@@ -1,6 +1,6 @@
 name = "LibTooltips"
 filename = "libtooltips-2.3.2-NEOFORGE-1.21.1.jar"
-side = "both"
+side = "client"
 
 [download]
 url = "https://cdn.modrinth.com/data/L95W3cqk/versions/8WjWgsz8/libtooltips-2.3.2-NEOFORGE-1.21.1.jar"
