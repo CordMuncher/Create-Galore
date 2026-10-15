@@ -1,0 +1,13 @@
+name = "Cozy Cafe"
+filename = "cozycafe-2.3-1.21.1.jar"
+side = "both"
+
+[download]
+url = "https://cdn.modrinth.com/data/iwLuXny2/versions/MgX9doBX/cozycafe-2.3-1.21.1.jar"
+hash-format = "sha512"
+hash = "6692cba00b3e74f27570ec57a272efcfe478ade2a92956ee5609e15d802634114aea2cbc9af468eb5c1d7c5d6e2136cdb84e97a337356e96592172d7e3cb779f"
+
+[update]
+[update.modrinth]
+mod-id = "iwLuXny2"
+version = "MgX9doBX"

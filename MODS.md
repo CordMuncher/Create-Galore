@@ -37,6 +37,7 @@ Not on Modrinth, add by hand: **Twilight Forest** `twilightforest-1.21.1-4.8.334
 | [Colorwheel](https://modrinth.com/mod/colorwheel) | 1.3.0+mc1.21.1 | client |
 | [Complementary Shaders - Reimagined](https://modrinth.com/shader/complementary-reimagined) | r5.9.3 | client |
 | [Controlling](https://modrinth.com/mod/controlling) | 19.0.5 | client |
+| [Cozy Cafe](https://modrinth.com/mod/cozycafe) | 2.3-1.21.1 | both |
 | [Crafting Tweaks](https://modrinth.com/mod/crafting-tweaks) | 21.1.11+neoforge-1.21.1 | both |
 | [Creat Aeronautics Structures](https://modrinth.com/mod/creat-aeronautics-structures) | 1.1.0-Beta-3.1 | both |
 | [Create](https://modrinth.com/mod/create) | 6.0.10+mc1.21.1 | both |
@@ -48,6 +49,7 @@ Not on Modrinth, add by hand: **Twilight Forest** `twilightforest-1.21.1-4.8.334
 | [Create Aeronautics: Encased Fluid Pipes](https://modrinth.com/mod/create-aeronautics-encased-fluid-pipes) | 1.0.7 | both |
 | [Create Aeronautics: Transmission & Linkage](https://modrinth.com/mod/create-aeronautics-transmission-linkage) | 0.2.8 | both |
 | [Create Big Cannons](https://modrinth.com/mod/create-big-cannons) | 5.11.7 | both |
+| [Create Cafe](https://modrinth.com/mod/create-cafe) | 1.4.3 | both |
 | [Create Collision Crashfix](https://modrinth.com/mod/create-collision-crashfix) | 1.0.0 | both |
 | [Create Confectionery](https://modrinth.com/mod/create-confectionery) | 1.1.3.b | both |
 | [Create Crafts & Additions](https://modrinth.com/mod/createaddition) | neoforge-1.21.1-1.7.2 | both |
@@ -87,6 +89,7 @@ Not on Modrinth, add by hand: **Twilight Forest** `twilightforest-1.21.1-4.8.334
 | [Create: Integrated Farming](https://modrinth.com/mod/create-integrated-farming) | 1.4.3 | both |
 | [Create: Interiors](https://modrinth.com/mod/interiors) | 0.6.1 | both |
 | [Create: LazyTick](https://modrinth.com/mod/createlazytick) | 1.21.1-2.7.31-6.0.10 | both |
+| [Create: Let The Adventure Begin](https://modrinth.com/mod/create-let-the-adventure-begin) | 4.1.0 | both |
 | [Create: Liquid Fuel](https://modrinth.com/mod/create-liquid-fuel) | 3.0.0-1.21.1 | both |
 | [Create: Mobile Packages](https://modrinth.com/mod/create-mobile-packages) | 1.21.1-0.7.8 | both |
 | [Create: Northstar - Redux](https://modrinth.com/mod/northstar-redux) | 0.6.6+1.21.1 | both |
@@ -99,6 +102,7 @@ Not on Modrinth, add by hand: **Twilight Forest** `twilightforest-1.21.1-4.8.334
 | [Create: Threaded Trains](https://modrinth.com/mod/create-threaded-trains) | 1.21.1-1.0.0 | both |
 | [Create: Wizardry](https://modrinth.com/mod/create-wizardry) | 1.21.1-0.5.1-pre1 | both |
 | [Cristel Lib](https://modrinth.com/mod/cristel-lib) | neoforge-1.21.1-3.1.7 | both |
+| [Critters and Companions](https://modrinth.com/mod/critters-and-companions) | 2.7.0 | both |
 | [Curios API](https://modrinth.com/mod/curios) | 9.5.1+1.21.1 | both |
 | [Delightful Creators](https://modrinth.com/mod/delightful-creators) | 1.2.1 | both |
 | [Distant Horizons](https://modrinth.com/mod/distanthorizons) | 3.3.3-1.21.1 | both |
@@ -131,6 +135,7 @@ Not on Modrinth, add by hand: **Twilight Forest** `twilightforest-1.21.1-4.8.334
 | [Kotlin for Forge](https://modrinth.com/mod/kotlin-for-forge) | 5.12.0 | both |
 | [L_Ender's Cataclysm](https://modrinth.com/mod/l_enders-cataclysm) | 3.33 | both |
 | [libIPN](https://modrinth.com/mod/libipn) | neoforge-1.21.1-6.6.3 | client |
+| [LibTooltips](https://modrinth.com/mod/libtooltips) | 2.3.2-NEOFORGE-1.21.1 | both |
 | [Lionfish-API](https://modrinth.com/mod/lionfish-api) | 3.1 | both |
 | [Lithium](https://modrinth.com/mod/lithium) | mc1.21.1-0.15.4-neoforge | both |
 | [Lithostitched](https://modrinth.com/mod/lithostitched) | 1.8.1-neoforge-21.1 | both |
@@ -154,6 +159,7 @@ Not on Modrinth, add by hand: **Twilight Forest** `twilightforest-1.21.1-4.8.334
 | [oωo (owo-lib)](https://modrinth.com/mod/owo-lib) | 0.12.15.5-beta.1+1.21 | both |
 | [Patchouli](https://modrinth.com/mod/patchouli) | 1.21.1-93-neoforge | both |
 | [Photon Shaders](https://modrinth.com/shader/photon-shader) | v1.3b | client |
+| [Placebo](https://modrinth.com/mod/placebo) | 1.21.1-9.9.4 | both |
 | [playerAnimator](https://modrinth.com/mod/playeranimator) | 2.0.4+1.21.1-forge | both |
 | [Resourceful Lib](https://modrinth.com/mod/resourceful-lib) | 3.0.12 | both |
 | [Revamped Shipwrecks](https://modrinth.com/mod/revamped-shipwrecks) | 1.1.0 | both |
@@ -190,6 +196,7 @@ Not on Modrinth, add by hand: **Twilight Forest** `twilightforest-1.21.1-4.8.334
 | [Xaero Train Map](https://modrinth.com/mod/xaero-train-map) | 1.0.0 | client |
 | [Xaero's Minimap](https://modrinth.com/mod/xaeros-minimap) | neoforge-1.21.1-26.6.0 | both |
 | [Xaero's World Map](https://modrinth.com/mod/xaeros-world-map) | neoforge-1.21.1-1.47.0 | both |
+| [YetAnotherConfigLib (YACL)](https://modrinth.com/mod/yacl) | 3.8.2+1.21.1-neoforge | both |
 | [YUNG's API](https://modrinth.com/mod/yungs-api) | 1.21.1-NeoForge-5.1.9 | both |
 | [YUNG's Better Desert Temples](https://modrinth.com/mod/yungs-better-desert-temples) | 1.21.1-NeoForge-4.1.5 | both |
 | [YUNG's Better Dungeons](https://modrinth.com/mod/yungs-better-dungeons) | 1.21.1-NeoForge-5.1.4 | both |

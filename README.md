@@ -4,7 +4,7 @@ A big, long-term Minecraft modpack built around the Create mod: airships, submar
 
 - **Minecraft** 1.21.1
 - **Loader** NeoForge **21.1.259** (pinned on purpose, see "Changes" below)
-- **Mods** 187 from Modrinth + Twilight Forest added by hand, plus 4 shader packs
+- **Mods** 194 from Modrinth + Twilight Forest added by hand, plus 4 shader packs
 - Full list with versions: [MODS.md](MODS.md)
 
 ## How to install
@@ -12,7 +12,7 @@ A big, long-term Minecraft modpack built around the Create mod: airships, submar
 1. Download [`Create-Galore-0.1.0.mrpack`](Create-Galore-0.1.0.mrpack) from this repo.
 2. **Prism Launcher:** Add Instance → Import → pick the `.mrpack` file.
    **Modrinth App:** drag the `.mrpack` onto the window (or File → Import).
-   The launcher downloads every mod at the exact pinned version, about 750 MB.
+   The launcher downloads every mod at the exact pinned version, about 755 MB.
 3. **Add Twilight Forest by hand.** It isn't on Modrinth, so it can't be inside the pack file. Put
    `twilightforest-1.21.1-4.8.3345-universal.jar` (CurseForge, version 4.8.3345) into the instance's `mods` folder.
 4. Give the game at least **8 GB of RAM** (instance settings → Java → maximum memory 8192 MB; 10 GB is more comfortable with Distant Horizons).
@@ -26,10 +26,10 @@ Everything ran in a headless cloud machine (4 CPU cores, 16 GB RAM, no GPU), so 
 
 | Test | Result |
 |---|---|
-| Dedicated server boot (164 server-side mods + Twilight Forest) | ✅ Clean. "Done" after 60 s, about 2 min from launch |
+| Dedicated server boot (171 server-side mods + Twilight Forest) | ✅ Clean. "Done" after about 60 s, about 2 min from launch |
 | World generation in Overworld, Moon, Mars, Twilight Forest, Nether, End | ✅ All generated a chunk with no errors |
 | Server shutdown | ✅ Clean |
-| Client boot to title screen (all 188 mods; NeoForge counts 224 with bundled libraries) | ✅ About 2 min under software rendering |
+| Client boot to title screen (all 195 mods; NeoForge counts about 230 with bundled libraries) | ✅ About 2 min under software rendering |
 | Client joins a world and plays for 90 s+ | ✅ (see screenshot below) |
 | Real FPS, shaders, Distant Horizons visuals, actual gameplay feel | ❌ Can't be judged without a GPU. Test these on a real PC. |
 
@@ -39,8 +39,8 @@ Rendering used Mesa llvmpipe (software OpenGL) under a virtual display. The clie
 
 ### Diagnostics
 
-- **Download size:** about 747 MB (mods 739 MB, shaders 7 MB). Biggest: BetterEnd 98 MB, Alex's Caves 75 MB, L_Ender's Cataclysm 73 MB, The Aether 40 MB, Mowzie's Mobs 36 MB, Create Aeronautics 33 MB.
-- **Memory:** the server used about 9.3 GB of process memory with an 8 GB heap; the client about 8.1-8.7 GB. Plan for 8 GB heap minimum.
+- **Download size:** about 754 MB (mods 747 MB, shaders 7 MB). Biggest: BetterEnd 98 MB, Alex's Caves 75 MB, L_Ender's Cataclysm 73 MB, The Aether 40 MB, Mowzie's Mobs 36 MB, Create Aeronautics 33 MB.
+- **Memory:** the server used about 9.3 GB of process memory with an 8 GB heap; the client about 8.1-9.6 GB. Plan for 8 GB heap minimum.
 - **First world creation** is slow (the Overworld spawn chunk took about 45 s on the test machine) because of the amount of world-gen mods. Normal after that.
 - **Client-only mods** (Sodium, Iris, JEI UI bits, Xaero's maps, etc.) are tagged `client` in `pack/`, so a server pack can be cut from the same folder later.
 
@@ -57,6 +57,7 @@ Every change from the curated list and why:
 | **Pinned NeoForge to 21.1.259** (not the newest 21.1.262) | On 21.1.262 joining any world kicks you out with "Failed to encode packet custom_payload" from The Aether's bundled Accessories library. Tested Aether alone: works on 21.1.248, 252, 257 and 259, fails on 262. The pack needs at least 21.1.252 (Cold Sweat Altitude), so 259 is the newest version that works. Revisit when Aether or Accessories updates. |
 | **Added roller coasters**: Create: Coasters Simulated, Coasters Simulated: Track Styles, Create: Coaster Seats | Requested, purely for fun. Coasters Simulated is the Create-native one and uses Sable physics, which the pack already has. |
 | **Added Twilight Forest** (manual, CurseForge) | Requested. Not on Modrinth, so it's a manual add (see install step 3). |
+| **Added the wishlist batch**: Create: Let The Adventure Begin, Create Cafe, Critters and Companions, Cozy Cafe, plus their libraries YACL, Placebo and LibTooltips | Requested. Tested as a separate step after the base pack was clean: server boot, all 6 dimensions and client in-world all passed with no new crashes. Create Confectionery and Create: Coasters Simulated from the same list were already in. |
 
 ## Known issues worth knowing
 
@@ -66,6 +67,7 @@ None of these stop the game. They're listed so they don't surprise anyone later.
 - **First launch shows a few one-time screens:** the BetterX welcome screen, Create Deep Seas' setup prompt and photosensitivity warning, and Minecraft's accessibility prompt. At small window sizes the Deep Seas warning's button can sit off-screen; press Tab then Enter.
 - **Cold Sweat ↔ Thirst Was Taken compat is off:** Cold Sweat wants Thirst 3.0+, and Modrinth only has 2.1.5 for NeoForge 1.21.1. Both mods work, they just don't talk to each other.
 - **Some recipes and loot tables log errors** because they point at mods that aren't installed (Alex's Caves radon lamps in Create: Framed, Thirst's Create compat recipes, Steam 'n' Rails tracks for other wood mods, many Design n Decor loot tables). Harmless.
+- **Wishlist batch log noise:** Create Cafe has compat recipes for Blood Magic and Botania (not installed), and Cozy Cafe can't read one menu file for Create Central Kitchen's pumpkin pie slice. Harmless.
 - **Sable warns about `copycats:copycat_catwalk`** (a block Copycats+ doesn't have in this version). Harmless.
 - **The Aether is pinned to an older NeoForge** (see above). Don't let a launcher auto-update NeoForge past 21.1.259 until that's fixed.
 
