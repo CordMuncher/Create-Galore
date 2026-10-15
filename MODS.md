@@ -2,7 +2,7 @@
 
 Create Galore 0.1.1, NeoForge 21.1.259 for Minecraft 1.21.1. Everything below comes from Modrinth and is pinned by the files in [`pack/`](pack/).
 
-"Side" is how the pack installs it: **both** means it goes on the client and (later) the server; **client** means client only. Server-only world generation mods are marked **both** on purpose, because singleplayer runs them on your own machine.
+"Side" is how the pack installs it: **both** means it goes on the client and the server; **client** means client only. Server-only world generation mods are marked **both** on purpose, because singleplayer runs them on your own machine.
 
 Not on Modrinth, add by hand: **Twilight Forest** `twilightforest-1.21.1-4.8.3345-universal.jar` (CurseForge). See the README.
 
@@ -109,7 +109,7 @@ Not on Modrinth, add by hand: **Twilight Forest** `twilightforest-1.21.1-4.8.334
 | [Curios API](https://modrinth.com/mod/curios) | 9.5.1+1.21.1 | both |
 | [Delightful Creators](https://modrinth.com/mod/delightful-creators) | 1.2.1 | both |
 | [Dimensional Sable](https://modrinth.com/mod/dimensional-sable) | 1.0.5 | both |
-| [Distant Horizons](https://modrinth.com/mod/distanthorizons) | 3.3.3-1.21.1 | both |
+| [Distant Horizons](https://modrinth.com/mod/distanthorizons) | 3.3.3-1.21.1 | client |
 | [DragonLib](https://modrinth.com/mod/dragonlib) | 3.0.29+1.21.1-neoforge | both |
 | [Dungeons and Taverns](https://modrinth.com/mod/dungeons-and-taverns) | v4.4.4+mod | both |
 | [Entity Culling](https://modrinth.com/mod/entityculling) | 1.11.3 | client |
@@ -141,7 +141,7 @@ Not on Modrinth, add by hand: **Twilight Forest** `twilightforest-1.21.1-4.8.334
 | [Kotlin for Forge](https://modrinth.com/mod/kotlin-for-forge) | 5.12.0 | both |
 | [L_Ender's Cataclysm](https://modrinth.com/mod/l_enders-cataclysm) | 3.33 | both |
 | [libIPN](https://modrinth.com/mod/libipn) | neoforge-1.21.1-6.6.3 | client |
-| [LibTooltips](https://modrinth.com/mod/libtooltips) | 2.3.2-NEOFORGE-1.21.1 | both |
+| [LibTooltips](https://modrinth.com/mod/libtooltips) | 2.3.2-NEOFORGE-1.21.1 | client |
 | [Lionfish-API](https://modrinth.com/mod/lionfish-api) | 3.1 | both |
 | [Lithium](https://modrinth.com/mod/lithium) | mc1.21.1-0.15.4-neoforge | both |
 | [Lithostitched](https://modrinth.com/mod/lithostitched) | 1.8.1-neoforge-21.1 | both |

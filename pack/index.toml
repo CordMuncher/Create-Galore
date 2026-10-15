@@ -1024,7 +1024,7 @@ metafile = true
 
 [[files]]
 file = "mods/distanthorizons.pw.toml"
-hash = "0c20fea3407ed0db85b4b171f1820a24987f2659946fadd30bae044205041b09"
+hash = "6d37de7b436e094a7834d51b5d9d803653ab445e1041853f32a61599b054c7bf"
 metafile = true
 
 [[files]]
@@ -1189,7 +1189,7 @@ metafile = true
 
 [[files]]
 file = "mods/libtooltips.pw.toml"
-hash = "31cdffdb94f0fbe1aa78cfffed671cd9422cbfae6ce1be30683bba3d12e7e569"
+hash = "22837c1069a4d1efd2d15634795476346e06133621fb900d9f617dcb45326691"
 metafile = true
 
 [[files]]

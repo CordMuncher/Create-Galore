@@ -20,6 +20,10 @@ A big, long-term Minecraft modpack built around the Create mod: airships, submar
 
 The repo does not contain any mod jars. The `pack/` folder is a [packwiz](https://packwiz.infra.link/) project that pins every file by hash; the `.mrpack` is built from it.
 
+## Running a server
+
+A dedicated server for this pack (Emre's PC when he plays, Exaroton when she plays alone) is set up with one script: see **[docs/server-setup.md](docs/server-setup.md)**. It installs NeoForge 21.1.259 and the 181 server-side mods from `pack/`, leaving out the 24 client-only mods, then you add Twilight Forest and accept the EULA. Tested: a full client joined the dedicated server and visited the Overworld, Moon, Nether, Aether and Twilight Forest with no mod mismatch.
+
 ## The Field Guide (in-game book)
 
 Every player gets the **Create Galore Field Guide** on first join. You can also craft one from a Book and Andesite. It's a searchable wiki, not a quest book: 13 sections and 130 entries explaining how things work, written for someone who has never played Create.
@@ -39,6 +43,7 @@ Everything ran in a headless cloud machine (4 CPU cores, 16 GB RAM, no GPU), so 
 | Server shutdown | ✅ Clean |
 | Client boot to title screen (all 211 mods) | ✅ About 2 min under software rendering |
 | Client joins a world and plays for 90 s+ | ✅ (see screenshot below) |
+| Dedicated server built by `server/install-server.sh` (181 server mods + Twilight Forest), client joins it and visits Overworld, Moon, Nether, Aether, Twilight Forest | ✅ No mod mismatch, 20 TPS, Field Guide handed out. See [docs/server-setup.md](docs/server-setup.md) |
 | Field Guide (fresh client from the `.mrpack`): handed out on first join, loads with no errors, opens, search finds entries by name and by item, links jump, Book + Andesite recipe shows in JEI | ✅ |
 | Real FPS, shaders, Distant Horizons visuals, actual gameplay feel | ❌ Can't be judged without a GPU. Test these on a real PC. |
 
@@ -51,7 +56,7 @@ Rendering used Mesa llvmpipe (software OpenGL) under a virtual display. The clie
 - **Download size:** about 860 MB (mods 853 MB, shaders 7 MB). Biggest: BetterEnd 98 MB, Alex's Caves 75 MB, L_Ender's Cataclysm 73 MB, The Aether 40 MB, Mowzie's Mobs 36 MB, Create Aeronautics 33 MB.
 - **Memory:** the server used about 9.3 GB of process memory with an 8 GB heap; the client about 8.1-9.6 GB. Plan for 8 GB heap minimum.
 - **First world creation** is slow (the Overworld spawn chunk took about 45 s on the test machine) because of the amount of world-gen mods. Normal after that.
-- **Client-only mods** (Sodium, Iris, JEI UI bits, Xaero's maps, etc.) are tagged `client` in `pack/`, so a server pack can be cut from the same folder later.
+- **Client-only mods** (Sodium, Iris, Distant Horizons, Xaero's map add-ons, etc.) are tagged `client` in `pack/`, so the server installer skips them.
 
 ## Config tweaks shipped in the pack
 
@@ -116,7 +121,7 @@ None of these stop the game. They're listed so they don't surprise anyone later.
 - **Some recipes and loot tables log errors** because they point at mods that aren't installed (Botania, Blood Magic, Mekanism, Modular Bees, Steam 'n' Rails tracks for other wood mods, many Design n Decor loot tables). Harmless, and fixable only in those mods. The broken Thirst, Create: Framed radon lamp and Create Deco placard recipes are fixed by the datapack.
 - **Wishlist batch log noise:** Create Cafe has compat recipes for Blood Magic and Botania (not installed), and Cozy Cafe can't read one menu file for Create Central Kitchen's pumpkin pie slice. Harmless.
 - **Sable warns about `copycats:copycat_catwalk`** (a block Copycats+ doesn't have in this version). Harmless.
-- **Chunksmith warns that Distant Horizons is installed on the server.** It's only a warning; the future server pack should leave Distant Horizons out and let Chunksmith send LODs to clients.
+- **Distant Horizons is client-only.** The server leaves it out and Chunksmith sends far-terrain data (LODs) to each player's Distant Horizons instead. Verified on the test server: the client log shows it received LOD data from the server.
 - **The Aether is pinned to an older NeoForge** (see above). Don't let a launcher auto-update NeoForge past 21.1.259 until that's fixed.
 
 ## Repo layout
@@ -125,6 +130,7 @@ None of these stop the game. They're listed so they don't surprise anyone later.
 - `Create-Galore-0.1.1.mrpack` – importable pack built from `pack/`
 - `MODS.md` – full mod list
 - `pack/patchouli_books/` – the Field Guide
+- `server/` – server install scripts (`install-server.bat` / `.sh`), memory settings and starting `server.properties`
 - `tools/` – scripts to extract item and recipe IDs from the mod jars and check the Field Guide
 
 To rebuild the `.mrpack` after changing `pack/`:
