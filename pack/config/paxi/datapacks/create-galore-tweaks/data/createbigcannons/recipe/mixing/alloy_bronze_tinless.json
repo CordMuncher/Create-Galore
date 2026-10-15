@@ -1,0 +1,1 @@
+{"type": "create:mixing", "heat_requirement": "heated", "ingredients": [{"tag": "c:ingots/copper"}, {"tag": "c:ingots/zinc"}, {"item": "create:cinder_flour"}], "results": [{"count": 2, "id": "alloyed:bronze_ingot"}]}

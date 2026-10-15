@@ -1,0 +1,13 @@
+{
+ "type": "minecraft:crafting_shapeless",
+ "category": "misc",
+ "ingredients": [
+  {
+   "item": "tfmg:lead_ingot"
+  }
+ ],
+ "result": {
+  "id": "createnuclear:lead_ingot",
+  "count": 1
+ }
+}

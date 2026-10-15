@@ -1,13 +1,13 @@
 name = "Animal Husbandry"
-filename = "AnimalHusbandry-neoforge-0.5.0.jar"
+filename = "AnimalHusbandry-neoforge-0.4.2.jar"
 side = "both"
 
 [download]
-url = "https://cdn.modrinth.com/data/HWb14TvI/versions/4lRl6E38/AnimalHusbandry-neoforge-0.5.0.jar"
+url = "https://cdn.modrinth.com/data/HWb14TvI/versions/ciOU3Trl/AnimalHusbandry-neoforge-0.4.2.jar"
 hash-format = "sha512"
-hash = "736977126eb70ea15adccadc278e1a58f3a2ff220acd6159c0d0b80c1348fc40b94a62cf21d23352aee67b7ab64a06e517497cd17e7b427b58f219f48009f01b"
+hash = "24d4d08df2dcb2b1109c997e7aaf3df7c23fec3070c2c5371f9308c27129b7ae04b1a4db8370dba95cdb79724a864815cef78ae299a26496d707b5f821d8306f"
 
 [update]
 [update.modrinth]
 mod-id = "HWb14TvI"
-version = "4lRl6E38"
+version = "ciOU3Trl"

@@ -1,0 +1,13 @@
+#.
+#Migrate copycats to Create: Copycats+ when they receive a block update
+migrateCopycatsOnBlockUpdate = true
+#.
+#Migrate copycats to Create: Copycats+ when their block entities are initialized
+migrateCopycatsOnInitialize = true
+
+#.
+#Enable/disable categories of features. Disabling a category hides all related features. Values on server override clients
+[feature_categories]
+	#.
+	#All copycats (Install Create: Copycats+ to upgrade)
+	copycats = false

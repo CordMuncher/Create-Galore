@@ -1,0 +1,13 @@
+{
+ "type": "minecraft:crafting_shapeless",
+ "category": "misc",
+ "ingredients": [
+  {
+   "item": "tfmg:raw_lead"
+  }
+ ],
+ "result": {
+  "id": "createnuclear:raw_lead",
+  "count": 1
+ }
+}
