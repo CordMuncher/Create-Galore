@@ -20,6 +20,14 @@ A big, long-term Minecraft modpack built around the Create mod: airships, submar
 
 The repo does not contain any mod jars. The `pack/` folder is a [packwiz](https://packwiz.infra.link/) project that pins every file by hash; the `.mrpack` is built from it.
 
+## The Field Guide (in-game book)
+
+Every player gets the **Create Galore Field Guide** on first join. You can also craft one from a Book and Andesite. It's a searchable wiki, not a quest book: 13 sections and 133 entries explaining how things work, written for someone who has never played Create.
+
+Sections: Start Here, Create: The Basics, How Things Connect, Industry and Power, Ores and Metals, Survival Layers, Trains and Rides, Flight, Space, The Ocean, Exploration and Adventure, Food and Farming, Home, Storage and Maps.
+
+To search, open the Index (the last icon on the first page) and type. Search matches entry names and the items shown in them. Editing notes are in [docs/guidebook.md](docs/guidebook.md).
+
 ## What was tested (2026-10-15)
 
 Everything ran in a headless cloud machine (4 CPU cores, 16 GB RAM, no GPU), so speed numbers are pessimistic compared with a gaming PC.
@@ -31,6 +39,7 @@ Everything ran in a headless cloud machine (4 CPU cores, 16 GB RAM, no GPU), so 
 | Server shutdown | ✅ Clean |
 | Client boot to title screen (all 211 mods) | ✅ About 2 min under software rendering |
 | Client joins a world and plays for 90 s+ | ✅ (see screenshot below) |
+| Field Guide (fresh client from the `.mrpack`): handed out on first join, loads with no errors, opens, search finds entries by name and by item, links jump, Book + Andesite recipe shows in JEI | ✅ |
 | Real FPS, shaders, Distant Horizons visuals, actual gameplay feel | ❌ Can't be judged without a GPU. Test these on a real PC. |
 
 Rendering used Mesa llvmpipe (software OpenGL) under a virtual display. The client joined the same world the server generated:
@@ -88,6 +97,8 @@ None of these stop the game. They're listed so they don't surprise anyone later.
 - `pack/` – packwiz source (one `.pw.toml` per mod or shader, `pack.toml`, `index.toml`)
 - `Create-Galore-0.1.0.mrpack` – importable pack built from `pack/`
 - `MODS.md` – full mod list
+- `pack/patchouli_books/` – the Field Guide
+- `tools/` – scripts to extract item and recipe IDs from the mod jars and check the Field Guide
 
 To rebuild the `.mrpack` after changing `pack/`:
 

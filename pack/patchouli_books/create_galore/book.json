@@ -1,6 +1,6 @@
 {
   "name": "Create Galore Field Guide",
-  "landing_text": "A field guide to Create Galore. It explains how things work and how the mods connect. It won't tell you what to do next.$(br2)New to Create? Start with $(l:create_basics/rotation)Create: The Basics$(/l).$(br2)To search, open the $(thing)Index$() below and type.",
+  "landing_text": "A field guide to Create Galore. It explains how things work and how the mods connect. It won't tell you what to do next.$(br2)New to Create? Start with $(l:create_basics/rotation)Create: The Basics$(/l).$(br2)To search, open the $(thing)Index$() (the last icon on the right) and type.",
   "version": 1,
   "i18n": false,
   "subtitle": "Create Galore 0.1",

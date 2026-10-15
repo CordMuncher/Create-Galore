@@ -1112,7 +1112,7 @@ metafile = true
 
 [[files]]
 file = "patchouli_books/create_galore/book.json"
-hash = "4d1ee46b1f8aa23e6b3acb5b2bc81c75d9acef7ccaca7dadb672faaa6d1ea0d3"
+hash = "72136ff946a8f9a3400564261cf2d87fd3c14b3d3415d7f6c2275f22e705ba2b"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/categories/connections.json"
@@ -1192,7 +1192,7 @@ hash = "842e6aef66de35ef8754e19f8336850855f0c9f5bccb817298c7c4add7af0123"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/connections/power.json"
-hash = "daa485261bc41bb528a766f3fe3ae04923ddcd75f06f040935c5d615fddcf437"
+hash = "3131044d8d6ec80275352abc220f51aeb39e66c5008fa54d9f9588d44a661847"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/connections/side_effects.json"
@@ -1537,10 +1537,6 @@ hash = "d324422a34164ac34effae5ebfa1f0881cef1b308842d6089f766a535394f378"
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/industry/tfmg_steel.json"
 hash = "0c38bd1e69f1554e817dccb007f2e944c53bbf6f6b9de179a0d175dfba3dbc16"
-
-[[files]]
-file = "patchouli_books/create_galore/en_us/entries/industry/wizardry.json"
-hash = "a8f0fffc70e67c595d841401f2aae57048827b07c45364d852ec76055047fe94"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/materials/ore_doubling.json"
