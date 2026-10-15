@@ -1,0 +1,13 @@
+name = "Berries and Cherries Delight"
+filename = "berries_and_cherries-1.1-neoforge-1.21.1.jar"
+side = "both"
+
+[download]
+url = "https://cdn.modrinth.com/data/fltEIOux/versions/6Mz9TV74/berries_and_cherries-1.1-neoforge-1.21.1.jar"
+hash-format = "sha512"
+hash = "7d82852f434900c48cfec05c5918ec4ab7c040049e181a68054fe088c9769de0bbf96d89ccfc169f40e45581d2a5e709566970d0846ddc1d44693c62f47a1987"
+
+[update]
+[update.modrinth]
+mod-id = "fltEIOux"
+version = "6Mz9TV74"

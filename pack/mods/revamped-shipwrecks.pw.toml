@@ -1,0 +1,13 @@
+name = "Revamped Shipwrecks"
+filename = "Revamped Shipwrecks 1.1.0.jar"
+side = "both"
+
+[download]
+url = "https://cdn.modrinth.com/data/ZnZ8uqXN/versions/olo0Q6nb/Revamped%20Shipwrecks%201.1.0.jar"
+hash-format = "sha512"
+hash = "ba3b2792359b37bc1918144969211bfa08f7a66b85357640d872985e78a79c45fcc4a2a1bf9093f27f6dcf595fb25bcf99241a7500c95ca1307256c70a946b21"
+
+[update]
+[update.modrinth]
+mod-id = "ZnZ8uqXN"
+version = "olo0Q6nb"

@@ -1,0 +1,13 @@
+name = "Cataclysm x Create Integration"
+filename = "cataclysm_create-1.21.1-Neoforge.jar"
+side = "both"
+
+[download]
+url = "https://cdn.modrinth.com/data/pmUh6mZW/versions/6Km4SJcj/cataclysm_create-1.21.1-Neoforge.jar"
+hash-format = "sha512"
+hash = "ddb814395bc3b782e972853c6761cfad4106dea18de1972829f6fa563f44df867aa7e45721e93ff4aa4ce7b7b9383e73bb880680fcc407385a18d9368a7ab2c0"
+
+[update]
+[update.modrinth]
+mod-id = "pmUh6mZW"
+version = "6Km4SJcj"

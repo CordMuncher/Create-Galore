@@ -1,0 +1,13 @@
+name = "Create Galore"
+author = "Emre"
+version = "0.1.0"
+pack-format = "packwiz:1.1.0"
+
+[index]
+file = "index.toml"
+hash-format = "sha256"
+hash = "1d3ce2846c293ef2433bc4235c6338025540b04878223968e1590b14ea776825"
+
+[versions]
+minecraft = "1.21.1"
+neoforge = "21.1.259"

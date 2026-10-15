@@ -1,0 +1,13 @@
+name = "Create Ore Excavation Deposits"
+filename = "coedeposits-0.2.0.jar"
+side = "both"
+
+[download]
+url = "https://cdn.modrinth.com/data/XfN8l56o/versions/60WDjd3H/coedeposits-0.2.0.jar"
+hash-format = "sha512"
+hash = "82236cbcb676c3260f1e51255b00763ba470000e08ba29eda665ff3e996c8b3125993325ef0661ef69eade2b9fb37928a29429efecc55ba539bfcae5f5e170ad"
+
+[update]
+[update.modrinth]
+mod-id = "XfN8l56o"
+version = "60WDjd3H"

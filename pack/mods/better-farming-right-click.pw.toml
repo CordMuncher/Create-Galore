@@ -1,0 +1,13 @@
+name = "Better Farming Right Click  + Right Click Harvest"
+filename = "better_farming_right_click-neoforge-1.21.1-1.1.1.jar"
+side = "client"
+
+[download]
+url = "https://cdn.modrinth.com/data/RWrgTm1s/versions/i3epo8CM/better_farming_right_click-neoforge-1.21.1-1.1.1.jar"
+hash-format = "sha512"
+hash = "bd9af9865e13dfec273179f415cdcb34bb1b5db13540ac039d146ac2db1b2bcb2a5af0c1a51a74d38b7cbcaefb837a0b064fe086d2333683b645452d431cda22"
+
+[update]
+[update.modrinth]
+mod-id = "RWrgTm1s"
+version = "i3epo8CM"
