@@ -1,0 +1,13 @@
+{
+ "type": "minecraft:crafting_shapeless",
+ "category": "misc",
+ "ingredients": [
+  {
+   "item": "tfmg:copper_wire"
+  }
+ ],
+ "result": {
+  "id": "createaddition:copper_wire",
+  "count": 1
+ }
+}

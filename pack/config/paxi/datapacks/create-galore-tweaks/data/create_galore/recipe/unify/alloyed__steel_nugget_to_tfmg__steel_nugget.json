@@ -1,0 +1,13 @@
+{
+ "type": "minecraft:crafting_shapeless",
+ "category": "misc",
+ "ingredients": [
+  {
+   "item": "alloyed:steel_nugget"
+  }
+ ],
+ "result": {
+  "id": "tfmg:steel_nugget",
+  "count": 1
+ }
+}

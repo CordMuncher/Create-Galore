@@ -37,28 +37,240 @@ file = "config/mowziesmobs-common.toml"
 hash = "370d63f9cf1ce54a034f75bd46fe245ba501aeb6f60235e005bc136d65bd18d5"
 
 [[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/alexscaves/recipe/gunpowder_from_sulfur.json"
+hash = "dc13e8b31ce0b3c4014ed02939fa35845a2baf7c75c09153ff28634f751c0f0c"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/alexscaves/recipe/polymer_plate.json"
+hash = "3694fbec75724a117226057c46894611cc78d1ca09f7ea096b396a5967628e5c"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/alexscaves/recipe/slam.json"
+hash = "ca45056dd158cddbe5e76b0b5dced65c19a8f6c57b4dca51106d7cb9d9037f3f"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/alexscaves/recipe/spelunkie.json"
+hash = "2398a07ae2edaf3704b6455da58b26a333edc6d9b8c51257b92d87d679ca2c9c"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/alloyed/recipe/crafting/steel_block_from_compacting.json"
+hash = "4ba0e7a0834f48236ca945470e1976c44abc8078da5dd42178fce67ae49b2584"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/alloyed/recipe/crafting/steel_ingot_from_compacting.json"
+hash = "0a7c4626ae3ae4534b35bb1b019c8ac78805b8e068492b40635fb163bf4b8628"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/alloyed/recipe/crafting/steel_ingot_from_decompacting.json"
+hash = "d8497a7caf413b0a3af21d7d94ed8011f637b92d03b82042030e7907c2926791"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/alloyed/recipe/crafting/steel_nugget_from_decompacting.json"
+hash = "104c5fe1abbceda019c9b1ef6a77d9af461330fe95c10cf2a1532db7907cc8e6"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/alloyed/recipe/forging/steel_ingot.json"
+hash = "83d592509244a2a22a46d494f2fe6684c5e144ca276886ca41fc225fe4e0cce1"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/alloyed/recipe/mixing/steel_ingot.json"
+hash = "7410886e01edf37ccac97ad9a0dc3a1a537bc98e718eda63fec944973b1641d6"
+
+[[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/cnbridge/recipe/dimensional_drive.json"
 hash = "d49135196f515d2ba77cf13c7abec12135fb5030a8d2f500a9760a81d8a3c4a3"
 
 [[files]]
-file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/recipe/steel_unify/cbc_from_tfmg.json"
-hash = "7d0252921e0136a9c3a702779da57f3f2f72ae12ab2ce873cd6c42edeeba349c"
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_confectionery/recipe/black_chocolate_recipe.json"
+hash = "657637917386c5dc62ab879a4221328754cab19ca53d28768c617fb0172fdc6e"
 
 [[files]]
-file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/recipe/steel_unify/nuclear_from_tfmg.json"
-hash = "7882353f51ad845081e866c3a3526904508e0af3608c2245928a7362f1b93ca8"
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_confectionery/recipe/cocoa_powder_and_butter_recipe.json"
+hash = "5d5532560b075b9f3f7e67f25e3d680aa43a3064ef99b7d827144702f09c43f1"
 
 [[files]]
-file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/recipe/steel_unify/tfmg_from_alloyed.json"
-hash = "1927ed7080547a1cd3464a8255e7384a4fa5610654becea99f521e82f6af30e2"
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_confectionery/recipe/hot_chocolate_recipe.json"
+hash = "d86081201ef6640f05dedfb271c31104b9215b88bc50a51cf1886a6b52a341e5"
 
 [[files]]
-file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/recipe/steel_unify/tfmg_from_cbc.json"
-hash = "115a03b1e8882320b4b8a6cc1c8c4451166290901094cded2c4e968220dd8f23"
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_confectionery/recipe/white_chocolate_recipe.json"
+hash = "2c2ce92253cd25d39f114804db073cf42349b4c5415c8443a9a196ac7b15bd35"
 
 [[files]]
-file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/recipe/steel_unify/tfmg_from_nuclear.json"
-hash = "57dfb540aba03c45bb2fac72ba78e5cb0c180e6d5ac87c307d92955520ab2186"
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/recipe/unify/alexscaves__sulfur_dust_to_tfmg__sulfur_dust.json"
+hash = "973e38194007219d1b650b17351b97b5391597012ebb61e6379b93773752b696"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/recipe/unify/alloyed__steel_block_to_tfmg__steel_block.json"
+hash = "b1eff44a1b0ac2a2aba213a1226886cea85c145da51a89c27eb4c5777fbb87a2"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/recipe/unify/alloyed__steel_ingot_to_tfmg__steel_ingot.json"
+hash = "6268438d5d8486462b78f14f6aa6a2a2a61d5074e86245af9b4138c4cb49d4e2"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/recipe/unify/alloyed__steel_nugget_to_tfmg__steel_nugget.json"
+hash = "39e72f43e5e9d4cff97c593dcbd8f24049561bd936f738111c11470a55590b88"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/recipe/unify/create_confectionery__cocoa_butter_to_ratatouille__cocoa_butter.json"
+hash = "4d8d3e8545b02eff3b01a7ca04fcd75c86631c96a11efb9cbb5d1329c9a67f9c"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/recipe/unify/create_confectionery__cocoa_powder_to_ratatouille__cocoa_powder.json"
+hash = "7aa6861d7da1d35d08ce6ccd1c02a2b37f48caf237b568e8ca614c7f81d54601"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/recipe/unify/createbigcannons__bronze_block_to_alloyed__bronze_block.json"
+hash = "e3593281e6dfbf4cff4ceb16b2492b5c40d2a9b29008f4433d6e5b950dbd4fb1"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/recipe/unify/createbigcannons__bronze_ingot_to_alloyed__bronze_ingot.json"
+hash = "a96bb426298603d8bacd1aa5ed020c32b6f82967f7b93b6e006db32aa6f7ff67"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/recipe/unify/createbigcannons__steel_block_to_tfmg__steel_block.json"
+hash = "75278b585262c6cbe113da73a0f6730f4a0369b9ed88d9e276c50c6e8768eaf2"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/recipe/unify/createbigcannons__steel_ingot_to_tfmg__steel_ingot.json"
+hash = "182b07e52031d85a2099c32e5721f6eb2aa2e53b888114f9b88dcdd9b3c3c355"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/recipe/unify/createnuclear__steel_block_to_tfmg__steel_block.json"
+hash = "00cef5c597c912e6bce508c606a08b8ab0075dad7f34aff5745d06f847af468f"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/recipe/unify/createnuclear__steel_ingot_to_tfmg__steel_ingot.json"
+hash = "32bed07e421c698807cba2fa2a4d86036b221f1a6ff5b6c5499a81e857852bac"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/recipe/unify/createnuclear__steel_nugget_to_tfmg__steel_nugget.json"
+hash = "7c031b93d9c20545616bb58f3199183b1d59acaeaa25ff80dec2e6b048b66f52"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/recipe/unify/northstar__salt_to_ratatouille__salt.json"
+hash = "75915b73a5152816eaf3b440301e230a9c81f0ef90d3d8e3de0f98b83dcffbdb"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/recipe/unify/tfmg__copper_spool_to_createaddition__copper_spool.json"
+hash = "0bab08f4d925b2434ecd3926728930b7daadcf1a31df82d2aebc04175077724a"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/recipe/unify/tfmg__copper_wire_to_createaddition__copper_wire.json"
+hash = "b23ed1ac4bd8208bba65d25fcb464bc48900f463432c40a733b2b30078e2b27a"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/recipe/unify/tfmg__lead_block_to_createnuclear__lead_block.json"
+hash = "0b8c54e1a9ca1551c06539392fccfca5c368bfb0fa9558e39f8c566c866e4c22"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/recipe/unify/tfmg__lead_ingot_to_createnuclear__lead_ingot.json"
+hash = "8e6366302533ceccc0556ab93472398c9b32c5bf9695b85ae6fabe018bd2ea64"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/recipe/unify/tfmg__lead_nugget_to_createnuclear__lead_nugget.json"
+hash = "4c81c3fa8fea8ac51f8c3c1ba906405b1a23390a11d052e536b1d5a7e289342d"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/recipe/unify/tfmg__raw_lead_block_to_createnuclear__raw_lead_block.json"
+hash = "bd520d5097e793340a76ed57cf165cc5f6ae9f3a18fe8beef92f7ac5f443d11d"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/recipe/unify/tfmg__raw_lead_to_createnuclear__raw_lead.json"
+hash = "b5e82e62f7615510dba5e3227c41fa9aa4d10ca0456124ea2a4dcd272d6df2c3"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createbigcannons/recipe/bronze_block.json"
+hash = "ef26b09c1318e8dcf17858c62e9cb45143042074e4d91e4d561595bf99e78c54"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createbigcannons/recipe/bronze_ingot_from_block.json"
+hash = "aad7a96fa72749d4e3827cf53d9e81527733e7a3080d522011f149eb0f5c4a31"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createbigcannons/recipe/bronze_ingot_from_nuggets.json"
+hash = "f2e434721109448166316535356505c0a2828d483b5f6c8c95db91b494b7adba"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createbigcannons/recipe/bronze_scrap.json"
+hash = "010338ffc98f09b95b384546aa805943d19d45a2ec3dc46e8367d380d5dc4941"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createbigcannons/recipe/compacting/forge_bronze_block.json"
+hash = "19924febb85fc2967f4305d3d357f74e2a3d389e1a9ad626cd30af8341155fb2"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createbigcannons/recipe/compacting/forge_bronze_ingot.json"
+hash = "99ee0af76e8d3716ef016c3765900d217eb6709591152d4abedcae06805903e6"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createbigcannons/recipe/compacting/forge_steel_block.json"
+hash = "da574139aa58049bc541c006c225901ee477d7d53cba9f574a080dbe2c5a48cb"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createbigcannons/recipe/compacting/forge_steel_ingot.json"
+hash = "2a532fb1be0dbdaf8f4f0b8e1e0ed68ffe7520cd91351c1cdfd2ba3635189007"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createbigcannons/recipe/mixing/alloy_bronze_brass.json"
+hash = "c2464110f9d6d916ae5962d2b1b8eaeadc9df48090436c1247f8e5a90dfcf9ac"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createbigcannons/recipe/mixing/alloy_bronze_tin.json"
+hash = "e06e26ea043c618c8ed32dac5c089948933fe8b8213a22ef97c795189f06e9f7"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createbigcannons/recipe/mixing/alloy_bronze_tinless.json"
+hash = "1659cfad5ebd9284bd3dce8da5b369a4862f5de4e3fdf804e0dc9c1c6800e20d"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createbigcannons/recipe/mixing/alloy_steel.json"
+hash = "3b07f62eeec3cae40c5ed5f936aeef8d91c2ea21cf94b700e2c66a8e24a6f42e"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createbigcannons/recipe/steel_block.json"
+hash = "dfa086de25658a45bd9d2e7abcc93ad6243ef538d400b93756dfebc8b7dd55e8"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createbigcannons/recipe/steel_ingot_from_block.json"
+hash = "916d1b3e2ae454be69101e55e83e925367edbc8af8a4d592c86d3737f913ea77"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createbigcannons/recipe/steel_ingot_from_nuggets.json"
+hash = "b76d5e7711acc676fa06ea4a6e332a6d28042670c88d3ac0632dc51e8b6ec32f"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createbigcannons/recipe/steel_scrap.json"
+hash = "bb09ddc557fae4baa1484635310ce8b5c05bcdb237e9d3697674c20eb7aba808"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createnuclear/recipe/crafting/crafting/steel_block_from_compacting.json"
+hash = "30c07b49e168a60e71e74512aa1bcda3084e89e8b22ba2335f80c598cb0dd6f6"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createnuclear/recipe/crafting/crafting/steel_ingot_from_compacting.json"
+hash = "d815df357e3b4248fdf66d8a576b7a454c1fded8d4a50d79225e10d91e204ee6"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createnuclear/recipe/crafting/crafting/steel_ingot_from_decompacting.json"
+hash = "3b4f3de28b4c552591fc3dbf8a26e5da8a6e973d394848f26b953930b9e22458"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createnuclear/recipe/crafting/crafting/steel_nugget_from_decompacting.json"
+hash = "c195378b07137ab4d4390654ed64329908e715cefc206a99e3be5b5c6b08fefa"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createnuclear/recipe/crafting/steel_ingot_from_decompacting.json"
+hash = "3b4f3de28b4c552591fc3dbf8a26e5da8a6e973d394848f26b953930b9e22458"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createnuclear/recipe/crafting/steel_nugget_from_decompacting.json"
+hash = "c195378b07137ab4d4390654ed64329908e715cefc206a99e3be5b5c6b08fefa"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createnuclear/recipe/mixing/steel.json"
+hash = "b6b682fa31f2d30118d09943c89a1edc0dbf9024ca32b9743708789147f6550c"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/naturalist/tags/worldgen/biome/has_anglerfish.json"
@@ -95,6 +307,110 @@ hash = "78211ca3f4a5f24669bc16b1132aa4dcd29c3d053564742f1728da77430c372b"
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/naturalist/tags/worldgen/biome/has_starfish.json"
 hash = "78211ca3f4a5f24669bc16b1132aa4dcd29c3d053564742f1728da77430c372b"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/northstar/recipe/compacting/brine_to_salt.json"
+hash = "a2fe129a90b4691c4fa1a0a3236d8d300710a0ee10f1f2d104192e49c2959bba"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/northstar/recipe/crushing/basalt.json"
+hash = "5aac962594ccd8875625427930f50d9138b6f72a77734587f35e0e7a8f619326"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/northstar/recipe/crushing/mars_gravel.json"
+hash = "b6b56a9e3fc9033f6c867e0f83936c1716779f6e9fd56977e7895560de538ccc"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/tfmg/recipe/blasting/lead_ingot_from_crushed_blasting.json"
+hash = "8eabd03ef1ef1918c96af419bb6ce4107fc47a3fe37595c1fdc9f3725d9172d6"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/tfmg/recipe/blasting/lead_ingot_from_ore_blasting.json"
+hash = "aad4181770ed7da5da6cf8d4183832e325160482c60d9261c86529da3ff81724"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/tfmg/recipe/blasting/lead_ingot_from_raw_blasting.json"
+hash = "4421ab6cf7efafaeb294d466aa822137ea4577c679ab43a7859dc4ebe81c3970"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/tfmg/recipe/casting/bronze.json"
+hash = "be2138bc7a85a75bc928be43da1b68163d71f9c6556e2fd0ac2e8c15373741a9"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/tfmg/recipe/copper_wire_from_ingots_copper_stonecutting.json"
+hash = "f8ecf97bbbd9a67c1add0441dcbd9c4282d7a3fa21e5a3ca07eb1fcb9f22e32f"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/tfmg/recipe/crafting/copper_spool.json"
+hash = "119e177d328fc74b0f3d90cf57cf679e5e4b12e48cbb27d4bf88f873fa02bad1"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/tfmg/recipe/crafting/materials/lead_block_from_compacting.json"
+hash = "12010e48b8b11fbe31bff8bb3168c5683ebef3c0bee468aad196cfe7f3c4f862"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/tfmg/recipe/crafting/materials/lead_ingot_from_compacting.json"
+hash = "f58395be351f0fd272f26d1511696b0779faaefceab8c6a60bbdebaaf3e4e1f2"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/tfmg/recipe/crafting/materials/lead_ingot_from_decompacting.json"
+hash = "048363449b591188597ee7ace504c90422c1960e4b70ba98da16463cb4407dbe"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/tfmg/recipe/crafting/materials/lead_nugget_from_decompacting.json"
+hash = "44b479bd359332a98251d82dea2d58f7514495d386e80094cfcf2feff9223560"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/tfmg/recipe/crafting/materials/raw_lead.json"
+hash = "41c460b91f87cb99e6abee4132aba3b8f9f9a09c8c20221b39e19f6b20fa678c"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/tfmg/recipe/crafting/materials/raw_lead_block.json"
+hash = "2cbe0a512f8a934b6b37a94987f875ccb6fb10c5e7f2c8925b16ab34f76ef78b"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/tfmg/recipe/crushing/galena.json"
+hash = "49fb32949a513285974e294155a270c698955ebe3237882b72ad8f9f97d3a1a2"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/tfmg/recipe/sequenced_assembly/generator.json"
+hash = "596ff9acdc95a603fafbee75dbad59ab0e2b14ec1ab05ab45a42370b6d3ad251"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/tfmg/recipe/sequenced_assembly/heavy_motor.json"
+hash = "246bbb6c663d7909f8172d28c7c9133ec98346ced3508e15c1347192d13ea5cf"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/tfmg/recipe/sequenced_assembly/motor.json"
+hash = "772fdb049fba63198ef7a2c2b83de10552353dfb0b90c9aaedfaba68216fa274"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/tfmg/recipe/smelting/lead_ingot_from_crushed_blasting.json"
+hash = "9ae7d0fbd80c375a300145fee01cfffe95511582b54fe953f48f3fbfc8c68625"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/tfmg/recipe/smelting/lead_ingot_from_ore.json"
+hash = "208c8182e19da99045bf2029f684281ebfcecc12f60773d1047ef4b0564420cb"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/tfmg/recipe/smelting/lead_ingot_from_ore_blasting.json"
+hash = "208c8182e19da99045bf2029f684281ebfcecc12f60773d1047ef4b0564420cb"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/tfmg/recipe/smelting/lead_ingot_from_raw.json"
+hash = "37278d99fd11da4988f7f222aafeae0a9fe42e3161a3837578783700b594149a"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/tfmg/recipe/smelting/lead_ingot_from_raw_blasting.json"
+hash = "37278d99fd11da4988f7f222aafeae0a9fe42e3161a3837578783700b594149a"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/tfmg/recipe/winding/electromagnetic_coil.json"
+hash = "ec4cb97d1bc9212b08ef94a36239e61011ceac96fa54940e09743f8834caf83a"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/tfmg/recipe/winding/large_coil.json"
+hash = "08ed15e3582446b68098f09574b6799cd16d11d5ae9a1828cf044a66c13c5e13"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/pack.mcmeta"
