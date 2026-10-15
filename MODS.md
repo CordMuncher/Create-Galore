@@ -90,7 +90,6 @@ Not on Modrinth, add by hand: **Twilight Forest** `twilightforest-1.21.1-4.8.334
 | [Create: Hostile Skies](https://modrinth.com/mod/create-hostile-skies) | 0.2.6 | both |
 | [Create: Hypertubes](https://modrinth.com/mod/hypertube) | 0.6.0 | both |
 | [Create: Integrated Farming](https://modrinth.com/mod/create-integrated-farming) | 1.4.3 | both |
-| [Create: Interiors](https://modrinth.com/mod/interiors) | 0.6.1 | both |
 | [Create: LazyTick](https://modrinth.com/mod/createlazytick) | 1.21.1-2.7.31-6.0.10 | both |
 | [Create: Let The Adventure Begin](https://modrinth.com/mod/create-let-the-adventure-begin) | 4.1.0 | both |
 | [Create: Liquid Fuel](https://modrinth.com/mod/create-liquid-fuel) | 3.0.0-1.21.1 | both |

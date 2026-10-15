@@ -4,7 +4,7 @@ A big, long-term Minecraft modpack built around the Create mod: airships, submar
 
 - **Minecraft** 1.21.1
 - **Loader** NeoForge **21.1.259** (pinned on purpose, see "Changes" below)
-- **Mods** 206 from Modrinth + Twilight Forest added by hand, plus 4 shader packs
+- **Mods** 205 from Modrinth + Twilight Forest added by hand, plus 4 shader packs
 - Full list with versions: [MODS.md](MODS.md)
 
 ## How to install
@@ -83,6 +83,10 @@ Every change from the curated list and why:
 | **Swapped Thirst Was Taken → Thirst Was Reclaimed 3.0.6** | Same mod ID (`thirst`). Fixes the Cold Sweat compat that the old 2.1.5 build could not provide. |
 | **Pinned Cold Sweat: Altitude to 0.7.0** (was 0.8.1) | 0.8.x targets Cold Sweat 2.4.4+. With the pack's Cold Sweat 2.4.3.1 it crashed the game with a "Ticking player" NullPointerException while joining a world. |
 | **Unified duplicate materials** (datapack `create-galore-tweaks`) | A scan of the loaded pack's tags and item models found the same material in several mods. One item is now canonical and every recipe from the other mods produces and uses it, so the ways of making it are kept but all point to one item: **steel** (ingot, nugget, block) to TFMG, **bronze** to Alloyed, **lead** (ingot, nugget, block, raw) to Create Nuclear, **copper wire and spool** to Create Crafts & Additions, **sulfur dust** to TFMG, **salt, cocoa butter and cocoa powder** to Ratatouille. The duplicate storage-block and compacting recipes of the losing mods are disabled, and any leftover item converts 1:1 into the canonical one in a crafting grid (`create_galore:unify/*`). Verified by reading every recipe in every jar: none still reference a losing item. |
+| **Removed Create: Interiors** | Its cushions duplicate all 16 Handcrafted cushions, and nothing else in the pack depends on it. Note it is a furniture mod, so its other furniture is gone too. |
+| **Switched off Create Connected's copycats** (config) | Create: Copycats+ covers the same blocks. Existing Create Connected copycats migrate to Copycats+ on their own. The rest of Create Connected stays. |
+| **Hid Naturalist's anglerfish, blobfish, piranha and jellyfish items from JEI** (datapack tag) | Those mobs already don't spawn in this pack (Hybrid Aquatic has them), so their fish, buckets and eggs would only be clutter. Aquaculture's same-named fish (tuna, carp, goldfish, piranha) are kept as they're separate catches. |
+| **Chunksmith world-enter pregen off** (config) | The default pre-generates a 4096-block radius every time you enter a world, which showed about 41 hours on a weak test client. Pregenerate on demand with Chunksmith's commands instead. |
 | **Pinned NeoForge to 21.1.259** (not the newest 21.1.262) | On 21.1.262 joining any world kicks you out with "Failed to encode packet custom_payload" from The Aether's bundled Accessories library. Tested Aether alone: works on 21.1.248, 252, 257 and 259, fails on 262. The pack needs at least 21.1.252 (Cold Sweat Altitude), so 259 is the newest version that works. Revisit when Aether or Accessories updates. |
 | **Added roller coasters**: Create: Coasters Simulated, Coasters Simulated: Track Styles, Create: Coaster Seats | Requested, purely for fun. Coasters Simulated is the Create-native one and uses Sable physics, which the pack already has. |
 | **Added Twilight Forest** (manual, CurseForge) | Requested. Not on Modrinth, so it's a manual add (see install step 3). |

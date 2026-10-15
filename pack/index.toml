@@ -5,8 +5,16 @@ file = "config/cataclysm-common.toml"
 hash = "5b4f51df2eeec04d3fde9a881d675d067825ad9009bd0dd4464e4a6787ec2227"
 
 [[files]]
+file = "config/chunksmith/config.json"
+hash = "730389f3107420d173634dfb9913e928c9bc54da7da0f9942f5f2d84ee4b2cc5"
+
+[[files]]
 file = "config/coldsweat/main.toml"
 hash = "fd2e5a6ded40aec007a9520b49f221682570c98bdedbe57dd84e081e263145a8"
+
+[[files]]
+file = "config/create_connected-common.toml"
+hash = "29208d8a0cf996ced5690dbd767ede4d3975cbe5f6d5025ab3f6f1c5e5fd5402"
 
 [[files]]
 file = "config/cristellib/alexscaves/structure_placement_config.json5"
@@ -75,6 +83,10 @@ hash = "83d592509244a2a22a46d494f2fe6684c5e144ca276886ca41fc225fe4e0cce1"
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/alloyed/recipe/mixing/steel_ingot.json"
 hash = "7410886e01edf37ccac97ad9a0dc3a1a537bc98e718eda63fec944973b1641d6"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/c/tags/item/hidden_from_recipe_viewers.json"
+hash = "e93016c6f35a6ddc631393398fb7a779ee0e957c87c52e09c0a31ac009921c78"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/cnbridge/recipe/dimensional_drive.json"
@@ -1017,11 +1029,6 @@ metafile = true
 [[files]]
 file = "mods/incendium.pw.toml"
 hash = "391f5b0b0fcae3ce77be6ab211435228faec79cb92c50d69471c52ba36b139d6"
-metafile = true
-
-[[files]]
-file = "mods/interiors.pw.toml"
-hash = "e7e6b3effe3022cf1fdb900c857111fdcbfd6b385c2d5bd28c914efaed436ecb"
 metafile = true
 
 [[files]]
