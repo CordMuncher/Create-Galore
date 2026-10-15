@@ -120,6 +120,8 @@ On a cloud test machine (4 CPU cores, 16 GB RAM, no GPU) with this pack (0.1.1, 
 | `install-server.sh` on an empty folder, then first boot with the shipped 8 GB settings | ✅ World created in 67 s, about 9 GB of process memory |
 | Chunksmith sends LOD data to the joining client's Distant Horizons | ✅ Client log: "the server has LOD data for [minecraft_overworld, northstar_moon]" |
 
+![Test client in the world on the dedicated server](server-join.png)
+
 Real performance on your PC and on Exaroton's hardware wasn't measured. Use `/spark tps` and `/spark health` on the server while playing to check.
 
 ## Troubleshooting
