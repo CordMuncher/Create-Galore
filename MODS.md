@@ -33,7 +33,7 @@ Not on Modrinth, add by hand: **Twilight Forest** `twilightforest-1.21.1-4.8.334
 | [Coasters Simulated: Track Styles](https://modrinth.com/mod/coaster-track-styles) | 1.2.0 | both |
 | [CodxLib](https://modrinth.com/mod/codxlib) | 1.6.1+neoforge-1.21.1 | both |
 | [Cold Sweat](https://modrinth.com/mod/cold-sweat) | 2.4.3.1 | both |
-| [Cold Sweat: Altitude](https://modrinth.com/mod/cold-sweat-altitude) | 0.8.1 | both |
+| [Cold Sweat: Altitude](https://modrinth.com/mod/cold-sweat-altitude) | 0.7.0 | both |
 | [Collective](https://modrinth.com/mod/collective) | 1.21.1-8.53-fabric+forge+neo | both |
 | [Colorwheel](https://modrinth.com/mod/colorwheel) | 1.3.0+mc1.21.1 | client |
 | [Controlling](https://modrinth.com/mod/controlling) | 19.0.5 | client |
@@ -195,7 +195,7 @@ Not on Modrinth, add by hand: **Twilight Forest** `twilightforest-1.21.1-4.8.334
 | [Tectonic](https://modrinth.com/mod/tectonic) | 3.0.28-neoforge-21.1 | both |
 | [Terralith](https://modrinth.com/mod/terralith) | 2.6.2 | both |
 | [The Aether](https://modrinth.com/mod/aether) | 1.21.1-1.5.10-neoforge | both |
-| [Thirst Was Taken](https://modrinth.com/mod/thirst-was-taken) | 1.21.1-2.1.5 | both |
+| [Thirst Was Reclaimed](https://modrinth.com/mod/thirst-was-reclaimed) | 1.21.1-3.0.6 | both |
 | [Towns and Towers](https://modrinth.com/mod/towns-and-towers) | 1.13.11 | both |
 | [When Dungeons Arise](https://modrinth.com/mod/when-dungeons-arise) | 2.1.68 | both |
 | [WorldWeaver: New Dawn](https://modrinth.com/mod/worldweaver-neoforge) | 21.0.27 | both |

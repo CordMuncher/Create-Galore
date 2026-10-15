@@ -1039,8 +1039,8 @@ hash = "8f0cba8a87fd4fd749a95a02e41a4754f6db3d3c96da921f4c1cbaa8a191b293"
 metafile = true
 
 [[files]]
-file = "mods/thirst-was-taken.pw.toml"
-hash = "7186d80f0afd569ac8ec64d0f78382fe03b092de01d72f722f79b77c1cad4412"
+file = "mods/thirst-was-reclaimed.pw.toml"
+hash = "b5278a5f57605624aa821ab8058b7c717721444e3e8ca68fa5c815c08c97ad62"
 metafile = true
 
 [[files]]

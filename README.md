@@ -80,6 +80,8 @@ Every change from the curated list and why:
 | **Removed Mama's Herbs and Harvest** | Its foods and crops duplicate Farmer's Delight, Fruits Delight and Berries and Cherries Delight and share their `c:` tags (checked in the jars). |
 | **Removed Abyss** (`deepabyss`) | Create: Deep Seas already ships its own deep-ocean dimension (`create_abyss:abyss`). The standalone mod added a second one (`abyss:abyss`, plus a few wreck structures). No ID clash, but two abyss dimensions is one too many. |
 | **Removed Smarter Contraption Storage** | Crashed the client on load in a fresh test: it and Sophisticated Backpacks Create Integration both register the backpack for contraptions ("Tried to register duplicate values for object Block{sophisticatedbackpacks:backpack}"). Backpacks on contraptions now come from the official integration. |
+| **Swapped Thirst Was Taken → Thirst Was Reclaimed 3.0.6** | Same mod ID (`thirst`). Fixes the Cold Sweat compat that the old 2.1.5 build could not provide. |
+| **Pinned Cold Sweat: Altitude to 0.7.0** (was 0.8.1) | 0.8.x targets Cold Sweat 2.4.4+. With the pack's Cold Sweat 2.4.3.1 it crashed the game with a "Ticking player" NullPointerException while joining a world. |
 | **Pinned NeoForge to 21.1.259** (not the newest 21.1.262) | On 21.1.262 joining any world kicks you out with "Failed to encode packet custom_payload" from The Aether's bundled Accessories library. Tested Aether alone: works on 21.1.248, 252, 257 and 259, fails on 262. The pack needs at least 21.1.252 (Cold Sweat Altitude), so 259 is the newest version that works. Revisit when Aether or Accessories updates. |
 | **Added roller coasters**: Create: Coasters Simulated, Coasters Simulated: Track Styles, Create: Coaster Seats | Requested, purely for fun. Coasters Simulated is the Create-native one and uses Sable physics, which the pack already has. |
 | **Added Twilight Forest** (manual, CurseForge) | Requested. Not on Modrinth, so it's a manual add (see install step 3). |
@@ -94,7 +96,7 @@ None of these stop the game. They're listed so they don't surprise anyone later.
 
 - **Animal Husbandry crashes a dedicated server** on startup (it loads a client-only class). It's fine in singleplayer and is in the client pack. It must be left out of the future server pack, or replaced.
 - **First launch shows a few one-time screens:** the BetterX welcome screen, Create Deep Seas' setup prompt and photosensitivity warning, and Minecraft's accessibility prompt. At small window sizes the Deep Seas warning's button can sit off-screen; press Tab then Enter.
-- **Cold Sweat ↔ Thirst Was Taken compat is off:** Cold Sweat wants Thirst 3.0+, and Modrinth only has 2.1.5 for NeoForge 1.21.1. Both mods work, they just don't talk to each other.
+- **Thirst Fruits Delight juices:** Thirst Was Reclaimed ships a copy of the old Thirst event API, so Fruits Delight's drink hook should still load, but whether its juices actually quench thirst is untested.
 - **Some recipes and loot tables log errors** because they point at mods that aren't installed (Alex's Caves radon lamps in Create: Framed, Thirst's Create compat recipes, Steam 'n' Rails tracks for other wood mods, many Design n Decor loot tables). Harmless.
 - **Wishlist batch log noise:** Create Cafe has compat recipes for Blood Magic and Botania (not installed), and Cozy Cafe can't read one menu file for Create Central Kitchen's pumpkin pie slice. Harmless.
 - **Sable warns about `copycats:copycat_catwalk`** (a block Copycats+ doesn't have in this version). Harmless.
