@@ -1,0 +1,62 @@
+{
+  "name": "Ship Hardware",
+  "icon": "aeronautics_utility_objects:hydraulic_rod",
+  "category": "patchouli:flight",
+  "sortnum": 8,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Three small add-ons help ship builds. Transmission and Linkage moves force between ships, Encased Fluid Pipes hides pipes inside balloons, and Aeronautics Compatibility makes other mods work on moving ships."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "aeronautics_utility_objects:brass_universal_joint",
+      "title": "Universal Joint Head",
+      "text": "Two heads and a rod link structures and pass rotation across. The brass rod is elastic. The andesite rod reaches 15 blocks and breaks if stretched too far.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "aeronautics_utility_objects:hydraulic_rod",
+      "title": "Pneumatic Rod",
+      "text": "A configurable strut between two pneumatic heads. Set target length, return force and stretch resistance. Free mode lets it slide.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "aeronautics_utility_objects:hydraulic_regulator",
+      "title": "Pneumatic Regulator",
+      "text": "Place behind a pneumatic head. Redstone strength sets the rod length, and shaft speed sets how fast it moves.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "aeronautics_utility_objects:damping_stress_bearing",
+      "title": "Kinetic Conversion Bearing",
+      "text": "Outputs the structure's real rotation speed to a shaft. Resistance is adjustable; stress output is capped.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "aeroencasedpipe:white_envelope_encased_pipe",
+      "title": "Envelope Encased Pipe",
+      "text": "A fluid pipe sealed in envelope material, so pipes can pass through a balloon wall. Exists in all 16 colours.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Aeronautics Compatibility makes blocks from mods that do not know about sub-levels keep working on ships. Jade Sable Compat does the same for Jade tooltips, and a Copycats patch fixes an item duplication bug.",
+      "title": "Compatibility"
+    },
+    {
+      "type": "patchouli:relations",
+      "entries": [
+        "patchouli:flight/ship_building",
+        "patchouli:flight/balloons_and_lift",
+        "patchouli:create_basics/fluids"
+      ],
+      "title": "Related",
+      "text": "Ships, balloons and Create fluids."
+    }
+  ]
+}

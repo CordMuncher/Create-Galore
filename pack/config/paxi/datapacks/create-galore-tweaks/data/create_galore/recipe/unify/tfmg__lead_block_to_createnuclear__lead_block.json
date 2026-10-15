@@ -1,0 +1,13 @@
+{
+ "type": "minecraft:crafting_shapeless",
+ "category": "misc",
+ "ingredients": [
+  {
+   "item": "tfmg:lead_block"
+  }
+ ],
+ "result": {
+  "id": "createnuclear:lead_block",
+  "count": 1
+ }
+}

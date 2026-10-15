@@ -1,0 +1,42 @@
+{
+  "name": "Stress",
+  "icon": "create:stressometer",
+  "category": "patchouli:create_basics",
+  "sortnum": 1,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Spinning is not free. Every machine uses some of the $(thing)stress capacity$() of its network, measured in $(bold)su$() (stress units). Sources provide capacity, machines consume it."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "If the machines on a network ask for more than the sources give, it is $(bold)overstressed$(): the whole network stops, not just one machine. The fix is more sources, fewer machines, or slower speed."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "create:stressometer",
+      "title": "Stressometer",
+      "text": "A gauge that shows how much of a network's capacity is in use. With goggles on, it names the exact numbers.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(bold)Faster costs more.$() A machine's stress cost goes up with its RPM, and a source's capacity goes up with RPM as well. A fast network can carry more, but each machine on it also eats more."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(bold)Reading it.$() Wear $(l:create_basics/tools_wrench)Goggles$(/l) and look at a machine for its Stress Impact, or a source for its Stress Capacity. Item tooltips (hold Shift) say Low, Moderate or High stress impact."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "create:goggles",
+      "title": "Engineer's Goggles",
+      "text": "Shows Kinetic Stats on any machine: impact, capacity and speed. Steam boilers show their power level too.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Large sources such as $(l:create_basics/power_sources)large water wheels and steam engines$(/l) exist because a lot of machines need a lot of capacity. Exact numbers vary by config, so check the goggles in your own world."
+    }
+  ]
+}

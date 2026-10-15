@@ -1,0 +1,1 @@
+{"type": "minecraft:crafting_shaped", "category": "misc", "key": {"B": {"item": "tfmg:raw_lead"}}, "pattern": ["BBB", "BBB", "BBB"], "result": {"count": 1, "id": "tfmg:raw_lead_block"}, "neoforge:conditions": [{"type": "neoforge:false"}]}

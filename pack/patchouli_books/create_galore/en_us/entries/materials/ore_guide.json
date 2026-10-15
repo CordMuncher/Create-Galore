@@ -1,0 +1,119 @@
+{
+  "name": "Ore Guide",
+  "icon": "create:zinc_ore",
+  "sortnum": 1,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Where each metal comes from in this pack, read from the mods' world generation data. Depths are Y levels, Overworld unless noted.$(br2)Ores go further when $(l:materials/ore_doubling)crushed$(/l). Drillable veins: $(l:industry/ore_excavation)Ore Excavation$(/l)."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Coal, copper, iron, gold, redstone, lapis, diamond and emerald are vanilla. Terrain mods such as Tectonic change where they end up.$(br2)$(thing)Zinc$() comes from Create: Y -63 to 70. Brass is copper plus zinc.",
+      "title": "Vanilla and Create"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "create:zinc_ore",
+      "title": "Zinc Ore",
+      "text": "Overworld, Y -63 to 70, stone and deepslate. Northstar's planets have their own zinc ores, and both count as zinc ore in recipes.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(li)$(item)Lead$(): Y -16 to 60$(li)$(item)Uranium$(): Y -63 to 16, sparse$(li)$(item)Thorium$(): Y -16 to 55$(li)$(item)Nitrate$(): Y -63 to 64$(br2)Autunite, a building stone, forms striated veins below Y 16.",
+      "title": "Create Nuclear"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "createnuclear:lead_ore",
+      "title": "Lead Ore",
+      "text": "The pack's only generated lead, since TFMG's lead ore is off. Mining drops Raw Lead. The ore block itself has no crushing recipe; crush the raw lead.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "createnuclear:uranium_ore",
+      "title": "Uranium Ore",
+      "text": "Deep and rare. Feeds $(l:industry/nuclear)the reactor$(/l). Alex's Caves adds its own uranium in Toxic Caves.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(li)$(item)Nickel$(): Y -63 to 20$(li)$(item)Lithium$(): Y -63 to -5, sparse$(li)$(item)Bauxite$(): a stone that crushes to powder, the start of aluminum$(li)Galena: decorative, not an ore$(li)Lead: off$(br)Oil: $(l:industry/tfmg_oil)Oil$(/l).",
+      "title": "TFMG"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "tfmg:nickel_ore",
+      "title": "Nickel Ore",
+      "text": "Y -63 to 20. Nickel goes into TFMG alloys such as constantan. Lithium ore sits deeper, below Y -5.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Titanium and tungsten exist only off-world, in planet-specific blocks.$(li)Titanium: Moon, Mars, Mercury, Venus$(li)Tungsten: Mercury only$(li)Zinc, copper, iron, gold, redstone, diamond: all four$(br)$(l:space/planets)Planets$(/l)",
+      "title": "Northstar planets"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "northstar:mars_titanium_ore",
+      "title": "Titanium Ore",
+      "text": "Moon, Mars, Mercury and Venus each have their own block. Drops raw titanium, which smelts to a titanium ingot.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(li)Glowstone: Moon, Mercury, Venus$(li)Lapis: Moon, Mercury$(li)Nether quartz: Mars, Venus$(li)Coal: Venus$(br2)Mercury's tungsten ore is plentiful. It crushes to Crushed Raw Tungsten.",
+      "title": "More planet ores"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Other mods add Overworld metals:$(li)$(item)Platinum$() (Create Propulsion): Y -63 to about 16$(li)$(item)Mithril$() (Iron's Spells 'n Spellbooks): Y -63 to -38, very deep",
+      "title": "Other Overworld ores"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "createpropulsion:platinum_ore",
+      "title": "Platinum Ore",
+      "text": "Create Propulsion's metal. Crushes and washes like any Create ore. Deep Overworld.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "irons_spellbooks:mithril_ore",
+      "title": "Mithril Ore",
+      "text": "Y -63 to -38. Crushing gives Crushed Mithril from Create: Wizardry, which can be washed or smelted.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(li)$(item)Aether$(): zanite, gravitite, ambrosium and icestone in holystone$(li)$(item)Alex's Caves$(): galena iron in Magnetic Caves, uranium in Toxic Caves, coal and redstone in Forlorn Hollows$(li)$(item)Better End$(): thallasium, ender and amber ore",
+      "title": "Dimension ores"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "aether:zanite_ore",
+      "title": "Zanite Ore",
+      "text": "Aether holystone. Zanite and ambrosium ores have Create crushing recipes, so a Crushing Wheel doubles them too.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "No ore generation of their own:$(li)Bronze (Alloyed) and steel (TFMG) are alloys$(li)Create Crafts & Additions: electrum is an alloy$(li)Cataclysm: its metals are not mined$(br2)Twilight Forest grows Iron, Copper and Gold Oreberry bushes instead of veins.",
+      "title": "Not mined"
+    },
+    {
+      "type": "patchouli:relations",
+      "entries": [
+        "patchouli:materials/ore_doubling",
+        "patchouli:materials/shared_metals",
+        "patchouli:create_basics/materials",
+        "patchouli:industry/ore_excavation",
+        "patchouli:exploration/dimensions"
+      ],
+      "title": "Related"
+    }
+  ],
+  "category": "patchouli:materials"
+}

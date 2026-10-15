@@ -1,0 +1,50 @@
+{
+  "name": "Seasonal Crops",
+  "icon": "farmersdelight:tomato_seeds",
+  "sortnum": 6,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Serene Seasons lists vanilla crops by season: wheat in summer and autumn, carrots in spring and autumn, and so on. Mushrooms, nether wart and oak saplings grow year round."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Farmer's Delight adds its own season data:$(li)Tomato: summer$(li)Cabbage: autumn, winter$(li)Onion: spring, autumn$(li)Rice: summer, autumn$(br2)See $(l:food/farmers_delight)Farmer's Delight$(/l).",
+      "title": "Farmer's Delight"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "farmersdelight:tomato_seeds",
+      "title": "Tomato Seeds",
+      "text": "Summer crop. Out of season they stop. A glass roof keeps a patch growing.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "farmersdelight:cabbage_seeds",
+      "title": "Cabbage Seeds",
+      "text": "Autumn and winter crop. One of the few things you can grow in the cold.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Fruits Delight trees follow seasons too: pear, peach and blueberry in spring; lychee, mango, durian, lemon and pineapple in summer; apple, orange, fig and cranberry in autumn; persimmon, kiwi and hawberry in winter.",
+      "title": "Fruit trees"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Seasonal Integration adds Berry Good's sweet berries (spring, winter) and glow berries, and My Nether's Delight peppers, to year round. Fungus Delight mushrooms grow in any season.",
+      "title": "Other mods"
+    },
+    {
+      "type": "patchouli:relations",
+      "entries": [
+        "patchouli:survival/seasons",
+        "patchouli:food/farmers_delight",
+        "patchouli:food/kitchen_automation"
+      ],
+      "title": "Related"
+    }
+  ],
+  "category": "patchouli:survival"
+}

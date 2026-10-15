@@ -1,0 +1,86 @@
+{
+  "name": "Roller Coasters",
+  "icon": "simulatedcoasters:coaster_cart",
+  "category": "patchouli:transport",
+  "sortnum": 4,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Simulated Coasters lets you lay free-form coaster track with curves, banks and chain lifts, and ride it in carts. Carts are physics objects, the same system airships use, not Create trains."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Place Track Anchorpoints, then link two with Coaster Track to make a smooth curve. A wrench reshapes it, and banking and height can be tuned. Dye tints the rails and an axe removes it. Tracks cannot split or cross over themselves.",
+      "title": "Track and anchorpoints"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "simulatedcoasters:coaster_track",
+      "title": "Coaster Track",
+      "text": "Click one anchorpoint, then another. Smoothing is automatic; hold left alt while placing to turn it off.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "simulatedcoasters:coaster_anchorpoint",
+      "title": "Track Anchorpoint",
+      "text": "The posts that tracks hang between. Each can take two connections.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Use a Chain to pick a start and an end on connected track to add a chain lift. The shaft at the start takes Create rotation to drive it. Sneak-use a wrench anywhere on the span to remove it.",
+      "title": "Chain lifts"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "simulatedcoasters:coaster_cart",
+      "title": "Coaster Cart",
+      "text": "Place on track. Use the cart item on a placed cart, then place another to couple them. Shears cut links and a wrench changes length. Build on the carts.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "simulatedcoasters:rivet",
+      "title": "Rivet",
+      "text": "Lets a block sit at any angle or offset. Tap the rotate key for 15 degree steps, hold for free rotation.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "simulatedcoasters:red_balloon",
+      "title": "Red Balloon",
+      "text": "Lifts a ship slightly off the ground and keeps it upright. Popping one pops its neighbours, dropping the ship.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Create: Coaster Seats adds Lapbar and Restrictor seats in all 16 colours. A Restrictor locks the rider in by Redstone Link frequency or a redstone signal. Coasters Simulated: Track Styles adds a Coaster Style Tool and an Anchor Style Tool for extra looks.",
+      "title": "Seats and styles"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "createcoasterseats:red_restrictor_seat",
+      "title": "Restrictor Seat",
+      "text": "Set the lock mode with a wrench: link only, link and redstone, or redstone only.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "coasterssimulatedextratypes:coaster_style_tool",
+      "title": "Coaster Style Tool",
+      "text": "Changes the look of existing coaster track.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:relations",
+      "entries": [
+        "patchouli:flight/airships",
+        "patchouli:transport/trains",
+        "patchouli:create_basics/contraptions"
+      ],
+      "title": "Related",
+      "text": "Airships use the same physics. Trains and contraptions for comparison."
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "name": "World Generation",
+  "icon": "minecraft:grass_block",
+  "category": "patchouli:exploration",
+  "sortnum": 6,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Three mods reshape the Overworld itself, so the land and caves differ from vanilla before any structure is placed. They are invisible in the inventory: you meet them as scenery."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "minecraft:oak_sapling",
+      "title": "Terralith",
+      "text": "Almost 100 new biomes in a realistic-to-light-fantasy style. It uses only vanilla blocks.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "minecraft:stone",
+      "title": "Tectonic",
+      "text": "Rewrites terrain shaping: taller, grander and more varied land. It works alongside Terralith.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "minecraft:deepslate",
+      "title": "YUNG's Better Caves",
+      "text": "A full overhaul of cave generation. Caves look different at every depth.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "These change where things are, so check $(l:materials/ore_guide)the Ore Guide$(/l) before assuming vanilla heights. Ocean depth also matters for $(l:ocean/submarines)submarines$(/l): bigger terrain means more places to dive."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Lithostitched and Noisium are libraries used by some of these mods; they have no content of their own. Underground biomes with their own rules are in $(l:exploration/alexs_caves)Alex's Caves$(/l)."
+    }
+  ]
+}

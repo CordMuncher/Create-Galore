@@ -1,0 +1,58 @@
+{
+  "name": "Burning Liquid Fuel",
+  "icon": "create:blaze_burner",
+  "category": "patchouli:industry",
+  "sortnum": 7,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "A Blaze Burner normally eats solid fuel. Two mods let it burn fluids from pipes instead, which is how oil products and biofuels reach Create's heat. See $(l:create_basics/heat)Heat$(/l)."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "create:blaze_burner",
+      "title": "Create: Liquid Fuel",
+      "text": "A plain Blaze Burner accepts fluid through pipes. Its list here: lava, Seed Oil, Bioethanol and Garnished's Peanut Oil.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Bioethanol and Peanut Oil superheat the burner (the blue flame). Lava and Seed Oil only heat it. Seed Oil and Bioethanol come from Crafts & Additions; Peanut Oil from Garnished."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "createaddition:straw",
+      "title": "Blaze Burner with Straw",
+      "text": "Crafts & Additions' version. Add a Straw to a Blaze Burner and it takes fuel from buckets or pipes.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Its fuels (burn time per 1000 mB): diesel, gasoline and biodiesel 24000 ticks; lava 20000; crude oil 9600; ethanol 8000; creosote and plant oil 4800. Bioethanol (biofuel tag) is superheated."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "So TFMG's diesel, gasoline, crude oil and creosote all burn here, through shared fluid tags. TFMG also ships its own fuel list for Liquid Fuel, but this build of Liquid Fuel does not appear to read it. Use a Straw burner for TFMG fuels."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "createaddition:straw",
+      "title": "Straw",
+      "text": "Craft this to convert a Blaze Burner. Biofuel chain: crops to Biomass, seeds to Seed Oil, then Bioethanol. Check JEI.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Pollution: a lit Blaze Burner and Crafts & Additions' Straw burner are both listed as smog sources. See $(l:survival/pollution)Pollution$(/l). Solid-fuel option: Biomass Pellets."
+    },
+    {
+      "type": "patchouli:relations",
+      "entries": [
+        "patchouli:industry/tfmg_oil",
+        "patchouli:industry/electricity",
+        "patchouli:create_basics/heat"
+      ],
+      "title": "Related"
+    }
+  ]
+}

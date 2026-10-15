@@ -1,0 +1,31 @@
+{
+  "name": "Structures",
+  "icon": "minecraft:chiseled_stone_bricks",
+  "category": "patchouli:exploration",
+  "sortnum": 8,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "This pack has a lot of structure mods. Together they fill the world with villages, ruins, dungeons, forts and wrecks, many of them stuffed with loot. This is the guide to which mod adds what."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l:exploration/structure_packs)Structure Packs$(/l): Towns and Towers, Dungeons and Taverns, When Dungeons Arise and the YUNG's mods.$(br2)$(l:exploration/create_structures)Create Structures$(/l): buildings with trains, airships, cranes and oil rigs.$(br2)$(l:exploration/lootr)Lootr$(/l): why a looted chest still has loot for you."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Structures in the sky are in $(l:flight/destinations)Destinations$(/l). Structures in the sea are in $(l:ocean/underwater_places)Underwater Places$(/l). Bosses defend many of them: $(l:exploration/bosses)Bosses$(/l)."
+    },
+    {
+      "type": "patchouli:relations",
+      "entries": [
+        "patchouli:exploration/structure_packs",
+        "patchouli:exploration/create_structures",
+        "patchouli:exploration/lootr",
+        "patchouli:ocean/underwater_places",
+        "patchouli:flight/destinations"
+      ],
+      "title": "Structure guides"
+    }
+  ]
+}

@@ -1,0 +1,46 @@
+{
+  "name": "Bosses",
+  "icon": "minecraft:dragon_head",
+  "category": "patchouli:exploration",
+  "sortnum": 12,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Several mods add big, named fights with their own arenas and unique drops. Most bosses are found in a dedicated structure or summoned with a special item. This page is the index; each mod has its own entry."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(li)$(l:exploration/cataclysm)Cataclysm$(/l): about a dozen bosses across all biomes.$(li)$(l:exploration/mowzies_mobs)Mowzie's Mobs$(/l): the Wroughtnaut, Umvuthi, Frostmaw and the Sculptor.$(li)$(l:exploration/twilight_forest)Twilight Forest$(/l): eight bosses with trophies.$(li)$(l:ocean/aquamirae)Aquamirae$(/l): the Ice Maze trio."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Pack tuning: Cataclysm's main bosses and all four Mowzie's bosses have 0.7x health and 0.75x damage. They are softened, not removed, and every boss structure still generates."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Others: the $(l:exploration/aether)Aether$(/l) dungeons end in the Slider, Valkyrie Queen and Sun Spirit. Hybrid Aquatic has the Karkinos. $(l:exploration/magic)Iron's Spells$(/l) has the Dead King and a Citadel. Vanilla Wither, Dragon and Elder Guardian also remain."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Boss drops often upgrade existing gear, so keep your best weapons around. In this pack the Cataclysm boss gear has Create-flavoured recipes: see $(l:exploration/cataclysm_create)Cataclysm x Create$(/l)."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "minecraft:nether_star",
+      "title": "Nether Star",
+      "text": "The Wither's drop is an ingredient in pack items such as Create Nuclear's Reactor Controller.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:relations",
+      "entries": [
+        "patchouli:exploration/cataclysm",
+        "patchouli:exploration/mowzies_mobs",
+        "patchouli:exploration/twilight_forest",
+        "patchouli:ocean/aquamirae",
+        "patchouli:exploration/magic"
+      ],
+      "title": "Boss guides"
+    }
+  ]
+}

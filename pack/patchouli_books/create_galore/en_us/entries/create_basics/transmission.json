@@ -1,0 +1,80 @@
+{
+  "name": "Transmission",
+  "icon": "create:cogwheel",
+  "category": "patchouli:create_basics",
+  "sortnum": 3,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Once you have rotation, you move it to where it is needed, and change its speed or direction on the way. These are the parts that do that."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "create:shaft",
+      "title": "Shaft",
+      "text": "Passes rotation straight on, same speed and direction. Place them end to end.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "create:cogwheel",
+      "title": "Cogwheel",
+      "text": "Passes rotation to adjacent cogwheels, but in the opposite direction. Also works as a shaft.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "create:large_cogwheel",
+      "title": "Large Cogwheel",
+      "text": "Meshes with small cogwheels diagonally. Small to large halves the speed, large to small doubles it. Also connects at right angles.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "create:gearbox",
+      "title": "Gearbox",
+      "text": "Turns rotation around a corner in a compact block. Straight connections are reversed and corners mirror.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "create:belt_connector",
+      "title": "Mechanical Belt",
+      "text": "Right-click two shafts to link them with a belt. Same speed and direction. Spans 2 to 20 blocks and also carries items.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(bold)Encased variants.$() Brass or andesite casing hides shafts, cogwheels and belts. Components placed after encasing do not connect unless you toggle the connection with a wrench."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "create:clutch",
+      "title": "Clutch",
+      "text": "Passes rotation in a line. When powered by redstone, it breaks the connection.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "create:gearshift",
+      "title": "Gearshift",
+      "text": "Passes rotation in a line. When powered by redstone, it reverses it.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "create:rotation_speed_controller",
+      "title": "Rotation Speed Controller",
+      "text": "Sits below a large cogwheel and relays rotation to it at a speed you set on its value panel.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(bold)Sequenced Gearshift.$() Runs a timed list of speed and direction instructions on each redstone pulse. Configure it by right-clicking. Useful for pistons, gantries and anything that moves in steps."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Chain drives pass rotation along a row with all shafts spinning the same way. Use Ponder for each part. Watch your $(l:create_basics/stress)stress$(/l) when you branch a network."
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "name": "Inventory Tools",
+  "icon": "minecraft:chest",
+  "category": "patchouli:home",
+  "sortnum": 3,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Client-side helpers that make big inventories bearable. $(thing)Inventory Profiles Next$() sorts and moves items. $(thing)Mouse Tweaks$() speeds up mouse use. $(thing)Shulker Box Tooltip$() previews contents. Settings are in the Mods menu."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "minecraft:hopper",
+      "title": "Inventory Profiles Next",
+      "text": "Sorts inventories with a button or key, moves matching stacks and locks slots. Auto-refill is off in this pack; turn it on in its config screen.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "minecraft:shulker_box",
+      "title": "Shulker Box Tooltip",
+      "text": "Hover a shulker box to see what is inside.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(bold)Mouse Tweaks$() adds drag-split: hold click and drag over slots to spread a stack. Scroll the wheel over a slot to move items between inventories. $(br2)Containers: $(l:home/storage)Storage$(/l)."
+    }
+  ]
+}

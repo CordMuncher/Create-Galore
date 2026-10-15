@@ -1,0 +1,49 @@
+{
+  "name": "Conduit Cages",
+  "icon": "create_aquatic_ambitions:mechanical_conduit",
+  "category": "patchouli:ocean",
+  "sortnum": 5,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Create: Aquatic Ambitions$() ties Minecraft's ocean items to Create. Its centrepiece is the $(item)Conduit Cage$(): a compact conduit you feed with a fluid through its bottom face. A fed cage is $(thing)awakened$()."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "create_aquatic_ambitions:mechanical_conduit",
+      "title": "Conduit Cage",
+      "text": "Awakened with water it gives the Conduit Power effect nearby. Other fluids give other effects.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "The cage's mode slot picks who is affected: everyone, players, friendly mobs, players and friendly mobs, or monsters. Its effects are listed in the item's tooltip, so check there."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Awakened cages also work as a $(l:create_basics/fans)fan$(/l) processor. Air blown through one makes a $(thing)Channeling$() stream, and extra water layers dilute it into washing. The classic Conduit ring works the same way."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Channeling can revive dead coral, turn flint into Prismarine Shards, glowstone dust into Prismarine Crystals, an Ender Eye into a Heart of the Sea, and age copper blocks. Look up recipes in JEI under Conduit Channeling."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "create_aquatic_ambitions:prismarine_alloy",
+      "title": "Prismarine Alloy",
+      "text": "Mixed from Prismarine and Copper Nuggets. Prismarine also smelts into Veridium.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "create_aquatic_ambitions:suspicious_rock",
+      "title": "Suspicious Rock",
+      "text": "Wash or channel it for Nautilus Shells, bones and Spiky Shells. Shells crush into bone meal and XP.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Prismarine is also crushable for lapis and Create XP nuggets, so ocean monuments become a source of materials: see $(l:ocean/underwater_places)Underwater Places$(/l). Gravel, Calcium Rich Powder and lava compact into calcite."
+    }
+  ]
+}

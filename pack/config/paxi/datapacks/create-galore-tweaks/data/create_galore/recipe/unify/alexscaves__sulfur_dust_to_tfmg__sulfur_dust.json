@@ -1,0 +1,13 @@
+{
+ "type": "minecraft:crafting_shapeless",
+ "category": "misc",
+ "ingredients": [
+  {
+   "item": "alexscaves:sulfur_dust"
+  }
+ ],
+ "result": {
+  "id": "tfmg:sulfur_dust",
+  "count": 1
+ }
+}

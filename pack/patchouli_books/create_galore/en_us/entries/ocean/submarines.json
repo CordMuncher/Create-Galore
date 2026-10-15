@@ -1,0 +1,80 @@
+{
+  "name": "Submarines",
+  "icon": "create_submarine:ballast_tank",
+  "category": "patchouli:ocean",
+  "sortnum": 1,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Create Deep Seas$() adds submarines. A sub is a Create-style contraption that moves as one solid, physical vessel, built on the same Sable and Aeronautics tech as $(l:flight/airships)airships$(/l). It dives by changing its own weight."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "A submarine floats until its $(item)Ballast Tanks$() are filled with sea water. A $(item)Ballast Vent$() is the sea valve and must touch the water. Pipe vent, pump and tanks together: pumping in makes the ship heavier and it sinks, pumping out lets it rise.$(br2)Each tank lifts roughly one block of ship mass, so heavy hulls need more tanks."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "create_submarine:ballast_tank",
+      "title": "Ballast Tank",
+      "text": "Holds the water that weighs the ship down. Read its capacity with Engineer's Goggles.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "create_submarine:ballast_vent",
+      "title": "Ballast Vent",
+      "text": "The sea valve. At least one face must touch the sea. Every face takes a pipe.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "The $(item)Onboard Computer$() can dive for you. Click its screen to set a target depth and speed, and it drives the pumps to hold that depth. $(item)Pump Controllers$() on the same ship are found automatically; pipe one between vent and tanks. More controllers or faster rotation mean quicker dives."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "create_submarine:command_sub",
+      "title": "Onboard Computer",
+      "text": "Autopilot for depth. With a Sonar on board it can also follow the sea floor and keep the keel clear.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "create_submarine:sonar",
+      "title": "Sonar",
+      "text": "Maps the floor, rocks, ships and mines around you on the Computer's screen.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Pumps and thrusters run on Create $(l:create_basics/rotation)rotation$(/l) and $(l:create_basics/fluids)fluids$(/l), so a sub is a Create machine through and through. Press $(bold)W$() over any Deep Seas block for its Ponder."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "create_submarine:submarine_propeller",
+      "title": "Submarine Propeller",
+      "text": "Strong in water, useless in air. Four in a 2x2 square facing one way merge into one big propeller.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "create_submarine:water_thruster",
+      "title": "Water Thruster",
+      "text": "Uses water and rotation for thrust. More pressure and speed push you faster.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Hull strength, oxygen and airlocks are covered in $(l:ocean/hulls_and_pressure)Hulls and Pressure$(/l). Surface ships and sails are in $(l:ocean/sailing)Sailing$(/l). Where to dive: $(l:ocean/underwater_places)Underwater Places$(/l). Deep Seas also holds an unfinished Create Abyss dimension, but it only switches on in development builds, so it is not in this pack."
+    },
+    {
+      "type": "patchouli:relations",
+      "entries": [
+        "patchouli:ocean/hulls_and_pressure",
+        "patchouli:ocean/sailing",
+        "patchouli:ocean/underwater_places",
+        "patchouli:ocean/diving"
+      ],
+      "title": "Related"
+    }
+  ]
+}

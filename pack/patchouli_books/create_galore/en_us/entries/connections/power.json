@@ -1,0 +1,45 @@
+{
+  "name": "Power Across Mods",
+  "icon": "createaddition:alternator",
+  "category": "patchouli:connections",
+  "sortnum": 1,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Create runs on $(thing)rotation$(). Many other machines run on $(thing)Forge Energy (FE)$(). They never mix on their own: you need a converter block in between.$(br2)Full detail: $(l:industry/power_compared)Rotation vs Electricity$(/l)."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "createaddition:alternator",
+      "title": "Rotation to FE",
+      "text": "Crafts & Additions' Alternator turns spin into FE. It needs at least 32 RPM.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "createaddition:electric_motor",
+      "title": "FE to Rotation",
+      "text": "Crafts & Additions' Electric Motor turns FE back into spin at the RPM you set.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Rotation sources beyond water, wind and steam:$(li)TFMG engines burning oil products$(li)The Create Nuclear reactor$(li)Create Propulsion's Stirling Engine, which turns heat into spin$(li)Electric Motors running on FE"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Things that want FE: Create Propulsion's Ion Thruster, Flight Control's vector ion thrusters and the Deep Seas Electrolyzer on submarines.$(br2)TFMG wires its own voltage circuits, but its connectors can import or export FE."
+    },
+    {
+      "type": "patchouli:relations",
+      "title": "Related",
+      "entries": [
+        "patchouli:industry/power_compared",
+        "patchouli:industry/electricity",
+        "patchouli:industry/tfmg_engines",
+        "patchouli:industry/nuclear",
+        "patchouli:create_basics/power_sources"
+      ]
+    }
+  ]
+}

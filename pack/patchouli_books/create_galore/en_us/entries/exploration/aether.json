@@ -1,0 +1,59 @@
+{
+  "name": "The Aether",
+  "icon": "aether:holystone",
+  "category": "patchouli:exploration",
+  "sortnum": 4,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)The Aether$() is a dimension of floating islands above a sea of clouds. It has its own mobs, materials and three dungeons."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "To get there, build a frame of $(item)Glowstone$() and place water in it. The portal swirls blue. The mod can also give new players a portal frame item, set by config."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "aether:aether_portal_frame",
+      "title": "Aether Portal Frame",
+      "text": "Glowstone frame plus water makes the portal.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "aether:holystone",
+      "title": "Holystone",
+      "text": "The Aether's main stone. Dungeons use Carved, Angelic and Hellfire stone and need Bronze, Silver and Gold keys.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "aether:zanite_gemstone",
+      "title": "Zanite Gemstone",
+      "text": "The Aether's tool and armor gem. Gravitite and Valkyrie gear come later.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "aether:ambrosium_shard",
+      "title": "Ambrosium Shard",
+      "text": "Lights Aether furnaces and heals. Golden Amber comes from golden oak trees.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "The Aether's dungeons hold keys and a boss each: Bronze, Silver and Gold, ending in the Slider, Valkyrie Queen and Sun Spirit. Parachute items make falling off the islands survivable."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "aether:cold_parachute",
+      "title": "Cold Parachute",
+      "text": "A parachute for falling off the islands. A Golden Parachute is the sturdier version.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Gear from the Aether stacks with other mods. The Invisibility Cloak toggles with = by default here. Bosses are in $(l:exploration/bosses)Bosses$(/l); travel is in $(l:exploration/dimensions)Dimensions$(/l)."
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "name": "What to Expect",
+  "icon": "minecraft:iron_sword",
+  "category": "patchouli:start_here",
+  "sortnum": 3,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Combat is meant to be exciting, not punishing. Bosses and dungeons are there for adventure, not to grind. If you want brutal fights, this is not the pack's focus."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "The pressure comes from $(thing)survival layers$() instead. Four systems push on you over time, and each one is designed so machines can solve it. Cold Sweat is tuned gentler than its default here."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(li)$(l:survival/temperature)Temperature$(/l): biome, altitude and weather heat or chill you. Clothing and heated rooms help.$(br)$(li)$(l:survival/thirst)Thirst$(/l): water is a need, not just a decoration.$(br)$(li)$(l:survival/seasons)Seasons$(/l): crops grow in their season."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(li)$(l:survival/pollution)Pollution$(/l): burners and engines pollute chunks, and air scrubbers clean them up.$(br2)Each system is a puzzle your factory can answer."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Dangers also live in the new worlds. See $(l:exploration/bosses)Bosses$(/l) and $(l:exploration/structures)Structures$(/l) before exploring far, and $(l:exploration/dimensions)Dimensions$(/l) for the places those dangers wait."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(bold)Spawn can be snowy.$() You may start in a cold biome. After the short spawn grace, Cold Sweat chills a player with no warm gear, and a freezing body takes damage. Insulated clothing and a heat source fix it, see $(l:survival/temperature)Temperature$(/l) and $(l:survival/temperature_gear)Temperature Gear$(/l)."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "minecraft:iron_sword",
+      "title": "Fights",
+      "text": "Bosses and dungeon mobs are tuned to be memorable, not to wear you down. Cataclysm and Mowzie's bosses have 0.7x health and 0.75x damage.",
+      "link_recipe": true
+    }
+  ]
+}

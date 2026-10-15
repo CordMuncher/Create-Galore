@@ -1,0 +1,58 @@
+{
+  "name": "Weather and Danger",
+  "icon": "hostile_skies:captains_orders",
+  "category": "patchouli:flight",
+  "sortnum": 10,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "The sky is not empty. Storms and lightning push ships, pillager airships hunt them, and whales drift above the oceans. All of it comes from add-ons that need Aeronautics."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Winds & Weather adds weather regions with storms and lightning that can strike a ship. Wind is stronger over open ocean and grows with altitude, and extreme wind pushes ships hard. Check your wind with an Anemometer.",
+      "title": "Weather"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Create Hostile Skies sends pillager airships after you, in tiers: Scout, Patrol, Warship, Flagship. Higher tiers open as you kill captains. Here they are rarer: an attempt every 25 minutes, starting at 5% chance. Bad Omen raises crew and loot. Ships can be captured.",
+      "title": "Hostile Skies"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "hostile_skies:captains_orders",
+      "title": "Captain's Orders",
+      "text": "One of two Hostile Skies items, with the Peace Treaty. They have no crafting recipe in the pack; read the tooltip.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Rare sky whales drift high over oceans. A dead one leaves a slowly sinking corpse of whale bone and meat blocks that behave as physics objects. Crushing bone gives Whale Bone Dust, which becomes End Stone Powder or, mixed, Levitite Blend.",
+      "title": "Sky Whales"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "skywhales:whale_bone_dust",
+      "title": "Whale Bone Dust",
+      "text": "Crush or mill whale bone. Heated mixing with zinc nuggets and water makes Levitite Blend, bypassing the End.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "skywhales:cooked_whale_meat",
+      "title": "Cooked Whale Meat",
+      "text": "Raw whale meat can be cooked into food.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:relations",
+      "entries": [
+        "patchouli:flight/balloons_and_lift",
+        "patchouli:flight/wind_sailing",
+        "patchouli:flight/hangars"
+      ],
+      "title": "Related",
+      "text": "Levitite, sails and where to find parts."
+    }
+  ]
+}

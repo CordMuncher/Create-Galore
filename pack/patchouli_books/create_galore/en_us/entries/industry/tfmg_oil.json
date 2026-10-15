@@ -1,0 +1,59 @@
+{
+  "name": "TFMG Oil and Fuels",
+  "icon": "tfmg:pumpjack_base",
+  "category": "patchouli:industry",
+  "sortnum": 5,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "TFMG's oil chain: find crude oil, pump it up, split it in a distillation tower, then burn the fractions or cook them into plastic and rubber."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "tfmg:surface_scanner",
+      "title": "Surface Scanner",
+      "text": "Powered from below, its 5x5 grid shows nearby chunks. Chunks holding an oil deposit glow.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "tfmg:pumpjack_base",
+      "title": "Pumpjack",
+      "text": "Run Industrial Pipe from the deposit to the surface, set the base on top, then hammer parts (glued together) and a crank driven through a Machine Input.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "tfmg:steel_distillation_controller",
+      "title": "Distillation Tower",
+      "text": "Steel tanks, a controller beside them, and up to 6 outputs separated by Industrial Pipes. Heat under the tanks; oil goes into the controller.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Crude oil splits into heavy oil, diesel, kerosene, naphtha, gasoline and LPG. Heavy oil distills again into more diesel and kerosene plus lubrication oil. A Flarestack burns whatever you do not need."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "tfmg:large_engine",
+      "title": "Fuels into rotation",
+      "text": "Large Engines burn diesel, kerosene, naphtha or furnace gas for rotation. See $(l:industry/tfmg_engines)TFMG Engines$(/l).",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "tfmg:firebox",
+      "title": "Firebox",
+      "text": "Heats machines above it like a Blaze Burner, burning LPG, butane, propane, diesel, naphtha or kerosene. CO2 must be pumped out. See $(l:create_basics/heat)Heat$(/l).",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Plastic: naphtha in a heated vat splits into ethylene and propylene. Either becomes molten plastic, which a Casting Basin turns into Plastic Sheets. Heavy oil plus sulfur makes rubber."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Fuels also burn in Crafts & Additions' Blaze Burner with Straw: crude oil, diesel and gasoline all work through shared fluid tags. See $(l:industry/liquid_fuel)Burning Liquid Fuel$(/l). Pipes and pumps: $(l:create_basics/fluids)Fluids$(/l)."
+    }
+  ]
+}

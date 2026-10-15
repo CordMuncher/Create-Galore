@@ -1,0 +1,45 @@
+{
+  "name": "Mowzie's Mobs",
+  "icon": "mowziesmobs:sol_visage",
+  "category": "patchouli:exploration",
+  "sortnum": 15,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Mowzie's Mobs$() adds animated creatures and four bosses, each tied to a structure, with masks, weapons and armor you can wear."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Structures: the $(bold)Wrought Chamber$() (Ferrous Wroughtnaut, an armored iron golem), the $(bold)Umvuthana Grove$() and $(bold)Monastery$() (Umvuthi, the Sunbird, and his tribe), and the Frostmaw's spawns in snowy places. Tongbi, the Sculptor, is the fourth boss."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "mowziesmobs:wrought_axe",
+      "title": "Axe of a Thousand Metals",
+      "text": "The Wroughtnaut's axe.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "mowziesmobs:sol_visage",
+      "title": "Sol Visage",
+      "text": "Umvuthi's mask. The Umvuthana masks (Fury, Fear, Rage, Bliss, Misery, Faith) are worn for abilities.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "mowziesmobs:earthrend_gauntlet",
+      "title": "Earthrend Gauntlet",
+      "text": "The Sculptor's gauntlet. The Geomancer set (staff, robe, beads) is his too.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Smaller mobs: Foliaath, Lantern, Grottol (a mineral creature), Bluff, Naga and Elokosa. Frostmaw's Ice Crystal is a weapon. Bosses: $(l:exploration/bosses)Bosses$(/l)."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Tuned in this pack: the Ferrous Wroughtnaut, Umvuthi, Frostmaw and the Sculptor have 0.7x health and 0.75x damage. They are softened, not removed, and their structures still generate."
+    }
+  ]
+}

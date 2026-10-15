@@ -1,0 +1,33 @@
+{
+  "name": "Magic",
+  "icon": "irons_spellbooks:copper_spell_book",
+  "category": "patchouli:exploration",
+  "sortnum": 16,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Two mods add magic to the pack. $(l:exploration/irons_spellbooks)Iron's Spells 'n Spellbooks$(/l) is a full spellcasting system. $(l:exploration/create_wizardry)Create: Wizardry$(/l) bridges it to Create's machines with a new fluid, mana, and pipes to carry it."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Magic uses mana, a resource that refills with time. Spells are cast from equipped spell books and scrolls, from schools such as fire, ice, lightning, holy, ender, blood, evocation and nature. Armor, rings and staffs boost them."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "irons_spellbooks:scroll",
+      "title": "Scroll",
+      "text": "A one-use spell. Made at a Scroll Forge, or found in loot.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:relations",
+      "entries": [
+        "patchouli:exploration/irons_spellbooks",
+        "patchouli:exploration/create_wizardry",
+        "patchouli:exploration/bosses",
+        "patchouli:exploration/gear"
+      ],
+      "title": "Magic guides"
+    }
+  ]
+}

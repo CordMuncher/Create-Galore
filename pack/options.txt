@@ -1,0 +1,15 @@
+version:3955
+onboardAccessibility:false
+key_key.sophisticatedbackpacks.open_backpack:key.keyboard.j
+key_key.jetpack.toggle_active.description:key.keyboard.n
+key_create_mobile_packages.keyinfo.open_portable_stock_ticker:key.keyboard.period
+key_accessories.key.open_accessories_screen:key.keyboard.comma
+key_create_mobile_packages.keyinfo.open_player_networks_screen:key.keyboard.semicolon
+key_key.cataclysm.ability:key.keyboard.home
+key_key.cataclysm.boots_ability:key.keyboard.end
+key_key.cataclysm.helmet_ability:key.keyboard.insert
+key_key.cataclysm.chestplate_ability:key.keyboard.delete
+key_key.aether.invisibility_toggle.desc:key.keyboard.equal
+key_supplementaries.keybind.quiver:key.keyboard.grave.accent
+key_iris.keybind.reload:key.keyboard.f8
+key_key.createrailwaysnavigator.route_overlay_options:key.keyboard.backslash

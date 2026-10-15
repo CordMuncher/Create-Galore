@@ -1,0 +1,42 @@
+{
+  "name": "Create Structures",
+  "icon": "create:schematic_table",
+  "category": "patchouli:exploration",
+  "sortnum": 10,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Two mods add buildings themed around Create. They give a reason to explore, and their chests drop Create components. Neither needs a special trigger."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Create: Structures Arise$() adds, by name, a mine train, a lost train station, a pillager steampunk airship, an air drop, a mini sky village, a crusher crane, a fluid tank house, a witch hut, a bastion and a ruined castle."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "create:track",
+      "title": "Train Track",
+      "text": "Create: Structures Arise includes a Mine Train and a Lost Train Station; see Trains.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "These are good places to look for ideas: $(l:transport/trains)trains$(/l) at the mine train and station, $(l:flight/airships)airships$(/l) at the sky village and the steampunk airship. Sky structures are also in $(l:flight/destinations)Destinations$(/l)."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Create: Let The Adventure Begin$() adds 62 structures with new loot, and a chance to fish up Create items. They include a railroad, oil rig, quarry, bunker, castle, kings castle, and houses in several styles."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "create:brass_ingot",
+      "title": "Brass",
+      "text": "Create: Let The Adventure Begin adds Create items to its loot and to fishing, so structure runs feed the same metals Create uses.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "The oil rig is worth a look for $(l:industry/tfmg_oil)oil$(/l) fans. For loot rules in these chests see $(l:exploration/lootr)Lootr$(/l)."
+    }
+  ]
+}

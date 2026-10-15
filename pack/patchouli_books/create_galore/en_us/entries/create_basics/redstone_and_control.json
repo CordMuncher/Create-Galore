@@ -1,0 +1,48 @@
+{
+  "name": "Redstone and Displays",
+  "icon": "create:redstone_link",
+  "category": "patchouli:create_basics",
+  "sortnum": 20,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Create adds ways to read and control machines without wires."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "create:redstone_link",
+      "title": "Redstone Link",
+      "text": "Wireless. Pairs share a frequency set by two items. A powered transmitter powers receivers anywhere.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "create:display_link",
+      "title": "Display Link",
+      "text": "Reads data from a block, such as a stock level, and writes it to a Display Board or Nixie Tubes.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "create:content_observer",
+      "title": "Smart Observer",
+      "text": "Detects items in front of it, in an inventory, or on a belt.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "create:stockpile_switch",
+      "title": "Threshold Switch",
+      "text": "Outputs redstone based on how full a container is.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:relations",
+      "entries": [
+        "patchouli:create_basics/item_logistics",
+        "patchouli:create_basics/packages"
+      ],
+      "title": "Related"
+    }
+  ]
+}

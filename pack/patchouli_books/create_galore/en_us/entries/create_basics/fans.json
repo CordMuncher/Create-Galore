@@ -1,0 +1,47 @@
+{
+  "name": "Encased Fans",
+  "icon": "create:encased_fan",
+  "category": "patchouli:create_basics",
+  "sortnum": 12,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "An $(item)Encased Fan$() turns rotation into an air current. Items caught in it, on the ground, on a belt or a depot, get $(thing)bulk processed$() depending on what the air passes through.$(br2)Speed only changes the range, not the processing speed."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "create:encased_fan",
+      "title": "Encased Fan",
+      "text": "Direction follows rotation. The air also pushes mobs, players and dropped items.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Base types$():$(br2)$(li)Washing: air through water$(br2)$(li)Smoking: fire or campfire$(br2)$(li)Blasting: lava$(br2)$(li)Haunting: soul fire or soul campfire$(br2)Washing: $(l:create_basics/crushing)Crushing$(/l)."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Blasting works like a furnace and would burn food: smoke it instead. A $(item)Blaze Burner$() also works as a blasting and smoking source, and the Lit Blaze Burner variant for haunting, see $(l:create_basics/heat)Heat$(/l).$(br2)Bars, fences and leaves let air through; solid blocks stop it."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Added by other mods$():$(br2)$(li)Dragons Plus: ending (dragon breath), freezing (powder snow), sanding (quicksand), coloring (liquid dye), enchanting (Golden Aercloud)$(br2)$(li)Create Nuclear: enriching$(br2)$(li)Enchantment Industry: salvaging"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "createnuclear:enriching_campfire",
+      "title": "Enriching Campfire",
+      "text": "Create Nuclear's fan catalyst for bulk enriching. Enriched fire comes from Enriched Soul Soil, see $(l:industry/nuclear)Nuclear$(/l).",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:relations",
+      "entries": [
+        "patchouli:create_basics/processing",
+        "patchouli:create_basics/crushing",
+        "patchouli:create_basics/heat"
+      ],
+      "title": "Related"
+    }
+  ]
+}

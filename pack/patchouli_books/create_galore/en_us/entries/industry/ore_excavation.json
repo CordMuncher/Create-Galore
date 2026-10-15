@@ -1,0 +1,48 @@
+{
+  "name": "Ore Excavation",
+  "icon": "createoreexcavation:drilling_machine",
+  "category": "patchouli:industry",
+  "sortnum": 9,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Create Ore Excavation hides ore veins underground. You locate a vein, put a Drilling Machine on it, and it produces raw ore as long as it has rotation. Veins here are finite and run out."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "createoreexcavation:vein_finder",
+      "title": "Ore Vein Finder",
+      "text": "Right-click to scan. It reports what is in your chunk, nearby, or just traces further away.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "createoreexcavation:drilling_machine",
+      "title": "Drilling Machine",
+      "text": "Needs rotation and a Drill (Iron, Diamond or Netherite). Output depends on the vein, including bonus items by chance.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "createoreexcavation:sample_drill",
+      "title": "Sample Drill",
+      "text": "Pins down a vein's exact details into an Ore Vein Atlas. The Atlas also filters the Vein Finder to a chosen vein.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "The Deposits add-on supplies the vein list: coal, copper, iron, zinc, gold, redstone, lapis, diamond, emerald, quartz and glowstone, plus Nether gold, Nether quartz and ancient debris veins. Check the Atlas or JEI."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "createoreexcavation:extractor",
+      "title": "Fluid Well Extractor",
+      "text": "Pulls fluid from a vein instead of items. Deposits include an Underground Spring that yields water.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Veins give raw ore, so crushing and washing still apply: $(l:create_basics/crushing)Crushing$(/l) and $(l:materials/ore_guide)Ore Guide$(/l). Drills need $(l:create_basics/stress)stress$(/l). Lead and TFMG ores are not in the vein list."
+    }
+  ]
+}

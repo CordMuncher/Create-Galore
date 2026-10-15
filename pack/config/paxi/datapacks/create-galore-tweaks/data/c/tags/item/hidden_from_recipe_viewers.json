@@ -1,0 +1,16 @@
+{
+ "replace": false,
+ "values": [
+  "naturalist:anglerfish",
+  "naturalist:anglerfish_bucket",
+  "naturalist:anglerfish_spawn_egg",
+  "naturalist:blobfish",
+  "naturalist:blobfish_bucket",
+  "naturalist:blobfish_spawn_egg",
+  "naturalist:piranha",
+  "naturalist:piranha_bucket",
+  "naturalist:piranha_spawn_egg",
+  "naturalist:jellyfish_bucket",
+  "naturalist:jellyfish_spawn_egg"
+ ]
+}

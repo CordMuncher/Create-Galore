@@ -1,0 +1,69 @@
+{
+  "name": "Thirst",
+  "icon": "thirst:terracotta_water_bowl",
+  "sortnum": 4,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Thirst Was Reclaimed adds a thirst bar beside hunger. It drains as you play, and with nothing to drink you eventually die of dehydration.$(br2)There is also a hidden buffer called $(thing)quenched$(), like saturation for drinks. A good drink fills it."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Water has a purity: $(item)Dirty$(), Slightly Dirty, Acceptable, Purified. Dirty water is a risk to drink. Purify it before you rely on it.$(br2)Bottles, buckets and bowls of water all carry a purity.",
+      "title": "Dirty water"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Boiling raises purity one step at a time. In a campfire each cook gives one step. A furnace is faster: dirty water goes straight to Acceptable, and the next cook gives Purified.$(br2)It works on water bottles, water buckets and terracotta water bowls.",
+      "title": "Boiling"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "minecraft:campfire",
+      "title": "Campfire",
+      "text": "Cooking water bottles, buckets and bowls here raises their purity one step per cook. Slow, but free.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "thirst:sand_filter",
+      "title": "Sand Filter",
+      "text": "Pump dirty water in from the top, purified water out of the bottom, one step per pass. Recipe: sand over a Nozzle over a Fluid Tank.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "The Sand Filter is where thirst meets Create. You build it with a $(item)Nozzle$() and a $(item)Fluid Tank$() and run it with a $(l:create_basics/fluids)pump$(/l). It is the automatic way to supply a base.",
+      "title": "Create filter"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "thirst:terracotta_water_bowl",
+      "title": "Terracotta Water Bowl",
+      "text": "A reusable bowl. Clay bowls bake into terracotta bowls, and a Spout fills one with 250 mB of water.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "A Create $(item)Compacting$() recipe squeezes a Cactus into purified water (250 mB) and green dye. Good for desert bases.$(br2)Thirst also has recipes for mods this pack does not include. Those stay inactive. Fruits Delight juices still count as drinks.",
+      "title": "Cactus and extras"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Thirst and $(l:survival/temperature)Cold Sweat$(/l) work together. The $(l:survival/temperature_gear)Waterskin$(/l) carries a purity like a bottle, and a furnace or campfire purifies it the same way.$(br2)With Cold Sweat, thirst lost while healing follows your body temperature, not just the biome's.",
+      "title": "Cold Sweat"
+    },
+    {
+      "type": "patchouli:relations",
+      "entries": [
+        "patchouli:survival/temperature",
+        "patchouli:survival/temperature_gear",
+        "patchouli:survival/food_and_health",
+        "patchouli:create_basics/fluids",
+        "patchouli:food/farmers_delight"
+      ],
+      "title": "Related"
+    }
+  ],
+  "category": "patchouli:survival"
+}

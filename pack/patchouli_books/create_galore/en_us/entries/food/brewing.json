@@ -1,0 +1,38 @@
+{
+  "name": "Brewing and Fermenting",
+  "icon": "brewinandchewin:keg",
+  "category": "patchouli:food",
+  "sortnum": 3,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Brewin' and Chewin'$() adds fermenting. A keg takes ingredients and a liquid, then slowly turns them into a drink or a preserved food. Drinks are served in a tankard and give status effects as well as food value."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "brewinandchewin:keg",
+      "title": "Keg",
+      "text": "Holds ingredients and fluid while they ferment over time. Output is a bottle or a food item. Check JEI for each recipe and how long it takes.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "brewinandchewin:tankard",
+      "title": "Tankard",
+      "text": "The drinking vessel. Drinks such as stout, vodka, rum and Pale Jane are poured into it. Fermented foods like kimchi come out of the keg directly.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Create can run the keg through Central Kitchen.$(br2)$(li)Pipes insert fluid into the keg and pull it out.$(li)Funnels extract the item product.$(li)A Spout fills a tankard with drink, and an Item Drain pours it out.$(br2)More: $(l:food/kitchen_automation)Kitchen Automation$(/l)."
+    },
+    {
+      "type": "patchouli:relations",
+      "entries": [
+        "patchouli:food/kitchen_automation",
+        "patchouli:food/farmers_delight_addons",
+        "patchouli:food/sweets_and_drinks"
+      ]
+    }
+  ]
+}

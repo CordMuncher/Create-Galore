@@ -1,0 +1,56 @@
+{
+  "name": "Seasons",
+  "icon": "sereneseasons:calendar",
+  "sortnum": 5,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Serene Seasons turns the Overworld year into four seasons: Spring, Summer, Autumn, Winter. Each splits into Early, Mid and Late.$(br2)By default every sub-season lasts 8 days, so a season is 24 days and a year 96. Foliage colors follow the season."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "sereneseasons:calendar",
+      "title": "Calendar",
+      "text": "Its tooltip shows the current season and day. Crafted from a Clock and paper. Handy for planning plantings.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Winter brings snow and ice generation. Rain, snow and storm frequency vary with the season. Tropical biomes (deserts, badlands, savanna, jungle and similar) have Wet and Dry seasons instead.",
+      "title": "Weather"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "The big rule: crops only grow in the right season. Out of season they grow slowly or not at all, depending on the config. Tooltips may list a crop's seasons.$(br2)Winter is hardest: very few crops grow. $(l:survival/seasons_crops)Details$(/l).",
+      "title": "Crops"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Two ways around it. Plants under a glass roof count as in season, using the greenhouse glass tag (ordinary glass blocks). Crops deep underground are also fertile, below a height set in the config.",
+      "title": "Greenhouses"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "sereneseasons:season_sensor",
+      "title": "Season Sensor",
+      "text": "Emits a redstone signal depending on the season, like a Daylight Detector. Lets machines react to the time of year.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Seasonal Integration is a datapack that teaches Serene Seasons about other mods: it adds crops to the season lists and sorts biomes into tropical or off-limits.",
+      "title": "Seasonal Integration"
+    },
+    {
+      "type": "patchouli:relations",
+      "entries": [
+        "patchouli:survival/seasons_crops",
+        "patchouli:food/farmers_delight",
+        "patchouli:survival/temperature",
+        "patchouli:exploration/dimensions"
+      ],
+      "title": "Related"
+    }
+  ],
+  "category": "patchouli:survival"
+}

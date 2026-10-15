@@ -1,0 +1,74 @@
+{
+  "name": "Steering and Controls",
+  "icon": "simulated:steering_wheel",
+  "category": "patchouli:flight",
+  "sortnum": 5,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Steering is turning redstone and rotation into thrust and angles. Simulated supplies wheels, levers and sensors. Aeroworks adds control consoles and servos."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "simulated:steering_wheel",
+      "title": "Steering Wheel",
+      "text": "Hold right-click and move the mouse to turn. Sneak snaps to 45 degrees. A comparator reads the angle.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "simulated:throttle_lever",
+      "title": "Throttle Lever",
+      "text": "A compact analog redstone source: right-click and drag. A wrench inverts the signal.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "simulated:navigation_table",
+      "title": "Navigation Table",
+      "text": "Outputs redstone toward a destination, weaker when you are not facing it. Different Navigation Items give different targets.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "The Altitude Sensor, Velocity Sensor and Gimbal Sensor give signals from height, speed and tilt. Laser Pointers, Laser Sensors and Optical Sensors detect objects. Modulating and Directional Linked Receivers read distance or angle to Redstone Links.",
+      "title": "Sensors"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Aeroworks consoles hold modules: Yoke, Joystick, Throttle Quadrant, Pedal, Lever, Wheel and buttons. Sneak-right-click to bind keys and Redstone Link frequencies. Right-click empty-handed to take control; Esc lets go. Touching consoles join into one deck.",
+      "title": "Aeroworks consoles"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "aeroworks:control_desk",
+      "title": "Control Desk",
+      "text": "Mount modules in its sockets, and use a wrench to remove them. They keep their settings. Styles change with materials.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "aeroworks:mechanical_servo",
+      "title": "Mechanical Servo",
+      "text": "Turns a redstone strength into an angle within a set range. Stepper Servos move in fixed steps, either direction.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "aeroworks:gyroscope",
+      "title": "Aeroworks Gyroscope",
+      "text": "Helps hold a ship level. Hover over it for its status and stability.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:relations",
+      "entries": [
+        "patchouli:flight/flight_control",
+        "patchouli:flight/propellers",
+        "patchouli:flight/propulsion"
+      ],
+      "title": "Related",
+      "text": "Autopilot-style control, propellers and thrusters."
+    }
+  ]
+}

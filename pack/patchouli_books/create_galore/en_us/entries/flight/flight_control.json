@@ -1,0 +1,69 @@
+{
+  "name": "Flight Control",
+  "icon": "create_flight_control:flight_control_computer",
+  "category": "patchouli:flight",
+  "sortnum": 6,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Create: Flight Control adds computers that decide how much each thruster should push. You link parts together with a tool gun instead of wiring redstone."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "create_flight_control:flight_control_tool_gun",
+      "title": "Flight Control Tool Gun",
+      "text": "Select an engine or controller, then right-click the computer to link it. Also links tanks, sensors and seats.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "create_flight_control:flight_control_computer",
+      "title": "Flight Control Computer",
+      "text": "Allocates thrust to meet the demand of linked controllers. Goggles show how many engines and controllers are active.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "create_flight_control:attitude_hold",
+      "title": "Smart Attitude Stabilizer",
+      "text": "Modes: Level, Level plus Heading, and Hold Attitude. Needs shaft stress from below and a linked computer.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "create_flight_control:altitude_hold",
+      "title": "Altitude Hold Block",
+      "text": "Holds the current height, a set height, or only lifts when below a minimum. Needs shaft power.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "create_flight_control:mouse_flight_controller",
+      "title": "Flight Control Terminal",
+      "text": "Mouse-driven flight with pitch, yaw and auto bank. Bind a seat to it with the tool gun first.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "create_flight_control:smart_vector_thruster",
+      "title": "Smart Vector Thruster",
+      "text": "A thruster whose nozzle swings inside a cone to push in the direction the computer asks for.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Other parts: Flight HUD Projector, Attitude Display, Navigation Terminal and Profile Builder, couplers for speed and distance, and a Redstone Proxy that lets redstone toggle modes. Fuel tanks link to thrusters within a short range.",
+      "title": "More parts"
+    },
+    {
+      "type": "patchouli:relations",
+      "entries": [
+        "patchouli:flight/controls",
+        "patchouli:flight/propulsion",
+        "patchouli:flight/airships"
+      ],
+      "title": "Related",
+      "text": "Manual controls, thrusters and the overview."
+    }
+  ]
+}

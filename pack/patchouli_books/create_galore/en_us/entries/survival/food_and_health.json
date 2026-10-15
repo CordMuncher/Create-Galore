@@ -1,0 +1,35 @@
+{
+  "name": "Food and Health",
+  "icon": "minecraft:golden_apple",
+  "sortnum": 9,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "AppleSkin shows what food does. Food tooltips list hunger and saturation, the hunger bar shows how much a held item would restore, and saturation appears as an overlay. Useful with the larger food list of $(l:food/farmers_delight)Farmer's Delight$(/l)."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "minecraft:golden_apple",
+      "title": "Food Values",
+      "text": "AppleSkin adds hunger and saturation values to food tooltips. Hold food to preview the refill on the bar.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Thirst has its own bar: $(l:survival/thirst)Thirst$(/l). Seasons decide what you can grow: $(l:survival/seasons)Seasons$(/l). Cold Sweat and Smog add their own hazards.",
+      "title": "Related survival"
+    },
+    {
+      "type": "patchouli:relations",
+      "entries": [
+        "patchouli:survival/thirst",
+        "patchouli:survival/seasons",
+        "patchouli:survival/temperature",
+        "patchouli:survival/pollution",
+        "patchouli:food/farmers_delight"
+      ],
+      "title": "Survival layers"
+    }
+  ],
+  "category": "patchouli:survival"
+}

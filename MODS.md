@@ -1,6 +1,6 @@
 # Mod list
 
-Create Galore 0.1.0, NeoForge 21.1.259 for Minecraft 1.21.1. Everything below comes from Modrinth and is pinned by the files in [`pack/`](pack/).
+Create Galore 0.1.1, NeoForge 21.1.259 for Minecraft 1.21.1. Everything below comes from Modrinth and is pinned by the files in [`pack/`](pack/).
 
 "Side" is how the pack installs it: **both** means it goes on the client and (later) the server; **client** means client only. Server-only world generation mods are marked **both** on purpose, because singleplayer runs them on your own machine.
 
@@ -8,12 +8,11 @@ Not on Modrinth, add by hand: **Twilight Forest** `twilightforest-1.21.1-4.8.334
 
 | Mod | Version | Side |
 |---|---|---|
-| [Abyss](https://modrinth.com/mod/deepabyss) | 2.3.1 | both |
 | [Aeronautics Hot Air Fix](https://modrinth.com/mod/aeronautics-hot-air-fix) | 1.1.1 | client |
 | [Aeronautics: Winds & Weather](https://modrinth.com/mod/aeronautics-winds-and-weather) | 1.3.1 | both |
 | [Alex's Caves Continued](https://modrinth.com/mod/alexs-caves-continued) | 1.1.1+neoforge-1.21.1 | both |
 | [Alloyed](https://modrinth.com/mod/create-alloyed) | 3.0.12+1.21.1-neoforge | both |
-| [Animal Husbandry](https://modrinth.com/mod/animalhusbandry) | 0.5.0 | both |
+| [Animal Husbandry](https://modrinth.com/mod/animalhusbandry) | 0.4.2 | both |
 | [AppleSkin](https://modrinth.com/mod/appleskin) | 3.0.9+mc1.21 | both |
 | [Aquaculture 2](https://modrinth.com/mod/aquaculture) | 2.7.21 | both |
 | [Aquaculture Delight](https://modrinth.com/mod/aquaculture-delight) | 1.2.0 | both |
@@ -34,7 +33,7 @@ Not on Modrinth, add by hand: **Twilight Forest** `twilightforest-1.21.1-4.8.334
 | [Coasters Simulated: Track Styles](https://modrinth.com/mod/coaster-track-styles) | 1.2.0 | both |
 | [CodxLib](https://modrinth.com/mod/codxlib) | 1.6.1+neoforge-1.21.1 | both |
 | [Cold Sweat](https://modrinth.com/mod/cold-sweat) | 2.4.3.1 | both |
-| [Cold Sweat: Altitude](https://modrinth.com/mod/cold-sweat-altitude) | 0.8.1 | both |
+| [Cold Sweat: Altitude](https://modrinth.com/mod/cold-sweat-altitude) | 0.7.0 | both |
 | [Collective](https://modrinth.com/mod/collective) | 1.21.1-8.53-fabric+forge+neo | both |
 | [Colorwheel](https://modrinth.com/mod/colorwheel) | 1.3.0+mc1.21.1 | client |
 | [Controlling](https://modrinth.com/mod/controlling) | 19.0.5 | client |
@@ -45,7 +44,6 @@ Not on Modrinth, add by hand: **Twilight Forest** `twilightforest-1.21.1-4.8.334
 | [Create - Xaero's map](https://modrinth.com/mod/create-xaeros-map) | 1.4.1 | client |
 | [Create Aeronautics](https://modrinth.com/mod/create-aeronautics) | 1.3.2+mc1.21.1 | both |
 | [Create Aeronautics Discovery](https://modrinth.com/mod/create-aeronautics-discovery) | 2.2.0 | both |
-| [Create Aeronautics Structures](https://modrinth.com/mod/aeronautics-structures) | 1.2 | both |
 | [Create Aeronautics: Compatibility](https://modrinth.com/mod/create-aeronautics-compatability) | 1.1.3 | both |
 | [Create Aeronautics: Encased Fluid Pipes](https://modrinth.com/mod/create-aeronautics-encased-fluid-pipes) | 1.0.7 | both |
 | [Create Aeronautics: Transmission & Linkage](https://modrinth.com/mod/create-aeronautics-transmission-linkage) | 0.2.8 | both |
@@ -92,7 +90,6 @@ Not on Modrinth, add by hand: **Twilight Forest** `twilightforest-1.21.1-4.8.334
 | [Create: Hostile Skies](https://modrinth.com/mod/create-hostile-skies) | 0.2.6 | both |
 | [Create: Hypertubes](https://modrinth.com/mod/hypertube) | 0.6.0 | both |
 | [Create: Integrated Farming](https://modrinth.com/mod/create-integrated-farming) | 1.4.3 | both |
-| [Create: Interiors](https://modrinth.com/mod/interiors) | 0.6.1 | both |
 | [Create: LazyTick](https://modrinth.com/mod/createlazytick) | 1.21.1-2.7.31-6.0.10 | both |
 | [Create: Let The Adventure Begin](https://modrinth.com/mod/create-let-the-adventure-begin) | 4.1.0 | both |
 | [Create: Liquid Fuel](https://modrinth.com/mod/create-liquid-fuel) | 3.0.0-1.21.1 | both |
@@ -152,7 +149,6 @@ Not on Modrinth, add by hand: **Twilight Forest** `twilightforest-1.21.1-4.8.334
 | [Macaw's Doors](https://modrinth.com/mod/macaws-doors) | 1.1.5 | both |
 | [Macaw's Roofs](https://modrinth.com/mod/macaws-roofs) | 2.3.2 | both |
 | [Macaw's Windows](https://modrinth.com/mod/macaws-windows) | 2.4.2 | both |
-| [Mama's Herbs and Harvest](https://modrinth.com/mod/mamas-herbs-and-harvest) | 1.21.1-16 | both |
 | [MezzConfig](https://modrinth.com/mod/mezzconfig) | 0.6.8 | both |
 | [ModernFix](https://modrinth.com/mod/modernfix) | 5.27.26+mc1.21.1 | both |
 | [Moog's Structure Lib (moogs_structures)](https://modrinth.com/mod/moogs-structure-lib) | 3.4.2-neoforge-1.21.1 | both |
@@ -183,7 +179,6 @@ Not on Modrinth, add by hand: **Twilight Forest** `twilightforest-1.21.1-4.8.334
 | [Serene Seasons](https://modrinth.com/mod/serene-seasons) | 10.1.0.9 | both |
 | [Shulker Box Tooltip](https://modrinth.com/mod/shulkerboxtooltip) | 5.1.9+1.21.1-neoforge | both |
 | [Sky Whales](https://modrinth.com/mod/sky-whales) | 0.1.8 | both |
-| [Smarter Contraption Storage](https://modrinth.com/mod/smarter-contraption-storage) | 1.21.1-6.0.0-1.4.7 | both |
 | [Sniffers Sniffs Delights! (SSD) (A Farmer's Delight Add-on)](https://modrinth.com/mod/sniffers-sniffs-delights) | neoforge-1.1+mc1.21 | both |
 | [Sodium](https://modrinth.com/mod/sodium) | mc1.21.1-0.8.13-neoforge | client |
 | [Sodium Extra](https://modrinth.com/mod/sodium-extra) | mc1.21.1-0.9.4+neoforge | client |
@@ -199,7 +194,7 @@ Not on Modrinth, add by hand: **Twilight Forest** `twilightforest-1.21.1-4.8.334
 | [Tectonic](https://modrinth.com/mod/tectonic) | 3.0.28-neoforge-21.1 | both |
 | [Terralith](https://modrinth.com/mod/terralith) | 2.6.2 | both |
 | [The Aether](https://modrinth.com/mod/aether) | 1.21.1-1.5.10-neoforge | both |
-| [Thirst Was Taken](https://modrinth.com/mod/thirst-was-taken) | 1.21.1-2.1.5 | both |
+| [Thirst Was Reclaimed](https://modrinth.com/mod/thirst-was-reclaimed) | 1.21.1-3.0.6 | both |
 | [Towns and Towers](https://modrinth.com/mod/towns-and-towers) | 1.13.11 | both |
 | [When Dungeons Arise](https://modrinth.com/mod/when-dungeons-arise) | 2.1.68 | both |
 | [WorldWeaver: New Dawn](https://modrinth.com/mod/worldweaver-neoforge) | 21.0.27 | both |

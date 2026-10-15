@@ -1,0 +1,41 @@
+{
+  "name": "Mushroom Quest",
+  "icon": "mushroomquest:mycopedia",
+  "category": "patchouli:exploration",
+  "sortnum": 20,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Mushroom Quest$() is a foraging mod. It adds dozens of wild mushrooms, giant logs and stumps with mushrooms on them, and cooking. Some are food, some medicine, some poison."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "mushroomquest:mycopedia",
+      "title": "Mycopedia",
+      "text": "A field guide for identifying mushrooms and learning their rarity.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Be careful: eating the wrong one can poison you, and a fungal disease exists. The mod's advancements mention medicinal, poisonous and deadly types, so identify before eating. Cooking uses campfire, smoking, smelting and shapeless recipes."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "mushroomquest:miso_soup_item",
+      "title": "Miso Soup",
+      "text": "Cooked dishes turn mushrooms into safer food.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "mushroomquest:enoki",
+      "title": "Enoki",
+      "text": "One of many wild mushrooms.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "It is a good match for $(l:food/farmers_delight)Farmer's Delight$(/l)-style cooking, which also has mushroom crops (Fungi Delight). A Witchy Cottage structure exists too."
+    }
+  ]
+}
