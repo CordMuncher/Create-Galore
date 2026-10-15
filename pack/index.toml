@@ -1,6 +1,10 @@
 hash-format = "sha256"
 
 [[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/cnbridge/recipe/dimensional_drive.json"
+hash = "d49135196f515d2ba77cf13c7abec12135fb5030a8d2f500a9760a81d8a3c4a3"
+
+[[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/naturalist/tags/worldgen/biome/has_anglerfish.json"
 hash = "78211ca3f4a5f24669bc16b1132aa4dcd29c3d053564742f1728da77430c372b"
 
@@ -38,7 +42,7 @@ hash = "78211ca3f4a5f24669bc16b1132aa4dcd29c3d053564742f1728da77430c372b"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/pack.mcmeta"
-hash = "b9a2852d7e9a78f66809e77b47d8839d7718a3acc3729b2aaf63134edc14ae78"
+hash = "6816460789f84ed4b28e80b16b1b805acf920364f772da46e2550c6340ac12f8"
 
 [[files]]
 file = "config/tfmg-common.toml"

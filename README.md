@@ -50,6 +50,7 @@ These live in `pack/config/` and land in the instance's `config/` folder on impo
 
 - **TFMG lead ore is off** (`config/tfmg-common.toml`, `lead_ore = false`). Create Nuclear also adds lead ore, and both mods' recipes accept any lead from the shared `c:ingots/lead` tag, so one lead ore is enough. Create Nuclear's is kept because its config can only switch off all its ores at once (uranium too). TFMG's galena is a decorative stone, not an ore, so it stays. Verified: a test world had TFMG lead in 133 of 452 chunks before the change and 0 after, with Create Nuclear lead in 182.
 - **Naturalist's 9 sea creatures that Hybrid Aquatic already has are off**: anglerfish, blobfish, giant isopod, great white shark, piranha, jellyfish, starfish, crab and ray. A small datapack (`config/paxi/datapacks/create-galore-tweaks`) empties their spawn-biome lists, and Paxi loads it into every world automatically. Verified with `/locate biome`: those 9 find nothing, while Naturalist's other spawns (whales, clams and the land animals) still work. Hybrid Aquatic's versions spawn as normal.
+- **Dimensional Drive recipe fixed.** The Northstar–Aeronautics bridge's Dimensional Drive (the block you put on an Aeronautics ship to launch it to a Northstar planet) asked for `northstar:computer_chip`, which Northstar 0.6.6 removed, so it couldn't be crafted. The same datapack replaces the recipe, swapping the chip for Northstar's **Circuit**, which can be made on Earth. Everything else in the recipe is unchanged: 4 titanium ingots and 4 precision mechanisms. Verified: the recipe error is gone on boot. Northstar Aeronautics Compat's Stellar Navigator is a second, already craftable way to reach the planets.
 
 ## Changes made to get it running
 
@@ -79,7 +80,6 @@ None of these stop the game. They're listed so they don't surprise anyone later.
 - **Some recipes and loot tables log errors** because they point at mods that aren't installed (Alex's Caves radon lamps in Create: Framed, Thirst's Create compat recipes, Steam 'n' Rails tracks for other wood mods, many Design n Decor loot tables). Harmless.
 - **Wishlist batch log noise:** Create Cafe has compat recipes for Blood Magic and Botania (not installed), and Cozy Cafe can't read one menu file for Create Central Kitchen's pumpkin pie slice. Harmless.
 - **Sable warns about `copycats:copycat_catwalk`** (a block Copycats+ doesn't have in this version). Harmless.
-- **The Northstar–Aeronautics bridge's Dimensional Drive recipe doesn't load**: it asks for `northstar:computer_chip`, which Northstar 0.6.6 no longer has. So the drive likely can't be crafted in survival (not checked in-game yet). Northstar Aeronautics Compat is unaffected. This was already true before the swipe batch.
 - **Chunksmith warns that Distant Horizons is installed on the server.** It's only a warning; the future server pack should leave Distant Horizons out and let Chunksmith send LODs to clients.
 - **The Aether is pinned to an older NeoForge** (see above). Don't let a launcher auto-update NeoForge past 21.1.259 until that's fixed.
 
