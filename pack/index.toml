@@ -17,6 +17,10 @@ file = "config/create_connected-common.toml"
 hash = "29208d8a0cf996ced5690dbd767ede4d3975cbe5f6d5025ab3f6f1c5e5fd5402"
 
 [[files]]
+file = "config/create_submarine-client.toml"
+hash = "e38558c715f01ec08abda913b77deb52ef8d024f6749127f0f89b67be68749fd"
+
+[[files]]
 file = "config/cristellib/alexscaves/structure_placement_config.json5"
 hash = "19e52264d00799dc531c4eff6d64d1710622f29b01af62d023181f66774df2ba"
 
@@ -257,6 +261,74 @@ file = "config/paxi/datapacks/create-galore-tweaks/data/createbigcannons/recipe/
 hash = "bb09ddc557fae4baa1484635310ce8b5c05bcdb237e9d3697674c20eb7aba808"
 
 [[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createdeco/recipe/placard.json"
+hash = "ddc3d0dd56b604d914bedbf2f985a2f0b5f7374eac79aad668a8a2cfd7cc154c"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createframed/recipe/integration/smelting/black_radon_lamp.json"
+hash = "dd05849abcaa3cd83447e06cf81b3bbc34f44286b6481120c8b2378e44f00279"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createframed/recipe/integration/smelting/blue_radon_lamp.json"
+hash = "8a21064fb2ca1e6ada0875b6be2b39406451f73e0ef6243cf6ccbe7dee1a1826"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createframed/recipe/integration/smelting/brown_radon_lamp.json"
+hash = "2b64484fb5b55b14d09a35615d52ff7237ed8122fdb88c7fad47281613df50b0"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createframed/recipe/integration/smelting/cyan_radon_lamp.json"
+hash = "cad8556aceb43a8e59de5c01183e668638330dfb75a7ce8cfa3d298b2f48edcd"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createframed/recipe/integration/smelting/gray_radon_lamp.json"
+hash = "2926408764a6b4964dbb2ebb7e61e3add5c7b8f452545ed16f4d1b4a5ede7936"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createframed/recipe/integration/smelting/green_radon_lamp.json"
+hash = "f4c1eac962334db8300692f3e2e950777e396bfaa3acee109e0e6c5fc974c3e3"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createframed/recipe/integration/smelting/light_blue_radon_lamp.json"
+hash = "5b62a0fc4dd149f4c80c82c084e17d9d987d932674104a66dcf05f9497b0fcc3"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createframed/recipe/integration/smelting/light_gray_radon_lamp.json"
+hash = "0f247a37116122617b986f387389e6e1d0faec6c6f1e98fb45a21d86fa1d133f"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createframed/recipe/integration/smelting/lime_radon_lamp.json"
+hash = "cf5d1673460a06342263fac872fba20d99d725951fa05bee7b392f200f2d4517"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createframed/recipe/integration/smelting/magenta_radon_lamp.json"
+hash = "b36a598f5188c437a9f545983600e95bd6ea79839e47933f688fbc597faa988d"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createframed/recipe/integration/smelting/orange_radon_lamp.json"
+hash = "bb0640bc20ca120f618722722190a4eb72e3707f648b464be09593eb0af72024"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createframed/recipe/integration/smelting/pink_radon_lamp.json"
+hash = "6f520a3fac656b075f4caf93f7fb71d49ce4cce8df8e888f0f5f1f96ca54b727"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createframed/recipe/integration/smelting/purple_radon_lamp.json"
+hash = "079f81a6d43f5a741b9731e05b33cb67bc214aa77b1567896a63f1ba09f96c1f"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createframed/recipe/integration/smelting/red_radon_lamp.json"
+hash = "be0aab444a23768cf3afb7d2f6f90829d7b286a86ae2dbc1cd1a19e3eeb5570b"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createframed/recipe/integration/smelting/white_radon_lamp.json"
+hash = "ce512f5415944b09effa0d418777108b29d3a055f66daae1ffff2da919621ad1"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createframed/recipe/integration/smelting/yellow_radon_lamp.json"
+hash = "04b0fb371936cf931745516114df90a9ed6c966c7dfd078aae3854317077fd88"
+
+[[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/createnuclear/recipe/crafting/crafting/steel_block_from_compacting.json"
 hash = "30c07b49e168a60e71e74512aa1bcda3084e89e8b22ba2335f80c598cb0dd6f6"
 
@@ -425,6 +497,14 @@ file = "config/paxi/datapacks/create-galore-tweaks/data/tfmg/recipe/winding/larg
 hash = "08ed15e3582446b68098f09574b6799cd16d11d5ae9a1828cf044a66c13c5e13"
 
 [[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/thirst/recipe/compat/create/cactus.json"
+hash = "2c98bc75edc3cb96a7950e242ac970fb85927e5bcc64b6fe17d2caf889b09ba9"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/thirst/recipe/compat/create/terracotta_water_bowl.json"
+hash = "b81f5339abb9eadad01034f97afaead2e67f5a409db509a2508e6ff2180937a0"
+
+[[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/pack.mcmeta"
 hash = "2497d0288b91de51c501dbe14485e2637b7ff225d9cdf660a849458a1979bc20"
 
@@ -435,6 +515,10 @@ hash = "2bbfe7a3d663b57127c7237e8e02531cd526fa0e3a9a8d8632ba6b3072c793c2"
 [[files]]
 file = "config/tfmg-common.toml"
 hash = "6932c0866d378225725a5d2e0a9b8fa20e963b5fa7f4cc6ab9bcc57d91974fa6"
+
+[[files]]
+file = "config/wover/client.json"
+hash = "2adb47f027bc307b25168eff0666e84181f9c8d6e4318402e4a45fe9096d818f"
 
 [[files]]
 file = "mods/aeronautics-hot-air-fix.pw.toml"
@@ -458,7 +542,7 @@ metafile = true
 
 [[files]]
 file = "mods/animalhusbandry.pw.toml"
-hash = "89989895f7674e467bfc09cdae661d59cdaedac87a41c03ca75890aab1b108e0"
+hash = "402b4717488813948fce40b883858e1d2234130978965d81babfaa46b62b7c50"
 metafile = true
 
 [[files]]

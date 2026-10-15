@@ -12,7 +12,7 @@ Not on Modrinth, add by hand: **Twilight Forest** `twilightforest-1.21.1-4.8.334
 | [Aeronautics: Winds & Weather](https://modrinth.com/mod/aeronautics-winds-and-weather) | 1.3.1 | both |
 | [Alex's Caves Continued](https://modrinth.com/mod/alexs-caves-continued) | 1.1.1+neoforge-1.21.1 | both |
 | [Alloyed](https://modrinth.com/mod/create-alloyed) | 3.0.12+1.21.1-neoforge | both |
-| [Animal Husbandry](https://modrinth.com/mod/animalhusbandry) | 0.5.0 | both |
+| [Animal Husbandry](https://modrinth.com/mod/animalhusbandry) | 0.4.2 | both |
 | [AppleSkin](https://modrinth.com/mod/appleskin) | 3.0.9+mc1.21 | both |
 | [Aquaculture 2](https://modrinth.com/mod/aquaculture) | 2.7.21 | both |
 | [Aquaculture Delight](https://modrinth.com/mod/aquaculture-delight) | 1.2.0 | both |
