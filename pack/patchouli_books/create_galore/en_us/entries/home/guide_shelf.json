@@ -1,0 +1,23 @@
+{
+  "name": "Guide Shelf",
+  "icon": "minecraft:bookshelf",
+  "category": "patchouli:home",
+  "sortnum": 8,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Guide Shelf$() puts buttons in your inventory screen for every Patchouli book and other in-game guide. This Field Guide is a Patchouli book, so it is listed there too."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "minecraft:bookshelf",
+      "title": "Guide Shelf",
+      "text": "Open a guide without holding the book. Handy for mods that ship their own handbook.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "You also get this book on first join, and can craft it from a Book and Andesite (shapeless). JEI can open it too.$(br2)Mods like Create keep help in Ponder: hold $(bold)W$() over an item.$(br2)Start: $(l:start_here/welcome)Welcome$(/l)."
+    }
+  ]
+}

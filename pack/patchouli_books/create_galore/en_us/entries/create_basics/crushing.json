@@ -1,0 +1,50 @@
+{
+  "name": "Crushing and Ore Doubling",
+  "icon": "create:crushing_wheel",
+  "category": "patchouli:create_basics",
+  "sortnum": 13,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Create turns one ore into more metal. You crush the raw ore, then wash or smelt the $(thing)crushed$() result. Two machines crush: the Millstone and Crushing Wheels."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "create:millstone",
+      "title": "Millstone",
+      "text": "Grinds items slowly and cheaply. Throw items in at the top, take the result out with right-click or automation. Good for flour, dyes and bone meal.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "create:crushing_wheel",
+      "title": "Crushing Wheels",
+      "text": "Used as a pair spinning toward each other. Fast, and the standard way to crush ore. Drop items in at the top.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Crushing a raw ore $(bold)block$(), like iron ore, gives a crushed item, a 75% chance of a second one, XP nuggets and sometimes cobble. Raw ore items give one crushed item plus XP."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "create:crushed_raw_iron",
+      "title": "Crushed Raw Iron",
+      "text": "Wash it in a fan for nine nuggets and a chance of redstone. Zinc, copper and gold give gunpowder, clay and quartz instead. Smelting works too.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "The trick: crush ore blocks, not raw items, for the bonus crushed ore, then $(l:create_basics/fans)wash$(/l) for byproducts.$(br2)Where ores are is in $(l:materials/ore_guide)the Ore Guide$(/l). See also $(l:create_basics/materials)Materials$(/l)."
+    },
+    {
+      "type": "patchouli:relations",
+      "entries": [
+        "patchouli:create_basics/fans",
+        "patchouli:materials/ore_guide",
+        "patchouli:create_basics/materials"
+      ],
+      "title": "Related"
+    }
+  ]
+}

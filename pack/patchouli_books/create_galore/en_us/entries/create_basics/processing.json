@@ -1,0 +1,55 @@
+{
+  "name": "Press, Mixer and Basin",
+  "icon": "create:mechanical_press",
+  "category": "patchouli:create_basics",
+  "sortnum": 10,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Create machines do not work through menus. They act on $(thing)items sitting in front of them$(): items on a belt, on a depot, or inside a basin. Most of them need $(l:create_basics/rotation)rotation$(/l) to run.$(br2)Hover a machine and hold W for its Ponder."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "create:mechanical_press",
+      "title": "Mechanical Press",
+      "text": "Hits whatever is under it. On a belt or depot it presses ingots into sheets. Over a basin it compacts the contents.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Pressing a plain item makes a $(item)sheet$(): iron, gold, copper and brass sheets are building blocks for later machines.$(br2)Over a $(item)Basin$(), the press compacts: any filled 2x2 or 3x3 crafting recipe, plus some extras (some need heat, see $(l:create_basics/heat)Heat$(/l))."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "create:mechanical_mixer",
+      "title": "Mechanical Mixer",
+      "text": "Sits above a basin and stirs. Handles any shapeless crafting recipe, plus extra recipes like alloying.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "create:basin",
+      "title": "Basin",
+      "text": "Holds items and fluids for the mixer or press above it. Has no output until you give it one.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Brass is the classic mixer job: copper and zinc ingots in a basin, with a $(l:create_basics/heat)heated$(/l) burner under it. Check JEI for the exact mix.$(br2)If two recipes fit the same contents, put an item in the machine's filter slot to pick one."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Basin output$(): put a belt, funnel, depot or chute below and to the side, and the basin shows a faucet and pushes finished items out. With no output block it keeps results inside, useful when they are ingredients for the next step.$(br2)If you pull from a basin, use a $(l:create_basics/item_logistics)filter$(/l) so unprocessed items stay."
+    },
+    {
+      "type": "patchouli:relations",
+      "entries": [
+        "patchouli:create_basics/heat",
+        "patchouli:create_basics/fans",
+        "patchouli:create_basics/crushing",
+        "patchouli:create_basics/brass_and_assembly"
+      ],
+      "title": "Related"
+    }
+  ]
+}

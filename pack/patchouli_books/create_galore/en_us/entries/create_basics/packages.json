@@ -1,0 +1,74 @@
+{
+  "name": "Logistics: Packages",
+  "icon": "create:packager",
+  "category": "patchouli:create_basics",
+  "sortnum": 19,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Create 6 added a $(thing)logistics$() system: items are packed into $(item)Packages$(), addressed, and delivered between points. It runs on belts, chain conveyors and frogports."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "create:packager",
+      "title": "Packager",
+      "text": "Attaches to a chest or machine. With redstone power it packs items; given a package it unpacks into the inventory.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "create:package_frogport",
+      "title": "Package Frogport",
+      "text": "Sends and receives packages. Gives each port an address. A chain conveyor links ports together.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "create:chain_conveyor",
+      "title": "Chain Conveyor",
+      "text": "Carries packages and relays rotation like shafts. Frogports attach to it for delivery over long distances.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "create:stock_link",
+      "title": "Stock Link",
+      "text": "Connects packagers to one network. Range is unlimited, but packages still need transport.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "create:stock_ticker",
+      "title": "Stock Ticker",
+      "text": "Orders items from the whole network. A blaze burner or seated mob in front acts as the Stock Keeper you right-click.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "create:redstone_requester",
+      "title": "Redstone Requester",
+      "text": "Orders a preset set on each redstone pulse.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "create:factory_gauge",
+      "title": "Factory Gauge",
+      "text": "Keeps stock at a target amount by requesting ingredients, down to full recipes and crafting setups.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Add-ons in this pack$():$(br2)$(li)Factory Logistics: network links, fluid gauges, a Bottler and jars for fluids$(br2)$(li)Mobile Packages: Robo Bee Port to send packages to players, a portable stock ticker"
+    },
+    {
+      "type": "patchouli:relations",
+      "entries": [
+        "patchouli:create_basics/item_logistics",
+        "patchouli:create_basics/brass_and_assembly",
+        "patchouli:home/storage"
+      ],
+      "title": "Related"
+    }
+  ]
+}

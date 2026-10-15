@@ -1,0 +1,85 @@
+{
+  "name": "Building a Rocket",
+  "icon": "northstar:rocket_thruster",
+  "category": "patchouli:space",
+  "sortnum": 2,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "A rocket is glued blocks around a Rocket Station. It needs thrusters, fuel in fluid tanks, a seat and Rocket Controls. Trips to planets also need an Interplanetary Navigator."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "northstar:rocket_station",
+      "title": "Rocket Station",
+      "text": "Pick the destination, assemble or disassemble the rocket, and read fuel, thruster and heat shielding needs.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "northstar:rocket_thruster",
+      "title": "Rocket Thruster",
+      "text": "How many you need depends on the rocket's weight and gravity at both ends. Built from a Combustion Chamber, titanium plates and a Create Propeller.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Fuel must sit in fluid tanks on the rocket. Accepted: Liquid Hydrogen, Hydrogen, Methane, Hydrocarbon, Biofuel, and TFMG diesel, gasoline, kerosene and naphtha. Amount depends on gravity at each end and the distance. See $(l:industry/tfmg_oil)Oil$(/l).",
+      "title": "Fuel"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Hydrocarbon is made by heated mixing of Carbon with Sodium or a Sodium Catalyst. Carbon comes from compacting coal with heat, or from a planet's air. Hydrogen and Oxygen come from the Electrolysis Machine. Check JEI for each.",
+      "title": "Making fuel"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "northstar:computer_rack",
+      "title": "Computer Rack",
+      "text": "Holds Targeting Computers, which find better trajectories and cut fuel cost.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Atmosphere friction heats a rocket. Heat shielding goes up by adding metallic blocks anywhere on it. Northstar groups them in tiers: titanium and iron, then Martian steel, then tungsten. The station lists supported blocks.",
+      "title": "Heat shielding"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Sit at the Rocket Controls and press jump to start the launch sequence, jump again to cancel. Hold the slow key on descent. Landings aim at a Rocket Waypoint, recorded by using the atlas on it. Super Glue holds the rocket together.",
+      "title": "Launching"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "northstar:rocket_controls",
+      "title": "Rocket Controls",
+      "text": "Required to launch and steer. Without them the station reports no controls attached.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "northstar:rocket_waypoint",
+      "title": "Rocket Waypoint",
+      "text": "Marks landing coordinates. Use a Space Atlas on it to save the position.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "northstar:auto_lander",
+      "title": "Auto-Landing Station",
+      "text": "Lands the rocket safely on its own.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:relations",
+      "entries": [
+        "patchouli:space/reaching_space",
+        "patchouli:space/planets",
+        "patchouli:industry/tfmg_oil",
+        "patchouli:industry/liquid_fuel"
+      ],
+      "title": "Related",
+      "text": "Where to go and where fuel comes from."
+    }
+  ]
+}

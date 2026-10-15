@@ -1,0 +1,51 @@
+{
+  "name": "Temperature",
+  "icon": "cold_sweat:thermometer",
+  "sortnum": 1,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Cold Sweat gives you a body temperature. Hot or cold places push it up or down, and if it goes too far you take damage and cannot sleep.$(br2)It is a layer of survival, not a puzzle: dress for the biome and keep a heat source nearby."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "cold_sweat:thermometer",
+      "title": "Thermometer",
+      "text": "Shows the temperature of the place you stand in. Your body temperature has its own icon on the HUD.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)World temperature$() is what the spot feels like: biome, time of day, height or depth, nearby fire, lava or ice, water.$(br2)$(thing)Body temperature$() drifts toward it. Armor insulation and warm or cold blocks slow that drift.",
+      "title": "Two numbers"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Getting wet cools you, and a netherite diving suit makes you immune to that. Heat and cold can both be lethal.$(br2)You cannot sleep while overheating or freezing.$(br2)After you spawn or die you get Grace, a short immunity to temperature damage.",
+      "title": "Water and danger"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Higher is colder. The pack adds $(l:survival/temperature_create)Cold Sweat: Altitude$(/l), which sets temperature bands by height, adds wind and lets sewn linings shield you.$(br2)Mountains, sky islands and airships are where it bites.",
+      "title": "Altitude"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Cold Sweat covers the Overworld and Aether. Northstar's planets have their own temperature system, set by each world and a Temperature Regulator block. It is separate from Cold Sweat: no link exists between them.",
+      "title": "Space"
+    },
+    {
+      "type": "patchouli:relations",
+      "entries": [
+        "patchouli:survival/temperature_gear",
+        "patchouli:survival/temperature_create",
+        "patchouli:create_basics/heat",
+        "patchouli:survival/thirst",
+        "patchouli:space/planets"
+      ],
+      "title": "Related",
+      "text": "Thirst does not talk to Cold Sweat in this pack."
+    }
+  ],
+  "category": "patchouli:survival"
+}

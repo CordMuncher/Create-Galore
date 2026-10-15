@@ -1,0 +1,41 @@
+{
+  "name": "Big Cannons",
+  "icon": "createbigcannons:cannon_mount",
+  "category": "patchouli:industry",
+  "sortnum": 14,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Create Big Cannons adds artillery built as contraptions: cast or built-up barrels, breeches, mounts, loaders and munitions. Ponder explains each step; this page only covers what connects to the rest of the pack."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "createbigcannons:cannon_mount",
+      "title": "Cannon Mount",
+      "text": "The rotating base that aims a cannon. Cannons are assembled onto it as a contraption.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "createbigcannons:cannon_loader",
+      "title": "Cannon Loader",
+      "text": "A contraption part that pushes charges and shells in. Cartridges and powder charges set range, shells set effect.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "createbigcannons:basin_foundry_lid",
+      "title": "Basin Foundry Lid",
+      "text": "Melts metal in a basin for casting cannon parts. Its recipes can output TFMG's molten steel.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "TFMG ties in: its Casting Basin casts Big Cannons bronze, cast iron and nethersteel. Its vat with graphite electrodes turns netherite scrap and molten steel into nethersteel. Steel is shared: $(l:materials/shared_metals)Shared Metals$(/l)."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Cannons are built from contraptions: $(l:create_basics/contraptions)Contraptions$(/l), so you can mount them on moving builds. Handle with care: shells destroy blocks."
+    }
+  ]
+}

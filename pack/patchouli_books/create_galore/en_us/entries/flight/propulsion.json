@@ -1,0 +1,75 @@
+{
+  "name": "Thrusters and Engines",
+  "icon": "createpropulsion:thruster",
+  "category": "patchouli:flight",
+  "sortnum": 7,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Create Propulsion: Simulated adds engines for ships: fuel thrusters, electric ion thrusters, steerable vector thrusters, wings and heat engines. They need Aeronautics physics to be useful."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "createpropulsion:thruster",
+      "title": "Thruster",
+      "text": "Burns liquid fuel piped in, throttled by redstone. An oxidizer adds an efficiency bonus. Build 2x2 or 3x3 blocks of them and feed only the rear.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Thrusters accept Turpentine (from Pine Resin), TFMG diesel, gasoline, kerosene and naphtha, and Northstar's hydrocarbon, methane, biofuel and liquid hydrogen. Wrong fluid means no thrust. Solid Fuel Thrusters burn coal, charcoal, wood or Blaze Cake. See $(l:industry/tfmg_oil)Oil$(/l) and $(l:space/rocket_building)Rockets$(/l).",
+      "title": "Fuels"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "createpropulsion:solid_fuel_thruster",
+      "title": "Solid Fuel Thruster",
+      "text": "Burns items instead of fluid. Easy to start with, since coal, charcoal and planks all work.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "createpropulsion:ion_thruster",
+      "title": "Ion Thruster",
+      "text": "Runs on Forge energy rather than fuel. Stores energy; generators can feed it from below. See Electricity.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "createpropulsion:vector_thruster",
+      "title": "Vector Thruster",
+      "text": "Tilts to push in any direction under redstone control. Needs platinum, which this mod adds as an ore.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "createpropulsion:wing",
+      "title": "Wing",
+      "text": "Plain wing blocks. Smelt one to get a Tempered Wing. Copycat versions copy another block's look.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "createpropulsion:stirling_engine",
+      "title": "Stirling Engine",
+      "text": "Makes rotation from heat below it. Solid and Liquid Burners supply that heat.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Redstone Transmission changes speed from a signal, either directly or step by step. Tilt Adapters turn a left/right difference into an angle. Hold W over the Stirling Engine and burners for their Ponders.",
+      "title": "Smaller parts"
+    },
+    {
+      "type": "patchouli:relations",
+      "entries": [
+        "patchouli:industry/tfmg_oil",
+        "patchouli:industry/electricity",
+        "patchouli:create_basics/heat",
+        "patchouli:materials/ore_guide"
+      ],
+      "title": "Connections",
+      "text": "Fuel, power, heat and platinum ore."
+    }
+  ]
+}

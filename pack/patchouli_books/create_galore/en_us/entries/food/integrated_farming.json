@@ -1,0 +1,41 @@
+{
+  "name": "Create Integrated Farming",
+  "icon": "create_integrated_farming:vacuum_harvester",
+  "category": "patchouli:food",
+  "sortnum": 10,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Create Integrated Farming$() adds farming machines for contraptions: a Vacuum Harvester, Roosts for poultry, and Fishing Nets that fish while moving. Several recipes use Farmer's Delight items."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "create_integrated_farming:vacuum_harvester",
+      "title": "Vacuum Harvester",
+      "text": "Rotation charges its chamber (30 s at 64 RPM by default). At full pressure it harvests every mature crop around it at once. Take output from any side but the shaft.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "On a contraption the chamber charges on a timer, even while parked. Each pulse covers the whole area around its position. Contraption Controls can pause it.$(br2)See $(l:create_basics/contraptions)Contraptions$(/l)."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "create_integrated_farming:roost",
+      "title": "Roost",
+      "text": "Right-click a bird with an empty Roost to catch it, or lead one in. Poultry produce over time; feeding speeds it up, by hand, belt or Arm.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "create_integrated_farming:fishing_net",
+      "title": "Fishing Net",
+      "text": "Made from Farmer's Delight's Safety Net. When moved on a contraption it fishes in open water like a rod, and it also catches small animals.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Mechanical Arms can harvest lily pads and powdery crops. A Spout speeds up Organic Compost decay, which feeds Farmer's Delight's Rich Soil.$(br2)Animals: $(l:food/animals)Animals$(/l). Delight basics: $(l:food/farmers_delight)Farmer's Delight$(/l)."
+    }
+  ]
+}

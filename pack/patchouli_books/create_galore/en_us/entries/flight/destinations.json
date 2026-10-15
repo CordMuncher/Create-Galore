@@ -1,0 +1,82 @@
+{
+  "name": "Destinations",
+  "icon": "aeronauticsdiscovery:pin_wand",
+  "category": "patchouli:flight",
+  "sortnum": 12,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Vehicles need somewhere to go. This is a map of what the pack puts in the sky and on far worlds, where it lives, and what you can expect there."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Create: Sky Village places villages high up in the Overworld, between about 150 and 250 blocks. There are two kinds: the Sky Village and the Highwind Village. Expect villagers and Create loot.",
+      "title": "Sky Villages"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Create Aeronautics Structures adds hot-air balloons, some broken, in plains, hills, desert, savanna, badlands and cherry groves.$(br2)Creat Aeronautics Structures adds airships, airballoons, crashed planes, boats, an engineering house with an Engineer villager, and pillager versions.",
+      "title": "Aeronautics builds"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Aeronautics Discovery adds events. Planes and balloons fly over the Overworld at height, and balloons appear in villages. It also adds Pillager Aviators, Soaring Traders and maps to temples, igloos, ancient cities and mineshafts.",
+      "title": "Discovery"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "aeronauticsdiscovery:pin_wand",
+      "title": "Pin Wand",
+      "text": "From Aeronautics Discovery. Check its tooltip in game for how to use it.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "aeronauticsdiscovery:soaring_trader_spawn_egg",
+      "title": "Soaring Trader",
+      "text": "A trader added by Aeronautics Discovery, with the Pillager Aviator as its hostile counterpart.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Moog's Soaring Structures fills the sky with vanilla-style floating islands: houses, towers, ruins, trees, volcanoes, an arena and a floating Nether portal. Expect loot and mobs.",
+      "title": "Floating islands"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "minecraft:chest",
+      "title": "Island loot",
+      "text": "Floating islands from Moog's Soaring Structures hold chests and mobs. Bring a ship that can land.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "The Aether is a separate dimension of floating islands. Its portal is built from a glowstone frame lit with water. Sky whales drift over the ocean in the Overworld; see $(l:flight/weather_and_danger)Weather and Danger$(/l).",
+      "title": "The Aether"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "aether:ambrosium_shard",
+      "title": "Ambrosium Shard",
+      "text": "A basic Aether resource. See Dimensions for the Aether and others.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "For the highest destinations, fly an Aeronautics ship upward with a Dimensional Drive, or build a rocket. Northstar has the Moon, Mars, Mercury and Venus. See $(l:space/reaching_space)Reaching Space$(/l) and $(l:space/planets)Planets$(/l).",
+      "title": "Beyond the sky"
+    },
+    {
+      "type": "patchouli:relations",
+      "entries": [
+        "patchouli:flight/hangars",
+        "patchouli:flight/weather_and_danger",
+        "patchouli:exploration/dimensions",
+        "patchouli:exploration/structures",
+        "patchouli:space/reaching_space"
+      ],
+      "title": "Related",
+      "text": "More places and the dangers on the way."
+    }
+  ]
+}

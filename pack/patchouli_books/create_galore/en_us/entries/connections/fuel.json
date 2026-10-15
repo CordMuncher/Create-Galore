@@ -1,0 +1,35 @@
+{
+  "name": "Fuel Goes Everywhere",
+  "icon": "tfmg:diesel_bucket",
+  "category": "patchouli:connections",
+  "sortnum": 3,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Oil from $(l:industry/tfmg_oil)TFMG$(/l) is the pack's main liquid fuel, and other mods accept it through shared fluid tags. Pipe it once and many things can drink from it."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Where TFMG fuels burn:$(li)Crafts & Additions' Blaze Burner with Straw: diesel, gasoline, crude oil, creosote$(li)Create Propulsion thrusters: diesel, gasoline, kerosene, naphtha$(li)Northstar rockets: diesel, gasoline, kerosene, naphtha"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Not into oil? Crafts & Additions makes Seed Oil and Bioethanol from crops, and Garnished makes Peanut Oil. Create: Liquid Fuel lets a plain Blaze Burner burn those, and Bioethanol and Peanut Oil superheat it."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Rockets also run on Northstar's own Hydrogen, Methane, Hydrocarbon and Biofuel. Thrusters take Turpentine from pine resin, and Solid Fuel Thrusters just burn coal or planks.$(br2)Soot from air scrubbers burns as solid fuel too."
+    },
+    {
+      "type": "patchouli:relations",
+      "title": "Related",
+      "entries": [
+        "patchouli:industry/liquid_fuel",
+        "patchouli:industry/tfmg_oil",
+        "patchouli:flight/propulsion",
+        "patchouli:space/rocket_building",
+        "patchouli:create_basics/fluids"
+      ]
+    }
+  ]
+}

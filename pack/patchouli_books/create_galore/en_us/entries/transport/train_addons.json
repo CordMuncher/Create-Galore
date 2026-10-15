@@ -1,0 +1,97 @@
+{
+  "name": "Train Add-ons",
+  "icon": "railways:track_switch_brass",
+  "category": "patchouli:transport",
+  "sortnum": 3,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Several mods extend Create trains: Steam 'n' Rails for new track and parts, Railways Navigator for route information, Train Utilities for doors, Threaded Trains for server speed, and Xaero Train Map for the map."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Adds Wide and Narrow gauge track, a Monorail, and Phantom track that fits any bogey. Track also comes in many wood and stone styles. You also get many more bogey designs, couplers, buffers, a handcar and styling blocks for locomotives such as boilers and smokestacks.",
+      "title": "Steam 'n' Rails"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "railways:track_switch_brass",
+      "title": "Track Switch",
+      "text": "Use to cycle right, sneak-use to cycle left. Redstone sets it. A comparator reads 1 left, 0 straight, 2 right.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "railways:semaphore",
+      "title": "Semaphore",
+      "text": "Sits on a pole above a Train Signal and shows its state. Two stacked show if some or all exits are blocked.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "railways:track_coupler",
+      "title": "Train Coupler",
+      "text": "Couples and decouples trains without taking them apart. A wrench changes the mode and the gap between pads.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "railways:black_conductor_cap",
+      "title": "Conductor's Cap",
+      "text": "Conductors can press buttons and flip levers when a player looks at them, unless that player wears another colour of cap.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Adds a Navigator item that lists connections with stopovers and live data, Advanced Display boards for platforms and train fronts, a Train Station Clock and a Lectern with Navigator. Penalty Anchors add a cost to a stretch of track, so trains avoid it.",
+      "title": "Railways Navigator"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "createrailwaysnavigator:navigator",
+      "title": "Navigator",
+      "text": "Search for a route to a station and see the trains that run it, with delays and changes along the way.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "createrailwaysnavigator:advanced_display",
+      "title": "Advanced Display",
+      "text": "Platform and train destination boards. Wrench it to open the configuration screen.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "createrailwaysnavigator:penalty_anchor",
+      "title": "Penalty Anchor",
+      "text": "Trains pick the cheapest path. Raise the penalty with a wrench to push them onto another route. Redstone weakens it.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Adds sliding train doors in dozens of real-world styles, platform and line blocks, and frameless glass. Some doors need small parts like Processing Units and Rubber Seals, made by Create assembly. Doors can be opened by hand or follow a moving contraption.",
+      "title": "Train Utilities"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "trainutilities:door_andesite_alloy",
+      "title": "Andesite Alloy Door",
+      "text": "One of many sliding doors. Create's own Train Door also exists as a simpler option.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Create: Threaded Trains runs the railway network's calculations on a separate thread, which helps large networks on a server. It has no blocks.$(br2)Xaero Train Map draws trains on Xaero's World Map. It only affects your own screen.",
+      "title": "Performance and map"
+    },
+    {
+      "type": "patchouli:relations",
+      "entries": [
+        "patchouli:transport/trains",
+        "patchouli:transport/train_signals"
+      ],
+      "title": "Related",
+      "text": "Core train building and signalling."
+    }
+  ]
+}

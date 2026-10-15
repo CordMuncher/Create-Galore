@@ -1,0 +1,62 @@
+{
+  "name": "Create: Wizardry",
+  "icon": "create_wizardry:mana_siphon",
+  "category": "patchouli:exploration",
+  "sortnum": 18,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Create: Wizardry$() makes mana a Create fluid. It needs Iron's Spells, and adds machines to extract, pipe and use mana. Pipe it like water, but mind the leaks."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "create_wizardry:mana_siphon",
+      "title": "Mana Siphon",
+      "text": "Draws mana from players, spells and mobs. Placed above it, a crystalline block can crystallize mana into Arcane Essence.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "create_wizardry:arcane_pipe",
+      "title": "Arcane Pipe",
+      "text": "Carries mana. Un-insulated pipes rapidly leak it. Insulate with Arcane Sheets.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "create_wizardry:arcane_pump",
+      "title": "Arcane Pump",
+      "text": "Made from an Arcane Pipe and a cogwheel. Moves mana by rotation, like a Mechanical Pump.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "create_wizardry:arcane_casing",
+      "title": "Arcane Casing",
+      "text": "The casing for the mod's machines. See Casings in the Create entries.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "create_wizardry:channeler",
+      "title": "Channeler",
+      "text": "Harvests Liquid Lightning from lightning bolts. Takes a Bottle of Lightning from Iron's Spells.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "create_wizardry:blaze_caster",
+      "title": "Blaze Caster",
+      "text": "A contraption that casts scroll spells. Must be superheated. Works in Impulse or Sentry modes.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "The Blaze Caster holds a scroll and casts it using mana. Not every spell is compatible with it. Heat is Create's: see $(l:create_basics/heat)Heat$(/l) and a blaze burner."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Other fluids: Liquid Lightning, Blood (from compressing meat or boiling mobs), Fire Ale and Netherward Tincture. Several are made by Create $(l:create_basics/processing)processing$(/l) such as mixing; look recipes up in JEI. Back to $(l:exploration/magic)Magic$(/l)."
+    }
+  ]
+}

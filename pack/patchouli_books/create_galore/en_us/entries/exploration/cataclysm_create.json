@@ -1,0 +1,45 @@
+{
+  "name": "Cataclysm x Create",
+  "icon": "cataclysm:mechanical_fusion_anvil",
+  "category": "patchouli:exploration",
+  "sortnum": 14,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Cataclysm x Create Integration$() is a data pack. It replaces Cataclysm's gear recipes with Create ones, so boss loot gets turned into equipment by machines instead of at a normal crafting table."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "About 35 items are made by $(thing)Sequenced Assembly$(): a base item goes through Deployer, Press, Deployer steps with boss materials. A few use Mechanical Crafting. Weapons, armor, shields, smithing templates and summoning Eyes are covered."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "cataclysm:mechanical_fusion_anvil",
+      "title": "Mechanical Fusion Anvil",
+      "text": "Made from an Anvil with Sturdy Sheets, Precision Mechanisms and Redstone Blocks.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "cataclysm:the_incinerator",
+      "title": "Example: The Incinerator",
+      "text": "Starts as a Netherite sword. Check JEI for its Sequenced Assembly.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "cataclysm:laser_gatling",
+      "title": "Laser Gatling",
+      "text": "Starts as a crossbow, uses electron tubes and redstone blocks.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "It also adds crushing recipes that recycle Cataclysm gear: black steel tools, Cursium, Ignitium and more go into a Crushing Wheel for nuggets, some ingots and XP nuggets. Read $(l:create_basics/crushing)Crushing$(/l) and $(l:create_basics/brass_and_assembly)Assembly$(/l)."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "The Abyssal Sacrifice, a Cataclysm ritual item, is now a compacting recipe that needs a heated Basin, so a Blaze Burner. See $(l:create_basics/heat)Heat$(/l). Links: $(l:exploration/cataclysm)Cataclysm$(/l)."
+    }
+  ]
+}

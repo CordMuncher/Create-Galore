@@ -1,0 +1,6 @@
+{
+  "criteria": {
+    "joined": {"trigger": "minecraft:tick"}
+  },
+  "rewards": {"function": "create_galore:give_field_guide"}
+}

@@ -1,0 +1,86 @@
+{
+  "name": "Oxygen and Suits",
+  "icon": "northstar:iron_space_suit_chestpiece",
+  "category": "patchouli:space",
+  "sortnum": 5,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Off Earth you need air and the right temperature. Northstar handles both with sealed rooms and spacesuits. The death messages say it all: ran out of oxygen, or forgot their spacesuit."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "northstar:iron_space_suit_chestpiece",
+      "title": "Iron Space Suit",
+      "text": "Made from iron armour, iron plates and tinted glass. The chestplate carries the oxygen supply.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "northstar:martian_steel_space_suit_chestpiece",
+      "title": "Martian Steel Space Suit",
+      "text": "The tougher suit. Martian steel gear and netherite diving gear are tagged heat resistant.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "northstar:oxygen_filler",
+      "title": "Oxygen Filler",
+      "text": "Right-click in a suit, then pump Oxygen Gas in to fill it, or extract it back out.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "northstar:oxygen_sealer",
+      "title": "Oxygen Sealer",
+      "text": "Oxygen from behind, rotation from below, and it fills the sealed area around it. It shows how much it can seal and warns if the room leaks.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "northstar:large_fan",
+      "title": "Large Fan",
+      "text": "Raises the area a Sealer or Temperature Regulator can cover. Needs an Encased Chain Drive; a wrench sets chain side.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "northstar:atmospheric_concentrator",
+      "title": "Atmospheric Concentrator",
+      "text": "Collects Oxygen or Carbon from air. Does nothing on worlds without an atmosphere.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "northstar:electrolysis_machine",
+      "title": "Electrolysis Machine",
+      "text": "Splits water into hydrogen and oxygen, which fuel rockets and fill suits.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "northstar:temperature_regulator",
+      "title": "Temperature Regulator",
+      "text": "Sets the temperature in a box you size. Vents let air pass; wool makes an insulated vent that blocks heat but not air.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "northstar:solar_panel",
+      "title": "Solar Panel",
+      "text": "Turns sunlight into rotation. A Combustion Engine burns rocket fuel for rotation and needs oxidizer.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:relations",
+      "entries": [
+        "patchouli:survival/temperature",
+        "patchouli:space/planets",
+        "patchouli:create_basics/power_sources",
+        "patchouli:create_basics/stress"
+      ],
+      "title": "Related",
+      "text": "Temperature on Earth, worlds, power and stress."
+    }
+  ]
+}

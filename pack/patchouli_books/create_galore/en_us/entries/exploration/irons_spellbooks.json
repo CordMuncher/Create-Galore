@@ -1,0 +1,60 @@
+{
+  "name": "Iron's Spellbooks",
+  "icon": "irons_spellbooks:iron_spell_book",
+  "category": "patchouli:exploration",
+  "sortnum": 17,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Iron's Spells 'n Spellbooks$() adds spellcasting. You carry a spell book, fill its slots with spells, and cast them using mana. Spells belong to schools, and gear raises the power of one school or all."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "irons_spellbooks:scroll",
+      "title": "Scroll",
+      "text": "A single-use spell. Anyone can cast one, no book needed. Spells are made or found at several tiers of rarity.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "irons_spellbooks:copper_spell_book",
+      "title": "Spell Books",
+      "text": "Books run from Flimsy Journal (copper) up to Ancient Codex (netherite). Better books hold more spell slots.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "irons_spellbooks:scroll_forge",
+      "title": "Scroll Forge",
+      "text": "Where scrolls are made. Built from polished deepslate and crying obsidian.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "irons_spellbooks:inscription_table",
+      "title": "Inscription Table",
+      "text": "Where spells are written into a spell book.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Magic crafting uses ink in five rarities, Arcane Essence, Mithril, Pyrium and Arcane Ingots, plus Upgrade Orbs that boost a school. An $(item)Alchemist Cauldron$(), Arcane Anvil and Pedestals help. Rings and necklaces are worn in $(l:exploration/gear)Curios slots$(/l)."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Create hooks in directly. Inks, Blood Vials, Timeless Slurry and several elixirs have Create filling and emptying recipes, so a Spout can fill them from fluid and a Drain can empty them. See $(l:create_basics/fluids)Fluids$(/l)."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "The world has wizard towers and a lost Citadel: Pyromancer Tower, Archevoker's Evoker Fort, Ice Spider Den, Ancient Battleground, Catacombs, and the Citadel (a Citadel Map exists). Mage mobs defend them. Pack-wide bosses: $(l:exploration/bosses)Bosses$(/l)."
+    },
+    {
+      "type": "patchouli:relations",
+      "entries": [
+        "patchouli:exploration/create_wizardry",
+        "patchouli:exploration/magic"
+      ],
+      "title": "See also"
+    }
+  ]
+}

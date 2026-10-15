@@ -1,0 +1,46 @@
+{
+  "name": "How Ideas Build Up",
+  "icon": "create:andesite_alloy",
+  "category": "patchouli:start_here",
+  "sortnum": 2,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "This is not a checklist. It is a map of how the pack's ideas depend on each other, so you can see which entry to read before another. Every playthrough orders things a little differently."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(bold)Rotation first.$() Almost every machine needs spinning shafts. Read $(l:create_basics/rotation)Rotation$(/l), $(l:create_basics/stress)Stress$(/l) and $(l:create_basics/power_sources)Power Sources$(/l) before building anything that processes items."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "create:andesite_alloy",
+      "title": "Andesite Alloy",
+      "text": "The first Create material. Early machines and casings use it. Brass comes later and opens the second tier. See $(l:create_basics/materials)Materials$(/l).",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(bold)Survival pressure starts early.$() Temperature and thirst affect you from the first day, seasons change what crops do, and pollution grows with your machines. See $(l:survival/temperature)Temperature$(/l), $(l:survival/thirst)Thirst$(/l), $(l:survival/seasons)Seasons$(/l) and $(l:survival/pollution)Pollution$(/l)."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(bold)Vehicles need destinations.$() Airships, submarines and trains are more fun with somewhere to go. $(l:flight/destinations)Flight Destinations$(/l), $(l:ocean/submarines)Submarines$(/l), $(l:transport/trains)Trains$(/l) and $(l:space/reaching_space)Reaching Space$(/l) are the long-range goals."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(bold)Metals link everything.$() Zinc, brass, steel, lead and titanium turn up in several mods. $(l:materials/ore_guide)The Ore Guide$(/l) says where each comes from, and $(l:industry/electricity)Electricity$(/l) and $(l:industry/tfmg_steel)Steel$(/l) cover the heavy industry tiers."
+    },
+    {
+      "type": "patchouli:relations",
+      "entries": [
+        "patchouli:create_basics/rotation",
+        "patchouli:create_basics/materials",
+        "patchouli:create_basics/brass_and_assembly",
+        "patchouli:survival/temperature",
+        "patchouli:space/reaching_space"
+      ],
+      "title": "Good starting links"
+    }
+  ]
+}

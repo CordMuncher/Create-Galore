@@ -1,0 +1,35 @@
+{
+  "name": "One Metal, Many Mods",
+  "icon": "tfmg:steel_ingot",
+  "category": "patchouli:connections",
+  "sortnum": 4,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Several mods add the same metal. Recipes usually ask for a $(thing)tag$() (\"any steel ingot\"), so any mod's version works. The items look alike but don't stack together.$(br2)Full list: $(l:materials/shared_metals)Shared Metals$(/l)."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(li)$(bold)Steel$(): Alloyed, TFMG, Create Nuclear and Big Cannons all make it, and all count as steel$(li)$(bold)Lead$(): only Create Nuclear's lead ore generates (TFMG's is switched off), and both mods' lead ingots count"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(li)$(bold)Titanium$(): ore only on Northstar's planets, but you can make it on Earth by crushing limestone or sand into Rutile and running an assembly line$(li)$(bold)Platinum$(): a Create Propulsion ore, needed for vector thrusters"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(li)$(bold)Zinc$(): Create's metal, needed for brass. Productive Bees can make zinc and lead bees too.$(br2)Crushing ores with Create gives more metal per block. See $(l:materials/ore_doubling)Ore Doubling$(/l)."
+    },
+    {
+      "type": "patchouli:relations",
+      "title": "Related",
+      "entries": [
+        "patchouli:materials/ore_guide",
+        "patchouli:materials/shared_metals",
+        "patchouli:materials/ore_doubling",
+        "patchouli:space/space_materials",
+        "patchouli:food/bees"
+      ]
+    }
+  ]
+}

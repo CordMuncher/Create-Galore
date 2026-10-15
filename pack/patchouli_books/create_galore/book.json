@@ -1,0 +1,15 @@
+{
+  "name": "Create Galore Field Guide",
+  "landing_text": "A field guide to Create Galore. It explains how things work and how the mods connect. It won't tell you what to do next.$(br2)New to Create? Start with $(l:create_basics/rotation)Create: The Basics$(/l).$(br2)To search, open the $(thing)Index$() below and type.",
+  "version": 1,
+  "i18n": false,
+  "subtitle": "Create Galore 0.1",
+  "model": "patchouli:book_brown",
+  "book_texture": "patchouli:textures/gui/book_brown.png",
+  "creative_tab": "minecraft:tools_and_utilities",
+  "show_progress": false,
+  "pause_game": true,
+  "use_resource_pack": false,
+  "text_overflow_mode": "resize",
+  "show_toasts": false
+}

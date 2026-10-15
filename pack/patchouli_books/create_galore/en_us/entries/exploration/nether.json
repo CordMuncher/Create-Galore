@@ -1,0 +1,31 @@
+{
+  "name": "The Nether",
+  "icon": "minecraft:netherrack",
+  "category": "patchouli:exploration",
+  "sortnum": 2,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Incendium$() rebuilds the Nether. It adds new biomes, mobs, structures and loot, so the Nether plays differently from vanilla."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Its biomes include Infernal Dunes, Inverted Forest, Quartz Flats, Toxic Heap, Volcanic Deltas, Weeping Valley, Ash Barrens and Withered Forest. Structures include a Forbidden Castle, Infernal Altar, Nether Reactor, Piglin Village, Ruined Lab, Sanctum and Quartz Kitchen."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "create:blaze_burner",
+      "title": "Blaze Burner",
+      "text": "Create's heat source. Loaded with a blaze from a Nether fortress spawner.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Other mods add to the Nether too. $(l:exploration/cataclysm)Cataclysm$(/l) has Nether bosses and arenas, and $(l:exploration/structure_packs)Dungeons and Taverns$(/l) adds Nether keeps, ports and skeleton towers."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "The Nether is where Create's $(l:create_basics/heat)heat$(/l) starts: Blaze Burners are loaded with blazes from fortresses. Its ores are listed in the $(l:materials/ore_guide)Ore Guide$(/l)."
+    }
+  ]
+}

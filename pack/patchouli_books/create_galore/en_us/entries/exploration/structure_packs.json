@@ -1,0 +1,44 @@
+{
+  "name": "Structure Packs",
+  "icon": "minecraft:mossy_stone_bricks",
+  "category": "patchouli:exploration",
+  "sortnum": 9,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "These mods add buildings to the Overworld and beyond. They need no setup: walk, ride or fly and you will find them. Most have chests that follow $(l:exploration/lootr)Lootr$(/l)'s per-player loot rules."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Towns and Towers$() adds many new village styles, pillager outposts, a wandering trader camp and ships, as variants for different biomes."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Dungeons and Taverns$() adds hamlets, taverns for every wood, wells, crypts, shrines, firewatch towers and Nether and End builds: Nether keeps and ports, End castles, ships and lighthouses."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)When Dungeons Arise$() adds big roguelike builds: coliseum, aviary, bandit towers, foundry, illager forts, monasteries, shiraz palace, plague asylum, typhon, thornborn towers and a mechanical nest. Several have bosses."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)YUNG's$() series reworks vanilla structures: Better Dungeons, Mineshafts, Strongholds, Desert Temples, Jungle Temples, Witch Huts and Ocean Monuments. Same places, much better builds and loot."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "minecraft:chest",
+      "title": "Dungeon Loot",
+      "text": "The chests in these builds are the reason to visit. Lootr makes them per-player.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:relations",
+      "entries": [
+        "patchouli:exploration/structures",
+        "patchouli:exploration/lootr",
+        "patchouli:exploration/create_structures"
+      ],
+      "title": "Related"
+    }
+  ]
+}

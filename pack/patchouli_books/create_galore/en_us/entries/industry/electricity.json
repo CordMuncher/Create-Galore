@@ -1,0 +1,81 @@
+{
+  "name": "Electricity",
+  "icon": "createaddition:connector",
+  "category": "patchouli:industry",
+  "sortnum": 2,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Create Crafts & Additions adds Forge Energy (FE) to Create. You generate FE from rotation, carry it on wires between connectors, and spend it in motors, pumps and chargers. Compare it with rotation in $(l:industry/power_compared)Rotation vs Electricity$(/l)."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "createaddition:alternator",
+      "title": "Alternator",
+      "text": "Turns rotation into FE, from 32 RPM up. Faster spin makes more. Place a connector on it and set the connector to Pull.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "createaddition:connector",
+      "title": "Small Connector",
+      "text": "Links FE blocks with wire. Wrench cycles Push, Pull and None. Up to 4 wires.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Connector modes: $(bold)Pull$() takes FE out of the block it is attached to (producers). $(bold)Push$() feeds FE into it (consumers). $(bold)None$() only relays between wires, so it can sit on any block."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "createaddition:copper_spool",
+      "title": "Wire spools",
+      "text": "Right-click two connectors with a filled spool to wire them. An Empty Spool on both ends removes the wire and gives the spool back.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Two current grades. $(item)Copper Spool$() is low current and fits Small Connectors. $(item)Gold$() and $(item)Electrum$() spools are high current. The Large Connector needs those, takes up to 6 wires and carries more."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "createaddition:large_connector",
+      "title": "Large Connector",
+      "text": "High-current connector. Needs a Gold or Electrum spool. Good for trunk lines between generators and storage.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "createaddition:modular_accumulator",
+      "title": "Accumulator",
+      "text": "A multiblock battery: configure one input connector and one output. It also pushes FE into blocks on its top and bottom faces.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "The older single-block Accumulator still exists but its own tooltip says it is deprecated. To carry FE storage on a moving contraption, the $(item)Portable Energy Interface$() swaps FE with a stationary one as it passes."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "createaddition:tesla_coil",
+      "title": "Tesla Coil",
+      "text": "Charges FE items placed under it. With a redstone signal it zaps nearby mobs and players. Some charging recipes make new items: check JEI.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "createaddition:rolling_mill",
+      "title": "Rolling Mill",
+      "text": "Takes rotation and rolls ingots and plates into rods and wires. Automate with a belt and two funnels.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Rods and wires feed the spools, motors and connectors. Electrum (a Crafts & Additions alloy) is needed for high current gear; look up its recipe in JEI. $(item)Barbed Wire$() hurts anything that walks through."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "The $(item)Servo Motor$() turns attached blocks to an exact angle from redstone and needs FE. The $(item)Electric Pump$() is a FE-powered fluid pump. Burning fuel without rotation: see $(l:industry/liquid_fuel)Burning Liquid Fuel$(/l)."
+    }
+  ]
+}

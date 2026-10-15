@@ -1,0 +1,65 @@
+{
+  "name": "Insulation and Heaters",
+  "icon": "cold_sweat:sewing_table",
+  "sortnum": 2,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Armor is the main defence. Take any armor to a $(item)Sewing Table$() and sew insulation onto it. Insulators such as Goat Fur and Hoglin Hide have their own item tab. JEI has a Sewing Recipes category.",
+      "title": "Armor"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "cold_sweat:sewing_table",
+      "title": "Sewing Table",
+      "text": "Crafted from wool and planks. Adds insulation from items like Goat Fur to armor, held as cold or heat resistance.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Goat Fur and Hoglin Hide come from goats and hoglins. Finished sets exist: Goat Fur, Hoglin and Chameleon Scale armor. Hover any piece to read its insulation.",
+      "title": "Fur and hide"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "cold_sweat:goat_fur_chestplate",
+      "title": "Goat Fur Parka",
+      "text": "One of the ready-made sets. Its insulation is shown in the tooltip. Cold Sweat's Chameleon, a tameable lizard, sheds scales for another set.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "A $(item)Hearth$() keeps the area around it comfortable. It takes fuel (see the Hearth Fuel category in JEI).$(br2)A $(item)Boiler$() warms and an $(item)Icebox$() cools. Put a Smokestack on top to make an area livable.",
+      "title": "Blocks"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "cold_sweat:hearth",
+      "title": "Hearth",
+      "text": "Fuel it, put it in the base. Its range and the fuels it takes are in JEI. Boiler and Icebox have their own fuel lists.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "cold_sweat:waterskin",
+      "title": "Waterskin",
+      "text": "Cold Sweat's own drink container. Its tooltip shows the keys to drink and pour. A Create Spout can fill it. Thirst Was Taken does not know about it.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "A full Create netherite diving set (netherite backtank, diving helmet, netherite leggings, diving boots) adds heat dampening and shrugs off the wet effect. The backtank tooltip shows the hint.",
+      "title": "Create diving suit"
+    },
+    {
+      "type": "patchouli:relations",
+      "entries": [
+        "patchouli:survival/temperature",
+        "patchouli:survival/temperature_create",
+        "patchouli:create_basics/heat"
+      ],
+      "title": "Related"
+    }
+  ],
+  "category": "patchouli:survival"
+}

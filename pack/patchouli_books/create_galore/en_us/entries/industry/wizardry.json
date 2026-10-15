@@ -1,0 +1,33 @@
+{
+  "name": "Create: Wizardry",
+  "icon": "create_wizardry:mana_siphon",
+  "category": "patchouli:industry",
+  "sortnum": 15,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Create: Wizardry connects Iron's Spells 'n Spellbooks mana to Create machinery: collect mana, pipe it, and cast spells from a contraption. See $(l:exploration/magic)Magic$(/l)."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "create_wizardry:mana_siphon",
+      "title": "Mana Siphon",
+      "text": "Gathers mana from around it and from spellcasting mobs, and produces Mana Crystals for Arcane Essence.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "create_wizardry:arcane_pipe",
+      "title": "Arcane Pipe",
+      "text": "Mana moves in pipes like fluids. Long runs (over about 20 blocks) leak, so insulate them with Arcane Sheets. The Channeler harvests Liquid Lightning.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "create_wizardry:blaze_caster",
+      "title": "Blaze Caster",
+      "text": "Casts a spell from a scroll and must be superheated. Some spells are incompatible with it.",
+      "link_recipe": true
+    }
+  ]
+}

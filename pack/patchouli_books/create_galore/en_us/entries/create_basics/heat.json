@@ -1,0 +1,54 @@
+{
+  "name": "Blaze Burner and Heat",
+  "icon": "create:blaze_burner",
+  "category": "patchouli:create_basics",
+  "sortnum": 11,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Some recipes need $(thing)heat$(). Create gets it from the $(item)Blaze Burner$(), which also boosts basin recipes and powers steam engine boilers.$(br2)The burner is not crafted whole: you capture a living blaze in an $(item)Empty Blaze Burner$()."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "create:empty_blaze_burner",
+      "title": "Empty Blaze Burner",
+      "text": "Right-click a blaze with it to capture the blaze. Blazes can also be collected from their spawners. Then put the burner under a basin or boiler.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "create:blaze_burner",
+      "title": "Blaze Burner",
+      "text": "Feed it flammable items by hand, or let a deployer or mechanical arm do it. It cools down when its fuel runs out.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Two levels$(): fed with fuel it is $(bold)heated$(). Fed a $(item)Blaze Cake$() it becomes $(bold)superheated$(), the stronger tier some recipes need. A superheated burner also counts as heated."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "create:blaze_cake",
+      "title": "Blaze Cake",
+      "text": "Takes a burner to the stronger tier. Check JEI (R, U) for its recipe and the recipes that need superheating.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)What uses heat$():$(br2)$(li)Mixer and press recipes marked heated or superheated$(br2)$(li)Steam engine boilers: fluid tanks sitting on a burner heat water to steam$(br2)$(li)Fans: see $(l:create_basics/fans)Encased Fans$(/l) for what counts as a fan catalyst."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Other mods$(): the tag Create reads for boiler heat also includes Farmer's Delight's $(item)Stove$(), Twilight Forest's fiery storage blocks, and lava, magma blocks, campfires and fire. These work as passive boiler heaters, weaker than a burner.$(br2)Create Additions' $(item)Blaze Burner with Straw$() takes liquid fuel by bucket or pipe."
+    },
+    {
+      "type": "patchouli:relations",
+      "entries": [
+        "patchouli:create_basics/processing",
+        "patchouli:create_basics/fans",
+        "patchouli:industry/liquid_fuel"
+      ],
+      "title": "Related"
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "name": "Create: Interiors",
+  "icon": "interiors:brown_chair",
+  "category": "patchouli:home",
+  "sortnum": 6,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Create: Interiors$() is furniture built for Create. Its chairs and seats $(bold)anchor you onto a contraption$(), so you can sit in a moving vehicle and ride along. Cushions are bouncy."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "interiors:brown_chair",
+      "title": "Chair",
+      "text": "Right-click to sit. Sneak to get up. Use a Wrench to toggle armrests and, while sneaking, the back size. Comes in many dye colours.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "interiors:black_floor_chair",
+      "title": "Floor Chair and Cushion",
+      "text": "Low floor seating and soft cushions in every colour. There is also a Wall Mounted Table and a Kelp Seat.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "For vehicles see $(l:create_basics/contraptions)Contraptions$(/l), $(l:transport/trains)Trains$(/l) and $(l:flight/airships)Airships$(/l).$(br2)Other furniture: $(l:home/building)Furniture and Decor$(/l)."
+    }
+  ]
+}

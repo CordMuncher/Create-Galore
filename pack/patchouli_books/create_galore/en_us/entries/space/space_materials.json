@@ -1,0 +1,63 @@
+{
+  "name": "Space Metals",
+  "icon": "northstar:titanium_ingot",
+  "category": "patchouli:space",
+  "sortnum": 6,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Northstar adds three metals: Titanium, Tungsten and Martian Steel. Titanium is the base of most of the tech. Ore for it sits on all four worlds, but you can also make it on Earth."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "northstar:titanium_ingot",
+      "title": "Titanium Ingot",
+      "text": "Smelt or blast titanium ore from the Moon, Mars, Mercury or Venus. Also pressed into Titanium Sheets.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Rutile Concentrate is mixed superheated with zinc, chlorine and carbon into Titanium Tetrachloride. That is applied to a Sturdy Sheet in a sequenced assembly, with lava, to give a Titanium Ingot. Chlorine comes from electrolysing Brine.",
+      "title": "Titanium on Earth"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "northstar:rutile_concentrate",
+      "title": "Rutile Concentrate",
+      "text": "Crush sand, Create's limestone (best of the two) or Venus Gravel.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "northstar:tungsten_ingot",
+      "title": "Tungsten Ingot",
+      "text": "Only from Mercury ore. The top tier of heat shielding.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "northstar:martian_steel_ingot",
+      "title": "Martian Steel Ingot",
+      "text": "Heated compacting of Titanium, Raw Martian Iron and Volcanic Ash gives two ingots.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "northstar:circuit",
+      "title": "Circuit",
+      "text": "Made by sequenced assembly. It replaces the removed chip in the Dimensional Drive recipe.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:relations",
+      "entries": [
+        "patchouli:materials/ore_guide",
+        "patchouli:create_basics/brass_and_assembly",
+        "patchouli:space/planets",
+        "patchouli:create_basics/materials"
+      ],
+      "title": "Related",
+      "text": "Ore, assembly lines and the planets."
+    }
+  ]
+}

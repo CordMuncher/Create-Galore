@@ -1,0 +1,68 @@
+{
+  "name": "Shared Metals",
+  "icon": "alloyed:steel_ingot",
+  "sortnum": 3,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Several mods add the same metal. Instead of keeping four steels apart, recipes ask for an $(thing)item tag$(): \"any steel ingot\", and every mod's steel qualifies.$(br2)The items stay different and do not stack together."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "alloyed:steel_ingot",
+      "title": "Steel Ingot",
+      "text": "Alloyed's steel. Three other mods add an item with the same name. Check the mod name in the tooltip or in JEI.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Four steel ingots exist: Alloyed, TFMG, Create Nuclear and Create Big Cannons.$(br2)All sit in the steel ingot tag, with matching nugget and block tags. A recipe written for the tag takes any of them. JEI cycles through the choices.",
+      "title": "Steel"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "tfmg:steel_ingot",
+      "title": "TFMG Steel",
+      "text": "The one made by TFMG's blast furnace chain: $(l:industry/tfmg_steel)TFMG Steel$(/l). It counts as steel in tag-based recipes of other mods.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Plates are shared too: Alloyed's Steel Sheet and TFMG's Heavy Plate are both in the steel plate tag, so a recipe asking for steel plate can take either.",
+      "title": "Steel plates"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(li)$(item)Lead$(): TFMG and Create Nuclear share ingot, nugget, block and raw tags. Only Nuclear's lead ore generates.$(li)$(item)Bronze$(): Alloyed and Create Big Cannons.$(li)$(item)Cast iron$(): TFMG and Create Big Cannons.",
+      "title": "Other shared metals"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "createbigcannons:cast_iron_ingot",
+      "title": "Cast Iron Ingot",
+      "text": "Shared by TFMG and Create Big Cannons through the cast iron tag, so either works in tag-based recipes.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Not shared: titanium, tungsten, platinum, mithril and zinc each come from one mod, so there is one item to find.$(br2)Northstar's Martian Steel has its own tag and is not generic steel.",
+      "title": "Single-source metals"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Raw uranium joins from Create Nuclear and Alex's Caves, and sulfur dust from Alex's Caves and TFMG.$(br2)If a recipe refuses an item, it asks for a specific one, not the tag. JEI shows a tag as a cycling icon.",
+      "title": "Also shared"
+    },
+    {
+      "type": "patchouli:relations",
+      "entries": [
+        "patchouli:materials/ore_guide",
+        "patchouli:industry/tfmg_steel",
+        "patchouli:industry/nuclear",
+        "patchouli:create_basics/materials"
+      ],
+      "title": "Related"
+    }
+  ],
+  "category": "patchouli:materials"
+}

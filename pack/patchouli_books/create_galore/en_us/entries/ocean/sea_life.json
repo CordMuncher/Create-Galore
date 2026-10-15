@@ -1,0 +1,62 @@
+{
+  "name": "Sea Life",
+  "icon": "hybrid_aquatic:diving_helmet",
+  "category": "patchouli:ocean",
+  "sortnum": 6,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "The pack's ocean is crowded. $(thing)Hybrid Aquatic$() is the big one: well over a hundred new sea creatures, from clownfish and seahorses to orcas, whale sharks and colossal squid, plus new ocean biomes to hold them."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Biomes include Coral Reef, Deep Coral Reef, Seagrass Bed, Tide Pools, Red Meadow, Sulfuric Caves, and Warm, Cold, Frozen and Lukewarm Trenches. New coral types and bleached variants come with them, and a Tropical River biome on land."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "hybrid_aquatic:ominous_conch",
+      "title": "Ominous Conch",
+      "text": "Tied to Hybrid Aquatic's Karkinos crab boss. Check JEI for its uses.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "hybrid_aquatic:magnetic_hook",
+      "title": "Magnetic Hook",
+      "text": "One of several special fishing hooks: Barbed, Glowing, CreeperMagnet, Ominous and Magnetic.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Naturalist$() adds land and sea animals. In this pack its anglerfish, blobfish, giant isopod, great white shark, piranha, jellyfish, starfish, crab and ray are switched off, because Hybrid Aquatic covers them. Its whale, clam, bass, catfish and the rest still spawn."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "hybrid_aquatic:diving_suit",
+      "title": "Diving Suit",
+      "text": "Hybrid Aquatic's underwater armor. See Diving Gear for how it compares with other options.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "naturalist:whale_spawn_egg",
+      "title": "Whale",
+      "text": "Naturalist's whale still spawns here. Clams also drop Clam Meat, used in cooking.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Other sea residents: $(l:ocean/aquamirae)Aquamirae$(/l) adds an icy ocean region with its own creatures and bosses, $(thing)Critters and Companions$() adds koi, dumbo octopus and sea bunnies, and $(l:ocean/underwater_places)structures$(/l) give them places to live. The fish worth catching are in $(l:ocean/fishing)Fishing$(/l)."
+    },
+    {
+      "type": "patchouli:relations",
+      "entries": [
+        "patchouli:ocean/aquamirae",
+        "patchouli:ocean/diving",
+        "patchouli:ocean/fishing",
+        "patchouli:exploration/creatures"
+      ],
+      "title": "Related"
+    }
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "name": "How Things Connect",
+  "icon": "create:precision_mechanism",
+  "category": "patchouli:connections",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Most mods explain themselves. What they don't explain is how they plug into each other. This section is about those joins.$(br2)Almost every connection in this pack runs through a few shared things."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(li)$(thing)Rotation$() and $(thing)electricity$(), and the blocks that convert between them$(li)$(thing)Heat$(), mostly from the Blaze Burner$(li)$(thing)Liquid fuel$(), mostly from oil$(li)$(thing)Metals$() several mods share$(li)$(thing)Destinations$() for every vehicle"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Each entry here is short and points to the full entries. Read it when you wonder \"can this mod's thing go into that mod's machine?\"$(br2)Also worth knowing: anything that burns makes smog, and anything hot warms you up. See $(l:connections/side_effects)Side Effects$(/l)."
+    },
+    {
+      "type": "patchouli:relations",
+      "title": "In this section",
+      "entries": [
+        "patchouli:connections/power",
+        "patchouli:connections/heat",
+        "patchouli:connections/fuel",
+        "patchouli:connections/metals",
+        "patchouli:connections/vehicles",
+        "patchouli:connections/farm_to_factory",
+        "patchouli:connections/adventure_loot",
+        "patchouli:connections/side_effects"
+      ]
+    }
+  ]
+}

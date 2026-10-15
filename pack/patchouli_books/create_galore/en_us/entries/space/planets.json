@@ -1,0 +1,76 @@
+{
+  "name": "Planets",
+  "icon": "northstar:moon_titanium_ore",
+  "category": "patchouli:space",
+  "sortnum": 4,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Northstar models many bodies, but only four have a surface to land on: the Moon, Mars, Mercury and Venus. Each has a surface and an orbit dimension. The rest are sky scenery in the atlas."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Gravity, temperature, air:$(li)Moon 1.6, -183 C, none$(li)Mars 3.71, -100 C, thin$(li)Mercury 3.7, -200 to 434 C, none$(li)Venus 8.87, 464 C, dense$(br)Orbits: no gravity, -270 C",
+      "title": "The numbers"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Lunar Plains, hills, crater fields and caves of ice, glowstone and asurine. Ores: titanium, zinc, copper, iron, gold, diamond, redstone, lapis, glowstone. Mobs: Moon Eel, Lunargrade, Snail. Abandoned lunar bases can be explored.",
+      "title": "The Moon"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "northstar:moon_titanium_ore",
+      "title": "Moon Titanium Ore",
+      "text": "Smelt it directly into a Titanium Ingot. Titanium ore appears on all four worlds.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Martian dunes, highlands, peaks and caverns with crimsite and overgrown plants. Ores: titanium, iron, copper, zinc, gold, diamond, quartz, redstone. Mobs: Cobra, Devil Moth, Root Toad, Echo Worm. Martian iron and ash make Martian steel.",
+      "title": "Mars"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "northstar:mars_titanium_ore",
+      "title": "Mars Titanium Ore",
+      "text": "Mars also has palms, tulips and Martian strawberry bushes.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Hills, basins, and icy or magmatic caverns, with a huge swing between day and night. Only world with tungsten ore. Also titanium, glowstone, lapis, gold, diamond. Mobs: Mercurian Raptor, Roach, Tortoise.",
+      "title": "Mercury"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "northstar:mercury_tungsten_ore",
+      "title": "Mercury Tungsten Ore",
+      "text": "The only source of tungsten. Crushed raw tungsten is washed into nuggets.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Fungal forests, lava and sulfuric caverns under a very dense atmosphere. Ores: coal, quartz, glowstone, titanium and others. Mobs: Mimic, Scorpion, Stone Bull, Vulture. Sulfuric Acid kills if you swim in it.",
+      "title": "Venus"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "northstar:venus_gravel",
+      "title": "Venus Gravel",
+      "text": "Crushing it gives the most Rutile Concentrate of any source, for making titanium on Earth.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:relations",
+      "entries": [
+        "patchouli:space/space_survival",
+        "patchouli:space/space_materials",
+        "patchouli:materials/ore_guide",
+        "patchouli:exploration/dimensions"
+      ],
+      "title": "Related",
+      "text": "Surviving there, the metals, ores and other dimensions."
+    }
+  ]
+}

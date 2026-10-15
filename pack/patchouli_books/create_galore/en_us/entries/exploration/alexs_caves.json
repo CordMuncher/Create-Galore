@@ -1,0 +1,52 @@
+{
+  "name": "Alex's Caves",
+  "icon": "alexscaves:cave_map",
+  "category": "patchouli:exploration",
+  "sortnum": 7,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Alex's Caves$() hides six huge biomes underground. Each has its own creatures, blocks and hazards. They are rare, so the mod gives you a way to locate them."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "The six: $(bold)Magnetic Caves$(), $(bold)Primordial Caves$() (dinosaurs), $(bold)Toxic Caves$() (acid and uranium), $(bold)Abyssal Chasm$() (a deep water trench), $(bold)Forlorn Hollows$() and $(bold)Candy Cavity$()."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "alexscaves:spelunkery_table",
+      "title": "Spelunkery Table",
+      "text": "Where Cave Tablets are studied. Place a tablet in the slot to begin research.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "alexscaves:cave_map",
+      "title": "Cave Biome Map",
+      "text": "A map pointing to the nearest cave biome of a type. If none is near, travel far away and try again.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Toxic Caves are the Create-connected one. Acid and Purple Soda are marked in Create's own data as $(thing)bottomless$() fluids, like water and lava, so a hose pulley can draw them without running dry. See $(l:create_basics/fluids)Fluids$(/l)."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "alexscaves:uranium_rod",
+      "title": "Uranium Rod",
+      "text": "Alex's Caves has its own uranium and a Nuclear Furnace. It is separate content from Create Nuclear, so check JEI before mixing them.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Magnetic Caves add Magnetic Levitation Rail and Neodymium nodes. The Abyssal Chasm links to the ocean: the mod also adds an item called a Submarine, if you want a smaller craft than a $(l:ocean/submarines)Deep Seas$(/l) build."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "alexscaves:submarine",
+      "title": "Submarine",
+      "text": "Alex's Caves' own small submarine, separate from Deep Seas.",
+      "link_recipe": true
+    }
+  ]
+}

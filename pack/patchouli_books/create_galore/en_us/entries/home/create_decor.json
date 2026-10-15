@@ -1,0 +1,64 @@
+{
+  "name": "Create Decor",
+  "icon": "createdeco:brass_coinstack",
+  "category": "patchouli:home",
+  "sortnum": 5,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "A cluster of mods adds blocks that look at home beside Create machines. Most are purely decorative, a few change how Create builds."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "createdeco:brass_coinstack",
+      "title": "Create Deco",
+      "text": "Metal and brick decor: catwalks, bars, cage lamps, coin stacks, shipping containers and train hulls. Bricks come in several colours and cracked or tiled forms.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "dndecor:brown_industrial_cogwheel",
+      "title": "Design n' Decor",
+      "text": "Industrial set dressing: sheet metal, large metal girders, containers, large fans, bolts and display boards, in many colours.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "copycats:copycat_block",
+      "title": "Copycats+",
+      "text": "Copycat blocks take on the look of any block you apply. Includes slices, layers, doors, fences, buttons, plates and even cogwheels and shafts.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "createframed:cyan_stained_framed_glass",
+      "title": "Create: Framed",
+      "text": "Framed and tiled stained glass, plus cardboard blocks and peephole panes. Many colours and connected-texture variants.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "createcasing:brass_encased_andesite_large_cogwheel",
+      "title": "Create Encased",
+      "text": "More casings for shafts, cogwheels, pipes and gearboxes. Pure variety; they keep the same function as Create's own.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "create_connected:six_way_gearbox",
+      "title": "Create: Connected",
+      "text": "Adds functional blocks too: a six-way gearbox, clutches, a kinetic bridge and battery, plus more copycats. Check JEI for the full list.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:relations",
+      "entries": [
+        "patchouli:home/interiors",
+        "patchouli:home/building",
+        "patchouli:create_basics/transmission"
+      ],
+      "title": "Related",
+      "text": "Seats, furniture and gearboxes."
+    }
+  ]
+}

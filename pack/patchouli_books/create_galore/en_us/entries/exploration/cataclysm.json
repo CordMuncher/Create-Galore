@@ -1,0 +1,45 @@
+{
+  "name": "L_Ender's Cataclysm",
+  "icon": "cataclysm:ignitium_ingot",
+  "category": "patchouli:exploration",
+  "sortnum": 13,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)L_Ender's Cataclysm$() adds large, hard bosses guarding their own structures, each with unique weapons, armor and materials. The fights are meant for well-geared players."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Bosses include the Netherite Monstrosity, Ignis, the Harbinger, the Leviathan, Scylla, the Ancient Remnant, Maledictus, the Ender Guardian and the Ender Golem. Structures include the Sunken City, Burning Arena, Ancient Factory, Cursed Pyramid, Frosted Prison and Ruined Citadel."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Where: the Sunken City sits in deep ocean (a good $(l:ocean/submarines)submarine$(/l) trip), the Burning Arena in the Nether, the Ruined Citadel in the End highlands and midlands, the Frosted Prison in snowy plains, the Cursed Pyramid in desert."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "cataclysm:ignitium_ingot",
+      "title": "Ignitium Ingot",
+      "text": "Boss material. Ignitium, Cursium and Black Steel each make a gear line.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "cataclysm:the_incinerator",
+      "title": "The Incinerator",
+      "text": "Starts as a Netherite sword in this pack's recipe. Check JEI.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "cataclysm:the_annihilator",
+      "title": "The Annihilator",
+      "text": "Starts as a Netherite pickaxe in this pack's recipe. Check JEI.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "The mod's own message says the Leviathan is invincible outside water, so plan to fight it wet. For gear crafted in this pack see $(l:exploration/cataclysm_create)Cataclysm x Create$(/l). Other bosses: $(l:exploration/bosses)Bosses$(/l)."
+    }
+  ]
+}

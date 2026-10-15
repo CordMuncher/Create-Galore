@@ -1,0 +1,81 @@
+{
+  "name": "Sailing and Wind",
+  "icon": "aeronauticswinds:windcatcher_canvas",
+  "category": "patchouli:flight",
+  "sortnum": 9,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Aeronautics: Winds & Weather adds a real wind field and cloth sails. Wind has a speed and heading, is stronger over open ocean and at altitude, and pushes ships rigged to catch it."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "aeronauticswinds:anemometer",
+      "title": "Anemometer",
+      "text": "Measures local wind speed and outputs it as shaft rotation. Goggles show the exact figure.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "aeronauticswinds:wind_vane",
+      "title": "Wind Vane",
+      "text": "Settles on the wind direction and turns its lower shaft. Goggles show the compass bearing.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "aeronauticswinds:windcatcher_canvas",
+      "title": "Windcatcher",
+      "text": "Only Windcatchers drive windmill bearings or push ships here; ordinary Create sails are decoration. Face the broad side into the wind.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Stack Masts, run a Yard across them, use a packed Cotton or Canvas Sail on the Yard, then click the lower opposite corner. Cotton is light and quick. Canvas is heavy and durable. Empty-hand clicks trim the yard in 8 steps. Sneak-use the cloth to reef it.",
+      "title": "Rigging a sail"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "aeronauticswinds:yard",
+      "title": "Yard",
+      "text": "Run a rope from an Aeronautics Rope Coupling to a Rope Winch for continuous trim. Shears detach it.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "aeronauticswinds:keel",
+      "title": "Keel",
+      "text": "Fits under the hull, fore and aft. Stops sideways slip and turns angled wind into forward travel. Extend it for more grip.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "aeronauticswinds:rudder",
+      "title": "Rudder",
+      "text": "Driven by a Create shaft that sets a steady angle. Stack blades for a deeper rudder. Sneak-click to centre.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Ship Anchor",
+      "text": "Secures a ship in place. Lower it with the top shaft. Light and Heavy Anchors also exist."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "aeronauticswinds:wind_rider",
+      "title": "Wind Rider",
+      "text": "A hang glider. Jump while falling to open it, jump again to stow. Campfire thermals carry you up.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:relations",
+      "entries": [
+        "patchouli:flight/airships",
+        "patchouli:flight/weather_and_danger",
+        "patchouli:flight/controls"
+      ],
+      "title": "Related",
+      "text": "Ships, storms and steering."
+    }
+  ]
+}

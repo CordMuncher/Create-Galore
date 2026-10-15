@@ -1,0 +1,42 @@
+{
+  "name": "Dragons Plus Fan Effects",
+  "icon": "create_dragons_plus:dragon_breath_bucket",
+  "category": "patchouli:industry",
+  "sortnum": 13,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Create: Dragons Plus adds new things for a $(l:create_basics/fans)Fan$(/l) to do. Blow air through a catalyst and items in the stream get processed in bulk."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(bold)Freezing$() (Powder Snow): ice to packed ice to blue ice, magma cream to slime ball, blaze rod to breeze rod.$(br2)$(bold)Ending$() (Dragon Head or Dragon's Breath): cobblestone to end stone, apple to chorus fruit, leather to phantom membrane."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "create_dragons_plus:dragon_breath_bucket",
+      "title": "Dragon's Breath",
+      "text": "A real fluid, usable in cauldrons. It turns to End Stone where it meets lava.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(bold)Coloring$(): Liquid Dye, made by mixing a dye with water, colors items, mobs and armor it touches. Fans blowing through it color items in bulk. Dye meeting lava makes matching concrete."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(bold)Sanding$() (quicksand) does sandpaper recipes in bulk. $(bold)Enchanting$() (Golden Aercloud) runs Aether Altar recipes and incubates Moa Eggs. See $(l:exploration/dimensions)Dimensions$(/l)."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "create_dragons_plus:fragile_fluid_tank",
+      "title": "Fragile Fluid Tank",
+      "text": "Breaks on impact and splashes its fluid onto the surroundings. Fluid Hatches let tanks be filled and emptied by hand.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Create Connected has matching fan catalyst blocks. See $(l:home/create_decor)Building with Create$(/l)."
+    }
+  ]
+}

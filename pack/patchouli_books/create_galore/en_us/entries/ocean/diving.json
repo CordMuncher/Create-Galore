@@ -1,0 +1,58 @@
+{
+  "name": "Diving Gear",
+  "icon": "create:copper_diving_helmet",
+  "category": "patchouli:ocean",
+  "sortnum": 8,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Several mods in the pack let you stay underwater. They differ in what they give you, so pick for the job: air, vision, speed, or a dry room."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "create:copper_diving_helmet",
+      "title": "Copper Diving Helmet",
+      "text": "Gives Water Breathing while a worn Backtank has air. Create's own set.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "create:copper_backtank",
+      "title": "Copper Backtank",
+      "text": "Wear it for air. Placed and spun by rotation, it refills itself. Netherite gear lets you dive in lava.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "hybrid_aquatic:reinforced_diving_helmet",
+      "title": "Reinforced Diving Helmet",
+      "text": "Hybrid Aquatic's suit also has Reinforced and Glowing versions.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "hybrid_aquatic:diving_weight",
+      "title": "Diving Weight",
+      "text": "Sinks you faster. A Hybrid Aquatic item.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "aquamirae:salvager_suit",
+      "title": "Salvager Suit",
+      "text": "Full set supplies air and stops freezing in the Ice Maze.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "create_high_seas:seaglide",
+      "title": "Seaglide",
+      "text": "Swim fast on your own hunger. Part of Deep Seas.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Artifacts$() adds a $(item)Snorkel$(), $(item)Flippers$() and $(item)Aqua-Dashers$() as wearable accessories, so they stack with armor. See $(l:exploration/gear)Artifacts$(/l). For rooms and ships that stay dry, use the oxygen setup in $(l:ocean/hulls_and_pressure)Hulls and Pressure$(/l)."
+    }
+  ]
+}

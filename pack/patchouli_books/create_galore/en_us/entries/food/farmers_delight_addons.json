@@ -1,0 +1,55 @@
+{
+  "name": "Delight Add-ons",
+  "icon": "farmersdelight_extended:cheeseburger",
+  "category": "patchouli:food",
+  "sortnum": 2,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "A family of small mods adds foods that all use the Farmer's Delight pot, board and skillet. The rules are the same everywhere: bring ingredients, a heat source and the right container. Look recipes up in JEI (hover, press $(bold)R$()). Meals and crops are listed below."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "farmersdelight_extended:cheeseburger",
+      "title": "Extended",
+      "text": "Farmer's Delight: Extended adds dishes made only from existing Minecraft, Create and Farmer's Delight items. No new crops or mobs. Cheese, burgers, breakfast plates, ice cream.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "fruitsdelight:pineapple_pie",
+      "title": "Fruits Delight",
+      "text": "Fruit trees and bushes (pear, kiwi, mango, persimmon, lychee, fig and more) with jams, pies, jellos, popsicles and drinks.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "fungidelight:truffle",
+      "title": "Fungi Delight",
+      "text": "Mushroom cooking: morel, inky cap and truffle crops and dishes such as truffle pasta and morel soup. Morel cows also exist.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "mynethersdelight:hoglin_sausage",
+      "title": "My Nether's Delight",
+      "text": "Hoglin, ghast and Nether-plant dishes, plus Nether-flavoured cabinets and decor. Meant for cooking in the Nether.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "oceansdelight:fugu_slice",
+      "title": "Ocean's Delight",
+      "text": "Food from sea creatures: fugu, guardian parts, tentacles and more. Cook it carefully, as fugu is poisonous raw.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(bold)Berries and Cherries Delight$() adds grapes, strawberries, cherries, jams and pies.$(br2)$(bold)Aquaculture Delight$() lets Aquaculture fish work in Farmer's Delight recipes.$(br2)$(bold)Sniffers Sniff Delights$() makes Sniffers dig up tomato, cabbage, rice and onion seeds far more often."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(bold)Delightful Creators$() is the Create bridge: soups as fluids, sequenced assembly meals and a Mechanical Cutter. See $(l:food/kitchen_automation)Kitchen Automation$(/l).$(br2)$(bold)Brewin' and Chewin'$() adds kegs and fermented drinks: $(l:food/brewing)Brewing$(/l).$(br2)Base mechanics: $(l:food/farmers_delight)Farmer's Delight$(/l)."
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "name": "Side Effects to Plan For",
+  "icon": "smog:aerometer",
+  "category": "patchouli:connections",
+  "sortnum": 8,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "A few systems react to what you build. None of them are punishing on their own, but a big base notices all of them."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(li)$(bold)Burning pollutes.$() Furnaces, burners and stoves add smog to their chunk. Flues and air scrubbers fix it.$(li)$(bold)Heat warms you.$() Factories near you count toward body temperature."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(li)$(bold)Height is cold.$() Cold Sweat: Altitude makes the sky chilly, which matters for airships.$(li)$(bold)Water isn't clean.$() Drink purified water, or build a filter.$(li)$(bold)Seasons turn.$() Plan farms around them."
+    },
+    {
+      "type": "patchouli:relations",
+      "title": "Related",
+      "entries": [
+        "patchouli:survival/pollution",
+        "patchouli:survival/pollution_control",
+        "patchouli:survival/temperature",
+        "patchouli:survival/thirst",
+        "patchouli:survival/seasons"
+      ]
+    }
+  ]
+}

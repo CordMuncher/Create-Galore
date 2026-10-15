@@ -1,0 +1,39 @@
+{
+  "name": "Performance and Shaders",
+  "icon": "minecraft:spyglass",
+  "category": "patchouli:start_here",
+  "sortnum": 4,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "This is a heavy pack. Give the game at least $(bold)8 GB of RAM$() (set in your launcher's instance settings). About 10 GB is more comfortable with Distant Horizons."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(bold)Distant Horizons$() draws far-away terrain as simplified chunks so you can see much further than normal render distance. It is useful for airships and the Moon, but costs memory and some frame rate. Turn its settings down first if the game stutters."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(bold)Shaders$() are included and run through Iris. Open Options > Video Settings > Shader Packs to pick one.$(br2)$(li)Complementary Reimagined, with Euphoria Patches$(br)$(li)Bliss$(br)$(li)Photon$(br)$(li)Solas"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Shaders are optional and can cut frame rate a lot on weaker machines. First world creation is also slow because of how many mods add world generation. This settles after the first load."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "minecraft:spyglass",
+      "title": "Distant Horizons",
+      "text": "Shows far terrain as simplified chunks. Handy from an airship, a submarine or the Moon.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:relations",
+      "entries": [
+        "patchouli:start_here/welcome",
+        "patchouli:start_here/tools"
+      ],
+      "title": "More"
+    }
+  ]
+}

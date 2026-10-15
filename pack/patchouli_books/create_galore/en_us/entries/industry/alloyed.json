@@ -1,0 +1,44 @@
+{
+  "name": "Alloyed: Steel and Bronze",
+  "icon": "alloyed:forge",
+  "category": "patchouli:industry",
+  "sortnum": 11,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Alloyed adds two alloys and the forge that makes them. Steel and bronze become tools, armor and building blocks, and both share tags with other mods' versions (see $(l:materials/shared_metals)Shared Metals$(/l))."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "alloyed:forge",
+      "title": "Alloy Forge",
+      "text": "Combines several ingredients into an alloy. Steel: three iron ingots, a coal and a fire charge give three steel. Bronze: copper, zinc nuggets and cinder flour.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "alloyed:steel_ingot",
+      "title": "Steel",
+      "text": "Shaped like iron but tougher. Forge it into pickaxes, swords, armor, horse armor, shears and fishing rods. Farmer's Delight gets a steel knife.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "alloyed:bronze_ingot",
+      "title": "Bronze",
+      "text": "Used for bronze casing, sheet and blocks. Bronze blocks oxidize like copper (exposed, weathered, oxidized) and can be waxed.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "alloyed:bronze_bell",
+      "title": "Bronze Bell",
+      "text": "A playable block. It rings when hit or powered by redstone, a Wrench tunes it, and a Deployer can ring it.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Casings: Steel Casing and Bronze Casing, with encased shafts and cogwheels, add more tiers to your builds. Also steel catwalks, mesh fences and doors. Other steel routes: $(l:industry/tfmg_steel)TFMG Steel$(/l)."
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "name": "TFMG Steel",
+  "icon": "tfmg:blast_stove",
+  "category": "patchouli:industry",
+  "sortnum": 4,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "TFMG (The Factory Must Grow) is heavy industry on top of Create. Steel is the gate to most of it. The main route is a $(thing)blast furnace$() fed with hot air, cast into ingots in a basin."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "tfmg:blast_stove",
+      "title": "Blast Stove",
+      "text": "Makes Hot Air from air plus fuel. It builds up Carbon Dioxide that stalls it, so pump that out to an Exhaust or Smokestack.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "tfmg:blast_furnace_output",
+      "title": "Blast Furnace",
+      "text": "Build a cylinder of Fireproof Bricks around the Output with one Hatch for hot air. Reinforcements speed it up. Items go in at the top.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Inputs: crushed raw iron (or raw iron) plus a flux, which is Limesand. Outputs: molten steel, molten slag and furnace gas. The Blast Stove burns furnace gas or creosote, so the furnace can feed itself."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "tfmg:coke_oven",
+      "title": "Coke Oven",
+      "text": "Cooks coal slowly into Coal Coke, creosote and CO2. Build long rows. Coke is a long-burning fuel and the base of graphite electrodes.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "tfmg:casting_basin",
+      "title": "Casting Basin",
+      "text": "Molten steel poured in sets into a Steel Ingot (90 mB each). Also casts Big Cannons metals.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "A chemical vat with three Graphite Electrodes is a second way to make steel, from crushed raw iron, flux and coke dust, in a large Fireproof Vat. Check JEI for exact sizes. Steel then unlocks pipes, tanks, casings and machines."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Every steel here is the same tag as Alloyed and Create Nuclear steel, so your first steel can come from an easier mod. See $(l:materials/shared_metals)Shared Metals$(/l). Next: $(l:industry/tfmg_oil)TFMG Oil$(/l)."
+    }
+  ]
+}

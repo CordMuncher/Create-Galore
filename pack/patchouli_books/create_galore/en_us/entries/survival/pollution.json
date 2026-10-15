@@ -1,0 +1,61 @@
+{
+  "name": "Pollution",
+  "icon": "smog:air_scrubber",
+  "sortnum": 7,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Create: Smog tracks air pollution per chunk. Anything that burns adds smog to the chunk it stands in. It spreads to neighbours, fades slowly, and fades faster in rain. Trees, logs, water and plants absorb it."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "It is pressure, not a wall. A few furnaces barely register; a big industrial base left alone gets bad. The fix is built from Create parts, so cleaning is part of the machine room.$(br2)$(l:survival/pollution_control)Control it$(/l).",
+      "title": "Why it exists"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Every source adds smog per second. Defaults:$(li)Campfire 1$(li)Stove (Farmer's Delight) 2$(li)Furnace, smoker 4$(li)Blast furnace 8$(li)Lit Blaze Burner 16, hotter flame more$(li)Blaze Burner with Straw 16",
+      "title": "What pollutes"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "create:blaze_burner",
+      "title": "Blaze Burner",
+      "text": "The Create heat source pollutes while lit, so it is a common source in factories. See $(l:create_basics/heat)Heat$(/l).",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Any other machine that reports a \"lit\" state adds 3 per second. The mod's list also names some TFMG machines, but whether they count depends on their block IDs. An Aerometer shows the real result.",
+      "title": "Other machines"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "smog:aerometer",
+      "title": "Aerometer",
+      "text": "Hold it to read the air where you stand. The levels are Clean, Light Haze, Polluted, Heavily Polluted and Toxic.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Levels by chunk value: Light Haze 400, Polluted 1,800, Heavily Polluted 4,500, Toxic 8,000. The cap is 10,000.",
+      "title": "Levels"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Heavy pollution gives you Nausea. Toxic adds Poison and Weakness. Land suffers too: crops lose growth, flowers and grass die, grass turns to dirt, and in toxic air farmland does too.",
+      "title": "What it does"
+    },
+    {
+      "type": "patchouli:relations",
+      "entries": [
+        "patchouli:survival/pollution_control",
+        "patchouli:industry/liquid_fuel",
+        "patchouli:industry/tfmg_oil",
+        "patchouli:create_basics/heat"
+      ],
+      "title": "Related"
+    }
+  ],
+  "category": "patchouli:survival"
+}

@@ -1,0 +1,48 @@
+{
+  "name": "Sea Food",
+  "icon": "oceansdelight:guardian_soup",
+  "category": "patchouli:ocean",
+  "sortnum": 10,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Two $(l:food/farmers_delight)Farmer's Delight$(/l) add-ons cook the ocean. They use Farmer's Delight's pot, cutting board and knives, so meals follow the same rules as the rest of the pack's food."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Ocean's Delight$() cooks vanilla ocean mobs: squid, cod, kelp, sea pickles, pufferfish, guardians and even Elder Guardians. $(thing)Aquaculture Delight$() cooks Aquaculture's fish: perch, halibut, pollock, tuna, catfish, bass and turtle meat."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "oceansdelight:guardian_soup",
+      "title": "Guardian Soup",
+      "text": "A one-pot soup made from Guardian parts.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "oceansdelight:stuffed_squid",
+      "title": "Stuffed Squid",
+      "text": "Squid meals. Cut Tentacles and Squid Rings come from cutting squid.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "aquaculturedelight:fish_and_chips",
+      "title": "Fish and Chips",
+      "text": "Aquaculture Delight meals use fillets and fish. Also includes a Neptunium Knife.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "aquaculturedelight:neptunium_knife",
+      "title": "Neptunium Knife",
+      "text": "A Farmer's Delight style knife made with Neptunium, for cutting fish.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "The same fish also feed automated kitchens: see $(l:food/kitchen_automation)Kitchen Automation$(/l). Hybrid Aquatic's clams cook into Cooked Clam, and Naturalist's clams give Clam Meat."
+    }
+  ]
+}

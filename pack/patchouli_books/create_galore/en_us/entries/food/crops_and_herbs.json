@@ -1,0 +1,41 @@
+{
+  "name": "Crops, Herbs and Berries",
+  "icon": "herbsandharvest:crop_basket",
+  "category": "patchouli:food",
+  "sortnum": 9,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Several mods grow more food. $(thing)Mama's Herbs and Harvest$() adds herbs, vegetables, fruit trees, cheese and butter. $(thing)Berry Good$() improves berries. $(thing)Better Farming Right Click$() saves you replanting time."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "herbsandharvest:crop_basket",
+      "title": "Mama's Herbs and Harvest",
+      "text": "Dozens of crops: basil, mint, corn, oats, garlic, ginger, cucumber, celery and more. Fruit trees such as lemon, orange and peach. Jars, pans and a cake stand for serving.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "herbsandharvest:cheese_cauldron",
+      "title": "Cheese and Butter",
+      "text": "A Cheesemaking Cauldron, Cheese Aging Shelf and Butter Churn make dairy products over time. Baking pans make lasagna, meatloaf and lamb.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "berry_good:sweet_berry_basket",
+      "title": "Berry Good",
+      "text": "Makes sweet berries less annoying to eat and adds berry foods: baskets, pips, meatballs, glowgurt and more.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(bold)Better Farming Right Click$() lets you right-click a mature crop to harvest and replant it in one go. Toggle it from its in-game options; there is also a no-cooldown setting for tools and seeds.$(br2)Rice, tomatoes and onions come from $(l:food/farmers_delight)Farmer's Delight$(/l)."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Seasons matter for crops. Serene Seasons ties growth to the calendar, so many crops struggle out of season; plan farms around it. Seasonal Integration extends this to other mods.$(br2)See $(l:survival/seasons)Seasons$(/l). Create farms: $(l:food/integrated_farming)Integrated Farming$(/l)."
+    }
+  ]
+}

@@ -1,0 +1,59 @@
+{
+  "name": "Nuclear Reactors",
+  "icon": "createnuclear:reactor_controller",
+  "category": "patchouli:industry",
+  "sortnum": 8,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Create Nuclear adds uranium, thorium, a multiblock reactor and radiation. The reactor outputs ordinary rotation through a shaft, so it plugs into any Create network. It is also the pack's source of lead."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "createnuclear:uranium_powder",
+      "title": "Uranium chain",
+      "text": "Crush raw uranium to powder, mix it into liquid, compact that to Yellowcake. Thorium follows a similar route. Check JEI.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "createnuclear:enriching_campfire",
+      "title": "Enriching Campfire",
+      "text": "Its green Enriching Fire, blown through by a fan, turns Yellowcake into Enriched Yellowcake. Make it from Enriched Soul Soil.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "createnuclear:uranium_rod",
+      "title": "Fuel rods",
+      "text": "Enriched Yellowcake pressed in a Mechanical Crafter makes Uranium Rods (fuel). Graphite Rods, from graphene and steel, are the cooling rods.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Reactor build: Reactor Casing (a Brass Casing plus steel) forms a T1, T2 or T3 tower following the pattern in Ponder. Place the Controller, then a Rod Input, Fluid Input, Output and an optional Alarm in casing spots."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "createnuclear:reactor_controller",
+      "title": "Reactor Controller",
+      "text": "Right-click it with a filled Reactor Blueprint to start. You need fuel and cooling rods, plus water or liquid nitrogen in the Fluid Input.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Too hot with too little cooling and the reactor melts down and explodes. Two Rod Inputs are needed: one for heating rods, one for cooling. Put an Alarm nearby. Drive a shaft off the Reactor Output for rotation."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "createnuclear:default_anti_radiation_chestplate",
+      "title": "Radiation",
+      "text": "Radiation hurts, and irradiated mobs exist. Anti Radiation armor protects. It can be dyed with cloth.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Steel here is made by mixing coal dust and an iron ingot, and the reactor accepts any steel (see $(l:materials/shared_metals)Shared Metals$(/l)). Lead is the pack's only lead. Rotation to FE: $(l:industry/power_compared)Rotation vs Electricity$(/l)."
+    }
+  ]
+}

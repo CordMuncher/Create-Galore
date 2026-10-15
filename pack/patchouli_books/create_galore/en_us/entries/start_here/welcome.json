@@ -1,0 +1,35 @@
+{
+  "name": "Welcome to Create Galore",
+  "icon": "minecraft:writable_book",
+  "category": "patchouli:start_here",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Create Galore is a big, long-term Minecraft pack built around the Create mod. Rotating machines are the core, and everything else hangs off them: airships, submarines, trains, roller coasters, the Moon, survival layers, homesteading and a lot of new world."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "This book is a $(thing)wiki$(), not a quest list. Nothing here tells you what to do next. Each entry explains one idea, how it behaves, the rules that trip people up, and how it connects to the other mods in the pack."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(bold)The categories$()$(br)$(li)Start Here$(br)$(li)Create: The Basics$(br)$(li)How Things Connect$(br)$(li)Industry and Power$(br)$(li)Ores and Metals$(br)$(li)Survival Layers"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(li)Trains and Rides$(br)$(li)Flight$(br)$(li)Space$(br)$(li)The Ocean$(br)$(li)Exploration$(br)$(li)Food and Farming$(br)$(li)Home and Storage"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(bold)Searching$()$(br)Open the book index and start typing. Search matches entry names and the names of items shown inside entries, so typing an item name such as a machine or a metal finds the entry that covers it.$(br2)Links like the ones on this page jump straight to other entries.$(br2)New to Create? $(l:create_basics/rotation)Rotation$(/l) is the first idea."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "minecraft:writable_book",
+      "title": "The Field Guide",
+      "text": "You get one on first join. It can be crafted from a Book and Andesite (shapeless), and opened from JEI. See $(l:start_here/tools)Tools of the Trade$(/l).",
+      "link_recipe": true
+    }
+  ]
+}

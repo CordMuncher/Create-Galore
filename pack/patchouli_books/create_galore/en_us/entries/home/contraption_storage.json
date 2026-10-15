@@ -1,0 +1,38 @@
+{
+  "name": "Storage on Contraptions",
+  "icon": "sophisticatedstorage:barrel",
+  "category": "patchouli:home",
+  "sortnum": 2,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Normal chests on a moving contraption are simple. These mods make them smarter. The $(thing)Create integration$() add-ons make Sophisticated Backpacks and Storage work fully on contraptions. $(thing)Smarter Contraption Storage$() lets you control which containers take items."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "sophisticatedstorage:barrel",
+      "title": "Sophisticated Storage on Contraptions",
+      "text": "Both add-ons describe themselves as full-featured Sophisticated storage on Create contraptions. Chests, barrels and backpacks can ride along with their upgrades.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "create:contraption_controls",
+      "title": "Smarter Contraption Storage",
+      "text": "A Contraption Controls block can switch containers on or off. One block can control many neighbouring chests. A switched-off chest is left out of the contraption.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Items picked up by contraption actors go into available containers automatically. Any actor can use them.$(br2)A Toolbox on a contraption can refill the hotbar of nearby players from the stored items.$(br2)See $(l:create_basics/contraptions)Contraptions$(/l)."
+    },
+    {
+      "type": "patchouli:relations",
+      "entries": [
+        "patchouli:home/storage",
+        "patchouli:home/inventory_tools",
+        "patchouli:create_basics/contraptions"
+      ]
+    }
+  ]
+}

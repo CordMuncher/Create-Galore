@@ -1,0 +1,38 @@
+{
+  "name": "Create Garnished",
+  "icon": "garnished:cashew_cookie",
+  "category": "patchouli:food",
+  "sortnum": 6,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Create Garnished$() is a big food-and-decor addon. It adds nine nuts, glazes and coatings, and many Create-style recipes with fans and haunting. It also has a large set of coloured building stones."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "garnished:cashew_cookie",
+      "title": "Nuts",
+      "text": "Pecan, almond, cashew, walnut, peanut, chestnut, hazelnut, pistachio and macadamia. They are crushed to cracked nuts, then coated, sweetened or honeyed.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Coating is mostly Create processing. A Deployer applies cinder flour to a nut, and compacting adds effects such as strength to a cinder-coated nut. Garnish Compound and Liquid Garnish finish dishes.$(br2)Check JEI for each nut's route."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Garnished adds fan recipes in two directions. Fans behind coloured $(item)Liquefied Mastic Resin$() bulk-dye items in 16 colours. A fan behind powdered snow does bulk freezing.$(br2)$(l:create_basics/fans)Fans$(/l) explains how fan catalysts work."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "garnished:garnish_compound",
+      "title": "Garnish Compound",
+      "text": "A key ingredient in finishing dishes. About 47 Garnished recipes run in the Farmer's Delight cooking pot, so the pot is where many Garnished meals end up.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Garnished also adds many haunting recipes: amethyst shards into amber remnant, ender jelly into cosmic powder, crestfallen flora into dragon breath. Zultanite and other cut stones come in many colours for building.$(br2)$(l:food/farmers_delight)Farmer's Delight$(/l) covers the pot."
+    }
+  ]
+}
