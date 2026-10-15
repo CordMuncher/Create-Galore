@@ -1,8 +1,64 @@
 hash-format = "sha256"
 
 [[files]]
+file = "config/cataclysm-common.toml"
+hash = "5b4f51df2eeec04d3fde9a881d675d067825ad9009bd0dd4464e4a6787ec2227"
+
+[[files]]
+file = "config/coldsweat/main.toml"
+hash = "fd2e5a6ded40aec007a9520b49f221682570c98bdedbe57dd84e081e263145a8"
+
+[[files]]
+file = "config/cristellib/alexscaves/structure_placement_config.json5"
+hash = "19e52264d00799dc531c4eff6d64d1710622f29b01af62d023181f66774df2ba"
+
+[[files]]
+file = "config/cristellib/betterdungeons/structure_placement_config.json5"
+hash = "351c478b77407648a9757d453a055dba03b875efbff22a98aed216daab351d07"
+
+[[files]]
+file = "config/cristellib/mr_dungeons_andtaverns/structure_placement_config.json5"
+hash = "6c7d1f307af36c5b59378b11142fab92ba9afe6f024d92811c1ba41627344677"
+
+[[files]]
+file = "config/crittersandcompanions-common.json5"
+hash = "fbded3027456c656977610fb0ea58188b1cf7974662ef17830703b2a79fc21a5"
+
+[[files]]
+file = "config/hostile_skies-common.toml"
+hash = "df9e88c098ae6384586a7b58c59f59645c602e209cc6446be1109474a94b48de"
+
+[[files]]
+file = "config/inventoryprofilesnext/inventoryprofiles.json"
+hash = "0abd5b4ce01b2398fb7e6a8df9c72170564bce762feb906eec41dc5eefd99c6a"
+
+[[files]]
+file = "config/mowziesmobs-common.toml"
+hash = "370d63f9cf1ce54a034f75bd46fe245ba501aeb6f60235e005bc136d65bd18d5"
+
+[[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/cnbridge/recipe/dimensional_drive.json"
 hash = "d49135196f515d2ba77cf13c7abec12135fb5030a8d2f500a9760a81d8a3c4a3"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/recipe/steel_unify/cbc_from_tfmg.json"
+hash = "7d0252921e0136a9c3a702779da57f3f2f72ae12ab2ce873cd6c42edeeba349c"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/recipe/steel_unify/nuclear_from_tfmg.json"
+hash = "7882353f51ad845081e866c3a3526904508e0af3608c2245928a7362f1b93ca8"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/recipe/steel_unify/tfmg_from_alloyed.json"
+hash = "1927ed7080547a1cd3464a8255e7384a4fa5610654becea99f521e82f6af30e2"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/recipe/steel_unify/tfmg_from_cbc.json"
+hash = "115a03b1e8882320b4b8a6cc1c8c4451166290901094cded2c4e968220dd8f23"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/recipe/steel_unify/tfmg_from_nuclear.json"
+hash = "57dfb540aba03c45bb2fac72ba78e5cb0c180e6d5ac87c307d92955520ab2186"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/naturalist/tags/worldgen/biome/has_anglerfish.json"
@@ -42,7 +98,11 @@ hash = "78211ca3f4a5f24669bc16b1132aa4dcd29c3d053564742f1728da77430c372b"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/pack.mcmeta"
-hash = "6816460789f84ed4b28e80b16b1b805acf920364f772da46e2550c6340ac12f8"
+hash = "2497d0288b91de51c501dbe14485e2637b7ff225d9cdf660a849458a1979bc20"
+
+[[files]]
+file = "config/sophisticatedbackpacks-server.toml"
+hash = "2bbfe7a3d663b57127c7237e8e02531cd526fa0e3a9a8d8632ba6b3072c793c2"
 
 [[files]]
 file = "config/tfmg-common.toml"
@@ -51,11 +111,6 @@ hash = "6932c0866d378225725a5d2e0a9b8fa20e963b5fa7f4cc6ab9bcc57d91974fa6"
 [[files]]
 file = "mods/aeronautics-hot-air-fix.pw.toml"
 hash = "55c8aefec97caf982304d74c1e7b5e0bc45b34da5be45afe9a1c9e23cfd144b3"
-metafile = true
-
-[[files]]
-file = "mods/aeronautics-structures.pw.toml"
-hash = "5279e3ff71cb614a1ab093dc3559740b42daa030d80a8cd298f7f4e2ad1df8ce"
 metafile = true
 
 [[files]]
@@ -175,7 +230,7 @@ metafile = true
 
 [[files]]
 file = "mods/cold-sweat-altitude.pw.toml"
-hash = "0be11068ba10da36b7d3ae9009186253109f72eeb0bee667e9153fe1abf05dcc"
+hash = "b0bdd76e722f5a6866fe423016d37671eb155b7c427b1db6cf91fd89b98b95e1"
 metafile = true
 
 [[files]]
@@ -534,11 +589,6 @@ hash = "36debf7653e95a855b4fedacc19027cf2e01960fc0b6d55ef2ffbffbcb455690"
 metafile = true
 
 [[files]]
-file = "mods/deepabyss.pw.toml"
-hash = "168e1d007d257f6e235e50c5ae8a08b94f41981777fb75db87f36a2d9e98b680"
-metafile = true
-
-[[files]]
 file = "mods/delightful-creators.pw.toml"
 hash = "ead7e6467df904f9fa779c021cff62bbd87e7943f394beec63a7f1ee3a74e4d5"
 metafile = true
@@ -759,11 +809,6 @@ hash = "450ed5663bf1d12ffddc78eda5aa56cb7808cbdac6db8102d18461361aaa555f"
 metafile = true
 
 [[files]]
-file = "mods/mamas-herbs-and-harvest.pw.toml"
-hash = "40d152259fc585354db3d91cd3d6132bb133d89e9123be8ea85e20a7557afc47"
-metafile = true
-
-[[files]]
 file = "mods/mezzconfig.pw.toml"
 hash = "cf5d87f046590b99d92096a79f6ea2f456290ba5d423c256f06674d2d10a1592"
 metafile = true
@@ -916,11 +961,6 @@ metafile = true
 [[files]]
 file = "mods/slice-and-dice.pw.toml"
 hash = "3c24accda8011a6a5e04c49c40e39617bb04ab3a549d8f2e8180d3246fddac39"
-metafile = true
-
-[[files]]
-file = "mods/smarter-contraption-storage.pw.toml"
-hash = "7ec957e4186c457b300833de16ec33156c9528d8321bea575336208a5a05f9cc"
 metafile = true
 
 [[files]]
@@ -1097,6 +1137,10 @@ metafile = true
 file = "mods/yungs-better-witch-huts.pw.toml"
 hash = "9854b699d5a067c46ac99b1dedeeb529bff3fc18dd079e29b438c4cbf9725f68"
 metafile = true
+
+[[files]]
+file = "options.txt"
+hash = "3b27165b9ab8dac3fd0ddc30add0cd2a6d9904379b560b36167b4928b76ef669"
 
 [[files]]
 file = "shaderpacks/bliss-shader.pw.toml"

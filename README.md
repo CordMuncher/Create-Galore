@@ -4,12 +4,12 @@ A big, long-term Minecraft modpack built around the Create mod: airships, submar
 
 - **Minecraft** 1.21.1
 - **Loader** NeoForge **21.1.259** (pinned on purpose, see "Changes" below)
-- **Mods** 210 from Modrinth + Twilight Forest added by hand, plus 4 shader packs
+- **Mods** 206 from Modrinth + Twilight Forest added by hand, plus 4 shader packs
 - Full list with versions: [MODS.md](MODS.md)
 
 ## How to install
 
-1. Download [`Create-Galore-0.1.0.mrpack`](Create-Galore-0.1.0.mrpack) from this repo.
+1. Download [`Create-Galore-0.1.1.mrpack`](Create-Galore-0.1.1.mrpack) from this repo.
 2. **Prism Launcher:** Add Instance → Import → pick the `.mrpack` file.
    **Modrinth App:** drag the `.mrpack` onto the window (or File → Import).
    The launcher downloads every mod at the exact pinned version, about 860 MB. It also unpacks the pack's config tweaks (see "Config tweaks" below).
@@ -52,6 +52,20 @@ These live in `pack/config/` and land in the instance's `config/` folder on impo
 - **Naturalist's 9 sea creatures that Hybrid Aquatic already has are off**: anglerfish, blobfish, giant isopod, great white shark, piranha, jellyfish, starfish, crab and ray. A small datapack (`config/paxi/datapacks/create-galore-tweaks`) empties their spawn-biome lists, and Paxi loads it into every world automatically. Verified with `/locate biome`: those 9 find nothing, while Naturalist's other spawns (whales, clams and the land animals) still work. Hybrid Aquatic's versions spawn as normal.
 - **Dimensional Drive recipe fixed.** The Northstar–Aeronautics bridge's Dimensional Drive (the block you put on an Aeronautics ship to launch it to a Northstar planet) asked for `northstar:computer_chip`, which Northstar 0.6.6 removed, so it couldn't be crafted. The same datapack replaces the recipe, swapping the chip for Northstar's **Circuit**, which can be made on Earth. Everything else in the recipe is unchanged: 4 titanium ingots and 4 precision mechanisms. Verified: the recipe error is gone on boot. Northstar Aeronautics Compat's Stellar Navigator is a second, already craftable way to reach the planets.
 
+### Added in 0.1.1 (overlap pass)
+
+All of these are plain config files or datapacks in `pack/`, so a fresh import is drag and drop. No mod jars are stored.
+
+- **Four steels now convert into each other.** Alloyed, TFMG, Create Big Cannons and Create Nuclear each add their own steel ingot, and all four share the `c:ingots/steel` tag. Alloyed's recipes accept the tag, but TFMG's recipes (39 of them) need TFMG's own ingot. The Paxi datapack adds 1:1 shapeless crafting recipes (`data/create_galore/recipe/steel_unify/`): Alloyed, Big Cannons and Nuclear steel into TFMG steel, and TFMG steel into Big Cannons or Nuclear steel. No gain from any loop, so it can't be farmed.
+- **Bosses softened, not removed** (`config/cataclysm-common.toml`, `config/mowziesmobs-common.toml`): health x0.7 and damage x0.75 for the Cataclysm bosses (Ender Guardian, Netherite Monstrosity, Ignis, Harbinger, Leviathan, Ancient Remnant, Scylla, Maledictus) and Mowzie's Frostmaw, Umvuthi, Ferrous Wroughtnaut and Sculptor. All boss structures stay on.
+- **Hostile Skies airships are rarer** (`config/hostile_skies-common.toml`): attempts every 25 minutes instead of 15, starting chance 5% instead of 10%. Tiers and Bad Omen behaviour unchanged.
+- **Cold Sweat is a bit gentler** (`config/coldsweat/main.toml`): rate multiplier 0.75 (was 1.0), temperature damage 1.0 (was 2.0). Create: Smog is deliberately left at its defaults so pollution stays punishing.
+- **Backpack magnet range** one block smaller (`config/sophisticatedbackpacks-server.toml`: 3 to 2 and 5 to 4), so it feels less like auto-play.
+- **Critters and Companions' otter, Dumbo Octopus and Sea Bunny are off** (`config/crittersandcompanions-common.json5`). Hybrid Aquatic already has otters and the ocean set.
+- **Underground structures are a bit sparser** (`config/cristellib/...`): small dungeons (YUNG's Better Dungeons), underground cabins (Alex's Caves), underground houses and deepslate camps (Dungeons and Taverns) have wider spacing. In the test window the pack placed about 6 times as many structures as vanilla, mostly small underground ones.
+- **Inventory Profiles Next auto-refill is off** (`config/inventoryprofilesnext/inventoryprofiles.json`) so the game does not play for you.
+- **Key rebinds** (`options.txt`, only the changed keys, nothing else is overridden): Sophisticated Backpacks open = J, Jetpack toggle = N, Mobile Packages stock ticker = ., Accessories screen = ,, Mobile Packages networks = ;, Cataclysm abilities = Home/End/Insert/Delete, Aether invisibility = =, Supplementaries quiver = `, Iris shader reload = F8, Railways Navigator overlay options = \. Everything else keeps its default key.
+
 ## Changes made to get it running
 
 Every change from the curated list and why:
@@ -62,6 +76,10 @@ Every change from the curated list and why:
 | **Removed Create: Northstar Structures** | Built for the old Northstar 0.5.x. With Northstar 0.6.6 it references Moon features that no longer exist, and the world refuses to load. The mod page itself says it isn't compatible with Northstar 0.6 yet. |
 | **Removed Chunky** | Distant Horizons calls into Chunky before Chunky has started, which crashes world creation at spawn. Distant Horizons generates distant terrain on its own, so nothing is lost. |
 | **Swapped Create: AeroStar → Create: Northstar–Aeronautics Compatibility 3.0.0** | AeroStar was built against Northstar 0.5 and crashes the game about 40 s into a world (missing Northstar class). The original compat mod it forked from was updated for Northstar 0.6 and does the same job (fly Aeronautics ships to Northstar planets). |
+| **Removed Create: Aeronautics Structures** (the small one, `aeronautics-structures`) | It only adds two hot-air-balloon structures. "Creat Aeronautics Structures" (with the typo) adds 12 (balloons, airships, boats, crashed variants, a plane) with loot tables, so the small one was redundant. |
+| **Removed Mama's Herbs and Harvest** | Its foods and crops duplicate Farmer's Delight, Fruits Delight and Berries and Cherries Delight and share their `c:` tags (checked in the jars). |
+| **Removed Abyss** (`deepabyss`) | Create: Deep Seas already ships its own deep-ocean dimension (`create_abyss:abyss`). The standalone mod added a second one (`abyss:abyss`, plus a few wreck structures). No ID clash, but two abyss dimensions is one too many. |
+| **Removed Smarter Contraption Storage** | Crashed the client on load in a fresh test: it and Sophisticated Backpacks Create Integration both register the backpack for contraptions ("Tried to register duplicate values for object Block{sophisticatedbackpacks:backpack}"). Backpacks on contraptions now come from the official integration. |
 | **Pinned NeoForge to 21.1.259** (not the newest 21.1.262) | On 21.1.262 joining any world kicks you out with "Failed to encode packet custom_payload" from The Aether's bundled Accessories library. Tested Aether alone: works on 21.1.248, 252, 257 and 259, fails on 262. The pack needs at least 21.1.252 (Cold Sweat Altitude), so 259 is the newest version that works. Revisit when Aether or Accessories updates. |
 | **Added roller coasters**: Create: Coasters Simulated, Coasters Simulated: Track Styles, Create: Coaster Seats | Requested, purely for fun. Coasters Simulated is the Create-native one and uses Sable physics, which the pack already has. |
 | **Added Twilight Forest** (manual, CurseForge) | Requested. Not on Modrinth, so it's a manual add (see install step 3). |
@@ -86,7 +104,7 @@ None of these stop the game. They're listed so they don't surprise anyone later.
 ## Repo layout
 
 - `pack/` – packwiz source (one `.pw.toml` per mod or shader, `pack.toml`, `index.toml`)
-- `Create-Galore-0.1.0.mrpack` – importable pack built from `pack/`
+- `Create-Galore-0.1.1.mrpack` – importable pack built from `pack/`
 - `MODS.md` – full mod list
 
 To rebuild the `.mrpack` after changing `pack/`:
@@ -94,5 +112,5 @@ To rebuild the `.mrpack` after changing `pack/`:
 ```
 cd pack
 packwiz refresh
-packwiz modrinth export -o ../Create-Galore-0.1.0.mrpack
+packwiz modrinth export -o ../Create-Galore-0.1.1.mrpack
 ```
