@@ -1755,7 +1755,7 @@ hash = "c33ac12c214ad9b2c6c986b8ba98435d55ca8d161bf603a060314367bb62f802"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/exploration/dimensions.json"
-hash = "83ec42a8ae0a567a01ef47bc709d830c362fc1024474641f7c93c24ebcb91476"
+hash = "cc5282cb303d95ea79a1d2bca840ae33fc665c89397b2a4292cc3000254511b8"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/exploration/gear.json"
