@@ -1,0 +1,13 @@
+name = "Northstar Aeronautics Compat"
+filename = "northstar_aeronautics_compat-0.1.9.jar"
+side = "both"
+
+[download]
+url = "https://cdn.modrinth.com/data/mil9olYo/versions/2V9tPQ6g/northstar_aeronautics_compat-0.1.9.jar"
+hash-format = "sha512"
+hash = "12d31172f6f673ef4b041a58400ee7ea55f2632fc3cafd2c30124438233b81fa9f7ab02652fddef4da35f4dfbf46fe644c013b4a001ffc6c356498558ac84ad3"
+
+[update]
+[update.modrinth]
+mod-id = "mil9olYo"
+version = "2V9tPQ6g"

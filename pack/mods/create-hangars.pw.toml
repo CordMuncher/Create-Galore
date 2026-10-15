@@ -1,0 +1,13 @@
+name = "Create: Hangars (Aeronautics)"
+filename = "create-hangars-V1.0.0.jar"
+side = "both"
+
+[download]
+url = "https://cdn.modrinth.com/data/en3HEaOT/versions/3IYW39g2/create-hangars-V1.0.0.jar"
+hash-format = "sha512"
+hash = "c3867cde779e943ddb7ecdfcefddf2714bc450d4c942bcb5283fc7515ab5cfc4fa4055de24f47a4f6a70e7decbff13d4e592c08f43b2a7706fc134219156ef51"
+
+[update]
+[update.modrinth]
+mod-id = "en3HEaOT"
+version = "3IYW39g2"
