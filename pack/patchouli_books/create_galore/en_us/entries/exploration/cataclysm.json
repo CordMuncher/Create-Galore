@@ -14,6 +14,14 @@
     },
     {
       "type": "patchouli:text",
+      "text": "Tuned in this pack: the Netherite Monstrosity, Ignis, Harbinger, Leviathan, Scylla, Ancient Remnant, Maledictus and Ender Guardian have 0.7x health and 0.75x damage. They are softened, not removed. Other Cataclysm mobs use default stats."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Ability keys are set in this pack: Home (general ability), End (boots), Insert (helmet) and Delete (chestplate). Change them under Controls, Cataclysm."
+    },
+    {
+      "type": "patchouli:text",
       "text": "Where: the Sunken City sits in deep ocean (a good $(l:ocean/submarines)submarine$(/l) trip), the Burning Arena in the Nether, the Ruined Citadel in the End highlands and midlands, the Frosted Prison in snowy plains, the Cursed Pyramid in desert."
     },
     {

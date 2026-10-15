@@ -10,7 +10,7 @@
     },
     {
       "type": "patchouli:text",
-      "text": "The pressure comes from $(thing)survival layers$() instead. Four systems push on you over time, and each one is designed so machines can solve it."
+      "text": "The pressure comes from $(thing)survival layers$() instead. Four systems push on you over time, and each one is designed so machines can solve it. Cold Sweat is tuned gentler than its default here."
     },
     {
       "type": "patchouli:text",
@@ -25,10 +25,14 @@
       "text": "Dangers also live in the new worlds. See $(l:exploration/bosses)Bosses$(/l) and $(l:exploration/structures)Structures$(/l) before exploring far, and $(l:exploration/dimensions)Dimensions$(/l) for the places those dangers wait."
     },
     {
+      "type": "patchouli:text",
+      "text": "$(bold)Spawn can be snowy.$() You may start in a cold biome. After the short spawn grace, Cold Sweat chills a player with no warm gear, and a freezing body takes damage. Insulated clothing and a heat source fix it, see $(l:survival/temperature)Temperature$(/l) and $(l:survival/temperature_gear)Temperature Gear$(/l)."
+    },
+    {
       "type": "patchouli:spotlight",
       "item": "minecraft:iron_sword",
       "title": "Fights",
-      "text": "Bosses and dungeon mobs are tuned to be memorable, not to wear you down. Preparation matters more than reflexes.",
+      "text": "Bosses and dungeon mobs are tuned to be memorable, not to wear you down. Cataclysm and Mowzie's bosses have 0.7x health and 0.75x damage.",
       "link_recipe": true
     }
   ]

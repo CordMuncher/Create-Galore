@@ -1631,11 +1631,11 @@ hash = "626e039ebd2f9bdcb78d57a3af67fa62edc7362b46994443ae7c37e5045762c1"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/connections/heat.json"
-hash = "5afc0390bcace1131fec205dc577c5d8203ccec343ca4bab12d49c210635cb0a"
+hash = "be15db53d306dbd85db499cf4d2c2aa3a092b37986be1a951edffd632806210d"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/connections/metals.json"
-hash = "6841a85ccb0e166e05348ac5e8e730227ef8281bc13fe16943816dcd9e90639c"
+hash = "a282f54648a33ef3457ebcc4762412c4f7f362c68ee1312be2529b590026da2b"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/connections/overview.json"
@@ -1647,7 +1647,7 @@ hash = "3131044d8d6ec80275352abc220f51aeb39e66c5008fa54d9f9588d44a661847"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/connections/side_effects.json"
-hash = "2ee027fb4dfe0ae90759cf74a625ab5d7b5b1d1457aad6e5429a1d5d3d6f0943"
+hash = "c11e5ee531b7b74f3bde4656d65f70d22393c6a4e53de8975ca503767b65d06f"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/connections/vehicles.json"
@@ -1723,19 +1723,19 @@ hash = "5d56e838ed5ad5732987a7c019f4c89f40c87910d23d0748dc2ece3c8cc125d6"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/exploration/aether.json"
-hash = "0417d8d03f60b41d101c966cce17a848132423ef6361190edf15d18a0746b0b8"
+hash = "b7cdd30ffeccf63f9944c77732f1d65d1c3a0f5dbe94e38e55cf35ce578e8b1e"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/exploration/alexs_caves.json"
-hash = "505c2b97005d11fcbfd483e677ae0b7f4db740421c592fe0651dcf38f5fdb929"
+hash = "3eb4282d39311f44419a621859d481742141f46ec646e20b214ad78edadd4146"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/exploration/bosses.json"
-hash = "fc2c74133b2e46bfd08cb42b109d8896a49648c629439534defcad5b42648a7c"
+hash = "c86f53930f36213c0ccbb803f6c0dff65ae40137cff5e9b08c8422bb3239fa13"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/exploration/cataclysm.json"
-hash = "dcb59c82e9dde35c1fb71bf82a75a4ae63d37cabc9f529228f711c1fa9577c0d"
+hash = "4c3cfc97f56209b80f7728c88901e2cb50d42a3c916fdf9177f78d1afe1a9a48"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/exploration/cataclysm_create.json"
@@ -1751,11 +1751,11 @@ hash = "3f6dd25dc675319ed790d87580530de4fc216eef584d07df3ec952b8403e5ff6"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/exploration/creatures.json"
-hash = "79ee26355015aefbb4c46cc7aebe7d36148fb5fd26b89a3e410a65492bd11acf"
+hash = "c33ac12c214ad9b2c6c986b8ba98435d55ca8d161bf603a060314367bb62f802"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/exploration/dimensions.json"
-hash = "d96326cd43f946381c0e3e1ae5b3eb0ad20d6ec7c5fd7fdc2915d37e1ecaaeaf"
+hash = "83ec42a8ae0a567a01ef47bc709d830c362fc1024474641f7c93c24ebcb91476"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/exploration/gear.json"
@@ -1775,7 +1775,7 @@ hash = "f752be3b6d7a4b31e956cfa8bd17ef2bd2ddbae8a442df1af8c28fa65f74af24"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/exploration/mowzies_mobs.json"
-hash = "03106638698a9746cb34952094158d31b36b347f3ff18a7157e58d1401e89617"
+hash = "9afcfe8a67b060d905c52cf1fc5f1d03c7224d3dd6b2f0f68b4aa857e4774c38"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/exploration/mushroom_quest.json"
@@ -1787,7 +1787,7 @@ hash = "f1f242cc32d793771a9f6023d95abe3721c690ffe22816680a39ef6435f32d92"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/exploration/structure_packs.json"
-hash = "47e129d2cd03734000a3bec15086340c041e430976000b27aaf247c219cd5511"
+hash = "6cb60f18cc746a478aa214f358be5451ded5e5675e11fd267beffe6ea9e843f3"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/exploration/structures.json"
@@ -1819,7 +1819,7 @@ hash = "d5d45079ecbf761ca05ba96b0087c0353495054a03bd6823f4a6247f68b782a2"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/flight/destinations.json"
-hash = "6a54874ba41ccccbd90132f4c6a7daab6f8ad6e48612d2890080b1237de3c2e1"
+hash = "b4c191e649735c3c980b2508a3e6ef85beaf34fc9e90e32801f6108dd4fa5167"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/flight/flight_control.json"
@@ -1847,7 +1847,7 @@ hash = "4f225801ac11a4476b6f211cff5bc866fe0841c1b9e7e2e7555895811c318cdd"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/flight/weather_and_danger.json"
-hash = "c05ed1b294bc9925b23685819db1593bba383d613c5de5fded68137a9dbc5532"
+hash = "5402be097e10743baff82c4adefa8deee530d7a05543b07397e529ce3f90fc4c"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/flight/wind_sailing.json"
@@ -1855,7 +1855,7 @@ hash = "0c8b9ab7e2305a9c3c6f53befdb79b54edf673f6a9f61a2637304bc7dcadb201"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/food/animals.json"
-hash = "59d2eecb3d3b8717fa205628dc194778e9159315513762ba7ea393c3bc900e51"
+hash = "59dd17b27a7f38b0137233637e1a317e6fabc448be4b4404ea4b05111e653f7f"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/food/bees.json"
@@ -1871,7 +1871,7 @@ hash = "4e6039c815f59aca5ab4d7ba5f9e58f1d27a453247039c933d32dca0060b9f08"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/food/crops_and_herbs.json"
-hash = "32a6ac691938ef75ae06daa8cc92a81c7691cd761f515e4fdcba1b462a423174"
+hash = "53be581ac09afce74a556f9ca6919315b1f3e51b35ec2f1d0233450b527914b4"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/food/farmers_delight.json"
@@ -1895,39 +1895,31 @@ hash = "9bb94e843b1d39b0f1a86d426a1d657bbb4edccef02038a64ed1ace996f951f3"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/food/ratatouille.json"
-hash = "7cfdf1643deecd390b6b763032cf86e685a69ea21d35234be1bd1c6fb00c717f"
+hash = "f97ebcd2a75443c1789229b11f50f5871a9e8d98a90756989578077b4db2b11a"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/food/sweets_and_drinks.json"
-hash = "1114203e4c739dfba5d2a0b27c28688ffdc93a1e45f0f47d5973f3de65fc07b2"
+hash = "a800325162dff7dee1d404977ead7deb96df813431da1add33c5f1b5393dfb9d"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/home/building.json"
-hash = "112efbc7f7fd4ffef2265eaaf92d32933dea33871907abd4b9e7f817ee5d8739"
-
-[[files]]
-file = "patchouli_books/create_galore/en_us/entries/home/contraption_storage.json"
-hash = "4f47d378a13de98e28a00c1746deda6bcdddf78e0e513fedaea8186d8fd85623"
+hash = "f4d69381fefa4627344f86caaa1b241d1f598b8bcf6cf623ae4cf49a5affdc6b"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/home/create_decor.json"
-hash = "49fcd35f0e79357f93de51d5b6a150f4367a789e07cce723e7a99136778821b0"
+hash = "b67941c691cf0ea0d460346fda9731990615e1f95b5a96694876ddc963938220"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/home/guide_shelf.json"
 hash = "31ae905463fa8f791c542188ef0c676e0dd9cb5dd03379cda31d68d8dcd5648a"
 
 [[files]]
-file = "patchouli_books/create_galore/en_us/entries/home/interiors.json"
-hash = "039a6bd8771ed24bdfb2932d83cc266517991c770fa32471cbd5ed44cb59fab4"
-
-[[files]]
 file = "patchouli_books/create_galore/en_us/entries/home/inventory_tools.json"
-hash = "2ab1f5ac55665fd65543de2188e4d8b7c783f09225d9ff906387f22d4c551908"
+hash = "c9d2d98923958b9317d2f1e93d57371728ffc9f0198f762ce5ff87b9a8ab53b9"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/home/maps.json"
-hash = "06a336af532387ba2945131cd3cafab74ccd99b11a7c1c115112302a8ad8db9f"
+hash = "de1ac6790b5fac7dd14e112b71e908654535c02d848715a2b065e6a249b3ca1c"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/home/starter_kit.json"
@@ -1935,15 +1927,15 @@ hash = "90ac5cf391fed7dfbeeea6319d7a2596921f2dc29b98d800f2bf50c5e54ba357"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/home/storage.json"
-hash = "a74319253aa654520fcacb74a22bce80294b53ea1328e7b53a980573f6da8cd0"
+hash = "2d85a750a59746c6b19b3e759bd8f64e3fe1b591aeb98afb04df00df9083d92d"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/industry/alloyed.json"
-hash = "67cf9bbae0d8280c82f22be5b2bf1b1006bff42b203fbb8cc9011f574b43f925"
+hash = "4fe89e82963508c2b08237a3fa231131e15b94d1d2665b24595f4176e9ab720c"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/industry/cannons.json"
-hash = "c28147aee187799609f4acf99a80327752fe9b7d9dfff132f48412eb6ccb16c2"
+hash = "8258b173bbf6bdfc1bc9e59dee2f586d8f02a80026804f157048cb82af13afd8"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/industry/dragons_plus.json"
@@ -1951,7 +1943,7 @@ hash = "8e70a88a05ebf265df8c126c0f004e3231df991fdc54d08a0e82f014af10b42a"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/industry/electricity.json"
-hash = "eebdcf3434c01f54d61bb98631a0e05d98c19cb0ec4643cd13bb940cb4b94581"
+hash = "8169615317d24b3f5c4457de942504627ae992d1b32ce6348fc306d1abeb380b"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/industry/enchanting.json"
@@ -1963,7 +1955,7 @@ hash = "46a8c393061424782f2ef87dae7feeebd66fe67e3c6d47397dfd00d913136129"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/industry/nuclear.json"
-hash = "86a09db131903bdce92937ac522cf93193c908bfb345394d4c99a1cf240ef4fa"
+hash = "f032fc6e9705c1e2d0c544c93f44fa113e1060818d8179b8dcbe1e0e0f50ff8e"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/industry/ore_excavation.json"
@@ -1987,7 +1979,7 @@ hash = "d324422a34164ac34effae5ebfa1f0881cef1b308842d6089f766a535394f378"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/industry/tfmg_steel.json"
-hash = "0c38bd1e69f1554e817dccb007f2e944c53bbf6f6b9de179a0d175dfba3dbc16"
+hash = "3baa6d6f8e81113bf866b715729980a28f97d4bb0131588ec7907a3568a91a8b"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/materials/ore_doubling.json"
@@ -1995,15 +1987,11 @@ hash = "7b75584eb9a47b57a9886d6904c7f321985eb290e91e83fa1c48c4291bc99077"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/materials/ore_guide.json"
-hash = "f8e0fa6cf72fdcfd78d1441240081e94a1bdf44abc47a9cc48cde69961f508e4"
+hash = "1982dcde73f0e7c997ed601318b0992a1319113eeb41449d42e302df1a2d4c23"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/materials/shared_metals.json"
-hash = "ea9e4f6b54688fd1bcdc991d82186ea1815f368b36bf871e9fa9c94650d7d368"
-
-[[files]]
-file = "patchouli_books/create_galore/en_us/entries/ocean/abyss.json"
-hash = "da55a35b63b9fe66b0cffee40f4701619a6e3cd55c23e85bcc3bbc7cb35ce857"
+hash = "4d423b48d6f69cadb75aa85a5bcd37d8f60cec3243c67895defa47de92d7d137"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/ocean/aquamirae.json"
@@ -2019,11 +2007,11 @@ hash = "25f73e1bd288a5e7303aad8ba51afb8ca076a5db217e805c53caabc4ac943261"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/ocean/fishing.json"
-hash = "cd514b7ee3081c7e17ed638388f738c62e2ccc6be2bd16c029329e15fcf66f1a"
+hash = "6286aee810f1b0d7fc5f3b6fb9ab5118332a10b9f4b50d46496842556e04e356"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/ocean/hulls_and_pressure.json"
-hash = "39888111f5dd63aa91098bef31c32a76e28a4bba531c7abc9cb9d0e298f03bc2"
+hash = "3c3f5b48ae92f64ea018cec3410779202fb6be2a71a6fc022444de1da8d1e0f0"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/ocean/sailing.json"
@@ -2035,15 +2023,15 @@ hash = "f4b5a6b54784e2d93ae7fc9fcb17abc14804fa97cfd903192207eb858020f6c0"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/ocean/sea_life.json"
-hash = "8f7552ded4fbac464e90d6a6b99dd8b1a47fe27ff52e8394314c4f4e961668f3"
+hash = "9770a8813145fbcc364a63eb7bffa08feaecc2652bb3c6cb1c9bb53b1d5e3101"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/ocean/submarines.json"
-hash = "679de5ab89220ac186d591f7eac19a9b22a87453bbb104ed8927fd01c0e14e74"
+hash = "b3e2222c009477b36bcd1744ebc8c7446cee6e48fc643eb1660f546f0b8db61d"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/ocean/underwater_places.json"
-hash = "6315c80243941d91bfb1a6a6c8aec94af61ebacb6b95031932941b0767951416"
+hash = "8700e53d12dacc1bb5754dc592506a7c4df9e23f837fd8b61aa9765f6c186d65"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/space/aeronautics_bridge.json"
@@ -2063,7 +2051,7 @@ hash = "2d430b9da024a98712d19c827c3bfada8651ced5684faf776d8084fa9d8c8011"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/space/space_materials.json"
-hash = "e4df8a96b85e2b61597e1b90a79a16a85b14a9a7ab3b8ed4c38c41e09f603b4b"
+hash = "9bb17e840f72d8d443e64e6fa445240bcd83642470091f0c50d734303943a479"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/space/space_survival.json"
@@ -2071,15 +2059,15 @@ hash = "3f212d0137e2e0b480c5558a64000ef4aadbd1c32d34e789fbf75554c5248135"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/start_here/difficulty.json"
-hash = "3a851cedd0511a35e35d900718f6c75f0184b22b794c78182bb86909e02b1551"
+hash = "5f78691aa94bc7589f02d0cfcd79d604323e2c79511ecefebe051316e10731be"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/start_here/performance.json"
-hash = "a2378662499a28458fff609660299ee052e43f4bf37bfff7a4a9980779542176"
+hash = "e650eacc35c47efce81191419edaabaa5d4145661e21b8026ada55665400ee07"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/start_here/tools.json"
-hash = "8ac2dba39097a8a6d265ac1a909c18743bc150e01cc7f11af118d70f0e1c820f"
+hash = "d5a1b0780b504737c40329d3f0593b666798c1e2fd120fc6d56216cf2d8f36c8"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/start_here/welcome.json"
@@ -2111,19 +2099,19 @@ hash = "4ef3be2f07cc97a662fb87d67873282c79839f44a420bec097991f8e660bdbf8"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/survival/temperature.json"
-hash = "510a82a5594f4b66fc39aff3f5aa39992bd9a79c4663216f2ad3b3fc4d4fdecb"
+hash = "72f9ec3ce6b0501f818832aea03648bde0d767e71cc0c623b560a3d14890ae10"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/survival/temperature_create.json"
-hash = "faefce7c4c49d5afe71349463249f18f6eb38a61af52964ff2848c64ac78df7f"
+hash = "57c62a77134aa522d894ca5727cf62f62a30e9e25876d552f4f10d27e43702be"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/survival/temperature_gear.json"
-hash = "0876024e3e332a7e1aab8c50065724a13d9813b4b2a054863d45ffdf1cca2cc3"
+hash = "759e0812f9ab3fd3317590aea0606eed74066e54df5811cef80f6263e744bc3f"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/survival/thirst.json"
-hash = "de184ae269ee8c072d1ca703f389ac357e38bf3e2d9c7b989316f7c447d59481"
+hash = "446e76295a1f1c186daf1c1548ae4f477b1e9ba5eda3d4b0874a14e04f9d4c62"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/transport/coasters.json"
@@ -2135,11 +2123,11 @@ hash = "88760491d88d901334250e0adb0339386e564c863b3de6934748376f1f32d204"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/transport/jetpack.json"
-hash = "746b0c45e7840eb6a0e97f08be81aa3493ce9fa3eb57e8e368079613756fcdfd"
+hash = "ab889b337d99b293a17a3ceb598bf422f87a1796ae4ef10b4eb20f6968fe3e56"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/transport/train_addons.json"
-hash = "6fa6a33c0c302db37fb4d9782850e8efc73cb6719e27519c0884f4960506948a"
+hash = "3020335d7e658e61e33552c5a14c290e991a3ded0805450eedf51a6d3132fe12"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/transport/train_signals.json"

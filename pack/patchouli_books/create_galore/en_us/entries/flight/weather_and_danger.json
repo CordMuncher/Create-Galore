@@ -15,7 +15,7 @@
     },
     {
       "type": "patchouli:text",
-      "text": "Create Hostile Skies sends pillager airships after you. Ships come in tiers: Scout, Patrol, Warship, Flagship. Higher tiers open up as you kill captains. Bad Omen raises crew and loot. Ships can be captured, and crews can make an emergency departure.",
+      "text": "Create Hostile Skies sends pillager airships after you, in tiers: Scout, Patrol, Warship, Flagship. Higher tiers open as you kill captains. Here they are rarer: an attempt every 25 minutes, starting at 5% chance. Bad Omen raises crew and loot. Ships can be captured.",
       "title": "Hostile Skies"
     },
     {

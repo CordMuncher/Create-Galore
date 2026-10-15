@@ -17,7 +17,7 @@
     },
     {
       "type": "patchouli:text",
-      "text": "Candy cane tools, a Gingerbread Man mob and hot chocolate drinks round out Confectionery. The recipes are ordinary Create machines: mixer, press, spout. Hover and press $(bold)R$() in JEI.",
+      "text": "Candy cane tools, a Gingerbread Man mob and hot chocolate drinks round out Confectionery. White, dark and hot chocolate use $(l:food/ratatouille)Ratatouille$(/l)'s cocoa butter and powder. Look recipes up in JEI with $(bold)R$().",
       "title": "More sweets"
     },
     {

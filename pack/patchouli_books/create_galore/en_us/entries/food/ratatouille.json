@@ -44,6 +44,20 @@
       "link_recipe": true
     },
     {
+      "type": "patchouli:spotlight",
+      "item": "ratatouille:salt",
+      "title": "Salt",
+      "text": "The pack's one salt. Heated boil stone makes it, and Northstar's brine and basalt recipes now give it too. Leftover Northstar salt converts 1:1 in a crafting grid.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "ratatouille:cocoa_powder",
+      "title": "Cocoa Powder and Butter",
+      "text": "The pack's one cocoa powder and butter. Ratatouille presses and mills them; Confectionery's chocolate now uses them. Old Confectionery cocoa converts 1:1.",
+      "link_recipe": true
+    },
+    {
       "type": "patchouli:text",
       "text": "$(item)Compost Tower$() composts food waste into compost products. The $(item)Mechanical Demolder$() frees items from moulds such as chocolate, cake and popsicle moulds.$(br2)Related: $(l:food/sweets_and_drinks)Sweets and Drinks$(/l).$(br2)Soil basics: $(l:food/farmers_delight)Farmer's Delight$(/l)."
     }

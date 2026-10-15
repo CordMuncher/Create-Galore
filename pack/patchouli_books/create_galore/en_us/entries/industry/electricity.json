@@ -38,6 +38,11 @@
       "text": "Two current grades. $(item)Copper Spool$() is low current and fits Small Connectors. $(item)Gold$() and $(item)Electrum$() spools are high current. The Large Connector needs those, takes up to 6 wires and carries more."
     },
     {
+      "type": "patchouli:text",
+      "title": "Shared with TFMG",
+      "text": "TFMG uses Crafts & Additions' $(item)Copper Wire$() and $(item)Copper Spool$(): its recipes now give and take these, and any leftover TFMG copper wire or spool converts 1:1 in a crafting grid. See $(l:materials/shared_metals)Shared Metals$(/l)."
+    },
+    {
       "type": "patchouli:spotlight",
       "item": "createaddition:large_connector",
       "title": "Large Connector",

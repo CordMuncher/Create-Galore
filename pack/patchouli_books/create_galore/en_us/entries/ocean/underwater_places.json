@@ -35,7 +35,6 @@
       "entries": [
         "patchouli:ocean/submarines",
         "patchouli:ocean/hulls_and_pressure",
-        "patchouli:ocean/abyss",
         "patchouli:exploration/structures"
       ],
       "title": "Related"

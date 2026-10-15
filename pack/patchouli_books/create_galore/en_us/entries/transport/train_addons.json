@@ -43,7 +43,7 @@
     },
     {
       "type": "patchouli:text",
-      "text": "Adds a Navigator item that lists connections with stopovers and live data, Advanced Display boards for platforms and train fronts, a Train Station Clock and a Lectern with Navigator. Penalty Anchors add a cost to a stretch of track, so trains avoid it.",
+      "text": "Adds a Navigator item that lists connections with stopovers and live data, Advanced Display boards, a Train Station Clock and a Lectern with Navigator. Penalty Anchors add a cost to a stretch of track. Route overlay options are on the \\ key.",
       "title": "Railways Navigator"
     },
     {

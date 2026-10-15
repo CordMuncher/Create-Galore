@@ -46,7 +46,7 @@
     },
     {
       "type": "patchouli:text",
-      "text": "Every steel here is the same tag as Alloyed and Create Nuclear steel, so your first steel can come from an easier mod. See $(l:materials/shared_metals)Shared Metals$(/l). Next: $(l:industry/tfmg_oil)TFMG Oil$(/l)."
+      "text": "TFMG's steel is the pack's steel. Alloyed, Create Nuclear and Big Cannons steel recipes now give it, so an easier mod can supply your first steel. Old ingots from those mods convert in a crafting grid. See $(l:materials/shared_metals)Shared Metals$(/l). Next: $(l:industry/tfmg_oil)TFMG Oil$(/l)."
     }
   ]
 }

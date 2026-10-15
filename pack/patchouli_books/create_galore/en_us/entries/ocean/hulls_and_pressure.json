@@ -27,11 +27,8 @@
       "link_recipe": true
     },
     {
-      "type": "patchouli:spotlight",
-      "item": "abyss:abyssal_pressurizer",
-      "title": "Abyssal Pressurizer",
-      "text": "From the Abyss mod. On a Deep Seas ship it multiplies the maximum hull depth by 10. See the Abyss entry.",
-      "link_recipe": true
+      "type": "patchouli:text",
+      "text": "Hull limits can be tuned. Deep Seas has a max depth multiplier that scales every block, and per-block depths are stored in $(item)config/submarine_hull.json$(). Windows are the usual weak point, so use pressurized glass. Goggles on a block show its tier."
     },
     {
       "type": "patchouli:text",

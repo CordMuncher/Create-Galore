@@ -25,6 +25,10 @@
       "text": "$(thing)YUNG's$() series reworks vanilla structures: Better Dungeons, Mineshafts, Strongholds, Desert Temples, Jungle Temples, Witch Huts and Ocean Monuments. Same places, much better builds and loot."
     },
     {
+      "type": "patchouli:text",
+      "text": "Some underground structures are spaced wider than their mods default: YUNG's small dungeons, Alex's Caves' underground cabins, and Dungeons and Taverns' underground houses and deepslate camps. The pack still has many more structures than vanilla."
+    },
+    {
       "type": "patchouli:spotlight",
       "item": "minecraft:chest",
       "title": "Dungeon Loot",

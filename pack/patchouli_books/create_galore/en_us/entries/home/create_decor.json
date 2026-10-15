@@ -26,7 +26,7 @@
       "type": "patchouli:spotlight",
       "item": "copycats:copycat_block",
       "title": "Copycats+",
-      "text": "Copycat blocks take on the look of any block you apply. Includes slices, layers, doors, fences, buttons, plates and even cogwheels and shafts.",
+      "text": "Copycat blocks take on the look of any block you apply: slices, layers, doors, fences, plates, cogwheels, shafts. Replaces the copycats Create: Connected has switched off.",
       "link_recipe": true
     },
     {
@@ -47,18 +47,17 @@
       "type": "patchouli:spotlight",
       "item": "create_connected:six_way_gearbox",
       "title": "Create: Connected",
-      "text": "Adds functional blocks too: a six-way gearbox, clutches, a kinetic bridge and battery, plus more copycats. Check JEI for the full list.",
+      "text": "Functional blocks: six-way gearbox, clutches, kinetic bridge and battery, fan catalysts. Its own copycats are off; old ones migrate to Copycats+.",
       "link_recipe": true
     },
     {
       "type": "patchouli:relations",
       "entries": [
-        "patchouli:home/interiors",
         "patchouli:home/building",
         "patchouli:create_basics/transmission"
       ],
       "title": "Related",
-      "text": "Seats, furniture and gearboxes."
+      "text": "Furniture and gearboxes."
     }
   ]
 }

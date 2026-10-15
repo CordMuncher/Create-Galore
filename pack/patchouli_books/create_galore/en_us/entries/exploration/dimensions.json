@@ -10,7 +10,7 @@
     },
     {
       "type": "patchouli:text",
-      "text": "$(li)$(l:exploration/nether)The Nether$(/l): reworked by Incendium.$(li)$(l:exploration/the_end)The End$(/l): BetterEnd and YUNG's island.$(li)$(l:exploration/aether)The Aether$(/l): glowstone portal.$(li)$(l:exploration/twilight_forest)Twilight Forest$(/l): flower pool and a diamond.$(li)$(l:ocean/abyss)The Abyss$(/l): deep ocean for submarines."
+      "text": "$(li)$(l:exploration/nether)The Nether$(/l): reworked by Incendium.$(li)$(l:exploration/the_end)The End$(/l): BetterEnd and YUNG's island.$(li)$(l:exploration/aether)The Aether$(/l): glowstone portal.$(li)$(l:exploration/twilight_forest)Twilight Forest$(/l): flower pool and a diamond.$(li)Create Deep Seas can add its own abyss dimension (a config option): $(l:ocean/submarines)Submarines$(/l)."
     },
     {
       "type": "patchouli:text",

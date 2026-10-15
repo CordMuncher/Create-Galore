@@ -21,6 +21,10 @@
       "text": "Shaders are optional and can cut frame rate a lot on weaker machines. First world creation is also slow because of how many mods add world generation. This settles after the first load."
     },
     {
+      "type": "patchouli:text",
+      "text": "$(bold)Chunksmith$() pregenerates terrain on demand. Its automatic pregeneration on world entry is switched off here: the default (a 4096-block radius every time you join) can take many hours on a weaker PC. Use the $(bold)/chunksmith$() commands when you want terrain ready ahead of an airship or train."
+    },
+    {
       "type": "patchouli:spotlight",
       "item": "minecraft:spyglass",
       "title": "Distant Horizons",

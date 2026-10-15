@@ -14,6 +14,10 @@
     },
     {
       "type": "patchouli:text",
+      "text": "Pack tuning: Cataclysm's main bosses and all four Mowzie's bosses have 0.7x health and 0.75x damage. They are softened, not removed, and every boss structure still generates."
+    },
+    {
+      "type": "patchouli:text",
       "text": "Others: the $(l:exploration/aether)Aether$(/l) dungeons end in the Slider, Valkyrie Queen and Sun Spirit. Hybrid Aquatic has the Karkinos. $(l:exploration/magic)Iron's Spells$(/l) has the Dead King and a Citadel. Vanilla Wither, Dragon and Elder Guardian also remain."
     },
     {
@@ -24,7 +28,7 @@
       "type": "patchouli:spotlight",
       "item": "minecraft:nether_star",
       "title": "Nether Star",
-      "text": "The Wither's drop is an ingredient in many pack items, such as the Abyssal Pressurizer.",
+      "text": "The Wither's drop is an ingredient in pack items such as Create Nuclear's Reactor Controller.",
       "link_recipe": true
     },
     {

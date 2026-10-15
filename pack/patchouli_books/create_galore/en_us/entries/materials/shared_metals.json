@@ -1,30 +1,23 @@
 {
   "name": "Shared Metals",
-  "icon": "alloyed:steel_ingot",
+  "icon": "tfmg:steel_ingot",
   "sortnum": 3,
   "pages": [
     {
       "type": "patchouli:text",
-      "text": "Several mods add the same metal. Instead of keeping four steels apart, recipes ask for an $(thing)item tag$(): \"any steel ingot\", and every mod's steel qualifies.$(br2)The items stay different and do not stack together."
-    },
-    {
-      "type": "patchouli:spotlight",
-      "item": "alloyed:steel_ingot",
-      "title": "Steel Ingot",
-      "text": "Alloyed's steel. Three other mods add an item with the same name. Check the mod name in the tooltip or in JEI.",
-      "link_recipe": true
-    },
-    {
-      "type": "patchouli:text",
-      "text": "Four steel ingots exist: Alloyed, TFMG, Create Nuclear and Create Big Cannons.$(br2)All sit in the steel ingot tag, with matching nugget and block tags. A recipe written for the tag takes any of them. JEI cycles through the choices.",
-      "title": "Steel"
+      "text": "Several mods add the same metal. In this pack each one has a single $(thing)canonical item$(). Other mods' recipes now produce and use it, so only one kind exists in practice.$(br2)Leftovers convert 1:1 in a crafting grid."
     },
     {
       "type": "patchouli:spotlight",
       "item": "tfmg:steel_ingot",
-      "title": "TFMG Steel",
-      "text": "The one made by TFMG's blast furnace chain: $(l:industry/tfmg_steel)TFMG Steel$(/l). It counts as steel in tag-based recipes of other mods.",
+      "title": "Steel: TFMG",
+      "text": "The canonical steel. Alloyed, Big Cannons and Nuclear recipes now give this item. See $(l:industry/tfmg_steel)TFMG Steel$(/l).",
       "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Alloyed, Big Cannons and Create Nuclear still have their own steel items, but no recipe makes them. Put an old ingot, nugget or block in a crafting grid to get TFMG steel. Recipes that ask for the steel tag still take either.",
+      "title": "Old steel"
     },
     {
       "type": "patchouli:text",
@@ -33,8 +26,15 @@
     },
     {
       "type": "patchouli:text",
-      "text": "$(li)$(item)Lead$(): TFMG and Create Nuclear share ingot, nugget, block and raw tags. Only Nuclear's lead ore generates.$(li)$(item)Bronze$(): Alloyed and Create Big Cannons.$(li)$(item)Cast iron$(): TFMG and Create Big Cannons.",
-      "title": "Other shared metals"
+      "text": "$(li)$(item)Lead$(): Create Nuclear's. TFMG lead converts. Only Nuclear's ore generates.$(li)$(item)Bronze$(): Alloyed's. Big Cannons bronze converts.$(li)$(item)Cast iron$(): still TFMG and Big Cannons, shared by tag.",
+      "title": "Other unified metals"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "createnuclear:lead_ingot",
+      "title": "Lead Ingot",
+      "text": "Smelt Raw Lead from Create Nuclear's ore. TFMG's lead recipes accept this ingot too.",
+      "link_recipe": true
     },
     {
       "type": "patchouli:spotlight",
@@ -45,20 +45,22 @@
     },
     {
       "type": "patchouli:text",
-      "text": "Not shared: titanium, tungsten, platinum, mithril and zinc each come from one mod, so there is one item to find.$(br2)Northstar's Martian Steel has its own tag and is not generic steel.",
-      "title": "Single-source metals"
+      "text": "$(item)Copper wire$() and $(item)copper spool$() are Create Crafts & Additions' (see $(l:industry/electricity)Electricity$(/l)); TFMG's convert. $(item)Sulfur dust$() is TFMG's; Alex's Caves sulfur converts. Salt and cocoa also unify, in Ratatouille.",
+      "title": "Wire, sulfur, salt"
     },
     {
       "type": "patchouli:text",
-      "text": "Raw uranium joins from Create Nuclear and Alex's Caves, and sulfur dust from Alex's Caves and TFMG.$(br2)If a recipe refuses an item, it asks for a specific one, not the tag. JEI shows a tag as a cycling icon.",
-      "title": "Also shared"
+      "text": "Not shared: titanium, tungsten, platinum, mithril and zinc each come from one mod.$(br2)Northstar's Martian Steel has its own tag and is not generic steel. Raw uranium joins Create Nuclear and Alex's Caves.",
+      "title": "Single-source"
     },
     {
       "type": "patchouli:relations",
       "entries": [
         "patchouli:materials/ore_guide",
         "patchouli:industry/tfmg_steel",
+        "patchouli:industry/alloyed",
         "patchouli:industry/nuclear",
+        "patchouli:industry/electricity",
         "patchouli:create_basics/materials"
       ],
       "title": "Related"

@@ -28,6 +28,11 @@
       "link_recipe": true
     },
     {
+      "type": "patchouli:text",
+      "title": "Salt",
+      "text": "Northstar's brine chain makes salt. In this pack it is Create Ratatouille's Salt: brine compacts down to it, and Mars Gravel and Basalt crush into it. Other mods' salt converts 1:1 in a crafting grid."
+    },
+    {
       "type": "patchouli:spotlight",
       "item": "northstar:tungsten_ingot",
       "title": "Tungsten Ingot",

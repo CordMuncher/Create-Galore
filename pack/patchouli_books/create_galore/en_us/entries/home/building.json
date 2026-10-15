@@ -38,7 +38,7 @@
     },
     {
       "type": "patchouli:text",
-      "text": "Furniture here is mostly decor. For seats that work on moving contraptions, see $(l:home/interiors)Create: Interiors$(/l).$(br2)Cafe-style decor ties into $(l:food/cozy_cafe)Cozy Cafe$(/l)."
+      "text": "Furniture here is mostly decor. For seats on moving contraptions, Create's own Seat works, and $(l:transport/coasters)Coasters$(/l) add coaster seats.$(br2)Cafe-style decor ties into $(l:food/cozy_cafe)Cozy Cafe$(/l)."
     }
   ]
 }

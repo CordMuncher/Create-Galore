@@ -10,7 +10,7 @@
     },
     {
       "type": "patchouli:text",
-      "text": "$(thing)Critters and Companions$() adds dragonflies (with armor), ferrets, koi, otters, red pandas, jumping spiders, ladybugs, leaf insects, sea bunnies and dumbo octopuses, plus a Grappling Hook and Pearl Necklaces."
+      "text": "$(thing)Critters and Companions$() adds dragonflies (with armor), ferrets, koi, red pandas, jumping spiders, ladybugs, leaf insects, snails and more, plus a Grappling Hook and Pearl Necklaces. Its otter, Dumbo Octopus and Sea Bunny spawns are off; Hybrid Aquatic has those."
     },
     {
       "type": "patchouli:spotlight",
@@ -28,7 +28,7 @@
     },
     {
       "type": "patchouli:text",
-      "text": "$(thing)Naturalist$() adds land animals: bears, deer, boar, lions, tigers, zebras, giraffes, elephants, hippos, rhinos, lizards, snakes, tortoises, snails, ducks, turkeys, birds, vultures and more. Its sea animals are mostly off in this pack."
+      "text": "$(thing)Naturalist$() adds land animals: bears, deer, boar, lions, tigers, zebras, giraffes, elephants, hippos, rhinos, lizards, snakes, tortoises, ducks, turkeys, vultures and more. Nine sea animals are off: anglerfish, blobfish, giant isopod, great white shark, piranha, jellyfish, starfish, crab and ray."
     },
     {
       "type": "patchouli:spotlight",

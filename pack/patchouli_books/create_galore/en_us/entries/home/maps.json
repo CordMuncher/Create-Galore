@@ -35,7 +35,7 @@
     },
     {
       "type": "patchouli:text",
-      "text": "Create Railways Navigator adds a Navigator item and Advanced Display boards for stations, to plan and show train routes. It complements the map.$(br2)Long trips by air or sea: $(l:flight/destinations)Destinations$(/l)."
+      "text": "Create Railways Navigator adds a Navigator item and Advanced Display boards for stations, to plan and show train routes. Its overlay options key is \\ here.$(br2)Long trips by air or sea: $(l:flight/destinations)Destinations$(/l)."
     }
   ]
 }

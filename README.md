@@ -22,7 +22,7 @@ The repo does not contain any mod jars. The `pack/` folder is a [packwiz](https:
 
 ## The Field Guide (in-game book)
 
-Every player gets the **Create Galore Field Guide** on first join. You can also craft one from a Book and Andesite. It's a searchable wiki, not a quest book: 13 sections and 133 entries explaining how things work, written for someone who has never played Create.
+Every player gets the **Create Galore Field Guide** on first join. You can also craft one from a Book and Andesite. It's a searchable wiki, not a quest book: 13 sections and 130 entries explaining how things work, written for someone who has never played Create.
 
 Sections: Start Here, Create: The Basics, How Things Connect, Industry and Power, Ores and Metals, Survival Layers, Trains and Rides, Flight, Space, The Ocean, Exploration and Adventure, Food and Farming, Home, Storage and Maps.
 

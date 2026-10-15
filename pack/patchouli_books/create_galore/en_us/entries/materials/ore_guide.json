@@ -100,7 +100,7 @@
     },
     {
       "type": "patchouli:text",
-      "text": "No ore generation of their own:$(li)Alloyed: bronze and steel are alloys$(li)Create Crafts & Additions: electrum is an alloy$(li)Cataclysm: its metals are not mined$(br2)Twilight Forest grows Iron, Copper and Gold Oreberry bushes instead of veins.",
+      "text": "No ore generation of their own:$(li)Bronze (Alloyed) and steel (TFMG) are alloys$(li)Create Crafts & Additions: electrum is an alloy$(li)Cataclysm: its metals are not mined$(br2)Twilight Forest grows Iron, Copper and Gold Oreberry bushes instead of veins.",
       "title": "Not mined"
     },
     {

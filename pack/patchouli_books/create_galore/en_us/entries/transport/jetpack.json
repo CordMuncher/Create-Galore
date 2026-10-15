@@ -12,7 +12,7 @@
       "type": "patchouli:spotlight",
       "item": "create_jetpack:jetpack",
       "title": "Jetpack",
-      "text": "Jump rises, sneak descends, G switches the engine on or off, H toggles hover mode. Keys can be changed in Controls.",
+      "text": "Jump rises, sneak descends, N switches the engine on or off (this pack's key; the mod's own is G), H toggles hover. Rebind in Controls.",
       "link_recipe": true
     },
     {

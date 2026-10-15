@@ -34,15 +34,13 @@
     },
     {
       "type": "patchouli:text",
-      "text": "Cold Sweat: Altitude splits the sky into temperature bands by Y. Each band has a message when you enter it (Altitude chill, Extreme altitude exposure). Wind makes exposed players colder; sew Windproof Linings into armor to cut it.",
+      "text": "Cold Sweat: Altitude splits the sky into temperature bands by Y, set in its own config file. Entering the sky bands shows a message (Altitude chill, Extreme altitude exposure). Enclosed cover can reduce the effect.",
       "title": "Altitude"
     },
     {
-      "type": "patchouli:spotlight",
-      "item": "coldsweat_altitude:windproof_lining",
-      "title": "Windproof Lining",
-      "text": "Leather around a Phantom Membrane. Sewn into armor, it reduces wind exposure at altitude.",
-      "link_recipe": true
+      "type": "patchouli:text",
+      "title": "Protection",
+      "text": "Altitude adds no items of its own. Armor protection works through item tags that start empty, so nothing in this pack gives it. Shelter can cut the effect: a roof and walls, or an enclosed Aeronautics ship."
     },
     {
       "type": "patchouli:text",

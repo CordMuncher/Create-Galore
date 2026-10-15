@@ -26,7 +26,7 @@
     },
     {
       "type": "patchouli:text",
-      "text": "$(bold)Water:$() Thirst Was Taken purifies water by boiling in a campfire or furnace.$(br2)$(bold)The cost:$() a lit burner is one of the biggest smog sources. Put a Flue on top. See $(l:survival/pollution)Pollution$(/l)."
+      "text": "$(bold)Water:$() Thirst Was Reclaimed purifies water by boiling in a campfire or furnace.$(br2)$(bold)The cost:$() a lit burner is one of the biggest smog sources. Put a Flue on top. See $(l:survival/pollution)Pollution$(/l)."
     },
     {
       "type": "patchouli:relations",

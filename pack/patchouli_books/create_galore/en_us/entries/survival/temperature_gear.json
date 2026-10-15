@@ -43,7 +43,7 @@
       "type": "patchouli:spotlight",
       "item": "cold_sweat:waterskin",
       "title": "Waterskin",
-      "text": "Cold Sweat's own drink container. Its tooltip shows the keys to drink and pour. A Create Spout can fill it. Thirst Was Taken does not know about it.",
+      "text": "Cold Sweat's own drink container. Its tooltip shows the keys to drink and pour. A Create Spout can fill it. It carries Thirst purity: purify it in a furnace or campfire.",
       "link_recipe": true
     },
     {

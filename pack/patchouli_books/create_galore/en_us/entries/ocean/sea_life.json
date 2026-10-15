@@ -28,7 +28,7 @@
     },
     {
       "type": "patchouli:text",
-      "text": "$(thing)Naturalist$() adds land and sea animals. In this pack its anglerfish, blobfish, giant isopod, great white shark, piranha, jellyfish, starfish, crab and ray are switched off, because Hybrid Aquatic covers them. Its whale, clam, bass, catfish and the rest still spawn."
+      "text": "$(thing)Naturalist$() adds land and sea animals. Here its anglerfish, blobfish, giant isopod, great white shark, piranha, jellyfish, starfish, crab and ray are off, because Hybrid Aquatic covers them. Their buckets and eggs are hidden from JEI. Whale, clam, bass, catfish and the rest still spawn."
     },
     {
       "type": "patchouli:spotlight",
@@ -46,7 +46,7 @@
     },
     {
       "type": "patchouli:text",
-      "text": "Other sea residents: $(l:ocean/aquamirae)Aquamirae$(/l) adds an icy ocean region with its own creatures and bosses, $(thing)Critters and Companions$() adds koi, dumbo octopus and sea bunnies, and $(l:ocean/underwater_places)structures$(/l) give them places to live. The fish worth catching are in $(l:ocean/fishing)Fishing$(/l)."
+      "text": "Other sea residents: $(l:ocean/aquamirae)Aquamirae$(/l) adds an icy ocean region with its own creatures and bosses, and $(thing)Critters and Companions$() adds koi fish (its otter, Dumbo Octopus and Sea Bunny are off here). $(l:ocean/underwater_places)Structures$(/l) give them places to live. Fish worth catching: $(l:ocean/fishing)Fishing$(/l)."
     },
     {
       "type": "patchouli:relations",

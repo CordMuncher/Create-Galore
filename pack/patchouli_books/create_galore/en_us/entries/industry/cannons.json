@@ -26,12 +26,17 @@
       "type": "patchouli:spotlight",
       "item": "createbigcannons:basin_foundry_lid",
       "title": "Basin Foundry Lid",
-      "text": "Melts metal in a basin for casting cannon parts. Its recipes can output TFMG's molten steel.",
+      "text": "Melts bronze, cast iron and nethersteel in a heated basin for casting cannon parts.",
       "link_recipe": true
     },
     {
       "type": "patchouli:text",
-      "text": "TFMG ties in: its Casting Basin casts Big Cannons bronze, cast iron and nethersteel. Its vat with graphite electrodes turns netherite scrap and molten steel into nethersteel. Steel is shared: $(l:materials/shared_metals)Shared Metals$(/l)."
+      "text": "TFMG ties in: its Casting Basin casts Big Cannons bronze, cast iron and nethersteel. Its vat with graphite electrodes turns netherite scrap and molten steel into nethersteel."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Steel and bronze",
+      "text": "Big Cannons' own steel recipes (mixing iron and coal, compacting molten steel) now give $(l:industry/tfmg_steel)TFMG steel$(/l), and its bronze recipes give Alloyed bronze. Old Big Cannons steel and bronze convert in a crafting grid. See $(l:materials/shared_metals)Shared Metals$(/l)."
     },
     {
       "type": "patchouli:text",

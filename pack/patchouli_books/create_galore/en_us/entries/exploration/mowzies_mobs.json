@@ -36,6 +36,10 @@
     {
       "type": "patchouli:text",
       "text": "Smaller mobs: Foliaath, Lantern, Grottol (a mineral creature), Bluff, Naga and Elokosa. Frostmaw's Ice Crystal is a weapon. Bosses: $(l:exploration/bosses)Bosses$(/l)."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Tuned in this pack: the Ferrous Wroughtnaut, Umvuthi, Frostmaw and the Sculptor have 0.7x health and 0.75x damage. They are softened, not removed, and their structures still generate."
     }
   ]
 }

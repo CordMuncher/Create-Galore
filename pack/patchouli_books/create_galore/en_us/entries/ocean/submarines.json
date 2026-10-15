@@ -64,14 +64,13 @@
     },
     {
       "type": "patchouli:text",
-      "text": "Hull strength, oxygen and airlocks are covered in $(l:ocean/hulls_and_pressure)Hulls and Pressure$(/l). Surface ships and sails are in $(l:ocean/sailing)Sailing$(/l). Where to dive: $(l:ocean/underwater_places)Underwater Places$(/l) and $(l:ocean/abyss)the Abyss$(/l)."
+      "text": "Hull strength, oxygen and airlocks are covered in $(l:ocean/hulls_and_pressure)Hulls and Pressure$(/l). Surface ships and sails are in $(l:ocean/sailing)Sailing$(/l). Where to dive: $(l:ocean/underwater_places)Underwater Places$(/l). Deep Seas also holds an unfinished Create Abyss dimension, but it only switches on in development builds, so it is not in this pack."
     },
     {
       "type": "patchouli:relations",
       "entries": [
         "patchouli:ocean/hulls_and_pressure",
         "patchouli:ocean/sailing",
-        "patchouli:ocean/abyss",
         "patchouli:ocean/underwater_places",
         "patchouli:ocean/diving"
       ],

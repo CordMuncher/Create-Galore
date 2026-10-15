@@ -12,7 +12,7 @@
       "type": "patchouli:spotlight",
       "item": "minecraft:hopper",
       "title": "Inventory Profiles Next",
-      "text": "Sorts your inventory or a container with a button or key, moves matching stacks and can lock slots. Many options live in its config screen; right-click to reset a key.",
+      "text": "Sorts inventories with a button or key, moves matching stacks and locks slots. Auto-refill is off in this pack; turn it on in its config screen.",
       "link_recipe": true
     },
     {

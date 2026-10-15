@@ -24,7 +24,7 @@
     },
     {
       "type": "patchouli:text",
-      "text": "Traits come from genes. A Glutton grows fast. A Truffle Snout finds more truffles. A Heavyweight drops double meat. Look at an animal in the ledger to see what it has.$(br2)Rabbit fluff makes the Angora set, which gives freeze immunity and slower hunger."
+      "text": "Traits come from genes. A Glutton grows fast. A Truffle Snout finds more truffles. A Heavyweight drops double meat and leather. Look at an animal in the ledger to see what it has.$(br2)The pack runs Animal Husbandry 0.4.2, so there are no rabbit genetics or Angora armor."
     },
     {
       "type": "patchouli:spotlight",
@@ -35,7 +35,7 @@
     },
     {
       "type": "patchouli:text",
-      "text": "Other animal mods: $(bold)Critters and Companions$() adds small pets like otters, red pandas, koi, dumbo octopus and sea bunnies. $(bold)Naturalist$() adds bears, deer, elephants, lions and many more land animals. Some Naturalist sea life is disabled; see $(l:ocean/sea_life)Sea Life$(/l)."
+      "text": "Other animal mods: $(bold)Critters and Companions$() adds small creatures like red pandas, ferrets, koi and dragonflies. Its otter, Dumbo Octopus and Sea Bunny spawns are off. $(bold)Naturalist$() adds bears, deer, elephants, lions and more. Nine of its sea animals are off; see $(l:ocean/sea_life)Sea Life$(/l)."
     },
     {
       "type": "patchouli:text",

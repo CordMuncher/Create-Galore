@@ -47,6 +47,10 @@
       "title": "Submarine",
       "text": "Alex's Caves' own small submarine, separate from Deep Seas.",
       "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Alex's Caves sulfur dust is not its own item here. Its recipes (Slam, Spelunkie, Polymer Plate, gunpowder) use TFMG's sulfur dust, and leftover Alex's dust converts 1:1 in a crafting grid."
     }
   ]
 }

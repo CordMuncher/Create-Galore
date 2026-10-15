@@ -8,6 +8,11 @@
       "text": "Cold Sweat gives you a body temperature. Hot or cold places push it up or down, and if it goes too far you take damage and cannot sleep.$(br2)It is a layer of survival, not a puzzle: dress for the biome and keep a heat source nearby."
     },
     {
+      "type": "patchouli:text",
+      "title": "In this pack",
+      "text": "Cold Sweat is gentler here: body temperature moves at 0.75 speed, and each hit does half a heart every 2 seconds instead of a full heart.$(br2)Spawn can be snowy. Without warm gear you will freeze once the 5 minute grace period ends, so insulate early."
+    },
+    {
       "type": "patchouli:spotlight",
       "item": "cold_sweat:thermometer",
       "title": "Thermometer",
@@ -26,7 +31,7 @@
     },
     {
       "type": "patchouli:text",
-      "text": "Higher is colder. The pack adds $(l:survival/temperature_create)Cold Sweat: Altitude$(/l), which sets temperature bands by height, adds wind and lets sewn linings shield you.$(br2)Mountains, sky islands and airships are where it bites.",
+      "text": "Higher is colder. The pack adds $(l:survival/temperature_create)Cold Sweat: Altitude$(/l), which splits the height range into bands that change temperature, adds a chill message in the sky and lets shelter or tagged armor cut the effect.$(br2)Mountains, sky islands and airships are where it bites.",
       "title": "Altitude"
     },
     {
@@ -44,7 +49,7 @@
         "patchouli:space/planets"
       ],
       "title": "Related",
-      "text": "Thirst does not talk to Cold Sweat in this pack."
+      "text": "Thirst now works with Cold Sweat: see $(l:survival/thirst)Thirst$(/l)."
     }
   ],
   "category": "patchouli:survival"

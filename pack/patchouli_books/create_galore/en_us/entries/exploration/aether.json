@@ -53,7 +53,7 @@
     },
     {
       "type": "patchouli:text",
-      "text": "Gear from the Aether stacks with other mods. Bosses are in $(l:exploration/bosses)Bosses$(/l); all other travel is in $(l:exploration/dimensions)Dimensions$(/l)."
+      "text": "Gear from the Aether stacks with other mods. The Invisibility Cloak toggles with = by default here. Bosses are in $(l:exploration/bosses)Bosses$(/l); travel is in $(l:exploration/dimensions)Dimensions$(/l)."
     }
   ]
 }
