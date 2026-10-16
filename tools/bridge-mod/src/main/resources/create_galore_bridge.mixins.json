@@ -3,6 +3,6 @@
   "minVersion": "0.8",
   "package": "dev.creategalore.bridge.mixin",
   "compatibilityLevel": "JAVA_21",
-  "mixins": ["SmogEmittersMixin"],
+  "mixins": ["SmogEmittersMixin", "WindsWeatherEffectsMixin"],
   "injectors": { "defaultRequire": 0 }
 }

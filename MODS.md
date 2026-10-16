@@ -1,10 +1,10 @@
 # Mod list
 
-Create Galore 0.1.4, NeoForge 21.1.259 for Minecraft 1.21.1. Everything below comes from Modrinth and is pinned by the files in [`pack/`](pack/).
+Create Galore 0.1.6, NeoForge 21.1.259 for Minecraft 1.21.1. Everything below comes from Modrinth and is pinned by the files in [`pack/`](pack/).
 
 "Side" is how the pack installs it: **both** means it goes on the client and the server; **client** means client only. Server-only world generation mods are marked **both** on purpose, because singleplayer runs them on your own machine.
 
-Built for this pack and shipped inside it: **Create Galore Bridge** 1.1.0 (both), `pack/mods/create-galore-bridge-1.1.0.jar`. It makes TFMG engines and blast furnaces pollute only while they burn fuel, and Blaze Burners only while they have fuel, and adds the Stellar Core, the item that gates space travel. Source and build script in [`tools/bridge-mod/`](tools/bridge-mod/).
+Built for this pack and shipped inside it: **Create Galore Bridge** 1.2.0 (both), `pack/mods/create-galore-bridge-1.2.0.jar`. It makes TFMG engines and blast furnaces pollute only while they burn fuel, and Blaze Burners only while they have fuel, adds the Stellar Core, the item that gates space travel, and stops Aeronautics Winds' weather effects from generating chunks on the server thread. Source and build script in [`tools/bridge-mod/`](tools/bridge-mod/).
 
 Also built for this pack: **Create Galore Lag Watch** 1.0.0 (dedicated server only; it ships in `pack/mods/create-galore-lagwatch-1.0.0.jar` for both sides but does nothing on a client), says in chat when TPS stays under 15 and records a spark profile automatically. How to use it: [docs/server-setup.md](docs/server-setup.md#lag-alerts-and-profiles). Source and build script in [`tools/lagwatch-mod/`](tools/lagwatch-mod/).
 
@@ -33,6 +33,7 @@ Resource pack, turned on by default: [Fresh Animations](https://modrinth.com/res
 | [Better Farming Right Click  + Right Click Harvest](https://modrinth.com/mod/better-farming-right-click) | 1.1.1 | client |
 | [BetterEnd: New Dawn](https://modrinth.com/mod/betterend-neoforge) | 21.0.37 | both |
 | [Blueprint](https://modrinth.com/mod/blueprint) | 8.2.0 | both |
+| [Borderless Window](https://modrinth.com/mod/borderless-window) | 1.21.1-1.7.5_1 | client |
 | [Brewin' And Chewin'](https://modrinth.com/mod/brewin-and-chewin) | 4.5.0+1.21.1-neoforge | both |
 | [Cataclysm x Create Integration](https://modrinth.com/mod/cataclysm_create) | 1.21.1-Neoforge+mod | both |
 | [Chunksmith](https://modrinth.com/mod/chunksmith) | 4.6.0+1.21.1-neoforge | both |

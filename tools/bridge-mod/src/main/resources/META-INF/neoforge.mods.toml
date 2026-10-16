@@ -4,10 +4,10 @@ license = "MIT"
 
 [[mods]]
 modId = "create_galore_bridge"
-version = "1.1.0"
+version = "1.2.0"
 displayName = "Create Galore Bridge"
 authors = "Create Galore"
-description = '''Pack glue for Create Galore: TFMG engines and blast furnaces pollute (Create: Smog) only while they burn fuel, Blaze Burners only while they have fuel, and the Stellar Core item that gates space travel.'''
+description = '''Pack glue for Create Galore: TFMG engines and blast furnaces pollute (Create: Smog) only while they burn fuel, Blaze Burners only while they have fuel, the Stellar Core item that gates space travel, and Aeronautics Winds weather effects that no longer load chunks on the server thread.'''
 
 [[mixins]]
 config = "create_galore_bridge.mixins.json"
@@ -29,6 +29,13 @@ side = "BOTH"
 [[dependencies.create_galore_bridge]]
 modId = "tfmg"
 type = "required"
+versionRange = "*"
+ordering = "AFTER"
+side = "BOTH"
+
+[[dependencies.create_galore_bridge]]
+modId = "aeronauticswinds"
+type = "optional"
 versionRange = "*"
 ordering = "AFTER"
 side = "BOTH"

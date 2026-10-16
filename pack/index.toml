@@ -1,6 +1,11 @@
 hash-format = "sha256"
 
 [[files]]
+file = "config/DistantHorizons.toml"
+hash = "e517e23f9c1bd888203d84d51c1ade393b8dbf5f349606f5529ec6c8c4a6db4e"
+preserve = true
+
+[[files]]
 file = "config/artifacts/items.toml"
 hash = "1867db2a5958350522416c4989199e28e97b28ed4fe4d8f651b34cb4cc79b58d"
 
@@ -10,7 +15,7 @@ hash = "5b4f51df2eeec04d3fde9a881d675d067825ad9009bd0dd4464e4a6787ec2227"
 
 [[files]]
 file = "config/chunksmith/config.json"
-hash = "730389f3107420d173634dfb9913e928c9bc54da7da0f9942f5f2d84ee4b2cc5"
+hash = "d28ea02f9b97d820b6d87a2a4973cd7b58941a9c7b959232ff7694797cebb686"
 
 [[files]]
 file = "config/coldsweat/main.toml"
@@ -923,7 +928,7 @@ hash = "f101272ab36443f08b607a8646408b3865d0c5b9bf629076034c5c5181a0bfe7"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/start_here/performance.json"
-hash = "079f82cd6e41f43358bc5347818b921460c96f42267e344fad27436aaa4bf132"
+hash = "dff8947a4b59bea93aa672a9375338dd81880c84d902d9a4ecafbaa20a637853"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/start_here/tools.json"
@@ -1787,6 +1792,10 @@ hash = "e2ecb2d3f8f7f3eb77ed8f7d27f6e86987e6acf04eae85382d22201bd5f0d7aa"
 preserve = true
 
 [[files]]
+file = "config/subtle_effects/entities.toml"
+hash = "c55466d6b1e32e5e377ea22d41b7c37e4387701ade29e65caab4055023b57abc"
+
+[[files]]
 file = "config/tfmg-common.toml"
 hash = "6932c0866d378225725a5d2e0a9b8fa20e963b5fa7f4cc6ab9bcc57d91974fa6"
 
@@ -1895,6 +1904,11 @@ metafile = true
 [[files]]
 file = "mods/blueprint.pw.toml"
 hash = "932b1f0df544525e277b4f75fc47dc9c01d0481d773f026082f1cae5c4afdb69"
+metafile = true
+
+[[files]]
+file = "mods/borderless-window.pw.toml"
+hash = "c15cf68301be3c07cd25295759f1e1a59aae0823894e07b30f4394cf1f990e8e"
 metafile = true
 
 [[files]]
@@ -2118,8 +2132,8 @@ hash = "db683b65dc15a03dd6de2d34d5dc6ad0e3490744ced513a8cc584784ee9d3d8b"
 metafile = true
 
 [[files]]
-file = "mods/create-galore-bridge-1.1.0.jar"
-hash = "e21911e2ed7ec2a45825e94bb29240e745803eeb3ae60e40952d1da7f338ae95"
+file = "mods/create-galore-bridge-1.2.0.jar"
+hash = "c34080c5b2d07dc67e07be09f59cbf47f72dbf1860dac3ab761650aa7c35867f"
 
 [[files]]
 file = "mods/create-galore-lagwatch-1.0.0.jar"
