@@ -23,12 +23,15 @@ namespace CreateGalore.ServerSetup
     /// </summary>
     public sealed class PackBundle
     {
-        public string PackVersion, Minecraft, NeoForge, TfFile, TfSha256, TfVersion;
+        public string PackVersion, PackSha256, Minecraft, NeoForge, TfFile, TfSha256, TfVersion;
         public List<ModEntry> Mods = new List<ModEntry>();
         public Dictionary<string, ModEntry> BySha512 = new Dictionary<string, ModEntry>(StringComparer.OrdinalIgnoreCase);
-        Func<Stream> openFiles;
+        Func<Stream> openFiles, openChecker;
 
         public Stream OpenServerFiles() { return openFiles(); }
+
+        /// <summary>create-galore-updater.jar, which start-server runs to ask about pack updates.</summary>
+        public Stream OpenUpdateChecker() { return openChecker(); }
 
         public static PackBundle FromAssembly(Assembly asm)
         {
@@ -43,7 +46,7 @@ namespace CreateGalore.ServerSetup
 
         static PackBundle Load(Func<string, Stream> open)
         {
-            var b = new PackBundle { openFiles = () => open("server-files.zip") };
+            var b = new PackBundle { openFiles = () => open("server-files.zip"), openChecker = () => open("create-galore-updater.jar") };
             foreach (var line in ReadLines(open("pack-info.txt")))
             {
                 int eq = line.IndexOf('=');
@@ -52,6 +55,7 @@ namespace CreateGalore.ServerSetup
                 switch (k)
                 {
                     case "pack": b.PackVersion = v; break;
+                    case "pack_sha256": b.PackSha256 = v; break;
                     case "minecraft": b.Minecraft = v; break;
                     case "neoforge": b.NeoForge = v; break;
                     case "tf_file": b.TfFile = v; break;

@@ -6,6 +6,8 @@
 #   README.md
 #   Create-Galore-icon.png                    the pack icon, to set on the launcher instance (a .mrpack can't carry one)
 #   Create-Galore-Updater.zip                 the pre-launch updater, for instances imported before the .mrpack carried it
+#   create-galore-updater.jar                 the same updater on its own; servers run it at start to ask about updates
+#   Create-Galore-pack-info.txt               version and checksum of this release's pack, read by that check
 # Twilight Forest isn't included anywhere: it's CurseForge-only, so players and the app add it by hand.
 #
 # A push to main-6fi2ef that touches the pack, the server files, the app or the docs rebuilds the release
@@ -110,6 +112,10 @@ jobs:
           zip -q "../release/Create-Galore-$V.mrpack" $(printf 'overrides/%s ' $jars)
           (cd overrides && zip -q ../../release/Create-Galore-Updater.zip $jars)
           unzip -l "../release/Create-Galore-$V.mrpack" | grep packwiz-installer
+          # Servers: the app embeds the jar and writes it next to start-server; the check reads the pack info.
+          cp overrides/create-galore-updater.jar ../bundle/
+          cp overrides/create-galore-updater.jar ../release/
+          cp ../bundle/pack-info.txt ../release/Create-Galore-pack-info.txt
 
       - name: Build the server kit
         env:
@@ -118,6 +124,7 @@ jobs:
           kit="Create-Galore-$V-server-kit"
           mkdir -p "dist/$kit"
           cp -r README.md MODS.md docs pack server "dist/$kit/"
+          cp dist/updater/overrides/create-galore-updater.jar "dist/$kit/server/"
           (cd dist && zip -qr "release/$kit.zip" "$kit")
           cp README.md dist/release/README.md
           cp docs/icon-512.png dist/release/Create-Galore-icon.png
@@ -203,7 +210,7 @@ jobs:
           From then on every launch fetches only the mods and configs that changed, removes mods the pack dropped and keeps your keybinds, Distant Horizons, Subtle Effects and other settings. Add \`--clean\` to the end of the command to reset every config to the pack's on each launch instead (bug hunting; mods and worlds stay). An instance imported before the updater shipped (no \`create-galore-updater.jar\` in its \`minecraft\` folder) first needs the three jars from **Create-Galore-Updater.zip** put there. Details in the README under *Updating*.
 
           ### Run a server (Windows)
-          Download **Create-Galore-Server-Setup-$V.exe** and run it (Windows may ask you to confirm because the app isn't signed: More info → Run anyway). Pick a folder and the memory, drop in the Twilight Forest jar, tick the EULA and press Install. It installs NeoForge, downloads the 182 server-side mods from Modrinth (or copies them from a mods folder you drop in), and sets up configs, memory, whitelist and a start script. It downloads Java 21 into the server folder if your PC doesn't have it. Run a newer version of the app on the same folder to update the server: only changed mods and configs are downloaded, mods the pack dropped are removed, and the world, your settings and any config you edited that the pack didn't change are kept.
+          Download **Create-Galore-Server-Setup-$V.exe** and run it (Windows may ask you to confirm because the app isn't signed: More info → Run anyway). Pick a folder and the memory, drop in the Twilight Forest jar, tick the EULA and press Install. It installs NeoForge, downloads the 182 server-side mods from Modrinth (or copies them from a mods folder you drop in), and sets up configs, memory, whitelist and a start script. It downloads Java 21 into the server folder if your PC doesn't have it. Each time \`start-server.bat\` starts, it checks for a newer pack and asks in the console whether to update: no, yes, or back up the world first (into the \`backups\` folder) and then update. It never updates without asking. Updating keeps the world, your settings and any config you edited that the pack didn't change. Running a newer version of the app on the same folder does the same update.
 
           ### Run a server (Linux, macOS, or by hand)
           **Create-Galore-$V-server-kit.zip** has the README, the server guide (\`docs/server-setup.md\`), the pack source and the \`install-server\` scripts.
@@ -247,3 +254,32 @@ jobs:
           }
           if (-not (Select-String -Path "$dir/server.properties" -Pattern '^allow-flight=true$' -Quiet)) { throw "allow-flight not set" }
           if (-not (Select-String -Path "$dir/user_jvm_args.txt" -Pattern '^-Xmx4G$' -Quiet)) { throw "memory not set" }
+          foreach ($f in "create-galore-updater.jar",".galore-pack.txt") {
+            if (-not (Test-Path (Join-Path $dir $f))) { throw "missing $f" }
+          }
+          Get-Content "$dir/.galore-pack.txt"
+          if (-not (Select-String -Path "$dir/.galore-pack.txt" -Pattern '^pack_sha256=[0-9a-f]{64}$' -Quiet)) { throw "no pack checksum for the update check" }
+          Get-Content "$dir/start-server.bat"
+
+      - name: Update the same server with --update (what the start-up check runs)
+        shell: pwsh
+        run: |
+          $exe = (Get-ChildItem app/*.exe).FullName
+          $dir = Join-Path $env:RUNNER_TEMP "galore-server"
+          $p = Start-Process -FilePath $exe -ArgumentList "--update",$dir,"--log","update.txt" -Wait -PassThru
+          Get-Content update.txt | Where-Object { $_ -notmatch '^  ' }
+          if ($p.ExitCode -ne 0) { throw "update failed with exit code $($p.ExitCode)" }
+          if (-not (Select-String -Path "$dir/user_jvm_args.txt" -Pattern '^-Xmx4G$' -Quiet)) { throw "--update changed the memory" }
+          if (-not (Select-String -Path update.txt -Pattern ': 0 downloaded' -Quiet)) { throw "--update downloaded mods again" }
+
+      - name: Start-up update check runs and lets the server start
+        shell: pwsh
+        run: |
+          $dir = Join-Path $env:RUNNER_TEMP "galore-server"
+          $java = if (Test-Path "$dir/java/bin/java.exe") { "$dir/java/bin/java.exe" } else { "java" }
+          Push-Location $dir
+          # No console here, so it must report and start, never wait for an answer.
+          & $java -jar create-galore-updater.jar --server-start
+          $code = $LASTEXITCODE
+          Pop-Location
+          if ($code -ne 0) { throw "update check exited with $code" }

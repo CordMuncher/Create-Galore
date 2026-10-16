@@ -3,7 +3,7 @@ rem Builds (or updates) a Create Galore dedicated server.
 rem Usage: install-server.bat C:\CreateGaloreServer [--clean]
 rem   --clean  also resets every config to the pack's version (config, defaultconfigs, each world's serverconfig).
 rem            For bug hunting. Mods aren't downloaded again; the world, server.properties, memory and whitelist stay.
-rem Needs Java 21. Run it again after the pack changes to update the mods.
+rem Needs Java 21. Start the server with start-server.bat: it asks before applying pack updates.
 setlocal
 set NEOFORGE=21.1.259
 set HERE=%~dp0
@@ -46,6 +46,19 @@ if /i "%~2"=="--clean" (
   java -jar packwiz-installer-bootstrap.jar --bootstrap-no-update -g -s server "%PACK%" || exit /b 1
 )
 
+rem The start script and its update check (asks no / yes / back up first when the pack on GitHub is newer).
+copy /y "%HERE%start-server.bat" start-server.bat >nul
+if exist "%HERE%create-galore-updater.jar" (
+  copy /y "%HERE%create-galore-updater.jar" create-galore-updater.jar >nul
+) else (
+  curl -fsSL -o create-galore-updater.jar https://github.com/emresahin0906-code/Create-Galore/releases/latest/download/create-galore-updater.jar || echo Couldn't download create-galore-updater.jar, so start-server.bat won't check for updates
+)
+set VERSION=
+for /f "tokens=2 delims==" %%V in ('findstr /b /c:"version" "%PACK%"') do for %%A in (%%V) do set "VERSION=%%~A"
+> .galore-pack.txt echo # Create Galore pack version this server has, for the update check at start
+>> .galore-pack.txt echo pack=%VERSION%
+>> .galore-pack.txt echo installer=script
+
 rem First run only: memory settings and server settings. Your own edits are kept on later runs.
 if not exist user_jvm_args.txt.galore (
   copy /y "%HERE%user_jvm_args.txt" user_jvm_args.txt >nul
@@ -60,5 +73,5 @@ if not exist mods\twilightforest-*.jar (
   echo ONE MANUAL STEP: put twilightforest-1.21.1-4.8.3345-universal.jar ^(CurseForge^) into %DEST%\mods
 )
 findstr /c:"eula=true" eula.txt >nul 2>&1 || echo Read https://aka.ms/MinecraftEULA, then put eula=true in %DEST%\eula.txt
-echo Done. Start the server with run.bat (it opens the server window with the live memory and player panel; use run.bat nogui for console only)
+echo Done. Start the server with start-server.bat (it checks for pack updates first, then opens the server window with the live memory and player panel; use start-server.bat nogui for console only)
 endlocal

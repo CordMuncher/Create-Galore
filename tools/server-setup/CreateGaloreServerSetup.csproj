@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <!-- .NET Framework 4.8 ships with Windows 10 and 11, so the exe is small and needs nothing installed.
-       Build: python3 tools/build_server_bundle.py <bundle dir>, then
+       Build: python3 tools/build_server_bundle.py <bundle dir> and tools/updater/build.sh <bundle dir>, then
               dotnet build -c Release -p:BundleDir=<bundle dir> -->
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
@@ -27,5 +27,6 @@
     <EmbeddedResource Include="$(BundleDir)/server-manifest.tsv" LogicalName="bundle.server-manifest.tsv" />
     <EmbeddedResource Include="$(BundleDir)/server-files.zip" LogicalName="bundle.server-files.zip" />
     <EmbeddedResource Include="$(BundleDir)/pack-info.txt" LogicalName="bundle.pack-info.txt" />
+    <EmbeddedResource Include="$(BundleDir)/create-galore-updater.jar" LogicalName="bundle.create-galore-updater.jar" />
   </ItemGroup>
 </Project>
