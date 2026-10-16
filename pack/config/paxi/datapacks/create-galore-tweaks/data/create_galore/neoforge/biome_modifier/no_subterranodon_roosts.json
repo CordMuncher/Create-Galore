@@ -1,0 +1,6 @@
+{
+  "type": "neoforge:remove_features",
+  "biomes": "alexscaves:primordial_caves",
+  "features": "alexscaves:subterranodon_roost",
+  "steps": ["underground_structures","surface_structures","local_modifications","underground_decoration","vegetal_decoration","top_layer_modification","lakes","raw_generation","fluid_springs","strongholds","underground_ores"]
+}

@@ -10,7 +10,7 @@
     },
     {
       "type": "patchouli:text",
-      "text": "The six: $(bold)Magnetic Caves$(), $(bold)Primordial Caves$() (dinosaurs), $(bold)Toxic Caves$() (acid and uranium), $(bold)Abyssal Chasm$() (a deep water trench), $(bold)Forlorn Hollows$() and $(bold)Candy Cavity$()."
+      "text": "The six: $(bold)Magnetic Caves$(), $(bold)Primordial Caves$() (dinosaurs, minus the rideable Subterranodon), $(bold)Toxic Caves$() (acid and uranium), $(bold)Abyssal Chasm$() (a deep water trench), $(bold)Forlorn Hollows$() and $(bold)Candy Cavity$()."
     },
     {
       "type": "patchouli:spotlight",
@@ -39,14 +39,12 @@
     },
     {
       "type": "patchouli:text",
-      "text": "Magnetic Caves add Magnetic Levitation Rail and Neodymium nodes. The Abyssal Chasm links to the ocean: the mod also adds an item called a Submarine, if you want a smaller craft than a $(l:ocean/submarines)Deep Seas$(/l) build."
+      "text": "Magnetic Caves add Magnetic Levitation Rail and Neodymium nodes. The Abyssal Chasm is a deep water trench under the ocean, best reached in a $(l:ocean/submarines)Deep Seas$(/l) submarine."
     },
     {
-      "type": "patchouli:spotlight",
-      "item": "alexscaves:submarine",
-      "title": "Submarine",
-      "text": "Alex's Caves' own small submarine, separate from Deep Seas.",
-      "link_recipe": true
+      "type": "patchouli:text",
+      "title": "Turned off here",
+      "text": "Two Alex's Caves rides skip the vehicle game, so they are off. The flying $(bold)Subterranodon$() never spawns. The $(bold)Hullbreaker$() no longer drops the Enigmatic Engine, so you can't build its small Submarine. Wrecked ones in the chasm ruins can still be fixed. See $(l:transport/getting_around)Getting Around$(/l)."
     },
     {
       "type": "patchouli:text",

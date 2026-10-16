@@ -1,0 +1,6 @@
+{
+  "pack": {
+    "pack_format": 48,
+    "description": "Create Galore: no Elytra. Takes Elytra out of End ships, loot and mob drops, swaps the Jetpack's Elytra for a Shulker Shell, and removes any Elytra that still reaches a player. Delete this folder to play with Elytra."
+  }
+}

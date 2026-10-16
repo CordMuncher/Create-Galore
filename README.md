@@ -4,7 +4,7 @@ A big, long-term Minecraft modpack built around the Create mod. Think "Minecraft
 
 | | |
 |---|---|
-| **Version** | 0.1.1 |
+| **Version** | 0.1.2 |
 | **Minecraft** | 1.21.1 |
 | **Loader** | NeoForge **21.1.259** (pinned, don't update it, see [Known issues](#known-issues)) |
 | **Mods** | 222 from Modrinth + Twilight Forest added by hand, plus 4 shader packs and the Fresh Animations resource pack |
@@ -13,7 +13,7 @@ A big, long-term Minecraft modpack built around the Create mod. Think "Minecraft
 
 ## Install (players)
 
-1. Download [`Create-Galore-0.1.1.mrpack`](Create-Galore-0.1.1.mrpack) from this repo.
+1. Download [`Create-Galore-0.1.2.mrpack`](Create-Galore-0.1.2.mrpack) from this repo.
 2. Import it:
    - **Prism Launcher:** Add Instance → Import → pick the `.mrpack`.
    - **Modrinth App:** drag the `.mrpack` onto the window (or File → Import).
@@ -62,6 +62,14 @@ Everything below ships as plain config files or a datapack in `pack/` (no mod ja
 - Naturalist's 9 sea creatures that Hybrid Aquatic already has don't spawn, and their fish items are hidden from JEI. Naturalist's whales, clams and land animals are unchanged.
 - Critters and Companions' otter, Dumbo Octopus and Sea Bunny are off (Hybrid Aquatic covers them).
 - Create Connected's copycats are off in favour of Create: Copycats+. The rest of Create Connected stays.
+
+**You travel by building.** Trains, airships, submarines, cars and hypertubes are the way around, so shortcuts that make them pointless are off. Sidegrades that cost something (Ender Pearls, a double jump, short Aether flights, the air-limited Jetpack) stay.
+- **No Elytra.** End City ships no longer get one, BetterEnd and Dungeons and Taverns loot gives Shulker Shells instead, and Incendium's paratroopers stop dropping theirs. If one still reaches a player in survival (old chunks, a mod we missed), it crumbles into 2 Phantom Membrane with a chat message. The Create Jetpack recipe takes a Shulker Shell where it used to take an Elytra. Iron's Spells' Angel Wings (Elytra flight as a spell) is off too.
+- **Iron's Spells:** Portal (permanent two-way teleport links) and Recall (home from anywhere) are off, and Portal Frames and Create Wizardry's Hither-Thither Wand can't be crafted. The spell switches live in `config/irons_spellbooks_spell_config/irons_spellbooks/` (Iron's datapack spell configs only take effect after a `/reload`, so the pack uses the config folder, which works from the first boot).
+- **Artifacts:** the Warp Drive (endless free Ender Pearls) no longer appears in loot and does nothing if you have one.
+- **Alex's Caves:** the Subterranodon, a tamed flyer with no real limit on level flight, doesn't spawn. The Hullbreaker no longer drops the Enigmatic Engine, so its fuel-free Submarine can't be built (wrecks in the Abyssal Chasm ruins can still be repaired).
+
+**Want Elytra back?** It's one switch for the whole world, set by whoever runs it (the singleplayer instance or the server). Stop the game or server, then move the folder `config/paxi/optional/create-galore-with-elytra` into `config/paxi/datapacks/`, and start again. It loads after `create-galore-no-elytra` and puts every original file back: Elytra return in End Cities you haven't explored yet and in loot, the old Jetpack recipe comes back, and nothing gets removed from inventories. Angel Wings stays off. Pack updates don't undo it, because the updater leaves folders it didn't install alone. To turn Elytra off again, delete that folder from `datapacks/`. The other travel switches stay off either way. `tools/build_no_elytra.py` rebuilds both folders from the mod jars after mod updates.
 
 **Gentler where it should be, harsh where it should be.**
 - Cataclysm and Mowzie's bosses have 70% health and 75% damage. All their structures still spawn.
@@ -130,6 +138,7 @@ None of these stop the game.
 - **Animal Husbandry is on 0.4.2**, so 0.5.0's rabbit genetics and Angora armor are missing until a fixed version ships.
 - **First launch:** Deep Seas' photosensitivity question still shows once. Minecraft's accessibility prompt is turned off by the shipped `options.txt`, but launchers overwrite `options.txt` when the pack updates, which also resets the key rebinds above. If the Deep Seas warning's button sits off-screen in a small window, press Tab then Enter.
 - **Log noise:** a few recipes and many loot tables log errors because they point at mods that aren't installed (Botania, Blood Magic, Mekanism, Steam 'n' Rails tracks for other wood mods, and so on). Sable also warns about a few copycat blocks that don't exist. All harmless, and only fixable in those mods.
+- **A one-time `/reload` about 5 seconds after a world opens.** Iron's Spells only applies its spell switches (Portal, Recall and Angel Wings off) after a reload, so the pack's datapack runs one automatically. Expect a short freeze and a "Reloading" line in the log. Without it those spells would still drop as scrolls.
 - **First world creation is slow** (about 45 s for the spawn area on the test machine) because of all the world-gen mods. Normal after that.
 
 ## What was tested
@@ -144,6 +153,7 @@ All tests ran headless in a cloud machine (4 cores, 16 GB RAM, no GPU), so speed
 | Singleplayer: client boots and plays in a world | ✅ |
 | Ambiance mods: client boots into a world with a sound device, Sound Physics' EFX starts, a running Create fan, animals, villager and held torch render and play with no new errors | ✅ |
 | Field Guide from a fresh `.mrpack` import: handed out, opens, search and links work, recipe shows in JEI | ✅ |
+| 0.1.2 travel changes on a dedicated server with a client joined: End City ship generates without its Elytra, mod loot and Lootr give Shulker Shells, the Hullbreaker drops no Enigmatic Engine, an Elytra given to a survival player crumbles into Phantom Membrane, 527 random spell scrolls with no Portal, Recall or Angel Wings, the opt-in folder brings Elytra back, Field Guide opens on the new Getting Around page | ✅ |
 | Real FPS, shaders, Distant Horizons visuals, gameplay feel | ❌ Needs a real PC with a GPU |
 
 **Memory:** about 9.3 GB of process memory on the server and 8-9.6 GB on the client with an 8 GB heap. A laptop with 16 GB can play but shouldn't host and play at the same time.
@@ -152,17 +162,17 @@ All tests ran headless in a cloud machine (4 cores, 16 GB RAM, no GPU), so speed
 
 ## Repo layout
 
-- `Create-Galore-0.1.1.mrpack`: the importable pack, built from `pack/`
-- `pack/`: [packwiz](https://packwiz.infra.link/) source, one `.pw.toml` per mod or shader, plus configs (`pack/config/`), the datapack (`pack/config/paxi/datapacks/create-galore-tweaks`) and the Field Guide (`pack/patchouli_books/`)
+- `Create-Galore-0.1.2.mrpack`: the importable pack, built from `pack/`
+- `pack/`: [packwiz](https://packwiz.infra.link/) source, one `.pw.toml` per mod or shader, plus configs (`pack/config/`), the datapacks (`pack/config/paxi/datapacks/create-galore-tweaks`, always on, `create-galore-no-elytra`, and the opt-in `config/paxi/optional/create-galore-with-elytra`) and the Field Guide (`pack/patchouli_books/`)
 - `MODS.md`: full mod list with versions and sides
 - `server/`: server install scripts, memory settings and a starting `server.properties`
 - `docs/`: server guide, Field Guide editing notes, screenshots
-- `tools/`: scripts to extract item and recipe IDs from mod jars and check the Field Guide
+- `tools/`: scripts to extract item and recipe IDs from mod jars, check the Field Guide and rebuild the no-Elytra datapack
 
 To rebuild the `.mrpack` after changing `pack/`:
 
 ```
 cd pack
 packwiz refresh
-packwiz modrinth export -o ../Create-Galore-0.1.1.mrpack
+packwiz modrinth export -o ../Create-Galore-0.1.2.mrpack
 ```

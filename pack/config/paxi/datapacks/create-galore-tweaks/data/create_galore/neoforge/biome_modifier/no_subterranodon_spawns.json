@@ -1,0 +1,5 @@
+{
+  "type": "neoforge:remove_spawns",
+  "biomes": "alexscaves:primordial_caves",
+  "entity_types": "alexscaves:subterranodon"
+}

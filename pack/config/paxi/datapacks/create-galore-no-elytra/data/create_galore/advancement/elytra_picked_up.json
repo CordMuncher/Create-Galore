@@ -1,0 +1,15 @@
+{
+  "criteria": {
+    "got_elytra": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          { "items": "minecraft:elytra" }
+        ]
+      }
+    }
+  },
+  "rewards": {
+    "function": "create_galore:no_elytra"
+  }
+}

@@ -1,6 +1,6 @@
 {
   "name": "Flight",
   "description": "Airships and aircraft built from blocks with Create Aeronautics and its add-ons.",
-  "icon": "minecraft:elytra",
+  "icon": "aeronautics:propeller_bearing",
   "sortnum": 7
 }

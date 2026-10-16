@@ -24,7 +24,7 @@
     },
     {
       "type": "patchouli:text",
-      "text": "Both versions are crafted by mechanical crafting from an Elytra, Chutes, Brass plates, Precision Mechanisms and the backtank. Press R over one in JEI to see the layout.$(br2)For something larger than one person, see $(l:flight/airships)Airships$(/l).",
+      "text": "Both versions are crafted by mechanical crafting from a Shulker Shell, Chutes, Brass plates, Precision Mechanisms and the backtank. Press R over one in JEI to see the layout.$(br2)For something larger than one person, see $(l:flight/airships)Airships$(/l).",
       "title": "Making one"
     },
     {

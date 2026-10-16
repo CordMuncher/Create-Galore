@@ -1,6 +1,10 @@
 hash-format = "sha256"
 
 [[files]]
+file = "config/artifacts/items.toml"
+hash = "1867db2a5958350522416c4989199e28e97b28ed4fe4d8f651b34cb4cc79b58d"
+
+[[files]]
 file = "config/cataclysm-common.toml"
 hash = "5b4f51df2eeec04d3fde9a881d675d067825ad9009bd0dd4464e4a6787ec2227"
 
@@ -45,8 +49,80 @@ file = "config/inventoryprofilesnext/inventoryprofiles.json"
 hash = "0abd5b4ce01b2398fb7e6a8df9c72170564bce762feb906eec41dc5eefd99c6a"
 
 [[files]]
+file = "config/irons_spellbooks_spell_config/irons_spellbooks/angel_wing.json"
+hash = "3875b81e90b636147cc5bce5f247b71ad25877c165f4773c98d5c2ad61db515e"
+
+[[files]]
+file = "config/irons_spellbooks_spell_config/irons_spellbooks/portal.json"
+hash = "3875b81e90b636147cc5bce5f247b71ad25877c165f4773c98d5c2ad61db515e"
+
+[[files]]
+file = "config/irons_spellbooks_spell_config/irons_spellbooks/recall.json"
+hash = "3875b81e90b636147cc5bce5f247b71ad25877c165f4773c98d5c2ad61db515e"
+
+[[files]]
 file = "config/mowziesmobs-common.toml"
 hash = "370d63f9cf1ce54a034f75bd46fe245ba501aeb6f60235e005bc136d65bd18d5"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-no-elytra/data/betterend/loot_table/chests/end_village_bonus_loot.json"
+hash = "14b667bda198cf101064e94515212d3047f47d66ed06bfac45e4d0adfe9923ef"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-no-elytra/data/create_galore/advancement/elytra_picked_up.json"
+hash = "b60474c434ac6e8baa4894fc137ed712256ba8dd5c476cc07cb082c5d5608e2b"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-no-elytra/data/create_galore/function/no_elytra.mcfunction"
+hash = "670555bf12aafd6130be4ce85719b037ef62ed8ece38edaa1f9e18bd16be04b1"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-no-elytra/data/create_jetpack/recipe/jetpack.json"
+hash = "fc81fc48714e877b4e138959c63e177690d088ad8d29685c3722bfb44991cf29"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-no-elytra/data/create_jetpack/recipe/netherite_jetpack.json"
+hash = "14e05164f778324220016839356ff6321aedd84cb998ea06db56b31878ccd4ef"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-no-elytra/data/incendium/function/castle/paratrooper/init.mcfunction"
+hash = "73bb5d0035951c6a6883bd266afe941c81b745b3ddfbaf8e9c61227aca33a1f9"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-no-elytra/data/incendium/function/castle/utils/action/alert.mcfunction"
+hash = "181115a9299a4240a3b6bcbc21482d1018825a06b7c5455272c42a26583139d7"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-no-elytra/data/incendium/structure/castle/mobs/shock_troop.nbt"
+hash = "37701679889e6eedd98a6155bf2709daa51a9a887ea8c597aaadd60c56330f35"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-no-elytra/data/lootr/loot_table/chests/elytra.json"
+hash = "57112514491bf534e34fa7718c7a6ff814d1150fc41b3429e9b41549c1049b1a"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-no-elytra/data/minecraft/structure/end_city/ship.nbt"
+hash = "a35881824bdd03ee060d852bcba8b68f75b1b33323caab5e0d584aad72ff01b9"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-no-elytra/data/nova_structures/loot_table/chests/end_castle/vault_brigattine.json"
+hash = "0e9ddf75f5f5826d178684a8a39c81269e0440f62e86fc800ba8ed86a23eb710"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-no-elytra/data/nova_structures/loot_table/chests/end_castle/vault_galleon.json"
+hash = "e9cd8850e0d157f621a8c4d66efc5ea6098b2cf9df914c7da864ea23e90a1d00"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-no-elytra/data/nova_structures/loot_table/chests/end_castle/vault_slope.json"
+hash = "6af9f3485db0c70232a92919f7ce6d82a6a1308ce43efb3461b2315f5cc94850"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-no-elytra/pack.mcmeta"
+hash = "e30684e25734d607a220c70ab369ede1ee36debe5c1944d8e235eb616f215a81"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/alexscaves/loot_table/entities/hullbreaker.json"
+hash = "81818ccfcec6360dd809783dc88c4e4c4ed19d63355b7702d25aa91ae831e7ed"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/alexscaves/recipe/gunpowder_from_sulfur.json"
@@ -117,8 +193,28 @@ file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/advancemen
 hash = "a87cfb341b081fa7a6f5db8eac14478d035f4f832fcb17bbd9d7f9395159c8dc"
 
 [[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/function/boot/load.mcfunction"
+hash = "e4c66a7f7030c85beeeb2673893ca182b682610fb6cd9978020bafed01c77ff9"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/function/boot/reload.mcfunction"
+hash = "ce752e6bd46fdd76b4e3468bdf522c4ecb63eeb9791d8c94f98d6c0ee08959cf"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/function/boot/schedule.mcfunction"
+hash = "524015215431150ebda3f2f2b98c12c730c92f7c541db72b4ead9fa40a9fe5e1"
+
+[[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/function/give_field_guide.mcfunction"
 hash = "af4fa526d27f76c62673ca2a9657238a60c17e68d6078be98bdd2f8ca671d79a"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/neoforge/biome_modifier/no_subterranodon_roosts.json"
+hash = "7dc290b1ed75022d564ff5545b21d51645b076b75999410dab30e0838551de91"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/neoforge/biome_modifier/no_subterranodon_spawns.json"
+hash = "26a03815320aef797b24587a9fa55321ffba2c1cc4bbe096de2f672f36d99cba"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/recipe/field_guide.json"
@@ -369,6 +465,18 @@ file = "config/paxi/datapacks/create-galore-tweaks/data/createnuclear/recipe/mix
 hash = "b6b682fa31f2d30118d09943c89a1edc0dbf9024ca32b9743708789147f6550c"
 
 [[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/irons_spellbooks/recipe/portal_frame.json"
+hash = "99f52b3269f385651ced345b8121c15f1351c6b7aeb55ed18eed803852ad0d9a"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/irons_spellbooks/recipe/sequenced_assembly/hither_thither_wand.json"
+hash = "694aa0e1f42ff2ba4d119f604fe90db5dd09cae79ee470b772f0a68f35b05fb4"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/minecraft/tags/function/load.json"
+hash = "de4848ad2d163c774b045ef1342097e018eb536fc8a44667902f04917f2975f6"
+
+[[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/naturalist/tags/worldgen/biome/has_anglerfish.json"
 hash = "78211ca3f4a5f24669bc16b1132aa4dcd29c3d053564742f1728da77430c372b"
 
@@ -518,7 +626,63 @@ hash = "b81f5339abb9eadad01034f97afaead2e67f5a409db509a2508e6ff2180937a0"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/pack.mcmeta"
-hash = "1f5039fa9795ec3582c1f8c6dbe66b4b38a44fa88daabe69dba88176f5b9d11e"
+hash = "7269b2729282f4e6a7a6194e76656f53c51406754dc40c553718b081609a9fdd"
+
+[[files]]
+file = "config/paxi/optional/create-galore-with-elytra/data/betterend/loot_table/chests/end_village_bonus_loot.json"
+hash = "e90bc63dd162a0ea96c54686d1a9b40a51f62e2e6781e386492434d61eb0c92a"
+
+[[files]]
+file = "config/paxi/optional/create-galore-with-elytra/data/create_galore/advancement/elytra_picked_up.json"
+hash = "a7a615e00f0146265ca53a880a59931bb4c03b78b4a2f3998d937ee21e185ab6"
+
+[[files]]
+file = "config/paxi/optional/create-galore-with-elytra/data/create_galore/function/no_elytra.mcfunction"
+hash = "6b01a26c3572db492f4a1ecf2e486b7b77c5cfc2458e9120e297d5d68158366a"
+
+[[files]]
+file = "config/paxi/optional/create-galore-with-elytra/data/create_jetpack/recipe/jetpack.json"
+hash = "9701daf26ab7b85fd83f4d6b8011761b06960b11572c7e8eea76ad3d09d9dbd1"
+
+[[files]]
+file = "config/paxi/optional/create-galore-with-elytra/data/create_jetpack/recipe/netherite_jetpack.json"
+hash = "cbf720de4243b3e43b7e10bdc4f59c045233946620294789c94061490f2aa73d"
+
+[[files]]
+file = "config/paxi/optional/create-galore-with-elytra/data/incendium/function/castle/paratrooper/init.mcfunction"
+hash = "2d2f460d146c74b9bad3a60a303937015920c5eb0392d42901d2ce5f643bdd1f"
+
+[[files]]
+file = "config/paxi/optional/create-galore-with-elytra/data/incendium/function/castle/utils/action/alert.mcfunction"
+hash = "93ac40ffe8f13d60880a515f295188535582729137be5a8919059cfd066f369d"
+
+[[files]]
+file = "config/paxi/optional/create-galore-with-elytra/data/incendium/structure/castle/mobs/shock_troop.nbt"
+hash = "a8a55635cbbb85f86b1658e5401e889aa0d6c468041ebff0fcd56d660b29437c"
+
+[[files]]
+file = "config/paxi/optional/create-galore-with-elytra/data/lootr/loot_table/chests/elytra.json"
+hash = "d9dbc29b6a6b37345251bb58e0437e43cc1398af399053c78d53d8ec02670fac"
+
+[[files]]
+file = "config/paxi/optional/create-galore-with-elytra/data/minecraft/structure/end_city/ship.nbt"
+hash = "b4a10cd0c6a495d96726c09713d7ec42ef991858cd4af6ebd86522ab45d78147"
+
+[[files]]
+file = "config/paxi/optional/create-galore-with-elytra/data/nova_structures/loot_table/chests/end_castle/vault_brigattine.json"
+hash = "a03a5b6af739dcadb67df9e61046cd6a5fd353e8e1c9ebf8b44d7a2eeff76ee3"
+
+[[files]]
+file = "config/paxi/optional/create-galore-with-elytra/data/nova_structures/loot_table/chests/end_castle/vault_galleon.json"
+hash = "5243b809ca1087c53c2f46f93713e7bfa69a94ea05801df6a29f79505519e682"
+
+[[files]]
+file = "config/paxi/optional/create-galore-with-elytra/data/nova_structures/loot_table/chests/end_castle/vault_slope.json"
+hash = "a0416becc3c20dcaa41dfeeee84dade6beb3ebfb0fb380fe581234e609955914"
+
+[[files]]
+file = "config/paxi/optional/create-galore-with-elytra/pack.mcmeta"
+hash = "496612965e223ce5e5f35c83c8f6bd58bb98792b1ce1f50a02cc388d952b67a2"
 
 [[files]]
 file = "config/sophisticatedbackpacks-server.toml"
@@ -1668,7 +1832,7 @@ hash = "e2df572a59366b61fb695562e962cabed2aa73d318bbdd8d95b0bbbec8913f23"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/categories/flight.json"
-hash = "173dcf636bb128843bae9f7286a64e6c2c7c2d29d1e42daa37732add7cf284cf"
+hash = "f38f69535ae20128ea08550f52cbd654528b93f232841b8c194bb7d0a0a95727"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/categories/food.json"
@@ -1816,7 +1980,7 @@ hash = "b7cdd30ffeccf63f9944c77732f1d65d1c3a0f5dbe94e38e55cf35ce578e8b1e"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/exploration/alexs_caves.json"
-hash = "3eb4282d39311f44419a621859d481742141f46ec646e20b214ad78edadd4146"
+hash = "555aaf9935a5a8d3c1f30f702432b759d6b048093465e7b13607a22fc7549d45"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/exploration/bosses.json"
@@ -1852,7 +2016,7 @@ hash = "ad0bd258700677d0f338c996817a2e208803f2cfac6cf9e9da7243a4bcc772b9"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/exploration/irons_spellbooks.json"
-hash = "543d9cb715603a3181b458d85ad44368eb28f61b297fcb5cf33141d287737e3b"
+hash = "2b8e6d4ab5740abf420d1c2d83cc534fb5b5fb43004a45654e56abcad0aadab9"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/exploration/lootr.json"
@@ -2207,12 +2371,16 @@ file = "patchouli_books/create_galore/en_us/entries/transport/coasters.json"
 hash = "64e176d6bb4a242206304def433806d0c10b0441d32d46d6cf91e32c46a62b56"
 
 [[files]]
+file = "patchouli_books/create_galore/en_us/entries/transport/getting_around.json"
+hash = "214271ada73d87668980c3116761f34eb7ffd009a67dd858a517fbc88977c5fd"
+
+[[files]]
 file = "patchouli_books/create_galore/en_us/entries/transport/hypertubes.json"
 hash = "88760491d88d901334250e0adb0339386e564c863b3de6934748376f1f32d204"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/transport/jetpack.json"
-hash = "ab889b337d99b293a17a3ceb598bf422f87a1796ae4ef10b4eb20f6968fe3e56"
+hash = "9ede772f632afc3cb18c615a5ffbcb07c4c58fb5732ff591fd29e6c938e8fa46"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/transport/train_addons.json"
