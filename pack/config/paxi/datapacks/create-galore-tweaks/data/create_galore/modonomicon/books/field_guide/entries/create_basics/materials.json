@@ -1,0 +1,93 @@
+{
+  "category": "create_basics",
+  "name": "Core Materials",
+  "description": "Create uses its own materials, made in steps.",
+  "icon": {
+    "item": "create:andesite_alloy"
+  },
+  "x": 4,
+  "y": 0,
+  "sort_number": 4,
+  "parents": [
+    {
+      "entry": "create_basics/processing",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": false
+    },
+    {
+      "entry": "create_basics/heat",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Core Materials",
+      "text": "Create uses its own materials, made in steps. Early ones need little; later ones need heat and machines. Look up exact recipes in JEI with R."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create:andesite_alloy"
+      },
+      "title": "Andesite Alloy",
+      "text": "The first Create material. Andesite plus iron or zinc nuggets, crafted in a diagonal or mixed in a basin."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create:andesite_casing"
+      },
+      "title": "Andesite Casing",
+      "text": "Right-click a stripped log with andesite alloy. Used to build early machines and to encase shafts."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create:zinc_ingot"
+      },
+      "title": "Zinc Ingot",
+      "text": "Smelted from zinc ore. Mixed with copper over heat to make brass. See [#](2E5AAC)[the Ore Guide](entry://materials/ore_guide)[#]() for where to find it."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create:brass_ingot"
+      },
+      "title": "Brass Ingot",
+      "text": "Copper and zinc mixed in a heated basin. Brass opens the second tier of Create machines."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create:brass_casing"
+      },
+      "title": "Brass Casing",
+      "text": "Right-click a stripped log with brass. Needed for most advanced machines. See [#](2E5AAC)[Brass and Assembly](entry://create_basics/brass_and_assembly)[#]()."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create:iron_sheet"
+      },
+      "title": "Iron Sheet",
+      "text": "Made by pressing an iron ingot with a mechanical press. Brass and copper also press into sheets."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create:electron_tube"
+      },
+      "title": "Electron Tube",
+      "text": "Crafted from polished rose quartz over an iron sheet. Needed for circuits and many brass machines."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Copper is smelted from ore and pressed into sheets. Copper casing is for fluid pipes. Metals are shared across mods: see [#](2E5AAC)[the Ore Guide](entry://materials/ore_guide)[#]() and [#](2E5AAC)[Processing](entry://create_basics/processing)[#]()."
+    }
+  ]
+}

@@ -1,0 +1,103 @@
+{
+  "category": "space",
+  "name": "Oxygen and Suits",
+  "description": "Off Earth you need air and the right temperature.",
+  "icon": {
+    "item": "northstar:iron_space_suit_chestpiece"
+  },
+  "x": -1,
+  "y": -1,
+  "sort_number": 5,
+  "parents": [
+    {
+      "entry": "space/reaching_space",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Oxygen and Suits",
+      "text": "Off Earth you need air and the right temperature. Northstar handles both with sealed rooms and spacesuits. The death messages say it all: ran out of oxygen, or forgot their spacesuit."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "northstar:iron_space_suit_chestpiece"
+      },
+      "title": "Iron Space Suit",
+      "text": "Made from iron armour, iron plates and tinted glass. The chestplate carries the oxygen supply."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "northstar:martian_steel_space_suit_chestpiece"
+      },
+      "title": "Martian Steel Space Suit",
+      "text": "The tougher suit. Martian steel gear and netherite diving gear are tagged heat resistant."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "northstar:oxygen_filler"
+      },
+      "title": "Oxygen Filler",
+      "text": "Right-click in a suit, then pump Oxygen Gas in to fill it, or extract it back out."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "northstar:oxygen_sealer"
+      },
+      "title": "Oxygen Sealer",
+      "text": "Oxygen from behind, rotation from below, and it fills the sealed area around it. It shows how much it can seal and warns if the room leaks."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "northstar:large_fan"
+      },
+      "title": "Large Fan",
+      "text": "Raises the area a Sealer or Temperature Regulator can cover. Needs an Encased Chain Drive; a wrench sets chain side."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "northstar:atmospheric_concentrator"
+      },
+      "title": "Atmospheric Concentrator",
+      "text": "Collects Oxygen or Carbon from air. Does nothing on worlds without an atmosphere."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "northstar:electrolysis_machine"
+      },
+      "title": "Electrolysis Machine",
+      "text": "Splits water into hydrogen and oxygen, which fuel rockets and fill suits."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "northstar:temperature_regulator"
+      },
+      "title": "Temperature Regulator",
+      "text": "Sets the temperature in a box you size. Vents let air pass; wool makes an insulated vent that blocks heat but not air."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "northstar:solar_panel"
+      },
+      "title": "Solar Panel",
+      "text": "Turns sunlight into rotation. A Combustion Engine burns rocket fuel for rotation and needs oxidizer."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Related",
+      "text": "Temperature on Earth, worlds, power and stress.\n\n- [#](2E5AAC)[Temperature](entry://survival/temperature)[#]()\n- [#](2E5AAC)[Planets](entry://space/planets)[#]()\n- [#](2E5AAC)[Power Sources](entry://create_basics/power_sources)[#]()\n- [#](2E5AAC)[Stress](entry://create_basics/stress)[#]()"
+    }
+  ]
+}

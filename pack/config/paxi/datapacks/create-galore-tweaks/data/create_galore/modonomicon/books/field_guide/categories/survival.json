@@ -1,0 +1,14 @@
+{
+  "name": "Survival Layers",
+  "description": "Temperature, thirst, seasons and pollution: what they do to you and how machines help.",
+  "icon": {
+    "item": "cold_sweat:thermometer"
+  },
+  "sort_number": 5,
+  "display_mode": "node",
+  "background": "modonomicon:textures/gui/dark_slate_seamless.png",
+  "background_width": 512,
+  "background_height": 512,
+  "max_scroll_x": 240,
+  "max_scroll_y": 150
+}

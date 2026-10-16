@@ -1,0 +1,90 @@
+{
+  "category": "create_basics",
+  "name": "Power Sources",
+  "description": "Every Create network needs at least one source of rotation.",
+  "icon": {
+    "item": "create:water_wheel"
+  },
+  "x": -2,
+  "y": -2,
+  "sort_number": 2,
+  "parents": [
+    {
+      "entry": "create_basics/rotation",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": false
+    },
+    {
+      "entry": "create_basics/stress",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Power Sources",
+      "text": "Every Create network needs at least one source of rotation. They differ in how much capacity they give, how fast they spin, and how much setup they take."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create:hand_crank"
+      },
+      "title": "Hand Crank",
+      "text": "You power it. Hold Use to rotate one way, sneak and hold Use for the other. Useful for testing and tiny jobs."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create:water_wheel"
+      },
+      "title": "Water Wheel",
+      "text": "Takes force from adjacent flowing water. Extra sides in water do not add output. Low capacity, steady."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create:large_water_wheel"
+      },
+      "title": "Large Water Wheel",
+      "text": "Spins at half the speed of a normal wheel, but gives a much higher stress capacity."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create:windmill_bearing"
+      },
+      "title": "Windmill Bearing",
+      "text": "Spins a structure of sails. At least 8 sail blocks are needed, and more sails spin it faster. Needs open air and glue to hold the structure."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create:white_sail"
+      },
+      "title": "Windmill Sail",
+      "text": "Place on a sail frame or any block. Right-click with dye to colour, shears turn it back to a frame."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Steam Engine.** Sits on a boiler built from **Fluid Tanks**. Needs water and heat from a **Blaze Burner**. A minimal boiler is 4 tanks. Heat more and it reaches a higher power level, and each level lets one more engine run at full strength. Goggles show the level."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create:steam_engine"
+      },
+      "title": "Steam Engine",
+      "text": "Connect a shaft to the engine's output. Heat comes from a blaze burner under the boiler. See [#](2E5AAC)[Heat](entry://create_basics/heat)[#]() and [#](2E5AAC)[Fluids](entry://create_basics/fluids)[#]()."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Blaze burners and engines make [#](2E5AAC)[pollution](entry://survival/pollution)[#]() in this pack. The Creative Motor exists but is not obtainable in survival.\n\nAdd-ons bring more sources: [#](2E5AAC)[Electricity](entry://industry/electricity)[#]() and [#](2E5AAC)[Liquid Fuel](entry://industry/liquid_fuel)[#]()."
+    }
+  ]
+}

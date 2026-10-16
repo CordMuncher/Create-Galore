@@ -1,0 +1,76 @@
+{
+  "category": "create_basics",
+  "name": "Press, Mixer and Basin",
+  "description": "Create machines do not work through menus.",
+  "icon": {
+    "item": "create:mechanical_press"
+  },
+  "x": 0,
+  "y": 0,
+  "sort_number": 10,
+  "parents": [
+    {
+      "entry": "create_basics/rotation",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": false
+    },
+    {
+      "entry": "create_basics/item_logistics",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Press, Mixer and Basin",
+      "text": "Create machines do not work through menus. They act on **items sitting in front of them**: items on a belt, on a depot, or inside a basin. Most of them need [#](2E5AAC)[rotation](entry://create_basics/rotation)[#]() to run.\n\nHover a machine and hold W for its Ponder."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create:mechanical_press"
+      },
+      "title": "Mechanical Press",
+      "text": "Hits whatever is under it. On a belt or depot it presses ingots into sheets. Over a basin it compacts the contents."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Pressing a plain item makes a **sheet**: iron, gold, copper and brass sheets are building blocks for later machines.\n\nOver a **Basin**, the press compacts: any filled 2x2 or 3x3 crafting recipe, plus some extras (some need heat, see [#](2E5AAC)[Heat](entry://create_basics/heat)[#]())."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create:mechanical_mixer"
+      },
+      "title": "Mechanical Mixer",
+      "text": "Sits above a basin and stirs. Handles any shapeless crafting recipe, plus extra recipes like alloying."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create:basin"
+      },
+      "title": "Basin",
+      "text": "Holds items and fluids for the mixer or press above it. Has no output until you give it one."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Brass is the classic mixer job: copper and zinc ingots in a basin, with a [#](2E5AAC)[heated](entry://create_basics/heat)[#]() burner under it. Check JEI for the exact mix.\n\nIf two recipes fit the same contents, put an item in the machine's filter slot to pick one."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Basin output**: put a belt, funnel, depot or chute below and to the side, and the basin shows a faucet and pushes finished items out. With no output block it keeps results inside, useful when they are ingredients for the next step.\n\nIf you pull from a basin, use a [#](2E5AAC)[filter](entry://create_basics/item_logistics)[#]() so unprocessed items stay."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Related",
+      "text": "- [#](2E5AAC)[Blaze Burner and Heat](entry://create_basics/heat)[#]()\n- [#](2E5AAC)[Encased Fans](entry://create_basics/fans)[#]()\n- [#](2E5AAC)[Crushing and Ore Doubling](entry://create_basics/crushing)[#]()\n- [#](2E5AAC)[Brass and Assembly](entry://create_basics/brass_and_assembly)[#]()"
+    }
+  ]
+}

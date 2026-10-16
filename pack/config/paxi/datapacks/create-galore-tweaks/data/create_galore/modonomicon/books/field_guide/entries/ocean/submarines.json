@@ -1,0 +1,92 @@
+{
+  "category": "ocean",
+  "name": "Submarines",
+  "description": "Create Deep Seas adds submarines.",
+  "icon": {
+    "item": "create_submarine:ballast_tank"
+  },
+  "x": -3,
+  "y": -2,
+  "sort_number": 1,
+  "parents": [],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Submarines",
+      "text": "**Create Deep Seas** adds submarines. A sub is a Create-style contraption that moves as one solid, physical vessel, built on the same Sable and Aeronautics tech as [#](2E5AAC)[airships](entry://flight/airships)[#](). It dives by changing its own weight."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "A submarine floats until its **Ballast Tanks** are filled with sea water. A **Ballast Vent** is the sea valve and must touch the water. Pipe vent, pump and tanks together: pumping in makes the ship heavier and it sinks, pumping out lets it rise.\n\nEach tank lifts roughly one block of ship mass, so heavy hulls need more tanks."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create_submarine:ballast_tank"
+      },
+      "title": "Ballast Tank",
+      "text": "Holds the water that weighs the ship down. Read its capacity with Engineer's Goggles."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create_submarine:ballast_vent"
+      },
+      "title": "Ballast Vent",
+      "text": "The sea valve. At least one face must touch the sea. Every face takes a pipe."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "The **Onboard Computer** can dive for you. Click its screen to set a target depth and speed, and it drives the pumps to hold that depth. **Pump Controllers** on the same ship are found automatically; pipe one between vent and tanks. More controllers or faster rotation mean quicker dives."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create_submarine:command_sub"
+      },
+      "title": "Onboard Computer",
+      "text": "Autopilot for depth. With a Sonar on board it can also follow the sea floor and keep the keel clear."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create_submarine:sonar"
+      },
+      "title": "Sonar",
+      "text": "Maps the floor, rocks, ships and mines around you on the Computer's screen."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Pumps and thrusters run on Create [#](2E5AAC)[rotation](entry://create_basics/rotation)[#]() and [#](2E5AAC)[fluids](entry://create_basics/fluids)[#](), so a sub is a Create machine through and through. Press **W** over any Deep Seas block for its Ponder."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create_submarine:submarine_propeller"
+      },
+      "title": "Submarine Propeller",
+      "text": "Strong in water, useless in air. Four in a 2x2 square facing one way merge into one big propeller."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create_submarine:water_thruster"
+      },
+      "title": "Water Thruster",
+      "text": "Uses water and rotation for thrust. More pressure and speed push you faster."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Hull strength, oxygen and airlocks are covered in [#](2E5AAC)[Hulls and Pressure](entry://ocean/hulls_and_pressure)[#](). Surface ships and sails are in [#](2E5AAC)[Sailing](entry://ocean/sailing)[#](). Where to dive: [#](2E5AAC)[Underwater Places](entry://ocean/underwater_places)[#](). Deep Seas also holds an unfinished Create Abyss dimension, but it only switches on in development builds, so it is not in this pack."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Related",
+      "text": "- [#](2E5AAC)[Hulls and Pressure](entry://ocean/hulls_and_pressure)[#]()\n- [#](2E5AAC)[Sailing and Boats](entry://ocean/sailing)[#]()\n- [#](2E5AAC)[Underwater Places](entry://ocean/underwater_places)[#]()\n- [#](2E5AAC)[Diving Gear](entry://ocean/diving)[#]()"
+    }
+  ]
+}

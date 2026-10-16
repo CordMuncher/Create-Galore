@@ -1,0 +1,69 @@
+{
+  "category": "start_here",
+  "name": "Performance and Shaders",
+  "description": "This is a heavy pack.",
+  "icon": {
+    "item": "minecraft:spyglass"
+  },
+  "x": -1,
+  "y": 1,
+  "sort_number": 4,
+  "parents": [
+    {
+      "entry": "start_here/welcome",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Performance and Shaders",
+      "text": "This is a heavy pack. Give the game **8 GB of RAM** on a 16 GB PC, or **12 GB** on a big one, in your launcher's instance settings. More than 16 GB doesn't help. The README has the matching Java flags."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Distant Horizons** draws far-away terrain as simplified chunks so you can see much further than normal render distance. It is useful for airships and the Moon, but costs memory and some frame rate. Turn its settings down first if the game stutters. Holes near you while flying fast fill in once the chunks arrive."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Shaders** are included and run through Iris. Open Options > Video Settings > Shader Packs to pick one.\n\n- Complementary Reimagined, with Euphoria Patches\n- Bliss\n- Photon\n- Solas"
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Ambiance** runs only on your own PC: sound echoes in caves, footsteps, falling leaves, held torches that light up, smoother animations. It changes nothing in play. A torch in your hand looks bright but doesn't stop mobs spawning; place one for that. Fresh Animations can be turned off under Resource Packs."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Shaders are optional and can cut frame rate a lot on weaker machines. First world creation is also slow because of how many mods add world generation. This settles after the first load."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Fullscreen** (F11) is a borderless window on Windows, so Alt-Tab is instant, screenshot tools work and a 10-bit or HDR monitor doesn't switch modes. Minecraft's own screenshot key is F2."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Chunksmith** pregenerates terrain when you ask it to with the **/cs** commands, ahead of an airship or train. It yields to players, so you can keep playing while it runs. Its automatic run on world entry (a 4096-block radius every time you join) is switched off here."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "minecraft:spyglass"
+      },
+      "title": "Distant Horizons",
+      "text": "Shows far terrain as simplified chunks. Handy from an airship, a submarine or the Moon."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "More",
+      "text": "- [#](2E5AAC)[Welcome to Create Galore](entry://start_here/welcome)[#]()\n- [#](2E5AAC)[Tools of the Trade](entry://start_here/tools)[#]()"
+    }
+  ]
+}

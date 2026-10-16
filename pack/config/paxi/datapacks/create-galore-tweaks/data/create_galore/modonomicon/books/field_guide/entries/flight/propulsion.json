@@ -1,0 +1,89 @@
+{
+  "category": "flight",
+  "name": "Thrusters and Engines",
+  "description": "Create Propulsion: Simulated adds engines for ships: fuel thrusters, electric ion...",
+  "icon": {
+    "item": "createpropulsion:thruster"
+  },
+  "x": 1,
+  "y": -1,
+  "sort_number": 7,
+  "parents": [
+    {
+      "entry": "flight/propellers",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Thrusters and Engines",
+      "text": "Create Propulsion: Simulated adds engines for ships: fuel thrusters, electric ion thrusters, steerable vector thrusters, wings and heat engines. They need Aeronautics physics to be useful."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "createpropulsion:thruster"
+      },
+      "title": "Thruster",
+      "text": "Burns liquid fuel piped in, throttled by redstone. An oxidizer adds an efficiency bonus. Build 2x2 or 3x3 blocks of them and feed only the rear."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Fuels",
+      "text": "Thrusters accept Turpentine (from Pine Resin), TFMG diesel, gasoline, kerosene and naphtha, and Northstar's hydrocarbon, methane, biofuel and liquid hydrogen. Wrong fluid means no thrust. Solid Fuel Thrusters burn coal, charcoal, wood or Blaze Cake. See [#](2E5AAC)[Oil](entry://industry/tfmg_oil)[#]() and [#](2E5AAC)[Rockets](entry://space/rocket_building)[#]()."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "createpropulsion:solid_fuel_thruster"
+      },
+      "title": "Solid Fuel Thruster",
+      "text": "Burns items instead of fluid. Easy to start with, since coal, charcoal and planks all work."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "createpropulsion:ion_thruster"
+      },
+      "title": "Ion Thruster",
+      "text": "Runs on Forge energy rather than fuel. Stores energy; generators can feed it from below. See Electricity."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "createpropulsion:vector_thruster"
+      },
+      "title": "Vector Thruster",
+      "text": "Tilts to push in any direction under redstone control. Needs platinum, which this mod adds as an ore."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "createpropulsion:wing"
+      },
+      "title": "Wing",
+      "text": "Plain wing blocks. Smelt one to get a Tempered Wing. Copycat versions copy another block's look."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "createpropulsion:stirling_engine"
+      },
+      "title": "Stirling Engine",
+      "text": "Makes rotation from heat below it. Solid and Liquid Burners supply that heat. They can warm a boiler but can't heat mixers or superheat anything; that still takes a Blaze Burner."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Smaller parts",
+      "text": "Redstone Transmission changes speed from a signal, either directly or step by step. Tilt Adapters turn a left/right difference into an angle. Hold W over the Stirling Engine and burners for their Ponders."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Connections",
+      "text": "Fuel, power, heat and platinum ore.\n\n- [#](2E5AAC)[TFMG Oil and Fuels](entry://industry/tfmg_oil)[#]()\n- [#](2E5AAC)[Electricity](entry://industry/electricity)[#]()\n- [#](2E5AAC)[Blaze Burner and Heat](entry://create_basics/heat)[#]()\n- [#](2E5AAC)[Ore Guide](entry://materials/ore_guide)[#]()"
+    }
+  ]
+}

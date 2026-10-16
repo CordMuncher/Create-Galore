@@ -1,0 +1,68 @@
+{
+  "category": "space",
+  "name": "Reaching Space",
+  "description": "Create: Northstar adds a solar system as dimensions: the Moon, Mars, Mercury and...",
+  "icon": {
+    "item": "northstar:rocket_station"
+  },
+  "x": -3,
+  "y": -1,
+  "sort_number": 1,
+  "parents": [],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Reaching Space",
+      "text": "Create: Northstar adds a solar system as dimensions: the Moon, Mars, Mercury and Venus, plus an orbit above each planet. You get there with a rocket built from Create parts, or by flying an Aeronautics ship upward. Either way you first need a [#](2E5AAC)[Stellar Core](entry://stars/why)[#]()."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Two ways up",
+      "text": "A Northstar rocket is a contraption glued around a Rocket Station. An Aeronautics ship uses a Dimensional Drive or Stellar Navigator instead. All three are built around a Stellar Core. See [#](2E5AAC)[Rockets](entry://space/rocket_building)[#]() and [#](2E5AAC)[Ship Bridges](entry://space/aeronautics_bridge)[#]()."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Before you go",
+      "text": "Destinations come from the **Space Atlas**. Planets unlock as you add science to it from Astronomical Readings. Landing on a planet needs an Interplanetary Navigator aboard; the Moon does not, since it is a moon."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "northstar:space_atlas"
+      },
+      "title": "Space Atlas",
+      "text": "Holds coordinates of bodies and saved waypoints. Put it in a Rocket Station to set the destination."
+    },
+    {
+      "type": "modonomicon:crafting_recipe",
+      "recipe_id_1": "northstar:crafting/space_atlas",
+      "text": "A Book and a Titanium Ingot."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "northstar:telescope"
+      },
+      "title": "Telescope",
+      "text": "Hold to take an astronomical reading. Needs night and 1 Paper. It does not work in every dimension."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "northstar:astronomy_table"
+      },
+      "title": "Astronomy Table",
+      "text": "Turns readings into science for the atlas. Readings of different planets are worth more, and one planet gives one reading per day."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Where next",
+      "text": "Titanium is the key metal here, replacing iron plates in much of the tech. See [#](2E5AAC)[Space Metals](entry://space/space_materials)[#](). Oxygen and suits are in [#](2E5AAC)[Oxygen and Suits](entry://space/space_survival)[#]()."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Related",
+      "text": "Rockets, ship bridges, worlds, survival and metals.\n\n- [#](2E5AAC)[Why Space Is Locked](entry://stars/why)[#]()\n- [#](2E5AAC)[Building a Rocket](entry://space/rocket_building)[#]()\n- [#](2E5AAC)[Flying Ships to Space](entry://space/aeronautics_bridge)[#]()\n- [#](2E5AAC)[Planets](entry://space/planets)[#]()\n- [#](2E5AAC)[Oxygen and Suits](entry://space/space_survival)[#]()\n- [#](2E5AAC)[Space Metals](entry://space/space_materials)[#]()\n- [#](2E5AAC)[Airships](entry://flight/airships)[#]()"
+    }
+  ]
+}

@@ -1,0 +1,73 @@
+{
+  "category": "industry",
+  "name": "TFMG Steel",
+  "description": "TFMG (The Factory Must Grow) is heavy industry on top of Create.",
+  "icon": {
+    "item": "tfmg:blast_stove"
+  },
+  "x": -1,
+  "y": -3,
+  "sort_number": 4,
+  "parents": [
+    {
+      "entry": "industry/power_compared",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "TFMG Steel",
+      "text": "TFMG (The Factory Must Grow) is heavy industry on top of Create. Steel is the gate to most of it. The main route is a **blast furnace** fed with hot air, cast into ingots in a basin."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "tfmg:blast_stove"
+      },
+      "title": "Blast Stove",
+      "text": "Makes Hot Air from air plus fuel. It builds up Carbon Dioxide that stalls it, so pump that out to an Exhaust or Smokestack."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "tfmg:blast_furnace_output"
+      },
+      "title": "Blast Furnace",
+      "text": "Build a cylinder of Fireproof Bricks around the Output with one Hatch for hot air. Reinforcements speed it up. Items go in at the top."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Inputs: crushed raw iron (or raw iron) plus a flux, which is Limesand. Outputs: molten steel, molten slag and furnace gas. The Blast Stove burns furnace gas or creosote, so the furnace can feed itself."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "tfmg:coke_oven"
+      },
+      "title": "Coke Oven",
+      "text": "Cooks coal slowly into Coal Coke, creosote and CO2. Build long rows. Coke is a long-burning fuel and the base of graphite electrodes."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "tfmg:casting_basin"
+      },
+      "title": "Casting Basin",
+      "text": "Molten steel poured in sets into a Steel Ingot (90 mB each). Also casts Big Cannons metals."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "A chemical vat with three Graphite Electrodes is a second way to make steel, from crushed raw iron, flux and coke dust, in a large Fireproof Vat. Check JEI for exact sizes. Steel then unlocks pipes, tanks, casings and machines."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "TFMG's steel is the pack's steel. Alloyed, Create Nuclear and Big Cannons steel recipes now give it, so a heated mixer can supply your first steel at 1 per iron ingot. The blast furnace gives 2 per raw iron. Old ingots from those mods convert in a crafting grid. See [#](2E5AAC)[Shared Metals](entry://materials/shared_metals)[#](). Next: [#](2E5AAC)[TFMG Oil](entry://industry/tfmg_oil)[#]()."
+    }
+  ]
+}

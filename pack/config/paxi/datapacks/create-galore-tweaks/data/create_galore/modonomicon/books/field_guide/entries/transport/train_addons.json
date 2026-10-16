@@ -1,0 +1,121 @@
+{
+  "category": "transport",
+  "name": "Train Add-ons",
+  "description": "Several mods extend Create trains: Steam 'n' Rails for new track and parts, Railways...",
+  "icon": {
+    "item": "railways:track_switch_brass"
+  },
+  "x": 3,
+  "y": -1,
+  "sort_number": 3,
+  "parents": [
+    {
+      "entry": "transport/trains",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": false
+    },
+    {
+      "entry": "transport/train_signals",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Train Add-ons",
+      "text": "Several mods extend Create trains: Steam 'n' Rails for new track and parts, Railways Navigator for route information, Train Utilities for doors, Threaded Trains for server speed, and Xaero Train Map for the map."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Steam 'n' Rails",
+      "text": "Adds Wide and Narrow gauge track, a Monorail, and Phantom track that fits any bogey. Track also comes in many wood and stone styles. You also get many more bogey designs, couplers, buffers, a handcar and styling blocks for locomotives such as boilers and smokestacks."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "railways:track_switch_brass"
+      },
+      "title": "Track Switch",
+      "text": "Use to cycle right, sneak-use to cycle left. Redstone sets it. A comparator reads 1 left, 0 straight, 2 right."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "railways:semaphore"
+      },
+      "title": "Semaphore",
+      "text": "Sits on a pole above a Train Signal and shows its state. Two stacked show if some or all exits are blocked."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "railways:track_coupler"
+      },
+      "title": "Train Coupler",
+      "text": "Couples and decouples trains without taking them apart. A wrench changes the mode and the gap between pads."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "railways:black_conductor_cap"
+      },
+      "title": "Conductor's Cap",
+      "text": "Conductors can press buttons and flip levers when a player looks at them, unless that player wears another colour of cap."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Railways Navigator",
+      "text": "Adds a Navigator item that lists connections with stopovers and live data, Advanced Display boards, a Train Station Clock and a Lectern with Navigator. Penalty Anchors add a cost to a stretch of track. Route overlay options are on the \\\\ key."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "createrailwaysnavigator:navigator"
+      },
+      "title": "Navigator",
+      "text": "Search for a route to a station and see the trains that run it, with delays and changes along the way."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "createrailwaysnavigator:advanced_display"
+      },
+      "title": "Advanced Display",
+      "text": "Platform and train destination boards. Wrench it to open the configuration screen."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "createrailwaysnavigator:penalty_anchor"
+      },
+      "title": "Penalty Anchor",
+      "text": "Trains pick the cheapest path. Raise the penalty with a wrench to push them onto another route. Redstone weakens it."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Train Utilities",
+      "text": "Adds sliding train doors in dozens of real-world styles, platform and line blocks, and frameless glass. Some doors need small parts like Processing Units and Rubber Seals, made by Create assembly. Doors can be opened by hand or follow a moving contraption."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "trainutilities:door_andesite_alloy"
+      },
+      "title": "Andesite Alloy Door",
+      "text": "One of many sliding doors. Create's own Train Door also exists as a simpler option."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Performance and map",
+      "text": "Create: Threaded Trains runs the railway network's calculations on a separate thread, which helps large networks on a server. It has no blocks.\n\nXaero Train Map draws trains on Xaero's World Map. It only affects your own screen."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Related",
+      "text": "Core train building and signalling.\n\n- [#](2E5AAC)[Trains](entry://transport/trains)[#]()\n- [#](2E5AAC)[Signals and Schedules](entry://transport/train_signals)[#]()"
+    }
+  ]
+}

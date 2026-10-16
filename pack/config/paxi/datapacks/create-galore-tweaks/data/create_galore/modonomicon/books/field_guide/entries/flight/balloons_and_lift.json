@@ -1,0 +1,81 @@
+{
+  "category": "flight",
+  "name": "Balloons and Lift",
+  "description": "Envelope blocks enclose a volume.",
+  "icon": {
+    "item": "aeronautics:white_envelope"
+  },
+  "x": -1,
+  "y": -2,
+  "sort_number": 3,
+  "parents": [
+    {
+      "entry": "flight/ship_building",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Balloons and Lift",
+      "text": "Envelope blocks enclose a volume. Fill it with hot air or steam and it pulls the ship up. A bigger sealed volume gives the burners more lift to work with."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "aeronautics:white_envelope"
+      },
+      "title": "Hot Air Envelope",
+      "text": "Must be airtight. Blocks inside shrink the volume. Dye them. Shafts can be encased in envelope blocks to stay sealed."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "aeronautics:adjustable_burner"
+      },
+      "title": "Hot Air Burner",
+      "text": "Redstone fills the balloon above from the top down. Set the maximum output in its panel. Several burners can feed one balloon."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "aeronautics:steam_vent"
+      },
+      "title": "Steam Vent",
+      "text": "Lift from steam instead. Like a Steam Engine it needs heat, water and boiler space. See Heat in the Create basics."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Altitude and air",
+      "text": "Lift weakens as altitude rises, so a ship settles where lift and weight balance. Changing lift changes altitude. The Altitude Sensor outputs a redstone signal for height and, with goggles, shows air pressure. Other worlds have very different air: see [#](2E5AAC)[Planets](entry://space/planets)[#]()."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "aeronautics:levitite_blend_bucket"
+      },
+      "title": "Levitite Blend",
+      "text": "A fluid from heated mixing of End Stone Powder, zinc nuggets and water. Heat sets it into solid Levitite."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "aeronautics:levitite"
+      },
+      "title": "Levitite",
+      "text": "Keeps a ship afloat but cannot gain height alone; you need other forces. It resists slow motion strongly and less so at speed."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Where it comes from",
+      "text": "End Stone Powder comes from crushing End Stone. Sky whale bone dust can replace it. Pearlescent Levitite is a pink variant of the same crystal. Certain blocks break when Levitite sets, which is useful for casting molds."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Related",
+      "text": "Heat and fluids drive burners and vents. Sky whales supply bone dust.\n\n- [#](2E5AAC)[Airships](entry://flight/airships)[#]()\n- [#](2E5AAC)[Weather and Danger](entry://flight/weather_and_danger)[#]()\n- [#](2E5AAC)[Blaze Burner and Heat](entry://create_basics/heat)[#]()\n- [#](2E5AAC)[Fluids, Pipes and Pumps](entry://create_basics/fluids)[#]()"
+    }
+  ]
+}

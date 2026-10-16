@@ -1,0 +1,91 @@
+{
+  "category": "ocean",
+  "name": "Sailing and Boats",
+  "description": "Deep Seas also includes Create High Seas: surface ships.",
+  "icon": {
+    "item": "create_high_seas:boat_engine"
+  },
+  "x": -1,
+  "y": 0,
+  "sort_number": 3,
+  "parents": [
+    {
+      "entry": "ocean/submarines",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Sailing and Boats",
+      "text": "Deep Seas also includes **Create High Seas**: surface ships. They are the same kind of physical vessel as a [#](2E5AAC)[submarine](entry://ocean/submarines)[#](), but they float on top and travel by wind, engine or oar."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create_high_seas:white_sail"
+      },
+      "title": "Sail",
+      "text": "Comes in all 16 dyes. A ship needs enough canvas for its size, and big ships need more sails to get going."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create_high_seas:wind_vane"
+      },
+      "title": "Wind Vane",
+      "text": "Shows wind direction. Steer along the arrow for top speed. Goggles show alignment as a percent."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Wind has a baseline, gusts, and extra strength in rain and thunderstorms. Terrain upwind can block it. Sailing straight into the wind keeps only part of your speed. A **Rudder** at the stern tells sails which way is forward; mount it on a Swivel Bearing to steer."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create_high_seas:boat_engine"
+      },
+      "title": "Boat Engine",
+      "text": "A compact fuel-burning propeller. Mount it at the stern with the propeller in the water."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "The engine burns fuel (open its fuel screen to see what it takes). Right-click to take the tiller, sneak to let go, sneak-click for the fuel screen. Hold use at the helm and move the mouse to set a speed limit from 0 to 15."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create_high_seas:anchor"
+      },
+      "title": "Anchor",
+      "text": "Light in the air, one ton once it touches the bottom. Use a Steel Cable on it to connect a rope winch."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Oars** give a stroke forward when used near water. A **Buoy** is a towable float you can ride and skip across the surface. Dyed **Floaters** from Deep Seas keep a plain boat on the surface."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create_high_seas:seaglide"
+      },
+      "title": "Seaglide",
+      "text": "Handheld twin fans for swimming. Runs on your hunger, not fuel. Break the surface at speed to leap out."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Steel Cables** and **Pulleys** let a ship ride a cable. An **Arresting Hook** under a ship grabs a cable and brakes it, like a carrier landing. An **Underwater Mine** on a contraption detonates when entities or boats come close."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "See also",
+      "text": "- [#](2E5AAC)[Submarines](entry://ocean/submarines)[#]()\n- [#](2E5AAC)[Airships](entry://flight/airships)[#]()\n- [#](2E5AAC)[Trains](entry://transport/trains)[#]()"
+    }
+  ]
+}

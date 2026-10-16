@@ -1,0 +1,81 @@
+{
+  "category": "exploration",
+  "name": "L_Ender's Cataclysm",
+  "description": "L_Ender's Cataclysm adds large, hard bosses guarding their own structures, each with...",
+  "icon": {
+    "item": "cataclysm:ignitium_ingot"
+  },
+  "x": -1,
+  "y": -3,
+  "sort_number": 13,
+  "parents": [
+    {
+      "entry": "exploration/nether",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": false
+    },
+    {
+      "entry": "exploration/bosses",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "L_Ender's Cataclysm",
+      "text": "**L\\_Ender's Cataclysm** adds large, hard bosses guarding their own structures, each with unique weapons, armor and materials. The fights are meant for well-geared players."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Bosses include the Netherite Monstrosity, Ignis, the Harbinger, the Leviathan, Scylla, the Ancient Remnant, Maledictus, the Ender Guardian and the Ender Golem. Structures include the Sunken City, Burning Arena, Ancient Factory, Cursed Pyramid, Frosted Prison and Ruined Citadel."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Tuned in this pack: the Netherite Monstrosity, Ignis, Harbinger, Leviathan, Scylla, Ancient Remnant, Maledictus and Ender Guardian have 0.7x health and 0.75x damage. They are softened, not removed. Other Cataclysm mobs use default stats."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Ability keys are set in this pack: Home (general ability), End (boots), Insert (helmet) and Delete (chestplate). Change them under Controls, Cataclysm."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Where: the Sunken City sits in deep ocean (a good [#](2E5AAC)[submarine](entry://ocean/submarines)[#]() trip), the Burning Arena in the Nether, the Ruined Citadel in the End highlands and midlands, the Frosted Prison in snowy plains, the Cursed Pyramid in desert."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "cataclysm:ignitium_ingot"
+      },
+      "title": "Ignitium Ingot",
+      "text": "Boss material. Ignitium, Cursium and Black Steel each make a gear line."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "cataclysm:the_incinerator"
+      },
+      "title": "The Incinerator",
+      "text": "Starts as a Netherite sword in this pack's recipe. Check JEI."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "cataclysm:the_annihilator"
+      },
+      "title": "The Annihilator",
+      "text": "Starts as a Netherite pickaxe in this pack's recipe. Check JEI."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "The mod's own message says the Leviathan is invincible outside water, so plan to fight it wet. For gear crafted in this pack see [#](2E5AAC)[Cataclysm x Create](entry://exploration/cataclysm_create)[#](). Other bosses: [#](2E5AAC)[Bosses](entry://exploration/bosses)[#]()."
+    }
+  ]
+}

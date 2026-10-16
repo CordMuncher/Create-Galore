@@ -1,0 +1,62 @@
+{
+  "category": "create_basics",
+  "name": "Stress",
+  "description": "Spinning is not free.",
+  "icon": {
+    "item": "create:stressometer"
+  },
+  "x": -4,
+  "y": -2,
+  "sort_number": 1,
+  "parents": [
+    {
+      "entry": "create_basics/rotation",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Stress",
+      "text": "Spinning is not free. Every machine uses some of the **stress capacity** of its network, measured in **su** (stress units). Sources provide capacity, machines consume it."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "If the machines on a network ask for more than the sources give, it is **overstressed**: the whole network stops, not just one machine. The fix is more sources, fewer machines, or slower speed."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create:stressometer"
+      },
+      "title": "Stressometer",
+      "text": "A gauge that shows how much of a network's capacity is in use. With goggles on, it names the exact numbers."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Faster costs more.** A machine's stress cost goes up with its RPM, and a source's capacity goes up with RPM as well. A fast network can carry more, but each machine on it also eats more."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Reading it.** Wear [#](2E5AAC)[Goggles](entry://create_basics/tools_wrench)[#]() and look at a machine for its Stress Impact, or a source for its Stress Capacity. Item tooltips (hold Shift) say Low, Moderate or High stress impact."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create:goggles"
+      },
+      "title": "Engineer's Goggles",
+      "text": "Shows Kinetic Stats on any machine: impact, capacity and speed. Steam boilers show their power level too."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Large sources such as [#](2E5AAC)[large water wheels and steam engines](entry://create_basics/power_sources)[#]() exist because a lot of machines need a lot of capacity. Exact numbers vary by config, so check the goggles in your own world."
+    }
+  ]
+}

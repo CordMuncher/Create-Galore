@@ -1,0 +1,76 @@
+{
+  "category": "flight",
+  "name": "Propellers",
+  "description": "A propeller pushes air and the ship pushes back.",
+  "icon": {
+    "item": "aeronautics:propeller_bearing"
+  },
+  "x": -1,
+  "y": -1,
+  "sort_number": 4,
+  "parents": [
+    {
+      "entry": "flight/ship_building",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Propellers",
+      "text": "A propeller pushes air and the ship pushes back. A Propeller Bearing spins a structure of sails. Any structure with at least two sail-like blocks counts, and more sails give more thrust."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "aeronautics:propeller_bearing"
+      },
+      "title": "Propeller Bearing",
+      "text": "Attaches to the block in front. Reversing rotation reverses thrust; a wrench does too. Goggles show thrust and airflow."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "aeronautics:gyroscopic_propeller_bearing"
+      },
+      "title": "Gyroscopic Propeller Bearing",
+      "text": "Keeps its propeller upright, for helicopters. Facing down it steadies top-heavy ships. Redstone resets the tilt."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "aeronautics:smart_propeller"
+      },
+      "title": "Smart Propeller",
+      "text": "Makes thrust when spun and tilts along one axis to try to face upward. A wrench reverses its thrust."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "aeronautics:wooden_propeller"
+      },
+      "title": "Wooden Propeller",
+      "text": "A ready-made small propeller. The Andesite Propeller is its sturdier twin."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Limits",
+      "text": "A propeller already moving through air pushes less, because the air is moving too. Thrust also fades with altitude, and props are of little use where there is no air."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "simulated:white_symmetric_sail"
+      },
+      "title": "Symmetric Sail",
+      "text": "Only makes drag, never lift. Angle it for turning or stabilising. Also handy for windmills; it needs no glue."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Related",
+      "text": "Fuel thrusters, steering and the overview.\n\n- [#](2E5AAC)[Thrusters and Engines](entry://flight/propulsion)[#]()\n- [#](2E5AAC)[Steering and Controls](entry://flight/controls)[#]()\n- [#](2E5AAC)[Airships](entry://flight/airships)[#]()"
+    }
+  ]
+}

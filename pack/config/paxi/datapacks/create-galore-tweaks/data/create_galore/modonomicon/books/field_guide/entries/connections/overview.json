@@ -1,0 +1,34 @@
+{
+  "category": "connections",
+  "name": "How Things Connect",
+  "description": "Most mods explain themselves.",
+  "icon": {
+    "item": "create:precision_mechanism"
+  },
+  "x": -3,
+  "y": -2,
+  "sort_number": 0,
+  "parents": [],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "How Things Connect",
+      "text": "Most mods explain themselves. What they don't explain is how they plug into each other. This section is about those joins.\n\nAlmost every connection in this pack runs through a few shared things."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "- **Rotation** and **electricity**, and the blocks that convert between them\n- **Heat**, mostly from the Blaze Burner\n- **Liquid fuel**, mostly from oil\n- **Metals** several mods share\n- **Destinations** for every vehicle"
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Each entry here is short and points to the full entries. Read it when you wonder \"can this mod's thing go into that mod's machine?\"\n\nAlso worth knowing: anything that burns makes smog, and anything hot warms you up. See [#](2E5AAC)[Side Effects](entry://connections/side_effects)[#]()."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "In this section",
+      "text": "- [#](2E5AAC)[Power Across Mods](entry://connections/power)[#]()\n- [#](2E5AAC)[Heat Is Shared](entry://connections/heat)[#]()\n- [#](2E5AAC)[Fuel Goes Everywhere](entry://connections/fuel)[#]()\n- [#](2E5AAC)[One Metal, Many Mods](entry://connections/metals)[#]()\n- [#](2E5AAC)[Where Vehicles Go](entry://connections/vehicles)[#]()\n- [#](2E5AAC)[Farm to Factory](entry://connections/farm_to_factory)[#]()\n- [#](2E5AAC)[Loot Feeds the Factory](entry://connections/adventure_loot)[#]()\n- [#](2E5AAC)[Side Effects to Plan For](entry://connections/side_effects)[#]()"
+    }
+  ]
+}

@@ -1,0 +1,70 @@
+{
+  "category": "ocean",
+  "name": "Conduit Cages",
+  "description": "Create: Aquatic Ambitions ties Minecraft's ocean items to Create.",
+  "icon": {
+    "item": "create_aquatic_ambitions:mechanical_conduit"
+  },
+  "x": 3,
+  "y": -1,
+  "sort_number": 5,
+  "parents": [
+    {
+      "entry": "ocean/underwater_places",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Conduit Cages",
+      "text": "**Create: Aquatic Ambitions** ties Minecraft's ocean items to Create. Its centrepiece is the **Conduit Cage**: a compact conduit you feed with a fluid through its bottom face. A fed cage is **awakened**."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create_aquatic_ambitions:mechanical_conduit"
+      },
+      "title": "Conduit Cage",
+      "text": "Awakened with water it gives the Conduit Power effect nearby. Other fluids give other effects."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "The cage's mode slot picks who is affected: everyone, players, friendly mobs, players and friendly mobs, or monsters. Its effects are listed in the item's tooltip, so check there."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Awakened cages also work as a [#](2E5AAC)[fan](entry://create_basics/fans)[#]() processor. Air blown through one makes a **Channeling** stream, and extra water layers dilute it into washing. The classic Conduit ring works the same way."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Channeling can revive dead coral, turn flint into Prismarine Shards, glowstone dust into Prismarine Crystals, an Ender Eye into a Heart of the Sea, and age copper blocks. Look up recipes in JEI under Conduit Channeling."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create_aquatic_ambitions:prismarine_alloy"
+      },
+      "title": "Prismarine Alloy",
+      "text": "Mixed from Prismarine and Copper Nuggets. Prismarine also smelts into Veridium."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create_aquatic_ambitions:suspicious_rock"
+      },
+      "title": "Suspicious Rock",
+      "text": "Wash or channel it for Nautilus Shells, bones and Spiky Shells. Shells crush into bone meal and XP."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Prismarine is also crushable for lapis and Create XP nuggets, so ocean monuments become a source of materials: see [#](2E5AAC)[Underwater Places](entry://ocean/underwater_places)[#](). Gravel, Calcium Rich Powder and lava compact into calcite."
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "category": "transport",
+  "name": "Jetpack",
+  "description": "The Create Jetpack is a backtank you can fly with.",
+  "icon": {
+    "item": "create_jetpack:jetpack"
+  },
+  "x": -1,
+  "y": 2,
+  "sort_number": 6,
+  "parents": [
+    {
+      "entry": "transport/getting_around",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Jetpack",
+      "text": "The Create Jetpack is a backtank you can fly with. It is built around a Copper Backtank and spends pressurised air to lift you, so it runs dry and needs refilling."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create_jetpack:jetpack"
+      },
+      "title": "Jetpack",
+      "text": "Jump rises, sneak descends, N switches the engine on or off (this pack's key; the mod's own is G), H toggles hover. Rebind in Controls."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create_jetpack:netherite_jetpack"
+      },
+      "title": "Netherite Jetpack",
+      "text": "The same flight, built around a Netherite Backtank. Check JEI for the upgrade recipe."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Making one",
+      "text": "Both versions are crafted by mechanical crafting from a Shulker Shell, Chutes, Brass plates, Precision Mechanisms and the backtank. Press R over one in JEI to see the layout.\n\nFor something larger than one person, see [#](2E5AAC)[Airships](entry://flight/airships)[#]()."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Related",
+      "text": "Bigger things that fly.\n\n- [#](2E5AAC)[Airships](entry://flight/airships)[#]()\n- [#](2E5AAC)[Thrusters and Engines](entry://flight/propulsion)[#]()"
+    }
+  ]
+}

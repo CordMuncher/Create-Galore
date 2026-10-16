@@ -13,7 +13,7 @@ The world is one folder, so it can move between the two (see [Moving the world](
 
 ## What the server runs
 
-The server gets **181 mods from the pack plus Twilight Forest**. The 42 client-only mods are skipped automatically because they're tagged `client` in `pack/`. That's the ambiance layer (Sound Physics, AmbientSounds, Sounds, Drip Sounds, Presence Footsteps and its Sable add-on, Subtle Effects, Falling Leaves, Make Bubbles Pop, LambDynamicLights, Contraption Lights, Not Enough Animations, EMF, ETF, plus their libraries CreativeCore, Fzzy Config and MRU) and these: Sodium, Sodium Extra, Iris, Euphoria Patches, Iris Veil Compat, Colorwheel, Distant Horizons, Borderless Window, Entity Culling, ImmediatelyFast, Controlling, Mouse Tweaks, Searchables, Inventory Profiles Next (+ libIPN), LibTooltips, Create JEI Compat, Create: Nowheel, Create Smart Bounds, Create - Xaero's map, Xaero Train Map, Jade Sable Compat, Guide Shelf, Aeronautics Hot Air Fix, Better Farming Right Click. Players still need the full pack (the `.mrpack`) on their own PC.
+The server gets **182 mods from the pack plus Twilight Forest**. The 42 client-only mods are skipped automatically because they're tagged `client` in `pack/`. That's the ambiance layer (Sound Physics, AmbientSounds, Sounds, Drip Sounds, Presence Footsteps and its Sable add-on, Subtle Effects, Falling Leaves, Make Bubbles Pop, LambDynamicLights, Contraption Lights, Not Enough Animations, EMF, ETF, plus their libraries CreativeCore, Fzzy Config and MRU) and these: Sodium, Sodium Extra, Iris, Euphoria Patches, Iris Veil Compat, Colorwheel, Distant Horizons, Borderless Window, Entity Culling, ImmediatelyFast, Controlling, Mouse Tweaks, Searchables, Inventory Profiles Next (+ libIPN), LibTooltips, Create JEI Compat, Create: Nowheel, Create Smart Bounds, Create - Xaero's map, Xaero Train Map, Jade Sable Compat, Guide Shelf, Aeronautics Hot Air Fix, Better Farming Right Click. Players still need the full pack (the `.mrpack`) on their own PC.
 
 **Distant Horizons stays off the server on purpose.** The pack's Chunksmith mod already sends far-away terrain (LODs) from the server to each player's Distant Horizons, without Distant Horizons on the server. Putting DH on the server as well makes Chunksmith complain and doubles the work.
 
@@ -27,7 +27,7 @@ Download `Create-Galore-Server-Setup-<version>.exe` from the [latest release](ht
 
 1. **Where the server goes:** for example `C:\CreateGaloreServer`. Pointing it at an existing server updates it.
 2. **Memory:** the app suggests 10 GB on a PC with 32 GB or more, 8 GB otherwise. 6 to 10 GB all tested fine; more than 12 GB doesn't help.
-3. **Mods:** nothing to do, the 181 server mods download from Modrinth at the pack's exact versions. If you already have the pack installed, you can drop your instance's `mods` folder on the box: mods that match the server list byte for byte are copied instead of downloaded, and client-only mods are ignored. Twilight Forest is picked up from that folder too.
+3. **Mods:** nothing to do, the 182 server mods download from Modrinth at the pack's exact versions. If you already have the pack installed, you can drop your instance's `mods` folder on the box: mods that match the server list byte for byte are copied instead of downloaded, and client-only mods are ignored. Twilight Forest is picked up from that folder too.
 4. **Twilight Forest:** drop `twilightforest-1.21.1-4.8.3345-universal.jar` on the box. A green check means it's the right file.
 5. **Players and settings:** your Minecraft name (whitelisted and made operator), other players (whitelisted), port, and the Elytra switch.
 6. Tick the EULA and press **Install server**. When it's done, **Start server** opens the console and the server window with its live memory graph and player list.
@@ -113,7 +113,7 @@ Exaroton bills by RAM per hour while the server runs, and can start the server w
 1. **Build the server folder on your PC first** (Part 1). Exaroton gets a copy of it.
 2. Create a server on Exaroton. Under **Software**, choose **NeoForge**, Minecraft **1.21.1**, NeoForge **21.1.259**. Custom uploads need bought credits; the free trial can't do it.
 3. Set **RAM to 8 GB**. After a few sessions, try 6 GB: the benchmark in [java-flags.md](java-flags.md) ran fine at 6 GB. Ignore `user_jvm_args.txt` there, the panel's RAM setting replaces it.
-4. In the **Files** section, upload from your server folder: `mods/`, `config/`, `patchouli_books/` (the Field Guide) and `server.properties`. Then upload the world folder (`world/`) if you want to continue your world (see the next section).
+4. In the **Files** section, upload from your server folder: `mods/`, `config/` (it holds the Field Guide too) and `server.properties`. Then upload the world folder (`world/`) if you want to continue your world (see the next section).
 5. In **Options**, set view distance 10 and simulation distance 8, keep online mode on, whitelist both accounts and op yourself. Turn on **auto-start** for whitelisted players if she should be able to start it by joining, and **auto-stop** after a few empty minutes so it doesn't run up credits.
 6. She adds the Exaroton address (shown on the server page, like `yourname.exaroton.me`) in Multiplayer.
 

@@ -1,0 +1,41 @@
+{
+  "category": "stars",
+  "name": "Fighting with Machines",
+  "description": "Four prizes come from bosses.",
+  "icon": {
+    "item": "createbigcannons:cast_iron_cannon_barrel"
+  },
+  "x": -1,
+  "y": 0,
+  "sort_number": 8,
+  "parents": [
+    {
+      "entry": "stars/why",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Fighting with Machines",
+      "text": "Four prizes come from bosses. You don't need to be good with a sword: every one of them can be beaten by a Create build. Machines don't miss, don't get scared and can be rebuilt."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Tools",
+      "text": "- [#](2E5AAC)[Big Cannons](entry://industry/cannons)[#]() and autocannons for range\n- Underwater Mines and Depth Charges for the sea\n- Potato Cannons for cheap firepower\n- Trains, ships and subs to carry it all"
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Tips",
+      "text": "Build from the safety of a vehicle or a bunker. Bring the build to the boss on a train, ship or submarine. Bosses do not scale with player count here, so bring a friend."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Related",
+      "text": "Weapons and the bosses.\n\n- [#](2E5AAC)[Why Space Is Locked](entry://stars/why)[#]()\n- [#](2E5AAC)[Big Cannons](entry://industry/cannons)[#]()\n- [#](2E5AAC)[Bosses](entry://exploration/bosses)[#]()\n- [#](2E5AAC)[Submarines](entry://ocean/submarines)[#]()"
+    }
+  ]
+}

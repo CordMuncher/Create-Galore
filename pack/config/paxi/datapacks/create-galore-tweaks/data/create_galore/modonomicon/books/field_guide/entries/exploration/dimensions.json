@@ -1,0 +1,52 @@
+{
+  "category": "exploration",
+  "name": "Dimensions",
+  "description": "Beyond the Overworld, this pack has a stack of places to travel.",
+  "icon": {
+    "item": "minecraft:ender_eye"
+  },
+  "x": -7,
+  "y": -4,
+  "sort_number": 1,
+  "parents": [],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Dimensions",
+      "text": "Beyond the Overworld, this pack has a stack of places to travel. Each one has its own rules, materials and bosses. This page is the map of them and how to reach each."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "- [#](2E5AAC)[The Nether](entry://exploration/nether)[#](): reworked by Incendium.\n- [#](2E5AAC)[The End](entry://exploration/the_end)[#](): BetterEnd and YUNG's island.\n- [#](2E5AAC)[The Aether](entry://exploration/aether)[#](): glowstone portal.\n- [#](2E5AAC)[Twilight Forest](entry://exploration/twilight_forest)[#](): flower pool and a diamond.\n- Create Deep Seas has an abyss dimension, but it is off in normal play: see [#](2E5AAC)[Submarines](entry://ocean/submarines)[#]()."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Space** is separate. Create: Northstar adds rockets and planets, see [#](2E5AAC)[Reaching Space](entry://space/reaching_space)[#]() and [#](2E5AAC)[Planets](entry://space/planets)[#](). Aeronautics ships can launch there too, using a **Dimensional Drive** from the Northstar-Aeronautics bridge. Getting there is the pack's capstone: see [#](2E5AAC)[The Road to the Stars](entry://stars/why)[#]()."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "cnbridge:dimensional_drive"
+      },
+      "title": "Dimensional Drive",
+      "text": "Place on an Aeronautics ship, pick a Northstar planet, arm it, then fly to the trigger altitude."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "The bridge lists the Moon, Mars, Venus, Mercury and Earth Orbit as drive destinations. Like every way into space, it needs a [#](2E5AAC)[Stellar Core](entry://stars/why)[#](). For airships see [#](2E5AAC)[Airships](entry://flight/airships)[#]() and [#](2E5AAC)[Destinations](entry://flight/destinations)[#]()."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Worldgen mods that change the Overworld itself (Terralith, Tectonic, Alex's Caves) are covered in [#](2E5AAC)[Worldgen](entry://exploration/worldgen)[#](). Structures to find on the way are in [#](2E5AAC)[Structures](entry://exploration/structures)[#]()."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Go to",
+      "text": "- [#](2E5AAC)[The Nether](entry://exploration/nether)[#]()\n- [#](2E5AAC)[The End](entry://exploration/the_end)[#]()\n- [#](2E5AAC)[The Aether](entry://exploration/aether)[#]()\n- [#](2E5AAC)[Twilight Forest](entry://exploration/twilight_forest)[#]()\n- [#](2E5AAC)[Planets](entry://space/planets)[#]()"
+    }
+  ]
+}

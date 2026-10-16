@@ -1,0 +1,14 @@
+{
+  "name": "Start Here",
+  "description": "How this book works, the tools that explain everything else, and what this pack is about.",
+  "icon": {
+    "item": "minecraft:writable_book"
+  },
+  "sort_number": 0,
+  "display_mode": "node",
+  "background": "modonomicon:textures/gui/dark_slate_seamless.png",
+  "background_width": 512,
+  "background_height": 512,
+  "max_scroll_x": 210,
+  "max_scroll_y": 135
+}

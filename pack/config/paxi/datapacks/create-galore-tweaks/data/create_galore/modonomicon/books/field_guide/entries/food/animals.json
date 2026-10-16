@@ -1,0 +1,71 @@
+{
+  "category": "food",
+  "name": "Animals and Husbandry",
+  "description": "Animal Husbandry makes farm animals feel alive.",
+  "icon": {
+    "item": "animalhusbandry:farm_ledger"
+  },
+  "x": 2,
+  "y": 1,
+  "sort_number": 12,
+  "parents": [
+    {
+      "entry": "food/crops_and_herbs",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": false
+    },
+    {
+      "entry": "food/integrated_farming",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Animals and Husbandry",
+      "text": "**Animal Husbandry** makes farm animals feel alive. Each has hunger, cleanliness, happiness, health and inherited traits. Care changes what you get."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "animalhusbandry:farm_ledger"
+      },
+      "title": "Farm Ledger",
+      "text": "Tracks hunger, cleanliness, growth, yield, fertility and happiness. The **Farm Magnifying Glass** inspects one animal: sickness, cooldowns, wool and milk."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "animalhusbandry:brush"
+      },
+      "title": "Grooming",
+      "text": "Brush animals to raise happiness. Feeding Troughs hold feed, Brushing Posts help with grooming, and sick animals need Animal Medicine. A Fertility Potion readies a pair to mate."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Traits come from genes. A Glutton grows fast. A Truffle Snout finds more truffles. A Heavyweight drops double meat and leather. Look at an animal in the ledger to see what it has.\n\nThe pack runs Animal Husbandry 0.4.2, so there are no rabbit genetics or Angora armor."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "animalhusbandry:chicken_nest"
+      },
+      "title": "Eggs and Cheese",
+      "text": "Chicken Nests hold eggs. Milk in a cauldron becomes cheese blocks and slices. Pigs with the right trait dig up truffles."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Other animal mods: **Critters and Companions** adds small creatures like red pandas, ferrets, koi and dragonflies. Its otter, Dumbo Octopus and Sea Bunny spawns are off. **Naturalist** adds bears, deer, elephants, lions and more. Nine of its sea animals are off; see [#](2E5AAC)[Sea Life](entry://ocean/sea_life)[#]()."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Create tie-ins: Roosts and Fishing Nets from [#](2E5AAC)[Integrated Farming](entry://food/integrated_farming)[#]() handle poultry on contraptions, and Ratatouille's Spreader breeds animals. Bees: [#](2E5AAC)[Productive Bees](entry://food/bees)[#]()."
+    }
+  ]
+}

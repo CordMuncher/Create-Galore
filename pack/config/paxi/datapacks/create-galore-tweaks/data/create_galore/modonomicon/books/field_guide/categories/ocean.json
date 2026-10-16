@@ -1,0 +1,14 @@
+{
+  "name": "The Ocean",
+  "description": "Submarines, sea life, fishing and what waits in the deep.",
+  "icon": {
+    "item": "minecraft:heart_of_the_sea"
+  },
+  "sort_number": 10,
+  "display_mode": "node",
+  "background": "modonomicon:textures/gui/dark_slate_seamless.png",
+  "background_width": 512,
+  "background_height": 512,
+  "max_scroll_x": 210,
+  "max_scroll_y": 180
+}

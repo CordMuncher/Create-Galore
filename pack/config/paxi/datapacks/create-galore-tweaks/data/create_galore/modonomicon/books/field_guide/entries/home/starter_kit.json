@@ -1,0 +1,47 @@
+{
+  "category": "home",
+  "name": "Starter Kit and Helpers",
+  "description": "Starter Kit gives new players configurable starter gear on their first join.",
+  "icon": {
+    "item": "minecraft:crafting_table"
+  },
+  "x": 1,
+  "y": 0,
+  "sort_number": 9,
+  "parents": [
+    {
+      "entry": "home/inventory_tools",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Starter Kit and Helpers",
+      "text": "**Starter Kit** gives new players configurable starter gear on their first join. What you receive depends on the pack's settings. **Crafting Tweaks** and **Searchables** are small interface helpers."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "minecraft:crafting_table"
+      },
+      "title": "Crafting Tweaks",
+      "text": "Adds buttons beside crafting grids: rotate, clear, balance and spread items, and compress or decompress stacks. Each also has a key in Controls."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "minecraft:writable_book"
+      },
+      "title": "Searchables",
+      "text": "A library that adds search bars with autocomplete to other mods' lists. You may only notice it as a search box inside another screen."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "If you want to know what you start with, check your inventory on first join. Other tools: [#](2E5AAC)[Tools](entry://start_here/tools)[#]().\n\nRelated: [#](2E5AAC)[Inventory Tools](entry://home/inventory_tools)[#]()."
+    }
+  ]
+}

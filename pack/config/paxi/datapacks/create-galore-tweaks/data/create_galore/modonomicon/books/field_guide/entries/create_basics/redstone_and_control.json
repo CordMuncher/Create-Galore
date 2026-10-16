@@ -1,0 +1,69 @@
+{
+  "category": "create_basics",
+  "name": "Redstone and Displays",
+  "description": "Create adds ways to read and control machines without wires.",
+  "icon": {
+    "item": "create:redstone_link"
+  },
+  "x": 2,
+  "y": 3,
+  "sort_number": 20,
+  "parents": [
+    {
+      "entry": "create_basics/item_logistics",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": false
+    },
+    {
+      "entry": "create_basics/packages",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Redstone and Displays",
+      "text": "Create adds ways to read and control machines without wires."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create:redstone_link"
+      },
+      "title": "Redstone Link",
+      "text": "Wireless. Pairs share a frequency set by two items. A powered transmitter powers receivers anywhere."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create:display_link"
+      },
+      "title": "Display Link",
+      "text": "Reads data from a block, such as a stock level, and writes it to a Display Board or Nixie Tubes."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create:content_observer"
+      },
+      "title": "Smart Observer",
+      "text": "Detects items in front of it, in an inventory, or on a belt."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create:stockpile_switch"
+      },
+      "title": "Threshold Switch",
+      "text": "Outputs redstone based on how full a container is."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Related",
+      "text": "- [#](2E5AAC)[Moving Items](entry://create_basics/item_logistics)[#]()\n- [#](2E5AAC)[Logistics: Packages](entry://create_basics/packages)[#]()"
+    }
+  ]
+}

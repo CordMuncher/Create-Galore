@@ -1,0 +1,75 @@
+{
+  "category": "transport",
+  "name": "Signals and Schedules",
+  "description": "Signals keep trains from hitting each other.",
+  "icon": {
+    "item": "create:track_signal"
+  },
+  "x": 1,
+  "y": -1,
+  "sort_number": 2,
+  "parents": [
+    {
+      "entry": "transport/trains",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Signals and Schedules",
+      "text": "Signals keep trains from hitting each other. A Train Signal splits the track into segments, and each segment holds one train at a time. Signals only govern trains that nobody is driving."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create:track_signal"
+      },
+      "title": "Train Signal",
+      "text": "Placed beside a track like a station. A scheduled train never crosses one against its direction unless a second signal faces that way."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Two modes",
+      "text": "A wrench switches a signal to its second mode. A brass-mode signal is meant to lead into ordinary ones: it holds a train back if, once inside, it could not leave the next segment at once. That keeps queued trains out of a busy junction."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Redstone",
+      "text": "A redstone signal forces a Train Signal red, and a red signal gives a comparator output. Nixie Tubes attached to a signal make the lights easier to read from a distance."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create:track_observer"
+      },
+      "title": "Train Observer",
+      "text": "Select a track, place the observer nearby. It fires when a train crosses the marker and can be filtered by cargo."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Schedules",
+      "text": "A **Train Schedule** holds a list of stops and the conditions to leave each. Right-click it to edit, then give it to a driver. Any mob, or a Blaze Burner, seated in front of Train Controls counts as a conductor. You can take the schedule back at any time."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create:schedule"
+      },
+      "title": "Train Schedule",
+      "text": "Stations are the stops. Conditions can be a delay, a cargo level, a redstone signal and more."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Going further",
+      "text": "Steam 'n' Rails adds track switches and semaphores, and Railways Navigator adds route planning and penalty anchors that make trains avoid stretches of track. See [#](2E5AAC)[Train Add-ons](entry://transport/train_addons)[#]()."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Related",
+      "text": "The basics of building a train, and the add-on mods.\n\n- [#](2E5AAC)[Trains](entry://transport/trains)[#]()\n- [#](2E5AAC)[Train Add-ons](entry://transport/train_addons)[#]()"
+    }
+  ]
+}

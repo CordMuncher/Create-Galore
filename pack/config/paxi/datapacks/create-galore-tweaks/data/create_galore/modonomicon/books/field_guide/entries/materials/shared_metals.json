@@ -1,0 +1,80 @@
+{
+  "category": "materials",
+  "name": "Shared Metals",
+  "description": "Several mods add the same metal.",
+  "icon": {
+    "item": "tfmg:steel_ingot"
+  },
+  "x": 1,
+  "y": 1,
+  "sort_number": 3,
+  "parents": [
+    {
+      "entry": "materials/ore_guide",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Shared Metals",
+      "text": "Several mods add the same metal. In this pack each one has a single **canonical item**. Other mods' recipes now produce and use it, so only one kind exists in practice.\n\nLeftovers convert 1:1 in a crafting grid."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "tfmg:steel_ingot"
+      },
+      "title": "Steel: TFMG",
+      "text": "The canonical steel. Alloyed, Big Cannons and Nuclear recipes now give this item. See [#](2E5AAC)[TFMG Steel](entry://industry/tfmg_steel)[#]()."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Old steel",
+      "text": "Alloyed, Big Cannons and Create Nuclear still have their own steel items, but no recipe makes them. Put an old ingot, nugget or block in a crafting grid to get TFMG steel. Recipes that ask for the steel tag still take either."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Steel plates",
+      "text": "TFMG's Heavy Plate (three presses) is the one you make: Alloyed's one-press Steel Sheet is off. Both are in the steel plate tag, so old sheets still work in recipes."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Other unified metals",
+      "text": "- **Lead**: Create Nuclear's. TFMG lead converts. Only Nuclear's ore generates.\n- **Bronze**: Alloyed's. Big Cannons bronze converts.\n- **Cast iron**: still TFMG and Big Cannons, shared by tag."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "createnuclear:lead_ingot"
+      },
+      "title": "Lead Ingot",
+      "text": "Smelt Raw Lead from Create Nuclear's ore. TFMG's lead recipes accept this ingot too."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "createbigcannons:cast_iron_ingot"
+      },
+      "title": "Cast Iron Ingot",
+      "text": "Shared by TFMG and Create Big Cannons through the cast iron tag, so either works in tag-based recipes."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Wire, sulfur, salt",
+      "text": "**Copper wire** is Create Crafts & Additions' (see [#](2E5AAC)[Electricity](entry://industry/electricity)[#]()); TFMG's converts. Each mod keeps its own copper spool, as they wire different machines. **Sulfur dust** is TFMG's; Alex's Caves sulfur converts. Salt and cocoa also unify, in Ratatouille."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Single-source",
+      "text": "Not shared: titanium, tungsten, platinum, mithril and zinc each come from one mod.\n\nNorthstar's Martian Steel has its own tag and is not generic steel. Raw uranium joins Create Nuclear and Alex's Caves."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Related",
+      "text": "- [#](2E5AAC)[Ore Guide](entry://materials/ore_guide)[#]()\n- [#](2E5AAC)[TFMG Steel](entry://industry/tfmg_steel)[#]()\n- [#](2E5AAC)[Alloyed: Steel and Bronze](entry://industry/alloyed)[#]()\n- [#](2E5AAC)[Nuclear Reactors](entry://industry/nuclear)[#]()\n- [#](2E5AAC)[Electricity](entry://industry/electricity)[#]()\n- [#](2E5AAC)[Core Materials](entry://create_basics/materials)[#]()"
+    }
+  ]
+}

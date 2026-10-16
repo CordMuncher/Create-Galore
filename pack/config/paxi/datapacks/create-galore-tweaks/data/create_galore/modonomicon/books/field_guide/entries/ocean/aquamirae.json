@@ -1,0 +1,87 @@
+{
+  "category": "ocean",
+  "name": "Aquamirae and the Ice Maze",
+  "description": "Aquamirae adds a frozen ocean region called the Ice Maze: pirate ships and outposts,...",
+  "icon": {
+    "item": "aquamirae:shell_horn"
+  },
+  "x": 3,
+  "y": 1,
+  "sort_number": 7,
+  "parents": [
+    {
+      "entry": "ocean/diving",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": false
+    },
+    {
+      "entry": "ocean/sea_life",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Aquamirae and the Ice Maze",
+      "text": "**Aquamirae** adds a frozen ocean region called the **Ice Maze**: pirate ships and outposts, shelters, and shipwrecks locked in ice, with their own creatures. Fragmentum, a library mod, and GeckoLib sit underneath it."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "The Ice Maze has three bosses. The **Shell Horn** summons the Ghost of Captain Cornelia near water in the Ice Maze. The Maze Mother lives deeper in. The Shipbreaker is a leviathan; its Ship Graveyard Echo leaves a trace that the Echo Compass can follow."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "aquamirae:shell_horn"
+      },
+      "title": "Shell Horn",
+      "text": "Found in frozen pirate ships. Summons Captain Cornelia when used near water in the Ice Maze."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "aquamirae:frozen_key"
+      },
+      "title": "Frozen Key",
+      "text": "Dropped by Cornelia. Opens a hidden chest in the depths of the Ice Maze."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "aquamirae:tidepiercer"
+      },
+      "title": "Tidepiercer",
+      "text": "Cornelia's weapon, looted from her after the fight."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "aquamirae:echo_compass"
+      },
+      "title": "Echo Compass",
+      "text": "Points toward the nearest Ship Graveyard Echo."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Salvager armor** supplies air underwater and keeps you from freezing in the Ice Maze. Two upgrade templates make better armor: the Terrible template upgrades Iron armor with a Fin, and the Abyssal template upgrades Diamond armor with Abyssal Amethyst."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "aquamirae:rune_of_the_storm"
+      },
+      "title": "Rune of the Storm",
+      "text": "Found buried in the Ice Maze. Attach at a smithing table: +40%% damage, or -10%% damage taken, in cold biomes."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Its fish and drops feed straight into cooking: Spinefish, Esca, Jellyfish Jelly and Sea Stew all exist, and fit in with [#](2E5AAC)[Farmer's Delight](entry://food/farmers_delight)[#]() style meals. For a way to get there, see [#](2E5AAC)[Submarines](entry://ocean/submarines)[#](). More boss info: [#](2E5AAC)[Bosses](entry://exploration/bosses)[#]()."
+    }
+  ]
+}

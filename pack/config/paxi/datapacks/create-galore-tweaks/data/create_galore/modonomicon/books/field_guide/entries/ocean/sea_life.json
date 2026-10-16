@@ -1,0 +1,78 @@
+{
+  "category": "ocean",
+  "name": "Sea Life",
+  "description": "The pack's ocean is crowded.",
+  "icon": {
+    "item": "hybrid_aquatic:diving_helmet"
+  },
+  "x": 1,
+  "y": 1,
+  "sort_number": 6,
+  "parents": [
+    {
+      "entry": "ocean/fishing",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Sea Life",
+      "text": "The pack's ocean is crowded. **Hybrid Aquatic** is the big one: well over a hundred new sea creatures, from clownfish and seahorses to orcas, whale sharks and colossal squid, plus new ocean biomes to hold them."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Biomes include Coral Reef, Deep Coral Reef, Seagrass Bed, Tide Pools, Red Meadow, Sulfuric Caves, and Warm, Cold, Frozen and Lukewarm Trenches. New coral types and bleached variants come with them, and a Tropical River biome on land."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "hybrid_aquatic:ominous_conch"
+      },
+      "title": "Ominous Conch",
+      "text": "Tied to Hybrid Aquatic's Karkinos crab boss. Check JEI for its uses."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "hybrid_aquatic:magnetic_hook"
+      },
+      "title": "Magnetic Hook",
+      "text": "One of several special fishing hooks: Barbed, Glowing, CreeperMagnet, Ominous and Magnetic."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Naturalist** adds land and sea animals. Here its anglerfish, blobfish, giant isopod, great white shark, piranha, jellyfish, starfish, crab and ray are off, because Hybrid Aquatic covers them. Their buckets and eggs are hidden from JEI. Whale, clam, bass, catfish and the rest still spawn."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "hybrid_aquatic:diving_suit"
+      },
+      "title": "Diving Suit",
+      "text": "Hybrid Aquatic's underwater armor. See Diving Gear for how it compares with other options."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "naturalist:whale_spawn_egg"
+      },
+      "title": "Whale",
+      "text": "Naturalist's whale still spawns here. Clams also drop Clam Meat, used in cooking."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Other sea residents: [#](2E5AAC)[Aquamirae](entry://ocean/aquamirae)[#]() adds an icy ocean region with its own creatures and bosses, and **Critters and Companions** adds koi fish (its otter, Dumbo Octopus and Sea Bunny are off here). [#](2E5AAC)[Structures](entry://ocean/underwater_places)[#]() give them places to live. Fish worth catching: [#](2E5AAC)[Fishing](entry://ocean/fishing)[#]()."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Related",
+      "text": "- [#](2E5AAC)[Aquamirae and the Ice Maze](entry://ocean/aquamirae)[#]()\n- [#](2E5AAC)[Diving Gear](entry://ocean/diving)[#]()\n- [#](2E5AAC)[Fishing](entry://ocean/fishing)[#]()\n- [#](2E5AAC)[Creatures](entry://exploration/creatures)[#]()"
+    }
+  ]
+}

@@ -1,0 +1,63 @@
+{
+  "category": "industry",
+  "name": "Alloyed: Steel and Bronze",
+  "description": "Alloyed adds two alloys and the forge that makes them.",
+  "icon": {
+    "item": "alloyed:forge"
+  },
+  "x": 1,
+  "y": 0,
+  "sort_number": 11,
+  "parents": [
+    {
+      "entry": "industry/tfmg_steel",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Alloyed: Steel and Bronze",
+      "text": "Alloyed adds two alloys and the forge that makes them. Steel and bronze become tools, armor and building blocks. Both are shared with other mods (see [#](2E5AAC)[Shared Metals](entry://materials/shared_metals)[#]())."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "alloyed:forge"
+      },
+      "title": "Alloy Forge",
+      "text": "Forges Alloyed tools, armor and parts. Steel and bronze themselves come from a heated Create mixer: bronze from copper, three zinc nuggets and cinder flour. See [#](2E5AAC)[Balance Changes](entry://connections/balance)[#]()."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "tfmg:steel_ingot"
+      },
+      "title": "Steel",
+      "text": "Alloyed's recipes now give TFMG steel. Forge it into pickaxes, swords, armor, horse armor, shears and fishing rods; any steel works. Farmer's Delight gets a steel knife."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "alloyed:bronze_ingot"
+      },
+      "title": "Bronze",
+      "text": "Alloyed's bronze is the pack's bronze: Big Cannons and TFMG bronze recipes give it too. Used for casing, sheet and blocks. Bronze blocks oxidize like copper and can be waxed."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "alloyed:bronze_bell"
+      },
+      "title": "Bronze Bell",
+      "text": "A playable block. It rings when hit or powered by redstone, a Wrench tunes it, and a Deployer can ring it."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Casings: Steel Casing and Bronze Casing, with encased shafts and cogwheels, add more tiers to your builds. Also steel catwalks, mesh fences and doors. Old Alloyed steel ingots convert to TFMG steel in a crafting grid. See [#](2E5AAC)[TFMG Steel](entry://industry/tfmg_steel)[#]()."
+    }
+  ]
+}

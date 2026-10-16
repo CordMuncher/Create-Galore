@@ -1,0 +1,61 @@
+{
+  "category": "exploration",
+  "name": "Lootr",
+  "description": "Lootr makes every loot container in the world unique per player.",
+  "icon": {
+    "item": "lootr:lootr_chest"
+  },
+  "x": 1,
+  "y": 1,
+  "sort_number": 11,
+  "parents": [
+    {
+      "entry": "exploration/structure_packs",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    },
+    {
+      "entry": "exploration/create_structures",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": false
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Lootr",
+      "text": "**Lootr** makes every loot container in the world unique per player. Two people can open the same dungeon chest and each gets a full set of loot. No more racing for the first chest."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "lootr:lootr_chest"
+      },
+      "title": "Loot Chest",
+      "text": "Generated chests turn into these. Each player sees and empties only their own copy."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "lootr:lootr_barrel"
+      },
+      "title": "Loot Barrel",
+      "text": "Barrels, shulkers and decorated pots in structures follow the same rule."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Containers you place yourself are normal. Only containers that would roll a vanilla loot table become Lootr ones, including those in [#](2E5AAC)[structure packs](entry://exploration/structure_packs)[#](), [#](2E5AAC)[Create structures](entry://exploration/create_structures)[#]() and [#](2E5AAC)[undersea wrecks](entry://ocean/underwater_places)[#]()."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "lootr:suspicious_sand"
+      },
+      "title": "Suspicious Sand",
+      "text": "Archaeology blocks are covered as well."
+    }
+  ]
+}

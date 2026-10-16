@@ -1,0 +1,52 @@
+{
+  "category": "start_here",
+  "name": "Welcome to Create Galore",
+  "description": "Create Galore is a big, long-term Minecraft pack built around the Create mod.",
+  "icon": {
+    "item": "minecraft:writable_book"
+  },
+  "x": -3,
+  "y": 0,
+  "sort_number": 0,
+  "parents": [],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Welcome to Create Galore",
+      "text": "Create Galore is a big, long-term Minecraft pack built around the Create mod. Rotating machines are the core, and everything else hangs off them: airships, submarines, trains, roller coasters, the Moon, survival layers, homesteading and a lot of new world."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "This book is a **wiki**, not a quest list. Nothing here tells you what to do next. Each entry explains one idea, how it behaves, the rules that trip people up, and how it connects to the other mods in the pack."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**The sections**\n- Start Here\n- Create: The Basics\n- How Things Connect\n- Industry and Power\n- Ores and Metals\n- Survival Layers\n- Trains and Rides"
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "- Flight\n- The Road to the Stars\n- Space\n- The Ocean\n- Exploration\n- Food and Farming\n- Home and Storage"
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Reading the maps**\\\nEach section is a map. An arrow from one entry to another means the first one usually comes before it, so to reach something, follow its lines back. Drag to move around and scroll to zoom."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Searching**\\\nThe magnifying glass on the right searches the text of every page.\n\nNew to Create? [#](2E5AAC)[Rotation](entry://create_basics/rotation)[#]() is the first idea."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "minecraft:writable_book"
+      },
+      "title": "The Field Guide",
+      "text": "You get one on first join. It can be crafted from a Book and Andesite (shapeless), and opened from JEI. See [#](2E5AAC)[Tools of the Trade](entry://start_here/tools)[#]()."
+    }
+  ]
+}

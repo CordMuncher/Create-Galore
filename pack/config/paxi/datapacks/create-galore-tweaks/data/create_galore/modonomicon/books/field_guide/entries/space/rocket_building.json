@@ -1,0 +1,105 @@
+{
+  "category": "space",
+  "name": "Building a Rocket",
+  "description": "A rocket is glued blocks around a Rocket Station.",
+  "icon": {
+    "item": "northstar:rocket_thruster"
+  },
+  "x": 1,
+  "y": 0,
+  "sort_number": 2,
+  "parents": [
+    {
+      "entry": "space/reaching_space",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": false
+    },
+    {
+      "entry": "space/space_materials",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Building a Rocket",
+      "text": "A rocket is glued blocks around a Rocket Station. It needs thrusters, fuel in fluid tanks, a seat and Rocket Controls. Trips to planets also need an Interplanetary Navigator."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "northstar:rocket_station"
+      },
+      "title": "Rocket Station",
+      "text": "Picks the destination, assembles the rocket and shows fuel, thruster and heat needs. Built around a [#](2E5AAC)[Stellar Core](entry://stars/stellar_core)[#]()."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "northstar:rocket_thruster"
+      },
+      "title": "Rocket Thruster",
+      "text": "How many you need depends on the rocket's weight and gravity at both ends. Built from a Combustion Chamber, titanium plates and a Create Propeller."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Fuel",
+      "text": "Fuel must sit in fluid tanks on the rocket. Accepted: Liquid Hydrogen, Hydrogen, Methane, Hydrocarbon, Biofuel, and TFMG diesel, gasoline, kerosene and naphtha. Amount depends on gravity at each end and the distance. See [#](2E5AAC)[Oil](entry://industry/tfmg_oil)[#]()."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Making fuel",
+      "text": "Hydrocarbon is made by heated mixing of Carbon with Sodium or a Sodium Catalyst. Carbon comes from compacting coal with heat, or from a planet's air. Hydrogen and Oxygen come from the Electrolysis Machine. Check JEI for each."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "northstar:computer_rack"
+      },
+      "title": "Computer Rack",
+      "text": "Holds Targeting Computers, which find better trajectories and cut fuel cost."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Heat shielding",
+      "text": "Atmosphere friction heats a rocket. Heat shielding goes up by adding metallic blocks anywhere on it. Northstar groups them in tiers: titanium and iron, then Martian steel, then tungsten. The station lists supported blocks."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Launching",
+      "text": "Sit at the Rocket Controls and press jump to start the launch sequence, jump again to cancel. Hold the slow key on descent. Landings aim at a Rocket Waypoint, recorded by using the atlas on it. Super Glue holds the rocket together."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "northstar:rocket_controls"
+      },
+      "title": "Rocket Controls",
+      "text": "Required to launch and steer. Without them the station reports no controls attached."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "northstar:rocket_waypoint"
+      },
+      "title": "Rocket Waypoint",
+      "text": "Marks landing coordinates. Use a Space Atlas on it to save the position."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "northstar:auto_lander"
+      },
+      "title": "Auto-Landing Station",
+      "text": "Lands the rocket safely on its own."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Related",
+      "text": "Where to go and where fuel comes from.\n\n- [#](2E5AAC)[Reaching Space](entry://space/reaching_space)[#]()\n- [#](2E5AAC)[Planets](entry://space/planets)[#]()\n- [#](2E5AAC)[TFMG Oil and Fuels](entry://industry/tfmg_oil)[#]()\n- [#](2E5AAC)[Burning Liquid Fuel](entry://industry/liquid_fuel)[#]()"
+    }
+  ]
+}

@@ -1,0 +1,76 @@
+{
+  "category": "create_basics",
+  "name": "Blaze Burner and Heat",
+  "description": "Some recipes need heat.",
+  "icon": {
+    "item": "create:blaze_burner"
+  },
+  "x": 2,
+  "y": 0,
+  "sort_number": 11,
+  "parents": [
+    {
+      "entry": "create_basics/processing",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    },
+    {
+      "entry": "create_basics/power_sources",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": false
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Blaze Burner and Heat",
+      "text": "Some recipes need **heat**. Create gets it from the **Blaze Burner**, which also boosts basin recipes and powers steam engine boilers.\n\nThe burner is not crafted whole: you capture a living blaze in an **Empty Blaze Burner**."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create:empty_blaze_burner"
+      },
+      "title": "Empty Blaze Burner",
+      "text": "Right-click a blaze with it to capture the blaze. Blazes can also be collected from their spawners. Then put the burner under a basin or boiler."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create:blaze_burner"
+      },
+      "title": "Blaze Burner",
+      "text": "Feed it flammable items by hand, or let a deployer or mechanical arm do it. It cools down when its fuel runs out."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Two levels**: fed with fuel it is **heated**. Fed a **Blaze Cake** it becomes **superheated**, the stronger tier some recipes need. A superheated burner also counts as heated."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create:blaze_cake"
+      },
+      "title": "Blaze Cake",
+      "text": "Takes a burner to the stronger tier. Check JEI (R, U) for its recipe and the recipes that need superheating."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**What uses heat**:\n\n- Mixer and press recipes marked heated or superheated\n\n- Steam engine boilers: fluid tanks sitting on a burner heat water to steam\n\n- Fans: see [#](2E5AAC)[Encased Fans](entry://create_basics/fans)[#]() for what counts as a fan catalyst."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Other mods**: the tag Create reads for boiler heat also includes Farmer's Delight's **Stove**, Twilight Forest's fiery storage blocks, and lava, magma blocks, campfires and fire. These work as passive boiler heaters, weaker than a burner.\n\nBurners can also burn liquid fuel from pipes: see [#](2E5AAC)[Burning Liquid Fuel](entry://industry/liquid_fuel)[#]()."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Related",
+      "text": "- [#](2E5AAC)[Press, Mixer and Basin](entry://create_basics/processing)[#]()\n- [#](2E5AAC)[Encased Fans](entry://create_basics/fans)[#]()\n- [#](2E5AAC)[Burning Liquid Fuel](entry://industry/liquid_fuel)[#]()"
+    }
+  ]
+}

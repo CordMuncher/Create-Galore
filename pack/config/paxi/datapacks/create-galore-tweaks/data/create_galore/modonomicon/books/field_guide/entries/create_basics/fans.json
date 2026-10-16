@@ -1,0 +1,68 @@
+{
+  "category": "create_basics",
+  "name": "Encased Fans",
+  "description": "An Encased Fan turns rotation into an air current.",
+  "icon": {
+    "item": "create:encased_fan"
+  },
+  "x": 4,
+  "y": 1,
+  "sort_number": 12,
+  "parents": [
+    {
+      "entry": "create_basics/processing",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": false
+    },
+    {
+      "entry": "create_basics/heat",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Encased Fans",
+      "text": "An **Encased Fan** turns rotation into an air current. Items caught in it, on the ground, on a belt or a depot, get **bulk processed** depending on what the air passes through.\n\nSpeed only changes the range, not the processing speed."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create:encased_fan"
+      },
+      "title": "Encased Fan",
+      "text": "Direction follows rotation. The air also pushes mobs, players and dropped items."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Base types**:\n\n- Washing: air through water\n\n- Smoking: fire or campfire\n\n- Blasting: lava\n\n- Haunting: soul fire or soul campfire\n\nWashing: [#](2E5AAC)[Crushing](entry://create_basics/crushing)[#]()."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Blasting works like a furnace and would burn food: smoke it instead. A **Blaze Burner** also works as a blasting and smoking source, and the Lit Blaze Burner variant for haunting, see [#](2E5AAC)[Heat](entry://create_basics/heat)[#]().\n\nBars, fences and leaves let air through; solid blocks stop it."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Added by other mods**:\n\n- Dragons Plus: ending (dragon breath), freezing (powder snow), sanding (quicksand), coloring (liquid dye), enchanting (Golden Aercloud)\n\n- Create Nuclear: enriching\n\n- Enchantment Industry: salvaging"
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "createnuclear:enriching_campfire"
+      },
+      "title": "Enriching Campfire",
+      "text": "Create Nuclear's fan catalyst for bulk enriching. Enriched fire comes from Enriched Soul Soil, see [#](2E5AAC)[Nuclear](entry://industry/nuclear)[#]()."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Related",
+      "text": "- [#](2E5AAC)[Press, Mixer and Basin](entry://create_basics/processing)[#]()\n- [#](2E5AAC)[Crushing and Ore Doubling](entry://create_basics/crushing)[#]()\n- [#](2E5AAC)[Blaze Burner and Heat](entry://create_basics/heat)[#]()"
+    }
+  ]
+}

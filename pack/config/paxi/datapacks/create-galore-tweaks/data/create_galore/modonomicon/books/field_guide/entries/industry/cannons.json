@@ -1,0 +1,65 @@
+{
+  "category": "industry",
+  "name": "Big Cannons",
+  "description": "Create Big Cannons adds artillery built as contraptions: cast or built-up barrels,...",
+  "icon": {
+    "item": "createbigcannons:cannon_mount"
+  },
+  "x": 3,
+  "y": 0,
+  "sort_number": 14,
+  "parents": [
+    {
+      "entry": "industry/alloyed",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Big Cannons",
+      "text": "Create Big Cannons adds artillery built as contraptions: cast or built-up barrels, breeches, mounts, loaders and munitions. Ponder explains each step; this page only covers what connects to the rest of the pack."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "createbigcannons:cannon_mount"
+      },
+      "title": "Cannon Mount",
+      "text": "The rotating base that aims a cannon. Cannons are assembled onto it as a contraption."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "createbigcannons:cannon_loader"
+      },
+      "title": "Cannon Loader",
+      "text": "A contraption part that pushes charges and shells in. Cartridges and powder charges set range, shells set effect."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "createbigcannons:basin_foundry_lid"
+      },
+      "title": "Basin Foundry Lid",
+      "text": "Melts bronze, cast iron and nethersteel in a heated basin for casting cannon parts."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "TFMG ties in: its Casting Basin casts Big Cannons bronze, cast iron and nethersteel. Its vat with graphite electrodes turns netherite scrap and molten steel into nethersteel."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Steel and bronze",
+      "text": "Big Cannons' own steel recipes (mixing iron and coal, compacting molten steel) now give [#](2E5AAC)[TFMG steel](entry://industry/tfmg_steel)[#](), and bronze comes from Alloyed's mixer recipe (Big Cannons' cheaper bronze mixes are off). Old Big Cannons steel and bronze convert in a crafting grid. See [#](2E5AAC)[Shared Metals](entry://materials/shared_metals)[#]()."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Cannons are built from contraptions: [#](2E5AAC)[Contraptions](entry://create_basics/contraptions)[#](), so you can mount them on moving builds. Handle with care: shells destroy blocks."
+    }
+  ]
+}

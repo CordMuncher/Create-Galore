@@ -1,0 +1,14 @@
+{
+  "name": "Space",
+  "description": "The Moon, Mars and beyond with Northstar, and flying your own ship there.",
+  "icon": {
+    "item": "northstar:moon_stone"
+  },
+  "sort_number": 9,
+  "display_mode": "node",
+  "background": "modonomicon:textures/gui/dark_slate_seamless.png",
+  "background_width": 512,
+  "background_height": 512,
+  "max_scroll_x": 210,
+  "max_scroll_y": 150
+}

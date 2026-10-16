@@ -1,0 +1,81 @@
+{
+  "category": "transport",
+  "name": "Hypertubes",
+  "description": "Hypertubes are tubes you travel through at speed.",
+  "icon": {
+    "item": "create_hypertube:hypertube"
+  },
+  "x": 1,
+  "y": 0,
+  "sort_number": 5,
+  "parents": [
+    {
+      "entry": "transport/trains",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Hypertubes",
+      "text": "Hypertubes are tubes you travel through at speed. Connect entrances with tube blocks and anything that steps in is carried down the line. Create rotation powers the entrance."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Building a line",
+      "text": "Right-click a placed tube while holding another, then place the second to connect them. Tubes that are already placed can be linked the same way. A wrench changes how many segments a span uses. The angle and distance between two ends are limited."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create_hypertube:hypertube"
+      },
+      "title": "Hypertube",
+      "text": "Hold a tube, right-click one already placed, then place the next."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Entrances",
+      "text": "An entrance needs at least 16 RPM to admit you, and faster rotation means faster travel. A wrench changes the mode, between manual lock (sneak to enter) and automatic lock. The escape key gets you out of a tube."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create_hypertube:hypertube_entrance"
+      },
+      "title": "Hypertube Entrance",
+      "text": "Power it from the shaft. If it says not enough speed, spin it faster."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create_hypertube:hypertube_accelerator"
+      },
+      "title": "Hypertube Accelerator",
+      "text": "Speeds up whoever passes. Right-click for Brake mode instead."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create_hypertube:hypertube_junction"
+      },
+      "title": "Hypertube Splitter",
+      "text": "Joins up to three tubes. Travellers steer with movement keys. A wrench cycles Continue, which sends them down the side tubes, and Center, which goes straight."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create_hypertube:tube_scanner_attachment"
+      },
+      "title": "Tube Scanner",
+      "text": "Gives a signal while something travels the tube, 8 for babies, 15 for adults. Redstone Detector Attachments change modes remotely."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Related",
+      "text": "Rotation and stress power the entrance. Trains are the long-haul option.\n\n- [#](2E5AAC)[Rotation](entry://create_basics/rotation)[#]()\n- [#](2E5AAC)[Stress](entry://create_basics/stress)[#]()\n- [#](2E5AAC)[Trains](entry://transport/trains)[#]()"
+    }
+  ]
+}

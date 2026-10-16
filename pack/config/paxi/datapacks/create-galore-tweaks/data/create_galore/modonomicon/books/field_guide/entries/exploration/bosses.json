@@ -1,0 +1,65 @@
+{
+  "category": "exploration",
+  "name": "Bosses",
+  "description": "Several mods add big, named fights with their own arenas and unique drops.",
+  "icon": {
+    "item": "minecraft:dragon_head"
+  },
+  "x": -3,
+  "y": -3,
+  "sort_number": 12,
+  "parents": [
+    {
+      "entry": "exploration/twilight_forest",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": false
+    },
+    {
+      "entry": "exploration/aether",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Bosses",
+      "text": "Several mods add big, named fights with their own arenas and unique drops. Most bosses are found in a dedicated structure or summoned with a special item. This page is the index; each mod has its own entry."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "- [#](2E5AAC)[Cataclysm](entry://exploration/cataclysm)[#](): about a dozen bosses across all biomes.\n- [#](2E5AAC)[Mowzie's Mobs](entry://exploration/mowzies_mobs)[#](): the Wroughtnaut, Umvuthi, Frostmaw and the Sculptor.\n- [#](2E5AAC)[Twilight Forest](entry://exploration/twilight_forest)[#](): eight bosses with trophies.\n- [#](2E5AAC)[Aquamirae](entry://ocean/aquamirae)[#](): the Ice Maze trio."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Pack tuning: Cataclysm's main bosses and all four Mowzie's bosses have 0.7x health and 0.75x damage. They are softened, not removed, and every boss structure still generates."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Others: the [#](2E5AAC)[Aether](entry://exploration/aether)[#]() dungeons end in the Slider, Valkyrie Queen and Sun Spirit. Hybrid Aquatic has the Karkinos. [#](2E5AAC)[Iron's Spells](entry://exploration/magic)[#]() has the Dead King and a Citadel. Vanilla Wither, Dragon and Elder Guardian also remain."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Boss drops often upgrade existing gear, so keep your best weapons around. In this pack the Cataclysm boss gear has Create-flavoured recipes: see [#](2E5AAC)[Cataclysm x Create](entry://exploration/cataclysm_create)[#]()."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "minecraft:nether_star"
+      },
+      "title": "Nether Star",
+      "text": "The Wither's drop goes into Create Nuclear's Reactor Controller and the [#](2E5AAC)[Stellar Core](entry://stars/stellar_core)[#]()."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Boss guides",
+      "text": "- [#](2E5AAC)[L\\_Ender's Cataclysm](entry://exploration/cataclysm)[#]()\n- [#](2E5AAC)[Mowzie's Mobs](entry://exploration/mowzies_mobs)[#]()\n- [#](2E5AAC)[Twilight Forest](entry://exploration/twilight_forest)[#]()\n- [#](2E5AAC)[Aquamirae and the Ice Maze](entry://ocean/aquamirae)[#]()\n- [#](2E5AAC)[Magic](entry://exploration/magic)[#]()"
+    }
+  ]
+}

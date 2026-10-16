@@ -1,0 +1,83 @@
+{
+  "category": "transport",
+  "name": "Trains",
+  "description": "Create trains run on their own track network and carry glued-together blocks as cars.",
+  "icon": {
+    "item": "create:railway_casing"
+  },
+  "x": -1,
+  "y": -1,
+  "sort_number": 1,
+  "parents": [
+    {
+      "entry": "transport/getting_around",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Trains",
+      "text": "Create trains run on their own track network and carry glued-together blocks as cars. You can drive one yourself or hand it a schedule.\n\nHold W over any item here to watch its Ponder."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Track",
+      "text": "Train Track is its own block, not a vanilla rail. Click a placed track, then another spot, to lay a straight, a curve or a slope in one go. Sprint while connecting for the longest bend that fits. Blocks in your off-hand are paved under the track."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create:track"
+      },
+      "title": "Train Track",
+      "text": "Placed against a Nether portal, track builds a matching line on the other side, so trains can cross dimensions."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Stations",
+      "text": "A **Train Station** is a waypoint on your network. Place it beside a track and open its screen. Assembly Mode builds a train, and scheduled trains stay away while it is on. A train can only be turned back into blocks at a station."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create:track_station"
+      },
+      "title": "Train Station",
+      "text": "Use a map on a station to add a labelled marker at that spot. Assembled trains can be nudged onto nearby track with a wrench."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Bogeys and controls",
+      "text": "Use **Train Casing** on a track to place a bogey, the wheel unit a car rides on. Click the track again to cycle designs. Glue blocks on with Super Glue. Every train needs Train Controls, and a second set facing the other way lets it leave a station in either direction."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create:railway_casing"
+      },
+      "title": "Train Casing",
+      "text": "Used on a track it places a bogey. Small and large bogeys are available."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create:controls"
+      },
+      "title": "Train Controls",
+      "text": "Right-click once assembled to drive. Movement keys steer, the mouse wheel sets top speed, sneak lets go."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Fuel and driving",
+      "text": "A train moves faster if it finds fuel in chests or barrels glued to it. Vault fuel is not burned. Hold space while driving to roll up to a station.\n\nTrack works in unloaded chunks: trains still travel and stop, but on-board machines wait until a player is near."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Related",
+      "text": "Signals, schedules, add-ons and how contraptions work in general.\n\n- [#](2E5AAC)[Signals and Schedules](entry://transport/train_signals)[#]()\n- [#](2E5AAC)[Train Add-ons](entry://transport/train_addons)[#]()\n- [#](2E5AAC)[Contraptions](entry://create_basics/contraptions)[#]()"
+    }
+  ]
+}

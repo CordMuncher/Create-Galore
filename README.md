@@ -6,16 +6,16 @@ A big, long-term Minecraft modpack built around the Create mod. Think "Minecraft
 
 | | |
 |---|---|
-| **Version** | 0.1.5 |
+| **Version** | 0.1.6 |
 | **Minecraft** | 1.21.1 |
 | **Loader** | NeoForge **21.1.259** (pinned, don't update it, see [Known issues](#known-issues)) |
-| **Mods** | 223 from Modrinth + the pack's own small Create Galore Bridge and Lag Watch + Twilight Forest added by hand, plus 4 shader packs and the Fresh Animations resource pack |
+| **Mods** | 224 from Modrinth + the pack's own small Create Galore Bridge and Lag Watch + Twilight Forest added by hand, plus 4 shader packs and the Fresh Animations resource pack |
 | **Full mod list** | [MODS.md](MODS.md) |
 | **In-game help** | The Create Galore Field Guide, a searchable book every player gets on first join |
 
 ## Install (players)
 
-1. Download `Create-Galore-0.1.5.mrpack` from the [latest release](https://github.com/emresahin0906-code/Create-Galore/releases/latest) (or [from this repo](Create-Galore-0.1.4.mrpack)).
+1. Download `Create-Galore-0.1.6.mrpack` from the [latest release](https://github.com/emresahin0906-code/Create-Galore/releases/latest) (or [from this repo](Create-Galore-0.1.6.mrpack)).
 2. Import it:
    - **Prism Launcher:** Add Instance → Import → pick the `.mrpack`.
    - **Modrinth App:** drag the `.mrpack` onto the window (or File → Import).
@@ -41,7 +41,7 @@ install-server.bat C:\CreateGaloreServer        (Windows)
 ./install-server.sh ~/CreateGaloreServer        (Linux / macOS)
 ```
 
-The server gets 181 mods, the pack's Create Galore Bridge and Lag Watch, and Twilight Forest. The 42 client-only mods (Sodium, Iris, Distant Horizons, Borderless Window, map add-ons, the ambiance layer and so on) are skipped automatically. Players still install the full `.mrpack`. Far terrain for Distant Horizons is sent from the server by Chunksmith, so Distant Horizons itself stays off the server.
+The server gets 182 mods, the pack's Create Galore Bridge and Lag Watch, and Twilight Forest. The 42 client-only mods (Sodium, Iris, Distant Horizons, Borderless Window, map add-ons, the ambiance layer and so on) are skipped automatically. Players still install the full `.mrpack`. Far terrain for Distant Horizons is sent from the server by Chunksmith, so Distant Horizons itself stays off the server.
 
 The server opens a small window with a live memory graph and the player list, and warns in chat when TPS stays under 15, recording a spark profile you can open later. See [Lag alerts and profiles](docs/server-setup.md#lag-alerts-and-profiles).
 
@@ -79,9 +79,13 @@ The updater also keeps NeoForge on the pack's pinned version. To freeze the inst
 
 ## The Field Guide
 
-Every player gets the **Create Galore Field Guide** on first join, and you can craft another from a Book and Andesite. It's a searchable wiki, not a quest book: 14 sections and about 140 entries on how things work and how the mods connect, written for someone who has never played Create.
+Every player gets the **Create Galore Field Guide** on first join, and you can craft another from a Book and Andesite. It's a wiki, not a quest book: 14 sections and about 140 entries on how things work and how the mods connect, written for someone who has never played Create.
 
-Open the Index (last icon on the first page) and type to search. It matches entry names and the items shown in them. Editing notes: [docs/guidebook.md](docs/guidebook.md).
+Each section is a map. Entries are nodes, and the arrows show what comes first, so to reach something you follow its lines back (the six prizes all lead into the Stellar Core, for example). Everything is open from the start, with no locks, tasks or rewards. The magnifying glass on the right searches the text of every page. Editing notes: [docs/guidebook.md](docs/guidebook.md).
+
+In a world started before the guide moved to Modonomicon, the old Patchouli Field Guide no longer opens it: put it in a crafting grid on its own to turn it into the new one.
+
+![The Road to the Stars section: the six prizes lead into the Stellar Core](docs/field-guide.png)
 
 ## What's different from the stock mods
 
@@ -243,6 +247,8 @@ All tests ran headless in a cloud machine (4 cores, 16 GB RAM, no GPU), so speed
 | 0.1.4 title screen: the Create Galore panorama shows instead of Aquamirae's menu | ✅ |
 | 0.1.5 space gate on a dedicated server with the full client joined: the Stellar Core, Rocket Station, Dimensional Drive and Stellar Navigator recipes load (JEI shows the core in all four, and the Rocket Station has no other recipe), a Hullbreaker's loot gives an Immortal Embryo, a killed Ender Dragon drops Dragonskin, all 8 Road to the Stars advancements unlock (each prize, the core, and arriving on the Moon), the Field Guide loads with all 14 sections and the new pages render | ✅ |
 | Lag Watch on a dedicated server, with lag forced by summoning thousands of zombies: under 15 TPS for 10 s gives the chat alert with an entity count ("15,162 Zombie in the Overworld"), a 60 s spark profile of only the slow ticks is saved to `config/spark/lagwatch-*.sparkprofile` and spark's background profiler restarts after it, `logs/lagwatch.log` gets the snapshot, and the all-clear comes once TPS is back over 18. `/lagwatch test` works at full speed. The server window (memory graph, player list) opens on start | ✅ |
+| Field Guide on Modonomicon in a new singleplayer world: handed out on join, all 14 section maps draw with their arrows, search finds page text, entry links open, a `/reload` picks up edited pages | ✅ |
+| 0.1.6 playtest fixes on a dedicated server with the full client joined and flying in creative while `/cs start` pregenerates: with 0.1.5's settings the server froze for 20 s (Aeronautics Winds loading chunks on the main thread) and kicked the player back with "moved too quickly"; with Bridge 1.2.0 and the gentler Chunksmith settings there was no rubber-banding and Winds no longer shows up in the stalls (worst hitch 8.4 s right at join on a 4-core test box running server and client together, then 2.5 to 5.5 s). Borderless Window, the Distant Horizons overdraw setting and the frosty-breath setting load in the client and keep their values | ✅ |
 | Real FPS, shaders, Distant Horizons visuals, gameplay feel | ❌ Needs a real PC with a GPU |
 
 **Memory:** about 9.3 GB of process memory on the server and 8-9.6 GB on the client with an 8 GB heap. A laptop with 16 GB can play but shouldn't host and play at the same time. A garbage collector benchmark on the server (pack's G1 flags vs Java defaults, Generational ZGC and Shenandoah, plus a 6 GB run) is in [docs/java-flags.md](docs/java-flags.md).
@@ -251,8 +257,8 @@ All tests ran headless in a cloud machine (4 cores, 16 GB RAM, no GPU), so speed
 
 ## Repo layout
 
-- `Create-Galore-0.1.5.mrpack`: the importable pack, built from `pack/`
-- `pack/`: [packwiz](https://packwiz.infra.link/) source, one `.pw.toml` per mod or shader, plus configs (`pack/config/`), the datapacks (`pack/config/paxi/datapacks/create-galore-tweaks`, always on, `create-galore-no-elytra`, and the opt-in `config/paxi/optional/create-galore-with-elytra`) and the Field Guide (`pack/patchouli_books/`)
+- `Create-Galore-0.1.6.mrpack`: the importable pack, built from `pack/`
+- `pack/`: [packwiz](https://packwiz.infra.link/) source, one `.pw.toml` per mod or shader, plus configs (`pack/config/`), the datapacks (`pack/config/paxi/datapacks/create-galore-tweaks`, always on, `create-galore-no-elytra`, and the opt-in `config/paxi/optional/create-galore-with-elytra`) and the Field Guide (a Modonomicon book inside `create-galore-tweaks`)
 - `MODS.md`: full mod list with versions and sides
 - `server/`: server install scripts, memory settings and a starting `server.properties`
 - `docs/`: server guide, Field Guide editing notes, screenshots
@@ -267,7 +273,7 @@ To rebuild the `.mrpack` after changing `pack/`:
 ```
 cd pack
 packwiz refresh
-packwiz modrinth export -o ../Create-Galore-0.1.5.mrpack
+packwiz modrinth export -o ../Create-Galore-0.1.6.mrpack
 ```
 
 The release workflow then adds `packwiz-installer-bootstrap.jar` and `packwiz-installer.jar` (pinned, hash-checked) and `create-galore-updater.jar` (built from `tools/updater/` by `tools/updater/build.sh`) to the `.mrpack`'s `overrides/` so new instances can use the pre-launch updater. A config players are expected to tweak in game gets `preserve = true` under its entry in `pack/index.toml` (`packwiz refresh` keeps the flag), so the updater never overwrites it.

@@ -1,0 +1,73 @@
+{
+  "category": "space",
+  "name": "Flying Ships to Space",
+  "description": "Two bridge mods let an Aeronautics ship cross to Northstar worlds without a rocket:...",
+  "icon": {
+    "item": "cnbridge:dimensional_drive"
+  },
+  "x": 1,
+  "y": 1,
+  "sort_number": 3,
+  "parents": [
+    {
+      "entry": "space/reaching_space",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": false
+    },
+    {
+      "entry": "space/space_materials",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Flying Ships to Space",
+      "text": "Two bridge mods let an Aeronautics ship cross to Northstar worlds without a rocket: the Dimensional Drive and the Stellar Navigator. Dimensional Sable lets Sable ships change dimension at all."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "cnbridge:dimensional_drive"
+      },
+      "title": "Dimensional Drive",
+      "text": "Place on a ship. Right-click to choose a Northstar destination, arm it, then fly up to the trigger altitude to launch."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Recipe here",
+      "text": "In this pack the Dimensional Drive costs a [#](2E5AAC)[Stellar Core](entry://stars/stellar_core)[#](), 4 Titanium Ingots and 4 Precision Mechanisms. Press R over it in JEI to check. It offers the Moon, Mars, Venus, Mercury, Earth and Earth Orbit."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Using it",
+      "text": "The drive must sit on an Aeronautics ship. Set the target planet and trigger altitude in blocks, then Arm and Confirm. Some destinations need an Interplanetary Navigator on board. Goggles show destination, speed and altitude."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "northstar_aeronautics_compat:stellar_navigator"
+      },
+      "title": "Stellar Navigator",
+      "text": "From Northstar Aeronautics Compat. Brings an Aeronautics vessel to another planet. It can be turned off in config."
+    },
+    {
+      "type": "modonomicon:crafting_recipe",
+      "recipe_id_1": "northstar_aeronautics_compat:stellar_navigator",
+      "text": "Needs a Stellar Core and a bucket of Levitite Blend."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Gravity and air",
+      "text": "Ships that arrive take on the world's gravity and air. The Moon and Mercury have no air, Mars has almost none, and Venus is crushingly dense. Propellers and burners need air, so plan thrusters. See [#](2E5AAC)[Propellers](entry://flight/propellers)[#]()."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Related",
+      "text": "Planets and the Aeronautics side.\n\n- [#](2E5AAC)[Reaching Space](entry://space/reaching_space)[#]()\n- [#](2E5AAC)[Planets](entry://space/planets)[#]()\n- [#](2E5AAC)[Airships](entry://flight/airships)[#]()\n- [#](2E5AAC)[Balloons and Lift](entry://flight/balloons_and_lift)[#]()"
+    }
+  ]
+}

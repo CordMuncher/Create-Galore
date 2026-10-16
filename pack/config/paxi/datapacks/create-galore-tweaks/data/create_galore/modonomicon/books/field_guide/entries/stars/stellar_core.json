@@ -1,0 +1,95 @@
+{
+  "category": "stars",
+  "name": "The Stellar Core",
+  "description": "The heart of any craft that leaves Earth.",
+  "icon": {
+    "item": "create_galore_bridge:stellar_core"
+  },
+  "x": 3,
+  "y": 0,
+  "sort_number": 1,
+  "parents": [
+    {
+      "entry": "stars/abyss",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    },
+    {
+      "entry": "stars/twilight",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": false
+    },
+    {
+      "entry": "stars/aether",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": false
+    },
+    {
+      "entry": "stars/nether",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": false
+    },
+    {
+      "entry": "stars/end",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": false
+    },
+    {
+      "entry": "stars/industry",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": false
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create_galore_bridge:stellar_core"
+      },
+      "title": "Stellar Core",
+      "text": "The heart of any craft that leaves Earth. Made in a 5x5 **Mechanical Crafter** grid. Press R over it in JEI to see the layout."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "The grid",
+      "text": "- 1 Immortal Embryo (centre)\n- 1 Nether Star\n- 1 Hardened Precision Mechanism\n- 4 Fiery Ingots\n- 4 Enchanted Gravitite\n- 4 Dragonskin\n- 2 TFMG Circuit Boards\n- 4 Titanium Plates"
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Why each part",
+      "text": "Gravitite lifts the craft, fiery metal survives the burn, the Nether Star powers it, Dragonskin holds out the void, the Embryo keeps the crew alive and the circuit boards steer. Lose any one and the craft never leaves the ground."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "northstar:rocket_station"
+      },
+      "title": "Rocket Station",
+      "text": "Now built around a Stellar Core, plus a Targeting Computer, circuits and titanium. See [#](2E5AAC)[Building a Rocket](entry://space/rocket_building)[#]()."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "cnbridge:dimensional_drive"
+      },
+      "title": "Dimensional Drive",
+      "text": "A Stellar Core ringed by Titanium Ingots and Precision Mechanisms. Takes an Aeronautics ship to the planets."
+    },
+    {
+      "type": "modonomicon:crafting_recipe",
+      "recipe_id_1": "northstar_aeronautics_compat:stellar_navigator",
+      "text": "The Stellar Navigator: a Stellar Core, Titanium, Levitite Blend, glass and redstone."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Related",
+      "text": "Where the core goes.\n\n- [#](2E5AAC)[Why Space Is Locked](entry://stars/why)[#]()\n- [#](2E5AAC)[Building a Rocket](entry://space/rocket_building)[#]()\n- [#](2E5AAC)[Flying Ships to Space](entry://space/aeronautics_bridge)[#]()"
+    }
+  ]
+}

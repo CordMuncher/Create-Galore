@@ -1,0 +1,44 @@
+{
+  "category": "stars",
+  "name": "Prize: Industry",
+  "description": "The TFMG board, the brain that steers.",
+  "icon": {
+    "item": "tfmg:circuit_board"
+  },
+  "x": -1,
+  "y": -1,
+  "sort_number": 7,
+  "parents": [
+    {
+      "entry": "stars/why",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "tfmg:circuit_board"
+      },
+      "title": "Circuit Board",
+      "text": "The TFMG board, the brain that steers. The core needs two."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "The chain",
+      "text": "- Refine crude oil into plastic\n- Plastic Sheets and green dye make an Empty Board\n- Deploy a gold plate on it\n- Etch it with Sulfuric Acid in a Chemical Vat"
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "- Finish with sequenced assembly: Capacitors, Resistors and a Transistor\n\nEach step is in JEI. It needs a working refinery and a chemical plant, so build these before you plan a trip. See [#](2E5AAC)[Oil](entry://industry/tfmg_oil)[#]()."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Related",
+      "text": "The road, and where this prize lives.\n\n- [#](2E5AAC)[Why Space Is Locked](entry://stars/why)[#]()\n- [#](2E5AAC)[The Stellar Core](entry://stars/stellar_core)[#]()\n- [#](2E5AAC)[TFMG Oil and Fuels](entry://industry/tfmg_oil)[#]()\n- [#](2E5AAC)[Electricity](entry://industry/electricity)[#]()"
+    }
+  ]
+}

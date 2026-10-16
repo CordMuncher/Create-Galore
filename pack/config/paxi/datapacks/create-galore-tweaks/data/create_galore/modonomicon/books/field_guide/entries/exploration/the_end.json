@@ -1,0 +1,52 @@
+{
+  "category": "exploration",
+  "name": "The End",
+  "description": "Two mods redo the End.",
+  "icon": {
+    "item": "betterend:end_stone_smelter"
+  },
+  "x": -3,
+  "y": -4,
+  "sort_number": 3,
+  "parents": [
+    {
+      "entry": "exploration/nether",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "The End",
+      "text": "Two mods redo the End. **YUNG's Better End Island** redesigns the central island where the Ender Dragon is fought. **BetterEnd** fills the outer islands with new biomes, plants, ores and tools."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Outer End biomes include Amber Land, Blossoming Spires, Chorus Forest, Crystal Mountains, Dragon Graveyards, Foggy Mushroomland, Glowing Grasslands, Lantern Woods, Megalake, Neon Oasis, Painted Mountains, Shadow Forest, Sulfur Springs, Umbra Valley and Umbrella Jungle."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "betterend:end_stone_smelter"
+      },
+      "title": "End Stone Smelter",
+      "text": "BetterEnd's own furnace for smelting its alloys."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "betterend:aeternium_block"
+      },
+      "title": "Aeternium Block",
+      "text": "BetterEnd's endgame metal, used for tools and armor."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Cataclysm adds an End structure, the Ruined Citadel, with its own bosses: see [#](2E5AAC)[Cataclysm](entry://exploration/cataclysm)[#](). Dungeons and Taverns adds End castles and ships: [#](2E5AAC)[Structure Packs](entry://exploration/structure_packs)[#]()."
+    }
+  ]
+}

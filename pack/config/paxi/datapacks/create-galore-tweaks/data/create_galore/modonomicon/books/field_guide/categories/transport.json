@@ -1,0 +1,14 @@
+{
+  "name": "Trains and Rides",
+  "description": "Trains, rail add-ons, hypertubes and roller coasters.",
+  "icon": {
+    "item": "create:track"
+  },
+  "sort_number": 6,
+  "display_mode": "node",
+  "background": "modonomicon:textures/gui/dark_slate_seamless.png",
+  "background_width": 512,
+  "background_height": 512,
+  "max_scroll_x": 210,
+  "max_scroll_y": 165
+}

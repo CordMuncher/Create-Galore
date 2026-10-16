@@ -1,0 +1,55 @@
+{
+  "category": "create_basics",
+  "name": "Deployer",
+  "description": "The Deployer is a mechanical player hand.",
+  "icon": {
+    "item": "create:deployer"
+  },
+  "x": 2,
+  "y": 2,
+  "sort_number": 16,
+  "parents": [
+    {
+      "entry": "create_basics/processing",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    },
+    {
+      "entry": "create_basics/item_logistics",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": false
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Deployer",
+      "text": "The **Deployer** is a mechanical player hand. Given rotation, it does what you do: place blocks, use items, activate blocks, harvest and attack mobs. It acts on the position two blocks in front of it."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create:deployer"
+      },
+      "title": "Deployer",
+      "text": "Right-click its front to give it an item. A wrench switches between right-click and left-click mode."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "In automation it **applies items to other items**. Held item over a belt or depot item: the combination is an assembly step. This is how a machine adds cogwheels, sand paper or ingredients.\n\nIt also feeds [#](2E5AAC)[Blaze Burners](entry://create_basics/heat)[#]() fuel."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "A negative redstone pulse triggers one cycle. On a [#](2E5AAC)[contraption](entry://create_basics/contraptions)[#](), deployers act at every place they pass, pulling from storage on the machine.\n\nThe same trick builds [#](2E5AAC)[precision mechanisms](entry://create_basics/brass_and_assembly)[#]() by looping a deployer, press and more."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Related",
+      "text": "- [#](2E5AAC)[Brass and Assembly](entry://create_basics/brass_and_assembly)[#]()\n- [#](2E5AAC)[Contraptions](entry://create_basics/contraptions)[#]()\n- [#](2E5AAC)[Blaze Burner and Heat](entry://create_basics/heat)[#]()"
+    }
+  ]
+}

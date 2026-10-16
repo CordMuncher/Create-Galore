@@ -6,8 +6,8 @@
     {"item": "minecraft:andesite"}
   ],
   "result": {
-    "id": "patchouli:guide_book",
+    "id": "modonomicon:modonomicon",
     "count": 1,
-    "components": {"patchouli:book": "patchouli:create_galore"}
+    "components": {"modonomicon:book_id": "create_galore:field_guide"}
   }
 }
