@@ -60,7 +60,8 @@ jobs:
         id: bundle
         run: |
           python3 tools/build_server_bundle.py dist/bundle
-          echo "mods=$(wc -l < dist/bundle/server-manifest.tsv)" >> "$GITHUB_OUTPUT"
+          # Downloaded mods plus jars shipped as pack files (the pack's own Create Galore Bridge).
+          echo "mods=$(( $(wc -l < dist/bundle/server-manifest.tsv) + $(find pack/mods -maxdepth 1 -name '*.jar' | wc -l) ))" >> "$GITHUB_OUTPUT"
 
       - uses: actions/setup-go@v5
         with:
@@ -187,7 +188,7 @@ jobs:
 
   app-install-test:
     name: App builds a real server (Windows)
-    # Full run of the app on a clean Windows machine: Java download, NeoForge install, 181 mod downloads.
+    # Full run of the app on a clean Windows machine: Java download, NeoForge install, 181 mod downloads plus the pack's own jar.
     # Only on pull requests and manual runs, so publishing doesn't wait on it.
     needs: [pack, app]
     if: github.event_name != 'push'
