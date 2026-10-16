@@ -10,7 +10,7 @@
     },
     {
       "type": "patchouli:text",
-      "text": "$(bold)Distant Horizons$() draws far-away terrain as simplified chunks so you can see much further than normal render distance. It is useful for airships and the Moon, but costs memory and some frame rate. Turn its settings down first if the game stutters."
+      "text": "$(bold)Distant Horizons$() draws far-away terrain as simplified chunks so you can see much further than normal render distance. It is useful for airships and the Moon, but costs memory and some frame rate. Turn its settings down first if the game stutters. Holes near you while flying fast fill in once the chunks arrive."
     },
     {
       "type": "patchouli:text",
@@ -26,7 +26,11 @@
     },
     {
       "type": "patchouli:text",
-      "text": "$(bold)Chunksmith$() pregenerates terrain on demand. Its automatic pregeneration on world entry is switched off here: the default (a 4096-block radius every time you join) can take many hours on a weaker PC. Use the $(bold)/chunksmith$() commands when you want terrain ready ahead of an airship or train."
+      "text": "$(bold)Fullscreen$() (F11) is a borderless window on Windows, so Alt-Tab is instant, screenshot tools work and a 10-bit or HDR monitor doesn't switch modes. Minecraft's own screenshot key is F2."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(bold)Chunksmith$() pregenerates terrain when you ask it to with the $(bold)/cs$() commands, ahead of an airship or train. It yields to players, so you can keep playing while it runs. Its automatic run on world entry (a 4096-block radius every time you join) is switched off here."
     },
     {
       "type": "patchouli:spotlight",

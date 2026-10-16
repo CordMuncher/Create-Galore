@@ -23,7 +23,7 @@ public abstract class WindsWeatherEffectsMixin {
         int pz = player.blockPosition().getZ();
         for (int cx = (px - 32) >> 4; cx <= (px + 31) >> 4; cx++)
             for (int cz = (pz - 32) >> 4; cz <= (pz + 31) >> 4; cz++)
-                if (!level.getChunkSource().hasChunk(cx, cz)) {
+                if (level.getChunkSource().getChunkNow(cx, cz) == null) {
                     ci.cancel();
                     return;
                 }

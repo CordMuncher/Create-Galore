@@ -1501,7 +1501,7 @@ metafile = true
 
 [[files]]
 file = "mods/create-galore-bridge-1.2.0.jar"
-hash = "d9c3ddd4a109dd8073ff9461814a526de8bcee002d33b1b18e6f9126f203e5ac"
+hash = "c34080c5b2d07dc67e07be09f59cbf47f72dbf1860dac3ab761650aa7c35867f"
 
 [[files]]
 file = "mods/create-garnished.pw.toml"
@@ -2849,7 +2849,7 @@ hash = "5f78691aa94bc7589f02d0cfcd79d604323e2c79511ecefebe051316e10731be"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/start_here/performance.json"
-hash = "be86ac397f8deb66dfd02e474a016f4a1739859467e61e8e2a30395eca48c043"
+hash = "79cf8b03bd88e71684c675e3356ba35126414a09316c90b0d49f6c0e567f1de2"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/start_here/tools.json"

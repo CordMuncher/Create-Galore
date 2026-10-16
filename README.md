@@ -9,7 +9,7 @@ A big, long-term Minecraft modpack built around the Create mod. Think "Minecraft
 | **Version** | 0.1.5 |
 | **Minecraft** | 1.21.1 |
 | **Loader** | NeoForge **21.1.259** (pinned, don't update it, see [Known issues](#known-issues)) |
-| **Mods** | 222 from Modrinth + the pack's own small Create Galore Bridge + Twilight Forest added by hand, plus 4 shader packs and the Fresh Animations resource pack |
+| **Mods** | 223 from Modrinth + the pack's own small Create Galore Bridge + Twilight Forest added by hand, plus 4 shader packs and the Fresh Animations resource pack |
 | **Full mod list** | [MODS.md](MODS.md) |
 | **In-game help** | The Create Galore Field Guide, a searchable book every player gets on first join |
 
@@ -41,7 +41,7 @@ install-server.bat C:\CreateGaloreServer        (Windows)
 ./install-server.sh ~/CreateGaloreServer        (Linux / macOS)
 ```
 
-The server gets 181 mods, the pack's Create Galore Bridge and Twilight Forest. The 41 client-only mods (Sodium, Iris, Distant Horizons, map add-ons, the ambiance layer and so on) are skipped automatically. Players still install the full `.mrpack`. Far terrain for Distant Horizons is sent from the server by Chunksmith, so Distant Horizons itself stays off the server.
+The server gets 181 mods, the pack's Create Galore Bridge and Twilight Forest. The 42 client-only mods (Sodium, Iris, Distant Horizons, Borderless Window, map add-ons, the ambiance layer and so on) are skipped automatically. Players still install the full `.mrpack`. Far terrain for Distant Horizons is sent from the server by Chunksmith, so Distant Horizons itself stays off the server.
 
 ## Updating
 
@@ -154,6 +154,11 @@ Nothing on the list comes from space, every prize can be found again, and nothin
 - My Nether's Delight adds its loot to bastion treasure and hoglin stable chests again (golden eggs, hoglin trophies, strider eggs and so on).
 - The chest in Aeronautics Structures' engineering house is no longer empty; its leather uniform is now navy blue instead of a random colour.
 - Chunksmith no longer pre-generates a 4096-block radius every time you enter a world. Use its commands to pregenerate when you want.
+- **No more server freezes while flying into new terrain.** Every 5 seconds Aeronautics Winds put snow, sand and puddles in random spots up to 32 blocks around each player, and looked up the ground height there even when that chunk wasn't generated yet. The server then generated it on the spot and waited, which froze it for up to 20 seconds and rubber-banded fast fliers, worst while Chunksmith was pregenerating. The pack's Create Galore Bridge (1.2.0) now skips that round until the area around the player is loaded; it simply runs again 5 seconds later.
+- **Chunksmith pregeneration yields to players.** Its defaults let a pregen run slow the server to 150 ms per tick (about 7 TPS) and keep 200 chunks in flight, so anything else that needed a chunk waited behind them. Now it backs off above 54 ms per tick (60 at most), keeps at most 32 chunks in flight, and pauses itself after 30 seconds of struggling (`config/chunksmith/config.json`). For a faster run while nobody plays, see [docs/java-flags.md](docs/java-flags.md#things-you-might-not-have-thought-of).
+- **Borderless fullscreen.** The Borderless Window mod makes F11 and the Fullscreen option a borderless window on Windows, so a 10-bit or HDR monitor doesn't switch modes on every Alt-Tab and the Snipping Tool works.
+- **Distant Horizons draws from closer in** (Overdraw Prevention 0.1 instead of auto), so terrain the server hasn't sent yet shows as far terrain instead of a hole. This ships in `config/DistantHorizons.toml` only for new instances; existing ones keep their DH settings (set it under DH settings → Advanced → Graphics → Culling).
+- **Frosty breath only where it's cold.** Subtle Effects showed breath in every biome, deserts included, from late autumn to early spring of Serene Seasons, and new worlds start in early spring. It now follows the biome only (snowy biomes and high peaks).
 - The Deep Seas setup prompt and the BetterX welcome screen are switched off.
 - The title screen shows the pack's own panorama again. Aquamirae's themed menu was drawn over it (`config/obscuria/aquamirae-early.json`).
 
