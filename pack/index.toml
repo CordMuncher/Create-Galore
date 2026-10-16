@@ -189,6 +189,14 @@ file = "config/paxi/datapacks/create-galore-tweaks/data/betterend/recipe/additio
 hash = "ded8107f6aa0cb602517e1784c01b839dac7f5d38a1fb3ac74e380528bc280a4"
 
 [[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/c/tags/item/dusts.json"
+hash = "91feefb8557710a965a2e176028e9788e86cc222ce3ebe97bf3d247c795801b3"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/c/tags/item/dusts/salt.json"
+hash = "91feefb8557710a965a2e176028e9788e86cc222ce3ebe97bf3d247c795801b3"
+
+[[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/c/tags/item/foods/blackberry.json"
 hash = "b9d485738a792d530d7d83fdd41e9ccc8e20d736040ea17c69e91471c1757c35"
 
@@ -255,6 +263,10 @@ hash = "ca5c9c9dd3eff157a37ebba1175a3c694e2065fdff1afdf5aebf1e5da0067e54"
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/c/tags/item/hidden_from_recipe_viewers.json"
 hash = "e93016c6f35a6ddc631393398fb7a779ee0e957c87c52e09c0a31ac009921c78"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/c/tags/item/storage_blocks/raw_lead.json"
+hash = "7e43e1991b1d99af8610042f670745d4855ae927948f205d32e93b2b5193c726"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/cnbridge/recipe/dimensional_drive.json"
@@ -391,10 +403,6 @@ hash = "7c031b93d9c20545616bb58f3199183b1d59acaeaa25ff80dec2e6b048b66f52"
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/recipe/unify/northstar__salt_to_ratatouille__salt.json"
 hash = "75915b73a5152816eaf3b440301e230a9c81f0ef90d3d8e3de0f98b83dcffbdb"
-
-[[files]]
-file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/recipe/unify/tfmg__copper_spool_to_createaddition__copper_spool.json"
-hash = "0bab08f4d925b2434ecd3926728930b7daadcf1a31df82d2aebc04175077724a"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/recipe/unify/tfmg__copper_wire_to_createaddition__copper_wire.json"
@@ -761,6 +769,10 @@ file = "config/paxi/datapacks/create-galore-tweaks/data/minecraft/tags/function/
 hash = "f74498097708215ee46031db7467ce3abed880ed8188eff156e81993d9787e31"
 
 [[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/minecraft/tags/item/beacon_payment_items.json"
+hash = "38900f83968c27a80817b5431ba59c8d9de11993a8f6bc750f269108db2f0caa"
+
+[[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/mynethersdelight/loot_modifiers/add_loot_bastion_hoglin_stable.json"
 hash = "2ca6a8c428d5bc964f68a1fd0a9ec125168fb7a04710c230fbe05b25a502690a"
 
@@ -965,10 +977,6 @@ file = "config/paxi/datapacks/create-galore-tweaks/data/tfmg/recipe/copper_wire_
 hash = "24ab33eadc57f6495efaa759b8c5162fbfa99dbd2bb28f4a208df08d6b8f16b1"
 
 [[files]]
-file = "config/paxi/datapacks/create-galore-tweaks/data/tfmg/recipe/crafting/copper_spool.json"
-hash = "119e177d328fc74b0f3d90cf57cf679e5e4b12e48cbb27d4bf88f873fa02bad1"
-
-[[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/tfmg/recipe/crafting/materials/lead_block_from_compacting.json"
 hash = "12010e48b8b11fbe31bff8bb3168c5683ebef3c0bee468aad196cfe7f3c4f862"
 
@@ -997,18 +1005,6 @@ file = "config/paxi/datapacks/create-galore-tweaks/data/tfmg/recipe/crushing/gal
 hash = "49fb32949a513285974e294155a270c698955ebe3237882b72ad8f9f97d3a1a2"
 
 [[files]]
-file = "config/paxi/datapacks/create-galore-tweaks/data/tfmg/recipe/sequenced_assembly/generator.json"
-hash = "596ff9acdc95a603fafbee75dbad59ab0e2b14ec1ab05ab45a42370b6d3ad251"
-
-[[files]]
-file = "config/paxi/datapacks/create-galore-tweaks/data/tfmg/recipe/sequenced_assembly/heavy_motor.json"
-hash = "246bbb6c663d7909f8172d28c7c9133ec98346ced3508e15c1347192d13ea5cf"
-
-[[files]]
-file = "config/paxi/datapacks/create-galore-tweaks/data/tfmg/recipe/sequenced_assembly/motor.json"
-hash = "772fdb049fba63198ef7a2c2b83de10552353dfb0b90c9aaedfaba68216fa274"
-
-[[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/tfmg/recipe/smelting/lead_ingot_from_crushed_blasting.json"
 hash = "9ae7d0fbd80c375a300145fee01cfffe95511582b54fe953f48f3fbfc8c68625"
 
@@ -1027,14 +1023,6 @@ hash = "37278d99fd11da4988f7f222aafeae0a9fe42e3161a3837578783700b594149a"
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/tfmg/recipe/smelting/lead_ingot_from_raw_blasting.json"
 hash = "37278d99fd11da4988f7f222aafeae0a9fe42e3161a3837578783700b594149a"
-
-[[files]]
-file = "config/paxi/datapacks/create-galore-tweaks/data/tfmg/recipe/winding/electromagnetic_coil.json"
-hash = "ec4cb97d1bc9212b08ef94a36239e61011ceac96fa54940e09743f8834caf83a"
-
-[[files]]
-file = "config/paxi/datapacks/create-galore-tweaks/data/tfmg/recipe/winding/large_coil.json"
-hash = "08ed15e3582446b68098f09574b6799cd16d11d5ae9a1828cf044a66c13c5e13"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/thirst/recipe/compat/create/cactus.json"
@@ -2328,7 +2316,7 @@ hash = "81edd6aa2e5581157086215a25fe43ff148a320ee9eba3dccb18ffa1bea90090"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/connections/metals.json"
-hash = "a282f54648a33ef3457ebcc4762412c4f7f362c68ee1312be2529b590026da2b"
+hash = "bba52193589a0d801abd71b7a7596acbe85fd95b779eb20d80c4669ea5c7dcce"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/connections/overview.json"
@@ -2636,7 +2624,7 @@ hash = "8e70a88a05ebf265df8c126c0f004e3231df991fdc54d08a0e82f014af10b42a"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/industry/electricity.json"
-hash = "8169615317d24b3f5c4457de942504627ae992d1b32ce6348fc306d1abeb380b"
+hash = "a81f175736765d50cc61caddff27e9bb06d8248e7e428745839d23943be144e6"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/industry/enchanting.json"
@@ -2684,7 +2672,7 @@ hash = "1982dcde73f0e7c997ed601318b0992a1319113eeb41449d42e302df1a2d4c23"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/materials/shared_metals.json"
-hash = "78a4b9f64d1dbe1f30a45a341549f1be59ad1b933faef2e4edbafff48e8f90b5"
+hash = "4c88100bdcd972093b9c30934a8c0a53109f945e15143ae9c41726bcbac34e0e"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/ocean/aquamirae.json"

@@ -14,7 +14,7 @@
     },
     {
       "type": "patchouli:text",
-      "text": "$(li)$(bold)Copper wire and spool$(): Crafts & Additions'$(li)$(bold)Sulfur dust$(): TFMG's$(li)$(bold)Salt, cocoa butter, cocoa powder$(): Create Ratatouille's$(br2)Conversion is one for one with no gain, so loops can't be farmed. Check JEI (R, U) for the recipes."
+      "text": "$(li)$(bold)Copper wire$(): Crafts & Additions'$(li)$(bold)Sulfur dust$(): TFMG's$(li)$(bold)Salt, cocoa butter, cocoa powder$(): Create Ratatouille's$(br2)Conversion is one for one with no gain, so loops can't be farmed. Check JEI (R, U) for the recipes."
     },
     {
       "type": "patchouli:text",

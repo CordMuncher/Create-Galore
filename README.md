@@ -60,9 +60,11 @@ Everything below ships as plain config files or a datapack in `pack/` (no mod ja
 | Steel | TFMG |
 | Bronze | Alloyed |
 | Lead (and lead ore) | Create Nuclear |
-| Copper wire and spool | Create Crafts & Additions |
+| Copper wire | Create Crafts & Additions |
 | Sulfur dust | TFMG |
 | Salt, cocoa butter, cocoa powder | Create Ratatouille |
+
+Copper spools stay separate: TFMG's spool lays TFMG cable and is the only kind its Winding Machine takes, so TFMG and Crafts & Additions each keep their own.
 
 **Duplicates trimmed.**
 - Naturalist's 9 sea creatures that Hybrid Aquatic already has don't spawn, and their fish items are hidden from JEI. Naturalist's whales, clams and land animals are unchanged.
