@@ -7,7 +7,7 @@ A big, long-term Minecraft modpack built around the Create mod. Think "Minecraft
 | **Version** | 0.1.1 |
 | **Minecraft** | 1.21.1 |
 | **Loader** | NeoForge **21.1.259** (pinned, don't update it, see [Known issues](#known-issues)) |
-| **Mods** | 205 from Modrinth + Twilight Forest added by hand, plus 4 shader packs |
+| **Mods** | 222 from Modrinth + Twilight Forest added by hand, plus 4 shader packs and the Fresh Animations resource pack |
 | **Full mod list** | [MODS.md](MODS.md) |
 | **In-game help** | The Create Galore Field Guide, a searchable book every player gets on first join |
 
@@ -79,6 +79,30 @@ Everything below ships as plain config files or a datapack in `pack/` (no mod ja
 
 **Key rebinds** (only these keys are changed): Backpack J, Jetpack toggle N, Mobile Packages stock ticker `.` and networks `;`, Accessories `,`, Cataclysm abilities Home/End/Insert/Delete, Aether invisibility `=`, Supplementaries quiver `` ` ``, Iris shader reload F8, Railways Navigator overlay options `\`.
 
+## Ambiance (client only)
+
+A set of sound and small-visual mods that make the world feel more alive without changing how anything plays. All of them are client-only, so the dedicated server is untouched.
+
+| Mod | What you notice |
+|---|---|
+| Sound Physics: Aeronautics | Echo in caves and halls, muffled sound through walls. It's the fork of Sound Physics Remastered built for this pack's mods: Create machines, trains and Aeronautics ships block and carry sound too, with a Doppler effect on passing craft. |
+| AmbientSounds | Wind, birds, insects, water and cave ambience that follow biome, time and weather. |
+| Presence Footsteps (+ Sable compat) | Footsteps that match the block and the mob, also on Aeronautics ships. |
+| Sounds | Small UI, item and block sounds (inventory, hotbar, bow pull, cake and more). |
+| Drip Sounds | Water and lava drips make a sound when they land. |
+| Subtle Effects | Sparks from fires, waterfall mist, fireflies, steam, dust clouds, snoring, and more small particles. |
+| Falling Leaves | Leaves drift from trees, more in autumn (reads Serene Seasons). |
+| Make Bubbles Pop | Underwater bubbles rise and pop at the surface. |
+| LambDynamicLights + Contraption Lights | Held torches and glowing items light up the area; lights on Create contraptions and Aeronautics ships move with them. |
+| Not Enough Animations | Third-person animations for eating, maps, ladders and more. |
+| EMF + ETF + Fresh Animations | Livelier vanilla mob animations (blinking, breathing, head turns). Fresh Animations is turned on by default in the resource pack list. |
+
+**Kept from doubling up.** Subtle Effects' chest and barrel underwater bubbles and its cake-eating sound are turned off (`pack/config/subtle_effects/blocks.toml`), because Make Bubbles Pop and Sounds already do them.
+
+**Looked at and left out.** Particle Rain (shaders already draw rain and snow, and Serene Seasons switches them), Continuity (needs Sinytra Connector on NeoForge), Fancy World Animations (Supplementaries already swings lanterns, and it would also animate modded doors), Better Clouds (shaders and Distant Horizons draw the sky), Cool Rain and Euphonium (AmbientSounds covers them). Wakes, Visuality, Eating Animation and the original Falling Leaves have no NeoForge 1.21.1 build. Sodium Dynamic Lights was swapped for LambDynamicLights because it predates this pack's Sodium 0.8.
+
+**Tips.** Sound Physics: Aeronautics runs a medium quality preset; turn it down in its config on the laptop if sound stutters. With a shader that has its own handheld light (Complementary + Euphoria Patches has one), you can switch one of the two off if held torches look too bright.
+
 ## Mods removed or swapped, and why
 
 | Change | Why |
@@ -118,6 +142,7 @@ All tests ran headless in a cloud machine (4 cores, 16 GB RAM, no GPU), so speed
 | World generation in the Overworld, Moon, Mars, Nether, End and Twilight Forest | ✅ No errors |
 | Full client joins that server and visits the Overworld, Moon, Nether, Aether and Twilight Forest | ✅ No mod mismatch, 20 TPS |
 | Singleplayer: client boots and plays in a world | ✅ |
+| Ambiance mods: client boots into a world with a sound device, Sound Physics' EFX starts, a running Create fan, animals, villager and held torch render and play with no new errors | ✅ |
 | Field Guide from a fresh `.mrpack` import: handed out, opens, search and links work, recipe shows in JEI | ✅ |
 | Real FPS, shaders, Distant Horizons visuals, gameplay feel | ❌ Needs a real PC with a GPU |
 
