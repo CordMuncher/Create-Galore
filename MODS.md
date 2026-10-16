@@ -33,7 +33,6 @@ Resource pack, turned on by default: [Fresh Animations](https://modrinth.com/res
 | [Better Farming Right Click  + Right Click Harvest](https://modrinth.com/mod/better-farming-right-click) | 1.1.1 | client |
 | [BetterEnd: New Dawn](https://modrinth.com/mod/betterend-neoforge) | 21.0.37 | both |
 | [Blueprint](https://modrinth.com/mod/blueprint) | 8.2.0 | both |
-| [Borderless Window](https://modrinth.com/mod/borderless-window) | 1.21.1-1.7.5_1 | client |
 | [Brewin' And Chewin'](https://modrinth.com/mod/brewin-and-chewin) | 4.5.0+1.21.1-neoforge | both |
 | [Cataclysm x Create Integration](https://modrinth.com/mod/cataclysm_create) | 1.21.1-Neoforge+mod | both |
 | [Chunksmith](https://modrinth.com/mod/chunksmith) | 4.6.0+1.21.1-neoforge | both |
