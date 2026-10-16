@@ -52,7 +52,7 @@
       "type": "patchouli:spotlight",
       "item": "createpropulsion:stirling_engine",
       "title": "Stirling Engine",
-      "text": "Makes rotation from heat below it. Solid and Liquid Burners supply that heat.",
+      "text": "Makes rotation from heat below it. Solid and Liquid Burners supply that heat. They can warm a boiler but can't heat mixers or superheat anything; that still takes a Blaze Burner.",
       "link_recipe": true
     },
     {

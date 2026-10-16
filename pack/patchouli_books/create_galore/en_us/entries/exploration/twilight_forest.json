@@ -37,7 +37,7 @@
       "type": "patchouli:spotlight",
       "item": "twilightforest:uncrafting_table",
       "title": "Uncrafting Table",
-      "text": "Breaks crafted items back into parts. A very useful utility block.",
+      "text": "Uncrafting is switched off in this pack (it multiplied metal through stonecutter recipes). The table still repairs and does its own special recipes.",
       "link_recipe": true
     },
     {

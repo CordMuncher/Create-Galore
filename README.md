@@ -87,6 +87,12 @@ Everything below ships as plain config files or a datapack in `pack/` (no mod ja
 - **Fuel.** Garnished Peanut Oil burns 5,000 ticks a bucket in the Crafts & Additions burner too (it was 24,000, a cheap superheat fuel next to Bioethanol).
 - **Loops.** Garnished stone slabs (3 blocks make 6) no longer stonecut back into full blocks or crush for ore, which doubled unstable stone and zultanite and their gold, zinc, iron and copper.
 - Create Wizardry's Create recipe for Iron's Portal Frame is off as well, matching the travel rules.
+- **Productive Bees.** Bees still make honey, wax, plain metals (iron, copper, gold, zinc, lead, nickel), gems and cheap mob drops. The combs that skipped whole progression chains give nothing from the centrifuge: steel, brass, constantan, rose quartz, titanium, tungsten, platinum, uranium, netherite, mithril, ender pearls, blaze and breeze rods, ghast tears, echo shards, wither skull chips, draconic dust, sulfur and saltpeter.
+- **Ore deposits.** Deposit drills mine diamonds, emeralds, quartz and glowstone at Ore Excavation's own speed (1,200 ticks, 512 SU for gems). Metals stay fast.
+- **Twilight Forest:** the Uncrafting Table no longer reverses recipes (`disableUncrafting = true`), since stonecutter recipes let it multiply copper, bronze and Create Deco metal up to 4x. It still repairs and does its special recipes.
+- **Create Propulsion:** Solid and Liquid Burners can't heat mixers or superheat boilers. They still heat boilers to normal level and run thrusters and Stirling engines.
+- **Pollution:** TFMG engines (6 per block, 4 for large engines), fireboxes (8) and blast furnaces (30) now add smog. Smog can't tell whether a TFMG block is running, so they count all the time once built.
+- **Smaller ones:** Farmer's Delight melon juice and apple cider hydrate like a water bottle (6 and 8 instead of 8 and 13). Create Wizardry's Mana Siphon never turns an arcane ingot into netherite. Ferrets dig up an emerald instead of a Totem of Undying. Crushing granite gives uranium powder 10% of the time instead of 50%. A Biomass Pellet takes 2 Biomass.
 
 **Fixes.**
 - The Northstar–Aeronautics Dimensional Drive recipe uses a Northstar Circuit instead of a chip Northstar removed, so ships can be launched to the planets again.
@@ -164,7 +170,7 @@ All tests ran headless in a cloud machine (4 cores, 16 GB RAM, no GPU), so speed
 | Field Guide from a fresh `.mrpack` import: handed out, opens, search and links work, recipe shows in JEI | ✅ |
 | 0.1.2 travel changes on a dedicated server with a client joined: End City ship generates without its Elytra, mod loot and Lootr give Shulker Shells, the Hullbreaker drops no Enigmatic Engine, an Elytra given to a survival player crumbles into Phantom Membrane, 527 random spell scrolls with no Portal, Recall or Angel Wings, the opt-in folder brings Elytra back, Field Guide opens on the new Getting Around page | ✅ |
 | Combined 0.1.2 (ambiance and travel changes together) on a fresh dedicated server with the full client joined and sound on: Iron's Spells' automatic reload runs on boot and after a restart, a `/reload` while playing with Sound Physics running causes no errors, an Elytra crumbles by default, the opt-in folder keeps Elytra after a restart, Field Guide opens | ✅ |
-| 0.1.3 balance pass on a dedicated server: boots clean, 16 fewer recipes load (22,337), no recipe, tag or Field Guide errors, Garnished stone tags list no slabs | ✅ |
+| 0.1.3 balance pass on a dedicated server: boots clean, 37 fewer recipes load (22,316), configs load without corrections, no recipe, tag or Field Guide errors, Garnished stone tags list no slabs | ✅ |
 | Real FPS, shaders, Distant Horizons visuals, gameplay feel | ❌ Needs a real PC with a GPU |
 
 **Memory:** about 9.3 GB of process memory on the server and 8-9.6 GB on the client with an 8 GB heap. A laptop with 16 GB can play but shouldn't host and play at the same time.
