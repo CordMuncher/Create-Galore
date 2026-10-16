@@ -17,7 +17,7 @@
     },
     {
       "type": "patchouli:text",
-      "text": "In this pack the Dimensional Drive costs 4 Titanium Ingots, 4 Precision Mechanisms and 1 Northstar Circuit, in place of a computer chip. Press R over it in JEI to check. It offers the Moon, Mars, Venus, Mercury, Earth and Earth Orbit.",
+      "text": "In this pack the Dimensional Drive costs a $(l:stars/stellar_core)Stellar Core$(/l), 4 Titanium Ingots and 4 Precision Mechanisms. Press R over it in JEI to check. It offers the Moon, Mars, Venus, Mercury, Earth and Earth Orbit.",
       "title": "Recipe here"
     },
     {
@@ -35,7 +35,7 @@
     {
       "type": "patchouli:crafting",
       "recipe": "northstar_aeronautics_compat:stellar_navigator",
-      "text": "Needs a bucket of Levitite Blend."
+      "text": "Needs a Stellar Core and a bucket of Levitite Blend."
     },
     {
       "type": "patchouli:text",

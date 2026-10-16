@@ -1,0 +1,36 @@
+{
+  "name": "Prize: The Abyss",
+  "icon": "alexscaves:immortal_embryo",
+  "category": "patchouli:stars",
+  "sortnum": 2,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "alexscaves:immortal_embryo",
+      "title": "Immortal Embryo",
+      "text": "Always dropped by a $(thing)Hullbreaker$(), the giant of the Abyssal Chasm. It keeps the crew alive out there.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Where",
+      "text": "The $(thing)Abyssal Chasm$() is an Alex's Caves biome deep under ocean, pitch black and crushing. A $(item)Cave Biome Map$() points to one. Go down in a $(l:ocean/submarines)submarine$(/l): it carries air, light and weapons."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "How",
+      "text": "Hullbreakers spawn there naturally, rarely. Underwater Mines and Depth Charges hit it from the safety of your hull. More will spawn if you need another."
+    },
+    {
+      "type": "patchouli:relations",
+      "entries": [
+        "patchouli:stars/why",
+        "patchouli:stars/stellar_core",
+        "patchouli:exploration/alexs_caves",
+        "patchouli:ocean/submarines"
+      ],
+      "title": "Related",
+      "text": "The road, and where this prize lives."
+    }
+  ]
+}

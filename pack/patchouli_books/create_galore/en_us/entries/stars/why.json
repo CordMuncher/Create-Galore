@@ -1,0 +1,53 @@
+{
+  "name": "Why Space Is Locked",
+  "icon": "create_galore_bridge:stellar_core",
+  "category": "patchouli:stars",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Rockets and space ships are the end of the road in Create Galore. You can't just build one whenever you like: every way off the planet needs a $(item)Stellar Core$(), and a core needs one prize from each big branch of the world."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "The six prizes",
+      "text": "$(li)$(l:stars/abyss)Immortal Embryo$(/l): the deep sea$(li)$(l:stars/twilight)4 Fiery Ingots$(/l): Twilight Forest$(li)$(l:stars/aether)4 Enchanted Gravitite$(/l): the Aether$(li)$(l:stars/nether)Nether Star$(/l): the Nether$(li)$(l:stars/end)4 Dragonskin$(/l): the End$(li)$(l:stars/industry)2 Circuit Boards$(/l): heavy industry"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "What it gates",
+      "text": "All three ways up take a core:$(li)the Northstar $(item)Rocket Station$()$(li)the $(item)Dimensional Drive$()$(li)the $(item)Stellar Navigator$()"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "One per vehicle",
+      "text": "Each of those blocks is placed once and reused trip after trip, so one core per vehicle is enough. Friends can share one rocket."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "No dead ends",
+      "text": "Nothing on this list comes from space, and nothing on Earth needs a space item to work. Every prize can be found again: bosses respawn or have more lairs, and ores keep generating further out. Titanium is made on Earth by sequenced assembly."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Your checklist",
+      "text": "Open Advancements and find the $(thing)Road to the Stars$() tab. It ticks off each prize as you pick it up, then the core, then your first trip off Earth.$(br2)The bosses can all be beaten with Create builds: see $(l:stars/machine_fights)Fighting with Machines$(/l)."
+    },
+    {
+      "type": "patchouli:relations",
+      "entries": [
+        "patchouli:stars/stellar_core",
+        "patchouli:stars/abyss",
+        "patchouli:stars/twilight",
+        "patchouli:stars/aether",
+        "patchouli:stars/nether",
+        "patchouli:stars/end",
+        "patchouli:stars/industry",
+        "patchouli:stars/machine_fights",
+        "patchouli:space/reaching_space"
+      ],
+      "title": "Related",
+      "text": "Each prize, the core and the space section."
+    }
+  ]
+}

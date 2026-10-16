@@ -1,0 +1,25 @@
+{
+  "parent": "create_galore:stars/root",
+  "display": {
+    "icon": {
+      "id": "create_galore_bridge:stellar_core"
+    },
+    "title": "Heart of a Star",
+    "description": "Build a Stellar Core in a Mechanical Crafter",
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "has": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "create_galore_bridge:stellar_core"
+          }
+        ]
+      }
+    }
+  }
+}

@@ -18,7 +18,7 @@
     },
     {
       "type": "patchouli:text",
-      "text": "$(bold)Space:$() a Northstar rocket goes to the Moon, Mars, Mercury and Venus. An Aeronautics ship can make the jump too with a Dimensional Drive (or the Stellar Navigator).$(br2)$(l:space/reaching_space)Reaching Space$(/l), $(l:space/aeronautics_bridge)Ships to Space$(/l)."
+      "text": "$(bold)Space:$() a Northstar rocket goes to the Moon, Mars, Mercury and Venus. An Aeronautics ship can make the jump too with a Dimensional Drive (or the Stellar Navigator). Every way up needs a $(l:stars/why)Stellar Core$(/l).$(br2)$(l:space/reaching_space)Reaching Space$(/l), $(l:space/aeronautics_bridge)Ships to Space$(/l)."
     },
     {
       "type": "patchouli:text",

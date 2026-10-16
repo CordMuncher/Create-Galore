@@ -45,7 +45,7 @@ The server gets 181 mods, the pack's Create Galore Bridge and Twilight Forest. T
 
 ## The Field Guide
 
-Every player gets the **Create Galore Field Guide** on first join, and you can craft another from a Book and Andesite. It's a searchable wiki, not a quest book: 13 sections and about 130 entries on how things work and how the mods connect, written for someone who has never played Create.
+Every player gets the **Create Galore Field Guide** on first join, and you can craft another from a Book and Andesite. It's a searchable wiki, not a quest book: 14 sections and about 140 entries on how things work and how the mods connect, written for someone who has never played Create.
 
 Open the Index (last icon on the first page) and type to search. It matches entry names and the items shown in them. Editing notes: [docs/guidebook.md](docs/guidebook.md).
 
@@ -79,6 +79,17 @@ Copper spools stay separate: TFMG's spool lays TFMG cable and is the only kind i
 
 **Want Elytra back?** It's one switch for the whole world, set by whoever runs it (the singleplayer instance or the server). Stop the game or server, then move the folder `config/paxi/optional/create-galore-with-elytra` into `config/paxi/datapacks/`, and start again. It loads after `create-galore-no-elytra` and puts every original file back: Elytra return in End Cities you haven't explored yet and in loot, the old Jetpack recipe comes back, and nothing gets removed from inventories. Angel Wings stays off. Pack updates don't undo it, because the updater leaves folders it didn't install alone. To turn Elytra off again, delete that folder from `datapacks/`. The other travel switches stay off either way. `tools/build_no_elytra.py` rebuilds both folders from the mod jars after mod updates.
 
+**Space is the capstone.** Rockets and space ships come last. Every way off the planet (the Northstar Rocket Station, the Dimensional Drive and the Stellar Navigator) is built around a **Stellar Core**, the pack's own item, made in a 5x5 Mechanical Crafter from one prize per branch of the world:
+- an Immortal Embryo (a Hullbreaker in Alex's Caves' Abyssal Chasm, deep under the ocean)
+- 4 Fiery Ingots (Twilight Forest's Hydra or Ur-Ghast)
+- 4 Enchanted Gravitite (the Aether)
+- a Nether Star (the Wither)
+- 4 Dragonskin (the Ender Dragon, via Iron's Spells)
+- 2 TFMG Circuit Boards (oil, plastic and acid industry)
+- plus a Hardened Precision Mechanism and 4 Titanium Plates
+
+Nothing on the list comes from space, every prize can be found again, and nothing on Earth needs a space item, so there's no dead end. The Field Guide's **The Road to the Stars** section explains why each prize is needed and where to get it, and an advancement tab of the same name ticks them off. One core builds one station or drive, and those are reused for every trip.
+
 **Gentler where it should be, harsh where it should be.**
 - Cataclysm and Mowzie's bosses have 70% health and 75% damage. All their structures still spawn.
 - Hostile Skies airship raids are rarer (every 25 minutes instead of 15, 5% starting chance instead of 10%).
@@ -104,7 +115,7 @@ Copper spools stay separate: TFMG's spool lays TFMG cable and is the only kind i
 
 **Fixes.**
 - Create's Blaze Burner makes smog. Smog's default list named `create:lit_blaze_burner`, the decorative flint-and-steel burner, which it can never see, so the real burner (and with it most Create factories) was pollution-free.
-- The Northstar–Aeronautics Dimensional Drive recipe uses a Northstar Circuit instead of a chip Northstar removed, so ships can be launched to the planets again.
+- The Northstar–Aeronautics Dimensional Drive recipe no longer asks for a chip Northstar removed (it now takes a Stellar Core, see above), so ships can be launched to the planets again.
 - 19 broken recipes from Thirst, Create: Framed (radon lamps) and Create Deco (white placard) are rewritten in the current format.
 - TFMG's diesel, gasoline, kerosene, naphtha and heavy oil can be piped into a Blaze Burner again, and napalm superheats it (TFMG used Create Liquid Fuel's old file name).
 - Create Cafe's fruit teas work with the pack's fruits. Fruits Delight, Berries and Cherries, Twilight Forest and Northstar fruits now count for 16 teas (orange, lemon, kiwi, lychee, mango, peach, persimmon, pineapple, fig, durian, blueberry, raspberry, blackberry, strawberry, cherry, grape) plus the raspberry and strawberry syrups. Blood Orange comes from haunting an orange with an Encased Fan, and Mana Berries from filling sweet berries with 25 mB of liquid experience from Create: Enchantment Industry. Before, both needed Blood Magic or Botania.

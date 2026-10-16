@@ -1,0 +1,31 @@
+{
+  "name": "Prize: The End",
+  "icon": "irons_spellbooks:dragonskin",
+  "category": "patchouli:stars",
+  "sortnum": 6,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "irons_spellbooks:dragonskin",
+      "title": "Dragonskin",
+      "text": "The $(thing)Ender Dragon$() drops 6 to 10 in this pack. A hull that has flown the void can hold it out.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "title": "How",
+      "text": "Reach the End through a Stronghold portal and fight the dragon. Ranged builds help: arrows or autocannon shots break the healing crystals. To fight again, place four End Crystals on the exit portal to bring the dragon back."
+    },
+    {
+      "type": "patchouli:relations",
+      "entries": [
+        "patchouli:stars/why",
+        "patchouli:stars/stellar_core",
+        "patchouli:exploration/the_end",
+        "patchouli:exploration/bosses"
+      ],
+      "title": "Related",
+      "text": "The road, and where this prize lives."
+    }
+  ]
+}

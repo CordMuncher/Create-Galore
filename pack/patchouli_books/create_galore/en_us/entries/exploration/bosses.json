@@ -28,7 +28,7 @@
       "type": "patchouli:spotlight",
       "item": "minecraft:nether_star",
       "title": "Nether Star",
-      "text": "The Wither's drop is an ingredient in pack items such as Create Nuclear's Reactor Controller.",
+      "text": "The Wither's drop goes into Create Nuclear's Reactor Controller and the $(l:stars/stellar_core)Stellar Core$(/l).",
       "link_recipe": true
     },
     {

@@ -1,0 +1,35 @@
+{
+  "name": "Prize: Industry",
+  "icon": "tfmg:circuit_board",
+  "category": "patchouli:stars",
+  "sortnum": 7,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "tfmg:circuit_board",
+      "title": "Circuit Board",
+      "text": "The TFMG board, the brain that steers. The core needs two.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "title": "The chain",
+      "text": "$(li)Refine crude oil into plastic$(li)Plastic Sheets and green dye make an Empty Board$(li)Deploy a gold plate on it$(li)Etch it with Sulfuric Acid in a Chemical Vat"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(li)Finish with sequenced assembly: Capacitors, Resistors and a Transistor$(br2)Each step is in JEI. It needs a working refinery and a chemical plant, so build these before you plan a trip. See $(l:industry/tfmg_oil)Oil$(/l)."
+    },
+    {
+      "type": "patchouli:relations",
+      "entries": [
+        "patchouli:stars/why",
+        "patchouli:stars/stellar_core",
+        "patchouli:industry/tfmg_oil",
+        "patchouli:industry/electricity"
+      ],
+      "title": "Related",
+      "text": "The road, and where this prize lives."
+    }
+  ]
+}

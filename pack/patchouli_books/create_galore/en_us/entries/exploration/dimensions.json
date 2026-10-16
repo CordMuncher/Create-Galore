@@ -14,7 +14,7 @@
     },
     {
       "type": "patchouli:text",
-      "text": "$(thing)Space$() is separate. Create: Northstar adds rockets and planets, see $(l:space/reaching_space)Reaching Space$(/l) and $(l:space/planets)Planets$(/l). Aeronautics ships can launch there too, using a $(item)Dimensional Drive$() from the Northstar-Aeronautics bridge."
+      "text": "$(thing)Space$() is separate. Create: Northstar adds rockets and planets, see $(l:space/reaching_space)Reaching Space$(/l) and $(l:space/planets)Planets$(/l). Aeronautics ships can launch there too, using a $(item)Dimensional Drive$() from the Northstar-Aeronautics bridge. Getting there is the pack's capstone: see $(l:stars/why)The Road to the Stars$(/l)."
     },
     {
       "type": "patchouli:spotlight",
@@ -25,7 +25,7 @@
     },
     {
       "type": "patchouli:text",
-      "text": "The bridge lists the Moon, Mars, Venus, Mercury and Earth Orbit as drive destinations. Its recipe in this pack uses Northstar's Circuit. For airships see $(l:flight/airships)Airships$(/l) and $(l:flight/destinations)Destinations$(/l)."
+      "text": "The bridge lists the Moon, Mars, Venus, Mercury and Earth Orbit as drive destinations. Like every way into space, it needs a $(l:stars/why)Stellar Core$(/l). For airships see $(l:flight/airships)Airships$(/l) and $(l:flight/destinations)Destinations$(/l)."
     },
     {
       "type": "patchouli:text",

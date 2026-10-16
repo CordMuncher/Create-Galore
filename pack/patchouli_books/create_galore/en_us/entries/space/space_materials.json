@@ -50,7 +50,7 @@
       "type": "patchouli:spotlight",
       "item": "northstar:circuit",
       "title": "Circuit",
-      "text": "Made by sequenced assembly. It replaces the removed chip in the Dimensional Drive recipe.",
+      "text": "Made by sequenced assembly. Used in rockets, oxygen gear and most space machines.",
       "link_recipe": true
     },
     {

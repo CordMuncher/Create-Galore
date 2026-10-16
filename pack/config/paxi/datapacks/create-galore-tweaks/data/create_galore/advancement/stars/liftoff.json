@@ -1,0 +1,75 @@
+{
+  "parent": "create_galore:stars/stellar_core",
+  "display": {
+    "icon": {
+      "id": "northstar:rocket_station"
+    },
+    "title": "Escape Velocity",
+    "description": "Leave Earth by rocket or by ship",
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "earth_orbit": {
+      "trigger": "minecraft:changed_dimension",
+      "conditions": {
+        "to": "northstar:earth_orbit"
+      }
+    },
+    "moon": {
+      "trigger": "minecraft:changed_dimension",
+      "conditions": {
+        "to": "northstar:moon"
+      }
+    },
+    "mars": {
+      "trigger": "minecraft:changed_dimension",
+      "conditions": {
+        "to": "northstar:mars"
+      }
+    },
+    "mars_orbit": {
+      "trigger": "minecraft:changed_dimension",
+      "conditions": {
+        "to": "northstar:mars_orbit"
+      }
+    },
+    "venus": {
+      "trigger": "minecraft:changed_dimension",
+      "conditions": {
+        "to": "northstar:venus"
+      }
+    },
+    "venus_orbit": {
+      "trigger": "minecraft:changed_dimension",
+      "conditions": {
+        "to": "northstar:venus_orbit"
+      }
+    },
+    "mercury": {
+      "trigger": "minecraft:changed_dimension",
+      "conditions": {
+        "to": "northstar:mercury"
+      }
+    },
+    "mercury_orbit": {
+      "trigger": "minecraft:changed_dimension",
+      "conditions": {
+        "to": "northstar:mercury_orbit"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "earth_orbit",
+      "moon",
+      "mars",
+      "mars_orbit",
+      "venus",
+      "venus_orbit",
+      "mercury",
+      "mercury_orbit"
+    ]
+  ]
+}

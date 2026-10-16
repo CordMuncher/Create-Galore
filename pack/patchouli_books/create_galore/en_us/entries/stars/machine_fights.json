@@ -1,0 +1,33 @@
+{
+  "name": "Fighting with Machines",
+  "icon": "createbigcannons:cast_iron_cannon_barrel",
+  "category": "patchouli:stars",
+  "sortnum": 8,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Four prizes come from bosses. You don't need to be good with a sword: every one of them can be beaten by a Create build. Machines don't miss, don't get scared and can be rebuilt."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Tools",
+      "text": "$(li)$(l:industry/cannons)Big Cannons$(/l) and autocannons for range$(li)Underwater Mines and Depth Charges for the sea$(li)Potato Cannons for cheap firepower$(li)Trains, ships and subs to carry it all"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Tips",
+      "text": "Build from the safety of a vehicle or a bunker. Bring the build to the boss on a train, ship or submarine. Bosses do not scale with player count here, so bring a friend."
+    },
+    {
+      "type": "patchouli:relations",
+      "entries": [
+        "patchouli:stars/why",
+        "patchouli:industry/cannons",
+        "patchouli:exploration/bosses",
+        "patchouli:ocean/submarines"
+      ],
+      "title": "Related",
+      "text": "Weapons and the bosses."
+    }
+  ]
+}

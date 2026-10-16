@@ -1,0 +1,54 @@
+{
+  "name": "The Stellar Core",
+  "icon": "create_galore_bridge:stellar_core",
+  "category": "patchouli:stars",
+  "sortnum": 1,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "create_galore_bridge:stellar_core",
+      "title": "Stellar Core",
+      "text": "The heart of any craft that leaves Earth. Made in a 5x5 $(item)Mechanical Crafter$() grid. Press R over it in JEI to see the layout.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:text",
+      "title": "The grid",
+      "text": "$(li)1 Immortal Embryo (centre)$(li)1 Nether Star$(li)1 Hardened Precision Mechanism$(li)4 Fiery Ingots$(li)4 Enchanted Gravitite$(li)4 Dragonskin$(li)2 TFMG Circuit Boards$(li)4 Titanium Plates"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Why each part",
+      "text": "Gravitite lifts the craft, fiery metal survives the burn, the Nether Star powers it, Dragonskin holds out the void, the Embryo keeps the crew alive and the circuit boards steer. Lose any one and the craft never leaves the ground."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "northstar:rocket_station",
+      "title": "Rocket Station",
+      "text": "Now built around a Stellar Core, plus a Targeting Computer, circuits and titanium. See $(l:space/rocket_building)Building a Rocket$(/l).",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "cnbridge:dimensional_drive",
+      "title": "Dimensional Drive",
+      "text": "A Stellar Core ringed by Titanium Ingots and Precision Mechanisms. Takes an Aeronautics ship to the planets.",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "northstar_aeronautics_compat:stellar_navigator",
+      "text": "The Stellar Navigator: a Stellar Core, Titanium, Levitite Blend, glass and redstone."
+    },
+    {
+      "type": "patchouli:relations",
+      "entries": [
+        "patchouli:stars/why",
+        "patchouli:space/rocket_building",
+        "patchouli:space/aeronautics_bridge"
+      ],
+      "title": "Related",
+      "text": "Where the core goes."
+    }
+  ]
+}
