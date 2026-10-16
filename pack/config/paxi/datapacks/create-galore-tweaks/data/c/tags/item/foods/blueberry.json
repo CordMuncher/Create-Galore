@@ -1,0 +1,16 @@
+{
+  "values": [
+    {
+      "id": "fruitsdelight:blueberry",
+      "required": false
+    },
+    {
+      "id": "berries_and_cherries:blueberry",
+      "required": false
+    },
+    {
+      "id": "twilightforest:blueberry",
+      "required": false
+    }
+  ]
+}
