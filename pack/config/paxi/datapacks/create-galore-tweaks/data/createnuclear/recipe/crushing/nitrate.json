@@ -1,0 +1,25 @@
+{
+  "type": "create:crushing",
+  "ingredients": [
+    {
+      "type": "neoforge:difference",
+      "base": {
+        "tag": "create:stone_types/limestone"
+      },
+      "subtracted": {
+        "item": "create:limestone"
+      }
+    }
+  ],
+  "processing_time": 250,
+  "results": [
+    {
+      "chance": 0.6,
+      "id": "createnuclear:nitrate"
+    },
+    {
+      "chance": 0.4,
+      "id": "createnuclear:lead_nugget"
+    }
+  ]
+}

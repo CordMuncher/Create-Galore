@@ -25,6 +25,14 @@ file = "config/create_submarine-client.toml"
 hash = "e38558c715f01ec08abda913b77deb52ef8d024f6749127f0f89b67be68749fd"
 
 [[files]]
+file = "config/create_wizardry-common.toml"
+hash = "740249b77c035beeb2d6f921c1c59ce48e4eed38f3a2b8da0602be2faa12afef"
+
+[[files]]
+file = "config/createpropulsion-common.toml"
+hash = "265eacba01c72ccd5f7550eef83f895a04df4b9d37538418ad4ef892b36a05cc"
+
+[[files]]
 file = "config/cristellib/alexscaves/structure_placement_config.json5"
 hash = "19e52264d00799dc531c4eff6d64d1710622f29b01af62d023181f66774df2ba"
 
@@ -157,12 +165,24 @@ file = "config/paxi/datapacks/create-galore-tweaks/data/alloyed/recipe/crafting/
 hash = "104c5fe1abbceda019c9b1ef6a77d9af461330fe95c10cf2a1532db7907cc8e6"
 
 [[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/alloyed/recipe/forging/bronze_ingot_from_create.json"
+hash = "a5307ef5f65743be4a0bdcd5b75eacc6097831bb2addde1718cf370ab8fe78a2"
+
+[[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/alloyed/recipe/forging/steel_ingot.json"
-hash = "83d592509244a2a22a46d494f2fe6684c5e144ca276886ca41fc225fe4e0cce1"
+hash = "27d84e37d8213c83af08d13ddbfbd1e131b3a0a9b9024675db263f8b1d604e3b"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/alloyed/recipe/mixing/steel_ingot.json"
 hash = "7410886e01edf37ccac97ad9a0dc3a1a537bc98e718eda63fec944973b1641d6"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/alloyed/recipe/pressing/steel_sheet.json"
+hash = "9e7763981dd64b9195c77ece7a070cbe77816b746d1eba55033c6cad8a7f0035"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/betterend/recipe/additional_netherite.json"
+hash = "ded8107f6aa0cb602517e1784c01b839dac7f5d38a1fb3ac74e380528bc280a4"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/c/tags/item/foods/blackberry.json"
@@ -237,8 +257,36 @@ file = "config/paxi/datapacks/create-galore-tweaks/data/cnbridge/recipe/dimensio
 hash = "d49135196f515d2ba77cf13c7abec12135fb5030a8d2f500a9760a81d8a3c4a3"
 
 [[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/coedeposits/recipe/ancient_debris_drilling.json"
+hash = "6a01ca380d31b4b4d578ba55dd26d52424394ab59215c1e4634f5f847cd3e061"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/coedeposits/recipe/diamond_drilling.json"
+hash = "3af3707fb450db53f1fea6495556a7c7810c91cc0d6fba35ae8e3468d7318ceb"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/coedeposits/recipe/emerald_drilling.json"
+hash = "99a907f5f873abb02b1a0d57ba5ff8baca1cf12c8fed404c21baa88b09553486"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/coedeposits/recipe/glowstone_drilling.json"
+hash = "36c36113333f8c0e2cfc414ffdac84ed262c029dbe08ad8bf6f6d197fd0288f4"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/coedeposits/recipe/nether_quartz_drilling.json"
+hash = "f2083e7d1d57537c10bde891d4607f0912fba0cc1e487e4c38c12641d94bac03"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/coedeposits/recipe/quartz_drilling.json"
+hash = "780f0aa8d419726dc4b3283c71cd8d639db8f6d707c73df5b47d391bf4fdfee8"
+
+[[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/cr_aero_structures/loot_table/chests/uniform.json"
 hash = "0381fb06d93217ce6697a856e785aaf5312c86c6895f3bebcf24b41c49477133"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_aquatic_ambitions/recipe/channeling/wet_sponge_revival.json"
+hash = "1e41b985c4f6dad97338385d652fcf206b147ba35225d0fd2a4563288ad06f29"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_confectionery/recipe/black_chocolate_recipe.json"
@@ -255,6 +303,14 @@ hash = "d86081201ef6640f05dedfb271c31104b9215b88bc50a51cf1886a6b52a341e5"
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_confectionery/recipe/white_chocolate_recipe.json"
 hash = "2c2ce92253cd25d39f114804db073cf42349b4c5415c8443a9a196ac7b15bd35"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_flight_control/recipe/smart_vector_ion_thruster.json"
+hash = "98d7d81476e2ffea28403782a6f3030cf09f514d43fefd1a962c05b89053f982"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_flight_control/recipe/smart_vector_ion_thruster_small.json"
+hash = "a6df6de172edc3826e7feef541c61bb35199f8d941a3202bd77e4252c0b1e8f8"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/advancement/give_field_guide.json"
@@ -373,6 +429,10 @@ file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/recipe/uni
 hash = "b5e82e62f7615510dba5e3227c41fa9aa4d10ca0456124ea2a4dcd272d6df2c3"
 
 [[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createaddition/recipe/compacting/biomass_pellet.json"
+hash = "c1116c09ad4214959581a4bf38ca29f9bfe5e9aefa4ace87436d41ec2994b5fb"
+
+[[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/createbigcannons/recipe/bronze_block.json"
 hash = "ef26b09c1318e8dcf17858c62e9cb45143042074e4d91e4d561595bf99e78c54"
 
@@ -406,7 +466,7 @@ hash = "2a532fb1be0dbdaf8f4f0b8e1e0ed68ffe7520cd91351c1cdfd2ba3635189007"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/createbigcannons/recipe/mixing/alloy_bronze_brass.json"
-hash = "c2464110f9d6d916ae5962d2b1b8eaeadc9df48090436c1247f8e5a90dfcf9ac"
+hash = "2ba133e0537d498b8e709a2e18735981d35a4fe32ea09ff20e6dca5b18ec9cda"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/createbigcannons/recipe/mixing/alloy_bronze_tin.json"
@@ -414,7 +474,7 @@ hash = "e06e26ea043c618c8ed32dac5c089948933fe8b8213a22ef97c795189f06e9f7"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/createbigcannons/recipe/mixing/alloy_bronze_tinless.json"
-hash = "1659cfad5ebd9284bd3dce8da5b369a4862f5de4e3fdf804e0dc9c1c6800e20d"
+hash = "cf3eec1261ab42d246534b92e83c5eafd70be1da6cbadc9c803471dc340381b1"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/createbigcannons/recipe/mixing/alloy_steel.json"
@@ -557,8 +617,140 @@ file = "config/paxi/datapacks/create-galore-tweaks/data/createnuclear/recipe/cra
 hash = "c195378b07137ab4d4390654ed64329908e715cefc206a99e3be5b5c6b08fefa"
 
 [[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createnuclear/recipe/crushing/granite.json"
+hash = "9ff048c55c8a1273e2bcb9f6ec4e72e19e3d00802ba2da4103885d54f18231b8"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createnuclear/recipe/crushing/nitrate.json"
+hash = "4db431b70944f1c2aa78eb027124fc3c24f123e6c0f3e9748d32640126f096ae"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createnuclear/recipe/crushing/raw_copper.json"
+hash = "5c83386c795f979964a25f2010644cfb4a04da488c455bf29f9d49b1c779b23b"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createnuclear/recipe/crushing/raw_zinc.json"
+hash = "96f8eaa0f84fbfdb5bba27a2b097e99469c941b1bc238c8cf22cfef66a1c414a"
+
+[[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/createnuclear/recipe/mixing/steel.json"
-hash = "b6b682fa31f2d30118d09943c89a1edc0dbf9024ca32b9743708789147f6550c"
+hash = "a4375d3f4ee098ad1c3776117bc1d7e2ceec3b3bf6cd0f27d99df9975cd66fb0"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createpropulsion/recipe/stonecutting/copycat_wing_from_zinc.json"
+hash = "55cae06821c95b4fc72fd7b4b6feaa2491cbfa786b5ae2c4beb4add5a57f4f61"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/crittersandcompanions/loot_table/gameplay/digging/treasure.json"
+hash = "7ddf23378b6b4c8ffa2466432e1264e9b66cbd7b571dedb7defc2a48a5fd0019"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/delightfulcreators/recipe/mixing/tomato_sauce_fluid.json"
+hash = "a9ddb36e8a9d13d3b99c96210497d614734b5ee90f7a3030a9dd63f1f23f891e"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/recipe/crushing/crushed_salt.json"
+hash = "7d9f49d44deb903db2401789bf9b596db0121cc75cb673c06dfd2b5a516ce9f9"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/recipe/integration/create_aquatic_ambitions/crushed_salt_crushing.json"
+hash = "92050319ecaa3d9e53317f17d835b611b5d47a6588a8440fc0b515ec79c12323"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/recipe/integration/createaddition/liquid_burning/peanut_oil.json"
+hash = "0ac461ea96f1051d63ee7fe893d75c9201f073582ff5c260e3743fbda792b71e"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/tags/item/stone_types/abyssal_stone.json"
+hash = "3a9df755b9edaa4ff5620d045fb628678c3ac3bc3e65d2dd4f029dfb76c2cb65"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/tags/item/stone_types/carnotite.json"
+hash = "63f74448f6eec67b7ffce33e95f1b6473e4ba8ce59b48358d3f2a45ece45e612"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/tags/item/stone_types/dragon_stone.json"
+hash = "0dbb7ee89b1ac6835942a6c4694a572e92ebfa008f527ed0cc86b5c6d83e4992"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/tags/item/stone_types/ritualistic_stone.json"
+hash = "5dc48b1ceb5a63ed2080072f4968a2c714116ec36a42a789c96086cdf7aef828"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/tags/item/stone_types/unstable_stone.json"
+hash = "5485322cd8d922bbda25a1170f3bec45c6db4654df13ff629c7ad3590303a5ba"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/tags/item/stone_types/zultanite.json"
+hash = "cd23a1eea1dc7e1425c8604a4e17ce3b6ad0a7ab584565e1fd2ea810aad1a6bf"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/tags/item/stone_types/zultanite/basic.json"
+hash = "3c029a28e525258a4c9fe8733698d90aeeb17a14da72da180c693f2c61b8ac24"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/tags/item/stone_types/zultanite/black.json"
+hash = "98043c9ba041317072666a676edf2d48cbfa01fb654912a9842ce3a6b16fdefa"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/tags/item/stone_types/zultanite/blue.json"
+hash = "694dc7254e8afaceb9eac0f208ec3abe900a4b00eed8a29df679f4da9c506a3a"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/tags/item/stone_types/zultanite/brown.json"
+hash = "6736584459793b56ed12a9ee9628af29956c2dadcbcc0d7d76ad66a6322ea6f4"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/tags/item/stone_types/zultanite/cyan.json"
+hash = "a3edee1ff9830800105895297c9a10f23f3f6f83a2198fb08d10d5287ce653cd"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/tags/item/stone_types/zultanite/gray.json"
+hash = "28fb36dc7ac87bf9a9290e48754f308c01b92d5ee4af075ba853547596af99b4"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/tags/item/stone_types/zultanite/green.json"
+hash = "4bc31f5a61b2b0f6b81427d4e9af0f2acf5cb0b8afcc751e65212fe57a90b6af"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/tags/item/stone_types/zultanite/light_blue.json"
+hash = "8bbeb5c755161237ad74131be78b90a5594fdc5ad3b56844977b2b676421ee9d"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/tags/item/stone_types/zultanite/light_gray.json"
+hash = "ed295f759c6a60b8f655a669bb98423d9e5d36fda4edb13da0f19a1337c725fe"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/tags/item/stone_types/zultanite/lime.json"
+hash = "38efa7489d70d54206a6409269b91973f6355ea3543032babaff2dd451a6266e"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/tags/item/stone_types/zultanite/magenta.json"
+hash = "310f4daff5bf089ecc91ac0b2fa1723773e1362ceb4a3e2e37c06a824ebf6ed3"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/tags/item/stone_types/zultanite/orange.json"
+hash = "52e1821439461b84c04eac30a7b26103f28c0cb8266699747a0c75e9ca904799"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/tags/item/stone_types/zultanite/pink.json"
+hash = "45cf416609dbd65ea9a075bf8fc37b27412b72fa164064b991a08d3b72109360"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/tags/item/stone_types/zultanite/purple.json"
+hash = "53cdc843a31ba212d89c222063f71641ba791b9d4bd54204dfde36a5b8b62c2a"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/tags/item/stone_types/zultanite/red.json"
+hash = "43b8b34c5bbd5c1a01d25ac1e315fafae3c95107649c179731f986f264f6f999"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/tags/item/stone_types/zultanite/white.json"
+hash = "c32c40c8450ef1ec32277fdee24b07f7499c50e921eeba19e3a97ebb1b350057"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/tags/item/stone_types/zultanite/yellow.json"
+hash = "1ae66cfe8afc8b1f57f146b86e69fc7356f060fa0a871c93bf7c9a40131e61c5"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/irons_spellbooks/recipe/portal_frame.json"
@@ -567,6 +759,10 @@ hash = "99f52b3269f385651ced345b8121c15f1351c6b7aeb55ed18eed803852ad0d9a"
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/irons_spellbooks/recipe/sequenced_assembly/hither_thither_wand.json"
 hash = "694aa0e1f42ff2ba4d119f604fe90db5dd09cae79ee470b772f0a68f35b05fb4"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/irons_spellbooks/recipe/sequenced_assembly/portal_frame.json"
+hash = "cbb7a4cffecc98c810aa26adaac2c70ced9412dcb70c1aa76423c5196b109c2f"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/minecraft/tags/function/load.json"
@@ -579,6 +775,10 @@ hash = "2ca6a8c428d5bc964f68a1fd0a9ec125168fb7a04710c230fbe05b25a502690a"
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/mynethersdelight/loot_modifiers/add_loot_bastion_treasure.json"
 hash = "d42d8060adf1daf267990ce9f752a7f26275cd6433283372a06c49763c2d5705"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/mynethersdelight/recipe/crafting/blaze_powder_alt.json"
+hash = "52e62729520a02784cf166c5510ee009ea89eea1c971851ac4aabd6954fbe397"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/naturalist/tags/worldgen/biome/has_anglerfish.json"
@@ -633,8 +833,124 @@ file = "config/paxi/datapacks/create-galore-tweaks/data/northstar/recipe/crushin
 hash = "5aac962594ccd8875625427930f50d9138b6f72a77734587f35e0e7a8f619326"
 
 [[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/northstar/recipe/crushing/limestone.json"
+hash = "96e03349dd54c1ae33dbe851ecc86b3c7a90ce7c1975d7f21987aeddd1c0fa9e"
+
+[[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/northstar/recipe/crushing/mars_gravel.json"
 hash = "b6b56a9e3fc9033f6c867e0f83936c1716779f6e9fd56977e7895560de538ccc"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/productivebees/recipe/centrifuge/alloys/honeycomb_brass.json"
+hash = "d9ac63c0e1a0342bc38b649679d10dbb7f72a27a2b1cc040cf70525a431e55e0"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/productivebees/recipe/centrifuge/alloys/honeycomb_bronze.json"
+hash = "7b0fafdbf946142d436761884f2a17b9cabacf9dc239987470ff1a4945dd75d0"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/productivebees/recipe/centrifuge/alloys/honeycomb_constantan.json"
+hash = "93d30562dd0ced0bf38da0b1aafd2347ad7162528a83d93375882ed9e144234f"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/productivebees/recipe/centrifuge/alloys/honeycomb_electrum.json"
+hash = "8ef3e736a654e425e1f25020160de2fa4acbe2125e37125506db7578b898b44b"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/productivebees/recipe/centrifuge/alloys/honeycomb_steel.json"
+hash = "5cb67580083d77c9dc49ba7804eb67604e526fd0d7e2e80df4da06b5885c8b7f"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/productivebees/recipe/centrifuge/comb_breeze.json"
+hash = "e5eeac3d72c93c3b7303b2d3bbf071dc57b01ecc6c656a5b7e01d79f47956bf2"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/productivebees/recipe/centrifuge/dusts/comb_blazing.json"
+hash = "a314df948cd6f09d81a12c6295e8f1288f0c8ca9e3d15820e614cc5328df8d2a"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/productivebees/recipe/centrifuge/dusts/honeycomb_platinum.json"
+hash = "9fab9ed26f1811fae6453ce514a63901bc09b38ff3f5b3b1e366ac8412f4f9e1"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/productivebees/recipe/centrifuge/dusts/honeycomb_radioactive.json"
+hash = "73ac773a73c9a1717abd606dfe3ca3f87f4ad673032a19ec2510f3628c711861"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/productivebees/recipe/centrifuge/dusts/honeycomb_saltpeter.json"
+hash = "b56cada5272a38af7a77f67c12208ab7f3bc85c19e8714d4971b98ff204cdcb0"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/productivebees/recipe/centrifuge/dusts/honeycomb_sulfur.json"
+hash = "9d8f795f19bba152924036f26ac39aab699b2601c25e97c6af80ac77e44e5d16"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/productivebees/recipe/centrifuge/dusts/honeycomb_titanium.json"
+hash = "6c1e19082c483998b934d5210c4fa2c76b25b24141fbf28b1c7127c3ccc7d277"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/productivebees/recipe/centrifuge/dusts/honeycomb_tungsten.json"
+hash = "a1d7122651b132d3770d1a6bf671362248d4694671a7ac6445948fc41f633389"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/productivebees/recipe/centrifuge/gems/honeycomb_rose_quartz.json"
+hash = "51738bd0249080c68f525f117a5df62f081d9d4a7a6639bc97566d5531f01364"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/productivebees/recipe/centrifuge/honeycomb_draconic.json"
+hash = "a832fe6a416d8eedfd091ae92820aad67945ff807fcae623bb88871544b6f4a8"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/productivebees/recipe/centrifuge/honeycomb_ender.json"
+hash = "ca1879df9afed33a6fab5f2b1ce38ce7932f2a6a981fcade7ca86b656b8a1359"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/productivebees/recipe/centrifuge/honeycomb_ghostly.json"
+hash = "544d2e853f2c8f5bd6095e2669ffd1064b2ff580fb0975e717c918a81a48fc55"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/productivebees/recipe/centrifuge/honeycomb_sculk.json"
+hash = "148c1cf11932327d1b6d7823290f88bee6aedb87a89b11b2c882202bd3820b7a"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/productivebees/recipe/centrifuge/honeycomb_withered.json"
+hash = "bd4489761e3d13b367ea4024d61dcc7c308e692d2828c58509848699973d42f9"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/productivebees/recipe/centrifuge/raw_materials/honeycomb_mithril.json"
+hash = "7caa5071aa94e5629890d79f7cea7a8fbad16d3b5533c45ff4f90d67a5a76f89"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/productivebees/recipe/centrifuge/raw_materials/honeycomb_netherite.json"
+hash = "2212d9685382a354493ebcea898db18f9cf8d3d4d6a0f783703f3820dfdd4b4c"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/productivebees/recipe/centrifuge/raw_materials/honeycomb_platinum.json"
+hash = "888cd3f91042f5a86513dc8e067a2b6b03c6305ef3af942ce786f69919f71ad9"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/productivebees/recipe/centrifuge/raw_materials/honeycomb_radioactive.json"
+hash = "f2f73f1c78fe43bd5441b3c224dd33e9ba0c2ef5221875108ba17bbd9c819324"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/productivebees/recipe/centrifuge/raw_materials/honeycomb_titanium.json"
+hash = "723beba1f60b91ce52b74ed386d25f8b9399f5ee504b8620b34a3f9471aeafb3"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/productivebees/recipe/centrifuge/raw_materials/honeycomb_tungsten.json"
+hash = "2c723a2ceb5323319f91f1766ff07639f944e01cfdf44565458cf192334bb1f5"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/ratatouille/recipe/composting/more_dough.json"
+hash = "687e072a70e472fbfeda830e0205bc2ffedd326ea19077cd92d25cd032012a6f"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/ratatouille/recipe/filling/melon_popsicle_mold_filled.json"
+hash = "78bce76491d60c3b5be50dfbb471021a6406b0e37c7a44a55985d944c39018c6"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/ratatouille/recipe/milling/wheat_flour.json"
+hash = "1cc8a2cbfe574a8914b98d339cb5fe14f64c2f6f9437752ed0a8e5178488b1a6"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/tfmg/recipe/blasting/lead_ingot_from_crushed_blasting.json"
@@ -654,7 +970,7 @@ hash = "be2138bc7a85a75bc928be43da1b68163d71f9c6556e2fd0ac2e8c15373741a9"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/tfmg/recipe/copper_wire_from_ingots_copper_stonecutting.json"
-hash = "f8ecf97bbbd9a67c1add0441dcbd9c4282d7a3fa21e5a3ca07eb1fcb9f22e32f"
+hash = "24ab33eadc57f6495efaa759b8c5162fbfa99dbd2bb28f4a208df08d6b8f16b1"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/tfmg/recipe/crafting/copper_spool.json"
@@ -797,6 +1113,10 @@ file = "config/paxi/optional/create-galore-with-elytra/pack.mcmeta"
 hash = "496612965e223ce5e5f35c83c8f6bd58bb98792b1ce1f50a02cc388d952b67a2"
 
 [[files]]
+file = "config/smog-common.toml"
+hash = "0133a92023f0a9bb6bb077da924c21e74e86786824e73163bbd0506b248a3212"
+
+[[files]]
 file = "config/sophisticatedbackpacks-server.toml"
 hash = "2bbfe7a3d663b57127c7237e8e02531cd526fa0e3a9a8d8632ba6b3072c793c2"
 
@@ -807,6 +1127,14 @@ hash = "e2ecb2d3f8f7f3eb77ed8f7d27f6e86987e6acf04eae85382d22201bd5f0d7aa"
 [[files]]
 file = "config/tfmg-common.toml"
 hash = "6932c0866d378225725a5d2e0a9b8fa20e963b5fa7f4cc6ab9bcc57d91974fa6"
+
+[[files]]
+file = "config/thirst/item_settings.toml"
+hash = "1f953e8c3b4822db477b0fdfe411c9adc5a2a2df56946f71ba5631f1c9ccf655"
+
+[[files]]
+file = "config/twilightforest-common.toml"
+hash = "79df1e9730257c4e805c23ede280510a939ffd8ac2a9802617b41866caa227ef"
 
 [[files]]
 file = "config/wover/client.json"
@@ -1987,6 +2315,10 @@ file = "patchouli_books/create_galore/en_us/entries/connections/adventure_loot.j
 hash = "fe8e0dfddd19ff9dbab5e11c1c1400263b861123f9dc8523c028e0a2e9674326"
 
 [[files]]
+file = "patchouli_books/create_galore/en_us/entries/connections/balance.json"
+hash = "702f72b2582cf824c9836578dcd8b52df9a6e7383183bcf7d900a6dfdbd51638"
+
+[[files]]
 file = "patchouli_books/create_galore/en_us/entries/connections/farm_to_factory.json"
 hash = "afd69346b38f459b86838e65621c645b03a1458521b01883108cb293b78e20e9"
 
@@ -2112,7 +2444,7 @@ hash = "1ea0a1bb6ed35726e6cca56b5a52302b94bf4037b077f2a2d9933e4db5ad94a5"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/exploration/create_wizardry.json"
-hash = "3f6dd25dc675319ed790d87580530de4fc216eef584d07df3ec952b8403e5ff6"
+hash = "e430fc104753165d85a4709d1745d0c6db54f15946ce844347fa867ceaa4e2f2"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/exploration/creatures.json"
@@ -2164,7 +2496,7 @@ hash = "5c85e5042bf7181d8aae025a88fbd166c8d1b58edf7e300bb5653d39a925285d"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/exploration/twilight_forest.json"
-hash = "e5bcacea1f19b982238122013ece2403ce75c960601b63587d1a5666a0dcc17c"
+hash = "7fe48023dc6ef4558070e461b74c52999d8e741c69c22781ec3aa28b9f8502ef"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/exploration/worldgen.json"
@@ -2200,7 +2532,7 @@ hash = "aff1d94894a7f8f3a894e85da0d58f7a8bff9a800a1b0e4b88789eec1874a121"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/flight/propulsion.json"
-hash = "471cff6b3541c8d15fecdee6dc4c21d181321f7895835c869998c77e1849e87b"
+hash = "7ce40e1a155ebe5e09bbc7c9ed3721faddcc07d56ef791525957b3cd9b3c7def"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/flight/ship_building.json"
@@ -2224,7 +2556,7 @@ hash = "59dd17b27a7f38b0137233637e1a317e6fabc448be4b4404ea4b05111e653f7f"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/food/bees.json"
-hash = "a472afdc6047bf1b5d2736192e52d0992ed7da0a0c40fa0f4e2a2b7784f22c0f"
+hash = "bab63beb8c295117b5ac3cb0b7f3ab838d03a3b78b6f31e57c11225c15819273"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/food/brewing.json"
@@ -2296,11 +2628,11 @@ hash = "2d85a750a59746c6b19b3e759bd8f64e3fe1b591aeb98afb04df00df9083d92d"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/industry/alloyed.json"
-hash = "4fe89e82963508c2b08237a3fa231131e15b94d1d2665b24595f4176e9ab720c"
+hash = "da86e8680332bd546fc676ed765fea8dc333805f095daf7e42d31a459d14f330"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/industry/cannons.json"
-hash = "8258b173bbf6bdfc1bc9e59dee2f586d8f02a80026804f157048cb82af13afd8"
+hash = "ed215e2bc00bb3821081f7ff91c04cc4cacc955e285439d93ef442c675c14c05"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/industry/dragons_plus.json"
@@ -2316,15 +2648,15 @@ hash = "4881a0f291cc516836933a75eb4cf1d1bfc3e1393c1a3ef83b2ad3b41214d57f"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/industry/liquid_fuel.json"
-hash = "46a8c393061424782f2ef87dae7feeebd66fe67e3c6d47397dfd00d913136129"
+hash = "b4d0d4400515ea7e2e966ea66ca41da5b7818fdeeb3ed6868b1b9387e73e7224"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/industry/nuclear.json"
-hash = "f032fc6e9705c1e2d0c544c93f44fa113e1060818d8179b8dcbe1e0e0f50ff8e"
+hash = "75665c0489d58b52f2cb1bc27f0b0eaa413d1d67de1db02adaedf84df8f77f3e"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/industry/ore_excavation.json"
-hash = "27e55b569c27c4994c7d39bd56e4bced938696cea444c8c8dcc9b0b1913bedd3"
+hash = "291e24e9dfa2d1456ae721ea43cba6442c82cea8fec7e21ed569029c06d6ee7f"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/industry/power_compared.json"
@@ -2344,7 +2676,7 @@ hash = "d324422a34164ac34effae5ebfa1f0881cef1b308842d6089f766a535394f378"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/industry/tfmg_steel.json"
-hash = "3baa6d6f8e81113bf866b715729980a28f97d4bb0131588ec7907a3568a91a8b"
+hash = "3506ad7b440745ae00b6aaa4832a49fc6d30617a9b5f1cc33afd224922c567ce"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/materials/ore_doubling.json"
@@ -2448,7 +2780,7 @@ hash = "688d9a11a76486a7fe4ca0fa585f01c77b0826d42b7f47c92cb9c58090beae43"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/survival/pollution.json"
-hash = "166442ad6bb873e6f2229815a5afb67cbcb7146d24f9554a4648e4b6015903ea"
+hash = "075412b0653419323899a8b8ec8a80a85c191ed19fd61ecc7d53b4edecf9a2c1"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/survival/pollution_control.json"

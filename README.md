@@ -4,7 +4,7 @@ A big, long-term Minecraft modpack built around the Create mod. Think "Minecraft
 
 | | |
 |---|---|
-| **Version** | 0.1.2 |
+| **Version** | 0.1.3 |
 | **Minecraft** | 1.21.1 |
 | **Loader** | NeoForge **21.1.259** (pinned, don't update it, see [Known issues](#known-issues)) |
 | **Mods** | 222 from Modrinth + Twilight Forest added by hand, plus 4 shader packs and the Fresh Animations resource pack |
@@ -13,7 +13,7 @@ A big, long-term Minecraft modpack built around the Create mod. Think "Minecraft
 
 ## Install (players)
 
-1. Download `Create-Galore-0.1.2.mrpack` from the [latest release](https://github.com/emresahin0906-code/Create-Galore/releases/latest) (or [from this repo](Create-Galore-0.1.2.mrpack)).
+1. Download `Create-Galore-0.1.3.mrpack` from the [latest release](https://github.com/emresahin0906-code/Create-Galore/releases/latest) (or [from this repo](Create-Galore-0.1.3.mrpack)).
 2. Import it:
    - **Prism Launcher:** Add Instance → Import → pick the `.mrpack`.
    - **Modrinth App:** drag the `.mrpack` onto the window (or File → Import).
@@ -80,6 +80,21 @@ Everything below ships as plain config files or a datapack in `pack/` (no mod ja
 - Create: Smog pollution is left at full strength on purpose.
 - Underground structures are spaced a bit wider, since the pack places far more than vanilla.
 - Inventory Profiles Next auto-refill is off and the backpack magnet is one block shorter, so the game doesn't play itself.
+
+**One fair route per item.** Where two mods make the same thing and one way gives far more for far less work, that way is cut or toned down, so the Create machine route stays worth building. A better yield that costs a bigger build (TFMG's blast furnace makes 2 steel per raw iron, a mixer makes 1 per ingot) is left alone. All of it is recipe and tag overrides in `create-galore-tweaks`; the Field Guide lists them under How Things Connect → Balance Changes.
+- **Metals.** Steel always needs heat: Create Nuclear's coal-dust steel mix is heated now, and the Alloyed Forge no longer makes steel or bronze (its tools and armor are unchanged). Big Cannons' cheaper bronze mixes are off, so bronze comes from Alloyed's mixer recipe. BetterEnd's smelter no longer turns 2 ancient debris into 3 scrap. Ancient debris deposits now need a Netherite Drill, 500 mB lava per cycle and 2,048 SU (they were 33x faster than Ore Excavation's own netherite vein with any drill).
+- **Recipe clashes.** Five mods had a crushing recipe for plain Limestone and only one can run, which could hide TFMG's Limesand (the steel flux). Limestone now crushes to Limesand only; Northstar's rutile still comes from sand and Venus gravel, Create Nuclear's nitrate from crushing cut or polished limestone, and Garnished's crushed salt from milling. Create Nuclear's faster raw copper and zinc crushing (with free lead) is off, so Create's own recipe runs.
+- **Parts.** Alloyed's one-press steel sheet is off, so steel plates are TFMG's 3-press Heavy Plate. Flight Control's ion vector thrusters can't be made by converting a plain thruster in the grid (that skipped 3 accumulators). Copper wire comes from the Rolling Mill, not 2 per ingot at the stonecutter. Copycat Wings stonecut 1:1 instead of 1:4.
+- **Food and farming.** Ratatouille's composter no longer triples dough, its kernel milling gives about 1.25 flour instead of 3 (wheat still gives about twice Create's plain mill), and popsicle molds take 250 mB of melon juice instead of 100. Delightful Creators' tomato sauce takes 2 tomatoes per 250 mB instead of 1 per 333. My Nether's Delight can't stretch blaze powder with pepper powder, and channeling a sponge gives exactly one wet sponge (it was an endless 1.25x loop).
+- **Fuel.** Garnished Peanut Oil burns 5,000 ticks a bucket in the Crafts & Additions burner too (it was 24,000, a cheap superheat fuel next to Bioethanol).
+- **Loops.** Garnished stone slabs (3 blocks make 6) no longer stonecut back into full blocks or crush for ore, which doubled unstable stone and zultanite and their gold, zinc, iron and copper.
+- Create Wizardry's Create recipe for Iron's Portal Frame is off as well, matching the travel rules.
+- **Productive Bees.** Bees still make honey, wax, plain metals (iron, copper, gold, zinc, lead, nickel), gems and cheap mob drops. The combs that skipped whole progression chains give nothing from the centrifuge: steel, brass, constantan, rose quartz, titanium, tungsten, platinum, uranium, netherite, mithril, ender pearls, blaze and breeze rods, ghast tears, echo shards, wither skull chips, draconic dust, sulfur and saltpeter.
+- **Ore deposits.** Deposit drills mine diamonds, emeralds, quartz and glowstone at Ore Excavation's own speed (1,200 ticks, 512 SU for gems). Metals stay fast.
+- **Twilight Forest:** the Uncrafting Table no longer reverses recipes (`disableUncrafting = true`), since stonecutter recipes let it multiply copper, bronze and Create Deco metal up to 4x. It still repairs and does its special recipes.
+- **Create Propulsion:** Solid and Liquid Burners can't heat mixers or superheat boilers. They still heat boilers to normal level and run thrusters and Stirling engines.
+- **Pollution:** TFMG engines (6 per block, 4 for large engines), fireboxes (8) and blast furnaces (30) now add smog. Smog can't tell whether a TFMG block is running, so they count all the time once built.
+- **Smaller ones:** Farmer's Delight melon juice and apple cider hydrate like a water bottle (6 and 8 instead of 8 and 13). Create Wizardry's Mana Siphon never turns an arcane ingot into netherite. Ferrets dig up an emerald instead of a Totem of Undying. Crushing granite gives uranium powder 10% of the time instead of 50%. A Biomass Pellet takes 2 Biomass.
 
 **Fixes.**
 - The Northstar–Aeronautics Dimensional Drive recipe uses a Northstar Circuit instead of a chip Northstar removed, so ships can be launched to the planets again.
@@ -162,6 +177,7 @@ All tests ran headless in a cloud machine (4 cores, 16 GB RAM, no GPU), so speed
 | 0.1.2 travel changes on a dedicated server with a client joined: End City ship generates without its Elytra, mod loot and Lootr give Shulker Shells, the Hullbreaker drops no Enigmatic Engine, an Elytra given to a survival player crumbles into Phantom Membrane, 527 random spell scrolls with no Portal, Recall or Angel Wings, the opt-in folder brings Elytra back, Field Guide opens on the new Getting Around page | ✅ |
 | Combined 0.1.2 (ambiance and travel changes together) on a fresh dedicated server with the full client joined and sound on: Iron's Spells' automatic reload runs on boot and after a restart, a `/reload` while playing with Sound Physics running causes no errors, an Elytra crumbles by default, the opt-in folder keeps Elytra after a restart, Field Guide opens | ✅ |
 | Log-noise fixes on a dedicated server, boot and two `/reload`s: 22 more recipes load (16 Create Cafe teas, 2 syrups, blood tea, mana tea, Blood Orange, Mana Berries), and the My Nether's Delight, Aeronautics Structures, blood tea and syrup errors are gone. In-world, a pump feeds TFMG diesel into a Blaze Burner and it burns, while water is refused | ✅ |
+| 0.1.3 balance pass on a dedicated server: boots clean, 37 fewer recipes load (22,338 together with the log-noise fixes), configs load without corrections, no recipe, tag or Field Guide errors, Garnished stone tags list no slabs | ✅ |
 | Real FPS, shaders, Distant Horizons visuals, gameplay feel | ❌ Needs a real PC with a GPU |
 
 **Memory:** about 9.3 GB of process memory on the server and 8-9.6 GB on the client with an 8 GB heap. A laptop with 16 GB can play but shouldn't host and play at the same time.
@@ -170,7 +186,7 @@ All tests ran headless in a cloud machine (4 cores, 16 GB RAM, no GPU), so speed
 
 ## Repo layout
 
-- `Create-Galore-0.1.2.mrpack`: the importable pack, built from `pack/`
+- `Create-Galore-0.1.3.mrpack`: the importable pack, built from `pack/`
 - `pack/`: [packwiz](https://packwiz.infra.link/) source, one `.pw.toml` per mod or shader, plus configs (`pack/config/`), the datapacks (`pack/config/paxi/datapacks/create-galore-tweaks`, always on, `create-galore-no-elytra`, and the opt-in `config/paxi/optional/create-galore-with-elytra`) and the Field Guide (`pack/patchouli_books/`)
 - `MODS.md`: full mod list with versions and sides
 - `server/`: server install scripts, memory settings and a starting `server.properties`
@@ -184,5 +200,5 @@ To rebuild the `.mrpack` after changing `pack/`:
 ```
 cd pack
 packwiz refresh
-packwiz modrinth export -o ../Create-Galore-0.1.2.mrpack
+packwiz modrinth export -o ../Create-Galore-0.1.3.mrpack
 ```

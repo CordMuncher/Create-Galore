@@ -1,0 +1,24 @@
+{
+  "replace": true,
+  "values": [
+    "garnished:chiseled_pink_zultanite_bricks",
+    "garnished:cut_pink_zultanite",
+    "garnished:cut_pink_zultanite_stairs",
+    "garnished:cut_pink_zultanite_wall",
+    "garnished:pink_zultanite",
+    "garnished:pink_zultanite_brick_stairs",
+    "garnished:pink_zultanite_brick_wall",
+    "garnished:pink_zultanite_bricks",
+    "garnished:pink_zultanite_stairs",
+    "garnished:pink_zultanite_wall",
+    "garnished:polished_pink_zultanite",
+    "garnished:polished_pink_zultanite_stairs",
+    "garnished:polished_pink_zultanite_wall",
+    "garnished:small_pink_zultanite_brick_stairs",
+    "garnished:small_pink_zultanite_brick_wall",
+    "garnished:small_pink_zultanite_bricks",
+    "garnished:smooth_pink_zultanite",
+    "garnished:smooth_pink_zultanite_stairs",
+    "garnished:smooth_pink_zultanite_wall"
+  ]
+}

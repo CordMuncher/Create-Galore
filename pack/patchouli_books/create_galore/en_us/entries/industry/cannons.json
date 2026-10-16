@@ -36,7 +36,7 @@
     {
       "type": "patchouli:text",
       "title": "Steel and bronze",
-      "text": "Big Cannons' own steel recipes (mixing iron and coal, compacting molten steel) now give $(l:industry/tfmg_steel)TFMG steel$(/l), and its bronze recipes give Alloyed bronze. Old Big Cannons steel and bronze convert in a crafting grid. See $(l:materials/shared_metals)Shared Metals$(/l)."
+      "text": "Big Cannons' own steel recipes (mixing iron and coal, compacting molten steel) now give $(l:industry/tfmg_steel)TFMG steel$(/l), and bronze comes from Alloyed's mixer recipe (Big Cannons' cheaper bronze mixes are off). Old Big Cannons steel and bronze convert in a crafting grid. See $(l:materials/shared_metals)Shared Metals$(/l)."
     },
     {
       "type": "patchouli:text",

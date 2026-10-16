@@ -26,7 +26,7 @@
     },
     {
       "type": "patchouli:text",
-      "text": "Any other machine that reports a \"lit\" state adds 3 per second. The mod's list also names some TFMG machines, but whether they count depends on their block IDs. An Aerometer shows the real result.",
+      "text": "Any other machine that reports a \"lit\" state adds 3 per second. TFMG engines, fireboxes and blast furnaces pollute too. They have no lit state, so they count all the time once built. An Aerometer shows the real result.",
       "title": "Other machines"
     },
     {

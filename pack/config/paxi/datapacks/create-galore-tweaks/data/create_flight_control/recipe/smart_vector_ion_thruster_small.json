@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "redstone",
+  "ingredients": [
+    {
+      "item": "create_flight_control:smart_vector_thruster_small"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "create_flight_control:smart_vector_ion_thruster_small"
+  },
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:false"
+    }
+  ]
+}

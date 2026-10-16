@@ -1,0 +1,37 @@
+{
+  "type": "createoreexcavation:drilling",
+  "drill": {
+    "item": "createoreexcavation:netherite_drill"
+  },
+  "output": [
+    {
+      "id": "minecraft:netherite_scrap"
+    },
+    {
+      "id": "minecraft:nether_gold_ore",
+      "chance": 0.08
+    },
+    {
+      "id": "minecraft:quartz",
+      "chance": 0.06
+    },
+    {
+      "id": "minecraft:netherrack",
+      "chance": 0.35
+    },
+    {
+      "id": "minecraft:gravel",
+      "chance": 0.1
+    }
+  ],
+  "priority": 0,
+  "stress": 2048,
+  "ticks": 2400,
+  "veinId": "coedeposits:ancient_debris_vein",
+  "fluid": {
+    "amount": 500,
+    "ingredient": {
+      "fluid": "minecraft:lava"
+    }
+  }
+}

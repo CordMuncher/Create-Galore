@@ -31,7 +31,7 @@
     },
     {
       "type": "patchouli:text",
-      "text": "The Deposits add-on supplies the vein list: coal, copper, iron, zinc, gold, redstone, lapis, diamond, emerald, quartz and glowstone, plus Nether gold, Nether quartz and ancient debris veins. Check the Atlas or JEI."
+      "text": "The Deposits add-on supplies the vein list: coal, copper, iron, zinc, gold, redstone, lapis, diamond, emerald, quartz and glowstone, plus Nether gold, Nether quartz and ancient debris veins. Ancient debris needs a Netherite Drill and lava. Check the Atlas or JEI."
     },
     {
       "type": "patchouli:spotlight",
