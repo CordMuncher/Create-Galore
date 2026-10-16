@@ -68,20 +68,34 @@ final class WglContext implements AutoCloseable {
 
             long tempContext = check(wglCreateContext(hdc));
             wglMakeCurrent(hdc, tempContext);
-            hglrc = check(wglCreateContextAttribsARB(hdc, 0, new int[] {
-                    WGL_CONTEXT_MAJOR_VERSION_ARB, flags.majorVersion,
-                    WGL_CONTEXT_MINOR_VERSION_ARB, flags.minorVersion,
-                    WGL_CONTEXT_PROFILE_MASK_ARB, switch (flags.profile) {
-                        case CORE -> WGL_CONTEXT_CORE_PROFILE_BIT_ARB;
-                        case COMPAT -> WGL_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB;
-                        case ANY -> 0;
-                    },
-                    WGL_CONTEXT_FLAGS_ARB, flags.forwardCompatible ? WGL_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB : 0,
-                    0
-            }));
+            // Minecraft asks for 3.2 core, which NVIDIA answers with exactly 3.3. Normally NeoForge's early window has
+            // already made a 4.6 context, and Iris, Flywheel and Distant Horizons pick faster paths on 4.x, so ask for
+            // 4.6 first, like that window does, and fall back to what the game asked for.
+            long context = 0L;
+            if (flags.majorVersion < 4) {
+                context = createContext(hdc, 4, 6, flags);
+            }
+            if (context == 0L) {
+                context = createContext(hdc, flags.majorVersion, flags.minorVersion, flags);
+            }
+            hglrc = check(context);
             wglMakeCurrent(hdc, 0);
             wglDeleteContext(tempContext);
         }
+    }
+
+    private static long createContext(long hdc, int major, int minor, ContextFlags flags) {
+        return wglCreateContextAttribsARB(hdc, 0, new int[] {
+                WGL_CONTEXT_MAJOR_VERSION_ARB, major,
+                WGL_CONTEXT_MINOR_VERSION_ARB, minor,
+                WGL_CONTEXT_PROFILE_MASK_ARB, switch (flags.profile) {
+                    case CORE -> WGL_CONTEXT_CORE_PROFILE_BIT_ARB;
+                    case COMPAT -> WGL_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB;
+                    case ANY -> 0;
+                },
+                WGL_CONTEXT_FLAGS_ARB, flags.forwardCompatible ? WGL_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB : 0,
+                0
+        });
     }
 
     void makeCurrent() {

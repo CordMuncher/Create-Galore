@@ -58,6 +58,9 @@ public final class TenBitWindow {
 
     /** Called once the window and its GL context exist; logs what the driver actually gave. */
     public static void afterCreate() {
+        if (!enabled() || dev.creategalore.bridge.present.Presentation.active()) {
+            return;
+        }
         try {
             GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, 0);
             int r = GL30.glGetFramebufferAttachmentParameteri(GL30.GL_FRAMEBUFFER, GL11.GL_BACK_LEFT, GL30.GL_FRAMEBUFFER_ATTACHMENT_RED_SIZE);

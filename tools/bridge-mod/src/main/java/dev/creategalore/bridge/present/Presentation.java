@@ -115,7 +115,7 @@ public final class Presentation {
             interop = new InteropContext(GLFWNativeWin32.glfwGetWin32Window(handle), FLAGS);
             window = handle;
             hideFromGlVersionCheck();
-            LOG.info("Perfect Presentation: DXGI swap chain ready (OpenGL {}.{} on a hidden context)", FLAGS.majorVersion, FLAGS.minorVersion);
+            LOG.info("Perfect Presentation: DXGI swap chain ready (OpenGL on a hidden context)");
             return handle;
         } catch (Throwable t) {
             LOG.error("Perfect Presentation: could not set up the DXGI swap chain, falling back to a normal OpenGL window", t);
