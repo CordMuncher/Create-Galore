@@ -50,6 +50,8 @@ public final class DisplaySettings {
                             + " (ported from Perfect Presentation by sidit77): borderless fullscreen at exclusive-fullscreen speed and\n"
                             + " Alt-Tab without a display mode change. Leave NVIDIA's Vulkan/OpenGL present method on Auto.\n"
                             + " Needs an NVIDIA or AMD driver with WGL_NV_DX_interop2. Turns off NeoForge's early loading window.\n"
+                            + " On NVIDIA also set Power management mode to Prefer maximum performance for javaw.exe, or the\n"
+                            + " driver keeps the GPU clocks low.\n"
                             + " tenBitWindow: EXPERIMENTAL. true asks for a 10-bit game window, meant to keep a 10-bit monitor at 10-bit\n"
                             + " in fullscreen. It did not stop the 8-bit switch on an RTX 4080 Super. Turns off NeoForge's early\n"
                             + " loading window (config/fml.toml).");
