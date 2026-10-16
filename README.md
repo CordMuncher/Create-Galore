@@ -20,7 +20,7 @@ A big, long-term Minecraft modpack built around the Create mod. Think "Minecraft
 
    The launcher downloads every mod at its pinned version (about 860 MB) and unpacks the pack's configs and datapacks.
 3. **Add Twilight Forest by hand.** It isn't on Modrinth, so it can't be inside the pack file. Put `twilightforest-1.21.1-4.8.3345-universal.jar` (CurseForge, version 4.8.3345) into the instance's `mods` folder.
-4. Give the game **8 GB of RAM** (instance settings → Java → maximum memory 8192 MB). 10 GB is more comfortable with Distant Horizons.
+4. Give the game its memory and Java flags in the instance's Java settings: **12 GB with Generational ZGC** on a PC with 32 GB or more, **8 GB with G1** on a 16 GB laptop. Set minimum and maximum memory to the same value. The exact lines to paste for Prism and the Modrinth App, the benchmark behind them and the upper limits are in **[docs/java-flags.md](docs/java-flags.md)**.
 5. Optional shaders are already in the `shaderpacks` folder: **Complementary Reimagined + Euphoria Patches** (recommended), Bliss, Photon and Solas (lightest). Turn one on in Options → Video Settings → Shader Packs.
 
 Don't let the launcher update NeoForge past 21.1.259.
@@ -181,7 +181,7 @@ All tests ran headless in a cloud machine (4 cores, 16 GB RAM, no GPU), so speed
 | Create Galore Bridge on a dedicated server, over 20 s per check: an idle regular engine and an idle large engine add no smog; a large engine running on diesel (shaft at 128 RPM, fuel draining) adds smog, and stops adding it once its air runs out with diesel still in the tank; a blast furnace adds smog while smelting and none once the charge stops | ✅ |
 | Real FPS, shaders, Distant Horizons visuals, gameplay feel | ❌ Needs a real PC with a GPU |
 
-**Memory:** about 9.3 GB of process memory on the server and 8-9.6 GB on the client with an 8 GB heap. A laptop with 16 GB can play but shouldn't host and play at the same time.
+**Memory:** about 9.3 GB of process memory on the server and 8-9.6 GB on the client with an 8 GB heap. A laptop with 16 GB can play but shouldn't host and play at the same time. A garbage collector benchmark on the server (pack's G1 flags vs Java defaults, Generational ZGC and Shenandoah, plus a 6 GB run) is in [docs/java-flags.md](docs/java-flags.md).
 
 ![In-world screenshot from the test client](docs/in-world.png)
 
