@@ -55,6 +55,7 @@ hash = "df9e88c098ae6384586a7b58c59f59645c602e209cc6446be1109474a94b48de"
 [[files]]
 file = "config/inventoryprofilesnext/inventoryprofiles.json"
 hash = "0abd5b4ce01b2398fb7e6a8df9c72170564bce762feb906eec41dc5eefd99c6a"
+preserve = true
 
 [[files]]
 file = "config/irons_spellbooks_spell_config/irons_spellbooks/angel_wing.json"
@@ -1151,6 +1152,7 @@ hash = "2bbfe7a3d663b57127c7237e8e02531cd526fa0e3a9a8d8632ba6b3072c793c2"
 [[files]]
 file = "config/subtle_effects/blocks.toml"
 hash = "e2ecb2d3f8f7f3eb77ed8f7d27f6e86987e6acf04eae85382d22201bd5f0d7aa"
+preserve = true
 
 [[files]]
 file = "config/tfmg-common.toml"
@@ -2285,6 +2287,7 @@ metafile = true
 [[files]]
 file = "options.txt"
 hash = "a682b1e53b1e21a3782438da0913f6963c41a595d0480b6aa399fae109a0415c"
+preserve = true
 
 [[files]]
 file = "patchouli_books/create_galore/book.json"

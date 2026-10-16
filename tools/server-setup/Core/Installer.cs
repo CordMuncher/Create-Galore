@@ -20,6 +20,7 @@ namespace CreateGalore.ServerSetup
         public int Port = 25565;
         public bool AcceptEula;
         public bool Elytra;
+        public bool Clean;                          // reset every config to the pack's (bug-fixing phase); world kept
         public string OpName;                       // gets op + whitelist
         public List<string> Players = new List<string>(); // whitelist only
         public string TfJar;                        // checked jar to copy into mods/
@@ -71,14 +72,16 @@ namespace CreateGalore.ServerSetup
             await InstallNeoForgeAsync();
 
             Step(0.25, "Installing mods");
+            if (o.Clean) CleanConfigs();
             var previous = ReadInstalledList();
             var installed = new List<string>();
             await InstallModsAsync(installed);
 
             Step(0.90, "Copying configs and datapacks");
-            InstallPackFiles(installed);
-            RemoveStale(previous, installed);
-            WriteInstalledList(installed);
+            var hashes = new Dictionary<string, string>();
+            InstallPackFiles(installed, previous, hashes);
+            RemoveStale(previous.Keys, installed);
+            WriteInstalledList(installed, hashes);
             SetElytra();
             InstallTwilightForest();
 
@@ -250,8 +253,14 @@ namespace CreateGalore.ServerSetup
 
         // ---------- Configs, datapacks, Field Guide ----------
 
-        void InstallPackFiles(List<string> installed)
+        /// <summary>
+        /// Copies the pack's configs and datapacks. Like packwiz-installer on the client, a file the pack didn't
+        /// change since the last install is left alone, so edits made on the server survive an update.
+        /// A file the pack changed is replaced (the pack's fix wins).
+        /// </summary>
+        void InstallPackFiles(List<string> installed, Dictionary<string, string> previous, Dictionary<string, string> hashes)
         {
+            int written = 0, kept = 0;
             using (var z = new ZipArchive(pack.OpenServerFiles(), ZipArchiveMode.Read))
             {
                 foreach (var e in z.Entries)
@@ -259,11 +268,23 @@ namespace CreateGalore.ServerSetup
                     if (!e.FullName.StartsWith("pack/") || e.FullName.EndsWith("/")) continue;
                     string rel = e.FullName.Substring(5);
                     string dest = Rel(rel);
+                    string sha;
+                    using (var s = e.Open()) sha = Hashing.Sha256(s);
+                    installed.Add(rel);
+                    hashes[rel] = sha;
+                    string before;
+                    if (File.Exists(dest) && previous.TryGetValue(rel, out before) && before == sha)
+                    {
+                        if (Hashing.Sha256File(dest) != sha) { kept++; log("  kept your edit (unchanged in the pack): " + rel); }
+                        continue;
+                    }
+                    if (File.Exists(dest) && Hashing.Sha256File(dest) == sha) continue;
                     Directory.CreateDirectory(Path.GetDirectoryName(dest));
                     e.ExtractToFile(dest, true);
-                    installed.Add(rel);
+                    written++;
                 }
             }
+            log(hashes.Count + " config and datapack files: " + written + " written, " + kept + " kept with your edits, the rest already up to date");
         }
 
         string ReadTemplate(string name)
@@ -273,19 +294,30 @@ namespace CreateGalore.ServerSetup
                 return r.ReadToEnd();
         }
 
-        List<string> ReadInstalledList()
+        /// <summary>Path -> sha256 the pack had for it at the last install ("" for mods and for lists from older versions).</summary>
+        Dictionary<string, string> ReadInstalledList()
         {
-            return File.Exists(P(InstalledList)) ? File.ReadAllLines(P(InstalledList)).Where(l => l.Length > 0).ToList() : new List<string>();
+            var d = new Dictionary<string, string>();
+            if (!File.Exists(P(InstalledList))) return d;
+            foreach (var l in File.ReadAllLines(P(InstalledList)))
+            {
+                if (l.Length == 0 || l.StartsWith("#")) continue;
+                int tab = l.IndexOf('\t');
+                d[tab < 0 ? l : l.Substring(0, tab)] = tab < 0 ? "" : l.Substring(tab + 1);
+            }
+            return d;
         }
 
-        void WriteInstalledList(List<string> installed)
+        void WriteInstalledList(List<string> installed, Dictionary<string, string> hashes)
         {
             File.WriteAllText(P(InstalledList), "# Files Create Galore Server Setup installed. Ones dropped from the pack are removed on update.\n"
-                + string.Join("\n", installed.OrderBy(x => x, StringComparer.Ordinal)) + "\n");
+                + "# Configs carry the pack's checksum, so an update can tell your edits from pack changes.\n"
+                + string.Join("\n", installed.Distinct().OrderBy(x => x, StringComparer.Ordinal)
+                    .Select(r => hashes.ContainsKey(r) ? r + "\t" + hashes[r] : r)) + "\n");
         }
 
         /// <summary>Removes files an older pack version installed that the new one no longer has. Never touches other files.</summary>
-        void RemoveStale(List<string> previous, List<string> installed)
+        void RemoveStale(IEnumerable<string> previous, List<string> installed)
         {
             var now = new HashSet<string>(installed);
             foreach (var rel in previous)
@@ -294,6 +326,25 @@ namespace CreateGalore.ServerSetup
                 string f = Rel(rel);
                 if (File.Exists(f)) { File.Delete(f); log("  removed (no longer in the pack): " + rel); }
             }
+        }
+
+        /// <summary>
+        /// --clean: deletes config/, defaultconfigs/ and each world's serverconfig/ so the pack's configs and the mods'
+        /// defaults come back on this run. Forgets the config checksums so every pack file is written again.
+        /// Mods, NeoForge, the worlds and server.properties, memory, whitelist and ops are kept.
+        /// </summary>
+        void CleanConfigs()
+        {
+            log("Resetting every config to the pack's version (the world is kept)");
+            foreach (var d in new[] { P("config"), P("defaultconfigs") })
+                if (Directory.Exists(d)) { Directory.Delete(d, true); log("  deleted " + Path.GetFileName(d) + "/"); }
+            foreach (var w in Directory.GetDirectories(dir))
+            {
+                string sc = Path.Combine(w, "serverconfig");
+                if (File.Exists(Path.Combine(w, "level.dat")) && Directory.Exists(sc)) { Directory.Delete(sc, true); log("  deleted " + Path.GetFileName(w) + "/serverconfig/"); }
+            }
+            var prev = ReadInstalledList();
+            if (prev.Count > 0) WriteInstalledList(prev.Keys.ToList(), new Dictionary<string, string>());
         }
 
         void SetElytra()

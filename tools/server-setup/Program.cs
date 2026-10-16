@@ -28,7 +28,7 @@ namespace CreateGalore.ServerSetup
         /// <summary>
         /// No-window mode, for scripts and tests:
         ///   --check                       print what this build installs, exit 0
-        ///   --install DIR [--memory GB] [--port N] [--eula] [--elytra] [--tf JAR] [--mods FOLDER]
+        ///   --install DIR [--memory GB] [--port N] [--eula] [--elytra] [--clean] [--tf JAR] [--mods FOLDER]
         ///             [--op NAME] [--players A,B] [--log FILE]
         /// </summary>
         static int Cli(PackBundle pack, string[] args)
@@ -52,7 +52,7 @@ namespace CreateGalore.ServerSetup
                 }
                 if (args[0] != "--install" || args.Length < 2)
                 {
-                    output.WriteLine("Usage: --check | --install DIR [--memory GB] [--port N] [--eula] [--elytra] [--tf JAR] [--mods FOLDER] [--op NAME] [--players A,B] [--log FILE]");
+                    output.WriteLine("Usage: --check | --install DIR [--memory GB] [--port N] [--eula] [--elytra] [--clean] [--tf JAR] [--mods FOLDER] [--op NAME] [--players A,B] [--log FILE]");
                     return 2;
                 }
                 var o = new SetupOptions
@@ -60,6 +60,7 @@ namespace CreateGalore.ServerSetup
                     ServerDir = args[1],
                     AcceptEula = args.Contains("--eula"),
                     Elytra = args.Contains("--elytra"),
+                    Clean = args.Contains("--clean"),
                     OpName = arg("--op"),
                     TfJar = arg("--tf"),
                 };

@@ -26,7 +26,7 @@ namespace CreateGalore.ServerSetup
         readonly DropZone modsZone, tfZone;
         readonly TextBox opName = new TextBox(), players = new TextBox();
         readonly NumericUpDown port = new NumericUpDown();
-        readonly CheckBox elytra = new CheckBox(), eula = new CheckBox();
+        readonly CheckBox elytra = new CheckBox(), eula = new CheckBox(), clean = new CheckBox();
         readonly Button install = new Button(), openFolder = new Button(), start = new Button();
         readonly ProgressBar bar = new ProgressBar();
         readonly Label status = new Label();
@@ -136,6 +136,10 @@ namespace CreateGalore.ServerSetup
             elytra.Text = "Allow Elytra (off by default so trains, airships and submarines stay worth building)";
             elytra.AutoSize = true;
             body.Controls.Add(elytra);
+
+            clean.Text = "Reset all configs to the pack's (for bug hunting; the world, whitelist and settings stay)";
+            clean.AutoSize = true;
+            body.Controls.Add(clean);
             eula.AutoSize = true;
             eula.Text = "I accept the Minecraft EULA (the server won't start without it)";
             var eulaRow = Row();
@@ -244,11 +248,18 @@ namespace CreateGalore.ServerSetup
             memoryLabel.Text = memory.Value + " GB" + (memory.Value >= 6 && memory.Value <= 10 ? " (tested)" : memory.Value > 12 ? " (more than needed)" : "");
         }
 
+        bool HasServer()
+        {
+            string dir = folder.Text.Trim();
+            return dir.Length > 0 && Directory.Exists(dir) && File.Exists(Path.Combine(dir, "server.properties"));
+        }
+
         void ReadExisting()
         {
             string dir = folder.Text.Trim();
-            bool has = dir.Length > 0 && Directory.Exists(dir) && File.Exists(Path.Combine(dir, "server.properties"));
-            existing.Text = has ? "There's already a server here. Install updates it and keeps the world and your settings." : "";
+            bool has = HasServer();
+            existing.Text = has ? "There's already a server here. Update only downloads mods and configs that changed, and keeps the world, your settings and config edits the pack didn't touch." : "";
+            install.Text = has ? "Update server" : "Install server";
             if (!has) return;
             int mem = ServerInstaller.ReadMemory(dir);
             if (mem > 0) memory.Value = Math.Max(memory.Minimum, Math.Min(memory.Maximum, mem));
@@ -303,7 +314,7 @@ namespace CreateGalore.ServerSetup
 
             var options = new SetupOptions
             {
-                ServerDir = dir, MemoryGb = memory.Value, Port = (int)port.Value, AcceptEula = eula.Checked, Elytra = elytra.Checked,
+                ServerDir = dir, MemoryGb = memory.Value, Port = (int)port.Value, AcceptEula = eula.Checked, Elytra = elytra.Checked, Clean = clean.Checked,
                 OpName = opName.Text.Trim().Length > 0 ? opName.Text.Trim() : null,
                 Players = players.Text.Split(new[] { ',', ';', ' ', '\n' }, StringSplitOptions.RemoveEmptyEntries).ToList(),
                 TfJar = tfJar, LocalMods = scan,
@@ -340,10 +351,10 @@ namespace CreateGalore.ServerSetup
 
         void SetBusy(bool busy)
         {
-            foreach (Control c in new Control[] { folder, memory, modsZone, tfZone, opName, players, port, elytra, eula })
+            foreach (Control c in new Control[] { folder, memory, modsZone, tfZone, opName, players, port, elytra, clean, eula })
                 c.Enabled = !busy;
             install.Enabled = true;
-            install.Text = busy ? "Stop" : "Install server";
+            install.Text = busy ? "Stop" : HasServer() ? "Update server" : "Install server";
             if (busy) { status.ForeColor = Muted; openFolder.Enabled = start.Enabled = false; }
         }
 
