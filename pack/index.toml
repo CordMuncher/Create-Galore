@@ -66,6 +66,10 @@ file = "config/hostile_skies-common.toml"
 hash = "df9e88c098ae6384586a7b58c59f59645c602e209cc6446be1109474a94b48de"
 
 [[files]]
+file = "config/immediatelyfast.json"
+hash = "8fa67a29d0214c52aefa292e41490283407fc2bc3fc254c448fe7a2ee17c70de"
+
+[[files]]
 file = "config/inventoryprofilesnext/inventoryprofiles.json"
 hash = "0abd5b4ce01b2398fb7e6a8df9c72170564bce762feb906eec41dc5eefd99c6a"
 preserve = true
