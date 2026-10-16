@@ -1,0 +1,35 @@
+{
+  "replace": false,
+  "values": {
+    "#c:diesel": {
+      "burnTime": 30,
+      "superHeat": false,
+      "amountConsumedPerTick": 1
+    },
+    "#c:gasoline": {
+      "burnTime": 20,
+      "superHeat": false,
+      "amountConsumedPerTick": 1
+    },
+    "#c:heavy_oil": {
+      "burnTime": 10,
+      "superHeat": false,
+      "amountConsumedPerTick": 1
+    },
+    "#c:kerosene": {
+      "burnTime": 25,
+      "superHeat": false,
+      "amountConsumedPerTick": 1
+    },
+    "#c:naphtha": {
+      "burnTime": 35,
+      "superHeat": false,
+      "amountConsumedPerTick": 1
+    },
+    "tfmg:napalm": {
+      "burnTime": 30,
+      "superHeat": true,
+      "amountConsumedPerTick": 1
+    }
+  }
+}

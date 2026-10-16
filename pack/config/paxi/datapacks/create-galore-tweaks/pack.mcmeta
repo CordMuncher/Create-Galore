@@ -1,6 +1,6 @@
 {
   "pack": {
     "pack_format": 48,
-    "description": "Create Galore tweaks: turns off Naturalist sea mobs that Hybrid Aquatic already adds, fixes the Dimensional Drive recipe, lets the four steels convert into each other, adds the Field Guide recipe and gives it on first join, and turns off travel shortcuts that replace vehicles (Iron's Portal and Recall spells, Portal Frames, Alex's Caves Subterranodon spawns and the Hullbreaker's Enigmatic Engine)"
+    "description": "Create Galore tweaks: turns off Naturalist sea mobs that Hybrid Aquatic already adds, fixes the Dimensional Drive recipe, lets the four steels convert into each other, adds the Field Guide recipe and gives it on first join, and turns off travel shortcuts that replace vehicles (Iron's Portal and Recall spells, Portal Frames, Alex's Caves Subterranodon spawns and the Hullbreaker's Enigmatic Engine), and repairs cross-mod data the log hid: TFMG fuels in Blaze Burners, Create Cafe fruit teas (plus Create recipes for Blood Orange and Mana Berries), My Nether's Delight bastion loot and the Aeronautics Structures uniform chest"
   }
 }

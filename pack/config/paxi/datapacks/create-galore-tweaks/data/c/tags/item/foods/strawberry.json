@@ -1,0 +1,12 @@
+{
+  "values": [
+    {
+      "id": "berries_and_cherries:strawberry",
+      "required": false
+    },
+    {
+      "id": "northstar:martian_strawberry",
+      "required": false
+    }
+  ]
+}

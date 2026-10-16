@@ -1,0 +1,18 @@
+{
+  "type": "create:filling",
+  "ingredients": [
+    {
+      "item": "minecraft:sweet_berries"
+    },
+    {
+      "type": "neoforge:single",
+      "amount": 25,
+      "fluid": "create_enchantment_industry:experience"
+    }
+  ],
+  "results": [
+    {
+      "id": "createcafe:mana_berries"
+    }
+  ]
+}
