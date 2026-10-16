@@ -88,6 +88,7 @@ namespace CreateGalore.ServerSetup
             Step(0.94, "Writing server settings");
             WriteServerProperties();
             WriteJvmArgs();
+            WriteUpdateCheck();
             if (o.AcceptEula) File.WriteAllText(P("eula.txt"), "# Accepted in Create Galore Server Setup (https://aka.ms/MinecraftEULA)\neula=true\n");
             await WritePlayersAsync();
             WriteStartScript();
@@ -491,21 +492,45 @@ namespace CreateGalore.ServerSetup
             catch (Exception e) when (!(e is OperationCanceledException)) { return null; }
         }
 
+        /// <summary>
+        /// The update check start-server runs before the server (create-galore-updater.jar --server-start), and the
+        /// record of which pack this folder now has, so the check can tell when the release is newer.
+        /// </summary>
+        void WriteUpdateCheck()
+        {
+            using (var s = pack.OpenUpdateChecker())
+            using (var f = File.Create(P("create-galore-updater.jar"))) s.CopyTo(f);
+            File.WriteAllText(P(".galore-pack.txt"), "# Create Galore pack version this server has, for the update check at start\n"
+                + "pack=" + pack.PackVersion + "\npack_sha256=" + pack.PackSha256 + "\nneoforge=" + pack.NeoForge + "\ninstaller=app\n");
+        }
+
         void WriteStartScript()
         {
             string args = "@user_jvm_args.txt @libraries/net/neoforged/neoforge/" + pack.NeoForge + "/" + (IsWindows ? "win" : "unix") + "_args.txt";
             if (IsWindows)
             {
+                // One bracketed block: cmd reads it whole before running it, so an update that rewrites this file
+                // while it runs can't make cmd read half of the new file. The update check exits 0 to start the server.
                 File.WriteAllText(P("start-server.bat"),
                     "@echo off\r\nrem Starts the Create Galore server. Type stop in this window to save and shut down.\r\n" +
+                    "rem First it checks for a newer pack and asks whether to update (no / yes / back up the world first).\r\n" +
                     "cd /d \"%~dp0\"\r\nset JAVA=java\r\nif exist \"java\\bin\\java.exe\" set JAVA=java\\bin\\java.exe\r\n" +
-                    "\"%JAVA%\" " + args + " %*\r\npause\r\n");
+                    "(\r\n" +
+                    "  set GALORE_OK=1\r\n" +
+                    "  if exist create-galore-updater.jar \"%JAVA%\" -jar create-galore-updater.jar --server-start || set GALORE_OK=\r\n" +
+                    "  if defined GALORE_OK \"%JAVA%\" " + args + " %*\r\n" +
+                    "  pause\r\n" +
+                    "  exit /b\r\n" +
+                    ")\r\n");
             }
             else
             {
                 string sh = P("start-server.sh");
-                File.WriteAllText(sh, "#!/usr/bin/env sh\n# Starts the Create Galore server. Type stop to save and shut down.\ncd \"$(dirname \"$0\")\"\n" +
-                    "JAVA=java\n[ -x java/bin/java ] && JAVA=java/bin/java\nexec \"$JAVA\" " + args + " \"$@\"\n");
+                File.WriteAllText(sh, "#!/usr/bin/env sh\n# Starts the Create Galore server. Type stop to save and shut down.\n" +
+                    "# First it checks for a newer pack and asks whether to update (no / yes / back up the world first).\ncd \"$(dirname \"$0\")\"\n" +
+                    "JAVA=java\n[ -x java/bin/java ] && JAVA=java/bin/java\n" +
+                    "if [ -f create-galore-updater.jar ]; then \"$JAVA\" -jar create-galore-updater.jar --server-start || exit; fi\n" +
+                    "exec \"$JAVA\" " + args + " \"$@\"\n");
                 try { Process.Start("chmod", "+x \"" + sh + "\"").WaitForExit(); } catch { }
             }
         }
