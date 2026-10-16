@@ -339,7 +339,19 @@ namespace CreateGalore.ServerSetup
             string text = File.Exists(path) ? File.ReadAllText(path) : ReadTemplate("server.properties");
             text = SetProperty(text, "server-port", o.Port.ToString());
             text = SetProperty(text, "allow-flight", "true"); // airships, jetpacks and contraptions get kicked without it
+            text = UpgradeDistances(text);
             File.WriteAllText(path, text);
+        }
+
+        // Older installs got view 8 / simulation 6. Raise those to the new defaults,
+        // but leave any distance the owner picked themselves alone.
+        public static string UpgradeDistances(string text)
+        {
+            bool oldView = Regex.IsMatch(text, @"^view-distance=8\s*$", RegexOptions.Multiline);
+            bool oldSim = Regex.IsMatch(text, @"^simulation-distance=6\s*$", RegexOptions.Multiline);
+            if (!oldView || !oldSim) return text;
+            text = SetProperty(text, "view-distance", "12");
+            return SetProperty(text, "simulation-distance", "10");
         }
 
         public static string SetProperty(string text, string key, string value)

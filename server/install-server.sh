@@ -32,6 +32,10 @@ java -jar packwiz-installer-bootstrap.jar --bootstrap-no-update -g -s server "$P
 # First run only: memory settings and server settings. Your own edits are kept on later runs.
 [ -f user_jvm_args.txt.galore ] || { cp "$HERE/user_jvm_args.txt" user_jvm_args.txt; touch user_jvm_args.txt.galore; }
 [ -f server.properties ] || cp "$HERE/server.properties" server.properties
+# Older installs got view 8 / simulation 6: raise them unless you changed them yourself.
+if grep -qx 'view-distance=8' server.properties && grep -qx 'simulation-distance=6' server.properties; then
+  sed -i.bak -e 's/^view-distance=8$/view-distance=12/' -e 's/^simulation-distance=6$/simulation-distance=10/' server.properties && rm -f server.properties.bak
+fi
 
 if ! ls mods/twilightforest-*.jar >/dev/null 2>&1; then
   echo

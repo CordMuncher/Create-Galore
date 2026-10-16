@@ -34,6 +34,8 @@ if not exist user_jvm_args.txt.galore (
   type nul > user_jvm_args.txt.galore
 )
 if not exist server.properties copy "%HERE%server.properties" server.properties >nul
+rem Older installs got view 8 / simulation 6: raise them unless you changed them yourself.
+findstr /x /c:"view-distance=8" server.properties >nul 2>&1 && findstr /x /c:"simulation-distance=6" server.properties >nul 2>&1 && powershell -NoProfile -Command "(Get-Content server.properties) -replace '^view-distance=8$','view-distance=12' -replace '^simulation-distance=6$','simulation-distance=10' | Set-Content -Encoding ascii server.properties"
 
 if not exist mods\twilightforest-*.jar (
   echo.
