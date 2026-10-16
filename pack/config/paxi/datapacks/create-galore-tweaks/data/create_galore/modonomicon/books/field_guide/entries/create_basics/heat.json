@@ -26,7 +26,7 @@
     {
       "type": "modonomicon:text",
       "title": "Blaze Burner and Heat",
-      "text": "Some recipes need **heat**. Create gets it from the **Blaze Burner**, which also boosts basin recipes and powers steam engine boilers.\n\nThe burner is not crafted whole: you capture a living blaze in an **Empty Blaze Burner**."
+      "text": "Some recipes need **heat**. Create gets it from the **Blaze Burner**, which also boosts basin recipes and powers steam engine boilers.\\\n\\\nThe burner is not crafted whole: you capture a living blaze in an **Empty Blaze Burner**."
     },
     {
       "type": "modonomicon:spotlight",

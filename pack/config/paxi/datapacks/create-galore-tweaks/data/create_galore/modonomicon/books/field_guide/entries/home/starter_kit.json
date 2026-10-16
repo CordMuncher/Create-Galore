@@ -41,7 +41,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "If you want to know what you start with, check your inventory on first join. Other tools: [#](2E5AAC)[Tools](entry://start_here/tools)[#]().\n\nRelated: [#](2E5AAC)[Inventory Tools](entry://home/inventory_tools)[#]()."
+      "text": "If you want to know what you start with, check your inventory on first join. Other tools: [#](2E5AAC)[Tools](entry://start_here/tools)[#]().\\\n\\\nRelated: [#](2E5AAC)[Inventory Tools](entry://home/inventory_tools)[#]()."
     }
   ]
 }

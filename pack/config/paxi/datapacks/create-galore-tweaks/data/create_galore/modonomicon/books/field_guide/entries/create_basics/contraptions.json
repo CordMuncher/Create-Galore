@@ -60,7 +60,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**Working parts**: Mechanical Drills, Saws, Harvesters and Ploughs do their job to whatever they pass. Deployers and funnels on the structure pull from and push into storage that moves with it.\n\nStorage on a contraption is a chest or vault attached to the structure."
+      "text": "**Working parts**: Mechanical Drills, Saws, Harvesters and Ploughs do their job to whatever they pass. Deployers and funnels on the structure pull from and push into storage that moves with it.\\\n\\\nStorage on a contraption is a chest or vault attached to the structure."
     },
     {
       "type": "modonomicon:spotlight",

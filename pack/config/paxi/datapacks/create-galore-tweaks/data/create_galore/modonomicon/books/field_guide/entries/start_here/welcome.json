@@ -43,7 +43,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**Searching**\\\nThe magnifying glass on the right searches the text of every page.\n\nNew to Create? [#](2E5AAC)[Rotation](entry://create_basics/rotation)[#]() is the first idea."
+      "text": "**Searching**\\\nThe magnifying glass on the right searches the text of every page.\\\n\\\nNew to Create? [#](2E5AAC)[Rotation](entry://create_basics/rotation)[#]() is the first idea."
     },
     {
       "type": "modonomicon:spotlight",

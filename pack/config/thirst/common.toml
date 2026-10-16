@@ -7,7 +7,7 @@
 	# Default: 3.0
 	# Range: 1.0 ~ 5.0
 	netherThirstDeletionModifier = 3.0
-	#How much faster is hydration depletion when players with fire resistance(Range 0 to 100, 0 means not to depletion,100 means normal depletion)
+	#How much faster is hydration depletion when players with fire resistance(Range 0 to 100, 0 means not to depletion,100 means depletion like normal)
 	# Default: 0
 	# Range: 0 ~ 100
 	fireResistanceDehydration = 0
@@ -30,7 +30,6 @@
 	#Whether dehydration from regenerating health (if enabled above) should take into account temperature and humidity
 	healthRegenDehydrationIsBiomeDependent = true
 	#Whether players can drink by shift-right-clicking water with an empty hand
-	#Create Galore: on (mod default is off), so a new player always has a way to drink. Untreated water still makes you sick.
 	canDrinkByHand = true
 	#How much the player is hydrated when drinking by hand
 	handDrinkingHydration = 3

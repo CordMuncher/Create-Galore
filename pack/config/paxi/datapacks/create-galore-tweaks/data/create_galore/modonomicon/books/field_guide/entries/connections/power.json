@@ -20,7 +20,7 @@
     {
       "type": "modonomicon:text",
       "title": "Power Across Mods",
-      "text": "Create runs on **rotation**. Many other machines run on **Forge Energy (FE)**. They never mix on their own: you need a converter block in between.\n\nFull detail: [#](2E5AAC)[Rotation vs Electricity](entry://industry/power_compared)[#]()."
+      "text": "Create runs on **rotation**. Many other machines run on **Forge Energy (FE)**. They never mix on their own: you need a converter block in between.\\\n\\\nFull detail: [#](2E5AAC)[Rotation vs Electricity](entry://industry/power_compared)[#]()."
     },
     {
       "type": "modonomicon:spotlight",
@@ -46,7 +46,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Things that want FE: Create Propulsion's Ion Thruster, Flight Control's vector ion thrusters and the Deep Seas Electrolyzer on submarines.\n\nTFMG wires its own voltage circuits, but its connectors can import or export FE."
+      "text": "Things that want FE: Create Propulsion's Ion Thruster, Flight Control's vector ion thrusters and the Deep Seas Electrolyzer on submarines.\\\n\\\nTFMG wires its own voltage circuits, but its connectors can import or export FE."
     },
     {
       "type": "modonomicon:text",

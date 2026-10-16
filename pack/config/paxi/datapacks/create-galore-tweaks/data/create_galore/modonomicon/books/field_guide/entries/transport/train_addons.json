@@ -110,7 +110,7 @@
     {
       "type": "modonomicon:text",
       "title": "Performance and map",
-      "text": "Create: Threaded Trains runs the railway network's calculations on a separate thread, which helps large networks on a server. It has no blocks.\n\nXaero Train Map draws trains on Xaero's World Map. It only affects your own screen."
+      "text": "Create: Threaded Trains runs the railway network's calculations on a separate thread, which helps large networks on a server. It has no blocks.\\\n\\\nXaero Train Map draws trains on Xaero's World Map. It only affects your own screen."
     },
     {
       "type": "modonomicon:text",

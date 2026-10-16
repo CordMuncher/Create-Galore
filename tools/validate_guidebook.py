@@ -63,6 +63,11 @@ for eid,e in sorted(entries.items()):
         if '$(' in txt: errs.append(f'{eid} p{i}: leftover Patchouli code')
         if re.search(r'(?<!%)%(?!%)',txt): errs.append(f'{eid} p{i}: write % as %%')
         if '—' in txt: warns.append(f'{eid} p{i}: em-dash')
+        # Modonomicon shows no gap for a plain blank line between paragraphs; they need '\\\n\\\n' (lists excepted)
+        parts=txt.split('\n\n')
+        for a,b in zip(parts,parts[1:]):
+            if b and not re.match(r'\s*([-*]|\d+\.) ',b) and not re.match(r'\s*([-*]|\d+\.) ',a.split('\n')[-1]):
+                errs.append(f'{eid} p{i}: paragraph break needs a backslash at the end of both lines (a blank line alone shows no gap)'); break
         if t=='text':
             limit=15 if p.get('title') else 17  # Modonomicon: text box is 155 px minus the title (17) or -4 without; 9 px a line
             n=lines(txt)

@@ -78,7 +78,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**Storage**: the **Item Vault** is a big multi-block chest that connects to belts and funnels. A **Threshold Switch** reads how full a container is and outputs redstone.\n\nFor networks that deliver by package, see [#](2E5AAC)[Logistics](entry://create_basics/packages)[#]()."
+      "text": "**Storage**: the **Item Vault** is a big multi-block chest that connects to belts and funnels. A **Threshold Switch** reads how full a container is and outputs redstone.\\\n\\\nFor networks that deliver by package, see [#](2E5AAC)[Logistics](entry://create_basics/packages)[#]()."
     },
     {
       "type": "modonomicon:text",

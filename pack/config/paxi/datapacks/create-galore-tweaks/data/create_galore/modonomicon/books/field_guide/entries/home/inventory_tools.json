@@ -41,7 +41,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**Mouse Tweaks** adds drag-split: hold click and drag over slots to spread a stack. Scroll the wheel over a slot to move items between inventories. \n\nContainers: [#](2E5AAC)[Storage](entry://home/storage)[#]()."
+      "text": "**Mouse Tweaks** adds drag-split: hold click and drag over slots to spread a stack. Scroll the wheel over a slot to move items between inventories. \\\n\\\nContainers: [#](2E5AAC)[Storage](entry://home/storage)[#]()."
     }
   ]
 }

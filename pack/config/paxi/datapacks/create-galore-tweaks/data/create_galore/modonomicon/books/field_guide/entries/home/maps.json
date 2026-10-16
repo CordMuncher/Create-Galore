@@ -41,7 +41,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Waypoint names can be shared to chat, so teammates can add them. Be careful not to expose a secret base.\n\nKeybinds are listed in Controls under the Xaero categories. Open the settings from the minimap or the Mods menu."
+      "text": "Waypoint names can be shared to chat, so teammates can add them. Be careful not to expose a secret base.\\\n\\\nKeybinds are listed in Controls under the Xaero categories. Open the settings from the minimap or the Mods menu."
     },
     {
       "type": "modonomicon:spotlight",
@@ -54,7 +54,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Create Railways Navigator adds a Navigator item and Advanced Display boards for stations, to plan and show train routes. Its overlay options key is \\\\ here.\n\nLong trips by air or sea: [#](2E5AAC)[Destinations](entry://flight/destinations)[#]()."
+      "text": "Create Railways Navigator adds a Navigator item and Advanced Display boards for stations, to plan and show train routes. Its overlay options key is \\\\ here.\\\n\\\nLong trips by air or sea: [#](2E5AAC)[Destinations](entry://flight/destinations)[#]()."
     }
   ]
 }

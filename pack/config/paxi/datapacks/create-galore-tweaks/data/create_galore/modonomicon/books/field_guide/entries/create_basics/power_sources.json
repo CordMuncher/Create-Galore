@@ -84,7 +84,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Blaze burners and engines make [#](2E5AAC)[pollution](entry://survival/pollution)[#]() in this pack. The Creative Motor exists but is not obtainable in survival.\n\nAdd-ons bring more sources: [#](2E5AAC)[Electricity](entry://industry/electricity)[#]() and [#](2E5AAC)[Liquid Fuel](entry://industry/liquid_fuel)[#]()."
+      "text": "Blaze burners and engines make [#](2E5AAC)[pollution](entry://survival/pollution)[#]() in this pack. The Creative Motor exists but is not obtainable in survival.\\\n\\\nAdd-ons bring more sources: [#](2E5AAC)[Electricity](entry://industry/electricity)[#]() and [#](2E5AAC)[Liquid Fuel](entry://industry/liquid_fuel)[#]()."
     }
   ]
 }

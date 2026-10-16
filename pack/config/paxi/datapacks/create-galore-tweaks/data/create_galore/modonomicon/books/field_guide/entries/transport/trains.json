@@ -20,7 +20,7 @@
     {
       "type": "modonomicon:text",
       "title": "Trains",
-      "text": "Create trains run on their own track network and carry glued-together blocks as cars. You can drive one yourself or hand it a schedule.\n\nHold W over any item here to watch its Ponder."
+      "text": "Create trains run on their own track network and carry glued-together blocks as cars. You can drive one yourself or hand it a schedule.\\\n\\\nHold W over any item here to watch its Ponder."
     },
     {
       "type": "modonomicon:text",
@@ -72,7 +72,7 @@
     {
       "type": "modonomicon:text",
       "title": "Fuel and driving",
-      "text": "A train moves faster if it finds fuel in chests or barrels glued to it. Vault fuel is not burned. Hold space while driving to roll up to a station.\n\nTrack works in unloaded chunks: trains still travel and stop, but on-board machines wait until a player is near."
+      "text": "A train moves faster if it finds fuel in chests or barrels glued to it. Vault fuel is not burned. Hold space while driving to roll up to a station.\\\n\\\nTrack works in unloaded chunks: trains still travel and stop, but on-board machines wait until a player is near."
     },
     {
       "type": "modonomicon:text",

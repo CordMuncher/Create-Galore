@@ -51,7 +51,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**Tooltips.** Hold Shift on any Create item for a summary of what it does and what it needs. Hold W for Ponder.\n\nRead about stress in [#](2E5AAC)[Stress](entry://create_basics/stress)[#]() and see [#](2E5AAC)[Tools](entry://start_here/tools)[#]()."
+      "text": "**Tooltips.** Hold Shift on any Create item for a summary of what it does and what it needs. Hold W for Ponder.\\\n\\\nRead about stress in [#](2E5AAC)[Stress](entry://create_basics/stress)[#]() and see [#](2E5AAC)[Tools](entry://start_here/tools)[#]()."
     },
     {
       "type": "modonomicon:crafting_recipe",

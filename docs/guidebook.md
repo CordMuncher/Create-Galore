@@ -40,7 +40,7 @@ Patchouli stays installed only because Iron's Spellbooks and Productive Bees shi
 ```
 
 - **Graph**: `x`/`y` are grid cells (30 px). Parents must be in the same category, and the parent sits to the left of its children. Keep one node per cell. A `line_reversed: true` line drops down the parent's column then turns right into the child; `false` runs along the parent's row then turns into the child's column. Use `true` for a parent's own children and `false` for a second parent, so lines don't run under other nodes.
-- **Text** is Markdown: `**bold**`, `*italic*`, `- list item`, a blank line for a new paragraph, `\` at a line end for a line break. Links to other entries are `[text](entry://category/entry)`.
+- **Text** is Markdown: `**bold**`, `*italic*`, `- list item`, `\` at a line end for a line break. A blank line alone does **not** show as a gap: Modonomicon glues the two paragraphs together ("water.Flowing water"). For a paragraph gap end the line with `\` twice, in JSON `"First.\\\n\\\nSecond."`. Next to a list keep a plain blank line (a trailing `\` there shows up as a literal backslash); list items start on their own lines anyway. Links to other entries are `[text](entry://category/entry)`.
 - Write `%` as `%%` and `_` as `\_` in text, or the line shows a format error or turns italic.
 - The first text page carries the entry's name as its `title` (Modonomicon doesn't add it).
 - A spotlight `item` is one item, or a list `[{"item": "a"}, {"item": "b"}]` that cycles.

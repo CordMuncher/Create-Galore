@@ -26,7 +26,7 @@
     {
       "type": "modonomicon:text",
       "title": "What it does",
-      "text": "Create: Cold Sweat makes Create machines change the temperature of nearby players, so a working factory also heats the room.\n\nThe heat idea itself is in [#](2E5AAC)[Heat](entry://create_basics/heat)[#]()."
+      "text": "Create: Cold Sweat makes Create machines change the temperature of nearby players, so a working factory also heats the room.\\\n\\\nThe heat idea itself is in [#](2E5AAC)[Heat](entry://create_basics/heat)[#]()."
     },
     {
       "type": "modonomicon:spotlight",

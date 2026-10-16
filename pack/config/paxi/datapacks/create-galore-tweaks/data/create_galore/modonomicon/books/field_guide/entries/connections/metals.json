@@ -20,7 +20,7 @@
     {
       "type": "modonomicon:text",
       "title": "One Metal, Many Mods",
-      "text": "Several mods add the same metal. In this pack one version of each is **canonical**: other mods' recipes now make and use that item, so they stack and match. Leftover items convert 1:1 in a crafting grid.\n\nFull list: [#](2E5AAC)[Shared Metals](entry://materials/shared_metals)[#]()."
+      "text": "Several mods add the same metal. In this pack one version of each is **canonical**: other mods' recipes now make and use that item, so they stack and match. Leftover items convert 1:1 in a crafting grid.\\\n\\\nFull list: [#](2E5AAC)[Shared Metals](entry://materials/shared_metals)[#]()."
     },
     {
       "type": "modonomicon:text",

@@ -55,7 +55,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Both mods have Create add-ons, so backpacks and storage can ride on contraptions with their upgrades. Backpacks on contraptions use the official Sophisticated Backpacks Create Integration. See [#](2E5AAC)[Contraptions](entry://create_basics/contraptions)[#]().\n\nMore inventory help: [#](2E5AAC)[Inventory Tools](entry://home/inventory_tools)[#]()."
+      "text": "Both mods have Create add-ons, so backpacks and storage can ride on contraptions with their upgrades. Backpacks on contraptions use the official Sophisticated Backpacks Create Integration. See [#](2E5AAC)[Contraptions](entry://create_basics/contraptions)[#]().\\\n\\\nMore inventory help: [#](2E5AAC)[Inventory Tools](entry://home/inventory_tools)[#]()."
     }
   ]
 }

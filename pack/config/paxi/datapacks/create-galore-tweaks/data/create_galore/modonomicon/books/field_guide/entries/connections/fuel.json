@@ -40,7 +40,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Rockets also run on Northstar's own Hydrogen, Methane, Hydrocarbon and Biofuel. Thrusters take Turpentine from pine resin, and Solid Fuel Thrusters just burn coal or planks.\n\nSoot from air scrubbers burns as solid fuel too."
+      "text": "Rockets also run on Northstar's own Hydrogen, Methane, Hydrocarbon and Biofuel. Thrusters take Turpentine from pine resin, and Solid Fuel Thrusters just burn coal or planks.\\\n\\\nSoot from air scrubbers burns as solid fuel too."
     },
     {
       "type": "modonomicon:text",
