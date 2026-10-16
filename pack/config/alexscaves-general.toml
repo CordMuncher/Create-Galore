@@ -1,0 +1,4 @@
+[generation]
+	#Whether to warn users when a server starts if an incompatible generation mod is detected.
+	#Create Galore: off. The warning names Tectonic, but a test world found the cave biomes about as often with Tectonic as without it.
+	warn_generation_incompatibility = false

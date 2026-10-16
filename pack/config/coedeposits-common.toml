@@ -1,0 +1,4 @@
+#Show a chat message when a deposit is discovered.
+#Off = no chat line (the map marker / waypoint still appears). Default on.
+#Create Galore: off. With reveal_mode ALWAYS, a new world printed about 50 "Discovered ..." lines on first join.
+discovery_chat = false
