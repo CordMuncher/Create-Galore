@@ -17,7 +17,7 @@
     },
     {
       "type": "patchouli:text",
-      "text": "Bioethanol and Peanut Oil superheat the burner (the blue flame). Lava and Seed Oil only heat it. Seed Oil and Bioethanol come from Crafts & Additions; Peanut Oil from Garnished."
+      "text": "Bioethanol and Peanut Oil superheat the burner (the blue flame). Lava and Seed Oil only heat it. Seed Oil and Bioethanol come from Crafts & Additions; Peanut Oil from Garnished. Peanut Oil burns 5,000 ticks a bucket in either burner."
     },
     {
       "type": "patchouli:spotlight",

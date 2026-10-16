@@ -1,0 +1,24 @@
+{
+  "replace": true,
+  "values": [
+    "garnished:chiseled_dragon_stone_bricks",
+    "garnished:cut_dragon_stone",
+    "garnished:cut_dragon_stone_stairs",
+    "garnished:cut_dragon_stone_wall",
+    "garnished:dragon_stone",
+    "garnished:dragon_stone_brick_stairs",
+    "garnished:dragon_stone_brick_wall",
+    "garnished:dragon_stone_bricks",
+    "garnished:dragon_stone_stairs",
+    "garnished:dragon_stone_wall",
+    "garnished:polished_dragon_stone",
+    "garnished:polished_dragon_stone_stairs",
+    "garnished:polished_dragon_stone_wall",
+    "garnished:small_dragon_stone_brick_stairs",
+    "garnished:small_dragon_stone_brick_wall",
+    "garnished:small_dragon_stone_bricks",
+    "garnished:smooth_dragon_stone",
+    "garnished:smooth_dragon_stone_stairs",
+    "garnished:smooth_dragon_stone_wall"
+  ]
+}

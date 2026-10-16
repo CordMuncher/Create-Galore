@@ -1,0 +1,36 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:false"
+    }
+  ],
+  "type": "create:crushing",
+  "ingredients": [
+    {
+      "item": "create:limestone"
+    }
+  ],
+  "processing_time": 200,
+  "results": [
+    {
+      "count": 1,
+      "item": {
+        "id": "garnished:crushed_salt"
+      }
+    },
+    {
+      "chance": 0.1,
+      "count": 2,
+      "item": {
+        "id": "minecraft:iron_nugget"
+      }
+    },
+    {
+      "chance": 0.05,
+      "count": 2,
+      "item": {
+        "id": "create:zinc_nugget"
+      }
+    }
+  ]
+}

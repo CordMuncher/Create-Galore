@@ -1,1 +1,17 @@
-{"type": "create:mixing", "ingredients": [{"tag": "c:dusts/coal"}, {"tag": "c:ingots/iron"}], "results": [{"id": "tfmg:steel_ingot"}]}
+{
+  "type": "create:mixing",
+  "ingredients": [
+    {
+      "tag": "c:dusts/coal"
+    },
+    {
+      "tag": "c:ingots/iron"
+    }
+  ],
+  "results": [
+    {
+      "id": "tfmg:steel_ingot"
+    }
+  ],
+  "heat_requirement": "heated"
+}

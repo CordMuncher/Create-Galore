@@ -1,0 +1,24 @@
+{
+  "replace": true,
+  "values": [
+    "garnished:chiseled_yellow_zultanite_bricks",
+    "garnished:cut_yellow_zultanite",
+    "garnished:cut_yellow_zultanite_stairs",
+    "garnished:cut_yellow_zultanite_wall",
+    "garnished:polished_yellow_zultanite",
+    "garnished:polished_yellow_zultanite_stairs",
+    "garnished:polished_yellow_zultanite_wall",
+    "garnished:small_yellow_zultanite_brick_stairs",
+    "garnished:small_yellow_zultanite_brick_wall",
+    "garnished:small_yellow_zultanite_bricks",
+    "garnished:smooth_yellow_zultanite",
+    "garnished:smooth_yellow_zultanite_stairs",
+    "garnished:smooth_yellow_zultanite_wall",
+    "garnished:yellow_zultanite",
+    "garnished:yellow_zultanite_brick_stairs",
+    "garnished:yellow_zultanite_brick_wall",
+    "garnished:yellow_zultanite_bricks",
+    "garnished:yellow_zultanite_stairs",
+    "garnished:yellow_zultanite_wall"
+  ]
+}

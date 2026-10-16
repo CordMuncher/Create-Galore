@@ -12,7 +12,7 @@
       "type": "patchouli:spotlight",
       "item": "alloyed:forge",
       "title": "Alloy Forge",
-      "text": "Steel: three iron ingots, a coal and a fire charge give three steel. Bronze: copper, three zinc nuggets and cinder flour. A Create mixer makes both too.",
+      "text": "Forges Alloyed tools, armor and parts. Steel and bronze themselves come from a heated Create mixer: bronze from copper, three zinc nuggets and cinder flour. See $(l:connections/balance)Balance Changes$(/l).",
       "link_recipe": true
     },
     {

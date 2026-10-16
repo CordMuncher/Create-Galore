@@ -1,0 +1,35 @@
+{
+  "name": "Balance Changes",
+  "icon": "create:mechanical_mixer",
+  "category": "patchouli:connections",
+  "sortnum": 9,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "With this many mods, the same item often has several recipes. Where one route gave far more for less work, it was cut or toned down so the Create machine route stays worth building. A better yield is fine when it costs a bigger build."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Metals",
+      "text": "$(li)Steel needs heat: Create Nuclear's mix is heated now, and the Alloy Forge no longer makes steel or bronze.$(li)Bronze comes from Alloyed's mixer recipe only.$(li)BetterEnd's smelter no longer turns 2 debris into 3 scrap."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(li)Debris deposits need a Netherite Drill, lava and 2,048 SU.$(li)Crushing Limestone gives TFMG Limesand. Crush cut or polished Limestone for Nuclear's Nitrate. Raw copper and zinc crush as in plain Create."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Parts",
+      "text": "$(li)Steel plates come from TFMG's 3-press Heavy Plate.$(li)Ion vector thrusters must be assembled, not converted.$(li)Copper wire comes from the Rolling Mill, not the stonecutter.$(li)Copycat Wings stonecut 1 to 1."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Food",
+      "text": "$(li)The composter no longer triples dough.$(li)Milling wheat kernels gives about 1.25 flour each.$(li)Popsicle molds take 250 mB of melon juice.$(li)Mixed tomato sauce takes 2 tomatoes per 250 mB."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(li)Blaze powder can't be stretched with pepper powder.$(li)Channeling a sponge gives exactly one wet sponge.$(li)Garnished stone slabs don't stonecut back into blocks or crush for ore."
+    }
+  ]
+}
