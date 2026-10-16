@@ -272,6 +272,26 @@ jobs:
           if (-not (Select-String -Path "$dir/user_jvm_args.txt" -Pattern '^-Xmx4G$' -Quiet)) { throw "--update changed the memory" }
           if (-not (Select-String -Path update.txt -Pattern ': 0 downloaded' -Quiet)) { throw "--update downloaded mods again" }
 
+      - name: --update while the update check holds its jar open (as when start-server runs it)
+        shell: pwsh
+        run: |
+          $exe = (Get-ChildItem app/*.exe).FullName
+          $dir = Join-Path $env:RUNNER_TEMP "galore-server"
+          $jar = Join-Path $dir "create-galore-updater.jar"
+          [IO.File]::AppendAllText($jar, "x")   # an older jar, so the update wants to replace it
+          $lock = [IO.File]::Open($jar, 'Open', 'Read', 'Read')   # Java keeps a running jar open like this
+          try {
+            $p = Start-Process -FilePath $exe -ArgumentList "--update",$dir,"--log","update2.txt" -Wait -PassThru
+            Get-Content update2.txt | Where-Object { $_ -notmatch '^  ' }
+            if ($p.ExitCode -ne 0) { throw "update with the jar in use failed with exit code $($p.ExitCode)" }
+            if (-not (Test-Path "$jar.new")) { throw "the new jar wasn't staged as .new" }
+          } finally { $lock.Close() }
+          Push-Location $dir
+          cmd /c "if exist create-galore-updater.jar.new move /y create-galore-updater.jar.new create-galore-updater.jar >nul"
+          Pop-Location
+          if (Test-Path "$jar.new") { throw "start-server's swap didn't take the new jar" }
+          if (-not (Select-String -Path "$dir/start-server.bat" -Pattern 'create-galore-updater.jar.new' -Quiet)) { throw "start-server.bat doesn't swap in a staged jar" }
+
       - name: Start-up update check runs and lets the server start
         shell: pwsh
         run: |

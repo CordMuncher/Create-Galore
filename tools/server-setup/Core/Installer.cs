@@ -495,13 +495,27 @@ namespace CreateGalore.ServerSetup
         /// <summary>
         /// The update check start-server runs before the server (create-galore-updater.jar --server-start), and the
         /// record of which pack this folder now has, so the check can tell when the release is newer.
+        /// When that check is what runs this update, Windows keeps its jar locked: the new jar then goes next to it
+        /// as create-galore-updater.jar.new, and start-server swaps it in before the next check.
         /// </summary>
         void WriteUpdateCheck()
         {
-            using (var s = pack.OpenUpdateChecker())
-            using (var f = File.Create(P("create-galore-updater.jar"))) s.CopyTo(f);
             File.WriteAllText(P(".galore-pack.txt"), "# Create Galore pack version this server has, for the update check at start\n"
                 + "pack=" + pack.PackVersion + "\npack_sha256=" + pack.PackSha256 + "\nneoforge=" + pack.NeoForge + "\ninstaller=app\n");
+            byte[] jar;
+            using (var s = pack.OpenUpdateChecker())
+            using (var m = new MemoryStream()) { s.CopyTo(m); jar = m.ToArray(); }
+            string path = P("create-galore-updater.jar"), staged = path + ".new";
+            try
+            {
+                if (!File.Exists(path) || !File.ReadAllBytes(path).SequenceEqual(jar)) File.WriteAllBytes(path, jar);
+                if (File.Exists(staged)) File.Delete(staged);
+            }
+            catch (Exception e) when (e is IOException || e is UnauthorizedAccessException)
+            {
+                File.WriteAllBytes(staged, jar);
+                log("The update check is running, so its new version is used from the next start");
+            }
         }
 
         void WriteStartScript()
@@ -515,6 +529,7 @@ namespace CreateGalore.ServerSetup
                     "@echo off\r\nrem Starts the Create Galore server. Type stop in this window to save and shut down.\r\n" +
                     "rem First it checks for a newer pack and asks whether to update (no / yes / back up the world first).\r\n" +
                     "cd /d \"%~dp0\"\r\nset JAVA=java\r\nif exist \"java\\bin\\java.exe\" set JAVA=java\\bin\\java.exe\r\n" +
+                    "if exist create-galore-updater.jar.new move /y create-galore-updater.jar.new create-galore-updater.jar >nul\r\n" +
                     "(\r\n" +
                     "  set GALORE_OK=1\r\n" +
                     "  if exist create-galore-updater.jar \"%JAVA%\" -jar create-galore-updater.jar --server-start || set GALORE_OK=\r\n" +
@@ -529,6 +544,7 @@ namespace CreateGalore.ServerSetup
                 File.WriteAllText(sh, "#!/usr/bin/env sh\n# Starts the Create Galore server. Type stop to save and shut down.\n" +
                     "# First it checks for a newer pack and asks whether to update (no / yes / back up the world first).\ncd \"$(dirname \"$0\")\"\n" +
                     "JAVA=java\n[ -x java/bin/java ] && JAVA=java/bin/java\n" +
+                    "[ -f create-galore-updater.jar.new ] && mv -f create-galore-updater.jar.new create-galore-updater.jar\n" +
                     "if [ -f create-galore-updater.jar ]; then \"$JAVA\" -jar create-galore-updater.jar --server-start || exit; fi\n" +
                     "exec \"$JAVA\" " + args + " \"$@\"\n");
                 try { Process.Start("chmod", "+x \"" + sh + "\"").WaitForExit(); } catch { }
