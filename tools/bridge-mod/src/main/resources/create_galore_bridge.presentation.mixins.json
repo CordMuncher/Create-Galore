@@ -4,6 +4,6 @@
   "package": "dev.creategalore.bridge.present.mixin",
   "plugin": "dev.creategalore.bridge.present.PresentationMixinPlugin",
   "compatibilityLevel": "JAVA_21",
-  "client": ["PresentWindowMixin", "PresentRenderSystemMixin", "PresentMinecraftMixin", "PresentMainTargetMixin", "PresentRenderTargetMixin"],
+  "client": ["PresentWindowMixin", "PresentRenderSystemMixin", "PresentMinecraftMixin"],
   "injectors": { "defaultRequire": 1 }
 }

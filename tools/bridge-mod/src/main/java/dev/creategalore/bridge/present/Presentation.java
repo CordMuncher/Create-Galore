@@ -21,9 +21,9 @@ import org.slf4j.LoggerFactory;
  * NVIDIA), and NVIDIA's "Prefer layered on DXGI Swapchain" present method is not needed (it held the GPU at ~55%).
  *
  * Ported from Perfect Presentation 1.0 for Fabric 1.21.1 (https://github.com/sidit77/perfect_presentation, MIT,
- * Copyright (c) sidit77). The hooks are the same; NeoForge creates the window through ImmediateWindowHandler and its
- * main target texture call is at a different position, so those two hooks differ, and NeoForge's OpenGL version
- * check is pointed away from the context-less window (see hideFromGlVersionCheck).
+ * Copyright (c) sidit77). NeoForge creates the window through ImmediateWindowHandler, so that hook differs, NeoForge's
+ * OpenGL version check is pointed away from the context-less window (see hideFromGlVersionCheck), and the main
+ * target is copied to D3D11 instead of shared (see {@link InteropContext}).
  *
  * EXPERIMENTAL, OFF BY DEFAULT, Windows only: config/create_galore_bridge-display.properties, perfectPresentation=true.
  * The mixins are only applied when it is on ({@link PresentationMixinPlugin}). If the DirectX side cannot start (no
@@ -208,15 +208,5 @@ public final class Presentation {
             glfwGetFramebufferSize(window, w, h);
             interop.resizeSwapChain(w.get(0), h.get(0));
         }
-    }
-
-    // --- MainTarget colour texture ---
-
-    /** The main target keeps its own OpenGL storage; each frame is copied into a shared texture instead. */
-    public static boolean allocateMainColor(int texture, int target, int internalFormat, int width, int height) {
-        return false;
-    }
-
-    public static void releaseMainColor(int texture) {
     }
 }
