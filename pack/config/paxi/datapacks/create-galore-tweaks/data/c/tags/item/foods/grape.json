@@ -1,0 +1,12 @@
+{
+  "values": [
+    {
+      "id": "berries_and_cherries:black_grapes",
+      "required": false
+    },
+    {
+      "id": "berries_and_cherries:green_grapes",
+      "required": false
+    }
+  ]
+}

@@ -165,12 +165,80 @@ file = "config/paxi/datapacks/create-galore-tweaks/data/alloyed/recipe/mixing/st
 hash = "7410886e01edf37ccac97ad9a0dc3a1a537bc98e718eda63fec944973b1641d6"
 
 [[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/c/tags/item/foods/blackberry.json"
+hash = "b9d485738a792d530d7d83fdd41e9ccc8e20d736040ea17c69e91471c1757c35"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/c/tags/item/foods/blueberry.json"
+hash = "78cb86d3a0f458c952b3d6a90fc5b725a074b196d7c49e25839886a2e5743085"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/c/tags/item/foods/cherry.json"
+hash = "2b3e1c99a47460b1df37a021bbe923cf6abbdebd5062f2fe591f4192fac2794b"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/c/tags/item/foods/durian.json"
+hash = "050b2e9b56f8a981d5d6bc9767d650108d427f62a857748f473d89ab69fdc498"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/c/tags/item/foods/fig.json"
+hash = "e33b0355eac91d85d0c092e070b6f753d954bbe056969d689c24bf89f7537876"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/c/tags/item/foods/grape.json"
+hash = "2fb2ac1029e210737b40727cd968b46c04ad64b8e7699bf4d201a8dca335a369"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/c/tags/item/foods/kiwi.json"
+hash = "f1f58caeb8d0d897f1a56a75c135577324a70818d4d86a79fd1454795f61bf14"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/c/tags/item/foods/lemon.json"
+hash = "ed2f8502c68a0c3ca98350fd90a36496ecb61e0deca0ef7f7b0019999eccf056"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/c/tags/item/foods/lychee.json"
+hash = "658613c5df913a3e3dda9518ea9e07a30bda5688ef4b2df47a9d7e43c41f7ffd"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/c/tags/item/foods/mango.json"
+hash = "0e2b9b38326db6f68a3cc115af111589f39344fb1f2c2838bb9fef0fb107e7c7"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/c/tags/item/foods/orange.json"
+hash = "3747777bf36925814c9c996c335693a265b5c8a4485bdd9564b7e965eca09aac"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/c/tags/item/foods/peach.json"
+hash = "f6bbf7b55780c9780c12b32df02be4bdfee7ef64e90f96a4233606ee58a5d506"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/c/tags/item/foods/persimmon.json"
+hash = "7e75b54991c4a6727131b52fb1b3a0afbcf99c16192820c2606c68dbc27496c5"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/c/tags/item/foods/pineapple.json"
+hash = "46dd4775ee6143582a909c93d5dd4ab6bc10b224448c346dfa98e7cbcef30ab0"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/c/tags/item/foods/raspberry.json"
+hash = "b8614d73592693948890f6e598836bf9c2f3b0c2e6c3cc78d82f84b0b5b463d1"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/c/tags/item/foods/strawberry.json"
+hash = "ca5c9c9dd3eff157a37ebba1175a3c694e2065fdff1afdf5aebf1e5da0067e54"
+
+[[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/c/tags/item/hidden_from_recipe_viewers.json"
 hash = "e93016c6f35a6ddc631393398fb7a779ee0e957c87c52e09c0a31ac009921c78"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/cnbridge/recipe/dimensional_drive.json"
 hash = "d49135196f515d2ba77cf13c7abec12135fb5030a8d2f500a9760a81d8a3c4a3"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/cr_aero_structures/loot_table/chests/uniform.json"
+hash = "0381fb06d93217ce6697a856e785aaf5312c86c6895f3bebcf24b41c49477133"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_confectionery/recipe/black_chocolate_recipe.json"
@@ -369,6 +437,30 @@ file = "config/paxi/datapacks/create-galore-tweaks/data/createbigcannons/recipe/
 hash = "bb09ddc557fae4baa1484635310ce8b5c05bcdb237e9d3697674c20eb7aba808"
 
 [[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createcafe/recipe/filling/mana_berries.json"
+hash = "683341e94db66665704dd04f6e068c3e305850efecba201b626c4a05bbc02518"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createcafe/recipe/haunting/blood_orange.json"
+hash = "63687e6e924173981ecd8d7ea74f4d9b71cc6de022706a7d991ec061769c782d"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createcafe/recipe/mixing/blood_tea_mixing.json"
+hash = "4ea374e47a1caaf4c91bb28cdeb6d44e7c624ad4913ba75bae7ca74fac10866a"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createcafe/recipe/mixing/mana_tea_mixing.json"
+hash = "dfb4f820aa69e85f541695e135f084aff43622c72f66ca89474c94a83c1654fe"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createcafe/recipe/mixing/syrups/raspberry_syrup_mixing.json"
+hash = "d973a90558bbf7491f9587b0d67ea3fa2405ecf6667b5a2477d9735261690c4c"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createcafe/recipe/mixing/syrups/strawberry_syrup_mixing.json"
+hash = "3e1fa6fd25a5212d046f562b4168fd48bb8f072fe580b0fc1a202e227712c5e8"
+
+[[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/createdeco/recipe/placard.json"
 hash = "ddc3d0dd56b604d914bedbf2f985a2f0b5f7374eac79aad668a8a2cfd7cc154c"
 
@@ -437,6 +529,10 @@ file = "config/paxi/datapacks/create-galore-tweaks/data/createframed/recipe/inte
 hash = "04b0fb371936cf931745516114df90a9ed6c966c7dfd078aae3854317077fd88"
 
 [[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createliquidfuel/data_maps/fluid/liquid_fuel.json"
+hash = "769557b2f628fe9489def9637bda9d6aa2c0cc5d4fc032e831b9d56e9a663ee0"
+
+[[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/createnuclear/recipe/crafting/crafting/steel_block_from_compacting.json"
 hash = "30c07b49e168a60e71e74512aa1bcda3084e89e8b22ba2335f80c598cb0dd6f6"
 
@@ -477,6 +573,14 @@ file = "config/paxi/datapacks/create-galore-tweaks/data/minecraft/tags/function/
 hash = "de4848ad2d163c774b045ef1342097e018eb536fc8a44667902f04917f2975f6"
 
 [[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/mynethersdelight/loot_modifiers/add_loot_bastion_hoglin_stable.json"
+hash = "2ca6a8c428d5bc964f68a1fd0a9ec125168fb7a04710c230fbe05b25a502690a"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/mynethersdelight/loot_modifiers/add_loot_bastion_treasure.json"
+hash = "d42d8060adf1daf267990ce9f752a7f26275cd6433283372a06c49763c2d5705"
+
+[[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/naturalist/tags/worldgen/biome/has_anglerfish.json"
 hash = "78211ca3f4a5f24669bc16b1132aa4dcd29c3d053564742f1728da77430c372b"
 
@@ -511,6 +615,14 @@ hash = "78211ca3f4a5f24669bc16b1132aa4dcd29c3d053564742f1728da77430c372b"
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/naturalist/tags/worldgen/biome/has_starfish.json"
 hash = "78211ca3f4a5f24669bc16b1132aa4dcd29c3d053564742f1728da77430c372b"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/neoforge/tags/item/fruits/raspberry.json"
+hash = "b8614d73592693948890f6e598836bf9c2f3b0c2e6c3cc78d82f84b0b5b463d1"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/neoforge/tags/item/fruits/strawberry.json"
+hash = "ca5c9c9dd3eff157a37ebba1175a3c694e2065fdff1afdf5aebf1e5da0067e54"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/northstar/recipe/compacting/brine_to_salt.json"
@@ -626,7 +738,7 @@ hash = "b81f5339abb9eadad01034f97afaead2e67f5a409db509a2508e6ff2180937a0"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/pack.mcmeta"
-hash = "7269b2729282f4e6a7a6194e76656f53c51406754dc40c553718b081609a9fdd"
+hash = "191a49e2b330886d52b375721ac6bfff45ea9990ed937ddb8d453e659c4b17f1"
 
 [[files]]
 file = "config/paxi/optional/create-galore-with-elytra/data/betterend/loot_table/chests/end_village_bonus_loot.json"
