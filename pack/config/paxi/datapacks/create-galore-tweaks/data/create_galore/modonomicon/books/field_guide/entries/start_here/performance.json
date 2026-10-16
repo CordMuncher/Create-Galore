@@ -50,6 +50,11 @@
     {
       "type": "modonomicon:text",
       "title": "",
+      "text": "**Black strobing** after that change can happen on some GPUs and drivers. It shows up when VSync (or adaptive VSync) is on and Max Framerate is Unlimited. Fix: turn VSync off (RivaTuner can then cap FPS smoothly), or cap Max Framerate at or below your monitor's refresh rate."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
       "text": "**Chunksmith** pregenerates terrain when you ask it to with the **/cs** commands, ahead of an airship or train. It yields to players, so you can keep playing while it runs. Its automatic run on world entry (a 4096-block radius every time you join) is switched off here."
     },
     {

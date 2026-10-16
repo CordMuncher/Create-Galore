@@ -226,6 +226,10 @@ None of these stop the game.
 - **Animal Husbandry is on 0.4.2**, so 0.5.0's rabbit genetics and Angora armor are missing until a fixed version ships.
 - **First launch:** Deep Seas' photosensitivity question still shows once. Minecraft's accessibility prompt is turned off by the shipped `options.txt`. Re-importing a `.mrpack` over an instance overwrites `options.txt` and resets the key rebinds above; the in-place updater (see [Updating](#updating)) keeps it. If the Deep Seas warning's button sits off-screen in a small window, press Tab then Enter.
 - **Log noise:** a few recipes and many loot tables log errors because they point at mods that aren't installed (Dye Depot colours for Design n' Decor and Create Connected, Steam 'n' Rails tracks for other wood mods, Botania, Blood Magic, Mekanism and so on). Sable also warns about a few copycat blocks that don't exist, and TFMG still ships its Blaze Burner fuel list under Create Liquid Fuel's old name (the pack's datapack adds it under the new one). All of this was checked line by line: none of those mods would add anything worth having, and the leftover lines are harmless.
+- **Black strobing with the DXGI present method (some GPUs and drivers).** After setting NVIDIA's Vulkan/OpenGL present method to Prefer layered on DXGI Swapchain (see Borderless fullscreen above), the whole screen can strobe black. Seen on an RTX 4080 Super; it may not happen on your card or driver. It only happens with VSync (or adaptive VSync) on **and** Max Framerate set to Unlimited. Any one of these fixes it:
+  - Turn VSync off and keep Max Framerate at Unlimited.
+  - Keep VSync on and set Max Framerate in Video Settings to your monitor's refresh rate or lower.
+  - Keep Max Framerate at Unlimited, VSync off, and cap FPS with an external limiter such as RivaTuner Statistics Server. Minecraft's own limiter can stutter and may not reach its cap, so this gives the smoothest frame times.
 - **First world creation is slow** (about 45 s for the spawn area on the test machine) because of all the world-gen mods. Normal after that.
 
 ## What was tested
