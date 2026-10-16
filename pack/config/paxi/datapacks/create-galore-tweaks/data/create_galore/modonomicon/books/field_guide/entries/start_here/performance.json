@@ -55,6 +55,11 @@
     {
       "type": "modonomicon:text",
       "title": "",
+      "text": "**Perfect Presentation** (Windows, experimental) shows the game through DirectX: fullscreen is a fast borderless window, Alt-Tab is instant and a 10-bit monitor stays 10-bit. Turn it on with perfectPresentation=true in config/create_galore_bridge-display.properties and restart twice. On NVIDIA, set Power management mode to Prefer maximum performance for javaw.exe."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
       "text": "**Chunksmith** pregenerates terrain when you ask it to with the **/cs** commands, ahead of an airship or train. It yields to players, so you can keep playing while it runs. Its automatic run on world entry (a 4096-block radius every time you join) is switched off here."
     },
     {
