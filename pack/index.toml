@@ -2244,7 +2244,7 @@ metafile = true
 
 [[files]]
 file = "options.txt"
-hash = "f8c67ed73ba60d794a027ae960f46f02ec9865ee2bd3eb103e653d97153cb376"
+hash = "a682b1e53b1e21a3782438da0913f6963c41a595d0480b6aa399fae109a0415c"
 
 [[files]]
 file = "patchouli_books/create_galore/book.json"
@@ -2829,6 +2829,38 @@ hash = "97ad0f411c25c776028f7976aad46286aafab3405000b484a2347041db949d50"
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/transport/trains.json"
 hash = "14acb415a28b37f7f10592602277f588a2642e4e7b2cff40d072e0b59e12acd3"
+
+[[files]]
+file = "resourcepacks/create-galore-menu/assets/minecraft/textures/gui/title/background/panorama_0.png"
+hash = "e692e331df258f193c310b7ae4b4cb8fffeefb08e439d0d1fedeef29eaf8ff1f"
+
+[[files]]
+file = "resourcepacks/create-galore-menu/assets/minecraft/textures/gui/title/background/panorama_1.png"
+hash = "6188487d74655108b9301eafe05fa0d76a753270c28f4fe003c8ffb3cb8080bc"
+
+[[files]]
+file = "resourcepacks/create-galore-menu/assets/minecraft/textures/gui/title/background/panorama_2.png"
+hash = "1e23d6c4818a24e7ed6358255f96ba848069625a01ae463ba55205e8e10bbc77"
+
+[[files]]
+file = "resourcepacks/create-galore-menu/assets/minecraft/textures/gui/title/background/panorama_3.png"
+hash = "71fb968978bb248b419d613263fa197099a9d1ca91d7b4db2db2e37985bfc681"
+
+[[files]]
+file = "resourcepacks/create-galore-menu/assets/minecraft/textures/gui/title/background/panorama_4.png"
+hash = "e6583d912e94ccef343de6efe89785ee4dee5ced958105f4cd8b03d17477e3b3"
+
+[[files]]
+file = "resourcepacks/create-galore-menu/assets/minecraft/textures/gui/title/background/panorama_5.png"
+hash = "e0f3ac609cb1a731c48db26b09f1f01f45c29a20fb1bc06c97c7178f8a8ef4d9"
+
+[[files]]
+file = "resourcepacks/create-galore-menu/pack.mcmeta"
+hash = "1933d6cc0eca03957411c0842a7fbad0083cdb820378ae632a20f69485a8e309"
+
+[[files]]
+file = "resourcepacks/create-galore-menu/pack.png"
+hash = "310071ed4bbc104da1946623ed94fc50ec6b9f9a0f267fcfe7267b9ef02cdff8"
 
 [[files]]
 file = "resourcepacks/fresh-animations.pw.toml"

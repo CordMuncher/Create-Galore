@@ -1,3 +1,5 @@
+<img src="docs/icon-512.png" alt="Create Galore icon" width="128" align="right">
+
 # Create Galore
 
 A big, long-term Minecraft modpack built around the Create mod. Think "Minecraft, but better, plus Create": airships, submarines, trains, roller coasters and rockets to the Moon, with survival layers (thirst, temperature, pollution, seasons), homesteading and a lot of new world to explore.
@@ -22,6 +24,8 @@ A big, long-term Minecraft modpack built around the Create mod. Think "Minecraft
 3. **Add Twilight Forest by hand.** It isn't on Modrinth, so it can't be inside the pack file. Put `twilightforest-1.21.1-4.8.3345-universal.jar` (CurseForge, version 4.8.3345) into the instance's `mods` folder.
 4. Give the game its memory and Java flags in the instance's Java settings: **12 GB with Generational ZGC** on a PC with 32 GB or more, **8 GB with G1** on a 16 GB laptop. Set minimum and maximum memory to the same value. The exact lines to paste for Prism and the Modrinth App, the benchmark behind them and the upper limits are in **[docs/java-flags.md](docs/java-flags.md)**.
 5. Optional shaders are already in the `shaderpacks` folder: **Complementary Reimagined + Euphoria Patches** (recommended), Bliss, Photon and Solas (lightest). Turn one on in Options → Video Settings → Shader Packs.
+
+6. Optional: give the instance the pack icon. Download `Create-Galore-icon.png` from the release and pick it in the launcher (Prism: click the instance icon; Modrinth App: instance settings). A `.mrpack` can't carry an icon, so launchers show their default one.
 
 Don't let the launcher update NeoForge past 21.1.259.
 
@@ -124,6 +128,7 @@ A set of sound and small-visual mods that make the world feel more alive without
 | Make Bubbles Pop | Underwater bubbles rise and pop at the surface. |
 | LambDynamicLights + Contraption Lights | Held torches and glowing items light up the area; lights on Create contraptions and Aeronautics ships move with them. |
 | Not Enough Animations | Third-person animations for eating, maps, ladders and more. |
+| Create Galore title screen | The pack's own menu backdrop: a spinning pixel-art scene with a Create town, a train on a viaduct, a submarine, a farm and airships. It's a small built-in resource pack (`create-galore-menu`), on by default; sources in [tools/art](tools/art).; [screenshot](docs/title-screen.png) |
 | EMF + ETF + Fresh Animations | Livelier vanilla mob animations (blinking, breathing, head turns). Fresh Animations is turned on by default in the resource pack list. |
 
 **Kept from doubling up.** Subtle Effects' chest and barrel underwater bubbles and its cake-eating sound are turned off (`pack/config/subtle_effects/blocks.toml`), because Make Bubbles Pop and Sounds already do them.
