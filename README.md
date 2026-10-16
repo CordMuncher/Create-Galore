@@ -83,6 +83,8 @@ Every player gets the **Create Galore Field Guide** on first join, and you can c
 
 Each section is a map. Entries are nodes, and the arrows show what comes first, so to reach something you follow its lines back (the six prizes all lead into the Stellar Core, for example). Everything is open from the start, with no locks, tasks or rewards. The magnifying glass on the right searches the text of every page. Editing notes: [docs/guidebook.md](docs/guidebook.md).
 
+In a world started before the guide moved to Modonomicon, the old Patchouli Field Guide no longer opens it: put it in a crafting grid on its own to turn it into the new one.
+
 ![The Road to the Stars section: the six prizes lead into the Stellar Core](docs/field-guide.png)
 
 ## What's different from the stock mods

@@ -1014,6 +1014,10 @@ file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/recipe/fie
 hash = "f8ca16f1d2759a21ecc204fb61907d3dde5766076288d9d2012b36a051fac2e8"
 
 [[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/recipe/field_guide_from_old.json"
+hash = "705b4555a80e44d6b0452378a4c380996ad5906514792ea38705c57425f633f5"
+
+[[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/recipe/space/stellar_core.json"
 hash = "0a571204aa40cb02b331575c019a3327508b757f2c0b3a32da24455ee5ba0126"
 

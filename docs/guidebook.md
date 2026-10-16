@@ -16,6 +16,7 @@ An entry's ID is `<category>/<entry>`. The book ID is `create_galore:field_guide
 How players get it (same datapack, `data/create_galore/`):
 - `advancement/give_field_guide.json` + `function/give_field_guide.mcfunction`: one copy on first join.
 - `recipe/field_guide.json`: Book + Andesite, shapeless.
+- `recipe/field_guide_from_old.json`: the old Patchouli Field Guide on its own turns into the new book, for worlds started before the switch.
 - By hand: `/give @s modonomicon:modonomicon[modonomicon:book_id="create_galore:field_guide"]`
 
 Patchouli stays installed only because Iron's Spellbooks and Productive Bees ship their own Patchouli manuals.
