@@ -21,9 +21,24 @@ Versions that must match on the server and on every player's PC: Minecraft **1.2
 
 ## Part 1: Local dedicated server (Emre's PC)
 
-You need **Java 21** (for example [Microsoft Build of OpenJDK 21](https://learn.microsoft.com/java/openjdk/download) or [Adoptium Temurin 21](https://adoptium.net/)) and a copy of this repo (on GitHub: **Code → Download ZIP**, then unzip).
+### Easiest: the Server Setup app (Windows)
 
-### Build the server folder (one command)
+Download `Create-Galore-Server-Setup-<version>.exe` from the [latest release](https://github.com/emresahin0906-code/Create-Galore/releases/latest) and run it. Windows SmartScreen may warn because the app isn't signed: **More info → Run anyway**.
+
+1. **Where the server goes:** for example `C:\CreateGaloreServer`. Pointing it at an existing server updates it.
+2. **Memory:** 8 GB is the tested size.
+3. **Mods:** nothing to do, the 181 server mods download from Modrinth at the pack's exact versions. If you already have the pack installed, you can drop your instance's `mods` folder on the box: mods that match the server list byte for byte are copied instead of downloaded, and client-only mods are ignored. Twilight Forest is picked up from that folder too.
+4. **Twilight Forest:** drop `twilightforest-1.21.1-4.8.3345-universal.jar` on the box. A green check means it's the right file.
+5. **Players and settings:** your Minecraft name (whitelisted and made operator), other players (whitelisted), port, and the Elytra switch.
+6. Tick the EULA and press **Install server**. When it's done, **Start server** opens the console.
+
+It does the same as the script below: NeoForge 21.1.259, the server mods, the pack's configs and datapacks, `server.properties` with `allow-flight=true`, and `user_jvm_args.txt` with the chosen memory. If no Java 21 is found it downloads Eclipse Temurin 21 into the server folder's `java` folder, and the `start-server.bat` it writes uses that. Your world, whitelist, ops and other `server.properties` edits are kept when you run it again. Files the app installed that a newer pack drops are removed; mods you added yourself are left alone.
+
+### Or with the script
+
+You need **Java 21** (for example [Microsoft Build of OpenJDK 21](https://learn.microsoft.com/java/openjdk/download) or [Adoptium Temurin 21](https://adoptium.net/)) and a copy of this repo (the `server-kit` zip from the latest release, or on GitHub: **Code → Download ZIP**, then unzip).
+
+#### Build the server folder (one command)
 
 Open a terminal in the repo's `server` folder and run:
 
@@ -38,19 +53,19 @@ The script:
 2. Downloads every server-side mod and the pack's configs and datapacks at the exact pinned versions (about 830 MB), using `packwiz-installer` with the pack in this repo.
 3. Copies in the pack's memory settings (`user_jvm_args.txt`, 8 GB) and starting `server.properties` the first time. Later runs keep your edits.
 
-Then two manual steps:
+Then two manual steps (the app does both for you):
 1. Copy `twilightforest-1.21.1-4.8.3345-universal.jar` (CurseForge, same jar as the client) into `C:\CreateGaloreServer\mods`.
 2. Read the [Minecraft EULA](https://aka.ms/MinecraftEULA) and put `eula=true` in `C:\CreateGaloreServer\eula.txt` (the file appears after the first start; you can also create it yourself).
 
 ### Start it
 
-Double-click `run.bat` in the server folder (or run `run.bat nogui` in a terminal for no window). The first start creates the world and takes a few minutes; later starts are faster. It's ready when the console says `Done (...)! For help, type "help"`.
+Double-click `start-server.bat` (made by the app) or `run.bat` (made by NeoForge) in the server folder. The first start creates the world and takes a few minutes; later starts are faster. It's ready when the console says `Done (...)! For help, type "help"`.
 
 Stop it by typing `stop` in the console. Don't close the window, or the last few minutes might not be saved.
 
 ### First-time settings
 
-Type these in the server console once:
+If you entered the names in the app, this is already done. Otherwise type these in the server console once:
 
 ```
 whitelist add <your Minecraft name>
@@ -102,8 +117,8 @@ Skip `session.lock` and anything named `*.old`. Both sides must run the same pac
 
 When the pack in this repo changes:
 
-1. Download the repo again (or `git pull`).
-2. Stop the server and run `install-server.bat C:\CreateGaloreServer` again. It updates the mods and configs in place and removes mods that left the pack. Your world, whitelist, ops and settings are kept.
+1. Stop the server. With the app: download the new `Create-Galore-Server-Setup` from the latest release, point it at the same folder and press Install. With the script: download the repo again (or `git pull`) and run `install-server.bat C:\CreateGaloreServer` again.
+2. Either way it updates the mods and configs in place and removes mods that left the pack. Your world, whitelist, ops and settings are kept.
 3. For Exaroton: delete its `mods/` folder and upload the new `mods/` and `config/` folders.
 4. Players update their own instance from the new `.mrpack`.
 
@@ -123,6 +138,10 @@ On a cloud test machine (4 CPU cores, 16 GB RAM, no GPU) with this pack (0.1.1, 
 | Without `allow-flight=true` | ❌ Player was kicked ("Flying is not enabled on this server") while falling into a dimension, so the shipped settings turn it on |
 | `install-server.sh` on an empty folder, then first boot with the shipped 8 GB settings | ✅ World created in 67 s, about 9 GB of process memory |
 | Chunksmith sends LOD data to the joining client's Distant Horizons | ✅ Client log: "the server has LOD data for [minecraft_overworld, northstar_moon]" |
+| Server Setup app (2026-10-16, pack 0.1.2, run on Linux under Mono since there's no Windows test machine): fresh install into an empty folder, then first boot | ✅ NeoForge installed, 181 mods downloaded and checksum-checked, Twilight Forest check passed, whitelist and op written, world created in 68 s with a 5 GB heap |
+| App run again on the same folder with Elytra ticked and new memory and port | ✅ 181 mods kept as up to date, Elytra datapack switched on, memory and port changed, world kept, a mod dropped from the pack was removed and a hand-added mod was kept |
+| App on a new folder with a mods folder dropped in | ✅ 181 of 181 server mods copied, nothing downloaded, Twilight Forest picked up from the same folder |
+| App on Windows (GitHub Actions, every pull request) | Builds, loads its pack data, and installs a full server on a clean Windows machine including the Java download |
 
 ![Test client in the world on the dedicated server](server-join.png)
 
