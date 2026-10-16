@@ -134,7 +134,8 @@ When the pack in this repo changes:
 2. Either way it updates in place. Mods whose checksum still matches stay, changed ones are downloaded (or copied from a mods folder you drop into the app), and mods that left the pack are removed. NeoForge is reinstalled only when the pack moves to a new version. Your world, whitelist, ops, `server.properties`, memory settings and the Twilight Forest jar are kept.
 3. Configs: a config you edited on the server is kept as long as the pack didn't change that file. When the pack changes it, the pack's version replaces yours (the app's log lists every config it kept, and the script's packwiz-installer does the same), so redo the edit if you still want it. The app remembers the pack's checksums in `.galore-installed.txt` and the scripts in `packwiz.json`; don't delete them, or the next update treats every file as new and rewrites the configs.
 4. For Exaroton: run the update on a local copy first, then upload the new `mods/` folder (delete Exaroton's old one first so dropped mods go) and the `config/` folder. Edited configs on Exaroton itself are overwritten by that upload, so make edits in the local copy.
-5. Players update their game with the pre-launch updater (README, *Updating*) or import the new `.mrpack`.
+5. **Clean slate for bug hunting:** tick **Reset all configs to the pack's** in the app (or add `--clean`: `install-server.bat C:\CreateGaloreServer --clean`). This deletes `config/`, `defaultconfigs/` and each world's `serverconfig/` and puts the pack's configs back, so every edit made on the server is gone. Mods aren't downloaded again. The world, `server.properties`, memory, whitelist and ops are kept; for a fresh world, delete or rename `world/` yourself.
+6. Players update their game with the pre-launch updater (README, *Updating*) or import the new `.mrpack`.
 
 Back up `world/` before updates that add or remove mods. Blocks and items from removed mods disappear from the world.
 

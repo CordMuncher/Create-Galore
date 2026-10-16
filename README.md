@@ -47,24 +47,33 @@ The server gets 181 mods, the pack's Create Galore Bridge and Twilight Forest. T
 
 You don't have to reinstall the pack for a new version. Both the game and the server can update in place: only mods and configs that changed are downloaded or replaced, mods that left the pack are removed, and everything else (Minecraft, NeoForge, every unchanged mod, your worlds) stays as it is. The full `.mrpack` stays the way to make a new instance.
 
-**Game (Prism Launcher), one-time setup.** The pack ships [packwiz-installer](https://packwiz.infra.link/tutorials/installing/packwiz-installer/), which updates the instance from the pack on GitHub each time you press Play.
+There are two modes. Pick one by adding or removing `--clean`:
 
-1. If the instance's `minecraft` folder (Prism: right-click the instance → Folder) has no `packwiz-installer-bootstrap.jar`, download `Create-Galore-Updater.zip` from the [latest release](https://github.com/emresahin0906-code/Create-Galore/releases/latest) and unzip its two jars there. Instances imported from a release that already has the updater have them.
-2. Edit the instance → Settings → Custom commands, tick the box and paste this as the **pre-launch command**:
+| Mode | Command ends with | Configs | Use it while |
+|---|---|---|---|
+| **Soft update** | `create-galore-updater.jar` | Your edits are kept unless the pack changed that file | playing a world you care about |
+| **Clean** ⚠️ | `create-galore-updater.jar --clean` | **Every config is deleted and reset to the pack's on every launch**: `config/`, `defaultconfigs/`, `options.txt` (keybinds, video settings) and each world's `serverconfig/`. Distant Horizons, Subtle Effects and all other settings go back to the pack's or the mod's defaults | hunting bugs and want a clean slate |
+
+Neither mode deletes or re-downloads mods that didn't change, and neither touches Minecraft, NeoForge or your worlds. `--clean` keeps world folders on purpose: a world's own data (terrain, structures, mod saved data) can't be rebuilt from the pack, so for a fully clean world just make a new one. It resets only each world's config folder.
+
+**Game (Prism Launcher), one-time setup.** The pack ships a small updater built on [packwiz-installer](https://packwiz.infra.link/tutorials/installing/packwiz-installer/) that updates the instance from the pack on GitHub each time you press Play.
+
+1. If the instance's `minecraft` folder (Prism: right-click the instance → Folder) has no `create-galore-updater.jar`, download `Create-Galore-Updater.zip` from the [latest release](https://github.com/emresahin0906-code/Create-Galore/releases/latest) and unzip its three jars there. Instances imported from a release that already has the updater have them.
+2. Edit the instance → Settings → Custom commands, tick the box and paste this as the **pre-launch command** (add ` --clean` at the end for the clean mode):
    ```
-   "$INST_JAVA" -jar packwiz-installer-bootstrap.jar --bootstrap-no-update https://raw.githubusercontent.com/emresahin0906-code/Create-Galore/main-6fi2ef/pack/pack.toml
+   "$INST_JAVA" -jar create-galore-updater.jar
    ```
-3. Press Play. A small window checks the pack. The first run on an instance you already have just checks the files and downloads nothing if they match the latest release. After that, launches with no pack change take a couple of seconds.
+3. Press Play. A small window checks the pack. The first run on an instance you already have just checks the files and downloads nothing if they match the latest release. After that, soft launches with no pack change take a couple of seconds. Clean launches fetch the pack's configs (a few hundred small files) each time.
 
 The updater also keeps NeoForge on the pack's pinned version. To freeze the instance on its current version, clear the pre-launch command. If GitHub can't be reached, the window offers to continue without updating.
 
-**What it keeps.** Files the pack doesn't ship are never touched: map and minimap data, `servers.dat`, your worlds, shaders' settings, the Twilight Forest jar and the Elytra switch. Your keybinds and video settings (`options.txt`), Distant Horizons' settings, Subtle Effects' `blocks.toml` and Inventory Profiles Next's settings are kept forever (if the pack ships one of them it is marked `preserve`), so the pack only writes them when they're missing. Any other config you edit stays until the pack itself changes that file; then the pack's version wins, because that's usually a fix.
+**What the soft update keeps.** Files the pack doesn't ship are never touched: map and minimap data, `servers.dat`, your worlds, shaders' settings, the Twilight Forest jar and the Elytra switch. Your keybinds and video settings (`options.txt`), Distant Horizons' settings, Subtle Effects' `blocks.toml` and Inventory Profiles Next's settings are kept forever (if the pack ships one of them it is marked `preserve`), so the pack only writes them when they're missing. Any other config you edit stays until the pack itself changes that file; then the pack's version wins, because that's usually a fix. `--clean` throws all of this away, the Elytra switch included.
 
-**Before the first switch**, update the instance to the latest release once if it's older (import the new `.mrpack` as usual). The updater only removes mods it knows it installed, so mods dropped before the switch would linger. A test with a real 0.1.5 instance (227 files, edited keybinds and Subtle Effects, a Distant Horizons config, a world) checked every file in about 4 seconds, downloaded nothing and changed nothing; an update then removed a dropped mod, fetched one changed and one new config, kept the edited files and moved NeoForge in the instance to the pack's version.
+**Before the first switch**, update the instance to the latest release once if it's older (import the new `.mrpack` as usual). The updater only removes mods it knows it installed, so mods dropped before the switch would linger. Tested with a real 0.1.5 instance (227 files, edited keybinds and Subtle Effects, a Distant Horizons config, a world): the switch checked every file in about 4 seconds, downloaded nothing and changed nothing; an update then removed a dropped mod, fetched one changed and one new config, kept the edited files and moved NeoForge in the instance to the pack's version. A `--clean` run then deleted the configs and the world's `serverconfig/`, put back the pack's 293 config files, downloaded no mods and left the world in place.
 
-**Modrinth App:** instance → Settings → Launch hooks → Pre-launch, the same command with `java` (or the full path to a Java 21 `java.exe`) in place of `"$INST_JAVA"`, after putting the two jars in the instance folder. Prism is the tested route.
+**Modrinth App:** instance → Settings → Launch hooks → Pre-launch, the same command with `java` (or the full path to a Java 21 `java.exe`) in place of `"$INST_JAVA"`, after putting the three jars in the instance folder. Prism is the tested route.
 
-**Server.** Run the newer Server Setup app on the same folder; its button reads "Update server" when it finds one there. It keeps mods whose checksum still matches, downloads the changed ones, removes the ones the pack dropped and keeps config edits the pack didn't change. The scripts do the same: run `install-server` again from the new server kit. They also reinstall NeoForge if the pack moves to a new version. Details in [docs/server-setup.md](docs/server-setup.md#updating-the-pack).
+**Server.** Run the newer Server Setup app on the same folder; its button reads "Update server" when it finds one there. It keeps mods whose checksum still matches, downloads the changed ones, removes the ones the pack dropped and keeps config edits the pack didn't change. Tick **Reset all configs to the pack's** for the clean mode: it deletes `config/`, `defaultconfigs/` and the world's `serverconfig/` before installing, and keeps the world, `server.properties`, memory, whitelist and ops. The scripts do the same: run `install-server` again from the new server kit, with `--clean` after the folder for the clean mode. They also reinstall NeoForge if the pack moves to a new version. Details in [docs/server-setup.md](docs/server-setup.md#updating-the-pack).
 
 ## The Field Guide
 
@@ -240,6 +249,7 @@ All tests ran headless in a cloud machine (4 cores, 16 GB RAM, no GPU), so speed
 - `server/`: server install scripts, memory settings and a starting `server.properties`
 - `docs/`: server guide, Field Guide editing notes, screenshots
 - `tools/`: scripts to extract item and recipe IDs from mod jars, check the Field Guide and rebuild the no-Elytra datapack
+- `tools/updater/`: the pre-launch updater (`create-galore-updater.jar`, plain Java): runs packwiz-installer against the pack on GitHub, and with `--clean` resets every config first
 - `tools/server-setup/`: the Windows Server Setup app (C#, .NET Framework 4.8, so it needs nothing installed). `tools/build_server_bundle.py` turns `pack/` into the mod list and config bundle the app carries, so the app always matches the pack it was built with
 - `.github/workflows/release.yml`: builds the GitHub release (the `.mrpack`, the Server Setup app, a server kit zip with the scripts and docs, and this README) whenever the pack, server files, app or docs change on `main-6fi2ef`. The release is tagged with the pack version; pushing again without a version bump replaces that release's files
 
@@ -251,4 +261,4 @@ packwiz refresh
 packwiz modrinth export -o ../Create-Galore-0.1.5.mrpack
 ```
 
-The release workflow then adds `packwiz-installer-bootstrap.jar` and `packwiz-installer.jar` (pinned, hash-checked) to the `.mrpack`'s `overrides/` so new instances can use the pre-launch updater. A config players are expected to tweak in game gets `preserve = true` under its entry in `pack/index.toml` (`packwiz refresh` keeps the flag), so the updater never overwrites it.
+The release workflow then adds `packwiz-installer-bootstrap.jar` and `packwiz-installer.jar` (pinned, hash-checked) and `create-galore-updater.jar` (built from `tools/updater/` by `tools/updater/build.sh`) to the `.mrpack`'s `overrides/` so new instances can use the pre-launch updater. A config players are expected to tweak in game gets `preserve = true` under its entry in `pack/index.toml` (`packwiz refresh` keeps the flag), so the updater never overwrites it.

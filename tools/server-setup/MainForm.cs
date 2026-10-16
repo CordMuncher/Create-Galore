@@ -26,7 +26,7 @@ namespace CreateGalore.ServerSetup
         readonly DropZone modsZone, tfZone;
         readonly TextBox opName = new TextBox(), players = new TextBox();
         readonly NumericUpDown port = new NumericUpDown();
-        readonly CheckBox elytra = new CheckBox(), eula = new CheckBox();
+        readonly CheckBox elytra = new CheckBox(), eula = new CheckBox(), clean = new CheckBox();
         readonly Button install = new Button(), openFolder = new Button(), start = new Button();
         readonly ProgressBar bar = new ProgressBar();
         readonly Label status = new Label();
@@ -136,6 +136,10 @@ namespace CreateGalore.ServerSetup
             elytra.Text = "Allow Elytra (off by default so trains, airships and submarines stay worth building)";
             elytra.AutoSize = true;
             body.Controls.Add(elytra);
+
+            clean.Text = "Reset all configs to the pack's (for bug hunting; the world, whitelist and settings stay)";
+            clean.AutoSize = true;
+            body.Controls.Add(clean);
             eula.AutoSize = true;
             eula.Text = "I accept the Minecraft EULA (the server won't start without it)";
             var eulaRow = Row();
@@ -310,7 +314,7 @@ namespace CreateGalore.ServerSetup
 
             var options = new SetupOptions
             {
-                ServerDir = dir, MemoryGb = memory.Value, Port = (int)port.Value, AcceptEula = eula.Checked, Elytra = elytra.Checked,
+                ServerDir = dir, MemoryGb = memory.Value, Port = (int)port.Value, AcceptEula = eula.Checked, Elytra = elytra.Checked, Clean = clean.Checked,
                 OpName = opName.Text.Trim().Length > 0 ? opName.Text.Trim() : null,
                 Players = players.Text.Split(new[] { ',', ';', ' ', '\n' }, StringSplitOptions.RemoveEmptyEntries).ToList(),
                 TfJar = tfJar, LocalMods = scan,
@@ -347,7 +351,7 @@ namespace CreateGalore.ServerSetup
 
         void SetBusy(bool busy)
         {
-            foreach (Control c in new Control[] { folder, memory, modsZone, tfZone, opName, players, port, elytra, eula })
+            foreach (Control c in new Control[] { folder, memory, modsZone, tfZone, opName, players, port, elytra, clean, eula })
                 c.Enabled = !busy;
             install.Enabled = true;
             install.Text = busy ? "Stop" : HasServer() ? "Update server" : "Install server";

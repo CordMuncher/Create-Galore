@@ -20,6 +20,7 @@ namespace CreateGalore.ServerSetup
         public int Port = 25565;
         public bool AcceptEula;
         public bool Elytra;
+        public bool Clean;                          // reset every config to the pack's (bug-fixing phase); world kept
         public string OpName;                       // gets op + whitelist
         public List<string> Players = new List<string>(); // whitelist only
         public string TfJar;                        // checked jar to copy into mods/
@@ -71,6 +72,7 @@ namespace CreateGalore.ServerSetup
             await InstallNeoForgeAsync();
 
             Step(0.25, "Installing mods");
+            if (o.Clean) CleanConfigs();
             var previous = ReadInstalledList();
             var installed = new List<string>();
             await InstallModsAsync(installed);
@@ -324,6 +326,25 @@ namespace CreateGalore.ServerSetup
                 string f = Rel(rel);
                 if (File.Exists(f)) { File.Delete(f); log("  removed (no longer in the pack): " + rel); }
             }
+        }
+
+        /// <summary>
+        /// --clean: deletes config/, defaultconfigs/ and each world's serverconfig/ so the pack's configs and the mods'
+        /// defaults come back on this run. Forgets the config checksums so every pack file is written again.
+        /// Mods, NeoForge, the worlds and server.properties, memory, whitelist and ops are kept.
+        /// </summary>
+        void CleanConfigs()
+        {
+            log("Resetting every config to the pack's version (the world is kept)");
+            foreach (var d in new[] { P("config"), P("defaultconfigs") })
+                if (Directory.Exists(d)) { Directory.Delete(d, true); log("  deleted " + Path.GetFileName(d) + "/"); }
+            foreach (var w in Directory.GetDirectories(dir))
+            {
+                string sc = Path.Combine(w, "serverconfig");
+                if (File.Exists(Path.Combine(w, "level.dat")) && Directory.Exists(sc)) { Directory.Delete(sc, true); log("  deleted " + Path.GetFileName(w) + "/serverconfig/"); }
+            }
+            var prev = ReadInstalledList();
+            if (prev.Count > 0) WriteInstalledList(prev.Keys.ToList(), new Dictionary<string, string>());
         }
 
         void SetElytra()

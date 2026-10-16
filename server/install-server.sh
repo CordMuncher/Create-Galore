@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 # Builds (or updates) a Create Galore dedicated server in the folder you give it.
-# Usage: ./install-server.sh /path/to/server-folder
+# Usage: ./install-server.sh /path/to/server-folder [--clean]
+#   --clean  also resets every config to the pack's version (config/, defaultconfigs/, each world's serverconfig/).
+#            For bug hunting. Mods aren't downloaded again; the world, server.properties, memory and whitelist stay.
 # Needs Java 21 and curl. Run it again after the pack changes to update the mods.
 set -euo pipefail
 
@@ -31,6 +33,15 @@ fi
 
 echo "Downloading the server-side mods and configs that changed..."
 java -jar packwiz-installer-bootstrap.jar --bootstrap-no-update -g -s server "$PACK"
+
+if [ "${2:-}" = "--clean" ]; then
+  echo "Resetting every config to the pack's version (the world is kept)..."
+  rm -rf config defaultconfigs
+  for w in */level.dat; do [ -f "$w" ] && rm -rf "$(dirname "$w")/serverconfig"; done
+  # Without its record packwiz-installer re-checks every file: mods match and stay, the deleted configs come back.
+  rm -f packwiz.json
+  java -jar packwiz-installer-bootstrap.jar --bootstrap-no-update -g -s server "$PACK"
+fi
 
 # First run only: memory settings and server settings. Your own edits are kept on later runs.
 [ -f user_jvm_args.txt.galore ] || { cp "$HERE/user_jvm_args.txt" user_jvm_args.txt; touch user_jvm_args.txt.galore; }

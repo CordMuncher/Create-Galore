@@ -1,6 +1,8 @@
 @echo off
 rem Builds (or updates) a Create Galore dedicated server.
-rem Usage: install-server.bat C:\CreateGaloreServer
+rem Usage: install-server.bat C:\CreateGaloreServer [--clean]
+rem   --clean  also resets every config to the pack's version (config, defaultconfigs, each world's serverconfig).
+rem            For bug hunting. Mods aren't downloaded again; the world, server.properties, memory and whitelist stay.
 rem Needs Java 21. Run it again after the pack changes to update the mods.
 setlocal
 set NEOFORGE=21.1.259
@@ -33,6 +35,16 @@ if not exist packwiz-installer.jar curl -fL -o packwiz-installer.jar https://git
 
 echo Downloading the server-side mods and configs that changed...
 java -jar packwiz-installer-bootstrap.jar --bootstrap-no-update -g -s server "%PACK%" || exit /b 1
+
+if /i "%~2"=="--clean" (
+  echo Resetting every config to the pack's version ^(the world is kept^)...
+  if exist config rmdir /s /q config
+  if exist defaultconfigs rmdir /s /q defaultconfigs
+  for /d %%W in (*) do if exist "%%W\level.dat" if exist "%%W\serverconfig" rmdir /s /q "%%W\serverconfig"
+  rem Without its record packwiz-installer re-checks every file: mods match and stay, the deleted configs come back.
+  del packwiz.json 2>nul
+  java -jar packwiz-installer-bootstrap.jar --bootstrap-no-update -g -s server "%PACK%" || exit /b 1
+)
 
 rem First run only: memory settings and server settings. Your own edits are kept on later runs.
 if not exist user_jvm_args.txt.galore (

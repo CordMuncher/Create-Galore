@@ -5,7 +5,7 @@
 #   Create-Galore-<v>-server-kit.zip          README, docs, pack/ and the install-server scripts (Linux, macOS, manual setups)
 #   README.md
 #   Create-Galore-icon.png                    the pack icon, to set on the launcher instance (a .mrpack can't carry one)
-#   Create-Galore-Updater.zip                 packwiz-installer for instances imported before the .mrpack carried it
+#   Create-Galore-Updater.zip                 the pre-launch updater, for instances imported before the .mrpack carried it
 # Twilight Forest isn't included anywhere: it's CurseForge-only, so players and the app add it by hand.
 #
 # A push to main-6fi2ef that touches the pack, the server files, the app or the docs rebuilds the release
@@ -24,6 +24,7 @@ on:
       - 'MODS.md'
       - 'tools/server-setup/**'
       - 'tools/build_server_bundle.py'
+      - 'tools/updater/**'
       - '.github/workflows/release.yml'
   pull_request:
     paths:
@@ -31,6 +32,7 @@ on:
       - 'server/**'
       - 'tools/server-setup/**'
       - 'tools/build_server_bundle.py'
+      - 'tools/updater/**'
       - '.github/workflows/release.yml'
   workflow_dispatch:
 
@@ -87,7 +89,7 @@ jobs:
           done
           echo "::error::packwiz export kept missing files"; exit 1
 
-      - name: Add the in-place updater (packwiz-installer) to the .mrpack
+      - name: Add the in-place updater to the .mrpack
         env:
           V: ${{ steps.version.outputs.version }}
         run: |
@@ -101,9 +103,12 @@ jobs:
           a8fbb24dc604278e97f4688e82d3d91a318b98efc08d5dbfcbcbcab6443d116c  packwiz-installer-bootstrap.jar
           c9f646908d340d84773948a9a7d98bc1dae250d35e1016dc6e2b8459760b5598  packwiz-installer.jar
           SUMS
-          cd ..
-          zip -q "../release/Create-Galore-$V.mrpack" overrides/packwiz-installer-bootstrap.jar overrides/packwiz-installer.jar
-          (cd overrides && zip -q ../../release/Create-Galore-Updater.zip packwiz-installer-bootstrap.jar packwiz-installer.jar)
+          cd ../../..
+          tools/updater/build.sh dist/updater/overrides
+          cd dist/updater
+          jars="packwiz-installer-bootstrap.jar packwiz-installer.jar create-galore-updater.jar"
+          zip -q "../release/Create-Galore-$V.mrpack" $(printf 'overrides/%s ' $jars)
+          (cd overrides && zip -q ../../release/Create-Galore-Updater.zip $jars)
           unzip -l "../release/Create-Galore-$V.mrpack" | grep packwiz-installer
 
       - name: Build the server kit
@@ -194,8 +199,8 @@ jobs:
 
           ### Update an instance you already have (no reinstall)
           Set this once as the instance's pre-launch command (Prism: Edit → Settings → Custom commands):
-          \`"\$INST_JAVA" -jar packwiz-installer-bootstrap.jar --bootstrap-no-update https://raw.githubusercontent.com/$GH_REPO/main-6fi2ef/pack/pack.toml\`
-          From then on every launch fetches only the mods and configs that changed, removes mods the pack dropped and keeps your keybinds, Distant Horizons, Subtle Effects and other settings. An instance imported before the updater shipped (no \`packwiz-installer-bootstrap.jar\` in its \`minecraft\` folder) first needs the two jars from **Create-Galore-Updater.zip** put there. Details in the README under *Updating*.
+          \`"\$INST_JAVA" -jar create-galore-updater.jar\`
+          From then on every launch fetches only the mods and configs that changed, removes mods the pack dropped and keeps your keybinds, Distant Horizons, Subtle Effects and other settings. Add \`--clean\` to the end of the command to reset every config to the pack's on each launch instead (bug hunting; mods and worlds stay). An instance imported before the updater shipped (no \`create-galore-updater.jar\` in its \`minecraft\` folder) first needs the three jars from **Create-Galore-Updater.zip** put there. Details in the README under *Updating*.
 
           ### Run a server (Windows)
           Download **Create-Galore-Server-Setup-$V.exe** and run it (Windows may ask you to confirm because the app isn't signed: More info → Run anyway). Pick a folder and the memory, drop in the Twilight Forest jar, tick the EULA and press Install. It installs NeoForge, downloads the 181 server-side mods from Modrinth (or copies them from a mods folder you drop in), and sets up configs, memory, whitelist and a start script. It downloads Java 21 into the server folder if your PC doesn't have it. Run a newer version of the app on the same folder to update the server: only changed mods and configs are downloaded, mods the pack dropped are removed, and the world, your settings and any config you edited that the pack didn't change are kept.
