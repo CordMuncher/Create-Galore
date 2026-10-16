@@ -493,7 +493,7 @@ namespace CreateGalore.ServerSetup
 
         void WriteStartScript()
         {
-            string args = "@user_jvm_args.txt @libraries/net/neoforged/neoforge/" + pack.NeoForge + "/" + (IsWindows ? "win" : "unix") + "_args.txt nogui";
+            string args = "@user_jvm_args.txt @libraries/net/neoforged/neoforge/" + pack.NeoForge + "/" + (IsWindows ? "win" : "unix") + "_args.txt";
             if (IsWindows)
             {
                 File.WriteAllText(P("start-server.bat"),

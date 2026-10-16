@@ -26,6 +26,10 @@ file = "config/create_connected-common.toml"
 hash = "29208d8a0cf996ced5690dbd767ede4d3975cbe5f6d5025ab3f6f1c5e5fd5402"
 
 [[files]]
+file = "config/create_galore_lagwatch-common.toml"
+hash = "1c464ae0c10ce62b4ae1b5c99556e5afde94e59d78919ea64dd34042df9018d5"
+
+[[files]]
 file = "config/create_submarine-client.toml"
 hash = "e38558c715f01ec08abda913b77deb52ef8d024f6749127f0f89b67be68749fd"
 
@@ -1502,6 +1506,10 @@ metafile = true
 [[files]]
 file = "mods/create-galore-bridge-1.2.0.jar"
 hash = "c34080c5b2d07dc67e07be09f59cbf47f72dbf1860dac3ab761650aa7c35867f"
+
+[[files]]
+file = "mods/create-galore-lagwatch-1.0.0.jar"
+hash = "2bb446ae0d08e1944f275bd466a9f3e1d5d4a460a57012bf3602f7da748d49bc"
 
 [[files]]
 file = "mods/create-garnished.pw.toml"
