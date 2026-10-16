@@ -1,0 +1,25 @@
+{
+  "parent": "create_galore:stars/root",
+  "display": {
+    "icon": {
+      "id": "aether:enchanted_gravitite"
+    },
+    "title": "Defying Gravity",
+    "description": "Enchant Gravitite at an Aether Altar",
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false
+  },
+  "criteria": {
+    "has": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "aether:enchanted_gravitite"
+          }
+        ]
+      }
+    }
+  }
+}

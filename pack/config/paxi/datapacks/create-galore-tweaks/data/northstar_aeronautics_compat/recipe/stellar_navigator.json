@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "DND",
+    "RKR",
+    "AAA"
+  ],
+  "key": {
+    "A": {
+      "item": "minecraft:redstone"
+    },
+    "D": {
+      "item": "northstar:titanium_ingot"
+    },
+    "N": {
+      "item": "aeronautics:levitite_blend_bucket"
+    },
+    "R": {
+      "item": "minecraft:glass"
+    },
+    "K": {
+      "item": "create_galore_bridge:stellar_core"
+    }
+  },
+  "result": {
+    "count": 1,
+    "id": "northstar_aeronautics_compat:stellar_navigator"
+  }
+}

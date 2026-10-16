@@ -12,7 +12,7 @@
       "type": "patchouli:spotlight",
       "item": "northstar:rocket_station",
       "title": "Rocket Station",
-      "text": "Pick the destination, assemble or disassemble the rocket, and read fuel, thruster and heat shielding needs.",
+      "text": "Picks the destination, assembles the rocket and shows fuel, thruster and heat needs. Built around a $(l:stars/stellar_core)Stellar Core$(/l).",
       "link_recipe": true
     },
     {

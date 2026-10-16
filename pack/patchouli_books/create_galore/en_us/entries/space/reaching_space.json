@@ -6,11 +6,11 @@
   "pages": [
     {
       "type": "patchouli:text",
-      "text": "Create: Northstar adds a solar system as dimensions: the Moon, Mars, Mercury and Venus, plus an orbit above each planet. You get there with a rocket built from Create parts, or by flying an Aeronautics ship upward."
+      "text": "Create: Northstar adds a solar system as dimensions: the Moon, Mars, Mercury and Venus, plus an orbit above each planet. You get there with a rocket built from Create parts, or by flying an Aeronautics ship upward. Either way you first need a $(l:stars/why)Stellar Core$(/l)."
     },
     {
       "type": "patchouli:text",
-      "text": "A Northstar rocket is a contraption: thrusters, fuel tanks, a seat and controls glued around a Rocket Station. An Aeronautics ship uses a Dimensional Drive or Stellar Navigator instead. See $(l:space/rocket_building)Rockets$(/l) and $(l:space/aeronautics_bridge)Ship Bridges$(/l).",
+      "text": "A Northstar rocket is a contraption glued around a Rocket Station. An Aeronautics ship uses a Dimensional Drive or Stellar Navigator instead. All three are built around a Stellar Core. See $(l:space/rocket_building)Rockets$(/l) and $(l:space/aeronautics_bridge)Ship Bridges$(/l).",
       "title": "Two ways up"
     },
     {
@@ -52,6 +52,7 @@
     {
       "type": "patchouli:relations",
       "entries": [
+        "patchouli:stars/why",
         "patchouli:space/rocket_building",
         "patchouli:space/aeronautics_bridge",
         "patchouli:space/planets",

@@ -1,0 +1,25 @@
+{
+  "parent": "create_galore:stars/root",
+  "display": {
+    "icon": {
+      "id": "twilightforest:fiery_ingot"
+    },
+    "title": "Forged in Twilight",
+    "description": "Make a Fiery Ingot from the Hydra's blood or the Ur-Ghast's tears",
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false
+  },
+  "criteria": {
+    "has": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "twilightforest:fiery_ingot"
+          }
+        ]
+      }
+    }
+  }
+}

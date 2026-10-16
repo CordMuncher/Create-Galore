@@ -1,0 +1,43 @@
+{
+  "type": "create:mechanical_crafting",
+  "accept_mirrored": false,
+  "category": "misc",
+  "key": {
+    "G": {
+      "item": "aether:enchanted_gravitite"
+    },
+    "T": {
+      "tag": "c:plates/titanium"
+    },
+    "F": {
+      "item": "twilightforest:fiery_ingot"
+    },
+    "D": {
+      "item": "irons_spellbooks:dragonskin"
+    },
+    "C": {
+      "item": "tfmg:circuit_board"
+    },
+    "N": {
+      "item": "minecraft:nether_star"
+    },
+    "E": {
+      "item": "alexscaves:immortal_embryo"
+    },
+    "M": {
+      "item": "northstar:hardened_precision_mechanism"
+    }
+  },
+  "pattern": [
+    " GTG ",
+    "FDCDF",
+    "TNEMT",
+    "FDCDF",
+    " GTG "
+  ],
+  "result": {
+    "count": 1,
+    "id": "create_galore_bridge:stellar_core"
+  },
+  "show_notification": true
+}

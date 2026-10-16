@@ -270,7 +270,7 @@ hash = "7e43e1991b1d99af8610042f670745d4855ae927948f205d32e93b2b5193c726"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/cnbridge/recipe/dimensional_drive.json"
-hash = "d49135196f515d2ba77cf13c7abec12135fb5030a8d2f500a9760a81d8a3c4a3"
+hash = "aed90e6f4837118bde8b91cc8debcac4e7fdbd735b45a6f695bf9fc43bbaf40a"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/coedeposits/recipe/ancient_debris_drilling.json"
@@ -333,6 +333,42 @@ file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/advancemen
 hash = "a87cfb341b081fa7a6f5db8eac14478d035f4f832fcb17bbd9d7f9395159c8dc"
 
 [[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/advancement/stars/aether.json"
+hash = "6a96e12b9dfea1ca12fcb1124c26f32306949820cae47530328927cfe1c08573"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/advancement/stars/deep_sea.json"
+hash = "af80d814f855150ed72c9b50910cb05803a081d32cbac0737844073926b73757"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/advancement/stars/end.json"
+hash = "76b4cab44eb16663073e56191d76e12f130a2aaaf9e11085a86dcf12fb85665c"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/advancement/stars/industry.json"
+hash = "607d6974afa33dc332d078fa157de6c6f5d759bfa6ea835d919a804f53919634"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/advancement/stars/liftoff.json"
+hash = "516429df75212f92a9952cc21307974b1ec61dd314a78e44ad3681becf10963d"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/advancement/stars/nether.json"
+hash = "d526826de54d4b499546f40604863f1c284650c5d9c1ba6c1cc5e842d3cd1d78"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/advancement/stars/root.json"
+hash = "351e3087b1f3b2604d33376c43408d69b1a5d13ecdc523efa80ff1b77a8cf9e6"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/advancement/stars/stellar_core.json"
+hash = "e795c4910d95476298fa1653030344e32b5a340095a6d0c0792f3edd27e779ae"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/advancement/stars/twilight.json"
+hash = "f7a92edeed2b624408d82c2d807f4cf75e3a9eee503439998265e2dcb23f6433"
+
+[[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/function/give_field_guide.mcfunction"
 hash = "af4fa526d27f76c62673ca2a9657238a60c17e68d6078be98bdd2f8ca671d79a"
 
@@ -347,6 +383,10 @@ hash = "26a03815320aef797b24587a9fa55321ffba2c1cc4bbe096de2f672f36d99cba"
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/recipe/field_guide.json"
 hash = "9ddcb1a3c82355017af3d923b6679f50d597ca4bd76f3373e743a41b8c3ad1db"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/recipe/space/stellar_core.json"
+hash = "0a571204aa40cb02b331575c019a3327508b757f2c0b3a32da24455ee5ba0126"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/recipe/unify/alexscaves__sulfur_dust_to_tfmg__sulfur_dust.json"
@@ -843,6 +883,14 @@ hash = "96e03349dd54c1ae33dbe851ecc86b3c7a90ce7c1975d7f21987aeddd1c0fa9e"
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/northstar/recipe/crushing/mars_gravel.json"
 hash = "b6b56a9e3fc9033f6c867e0f83936c1716779f6e9fd56977e7895560de538ccc"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/northstar/recipe/mechanical_crafting/rocket_station.json"
+hash = "ab155e751d08aeba8658a7c89cefa1b1cc844f3bd270066012d600b4bbc7f0fd"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/northstar_aeronautics_compat/recipe/stellar_navigator.json"
+hash = "8c5bc952910af12e3f8385587fc0153eb862c6d9d84b6d041d446a2464a72953"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/productivebees/recipe/centrifuge/alloys/honeycomb_brass.json"
@@ -1436,8 +1484,8 @@ hash = "db683b65dc15a03dd6de2d34d5dc6ad0e3490744ced513a8cc584784ee9d3d8b"
 metafile = true
 
 [[files]]
-file = "mods/create-galore-bridge-1.0.1.jar"
-hash = "1be3b20f143b9d1b86018dfba1e99f6dade773cca3839b0d51372a8ec6ed7c64"
+file = "mods/create-galore-bridge-1.1.0.jar"
+hash = "e21911e2ed7ec2a45825e94bb29240e745803eeb3ae60e40952d1da7f338ae95"
 
 [[files]]
 file = "mods/create-garnished.pw.toml"
@@ -2240,7 +2288,7 @@ hash = "a682b1e53b1e21a3782438da0913f6963c41a595d0480b6aa399fae109a0415c"
 
 [[files]]
 file = "patchouli_books/create_galore/book.json"
-hash = "72136ff946a8f9a3400564261cf2d87fd3c14b3d3415d7f6c2275f22e705ba2b"
+hash = "560b24274a4672832b760512fae14dcdccffe28357f6ea6ac5b9a753b6ee1e45"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/categories/connections.json"
@@ -2252,7 +2300,7 @@ hash = "f2250b0ed4454e16950d57c2632420459770ae527e94a5dd654f831463157955"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/categories/exploration.json"
-hash = "e2df572a59366b61fb695562e962cabed2aa73d318bbdd8d95b0bbbec8913f23"
+hash = "c498db4584bfa4625edef89f3af8cadb5e9db28d596148e4d548933219fd68b7"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/categories/flight.json"
@@ -2260,11 +2308,11 @@ hash = "f38f69535ae20128ea08550f52cbd654528b93f232841b8c194bb7d0a0a95727"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/categories/food.json"
-hash = "2b749c8d1bfed06390529c635ade938cf0651b3e3829bbfb0f21a4dfac5d1bcf"
+hash = "ba68d087a9e1a54e54dfd5f35ea5dd4c539c7f9bff9ff0089c30c46d8499f90b"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/categories/home.json"
-hash = "23b5a0000bb337b909c0bc2069229c2897530f5cceee2b9ddca4c1419e1786d9"
+hash = "7b74aeb7fa29180a184d2f7e79e065c2a99144919c2ee11e5c332efb3020caaa"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/categories/industry.json"
@@ -2276,11 +2324,15 @@ hash = "e0250281db57d77c077ed5624b63503e511c205a35c3af98beb624b2160ecd5a"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/categories/ocean.json"
-hash = "44c001584e6cc5f6c8f166d913d83582836483291ff3e3966cde994a36038f77"
+hash = "26071f2cd284dc98381ad2fc7b2b959effc7e3e76960b3193ff8e5e13a8a7ff2"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/categories/space.json"
-hash = "6e4902b2ae599c251335a9bd609109f2b2acd550410b76e57ca4dd171ae07788"
+hash = "164eda1792aac4c8130105762c67913cf9879050e2a04e4fdfe264c0e5618ccd"
+
+[[files]]
+file = "patchouli_books/create_galore/en_us/categories/stars.json"
+hash = "92722f2aa8d54601421385aba52853d7b2b86575ba8f0d5f6f23e5249155f57b"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/categories/start_here.json"
@@ -2332,7 +2384,7 @@ hash = "7fd3fbbe655666c1006c5df7a8ddb0e751f0e399eb434122d87f6c98aeb56b2e"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/connections/vehicles.json"
-hash = "9527f8fffb7772362853b628a12195d477b8442ab31cfd71fc78d1201098974c"
+hash = "f1b39dccf487d702194cbb8e8c44e610bbe9136a05bd75f0675713a661c4f12b"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/create_basics/brass_and_assembly.json"
@@ -2412,7 +2464,7 @@ hash = "555aaf9935a5a8d3c1f30f702432b759d6b048093465e7b13607a22fc7549d45"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/exploration/bosses.json"
-hash = "c86f53930f36213c0ccbb803f6c0dff65ae40137cff5e9b08c8422bb3239fa13"
+hash = "564987eea803790149cf6f3f6c4c798ce997640ce3161bade359dfd399607bce"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/exploration/cataclysm.json"
@@ -2436,7 +2488,7 @@ hash = "c33ac12c214ad9b2c6c986b8ba98435d55ca8d161bf603a060314367bb62f802"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/exploration/dimensions.json"
-hash = "cc5282cb303d95ea79a1d2bca840ae33fc665c89397b2a4292cc3000254511b8"
+hash = "eb18854d3bc12d8f14c53f7c47dc3ea538b18da6f178e9ff787982441431a95e"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/exploration/gear.json"
@@ -2716,7 +2768,7 @@ hash = "8700e53d12dacc1bb5754dc592506a7c4df9e23f837fd8b61aa9765f6c186d65"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/space/aeronautics_bridge.json"
-hash = "3cb4fcb45da7c8c298c84fea1c68d0bd0589fbddbb0c036946241226e0fe9773"
+hash = "0240908765c566a6991512bf7a3c66afba20b673aff35496a5bb0ed864d809e4"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/space/planets.json"
@@ -2724,19 +2776,55 @@ hash = "91ce7ae5924c1799458be89341dfcc71373f6813ad83b03217cb21508d76675e"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/space/reaching_space.json"
-hash = "761427284df4bc63643341aa0b94e7d78d9f828f2fa84b3c5274f8a8dea927d0"
+hash = "493349ee380b560843bc70477c427b8e1f92b0447431071abb9c41d4b024295d"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/space/rocket_building.json"
-hash = "2d430b9da024a98712d19c827c3bfada8651ced5684faf776d8084fa9d8c8011"
+hash = "a49398604050d661408cb9758cb33d7429e7a15cc5b9cf365a32ae690a222335"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/space/space_materials.json"
-hash = "9bb17e840f72d8d443e64e6fa445240bcd83642470091f0c50d734303943a479"
+hash = "a935deef1640316412bbbce6df6a1782336f3e1e44dec1e74a66b254ee978fdb"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/space/space_survival.json"
 hash = "3f212d0137e2e0b480c5558a64000ef4aadbd1c32d34e789fbf75554c5248135"
+
+[[files]]
+file = "patchouli_books/create_galore/en_us/entries/stars/abyss.json"
+hash = "cb85c99592efced9fcdb86e2ccbdc6ac509b9e2741bde471147c26e1f2cf766e"
+
+[[files]]
+file = "patchouli_books/create_galore/en_us/entries/stars/aether.json"
+hash = "af0cf9ee8aac1255eefad7c47d09a6e81abd131aa047418803a322703ed1c3df"
+
+[[files]]
+file = "patchouli_books/create_galore/en_us/entries/stars/end.json"
+hash = "7b5f49c43a80c70a843f4aa9c4eee1464dbad2419535700a50f11a2c31ce2f7f"
+
+[[files]]
+file = "patchouli_books/create_galore/en_us/entries/stars/industry.json"
+hash = "1ae530c6bc1c1103fdb436459350685014e9e7e733bc74a76f05322b0c3ec32b"
+
+[[files]]
+file = "patchouli_books/create_galore/en_us/entries/stars/machine_fights.json"
+hash = "5cf5314dc3de8264a47124c3ed040279f92b6d2cb9fb61e58c5a9990edeef7e0"
+
+[[files]]
+file = "patchouli_books/create_galore/en_us/entries/stars/nether.json"
+hash = "3d3ff10607e25a141fcf36ce0ee57d0e3c0a60e22ada53d799f19427e711b2a6"
+
+[[files]]
+file = "patchouli_books/create_galore/en_us/entries/stars/stellar_core.json"
+hash = "df5a4cbbe3743bbedbfe782791a20f938035477015ed7d3c5fb4299bb8e997e1"
+
+[[files]]
+file = "patchouli_books/create_galore/en_us/entries/stars/twilight.json"
+hash = "023e498ebd30c3582ed216039fa3e8a9305ced4c802e478d043f0d58c14348ca"
+
+[[files]]
+file = "patchouli_books/create_galore/en_us/entries/stars/why.json"
+hash = "69af0e6a626d6c93a08a20882ca1c2b976549fbd0f130f96c98fda604bb6c20d"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/start_here/difficulty.json"

@@ -1,0 +1,25 @@
+{
+  "parent": "create_galore:stars/root",
+  "display": {
+    "icon": {
+      "id": "irons_spellbooks:dragonskin"
+    },
+    "title": "Dragon Hide",
+    "description": "Take Dragonskin from the Ender Dragon",
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false
+  },
+  "criteria": {
+    "has": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "irons_spellbooks:dragonskin"
+          }
+        ]
+      }
+    }
+  }
+}

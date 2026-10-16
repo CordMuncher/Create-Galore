@@ -1,0 +1,25 @@
+{
+  "parent": "create_galore:stars/root",
+  "display": {
+    "icon": {
+      "id": "alexscaves:immortal_embryo"
+    },
+    "title": "From the Abyss",
+    "description": "Take an Immortal Embryo from a Hullbreaker in the Abyssal Chasm",
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false
+  },
+  "criteria": {
+    "has": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "alexscaves:immortal_embryo"
+          }
+        ]
+      }
+    }
+  }
+}

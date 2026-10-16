@@ -5,7 +5,7 @@ The **Create Galore Field Guide** is a [Patchouli](https://modrinth.com/mod/patc
 ```
 pack/patchouli_books/create_galore/
   book.json                     name, landing text, look
-  en_us/categories/<id>.json    the 13 sections
+  en_us/categories/<id>.json    the 14 sections
   en_us/entries/<category>/<entry>.json
 ```
 

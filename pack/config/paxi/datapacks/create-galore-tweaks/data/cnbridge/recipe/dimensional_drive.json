@@ -7,9 +7,15 @@
     "SPS"
   ],
   "key": {
-    "S": { "item": "northstar:titanium_ingot" },
-    "P": { "item": "create:precision_mechanism" },
-    "C": { "item": "northstar:circuit" }
+    "S": {
+      "item": "northstar:titanium_ingot"
+    },
+    "P": {
+      "item": "create:precision_mechanism"
+    },
+    "C": {
+      "item": "create_galore_bridge:stellar_core"
+    }
   },
   "result": {
     "id": "cnbridge:dimensional_drive",
