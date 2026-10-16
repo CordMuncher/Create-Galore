@@ -45,7 +45,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**Fullscreen** is F11. On an NVIDIA card with a 10-bit monitor, set Vulkan/OpenGL present method to Prefer layered on DXGI Swapchain in the NVIDIA Control Panel, or the driver still switches a 10-bit monitor to 8-bit. Screenshot key: F2."
+      "text": "**Fullscreen** is F11. On an NVIDIA card with a 10-bit monitor, set Vulkan/OpenGL present method to Prefer layered on DXGI Swapchain in the NVIDIA Control Panel, or the driver still switches a 10-bit monitor to 8-bit. With shaders this can cap the GPU at about half its speed; set it back to Auto if you don't need 10-bit. Screenshot key: F2."
     },
     {
       "type": "modonomicon:text",
