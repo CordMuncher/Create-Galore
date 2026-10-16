@@ -29,12 +29,12 @@
       "type": "patchouli:spotlight",
       "item": "createcafe:strawberry_milk_tea",
       "title": "Tea and Syrups",
-      "text": "Teas and syrups are mixed over heat from fruit, melted sugar and often milk or water. Dozens of fruit flavours exist.",
+      "text": "Mixed over heat from fruit, melted sugar and often milk or water. Fruit from Fruits Delight, Berries and Cherries, Twilight Forest and Northstar all count.",
       "link_recipe": true
     },
     {
       "type": "patchouli:text",
-      "text": "The mixing recipes need a Blaze Burner under the mixer. Tapioca flour, oreo and crushed cookies give bubble tea style toppings.$(br2)Heat: $(l:create_basics/heat)Heat$(/l). Serving to customers: $(l:food/cozy_cafe)Cozy Cafe$(/l)."
+      "text": "The mixing recipes need a Blaze Burner under the mixer. Tapioca flour, oreo and crushed cookies give bubble tea style toppings.$(br2)Blood Oranges come from haunting an orange with a Fan. Mana Berries come from filling sweet berries with 25 mB of liquid experience in a Spout.$(br2)Heat: $(l:create_basics/heat)Heat$(/l). Serving to customers: $(l:food/cozy_cafe)Cozy Cafe$(/l)."
     }
   ]
 }

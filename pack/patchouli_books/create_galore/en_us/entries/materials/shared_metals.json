@@ -21,7 +21,7 @@
     },
     {
       "type": "patchouli:text",
-      "text": "Plates are shared too: Alloyed's Steel Sheet and TFMG's Heavy Plate are both in the steel plate tag, so a recipe asking for steel plate can take either.",
+      "text": "TFMG's Heavy Plate (three presses) is the one you make: Alloyed's one-press Steel Sheet is off. Both are in the steel plate tag, so old sheets still work in recipes.",
       "title": "Steel plates"
     },
     {

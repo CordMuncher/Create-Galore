@@ -39,7 +39,7 @@
     },
     {
       "type": "patchouli:text",
-      "text": "$(thing)Other mods$(): the tag Create reads for boiler heat also includes Farmer's Delight's $(item)Stove$(), Twilight Forest's fiery storage blocks, and lava, magma blocks, campfires and fire. These work as passive boiler heaters, weaker than a burner.$(br2)Create Additions' $(item)Blaze Burner with Straw$() takes liquid fuel by bucket or pipe."
+      "text": "$(thing)Other mods$(): the tag Create reads for boiler heat also includes Farmer's Delight's $(item)Stove$(), Twilight Forest's fiery storage blocks, and lava, magma blocks, campfires and fire. These work as passive boiler heaters, weaker than a burner.$(br2)Burners can also burn liquid fuel from pipes: see $(l:industry/liquid_fuel)Burning Liquid Fuel$(/l)."
     },
     {
       "type": "patchouli:relations",

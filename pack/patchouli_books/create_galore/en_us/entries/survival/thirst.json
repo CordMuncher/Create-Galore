@@ -45,7 +45,7 @@
     },
     {
       "type": "patchouli:text",
-      "text": "A Create $(item)Compacting$() recipe squeezes a Cactus into purified water (250 mB) and green dye. Good for desert bases.$(br2)Thirst also has recipes for mods this pack does not include. Those stay inactive. Fruits Delight juices still count as drinks.",
+      "text": "A Create $(item)Compacting$() recipe squeezes a Cactus into purified water (250 mB) and green dye. Good for desert bases.$(br2)Fruits Delight juices count as drinks. Farmer's Delight melon juice and apple cider hydrate like a water bottle.",
       "title": "Cactus and extras"
     },
     {

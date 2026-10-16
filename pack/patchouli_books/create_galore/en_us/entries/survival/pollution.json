@@ -14,14 +14,14 @@
     },
     {
       "type": "patchouli:text",
-      "text": "Every source adds smog per second. Defaults:$(li)Campfire 1$(li)Stove (Farmer's Delight) 2$(li)Furnace, smoker 4$(li)Blast furnace 8$(li)Lit Blaze Burner 16, hotter flame more$(li)Blaze Burner with Straw 16",
+      "text": "Every source adds smog per second:$(li)Campfire 1$(li)Stove (Farmer's Delight) 2$(li)Furnace, smoker 4$(li)Blast furnace 8$(li)Blaze Burner 16, superheated 32$(li)Blaze Burner with Straw, the same",
       "title": "What pollutes"
     },
     {
       "type": "patchouli:spotlight",
       "item": "create:blaze_burner",
       "title": "Blaze Burner",
-      "text": "The Create heat source pollutes while lit, so it is a common source in factories. See $(l:create_basics/heat)Heat$(/l).",
+      "text": "The Create heat source pollutes while it burns fuel, so it is a common source in factories. One with no fuel is clean. See $(l:create_basics/heat)Heat$(/l).",
       "link_recipe": true
     },
     {

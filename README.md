@@ -6,7 +6,7 @@ A big, long-term Minecraft modpack built around the Create mod. Think "Minecraft
 
 | | |
 |---|---|
-| **Version** | 0.1.3 |
+| **Version** | 0.1.4 |
 | **Minecraft** | 1.21.1 |
 | **Loader** | NeoForge **21.1.259** (pinned, don't update it, see [Known issues](#known-issues)) |
 | **Mods** | 222 from Modrinth + the pack's own small Create Galore Bridge + Twilight Forest added by hand, plus 4 shader packs and the Fresh Animations resource pack |
@@ -15,7 +15,7 @@ A big, long-term Minecraft modpack built around the Create mod. Think "Minecraft
 
 ## Install (players)
 
-1. Download `Create-Galore-0.1.3.mrpack` from the [latest release](https://github.com/emresahin0906-code/Create-Galore/releases/latest) (or [from this repo](Create-Galore-0.1.3.mrpack)).
+1. Download `Create-Galore-0.1.4.mrpack` from the [latest release](https://github.com/emresahin0906-code/Create-Galore/releases/latest) (or [from this repo](Create-Galore-0.1.4.mrpack)).
 2. Import it:
    - **Prism Launcher:** Add Instance → Import → pick the `.mrpack`.
    - **Modrinth App:** drag the `.mrpack` onto the window (or File → Import).
@@ -97,10 +97,11 @@ Everything below ships as plain config files or a datapack in `pack/` (no mod ja
 - **Ore deposits.** Deposit drills mine diamonds, emeralds, quartz and glowstone at Ore Excavation's own speed (1,200 ticks, 512 SU for gems). Metals stay fast.
 - **Twilight Forest:** the Uncrafting Table no longer reverses recipes (`disableUncrafting = true`), since stonecutter recipes let it multiply copper, bronze and Create Deco metal up to 4x. It still repairs and does its special recipes.
 - **Create Propulsion:** Solid and Liquid Burners can't heat mixers or superheat boilers. They still heat boilers to normal level and run thrusters and Stirling engines.
-- **Pollution:** TFMG engines (6 per block at full throttle, 4 for large engines), fireboxes (8) and blast furnaces (30) add smog while they run. The pack's small Create Galore Bridge mod tells Smog when they're actually burning fuel, so an idle, empty or switched-off machine is clean and a throttled engine pollutes less.
+- **Pollution:** TFMG engines (6 per block at full throttle, 4 for large engines), fireboxes (8) and blast furnaces (30) add smog while they run. The pack's small Create Galore Bridge mod tells Smog when they're actually burning fuel, so an idle, empty or switched-off machine is clean and a throttled engine pollutes less. Blaze Burners work the same way: 16 per second while fuelled, 32 superheated, nothing when the blaze has no fuel.
 - **Smaller ones:** Farmer's Delight melon juice and apple cider hydrate like a water bottle (6 and 8 instead of 8 and 13). Create Wizardry's Mana Siphon never turns an arcane ingot into netherite. Ferrets dig up an emerald instead of a Totem of Undying. Crushing granite gives uranium powder 10% of the time instead of 50%. A Biomass Pellet takes 2 Biomass.
 
 **Fixes.**
+- Create's Blaze Burner makes smog. Smog's default list named `create:lit_blaze_burner`, the decorative flint-and-steel burner, which it can never see, so the real burner (and with it most Create factories) was pollution-free.
 - The Northstar–Aeronautics Dimensional Drive recipe uses a Northstar Circuit instead of a chip Northstar removed, so ships can be launched to the planets again.
 - 19 broken recipes from Thirst, Create: Framed (radon lamps) and Create Deco (white placard) are rewritten in the current format.
 - TFMG's diesel, gasoline, kerosene, naphtha and heavy oil can be piped into a Blaze Burner again, and napalm superheats it (TFMG used Create Liquid Fuel's old file name).
@@ -109,6 +110,7 @@ Everything below ships as plain config files or a datapack in `pack/` (no mod ja
 - The chest in Aeronautics Structures' engineering house is no longer empty; its leather uniform is now navy blue instead of a random colour.
 - Chunksmith no longer pre-generates a 4096-block radius every time you enter a world. Use its commands to pregenerate when you want.
 - The Deep Seas setup prompt and the BetterX welcome screen are switched off.
+- The title screen shows the pack's own panorama again. Aquamirae's themed menu was drawn over it (`config/obscuria/aquamirae-early.json`).
 
 **Key rebinds** (only these keys are changed): Backpack J, Jetpack toggle N, Mobile Packages stock ticker `.` and networks `;`, Accessories `,`, Cataclysm abilities Home/End/Insert/Delete, Aether invisibility `=`, Supplementaries quiver `` ` ``, Iris shader reload F8, Railways Navigator overlay options `\`.
 
@@ -184,6 +186,9 @@ All tests ran headless in a cloud machine (4 cores, 16 GB RAM, no GPU), so speed
 | Log-noise fixes on a dedicated server, boot and two `/reload`s: 22 more recipes load (16 Create Cafe teas, 2 syrups, blood tea, mana tea, Blood Orange, Mana Berries), and the My Nether's Delight, Aeronautics Structures, blood tea and syrup errors are gone. In-world, a pump feeds TFMG diesel into a Blaze Burner and it burns, while water is refused | ✅ |
 | 0.1.3 balance pass on a dedicated server: boots clean, 37 fewer recipes load (22,338 together with the log-noise fixes), configs load without corrections, no recipe, tag or Field Guide errors, Garnished stone tags list no slabs | ✅ |
 | Create Galore Bridge on a dedicated server, over 20 s per check: an idle regular engine and an idle large engine add no smog; a large engine running on diesel (shaft at 128 RPM, fuel draining) adds smog, and stops adding it once its air runs out with diesel still in the tank; a blast furnace adds smog while smelting and none once the charge stops | ✅ |
+| 0.1.4 Blaze Burner smog on a dedicated server: a burner with no fuel adds no smog, a fuelled one adds 16 per second and a superheated one 32 | ✅ |
+| 0.1.4 Field Guide in-world: the book loads with all 13 categories and no errors of its own, the changed pages show the new text | ✅ |
+| 0.1.4 title screen: the Create Galore panorama shows instead of Aquamirae's menu | ✅ |
 | Real FPS, shaders, Distant Horizons visuals, gameplay feel | ❌ Needs a real PC with a GPU |
 
 **Memory:** about 9.3 GB of process memory on the server and 8-9.6 GB on the client with an 8 GB heap. A laptop with 16 GB can play but shouldn't host and play at the same time. A garbage collector benchmark on the server (pack's G1 flags vs Java defaults, Generational ZGC and Shenandoah, plus a 6 GB run) is in [docs/java-flags.md](docs/java-flags.md).
@@ -192,7 +197,7 @@ All tests ran headless in a cloud machine (4 cores, 16 GB RAM, no GPU), so speed
 
 ## Repo layout
 
-- `Create-Galore-0.1.3.mrpack`: the importable pack, built from `pack/`
+- `Create-Galore-0.1.4.mrpack`: the importable pack, built from `pack/`
 - `pack/`: [packwiz](https://packwiz.infra.link/) source, one `.pw.toml` per mod or shader, plus configs (`pack/config/`), the datapacks (`pack/config/paxi/datapacks/create-galore-tweaks`, always on, `create-galore-no-elytra`, and the opt-in `config/paxi/optional/create-galore-with-elytra`) and the Field Guide (`pack/patchouli_books/`)
 - `MODS.md`: full mod list with versions and sides
 - `server/`: server install scripts, memory settings and a starting `server.properties`
@@ -206,5 +211,5 @@ To rebuild the `.mrpack` after changing `pack/`:
 ```
 cd pack
 packwiz refresh
-packwiz modrinth export -o ../Create-Galore-0.1.3.mrpack
+packwiz modrinth export -o ../Create-Galore-0.1.4.mrpack
 ```

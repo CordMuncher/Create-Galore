@@ -1,10 +1,10 @@
 # Mod list
 
-Create Galore 0.1.3, NeoForge 21.1.259 for Minecraft 1.21.1. Everything below comes from Modrinth and is pinned by the files in [`pack/`](pack/).
+Create Galore 0.1.4, NeoForge 21.1.259 for Minecraft 1.21.1. Everything below comes from Modrinth and is pinned by the files in [`pack/`](pack/).
 
 "Side" is how the pack installs it: **both** means it goes on the client and the server; **client** means client only. Server-only world generation mods are marked **both** on purpose, because singleplayer runs them on your own machine.
 
-Built for this pack and shipped inside it: **Create Galore Bridge** 1.0.0 (both), `pack/mods/create-galore-bridge-1.0.0.jar`. It makes TFMG engines and blast furnaces pollute only while they burn fuel. Source and build script in [`tools/bridge-mod/`](tools/bridge-mod/).
+Built for this pack and shipped inside it: **Create Galore Bridge** 1.0.1 (both), `pack/mods/create-galore-bridge-1.0.1.jar`. It makes TFMG engines and blast furnaces pollute only while they burn fuel, and Blaze Burners only while they have fuel. Source and build script in [`tools/bridge-mod/`](tools/bridge-mod/).
 
 Not on Modrinth, add by hand: **Twilight Forest** `twilightforest-1.21.1-4.8.3345-universal.jar` (CurseForge). See the README.
 

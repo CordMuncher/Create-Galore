@@ -12,12 +12,12 @@
       "type": "patchouli:spotlight",
       "item": "create:blaze_burner",
       "title": "Create: Liquid Fuel",
-      "text": "A plain Blaze Burner accepts fluid through pipes. Its list here: lava, Seed Oil, Bioethanol and Garnished's Peanut Oil.",
+      "text": "A plain Blaze Burner takes piped fluid: lava, Seed Oil, Bioethanol, Peanut Oil, and TFMG's diesel, gasoline, kerosene, naphtha, heavy oil and napalm.",
       "link_recipe": true
     },
     {
       "type": "patchouli:text",
-      "text": "Bioethanol and Peanut Oil superheat the burner (the blue flame). Lava and Seed Oil only heat it. Seed Oil and Bioethanol come from Crafts & Additions; Peanut Oil from Garnished. Peanut Oil burns 5,000 ticks a bucket in either burner."
+      "text": "Bioethanol, Peanut Oil and TFMG's napalm superheat the burner (the blue flame). The others only heat it. Seed Oil and Bioethanol come from Crafts & Additions; Peanut Oil from Garnished. Peanut Oil burns 5,000 ticks a bucket in either burner."
     },
     {
       "type": "patchouli:spotlight",
@@ -32,7 +32,7 @@
     },
     {
       "type": "patchouli:text",
-      "text": "So TFMG's diesel, gasoline, crude oil and creosote all burn here, through shared fluid tags. TFMG also ships its own fuel list for Liquid Fuel, but this build of Liquid Fuel does not appear to read it. Use a Straw burner for TFMG fuels."
+      "text": "So TFMG's diesel, gasoline, crude oil and creosote all burn here, through shared fluid tags. Crude oil and creosote need the Straw burner; TFMG's other fuels work in a plain Blaze Burner too."
     },
     {
       "type": "patchouli:spotlight",
@@ -43,7 +43,7 @@
     },
     {
       "type": "patchouli:text",
-      "text": "Pollution: a lit Blaze Burner and Crafts & Additions' Straw burner are both listed as smog sources. See $(l:survival/pollution)Pollution$(/l). Solid-fuel option: Biomass Pellets."
+      "text": "Pollution: a Blaze Burner, with or without Straw, makes smog while it burns fuel. See $(l:survival/pollution)Pollution$(/l). Solid-fuel option: Biomass Pellets."
     },
     {
       "type": "patchouli:relations",

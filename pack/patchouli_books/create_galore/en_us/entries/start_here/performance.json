@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "patchouli:text",
-      "text": "This is a heavy pack. Give the game at least $(bold)8 GB of RAM$() (set in your launcher's instance settings). About 10 GB is more comfortable with Distant Horizons."
+      "text": "This is a heavy pack. Give the game $(bold)8 GB of RAM$() on a 16 GB PC, or $(bold)12 GB$() on a big one, in your launcher's instance settings. More than 16 GB doesn't help. The README has the matching Java flags."
     },
     {
       "type": "patchouli:text",

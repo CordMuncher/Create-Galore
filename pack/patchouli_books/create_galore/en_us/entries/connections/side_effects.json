@@ -10,7 +10,7 @@
     },
     {
       "type": "patchouli:text",
-      "text": "$(li)$(bold)Burning pollutes.$() Furnaces, burners and stoves add smog to their chunk. Smog is left at its defaults, so it stays punishing. Flues and air scrubbers fix it.$(li)$(bold)Heat warms you.$() Factories near you count toward body temperature."
+      "text": "$(li)$(bold)Burning pollutes.$() Furnaces, burners and stoves add smog to their chunk. Smog keeps its default rates, so it stays punishing. Flues and air scrubbers fix it.$(li)$(bold)Heat warms you.$() Factories near you count toward body temperature."
     },
     {
       "type": "patchouli:text",

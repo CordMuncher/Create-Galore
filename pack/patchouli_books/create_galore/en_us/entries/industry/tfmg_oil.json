@@ -53,7 +53,7 @@
     },
     {
       "type": "patchouli:text",
-      "text": "Fuels also burn in Crafts & Additions' Blaze Burner with Straw: crude oil, diesel and gasoline all work through shared fluid tags. See $(l:industry/liquid_fuel)Burning Liquid Fuel$(/l). Pipes and pumps: $(l:create_basics/fluids)Fluids$(/l)."
+      "text": "Fuels also burn in Blaze Burners: piped diesel, gasoline, kerosene, naphtha and heavy oil heat one, and napalm superheats it. The Straw burner also takes crude oil and creosote. See $(l:industry/liquid_fuel)Burning Liquid Fuel$(/l). Pipes and pumps: $(l:create_basics/fluids)Fluids$(/l)."
     }
   ]
 }
