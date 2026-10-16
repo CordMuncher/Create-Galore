@@ -12,7 +12,8 @@ DEST="${1:?give the server folder, e.g. ./install-server.sh ~/CreateGaloreServer
 mkdir -p "$DEST"
 cd "$DEST"
 
-if [ ! -f run.sh ]; then
+# Installs NeoForge on the first run, and again when the pack moves to another NeoForge version.
+if [ ! -f run.sh ] || [ ! -d "libraries/net/neoforged/neoforge/$NEOFORGE" ]; then
   echo "Installing NeoForge $NEOFORGE server..."
   curl -fL -o neoforge-installer.jar \
     "https://maven.neoforged.net/releases/net/neoforged/neoforge/$NEOFORGE/neoforge-$NEOFORGE-installer.jar"
@@ -20,13 +21,15 @@ if [ ! -f run.sh ]; then
   rm -f neoforge-installer.jar neoforge-installer.jar.log
 fi
 
+# packwiz-installer remembers what it installed (packwiz.json), so a re-run only downloads what changed,
+# removes mods the pack dropped and leaves config edits alone unless the pack changed that file.
 [ -f packwiz-installer-bootstrap.jar ] || curl -fL -o packwiz-installer-bootstrap.jar \
-  https://github.com/packwiz/packwiz-installer-bootstrap/releases/latest/download/packwiz-installer-bootstrap.jar
+  https://github.com/packwiz/packwiz-installer-bootstrap/releases/download/v0.0.3/packwiz-installer-bootstrap.jar
 
 [ -f packwiz-installer.jar ] || curl -fL -o packwiz-installer.jar \
-  https://github.com/packwiz/packwiz-installer/releases/latest/download/packwiz-installer.jar
+  https://github.com/packwiz/packwiz-installer/releases/download/v0.5.14/packwiz-installer.jar
 
-echo "Downloading the server-side mods and configs..."
+echo "Downloading the server-side mods and configs that changed..."
 java -jar packwiz-installer-bootstrap.jar --bootstrap-no-update -g -s server "$PACK"
 
 # First run only: memory settings and server settings. Your own edits are kept on later runs.

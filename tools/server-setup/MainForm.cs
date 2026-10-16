@@ -244,11 +244,18 @@ namespace CreateGalore.ServerSetup
             memoryLabel.Text = memory.Value + " GB" + (memory.Value >= 6 && memory.Value <= 10 ? " (tested)" : memory.Value > 12 ? " (more than needed)" : "");
         }
 
+        bool HasServer()
+        {
+            string dir = folder.Text.Trim();
+            return dir.Length > 0 && Directory.Exists(dir) && File.Exists(Path.Combine(dir, "server.properties"));
+        }
+
         void ReadExisting()
         {
             string dir = folder.Text.Trim();
-            bool has = dir.Length > 0 && Directory.Exists(dir) && File.Exists(Path.Combine(dir, "server.properties"));
-            existing.Text = has ? "There's already a server here. Install updates it and keeps the world and your settings." : "";
+            bool has = HasServer();
+            existing.Text = has ? "There's already a server here. Update only downloads mods and configs that changed, and keeps the world, your settings and config edits the pack didn't touch." : "";
+            install.Text = has ? "Update server" : "Install server";
             if (!has) return;
             int mem = ServerInstaller.ReadMemory(dir);
             if (mem > 0) memory.Value = Math.Max(memory.Minimum, Math.Min(memory.Maximum, mem));
@@ -343,7 +350,7 @@ namespace CreateGalore.ServerSetup
             foreach (Control c in new Control[] { folder, memory, modsZone, tfZone, opName, players, port, elytra, eula })
                 c.Enabled = !busy;
             install.Enabled = true;
-            install.Text = busy ? "Stop" : "Install server";
+            install.Text = busy ? "Stop" : HasServer() ? "Update server" : "Install server";
             if (busy) { status.ForeColor = Muted; openFolder.Enabled = start.Enabled = false; }
         }
 

@@ -119,10 +119,11 @@ Skip `session.lock` and anything named `*.old`. Both sides must run the same pac
 
 When the pack in this repo changes:
 
-1. Stop the server. With the app: download the new `Create-Galore-Server-Setup` from the latest release, point it at the same folder and press Install. With the script: download the repo again (or `git pull`) and run `install-server.bat C:\CreateGaloreServer` again.
-2. Either way it updates the mods and configs in place and removes mods that left the pack. Your world, whitelist, ops and settings are kept.
-3. For Exaroton: delete its `mods/` folder and upload the new `mods/` and `config/` folders.
-4. Players update their own instance from the new `.mrpack`.
+1. Stop the server. With the app: download the new `Create-Galore-Server-Setup` from the latest release, point it at the same folder and press **Update server**. With the script: download the new server kit (or `git pull`) and run `install-server.bat C:\CreateGaloreServer` again.
+2. Either way it updates in place. Mods whose checksum still matches stay, changed ones are downloaded (or copied from a mods folder you drop into the app), and mods that left the pack are removed. NeoForge is reinstalled only when the pack moves to a new version. Your world, whitelist, ops, `server.properties`, memory settings and the Twilight Forest jar are kept.
+3. Configs: a config you edited on the server is kept as long as the pack didn't change that file. When the pack changes it, the pack's version replaces yours (the app's log lists every config it kept, and the script's packwiz-installer does the same), so redo the edit if you still want it. The app remembers the pack's checksums in `.galore-installed.txt` and the scripts in `packwiz.json`; don't delete them, or the next update treats every file as new and rewrites the configs.
+4. For Exaroton: run the update on a local copy first, then upload the new `mods/` folder (delete Exaroton's old one first so dropped mods go) and the `config/` folder. Edited configs on Exaroton itself are overwritten by that upload, so make edits in the local copy.
+5. Players update their game with the pre-launch updater (README, *Updating*) or import the new `.mrpack`.
 
 Back up `world/` before updates that add or remove mods. Blocks and items from removed mods disappear from the world.
 

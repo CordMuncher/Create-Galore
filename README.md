@@ -31,7 +31,7 @@ Don't let the launcher update NeoForge past 21.1.259.
 
 ## Install (server)
 
-**On Windows, use the Server Setup app.** Download `Create-Galore-Server-Setup-<version>.exe` from the [latest release](https://github.com/emresahin0906-code/Create-Galore/releases/latest) and run it. Pick a folder and the memory, drop in the Twilight Forest jar (it shows a green check when it's the right version), tick the EULA and press Install. It installs NeoForge, downloads the server-side mods (or copies them from a mods folder you drop in, skipping client-only ones), applies the pack's configs, memory and whitelist, and writes a `start-server.bat`. If your PC has no Java 21 it downloads one into the server folder. Run it again after a pack update to update the server; the world and your settings stay.
+**On Windows, use the Server Setup app.** Download `Create-Galore-Server-Setup-<version>.exe` from the [latest release](https://github.com/emresahin0906-code/Create-Galore/releases/latest) and run it. Pick a folder and the memory, drop in the Twilight Forest jar (it shows a green check when it's the right version), tick the EULA and press Install. It installs NeoForge, downloads the server-side mods (or copies them from a mods folder you drop in, skipping client-only ones), applies the pack's configs, memory and whitelist, and writes a `start-server.bat`. If your PC has no Java 21 it downloads one into the server folder. Run a newer version of the app on the same folder to update the server (see [Updating](#updating)).
 
 **Or use the script** (any OS). A dedicated server takes one script plus two manual steps (add Twilight Forest, accept the EULA). The full guide, including hosting on your own PC vs Exaroton, memory, whitelisting and moving the world between the two, is in **[docs/server-setup.md](docs/server-setup.md)**.
 
@@ -42,6 +42,29 @@ install-server.bat C:\CreateGaloreServer        (Windows)
 ```
 
 The server gets 181 mods, the pack's Create Galore Bridge and Twilight Forest. The 41 client-only mods (Sodium, Iris, Distant Horizons, map add-ons, the ambiance layer and so on) are skipped automatically. Players still install the full `.mrpack`. Far terrain for Distant Horizons is sent from the server by Chunksmith, so Distant Horizons itself stays off the server.
+
+## Updating
+
+You don't have to reinstall the pack for a new version. Both the game and the server can update in place: only mods and configs that changed are downloaded or replaced, mods that left the pack are removed, and everything else (Minecraft, NeoForge, every unchanged mod, your worlds) stays as it is. The full `.mrpack` stays the way to make a new instance.
+
+**Game (Prism Launcher), one-time setup.** The pack ships [packwiz-installer](https://packwiz.infra.link/tutorials/installing/packwiz-installer/), which updates the instance from the pack on GitHub each time you press Play.
+
+1. If the instance's `minecraft` folder (Prism: right-click the instance → Folder) has no `packwiz-installer-bootstrap.jar`, download `Create-Galore-Updater.zip` from the [latest release](https://github.com/emresahin0906-code/Create-Galore/releases/latest) and unzip its two jars there. Instances imported from a release that already has the updater have them.
+2. Edit the instance → Settings → Custom commands, tick the box and paste this as the **pre-launch command**:
+   ```
+   "$INST_JAVA" -jar packwiz-installer-bootstrap.jar --bootstrap-no-update https://raw.githubusercontent.com/emresahin0906-code/Create-Galore/main-6fi2ef/pack/pack.toml
+   ```
+3. Press Play. A small window checks the pack. The first run on an instance you already have just checks the files and downloads nothing if they match the latest release. After that, launches with no pack change take a couple of seconds.
+
+The updater also keeps NeoForge on the pack's pinned version. To freeze the instance on its current version, clear the pre-launch command. If GitHub can't be reached, the window offers to continue without updating.
+
+**What it keeps.** Files the pack doesn't ship are never touched: Distant Horizons settings, map and minimap data, `servers.dat`, your worlds, shaders' settings, the Twilight Forest jar and the Elytra switch. Your keybinds and video settings (`options.txt`), Subtle Effects' `blocks.toml` and Inventory Profiles Next's settings are marked keep-forever, so the pack only writes them when they're missing. Any other config you edit stays until the pack itself changes that file; then the pack's version wins, because that's usually a fix.
+
+**Before the first switch**, update the instance to the latest release once if it's older (import the new `.mrpack` as usual). The updater only removes mods it knows it installed, so mods dropped before the switch would linger. A test with a real 0.1.5 instance (227 files, edited keybinds and Subtle Effects, a Distant Horizons config, a world) checked every file in about 4 seconds, downloaded nothing and changed nothing; an update then removed a dropped mod, fetched one changed and one new config, kept the edited files and moved NeoForge in the instance to the pack's version.
+
+**Modrinth App:** instance → Settings → Launch hooks → Pre-launch, the same command with `java` (or the full path to a Java 21 `java.exe`) in place of `"$INST_JAVA"`, after putting the two jars in the instance folder. Prism is the tested route.
+
+**Server.** Run the newer Server Setup app on the same folder; its button reads "Update server" when it finds one there. It keeps mods whose checksum still matches, downloads the changed ones, removes the ones the pack dropped and keeps config edits the pack didn't change. The scripts do the same: run `install-server` again from the new server kit. They also reinstall NeoForge if the pack moves to a new version. Details in [docs/server-setup.md](docs/server-setup.md#updating-the-pack).
 
 ## The Field Guide
 
@@ -177,7 +200,7 @@ None of these stop the game.
 
 - **NeoForge must stay on 21.1.259.** On 21.1.262 The Aether's bundled Accessories library kicks players on join. 259 is the newest version that works (the pack needs at least 252). Revisit when The Aether updates.
 - **Animal Husbandry is on 0.4.2**, so 0.5.0's rabbit genetics and Angora armor are missing until a fixed version ships.
-- **First launch:** Deep Seas' photosensitivity question still shows once. Minecraft's accessibility prompt is turned off by the shipped `options.txt`, but launchers overwrite `options.txt` when the pack updates, which also resets the key rebinds above. If the Deep Seas warning's button sits off-screen in a small window, press Tab then Enter.
+- **First launch:** Deep Seas' photosensitivity question still shows once. Minecraft's accessibility prompt is turned off by the shipped `options.txt`. Re-importing a `.mrpack` over an instance overwrites `options.txt` and resets the key rebinds above; the in-place updater (see [Updating](#updating)) keeps it. If the Deep Seas warning's button sits off-screen in a small window, press Tab then Enter.
 - **Log noise:** a few recipes and many loot tables log errors because they point at mods that aren't installed (Dye Depot colours for Design n' Decor and Create Connected, Steam 'n' Rails tracks for other wood mods, Botania, Blood Magic, Mekanism and so on). Sable also warns about a few copycat blocks that don't exist, and TFMG still ships its Blaze Burner fuel list under Create Liquid Fuel's old name (the pack's datapack adds it under the new one). All of this was checked line by line: none of those mods would add anything worth having, and the leftover lines are harmless.
 - **First world creation is slow** (about 45 s for the spawn area on the test machine) because of all the world-gen mods. Normal after that.
 
@@ -227,3 +250,5 @@ cd pack
 packwiz refresh
 packwiz modrinth export -o ../Create-Galore-0.1.5.mrpack
 ```
+
+The release workflow then adds `packwiz-installer-bootstrap.jar` and `packwiz-installer.jar` (pinned, hash-checked) to the `.mrpack`'s `overrides/` so new instances can use the pre-launch updater. A config players are expected to tweak in game gets `preserve = true` under its entry in `pack/index.toml` (`packwiz refresh` keeps the flag), so the updater never overwrites it.

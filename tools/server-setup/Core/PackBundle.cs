@@ -95,6 +95,11 @@ namespace CreateGalore.ServerSetup
             using (var s = File.OpenRead(path)) return Hex(h.ComputeHash(s));
         }
 
+        public static string Sha256(Stream s)
+        {
+            using (var h = SHA256.Create()) return Hex(h.ComputeHash(s));
+        }
+
         public static string Hex(byte[] bytes)
         {
             var sb = new StringBuilder(bytes.Length * 2);
