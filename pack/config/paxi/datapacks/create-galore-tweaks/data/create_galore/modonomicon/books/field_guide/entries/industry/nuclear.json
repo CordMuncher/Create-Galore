@@ -1,0 +1,87 @@
+{
+  "category": "industry",
+  "name": "Nuclear Reactors",
+  "description": "Create Nuclear adds uranium, thorium, a multiblock reactor and radiation.",
+  "icon": {
+    "item": "createnuclear:reactor_controller"
+  },
+  "x": 1,
+  "y": -1,
+  "sort_number": 8,
+  "parents": [
+    {
+      "entry": "industry/tfmg_steel",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    },
+    {
+      "entry": "industry/power_compared",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": false
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Nuclear Reactors",
+      "text": "Create Nuclear adds uranium, thorium, a multiblock reactor and radiation. The reactor outputs ordinary rotation through a shaft, so it plugs into any Create network. It is also the pack's source of lead."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "createnuclear:uranium_powder"
+      },
+      "title": "Uranium chain",
+      "text": "Crush raw uranium to powder, mix it into liquid, compact that to Yellowcake. Thorium follows a similar route. Check JEI."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "createnuclear:enriching_campfire"
+      },
+      "title": "Enriching Campfire",
+      "text": "Its green Enriching Fire, blown through by a fan, turns Yellowcake into Enriched Yellowcake. Make it from Enriched Soul Soil."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "createnuclear:uranium_rod"
+      },
+      "title": "Fuel rods",
+      "text": "Enriched Yellowcake pressed in a Mechanical Crafter makes Uranium Rods (fuel). Graphite Rods, from graphene and steel, are the cooling rods."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Reactor build: Reactor Casing (a Brass Casing plus steel) forms a T1, T2 or T3 tower following the pattern in Ponder. Place the Controller, then a Rod Input, Fluid Input, Output and an optional Alarm in casing spots."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "createnuclear:reactor_controller"
+      },
+      "title": "Reactor Controller",
+      "text": "Right-click it with a filled Reactor Blueprint to start. You need fuel and cooling rods, plus water or liquid nitrogen in the Fluid Input."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Too hot with too little cooling and the reactor melts down and explodes. Two Rod Inputs are needed: one for heating rods, one for cooling. Put an Alarm nearby. Drive a shaft off the Reactor Output for rotation."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "createnuclear:default_anti_radiation_chestplate"
+      },
+      "title": "Radiation",
+      "text": "Radiation hurts, and irradiated mobs exist. Anti Radiation armor protects. It can be dyed with cloth."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Steel here is made by mixing coal dust and an iron ingot in a heated mixer, and it gives TFMG steel. The reactor accepts any steel (see [#](2E5AAC)[Shared Metals](entry://materials/shared_metals)[#]()). Create Nuclear's lead is the pack's only lead. Rotation to FE: [#](2E5AAC)[Rotation vs Electricity](entry://industry/power_compared)[#]()."
+    }
+  ]
+}

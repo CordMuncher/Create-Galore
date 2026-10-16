@@ -1,0 +1,94 @@
+{
+  "category": "food",
+  "name": "Kitchen Automation",
+  "description": "Cooking by hand works, but several mods let Create machines do it.",
+  "icon": {
+    "item": "create:mechanical_arm"
+  },
+  "x": -2,
+  "y": 0,
+  "sort_number": 4,
+  "parents": [
+    {
+      "entry": "food/farmers_delight",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Kitchen Automation",
+      "text": "Cooking by hand works, but several mods let Create machines do it. **Central Kitchen** teaches Create to use Farmer's Delight blocks. **Slice & Dice** and **Delightful Creators** add Create-powered cutting and kitchen recipes."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create:blaze_burner"
+      },
+      "title": "Heat (Central Kitchen)",
+      "text": "A Blaze Burner under a pot or stove heats it. A hotter burner speeds up some utensils. Farmer's Delight heat sources also count as passive boiler heaters."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "farmersdelight:cooking_pot"
+      },
+      "title": "Cooking Pot",
+      "text": "A Mechanical Arm can place the bowl and take the meal. A Funnel can pull it out. Packagers and pipes feed solid and fluid ingredients. Factory Gauges help.\\\nSee [#](2E5AAC)[Packages](entry://create_basics/packages)[#]()."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "farmersdelight:cutting_board"
+      },
+      "title": "Cutting Board",
+      "text": "An Arm can lay an ingredient on the board. A Deployer holding a knife in use mode cuts it, and so can a Mechanical Saw."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "The **Stove** and **Skillet** accept ingredients from an Arm too.\n\nFeasts and pies: an Arm takes servings, and the last serving stays in place until a fresh whole dish replaces it. Pancake stacks take only matching flavours, up to twelve."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "sliceanddice:slicer"
+      },
+      "title": "Slicer (Slice & Dice)",
+      "text": "A rotating cutter. Right-click it with a knife. It runs Farmer's Delight cutting board recipes, and it also works on a Basin. Needs rotation: [#](2E5AAC)[Rotation](entry://create_basics/rotation)[#]()."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "sliceanddice:sprinkler"
+      },
+      "title": "Sprinkler",
+      "text": "Place it below a fluid pipe. The fluid sets the effect: Liquid Fertilizer feeds crops, potions affect mobs, lava burns, water moisturises. Not just a farm tool."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Liquid Fertilizer is mixed from tree fertilizer and water, or from Organic Compost and water. Filling Organic Compost with it makes **Rich Soil** in a Spout.\n\nSlice & Dice also fills a bottle with Create's chocolate to make Hot Cocoa."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "delightfulcreators:mechanical_cutter"
+      },
+      "title": "Mechanical Cutter",
+      "text": "Delightful Creators: processes cutting board recipes on items beneath it, from a depot or belt. Cheaper to set up than a Slicer, and the same idea."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Delightful Creators also makes soups and stews **fluids**, so a Spout can fill bowls. Many dishes (steak and potatoes, pies, sandwiches) have Sequenced Assembly versions, and cookies and cakes can be compacted. Look in JEI."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Related",
+      "text": "Other Create-powered food.\n\n- [#](2E5AAC)[Farmer's Delight](entry://food/farmers_delight)[#]()\n- [#](2E5AAC)[Create Ratatouille](entry://food/ratatouille)[#]()\n- [#](2E5AAC)[Brewing and Fermenting](entry://food/brewing)[#]()\n- [#](2E5AAC)[Create Integrated Farming](entry://food/integrated_farming)[#]()"
+    }
+  ]
+}

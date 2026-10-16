@@ -1,0 +1,59 @@
+{
+  "category": "start_here",
+  "name": "How Ideas Build Up",
+  "description": "This is not a checklist.",
+  "icon": {
+    "item": "create:andesite_alloy"
+  },
+  "x": 1,
+  "y": 0,
+  "sort_number": 2,
+  "parents": [
+    {
+      "entry": "start_here/tools",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "How Ideas Build Up",
+      "text": "This is not a checklist. It is a map of how the pack's ideas depend on each other, so you can see which entry to read before another. Every playthrough orders things a little differently."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Rotation first.** Almost every machine needs spinning shafts. Read [#](2E5AAC)[Rotation](entry://create_basics/rotation)[#](), [#](2E5AAC)[Stress](entry://create_basics/stress)[#]() and [#](2E5AAC)[Power Sources](entry://create_basics/power_sources)[#]() before building anything that processes items."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create:andesite_alloy"
+      },
+      "title": "Andesite Alloy",
+      "text": "The first Create material. Early machines and casings use it. Brass comes later and opens the second tier. See [#](2E5AAC)[Materials](entry://create_basics/materials)[#]()."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Survival pressure starts early.** Temperature and thirst affect you from the first day, seasons change what crops do, and pollution grows with your machines. See [#](2E5AAC)[Temperature](entry://survival/temperature)[#](), [#](2E5AAC)[Thirst](entry://survival/thirst)[#](), [#](2E5AAC)[Seasons](entry://survival/seasons)[#]() and [#](2E5AAC)[Pollution](entry://survival/pollution)[#]()."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Vehicles need destinations.** Airships, submarines and trains are more fun with somewhere to go. [#](2E5AAC)[Flight Destinations](entry://flight/destinations)[#](), [#](2E5AAC)[Submarines](entry://ocean/submarines)[#](), [#](2E5AAC)[Trains](entry://transport/trains)[#]() and [#](2E5AAC)[Reaching Space](entry://space/reaching_space)[#]() are the long-range goals."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Metals link everything.** Zinc, brass, steel, lead and titanium turn up in several mods. [#](2E5AAC)[The Ore Guide](entry://materials/ore_guide)[#]() says where each comes from, and [#](2E5AAC)[Electricity](entry://industry/electricity)[#]() and [#](2E5AAC)[Steel](entry://industry/tfmg_steel)[#]() cover the heavy industry tiers."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Good starting links",
+      "text": "- [#](2E5AAC)[Rotation](entry://create_basics/rotation)[#]()\n- [#](2E5AAC)[Core Materials](entry://create_basics/materials)[#]()\n- [#](2E5AAC)[Brass and Assembly](entry://create_basics/brass_and_assembly)[#]()\n- [#](2E5AAC)[Temperature](entry://survival/temperature)[#]()\n- [#](2E5AAC)[Reaching Space](entry://space/reaching_space)[#]()"
+    }
+  ]
+}

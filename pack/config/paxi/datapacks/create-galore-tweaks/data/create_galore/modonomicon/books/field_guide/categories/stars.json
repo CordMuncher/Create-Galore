@@ -1,0 +1,14 @@
+{
+  "name": "The Road to the Stars",
+  "description": "Space is the pack's capstone. Leaving Earth takes a Stellar Core, built from one prize from every corner of the world. This section lists all six and why each is needed.",
+  "icon": {
+    "item": "create_galore_bridge:stellar_core"
+  },
+  "sort_number": 8,
+  "display_mode": "node",
+  "background": "modonomicon:textures/gui/dark_slate_seamless.png",
+  "background_width": 512,
+  "background_height": 512,
+  "max_scroll_x": 210,
+  "max_scroll_y": 195
+}

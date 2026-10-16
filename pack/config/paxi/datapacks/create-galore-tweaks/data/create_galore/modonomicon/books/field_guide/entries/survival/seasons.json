@@ -1,0 +1,67 @@
+{
+  "category": "survival",
+  "name": "Seasons",
+  "description": "Serene Seasons turns the Overworld year into four seasons: Spring, Summer, Autumn, Winter.",
+  "icon": {
+    "item": "sereneseasons:calendar"
+  },
+  "x": -2,
+  "y": 1,
+  "sort_number": 5,
+  "parents": [
+    {
+      "entry": "survival/temperature",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Seasons",
+      "text": "Serene Seasons turns the Overworld year into four seasons: Spring, Summer, Autumn, Winter. Each splits into Early, Mid and Late.\n\nBy default every sub-season lasts 8 days, so a season is 24 days and a year 96. Foliage colors follow the season."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "sereneseasons:calendar"
+      },
+      "title": "Calendar",
+      "text": "Its tooltip shows the current season and day. Crafted from a Clock and paper. Handy for planning plantings."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Weather",
+      "text": "Winter brings snow and ice generation. Rain, snow and storm frequency vary with the season. Tropical biomes (deserts, badlands, savanna, jungle and similar) have Wet and Dry seasons instead."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Crops",
+      "text": "The big rule: crops only grow in the right season. Out of season they grow slowly or not at all, depending on the config. Tooltips may list a crop's seasons.\n\nWinter is hardest: very few crops grow. [#](2E5AAC)[Details](entry://survival/seasons_crops)[#]()."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Greenhouses",
+      "text": "Two ways around it. Plants under a glass roof count as in season, using the greenhouse glass tag (ordinary glass blocks). Crops deep underground are also fertile, below a height set in the config."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "sereneseasons:season_sensor"
+      },
+      "title": "Season Sensor",
+      "text": "Emits a redstone signal depending on the season, like a Daylight Detector. Lets machines react to the time of year."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Seasonal Integration",
+      "text": "Seasonal Integration is a datapack that teaches Serene Seasons about other mods: it adds crops to the season lists and sorts biomes into tropical or off-limits."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Related",
+      "text": "- [#](2E5AAC)[Seasonal Crops](entry://survival/seasons_crops)[#]()\n- [#](2E5AAC)[Farmer's Delight](entry://food/farmers_delight)[#]()\n- [#](2E5AAC)[Temperature](entry://survival/temperature)[#]()\n- [#](2E5AAC)[Dimensions](entry://exploration/dimensions)[#]()"
+    }
+  ]
+}

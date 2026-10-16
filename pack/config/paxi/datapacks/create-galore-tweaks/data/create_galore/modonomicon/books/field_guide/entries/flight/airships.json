@@ -1,0 +1,60 @@
+{
+  "category": "flight",
+  "name": "Airships",
+  "description": "Create Aeronautics turns ordinary blocks into vehicles that float, tilt, fall and collide.",
+  "icon": {
+    "item": "aeronautics:propeller_bearing"
+  },
+  "x": -5,
+  "y": -2,
+  "sort_number": 1,
+  "parents": [],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Airships",
+      "text": "Create Aeronautics turns ordinary blocks into vehicles that float, tilt, fall and collide. A ship needs three things: a body assembled into a physics object, something that lifts it, and something that pushes it."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "The physics layer",
+      "text": "The physics comes from the Sable library. Aeronautics bundles Simulated, with general physics parts like bearings and sensors, and Offroad, with tires, wheel mounts and drilling heads for ground vehicles. A moving build is a **sub-level**: a chunk of world with mass."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "What keeps it up",
+      "text": "Lift comes from sealed balloon envelopes filled with hot air or steam, from Levitite blocks, or from sails and wings moving through air. Lift fades with altitude, so a ship settles where lift equals weight. See [#](2E5AAC)[Balloons and Lift](entry://flight/balloons_and_lift)[#]()."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "What moves it",
+      "text": "Propeller Bearings spin sails to make thrust, and Create Propulsion adds fuel and electric thrusters. Steering uses wheels, throttles and control consoles. See [#](2E5AAC)[Propellers](entry://flight/propellers)[#](), [#](2E5AAC)[Thrusters](entry://flight/propulsion)[#]() and [#](2E5AAC)[Controls](entry://flight/controls)[#]()."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "simulated:physics_assembler"
+      },
+      "title": "Physics Assembler",
+      "text": "Glue a group of blocks, hold right-click on the assembler and pull its lever to turn them into a ship."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "aeronautics:aviators_goggles"
+      },
+      "title": "Aviator's Goggles",
+      "text": "Work like Engineer's Goggles. Show stress and capacity on kinetic parts and extra readouts on placed blocks."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "In this pack",
+      "text": "Ships show up on Xaero's maps through Sable Xaero Maps, and Jade tooltips work on them. They carry Create machines, burn TFMG fuel in thrusters, and can leave the planet through the Northstar bridges. See [#](2E5AAC)[Destinations](entry://flight/destinations)[#]() and [#](2E5AAC)[Reaching Space](entry://space/reaching_space)[#]()."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Where to next",
+      "text": "Building, lifting, pushing, steering, dangers and places to go.\n\n- [#](2E5AAC)[Building a Ship](entry://flight/ship_building)[#]()\n- [#](2E5AAC)[Balloons and Lift](entry://flight/balloons_and_lift)[#]()\n- [#](2E5AAC)[Propellers](entry://flight/propellers)[#]()\n- [#](2E5AAC)[Steering and Controls](entry://flight/controls)[#]()\n- [#](2E5AAC)[Weather and Danger](entry://flight/weather_and_danger)[#]()\n- [#](2E5AAC)[Destinations](entry://flight/destinations)[#]()"
+    }
+  ]
+}

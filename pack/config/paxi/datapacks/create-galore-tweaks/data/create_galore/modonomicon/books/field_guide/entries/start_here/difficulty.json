@@ -1,0 +1,59 @@
+{
+  "category": "start_here",
+  "name": "What to Expect",
+  "description": "Combat is meant to be exciting, not punishing.",
+  "icon": {
+    "item": "minecraft:iron_sword"
+  },
+  "x": 3,
+  "y": 0,
+  "sort_number": 3,
+  "parents": [
+    {
+      "entry": "start_here/where_to_begin",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "What to Expect",
+      "text": "Combat is meant to be exciting, not punishing. Bosses and dungeons are there for adventure, not to grind. If you want brutal fights, this is not the pack's focus."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "The pressure comes from **survival layers** instead. Four systems push on you over time, and each one is designed so machines can solve it. Cold Sweat is tuned gentler than its default here."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "- [#](2E5AAC)[Temperature](entry://survival/temperature)[#](): biome, altitude and weather heat or chill you. Clothing and heated rooms help.\n- [#](2E5AAC)[Thirst](entry://survival/thirst)[#](): water is a need, not just a decoration.\n- [#](2E5AAC)[Seasons](entry://survival/seasons)[#](): crops grow in their season."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "- [#](2E5AAC)[Pollution](entry://survival/pollution)[#](): burners and engines pollute chunks, and air scrubbers clean them up.\n\nEach system is a puzzle your factory can answer."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Dangers also live in the new worlds. See [#](2E5AAC)[Bosses](entry://exploration/bosses)[#]() and [#](2E5AAC)[Structures](entry://exploration/structures)[#]() before exploring far, and [#](2E5AAC)[Dimensions](entry://exploration/dimensions)[#]() for the places those dangers wait."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Spawn can be snowy.** You may start in a cold biome. After the short spawn grace, Cold Sweat chills a player with no warm gear, and a freezing body takes damage. Insulated clothing and a heat source fix it, see [#](2E5AAC)[Temperature](entry://survival/temperature)[#]() and [#](2E5AAC)[Temperature Gear](entry://survival/temperature_gear)[#]()."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "minecraft:iron_sword"
+      },
+      "title": "Fights",
+      "text": "Bosses and dungeon mobs are tuned to be memorable, not to wear you down. Cataclysm and Mowzie's bosses have 0.7x health and 0.75x damage."
+    }
+  ]
+}

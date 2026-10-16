@@ -1,0 +1,75 @@
+{
+  "category": "exploration",
+  "name": "Alex's Caves",
+  "description": "Alex's Caves hides six huge biomes underground.",
+  "icon": {
+    "item": "alexscaves:cave_map"
+  },
+  "x": -3,
+  "y": 0,
+  "sort_number": 7,
+  "parents": [
+    {
+      "entry": "exploration/worldgen",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Alex's Caves",
+      "text": "**Alex's Caves** hides six huge biomes underground. Each has its own creatures, blocks and hazards. They are rare, so the mod gives you a way to locate them."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "The six: **Magnetic Caves**, **Primordial Caves** (dinosaurs, minus the rideable Subterranodon), **Toxic Caves** (acid and uranium), **Abyssal Chasm** (a deep water trench), **Forlorn Hollows** and **Candy Cavity**."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "alexscaves:spelunkery_table"
+      },
+      "title": "Spelunkery Table",
+      "text": "Where Cave Tablets are studied. Place a tablet in the slot to begin research."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "alexscaves:cave_map"
+      },
+      "title": "Cave Biome Map",
+      "text": "A map pointing to the nearest cave biome of a type. If none is near, travel far away and try again."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Toxic Caves are the Create-connected one. Acid and Purple Soda are marked in Create's own data as **bottomless** fluids, like water and lava, so a hose pulley can draw them without running dry. See [#](2E5AAC)[Fluids](entry://create_basics/fluids)[#]()."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "alexscaves:uranium_rod"
+      },
+      "title": "Uranium Rod",
+      "text": "Alex's Caves has its own uranium and a Nuclear Furnace. It is separate content from Create Nuclear, so check JEI before mixing them."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Magnetic Caves add Magnetic Levitation Rail and Neodymium nodes. The Abyssal Chasm is a deep water trench under the ocean, best reached in a [#](2E5AAC)[Deep Seas](entry://ocean/submarines)[#]() submarine."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Turned off here",
+      "text": "Two Alex's Caves rides skip the vehicle game, so they are off. The flying **Subterranodon** never spawns. The **Hullbreaker** no longer drops the Enigmatic Engine, so you can't build its small Submarine. Wrecked ones in the chasm ruins can still be fixed. See [#](2E5AAC)[Getting Around](entry://transport/getting_around)[#]()."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Alex's Caves sulfur dust is not its own item here. Its recipes (Slam, Spelunkie, Polymer Plate, gunpowder) use TFMG's sulfur dust, and leftover Alex's dust converts 1:1 in a crafting grid."
+    }
+  ]
+}

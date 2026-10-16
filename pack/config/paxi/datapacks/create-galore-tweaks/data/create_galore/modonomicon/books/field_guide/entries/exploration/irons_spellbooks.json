@@ -1,0 +1,83 @@
+{
+  "category": "exploration",
+  "name": "Iron's Spellbooks",
+  "description": "Iron's Spells 'n Spellbooks adds spellcasting.",
+  "icon": {
+    "item": "irons_spellbooks:iron_spell_book"
+  },
+  "x": 7,
+  "y": 1,
+  "sort_number": 17,
+  "parents": [
+    {
+      "entry": "exploration/magic",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Iron's Spellbooks",
+      "text": "**Iron's Spells 'n Spellbooks** adds spellcasting. You carry a spell book, fill its slots with spells, and cast them using mana. Spells belong to schools, and gear raises the power of one school or all."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "irons_spellbooks:scroll"
+      },
+      "title": "Scroll",
+      "text": "A single-use spell. Anyone can cast one, no book needed. Spells are made or found at several tiers of rarity."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "irons_spellbooks:copper_spell_book"
+      },
+      "title": "Spell Books",
+      "text": "Books run from Flimsy Journal (copper) up to Ancient Codex (netherite). Better books hold more spell slots."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "irons_spellbooks:scroll_forge"
+      },
+      "title": "Scroll Forge",
+      "text": "Where scrolls are made. Built from polished deepslate and crying obsidian."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "irons_spellbooks:inscription_table"
+      },
+      "title": "Inscription Table",
+      "text": "Where spells are written into a spell book."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Magic crafting uses ink in five rarities, Arcane Essence, Mithril, Pyrium and Arcane Ingots, plus Upgrade Orbs that boost a school. An **Alchemist Cauldron**, Arcane Anvil and Pedestals help. Rings and necklaces are worn in [#](2E5AAC)[Curios slots](entry://exploration/gear)[#]()."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Create hooks in directly. Inks, Blood Vials, Timeless Slurry and several elixirs have Create filling and emptying recipes, so a Spout can fill them from fluid and a Drain can empty them. See [#](2E5AAC)[Fluids](entry://create_basics/fluids)[#]()."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "The world has wizard towers and a lost Citadel: Pyromancer Tower, Archevoker's Evoker Fort, Ice Spider Den, Ancient Battleground, Catacombs, and the Citadel (a Citadel Map exists). Mage mobs defend them. Pack-wide bosses: [#](2E5AAC)[Bosses](entry://exploration/bosses)[#]()."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Turned off here",
+      "text": "Three spells would replace vehicles, so they never show up in loot, the Scroll Forge or JEI: **Portal** (permanent two-way links), **Recall** (home from anywhere) and **Angel Wings** (Elytra flight). Portal Frames and the Hither-Thither Wand can't be crafted. See [#](2E5AAC)[Getting Around](entry://transport/getting_around)[#]()."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "See also",
+      "text": "- [#](2E5AAC)[Create: Wizardry](entry://exploration/create_wizardry)[#]()\n- [#](2E5AAC)[Magic](entry://exploration/magic)[#]()"
+    }
+  ]
+}

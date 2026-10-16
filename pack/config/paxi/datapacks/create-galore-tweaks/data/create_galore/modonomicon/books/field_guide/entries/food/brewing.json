@@ -1,0 +1,52 @@
+{
+  "category": "food",
+  "name": "Brewing and Fermenting",
+  "description": "Brewin' and Chewin' adds fermenting.",
+  "icon": {
+    "item": "brewinandchewin:keg"
+  },
+  "x": -2,
+  "y": -1,
+  "sort_number": 3,
+  "parents": [
+    {
+      "entry": "food/farmers_delight",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Brewing and Fermenting",
+      "text": "**Brewin' and Chewin'** adds fermenting. A keg takes ingredients and a liquid, then slowly turns them into a drink or a preserved food. Drinks are served in a tankard and give status effects as well as food value."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "brewinandchewin:keg"
+      },
+      "title": "Keg",
+      "text": "Holds ingredients and fluid while they ferment over time. Output is a bottle or a food item. Check JEI for each recipe and how long it takes."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "brewinandchewin:tankard"
+      },
+      "title": "Tankard",
+      "text": "The drinking vessel. Drinks such as stout, vodka, rum and Pale Jane are poured into it. Fermented foods like kimchi come out of the keg directly."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Create can run the keg through Central Kitchen.\n\n- Pipes insert fluid into the keg and pull it out.\n- Funnels extract the item product.\n- A Spout fills a tankard with drink, and an Item Drain pours it out.\n\nMore: [#](2E5AAC)[Kitchen Automation](entry://food/kitchen_automation)[#]()."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Related Entries",
+      "text": "- [#](2E5AAC)[Kitchen Automation](entry://food/kitchen_automation)[#]()\n- [#](2E5AAC)[Delight Add-ons](entry://food/farmers_delight_addons)[#]()\n- [#](2E5AAC)[Chocolate, Tea and Coffee](entry://food/sweets_and_drinks)[#]()"
+    }
+  ]
+}

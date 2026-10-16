@@ -1,0 +1,89 @@
+{
+  "category": "flight",
+  "name": "Steering and Controls",
+  "description": "Steering is turning redstone and rotation into thrust and angles.",
+  "icon": {
+    "item": "simulated:steering_wheel"
+  },
+  "x": -1,
+  "y": 1,
+  "sort_number": 5,
+  "parents": [
+    {
+      "entry": "flight/ship_building",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Steering and Controls",
+      "text": "Steering is turning redstone and rotation into thrust and angles. Simulated supplies wheels, levers and sensors. Aeroworks adds control consoles and servos."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "simulated:steering_wheel"
+      },
+      "title": "Steering Wheel",
+      "text": "Hold right-click and move the mouse to turn. Sneak snaps to 45 degrees. A comparator reads the angle."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "simulated:throttle_lever"
+      },
+      "title": "Throttle Lever",
+      "text": "A compact analog redstone source: right-click and drag. A wrench inverts the signal."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "simulated:navigation_table"
+      },
+      "title": "Navigation Table",
+      "text": "Outputs redstone toward a destination, weaker when you are not facing it. Different Navigation Items give different targets."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Sensors",
+      "text": "The Altitude Sensor, Velocity Sensor and Gimbal Sensor give signals from height, speed and tilt. Laser Pointers, Laser Sensors and Optical Sensors detect objects. Modulating and Directional Linked Receivers read distance or angle to Redstone Links."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Aeroworks consoles",
+      "text": "Aeroworks consoles hold modules: Yoke, Joystick, Throttle Quadrant, Pedal, Lever, Wheel and buttons. Sneak-right-click to bind keys and Redstone Link frequencies. Right-click empty-handed to take control; Esc lets go. Touching consoles join into one deck."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "aeroworks:control_desk"
+      },
+      "title": "Control Desk",
+      "text": "Mount modules in its sockets, and use a wrench to remove them. They keep their settings. Styles change with materials."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "aeroworks:mechanical_servo"
+      },
+      "title": "Mechanical Servo",
+      "text": "Turns a redstone strength into an angle within a set range. Stepper Servos move in fixed steps, either direction."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "aeroworks:gyroscope"
+      },
+      "title": "Aeroworks Gyroscope",
+      "text": "Helps hold a ship level. Hover over it for its status and stability."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Related",
+      "text": "Autopilot-style control, propellers and thrusters.\n\n- [#](2E5AAC)[Flight Control](entry://flight/flight_control)[#]()\n- [#](2E5AAC)[Propellers](entry://flight/propellers)[#]()\n- [#](2E5AAC)[Thrusters and Engines](entry://flight/propulsion)[#]()"
+    }
+  ]
+}

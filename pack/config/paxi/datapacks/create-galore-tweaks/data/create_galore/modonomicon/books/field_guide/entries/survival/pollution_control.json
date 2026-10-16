@@ -1,0 +1,83 @@
+{
+  "category": "survival",
+  "name": "Clearing the Air",
+  "description": "Three tools: stop it at the source, scrub it out, or shield yourself.",
+  "icon": {
+    "item": "smog:respirator"
+  },
+  "x": 4,
+  "y": -1,
+  "sort_number": 8,
+  "parents": [
+    {
+      "entry": "survival/pollution",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Three answers",
+      "text": "Three tools: stop it at the source, scrub it out, or shield yourself. Mix them. A tall Flue stack and a few scrubbers keep an average base clear."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "smog:flue"
+      },
+      "title": "Flue",
+      "text": "Stack these above a furnace or burner. Each block sends more of its output high and wide, instead of into the chunk below, up to 80%% total."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "smog:air_scrubber"
+      },
+      "title": "Air Scrubber",
+      "text": "Kinetic: needs rotation and a Filter Cartridge. Cleans its own chunk and the four beside it, faster the faster it spins."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "How it works",
+      "text": "A scrubber wants a [#](2E5AAC)[rotation](entry://create_basics/rotation)[#]() input and stress. Funnels and chutes can feed cartridges, and a water pipe wets the filter for a bonus. It also works on a moving contraption, a bit slower."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Panels",
+      "text": "Scrubbers placed side by side share one cartridge and work as a panel, with more output for more stress. A flat 5x5 of 25 reaches upward to break the cloud above."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "smog:filter_cartridge"
+      },
+      "title": "Filter Cartridge",
+      "text": "The basic filter. The Brass one holds four times as much, the Precision one sixteen times. Spent ones turn into clogged cartridges."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Washing",
+      "text": "Clogged cartridges are cleaned by a Fan blowing through water. You get the cartridge back and sometimes Soot. Soot burns as fuel, makes black dye, or compacts to Graphite and a Block of Soot."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "smog:respirator"
+      },
+      "title": "Respirator",
+      "text": "Wear on the head or in an accessory slot. Keeps smog out of you and slowly clears what you breathed in. Wears down as it works."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Upgrades",
+      "text": "The Precision Cartridge uses Electron Tubes and Graphite, so the best filter sits behind [#](2E5AAC)[brass and assembly](entry://create_basics/brass_and_assembly)[#](). Filter Medium, pressed from soot and string, replaces wool in the basic cartridge."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Related",
+      "text": "- [#](2E5AAC)[Pollution](entry://survival/pollution)[#]()\n- [#](2E5AAC)[Encased Fans](entry://create_basics/fans)[#]()\n- [#](2E5AAC)[Stress](entry://create_basics/stress)[#]()\n- [#](2E5AAC)[Rotation](entry://create_basics/rotation)[#]()"
+    }
+  ]
+}

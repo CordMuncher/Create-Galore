@@ -1,0 +1,76 @@
+{
+  "category": "flight",
+  "name": "Weather and Danger",
+  "description": "The sky is not empty.",
+  "icon": {
+    "item": "hostile_skies:captains_orders"
+  },
+  "x": 3,
+  "y": 0,
+  "sort_number": 10,
+  "parents": [
+    {
+      "entry": "flight/wind_sailing",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    },
+    {
+      "entry": "flight/balloons_and_lift",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": false
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Weather and Danger",
+      "text": "The sky is not empty. Storms and lightning push ships, pillager airships hunt them, and whales drift above the oceans. All of it comes from add-ons that need Aeronautics."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Weather",
+      "text": "Winds & Weather adds weather regions with storms and lightning that can strike a ship. Wind is stronger over open ocean and grows with altitude, and extreme wind pushes ships hard. Check your wind with an Anemometer."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Hostile Skies",
+      "text": "Create Hostile Skies sends pillager airships after you, in tiers: Scout, Patrol, Warship, Flagship. Higher tiers open as you kill captains. Here they are rarer: an attempt every 25 minutes, starting at 5%% chance. Bad Omen raises crew and loot. Ships can be captured."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "hostile_skies:captains_orders"
+      },
+      "title": "Captain's Orders",
+      "text": "One of two Hostile Skies items, with the Peace Treaty. They have no crafting recipe in the pack; read the tooltip."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Sky Whales",
+      "text": "Rare sky whales drift high over oceans. A dead one leaves a slowly sinking corpse of whale bone and meat blocks that behave as physics objects. Crushing bone gives Whale Bone Dust, which becomes End Stone Powder or, mixed, Levitite Blend."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "skywhales:whale_bone_dust"
+      },
+      "title": "Whale Bone Dust",
+      "text": "Crush or mill whale bone. Heated mixing with zinc nuggets and water makes Levitite Blend, bypassing the End."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "skywhales:cooked_whale_meat"
+      },
+      "title": "Cooked Whale Meat",
+      "text": "Raw whale meat can be cooked into food."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Related",
+      "text": "Levitite, sails and where to find parts.\n\n- [#](2E5AAC)[Balloons and Lift](entry://flight/balloons_and_lift)[#]()\n- [#](2E5AAC)[Sailing and Wind](entry://flight/wind_sailing)[#]()\n- [#](2E5AAC)[Hangars](entry://flight/hangars)[#]()"
+    }
+  ]
+}

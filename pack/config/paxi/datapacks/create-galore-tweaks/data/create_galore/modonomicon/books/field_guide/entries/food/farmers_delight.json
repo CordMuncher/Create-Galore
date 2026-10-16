@@ -1,0 +1,79 @@
+{
+  "category": "food",
+  "name": "Farmer's Delight",
+  "description": "Farmer's Delight is the pack's cooking layer.",
+  "icon": {
+    "item": "farmersdelight:cooking_pot"
+  },
+  "x": -4,
+  "y": -2,
+  "sort_number": 1,
+  "parents": [],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Farmer's Delight",
+      "text": "**Farmer's Delight** is the pack's cooking layer. It adds crops, a few kitchen blocks and a lot of proper meals. Most other food mods here use its blocks, so learn it first. Meals give lasting effects, not just hunger points."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "farmersdelight:cooking_pot"
+      },
+      "title": "Cooking Pot",
+      "text": "Combine ingredients into a meal, usually with a bowl. It needs a heat source directly below. The meal waits inside until you take it with the right container."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Heat",
+      "text": "Heat: a **Stove**, campfire, fire, lava or magma block. Create's Blaze Burner also counts, via Central Kitchen. See [#](2E5AAC)[Kitchen Automation](entry://food/kitchen_automation)[#]()."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "farmersdelight:stove"
+      },
+      "title": "Stove",
+      "text": "A heat source for pots and skillets. A Stove also counts as a passive heater for a Create boiler.\\\nSee [#](2E5AAC)[Heat](entry://create_basics/heat)[#]()."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "farmersdelight:skillet"
+      },
+      "title": "Skillet",
+      "text": "Cooks one item at a time on a heat source. It also works as a portable cooker: stand next to heat and hold the food in your other hand."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "farmersdelight:cutting_board"
+      },
+      "title": "Cutting Board",
+      "text": "Put an item on the board and use the right tool on it. Knives cut food, other tools handle wood and similar. Fortune on the tool raises the odds of rare results."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Knives also harvest **Straw** from grass, wheat and rice. Flint is the starter knife; iron and better follow.\n\nWheat plus a water bucket makes Wheat Dough, and the bucket keeps its water."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "farmersdelight:rich_soil"
+      },
+      "title": "Rich Soil",
+      "text": "**Organic Compost** slowly decays into Rich Soil. Crops and mushrooms on it grow better, and it never dries out. Create's Irrigation Tower can turn farmland into it."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Meals grant two effects.\n\n**Nourishment** stops your food meter from dropping, except when healing with saturation.\n\n**Comfort** gives natural regeneration however hungry you are.\n\nThe AppleSkin overlay shows how much a food restores."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Related",
+      "text": "Add-on foods, machines and crops.\n\n- [#](2E5AAC)[Delight Add-ons](entry://food/farmers_delight_addons)[#]()\n- [#](2E5AAC)[Kitchen Automation](entry://food/kitchen_automation)[#]()\n- [#](2E5AAC)[Brewing and Fermenting](entry://food/brewing)[#]()\n- [#](2E5AAC)[Berries and Farm Helpers](entry://food/crops_and_herbs)[#]()"
+    }
+  ]
+}

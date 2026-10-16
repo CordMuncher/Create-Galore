@@ -1,0 +1,84 @@
+{
+  "category": "create_basics",
+  "name": "Contraptions",
+  "description": "A contraption is a group of blocks moved as one: a drill carrying platform, a farm...",
+  "icon": {
+    "item": "create:mechanical_piston"
+  },
+  "x": 4,
+  "y": 2,
+  "sort_number": 17,
+  "parents": [
+    {
+      "entry": "create_basics/deployer",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    },
+    {
+      "entry": "create_basics/transmission",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": false
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Contraptions",
+      "text": "A **contraption** is a group of blocks moved as one: a drill carrying platform, a farm that drives itself, a train car. Glue and chassis decide what comes along; a mover decides how."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create:super_glue"
+      },
+      "title": "Super Glue",
+      "text": "Bonds blocks into a shape. Blocks that hang on others need none. Click two corners to define an area."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create:linear_chassis"
+      },
+      "title": "Linear Chassis",
+      "text": "Glues a row of blocks along its axis. The Radial Chassis grabs a disc around its axis. Both work with wrench settings and chassis ranges."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Movers**:\n\n- Piston: pushes along a line\n\n- Rope Pulley: up and down\n\n- Gantry: slides on a shaft\n\n- Bearing: spins\n\n- Cart Assembler: rides a minecart"
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create:mechanical_bearing"
+      },
+      "title": "Mechanical Bearing",
+      "text": "Rotates a structure, for windmills, rotating drills and turntables. The Clockwork Bearing makes clock hands."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Working parts**: Mechanical Drills, Saws, Harvesters and Ploughs do their job to whatever they pass. Deployers and funnels on the structure pull from and push into storage that moves with it.\n\nStorage on a contraption is a chest or vault attached to the structure."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create:mechanical_drill"
+      },
+      "title": "Mechanical Drill",
+      "text": "Breaks blocks in front of it, also while moving. Harvesters cut crops, Ploughs till soil."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Bigger things**: Create Aeronautics builds flying ships out of the same idea, see [#](2E5AAC)[Airships](entry://flight/airships)[#](). Trains are contraptions too, see [#](2E5AAC)[Trains](entry://transport/trains)[#]()."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Related",
+      "text": "- [#](2E5AAC)[Airships](entry://flight/airships)[#]()\n- [#](2E5AAC)[Trains](entry://transport/trains)[#]()\n- [#](2E5AAC)[Deployer](entry://create_basics/deployer)[#]()"
+    }
+  ]
+}

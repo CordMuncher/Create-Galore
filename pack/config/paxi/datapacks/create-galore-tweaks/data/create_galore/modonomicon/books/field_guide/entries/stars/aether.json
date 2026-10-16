@@ -1,0 +1,39 @@
+{
+  "category": "stars",
+  "name": "Prize: The Aether",
+  "description": "Gravitite Ore enchanted at an Aether Altar.",
+  "icon": {
+    "item": "aether:enchanted_gravitite"
+  },
+  "x": -1,
+  "y": -2,
+  "sort_number": 4,
+  "parents": [
+    {
+      "entry": "stars/why",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "aether:enchanted_gravitite"
+      },
+      "title": "Enchanted Gravitite",
+      "text": "Gravitite Ore enchanted at an Aether **Altar**. It falls upward, which is exactly what a rocket wants."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Where",
+      "text": "Gravitite Ore is a rare ore in Aether Holystone and needs an iron-tier pickaxe (**Zanite** works). Mine it, then enchant it at an Altar fuelled with Ambrosium. No boss needed; the Aether goes on forever."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Related",
+      "text": "The road, and where this prize lives.\n\n- [#](2E5AAC)[Why Space Is Locked](entry://stars/why)[#]()\n- [#](2E5AAC)[The Stellar Core](entry://stars/stellar_core)[#]()\n- [#](2E5AAC)[The Aether](entry://exploration/aether)[#]()"
+    }
+  ]
+}

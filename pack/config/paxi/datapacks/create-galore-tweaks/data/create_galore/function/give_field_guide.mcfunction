@@ -1,1 +1,1 @@
-give @s patchouli:guide_book[patchouli:book="patchouli:create_galore"]
+give @s modonomicon:modonomicon[modonomicon:book_id="create_galore:field_guide"]

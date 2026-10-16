@@ -1,0 +1,14 @@
+{
+  "name": "Flight",
+  "description": "Airships and aircraft built from blocks with Create Aeronautics and its add-ons.",
+  "icon": {
+    "item": "aeronautics:propeller_bearing"
+  },
+  "sort_number": 7,
+  "display_mode": "node",
+  "background": "modonomicon:textures/gui/dark_slate_seamless.png",
+  "background_width": 512,
+  "background_height": 512,
+  "max_scroll_x": 270,
+  "max_scroll_y": 180
+}

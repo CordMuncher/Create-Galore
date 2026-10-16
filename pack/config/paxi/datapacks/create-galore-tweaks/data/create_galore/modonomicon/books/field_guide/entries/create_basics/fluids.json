@@ -1,0 +1,76 @@
+{
+  "category": "create_basics",
+  "name": "Fluids, Pipes and Pumps",
+  "description": "Create fluids flow through Fluid Pipes driven by a Mechanical Pump.",
+  "icon": {
+    "item": "create:fluid_pipe"
+  },
+  "x": 0,
+  "y": -2,
+  "sort_number": 15,
+  "parents": [
+    {
+      "entry": "create_basics/power_sources",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Fluids, Pipes and Pumps",
+      "text": "Create fluids flow through **Fluid Pipes** driven by a **Mechanical Pump**. Without a pump, pipes only connect; they do not move liquid."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create:mechanical_pump"
+      },
+      "title": "Mechanical Pump",
+      "text": "Its arrow shows flow direction, not the rotation. Wrench it to flip. It pulls from the pipe behind it and pushes into the pipe in front, up to 16 blocks."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create:fluid_tank"
+      },
+      "title": "Fluid Tank",
+      "text": "Stores fluid. Tanks can be joined up to 3 wide and many layers tall. In survival you cannot fill them by hand, use pipes, spouts or drains."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create:spout"
+      },
+      "title": "Spout",
+      "text": "Fills items beneath it, such as buckets or potions, from a fluid supply. Items sit on a depot or belt under it."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create:item_drain"
+      },
+      "title": "Item Drain",
+      "text": "Empties fluid out of items like buckets and bottles into pipes. Right-click to pour from your hand."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Big supplies**: a pipe end in a pool pulls source blocks, and a vanilla water pool with two sources refills itself. A **Hose Pulley** lowered into a large enough body, such as an ocean, gives or drains without running out."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create:hose_pulley"
+      },
+      "title": "Hose Pulley",
+      "text": "Fills or drains a whole pool, from the top down to the hose end. It needs rotation to lower."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Related",
+      "text": "- [#](2E5AAC)[Press, Mixer and Basin](entry://create_basics/processing)[#]()\n- [#](2E5AAC)[Blaze Burner and Heat](entry://create_basics/heat)[#]()\n- [#](2E5AAC)[Burning Liquid Fuel](entry://industry/liquid_fuel)[#]()"
+    }
+  ]
+}

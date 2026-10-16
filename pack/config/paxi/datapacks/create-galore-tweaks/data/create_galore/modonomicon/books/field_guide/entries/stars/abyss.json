@@ -1,0 +1,44 @@
+{
+  "category": "stars",
+  "name": "Prize: The Abyss",
+  "description": "Always dropped by a Hullbreaker, the giant of the Abyssal Chasm.",
+  "icon": {
+    "item": "alexscaves:immortal_embryo"
+  },
+  "x": 1,
+  "y": 0,
+  "sort_number": 2,
+  "parents": [
+    {
+      "entry": "stars/machine_fights",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "alexscaves:immortal_embryo"
+      },
+      "title": "Immortal Embryo",
+      "text": "Always dropped by a **Hullbreaker**, the giant of the Abyssal Chasm. It keeps the crew alive out there."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Where",
+      "text": "The **Abyssal Chasm** is an Alex's Caves biome deep under ocean, pitch black and crushing. A **Cave Biome Map** points to one. Go down in a [#](2E5AAC)[submarine](entry://ocean/submarines)[#](): it carries air, light and weapons."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "How",
+      "text": "Hullbreakers spawn there naturally, rarely. Underwater Mines and Depth Charges hit it from the safety of your hull. More will spawn if you need another."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Related",
+      "text": "The road, and where this prize lives.\n\n- [#](2E5AAC)[Why Space Is Locked](entry://stars/why)[#]()\n- [#](2E5AAC)[The Stellar Core](entry://stars/stellar_core)[#]()\n- [#](2E5AAC)[Alex's Caves](entry://exploration/alexs_caves)[#]()\n- [#](2E5AAC)[Submarines](entry://ocean/submarines)[#]()"
+    }
+  ]
+}

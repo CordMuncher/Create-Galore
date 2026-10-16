@@ -1,0 +1,75 @@
+{
+  "category": "industry",
+  "name": "Burning Liquid Fuel",
+  "description": "A Blaze Burner normally eats solid fuel.",
+  "icon": {
+    "item": "create:blaze_burner"
+  },
+  "x": 3,
+  "y": -2,
+  "sort_number": 7,
+  "parents": [
+    {
+      "entry": "industry/tfmg_oil",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Burning Liquid Fuel",
+      "text": "A Blaze Burner normally eats solid fuel. Two mods let it burn fluids from pipes instead, which is how oil products and biofuels reach Create's heat. See [#](2E5AAC)[Heat](entry://create_basics/heat)[#]()."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create:blaze_burner"
+      },
+      "title": "Create: Liquid Fuel",
+      "text": "A plain Blaze Burner takes piped fluid: lava, Seed Oil, Bioethanol, Peanut Oil, and TFMG's diesel, gasoline, kerosene, naphtha, heavy oil and napalm."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Bioethanol, Peanut Oil and TFMG's napalm superheat the burner (the blue flame). The others only heat it. Seed Oil and Bioethanol come from Crafts & Additions; Peanut Oil from Garnished. Peanut Oil burns 5,000 ticks a bucket in either burner."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "createaddition:straw"
+      },
+      "title": "Blaze Burner with Straw",
+      "text": "Crafts & Additions' version. Add a Straw to a Blaze Burner and it takes fuel from buckets or pipes."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Its fuels (burn time per 1000 mB): diesel, gasoline and biodiesel 24000 ticks; lava 20000; crude oil 9600; ethanol 8000; creosote and plant oil 4800. Bioethanol (biofuel tag) is superheated."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "So TFMG's diesel, gasoline, crude oil and creosote all burn here, through shared fluid tags. Crude oil and creosote need the Straw burner; TFMG's other fuels work in a plain Blaze Burner too."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "createaddition:straw"
+      },
+      "title": "Straw",
+      "text": "Craft this to convert a Blaze Burner. Biofuel chain: crops to Biomass, seeds to Seed Oil, then Bioethanol. Check JEI."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Pollution: a Blaze Burner, with or without Straw, makes smog while it burns fuel. See [#](2E5AAC)[Pollution](entry://survival/pollution)[#](). Solid-fuel option: Biomass Pellets."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Related",
+      "text": "- [#](2E5AAC)[TFMG Oil and Fuels](entry://industry/tfmg_oil)[#]()\n- [#](2E5AAC)[Electricity](entry://industry/electricity)[#]()\n- [#](2E5AAC)[Blaze Burner and Heat](entry://create_basics/heat)[#]()"
+    }
+  ]
+}

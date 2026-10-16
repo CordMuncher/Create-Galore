@@ -1,0 +1,73 @@
+{
+  "category": "industry",
+  "name": "TFMG Engines and Power",
+  "description": "TFMG makes rotation from fuel with engines, and electricity with its own circuit system.",
+  "icon": {
+    "item": "tfmg:large_engine"
+  },
+  "x": 3,
+  "y": -3,
+  "sort_number": 6,
+  "parents": [
+    {
+      "entry": "industry/tfmg_oil",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "TFMG Engines and Power",
+      "text": "TFMG makes rotation from fuel with engines, and electricity with its own circuit system. Both plug into normal Create networks."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "tfmg:regular_engine"
+      },
+      "title": "Regular Engine",
+      "text": "Assembled from a body plus matching Engine Cylinders. Click it with a Shaft to set the rotation output. Needs lubrication oil from an Oil Can."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "tfmg:large_engine"
+      },
+      "title": "Large Engine",
+      "text": "Burns less refined fuel (diesel, kerosene, naphtha, furnace gas). Needs air in and CO2 pumped out to an Exhaust. A Shaft goes on like a steam engine."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Radial and Turbine Engines are the other types. An Engine Controller linked to the engine sets speed and direction. Fuel comes from [#](2E5AAC)[TFMG Oil](entry://industry/tfmg_oil)[#](); engine rotation is ordinary rotation and obeys [#](2E5AAC)[Stress](entry://create_basics/stress)[#]()."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "tfmg:generator"
+      },
+      "title": "Generator",
+      "text": "The source of TFMG electricity. A source gives Voltage and Power; devices have Resistance, and current is voltage divided by resistance."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Blocks share a **group**: members of one group split the voltage, the rest keep all of it. Change a block's group with the **Configuration Wrench**. A Diode, Potentiometer, Switch or Transformer starts a subnetwork."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "tfmg:copper_cable_hub"
+      },
+      "title": "Cable Hubs",
+      "text": "Wire hubs and insulators with copper, aluminum or constantan spools. A Voltmeter (Electric Gauge) shows what a part carries."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "TFMG's cable connectors can import and export FE, so TFMG circuits can touch FE machines. Its wires are separate from Crafts & Additions wires. See [#](2E5AAC)[Rotation vs Electricity](entry://industry/power_compared)[#]()."
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "category": "exploration",
+  "name": "Magic",
+  "description": "Two mods add magic to the pack.",
+  "icon": {
+    "item": "irons_spellbooks:copper_spell_book"
+  },
+  "x": 5,
+  "y": 1,
+  "sort_number": 16,
+  "parents": [
+    {
+      "entry": "exploration/gear",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Magic",
+      "text": "Two mods add magic to the pack. [#](2E5AAC)[Iron's Spells 'n Spellbooks](entry://exploration/irons_spellbooks)[#]() is a full spellcasting system. [#](2E5AAC)[Create: Wizardry](entry://exploration/create_wizardry)[#]() bridges it to Create's machines with a new fluid, mana, and pipes to carry it."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Magic uses mana, a resource that refills with time. Spells are cast from equipped spell books and scrolls, from schools such as fire, ice, lightning, holy, ender, blood, evocation and nature. Armor, rings and staffs boost them."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "irons_spellbooks:scroll"
+      },
+      "title": "Scroll",
+      "text": "A one-use spell. Made at a Scroll Forge, or found in loot."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Magic guides",
+      "text": "- [#](2E5AAC)[Iron's Spellbooks](entry://exploration/irons_spellbooks)[#]()\n- [#](2E5AAC)[Create: Wizardry](entry://exploration/create_wizardry)[#]()\n- [#](2E5AAC)[Bosses](entry://exploration/bosses)[#]()\n- [#](2E5AAC)[Gear and Curios](entry://exploration/gear)[#]()"
+    }
+  ]
+}

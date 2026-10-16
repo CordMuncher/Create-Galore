@@ -1,0 +1,62 @@
+{
+  "category": "survival",
+  "name": "Seasonal Crops",
+  "description": "Serene Seasons lists vanilla crops by season: wheat in summer and autumn, carrots in...",
+  "icon": {
+    "item": "farmersdelight:tomato_seeds"
+  },
+  "x": 0,
+  "y": 1,
+  "sort_number": 6,
+  "parents": [
+    {
+      "entry": "survival/seasons",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Seasonal Crops",
+      "text": "Serene Seasons lists vanilla crops by season: wheat in summer and autumn, carrots in spring and autumn, and so on. Mushrooms, nether wart and oak saplings grow year round."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Farmer's Delight",
+      "text": "Farmer's Delight adds its own season data:\n- Tomato: summer\n- Cabbage: autumn, winter\n- Onion: spring, autumn\n- Rice: summer, autumn\n\nSee [#](2E5AAC)[Farmer's Delight](entry://food/farmers_delight)[#]()."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "farmersdelight:tomato_seeds"
+      },
+      "title": "Tomato Seeds",
+      "text": "Summer crop. Out of season they stop. A glass roof keeps a patch growing."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "farmersdelight:cabbage_seeds"
+      },
+      "title": "Cabbage Seeds",
+      "text": "Autumn and winter crop. One of the few things you can grow in the cold."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Fruit trees",
+      "text": "Fruits Delight trees follow seasons too: pear, peach and blueberry in spring; lychee, mango, durian, lemon and pineapple in summer; apple, orange, fig and cranberry in autumn; persimmon, kiwi and hawberry in winter."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Other mods",
+      "text": "Seasonal Integration adds Berry Good's sweet berries (spring, winter) and glow berries, and My Nether's Delight peppers, to year round. Fungus Delight mushrooms grow in any season."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Related",
+      "text": "- [#](2E5AAC)[Seasons](entry://survival/seasons)[#]()\n- [#](2E5AAC)[Farmer's Delight](entry://food/farmers_delight)[#]()\n- [#](2E5AAC)[Kitchen Automation](entry://food/kitchen_automation)[#]()"
+    }
+  ]
+}

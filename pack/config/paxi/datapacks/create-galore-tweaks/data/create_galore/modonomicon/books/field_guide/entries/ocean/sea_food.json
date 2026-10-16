@@ -1,0 +1,68 @@
+{
+  "category": "ocean",
+  "name": "Sea Food",
+  "description": "Two Farmer's Delight add-ons cook the ocean.",
+  "icon": {
+    "item": "oceansdelight:guardian_soup"
+  },
+  "x": 1,
+  "y": 2,
+  "sort_number": 10,
+  "parents": [
+    {
+      "entry": "ocean/fishing",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Sea Food",
+      "text": "Two [#](2E5AAC)[Farmer's Delight](entry://food/farmers_delight)[#]() add-ons cook the ocean. They use Farmer's Delight's pot, cutting board and knives, so meals follow the same rules as the rest of the pack's food."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Ocean's Delight** cooks vanilla ocean mobs: squid, cod, kelp, sea pickles, pufferfish, guardians and even Elder Guardians. **Aquaculture Delight** cooks Aquaculture's fish: perch, halibut, pollock, tuna, catfish, bass and turtle meat."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "oceansdelight:guardian_soup"
+      },
+      "title": "Guardian Soup",
+      "text": "A one-pot soup made from Guardian parts."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "oceansdelight:stuffed_squid"
+      },
+      "title": "Stuffed Squid",
+      "text": "Squid meals. Cut Tentacles and Squid Rings come from cutting squid."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "aquaculturedelight:fish_and_chips"
+      },
+      "title": "Fish and Chips",
+      "text": "Aquaculture Delight meals use fillets and fish. Also includes a Neptunium Knife."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "aquaculturedelight:neptunium_knife"
+      },
+      "title": "Neptunium Knife",
+      "text": "A Farmer's Delight style knife made with Neptunium, for cutting fish."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "The same fish also feed automated kitchens: see [#](2E5AAC)[Kitchen Automation](entry://food/kitchen_automation)[#](). Hybrid Aquatic's clams cook into Cooked Clam, and Naturalist's clams give Clam Meat."
+    }
+  ]
+}

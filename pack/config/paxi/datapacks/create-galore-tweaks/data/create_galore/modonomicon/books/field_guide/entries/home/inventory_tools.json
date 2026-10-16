@@ -1,0 +1,47 @@
+{
+  "category": "home",
+  "name": "Inventory Tools",
+  "description": "Client-side helpers that make big inventories bearable.",
+  "icon": {
+    "item": "minecraft:chest"
+  },
+  "x": -1,
+  "y": -1,
+  "sort_number": 3,
+  "parents": [
+    {
+      "entry": "home/storage",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Inventory Tools",
+      "text": "Client-side helpers that make big inventories bearable. **Inventory Profiles Next** sorts and moves items. **Mouse Tweaks** speeds up mouse use. **Shulker Box Tooltip** previews contents. Settings are in the Mods menu."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "minecraft:hopper"
+      },
+      "title": "Inventory Profiles Next",
+      "text": "Sorts inventories with a button or key, moves matching stacks and locks slots. Auto-refill is off in this pack; turn it on in its config screen."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "minecraft:shulker_box"
+      },
+      "title": "Shulker Box Tooltip",
+      "text": "Hover a shulker box to see what is inside."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Mouse Tweaks** adds drag-split: hold click and drag over slots to spread a stack. Scroll the wheel over a slot to move items between inventories. \n\nContainers: [#](2E5AAC)[Storage](entry://home/storage)[#]()."
+    }
+  ]
+}

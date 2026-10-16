@@ -1,0 +1,14 @@
+{
+  "name": "How Things Connect",
+  "description": "The bridges between mods: shared power, heat, fuel, metals and destinations. The stuff online wikis rarely tell you.",
+  "icon": {
+    "item": "create:precision_mechanism"
+  },
+  "sort_number": 2,
+  "display_mode": "node",
+  "background": "modonomicon:textures/gui/dark_slate_seamless.png",
+  "background_width": 512,
+  "background_height": 512,
+  "max_scroll_x": 210,
+  "max_scroll_y": 180
+}

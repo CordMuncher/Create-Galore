@@ -1,0 +1,65 @@
+{
+  "category": "exploration",
+  "name": "Cataclysm x Create",
+  "description": "Cataclysm x Create Integration is a data pack.",
+  "icon": {
+    "item": "cataclysm:mechanical_fusion_anvil"
+  },
+  "x": 1,
+  "y": -3,
+  "sort_number": 14,
+  "parents": [
+    {
+      "entry": "exploration/cataclysm",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Cataclysm x Create",
+      "text": "**Cataclysm x Create Integration** is a data pack. It replaces Cataclysm's gear recipes with Create ones, so boss loot gets turned into equipment by machines instead of at a normal crafting table."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "About 35 items are made by **Sequenced Assembly**: a base item goes through Deployer, Press, Deployer steps with boss materials. A few use Mechanical Crafting. Weapons, armor, shields, smithing templates and summoning Eyes are covered."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "cataclysm:mechanical_fusion_anvil"
+      },
+      "title": "Mechanical Fusion Anvil",
+      "text": "Made from an Anvil with Sturdy Sheets, Precision Mechanisms and Redstone Blocks."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "cataclysm:the_incinerator"
+      },
+      "title": "Example: The Incinerator",
+      "text": "Starts as a Netherite sword. Check JEI for its Sequenced Assembly."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "cataclysm:laser_gatling"
+      },
+      "title": "Laser Gatling",
+      "text": "Starts as a crossbow, uses electron tubes and redstone blocks."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "It also adds crushing recipes that recycle Cataclysm gear: black steel tools, Cursium, Ignitium and more go into a Crushing Wheel for nuggets, some ingots and XP nuggets. Read [#](2E5AAC)[Crushing](entry://create_basics/crushing)[#]() and [#](2E5AAC)[Assembly](entry://create_basics/brass_and_assembly)[#]()."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "The Abyssal Sacrifice, a Cataclysm ritual item, is now a compacting recipe that needs a heated Basin, so a Blaze Burner. See [#](2E5AAC)[Heat](entry://create_basics/heat)[#](). Links: [#](2E5AAC)[Cataclysm](entry://exploration/cataclysm)[#]()."
+    }
+  ]
+}

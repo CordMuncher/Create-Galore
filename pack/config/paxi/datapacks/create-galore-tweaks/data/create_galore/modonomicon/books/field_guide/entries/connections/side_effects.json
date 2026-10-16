@@ -1,0 +1,52 @@
+{
+  "category": "connections",
+  "name": "Side Effects to Plan For",
+  "description": "A few systems react to what you build.",
+  "icon": {
+    "item": "smog:aerometer"
+  },
+  "x": 1,
+  "y": -1,
+  "sort_number": 8,
+  "parents": [
+    {
+      "entry": "connections/heat",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    },
+    {
+      "entry": "connections/fuel",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": false
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Side Effects to Plan For",
+      "text": "A few systems react to what you build. None of them are punishing on their own, but a big base notices all of them."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "- **Burning pollutes.** Furnaces, burners and stoves add smog to their chunk. Smog keeps its default rates, so it stays punishing. Flues and air scrubbers fix it.\n- **Heat warms you.** Factories near you count toward body temperature."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "- **Height is cold.** Cold Sweat: Altitude makes the sky chilly, which matters for airships. Cold Sweat is tuned gentler than default.\n- **Water isn't clean.** Drink purified water, or build a filter.\n- **Seasons turn.** Plan farms around them."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Cold Sweat and Thirst work together.** Thirst Was Reclaimed uses Cold Sweat's temperature readings, so the heat or cold around you feeds into its thirst system. Dress for the weather and carry water."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Related",
+      "text": "- [#](2E5AAC)[Pollution](entry://survival/pollution)[#]()\n- [#](2E5AAC)[Clearing the Air](entry://survival/pollution_control)[#]()\n- [#](2E5AAC)[Temperature](entry://survival/temperature)[#]()\n- [#](2E5AAC)[Thirst](entry://survival/thirst)[#]()\n- [#](2E5AAC)[Seasons](entry://survival/seasons)[#]()"
+    }
+  ]
+}

@@ -1,0 +1,71 @@
+{
+  "category": "create_basics",
+  "name": "Brass and Assembly",
+  "description": "Brass is the second tier of Create metal, made by mixing copper and zinc in a heated...",
+  "icon": {
+    "item": "create:precision_mechanism"
+  },
+  "x": 6,
+  "y": 0,
+  "sort_number": 18,
+  "parents": [
+    {
+      "entry": "create_basics/materials",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    },
+    {
+      "entry": "create_basics/deployer",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": false
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Brass and Assembly",
+      "text": "**Brass** is the second tier of Create metal, made by mixing copper and zinc in a heated basin. Brass casings and parts open up funnels with filters, tunnels, mechanical arms and more."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create:brass_ingot"
+      },
+      "title": "Brass Ingot",
+      "text": "Copper plus zinc in a mixer over a heated burner. See [#](2E5AAC)[Processing](entry://create_basics/processing)[#]()."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "A **Precision Mechanism** is made by **sequenced assembly**: one item goes through a chain of steps on a belt, repeated several times. It becomes an **incomplete** item in between. The steps use deployers and a press."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create:precision_mechanism"
+      },
+      "title": "Precision Mechanism",
+      "text": "Needed for many advanced machines in several mods. The recipe has a small chance of giving other items. Check JEI for the loop."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create:mechanical_crafter"
+      },
+      "title": "Mechanical Crafter",
+      "text": "Arrange several in a grid and connect their paths to craft any recipe, even ones too big for the mixer. Fill every slot, then it crafts."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Mechanical crafters need rotation. Use a wrench to arrange paths, and slot covers to leave holes in the grid.\n\nThe **Mechanical Crafter** works with packages too, see [#](2E5AAC)[Logistics](entry://create_basics/packages)[#]()."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Related",
+      "text": "- [#](2E5AAC)[Press, Mixer and Basin](entry://create_basics/processing)[#]()\n- [#](2E5AAC)[Deployer](entry://create_basics/deployer)[#]()\n- [#](2E5AAC)[Blaze Burner and Heat](entry://create_basics/heat)[#]()"
+    }
+  ]
+}

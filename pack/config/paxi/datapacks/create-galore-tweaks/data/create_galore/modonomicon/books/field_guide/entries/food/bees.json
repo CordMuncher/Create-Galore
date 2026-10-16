@@ -1,0 +1,60 @@
+{
+  "category": "food",
+  "name": "Productive Bees",
+  "description": "Productive Bees adds dozens of bee species.",
+  "icon": {
+    "item": "productivebees:advanced_oak_beehive"
+  },
+  "x": 0,
+  "y": 2,
+  "sort_number": 11,
+  "parents": [
+    {
+      "entry": "food/crops_and_herbs",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Productive Bees",
+      "text": "**Productive Bees** adds dozens of bee species. Each produces its own honeycomb. Resource bees yield metals and gems, and many ore bees exist only if the matching ore block does in your pack."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "productivebees:advanced_oak_beehive"
+      },
+      "title": "Advanced Hives",
+      "text": "A better beehive for many bee types. Wild nests spawn in the world. Expansion boxes add capacity. Each species has a favourite flower or block."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "productivebees:centrifuge"
+      },
+      "title": "Centrifuge",
+      "text": "Spins combs into items and wax; the Powered one runs on power. Metal and gem combs give ore or gems by chance. Alloy, rare-metal and rare-drop combs are off: [#](2E5AAC)[Balance Changes](entry://connections/balance)[#]()."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "productivebees:bee_cage"
+      },
+      "title": "Cages and Breeding",
+      "text": "Catch bees in a Bee Cage and breed new ones in a Breeding Chamber. Honey Treats help. Bee breeding recipes are in JEI. Wild nests spread species too."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "A metal or gem bee exists only if the pack has that material's block. So zinc (Create), lead (Create Nuclear), nickel and aluminium (TFMG) bees are possible. Lead uses the shared lead tag.\n\n[#](2E5AAC)[Ore Guide](entry://materials/ore_guide)[#]()."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Create tie-in: the Super Experience bee's comb can be mixed in a **superheated** Mixer into a Nugget of Super Experience from Create: Enchantment Industry.\n\nPower: [#](2E5AAC)[Electricity](entry://industry/electricity)[#]()."
+    }
+  ]
+}

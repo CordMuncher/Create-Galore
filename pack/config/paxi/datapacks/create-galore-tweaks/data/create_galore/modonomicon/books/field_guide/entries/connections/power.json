@@ -1,0 +1,57 @@
+{
+  "category": "connections",
+  "name": "Power Across Mods",
+  "description": "Create runs on rotation.",
+  "icon": {
+    "item": "createaddition:alternator"
+  },
+  "x": -1,
+  "y": -2,
+  "sort_number": 1,
+  "parents": [
+    {
+      "entry": "connections/overview",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Power Across Mods",
+      "text": "Create runs on **rotation**. Many other machines run on **Forge Energy (FE)**. They never mix on their own: you need a converter block in between.\n\nFull detail: [#](2E5AAC)[Rotation vs Electricity](entry://industry/power_compared)[#]()."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "createaddition:alternator"
+      },
+      "title": "Rotation to FE",
+      "text": "Crafts & Additions' Alternator turns spin into FE. It needs at least 32 RPM."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "createaddition:electric_motor"
+      },
+      "title": "FE to Rotation",
+      "text": "Crafts & Additions' Electric Motor turns FE back into spin at the RPM you set."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Rotation sources beyond water, wind and steam:\n- TFMG engines burning oil products\n- The Create Nuclear reactor\n- Create Propulsion's Stirling Engine, which turns heat into spin\n- Electric Motors running on FE"
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Things that want FE: Create Propulsion's Ion Thruster, Flight Control's vector ion thrusters and the Deep Seas Electrolyzer on submarines.\n\nTFMG wires its own voltage circuits, but its connectors can import or export FE."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Related",
+      "text": "- [#](2E5AAC)[Rotation vs Electricity](entry://industry/power_compared)[#]()\n- [#](2E5AAC)[Electricity](entry://industry/electricity)[#]()\n- [#](2E5AAC)[TFMG Engines and Power](entry://industry/tfmg_engines)[#]()\n- [#](2E5AAC)[Nuclear Reactors](entry://industry/nuclear)[#]()\n- [#](2E5AAC)[Power Sources](entry://create_basics/power_sources)[#]()"
+    }
+  ]
+}

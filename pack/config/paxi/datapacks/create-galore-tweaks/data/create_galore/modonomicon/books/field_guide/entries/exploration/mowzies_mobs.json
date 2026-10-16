@@ -1,0 +1,65 @@
+{
+  "category": "exploration",
+  "name": "Mowzie's Mobs",
+  "description": "Mowzie's Mobs adds animated creatures and four bosses, each tied to a structure, with...",
+  "icon": {
+    "item": "mowziesmobs:sol_visage"
+  },
+  "x": -1,
+  "y": -2,
+  "sort_number": 15,
+  "parents": [
+    {
+      "entry": "exploration/bosses",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Mowzie's Mobs",
+      "text": "**Mowzie's Mobs** adds animated creatures and four bosses, each tied to a structure, with masks, weapons and armor you can wear."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Structures: the **Wrought Chamber** (Ferrous Wroughtnaut, an armored iron golem), the **Umvuthana Grove** and **Monastery** (Umvuthi, the Sunbird, and his tribe), and the Frostmaw's spawns in snowy places. Tongbi, the Sculptor, is the fourth boss."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "mowziesmobs:wrought_axe"
+      },
+      "title": "Axe of a Thousand Metals",
+      "text": "The Wroughtnaut's axe."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "mowziesmobs:sol_visage"
+      },
+      "title": "Sol Visage",
+      "text": "Umvuthi's mask. The Umvuthana masks (Fury, Fear, Rage, Bliss, Misery, Faith) are worn for abilities."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "mowziesmobs:earthrend_gauntlet"
+      },
+      "title": "Earthrend Gauntlet",
+      "text": "The Sculptor's gauntlet. The Geomancer set (staff, robe, beads) is his too."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Smaller mobs: Foliaath, Lantern, Grottol (a mineral creature), Bluff, Naga and Elokosa. Frostmaw's Ice Crystal is a weapon. Bosses: [#](2E5AAC)[Bosses](entry://exploration/bosses)[#]()."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Tuned in this pack: the Ferrous Wroughtnaut, Umvuthi, Frostmaw and the Sculptor have 0.7x health and 0.75x damage. They are softened, not removed, and their structures still generate."
+    }
+  ]
+}
