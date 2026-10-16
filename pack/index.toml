@@ -317,18 +317,6 @@ file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/advancemen
 hash = "a87cfb341b081fa7a6f5db8eac14478d035f4f832fcb17bbd9d7f9395159c8dc"
 
 [[files]]
-file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/function/boot/load.mcfunction"
-hash = "e4c66a7f7030c85beeeb2673893ca182b682610fb6cd9978020bafed01c77ff9"
-
-[[files]]
-file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/function/boot/reload.mcfunction"
-hash = "ce752e6bd46fdd76b4e3468bdf522c4ecb63eeb9791d8c94f98d6c0ee08959cf"
-
-[[files]]
-file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/function/boot/schedule.mcfunction"
-hash = "524015215431150ebda3f2f2b98c12c730c92f7c541db72b4ead9fa40a9fe5e1"
-
-[[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/function/give_field_guide.mcfunction"
 hash = "af4fa526d27f76c62673ca2a9657238a60c17e68d6078be98bdd2f8ca671d79a"
 
@@ -766,7 +754,7 @@ hash = "cbb7a4cffecc98c810aa26adaac2c70ced9412dcb70c1aa76423c5196b109c2f"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/minecraft/tags/function/load.json"
-hash = "de4848ad2d163c774b045ef1342097e018eb536fc8a44667902f04917f2975f6"
+hash = "f74498097708215ee46031db7467ce3abed880ed8188eff156e81993d9787e31"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/mynethersdelight/loot_modifiers/add_loot_bastion_hoglin_stable.json"
@@ -2320,7 +2308,7 @@ hash = "fe8e0dfddd19ff9dbab5e11c1c1400263b861123f9dc8523c028e0a2e9674326"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/connections/balance.json"
-hash = "702f72b2582cf824c9836578dcd8b52df9a6e7383183bcf7d900a6dfdbd51638"
+hash = "0859091e387eeacdfa23fe193b5a81194c0c35cbe99d00e80d3bb2f1690e545f"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/connections/farm_to_factory.json"
@@ -2784,7 +2772,7 @@ hash = "688d9a11a76486a7fe4ca0fa585f01c77b0826d42b7f47c92cb9c58090beae43"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/survival/pollution.json"
-hash = "77a69f7d1d7ee706ad47098798aa34ee2023161a9724cd40eb88265fe9eb1557"
+hash = "909af4e32e1ba3edd6f64da01d023e21b0f0b8d68056b3460d760fdcc9cd0034"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/survival/pollution_control.json"
