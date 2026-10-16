@@ -13,7 +13,7 @@ A big, long-term Minecraft modpack built around the Create mod. Think "Minecraft
 
 ## Install (players)
 
-1. Download [`Create-Galore-0.1.3.mrpack`](Create-Galore-0.1.3.mrpack) from this repo.
+1. Download `Create-Galore-0.1.3.mrpack` from the [latest release](https://github.com/emresahin0906-code/Create-Galore/releases/latest) (or [from this repo](Create-Galore-0.1.3.mrpack)).
 2. Import it:
    - **Prism Launcher:** Add Instance → Import → pick the `.mrpack`.
    - **Modrinth App:** drag the `.mrpack` onto the window (or File → Import).
@@ -27,7 +27,9 @@ Don't let the launcher update NeoForge past 21.1.259.
 
 ## Install (server)
 
-A dedicated server takes one script plus two manual steps (add Twilight Forest, accept the EULA). The full guide, including hosting on your own PC vs Exaroton, memory, whitelisting and moving the world between the two, is in **[docs/server-setup.md](docs/server-setup.md)**.
+**On Windows, use the Server Setup app.** Download `Create-Galore-Server-Setup-<version>.exe` from the [latest release](https://github.com/emresahin0906-code/Create-Galore/releases/latest) and run it. Pick a folder and the memory, drop in the Twilight Forest jar (it shows a green check when it's the right version), tick the EULA and press Install. It installs NeoForge, downloads the server-side mods (or copies them from a mods folder you drop in, skipping client-only ones), applies the pack's configs, memory and whitelist, and writes a `start-server.bat`. If your PC has no Java 21 it downloads one into the server folder. Run it again after a pack update to update the server; the world and your settings stay.
+
+**Or use the script** (any OS). A dedicated server takes one script plus two manual steps (add Twilight Forest, accept the EULA). The full guide, including hosting on your own PC vs Exaroton, memory, whitelisting and moving the world between the two, is in **[docs/server-setup.md](docs/server-setup.md)**.
 
 ```
 cd server
@@ -185,6 +187,8 @@ All tests ran headless in a cloud machine (4 cores, 16 GB RAM, no GPU), so speed
 - `server/`: server install scripts, memory settings and a starting `server.properties`
 - `docs/`: server guide, Field Guide editing notes, screenshots
 - `tools/`: scripts to extract item and recipe IDs from mod jars, check the Field Guide and rebuild the no-Elytra datapack
+- `tools/server-setup/`: the Windows Server Setup app (C#, .NET Framework 4.8, so it needs nothing installed). `tools/build_server_bundle.py` turns `pack/` into the mod list and config bundle the app carries, so the app always matches the pack it was built with
+- `.github/workflows/release.yml`: builds the GitHub release (the `.mrpack`, the Server Setup app, a server kit zip with the scripts and docs, and this README) whenever the pack, server files, app or docs change on `main-6fi2ef`. The release is tagged with the pack version; pushing again without a version bump replaces that release's files
 
 To rebuild the `.mrpack` after changing `pack/`:
 
