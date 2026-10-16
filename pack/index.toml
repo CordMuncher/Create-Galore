@@ -2316,7 +2316,7 @@ hash = "5f78691aa94bc7589f02d0cfcd79d604323e2c79511ecefebe051316e10731be"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/start_here/performance.json"
-hash = "e650eacc35c47efce81191419edaabaa5d4145661e21b8026ada55665400ee07"
+hash = "79a7070b37f49d76c6a500343aa51a40b637c6eb9c7f745a7bdc53bb66ed9967"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/start_here/tools.json"
