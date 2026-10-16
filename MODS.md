@@ -6,12 +6,15 @@ Create Galore 0.1.2, NeoForge 21.1.259 for Minecraft 1.21.1. Everything below co
 
 Not on Modrinth, add by hand: **Twilight Forest** `twilightforest-1.21.1-4.8.3345-universal.jar` (CurseForge). See the README.
 
+Resource pack, turned on by default: [Fresh Animations](https://modrinth.com/resourcepack/fresh-animations) 1.10.4 (client, needs EMF + ETF).
+
 | Mod | Version | Side |
 |---|---|---|
 | [Aeronautics Hot Air Fix](https://modrinth.com/mod/aeronautics-hot-air-fix) | 1.1.1 | client |
 | [Aeronautics: Winds & Weather](https://modrinth.com/mod/aeronautics-winds-and-weather) | 1.3.1 | both |
 | [Alex's Caves Continued](https://modrinth.com/mod/alexs-caves-continued) | 1.1.1+neoforge-1.21.1 | both |
 | [Alloyed](https://modrinth.com/mod/create-alloyed) | 3.0.12+1.21.1-neoforge | both |
+| [AmbientSounds](https://modrinth.com/mod/ambientsounds) | 6.3.10 | client |
 | [Animal Husbandry](https://modrinth.com/mod/animalhusbandry) | 0.4.2 | both |
 | [AppleSkin](https://modrinth.com/mod/appleskin) | 3.0.9+mc1.21 | both |
 | [Aquaculture 2](https://modrinth.com/mod/aquaculture) | 2.7.21 | both |
@@ -36,6 +39,7 @@ Not on Modrinth, add by hand: **Twilight Forest** `twilightforest-1.21.1-4.8.334
 | [Cold Sweat: Altitude](https://modrinth.com/mod/cold-sweat-altitude) | 0.7.0 | both |
 | [Collective](https://modrinth.com/mod/collective) | 1.21.1-8.53-fabric+forge+neo | both |
 | [Colorwheel](https://modrinth.com/mod/colorwheel) | 1.3.0+mc1.21.1 | client |
+| [Contraption Lights (Bi-directional Coloured Dynamic Lights)](https://modrinth.com/mod/contraption-lights) | 1.5.4 | client |
 | [Controlling](https://modrinth.com/mod/controlling) | 19.0.5 | client |
 | [Cozy Cafe](https://modrinth.com/mod/cozycafe) | 2.3-1.21.1 | both |
 | [Crafting Tweaks](https://modrinth.com/mod/crafting-tweaks) | 21.1.11+neoforge-1.21.1 | both |
@@ -104,6 +108,7 @@ Not on Modrinth, add by hand: **Twilight Forest** `twilightforest-1.21.1-4.8.334
 | [Create: TFMG Community Edition](https://modrinth.com/mod/tfmg-community-edition) | 1.3.2a | both |
 | [Create: Threaded Trains](https://modrinth.com/mod/create-threaded-trains) | 1.21.1-1.0.0 | both |
 | [Create: Wizardry](https://modrinth.com/mod/create-wizardry) | 1.21.1-0.5.1-pre1 | both |
+| [CreativeCore](https://modrinth.com/mod/creativecore) | 2.13.51 | client |
 | [Cristel Lib](https://modrinth.com/mod/cristel-lib) | neoforge-1.21.1-3.1.7 | both |
 | [Critters and Companions](https://modrinth.com/mod/critters-and-companions) | 2.7.0 | both |
 | [Curios API](https://modrinth.com/mod/curios) | 9.5.1+1.21.1 | both |
@@ -111,15 +116,20 @@ Not on Modrinth, add by hand: **Twilight Forest** `twilightforest-1.21.1-4.8.334
 | [Dimensional Sable](https://modrinth.com/mod/dimensional-sable) | 1.0.5 | both |
 | [Distant Horizons](https://modrinth.com/mod/distanthorizons) | 3.3.3-1.21.1 | client |
 | [DragonLib](https://modrinth.com/mod/dragonlib) | 3.0.29+1.21.1-neoforge | both |
+| [Drip Sounds](https://modrinth.com/mod/dripsounds) | 0.6.3+1.21.8-neoforge | client |
 | [Dungeons and Taverns](https://modrinth.com/mod/dungeons-and-taverns) | v4.4.4+mod | both |
+| [[EMF] Entity Model Features](https://modrinth.com/mod/entity-model-features) | 3.3.12-neoforge-1.21 | client |
 | [Entity Culling](https://modrinth.com/mod/entityculling) | 1.11.3 | client |
+| [[ETF] Entity Texture Features](https://modrinth.com/mod/entitytexturefeatures) | 7.2.6-neoforge-1.21 | client |
 | [Euphoria Patches](https://modrinth.com/mod/euphoria-patches) | 1.10.5-r5.9.3-neoforge | client |
+| [Falling Leaves (NeoForge/Forge)](https://modrinth.com/mod/fallingleavesforge) | 1.21.1-2.5.1 | client |
 | [Farmer's Delight](https://modrinth.com/mod/farmers-delight) | 1.21.1-1.3.4 | both |
 | [Farmer's Delight: Extended](https://modrinth.com/mod/farmers-delight-extended) | 1.21.1-0.2.2 | both |
 | [FerriteCore](https://modrinth.com/mod/ferrite-core) | 7.0.3-neoforge | both |
 | [Fragmentum](https://modrinth.com/mod/fragmentum) | 5.3.0 | both |
 | [Fruits Delight](https://modrinth.com/mod/fruits-delight) | 1.2.14 | both |
 | [Fungi Delight (A Farmer's Delight Add-on)](https://modrinth.com/mod/fungi-delight) | 1.3 | both |
+| [Fzzy Config](https://modrinth.com/mod/fzzy-config) | 0.7.7+1.21+neoforge | client |
 | [Geckolib](https://modrinth.com/mod/geckolib) | 4.9.3 | both |
 | [GlitchCore](https://modrinth.com/mod/glitchcore) | 2.1.0.2 | both |
 | [Guide Shelf](https://modrinth.com/mod/guide-shelf) | 1.3.6 | client |
@@ -140,6 +150,7 @@ Not on Modrinth, add by hand: **Twilight Forest** `twilightforest-1.21.1-4.8.334
 | [Just Enough Items (JEI)](https://modrinth.com/mod/jei) | 19.64.0.454 | both |
 | [Kotlin for Forge](https://modrinth.com/mod/kotlin-for-forge) | 5.12.0 | both |
 | [L_Ender's Cataclysm](https://modrinth.com/mod/l_enders-cataclysm) | 3.33 | both |
+| [LambDynamicLights - Dynamic Lights](https://modrinth.com/mod/lambdynamiclights) | 4.8.11+1.21.1 | client |
 | [libIPN](https://modrinth.com/mod/libipn) | neoforge-1.21.1-6.6.3 | client |
 | [LibTooltips](https://modrinth.com/mod/libtooltips) | 2.3.2-NEOFORGE-1.21.1 | client |
 | [Lionfish-API](https://modrinth.com/mod/lionfish-api) | 3.1 | both |
@@ -149,6 +160,7 @@ Not on Modrinth, add by hand: **Twilight Forest** `twilightforest-1.21.1-4.8.334
 | [Macaw's Doors](https://modrinth.com/mod/macaws-doors) | 1.1.5 | both |
 | [Macaw's Roofs](https://modrinth.com/mod/macaws-roofs) | 2.3.2 | both |
 | [Macaw's Windows](https://modrinth.com/mod/macaws-windows) | 2.4.2 | both |
+| [Make Bubbles Pop](https://modrinth.com/mod/make_bubbles_pop) | 0.4.0-beta.2 | client |
 | [MezzConfig](https://modrinth.com/mod/mezzconfig) | 0.6.8 | both |
 | [ModernFix](https://modrinth.com/mod/modernfix) | 5.27.26+mc1.21.1 | both |
 | [Moog's Structure Lib (moogs_structures)](https://modrinth.com/mod/moogs-structure-lib) | 3.4.2-neoforge-1.21.1 | both |
@@ -156,18 +168,22 @@ Not on Modrinth, add by hand: **Twilight Forest** `twilightforest-1.21.1-4.8.334
 | [MOS - Moog's Ocean Structures](https://modrinth.com/mod/mos-moogs-ocean-structures) | 1.1.1 | both |
 | [Mouse Tweaks](https://modrinth.com/mod/mouse-tweaks) | 1.21-2.26.1-neoforge | client |
 | [Mowzie's Mobs](https://modrinth.com/mod/mowzies-mobs) | 1.8.2 | both |
+| [MRU](https://modrinth.com/mod/mru) | 1.0.41+1.21.1-neoforge | client |
 | [MSS - Moog's Soaring Structures](https://modrinth.com/mod/mss-moogs-soaring-structures) | 2.2.0 | both |
 | [Mushroom Quest](https://modrinth.com/mod/mushroom-quest) | 4.3.2 | both |
 | [My Nether's Delight](https://modrinth.com/mod/my-nethers-delight) | 1.10.4.1 | both |
 | [Naturalist](https://modrinth.com/mod/naturalist) | 2.0.5+1.21.1-neoforge | both |
 | [NoisiumForked](https://modrinth.com/mod/noisiumforked) | 2.7.0+mc1.21-1.21.1 | both |
 | [Northstar Aeronautics Compat](https://modrinth.com/mod/northstar-aeronautics-compat) | 0.1.9 | both |
+| [Not Enough Animations](https://modrinth.com/mod/not-enough-animations) | 1.12.6 | client |
 | [Ocean's Delight](https://modrinth.com/mod/oceans-delight) | 1.0.4 | both |
 | [oωo (owo-lib)](https://modrinth.com/mod/owo-lib) | 0.12.15.5-beta.1+1.21 | both |
 | [Patchouli](https://modrinth.com/mod/patchouli) | 1.21.1-93-neoforge | both |
 | [Paxi](https://modrinth.com/mod/paxi) | 1.21.1-NeoForge-5.1.3 | both |
 | [Placebo](https://modrinth.com/mod/placebo) | 1.21.1-9.9.4 | both |
 | [playerAnimator](https://modrinth.com/mod/playeranimator) | 2.0.4+1.21.1-forge | both |
+| [Presence Footsteps (NeoForge)](https://modrinth.com/mod/pf-neoforge) | 1.21.1-1.12.0-beta.1 | client |
+| [Presence Footsteps x Sable (Aeronautics Compat)](https://modrinth.com/mod/presence-footsteps-x-sable) | 1.0 | client |
 | [Productive Bees](https://modrinth.com/mod/productivebees) | 1.21.1-13.13.0 | both |
 | [Resourceful Lib](https://modrinth.com/mod/resourceful-lib) | 3.0.12 | both |
 | [Revamped Shipwrecks](https://modrinth.com/mod/revamped-shipwrecks) | 1.1.0 | both |
@@ -187,9 +203,12 @@ Not on Modrinth, add by hand: **Twilight Forest** `twilightforest-1.21.1-4.8.334
 | [Sophisticated Core](https://modrinth.com/mod/sophisticated-core) | 1.21.1-1.5.12.2400 | both |
 | [Sophisticated Storage](https://modrinth.com/mod/sophisticated-storage) | 1.21.1-1.6.6.2181 | both |
 | [Sophisticated Storage Create Integration](https://modrinth.com/mod/sophisticated-storage-create-integration) | 1.21.1-0.1.23.246 | both |
+| [Sound Physics: Aeronautics](https://modrinth.com/mod/sound-physics-aeronautics) | 2.0.1 | client |
+| [Sounds](https://modrinth.com/mod/sound) | 2.4.22+lts+1.21.1-neoforge | client |
 | [spark](https://modrinth.com/mod/spark) | 1.10.124-neoforge-1.21.1 | both |
 | [Starter Kit](https://modrinth.com/mod/starter-kit) | 1.21.1-8.3-fabric+forge+neo | both |
 | [Steam 'n' Rails Neoforge](https://modrinth.com/mod/create-steam-n-rails-1.21.1) | 0.3.0-beta.2+neoforge-mc1.21.1 | both |
+| [Subtle Effects](https://modrinth.com/mod/subtle-effects) | 1.15.1 | client |
 | [Supplementaries](https://modrinth.com/mod/supplementaries) | 1.21.1-4.0.1 | both |
 | [Tectonic](https://modrinth.com/mod/tectonic) | 3.0.28-neoforge-21.1 | both |
 | [Terralith](https://modrinth.com/mod/terralith) | 2.6.2 | both |

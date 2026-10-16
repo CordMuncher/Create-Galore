@@ -13,3 +13,4 @@ key_key.aether.invisibility_toggle.desc:key.keyboard.equal
 key_supplementaries.keybind.quiver:key.keyboard.grave.accent
 key_iris.keybind.reload:key.keyboard.f8
 key_key.createrailwaysnavigator.route_overlay_options:key.keyboard.backslash
+resourcePacks:["vanilla","mod_resources","file/FreshAnimations_v1.10.4.zip"]

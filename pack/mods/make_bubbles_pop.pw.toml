@@ -1,0 +1,13 @@
+name = "Make Bubbles Pop"
+filename = "make_bubbles_pop-0.4.0-beta.2-neoforge-mc1.21-1.21.1.jar"
+side = "client"
+
+[download]
+url = "https://cdn.modrinth.com/data/gPCdW0Wr/versions/OkGl4Kh9/make_bubbles_pop-0.4.0-beta.2-neoforge-mc1.21-1.21.1.jar"
+hash-format = "sha512"
+hash = "05d4db48cb7797c7c2ed32fabcd68a5511ee930ce2bfca0f967327cd47b9b8bfc930ce4d0aacfc1e57a6e76b83c1d669642e7bf799bf960274c634f49e92280e"
+
+[update]
+[update.modrinth]
+mod-id = "gPCdW0Wr"
+version = "OkGl4Kh9"
