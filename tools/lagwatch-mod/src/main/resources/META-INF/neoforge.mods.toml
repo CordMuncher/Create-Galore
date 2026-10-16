@@ -1,0 +1,26 @@
+modLoader = "javafml"
+loaderVersion = "[4,)"
+license = "MIT"
+
+[[mods]]
+modId = "create_galore_lagwatch"
+version = "1.0.0"
+displayName = "Create Galore Lag Watch"
+authors = "Create Galore"
+description = '''Dedicated servers only: says in chat when TPS stays under 15, records a spark profile to a file automatically, and logs who was where and which entities were piling up. Does nothing on a client or in singleplayer.'''
+# Server-side only: players never need it to join.
+displayTest = "IGNORE_ALL_VERSION"
+
+[[dependencies.create_galore_lagwatch]]
+modId = "neoforge"
+type = "required"
+versionRange = "[21.1,)"
+ordering = "NONE"
+side = "SERVER"
+
+[[dependencies.create_galore_lagwatch]]
+modId = "spark"
+type = "optional"
+versionRange = "[1.10,)"
+ordering = "AFTER"
+side = "SERVER"

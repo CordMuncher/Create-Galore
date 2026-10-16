@@ -60,5 +60,5 @@ if not exist mods\twilightforest-*.jar (
   echo ONE MANUAL STEP: put twilightforest-1.21.1-4.8.3345-universal.jar ^(CurseForge^) into %DEST%\mods
 )
 findstr /c:"eula=true" eula.txt >nul 2>&1 || echo Read https://aka.ms/MinecraftEULA, then put eula=true in %DEST%\eula.txt
-echo Done. Start the server with run.bat
+echo Done. Start the server with run.bat (it opens the server window with the live memory and player panel; use run.bat nogui for console only)
 endlocal

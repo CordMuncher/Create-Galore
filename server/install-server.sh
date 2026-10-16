@@ -58,4 +58,4 @@ fi
 if ! grep -q 'eula=true' eula.txt 2>/dev/null; then
   echo "Read https://aka.ms/MinecraftEULA, then put eula=true in $DEST/eula.txt"
 fi
-echo "Done. Start the server with ./run.sh nogui"
+echo "Done. Start the server with ./run.sh (it opens the server window with the live memory and player panel; add nogui for a console-only server)"

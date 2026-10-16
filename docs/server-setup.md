@@ -30,7 +30,7 @@ Download `Create-Galore-Server-Setup-<version>.exe` from the [latest release](ht
 3. **Mods:** nothing to do, the 181 server mods download from Modrinth at the pack's exact versions. If you already have the pack installed, you can drop your instance's `mods` folder on the box: mods that match the server list byte for byte are copied instead of downloaded, and client-only mods are ignored. Twilight Forest is picked up from that folder too.
 4. **Twilight Forest:** drop `twilightforest-1.21.1-4.8.3345-universal.jar` on the box. A green check means it's the right file.
 5. **Players and settings:** your Minecraft name (whitelisted and made operator), other players (whitelisted), port, and the Elytra switch.
-6. Tick the EULA and press **Install server**. When it's done, **Start server** opens the console.
+6. Tick the EULA and press **Install server**. When it's done, **Start server** opens the console and the server window with its live memory graph and player list.
 
 It does the same as the script below: NeoForge 21.1.259, the server mods, the pack's configs and datapacks, `server.properties` with `allow-flight=true`, and `user_jvm_args.txt` with the chosen memory. If no Java 21 is found it downloads Eclipse Temurin 21 into the server folder's `java` folder, and the `start-server.bat` it writes uses that. Your world, whitelist, ops and other `server.properties` edits are kept when you run it again. Files the app installed that a newer pack drops are removed; mods you added yourself are left alone.
 
@@ -62,6 +62,8 @@ Then two manual steps (the app does both for you):
 Double-click `start-server.bat` (made by the app) or `run.bat` (made by NeoForge) in the server folder. The first start creates the world and takes a few minutes; later starts are faster. It's ready when the console says `Done (...)! For help, type "help"`.
 
 Stop it by typing `stop` in the console. Don't close the window, or the last few minutes might not be saved.
+
+The server also opens its own small window: a live **memory graph** with "Memory use" and "Avg tick" (milliseconds per tick, under 50 is full speed), the **player list**, and a copy of the log with a box to type commands. It's on by default. Closing that window stops the server cleanly. If you'd rather have only the console, add `nogui` at the end of the java line in `start-server.bat`, or start with `run.bat nogui`. On Exaroton there is never a window; the web console does the same job.
 
 ### First-time settings
 
@@ -139,6 +141,40 @@ When the pack in this repo changes:
 
 Back up `world/` before updates that add or remove mods. Blocks and items from removed mods disappear from the world.
 
+## Lag alerts and profiles
+
+The server runs **Create Galore Lag Watch**, a small mod made for this pack. It only does anything on a dedicated server (your PC or Exaroton); in singleplayer it stays off, and players don't need anything for it.
+
+**What it does.** Once a second it checks the real tick rate (TPS, 20 is full speed). If TPS stays **under 15 for 10 seconds**, everyone on the server sees this in chat:
+
+```
+[Lag Watch] Server is lagging: 9.4 TPS (106 ms per tick) for 10 s. Recording a 60 s spark profile.
+[Lag Watch] Most entities: 9,992 Zombie in the Overworld, 282 Item in the Overworld, 15 Skeleton in the Overworld
+```
+
+A minute later it says where the profile went (`Profile saved: config/spark/lagwatch-2026-10-16_14.10.30.sparkprofile`), and when TPS is back above 18 for 10 seconds it says `Back to 19.7 TPS after 59 s. Lowest was 7.9.` It stays quiet for the first 2 minutes after a start, because world loading is always slow.
+
+It records at most one profile every 10 minutes, so a long lag spell doesn't fill the disk, and it keeps the newest 30 Lag Watch profiles (profiles you save yourself with spark are never deleted). Each alert also goes into `logs/lagwatch.log` in the server folder, with the TPS, which dimensions had how many chunks and entities loaded, and **where every player was standing**. That last part usually tells you whose base was lagging.
+
+**Commands** (operators only):
+- `/lagwatch` shows the current TPS and milliseconds per tick, and whether a lag spell is going on.
+- `/lagwatch test` fires a test alert right now and records a profile, so you can see that it all works. A test doesn't count toward the 10-minute limit.
+
+**Reading a profile.**
+1. Get the file: it's in the server folder under `config/spark/` (on Exaroton: Files → `config` → `spark`, then download it).
+2. Open [spark.lucko.me](https://spark.lucko.me/) in a browser and drag the `.sparkprofile` file onto the page. Nothing is uploaded; it opens on your PC.
+3. The profile only holds the **slow ticks** (over 50 ms), so everything in it is what was making the server lag.
+4. Open `Server thread` and click down the biggest percentages. Ignore `waitForNextTick`/`sleep` lines, they're idle time. You're looking for the first line that names a mod or a game system, for example:
+   - `ServerLevel.tickNonPassenger` or `EntityTickList` → too many mobs or items (the chat census already names the type).
+   - `LevelChunk...tickBlockEntities` → machines and block entities. Expand it; Create contraptions, kinetic networks, TFMG and storage mods show up by their package name (`com.simibubi.create`, `com.drmangotea.tfmg`...).
+   - `ChunkMap`, `ServerChunkCache` or `worldgen` → new chunks being generated (someone flying or sailing fast into new land).
+   - `GarbageCollector` time in the top bar → memory pressure; raise the server RAM.
+5. The search box on the page finds a mod by name, and the **Sources** button groups the time by mod.
+
+The spark commands still work by hand too: `/spark tps` and `/spark health` for a quick look, `/spark profiler open` to see the last few minutes from spark's always-on background profiler.
+
+**Changing it.** Edit `config/create_galore_lagwatch-common.toml` in the server folder and restart: the TPS that counts as lag (`alertTps`), how long it has to last (`alertAfterSeconds`), whether everyone or only operators see the alert (`tellEveryone`), the profile length, the 10-minute limit and how many profiles to keep. `enabled = false` turns it off.
+
 ## What was tested (2026-10-15)
 
 On a cloud test machine (4 CPU cores, 16 GB RAM, no GPU) with this pack (0.1.1, 181 server mods + Twilight Forest):
@@ -160,7 +196,7 @@ On a cloud test machine (4 CPU cores, 16 GB RAM, no GPU) with this pack (0.1.1, 
 
 ![Test client in the world on the dedicated server](server-join.png)
 
-Real performance on your PC and on Exaroton's hardware wasn't measured. Use `/spark tps` and `/spark health` on the server while playing to check.
+Real performance on your PC and on Exaroton's hardware wasn't measured. Use `/spark tps` and `/spark health` on the server while playing to check, and see [Lag alerts and profiles](#lag-alerts-and-profiles) for what the server reports on its own.
 
 ## Troubleshooting
 
