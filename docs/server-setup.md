@@ -73,7 +73,18 @@ whitelist add <her Minecraft name>
 op <your Minecraft name>
 ```
 
-The shipped `server.properties` turns the whitelist on, keeps `online-mode=true` (real Minecraft accounts, so player data matches on Exaroton too), sets view distance 8 and simulation distance 6, and sets `allow-flight=true`. That last one matters: without it the server kicks players for "flying" when they ride airships, jetpacks or contraptions.
+The shipped `server.properties` turns the whitelist on, keeps `online-mode=true` (real Minecraft accounts, so player data matches on Exaroton too), sets view distance 12 and simulation distance 10 (see below), and sets `allow-flight=true`. That last one matters: without it the server kicks players for "flying" when they ride airships, jetpacks or contraptions.
+
+### View and simulation distance
+
+- **Your PC (9950X3D), two players:** view distance 12, simulation distance 10. This is what the shipped `server.properties` uses.
+- **Exaroton (6 to 8 GB):** view distance 10, simulation distance 8. Set these in Exaroton's **Options** after uploading, because the uploaded `server.properties` carries the PC values.
+
+Simulation distance is how far around each player machines, farms, mobs and crops keep running; view distance is how far the server sends real chunks. Distant Horizons draws everything past view distance from Chunksmith's LOD data, so a bigger view distance mostly costs chunk loading and network, not looks. No mod in the pack needs a minimum: Create trains keep running on their tracks even through unloaded chunks, and on a contraption or Aeronautics ship the riders load chunks around themselves like any player. What a low simulation distance does change is that a factory, farm or parked contraption freezes once every player is further away than that. For a train station or base that must run while you're away, use Create: Power Loader, not a higher distance.
+
+Benchmark (2026-10-16, the 4-core cloud test box, fresh world, two players' areas force-loaded 1,600 blocks apart, 6 GB heap): tick time 18 ms at simulation 6, 26 ms at 8 and 34 ms at 10, out of a 50 ms budget. Memory stayed at 7.3 GB for the whole process at every setting. Your 9950X3D should be roughly twice as fast per core (an estimate, not measured), so 10 leaves plenty of room for big Create builds; on Exaroton's shared CPU 8 is the safer pick. If the server falls behind (`/neoforge tps` above 50 ms per tick), lower simulation distance first.
+
+Servers installed with older versions of the app or script got view 8 / simulation 6. Installing again raises those to 12 / 10, unless you changed them yourself.
 
 ### Elytra (off unless you switch them on)
 
@@ -101,7 +112,7 @@ Exaroton bills by RAM per hour while the server runs, and can start the server w
 2. Create a server on Exaroton. Under **Software**, choose **NeoForge**, Minecraft **1.21.1**, NeoForge **21.1.259**. Custom uploads need bought credits; the free trial can't do it.
 3. Set **RAM to 8 GB**. After a few sessions, try 6 GB: the benchmark in [java-flags.md](java-flags.md) ran fine at 6 GB. Ignore `user_jvm_args.txt` there, the panel's RAM setting replaces it.
 4. In the **Files** section, upload from your server folder: `mods/`, `config/`, `patchouli_books/` (the Field Guide) and `server.properties`. Then upload the world folder (`world/`) if you want to continue your world (see the next section).
-5. In **Options**, keep online mode on, whitelist both accounts and op yourself. Turn on **auto-start** for whitelisted players if she should be able to start it by joining, and **auto-stop** after a few empty minutes so it doesn't run up credits.
+5. In **Options**, set view distance 10 and simulation distance 8, keep online mode on, whitelist both accounts and op yourself. Turn on **auto-start** for whitelisted players if she should be able to start it by joining, and **auto-stop** after a few empty minutes so it doesn't run up credits.
 6. She adds the Exaroton address (shown on the server page, like `yourname.exaroton.me`) in Multiplayer.
 
 The storage limit is 10 GB per server. The mods are about 0.8 GB and a fresh world is small, but it grows as you explore. Chunksmith's LOD store (`world/chunksmith/lod/`) is optional and can be left out of uploads to save space.
