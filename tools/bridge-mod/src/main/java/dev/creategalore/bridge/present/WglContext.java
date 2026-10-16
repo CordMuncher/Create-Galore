@@ -2,6 +2,7 @@ package dev.creategalore.bridge.present;
 
 import static org.lwjgl.opengl.WGL.wglCreateContext;
 import static org.lwjgl.opengl.WGL.wglDeleteContext;
+import static org.lwjgl.opengl.WGL.wglGetProcAddress;
 import static org.lwjgl.opengl.WGL.wglMakeCurrent;
 import static org.lwjgl.opengl.WGLARBCreateContext.WGL_CONTEXT_FLAGS_ARB;
 import static org.lwjgl.opengl.WGLARBCreateContext.WGL_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB;
@@ -17,10 +18,13 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 import static org.lwjgl.system.MemoryUtil.memAddress;
 import static org.lwjgl.system.windows.GDI32.ChoosePixelFormat;
 import static org.lwjgl.system.windows.GDI32.DescribePixelFormat;
+import static org.lwjgl.system.windows.GDI32.PFD_DOUBLEBUFFER;
+import static org.lwjgl.system.windows.GDI32.PFD_DRAW_TO_WINDOW;
 import static org.lwjgl.system.windows.GDI32.PFD_MAIN_PLANE;
 import static org.lwjgl.system.windows.GDI32.PFD_SUPPORT_OPENGL;
 import static org.lwjgl.system.windows.GDI32.PFD_TYPE_RGBA;
 import static org.lwjgl.system.windows.GDI32.SetPixelFormat;
+import static org.lwjgl.system.windows.GDI32.SwapBuffers;
 import static org.lwjgl.system.windows.User32.DestroyWindow;
 import static org.lwjgl.system.windows.User32.GetDC;
 import static org.lwjgl.system.windows.User32.ReleaseDC;
@@ -49,7 +53,7 @@ final class WglContext implements AutoCloseable {
             PIXELFORMATDESCRIPTOR pfd = PIXELFORMATDESCRIPTOR.calloc(stack)
                     .nSize((short) PIXELFORMATDESCRIPTOR.SIZEOF)
                     .nVersion((short) 1)
-                    .dwFlags(PFD_SUPPORT_OPENGL)
+                    .dwFlags(PFD_SUPPORT_OPENGL | PFD_DRAW_TO_WINDOW | PFD_DOUBLEBUFFER)
                     .iPixelType(PFD_TYPE_RGBA)
                     .iLayerType(PFD_MAIN_PLANE)
                     .cColorBits((byte) 32)
@@ -79,6 +83,12 @@ final class WglContext implements AutoCloseable {
                 context = createContext(hdc, flags.majorVersion, flags.minorVersion, flags);
             }
             hglrc = check(context);
+            // swapBuffers() must never wait for a vblank: turn vsync off for the hidden window.
+            wglMakeCurrent(hdc, hglrc);
+            long swapInterval = wglGetProcAddress("wglSwapIntervalEXT");
+            if (swapInterval != NULL) {
+                Ffi.call("I:I", swapInterval, 0);
+            }
             wglMakeCurrent(hdc, 0);
             wglDeleteContext(tempContext);
         }
@@ -100,6 +110,14 @@ final class WglContext implements AutoCloseable {
 
     void makeCurrent() {
         wglMakeCurrent(hdc, hglrc);
+    }
+
+    /**
+     * Swaps the hidden 1x1 window. Nothing is shown; it only marks the end of a frame for the OpenGL driver, which
+     * otherwise never sees one (the frames go out through DXGI) and may keep the GPU clocks low.
+     */
+    void swapBuffers() {
+        SwapBuffers(hdc);
     }
 
     @Override

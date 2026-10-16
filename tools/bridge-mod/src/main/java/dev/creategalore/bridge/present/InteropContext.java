@@ -247,6 +247,7 @@ final class InteropContext implements AutoCloseable {
     }
 
     void present() {
+        openglContext.swapBuffers();
         Com.check("Present", swapChain, SWAP_CHAIN_PRESENT, "II", syncInterval, syncInterval == 0 ? DXGI_PRESENT_ALLOW_TEARING : 0);
     }
 
