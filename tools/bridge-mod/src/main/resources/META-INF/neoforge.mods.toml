@@ -4,10 +4,10 @@ license = "MIT"
 
 [[mods]]
 modId = "create_galore_bridge"
-version = "1.0.0"
+version = "1.0.1"
 displayName = "Create Galore Bridge"
 authors = "Create Galore"
-description = '''Pack glue for Create Galore: TFMG engines and blast furnaces pollute (Create: Smog) only while they burn fuel.'''
+description = '''Pack glue for Create Galore: TFMG engines and blast furnaces pollute (Create: Smog) only while they burn fuel, and Blaze Burners only while they have fuel.'''
 
 [[mixins]]
 config = "create_galore_bridge.mixins.json"

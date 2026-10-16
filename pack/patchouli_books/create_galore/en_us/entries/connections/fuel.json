@@ -10,7 +10,7 @@
     },
     {
       "type": "patchouli:text",
-      "text": "Where TFMG fuels burn:$(li)Crafts & Additions' Blaze Burner with Straw: diesel, gasoline, crude oil, creosote$(li)Create Propulsion thrusters: diesel, gasoline, kerosene, naphtha$(li)Northstar rockets: diesel, gasoline, kerosene, naphtha"
+      "text": "Where TFMG fuels burn:$(li)Any Blaze Burner, piped in: diesel, gasoline, kerosene, naphtha, heavy oil. Napalm superheats it$(li)Crafts & Additions' Blaze Burner with Straw: also crude oil and creosote$(li)Create Propulsion thrusters: diesel, gasoline, kerosene, naphtha$(li)Northstar rockets: diesel, gasoline, kerosene, naphtha"
     },
     {
       "type": "patchouli:text",
