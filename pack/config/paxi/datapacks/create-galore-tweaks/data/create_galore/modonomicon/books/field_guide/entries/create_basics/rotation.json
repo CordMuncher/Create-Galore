@@ -1,0 +1,55 @@
+{
+  "category": "create_basics",
+  "name": "Rotation",
+  "description": "Create does not run on electricity or fuel at its core.",
+  "icon": {
+    "item": "create:shaft"
+  },
+  "x": -6,
+  "y": -2,
+  "sort_number": 0,
+  "parents": [],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Rotation",
+      "text": "Create does not run on electricity or fuel at its core. It runs on **rotational force**: things that spin. A source (water, wind, steam, your own hand) spins a shaft, and the spin passes along shafts and gears to machines that use it."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Two numbers describe any spinning part. **Speed** in RPM (rotations per minute), and **direction**, clockwise or counter-clockwise. Many machines work at any speed, some want fast, and a few get better the faster they spin."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create:shaft"
+      },
+      "title": "Shaft",
+      "text": "Carries rotation in a straight line, unchanged. Everything else in the network connects through shafts, gears or belts. See [#](2E5AAC)[Transmission](entry://create_basics/transmission)[#]()."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Direction matters.** Touching cogwheels spin in opposite directions. A machine such as a drill or saw may work in one direction only, and fans, pumps and bearings flip what they do if you reverse them."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**A network is shared.** Every machine on one connected set of shafts and gears spins at the same speed, scaled by gear ratios, and they all draw from the same pool of power. That pool is covered in [#](2E5AAC)[Stress](entry://create_basics/stress)[#]()."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create:speedometer"
+      },
+      "title": "Speedometer",
+      "text": "Shows a network's speed with a dial. With goggles on, it reads out the exact RPM."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Ponder (**hold W** over any block) shows each part in motion. For where the spin comes from, see [#](2E5AAC)[Power Sources](entry://create_basics/power_sources)[#](). To read speed and stress live, see [#](2E5AAC)[Wrench and Goggles](entry://create_basics/tools_wrench)[#]()."
+    }
+  ]
+}

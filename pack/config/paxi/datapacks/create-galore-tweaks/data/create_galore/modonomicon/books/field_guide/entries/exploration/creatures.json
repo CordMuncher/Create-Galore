@@ -1,0 +1,65 @@
+{
+  "category": "exploration",
+  "name": "Creatures",
+  "description": "Two mods fill the Overworld with ordinary-feeling animals.",
+  "icon": {
+    "item": "crittersandcompanions:koi_fish"
+  },
+  "x": -3,
+  "y": 5,
+  "sort_number": 21,
+  "parents": [
+    {
+      "entry": "exploration/worldgen",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Creatures",
+      "text": "Two mods fill the Overworld with ordinary-feeling animals. They are vanilla-style: no bosses, no new dimension, just more to see and sometimes tame."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Critters and Companions** adds dragonflies (with armor), ferrets, koi, red pandas, jumping spiders, ladybugs, leaf insects, snails and more, plus a Grappling Hook and Pearl Necklaces. Its otter, Dumbo Octopus and Sea Bunny spawns are off; Hybrid Aquatic has those."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "crittersandcompanions:koi_fish"
+      },
+      "title": "Koi Fish",
+      "text": "A pond fish that can be carried in a bucket."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "crittersandcompanions:grappling_hook"
+      },
+      "title": "Grappling Hook",
+      "text": "Critters and Companions' grappling tool."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Naturalist** adds land animals: bears, deer, boar, lions, tigers, zebras, giraffes, elephants, hippos, rhinos, lizards, snakes, tortoises, ducks, turkeys, vultures and more. Nine sea animals are off: anglerfish, blobfish, giant isopod, great white shark, piranha, jellyfish, starfish, crab and ray."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "naturalist:capture_net"
+      },
+      "title": "Capture Net",
+      "text": "Naturalist's tool to catch small creatures like butterflies and firefly."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Sea creatures: [#](2E5AAC)[Sea Life](entry://ocean/sea_life)[#](). Creature drops feed cooking in [#](2E5AAC)[Farmer's Delight](entry://food/farmers_delight)[#]()."
+    }
+  ]
+}

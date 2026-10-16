@@ -1,0 +1,60 @@
+{
+  "category": "exploration",
+  "name": "World Generation",
+  "description": "Three mods reshape the Overworld itself, so the land and caves differ from vanilla...",
+  "icon": {
+    "item": "minecraft:grass_block"
+  },
+  "x": -5,
+  "y": 0,
+  "sort_number": 6,
+  "parents": [
+    {
+      "entry": "exploration/dimensions",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "World Generation",
+      "text": "Three mods reshape the Overworld itself, so the land and caves differ from vanilla before any structure is placed. They are invisible in the inventory: you meet them as scenery."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "minecraft:oak_sapling"
+      },
+      "title": "Terralith",
+      "text": "Almost 100 new biomes in a realistic-to-light-fantasy style. It uses only vanilla blocks."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "minecraft:stone"
+      },
+      "title": "Tectonic",
+      "text": "Rewrites terrain shaping: taller, grander and more varied land. It works alongside Terralith."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "minecraft:deepslate"
+      },
+      "title": "YUNG's Better Caves",
+      "text": "A full overhaul of cave generation. Caves look different at every depth."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "These change where things are, so check [#](2E5AAC)[the Ore Guide](entry://materials/ore_guide)[#]() before assuming vanilla heights. Ocean depth also matters for [#](2E5AAC)[submarines](entry://ocean/submarines)[#](): bigger terrain means more places to dive."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Lithostitched and Noisium are libraries used by some of these mods; they have no content of their own. Underground biomes with their own rules are in [#](2E5AAC)[Alex's Caves](entry://exploration/alexs_caves)[#]()."
+    }
+  ]
+}

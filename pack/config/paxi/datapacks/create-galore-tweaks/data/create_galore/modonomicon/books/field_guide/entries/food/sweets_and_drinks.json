@@ -1,0 +1,63 @@
+{
+  "category": "food",
+  "name": "Chocolate, Tea and Coffee",
+  "description": "Two addons turn Create into a sweet shop and a cafe.",
+  "icon": {
+    "item": "createcafe:strawberry_milk_tea"
+  },
+  "x": 2,
+  "y": 0,
+  "sort_number": 7,
+  "parents": [
+    {
+      "entry": "food/kitchen_automation",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": false
+    },
+    {
+      "entry": "food/ratatouille",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Chocolate, Tea and Coffee",
+      "text": "Two addons turn Create into a sweet shop and a cafe. **Create Confectionery** handles chocolate, candy and gingerbread. **Create Cafe** handles coffee, tea and syrups. Both lean on Create's mixing, filling and compacting."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create_confectionery:chocolate_bricks"
+      },
+      "title": "Confectionery",
+      "text": "Chocolate comes in milk, dark, white and ruby as fluids. Compact it into bars or build with chocolate bricks. Also candy, caramel, marshmallow and gingerbread."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "More sweets",
+      "text": "Candy cane tools, a Gingerbread Man mob and hot chocolate drinks round out Confectionery. White, dark and hot chocolate use [#](2E5AAC)[Ratatouille](entry://food/ratatouille)[#]()'s cocoa butter and powder. Look recipes up in JEI with **R**."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Coffee",
+      "text": "Coffee fruit is crushed to beans, roasted in a smoker, then milled or crushed to grounds. Syrups flavour drinks, applied with a Spout."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "createcafe:strawberry_milk_tea"
+      },
+      "title": "Tea and Syrups",
+      "text": "Mixed over heat from fruit, melted sugar and often milk or water. Fruit from Fruits Delight, Berries and Cherries, Twilight Forest and Northstar all count."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "The mixing recipes need a Blaze Burner under the mixer. Tapioca flour, oreo and crushed cookies give bubble tea style toppings.\n\nBlood Oranges come from haunting an orange with a Fan. Mana Berries come from filling sweet berries with 25 mB of liquid experience in a Spout.\n\nHeat: [#](2E5AAC)[Heat](entry://create_basics/heat)[#](). Serving to customers: [#](2E5AAC)[Cozy Cafe](entry://food/cozy_cafe)[#]()."
+    }
+  ]
+}

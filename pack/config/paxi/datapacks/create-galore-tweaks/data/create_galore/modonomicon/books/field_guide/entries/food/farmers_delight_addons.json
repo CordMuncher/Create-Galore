@@ -1,0 +1,76 @@
+{
+  "category": "food",
+  "name": "Delight Add-ons",
+  "description": "A family of small mods adds foods that all use the Farmer's Delight pot, board and...",
+  "icon": {
+    "item": "farmersdelight_extended:cheeseburger"
+  },
+  "x": -2,
+  "y": -2,
+  "sort_number": 2,
+  "parents": [
+    {
+      "entry": "food/farmers_delight",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Delight Add-ons",
+      "text": "A family of small mods adds foods that all use the Farmer's Delight pot, board and skillet. The rules are the same everywhere: bring ingredients, a heat source and the right container. Look recipes up in JEI (hover, press **R**). Meals and crops are listed below."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "farmersdelight_extended:cheeseburger"
+      },
+      "title": "Extended",
+      "text": "Farmer's Delight: Extended adds dishes made only from existing Minecraft, Create and Farmer's Delight items. No new crops or mobs. Cheese, burgers, breakfast plates, ice cream."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "fruitsdelight:pineapple_pie"
+      },
+      "title": "Fruits Delight",
+      "text": "Fruit trees and bushes (pear, kiwi, mango, persimmon, lychee, fig and more) with jams, pies, jellos, popsicles and drinks."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "fungidelight:truffle"
+      },
+      "title": "Fungi Delight",
+      "text": "Mushroom cooking: morel, inky cap and truffle crops and dishes such as truffle pasta and morel soup. Morel cows also exist."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "mynethersdelight:hoglin_sausage"
+      },
+      "title": "My Nether's Delight",
+      "text": "Hoglin, ghast and Nether-plant dishes, plus Nether-flavoured cabinets and decor. Meant for cooking in the Nether. Bastion chests hold some of its extras, like strider eggs."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "oceansdelight:fugu_slice"
+      },
+      "title": "Ocean's Delight",
+      "text": "Food from sea creatures: fugu, guardian parts, tentacles and more. Cook it carefully, as fugu is poisonous raw."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Berries and Cherries Delight** adds grapes, strawberries, cherries, jams and pies.\n\n**Aquaculture Delight** lets Aquaculture fish work in Farmer's Delight recipes.\n\n**Sniffers Sniff Delights** makes Sniffers dig up tomato, cabbage, rice and onion seeds far more often."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Delightful Creators** is the Create bridge: soups as fluids, sequenced assembly meals and a Mechanical Cutter. See [#](2E5AAC)[Kitchen Automation](entry://food/kitchen_automation)[#]().\n\n**Brewin' and Chewin'** adds kegs and fermented drinks: [#](2E5AAC)[Brewing](entry://food/brewing)[#]().\n\nBase mechanics: [#](2E5AAC)[Farmer's Delight](entry://food/farmers_delight)[#]()."
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "category": "food",
+  "name": "Berries and Farm Helpers",
+  "description": "A few small mods make growing food easier.",
+  "icon": {
+    "item": "berry_good:sweet_berry_basket"
+  },
+  "x": -2,
+  "y": 1,
+  "sort_number": 9,
+  "parents": [
+    {
+      "entry": "food/farmers_delight",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Berries and Farm Helpers",
+      "text": "A few small mods make growing food easier. **Berry Good** improves berries. **Better Farming Right Click** saves you replanting time. Seasons decide when crops grow.\n\nFruit trees, jams and pies come from the [#](2E5AAC)[Delight add-ons](entry://food/farmers_delight_addons)[#]()."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "berry_good:sweet_berry_basket"
+      },
+      "title": "Berry Good",
+      "text": "Makes sweet berries less annoying to eat and adds berry foods: baskets, pips, meatballs, glowgurt and more. Glow berries get the same treatment."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Better Farming Right Click** lets you right-click a mature crop to harvest and replant it in one go. Toggle it from its in-game options; there is also a no-cooldown setting for tools and seeds.\n\nRice, tomatoes and onions come from [#](2E5AAC)[Farmer's Delight](entry://food/farmers_delight)[#]()."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Seasons matter for crops. Serene Seasons ties growth to the calendar, so many crops struggle out of season; plan farms around it. Seasonal Integration extends this to other mods.\n\nSee [#](2E5AAC)[Seasons](entry://survival/seasons)[#](). Create farms: [#](2E5AAC)[Integrated Farming](entry://food/integrated_farming)[#]()."
+    }
+  ]
+}

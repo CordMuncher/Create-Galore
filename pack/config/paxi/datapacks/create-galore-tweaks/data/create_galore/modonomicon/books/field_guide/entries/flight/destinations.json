@@ -1,0 +1,99 @@
+{
+  "category": "flight",
+  "name": "Destinations",
+  "description": "Vehicles need somewhere to go.",
+  "icon": {
+    "item": "aeronauticsdiscovery:pin_wand"
+  },
+  "x": 5,
+  "y": -1,
+  "sort_number": 12,
+  "parents": [
+    {
+      "entry": "flight/weather_and_danger",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": false
+    },
+    {
+      "entry": "flight/flight_control",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Destinations",
+      "text": "Vehicles need somewhere to go. This is a map of what the pack puts in the sky and on far worlds, where it lives, and what you can expect there."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Sky Villages",
+      "text": "Create: Sky Village places villages high up in the Overworld, between about 150 and 250 blocks. There are two kinds: the Sky Village and the Highwind Village. Expect villagers and Create loot."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Aeronautics builds",
+      "text": "Creat Aeronautics Structures adds airships, airballoons, crashed planes, boats, an engineering house with an Engineer villager, and pillager versions."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Discovery",
+      "text": "Aeronautics Discovery adds events. Planes and balloons fly over the Overworld at height, and balloons appear in villages. It also adds Pillager Aviators, Soaring Traders and maps to temples, igloos, ancient cities and mineshafts."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "aeronauticsdiscovery:pin_wand"
+      },
+      "title": "Pin Wand",
+      "text": "From Aeronautics Discovery. Check its tooltip in game for how to use it."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "aeronauticsdiscovery:soaring_trader_spawn_egg"
+      },
+      "title": "Soaring Trader",
+      "text": "A trader added by Aeronautics Discovery, with the Pillager Aviator as its hostile counterpart."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Floating islands",
+      "text": "Moog's Soaring Structures fills the sky with vanilla-style floating islands: houses, towers, ruins, trees, volcanoes, an arena and a floating Nether portal. Expect loot and mobs."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "minecraft:chest"
+      },
+      "title": "Island loot",
+      "text": "Floating islands from Moog's Soaring Structures hold chests and mobs. Bring a ship that can land."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "The Aether",
+      "text": "The Aether is a separate dimension of floating islands. Its portal is built from a glowstone frame lit with water. Sky whales drift over the ocean in the Overworld; see [#](2E5AAC)[Weather and Danger](entry://flight/weather_and_danger)[#]()."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "aether:ambrosium_shard"
+      },
+      "title": "Ambrosium Shard",
+      "text": "A basic Aether resource. See Dimensions for the Aether and others."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Beyond the sky",
+      "text": "For the highest destinations, fly an Aeronautics ship upward with a Dimensional Drive, or build a rocket. Northstar has the Moon, Mars, Mercury and Venus. See [#](2E5AAC)[Reaching Space](entry://space/reaching_space)[#]() and [#](2E5AAC)[Planets](entry://space/planets)[#]()."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Related",
+      "text": "More places and the dangers on the way.\n\n- [#](2E5AAC)[Hangars](entry://flight/hangars)[#]()\n- [#](2E5AAC)[Weather and Danger](entry://flight/weather_and_danger)[#]()\n- [#](2E5AAC)[Dimensions](entry://exploration/dimensions)[#]()\n- [#](2E5AAC)[Structures](entry://exploration/structures)[#]()\n- [#](2E5AAC)[Reaching Space](entry://space/reaching_space)[#]()"
+    }
+  ]
+}

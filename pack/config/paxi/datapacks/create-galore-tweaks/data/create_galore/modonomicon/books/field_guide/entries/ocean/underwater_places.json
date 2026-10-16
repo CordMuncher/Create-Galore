@@ -1,0 +1,57 @@
+{
+  "category": "ocean",
+  "name": "Underwater Places",
+  "description": "Four structure mods rework the sea floor.",
+  "icon": {
+    "item": "minecraft:heart_of_the_sea"
+  },
+  "x": 1,
+  "y": -1,
+  "sort_number": 11,
+  "parents": [
+    {
+      "entry": "ocean/hulls_and_pressure",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Underwater Places",
+      "text": "Four structure mods rework the sea floor. They are destinations for a [#](2E5AAC)[submarine](entry://ocean/submarines)[#](): ruins, wrecks and monuments with better loot than vanilla. Pressure matters, so check depth with a Barometer first."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "minecraft:prismarine_bricks"
+      },
+      "title": "Ocean Monuments",
+      "text": "YUNG's Better Ocean Monuments rebuilds the vanilla monument. Prismarine can be crushed for lapis and XP."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Hopo Better Underwater Ruins** and **Revamped Shipwrecks** both replace vanilla ruins and shipwrecks with larger, more varied builds. **MOS (Moog's Ocean Structures)** adds many more: Atlantis ruins, temples, sunken ships, dragon skeletons, gardens and shrines."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Chests in them are normal loot, so remember [#](2E5AAC)[Lootr](entry://exploration/lootr)[#](): in this pack, loot chests are per player. Conduit and prismarine gear from these places feeds the machines in [#](2E5AAC)[Conduit Cages](entry://ocean/conduits)[#]()."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "minecraft:conduit"
+      },
+      "title": "Conduit",
+      "text": "A conduit in a monument can be worked with Aquatic Ambitions' fan channeling."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Related",
+      "text": "- [#](2E5AAC)[Submarines](entry://ocean/submarines)[#]()\n- [#](2E5AAC)[Hulls and Pressure](entry://ocean/hulls_and_pressure)[#]()\n- [#](2E5AAC)[Structures](entry://exploration/structures)[#]()"
+    }
+  ]
+}

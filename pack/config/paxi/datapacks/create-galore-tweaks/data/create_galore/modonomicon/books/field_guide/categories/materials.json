@@ -1,0 +1,14 @@
+{
+  "name": "Ores and Metals",
+  "description": "Where every metal comes from, which mods share it, and how Create turns one ore into more.",
+  "icon": {
+    "item": "create:crushed_raw_zinc"
+  },
+  "sort_number": 4,
+  "display_mode": "node",
+  "background": "modonomicon:textures/gui/dark_slate_seamless.png",
+  "background_width": 512,
+  "background_height": 512,
+  "max_scroll_x": 150,
+  "max_scroll_y": 135
+}

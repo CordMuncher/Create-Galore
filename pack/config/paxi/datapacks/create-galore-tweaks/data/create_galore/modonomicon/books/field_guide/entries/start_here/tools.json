@@ -1,0 +1,74 @@
+{
+  "category": "start_here",
+  "name": "Tools of the Trade",
+  "description": "A few helpers explain the pack for you: JEI, Create Ponder, Jade, Engineer's Goggles,...",
+  "icon": {
+    "item": "create:goggles"
+  },
+  "x": -1,
+  "y": 0,
+  "sort_number": 1,
+  "parents": [
+    {
+      "entry": "start_here/welcome",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Tools of the Trade",
+      "text": "A few helpers explain the pack for you: JEI, Create Ponder, Jade, Engineer's Goggles, the Xaero maps and AppleSkin. Learn these first and you rarely need a web wiki."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**JEI**, Just Enough Items, lists every item and recipe. Hover an item and press **R** for how to make it, **U** for what it is used in. Press **A** on an item to bookmark it. Machine recipes (mixing, pressing, fan processing) appear here too."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create:goggles"
+      },
+      "title": "Engineer's Goggles",
+      "text": "Wear them to see stress, speed and extra info on kinetic machines, tanks and basins. See [#](2E5AAC)[Stress](entry://create_basics/stress)[#]()."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Create Ponder**: hover over almost any Create item (in your inventory or JEI) and hold **W**. An animated scene shows how it works. Many add-on mods use Ponder too.\n\nPonder is the first place to look for how a Create machine behaves, so these entries do not repeat every block."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Jade**: point at a block or mob and a small box names it, its mod, and extra details such as machine contents or crop growth.\n\n**AppleSkin**: food tooltips show hunger and saturation, and the hunger bar previews what a food will restore."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Xaero's Minimap and World Map** show where you are and what you have explored. Create add-ons put train and ship info on them. Map keys are listed under Options > Controls.\n\nWaypoints, map tips and coordinates are covered in [#](2E5AAC)[Maps](entry://home/maps)[#]()."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Changed keys.** The pack rebinds a few defaults; the rest keep their normal key. Check Options > Controls.\n\n- Backpack open: J\n- Jetpack toggle: N\n- Accessories screen: comma"
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "- Shader reload (Iris): F8\n- Aether invisibility: =\n- Supplementaries quiver: backtick\n- Stock ticker (Mobile Packages): period\n- Player networks: semicolon"
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "- Cataclysm abilities: Home, End, Insert, Delete\n- Railways Navigator overlay options: backslash\n\nA launcher may overwrite the file holding these when the pack updates, which resets them."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Related",
+      "text": "- [#](2E5AAC)[Rotation](entry://create_basics/rotation)[#]()\n- [#](2E5AAC)[Stress](entry://create_basics/stress)[#]()\n- [#](2E5AAC)[Wrench and Goggles](entry://create_basics/tools_wrench)[#]()\n- [#](2E5AAC)[Maps and Waypoints](entry://home/maps)[#]()"
+    }
+  ]
+}

@@ -1,0 +1,81 @@
+{
+  "category": "space",
+  "name": "Space Metals",
+  "description": "Northstar adds three metals: Titanium, Tungsten and Martian Steel.",
+  "icon": {
+    "item": "northstar:titanium_ingot"
+  },
+  "x": -1,
+  "y": 0,
+  "sort_number": 6,
+  "parents": [
+    {
+      "entry": "space/reaching_space",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Space Metals",
+      "text": "Northstar adds three metals: Titanium, Tungsten and Martian Steel. Titanium is the base of most of the tech. Ore for it sits on all four worlds, but you can also make it on Earth."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "northstar:titanium_ingot"
+      },
+      "title": "Titanium Ingot",
+      "text": "Smelt or blast titanium ore from the Moon, Mars, Mercury or Venus. Also pressed into Titanium Sheets."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Titanium on Earth",
+      "text": "Rutile Concentrate is mixed superheated with zinc, chlorine and carbon into Titanium Tetrachloride. That is applied to a Sturdy Sheet in a sequenced assembly, with lava, to give a Titanium Ingot. Chlorine comes from electrolysing Brine."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "northstar:rutile_concentrate"
+      },
+      "title": "Rutile Concentrate",
+      "text": "Crush sand, Create's limestone (best of the two) or Venus Gravel."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Salt",
+      "text": "Northstar's brine chain makes salt. In this pack it is Create Ratatouille's Salt: brine compacts down to it, and Mars Gravel and Basalt crush into it. Other mods' salt converts 1:1 in a crafting grid."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "northstar:tungsten_ingot"
+      },
+      "title": "Tungsten Ingot",
+      "text": "Only from Mercury ore. The top tier of heat shielding."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "northstar:martian_steel_ingot"
+      },
+      "title": "Martian Steel Ingot",
+      "text": "Heated compacting of Titanium, Raw Martian Iron and Volcanic Ash gives two ingots."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "northstar:circuit"
+      },
+      "title": "Circuit",
+      "text": "Made by sequenced assembly. Used in rockets, oxygen gear and most space machines."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Related",
+      "text": "Ore, assembly lines and the planets.\n\n- [#](2E5AAC)[Ore Guide](entry://materials/ore_guide)[#]()\n- [#](2E5AAC)[Brass and Assembly](entry://create_basics/brass_and_assembly)[#]()\n- [#](2E5AAC)[Planets](entry://space/planets)[#]()\n- [#](2E5AAC)[Core Materials](entry://create_basics/materials)[#]()"
+    }
+  ]
+}

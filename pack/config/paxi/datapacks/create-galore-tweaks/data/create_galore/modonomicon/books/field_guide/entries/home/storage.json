@@ -1,0 +1,61 @@
+{
+  "category": "home",
+  "name": "Backpacks and Storage",
+  "description": "Sophisticated Backpacks and Sophisticated Storage share one idea: containers you...",
+  "icon": {
+    "item": "sophisticatedbackpacks:backpack"
+  },
+  "x": -3,
+  "y": -1,
+  "sort_number": 1,
+  "parents": [],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Backpacks and Storage",
+      "text": "**Sophisticated Backpacks** and **Sophisticated Storage** share one idea: containers you customise with upgrades. Backpacks go on your back. Storage covers chests, barrels and shulker boxes. Both use the same upgrade system."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "sophisticatedbackpacks:backpack"
+      },
+      "title": "Backpack",
+      "text": "Worn on your back; the open key is J here. Tiers climb from the basic backpack through copper, iron, gold, diamond and netherite, each with more slots and upgrade slots."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "sophisticatedstorage:chest"
+      },
+      "title": "Storage Chests",
+      "text": "Chests, barrels and shulker boxes come in the same material tiers. Barrels can be limited to a few stacks. Use the Storage Tool to change appearance."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "sophisticatedbackpacks:stack_upgrade_tier_1"
+      },
+      "title": "Stack Upgrade",
+      "text": "Multiplies how many items fit per slot. Higher tiers stack more. Conversion recipes upgrade one tier to the next."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Common upgrades:\n- Pickup and Magnet collect items (range 2, Advanced 4).\n- Filter limits what goes in.\n- Feeding eats for you.\n- Restock and Refill keep your hotbar full.\n- Void and Compacting tidy overflow.\n- Smelting, crafting and more."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "sophisticatedstorage:controller"
+      },
+      "title": "Controller",
+      "text": "Links many nearby Sophisticated chests and barrels into one big inventory. Add a Storage Link to connect other storage."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Both mods have Create add-ons, so backpacks and storage can ride on contraptions with their upgrades. Backpacks on contraptions use the official Sophisticated Backpacks Create Integration. See [#](2E5AAC)[Contraptions](entry://create_basics/contraptions)[#]().\n\nMore inventory help: [#](2E5AAC)[Inventory Tools](entry://home/inventory_tools)[#]()."
+    }
+  ]
+}

@@ -1,0 +1,78 @@
+{
+  "category": "survival",
+  "name": "Create and Altitude Heat",
+  "description": "Create: Cold Sweat makes Create machines change the temperature of nearby players, so...",
+  "icon": {
+    "item": "create:blaze_burner"
+  },
+  "x": 0,
+  "y": -1,
+  "sort_number": 3,
+  "parents": [
+    {
+      "entry": "survival/temperature",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": false
+    },
+    {
+      "entry": "survival/temperature_gear",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "What it does",
+      "text": "Create: Cold Sweat makes Create machines change the temperature of nearby players, so a working factory also heats the room.\n\nThe heat idea itself is in [#](2E5AAC)[Heat](entry://create_basics/heat)[#]()."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create:blaze_burner"
+      },
+      "title": "Blaze Burner",
+      "text": "Warms nearby players. The hotter the flame, the more it adds: smouldering, fading, kindled, seething."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Other sources",
+      "text": "Also counted: **Steam Engines**, **Encased Fans**, **Fluid Tanks**, **Basins**, pipes and pumps. A working steam boiler radiates more as its level rises. Lava in a container gives heat; water is neutral."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create:encased_fan"
+      },
+      "title": "Encased Fan",
+      "text": "A fan can take its temperature from the block it faces, so a fan blowing out of a fire or lava can heat a room."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Range",
+      "text": "Each effect has a maximum range, so you need to be fairly close. Pipes and tanks only matter when they hold something hot or cold."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Altitude",
+      "text": "Cold Sweat: Altitude splits the sky into temperature bands by Y, set in its own config file. Entering the sky bands shows a message (Altitude chill, Extreme altitude exposure). Enclosed cover can reduce the effect."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Protection",
+      "text": "Altitude adds no items of its own. Armor protection works through item tags that start empty, so nothing in this pack gives it. Shelter can cut the effect: a roof and walls, or an enclosed Aeronautics ship."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Airships",
+      "text": "Altitude also knows Create Aeronautics ships. Burners and steam vents aboard add heat, and an enclosed ship can shelter you from the chill. See [#](2E5AAC)[Airships](entry://flight/airships)[#]()."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Related",
+      "text": "- [#](2E5AAC)[Temperature](entry://survival/temperature)[#]()\n- [#](2E5AAC)[Insulation and Heaters](entry://survival/temperature_gear)[#]()\n- [#](2E5AAC)[Airships](entry://flight/airships)[#]()\n- [#](2E5AAC)[Blaze Burner and Heat](entry://create_basics/heat)[#]()"
+    }
+  ]
+}

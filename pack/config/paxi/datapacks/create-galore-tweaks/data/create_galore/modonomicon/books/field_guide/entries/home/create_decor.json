@@ -1,0 +1,79 @@
+{
+  "category": "home",
+  "name": "Create Decor",
+  "description": "A cluster of mods adds blocks that look at home beside Create machines.",
+  "icon": {
+    "item": "createdeco:brass_coinstack"
+  },
+  "x": 1,
+  "y": 1,
+  "sort_number": 5,
+  "parents": [
+    {
+      "entry": "home/building",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Create Decor",
+      "text": "A cluster of mods adds blocks that look at home beside Create machines. Most are purely decorative, a few change how Create builds."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "createdeco:brass_coinstack"
+      },
+      "title": "Create Deco",
+      "text": "Metal and brick decor: catwalks, bars, cage lamps, coin stacks, shipping containers and train hulls. Bricks come in several colours and cracked or tiled forms."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "dndecor:brown_industrial_cogwheel"
+      },
+      "title": "Design n' Decor",
+      "text": "Industrial set dressing: sheet metal, large metal girders, containers, large fans, bolts and display boards, in many colours."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "copycats:copycat_block"
+      },
+      "title": "Copycats+",
+      "text": "Copycat blocks take on the look of any block you apply: slices, layers, doors, fences, plates, cogwheels, shafts. Replaces the copycats Create: Connected has switched off."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "createframed:cyan_stained_framed_glass"
+      },
+      "title": "Create: Framed",
+      "text": "Framed and tiled stained glass, plus cardboard blocks and peephole panes. Many colours and connected-texture variants."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "createcasing:brass_encased_andesite_large_cogwheel"
+      },
+      "title": "Create Encased",
+      "text": "More casings for shafts, cogwheels, pipes and gearboxes. Pure variety; they keep the same function as Create's own."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create_connected:six_way_gearbox"
+      },
+      "title": "Create: Connected",
+      "text": "Functional blocks: six-way gearbox, clutches, kinetic bridge and battery, fan catalysts. Its own copycats are off; old ones migrate to Copycats+."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Related",
+      "text": "Furniture and gearboxes.\n\n- [#](2E5AAC)[Furniture and Decor](entry://home/building)[#]()\n- [#](2E5AAC)[Transmission](entry://create_basics/transmission)[#]()"
+    }
+  ]
+}

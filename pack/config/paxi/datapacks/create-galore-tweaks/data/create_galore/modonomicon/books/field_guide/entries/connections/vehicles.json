@@ -1,0 +1,62 @@
+{
+  "category": "connections",
+  "name": "Where Vehicles Go",
+  "description": "This pack has trains, airships, submarines, rockets and roller coasters.",
+  "icon": {
+    "item": "create:track"
+  },
+  "x": 1,
+  "y": -2,
+  "sort_number": 5,
+  "parents": [
+    {
+      "entry": "connections/fuel",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": false
+    },
+    {
+      "entry": "connections/power",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Where Vehicles Go",
+      "text": "This pack has trains, airships, submarines, rockets and roller coasters. Each one has places that are worth reaching with it. This entry is the map of who goes where."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Trains** link your bases and farms over long distances. Create: Power Loader can keep a station's area loaded.\n\n[#](2E5AAC)[Trains](entry://transport/trains)[#](), [#](2E5AAC)[Power Loader](entry://industry/power_loader)[#]()."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Airships** reach sky villages, floating ruins and soaring structures that you can't easily climb to. Watch out for Hostile Skies' raiders and the cold of altitude.\n\n[#](2E5AAC)[Flight Destinations](entry://flight/destinations)[#]()."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Space:** a Northstar rocket goes to the Moon, Mars, Mercury and Venus. An Aeronautics ship can make the jump too with a Dimensional Drive (or the Stellar Navigator). Every way up needs a [#](2E5AAC)[Stellar Core](entry://stars/why)[#]().\n\n[#](2E5AAC)[Reaching Space](entry://space/reaching_space)[#](), [#](2E5AAC)[Ships to Space](entry://space/aeronautics_bridge)[#]()."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Submarines** reach ruins, shipwrecks, ocean monuments and the deep, where pressure and air become the problem.\n\n[#](2E5AAC)[Submarines](entry://ocean/submarines)[#](), [#](2E5AAC)[Underwater Places](entry://ocean/underwater_places)[#]()."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Roller coasters** go nowhere in particular. That is the point.\n\n[#](2E5AAC)[Roller Coasters](entry://transport/coasters)[#]()."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Related",
+      "text": "- [#](2E5AAC)[Trains](entry://transport/trains)[#]()\n- [#](2E5AAC)[Destinations](entry://flight/destinations)[#]()\n- [#](2E5AAC)[Planets](entry://space/planets)[#]()\n- [#](2E5AAC)[Underwater Places](entry://ocean/underwater_places)[#]()\n- [#](2E5AAC)[Structures](entry://exploration/structures)[#]()"
+    }
+  ]
+}

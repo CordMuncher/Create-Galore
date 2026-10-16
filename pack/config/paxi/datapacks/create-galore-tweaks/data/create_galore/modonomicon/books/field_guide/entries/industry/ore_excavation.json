@@ -1,0 +1,68 @@
+{
+  "category": "industry",
+  "name": "Ore Excavation",
+  "description": "Create Ore Excavation hides ore veins underground.",
+  "icon": {
+    "item": "createoreexcavation:drilling_machine"
+  },
+  "x": -1,
+  "y": 1,
+  "sort_number": 9,
+  "parents": [
+    {
+      "entry": "industry/power_compared",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Ore Excavation",
+      "text": "Create Ore Excavation hides ore veins underground. You locate a vein, put a Drilling Machine on it, and it produces raw ore as long as it has rotation. Veins here are finite and run out."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "createoreexcavation:vein_finder"
+      },
+      "title": "Ore Vein Finder",
+      "text": "Right-click to scan. It reports what is in your chunk, nearby, or just traces further away."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "createoreexcavation:drilling_machine"
+      },
+      "title": "Drilling Machine",
+      "text": "Needs rotation and a Drill (Iron, Diamond or Netherite). Output depends on the vein, including bonus items by chance."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "createoreexcavation:sample_drill"
+      },
+      "title": "Sample Drill",
+      "text": "Pins down a vein's exact details into an Ore Vein Atlas. The Atlas also filters the Vein Finder to a chosen vein."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "The Deposits add-on supplies the vein list: coal, copper, iron, zinc, gold, redstone, lapis, diamond, emerald, quartz and glowstone, plus Nether gold, Nether quartz and ancient debris veins. Ancient debris needs a Netherite Drill and lava. Check the Atlas or JEI."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "createoreexcavation:extractor"
+      },
+      "title": "Fluid Well Extractor",
+      "text": "Pulls fluid from a vein instead of items. Deposits include an Underground Spring that yields water."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Veins give raw ore, so crushing and washing still apply: [#](2E5AAC)[Crushing](entry://create_basics/crushing)[#]() and [#](2E5AAC)[Ore Guide](entry://materials/ore_guide)[#](). Drills need [#](2E5AAC)[stress](entry://create_basics/stress)[#](). Lead and TFMG ores are not in the vein list."
+    }
+  ]
+}

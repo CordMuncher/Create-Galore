@@ -1,0 +1,51 @@
+{
+  "category": "connections",
+  "name": "One Metal, Many Mods",
+  "description": "Several mods add the same metal.",
+  "icon": {
+    "item": "tfmg:steel_ingot"
+  },
+  "x": -1,
+  "y": 2,
+  "sort_number": 4,
+  "parents": [
+    {
+      "entry": "connections/overview",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "One Metal, Many Mods",
+      "text": "Several mods add the same metal. In this pack one version of each is **canonical**: other mods' recipes now make and use that item, so they stack and match. Leftover items convert 1:1 in a crafting grid.\n\nFull list: [#](2E5AAC)[Shared Metals](entry://materials/shared_metals)[#]()."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "- **Steel**: TFMG's. Alloyed, Create Big Cannons and Create Nuclear steel convert to it\n- **Bronze**: Alloyed's\n- **Lead**: Create Nuclear's, the only lead ore (TFMG's is off). TFMG lead converts to it"
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "- **Copper wire**: Crafts & Additions'\n- **Sulfur dust**: TFMG's\n- **Salt, cocoa butter, cocoa powder**: Create Ratatouille's\n\nConversion is one for one with no gain, so loops can't be farmed. Check JEI (R, U) for the recipes."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "- **Titanium**: ore only on Northstar's planets, but you can make it on Earth by crushing limestone or sand into Rutile and running an assembly line\n- **Platinum**: a Create Propulsion ore, needed for vector thrusters"
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "- **Zinc**: Create's metal, needed for brass. Productive Bees can make zinc and lead bees too.\n\nCrushing ores with Create gives more metal per block. See [#](2E5AAC)[Ore Doubling](entry://materials/ore_doubling)[#]()."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Related",
+      "text": "- [#](2E5AAC)[Ore Guide](entry://materials/ore_guide)[#]()\n- [#](2E5AAC)[Shared Metals](entry://materials/shared_metals)[#]()\n- [#](2E5AAC)[Ore Doubling](entry://materials/ore_doubling)[#]()\n- [#](2E5AAC)[Space Metals](entry://space/space_materials)[#]()\n- [#](2E5AAC)[Productive Bees](entry://food/bees)[#]()"
+    }
+  ]
+}

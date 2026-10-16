@@ -1,0 +1,39 @@
+{
+  "category": "stars",
+  "name": "Prize: The Nether",
+  "description": "Dropped by the Wither.",
+  "icon": {
+    "item": "minecraft:nether_star"
+  },
+  "x": 1,
+  "y": 2,
+  "sort_number": 5,
+  "parents": [
+    {
+      "entry": "stars/machine_fights",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "minecraft:nether_star"
+      },
+      "title": "Nether Star",
+      "text": "Dropped by the **Wither**. A power source that never runs dry."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "How",
+      "text": "Collect three Wither Skeleton Skulls from Nether Fortresses and summon the Wither somewhere you don't mind wrecking. Big Cannons and autocannons work well from a bunker. Summon it again for more stars."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Related",
+      "text": "The road, and where this prize lives.\n\n- [#](2E5AAC)[Why Space Is Locked](entry://stars/why)[#]()\n- [#](2E5AAC)[The Stellar Core](entry://stars/stellar_core)[#]()\n- [#](2E5AAC)[The Nether](entry://exploration/nether)[#]()\n- [#](2E5AAC)[Bosses](entry://exploration/bosses)[#]()"
+    }
+  ]
+}

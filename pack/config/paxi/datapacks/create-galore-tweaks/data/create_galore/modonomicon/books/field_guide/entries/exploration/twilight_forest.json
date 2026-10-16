@@ -1,0 +1,84 @@
+{
+  "category": "exploration",
+  "name": "Twilight Forest",
+  "description": "Twilight Forest is a dark, layered dimension of dense forest, with eight bosses and...",
+  "icon": {
+    "item": "twilightforest:ironwood_ingot"
+  },
+  "x": -5,
+  "y": -1,
+  "sort_number": 5,
+  "parents": [
+    {
+      "entry": "exploration/dimensions",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Twilight Forest",
+      "text": "**Twilight Forest** is a dark, layered dimension of dense forest, with eight bosses and its own metals and magic items. It was added by hand to this pack."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "To enter, dig a small pool, ring it with flowers, and throw a **Diamond** into the water. Lightning strikes and the portal opens."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "twilightforest:ironwood_ingot"
+      },
+      "title": "Ironwood Ingot",
+      "text": "First of Twilight's metals. Steeleaf, Knightmetal and Fiery metal follow."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "twilightforest:knightmetal_block"
+      },
+      "title": "Block of Knightmetal",
+      "text": "A later Twilight metal, tougher than Ironwood and Steeleaf."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "twilightforest:fiery_ingot"
+      },
+      "title": "Fiery Ingot",
+      "text": "Made from Hydra's Fiery Blood. Fiery tools set what they hit on fire."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "twilightforest:uncrafting_table"
+      },
+      "title": "Uncrafting Table",
+      "text": "Uncrafting is switched off in this pack (it multiplied metal through stonecutter recipes). The table still repairs and does its own special recipes."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "twilightforest:filled_magic_map"
+      },
+      "title": "Magic Map",
+      "text": "Maps the forest. Twilight Charms of Keeping and Life also exist."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Bosses, in the usual order: Naga, Lich, Minoshroom, Hydra, Knight Phantoms, Ur-Ghast, Alpha Yeti, Snow Queen. Each leaves a trophy. See [#](2E5AAC)[Bosses](entry://exploration/bosses)[#]()."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "twilightforest:lich_trophy"
+      },
+      "title": "Lich Trophy",
+      "text": "One of eight trophies. Bosses have spawner blocks in their lairs."
+    }
+  ]
+}

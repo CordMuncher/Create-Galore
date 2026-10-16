@@ -1,0 +1,60 @@
+{
+  "category": "home",
+  "name": "Maps and Waypoints",
+  "description": "Xaero's Minimap and World Map are the pack's navigation.",
+  "icon": {
+    "item": "minecraft:filled_map"
+  },
+  "x": 3,
+  "y": 0,
+  "sort_number": 7,
+  "parents": [
+    {
+      "entry": "home/starter_kit",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Maps and Waypoints",
+      "text": "**Xaero's Minimap** and **World Map** are the pack's navigation. A small map sits on screen. The full-screen map shows everywhere you have explored. Both are client side; nothing is needed on a server."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "minecraft:filled_map"
+      },
+      "title": "Xaero's Maps",
+      "text": "Waypoints can be set from either map. Right-click the world map for options such as a temporary waypoint or sharing a location in chat. Zoom the minimap in its settings."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "minecraft:recovery_compass"
+      },
+      "title": "Death Points",
+      "text": "When you die a Latest Death waypoint is made for you, and older deaths can be kept. Check the minimap settings to tune this."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Waypoint names can be shared to chat, so teammates can add them. Be careful not to expose a secret base.\n\nKeybinds are listed in Controls under the Xaero categories. Open the settings from the minimap or the Mods menu."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "minecraft:compass"
+      },
+      "title": "Trains and Airships",
+      "text": "Xaero Train Map shows Create train lines and stations on the world map. Create - Xaero's map draws Sable-based vehicles like airships live, with rotation.\\\n[#](2E5AAC)[Trains](entry://transport/trains)[#]() [#](2E5AAC)[Airships](entry://flight/airships)[#]()"
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Create Railways Navigator adds a Navigator item and Advanced Display boards for stations, to plan and show train routes. Its overlay options key is \\\\ here.\n\nLong trips by air or sea: [#](2E5AAC)[Destinations](entry://flight/destinations)[#]()."
+    }
+  ]
+}

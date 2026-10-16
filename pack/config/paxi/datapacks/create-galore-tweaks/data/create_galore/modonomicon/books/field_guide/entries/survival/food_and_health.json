@@ -1,0 +1,50 @@
+{
+  "category": "survival",
+  "name": "Food and Health",
+  "description": "AppleSkin shows what food does.",
+  "icon": {
+    "item": "minecraft:golden_apple"
+  },
+  "x": 2,
+  "y": 1,
+  "sort_number": 9,
+  "parents": [
+    {
+      "entry": "survival/thirst",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": false
+    },
+    {
+      "entry": "survival/seasons_crops",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Food and Health",
+      "text": "AppleSkin shows what food does. Food tooltips list hunger and saturation, the hunger bar shows how much a held item would restore, and saturation appears as an overlay. Useful with the larger food list of [#](2E5AAC)[Farmer's Delight](entry://food/farmers_delight)[#]()."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "minecraft:golden_apple"
+      },
+      "title": "Food Values",
+      "text": "AppleSkin adds hunger and saturation values to food tooltips. Hold food to preview the refill on the bar."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Related survival",
+      "text": "Thirst has its own bar: [#](2E5AAC)[Thirst](entry://survival/thirst)[#](). Seasons decide what you can grow: [#](2E5AAC)[Seasons](entry://survival/seasons)[#](). Cold Sweat and Smog add their own hazards."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Survival layers",
+      "text": "- [#](2E5AAC)[Thirst](entry://survival/thirst)[#]()\n- [#](2E5AAC)[Seasons](entry://survival/seasons)[#]()\n- [#](2E5AAC)[Temperature](entry://survival/temperature)[#]()\n- [#](2E5AAC)[Pollution](entry://survival/pollution)[#]()\n- [#](2E5AAC)[Farmer's Delight](entry://food/farmers_delight)[#]()"
+    }
+  ]
+}

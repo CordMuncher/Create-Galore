@@ -1,0 +1,83 @@
+{
+  "category": "flight",
+  "name": "Building a Ship",
+  "description": "A ship is a normal build turned into a Simulated Contraption by the Physics Assembler.",
+  "icon": {
+    "item": "simulated:physics_assembler"
+  },
+  "x": -3,
+  "y": -2,
+  "sort_number": 2,
+  "parents": [
+    {
+      "entry": "flight/airships",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Building a Ship",
+      "text": "A ship is a normal build turned into a Simulated Contraption by the Physics Assembler. Glue decides which blocks belong, so only glued groups move together."
+    },
+    {
+      "type": "modonomicon:crafting_recipe",
+      "recipe_id_1": "simulated:physics_assembler",
+      "text": "Physics Assembler. More Simulated parts are in JEI."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Assembling",
+      "text": "Select a group with Super Glue or Honey Glue, then hold right-click on the assembler and pull the lever. Blocks along diagonal edges are included. Once built, any Physics Assembler can disassemble the ship, and the ship stays fully usable: walk on it, open chests, run machines."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "simulated:honey_glue"
+      },
+      "title": "Honey Glue",
+      "text": "Click two corners and ctrl-scroll to resize. It only joins ships and also takes overlapping Super Glue. Super Glue does not take Honey Glue."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Weight and splitting",
+      "text": "Blocks have different weights. Some are light, super heavy, slippery or fragile. Sections that lose their connection split off as separate ships, and a Slime Ball merges any two."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "simulated:swivel_bearing"
+      },
+      "title": "Swivel Bearing",
+      "text": "Turns the glued group in front of it into a rotating sub-ship. Rotation passes through the shaft. Redstone unlocks it to spin freely."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "simulated:docking_connector"
+      },
+      "title": "Docking Connector",
+      "text": "Two connectors align and lock into a rigid link. Items and fluids can then pass both ways. Retract either to undock."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "simulated:rope_winch"
+      },
+      "title": "Rope Winch",
+      "text": "Link ships with a Rope Coupling between a winch and a connector. Rotation reels the rope in and out. Shears cut it."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "A rule that trips people up",
+      "text": "Bearings must be told not to disassemble when used with Steering Wheels or Torsion Springs. Springs let a bearing swing within an angle and return when the input stops."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Related",
+      "text": "The overview, extra hardware and ordinary Create contraptions.\n\n- [#](2E5AAC)[Airships](entry://flight/airships)[#]()\n- [#](2E5AAC)[Ship Hardware](entry://flight/ship_hardware)[#]()\n- [#](2E5AAC)[Contraptions](entry://create_basics/contraptions)[#]()"
+    }
+  ]
+}

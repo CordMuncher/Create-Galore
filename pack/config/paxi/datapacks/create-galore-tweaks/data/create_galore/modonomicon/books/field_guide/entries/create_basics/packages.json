@@ -1,0 +1,92 @@
+{
+  "category": "create_basics",
+  "name": "Logistics: Packages",
+  "description": "Create 6 added a logistics system: items are packed into Packages, addressed, and...",
+  "icon": {
+    "item": "create:packager"
+  },
+  "x": 0,
+  "y": 3,
+  "sort_number": 19,
+  "parents": [
+    {
+      "entry": "create_basics/item_logistics",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Logistics: Packages",
+      "text": "Create 6 added a **logistics** system: items are packed into **Packages**, addressed, and delivered between points. It runs on belts, chain conveyors and frogports."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create:packager"
+      },
+      "title": "Packager",
+      "text": "Attaches to a chest or machine. With redstone power it packs items; given a package it unpacks into the inventory."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create:package_frogport"
+      },
+      "title": "Package Frogport",
+      "text": "Sends and receives packages. Gives each port an address. A chain conveyor links ports together."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create:chain_conveyor"
+      },
+      "title": "Chain Conveyor",
+      "text": "Carries packages and relays rotation like shafts. Frogports attach to it for delivery over long distances."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create:stock_link"
+      },
+      "title": "Stock Link",
+      "text": "Connects packagers to one network. Range is unlimited, but packages still need transport."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create:stock_ticker"
+      },
+      "title": "Stock Ticker",
+      "text": "Orders items from the whole network. A blaze burner or seated mob in front acts as the Stock Keeper you right-click."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create:redstone_requester"
+      },
+      "title": "Redstone Requester",
+      "text": "Orders a preset set on each redstone pulse."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create:factory_gauge"
+      },
+      "title": "Factory Gauge",
+      "text": "Keeps stock at a target amount by requesting ingredients, down to full recipes and crafting setups."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Add-ons in this pack**:\n\n- Factory Logistics: network links, fluid gauges, a Bottler and jars for fluids\n\n- Mobile Packages: Robo Bee Port to send packages to players, a portable stock ticker"
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Related",
+      "text": "- [#](2E5AAC)[Moving Items](entry://create_basics/item_logistics)[#]()\n- [#](2E5AAC)[Brass and Assembly](entry://create_basics/brass_and_assembly)[#]()\n- [#](2E5AAC)[Backpacks and Storage](entry://home/storage)[#]()"
+    }
+  ]
+}

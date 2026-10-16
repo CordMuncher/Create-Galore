@@ -1,0 +1,97 @@
+{
+  "category": "flight",
+  "name": "Sailing and Wind",
+  "description": "Aeronautics: Winds & Weather adds a real wind field and cloth sails.",
+  "icon": {
+    "item": "aeronauticswinds:windcatcher_canvas"
+  },
+  "x": 1,
+  "y": 0,
+  "sort_number": 9,
+  "parents": [
+    {
+      "entry": "flight/propellers",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Sailing and Wind",
+      "text": "Aeronautics: Winds & Weather adds a real wind field and cloth sails. Wind has a speed and heading, is stronger over open ocean and at altitude, and pushes ships rigged to catch it."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "aeronauticswinds:anemometer"
+      },
+      "title": "Anemometer",
+      "text": "Measures local wind speed and outputs it as shaft rotation. Goggles show the exact figure."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "aeronauticswinds:wind_vane"
+      },
+      "title": "Wind Vane",
+      "text": "Settles on the wind direction and turns its lower shaft. Goggles show the compass bearing."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "aeronauticswinds:windcatcher_canvas"
+      },
+      "title": "Windcatcher",
+      "text": "Only Windcatchers drive windmill bearings or push ships here; ordinary Create sails are decoration. Face the broad side into the wind."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Rigging a sail",
+      "text": "Stack Masts, run a Yard across them, use a packed Cotton or Canvas Sail on the Yard, then click the lower opposite corner. Cotton is light and quick. Canvas is heavy and durable. Empty-hand clicks trim the yard in 8 steps. Sneak-use the cloth to reef it."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "aeronauticswinds:yard"
+      },
+      "title": "Yard",
+      "text": "Run a rope from an Aeronautics Rope Coupling to a Rope Winch for continuous trim. Shears detach it."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "aeronauticswinds:keel"
+      },
+      "title": "Keel",
+      "text": "Fits under the hull, fore and aft. Stops sideways slip and turns angled wind into forward travel. Extend it for more grip."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "aeronauticswinds:rudder"
+      },
+      "title": "Rudder",
+      "text": "Driven by a Create shaft that sets a steady angle. Stack blades for a deeper rudder. Sneak-click to centre."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Ship Anchor",
+      "text": "Secures a ship in place. Lower it with the top shaft. Light and Heavy Anchors also exist."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "aeronauticswinds:wind_rider"
+      },
+      "title": "Wind Rider",
+      "text": "A hang glider. Jump while falling to open it, jump again to stow. Campfire thermals carry you up."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Related",
+      "text": "Ships, storms and steering.\n\n- [#](2E5AAC)[Airships](entry://flight/airships)[#]()\n- [#](2E5AAC)[Weather and Danger](entry://flight/weather_and_danger)[#]()\n- [#](2E5AAC)[Steering and Controls](entry://flight/controls)[#]()"
+    }
+  ]
+}

@@ -1,0 +1,57 @@
+{
+  "category": "connections",
+  "name": "Loot Feeds the Factory",
+  "description": "Exploring and building aren't separate games here.",
+  "icon": {
+    "item": "cataclysm:mechanical_fusion_anvil"
+  },
+  "x": 3,
+  "y": -2,
+  "sort_number": 7,
+  "parents": [
+    {
+      "entry": "connections/vehicles",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    },
+    {
+      "entry": "connections/metals",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": false
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Loot Feeds the Factory",
+      "text": "Exploring and building aren't separate games here. Loot from dungeons and other dimensions often goes straight into Create machines."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Boss gear:** Cataclysm x Create rebuilds Cataclysm's weapons and armor as Create assembly lines, and lets a crushing wheel recycle old gear.\n\n[#](2E5AAC)[Cataclysm x Create](entry://exploration/cataclysm_create)[#]()."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Magic:** Iron's Spells inks and elixirs can be filled and emptied with Create's spouts and drains. Create: Wizardry builds on Iron's Spells.\n\n[#](2E5AAC)[Magic](entry://exploration/magic)[#]()."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Strange fluids:** Create: Dragons Plus adds fan processing with dragon's breath, powder snow and more, and Enchantment Industry turns experience into a fluid you can pipe.\n\n[#](2E5AAC)[Encased Fans](entry://create_basics/fans)[#](), [#](2E5AAC)[Enchanting](entry://industry/enchanting)[#]()."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Other worlds' materials:** Northstar's planets give titanium and tungsten, and Twilight Forest's fiery blocks heat a boiler.\n\n[#](2E5AAC)[Ore Guide](entry://materials/ore_guide)[#]()."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Related",
+      "text": "- [#](2E5AAC)[Cataclysm x Create](entry://exploration/cataclysm_create)[#]()\n- [#](2E5AAC)[Magic](entry://exploration/magic)[#]()\n- [#](2E5AAC)[Dragons Plus Fan Effects](entry://industry/dragons_plus)[#]()\n- [#](2E5AAC)[Enchantment Industry](entry://industry/enchanting)[#]()\n- [#](2E5AAC)[Ore Guide](entry://materials/ore_guide)[#]()"
+    }
+  ]
+}

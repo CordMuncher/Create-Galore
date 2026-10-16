@@ -1,0 +1,49 @@
+{
+  "category": "exploration",
+  "name": "The Nether",
+  "description": "Incendium rebuilds the Nether.",
+  "icon": {
+    "item": "minecraft:netherrack"
+  },
+  "x": -5,
+  "y": -4,
+  "sort_number": 2,
+  "parents": [
+    {
+      "entry": "exploration/dimensions",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "The Nether",
+      "text": "**Incendium** rebuilds the Nether. It adds new biomes, mobs, structures and loot, so the Nether plays differently from vanilla."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Its biomes include Infernal Dunes, Inverted Forest, Quartz Flats, Toxic Heap, Volcanic Deltas, Weeping Valley, Ash Barrens and Withered Forest. Structures include a Forbidden Castle, Infernal Altar, Nether Reactor, Piglin Village, Ruined Lab, Sanctum and Quartz Kitchen."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create:blaze_burner"
+      },
+      "title": "Blaze Burner",
+      "text": "Create's heat source. Loaded with a blaze from a Nether fortress spawner."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Other mods add to the Nether too. [#](2E5AAC)[Cataclysm](entry://exploration/cataclysm)[#]() has Nether bosses and arenas, and [#](2E5AAC)[Dungeons and Taverns](entry://exploration/structure_packs)[#]() adds Nether keeps, ports and skeleton towers."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "The Nether is where Create's [#](2E5AAC)[heat](entry://create_basics/heat)[#]() starts: Blaze Burners are loaded with blazes from fortresses. Its ores are listed in the [#](2E5AAC)[Ore Guide](entry://materials/ore_guide)[#]()."
+    }
+  ]
+}

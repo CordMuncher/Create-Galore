@@ -1,0 +1,63 @@
+{
+  "category": "home",
+  "name": "Furniture and Decor",
+  "description": "Three groups of mods cover non-Create building.",
+  "icon": {
+    "item": "handcrafted:oak_table"
+  },
+  "x": -1,
+  "y": 1,
+  "sort_number": 4,
+  "parents": [
+    {
+      "entry": "home/storage",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Furniture and Decor",
+      "text": "Three groups of mods cover non-Create building. **Handcrafted** adds furniture. The **Macaw's** mods add doors, roofs and windows. **Supplementaries** adds many small useful blocks. Create-flavoured decor is in [#](2E5AAC)[Create Decor](entry://home/create_decor)[#]()."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "handcrafted:oak_table"
+      },
+      "title": "Handcrafted",
+      "text": "Tables, benches, couches, desks, drawers, shelves, counters, beds, sheets and cushions in many wood types. Plus trophies and pillar trims for the walls."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "mcwroofs:oak_roof"
+      },
+      "title": "Macaw's Roofs",
+      "text": "Many roof shapes: attic, top and lower base roofs per wood and material. A Roofing Hammer helps. Macaw's Doors and Windows follow the same pattern."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "mcwwindows:oak_window"
+      },
+      "title": "Macaw's Windows",
+      "text": "Resizeable windows, plus a Window Hammer and Window Key. Macaw's Doors adds many door styles and a Garage Remote."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "supplementaries:jar"
+      },
+      "title": "Supplementaries",
+      "text": "Jars hold small things. Also flags, awnings, bunting, candle holders, goblets, book piles, soap and a Wrench. Browse the item list in JEI."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Furniture here is mostly decor. For seats on moving contraptions, Create's own Seat works, and [#](2E5AAC)[Coasters](entry://transport/coasters)[#]() add coaster seats.\n\nCafe-style decor ties into [#](2E5AAC)[Cozy Cafe](entry://food/cozy_cafe)[#]()."
+    }
+  ]
+}

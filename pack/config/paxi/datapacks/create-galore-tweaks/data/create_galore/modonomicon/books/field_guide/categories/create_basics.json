@@ -1,0 +1,14 @@
+{
+  "name": "Create: The Basics",
+  "description": "Everything you need to understand Create if you have never touched it. Read these in order once and the rest of the pack makes sense.",
+  "icon": {
+    "item": "create:cogwheel"
+  },
+  "sort_number": 1,
+  "display_mode": "node",
+  "background": "modonomicon:textures/gui/dark_slate_seamless.png",
+  "background_width": 512,
+  "background_height": 512,
+  "max_scroll_x": 300,
+  "max_scroll_y": 195
+}

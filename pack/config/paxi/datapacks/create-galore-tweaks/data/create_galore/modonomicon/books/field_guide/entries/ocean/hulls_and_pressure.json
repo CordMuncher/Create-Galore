@@ -1,0 +1,83 @@
+{
+  "category": "ocean",
+  "name": "Hulls and Pressure",
+  "description": "Deep water crushes blocks.",
+  "icon": {
+    "item": "create_submarine:barometer"
+  },
+  "x": -1,
+  "y": -2,
+  "sort_number": 2,
+  "parents": [
+    {
+      "entry": "ocean/submarines",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Hulls and Pressure",
+      "text": "Deep water crushes blocks. Every block has a maximum depth, and a ship is only as strong as its weakest block. The **Pressure Barometer** compares the pressure on the ship to what the weakest block can take. Goggles show a block's hull tier: fragile, standard or reinforced."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Past its limit a block gives way. Above a certain depth the room just floods through the hole. Far deeper, a failing block implodes the whole ship. The **Industrial Alarm** flashes and sounds faster every 5 m you sink past the safe depth. Tune it all in the Deep Seas config."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create_submarine:barometer"
+      },
+      "title": "Pressure Barometer",
+      "text": "Shows depth and pressure. Attach a Display Link to broadcast depth and hull state to a Display Board."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create_submarine:iron_pressurizer"
+      },
+      "title": "Iron Pressurized Glass",
+      "text": "Windows need special glass. Glass, Iron and Copper Pressurized Glass resist pressure; plain glass does not."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Hull limits can be tuned. Deep Seas has a max depth multiplier that scales every block, and per-block depths are stored in **config/submarine\\_hull.json**. Windows are the usual weak point, so use pressurized glass. Goggles on a block show its tier."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "A dry interior needs a sealed hull. An **Electrolyzer** turns water into oxygen, an **Oxygen Diffuser** spreads it through the ship (give it a redstone signal). The Electrolyzer runs on FE power, see [#](2E5AAC)[Electricity](entry://industry/electricity)[#](), or you can put a Shaft in its module slot and spin it directly."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create_submarine:electrolyzer"
+      },
+      "title": "Electrolyzer",
+      "text": "Water in, oxygen out. Accepts FE, or a shaft in the module slot for plain Create rotation."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "To leave the ship underwater, build an airlock from two **Decompression Chambers** joined by pipes and a pump. Flood the airlock before opening the outer door deep down, or the sea crushes it in. Reverse the pump to dry it again."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create_submarine:decompression_chamber"
+      },
+      "title": "Decompression Chamber",
+      "text": "An airlock valve. Pipe water in at the back to flood a room, or out to empty it."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Create: Deep Seas, Lava Fix** patches a bug: players inside a sealed submarine submerged in lava no longer take fire or lava damage, since the interior is dry. Nothing to set up.\n\nBack to [#](2E5AAC)[Submarines](entry://ocean/submarines)[#]()."
+    }
+  ]
+}

@@ -1,0 +1,81 @@
+{
+  "category": "exploration",
+  "name": "The Aether",
+  "description": "The Aether is a dimension of floating islands above a sea of clouds.",
+  "icon": {
+    "item": "aether:holystone"
+  },
+  "x": -5,
+  "y": -3,
+  "sort_number": 4,
+  "parents": [
+    {
+      "entry": "exploration/dimensions",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "The Aether",
+      "text": "**The Aether** is a dimension of floating islands above a sea of clouds. It has its own mobs, materials and three dungeons."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "To get there, build a frame of **Glowstone** and place water in it. The portal swirls blue. The mod can also give new players a portal frame item, set by config."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "aether:aether_portal_frame"
+      },
+      "title": "Aether Portal Frame",
+      "text": "Glowstone frame plus water makes the portal."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "aether:holystone"
+      },
+      "title": "Holystone",
+      "text": "The Aether's main stone. Dungeons use Carved, Angelic and Hellfire stone and need Bronze, Silver and Gold keys."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "aether:zanite_gemstone"
+      },
+      "title": "Zanite Gemstone",
+      "text": "The Aether's tool and armor gem. Gravitite and Valkyrie gear come later."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "aether:ambrosium_shard"
+      },
+      "title": "Ambrosium Shard",
+      "text": "Lights Aether furnaces and heals. Golden Amber comes from golden oak trees."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "The Aether's dungeons hold keys and a boss each: Bronze, Silver and Gold, ending in the Slider, Valkyrie Queen and Sun Spirit. Parachute items make falling off the islands survivable."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "aether:cold_parachute"
+      },
+      "title": "Cold Parachute",
+      "text": "A parachute for falling off the islands. A Golden Parachute is the sturdier version."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Gear from the Aether stacks with other mods. The Invisibility Cloak toggles with = by default here. Bosses are in [#](2E5AAC)[Bosses](entry://exploration/bosses)[#](); travel is in [#](2E5AAC)[Dimensions](entry://exploration/dimensions)[#]()."
+    }
+  ]
+}

@@ -1,0 +1,90 @@
+{
+  "category": "flight",
+  "name": "Flight Control",
+  "description": "Create: Flight Control adds computers that decide how much each thruster should push.",
+  "icon": {
+    "item": "create_flight_control:flight_control_computer"
+  },
+  "x": 3,
+  "y": -1,
+  "sort_number": 6,
+  "parents": [
+    {
+      "entry": "flight/controls",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": false
+    },
+    {
+      "entry": "flight/propulsion",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Flight Control",
+      "text": "Create: Flight Control adds computers that decide how much each thruster should push. You link parts together with a tool gun instead of wiring redstone."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create_flight_control:flight_control_tool_gun"
+      },
+      "title": "Flight Control Tool Gun",
+      "text": "Select an engine or controller, then right-click the computer to link it. Also links tanks, sensors and seats."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create_flight_control:flight_control_computer"
+      },
+      "title": "Flight Control Computer",
+      "text": "Allocates thrust to meet the demand of linked controllers. Goggles show how many engines and controllers are active."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create_flight_control:attitude_hold"
+      },
+      "title": "Smart Attitude Stabilizer",
+      "text": "Modes: Level, Level plus Heading, and Hold Attitude. Needs shaft stress from below and a linked computer."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create_flight_control:altitude_hold"
+      },
+      "title": "Altitude Hold Block",
+      "text": "Holds the current height, a set height, or only lifts when below a minimum. Needs shaft power."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create_flight_control:mouse_flight_controller"
+      },
+      "title": "Flight Control Terminal",
+      "text": "Mouse-driven flight with pitch, yaw and auto bank. Bind a seat to it with the tool gun first."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create_flight_control:smart_vector_thruster"
+      },
+      "title": "Smart Vector Thruster",
+      "text": "A thruster whose nozzle swings inside a cone to push in the direction the computer asks for."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "More parts",
+      "text": "Other parts: Flight HUD Projector, Attitude Display, Navigation Terminal and Profile Builder, couplers for speed and distance, and a Redstone Proxy that lets redstone toggle modes. Fuel tanks link to thrusters within a short range."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Related",
+      "text": "Manual controls, thrusters and the overview.\n\n- [#](2E5AAC)[Steering and Controls](entry://flight/controls)[#]()\n- [#](2E5AAC)[Thrusters and Engines](entry://flight/propulsion)[#]()\n- [#](2E5AAC)[Airships](entry://flight/airships)[#]()"
+    }
+  ]
+}

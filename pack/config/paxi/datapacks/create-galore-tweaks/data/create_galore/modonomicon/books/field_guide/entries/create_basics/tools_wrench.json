@@ -1,0 +1,67 @@
+{
+  "category": "create_basics",
+  "name": "Wrench and Goggles",
+  "description": "Two items you will carry all the time.",
+  "icon": {
+    "item": "create:wrench"
+  },
+  "x": -2,
+  "y": -1,
+  "sort_number": 5,
+  "parents": [
+    {
+      "entry": "create_basics/stress",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Wrench and Goggles",
+      "text": "Two items you will carry all the time. The **Wrench** changes blocks. The **Engineer's Goggles** show information about them."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create:wrench"
+      },
+      "title": "Wrench",
+      "text": "Right-click to rotate a component around the face you click. Sneak and right-click to dismantle it. It also moves assembled minecart and train contraptions."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create:goggles"
+      },
+      "title": "Engineer's Goggles",
+      "text": "Show stress impact, capacity and speed of kinetic parts, and the contents of tanks and basins, when you look at them."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Wrenches also toggle connections on encased shafts and cogwheels, and open or close the window on fluid tanks."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Value boxes.** Many machines show a small panel on a face. Look at it and right-click to change it, or scroll with the mouse wheel to adjust the value. Speed controllers, windmills and gearshifts use these."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Tooltips.** Hold Shift on any Create item for a summary of what it does and what it needs. Hold W for Ponder.\n\nRead about stress in [#](2E5AAC)[Stress](entry://create_basics/stress)[#]() and see [#](2E5AAC)[Tools](entry://start_here/tools)[#]()."
+    },
+    {
+      "type": "modonomicon:crafting_recipe",
+      "recipe_id_1": "create:crafting/kinetics/wrench",
+      "text": ""
+    },
+    {
+      "type": "modonomicon:crafting_recipe",
+      "recipe_id_1": "create:crafting/kinetics/goggles",
+      "text": ""
+    }
+  ]
+}

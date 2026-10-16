@@ -1,0 +1,49 @@
+{
+  "category": "stars",
+  "name": "Why Space Is Locked",
+  "description": "Rockets and space ships are the end of the road in Create Galore.",
+  "icon": {
+    "item": "create_galore_bridge:stellar_core"
+  },
+  "x": -3,
+  "y": -2,
+  "sort_number": 0,
+  "parents": [],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Why Space Is Locked",
+      "text": "Rockets and space ships are the end of the road in Create Galore. You can't just build one whenever you like: every way off the planet needs a **Stellar Core**, and a core needs one prize from each big branch of the world."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "The six prizes",
+      "text": "- [#](2E5AAC)[Immortal Embryo](entry://stars/abyss)[#](): the deep sea\n- [#](2E5AAC)[4 Fiery Ingots](entry://stars/twilight)[#](): Twilight Forest\n- [#](2E5AAC)[4 Enchanted Gravitite](entry://stars/aether)[#](): the Aether\n- [#](2E5AAC)[Nether Star](entry://stars/nether)[#](): the Nether\n- [#](2E5AAC)[4 Dragonskin](entry://stars/end)[#](): the End\n- [#](2E5AAC)[2 Circuit Boards](entry://stars/industry)[#](): heavy industry"
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "What it gates",
+      "text": "All three ways up take a core:\n- the Northstar **Rocket Station**\n- the **Dimensional Drive**\n- the **Stellar Navigator**"
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "One per vehicle",
+      "text": "Each of those blocks is placed once and reused trip after trip, so one core per vehicle is enough. Friends can share one rocket."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "No dead ends",
+      "text": "Nothing on this list comes from space, and nothing on Earth needs a space item to work. Every prize can be found again: bosses respawn or have more lairs, and ores keep generating further out. Titanium is made on Earth by sequenced assembly."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Your checklist",
+      "text": "Open Advancements and find the **Road to the Stars** tab. It ticks off each prize as you pick it up, then the core, then your first trip off Earth.\n\nThe bosses can all be beaten with Create builds: see [#](2E5AAC)[Fighting with Machines](entry://stars/machine_fights)[#]()."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Related",
+      "text": "Each prize, the core and the space section.\n\n- [#](2E5AAC)[The Stellar Core](entry://stars/stellar_core)[#]()\n- [#](2E5AAC)[Prize: The Abyss](entry://stars/abyss)[#]()\n- [#](2E5AAC)[Prize: Twilight Forest](entry://stars/twilight)[#]()\n- [#](2E5AAC)[Prize: The Aether](entry://stars/aether)[#]()\n- [#](2E5AAC)[Prize: The Nether](entry://stars/nether)[#]()\n- [#](2E5AAC)[Prize: The End](entry://stars/end)[#]()\n- [#](2E5AAC)[Prize: Industry](entry://stars/industry)[#]()\n- [#](2E5AAC)[Fighting with Machines](entry://stars/machine_fights)[#]()\n- [#](2E5AAC)[Reaching Space](entry://space/reaching_space)[#]()"
+    }
+  ]
+}

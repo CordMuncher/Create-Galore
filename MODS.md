@@ -167,6 +167,7 @@ Resource pack, turned on by default: [Fresh Animations](https://modrinth.com/res
 | [Make Bubbles Pop](https://modrinth.com/mod/make_bubbles_pop) | 0.4.0-beta.2 | client |
 | [MezzConfig](https://modrinth.com/mod/mezzconfig) | 0.6.8 | both |
 | [ModernFix](https://modrinth.com/mod/modernfix) | 5.27.26+mc1.21.1 | both |
+| [Modonomicon](https://modrinth.com/mod/modonomicon) | 1.21.1-neoforge-1.120.7 | both |
 | [Moog's Structure Lib (moogs_structures)](https://modrinth.com/mod/moogs-structure-lib) | 3.4.2-neoforge-1.21.1 | both |
 | [Moonlight Lib](https://modrinth.com/mod/moonlight) | 1.21.1-3.7.2 | both |
 | [MOS - Moog's Ocean Structures](https://modrinth.com/mod/mos-moogs-ocean-structures) | 1.1.1 | both |

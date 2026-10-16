@@ -1,0 +1,78 @@
+{
+  "category": "survival",
+  "name": "Insulation and Heaters",
+  "description": "Armor is the main defence.",
+  "icon": {
+    "item": "cold_sweat:sewing_table"
+  },
+  "x": -2,
+  "y": -1,
+  "sort_number": 2,
+  "parents": [
+    {
+      "entry": "survival/temperature",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Armor",
+      "text": "Armor is the main defence. Take any armor to a **Sewing Table** and sew insulation onto it. Insulators such as Goat Fur and Hoglin Hide have their own item tab. JEI has a Sewing Recipes category."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "cold_sweat:sewing_table"
+      },
+      "title": "Sewing Table",
+      "text": "Crafted from wool and planks. Adds insulation from items like Goat Fur to armor, held as cold or heat resistance."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Fur and hide",
+      "text": "Goat Fur and Hoglin Hide come from goats and hoglins. Finished sets exist: Goat Fur, Hoglin and Chameleon Scale armor. Hover any piece to read its insulation."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "cold_sweat:goat_fur_chestplate"
+      },
+      "title": "Goat Fur Parka",
+      "text": "One of the ready-made sets. Its insulation is shown in the tooltip. Cold Sweat's Chameleon, a tameable lizard, sheds scales for another set."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Blocks",
+      "text": "A **Hearth** keeps the area around it comfortable. It takes fuel (see the Hearth Fuel category in JEI).\n\nA **Boiler** warms and an **Icebox** cools. Put a Smokestack on top to make an area livable."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "cold_sweat:hearth"
+      },
+      "title": "Hearth",
+      "text": "Fuel it, put it in the base. Its range and the fuels it takes are in JEI. Boiler and Icebox have their own fuel lists."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "cold_sweat:waterskin"
+      },
+      "title": "Waterskin",
+      "text": "Cold Sweat's own drink container. Its tooltip shows the keys to drink and pour. A Create Spout can fill it. It carries Thirst purity: purify it in a furnace or campfire."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Create diving suit",
+      "text": "A full Create netherite diving set (netherite backtank, diving helmet, netherite leggings, diving boots) adds heat dampening and shrugs off the wet effect. The backtank tooltip shows the hint."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Related",
+      "text": "- [#](2E5AAC)[Temperature](entry://survival/temperature)[#]()\n- [#](2E5AAC)[Create and Altitude Heat](entry://survival/temperature_create)[#]()\n- [#](2E5AAC)[Blaze Burner and Heat](entry://create_basics/heat)[#]()"
+    }
+  ]
+}

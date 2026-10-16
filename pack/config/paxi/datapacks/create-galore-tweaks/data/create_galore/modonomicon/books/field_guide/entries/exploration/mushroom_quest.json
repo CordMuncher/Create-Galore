@@ -1,0 +1,60 @@
+{
+  "category": "exploration",
+  "name": "Mushroom Quest",
+  "description": "Mushroom Quest is a foraging mod.",
+  "icon": {
+    "item": "mushroomquest:mycopedia"
+  },
+  "x": -3,
+  "y": 4,
+  "sort_number": 20,
+  "parents": [
+    {
+      "entry": "exploration/worldgen",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Mushroom Quest",
+      "text": "**Mushroom Quest** is a foraging mod. It adds dozens of wild mushrooms, giant logs and stumps with mushrooms on them, and cooking. Some are food, some medicine, some poison."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "mushroomquest:mycopedia"
+      },
+      "title": "Mycopedia",
+      "text": "A field guide for identifying mushrooms and learning their rarity."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Be careful: eating the wrong one can poison you, and a fungal disease exists. The mod's advancements mention medicinal, poisonous and deadly types, so identify before eating. Cooking uses campfire, smoking, smelting and shapeless recipes."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "mushroomquest:miso_soup_item"
+      },
+      "title": "Miso Soup",
+      "text": "Cooked dishes turn mushrooms into safer food."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "mushroomquest:enoki"
+      },
+      "title": "Enoki",
+      "text": "One of many wild mushrooms."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "It is a good match for [#](2E5AAC)[Farmer's Delight](entry://food/farmers_delight)[#]()-style cooking, which also has mushroom crops (Fungi Delight). A Witchy Cottage structure exists too."
+    }
+  ]
+}

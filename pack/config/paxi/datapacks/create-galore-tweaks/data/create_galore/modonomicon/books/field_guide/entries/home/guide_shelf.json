@@ -1,0 +1,39 @@
+{
+  "category": "home",
+  "name": "Guide Shelf",
+  "description": "Guide Shelf puts buttons in your inventory screen for every in-game guide book.",
+  "icon": {
+    "item": "minecraft:bookshelf"
+  },
+  "x": 1,
+  "y": -1,
+  "sort_number": 8,
+  "parents": [
+    {
+      "entry": "home/inventory_tools",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Guide Shelf",
+      "text": "**Guide Shelf** puts buttons in your inventory screen for every in-game guide book, this Field Guide included."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "minecraft:bookshelf"
+      },
+      "title": "Guide Shelf",
+      "text": "Open a guide without holding the book. Handy for mods that ship their own handbook."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "You also get this book on first join, and can craft it from a Book and Andesite (shapeless). JEI can open it too.\n\nMods like Create keep help in Ponder: hold **W** over an item.\n\nStart: [#](2E5AAC)[Welcome](entry://start_here/welcome)[#]()."
+    }
+  ]
+}

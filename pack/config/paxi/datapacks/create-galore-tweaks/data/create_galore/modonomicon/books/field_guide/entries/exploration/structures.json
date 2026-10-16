@@ -1,0 +1,41 @@
+{
+  "category": "exploration",
+  "name": "Structures",
+  "description": "This pack has a lot of structure mods.",
+  "icon": {
+    "item": "minecraft:chiseled_stone_bricks"
+  },
+  "x": -3,
+  "y": 1,
+  "sort_number": 8,
+  "parents": [
+    {
+      "entry": "exploration/worldgen",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Structures",
+      "text": "This pack has a lot of structure mods. Together they fill the world with villages, ruins, dungeons, forts and wrecks, many of them stuffed with loot. This is the guide to which mod adds what."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "[#](2E5AAC)[Structure Packs](entry://exploration/structure_packs)[#](): Towns and Towers, Dungeons and Taverns, When Dungeons Arise and the YUNG's mods.\n\n[#](2E5AAC)[Create Structures](entry://exploration/create_structures)[#](): buildings with trains, airships, cranes and oil rigs.\n\n[#](2E5AAC)[Lootr](entry://exploration/lootr)[#](): why a looted chest still has loot for you."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Structures in the sky are in [#](2E5AAC)[Destinations](entry://flight/destinations)[#](). Structures in the sea are in [#](2E5AAC)[Underwater Places](entry://ocean/underwater_places)[#](). Bosses defend many of them: [#](2E5AAC)[Bosses](entry://exploration/bosses)[#]()."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Structure guides",
+      "text": "- [#](2E5AAC)[Structure Packs](entry://exploration/structure_packs)[#]()\n- [#](2E5AAC)[Create Structures](entry://exploration/create_structures)[#]()\n- [#](2E5AAC)[Lootr](entry://exploration/lootr)[#]()\n- [#](2E5AAC)[Underwater Places](entry://ocean/underwater_places)[#]()\n- [#](2E5AAC)[Destinations](entry://flight/destinations)[#]()"
+    }
+  ]
+}

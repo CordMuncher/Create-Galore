@@ -1,0 +1,61 @@
+{
+  "category": "food",
+  "name": "Cozy Cafe",
+  "description": "Cozy Cafe lets you open a small restaurant.",
+  "icon": {
+    "item": "cozycafe:cafe_manager"
+  },
+  "x": 4,
+  "y": 0,
+  "sort_number": 8,
+  "parents": [
+    {
+      "entry": "food/sweets_and_drinks",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    },
+    {
+      "entry": "food/brewing",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": false
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Cozy Cafe",
+      "text": "**Cozy Cafe** lets you open a small restaurant. Customers spawn at a sign, order from your menu, and leave tips and dirty plates. Menu items are foods and drinks; the menu screen says if one can't be added."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "cozycafe:cafe_manager"
+      },
+      "title": "Cafe Manager",
+      "text": "The heart of the cafe. Place Cafe Menus in its working area and link a Cafe Sign before opening. You can rename the cafe, view stats and see reputation grow."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "cozycafe:cafe_sign"
+      },
+      "title": "Cafe Sign",
+      "text": "Marks where customers appear. Sneak and right-click the Manager to link it before placing the sign."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "cozycafe:plating_station"
+      },
+      "title": "Plating Station",
+      "text": "Used for mains. Right-click with a Serving Plate, then with a menu item, then with an empty hand to take the plated dish."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Dirty serving plates drop after customers leave. Hold use on a sponge or sink to clean them. The **Cafe Catalog** in your offhand shows menu price and decor info in tooltips.\n\nThemed decor sets a theme and modifiers (tips, patience, price). Food: [#](2E5AAC)[Sweets and Drinks](entry://food/sweets_and_drinks)[#]()."
+    }
+  ]
+}

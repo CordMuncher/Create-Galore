@@ -1,0 +1,62 @@
+{
+  "category": "exploration",
+  "name": "Create Structures",
+  "description": "Two mods add buildings themed around Create.",
+  "icon": {
+    "item": "create:schematic_table"
+  },
+  "x": -1,
+  "y": 3,
+  "sort_number": 10,
+  "parents": [
+    {
+      "entry": "exploration/structures",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Create Structures",
+      "text": "Two mods add buildings themed around Create. They give a reason to explore, and their chests drop Create components. Neither needs a special trigger."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Create: Structures Arise** adds, by name, a mine train, a lost train station, a pillager steampunk airship, an air drop, a mini sky village, a crusher crane, a fluid tank house, a witch hut, a bastion and a ruined castle."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create:track"
+      },
+      "title": "Train Track",
+      "text": "Create: Structures Arise includes a Mine Train and a Lost Train Station; see Trains."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "These are good places to look for ideas: [#](2E5AAC)[trains](entry://transport/trains)[#]() at the mine train and station, [#](2E5AAC)[airships](entry://flight/airships)[#]() at the sky village and the steampunk airship. Sky structures are also in [#](2E5AAC)[Destinations](entry://flight/destinations)[#]()."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Create: Let The Adventure Begin** adds 62 structures with new loot, and a chance to fish up Create items. They include a railroad, oil rig, quarry, bunker, castle, kings castle, and houses in several styles."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create:brass_ingot"
+      },
+      "title": "Brass",
+      "text": "Create: Let The Adventure Begin adds Create items to its loot and to fishing, so structure runs feed the same metals Create uses."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "The oil rig is worth a look for [#](2E5AAC)[oil](entry://industry/tfmg_oil)[#]() fans. For loot rules in these chests see [#](2E5AAC)[Lootr](entry://exploration/lootr)[#]()."
+    }
+  ]
+}

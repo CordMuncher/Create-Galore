@@ -1,0 +1,62 @@
+{
+  "category": "industry",
+  "name": "Dragons Plus Fan Effects",
+  "description": "Create: Dragons Plus adds new things for a Fan to do.",
+  "icon": {
+    "item": "create_dragons_plus:dragon_breath_bucket"
+  },
+  "x": -1,
+  "y": 4,
+  "sort_number": 13,
+  "parents": [
+    {
+      "entry": "industry/power_compared",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Dragons Plus Fan Effects",
+      "text": "Create: Dragons Plus adds new things for a [#](2E5AAC)[Fan](entry://create_basics/fans)[#]() to do. Blow air through a catalyst and items in the stream get processed in bulk."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Freezing** (Powder Snow): ice to packed ice to blue ice, magma cream to slime ball, blaze rod to breeze rod.\n\n**Ending** (Dragon Head or Dragon's Breath): cobblestone to end stone, apple to chorus fruit, leather to phantom membrane."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create_dragons_plus:dragon_breath_bucket"
+      },
+      "title": "Dragon's Breath",
+      "text": "A real fluid, usable in cauldrons. It turns to End Stone where it meets lava."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Coloring**: Liquid Dye, made by mixing a dye with water, colors items, mobs and armor it touches. Fans blowing through it color items in bulk. Dye meeting lava makes matching concrete."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Sanding** (quicksand) does sandpaper recipes in bulk. **Enchanting** (Golden Aercloud) runs Aether Altar recipes and incubates Moa Eggs. See [#](2E5AAC)[Dimensions](entry://exploration/dimensions)[#]()."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create_dragons_plus:fragile_fluid_tank"
+      },
+      "title": "Fragile Fluid Tank",
+      "text": "Breaks on impact and splashes its fluid onto the surroundings. Fluid Hatches let tanks be filled and emptied by hand."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Create Connected has matching fan catalyst blocks. See [#](2E5AAC)[Building with Create](entry://home/create_decor)[#]()."
+    }
+  ]
+}

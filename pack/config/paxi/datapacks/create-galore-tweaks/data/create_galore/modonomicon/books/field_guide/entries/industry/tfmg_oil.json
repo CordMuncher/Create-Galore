@@ -1,0 +1,81 @@
+{
+  "category": "industry",
+  "name": "TFMG Oil and Fuels",
+  "description": "TFMG's oil chain: find crude oil, pump it up, split it in a distillation tower, then...",
+  "icon": {
+    "item": "tfmg:pumpjack_base"
+  },
+  "x": 1,
+  "y": -3,
+  "sort_number": 5,
+  "parents": [
+    {
+      "entry": "industry/tfmg_steel",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "TFMG Oil and Fuels",
+      "text": "TFMG's oil chain: find crude oil, pump it up, split it in a distillation tower, then burn the fractions or cook them into plastic and rubber."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "tfmg:surface_scanner"
+      },
+      "title": "Surface Scanner",
+      "text": "Powered from below, its 5x5 grid shows nearby chunks. Chunks holding an oil deposit glow."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "tfmg:pumpjack_base"
+      },
+      "title": "Pumpjack",
+      "text": "Run Industrial Pipe from the deposit to the surface, set the base on top, then hammer parts (glued together) and a crank driven through a Machine Input."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "tfmg:steel_distillation_controller"
+      },
+      "title": "Distillation Tower",
+      "text": "Steel tanks, a controller beside them, and up to 6 outputs separated by Industrial Pipes. Heat under the tanks; oil goes into the controller."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Crude oil splits into heavy oil, diesel, kerosene, naphtha, gasoline and LPG. Heavy oil distills again into more diesel and kerosene plus lubrication oil. A Flarestack burns whatever you do not need."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "tfmg:large_engine"
+      },
+      "title": "Fuels into rotation",
+      "text": "Large Engines burn diesel, kerosene, naphtha or furnace gas for rotation. See [#](2E5AAC)[TFMG Engines](entry://industry/tfmg_engines)[#]()."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "tfmg:firebox"
+      },
+      "title": "Firebox",
+      "text": "Heats machines above it like a Blaze Burner, burning LPG, butane, propane, diesel, naphtha or kerosene. CO2 must be pumped out. See [#](2E5AAC)[Heat](entry://create_basics/heat)[#]()."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Plastic: naphtha in a heated vat splits into ethylene and propylene. Either becomes molten plastic, which a Casting Basin turns into Plastic Sheets. Heavy oil plus sulfur makes rubber."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Fuels also burn in Blaze Burners: piped diesel, gasoline, kerosene, naphtha and heavy oil heat one, and napalm superheats it. The Straw burner also takes crude oil and creosote. See [#](2E5AAC)[Burning Liquid Fuel](entry://industry/liquid_fuel)[#](). Pipes and pumps: [#](2E5AAC)[Fluids](entry://create_basics/fluids)[#]()."
+    }
+  ]
+}
