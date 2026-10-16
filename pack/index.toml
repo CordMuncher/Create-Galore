@@ -738,7 +738,7 @@ hash = "b81f5339abb9eadad01034f97afaead2e67f5a409db509a2508e6ff2180937a0"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/pack.mcmeta"
-hash = "7269b2729282f4e6a7a6194e76656f53c51406754dc40c553718b081609a9fdd"
+hash = "191a49e2b330886d52b375721ac6bfff45ea9990ed937ddb8d453e659c4b17f1"
 
 [[files]]
 file = "config/paxi/optional/create-galore-with-elytra/data/betterend/loot_table/chests/end_village_bonus_loot.json"
