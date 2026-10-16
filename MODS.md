@@ -6,6 +6,8 @@ Create Galore 0.1.4, NeoForge 21.1.259 for Minecraft 1.21.1. Everything below co
 
 Built for this pack and shipped inside it: **Create Galore Bridge** 1.1.0 (both), `pack/mods/create-galore-bridge-1.1.0.jar`. It makes TFMG engines and blast furnaces pollute only while they burn fuel, and Blaze Burners only while they have fuel, and adds the Stellar Core, the item that gates space travel. Source and build script in [`tools/bridge-mod/`](tools/bridge-mod/).
 
+Also built for this pack: **Create Galore Lag Watch** 1.0.0 (dedicated server only; it ships in `pack/mods/create-galore-lagwatch-1.0.0.jar` for both sides but does nothing on a client), says in chat when TPS stays under 15 and records a spark profile automatically. How to use it: [docs/server-setup.md](docs/server-setup.md#lag-alerts-and-profiles). Source and build script in [`tools/lagwatch-mod/`](tools/lagwatch-mod/).
+
 Not on Modrinth, add by hand: **Twilight Forest** `twilightforest-1.21.1-4.8.3345-universal.jar` (CurseForge). See the README.
 
 Resource pack, turned on by default: [Fresh Animations](https://modrinth.com/resourcepack/fresh-animations) 1.10.4 (client, needs EMF + ETF).

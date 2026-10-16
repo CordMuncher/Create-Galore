@@ -1,0 +1,40 @@
+#Turn the whole thing on or off.
+enabled = true
+#Warn when TPS (ticks per second, 20 is full speed) stays below this.
+# Default: 15.0
+# Range: 1.0 ~ 19.9
+alertTps = 15.0
+#The lag spell counts as over once TPS is back above this for 10 seconds.
+# Default: 18.0
+# Range: 1.0 ~ 20.0
+recoverTps = 18.0
+#How long TPS must stay low before the alert, so a single hiccup stays quiet.
+# Default: 10
+# Range: 1 ~ 600
+alertAfterSeconds = 10
+#Stay quiet this long after the server starts (world loading is always slow).
+# Default: 120
+# Range: 0 ~ 3600
+startupGraceSeconds = 120
+#true: every player sees the alert. false: only operators do. The console and logs/lagwatch.log always get it.
+tellEveryone = true
+
+[profile]
+	#Record a spark profile when the alert fires. Needs spark (it's in the pack).
+	enabled = true
+	#How long each profile records.
+	# Default: 60
+	# Range: 10 ~ 600
+	seconds = 60
+	#Only keep slow ticks in the profile (50 ms is one full tick budget). 0 keeps every tick.
+	# Default: 50
+	# Range: 0 ~ 1000
+	onlyTicksOverMs = 50
+	#At most one automatic profile per this many minutes. Alerts still come through.
+	# Default: 10
+	# Range: 0 ~ 1440
+	cooldownMinutes = 10
+	#Delete the oldest Lag Watch profiles beyond this many. 0 keeps them all.
+	# Default: 30
+	# Range: 0 ~ 10000
+	keep = 30
