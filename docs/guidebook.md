@@ -46,6 +46,8 @@ Patchouli stays installed only because Iron's Spellbooks and Productive Bees shi
 - A spotlight `item` is one item, or a list `[{"item": "a"}, {"item": "b"}]` that cycles.
 - Only vanilla crafting-table recipes can be shown on a page. For Create machine recipes, point to JEI.
 - Text that is too long for a page shrinks to fit rather than overflowing; split long pages anyway so it stays readable.
+- **Page margins.** Modonomicon's default text box (124 px) runs into the spine stitching on left pages and the stacked page edges on right pages. `book.json` narrows it with `book_text_offset_x: 3` and `book_text_offset_width: -9` (112 px, starting 3 px in), which keeps every line on the clean paper. Titles ignore those settings, so the Create Galore Bridge mod caps them at 108 px instead of 120.
+- **How much fits.** About 15 lines under a title, 17 without one, 12 on a spotlight page, at roughly 23 characters a line. `validate_guidebook.py` warns past that.
 
 ## Checking it
 

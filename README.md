@@ -85,6 +85,8 @@ The updater also keeps NeoForge on the pack's pinned version. To freeze the inst
 
 Every player gets the **Create Galore Field Guide** on first join, and you can craft another from a Book and Andesite. It's a wiki, not a quest book: 14 sections and about 140 entries on how things work and how the mods connect, written for someone who has never played Create.
 
+A new player should open **Start Here > Your First Days** first: how to drink, where to find clean water, food and staying warm, the things that can kill you before you know the pack.
+
 Each section is a map. Entries are nodes, and the arrows show what comes first, so to reach something you follow its lines back (the six prizes all lead into the Stellar Core, for example). Everything is open from the start, with no locks, tasks or rewards. The magnifying glass on the right searches the text of every page. Editing notes: [docs/guidebook.md](docs/guidebook.md).
 
 In a world started before the guide moved to Modonomicon, the old Patchouli Field Guide no longer opens it: put it in a crafting grid on its own to turn it into the new one.
@@ -136,6 +138,7 @@ Nothing on the list comes from space, every prize can be found again, and nothin
 - Cataclysm and Mowzie's bosses have 70% health and 75% damage. All their structures still spawn.
 - Hostile Skies airship raids are rarer (every 25 minutes instead of 15, 5% starting chance instead of 10%).
 - Cold Sweat runs at 0.75x speed and deals half the temperature damage.
+- Thirst: you can drink straight from water by crouching and right-clicking it with both hands empty (Thirst Was Reclaimed has this off by default). Raw water still makes you sick, so bottles and boiling stay the real answer. Drinking rain (look straight up) also works.
 - Create: Smog pollution is left at full strength on purpose.
 - Underground structures are spaced a bit wider, since the pack places far more than vanilla.
 - Inventory Profiles Next auto-refill is off and the backpack magnet is one block shorter, so the game doesn't play itself.

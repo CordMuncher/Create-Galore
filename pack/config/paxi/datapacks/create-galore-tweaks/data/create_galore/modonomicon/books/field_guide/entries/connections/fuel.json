@@ -25,7 +25,12 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Where TFMG fuels burn:\n- Any Blaze Burner, piped in: diesel, gasoline, kerosene, naphtha, heavy oil. Napalm superheats it\n- Crafts & Additions' Blaze Burner with Straw: also crude oil and creosote\n- Create Propulsion thrusters: diesel, gasoline, kerosene, naphtha\n- Northstar rockets: diesel, gasoline, kerosene, naphtha"
+      "text": "Where TFMG fuels burn:\n- Any Blaze Burner, piped in: diesel, gasoline, kerosene, naphtha, heavy oil. Napalm superheats it\n- Crafts & Additions' Blaze Burner with Straw: also crude oil and creosote"
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "- Create Propulsion thrusters: diesel, gasoline, kerosene, naphtha\n- Northstar rockets: diesel, gasoline, kerosene, naphtha"
     },
     {
       "type": "modonomicon:text",

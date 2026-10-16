@@ -65,7 +65,12 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**Berries and Cherries Delight** adds grapes, strawberries, cherries, jams and pies.\n\n**Aquaculture Delight** lets Aquaculture fish work in Farmer's Delight recipes.\n\n**Sniffers Sniff Delights** makes Sniffers dig up tomato, cabbage, rice and onion seeds far more often."
+      "text": "**Berries and Cherries Delight** adds grapes, strawberries, cherries, jams and pies.\n\n**Aquaculture Delight** lets Aquaculture fish work in Farmer's Delight recipes."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Sniffers Sniff Delights** makes Sniffers dig up tomato, cabbage, rice and onion seeds far more often."
     },
     {
       "type": "modonomicon:text",

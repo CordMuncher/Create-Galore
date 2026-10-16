@@ -24,8 +24,13 @@
     },
     {
       "type": "modonomicon:text",
+      "title": "How to drink",
+      "text": "- **Rain:** stand in it and look straight up.\n- **By hand:** both hands empty, crouch and right-click water.\n- **Bottles:** fill a glass bottle at any water and hold right-click to drink.\n\nNew here? [#](2E5AAC)[Your First Days](entry://start_here/first_days)[#]() has the short version."
+    },
+    {
+      "type": "modonomicon:text",
       "title": "Dirty water",
-      "text": "Water has a purity: **Dirty**, Slightly Dirty, Acceptable, Purified. Dirty water is a risk to drink. Purify it before you rely on it.\n\nBottles, buckets and bowls of water all carry a purity."
+      "text": "Water has a purity: **Dirty**, Slightly Dirty, Acceptable, Purified. Still water at sea level is Dirty: it always makes you sick and sometimes poisons you. Slightly Dirty is a coin flip. Acceptable and Purified are safe.\n\nBottles, buckets and bowls of water all carry a purity."
     },
     {
       "type": "modonomicon:text",

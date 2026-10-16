@@ -57,7 +57,12 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "The mixing recipes need a Blaze Burner under the mixer. Tapioca flour, oreo and crushed cookies give bubble tea style toppings.\n\nBlood Oranges come from haunting an orange with a Fan. Mana Berries come from filling sweet berries with 25 mB of liquid experience in a Spout.\n\nHeat: [#](2E5AAC)[Heat](entry://create_basics/heat)[#](). Serving to customers: [#](2E5AAC)[Cozy Cafe](entry://food/cozy_cafe)[#]()."
+      "text": "The mixing recipes need a Blaze Burner under the mixer. Tapioca flour, oreo and crushed cookies give bubble tea style toppings.\n\nBlood Oranges come from haunting an orange with a Fan. Mana Berries come from filling sweet berries with 25 mB of liquid experience in a Spout."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Heat: [#](2E5AAC)[Heat](entry://create_basics/heat)[#](). Serving to customers: [#](2E5AAC)[Cozy Cafe](entry://food/cozy_cafe)[#]()."
     }
   ]
 }
