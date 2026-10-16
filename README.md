@@ -7,7 +7,7 @@ A big, long-term Minecraft modpack built around the Create mod. Think "Minecraft
 | **Version** | 0.1.3 |
 | **Minecraft** | 1.21.1 |
 | **Loader** | NeoForge **21.1.259** (pinned, don't update it, see [Known issues](#known-issues)) |
-| **Mods** | 222 from Modrinth + Twilight Forest added by hand, plus 4 shader packs and the Fresh Animations resource pack |
+| **Mods** | 222 from Modrinth + the pack's own small Create Galore Bridge + Twilight Forest added by hand, plus 4 shader packs and the Fresh Animations resource pack |
 | **Full mod list** | [MODS.md](MODS.md) |
 | **In-game help** | The Create Galore Field Guide, a searchable book every player gets on first join |
 
@@ -37,7 +37,7 @@ install-server.bat C:\CreateGaloreServer        (Windows)
 ./install-server.sh ~/CreateGaloreServer        (Linux / macOS)
 ```
 
-The server gets 181 mods plus Twilight Forest. The 41 client-only mods (Sodium, Iris, Distant Horizons, map add-ons, the ambiance layer and so on) are skipped automatically. Players still install the full `.mrpack`. Far terrain for Distant Horizons is sent from the server by Chunksmith, so Distant Horizons itself stays off the server.
+The server gets 181 mods, the pack's Create Galore Bridge and Twilight Forest. The 41 client-only mods (Sodium, Iris, Distant Horizons, map add-ons, the ambiance layer and so on) are skipped automatically. Players still install the full `.mrpack`. Far terrain for Distant Horizons is sent from the server by Chunksmith, so Distant Horizons itself stays off the server.
 
 ## The Field Guide
 
@@ -93,7 +93,7 @@ Everything below ships as plain config files or a datapack in `pack/` (no mod ja
 - **Ore deposits.** Deposit drills mine diamonds, emeralds, quartz and glowstone at Ore Excavation's own speed (1,200 ticks, 512 SU for gems). Metals stay fast.
 - **Twilight Forest:** the Uncrafting Table no longer reverses recipes (`disableUncrafting = true`), since stonecutter recipes let it multiply copper, bronze and Create Deco metal up to 4x. It still repairs and does its special recipes.
 - **Create Propulsion:** Solid and Liquid Burners can't heat mixers or superheat boilers. They still heat boilers to normal level and run thrusters and Stirling engines.
-- **Pollution:** TFMG engines (6 per block, 4 for large engines), fireboxes (8) and blast furnaces (30) now add smog. Smog can't tell whether a TFMG block is running, so they count all the time once built.
+- **Pollution:** TFMG engines (6 per block at full throttle, 4 for large engines), fireboxes (8) and blast furnaces (30) add smog while they run. The pack's small Create Galore Bridge mod tells Smog when they're actually burning fuel, so an idle, empty or switched-off machine is clean and a throttled engine pollutes less.
 - **Smaller ones:** Farmer's Delight melon juice and apple cider hydrate like a water bottle (6 and 8 instead of 8 and 13). Create Wizardry's Mana Siphon never turns an arcane ingot into netherite. Ferrets dig up an emerald instead of a Totem of Undying. Crushing granite gives uranium powder 10% of the time instead of 50%. A Biomass Pellet takes 2 Biomass.
 
 **Fixes.**
@@ -178,6 +178,7 @@ All tests ran headless in a cloud machine (4 cores, 16 GB RAM, no GPU), so speed
 | Without the automatic `/reload`: on a fresh dedicated server, after a restart, after a manual `/reload` and in a new singleplayer world, about 1,100 random spell scrolls per run once a player has joined, none of them Portal, Recall or Angel Wings, and the client receives the same switches | ✅ |
 | Log-noise fixes on a dedicated server, boot and two `/reload`s: 22 more recipes load (16 Create Cafe teas, 2 syrups, blood tea, mana tea, Blood Orange, Mana Berries), and the My Nether's Delight, Aeronautics Structures, blood tea and syrup errors are gone. In-world, a pump feeds TFMG diesel into a Blaze Burner and it burns, while water is refused | ✅ |
 | 0.1.3 balance pass on a dedicated server: boots clean, 37 fewer recipes load (22,338 together with the log-noise fixes), configs load without corrections, no recipe, tag or Field Guide errors, Garnished stone tags list no slabs | ✅ |
+| Create Galore Bridge on a dedicated server, over 20 s per check: an idle regular engine and an idle large engine add no smog; a large engine running on diesel (shaft at 128 RPM, fuel draining) adds smog, and stops adding it once its air runs out with diesel still in the tank; a blast furnace adds smog while smelting and none once the charge stops | ✅ |
 | Real FPS, shaders, Distant Horizons visuals, gameplay feel | ❌ Needs a real PC with a GPU |
 
 **Memory:** about 9.3 GB of process memory on the server and 8-9.6 GB on the client with an 8 GB heap. A laptop with 16 GB can play but shouldn't host and play at the same time.

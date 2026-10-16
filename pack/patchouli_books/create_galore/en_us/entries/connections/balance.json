@@ -39,7 +39,7 @@
     {
       "type": "patchouli:text",
       "title": "Other",
-      "text": "$(li)No Uncrafting Table reversing.$(li)Propulsion burners don't heat mixers or superheat.$(li)TFMG engines pollute.$(li)Melon juice and cider hydrate like water."
+      "text": "$(li)No Uncrafting Table reversing.$(li)Propulsion burners don't heat mixers or superheat.$(li)TFMG engines pollute while running.$(li)Melon juice and cider hydrate like water."
     },
     {
       "type": "patchouli:text",

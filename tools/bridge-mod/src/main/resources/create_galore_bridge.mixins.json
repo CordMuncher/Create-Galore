@@ -1,0 +1,8 @@
+{
+  "required": false,
+  "minVersion": "0.8",
+  "package": "dev.creategalore.bridge.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": ["SmogEmittersMixin"],
+  "injectors": { "defaultRequire": 0 }
+}

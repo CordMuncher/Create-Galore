@@ -1102,7 +1102,7 @@ hash = "496612965e223ce5e5f35c83c8f6bd58bb98792b1ce1f50a02cc388d952b67a2"
 
 [[files]]
 file = "config/smog-common.toml"
-hash = "0133a92023f0a9bb6bb077da924c21e74e86786824e73163bbd0506b248a3212"
+hash = "017cbc51affe7f4b65872c5f9dcf766cb6d7592a79d9a5b91099db5ee99a4a2b"
 
 [[files]]
 file = "config/sophisticatedbackpacks-server.toml"
@@ -1442,6 +1442,10 @@ metafile = true
 file = "mods/create-framed.pw.toml"
 hash = "db683b65dc15a03dd6de2d34d5dc6ad0e3490744ced513a8cc584784ee9d3d8b"
 metafile = true
+
+[[files]]
+file = "mods/create-galore-bridge-1.0.0.jar"
+hash = "362c825e01322320a1f16c0cdf5f90af00089561aeb5431dccc9f31426dcfdb9"
 
 [[files]]
 file = "mods/create-garnished.pw.toml"
@@ -2304,7 +2308,7 @@ hash = "fe8e0dfddd19ff9dbab5e11c1c1400263b861123f9dc8523c028e0a2e9674326"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/connections/balance.json"
-hash = "702f72b2582cf824c9836578dcd8b52df9a6e7383183bcf7d900a6dfdbd51638"
+hash = "0859091e387eeacdfa23fe193b5a81194c0c35cbe99d00e80d3bb2f1690e545f"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/connections/farm_to_factory.json"
@@ -2768,7 +2772,7 @@ hash = "688d9a11a76486a7fe4ca0fa585f01c77b0826d42b7f47c92cb9c58090beae43"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/survival/pollution.json"
-hash = "075412b0653419323899a8b8ec8a80a85c191ed19fd61ecc7d53b4edecf9a2c1"
+hash = "909af4e32e1ba3edd6f64da01d023e21b0f0b8d68056b3460d760fdcc9cd0034"
 
 [[files]]
 file = "patchouli_books/create_galore/en_us/entries/survival/pollution_control.json"
