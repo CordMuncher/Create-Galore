@@ -1,14 +1,6 @@
 package dev.creategalore.bridge;
 
-import java.io.IOException;
-import java.io.Reader;
-import java.io.Writer;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Properties;
-
 import net.neoforged.fml.loading.FMLConfig;
-import net.neoforged.fml.loading.FMLPaths;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
@@ -30,37 +22,21 @@ import org.slf4j.LoggerFactory;
  */
 public final class TenBitWindow {
     private static final Logger LOG = LoggerFactory.getLogger("create_galore_bridge");
-    private static final String FILE = "create_galore_bridge-display.properties";
 
     private TenBitWindow() {}
 
     public static boolean enabled() {
-        Path file = FMLPaths.CONFIGDIR.get().resolve(FILE);
-        Properties props = new Properties();
-        try {
-            if (Files.exists(file)) {
-                try (Reader r = Files.newBufferedReader(file)) {
-                    props.load(r);
-                }
-            } else {
-                props.setProperty("tenBitWindow", "false");
-                try (Writer w = Files.newBufferedWriter(file)) {
-                    props.store(w, "Create Galore Bridge display settings.\n"
-                            + " tenBitWindow: EXPERIMENTAL. true asks for a 10-bit game window, meant to keep a 10-bit monitor at 10-bit\n"
-                            + " in fullscreen. It did not stop the 8-bit switch on an RTX 4080 Super. Turns off NeoForge's early\n"
-                            + " loading window (config/fml.toml). Needs a restart.");
-                }
-            }
-        } catch (IOException e) {
-            LOG.warn("Could not read {}, using defaults", file, e);
-        }
-        return Boolean.parseBoolean(props.getProperty("tenBitWindow", "false").trim());
+        return DisplaySettings.get(DisplaySettings.TEN_BIT_WINDOW);
     }
 
     /** Called just before the game window is created. */
     public static void beforeCreate() {
         if (!enabled()) {
-            LOG.info("10-bit window: off (config/{})", FILE);
+            LOG.info("10-bit window: off (config/{})", DisplaySettings.FILE);
+            return;
+        }
+        if (dev.creategalore.bridge.present.Presentation.active()) {
+            LOG.info("10-bit window: skipped, perfectPresentation shows the game through DirectX instead");
             return;
         }
         if (FMLConfig.getBoolConfigValue(FMLConfig.ConfigValue.EARLY_WINDOW_CONTROL)) {

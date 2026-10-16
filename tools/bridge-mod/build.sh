@@ -23,6 +23,16 @@ CP=$( { ls "$SERVER"/libraries/net/minecraft/server/*/server-*-srg.jar
         find "$SERVER/libraries" -name '*.jar' ! -path '*/net/minecraft/server/*'
         find "$WORK/jij" -name '*.jar'; ls "$SERVER"/mods/*.jar; } | tr '\n' ':')
 
+# A server has no LWJGL (the display code needs it at compile time only); Minecraft 1.21.1 ships 3.3.3.
+for m in lwjgl lwjgl-glfw lwjgl-opengl; do
+  curl -sSfL -o "$WORK/$m.jar" "https://repo1.maven.org/maven2/org/lwjgl/$m/3.3.3/$m-3.3.3.jar"
+  CP="$CP$WORK/$m.jar:"
+done
+# Compile-only stubs for the two client classes the display mixins name; they are not packaged.
+mkdir -p "$WORK/stubs"
+javac --release 21 -nowarn -proc:none -d "$WORK/stubs" $(find "$HERE/stubs" -name '*.java')
+CP="$CP$WORK/stubs"
+
 mkdir -p "$WORK/classes"
 javac --release 21 -nowarn -proc:none -cp "$CP" -d "$WORK/classes" $(find "$HERE/src/main/java" -name '*.java')
 cp -r "$HERE/src/main/resources/." "$WORK/classes/"

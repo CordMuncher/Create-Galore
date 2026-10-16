@@ -1,0 +1,9 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "dev.creategalore.bridge.present.mixin",
+  "plugin": "dev.creategalore.bridge.present.PresentationMixinPlugin",
+  "compatibilityLevel": "JAVA_21",
+  "client": ["PresentWindowMixin", "PresentRenderSystemMixin", "PresentMinecraftMixin", "PresentMainTargetMixin", "PresentRenderTargetMixin"],
+  "injectors": { "defaultRequire": 1 }
+}
