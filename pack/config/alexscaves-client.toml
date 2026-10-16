@@ -1,0 +1,4 @@
+[visuals]
+	#true if some biomes, such as toxic caves, apply a color to ambient light. May conflict with shaders.
+	#Create Galore: off, because it stops Distant Horizons from drawing LODs.
+	biome_ambient_light_coloring = false

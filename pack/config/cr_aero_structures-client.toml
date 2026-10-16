@@ -1,0 +1,4 @@
+#Create Aeronautics Structures
+[general]
+	#Show the Telegram channel message when joining a world
+	showLoginMessage = false

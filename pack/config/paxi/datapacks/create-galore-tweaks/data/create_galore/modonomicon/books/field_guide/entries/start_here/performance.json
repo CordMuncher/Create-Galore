@@ -30,7 +30,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**Shaders** are included and run through Iris. Open Options > Video Settings > Shader Packs to pick one.\n\n- Complementary Reimagined, with Euphoria Patches\n- Bliss\n- Photon\n- Solas"
+      "text": "**Shaders** are included and run through Iris. Open Options > Video Settings > Shader Packs to pick one.\n\n- Complementary Reimagined, with Euphoria Patches\n- Bliss\n- Photon\n- Solas\n\nFor Bliss or Photon, pick the copy ending in **+ Clrwl** so contraptions are shaded right."
     },
     {
       "type": "modonomicon:text",

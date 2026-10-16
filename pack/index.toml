@@ -2,8 +2,12 @@ hash-format = "sha256"
 
 [[files]]
 file = "config/DistantHorizons.toml"
-hash = "e517e23f9c1bd888203d84d51c1ade393b8dbf5f349606f5529ec6c8c4a6db4e"
+hash = "4106317596bf5d6dcb9e488ddb479349699063895ae17a341c04801123a5ebb9"
 preserve = true
+
+[[files]]
+file = "config/alexscaves-client.toml"
+hash = "70ca729ef7342206849a2aa215021fc0bb9304db32b9060f6289714adcd8cf41"
 
 [[files]]
 file = "config/artifacts/items.toml"
@@ -24,6 +28,10 @@ hash = "f77a6bf4cb60e20b35898c593a3c639b2948cc8eb0803c5d2ac07d489366d48a"
 [[files]]
 file = "config/coldsweat/main.toml"
 hash = "fd2e5a6ded40aec007a9520b49f221682570c98bdedbe57dd84e081e263145a8"
+
+[[files]]
+file = "config/cr_aero_structures-client.toml"
+hash = "3a7e6dd212af6eccf8b3ae4a4d2043e57b2c71fe91116370e39d5b7ca0ee3181"
 
 [[files]]
 file = "config/create_connected-common.toml"
@@ -940,7 +948,7 @@ hash = "7ab35b6cf94a21826edcea87e97ab032cb82101c8b9eb2aa1fe1c797661c8680"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/start_here/performance.json"
-hash = "9d77ad8a0b0aa13609b2fa74f8d9ea79ebf909aee4efede6f3e9a51d28b799b8"
+hash = "0f23eb3900c4caad894717c2854e588377db87d88dabbae65b9396f4eb483b32"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/start_here/tools.json"
@@ -1970,6 +1978,11 @@ metafile = true
 [[files]]
 file = "mods/collective.pw.toml"
 hash = "136af191b860ebf7967a748fe20457b8b1712e9d6095413dce23def1ed28468b"
+metafile = true
+
+[[files]]
+file = "mods/colorwheel-patcher.pw.toml"
+hash = "caab0399294fca902849b8eb653f56840bc107d5dbd0b0cbaab3d60ca4cc01f9"
 metafile = true
 
 [[files]]
@@ -3009,7 +3022,7 @@ metafile = true
 
 [[files]]
 file = "shaderpacks/photon-shader.pw.toml"
-hash = "e9112a2da03f65451c8c949331d71b92546bbd75ff78eac554d27f6c41e1ba29"
+hash = "4c76d9c56650f80580e8baeaeed3effbda6d6fa1c405d8afccce2316011a2b79"
 metafile = true
 
 [[files]]

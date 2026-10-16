@@ -1,6 +1,6 @@
 # Mod list
 
-Create Galore 0.1.7, NeoForge 21.1.259 for Minecraft 1.21.1. Everything below comes from Modrinth and is pinned by the files in [`pack/`](pack/).
+Create Galore 0.1.8, NeoForge 21.1.259 for Minecraft 1.21.1. Everything below comes from Modrinth and is pinned by the files in [`pack/`](pack/).
 
 "Side" is how the pack installs it: **both** means it goes on the client and the server; **client** means client only. Server-only world generation mods are marked **both** on purpose, because singleplayer runs them on your own machine.
 
@@ -44,6 +44,7 @@ Resource pack, turned on by default: [Fresh Animations](https://modrinth.com/res
 | [Cold Sweat: Altitude](https://modrinth.com/mod/cold-sweat-altitude) | 0.7.0 | both |
 | [Collective](https://modrinth.com/mod/collective) | 1.21.1-8.53-fabric+forge+neo | both |
 | [Colorwheel](https://modrinth.com/mod/colorwheel) | 1.3.0+mc1.21.1 | client |
+| [Colorwheel Patcher](https://modrinth.com/mod/colorwheel-patcher) | 1.0.5+mc1.21.1 | client |
 | [Contraption Lights (Bi-directional Coloured Dynamic Lights)](https://modrinth.com/mod/contraption-lights) | 1.5.4 | client |
 | [Controlling](https://modrinth.com/mod/controlling) | 19.0.5 | client |
 | [Cozy Cafe](https://modrinth.com/mod/cozycafe) | 2.3-1.21.1 | both |
