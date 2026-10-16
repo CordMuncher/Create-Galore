@@ -194,7 +194,7 @@ public final class Presentation {
         if (!active()) {
             return false;
         }
-        interop.blitSharedTextureToSwapChain(colorTexture);
+        interop.blitToSwapChain(colorTexture);
         return true;
     }
 
@@ -212,18 +212,11 @@ public final class Presentation {
 
     // --- MainTarget colour texture ---
 
-    /** The main target's colour texture is shared with D3D11 instead of getting its own storage. */
+    /** The main target keeps its own OpenGL storage; each frame is copied into a shared texture instead. */
     public static boolean allocateMainColor(int texture, int target, int internalFormat, int width, int height) {
-        if (!active()) {
-            return false;
-        }
-        interop.allocateSharedTexture(texture, target, internalFormat, width, height);
-        return true;
+        return false;
     }
 
     public static void releaseMainColor(int texture) {
-        if (active() && interop.hasSharedTexture(texture)) {
-            interop.deallocateSharedTexture(texture);
-        }
     }
 }

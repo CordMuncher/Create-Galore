@@ -1,5 +1,12 @@
 package dev.creategalore.bridge.present;
 
+import static org.lwjgl.opengl.GL11C.GL_TEXTURE_2D;
+import static org.lwjgl.opengl.GL11C.GL_TEXTURE_HEIGHT;
+import static org.lwjgl.opengl.GL11C.GL_TEXTURE_WIDTH;
+import static org.lwjgl.opengl.GL11C.glDeleteTextures;
+import static org.lwjgl.opengl.GL43C.glCopyImageSubData;
+import static org.lwjgl.opengl.GL45C.glCreateTextures;
+import static org.lwjgl.opengl.GL45C.glGetTextureLevelParameteri;
 import static org.lwjgl.opengl.WGLNVDXInterop.WGL_ACCESS_WRITE_DISCARD_NV;
 import static org.lwjgl.opengl.WGLNVDXInterop.wglDXCloseDeviceNV;
 import static org.lwjgl.opengl.WGLNVDXInterop.wglDXLockObjectsNV;
@@ -17,8 +24,6 @@ import static org.lwjgl.system.MemoryUtil.memPutFloat;
 import static org.lwjgl.system.MemoryUtil.memPutInt;
 
 import java.nio.ByteBuffer;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.windows.WindowsUtil;
@@ -27,12 +32,15 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Shows the game's frames through a Direct3D 11 flip-model swap chain on the game window. The game still renders with
- * OpenGL (on {@link WglContext}); its main colour texture is shared with D3D11 through WGL_NV_DX_interop2 and copied
- * to the swap chain each frame. Windows then treats the window like a DirectX game: borderless fullscreen gets
- * exclusive-fullscreen speed, and Alt-Tab never changes the display mode.
+ * OpenGL (on {@link WglContext}); each frame its main colour texture is copied into one of a few textures shared with
+ * D3D11 through WGL_NV_DX_interop2, which D3D11 then draws to the swap chain. Windows then treats the window like a
+ * DirectX game: borderless fullscreen gets exclusive-fullscreen speed, and Alt-Tab never changes the display mode.
  *
  * Ported from Perfect Presentation's InteropContext (MIT, Copyright (c) sidit77), with its Java 22 foreign-function
- * calls rewritten as libffi calls so it runs on Java 21. Same steps, flags and shader.
+ * calls rewritten as libffi calls so it runs on Java 21. Same flags and shader. Unlike Perfect Presentation, the main
+ * target is not itself shared: handing one texture back and forth every frame made OpenGL wait for D3D11, and the
+ * short idle gaps that left made NVIDIA clock the GPU down ("GPU idle" on an RTX 4080 Super, 170 W instead of 300 W).
+ * A ring of shared copies means OpenGL only takes a texture back long after D3D11 is done with it.
  */
 final class InteropContext implements AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger("create_galore_bridge");
@@ -59,7 +67,6 @@ final class InteropContext implements AutoCloseable {
     private static final int D3D11_USAGE_DEFAULT = 0;
     private static final int D3D11_BIND_SHADER_RESOURCE = 0x8;
     private static final int D3D11_BIND_RENDER_TARGET = 0x20;
-    private static final int GL_RGBA8 = 0x8058;
     private static final int WAIT_ABANDONED = 0x80;
     private static final int WAIT_TIMEOUT = 0x102;
     private static final int WAIT_FAILED = 0xFFFFFFFF;
@@ -116,7 +123,11 @@ final class InteropContext implements AutoCloseable {
     private final long closeHandle = Com.function("kernel32.dll", "CloseHandle");
     private long renderTargetView;
 
-    private final Map<Integer, SharedTexture> sharedTextures = new HashMap<>();
+    private static final int RING_SIZE = 3;
+    private final SharedTexture[] ring = new SharedTexture[RING_SIZE];
+    private int ringIndex;
+    private int ringWidth;
+    private int ringHeight;
     private int syncInterval = 1;
 
     InteropContext(long hwnd, WglContext.ContextFlags flags) {
@@ -256,11 +267,22 @@ final class InteropContext implements AutoCloseable {
         Com.check("ResizeBuffers", swapChain, SWAP_CHAIN_RESIZE_BUFFERS, "IIIII", 0, width, height, DXGI_FORMAT_UNKNOWN, SWAP_CHAIN_FLAGS);
     }
 
-    void blitSharedTextureToSwapChain(int glTexture) {
-        SharedTexture texture = sharedTextures.get(glTexture);
-        if (texture == null) {
-            throw new IllegalStateException("No shared texture allocated for GL texture " + glTexture);
+    /** Copies the game's colour texture into the next shared texture and draws that to the swap chain. */
+    void blitToSwapChain(int glTexture) {
+        int width = glGetTextureLevelParameteri(glTexture, 0, GL_TEXTURE_WIDTH);
+        int height = glGetTextureLevelParameteri(glTexture, 0, GL_TEXTURE_HEIGHT);
+        if (width != ringWidth || height != ringHeight) {
+            closeRing();
+            for (int i = 0; i < RING_SIZE; i++) {
+                ring[i] = new SharedTexture(width, height);
+            }
+            ringWidth = width;
+            ringHeight = height;
         }
+        SharedTexture texture = ring[ringIndex];
+        ringIndex = (ringIndex + 1) % RING_SIZE;
+        texture.lock();
+        glCopyImageSubData(glTexture, GL_TEXTURE_2D, 0, 0, 0, 0, texture.glTexture, GL_TEXTURE_2D, 0, 0, 0, 0, width, height, 1);
         texture.unlock();
         try (MemoryStack stack = stackPush()) {
             long out = stack.nmalloc(8, 8);
@@ -286,37 +308,23 @@ final class InteropContext implements AutoCloseable {
             Com.call(context, CONTEXT_OM_SET_RENDER_TARGETS, "IPP:V", 1, views, 0L);
             Com.call(context, CONTEXT_DRAW, "II:V", 3, 0);
         }
-        texture.lock();
     }
 
-    boolean hasSharedTexture(int glTexture) {
-        return sharedTextures.containsKey(glTexture);
-    }
-
-    void allocateSharedTexture(int glTexture, int glTarget, int glFormat, int width, int height) {
-        if (sharedTextures.containsKey(glTexture)) {
-            throw new IllegalStateException("Shared texture already allocated for GL texture " + glTexture);
+    private void closeRing() {
+        for (int i = 0; i < RING_SIZE; i++) {
+            if (ring[i] != null) {
+                ring[i].close();
+                ring[i] = null;
+            }
         }
-        SharedTexture texture = new SharedTexture(glTexture, glTarget, glFormat, width, height);
-        texture.lock();
-        sharedTextures.put(glTexture, texture);
-    }
-
-    void deallocateSharedTexture(int glTexture) {
-        SharedTexture texture = sharedTextures.remove(glTexture);
-        if (texture == null) {
-            throw new IllegalStateException("No shared texture allocated for GL texture " + glTexture);
-        }
-        texture.close();
+        ringWidth = 0;
+        ringHeight = 0;
     }
 
     @Override
     public void close() {
         Com.call(context, CONTEXT_CLEAR_STATE, ":V");
-        for (SharedTexture texture : sharedTextures.values()) {
-            texture.close();
-        }
-        sharedTextures.clear();
+        closeRing();
         Com.release(renderTargetView);
         renderTargetView = 0L;
         Ffi.call("P:I", closeHandle, waitHandle);
@@ -327,15 +335,15 @@ final class InteropContext implements AutoCloseable {
         openglContext.close();
     }
 
+    /** An OpenGL texture whose storage is a D3D11 texture. OpenGL owns it while locked, D3D11 while unlocked. */
     private final class SharedTexture implements AutoCloseable {
+        private final int glTexture;
         private final long textureView;
         private final long interopHandle;
         private boolean locked;
 
-        SharedTexture(int glTexture, int glTarget, int glFormat, int width, int height) {
-            if (glFormat != GL_RGBA8) {
-                throw new IllegalStateException("Unexpected main target format 0x" + Integer.toHexString(glFormat));
-            }
+        SharedTexture(int width, int height) {
+            glTexture = glCreateTextures(GL_TEXTURE_2D);
             try (MemoryStack stack = stackPush()) {
                 long out = stack.nmalloc(8, 8);
                 long desc = calloc(stack, TEXTURE2D_DESC_SIZE);
@@ -352,14 +360,13 @@ final class InteropContext implements AutoCloseable {
                 long texture = memGetAddress(out);
                 Com.check("CreateShaderResourceView", device, DEVICE_CREATE_SHADER_RESOURCE_VIEW, "PPP", texture, 0L, out);
                 textureView = memGetAddress(out);
-                interopHandle = check(wglDXRegisterObjectNV(interopDevice, texture, glTexture, glTarget, WGL_ACCESS_WRITE_DISCARD_NV));
+                interopHandle = check(wglDXRegisterObjectNV(interopDevice, texture, glTexture, GL_TEXTURE_2D, WGL_ACCESS_WRITE_DISCARD_NV));
                 Com.release(texture);
             }
         }
 
         void lock() {
             if (locked) {
-                LOG.warn("Perfect Presentation: shared texture is already locked");
                 return;
             }
             try (MemoryStack stack = stackPush()) {
@@ -392,6 +399,7 @@ final class InteropContext implements AutoCloseable {
                 WindowsUtil.windowsThrowException("Failed to unregister the shared texture");
             }
             Com.release(textureView);
+            glDeleteTextures(glTexture);
         }
     }
 
