@@ -45,7 +45,7 @@
     },
     {
       "type": "patchouli:text",
-      "text": "$(item)Copper wire$() and $(item)copper spool$() are Create Crafts & Additions' (see $(l:industry/electricity)Electricity$(/l)); TFMG's convert. $(item)Sulfur dust$() is TFMG's; Alex's Caves sulfur converts. Salt and cocoa also unify, in Ratatouille.",
+      "text": "$(item)Copper wire$() is Create Crafts & Additions' (see $(l:industry/electricity)Electricity$(/l)); TFMG's converts. Each mod keeps its own copper spool, as they wire different machines. $(item)Sulfur dust$() is TFMG's; Alex's Caves sulfur converts. Salt and cocoa also unify, in Ratatouille.",
       "title": "Wire, sulfur, salt"
     },
     {

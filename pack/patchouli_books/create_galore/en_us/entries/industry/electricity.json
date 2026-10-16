@@ -40,7 +40,7 @@
     {
       "type": "patchouli:text",
       "title": "Shared with TFMG",
-      "text": "TFMG uses Crafts & Additions' $(item)Copper Wire$() and $(item)Copper Spool$(): its recipes now give and take these, and any leftover TFMG copper wire or spool converts 1:1 in a crafting grid. See $(l:materials/shared_metals)Shared Metals$(/l)."
+      "text": "TFMG uses Crafts & Additions' $(item)Copper Wire$(): its recipes take it, and leftover TFMG copper wire converts 1:1 in a crafting grid. TFMG keeps its own $(item)Copper Spool$(), since only TFMG spools fit its Winding Machine and lay TFMG cable. See $(l:materials/shared_metals)Shared Metals$(/l)."
     },
     {
       "type": "patchouli:spotlight",
