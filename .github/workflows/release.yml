@@ -1,0 +1,215 @@
+# Builds everything needed to play and to run a server, and publishes it as the GitHub release
+# for the pack version in pack/pack.toml (tag v<version>, e.g. v0.1.2).
+#   Create-Galore-<v>.mrpack                  the pack, built fresh from pack/ (import in Prism or the Modrinth App)
+#   Create-Galore-Server-Setup-<v>.exe        Windows app that builds a dedicated server (mods download automatically)
+#   Create-Galore-<v>-server-kit.zip          README, docs, pack/ and the install-server scripts (Linux, macOS, manual setups)
+#   README.md
+# Twilight Forest isn't included anywhere: it's CurseForge-only, so players and the app add it by hand.
+#
+# A push to main-6fi2ef that touches the pack, the server files, the app or the docs rebuilds the release
+# for the current version. Same version again: the files are replaced and the tag moves to the new commit.
+# Pull requests only build and check, they never publish.
+name: Release
+
+on:
+  push:
+    branches: [main-6fi2ef]
+    paths:
+      - 'pack/**'
+      - 'server/**'
+      - 'docs/**'
+      - 'README.md'
+      - 'MODS.md'
+      - 'tools/server-setup/**'
+      - 'tools/build_server_bundle.py'
+      - '.github/workflows/release.yml'
+  pull_request:
+    paths:
+      - 'pack/**'
+      - 'server/**'
+      - 'tools/server-setup/**'
+      - 'tools/build_server_bundle.py'
+      - '.github/workflows/release.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  pack:
+    name: Pack, server kit and app data
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      mods: ${{ steps.bundle.outputs.mods }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Read the pack version
+        id: version
+        run: |
+          v=$(python3 -c "import tomllib; print(tomllib.load(open('pack/pack.toml','rb'))['version'])")
+          echo "version=$v" >> "$GITHUB_OUTPUT"
+          echo "Pack version $v"
+
+      - name: Build the app's server data (fails if pack/index.toml is stale)
+        id: bundle
+        run: |
+          python3 tools/build_server_bundle.py dist/bundle
+          echo "mods=$(wc -l < dist/bundle/server-manifest.tsv)" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: stable
+          cache: false
+
+      - name: Build the .mrpack with packwiz
+        env:
+          V: ${{ steps.version.outputs.version }}
+        run: |
+          go install github.com/packwiz/packwiz@latest
+          mkdir -p dist/release
+          out="dist/release/Create-Galore-$V.mrpack"
+          # packwiz can silently leave out a mod when a download lookup hiccups, so check the count and retry.
+          want=$(grep -c '^metafile = true' pack/index.toml)
+          for try in 1 2 3; do
+            (cd pack && "$(go env GOPATH)/bin/packwiz" modrinth export -o "../$out")
+            got=$(unzip -p "$out" modrinth.index.json | python3 -c "import json,sys; print(len(json.load(sys.stdin)['files']))")
+            echo "mrpack lists $got of $want mods, shaders and resource packs"
+            [ "$got" = "$want" ] && exit 0
+          done
+          echo "::error::packwiz export kept missing files"; exit 1
+
+      - name: Build the server kit
+        env:
+          V: ${{ steps.version.outputs.version }}
+        run: |
+          kit="Create-Galore-$V-server-kit"
+          mkdir -p "dist/$kit"
+          cp -r README.md MODS.md docs pack server "dist/$kit/"
+          (cd dist && zip -qr "release/$kit.zip" "$kit")
+          cp README.md dist/release/README.md
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: bundle
+          path: dist/bundle
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-files
+          path: dist/release
+
+  app:
+    name: Server Setup app (Windows)
+    needs: pack
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: bundle
+          path: bundle
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Build
+        run: dotnet build tools/server-setup/CreateGaloreServerSetup.csproj -c Release "-p:BundleDir=${{ github.workspace }}/bundle"
+
+      - name: Check the exe loads its pack data
+        shell: pwsh
+        run: |
+          $exe = "tools/server-setup/bin/Release/net48/Create-Galore-Server-Setup.exe"
+          $p = Start-Process -FilePath $exe -ArgumentList "--check","--log","check.txt" -Wait -PassThru
+          Get-Content check.txt
+          if ($p.ExitCode -ne 0) { throw "exe check failed with exit code $($p.ExitCode)" }
+          New-Item -ItemType Directory -Force app | Out-Null
+          Copy-Item $exe "app/Create-Galore-Server-Setup-${{ needs.pack.outputs.version }}.exe"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: app
+          path: app
+
+  release:
+    name: Publish release
+    needs: [pack, app]
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main-6fi2ef'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: release-files
+          path: out
+      - uses: actions/download-artifact@v4
+        with:
+          name: app
+          path: out
+
+      - name: Create or update the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          V: ${{ needs.pack.outputs.version }}
+        run: |
+          tag="v$V"
+          ls -la out
+          cat > notes.md <<EOF
+          **Create Galore $V** · Minecraft 1.21.1 · NeoForge 21.1.259 (don't update NeoForge)
+
+          ### Play
+          1. Download **Create-Galore-$V.mrpack** and import it in Prism Launcher or the Modrinth App.
+          2. Add **twilightforest-1.21.1-4.8.3345-universal.jar** from [CurseForge](https://www.curseforge.com/minecraft/mc-mods/the-twilight-forest/files/all?version=1.21.1) to the instance's \`mods\` folder. It's CurseForge-only, so it can't be in the pack.
+          3. Give the game 8 GB of RAM.
+
+          ### Run a server (Windows)
+          Download **Create-Galore-Server-Setup-$V.exe** and run it (Windows may ask you to confirm because the app isn't signed: More info → Run anyway). Pick a folder and the memory, drop in the Twilight Forest jar, tick the EULA and press Install. It installs NeoForge, downloads the 181 server-side mods from Modrinth (or copies them from a mods folder you drop in), and sets up configs, memory, whitelist and a start script. It downloads Java 21 into the server folder if your PC doesn't have it. Run it again with a newer version to update the server; the world and your settings are kept.
+
+          ### Run a server (Linux, macOS, or by hand)
+          **Create-Galore-$V-server-kit.zip** has the README, the server guide (\`docs/server-setup.md\`), the pack source and the \`install-server\` scripts.
+
+          Built from ${GITHUB_SHA::7}.
+          EOF
+          if gh release view "$tag" >/dev/null 2>&1; then
+            # Same version rebuilt: move the tag to this commit and replace the files.
+            gh api -X PATCH "repos/$GH_REPO/git/refs/tags/$tag" -f sha="$GITHUB_SHA" -F force=true >/dev/null
+            gh release edit "$tag" --title "Create Galore $V" --notes-file notes.md --latest
+            gh release upload "$tag" out/* --clobber
+          else
+            gh release create "$tag" out/* --target "$GITHUB_SHA" --title "Create Galore $V" --notes-file notes.md --latest
+          fi
+
+  app-install-test:
+    name: App builds a real server (Windows)
+    # Full run of the app on a clean Windows machine: Java download, NeoForge install, 181 mod downloads.
+    # Only on pull requests and manual runs, so publishing doesn't wait on it.
+    needs: [pack, app]
+    if: github.event_name != 'push'
+    runs-on: windows-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: app
+          path: app
+      - name: Install a server with the app
+        shell: pwsh
+        run: |
+          $exe = (Get-ChildItem app/*.exe).FullName
+          $dir = Join-Path $env:RUNNER_TEMP "galore-server"
+          $p = Start-Process -FilePath $exe -ArgumentList "--install",$dir,"--memory","4","--eula","--log","install.txt" -Wait -PassThru
+          Get-Content install.txt | Where-Object { $_ -notmatch '^  ' }
+          if ($p.ExitCode -ne 0) { throw "install failed with exit code $($p.ExitCode)" }
+          $mods = (Get-ChildItem "$dir/mods/*.jar").Count
+          Write-Host "$mods mods installed"
+          if ($mods -ne ${{ needs.pack.outputs.mods }}) { throw "expected ${{ needs.pack.outputs.mods }} mods" }
+          foreach ($f in "start-server.bat","run.bat","server.properties","user_jvm_args.txt","eula.txt","config/paxi/datapacks/create-galore-tweaks/pack.mcmeta") {
+            if (-not (Test-Path (Join-Path $dir $f))) { throw "missing $f" }
+          }
+          if (-not (Select-String -Path "$dir/server.properties" -Pattern '^allow-flight=true$' -Quiet)) { throw "allow-flight not set" }
+          if (-not (Select-String -Path "$dir/user_jvm_args.txt" -Pattern '^-Xmx4G$' -Quiet)) { throw "memory not set" }
