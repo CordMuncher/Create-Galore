@@ -6,7 +6,7 @@ A big, long-term Minecraft modpack built around the Create mod. Think "Minecraft
 
 | | |
 |---|---|
-| **Version** | 0.1.6 |
+| **Version** | 0.1.7 |
 | **Minecraft** | 1.21.1 |
 | **Loader** | NeoForge **21.1.259** (pinned, don't update it, see [Known issues](#known-issues)) |
 | **Mods** | 224 from Modrinth + the pack's own small Create Galore Bridge and Lag Watch + Twilight Forest added by hand, plus 4 shader packs and the Fresh Animations resource pack |
@@ -15,7 +15,7 @@ A big, long-term Minecraft modpack built around the Create mod. Think "Minecraft
 
 ## Install (players)
 
-1. Download `Create-Galore-0.1.6.mrpack` from the [latest release](https://github.com/emresahin0906-code/Create-Galore/releases/latest) (or [from this repo](Create-Galore-0.1.6.mrpack)).
+1. Download `Create-Galore-0.1.7.mrpack` from the [latest release](https://github.com/emresahin0906-code/Create-Galore/releases/latest) (or [from this repo](Create-Galore-0.1.7.mrpack)).
 2. Import it:
    - **Prism Launcher:** Add Instance → Import → pick the `.mrpack`.
    - **Modrinth App:** drag the `.mrpack` onto the window (or File → Import).
@@ -67,7 +67,7 @@ Neither mode deletes or re-downloads mods that didn't change, and neither touche
    ```
 3. Press Play. A small window checks the pack. The first run on an instance you already have just checks the files and downloads nothing if they match the latest release. After that, soft launches with no pack change take a couple of seconds. Clean launches fetch the pack's configs (a few hundred small files) each time.
 
-The command reads the pack from GitHub, which only works while the repo is public. To update from a local copy instead (a private repo, or no internet), unzip the release's `Create-Galore-<version>-server-kit.zip` somewhere and put the path of its `pack\pack.toml` after the jar, for example `"$INST_JAVA" -jar create-galore-updater.jar C:\CreateGalorePack\Create-Galore-0.1.6-server-kit\pack\pack.toml --clean`. Unzip a newer kit over it to update.
+The command reads the pack from GitHub, which only works while the repo is public. To update from a local copy instead (a private repo, or no internet), unzip the release's `Create-Galore-<version>-server-kit.zip` somewhere and put the path of its `pack\pack.toml` after the jar, for example `"$INST_JAVA" -jar create-galore-updater.jar C:\CreateGalorePack\Create-Galore-0.1.7-server-kit\pack\pack.toml --clean`. Unzip a newer kit over it to update.
 
 If the pack can't be read, the updater stops before changing anything. `--clean` moves the configs aside first and puts them back if the update fails, so a failed launch never leaves the instance without configs.
 
@@ -258,6 +258,7 @@ All tests ran headless in a cloud machine (4 cores, 16 GB RAM, no GPU), so speed
 | Lag Watch on a dedicated server, with lag forced by summoning thousands of zombies: under 15 TPS for 10 s gives the chat alert with an entity count ("15,162 Zombie in the Overworld"), a 60 s spark profile of only the slow ticks is saved to `config/spark/lagwatch-*.sparkprofile` and spark's background profiler restarts after it, `logs/lagwatch.log` gets the snapshot, and the all-clear comes once TPS is back over 18. `/lagwatch test` works at full speed. The server window (memory graph, player list) opens on start | ✅ |
 | Field Guide on Modonomicon in a new singleplayer world: handed out on join, all 14 section maps draw with their arrows, search finds page text, entry links open, a `/reload` picks up edited pages | ✅ |
 | 0.1.6 playtest fixes on a dedicated server with the full client joined and flying in creative while `/cs start` pregenerates: with 0.1.5's settings the server froze for 20 s (Aeronautics Winds loading chunks on the main thread) and kicked the player back with "moved too quickly"; with Bridge 1.2.0 and the gentler Chunksmith settings there was no rubber-banding and Winds no longer shows up in the stalls (worst hitch 8.4 s right at join on a 4-core test box running server and client together, then 2.5 to 5.5 s). Borderless Window, the Distant Horizons overdraw setting and the frosty-breath setting load in the client and keep their values | ✅ |
+| Update check at server start, on a server built with `install-server.sh` (182 mods, Twilight Forest, a generated world): with the pack on GitHub changed it showed the N/Y/B prompt; N started the server unchanged; B zipped the world, mods and configs (776 MB) into `backups/`, updated to 0.1.7 with packwiz-installer, and the updated server booted the same world. Up to date, offline and no-console runs start the server without asking; a failed update stops the start. The app's new `--update` (what app servers run) kept memory, port, Elytra and an edited config | ✅ |
 | Real FPS, shaders, Distant Horizons visuals, gameplay feel | ❌ Needs a real PC with a GPU |
 
 **Memory:** about 9.3 GB of process memory on the server and 8-9.6 GB on the client with an 8 GB heap. A laptop with 16 GB can play but shouldn't host and play at the same time. A garbage collector benchmark on the server (pack's G1 flags vs Java defaults, Generational ZGC and Shenandoah, plus a 6 GB run) is in [docs/java-flags.md](docs/java-flags.md).
@@ -266,7 +267,7 @@ All tests ran headless in a cloud machine (4 cores, 16 GB RAM, no GPU), so speed
 
 ## Repo layout
 
-- `Create-Galore-0.1.6.mrpack`: the importable pack, built from `pack/`
+- `Create-Galore-0.1.7.mrpack`: the importable pack, built from `pack/`
 - `pack/`: [packwiz](https://packwiz.infra.link/) source, one `.pw.toml` per mod or shader, plus configs (`pack/config/`), the datapacks (`pack/config/paxi/datapacks/create-galore-tweaks`, always on, `create-galore-no-elytra`, and the opt-in `config/paxi/optional/create-galore-with-elytra`) and the Field Guide (a Modonomicon book inside `create-galore-tweaks`)
 - `MODS.md`: full mod list with versions and sides
 - `server/`: server install scripts, memory settings and a starting `server.properties`
@@ -282,7 +283,7 @@ To rebuild the `.mrpack` after changing `pack/`:
 ```
 cd pack
 packwiz refresh
-packwiz modrinth export -o ../Create-Galore-0.1.6.mrpack
+packwiz modrinth export -o ../Create-Galore-0.1.7.mrpack
 ```
 
 The release workflow then adds `packwiz-installer-bootstrap.jar` and `packwiz-installer.jar` (pinned, hash-checked) and `create-galore-updater.jar` (built from `tools/updater/` by `tools/updater/build.sh`) to the `.mrpack`'s `overrides/` so new instances can use the pre-launch updater. A config players are expected to tweak in game gets `preserve = true` under its entry in `pack/index.toml` (`packwiz refresh` keeps the flag), so the updater never overwrites it.
