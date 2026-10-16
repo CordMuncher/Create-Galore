@@ -1,0 +1,34 @@
+modLoader = "javafml"
+loaderVersion = "[4,)"
+license = "MIT"
+
+[[mods]]
+modId = "create_galore_bridge"
+version = "1.0.0"
+displayName = "Create Galore Bridge"
+authors = "Create Galore"
+description = '''Pack glue for Create Galore: TFMG engines and blast furnaces pollute (Create: Smog) only while they burn fuel.'''
+
+[[mixins]]
+config = "create_galore_bridge.mixins.json"
+
+[[dependencies.create_galore_bridge]]
+modId = "neoforge"
+type = "required"
+versionRange = "[21.1,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.create_galore_bridge]]
+modId = "smog"
+type = "required"
+versionRange = "[0.4,)"
+ordering = "AFTER"
+side = "BOTH"
+
+[[dependencies.create_galore_bridge]]
+modId = "tfmg"
+type = "required"
+versionRange = "*"
+ordering = "AFTER"
+side = "BOTH"

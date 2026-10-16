@@ -26,7 +26,7 @@
     },
     {
       "type": "patchouli:text",
-      "text": "Any other machine that reports a \"lit\" state adds 3 per second. TFMG engines, fireboxes and blast furnaces pollute too. They have no lit state, so they count all the time once built. An Aerometer shows the real result.",
+      "text": "Any other machine that reports a \"lit\" state adds 3 per second. TFMG machines pollute only while burning fuel: engines 6 per block at full throttle (large 4), fireboxes 8, blast furnaces 30. Idle ones are clean. An Aerometer shows the real result.",
       "title": "Other machines"
     },
     {
