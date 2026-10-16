@@ -18,6 +18,10 @@
     },
     {
       "type": "patchouli:text",
+      "text": "$(bold)Ambiance$() runs only on your own PC: sound echoes in caves, footsteps, falling leaves, held torches that light up, smoother animations. It changes nothing in play. A torch in your hand looks bright but doesn't stop mobs spawning; place one for that. Fresh Animations can be turned off under Resource Packs."
+    },
+    {
+      "type": "patchouli:text",
       "text": "Shaders are optional and can cut frame rate a lot on weaker machines. First world creation is also slow because of how many mods add world generation. This settles after the first load."
     },
     {
