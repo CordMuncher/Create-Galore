@@ -112,10 +112,11 @@ public final class Presentation {
         glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
         long handle = create.apply(() -> 0L);
         try {
-            interop = new InteropContext(GLFWNativeWin32.glfwGetWin32Window(handle), FLAGS);
+            int frameLatency = DisplaySettings.getInt(DisplaySettings.FRAME_LATENCY, 2, 1, 3);
+            interop = new InteropContext(GLFWNativeWin32.glfwGetWin32Window(handle), FLAGS, frameLatency);
             window = handle;
             hideFromGlVersionCheck();
-            LOG.info("Perfect Presentation: DXGI swap chain ready (OpenGL on a hidden context)");
+            LOG.info("Perfect Presentation: DXGI swap chain ready (OpenGL on a hidden context, frame latency {})", frameLatency);
             return handle;
         } catch (Throwable t) {
             LOG.error("Perfect Presentation: could not set up the DXGI swap chain, falling back to a normal OpenGL window", t);

@@ -20,6 +20,7 @@ public final class DisplaySettings {
     public static final String FILE = "create_galore_bridge-display.properties";
     public static final String TEN_BIT_WINDOW = "tenBitWindow";
     public static final String PERFECT_PRESENTATION = "perfectPresentation";
+    public static final String FRAME_LATENCY = "perfectPresentationFrameLatency";
 
     private static Properties cached;
 
@@ -30,6 +31,17 @@ public final class DisplaySettings {
             cached = load();
         }
         return Boolean.parseBoolean(cached.getProperty(key, "false").trim());
+    }
+
+    public static synchronized int getInt(String key, int fallback, int min, int max) {
+        if (cached == null) {
+            cached = load();
+        }
+        try {
+            return Math.max(min, Math.min(max, Integer.parseInt(cached.getProperty(key, "").trim())));
+        } catch (NumberFormatException e) {
+            return fallback;
+        }
     }
 
     private static Properties load() {
@@ -43,13 +55,16 @@ public final class DisplaySettings {
             }
             boolean missing = props.putIfAbsent(TEN_BIT_WINDOW, "false") == null;
             missing |= props.putIfAbsent(PERFECT_PRESENTATION, "false") == null;
+            missing |= props.putIfAbsent(FRAME_LATENCY, "2") == null;
             if (missing) {
                 try (Writer w = Files.newBufferedWriter(file)) {
-                    props.store(w, "Create Galore Bridge display settings. Both need a restart.\n"
+                    props.store(w, "Create Galore Bridge display settings. All need a restart.\n"
                             + " perfectPresentation: EXPERIMENTAL, Windows only. true shows the game through a DirectX swap chain\n"
                             + " (ported from Perfect Presentation by sidit77): borderless fullscreen at exclusive-fullscreen speed and\n"
                             + " Alt-Tab without a display mode change. Leave NVIDIA's Vulkan/OpenGL present method on Auto.\n"
                             + " Needs an NVIDIA or AMD driver with WGL_NV_DX_interop2. Turns off NeoForge's early loading window.\n"
+                            + " perfectPresentationFrameLatency: 1 to 3 frames the game may queue ahead of the screen (default 2).\n"
+                            + " 1 is the lowest input lag, higher keeps the GPU busier.\n"
                             + " tenBitWindow: EXPERIMENTAL. true asks for a 10-bit game window, meant to keep a 10-bit monitor at 10-bit\n"
                             + " in fullscreen. It did not stop the 8-bit switch on an RTX 4080 Super. Turns off NeoForge's early\n"
                             + " loading window (config/fml.toml).");

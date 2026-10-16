@@ -24,9 +24,11 @@ CP=$( { ls "$SERVER"/libraries/net/minecraft/server/*/server-*-srg.jar
         find "$WORK/jij" -name '*.jar'; ls "$SERVER"/mods/*.jar; } | tr '\n' ':')
 
 # A server has no LWJGL (the display code needs it at compile time only); Minecraft 1.21.1 ships 3.3.3.
+CACHE="${XDG_CACHE_HOME:-$HOME/.cache}/create-galore-bridge"
+mkdir -p "$CACHE"
 for m in lwjgl lwjgl-glfw lwjgl-opengl; do
-  curl -sSfL -o "$WORK/$m.jar" "https://repo1.maven.org/maven2/org/lwjgl/$m/3.3.3/$m-3.3.3.jar"
-  CP="$CP$WORK/$m.jar:"
+  [ -s "$CACHE/$m-3.3.3.jar" ] || curl -sSfL --retry 4 -o "$CACHE/$m-3.3.3.jar" "https://repo1.maven.org/maven2/org/lwjgl/$m/3.3.3/$m-3.3.3.jar"
+  CP="$CP$CACHE/$m-3.3.3.jar:"
 done
 # Compile-only stubs for the two client classes the display mixins name; they are not packaged.
 mkdir -p "$WORK/stubs"

@@ -119,7 +119,7 @@ final class InteropContext implements AutoCloseable {
     private final Map<Integer, SharedTexture> sharedTextures = new HashMap<>();
     private int syncInterval = 1;
 
-    InteropContext(long hwnd, WglContext.ContextFlags flags) {
+    InteropContext(long hwnd, WglContext.ContextFlags flags, int frameLatency) {
         openglContext = new WglContext(flags);
         try (MemoryStack stack = stackPush()) {
             long out = stack.nmalloc(8, 8);
@@ -140,7 +140,7 @@ final class InteropContext implements AutoCloseable {
             memPutInt(desc + 16, 1);                           // SampleDesc.Count
             memPutInt(desc + 20, 0);                           // SampleDesc.Quality
             memPutInt(desc + 24, DXGI_USAGE_RENDER_TARGET_OUTPUT);
-            memPutInt(desc + 28, 2);                           // BufferCount
+            memPutInt(desc + 28, frameLatency + 1);            // BufferCount
             memPutInt(desc + 32, DXGI_SCALING_NONE);
             memPutInt(desc + 36, DXGI_SWAP_EFFECT_FLIP_DISCARD);
             memPutInt(desc + 40, DXGI_ALPHA_MODE_UNSPECIFIED);
@@ -150,7 +150,7 @@ final class InteropContext implements AutoCloseable {
             Com.check("QueryInterface(IDXGISwapChain2)", swapChain1, Com.QUERY_INTERFACE, "PP", IID_IDXGI_SWAP_CHAIN2, out);
             swapChain = memGetAddress(out);
 
-            Com.check("SetMaximumFrameLatency", swapChain, SWAP_CHAIN2_SET_MAXIMUM_FRAME_LATENCY, "I", 1);
+            Com.check("SetMaximumFrameLatency", swapChain, SWAP_CHAIN2_SET_MAXIMUM_FRAME_LATENCY, "I", frameLatency);
             waitHandle = Com.call(swapChain, SWAP_CHAIN2_GET_FRAME_LATENCY_WAITABLE_OBJECT, ":P");
 
             Com.release(swapChain1);
