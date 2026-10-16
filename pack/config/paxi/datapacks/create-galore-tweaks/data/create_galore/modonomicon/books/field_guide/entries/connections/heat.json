@@ -20,12 +20,12 @@
     {
       "type": "modonomicon:text",
       "title": "Heat Is Shared",
-      "text": "The **Blaze Burner** is the closest thing this pack has to a universal heater. Many mods read Create's heat, and Create reads heat from other mods.\n\nBasics: [#](2E5AAC)[Blaze Burner and Heat](entry://create_basics/heat)[#]()."
+      "text": "The **Blaze Burner** is the closest thing this pack has to a universal heater. Many mods read Create's heat, and Create reads heat from other mods.\\\n\\\nBasics: [#](2E5AAC)[Blaze Burner and Heat](entry://create_basics/heat)[#]()."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**Cooking:** with Central Kitchen, a Blaze Burner heats a Farmer's Delight Cooking Pot or Skillet, and a Farmer's Delight Stove counts as a passive heater under a Create boiler.\n\nSee [#](2E5AAC)[Kitchen Automation](entry://food/kitchen_automation)[#]()."
+      "text": "**Cooking:** with Central Kitchen, a Blaze Burner heats a Farmer's Delight Cooking Pot or Skillet, and a Farmer's Delight Stove counts as a passive heater under a Create boiler.\\\n\\\nSee [#](2E5AAC)[Kitchen Automation](entry://food/kitchen_automation)[#]()."
     },
     {
       "type": "modonomicon:text",
@@ -35,17 +35,17 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**Your body:** with Create: Cold Sweat, lit burners, steam engines, fans and hot tanks warm nearby players. A factory doubles as a heater in winter or high up.\n\nSee [#](2E5AAC)[Create and Altitude Heat](entry://survival/temperature_create)[#]()."
+      "text": "**Your body:** with Create: Cold Sweat, lit burners, steam engines, fans and hot tanks warm nearby players. A factory doubles as a heater in winter or high up.\\\n\\\nSee [#](2E5AAC)[Create and Altitude Heat](entry://survival/temperature_create)[#]()."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**Flight:** burners lift hot air balloons on Aeronautics ships, and they also keep the crew warm against altitude cold.\n\n**Power:** Create Propulsion's Stirling Engine turns heat below it into rotation."
+      "text": "**Flight:** burners lift hot air balloons on Aeronautics ships, and they also keep the crew warm against altitude cold.\\\n\\\n**Power:** Create Propulsion's Stirling Engine turns heat below it into rotation."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**Water:** Thirst Was Reclaimed purifies water by boiling in a campfire or furnace.\n\n**The cost:** a fuelled burner is one of the biggest smog sources. Put a Flue on top. See [#](2E5AAC)[Pollution](entry://survival/pollution)[#]()."
+      "text": "**Water:** Thirst Was Reclaimed purifies water by boiling in a campfire or furnace.\\\n\\\n**The cost:** a fuelled burner is one of the biggest smog sources. Put a Flue on top. See [#](2E5AAC)[Pollution](entry://survival/pollution)[#]()."
     },
     {
       "type": "modonomicon:text",

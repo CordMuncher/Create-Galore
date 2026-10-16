@@ -49,7 +49,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "The **Stove** and **Skillet** accept ingredients from an Arm too.\n\nFeasts and pies: an Arm takes servings, and the last serving stays in place until a fresh whole dish replaces it. Pancake stacks take only matching flavours, up to twelve."
+      "text": "The **Stove** and **Skillet** accept ingredients from an Arm too.\\\n\\\nFeasts and pies: an Arm takes servings, and the last serving stays in place until a fresh whole dish replaces it. Pancake stacks take only matching flavours, up to twelve."
     },
     {
       "type": "modonomicon:spotlight",
@@ -70,7 +70,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Liquid Fertilizer is mixed from tree fertilizer and water, or from Organic Compost and water. Filling Organic Compost with it makes **Rich Soil** in a Spout.\n\nSlice & Dice also fills a bottle with Create's chocolate to make Hot Cocoa."
+      "text": "Liquid Fertilizer is mixed from tree fertilizer and water, or from Organic Compost and water. Filling Organic Compost with it makes **Rich Soil** in a Spout.\\\n\\\nSlice & Dice also fills a bottle with Create's chocolate to make Hot Cocoa."
     },
     {
       "type": "modonomicon:spotlight",

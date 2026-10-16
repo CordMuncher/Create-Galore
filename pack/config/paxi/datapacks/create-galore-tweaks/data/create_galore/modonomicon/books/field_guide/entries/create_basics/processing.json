@@ -26,7 +26,7 @@
     {
       "type": "modonomicon:text",
       "title": "Press, Mixer and Basin",
-      "text": "Create machines do not work through menus. They act on **items sitting in front of them**: items on a belt, on a depot, or inside a basin. Most of them need [#](2E5AAC)[rotation](entry://create_basics/rotation)[#]() to run.\n\nHover a machine and hold W for its Ponder."
+      "text": "Create machines do not work through menus. They act on **items sitting in front of them**: items on a belt, on a depot, or inside a basin. Most of them need [#](2E5AAC)[rotation](entry://create_basics/rotation)[#]() to run.\\\n\\\nHover a machine and hold W for its Ponder."
     },
     {
       "type": "modonomicon:spotlight",
@@ -39,7 +39,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Pressing a plain item makes a **sheet**: iron, gold, copper and brass sheets are building blocks for later machines.\n\nOver a **Basin**, the press compacts: any filled 2x2 or 3x3 crafting recipe, plus some extras (some need heat, see [#](2E5AAC)[Heat](entry://create_basics/heat)[#]())."
+      "text": "Pressing a plain item makes a **sheet**: iron, gold, copper and brass sheets are building blocks for later machines.\\\n\\\nOver a **Basin**, the press compacts: any filled 2x2 or 3x3 crafting recipe, plus some extras (some need heat, see [#](2E5AAC)[Heat](entry://create_basics/heat)[#]())."
     },
     {
       "type": "modonomicon:spotlight",
@@ -60,12 +60,12 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Brass is the classic mixer job: copper and zinc ingots in a basin, with a [#](2E5AAC)[heated](entry://create_basics/heat)[#]() burner under it. Check JEI for the exact mix.\n\nIf two recipes fit the same contents, put an item in the machine's filter slot to pick one."
+      "text": "Brass is the classic mixer job: copper and zinc ingots in a basin, with a [#](2E5AAC)[heated](entry://create_basics/heat)[#]() burner under it. Check JEI for the exact mix.\\\n\\\nIf two recipes fit the same contents, put an item in the machine's filter slot to pick one."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**Basin output**: put a belt, funnel, depot or chute below and to the side, and the basin shows a faucet and pushes finished items out. With no output block it keeps results inside, useful when they are ingredients for the next step.\n\nIf you pull from a basin, use a [#](2E5AAC)[filter](entry://create_basics/item_logistics)[#]() so unprocessed items stay."
+      "text": "**Basin output**: put a belt, funnel, depot or chute below and to the side, and the basin shows a faucet and pushes finished items out. With no output block it keeps results inside, useful when they are ingredients for the next step.\\\n\\\nIf you pull from a basin, use a [#](2E5AAC)[filter](entry://create_basics/item_logistics)[#]() so unprocessed items stay."
     },
     {
       "type": "modonomicon:text",

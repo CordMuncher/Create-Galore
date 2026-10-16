@@ -1,11 +1,13 @@
 {
   "name": "Create Galore Field Guide",
   "tooltip": "Create Galore 0.1",
-  "description": "A field guide to Create Galore. It explains how things work and how the mods connect. It won't tell you what to do next, with one exception: the road to space, the pack's capstone.\n\nNew to Create? Start with [#](2E5AAC)[Create: The Basics](entry://create_basics/rotation)[#]().\n\nEach section is a map: follow the arrows back to see what comes first. The magnifying glass searches every page.",
+  "description": "A field guide to Create Galore. It explains how things work and how the mods connect. It won't tell you what to do next, with one exception: the road to space, the pack's capstone.\\\n\\\nJust spawned? Read [#](2E5AAC)[Your First Days](entry://start_here/first_days)[#]() first: it covers drinking, clean water and staying warm.\\\n\\\nNew to Create? Start with [#](2E5AAC)[Create: The Basics](entry://create_basics/rotation)[#]().\\\n\\\nEach section is a map: follow the arrows back to see what comes first. The magnifying glass searches every page.",
   "display_mode": "node",
   "model": "modonomicon:modonomicon_red",
   "generate_book_item": true,
   "creative_tab": "minecraft:tools_and_utilities",
   "auto_add_read_conditions": false,
-  "allow_open_book_with_invalid_links": true
+  "allow_open_book_with_invalid_links": true,
+  "book_text_offset_x": 3,
+  "book_text_offset_width": -9
 }

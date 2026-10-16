@@ -60,7 +60,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Mechanical crafters need rotation. Use a wrench to arrange paths, and slot covers to leave holes in the grid.\n\nThe **Mechanical Crafter** works with packages too, see [#](2E5AAC)[Logistics](entry://create_basics/packages)[#]()."
+      "text": "Mechanical crafters need rotation. Use a wrench to arrange paths, and slot covers to leave holes in the grid.\\\n\\\nThe **Mechanical Crafter** works with packages too, see [#](2E5AAC)[Logistics](entry://create_basics/packages)[#]()."
     },
     {
       "type": "modonomicon:text",

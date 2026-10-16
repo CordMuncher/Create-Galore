@@ -25,7 +25,7 @@
     {
       "type": "modonomicon:text",
       "title": "Why it exists",
-      "text": "It is pressure, not a wall. A few furnaces barely register; a big industrial base left alone gets bad. The fix is built from Create parts, so cleaning is part of the machine room.\n\n[#](2E5AAC)[Control it](entry://survival/pollution_control)[#]()."
+      "text": "It is pressure, not a wall. A few furnaces barely register; a big industrial base left alone gets bad. The fix is built from Create parts, so cleaning is part of the machine room.\\\n\\\n[#](2E5AAC)[Control it](entry://survival/pollution_control)[#]()."
     },
     {
       "type": "modonomicon:text",

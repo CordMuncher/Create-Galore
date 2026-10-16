@@ -26,9 +26,9 @@ for f in glob.glob(ROOT+'/entries/**/*.json',recursive=True):
     try: entries[eid]=json.load(open(f,encoding='utf-8'))
     except Exception as e: errs.append(f'{eid}: bad JSON {e}')
 def lines(t):
-    # approx wrap at 26 chars per line
+    # approx wrap at 23 chars per line (text box is 112 px wide, see book_text_offset_* in book.json)
     t=re.sub(r'\]\([^)]*\)','',t).replace('**','').replace('\\\n','\n')
-    return sum(max(1,-(-len(para)//26)) for para in t.split('\n'))
+    return sum(max(1,-(-len(para)//23)) for para in t.split('\n'))
 def chk_item(eid,it):
     if items is None: return
     for s in (it if isinstance(it,list) else [it]):
@@ -63,14 +63,19 @@ for eid,e in sorted(entries.items()):
         if '$(' in txt: errs.append(f'{eid} p{i}: leftover Patchouli code')
         if re.search(r'(?<!%)%(?!%)',txt): errs.append(f'{eid} p{i}: write % as %%')
         if '—' in txt: warns.append(f'{eid} p{i}: em-dash')
+        # Modonomicon shows no gap for a plain blank line between paragraphs; they need '\\\n\\\n' (lists excepted)
+        parts=txt.split('\n\n')
+        for a,b in zip(parts,parts[1:]):
+            if b and not re.match(r'\s*([-*]|\d+\.) ',b) and not re.match(r'\s*([-*]|\d+\.) ',a.split('\n')[-1]):
+                errs.append(f'{eid} p{i}: paragraph break needs a backslash at the end of both lines (a blank line alone shows no gap)'); break
         if t=='text':
-            limit=13 if p.get('title') else 16
+            limit=15 if p.get('title') else 17  # Modonomicon: text box is 155 px minus the title (17) or -4 without; 9 px a line
             n=lines(txt)
             if n>limit: warns.append(f'{eid} p{i}: text long (~{n} lines, ~{limit} fit before it shrinks); consider splitting')
         elif t=='spotlight':
             if 'item' not in p: errs.append(f'{eid} p{i}: spotlight needs item')
             else: chk_item(eid,p['item'])
-            if lines(txt)>9: warns.append(f'{eid} p{i}: spotlight text long')
+            if lines(txt)>12: warns.append(f'{eid} p{i}: spotlight text long')
         elif t=='crafting_recipe':
             for k in ('recipe_id_1','recipe_id_2'):
                 if k in p: chk_recipe(eid,p[k])

@@ -46,7 +46,7 @@
     {
       "type": "modonomicon:text",
       "title": "Blocks",
-      "text": "A **Hearth** keeps the area around it comfortable. It takes fuel (see the Hearth Fuel category in JEI).\n\nA **Boiler** warms and an **Icebox** cools. Put a Smokestack on top to make an area livable."
+      "text": "A **Hearth** keeps the area around it comfortable. It takes fuel (see the Hearth Fuel category in JEI).\\\n\\\nA **Boiler** warms and an **Icebox** cools. Put a Smokestack on top to make an area livable."
     },
     {
       "type": "modonomicon:spotlight",

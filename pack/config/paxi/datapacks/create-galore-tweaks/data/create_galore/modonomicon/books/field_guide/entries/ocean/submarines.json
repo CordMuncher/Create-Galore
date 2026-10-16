@@ -18,7 +18,12 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "A submarine floats until its **Ballast Tanks** are filled with sea water. A **Ballast Vent** is the sea valve and must touch the water. Pipe vent, pump and tanks together: pumping in makes the ship heavier and it sinks, pumping out lets it rise.\n\nEach tank lifts roughly one block of ship mass, so heavy hulls need more tanks."
+      "text": "A submarine floats until its **Ballast Tanks** are filled with sea water. A **Ballast Vent** is the sea valve and must touch the water. Pipe vent, pump and tanks together: pumping in makes the ship heavier and it sinks, pumping out lets it rise."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Each tank lifts roughly one block of ship mass, so heavy hulls need more tanks."
     },
     {
       "type": "modonomicon:spotlight",

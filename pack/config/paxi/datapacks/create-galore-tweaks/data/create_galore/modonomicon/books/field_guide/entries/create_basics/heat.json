@@ -26,7 +26,7 @@
     {
       "type": "modonomicon:text",
       "title": "Blaze Burner and Heat",
-      "text": "Some recipes need **heat**. Create gets it from the **Blaze Burner**, which also boosts basin recipes and powers steam engine boilers.\n\nThe burner is not crafted whole: you capture a living blaze in an **Empty Blaze Burner**."
+      "text": "Some recipes need **heat**. Create gets it from the **Blaze Burner**, which also boosts basin recipes and powers steam engine boilers.\\\n\\\nThe burner is not crafted whole: you capture a living blaze in an **Empty Blaze Burner**."
     },
     {
       "type": "modonomicon:spotlight",
@@ -65,7 +65,12 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**Other mods**: the tag Create reads for boiler heat also includes Farmer's Delight's **Stove**, Twilight Forest's fiery storage blocks, and lava, magma blocks, campfires and fire. These work as passive boiler heaters, weaker than a burner.\n\nBurners can also burn liquid fuel from pipes: see [#](2E5AAC)[Burning Liquid Fuel](entry://industry/liquid_fuel)[#]()."
+      "text": "**Other mods**: the tag Create reads for boiler heat also includes Farmer's Delight's **Stove**, Twilight Forest's fiery storage blocks, and lava, magma blocks, campfires and fire. These work as passive boiler heaters, weaker than a burner."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Burners can also burn liquid fuel from pipes: see [#](2E5AAC)[Burning Liquid Fuel](entry://industry/liquid_fuel)[#]()."
     },
     {
       "type": "modonomicon:text",

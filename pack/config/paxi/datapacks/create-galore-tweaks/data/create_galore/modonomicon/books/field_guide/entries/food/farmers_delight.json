@@ -55,7 +55,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Knives also harvest **Straw** from grass, wheat and rice. Flint is the starter knife; iron and better follow.\n\nWheat plus a water bucket makes Wheat Dough, and the bucket keeps its water."
+      "text": "Knives also harvest **Straw** from grass, wheat and rice. Flint is the starter knife; iron and better follow.\\\n\\\nWheat plus a water bucket makes Wheat Dough, and the bucket keeps its water."
     },
     {
       "type": "modonomicon:spotlight",
@@ -68,7 +68,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Meals grant two effects.\n\n**Nourishment** stops your food meter from dropping, except when healing with saturation.\n\n**Comfort** gives natural regeneration however hungry you are.\n\nThe AppleSkin overlay shows how much a food restores."
+      "text": "Meals grant two effects.\\\n\\\n**Nourishment** stops your food meter from dropping, except when healing with saturation.\\\n\\\n**Comfort** gives natural regeneration however hungry you are.\\\n\\\nThe AppleSkin overlay shows how much a food restores."
     },
     {
       "type": "modonomicon:text",

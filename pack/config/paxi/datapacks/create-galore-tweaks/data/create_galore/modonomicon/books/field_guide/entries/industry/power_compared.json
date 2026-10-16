@@ -18,7 +18,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**Rotation to FE:** the Alternator from Crafts & Additions.\\\n**FE to rotation:** the Crafts & Additions Electric Motor, whose RPM you set. Higher RPM draws more FE.\n\nDetails: [#](2E5AAC)[Electricity](entry://industry/electricity)[#]()."
+      "text": "**Rotation to FE:** the Alternator from Crafts & Additions.\\\n**FE to rotation:** the Crafts & Additions Electric Motor, whose RPM you set. Higher RPM draws more FE.\\\n\\\nDetails: [#](2E5AAC)[Electricity](entry://industry/electricity)[#]()."
     },
     {
       "type": "modonomicon:spotlight",

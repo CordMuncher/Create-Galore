@@ -54,7 +54,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "The trick: crush ore blocks, not raw items, for the bonus crushed ore, then [#](2E5AAC)[wash](entry://create_basics/fans)[#]() for byproducts.\n\nWhere ores are is in [#](2E5AAC)[the Ore Guide](entry://materials/ore_guide)[#](). See also [#](2E5AAC)[Materials](entry://create_basics/materials)[#]()."
+      "text": "The trick: crush ore blocks, not raw items, for the bonus crushed ore, then [#](2E5AAC)[wash](entry://create_basics/fans)[#]() for byproducts.\\\n\\\nWhere ores are is in [#](2E5AAC)[the Ore Guide](entry://materials/ore_guide)[#](). See also [#](2E5AAC)[Materials](entry://create_basics/materials)[#]()."
     },
     {
       "type": "modonomicon:text",

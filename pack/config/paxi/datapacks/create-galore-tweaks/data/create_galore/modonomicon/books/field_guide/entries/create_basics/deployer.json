@@ -39,12 +39,12 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "In automation it **applies items to other items**. Held item over a belt or depot item: the combination is an assembly step. This is how a machine adds cogwheels, sand paper or ingredients.\n\nIt also feeds [#](2E5AAC)[Blaze Burners](entry://create_basics/heat)[#]() fuel."
+      "text": "In automation it **applies items to other items**. Held item over a belt or depot item: the combination is an assembly step. This is how a machine adds cogwheels, sand paper or ingredients.\\\n\\\nIt also feeds [#](2E5AAC)[Blaze Burners](entry://create_basics/heat)[#]() fuel."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "A negative redstone pulse triggers one cycle. On a [#](2E5AAC)[contraption](entry://create_basics/contraptions)[#](), deployers act at every place they pass, pulling from storage on the machine.\n\nThe same trick builds [#](2E5AAC)[precision mechanisms](entry://create_basics/brass_and_assembly)[#]() by looping a deployer, press and more."
+      "text": "A negative redstone pulse triggers one cycle. On a [#](2E5AAC)[contraption](entry://create_basics/contraptions)[#](), deployers act at every place they pass, pulling from storage on the machine.\\\n\\\nThe same trick builds [#](2E5AAC)[precision mechanisms](entry://create_basics/brass_and_assembly)[#]() by looping a deployer, press and more."
     },
     {
       "type": "modonomicon:text",

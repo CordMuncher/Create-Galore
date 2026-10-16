@@ -47,7 +47,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Traits come from genes. A Glutton grows fast. A Truffle Snout finds more truffles. A Heavyweight drops double meat and leather. Look at an animal in the ledger to see what it has.\n\nThe pack runs Animal Husbandry 0.4.2, so there are no rabbit genetics or Angora armor."
+      "text": "Traits come from genes. A Glutton grows fast. A Truffle Snout finds more truffles. A Heavyweight drops double meat and leather. Look at an animal in the ledger to see what it has.\\\n\\\nThe pack runs Animal Husbandry 0.4.2, so there are no rabbit genetics or Angora armor."
     },
     {
       "type": "modonomicon:spotlight",

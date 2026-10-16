@@ -20,7 +20,7 @@
     {
       "type": "modonomicon:text",
       "title": "Seasons",
-      "text": "Serene Seasons turns the Overworld year into four seasons: Spring, Summer, Autumn, Winter. Each splits into Early, Mid and Late.\n\nBy default every sub-season lasts 8 days, so a season is 24 days and a year 96. Foliage colors follow the season."
+      "text": "Serene Seasons turns the Overworld year into four seasons: Spring, Summer, Autumn, Winter. Each splits into Early, Mid and Late.\\\n\\\nBy default every sub-season lasts 8 days, so a season is 24 days and a year 96. Foliage colors follow the season."
     },
     {
       "type": "modonomicon:spotlight",
@@ -38,7 +38,7 @@
     {
       "type": "modonomicon:text",
       "title": "Crops",
-      "text": "The big rule: crops only grow in the right season. Out of season they grow slowly or not at all, depending on the config. Tooltips may list a crop's seasons.\n\nWinter is hardest: very few crops grow. [#](2E5AAC)[Details](entry://survival/seasons_crops)[#]()."
+      "text": "The big rule: crops only grow in the right season. Out of season they grow slowly or not at all, depending on the config. Tooltips may list a crop's seasons.\\\n\\\nWinter is hardest: very few crops grow. [#](2E5AAC)[Details](entry://survival/seasons_crops)[#]()."
     },
     {
       "type": "modonomicon:text",

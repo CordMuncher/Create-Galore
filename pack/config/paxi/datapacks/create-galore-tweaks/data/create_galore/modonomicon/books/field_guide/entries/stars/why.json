@@ -38,7 +38,7 @@
     {
       "type": "modonomicon:text",
       "title": "Your checklist",
-      "text": "Open Advancements and find the **Road to the Stars** tab. It ticks off each prize as you pick it up, then the core, then your first trip off Earth.\n\nThe bosses can all be beaten with Create builds: see [#](2E5AAC)[Fighting with Machines](entry://stars/machine_fights)[#]()."
+      "text": "Open Advancements and find the **Road to the Stars** tab. It ticks off each prize as you pick it up, then the core, then your first trip off Earth.\\\n\\\nThe bosses can all be beaten with Create builds: see [#](2E5AAC)[Fighting with Machines](entry://stars/machine_fights)[#]()."
     },
     {
       "type": "modonomicon:text",

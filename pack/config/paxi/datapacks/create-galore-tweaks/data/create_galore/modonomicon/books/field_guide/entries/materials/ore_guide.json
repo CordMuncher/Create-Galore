@@ -13,12 +13,12 @@
     {
       "type": "modonomicon:text",
       "title": "Ore Guide",
-      "text": "Where each metal comes from in this pack, read from the mods' world generation data. Depths are Y levels, Overworld unless noted.\n\nOres go further when [#](2E5AAC)[crushed](entry://materials/ore_doubling)[#](). Drillable veins: [#](2E5AAC)[Ore Excavation](entry://industry/ore_excavation)[#]()."
+      "text": "Where each metal comes from in this pack, read from the mods' world generation data. Depths are Y levels, Overworld unless noted.\\\n\\\nOres go further when [#](2E5AAC)[crushed](entry://materials/ore_doubling)[#](). Drillable veins: [#](2E5AAC)[Ore Excavation](entry://industry/ore_excavation)[#]()."
     },
     {
       "type": "modonomicon:text",
       "title": "Vanilla and Create",
-      "text": "Coal, copper, iron, gold, redstone, lapis, diamond and emerald are vanilla. Terrain mods such as Tectonic change where they end up.\n\n**Zinc** comes from Create: Y -63 to 70. Brass is copper plus zinc."
+      "text": "Coal, copper, iron, gold, redstone, lapis, diamond and emerald are vanilla. Terrain mods such as Tectonic change where they end up.\\\n\\\n**Zinc** comes from Create: Y -63 to 70. Brass is copper plus zinc."
     },
     {
       "type": "modonomicon:spotlight",

@@ -20,7 +20,7 @@
     {
       "type": "modonomicon:text",
       "title": "Shared Metals",
-      "text": "Several mods add the same metal. In this pack each one has a single **canonical item**. Other mods' recipes now produce and use it, so only one kind exists in practice.\n\nLeftovers convert 1:1 in a crafting grid."
+      "text": "Several mods add the same metal. In this pack each one has a single **canonical item**. Other mods' recipes now produce and use it, so only one kind exists in practice.\\\n\\\nLeftovers convert 1:1 in a crafting grid."
     },
     {
       "type": "modonomicon:spotlight",
@@ -69,7 +69,7 @@
     {
       "type": "modonomicon:text",
       "title": "Single-source",
-      "text": "Not shared: titanium, tungsten, platinum, mithril and zinc each come from one mod.\n\nNorthstar's Martian Steel has its own tag and is not generic steel. Raw uranium joins Create Nuclear and Alex's Caves."
+      "text": "Not shared: titanium, tungsten, platinum, mithril and zinc each come from one mod.\\\n\\\nNorthstar's Martian Steel has its own tag and is not generic steel. Raw uranium joins Create Nuclear and Alex's Caves."
     },
     {
       "type": "modonomicon:text",

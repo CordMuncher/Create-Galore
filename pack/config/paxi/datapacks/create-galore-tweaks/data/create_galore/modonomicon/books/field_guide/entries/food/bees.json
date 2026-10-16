@@ -49,12 +49,12 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "A metal or gem bee exists only if the pack has that material's block. So zinc (Create), lead (Create Nuclear), nickel and aluminium (TFMG) bees are possible. Lead uses the shared lead tag.\n\n[#](2E5AAC)[Ore Guide](entry://materials/ore_guide)[#]()."
+      "text": "A metal or gem bee exists only if the pack has that material's block. So zinc (Create), lead (Create Nuclear), nickel and aluminium (TFMG) bees are possible. Lead uses the shared lead tag.\\\n\\\n[#](2E5AAC)[Ore Guide](entry://materials/ore_guide)[#]()."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Create tie-in: the Super Experience bee's comb can be mixed in a **superheated** Mixer into a Nugget of Super Experience from Create: Enchantment Industry.\n\nPower: [#](2E5AAC)[Electricity](entry://industry/electricity)[#]()."
+      "text": "Create tie-in: the Super Experience bee's comb can be mixed in a **superheated** Mixer into a Nugget of Super Experience from Create: Enchantment Industry.\\\n\\\nPower: [#](2E5AAC)[Electricity](entry://industry/electricity)[#]()."
     }
   ]
 }

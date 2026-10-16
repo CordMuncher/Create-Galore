@@ -39,7 +39,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "On a contraption the chamber charges on a timer, even while parked. Each pulse covers the whole area around its position. Contraption Controls can pause it.\n\nSee [#](2E5AAC)[Contraptions](entry://create_basics/contraptions)[#]()."
+      "text": "On a contraption the chamber charges on a timer, even while parked. Each pulse covers the whole area around its position. Contraption Controls can pause it.\\\n\\\nSee [#](2E5AAC)[Contraptions](entry://create_basics/contraptions)[#]()."
     },
     {
       "type": "modonomicon:spotlight",
@@ -60,7 +60,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Mechanical Arms can harvest lily pads and powdery crops. A Spout speeds up Organic Compost decay, which feeds Farmer's Delight's Rich Soil.\n\nAnimals: [#](2E5AAC)[Animals](entry://food/animals)[#](). Delight basics: [#](2E5AAC)[Farmer's Delight](entry://food/farmers_delight)[#]()."
+      "text": "Mechanical Arms can harvest lily pads and powdery crops. A Spout speeds up Organic Compost decay, which feeds Farmer's Delight's Rich Soil.\\\n\\\nAnimals: [#](2E5AAC)[Animals](entry://food/animals)[#](). Delight basics: [#](2E5AAC)[Farmer's Delight](entry://food/farmers_delight)[#]()."
     }
   ]
 }

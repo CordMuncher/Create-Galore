@@ -18,6 +18,11 @@
     {
       "type": "modonomicon:text",
       "title": "",
+      "text": "**Just spawned?** Read [#](2E5AAC)[Your First Days](entry://start_here/first_days)[#]() before your first night. It covers drinking, clean water, food and staying warm."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
       "text": "This book is a **wiki**, not a quest list. Nothing here tells you what to do next. Each entry explains one idea, how it behaves, the rules that trip people up, and how it connects to the other mods in the pack."
     },
     {
@@ -38,7 +43,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**Searching**\\\nThe magnifying glass on the right searches the text of every page.\n\nNew to Create? [#](2E5AAC)[Rotation](entry://create_basics/rotation)[#]() is the first idea."
+      "text": "**Searching**\\\nThe magnifying glass on the right searches the text of every page.\\\n\\\nNew to Create? [#](2E5AAC)[Rotation](entry://create_basics/rotation)[#]() is the first idea."
     },
     {
       "type": "modonomicon:spotlight",

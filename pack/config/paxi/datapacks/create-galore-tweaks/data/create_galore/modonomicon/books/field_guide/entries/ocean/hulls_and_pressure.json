@@ -77,7 +77,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**Create: Deep Seas, Lava Fix** patches a bug: players inside a sealed submarine submerged in lava no longer take fire or lava damage, since the interior is dry. Nothing to set up.\n\nBack to [#](2E5AAC)[Submarines](entry://ocean/submarines)[#]()."
+      "text": "**Create: Deep Seas, Lava Fix** patches a bug: players inside a sealed submarine submerged in lava no longer take fire or lava damage, since the interior is dry. Nothing to set up.\\\n\\\nBack to [#](2E5AAC)[Submarines](entry://ocean/submarines)[#]()."
     }
   ]
 }

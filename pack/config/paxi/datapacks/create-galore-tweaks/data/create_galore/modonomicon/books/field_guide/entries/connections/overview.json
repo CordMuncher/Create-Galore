@@ -13,7 +13,7 @@
     {
       "type": "modonomicon:text",
       "title": "How Things Connect",
-      "text": "Most mods explain themselves. What they don't explain is how they plug into each other. This section is about those joins.\n\nAlmost every connection in this pack runs through a few shared things."
+      "text": "Most mods explain themselves. What they don't explain is how they plug into each other. This section is about those joins.\\\n\\\nAlmost every connection in this pack runs through a few shared things."
     },
     {
       "type": "modonomicon:text",
@@ -23,7 +23,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Each entry here is short and points to the full entries. Read it when you wonder \"can this mod's thing go into that mod's machine?\"\n\nAlso worth knowing: anything that burns makes smog, and anything hot warms you up. See [#](2E5AAC)[Side Effects](entry://connections/side_effects)[#]()."
+      "text": "Each entry here is short and points to the full entries. Read it when you wonder \"can this mod's thing go into that mod's machine?\"\\\n\\\nAlso worth knowing: anything that burns makes smog, and anything hot warms you up. See [#](2E5AAC)[Side Effects](entry://connections/side_effects)[#]()."
     },
     {
       "type": "modonomicon:text",

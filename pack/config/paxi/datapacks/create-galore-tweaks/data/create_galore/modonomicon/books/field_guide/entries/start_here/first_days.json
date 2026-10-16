@@ -1,0 +1,79 @@
+{
+  "category": "start_here",
+  "name": "Your First Days",
+  "description": "Read this before your first night: drinking, clean water, food and staying warm.",
+  "icon": {
+    "item": "minecraft:campfire"
+  },
+  "x": -1,
+  "y": -1,
+  "sort_number": 1,
+  "parents": [
+    {
+      "entry": "start_here/welcome",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Your First Days",
+      "text": "Read this before your first night. Three things can kill a new player here that can't in vanilla: **thirst**, **cold or heat**, and **dirty water**. All three are easy once you know the trick."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "How to drink",
+      "text": "**Rain:** stand in the rain and look straight up. You drink a little every half second, for free.\\\n\\\n**By hand:** with both hands empty, crouch and right-click water. A quick sip, but raw water usually makes you sick."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Dirty water",
+      "text": "Lake, sea and swamp water is **Dirty**. Drinking it always gives hunger and nausea, and 3 times in 10 poison too. You still get the water.\\\n\\\nFlowing water, and water above Y 100 or below Y 48, is one step cleaner."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "minecraft:glass_bottle"
+      },
+      "title": "Your first bottles",
+      "text": "Smelt sand into glass and craft 3 glass into 3 bottles. Right-click water to fill one, then hold right-click to drink it. Water bottles stack to 64."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Boil it",
+      "text": "Cook a filled bottle before you drink it.\n\n- **Furnace:** Dirty turns straight into Acceptable, which is safe to live on.\n- **Campfire:** one step cleaner per cook. Slow, but it needs no fuel.\n\nBoil a stack while you work."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Food that hydrates",
+      "text": "Some food counts as a drink. **Melon slices** are the best early pick, then apples, beetroot soup, carrots and berries.\\\n\\\nAt 3 droplets or less you can't sprint, and at zero you start taking damage."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Food",
+      "text": "Hunger works like vanilla. Kill animals and cook the meat on a campfire or in a furnace, or fish. AppleSkin shows what each food restores.\\\n\\\nCrops only grow in their season: [#](2E5AAC)[Seasonal Crops](entry://survival/seasons_crops)[#]() says which grows when."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Cold and heat",
+      "text": "Your body temperature is on the HUD. If you spawn in snow you get about 5 minutes of grace, then the cold starts to hurt.\\\n\\\nStand near a campfire, a lit furnace or lava to warm up. Getting wet chills you, which helps in a desert."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Dress for it",
+      "text": "Leather armor and furs insulate. A **Sewing Table** (wool and planks) sews insulation like Goat Fur onto any armor. Later a **Hearth** keeps a whole base comfortable.\\\n\\\nYou can't sleep while freezing or overheating."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Day one checklist",
+      "text": "- Glass bottles, filled and boiled\n- A campfire for light, warmth and clean water\n- Meat or melons\n- Warm armor if it's snowy\n- A bed and a roof\n\nAnd remember: rain is free water."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Related",
+      "text": "- [#](2E5AAC)[Thirst](entry://survival/thirst)[#]()\n- [#](2E5AAC)[Temperature](entry://survival/temperature)[#]()\n- [#](2E5AAC)[Insulation and Heaters](entry://survival/temperature_gear)[#]()\n- [#](2E5AAC)[Seasonal Crops](entry://survival/seasons_crops)[#]()\n- [#](2E5AAC)[Food and Health](entry://survival/food_and_health)[#]()\n- [#](2E5AAC)[What to Expect](entry://start_here/difficulty)[#]()"
+    }
+  ]
+}

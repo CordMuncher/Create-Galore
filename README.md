@@ -85,6 +85,8 @@ The updater also keeps NeoForge on the pack's pinned version. To freeze the inst
 
 Every player gets the **Create Galore Field Guide** on first join, and you can craft another from a Book and Andesite. It's a wiki, not a quest book: 14 sections and about 140 entries on how things work and how the mods connect, written for someone who has never played Create.
 
+A new player should open **Start Here > Your First Days** first: how to drink, where to find clean water, food and staying warm, the things that can kill you before you know the pack.
+
 Each section is a map. Entries are nodes, and the arrows show what comes first, so to reach something you follow its lines back (the six prizes all lead into the Stellar Core, for example). Everything is open from the start, with no locks, tasks or rewards. The magnifying glass on the right searches the text of every page. Editing notes: [docs/guidebook.md](docs/guidebook.md).
 
 In a world started before the guide moved to Modonomicon, the old Patchouli Field Guide no longer opens it: put it in a crafting grid on its own to turn it into the new one.
@@ -136,6 +138,7 @@ Nothing on the list comes from space, every prize can be found again, and nothin
 - Cataclysm and Mowzie's bosses have 70% health and 75% damage. All their structures still spawn.
 - Hostile Skies airship raids are rarer (every 25 minutes instead of 15, 5% starting chance instead of 10%).
 - Cold Sweat runs at 0.75x speed and deals half the temperature damage.
+- Thirst: you can drink straight from water by crouching and right-clicking it with both hands empty (Thirst Was Reclaimed has this off by default). Raw water still makes you sick, so bottles and boiling stay the real answer. Drinking rain (look straight up) also works.
 - Create: Smog pollution is left at full strength on purpose.
 - Underground structures are spaced a bit wider, since the pack places far more than vanilla.
 - Inventory Profiles Next auto-refill is off and the backpack magnet is one block shorter, so the game doesn't play itself.
@@ -259,6 +262,7 @@ All tests ran headless in a cloud machine (4 cores, 16 GB RAM, no GPU), so speed
 | Field Guide on Modonomicon in a new singleplayer world: handed out on join, all 14 section maps draw with their arrows, search finds page text, entry links open, a `/reload` picks up edited pages | ✅ |
 | 0.1.6 playtest fixes on a dedicated server with the full client joined and flying in creative while `/cs start` pregenerates: with 0.1.5's settings the server froze for 20 s (Aeronautics Winds loading chunks on the main thread) and kicked the player back with "moved too quickly"; with Bridge 1.2.0 and the gentler Chunksmith settings there was no rubber-banding and Winds no longer shows up in the stalls (worst hitch 8.4 s right at join on a 4-core test box running server and client together, then 2.5 to 5.5 s). Borderless Window, the Distant Horizons overdraw setting and the frosty-breath setting load in the client and keep their values | ✅ |
 | Update check at server start, on a server built with `install-server.sh` (182 mods, Twilight Forest, a generated world): with the pack on GitHub changed it showed the N/Y/B prompt; N started the server unchanged; B zipped the world, mods and configs (776 MB) into `backups/`, updated to 0.1.7 with packwiz-installer, and the updated server booted the same world. Up to date, offline and no-console runs start the server without asking; a failed update stops the start. The app's new `--update` (what app servers run) kept memory, port, Elytra and an edited config | ✅ |
+| Field Guide pass in the full client (singleplayer, NeoForge 21.1.259): Bridge 1.3.0's title mixin applies to Modonomicon, the text box stays clear of the spine and page edges (same Tankard page as the bug report), paragraph gaps show, Your First Days opens from Start Here, and crouch + right-click on water with empty hands raised thirst 6 → 15 | ✅ |
 | Real FPS, shaders, Distant Horizons visuals, gameplay feel | ❌ Needs a real PC with a GPU |
 
 **Memory:** about 9.3 GB of process memory on the server and 8-9.6 GB on the client with an 8 GB heap. A laptop with 16 GB can play but shouldn't host and play at the same time. A garbage collector benchmark on the server (pack's G1 flags vs Java defaults, Generational ZGC and Shenandoah, plus a 6 GB run) is in [docs/java-flags.md](docs/java-flags.md).
