@@ -65,7 +65,7 @@ Everything below ships as plain config files or a datapack in `pack/` (no mod ja
 
 **You travel by building.** Trains, airships, submarines, cars and hypertubes are the way around, so shortcuts that make them pointless are off. Sidegrades that cost something (Ender Pearls, a double jump, short Aether flights, the air-limited Jetpack) stay.
 - **No Elytra.** End City ships no longer get one, BetterEnd and Dungeons and Taverns loot gives Shulker Shells instead, and Incendium's paratroopers stop dropping theirs. If one still reaches a player in survival (old chunks, a mod we missed), it crumbles into 2 Phantom Membrane with a chat message. The Create Jetpack recipe takes a Shulker Shell where it used to take an Elytra. Iron's Spells' Angel Wings (Elytra flight as a spell) is off too.
-- **Iron's Spells:** Portal (permanent two-way teleport links) and Recall (home from anywhere) are off, and Portal Frames and Create Wizardry's Hither-Thither Wand can't be crafted. The spell switches live in `config/irons_spellbooks_spell_config/irons_spellbooks/`. Iron's only reads them after a `/reload`, so the pack runs one automatically a few seconds after a world opens (see Known issues).
+- **Iron's Spells:** Portal (permanent two-way teleport links) and Recall (home from anywhere) are off, and Portal Frames and Create Wizardry's Hither-Thither Wand can't be crafted. The spell switches live in `config/irons_spellbooks_spell_config/irons_spellbooks/`. Iron's applies them as soon as the first player joins a world, with no reload needed.
 - **Artifacts:** the Warp Drive (endless free Ender Pearls) no longer appears in loot and does nothing if you have one.
 - **Alex's Caves:** the Subterranodon, a tamed flyer with no real limit on level flight, doesn't spawn. The Hullbreaker no longer drops the Enigmatic Engine, so its fuel-free Submarine can't be built (wrecks in the Abyssal Chasm ruins can still be repaired).
 
@@ -138,7 +138,6 @@ None of these stop the game.
 - **Animal Husbandry is on 0.4.2**, so 0.5.0's rabbit genetics and Angora armor are missing until a fixed version ships.
 - **First launch:** Deep Seas' photosensitivity question still shows once. Minecraft's accessibility prompt is turned off by the shipped `options.txt`, but launchers overwrite `options.txt` when the pack updates, which also resets the key rebinds above. If the Deep Seas warning's button sits off-screen in a small window, press Tab then Enter.
 - **Log noise:** a few recipes and many loot tables log errors because they point at mods that aren't installed (Botania, Blood Magic, Mekanism, Steam 'n' Rails tracks for other wood mods, and so on). Sable also warns about a few copycat blocks that don't exist. All harmless, and only fixable in those mods.
-- **A one-time `/reload` about 5 seconds after a world opens.** Iron's Spells only applies its spell switches (Portal, Recall and Angel Wings off) after a reload, so the pack's datapack runs one automatically. Expect a short freeze and a "Reloading" line in the log. Without it those spells would still drop as scrolls.
 - **First world creation is slow** (about 45 s for the spawn area on the test machine) because of all the world-gen mods. Normal after that.
 
 ## What was tested
@@ -154,7 +153,8 @@ All tests ran headless in a cloud machine (4 cores, 16 GB RAM, no GPU), so speed
 | Ambiance mods: client boots into a world with a sound device, Sound Physics' EFX starts, a running Create fan, animals, villager and held torch render and play with no new errors | ✅ |
 | Field Guide from a fresh `.mrpack` import: handed out, opens, search and links work, recipe shows in JEI | ✅ |
 | 0.1.2 travel changes on a dedicated server with a client joined: End City ship generates without its Elytra, mod loot and Lootr give Shulker Shells, the Hullbreaker drops no Enigmatic Engine, an Elytra given to a survival player crumbles into Phantom Membrane, 527 random spell scrolls with no Portal, Recall or Angel Wings, the opt-in folder brings Elytra back, Field Guide opens on the new Getting Around page | ✅ |
-| Combined 0.1.2 (ambiance and travel changes together) on a fresh dedicated server with the full client joined and sound on: Iron's Spells' automatic reload runs on boot and after a restart, a `/reload` while playing with Sound Physics running causes no errors, an Elytra crumbles by default, the opt-in folder keeps Elytra after a restart, Field Guide opens | ✅ |
+| Combined 0.1.2 (ambiance and travel changes together) on a fresh dedicated server with the full client joined and sound on: a `/reload` while playing with Sound Physics running causes no errors, an Elytra crumbles by default, the opt-in folder keeps Elytra after a restart, Field Guide opens | ✅ |
+| Without the automatic `/reload`: on a fresh dedicated server, after a restart, after a manual `/reload` and in a new singleplayer world, about 1,100 random spell scrolls per run once a player has joined, none of them Portal, Recall or Angel Wings, and the client receives the same switches | ✅ |
 | Real FPS, shaders, Distant Horizons visuals, gameplay feel | ❌ Needs a real PC with a GPU |
 
 **Memory:** about 9.3 GB of process memory on the server and 8-9.6 GB on the client with an 8 GB heap. A laptop with 16 GB can play but shouldn't host and play at the same time.

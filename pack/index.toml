@@ -193,18 +193,6 @@ file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/advancemen
 hash = "a87cfb341b081fa7a6f5db8eac14478d035f4f832fcb17bbd9d7f9395159c8dc"
 
 [[files]]
-file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/function/boot/load.mcfunction"
-hash = "e4c66a7f7030c85beeeb2673893ca182b682610fb6cd9978020bafed01c77ff9"
-
-[[files]]
-file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/function/boot/reload.mcfunction"
-hash = "ce752e6bd46fdd76b4e3468bdf522c4ecb63eeb9791d8c94f98d6c0ee08959cf"
-
-[[files]]
-file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/function/boot/schedule.mcfunction"
-hash = "524015215431150ebda3f2f2b98c12c730c92f7c541db72b4ead9fa40a9fe5e1"
-
-[[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/function/give_field_guide.mcfunction"
 hash = "af4fa526d27f76c62673ca2a9657238a60c17e68d6078be98bdd2f8ca671d79a"
 
@@ -474,7 +462,7 @@ hash = "694aa0e1f42ff2ba4d119f604fe90db5dd09cae79ee470b772f0a68f35b05fb4"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/minecraft/tags/function/load.json"
-hash = "de4848ad2d163c774b045ef1342097e018eb536fc8a44667902f04917f2975f6"
+hash = "f74498097708215ee46031db7467ce3abed880ed8188eff156e81993d9787e31"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/naturalist/tags/worldgen/biome/has_anglerfish.json"
