@@ -45,7 +45,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**Fullscreen** (F11) is a borderless window on Windows, so Alt-Tab is instant, screenshot tools work and a 10-bit or HDR monitor doesn't switch modes. Minecraft's own screenshot key is F2."
+      "text": "**Fullscreen** (F11) is a borderless window on Windows. On an NVIDIA card, also set Vulkan/OpenGL present method to Prefer layered on DXGI Swapchain in the NVIDIA Control Panel, or the driver still switches a 10-bit monitor to 8-bit. Screenshot key: F2."
     },
     {
       "type": "modonomicon:text",
