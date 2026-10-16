@@ -59,11 +59,11 @@ Then two manual steps (the app does both for you):
 
 ### Start it
 
-Double-click `start-server.bat` (made by the app) or `run.bat` (made by NeoForge) in the server folder. The first start creates the world and takes a few minutes; later starts are faster. It's ready when the console says `Done (...)! For help, type "help"`.
+Double-click `start-server.bat` in the server folder (Linux and macOS: `./start-server.sh`). It first checks for a newer pack (see [Update check at start](#update-check-at-start)), then starts the server. `run.bat` (made by NeoForge) starts it without the check. The first start creates the world and takes a few minutes; later starts are faster. It's ready when the console says `Done (...)! For help, type "help"`.
 
 Stop it by typing `stop` in the console. Don't close the window, or the last few minutes might not be saved.
 
-The server also opens its own small window: a live **memory graph** with "Memory use" and "Avg tick" (milliseconds per tick, under 50 is full speed), the **player list**, and a copy of the log with a box to type commands. It's on by default. Closing that window stops the server cleanly. If you'd rather have only the console, add `nogui` at the end of the java line in `start-server.bat`, or start with `run.bat nogui`. On Exaroton there is never a window; the web console does the same job.
+The server also opens its own small window: a live **memory graph** with "Memory use" and "Avg tick" (milliseconds per tick, under 50 is full speed), the **player list**, and a copy of the log with a box to type commands. It's on by default. Closing that window stops the server cleanly. If you'd rather have only the console, start with `start-server.bat nogui`. On Exaroton there is never a window; the web console does the same job.
 
 ### First-time settings
 
@@ -130,6 +130,32 @@ Skip `session.lock` and anything named `*.old`. Both sides must run the same pac
 
 ## Updating the pack
 
+### Update check at start
+
+Every time `start-server` runs, before the server starts, it asks GitHub whether the pack changed since this server was installed or last updated. If it did, the console shows:
+
+```
+=========================================================================
+  Create Galore update available: 0.1.6 -> 0.1.7.
+  The server hasn't started yet, so nothing has been changed.
+=========================================================================
+  N  No, start the server without updating
+  Y  Yes, update, then start the server
+  B  Back up the world first (into the backups folder), then update and start
+=========================================================================
+Update? [N/Y/B] (no answer in 2 minutes = N):
+```
+
+- **N** (or no answer within 2 minutes, or no internet) starts the server as it is. It asks again at the next start.
+- **Y** updates the same way as the steps below, then starts the server.
+- **B** first zips the world, `mods/`, `config/`, `defaultconfigs/`, `server.properties`, memory settings, whitelist and ops into `backups/world-<date>_<time>-before-<version>.zip` in the server folder, then updates and starts. To go back: stop the server, delete `world/`, `mods/` and `config/`, and unzip the backup into the server folder (the zip has a `RESTORE.txt` saying the same). Backups are never deleted automatically; remove old ones yourself when the disk fills up. If there isn't enough free space for the backup, nothing is changed and the server doesn't start, so you can free space or start again and choose N.
+
+It never updates without an answer. If the update fails halfway (for example the internet drops), the server doesn't start, because a half-updated server can lose blocks and items from the world: start again to retry, or put the backup back. Servers from the app update with the app of the newest release (downloaded into `.galore-update/` and run as `--update`, which keeps the memory, port, Elytra choice and your config edits). Servers from the scripts update with packwiz-installer straight from the pack on GitHub. When an update moves NeoForge, script servers are told to run `install-server` from the new server kit instead; app servers update NeoForge too and ask you to run `start-server` once more. The check is in `create-galore-updater.jar` next to `start-server`; servers set up before 0.1.7 get it the next time you update them by hand.
+
+Players still update their own game with the pre-launch updater (README, *Updating*); both sides need the same pack version.
+
+### Updating by hand
+
 When the pack in this repo changes:
 
 1. Stop the server. With the app: download the new `Create-Galore-Server-Setup` from the latest release, point it at the same folder and press **Update server**. With the script: download the new server kit (or `git pull`) and run `install-server.bat C:\CreateGaloreServer` again.
@@ -139,7 +165,7 @@ When the pack in this repo changes:
 5. **Clean slate for bug hunting:** tick **Reset all configs to the pack's** in the app (or add `--clean`: `install-server.bat C:\CreateGaloreServer --clean`). This deletes `config/`, `defaultconfigs/` and each world's `serverconfig/` and puts the pack's configs back, so every edit made on the server is gone. Mods aren't downloaded again. The world, `server.properties`, memory, whitelist and ops are kept; for a fresh world, delete or rename `world/` yourself.
 6. Players update their game with the pre-launch updater (README, *Updating*) or import the new `.mrpack`.
 
-Back up `world/` before updates that add or remove mods. Blocks and items from removed mods disappear from the world.
+Back up `world/` before updates that add or remove mods (the start-up check's **B** does it for you). Blocks and items from removed mods disappear from the world.
 
 ## Lag alerts and profiles
 

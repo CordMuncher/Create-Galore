@@ -3,7 +3,7 @@
 # Usage: ./install-server.sh /path/to/server-folder [--clean]
 #   --clean  also resets every config to the pack's version (config/, defaultconfigs/, each world's serverconfig/).
 #            For bug hunting. Mods aren't downloaded again; the world, server.properties, memory and whitelist stay.
-# Needs Java 21 and curl. Run it again after the pack changes to update the mods.
+# Needs Java 21 and curl. Start the server with start-server.sh: it asks before applying pack updates.
 set -euo pipefail
 
 NEOFORGE=21.1.259
@@ -43,6 +43,15 @@ if [ "${2:-}" = "--clean" ]; then
   java -jar packwiz-installer-bootstrap.jar --bootstrap-no-update -g -s server "$PACK"
 fi
 
+# The start script and its update check (asks no / yes / back up first when the pack on GitHub is newer).
+cp "$HERE/start-server.sh" start-server.sh && chmod +x start-server.sh
+if [ -f "$HERE/create-galore-updater.jar" ]; then cp "$HERE/create-galore-updater.jar" .
+else curl -fsSL -o create-galore-updater.jar https://github.com/emresahin0906-code/Create-Galore/releases/latest/download/create-galore-updater.jar \
+  || echo "Couldn't download create-galore-updater.jar, so start-server.sh won't check for updates"
+fi
+VERSION="$(sed -n 's/^version *= *"\(.*\)"/\1/p' "$PACK")"
+printf '# Create Galore pack version this server has, for the update check at start\npack=%s\ninstaller=script\n' "$VERSION" > .galore-pack.txt
+
 # First run only: memory settings and server settings. Your own edits are kept on later runs.
 [ -f user_jvm_args.txt.galore ] || { cp "$HERE/user_jvm_args.txt" user_jvm_args.txt; touch user_jvm_args.txt.galore; }
 [ -f server.properties ] || cp "$HERE/server.properties" server.properties
@@ -58,4 +67,4 @@ fi
 if ! grep -q 'eula=true' eula.txt 2>/dev/null; then
   echo "Read https://aka.ms/MinecraftEULA, then put eula=true in $DEST/eula.txt"
 fi
-echo "Done. Start the server with ./run.sh (it opens the server window with the live memory and player panel; add nogui for a console-only server)"
+echo "Done. Start the server with ./start-server.sh (it checks for pack updates first, then opens the server window with the live memory and player panel; add nogui for a console-only server)"

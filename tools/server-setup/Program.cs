@@ -30,6 +30,8 @@ namespace CreateGalore.ServerSetup
         ///   --check                       print what this build installs, exit 0
         ///   --install DIR [--memory GB] [--port N] [--eula] [--elytra] [--clean] [--tf JAR] [--mods FOLDER]
         ///             [--op NAME] [--players A,B] [--log FILE]
+        ///   --update DIR [--log FILE]     update an existing server, keeping its memory, port and Elytra setting
+        ///                                 (what the update check in start-server.bat runs)
         /// </summary>
         static int Cli(PackBundle pack, string[] args)
         {
@@ -50,20 +52,31 @@ namespace CreateGalore.ServerSetup
                         output.WriteLine(z.Entries.Count + " config and datapack files");
                     return pack.Mods.Count > 0 ? 0 : 1;
                 }
-                if (args[0] != "--install" || args.Length < 2)
+                bool update = args[0] == "--update";
+                if ((args[0] != "--install" && !update) || args.Length < 2)
                 {
-                    output.WriteLine("Usage: --check | --install DIR [--memory GB] [--port N] [--eula] [--elytra] [--clean] [--tf JAR] [--mods FOLDER] [--op NAME] [--players A,B] [--log FILE]");
+                    output.WriteLine("Usage: --check | --update DIR [--log FILE] | --install DIR [--memory GB] [--port N] [--eula] [--elytra] [--clean] [--tf JAR] [--mods FOLDER] [--op NAME] [--players A,B] [--log FILE]");
+                    return 2;
+                }
+                if (update && !File.Exists(Path.Combine(args[1], "user_jvm_args.txt")))
+                {
+                    output.WriteLine("ERROR: there's no Create Galore server in " + args[1]);
                     return 2;
                 }
                 var o = new SetupOptions
                 {
                     ServerDir = args[1],
                     AcceptEula = args.Contains("--eula"),
-                    Elytra = args.Contains("--elytra"),
+                    Elytra = update ? ServerInstaller.ElytraIsOn(args[1]) : args.Contains("--elytra"),
                     Clean = args.Contains("--clean"),
                     OpName = arg("--op"),
                     TfJar = arg("--tf"),
                 };
+                if (update)
+                {
+                    if (ServerInstaller.ReadMemory(args[1]) > 0) o.MemoryGb = ServerInstaller.ReadMemory(args[1]);
+                    if (ServerInstaller.ReadPort(args[1]) > 0) o.Port = ServerInstaller.ReadPort(args[1]);
+                }
                 if (arg("--memory") != null) o.MemoryGb = int.Parse(arg("--memory"));
                 if (arg("--port") != null) o.Port = int.Parse(arg("--port"));
                 if (arg("--players") != null) o.Players = arg("--players").Split(',').ToList();

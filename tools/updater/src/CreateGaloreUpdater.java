@@ -13,6 +13,7 @@ import java.util.List;
  *
  *   "$INST_JAVA" -jar create-galore-updater.jar            soft update: only changed mods and configs
  *   "$INST_JAVA" -jar create-galore-updater.jar --clean    also resets every config to the pack's version
+ *   java -jar create-galore-updater.jar --server-start      on a server: ask whether to update (see ServerUpdateCheck)
  *
  * The update itself is packwiz-installer (pinned, shipped next to this jar). Nothing is touched unless the
  * pack can be read. --clean moves config/, defaultconfigs/, options.txt and each world's serverconfig/ aside
@@ -22,6 +23,7 @@ public final class CreateGaloreUpdater {
     static final String PACK_URL = "https://raw.githubusercontent.com/emresahin0906-code/Create-Galore/main-6fi2ef/pack/pack.toml";
 
     public static void main(String[] args) throws Exception {
+        if (args.length > 0 && args[0].equals("--server-start")) { ServerUpdateCheck.main(args); return; }
         boolean clean = false;
         String url = PACK_URL;
         List<String> passOn = new ArrayList<>();

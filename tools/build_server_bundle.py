@@ -3,7 +3,8 @@
   <out>/server-manifest.tsv   one line per server-side mod: path, sha512, url, name
   <out>/server-files.zip      every non-mod file in the pack (configs, datapacks, Field Guide)
                               plus server/server.properties and server/user_jvm_args.txt
-  <out>/pack-info.txt         pack version, Minecraft and NeoForge versions, Twilight Forest jar
+  <out>/pack-info.txt         pack version and pack.toml checksum, Minecraft and NeoForge versions, Twilight Forest jar
+                              (also published with the release, for the update check servers run at start)
 Same rule as `packwiz-installer -s server`: files whose .pw.toml says side = "client" are skipped.
 Usage: python3 tools/build_server_bundle.py <out folder>"""
 import hashlib, os, sys, tomllib, zipfile
@@ -22,6 +23,8 @@ def load(path):
         return tomllib.load(f)
 
 pack = load(os.path.join(PACK, 'pack.toml'))
+# The same checksum packwiz-installer keeps in packwiz.json: any change to the pack changes it.
+pack_sha256 = hashlib.sha256(open(os.path.join(PACK, 'pack.toml'), 'rb').read()).hexdigest()
 index = load(os.path.join(PACK, pack['index']['file']))
 os.makedirs(OUT, exist_ok=True)
 
@@ -60,7 +63,7 @@ with zipfile.ZipFile(os.path.join(OUT, 'server-files.zip'), 'w', zipfile.ZIP_DEF
         z.write(os.path.join(ROOT, 'server', name), 'server/' + name)
 
 with open(os.path.join(OUT, 'pack-info.txt'), 'w', newline='\n') as f:
-    f.write(f"pack={pack['version']}\nminecraft={pack['versions']['minecraft']}\n"
+    f.write(f"pack={pack['version']}\npack_sha256={pack_sha256}\nminecraft={pack['versions']['minecraft']}\n"
             f"neoforge={pack['versions']['neoforge']}\n"
             f"tf_file={TF_FILE}\ntf_sha256={TF_SHA256}\ntf_version={TF_VERSION}\n")
 
