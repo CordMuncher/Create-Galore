@@ -6,7 +6,7 @@ A big, long-term Minecraft modpack built around the Create mod. Think "Minecraft
 
 | | |
 |---|---|
-| **Version** | 0.1.4 |
+| **Version** | 0.1.5 |
 | **Minecraft** | 1.21.1 |
 | **Loader** | NeoForge **21.1.259** (pinned, don't update it, see [Known issues](#known-issues)) |
 | **Mods** | 222 from Modrinth + the pack's own small Create Galore Bridge + Twilight Forest added by hand, plus 4 shader packs and the Fresh Animations resource pack |
@@ -15,7 +15,7 @@ A big, long-term Minecraft modpack built around the Create mod. Think "Minecraft
 
 ## Install (players)
 
-1. Download `Create-Galore-0.1.4.mrpack` from the [latest release](https://github.com/emresahin0906-code/Create-Galore/releases/latest) (or [from this repo](Create-Galore-0.1.4.mrpack)).
+1. Download `Create-Galore-0.1.5.mrpack` from the [latest release](https://github.com/emresahin0906-code/Create-Galore/releases/latest) (or [from this repo](Create-Galore-0.1.4.mrpack)).
 2. Import it:
    - **Prism Launcher:** Add Instance → Import → pick the `.mrpack`.
    - **Modrinth App:** drag the `.mrpack` onto the window (or File → Import).
@@ -202,6 +202,7 @@ All tests ran headless in a cloud machine (4 cores, 16 GB RAM, no GPU), so speed
 | 0.1.4 Blaze Burner smog on a dedicated server: a burner with no fuel adds no smog, a fuelled one adds 16 per second and a superheated one 32 | ✅ |
 | 0.1.4 Field Guide in-world: the book loads with all 13 categories and no errors of its own, the changed pages show the new text | ✅ |
 | 0.1.4 title screen: the Create Galore panorama shows instead of Aquamirae's menu | ✅ |
+| 0.1.5 space gate on a dedicated server with the full client joined: the Stellar Core, Rocket Station, Dimensional Drive and Stellar Navigator recipes load (JEI shows the core in all four, and the Rocket Station has no other recipe), a Hullbreaker's loot gives an Immortal Embryo, a killed Ender Dragon drops Dragonskin, all 8 Road to the Stars advancements unlock (each prize, the core, and arriving on the Moon), the Field Guide loads with all 14 sections and the new pages render | ✅ |
 | Real FPS, shaders, Distant Horizons visuals, gameplay feel | ❌ Needs a real PC with a GPU |
 
 **Memory:** about 9.3 GB of process memory on the server and 8-9.6 GB on the client with an 8 GB heap. A laptop with 16 GB can play but shouldn't host and play at the same time. A garbage collector benchmark on the server (pack's G1 flags vs Java defaults, Generational ZGC and Shenandoah, plus a 6 GB run) is in [docs/java-flags.md](docs/java-flags.md).
@@ -210,7 +211,7 @@ All tests ran headless in a cloud machine (4 cores, 16 GB RAM, no GPU), so speed
 
 ## Repo layout
 
-- `Create-Galore-0.1.4.mrpack`: the importable pack, built from `pack/`
+- `Create-Galore-0.1.5.mrpack`: the importable pack, built from `pack/`
 - `pack/`: [packwiz](https://packwiz.infra.link/) source, one `.pw.toml` per mod or shader, plus configs (`pack/config/`), the datapacks (`pack/config/paxi/datapacks/create-galore-tweaks`, always on, `create-galore-no-elytra`, and the opt-in `config/paxi/optional/create-galore-with-elytra`) and the Field Guide (`pack/patchouli_books/`)
 - `MODS.md`: full mod list with versions and sides
 - `server/`: server install scripts, memory settings and a starting `server.properties`
@@ -224,5 +225,5 @@ To rebuild the `.mrpack` after changing `pack/`:
 ```
 cd pack
 packwiz refresh
-packwiz modrinth export -o ../Create-Galore-0.1.4.mrpack
+packwiz modrinth export -o ../Create-Galore-0.1.5.mrpack
 ```
