@@ -49,6 +49,11 @@
       "text": "The world has wizard towers and a lost Citadel: Pyromancer Tower, Archevoker's Evoker Fort, Ice Spider Den, Ancient Battleground, Catacombs, and the Citadel (a Citadel Map exists). Mage mobs defend them. Pack-wide bosses: $(l:exploration/bosses)Bosses$(/l)."
     },
     {
+      "type": "patchouli:text",
+      "title": "Turned off here",
+      "text": "Three spells would replace vehicles, so they never show up in loot, the Scroll Forge or JEI: $(bold)Portal$() (permanent two-way links), $(bold)Recall$() (home from anywhere) and $(bold)Angel Wings$() (Elytra flight). Portal Frames and the Hither-Thither Wand can't be crafted. See $(l:transport/getting_around)Getting Around$(/l)."
+    },
+    {
       "type": "patchouli:relations",
       "entries": [
         "patchouli:exploration/create_wizardry",

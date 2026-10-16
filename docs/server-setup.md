@@ -60,6 +60,10 @@ op <your Minecraft name>
 
 The shipped `server.properties` turns the whitelist on, keeps `online-mode=true` (real Minecraft accounts, so player data matches on Exaroton too), sets view distance 8 and simulation distance 6, and sets `allow-flight=true`. That last one matters: without it the server kicks players for "flying" when they ride airships, jetpacks or contraptions.
 
+### Elytra (off unless you switch them on)
+
+Elytra are off in this pack so trains, airships and submarines stay worth building. To allow them on your server, stop it, move `config/paxi/optional/create-galore-with-elytra` into `config/paxi/datapacks/`, and start it again. Re-running the install script doesn't undo this. Delete that folder from `datapacks/` to turn them off again. Details are in the README under "You travel by building".
+
 ### Joining
 
 - **On the same PC:** Multiplayer → Add Server → address `localhost`.
