@@ -4,6 +4,6 @@
   "package": "dev.creategalore.bridge.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": ["SmogEmittersMixin", "WindsWeatherEffectsMixin"],
-  "client": ["ModonomiconTitleWidthMixin", "JoinNoticeFilterMixin"],
+  "client": ["ModonomiconTitleWidthMixin", "JoinNoticeFilterMixin", "TenBitWindowMixin"],
   "injectors": { "defaultRequire": 0 }
 }
