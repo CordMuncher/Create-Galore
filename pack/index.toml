@@ -18,6 +18,10 @@ file = "config/chunksmith/config.json"
 hash = "d28ea02f9b97d820b6d87a2a4973cd7b58941a9c7b959232ff7694797cebb686"
 
 [[files]]
+file = "config/coldsweat/client.toml"
+hash = "f77a6bf4cb60e20b35898c593a3c639b2948cc8eb0803c5d2ac07d489366d48a"
+
+[[files]]
 file = "config/coldsweat/main.toml"
 hash = "fd2e5a6ded40aec007a9520b49f221682570c98bdedbe57dd84e081e263145a8"
 
