@@ -1,8 +1,11 @@
-# Memory for the server. 8G is the tested size for this pack; 10G is comfortable on a big PC.
+# Memory for the server. 8G is safe anywhere; on a PC with 32 GB or more use 10G.
+# More than 12G doesn't help: only about 2.5 GB is still in use after a collection.
+# Keep -Xms equal to -Xmx so Java reserves it all at start (no resizing stalls).
 # On Exaroton you set RAM in the web panel instead and this file isn't used.
+# Why these flags and the alternatives that were benchmarked: docs/java-flags.md
 -Xms8G
 -Xmx8G
-# G1 garbage collector settings (Aikar's flags), good for modded servers.
+# G1 garbage collector settings (Aikar's flags). Best tick speed and chunk generation in the pack's benchmark.
 -XX:+UseG1GC
 -XX:+ParallelRefProcEnabled
 -XX:MaxGCPauseMillis=200

@@ -87,8 +87,9 @@ namespace CreateGalore.ServerSetup
             body.Controls.Add(Heading("2  Memory"));
             totalRamGb = TotalRamGb();
             memory.Minimum = 4;
-            memory.Maximum = Math.Max(12, Math.Min(32, totalRamGb > 0 ? totalRamGb - 4 : 16));
-            memory.Value = 8;
+            // More than 12 GB doesn't help this pack (about 2.5 GB is live after a collection), so 16 is the top of the slider.
+            memory.Maximum = Math.Max(8, Math.Min(16, totalRamGb > 0 ? totalRamGb - 4 : 16));
+            memory.Value = Math.Min(memory.Maximum, totalRamGb >= 32 ? 10 : 8);
             memory.TickFrequency = 2;
             memory.Width = 400;
             memory.ValueChanged += (s, e) => ShowMemory();
@@ -99,7 +100,7 @@ namespace CreateGalore.ServerSetup
             memoryLabel.Font = new Font(Font, FontStyle.Bold);
             memRow.Controls.Add(memoryLabel);
             body.Controls.Add(memRow);
-            body.Controls.Add(Note("8 GB is what the pack was tested with. If you play on the same PC, the game needs its own 8 to 10 GB on top."
+            body.Controls.Add(Note("6 to 10 GB tested fine; 10 GB is plenty and more than 12 GB doesn't help. If you play on the same PC, the game needs its own 8 to 12 GB on top."
                 + (totalRamGb > 0 ? " This PC has " + totalRamGb + " GB." : "")));
             ShowMemory();
 
@@ -240,7 +241,7 @@ namespace CreateGalore.ServerSetup
 
         void ShowMemory()
         {
-            memoryLabel.Text = memory.Value + " GB" + (memory.Value == 8 ? " (tested)" : "");
+            memoryLabel.Text = memory.Value + " GB" + (memory.Value >= 6 && memory.Value <= 10 ? " (tested)" : memory.Value > 12 ? " (more than needed)" : "");
         }
 
         void ReadExisting()
@@ -250,7 +251,7 @@ namespace CreateGalore.ServerSetup
             existing.Text = has ? "There's already a server here. Install updates it and keeps the world and your settings." : "";
             if (!has) return;
             int mem = ServerInstaller.ReadMemory(dir);
-            if (mem >= memory.Minimum && mem <= memory.Maximum) memory.Value = mem;
+            if (mem > 0) memory.Value = Math.Max(memory.Minimum, Math.Min(memory.Maximum, mem));
             int p = ServerInstaller.ReadPort(dir);
             if (p >= port.Minimum && p <= port.Maximum) port.Value = p;
             elytra.Checked = ServerInstaller.ElytraIsOn(dir);
