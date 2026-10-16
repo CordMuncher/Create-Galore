@@ -1,1 +1,29 @@
-{"type": "alloyed:forging", "ingredients": [{"item": "minecraft:iron_ingot"}, {"item": "minecraft:iron_ingot"}, {"item": "minecraft:iron_ingot"}, {"tag": "minecraft:coals"}, {"item": "minecraft:fire_charge"}], "result": {"count": 3, "id": "tfmg:steel_ingot"}}
+{
+  "type": "alloyed:forging",
+  "ingredients": [
+    {
+      "item": "minecraft:iron_ingot"
+    },
+    {
+      "item": "minecraft:iron_ingot"
+    },
+    {
+      "item": "minecraft:iron_ingot"
+    },
+    {
+      "tag": "minecraft:coals"
+    },
+    {
+      "item": "minecraft:fire_charge"
+    }
+  ],
+  "result": {
+    "count": 3,
+    "id": "tfmg:steel_ingot"
+  },
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:false"
+    }
+  ]
+}

@@ -19,7 +19,7 @@
       "type": "patchouli:spotlight",
       "item": "productivebees:centrifuge",
       "title": "Centrifuge",
-      "text": "Spins combs into items, fluids and wax. The Powered Centrifuge runs on power. Metal combs give raw ore or dust, with a chance per spin.",
+      "text": "Spins combs into items and wax; the Powered one runs on power. Plain metal and gem combs give ore or gems by chance. Alloy, space-metal and boss-drop combs are off: $(l:connections/balance)Balance Changes$(/l).",
       "link_recipe": true
     },
     {

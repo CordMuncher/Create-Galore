@@ -1,0 +1,28 @@
+{
+  "type": "productivebees:centrifuge",
+  "ingredient": {
+    "type": "productivebees:component",
+    "components": {
+      "productivebees:bee_type": "productivebees:withered"
+    },
+    "items": "productivebees:configurable_honeycomb"
+  },
+  "outputs": [
+    {
+      "item": {
+        "tag": "c:fragments/wither_skull"
+      },
+      "chance": 0.3
+    },
+    {
+      "item": {
+        "item": "productivebees:wax"
+      }
+    }
+  ],
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:false"
+    }
+  ]
+}

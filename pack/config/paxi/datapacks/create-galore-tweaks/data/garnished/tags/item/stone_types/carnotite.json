@@ -1,0 +1,24 @@
+{
+  "replace": true,
+  "values": [
+    "garnished:carnotite",
+    "garnished:carnotite_brick_stairs",
+    "garnished:carnotite_brick_wall",
+    "garnished:carnotite_bricks",
+    "garnished:carnotite_stairs",
+    "garnished:carnotite_wall",
+    "garnished:chiseled_carnotite_bricks",
+    "garnished:cut_carnotite",
+    "garnished:cut_carnotite_stairs",
+    "garnished:cut_carnotite_wall",
+    "garnished:polished_carnotite",
+    "garnished:polished_carnotite_stairs",
+    "garnished:polished_carnotite_wall",
+    "garnished:small_carnotite_brick_stairs",
+    "garnished:small_carnotite_brick_wall",
+    "garnished:small_carnotite_bricks",
+    "garnished:smooth_carnotite",
+    "garnished:smooth_carnotite_stairs",
+    "garnished:smooth_carnotite_wall"
+  ]
+}

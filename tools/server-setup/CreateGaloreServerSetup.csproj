@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- .NET Framework 4.8 ships with Windows 10 and 11, so the exe is small and needs nothing installed.
+       Build: python3 tools/build_server_bundle.py <bundle dir>, then
+              dotnet build -c Release -p:BundleDir=<bundle dir> -->
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net48</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+    <LangVersion>10.0</LangVersion>
+    <Nullable>disable</Nullable>
+    <AssemblyName>Create-Galore-Server-Setup</AssemblyName>
+    <RootNamespace>CreateGalore.ServerSetup</RootNamespace>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>icon.ico</ApplicationIcon>
+    <Product>Create Galore Server Setup</Product>
+    <Version>1.0.0</Version>
+    <BundleDir Condition="'$(BundleDir)' == ''">$(MSBuildThisFileDirectory)bundle</BundleDir>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" PrivateAssets="all" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.IO.Compression.FileSystem" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="$(BundleDir)/server-manifest.tsv" LogicalName="bundle.server-manifest.tsv" />
+    <EmbeddedResource Include="$(BundleDir)/server-files.zip" LogicalName="bundle.server-files.zip" />
+    <EmbeddedResource Include="$(BundleDir)/pack-info.txt" LogicalName="bundle.pack-info.txt" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,24 @@
+{
+  "replace": true,
+  "values": [
+    "garnished:chiseled_orange_zultanite_bricks",
+    "garnished:cut_orange_zultanite",
+    "garnished:cut_orange_zultanite_stairs",
+    "garnished:cut_orange_zultanite_wall",
+    "garnished:orange_zultanite",
+    "garnished:orange_zultanite_brick_stairs",
+    "garnished:orange_zultanite_brick_wall",
+    "garnished:orange_zultanite_bricks",
+    "garnished:orange_zultanite_stairs",
+    "garnished:orange_zultanite_wall",
+    "garnished:polished_orange_zultanite",
+    "garnished:polished_orange_zultanite_stairs",
+    "garnished:polished_orange_zultanite_wall",
+    "garnished:small_orange_zultanite_brick_stairs",
+    "garnished:small_orange_zultanite_brick_wall",
+    "garnished:small_orange_zultanite_bricks",
+    "garnished:smooth_orange_zultanite",
+    "garnished:smooth_orange_zultanite_stairs",
+    "garnished:smooth_orange_zultanite_wall"
+  ]
+}

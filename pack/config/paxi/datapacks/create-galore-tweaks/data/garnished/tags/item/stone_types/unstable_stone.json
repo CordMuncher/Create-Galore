@@ -1,0 +1,24 @@
+{
+  "replace": true,
+  "values": [
+    "garnished:chiseled_unstable_stone_bricks",
+    "garnished:cut_unstable_stone",
+    "garnished:cut_unstable_stone_stairs",
+    "garnished:cut_unstable_stone_wall",
+    "garnished:polished_unstable_stone",
+    "garnished:polished_unstable_stone_stairs",
+    "garnished:polished_unstable_stone_wall",
+    "garnished:small_unstable_stone_brick_stairs",
+    "garnished:small_unstable_stone_brick_wall",
+    "garnished:small_unstable_stone_bricks",
+    "garnished:smooth_unstable_stone",
+    "garnished:smooth_unstable_stone_stairs",
+    "garnished:smooth_unstable_stone_wall",
+    "garnished:unstable_stone",
+    "garnished:unstable_stone_brick_stairs",
+    "garnished:unstable_stone_brick_wall",
+    "garnished:unstable_stone_bricks",
+    "garnished:unstable_stone_stairs",
+    "garnished:unstable_stone_wall"
+  ]
+}

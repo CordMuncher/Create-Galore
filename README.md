@@ -4,7 +4,7 @@ A big, long-term Minecraft modpack built around the Create mod. Think "Minecraft
 
 | | |
 |---|---|
-| **Version** | 0.1.2 |
+| **Version** | 0.1.3 |
 | **Minecraft** | 1.21.1 |
 | **Loader** | NeoForge **21.1.259** (pinned, don't update it, see [Known issues](#known-issues)) |
 | **Mods** | 222 from Modrinth + Twilight Forest added by hand, plus 4 shader packs and the Fresh Animations resource pack |
@@ -13,7 +13,7 @@ A big, long-term Minecraft modpack built around the Create mod. Think "Minecraft
 
 ## Install (players)
 
-1. Download [`Create-Galore-0.1.2.mrpack`](Create-Galore-0.1.2.mrpack) from this repo.
+1. Download `Create-Galore-0.1.3.mrpack` from the [latest release](https://github.com/emresahin0906-code/Create-Galore/releases/latest) (or [from this repo](Create-Galore-0.1.3.mrpack)).
 2. Import it:
    - **Prism Launcher:** Add Instance → Import → pick the `.mrpack`.
    - **Modrinth App:** drag the `.mrpack` onto the window (or File → Import).
@@ -27,7 +27,9 @@ Don't let the launcher update NeoForge past 21.1.259.
 
 ## Install (server)
 
-A dedicated server takes one script plus two manual steps (add Twilight Forest, accept the EULA). The full guide, including hosting on your own PC vs Exaroton, memory, whitelisting and moving the world between the two, is in **[docs/server-setup.md](docs/server-setup.md)**.
+**On Windows, use the Server Setup app.** Download `Create-Galore-Server-Setup-<version>.exe` from the [latest release](https://github.com/emresahin0906-code/Create-Galore/releases/latest) and run it. Pick a folder and the memory, drop in the Twilight Forest jar (it shows a green check when it's the right version), tick the EULA and press Install. It installs NeoForge, downloads the server-side mods (or copies them from a mods folder you drop in, skipping client-only ones), applies the pack's configs, memory and whitelist, and writes a `start-server.bat`. If your PC has no Java 21 it downloads one into the server folder. Run it again after a pack update to update the server; the world and your settings stay.
+
+**Or use the script** (any OS). A dedicated server takes one script plus two manual steps (add Twilight Forest, accept the EULA). The full guide, including hosting on your own PC vs Exaroton, memory, whitelisting and moving the world between the two, is in **[docs/server-setup.md](docs/server-setup.md)**.
 
 ```
 cd server
@@ -79,9 +81,28 @@ Everything below ships as plain config files or a datapack in `pack/` (no mod ja
 - Underground structures are spaced a bit wider, since the pack places far more than vanilla.
 - Inventory Profiles Next auto-refill is off and the backpack magnet is one block shorter, so the game doesn't play itself.
 
+**One fair route per item.** Where two mods make the same thing and one way gives far more for far less work, that way is cut or toned down, so the Create machine route stays worth building. A better yield that costs a bigger build (TFMG's blast furnace makes 2 steel per raw iron, a mixer makes 1 per ingot) is left alone. All of it is recipe and tag overrides in `create-galore-tweaks`; the Field Guide lists them under How Things Connect → Balance Changes.
+- **Metals.** Steel always needs heat: Create Nuclear's coal-dust steel mix is heated now, and the Alloyed Forge no longer makes steel or bronze (its tools and armor are unchanged). Big Cannons' cheaper bronze mixes are off, so bronze comes from Alloyed's mixer recipe. BetterEnd's smelter no longer turns 2 ancient debris into 3 scrap. Ancient debris deposits now need a Netherite Drill, 500 mB lava per cycle and 2,048 SU (they were 33x faster than Ore Excavation's own netherite vein with any drill).
+- **Recipe clashes.** Five mods had a crushing recipe for plain Limestone and only one can run, which could hide TFMG's Limesand (the steel flux). Limestone now crushes to Limesand only; Northstar's rutile still comes from sand and Venus gravel, Create Nuclear's nitrate from crushing cut or polished limestone, and Garnished's crushed salt from milling. Create Nuclear's faster raw copper and zinc crushing (with free lead) is off, so Create's own recipe runs.
+- **Parts.** Alloyed's one-press steel sheet is off, so steel plates are TFMG's 3-press Heavy Plate. Flight Control's ion vector thrusters can't be made by converting a plain thruster in the grid (that skipped 3 accumulators). Copper wire comes from the Rolling Mill, not 2 per ingot at the stonecutter. Copycat Wings stonecut 1:1 instead of 1:4.
+- **Food and farming.** Ratatouille's composter no longer triples dough, its kernel milling gives about 1.25 flour instead of 3 (wheat still gives about twice Create's plain mill), and popsicle molds take 250 mB of melon juice instead of 100. Delightful Creators' tomato sauce takes 2 tomatoes per 250 mB instead of 1 per 333. My Nether's Delight can't stretch blaze powder with pepper powder, and channeling a sponge gives exactly one wet sponge (it was an endless 1.25x loop).
+- **Fuel.** Garnished Peanut Oil burns 5,000 ticks a bucket in the Crafts & Additions burner too (it was 24,000, a cheap superheat fuel next to Bioethanol).
+- **Loops.** Garnished stone slabs (3 blocks make 6) no longer stonecut back into full blocks or crush for ore, which doubled unstable stone and zultanite and their gold, zinc, iron and copper.
+- Create Wizardry's Create recipe for Iron's Portal Frame is off as well, matching the travel rules.
+- **Productive Bees.** Bees still make honey, wax, plain metals (iron, copper, gold, zinc, lead, nickel), gems and cheap mob drops. The combs that skipped whole progression chains give nothing from the centrifuge: steel, brass, constantan, rose quartz, titanium, tungsten, platinum, uranium, netherite, mithril, ender pearls, blaze and breeze rods, ghast tears, echo shards, wither skull chips, draconic dust, sulfur and saltpeter.
+- **Ore deposits.** Deposit drills mine diamonds, emeralds, quartz and glowstone at Ore Excavation's own speed (1,200 ticks, 512 SU for gems). Metals stay fast.
+- **Twilight Forest:** the Uncrafting Table no longer reverses recipes (`disableUncrafting = true`), since stonecutter recipes let it multiply copper, bronze and Create Deco metal up to 4x. It still repairs and does its special recipes.
+- **Create Propulsion:** Solid and Liquid Burners can't heat mixers or superheat boilers. They still heat boilers to normal level and run thrusters and Stirling engines.
+- **Pollution:** TFMG engines (6 per block, 4 for large engines), fireboxes (8) and blast furnaces (30) now add smog. Smog can't tell whether a TFMG block is running, so they count all the time once built.
+- **Smaller ones:** Farmer's Delight melon juice and apple cider hydrate like a water bottle (6 and 8 instead of 8 and 13). Create Wizardry's Mana Siphon never turns an arcane ingot into netherite. Ferrets dig up an emerald instead of a Totem of Undying. Crushing granite gives uranium powder 10% of the time instead of 50%. A Biomass Pellet takes 2 Biomass.
+
 **Fixes.**
 - The Northstar–Aeronautics Dimensional Drive recipe uses a Northstar Circuit instead of a chip Northstar removed, so ships can be launched to the planets again.
 - 19 broken recipes from Thirst, Create: Framed (radon lamps) and Create Deco (white placard) are rewritten in the current format.
+- TFMG's diesel, gasoline, kerosene, naphtha and heavy oil can be piped into a Blaze Burner again, and napalm superheats it (TFMG used Create Liquid Fuel's old file name).
+- Create Cafe's fruit teas work with the pack's fruits. Fruits Delight, Berries and Cherries, Twilight Forest and Northstar fruits now count for 16 teas (orange, lemon, kiwi, lychee, mango, peach, persimmon, pineapple, fig, durian, blueberry, raspberry, blackberry, strawberry, cherry, grape) plus the raspberry and strawberry syrups. Blood Orange comes from haunting an orange with an Encased Fan, and Mana Berries from filling sweet berries with 25 mB of liquid experience from Create: Enchantment Industry. Before, both needed Blood Magic or Botania.
+- My Nether's Delight adds its loot to bastion treasure and hoglin stable chests again (golden eggs, hoglin trophies, strider eggs and so on).
+- The chest in Aeronautics Structures' engineering house is no longer empty; its leather uniform is now navy blue instead of a random colour.
 - Chunksmith no longer pre-generates a 4096-block radius every time you enter a world. Use its commands to pregenerate when you want.
 - The Deep Seas setup prompt and the BetterX welcome screen are switched off.
 
@@ -137,7 +158,7 @@ None of these stop the game.
 - **NeoForge must stay on 21.1.259.** On 21.1.262 The Aether's bundled Accessories library kicks players on join. 259 is the newest version that works (the pack needs at least 252). Revisit when The Aether updates.
 - **Animal Husbandry is on 0.4.2**, so 0.5.0's rabbit genetics and Angora armor are missing until a fixed version ships.
 - **First launch:** Deep Seas' photosensitivity question still shows once. Minecraft's accessibility prompt is turned off by the shipped `options.txt`, but launchers overwrite `options.txt` when the pack updates, which also resets the key rebinds above. If the Deep Seas warning's button sits off-screen in a small window, press Tab then Enter.
-- **Log noise:** a few recipes and many loot tables log errors because they point at mods that aren't installed (Botania, Blood Magic, Mekanism, Steam 'n' Rails tracks for other wood mods, and so on). Sable also warns about a few copycat blocks that don't exist. All harmless, and only fixable in those mods.
+- **Log noise:** a few recipes and many loot tables log errors because they point at mods that aren't installed (Dye Depot colours for Design n' Decor and Create Connected, Steam 'n' Rails tracks for other wood mods, Botania, Blood Magic, Mekanism and so on). Sable also warns about a few copycat blocks that don't exist, and TFMG still ships its Blaze Burner fuel list under Create Liquid Fuel's old name (the pack's datapack adds it under the new one). All of this was checked line by line: none of those mods would add anything worth having, and the leftover lines are harmless.
 - **First world creation is slow** (about 45 s for the spawn area on the test machine) because of all the world-gen mods. Normal after that.
 
 ## What was tested
@@ -155,6 +176,8 @@ All tests ran headless in a cloud machine (4 cores, 16 GB RAM, no GPU), so speed
 | 0.1.2 travel changes on a dedicated server with a client joined: End City ship generates without its Elytra, mod loot and Lootr give Shulker Shells, the Hullbreaker drops no Enigmatic Engine, an Elytra given to a survival player crumbles into Phantom Membrane, 527 random spell scrolls with no Portal, Recall or Angel Wings, the opt-in folder brings Elytra back, Field Guide opens on the new Getting Around page | ✅ |
 | Combined 0.1.2 (ambiance and travel changes together) on a fresh dedicated server with the full client joined and sound on: a `/reload` while playing with Sound Physics running causes no errors, an Elytra crumbles by default, the opt-in folder keeps Elytra after a restart, Field Guide opens | ✅ |
 | Without the automatic `/reload`: on a fresh dedicated server, after a restart, after a manual `/reload` and in a new singleplayer world, about 1,100 random spell scrolls per run once a player has joined, none of them Portal, Recall or Angel Wings, and the client receives the same switches | ✅ |
+| Log-noise fixes on a dedicated server, boot and two `/reload`s: 22 more recipes load (16 Create Cafe teas, 2 syrups, blood tea, mana tea, Blood Orange, Mana Berries), and the My Nether's Delight, Aeronautics Structures, blood tea and syrup errors are gone. In-world, a pump feeds TFMG diesel into a Blaze Burner and it burns, while water is refused | ✅ |
+| 0.1.3 balance pass on a dedicated server: boots clean, 37 fewer recipes load (22,338 together with the log-noise fixes), configs load without corrections, no recipe, tag or Field Guide errors, Garnished stone tags list no slabs | ✅ |
 | Real FPS, shaders, Distant Horizons visuals, gameplay feel | ❌ Needs a real PC with a GPU |
 
 **Memory:** about 9.3 GB of process memory on the server and 8-9.6 GB on the client with an 8 GB heap. A laptop with 16 GB can play but shouldn't host and play at the same time.
@@ -163,17 +186,19 @@ All tests ran headless in a cloud machine (4 cores, 16 GB RAM, no GPU), so speed
 
 ## Repo layout
 
-- `Create-Galore-0.1.2.mrpack`: the importable pack, built from `pack/`
+- `Create-Galore-0.1.3.mrpack`: the importable pack, built from `pack/`
 - `pack/`: [packwiz](https://packwiz.infra.link/) source, one `.pw.toml` per mod or shader, plus configs (`pack/config/`), the datapacks (`pack/config/paxi/datapacks/create-galore-tweaks`, always on, `create-galore-no-elytra`, and the opt-in `config/paxi/optional/create-galore-with-elytra`) and the Field Guide (`pack/patchouli_books/`)
 - `MODS.md`: full mod list with versions and sides
 - `server/`: server install scripts, memory settings and a starting `server.properties`
 - `docs/`: server guide, Field Guide editing notes, screenshots
 - `tools/`: scripts to extract item and recipe IDs from mod jars, check the Field Guide and rebuild the no-Elytra datapack
+- `tools/server-setup/`: the Windows Server Setup app (C#, .NET Framework 4.8, so it needs nothing installed). `tools/build_server_bundle.py` turns `pack/` into the mod list and config bundle the app carries, so the app always matches the pack it was built with
+- `.github/workflows/release.yml`: builds the GitHub release (the `.mrpack`, the Server Setup app, a server kit zip with the scripts and docs, and this README) whenever the pack, server files, app or docs change on `main-6fi2ef`. The release is tagged with the pack version; pushing again without a version bump replaces that release's files
 
 To rebuild the `.mrpack` after changing `pack/`:
 
 ```
 cd pack
 packwiz refresh
-packwiz modrinth export -o ../Create-Galore-0.1.2.mrpack
+packwiz modrinth export -o ../Create-Galore-0.1.3.mrpack
 ```

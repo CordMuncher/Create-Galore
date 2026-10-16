@@ -12,7 +12,7 @@
       "type": "patchouli:spotlight",
       "item": "create_wizardry:mana_siphon",
       "title": "Mana Siphon",
-      "text": "Draws mana from players, spells and mobs. Placed above it, a crystalline block can crystallize mana into Arcane Essence.",
+      "text": "Draws mana from players, spells and mobs. Placed above it, a crystalline block can crystallize mana into Arcane Essence. Drained arcane ingots never turn into netherite here.",
       "link_recipe": true
     },
     {

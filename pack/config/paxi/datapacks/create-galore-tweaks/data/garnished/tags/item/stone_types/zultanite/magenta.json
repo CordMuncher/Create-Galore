@@ -1,0 +1,24 @@
+{
+  "replace": true,
+  "values": [
+    "garnished:chiseled_magenta_zultanite_bricks",
+    "garnished:cut_magenta_zultanite",
+    "garnished:cut_magenta_zultanite_stairs",
+    "garnished:cut_magenta_zultanite_wall",
+    "garnished:magenta_zultanite",
+    "garnished:magenta_zultanite_brick_stairs",
+    "garnished:magenta_zultanite_brick_wall",
+    "garnished:magenta_zultanite_bricks",
+    "garnished:magenta_zultanite_stairs",
+    "garnished:magenta_zultanite_wall",
+    "garnished:polished_magenta_zultanite",
+    "garnished:polished_magenta_zultanite_stairs",
+    "garnished:polished_magenta_zultanite_wall",
+    "garnished:small_magenta_zultanite_brick_stairs",
+    "garnished:small_magenta_zultanite_brick_wall",
+    "garnished:small_magenta_zultanite_bricks",
+    "garnished:smooth_magenta_zultanite",
+    "garnished:smooth_magenta_zultanite_stairs",
+    "garnished:smooth_magenta_zultanite_wall"
+  ]
+}

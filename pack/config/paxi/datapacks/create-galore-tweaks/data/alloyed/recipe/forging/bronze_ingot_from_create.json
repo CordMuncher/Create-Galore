@@ -1,0 +1,28 @@
+{
+  "type": "alloyed:forging",
+  "ingredients": [
+    {
+      "item": "minecraft:copper_ingot"
+    },
+    {
+      "tag": "c:nuggets/zinc"
+    },
+    {
+      "tag": "c:nuggets/zinc"
+    },
+    {
+      "tag": "c:nuggets/zinc"
+    },
+    {
+      "item": "create:cinder_flour"
+    }
+  ],
+  "result": {
+    "id": "alloyed:bronze_ingot"
+  },
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:false"
+    }
+  ]
+}

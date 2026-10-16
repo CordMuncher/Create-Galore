@@ -53,7 +53,7 @@
     },
     {
       "type": "patchouli:text",
-      "text": "Steel here is made by mixing coal dust and an iron ingot, and it now gives TFMG steel. The reactor accepts any steel (see $(l:materials/shared_metals)Shared Metals$(/l)). Create Nuclear's lead is the pack's only lead. Rotation to FE: $(l:industry/power_compared)Rotation vs Electricity$(/l)."
+      "text": "Steel here is made by mixing coal dust and an iron ingot in a heated mixer, and it gives TFMG steel. The reactor accepts any steel (see $(l:materials/shared_metals)Shared Metals$(/l)). Create Nuclear's lead is the pack's only lead. Rotation to FE: $(l:industry/power_compared)Rotation vs Electricity$(/l)."
     }
   ]
 }

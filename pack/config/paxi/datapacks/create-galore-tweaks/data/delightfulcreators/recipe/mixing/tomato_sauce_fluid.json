@@ -1,0 +1,18 @@
+{
+  "type": "create:mixing",
+  "heat_requirement": "heated",
+  "ingredients": [
+    {
+      "tag": "c:crops/tomato"
+    },
+    {
+      "tag": "c:crops/tomato"
+    }
+  ],
+  "results": [
+    {
+      "id": "delightfulcreators:tomato_sauce",
+      "amount": 250
+    }
+  ]
+}

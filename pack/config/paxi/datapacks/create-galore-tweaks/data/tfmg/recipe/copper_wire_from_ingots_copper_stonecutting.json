@@ -1,1 +1,15 @@
-{"type": "minecraft:stonecutting", "ingredient": {"tag": "c:ingots/copper"}, "result": {"count": 2, "id": "createaddition:copper_wire"}}
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "tag": "c:ingots/copper"
+  },
+  "result": {
+    "count": 2,
+    "id": "createaddition:copper_wire"
+  },
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:false"
+    }
+  ]
+}

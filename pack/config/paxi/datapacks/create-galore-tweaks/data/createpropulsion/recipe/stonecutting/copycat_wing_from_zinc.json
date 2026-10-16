@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "item": "createpropulsion:wing"
+  },
+  "result": {
+    "id": "createpropulsion:copycat_wing",
+    "count": 1
+  }
+}
