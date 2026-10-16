@@ -1,0 +1,7 @@
+[Preferences]
+	#─────────────────────────────────────────────────────────────────────────
+	# Displays a dripping water effect on-screen and/or with particles when the player is wet
+	# 0: Off, 1: Particles, 2: On-Screen, 3: Both
+	# Create Galore: 1 keeps the drips falling off wet players but removes the droplets running down your screen.
+	# Range: 0 ~ 3
+	"Show Water Effect" = 1
