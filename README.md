@@ -67,6 +67,10 @@ Neither mode deletes or re-downloads mods that didn't change, and neither touche
    ```
 3. Press Play. A small window checks the pack. The first run on an instance you already have just checks the files and downloads nothing if they match the latest release. After that, soft launches with no pack change take a couple of seconds. Clean launches fetch the pack's configs (a few hundred small files) each time.
 
+The command reads the pack from GitHub, which only works while the repo is public. To update from a local copy instead (a private repo, or no internet), unzip the release's `Create-Galore-<version>-server-kit.zip` somewhere and put the path of its `pack\pack.toml` after the jar, for example `"$INST_JAVA" -jar create-galore-updater.jar C:\CreateGalorePack\Create-Galore-0.1.6-server-kit\pack\pack.toml --clean`. Unzip a newer kit over it to update.
+
+If the pack can't be read, the updater stops before changing anything. `--clean` moves the configs aside first and puts them back if the update fails, so a failed launch never leaves the instance without configs.
+
 The updater also keeps NeoForge on the pack's pinned version. To freeze the instance on its current version, clear the pre-launch command. If GitHub can't be reached, the window offers to continue without updating.
 
 **What the soft update keeps.** Files the pack doesn't ship are never touched: map and minimap data, `servers.dat`, your worlds, shaders' settings, the Twilight Forest jar and the Elytra switch. Your keybinds and video settings (`options.txt`), Distant Horizons' settings, Subtle Effects' `blocks.toml` and Inventory Profiles Next's settings are kept forever (if the pack ships one of them it is marked `preserve`), so the pack only writes them when they're missing. Any other config you edit stays until the pack itself changes that file; then the pack's version wins, because that's usually a fix. `--clean` throws all of this away, the Elytra switch included.
