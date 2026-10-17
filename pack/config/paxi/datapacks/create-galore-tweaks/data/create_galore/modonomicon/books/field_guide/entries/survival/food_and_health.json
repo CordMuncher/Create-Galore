@@ -26,7 +26,7 @@
     {
       "type": "modonomicon:text",
       "title": "Food and Health",
-      "text": "AppleSkin shows what food does. Food tooltips list hunger and saturation, the hunger bar shows how much a held item would restore, and saturation appears as an overlay. Useful with the larger food list of [#](2E5AAC)[Farmer's Delight](entry://food/farmers_delight)[#]()."
+      "text": "AppleSkin shows what food does. Food tooltips list hunger and [#](7A3C9A)[saturation](entry://glossary/saturation)[#](), the hunger bar shows how much a held item would restore, and saturation appears as an overlay. Useful with the larger food list of [#](2E5AAC)[Farmer's Delight](entry://food/farmers_delight)[#]()."
     },
     {
       "type": "modonomicon:spotlight",
@@ -39,7 +39,7 @@
     {
       "type": "modonomicon:text",
       "title": "Related survival",
-      "text": "Thirst has its own bar: [#](2E5AAC)[Thirst](entry://survival/thirst)[#](). Seasons decide what you can grow: [#](2E5AAC)[Seasons](entry://survival/seasons)[#](). Cold Sweat and Smog add their own hazards."
+      "text": "Thirst has its own bar: [#](2E5AAC)[Thirst](entry://survival/thirst)[#](). Seasons decide what you can grow: [#](2E5AAC)[Seasons](entry://survival/seasons)[#](). [#](2E5AAC)[Cold Sweat](entry://survival/temperature)[#]() and [#](2E5AAC)[Smog](entry://survival/pollution)[#]() add their own hazards."
     },
     {
       "type": "modonomicon:text",

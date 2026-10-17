@@ -1,0 +1,24 @@
+{
+  "category": "glossary",
+  "name": "Purified Water",
+  "description": "Water purity: drink clean water or get sick.",
+  "icon": {
+    "item": "thirst:sand_filter"
+  },
+  "x": -2,
+  "y": 5,
+  "sort_number": 34,
+  "parents": [],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Purified Water",
+      "text": "Water has a **purity**: Dirty, Slightly Dirty, Acceptable, Purified. Dirty water always makes you sick and sometimes poisons you. Acceptable and Purified are safe.\\\n\\\nBoil to clean it: a campfire raises it one step per cook, a furnace takes Dirty straight to Acceptable. A Sand Filter purifies piped water."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Where it matters**\n\n- [#](2E5AAC)[Thirst](entry://survival/thirst)[#]()\n- [#](2E5AAC)[Your First Days](entry://start_here/first_days)[#]()"
+    }
+  ]
+}

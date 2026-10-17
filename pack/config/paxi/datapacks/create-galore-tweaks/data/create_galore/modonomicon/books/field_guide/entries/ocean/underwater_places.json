@@ -20,7 +20,7 @@
     {
       "type": "modonomicon:text",
       "title": "Underwater Places",
-      "text": "Four structure mods rework the sea floor. They are destinations for a [#](2E5AAC)[submarine](entry://ocean/submarines)[#](): ruins, wrecks and monuments with better loot than vanilla. Pressure matters, so check depth with a Barometer first."
+      "text": "Four structure mods rework the sea floor. They are destinations for a [#](2E5AAC)[submarine](entry://ocean/submarines)[#](): ruins, wrecks and monuments with better loot than vanilla. Pressure matters, so check depth with a [#](2E5AAC)[Barometer](entry://ocean/hulls_and_pressure)[#]() first."
     },
     {
       "type": "modonomicon:spotlight",

@@ -36,7 +36,7 @@
         "item": "productivebees:centrifuge"
       },
       "title": "Centrifuge",
-      "text": "Spins combs into items and wax; the Powered one runs on power. Metal and gem combs give ore or gems by chance. Alloy, rare-metal and rare-drop combs are off: [#](2E5AAC)[Balance Changes](entry://connections/balance)[#]()."
+      "text": "Spins combs into items and wax; the Powered one runs on power. Metal and gem combs give ore or gems by chance. Alloy, rare-metal and rare-drop combs are **off**: [#](2E5AAC)[Balance Changes](entry://connections/balance)[#]()."
     },
     {
       "type": "modonomicon:spotlight",
@@ -44,17 +44,17 @@
         "item": "productivebees:bee_cage"
       },
       "title": "Cages and Breeding",
-      "text": "Catch bees in a Bee Cage and breed new ones in a Breeding Chamber. Honey Treats help. Bee breeding recipes are in JEI. Wild nests spread species too."
+      "text": "Catch bees in a Bee Cage and breed new ones in a Breeding Chamber. Honey Treats help. Bee breeding recipes are in [#](7A3C9A)[JEI](entry://glossary/jei)[#](). Wild nests spread species too."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "A metal or gem bee exists only if the pack has that material's block. So zinc (Create), lead (Create Nuclear), nickel and aluminium (TFMG) bees are possible. Lead uses the shared lead tag.\\\n\\\n[#](2E5AAC)[Ore Guide](entry://materials/ore_guide)[#]()."
+      "text": "A metal or gem bee exists only if the pack has that material's block. So zinc (Create), lead (Create Nuclear), nickel and aluminium (TFMG) bees are possible. Lead uses the shared lead [#](7A3C9A)[tag](entry://glossary/tags)[#]().\\\n\\\n[#](2E5AAC)[Ore Guide](entry://materials/ore_guide)[#]()."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Create tie-in: the Super Experience bee's comb can be mixed in a **superheated** Mixer into a Nugget of Super Experience from Create: Enchantment Industry.\\\n\\\nPower: [#](2E5AAC)[Electricity](entry://industry/electricity)[#]()."
+      "text": "Create tie-in: the Super Experience bee's comb can be mixed in a [#](2E5AAC)[superheated](entry://create_basics/heat)[#]() Mixer into a Nugget of Super Experience from Create: Enchantment Industry.\\\n\\\nPower: [#](2E5AAC)[Electricity](entry://industry/electricity)[#]()."
     }
   ]
 }

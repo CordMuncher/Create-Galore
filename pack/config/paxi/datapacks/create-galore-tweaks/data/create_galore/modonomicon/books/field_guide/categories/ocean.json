@@ -4,7 +4,7 @@
   "icon": {
     "item": "minecraft:heart_of_the_sea"
   },
-  "sort_number": 10,
+  "sort_number": 11,
   "display_mode": "node",
   "background": "modonomicon:textures/gui/dark_slate_seamless.png",
   "background_width": 512,

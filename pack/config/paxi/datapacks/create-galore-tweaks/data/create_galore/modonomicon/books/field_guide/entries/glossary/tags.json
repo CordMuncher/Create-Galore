@@ -1,0 +1,24 @@
+{
+  "category": "glossary",
+  "name": "Tags",
+  "description": "A named group of items, fluids or blocks shared by mods.",
+  "icon": {
+    "item": "minecraft:name_tag"
+  },
+  "x": 2,
+  "y": 7,
+  "sort_number": 44,
+  "parents": [],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Tags",
+      "text": "A **tag** is a named group of items, fluids or blocks. Recipes and mods check the tag instead of one exact item, so different mods' versions work alike.\\\n\\\nShared fluid tags let Blaze Burners burn TFMG fuels; the steel tag takes any steel. Glass in the greenhouse glass tag shelters crops."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Where it matters**\n\n- [#](2E5AAC)[Shared Metals](entry://materials/shared_metals)[#]()\n- [#](2E5AAC)[Fuel Goes Everywhere](entry://connections/fuel)[#]()\n- [#](2E5AAC)[Seasons](entry://survival/seasons)[#]()"
+    }
+  ]
+}

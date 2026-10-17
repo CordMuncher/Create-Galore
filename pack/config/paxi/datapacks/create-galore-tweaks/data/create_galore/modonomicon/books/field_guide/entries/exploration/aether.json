@@ -25,7 +25,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "To get there, build a frame of **Glowstone** and place water in it. The portal swirls blue. The mod can also give new players a portal frame item, set by config."
+      "text": "To get there, build a frame of **Glowstone** and place water in it. The portal swirls blue.\\\n\\\nThe mod can also give new players a portal frame item, set by [#](7A3C9A)[config](entry://glossary/config)[#]()."
     },
     {
       "type": "modonomicon:spotlight",
@@ -62,7 +62,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "The Aether's dungeons hold keys and a boss each: Bronze, Silver and Gold, ending in the Slider, Valkyrie Queen and Sun Spirit. Parachute items make falling off the islands survivable."
+      "text": "The Aether's dungeons hold keys and a boss each: Bronze, Silver and Gold, ending in the Slider, Valkyrie Queen and Sun Spirit.\\\n\\\nParachute items make falling off the islands survivable."
     },
     {
       "type": "modonomicon:spotlight",
@@ -70,12 +70,12 @@
         "item": "aether:cold_parachute"
       },
       "title": "Cold Parachute",
-      "text": "A parachute for falling off the islands. A Golden Parachute is the sturdier version."
+      "text": "A parachute for falling off the islands. A [Golden Parachute](item://aether:golden_parachute) is the sturdier version."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Gear from the Aether stacks with other mods. The Invisibility Cloak toggles with = by default here. Bosses are in [#](2E5AAC)[Bosses](entry://exploration/bosses)[#](); travel is in [#](2E5AAC)[Dimensions](entry://exploration/dimensions)[#]()."
+      "text": "Gear from the Aether stacks with other mods. The [Invisibility Cloak](item://aether:invisibility_cloak) toggles with **=** by default here.\\\n\\\nBosses are in [#](2E5AAC)[Bosses](entry://exploration/bosses)[#](); travel is in [#](2E5AAC)[Dimensions](entry://exploration/dimensions)[#]()."
     }
   ]
 }

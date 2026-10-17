@@ -1,0 +1,24 @@
+{
+  "category": "glossary",
+  "name": "Boiler (Steam)",
+  "description": "Fluid tanks heated from below that run Steam Engines.",
+  "icon": {
+    "item": "create:steam_engine"
+  },
+  "x": 4,
+  "y": -3,
+  "sort_number": 5,
+  "parents": [],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Boiler (Steam)",
+      "text": "A Create **boiler** is Fluid Tanks of water, heated from below, with Steam Engines attached. The minimum is 4 tanks.\\\n\\\nMore heat gives a higher **power level**; each level runs one more engine at full strength. Goggles show it.\\\n\\\nCold Sweat's Boiler is a different block, an area heater."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Where it matters**\n\n- [#](2E5AAC)[Power Sources](entry://create_basics/power_sources)[#]()\n- [#](2E5AAC)[Blaze Burner and Heat](entry://create_basics/heat)[#]()\n- [#](2E5AAC)[Insulation and Heaters](entry://survival/temperature_gear)[#]()"
+    }
+  ]
+}

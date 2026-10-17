@@ -20,7 +20,7 @@
     {
       "type": "modonomicon:text",
       "title": "Dragons Plus Fan Effects",
-      "text": "Create: Dragons Plus adds new things for a [#](2E5AAC)[Fan](entry://create_basics/fans)[#]() to do. Blow air through a catalyst and items in the stream get processed in bulk."
+      "text": "Create: Dragons Plus adds new things for a [#](2E5AAC)[Fan](entry://create_basics/fans)[#]() to do. Blow air through a [#](7A3C9A)[catalyst](entry://glossary/fan_catalyst)[#]() and items in the stream get processed in bulk."
     },
     {
       "type": "modonomicon:text",
@@ -43,7 +43,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**Sanding** (quicksand) does sandpaper recipes in bulk. **Enchanting** (Golden Aercloud) runs Aether Altar recipes and incubates Moa Eggs. See [#](2E5AAC)[Dimensions](entry://exploration/dimensions)[#]()."
+      "text": "**Sanding** (quicksand) does sandpaper recipes in bulk.\\\n\\\n**Enchanting** (Golden Aercloud) runs Aether Altar recipes and incubates Moa Eggs. See [#](2E5AAC)[Dimensions](entry://exploration/dimensions)[#]()."
     },
     {
       "type": "modonomicon:spotlight",

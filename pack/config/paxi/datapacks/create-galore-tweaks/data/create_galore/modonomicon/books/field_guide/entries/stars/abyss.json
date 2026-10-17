@@ -28,7 +28,7 @@
     {
       "type": "modonomicon:text",
       "title": "Where",
-      "text": "The **Abyssal Chasm** is an Alex's Caves biome deep under ocean, pitch black and crushing. A **Cave Biome Map** points to one. Go down in a [#](2E5AAC)[submarine](entry://ocean/submarines)[#](): it carries air, light and weapons."
+      "text": "The **Abyssal Chasm** is an [#](2E5AAC)[Alex's Caves](entry://exploration/alexs_caves)[#]() biome deep under ocean, pitch black and crushing. A [Cave Biome Map](item://alexscaves:cave_map) points to one. Go down in a [#](2E5AAC)[submarine](entry://ocean/submarines)[#](): it carries air, light and weapons."
     },
     {
       "type": "modonomicon:text",

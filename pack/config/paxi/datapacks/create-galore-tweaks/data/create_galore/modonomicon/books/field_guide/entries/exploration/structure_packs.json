@@ -20,7 +20,12 @@
     {
       "type": "modonomicon:text",
       "title": "Structure Packs",
-      "text": "These mods add buildings to the Overworld and beyond. They need no setup: walk, ride or fly and you will find them. Most have chests that follow [#](2E5AAC)[Lootr](entry://exploration/lootr)[#]()'s per-player loot rules."
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- [#](FFFFFF)\ue10e[#]() No setup: walk, ride or fly and you will find them.\n- Most chests follow [#](2E5AAC)[Lootr](entry://exploration/lootr)[#]()'s per-player loot rules.\n- Four families: **Towns and Towers**, **Dungeons and Taverns**, **When Dungeons Arise** and **YUNG's**."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "These mods add buildings to the Overworld and beyond. They need no setup: walk, ride or fly and you will find them. Most have chests that follow Lootr's per-player loot rules."
     },
     {
       "type": "modonomicon:text",
@@ -43,17 +48,17 @@
       "text": "**YUNG's** series reworks vanilla structures: Better Dungeons, Mineshafts, Strongholds, Desert Temples, Jungle Temples, Witch Huts and Ocean Monuments. Same places, much better builds and loot."
     },
     {
-      "type": "modonomicon:text",
-      "title": "",
-      "text": "Some underground structures are spaced wider than their mods default: YUNG's small dungeons, Alex's Caves' underground cabins, and Dungeons and Taverns' underground houses and deepslate camps. The pack still has many more structures than vanilla."
-    },
-    {
       "type": "modonomicon:spotlight",
       "item": {
         "item": "minecraft:chest"
       },
       "title": "Dungeon Loot",
       "text": "The chests in these builds are the reason to visit. Lootr makes them per-player."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "[#](FFFFFF)\ue103[#]() **In depth.** Some underground structures are spaced wider than their mods default: YUNG's small dungeons, Alex's Caves' underground cabins, and Dungeons and Taverns' underground houses and deepslate camps. The pack still has many more structures than vanilla."
     },
     {
       "type": "modonomicon:text",

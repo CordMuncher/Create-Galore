@@ -20,7 +20,12 @@
     {
       "type": "modonomicon:text",
       "title": "Iron's Spellbooks",
-      "text": "**Iron's Spells 'n Spellbooks** adds spellcasting. You carry a spell book, fill its slots with spells, and cast them using mana. Spells belong to schools, and gear raises the power of one school or all."
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- Put spells in a spell book, cast with mana. Better books hold more.\n- **Scrolls**: single-use spells anyone can cast.\n- [#](FFFFFF)\ue10d[#]() Scroll Forge makes scrolls; Inscription Table fills books.\n- Portal, Recall and Angel Wings are off."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Iron's Spells 'n Spellbooks** adds spellcasting. You carry a spell book, fill its slots with spells, and cast them using [#](7A3C9A)[mana](entry://glossary/mana)[#](). Spells belong to schools, and gear raises the power of one school or all."
     },
     {
       "type": "modonomicon:spotlight",
@@ -57,22 +62,22 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Magic crafting uses ink in five rarities, Arcane Essence, Mithril, Pyrium and Arcane Ingots, plus Upgrade Orbs that boost a school. An **Alchemist Cauldron**, Arcane Anvil and Pedestals help. Rings and necklaces are worn in [#](2E5AAC)[Curios slots](entry://exploration/gear)[#]()."
+      "text": "Magic crafting uses:\n\n- ink in five rarities\n- Arcane Essence\n- Mithril, Pyrium and Arcane Ingots\n- Upgrade Orbs that boost a school\n\nAn **Alchemist Cauldron**, Arcane Anvil and Pedestals help. Rings and necklaces are worn in [#](2E5AAC)[Curios slots](entry://exploration/gear)[#]()."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Create hooks in directly. Inks, Blood Vials, Timeless Slurry and several elixirs have Create filling and emptying recipes, so a Spout can fill them from fluid and a Drain can empty them. See [#](2E5AAC)[Fluids](entry://create_basics/fluids)[#]()."
-    },
-    {
-      "type": "modonomicon:text",
-      "title": "",
-      "text": "The world has wizard towers and a lost Citadel: Pyromancer Tower, Archevoker's Evoker Fort, Ice Spider Den, Ancient Battleground, Catacombs, and the Citadel (a Citadel Map exists). Mage mobs defend them. Pack-wide bosses: [#](2E5AAC)[Bosses](entry://exploration/bosses)[#]()."
+      "text": "The world has wizard towers and a lost Citadel. Mage mobs defend them.\n\n- Pyromancer Tower\n- Archevoker's Evoker Fort\n- Ice Spider Den\n- Ancient Battleground\n- Catacombs\n- the Citadel (a Citadel Map exists)\n\nPack-wide bosses: [#](2E5AAC)[Bosses](entry://exploration/bosses)[#]()."
     },
     {
       "type": "modonomicon:text",
       "title": "Turned off here",
-      "text": "Three spells would replace vehicles, so they never show up in loot, the Scroll Forge or JEI: **Portal** (permanent two-way links), **Recall** (home from anywhere) and **Angel Wings** (Elytra flight). Portal Frames and the Hither-Thither Wand can't be crafted. See [#](2E5AAC)[Getting Around](entry://transport/getting_around)[#]()."
+      "text": "Three spells would replace vehicles, so they never show up in loot, the Scroll Forge or [#](7A3C9A)[JEI](entry://glossary/jei)[#](): **Portal** (permanent two-way links), **Recall** (home from anywhere) and **Angel Wings** (Elytra flight).\\\n\\\nPortal Frames and the Hither-Thither Wand can't be crafted. See [#](2E5AAC)[Getting Around](entry://transport/getting_around)[#]()."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "[#](FFFFFF)\ue103[#]() **In depth.** Create hooks in directly. Inks, Blood Vials, Timeless Slurry and several elixirs have Create filling and emptying recipes, so a Spout can fill them from fluid and a Drain can empty them.\\\n\\\nSee [#](2E5AAC)[Fluids](entry://create_basics/fluids)[#]()."
     },
     {
       "type": "modonomicon:text",

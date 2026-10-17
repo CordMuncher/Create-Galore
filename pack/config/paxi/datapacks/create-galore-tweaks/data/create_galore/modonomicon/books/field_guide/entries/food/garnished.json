@@ -20,7 +20,7 @@
     {
       "type": "modonomicon:text",
       "title": "Create Garnished",
-      "text": "**Create Garnished** is a big food-and-decor addon. It adds nine nuts, glazes and coatings, and many Create-style recipes with fans and haunting. It also has a large set of coloured building stones."
+      "text": "**Create Garnished** is a big food-and-decor addon. It adds nine nuts, glazes and coatings, and many Create-style recipes with fans and [#](7A3C9A)[haunting](entry://glossary/haunting)[#]().\\\n\\\nIt also has a large set of coloured building stones."
     },
     {
       "type": "modonomicon:spotlight",
@@ -33,12 +33,12 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Coating is mostly Create processing. A Deployer applies cinder flour to a nut, and compacting adds effects such as strength to a cinder-coated nut. Garnish Compound and Liquid Garnish finish dishes.\\\n\\\nCheck JEI for each nut's route."
+      "text": "Coating is mostly Create processing. A Deployer applies cinder flour to a nut, and [#](7A3C9A)[compacting](entry://glossary/compacting)[#]() adds effects such as strength to a cinder-coated nut. Garnish Compound and Liquid Garnish finish dishes.\\\n\\\nCheck [#](7A3C9A)[JEI](entry://glossary/jei)[#]() for each nut's route."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Garnished adds fan recipes in two directions. Fans behind coloured **Liquefied Mastic Resin** bulk-dye items in 16 colours. A fan behind powdered snow does bulk freezing.\\\n\\\n[#](2E5AAC)[Fans](entry://create_basics/fans)[#]() explains how fan catalysts work."
+      "text": "Garnished adds fan recipes in two directions:\n\n- Fans behind coloured **Liquefied Mastic Resin** bulk-dye items in 16 colours.\n- A fan behind powdered snow does bulk freezing.\n\n[#](2E5AAC)[Fans](entry://create_basics/fans)[#]() explains how [#](7A3C9A)[fan catalysts](entry://glossary/fan_catalyst)[#]() work."
     },
     {
       "type": "modonomicon:spotlight",

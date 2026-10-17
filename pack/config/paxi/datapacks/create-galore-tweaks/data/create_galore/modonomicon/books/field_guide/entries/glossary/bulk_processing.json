@@ -1,0 +1,24 @@
+{
+  "category": "glossary",
+  "name": "Bulk Processing",
+  "description": "Items processed by an Encased Fan's air stream.",
+  "icon": {
+    "item": "create:encased_fan"
+  },
+  "x": 6,
+  "y": -3,
+  "sort_number": 6,
+  "parents": [],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Bulk Processing",
+      "text": "**Bulk processing** (fan processing) is what an Encased Fan does to items in its air, on the ground, a belt or a depot.\\\n\\\nThe block the air passes through decides it: washing, smoking, blasting, haunting and add-on types. Fan speed only changes the range."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Where it matters**\n\n- [#](2E5AAC)[Encased Fans](entry://create_basics/fans)[#]()\n- [#](2E5AAC)[Dragons Plus Fan Effects](entry://industry/dragons_plus)[#]()\n- [#](2E5AAC)[Create Garnished](entry://food/garnished)[#]()\n- [#](2E5AAC)[Conduit Cages](entry://ocean/conduits)[#]()"
+    }
+  ]
+}

@@ -4,7 +4,7 @@
   "icon": {
     "item": "sophisticatedbackpacks:backpack"
   },
-  "sort_number": 13,
+  "sort_number": 14,
   "display_mode": "node",
   "background": "modonomicon:textures/gui/dark_slate_seamless.png",
   "background_width": 512,

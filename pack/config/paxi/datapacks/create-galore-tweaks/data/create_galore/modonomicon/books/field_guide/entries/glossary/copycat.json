@@ -1,0 +1,24 @@
+{
+  "category": "glossary",
+  "name": "Copycat",
+  "description": "A block that takes on the look of another block.",
+  "icon": {
+    "item": "copycats:copycat_block"
+  },
+  "x": 0,
+  "y": -1,
+  "sort_number": 11,
+  "parents": [],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Copycat",
+      "text": "A **copycat** block takes on the look of any block you apply to it, so you can make slices, layers, panels, doors, fences or even cogwheels and shafts in any material.\\\n\\\nCopycats+ supplies them here; Create: Connected's own copycats are switched off. Create Propulsion has copycat wings."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Where it matters**\n\n- [#](2E5AAC)[Create Decor](entry://home/create_decor)[#]()\n- [#](2E5AAC)[Thrusters and Engines](entry://flight/propulsion)[#]()\n- [#](2E5AAC)[Ship Hardware](entry://flight/ship_hardware)[#]()"
+    }
+  ]
+}

@@ -28,7 +28,7 @@
         "item": "brewinandchewin:keg"
       },
       "title": "Keg",
-      "text": "Holds ingredients and fluid while they ferment over time. Output is a bottle or a food item. Check JEI for each recipe and how long it takes."
+      "text": "Holds ingredients and fluid while they ferment over time. Output is a bottle or a food item. Check [#](7A3C9A)[JEI](entry://glossary/jei)[#]() for each recipe and how long it takes."
     },
     {
       "type": "modonomicon:spotlight",

@@ -28,7 +28,7 @@
         "item": "create:wrench"
       },
       "title": "Wrench",
-      "text": "Right-click to rotate a component around the face you click. Sneak and right-click to dismantle it. It also moves assembled minecart and train contraptions."
+      "text": "Right-click to rotate a component around the face you click. Sneak and right-click to dismantle it. It also moves [#](7A3C9A)[assembled](entry://glossary/assemble)[#]() minecart and train contraptions."
     },
     {
       "type": "modonomicon:spotlight",
@@ -36,22 +36,22 @@
         "item": "create:goggles"
       },
       "title": "Engineer's Goggles",
-      "text": "Show stress impact, capacity and speed of kinetic parts, and the contents of tanks and basins, when you look at them."
+      "text": "Show stress impact, capacity and speed of [#](7A3C9A)[kinetic parts](entry://glossary/kinetic_network)[#](), and the contents of tanks and basins, when you look at them."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Wrenches also toggle connections on encased shafts and cogwheels, and open or close the window on fluid tanks."
+      "text": "Wrenches also toggle connections on [#](7A3C9A)[encased](entry://glossary/encased)[#]() shafts and cogwheels, and open or close the window on fluid tanks."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**Value boxes.** Many machines show a small panel on a face. Look at it and right-click to change it, or scroll with the mouse wheel to adjust the value. Speed controllers, windmills and gearshifts use these."
+      "text": "**Value boxes.** Many machines show a small [#](7A3C9A)[panel](entry://glossary/value_panel)[#]() on a face. Look at it and right-click to change it, or scroll with the mouse wheel to adjust the value. Speed controllers, windmills and gearshifts use these."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**Tooltips.** Hold Shift on any Create item for a summary of what it does and what it needs. Hold W for Ponder.\\\n\\\nRead about stress in [#](2E5AAC)[Stress](entry://create_basics/stress)[#]() and see [#](2E5AAC)[Tools](entry://start_here/tools)[#]()."
+      "text": "**Tooltips.** Hold Shift on any Create item for a summary of what it does and what it needs. Hold W for [#](2E5AAC)[Ponder](entry://start_here/tools)[#]().\\\n\\\nRead about stress in [#](2E5AAC)[Stress](entry://create_basics/stress)[#]() and see [#](2E5AAC)[Tools](entry://start_here/tools)[#]()."
     },
     {
       "type": "modonomicon:crafting_recipe",

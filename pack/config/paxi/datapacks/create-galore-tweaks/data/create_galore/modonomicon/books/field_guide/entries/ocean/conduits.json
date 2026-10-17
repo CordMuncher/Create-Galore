@@ -20,7 +20,12 @@
     {
       "type": "modonomicon:text",
       "title": "Conduit Cages",
-      "text": "**Create: Aquatic Ambitions** ties Minecraft's ocean items to Create. Its centrepiece is the **Conduit Cage**: a compact conduit you feed with a fluid through its bottom face. A fed cage is **awakened**."
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- [#](FFFFFF)\ue107[#]() Feed a **Conduit Cage** a fluid through its bottom face to awaken it. Water gives Conduit Power nearby.\n- [#](FFFFFF)\ue104[#]() Air blown through an awakened cage makes a **Channeling** fan stream.\n- Channeling recipes are in JEI under Conduit Channeling."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Create: Aquatic Ambitions** ties Minecraft's ocean items to Create. Its centrepiece is the **Conduit Cage**: a compact conduit you feed with a fluid through its **bottom face**. A fed cage is **awakened**."
     },
     {
       "type": "modonomicon:spotlight",
@@ -38,12 +43,12 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Awakened cages also work as a [#](2E5AAC)[fan](entry://create_basics/fans)[#]() processor. Air blown through one makes a **Channeling** stream, and extra water layers dilute it into washing. The classic Conduit ring works the same way."
+      "text": "Awakened cages also work as a [#](2E5AAC)[fan](entry://create_basics/fans)[#]() processor. Air blown through one makes a **Channeling** stream, and extra water layers dilute it into [#](7A3C9A)[washing](entry://glossary/washing)[#](). The classic Conduit ring works the same way."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Channeling can revive dead coral, turn flint into Prismarine Shards, glowstone dust into Prismarine Crystals, an Ender Eye into a Heart of the Sea, and age copper blocks. Look up recipes in JEI under Conduit Channeling."
+      "text": "Channeling can:\n\n- revive dead coral\n- turn flint into Prismarine Shards\n- turn glowstone dust into Prismarine Crystals\n- turn an Ender Eye into a Heart of the Sea\n- age copper blocks\n\nLook up recipes in [#](2E5AAC)[JEI](entry://start_here/tools)[#]() under Conduit Channeling."
     },
     {
       "type": "modonomicon:spotlight",
@@ -64,7 +69,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Prismarine is also crushable for lapis and Create XP nuggets, so ocean monuments become a source of materials: see [#](2E5AAC)[Underwater Places](entry://ocean/underwater_places)[#](). Gravel, Calcium Rich Powder and lava compact into calcite."
+      "text": "Prismarine is also crushable for lapis and Create [XP nuggets](item://create:experience_nugget), so ocean monuments become a source of materials: see [#](2E5AAC)[Underwater Places](entry://ocean/underwater_places)[#](). Gravel, Calcium Rich Powder and lava [#](7A3C9A)[compact](entry://glossary/compacting)[#]() into calcite."
     }
   ]
 }

@@ -20,6 +20,11 @@
     {
       "type": "modonomicon:text",
       "title": "Your First Days",
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- [#](FFFFFF)\ue107[#]() Lake, sea and swamp water is **Dirty**: boil bottles in a furnace before you drink.\n- Rain is free water: look straight up.\n- [#](FFFFFF)\ue109[#]() Snowy spawn? About 5 minutes, then the cold hurts. Get near a fire.\n- [#](FFFFFF)\ue10c[#]() Melon slices count as a drink."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
       "text": "Read this before your first night. Three things can kill a new player here that can't in vanilla: **thirst**, **cold or heat**, and **dirty water**. All three are easy once you know the trick."
     },
     {
@@ -30,7 +35,7 @@
     {
       "type": "modonomicon:text",
       "title": "Dirty water",
-      "text": "Lake, sea and swamp water is **Dirty**. Drinking it always gives hunger and nausea, and 3 times in 10 poison too. You still get the water.\\\n\\\nFlowing water, and water above Y 100 or below Y 48, is one step cleaner."
+      "text": "Lake, sea and swamp water is [#](7A3C9A)[Dirty](entry://glossary/purified_water)[#]().\\\n\\\n[#](FFFFFF)\ue101[#]() **Watch out:** drinking it always gives hunger and nausea, and 3 times in 10 poison too. You still get the water.\\\n\\\nFlowing water, and water above [#](7A3C9A)[Y](entry://glossary/y_level)[#]() 100 or below Y 48, is one step cleaner."
     },
     {
       "type": "modonomicon:spotlight",
@@ -43,12 +48,12 @@
     {
       "type": "modonomicon:text",
       "title": "Boil it",
-      "text": "Cook a filled bottle before you drink it.\n\n- **Furnace:** Dirty turns straight into Acceptable, which is safe to live on.\n- **Campfire:** one step cleaner per cook. Slow, but it needs no fuel.\n\nBoil a stack while you work."
+      "text": "Cook a filled bottle before you drink it.\n\n- **Furnace:** Dirty turns straight into Acceptable, which is safe to live on.\n- **Campfire:** one step cleaner per cook. Slow, but it needs no fuel.\n\n[#](FFFFFF)\ue102[#]() **Tip:** boil a stack while you work."
     },
     {
       "type": "modonomicon:text",
       "title": "Food that hydrates",
-      "text": "Some food counts as a drink. **Melon slices** are the best early pick, then apples, beetroot soup, carrots and berries.\\\n\\\nAt 3 droplets or less you can't sprint, and at zero you start taking damage."
+      "text": "Some food counts as a drink. [Melon slices](item://minecraft:melon_slice) are the best early pick, then apples, beetroot soup, carrots and berries.\\\n\\\nAt 3 droplets or less you can't sprint, and at zero you start taking damage."
     },
     {
       "type": "modonomicon:text",
@@ -58,12 +63,12 @@
     {
       "type": "modonomicon:text",
       "title": "Cold and heat",
-      "text": "Your body temperature is on the HUD. If you spawn in snow you get about 5 minutes of grace, then the cold starts to hurt.\\\n\\\nStand near a campfire, a lit furnace or lava to warm up. Getting wet chills you, which helps in a desert."
+      "text": "Your [#](2E5AAC)[body temperature](entry://survival/temperature)[#]() is on the HUD. If you spawn in snow you get about 5 minutes of [#](7A3C9A)[grace](entry://glossary/grace)[#](), then the cold starts to hurt.\\\n\\\nStand near a campfire, a lit furnace or lava to warm up. Getting wet chills you, which helps in a desert."
     },
     {
       "type": "modonomicon:text",
       "title": "Dress for it",
-      "text": "Leather armor and furs insulate. A **Sewing Table** (wool and planks) sews insulation like Goat Fur onto any armor. Later a **Hearth** keeps a whole base comfortable.\\\n\\\nYou can't sleep while freezing or overheating."
+      "text": "Leather armor and furs [#](2E5AAC)[insulate](entry://survival/temperature_gear)[#](). A [Sewing Table](item://cold_sweat:sewing_table) (wool and planks) sews insulation like [Goat Fur](item://cold_sweat:goat_fur) onto any armor. Later a **Hearth** keeps a whole base comfortable.\\\n\\\nYou can't sleep while freezing or overheating."
     },
     {
       "type": "modonomicon:text",

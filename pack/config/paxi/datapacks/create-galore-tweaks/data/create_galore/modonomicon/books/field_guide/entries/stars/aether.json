@@ -28,7 +28,7 @@
     {
       "type": "modonomicon:text",
       "title": "Where",
-      "text": "Gravitite Ore is a rare ore in Aether Holystone and needs an iron-tier pickaxe (**Zanite** works). Mine it, then enchant it at an Altar fuelled with Ambrosium. No boss needed; the Aether goes on forever."
+      "text": "Gravitite Ore is a rare ore in Aether Holystone and needs an iron-tier pickaxe ([Zanite](item://aether:zanite_pickaxe) works). Mine it, then enchant it at an Altar fuelled with [Ambrosium](item://aether:ambrosium_shard). No boss needed; the Aether goes on forever."
     },
     {
       "type": "modonomicon:text",

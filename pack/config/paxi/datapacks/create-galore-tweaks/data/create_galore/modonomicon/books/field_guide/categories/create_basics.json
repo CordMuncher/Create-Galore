@@ -4,7 +4,7 @@
   "icon": {
     "item": "create:cogwheel"
   },
-  "sort_number": 1,
+  "sort_number": 2,
   "display_mode": "node",
   "background": "modonomicon:textures/gui/dark_slate_seamless.png",
   "background_width": 512,

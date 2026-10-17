@@ -25,7 +25,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**Rotation first.** Almost every machine needs spinning shafts. Read [#](2E5AAC)[Rotation](entry://create_basics/rotation)[#](), [#](2E5AAC)[Stress](entry://create_basics/stress)[#]() and [#](2E5AAC)[Power Sources](entry://create_basics/power_sources)[#]() before building anything that processes items."
+      "text": "**Rotation first.** Almost every machine needs spinning shafts. Read [#](2E5AAC)[Rotation](entry://create_basics/rotation)[#](), [#](2E5AAC)[Stress](entry://create_basics/stress)[#]() and [#](2E5AAC)[Power Sources](entry://create_basics/power_sources)[#]() before building anything that [#](2E5AAC)[processes items](entry://create_basics/processing)[#]()."
     },
     {
       "type": "modonomicon:spotlight",
@@ -33,7 +33,7 @@
         "item": "create:andesite_alloy"
       },
       "title": "Andesite Alloy",
-      "text": "The first Create material. Early machines and casings use it. Brass comes later and opens the second tier. See [#](2E5AAC)[Materials](entry://create_basics/materials)[#]()."
+      "text": "The first Create material. Early machines and [#](7A3C9A)[casings](entry://glossary/encased)[#]() use it. [#](2E5AAC)[Brass](entry://create_basics/brass_and_assembly)[#]() comes later and opens the second tier. See [#](2E5AAC)[Materials](entry://create_basics/materials)[#]()."
     },
     {
       "type": "modonomicon:text",

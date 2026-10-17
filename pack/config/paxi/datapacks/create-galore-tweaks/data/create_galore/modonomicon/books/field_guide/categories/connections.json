@@ -4,7 +4,7 @@
   "icon": {
     "item": "create:precision_mechanism"
   },
-  "sort_number": 2,
+  "sort_number": 3,
   "display_mode": "node",
   "background": "modonomicon:textures/gui/dark_slate_seamless.png",
   "background_width": 512,

@@ -1,0 +1,24 @@
+{
+  "category": "glossary",
+  "name": "Redstone Link Frequency",
+  "description": "The two-item code that pairs Redstone Links.",
+  "icon": {
+    "item": "create:redstone_link"
+  },
+  "x": 0,
+  "y": 5,
+  "sort_number": 35,
+  "parents": [],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Redstone Link Frequency",
+      "text": "A Redstone Link's **frequency** is set by two items in its slots. A powered transmitter powers every receiver with the same pair, anywhere.\\\n\\\nOther blocks bind to these frequencies too: Aeroworks control consoles and coaster Restrictor seats."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Where it matters**\n\n- [#](2E5AAC)[Redstone and Displays](entry://create_basics/redstone_and_control)[#]()\n- [#](2E5AAC)[Steering and Controls](entry://flight/controls)[#]()\n- [#](2E5AAC)[Roller Coasters](entry://transport/coasters)[#]()"
+    }
+  ]
+}

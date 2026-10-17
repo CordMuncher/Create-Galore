@@ -41,7 +41,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Waypoint names can be shared to chat, so teammates can add them. Be careful not to expose a secret base.\\\n\\\nKeybinds are listed in Controls under the Xaero categories. Open the settings from the minimap or the Mods menu."
+      "text": "Waypoint names can be shared to chat, so teammates can add them. [#](FFFFFF)\ue101[#]() **Watch out:** be careful not to expose a secret base.\\\n\\\nKeybinds are listed in Controls under the Xaero categories. Open the settings from the minimap or the Mods menu."
     },
     {
       "type": "modonomicon:spotlight",
@@ -49,7 +49,7 @@
         "item": "minecraft:compass"
       },
       "title": "Trains and Airships",
-      "text": "Xaero Train Map shows Create train lines and stations on the world map. Create - Xaero's map draws Sable-based vehicles like airships live, with rotation.\\\n[#](2E5AAC)[Trains](entry://transport/trains)[#]() [#](2E5AAC)[Airships](entry://flight/airships)[#]()"
+      "text": "Xaero Train Map shows Create train lines and stations on the world map. Create - Xaero's map draws [#](7A3C9A)[Sable](entry://glossary/sub_level)[#]()-based vehicles like airships live, with rotation.\\\n[#](2E5AAC)[Trains](entry://transport/trains)[#]() [#](2E5AAC)[Airships](entry://flight/airships)[#]()"
     },
     {
       "type": "modonomicon:text",

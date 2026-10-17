@@ -1,0 +1,24 @@
+{
+  "category": "glossary",
+  "name": "Kinetic Network",
+  "description": "Everything connected to one set of spinning shafts and gears.",
+  "icon": {
+    "item": "create:cogwheel"
+  },
+  "x": -4,
+  "y": 3,
+  "sort_number": 25,
+  "parents": [],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Kinetic Network",
+      "text": "A **kinetic network** is every shaft, gear, belt and machine connected together. **Kinetic** is Create's word for parts that run on rotation.\\\n\\\nEverything on one network spins at the same speed, scaled by gear ratios, and shares one pool of stress capacity. Overstress it and the whole network stops."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Where it matters**\n\n- [#](2E5AAC)[Rotation](entry://create_basics/rotation)[#]()\n- [#](2E5AAC)[Stress](entry://create_basics/stress)[#]()\n- [#](2E5AAC)[Transmission](entry://create_basics/transmission)[#]()"
+    }
+  ]
+}

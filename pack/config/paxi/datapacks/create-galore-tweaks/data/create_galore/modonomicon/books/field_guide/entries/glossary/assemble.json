@@ -1,0 +1,24 @@
+{
+  "category": "glossary",
+  "name": "Assemble",
+  "description": "Turning placed blocks into a moving contraption, and back.",
+  "icon": {
+    "item": "create:mechanical_piston"
+  },
+  "x": -4,
+  "y": -3,
+  "sort_number": 1,
+  "parents": [],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Assemble",
+      "text": "To **assemble** is to turn placed blocks into one moving contraption, train, ship or rocket. **Disassemble** turns it back into blocks.\\\n\\\nGlue decides what comes along. Movers like bearings assemble their own; trains use a Train Station's Assembly Mode, ships the Physics Assembler. Trains disassemble only at a station."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Where it matters**\n\n- [#](2E5AAC)[Contraptions](entry://create_basics/contraptions)[#]()\n- [#](2E5AAC)[Trains](entry://transport/trains)[#]()\n- [#](2E5AAC)[Building a Ship](entry://flight/ship_building)[#]()\n- [#](2E5AAC)[Building a Rocket](entry://space/rocket_building)[#]()"
+    }
+  ]
+}

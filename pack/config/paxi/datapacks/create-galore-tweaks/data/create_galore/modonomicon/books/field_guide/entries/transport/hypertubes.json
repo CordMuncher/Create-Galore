@@ -20,12 +20,17 @@
     {
       "type": "modonomicon:text",
       "title": "Hypertubes",
-      "text": "Hypertubes are tubes you travel through at speed. Connect entrances with tube blocks and anything that steps in is carried down the line. Create rotation powers the entrance."
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- [#](FFFFFF)\ue104[#]() Create rotation powers the entrance: at least **16 RPM** to admit you.\n- Faster rotation means faster travel.\n- Hold a tube, right-click one already placed, then place the next.\n- The **escape key** gets you out of a tube."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Hypertubes are tubes you travel through at speed. Connect entrances with tube blocks and anything that steps in is carried down the line. Create [#](2E5AAC)[rotation](entry://create_basics/rotation)[#]() powers the entrance."
     },
     {
       "type": "modonomicon:text",
       "title": "Building a line",
-      "text": "Right-click a placed tube while holding another, then place the second to connect them. Tubes that are already placed can be linked the same way. A wrench changes how many segments a span uses. The angle and distance between two ends are limited."
+      "text": "Right-click a placed tube while holding another, then place the second to connect them. Tubes that are already placed can be linked the same way. A [#](2E5AAC)[wrench](entry://create_basics/tools_wrench)[#]() changes how many segments a span uses. The angle and distance between two ends are limited."
     },
     {
       "type": "modonomicon:spotlight",
@@ -38,7 +43,7 @@
     {
       "type": "modonomicon:text",
       "title": "Entrances",
-      "text": "An entrance needs at least 16 RPM to admit you, and faster rotation means faster travel. A wrench changes the mode, between manual lock (sneak to enter) and automatic lock. The escape key gets you out of a tube."
+      "text": "An entrance needs at least **16 [#](7A3C9A)[RPM](entry://glossary/rpm)[#]()** to admit you, and faster rotation means faster travel.\n\n- A wrench changes the mode, between **manual lock** (sneak to enter) and **automatic lock**.\n- The **escape key** gets you out of a tube."
     },
     {
       "type": "modonomicon:spotlight",

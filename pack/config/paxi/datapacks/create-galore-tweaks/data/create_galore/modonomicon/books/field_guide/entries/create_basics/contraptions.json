@@ -26,7 +26,12 @@
     {
       "type": "modonomicon:text",
       "title": "Contraptions",
-      "text": "A **contraption** is a group of blocks moved as one: a drill carrying platform, a farm that drives itself, a train car. Glue and chassis decide what comes along; a mover decides how."
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- [#](FFFFFF)\ue104[#]() A **contraption** is a group of blocks moved as one.\n- **Glue** and **chassis** decide which blocks come along.\n- A **mover** decides how: piston, pulley, gantry, bearing or cart.\n- Drills, saws and deployers on it work as it moves."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "A **contraption** is a group of blocks moved as one: a drill carrying platform, a farm that drives itself, a train car. [#](7A3C9A)[Glue](entry://glossary/super_glue)[#]() and chassis decide what comes along; a mover decides how."
     },
     {
       "type": "modonomicon:spotlight",
@@ -42,12 +47,12 @@
         "item": "create:linear_chassis"
       },
       "title": "Linear Chassis",
-      "text": "Glues a row of blocks along its axis. The Radial Chassis grabs a disc around its axis. Both work with wrench settings and chassis ranges."
+      "text": "Glues a row of blocks along its axis. The Radial Chassis grabs a disc around its axis. Both work with [#](2E5AAC)[wrench](entry://create_basics/tools_wrench)[#]() settings and chassis ranges."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**Movers**:\n\n- Piston: pushes along a line\n\n- Rope Pulley: up and down\n\n- Gantry: slides on a shaft\n\n- Bearing: spins\n\n- Cart Assembler: rides a minecart"
+      "text": "**Movers**:\n\n- Piston: pushes along a line\n\n- Rope Pulley: up and down\n\n- Gantry: slides on a shaft\n\n- [#](7A3C9A)[Bearing](entry://glossary/bearing)[#](): spins\n\n- Cart Assembler: rides a minecart"
     },
     {
       "type": "modonomicon:spotlight",
@@ -55,12 +60,12 @@
         "item": "create:mechanical_bearing"
       },
       "title": "Mechanical Bearing",
-      "text": "Rotates a structure, for windmills, rotating drills and turntables. The Clockwork Bearing makes clock hands."
+      "text": "Rotates a structure, for [#](2E5AAC)[windmills](entry://create_basics/power_sources)[#](), rotating drills and turntables. The Clockwork Bearing makes clock hands."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**Working parts**: Mechanical Drills, Saws, Harvesters and Ploughs do their job to whatever they pass. Deployers and funnels on the structure pull from and push into storage that moves with it.\\\n\\\nStorage on a contraption is a chest or vault attached to the structure."
+      "text": "**Working parts**: Mechanical Drills, Saws, Harvesters and Ploughs do their job to whatever they pass. [#](2E5AAC)[Deployers](entry://create_basics/deployer)[#]() and [#](2E5AAC)[funnels](entry://create_basics/item_logistics)[#]() on the structure pull from and push into storage that moves with it.\\\n\\\nStorage on a contraption is a chest or vault attached to the structure."
     },
     {
       "type": "modonomicon:spotlight",

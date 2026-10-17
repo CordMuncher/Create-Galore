@@ -28,12 +28,12 @@
         "item": "create_enchantment_industry:experience_hatch"
       },
       "title": "Experience Hatch",
-      "text": "Right-click to store your own XP in it; sneak-click to take XP out. A filter slot lets other mods' fluids count as XP."
+      "text": "Right-click to store your own XP in it; sneak-click to take XP out. A [#](7A3C9A)[filter slot](entry://glossary/filter_slot)[#]() lets other mods' fluids count as XP."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Other XP sources: a Mechanical Grindstone over a Grindstone Drain crushes Experience Nuggets into liquid. Crushing Wheels and Deployers drop nuggets when they kill mobs. An Experience Lantern collects nearby orbs."
+      "text": "Other XP sources:\n- A Mechanical Grindstone over a Grindstone Drain crushes Experience Nuggets into liquid.\n- [#](2E5AAC)[Crushing Wheels](entry://create_basics/crushing)[#]() and [#](2E5AAC)[Deployers](entry://create_basics/deployer)[#]() drop nuggets when they kill mobs.\n- An **Experience Lantern** collects nearby orbs."
     },
     {
       "type": "modonomicon:spotlight",
@@ -41,7 +41,7 @@
         "item": "create_enchantment_industry:blaze_enchanter"
       },
       "title": "Blaze Enchanter",
-      "text": "Acts as an enchanting table fed with Liquid Experience. Set the enchant level on its panel. A template item limits the result to that item's enchantments."
+      "text": "Acts as an enchanting table fed with Liquid Experience. Set the enchant level on its [#](7A3C9A)[panel](entry://glossary/value_panel)[#](). A template item limits the result to that item's enchantments."
     },
     {
       "type": "modonomicon:spotlight",
@@ -57,12 +57,12 @@
         "item": "create_enchantment_industry:printer"
       },
       "title": "Printer",
-      "text": "Copies written books and enchanted books, names items, copies train schedules, clipboards and package addresses. Check JEI for recipes."
+      "text": "Copies written books and enchanted books, names items, copies train schedules, clipboards and package addresses. Check [#](2E5AAC)[JEI](entry://start_here/tools)[#]() for recipes."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Super enchanting: feed a Blaze a Cake o' Enchanting and it goes past vanilla level limits, with lightning strikes. Keep a Lightning Rod nearby. The Apotheosis blocks (Affix Augmentor, Gem Cutter, Blaze Composer) need Apotheosis, which is not in this pack."
+      "text": "**Super enchanting:** feed a Blaze a Cake o' Enchanting and it goes past vanilla level limits.\\\n\\\n[#](FFFFFF)\ue101[#]() **Watch out:** it comes with lightning strikes. Keep a Lightning Rod nearby.\\\n\\\nThe Apotheosis blocks (Affix Augmentor, Gem Cutter, Blaze Composer) need Apotheosis, which is not in this pack."
     }
   ]
 }

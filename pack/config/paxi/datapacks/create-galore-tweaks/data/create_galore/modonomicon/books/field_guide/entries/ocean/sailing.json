@@ -20,6 +20,11 @@
     {
       "type": "modonomicon:text",
       "title": "Sailing and Boats",
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- [#](FFFFFF)\ue10e[#]() Surface ships are the same physical vessels as submarines, but float and travel by wind, engine or oar.\n- A ship needs **enough canvas** for its size. Steer along the Wind Vane's arrow for top speed.\n- A **Rudder** at the stern tells sails which way is forward."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
       "text": "Deep Seas also includes **Create High Seas**: surface ships. They are the same kind of physical vessel as a [#](2E5AAC)[submarine](entry://ocean/submarines)[#](), but they float on top and travel by wind, engine or oar."
     },
     {
@@ -36,12 +41,12 @@
         "item": "create_high_seas:wind_vane"
       },
       "title": "Wind Vane",
-      "text": "Shows wind direction. Steer along the arrow for top speed. Goggles show alignment as a percent."
+      "text": "Shows wind direction. Steer along the arrow for top speed. [#](2E5AAC)[Goggles](entry://create_basics/tools_wrench)[#]() show alignment as a percent."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Wind has a baseline, gusts, and extra strength in rain and thunderstorms. Terrain upwind can block it. Sailing straight into the wind keeps only part of your speed. A **Rudder** at the stern tells sails which way is forward; mount it on a Swivel Bearing to steer."
+      "text": "Wind has a baseline, gusts, and extra strength in rain and thunderstorms.\n\n- Terrain upwind can block it.\n- Sailing straight into the wind keeps only part of your speed.\n- A **Rudder** at the stern tells sails which way is forward; mount it on a [#](2E5AAC)[Swivel Bearing](entry://flight/ship_building)[#]() to steer."
     },
     {
       "type": "modonomicon:spotlight",
@@ -54,7 +59,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "The engine burns fuel (open its fuel screen to see what it takes). Right-click to take the tiller, sneak to let go, sneak-click for the fuel screen. Hold use at the helm and move the mouse to set a speed limit from 0 to 15."
+      "text": "The engine burns fuel (open its fuel screen to see what it takes).\n\n- **Right-click** to take the tiller, **sneak** to let go.\n- **Sneak-click** for the fuel screen.\n- **Hold use** at the helm and move the mouse to set a speed limit from 0 to 15."
     },
     {
       "type": "modonomicon:spotlight",
@@ -80,7 +85,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**Steel Cables** and **Pulleys** let a ship ride a cable. An **Arresting Hook** under a ship grabs a cable and brakes it, like a carrier landing. An **Underwater Mine** on a contraption detonates when entities or boats come close."
+      "text": "[#](FFFFFF)\ue103[#]() **In depth.** **Steel Cables** and **Pulleys** let a ship ride a cable. An **Arresting Hook** under a ship grabs a cable and brakes it, like a carrier landing. An **Underwater Mine** on a [#](2E5AAC)[contraption](entry://create_basics/contraptions)[#]() detonates when entities or boats come close."
     },
     {
       "type": "modonomicon:text",

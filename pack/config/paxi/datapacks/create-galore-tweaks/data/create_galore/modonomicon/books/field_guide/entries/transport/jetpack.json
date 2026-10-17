@@ -20,7 +20,7 @@
     {
       "type": "modonomicon:text",
       "title": "Jetpack",
-      "text": "The Create Jetpack is a backtank you can fly with. It is built around a Copper Backtank and spends pressurised air to lift you, so it runs dry and needs refilling."
+      "text": "The Create Jetpack is a backtank you can fly with. It is built around a [#](2E5AAC)[Copper Backtank](entry://ocean/diving)[#]() and spends pressurised air to lift you, so it runs dry and needs refilling."
     },
     {
       "type": "modonomicon:spotlight",
@@ -41,7 +41,7 @@
     {
       "type": "modonomicon:text",
       "title": "Making one",
-      "text": "Both versions are crafted by mechanical crafting from a Shulker Shell, Chutes, Brass plates, Precision Mechanisms and the backtank. Press R over one in JEI to see the layout.\\\n\\\nFor something larger than one person, see [#](2E5AAC)[Airships](entry://flight/airships)[#]()."
+      "text": "Both versions are crafted by [#](7A3C9A)[mechanical crafting](entry://glossary/mechanical_crafting)[#]() from a Shulker Shell, Chutes, Brass plates, Precision Mechanisms and the backtank. Press R over one in [#](2E5AAC)[JEI](entry://start_here/tools)[#]() to see the layout.\\\n\\\nFor something larger than one person, see [#](2E5AAC)[Airships](entry://flight/airships)[#]()."
     },
     {
       "type": "modonomicon:text",

@@ -36,7 +36,7 @@
         "item": "create:copper_backtank"
       },
       "title": "Copper Backtank",
-      "text": "Wear it for air. Placed and spun by rotation, it refills itself. Netherite gear lets you dive in lava."
+      "text": "Wear it for air. Placed and spun by [#](2E5AAC)[rotation](entry://create_basics/rotation)[#](), it refills itself. Netherite gear lets you dive in lava."
     },
     {
       "type": "modonomicon:spotlight",
@@ -60,7 +60,7 @@
         "item": "aquamirae:salvager_suit"
       },
       "title": "Salvager Suit",
-      "text": "Full set supplies air and stops freezing in the Ice Maze."
+      "text": "Full set supplies air and stops freezing in the [#](2E5AAC)[Ice Maze](entry://ocean/aquamirae)[#]()."
     },
     {
       "type": "modonomicon:spotlight",

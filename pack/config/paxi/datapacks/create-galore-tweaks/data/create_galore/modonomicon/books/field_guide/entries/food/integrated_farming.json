@@ -26,7 +26,7 @@
     {
       "type": "modonomicon:text",
       "title": "Create Integrated Farming",
-      "text": "**Create Integrated Farming** adds farming machines for contraptions: a Vacuum Harvester, Roosts for poultry, and Fishing Nets that fish while moving. Several recipes use Farmer's Delight items."
+      "text": "**Create Integrated Farming** adds farming machines for contraptions:\n\n- a **Vacuum Harvester**\n- **Roosts** for poultry\n- **Fishing Nets** that fish while moving\n\nSeveral recipes use Farmer's Delight items."
     },
     {
       "type": "modonomicon:spotlight",
@@ -34,7 +34,7 @@
         "item": "create_integrated_farming:vacuum_harvester"
       },
       "title": "Vacuum Harvester",
-      "text": "Rotation charges its chamber (30 s at 64 RPM by default). At full pressure it harvests every mature crop around it at once. Take output from any side but the shaft."
+      "text": "Rotation charges its chamber (30 s at 64 [#](7A3C9A)[RPM](entry://glossary/rpm)[#]() by default). At full pressure it harvests every mature crop around it at once. Take output from any side but the shaft."
     },
     {
       "type": "modonomicon:text",
@@ -60,7 +60,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Mechanical Arms can harvest lily pads and powdery crops. A Spout speeds up Organic Compost decay, which feeds Farmer's Delight's Rich Soil.\\\n\\\nAnimals: [#](2E5AAC)[Animals](entry://food/animals)[#](). Delight basics: [#](2E5AAC)[Farmer's Delight](entry://food/farmers_delight)[#]()."
+      "text": "Mechanical Arms can harvest lily pads and powdery crops. A Spout speeds up [Organic Compost](item://farmersdelight:organic_compost) decay, which feeds Farmer's Delight's Rich Soil.\\\n\\\nAnimals: [#](2E5AAC)[Animals](entry://food/animals)[#](). Delight basics: [#](2E5AAC)[Farmer's Delight](entry://food/farmers_delight)[#]()."
     }
   ]
 }

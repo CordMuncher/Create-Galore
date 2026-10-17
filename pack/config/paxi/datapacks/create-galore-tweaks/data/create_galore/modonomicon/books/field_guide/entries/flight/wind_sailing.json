@@ -20,6 +20,11 @@
     {
       "type": "modonomicon:text",
       "title": "Sailing and Wind",
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- [#](FFFFFF)\ue10e[#]() Wind has a speed and heading, and is stronger over open ocean and at altitude.\n- Only **Windcatchers** drive windmill bearings or push ships; ordinary Create sails are decoration.\n- A **Keel** stops sideways slip, and a **Rudder** on a Create shaft steers."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
       "text": "Aeronautics: Winds & Weather adds a real wind field and cloth sails. Wind has a speed and heading, is stronger over open ocean and at altitude, and pushes ships rigged to catch it."
     },
     {
@@ -28,7 +33,7 @@
         "item": "aeronauticswinds:anemometer"
       },
       "title": "Anemometer",
-      "text": "Measures local wind speed and outputs it as shaft rotation. Goggles show the exact figure."
+      "text": "Measures local wind speed and outputs it as shaft rotation. [#](2E5AAC)[Goggles](entry://create_basics/tools_wrench)[#]() show the exact figure."
     },
     {
       "type": "modonomicon:spotlight",
@@ -44,12 +49,12 @@
         "item": "aeronauticswinds:windcatcher_canvas"
       },
       "title": "Windcatcher",
-      "text": "Only Windcatchers drive windmill bearings or push ships here; ordinary Create sails are decoration. Face the broad side into the wind."
+      "text": "**Only Windcatchers** drive windmill [#](7A3C9A)[bearings](entry://glossary/bearing)[#]() or push ships here; ordinary Create sails are decoration. Face the broad side into the wind."
     },
     {
       "type": "modonomicon:text",
       "title": "Rigging a sail",
-      "text": "Stack Masts, run a Yard across them, use a packed Cotton or Canvas Sail on the Yard, then click the lower opposite corner. Cotton is light and quick. Canvas is heavy and durable. Empty-hand clicks trim the yard in 8 steps. Sneak-use the cloth to reef it."
+      "text": "- Stack **Masts** and run a **Yard** across them.\n- Use a packed Cotton or Canvas Sail on the Yard, then click the lower opposite corner.\n- Empty-hand clicks trim the yard in 8 steps.\n- Sneak-use the cloth to reef it.\n\nCotton is light and quick. Canvas is heavy and durable."
     },
     {
       "type": "modonomicon:spotlight",

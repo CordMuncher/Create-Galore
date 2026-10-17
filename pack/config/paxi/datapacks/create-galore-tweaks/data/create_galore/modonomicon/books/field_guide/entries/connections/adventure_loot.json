@@ -31,12 +31,12 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**Boss gear:** Cataclysm x Create rebuilds Cataclysm's weapons and armor as Create assembly lines, and lets a crushing wheel recycle old gear.\\\n\\\n[#](2E5AAC)[Cataclysm x Create](entry://exploration/cataclysm_create)[#]()."
+      "text": "**Boss gear:** Cataclysm x Create rebuilds Cataclysm's weapons and armor as Create [#](2E5AAC)[assembly lines](entry://create_basics/brass_and_assembly)[#](), and lets a [#](2E5AAC)[crushing wheel](entry://create_basics/crushing)[#]() recycle old gear.\\\n\\\n[#](2E5AAC)[Cataclysm x Create](entry://exploration/cataclysm_create)[#]()."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**Magic:** Iron's Spells inks and elixirs can be filled and emptied with Create's spouts and drains. Create: Wizardry builds on Iron's Spells.\\\n\\\n[#](2E5AAC)[Magic](entry://exploration/magic)[#]()."
+      "text": "**Magic:** Iron's Spells inks and elixirs can be filled and emptied with Create's [#](2E5AAC)[spouts and drains](entry://create_basics/fluids)[#](). Create: Wizardry builds on Iron's Spells.\\\n\\\n[#](2E5AAC)[Magic](entry://exploration/magic)[#]()."
     },
     {
       "type": "modonomicon:text",
@@ -46,7 +46,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**Other worlds' materials:** Northstar's planets give titanium and tungsten, and Twilight Forest's fiery blocks heat a boiler.\\\n\\\n[#](2E5AAC)[Ore Guide](entry://materials/ore_guide)[#]()."
+      "text": "**Other worlds' materials:** Northstar's planets give titanium and tungsten, and Twilight Forest's fiery blocks heat a [#](7A3C9A)[boiler](entry://glossary/boiler)[#]().\\\n\\\n[#](2E5AAC)[Ore Guide](entry://materials/ore_guide)[#]()."
     },
     {
       "type": "modonomicon:text",

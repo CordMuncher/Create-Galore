@@ -20,7 +20,7 @@
     {
       "type": "modonomicon:text",
       "title": "Power Across Mods",
-      "text": "Create runs on **rotation**. Many other machines run on **Forge Energy (FE)**. They never mix on their own: you need a converter block in between.\\\n\\\nFull detail: [#](2E5AAC)[Rotation vs Electricity](entry://industry/power_compared)[#]()."
+      "text": "Create runs on **rotation**. Many other machines run on **[#](2E5AAC)[Forge Energy (FE)](entry://industry/electricity)[#]()**. They never mix on their own: you need a converter block in between.\\\n\\\nFull detail: [#](2E5AAC)[Rotation vs Electricity](entry://industry/power_compared)[#]()."
     },
     {
       "type": "modonomicon:spotlight",
@@ -28,7 +28,7 @@
         "item": "createaddition:alternator"
       },
       "title": "Rotation to FE",
-      "text": "Crafts & Additions' Alternator turns spin into FE. It needs at least 32 RPM."
+      "text": "Crafts & Additions' Alternator turns spin into FE. It needs at least 32 [#](7A3C9A)[RPM](entry://glossary/rpm)[#]()."
     },
     {
       "type": "modonomicon:spotlight",
@@ -41,12 +41,12 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Rotation sources beyond water, wind and steam:\n- TFMG engines burning oil products\n- The Create Nuclear reactor\n- Create Propulsion's Stirling Engine, which turns heat into spin\n- Electric Motors running on FE"
+      "text": "Rotation sources beyond [#](2E5AAC)[water, wind and steam](entry://create_basics/power_sources)[#]():\n- [#](2E5AAC)[TFMG engines](entry://industry/tfmg_engines)[#]() burning oil products\n- The [#](2E5AAC)[Create Nuclear reactor](entry://industry/nuclear)[#]()\n- Create Propulsion's Stirling Engine, which turns heat into spin\n- Electric Motors running on FE"
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Things that want FE: Create Propulsion's Ion Thruster, Flight Control's vector ion thrusters and the Deep Seas Electrolyzer on submarines.\\\n\\\nTFMG wires its own voltage circuits, but its connectors can import or export FE."
+      "text": "Things that want FE: Create Propulsion's Ion Thruster, Flight Control's vector ion thrusters and the Deep Seas Electrolyzer on [#](2E5AAC)[submarines](entry://ocean/submarines)[#]().\\\n\\\nTFMG wires its own voltage circuits, but its connectors can import or export FE."
     },
     {
       "type": "modonomicon:text",

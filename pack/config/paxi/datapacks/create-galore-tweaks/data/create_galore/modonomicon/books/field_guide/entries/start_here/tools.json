@@ -20,12 +20,17 @@
     {
       "type": "modonomicon:text",
       "title": "Tools of the Trade",
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- [#](FFFFFF)\ue10d[#]() **JEI**: hover an item, press **R** for its recipe, **U** for its uses.\n- [#](FFFFFF)\ue104[#]() **Ponder**: hover a Create item and hold **W**.\n- **Goggles** show stress and speed on machines.\n- **Jade** names whatever you point at."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
       "text": "A few helpers explain the pack for you: JEI, Create Ponder, Jade, Engineer's Goggles, the Xaero maps and AppleSkin. Learn these first and you rarely need a web wiki."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**JEI**, Just Enough Items, lists every item and recipe. Hover an item and press **R** for how to make it, **U** for what it is used in. Press **A** on an item to bookmark it. Machine recipes (mixing, pressing, fan processing) appear here too."
+      "text": "**JEI**, Just Enough Items, lists every item and recipe. Hover an item and press **R** for how to make it, **U** for what it is used in. Press **A** on an item to bookmark it. Machine recipes ([#](7A3C9A)[mixing](entry://glossary/mixing)[#](), [#](2E5AAC)[pressing](entry://create_basics/processing)[#](), [#](2E5AAC)[fan processing](entry://create_basics/fans)[#]()) appear here too."
     },
     {
       "type": "modonomicon:spotlight",
@@ -33,7 +38,7 @@
         "item": "create:goggles"
       },
       "title": "Engineer's Goggles",
-      "text": "Wear them to see stress, speed and extra info on kinetic machines, tanks and basins. See [#](2E5AAC)[Stress](entry://create_basics/stress)[#]()."
+      "text": "Wear them to see stress, speed and extra info on [#](7A3C9A)[kinetic](entry://glossary/kinetic_network)[#]() machines, tanks and basins. See [#](2E5AAC)[Stress](entry://create_basics/stress)[#]()."
     },
     {
       "type": "modonomicon:text",
@@ -43,7 +48,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**Jade**: point at a block or mob and a small box names it, its mod, and extra details such as machine contents or crop growth.\\\n\\\n**AppleSkin**: food tooltips show hunger and saturation, and the hunger bar previews what a food will restore."
+      "text": "**Jade**: point at a block or mob and a small box names it, its mod, and extra details such as machine contents or crop growth.\\\n\\\n**AppleSkin**: food tooltips show hunger and [#](7A3C9A)[saturation](entry://glossary/saturation)[#](), and the hunger bar previews what a food will restore."
     },
     {
       "type": "modonomicon:text",
@@ -63,7 +68,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "- Cataclysm abilities: Home, End, Insert, Delete\n- Railways Navigator overlay options: backslash\n\nA launcher may overwrite the file holding these when the pack updates, which resets them."
+      "text": "- Cataclysm abilities: Home, End, Insert, Delete\n- Railways Navigator overlay options: backslash\n\n[#](FFFFFF)\ue101[#]() **Watch out:** a launcher may overwrite the file holding these when the pack updates, which resets them."
     },
     {
       "type": "modonomicon:text",

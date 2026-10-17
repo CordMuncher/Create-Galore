@@ -4,7 +4,7 @@
   "icon": {
     "item": "create:crushed_raw_zinc"
   },
-  "sort_number": 4,
+  "sort_number": 5,
   "display_mode": "node",
   "background": "modonomicon:textures/gui/dark_slate_seamless.png",
   "background_width": 512,

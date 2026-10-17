@@ -26,7 +26,12 @@
     {
       "type": "modonomicon:text",
       "title": "Power Sources",
-      "text": "Every Create network needs at least one source of rotation. They differ in how much capacity they give, how fast they spin, and how much setup they take."
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- [#](FFFFFF)\ue104[#]() Every network needs at least one **source** of rotation.\n- Small and simple: Hand Crank, Water Wheel, Windmill.\n- Big jobs: **Large Water Wheel** and **Steam Engine**.\n- [#](FFFFFF)\ue10a[#]() Blaze burners and engines make pollution here."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Every Create [#](7A3C9A)[network](entry://glossary/kinetic_network)[#]() needs at least one source of rotation. They differ in how much capacity they give, how fast they spin, and how much setup they take."
     },
     {
       "type": "modonomicon:spotlight",
@@ -50,7 +55,7 @@
         "item": "create:large_water_wheel"
       },
       "title": "Large Water Wheel",
-      "text": "Spins at half the speed of a normal wheel, but gives a much higher stress capacity."
+      "text": "Spins at half the speed of a normal wheel, but gives a much higher [#](2E5AAC)[stress capacity](entry://create_basics/stress)[#]()."
     },
     {
       "type": "modonomicon:spotlight",
@@ -58,7 +63,7 @@
         "item": "create:windmill_bearing"
       },
       "title": "Windmill Bearing",
-      "text": "Spins a structure of sails. At least 8 sail blocks are needed, and more sails spin it faster. Needs open air and glue to hold the structure."
+      "text": "Spins a structure of sails. At least 8 sail blocks are needed, and more sails spin it faster. Needs open air and [#](7A3C9A)[glue](entry://glossary/super_glue)[#]() to hold the structure."
     },
     {
       "type": "modonomicon:spotlight",
@@ -71,7 +76,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**Steam Engine.** Sits on a boiler built from **Fluid Tanks**. Needs water and heat from a **Blaze Burner**. A minimal boiler is 4 tanks. Heat more and it reaches a higher power level, and each level lets one more engine run at full strength. Goggles show the level."
+      "text": "**Steam Engine.** Sits on a [#](7A3C9A)[boiler](entry://glossary/boiler)[#]() built from **Fluid Tanks**.\n\n- Needs water and heat from a **Blaze Burner**.\n- A minimal boiler is 4 tanks.\n- Heat more and it reaches a higher power level. Each level lets one more engine run at full strength.\n- [#](2E5AAC)[Goggles](entry://create_basics/tools_wrench)[#]() show the level."
     },
     {
       "type": "modonomicon:spotlight",
@@ -80,6 +85,13 @@
       },
       "title": "Steam Engine",
       "text": "Connect a shaft to the engine's output. Heat comes from a blaze burner under the boiler. See [#](2E5AAC)[Heat](entry://create_basics/heat)[#]() and [#](2E5AAC)[Fluids](entry://create_basics/fluids)[#]()."
+    },
+    {
+      "type": "modonomicon:multiblock",
+      "multiblock_id": "create_galore:steam_engine",
+      "multiblock_name": "Steam Engine",
+      "text": "A 4-tank boiler over Blaze Burners, filled with water. The shaft goes on the engine's output.",
+      "show_visualize_button": true
     },
     {
       "type": "modonomicon:text",

@@ -34,7 +34,7 @@
         "item": "aeronautics_utility_objects:brass_universal_joint"
       },
       "title": "Universal Joint Head",
-      "text": "Two heads and a rod link structures and pass rotation across. The brass rod is elastic. The andesite rod reaches 15 blocks and breaks if stretched too far."
+      "text": "Two heads and a rod link structures and pass [#](2E5AAC)[rotation](entry://create_basics/rotation)[#]() across. The brass rod is elastic. The andesite rod reaches 15 blocks and breaks if stretched too far."
     },
     {
       "type": "modonomicon:spotlight",
@@ -58,7 +58,7 @@
         "item": "aeronautics_utility_objects:damping_stress_bearing"
       },
       "title": "Kinetic Conversion Bearing",
-      "text": "Outputs the structure's real rotation speed to a shaft. Resistance is adjustable; stress output is capped."
+      "text": "Outputs the structure's real rotation speed to a shaft. Resistance is adjustable; [#](2E5AAC)[stress](entry://create_basics/stress)[#]() output is capped."
     },
     {
       "type": "modonomicon:spotlight",
@@ -66,12 +66,12 @@
         "item": "aeroencasedpipe:white_envelope_encased_pipe"
       },
       "title": "Envelope Encased Pipe",
-      "text": "A fluid pipe sealed in envelope material, so pipes can pass through a balloon wall. Exists in all 16 colours."
+      "text": "A [#](2E5AAC)[fluid pipe](entry://create_basics/fluids)[#]() sealed in envelope material, so pipes can pass through a balloon wall. Exists in all 16 colours."
     },
     {
       "type": "modonomicon:text",
       "title": "Compatibility",
-      "text": "Aeronautics Compatibility makes blocks from mods that do not know about sub-levels keep working on ships. Jade Sable Compat does the same for Jade tooltips, and a Copycats patch fixes an item duplication bug."
+      "text": "Aeronautics Compatibility makes blocks from mods that do not know about [#](7A3C9A)[sub-levels](entry://glossary/sub_level)[#]() keep working on ships. Jade Sable Compat does the same for Jade tooltips, and a [#](7A3C9A)[Copycats](entry://glossary/copycat)[#]() patch fixes an item duplication bug."
     },
     {
       "type": "modonomicon:text",

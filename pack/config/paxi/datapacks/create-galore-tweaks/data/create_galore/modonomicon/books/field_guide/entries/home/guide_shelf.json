@@ -33,7 +33,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "You also get this book on first join, and can craft it from a Book and Andesite (shapeless). JEI can open it too.\\\n\\\nMods like Create keep help in Ponder: hold **W** over an item.\\\n\\\nStart: [#](2E5AAC)[Welcome](entry://start_here/welcome)[#]()."
+      "text": "You also get this book on first join, and can craft it from a Book and Andesite (shapeless). [#](2E5AAC)[JEI](entry://start_here/tools)[#]() can open it too.\\\n\\\nMods like Create keep help in [#](7A3C9A)[Ponder](entry://glossary/ponder)[#](): hold **W** over an item.\\\n\\\nStart: [#](2E5AAC)[Welcome](entry://start_here/welcome)[#]()."
     }
   ]
 }

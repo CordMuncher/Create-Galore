@@ -20,12 +20,17 @@
     {
       "type": "modonomicon:text",
       "title": "Sea Life",
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- [#](FFFFFF)\ue10e[#]() **Hybrid Aquatic** adds well over a hundred sea creatures and new ocean biomes.\n- **Naturalist** animals that Hybrid Aquatic covers are off; its whale, clam, bass and catfish still spawn.\n- **Aquamirae** adds an icy ocean region with its own creatures and bosses."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
       "text": "The pack's ocean is crowded. **Hybrid Aquatic** is the big one: well over a hundred new sea creatures, from clownfish and seahorses to orcas, whale sharks and colossal squid, plus new ocean biomes to hold them."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Biomes include Coral Reef, Deep Coral Reef, Seagrass Bed, Tide Pools, Red Meadow, Sulfuric Caves, and Warm, Cold, Frozen and Lukewarm Trenches. New coral types and bleached variants come with them, and a Tropical River biome on land."
+      "text": "Biomes include:\n\n- Coral Reef, Deep Coral Reef, Seagrass Bed, Tide Pools\n- Red Meadow, Sulfuric Caves\n- Warm, Cold, Frozen and Lukewarm Trenches\n- a Tropical River biome on land\n\nNew coral types and bleached variants come with them."
     },
     {
       "type": "modonomicon:spotlight",
@@ -33,7 +38,7 @@
         "item": "hybrid_aquatic:ominous_conch"
       },
       "title": "Ominous Conch",
-      "text": "Tied to Hybrid Aquatic's Karkinos crab boss. Check JEI for its uses."
+      "text": "Tied to Hybrid Aquatic's Karkinos crab boss. Check [#](2E5AAC)[JEI](entry://start_here/tools)[#]() for its uses."
     },
     {
       "type": "modonomicon:spotlight",
@@ -46,7 +51,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**Naturalist** adds land and sea animals. Here its anglerfish, blobfish, giant isopod, great white shark, piranha, jellyfish, starfish, crab and ray are off, because Hybrid Aquatic covers them. Their buckets and eggs are hidden from JEI. Whale, clam, bass, catfish and the rest still spawn."
+      "text": "**Naturalist** adds land and sea animals.\n\n- **Off here**, because Hybrid Aquatic covers them: anglerfish, blobfish, giant isopod, great white shark, piranha, jellyfish, starfish, crab and ray. Their buckets and eggs are hidden from JEI.\n- **Still spawn**: whale, clam, bass, catfish and the rest."
     },
     {
       "type": "modonomicon:spotlight",
@@ -54,7 +59,7 @@
         "item": "hybrid_aquatic:diving_suit"
       },
       "title": "Diving Suit",
-      "text": "Hybrid Aquatic's underwater armor. See Diving Gear for how it compares with other options."
+      "text": "Hybrid Aquatic's underwater armor. See [#](2E5AAC)[Diving Gear](entry://ocean/diving)[#]() for how it compares with other options."
     },
     {
       "type": "modonomicon:spotlight",

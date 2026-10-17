@@ -26,7 +26,12 @@
     {
       "type": "modonomicon:text",
       "title": "Building a Rocket",
-      "text": "A rocket is glued blocks around a Rocket Station. It needs thrusters, fuel in fluid tanks, a seat and Rocket Controls. Trips to planets also need an Interplanetary Navigator."
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- [#](FFFFFF)\ue10f[#]() Around a **Rocket Station**: thrusters, fuel tanks, a seat and Rocket Controls.\n- Planets also need an Interplanetary Navigator.\n- Thruster and fuel needs depend on weight, gravity and distance.\n- Sit at the controls and press **jump** to launch."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "A rocket is [#](7A3C9A)[glued](entry://glossary/super_glue)[#]() blocks around a Rocket Station. It needs thrusters, fuel in fluid tanks, a seat and Rocket Controls. Trips to planets also need an Interplanetary Navigator."
     },
     {
       "type": "modonomicon:spotlight",
@@ -47,12 +52,12 @@
     {
       "type": "modonomicon:text",
       "title": "Fuel",
-      "text": "Fuel must sit in fluid tanks on the rocket. Accepted: Liquid Hydrogen, Hydrogen, Methane, Hydrocarbon, Biofuel, and TFMG diesel, gasoline, kerosene and naphtha. Amount depends on gravity at each end and the distance. See [#](2E5AAC)[Oil](entry://industry/tfmg_oil)[#]()."
+      "text": "Fuel must sit in **fluid tanks** on the rocket. Accepted:\n\n- Liquid Hydrogen, Hydrogen, Methane, Hydrocarbon, Biofuel\n- TFMG diesel, gasoline, kerosene and naphtha\n\nAmount depends on gravity at each end and the distance. See [#](2E5AAC)[Oil](entry://industry/tfmg_oil)[#]()."
     },
     {
       "type": "modonomicon:text",
       "title": "Making fuel",
-      "text": "Hydrocarbon is made by heated mixing of Carbon with Sodium or a Sodium Catalyst. Carbon comes from compacting coal with heat, or from a planet's air. Hydrogen and Oxygen come from the Electrolysis Machine. Check JEI for each."
+      "text": "Hydrocarbon is made by [#](2E5AAC)[heated mixing](entry://create_basics/heat)[#]() of Carbon with Sodium or a Sodium Catalyst. Carbon comes from [#](7A3C9A)[compacting](entry://glossary/compacting)[#]() coal with heat, or from a planet's air. Hydrogen and Oxygen come from the Electrolysis Machine. Check [#](2E5AAC)[JEI](entry://start_here/tools)[#]() for each."
     },
     {
       "type": "modonomicon:spotlight",
@@ -70,7 +75,7 @@
     {
       "type": "modonomicon:text",
       "title": "Launching",
-      "text": "Sit at the Rocket Controls and press jump to start the launch sequence, jump again to cancel. Hold the slow key on descent. Landings aim at a Rocket Waypoint, recorded by using the atlas on it. Super Glue holds the rocket together."
+      "text": "- Sit at the Rocket Controls and press **jump** to start the launch sequence, jump again to cancel.\n- Hold the **slow key** on descent.\n- Landings aim at a **Rocket Waypoint**, recorded by using the atlas on it.\n- Super Glue holds the rocket together."
     },
     {
       "type": "modonomicon:spotlight",

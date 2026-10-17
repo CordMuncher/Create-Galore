@@ -1,0 +1,24 @@
+{
+  "category": "glossary",
+  "name": "Canonical Item",
+  "description": "The one version of a shared metal that the pack uses.",
+  "icon": {
+    "item": "tfmg:steel_ingot"
+  },
+  "x": 8,
+  "y": -3,
+  "sort_number": 7,
+  "parents": [],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Canonical Item",
+      "text": "When several mods add the same metal, the pack picks one version as the **canonical** item. Other mods' recipes make and use it, so stacks match.\\\n\\\nLeftover items from the other mods convert 1:1 in a crafting grid, with no gain. Steel is TFMG's, bronze is Alloyed's and lead is Create Nuclear's."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Where it matters**\n\n- [#](2E5AAC)[Shared Metals](entry://materials/shared_metals)[#]()\n- [#](2E5AAC)[One Metal, Many Mods](entry://connections/metals)[#]()"
+    }
+  ]
+}

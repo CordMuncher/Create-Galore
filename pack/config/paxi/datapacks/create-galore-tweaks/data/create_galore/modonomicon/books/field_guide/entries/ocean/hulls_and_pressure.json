@@ -20,12 +20,17 @@
     {
       "type": "modonomicon:text",
       "title": "Hulls and Pressure",
-      "text": "Deep water crushes blocks. Every block has a maximum depth, and a ship is only as strong as its weakest block. The **Pressure Barometer** compares the pressure on the ship to what the weakest block can take. Goggles show a block's hull tier: fragile, standard or reinforced."
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- A ship is only as strong as its **weakest block**. Past its limit a block floods the room, or far deeper implodes the ship.\n- Windows are the usual weak point: use **pressurized glass**.\n- [#](FFFFFF)\ue107[#]() A dry interior needs a sealed hull, an **Electrolyzer** and an **Oxygen Diffuser**."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Past its limit a block gives way. Above a certain depth the room just floods through the hole. Far deeper, a failing block implodes the whole ship. The **Industrial Alarm** flashes and sounds faster every 5 m you sink past the safe depth. Tune it all in the Deep Seas config."
+      "text": "Deep water crushes blocks. Every block has a **maximum depth**, and a ship is only as strong as its **weakest block**. The **Pressure Barometer** compares the pressure on the ship to what the weakest block can take. [#](2E5AAC)[Goggles](entry://create_basics/tools_wrench)[#]() show a block's hull tier: fragile, standard or reinforced."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Past its limit a block gives way. Above a certain depth the room just floods through the hole.\\\n\\\n[#](FFFFFF)\ue101[#]() **Watch out:** far deeper, a failing block implodes the whole ship. The **Industrial Alarm** flashes and sounds faster every 5 m you sink past the safe depth.\\\n\\\nTune it all in the Deep Seas [#](7A3C9A)[config](entry://glossary/config)[#]()."
     },
     {
       "type": "modonomicon:spotlight",
@@ -33,7 +38,7 @@
         "item": "create_submarine:barometer"
       },
       "title": "Pressure Barometer",
-      "text": "Shows depth and pressure. Attach a Display Link to broadcast depth and hull state to a Display Board."
+      "text": "Shows depth and pressure. Attach a [#](2E5AAC)[Display Link](entry://create_basics/redstone_and_control)[#]() to broadcast depth and hull state to a Display Board."
     },
     {
       "type": "modonomicon:spotlight",
@@ -41,17 +46,12 @@
         "item": "create_submarine:iron_pressurizer"
       },
       "title": "Iron Pressurized Glass",
-      "text": "Windows need special glass. Glass, Iron and Copper Pressurized Glass resist pressure; plain glass does not."
+      "text": "**Windows need special glass.** Glass, Iron and Copper Pressurized Glass resist pressure; plain glass does not."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Hull limits can be tuned. Deep Seas has a max depth multiplier that scales every block, and per-block depths are stored in **config/submarine\\_hull.json**. Windows are the usual weak point, so use pressurized glass. Goggles on a block show its tier."
-    },
-    {
-      "type": "modonomicon:text",
-      "title": "",
-      "text": "A dry interior needs a sealed hull. An **Electrolyzer** turns water into oxygen, an **Oxygen Diffuser** spreads it through the ship (give it a redstone signal). The Electrolyzer runs on FE power, see [#](2E5AAC)[Electricity](entry://industry/electricity)[#](), or you can put a Shaft in its module slot and spin it directly."
+      "text": "A dry interior needs a sealed hull.\n\n- An **Electrolyzer** turns water into oxygen.\n- An **Oxygen Diffuser** spreads it through the ship (give it a redstone signal).\n\nThe Electrolyzer runs on FE power, see [#](2E5AAC)[Electricity](entry://industry/electricity)[#](), or you can put a Shaft in its module slot and spin it directly."
     },
     {
       "type": "modonomicon:spotlight",
@@ -64,7 +64,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "To leave the ship underwater, build an airlock from two **Decompression Chambers** joined by pipes and a pump. Flood the airlock before opening the outer door deep down, or the sea crushes it in. Reverse the pump to dry it again."
+      "text": "To leave the ship underwater, build an airlock from two **Decompression Chambers** joined by [#](2E5AAC)[pipes and a pump](entry://create_basics/fluids)[#]().\\\n\\\n[#](FFFFFF)\ue101[#]() **Watch out:** flood the airlock before opening the outer door deep down, or the sea crushes it in.\\\n\\\nReverse the pump to dry it again."
     },
     {
       "type": "modonomicon:spotlight",
@@ -73,6 +73,11 @@
       },
       "title": "Decompression Chamber",
       "text": "An airlock valve. Pipe water in at the back to flood a room, or out to empty it."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "[#](FFFFFF)\ue103[#]() **In depth.** Hull limits can be tuned. Deep Seas has a max depth multiplier that scales every block, and per-block depths are stored in **config/submarine\\_hull.json**. Windows are the usual weak point, so use pressurized glass. Goggles on a block show its tier."
     },
     {
       "type": "modonomicon:text",

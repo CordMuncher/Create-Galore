@@ -26,12 +26,17 @@
     {
       "type": "modonomicon:text",
       "title": "Aquamirae and the Ice Maze",
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- [#](FFFFFF)\ue10e[#]() The **Ice Maze**: a frozen ocean of pirate ships, outposts and wrecks in ice.\n- [#](FFFFFF)\ue10b[#]() Three bosses: Captain Cornelia (summoned with the Shell Horn), the Maze Mother and the Shipbreaker.\n- [#](FFFFFF)\ue109[#]() **Salvager armor** gives air underwater and stops freezing there."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
       "text": "**Aquamirae** adds a frozen ocean region called the **Ice Maze**: pirate ships and outposts, shelters, and shipwrecks locked in ice, with their own creatures. Fragmentum, a library mod, and GeckoLib sit underneath it."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "The Ice Maze has three bosses. The **Shell Horn** summons the Ghost of Captain Cornelia near water in the Ice Maze. The Maze Mother lives deeper in. The Shipbreaker is a leviathan; its Ship Graveyard Echo leaves a trace that the Echo Compass can follow."
+      "text": "The Ice Maze has three bosses:\n\n- **Ghost of Captain Cornelia**: the **Shell Horn** summons her near water in the Ice Maze.\n- **Maze Mother**: lives deeper in.\n- **Shipbreaker**: a leviathan. Its Ship Graveyard Echo leaves a trace that the Echo Compass can follow."
     },
     {
       "type": "modonomicon:spotlight",
@@ -68,7 +73,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**Salvager armor** supplies air underwater and keeps you from freezing in the Ice Maze. Two upgrade templates make better armor: the Terrible template upgrades Iron armor with a Fin, and the Abyssal template upgrades Diamond armor with Abyssal Amethyst."
+      "text": "**Salvager armor** supplies air underwater and keeps you from freezing in the Ice Maze. See [#](2E5AAC)[Diving Gear](entry://ocean/diving)[#]().\\\n\\\nTwo upgrade templates make better armor:\n\n- **Terrible template**: upgrades Iron armor with a Fin.\n- **Abyssal template**: upgrades Diamond armor with Abyssal Amethyst."
     },
     {
       "type": "modonomicon:spotlight",
@@ -81,7 +86,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Its fish and drops feed straight into cooking: Spinefish, Esca, Jellyfish Jelly and Sea Stew all exist, and fit in with [#](2E5AAC)[Farmer's Delight](entry://food/farmers_delight)[#]() style meals. For a way to get there, see [#](2E5AAC)[Submarines](entry://ocean/submarines)[#](). More boss info: [#](2E5AAC)[Bosses](entry://exploration/bosses)[#]()."
+      "text": "Aquamirae's fish and drops feed straight into cooking: Spinefish, Esca, Jellyfish Jelly and Sea Stew all exist, and fit in with [#](2E5AAC)[Farmer's Delight](entry://food/farmers_delight)[#]() style meals. For a way to get there, see [#](2E5AAC)[Submarines](entry://ocean/submarines)[#](). More boss info: [#](2E5AAC)[Bosses](entry://exploration/bosses)[#]()."
     }
   ]
 }

@@ -1,0 +1,63 @@
+{
+  "type": "modonomicon:dense",
+  "pattern": [
+    [
+      "AB",
+      "_ ",
+      "C ",
+      "DE",
+      "FG"
+    ],
+    [
+      "  ",
+      "  ",
+      "  ",
+      "0H",
+      "HH"
+    ]
+  ],
+  "mapping": {
+    "A": {
+      "type": "modonomicon:display",
+      "display": "create:shaft[axis=z]"
+    },
+    "B": {
+      "type": "modonomicon:blockstateproperty",
+      "block": "create:shaft[axis=z]"
+    },
+    "C": {
+      "type": "modonomicon:blockstateproperty",
+      "block": "create:steam_engine[face=wall,facing=west]"
+    },
+    "D": {
+      "type": "modonomicon:block",
+      "block": "create:fluid_tank",
+      "display": "create:fluid_tank[bottom=true,shape=window_nw,top=true]"
+    },
+    "E": {
+      "type": "modonomicon:block",
+      "block": "create:fluid_tank",
+      "display": "create:fluid_tank[bottom=true,shape=window_sw,top=true]"
+    },
+    "F": {
+      "type": "modonomicon:block",
+      "block": "create:fluid_tank",
+      "display": "create:fluid_tank[bottom=true,shape=window_ne,top=true]"
+    },
+    "G": {
+      "type": "modonomicon:block",
+      "block": "create:fluid_tank",
+      "display": "create:fluid_tank[bottom=true,shape=window_se,top=true]"
+    },
+    "0": {
+      "type": "modonomicon:block",
+      "block": "create:blaze_burner",
+      "display": "create:blaze_burner[blaze=kindled]"
+    },
+    "H": {
+      "type": "modonomicon:block",
+      "block": "create:blaze_burner",
+      "display": "create:blaze_burner[blaze=kindled]"
+    }
+  }
+}

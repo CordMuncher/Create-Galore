@@ -1,0 +1,24 @@
+{
+  "category": "glossary",
+  "name": "Sub-level",
+  "description": "A moving physics build, like an airship or submarine.",
+  "icon": {
+    "item": "simulated:physics_assembler"
+  },
+  "x": -4,
+  "y": 7,
+  "sort_number": 41,
+  "parents": [],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Sub-level",
+      "text": "A **sub-level** is a moving Aeronautics build: a chunk of world with mass. Ships, submarines and coaster carts are physics objects that float, tilt, fall and collide.\\\n\\\nThe physics comes from the Sable library. Aeronautics Compatibility keeps other mods' blocks working on them."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Where it matters**\n\n- [#](2E5AAC)[Airships](entry://flight/airships)[#]()\n- [#](2E5AAC)[Building a Ship](entry://flight/ship_building)[#]()\n- [#](2E5AAC)[Ship Hardware](entry://flight/ship_hardware)[#]()\n- [#](2E5AAC)[Submarines](entry://ocean/submarines)[#]()"
+    }
+  ]
+}

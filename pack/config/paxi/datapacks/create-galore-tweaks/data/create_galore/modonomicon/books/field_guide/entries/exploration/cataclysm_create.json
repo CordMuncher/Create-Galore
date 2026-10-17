@@ -20,12 +20,12 @@
     {
       "type": "modonomicon:text",
       "title": "Cataclysm x Create",
-      "text": "**Cataclysm x Create Integration** is a data pack. It replaces Cataclysm's gear recipes with Create ones, so boss loot gets turned into equipment by machines instead of at a normal crafting table."
+      "text": "**Cataclysm x Create Integration** is a [#](7A3C9A)[data pack](entry://glossary/datapack)[#](). It replaces Cataclysm's gear recipes with Create ones, so boss loot gets turned into equipment by machines instead of at a normal crafting table."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "About 35 items are made by **Sequenced Assembly**: a base item goes through Deployer, Press, Deployer steps with boss materials. A few use Mechanical Crafting. Weapons, armor, shields, smithing templates and summoning Eyes are covered."
+      "text": "About 35 items are made by [#](2E5AAC)[Sequenced Assembly](entry://create_basics/brass_and_assembly)[#](): a base item goes through Deployer, Press, Deployer steps with boss materials. A few use [#](7A3C9A)[Mechanical Crafting](entry://glossary/mechanical_crafting)[#]().\\\n\\\nCovered: weapons, armor, shields, smithing templates and summoning Eyes."
     },
     {
       "type": "modonomicon:spotlight",
@@ -41,7 +41,7 @@
         "item": "cataclysm:the_incinerator"
       },
       "title": "Example: The Incinerator",
-      "text": "Starts as a Netherite sword. Check JEI for its Sequenced Assembly."
+      "text": "Starts as a Netherite sword. Check [#](7A3C9A)[JEI](entry://glossary/jei)[#]() for its Sequenced Assembly."
     },
     {
       "type": "modonomicon:spotlight",
@@ -54,12 +54,12 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "It also adds crushing recipes that recycle Cataclysm gear: black steel tools, Cursium, Ignitium and more go into a Crushing Wheel for nuggets, some ingots and XP nuggets. Read [#](2E5AAC)[Crushing](entry://create_basics/crushing)[#]() and [#](2E5AAC)[Assembly](entry://create_basics/brass_and_assembly)[#]()."
+      "text": "It also adds crushing recipes that recycle Cataclysm gear: black steel tools, Cursium, Ignitium and more go into a Crushing Wheel for nuggets, some ingots and XP nuggets.\\\n\\\nRead [#](2E5AAC)[Crushing](entry://create_basics/crushing)[#]() and [#](2E5AAC)[Assembly](entry://create_basics/brass_and_assembly)[#]()."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "The Abyssal Sacrifice, a Cataclysm ritual item, is now a compacting recipe that needs a heated Basin, so a Blaze Burner. See [#](2E5AAC)[Heat](entry://create_basics/heat)[#](). Links: [#](2E5AAC)[Cataclysm](entry://exploration/cataclysm)[#]()."
+      "text": "The **Abyssal Sacrifice**, a Cataclysm ritual item, is now a [#](7A3C9A)[compacting](entry://glossary/compacting)[#]() recipe that needs a heated Basin, so a Blaze Burner. See [#](2E5AAC)[Heat](entry://create_basics/heat)[#]().\\\n\\\nLinks: [#](2E5AAC)[Cataclysm](entry://exploration/cataclysm)[#]()."
     }
   ]
 }

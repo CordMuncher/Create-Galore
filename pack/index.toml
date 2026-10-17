@@ -412,47 +412,51 @@ hash = "8276a3cb790698fa10941d6af0b7b3322e9ccb372d8e3a88d5cdf50cd95b3881"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/categories/connections.json"
-hash = "2e70084976b451724e90642f871dd8eb4bc257509887bf44316cb6c89af77810"
+hash = "51e03467277951fe3863899669691191ecb30e3b4b67f58678c0dac8d9d71495"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/categories/create_basics.json"
-hash = "d330a50dae4b1329133c37d88635531a79d455025ce280de3321d1d27a513c3d"
+hash = "d18e7cb8d8eceea2d862376c99087c54f578144e7d6bec61551a706caf3b55e7"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/categories/exploration.json"
-hash = "91fcd0a0d5337fdc710a5f68a48f8c002c439c5a7c07e07ce8e379884c0a9d14"
+hash = "8a78d7483db7d6bdc1ffe547c880f24aecd161db0b863bc5ef3f1ca2b9078a08"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/categories/flight.json"
-hash = "6a81d6e5d5c953eeede35f2ede7f1067fc5eb36229c15079b64bff95b0ee6672"
+hash = "bd9a424b1b88e0323a07d5cff45b874ec7d00e5bb2948036b2a7d444b718a4d1"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/categories/food.json"
-hash = "435d336000c51b04f72a1caeb048b3f9f38229e42679bb9af8b0b8d2d57e76f6"
+hash = "c1ce16718301e8b160b6b1631dcba724a96cb9a693ffcb1e05d72808b8de4544"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/categories/glossary.json"
+hash = "1c2048663ad5a3ea41c2da80e4812d0db2d613ca74e2b95eac3dca4deb1e1219"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/categories/home.json"
-hash = "88f1b905c52e20cf5d98eaa93844caa7830e04072287b210527b87974ed568b3"
+hash = "ebec9f991fb63f3b6c9605b3b5f578b5bee3e33fa0ad84a9c8fbec3e8c0a3f1b"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/categories/industry.json"
-hash = "123dd82ea8fc4cc5a4e771bcd5661fcc0f2c505fe8206f840d64089d16da7738"
+hash = "3849093a1a4ef203b170afdfac739ad3f91d2440512ba7697533021cc363f5a8"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/categories/materials.json"
-hash = "9771a4ff82af425886d19ef54539bda2c697420f8f6ee9ddb52187765f847d68"
+hash = "fcddef3ccc2de9361316628f02e97e09b84bc993ca3b8d8e97c9d7c4bb9ea09a"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/categories/ocean.json"
-hash = "258126ee768598ab950390ad2032ece6ba0f51fb9b61fd2abe8f8d5008339ff2"
+hash = "5d90e4c0139f05943087025ea9951bbc5c846ea86dfbf1d56d7daaaf1c6cddbc"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/categories/space.json"
-hash = "4051988075d397f1a3f6fed8bcbef9d23dc8cb0c1af3ff50e92684892d33bb06"
+hash = "47c01a148b337ea2e0fca813f24f6cc2d22811ee3a39c8e05172c18a0c4a2970"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/categories/stars.json"
-hash = "1e2702515b045af2c2884ca6439baed9309d7626acd866519fba29ad3b7b06c1"
+hash = "e2b7ac59ab2914e4cc633ed36894697641473af9b44f5a4e76e8571141434f26"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/categories/start_here.json"
@@ -460,187 +464,187 @@ hash = "ca98db35c5e33ceb48e372784a804bc19b95278b7934cb03958fc6f1eba7a43f"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/categories/survival.json"
-hash = "8c49fdf2d1c1cb20455024db20c2a9d1690af1338f5255cb5b453f42cb1da93c"
+hash = "73efa32574d746848e2e640e073950740380396f381d8a8a24683355ddcebaf3"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/categories/transport.json"
-hash = "f0c7078fec9765b64964c3ba32406f08ab493a2efaa3f1e055d2642d9d75fac9"
+hash = "1e15798935262f707a159859493e33db428e5ea31a5fe99a528012c3745b4728"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/connections/adventure_loot.json"
-hash = "fac6c4e7b6f2fd554a62978ae41c2c5af2c8908d9e9ec44df6c72f50da3af393"
+hash = "d8d14fefa2f0a971302de63ea9b420a16058191204d583c9b6f0f95d8aec158c"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/connections/balance.json"
-hash = "d97c438e806af9c88fe948222522c473b43d8bcebb8fdd5f2a894b4b384c2114"
+hash = "7b6709f0ff5908f5cc1c8defa1ea4f5527ec2145f39326deea91f6d445f4abfc"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/connections/farm_to_factory.json"
-hash = "a08f8fa67f13c498e754dd5d632ab915dfc869033cd998b31f1b734fe8ff4cf1"
+hash = "d75be3b282533485fb25f22951b23ce2ffae62de6376f9a28b25eb25da01eee4"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/connections/fuel.json"
-hash = "6db2ae8c21346891bb0abdab5676bef3680bcbe9096acf00357f89809a0275c0"
+hash = "05f339c20ad9af71bff8ed691f14439fcd8bb7bf6d335e4c68c91c42098aba04"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/connections/heat.json"
-hash = "81196398b3417f0c016c68d1eefcec1ef90bd594c5e1b3dfcf6a357499fc2bd6"
+hash = "890fd8660362a0bbd395ddf1faf4b3a6cec2d005ecb3b585ec56222a49be6c9a"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/connections/metals.json"
-hash = "13f8a8ad32bdcd1182bc67b7b4aff7bd3aaf9d30b0118459f3a5a3b73e856a62"
+hash = "67cea2214f554fce3342ef07c4d1a6661d740d758dbcaf2ade2dc6612cf26374"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/connections/overview.json"
-hash = "54f3a3caae63fce67d8e7b3b42036dd23f9b2fec7b568228f7ec4eca4dc4147a"
+hash = "b10d228cf0fd49c7f0b85c05d492f2b912d4f89231601b1067a33b03c66fe483"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/connections/power.json"
-hash = "9c4f3a8526e6abca9ceec8c809989562e3cee5768f9c55bcdec1f3d00489a7c4"
+hash = "d633021b9a7d0a194cc37395d9c60970728527f8b7d3c0d007dc6f71defc651c"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/connections/side_effects.json"
-hash = "2a53067caca04ef4ac4bf0a3cec6cab819a8e139cc71266e783d400290c9d752"
+hash = "0f5517a1415bf6c87f1e8a50278d055287ee7808cfa1d3e20a0893e22e36e7d2"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/connections/vehicles.json"
-hash = "f7eadbe90934742fa6501a8f0693b55b45488313fb6c3e545e258dca849fda2a"
+hash = "e93f38428a822d3a35f39aecc4697531aa80325505c4dbb268b19086cd72d15f"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/create_basics/brass_and_assembly.json"
-hash = "33c3c89ac3c2294adb5b8c1cca3e7e15b2ff4cb7319e9de2269a4142f3aea255"
+hash = "118ca28c1776b878a3d8bcd141e9472767ebd5b5238707198f67ef22301021ae"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/create_basics/contraptions.json"
-hash = "6cc777c850b0f1fd8c6fb77a89437dbd72178fc6f0acc9e38c393e0bc611837d"
+hash = "3dc0367765490ee0946af1fd1d1d3316b8ff447948e5e3427d6818815d303acf"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/create_basics/crushing.json"
-hash = "b1393819c8ed6a22892957bf95bd42487e4a4cc697a9626bbf159d6b61d05c96"
+hash = "9cb4fba52d0509857c6adaf99d94d50c8e05e41b80eaacf4fbdbb25e9a90acc5"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/create_basics/deployer.json"
-hash = "96915630ca248d1db3c82427aa0a9a08a5cefe8038bfa2682d667d8c304479fc"
+hash = "0c98d81e27c5ccd847c09541be38098f2037819d184866235ac255d332fa4f8f"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/create_basics/fans.json"
-hash = "747466706eb384dff7254cce33ff92a96d86ff6ac185d52da0e81c1667031907"
+hash = "1b64afef0228b77eaee51bcd3ec83a666158381d6acaa9cabdc343596069cd35"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/create_basics/fluids.json"
-hash = "a99ad4af9c266a3aeb8ea5466b9ef74d16e2ad054d11bc621267187aea3180dc"
+hash = "2f94e8a324f7bdd8668ec5517280a809979970f49a66d85fe3109ba2e98cd263"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/create_basics/heat.json"
-hash = "e09add42d7769d234cf552a93e63712afdbe9cfa18fbb83d5149f5ca42b804ba"
+hash = "76d96f3adc40618c3cde08d50bb16c017387d63c1135321c7b54e8c3b9380157"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/create_basics/item_logistics.json"
-hash = "74963761aa892f00d776f965bcf96111eb21b608fd929ae600792c3af939a10b"
+hash = "5593d1039e957a9739eb74b57cc1c3d7075d23dc89ce0e42048375fe8392b159"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/create_basics/materials.json"
-hash = "baf660640208511b964bc3eaa7eafb22e9f20aa75ebee23123887a6f59ac764d"
+hash = "b576b199665e63ceb688a48f61bde5deaa0cc7992442fbf1bc019262568d0539"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/create_basics/packages.json"
-hash = "85e2813aec7c7c2ba607752ebfb63fcc61dd7d620adfcaeb6071b0df952a2364"
+hash = "54d2cc7caaf5436cb58073693e8fa0835053ac625e8f85a4c0b7d0141fb97df8"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/create_basics/power_sources.json"
-hash = "c3695dec194108ba73ada23f1efb8dfb501b7c9d1294fde96ba5b38e8e0b3cb9"
+hash = "0c6bb70edc055c19e8dd45c9b71caeaa59919b6f42d63edf4b6c0d1bee5d966b"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/create_basics/processing.json"
-hash = "da0bd62f1fb3eaf6a38fc8d4cd655ba6c4dc48d6e02cf17fbca4619b5ec604ee"
+hash = "f59f813f155b425eb999ce70406023bf422bfa4d53101e3c682f30aeca0d4150"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/create_basics/redstone_and_control.json"
-hash = "0373200ca5fc5af1a01e522dfc5d7edaaa72135f9fde4b4d00e4edbc727950a7"
+hash = "2c575cdc57240eab0aaa813ee673c3c906fd9097f102b89aadd0709cb04052cd"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/create_basics/rotation.json"
-hash = "d22e8a2e9f7375f97c341d278acc48562b35d7d3827f0bdc8a5e34688c7fc681"
+hash = "86ab769cc451963f3360dbd798638fd932757ac5bb4c9dde1e2ceeb135a7ae6b"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/create_basics/stress.json"
-hash = "253389ac0037ce4343c2c16d71fe67ba4cb9eb2a0028d972216d66e0465cdc51"
+hash = "6726870c9044e03c19c1a09801da11a39c7359c2006d1ee1f902bd4bba1f2cb6"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/create_basics/tools_wrench.json"
-hash = "f964886a974c8d345477c62a741b39a8a677cab1deaecaea553867f821177e51"
+hash = "40bd1f50a267c1ddc413caa770016339a821d0624897402765eb968c9cf48e1d"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/create_basics/transmission.json"
-hash = "158e6948bd991669762fa5c9ba94ca9c7c2319db8a490fd3dd74c9130a1aaecb"
+hash = "8d4aa0f7ff88d758cd6b25add95d24082f796b5f2c3b76e1e78ad3363d43b1cc"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/exploration/aether.json"
-hash = "e08c3494906e6b65b67d449c2e981ef64d3feb9a3e574157ac7558051b05bbb6"
+hash = "df1a9597136bcacdcfaaeda50757b3fe30eb326005a086dc0e2c0fd59cc97726"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/exploration/alexs_caves.json"
-hash = "64d8af7e590871fa9f83933f3f6e1c9e6be7608724ec14df362cc580003de486"
+hash = "49528498ab6d118e9c224ac054339949b4c3be9ffaf53086c0af9f565ec4c6ae"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/exploration/bosses.json"
-hash = "238ffd5f6c660b95e06a6b924ff51585f3e5d28aec60fc0465009710b021ba3a"
+hash = "c0423b856edb89c4cdff06f40a776808c434bd1e3285b3a2d19bd14043d85917"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/exploration/cataclysm.json"
-hash = "84ca9b9b09e7e6115ae2c97cd4b0a7b338e9ba728e913582e3997ffee01315be"
+hash = "7c1c585081614b96213e882eeed141a6b33b80cbe1089a471d65f4265a43222b"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/exploration/cataclysm_create.json"
-hash = "15af9fb3c78d0cd8b53c894eea5e4c29737b7fe26fcc93c952c4f836261468ff"
+hash = "6aafd4c6890c214419c4f232f2c43210b8ac10e8b478f40bf1705d075cadeaad"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/exploration/create_structures.json"
-hash = "35642751da39189c118d9e88abe46d5e3ecce4b527b579fb0744bbdfb34f40b3"
+hash = "f9beb8ebec8eef64db6b4d762243c0cd760a00bf6ecbf54631aabbac76c9b7e8"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/exploration/create_wizardry.json"
-hash = "9d3b870b979c0f7064c3fb8e622d34dfccc688f37b6a7a8bc44c374087c901c7"
+hash = "de3647efacd1e520151e24664bcdf4c741a47e7b21a322f2cc4926e3f08b0858"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/exploration/creatures.json"
-hash = "afc88e844b813151788bb1274bd8fd1c94d885c1dac8d26aff0f834596152aa6"
+hash = "d3f473803faf7c539bcc35d67de59a8304a5e80ba4916f7b79f52ece60063393"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/exploration/dimensions.json"
-hash = "2e6f87584d97f6602df1b1bb286a84586858f983fb79db133c03b2ce3fdf0562"
+hash = "14ffda5073ce42d194e378269822f86d1c7f432d4e4b02c17f5a7af7f6138084"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/exploration/gear.json"
-hash = "b9c447bf683822d641b38a1163c65b683a1fcd50e90620fd5101c5b764a6f62e"
+hash = "42bc88d30724508b2edde920007b5d9244b5fbab83f9c4dda37eb0b7b147d787"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/exploration/irons_spellbooks.json"
-hash = "964b5a34860efc5b36f66931ad1eaa820f2fbb46fb7edd2de5476d01db81cda9"
+hash = "0cb307ca6b337cc3fb644856f4e7a5c531a8aaa80a7782cd7fa6465d34981b66"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/exploration/lootr.json"
-hash = "0518fee456c47cdeddacd44f271c8ab5eaa1361847481998cf3fcc083dfa540f"
+hash = "43c3a5ab8a4354217f50b2d3281b9848e0734d56a983e5acd7189a40b23a9caa"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/exploration/magic.json"
-hash = "d45db6f026561bdc93522d5661050abeb20abf473119322842533871da302872"
+hash = "8a4c0410d3e8f6858ee35840df206bde96df6a8a460a8fc71c721b4b51005b78"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/exploration/mowzies_mobs.json"
-hash = "3a97fb77c0796d8ca2a22c010a9b55f9710b788519b21ab68074488c8286eb0e"
+hash = "4cfdf8b4d8361f3adba0b423879cab5d9f23a2d9b85124cc7821d7becc2bb4a2"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/exploration/mushroom_quest.json"
-hash = "2e688e86bf91836182b3b4e193372351be91a03c24252be210899883d0e13ade"
+hash = "0a936a18e50b603a801009dd0b331f4453fd0d57de24811506692d0095da240f"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/exploration/nether.json"
-hash = "d7291c9424db3d150c8eaa2e2d79b15b8c04f15ffc005e73831b7b01dc347844"
+hash = "08415496217fe3e56b306741db5a0b1d5f6ad2637888bd2b645d3f62e9967786"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/exploration/structure_packs.json"
-hash = "fcc747b3a145660eb245893c7388b356b8ec0c74726c93c2094f0ffb5c493924"
+hash = "2a5608c409b5c25f3e86b7795819ed1aab97f4de1a6df84a04f8892adbb4fee1"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/exploration/structures.json"
@@ -652,387 +656,599 @@ hash = "e4fc9c3fc8fe773a35f0d37a8e35b0113ebff3a4de58d78cd8af2497ae144964"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/exploration/twilight_forest.json"
-hash = "8ff4fa6d0e79d0aa49b79d10ee13c4784de8059fd25a3ab62af5ca6df995063b"
+hash = "485cfead13f96b32817268acdc9aa4eefac1c4f1ccdc37f4f9233de4e39a73b6"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/exploration/worldgen.json"
-hash = "79ceafac1e0e6b3ad5427368ba48e2c00431e36b10832c5f04793d078d4121b4"
+hash = "b22d53c88076d01a60d19b444beecc3578d6d3738578416a48d6f8ce8fa7a9c1"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/flight/airships.json"
-hash = "88272da4fb931692b7b9cda3d5b17d4e86c1a6e850e96672b019e53050a7fd9c"
+hash = "0adca6fd4e1a50351d2c6bc49d54b50495b47c5b26f140e15677bd088348ce42"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/flight/balloons_and_lift.json"
-hash = "008d70b430106647ceac134b70cc2a5265ca8888064b283ce6f8606cbb4a0614"
+hash = "e9a48f38a1e04a160ee5b55b614700e1badb3cf2f1e2fc40ff29d44983d7f5e7"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/flight/controls.json"
-hash = "640f3cee7bc23ef29f938514ac61140064db176e8d6b93eb9ab0d6ac3afcf53d"
+hash = "92641597f924dc1f304274b65d6776de3373215ca7452ef83af293257a53ecc3"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/flight/destinations.json"
-hash = "633830b3f1b1b1bccc4a36dc47fa471502b6efb5006c047fed87a640df51eca3"
+hash = "69af6d713108530c13148b94a20a1ec85db3a1baa43f140a37be57179331dab3"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/flight/flight_control.json"
-hash = "c868d01a89c76bf85511fbb2168fc6d4cf03e64caf6c0bff4a0d68dd80c2682e"
+hash = "c3b1fa9919dfd55d94730e0d0823d4c564bc30d862e6f542ea1ce9fd69bc2f58"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/flight/hangars.json"
-hash = "da6ed82590c8af46148ce2a58cca8d670f4e2ce423229ab9be16b1736b495ab3"
+hash = "2a903b8f88b7440387ef46195defdbedddc5183bde7f74f9192a1e10fb0314b4"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/flight/propellers.json"
-hash = "28b7146dd2591f196a3e9700ca165f0880dfe2d50f9cf384b1fbd0ee961cb66d"
+hash = "13367d3cf14f34eea3d07afcebecb68ee2c319f5fbcfd48989071949c9432e69"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/flight/propulsion.json"
-hash = "987752c59c1db4c1b331fefe7bda4a04bf18ccf8f6cab471ef21d3622b5ffc66"
+hash = "33bc5be0bfc096a7f09fedd19f965725d6ebaef54645187b7711ecdec7e1a8e5"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/flight/ship_building.json"
-hash = "06d3619c4018edadcdf08c195b6bb4e31ff1946c038cc94d565c63b292b352bd"
+hash = "0cc8ec49a1f35b686a0ff105e51ac64ab472c97ada9c42d326b86e286899dbc5"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/flight/ship_hardware.json"
-hash = "2d735265064202fd7c577e910af7aa305b52ff4cd6eaa3544424cef160ef2cb6"
+hash = "47350473759e90b60b7533ac18d8569bbce13339d5ac87533050dcfb4940b2cd"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/flight/weather_and_danger.json"
-hash = "9089809174f758639ba630479f5873b7da033ab70f7b72411837de230768dee1"
+hash = "adc6c0a0caf39526618c530d18a79f47ec7d690ef8fb9ec9fd0fdb3eabfb9e29"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/flight/wind_sailing.json"
-hash = "b35dc29efa606bd1b352fc5ca11ed4f62c633b4b7d8232ca683198442652608e"
+hash = "18244ee31b511d1fc4128607d3a9f295e84bc33f764d24297ab9156c1bf40ab3"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/food/animals.json"
-hash = "4b3ea9f860acb525a260d6bf6fdb6838a0a05783e0f878791e4eb3079e5b52d0"
+hash = "8a347ec4c34ceb64e83890bb415dfb22833fda3a6afce424eedfe80cb1c1d3ff"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/food/bees.json"
-hash = "b9055b5e7b28ce54f061404a9af361efd5df0550b36e294d9cf7fb0476478f59"
+hash = "c52e2e1bddbd451c8e949f1841bc8bf501c8f5b599052e863f1bd62cb27c7e5e"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/food/brewing.json"
-hash = "ad44fbcefbcd811faf32f00b770c3e1a28eae375bfee16f5028dc1135fd46f86"
+hash = "c44c509ece2ff3c227f4dec6d99d1ebd739b41fdb4c71f8dd81c63b53520f7b7"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/food/cozy_cafe.json"
-hash = "a05fda5f5d48ab6621385f8a56332c31eb49f3bca5cdc547428f15b20e6d2e83"
+hash = "9f3e129b7b20f52520ea02e6701157d27d3332f46278a88ae7d3255ad2686046"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/food/crops_and_herbs.json"
-hash = "443fdf1e00fa58c5c581f3fa88ca07bd83d1d09dace8bc2e62bae367a623f955"
+hash = "bd472e0b92a462a61f7c13114c8b0df2d8acc7098eea9853df69275647803fe0"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/food/farmers_delight.json"
-hash = "e752716e52658bf5b264a0a9357a333de2e3000d8abb00d198c30aa93a5b8b70"
+hash = "32a0efca48edbc29579d6df0a0a30305c5985215f85a34f8bbbca58ce8c0c904"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/food/farmers_delight_addons.json"
-hash = "0075f8cf52ca19c133090f848621ebd56c7e0d649e30daa1cfcbafa190a0db74"
+hash = "8f6b59973a9c05069309f54d4fd9ea5b6df8fe3c9ee178d48a3e6eb889e65b40"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/food/garnished.json"
-hash = "ab29534d9decbcbcda85fcb0cfc37c0ba7842838afb3642936355d369f95a9b6"
+hash = "09fa194782c445c6b048ba127ce041aa5ad3dde26ae9d40e3e42db41871d1893"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/food/integrated_farming.json"
-hash = "381588ee8b6f84f2a107393bf8a038f8fb44f482924673dcaaecd18f03576469"
+hash = "130042749bdf15ae9477dd3bab272d6f97041b06670fd700b90addd60295f5ce"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/food/kitchen_automation.json"
-hash = "be08fd7b75b453daea0d589328ae7f6ae292b6f065032f959ca38e8389f05a4a"
+hash = "b879112af7c631792378c06a0ab88b773b06282761d4b3566e11ca8ada8c662a"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/food/ratatouille.json"
-hash = "eb7c1281649d9598cffc2ddf73a97053b2121fab9b96e4fe847966a9af3213da"
+hash = "6b6d0ed67acf706179942ed89e3a3290f891050a434d54ec23882612179171a6"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/food/sweets_and_drinks.json"
-hash = "71acff00fa6dd19eca36cd9f8cc1feb3dd2a45ba1015ca634da8a403f3c507ac"
+hash = "5723c29d46a517eb3117bd21a3bcc918c6ba5d35d13247f27580e7f4b718f70b"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/glossary/assemble.json"
+hash = "c845dd3486bb8a4b908e26cb9997851c7526c6a9dda6574674477f9b404c0e5f"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/glossary/bearing.json"
+hash = "10671a285725f9f0449ad865dc651ecaf5b6fd2ed6606ced2c2e8a7ecf215f4a"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/glossary/body_temperature.json"
+hash = "a78220b493f9dcea82f05c80a9e702a671107ec0aead26ae838d3a2e50be2a91"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/glossary/bogey.json"
+hash = "02e9070799a294119bf1111750d570bc429460824ddc1654431f65a3fada86c9"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/glossary/boiler.json"
+hash = "3bdb6e4c4dd889e406a675c290f96e255b0c6a89d02459e63ec8c9383161c5a6"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/glossary/bulk_processing.json"
+hash = "978b4a7626249f78ebee9c226e2ab89e9364ef84da289c059a7b9a78c2d3c166"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/glossary/canonical_item.json"
+hash = "355406c44d075500c90eb2f7bb3c514b0f35dc7c9d9d285b9b6d17ae568982b6"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/glossary/chunk.json"
+hash = "05b74aeedb4802a10e57faa683c77b8f74edc274163355a6d1febbb1e916f9a4"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/glossary/compacting.json"
+hash = "1271f19869d0c1fd8c44c7f2e062eefc0e4e24422437972a30de6575980c0f97"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/glossary/config.json"
+hash = "11a00491ea957542314064176da15ee2733fefca732b1ceacae1cf75e8f02831"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/glossary/copycat.json"
+hash = "6e835b21c8ecf5dea911e783f4bc4a6c0245248f92150ac3b723a35237d0b79d"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/glossary/crushed_ore.json"
+hash = "bc95f953548654745d32e82edd4aef68e9011074af57f4a5250b89df9b950e6d"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/glossary/curios.json"
+hash = "d4f17d1c232b9f25deee396075f2cf0ae063f6a362d68401032b2f9962ef2d96"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/glossary/datapack.json"
+hash = "e34a38c95fca5dc6d250be1fbf6cfa6018875a44317c32e79f09ae8b9b54b284"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/glossary/encased.json"
+hash = "837c679e04300c9b5098ed4c9e5bb456b5c865bbc8f5306002f269aed8249c99"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/glossary/fan_catalyst.json"
+hash = "9129c988ab076f864a62e50b9daa63898114544a371c6dd6cfce51edc9659f02"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/glossary/fe.json"
+hash = "59ab8379e80a9dd5cbfb5e75e26ebb04df0833795b1429a5daa3e441937f159a"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/glossary/filter_slot.json"
+hash = "61dd69a7bd24b71791e5473d919a496db59190110e8e098393874a55783e6e4e"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/glossary/goggles.json"
+hash = "f19acff56fa9ca24263446b360166fc1df37f78f4a752054200ff1b25eddab8a"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/glossary/grace.json"
+hash = "fb27bc87d248620870b04b987e532b5f95ee32c1385a57adf01aab074ca16fee"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/glossary/haunting.json"
+hash = "1eacc0be639e4e2f89f90aed61f560f8f7edd8071e2dcfad468fcbe7c3bfd556"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/glossary/heated.json"
+hash = "334cce60a03c1d9e2b983b91b674696ae6dd8d1afefb1e0e2943e95f26ee11c4"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/glossary/index.json"
+hash = "6129caade61b5ee13d5831cdce522902681a36981df8faac0cc0559638f74718"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/glossary/insulation.json"
+hash = "734c93e2b51c56bf0a61632f39611d487a654f7d6acee96d59d4b3713e7ff525"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/glossary/jei.json"
+hash = "173af827f921b0da1b4955f26da6beb55d17502e5d79f95f2bf7abc26719915b"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/glossary/kinetic_network.json"
+hash = "26f7084e28083ab1c0a6ad2a798bdacd57cad69d49ebf27f68588685e9e54f2b"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/glossary/mana.json"
+hash = "50de3d11e35cd74a48102dfe2072e574c4e058b89043161c39c6928f20104f5f"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/glossary/mb.json"
+hash = "579e3e5518081307d581b8de67bb4e95604ab28e6f6196212a428870f84f9ba2"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/glossary/mechanical_crafting.json"
+hash = "b6f52262e73c5a8fd6c5c187dbd94d4106207bc240a19dfb913c4bc0c74621b5"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/glossary/mixing.json"
+hash = "359ca52e2f740df0b0079eaea48f2ece505cdd671bb86c533e88b6a559a95a16"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/glossary/multiblock.json"
+hash = "a1b87ca63fae8c19d93ca03dbbfa8e217766b11bee5d97409b8d2a7ebc6191c9"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/glossary/overstressed.json"
+hash = "74897f714bd6dc909f036c75ee10afab7e7849fb10a404d7de2e4b908563e609"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/glossary/passive_heater.json"
+hash = "61e21fd27139f597c1f6e0a627574d0316a3393573c04e4dc6ab17f9fbe2e86d"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/glossary/ponder.json"
+hash = "b31a98b4996fc8ffc7ae82dbd8b00beba12299bc753ae63eba3abc35368839f8"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/glossary/purified_water.json"
+hash = "258d6878bf290a7d4f82fb74309f032fbad09775f749a3bf3582dffedc03164b"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/glossary/redstone_frequency.json"
+hash = "273639cf6df9fb6bbbc4201d59d3eaf25bfd78e2676fb9d00dcdd8fc4573edee"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/glossary/rpm.json"
+hash = "36b76ceb0d884399325cf07302b61fd6739e4b12a38f332a64dc63eba7f68f8c"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/glossary/saturation.json"
+hash = "c6234b2a384612aff24ea62666e3ab7abc845d9f9fa3ac75ed5c6ffe2fabd14c"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/glossary/sequenced_assembly.json"
+hash = "515e6dbe0f49d3356dbfbf7e1daa80ff550bb984408bb2cf19fdfcab1ffe6463"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/glossary/smog.json"
+hash = "93b7ec67d1ef331c993e421a596b6e3f6de87afdc1b4e39917ec98e3b66bef3f"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/glossary/su.json"
+hash = "12b385bec13e2ea96c947fe5ec54422397e7c5616b08072cac5da4bae9b54a10"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/glossary/sub_level.json"
+hash = "7313d55d186152d8725ef21457287cfbb01cbb48de7738a13ce25f2d87a71720"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/glossary/super_glue.json"
+hash = "20623d7cfa5c10ca3b3667d038a893aff9ab45e21b3bf1b104ca49a66063b3b8"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/glossary/superheated.json"
+hash = "e9643f3fc9ead382b4c062d3a641d579de451eae04fe7af91b40e9fba26468b2"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/glossary/tags.json"
+hash = "7c7a794449bc6d1dea88f94b7c5f39f2152a75c02eb85ceb7ad04d5dfc395956"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/glossary/tick.json"
+hash = "3af7ebb9a45fbfbef062f01530b59572ce69f4cd9f326e18c82a58e7609254f3"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/glossary/value_panel.json"
+hash = "04fd617555d17ef0392b4a8f3bf19acf8e59b35a7615c735998cda3afe7a625d"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/glossary/washing.json"
+hash = "284f77421cbabbf894cb061fe667143c2c7808707b0ab16a3e133595d6c466cd"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/glossary/y_level.json"
+hash = "58c1fff57ded8ac11da9233e239042b29c408dc6ff978da841fd7ddd7356351a"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/home/building.json"
-hash = "3fbf39bc71127275ff8613f31c662f08fac891d62aed762ecce353a1375db94b"
+hash = "59abe4d6130cc06695d0ed3535910dec69e03fb1aa65056a6f409df8c08ff2b1"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/home/create_decor.json"
-hash = "b0228b3ab8e47a25d4b4b20f9fca1377dd94cbe27287465c05869e7c99b25c37"
+hash = "32811a048fdd9b8b627c836929c3eb42f48232a27ab7ff3cefb982e6c2f19112"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/home/guide_shelf.json"
-hash = "a3f1093acacd7b19bd49627c862e543dbc6d99cb5b570ba3be9036465239248e"
+hash = "0a30ef28a64d77f7ab364cbbd1f3771bfc6287cea6957e13494fcc94a4ac3859"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/home/inventory_tools.json"
-hash = "5bcf53f637bc94495d3eab8db6d9c1ea8eb94a927f5a64e30ff2bc65a4791c39"
+hash = "015aba92f677eeba8de1b9232e2fb803d827a78030ace8447aee760b9e534223"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/home/maps.json"
-hash = "24c9d58edc3f7e52a47db1e73d71af0ad27042413ef9576387ec5cba29a8948e"
+hash = "b4c3e6a6ebdd4e01c42193c2c1575e36b2af2fb7d89e32ac2656be7279d1b0b8"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/home/starter_kit.json"
-hash = "a1ae7a957765634978b08fc2ec71d775bbce13be95e0f53ed047bc9e76e21aec"
+hash = "aa06ad47304a8735207e869b96a9027b5956cf78e388bdfa359475b751da23f9"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/home/storage.json"
-hash = "255c03a67b6641a823d0b81ae34862497843cdb80ef1168729f348c11041d4bd"
+hash = "f382fa550ffca947a48f2a7744fb24351d1f485e419ad876a48ae443a62b01c0"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/industry/alloyed.json"
-hash = "352932dc6e99be523ac0963d6a365ca66f0f56dc9d7e6fa2f0ba311bd4af6f20"
+hash = "4ceef8f67f990588cf8d908181e6d4284873311cf1d5d8417031f57fc7b8d916"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/industry/cannons.json"
-hash = "d9cf55b6c969c61615e2960e970782a3a2caaf4a08568f70840b56f9d0c70d0d"
+hash = "58d53752bbee102df66b5dd8f68171e1ebec42ca5dfbb22fe0964a0e3ee3cdc7"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/industry/dragons_plus.json"
-hash = "e1a0cf9dbe04a829d9f35c734ab149d40bee5a7b8259f6209b31eb85539260d1"
+hash = "49a52f4b27376f29500b6937021f4bbf631174173e2218dfc558ffba9e5f451e"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/industry/electricity.json"
-hash = "ea77f7c397e61f0aedd795e5046e43bcfdc166a2de2842d42d4c4f8f09178526"
+hash = "7a3910dc40dc2b2c80d90a575d3b034a2d0aff20eabcad1f65cef3694618e926"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/industry/enchanting.json"
-hash = "7cb36922cdc33fa4148624202563156c437cdc5207d7ec4c8715c2d88b028a9d"
+hash = "1c93942caf5050915b0d7fb38a0fb78ce944e8df58683b98252e98ced18e376a"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/industry/liquid_fuel.json"
-hash = "748a66dbd893087dad2307af87a9036e5b457f01ccdab1b4f9b720ab8b39bb65"
+hash = "1791e0aace3c130956f9bd0e191838d99c85a791b919f0f054ae8fdce785efdc"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/industry/nuclear.json"
-hash = "f02b27abccb77c8a036dd87d83f5eced0f2418c3349f51e808134168276117ac"
+hash = "24c636c06a60f82479e49a74881a0b86cf4afafe9462e6015dc23abfecf3e117"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/industry/ore_excavation.json"
-hash = "1989b20998243800b9aa7a2fa21f99ac13b75210a4e0406ca52ac552caeff72a"
+hash = "fbd6959fd1104154aaa4d9da0d9731c364d0949c906af503605d78e9c518f01d"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/industry/power_compared.json"
-hash = "453a05aa012d8168b0ff383180a97965ac80980adf7bd61045cca7f9819f9079"
+hash = "104101a7b79fa0aff9a8ba556e70430e87bc5f8e9f481a8d9529d6437b23b02d"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/industry/power_loader.json"
-hash = "407d9510278a02fdaa06e887f300c83b885bc65886d26529a6692ddbbf81c29e"
+hash = "37c8258119eb6f42ca6e85cef3b58c116f19325588d5804df1578b29482b9eef"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/industry/tfmg_engines.json"
-hash = "5bd2123e2570c603779d2829571dcad45fa5223de66c8ec0bdb3e3710250b58a"
+hash = "0e81d71e03dc4a78f3a1780ef70e4c82b27a2ef9db4614b465048e180fdaeecb"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/industry/tfmg_oil.json"
-hash = "1f092232bb4c119aa749ad9be2e72d8e3e1b9cc037494b89fb0d79c2b2745788"
+hash = "c9a49abf1fad3a6816759d2aa00977b425d6754b88f410d89f6e22b156fa0c70"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/industry/tfmg_steel.json"
-hash = "2a1e7df7db35d3f30a68e9658da6253d202cbe820d50241bb16339fcfe3fa2b1"
+hash = "b9d7303eb38ddd0092e3ad033975b1247ba0cd68e7bb3cd6a0606be3bd10e02a"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/materials/ore_doubling.json"
-hash = "f87ccf7d609e2f5327e514fd5dd09214e7f62023d7dc045a0c8330161baf4117"
+hash = "d3199c62142384b14abfc6d9cb5f7b62452b032df3fe96c6c7790e735396b990"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/materials/ore_guide.json"
-hash = "83983c84a28a071dec822f6419d635072c83c43c6f41c3b83a2082a548bafffa"
+hash = "2b71c30a4f07b55bf64b1ce52ccbaf4db84191627229a0b75b5e1b9a38c19110"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/materials/shared_metals.json"
-hash = "c4deb70efbdb50e017c4c0654138b4c895b6a94e9328cb1ee1a0dacd0b2cbe34"
+hash = "8ed76122122e3aea3993b6a3a932eaa3620f7c3edae4de0b2af67749356e3a38"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/ocean/aquamirae.json"
-hash = "037276c43d964b5e914d8a29e06346f5ee81ba50fca05bfc5ae0f4bbce4b5bb3"
+hash = "4cab7882051f9f4f797087d959741528a7da259c4f1aa0db2fba47991bf42b1d"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/ocean/conduits.json"
-hash = "b66290cbc4d046e29c2dcfc2d917abe64ca0c8c134469b2441c66b5894c9b0ea"
+hash = "f9f0caaf4e4d8f80299671e0aad04dc47879a8823de38512d8df5027c57ff1c7"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/ocean/diving.json"
-hash = "d98ef98fbf00835f392256fa168bad6adec04d4080353f87678a3e55c921c56f"
+hash = "6b0d88ba7f3a24e2961a47782a2afa596173222050bc7681598ccc93c31d2e2a"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/ocean/fishing.json"
-hash = "43e5dacbbf16d23303d9e1346c40156c25f4fabd0f5fc8c0747460e0a2024e36"
+hash = "9594e8723af26cf5feb9a672a78049c46a4a36cdb6c20dbb953b10d768e74ce3"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/ocean/hulls_and_pressure.json"
-hash = "6e49a86530bac638d310cd34e2ac79090d419e301e35b511589bc1413c26c198"
+hash = "4d3d1a5729a82feaacb0ce5f716785ba563bcc2d47196704f12b9d719a020376"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/ocean/sailing.json"
-hash = "775f2d186f8b506d7ddd7994bc3492eb8236106a0cd6087b1540d715fae176bb"
+hash = "b821c0b7af441ba37aefe7404e5b215bd1a75f75e7b0ecae07e1ccdeeb46b592"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/ocean/sea_food.json"
-hash = "0257edd0576f4942c97d93d12e1f674767d003ed8661ef4452a415f8b0d0d69b"
+hash = "e3648df3fa264fb50d7b4f73003ccaa3b79111aedc8bd602952e79a8a78a94d2"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/ocean/sea_life.json"
-hash = "265c7c5734407b67b71f1ea2b9a1616f45f9b8bcae5bc69d5b0dc29c88cef47b"
+hash = "0b3cac58a97eba1b2de9183222a1c526676f97bec17cee574e51c44b9ccd5024"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/ocean/submarines.json"
-hash = "e1354e59af6ea0865b7f1eea52a9ea8e98adca0c2ce169eb3b431af2057c1d1a"
+hash = "9f0838af8a46e5cba1c76788b385d88984ee30fc32cfdb73dfa838753ef564f5"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/ocean/underwater_places.json"
-hash = "e99166160a1cc0688de55c4931c9c4c95004b00e12b9592dd06600ce3e362fcf"
+hash = "2123a43929f51d88fb6d49efd2b5308c83b9813c80967740a427748e7f9f07a8"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/space/aeronautics_bridge.json"
-hash = "30bf3f89acca70e8eec27c20df7c340fc4bfb0b0f1a4cc6c96fec8ccdfe6e416"
+hash = "03e559a5b73807095e32fcb55f2bed507cf862c27fdae021955bd4986023ec55"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/space/planets.json"
-hash = "b8b16441c5ec9bb0f8e2152ffe626778223ae79d31946e6d3c91cbf96fd0a34c"
+hash = "aa34207a386cdb2fa24c28838131957a4be90708034a7ded790a5cd89bb20e71"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/space/reaching_space.json"
-hash = "50999e402dff85138d5b9df894a6da9bae8d35e6695617bdef853e0f31529966"
+hash = "403e4f0a0db9f44d07951ca45880e475c74a7905fc2262848af3577678874712"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/space/rocket_building.json"
-hash = "9061c6d4e8e014c162e3179782f21166cb32b3229eb4e007d9bd98e69204a124"
+hash = "eea972249020e4b3603ddab77b0c5252a2647a007d17cbb5d9e8ef7a83d2136c"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/space/space_materials.json"
-hash = "482566221beb67a77b84d364fa7531f0f2b84fdd4f87369f96d0de8e2f23aacb"
+hash = "9dcf6195f08a6e37b6eecc4aa162979b43ec679620f3d76371b0de329621f310"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/space/space_survival.json"
-hash = "5184b303f20be9f20b2f4eb57fb01bbac0892f544a6d842a2ce1ed9cafcdafe3"
+hash = "9df3ce578f4786032ba9f4c13e59251bd9676ac2bdcb2d2acdb7e36f01ed5d90"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/stars/abyss.json"
-hash = "77eee9d7ebfa52c5f64918c155bd5a8ac148bfa5d872c5abcec5776022c16f0f"
+hash = "02d532492bffacbe204f4ef3a3568046da8689e8a8fd926cf38170ca48a0b7d9"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/stars/aether.json"
-hash = "ad99f0833b3f2f53c25e39ea1ca8f57319aab2a5fb3a4d8e2fa4a199140978d2"
+hash = "98a49002df505a8ea28f30abeaa75529391538836a75689e67ab2bd243c80e5a"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/stars/end.json"
-hash = "23256b6a67dd2f0f570ec7525d32867fa339f0f6035eeba6f45744490a0029b8"
+hash = "9e73e41b58aa9ffd7e8f5ef01566bfacd812218e067dc283f6eb2a7216b5caf4"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/stars/industry.json"
-hash = "3b4a049326b2cd9168e6c9acb120f2abbbbcd3b52f697bbf2c4778c7a8e89da4"
+hash = "0a2b0679db2033ffa159c2151089077d5a5659f36034eda4b0ee140ec3b800ca"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/stars/machine_fights.json"
-hash = "69b45a543e4f030f95343c7ae5c57db6ffa20f49796c433f37b31c03a1b4e3a8"
+hash = "911837163ccaf2e8c5dffdb9027f6617d6909387ec3a9ec08fcdc4fdb182bc44"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/stars/nether.json"
-hash = "f410acf7c39eaf0cdd5ebd0262cce8c57326aec7d9271a9375c832743e99a927"
+hash = "4bf44c67e6a685f849e0db1a9ac252e2a3255a42b11b6b1f72fb8e0f626126fd"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/stars/stellar_core.json"
-hash = "83bf21de44d47080907a0767ffc387ac66f68ae6c2870020275386667c67a906"
+hash = "492ffc8c593d0acbab94b491cb4f07562ab57b47dcff299308d3dbb811c041f1"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/stars/twilight.json"
-hash = "14d5dd02e92f15af14566645c431cf40e739084711893c4b7dcda0042c4d8d72"
+hash = "f6be4d98976d22477b48a7a8c5b4230a1e6eaa5853b468734144e6ac4523db45"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/stars/why.json"
-hash = "027059528a6d2ac18b1dfba7098d8c1eb63cfff6b942a15f9c7590279e292d6c"
+hash = "2ecaa13ff5b07379f2236422f6915f689d5238a035d1951e56aa965f01e8bde9"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/start_here/difficulty.json"
-hash = "72f11c0c7ebc31afb6192a85332af80124fcba3fb69c77e585452e816c8ad708"
+hash = "bd9a6b89a06df6aef212b0e1c43b9c3d4d06123c718ae537104352eb86649656"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/start_here/first_days.json"
-hash = "7ab35b6cf94a21826edcea87e97ab032cb82101c8b9eb2aa1fe1c797661c8680"
+hash = "621c2518ff365a5baa6c8af72516e6deee2686aa2b9b6d7080b0275f5c2ea86a"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/start_here/performance.json"
-hash = "70d0966799a48afc9eb73447efa5d19c1b971f550d41d852c3283a91d2a4f005"
+hash = "0c9d998fc3feca0a932805d952e203040e123770ca2cd11480ab157e7bd1b74c"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/start_here/tools.json"
-hash = "3d5ae69b6a534a346dc842742279928f43186ecd6ab9229bd80baa70b888bd4a"
+hash = "0ddee7972293a52d403161fb0d671e396459c6dc540b7c0b97c4b54535f9ddf3"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/start_here/welcome.json"
-hash = "c6875d7066ab8605bd8675d8fe50e1212dd52479e31acd01cd43e4b24e445773"
+hash = "eb6580edb8fd4c567f40d3fb4725db7ad9862ca29060711b2d2b69d36f9f9bb7"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/start_here/where_to_begin.json"
-hash = "bd1c555ffe2f8e0c02ba3fa387135af2ea23ccd5b905c5000bea97b906826acc"
+hash = "b77524b91bc90331e4b61b6dc948aada676652ce21d91436ba4fe7c83e2f4562"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/survival/food_and_health.json"
-hash = "dd87a08f05a9834aa1f142299d7330c2bab770654d5027bd51fa855e78148f2f"
+hash = "1115736fafcc789e52fbc9cdd55ae1f38afe7aa9885579d8d63c93960d0c6e5e"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/survival/pollution.json"
-hash = "ea7092ea2bdbf37df18b0cbcb6d5ee90967ff17e57c01de20d1ac15f8947928c"
+hash = "ec33e0b630d6043935e8184340116f935e3d117626ea2169d7d381247f184160"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/survival/pollution_control.json"
-hash = "2f83f98a5ee035b43a251478c372924d93f2c4966638a8c6cb1d480000e0aa77"
+hash = "d8f92494e82044f2596b6b629738b1ef16448c5a9b3d18610063585ba541c6e3"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/survival/seasons.json"
-hash = "d85f5bf6017d071e152bcfcd3eba8222ac795bd264ba8b83028b90bdd253af04"
+hash = "912f2b907743e68de8a090417676d26738c67bc2428d4740658f53fdc1ff161e"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/survival/seasons_crops.json"
-hash = "43a21cca052b479d6c6be086b638aee25415c3765d469343a4e52bb43222c38f"
+hash = "a64224526087282131547aef34fe0baa580e54ecf5650874f4ed181fbf1ea417"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/survival/temperature.json"
-hash = "db522dbef4bc834a4d0727d127297e8ee33218f99d54880ab3c293a39a678dd2"
+hash = "d6eb0ba0b008cdde5eb91b347323e82012a0012a454e5c108b226d049d8f8b2b"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/survival/temperature_create.json"
-hash = "8c6090a30eed8ccb3b7d27221826ad04ab70e753deb59979c281bf4ffdd52a30"
+hash = "1e19c2a5e15abae9af4fc338d4dce574add7b3518c717bbbc72a6fd37ea39de4"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/survival/temperature_gear.json"
-hash = "46a8714364dcd96b8f7a5622097feb28a8e3c2ff1d854b7449bb2c1040b0caf7"
+hash = "8e1d917e411aee4c1548687e7133b0e40c4f4df80574223339466b56a83a0a8b"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/survival/thirst.json"
-hash = "fe391548d11cbd028ef59337099c34dd3e6d61029ab37e8091329bbebfe58195"
+hash = "39b9bec1d944c7b64f0d6b170b6f4b5d42ed431423f00617fb89077f85535dbf"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/transport/coasters.json"
-hash = "8cad956ba65c6166c4e229eda30c1f8d072f4dca198d2f3174da546ab57e78f8"
+hash = "18ca9a8243df56416e3b82561b145c1e8193aa148e70aa23179abb041facb6ff"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/transport/getting_around.json"
-hash = "725534260ec090533a087aaa3301f5807e3c5a02defca7c749063dd88c6d26e1"
+hash = "474fa9d43549cc98f4fa4c401252ed59fccd593d4d21bb0ae5eccdfcd29198e1"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/transport/hypertubes.json"
-hash = "0c6385e68cefd573ea58d7fce2b9dc162ac3c413bfcd9501f2225a3a14a4c388"
+hash = "3505ebc36620fa6243321da5db64243a858f372c3bb483308bcbc2d4decbf4f2"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/transport/jetpack.json"
-hash = "2974e0a5ca05f6f714350f61e7a5716dd60744eea81ab6e03c069d01fe283a9e"
+hash = "a2436b6d819ce57ca8d8eb884f28d097eff1ed42f0f9aa733ba00446b1a4217f"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/transport/train_addons.json"
-hash = "529c3ef11678601cb6249a7fe0eae2622188ca71ae202abd2dbff5fd1dca97bb"
+hash = "0e697a01ac5deef7c5bd56f1674088de3adcb3e66be50d65a3bc545169a4bc8e"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/transport/train_signals.json"
-hash = "ffd2631ecbb674712e2b21feb13b82ae3273ac48e744891bd981e86784813901"
+hash = "4dfbe475ffcffe03d2aebd11ab15864dedf0880a439224ad7e18ba4e2b12d7d4"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/transport/trains.json"
-hash = "e5844629ad51ac2282ff1a5312a2d6341e54aae108d3a18dda21edb54ef2685f"
+hash = "e9913eb0277000018b590add6a3c9abbc604d2a1a48fab3aa435fac57082237d"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/multiblocks/crushing_wheels.json"
+hash = "938e2377f908ce2f23f597dc64b888eb4e8f0c4ecba36f8c6aea26e96f1ee48a"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/multiblocks/heated_mixer.json"
+hash = "c07407eeb7ecdfc1b7daa1be483865533a30ccf101c944fbd5f5365f1a50f5d8"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/multiblocks/press_depot.json"
+hash = "6312af784f8b8c0d72863b5dd971b7dd6cb041514594619af9e6e015dae1941e"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/multiblocks/steam_engine.json"
+hash = "1310db95be0cb0f2644ec81ed8583ee05c8987d1d5eb8488398cd9de26078712"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/neoforge/biome_modifier/no_subterranodon_roosts.json"
@@ -1805,6 +2021,34 @@ hash = "a0416becc3c20dcaa41dfeeee84dade6beb3ebfb0fb380fe581234e609955914"
 [[files]]
 file = "config/paxi/optional/create-galore-with-elytra/pack.mcmeta"
 hash = "496612965e223ce5e5f35c83c8f6bd58bb98792b1ce1f50a02cc388d952b67a2"
+
+[[files]]
+file = "config/paxi/resourcepacks/create-galore-guide/assets/create_galore/textures/font/guide_icons.png"
+hash = "f5061bee6ae8750f05b7c42e0793f17a15b55ce60f52b5162141b1f0a8319729"
+
+[[files]]
+file = "config/paxi/resourcepacks/create-galore-guide/assets/create_galore/textures/gui/guide/crushed_to_metal.png"
+hash = "e1bc5b69125d17d88a0c5cbce525974eddc0ebb65de3dfbf0a0fd7338c5b18fb"
+
+[[files]]
+file = "config/paxi/resourcepacks/create-galore-guide/assets/create_galore/textures/gui/guide/ore_doubling.png"
+hash = "dced611df2056811a01ed0d2b89e9caa085a7de42e6cba574b936909a707bdca"
+
+[[files]]
+file = "config/paxi/resourcepacks/create-galore-guide/assets/create_galore/textures/gui/guide/water_purity.png"
+hash = "e871224467055b29f25f7ed0655b372ee3cc45f7b5679570f28c7a9572b25a56"
+
+[[files]]
+file = "config/paxi/resourcepacks/create-galore-guide/assets/minecraft/font/default.json"
+hash = "ae635f6ad743e7699394999477f7823a54160f26146c4cb4b1c759be3d6143a9"
+
+[[files]]
+file = "config/paxi/resourcepacks/create-galore-guide/assets/modonomicon/font/default.json"
+hash = "ae635f6ad743e7699394999477f7823a54160f26146c4cb4b1c759be3d6143a9"
+
+[[files]]
+file = "config/paxi/resourcepacks/create-galore-guide/pack.mcmeta"
+hash = "024c3f3af4a47af34577bc953522b02a9eb8de40a852cdeafd6ac8b68522a60b"
 
 [[files]]
 file = "config/smog-common.toml"

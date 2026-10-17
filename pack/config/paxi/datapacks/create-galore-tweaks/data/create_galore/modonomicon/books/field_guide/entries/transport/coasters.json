@@ -20,12 +20,17 @@
     {
       "type": "modonomicon:text",
       "title": "Roller Coasters",
-      "text": "Simulated Coasters lets you lay free-form coaster track with curves, banks and chain lifts, and ride it in carts. Carts are physics objects, the same system airships use, not Create trains."
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- [#](FFFFFF)\ue104[#]() Place **Track Anchorpoints**, then link two with **Coaster Track** for a smooth curve.\n- Tracks cannot split or cross over themselves.\n- Carts are physics objects like airships, not Create trains.\n- A chain lift runs on Create rotation."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Simulated Coasters lets you lay free-form coaster track with curves, banks and chain lifts, and ride it in carts. Carts are [#](7A3C9A)[physics objects](entry://glossary/sub_level)[#](), the same system airships use, not Create trains."
     },
     {
       "type": "modonomicon:text",
       "title": "Track and anchorpoints",
-      "text": "Place Track Anchorpoints, then link two with Coaster Track to make a smooth curve. A wrench reshapes it, and banking and height can be tuned. Dye tints the rails and an axe removes it. Tracks cannot split or cross over themselves."
+      "text": "Place Track Anchorpoints, then link two with Coaster Track to make a smooth curve.\n\n- A [#](2E5AAC)[wrench](entry://create_basics/tools_wrench)[#]() reshapes it, and banking and height can be tuned.\n- **Dye** tints the rails and an **axe** removes it.\n- Tracks **cannot split** or cross over themselves."
     },
     {
       "type": "modonomicon:spotlight",
@@ -46,7 +51,7 @@
     {
       "type": "modonomicon:text",
       "title": "Chain lifts",
-      "text": "Use a Chain to pick a start and an end on connected track to add a chain lift. The shaft at the start takes Create rotation to drive it. Sneak-use a wrench anywhere on the span to remove it."
+      "text": "Use a Chain to pick a start and an end on connected track to add a chain lift. The shaft at the start takes Create [#](2E5AAC)[rotation](entry://create_basics/rotation)[#]() to drive it. Sneak-use a wrench anywhere on the span to remove it."
     },
     {
       "type": "modonomicon:spotlight",
@@ -75,7 +80,7 @@
     {
       "type": "modonomicon:text",
       "title": "Seats and styles",
-      "text": "Create: Coaster Seats adds Lapbar and Restrictor seats in all 16 colours. A Restrictor locks the rider in by Redstone Link frequency or a redstone signal. Coasters Simulated: Track Styles adds a Coaster Style Tool and an Anchor Style Tool for extra looks."
+      "text": "Create: Coaster Seats adds Lapbar and Restrictor seats in all 16 colours. A Restrictor locks the rider in by [#](7A3C9A)[Redstone Link frequency](entry://glossary/redstone_frequency)[#]() or a redstone signal. Coasters Simulated: Track Styles adds a Coaster Style Tool and an Anchor Style Tool for extra looks."
     },
     {
       "type": "modonomicon:spotlight",

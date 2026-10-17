@@ -1,0 +1,24 @@
+{
+  "category": "glossary",
+  "name": "Encased",
+  "description": "A shaft, cogwheel or belt hidden inside a casing block.",
+  "icon": {
+    "item": "create:andesite_casing"
+  },
+  "x": 8,
+  "y": -1,
+  "sort_number": 15,
+  "parents": [],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Encased",
+      "text": "**Encased** means a shaft, cogwheel or belt is hidden in a **casing**. Right-click it with Andesite or Brass Casing; it keeps working.\\\n\\\nParts placed after encasing don't connect until you toggle the side with a wrench. Casings are also the base of many machines."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Where it matters**\n\n- [#](2E5AAC)[Transmission](entry://create_basics/transmission)[#]()\n- [#](2E5AAC)[Core Materials](entry://create_basics/materials)[#]()\n- [#](2E5AAC)[Wrench and Goggles](entry://create_basics/tools_wrench)[#]()\n- [#](2E5AAC)[Create Decor](entry://home/create_decor)[#]()"
+    }
+  ]
+}

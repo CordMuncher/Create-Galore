@@ -28,6 +28,11 @@
     {
       "type": "modonomicon:text",
       "title": "",
+      "text": "**Reading the pages**\\\n[#](7A3C9A)[Purple words](entry://glossary/index)[#]() open a definition in Words to Know. [#](2E5AAC)Blue words[#]() open the full entry.\\\n\\\n[#](FFFFFF)\ue100[#]() **Key points** start a long entry: the must-know part.\\\n[#](FFFFFF)\ue103[#]() **In depth** marks optional detail; all after it can wait.\\\n\\\n[#](FFFFFF)\ue101[#]() **Watch out:** danger or lost progress\\\n[#](FFFFFF)\ue102[#]() **Tip:** a useful trick"
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
       "text": "**The sections**\n- Start Here\n- Create: The Basics\n- How Things Connect\n- Industry and Power\n- Ores and Metals\n- Survival Layers\n- Trains and Rides"
     },
     {

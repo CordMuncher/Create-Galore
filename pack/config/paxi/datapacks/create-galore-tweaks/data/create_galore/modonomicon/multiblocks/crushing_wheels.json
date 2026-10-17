@@ -1,0 +1,35 @@
+{
+  "type": "modonomicon:dense",
+  "pattern": [
+    [
+      "A ",
+      "BC",
+      "A_",
+      "BC"
+    ],
+    [
+      "  ",
+      "  ",
+      " 0",
+      "  "
+    ]
+  ],
+  "mapping": {
+    "A": {
+      "type": "modonomicon:blockstateproperty",
+      "block": "create:shaft[axis=x]"
+    },
+    "B": {
+      "type": "modonomicon:blockstateproperty",
+      "block": "create:gearbox[axis=y]"
+    },
+    "C": {
+      "type": "modonomicon:blockstateproperty",
+      "block": "create:crushing_wheel[axis=z]"
+    },
+    "0": {
+      "type": "modonomicon:block",
+      "block": "create:depot"
+    }
+  }
+}

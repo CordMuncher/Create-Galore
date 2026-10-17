@@ -1,0 +1,24 @@
+{
+  "category": "glossary",
+  "name": "Compacting",
+  "description": "A Mechanical Press squeezing the contents of a Basin.",
+  "icon": {
+    "item": "create:mechanical_press"
+  },
+  "x": -4,
+  "y": -1,
+  "sort_number": 9,
+  "parents": [],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Compacting",
+      "text": "**Compacting** is a Mechanical Press working over a Basin. It runs any filled 2x2 or 3x3 crafting recipe, plus extra recipes, and some need heat from a burner below.\\\n\\\nExamples in this pack: a Cactus into purified water and green dye, chocolate into bars, and Yellowcake. JEI lists them."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Where it matters**\n\n- [#](2E5AAC)[Press, Mixer and Basin](entry://create_basics/processing)[#]()\n- [#](2E5AAC)[Thirst](entry://survival/thirst)[#]()\n- [#](2E5AAC)[Nuclear Reactors](entry://industry/nuclear)[#]()"
+    }
+  ]
+}

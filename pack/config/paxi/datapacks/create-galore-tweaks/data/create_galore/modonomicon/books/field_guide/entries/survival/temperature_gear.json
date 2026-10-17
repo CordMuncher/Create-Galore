@@ -19,8 +19,13 @@
   "pages": [
     {
       "type": "modonomicon:text",
+      "title": "Insulation and Heaters",
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- [#](FFFFFF)\ue109[#]() Sew insulation onto any armor at a **Sewing Table**\n- Ready-made sets: Goat Fur, Hoglin and Chameleon Scale\n- [#](FFFFFF)\ue108[#]() A fuelled **Hearth** keeps an area comfortable"
+    },
+    {
+      "type": "modonomicon:text",
       "title": "Armor",
-      "text": "Armor is the main defence. Take any armor to a **Sewing Table** and sew insulation onto it. Insulators such as Goat Fur and Hoglin Hide have their own item tab. JEI has a Sewing Recipes category."
+      "text": "Armor is the main defence. Take any armor to a **Sewing Table** and sew insulation onto it. Insulators such as Goat Fur and Hoglin Hide have their own item tab. [#](2E5AAC)[JEI](entry://start_here/tools)[#]() has a Sewing Recipes category."
     },
     {
       "type": "modonomicon:spotlight",
@@ -62,12 +67,12 @@
         "item": "cold_sweat:waterskin"
       },
       "title": "Waterskin",
-      "text": "Cold Sweat's own drink container. Its tooltip shows the keys to drink and pour. A Create Spout can fill it. It carries Thirst purity: purify it in a furnace or campfire."
+      "text": "Cold Sweat's own drink container. Its tooltip shows the keys to drink and pour. A Create Spout can fill it. It carries [#](2E5AAC)[Thirst](entry://survival/thirst)[#]() purity: purify it in a furnace or campfire."
     },
     {
       "type": "modonomicon:text",
-      "title": "Create diving suit",
-      "text": "A full Create netherite diving set (netherite backtank, diving helmet, netherite leggings, diving boots) adds heat dampening and shrugs off the wet effect. The backtank tooltip shows the hint."
+      "title": "",
+      "text": "[#](FFFFFF)\ue103[#]() **In depth.** A full Create netherite [#](2E5AAC)[diving set](entry://ocean/diving)[#]() (netherite backtank, diving helmet, netherite leggings, diving boots) adds heat dampening and shrugs off the wet effect. The backtank tooltip shows the hint."
     },
     {
       "type": "modonomicon:text",

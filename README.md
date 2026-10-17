@@ -6,7 +6,7 @@ A big, long-term Minecraft modpack built around the Create mod. Think "Minecraft
 
 | | |
 |---|---|
-| **Version** | 0.1.8 |
+| **Version** | 0.1.9 |
 | **Minecraft** | 1.21.1 |
 | **Loader** | NeoForge **21.1.259** (pinned, don't update it, see [Known issues](#known-issues)) |
 | **Mods** | 225 from Modrinth + the pack's own small Create Galore Bridge and Lag Watch + Twilight Forest added by hand, plus 4 shader packs and the Fresh Animations resource pack |
@@ -15,7 +15,7 @@ A big, long-term Minecraft modpack built around the Create mod. Think "Minecraft
 
 ## Install (players)
 
-1. Download `Create-Galore-0.1.8.mrpack` from the [latest release](https://github.com/emresahin0906-code/Create-Galore/releases/latest) (or [from this repo](Create-Galore-0.1.8.mrpack)).
+1. Download `Create-Galore-0.1.9.mrpack` from the [latest release](https://github.com/emresahin0906-code/Create-Galore/releases/latest) (or [from this repo](Create-Galore-0.1.9.mrpack)).
 2. Import it:
    - **Prism Launcher:** Add Instance → Import → pick the `.mrpack`.
    - **Modrinth App:** drag the `.mrpack` onto the window (or File → Import).
@@ -67,7 +67,7 @@ Neither mode deletes or re-downloads mods that didn't change, and neither touche
    ```
 3. Press Play. A small window checks the pack. The first run on an instance you already have just checks the files and downloads nothing if they match the latest release. After that, soft launches with no pack change take a couple of seconds. Clean launches fetch the pack's configs (a few hundred small files) each time.
 
-The command reads the pack from GitHub, which only works while the repo is public. To update from a local copy instead (a private repo, or no internet), unzip the release's `Create-Galore-<version>-server-kit.zip` somewhere and put the path of its `pack\pack.toml` after the jar, for example `"$INST_JAVA" -jar create-galore-updater.jar C:\CreateGalorePack\Create-Galore-0.1.8-server-kit\pack\pack.toml --clean`. Unzip a newer kit over it to update.
+The command reads the pack from GitHub, which only works while the repo is public. To update from a local copy instead (a private repo, or no internet), unzip the release's `Create-Galore-<version>-server-kit.zip` somewhere and put the path of its `pack\pack.toml` after the jar, for example `"$INST_JAVA" -jar create-galore-updater.jar C:\CreateGalorePack\Create-Galore-0.1.9-server-kit\pack\pack.toml --clean`. Unzip a newer kit over it to update.
 
 If the pack can't be read, the updater stops before changing anything. `--clean` moves the configs aside first and puts them back if the update fails, so a failed launch never leaves the instance without configs.
 
@@ -83,11 +83,13 @@ The updater also keeps NeoForge on the pack's pinned version. To freeze the inst
 
 ## The Field Guide
 
-Every player gets the **Create Galore Field Guide** on first join, and you can craft another from a Book and Andesite. It's a wiki, not a quest book: 14 sections and about 140 entries on how things work and how the mods connect, written for someone who has never played Create.
+Every player gets the **Create Galore Field Guide** on first join, and you can craft another from a Book and Andesite. It's a wiki, not a quest book: 15 sections and about 190 entries on how things work and how the mods connect, written for someone who has never played Create.
 
 A new player should open **Start Here > Your First Days** first: how to drink, where to find clean water, food and staying warm, the things that can kill you before you know the pack.
 
 Each section is a map. Entries are nodes, and the arrows show what comes first, so to reach something you follow its lines back (the six prizes all lead into the Stellar Core, for example). Everything is open from the start, with no locks, tasks or rewards. The magnifying glass on the right searches the text of every page. Editing notes: [docs/guidebook.md](docs/guidebook.md).
+
+Long entries open with a **Key points** page (the must-know part, marked with a key icon) and push niche detail behind an **In depth** marker (a magnifying glass), so you can stop reading there. Purple words open a short definition in **Words to Know**, the guide's glossary of Create and survival jargon; blue words open the full entry; hovering an item name shows its tooltip. Small icons flag dangers (**Watch out**) and tricks (**Tip**), a few pages show diagrams, and the classic Create builds (crushing wheels, press, heated mixer, steam engine) have rotating 3D previews with a button that shows the build as a ghost in your world. The icons and pictures come from a small built-in resource pack, `create-galore-guide`, that is always on.
 
 In a world started before the guide moved to Modonomicon, the old Patchouli Field Guide no longer opens it: put it in a crafting grid on its own to turn it into the new one.
 
@@ -269,6 +271,7 @@ All tests ran headless in a cloud machine (4 cores, 16 GB RAM, no GPU), so speed
 | Update check at server start, on a server built with `install-server.sh` (182 mods, Twilight Forest, a generated world): with the pack on GitHub changed it showed the N/Y/B prompt; N started the server unchanged; B zipped the world, mods and configs (776 MB) into `backups/`, updated to 0.1.7 with packwiz-installer, and the updated server booted the same world. Up to date, offline and no-console runs start the server without asking; a failed update stops the start. The app's new `--update` (what app servers run) kept memory, port, Elytra and an edited config | ✅ |
 | Field Guide pass in the full client (singleplayer, NeoForge 21.1.259): Bridge 1.3.0's title mixin applies to Modonomicon, the text box stays clear of the spine and page edges (same Tankard page as the bug report), paragraph gaps show, Your First Days opens from Start Here, and crouch + right-click on water with empty hands raised thirst 6 → 15 | ✅ |
 | 0.1.8 join chat in the full client (singleplayer, fresh world): Colorwheel Patcher writes `Bliss_v2.1.2_(Chocapic13_Shaders_edit) + Clrwl_1.0.5.zip` and `photon_v1.3a + Clrwl_1.0.5.zip` at launch; Bridge 1.4.0 removes the Train Utilities and Toolgun notices; the Telegram ad, Alex's Caves Tectonic warning, Terralith welcome, deposit lines and DH Alex's Caves note are gone; only advancements remain. Alex's Caves on a dedicated server, same seed with and without Tectonic: `/locate biome` found 3 of the 6 cave biomes each time | ✅ |
+| 0.1.9 Field Guide readability pass in the full client (singleplayer, NeoForge 21.1.259): the icon font shows in Modonomicon's text in colour, Key points and In depth pages render, purple glossary links and blue entry links open their entries, item links show tooltips on hover, the ore doubling, washing and water purity diagrams are readable at book size, and the crushing wheels, press, heated mixer and steam engine 3D previews render and can be placed with Visualize | ✅ |
 | Real FPS, shaders, Distant Horizons visuals, gameplay feel | ❌ Needs a real PC with a GPU |
 
 **Memory:** about 9.3 GB of process memory on the server and 8-9.6 GB on the client with an 8 GB heap. A laptop with 16 GB can play but shouldn't host and play at the same time. A garbage collector benchmark on the server (pack's G1 flags vs Java defaults, Generational ZGC and Shenandoah, plus a 6 GB run) is in [docs/java-flags.md](docs/java-flags.md).
@@ -277,8 +280,8 @@ All tests ran headless in a cloud machine (4 cores, 16 GB RAM, no GPU), so speed
 
 ## Repo layout
 
-- `Create-Galore-0.1.8.mrpack`: the importable pack, built from `pack/`
-- `pack/`: [packwiz](https://packwiz.infra.link/) source, one `.pw.toml` per mod or shader, plus configs (`pack/config/`), the datapacks (`pack/config/paxi/datapacks/create-galore-tweaks`, always on, `create-galore-no-elytra`, and the opt-in `config/paxi/optional/create-galore-with-elytra`) and the Field Guide (a Modonomicon book inside `create-galore-tweaks`)
+- `Create-Galore-0.1.9.mrpack`: the importable pack, built from `pack/`
+- `pack/`: [packwiz](https://packwiz.infra.link/) source, one `.pw.toml` per mod or shader, plus configs (`pack/config/`), the datapacks (`pack/config/paxi/datapacks/create-galore-tweaks`, always on, `create-galore-no-elytra`, and the opt-in `config/paxi/optional/create-galore-with-elytra`) the Field Guide (a Modonomicon book inside `create-galore-tweaks`) and its resource pack `pack/config/paxi/resourcepacks/create-galore-guide` (icon font and diagram pictures, always on)
 - `MODS.md`: full mod list with versions and sides
 - `server/`: server install scripts, memory settings and a starting `server.properties`
 - `docs/`: server guide, Field Guide editing notes, screenshots
@@ -293,7 +296,7 @@ To rebuild the `.mrpack` after changing `pack/`:
 ```
 cd pack
 packwiz refresh
-packwiz modrinth export -o ../Create-Galore-0.1.8.mrpack
+packwiz modrinth export -o ../Create-Galore-0.1.9.mrpack
 ```
 
 The release workflow then adds `packwiz-installer-bootstrap.jar` and `packwiz-installer.jar` (pinned, hash-checked) and `create-galore-updater.jar` (built from `tools/updater/` by `tools/updater/build.sh`) to the `.mrpack`'s `overrides/` so new instances can use the pre-launch updater. A config players are expected to tweak in game gets `preserve = true` under its entry in `pack/index.toml` (`packwiz refresh` keeps the flag), so the updater never overwrites it.

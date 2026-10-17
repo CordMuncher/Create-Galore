@@ -33,7 +33,7 @@
     {
       "type": "modonomicon:text",
       "title": "Titanium on Earth",
-      "text": "Rutile Concentrate is mixed superheated with zinc, chlorine and carbon into Titanium Tetrachloride. That is applied to a Sturdy Sheet in a sequenced assembly, with lava, to give a Titanium Ingot. Chlorine comes from electrolysing Brine."
+      "text": "- Rutile Concentrate is mixed [#](2E5AAC)[superheated](entry://create_basics/heat)[#]() with zinc, chlorine and carbon into **Titanium Tetrachloride**.\n- That is applied to a Sturdy Sheet in a [#](2E5AAC)[sequenced assembly](entry://create_basics/brass_and_assembly)[#](), with lava, to give a **Titanium Ingot**.\n\nChlorine comes from electrolysing Brine."
     },
     {
       "type": "modonomicon:spotlight",
@@ -46,7 +46,7 @@
     {
       "type": "modonomicon:text",
       "title": "Salt",
-      "text": "Northstar's brine chain makes salt. In this pack it is Create Ratatouille's Salt: brine compacts down to it, and Mars Gravel and Basalt crush into it. Other mods' salt converts 1:1 in a crafting grid."
+      "text": "Northstar's brine chain makes salt. In this pack it is Create Ratatouille's Salt: brine [#](7A3C9A)[compacts](entry://glossary/compacting)[#]() down to it, and Mars Gravel and Basalt crush into it. Other mods' salt [#](2E5AAC)[converts 1:1](entry://materials/shared_metals)[#]() in a crafting grid."
     },
     {
       "type": "modonomicon:spotlight",

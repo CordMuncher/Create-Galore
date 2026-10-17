@@ -1,0 +1,24 @@
+{
+  "category": "glossary",
+  "name": "Curios",
+  "description": "Extra equipment slots for rings, necklaces, belts and more.",
+  "icon": {
+    "item": "artifacts:cloud_in_a_bottle"
+  },
+  "x": 4,
+  "y": -1,
+  "sort_number": 13,
+  "parents": [],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Curios",
+      "text": "**Curios** adds extra equipment slots beside armor: rings, necklaces, belts, hands and more. Gear worn there counts on top of your armor.\\\n\\\nArtifacts, Iron's Spells and Critters and Companions fill these slots."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Where it matters**\n\n- [#](2E5AAC)[Gear and Curios](entry://exploration/gear)[#]()\n- [#](2E5AAC)[Iron's Spellbooks](entry://exploration/irons_spellbooks)[#]()\n- [#](2E5AAC)[Diving Gear](entry://ocean/diving)[#]()"
+    }
+  ]
+}

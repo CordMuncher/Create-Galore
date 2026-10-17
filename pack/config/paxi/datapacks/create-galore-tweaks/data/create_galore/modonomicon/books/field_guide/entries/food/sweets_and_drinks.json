@@ -26,7 +26,7 @@
     {
       "type": "modonomicon:text",
       "title": "Chocolate, Tea and Coffee",
-      "text": "Two addons turn Create into a sweet shop and a cafe. **Create Confectionery** handles chocolate, candy and gingerbread. **Create Cafe** handles coffee, tea and syrups. Both lean on Create's mixing, filling and compacting."
+      "text": "Two addons turn Create into a sweet shop and a cafe.\n\n- **Create Confectionery** handles chocolate, candy and gingerbread.\n- **Create Cafe** handles coffee, tea and syrups.\n\nBoth lean on Create's [#](7A3C9A)[mixing](entry://glossary/mixing)[#](), filling and [#](7A3C9A)[compacting](entry://glossary/compacting)[#]()."
     },
     {
       "type": "modonomicon:spotlight",
@@ -39,7 +39,7 @@
     {
       "type": "modonomicon:text",
       "title": "More sweets",
-      "text": "Candy cane tools, a Gingerbread Man mob and hot chocolate drinks round out Confectionery. White, dark and hot chocolate use [#](2E5AAC)[Ratatouille](entry://food/ratatouille)[#]()'s cocoa butter and powder. Look recipes up in JEI with **R**."
+      "text": "Candy cane tools, a Gingerbread Man mob and hot chocolate drinks round out Confectionery. White, dark and hot chocolate use [#](2E5AAC)[Ratatouille](entry://food/ratatouille)[#]()'s cocoa butter and powder.\\\n\\\nLook recipes up in [#](7A3C9A)[JEI](entry://glossary/jei)[#]() with **R**."
     },
     {
       "type": "modonomicon:text",
@@ -57,7 +57,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "The mixing recipes need a Blaze Burner under the mixer. Tapioca flour, oreo and crushed cookies give bubble tea style toppings.\\\n\\\nBlood Oranges come from haunting an orange with a Fan. Mana Berries come from filling sweet berries with 25 mB of liquid experience in a Spout."
+      "text": "The mixing recipes need a **Blaze Burner** under the mixer. Tapioca flour, oreo and crushed cookies give bubble tea style toppings.\\\n\\\nBlood Oranges come from [#](7A3C9A)[haunting](entry://glossary/haunting)[#]() an orange with a Fan. Mana Berries come from filling sweet berries with 25 [#](7A3C9A)[mB](entry://glossary/mb)[#]() of liquid experience in a Spout."
     },
     {
       "type": "modonomicon:text",

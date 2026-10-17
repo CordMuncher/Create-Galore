@@ -1,0 +1,24 @@
+{
+  "category": "glossary",
+  "name": "Superheated",
+  "description": "The stronger heat level some recipes need.",
+  "icon": {
+    "item": "create:blaze_cake"
+  },
+  "x": 0,
+  "y": 7,
+  "sort_number": 43,
+  "parents": [],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Superheated",
+      "text": "**Superheated** is the stronger heat level of a Blaze Burner (the blue flame). Feed it a Blaze Cake, or pipe in Bioethanol, Peanut Oil or napalm. Some recipes need it.\\\n\\\nIt counts as heated too, and makes twice the smog. Create Propulsion's burners can't superheat."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Where it matters**\n\n- [#](2E5AAC)[Blaze Burner and Heat](entry://create_basics/heat)[#]()\n- [#](2E5AAC)[Burning Liquid Fuel](entry://industry/liquid_fuel)[#]()\n- [#](2E5AAC)[Pollution](entry://survival/pollution)[#]()"
+    }
+  ]
+}

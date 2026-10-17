@@ -1,0 +1,24 @@
+{
+  "category": "glossary",
+  "name": "Mechanical Crafting",
+  "description": "Crafting with a grid of Mechanical Crafters.",
+  "icon": {
+    "item": "create:mechanical_crafter"
+  },
+  "x": 2,
+  "y": 3,
+  "sort_number": 28,
+  "parents": [],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Mechanical Crafting",
+      "text": "**Mechanical crafting** uses a grid of Mechanical Crafters with their paths connected. It needs rotation and can craft recipes bigger than 3x3, such as the 5x5 Stellar Core.\\\n\\\nFill every slot and it crafts. Press R over the result in JEI to see the layout."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Where it matters**\n\n- [#](2E5AAC)[Brass and Assembly](entry://create_basics/brass_and_assembly)[#]()\n- [#](2E5AAC)[The Stellar Core](entry://stars/stellar_core)[#]()\n- [#](2E5AAC)[Jetpack](entry://transport/jetpack)[#]()"
+    }
+  ]
+}

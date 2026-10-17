@@ -20,6 +20,11 @@
     {
       "type": "modonomicon:text",
       "title": "Balloons and Lift",
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- [#](FFFFFF)\ue108[#]() **Hot air or steam** in sealed envelopes lifts the ship. More volume, more lift.\n- Envelopes must be **airtight**.\n- Lift weakens with altitude; a ship settles where lift equals weight.\n- **Levitite** keeps a ship afloat but can't gain height alone."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
       "text": "Envelope blocks enclose a volume. Fill it with hot air or steam and it pulls the ship up. A bigger sealed volume gives the burners more lift to work with."
     },
     {
@@ -28,7 +33,7 @@
         "item": "aeronautics:white_envelope"
       },
       "title": "Hot Air Envelope",
-      "text": "Must be airtight. Blocks inside shrink the volume. Dye them. Shafts can be encased in envelope blocks to stay sealed."
+      "text": "Must be airtight. Blocks inside shrink the volume. Dye them. Shafts can be [#](7A3C9A)[encased](entry://glossary/encased)[#]() in envelope blocks to stay sealed."
     },
     {
       "type": "modonomicon:spotlight",
@@ -36,7 +41,7 @@
         "item": "aeronautics:adjustable_burner"
       },
       "title": "Hot Air Burner",
-      "text": "Redstone fills the balloon above from the top down. Set the maximum output in its panel. Several burners can feed one balloon."
+      "text": "Redstone fills the balloon above from the top down. Set the maximum output in its [#](7A3C9A)[panel](entry://glossary/value_panel)[#](). Several burners can feed one balloon."
     },
     {
       "type": "modonomicon:spotlight",
@@ -44,12 +49,12 @@
         "item": "aeronautics:steam_vent"
       },
       "title": "Steam Vent",
-      "text": "Lift from steam instead. Like a Steam Engine it needs heat, water and boiler space. See Heat in the Create basics."
+      "text": "Lift from steam instead. Like a Steam Engine it needs heat, water and [#](7A3C9A)[boiler](entry://glossary/boiler)[#]() space. See [#](2E5AAC)[Heat](entry://create_basics/heat)[#]() in the Create basics."
     },
     {
       "type": "modonomicon:text",
       "title": "Altitude and air",
-      "text": "Lift weakens as altitude rises, so a ship settles where lift and weight balance. Changing lift changes altitude. The Altitude Sensor outputs a redstone signal for height and, with goggles, shows air pressure. Other worlds have very different air: see [#](2E5AAC)[Planets](entry://space/planets)[#]()."
+      "text": "Lift weakens as altitude rises, so a ship settles where lift and weight balance. Changing lift changes altitude. The Altitude Sensor outputs a redstone signal for height and, with [#](2E5AAC)[goggles](entry://create_basics/tools_wrench)[#](), shows air pressure. Other worlds have very different air: see [#](2E5AAC)[Planets](entry://space/planets)[#]()."
     },
     {
       "type": "modonomicon:spotlight",
@@ -57,7 +62,7 @@
         "item": "aeronautics:levitite_blend_bucket"
       },
       "title": "Levitite Blend",
-      "text": "A fluid from heated mixing of End Stone Powder, zinc nuggets and water. Heat sets it into solid Levitite."
+      "text": "A fluid from heated [#](7A3C9A)[mixing](entry://glossary/mixing)[#]() of End Stone Powder, zinc nuggets and water. Heat sets it into solid Levitite."
     },
     {
       "type": "modonomicon:spotlight",
@@ -65,12 +70,12 @@
         "item": "aeronautics:levitite"
       },
       "title": "Levitite",
-      "text": "Keeps a ship afloat but cannot gain height alone; you need other forces. It resists slow motion strongly and less so at speed."
+      "text": "Keeps a ship afloat but **cannot gain height alone**; you need other forces. It resists slow motion strongly and less so at speed."
     },
     {
       "type": "modonomicon:text",
       "title": "Where it comes from",
-      "text": "End Stone Powder comes from crushing End Stone. Sky whale bone dust can replace it. Pearlescent Levitite is a pink variant of the same crystal. Certain blocks break when Levitite sets, which is useful for casting molds."
+      "text": "[#](FFFFFF)\ue103[#]() **In depth.** End Stone Powder comes from crushing End Stone. Sky whale bone dust can replace it. Pearlescent Levitite is a pink variant of the same crystal. Certain blocks break when Levitite sets, which is useful for casting molds."
     },
     {
       "type": "modonomicon:text",

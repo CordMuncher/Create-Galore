@@ -13,17 +13,22 @@
     {
       "type": "modonomicon:text",
       "title": "Submarines",
-      "text": "**Create Deep Seas** adds submarines. A sub is a Create-style contraption that moves as one solid, physical vessel, built on the same Sable and Aeronautics tech as [#](2E5AAC)[airships](entry://flight/airships)[#](). It dives by changing its own weight."
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- [#](FFFFFF)\ue107[#]() A sub floats until its **Ballast Tanks** fill with sea water. Pump in to sink, out to rise.\n- The **Ballast Vent** is the sea valve and must touch the water.\n- Each tank lifts about one block of mass.\n- The **Onboard Computer** can hold a target depth for you."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "A submarine floats until its **Ballast Tanks** are filled with sea water. A **Ballast Vent** is the sea valve and must touch the water. Pipe vent, pump and tanks together: pumping in makes the ship heavier and it sinks, pumping out lets it rise."
+      "text": "**Create Deep Seas** adds submarines. A sub is a Create-style [#](2E5AAC)[contraption](entry://create_basics/contraptions)[#]() that moves as one solid, physical vessel, built on the same [#](7A3C9A)[Sable](entry://glossary/sub_level)[#]() and Aeronautics tech as [#](2E5AAC)[airships](entry://flight/airships)[#](). It dives by changing its own weight."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Each tank lifts roughly one block of ship mass, so heavy hulls need more tanks."
+      "text": "A submarine floats until its **Ballast Tanks** are filled with sea water.\n\n- A **Ballast Vent** is the sea valve and must touch the water.\n- Pipe vent, pump and tanks together.\n- Pumping in makes the ship heavier and it sinks; pumping out lets it rise."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Each tank lifts roughly **one block of ship mass**, so heavy hulls need more tanks."
     },
     {
       "type": "modonomicon:spotlight",
@@ -31,7 +36,7 @@
         "item": "create_submarine:ballast_tank"
       },
       "title": "Ballast Tank",
-      "text": "Holds the water that weighs the ship down. Read its capacity with Engineer's Goggles."
+      "text": "Holds the water that weighs the ship down. Read its capacity with [#](2E5AAC)[Engineer's Goggles](entry://create_basics/tools_wrench)[#]()."
     },
     {
       "type": "modonomicon:spotlight",
@@ -65,7 +70,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Pumps and thrusters run on Create [#](2E5AAC)[rotation](entry://create_basics/rotation)[#]() and [#](2E5AAC)[fluids](entry://create_basics/fluids)[#](), so a sub is a Create machine through and through. Press **W** over any Deep Seas block for its Ponder."
+      "text": "Pumps and thrusters run on Create [#](2E5AAC)[rotation](entry://create_basics/rotation)[#]() and [#](2E5AAC)[fluids](entry://create_basics/fluids)[#](), so a sub is a Create machine through and through.\\\n\\\n[#](FFFFFF)\ue102[#]() **Tip:** press **W** over any Deep Seas block for its [#](2E5AAC)[Ponder](entry://start_here/tools)[#]()."
     },
     {
       "type": "modonomicon:spotlight",
@@ -86,7 +91,12 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Hull strength, oxygen and airlocks are covered in [#](2E5AAC)[Hulls and Pressure](entry://ocean/hulls_and_pressure)[#](). Surface ships and sails are in [#](2E5AAC)[Sailing](entry://ocean/sailing)[#](). Where to dive: [#](2E5AAC)[Underwater Places](entry://ocean/underwater_places)[#](). Deep Seas also holds an unfinished Create Abyss dimension, but it only switches on in development builds, so it is not in this pack."
+      "text": "Hull strength, oxygen and airlocks are covered in [#](2E5AAC)[Hulls and Pressure](entry://ocean/hulls_and_pressure)[#](). Surface ships and sails are in [#](2E5AAC)[Sailing](entry://ocean/sailing)[#](). Where to dive: [#](2E5AAC)[Underwater Places](entry://ocean/underwater_places)[#]()."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "[#](FFFFFF)\ue103[#]() **In depth.** Deep Seas also holds an unfinished Create Abyss dimension, but it only switches on in development builds, so it is not in this pack."
     },
     {
       "type": "modonomicon:text",

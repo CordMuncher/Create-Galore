@@ -1,0 +1,24 @@
+{
+  "category": "glossary",
+  "name": "Body Temperature",
+  "description": "Cold Sweat's temperature for your body, shown on the HUD.",
+  "icon": {
+    "item": "cold_sweat:thermometer"
+  },
+  "x": 0,
+  "y": -3,
+  "sort_number": 3,
+  "parents": [],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Body Temperature",
+      "text": "**Body temperature** comes from Cold Sweat and has its own icon on the HUD. It drifts toward the **world temperature**: how hot or cold the spot you stand in is.\\\n\\\nToo far either way and you take damage and cannot sleep. Insulated armor slows the drift; a fire, burner or Hearth warms you."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Where it matters**\n\n- [#](2E5AAC)[Temperature](entry://survival/temperature)[#]()\n- [#](2E5AAC)[Insulation and Heaters](entry://survival/temperature_gear)[#]()\n- [#](2E5AAC)[Your First Days](entry://start_here/first_days)[#]()"
+    }
+  ]
+}

@@ -25,7 +25,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**Cooking:** with Central Kitchen, a Blaze Burner heats a Farmer's Delight Cooking Pot or Skillet, and a Farmer's Delight Stove counts as a passive heater under a Create boiler.\\\n\\\nSee [#](2E5AAC)[Kitchen Automation](entry://food/kitchen_automation)[#]()."
+      "text": "**Cooking:** with Central Kitchen, a Blaze Burner heats a Farmer's Delight Cooking Pot or Skillet, and a Farmer's Delight Stove counts as a [#](7A3C9A)[passive heater](entry://glossary/passive_heater)[#]() under a Create [#](7A3C9A)[boiler](entry://glossary/boiler)[#]().\\\n\\\nSee [#](2E5AAC)[Kitchen Automation](entry://food/kitchen_automation)[#]()."
     },
     {
       "type": "modonomicon:text",
@@ -40,12 +40,12 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**Flight:** burners lift hot air balloons on Aeronautics ships, and they also keep the crew warm against altitude cold.\\\n\\\n**Power:** Create Propulsion's Stirling Engine turns heat below it into rotation."
+      "text": "**Flight:** burners lift [#](2E5AAC)[hot air balloons](entry://flight/balloons_and_lift)[#]() on Aeronautics ships, and they also keep the crew warm against altitude cold.\\\n\\\n**Power:** Create Propulsion's Stirling Engine turns heat below it into rotation."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**Water:** Thirst Was Reclaimed purifies water by boiling in a campfire or furnace.\\\n\\\n**The cost:** a fuelled burner is one of the biggest smog sources. Put a Flue on top. See [#](2E5AAC)[Pollution](entry://survival/pollution)[#]()."
+      "text": "**Water:** Thirst Was Reclaimed purifies water by boiling in a campfire or furnace. See [#](2E5AAC)[Thirst](entry://survival/thirst)[#]().\\\n\\\n[#](FFFFFF)\ue101[#]() **Watch out:** a fuelled burner is one of the biggest smog sources. Put a [#](2E5AAC)[Flue](entry://survival/pollution_control)[#]() on top. See [#](2E5AAC)[Pollution](entry://survival/pollution)[#]()."
     },
     {
       "type": "modonomicon:text",

@@ -20,6 +20,11 @@
     {
       "type": "modonomicon:text",
       "title": "Steering and Controls",
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- [#](FFFFFF)\ue104[#]() Steering turns redstone and rotation into thrust and angles.\n- **Steering Wheel**: hold right-click and move the mouse. **Throttle Lever**: right-click and drag.\n- **Aeroworks consoles**: right-click empty-handed to take control; Esc lets go."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
       "text": "Steering is turning redstone and rotation into thrust and angles. Simulated supplies wheels, levers and sensors. Aeroworks adds control consoles and servos."
     },
     {
@@ -36,7 +41,7 @@
         "item": "simulated:throttle_lever"
       },
       "title": "Throttle Lever",
-      "text": "A compact analog redstone source: right-click and drag. A wrench inverts the signal."
+      "text": "A compact analog redstone source: right-click and drag. A [#](2E5AAC)[wrench](entry://create_basics/tools_wrench)[#]() inverts the signal."
     },
     {
       "type": "modonomicon:spotlight",
@@ -49,12 +54,12 @@
     {
       "type": "modonomicon:text",
       "title": "Sensors",
-      "text": "The Altitude Sensor, Velocity Sensor and Gimbal Sensor give signals from height, speed and tilt. Laser Pointers, Laser Sensors and Optical Sensors detect objects. Modulating and Directional Linked Receivers read distance or angle to Redstone Links."
+      "text": "The sensors give redstone signals:\n\n- **Altitude, Velocity and Gimbal Sensors**: from height, speed and tilt.\n- **Laser Pointers, Laser Sensors and Optical Sensors**: detect objects.\n- **Modulating and Directional Linked Receivers**: read distance or angle to [#](2E5AAC)[Redstone Links](entry://create_basics/redstone_and_control)[#]()."
     },
     {
       "type": "modonomicon:text",
       "title": "Aeroworks consoles",
-      "text": "Aeroworks consoles hold modules: Yoke, Joystick, Throttle Quadrant, Pedal, Lever, Wheel and buttons. Sneak-right-click to bind keys and Redstone Link frequencies. Right-click empty-handed to take control; Esc lets go. Touching consoles join into one deck."
+      "text": "Aeroworks consoles hold modules: Yoke, Joystick, Throttle Quadrant, Pedal, Lever, Wheel and buttons.\n\n- **Sneak-right-click** to bind keys and [#](7A3C9A)[Redstone Link frequencies](entry://glossary/redstone_frequency)[#]().\n- **Right-click empty-handed** to take control; Esc lets go.\n- Touching consoles join into one deck."
     },
     {
       "type": "modonomicon:spotlight",

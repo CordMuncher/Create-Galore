@@ -1,0 +1,24 @@
+{
+  "category": "glossary",
+  "name": "Overstressed",
+  "description": "A network asking for more stress than it has.",
+  "icon": {
+    "item": "create:stressometer"
+  },
+  "x": 8,
+  "y": 3,
+  "sort_number": 31,
+  "parents": [],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Overstressed",
+      "text": "A network is **overstressed** when its machines ask for more stress than its sources give. The whole network stops, not just one machine.\\\n\\\nFix it with more sources, fewer machines, or slower speed. A Stressometer or goggles show how much capacity is in use."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Where it matters**\n\n- [#](2E5AAC)[Stress](entry://create_basics/stress)[#]()\n- [#](2E5AAC)[Power Sources](entry://create_basics/power_sources)[#]()"
+    }
+  ]
+}

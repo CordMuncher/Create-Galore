@@ -1,0 +1,24 @@
+{
+  "category": "glossary",
+  "name": "Washing",
+  "description": "Fan processing through water.",
+  "icon": {
+    "item": "minecraft:water_bucket"
+  },
+  "x": 8,
+  "y": 7,
+  "sort_number": 47,
+  "parents": [],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Washing",
+      "text": "**Washing** is fan processing through water. Washing crushed ore gives nuggets and a chance of a byproduct: crushed iron gives 9 nuggets and may add redstone.\\\n\\\nA fan through water also cleans clogged filter cartridges."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Where it matters**\n\n- [#](2E5AAC)[Encased Fans](entry://create_basics/fans)[#]()\n- [#](2E5AAC)[Crushing and Ore Doubling](entry://create_basics/crushing)[#]()\n- [#](2E5AAC)[Ore Doubling](entry://materials/ore_doubling)[#]()\n- [#](2E5AAC)[Clearing the Air](entry://survival/pollution_control)[#]()"
+    }
+  ]
+}

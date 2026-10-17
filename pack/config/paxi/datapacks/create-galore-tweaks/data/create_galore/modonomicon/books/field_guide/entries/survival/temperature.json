@@ -13,12 +13,17 @@
     {
       "type": "modonomicon:text",
       "title": "Temperature",
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- [#](FFFFFF)\ue109[#]() Too hot or too cold and you take damage and cannot sleep\n- Spawn can be snowy: **insulate early**\n- Dress for the biome and keep a heat source nearby\n- Higher is colder"
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
       "text": "Cold Sweat gives you a body temperature. Hot or cold places push it up or down, and if it goes too far you take damage and cannot sleep.\\\n\\\nIt is a layer of survival, not a puzzle: dress for the biome and keep a heat source nearby."
     },
     {
       "type": "modonomicon:text",
-      "title": "In this pack",
-      "text": "Cold Sweat is gentler here: body temperature moves at 0.75 speed, and each hit does half a heart every 2 seconds instead of a full heart.\\\n\\\nSpawn can be snowy. Without warm gear you will freeze once the 5 minute grace period ends, so insulate early."
+      "title": "",
+      "text": "[#](FFFFFF)\ue101[#]() **Watch out:** spawn can be snowy. Without warm gear you will freeze once the 5 minute [#](7A3C9A)[grace period](entry://glossary/grace)[#]() ends, so [#](2E5AAC)[insulate](entry://survival/temperature_gear)[#]() early."
     },
     {
       "type": "modonomicon:spotlight",
@@ -42,6 +47,11 @@
       "type": "modonomicon:text",
       "title": "Altitude",
       "text": "Higher is colder. The pack adds [#](2E5AAC)[Cold Sweat: Altitude](entry://survival/temperature_create)[#](), which splits the height range into bands that change temperature, adds a chill message in the sky and lets shelter or tagged armor cut the effect.\\\n\\\nMountains, sky islands and airships are where it bites."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "[#](FFFFFF)\ue103[#]() **In depth.** Cold Sweat is gentler here: body temperature moves at 0.75 speed, and each hit does half a heart every 2 seconds instead of a full heart."
     },
     {
       "type": "modonomicon:text",

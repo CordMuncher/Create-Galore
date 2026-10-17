@@ -28,7 +28,7 @@
         "item": "alloyed:forge"
       },
       "title": "Alloy Forge",
-      "text": "Forges Alloyed tools, armor and parts. Steel and bronze themselves come from a heated Create mixer: bronze from copper, three zinc nuggets and cinder flour. See [#](2E5AAC)[Balance Changes](entry://connections/balance)[#]()."
+      "text": "Forges Alloyed tools, armor and parts. Steel and bronze themselves come from a [#](2E5AAC)[heated](entry://create_basics/heat)[#]() Create mixer: bronze from copper, three zinc nuggets and cinder flour. See [#](2E5AAC)[Balance Changes](entry://connections/balance)[#]()."
     },
     {
       "type": "modonomicon:spotlight",
@@ -36,7 +36,7 @@
         "item": "tfmg:steel_ingot"
       },
       "title": "Steel",
-      "text": "Alloyed's recipes now give TFMG steel. Forge it into pickaxes, swords, armor, horse armor, shears and fishing rods; any steel works. Farmer's Delight gets a steel knife."
+      "text": "Alloyed's recipes now give TFMG steel. Forge it into pickaxes, swords, armor, horse armor, shears and fishing rods; any steel works. [#](2E5AAC)[Farmer's Delight](entry://food/farmers_delight)[#]() gets a steel knife."
     },
     {
       "type": "modonomicon:spotlight",
@@ -52,12 +52,12 @@
         "item": "alloyed:bronze_bell"
       },
       "title": "Bronze Bell",
-      "text": "A playable block. It rings when hit or powered by redstone, a Wrench tunes it, and a Deployer can ring it."
+      "text": "A playable block. It rings when hit or powered by redstone, a [#](2E5AAC)[Wrench](entry://create_basics/tools_wrench)[#]() tunes it, and a [#](2E5AAC)[Deployer](entry://create_basics/deployer)[#]() can ring it."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Casings: Steel Casing and Bronze Casing, with encased shafts and cogwheels, add more tiers to your builds. Also steel catwalks, mesh fences and doors. Old Alloyed steel ingots convert to TFMG steel in a crafting grid. See [#](2E5AAC)[TFMG Steel](entry://industry/tfmg_steel)[#]()."
+      "text": "**Casings and building blocks:**\n- Steel Casing and Bronze Casing, with [#](7A3C9A)[encased](entry://glossary/encased)[#]() shafts and cogwheels, add more tiers to your builds\n- Steel catwalks, mesh fences and doors\n\nOld Alloyed steel ingots convert to TFMG steel in a crafting grid. See [#](2E5AAC)[TFMG Steel](entry://industry/tfmg_steel)[#]()."
     }
   ]
 }

@@ -33,7 +33,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "- Finish with sequenced assembly: Capacitors, Resistors and a Transistor\n\nEach step is in JEI. It needs a working refinery and a chemical plant, so build these before you plan a trip. See [#](2E5AAC)[Oil](entry://industry/tfmg_oil)[#]()."
+      "text": "- Finish with [#](2E5AAC)[sequenced assembly](entry://create_basics/brass_and_assembly)[#](): Capacitors, Resistors and a Transistor\n\nEach step is in JEI. It needs a working refinery and a chemical plant, so build these before you plan a trip. See [#](2E5AAC)[Oil](entry://industry/tfmg_oil)[#]()."
     },
     {
       "type": "modonomicon:text",

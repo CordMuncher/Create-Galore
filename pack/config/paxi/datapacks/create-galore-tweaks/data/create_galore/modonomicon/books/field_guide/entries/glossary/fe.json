@@ -1,0 +1,24 @@
+{
+  "category": "glossary",
+  "name": "FE (Forge Energy)",
+  "description": "The shared electricity of many non-Create mods.",
+  "icon": {
+    "item": "createaddition:alternator"
+  },
+  "x": -4,
+  "y": 1,
+  "sort_number": 17,
+  "parents": [],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "FE (Forge Energy)",
+      "text": "**FE**, Forge Energy, is the electricity many mods share. Create itself runs on rotation, not FE, and the two only meet through converters.\\\n\\\nThe Alternator turns rotation into FE (from 32 RPM), the Electric Motor turns FE into rotation. FE runs on wires between connectors."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Where it matters**\n\n- [#](2E5AAC)[Electricity](entry://industry/electricity)[#]()\n- [#](2E5AAC)[Rotation vs Electricity](entry://industry/power_compared)[#]()\n- [#](2E5AAC)[Power Across Mods](entry://connections/power)[#]()"
+    }
+  ]
+}

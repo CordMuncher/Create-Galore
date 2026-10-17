@@ -20,7 +20,7 @@
     {
       "type": "modonomicon:text",
       "title": "Inventory Tools",
-      "text": "Client-side helpers that make big inventories bearable. **Inventory Profiles Next** sorts and moves items. **Mouse Tweaks** speeds up mouse use. **Shulker Box Tooltip** previews contents. Settings are in the Mods menu."
+      "text": "Client-side helpers that make big inventories bearable:\n\n- **Inventory Profiles Next** sorts and moves items.\n- **Mouse Tweaks** speeds up mouse use.\n- **Shulker Box Tooltip** previews contents.\n\nSettings are in the Mods menu."
     },
     {
       "type": "modonomicon:spotlight",
@@ -28,7 +28,7 @@
         "item": "minecraft:hopper"
       },
       "title": "Inventory Profiles Next",
-      "text": "Sorts inventories with a button or key, moves matching stacks and locks slots. Auto-refill is off in this pack; turn it on in its config screen."
+      "text": "Sorts inventories with a button or key, moves matching stacks and locks slots. Auto-refill is off in this pack; turn it on in its [#](7A3C9A)[config](entry://glossary/config)[#]() screen."
     },
     {
       "type": "modonomicon:spotlight",

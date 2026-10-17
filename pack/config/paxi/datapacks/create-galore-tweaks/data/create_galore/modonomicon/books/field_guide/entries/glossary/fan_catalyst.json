@@ -1,0 +1,24 @@
+{
+  "category": "glossary",
+  "name": "Fan Catalyst",
+  "description": "The block a fan blows through that picks its processing.",
+  "icon": {
+    "item": "minecraft:campfire"
+  },
+  "x": 10,
+  "y": -1,
+  "sort_number": 16,
+  "parents": [],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Fan Catalyst",
+      "text": "A **fan catalyst** is what an Encased Fan blows through. Water washes, fire or a campfire smokes, lava blasts, soul fire haunts.\\\n\\\nA Blaze Burner works for blasting and smoking. Add-ons add more: powder snow, Liquid Dye, Enriching Fire, Conduit Cages."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Where it matters**\n\n- [#](2E5AAC)[Encased Fans](entry://create_basics/fans)[#]()\n- [#](2E5AAC)[Dragons Plus Fan Effects](entry://industry/dragons_plus)[#]()\n- [#](2E5AAC)[Conduit Cages](entry://ocean/conduits)[#]()"
+    }
+  ]
+}

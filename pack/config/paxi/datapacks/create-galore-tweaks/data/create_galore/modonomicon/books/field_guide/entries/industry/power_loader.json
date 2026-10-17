@@ -20,7 +20,7 @@
     {
       "type": "modonomicon:text",
       "title": "Chunk Loaders",
-      "text": "Create: Power Loader keeps chunks loaded so machines keep working when you are away. The cost is rotation: a spinning shaft keeps the chunk awake."
+      "text": "Create: Power Loader keeps [#](7A3C9A)[chunks](entry://glossary/chunk)[#]() loaded so machines keep working when you are away. The cost is rotation: a spinning shaft keeps the chunk awake."
     },
     {
       "type": "modonomicon:spotlight",
@@ -44,17 +44,17 @@
         "item": "create_power_loader:brass_chunk_loader"
       },
       "title": "Brass Chunk Loader",
-      "text": "Loads 1x1, 3x3 or 5x5 chunks. Bigger areas need faster rotation. Set the range on the value panel."
+      "text": "Loads 1x1, 3x3 or 5x5 chunks. Bigger areas need faster rotation. Set the range on the [#](7A3C9A)[value panel](entry://glossary/value_panel)[#]()."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Brass loaders work on moving contraptions (always 3x3, no rotation needed once assembled) and on Train Stations. At a station the area is loaded only while a train is there. See [#](2E5AAC)[Trains](entry://transport/trains)[#]() and [#](2E5AAC)[Contraptions](entry://create_basics/contraptions)[#]()."
+      "text": "Brass loaders work on moving contraptions (always 3x3, no rotation needed once [#](7A3C9A)[assembled](entry://glossary/assemble)[#]()) and on Train Stations. At a station the area is loaded only while a train is there. See [#](2E5AAC)[Trains](entry://transport/trains)[#]() and [#](2E5AAC)[Contraptions](entry://create_basics/contraptions)[#]()."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "When power is lost there is a short, configurable delay before unloading, so brief stalls are fine. Loaded chunks still tick machines, so a big loader grid costs performance."
+      "text": "When power is lost there is a short, [#](7A3C9A)[configurable](entry://glossary/config)[#]() delay before unloading, so brief stalls are fine.\\\n\\\nLoaded chunks still [#](7A3C9A)[tick](entry://glossary/tick)[#]() machines, so a big loader grid costs performance."
     }
   ]
 }

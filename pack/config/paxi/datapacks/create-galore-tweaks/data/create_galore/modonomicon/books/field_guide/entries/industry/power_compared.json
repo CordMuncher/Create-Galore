@@ -13,7 +13,12 @@
     {
       "type": "modonomicon:text",
       "title": "Rotation vs Electricity",
-      "text": "Two kinds of power live side by side here. **Rotation** (RPM and stress units) drives Create machines through shafts and cogs. **Forge Energy (FE)** is the generic electricity many other mods share. They only meet through converters."
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- [#](FFFFFF)\ue104[#]() **Rotation** (RPM and stress) drives Create machines\n- [#](FFFFFF)\ue106[#]() **FE** is the electricity many other mods share; the two only meet through converters\n- Rotation to FE: the **Alternator**, 32 RPM and up\n- FE to rotation: the **Electric Motor**, at the RPM you set"
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Two kinds of power live side by side here. **Rotation** ([#](7A3C9A)[RPM](entry://glossary/rpm)[#]() and [#](2E5AAC)[stress units](entry://create_basics/stress)[#]()) drives Create machines through shafts and cogs. **Forge Energy (FE)** is the generic electricity many other mods share. They only meet through converters."
     },
     {
       "type": "modonomicon:text",
@@ -39,12 +44,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**TFMG** runs its own circuits with voltage, resistance and cable hubs, separate from FE. Its cable connectors can switch between FE import and export, so it can still meet FE machines. TFMG also has an Electric Motor: not the same block as the Crafts & Additions one."
-    },
-    {
-      "type": "modonomicon:text",
-      "title": "",
-      "text": "Where rotation comes from: TFMG engines burning [#](2E5AAC)[oil products](entry://industry/tfmg_oil)[#](), the [#](2E5AAC)[Create Nuclear reactor](entry://industry/nuclear)[#](), Create's own water, wind and steam. Chain it: fuel, rotation, Alternator, FE."
+      "text": "Where rotation comes from:\n- TFMG engines burning [#](2E5AAC)[oil products](entry://industry/tfmg_oil)[#]()\n- the [#](2E5AAC)[Create Nuclear reactor](entry://industry/nuclear)[#]()\n- Create's own [#](2E5AAC)[water, wind and steam](entry://create_basics/power_sources)[#]()\n\nChain it: fuel, rotation, Alternator, FE."
     },
     {
       "type": "modonomicon:spotlight",
@@ -53,6 +53,11 @@
       },
       "title": "Kinetic Battery",
       "text": "Stores rotation, not FE. It charges from spare stress and releases it when redstone-powered."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "[#](FFFFFF)\ue103[#]() **In depth.** [#](2E5AAC)[TFMG](entry://industry/tfmg_engines)[#]() runs its own circuits with voltage, resistance and cable hubs, separate from FE. Its cable connectors can switch between FE import and export, so it can still meet FE machines.\\\n\\\nTFMG also has an Electric Motor: not the same block as the Crafts & Additions one."
     },
     {
       "type": "modonomicon:text",

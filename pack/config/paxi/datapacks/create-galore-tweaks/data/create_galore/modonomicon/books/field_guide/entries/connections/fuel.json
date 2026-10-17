@@ -20,17 +20,17 @@
     {
       "type": "modonomicon:text",
       "title": "Fuel Goes Everywhere",
-      "text": "Oil from [#](2E5AAC)[TFMG](entry://industry/tfmg_oil)[#]() is the pack's main liquid fuel, and other mods accept it through shared fluid tags. Pipe it once and many things can drink from it."
+      "text": "Oil from [#](2E5AAC)[TFMG](entry://industry/tfmg_oil)[#]() is the pack's main liquid fuel, and other mods accept it through [#](7A3C9A)[shared fluid tags](entry://glossary/tags)[#](). Pipe it once and many things can drink from it."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Where TFMG fuels burn:\n- Any Blaze Burner, piped in: diesel, gasoline, kerosene, naphtha, heavy oil. Napalm superheats it\n- Crafts & Additions' Blaze Burner with Straw: also crude oil and creosote"
+      "text": "Where TFMG fuels burn:\n- Any [#](2E5AAC)[Blaze Burner](entry://industry/liquid_fuel)[#](), piped in: diesel, gasoline, kerosene, naphtha, heavy oil. Napalm [#](2E5AAC)[superheats](entry://create_basics/heat)[#]() it\n- Crafts & Additions' Blaze Burner with Straw: also crude oil and creosote"
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "- Create Propulsion thrusters: diesel, gasoline, kerosene, naphtha\n- Northstar rockets: diesel, gasoline, kerosene, naphtha"
+      "text": "- [#](2E5AAC)[Create Propulsion thrusters](entry://flight/propulsion)[#](): diesel, gasoline, kerosene, naphtha\n- [#](2E5AAC)[Northstar rockets](entry://space/rocket_building)[#](): diesel, gasoline, kerosene, naphtha"
     },
     {
       "type": "modonomicon:text",
@@ -40,7 +40,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Rockets also run on Northstar's own Hydrogen, Methane, Hydrocarbon and Biofuel. Thrusters take Turpentine from pine resin, and Solid Fuel Thrusters just burn coal or planks.\\\n\\\nSoot from air scrubbers burns as solid fuel too."
+      "text": "Rockets also run on Northstar's own Hydrogen, Methane, Hydrocarbon and Biofuel. Thrusters take Turpentine from pine resin, and Solid Fuel Thrusters just burn coal or planks.\\\n\\\nSoot from [#](2E5AAC)[air scrubbers](entry://survival/pollution_control)[#]() burns as solid fuel too."
     },
     {
       "type": "modonomicon:text",

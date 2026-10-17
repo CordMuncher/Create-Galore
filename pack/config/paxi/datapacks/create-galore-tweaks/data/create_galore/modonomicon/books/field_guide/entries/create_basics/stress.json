@@ -20,12 +20,17 @@
     {
       "type": "modonomicon:text",
       "title": "Stress",
-      "text": "Spinning is not free. Every machine uses some of the **stress capacity** of its network, measured in **su** (stress units). Sources provide capacity, machines consume it."
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- [#](FFFFFF)\ue105[#]() Machines use **stress capacity**, counted in su. Sources provide it.\n- Ask for more than the sources give and the **whole network stops**.\n- Faster spinning costs more, and also gives more.\n- Goggles show the numbers."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "If the machines on a network ask for more than the sources give, it is **overstressed**: the whole network stops, not just one machine. The fix is more sources, fewer machines, or slower speed."
+      "text": "Spinning is not free. Every machine uses some of the **stress capacity** of its [#](7A3C9A)[network](entry://glossary/kinetic_network)[#](), measured in [#](7A3C9A)[su](entry://glossary/su)[#]() (stress units). Sources provide capacity, machines consume it."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "[#](FFFFFF)\ue101[#]() **Watch out:** if the machines on a network ask for more than the sources give, it is [#](7A3C9A)[overstressed](entry://glossary/overstressed)[#](): the **whole network stops**, not just one machine.\\\n\\\nThe fix is more sources, fewer machines, or slower speed."
     },
     {
       "type": "modonomicon:spotlight",
@@ -33,12 +38,12 @@
         "item": "create:stressometer"
       },
       "title": "Stressometer",
-      "text": "A gauge that shows how much of a network's capacity is in use. With goggles on, it names the exact numbers."
+      "text": "A gauge that shows how much of a network's capacity is in use. With [#](2E5AAC)[goggles](entry://create_basics/tools_wrench)[#]() on, it names the exact numbers."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**Faster costs more.** A machine's stress cost goes up with its RPM, and a source's capacity goes up with RPM as well. A fast network can carry more, but each machine on it also eats more."
+      "text": "**Faster costs more.** A machine's stress cost goes up with its [#](7A3C9A)[RPM](entry://glossary/rpm)[#](), and a source's capacity goes up with RPM as well. A fast network can carry more, but each machine on it also eats more."
     },
     {
       "type": "modonomicon:text",
@@ -51,12 +56,12 @@
         "item": "create:goggles"
       },
       "title": "Engineer's Goggles",
-      "text": "Shows Kinetic Stats on any machine: impact, capacity and speed. Steam boilers show their power level too."
+      "text": "Shows Kinetic Stats on any machine: impact, capacity and speed. Steam [#](7A3C9A)[boilers](entry://glossary/boiler)[#]() show their power level too."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Large sources such as [#](2E5AAC)[large water wheels and steam engines](entry://create_basics/power_sources)[#]() exist because a lot of machines need a lot of capacity. Exact numbers vary by config, so check the goggles in your own world."
+      "text": "Large sources such as [#](2E5AAC)[large water wheels and steam engines](entry://create_basics/power_sources)[#]() exist because a lot of machines need a lot of capacity. Exact numbers vary by [#](7A3C9A)[config](entry://glossary/config)[#](), so check the goggles in your own world."
     }
   ]
 }

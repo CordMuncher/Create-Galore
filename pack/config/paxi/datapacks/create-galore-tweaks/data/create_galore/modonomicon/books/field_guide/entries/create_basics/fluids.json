@@ -28,7 +28,7 @@
         "item": "create:mechanical_pump"
       },
       "title": "Mechanical Pump",
-      "text": "Its arrow shows flow direction, not the rotation. Wrench it to flip. It pulls from the pipe behind it and pushes into the pipe in front, up to 16 blocks."
+      "text": "Its arrow shows flow direction, not the rotation. [#](2E5AAC)[Wrench](entry://create_basics/tools_wrench)[#]() it to flip. It pulls from the pipe behind it and pushes into the pipe in front, up to 16 blocks."
     },
     {
       "type": "modonomicon:spotlight",
@@ -44,7 +44,7 @@
         "item": "create:spout"
       },
       "title": "Spout",
-      "text": "Fills items beneath it, such as buckets or potions, from a fluid supply. Items sit on a depot or belt under it."
+      "text": "Fills items beneath it, such as buckets or potions, from a fluid supply. Items sit on a [#](2E5AAC)[depot or belt](entry://create_basics/item_logistics)[#]() under it."
     },
     {
       "type": "modonomicon:spotlight",
@@ -57,7 +57,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**Big supplies**: a pipe end in a pool pulls source blocks, and a vanilla water pool with two sources refills itself. A **Hose Pulley** lowered into a large enough body, such as an ocean, gives or drains without running out."
+      "text": "**Big supplies**: a pipe end in a pool pulls source blocks, and a vanilla water pool with two sources refills itself.\\\n\\\n[#](FFFFFF)\ue102[#]() **Tip:** a **Hose Pulley** lowered into a large enough body, such as an ocean, gives or drains without running out."
     },
     {
       "type": "modonomicon:spotlight",
@@ -65,7 +65,7 @@
         "item": "create:hose_pulley"
       },
       "title": "Hose Pulley",
-      "text": "Fills or drains a whole pool, from the top down to the hose end. It needs rotation to lower."
+      "text": "Fills or drains a whole pool, from the top down to the hose end. It needs [#](2E5AAC)[rotation](entry://create_basics/rotation)[#]() to lower."
     },
     {
       "type": "modonomicon:text",
