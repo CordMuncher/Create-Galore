@@ -158,12 +158,30 @@ final class Report {
         try (var w = Files.newBufferedWriter(dir.resolve("scan.properties"))) { props.store(w, "Create Galore structure scan"); }
 
         // Every structure found, for anything the summary doesn't answer.
-        StringBuilder st = new StringBuilder("set\tstructure\tx\tz\tmin_y\tmax_y\tfloor_y\twater_y\tlayer\n");
+        StringBuilder st = new StringBuilder("set\tstructure\tx\tz\tmin_y\tmax_y\tfloor_y\twater_y\tlayer\tbiome\n");
         all.stream().sorted(Comparator.comparing(Start::structure).thenComparingInt(Start::x)).forEach(s ->
                 st.append(s.set()).append('\t').append(s.structure()).append('\t').append(s.x()).append('\t').append(s.z()).append('\t')
                         .append(s.minY()).append('\t').append(s.maxY()).append('\t').append(s.floor()).append('\t').append(s.water()).append('\t')
-                        .append(s.layer().name().toLowerCase(Locale.ROOT)).append('\n'));
+                        .append(s.layer().name().toLowerCase(Locale.ROOT)).append('\t').append(s.biome()).append('\n'));
         Files.writeString(dir.resolve("starts.tsv"), st);
+
+        // Per biome: how much of the square it covers (at the ground and down in the caves) and the structures in it.
+        // Underground structures count against the cave area, the other layers against the ground area.
+        Map<String, int[]> biomeCounts = new TreeMap<>();
+        for (Start s : all) biomeCounts.computeIfAbsent(s.biome(), k -> new int[4])[s.layer().ordinal()]++;
+        Set<String> biomeIds = new java.util.TreeSet<>(r.biomeArea().keySet());
+        biomeIds.addAll(biomeCounts.keySet());
+        List<String[]> biomeRows = new ArrayList<>();
+        StringBuilder bt = new StringBuilder("biome\tground_km2\tcave_km2\tsurface\tunderground\tunderwater\tsky\tabove_ground_per_km2\tunderground_per_km2\n");
+        for (String b : biomeIds) {
+            double[] a = r.biomeArea().getOrDefault(b, new double[2]);
+            int[] c = biomeCounts.getOrDefault(b, new int[4]);
+            String[] row = {b, f2(a[0]), f2(a[1]), String.valueOf(c[0]), String.valueOf(c[1]), String.valueOf(c[2]), String.valueOf(c[3]),
+                    a[0] > 0 ? f2((c[0] + c[2] + c[3]) / a[0]) : "-", a[1] > 0 ? f2(c[1] / a[1]) : "-"};
+            biomeRows.add(row);
+            bt.append(String.join("\t", row)).append('\n');
+        }
+        Files.writeString(dir.resolve("biomes.tsv"), bt);
 
         // Per structure.
         Map<String, List<Start>> byStructure = new TreeMap<>();
@@ -252,6 +270,20 @@ final class Report {
                 .append("| Mod | Kinds | Kinds found | Surface | Underground | Underwater | Sky | Share of structures | Share of kinds |\n|---|---:|---:|---:|---:|---:|---:|---:|---:|\n");
         modRows.stream().sorted((a, b) -> Integer.parseInt(b[7]) - Integer.parseInt(a[7])).forEach(row ->
                 md.append("| ").append(String.join(" | ", row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[8], row[9])).append(" |\n"));
+
+        md.append("\n## By biome\n\nStructures per km² of each biome that covers at least 1 km² of the square: surface, underwater and sky structures against the biome's area at the ground, ")
+                .append("underground ones against its area at y ").append(Scanner.CAVE_Y).append(" (sampled every ").append(Scanner.BIOME_STEP).append(" blocks). ")
+                .append("The ratio is against the whole square's density for that group, so 1.0× is average. Most crowded first.\n\n")
+                .append("| Biome | Ground km² | Above ground per km² | Ratio | Cave km² | Underground per km² | Ratio |\n|---|---:|---:|---:|---:|---:|---:|\n");
+        double aboveAll = (layers.get(Layer.SURFACE).size() + layers.get(Layer.UNDERWATER).size() + layers.get(Layer.SKY).size()) / km2;
+        double underAll = layers.get(Layer.UNDERGROUND).size() / km2;
+        biomeRows.stream().filter(b -> Double.parseDouble(b[1]) >= 1 || Double.parseDouble(b[2]) >= 1)
+                .sorted(Comparator.comparingDouble(b -> -(b[7].equals("-") ? 0 : Double.parseDouble(b[7])))).forEach(b -> {
+                    boolean g = Double.parseDouble(b[1]) >= 1, c = Double.parseDouble(b[2]) >= 1;
+                    md.append("| ").append(b[0]).append(" | ").append(b[1]).append(" | ").append(g ? b[7] : "-").append(" | ")
+                            .append(g && aboveAll > 0 ? f1(Double.parseDouble(b[7]) / aboveAll) + "×" : "-").append(" | ").append(b[2]).append(" | ")
+                            .append(c ? b[8] : "-").append(" | ").append(c && underAll > 0 ? f1(Double.parseDouble(b[8]) / underAll) + "×" : "-").append(" |\n");
+                });
 
         md.append("\n## By structure\n\n| Structure | Main layer | Count | Per km² | Median distance to the same kind |\n|---|---|---:|---:|---:|\n");
         rows.stream().sorted((a, b) -> Integer.parseInt(b[3]) - Integer.parseInt(a[3])).forEach(row ->

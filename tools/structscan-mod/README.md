@@ -46,7 +46,8 @@ tools/structscan-mod/scan.sh /path/to/server --seed 12345 --radius 4000 --label 
 | `sets.tsv` | Every structure set: placement type, spacing, separation, frequency, candidates, placed per layer, its structures |
 | `mods.tsv` | Per mod: structure kinds it can place, how many it placed per layer, share of structures vs share of kinds |
 | `structures.tsv` | Per structure: count, main layer, per layer counts |
-| `starts.tsv` | Every structure found, with position, height range, ground and water height, layer |
+| `starts.tsv` | Every structure found, with position, height range, ground and water height, layer, biome |
+| `biomes.tsv` | Per biome: area at the ground and at y -20 (cave biomes), structures per layer, density |
 | `scan.properties` | Totals, so the scan can be another one's baseline |
 | `verify.txt` | With `--verify`: predicted vs real structure starts |
 
@@ -56,6 +57,11 @@ every later scan compare against it automatically.
 
 **Vanilla baseline**: a bare NeoForge 21.1.259 server with only this jar in `mods/`, same seed. It takes
 about 85 s for 144 km².
+
+Biomes: each structure gets the biome at the middle of its bounding box (at the ground for the ones that pick
+their height later). Biome areas come from a grid of samples every 64 blocks, at the ground and at y -20, so
+underground structures are compared with how much of the caves a biome fills. The summary's "By biome" table
+shows which biomes are crowded or empty compared with the whole square.
 
 Layers are judged at the middle of each structure's bounding box: sky starts 16+ blocks above the ground or
 water, underground tops out more than 4 blocks under the ground or sea floor, underwater stands in 3+ blocks
