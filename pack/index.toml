@@ -2432,7 +2432,7 @@ metafile = true
 
 [[files]]
 file = "mods/alexs-caves-continued.pw.toml"
-hash = "49d4c3483faf58ba3cc7131ccf438edcc6c944fe92e97b2e18b5e4d19a27d7ba"
+hash = "5ffa3d0118623a3164b2e6b24ba10ca8ca98a9eb640ebf6616cfceead949a492"
 metafile = true
 
 [[files]]
@@ -2741,8 +2741,8 @@ hash = "db683b65dc15a03dd6de2d34d5dc6ad0e3490744ced513a8cc584784ee9d3d8b"
 metafile = true
 
 [[files]]
-file = "mods/create-galore-bridge-1.7.2.jar"
-hash = "cb6302b02d607c0c9ccfdcd5c5d8fe0149fd5d8e0734e039531561e3aadde270"
+file = "mods/create-galore-bridge-1.7.3.jar"
+hash = "348dc7edcb9af709541d235f2a5ff7ad1e8fe37ee7af74936821390f189ef867"
 
 [[files]]
 file = "mods/create-galore-lagwatch-1.0.0.jar"
