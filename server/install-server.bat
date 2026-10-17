@@ -5,7 +5,7 @@ rem   --clean  also resets every config to the pack's version (config, defaultco
 rem            For bug hunting. Mods aren't downloaded again; the world, server.properties, memory and whitelist stay.
 rem Needs Java 21. Start the server with start-server.bat: it asks before applying pack updates.
 setlocal
-set NEOFORGE=21.1.259
+set NEOFORGE=21.1.262
 set HERE=%~dp0
 for %%I in ("%HERE%..\pack\pack.toml") do set "PACK=%%~fI"
 if "%~1"=="" (

@@ -6,7 +6,7 @@
 # Needs Java 21 and curl. Start the server with start-server.sh: it asks before applying pack updates.
 set -euo pipefail
 
-NEOFORGE=21.1.259
+NEOFORGE=21.1.262
 HERE="$(cd "$(dirname "$0")" && pwd)"
 PACK="$HERE/../pack/pack.toml"
 DEST="${1:?give the server folder, e.g. ./install-server.sh ~/CreateGaloreServer}"
