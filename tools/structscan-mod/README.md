@@ -75,9 +75,11 @@ minecraft:* 1
 * 1.5
 ```
 
-Spacing and separation are multiplied (separation stays below spacing). Only `minecraft:random_spread`
-sets can be rescaled; others are listed as such in the report. Exclusion zones keep pointing at the
-original sets.
+Spacing and separation are multiplied (separation stays below spacing). Random-spread sets can be rescaled,
+including mods' own variants (Aquamirae's configurable one is rescaled as a plain random spread; the real
+change would go through Aquamirae's config). Create Structures Arise swaps in its own placements when the
+world loads, so rules don't reach its sets; the report marks them "not applied". Exclusion zones keep
+pointing at the original sets.
 
 Rule of thumb for planning: a set's density goes with 1 / spacing² (twice the spacing, a quarter of the
 structures), times the frequency. So the placed counts in `sets.tsv` give a quick estimate for any
