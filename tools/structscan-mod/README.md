@@ -68,7 +68,7 @@ pick their height when placed, so they're judged by where they stand (water or l
 scan only, without touching the world or the pack:
 
 ```
-# <structure set pattern> <spacing scale> [frequency scale]; first match wins, * is a wildcard
+# <structure set or structure pattern> <spacing scale> [frequency scale]; first match wins, * is a wildcard
 dungeons_arise:* 2
 aquamirae:* 3
 minecraft:* 1

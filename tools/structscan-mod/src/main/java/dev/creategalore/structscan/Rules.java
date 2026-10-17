@@ -9,7 +9,8 @@ import java.util.regex.Pattern;
 
 /**
  * What-if rules, one per line: {@code <structure set pattern> <spacing scale> [frequency scale]}.
- * The pattern matches structure set ids with * as a wildcard ("dungeons_arise:*", "*:village_*", "*").
+ * The pattern matches structure set ids (or the ids of the structures in the set) with * as a wildcard
+ * ("dungeons_arise:*", "*:village_*", "*").
  * The first matching line wins. Lines starting with # are comments.
  */
 final class Rules {
@@ -29,8 +30,12 @@ final class Rules {
         return out;
     }
 
-    static Rule match(List<Rule> rules, String setId) {
-        for (Rule r : rules) if (r.regex().matcher(setId).matches()) return r;
+    /** The first rule matching the set's id, or (for sets without a proper id) one of its structures' ids. */
+    static Rule match(List<Rule> rules, String setId, List<String> structureIds) {
+        for (Rule r : rules) {
+            if (r.regex().matcher(setId).matches()) return r;
+            for (String id : structureIds) if (r.regex().matcher(id).matches()) return r;
+        }
         return null;
     }
 

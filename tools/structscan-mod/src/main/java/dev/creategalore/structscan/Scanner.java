@@ -109,7 +109,9 @@ final class Scanner {
         for (Holder<StructureSet> h : base.possibleStructureSets()) {
             StructureSet set = h.value();
             SetInfo info = new SetInfo();
-            info.id = h.unwrapKey().map(k -> k.location().toString()).orElse("(unnamed)");
+            // Some mods (Create Structures Arise) add sets without a registry name: name those after their first structure.
+            info.id = h.unwrapKey().map(k -> k.location().toString()).orElseGet(() -> set.structures().isEmpty() ? "(unnamed)"
+                    : "(set of " + structureReg.getKey(set.structures().get(0).structure().value()) + ")");
             StructurePlacement p = set.placement();
             info.type = String.valueOf(net.minecraft.core.registries.BuiltInRegistries.STRUCTURE_PLACEMENT.getKey(p.type()));
             info.frequency = info.newFrequency = (float) call(p, "frequency");
@@ -126,7 +128,7 @@ final class Scanner {
                 info.spacing = info.newSpacing = r.spacing();
                 info.separation = info.newSeparation = r.separation();
             }
-            Rules.Rule rule = Rules.match(rules, info.id);
+            Rules.Rule rule = Rules.match(rules, info.id, info.structureIds);
             if (rule != null) {
                 info.rule = rule.pattern() + " " + rule.spacing() + (rule.frequency() != 1 ? " " + rule.frequency() : "");
                 StructurePlacement np = rescale(p, rule, info);
@@ -159,9 +161,20 @@ final class Scanner {
         int minX = cx0 - r, maxX = cx0 + r, minZ = cz0 - r, maxZ = cz0 + r;
         Long2ObjectOpenHashMap<IntArrayList> chunks = new Long2ObjectOpenHashMap<>();
         List<Holder<StructureSet>> sets = state.possibleStructureSets();
+        if (sets.size() != holders.size()) throw new IllegalStateException("structure sets changed: " + holders.size() + " -> " + sets.size());
         for (int i = 0; i < sets.size(); i++) {
             StructurePlacement p = sets.get(i).value().placement();
-            int info = indexOf(holders, sets.get(i)), n = 0;
+            // Same order as ours, but a mod may hand back new holders (Create Structures Arise does), so go by position.
+            int info = i, n = 0;
+            SetInfo si0 = infos.get(i);
+            boolean ruled = si0.newSpacing != si0.spacing || si0.newFrequency != si0.frequency;
+            if (ruled && holders.get(i).value().placement() != p) {
+                // Create Structures Arise swaps in its own placements when the state is built, so the rule can't reach it.
+                si0.rule += " (not applied: the mod sets this placement itself)";
+                si0.newSpacing = p instanceof RandomSpreadStructurePlacement rp0 ? rp0.spacing() : si0.spacing;
+                si0.newSeparation = p instanceof RandomSpreadStructurePlacement rp0 ? rp0.separation() : si0.separation;
+                si0.newFrequency = si0.frequency;
+            }
             if (p.getClass() == RandomSpreadStructurePlacement.class) {
                 RandomSpreadStructurePlacement rp = (RandomSpreadStructurePlacement) p;
                 int s = rp.spacing();
@@ -289,10 +302,12 @@ final class Scanner {
         return new int[]{floor, seenWater ? water : floor};
     }
 
-    /** A copy of a random-spread placement with spacing/separation (and frequency) scaled; null for other types. */
+    /** A random-spread placement with spacing/separation (and frequency) scaled; null for other types. */
     private static StructurePlacement rescale(StructurePlacement p, Rules.Rule rule, SetInfo info) throws Exception {
-        if (p.getClass() != RandomSpreadStructurePlacement.class) return null;
-        RandomSpreadStructurePlacement r = (RandomSpreadStructurePlacement) p;
+        if (!(p instanceof RandomSpreadStructurePlacement r)) return null;
+        // A mod's own random spread (Aquamirae's configurable one, Create Structures Arise's) becomes a plain one with
+        // the same numbers; the real change would go through that mod's config instead.
+        if (p.getClass() != RandomSpreadStructurePlacement.class) info.rule += " (as plain random_spread)";
         int spacing = Math.max(1, (int) Math.round(r.spacing() * rule.spacing()));
         int separation = Math.max(0, Math.min(spacing - 1, (int) Math.round(r.separation() * rule.spacing())));
         float freq = (float) Math.min(1.0, (float) call(p, "frequency") * rule.frequency());
@@ -315,11 +330,6 @@ final class Scanner {
         } catch (ReflectiveOperationException e) {
             throw new IllegalStateException("StructurePlacement." + name, e);
         }
-    }
-
-    private static int indexOf(List<Holder<StructureSet>> list, Holder<StructureSet> h) {
-        for (int i = 0; i < list.size(); i++) if (list.get(i) == h) return i;
-        throw new IllegalStateException("structure set lost");
     }
 
     private Scanner() {}
