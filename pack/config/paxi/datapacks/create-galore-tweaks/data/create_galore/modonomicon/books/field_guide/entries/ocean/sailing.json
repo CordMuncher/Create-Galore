@@ -25,7 +25,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Deep Seas also includes **Create High Seas**: surface ships. They are the same kind of physical vessel as a [#](2E5AAC)[submarine](entry://ocean/submarines)[#](), but they float on top and travel by wind, engine or oar."
+      "text": "Deep Seas also includes **Create High Seas**: surface ships. They are the same kind of physical vessel as a [#](2E5AAC)[submarine](entry://ocean/submarines)[#](), but they float on top and travel by wind, engine or oar.\\\n\\\nA boat floats on the air in its **hold**: a hull with a floor and four walls, open on top or not. A hole below the waterline floods the hold and it stops giving lift."
     },
     {
       "type": "modonomicon:spotlight",

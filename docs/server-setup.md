@@ -96,9 +96,11 @@ Elytra are off in this pack so trains, airships and submarines stay worth buildi
 
 - **On the same PC:** Multiplayer → Add Server → address `localhost`.
 - **Another PC at home:** use your PC's local address, for example `192.168.1.23`. Find it with `ipconfig` (the "IPv4 Address" line). When Windows asks whether Java may use the network, allow **Private networks**.
-- **From outside your home:** not needed for this plan. It would need port forwarding of TCP 25565 on your router, or a tool like Tailscale.
+- **From outside your home:** not needed for this plan. It would need port forwarding of 25565 for both TCP and UDP on your router (ships use UDP, see below), or a tool like Tailscale.
 
 Optional: Chunksmith also opens TCP **25566** for faster LOD downloads. Allowing it through the Windows firewall helps Distant Horizons fill in faster for the second PC; everything works without it.
+
+Airships, submarines and boats (the Sable physics engine) send their movement over **UDP** on the game port, 25565. Where UDP can't get through, Sable switches to TCP by itself about half a minute after you join and ships keep working. UDP is the path Sable prefers, so let it through where you can.
 
 ### Memory
 
