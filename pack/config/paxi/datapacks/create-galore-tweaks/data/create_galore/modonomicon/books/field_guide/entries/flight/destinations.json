@@ -84,8 +84,8 @@
     },
     {
       "type": "modonomicon:text",
-      "title": "Every kind equal",
-      "text": "Each kind of sky structure is equally common, so a mod with many kinds, like Moog's islands, shows up more often than one with a single kind, like the loot balloon.\\\n\\\nSome islands only float over their own biome: desert, badlands, jungle, birch, cherry, mangrove, swamp, snowy, cold, mushroom and ocean."
+      "title": "Common and rare",
+      "text": "Most sky structures are equally common, so a mod with many kinds, like Moog's islands, shows up more. Prizes stay rarer: the island arena, volcano and towers, the big Sky Village, the steampunk airship and the heavenly fortresses.\\\n\\\nSome islands only float over their own biome."
     },
     {
       "type": "modonomicon:text",
