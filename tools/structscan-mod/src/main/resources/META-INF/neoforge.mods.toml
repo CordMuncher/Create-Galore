@@ -1,0 +1,22 @@
+modLoader = "javafml"
+loaderVersion = "[4,)"
+license = "MIT"
+
+[[mods]]
+modId = "create_galore_structscan"
+version = "1.0.0"
+displayName = "Create Galore Structure Scan"
+authors = "Create Galore"
+description = '''Pack tuning tool, not part of the pack. Finds every structure in an area straight from the seed, without generating chunks, and writes density numbers (structures per km², distance to the nearest neighbour, how many you can see from a spot). Can also try out different spacings without touching the world.'''
+# Only the server runs it: players never need it to join.
+displayTest = "IGNORE_ALL_VERSION"
+
+[[mixins]]
+config = "create_galore_structscan.mixins.json"
+
+[[dependencies.create_galore_structscan]]
+modId = "neoforge"
+type = "required"
+versionRange = "[21.1,)"
+ordering = "NONE"
+side = "BOTH"
