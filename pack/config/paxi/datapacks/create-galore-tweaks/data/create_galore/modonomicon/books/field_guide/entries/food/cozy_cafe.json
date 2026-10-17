@@ -37,6 +37,11 @@
       "text": "The heart of the cafe. Place Cafe Menus in its working area and link a Cafe Sign before opening. You can rename the cafe, view stats and see reputation grow."
     },
     {
+      "type": "modonomicon:text",
+      "title": "Opening",
+      "text": "The working area is behind the Manager. The cafe closes on its own when a new day starts, so open it again each day; a closed cafe gets no customers."
+    },
+    {
       "type": "modonomicon:spotlight",
       "item": {
         "item": "cozycafe:cafe_sign"
