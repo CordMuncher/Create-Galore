@@ -68,7 +68,17 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "- Cataclysm abilities: Home, End, Insert, Delete\n- Railways Navigator overlay options: backslash\n\n[#](FFFFFF)\ue101[#]() **Watch out:** a launcher may overwrite the file holding these when the pack updates, which resets them."
+      "text": "- Cataclysm abilities: Home, End, Insert, Delete\n- Railways Navigator overlay options: backslash\n- Alex's Caves special ability: apostrophe (')"
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "TFMG vehicle keys:\n\n- Engine start: minus (-)\n- Gear up: right arrow\n- Gear down: left arrow\n- Custom button: F6"
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Twilight Forest keys:\n\n- Zoom: F7\n- Hotbar swap: F9\n- Map display cycle: F12\n\nThe Aether's own accessories key is unbound; comma opens the same screen.\\\n\\\n[#](FFFFFF)\ue101[#]() **Watch out:** importing the pack file again resets these. The pack's updater keeps your keys."
     },
     {
       "type": "modonomicon:text",

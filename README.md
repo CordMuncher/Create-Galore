@@ -15,7 +15,7 @@ A big, long-term Minecraft modpack built around the Create mod. Think "Minecraft
 
 ## Install (players)
 
-1. Download `Create-Galore-0.2.0.mrpack` from the [latest release](https://github.com/emresahin0906-code/Create-Galore/releases/latest) (or [from this repo](Create-Galore-0.2.0.mrpack)).
+1. Download `Create-Galore-0.2.0.mrpack` from the [latest release](https://github.com/emresahin0906-code/Create-Galore/releases/latest). The older `.mrpack` files in the repo's top folder are past versions; don't import those.
 2. Import it:
    - **Prism Launcher:** Add Instance → Import → pick the `.mrpack`.
    - **Modrinth App:** drag the `.mrpack` onto the window (or File → Import).
@@ -183,7 +183,7 @@ Nothing on the list comes from space, every prize can be found again, and nothin
 - The Deep Seas setup prompt and the BetterX welcome screen are switched off.
 - The title screen shows the pack's own panorama again. Aquamirae's themed menu was drawn over it (`config/obscuria/aquamirae-early.json`).
 
-**Key rebinds** (only these keys are changed): Backpack J, Jetpack toggle N, Mobile Packages stock ticker `.` and networks `;`, Accessories `,`, Cataclysm abilities Home/End/Insert/Delete, Aether invisibility `=`, Supplementaries quiver `` ` ``, Iris shader reload F8, Railways Navigator overlay options `\`.
+**Key rebinds** (only these keys are changed): Backpack J, Jetpack toggle N, Mobile Packages stock ticker `.` and networks `;`, Accessories `,`, Cataclysm abilities Home/End/Insert/Delete, Aether invisibility `=`, Supplementaries quiver `` ` ``, Iris shader reload F8, Railways Navigator overlay options `\`, Alex's Caves special ability `'`, TFMG engine start `-`, gear up/down right/left arrow and custom button F6, Twilight Forest zoom F7, hotbar swap F9 and map display cycle F12. The Aether's own accessories key is unbound (`,` opens the same screen). With these, no two in-world keys share a key.
 
 ## Ambiance (client only)
 
@@ -284,7 +284,7 @@ All tests ran headless in a cloud machine (4 cores, 16 GB RAM, no GPU), so speed
 
 ## Repo layout
 
-- `Create-Galore-0.2.0.mrpack`: the importable pack, built from `pack/`
+- `Create-Galore-0.1.*.mrpack`: old versions kept for reference. The current `.mrpack` is only on the [latest release](https://github.com/emresahin0906-code/Create-Galore/releases/latest), built from `pack/` by the release workflow
 - `pack/`: [packwiz](https://packwiz.infra.link/) source, one `.pw.toml` per mod or shader, plus configs (`pack/config/`), the datapacks (`pack/config/paxi/datapacks/create-galore-tweaks`, always on, `create-galore-no-elytra`, and the opt-in `config/paxi/optional/create-galore-with-elytra`) the Field Guide (a Modonomicon book inside `create-galore-tweaks`) and its resource pack `pack/config/paxi/resourcepacks/create-galore-guide` (icon font and diagram pictures, always on)
 - `MODS.md`: full mod list with versions and sides
 - `server/`: server install scripts, memory settings and a starting `server.properties`

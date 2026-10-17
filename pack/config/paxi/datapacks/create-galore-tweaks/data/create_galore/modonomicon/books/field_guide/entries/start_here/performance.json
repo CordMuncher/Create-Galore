@@ -43,6 +43,11 @@
     {
       "type": "modonomicon:text",
       "title": "",
+      "text": "**On a laptop** (16 GB RAM):\n\n- Give the game 8 GB, no more.\n- Play plugged in.\n- Set Distant Horizons' render distance to 128 or lower; the pack ships 256.\n- Render distance 10, simulation distance 8.\n- Skip shaders, or use Solas, the lightest.\n- Don't host the server on it while you play."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
       "text": "**Shaders** are included and run through Iris. Open Options > Video Settings > Shader Packs to pick one.\n\n- Complementary Reimagined, with Euphoria Patches\n- Bliss\n- Photon\n- Solas\n\nFor Bliss or Photon, pick the copy ending in **+ Clrwl** so contraptions are shaded right."
     },
     {
