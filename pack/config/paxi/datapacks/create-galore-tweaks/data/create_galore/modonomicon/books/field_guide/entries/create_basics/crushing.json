@@ -65,6 +65,11 @@
     },
     {
       "type": "modonomicon:text",
+      "title": "Choosing a recipe",
+      "text": "Mods often add several recipes for one input. **Configurable Machine Outputs** lets you pick which one a machine uses.\n\n- **Ctrl + right-click** a Crushing Wheel, [#](2E5AAC)[Press](entry://create_basics/processing)[#]() or Millstone with a [#](2E5AAC)[wrench](entry://create_basics/tools_wrench)[#]().\n- Search the item, choose a recipe.\n- It is remembered per machine."
+    },
+    {
+      "type": "modonomicon:text",
       "title": "Related",
       "text": "- [#](2E5AAC)[Encased Fans](entry://create_basics/fans)[#]()\n- [#](2E5AAC)[Ore Guide](entry://materials/ore_guide)[#]()\n- [#](2E5AAC)[Core Materials](entry://create_basics/materials)[#]()"
     }

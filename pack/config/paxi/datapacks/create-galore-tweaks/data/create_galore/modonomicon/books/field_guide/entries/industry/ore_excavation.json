@@ -52,6 +52,21 @@
       "text": "The Deposits add-on supplies the vein list:\n- coal, copper, iron, zinc, gold, redstone, lapis, diamond, emerald, quartz and glowstone\n- Nether gold, Nether quartz and ancient debris\n\nAncient debris needs a **Netherite Drill** and lava. Check the Atlas or [#](2E5AAC)[JEI](entry://start_here/tools)[#]()."
     },
     {
+      "type": "modonomicon:text",
+      "title": "Deposits",
+      "text": "**Create Ore Excavation Deposits** replaces single-chunk veins with **multi-chunk deposits**: blobs of 2 to 40 chunks, each one ore.\n\n- The farther out you go, the bigger and richer they get.\n- The core chunk is richest; edges fade.\n- Each ore keeps to its biomes, like iron in mountains and taiga."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "On [#](2E5AAC)[Xaero's World Map](entry://home/maps)[#]() a deposit is coloured chunks that fade as it runs dry. Hover for the units left.\\\n\\\n/coedeposits share offers your deposit to others with an **Add to map** click."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "[#](FFFFFF)\ue103[#]() **In depth.** The pack changes the gem and Nether drills: diamond, emerald, quartz and glowstone veins give the gem or dust itself, with small chances of extras.\\\n\\\nAncient debris gives Netherite Scrap, and each cycle uses 500 mB of lava with a Netherite Drill."
+    },
+    {
       "type": "modonomicon:spotlight",
       "item": {
         "item": "createoreexcavation:extractor"

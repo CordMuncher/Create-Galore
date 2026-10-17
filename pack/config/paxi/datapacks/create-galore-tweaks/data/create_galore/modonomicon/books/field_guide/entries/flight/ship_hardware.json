@@ -26,7 +26,12 @@
     {
       "type": "modonomicon:text",
       "title": "Ship Hardware",
-      "text": "Three small add-ons help ship builds. Transmission and Linkage moves force between ships, Encased Fluid Pipes hides pipes inside balloons, and Aeronautics Compatibility makes other mods work on moving ships."
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- [#](FFFFFF)\ue100[#]() **Transmission and Linkage** links ships with joints, rods and bearings.\n- **Encased Fluid Pipes** carry fluid through a balloon wall.\n- **Weightworks** makes Copycats nearly weightless."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Small add-ons help ship builds. Transmission and Linkage moves force between ships, Encased Fluid Pipes hides pipes inside balloons, Weightworks lightens Copycats, and Aeronautics Compatibility makes other mods work on moving ships."
     },
     {
       "type": "modonomicon:spotlight",
@@ -55,6 +60,22 @@
     {
       "type": "modonomicon:spotlight",
       "item": {
+        "item": "aeronautics_utility_objects:brass_hydraulic_hinge_head"
+      },
+      "title": "Hinge Head",
+      "text": "A pneumatic rod ends in a hinge head that swings around one axis while the rod sets only its length. The brass one has adjustable minimum and maximum angles."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "aeronautics_utility_objects:giant_hydraulic_rod"
+      },
+      "title": "Giant Hydraulic Rod",
+      "text": "Heavy-duty rod with two settings: Valve Flow limits its speed, Supply Pressure limits its force. An overloaded rod slows or stalls. Made by [#](7A3C9A)[mechanical crafting](entry://glossary/mechanical_crafting)[#]()."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
         "item": "aeronautics_utility_objects:damping_stress_bearing"
       },
       "title": "Kinetic Conversion Bearing",
@@ -66,12 +87,22 @@
         "item": "aeroencasedpipe:white_envelope_encased_pipe"
       },
       "title": "Envelope Encased Pipe",
-      "text": "A [#](2E5AAC)[fluid pipe](entry://create_basics/fluids)[#]() sealed in envelope material, so pipes can pass through a balloon wall. Exists in all 16 colours."
+      "text": "A [#](2E5AAC)[fluid pipe](entry://create_basics/fluids)[#]() sealed in envelope material, so pipes can pass through a balloon wall. Made from a fluid pipe and an envelope block, in all 16 colours."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Envelope pipes count as part of the balloon, so the hot air stays sealed. Use dye to recolour one in place. Sneak with a wrench to strip the casing and get it back."
     },
     {
       "type": "modonomicon:text",
       "title": "Compatibility",
-      "text": "Aeronautics Compatibility makes blocks from mods that do not know about [#](7A3C9A)[sub-levels](entry://glossary/sub_level)[#]() keep working on ships. Jade Sable Compat does the same for Jade tooltips, and a [#](7A3C9A)[Copycats](entry://glossary/copycat)[#]() patch fixes an item duplication bug."
+      "text": "Aeronautics Compatibility makes blocks from mods that do not know about [#](7A3C9A)[sub-levels](entry://glossary/sub_level)[#]() keep working on ships. Jade Sable Compat does the same for Jade tooltips, and a [#](7A3C9A)[Copycats](entry://glossary/copycat)[#]() patch fixes an item duplication bug.\\\n\\\n**Weightworks** gives Copycat blocks almost no mass."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "[#](FFFFFF)\ue103[#]() **In depth.** Right-click two matching joint heads with a rod. Ends must be on different structures, or one may be the world.\\\n\\\nAn andesite rod pulls back after 1 block of stretch.\\\n\\\nThe conversion bearing caps output at 200,000 SU."
     },
     {
       "type": "modonomicon:text",
