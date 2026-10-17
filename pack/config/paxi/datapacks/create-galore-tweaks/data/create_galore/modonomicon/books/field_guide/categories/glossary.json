@@ -1,0 +1,14 @@
+{
+  "name": "Words to Know",
+  "description": "A to Z of the jargon used in this book: short definitions with links to the full entries.",
+  "icon": {
+    "item": "minecraft:name_tag"
+  },
+  "sort_number": 1,
+  "display_mode": "node",
+  "background": "modonomicon:textures/gui/dark_slate_seamless.png",
+  "background_width": 512,
+  "background_height": 512,
+  "max_scroll_x": 330,
+  "max_scroll_y": 240
+}

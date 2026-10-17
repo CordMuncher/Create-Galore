@@ -31,12 +31,12 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**Trains** link your bases and farms over long distances. Create: Power Loader can keep a station's area loaded.\\\n\\\n[#](2E5AAC)[Trains](entry://transport/trains)[#](), [#](2E5AAC)[Power Loader](entry://industry/power_loader)[#]()."
+      "text": "**Trains** link your bases and farms over long distances. Create: Power Loader can keep a station's area [#](7A3C9A)[loaded](entry://glossary/chunk)[#]().\\\n\\\n[#](2E5AAC)[Trains](entry://transport/trains)[#](), [#](2E5AAC)[Power Loader](entry://industry/power_loader)[#]()."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**Airships** reach sky villages, floating ruins and soaring structures that you can't easily climb to. Watch out for Hostile Skies' raiders and the cold of altitude.\\\n\\\n[#](2E5AAC)[Flight Destinations](entry://flight/destinations)[#]()."
+      "text": "**Airships** reach sky villages, floating ruins and soaring structures that you can't easily climb to.\\\n\\\n[#](FFFFFF)\ue101[#]() **Watch out:** Hostile Skies' raiders and the cold of altitude.\\\n\\\n[#](2E5AAC)[Flight Destinations](entry://flight/destinations)[#]()."
     },
     {
       "type": "modonomicon:text",

@@ -47,7 +47,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Containers you place yourself are normal. Only containers that would roll a vanilla loot table become Lootr ones, including those in [#](2E5AAC)[structure packs](entry://exploration/structure_packs)[#](), [#](2E5AAC)[Create structures](entry://exploration/create_structures)[#]() and [#](2E5AAC)[undersea wrecks](entry://ocean/underwater_places)[#]()."
+      "text": "**Containers you place yourself are normal.** Only containers that would roll a vanilla loot table become Lootr ones, including those in [#](2E5AAC)[structure packs](entry://exploration/structure_packs)[#](), [#](2E5AAC)[Create structures](entry://exploration/create_structures)[#]() and [#](2E5AAC)[undersea wrecks](entry://ocean/underwater_places)[#]()."
     },
     {
       "type": "modonomicon:spotlight",

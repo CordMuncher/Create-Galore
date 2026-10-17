@@ -1,0 +1,24 @@
+{
+  "category": "glossary",
+  "name": "Tick",
+  "description": "Minecraft's unit of game time: 20 a second.",
+  "icon": {
+    "item": "minecraft:clock"
+  },
+  "x": 4,
+  "y": 7,
+  "sort_number": 45,
+  "parents": [],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Tick",
+      "text": "A **tick** is Minecraft's step of game time: 20 ticks make one second when the game runs at full speed.\\\n\\\nBurn times are often in ticks: 24000 ticks is 20 minutes. Chunks that \"tick\" keep their machines running."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Where it matters**\n\n- [#](2E5AAC)[Burning Liquid Fuel](entry://industry/liquid_fuel)[#]()\n- [#](2E5AAC)[Chunk Loaders](entry://industry/power_loader)[#]()"
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "category": "glossary",
+  "name": "JEI",
+  "description": "Just Enough Items: the item and recipe list.",
+  "icon": {
+    "item": "minecraft:crafting_table"
+  },
+  "x": 10,
+  "y": 1,
+  "sort_number": 24,
+  "parents": [],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "JEI",
+      "text": "**JEI**, Just Enough Items, lists every item and recipe beside your inventory. Hover an item and press **R** for how to make it, **U** for what it is used in, **A** to bookmark it.\\\n\\\nMachine recipes such as mixing, pressing and fan processing show there too. When this book says \"check JEI\", this is it."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Where it matters**\n\n- [#](2E5AAC)[Tools of the Trade](entry://start_here/tools)[#]()\n- [#](2E5AAC)[Core Materials](entry://create_basics/materials)[#]()"
+    }
+  ]
+}

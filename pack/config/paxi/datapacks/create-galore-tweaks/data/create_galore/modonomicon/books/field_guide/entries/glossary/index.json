@@ -1,0 +1,39 @@
+{
+  "category": "glossary",
+  "name": "A to Z",
+  "description": "Every word in this section, in alphabetical order.",
+  "icon": {
+    "item": "minecraft:name_tag"
+  },
+  "x": -6,
+  "y": -3,
+  "sort_number": 0,
+  "parents": [],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Words to Know",
+      "text": "Short definitions of words the book uses without explaining them, mostly Create and survival jargon.\\\n\\\nA **purple** word anywhere in the book links to its entry here. Each entry gives a short definition and links to where the word matters.\\\n\\\nThe A to Z list is on the next pages."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "- [#](7A3C9A)[Assemble](entry://glossary/assemble)[#]()\n- [#](7A3C9A)[Bearing](entry://glossary/bearing)[#]()\n- [#](7A3C9A)[Body Temperature](entry://glossary/body_temperature)[#]()\n- [#](7A3C9A)[Bogey](entry://glossary/bogey)[#]()\n- [#](7A3C9A)[Boiler (Steam)](entry://glossary/boiler)[#]()\n- [#](7A3C9A)[Bulk Processing](entry://glossary/bulk_processing)[#]()\n- [#](7A3C9A)[Canonical Item](entry://glossary/canonical_item)[#]()\n- [#](7A3C9A)[Chunk](entry://glossary/chunk)[#]()\n- [#](7A3C9A)[Compacting](entry://glossary/compacting)[#]()\n- [#](7A3C9A)[Config](entry://glossary/config)[#]()\n- [#](7A3C9A)[Copycat](entry://glossary/copycat)[#]()\n- [#](7A3C9A)[Crushed Ore](entry://glossary/crushed_ore)[#]()"
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "- [#](7A3C9A)[Curios](entry://glossary/curios)[#]()\n- [#](7A3C9A)[Datapack](entry://glossary/datapack)[#]()\n- [#](7A3C9A)[Encased](entry://glossary/encased)[#]()\n- [#](7A3C9A)[Fan Catalyst](entry://glossary/fan_catalyst)[#]()\n- [#](7A3C9A)[FE (Forge Energy)](entry://glossary/fe)[#]()\n- [#](7A3C9A)[Filter Slot](entry://glossary/filter_slot)[#]()\n- [#](7A3C9A)[Goggles](entry://glossary/goggles)[#]()\n- [#](7A3C9A)[Grace Period](entry://glossary/grace)[#]()\n- [#](7A3C9A)[Haunting](entry://glossary/haunting)[#]()\n- [#](7A3C9A)[Heated](entry://glossary/heated)[#]()\n- [#](7A3C9A)[Insulation](entry://glossary/insulation)[#]()\n- [#](7A3C9A)[JEI](entry://glossary/jei)[#]()"
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "- [#](7A3C9A)[Kinetic Network](entry://glossary/kinetic_network)[#]()\n- [#](7A3C9A)[Mana](entry://glossary/mana)[#]()\n- [#](7A3C9A)[mB (Millibuckets)](entry://glossary/mb)[#]()\n- [#](7A3C9A)[Mechanical Crafting](entry://glossary/mechanical_crafting)[#]()\n- [#](7A3C9A)[Mixing](entry://glossary/mixing)[#]()\n- [#](7A3C9A)[Multiblock](entry://glossary/multiblock)[#]()\n- [#](7A3C9A)[Overstressed](entry://glossary/overstressed)[#]()\n- [#](7A3C9A)[Passive Heater](entry://glossary/passive_heater)[#]()\n- [#](7A3C9A)[Ponder](entry://glossary/ponder)[#]()\n- [#](7A3C9A)[Purified Water](entry://glossary/purified_water)[#]()\n- [#](7A3C9A)[Redstone Link Frequency](entry://glossary/redstone_frequency)[#]()\n- [#](7A3C9A)[RPM](entry://glossary/rpm)[#]()"
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "- [#](7A3C9A)[Saturation](entry://glossary/saturation)[#]()\n- [#](7A3C9A)[Sequenced Assembly](entry://glossary/sequenced_assembly)[#]()\n- [#](7A3C9A)[Smog](entry://glossary/smog)[#]()\n- [#](7A3C9A)[SU (Stress Units)](entry://glossary/su)[#]()\n- [#](7A3C9A)[Sub-level](entry://glossary/sub_level)[#]()\n- [#](7A3C9A)[Super Glue](entry://glossary/super_glue)[#]()\n- [#](7A3C9A)[Superheated](entry://glossary/superheated)[#]()\n- [#](7A3C9A)[Tags](entry://glossary/tags)[#]()\n- [#](7A3C9A)[Tick](entry://glossary/tick)[#]()\n- [#](7A3C9A)[Value Panel](entry://glossary/value_panel)[#]()\n- [#](7A3C9A)[Washing](entry://glossary/washing)[#]()\n- [#](7A3C9A)[Y Level](entry://glossary/y_level)[#]()"
+    }
+  ]
+}

@@ -13,12 +13,17 @@
     {
       "type": "modonomicon:text",
       "title": "Rotation",
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- [#](FFFFFF)\ue104[#]() Create runs on **rotation**: a source spins a shaft, and gears carry it to machines.\n- Every spinning part has a **speed** (RPM) and a **direction**.\n- Touching cogwheels spin opposite ways.\n- One network shares its speed and its power."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
       "text": "Create does not run on electricity or fuel at its core. It runs on **rotational force**: things that spin. A source (water, wind, steam, your own hand) spins a shaft, and the spin passes along shafts and gears to machines that use it."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Two numbers describe any spinning part. **Speed** in RPM (rotations per minute), and **direction**, clockwise or counter-clockwise. Many machines work at any speed, some want fast, and a few get better the faster they spin."
+      "text": "Two numbers describe any spinning part:\n\n- **Speed** in [#](7A3C9A)[RPM](entry://glossary/rpm)[#]() (rotations per minute).\n- **Direction**, clockwise or counter-clockwise.\n\nMany machines work at any speed, some want fast, and a few get better the faster they spin."
     },
     {
       "type": "modonomicon:spotlight",
@@ -26,12 +31,12 @@
         "item": "create:shaft"
       },
       "title": "Shaft",
-      "text": "Carries rotation in a straight line, unchanged. Everything else in the network connects through shafts, gears or belts. See [#](2E5AAC)[Transmission](entry://create_basics/transmission)[#]()."
+      "text": "Carries rotation in a straight line, unchanged. Everything else in the [#](7A3C9A)[network](entry://glossary/kinetic_network)[#]() connects through shafts, gears or belts. See [#](2E5AAC)[Transmission](entry://create_basics/transmission)[#]()."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**Direction matters.** Touching cogwheels spin in opposite directions. A machine such as a drill or saw may work in one direction only, and fans, pumps and bearings flip what they do if you reverse them."
+      "text": "**Direction matters.** Touching cogwheels spin in opposite directions. A machine such as a drill or saw may work in one direction only, and fans, pumps and [#](7A3C9A)[bearings](entry://glossary/bearing)[#]() flip what they do if you reverse them."
     },
     {
       "type": "modonomicon:text",
@@ -44,12 +49,12 @@
         "item": "create:speedometer"
       },
       "title": "Speedometer",
-      "text": "Shows a network's speed with a dial. With goggles on, it reads out the exact RPM."
+      "text": "Shows a network's speed with a dial. With [#](2E5AAC)[goggles](entry://create_basics/tools_wrench)[#]() on, it reads out the exact RPM."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Ponder (**hold W** over any block) shows each part in motion. For where the spin comes from, see [#](2E5AAC)[Power Sources](entry://create_basics/power_sources)[#](). To read speed and stress live, see [#](2E5AAC)[Wrench and Goggles](entry://create_basics/tools_wrench)[#]()."
+      "text": "[#](2E5AAC)[Ponder](entry://start_here/tools)[#]() (**hold W** over any block) shows each part in motion. For where the spin comes from, see [#](2E5AAC)[Power Sources](entry://create_basics/power_sources)[#](). To read speed and stress live, see [#](2E5AAC)[Wrench and Goggles](entry://create_basics/tools_wrench)[#]()."
     }
   ]
 }

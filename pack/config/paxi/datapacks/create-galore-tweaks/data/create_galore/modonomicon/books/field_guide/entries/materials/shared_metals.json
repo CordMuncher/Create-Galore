@@ -20,6 +20,11 @@
     {
       "type": "modonomicon:text",
       "title": "Shared Metals",
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- [#](FFFFFF)\ue10d[#]() Each shared metal has one **canonical item** that recipes make and use\n- Leftovers from other mods convert **1:1** in a crafting grid\n- **Steel** is TFMG's, **lead** Create Nuclear's, **bronze** Alloyed's\n- Steel plates are TFMG's **Heavy Plate**"
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
       "text": "Several mods add the same metal. In this pack each one has a single **canonical item**. Other mods' recipes now produce and use it, so only one kind exists in practice.\\\n\\\nLeftovers convert 1:1 in a crafting grid."
     },
     {
@@ -33,7 +38,7 @@
     {
       "type": "modonomicon:text",
       "title": "Old steel",
-      "text": "Alloyed, Big Cannons and Create Nuclear still have their own steel items, but no recipe makes them. Put an old ingot, nugget or block in a crafting grid to get TFMG steel. Recipes that ask for the steel tag still take either."
+      "text": "[#](2E5AAC)[Alloyed](entry://industry/alloyed)[#](), [#](2E5AAC)[Big Cannons](entry://industry/cannons)[#]() and [#](2E5AAC)[Create Nuclear](entry://industry/nuclear)[#]() still have their own steel items, but no recipe makes them. Put an old ingot, nugget or block in a crafting grid to get TFMG steel. Recipes that ask for the steel [#](7A3C9A)[tag](entry://glossary/tags)[#]() still take either."
     },
     {
       "type": "modonomicon:text",
@@ -64,12 +69,12 @@
     {
       "type": "modonomicon:text",
       "title": "Wire, sulfur, salt",
-      "text": "**Copper wire** is Create Crafts & Additions' (see [#](2E5AAC)[Electricity](entry://industry/electricity)[#]()); TFMG's converts. Each mod keeps its own copper spool, as they wire different machines. **Sulfur dust** is TFMG's; Alex's Caves sulfur converts. Salt and cocoa also unify, in Ratatouille."
+      "text": "- **Copper wire** is Create Crafts & Additions' (see [#](2E5AAC)[Electricity](entry://industry/electricity)[#]()); TFMG's converts. Each mod keeps its own copper spool, as they wire different machines.\n- **Sulfur dust** is TFMG's; Alex's Caves sulfur converts.\n- **Salt** and **cocoa** also unify, in [#](2E5AAC)[Ratatouille](entry://food/ratatouille)[#]()."
     },
     {
       "type": "modonomicon:text",
       "title": "Single-source",
-      "text": "Not shared: titanium, tungsten, platinum, mithril and zinc each come from one mod.\\\n\\\nNorthstar's Martian Steel has its own tag and is not generic steel. Raw uranium joins Create Nuclear and Alex's Caves."
+      "text": "[#](FFFFFF)\ue103[#]() **In depth.** Not shared: titanium, tungsten, platinum, mithril and zinc each come from one mod.\\\n\\\nNorthstar's Martian Steel has its own tag and is not generic steel. Raw uranium joins Create Nuclear and Alex's Caves."
     },
     {
       "type": "modonomicon:text",

@@ -1,0 +1,29 @@
+{
+  "type": "modonomicon:dense",
+  "pattern": [
+    [
+      "ABB"
+    ],
+    [
+      "   "
+    ],
+    [
+      "0  "
+    ]
+  ],
+  "mapping": {
+    "A": {
+      "type": "modonomicon:block",
+      "block": "create:mechanical_press",
+      "display": "create:mechanical_press[facing=north]"
+    },
+    "B": {
+      "type": "modonomicon:blockstateproperty",
+      "block": "create:shaft[axis=z]"
+    },
+    "0": {
+      "type": "modonomicon:block",
+      "block": "create:depot"
+    }
+  }
+}

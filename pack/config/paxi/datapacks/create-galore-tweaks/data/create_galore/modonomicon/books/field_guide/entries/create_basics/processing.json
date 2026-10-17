@@ -26,7 +26,12 @@
     {
       "type": "modonomicon:text",
       "title": "Press, Mixer and Basin",
-      "text": "Create machines do not work through menus. They act on **items sitting in front of them**: items on a belt, on a depot, or inside a basin. Most of them need [#](2E5AAC)[rotation](entry://create_basics/rotation)[#]() to run.\\\n\\\nHover a machine and hold W for its Ponder."
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- [#](FFFFFF)\ue104[#]() Machines act on items **in front of them**, not through menus.\n- **Press**: ingots into sheets. Over a basin it compacts.\n- **Mixer** over a **Basin**: shapeless recipes and alloys like brass.\n- A basin pushes results out only when it has an output block."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Create machines do not work through menus. They act on **items sitting in front of them**: items on a belt, on a depot, or inside a basin. Most of them need [#](2E5AAC)[rotation](entry://create_basics/rotation)[#]() to run.\\\n\\\nHover a machine and hold W for its [#](2E5AAC)[Ponder](entry://start_here/tools)[#]()."
     },
     {
       "type": "modonomicon:spotlight",
@@ -34,7 +39,14 @@
         "item": "create:mechanical_press"
       },
       "title": "Mechanical Press",
-      "text": "Hits whatever is under it. On a belt or depot it presses ingots into sheets. Over a basin it compacts the contents."
+      "text": "Hits whatever is under it. On a belt or depot it presses ingots into sheets. Over a basin it [#](7A3C9A)[compacts](entry://glossary/compacting)[#]() the contents."
+    },
+    {
+      "type": "modonomicon:multiblock",
+      "multiblock_id": "create_galore:press_depot",
+      "multiblock_name": "Press on a Depot",
+      "text": "The press hits items on the depot below it: ingots become sheets.",
+      "show_visualize_button": true
     },
     {
       "type": "modonomicon:text",
@@ -60,7 +72,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Brass is the classic mixer job: copper and zinc ingots in a basin, with a [#](2E5AAC)[heated](entry://create_basics/heat)[#]() burner under it. Check JEI for the exact mix.\\\n\\\nIf two recipes fit the same contents, put an item in the machine's filter slot to pick one."
+      "text": "[#](2E5AAC)[Brass](entry://create_basics/brass_and_assembly)[#]() is the classic mixer job: copper and zinc ingots in a basin, with a [#](2E5AAC)[heated](entry://create_basics/heat)[#]() burner under it. Check [#](2E5AAC)[JEI](entry://start_here/tools)[#]() for the exact [#](7A3C9A)[mix](entry://glossary/mixing)[#]().\\\n\\\n[#](FFFFFF)\ue102[#]() **Tip:** if two recipes fit the same contents, put an item in the machine's [#](7A3C9A)[filter slot](entry://glossary/filter_slot)[#]() to pick one."
     },
     {
       "type": "modonomicon:text",

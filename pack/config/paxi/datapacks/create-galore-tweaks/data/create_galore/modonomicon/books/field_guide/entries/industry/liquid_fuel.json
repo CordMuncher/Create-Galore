@@ -20,6 +20,11 @@
     {
       "type": "modonomicon:text",
       "title": "Burning Liquid Fuel",
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- [#](FFFFFF)\ue108[#]() A plain **Blaze Burner** burns piped fuels such as lava, Seed Oil and TFMG's diesel\n- Crude oil and creosote need the **Straw** burner\n- **Bioethanol**, **Peanut Oil** and **napalm** superheat a plain burner\n- [#](FFFFFF)\ue10a[#]() Burning fuel makes smog"
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
       "text": "A Blaze Burner normally eats solid fuel. Two mods let it burn fluids from pipes instead, which is how oil products and biofuels reach Create's heat. See [#](2E5AAC)[Heat](entry://create_basics/heat)[#]()."
     },
     {
@@ -33,7 +38,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Bioethanol, Peanut Oil and TFMG's napalm superheat the burner (the blue flame). The others only heat it. Seed Oil and Bioethanol come from Crafts & Additions; Peanut Oil from Garnished. Peanut Oil burns 5,000 ticks a bucket in either burner."
+      "text": "Bioethanol, Peanut Oil and TFMG's napalm superheat the burner (the blue flame). The others only heat it. Seed Oil and Bioethanol come from Crafts & Additions; Peanut Oil from [#](2E5AAC)[Garnished](entry://food/garnished)[#](). Peanut Oil burns 5,000 [#](7A3C9A)[ticks](entry://glossary/tick)[#]() a bucket in either burner."
     },
     {
       "type": "modonomicon:spotlight",
@@ -46,12 +51,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Its fuels (burn time per 1000 mB): diesel, gasoline and biodiesel 24000 ticks; lava 20000; crude oil 9600; ethanol 8000; creosote and plant oil 4800. Bioethanol (biofuel tag) is superheated."
-    },
-    {
-      "type": "modonomicon:text",
-      "title": "",
-      "text": "So TFMG's diesel, gasoline, crude oil and creosote all burn here, through shared fluid tags. Crude oil and creosote need the Straw burner; TFMG's other fuels work in a plain Blaze Burner too."
+      "text": "TFMG's diesel, gasoline, crude oil and creosote all burn in the Straw burner, through [#](7A3C9A)[shared fluid tags](entry://glossary/tags)[#](). Crude oil and creosote need the Straw burner; TFMG's other fuels work in a plain Blaze Burner too."
     },
     {
       "type": "modonomicon:spotlight",
@@ -59,12 +59,17 @@
         "item": "createaddition:straw"
       },
       "title": "Straw",
-      "text": "Craft this to convert a Blaze Burner. Biofuel chain: crops to Biomass, seeds to Seed Oil, then Bioethanol. Check JEI."
+      "text": "Craft this to convert a Blaze Burner. Biofuel chain: crops to Biomass, seeds to Seed Oil, then Bioethanol. Check [#](2E5AAC)[JEI](entry://start_here/tools)[#]()."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Pollution: a Blaze Burner, with or without Straw, makes smog while it burns fuel. See [#](2E5AAC)[Pollution](entry://survival/pollution)[#](). Solid-fuel option: Biomass Pellets."
+      "text": "[#](FFFFFF)\ue101[#]() **Watch out:** a Blaze Burner, with or without Straw, makes smog while it burns fuel. See [#](2E5AAC)[Pollution](entry://survival/pollution)[#]().\\\n\\\nSolid-fuel option: [Biomass Pellets](item://createaddition:biomass_pellet)."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "[#](FFFFFF)\ue103[#]() **In depth.** Straw burner fuels, burn time per 1000 [#](7A3C9A)[mB](entry://glossary/mb)[#]():\n- diesel, gasoline and biodiesel: 24000 ticks\n- lava: 20000\n- crude oil: 9600\n- ethanol: 8000\n- creosote and plant oil: 4800\n\nBioethanol (biofuel tag) is superheated."
     },
     {
       "type": "modonomicon:text",

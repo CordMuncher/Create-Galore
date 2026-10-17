@@ -13,6 +13,11 @@
     {
       "type": "modonomicon:text",
       "title": "Dimensions",
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- [#](FFFFFF)\ue10e[#]() Each has its own rules, materials and bosses. Next page: how to get in.\n- Create Deep Seas' abyss is off in normal play.\n- [#](FFFFFF)\ue10f[#]() Space: Northstar rockets, or an Aeronautics ship with a **Dimensional Drive**. Both need a Stellar Core."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
       "text": "Beyond the Overworld, this pack has a stack of places to travel. Each one has its own rules, materials and bosses. This page is the map of them and how to reach each."
     },
     {
@@ -23,7 +28,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**Space** is separate. Create: Northstar adds rockets and planets, see [#](2E5AAC)[Reaching Space](entry://space/reaching_space)[#]() and [#](2E5AAC)[Planets](entry://space/planets)[#](). Aeronautics ships can launch there too, using a **Dimensional Drive** from the Northstar-Aeronautics bridge. Getting there is the pack's capstone: see [#](2E5AAC)[The Road to the Stars](entry://stars/why)[#]()."
+      "text": "**Space** is separate. Create: Northstar adds rockets and planets, see [#](2E5AAC)[Reaching Space](entry://space/reaching_space)[#]() and [#](2E5AAC)[Planets](entry://space/planets)[#]().\\\n\\\nAeronautics ships can launch there too, using a **Dimensional Drive** from the Northstar-Aeronautics bridge.\\\n\\\nGetting there is the pack's capstone: see [#](2E5AAC)[The Road to the Stars](entry://stars/why)[#]()."
     },
     {
       "type": "modonomicon:spotlight",

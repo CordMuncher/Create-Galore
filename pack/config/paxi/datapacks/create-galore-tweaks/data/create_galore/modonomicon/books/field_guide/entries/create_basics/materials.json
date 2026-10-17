@@ -26,7 +26,7 @@
     {
       "type": "modonomicon:text",
       "title": "Core Materials",
-      "text": "Create uses its own materials, made in steps. Early ones need little; later ones need heat and machines. Look up exact recipes in JEI with R."
+      "text": "Create uses its own materials, made in steps. Early ones need little; later ones need heat and machines. Look up exact recipes in [#](2E5AAC)[JEI](entry://start_here/tools)[#]() with R."
     },
     {
       "type": "modonomicon:spotlight",
@@ -34,7 +34,7 @@
         "item": "create:andesite_alloy"
       },
       "title": "Andesite Alloy",
-      "text": "The first Create material. Andesite plus iron or zinc nuggets, crafted in a diagonal or mixed in a basin."
+      "text": "The first Create material. Andesite plus iron or zinc nuggets, crafted in a diagonal or [#](7A3C9A)[mixed](entry://glossary/mixing)[#]() in a basin."
     },
     {
       "type": "modonomicon:spotlight",
@@ -42,7 +42,7 @@
         "item": "create:andesite_casing"
       },
       "title": "Andesite Casing",
-      "text": "Right-click a stripped log with andesite alloy. Used to build early machines and to encase shafts."
+      "text": "Right-click a stripped log with andesite alloy. Used to build early machines and to [#](7A3C9A)[encase](entry://glossary/encased)[#]() shafts."
     },
     {
       "type": "modonomicon:spotlight",
@@ -50,7 +50,7 @@
         "item": "create:zinc_ingot"
       },
       "title": "Zinc Ingot",
-      "text": "Smelted from zinc ore. Mixed with copper over heat to make brass. See [#](2E5AAC)[the Ore Guide](entry://materials/ore_guide)[#]() for where to find it."
+      "text": "Smelted from zinc ore. Mixed with copper over [#](2E5AAC)[heat](entry://create_basics/heat)[#]() to make brass. See [#](2E5AAC)[the Ore Guide](entry://materials/ore_guide)[#]() for where to find it."
     },
     {
       "type": "modonomicon:spotlight",
@@ -74,7 +74,7 @@
         "item": "create:iron_sheet"
       },
       "title": "Iron Sheet",
-      "text": "Made by pressing an iron ingot with a mechanical press. Brass and copper also press into sheets."
+      "text": "Made by pressing an iron ingot with a [#](2E5AAC)[mechanical press](entry://create_basics/processing)[#](). Brass and copper also press into sheets."
     },
     {
       "type": "modonomicon:spotlight",
@@ -82,7 +82,7 @@
         "item": "create:electron_tube"
       },
       "title": "Electron Tube",
-      "text": "Crafted from polished rose quartz over an iron sheet. Needed for circuits and many brass machines."
+      "text": "Crafted from [polished rose quartz](item://create:polished_rose_quartz) over an iron sheet. Needed for circuits and many brass machines."
     },
     {
       "type": "modonomicon:text",

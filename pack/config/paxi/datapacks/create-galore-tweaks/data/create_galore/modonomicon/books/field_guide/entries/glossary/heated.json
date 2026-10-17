@@ -1,0 +1,24 @@
+{
+  "category": "glossary",
+  "name": "Heated",
+  "description": "The first heat level, from a Blaze Burner with fuel.",
+  "icon": {
+    "item": "create:blaze_burner"
+  },
+  "x": 6,
+  "y": 1,
+  "sort_number": 22,
+  "parents": [],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Heated",
+      "text": "**Heated** is the heat level of a Blaze Burner that has fuel. Recipes marked heated, such as brass, only run in a basin with a heated burner under it.\\\n\\\nA superheated burner counts as heated too. The burner cools down when its fuel runs out."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Where it matters**\n\n- [#](2E5AAC)[Blaze Burner and Heat](entry://create_basics/heat)[#]()\n- [#](2E5AAC)[Press, Mixer and Basin](entry://create_basics/processing)[#]()\n- [#](2E5AAC)[TFMG Steel](entry://industry/tfmg_steel)[#]()"
+    }
+  ]
+}

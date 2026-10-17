@@ -20,17 +20,22 @@
     {
       "type": "modonomicon:text",
       "title": "Building a Ship",
-      "text": "A ship is a normal build turned into a Simulated Contraption by the Physics Assembler. Glue decides which blocks belong, so only glued groups move together."
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- [#](FFFFFF)\ue10d[#]() Glue a group with Super Glue or Honey Glue, then hold right-click on the **Physics Assembler** and pull its lever.\n- Only glued groups move together. The built ship stays fully usable.\n- Bearings used with Steering Wheels or Torsion Springs must be told not to disassemble."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "A ship is a normal build turned into a [#](7A3C9A)[Simulated Contraption](entry://glossary/sub_level)[#]() by the Physics Assembler. [#](7A3C9A)[Glue](entry://glossary/super_glue)[#]() decides which blocks belong, so **only glued groups move together**."
     },
     {
       "type": "modonomicon:crafting_recipe",
       "recipe_id_1": "simulated:physics_assembler",
-      "text": "Physics Assembler. More Simulated parts are in JEI."
+      "text": "Physics Assembler. More Simulated parts are in [#](2E5AAC)[JEI](entry://start_here/tools)[#]()."
     },
     {
       "type": "modonomicon:text",
       "title": "Assembling",
-      "text": "Select a group with Super Glue or Honey Glue, then hold right-click on the assembler and pull the lever. Blocks along diagonal edges are included. Once built, any Physics Assembler can disassemble the ship, and the ship stays fully usable: walk on it, open chests, run machines."
+      "text": "Select a group with Super Glue or Honey Glue, then **hold right-click** on the assembler and **pull the lever**.\n\n- Blocks along diagonal edges are included.\n- Once built, any Physics Assembler can [#](7A3C9A)[disassemble](entry://glossary/assemble)[#]() the ship.\n- The ship stays fully usable: walk on it, open chests, run machines."
     },
     {
       "type": "modonomicon:spotlight",
@@ -51,7 +56,7 @@
         "item": "simulated:swivel_bearing"
       },
       "title": "Swivel Bearing",
-      "text": "Turns the glued group in front of it into a rotating sub-ship. Rotation passes through the shaft. Redstone unlocks it to spin freely."
+      "text": "Turns the glued group in front of it into a rotating sub-ship. [#](2E5AAC)[Rotation](entry://create_basics/rotation)[#]() passes through the shaft. Redstone unlocks it to spin freely."
     },
     {
       "type": "modonomicon:spotlight",
@@ -72,7 +77,7 @@
     {
       "type": "modonomicon:text",
       "title": "A rule that trips people up",
-      "text": "Bearings must be told not to disassemble when used with Steering Wheels or Torsion Springs. Springs let a bearing swing within an angle and return when the input stops."
+      "text": "[#](FFFFFF)\ue101[#]() **Watch out:** [#](7A3C9A)[bearings](entry://glossary/bearing)[#]() must be told not to disassemble when used with Steering Wheels or Torsion Springs.\\\n\\\nSprings let a bearing swing within an angle and return when the input stops."
     },
     {
       "type": "modonomicon:text",

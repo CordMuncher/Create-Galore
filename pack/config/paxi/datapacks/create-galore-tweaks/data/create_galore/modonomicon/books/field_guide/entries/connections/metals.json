@@ -25,17 +25,17 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "- **Steel**: TFMG's. Alloyed, Create Big Cannons and Create Nuclear steel convert to it\n- **Bronze**: Alloyed's\n- **Lead**: Create Nuclear's, the only lead ore (TFMG's is off). TFMG lead converts to it"
+      "text": "- **Steel**: [#](2E5AAC)[TFMG](entry://industry/tfmg_steel)[#]()'s. Alloyed, Create Big Cannons and Create Nuclear steel convert to it\n- **Bronze**: [#](2E5AAC)[Alloyed](entry://industry/alloyed)[#]()'s\n- **Lead**: Create Nuclear's, the only lead ore (TFMG's is off). TFMG lead converts to it"
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "- **Copper wire**: Crafts & Additions'\n- **Sulfur dust**: TFMG's\n- **Salt, cocoa butter, cocoa powder**: Create Ratatouille's\n\nConversion is one for one with no gain, so loops can't be farmed. Check JEI (R, U) for the recipes."
+      "text": "- **Copper wire**: Crafts & Additions'\n- **Sulfur dust**: TFMG's\n- **Salt, cocoa butter, cocoa powder**: Create Ratatouille's\n\nConversion is one for one with no gain, so loops can't be farmed. Check [#](2E5AAC)[JEI](entry://start_here/tools)[#]() (R, U) for the recipes."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "- **Titanium**: ore only on Northstar's planets, but you can make it on Earth by crushing limestone or sand into Rutile and running an assembly line\n- **Platinum**: a Create Propulsion ore, needed for vector thrusters"
+      "text": "- **Titanium**: ore only on Northstar's planets, but you can make it on Earth by crushing limestone or sand into Rutile and running an [#](2E5AAC)[assembly line](entry://create_basics/brass_and_assembly)[#]()\n- **Platinum**: a Create Propulsion ore, needed for vector thrusters"
     },
     {
       "type": "modonomicon:text",

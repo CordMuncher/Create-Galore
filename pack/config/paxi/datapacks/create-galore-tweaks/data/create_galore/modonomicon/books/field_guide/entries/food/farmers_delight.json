@@ -13,6 +13,11 @@
     {
       "type": "modonomicon:text",
       "title": "Farmer's Delight",
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- [#](FFFFFF)\ue10c[#]() The pack's cooking layer. Most food mods use its blocks, so learn it first.\n- [#](FFFFFF)\ue108[#]() The **Cooking Pot** needs a heat source directly below.\n- Knives on the **Cutting Board** cut food.\n- Meals give lasting effects: **Nourishment** and **Comfort**."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
       "text": "**Farmer's Delight** is the pack's cooking layer. It adds crops, a few kitchen blocks and a lot of proper meals. Most other food mods here use its blocks, so learn it first. Meals give lasting effects, not just hunger points."
     },
     {
@@ -26,7 +31,7 @@
     {
       "type": "modonomicon:text",
       "title": "Heat",
-      "text": "Heat: a **Stove**, campfire, fire, lava or magma block. Create's Blaze Burner also counts, via Central Kitchen. See [#](2E5AAC)[Kitchen Automation](entry://food/kitchen_automation)[#]()."
+      "text": "Heat sources:\n\n- a **Stove**\n- a campfire, fire, lava or magma block\n- Create's Blaze Burner, via Central Kitchen\n\nSee [#](2E5AAC)[Kitchen Automation](entry://food/kitchen_automation)[#]()."
     },
     {
       "type": "modonomicon:spotlight",
@@ -34,7 +39,7 @@
         "item": "farmersdelight:stove"
       },
       "title": "Stove",
-      "text": "A heat source for pots and skillets. A Stove also counts as a passive heater for a Create boiler.\\\nSee [#](2E5AAC)[Heat](entry://create_basics/heat)[#]()."
+      "text": "A heat source for pots and skillets. A Stove also counts as a [#](7A3C9A)[passive heater](entry://glossary/passive_heater)[#]() for a Create [#](7A3C9A)[boiler](entry://glossary/boiler)[#]().\\\nSee [#](2E5AAC)[Heat](entry://create_basics/heat)[#]()."
     },
     {
       "type": "modonomicon:spotlight",
@@ -55,7 +60,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Knives also harvest **Straw** from grass, wheat and rice. Flint is the starter knife; iron and better follow.\\\n\\\nWheat plus a water bucket makes Wheat Dough, and the bucket keeps its water."
+      "text": "Knives also harvest [Straw](item://farmersdelight:straw) from grass, wheat and rice. [Flint](item://farmersdelight:flint_knife) is the starter knife; iron and better follow.\\\n\\\nWheat plus a water bucket makes Wheat Dough, and the bucket keeps its water."
     },
     {
       "type": "modonomicon:spotlight",
@@ -63,12 +68,12 @@
         "item": "farmersdelight:rich_soil"
       },
       "title": "Rich Soil",
-      "text": "**Organic Compost** slowly decays into Rich Soil. Crops and mushrooms on it grow better, and it never dries out. Create's Irrigation Tower can turn farmland into it."
+      "text": "**Organic Compost** slowly decays into Rich Soil. Crops and mushrooms on it grow better, and it never dries out. Create's [#](2E5AAC)[Irrigation Tower](entry://food/ratatouille)[#]() can turn farmland into it."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Meals grant two effects.\\\n\\\n**Nourishment** stops your food meter from dropping, except when healing with saturation.\\\n\\\n**Comfort** gives natural regeneration however hungry you are.\\\n\\\nThe AppleSkin overlay shows how much a food restores."
+      "text": "Meals grant two effects.\\\n\\\n**Nourishment** stops your food meter from dropping, except when healing with [#](7A3C9A)[saturation](entry://glossary/saturation)[#]().\\\n\\\n**Comfort** gives natural regeneration however hungry you are.\\\n\\\nThe AppleSkin overlay shows how much a food restores."
     },
     {
       "type": "modonomicon:text",

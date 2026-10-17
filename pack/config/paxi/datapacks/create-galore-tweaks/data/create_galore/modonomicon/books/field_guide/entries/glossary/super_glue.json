@@ -1,0 +1,24 @@
+{
+  "category": "glossary",
+  "name": "Super Glue",
+  "description": "Bonds blocks so they move together.",
+  "icon": {
+    "item": "create:super_glue"
+  },
+  "x": -2,
+  "y": 7,
+  "sort_number": 42,
+  "parents": [],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Super Glue",
+      "text": "**Super Glue** bonds blocks into one shape so they move together as a contraption, train car, rocket or ship. Click two corners to glue an area.\\\n\\\nBlocks that hang on others need none. For ships, Honey Glue does the same job."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Where it matters**\n\n- [#](2E5AAC)[Contraptions](entry://create_basics/contraptions)[#]()\n- [#](2E5AAC)[Trains](entry://transport/trains)[#]()\n- [#](2E5AAC)[Building a Ship](entry://flight/ship_building)[#]()\n- [#](2E5AAC)[Building a Rocket](entry://space/rocket_building)[#]()"
+    }
+  ]
+}

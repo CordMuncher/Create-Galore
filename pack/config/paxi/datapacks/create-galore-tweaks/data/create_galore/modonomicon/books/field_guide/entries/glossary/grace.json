@@ -1,0 +1,24 @@
+{
+  "category": "glossary",
+  "name": "Grace Period",
+  "description": "A short immunity to temperature damage after spawning.",
+  "icon": {
+    "item": "minecraft:snowball"
+  },
+  "x": 2,
+  "y": 1,
+  "sort_number": 20,
+  "parents": [],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Grace Period",
+      "text": "**Grace** is Cold Sweat's short immunity to temperature damage after you spawn or die.\\\n\\\nIf you spawn in snow it lasts about 5 minutes; then a player with no warm gear starts to freeze. Use it to find shelter, a campfire and insulation."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Where it matters**\n\n- [#](2E5AAC)[Temperature](entry://survival/temperature)[#]()\n- [#](2E5AAC)[Your First Days](entry://start_here/first_days)[#]()\n- [#](2E5AAC)[What to Expect](entry://start_here/difficulty)[#]()"
+    }
+  ]
+}

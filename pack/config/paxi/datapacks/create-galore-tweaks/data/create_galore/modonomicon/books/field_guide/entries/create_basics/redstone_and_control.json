@@ -34,7 +34,7 @@
         "item": "create:redstone_link"
       },
       "title": "Redstone Link",
-      "text": "Wireless. Pairs share a frequency set by two items. A powered transmitter powers receivers anywhere."
+      "text": "Wireless. Pairs share a [#](7A3C9A)[frequency](entry://glossary/redstone_frequency)[#]() set by two items. A powered transmitter powers receivers anywhere."
     },
     {
       "type": "modonomicon:spotlight",

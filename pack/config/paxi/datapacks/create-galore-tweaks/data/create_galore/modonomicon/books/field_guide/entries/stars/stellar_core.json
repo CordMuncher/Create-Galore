@@ -53,7 +53,7 @@
         "item": "create_galore_bridge:stellar_core"
       },
       "title": "Stellar Core",
-      "text": "The heart of any craft that leaves Earth. Made in a 5x5 **Mechanical Crafter** grid. Press R over it in JEI to see the layout."
+      "text": "The heart of any craft that leaves Earth. Made in a 5x5 [#](7A3C9A)[Mechanical Crafter grid](entry://glossary/mechanical_crafting)[#](). Press R over it in [#](2E5AAC)[JEI](entry://start_here/tools)[#]() to see the layout."
     },
     {
       "type": "modonomicon:text",
@@ -79,7 +79,7 @@
         "item": "cnbridge:dimensional_drive"
       },
       "title": "Dimensional Drive",
-      "text": "A Stellar Core ringed by Titanium Ingots and Precision Mechanisms. Takes an Aeronautics ship to the planets."
+      "text": "A Stellar Core ringed by Titanium Ingots and Precision Mechanisms. Takes an [#](2E5AAC)[Aeronautics ship](entry://flight/airships)[#]() to the planets."
     },
     {
       "type": "modonomicon:crafting_recipe",

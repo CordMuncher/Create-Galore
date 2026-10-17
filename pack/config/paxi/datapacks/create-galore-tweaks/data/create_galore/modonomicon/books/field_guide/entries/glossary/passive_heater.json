@@ -1,0 +1,24 @@
+{
+  "category": "glossary",
+  "name": "Passive Heater",
+  "description": "A block that heats a boiler without fuel.",
+  "icon": {
+    "item": "farmersdelight:stove"
+  },
+  "x": 10,
+  "y": 3,
+  "sort_number": 32,
+  "parents": [],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Passive Heater",
+      "text": "A **passive heater** heats a Create boiler with no fuel: Farmer's Delight's Stove, Twilight Forest's fiery storage blocks, lava, magma blocks, campfires and fire.\\\n\\\nIt is weaker than a Blaze Burner, but free."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Where it matters**\n\n- [#](2E5AAC)[Blaze Burner and Heat](entry://create_basics/heat)[#]()\n- [#](2E5AAC)[Heat Is Shared](entry://connections/heat)[#]()\n- [#](2E5AAC)[Kitchen Automation](entry://food/kitchen_automation)[#]()"
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "type": "modonomicon:dense",
+  "pattern": [
+    [
+      " A"
+    ],
+    [
+      "BC"
+    ],
+    [
+      "  "
+    ],
+    [
+      "0 "
+    ],
+    [
+      "D "
+    ]
+  ],
+  "mapping": {
+    "A": {
+      "type": "modonomicon:blockstateproperty",
+      "block": "create:shaft[axis=y]"
+    },
+    "B": {
+      "type": "modonomicon:block",
+      "block": "create:mechanical_mixer"
+    },
+    "C": {
+      "type": "modonomicon:blockstateproperty",
+      "block": "create:cogwheel[axis=y]"
+    },
+    "0": {
+      "type": "modonomicon:block",
+      "block": "create:basin"
+    },
+    "D": {
+      "type": "modonomicon:block",
+      "block": "create:blaze_burner",
+      "display": "create:blaze_burner[blaze=kindled]"
+    }
+  }
+}

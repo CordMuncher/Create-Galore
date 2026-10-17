@@ -1,0 +1,24 @@
+{
+  "category": "glossary",
+  "name": "mB (Millibuckets)",
+  "description": "Fluid amounts: 1000 mB is one bucket.",
+  "icon": {
+    "item": "minecraft:bucket"
+  },
+  "x": 0,
+  "y": 3,
+  "sort_number": 27,
+  "parents": [],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "mB (Millibuckets)",
+      "text": "**mB** means millibuckets: 1000 mB is one bucket of fluid. Create and its add-ons measure fluids this way.\\\n\\\nA Spout fills a terracotta bowl with 250 mB of water, and 90 mB of molten steel sets into a Steel Ingot. Goggles show how much a tank holds."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Where it matters**\n\n- [#](2E5AAC)[Fluids, Pipes and Pumps](entry://create_basics/fluids)[#]()\n- [#](2E5AAC)[Burning Liquid Fuel](entry://industry/liquid_fuel)[#]()\n- [#](2E5AAC)[TFMG Steel](entry://industry/tfmg_steel)[#]()"
+    }
+  ]
+}

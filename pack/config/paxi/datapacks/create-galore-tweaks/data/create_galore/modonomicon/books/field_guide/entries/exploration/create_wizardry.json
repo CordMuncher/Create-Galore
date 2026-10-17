@@ -20,7 +20,7 @@
     {
       "type": "modonomicon:text",
       "title": "Create: Wizardry",
-      "text": "**Create: Wizardry** makes mana a Create fluid. It needs Iron's Spells, and adds machines to extract, pipe and use mana. Pipe it like water, but mind the leaks."
+      "text": "**Create: Wizardry** makes [#](7A3C9A)[mana](entry://glossary/mana)[#]() a Create fluid. It needs Iron's Spells, and adds machines to extract, pipe and use mana. Pipe it like water, but mind the leaks."
     },
     {
       "type": "modonomicon:spotlight",
@@ -36,7 +36,7 @@
         "item": "create_wizardry:arcane_pipe"
       },
       "title": "Arcane Pipe",
-      "text": "Carries mana. Un-insulated pipes rapidly leak it. Insulate with Arcane Sheets."
+      "text": "Carries mana.\\\n[#](FFFFFF)\ue101[#]() **Watch out:** un-insulated pipes rapidly leak it. Insulate with Arcane Sheets."
     },
     {
       "type": "modonomicon:spotlight",
@@ -52,7 +52,7 @@
         "item": "create_wizardry:arcane_casing"
       },
       "title": "Arcane Casing",
-      "text": "The casing for the mod's machines. See Casings in the Create entries."
+      "text": "The [#](7A3C9A)[casing](entry://glossary/encased)[#]() for the mod's machines. See Casings in the Create entries."
     },
     {
       "type": "modonomicon:spotlight",
@@ -68,7 +68,7 @@
         "item": "create_wizardry:blaze_caster"
       },
       "title": "Blaze Caster",
-      "text": "A contraption that casts scroll spells. Must be superheated. Works in Impulse or Sentry modes."
+      "text": "A contraption that casts scroll spells. Must be [#](7A3C9A)[superheated](entry://glossary/superheated)[#](). Works in Impulse or Sentry modes."
     },
     {
       "type": "modonomicon:text",
@@ -78,7 +78,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Other fluids: Liquid Lightning, Blood (from compressing meat or boiling mobs), Fire Ale and Netherward Tincture. Several are made by Create [#](2E5AAC)[processing](entry://create_basics/processing)[#]() such as mixing; look recipes up in JEI. Back to [#](2E5AAC)[Magic](entry://exploration/magic)[#]()."
+      "text": "Other fluids: Liquid Lightning, Blood (from compressing meat or boiling mobs), Fire Ale and Netherward Tincture.\\\n\\\nSeveral are made by Create [#](2E5AAC)[processing](entry://create_basics/processing)[#]() such as [#](7A3C9A)[mixing](entry://glossary/mixing)[#](); look recipes up in [#](7A3C9A)[JEI](entry://glossary/jei)[#](). Back to [#](2E5AAC)[Magic](entry://exploration/magic)[#]()."
     }
   ]
 }

@@ -20,6 +20,11 @@
     {
       "type": "modonomicon:text",
       "title": "Moving Items",
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- [#](FFFFFF)\ue10d[#]() Items move on **belts**, **chutes**, **funnels** and **arms**.\n- Machines work on items on the belt or depot in front of them.\n- Brass funnels and tunnels can filter. Andesite ones can't.\n- An **Item Vault** is a big chest for belts and funnels."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
       "text": "Items move by **belts**, **chutes**, **funnels** and **arms**. Machines pick up what is on the belt in front of them."
     },
     {
@@ -28,7 +33,7 @@
         "item": "create:belt_connector"
       },
       "title": "Mechanical Belt",
-      "text": "Needs rotation. Carries items and entities. Place two shafts, link them with the belt, and machines can work on items riding it."
+      "text": "Needs [#](2E5AAC)[rotation](entry://create_basics/rotation)[#](). Carries items and entities. Place two shafts, link them with the belt, and machines can work on items riding it."
     },
     {
       "type": "modonomicon:spotlight",
@@ -44,7 +49,7 @@
         "item": "create:brass_funnel"
       },
       "title": "Brass Funnel",
-      "text": "Pulls from or pushes into an inventory. Place normally to pull, sneaking to push. Has a filter slot. The Andesite Funnel moves items unfiltered."
+      "text": "Pulls from or pushes into an inventory. Place normally to pull, sneaking to push. Has a [#](7A3C9A)[filter slot](entry://glossary/filter_slot)[#](). The Andesite Funnel moves items unfiltered."
     },
     {
       "type": "modonomicon:spotlight",
@@ -65,7 +70,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**Filters**: the **List Filter** matches chosen items, the **Attribute Filter** matches by property (food, enchanted, and so on). Put them in funnel, tunnel or smart chute filter slots."
+      "text": "**Filters** go in funnel, tunnel or smart chute filter slots.\n\n- [List Filter](item://create:filter): matches chosen items.\n- [Attribute Filter](item://create:attribute_filter): matches by property (food, enchanted, and so on)."
     },
     {
       "type": "modonomicon:spotlight",
@@ -78,7 +83,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**Storage**: the **Item Vault** is a big multi-block chest that connects to belts and funnels. A **Threshold Switch** reads how full a container is and outputs redstone.\\\n\\\nFor networks that deliver by package, see [#](2E5AAC)[Logistics](entry://create_basics/packages)[#]()."
+      "text": "**Storage**: the **Item Vault** is a big [#](7A3C9A)[multi-block](entry://glossary/multiblock)[#]() chest that connects to belts and funnels. A [#](2E5AAC)[Threshold Switch](entry://create_basics/redstone_and_control)[#]() reads how full a container is and outputs redstone.\\\n\\\nFor networks that deliver by package, see [#](2E5AAC)[Logistics](entry://create_basics/packages)[#]()."
     },
     {
       "type": "modonomicon:text",

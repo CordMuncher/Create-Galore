@@ -46,7 +46,7 @@
     {
       "type": "modonomicon:text",
       "title": "Fruit trees",
-      "text": "Fruits Delight trees follow seasons too: pear, peach and blueberry in spring; lychee, mango, durian, lemon and pineapple in summer; apple, orange, fig and cranberry in autumn; persimmon, kiwi and hawberry in winter."
+      "text": "Fruits Delight trees follow seasons too:\n- **Spring:** pear, peach, blueberry\n- **Summer:** lychee, mango, durian, lemon, pineapple\n- **Autumn:** apple, orange, fig, cranberry\n- **Winter:** persimmon, kiwi, hawberry"
     },
     {
       "type": "modonomicon:text",

@@ -20,7 +20,12 @@
     {
       "type": "modonomicon:text",
       "title": "Electricity",
-      "text": "Create Crafts & Additions adds Forge Energy (FE) to Create. You generate FE from rotation, carry it on wires between connectors, and spend it in motors, pumps and chargers. Compare it with rotation in [#](2E5AAC)[Rotation vs Electricity](entry://industry/power_compared)[#]()."
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- [#](FFFFFF)\ue106[#]() An **Alternator** makes FE from rotation, 32 RPM and up\n- Wire **connectors** together: **Pull** on producers, **Push** on consumers\n- **Copper Spool**: low current. **Gold** and **Electrum**: high current, for the Large Connector\n- Store FE in the multiblock **Accumulator**"
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Create Crafts & Additions adds Forge Energy (FE) to Create. You generate FE from [#](2E5AAC)[rotation](entry://create_basics/rotation)[#](), carry it on wires between connectors, and spend it in motors, pumps and chargers. Compare it with rotation in [#](2E5AAC)[Rotation vs Electricity](entry://industry/power_compared)[#]()."
     },
     {
       "type": "modonomicon:spotlight",
@@ -28,7 +33,7 @@
         "item": "createaddition:alternator"
       },
       "title": "Alternator",
-      "text": "Turns rotation into FE, from 32 RPM up. Faster spin makes more. Place a connector on it and set the connector to Pull."
+      "text": "Turns rotation into FE, from 32 [#](7A3C9A)[RPM](entry://glossary/rpm)[#]() up. Faster spin makes more. Place a connector on it and set the connector to Pull."
     },
     {
       "type": "modonomicon:spotlight",
@@ -36,12 +41,12 @@
         "item": "createaddition:connector"
       },
       "title": "Small Connector",
-      "text": "Links FE blocks with wire. Wrench cycles Push, Pull and None. Up to 4 wires."
+      "text": "Links FE blocks with wire. [#](2E5AAC)[Wrench](entry://create_basics/tools_wrench)[#]() cycles Push, Pull and None. Up to 4 wires."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Connector modes: **Pull** takes FE out of the block it is attached to (producers). **Push** feeds FE into it (consumers). **None** only relays between wires, so it can sit on any block."
+      "text": "Connector modes:\n- **Pull** takes FE out of the block it is attached to (producers).\n- **Push** feeds FE into it (consumers).\n- **None** only relays between wires, so it can sit on any block."
     },
     {
       "type": "modonomicon:spotlight",
@@ -54,12 +59,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Two current grades. **Copper Spool** is low current and fits Small Connectors. **Gold** and **Electrum** spools are high current. The Large Connector needs those, takes up to 6 wires and carries more."
-    },
-    {
-      "type": "modonomicon:text",
-      "title": "Shared with TFMG",
-      "text": "TFMG uses Crafts & Additions' **Copper Wire**: its recipes take it, and leftover TFMG copper wire converts 1:1 in a crafting grid. TFMG keeps its own **Copper Spool**, since only TFMG spools fit its Winding Machine and lay TFMG cable. See [#](2E5AAC)[Shared Metals](entry://materials/shared_metals)[#]()."
+      "text": "Two current grades:\n- **Copper Spool**: low current, fits Small Connectors.\n- **Gold** and **Electrum** spools: high current. The Large Connector needs those, takes up to 6 wires and carries more."
     },
     {
       "type": "modonomicon:spotlight",
@@ -75,12 +75,7 @@
         "item": "createaddition:modular_accumulator"
       },
       "title": "Accumulator",
-      "text": "A multiblock battery: configure one input connector and one output. It also pushes FE into blocks on its top and bottom faces."
-    },
-    {
-      "type": "modonomicon:text",
-      "title": "",
-      "text": "The older single-block Accumulator still exists but its own tooltip says it is deprecated. To carry FE storage on a moving contraption, the **Portable Energy Interface** swaps FE with a stationary one as it passes."
+      "text": "A [#](7A3C9A)[multiblock](entry://glossary/multiblock)[#]() battery: configure one input connector and one output. It also pushes FE into blocks on its top and bottom faces."
     },
     {
       "type": "modonomicon:spotlight",
@@ -88,7 +83,7 @@
         "item": "createaddition:tesla_coil"
       },
       "title": "Tesla Coil",
-      "text": "Charges FE items placed under it. With a redstone signal it zaps nearby mobs and players. Some charging recipes make new items: check JEI."
+      "text": "Charges FE items placed under it. With a redstone signal it zaps nearby mobs and players. Some charging recipes make new items: check [#](2E5AAC)[JEI](entry://start_here/tools)[#]()."
     },
     {
       "type": "modonomicon:spotlight",
@@ -106,7 +101,17 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "The **Servo Motor** turns attached blocks to an exact angle from redstone and needs FE. The **Electric Pump** is a FE-powered fluid pump. Burning fuel without rotation: see [#](2E5AAC)[Burning Liquid Fuel](entry://industry/liquid_fuel)[#]()."
+      "text": "- The **Servo Motor** turns attached blocks to an exact angle from redstone and needs FE.\n- The **Electric Pump** is a FE-powered fluid pump.\n\nBurning fuel without rotation: see [#](2E5AAC)[Burning Liquid Fuel](entry://industry/liquid_fuel)[#]()."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Shared with TFMG",
+      "text": "[#](FFFFFF)\ue103[#]() **In depth.** TFMG uses Crafts & Additions' **Copper Wire**: its recipes take it, and leftover TFMG copper wire converts 1:1 in a crafting grid. TFMG keeps its own **Copper Spool**, since only TFMG spools fit its Winding Machine and lay TFMG cable. See [#](2E5AAC)[Shared Metals](entry://materials/shared_metals)[#]()."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "The older single-block Accumulator still exists but its own tooltip says it is deprecated.\\\n\\\nTo carry FE storage on a moving contraption, the [Portable Energy Interface](item://createaddition:portable_energy_interface) swaps FE with a stationary one as it passes."
     }
   ]
 }

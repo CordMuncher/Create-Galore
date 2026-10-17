@@ -1,0 +1,24 @@
+{
+  "category": "glossary",
+  "name": "Smog",
+  "description": "Air pollution from anything that burns.",
+  "icon": {
+    "item": "smog:aerometer"
+  },
+  "x": 8,
+  "y": 5,
+  "sort_number": 39,
+  "parents": [],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Smog",
+      "text": "**Smog** is Create: Smog's air pollution, tracked per chunk. Anything that burns adds some; it spreads to nearby chunks and fades slowly, faster in rain.\\\n\\\nHeavy smog gives Nausea, Toxic adds Poison and Weakness, and it harms crops. Flues and air scrubbers fix it. An Aerometer reads it."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Where it matters**\n\n- [#](2E5AAC)[Pollution](entry://survival/pollution)[#]()\n- [#](2E5AAC)[Clearing the Air](entry://survival/pollution_control)[#]()"
+    }
+  ]
+}

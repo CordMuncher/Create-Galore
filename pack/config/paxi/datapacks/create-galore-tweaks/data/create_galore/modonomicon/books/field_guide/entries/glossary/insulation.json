@@ -1,0 +1,24 @@
+{
+  "category": "glossary",
+  "name": "Insulation",
+  "description": "Armor's protection against heat and cold.",
+  "icon": {
+    "item": "cold_sweat:sewing_table"
+  },
+  "x": 8,
+  "y": 1,
+  "sort_number": 23,
+  "parents": [],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Insulation",
+      "text": "**Insulation** is the cold or heat resistance on armor. It slows how fast your body temperature drifts.\\\n\\\nLeather armor and furs have some. A **Sewing Table** sews insulators such as Goat Fur or Hoglin Hide onto any armor. Hover a piece to read its insulation."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Where it matters**\n\n- [#](2E5AAC)[Insulation and Heaters](entry://survival/temperature_gear)[#]()\n- [#](2E5AAC)[Temperature](entry://survival/temperature)[#]()\n- [#](2E5AAC)[Your First Days](entry://start_here/first_days)[#]()"
+    }
+  ]
+}

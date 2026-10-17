@@ -25,7 +25,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Structures: the **Wrought Chamber** (Ferrous Wroughtnaut, an armored iron golem), the **Umvuthana Grove** and **Monastery** (Umvuthi, the Sunbird, and his tribe), and the Frostmaw's spawns in snowy places. Tongbi, the Sculptor, is the fourth boss."
+      "text": "Where to find the bosses:\n\n- **Wrought Chamber**: the Ferrous Wroughtnaut, an armored iron golem\n- **Umvuthana Grove** and **Monastery**: Umvuthi, the Sunbird, and his tribe\n- **Frostmaw**: spawns in snowy places\n\nTongbi, the Sculptor, is the fourth boss."
     },
     {
       "type": "modonomicon:spotlight",
@@ -54,12 +54,12 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Smaller mobs: Foliaath, Lantern, Grottol (a mineral creature), Bluff, Naga and Elokosa. Frostmaw's Ice Crystal is a weapon. Bosses: [#](2E5AAC)[Bosses](entry://exploration/bosses)[#]()."
+      "text": "Smaller mobs: Foliaath, Lantern, Grottol (a mineral creature), Bluff, Naga and Elokosa.\\\n\\\nFrostmaw's [Ice Crystal](item://mowziesmobs:ice_crystal) is a weapon. Bosses: [#](2E5AAC)[Bosses](entry://exploration/bosses)[#]()."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Tuned in this pack: the Ferrous Wroughtnaut, Umvuthi, Frostmaw and the Sculptor have 0.7x health and 0.75x damage. They are softened, not removed, and their structures still generate."
+      "text": "[#](FFFFFF)\ue10b[#]() **Tuned in this pack:** the Ferrous Wroughtnaut, Umvuthi, Frostmaw and the Sculptor have 0.7x health and 0.75x damage. They are softened, not removed, and their structures still generate."
     }
   ]
 }

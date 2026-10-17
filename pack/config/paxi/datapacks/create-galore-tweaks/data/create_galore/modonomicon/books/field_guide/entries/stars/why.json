@@ -13,7 +13,12 @@
     {
       "type": "modonomicon:text",
       "title": "Why Space Is Locked",
-      "text": "Rockets and space ships are the end of the road in Create Galore. You can't just build one whenever you like: every way off the planet needs a **Stellar Core**, and a core needs one prize from each big branch of the world."
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- [#](FFFFFF)\ue10f[#]() Every way off the planet needs a **Stellar Core**.\n- A core takes **six prizes**, one from each big branch of the world.\n- One core per vehicle is enough, and every prize can be found again.\n- The **Road to the Stars** advancement tab tracks it all."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Rockets and space ships are the end of the road in Create Galore. You can't just build one whenever you like: every way off the planet needs a [#](2E5AAC)[Stellar Core](entry://stars/stellar_core)[#](), and a core needs one prize from each big branch of the world."
     },
     {
       "type": "modonomicon:text",
@@ -23,7 +28,7 @@
     {
       "type": "modonomicon:text",
       "title": "What it gates",
-      "text": "All three ways up take a core:\n- the Northstar **Rocket Station**\n- the **Dimensional Drive**\n- the **Stellar Navigator**"
+      "text": "All three ways up take a core:\n- the Northstar [#](2E5AAC)[Rocket Station](entry://space/rocket_building)[#]()\n- the [#](2E5AAC)[Dimensional Drive](entry://space/aeronautics_bridge)[#]()\n- the **Stellar Navigator**"
     },
     {
       "type": "modonomicon:text",
@@ -33,7 +38,7 @@
     {
       "type": "modonomicon:text",
       "title": "No dead ends",
-      "text": "Nothing on this list comes from space, and nothing on Earth needs a space item to work. Every prize can be found again: bosses respawn or have more lairs, and ores keep generating further out. Titanium is made on Earth by sequenced assembly."
+      "text": "Nothing on this list comes from space, and nothing on Earth needs a space item to work. Every prize can be found again: bosses respawn or have more lairs, and ores keep generating further out. Titanium is made on Earth by [#](2E5AAC)[sequenced assembly](entry://create_basics/brass_and_assembly)[#]()."
     },
     {
       "type": "modonomicon:text",

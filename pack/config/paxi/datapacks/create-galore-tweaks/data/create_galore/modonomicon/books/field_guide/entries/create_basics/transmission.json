@@ -20,6 +20,11 @@
     {
       "type": "modonomicon:text",
       "title": "Transmission",
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- [#](FFFFFF)\ue104[#]() **Shafts** pass rotation straight on. **Cogwheels** flip its direction.\n- Small to large cogwheel halves the speed, large to small doubles it.\n- With redstone, a **Clutch** cuts rotation and a **Gearshift** reverses it.\n- Watch your stress when you branch a network."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
       "text": "Once you have rotation, you move it to where it is needed, and change its speed or direction on the way. These are the parts that do that."
     },
     {
@@ -65,7 +70,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**Encased variants.** Brass or andesite casing hides shafts, cogwheels and belts. Components placed after encasing do not connect unless you toggle the connection with a wrench."
+      "text": "**Encased variants.** Brass or andesite [#](7A3C9A)[casing](entry://glossary/encased)[#]() hides shafts, cogwheels and belts. Components placed after encasing do not connect unless you toggle the connection with a [#](2E5AAC)[wrench](entry://create_basics/tools_wrench)[#]()."
     },
     {
       "type": "modonomicon:spotlight",
@@ -89,17 +94,17 @@
         "item": "create:rotation_speed_controller"
       },
       "title": "Rotation Speed Controller",
-      "text": "Sits below a large cogwheel and relays rotation to it at a speed you set on its value panel."
+      "text": "Sits below a large cogwheel and relays rotation to it at a speed you set on its [#](7A3C9A)[value panel](entry://glossary/value_panel)[#]()."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**Sequenced Gearshift.** Runs a timed list of speed and direction instructions on each redstone pulse. Configure it by right-clicking. Useful for pistons, gantries and anything that moves in steps."
+      "text": "[#](FFFFFF)\ue103[#]() **In depth.** **Sequenced Gearshift.** Runs a timed list of speed and direction instructions on each redstone pulse. Configure it by right-clicking. Useful for pistons, gantries and anything that moves in steps."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Chain drives pass rotation along a row with all shafts spinning the same way. Use Ponder for each part. Watch your [#](2E5AAC)[stress](entry://create_basics/stress)[#]() when you branch a network."
+      "text": "Chain drives pass rotation along a row with all shafts spinning the same way. Use [#](2E5AAC)[Ponder](entry://start_here/tools)[#]() for each part. Watch your [#](2E5AAC)[stress](entry://create_basics/stress)[#]() when you branch a [#](7A3C9A)[network](entry://glossary/kinetic_network)[#]()."
     }
   ]
 }

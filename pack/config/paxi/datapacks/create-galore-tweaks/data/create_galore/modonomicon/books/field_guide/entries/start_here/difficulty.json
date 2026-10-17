@@ -35,7 +35,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "- [#](2E5AAC)[Pollution](entry://survival/pollution)[#](): burners and engines pollute chunks, and air scrubbers clean them up.\n\nEach system is a puzzle your factory can answer."
+      "text": "- [#](2E5AAC)[Pollution](entry://survival/pollution)[#](): burners and engines pollute [#](7A3C9A)[chunks](entry://glossary/chunk)[#](), and air scrubbers clean them up.\n\nEach system is a puzzle your factory can answer."
     },
     {
       "type": "modonomicon:text",
@@ -45,7 +45,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**Spawn can be snowy.** You may start in a cold biome. After the short spawn grace, Cold Sweat chills a player with no warm gear, and a freezing body takes damage. Insulated clothing and a heat source fix it, see [#](2E5AAC)[Temperature](entry://survival/temperature)[#]() and [#](2E5AAC)[Temperature Gear](entry://survival/temperature_gear)[#]()."
+      "text": "[#](FFFFFF)\ue101[#]() **Watch out:** spawn can be snowy. You may start in a cold biome. After the short [#](7A3C9A)[spawn grace](entry://glossary/grace)[#](), Cold Sweat chills a player with no warm gear, and a freezing body takes damage.\\\n\\\nInsulated clothing and a heat source fix it, see [#](2E5AAC)[Temperature](entry://survival/temperature)[#]() and [#](2E5AAC)[Temperature Gear](entry://survival/temperature_gear)[#]()."
     },
     {
       "type": "modonomicon:spotlight",

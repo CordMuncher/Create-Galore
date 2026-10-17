@@ -26,7 +26,12 @@
     {
       "type": "modonomicon:text",
       "title": "Nuclear Reactors",
-      "text": "Create Nuclear adds uranium, thorium, a multiblock reactor and radiation. The reactor outputs ordinary rotation through a shaft, so it plugs into any Create network. It is also the pack's source of lead."
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- [#](FFFFFF)\ue104[#]() The reactor outputs ordinary rotation through a shaft\n- Fuel: uranium to Yellowcake, enriched, then made into Uranium Rods\n- It needs fuel rods, cooling rods, and water or liquid nitrogen\n- Too hot with too little cooling and it **melts down and explodes**"
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Create Nuclear adds uranium, thorium, a [#](7A3C9A)[multiblock](entry://glossary/multiblock)[#]() reactor and radiation. The reactor outputs ordinary rotation through a shaft, so it plugs into any [#](7A3C9A)[Create network](entry://glossary/kinetic_network)[#](). It is also the pack's source of lead."
     },
     {
       "type": "modonomicon:spotlight",
@@ -34,7 +39,7 @@
         "item": "createnuclear:uranium_powder"
       },
       "title": "Uranium chain",
-      "text": "Crush raw uranium to powder, mix it into liquid, compact that to Yellowcake. Thorium follows a similar route. Check JEI."
+      "text": "[#](2E5AAC)[Crush](entry://create_basics/crushing)[#]() raw uranium to powder, [#](7A3C9A)[mix](entry://glossary/mixing)[#]() it into liquid, [#](7A3C9A)[compact](entry://glossary/compacting)[#]() that to Yellowcake. Thorium follows a similar route. Check [#](2E5AAC)[JEI](entry://start_here/tools)[#]()."
     },
     {
       "type": "modonomicon:spotlight",
@@ -42,7 +47,7 @@
         "item": "createnuclear:enriching_campfire"
       },
       "title": "Enriching Campfire",
-      "text": "Its green Enriching Fire, blown through by a fan, turns Yellowcake into Enriched Yellowcake. Make it from Enriched Soul Soil."
+      "text": "Its green Enriching Fire, blown through by a [#](2E5AAC)[fan](entry://create_basics/fans)[#](), turns Yellowcake into Enriched Yellowcake. Make it from Enriched Soul Soil."
     },
     {
       "type": "modonomicon:spotlight",
@@ -55,7 +60,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Reactor build: Reactor Casing (a Brass Casing plus steel) forms a T1, T2 or T3 tower following the pattern in Ponder. Place the Controller, then a Rod Input, Fluid Input, Output and an optional Alarm in casing spots."
+      "text": "**Reactor build:** Reactor Casing (a Brass Casing plus steel) forms a T1, T2 or T3 tower following the pattern in Ponder.\\\n\\\nPlace the Controller, then a Rod Input, Fluid Input, Output and an optional Alarm in casing spots."
     },
     {
       "type": "modonomicon:spotlight",
@@ -63,12 +68,12 @@
         "item": "createnuclear:reactor_controller"
       },
       "title": "Reactor Controller",
-      "text": "Right-click it with a filled Reactor Blueprint to start. You need fuel and cooling rods, plus water or liquid nitrogen in the Fluid Input."
+      "text": "Right-click it with a filled [Reactor Blueprint](item://createnuclear:reactor_blueprint_item) to start. You need fuel and cooling rods, plus water or liquid nitrogen in the Fluid Input."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Too hot with too little cooling and the reactor melts down and explodes. Two Rod Inputs are needed: one for heating rods, one for cooling. Put an Alarm nearby. Drive a shaft off the Reactor Output for rotation."
+      "text": "[#](FFFFFF)\ue101[#]() **Watch out:** too hot with too little cooling and the reactor melts down and explodes. Put an Alarm nearby.\\\n\\\nTwo Rod Inputs are needed: one for heating rods, one for cooling. Drive a shaft off the Reactor Output for rotation."
     },
     {
       "type": "modonomicon:spotlight",
@@ -81,7 +86,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Steel here is made by mixing coal dust and an iron ingot in a heated mixer, and it gives TFMG steel. The reactor accepts any steel (see [#](2E5AAC)[Shared Metals](entry://materials/shared_metals)[#]()). Create Nuclear's lead is the pack's only lead. Rotation to FE: [#](2E5AAC)[Rotation vs Electricity](entry://industry/power_compared)[#]()."
+      "text": "[#](FFFFFF)\ue103[#]() **In depth.** Steel here is made by mixing coal dust and an iron ingot in a [#](2E5AAC)[heated mixer](entry://create_basics/heat)[#](), and it gives TFMG steel. The reactor accepts any steel (see [#](2E5AAC)[Shared Metals](entry://materials/shared_metals)[#]()).\\\n\\\nCreate Nuclear's lead is the pack's only lead. Rotation to FE: [#](2E5AAC)[Rotation vs Electricity](entry://industry/power_compared)[#]()."
     }
   ]
 }

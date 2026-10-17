@@ -25,7 +25,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "To enter, dig a small pool, ring it with flowers, and throw a **Diamond** into the water. Lightning strikes and the portal opens."
+      "text": "[#](FFFFFF)\ue10e[#]() **To enter**, dig a small pool, ring it with flowers, and throw a **Diamond** into the water. Lightning strikes and the portal opens."
     },
     {
       "type": "modonomicon:spotlight",
@@ -57,7 +57,7 @@
         "item": "twilightforest:uncrafting_table"
       },
       "title": "Uncrafting Table",
-      "text": "Uncrafting is switched off in this pack (it multiplied metal through stonecutter recipes). The table still repairs and does its own special recipes."
+      "text": "Uncrafting is **switched off** in this pack (it multiplied metal through stonecutter recipes). The table still repairs and does its own special recipes."
     },
     {
       "type": "modonomicon:spotlight",
@@ -65,12 +65,12 @@
         "item": "twilightforest:filled_magic_map"
       },
       "title": "Magic Map",
-      "text": "Maps the forest. Twilight Charms of Keeping and Life also exist."
+      "text": "Maps the forest. Twilight [Charms of Keeping](item://twilightforest:charm_of_keeping_1) and Life also exist."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Bosses, in the usual order: Naga, Lich, Minoshroom, Hydra, Knight Phantoms, Ur-Ghast, Alpha Yeti, Snow Queen. Each leaves a trophy. See [#](2E5AAC)[Bosses](entry://exploration/bosses)[#]()."
+      "text": "Bosses, in the usual order:\n\n- Naga\n- Lich\n- Minoshroom\n- Hydra\n- Knight Phantoms\n- Ur-Ghast\n- Alpha Yeti\n- Snow Queen\n\nEach leaves a trophy. See [#](2E5AAC)[Bosses](entry://exploration/bosses)[#]()."
     },
     {
       "type": "modonomicon:spotlight",

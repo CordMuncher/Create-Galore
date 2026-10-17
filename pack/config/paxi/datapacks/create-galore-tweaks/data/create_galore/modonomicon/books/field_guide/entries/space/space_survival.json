@@ -20,6 +20,11 @@
     {
       "type": "modonomicon:text",
       "title": "Oxygen and Suits",
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- [#](FFFFFF)\ue10f[#]() Off Earth you need **air** and the **right temperature**.\n- The suit's chestplate holds the oxygen; fill it at an Oxygen Filler.\n- An **Oxygen Sealer** fills a sealed room with oxygen.\n- A **Temperature Regulator** sets the temperature in a box you size."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
       "text": "Off Earth you need air and the right temperature. Northstar handles both with sealed rooms and spacesuits. The death messages say it all: ran out of oxygen, or forgot their spacesuit."
     },
     {
@@ -36,7 +41,7 @@
         "item": "northstar:martian_steel_space_suit_chestpiece"
       },
       "title": "Martian Steel Space Suit",
-      "text": "The tougher suit. Martian steel gear and netherite diving gear are tagged heat resistant."
+      "text": "The tougher suit. Martian steel gear and netherite diving gear are [#](7A3C9A)[tagged](entry://glossary/tags)[#]() heat resistant."
     },
     {
       "type": "modonomicon:spotlight",
@@ -52,7 +57,7 @@
         "item": "northstar:oxygen_sealer"
       },
       "title": "Oxygen Sealer",
-      "text": "Oxygen from behind, rotation from below, and it fills the sealed area around it. It shows how much it can seal and warns if the room leaks."
+      "text": "Oxygen from behind, [#](2E5AAC)[rotation](entry://create_basics/rotation)[#]() from below, and it fills the sealed area around it. It shows how much it can seal and warns if the room leaks."
     },
     {
       "type": "modonomicon:spotlight",
@@ -60,7 +65,7 @@
         "item": "northstar:large_fan"
       },
       "title": "Large Fan",
-      "text": "Raises the area a Sealer or Temperature Regulator can cover. Needs an Encased Chain Drive; a wrench sets chain side."
+      "text": "Raises the area a Sealer or Temperature Regulator can cover. Needs an [#](2E5AAC)[Encased Chain Drive](entry://create_basics/transmission)[#](); a [#](2E5AAC)[wrench](entry://create_basics/tools_wrench)[#]() sets chain side."
     },
     {
       "type": "modonomicon:spotlight",

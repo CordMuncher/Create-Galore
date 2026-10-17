@@ -49,7 +49,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "These change where things are, so check [#](2E5AAC)[the Ore Guide](entry://materials/ore_guide)[#]() before assuming vanilla heights. Ocean depth also matters for [#](2E5AAC)[submarines](entry://ocean/submarines)[#](): bigger terrain means more places to dive."
+      "text": "[#](FFFFFF)\ue102[#]() **Tip:** these change where things are, so check [#](2E5AAC)[the Ore Guide](entry://materials/ore_guide)[#]() before assuming vanilla heights.\\\n\\\nOcean depth also matters for [#](2E5AAC)[submarines](entry://ocean/submarines)[#](): bigger terrain means more places to dive."
     },
     {
       "type": "modonomicon:text",

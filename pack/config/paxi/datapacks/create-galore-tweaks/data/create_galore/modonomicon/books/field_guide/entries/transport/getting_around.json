@@ -13,32 +13,32 @@
     {
       "type": "modonomicon:text",
       "title": "Getting Around",
-      "text": "In this pack you travel by building. Trains, airships, submarines, cars and hypertubes are how you cross the world, so the shortcuts that make them pointless are switched off."
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- [#](FFFFFF)\ue10e[#]() You travel by **building**: trains, airships, submarines, cars and hypertubes.\n- **Elytra are off.** One that turns up anyway crumbles into Phantom Membrane.\n- Short-range tricks that cost you something, like a double jump or a jetpack tank, stay in."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Short-range tricks that cost you something, like a double jump or a jetpack tank, are still in."
+      "text": "In this pack you travel by building. Trains, airships, submarines, cars and hypertubes are how you cross the world, so the shortcuts that make them pointless are switched off.\\\n\\\nShort-range tricks that cost you something, like a double jump or a jetpack tank, are still in."
     },
     {
       "type": "modonomicon:text",
       "title": "No Elytra",
-      "text": "Elytra are off. End City ships have an empty spot where the Elytra used to hang, and no chest, mob or vault drops one. If one turns up anyway, it crumbles into Phantom Membrane. The [#](2E5AAC)[Jetpack](entry://transport/jetpack)[#]() now takes a Shulker Shell instead."
+      "text": "**Elytra are off.** End City ships have an empty spot where the Elytra used to hang, and no chest, mob or vault drops one. If one turns up anyway, it crumbles into Phantom Membrane. The [#](2E5AAC)[Jetpack](entry://transport/jetpack)[#]() now takes a Shulker Shell instead."
     },
     {
       "type": "modonomicon:text",
       "title": "Also off",
-      "text": "- Iron's Spells: Portal, Recall, Angel Wings, Portal Frames.\n- Artifacts: Warp Drive.\n- Alex's Caves: the Subterranodon mount, and the Hullbreaker's Enigmatic Engine (so no buildable Submarine)."
+      "text": "- [#](2E5AAC)[Iron's Spells](entry://exploration/irons_spellbooks)[#](): Portal, Recall, Angel Wings, Portal Frames.\n- Artifacts: Warp Drive.\n- [#](2E5AAC)[Alex's Caves](entry://exploration/alexs_caves)[#](): the Subterranodon mount, and the Hullbreaker's Enigmatic Engine (so no buildable Submarine)."
     },
     {
       "type": "modonomicon:text",
       "title": "Still in",
-      "text": "Ender Pearls, Aether mounts and Valkyrie gear, Artifacts' Helium Flamingo and Cloud in a Bottle, Twilight Forest gear and Alex's Caves' Cloak of Darkness all stay. Each one is a short hop with a cost or a time limit."
+      "text": "These all stay. Each one is a short hop with a cost or a time limit.\n\n- Ender Pearls\n- [#](2E5AAC)[Aether](entry://exploration/aether)[#]() mounts and Valkyrie gear\n- [#](2E5AAC)[Artifacts](entry://exploration/gear)[#]()' Helium Flamingo and Cloud in a Bottle\n- [#](2E5AAC)[Twilight Forest](entry://exploration/twilight_forest)[#]() gear\n- Alex's Caves' Cloak of Darkness"
     },
     {
       "type": "modonomicon:text",
       "title": "Want Elytra back?",
-      "text": "A world-wide switch for whoever runs the game. Close the game or server, move **config/paxi/optional/create-galore-with-elytra** into **config/paxi/datapacks**, and start again. Unexplored End Cities and loot have Elytra again. The README has the details."
+      "text": "[#](FFFFFF)\ue103[#]() **In depth.** A world-wide switch for whoever runs the game. Close the game or server, move **config/paxi/optional/create-galore-with-elytra** into **config/paxi/datapacks**, and start again. Unexplored End Cities and loot have Elytra again. The README has the details."
     },
     {
       "type": "modonomicon:text",

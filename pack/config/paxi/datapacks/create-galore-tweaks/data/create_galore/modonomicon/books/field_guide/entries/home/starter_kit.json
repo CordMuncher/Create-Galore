@@ -20,7 +20,7 @@
     {
       "type": "modonomicon:text",
       "title": "Starter Kit and Helpers",
-      "text": "**Starter Kit** gives new players configurable starter gear on their first join. What you receive depends on the pack's settings. **Crafting Tweaks** and **Searchables** are small interface helpers."
+      "text": "**Starter Kit** gives new players [#](7A3C9A)[configurable](entry://glossary/config)[#]() starter gear on their first join. What you receive depends on the pack's settings. **Crafting Tweaks** and **Searchables** are small interface helpers."
     },
     {
       "type": "modonomicon:spotlight",

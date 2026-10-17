@@ -13,6 +13,11 @@
     {
       "type": "modonomicon:text",
       "title": "Backpacks and Storage",
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- [#](FFFFFF)\ue10d[#]() Backpacks and Sophisticated chests, barrels and shulker boxes all take **upgrades**.\n- Open your backpack with **J**.\n- **Stack Upgrades** fit more items per slot.\n- A **Controller** links nearby chests into one big inventory."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
       "text": "**Sophisticated Backpacks** and **Sophisticated Storage** share one idea: containers you customise with upgrades. Backpacks go on your back. Storage covers chests, barrels and shulker boxes. Both use the same upgrade system."
     },
     {

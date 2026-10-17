@@ -1,0 +1,24 @@
+{
+  "category": "glossary",
+  "name": "Bogey",
+  "description": "The wheel unit a Create train car rides on.",
+  "icon": {
+    "item": "create:railway_casing"
+  },
+  "x": 2,
+  "y": -3,
+  "sort_number": 4,
+  "parents": [],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Bogey",
+      "text": "A **bogey** is the wheel unit a train car rides on. Use Train Casing on a track to place one, and click the track again to cycle designs. Small and large bogeys exist.\\\n\\\nBlocks glued on top of bogeys become the car. Steam 'n' Rails adds many more bogey designs and other track gauges."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Where it matters**\n\n- [#](2E5AAC)[Trains](entry://transport/trains)[#]()\n- [#](2E5AAC)[Train Add-ons](entry://transport/train_addons)[#]()"
+    }
+  ]
+}

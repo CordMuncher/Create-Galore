@@ -1,0 +1,24 @@
+{
+  "category": "glossary",
+  "name": "Value Panel",
+  "description": "The small adjustable panel on a machine's face.",
+  "icon": {
+    "item": "create:rotation_speed_controller"
+  },
+  "x": 6,
+  "y": 7,
+  "sort_number": 46,
+  "parents": [],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Value Panel",
+      "text": "A **value panel** (or value box) is the small panel many machines show on one face. Look at it and right-click, or scroll the mouse wheel, to change its value.\\\n\\\nSpeed controllers, windmills, gearshifts and chunk loaders use one."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Where it matters**\n\n- [#](2E5AAC)[Wrench and Goggles](entry://create_basics/tools_wrench)[#]()\n- [#](2E5AAC)[Transmission](entry://create_basics/transmission)[#]()\n- [#](2E5AAC)[Chunk Loaders](entry://industry/power_loader)[#]()"
+    }
+  ]
+}

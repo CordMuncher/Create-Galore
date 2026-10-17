@@ -25,7 +25,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Magic uses mana, a resource that refills with time. Spells are cast from equipped spell books and scrolls, from schools such as fire, ice, lightning, holy, ender, blood, evocation and nature. Armor, rings and staffs boost them."
+      "text": "Magic uses [#](7A3C9A)[mana](entry://glossary/mana)[#](), a resource that refills with time.\\\n\\\nSpells are cast from equipped spell books and scrolls, from schools such as fire, ice, lightning, holy, ender, blood, evocation and nature. Armor, rings and staffs boost them."
     },
     {
       "type": "modonomicon:spotlight",

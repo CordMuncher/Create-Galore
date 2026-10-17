@@ -26,7 +26,12 @@
     {
       "type": "modonomicon:text",
       "title": "Encased Fans",
-      "text": "An **Encased Fan** turns rotation into an air current. Items caught in it, on the ground, on a belt or a depot, get **bulk processed** depending on what the air passes through.\\\n\\\nSpeed only changes the range, not the processing speed."
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- [#](FFFFFF)\ue104[#]() A fan blows air, and items in it are processed **in bulk**.\n- [#](FFFFFF)\ue107[#]() What the air passes through picks the job: water washes, fire smokes, lava blasts, soul fire haunts.\n- Speed changes only the range.\n- Smoke food: blasting burns it."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "An **Encased Fan** turns rotation into an air current. Items caught in it, on the ground, on a belt or a depot, get [#](7A3C9A)[bulk processed](entry://glossary/bulk_processing)[#]() depending on what the air passes through.\\\n\\\nSpeed only changes the range, not the processing speed."
     },
     {
       "type": "modonomicon:spotlight",
@@ -39,17 +44,17 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**Base types**:\n\n- Washing: air through water\n\n- Smoking: fire or campfire\n\n- Blasting: lava\n\n- Haunting: soul fire or soul campfire\n\nWashing: [#](2E5AAC)[Crushing](entry://create_basics/crushing)[#]()."
+      "text": "**Base types**:\n\n- [#](7A3C9A)[Washing](entry://glossary/washing)[#](): air through water\n\n- Smoking: fire or campfire\n\n- Blasting: lava\n\n- [#](7A3C9A)[Haunting](entry://glossary/haunting)[#](): soul fire or soul campfire\n\nWashing: [#](2E5AAC)[Crushing](entry://create_basics/crushing)[#]()."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Blasting works like a furnace and would burn food: smoke it instead. A **Blaze Burner** also works as a blasting and smoking source, and the Lit Blaze Burner variant for haunting, see [#](2E5AAC)[Heat](entry://create_basics/heat)[#]().\\\n\\\nBars, fences and leaves let air through; solid blocks stop it."
+      "text": "A **Blaze Burner** also works as a blasting and smoking source, and the Lit Blaze Burner variant for haunting, see [#](2E5AAC)[Heat](entry://create_basics/heat)[#]().\\\n\\\nBars, fences and leaves let air through; solid blocks stop it.\\\n\\\n[#](FFFFFF)\ue101[#]() **Watch out:** blasting works like a furnace and would burn food: smoke it instead."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**Added by other mods**:\n\n- Dragons Plus: ending (dragon breath), freezing (powder snow), sanding (quicksand), coloring (liquid dye), enchanting (Golden Aercloud)\n\n- Create Nuclear: enriching\n\n- Enchantment Industry: salvaging"
+      "text": "[#](FFFFFF)\ue103[#]() **In depth.** **Added by other mods**:\n\n- [#](2E5AAC)[Dragons Plus](entry://industry/dragons_plus)[#](): ending (dragon breath), freezing (powder snow), sanding (quicksand), coloring (liquid dye), enchanting (Golden Aercloud)\n\n- Create Nuclear: enriching\n\n- [#](2E5AAC)[Enchantment Industry](entry://industry/enchanting)[#](): salvaging"
     },
     {
       "type": "modonomicon:spotlight",
@@ -57,7 +62,7 @@
         "item": "createnuclear:enriching_campfire"
       },
       "title": "Enriching Campfire",
-      "text": "Create Nuclear's fan catalyst for bulk enriching. Enriched fire comes from Enriched Soul Soil, see [#](2E5AAC)[Nuclear](entry://industry/nuclear)[#]()."
+      "text": "Create Nuclear's [#](7A3C9A)[fan catalyst](entry://glossary/fan_catalyst)[#]() for bulk enriching. Enriched fire comes from Enriched Soul Soil, see [#](2E5AAC)[Nuclear](entry://industry/nuclear)[#]()."
     },
     {
       "type": "modonomicon:text",

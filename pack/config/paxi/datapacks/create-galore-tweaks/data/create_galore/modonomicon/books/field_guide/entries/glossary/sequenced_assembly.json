@@ -1,0 +1,24 @@
+{
+  "category": "glossary",
+  "name": "Sequenced Assembly",
+  "description": "A recipe made by looping one item through machine steps.",
+  "icon": {
+    "item": "create:precision_mechanism"
+  },
+  "x": 6,
+  "y": 5,
+  "sort_number": 38,
+  "parents": [],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Sequenced Assembly",
+      "text": "**Sequenced assembly** makes an item by sending it along a belt through a chain of steps, such as deployers and a press, repeated several times. In between it is an **incomplete** item.\\\n\\\nThe Precision Mechanism is the first one. JEI shows each loop."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Where it matters**\n\n- [#](2E5AAC)[Brass and Assembly](entry://create_basics/brass_and_assembly)[#]()\n- [#](2E5AAC)[Deployer](entry://create_basics/deployer)[#]()\n- [#](2E5AAC)[Cataclysm x Create](entry://exploration/cataclysm_create)[#]()\n- [#](2E5AAC)[Space Metals](entry://space/space_materials)[#]()"
+    }
+  ]
+}

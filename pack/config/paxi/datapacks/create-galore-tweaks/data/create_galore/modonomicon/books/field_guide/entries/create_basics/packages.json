@@ -20,7 +20,12 @@
     {
       "type": "modonomicon:text",
       "title": "Logistics: Packages",
-      "text": "Create 6 added a **logistics** system: items are packed into **Packages**, addressed, and delivered between points. It runs on belts, chain conveyors and frogports."
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- [#](FFFFFF)\ue10d[#]() A **Packager** on a chest packs items into addressed **Packages**.\n- **Frogports** send and receive them over chain conveyors or belts.\n- A **Stock Ticker** orders items from the whole network.\n- Stock Links reach anywhere, but packages still need transport."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Create 6 added a **logistics** system: items are packed into **Packages**, addressed, and delivered between points. It runs on [#](2E5AAC)[belts](entry://create_basics/item_logistics)[#](), chain conveyors and frogports."
     },
     {
       "type": "modonomicon:spotlight",
@@ -44,7 +49,7 @@
         "item": "create:chain_conveyor"
       },
       "title": "Chain Conveyor",
-      "text": "Carries packages and relays rotation like shafts. Frogports attach to it for delivery over long distances."
+      "text": "Carries packages and relays rotation like [#](2E5AAC)[shafts](entry://create_basics/transmission)[#](). Frogports attach to it for delivery over long distances."
     },
     {
       "type": "modonomicon:spotlight",
@@ -60,7 +65,7 @@
         "item": "create:stock_ticker"
       },
       "title": "Stock Ticker",
-      "text": "Orders items from the whole network. A blaze burner or seated mob in front acts as the Stock Keeper you right-click."
+      "text": "Orders items from the whole network. A [#](2E5AAC)[blaze burner](entry://create_basics/heat)[#]() or seated mob in front acts as the Stock Keeper you right-click."
     },
     {
       "type": "modonomicon:spotlight",
@@ -81,7 +86,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**Add-ons in this pack**:\n\n- Factory Logistics: network links, fluid gauges, a Bottler and jars for fluids\n\n- Mobile Packages: Robo Bee Port to send packages to players, a portable stock ticker"
+      "text": "[#](FFFFFF)\ue103[#]() **In depth.** **Add-ons in this pack**:\n\n- Factory Logistics: network links, fluid gauges, a Bottler and jars for fluids\n\n- Mobile Packages: Robo Bee Port to send packages to players, a portable stock ticker"
     },
     {
       "type": "modonomicon:text",

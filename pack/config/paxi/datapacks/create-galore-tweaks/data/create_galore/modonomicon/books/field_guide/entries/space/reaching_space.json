@@ -13,17 +13,22 @@
     {
       "type": "modonomicon:text",
       "title": "Reaching Space",
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- [#](FFFFFF)\ue10f[#]() First you need a **Stellar Core**.\n- Go by Northstar **rocket** or Aeronautics **ship** (Dimensional Drive or Stellar Navigator).\n- Planets unlock in the **Space Atlas** as you add science from Astronomical Readings.\n- Planets need an Interplanetary Navigator; the Moon does not."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
       "text": "Create: Northstar adds a solar system as dimensions: the Moon, Mars, Mercury and Venus, plus an orbit above each planet. You get there with a rocket built from Create parts, or by flying an Aeronautics ship upward. Either way you first need a [#](2E5AAC)[Stellar Core](entry://stars/why)[#]()."
     },
     {
       "type": "modonomicon:text",
       "title": "Two ways up",
-      "text": "A Northstar rocket is a contraption glued around a Rocket Station. An Aeronautics ship uses a Dimensional Drive or Stellar Navigator instead. All three are built around a Stellar Core. See [#](2E5AAC)[Rockets](entry://space/rocket_building)[#]() and [#](2E5AAC)[Ship Bridges](entry://space/aeronautics_bridge)[#]()."
+      "text": "A Northstar rocket is a [#](2E5AAC)[contraption](entry://create_basics/contraptions)[#]() [#](7A3C9A)[glued](entry://glossary/super_glue)[#]() around a Rocket Station. An Aeronautics ship uses a Dimensional Drive or Stellar Navigator instead. All three are built around a Stellar Core. See [#](2E5AAC)[Rockets](entry://space/rocket_building)[#]() and [#](2E5AAC)[Ship Bridges](entry://space/aeronautics_bridge)[#]()."
     },
     {
       "type": "modonomicon:text",
       "title": "Before you go",
-      "text": "Destinations come from the **Space Atlas**. Planets unlock as you add science to it from Astronomical Readings. Landing on a planet needs an Interplanetary Navigator aboard; the Moon does not, since it is a moon."
+      "text": "Destinations come from the **Space Atlas**. Planets unlock as you add science to it from Astronomical Readings. Landing on a planet needs an **Interplanetary Navigator** aboard; the Moon does not, since it is a moon."
     },
     {
       "type": "modonomicon:spotlight",
@@ -57,7 +62,7 @@
     {
       "type": "modonomicon:text",
       "title": "Where next",
-      "text": "Titanium is the key metal here, replacing iron plates in much of the tech. See [#](2E5AAC)[Space Metals](entry://space/space_materials)[#](). Oxygen and suits are in [#](2E5AAC)[Oxygen and Suits](entry://space/space_survival)[#]()."
+      "text": "**Titanium** is the key metal here, replacing iron plates in much of the tech. See [#](2E5AAC)[Space Metals](entry://space/space_materials)[#](). Oxygen and suits are in [#](2E5AAC)[Oxygen and Suits](entry://space/space_survival)[#]()."
     },
     {
       "type": "modonomicon:text",

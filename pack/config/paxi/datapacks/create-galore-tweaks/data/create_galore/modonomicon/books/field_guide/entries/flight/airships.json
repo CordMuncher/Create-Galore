@@ -13,17 +13,17 @@
     {
       "type": "modonomicon:text",
       "title": "Airships",
-      "text": "Create Aeronautics turns ordinary blocks into vehicles that float, tilt, fall and collide. A ship needs three things: a body assembled into a physics object, something that lifts it, and something that pushes it."
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- [#](FFFFFF)\ue104[#]() A ship is glued blocks turned into a moving physics object by the **Physics Assembler**.\n- It needs **lift** (balloons, Levitite, sails or wings) and **thrust** (propellers or thrusters).\n- Lift fades with altitude, so a ship settles where lift equals weight."
     },
     {
       "type": "modonomicon:text",
-      "title": "The physics layer",
-      "text": "The physics comes from the Sable library. Aeronautics bundles Simulated, with general physics parts like bearings and sensors, and Offroad, with tires, wheel mounts and drilling heads for ground vehicles. A moving build is a **sub-level**: a chunk of world with mass."
+      "title": "",
+      "text": "Create Aeronautics turns ordinary blocks into vehicles that float, tilt, fall and collide. A ship needs **three things**: a body [#](7A3C9A)[assembled](entry://glossary/assemble)[#]() into a [#](7A3C9A)[physics object](entry://glossary/sub_level)[#](), something that lifts it, and something that pushes it."
     },
     {
       "type": "modonomicon:text",
       "title": "What keeps it up",
-      "text": "Lift comes from sealed balloon envelopes filled with hot air or steam, from Levitite blocks, or from sails and wings moving through air. Lift fades with altitude, so a ship settles where lift equals weight. See [#](2E5AAC)[Balloons and Lift](entry://flight/balloons_and_lift)[#]()."
+      "text": "Lift comes from sealed balloon envelopes filled with hot air or steam, from [Levitite](item://aeronautics:levitite) blocks, or from sails and wings moving through air. Lift fades with altitude, so a ship settles where lift equals weight. See [#](2E5AAC)[Balloons and Lift](entry://flight/balloons_and_lift)[#]()."
     },
     {
       "type": "modonomicon:text",
@@ -36,7 +36,7 @@
         "item": "simulated:physics_assembler"
       },
       "title": "Physics Assembler",
-      "text": "Glue a group of blocks, hold right-click on the assembler and pull its lever to turn them into a ship."
+      "text": "[#](7A3C9A)[Glue](entry://glossary/super_glue)[#]() a group of blocks, hold right-click on the assembler and pull its lever to turn them into a ship."
     },
     {
       "type": "modonomicon:spotlight",
@@ -44,12 +44,17 @@
         "item": "aeronautics:aviators_goggles"
       },
       "title": "Aviator's Goggles",
-      "text": "Work like Engineer's Goggles. Show stress and capacity on kinetic parts and extra readouts on placed blocks."
+      "text": "Work like [#](2E5AAC)[Engineer's Goggles](entry://create_basics/tools_wrench)[#](). Show [#](2E5AAC)[stress](entry://create_basics/stress)[#]() and capacity on [#](7A3C9A)[kinetic parts](entry://glossary/kinetic_network)[#]() and extra readouts on placed blocks."
     },
     {
       "type": "modonomicon:text",
       "title": "In this pack",
       "text": "Ships show up on Xaero's maps through Sable Xaero Maps, and Jade tooltips work on them. They carry Create machines, burn TFMG fuel in thrusters, and can leave the planet through the Northstar bridges. See [#](2E5AAC)[Destinations](entry://flight/destinations)[#]() and [#](2E5AAC)[Reaching Space](entry://space/reaching_space)[#]()."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "The physics layer",
+      "text": "[#](FFFFFF)\ue103[#]() **In depth.** The physics comes from the Sable library. Aeronautics bundles Simulated, with general physics parts like [#](7A3C9A)[bearings](entry://glossary/bearing)[#]() and sensors, and Offroad, with tires, wheel mounts and drilling heads for ground vehicles. A moving build is a **sub-level**: a chunk of world with mass."
     },
     {
       "type": "modonomicon:text",

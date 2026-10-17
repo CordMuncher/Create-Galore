@@ -44,7 +44,7 @@
         "item": "copycats:copycat_block"
       },
       "title": "Copycats+",
-      "text": "Copycat blocks take on the look of any block you apply: slices, layers, doors, fences, plates, cogwheels, shafts. Replaces the copycats Create: Connected has switched off."
+      "text": "[#](7A3C9A)[Copycat](entry://glossary/copycat)[#]() blocks take on the look of any block you apply: slices, layers, doors, fences, plates, cogwheels, shafts. Replaces the copycats Create: Connected has switched off."
     },
     {
       "type": "modonomicon:spotlight",
@@ -60,7 +60,7 @@
         "item": "createcasing:brass_encased_andesite_large_cogwheel"
       },
       "title": "Create Encased",
-      "text": "More casings for shafts, cogwheels, pipes and gearboxes. Pure variety; they keep the same function as Create's own."
+      "text": "More [#](7A3C9A)[casings](entry://glossary/encased)[#]() for shafts, cogwheels, pipes and gearboxes. Pure variety; they keep the same function as Create's own."
     },
     {
       "type": "modonomicon:spotlight",
@@ -68,7 +68,7 @@
         "item": "create_connected:six_way_gearbox"
       },
       "title": "Create: Connected",
-      "text": "Functional blocks: six-way gearbox, clutches, kinetic bridge and battery, fan catalysts. Its own copycats are off; old ones migrate to Copycats+."
+      "text": "Functional blocks: six-way gearbox, clutches, kinetic bridge and battery, [#](7A3C9A)[fan catalysts](entry://glossary/fan_catalyst)[#](). Its own copycats are off; old ones migrate to Copycats+."
     },
     {
       "type": "modonomicon:text",

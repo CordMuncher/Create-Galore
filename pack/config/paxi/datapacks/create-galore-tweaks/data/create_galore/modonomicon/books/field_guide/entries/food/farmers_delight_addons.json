@@ -20,7 +20,12 @@
     {
       "type": "modonomicon:text",
       "title": "Delight Add-ons",
-      "text": "A family of small mods adds foods that all use the Farmer's Delight pot, board and skillet. The rules are the same everywhere: bring ingredients, a heat source and the right container. Look recipes up in JEI (hover, press **R**). Meals and crops are listed below."
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- [#](FFFFFF)\ue10c[#]() All use the [#](2E5AAC)[Farmer's Delight](entry://food/farmers_delight)[#]() pot, board and skillet.\n- Bring ingredients, a heat source and the right container.\n- [#](FFFFFF)\ue10d[#]() Look recipes up in [#](7A3C9A)[JEI](entry://glossary/jei)[#](): hover, press **R**.\n- [#](FFFFFF)\ue104[#]() **Delightful Creators** is the Create bridge."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "A family of small mods adds foods that all use the Farmer's Delight pot, board and skillet. The rules are the same everywhere: bring ingredients, a heat source and the right container.\\\n\\\nLook recipes up in JEI (hover, press **R**). Meals and crops are listed below."
     },
     {
       "type": "modonomicon:spotlight",
@@ -60,22 +65,17 @@
         "item": "oceansdelight:fugu_slice"
       },
       "title": "Ocean's Delight",
-      "text": "Food from sea creatures: fugu, guardian parts, tentacles and more. Cook it carefully, as fugu is poisonous raw."
+      "text": "Food from sea creatures: fugu, guardian parts, tentacles and more.\\\n[#](FFFFFF)\ue101[#]() **Watch out:** cook it carefully, as fugu is poisonous raw."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**Berries and Cherries Delight** adds grapes, strawberries, cherries, jams and pies.\\\n\\\n**Aquaculture Delight** lets Aquaculture fish work in Farmer's Delight recipes."
+      "text": "**Berries and Cherries Delight** adds grapes, strawberries, cherries, jams and pies.\\\n\\\n**Aquaculture Delight** lets Aquaculture fish work in Farmer's Delight recipes.\\\n\\\n**Sniffers Sniff Delights** makes Sniffers dig up tomato, cabbage, rice and onion seeds far more often."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**Sniffers Sniff Delights** makes Sniffers dig up tomato, cabbage, rice and onion seeds far more often."
-    },
-    {
-      "type": "modonomicon:text",
-      "title": "",
-      "text": "**Delightful Creators** is the Create bridge: soups as fluids, sequenced assembly meals and a Mechanical Cutter. See [#](2E5AAC)[Kitchen Automation](entry://food/kitchen_automation)[#]().\\\n\\\n**Brewin' and Chewin'** adds kegs and fermented drinks: [#](2E5AAC)[Brewing](entry://food/brewing)[#]().\\\n\\\nBase mechanics: [#](2E5AAC)[Farmer's Delight](entry://food/farmers_delight)[#]()."
+      "text": "**Delightful Creators** is the Create bridge: soups as fluids, [#](2E5AAC)[sequenced assembly](entry://create_basics/brass_and_assembly)[#]() meals and a Mechanical Cutter. See [#](2E5AAC)[Kitchen Automation](entry://food/kitchen_automation)[#]().\\\n\\\n**Brewin' and Chewin'** adds kegs and fermented drinks: [#](2E5AAC)[Brewing](entry://food/brewing)[#]().\\\n\\\nBase mechanics: [#](2E5AAC)[Farmer's Delight](entry://food/farmers_delight)[#]()."
     }
   ]
 }

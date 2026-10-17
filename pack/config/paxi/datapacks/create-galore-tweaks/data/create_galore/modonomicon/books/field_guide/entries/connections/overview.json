@@ -23,7 +23,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Each entry here is short and points to the full entries. Read it when you wonder \"can this mod's thing go into that mod's machine?\"\\\n\\\nAlso worth knowing: anything that burns makes smog, and anything hot warms you up. See [#](2E5AAC)[Side Effects](entry://connections/side_effects)[#]()."
+      "text": "Each entry here is short and points to the full entries. Read it when you wonder \"can this mod's thing go into that mod's machine?\"\\\n\\\nAlso worth knowing: anything that burns makes [#](2E5AAC)[smog](entry://survival/pollution)[#](), and anything hot warms you up. See [#](2E5AAC)[Side Effects](entry://connections/side_effects)[#]()."
     },
     {
       "type": "modonomicon:text",

@@ -1,0 +1,24 @@
+{
+  "category": "glossary",
+  "name": "Saturation",
+  "description": "The hidden food buffer that empties before hunger.",
+  "icon": {
+    "item": "minecraft:cooked_beef"
+  },
+  "x": 4,
+  "y": 5,
+  "sort_number": 37,
+  "parents": [],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Saturation",
+      "text": "**Saturation** is a hidden buffer from food that empties before your hunger bar starts to drop.\\\n\\\nAppleSkin shows it in food tooltips and as an overlay on the hunger bar. Thirst's hidden **quenched** buffer is the same idea for drinks."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Where it matters**\n\n- [#](2E5AAC)[Food and Health](entry://survival/food_and_health)[#]()\n- [#](2E5AAC)[Thirst](entry://survival/thirst)[#]()\n- [#](2E5AAC)[Farmer's Delight](entry://food/farmers_delight)[#]()"
+    }
+  ]
+}

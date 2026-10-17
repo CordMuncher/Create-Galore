@@ -26,6 +26,11 @@
     {
       "type": "modonomicon:text",
       "title": "Create Ratatouille",
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- [#](FFFFFF)\ue104[#]() Create machines for baking, threshing, squeezing, ripening and composting.\n- [#](FFFFFF)\ue108[#]() The **Oven** is heated by a Blaze Burner; goggles show its level.\n- [#](FFFFFF)\ue10d[#]() Its salt, cocoa powder and butter are the pack's only ones."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
       "text": "**Create Ratatouille** adds farm-to-table machines: bulk baking, grain threshing, squeezing, crop ripening and composting. It sits beside Farmer's Delight rather than replacing it."
     },
     {
@@ -34,7 +39,7 @@
         "item": "ratatouille:oven"
       },
       "title": "Oven",
-      "text": "A multiblock heated by a Blaze Burner. Oven Fans keep air moving. Better heat, air and space means faster bulk baking and smoking. Use goggles to read its level."
+      "text": "A [#](7A3C9A)[multiblock](entry://glossary/multiblock)[#]() heated by a [#](2E5AAC)[Blaze Burner](entry://create_basics/heat)[#](). Oven Fans keep air moving. Better heat, air and space means faster bulk baking and smoking. Use [#](2E5AAC)[goggles](entry://create_basics/tools_wrench)[#]() to read its level."
     },
     {
       "type": "modonomicon:spotlight",
@@ -42,7 +47,7 @@
         "item": "ratatouille:thresher"
       },
       "title": "Thresher",
-      "text": "Processes grain and crops, and works well on a belt. Output slides out the side. Recipes are listed under Threshing in JEI."
+      "text": "Processes grain and crops, and works well on a belt. Output slides out the side. Recipes are listed under Threshing in [#](7A3C9A)[JEI](entry://glossary/jei)[#]()."
     },
     {
       "type": "modonomicon:spotlight",
@@ -69,12 +74,17 @@
       "text": "Keeps farmland in range moist from a water tank. Fill it with Compost Tea and it slowly turns farmland into Farmer's Delight Rich Soil Farmland."
     },
     {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Compost Tower** composts food waste into compost products. The **Mechanical Demolder** frees items from moulds such as chocolate, cake and popsicle moulds.\\\n\\\nRelated: [#](2E5AAC)[Sweets and Drinks](entry://food/sweets_and_drinks)[#]().\\\n\\\nSoil basics: [#](2E5AAC)[Farmer's Delight](entry://food/farmers_delight)[#]()."
+    },
+    {
       "type": "modonomicon:spotlight",
       "item": {
         "item": "ratatouille:salt"
       },
       "title": "Salt",
-      "text": "The pack's one salt. Heated boil stone makes it, and Northstar's brine and basalt recipes now give it too. Leftover Northstar salt converts 1:1 in a crafting grid."
+      "text": "[#](FFFFFF)\ue103[#]() **In depth.** The pack's one salt. Heated boil stone makes it, and Northstar's brine and basalt recipes now give it too. Leftover Northstar salt [#](7A3C9A)[converts 1:1](entry://glossary/canonical_item)[#]() in a crafting grid."
     },
     {
       "type": "modonomicon:spotlight",
@@ -83,11 +93,6 @@
       },
       "title": "Cocoa Powder and Butter",
       "text": "The pack's one cocoa powder and butter. Ratatouille presses and mills them; Confectionery's chocolate now uses them. Old Confectionery cocoa converts 1:1."
-    },
-    {
-      "type": "modonomicon:text",
-      "title": "",
-      "text": "**Compost Tower** composts food waste into compost products. The **Mechanical Demolder** frees items from moulds such as chocolate, cake and popsicle moulds.\\\n\\\nRelated: [#](2E5AAC)[Sweets and Drinks](entry://food/sweets_and_drinks)[#]().\\\n\\\nSoil basics: [#](2E5AAC)[Farmer's Delight](entry://food/farmers_delight)[#]()."
     }
   ]
 }

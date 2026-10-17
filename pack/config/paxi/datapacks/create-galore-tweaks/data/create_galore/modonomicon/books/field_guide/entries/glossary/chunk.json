@@ -1,0 +1,24 @@
+{
+  "category": "glossary",
+  "name": "Chunk",
+  "description": "A 16 by 16 column of the world; the unit that loads and tracks smog.",
+  "icon": {
+    "item": "minecraft:grass_block"
+  },
+  "x": 10,
+  "y": -3,
+  "sort_number": 8,
+  "parents": [],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Chunk",
+      "text": "The world is stored in **chunks**, columns 16 by 16 blocks from top to bottom. F3 + G shows their borders.\\\n\\\nSmog, ore veins and oil deposits count per chunk. Chunks far from players **unload** and their machines stop; trains still travel through them. Chunk loaders keep chunks running."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Where it matters**\n\n- [#](2E5AAC)[Chunk Loaders](entry://industry/power_loader)[#]()\n- [#](2E5AAC)[Pollution](entry://survival/pollution)[#]()\n- [#](2E5AAC)[Ore Excavation](entry://industry/ore_excavation)[#]()\n- [#](2E5AAC)[Trains](entry://transport/trains)[#]()"
+    }
+  ]
+}

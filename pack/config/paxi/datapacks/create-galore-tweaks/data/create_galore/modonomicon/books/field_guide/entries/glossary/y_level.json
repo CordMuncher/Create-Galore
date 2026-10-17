@@ -1,0 +1,24 @@
+{
+  "category": "glossary",
+  "name": "Y Level",
+  "description": "The height coordinate: where ores and sky bands sit.",
+  "icon": {
+    "item": "minecraft:deepslate"
+  },
+  "x": 10,
+  "y": 7,
+  "sort_number": 48,
+  "parents": [],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Y Level",
+      "text": "The **Y level** is your height in the world, shown on the F3 screen. Lower numbers are deeper, and the Overworld goes below zero.\\\n\\\nThe Ore Guide gives ore depths in Y. Water above Y 100 or below Y 48 is one step cleaner, and Cold Sweat: Altitude gets colder with Y."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Where it matters**\n\n- [#](2E5AAC)[Ore Guide](entry://materials/ore_guide)[#]()\n- [#](2E5AAC)[Your First Days](entry://start_here/first_days)[#]()\n- [#](2E5AAC)[Create and Altitude Heat](entry://survival/temperature_create)[#]()"
+    }
+  ]
+}

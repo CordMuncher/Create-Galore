@@ -34,12 +34,12 @@
         "item": "create:deployer"
       },
       "title": "Deployer",
-      "text": "Right-click its front to give it an item. A wrench switches between right-click and left-click mode."
+      "text": "Right-click its front to give it an item. A [#](2E5AAC)[wrench](entry://create_basics/tools_wrench)[#]() switches between right-click and left-click mode."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "In automation it **applies items to other items**. Held item over a belt or depot item: the combination is an assembly step. This is how a machine adds cogwheels, sand paper or ingredients.\\\n\\\nIt also feeds [#](2E5AAC)[Blaze Burners](entry://create_basics/heat)[#]() fuel."
+      "text": "In automation it **applies items to other items**. Held item over a [#](2E5AAC)[belt or depot](entry://create_basics/item_logistics)[#]() item: the combination is an [#](2E5AAC)[assembly step](entry://create_basics/brass_and_assembly)[#](). This is how a machine adds cogwheels, [sand paper](item://create:sand_paper) or ingredients.\\\n\\\nIt also feeds [#](2E5AAC)[Blaze Burners](entry://create_basics/heat)[#]() fuel."
     },
     {
       "type": "modonomicon:text",

@@ -1,0 +1,24 @@
+{
+  "category": "glossary",
+  "name": "Datapack",
+  "description": "A bundle of recipes, loot and other data loaded with the world.",
+  "icon": {
+    "item": "minecraft:knowledge_book"
+  },
+  "x": 6,
+  "y": -1,
+  "sort_number": 14,
+  "parents": [],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Datapack",
+      "text": "A **datapack** is a bundle of data, not code: recipes, loot, world generation. It loads with the world.\\\n\\\nThe pack loads its own through Paxi; this book is one. Cataclysm x Create and Seasonal Integration are datapacks, and so is the Elytra switch."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Where it matters**\n\n- [#](2E5AAC)[Getting Around](entry://transport/getting_around)[#]()\n- [#](2E5AAC)[Cataclysm x Create](entry://exploration/cataclysm_create)[#]()\n- [#](2E5AAC)[Seasons](entry://survival/seasons)[#]()"
+    }
+  ]
+}

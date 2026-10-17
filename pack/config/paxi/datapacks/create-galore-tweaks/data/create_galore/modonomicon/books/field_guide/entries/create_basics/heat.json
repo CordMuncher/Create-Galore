@@ -26,7 +26,12 @@
     {
       "type": "modonomicon:text",
       "title": "Blaze Burner and Heat",
-      "text": "Some recipes need **heat**. Create gets it from the **Blaze Burner**, which also boosts basin recipes and powers steam engine boilers.\\\n\\\nThe burner is not crafted whole: you capture a living blaze in an **Empty Blaze Burner**."
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- [#](FFFFFF)\ue108[#]() Some recipes need heat from a **Blaze Burner**.\n- Capture a living blaze in an **Empty Blaze Burner**.\n- Fuel makes it **heated**. A **Blaze Cake** makes it **superheated**.\n- It cools down when its fuel runs out."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Some recipes need **heat**. Create gets it from the **Blaze Burner**, which also boosts [#](2E5AAC)[basin](entry://create_basics/processing)[#]() recipes and powers steam engine [#](7A3C9A)[boilers](entry://glossary/boiler)[#]().\\\n\\\nThe burner is not crafted whole: you capture a living blaze in an **Empty Blaze Burner**."
     },
     {
       "type": "modonomicon:spotlight",
@@ -37,17 +42,24 @@
       "text": "Right-click a blaze with it to capture the blaze. Blazes can also be collected from their spawners. Then put the burner under a basin or boiler."
     },
     {
+      "type": "modonomicon:multiblock",
+      "multiblock_id": "create_galore:heated_mixer",
+      "multiblock_name": "Heated Mixer",
+      "text": "The burner under the basin heats it for mixer recipes marked heated.",
+      "show_visualize_button": true
+    },
+    {
       "type": "modonomicon:spotlight",
       "item": {
         "item": "create:blaze_burner"
       },
       "title": "Blaze Burner",
-      "text": "Feed it flammable items by hand, or let a deployer or mechanical arm do it. It cools down when its fuel runs out."
+      "text": "Feed it flammable items by hand, or let a [#](2E5AAC)[deployer](entry://create_basics/deployer)[#]() or mechanical arm do it. It cools down when its fuel runs out."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**Two levels**: fed with fuel it is **heated**. Fed a **Blaze Cake** it becomes **superheated**, the stronger tier some recipes need. A superheated burner also counts as heated."
+      "text": "**Two levels**:\n\n- Fed with fuel it is [#](7A3C9A)[heated](entry://glossary/heated)[#]().\n- Fed a **Blaze Cake** it becomes [#](7A3C9A)[superheated](entry://glossary/superheated)[#](), the stronger tier some recipes need.\n\nA superheated burner also counts as heated."
     },
     {
       "type": "modonomicon:spotlight",
@@ -55,7 +67,7 @@
         "item": "create:blaze_cake"
       },
       "title": "Blaze Cake",
-      "text": "Takes a burner to the stronger tier. Check JEI (R, U) for its recipe and the recipes that need superheating."
+      "text": "Takes a burner to the stronger tier. Check [#](2E5AAC)[JEI](entry://start_here/tools)[#]() (R, U) for its recipe and the recipes that need superheating."
     },
     {
       "type": "modonomicon:text",
@@ -65,7 +77,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**Other mods**: the tag Create reads for boiler heat also includes Farmer's Delight's **Stove**, Twilight Forest's fiery storage blocks, and lava, magma blocks, campfires and fire. These work as passive boiler heaters, weaker than a burner."
+      "text": "[#](FFFFFF)\ue103[#]() **In depth.** **Other mods**: the [#](7A3C9A)[tag](entry://glossary/tags)[#]() Create reads for boiler heat also includes [#](2E5AAC)[Farmer's Delight](entry://food/farmers_delight)[#]()'s **Stove**, [#](2E5AAC)[Twilight Forest](entry://exploration/twilight_forest)[#]()'s fiery storage blocks, and lava, magma blocks, campfires and fire. These work as [#](7A3C9A)[passive boiler heaters](entry://glossary/passive_heater)[#](), weaker than a burner."
     },
     {
       "type": "modonomicon:text",

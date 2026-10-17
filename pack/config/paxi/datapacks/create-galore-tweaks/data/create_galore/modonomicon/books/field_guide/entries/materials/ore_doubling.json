@@ -20,6 +20,11 @@
     {
       "type": "modonomicon:text",
       "title": "Ore Doubling",
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- [#](FFFFFF)\ue104[#]() Crush **ore blocks** (mined with Silk Touch): about 1.75 crushed ores each, 2.25 from deepslate\n- **Raw ore** crushes to just one: no gain\n- Then smelt the crushed ore, or [#](7A3C9A)[wash](entry://glossary/washing)[#]() it with a Fan for nuggets"
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
       "text": "Crushing gets more metal out of an ore block than smelting it does. This is the main reason to build [#](2E5AAC)[Crushing Wheels](entry://create_basics/crushing)[#]().\\\n\\\nOne ore block gives 1 crushed ore, a 75%% chance of a second, experience nuggets and sometimes stone back."
     },
     {
@@ -36,6 +41,15 @@
       "text": "The catch: **raw ore**, what normal mining drops, crushes to one crushed ore. No gain. Only the ore block itself doubles.\\\n\\\nThen smelt or wash the crushed ore."
     },
     {
+      "type": "modonomicon:image",
+      "images": [
+        "create_galore:textures/gui/guide/ore_doubling.png"
+      ],
+      "border": true,
+      "title": "",
+      "text": "Ore blocks from Silk Touch double; raw ore doesn't."
+    },
+    {
       "type": "modonomicon:spotlight",
       "item": {
         "item": "create:crushed_raw_iron"
@@ -44,19 +58,28 @@
       "text": "Blast it into one ingot, or wash it with a Fan into nuggets plus a chance at a byproduct. Crushed zinc works the same."
     },
     {
+      "type": "modonomicon:image",
+      "images": [
+        "create_galore:textures/gui/guide/crushed_to_metal.png"
+      ],
+      "border": true,
+      "title": "",
+      "text": "Washing: 9 nuggets and a chance of a byproduct (see JEI). Blasting: one ingot."
+    },
+    {
       "type": "modonomicon:text",
       "title": "Fan washing",
-      "text": "Washing means a [#](2E5AAC)[Fan](entry://create_basics/fans)[#]() blowing through water. Iron gives 9 nuggets and may add redstone. Check JEI for each metal's byproduct."
+      "text": "Washing means a [#](2E5AAC)[Fan](entry://create_basics/fans)[#]() blowing through water. Iron gives 9 nuggets and may add redstone. Check [#](2E5AAC)[JEI](entry://start_here/tools)[#]() for each metal's byproduct."
     },
     {
       "type": "modonomicon:text",
       "title": "Which metals",
-      "text": "Create covers copper, iron, gold and zinc. Tag recipes also cover platinum, uranium, nickel and raw lead when a mod supplies them. Its recipe for lead ore blocks is off."
+      "text": "[#](FFFFFF)\ue103[#]() **In depth.** Create covers copper, iron, gold and zinc. [#](7A3C9A)[Tag](entry://glossary/tags)[#]() recipes also cover platinum, uranium, nickel and raw lead when a mod supplies them. Its recipe for lead ore blocks is off."
     },
     {
       "type": "modonomicon:text",
       "title": "Add-on crushing",
-      "text": "- TFMG: nickel, lithium, bauxite to powder, galena to a little lead. Its metals get a smaller bonus, about 1.25.\n- Create Nuclear: crushed uranium to powder, thorium, nitrate."
+      "text": "- [#](2E5AAC)[TFMG](entry://industry/tfmg_steel)[#](): nickel, lithium, bauxite to powder, galena to a little lead. Its metals get a smaller bonus, about 1.25.\n- [#](2E5AAC)[Create Nuclear](entry://industry/nuclear)[#](): crushed uranium to powder, thorium, nitrate."
     },
     {
       "type": "modonomicon:spotlight",
@@ -64,12 +87,12 @@
         "item": "tfmg:crushed_raw_lithium"
       },
       "title": "Crushed Raw Lithium",
-      "text": "TFMG's lithium ore crushes to this, then blasts to an ingot. Nickel ore crushes to Crushed Raw Nickel."
+      "text": "TFMG's lithium ore crushes to this, then blasts to an ingot. Nickel ore crushes to [Crushed Raw Nickel](item://create:crushed_raw_nickel)."
     },
     {
       "type": "modonomicon:text",
-      "title": "Northstar",
-      "text": "Create Propulsion adds platinum, Iron's Spells mithril. Northstar planet ores crush at the full rate into raw items, for example raw titanium. Raw titanium smelts straight to an ingot. Venus coal ore crushes to extra coal."
+      "title": "More metals",
+      "text": "- Create Propulsion adds platinum, Iron's Spells mithril.\n- **Northstar** planet ores crush at the full rate into raw items, for example raw titanium. Raw titanium smelts straight to an ingot.\n- Venus coal ore crushes to extra coal."
     },
     {
       "type": "modonomicon:spotlight",

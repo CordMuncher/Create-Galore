@@ -1,0 +1,24 @@
+{
+  "category": "glossary",
+  "name": "Crushed Ore",
+  "description": "What crushing an ore gives; wash or smelt it for metal.",
+  "icon": {
+    "item": "create:crushed_raw_iron"
+  },
+  "x": 2,
+  "y": -1,
+  "sort_number": 12,
+  "parents": [],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Crushed Ore",
+      "text": "**Crushed ore**, such as Crushed Raw Iron, is what Crushing Wheels or a Millstone make from ore.\\\n\\\nSmelt or blast it into an ingot, or wash it with a fan for nuggets and a chance of a byproduct. Crush ore **blocks**, not raw ore items: a block gives a crushed ore plus a 75%% chance of a second one."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Where it matters**\n\n- [#](2E5AAC)[Ore Doubling](entry://materials/ore_doubling)[#]()\n- [#](2E5AAC)[Crushing and Ore Doubling](entry://create_basics/crushing)[#]()\n- [#](2E5AAC)[Ore Guide](entry://materials/ore_guide)[#]()"
+    }
+  ]
+}

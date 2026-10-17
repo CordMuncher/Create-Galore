@@ -26,12 +26,17 @@
     {
       "type": "modonomicon:text",
       "title": "Destinations",
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- [#](FFFFFF)\ue10e[#]() **Sky Villages** sit 150 to 250 blocks up in the Overworld.\n- **Floating islands** hold chests and mobs; bring a ship that can land.\n- **The Aether**: a glowstone portal frame lit with water.\n- [#](FFFFFF)\ue10f[#]() **Space**: the Moon, Mars, Mercury and Venus, by Dimensional Drive or rocket."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
       "text": "Vehicles need somewhere to go. This is a map of what the pack puts in the sky and on far worlds, where it lives, and what you can expect there."
     },
     {
       "type": "modonomicon:text",
       "title": "Sky Villages",
-      "text": "Create: Sky Village places villages high up in the Overworld, between about 150 and 250 blocks. There are two kinds: the Sky Village and the Highwind Village. Expect villagers and Create loot."
+      "text": "Create: Sky Village places villages high up in the Overworld, between about **150 and 250 blocks**. There are two kinds: the Sky Village and the Highwind Village. Expect villagers and Create loot."
     },
     {
       "type": "modonomicon:text",
@@ -41,7 +46,7 @@
     {
       "type": "modonomicon:text",
       "title": "Discovery",
-      "text": "Aeronautics Discovery adds events. Planes and balloons fly over the Overworld at height, and balloons appear in villages. It also adds Pillager Aviators, Soaring Traders and maps to temples, igloos, ancient cities and mineshafts."
+      "text": "Aeronautics Discovery adds events: planes and balloons fly over the Overworld at height, and balloons appear in villages. It also adds:\n\n- Pillager Aviators\n- Soaring Traders\n- maps to temples, igloos, ancient cities and mineshafts"
     },
     {
       "type": "modonomicon:spotlight",
@@ -75,7 +80,7 @@
     {
       "type": "modonomicon:text",
       "title": "The Aether",
-      "text": "The Aether is a separate dimension of floating islands. Its portal is built from a glowstone frame lit with water. Sky whales drift over the ocean in the Overworld; see [#](2E5AAC)[Weather and Danger](entry://flight/weather_and_danger)[#]()."
+      "text": "The [#](2E5AAC)[Aether](entry://exploration/aether)[#]() is a separate dimension of floating islands. Its portal is built from a **glowstone frame lit with water**. Sky whales drift over the ocean in the Overworld; see [#](2E5AAC)[Weather and Danger](entry://flight/weather_and_danger)[#]()."
     },
     {
       "type": "modonomicon:spotlight",
@@ -83,12 +88,12 @@
         "item": "aether:ambrosium_shard"
       },
       "title": "Ambrosium Shard",
-      "text": "A basic Aether resource. See Dimensions for the Aether and others."
+      "text": "A basic Aether resource. See [#](2E5AAC)[Dimensions](entry://exploration/dimensions)[#]() for the Aether and others."
     },
     {
       "type": "modonomicon:text",
       "title": "Beyond the sky",
-      "text": "For the highest destinations, fly an Aeronautics ship upward with a Dimensional Drive, or build a rocket. Northstar has the Moon, Mars, Mercury and Venus. See [#](2E5AAC)[Reaching Space](entry://space/reaching_space)[#]() and [#](2E5AAC)[Planets](entry://space/planets)[#]()."
+      "text": "For the highest destinations, fly an Aeronautics ship upward with a [#](2E5AAC)[Dimensional Drive](entry://space/aeronautics_bridge)[#](), or build a rocket. Northstar has the Moon, Mars, Mercury and Venus. See [#](2E5AAC)[Reaching Space](entry://space/reaching_space)[#]() and [#](2E5AAC)[Planets](entry://space/planets)[#]()."
     },
     {
       "type": "modonomicon:text",

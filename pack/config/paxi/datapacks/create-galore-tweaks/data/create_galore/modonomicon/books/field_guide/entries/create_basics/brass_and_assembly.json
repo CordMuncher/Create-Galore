@@ -26,7 +26,7 @@
     {
       "type": "modonomicon:text",
       "title": "Brass and Assembly",
-      "text": "**Brass** is the second tier of Create metal, made by mixing copper and zinc in a heated basin. Brass casings and parts open up funnels with filters, tunnels, mechanical arms and more."
+      "text": "**Brass** is the second tier of Create metal, made by mixing copper and zinc in a [#](2E5AAC)[heated basin](entry://create_basics/heat)[#](). Brass casings and parts open up [#](2E5AAC)[funnels with filters](entry://create_basics/item_logistics)[#](), tunnels, mechanical arms and more."
     },
     {
       "type": "modonomicon:spotlight",
@@ -39,7 +39,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "A **Precision Mechanism** is made by **sequenced assembly**: one item goes through a chain of steps on a belt, repeated several times. It becomes an **incomplete** item in between. The steps use deployers and a press."
+      "text": "A **Precision Mechanism** is made by [#](7A3C9A)[sequenced assembly](entry://glossary/sequenced_assembly)[#](): one item goes through a chain of steps on a belt, repeated several times. It becomes an **incomplete** item in between. The steps use [#](2E5AAC)[deployers](entry://create_basics/deployer)[#]() and a press."
     },
     {
       "type": "modonomicon:spotlight",
@@ -47,7 +47,7 @@
         "item": "create:precision_mechanism"
       },
       "title": "Precision Mechanism",
-      "text": "Needed for many advanced machines in several mods. The recipe has a small chance of giving other items. Check JEI for the loop."
+      "text": "Needed for many advanced machines in several mods. The recipe has a small chance of giving other items. Check [#](2E5AAC)[JEI](entry://start_here/tools)[#]() for the loop."
     },
     {
       "type": "modonomicon:spotlight",
@@ -55,12 +55,12 @@
         "item": "create:mechanical_crafter"
       },
       "title": "Mechanical Crafter",
-      "text": "Arrange several in a grid and connect their paths to craft any recipe, even ones too big for the mixer. Fill every slot, then it crafts."
+      "text": "Arrange several in a [#](7A3C9A)[grid](entry://glossary/mechanical_crafting)[#]() and connect their paths to craft any recipe, even ones too big for the mixer. Fill every slot, then it crafts."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Mechanical crafters need rotation. Use a wrench to arrange paths, and slot covers to leave holes in the grid.\\\n\\\nThe **Mechanical Crafter** works with packages too, see [#](2E5AAC)[Logistics](entry://create_basics/packages)[#]()."
+      "text": "Mechanical crafters need [#](2E5AAC)[rotation](entry://create_basics/rotation)[#](). Use a [#](2E5AAC)[wrench](entry://create_basics/tools_wrench)[#]() to arrange paths, and slot covers to leave holes in the grid.\\\n\\\nThe **Mechanical Crafter** works with packages too, see [#](2E5AAC)[Logistics](entry://create_basics/packages)[#]()."
     },
     {
       "type": "modonomicon:text",

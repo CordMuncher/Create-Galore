@@ -20,7 +20,12 @@
     {
       "type": "modonomicon:text",
       "title": "TFMG Engines and Power",
-      "text": "TFMG makes rotation from fuel with engines, and electricity with its own circuit system. Both plug into normal Create networks."
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- [#](FFFFFF)\ue104[#]() Engines burn fuel for ordinary rotation\n- **Regular Engine**: a body plus Engine Cylinders, oiled from an Oil Can\n- **Large Engine**: pump its CO2 out to an Exhaust\n- [#](FFFFFF)\ue106[#]() TFMG circuits are separate from FE, but its connectors can import and export FE"
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "TFMG makes rotation from fuel with engines, and electricity with its own circuit system. Both plug into normal [#](7A3C9A)[Create networks](entry://glossary/kinetic_network)[#]()."
     },
     {
       "type": "modonomicon:spotlight",
@@ -28,7 +33,7 @@
         "item": "tfmg:regular_engine"
       },
       "title": "Regular Engine",
-      "text": "Assembled from a body plus matching Engine Cylinders. Click it with a Shaft to set the rotation output. Needs lubrication oil from an Oil Can."
+      "text": "[#](7A3C9A)[Assembled](entry://glossary/assemble)[#]() from a body plus matching Engine Cylinders. Click it with a Shaft to set the rotation output. Needs lubrication oil from an [Oil Can](item://tfmg:oil_can)."
     },
     {
       "type": "modonomicon:spotlight",
@@ -52,11 +57,6 @@
       "text": "The source of TFMG electricity. A source gives Voltage and Power; devices have Resistance, and current is voltage divided by resistance."
     },
     {
-      "type": "modonomicon:text",
-      "title": "",
-      "text": "Blocks share a **group**: members of one group split the voltage, the rest keep all of it. Change a block's group with the **Configuration Wrench**. A Diode, Potentiometer, Switch or Transformer starts a subnetwork."
-    },
-    {
       "type": "modonomicon:spotlight",
       "item": {
         "item": "tfmg:copper_cable_hub"
@@ -68,6 +68,11 @@
       "type": "modonomicon:text",
       "title": "",
       "text": "TFMG's cable connectors can import and export FE, so TFMG circuits can touch FE machines. Its wires are separate from Crafts & Additions wires. See [#](2E5AAC)[Rotation vs Electricity](entry://industry/power_compared)[#]()."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "[#](FFFFFF)\ue103[#]() **In depth.** Blocks share a **group**: members of one group split the voltage, the rest keep all of it. Change a block's group with the **Configuration Wrench**.\\\n\\\nA Diode, Potentiometer, Switch or Transformer starts a subnetwork."
     }
   ]
 }

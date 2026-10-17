@@ -20,12 +20,25 @@
     {
       "type": "modonomicon:text",
       "title": "Performance and Shaders",
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- Give the game **8 GB** of RAM on a 16 GB PC, or **12 GB** on a big one. More than 16 GB doesn't help.\n- Shaders are optional: Options > Video Settings > Shader Packs.\n- If it stutters, turn Distant Horizons down first.\n- The first world takes a while to create."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
       "text": "This is a heavy pack. Give the game **8 GB of RAM** on a 16 GB PC, or **12 GB** on a big one, in your launcher's instance settings. More than 16 GB doesn't help. The README has the matching Java flags."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**Distant Horizons** draws far-away terrain as simplified chunks so you can see much further than normal render distance. It is useful for airships and the Moon, but costs memory and some frame rate. Turn its settings down first if the game stutters. Holes near you while flying fast fill in once the chunks arrive."
+      "text": "**Distant Horizons** draws far-away terrain as simplified [#](7A3C9A)[chunks](entry://glossary/chunk)[#]() so you can see much further than normal render distance. It is useful for airships and the Moon, but costs memory and some frame rate. Holes near you while flying fast fill in once the chunks arrive.\\\n\\\n[#](FFFFFF)\ue102[#]() **Tip:** turn its settings down first if the game stutters."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "minecraft:spyglass"
+      },
+      "title": "Distant Horizons",
+      "text": "Shows far terrain as simplified chunks. Handy from an airship, a submarine or the Moon."
     },
     {
       "type": "modonomicon:text",
@@ -35,17 +48,22 @@
     {
       "type": "modonomicon:text",
       "title": "",
+      "text": "Shaders are optional and can cut frame rate a lot on weaker machines. First world creation is also slow because of how many mods add world generation. This settles after the first load.\\\n\\\n**Fullscreen** is F11. Screenshot key: F2."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
       "text": "**Ambiance** runs only on your own PC: sound echoes in caves, footsteps, falling leaves, held torches that light up, smoother animations. It changes nothing in play. A torch in your hand looks bright but doesn't stop mobs spawning; place one for that. Fresh Animations can be turned off under Resource Packs."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Shaders are optional and can cut frame rate a lot on weaker machines. First world creation is also slow because of how many mods add world generation. This settles after the first load."
+      "text": "**Chunksmith** pregenerates terrain when you ask it to with the **/cs** commands, ahead of an airship or train. It yields to players, so you can keep playing while it runs. Its automatic run on world entry (a 4096-block radius every time you join) is switched off here."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**Fullscreen** is F11. On an NVIDIA card with a 10-bit monitor, set Vulkan/OpenGL present method to Prefer layered on DXGI Swapchain in the NVIDIA Control Panel, or the driver still switches a 10-bit monitor to 8-bit. With shaders this can cap the GPU at about half its speed; set it back to Auto if you don't need 10-bit. Screenshot key: F2."
+      "text": "[#](FFFFFF)\ue103[#]() **In depth.** On an NVIDIA card with a 10-bit monitor, set Vulkan/OpenGL present method to Prefer layered on DXGI Swapchain in the NVIDIA Control Panel, or the driver still switches a 10-bit monitor to 8-bit. With shaders this can cap the GPU at about half its speed; set it back to Auto if you don't need 10-bit."
     },
     {
       "type": "modonomicon:text",
@@ -55,20 +73,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**Perfect Presentation** (Windows, experimental) shows the game through DirectX: fullscreen is a fast borderless window, Alt-Tab is instant and a 10-bit monitor stays 10-bit. Turn it on with perfectPresentation=true in config/create_galore_bridge-display.properties and restart twice. On NVIDIA, set Power management mode to Prefer maximum performance for javaw.exe."
-    },
-    {
-      "type": "modonomicon:text",
-      "title": "",
-      "text": "**Chunksmith** pregenerates terrain when you ask it to with the **/cs** commands, ahead of an airship or train. It yields to players, so you can keep playing while it runs. Its automatic run on world entry (a 4096-block radius every time you join) is switched off here."
-    },
-    {
-      "type": "modonomicon:spotlight",
-      "item": {
-        "item": "minecraft:spyglass"
-      },
-      "title": "Distant Horizons",
-      "text": "Shows far terrain as simplified chunks. Handy from an airship, a submarine or the Moon."
+      "text": "**Perfect Presentation** (Windows, experimental) shows the game through DirectX: fullscreen is a fast borderless window, Alt-Tab is instant and a 10-bit monitor stays 10-bit. Turn it on with perfectPresentation=true in the [#](7A3C9A)[config](entry://glossary/config)[#]() file config/create\\_galore\\_bridge-display.properties and restart twice. On NVIDIA, set Power management mode to Prefer maximum performance for javaw.exe."
     },
     {
       "type": "modonomicon:text",

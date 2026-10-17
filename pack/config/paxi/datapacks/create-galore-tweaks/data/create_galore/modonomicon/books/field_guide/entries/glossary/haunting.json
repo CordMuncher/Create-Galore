@@ -1,0 +1,24 @@
+{
+  "category": "glossary",
+  "name": "Haunting",
+  "description": "Fan processing through soul fire.",
+  "icon": {
+    "item": "minecraft:soul_campfire"
+  },
+  "x": 4,
+  "y": 1,
+  "sort_number": 21,
+  "parents": [],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Haunting",
+      "text": "**Haunting** is fan processing through soul fire or a soul campfire (or a Lit Blaze Burner). It transforms the items it hits.\\\n\\\nCreate Garnished adds many haunting recipes, and an orange turns into a Blood Orange this way. JEI lists them."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Where it matters**\n\n- [#](2E5AAC)[Encased Fans](entry://create_basics/fans)[#]()\n- [#](2E5AAC)[Create Garnished](entry://food/garnished)[#]()\n- [#](2E5AAC)[Chocolate, Tea and Coffee](entry://food/sweets_and_drinks)[#]()"
+    }
+  ]
+}

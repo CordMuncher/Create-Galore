@@ -13,12 +13,17 @@
     {
       "type": "modonomicon:text",
       "title": "Ore Guide",
-      "text": "Where each metal comes from in this pack, read from the mods' world generation data. Depths are Y levels, Overworld unless noted.\\\n\\\nOres go further when [#](2E5AAC)[crushed](entry://materials/ore_doubling)[#](). Drillable veins: [#](2E5AAC)[Ore Excavation](entry://industry/ore_excavation)[#]()."
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- [#](FFFFFF)\ue10d[#]() **Zinc**, for brass: Overworld, Y -63 to 70\n- **Lead** only generates as Create Nuclear's ore\n- [#](FFFFFF)\ue10f[#]() **Titanium** and **tungsten** exist only on Northstar's planets\n- Ores go further when crushed"
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Where each metal comes from in this pack, read from the mods' world generation data. Depths are [#](7A3C9A)[Y levels](entry://glossary/y_level)[#](), Overworld unless noted.\\\n\\\nOres go further when [#](2E5AAC)[crushed](entry://materials/ore_doubling)[#](). Drillable veins: [#](2E5AAC)[Ore Excavation](entry://industry/ore_excavation)[#]()."
     },
     {
       "type": "modonomicon:text",
       "title": "Vanilla and Create",
-      "text": "Coal, copper, iron, gold, redstone, lapis, diamond and emerald are vanilla. Terrain mods such as Tectonic change where they end up.\\\n\\\n**Zinc** comes from Create: Y -63 to 70. Brass is copper plus zinc."
+      "text": "Coal, copper, iron, gold, redstone, lapis, diamond and emerald are vanilla. Terrain mods such as Tectonic change where they end up.\\\n\\\n**Zinc** comes from Create: Y -63 to 70. [#](2E5AAC)[Brass](entry://create_basics/brass_and_assembly)[#]() is copper plus zinc."
     },
     {
       "type": "modonomicon:spotlight",
@@ -31,7 +36,7 @@
     {
       "type": "modonomicon:text",
       "title": "Create Nuclear",
-      "text": "- **Lead**: Y -16 to 60\n- **Uranium**: Y -63 to 16, sparse\n- **Thorium**: Y -16 to 55\n- **Nitrate**: Y -63 to 64\n\nAutunite, a building stone, forms striated veins below Y 16."
+      "text": "- **Lead**: Y -16 to 60\n- **Uranium**: Y -63 to 16, sparse\n- **Thorium**: Y -16 to 55\n- **Nitrate**: Y -63 to 64\n\n[Autunite](item://createnuclear:autunite), a building stone, forms striated veins below Y 16."
     },
     {
       "type": "modonomicon:spotlight",
@@ -39,7 +44,7 @@
         "item": "createnuclear:lead_ore"
       },
       "title": "Lead Ore",
-      "text": "The pack's only generated lead, since TFMG's lead ore is off. Mining drops Raw Lead. The ore block itself has no crushing recipe; crush the raw lead."
+      "text": "The pack's only generated lead, since TFMG's lead ore is off. Mining drops [Raw Lead](item://createnuclear:raw_lead). The ore block itself has no crushing recipe; crush the raw lead."
     },
     {
       "type": "modonomicon:spotlight",
@@ -47,12 +52,12 @@
         "item": "createnuclear:uranium_ore"
       },
       "title": "Uranium Ore",
-      "text": "Deep and rare. Feeds [#](2E5AAC)[the reactor](entry://industry/nuclear)[#](). Alex's Caves adds its own uranium in Toxic Caves."
+      "text": "Deep and rare. Feeds [#](2E5AAC)[the reactor](entry://industry/nuclear)[#](). [#](2E5AAC)[Alex's Caves](entry://exploration/alexs_caves)[#]() adds its own uranium in Toxic Caves."
     },
     {
       "type": "modonomicon:text",
       "title": "TFMG",
-      "text": "- **Nickel**: Y -63 to 20\n- **Lithium**: Y -63 to -5, sparse\n- **Bauxite**: a stone that crushes to powder, the start of aluminum\n- Galena: decorative, not an ore\n- Lead: off\\\nOil: [#](2E5AAC)[Oil](entry://industry/tfmg_oil)[#]()."
+      "text": "- **Nickel**: Y -63 to 20\n- **Lithium**: Y -63 to -5, sparse\n- **Bauxite**: a stone that crushes to powder, the start of aluminum\n- Galena: decorative, not an ore\n- Lead: off\n\nOil: [#](2E5AAC)[Oil](entry://industry/tfmg_oil)[#]()."
     },
     {
       "type": "modonomicon:spotlight",
@@ -64,8 +69,29 @@
     },
     {
       "type": "modonomicon:text",
+      "title": "Other Overworld ores",
+      "text": "Other mods add Overworld metals:\n- **Platinum** (Create Propulsion): Y -63 to about 16\n- **Mithril** ([#](2E5AAC)[Iron's Spells 'n Spellbooks](entry://exploration/irons_spellbooks)[#]()): Y -63 to -38, very deep"
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "createpropulsion:platinum_ore"
+      },
+      "title": "Platinum Ore",
+      "text": "Create Propulsion's metal. Crushes and [#](7A3C9A)[washes](entry://glossary/washing)[#]() like any Create ore. Deep Overworld."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "irons_spellbooks:mithril_ore"
+      },
+      "title": "Mithril Ore",
+      "text": "Y -63 to -38. Crushing gives [Crushed Mithril](item://create_wizardry:crushed_mithril) from [#](2E5AAC)[Create: Wizardry](entry://exploration/create_wizardry)[#](), which can be washed or smelted."
+    },
+    {
+      "type": "modonomicon:text",
       "title": "Northstar planets",
-      "text": "Titanium and tungsten exist only off-world, in planet-specific blocks.\n- Titanium: Moon, Mars, Mercury, Venus\n- Tungsten: Mercury only\n- Zinc, copper, iron, gold, redstone, diamond: all four\\\n[#](2E5AAC)[Planets](entry://space/planets)[#]()"
+      "text": "Titanium and tungsten exist only off-world, in planet-specific blocks.\n- **Titanium**: Moon, Mars, Mercury, Venus\n- **Tungsten**: Mercury only\n- Zinc, copper, iron, gold, redstone, diamond: all four\n\n[#](2E5AAC)[Planets](entry://space/planets)[#]()"
     },
     {
       "type": "modonomicon:spotlight",
@@ -78,33 +104,12 @@
     {
       "type": "modonomicon:text",
       "title": "More planet ores",
-      "text": "- Glowstone: Moon, Mercury, Venus\n- Lapis: Moon, Mercury\n- Nether quartz: Mars, Venus\n- Coal: Venus\n\nMercury's tungsten ore is plentiful. It crushes to Crushed Raw Tungsten."
-    },
-    {
-      "type": "modonomicon:text",
-      "title": "Other Overworld ores",
-      "text": "Other mods add Overworld metals:\n- **Platinum** (Create Propulsion): Y -63 to about 16\n- **Mithril** (Iron's Spells 'n Spellbooks): Y -63 to -38, very deep"
-    },
-    {
-      "type": "modonomicon:spotlight",
-      "item": {
-        "item": "createpropulsion:platinum_ore"
-      },
-      "title": "Platinum Ore",
-      "text": "Create Propulsion's metal. Crushes and washes like any Create ore. Deep Overworld."
-    },
-    {
-      "type": "modonomicon:spotlight",
-      "item": {
-        "item": "irons_spellbooks:mithril_ore"
-      },
-      "title": "Mithril Ore",
-      "text": "Y -63 to -38. Crushing gives Crushed Mithril from Create: Wizardry, which can be washed or smelted."
+      "text": "- Glowstone: Moon, Mercury, Venus\n- Lapis: Moon, Mercury\n- Nether quartz: Mars, Venus\n- Coal: Venus\n\nMercury's tungsten ore is plentiful. It crushes to [Crushed Raw Tungsten](item://northstar:crushed_raw_tungsten)."
     },
     {
       "type": "modonomicon:text",
       "title": "Dimension ores",
-      "text": "- **Aether**: zanite, gravitite, ambrosium and icestone in holystone\n- **Alex's Caves**: galena iron in Magnetic Caves, uranium in Toxic Caves, coal and redstone in Forlorn Hollows\n- **Better End**: thallasium, ender and amber ore"
+      "text": "[#](FFFFFF)\ue103[#]() **In depth.** Ores in other dimensions:\n- **Aether**: zanite, gravitite, ambrosium and icestone in holystone\n- **Alex's Caves**: galena iron in Magnetic Caves, uranium in Toxic Caves, coal and redstone in Forlorn Hollows\n- **Better End**: thallasium, ender and amber ore"
     },
     {
       "type": "modonomicon:spotlight",
@@ -112,12 +117,12 @@
         "item": "aether:zanite_ore"
       },
       "title": "Zanite Ore",
-      "text": "Aether holystone. Zanite and ambrosium ores have Create crushing recipes, so a Crushing Wheel doubles them too."
+      "text": "[#](2E5AAC)[Aether](entry://exploration/aether)[#]() holystone. Zanite and ambrosium ores have Create crushing recipes, so a [#](2E5AAC)[Crushing Wheel](entry://create_basics/crushing)[#]() doubles them too."
     },
     {
       "type": "modonomicon:text",
       "title": "Not mined",
-      "text": "No ore generation of their own:\n- Bronze (Alloyed) and steel (TFMG) are alloys\n- Create Crafts & Additions: electrum is an alloy\n- Cataclysm: its metals are not mined\n\nTwilight Forest grows Iron, Copper and Gold Oreberry bushes instead of veins."
+      "text": "No ore generation of their own:\n- Bronze ([#](2E5AAC)[Alloyed](entry://industry/alloyed)[#]()) and steel ([#](2E5AAC)[TFMG](entry://industry/tfmg_steel)[#]()) are alloys\n- Create Crafts & Additions: electrum is an alloy\n- Cataclysm: its metals are not mined\n\n[#](2E5AAC)[Twilight Forest](entry://exploration/twilight_forest)[#]() grows Iron, Copper and Gold Oreberry bushes instead of veins."
     },
     {
       "type": "modonomicon:text",

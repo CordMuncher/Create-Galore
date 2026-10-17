@@ -1,0 +1,24 @@
+{
+  "category": "glossary",
+  "name": "Goggles",
+  "description": "Engineer's Goggles: see speed, stress and contents.",
+  "icon": {
+    "item": "create:goggles"
+  },
+  "x": 0,
+  "y": 1,
+  "sort_number": 19,
+  "parents": [],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Goggles",
+      "text": "**Engineer's Goggles** are worn on your head and show information when you look at a block: stress impact, capacity and speed of kinetic parts, and what is in tanks and basins.\\\n\\\nThey also show a steam boiler's power level, and many add-on blocks give extra readouts through them. Aviator's Goggles work the same way."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Where it matters**\n\n- [#](2E5AAC)[Wrench and Goggles](entry://create_basics/tools_wrench)[#]()\n- [#](2E5AAC)[Stress](entry://create_basics/stress)[#]()\n- [#](2E5AAC)[Airships](entry://flight/airships)[#]()"
+    }
+  ]
+}

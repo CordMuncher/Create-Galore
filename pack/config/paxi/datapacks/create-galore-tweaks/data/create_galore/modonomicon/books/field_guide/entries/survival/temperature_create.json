@@ -25,7 +25,12 @@
   "pages": [
     {
       "type": "modonomicon:text",
-      "title": "What it does",
+      "title": "Create and Altitude Heat",
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- [#](FFFFFF)\ue108[#]() Working Create machines warm nearby players\n- The hotter a Blaze Burner burns, the more it adds\n- You need to be fairly close\n- [#](FFFFFF)\ue109[#]() High up the sky is colder; shelter cuts the chill"
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
       "text": "Create: Cold Sweat makes Create machines change the temperature of nearby players, so a working factory also heats the room.\\\n\\\nThe heat idea itself is in [#](2E5AAC)[Heat](entry://create_basics/heat)[#]()."
     },
     {
@@ -39,7 +44,7 @@
     {
       "type": "modonomicon:text",
       "title": "Other sources",
-      "text": "Also counted: **Steam Engines**, **Encased Fans**, **Fluid Tanks**, **Basins**, pipes and pumps. A working steam boiler radiates more as its level rises. Lava in a container gives heat; water is neutral."
+      "text": "Also counted: **Steam Engines**, **Encased Fans**, **Fluid Tanks**, **Basins**, pipes and pumps.\\\n\\\nA working [#](7A3C9A)[steam boiler](entry://glossary/boiler)[#]() radiates more as its level rises. Lava in a container gives heat; water is neutral."
     },
     {
       "type": "modonomicon:spotlight",
@@ -57,17 +62,17 @@
     {
       "type": "modonomicon:text",
       "title": "Altitude",
-      "text": "Cold Sweat: Altitude splits the sky into temperature bands by Y, set in its own config file. Entering the sky bands shows a message (Altitude chill, Extreme altitude exposure). Enclosed cover can reduce the effect."
-    },
-    {
-      "type": "modonomicon:text",
-      "title": "Protection",
-      "text": "Altitude adds no items of its own. Armor protection works through item tags that start empty, so nothing in this pack gives it. Shelter can cut the effect: a roof and walls, or an enclosed Aeronautics ship."
+      "text": "Cold Sweat: Altitude splits the sky into temperature bands by [#](7A3C9A)[Y](entry://glossary/y_level)[#](), set in its own [#](7A3C9A)[config file](entry://glossary/config)[#](). Entering the sky bands shows a message (Altitude chill, Extreme altitude exposure). Enclosed cover can reduce the effect."
     },
     {
       "type": "modonomicon:text",
       "title": "Airships",
       "text": "Altitude also knows Create Aeronautics ships. Burners and steam vents aboard add heat, and an enclosed ship can shelter you from the chill. See [#](2E5AAC)[Airships](entry://flight/airships)[#]()."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Protection",
+      "text": "[#](FFFFFF)\ue103[#]() **In depth.** Altitude adds no items of its own. Armor protection works through item [#](7A3C9A)[tags](entry://glossary/tags)[#]() that start empty, so nothing in this pack gives it.\\\n\\\nShelter can cut the effect: a roof and walls, or an enclosed Aeronautics ship."
     },
     {
       "type": "modonomicon:text",

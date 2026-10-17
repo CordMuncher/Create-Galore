@@ -7,7 +7,7 @@ The book is data, not a mod. It lives in the always-on Paxi datapack, so the ser
 ```
 pack/config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/
   book.json                       name, look, landing text
-  categories/<id>.json            the 14 sections (tabs)
+  categories/<id>.json            the 15 sections (tabs)
   entries/<category>/<entry>.json one node each
 ```
 
@@ -48,6 +48,46 @@ Patchouli stays installed only because Iron's Spellbooks and Productive Bees shi
 - Text that is too long for a page shrinks to fit rather than overflowing; split long pages anyway so it stays readable.
 - **Page margins.** Modonomicon's default text box (124 px) runs into the spine stitching on left pages and the stacked page edges on right pages. `book.json` narrows it with `book_text_offset_x: 3` and `book_text_offset_width: -9` (112 px, starting 3 px in), which keeps every line on the clean paper. Titles ignore those settings, so the Create Galore Bridge mod caps them at 108 px instead of 120.
 - **How much fits.** About 15 lines under a title, 17 without one, 12 on a spotlight page, at roughly 23 characters a line. `validate_guidebook.py` warns past that.
+
+## Readability conventions
+
+The guide keeps every fact, but long entries are shaped so a reader can tell what matters:
+
+- **Key points.** An entry of roughly 1300+ characters starts with a page titled with the entry name whose text is a key icon, `**Key points**` and 2 to 4 bullets: the must-know facts, restated from the entry. The entry's own intro follows untitled.
+- **In depth.** Niche material (exact numbers, config notes, edge cases, add-on interactions) sits at the end of the entry, and its first page starts with the magnifier icon and `**In depth.**`. Everything after it is optional.
+- **Callouts.** A real danger or lost progress: warning icon + `**Watch out:**`. A useful trick: bulb icon + `**Tip:**`. One or two per entry at most.
+- **Links.** Blue `[#](2E5AAC)[text](entry://category/entry)[#]()` for a thing with its own entry. Purple `[#](7A3C9A)[text](entry://glossary/<term>)[#]()` for jargon defined in **Words to Know** (the `glossary` section, one short entry per term plus an A to Z index). Purple, not green, because Modonomicon draws item links in green. `[Name](item://modid:item)` shows the item's tooltip on hover; leave the name empty and the item's own name is filled in. First mention per entry is enough.
+- **Start Here > Welcome** explains these to players ("Reading the pages"). Change it if the conventions change.
+
+### Icons
+
+Small icons are glyphs in a font added by the always-on resource pack `pack/config/paxi/resourcepacks/create-galore-guide` (`tools/art/guide_icons.py` draws them and writes the font for both `minecraft:default` and `modonomicon:default`, the font book text uses). Book text tints glyphs black, so each icon is wrapped in white: `[#](FFFFFF)\ue100[#]()`. The validator flags unwrapped icons. An icon is about two characters wide.
+
+| Code | Icon | Use |
+|---|---|---|
+| `\ue100` | key | Key points |
+| `\ue101` | warning | Watch out |
+| `\ue102` | bulb | Tip |
+| `\ue103` | magnifier | In depth |
+| `\ue104` | cog | rotation, Create machines |
+| `\ue105` | gauge | stress, SU |
+| `\ue106` | bolt | electricity, FE |
+| `\ue107` | drop | fluids, water |
+| `\ue108` | flame | heat |
+| `\ue109` | snowflake | cold |
+| `\ue10a` | cloud | pollution |
+| `\ue10b` | heart | health, combat |
+| `\ue10c` | drumstick | food |
+| `\ue10d` | crafting grid | items, crafting |
+| `\ue10e` | compass | travel, exploration |
+| `\ue10f` | star | space, the capstone |
+
+Topic icons go only at the start of a key-point bullet or a bold lead-in.
+
+### Pictures and 3D builds
+
+- **Image pages**: `{"type": "modonomicon:image", "images": ["create_galore:textures/gui/guide/<name>.png"], "border": true, "title": "", "text": "<caption>"}`. Images are 200x200 PNGs in the `create-galore-guide` resource pack, shown at half size, with a short caption below (about 3 lines). `tools/art/guide_diagrams.py` draws the current ones from item textures copied out of the jars (its docstring lists them).
+- **Multiblock pages**: `{"type": "modonomicon:multiblock", "multiblock_id": "create_galore:<name>", "multiblock_name": "...", "text": "<caption>", "show_visualize_button": true}`, with the build in `data/create_galore/modonomicon/multiblocks/<name>.json` (`modonomicon:dense`: layers top to bottom, each row string steps east, each character steps south, `0` is the centre, `_` any block, space air; matchers `modonomicon:block`, `modonomicon:blockstateproperty`, `modonomicon:display`). The preview draws block models and block entities but **not Create's Flywheel parts**: shafts, cogwheels, water wheels and other rotating pieces are invisible in it. Only use builds whose point survives that (crushing wheels, casings, tanks, burners, depots). Keep captions to about 4 lines.
 
 ## Checking it
 

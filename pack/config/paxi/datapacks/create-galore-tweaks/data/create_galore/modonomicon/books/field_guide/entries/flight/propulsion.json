@@ -20,6 +20,11 @@
     {
       "type": "modonomicon:text",
       "title": "Thrusters and Engines",
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- [#](FFFFFF)\ue108[#]() **Thrusters** burn piped liquid fuel, throttled by redstone. Wrong fluid, no thrust.\n- **Solid Fuel Thrusters** are the easy start: coal, charcoal, planks.\n- [#](FFFFFF)\ue106[#]() **Ion Thrusters** run on Forge energy.\n- All need Aeronautics physics to be useful."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
       "text": "Create Propulsion: Simulated adds engines for ships: fuel thrusters, electric ion thrusters, steerable vector thrusters, wings and heat engines. They need Aeronautics physics to be useful."
     },
     {
@@ -33,7 +38,7 @@
     {
       "type": "modonomicon:text",
       "title": "Fuels",
-      "text": "Thrusters accept Turpentine (from Pine Resin), TFMG diesel, gasoline, kerosene and naphtha, and Northstar's hydrocarbon, methane, biofuel and liquid hydrogen. Wrong fluid means no thrust. Solid Fuel Thrusters burn coal, charcoal, wood or Blaze Cake. See [#](2E5AAC)[Oil](entry://industry/tfmg_oil)[#]() and [#](2E5AAC)[Rockets](entry://space/rocket_building)[#]()."
+      "text": "Thrusters accept:\n\n- Turpentine (from Pine Resin)\n- TFMG diesel, gasoline, kerosene and naphtha\n- Northstar's hydrocarbon, methane, biofuel and liquid hydrogen\n\n**Wrong fluid means no thrust.** See [#](2E5AAC)[Oil](entry://industry/tfmg_oil)[#]() and [#](2E5AAC)[Rockets](entry://space/rocket_building)[#]()."
     },
     {
       "type": "modonomicon:spotlight",
@@ -41,7 +46,7 @@
         "item": "createpropulsion:solid_fuel_thruster"
       },
       "title": "Solid Fuel Thruster",
-      "text": "Burns items instead of fluid. Easy to start with, since coal, charcoal and planks all work."
+      "text": "Burns items instead of fluid: coal, charcoal, wood or Blaze Cake. Easy to start with, since coal, charcoal and planks all work."
     },
     {
       "type": "modonomicon:spotlight",
@@ -49,7 +54,7 @@
         "item": "createpropulsion:ion_thruster"
       },
       "title": "Ion Thruster",
-      "text": "Runs on Forge energy rather than fuel. Stores energy; generators can feed it from below. See Electricity."
+      "text": "Runs on Forge energy rather than fuel. Stores energy; generators can feed it from below. See [#](2E5AAC)[Electricity](entry://industry/electricity)[#]()."
     },
     {
       "type": "modonomicon:spotlight",
@@ -65,7 +70,7 @@
         "item": "createpropulsion:wing"
       },
       "title": "Wing",
-      "text": "Plain wing blocks. Smelt one to get a Tempered Wing. Copycat versions copy another block's look."
+      "text": "Plain wing blocks. Smelt one to get a Tempered Wing. [#](7A3C9A)[Copycat](entry://glossary/copycat)[#]() versions copy another block's look."
     },
     {
       "type": "modonomicon:spotlight",
@@ -73,12 +78,12 @@
         "item": "createpropulsion:stirling_engine"
       },
       "title": "Stirling Engine",
-      "text": "Makes rotation from heat below it. Solid and Liquid Burners supply that heat. They can warm a boiler but can't heat mixers or superheat anything; that still takes a Blaze Burner."
+      "text": "Makes rotation from heat below it. Solid and Liquid Burners supply that heat. They can warm a [#](7A3C9A)[boiler](entry://glossary/boiler)[#]() but can't heat mixers or superheat anything; that still takes a [#](2E5AAC)[Blaze Burner](entry://create_basics/heat)[#]()."
     },
     {
       "type": "modonomicon:text",
       "title": "Smaller parts",
-      "text": "Redstone Transmission changes speed from a signal, either directly or step by step. Tilt Adapters turn a left/right difference into an angle. Hold W over the Stirling Engine and burners for their Ponders."
+      "text": "[#](FFFFFF)\ue103[#]() **In depth.** Redstone Transmission changes speed from a signal, either directly or step by step. Tilt Adapters turn a left/right difference into an angle. [#](2E5AAC)[Hold W](entry://start_here/tools)[#]() over the Stirling Engine and burners for their Ponders."
     },
     {
       "type": "modonomicon:text",

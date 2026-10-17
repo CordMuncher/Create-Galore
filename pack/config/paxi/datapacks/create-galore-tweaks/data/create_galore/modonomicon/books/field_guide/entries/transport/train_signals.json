@@ -20,7 +20,12 @@
     {
       "type": "modonomicon:text",
       "title": "Signals and Schedules",
-      "text": "Signals keep trains from hitting each other. A Train Signal splits the track into segments, and each segment holds one train at a time. Signals only govern trains that nobody is driving."
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- [#](FFFFFF)\ue104[#]() A **Train Signal** splits track into segments, each holding one train at a time.\n- Signals only govern trains nobody is driving.\n- A **Train Schedule** lists stops and when to leave each. Hand it to a seated driver."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Signals keep trains from hitting each other. A Train Signal splits the track into segments, and each segment holds **one train at a time**. Signals only govern trains that **nobody is driving**."
     },
     {
       "type": "modonomicon:spotlight",
@@ -32,13 +37,8 @@
     },
     {
       "type": "modonomicon:text",
-      "title": "Two modes",
-      "text": "A wrench switches a signal to its second mode. A brass-mode signal is meant to lead into ordinary ones: it holds a train back if, once inside, it could not leave the next segment at once. That keeps queued trains out of a busy junction."
-    },
-    {
-      "type": "modonomicon:text",
       "title": "Redstone",
-      "text": "A redstone signal forces a Train Signal red, and a red signal gives a comparator output. Nixie Tubes attached to a signal make the lights easier to read from a distance."
+      "text": "A redstone signal forces a Train Signal red, and a red signal gives a comparator output. [#](2E5AAC)[Nixie Tubes](entry://create_basics/redstone_and_control)[#]() attached to a signal make the lights easier to read from a distance."
     },
     {
       "type": "modonomicon:spotlight",
@@ -51,7 +51,7 @@
     {
       "type": "modonomicon:text",
       "title": "Schedules",
-      "text": "A **Train Schedule** holds a list of stops and the conditions to leave each. Right-click it to edit, then give it to a driver. Any mob, or a Blaze Burner, seated in front of Train Controls counts as a conductor. You can take the schedule back at any time."
+      "text": "A **Train Schedule** holds a list of stops and the conditions to leave each.\n\n- Right-click it to edit, then give it to a driver.\n- Any mob, or a [#](2E5AAC)[Blaze Burner](entry://create_basics/heat)[#](), seated in front of [#](2E5AAC)[Train Controls](entry://transport/trains)[#]() counts as a conductor.\n- You can take the schedule back at any time."
     },
     {
       "type": "modonomicon:spotlight",
@@ -60,6 +60,11 @@
       },
       "title": "Train Schedule",
       "text": "Stations are the stops. Conditions can be a delay, a cargo level, a redstone signal and more."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Two modes",
+      "text": "[#](FFFFFF)\ue103[#]() **In depth.** A [#](2E5AAC)[wrench](entry://create_basics/tools_wrench)[#]() switches a signal to its second mode. A brass-mode signal is meant to lead into ordinary ones: it holds a train back if, once inside, it could not leave the next segment at once. That keeps queued trains out of a busy junction."
     },
     {
       "type": "modonomicon:text",

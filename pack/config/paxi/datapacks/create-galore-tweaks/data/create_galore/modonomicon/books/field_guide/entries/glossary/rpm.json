@@ -1,0 +1,24 @@
+{
+  "category": "glossary",
+  "name": "RPM",
+  "description": "Rotations per minute: how fast a part spins.",
+  "icon": {
+    "item": "create:speedometer"
+  },
+  "x": 2,
+  "y": 5,
+  "sort_number": 36,
+  "parents": [],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "RPM",
+      "text": "**RPM** (rotations per minute) is how fast a part spins. A network shares one speed, scaled by gear ratios: large to small cogwheel doubles it.\\\n\\\nSome machines need a minimum, like 32 RPM for an Alternator. Faster also costs more stress. A Speedometer shows speed; goggles give the exact RPM."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Where it matters**\n\n- [#](2E5AAC)[Rotation](entry://create_basics/rotation)[#]()\n- [#](2E5AAC)[Transmission](entry://create_basics/transmission)[#]()\n- [#](2E5AAC)[Stress](entry://create_basics/stress)[#]()\n- [#](2E5AAC)[Electricity](entry://industry/electricity)[#]()"
+    }
+  ]
+}

@@ -20,12 +20,17 @@
     {
       "type": "modonomicon:text",
       "title": "Trains",
-      "text": "Create trains run on their own track network and carry glued-together blocks as cars. You can drive one yourself or hand it a schedule.\\\n\\\nHold W over any item here to watch its Ponder."
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- [#](FFFFFF)\ue104[#]() Lay **Train Track** by clicking a placed track, then another spot.\n- A station's **Assembly Mode** builds a train: Train Casing for bogeys, glued blocks, Train Controls.\n- A train can only be turned back into blocks at a station."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Create trains run on their own track network and carry [#](7A3C9A)[glued](entry://glossary/super_glue)[#]()-together blocks as cars. You can drive one yourself or hand it a schedule.\\\n\\\n[#](FFFFFF)\ue102[#]() **Tip:** hold W over any item here to watch its [#](2E5AAC)[Ponder](entry://start_here/tools)[#]()."
     },
     {
       "type": "modonomicon:text",
       "title": "Track",
-      "text": "Train Track is its own block, not a vanilla rail. Click a placed track, then another spot, to lay a straight, a curve or a slope in one go. Sprint while connecting for the longest bend that fits. Blocks in your off-hand are paved under the track."
+      "text": "Train Track is **its own block**, not a vanilla rail. Click a placed track, then another spot, to lay a straight, a curve or a slope in one go. Sprint while connecting for the longest bend that fits. Blocks in your off-hand are paved under the track."
     },
     {
       "type": "modonomicon:spotlight",
@@ -38,7 +43,7 @@
     {
       "type": "modonomicon:text",
       "title": "Stations",
-      "text": "A **Train Station** is a waypoint on your network. Place it beside a track and open its screen. Assembly Mode builds a train, and scheduled trains stay away while it is on. A train can only be turned back into blocks at a station."
+      "text": "A **Train Station** is a waypoint on your network. Place it beside a track and open its screen. [#](7A3C9A)[Assembly Mode](entry://glossary/assemble)[#]() builds a train, and scheduled trains stay away while it is on. A train can **only be turned back into blocks at a station**."
     },
     {
       "type": "modonomicon:spotlight",
@@ -46,12 +51,12 @@
         "item": "create:track_station"
       },
       "title": "Train Station",
-      "text": "Use a map on a station to add a labelled marker at that spot. Assembled trains can be nudged onto nearby track with a wrench."
+      "text": "Use a map on a station to add a labelled marker at that spot. Assembled trains can be nudged onto nearby track with a [#](2E5AAC)[wrench](entry://create_basics/tools_wrench)[#]()."
     },
     {
       "type": "modonomicon:text",
       "title": "Bogeys and controls",
-      "text": "Use **Train Casing** on a track to place a bogey, the wheel unit a car rides on. Click the track again to cycle designs. Glue blocks on with Super Glue. Every train needs Train Controls, and a second set facing the other way lets it leave a station in either direction."
+      "text": "Use **Train Casing** on a track to place a [#](7A3C9A)[bogey](entry://glossary/bogey)[#](), the wheel unit a car rides on.\n\n- Click the track again to cycle designs.\n- Glue blocks on with Super Glue.\n- Every train needs **Train Controls**. A second set facing the other way lets it leave a station in either direction."
     },
     {
       "type": "modonomicon:spotlight",
@@ -72,7 +77,7 @@
     {
       "type": "modonomicon:text",
       "title": "Fuel and driving",
-      "text": "A train moves faster if it finds fuel in chests or barrels glued to it. Vault fuel is not burned. Hold space while driving to roll up to a station.\\\n\\\nTrack works in unloaded chunks: trains still travel and stop, but on-board machines wait until a player is near."
+      "text": "A train moves faster if it finds fuel in chests or barrels glued to it. Vault fuel is not burned. Hold space while driving to roll up to a station.\\\n\\\nTrack works in [#](7A3C9A)[unloaded chunks](entry://glossary/chunk)[#](): trains still travel and stop, but on-board machines wait until a player is near."
     },
     {
       "type": "modonomicon:text",

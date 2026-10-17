@@ -20,7 +20,12 @@
     {
       "type": "modonomicon:text",
       "title": "Kitchen Automation",
-      "text": "Cooking by hand works, but several mods let Create machines do it. **Central Kitchen** teaches Create to use Farmer's Delight blocks. **Slice & Dice** and **Delightful Creators** add Create-powered cutting and kitchen recipes."
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- [#](FFFFFF)\ue104[#]() With **Central Kitchen**, Create machines use Farmer's Delight blocks.\n- [#](FFFFFF)\ue108[#]() A Blaze Burner under a pot or stove heats it.\n- A **Slicer** or **Mechanical Cutter** runs cutting board recipes.\n- [#](FFFFFF)\ue107[#]() Soups are fluids, so a Spout fills bowls."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Cooking by hand works, but several mods let Create machines do it.\n\n- **Central Kitchen** teaches Create to use [#](2E5AAC)[Farmer's Delight](entry://food/farmers_delight)[#]() blocks.\n- **Slice & Dice** and **Delightful Creators** add Create-powered cutting and kitchen recipes."
     },
     {
       "type": "modonomicon:spotlight",
@@ -28,7 +33,7 @@
         "item": "create:blaze_burner"
       },
       "title": "Heat (Central Kitchen)",
-      "text": "A Blaze Burner under a pot or stove heats it. A hotter burner speeds up some utensils. Farmer's Delight heat sources also count as passive boiler heaters."
+      "text": "A Blaze Burner under a pot or stove heats it. A hotter burner speeds up some utensils. Farmer's Delight heat sources also count as [#](7A3C9A)[passive boiler heaters](entry://glossary/passive_heater)[#]()."
     },
     {
       "type": "modonomicon:spotlight",
@@ -49,7 +54,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "The **Stove** and **Skillet** accept ingredients from an Arm too.\\\n\\\nFeasts and pies: an Arm takes servings, and the last serving stays in place until a fresh whole dish replaces it. Pancake stacks take only matching flavours, up to twelve."
+      "text": "The **Stove** and **Skillet** accept ingredients from an Arm too."
     },
     {
       "type": "modonomicon:spotlight",
@@ -70,7 +75,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Liquid Fertilizer is mixed from tree fertilizer and water, or from Organic Compost and water. Filling Organic Compost with it makes **Rich Soil** in a Spout.\\\n\\\nSlice & Dice also fills a bottle with Create's chocolate to make Hot Cocoa."
+      "text": "Liquid Fertilizer is [#](7A3C9A)[mixed](entry://glossary/mixing)[#]() from tree fertilizer and water, or from Organic Compost and water. Filling Organic Compost with it makes **Rich Soil** in a Spout.\\\n\\\nSlice & Dice also fills a bottle with Create's chocolate to make Hot Cocoa."
     },
     {
       "type": "modonomicon:spotlight",
@@ -83,7 +88,12 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Delightful Creators also makes soups and stews **fluids**, so a Spout can fill bowls. Many dishes (steak and potatoes, pies, sandwiches) have Sequenced Assembly versions, and cookies and cakes can be compacted. Look in JEI."
+      "text": "Delightful Creators also makes soups and stews **fluids**, so a Spout can fill bowls.\\\n\\\nMany dishes (steak and potatoes, pies, sandwiches) have [#](2E5AAC)[Sequenced Assembly](entry://create_basics/brass_and_assembly)[#]() versions, and cookies and cakes can be [#](7A3C9A)[compacted](entry://glossary/compacting)[#](). Look in [#](7A3C9A)[JEI](entry://glossary/jei)[#]()."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "[#](FFFFFF)\ue103[#]() **In depth.** Feasts and pies: an Arm takes servings, and the last serving stays in place until a fresh whole dish replaces it.\\\n\\\nPancake stacks take only matching flavours, up to twelve."
     },
     {
       "type": "modonomicon:text",

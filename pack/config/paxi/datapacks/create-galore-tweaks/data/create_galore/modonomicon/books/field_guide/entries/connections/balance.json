@@ -26,27 +26,32 @@
     {
       "type": "modonomicon:text",
       "title": "Balance Changes",
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- Recipe routes that gave far more for less work were cut or toned down\n- A better yield is fine if it costs a bigger build\n- [#](FFFFFF)\ue108[#]() **Steel** needs heat; **bronze** only comes from Alloyed's mixer\n- [#](FFFFFF)\ue10a[#]() TFMG engines and Blaze Burners pollute"
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
       "text": "With this many mods, the same item often has several recipes. Where one route gave far more for less work, it was cut or toned down so the Create machine route stays worth building. A better yield is fine when it costs a bigger build."
     },
     {
       "type": "modonomicon:text",
       "title": "Metals",
-      "text": "- Steel needs heat: Create Nuclear's mix is heated now, and the Alloy Forge no longer makes steel or bronze.\n- Bronze comes from Alloyed's mixer recipe only.\n- BetterEnd's smelter no longer turns 2 debris into 3 scrap."
+      "text": "- Steel needs heat: Create Nuclear's mix is [#](2E5AAC)[heated](entry://create_basics/heat)[#]() now, and the Alloy Forge no longer makes steel or bronze.\n- Bronze comes from [#](2E5AAC)[Alloyed](entry://industry/alloyed)[#]()'s mixer recipe only.\n- BetterEnd's smelter no longer turns 2 debris into 3 scrap."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "- Debris deposits need a Netherite Drill, lava and 2,048 SU.\n- Crushing Limestone gives TFMG Limesand. Crush cut or polished Limestone for Nuclear's Nitrate. Raw copper and zinc crush as in plain Create."
+      "text": "- Debris deposits need a Netherite Drill, lava and 2,048 [#](2E5AAC)[SU](entry://create_basics/stress)[#]().\n- Crushing Limestone gives TFMG Limesand. Crush cut or polished Limestone for Nuclear's Nitrate. Raw copper and zinc crush as in plain Create."
     },
     {
       "type": "modonomicon:text",
       "title": "Parts",
-      "text": "- Steel plates come from TFMG's 3-press Heavy Plate.\n- Ion vector thrusters must be assembled, not converted.\n- Copper wire comes from the Rolling Mill, not the stonecutter.\n- Copycat Wings stonecut 1 to 1."
+      "text": "- Steel plates come from TFMG's 3-press Heavy Plate.\n- Ion vector thrusters must be assembled, not converted.\n- Copper wire comes from the Rolling Mill, not the stonecutter.\n- [#](7A3C9A)[Copycat](entry://glossary/copycat)[#]() Wings stonecut 1 to 1."
     },
     {
       "type": "modonomicon:text",
       "title": "Food",
-      "text": "- The composter no longer triples dough.\n- Milling wheat kernels gives about 1.25 flour each.\n- Popsicle molds take 250 mB of melon juice.\n- Mixed tomato sauce takes 2 tomatoes per 250 mB."
+      "text": "- The composter no longer triples dough.\n- Milling wheat kernels gives about 1.25 flour each.\n- Popsicle molds take 250 [#](7A3C9A)[mB](entry://glossary/mb)[#]() of melon juice.\n- Mixed tomato sauce takes 2 tomatoes per 250 mB."
     },
     {
       "type": "modonomicon:text",
@@ -56,12 +61,12 @@
     {
       "type": "modonomicon:text",
       "title": "Bees and drills",
-      "text": "- Bees can't make alloys, rose quartz, rare metals (titanium, tungsten, platinum, uranium, mithril, netherite), sulfur, saltpeter or rare mob drops.\n- Deposit drills mine gems and glowstone at Ore Excavation's own speed."
+      "text": "- [#](2E5AAC)[Bees](entry://food/bees)[#]() can't make alloys, rose quartz, rare metals (titanium, tungsten, platinum, uranium, mithril, netherite), sulfur, saltpeter or rare mob drops.\n- Deposit drills mine gems and glowstone at [#](2E5AAC)[Ore Excavation](entry://industry/ore_excavation)[#]()'s own speed."
     },
     {
       "type": "modonomicon:text",
       "title": "Other",
-      "text": "- No Uncrafting Table reversing.\n- Propulsion burners don't heat mixers or superheat.\n- TFMG engines pollute while running, and Blaze Burners while they burn fuel.\n- Melon juice and cider hydrate like water."
+      "text": "- No Uncrafting Table reversing.\n- Propulsion burners don't heat mixers or superheat.\n- TFMG engines pollute while running, and Blaze Burners while they burn fuel. See [#](2E5AAC)[Pollution](entry://survival/pollution)[#]().\n- Melon juice and cider hydrate like water."
     },
     {
       "type": "modonomicon:text",

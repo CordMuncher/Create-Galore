@@ -1,0 +1,24 @@
+{
+  "category": "glossary",
+  "name": "Filter Slot",
+  "description": "A slot that picks which items pass or which recipe runs.",
+  "icon": {
+    "item": "create:brass_funnel"
+  },
+  "x": -2,
+  "y": 1,
+  "sort_number": 18,
+  "parents": [],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Filter Slot",
+      "text": "A **filter slot** is a small slot on the face of a brass funnel, tunnel, Smart Chute and many machines. Put an item or a filter in it to choose what passes.\\\n\\\nA List Filter matches chosen items; an Attribute Filter matches by property. On a machine where two recipes fit, an item in its filter slot picks one."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Where it matters**\n\n- [#](2E5AAC)[Moving Items](entry://create_basics/item_logistics)[#]()\n- [#](2E5AAC)[Press, Mixer and Basin](entry://create_basics/processing)[#]()\n- [#](2E5AAC)[Enchantment Industry](entry://industry/enchanting)[#]()"
+    }
+  ]
+}

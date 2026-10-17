@@ -4,7 +4,7 @@
   "icon": {
     "item": "create_galore_bridge:stellar_core"
   },
-  "sort_number": 8,
+  "sort_number": 9,
   "display_mode": "node",
   "background": "modonomicon:textures/gui/dark_slate_seamless.png",
   "background_width": 512,

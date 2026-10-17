@@ -20,12 +20,17 @@
     {
       "type": "modonomicon:text",
       "title": "Alex's Caves",
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- Six huge, rare underground biomes with their own mobs, blocks and hazards.\n- [#](FFFFFF)\ue10e[#]() A **Cave Biome Map** finds the nearest one.\n- [#](FFFFFF)\ue107[#]() Toxic Caves' Acid and Purple Soda are **bottomless** fluids.\n- Off here: the Subterranodon, and crafting the small Submarine."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
       "text": "**Alex's Caves** hides six huge biomes underground. Each has its own creatures, blocks and hazards. They are rare, so the mod gives you a way to locate them."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "The six: **Magnetic Caves**, **Primordial Caves** (dinosaurs, minus the rideable Subterranodon), **Toxic Caves** (acid and uranium), **Abyssal Chasm** (a deep water trench), **Forlorn Hollows** and **Candy Cavity**."
+      "text": "The six biomes:\n\n- **Magnetic Caves**\n- **Primordial Caves**: dinosaurs, minus the rideable Subterranodon\n- **Toxic Caves**: acid and uranium\n- **Abyssal Chasm**: a deep water trench\n- **Forlorn Hollows**\n- **Candy Cavity**"
     },
     {
       "type": "modonomicon:spotlight",
@@ -33,7 +38,7 @@
         "item": "alexscaves:spelunkery_table"
       },
       "title": "Spelunkery Table",
-      "text": "Where Cave Tablets are studied. Place a tablet in the slot to begin research."
+      "text": "Where [Cave Tablets](item://alexscaves:cave_tablet) are studied. Place a tablet in the slot to begin research."
     },
     {
       "type": "modonomicon:spotlight",
@@ -46,7 +51,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Toxic Caves are the Create-connected one. Acid and Purple Soda are marked in Create's own data as **bottomless** fluids, like water and lava, so a hose pulley can draw them without running dry. See [#](2E5AAC)[Fluids](entry://create_basics/fluids)[#]()."
+      "text": "Toxic Caves are the Create-connected one. Acid and Purple Soda are marked in Create's own data as **bottomless** fluids, like water and lava, so a hose pulley can draw them without running dry.\\\n\\\nSee [#](2E5AAC)[Fluids](entry://create_basics/fluids)[#]()."
     },
     {
       "type": "modonomicon:spotlight",
@@ -54,22 +59,22 @@
         "item": "alexscaves:uranium_rod"
       },
       "title": "Uranium Rod",
-      "text": "Alex's Caves has its own uranium and a Nuclear Furnace. It is separate content from Create Nuclear, so check JEI before mixing them."
+      "text": "Alex's Caves has its own uranium and a Nuclear Furnace. It is separate content from Create Nuclear, so check [#](7A3C9A)[JEI](entry://glossary/jei)[#]() before mixing them."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Magnetic Caves add Magnetic Levitation Rail and Neodymium nodes. The Abyssal Chasm is a deep water trench under the ocean, best reached in a [#](2E5AAC)[Deep Seas](entry://ocean/submarines)[#]() submarine."
+      "text": "**Magnetic Caves** add Magnetic Levitation Rail and Neodymium nodes.\\\n\\\nThe **Abyssal Chasm** is a deep water trench under the ocean, best reached in a [#](2E5AAC)[Deep Seas](entry://ocean/submarines)[#]() submarine."
     },
     {
       "type": "modonomicon:text",
       "title": "Turned off here",
-      "text": "Two Alex's Caves rides skip the vehicle game, so they are off. The flying **Subterranodon** never spawns. The **Hullbreaker** no longer drops the Enigmatic Engine, so you can't build its small Submarine. Wrecked ones in the chasm ruins can still be fixed. See [#](2E5AAC)[Getting Around](entry://transport/getting_around)[#]()."
+      "text": "Two Alex's Caves rides skip the vehicle game, so they are off.\n\n- **Subterranodon**: the flier never spawns.\n- **Submarine**: the Hullbreaker no longer drops the Enigmatic Engine, so you can't build this small sub. Wrecks in the chasm ruins can still be fixed. See [#](2E5AAC)[Getting Around](entry://transport/getting_around)[#]()."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Alex's Caves sulfur dust is not its own item here. Its recipes (Slam, Spelunkie, Polymer Plate, gunpowder) use TFMG's sulfur dust, and leftover Alex's dust converts 1:1 in a crafting grid."
+      "text": "[#](FFFFFF)\ue103[#]() **In depth.** Alex's Caves sulfur dust is not its own item here. Its recipes (Slam, Spelunkie, Polymer Plate, gunpowder) use TFMG's sulfur dust, and leftover Alex's dust [#](7A3C9A)[converts 1:1](entry://glossary/canonical_item)[#]() in a crafting grid."
     }
   ]
 }

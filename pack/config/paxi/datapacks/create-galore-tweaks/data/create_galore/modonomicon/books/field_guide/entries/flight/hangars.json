@@ -25,12 +25,12 @@
     {
       "type": "modonomicon:text",
       "title": "Where",
-      "text": "Hangars come in eight biome styles: plains, birch, taiga, dark oak, cherry, jungle, bamboo and savanna. Jungle and plains versions are the most common. They are spaced roughly 500 blocks apart."
+      "text": "Hangars come in eight biome styles: plains, birch, taiga, dark oak, cherry, jungle, bamboo and savanna. Jungle and plains versions are the most common. They are spaced roughly **500 blocks** apart."
     },
     {
       "type": "modonomicon:text",
       "title": "Loot",
-      "text": "Shelf chests hold Hot Air Burners, Hot Air Envelopes, Propellers, Windmill Sails, Symmetric Sails, Springs, Redstone Magnets and basic Create gear. Pulley chests hold Rope Couplings and Andesite Casing."
+      "text": "Two kinds of chest:\n\n- **Shelf chests**: Hot Air Burners, Hot Air Envelopes, Propellers, Windmill Sails, Symmetric Sails, Springs, Redstone Magnets and basic Create gear.\n- **Pulley chests**: Rope Couplings and [Andesite Casing](item://create:andesite_casing)."
     },
     {
       "type": "modonomicon:spotlight",
@@ -38,7 +38,7 @@
         "item": "aeronautics:adjustable_burner"
       },
       "title": "Hot Air Burner",
-      "text": "A common find on hangar shelves, along with envelopes and propellers."
+      "text": "A common find on hangar shelves, along with envelopes and [#](2E5AAC)[propellers](entry://flight/propellers)[#]()."
     },
     {
       "type": "modonomicon:spotlight",

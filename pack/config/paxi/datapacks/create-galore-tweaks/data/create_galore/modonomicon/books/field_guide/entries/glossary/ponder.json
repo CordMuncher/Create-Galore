@@ -1,0 +1,24 @@
+{
+  "category": "glossary",
+  "name": "Ponder",
+  "description": "Create's animated help: hold W over an item.",
+  "icon": {
+    "item": "minecraft:spyglass"
+  },
+  "x": -4,
+  "y": 5,
+  "sort_number": 33,
+  "parents": [],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Ponder",
+      "text": "**Ponder** is Create's animated help. Hover over almost any Create item, in your inventory or JEI, and hold **W**. A scene shows how it works.\\\n\\\nMany add-ons use Ponder too. It is the first place to look for how a machine behaves."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Where it matters**\n\n- [#](2E5AAC)[Tools of the Trade](entry://start_here/tools)[#]()\n- [#](2E5AAC)[Rotation](entry://create_basics/rotation)[#]()"
+    }
+  ]
+}

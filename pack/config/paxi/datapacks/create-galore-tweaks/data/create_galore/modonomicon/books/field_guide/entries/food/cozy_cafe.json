@@ -55,7 +55,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Dirty serving plates drop after customers leave. Hold use on a sponge or sink to clean them. The **Cafe Catalog** in your offhand shows menu price and decor info in tooltips.\\\n\\\nThemed decor sets a theme and modifiers (tips, patience, price). Food: [#](2E5AAC)[Sweets and Drinks](entry://food/sweets_and_drinks)[#]()."
+      "text": "Dirty serving plates drop after customers leave. Hold use on a sponge or sink to clean them.\\\n\\\n[#](FFFFFF)\ue102[#]() **Tip:** the [Cafe Catalog](item://cozycafe:cafe_catalog) in your offhand shows menu price and decor info in tooltips.\\\n\\\nThemed decor sets a theme and modifiers (tips, patience, price). Food: [#](2E5AAC)[Sweets and Drinks](entry://food/sweets_and_drinks)[#]()."
     }
   ]
 }

@@ -20,7 +20,12 @@
     {
       "type": "modonomicon:text",
       "title": "Pollution",
-      "text": "Create: Smog tracks air pollution per chunk. Anything that burns adds smog to the chunk it stands in. It spreads to neighbours, fades slowly, and fades faster in rain. Trees, logs, water and plants absorb it."
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- [#](FFFFFF)\ue10a[#]() Anything that **burns** adds smog to its chunk\n- It spreads and fades slowly; rain, trees, water and plants help\n- [#](FFFFFF)\ue10b[#]() Heavy smog gives you Nausea and hurts crops and grass\n- Clean it up with Flues and scrubbers"
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Create: Smog tracks air pollution per [#](7A3C9A)[chunk](entry://glossary/chunk)[#](). Anything that burns adds smog to the chunk it stands in.\\\n\\\nIt spreads to neighbours, fades slowly, and fades faster in rain. Trees, logs, water and plants absorb it."
     },
     {
       "type": "modonomicon:text",
@@ -42,8 +47,8 @@
     },
     {
       "type": "modonomicon:text",
-      "title": "Other machines",
-      "text": "Any other machine that reports a \"lit\" state adds 3 per second. TFMG machines pollute only while burning fuel: engines 6 per block at full throttle (large 4), fireboxes 8, blast furnaces 30. Idle ones are clean. An Aerometer shows the real result."
+      "title": "What it does",
+      "text": "[#](FFFFFF)\ue101[#]() **Watch out:** heavy pollution gives you Nausea. Toxic adds Poison and Weakness.\\\n\\\nLand suffers too: crops lose growth, flowers and grass die, grass turns to dirt, and in toxic air farmland does too."
     },
     {
       "type": "modonomicon:spotlight",
@@ -56,12 +61,12 @@
     {
       "type": "modonomicon:text",
       "title": "Levels",
-      "text": "Levels by chunk value: Light Haze 400, Polluted 1,800, Heavily Polluted 4,500, Toxic 8,000. The cap is 10,000."
+      "text": "[#](FFFFFF)\ue103[#]() **In depth.** Levels by chunk value:\n- Light Haze 400\n- Polluted 1,800\n- Heavily Polluted 4,500\n- Toxic 8,000\n\nThe cap is 10,000."
     },
     {
       "type": "modonomicon:text",
-      "title": "What it does",
-      "text": "Heavy pollution gives you Nausea. Toxic adds Poison and Weakness. Land suffers too: crops lose growth, flowers and grass die, grass turns to dirt, and in toxic air farmland does too."
+      "title": "Other machines",
+      "text": "Any other machine that reports a \"lit\" state adds 3 per second.\\\n\\\n[#](2E5AAC)[TFMG](entry://industry/tfmg_engines)[#]() machines pollute only while burning fuel: engines 6 per block at full throttle (large 4), fireboxes 8, blast furnaces 30. Idle ones are clean. An Aerometer shows the real result."
     },
     {
       "type": "modonomicon:text",

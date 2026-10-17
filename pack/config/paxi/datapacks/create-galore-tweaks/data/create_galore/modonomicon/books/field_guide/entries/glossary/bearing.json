@@ -1,0 +1,24 @@
+{
+  "category": "glossary",
+  "name": "Bearing",
+  "description": "A block that spins a whole structure attached to it.",
+  "icon": {
+    "item": "create:mechanical_bearing"
+  },
+  "x": -2,
+  "y": -3,
+  "sort_number": 2,
+  "parents": [],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Bearing",
+      "text": "A **bearing** is a mover that spins the structure glued to its face as a contraption.\\\n\\\nThe Mechanical Bearing turns drills and turntables, the Windmill Bearing spins sails for power, the Propeller Bearing pushes ships and the Swivel Bearing turns a sub-ship. Reverse the input and it turns the other way."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Where it matters**\n\n- [#](2E5AAC)[Contraptions](entry://create_basics/contraptions)[#]()\n- [#](2E5AAC)[Power Sources](entry://create_basics/power_sources)[#]()\n- [#](2E5AAC)[Propellers](entry://flight/propellers)[#]()\n- [#](2E5AAC)[Building a Ship](entry://flight/ship_building)[#]()"
+    }
+  ]
+}

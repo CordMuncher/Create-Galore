@@ -1,0 +1,24 @@
+{
+  "category": "glossary",
+  "name": "Mana",
+  "description": "The resource spells are cast with.",
+  "icon": {
+    "item": "irons_spellbooks:iron_spell_book"
+  },
+  "x": -2,
+  "y": 3,
+  "sort_number": 26,
+  "parents": [],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Mana",
+      "text": "**Mana** is what Iron's Spells uses to cast spells. It refills with time.\\\n\\\nCreate: Wizardry turns mana into a fluid you can extract and pipe like water, but un-insulated Arcane Pipes leak it."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Where it matters**\n\n- [#](2E5AAC)[Magic](entry://exploration/magic)[#]()\n- [#](2E5AAC)[Iron's Spellbooks](entry://exploration/irons_spellbooks)[#]()\n- [#](2E5AAC)[Create: Wizardry](entry://exploration/create_wizardry)[#]()"
+    }
+  ]
+}

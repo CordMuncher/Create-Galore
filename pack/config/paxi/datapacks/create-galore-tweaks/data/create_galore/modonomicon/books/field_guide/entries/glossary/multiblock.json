@@ -1,0 +1,24 @@
+{
+  "category": "glossary",
+  "name": "Multiblock",
+  "description": "A machine built from several blocks working as one.",
+  "icon": {
+    "item": "create:fluid_tank"
+  },
+  "x": 6,
+  "y": 3,
+  "sort_number": 30,
+  "parents": [],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Multiblock",
+      "text": "A **multiblock** is a machine made of several blocks that work as one. Fluid Tanks and Item Vaults join up, and a steam boiler is a multiblock.\\\n\\\nOthers in the pack: TFMG's blast furnace, the Create Nuclear reactor, Ratatouille's Oven and the Modular Accumulator. Shape matters, so check Ponder."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Where it matters**\n\n- [#](2E5AAC)[Fluids, Pipes and Pumps](entry://create_basics/fluids)[#]()\n- [#](2E5AAC)[TFMG Steel](entry://industry/tfmg_steel)[#]()\n- [#](2E5AAC)[Nuclear Reactors](entry://industry/nuclear)[#]()"
+    }
+  ]
+}

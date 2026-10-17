@@ -26,12 +26,17 @@
     {
       "type": "modonomicon:text",
       "title": "Train Add-ons",
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- [#](FFFFFF)\ue104[#]() **Steam 'n' Rails**: new gauges, Monorail and Phantom track, bogeys, switches and couplers.\n- **Railways Navigator**: route search, display boards and Penalty Anchors.\n- **Train Utilities**: sliding train doors in dozens of styles."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
       "text": "Several mods extend Create trains: Steam 'n' Rails for new track and parts, Railways Navigator for route information, Train Utilities for doors, Threaded Trains for server speed, and Xaero Train Map for the map."
     },
     {
       "type": "modonomicon:text",
       "title": "Steam 'n' Rails",
-      "text": "Adds Wide and Narrow gauge track, a Monorail, and Phantom track that fits any bogey. Track also comes in many wood and stone styles. You also get many more bogey designs, couplers, buffers, a handcar and styling blocks for locomotives such as boilers and smokestacks."
+      "text": "Steam 'n' Rails adds:\n\n- **Track:** Wide and Narrow gauge, a Monorail, and Phantom track that fits any [#](7A3C9A)[bogey](entry://glossary/bogey)[#](). Track also comes in many wood and stone styles.\n- **Parts:** many more bogey designs, couplers, buffers and a handcar.\n- **Styling:** blocks for locomotives such as boilers and smokestacks."
     },
     {
       "type": "modonomicon:spotlight",
@@ -47,7 +52,7 @@
         "item": "railways:semaphore"
       },
       "title": "Semaphore",
-      "text": "Sits on a pole above a Train Signal and shows its state. Two stacked show if some or all exits are blocked."
+      "text": "Sits on a pole above a [#](2E5AAC)[Train Signal](entry://transport/train_signals)[#]() and shows its state. Two stacked show if some or all exits are blocked."
     },
     {
       "type": "modonomicon:spotlight",
@@ -55,7 +60,7 @@
         "item": "railways:track_coupler"
       },
       "title": "Train Coupler",
-      "text": "Couples and decouples trains without taking them apart. A wrench changes the mode and the gap between pads."
+      "text": "Couples and decouples trains without taking them apart. [#](2E5AAC)[A wrench](entry://create_basics/tools_wrench)[#]() changes the mode and the gap between pads."
     },
     {
       "type": "modonomicon:spotlight",
@@ -68,7 +73,7 @@
     {
       "type": "modonomicon:text",
       "title": "Railways Navigator",
-      "text": "Adds a Navigator item that lists connections with stopovers and live data, Advanced Display boards, a Train Station Clock and a Lectern with Navigator. Penalty Anchors add a cost to a stretch of track. Route overlay options are on the \\\\ key."
+      "text": "Adds:\n\n- a **Navigator** item that lists connections with stopovers and live data\n- Advanced Display boards, a Train Station Clock and a Lectern with Navigator\n- **Penalty Anchors**, which add a cost to a stretch of track"
     },
     {
       "type": "modonomicon:spotlight",
@@ -76,7 +81,7 @@
         "item": "createrailwaysnavigator:navigator"
       },
       "title": "Navigator",
-      "text": "Search for a route to a station and see the trains that run it, with delays and changes along the way."
+      "text": "Search for a route to a station and see the trains that run it, with delays and changes along the way.\\\n\\\nRoute overlay options are on the \\\\ key."
     },
     {
       "type": "modonomicon:spotlight",
@@ -92,12 +97,12 @@
         "item": "createrailwaysnavigator:penalty_anchor"
       },
       "title": "Penalty Anchor",
-      "text": "Trains pick the cheapest path. Raise the penalty with a wrench to push them onto another route. Redstone weakens it."
+      "text": "Trains pick the **cheapest path**. Raise the penalty with a wrench to push them onto another route. Redstone weakens it."
     },
     {
       "type": "modonomicon:text",
       "title": "Train Utilities",
-      "text": "Adds sliding train doors in dozens of real-world styles, platform and line blocks, and frameless glass. Some doors need small parts like Processing Units and Rubber Seals, made by Create assembly. Doors can be opened by hand or follow a moving contraption."
+      "text": "Adds sliding train doors in dozens of real-world styles, platform and line blocks, and frameless glass. Some doors need small parts like Processing Units and Rubber Seals, made by [#](2E5AAC)[Create assembly](entry://create_basics/brass_and_assembly)[#](). Doors can be opened by hand or follow a moving [#](2E5AAC)[contraption](entry://create_basics/contraptions)[#]()."
     },
     {
       "type": "modonomicon:spotlight",
@@ -110,7 +115,7 @@
     {
       "type": "modonomicon:text",
       "title": "Performance and map",
-      "text": "Create: Threaded Trains runs the railway network's calculations on a separate thread, which helps large networks on a server. It has no blocks.\\\n\\\nXaero Train Map draws trains on Xaero's World Map. It only affects your own screen."
+      "text": "[#](FFFFFF)\ue103[#]() **In depth.** Create: Threaded Trains runs the railway network's calculations on a separate thread, which helps large networks on a server. It has no blocks.\\\n\\\nXaero Train Map draws trains on Xaero's World Map. It only affects your own screen."
     },
     {
       "type": "modonomicon:text",

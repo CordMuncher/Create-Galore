@@ -27,7 +27,9 @@ for f in glob.glob(ROOT+'/entries/**/*.json',recursive=True):
     except Exception as e: errs.append(f'{eid}: bad JSON {e}')
 def lines(t):
     # approx wrap at 23 chars per line (text box is 112 px wide, see book_text_offset_* in book.json)
-    t=re.sub(r'\]\([^)]*\)','',t).replace('**','').replace('\\\n','\n')
+    t=re.sub(r'\[#\]\([0-9A-Fa-f]*\)','',t)  # colour markers take no room
+    t=re.sub(ICON,'ii',t)  # an icon is about two characters wide
+    t=re.sub(r'\]\([^)]*\)','',t).replace('**','').replace('[','').replace('\\\n','\n')
     return sum(max(1,-(-len(para)//23)) for para in t.split('\n'))
 def chk_item(eid,it):
     if items is None: return
@@ -42,6 +44,11 @@ def chk_recipe(eid,r):
     t=json.load(open(f)).get('type','')
     if t not in ('minecraft:crafting_shaped','minecraft:crafting_shapeless'):
         errs.append(f'{eid}: recipe {r} has type {t}, not a crafting recipe')
+ICON='[\ue100-\ue1ff]'  # Field Guide icons (tools/art/guide_icons.py), drawn by the create-galore-guide resource pack
+ICON_OK=re.compile(r'\[#\]\(FFFFFF\)'+ICON+r'\[#\]\(\)')
+ITEM_LINK=re.compile(r'\]\(item://([a-z0-9_.-]+:[a-z0-9_/.-]+)\)')
+DATA=pathlib.Path(ROOT).parents[2]  # .../data/create_galore
+RP=pathlib.Path(ROOT).parents[6]/'resourcepacks/create-galore-guide/assets'
 LINK=re.compile(r'\]\(entry://([^)#]+)(#[^)]*)?\)')
 for eid,e in sorted(entries.items()):
     if flt and not eid.startswith(flt): continue
@@ -60,6 +67,9 @@ for eid,e in sorted(entries.items()):
         txt=p.get('text','')
         for m in LINK.finditer(txt):
             if m.group(1) not in entries: errs.append(f'{eid} p{i}: broken link {m.group(1)}')
+        if re.search(ICON,ICON_OK.sub('',txt)): errs.append(f'{eid} p{i}: icon not wrapped in [#](FFFFFF)...[#]() (book text tints it black)')
+        if '{{' in txt: errs.append(f'{eid} p{i}: leftover {{{{icon}}}} token')
+        for m in ITEM_LINK.finditer(txt): chk_item(eid,m.group(1))
         if '$(' in txt: errs.append(f'{eid} p{i}: leftover Patchouli code')
         if re.search(r'(?<!%)%(?!%)',txt): errs.append(f'{eid} p{i}: write % as %%')
         if '—' in txt: warns.append(f'{eid} p{i}: em-dash')
@@ -79,7 +89,14 @@ for eid,e in sorted(entries.items()):
         elif t=='crafting_recipe':
             for k in ('recipe_id_1','recipe_id_2'):
                 if k in p: chk_recipe(eid,p[k])
-        elif t in ('image','entity','empty','multiblock'): pass
+        elif t=='multiblock':
+            mb=p.get('multiblock_id','').partition(':')
+            if not (DATA.parent/mb[0]/'modonomicon/multiblocks'/(mb[2]+'.json')).exists(): errs.append(f'{eid} p{i}: multiblock {p.get("multiblock_id")} not found')
+        elif t=='image':
+            for im in p.get('images',[]):
+                ns,_,path=im.partition(':')
+                if not (RP/ns/path).exists(): errs.append(f'{eid} p{i}: image {im} not in the create-galore-guide resource pack')
+        elif t in ('entity','empty'): pass
         else: errs.append(f'{eid} p{i}: unknown page type {t}')
 # graph: one spot per entry in each category, no cycles
 for c in cats:

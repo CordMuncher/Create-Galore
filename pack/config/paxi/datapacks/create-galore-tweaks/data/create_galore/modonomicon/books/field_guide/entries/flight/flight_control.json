@@ -34,7 +34,7 @@
         "item": "create_flight_control:flight_control_tool_gun"
       },
       "title": "Flight Control Tool Gun",
-      "text": "Select an engine or controller, then right-click the computer to link it. Also links tanks, sensors and seats."
+      "text": "Select an [#](2E5AAC)[engine](entry://flight/propulsion)[#]() or controller, then right-click the computer to link it. Also links tanks, sensors and seats."
     },
     {
       "type": "modonomicon:spotlight",
@@ -42,7 +42,7 @@
         "item": "create_flight_control:flight_control_computer"
       },
       "title": "Flight Control Computer",
-      "text": "Allocates thrust to meet the demand of linked controllers. Goggles show how many engines and controllers are active."
+      "text": "Allocates thrust to meet the demand of linked controllers. [#](2E5AAC)[Goggles](entry://create_basics/tools_wrench)[#]() show how many engines and controllers are active."
     },
     {
       "type": "modonomicon:spotlight",
@@ -50,7 +50,7 @@
         "item": "create_flight_control:attitude_hold"
       },
       "title": "Smart Attitude Stabilizer",
-      "text": "Modes: Level, Level plus Heading, and Hold Attitude. Needs shaft stress from below and a linked computer."
+      "text": "Modes: Level, Level plus Heading, and Hold Attitude. Needs shaft [#](2E5AAC)[stress](entry://create_basics/stress)[#]() from below and a linked computer."
     },
     {
       "type": "modonomicon:spotlight",
@@ -79,7 +79,7 @@
     {
       "type": "modonomicon:text",
       "title": "More parts",
-      "text": "Other parts: Flight HUD Projector, Attitude Display, Navigation Terminal and Profile Builder, couplers for speed and distance, and a Redstone Proxy that lets redstone toggle modes. Fuel tanks link to thrusters within a short range."
+      "text": "Other parts:\n\n- Flight HUD Projector, Attitude Display, Navigation Terminal and Profile Builder\n- couplers for speed and distance\n- a Redstone Proxy that lets redstone toggle modes\n\nFuel tanks link to thrusters within a short range."
     },
     {
       "type": "modonomicon:text",
