@@ -62,6 +62,11 @@
       "text": "Air pressure fades to nothing by the top of the world (Y 320), so balloons and propellers stop lifting there. [#](2E5AAC)[Thrusters](entry://flight/propulsion)[#]() keep full power in thin air: with its exhaust pointing down, one fuelled Thruster lifted a small test ship past Y 1750 in under 10 seconds. Bring enough fuel to hold the height while the drive spools."
     },
     {
+      "type": "modonomicon:text",
+      "title": "Climbing safely",
+      "text": "Fixed thrusters at full power with nobody steering can tip a ship over and drop it. Steer them (vector thrusters, or trim each one's power) and climb steadily.\\\n\\\nRide in a **closed cabin**: open decks freeze you above Y 192 (see [#](2E5AAC)[Temperature and Create](entry://survival/temperature_create)[#]()). A very fast climb can make a busy server throw riders off."
+    },
+    {
       "type": "modonomicon:spotlight",
       "item": {
         "item": "northstar_aeronautics_compat:stellar_navigator"

@@ -6,7 +6,7 @@ A big, long-term Minecraft modpack built around the Create mod. Think "Minecraft
 
 | | |
 |---|---|
-| **Version** | 0.2.1 |
+| **Version** | 0.2.2 |
 | **Minecraft** | 1.21.1 |
 | **Loader** | NeoForge **21.1.262** (pinned, don't update it, see [Known issues](#known-issues)) |
 | **Mods** | 228 from Modrinth + the pack's own small Create Galore Bridge and Lag Watch + Twilight Forest added by hand, plus 4 shader packs and the Fresh Animations resource pack |
@@ -15,7 +15,7 @@ A big, long-term Minecraft modpack built around the Create mod. Think "Minecraft
 
 ## Install (players)
 
-1. Download `Create-Galore-0.2.1.mrpack` from the [latest release](https://github.com/emresahin0906-code/Create-Galore/releases/latest). The older `.mrpack` files in the repo's top folder are past versions; don't import those.
+1. Download `Create-Galore-0.2.2.mrpack` from the [latest release](https://github.com/emresahin0906-code/Create-Galore/releases/latest). The older `.mrpack` files in the repo's top folder are past versions; don't import those.
 2. Import it:
    - **Prism Launcher:** Add Instance → Import → pick the `.mrpack`.
    - **Modrinth App:** drag the `.mrpack` onto the window (or File → Import).
