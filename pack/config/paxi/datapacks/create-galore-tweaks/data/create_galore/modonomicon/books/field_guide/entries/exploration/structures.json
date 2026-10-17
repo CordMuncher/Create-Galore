@@ -20,7 +20,17 @@
     {
       "type": "modonomicon:text",
       "title": "Structures",
-      "text": "This pack has a lot of structure mods. Together they fill the world with villages, ruins, dungeons, forts and wrecks, many of them stuffed with loot. This is the guide to which mod adds what."
+      "text": "This pack has a lot of structure mods. Together they add villages, ruins, dungeons, forts and wrecks, many of them stuffed with loot. This is the guide to which mod adds what."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "How Far Apart",
+      "text": "Structures are spread out so each find counts. The surface has about twice as many as vanilla, shared evenly by kind: a mod with ten kinds of building turns up five times as often as one with two. The next of the same kind can be kilometres away."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Left as common as their mods make them, because they are part of the land: the Ice Maze's ice arches, the Abyssal Chasm, and wild cherry trees and berry bushes."
     },
     {
       "type": "modonomicon:text",

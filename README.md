@@ -292,6 +292,7 @@ All tests ran headless in a cloud machine (4 cores, 16 GB RAM, no GPU), so speed
 - `tools/updater/`: the pre-launch updater (`create-galore-updater.jar`, plain Java): runs packwiz-installer against the pack on GitHub, and with `--clean` resets every config first
 - `tools/bridge-mod/`, `tools/lagwatch-mod/`: source and build scripts for the pack's two small mods
 - `tools/structscan-mod/`: Structure Scan, a tuning tool (not in the pack) that finds every structure from the seed without generating chunks and reports density per layer and per mod. See its README
+- `tools/structure-thinning/`: scripts that turn a Structure Scan into structure spacing for one layer (`plan.py`), write it into the mods' configs (`apply.py`) and check the result per biome and against vanilla (`biome_check.py`, `final_check.py`). The decisions for each layer are in `docs/structure-thinning/`
 - `tools/server-setup/`: the Windows Server Setup app (C#, .NET Framework 4.8, so it needs nothing installed). `tools/build_server_bundle.py` turns `pack/` into the mod list and config bundle the app carries, so the app always matches the pack it was built with
 - `.github/workflows/release.yml`: builds the GitHub release (the `.mrpack`, the Server Setup app, a server kit zip with the scripts and docs, and this README) whenever the pack, server files, app or docs change on `main-6fi2ef`. The release is tagged with the pack version; pushing again without a version bump replaces that release's files
 
