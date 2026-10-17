@@ -299,6 +299,10 @@ file = "config/paxi/datapacks/create-galore-tweaks/data/alloyed/recipe/pressing/
 hash = "9e7763981dd64b9195c77ece7a070cbe77816b746d1eba55033c6cad8a7f0035"
 
 [[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/animalhusbandry/recipe/animal_medicine.json"
+hash = "c7ef193c56bca6171ccda9409910befcba264dcafbc72e5574fbdc82e49c5a05"
+
+[[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/aquamirae/worldgen/structure_set/shipwreck.json"
 hash = "67f9536a0965ee554ffdf061c23abb03358f6bd12b099c97f4d83dbab7578c4b"
 
@@ -355,6 +359,10 @@ file = "config/paxi/datapacks/create-galore-tweaks/data/c/tags/item/foods/mango.
 hash = "0e2b9b38326db6f68a3cc115af111589f39344fb1f2c2838bb9fef0fb107e7c7"
 
 [[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/c/tags/item/foods/milk.json"
+hash = "95c68999d871fbd5a49e52e3c71ea762c7937ccdbfb84fc2230e9eea645171f3"
+
+[[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/c/tags/item/foods/orange.json"
 hash = "3747777bf36925814c9c996c335693a265b5c8a4485bdd9564b7e965eca09aac"
 
@@ -381,6 +389,10 @@ hash = "ca5c9c9dd3eff157a37ebba1175a3c694e2065fdff1afdf5aebf1e5da0067e54"
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/c/tags/item/hidden_from_recipe_viewers.json"
 hash = "e93016c6f35a6ddc631393398fb7a779ee0e957c87c52e09c0a31ac009921c78"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/c/tags/item/mushrooms/truffle.json"
+hash = "b052c95dad05646520aaec21a0c3598c16c803d9ddfb058a35d1d09415f56f6d"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/c/tags/item/storage_blocks/raw_lead.json"
@@ -517,6 +529,7 @@ hash = "c919cad77acf79ed938ba0fba711d0f0d99af984b7e3355a0b1c04dd55478b21"
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/cold_sweat/item/insulator/northstar/martian_steel_space_suit_leggings.json"
 hash = "6153f655aec1620b1b799b1e2aa1dffa50af403f109b9a4c80386ddf838491ed"
+
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/function/give_field_guide.mcfunction"
 hash = "8e9e30da9c1385f17227c7c538defa29b2e02259cc8f2576e1c48fb13c7b734b"
@@ -831,7 +844,7 @@ hash = "18244ee31b511d1fc4128607d3a9f295e84bc33f764d24297ab9156c1bf40ab3"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/food/animals.json"
-hash = "67b634b511b1b8aee07223ef32479d5a3e965a4827f70235f6d64cbd787f5a98"
+hash = "028f20d599db93eeb3f2ae6196d96a0b5d603bb50543569e481d1b31eb935739"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/food/bees.json"
@@ -843,7 +856,7 @@ hash = "c44c509ece2ff3c227f4dec6d99d1ebd739b41fdb4c71f8dd81c63b53520f7b7"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/food/cozy_cafe.json"
-hash = "9f3e129b7b20f52520ea02e6701157d27d3332f46278a88ae7d3255ad2686046"
+hash = "ba792acfdead902bab27a7c87162c1fd2c37cdef64adcc6f2116736c5945ec3d"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/food/crops_and_herbs.json"
@@ -1315,11 +1328,11 @@ hash = "d8f92494e82044f2596b6b629738b1ef16448c5a9b3d18610063585ba541c6e3"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/survival/seasons.json"
-hash = "912f2b907743e68de8a090417676d26738c67bc2428d4740658f53fdc1ff161e"
+hash = "07046df2776fb592871be47f24af6ea03edd2e77800ebf513f37df4b5b7c6362"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/survival/seasons_crops.json"
-hash = "a64224526087282131547aef34fe0baa580e54ecf5650874f4ed181fbf1ea417"
+hash = "9240a06562cc1ef3506dc16b31e25e751c713e66a8a660f7379de06011c8a639"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/survival/temperature.json"
@@ -2730,6 +2743,7 @@ metafile = true
 [[files]]
 file = "mods/create-galore-bridge-1.7.1.jar"
 hash = "c27c54bc1869c86b81208ea7b5c5f205c4773687f85f144d2a78c8f7b867677d"
+
 [[files]]
 file = "mods/create-galore-lagwatch-1.0.0.jar"
 hash = "2bb446ae0d08e1944f275bd466a9f3e1d5d4a460a57012bf3602f7da748d49bc"

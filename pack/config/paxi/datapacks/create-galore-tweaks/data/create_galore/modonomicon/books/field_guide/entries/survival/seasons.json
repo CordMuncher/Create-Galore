@@ -43,7 +43,7 @@
     {
       "type": "modonomicon:text",
       "title": "Crops",
-      "text": "**The big rule:** crops only grow in the right season. Out of season they grow slowly or not at all, depending on the [#](7A3C9A)[config](entry://glossary/config)[#](). Tooltips may list a crop's seasons.\\\n\\\nWinter is hardest: very few crops grow. [#](2E5AAC)[Details](entry://survival/seasons_crops)[#]()."
+      "text": "**The big rule:** crops only grow in the right season. Out of season they grow slowly. A [#](7A3C9A)[config](entry://glossary/config)[#]() setting can make them stop or break instead. Tooltips may list a crop's seasons.\\\n\\\nWinter is hardest: very few crops grow. [#](2E5AAC)[Details](entry://survival/seasons_crops)[#]()."
     },
     {
       "type": "modonomicon:text",
