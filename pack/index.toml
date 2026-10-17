@@ -63,15 +63,15 @@ hash = "265eacba01c72ccd5f7550eef83f895a04df4b9d37538418ad4ef892b36a05cc"
 
 [[files]]
 file = "config/cristellib/alexscaves/structure_placement_config.json5"
-hash = "19e52264d00799dc531c4eff6d64d1710622f29b01af62d023181f66774df2ba"
+hash = "426d78651264dd09b961412fb90399a0d8c8bd7396437706238e49f982a6a87e"
 
 [[files]]
 file = "config/cristellib/betterdungeons/structure_placement_config.json5"
-hash = "351c478b77407648a9757d453a055dba03b875efbff22a98aed216daab351d07"
+hash = "c664b2bfbbc6e892a86f270b3a4bad37676282a8e44ff5467ef4f5d42a011563"
 
 [[files]]
 file = "config/cristellib/mr_dungeons_andtaverns/structure_placement_config.json5"
-hash = "6c7d1f307af36c5b59378b11142fab92ba9afe6f024d92811c1ba41627344677"
+hash = "2cb7b1b8c93c2c56194ef52cc01408f3256e77710ef8b774fc86fa9fd5e35a7d"
 
 [[files]]
 file = "config/crittersandcompanions-common.json5"
@@ -644,7 +644,7 @@ hash = "08415496217fe3e56b306741db5a0b1d5f6ad2637888bd2b645d3f62e9967786"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/exploration/structure_packs.json"
-hash = "2a5608c409b5c25f3e86b7795819ed1aab97f4de1a6df84a04f8892adbb4fee1"
+hash = "8632a6dd5dc315e394f849bb53b5457bef4bc772af8e40a60af8a5963f605faa"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/exploration/structures.json"
@@ -1367,6 +1367,10 @@ file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/recipe/uni
 hash = "b5e82e62f7615510dba5e3227c41fa9aa4d10ca0456124ea2a4dcd272d6df2c3"
 
 [[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_ltab/worldgen/structure_set/cave_ruins.json"
+hash = "01c5213dca67528b53ac02bb758bef37a832d450d88a7ce2c135e27ae6aa3117"
+
+[[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/createaddition/recipe/compacting/biomass_pellet.json"
 hash = "c1116c09ad4214959581a4bf38ca29f9bfe5e9aefa4ace87436d41ec2994b5fb"
 
@@ -1711,6 +1715,10 @@ file = "config/paxi/datapacks/create-galore-tweaks/data/minecraft/tags/item/beac
 hash = "38900f83968c27a80817b5431ba59c8d9de11993a8f6bc750f269108db2f0caa"
 
 [[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/mowziesmobs/worldgen/structure_set/wrought_chambers.json"
+hash = "1edcdd12dd84c442bc9ddf28ea40fa14969bce7947f7feb6a9cf24a51c8d47fe"
+
+[[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/mynethersdelight/loot_modifiers/add_loot_bastion_hoglin_stable.json"
 hash = "2ca6a8c428d5bc964f68a1fd0a9ec125168fb7a04710c230fbe05b25a502690a"
 
@@ -1901,6 +1909,10 @@ hash = "78bce76491d60c3b5be50dfbb471021a6406b0e37c7a44a55985d944c39018c6"
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/ratatouille/recipe/milling/wheat_flour.json"
 hash = "1cc8a2cbfe574a8914b98d339cb5fe14f64c2f6f9437752ed0a8e5178488b1a6"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/terralith/worldgen/structure_set/underground.json"
+hash = "5bfdf1b9e094ce72f46809c2a59d511f322775383d7309bf44b6eded250b8301"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/tfmg/recipe/blasting/lead_ingot_from_crushed_blasting.json"
