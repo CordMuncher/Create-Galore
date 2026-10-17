@@ -62,7 +62,12 @@
     {
       "type": "modonomicon:text",
       "title": "Altitude",
-      "text": "Cold Sweat: Altitude splits the sky into temperature bands by [#](7A3C9A)[Y](entry://glossary/y_level)[#](), set in its own [#](7A3C9A)[config file](entry://glossary/config)[#](). Entering the sky bands shows a message (Altitude chill, Extreme altitude exposure). Enclosed cover can reduce the effect."
+      "text": "Cold Sweat: Altitude splits the sky into temperature bands by [#](7A3C9A)[Y](entry://glossary/y_level)[#](), set in its own [#](7A3C9A)[config file](entry://glossary/config)[#](). Each band shows a message: \"The mountain air grows colder.\" from Y 128, \"The air grows colder at this altitude.\" from Y 192, \"The air grows thin and bitter.\" from Y 256. Deep caves are a little warmer."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "[#](FFFFFF)\ue101[#]() **Watch out:** open sky is harsh. On an open deck above Y 192 you freeze in under a minute without insulation; leather buys about two minutes.\\\n\\\nA closed cabin with a roof and walls stops the chill completely, on the ground or on a ship."
     },
     {
       "type": "modonomicon:text",

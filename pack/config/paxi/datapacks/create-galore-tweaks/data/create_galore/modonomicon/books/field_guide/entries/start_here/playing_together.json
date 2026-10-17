@@ -20,7 +20,7 @@
     {
       "type": "modonomicon:text",
       "title": "Playing Together",
-      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- Only areas near a player run. Machines elsewhere stop.\n- **Chunk Loaders** keep a base or train running while you're away.\n- Everyone has to sleep to skip the night.\n- The server backs up the world every 2 hours."
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- Only areas near a player run. Machines elsewhere stop.\n- **Chunk Loaders** keep a base or train running while you're away.\n- One player in bed skips the night.\n- The server backs up the world every 2 hours."
     },
     {
       "type": "modonomicon:text",
@@ -35,7 +35,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**Night:** every player online has to be in bed to skip it.\\\n\\\n**Finding each other:** share a waypoint to chat from the [#](2E5AAC)[map](entry://home/maps)[#](), or check the other player's spot on it.\\\n\\\n**Dying:** see [#](2E5AAC)[Death and Graves](entry://survival/death_and_graves)[#](); a friend can fetch your grave."
+      "text": "**Night:** one player in bed is enough to skip it, so the other can keep working.\\\n\\\n**Finding each other:** share a waypoint to chat from the [#](2E5AAC)[map](entry://home/maps)[#](), or check the other player's spot on it.\\\n\\\n**Dying:** see [#](2E5AAC)[Death and Graves](entry://survival/death_and_graves)[#](); a friend can fetch your grave."
     },
     {
       "type": "modonomicon:text",

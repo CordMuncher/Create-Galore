@@ -13,7 +13,7 @@
     {
       "type": "modonomicon:text",
       "title": "Temperature",
-      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- [#](FFFFFF)\ue109[#]() Too hot or too cold and you take damage and cannot sleep\n- Spawn can be snowy: **insulate early**\n- Dress for the biome and keep a heat source nearby\n- Higher is colder"
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- [#](FFFFFF)\ue109[#]() Too hot or too cold and you take damage and cannot sleep\n- Spawn can be snowy: **insulate early**\n- Dress for the biome and the season, and keep a heat source nearby\n- Higher is colder"
     },
     {
       "type": "modonomicon:text",
@@ -36,7 +36,17 @@
     {
       "type": "modonomicon:text",
       "title": "Two numbers",
-      "text": "**World temperature** is what the spot feels like: biome, time of day, height or depth, nearby fire, lava or ice, water.\\\n\\\n**Body temperature** drifts toward it. Armor insulation and warm or cold blocks slow that drift."
+      "text": "**World temperature** is what the spot feels like: biome, season, time of day, height or depth, nearby fire, lava or ice, water.\\\n\\\n**Body temperature** drifts toward it. Armor insulation and warm or cold blocks slow that drift."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Seasons",
+      "text": "The [#](2E5AAC)[season](entry://survival/seasons)[#]() moves every biome's temperature: Mid Summer adds the most heat, Mid Winter takes the most away.\\\n\\\nIn a temperate forest a summer noon is about 100 °F and a winter night about 20 °F, both outside the comfortable 50 to 95 °F."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Leather or fur armor slows the drift enough to get through it; iron armor does not. See [#](2E5AAC)[Insulation and Heaters](entry://survival/temperature_gear)[#]()."
     },
     {
       "type": "modonomicon:text",
