@@ -57,6 +57,11 @@
       "text": "The trigger height is fixed, not set in the menu. From Earth:\n- Earth Orbit and Moon: 1750\n- Mars: 2200\n- Venus: 2600\n- Mercury: 3000\n\nFrom anywhere else it is 1750. Hold that height for about 5 seconds while the drive spools, and stay on a seat so you land with the ship."
     },
     {
+      "type": "modonomicon:text",
+      "title": "Getting that high",
+      "text": "Air pressure fades to nothing by the top of the world (Y 320), so balloons and propellers stop lifting there. [#](2E5AAC)[Thrusters](entry://flight/propulsion)[#]() keep full power in thin air: with its exhaust pointing down, one fuelled Thruster lifted a small test ship past Y 1750 in under 10 seconds. Bring enough fuel to hold the height while the drive spools."
+    },
+    {
       "type": "modonomicon:spotlight",
       "item": {
         "item": "northstar_aeronautics_compat:stellar_navigator"

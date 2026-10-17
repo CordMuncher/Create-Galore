@@ -49,6 +49,11 @@
       "text": "Above 300 C (Venus, Mercury by day) you burn unless all four armour pieces are [#](7A3C9A)[tagged](entry://glossary/tags)[#]() heat resistant: the Martian Steel Space Suit, or Create's netherite diving helmet, backtank and boots with netherite leggings.\\\n\\\nBelow -32 C all four must be insulating: either space suit, or leather armour."
     },
     {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "On Earth both suits also count as warm clothing for [#](2E5AAC)[body temperature](entry://survival/temperature)[#](): the iron one against cold, the Martian steel one against cold and heat."
+    },
+    {
       "type": "modonomicon:spotlight",
       "item": {
         "item": "northstar:oxygen_filler"

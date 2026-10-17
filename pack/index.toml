@@ -487,6 +487,38 @@ file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/advancemen
 hash = "f7a92edeed2b624408d82c2d807f4cf75e3a9eee503439998265e2dcb23f6433"
 
 [[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/cold_sweat/item/insulator/northstar/iron_space_suit_boots.json"
+hash = "8e968e65c1ab92b2fb7bfb4fac9b4bf7bc70b9bd448df10db9ec54fa26eabf8b"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/cold_sweat/item/insulator/northstar/iron_space_suit_chestpiece.json"
+hash = "d03bc6c32c56b94b96a90f95b50ed3e1b3a266657f5bb484785dd2bff5484b2b"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/cold_sweat/item/insulator/northstar/iron_space_suit_helmet.json"
+hash = "05e6d981136dc05969893107d5fd117fe53f7661233f1a75933bb3d0baefdee5"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/cold_sweat/item/insulator/northstar/iron_space_suit_leggings.json"
+hash = "dbd4c89d037e59f8850b6ae220b5847f1ef562c057534df37ddb4961ab965745"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/cold_sweat/item/insulator/northstar/martian_steel_space_suit_boots.json"
+hash = "1b6275489814ad9bcb032584357f909eae24c5a391a6c78bf9e45072283ae911"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/cold_sweat/item/insulator/northstar/martian_steel_space_suit_chestpiece.json"
+hash = "b38a335023301b11d39b5c85d05145d98142395c9ddf2a854f97ac8f9c91ca89"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/cold_sweat/item/insulator/northstar/martian_steel_space_suit_helmet.json"
+hash = "c919cad77acf79ed938ba0fba711d0f0d99af984b7e3355a0b1c04dd55478b21"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/cold_sweat/item/insulator/northstar/martian_steel_space_suit_leggings.json"
+hash = "6153f655aec1620b1b799b1e2aa1dffa50af403f109b9a4c80386ddf838491ed"
+
+[[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/function/give_field_guide.mcfunction"
 hash = "8e9e30da9c1385f17227c7c538defa29b2e02259cc8f2576e1c48fb13c7b734b"
 
@@ -1172,7 +1204,7 @@ hash = "0807ea54f451b7b7267b48e75a66abdadf83e24a99288b715754409f7ef9f9d3"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/space/aeronautics_bridge.json"
-hash = "de3c46a4a05c7d2e587b1b2c59dd27f6faf8ecba1c47ee8546754b9ef5943bcd"
+hash = "8a2544d3cbda7d60447c12644ced3528a4a2cd4e80d838e9cf5a1d661258f0aa"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/space/planets.json"
@@ -1192,7 +1224,7 @@ hash = "9dcf6195f08a6e37b6eecc4aa162979b43ec679620f3d76371b0de329621f310"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/space/space_survival.json"
-hash = "3d11fa2b9cc1e7c62f4413caa79f5f7f0dbd670eb8567a708c8daac26cd797ea"
+hash = "db7f66eb825f26dc98119640dff69147ae231d23b1c2b63de1fd672495e9d8d9"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/stars/abyss.json"
@@ -1288,7 +1320,7 @@ hash = "a64224526087282131547aef34fe0baa580e54ecf5650874f4ed181fbf1ea417"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/survival/temperature.json"
-hash = "d6eb0ba0b008cdde5eb91b347323e82012a0012a454e5c108b226d049d8f8b2b"
+hash = "ba558fe0af6d9c12fe482309e327dbed91c4afcf4257beab8a38d27b00f758de"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/survival/temperature_create.json"
@@ -2693,8 +2725,8 @@ hash = "db683b65dc15a03dd6de2d34d5dc6ad0e3490744ced513a8cc584784ee9d3d8b"
 metafile = true
 
 [[files]]
-file = "mods/create-galore-bridge-1.7.0.jar"
-hash = "e28385b82500e6815d3e7a87aa762da98e305bfe482486a7d098b275043f3f66"
+file = "mods/create-galore-bridge-1.7.1.jar"
+hash = "c27c54bc1869c86b81208ea7b5c5f205c4773687f85f144d2a78c8f7b867677d"
 
 [[files]]
 file = "mods/create-galore-lagwatch-1.0.0.jar"
