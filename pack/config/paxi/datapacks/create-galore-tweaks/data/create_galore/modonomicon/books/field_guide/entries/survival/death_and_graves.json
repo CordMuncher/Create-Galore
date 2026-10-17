@@ -36,6 +36,11 @@
     {
       "type": "modonomicon:text",
       "title": "",
+      "text": "- **On a ship**: in the air where you died. The ship flies on and the grave stays there, so follow the Latest Death waypoint and build up to it.\n- **Another planet**: on that planet, where you died. You wake up back on Earth, so you need a rocket to fetch it."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
       "text": "[#](FFFFFF)\ue102[#]() **Tip:** an **Everlasting Upgrade** keeps a backpack safe from fire, lava and the void if it ever lies on the ground, for example after you drop it. See [#](2E5AAC)[Backpacks and Storage](entry://home/storage)[#]().\\\n\\\nThe server also keeps regular backups of the world; see [#](2E5AAC)[Playing Together](entry://start_here/playing_together)[#]()."
     }
   ]
