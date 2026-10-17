@@ -1,0 +1,14 @@
+{
+  "structures": [
+    {
+      "structure": "create_sky_village:highwind_village",
+      "weight": 1
+    }
+  ],
+  "placement": {
+    "type": "minecraft:random_spread",
+    "spacing": 202,
+    "separation": 67,
+    "salt": 182451771
+  }
+}

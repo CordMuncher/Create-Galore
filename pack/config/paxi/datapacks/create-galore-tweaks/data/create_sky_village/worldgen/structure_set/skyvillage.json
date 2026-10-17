@@ -1,0 +1,14 @@
+{
+  "structures": [
+    {
+      "structure": "create_sky_village:skyvillage",
+      "weight": 1
+    }
+  ],
+  "placement": {
+    "type": "minecraft:random_spread",
+    "spacing": 202,
+    "separation": 50,
+    "salt": 391245617
+  }
+}

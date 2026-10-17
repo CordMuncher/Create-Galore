@@ -26,7 +26,7 @@
     {
       "type": "modonomicon:text",
       "title": "Destinations",
-      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- [#](FFFFFF)\ue10e[#]() **Sky Villages** sit 150 to 250 blocks up in the Overworld.\n- **Floating islands** hold chests and mobs; bring a ship that can land.\n- **The Aether**: a glowstone portal frame lit with water.\n- [#](FFFFFF)\ue10f[#]() **Space**: the Moon, Mars, Mercury and Venus, by Dimensional Drive or rocket."
+      "text": "[#](FFFFFF)[#]() **Key points**\n\n- [#](FFFFFF)[#]() **Sky Villages** sit 150 to 250 blocks up in the Overworld.\n- **Sky structures**: about one every 600 blocks; bring a ship that can land.\n- **The Aether**: a glowstone portal frame lit with water.\n- [#](FFFFFF)[#]() **Space**: the Moon, Mars, Mercury and Venus, by Dimensional Drive or rocket."
     },
     {
       "type": "modonomicon:text",
@@ -67,7 +67,7 @@
     {
       "type": "modonomicon:text",
       "title": "Floating islands",
-      "text": "Moog's Soaring Structures fills the sky with vanilla-style floating islands: houses, towers, ruins, trees, volcanoes, an arena and a floating Nether portal. Expect loot and mobs."
+      "text": "Moog's Soaring Structures scatters vanilla-style floating islands across the sky: houses, towers, ruins, trees, volcanoes, an arena and a floating Nether portal. Expect loot and mobs."
     },
     {
       "type": "modonomicon:spotlight",
@@ -76,6 +76,16 @@
       },
       "title": "Island loot",
       "text": "Floating islands from Moog's Soaring Structures hold chests and mobs. Bring a ship that can land."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "How often",
+      "text": "You cover ground faster in the air, so the sky is sparser than the ground. Expect **about 3 sky structures per km²**, the rate vanilla places structures on the surface: one every **600 blocks** or so."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Every kind equal",
+      "text": "Each kind of sky structure is equally common, so a mod with many kinds, like Moog's islands, shows up more often than one with a single kind, like the loot balloon.\\\n\\\nSome islands only float over their own biome: desert, badlands, jungle, birch, cherry, mangrove, swamp, snowy, cold, mushroom and ocean."
     },
     {
       "type": "modonomicon:text",
