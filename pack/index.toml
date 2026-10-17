@@ -219,6 +219,10 @@ file = "config/paxi/datapacks/create-galore-tweaks/data/alloyed/recipe/pressing/
 hash = "9e7763981dd64b9195c77ece7a070cbe77816b746d1eba55033c6cad8a7f0035"
 
 [[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/aquamirae/worldgen/structure_set/shipwreck.json"
+hash = "67f9536a0965ee554ffdf061c23abb03358f6bd12b099c97f4d83dbab7578c4b"
+
+[[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/betterend/recipe/additional_netherite.json"
 hash = "ded8107f6aa0cb602517e1784c01b839dac7f5d38a1fb3ac74e380528bc280a4"
 
@@ -1084,7 +1088,7 @@ hash = "9f0838af8a46e5cba1c76788b385d88984ee30fc32cfdb73dfa838753ef564f5"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/ocean/underwater_places.json"
-hash = "2123a43929f51d88fb6d49efd2b5308c83b9813c80967740a427748e7f9f07a8"
+hash = "0807ea54f451b7b7267b48e75a66abdadf83e24a99288b715754409f7ef9f9d3"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/space/aeronautics_bridge.json"
@@ -1695,6 +1699,14 @@ file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/tags/item/ston
 hash = "1ae66cfe8afc8b1f57f146b86e69fc7356f060fa0a871c93bf7c9a40131e61c5"
 
 [[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/hopo/worldgen/structure_set/underwater_small_ruins.json"
+hash = "d4cb3a503318eb449922b7ac6fff7d11a90edc44e0ffed0ff73ef75696b92dbd"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/hybrid_aquatic/worldgen/structure_set/whale_falls.json"
+hash = "01530e3f6f54bc13fdea3336db15173826e128d3fd2b1ffbd1282d12d66a610a"
+
+[[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/irons_spellbooks/recipe/portal_frame.json"
 hash = "99f52b3269f385651ced345b8121c15f1351c6b7aeb55ed18eed803852ad0d9a"
 
@@ -1713,6 +1725,10 @@ hash = "f74498097708215ee46031db7467ce3abed880ed8188eff156e81993d9787e31"
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/minecraft/tags/item/beacon_payment_items.json"
 hash = "38900f83968c27a80817b5431ba59c8d9de11993a8f6bc750f269108db2f0caa"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/minecraft/worldgen/structure_set/ocean_ruins.json"
+hash = "94039d458d8f5677bfafbeddde8f162d2e7a79f9a7a0fe768dfd94c457d170fb"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/mowziesmobs/worldgen/structure_set/wrought_chambers.json"
@@ -1909,6 +1925,10 @@ hash = "78bce76491d60c3b5be50dfbb471021a6406b0e37c7a44a55985d944c39018c6"
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/ratatouille/recipe/milling/wheat_flour.json"
 hash = "1cc8a2cbfe574a8914b98d339cb5fe14f64c2f6f9437752ed0a8e5178488b1a6"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/revamped_shipwrecks/worldgen/structure_set/shipwreck.json"
+hash = "3fff74490c710f1918b72bf9375cd4469d6db629db06829abd85c3611fa3c981"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/terralith/worldgen/structure_set/underground.json"
