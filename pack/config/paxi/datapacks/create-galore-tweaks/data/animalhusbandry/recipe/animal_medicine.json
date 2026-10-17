@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    { "item": "minecraft:bowl" },
+    [
+      { "item": "animalhusbandry:truffle" },
+      { "item": "fungidelight:truffle" }
+    ],
+    { "item": "minecraft:brown_mushroom" },
+    { "item": "minecraft:dandelion" }
+  ],
+  "result": { "id": "animalhusbandry:animal_medicine", "count": 1 }
+}
