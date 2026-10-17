@@ -62,9 +62,10 @@ final class Scanner {
 
     /**
      * One structure found. x/z is the middle of its bounding box; floor is the top of the solid ground there
-     * (the sea floor in water) and water the top of the water (same as floor on land).
+     * (the sea floor in water) and water the top of the water (same as floor on land). biome is the biome at the
+     * middle of the bounding box (at the ground for structures that pick their height later).
      */
-    record Start(String set, String structure, int x, int z, int minY, int maxY, int floor, int water, long chunk, Deferred deferred) {
+    record Start(String set, String structure, int x, int z, int minY, int maxY, int floor, int water, long chunk, Deferred deferred, String biome) {
         Layer layer() {
             // Their height is only picked when the structure is placed, so the start's y means nothing yet.
             if (deferred == Deferred.BURIED) return Layer.UNDERGROUND;
@@ -90,7 +91,46 @@ final class Scanner {
     }
 
     record Result(String dim, long seed, int radius, int centerX, int centerZ, List<Start> starts, List<SetInfo> sets,
-                  int chunksChecked, int errors, long millis, boolean whatif) {}
+                  int chunksChecked, int errors, long millis, boolean whatif, Map<String, double[]> biomeArea) {}
+
+    /** How far apart the biome-area samples are, in blocks. */
+    static final int BIOME_STEP = 64;
+    /** Underground biome areas are sampled at this height (deep enough for the cave biomes). */
+    static final int CAVE_Y = -20;
+
+    /**
+     * Area of every biome in the scanned square, in km², at the ground ([0]) and at {@link #CAVE_Y} ([1]),
+     * from a grid of samples. Lets the report say how dense structures are per biome.
+     */
+    private static Map<String, double[]> biomeArea(ServerLevel level, ChunkGenerator gen, RandomState rs, StructScan.Options opt, ForkJoinPool pool) throws Exception {
+        Registry<Biome> biomeReg = level.registryAccess().registryOrThrow(Registries.BIOME);
+        int n = 2 * opt.radius() / BIOME_STEP;
+        double cell = BIOME_STEP * (double) BIOME_STEP / 1e6;
+        Map<String, double[]> area = new java.util.concurrent.ConcurrentHashMap<>();
+        pool.submit(() -> java.util.stream.IntStream.range(0, n).parallel().forEach(i -> {
+            ColumnCache.begin(rs);
+            try {
+                for (int j = 0; j < n; j++) {
+                    int x = opt.centerX() - opt.radius() + i * BIOME_STEP + BIOME_STEP / 2;
+                    int z = opt.centerZ() - opt.radius() + j * BIOME_STEP + BIOME_STEP / 2;
+                    int y = gen.getBaseHeight(x, z, net.minecraft.world.level.levelgen.Heightmap.Types.OCEAN_FLOOR_WG, level, rs);
+                    String top = biomeAt(gen, rs, biomeReg, x, y, z), cave = biomeAt(gen, rs, biomeReg, x, CAVE_Y, z);
+                    synchronized (area) {
+                        area.computeIfAbsent(top, k -> new double[2])[0] += cell;
+                        area.computeIfAbsent(cave, k -> new double[2])[1] += cell;
+                    }
+                }
+            } finally {
+                ColumnCache.end();
+            }
+        })).get();
+        return area;
+    }
+
+    static String biomeAt(ChunkGenerator gen, RandomState rs, Registry<Biome> reg, int x, int y, int z) {
+        Holder<Biome> b = gen.getBiomeSource().getNoiseBiome(x >> 2, y >> 2, z >> 2, rs.sampler());
+        return b.unwrapKey().map(k -> k.location().toString()).orElseGet(() -> String.valueOf(reg.getKey(b.value())));
+    }
 
     static Result scan(ServerLevel level, StructScan.Options opt, List<Rules.Rule> rules, Consumer<String> log) throws Exception {
         long t0 = System.currentTimeMillis();
@@ -214,6 +254,7 @@ final class Scanner {
         int total = list.size();
         final ChunkGeneratorStructureState st = state;
         ForkJoinPool pool = new ForkJoinPool(Math.max(1, opt.threads()));
+        Map<String, double[]> biomes;
         try {
             pool.submit(() -> list.longParallelStream().forEach(packed -> {
                 ChunkPos cp = new ChunkPos(packed);
@@ -229,7 +270,9 @@ final class Scanner {
                         int x = (b.minX() + b.maxX()) / 2, z = (b.minZ() + b.maxZ()) / 2;
                         int[] h = heights(gen.getBaseColumn(x, z, level, rs), gen.getMinY(), level.getHeight());
                         String setId = setOfStructure.getOrDefault(e.getKey(), "?");
-                        Start found1 = new Start(setId, String.valueOf(structureReg.getKey(e.getKey())), x, z, b.minY(), b.maxY(), h[0], h[1], packed, deferred(s));
+                        Deferred d = deferred(s);
+                        String biome = biomeAt(gen, rs, biomeReg, x, d == Deferred.NO ? (b.minY() + b.maxY()) / 2 : h[0], z);
+                        Start found1 = new Start(setId, String.valueOf(structureReg.getKey(e.getKey())), x, z, b.minY(), b.maxY(), h[0], h[1], packed, d, biome);
                         found.add(found1);
                         SetInfo si = infoById.get(setId);
                         if (si != null) {
@@ -248,12 +291,14 @@ final class Scanner {
                 int d = done.incrementAndGet();
                 if (d % Math.max(1, total / 10) == 0) log.accept("StructScan: " + (d * 100L / total) + "% (" + found.size() + " structures)");
             })).get();
+            log.accept("StructScan: sampling biome areas...");
+            biomes = biomeArea(level, gen, rs, opt, pool);
         } finally {
             pool.shutdown();
         }
         log.accept("StructScan: cache " + ColumnCache.stats());
         return new Result(level.dimension().location().toString(), seed, opt.radius(), opt.centerX(), opt.centerZ(),
-                new ArrayList<>(found), infos, total, errors.get(), System.currentTimeMillis() - t0, changed);
+                new ArrayList<>(found), infos, total, errors.get(), System.currentTimeMillis() - t0, changed, biomes);
     }
 
     /**
