@@ -28,7 +28,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Each tank lifts roughly **one block of ship mass**, so heavy hulls need more tanks."
+      "text": "Each empty tank lifts about **75 units of ship mass** (`ballastLiftPerTank` in the Deep Seas [#](7A3C9A)[config](entry://glossary/config)[#]()). A plank weighs about 1, an iron block about 3.5 and machines more, so a small iron sub can need a dozen tanks.\\\n\\\nFit a few **spare tanks**: a sub with barely enough lift sinks slowly even with every tank empty."
     },
     {
       "type": "modonomicon:spotlight",
