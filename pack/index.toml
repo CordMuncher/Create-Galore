@@ -491,6 +491,10 @@ file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/function/g
 hash = "8e9e30da9c1385f17227c7c538defa29b2e02259cc8f2576e1c48fb13c7b734b"
 
 [[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/function/world_defaults.mcfunction"
+hash = "f6686377a84e0c350a3551007c986ba51d59cd7ddaabdba9b4af6c5d1ec9930a"
+
+[[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/book.json"
 hash = "8276a3cb790698fa10941d6af0b7b3322e9ccb372d8e3a88d5cdf50cd95b3881"
 
@@ -1248,7 +1252,7 @@ hash = "0e9efa234d7034ba72823365186dbe0e0fc4b5fb8da8a379e3f2b646b2f9b334"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/start_here/playing_together.json"
-hash = "a437070568f7afa0bed59e2bdb77afc5158f2581d1f017a3940176ece71718f8"
+hash = "83c815c1f3551454e69c04818a6b00506861630bd891d91af645140af97d4ae7"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/start_here/tools.json"
@@ -1264,7 +1268,7 @@ hash = "b77524b91bc90331e4b61b6dc948aada676652ce21d91436ba4fe7c83e2f4562"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/survival/death_and_graves.json"
-hash = "9aa38cb1f0de303cffcfff8238b72b04d441e1b9ef39ebfd4d82dd68fc4ad6a2"
+hash = "b24232bb9ca0fd3c4be03d6aa2c7f64018b34713fcca64e9050b5b9361263d82"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/survival/food_and_health.json"
@@ -1288,11 +1292,11 @@ hash = "a64224526087282131547aef34fe0baa580e54ecf5650874f4ed181fbf1ea417"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/survival/temperature.json"
-hash = "d6eb0ba0b008cdde5eb91b347323e82012a0012a454e5c108b226d049d8f8b2b"
+hash = "e5964c65936d12fd4d59a408b51ca7b7b340968f87bd03c24c13668451663563"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/survival/temperature_create.json"
-hash = "1e19c2a5e15abae9af4fc338d4dce574add7b3518c717bbbc72a6fd37ea39de4"
+hash = "43a5660995c6972b05bcdb0e24097a89ec700897fba97563d66f57b51bc94f8f"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/survival/temperature_gear.json"
@@ -1828,7 +1832,7 @@ hash = "cbb7a4cffecc98c810aa26adaac2c70ced9412dcb70c1aa76423c5196b109c2f"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/minecraft/tags/function/load.json"
-hash = "f74498097708215ee46031db7467ce3abed880ed8188eff156e81993d9787e31"
+hash = "a72297eb2fdfe5642d95f970c5feb64346ae168624bcdc47396cb126bcd186cb"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/minecraft/tags/item/beacon_payment_items.json"
