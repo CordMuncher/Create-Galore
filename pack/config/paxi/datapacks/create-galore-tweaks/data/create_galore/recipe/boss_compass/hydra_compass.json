@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    {
+      "item": "minecraft:compass"
+    },
+    {
+      "item": "twilightforest:raw_meef"
+    },
+    {
+      "item": "twilightforest:maze_slime_ball"
+    }
+  ],
+  "result": {
+    "id": "create_galore_bridge:hydra_compass",
+    "count": 1
+  }
+}

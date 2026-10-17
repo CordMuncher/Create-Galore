@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    {
+      "item": "minecraft:compass"
+    },
+    {
+      "item": "twilightforest:exanimate_essence"
+    }
+  ],
+  "result": {
+    "id": "create_galore_bridge:minoshroom_compass",
+    "count": 1
+  }
+}

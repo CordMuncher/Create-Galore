@@ -1,4 +1,14 @@
 {
   "item.create_galore_bridge.stellar_core": "Stellar Core",
-  "item.create_galore_bridge.stellar_core.tooltip": "Builds a Rocket Station, Dimensional Drive or Stellar Navigator. See the Field Guide: The Road to the Stars."
+  "item.create_galore_bridge.stellar_core.tooltip": "Builds a Rocket Station, Dimensional Drive or Stellar Navigator. See the Field Guide: The Road to the Stars.",
+  "item.create_galore_bridge.naga_compass": "Naga Compass",
+  "item.create_galore_bridge.lich_compass": "Lich Compass",
+  "item.create_galore_bridge.minoshroom_compass": "Minoshroom Compass",
+  "item.create_galore_bridge.hydra_compass": "Hydra Compass",
+  "item.create_galore_bridge.boss_compass.tooltip": "Right-click in the %2$s to find the nearest %1$s.",
+  "item.create_galore_bridge.boss_compass.target": "Pointing at %s",
+  "item.create_galore_bridge.boss_compass.wrong_dimension": "This compass only works in the %s.",
+  "item.create_galore_bridge.boss_compass.found": "Nearest %s: %s (about %s blocks away). The needle points there now.",
+  "item.create_galore_bridge.boss_compass.none": "No %s within %s blocks. Travel further and try again.",
+  "create_galore_bridge.guide_cleanup.removed": "An old copy of the Field Guide was taken from your inventory. The current Field Guide has everything it had and more."
 }

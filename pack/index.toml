@@ -588,7 +588,7 @@ hash = "49528498ab6d118e9c224ac054339949b4c3be9ffaf53086c0af9f565ec4c6ae"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/exploration/bosses.json"
-hash = "c0423b856edb89c4cdff06f40a776808c434bd1e3285b3a2d19bd14043d85917"
+hash = "1e4e8647592ae4b3aa814ce1defc86bac8140af9992a5448374dabb9bb243a5e"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/exploration/cataclysm.json"
@@ -656,7 +656,7 @@ hash = "e4fc9c3fc8fe773a35f0d37a8e35b0113ebff3a4de58d78cd8af2497ae144964"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/exploration/twilight_forest.json"
-hash = "485cfead13f96b32817268acdc9aa4eefac1c4f1ccdc37f4f9233de4e39a73b6"
+hash = "f0c5bd3b283a973327d7ac443bf6929ef2beb1432f3f3b8e32d137390267a115"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/exploration/worldgen.json"
@@ -1119,6 +1119,10 @@ file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomico
 hash = "98a49002df505a8ea28f30abeaa75529391538836a75689e67ab2bd243c80e5a"
 
 [[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/stars/boss_compasses.json"
+hash = "a68bb2e5ed289e65cb0e5580ea6d5314e00293cb66abe781709a29813007cd69"
+
+[[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/stars/end.json"
 hash = "9e73e41b58aa9ffd7e8f5ef01566bfacd812218e067dc283f6eb2a7216b5caf4"
 
@@ -1140,7 +1144,7 @@ hash = "492ffc8c593d0acbab94b491cb4f07562ab57b47dcff299308d3dbb811c041f1"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/stars/twilight.json"
-hash = "f6be4d98976d22477b48a7a8c5b4230a1e6eaa5853b468734144e6ac4523db45"
+hash = "ce2bddf542db4a463d17fbe1b79b18b16f905745626fbcd628b4cea149336cd5"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/stars/why.json"
@@ -1259,12 +1263,24 @@ file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/neoforge/b
 hash = "26a03815320aef797b24587a9fa55321ffba2c1cc4bbe096de2f672f36d99cba"
 
 [[files]]
-file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/recipe/field_guide.json"
-hash = "f8ca16f1d2759a21ecc204fb61907d3dde5766076288d9d2012b36a051fac2e8"
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/recipe/boss_compass/hydra_compass.json"
+hash = "4c56a49421847fc54affcf8d7a3c51536e47529abe3e58d96c8904c3d9d9bbd5"
 
 [[files]]
-file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/recipe/field_guide_from_old.json"
-hash = "705b4555a80e44d6b0452378a4c380996ad5906514792ea38705c57425f633f5"
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/recipe/boss_compass/lich_compass.json"
+hash = "835782e3128ec53a93d3b0fbd9528e5c555728f163d5bd7fa2588f4692d355a7"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/recipe/boss_compass/minoshroom_compass.json"
+hash = "94453743f89e6cb42071436ccf946c720b7301cdcd83e50ee7dc715e466b0bbb"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/recipe/boss_compass/naga_compass.json"
+hash = "5841220fbed62969e222daa8ef3ab453204e9f592a41a89a4408c9996e56e261"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/recipe/field_guide.json"
+hash = "f8ca16f1d2759a21ecc204fb61907d3dde5766076288d9d2012b36a051fac2e8"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/recipe/space/stellar_core.json"
@@ -2412,8 +2428,8 @@ hash = "db683b65dc15a03dd6de2d34d5dc6ad0e3490744ced513a8cc584784ee9d3d8b"
 metafile = true
 
 [[files]]
-file = "mods/create-galore-bridge-1.6.0.jar"
-hash = "6bf016801ac06ebb1a151a1f8e7d983554ee4ec9cf7ec2756584fb1d3b082147"
+file = "mods/create-galore-bridge-1.7.0.jar"
+hash = "e28385b82500e6815d3e7a87aa762da98e305bfe482486a7d098b275043f3f66"
 
 [[files]]
 file = "mods/create-galore-lagwatch-1.0.0.jar"

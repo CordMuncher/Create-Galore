@@ -30,9 +30,9 @@ for m in lwjgl lwjgl-glfw lwjgl-opengl; do
   [ -s "$CACHE/$m-3.3.3.jar" ] || curl -sSfL --retry 4 -o "$CACHE/$m-3.3.3.jar" "https://repo1.maven.org/maven2/org/lwjgl/$m/3.3.3/$m-3.3.3.jar"
   CP="$CP$CACHE/$m-3.3.3.jar:"
 done
-# Compile-only stubs for the two client classes the display mixins name; they are not packaged.
+# Compile-only stubs for the client classes the display mixins and the compass needle name; they are not packaged.
 mkdir -p "$WORK/stubs"
-javac --release 21 -nowarn -proc:none -d "$WORK/stubs" $(find "$HERE/stubs" -name '*.java')
+javac --release 21 -nowarn -proc:none -cp "$CP" -d "$WORK/stubs" $(find "$HERE/stubs" -name '*.java')
 CP="$CP$WORK/stubs"
 
 mkdir -p "$WORK/classes"

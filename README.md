@@ -6,7 +6,7 @@ A big, long-term Minecraft modpack built around the Create mod. Think "Minecraft
 
 | | |
 |---|---|
-| **Version** | 0.1.9 |
+| **Version** | 0.1.10 |
 | **Minecraft** | 1.21.1 |
 | **Loader** | NeoForge **21.1.259** (pinned, don't update it, see [Known issues](#known-issues)) |
 | **Mods** | 225 from Modrinth + the pack's own small Create Galore Bridge and Lag Watch + Twilight Forest added by hand, plus 4 shader packs and the Fresh Animations resource pack |
@@ -15,7 +15,7 @@ A big, long-term Minecraft modpack built around the Create mod. Think "Minecraft
 
 ## Install (players)
 
-1. Download `Create-Galore-0.1.9.mrpack` from the [latest release](https://github.com/emresahin0906-code/Create-Galore/releases/latest) (or [from this repo](Create-Galore-0.1.9.mrpack)).
+1. Download `Create-Galore-0.1.10.mrpack` from the [latest release](https://github.com/emresahin0906-code/Create-Galore/releases/latest) (or [from this repo](Create-Galore-0.1.10.mrpack)).
 2. Import it:
    - **Prism Launcher:** Add Instance → Import → pick the `.mrpack`.
    - **Modrinth App:** drag the `.mrpack` onto the window (or File → Import).
@@ -67,7 +67,7 @@ Neither mode deletes or re-downloads mods that didn't change, and neither touche
    ```
 3. Press Play. A small window checks the pack. The first run on an instance you already have just checks the files and downloads nothing if they match the latest release. After that, soft launches with no pack change take a couple of seconds. Clean launches fetch the pack's configs (a few hundred small files) each time.
 
-The command reads the pack from GitHub, which only works while the repo is public. To update from a local copy instead (a private repo, or no internet), unzip the release's `Create-Galore-<version>-server-kit.zip` somewhere and put the path of its `pack\pack.toml` after the jar, for example `"$INST_JAVA" -jar create-galore-updater.jar C:\CreateGalorePack\Create-Galore-0.1.9-server-kit\pack\pack.toml --clean`. Unzip a newer kit over it to update.
+The command reads the pack from GitHub, which only works while the repo is public. To update from a local copy instead (a private repo, or no internet), unzip the release's `Create-Galore-<version>-server-kit.zip` somewhere and put the path of its `pack\pack.toml` after the jar, for example `"$INST_JAVA" -jar create-galore-updater.jar C:\CreateGalorePack\Create-Galore-0.1.10-server-kit\pack\pack.toml --clean`. Unzip a newer kit over it to update.
 
 If the pack can't be read, the updater stops before changing anything. `--clean` moves the configs aside first and puts them back if the update fails, so a failed launch never leaves the instance without configs.
 
@@ -91,7 +91,7 @@ Each section is a map. Entries are nodes, and the arrows show what comes first, 
 
 Long entries open with a **Key points** page (the must-know part, marked with a key icon) and push niche detail behind an **In depth** marker (a magnifying glass), so you can stop reading there. Purple words open a short definition in **Words to Know**, the guide's glossary of Create and survival jargon; blue words open the full entry; hovering an item name shows its tooltip. Small icons flag dangers (**Watch out**) and tricks (**Tip**), a few pages show diagrams, and the classic Create builds (crushing wheels, press, heated mixer, steam engine) have rotating 3D previews with a button that shows the build as a ghost in your world. The icons and pictures come from a small built-in resource pack, `create-galore-guide`, that is always on.
 
-In a world started before the guide moved to Modonomicon, the old Patchouli Field Guide no longer opens it: put it in a crafting grid on its own to turn it into the new one.
+In a world started before the guide moved to Modonomicon, the old Patchouli Field Guide no longer opens it. The pack's Bridge mod takes old copies out of every player's inventory and ender chest by itself (on join, and when one is picked up later) and hands over the current book if the player has none.
 
 ![The Road to the Stars section: the six prizes lead into the Stellar Core](docs/field-guide.png)
 
@@ -135,6 +135,8 @@ Copper spools stay separate: TFMG's spool lays TFMG cable and is the only kind i
 - plus a Hardened Precision Mechanism and 4 Titanium Plates
 
 Nothing on the list comes from space, every prize can be found again, and nothing on Earth needs a space item, so there's no dead end. The Field Guide's **The Road to the Stars** section explains why each prize is needed and where to get it, and an advancement tab of the same name ticks them off. One core builds one station or drive, and those are reused for every trip.
+
+**Boss compasses.** Structures are spread out, so the Twilight Forest boss lairs on the way to the core each have a compass, made from a Compass and drops you have by then: the **Naga Compass** (Raven Feather, Torchberries), **Lich Compass** (2 Naga Scales), **Minoshroom Compass** (Exanimate Essence from the Lich) and **Hydra Compass** (Raw Meef, Maze Slimeball). Right-click one in the Twilight Forest: chat shows the X and Z of the nearest lair within 1600 blocks, and the needle points there from then on. The other prize bosses need none (the Wither is summoned, an Eye of Ender finds the Dragon's Stronghold, a Cave Biome Map finds the Hullbreaker's biome). The Field Guide has a **Boss Compasses** page in The Road to the Stars.
 
 **Gentler where it should be, harsh where it should be.**
 - Cataclysm and Mowzie's bosses have 70% health and 75% damage. All their structures still spawn.
@@ -280,7 +282,7 @@ All tests ran headless in a cloud machine (4 cores, 16 GB RAM, no GPU), so speed
 
 ## Repo layout
 
-- `Create-Galore-0.1.9.mrpack`: the importable pack, built from `pack/`
+- `Create-Galore-0.1.10.mrpack`: the importable pack, built from `pack/`
 - `pack/`: [packwiz](https://packwiz.infra.link/) source, one `.pw.toml` per mod or shader, plus configs (`pack/config/`), the datapacks (`pack/config/paxi/datapacks/create-galore-tweaks`, always on, `create-galore-no-elytra`, and the opt-in `config/paxi/optional/create-galore-with-elytra`) the Field Guide (a Modonomicon book inside `create-galore-tweaks`) and its resource pack `pack/config/paxi/resourcepacks/create-galore-guide` (icon font and diagram pictures, always on)
 - `MODS.md`: full mod list with versions and sides
 - `server/`: server install scripts, memory settings and a starting `server.properties`
@@ -296,7 +298,7 @@ To rebuild the `.mrpack` after changing `pack/`:
 ```
 cd pack
 packwiz refresh
-packwiz modrinth export -o ../Create-Galore-0.1.9.mrpack
+packwiz modrinth export -o ../Create-Galore-0.1.10.mrpack
 ```
 
 The release workflow then adds `packwiz-installer-bootstrap.jar` and `packwiz-installer.jar` (pinned, hash-checked) and `create-galore-updater.jar` (built from `tools/updater/` by `tools/updater/build.sh`) to the `.mrpack`'s `overrides/` so new instances can use the pre-launch updater. A config players are expected to tweak in game gets `preserve = true` under its entry in `pack/index.toml` (`packwiz refresh` keeps the flag), so the updater never overwrites it.
