@@ -20,7 +20,7 @@
     {
       "type": "modonomicon:text",
       "title": "TFMG Engines and Power",
-      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- [#](FFFFFF)\ue104[#]() Engines burn fuel for ordinary rotation\n- **Regular Engine**: a body plus Engine Cylinders, oiled from an Oil Can\n- **Large Engine**: pump its CO2 out to an Exhaust\n- [#](FFFFFF)\ue106[#]() TFMG circuits are separate from FE, but its connectors can import and export FE"
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- [#](FFFFFF)\ue104[#]() Engines burn fuel for ordinary rotation\n- **Regular Engine**: parts, then Engine Cylinders that match the fuel\n- Regular and Large Engines: pump the CO2 out to an Exhaust or they stop\n- [#](FFFFFF)\ue106[#]() TFMG circuits are separate from FE, but its connectors can import and export FE"
     },
     {
       "type": "modonomicon:text",
@@ -33,7 +33,12 @@
         "item": "tfmg:regular_engine"
       },
       "title": "Regular Engine",
-      "text": "[#](7A3C9A)[Assembled](entry://glossary/assemble)[#]() from a body plus matching Engine Cylinders. Click it with a Shaft to set the rotation output. Needs lubrication oil from an [Oil Can](item://tfmg:oil_can)."
+      "text": "[#](7A3C9A)[Assembled](entry://glossary/assemble)[#]() from a body: click in its parts first (goggles name the next one), then matching Engine Cylinders. Click it with a Shaft to set the rotation output. Lubrication oil ([Oil Can](item://tfmg:oil_can) or bucket) and cooling fluid are optional; each cuts fuel use by 30%%."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "The cylinder sets the fuel: Engine Cylinder burns gasoline, kerosene or naphtha, Diesel Engine Cylinder diesel, Autogas Engine Cylinder LPG, Simple Engine Cylinder creosote or furnace gas.\\\n\\\n[#](FFFFFF)\ue101[#]() **Watch out:** burnt fuel fills an 8,000 mB CO2 tank. Pump it out to an Exhaust or the engine stops."
     },
     {
       "type": "modonomicon:spotlight",
