@@ -66,12 +66,28 @@ file = "config/cristellib/alexscaves/structure_placement_config.json5"
 hash = "426d78651264dd09b961412fb90399a0d8c8bd7396437706238e49f982a6a87e"
 
 [[files]]
+file = "config/cristellib/aquamirae/structure_placement_config.json5"
+hash = "f40f2dfd65604adb0be5e0e3d6816b97857d962ec1918f222f151b1babf93d92"
+
+[[files]]
 file = "config/cristellib/betterdungeons/structure_placement_config.json5"
 hash = "c664b2bfbbc6e892a86f270b3a4bad37676282a8e44ff5467ef4f5d42a011563"
 
 [[files]]
+file = "config/cristellib/hopour/structure_placement_config.json5"
+hash = "3a13a018dd90f100e3e55e3e6381bcc5624c2e3c3abfca73a11c0ffc6940e83a"
+
+[[files]]
+file = "config/cristellib/hybrid_aquatic/structure_placement_config.json5"
+hash = "d000a0270c73795c0e556e1281046b58548789ccbe49b006388802d942ff0943"
+
+[[files]]
 file = "config/cristellib/mr_dungeons_andtaverns/structure_placement_config.json5"
 hash = "2cb7b1b8c93c2c56194ef52cc01408f3256e77710ef8b774fc86fa9fd5e35a7d"
+
+[[files]]
+file = "config/cristellib/revamped_shipwrecks/structure_placement_config.json5"
+hash = "632c72af95eea4b20c17e7f9ba5bb38292c5c2c599b8d2e038919485daa1a239"
 
 [[files]]
 file = "config/crittersandcompanions-common.json5"
