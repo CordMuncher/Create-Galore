@@ -240,7 +240,7 @@ hash = "e30684e25734d607a220c70ab369ede1ee36debe5c1944d8e235eb616f215a81"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/aeronauticsdiscovery/worldgen/structure_set/balloon_loot.json"
-hash = "24745f469d77c874465c48aa5091ed2623d32d03cbecacbd6af17bb766210d86"
+hash = "a235fa7299dc084217683eda27a898afd62b054dc55df5050a5b475d8bc493bc"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/alexscaves/loot_table/entities/hullbreaker.json"
@@ -1452,11 +1452,11 @@ hash = "01c5213dca67528b53ac02bb758bef37a832d450d88a7ce2c135e27ae6aa3117"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_sky_village/worldgen/structure_set/highwind_village.json"
-hash = "0c34044b4e0b65eebb54277d352df49a7c62c27e427a06bb1c1517269f47df7d"
+hash = "92094d71db9dcd32278dde3716479735422c9607fb19339ea7d95f0fae149653"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_sky_village/worldgen/structure_set/skyvillage.json"
-hash = "3a4761d2e0791f2ce9a03f94d40d2e9172b0c20cb55751006e93a9aad9572989"
+hash = "5d981af0422331356d664b5d91052cbd923a0e4295924666c363df88a044efed"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/createaddition/recipe/compacting/biomass_pellet.json"
@@ -1820,115 +1820,115 @@ hash = "1edcdd12dd84c442bc9ddf28ea40fa14969bce7947f7feb6a9cf24a51c8d47fe"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/mss/worldgen/structure_set/arena.json"
-hash = "c37ca5ca2d58f03442b3db8ceae6d7c7054c3b047bc571db819617ab330cefa1"
+hash = "97b8014b68a4bdfe84f8b7d6cb042813cfd1382ac34240432f72f4590610f36e"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/mss/worldgen/structure_set/birch_river.json"
-hash = "5fdc202ef9284f0003147224b9c31dc8a2fb495c47f180bedae19d6f9cf68c12"
+hash = "325a811406f109b8d2928f050665ccb69141205eed76fc04205d37dd2ea40799"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/mss/worldgen/structure_set/calcite_house.json"
-hash = "0138f8003edd9fcc134f110561222b80f3491c43fd7db34ba67e3133e1a09fc2"
+hash = "8b1d81c4e66a69b1a64c115beef83d9ccfc9a10742be0c7d4bc04faa52ade2b3"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/mss/worldgen/structure_set/castle_ruin.json"
-hash = "4235f66a7df2753b97066726162fa2e53550ea21a4f1ba6e44b8eb028b28ef5b"
+hash = "57d9c8ed94c99d9b2f1ed14645f32efdd42e4dd88a0ee6f010b69ea4448ba727"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/mss/worldgen/structure_set/castle_tower.json"
-hash = "d4c30fb1d5c54fb2ff7c592f7e428cd624911f34d2477d3b671fe8cc5f865697"
+hash = "df78ffe9a9df13acc7dc5b48693a92b781074fda1997ad86db128bdeb909edf4"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/mss/worldgen/structure_set/cherry_river.json"
-hash = "f8bfe61659599ba39f5c80ed0886d8a8532a3a7615064aa806e0ba5fa8bfe108"
+hash = "f7a28cae69baca17de7e8f80a3e2477c01c5d0115c255fc68acf8d9fc9019e04"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/mss/worldgen/structure_set/desert_pyramid.json"
-hash = "5a9ebf03fdfbdc14ac5a173e8236312bb1c928703d22403207f84294b98bb561"
+hash = "736d1fb20e8672afd01f49beb86d4057d09e450326f770dc0eb0f10e50218f59"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/mss/worldgen/structure_set/desert_well.json"
-hash = "4c0f210f55017fb22e315f74795d78ae8c8dc98691b9c5fb416a4ab3f42b6a0c"
+hash = "554f043fd12bc47892edcb19ee50e6ecb107b8f95f44bada98b68247a2e824b8"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/mss/worldgen/structure_set/diorite_house.json"
-hash = "0681d11d94694fdb2e9d5b12975960c9af47dff1d18bcd011c410d0850040c15"
+hash = "90d12c9d615ee7c526de5141af9229ad4371c52e128334dde87244664c1baa3d"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/mss/worldgen/structure_set/frozen_pond.json"
-hash = "b02e589d0d115cb3a637a54fc82e5df4582989430fb64300b47d2b62396a8669"
+hash = "7a4763bc7cb1b3ee9c91a1cc0368ef53b579376a45e49304f4c69f1d27aa437a"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/mss/worldgen/structure_set/jungle.json"
-hash = "a381d9bd65b2e3cb678d91ee4e824d7c5e8e40f387cc9477b1995da82371b67e"
+hash = "9c4309f6939e9ce026ea0bdfd2b48d51cf4882ba18656188bb98e4f1aad925fb"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/mss/worldgen/structure_set/large_tower.json"
-hash = "3460f68fa8c12cfe6ebc007d71ba36d1cedcf120c573309ce430b4d498a36135"
+hash = "b2450b952f1be5466982c9b68a32cd521c91905220fde60842f4fd6933003116"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/mss/worldgen/structure_set/leaf_hollow.json"
-hash = "d93547fd8c62e3170a6f31d9ab4f09154d5b3ea8837f72cdb6e3c8d09d00bc01"
+hash = "75806ae4c26a3380e2ea4c7d5778000896933cfc0636d6eebb6c6ce01ddc1400"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/mss/worldgen/structure_set/mangrove.json"
-hash = "1445f7190b8cf07b452d152f369acdb7b9b038a94245141435f5b8b3beba1015"
+hash = "9cdf3fa739122860dc8317fd177af01e8f3d8eb1f66c968b5b0f77df1c5855af"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/mss/worldgen/structure_set/muddy_water_hole.json"
-hash = "0a3701bbd049c920411a9c9921f9fc7ed858c9f635c5afe1f6d4ae9dedb7cc87"
+hash = "4d957675cc89aa5d49d7c5671fbe474efc2ecfd4c2e3f59fa1f288e0e1600493"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/mss/worldgen/structure_set/mushroom.json"
-hash = "1435ec7d0330c3c70a2b5b63ff823e1f5e9026a292437f5e05f88bda512321ce"
+hash = "7c49370546b887815159cd7af95270678d38a9226233f17316a92a5bba166ba0"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/mss/worldgen/structure_set/nether_portal.json"
-hash = "97d2fa2a3956831cdf5e02410e9fbf2e1f9adfe8749032e7207310253c5266fb"
+hash = "39ccd6cdfce478ee8552163bdc01c5c00b3248f1c2a63c1edfadae3ad7f9db5d"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/mss/worldgen/structure_set/palm_island.json"
-hash = "ce9baa0427f92acde14c73471237b6e7492a09aba8655166bd59001482d50d17"
+hash = "bfa48bea279234e95f2ef62b73ddc0df4b6563b37d03ecfed3b8da1237c1a267"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/mss/worldgen/structure_set/red_sand.json"
-hash = "8176fc0a5d3333a1d422c770f407d36b8745662b033f79505aaddbcc86586ef3"
+hash = "4a8b25fe07e78a63eebb1e3643a39eb65595e487b5516d0408c3d92eb63e37a0"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/mss/worldgen/structure_set/small_deepslate_house.json"
-hash = "b3a5f4b14c86ffae74c0362d63b8ddb571fc7d8b35083620c32f6564094bf7e5"
+hash = "dbfb03609f93495e611872c66ebad1b58249cc0e356e3d1b52db9734f5882d1c"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/mss/worldgen/structure_set/small_oak_house.json"
-hash = "8d9c135b93fb9877806130e1a5ca2013f3ab7dd1ca44339e4d825cecf4171624"
+hash = "110c1fb6abc0f9f2949d0ad52bd72ea365fa646ba9bc44595958bb07fca00a2b"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/mss/worldgen/structure_set/small_pond.json"
-hash = "9bfe5f625d67108d3b363d8af2c28dc8cea740b4c495121d07a191941598bd56"
+hash = "ca342078e1a87ab18bd80f968caa6e6c85ccae4347927b9ed03e54f65dbb1a6f"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/mss/worldgen/structure_set/small_tower.json"
-hash = "5030b1863ce87bd4013fddd40c951a12f3b8d8e046b27cfd7c405064b6aeb989"
+hash = "0ae6687dc79af82466c99fac1f3a109ea34442ef27504d020a39af6dea7ff5b1"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/mss/worldgen/structure_set/spruce_huts.json"
-hash = "ebb3a1a3306e8783a42eda82700b207f0a58841fda404084ee801d841172be3b"
+hash = "48f566a0f6010b2eaba1b648fc472fd303bbf157063fcd16648ae5b81ea5dcb3"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/mss/worldgen/structure_set/taiga.json"
-hash = "a4925a4e836a39bb0727fa0bc55d1e6cd0c782098dc41bc3f94cac9681dddccc"
+hash = "c3e3be8c7251980f61cfe3456208da1054e3441db7427eba1c3a1b3921f65c7c"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/mss/worldgen/structure_set/trees.json"
-hash = "c3e6cb57f36cc43761462918af19b02692e02f5da16c372890d9f4ea35ba2e59"
+hash = "12e1806a6c164b1139aaa02d09e635100c2a233c0b9ff4e8fa217b4d2633bd19"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/mss/worldgen/structure_set/volcano.json"
-hash = "1bfa4b93eea45c493643d55282553b7232bebdef7dbad59e5d357028e9915a1a"
+hash = "cca284cde3bb508452a7b932a65bf84b693e91022b5b9b39e8eeeb3b401a8b6d"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/mss/worldgen/structure_set/white_house.json"
-hash = "3e5477812b55bbf757a5c2649d3c76c8a7a2724a2244d2bb63a0b57eafe9bb3c"
+hash = "886710e7c61c050fa49a7c27e5a7b330a3345bf0bb4c7830e90ed3af1c5fa8f9"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/mynethersdelight/loot_modifiers/add_loot_bastion_hoglin_stable.json"
