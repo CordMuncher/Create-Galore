@@ -16,7 +16,7 @@ Resource pack, turned on by default: [Fresh Animations](https://modrinth.com/res
 |---|---|---|
 | [Aeronautics Hot Air Fix](https://modrinth.com/mod/aeronautics-hot-air-fix) | 1.1.1 | client |
 | [Aeronautics: Winds & Weather](https://modrinth.com/mod/aeronautics-winds-and-weather) | 1.3.1 | both |
-| [Alex's Caves Continued](https://modrinth.com/mod/alexs-caves-continued) | 1.1.2+neoforge-1.21.1 | both |
+| [Alex's Caves Continued](https://modrinth.com/mod/alexs-caves-continued) | 1.1.1+neoforge-1.21.1 | both |
 | [Alloyed](https://modrinth.com/mod/create-alloyed) | 3.0.12+1.21.1-neoforge | both |
 | [AmbientSounds](https://modrinth.com/mod/ambientsounds) | 6.3.10 | client |
 | [Animal Husbandry](https://modrinth.com/mod/animalhusbandry) | 0.4.2 | both |

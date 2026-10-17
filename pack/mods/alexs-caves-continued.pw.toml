@@ -1,13 +1,13 @@
 name = "Alex's Caves Continued"
-filename = "alexscaves-1.1.2-neoforge+1.21.1.jar"
+filename = "alexscaves-1.1.1-neoforge+1.21.1.jar"
 side = "both"
 
 [download]
-url = "https://cdn.modrinth.com/data/cO2CvXug/versions/wSeCJMlI/alexscaves-1.1.2-neoforge%2B1.21.1.jar"
+url = "https://cdn.modrinth.com/data/cO2CvXug/versions/O6z8hev6/alexscaves-1.1.1-neoforge%2B1.21.1.jar"
 hash-format = "sha512"
-hash = "5682a99122d65df204d76e56795b5d11940fb4a387fe3b605f69086ce9bd7f94887d5b1f7bc3d7aeb709f644360edfc9f29c4cb7d7d016731f92e8bf931e21bc"
+hash = "3e8c0c4580ac9646fd7d62a2b216c5506f7a6ad3990ac040ba735ce02f48fcd53eea0b1d23be878f9e7a0ac8c4b1310bfa857b14c6b60213a0a8e56f768b22d6"
 
 [update]
 [update.modrinth]
 mod-id = "cO2CvXug"
-version = "wSeCJMlI"
+version = "O6z8hev6"
