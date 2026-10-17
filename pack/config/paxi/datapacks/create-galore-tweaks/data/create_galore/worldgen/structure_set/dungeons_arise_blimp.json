@@ -1,0 +1,14 @@
+{
+  "structures": [
+    {
+      "structure": "dungeons_arise:small_blimp",
+      "weight": 1
+    }
+  ],
+  "placement": {
+    "type": "minecraft:random_spread",
+    "salt": 1711171117,
+    "spacing": 360,
+    "separation": 280
+  }
+}

@@ -728,7 +728,7 @@ hash = "8632a6dd5dc315e394f849bb53b5457bef4bc772af8e40a60af8a5963f605faa"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/exploration/structures.json"
-hash = "ccd489d402d9ab4f9b4688fc1096631a1e66e80583e773180db017d5cd234ae4"
+hash = "b551ab0e7ecf6a7d22f0411f3aa1bc7972228ddd0dbd8dae0f8c798eb94baf05"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/exploration/the_end.json"
@@ -1445,6 +1445,18 @@ hash = "bd520d5097e793340a76ed57cf165cc5f6ae9f3a18fe8beef92f7ac5f443d11d"
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/recipe/unify/tfmg__raw_lead_to_createnuclear__raw_lead.json"
 hash = "b5e82e62f7615510dba5e3227c41fa9aa4d10ca0456124ea2a4dcd272d6df2c3"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/worldgen/structure_set/aeronautics_sky.json"
+hash = "399135c23d661be058304b6ef482a807a35ee050c9c6d38a2f24391a03e6a636"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/worldgen/structure_set/dungeons_arise_blimp.json"
+hash = "dd524016e8cf2dabaf008d5cfe7d0a63ebb4c266738767255fb35fd1d4d06213"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/worldgen/structure_set/dungeons_arise_sky.json"
+hash = "34205c83c4bea6ffb267c8f4e551f1f65e6b8b0ab1099c9b10e032fc1a5482a5"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_ltab/worldgen/structure_set/cave_ruins.json"
