@@ -1,0 +1,16 @@
+{
+  "required_mods": [
+    "northstar"
+  ],
+  "type": "armor",
+  "item": {
+    "items": [
+      "northstar:iron_space_suit_helmet"
+    ]
+  },
+  "insulation": {
+    "cold": 10,
+    "heat": 0
+  },
+  "fill_slots": false
+}

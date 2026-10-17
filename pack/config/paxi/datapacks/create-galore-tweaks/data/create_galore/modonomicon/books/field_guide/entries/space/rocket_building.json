@@ -26,7 +26,7 @@
     {
       "type": "modonomicon:text",
       "title": "Building a Rocket",
-      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- [#](FFFFFF)\ue10f[#]() Around a **Rocket Station**: thrusters, fuel tanks, a seat and Rocket Controls.\n- Planets also need an Interplanetary Navigator.\n- Thruster and fuel needs depend on weight, gravity and distance.\n- Sit at the controls and press **jump** to launch."
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- [#](FFFFFF)\ue10f[#]() Around a **Rocket Station**: thrusters, fuel tanks, a seat and Rocket Controls.\n- Planets also need an Interplanetary Navigator.\n- Thruster and fuel needs depend on weight, gravity and distance.\n- Right-click the controls, then press **jump** to launch."
     },
     {
       "type": "modonomicon:text",
@@ -39,7 +39,7 @@
         "item": "northstar:rocket_station"
       },
       "title": "Rocket Station",
-      "text": "Picks the destination, assembles the rocket and shows fuel, thruster and heat needs. Built around a [#](2E5AAC)[Stellar Core](entry://stars/stellar_core)[#]()."
+      "text": "Picks the destination, assembles the rocket and shows fuel, thruster and heat needs. After picking a destination, press the **save** icon: closing with Esc throws the choice away. Built around a [#](2E5AAC)[Stellar Core](entry://stars/stellar_core)[#]()."
     },
     {
       "type": "modonomicon:spotlight",
@@ -52,7 +52,7 @@
     {
       "type": "modonomicon:text",
       "title": "Fuel",
-      "text": "Fuel must sit in **fluid tanks** on the rocket. Accepted:\n\n- Liquid Hydrogen, Hydrogen, Methane, Hydrocarbon, Biofuel\n- TFMG diesel, gasoline, kerosene and naphtha\n\nAmount depends on gravity at each end and the distance. See [#](2E5AAC)[Oil](entry://industry/tfmg_oil)[#]()."
+      "text": "Fuel must sit in **fluid tanks** on the rocket. Accepted:\n\n- Liquid Hydrogen, Hydrogen, Methane, Hydrocarbon, Biofuel\n- TFMG kerosene and naphtha (diesel and gasoline only run the Combustion Engine)\n\nAmount depends on gravity at each end and the distance. See [#](2E5AAC)[Oil](entry://industry/tfmg_oil)[#]()."
     },
     {
       "type": "modonomicon:text",
@@ -75,7 +75,7 @@
     {
       "type": "modonomicon:text",
       "title": "Launching",
-      "text": "- Sit at the Rocket Controls and press **jump** to start the launch sequence, jump again to cancel.\n- Hold the **slow key** on descent.\n- Landings aim at a **Rocket Waypoint**, recorded by using the atlas on it.\n- Super Glue holds the rocket together."
+      "text": "- Right-click the Rocket Controls to take control, as with train controls, then press **jump** to start the launch sequence. Jump again to cancel.\n- Hold the **slow key** on descent.\n- Landings aim at a **Rocket Waypoint**, recorded by using the atlas on it.\n- Super Glue holds the rocket together."
     },
     {
       "type": "modonomicon:spotlight",

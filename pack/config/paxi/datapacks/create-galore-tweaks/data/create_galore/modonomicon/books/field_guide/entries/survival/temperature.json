@@ -66,7 +66,7 @@
     {
       "type": "modonomicon:text",
       "title": "Space",
-      "text": "Cold Sweat covers the Overworld and Aether. Northstar's planets have their own temperature system, set by each world and a Temperature Regulator block. It is separate from Cold Sweat: no link exists between them."
+      "text": "Cold Sweat covers the Overworld and Aether. Northstar's planets have their own temperature system, set by each world and a Temperature Regulator block. It is separate from Cold Sweat, with one link: space suits count as warm clothing, so a suit keeps you warm on a cold night back home. The Martian Steel suit keeps out heat too."
     },
     {
       "type": "modonomicon:text",
