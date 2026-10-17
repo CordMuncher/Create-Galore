@@ -6,7 +6,7 @@ A big, long-term Minecraft modpack built around the Create mod. Think "Minecraft
 
 | | |
 |---|---|
-| **Version** | 0.1.10 |
+| **Version** | 0.2.0 |
 | **Minecraft** | 1.21.1 |
 | **Loader** | NeoForge **21.1.259** (pinned, don't update it, see [Known issues](#known-issues)) |
 | **Mods** | 225 from Modrinth + the pack's own small Create Galore Bridge and Lag Watch + Twilight Forest added by hand, plus 4 shader packs and the Fresh Animations resource pack |
@@ -15,7 +15,7 @@ A big, long-term Minecraft modpack built around the Create mod. Think "Minecraft
 
 ## Install (players)
 
-1. Download `Create-Galore-0.1.10.mrpack` from the [latest release](https://github.com/emresahin0906-code/Create-Galore/releases/latest) (or [from this repo](Create-Galore-0.1.10.mrpack)).
+1. Download `Create-Galore-0.2.0.mrpack` from the [latest release](https://github.com/emresahin0906-code/Create-Galore/releases/latest) (or [from this repo](Create-Galore-0.2.0.mrpack)).
 2. Import it:
    - **Prism Launcher:** Add Instance → Import → pick the `.mrpack`.
    - **Modrinth App:** drag the `.mrpack` onto the window (or File → Import).
@@ -67,7 +67,7 @@ Neither mode deletes or re-downloads mods that didn't change, and neither touche
    ```
 3. Press Play. A small window checks the pack. The first run on an instance you already have just checks the files and downloads nothing if they match the latest release. After that, soft launches with no pack change take a couple of seconds. Clean launches fetch the pack's configs (a few hundred small files) each time.
 
-The command reads the pack from GitHub, which only works while the repo is public. To update from a local copy instead (a private repo, or no internet), unzip the release's `Create-Galore-<version>-server-kit.zip` somewhere and put the path of its `pack\pack.toml` after the jar, for example `"$INST_JAVA" -jar create-galore-updater.jar C:\CreateGalorePack\Create-Galore-0.1.10-server-kit\pack\pack.toml --clean`. Unzip a newer kit over it to update.
+The command reads the pack from GitHub, which only works while the repo is public. To update from a local copy instead (a private repo, or no internet), unzip the release's `Create-Galore-<version>-server-kit.zip` somewhere and put the path of its `pack\pack.toml` after the jar, for example `"$INST_JAVA" -jar create-galore-updater.jar C:\CreateGalorePack\Create-Galore-0.2.0-server-kit\pack\pack.toml --clean`. Unzip a newer kit over it to update.
 
 If the pack can't be read, the updater stops before changing anything. `--clean` moves the configs aside first and puts them back if the update fails, so a failed launch never leaves the instance without configs.
 
@@ -144,7 +144,7 @@ Nothing on the list comes from space, every prize can be found again, and nothin
 - Cold Sweat runs at 0.75x speed and deals half the temperature damage.
 - Thirst: you can drink straight from water by crouching and right-clicking it with both hands empty (Thirst Was Reclaimed has this off by default). Raw water still makes you sick, so bottles and boiling stay the real answer. Drinking rain (look straight up) also works.
 - Create: Smog pollution is left at full strength on purpose.
-- Underground structures are spaced a bit wider, since the pack places far more than vanilla.
+- Structures are spread out so each find counts (0.2.0): about twice vanilla's density on the surface, three times vanilla underground (mineshafts keep their own rate) and under the sea, and the sky as dense as vanilla's surface. Every kind of structure gets an equal share, so a mod with ten kinds turns up five times as often as one with two; boss lairs and the dungeons with the best loot stay rarer. Before this the pack placed about 15 times vanilla's surface density. How each layer was decided: `docs/structure-thinning/`.
 - Inventory Profiles Next auto-refill is off and the backpack magnet is one block shorter, so the game doesn't play itself.
 
 **One fair route per item.** Where two mods make the same thing and one way gives far more for far less work, that way is cut or toned down, so the Create machine route stays worth building. A better yield that costs a bigger build (TFMG's blast furnace makes 2 steel per raw iron, a mixer makes 1 per ingot) is left alone. All of it is recipe and tag overrides in `create-galore-tweaks`; the Field Guide lists them under How Things Connect → Balance Changes.
@@ -275,6 +275,7 @@ All tests ran headless in a cloud machine (4 cores, 16 GB RAM, no GPU), so speed
 | 0.1.8 join chat in the full client (singleplayer, fresh world): Colorwheel Patcher writes `Bliss_v2.1.2_(Chocapic13_Shaders_edit) + Clrwl_1.0.5.zip` and `photon_v1.3a + Clrwl_1.0.5.zip` at launch; Bridge 1.4.0 removes the Train Utilities and Toolgun notices; the Telegram ad, Alex's Caves Tectonic warning, Terralith welcome, deposit lines and DH Alex's Caves note are gone; only advancements remain. Alex's Caves on a dedicated server, same seed with and without Tectonic: `/locate biome` found 3 of the 6 cave biomes each time | ✅ |
 | 0.1.9 Field Guide readability pass in the full client (singleplayer, NeoForge 21.1.259): the icon font shows in Modonomicon's text in colour, Key points and In depth pages render, purple glossary links and blue entry links open their entries, item links show tooltips on hover, the ore doubling, washing and water purity diagrams are readable at book size, and the crushing wheels, press, heated mixer and steam engine 3D previews render and can be placed with Visualize | ✅ |
 | 0.1.10 boss compasses and old guide cleanup on a dedicated server with the full client joined: `/locate` and all four compasses find their Twilight Forest lairs (Naga Courtyard 248 blocks, Lich Tower 232, Labyrinth 373, Hydra's Lair 554 on seed 12345); right-click puts the coordinates in chat and the needle turns to face the lair, and keeps pointing after a relog; outside the Twilight Forest it says where it works; an old Patchouli Field Guide is swapped for the current book when the player has none, removed when they do, and taken out of the ender chest on join, while Iron's Spells' Patchouli book stays; the Boss Compasses guide entry and its four recipe pages render | ✅ |
+| 0.2.0 structure thinning audit with Structure Scan on two fresh seeds (128 km²) against vanilla on ten seeds: surface 1.07× its target (2× vanilla per km² of land), underground 0.96× (3×, mineshafts not counted), underwater 0.96× (3× per km² of ocean), sky 1.00× (vanilla's surface rate); rare kinds stay below ordinary ones; real generation matches the scan 130 of 130; a new world on a dedicated server boots cleanly and `/locate` finds all four Twilight boss lairs and the Abyssal Chasm. Details: `docs/structure-thinning/audit.md` | ✅ |
 | Real FPS, shaders, Distant Horizons visuals, gameplay feel | ❌ Needs a real PC with a GPU |
 
 **Memory:** about 9.3 GB of process memory on the server and 8-9.6 GB on the client with an 8 GB heap. A laptop with 16 GB can play but shouldn't host and play at the same time. A garbage collector benchmark on the server (pack's G1 flags vs Java defaults, Generational ZGC and Shenandoah, plus a 6 GB run) is in [docs/java-flags.md](docs/java-flags.md).
@@ -283,7 +284,7 @@ All tests ran headless in a cloud machine (4 cores, 16 GB RAM, no GPU), so speed
 
 ## Repo layout
 
-- `Create-Galore-0.1.10.mrpack`: the importable pack, built from `pack/`
+- `Create-Galore-0.2.0.mrpack`: the importable pack, built from `pack/`
 - `pack/`: [packwiz](https://packwiz.infra.link/) source, one `.pw.toml` per mod or shader, plus configs (`pack/config/`), the datapacks (`pack/config/paxi/datapacks/create-galore-tweaks`, always on, `create-galore-no-elytra`, and the opt-in `config/paxi/optional/create-galore-with-elytra`) the Field Guide (a Modonomicon book inside `create-galore-tweaks`) and its resource pack `pack/config/paxi/resourcepacks/create-galore-guide` (icon font and diagram pictures, always on)
 - `MODS.md`: full mod list with versions and sides
 - `server/`: server install scripts, memory settings and a starting `server.properties`
@@ -292,7 +293,7 @@ All tests ran headless in a cloud machine (4 cores, 16 GB RAM, no GPU), so speed
 - `tools/updater/`: the pre-launch updater (`create-galore-updater.jar`, plain Java): runs packwiz-installer against the pack on GitHub, and with `--clean` resets every config first
 - `tools/bridge-mod/`, `tools/lagwatch-mod/`: source and build scripts for the pack's two small mods
 - `tools/structscan-mod/`: Structure Scan, a tuning tool (not in the pack) that finds every structure from the seed without generating chunks and reports density per layer and per mod. See its README
-- `tools/structure-thinning/`: scripts that turn a Structure Scan into structure spacing for one layer (`plan.py`), write it into the mods' configs (`apply.py`) and check the result per biome and against vanilla (`biome_check.py`, `final_check.py`). The decisions for each layer are in `docs/structure-thinning/`
+- `tools/structure-thinning/`: scripts that turn a Structure Scan into structure spacing for one layer (`plan.py`), write it into the mods' configs (`apply.py`) and check the result per biome and against vanilla (`biome_check.py`, `final_check.py`, and `audit.py` for all four layers at once). The decisions for each layer are in `docs/structure-thinning/`
 - `tools/server-setup/`: the Windows Server Setup app (C#, .NET Framework 4.8, so it needs nothing installed). `tools/build_server_bundle.py` turns `pack/` into the mod list and config bundle the app carries, so the app always matches the pack it was built with
 - `.github/workflows/release.yml`: builds the GitHub release (the `.mrpack`, the Server Setup app, a server kit zip with the scripts and docs, and this README) whenever the pack, server files, app or docs change on `main-6fi2ef`. The release is tagged with the pack version; pushing again without a version bump replaces that release's files
 
@@ -301,7 +302,7 @@ To rebuild the `.mrpack` after changing `pack/`:
 ```
 cd pack
 packwiz refresh
-packwiz modrinth export -o ../Create-Galore-0.1.10.mrpack
+packwiz modrinth export -o ../Create-Galore-0.2.0.mrpack
 ```
 
 The release workflow then adds `packwiz-installer-bootstrap.jar` and `packwiz-installer.jar` (pinned, hash-checked) and `create-galore-updater.jar` (built from `tools/updater/` by `tools/updater/build.sh`) to the `.mrpack`'s `overrides/` so new instances can use the pre-launch updater. A config players are expected to tweak in game gets `preserve = true` under its entry in `pack/index.toml` (`packwiz refresh` keeps the flag), so the updater never overwrites it.

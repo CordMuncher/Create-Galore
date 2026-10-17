@@ -1,0 +1,26 @@
+{
+  "structures": [
+    {
+      "structure": "cr_aero_structures:airship",
+      "weight": 1
+    },
+    {
+      "structure": "cr_aero_structures:airballoon",
+      "weight": 1
+    },
+    {
+      "structure": "cr_aero_structures:pillager_airballoon",
+      "weight": 1
+    },
+    {
+      "structure": "cr_aero_structures:pillager_airship",
+      "weight": 1
+    }
+  ],
+  "placement": {
+    "type": "minecraft:random_spread",
+    "salt": 1709170917,
+    "spacing": 63,
+    "separation": 25
+  }
+}
