@@ -13,11 +13,11 @@ The world is one folder, so it can move between the two (see [Moving the world](
 
 ## What the server runs
 
-The server gets **182 mods from the pack plus Twilight Forest**. The 42 client-only mods are skipped automatically because they're tagged `client` in `pack/`. That's the ambiance layer (Sound Physics, AmbientSounds, Sounds, Drip Sounds, Presence Footsteps and its Sable add-on, Subtle Effects, Falling Leaves, Make Bubbles Pop, LambDynamicLights, Contraption Lights, Not Enough Animations, EMF, ETF, plus their libraries CreativeCore, Fzzy Config and MRU) and these: Sodium, Sodium Extra, Iris, Euphoria Patches, Iris Veil Compat, Colorwheel, Distant Horizons, Borderless Window, Entity Culling, ImmediatelyFast, Controlling, Mouse Tweaks, Searchables, Inventory Profiles Next (+ libIPN), LibTooltips, Create JEI Compat, Create: Nowheel, Create Smart Bounds, Create - Xaero's map, Xaero Train Map, Jade Sable Compat, Guide Shelf, Aeronautics Hot Air Fix, Better Farming Right Click. Players still need the full pack (the `.mrpack`) on their own PC.
+The server gets **186 mods from the pack plus Twilight Forest**. The 42 client-only mods are skipped automatically because they're tagged `client` in `pack/`. That's the ambiance layer (Sound Physics, AmbientSounds, Sounds, Drip Sounds, Presence Footsteps and its Sable add-on, Subtle Effects, Falling Leaves, Make Bubbles Pop, LambDynamicLights, Contraption Lights, Not Enough Animations, EMF, ETF, plus their libraries CreativeCore, Fzzy Config and MRU) and these: Sodium, Sodium Extra, Iris, Euphoria Patches, Iris Veil Compat, Colorwheel, Distant Horizons, Borderless Window, Entity Culling, ImmediatelyFast, Controlling, Mouse Tweaks, Searchables, Inventory Profiles Next (+ libIPN), LibTooltips, Create JEI Compat, Create: Nowheel, Create Smart Bounds, Create - Xaero's map, Xaero Train Map, Jade Sable Compat, Guide Shelf, Aeronautics Hot Air Fix, Better Farming Right Click. Players still need the full pack (the `.mrpack`) on their own PC.
 
 **Distant Horizons stays off the server on purpose.** The pack's Chunksmith mod already sends far-away terrain (LODs) from the server to each player's Distant Horizons, without Distant Horizons on the server. Putting DH on the server as well makes Chunksmith complain and doubles the work.
 
-Versions that must match on the server and on every player's PC: Minecraft **1.21.1**, NeoForge **21.1.259** (not newer, The Aether breaks on 21.1.262), and the same pack version.
+Versions that must match on the server and on every player's PC: Minecraft **1.21.1**, NeoForge **21.1.262** (not newer until it's tested with The Aether), and the same pack version.
 
 ## Part 1: Local dedicated server (Emre's PC)
 
@@ -27,12 +27,12 @@ Download `Create-Galore-Server-Setup-<version>.exe` from the [latest release](ht
 
 1. **Where the server goes:** for example `C:\CreateGaloreServer`. Pointing it at an existing server updates it.
 2. **Memory:** the app suggests 10 GB on a PC with 32 GB or more, 8 GB otherwise. 6 to 10 GB all tested fine; more than 12 GB doesn't help.
-3. **Mods:** nothing to do, the 182 server mods download from Modrinth at the pack's exact versions. If you already have the pack installed, you can drop your instance's `mods` folder on the box: mods that match the server list byte for byte are copied instead of downloaded, and client-only mods are ignored. Twilight Forest is picked up from that folder too.
+3. **Mods:** nothing to do, the 186 server mods download from Modrinth at the pack's exact versions. If you already have the pack installed, you can drop your instance's `mods` folder on the box: mods that match the server list byte for byte are copied instead of downloaded, and client-only mods are ignored. Twilight Forest is picked up from that folder too.
 4. **Twilight Forest:** drop `twilightforest-1.21.1-4.8.3345-universal.jar` on the box. A green check means it's the right file.
 5. **Players and settings:** your Minecraft name (whitelisted and made operator), other players (whitelisted), port, and the Elytra switch.
 6. Tick the EULA and press **Install server**. When it's done, **Start server** opens the console and the server window with its live memory graph and player list.
 
-It does the same as the script below: NeoForge 21.1.259, the server mods, the pack's configs and datapacks, `server.properties` with `allow-flight=true`, and `user_jvm_args.txt` with the chosen memory. If no Java 21 is found it downloads Eclipse Temurin 21 into the server folder's `java` folder, and the `start-server.bat` it writes uses that. Your world, whitelist, ops and other `server.properties` edits are kept when you run it again. Files the app installed that a newer pack drops are removed; mods you added yourself are left alone.
+It does the same as the script below: NeoForge 21.1.262, the server mods, the pack's configs and datapacks, `server.properties` with `allow-flight=true`, and `user_jvm_args.txt` with the chosen memory. If no Java 21 is found it downloads Eclipse Temurin 21 into the server folder's `java` folder, and the `start-server.bat` it writes uses that. Your world, whitelist, ops and other `server.properties` edits are kept when you run it again. Files the app installed that a newer pack drops are removed; mods you added yourself are left alone.
 
 ### Or with the script
 
@@ -49,7 +49,7 @@ install-server.bat C:\CreateGaloreServer
 (On Linux or macOS: `./install-server.sh ~/CreateGaloreServer`.)
 
 The script:
-1. Installs the NeoForge 21.1.259 server into that folder.
+1. Installs the NeoForge 21.1.262 server into that folder.
 2. Downloads every server-side mod and the pack's configs and datapacks at the exact pinned versions (about 830 MB), using `packwiz-installer` with the pack in this repo.
 3. Copies in the pack's memory settings (`user_jvm_args.txt`, 8 GB) and starting `server.properties` the first time. Later runs keep your edits.
 
@@ -111,13 +111,25 @@ The file also carries tuned garbage collector flags. They won a benchmark agains
 Exaroton bills by RAM per hour while the server runs, and can start the server when a whitelisted player tries to join. These steps follow Exaroton's documented features; their exact screens weren't tested from here, so names in the panel may differ slightly.
 
 1. **Build the server folder on your PC first** (Part 1). Exaroton gets a copy of it.
-2. Create a server on Exaroton. Under **Software**, choose **NeoForge**, Minecraft **1.21.1**, NeoForge **21.1.259**. Custom uploads need bought credits; the free trial can't do it.
+2. Create a server on Exaroton. Under **Software**, choose **NeoForge**, Minecraft **1.21.1**, NeoForge **21.1.262**. Custom uploads need bought credits; the free trial can't do it.
 3. Set **RAM to 8 GB**. After a few sessions, try 6 GB: the benchmark in [java-flags.md](java-flags.md) ran fine at 6 GB. Ignore `user_jvm_args.txt` there, the panel's RAM setting replaces it.
 4. In the **Files** section, upload from your server folder: `mods/`, `config/` (it holds the Field Guide too) and `server.properties`. Then upload the world folder (`world/`) if you want to continue your world (see the next section).
 5. In **Options**, set view distance 10 and simulation distance 8, keep online mode on, whitelist both accounts and op yourself. Turn on **auto-start** for whitelisted players if she should be able to start it by joining, and **auto-stop** after a few empty minutes so it doesn't run up credits.
 6. She adds the Exaroton address (shown on the server page, like `yourname.exaroton.me`) in Multiplayer.
 
+**Backups on Exaroton.** The pack's automatic backups (see [Automatic backups](#automatic-backups)) run there too and count toward storage, so before the first start edit `config/simplebackups-common.toml` in Exaroton's file manager: `backupsToKeep = 3` and `maxDiskSize = "3 GB"`. Exaroton's own backups (Options) are a second copy outside the server.
+
 The storage limit is 10 GB per server. The mods are about 0.8 GB and a fresh world is small, but it grows as you explore. Chunksmith's LOD store (`world/chunksmith/lod/`) is optional and can be left out of uploads to save space.
+
+## Automatic backups
+
+The pack ships **Simple Backups**. While anyone is online it zips the whole world every **2 hours** into `simplebackups/world/` in the server folder (`world_<date>_<time>.zip`), keeps the newest **10** and never lets them pass 25 GB. While nobody is online it makes one more backup after the last player leaves and then waits. It says in chat when one starts and finishes. On the test server a 34 MB world took about a second. In singleplayer the same happens in the game folder's `simplebackups/` for each world.
+
+- **Back up now:** `/simplebackups backup start` (op).
+- **Change it:** `config/simplebackups-common.toml` (`timer` in minutes, `backupsToKeep`, `maxDiskSize`).
+- **Restore:** stop the server, rename `world/` to `world-broken/`, unzip the backup in the server folder so it makes a new `world/` (check the zip's top folder is `world`; if the files sit at the top, make a `world` folder and unzip into it), start the server. Delete `world-broken/` once everything looks right.
+
+These are separate from the backup the update check offers before a pack update (below), which also saves mods and configs.
 
 ## Moving the world between your PC and Exaroton
 
@@ -227,7 +239,7 @@ Real performance on your PC and on Exaroton's hardware wasn't measured. Use `/sp
 ## Troubleshooting
 
 - **"Mod rejections" or "missing registry" when joining:** the player's pack and the server's mods don't match. Update both to the same pack version.
-- **"Failed to encode packet" right after joining:** NeoForge is newer than 21.1.259. Reinstall the server with the script (it pins the version) and check the launcher hasn't updated NeoForge.
+- **"Failed to encode packet" right after joining:** NeoForge doesn't match the pack's 21.1.262. Reinstall the server with the script (it pins the version) and check the launcher hasn't updated NeoForge.
 - **Kicked for flying:** set `allow-flight=true` in `server.properties`.
 - **Rubber-banding, "moved too quickly" or "Can't keep up" in the console:** the server thread is stuck waiting for chunks. Check `cs progress` in the console; if a Chunksmith pregen is running, `cs pause` it while you play and `cs continue` later. The pack's Chunksmith settings already make it yield to players (see [java-flags.md](java-flags.md#things-you-might-not-have-thought-of)), so if it still happens with no pregen running, `/spark profiler` for a minute while it lags shows what's blocking.
 - **Server crashes with `java.lang.OutOfMemoryError`:** raise the RAM (the `-Xmx` value, or the Exaroton RAM slider).
