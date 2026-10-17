@@ -50,6 +50,10 @@ file = "config/create_galore_lagwatch-common.toml"
 hash = "1c464ae0c10ce62b4ae1b5c99556e5afde94e59d78919ea64dd34042df9018d5"
 
 [[files]]
+file = "config/create_structures_arise-server.toml"
+hash = "ae7aeddf5947903d61f1cc99a3d848b3b77c1e4f7e04aa3a31671688dc3c0996"
+
+[[files]]
 file = "config/create_submarine-client.toml"
 hash = "e38558c715f01ec08abda913b77deb52ef8d024f6749127f0f89b67be68749fd"
 
@@ -71,7 +75,27 @@ hash = "f40f2dfd65604adb0be5e0e3d6816b97857d962ec1918f222f151b1babf93d92"
 
 [[files]]
 file = "config/cristellib/betterdungeons/structure_placement_config.json5"
-hash = "c664b2bfbbc6e892a86f270b3a4bad37676282a8e44ff5467ef4f5d42a011563"
+hash = "da3fae37b5fb21861214aac1ae5e59bb340c4baac134d1d355c9056402887e58"
+
+[[files]]
+file = "config/cristellib/betterjungletemples/structure_placement_config.json5"
+hash = "5cfddba9bc046572c0178572217e6f22a393c6da18f7effe0b3d7940cc6ca0c0"
+
+[[files]]
+file = "config/cristellib/cataclysm/structure_placement_config.json5"
+hash = "c1bd55732969644ebdf8824b99b5e0c00acd1d78abd2d0f43b06a33cfe733827"
+
+[[files]]
+file = "config/cristellib/cr_aero_structures/structure_placement_config.json5"
+hash = "d0d8bd3eaa19a5f5f5e1650960aa0caa4c8a40aabc845a5327e94bf315ab6853"
+
+[[files]]
+file = "config/cristellib/create_ltab/structure_placement_config.json5"
+hash = "05b184377963bf7dce0fbed9232de8d7d53f7a4ac8d9c5b33c8e05f706fd304e"
+
+[[files]]
+file = "config/cristellib/dungeons_arise/structure_placement_config.json5"
+hash = "f2d392b3a684df1a4e32bd157178f6ccbf9d6a8d4e8e658b4dcaff66ebc4c748"
 
 [[files]]
 file = "config/cristellib/hopour/structure_placement_config.json5"
@@ -82,12 +106,40 @@ file = "config/cristellib/hybrid_aquatic/structure_placement_config.json5"
 hash = "d000a0270c73795c0e556e1281046b58548789ccbe49b006388802d942ff0943"
 
 [[files]]
+file = "config/cristellib/irons_spellbooks/structure_placement_config.json5"
+hash = "6b4b0ac4b23789ba9cc9ff785d1d37599870accb83182a50b29fbc065f83c25f"
+
+[[files]]
+file = "config/cristellib/mos/structure_placement_config.json5"
+hash = "8e217f1feacd84d41a132c5fc279a52c54090988cc3ac6cd2d7567ba70f97d98"
+
+[[files]]
+file = "config/cristellib/mowziesmobs/structure_placement_config.json5"
+hash = "8ad85aa81717d4ccb049d6e1e0861c699c8c60cb2909944735b669d1b9d727de"
+
+[[files]]
+file = "config/cristellib/mr_create_hangars/structure_placement_config.json5"
+hash = "82e1e4760ebc5014a2dda3f99ff57896343f87ea0984673b6227ebf1cd58ce20"
+
+[[files]]
 file = "config/cristellib/mr_dungeons_andtaverns/structure_placement_config.json5"
-hash = "2cb7b1b8c93c2c56194ef52cc01408f3256e77710ef8b774fc86fa9fd5e35a7d"
+hash = "5cbdcd9f1cdf31a827af2083f9406da610768d3dea6333411792ed260b826493"
+
+[[files]]
+file = "config/cristellib/mushroomquest/structure_placement_config.json5"
+hash = "e01566d39b6489bfeb51d5aca30edbc3fe919e315b50d2e89a04e3ec1001d4bf"
 
 [[files]]
 file = "config/cristellib/revamped_shipwrecks/structure_placement_config.json5"
 hash = "632c72af95eea4b20c17e7f9ba5bb38292c5c2c599b8d2e038919485daa1a239"
+
+[[files]]
+file = "config/cristellib/supplementaries/structure_placement_config.json5"
+hash = "149d72e38f0129c003033fbaf0d83a948392c9525ae479628fbf9b1be527f55f"
+
+[[files]]
+file = "config/cristellib/terralith/structure_placement_config.json5"
+hash = "8cdc7d5e3342e0623991fd486b2bc69da90050c04635542c18a5888407e04dbc"
 
 [[files]]
 file = "config/crittersandcompanions-common.json5"
@@ -121,6 +173,10 @@ hash = "3875b81e90b636147cc5bce5f247b71ad25877c165f4773c98d5c2ad61db515e"
 [[files]]
 file = "config/mowziesmobs-common.toml"
 hash = "370d63f9cf1ce54a034f75bd46fe245ba501aeb6f60235e005bc136d65bd18d5"
+
+[[files]]
+file = "config/obscuria/aquamirae-common.toml"
+hash = "ba3d29006ec82121c2bc56700ad79f9b5f6ff88973455644a867fcec246d9366"
 
 [[files]]
 file = "config/obscuria/aquamirae-early.json"
@@ -668,7 +724,7 @@ hash = "8632a6dd5dc315e394f849bb53b5457bef4bc772af8e40a60af8a5963f605faa"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/exploration/structures.json"
-hash = "2f96335efe6c0a9e1a612427024a224722ee44b2274c5d2aa2026bf629df9836"
+hash = "ccd489d402d9ab4f9b4688fc1096631a1e66e80583e773180db017d5cd234ae4"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/exploration/the_end.json"
@@ -704,7 +760,7 @@ hash = "c3b1fa9919dfd55d94730e0d0823d4c564bc30d862e6f542ea1ce9fd69bc2f58"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/flight/hangars.json"
-hash = "2a903b8f88b7440387ef46195defdbedddc5183bde7f74f9192a1e10fb0314b4"
+hash = "0de6c0cce594ce6dec3bac87625718f0ed727d13e2947a8db8bc9b32d71e0128"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/flight/propellers.json"
@@ -2148,8 +2204,16 @@ file = "config/thirst/item_settings.toml"
 hash = "1f953e8c3b4822db477b0fdfe411c9adc5a2a2df56946f71ba5631f1c9ccf655"
 
 [[files]]
+file = "config/towns_and_towers/structure_rarity_new.json5"
+hash = "9b0af65c74cf8cda628ace4ff3c1d67d8de8db868eaa8ca38e0dbbb89fc5b5c5"
+
+[[files]]
 file = "config/twilightforest-common.toml"
 hash = "79df1e9730257c4e805c23ede280510a939ffd8ac2a9802617b41866caa227ef"
+
+[[files]]
+file = "config/vanilla_structures/placement_structure_config.json5"
+hash = "38faa2af19c41a50340a2d50e7879b8b03c4e494b792b53a32fb7f0df2ee3064"
 
 [[files]]
 file = "config/wover/client.json"

@@ -1,0 +1,28 @@
+# Surface sets the thinning leaves alone (keep) or scales by hand (scale <pattern> <density factor>).
+# First match on the set id or one of its structures wins. Why each line is here: docs/structure-thinning/surface.md
+keep *mineshaft*            # mineshafts stay at their own rate and don't count (Emre, 2026-10-17)
+keep aquamirae:surface      # Ice Maze terrain (ice arches and spirals), the biome itself; owned by the underwater thread
+keep alexscaves:ocean_trench   # carves the Abyssal Chasm biome; thinning it would break the biome (Emre: a biome's own gimmick stays)
+keep berries_and_cherries:*    # wild cherry trees and raspberry bushes: foraging plants, not buildings to discover
+# Mixed surface and sky set handed to this thread by the sky thread (34 sky, 33 surface on seed 12345).
+own cr_aero_structures:cr_aero_structures
+# Sky kinds inside surface-owned sets (dungeons_arise:major_structures, cr_aero_structures) get the sky thread's share.
+level sky 3.7
+# Other layers' sets also land some structures on the surface (beached shipwrecks, grounded balloons, ...):
+# about 0.85 per km² now, roughly half that once those threads thin them.
+reserve spill 0.45
+# Rare vanilla builds with items found nowhere else stay at the rate they have now, which is already at or below
+# vanilla's: woodland mansions (totems, Vindicators) and ocean monuments (sponges; YUNG's are rarer than vanilla).
+scale minecraft:woodland_mansions 1
+scale betteroceanmonuments:* 1
+# Meant to be rare (Emre, 2026-10-17: rare builds with good loot stay rarer than the rest):
+# boss lairs and the big dungeons with the best loot. Thinned in proportion, never up to an ordinary share.
+rare dungeons_arise:major_structures   # When Dungeons Arise's big roguelike dungeons, several with bosses
+rare mowziesmobs:*                     # Ferrous Wroughtnaut, Frostmaw, Umvuthi lairs
+rare cataclysm:*                       # Cataclysm boss lairs (Ignis, Maledictus, ...)
+rare betteroceanmonuments:*            # ocean monument: Elder Guardians, sponges, gold
+rare minecraft:ocean_monuments         # same, if YUNG's is ever removed
+rare minecraft:woodland_mansions       # mansion: totems, the rarest vanilla build
+rare irons_spellbooks:*                # spellcaster towers and forts with bosses and spell loot
+rare create_ltab:thecastle             # the castle and the king's castle
+rare create_ltab:grot
