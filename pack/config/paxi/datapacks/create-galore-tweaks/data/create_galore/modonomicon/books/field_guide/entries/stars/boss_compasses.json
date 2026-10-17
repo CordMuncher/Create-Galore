@@ -1,0 +1,78 @@
+{
+  "category": "stars",
+  "name": "Boss Compasses",
+  "description": "Compasses that find the Twilight Forest boss lairs on the road to the Stellar Core.",
+  "icon": {
+    "item": "create_galore_bridge:hydra_compass"
+  },
+  "x": 1,
+  "y": 4,
+  "sort_number": 7,
+  "parents": [
+    {
+      "entry": "stars/machine_fights",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Boss Compasses",
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- [#](FFFFFF)\ue10e[#]() One compass for each Twilight boss on the way to the [#](2E5AAC)[Stellar Core](entry://stars/stellar_core)[#]().\n- Right-click it in the Twilight Forest: chat shows where the nearest lair is, and the needle points there.\n- Each is a Compass plus drops you will have by then."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Structures are spread out in Create Galore, so a lair can be a long walk away. The **Hydra** drops the Fiery Blood the core needs, and the Twilight Forest only lets you reach it after beating the **Naga**, the **Lich** and the **Minoshroom**, in that order. Each of the four has a compass that finds its lair."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "The four compasses",
+      "text": "- **Naga Compass**: finds the Naga Courtyard. Compass, Raven Feather, Torchberries.\n- **Lich Compass**: finds the Lich Tower. Compass and 2 Naga Scales."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "- **Minoshroom Compass**: finds the Minotaur Labyrinth. Compass and Exanimate Essence, which the Lich drops.\n- **Hydra Compass**: finds the Hydra's Lair in the Fire Swamp. Compass, Raw Meef and a Maze Slimeball from the Labyrinth."
+    },
+    {
+      "type": "modonomicon:crafting_recipe",
+      "recipe_id_1": "create_galore:boss_compass/naga_compass",
+      "recipe_id_2": "create_galore:boss_compass/lich_compass",
+      "text": ""
+    },
+    {
+      "type": "modonomicon:crafting_recipe",
+      "recipe_id_1": "create_galore:boss_compass/minoshroom_compass",
+      "recipe_id_2": "create_galore:boss_compass/hydra_compass",
+      "text": ""
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Using one",
+      "text": "Right-click it anywhere in the Twilight Forest. Chat shows the X and Z of the nearest lair and how far away it is, and from then on the needle points there, like a lodestone compass. It searches up to 1600 blocks around you."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Right-click again later to search from where you are now.\\\n\\\nOutside the Twilight Forest it only tells you where it works."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "[#](FFFFFF)\ue101[#]() **Watch out:** it finds the nearest lair, even one you already cleared. Head past it and search again.\\\n\\\n[#](FFFFFF)\ue102[#]() **Tip:** Twilight's own [Magic Map](item://twilightforest:magic_map) and [Maze Map](item://twilightforest:maze_map) still work too, and show the area around the lair."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "No compass needed",
+      "text": "The other prize bosses don't hide in a lair you have to find:\n\n- the **Wither** is summoned,\n- the **Ender Dragon** waits past the Stronghold portal, and an Eye of Ender finds the Stronghold,\n- the **Hullbreaker** roams the Abyssal Chasm biome, which a [Cave Biome Map](item://alexscaves:cave_map) finds."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Related",
+      "text": "The road, and the bosses on it.\n\n- [#](2E5AAC)[Prize: Twilight Forest](entry://stars/twilight)[#]()\n- [#](2E5AAC)[Fighting with Machines](entry://stars/machine_fights)[#]()\n- [#](2E5AAC)[Twilight Forest](entry://exploration/twilight_forest)[#]()\n- [#](2E5AAC)[Bosses](entry://exploration/bosses)[#]()"
+    }
+  ]
+}

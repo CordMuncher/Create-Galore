@@ -33,12 +33,12 @@
     {
       "type": "modonomicon:text",
       "title": "How",
-      "text": "Twilight bosses drop into a chest where they started. Each lair holds one boss, but every new Fire Swamp or Dark Tower has another. [#](2E5AAC)[Cannons](entry://industry/cannons)[#]() and autocannons work well on the Hydra's heads."
+      "text": "Twilight bosses drop into a chest where they started. Each lair holds one boss, but every new Fire Swamp or Dark Tower has another. [#](2E5AAC)[Cannons](entry://industry/cannons)[#]() and autocannons work well on the Hydra's heads. A Hydra Compass finds the lair: see [#](2E5AAC)[Boss Compasses](entry://stars/boss_compasses)[#]()."
     },
     {
       "type": "modonomicon:text",
       "title": "Related",
-      "text": "The road, and where this prize lives.\n\n- [#](2E5AAC)[Why Space Is Locked](entry://stars/why)[#]()\n- [#](2E5AAC)[The Stellar Core](entry://stars/stellar_core)[#]()\n- [#](2E5AAC)[Twilight Forest](entry://exploration/twilight_forest)[#]()"
+      "text": "The road, and where this prize lives.\n\n- [#](2E5AAC)[Why Space Is Locked](entry://stars/why)[#]()\n- [#](2E5AAC)[The Stellar Core](entry://stars/stellar_core)[#]()\n- [#](2E5AAC)[Twilight Forest](entry://exploration/twilight_forest)[#]()\n- [#](2E5AAC)[Boss Compasses](entry://stars/boss_compasses)[#]()"
     }
   ]
 }
