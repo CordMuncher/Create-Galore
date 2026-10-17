@@ -1,3 +1,5 @@
 {
-  "values": []
+  "values": [
+    "create_galore:world_defaults"
+  ]
 }

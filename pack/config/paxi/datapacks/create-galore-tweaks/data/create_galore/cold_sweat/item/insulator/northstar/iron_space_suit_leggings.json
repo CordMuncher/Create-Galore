@@ -1,0 +1,16 @@
+{
+  "required_mods": [
+    "northstar"
+  ],
+  "type": "armor",
+  "item": {
+    "items": [
+      "northstar:iron_space_suit_leggings"
+    ]
+  },
+  "insulation": {
+    "cold": 12,
+    "heat": 0
+  },
+  "fill_slots": false
+}

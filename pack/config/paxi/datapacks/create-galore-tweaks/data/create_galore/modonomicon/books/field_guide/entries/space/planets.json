@@ -26,12 +26,12 @@
     {
       "type": "modonomicon:text",
       "title": "Planets",
-      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- [#](FFFFFF)\ue10f[#]() Four worlds to land on: the **Moon, Mars, Mercury and Venus**, each with an orbit dimension.\n- Titanium ore is on all four; tungsten only on Mercury.\n- [#](FFFFFF)\ue109[#]() Temperatures run from -270 C in orbit to 464 C on Venus."
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- [#](FFFFFF)\ue10f[#]() Four worlds to land on: the **Moon, Mars, Mercury and Venus**. Mars, Mercury and Venus also have an orbit dimension; the Moon has none.\n- Titanium ore is on all four; tungsten only on Mercury.\n- [#](FFFFFF)\ue109[#]() Temperatures run from -270 C in orbit to 464 C on Venus."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Northstar models many bodies, but only four have a surface to land on: the Moon, Mars, Mercury and Venus. Each has a surface and an orbit dimension. The rest are sky scenery in the atlas."
+      "text": "Northstar models many bodies, but only four have a surface to land on: the Moon, Mars, Mercury and Venus. Each has a surface. Earth, Mars, Mercury and Venus also have an orbit dimension above them; the Moon has none. The rest are sky scenery in the atlas."
     },
     {
       "type": "modonomicon:text",
@@ -80,7 +80,7 @@
     {
       "type": "modonomicon:text",
       "title": "Venus",
-      "text": "Fungal forests, lava and sulfuric caverns under a very dense atmosphere.\n\n- **Ores:** coal, quartz, glowstone, titanium and others.\n- **Mobs:** Mimic, Scorpion, Stone Bull, Vulture.\n\n[#](FFFFFF)\ue101[#]() **Watch out:** Sulfuric Acid kills if you swim in it."
+      "text": "Fungal forests, lava and sulfuric caverns under a very dense atmosphere.\n\n- **Ores:** coal, quartz, glowstone, titanium and others.\n- **Mobs:** Mimic, Scorpion, Stone Bull, Vulture.\n\n[#](FFFFFF)\ue101[#]() **Watch out:** iron suits burn here; wear [#](2E5AAC)[Martian steel](entry://space/space_survival)[#](). Sulfuric Acid kills swimmers."
     },
     {
       "type": "modonomicon:spotlight",
