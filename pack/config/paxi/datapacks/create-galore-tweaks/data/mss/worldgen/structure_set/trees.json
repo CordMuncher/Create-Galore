@@ -1,0 +1,43 @@
+{
+  "structures": [
+    {
+      "structure": "mss:tree_1",
+      "weight": 1
+    },
+    {
+      "structure": "mss:tree_2",
+      "weight": 1
+    },
+    {
+      "structure": "mss:tree_3",
+      "weight": 1
+    },
+    {
+      "structure": "mss:tree_4",
+      "weight": 1
+    },
+    {
+      "structure": "mss:tree_5",
+      "weight": 1
+    },
+    {
+      "structure": "mss:tree_6",
+      "weight": 1
+    },
+    {
+      "structure": "mss:tree_7",
+      "weight": 1
+    },
+    {
+      "structure": "mss:tree_8",
+      "weight": 1
+    }
+  ],
+  "placement": {
+    "type": "moogs_structures:advanced_random_spread",
+    "salt": 731846205,
+    "spacing": 41,
+    "separation": 20,
+    "min_distance_from_world_origin": 250
+  }
+}
