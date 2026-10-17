@@ -30,7 +30,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "- [#](2E5AAC)[Create Propulsion thrusters](entry://flight/propulsion)[#](): diesel, gasoline, kerosene, naphtha\n- [#](2E5AAC)[Northstar rockets](entry://space/rocket_building)[#](): diesel, gasoline, kerosene, naphtha"
+      "text": "- [#](2E5AAC)[Create Propulsion thrusters](entry://flight/propulsion)[#](): diesel, gasoline, kerosene, naphtha\n- [#](2E5AAC)[Northstar rockets](entry://space/rocket_building)[#](): kerosene, naphtha. Diesel and gasoline only run Northstar's Combustion Engine"
     },
     {
       "type": "modonomicon:text",

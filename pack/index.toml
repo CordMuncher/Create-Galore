@@ -568,7 +568,7 @@ hash = "d75be3b282533485fb25f22951b23ce2ffae62de6376f9a28b25eb25da01eee4"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/connections/fuel.json"
-hash = "05f339c20ad9af71bff8ed691f14439fcd8bb7bf6d335e4c68c91c42098aba04"
+hash = "e54a3850ab7f503c650738674bdb83e3668223c853a57fc1bfd0fc261ade926d"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/connections/heat.json"
@@ -1172,19 +1172,19 @@ hash = "0807ea54f451b7b7267b48e75a66abdadf83e24a99288b715754409f7ef9f9d3"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/space/aeronautics_bridge.json"
-hash = "03e559a5b73807095e32fcb55f2bed507cf862c27fdae021955bd4986023ec55"
+hash = "de3c46a4a05c7d2e587b1b2c59dd27f6faf8ecba1c47ee8546754b9ef5943bcd"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/space/planets.json"
-hash = "aa34207a386cdb2fa24c28838131957a4be90708034a7ded790a5cd89bb20e71"
+hash = "be84c98806e0ede3af4b12c43db732a72f66966bfbcc289fa4a8b9195b408cbb"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/space/reaching_space.json"
-hash = "403e4f0a0db9f44d07951ca45880e475c74a7905fc2262848af3577678874712"
+hash = "2c3a199a352e532e0c475f56c64f14bf3e15cd676a4764edf6255f47f69dc41e"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/space/rocket_building.json"
-hash = "eea972249020e4b3603ddab77b0c5252a2647a007d17cbb5d9e8ef7a83d2136c"
+hash = "444829da390ac60d31127126187d8d30aaaaccd6e5d6c809518f04b116b04a4d"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/space/space_materials.json"

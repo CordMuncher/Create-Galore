@@ -39,17 +39,22 @@
         "item": "cnbridge:dimensional_drive"
       },
       "title": "Dimensional Drive",
-      "text": "Place on a ship. Right-click to choose a Northstar destination, arm it, then fly up to the trigger altitude to launch."
+      "text": "Place on a ship. Right-click it, put a Space Atlas in its slot and pick a planet, then press **Arm Drive** and fly up to the trigger altitude."
     },
     {
       "type": "modonomicon:text",
       "title": "Recipe here",
-      "text": "In this pack the Dimensional Drive costs a [#](2E5AAC)[Stellar Core](entry://stars/stellar_core)[#](), 4 Titanium Ingots and 4 [#](2E5AAC)[Precision Mechanisms](entry://create_basics/brass_and_assembly)[#](). Press R over it in [#](2E5AAC)[JEI](entry://start_here/tools)[#]() to check. It offers the Moon, Mars, Venus, Mercury, Earth and Earth Orbit."
+      "text": "In this pack the Dimensional Drive costs a [#](2E5AAC)[Stellar Core](entry://stars/stellar_core)[#](), 4 Titanium Ingots and 4 [#](2E5AAC)[Precision Mechanisms](entry://create_basics/brass_and_assembly)[#](). Press R over it in [#](2E5AAC)[JEI](entry://start_here/tools)[#]() to check. It can reach the Moon, Mars, Venus, Mercury, Earth and Earth Orbit."
     },
     {
       "type": "modonomicon:text",
       "title": "Using it",
-      "text": "The drive must sit on an Aeronautics ship.\n\n- Set the target planet and trigger altitude in blocks, then **Arm** and **Confirm**.\n- Some destinations need an **Interplanetary Navigator** on board.\n- [#](2E5AAC)[Goggles](entry://create_basics/tools_wrench)[#]() show destination, speed and altitude."
+      "text": "The drive must sit on an Aeronautics ship.\n\n- With no atlas in its slot it always goes to **Earth Orbit**.\n- Mars, Venus and Mercury also need an **Interplanetary Navigator** on board.\n- [#](2E5AAC)[Goggles](entry://create_basics/tools_wrench)[#]() show destination, speed, altitude and the altitude needed."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Trigger altitude",
+      "text": "The trigger height is fixed, not set in the menu. From Earth:\n- Earth Orbit and Moon: 1750\n- Mars: 2200\n- Venus: 2600\n- Mercury: 3000\n\nFrom anywhere else it is 1750. Hold that height for about 5 seconds while the drive spools, and stay on a seat so you land with the ship."
     },
     {
       "type": "modonomicon:spotlight",
