@@ -68,6 +68,19 @@
       "text": "Fills or drains a whole pool, from the top down to the hose end. It needs [#](2E5AAC)[rotation](entry://create_basics/rotation)[#]() to lower."
     },
     {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "cmparallelpipes:pipe_wrench"
+      },
+      "title": "Pipe Wrench",
+      "text": "From Create More: Parallel Pipes. A fluid pipe normally joins every pipe beside it. Use this wrench on a pipe to lock its connections, like an [#](7A3C9A)[encased](entry://glossary/encased)[#]() pipe, so pipes can run side by side. Use it again to unlock."
+    },
+    {
+      "type": "modonomicon:crafting_recipe",
+      "recipe_id_1": "cmparallelpipes:pipe_wrench",
+      "text": "Hold the wrench and a locked pipe shows outlines. Use it on them to add or remove a connection. A pipe keeps at least two open ends."
+    },
+    {
       "type": "modonomicon:text",
       "title": "Related",
       "text": "- [#](2E5AAC)[Press, Mixer and Basin](entry://create_basics/processing)[#]()\n- [#](2E5AAC)[Blaze Burner and Heat](entry://create_basics/heat)[#]()\n- [#](2E5AAC)[Burning Liquid Fuel](entry://industry/liquid_fuel)[#]()"

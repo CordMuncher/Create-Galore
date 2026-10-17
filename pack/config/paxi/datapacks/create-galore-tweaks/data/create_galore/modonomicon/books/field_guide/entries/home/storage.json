@@ -47,7 +47,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Common upgrades:\n- Pickup and Magnet collect items (range 2, Advanced 4).\n- Filter limits what goes in.\n- Feeding eats for you.\n- Restock and Refill keep your hotbar full.\n- Void and Compacting tidy overflow.\n- Smelting, crafting and more."
+      "text": "Common upgrades:\n- Pickup and Magnet collect items (range 2, Advanced 4).\n- Filter limits what goes in.\n- Feeding eats for you.\n- Restock and Refill keep your hotbar full.\n- Void and Compacting tidy overflow.\n- Everlasting makes a backpack on the ground immune to fire, lava and the void.\n- Smelting, crafting and more."
     },
     {
       "type": "modonomicon:spotlight",

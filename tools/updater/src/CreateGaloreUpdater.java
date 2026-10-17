@@ -6,6 +6,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -52,15 +53,26 @@ public final class CreateGaloreUpdater {
         cmd.add(java); cmd.add("-jar"); cmd.add("packwiz-installer-bootstrap.jar"); cmd.add("--bootstrap-no-update");
         cmd.addAll(passOn);
         cmd.add(url);
+        // packwiz-installer moves NeoForge by editing the launcher's mmc-pack.json, but the launcher has already
+        // read that file for this launch, so this run would start the old NeoForge with the new mods.
+        Path mmcPack = here.getParent() == null ? null : here.getParent().resolve("mmc-pack.json");
+        byte[] componentsBefore = mmcPack != null && Files.isRegularFile(mmcPack) ? Files.readAllBytes(mmcPack) : null;
         int code = new ProcessBuilder(cmd).inheritIO().start().waitFor();
         if (Files.exists(backup)) {
             if (code == 0) delete(backup);
             else { System.out.println("The update failed, so --clean puts your old configs back"); restore(here, backup); }
         }
+        if (code == 0 && componentsBefore != null && Files.isRegularFile(mmcPack)
+                && !Arrays.equals(componentsBefore, Files.readAllBytes(mmcPack))) {
+            System.out.println("The update moved the instance to a new NeoForge version. Launch the game again to start it.");
+            System.exit(NEW_LOADER);
+        }
         System.exit(code);
     }
 
     static final String BACKUP = ".galore-clean-backup";
+    /** Exit code that stops this launch because NeoForge changed; the next launch uses the new version. */
+    static final int NEW_LOADER = 4;
 
     static boolean packReachable(String url) {
         if (!url.startsWith("http://") && !url.startsWith("https://")) return Files.isRegularFile(Paths.get(url));

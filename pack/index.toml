@@ -146,6 +146,10 @@ file = "config/crittersandcompanions-common.json5"
 hash = "fbded3027456c656977610fb0ea58188b1cf7974662ef17830703b2a79fc21a5"
 
 [[files]]
+file = "config/gravestone-server.toml"
+hash = "6ddf2cf723d6c534a2e89916f47f252887632812d4e4eb052f32394b25639a66"
+
+[[files]]
 file = "config/hostile_skies-common.toml"
 hash = "df9e88c098ae6384586a7b58c59f59645c602e209cc6446be1109474a94b48de"
 
@@ -600,7 +604,7 @@ hash = "3dc0367765490ee0946af1fd1d1d3316b8ff447948e5e3427d6818815d303acf"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/create_basics/crushing.json"
-hash = "9cb4fba52d0509857c6adaf99d94d50c8e05e41b80eaacf4fbdbb25e9a90acc5"
+hash = "e4f8069553c2e4d4272fc574075cc3a3b7194122073920e4233a9c0246d7e7ad"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/create_basics/deployer.json"
@@ -612,7 +616,7 @@ hash = "1b64afef0228b77eaee51bcd3ec83a666158381d6acaa9cabdc343596069cd35"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/create_basics/fluids.json"
-hash = "2f94e8a324f7bdd8668ec5517280a809979970f49a66d85fe3109ba2e98cd263"
+hash = "eafec7c5af221dfa145547c04eefc258d055ec19df1e15f09f7c4a49a42b693d"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/create_basics/heat.json"
@@ -720,7 +724,7 @@ hash = "0a936a18e50b603a801009dd0b331f4453fd0d57de24811506692d0095da240f"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/exploration/nether.json"
-hash = "08415496217fe3e56b306741db5a0b1d5f6ad2637888bd2b645d3f62e9967786"
+hash = "0395a4ebe0d70be2097c7cc3d8d524e075150643c08cbd2f12a0d748f7794144"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/exploration/structure_packs.json"
@@ -780,7 +784,7 @@ hash = "0cc8ec49a1f35b686a0ff105e51ac64ab472c97ada9c42d326b86e286899dbc5"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/flight/ship_hardware.json"
-hash = "47350473759e90b60b7533ac18d8569bbce13339d5ac87533050dcfb4940b2cd"
+hash = "f388e791618af53b3569cea2755c6e5e0fbb4145b997cd012be871338085e5a5"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/flight/weather_and_danger.json"
@@ -792,7 +796,7 @@ hash = "18244ee31b511d1fc4128607d3a9f295e84bc33f764d24297ab9156c1bf40ab3"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/food/animals.json"
-hash = "8a347ec4c34ceb64e83890bb415dfb22833fda3a6afce424eedfe80cb1c1d3ff"
+hash = "67b634b511b1b8aee07223ef32479d5a3e965a4827f70235f6d64cbd787f5a98"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/food/bees.json"
@@ -816,7 +820,7 @@ hash = "32a0efca48edbc29579d6df0a0a30305c5985215f85a34f8bbbca58ce8c0c904"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/food/farmers_delight_addons.json"
-hash = "8f6b59973a9c05069309f54d4fd9ea5b6df8fe3c9ee178d48a3e6eb889e65b40"
+hash = "2e75e38dd399e9d9dee9ae26a8f0310ce6ecd995e4a95032f5bb24bbbf7b1f59"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/food/garnished.json"
@@ -1052,7 +1056,7 @@ hash = "015aba92f677eeba8de1b9232e2fb803d827a78030ace8447aee760b9e534223"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/home/maps.json"
-hash = "b4c3e6a6ebdd4e01c42193c2c1575e36b2af2fb7d89e32ac2656be7279d1b0b8"
+hash = "e9e6510cd9373e7b06f55c216e19c3b853f72013d1be9d75953c9f0844cd5fae"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/home/starter_kit.json"
@@ -1060,7 +1064,7 @@ hash = "aa06ad47304a8735207e869b96a9027b5956cf78e388bdfa359475b751da23f9"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/home/storage.json"
-hash = "f382fa550ffca947a48f2a7744fb24351d1f485e419ad876a48ae443a62b01c0"
+hash = "037ccfa7244736bdf664abaae741d5524d5d3e0dd83c1f77db6820d01d9e682a"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/industry/alloyed.json"
@@ -1092,7 +1096,7 @@ hash = "24c636c06a60f82479e49a74881a0b86cf4afafe9462e6015dc23abfecf3e117"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/industry/ore_excavation.json"
-hash = "fbd6959fd1104154aaa4d9da0d9731c364d0949c906af503605d78e9c518f01d"
+hash = "a50f0bf01c8d6a741978aae03e4053af8a850e1c34098ad745798680cb22c197"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/industry/power_compared.json"
@@ -1240,11 +1244,15 @@ hash = "621c2518ff365a5baa6c8af72516e6deee2686aa2b9b6d7080b0275f5c2ea86a"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/start_here/performance.json"
-hash = "0c9d998fc3feca0a932805d952e203040e123770ca2cd11480ab157e7bd1b74c"
+hash = "0e9efa234d7034ba72823365186dbe0e0fc4b5fb8da8a379e3f2b646b2f9b334"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/start_here/playing_together.json"
+hash = "a437070568f7afa0bed59e2bdb77afc5158f2581d1f017a3940176ece71718f8"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/start_here/tools.json"
-hash = "0ddee7972293a52d403161fb0d671e396459c6dc540b7c0b97c4b54535f9ddf3"
+hash = "274ab1c01f7a5747813daefc3ed49de27479a62c6314d17d8be23bb1710942b0"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/start_here/welcome.json"
@@ -1253,6 +1261,10 @@ hash = "eb6580edb8fd4c567f40d3fb4725db7ad9862ca29060711b2d2b69d36f9f9bb7"
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/start_here/where_to_begin.json"
 hash = "b77524b91bc90331e4b61b6dc948aada676652ce21d91436ba4fe7c83e2f4562"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/survival/death_and_graves.json"
+hash = "9aa38cb1f0de303cffcfff8238b72b04d441e1b9ef39ebfd4d82dd68fc4ad6a2"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/survival/food_and_health.json"
@@ -1308,7 +1320,7 @@ hash = "a2436b6d819ce57ca8d8eb884f28d097eff1ed42f0f9aa733ba00446b1a4217f"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/transport/train_addons.json"
-hash = "0e697a01ac5deef7c5bd56f1674088de3adcb3e66be50d65a3bc545169a4bc8e"
+hash = "983d58d52ac2c48c6d014c66c481f8ee20e5e60cca7c486e29c5eef9e46aee18"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/transport/train_signals.json"
@@ -2372,7 +2384,7 @@ metafile = true
 
 [[files]]
 file = "mods/alexs-caves-continued.pw.toml"
-hash = "5ffa3d0118623a3164b2e6b24ba10ca8ca98a9eb640ebf6616cfceead949a492"
+hash = "49d4c3483faf58ba3cc7131ccf438edcc6c944fe92e97b2e18b5e4d19a27d7ba"
 metafile = true
 
 [[files]]
@@ -2413,6 +2425,11 @@ metafile = true
 [[files]]
 file = "mods/artifacts.pw.toml"
 hash = "416b7f130791397fb2ceb9e89ce3fd0e870f207c8e40b759c069cb58b7544314"
+metafile = true
+
+[[files]]
+file = "mods/baguettelib.pw.toml"
+hash = "ad964c7bc216dc509aba7cc617456a340e7746565e79d0cd4fab8a4d31ec95ed"
 metafile = true
 
 [[files]]
@@ -2482,17 +2499,17 @@ metafile = true
 
 [[files]]
 file = "mods/cold-sweat-altitude.pw.toml"
-hash = "b0bdd76e722f5a6866fe423016d37671eb155b7c427b1db6cf91fd89b98b95e1"
+hash = "0be11068ba10da36b7d3ae9009186253109f72eeb0bee667e9153fe1abf05dcc"
 metafile = true
 
 [[files]]
 file = "mods/cold-sweat.pw.toml"
-hash = "3d30ac171f7b054e06a4efe45f22fc62d8e79d28c745c3ea9f0a32182500243a"
+hash = "bd6a02eb59cf80b4211704447b6f93bf2070c901cfb1b2929f2fb9a5722f1d59"
 metafile = true
 
 [[files]]
 file = "mods/collective.pw.toml"
-hash = "136af191b860ebf7967a748fe20457b8b1712e9d6095413dce23def1ed28468b"
+hash = "0068600d3a81ec5e80dd2b7d700bdb7b957f953ee340c6526ba7da741661a40b"
 metafile = true
 
 [[files]]
@@ -2637,7 +2654,7 @@ metafile = true
 
 [[files]]
 file = "mods/create-deep-seas.pw.toml"
-hash = "d13664474b8a9e6f2c540f6581f99cd887631707b663daa4c0eb203c02d9e509"
+hash = "034d02209c640de464c54a7bc413bc3c08004e51026451ff9c5d5911275e60b4"
 metafile = true
 
 [[files]]
@@ -2915,7 +2932,7 @@ metafile = true
 
 [[files]]
 file = "mods/fallingleavesforge.pw.toml"
-hash = "e5125f8f2709fd20f8182fade3d7f9e7129872c63f042c5489c6eba4733b6b49"
+hash = "5db5e7bdaa8455f290c567e88f918887ec86167565dd6822be8089405e4a8ecd"
 metafile = true
 
 [[files]]
@@ -2935,7 +2952,7 @@ metafile = true
 
 [[files]]
 file = "mods/fragmentum.pw.toml"
-hash = "20a6fed49a56d88d939ce6990ae7088faa80887e6baeef317aa11d53a398db40"
+hash = "e937517aca4968decca4550ea9f436bcf371892fb6bd9dcd0d6b06d0beb350a4"
 metafile = true
 
 [[files]]
@@ -2961,6 +2978,16 @@ metafile = true
 [[files]]
 file = "mods/glitchcore.pw.toml"
 hash = "e53646f88aeb6bd54c38db50da972abdac91e83c145a8f974107b0ca103b15bc"
+metafile = true
+
+[[files]]
+file = "mods/gravestone-mod.pw.toml"
+hash = "d18f1ea4c6c1c2f99f18a8725d11e14c93abd29988df24c967794fc52e9c969c"
+metafile = true
+
+[[files]]
+file = "mods/gravestone-x-curios-api-compat.pw.toml"
+hash = "ab17d6e36c0a7503693e512231e86685009d85953e1e8026a31d3241df565f83"
 metafile = true
 
 [[files]]
@@ -3045,7 +3072,7 @@ metafile = true
 
 [[files]]
 file = "mods/jei.pw.toml"
-hash = "7358789081b9ff127b20b86bee860392e60587fa90c3e61a3a05c8983f06013d"
+hash = "58333a1b7c35bd5940e63b498cf44da16b1f2464c73d72203d1fed84ccfd352a"
 metafile = true
 
 [[files]]
@@ -3205,7 +3232,7 @@ metafile = true
 
 [[files]]
 file = "mods/owo-lib.pw.toml"
-hash = "46831c04077a06df823bcd0f254833a90a9a9ccc78f5069f4b4c27fa301ac0cf"
+hash = "6514f98b34602b789fc2dbcafe7a67468d1c94d74965a0142a79b7ab23628a9a"
 metafile = true
 
 [[files]]
@@ -3284,6 +3311,11 @@ hash = "0bef7b3dd4758a661d3e6827bd390c12ff8a3ede4a66bb2e01e3c760f02bd509"
 metafile = true
 
 [[files]]
+file = "mods/simple-backups.pw.toml"
+hash = "b3b444ca79a5786d5c7589a7119fcf4c3e4cf73c70860c17acb63c88fc06749a"
+metafile = true
+
+[[files]]
 file = "mods/sky-whales.pw.toml"
 hash = "c1a1cbd1d0ce2688841ad652bbf58cde0bf2cc816e820e30b31c127c800100ad"
 metafile = true
@@ -3320,7 +3352,7 @@ metafile = true
 
 [[files]]
 file = "mods/sophisticated-core.pw.toml"
-hash = "960a56ecd60197601d3f32e37aa68284c77d01f88a27a63d210ebbf1afa4df27"
+hash = "e4bdcd14cc0c3ebd4f44c55082901a76bb7ccebe155f5b0c971f0a99e4062821"
 metafile = true
 
 [[files]]
@@ -3330,7 +3362,7 @@ metafile = true
 
 [[files]]
 file = "mods/sophisticated-storage.pw.toml"
-hash = "626fb110093da1932f03ad91e673c0903856d58b768f8328a19a1e0f8606e1c2"
+hash = "9f50efe25b9ab10d111c215989b60adcfd2cc7d7caa9d9cc5d4c1e525125fea6"
 metafile = true
 
 [[files]]
@@ -3355,7 +3387,7 @@ metafile = true
 
 [[files]]
 file = "mods/starter-kit.pw.toml"
-hash = "71611fa08ee40da7b9f4414245743aa957211a678ce39b6351ddd4c8481c2cc7"
+hash = "8d5d384df3fcc89b485c536aa3920eeeff2e8cd6d03eafb0304a463cda1012fb"
 metafile = true
 
 [[files]]
@@ -3365,7 +3397,7 @@ metafile = true
 
 [[files]]
 file = "mods/supplementaries.pw.toml"
-hash = "b88bbb62ccc2222c4736899745678d83e2dff37bf29ceff94cca94a90a7b68fe"
+hash = "c7e7206384e1d5ab7caecc643dda50dae1886312e0aeca5aaef8852bb6b11b4e"
 metafile = true
 
 [[files]]
@@ -3485,7 +3517,7 @@ metafile = true
 
 [[files]]
 file = "options.txt"
-hash = "a682b1e53b1e21a3782438da0913f6963c41a595d0480b6aa399fae109a0415c"
+hash = "d88784a713133ae3191e7f600cbb44273b7e73d2ec0954ebee7b6ae162594df9"
 preserve = true
 
 [[files]]

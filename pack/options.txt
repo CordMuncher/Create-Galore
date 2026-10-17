@@ -14,3 +14,12 @@ key_supplementaries.keybind.quiver:key.keyboard.grave.accent
 key_iris.keybind.reload:key.keyboard.f8
 key_key.createrailwaysnavigator.route_overlay_options:key.keyboard.backslash
 resourcePacks:["vanilla","mod_resources","file/FreshAnimations_v1.10.4.zip","file/create-galore-menu"]
+key_key.special_ability:key.keyboard.apostrophe
+key_key.aether.open_accessories.desc:key.keyboard.unknown
+key_tfmg.keyinfo.engine_start:key.keyboard.minus
+key_tfmg.keyinfo.transmission_shift_up:key.keyboard.right
+key_tfmg.keyinfo.transmission_shift_down:key.keyboard.left
+key_tfmg.keyinfo.custom_button:key.keyboard.f6
+key_key.twilightforest.zoom:key.keyboard.f7
+key_key.twilightforest.swap_hotbar:key.keyboard.f9
+key_key.twilightforest.item_display_map_cycle:key.keyboard.f12

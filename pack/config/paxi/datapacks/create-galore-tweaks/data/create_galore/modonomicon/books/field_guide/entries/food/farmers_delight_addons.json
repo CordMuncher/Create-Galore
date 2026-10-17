@@ -18,6 +18,19 @@
   ],
   "pages": [
     {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "farmersdelight:tomato_seeds"
+      },
+      "title": "Sniffers Sniff Delights",
+      "text": "Sniffers dig up tomato seeds, cabbage seeds, rice or onions in about 9 of 10 digs. Torchflower seeds and pitcher pods are rare now."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Those four crops are also sniffer food, so you can lure and breed sniffers with them.\\\n\\\nSniffer eggs are vanilla: brush Suspicious Sand in Warm Ocean Ruins. Needs [#](2E5AAC)[Farmer's Delight](entry://food/farmers_delight)[#]()."
+    },
+    {
       "type": "modonomicon:text",
       "title": "Delight Add-ons",
       "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- [#](FFFFFF)\ue10c[#]() All use the [#](2E5AAC)[Farmer's Delight](entry://food/farmers_delight)[#]() pot, board and skillet.\n- Bring ingredients, a heat source and the right container.\n- [#](FFFFFF)\ue10d[#]() Look recipes up in [#](7A3C9A)[JEI](entry://glossary/jei)[#](): hover, press **R**.\n- [#](FFFFFF)\ue104[#]() **Delightful Creators** is the Create bridge."

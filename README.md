@@ -6,16 +6,16 @@ A big, long-term Minecraft modpack built around the Create mod. Think "Minecraft
 
 | | |
 |---|---|
-| **Version** | 0.2.0 |
+| **Version** | 0.2.1 |
 | **Minecraft** | 1.21.1 |
-| **Loader** | NeoForge **21.1.259** (pinned, don't update it, see [Known issues](#known-issues)) |
-| **Mods** | 225 from Modrinth + the pack's own small Create Galore Bridge and Lag Watch + Twilight Forest added by hand, plus 4 shader packs and the Fresh Animations resource pack |
+| **Loader** | NeoForge **21.1.262** (pinned, don't update it, see [Known issues](#known-issues)) |
+| **Mods** | 228 from Modrinth + the pack's own small Create Galore Bridge and Lag Watch + Twilight Forest added by hand, plus 4 shader packs and the Fresh Animations resource pack |
 | **Full mod list** | [MODS.md](MODS.md) |
 | **In-game help** | The Create Galore Field Guide, a searchable book every player gets on first join |
 
 ## Install (players)
 
-1. Download `Create-Galore-0.2.0.mrpack` from the [latest release](https://github.com/emresahin0906-code/Create-Galore/releases/latest) (or [from this repo](Create-Galore-0.2.0.mrpack)).
+1. Download `Create-Galore-0.2.1.mrpack` from the [latest release](https://github.com/emresahin0906-code/Create-Galore/releases/latest). The older `.mrpack` files in the repo's top folder are past versions; don't import those.
 2. Import it:
    - **Prism Launcher:** Add Instance → Import → pick the `.mrpack`.
    - **Modrinth App:** drag the `.mrpack` onto the window (or File → Import).
@@ -27,7 +27,7 @@ A big, long-term Minecraft modpack built around the Create mod. Think "Minecraft
 
 6. Optional: give the instance the pack icon. Download `Create-Galore-icon.png` from the release and pick it in the launcher (Prism: click the instance icon; Modrinth App: instance settings). A `.mrpack` can't carry an icon, so launchers show their default one.
 
-Don't let the launcher update NeoForge past 21.1.259.
+Don't let the launcher update NeoForge past 21.1.262.
 
 ## Install (server)
 
@@ -41,7 +41,7 @@ install-server.bat C:\CreateGaloreServer        (Windows)
 ./install-server.sh ~/CreateGaloreServer        (Linux / macOS)
 ```
 
-The server gets 182 mods, the pack's Create Galore Bridge and Lag Watch, and Twilight Forest. The 42 client-only mods (Sodium, Iris, Distant Horizons, map add-ons, the ambiance layer and so on) are skipped automatically. Players still install the full `.mrpack`. Far terrain for Distant Horizons is sent from the server by Chunksmith, so Distant Horizons itself stays off the server.
+The server gets 186 mods, the pack's Create Galore Bridge and Lag Watch, and Twilight Forest. The 42 client-only mods (Sodium, Iris, Distant Horizons, map add-ons, the ambiance layer and so on) are skipped automatically. Players still install the full `.mrpack`. Far terrain for Distant Horizons is sent from the server by Chunksmith, so Distant Horizons itself stays off the server.
 
 The server opens a small window with a live memory graph and the player list, and warns in chat when TPS stays under 15, recording a spark profile you can open later. See [Lag alerts and profiles](docs/server-setup.md#lag-alerts-and-profiles).
 
@@ -71,7 +71,7 @@ The command reads the pack from GitHub, which only works while the repo is publi
 
 If the pack can't be read, the updater stops before changing anything. `--clean` moves the configs aside first and puts them back if the update fails, so a failed launch never leaves the instance without configs.
 
-The updater also keeps NeoForge on the pack's pinned version. To freeze the instance on its current version, clear the pre-launch command. If GitHub can't be reached, the window offers to continue without updating.
+The updater also keeps NeoForge on the pack's pinned version. In Prism, when an update moves NeoForge (0.2.1 moves it from 21.1.259 to 21.1.262), the updater changes the instance's NeoForge and then stops that launch, because Prism has already picked the old version for it: Prism says the pre-launch command failed (exit code 4). Press Launch again and the game starts on the new NeoForge. The Modrinth App doesn't let the updater change NeoForge: set it by hand in the instance's settings (Installation → NeoForge version). To freeze the instance on its current version, clear the pre-launch command. If GitHub can't be reached, the window offers to continue without updating.
 
 **What the soft update keeps.** Files the pack doesn't ship are never touched: map and minimap data, `servers.dat`, your worlds, shaders' settings, the Twilight Forest jar and the Elytra switch. Your keybinds and video settings (`options.txt`), Distant Horizons' settings, Subtle Effects' `blocks.toml` and Inventory Profiles Next's settings are kept forever (if the pack ships one of them it is marked `preserve`), so the pack only writes them when they're missing. Any other config you edit stays until the pack itself changes that file; then the pack's version wins, because that's usually a fix. `--clean` throws all of this away, the Elytra switch included.
 
@@ -136,6 +136,8 @@ Copper spools stay separate: TFMG's spool lays TFMG cable and is the only kind i
 
 Nothing on the list comes from space, every prize can be found again, and nothing on Earth needs a space item, so there's no dead end. The Field Guide's **The Road to the Stars** section explains why each prize is needed and where to get it, and an advancement tab of the same name ticks them off. One core builds one station or drive, and those are reused for every trip.
 
+**Graves and backups.** Dying leaves a GraveStone grave with everything you carried, Curios slots included (Aether gloves and pendants come back as normal items to put on again); anyone can break it, so a friend can fetch it. The obituary paper goes away when you break the grave. Simple Backups zips the world every 2 hours while someone is online and keeps 10 (details in [docs/server-setup.md](docs/server-setup.md#automatic-backups)). The Field Guide covers both under Survival → Death and Graves and Start Here → Playing Together.
+
 **Boss compasses.** Structures are spread out, so the Twilight Forest boss lairs on the way to the core each have a compass, made from a Compass and drops you have by then: the **Naga Compass** (Raven Feather, Torchberries), **Lich Compass** (2 Naga Scales), **Minoshroom Compass** (Exanimate Essence from the Lich) and **Hydra Compass** (Raw Meef, Maze Slimeball). Right-click one in the Twilight Forest: chat shows the X and Z of the nearest lair within 1600 blocks, and the needle points there from then on. The other prize bosses need none (the Wither is summoned, an Eye of Ender finds the Dragon's Stronghold, a Cave Biome Map finds the Hullbreaker's biome). The Field Guide has a **Boss Compasses** page in The Road to the Stars.
 
 **Gentler where it should be, harsh where it should be.**
@@ -183,7 +185,7 @@ Nothing on the list comes from space, every prize can be found again, and nothin
 - The Deep Seas setup prompt and the BetterX welcome screen are switched off.
 - The title screen shows the pack's own panorama again. Aquamirae's themed menu was drawn over it (`config/obscuria/aquamirae-early.json`).
 
-**Key rebinds** (only these keys are changed): Backpack J, Jetpack toggle N, Mobile Packages stock ticker `.` and networks `;`, Accessories `,`, Cataclysm abilities Home/End/Insert/Delete, Aether invisibility `=`, Supplementaries quiver `` ` ``, Iris shader reload F8, Railways Navigator overlay options `\`.
+**Key rebinds** (only these keys are changed): Backpack J, Jetpack toggle N, Mobile Packages stock ticker `.` and networks `;`, Accessories `,`, Cataclysm abilities Home/End/Insert/Delete, Aether invisibility `=`, Supplementaries quiver `` ` ``, Iris shader reload F8, Railways Navigator overlay options `\`, Alex's Caves special ability `'`, TFMG engine start `-`, gear up/down right/left arrow and custom button F6, Twilight Forest zoom F7, hotbar swap F9 and map display cycle F12. The Aether's own accessories key is unbound (`,` opens the same screen). With these, no two in-world keys share a key.
 
 ## Ambiance (client only)
 
@@ -234,7 +236,7 @@ A set of sound and small-visual mods that make the world feel more alive without
 
 None of these stop the game.
 
-- **NeoForge must stay on 21.1.259.** On 21.1.262 The Aether's bundled Accessories library kicks players on join. 259 is the newest version that works (the pack needs at least 252). Revisit when The Aether updates.
+- **NeoForge is pinned to 21.1.262.** Until 0.2.0 the pack had to stay on 21.1.259, because on 262 The Aether's bundled Accessories library kicked players on join. owo-lib 0.12.15.6 fixed that (0.2.1 joins, plays and dies on 262 with Aether accessories equipped). Check The Aether before moving to a newer NeoForge.
 - **Animal Husbandry is on 0.4.2**, so 0.5.0's rabbit genetics and Angora armor are missing until a fixed version ships.
 - **First launch:** Deep Seas' photosensitivity question still shows once. Minecraft's accessibility prompt is turned off by the shipped `options.txt`. Re-importing a `.mrpack` over an instance overwrites `options.txt` and resets the key rebinds above; the in-place updater (see [Updating](#updating)) keeps it. If the Deep Seas warning's button sits off-screen in a small window, press Tab then Enter.
 - **Letters missing after opening the resource pack screen.** On an RTX 4080 Super, leaving the resource pack screen once left most letters blank in every menu. ImmediatelyFast's font atlas resizing is turned off in `config/immediatelyfast.json` to stop it. If it ever happens anyway, restart the game and the letters come back.
@@ -276,6 +278,7 @@ All tests ran headless in a cloud machine (4 cores, 16 GB RAM, no GPU), so speed
 | 0.1.9 Field Guide readability pass in the full client (singleplayer, NeoForge 21.1.259): the icon font shows in Modonomicon's text in colour, Key points and In depth pages render, purple glossary links and blue entry links open their entries, item links show tooltips on hover, the ore doubling, washing and water purity diagrams are readable at book size, and the crushing wheels, press, heated mixer and steam engine 3D previews render and can be placed with Visualize | ✅ |
 | 0.1.10 boss compasses and old guide cleanup on a dedicated server with the full client joined: `/locate` and all four compasses find their Twilight Forest lairs (Naga Courtyard 248 blocks, Lich Tower 232, Labyrinth 373, Hydra's Lair 554 on seed 12345); right-click puts the coordinates in chat and the needle turns to face the lair, and keeps pointing after a relog; outside the Twilight Forest it says where it works; an old Patchouli Field Guide is swapped for the current book when the player has none, removed when they do, and taken out of the ender chest on join, while Iron's Spells' Patchouli book stays; the Boss Compasses guide entry and its four recipe pages render | ✅ |
 | 0.2.0 structure thinning audit with Structure Scan on two fresh seeds (128 km²) against vanilla on ten seeds: surface 1.07× its target (2× vanilla per km² of land), underground 0.96× (3×, mineshafts not counted), underwater 0.96× (3× per km² of ocean), sky 1.00× (vanilla's surface rate); rare kinds stay below ordinary ones; real generation matches the scan 130 of 130; a new world on a dedicated server boots cleanly and `/locate` finds all four Twilight boss lairs and the Abyssal Chasm. Details: `docs/structure-thinning/audit.md` | ✅ |
+| 0.2.1 on a dedicated server with one client on NeoForge 21.1.262 (189 server mods + Twilight Forest, 274 on the client): joined and played about 25 minutes with deaths, a kick and a rejoin, no packet-codec kick with Aether gloves and pendant equipped; Cold Sweat 2.4.4 with Altitude 0.8.1 fine on join. Graves: `/kill` with full inventory, armour, offhand, Curios backpack, necklace and charm plus Aether accessories left a grave and nothing on the ground, breaking it gave everything back (Curios into their slots); void death put the grave at y −60, lava death in the lava. Simple Backups ran on first join and on command (34 MB world, 1.2 s, 26 MB zip). No new errors from the updated or added mods | ✅ |
 | Real FPS, shaders, Distant Horizons visuals, gameplay feel | ❌ Needs a real PC with a GPU |
 
 **Memory:** about 9.3 GB of process memory on the server and 8-9.6 GB on the client with an 8 GB heap. A laptop with 16 GB can play but shouldn't host and play at the same time. A garbage collector benchmark on the server (pack's G1 flags vs Java defaults, Generational ZGC and Shenandoah, plus a 6 GB run) is in [docs/java-flags.md](docs/java-flags.md).
@@ -284,7 +287,7 @@ All tests ran headless in a cloud machine (4 cores, 16 GB RAM, no GPU), so speed
 
 ## Repo layout
 
-- `Create-Galore-0.2.0.mrpack`: the importable pack, built from `pack/`
+- `Create-Galore-0.1.*.mrpack`: old versions kept for reference. The current `.mrpack` is only on the [latest release](https://github.com/emresahin0906-code/Create-Galore/releases/latest), built from `pack/` by the release workflow
 - `pack/`: [packwiz](https://packwiz.infra.link/) source, one `.pw.toml` per mod or shader, plus configs (`pack/config/`), the datapacks (`pack/config/paxi/datapacks/create-galore-tweaks`, always on, `create-galore-no-elytra`, and the opt-in `config/paxi/optional/create-galore-with-elytra`) the Field Guide (a Modonomicon book inside `create-galore-tweaks`) and its resource pack `pack/config/paxi/resourcepacks/create-galore-guide` (icon font and diagram pictures, always on)
 - `MODS.md`: full mod list with versions and sides
 - `server/`: server install scripts, memory settings and a starting `server.properties`

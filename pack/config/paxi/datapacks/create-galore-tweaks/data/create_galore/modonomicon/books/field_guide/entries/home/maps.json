@@ -20,7 +20,7 @@
     {
       "type": "modonomicon:text",
       "title": "Maps and Waypoints",
-      "text": "**Xaero's Minimap** and **World Map** are the pack's navigation. A small map sits on screen. The full-screen map shows everywhere you have explored. Both are client side; nothing is needed on a server."
+      "text": "**Xaero's Minimap** and **World Map** are the pack's navigation. A small map sits on screen. The full-screen map shows everywhere you have explored. Your maps are drawn and saved on your own PC. The server has a copy of both mods too, so each world and dimension keeps its own map."
     },
     {
       "type": "modonomicon:spotlight",

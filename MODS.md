@@ -1,10 +1,10 @@
 # Mod list
 
-Create Galore 0.1.9, NeoForge 21.1.259 for Minecraft 1.21.1. Everything below comes from Modrinth and is pinned by the files in [`pack/`](pack/).
+Create Galore 0.2.1, NeoForge 21.1.262 for Minecraft 1.21.1. Everything below comes from Modrinth and is pinned by the files in [`pack/`](pack/).
 
 "Side" is how the pack installs it: **both** means it goes on the client and the server; **client** means client only. Server-only world generation mods are marked **both** on purpose, because singleplayer runs them on your own machine.
 
-Built for this pack and shipped inside it: **Create Galore Bridge** 1.6.0 (both), `pack/mods/create-galore-bridge-1.6.0.jar`. It makes TFMG engines and blast furnaces pollute only while they burn fuel, and Blaze Burners only while they have fuel, adds the Stellar Core, the item that gates space travel, and stops Aeronautics Winds' weather effects from generating chunks on the server thread. On the client it keeps long Field Guide page titles on the paper and drops two join-chat notices that have no setting (Create Train Utilities' v4 rename and Transmission & Linkage's Toolgun recommendation). It also has two experimental, off-by-default display options in `config/create_galore_bridge-display.properties`: a 10-bit game window (`tenBitWindow`) and Perfect Presentation (`perfectPresentation`, Windows only), a NeoForge port of [Perfect Presentation](https://github.com/sidit77/perfect_presentation) by sidit77 (MIT license, included in the jar as `LICENSE-perfect_presentation.txt`). Source and build script in [`tools/bridge-mod/`](tools/bridge-mod/).
+Built for this pack and shipped inside it: **Create Galore Bridge** 1.7.0 (both), `pack/mods/create-galore-bridge-1.7.0.jar`. It makes TFMG engines and blast furnaces pollute only while they burn fuel, and Blaze Burners only while they have fuel, adds the Stellar Core, the item that gates space travel, and stops Aeronautics Winds' weather effects from generating chunks on the server thread. On the client it keeps long Field Guide page titles on the paper and drops two join-chat notices that have no setting (Create Train Utilities' v4 rename and Transmission & Linkage's Toolgun recommendation). It also has two experimental, off-by-default display options in `config/create_galore_bridge-display.properties`: a 10-bit game window (`tenBitWindow`) and Perfect Presentation (`perfectPresentation`, Windows only), a NeoForge port of [Perfect Presentation](https://github.com/sidit77/perfect_presentation) by sidit77 (MIT license, included in the jar as `LICENSE-perfect_presentation.txt`). Source and build script in [`tools/bridge-mod/`](tools/bridge-mod/).
 
 Also built for this pack: **Create Galore Lag Watch** 1.0.0 (dedicated server only; it ships in `pack/mods/create-galore-lagwatch-1.0.0.jar` for both sides but does nothing on a client), says in chat when TPS stays under 15 and records a spark profile automatically. How to use it: [docs/server-setup.md](docs/server-setup.md#lag-alerts-and-profiles). Source and build script in [`tools/lagwatch-mod/`](tools/lagwatch-mod/).
 
@@ -16,7 +16,7 @@ Resource pack, turned on by default: [Fresh Animations](https://modrinth.com/res
 |---|---|---|
 | [Aeronautics Hot Air Fix](https://modrinth.com/mod/aeronautics-hot-air-fix) | 1.1.1 | client |
 | [Aeronautics: Winds & Weather](https://modrinth.com/mod/aeronautics-winds-and-weather) | 1.3.1 | both |
-| [Alex's Caves Continued](https://modrinth.com/mod/alexs-caves-continued) | 1.1.1+neoforge-1.21.1 | both |
+| [Alex's Caves Continued](https://modrinth.com/mod/alexs-caves-continued) | 1.1.2+neoforge-1.21.1 | both |
 | [Alloyed](https://modrinth.com/mod/create-alloyed) | 3.0.12+1.21.1-neoforge | both |
 | [AmbientSounds](https://modrinth.com/mod/ambientsounds) | 6.3.10 | client |
 | [Animal Husbandry](https://modrinth.com/mod/animalhusbandry) | 0.4.2 | both |
@@ -26,6 +26,7 @@ Resource pack, turned on by default: [Fresh Animations](https://modrinth.com/res
 | [Aquamirae](https://modrinth.com/mod/aquamirae) | 7.2.12 | both |
 | [Architectury API](https://modrinth.com/mod/architectury-api) | 13.0.11+neoforge | both |
 | [Artifacts](https://modrinth.com/mod/artifacts) | 13.2.5 | both |
+| [BaguetteLib](https://modrinth.com/mod/baguettelib) | 2.0.7 | both |
 | [Balm](https://modrinth.com/mod/balm) | 21.0.66+neoforge-1.21.1 | both |
 | [BCLib: New Dawn](https://modrinth.com/mod/bclib-neoforge) | 21.0.27 | both |
 | [Berries and Cherries Delight](https://modrinth.com/mod/berries-and-cherries) | 1.1 | both |
@@ -39,9 +40,9 @@ Resource pack, turned on by default: [Fresh Animations](https://modrinth.com/res
 | [Cloth Config API](https://modrinth.com/mod/cloth-config) | 15.0.140+neoforge | both |
 | [Coasters Simulated: Track Styles](https://modrinth.com/mod/coaster-track-styles) | 1.2.0 | both |
 | [CodxLib](https://modrinth.com/mod/codxlib) | 1.6.1+neoforge-1.21.1 | both |
-| [Cold Sweat](https://modrinth.com/mod/cold-sweat) | 2.4.3.1 | both |
-| [Cold Sweat: Altitude](https://modrinth.com/mod/cold-sweat-altitude) | 0.7.0 | both |
-| [Collective](https://modrinth.com/mod/collective) | 1.21.1-8.53-fabric+forge+neo | both |
+| [Cold Sweat](https://modrinth.com/mod/cold-sweat) | 2.4.4 | both |
+| [Cold Sweat: Altitude](https://modrinth.com/mod/cold-sweat-altitude) | 0.8.1 | both |
+| [Collective](https://modrinth.com/mod/collective) | 1.21.1-8.57-fabric+forge+neo | both |
 | [Colorwheel](https://modrinth.com/mod/colorwheel) | 1.3.0+mc1.21.1 | client |
 | [Colorwheel Patcher](https://modrinth.com/mod/colorwheel-patcher) | 1.0.5+mc1.21.1 | client |
 | [Contraption Lights (Bi-directional Coloured Dynamic Lights)](https://modrinth.com/mod/contraption-lights) | 1.5.4 | client |
@@ -62,7 +63,7 @@ Resource pack, turned on by default: [Fresh Animations](https://modrinth.com/res
 | [Create Confectionery](https://modrinth.com/mod/create-confectionery) | 1.1.3.b | both |
 | [Create Crafts & Additions](https://modrinth.com/mod/createaddition) | neoforge-1.21.1-1.7.2 | both |
 | [Create Deco](https://modrinth.com/mod/create-deco) | 2.1.3 | both |
-| [Create Deep Seas](https://modrinth.com/mod/create-deep-seas) | 3.3.0 | both |
+| [Create Deep Seas](https://modrinth.com/mod/create-deep-seas) | 3.4.0 | both |
 | [Create Dupe Fix](https://modrinth.com/mod/create-dup-fix) | 1.21.1-1.2 | both |
 | [Create Encased](https://modrinth.com/mod/create-encased) | 1.21.1-1.9.0-ht3 | both |
 | [Create Factory Logistics](https://modrinth.com/mod/create_factory_logistics) | 1.6.1 | both |
@@ -127,16 +128,18 @@ Resource pack, turned on by default: [Fresh Animations](https://modrinth.com/res
 | [Entity Culling](https://modrinth.com/mod/entityculling) | 1.11.3 | client |
 | [[ETF] Entity Texture Features](https://modrinth.com/mod/entitytexturefeatures) | 7.2.6-neoforge-1.21 | client |
 | [Euphoria Patches](https://modrinth.com/mod/euphoria-patches) | 1.10.5-r5.9.3-neoforge | client |
-| [Falling Leaves (NeoForge/Forge)](https://modrinth.com/mod/fallingleavesforge) | 1.21.1-2.5.1 | client |
+| [Falling Leaves (NeoForge/Forge)](https://modrinth.com/mod/fallingleavesforge) | 1.21.1-2.6.0 | client |
 | [Farmer's Delight](https://modrinth.com/mod/farmers-delight) | 1.21.1-1.3.4 | both |
 | [Farmer's Delight: Extended](https://modrinth.com/mod/farmers-delight-extended) | 1.21.1-0.2.2 | both |
 | [FerriteCore](https://modrinth.com/mod/ferrite-core) | 7.0.3-neoforge | both |
-| [Fragmentum](https://modrinth.com/mod/fragmentum) | 5.3.0 | both |
+| [Fragmentum](https://modrinth.com/mod/fragmentum) | 5.4.0 | both |
 | [Fruits Delight](https://modrinth.com/mod/fruits-delight) | 1.2.14 | both |
 | [Fungi Delight (A Farmer's Delight Add-on)](https://modrinth.com/mod/fungi-delight) | 1.3 | both |
 | [Fzzy Config](https://modrinth.com/mod/fzzy-config) | 0.7.7+1.21+neoforge | client |
 | [Geckolib](https://modrinth.com/mod/geckolib) | 4.9.3 | both |
 | [GlitchCore](https://modrinth.com/mod/glitchcore) | 2.1.0.2 | both |
+| [GraveStone Mod](https://modrinth.com/mod/gravestone-mod) | neoforge-1.21.1-1.0.40 | both |
+| [Gravestone x Curios API Compat](https://modrinth.com/mod/gravestone-x-curios-api-compat) | 4.2.0 | both |
 | [Guide Shelf](https://modrinth.com/mod/guide-shelf) | 1.3.6 | client |
 | [Handcrafted](https://modrinth.com/mod/handcrafted) | 4.0.3 | both |
 | [Hopo Better Underwater Ruins](https://modrinth.com/mod/hopo-better-underwater-ruins) | 1.2.1b | both |
@@ -152,7 +155,7 @@ Resource pack, turned on by default: [Fresh Animations](https://modrinth.com/res
 | [Jade Addons (Neo/Forge)](https://modrinth.com/mod/jade-addons-forge) | 6.1.2+neoforge | both |
 | [Jade Sable Compat](https://modrinth.com/mod/jade-sable-compat) | 1.3.0 | client |
 | [Jade 🔍](https://modrinth.com/mod/jade) | 15.10.6+neoforge | both |
-| [Just Enough Items (JEI)](https://modrinth.com/mod/jei) | 19.64.0.454 | both |
+| [Just Enough Items (JEI)](https://modrinth.com/mod/jei) | 19.64.0.455 | both |
 | [Kotlin for Forge](https://modrinth.com/mod/kotlin-for-forge) | 5.12.0 | both |
 | [L_Ender's Cataclysm](https://modrinth.com/mod/l_enders-cataclysm) | 3.33 | both |
 | [LambDynamicLights - Dynamic Lights](https://modrinth.com/mod/lambdynamiclights) | 4.8.11+1.21.1 | client |
@@ -183,7 +186,7 @@ Resource pack, turned on by default: [Fresh Animations](https://modrinth.com/res
 | [Northstar Aeronautics Compat](https://modrinth.com/mod/northstar-aeronautics-compat) | 0.1.9 | both |
 | [Not Enough Animations](https://modrinth.com/mod/not-enough-animations) | 1.12.6 | client |
 | [Ocean's Delight](https://modrinth.com/mod/oceans-delight) | 1.0.4 | both |
-| [oωo (owo-lib)](https://modrinth.com/mod/owo-lib) | 0.12.15.5-beta.1+1.21 | both |
+| [oωo (owo-lib)](https://modrinth.com/mod/owo-lib) | 0.12.15.6-beta.1+1.21 | both |
 | [Patchouli](https://modrinth.com/mod/patchouli) | 1.21.1-93-neoforge | both |
 | [Paxi](https://modrinth.com/mod/paxi) | 1.21.1-NeoForge-5.1.3 | both |
 | [Placebo](https://modrinth.com/mod/placebo) | 1.21.1-9.9.4 | both |
@@ -200,22 +203,23 @@ Resource pack, turned on by default: [Fresh Animations](https://modrinth.com/res
 | [Separate Sable Render Distance (Create Aeronautics Addon)](https://modrinth.com/mod/ssrd) | 1.8.7 | both |
 | [Serene Seasons](https://modrinth.com/mod/serene-seasons) | 10.1.0.9 | both |
 | [Shulker Box Tooltip](https://modrinth.com/mod/shulkerboxtooltip) | 5.1.9+1.21.1-neoforge | both |
+| [Simple Backups](https://modrinth.com/mod/simple-backups) | 1.21-4.0.30 | both |
 | [Sky Whales](https://modrinth.com/mod/sky-whales) | 0.1.8 | both |
 | [Sniffers Sniffs Delights! (SSD) (A Farmer's Delight Add-on)](https://modrinth.com/mod/sniffers-sniffs-delights) | neoforge-1.1+mc1.21 | both |
 | [Sodium](https://modrinth.com/mod/sodium) | mc1.21.1-0.8.13-neoforge | client |
 | [Sodium Extra](https://modrinth.com/mod/sodium-extra) | mc1.21.1-0.9.4+neoforge | client |
 | [Sophisticated Backpacks](https://modrinth.com/mod/sophisticated-backpacks) | 1.21.1-3.26.12.2208 | both |
 | [Sophisticated Backpacks Create Integration](https://modrinth.com/mod/sophisticated-backpacks-create-integration) | 1.21.1-0.2.3.194 | both |
-| [Sophisticated Core](https://modrinth.com/mod/sophisticated-core) | 1.21.1-1.5.12.2400 | both |
-| [Sophisticated Storage](https://modrinth.com/mod/sophisticated-storage) | 1.21.1-1.6.6.2181 | both |
+| [Sophisticated Core](https://modrinth.com/mod/sophisticated-core) | 1.21.1-1.5.13.2404 | both |
+| [Sophisticated Storage](https://modrinth.com/mod/sophisticated-storage) | 1.21.1-1.6.7.2184 | both |
 | [Sophisticated Storage Create Integration](https://modrinth.com/mod/sophisticated-storage-create-integration) | 1.21.1-0.1.23.246 | both |
 | [Sound Physics: Aeronautics](https://modrinth.com/mod/sound-physics-aeronautics) | 2.0.1 | client |
 | [Sounds](https://modrinth.com/mod/sound) | 2.4.22+lts+1.21.1-neoforge | client |
 | [spark](https://modrinth.com/mod/spark) | 1.10.124-neoforge-1.21.1 | both |
-| [Starter Kit](https://modrinth.com/mod/starter-kit) | 1.21.1-8.3-fabric+forge+neo | both |
+| [Starter Kit](https://modrinth.com/mod/starter-kit) | 1.21.1-8.4-fabric+forge+neo | both |
 | [Steam 'n' Rails Neoforge](https://modrinth.com/mod/create-steam-n-rails-1.21.1) | 0.3.0-beta.2+neoforge-mc1.21.1 | both |
 | [Subtle Effects](https://modrinth.com/mod/subtle-effects) | 1.15.1 | client |
-| [Supplementaries](https://modrinth.com/mod/supplementaries) | 1.21.1-4.0.1 | both |
+| [Supplementaries](https://modrinth.com/mod/supplementaries) | 1.21.1-4.0.2 | both |
 | [Tectonic](https://modrinth.com/mod/tectonic) | 3.0.28-neoforge-21.1 | both |
 | [Terralith](https://modrinth.com/mod/terralith) | 2.6.2 | both |
 | [The Aether](https://modrinth.com/mod/aether) | 1.21.1-1.5.10-neoforge | both |

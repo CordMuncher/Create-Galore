@@ -71,6 +71,19 @@
       "text": "Conductors can press buttons and flip levers when a player looks at them, unless that player wears another colour of cap."
     },
     {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "railways:conductor_whistle"
+      },
+      "title": "Conductor Whistle",
+      "text": "Bind it to a conductor riding a train, then use it on a track or station to call that train. A deployer can use it on a station too."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Remote Lens:** bind it to a conductor wearing goggles, then use it to look through their eyes.\\\n\\\n**Handcar:** a small rail cart; pick it up with a wrench.\\\n\\\n**Smokestacks** can be dyed, and soul sand or soul soil makes soul smoke."
+    },
+    {
       "type": "modonomicon:text",
       "title": "Railways Navigator",
       "text": "Adds:\n\n- a **Navigator** item that lists connections with stopovers and live data\n- Advanced Display boards, a Train Station Clock and a Lectern with Navigator\n- **Penalty Anchors**, which add a cost to a stretch of track"
@@ -114,8 +127,13 @@
     },
     {
       "type": "modonomicon:text",
+      "title": "",
+      "text": "[#](FFFFFF)\ue103[#]() **In depth.** The pack uses an unofficial port of Steam 'n' Rails for 1.21.1, still in beta."
+    },
+    {
+      "type": "modonomicon:text",
       "title": "Performance and map",
-      "text": "[#](FFFFFF)\ue103[#]() **In depth.** Create: Threaded Trains runs the railway network's calculations on a separate thread, which helps large networks on a server. It has no blocks.\\\n\\\nXaero Train Map draws trains on Xaero's World Map. It only affects your own screen."
+      "text": "Create: Threaded Trains runs the railway network's calculations on a separate thread, which helps large networks on a server. It has no blocks.\\\n\\\nXaero Train Map draws trains on Xaero's World Map. It only affects your own screen."
     },
     {
       "type": "modonomicon:text",

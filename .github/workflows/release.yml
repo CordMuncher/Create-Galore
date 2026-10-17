@@ -196,7 +196,7 @@ jobs:
           tag="v$V"
           ls -la out
           cat > notes.md <<EOF
-          **Create Galore $V** · Minecraft 1.21.1 · NeoForge 21.1.259 (don't update NeoForge)
+          **Create Galore $V** · Minecraft 1.21.1 · NeoForge 21.1.262 (don't update NeoForge)
 
           ### Play
           1. Download **Create-Galore-$V.mrpack** and import it in Prism Launcher or the Modrinth App.

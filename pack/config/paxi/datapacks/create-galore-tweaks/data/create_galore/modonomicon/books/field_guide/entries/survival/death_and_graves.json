@@ -1,0 +1,42 @@
+{
+  "category": "survival",
+  "name": "Death and Graves",
+  "description": "GraveStone keeps everything you carried in a grave where you died.",
+  "icon": {
+    "item": "gravestone:gravestone"
+  },
+  "x": -4,
+  "y": 1,
+  "sort_number": 10,
+  "parents": [],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Death and Graves",
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- Dying leaves a **grave** with everything you carried.\n- Break the grave to get it all back, armour and Curios slots included.\n- The Latest Death waypoint on your map leads you back.\n- Anyone can break it, so a friend can fetch it."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "gravestone:gravestone"
+      },
+      "title": "Gravestone",
+      "text": "When you die, **GraveStone** puts a grave where you fell and stores your inventory, armour, offhand and Curios slots (backpack, charms) in it. Nothing drops on the ground, so nothing burns or despawns."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Walk back and break the grave: every item goes back where it was. Aether gloves and pendants come back as normal items; put them on again with **comma**.\\\n\\\nYou also get an **Obituary**, a paper saying how and where you died. It disappears when you break the grave."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Where graves land:**\n\n- **Void** (falling out of the world, as in the End): just above the bottom of the world, in the rock. Dig down to it.\n- **Lava**: in the lava where you died. Bring Fire Resistance or drain it first.\n- **Water**: on the spot, even deep underwater."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "[#](FFFFFF)\ue102[#]() **Tip:** an **Everlasting Upgrade** keeps a backpack safe from fire, lava and the void if it ever lies on the ground, for example after you drop it. See [#](2E5AAC)[Backpacks and Storage](entry://home/storage)[#]().\\\n\\\nThe server also keeps regular backups of the world; see [#](2E5AAC)[Playing Together](entry://start_here/playing_together)[#]()."
+    }
+  ]
+}
