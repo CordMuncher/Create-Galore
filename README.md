@@ -6,7 +6,7 @@ A big, long-term Minecraft modpack built around the Create mod. Think "Minecraft
 
 | | |
 |---|---|
-| **Version** | 0.2.11 |
+| **Version** | 0.2.12 |
 | **Minecraft** | 1.21.1 |
 | **Loader** | NeoForge **21.1.262** (pinned, don't update it, see [Known issues](#known-issues)) |
 | **Mods** | 228 from Modrinth + the pack's own small Create Galore Bridge and Lag Watch + Twilight Forest added by hand, plus 4 shader packs and the Fresh Animations resource pack |
@@ -15,7 +15,7 @@ A big, long-term Minecraft modpack built around the Create mod. Think "Minecraft
 
 ## Install (players)
 
-1. Download `Create-Galore-0.2.11.mrpack` from the [latest release](https://github.com/emresahin0906-code/Create-Galore/releases/latest). The older `.mrpack` files in the repo's top folder are past versions; don't import those.
+1. Download `Create-Galore-0.2.12.mrpack` from the [latest release](https://github.com/emresahin0906-code/Create-Galore/releases/latest). The older `.mrpack` files in the repo's top folder are past versions; don't import those.
 2. Import it:
    - **Prism Launcher:** Add Instance → Import → pick the `.mrpack`.
    - **Modrinth App:** drag the `.mrpack` onto the window (or File → Import).
@@ -151,6 +151,7 @@ Nothing on the list comes from space, every prize can be found again, and nothin
 - Cataclysm and Mowzie's bosses have 70% health and 75% damage. All their structures still spawn.
 - Hostile Skies airship raids are rarer (every 25 minutes instead of 15, 5% starting chance instead of 10%).
 - Cold Sweat runs at 0.6x speed and deals half the temperature damage. You're comfortable down to about 45 °F (default 50 °F), and the seasons' cold side is halved: Mid Winter takes about 13 °F off instead of 27 °F, the start of Spring and end of Autumn about 4 °F instead of 9 °F (summer heat unchanged). On a temperate beach a bare player starts freezing a few minutes into a Mid Winter night, and one lit campfire a few blocks away is enough to stay warm. Snowy biomes still need warm clothes, and the altitude cold above y 192 still needs a closed cabin (0.2.8).
+- Thirst no longer touches healing (0.2.12). Health regenerates from food and saturation exactly as in vanilla, whatever your water level, and healing doesn't use up water. Water is its own resource: at 3 droplets or less you can't sprint, and at zero you take half a heart of damage every 2 seconds until you drink, which kills you on Normal. Before, Thirst Was Reclaimed's defaults stopped all healing below 19 of 20 water and only healed quickly with a completely full bar.
 - Thirst: you can drink straight from water by crouching and right-clicking it with both hands empty (Thirst Was Reclaimed has this off by default). Raw water still makes you sick, so bottles and boiling stay the real answer. Drinking rain also works: stand under open sky in the rain and look straight up, with anything in your hands.
 - Create: Smog pollution is left at full strength on purpose.
 - Structures are spread out so each find counts (0.2.0): about twice vanilla's density on the surface, three times vanilla underground (mineshafts keep their own rate) and under the sea, and the sky as dense as vanilla's surface. Every kind of structure gets an equal share, so a mod with ten kinds turns up five times as often as one with two; boss lairs and the dungeons with the best loot stay rarer. Before this the pack placed about 15 times vanilla's surface density. How each layer was decided: `docs/structure-thinning/`.
@@ -297,6 +298,7 @@ All tests ran headless in a cloud machine (4 cores, 16 GB RAM, no GPU), so speed
 | 0.2.7 name tags under shaders, full client on a dedicated server (Mesa software rendering, Photon doesn't compile there): a named villager in a closed oak room showed a black plate and no name with Bliss on Bridge 1.8.0 and with only Iris and Sodium installed; with Bridge 1.9.0 the name is readable on a faint plate with Bliss and with Complementary + Euphoria Patches, and white on its plate in daylight against a wall; the normal name stays hidden behind blocks | ✅ |
 | 0.2.8 cold retune on a dedicated server with one client, bare player on a beach at midnight: before, Early Spring 42 °F and Mid Winter 23 °F; after, Early Spring 45 °F and Mid Winter 39 °F with body temperature falling 0.25 a second (damage starts at −100). A lit campfire two blocks away lifts Mid Winter to 54 °F and warms the player back up. Open platform at y 200 at Mid Summer noon: −2 °F, body −18 in 10 s, so the altitude cold still needs a cabin. The updated `world.toml` replaces an existing server's generated one when `install-server.sh` is run again | ✅ |
 | 0.2.10 rain after a swim on a dedicated server with one client: in an Aeronautics Winds rain region, a player soaked to −1.0 by water went to −2.8 in 40 s on Bridge 1.9.0; on Bridge 1.10.0 the same player eased back to −0.2 within 15 s and stayed there while it rained, then dried completely within 30 s of `aeroweather clear`. The client shows the rain the server counts (`rainOnlyBeneathClouds = false`) | ✅ |
+| 0.2.12 healing without full water, NeoForge 262 dedicated server with Thirst Was Reclaimed 3.0.6 + Cold Sweat 2.4.4 and one client joined, full food, 10 of 20 health, water 8 of 20: with the old config health stayed at 10 for 20 s; with the new one it reached 20 in 6 s on saturation and water stayed at 8. At zero water with full food and saturation the player first heals, then loses health once saturation runs out and dies of dehydration about 70 s later (old config: dead in 20 s, no healing at all) | ✅ |
 | Real FPS, shaders, Distant Horizons visuals, gameplay feel | ❌ Needs a real PC with a GPU |
 
 **Memory:** about 9.3 GB of process memory on the server and 8-9.6 GB on the client with an 8 GB heap. A laptop with 16 GB can play but shouldn't host and play at the same time. A garbage collector benchmark on the server (pack's G1 flags vs Java defaults, Generational ZGC and Shenandoah, plus a 6 GB run) is in [docs/java-flags.md](docs/java-flags.md).

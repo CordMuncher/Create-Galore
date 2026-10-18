@@ -1336,7 +1336,7 @@ hash = "b24232bb9ca0fd3c4be03d6aa2c7f64018b34713fcca64e9050b5b9361263d82"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/survival/food_and_health.json"
-hash = "e0791114e798a78d61f4253b45ab78d1da098847604d9ee58818469e9e60b571"
+hash = "12883679f8e250e62e7b1e180c031b0d3e484849292b9965d26a2010f12136ce"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/survival/pollution.json"
@@ -1368,7 +1368,7 @@ hash = "8e1d917e411aee4c1548687e7133b0e40c4f4df80574223339466b56a83a0a8b"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/survival/thirst.json"
-hash = "9c433df8f3d09dc4c699358dffe9f85b119149c1ed8687ec7b5e83e48a89a93c"
+hash = "5800fe7b1a4d9f20c156145541bb026d07eb19cd9f0ff15595a0e3a174e303e9"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/transport/coasters.json"
@@ -2437,7 +2437,7 @@ hash = "6932c0866d378225725a5d2e0a9b8fa20e963b5fa7f4cc6ab9bcc57d91974fa6"
 
 [[files]]
 file = "config/thirst/common.toml"
-hash = "97e6f6bcdf8444e7e72e5235b2475a411f732394e7602e1057c02e336d461fd1"
+hash = "aee573eb310e2f13399f1fdcf1d904a31e148f7f112af6406f2ade4a94dc62cf"
 
 [[files]]
 file = "config/thirst/item_settings.toml"
