@@ -65,7 +65,7 @@
         "item": "simulated:white_symmetric_sail"
       },
       "title": "Symmetric Sail",
-      "text": "Only makes drag, never lift. Angle it for turning or stabilising. Also handy for windmills; it needs no [#](7A3C9A)[glue](entry://glossary/super_glue)[#]()."
+      "text": "Only makes drag, never lift. Angle it for turning or stabilising. On a windmill bearing it gives 0 RPM here; windmills need Windcatchers."
     },
     {
       "type": "modonomicon:text",

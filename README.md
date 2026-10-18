@@ -244,6 +244,7 @@ A set of sound and small-visual mods that make the world feel more alive without
 | Removed **Create: Ballast** | Its jar refuses NeoForge 21.1.227+, which Aeronautics needs. Deep Seas has ballast tanks for subs. |
 | Removed **Create: Northstar Structures** | Built for the old Northstar 0.5. The world won't load with Northstar 0.6. |
 | Left out **Create: Northstar Chemistry** | 1.0.0 crashes on startup with Northstar 0.6.6. Add it back when it updates. |
+| Removed **Create: Threaded Trains** | Its train worker thread read blocks next to a station (a Station Powered wait), which deadlocked the server: the world froze with no crash and no watchdog. Trains tick normally without it. |
 | Removed **Borderless Window** | It did nothing on NVIDIA: the driver still treated its window as exclusive fullscreen, and the NVIDIA present setting below keeps a 10-bit monitor at 10-bit with or without it. One less mod to suspect when something goes wrong. |
 | Pinned **Animal Husbandry 0.4.2** | 0.5.0 crashes dedicated servers. |
 | **Cold Sweat 2.4.4 + Altitude 0.8.1** | Altitude 0.8.x crashed on join with Cold Sweat 2.4.3.1, so it was pinned to 0.7.0 until both updated together in 0.2.1. |

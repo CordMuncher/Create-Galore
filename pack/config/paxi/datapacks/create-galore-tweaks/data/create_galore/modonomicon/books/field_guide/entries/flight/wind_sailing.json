@@ -49,7 +49,7 @@
         "item": "aeronauticswinds:windcatcher_canvas"
       },
       "title": "Windcatcher",
-      "text": "**Only Windcatchers** drive windmill [#](7A3C9A)[bearings](entry://glossary/bearing)[#]() or push ships here; ordinary Create sails are decoration. Face the broad side into the wind."
+      "text": "**Only Windcatchers** drive windmill [#](7A3C9A)[bearings](entry://glossary/bearing)[#]() or push ships here; ordinary Create sails are decoration. They don't stick on their own: [#](7A3C9A)[glue](entry://glossary/super_glue)[#]() them to the bearing. Face the broad side into the wind."
     },
     {
       "type": "modonomicon:text",
