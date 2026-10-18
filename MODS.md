@@ -112,7 +112,6 @@ Resource pack, turned on by default: [Fresh Animations](https://modrinth.com/res
 | [Create: Smog](https://modrinth.com/mod/create-smog) | 0.4.1 | both |
 | [Create: Structures Arise](https://modrinth.com/mod/create-structures-arise) | 176.49.49 | both |
 | [Create: TFMG Community Edition](https://modrinth.com/mod/tfmg-community-edition) | 1.3.2a | both |
-| [Create: Threaded Trains](https://modrinth.com/mod/create-threaded-trains) | 1.21.1-1.0.0 | both |
 | [Create: Wizardry](https://modrinth.com/mod/create-wizardry) | 1.21.1-0.5.1-pre1 | both |
 | [CreativeCore](https://modrinth.com/mod/creativecore) | 2.13.51 | client |
 | [Cristel Lib](https://modrinth.com/mod/cristel-lib) | neoforge-1.21.1-3.1.7 | both |
