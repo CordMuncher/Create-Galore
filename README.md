@@ -6,7 +6,7 @@ A big, long-term Minecraft modpack built around the Create mod. Think "Minecraft
 
 | | |
 |---|---|
-| **Version** | 0.2.4 |
+| **Version** | 0.2.5 |
 | **Minecraft** | 1.21.1 |
 | **Loader** | NeoForge **21.1.262** (pinned, don't update it, see [Known issues](#known-issues)) |
 | **Mods** | 228 from Modrinth + the pack's own small Create Galore Bridge and Lag Watch + Twilight Forest added by hand, plus 4 shader packs and the Fresh Animations resource pack |
@@ -15,7 +15,7 @@ A big, long-term Minecraft modpack built around the Create mod. Think "Minecraft
 
 ## Install (players)
 
-1. Download `Create-Galore-0.2.4.mrpack` from the [latest release](https://github.com/emresahin0906-code/Create-Galore/releases/latest). The older `.mrpack` files in the repo's top folder are past versions; don't import those.
+1. Download `Create-Galore-0.2.5.mrpack` from the [latest release](https://github.com/emresahin0906-code/Create-Galore/releases/latest). The older `.mrpack` files in the repo's top folder are past versions; don't import those.
 2. Import it:
    - **Prism Launcher:** Add Instance → Import → pick the `.mrpack`.
    - **Modrinth App:** drag the `.mrpack` onto the window (or File → Import).
@@ -147,7 +147,7 @@ Nothing on the list comes from space, every prize can be found again, and nothin
 - Cataclysm and Mowzie's bosses have 70% health and 75% damage. All their structures still spawn.
 - Hostile Skies airship raids are rarer (every 25 minutes instead of 15, 5% starting chance instead of 10%).
 - Cold Sweat runs at 0.75x speed and deals half the temperature damage.
-- Thirst: you can drink straight from water by crouching and right-clicking it with both hands empty (Thirst Was Reclaimed has this off by default). Raw water still makes you sick, so bottles and boiling stay the real answer. Drinking rain (look straight up) also works.
+- Thirst: you can drink straight from water by crouching and right-clicking it with both hands empty (Thirst Was Reclaimed has this off by default). Raw water still makes you sick, so bottles and boiling stay the real answer. Drinking rain also works: stand under open sky in the rain and look straight up, with anything in your hands.
 - Create: Smog pollution is left at full strength on purpose.
 - Structures are spread out so each find counts (0.2.0): about twice vanilla's density on the surface, three times vanilla underground (mineshafts keep their own rate) and under the sea, and the sky as dense as vanilla's surface. Every kind of structure gets an equal share, so a mod with ten kinds turns up five times as often as one with two; boss lairs and the dungeons with the best loot stay rarer. Before this the pack placed about 15 times vanilla's surface density. How each layer was decided: `docs/structure-thinning/`.
 - Inventory Profiles Next auto-refill is off and the backpack magnet is one block shorter, so the game doesn't play itself.
@@ -180,6 +180,7 @@ Nothing on the list comes from space, every prize can be found again, and nothin
 - **Bliss and Photon work with Colorwheel.** Colorwheel (Create contraptions under shaders) only supports shader packs that carry its patch, so Bliss and Photon showed a red "not compatible" alert. Colorwheel Patcher now writes a patched copy of each at launch, named `... + Clrwl_1.0.5.zip`; pick that one. Photon is held at **v1.3a**, the newest version the patcher knows (v1.3b only fixed a setting on Minecraft 1.21.11). Complementary + Euphoria Patches and Solas support Colorwheel on their own.
 - Chunksmith no longer pre-generates a 4096-block radius every time you enter a world. Use its commands to pregenerate when you want.
 - **No more server freezes while flying into new terrain.** Every 5 seconds Aeronautics Winds put snow, sand and puddles in random spots up to 32 blocks around each player, and looked up the ground height there even when that chunk wasn't generated yet. The server then generated it on the spot and waited, which froze it for up to 20 seconds and rubber-banded fast fliers, worst while Chunksmith was pregenerating. The pack's Create Galore Bridge (1.2.0) now skips that round until the area around the player is loaded; it simply runs again 5 seconds later.
+- **Rain counts as rain again.** Aeronautics Winds draws rain only under its clouds, but the clouds drift separately on the server and on each client, so on a server the rain you saw often wasn't rain to the game: you couldn't drink it and cauldrons didn't fill. `config/aeronauticswinds-common.toml` turns that off (`rainOnlyBeneathClouds = false`), so rain falls and counts wherever the normal weather rains. Wind, storms and weather regions are unchanged.
 - **Boats float on a dedicated server.** Deep Seas 3.4.0 checks its boats once per dimension, but all dimensions share one list and each pass forgets the boats it didn't find in its own dimension. On a server with ships in another dimension (the Northstar orbits) that wiped every Overworld boat each tick before its hold was measured, so wooden hulls got no lift and sank; singleplayer was fine. The pack's Create Galore Bridge (1.7.2) gives each dimension its own list. Tested on the dedicated server: a 9x13 open plank hull and a lidded one now float (they sank to the sea floor before), and a hull with a Boat Engine carried a player 400 blocks at 20 TPS.
 - **Chunksmith pregeneration yields to players.** Its defaults let a pregen run slow the server to 150 ms per tick (about 7 TPS) and keep 200 chunks in flight, so anything else that needed a chunk waited behind them. Now it backs off above 54 ms per tick (60 at most), keeps at most 32 chunks in flight, and pauses itself after 30 seconds of struggling (`config/chunksmith/config.json`). For a faster run while nobody plays, see [docs/java-flags.md](docs/java-flags.md#things-you-might-not-have-thought-of).
 - **10-bit monitors and NVIDIA.** On an NVIDIA card the driver treats a game window that fills the screen as exclusive fullscreen, so a 10-bit or HDR monitor switches to 8-bit on Alt-Tab and the Snipping Tool kicks you out. Fix it once in the NVIDIA Control Panel: Manage 3D settings → Program Settings → add `javaw.exe` from the Java your launcher uses (or use Global Settings) → **Vulkan/OpenGL present method** → **Prefer layered on DXGI Swapchain** → Apply, then restart the game. **Catch:** with shaders on, this setting held an RTX 4080 Super at about 55% GPU use (100-140 FPS where 200 was expected); setting it back to Auto gave 100% GPU use again. The pack no longer ships Borderless Window (see [Mods removed](#mods-removed-or-swapped-and-why)); F11 is the game's normal fullscreen. The pack's Bridge mod also has an experimental 10-bit game window (set `tenBitWindow=true` in `config/create_galore_bridge-display.properties`; it turns off NeoForge's early loading screen). The driver gave it a 10-bit window on an RTX 4080 Super but still switched the monitor to 8-bit, so it's off by default.

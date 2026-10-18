@@ -36,7 +36,7 @@
     {
       "type": "modonomicon:text",
       "title": "Weather",
-      "text": "Winds & Weather adds weather regions with storms and lightning that can strike a ship. Wind is stronger over open ocean and grows with altitude, and **extreme wind pushes ships hard**. Check your wind with an [#](2E5AAC)[Anemometer](entry://flight/wind_sailing)[#]()."
+      "text": "Winds & Weather adds weather regions with storms and lightning that can strike a ship. Wind is stronger over open ocean and grows with altitude, and **extreme wind pushes ships hard**. Rain itself follows the normal weather: when you see rain, it counts as rain for drinking, crops and cauldrons. Check your wind with an [#](2E5AAC)[Anemometer](entry://flight/wind_sailing)[#]()."
     },
     {
       "type": "modonomicon:text",

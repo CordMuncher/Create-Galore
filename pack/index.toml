@@ -6,6 +6,10 @@ hash = "517774e283d163ab1454ff385f2a8871fbc20f45022ae417845cce746afd439e"
 preserve = true
 
 [[files]]
+file = "config/aeronauticswinds-common.toml"
+hash = "62255046d6484012079c13c27126fab748597af191e8b6d23bf0570ab029c357"
+
+[[files]]
 file = "config/alexscaves-client.toml"
 hash = "70ca729ef7342206849a2aa215021fc0bb9304db32b9060f6289714adcd8cf41"
 
@@ -836,7 +840,7 @@ hash = "f388e791618af53b3569cea2755c6e5e0fbb4145b997cd012be871338085e5a5"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/flight/weather_and_danger.json"
-hash = "adc6c0a0caf39526618c530d18a79f47ec7d690ef8fb9ec9fd0fdb3eabfb9e29"
+hash = "b7b274d36f2e7ac69d7c93632479439b2a8e081146f1f006c066018097f52994"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/flight/wind_sailing.json"
@@ -1348,7 +1352,7 @@ hash = "8e1d917e411aee4c1548687e7133b0e40c4f4df80574223339466b56a83a0a8b"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/survival/thirst.json"
-hash = "39b9bec1d944c7b64f0d6b170b6f4b5d42ed431423f00617fb89077f85535dbf"
+hash = "9c433df8f3d09dc4c699358dffe9f85b119149c1ed8687ec7b5e83e48a89a93c"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/transport/coasters.json"
