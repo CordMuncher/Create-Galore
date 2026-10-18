@@ -52,8 +52,12 @@ RP=pathlib.Path(ROOT).parents[6]/'resourcepacks/create-galore-guide/assets'
 LINK=re.compile(r'\]\(entry://([^)#]+)(#[^)]*)?\)')
 for eid,e in sorted(entries.items()):
     if flt and not eid.startswith(flt): continue
-    for k in ('name','icon','category','pages','x','y'):
+    link=e.get('type','')=='modonomicon:entry_link'
+    for k in ('name','icon','category','x','y')+(() if link else ('pages',)):
         if k not in e: errs.append(f'{eid}: missing {k}')
+    if link:  # a map node that opens an entry from another section
+        tgt=e.get('entry_to_open','').split(':',1)[-1]
+        if tgt not in entries: errs.append(f'{eid}: entry_to_open {tgt} missing')
     c=e.get('category','')
     if c not in cats: errs.append(f'{eid}: unknown category {c}')
     if not eid.startswith(c+'/'): errs.append(f'{eid}: file is not in entries/{c}/')

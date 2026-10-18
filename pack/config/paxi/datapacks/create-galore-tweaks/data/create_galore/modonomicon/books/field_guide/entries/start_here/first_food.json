@@ -1,0 +1,20 @@
+{
+  "type": "modonomicon:entry_link",
+  "category": "start_here",
+  "name": "Food in Your First Days",
+  "description": "What you can eat early on, area by area. Opens the page in Food and Farming.",
+  "icon": {
+    "item": "minecraft:cooked_rabbit"
+  },
+  "x": 1,
+  "y": -1,
+  "parents": [
+    {
+      "entry": "start_here/first_days",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": false
+    }
+  ],
+  "entry_to_open": "create_galore:food/first_food"
+}
