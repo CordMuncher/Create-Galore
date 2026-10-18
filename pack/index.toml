@@ -1000,7 +1000,7 @@ hash = "54d2cc7caaf5436cb58073693e8fa0835053ac625e8f85a4c0b7d0141fb97df8"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/create_basics/power_sources.json"
-hash = "0c6bb70edc055c19e8dd45c9b71caeaa59919b6f42d63edf4b6c0d1bee5d966b"
+hash = "e00837cac4dbd6b63d48e8c1e66a8d8cb19a7fe1bbfe8f9327c9ec69d2048cb2"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/create_basics/processing.json"
@@ -1136,7 +1136,7 @@ hash = "0de6c0cce594ce6dec3bac87625718f0ed727d13e2947a8db8bc9b32d71e0128"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/flight/propellers.json"
-hash = "13367d3cf14f34eea3d07afcebecb68ee2c319f5fbcfd48989071949c9432e69"
+hash = "60b7c49fc2102a4e9d7acf9362420c88ea5dfe1d6342192873caf1faaba1c518"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/flight/propulsion.json"
@@ -1156,7 +1156,7 @@ hash = "b7b274d36f2e7ac69d7c93632479439b2a8e081146f1f006c066018097f52994"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/flight/wind_sailing.json"
-hash = "b8123200726b51c2c67a98dbfbe0ce27cec386df71cd34117fdcd594058b521e"
+hash = "4a013d965855dd98fdb2037c212eb82626e960cca3af8f794e610a8fd04232e8"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/food/animals.json"
@@ -1184,7 +1184,7 @@ hash = "722f3bc3d52de487ab6200b88f40a87682cdbd43c953b812432956b0c209e583"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/food/farmers_delight_addons.json"
-hash = "c274cb3cece0d08f9e4559474cca458fc2ad3375165f6a1a7be7e1fe2f46d78a"
+hash = "58cbccee4b554af8db2f7c53513bdc7282853ae33f4f5c7757812e7ad0ce1803"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/food/first_food.json"
@@ -1216,7 +1216,7 @@ hash = "c845dd3486bb8a4b908e26cb9997851c7526c6a9dda6574674477f9b404c0e5f"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/glossary/bearing.json"
-hash = "10671a285725f9f0449ad865dc651ecaf5b6fd2ed6606ced2c2e8a7ecf215f4a"
+hash = "242e6a664ab3972cd8d2cf43900f6f1e1cb925334e6d3b948ba6c11fbd85a456"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/glossary/body_temperature.json"
@@ -1448,7 +1448,7 @@ hash = "49a52f4b27376f29500b6937021f4bbf631174173e2218dfc558ffba9e5f451e"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/industry/electricity.json"
-hash = "7a3910dc40dc2b2c80d90a575d3b034a2d0aff20eabcad1f65cef3694618e926"
+hash = "2539ef7b13acf93317821ec28b64a55532f8bd2890d2b2be77aa10391196b148"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/industry/enchanting.json"
@@ -1476,7 +1476,7 @@ hash = "37c8258119eb6f42ca6e85cef3b58c116f19325588d5804df1578b29482b9eef"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/industry/tfmg_engines.json"
-hash = "f50aa74bb836039f24ce916cc2a8c6cf445090625c46c2bba79335498e8d30fb"
+hash = "51a44606340c1ddc9fde62edace6a170e10ee1c1d1932a232527a8617d115b57"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/industry/tfmg_oil.json"
@@ -1692,7 +1692,7 @@ hash = "a2436b6d819ce57ca8d8eb884f28d097eff1ed42f0f9aa733ba00446b1a4217f"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/transport/train_addons.json"
-hash = "983d58d52ac2c48c6d014c66c481f8ee20e5e60cca7c486e29c5eef9e46aee18"
+hash = "6fdb1f91e947905576a1aeaa78ce7a87b4a4a6f6075930fc853a6053d26d50a4"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/transport/train_signals.json"
@@ -4409,8 +4409,8 @@ hash = "db683b65dc15a03dd6de2d34d5dc6ad0e3490744ced513a8cc584784ee9d3d8b"
 metafile = true
 
 [[files]]
-file = "mods/create-galore-bridge-1.12.0.jar"
-hash = "44932abbe59abedabe6e1e69a391541ca310a84e3a1f1503141867b7046ed54c"
+file = "mods/create-galore-bridge-1.15.0.jar"
+hash = "238530baeb0fa5788947eb8e675d8864984ad711f769bfc65d82f13bbb5fa220"
 
 [[files]]
 file = "mods/create-galore-lagwatch-1.0.0.jar"
@@ -4529,11 +4529,6 @@ metafile = true
 [[files]]
 file = "mods/create-structures-arise.pw.toml"
 hash = "d07e87a42a1f882ee71b9f68fc531b1b9dcf4637f69fcf0c80322e488cf79171"
-metafile = true
-
-[[files]]
-file = "mods/create-threaded-trains.pw.toml"
-hash = "f802c6f488a0141d9a51624bcce33c80c2c3d4bea731ea3f9301a6ec9d36cf4d"
 metafile = true
 
 [[files]]

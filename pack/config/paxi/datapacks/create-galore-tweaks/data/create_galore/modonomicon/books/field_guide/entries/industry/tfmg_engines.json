@@ -78,6 +78,14 @@
       "type": "modonomicon:text",
       "title": "",
       "text": "[#](FFFFFF)\ue103[#]() **In depth.** Blocks share a **group**: members of one group split the voltage, the rest keep all of it. Change a block's group with the **Configuration Wrench**.\\\n\\\nA Diode, Potentiometer, Switch or Transformer starts a subnetwork."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "tfmg:large_transformer"
+      },
+      "title": "Large Transformer",
+      "text": "Built in place: two wound Large Coils side by side, then click one with a Laminated Magnetic Alloy Block, a Block of Steel and a Lubrication Oil bucket. Mining it returns both coils (turns kept) and the steel."
     }
   ]
 }
