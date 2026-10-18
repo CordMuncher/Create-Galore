@@ -43,7 +43,11 @@ hash = "c8c05ff0d9853da43b24b7dfe45efc8e93b5e742e8dc561baf099c8debc91367"
 
 [[files]]
 file = "config/coldsweat/world.toml"
-hash = "a38f8033cb6b604df8535a4cd9329c2f21d319d1802610b7e911925e2fc48346"
+hash = "07f026b236af9a108218f8ded59975a8491ec5248d314acebbc6684463f39260"
+
+[[files]]
+file = "config/coldsweat_altitude-server.toml"
+hash = "756ca80daae32230ebc9f3cca27db36b074fb0ebf80272029ac8e268ba16375d"
 
 [[files]]
 file = "config/cr_aero_structures-client.toml"
@@ -437,6 +441,10 @@ hash = "f2083e7d1d57537c10bde891d4607f0912fba0cc1e487e4c38c12641d94bac03"
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/coedeposits/recipe/quartz_drilling.json"
 hash = "780f0aa8d419726dc4b3283c71cd8d639db8f6d707c73df5b47d391bf4fdfee8"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/cold_sweat/cold_sweat/world/temp_region/default.json"
+hash = "9d7094edc41bed1f3c1f226ad9ef1e65234ca52f4124ab571403a4a22c16dd64"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/cr_aero_structures/loot_table/chests/uniform.json"
@@ -1356,15 +1364,15 @@ hash = "160ce78a2f3c5102f4540fcc6b9c274fcdd40bdef0218eea2736e17eece1d16a"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/survival/temperature.json"
-hash = "69c135e3f737151c8920fc24ce5d7abd972f0f74c5e60d55e81626b8bdc0492c"
+hash = "04f37b50a872337c68a542681e66d3eb454411d539616f4841b6cb8e50751981"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/survival/temperature_create.json"
-hash = "43a5660995c6972b05bcdb0e24097a89ec700897fba97563d66f57b51bc94f8f"
+hash = "21c6492b3702f367054e1bf5318b557c00ee65ff424d79e383fa127a60d55b66"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/survival/temperature_gear.json"
-hash = "8e1d917e411aee4c1548687e7133b0e40c4f4df80574223339466b56a83a0a8b"
+hash = "9684b75cf1a6cbf47c5b1070bb87578380dd29d6058ad38085b9211433d87c0c"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/survival/thirst.json"

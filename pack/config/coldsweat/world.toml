@@ -30,11 +30,12 @@
 	# • dimension_id: The ID of the dimension (e.g. "minecraft:the_nether")
 	# • temperature: The temperature offset to apply to the dimension
 	# • *units: The units of the temperature ("f", "c", or "mc"). Defaults to Minecraft units (mc))
+	# Create Galore: the Aether offset is 0 (Cold Sweat's default +32 F made every Aether noon 122 F, hotter than the Nether).
 	"Dimension Temperature Offsets" = [
 	    ["minecraft:the_nether", 32, "f"],
 	    ["minecraft:the_end", -5, "f"],
 	    ["twilightforest:twilight_forest_type", 10, "f"],
-	    ["aether:the_aether", 32, "f"]
+	    ["aether:the_aether", 0, "f"]
 	]
 	#─────────────────────────────────────────────────────────────────────────//v
 	# Defines the temperature of a dimension, overriding biome and elevation temperature
@@ -284,7 +285,8 @@
 		#─────────────────────────────────────────────────────────────────────────
 		# Allows the hearth to automatically turn on/off based on nearby players' temperature
 		# If false, it turns on/off by redstone signal instead
-		"Automatic Hearth" = false
+		# Create Galore: true, so a fuelled Hearth works without a redstone signal and only burns fuel while someone nearby needs it.
+		"Automatic Hearth" = true
 		#─────────────────────────────────────────────────────────────────────────
 		# The distance the hearth's air will travel from a source, like the hearth itself or the end of a pipe
 		# Default: 20
@@ -321,7 +323,8 @@
 		#─────────────────────────────────────────────────────────────────────────
 		# Allows the boiler to automatically turn on/off based on nearby players' temperature
 		# If false, it turns on/off by redstone signal instead
-		"Automatic Boiler" = false
+		# Create Galore: true, so a fuelled Boiler works without a redstone signal and only burns fuel while someone nearby needs it.
+		"Automatic Boiler" = true
 		#─────────────────────────────────────────────────────────────────────────
 		# The distance the boiler's air will travel from a source, like the boiler itself or the end of a pipe
 		# Default: 16
@@ -358,7 +361,8 @@
 		#─────────────────────────────────────────────────────────────────────────
 		# Allows the icebox to automatically turn on/off based on nearby players' temperature
 		# If false, it turns on/off by redstone signal instead
-		"Automatic Icebox" = false
+		# Create Galore: true, so a fuelled Icebox works without a redstone signal and only burns fuel while someone nearby needs it.
+		"Automatic Icebox" = true
 		#─────────────────────────────────────────────────────────────────────────
 		# The distance the icebox's air will travel from a source, like the icebox itself or the end of a pipe
 		# Default: 16

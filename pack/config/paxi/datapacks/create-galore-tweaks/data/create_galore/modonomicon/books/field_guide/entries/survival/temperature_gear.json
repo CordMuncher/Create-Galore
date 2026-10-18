@@ -59,7 +59,7 @@
         "item": "cold_sweat:hearth"
       },
       "title": "Hearth",
-      "text": "Fuel it, put it in the base. Its range and the fuels it takes are in JEI. Boiler and Icebox have their own fuel lists."
+      "text": "Fuel it and put it in an enclosed room. It switches on by itself when someone inside is too cold (or too hot, with cold fuel) and only burns fuel then; no redstone needed. Boiler and Icebox work the same way. Fuels and range are in JEI."
     },
     {
       "type": "modonomicon:spotlight",
