@@ -311,6 +311,10 @@ file = "config/paxi/datapacks/create-galore-tweaks/data/aquamirae/worldgen/struc
 hash = "67f9536a0965ee554ffdf061c23abb03358f6bd12b099c97f4d83dbab7578c4b"
 
 [[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/berries_and_cherries/recipe/cherrypitremoval.json"
+hash = "5d03434fe1d31710c4d4e6c3759cc1cd2b30206e6cf0b55f2836d075f010a45d"
+
+[[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/betterend/recipe/additional_netherite.json"
 hash = "ded8107f6aa0cb602517e1784c01b839dac7f5d38a1fb3ac74e380528bc280a4"
 
@@ -868,11 +872,11 @@ hash = "bd472e0b92a462a61f7c13114c8b0df2d8acc7098eea9853df69275647803fe0"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/food/farmers_delight.json"
-hash = "32a0efca48edbc29579d6df0a0a30305c5985215f85a34f8bbbca58ce8c0c904"
+hash = "37f44720d04a3e794ea1b47b90ff8ae6566b798f80b49c36718ec25c739b1944"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/food/farmers_delight_addons.json"
-hash = "2e75e38dd399e9d9dee9ae26a8f0310ce6ecd995e4a95032f5bb24bbbf7b1f59"
+hash = "33427ee835985a900fbeff95c9bacd2910714f8def5e16d3054ff8e75720afe5"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/food/garnished.json"
@@ -2769,8 +2773,8 @@ hash = "db683b65dc15a03dd6de2d34d5dc6ad0e3490744ced513a8cc584784ee9d3d8b"
 metafile = true
 
 [[files]]
-file = "mods/create-galore-bridge-1.7.4.jar"
-hash = "60187a3b7f3117f32cec9aab573de3787233afe0e836d2b7d074a8265a2930a9"
+file = "mods/create-galore-bridge-1.8.0.jar"
+hash = "d7f260f30201bfd13ca4d1e7f3956c8de1aba68313e7341fdb03980664b08e2f"
 
 [[files]]
 file = "mods/create-galore-lagwatch-1.0.0.jar"

@@ -6,7 +6,7 @@ A big, long-term Minecraft modpack built around the Create mod. Think "Minecraft
 
 | | |
 |---|---|
-| **Version** | 0.2.5 |
+| **Version** | 0.2.6 |
 | **Minecraft** | 1.21.1 |
 | **Loader** | NeoForge **21.1.262** (pinned, don't update it, see [Known issues](#known-issues)) |
 | **Mods** | 228 from Modrinth + the pack's own small Create Galore Bridge and Lag Watch + Twilight Forest added by hand, plus 4 shader packs and the Fresh Animations resource pack |
@@ -15,7 +15,7 @@ A big, long-term Minecraft modpack built around the Create mod. Think "Minecraft
 
 ## Install (players)
 
-1. Download `Create-Galore-0.2.5.mrpack` from the [latest release](https://github.com/emresahin0906-code/Create-Galore/releases/latest). The older `.mrpack` files in the repo's top folder are past versions; don't import those.
+1. Download `Create-Galore-0.2.6.mrpack` from the [latest release](https://github.com/emresahin0906-code/Create-Galore/releases/latest). The older `.mrpack` files in the repo's top folder are past versions; don't import those.
 2. Import it:
    - **Prism Launcher:** Add Instance → Import → pick the `.mrpack`.
    - **Modrinth App:** drag the `.mrpack` onto the window (or File → Import).
@@ -109,6 +109,8 @@ Everything below ships as plain config files or a datapack in `pack/` (no mod ja
 | Copper wire | Create Crafts & Additions |
 | Sulfur dust | TFMG |
 | Salt, cocoa butter, cocoa powder | Create Ratatouille |
+
+Tools too: Berries and Cherries' Iron Knife is merged into Farmer's Delight's. Its cherry pitting recipe takes any knife, and old Berries and Cherries knives in inventories, chests and backpacks turn into the Farmer's Delight one (damage, enchantments and names kept). A knife used in a crafting grid comes back one point more worn instead of being used up.
 
 Copper spools stay separate: TFMG's spool lays TFMG cable and is the only kind its Winding Machine takes, so TFMG and Crafts & Additions each keep their own.
 
@@ -287,6 +289,7 @@ All tests ran headless in a cloud machine (4 cores, 16 GB RAM, no GPU), so speed
 | 0.2.1 on a dedicated server with one client on NeoForge 21.1.262 (189 server mods + Twilight Forest, 274 on the client): joined and played about 25 minutes with deaths, a kick and a rejoin, no packet-codec kick with Aether gloves and pendant equipped; Cold Sweat 2.4.4 with Altitude 0.8.1 fine on join. Graves: `/kill` with full inventory, armour, offhand, Curios backpack, necklace and charm plus Aether accessories left a grave and nothing on the ground, breaking it gave everything back (Curios into their slots); void death put the grave at y −60, lava death in the lava. Simple Backups ran on first join and on command (34 MB world, 1.2 s, 26 MB zip). No new errors from the updated or added mods | ✅ |
 | 0.2.2 overnight playability check (seven areas in parallel on headless servers and clients, findings in the project's playability-check notes): Create and TFMG machine chains, trains, airships, submarines and boats, the space route from Stellar Core to the Moon, Mars and Venus and the Dimensional Drive, Twilight Forest, Aether and boss damage, survival systems and graves, farming, cooking and animals, two players on one server, backups and restore, and updating 0.2.0 servers and instances to NeoForge 262. Fixed: Alex's Caves cave biomes missing on 1.1.2 (back to 1.1.1, which blocked the Hullbreaker and Stellar Core), a Primordial Caves worldgen crash, Deep Seas boats sinking on servers, the Dimensional Drive jumping the wrong ship, Fungi Delight milk dishes, one sleeper skips the night, and Field Guide corrections. Final combined run on a fresh world: cave biomes locate, Primordial Caves generate with a player inside at 20 TPS | ✅ |
 | 0.2.4 tool fix on a dedicated server: Create Deep Seas 3.4 lists six Abyss blocks it never adds, so vanilla dropped `minecraft:mineable/pickaxe`, `mineable/axe`, `mineable/shovel`, `minecraft:logs` and about 15 tags built on them (no tool counted as the right tool, leaves decayed). With Bridge 1.7.4 the server log shows only those six entries skipped, and stone, sand, dirt and oak logs are back in their mineable tags | ✅ |
+| 0.2.6 iron knife merge on a dedicated server: a chest holding a Berries and Cherries Iron Knife (damage 7, custom name) loads it as the Farmer's Delight Iron Knife with damage and name kept; a dropped one turns into it too. A Crafter with a Farmer's Delight knife and cherries makes Pitted Cherries and gives the knife back one point more worn. No new tag errors in the server log | ✅ |
 | Real FPS, shaders, Distant Horizons visuals, gameplay feel | ❌ Needs a real PC with a GPU |
 
 **Memory:** about 9.3 GB of process memory on the server and 8-9.6 GB on the client with an 8 GB heap. A laptop with 16 GB can play but shouldn't host and play at the same time. A garbage collector benchmark on the server (pack's G1 flags vs Java defaults, Generational ZGC and Shenandoah, plus a 6 GB run) is in [docs/java-flags.md](docs/java-flags.md).

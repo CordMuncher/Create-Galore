@@ -7,6 +7,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.registries.DeferredItem;
@@ -42,6 +43,7 @@ public final class CreateGaloreBridge {
     public CreateGaloreBridge(IEventBus modBus) {
         ITEMS.register(modBus);
         modBus.addListener(CreateGaloreBridge::addToTabs);
+        modBus.addListener((FMLCommonSetupEvent event) -> KnifeUnify.resolve());
         GuideCleanup.register();
         if (FMLEnvironment.dist.isClient()) {
             BridgeClient.init(modBus);

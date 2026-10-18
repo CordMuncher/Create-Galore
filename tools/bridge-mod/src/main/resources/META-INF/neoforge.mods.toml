@@ -4,7 +4,7 @@ license = "MIT"
 
 [[mods]]
 modId = "create_galore_bridge"
-version = "1.7.4"
+version = "1.8.0"
 displayName = "Create Galore Bridge"
 authors = "Create Galore"
 description = '''Pack glue for Create Galore: TFMG engines and blast furnaces pollute (Create: Smog) only while they burn fuel, Blaze Burners only while they have fuel, the Stellar Core item that gates space travel, compasses that find the Twilight Forest boss lairs on the way to it, removal of outdated Field Guide copies from inventories, Aeronautics Winds weather effects that no longer load chunks on the server thread, a Dimensional Drive that reads and jumps its own ship when several ships are loaded, Field Guide page titles that stay on the paper, two join-chat notices (Train Utilities rename, Toolgun recommendation) kept out of chat, an experimental, off-by-default 10-bit game window, and an experimental, off-by-default DirectX presentation mode for Windows (ported from Perfect Presentation by sidit77, MIT).'''

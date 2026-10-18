@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "tag": "c:tools/knife"
+    },
+    {
+      "item": "berries_and_cherries:cherries"
+    }
+  ],
+  "result": {
+    "id": "berries_and_cherries:pittedcherries",
+    "count": 1
+  }
+}

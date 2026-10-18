@@ -83,7 +83,12 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**Berries and Cherries Delight** adds grapes, strawberries, cherries, jams and pies.\\\n\\\n**Aquaculture Delight** lets Aquaculture fish work in Farmer's Delight recipes.\\\n\\\n**Sniffers Sniff Delights** makes Sniffers dig up tomato, cabbage, rice and onion seeds far more often."
+      "text": "**Berries and Cherries Delight** adds grapes, strawberries, cherries, jams and pies. Pit cherries by crafting them with any knife. Its own Iron Knife is merged into the Farmer's Delight one, and old ones turn into it."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Aquaculture Delight** lets Aquaculture fish work in Farmer's Delight recipes.\\\n\\\n**Sniffers Sniff Delights** makes Sniffers dig up tomato, cabbage, rice and onion seeds far more often."
     },
     {
       "type": "modonomicon:text",

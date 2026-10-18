@@ -60,7 +60,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Knives also harvest [Straw](item://farmersdelight:straw) from grass, wheat and rice. [Flint](item://farmersdelight:flint_knife) is the starter knife; iron and better follow.\\\n\\\nWheat plus a water bucket makes Wheat Dough, and the bucket keeps its water."
+      "text": "Knives also harvest [Straw](item://farmersdelight:straw) from grass, wheat and rice. [Flint](item://farmersdelight:flint_knife) is the starter knife; iron and better follow. A knife used in a crafting grid comes back one point more worn instead of being used up.\\\n\\\nWheat plus a water bucket makes Wheat Dough, and the bucket keeps its water."
     },
     {
       "type": "modonomicon:spotlight",
