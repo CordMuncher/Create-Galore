@@ -1,0 +1,208 @@
+{
+  "category": "food",
+  "name": "Food in Your First Days",
+  "description": "What you can eat early on, area by area: beach, desert, forest, snow and more.",
+  "icon": {
+    "item": "minecraft:cooked_rabbit"
+  },
+  "x": -4,
+  "y": 0,
+  "parents": [],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Food in Your First Days",
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- [#](FFFFFF)\ue10c[#]() Hunt what lives nearby and cook it on a campfire.\n- Wild crops and fruit are food in any season. Only replanting cares.\n- Raw mushrooms aren't food: make stew.\n- [#](FFFFFF)\ue107[#]() Meat and fish don't quench thirst. Fruit does."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Food is spread thin here: lots of species, each in its own biome. This entry lists what is **easy to get with stone tools, a crafting table and a campfire**, area by area.\\\n\\\nEach area page starts with the best options. Rare finds are marked as such."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Seasons",
+      "text": "The world starts in **early spring**. A wild crop you pick is food straight away; the season only matters when you plant it.\\\n\\\nIn season now: carrots, potatoes, onions, sweet berries and strawberries.\\\nWheat is a summer crop, so seeds from grass grow slowly until then. See [#](2E5AAC)[Seasonal Crops](entry://survival/seasons_crops)[#]()."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Your kitchen",
+      "text": "[#](FFFFFF)\ue108[#]() **Campfire:** 3 sticks, coal or charcoal, 3 logs. No coal? Smelt a log in a furnace for charcoal.\\\n\\\nIt cooks 4 things at once with no fuel, boils water and keeps you warm.\\\n\\\nBowls: 3 planks make 4."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": [
+        {
+          "item": "farmersdelight:cutting_board"
+        },
+        {
+          "item": "farmersdelight:flint_knife"
+        }
+      ],
+      "title": "Board and knife",
+      "text": "A **Cutting Board** (4 planks, 2 sticks) and a **Flint Knife** (flint, stick) slice pineapples, melons and pumpkins and cut meat. The Cooking Pot needs iron, so it comes later."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Everywhere",
+      "text": "- **Grass** drops wheat seeds, and short grass also coffee beans and cassava seeds. All three are summer crops.\n- **Oak leaves** drop apples (rare) and acorns.\n- **Mushroom stew:** a brown and a red mushroom in a bowl, on a crafting table.\n- **Zombies** sometimes drop onions."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Fishing",
+      "text": "A rod is 3 sticks and 2 string. It catches cod, salmon and Hybrid Aquatic's fish anywhere; cook them on the campfire.\\\n\\\n[#](FFFFFF)\ue101[#]() **Watch out:** pufferfish, lionfish, stonefish, blowfish, boxfish, hagfish and stingrays poison you raw. About 1 cast in 10."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "[#](FFFFFF)\ue102[#]() **Tip:** no rod? Aquaculture's fish swim in ponds and rivers. Hit one and it drops itself, edible even raw.\\\n\\\nAquaculture's regional fish (piranha, halibut and the rest) bite only on its own rods, iron and up. See [#](2E5AAC)[Fishing](entry://ocean/fishing)[#]()."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Food that hydrates",
+      "text": "Meat, fish, bread and potatoes give **no** water. Fruit does:\n\n- **Best:** melon, pineapple slices, pears, peaches, oranges\n- **Good:** apples, tomatoes, onions, mango\n- **A little:** berries, carrots, beetroot\n\nMelon juice (4 slices, sugar, bottle) is a full drink."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Beach",
+      "text": "- **Wild cabbages and beetroots** grow on the sand, about one patch every 30 chunks. Eat them as they are.\n- **Pineapples:** cut one on the board for 6 slices, a top drink-food.\n- **Wild rice** and **wild carrots and onions**, rarer.\n- **Crabs:** a claw becomes Raw Crab in the crafting grid."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "No cows, pigs or sheep spawn on beaches; fish and crabs are your meat. Dried kelp (smelt kelp) is weak but endless.\\\n\\\n**Stony shore:** wild potatoes and crabs.\\\n**Snowy beach:** cabbages and beetroots too."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": [
+        {
+          "item": "farmersdelight:wild_cabbages"
+        },
+        {
+          "item": "fruitsdelight:pineapple"
+        },
+        {
+          "item": "hybrid_aquatic:raw_crab"
+        }
+      ],
+      "title": "Beach food",
+      "text": "Wild cabbages, pineapples and crabs. Cabbage and beetroot are autumn crops, so they grow slowly if you plant them in spring."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Ocean and river",
+      "text": "- **Fish** with a rod, or hit Aquaculture fish swimming by.\n- **Clams** (Naturalist) on the sea floor give Clam Meat.\n- **Squid** killed with a knife drop tentacles.\n- **Rivers:** ducks, bass, crayfish and salmon.\n\nRunning river water is one step cleaner than still water."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Desert",
+      "text": "- **Rabbits** are the easy meat. **Komodo dragons** drop bushmeat but bite back.\n- **Hamimelons** (Fruits Delight) grow only here: break one for slices.\n- **Wild tomatoes** are rare and give few tomatoes.\n- **Desert villages**: wheat farms, water and bread in chests."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "[#](FFFFFF)\ue102[#]() **Tip:** deserts count as tropical, so **summer crops grow all year**: wheat, melons, tomatoes, sugar cane. Spring and autumn crops grow slowly here.\\\n\\\n[#](FFFFFF)\ue101[#]() **Watch out:** it never rains in a desert. Carry water."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Badlands",
+      "text": "The thinnest area for food: wild tomatoes, komodo dragons, rabbits on the edges and whatever you can fish. Summer crops grow all year, so build the farm early or move on."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Savanna",
+      "text": "**No cows, pigs, sheep or chickens** spawn here. Instead:\n\n- **Ostriches:** drumsticks, the best meat here\n- **Boars:** porkchops\n- **Hippos:** melon slices, but they hit hard\n- **Giraffes and elephants:** bushmeat\n\nAvoid lions. Summer crops grow all year."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Jungle",
+      "text": "The richest start:\n\n- **Melons** grow wild, lots of them\n- **Pigs, cows, sheep, chickens** and **capybaras** (bushmeat)\n- **Wild rice**, cranberry bushes and fruit trees: mango, peach, lychee, durian\n\nSummer crops grow all year. Rice needs the Cooking Pot."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Plains and meadow",
+      "text": "- **Plains:** cows, sheep, pigs and chickens. Hedgehogs, rats and snakes drop morsels.\n- **Wild carrots and onions**, about one patch per 120 chunks.\n- **Lemon trees** (one per 32 chunks) and rare blueberry and raspberry bushes.\n- **Villages:** bread, potatoes, carrots, farms."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Meadow** has few animals: some sheep and rabbits, and hedgehogs. Look for lemon trees, carrots and onions, or head to a plains village."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Forests",
+      "text": "No pigs in forests. Instead:\n\n- **Deer** (venison), **boars** (porkchops), **turkeys** (drumsticks), plus cows, sheep, chickens\n- **Fruit trees** in forest and flower forest, about 1 in 20 chunks: apple, orange, fig, kiwi\n- **Pear trees** in birch forest, 1 in 15 chunks"
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Dark forest:** cranberry bushes, and the huge mushrooms drop mushrooms for stew. Lots of monsters at night.\\\n\\\n**Cherry grove:** the weakest spot. Deer are the main meat, with a few rabbits and sheep.\\\n\\\n[#](FFFFFF)\ue101[#]() **Watch out:** bears and tigers drop no food. Leave them alone."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": [
+        {
+          "item": "naturalist:venison"
+        },
+        {
+          "item": "naturalist:drumstick"
+        },
+        {
+          "item": "fruitsdelight:pear"
+        }
+      ],
+      "title": "Forest food",
+      "text": "Venison, drumsticks and wild fruit. Cook meat on the campfire: cooked venison and drumsticks fill 6."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Taiga",
+      "text": "One of the best starts:\n\n- **Sweet berries**, common and in season\n- **Brown mushrooms** everywhere (red ones are rarer)\n- **Turkeys**, cows, sheep, pigs, rabbits\n- **Wild potatoes**, hawberry trees, blueberry bushes\n\nBears here are dangerous and drop only fur."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Snow",
+      "text": "**Snowy plains, snowy taiga, ice spikes:** rabbits, persimmon trees, blueberry bushes, rare sweet berries, and fish (break the ice).\\\n\\\n[#](FFFFFF)\ue109[#]() Snowy biomes grow only **winter crops**: cabbage, sweet berries, hawberry, kiwi, persimmon."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "[#](FFFFFF)\ue108[#]() Set up the campfire first: it cooks and warms you at once. When you are too cold, part of your hearts freeze and won't heal, so food alone can't patch you up. See [#](2E5AAC)[Temperature](entry://survival/temperature)[#]()."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Mountains",
+      "text": "- **Grove:** deer, boars, persimmon trees.\n- **Slopes and peaks:** goats (they drop chevon), rabbits on the slopes. Mammoths have lots of meat but fight hard.\n- **Stony peaks:** wild tomatoes.\n- **Windswept hills:** like plains, plus wild potatoes."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Swamp and mangrove",
+      "text": "**No cows, pigs, sheep or chickens.** Instead:\n\n- **Ducks**, **bass**, **catfish** and **capybaras**\n- **Wild rice**, blueberry and cranberry bushes\n- **Mushrooms**, both colors, for stew\n\n[#](FFFFFF)\ue107[#]() Swamp water is Dirty: boil it."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Mushroom fields",
+      "text": "**Mooshrooms** drop beef, and milking one with a bowl gives mushroom stew. Fungi Delight's morel and inky cap cows drop beef too. Mushrooms are everywhere."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Caves",
+      "text": "- **Lush caves:** glow berries hang from the ceiling, lots of them, all year. They hydrate a little.\n- **Alex's Caves' Candy Cavity** is full of sweets, but it's deep and dangerous. Not a day-one trip."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "[#](FFFFFF)\ue103[#]() **In depth.** Terralith biomes work like the closest vanilla area: a Terralith desert follows the desert page, and so on.\\\n\\\n**MushroomQuest** stumps and logs in forests, taigas and swamps drop dozens of wild mushrooms. Some are good food, some are deadly. Read the tooltip before you eat one."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Fungi Delight's **morels** and **inky caps** aren't food raw. Inky caps cut on the board into cleaned caps; morels go into Cooking Pot dishes.\\\n\\\nPatch rarity: wild cabbages and beetroots 1 in 30 chunks, wild rice 1 in 20, carrots and onions 1 in 120, potatoes and tomatoes 1 in 100."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Related",
+      "text": "- [#](2E5AAC)[Your First Days](entry://start_here/first_days)[#]()\n- [#](2E5AAC)[Thirst](entry://survival/thirst)[#]()\n- [#](2E5AAC)[Seasonal Crops](entry://survival/seasons_crops)[#]()\n- [#](2E5AAC)[Farmer's Delight](entry://food/farmers_delight)[#]()\n- [#](2E5AAC)[Fishing](entry://ocean/fishing)[#]()\n- [#](2E5AAC)[Sea Food](entry://ocean/sea_food)[#]()\n- [#](2E5AAC)[Animals and Husbandry](entry://food/animals)[#]()"
+    }
+  ]
+}

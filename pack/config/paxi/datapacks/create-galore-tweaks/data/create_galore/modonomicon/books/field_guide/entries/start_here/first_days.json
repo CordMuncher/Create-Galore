@@ -58,7 +58,7 @@
     {
       "type": "modonomicon:text",
       "title": "Food",
-      "text": "Hunger works like vanilla. Kill animals and cook the meat on a campfire or in a furnace, or fish. AppleSkin shows what each food restores.\\\n\\\nCrops only grow in their season: [#](2E5AAC)[Seasonal Crops](entry://survival/seasons_crops)[#]() says which grows when."
+      "text": "Hunger works like vanilla. Kill animals and cook the meat on a campfire or in a furnace, or fish. AppleSkin shows what each food restores.\\\n\\\nWhat to eat where: [#](2E5AAC)[Food in Your First Days](entry://food/first_food)[#]().\\\n\\\nCrops only grow in their season: [#](2E5AAC)[Seasonal Crops](entry://survival/seasons_crops)[#]() says which grows when."
     },
     {
       "type": "modonomicon:text",
@@ -78,7 +78,7 @@
     {
       "type": "modonomicon:text",
       "title": "Related",
-      "text": "- [#](2E5AAC)[Thirst](entry://survival/thirst)[#]()\n- [#](2E5AAC)[Temperature](entry://survival/temperature)[#]()\n- [#](2E5AAC)[Insulation and Heaters](entry://survival/temperature_gear)[#]()\n- [#](2E5AAC)[Seasonal Crops](entry://survival/seasons_crops)[#]()\n- [#](2E5AAC)[Food and Health](entry://survival/food_and_health)[#]()\n- [#](2E5AAC)[What to Expect](entry://start_here/difficulty)[#]()"
+      "text": "- [#](2E5AAC)[Thirst](entry://survival/thirst)[#]()\n- [#](2E5AAC)[Temperature](entry://survival/temperature)[#]()\n- [#](2E5AAC)[Insulation and Heaters](entry://survival/temperature_gear)[#]()\n- [#](2E5AAC)[Seasonal Crops](entry://survival/seasons_crops)[#]()\n- [#](2E5AAC)[Food and Health](entry://survival/food_and_health)[#]()\n- [#](2E5AAC)[Food in Your First Days](entry://food/first_food)[#]()\n- [#](2E5AAC)[What to Expect](entry://start_here/difficulty)[#]()"
     }
   ]
 }

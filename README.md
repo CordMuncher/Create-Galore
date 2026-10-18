@@ -6,7 +6,7 @@ A big, long-term Minecraft modpack built around the Create mod. Think "Minecraft
 
 | | |
 |---|---|
-| **Version** | 0.2.8 |
+| **Version** | 0.2.9 |
 | **Minecraft** | 1.21.1 |
 | **Loader** | NeoForge **21.1.262** (pinned, don't update it, see [Known issues](#known-issues)) |
 | **Mods** | 228 from Modrinth + the pack's own small Create Galore Bridge and Lag Watch + Twilight Forest added by hand, plus 4 shader packs and the Fresh Animations resource pack |
@@ -15,7 +15,7 @@ A big, long-term Minecraft modpack built around the Create mod. Think "Minecraft
 
 ## Install (players)
 
-1. Download `Create-Galore-0.2.8.mrpack` from the [latest release](https://github.com/emresahin0906-code/Create-Galore/releases/latest). The older `.mrpack` files in the repo's top folder are past versions; don't import those.
+1. Download `Create-Galore-0.2.9.mrpack` from the [latest release](https://github.com/emresahin0906-code/Create-Galore/releases/latest). The older `.mrpack` files in the repo's top folder are past versions; don't import those.
 2. Import it:
    - **Prism Launcher:** Add Instance → Import → pick the `.mrpack`.
    - **Modrinth App:** drag the `.mrpack` onto the window (or File → Import).
@@ -86,6 +86,8 @@ The updater also keeps NeoForge on the pack's pinned version. In Prism, when an 
 Every player gets the **Create Galore Field Guide** on first join, and you can craft another from a Book and Andesite. It's a wiki, not a quest book: 15 sections and about 190 entries on how things work and how the mods connect, written for someone who has never played Create.
 
 A new player should open **Start Here > Your First Days** first: how to drink, where to find clean water, food and staying warm, the things that can kill you before you know the pack.
+
+Not sure what to eat? **Food and Farming > Food in Your First Days** goes area by area (beach, ocean, desert, savanna, jungle, plains, forest, taiga, snow, mountains, swamp, caves) through what you can forage, hunt, fish and cook with only a campfire, with the early-spring start and thirst in mind.
 
 Each section is a map. Entries are nodes, and the arrows show what comes first, so to reach something you follow its lines back (the six prizes all lead into the Stellar Core, for example). Everything is open from the start, with no locks, tasks or rewards. The magnifying glass on the right searches the text of every page. Editing notes: [docs/guidebook.md](docs/guidebook.md).
 
