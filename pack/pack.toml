@@ -1,6 +1,6 @@
 name = "Create Galore"
 author = "Emre"
-version = "0.2.13"
+version = "0.2.14"
 pack-format = "packwiz:1.1.0"
 
 [index]
