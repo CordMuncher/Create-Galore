@@ -363,6 +363,10 @@ file = "config/paxi/datapacks/create-galore-tweaks/data/betterend/loot_table/blo
 hash = "5d7d10d8e072dcf2eb37f52932b879fb41f5eb7a35614675937a9ca216d3993c"
 
 [[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/betterend/loot_table/blocks/crystal_moss_cover.json"
+hash = "2a60b3a79ebdcbdf922f83469f8ae2d0a7567b1f4bd30c34ad6d1ea60fe24099"
+
+[[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/betterend/loot_table/blocks/dragon_bone_slab.json"
 hash = "dd0e14fd6b9013f891b85dee7a0f3b4459f06945ab55ace1d248d34d9638202e"
 
@@ -1935,6 +1939,134 @@ file = "config/paxi/datapacks/create-galore-tweaks/data/createcafe/recipe/mixing
 hash = "3e1fa6fd25a5212d046f562b4168fd48bb8f072fe580b0fc1a202e227712c5e8"
 
 [[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createcoasterseats/loot_table/blocks/black_lapbar_seat.json"
+hash = "721d9448b10eabb88612e8cf4d4bcd5b322edd650817d214840e6539e52537f0"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createcoasterseats/loot_table/blocks/black_restrictor_seat.json"
+hash = "2d73231293b6882e26db8019d72f51e8ab8d8b08c2d714051fdd5897b9a51e0a"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createcoasterseats/loot_table/blocks/blue_lapbar_seat.json"
+hash = "b3dfb65876cb81e2f4efd5698ae6d3f613921f1026dcbf99e4a3b99c859188d6"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createcoasterseats/loot_table/blocks/blue_restrictor_seat.json"
+hash = "b75364aa84f471cfc388668bef4836584ba0ea38f6472920a38bd6079aa1732b"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createcoasterseats/loot_table/blocks/brown_lapbar_seat.json"
+hash = "1447d346e0f69862d45c84896e1bc0f47144a4ce89a38191d211bbcd42061718"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createcoasterseats/loot_table/blocks/brown_restrictor_seat.json"
+hash = "14ad03bde6aafdfbc347d2877c1a5b341d1c34c8dd9a0308afc7c9c07039db6b"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createcoasterseats/loot_table/blocks/cyan_lapbar_seat.json"
+hash = "0f4a899fa91ea14bfb4736b6c5cf77edc084d2658d84dad30789937c953aaad3"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createcoasterseats/loot_table/blocks/cyan_restrictor_seat.json"
+hash = "4803187687a0185646d9ea8df8c3e71af1163cd1ca7c235c7a25b39e9888603d"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createcoasterseats/loot_table/blocks/gray_lapbar_seat.json"
+hash = "6247ae584a5652413249e763aa0250d1a4de7fff4a789cc76d9ed04f3a58c95d"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createcoasterseats/loot_table/blocks/gray_restrictor_seat.json"
+hash = "4a22021c8ad576028e76ae28ed59e009f61138818c130003a777ab5f36ed9979"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createcoasterseats/loot_table/blocks/green_lapbar_seat.json"
+hash = "15697191666caad60f2ef7de88d3405af584cf86b0a1b57607d4a001b391ff56"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createcoasterseats/loot_table/blocks/green_restrictor_seat.json"
+hash = "523eaac25059ecb76d874057060fd1c400c802e32898a4433c95eead3b40380f"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createcoasterseats/loot_table/blocks/light_blue_lapbar_seat.json"
+hash = "9e7731f8e45b8d9089c54d05700391e2601214fddf46a4bf5e4235c8a8b85433"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createcoasterseats/loot_table/blocks/light_blue_restrictor_seat.json"
+hash = "6fc0a5d079076dd114658ceab427833059b9a03f34d9580070ba7f023f6e7083"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createcoasterseats/loot_table/blocks/light_gray_lapbar_seat.json"
+hash = "5d233689fda634b1091ba2b217b94e079813878031ce1726930cda43d6f9deac"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createcoasterseats/loot_table/blocks/light_gray_restrictor_seat.json"
+hash = "b2d5c8803ef5fd850175e1772e4f4f97872df3a9afcc0757fddaccb53190f926"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createcoasterseats/loot_table/blocks/lime_lapbar_seat.json"
+hash = "112df127ebf11e759068cd07cda76c6eed5922509a59d8eae08d860844d80276"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createcoasterseats/loot_table/blocks/lime_restrictor_seat.json"
+hash = "39d8a27680fd4cbca9531999dacc7d9709a53d069c46fb0be187df5f88451e3d"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createcoasterseats/loot_table/blocks/magenta_lapbar_seat.json"
+hash = "6fab86e004cf2d746b7cb511fffc71334e56c04acd0a025434c3f8d9f93b0c63"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createcoasterseats/loot_table/blocks/magenta_restrictor_seat.json"
+hash = "aafb1453e6ca1a82988b412c1237286dcf9b8a8b855d923fdb295e7163271467"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createcoasterseats/loot_table/blocks/orange_lapbar_seat.json"
+hash = "42de140b0c31eaf6518d818d00da6f12d87308e8414d13e1321ebcbd3ce79e09"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createcoasterseats/loot_table/blocks/orange_restrictor_seat.json"
+hash = "95f27b02d161d1ecd767fffb1cc538622f428e15f851376ec85d0b2232bdb498"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createcoasterseats/loot_table/blocks/pink_lapbar_seat.json"
+hash = "90ded1c6df549ea931df6faa940c6e58b464031fdcfe2adc7a1fc1630d6abf92"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createcoasterseats/loot_table/blocks/pink_restrictor_seat.json"
+hash = "93916e2768a31d90a38b9d15783b2e7672f09fcd09d129b3668cd9a8906e7ca7"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createcoasterseats/loot_table/blocks/purple_lapbar_seat.json"
+hash = "42d09bef459c7430290cab1806518987deb5f04ec7d45b24a27579d53dcb6f3e"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createcoasterseats/loot_table/blocks/purple_restrictor_seat.json"
+hash = "6ffd2f6e53d9baa802f1a7e0ebde979b17bcaa372592be84d92097f235aef2f6"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createcoasterseats/loot_table/blocks/red_lapbar_seat.json"
+hash = "e3e4074ef33b39d1c4a42428179360bff0449e2b30d53ef2947a7ddd96d82a0c"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createcoasterseats/loot_table/blocks/red_restrictor_seat.json"
+hash = "09074d48e7bf4110b878be23caab37cfe90de58709594e84977dd745bd71c11b"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createcoasterseats/loot_table/blocks/white_lapbar_seat.json"
+hash = "d720f5b972e3e5de3430a5eab0ccd8b0d09a8d5e6a31349a4e8441627192c9c7"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createcoasterseats/loot_table/blocks/white_restrictor_seat.json"
+hash = "d255971be7d6c59487e5c3d5fc2d2f3faa22c3a405723a930be2563806e807b3"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createcoasterseats/loot_table/blocks/yellow_lapbar_seat.json"
+hash = "c8b05d04aaf7a15b9eafb6102e79fbdb1858ef890d768861820f08808b086dc5"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createcoasterseats/loot_table/blocks/yellow_restrictor_seat.json"
+hash = "94257dad27e17a719baa97d6391f11be1f8c04eca14c1e44abfa09e8e0ffe6e6"
+
+[[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/createdeco/recipe/placard.json"
 hash = "ddc3d0dd56b604d914bedbf2f985a2f0b5f7374eac79aad668a8a2cfd7cc154c"
 
@@ -3339,6 +3471,18 @@ file = "config/paxi/datapacks/create-galore-tweaks/data/northstar_aeronautics_co
 hash = "8c5bc952910af12e3f8385587fc0153eb862c6d9d84b6d041d446a2464a72953"
 
 [[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/productivebees/loot_table/blocks/crimson_bee_nest.json"
+hash = "0cfa5249d3533df27476cd369a480042c0e9eefd495054b43b0d615d4def9153"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/productivebees/loot_table/blocks/sugarbag_nest.json"
+hash = "d84274d36127c08d5af77d2e054522ae6800186390e7450d4a2962ba43a732a7"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/productivebees/loot_table/blocks/warped_bee_nest.json"
+hash = "fe27c80ae94e590bbc10177082ca358d69b6cf0ed5f634ceb7887f2782200d1b"
+
+[[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/productivebees/recipe/centrifuge/alloys/honeycomb_brass.json"
 hash = "d9ac63c0e1a0342bc38b649679d10dbb7f72a27a2b1cc040cf70525a431e55e0"
 
@@ -3708,7 +3852,7 @@ hash = "b226108772a5e85fd5181f68de4895511c304fcc5ecf295d2c8391cce88bf81a"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/pack.mcmeta"
-hash = "b5ea07d02f126c41b0605a0f87ea39872b4eb1e56606e368561e37dfcf15907a"
+hash = "9087233cb29440cbffe086d4fbccb557a2693d32f625fcc0a7cf4ffcff1870c6"
 
 [[files]]
 file = "config/paxi/optional/create-galore-with-elytra/data/betterend/loot_table/chests/end_village_bonus_loot.json"
