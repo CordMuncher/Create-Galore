@@ -1352,7 +1352,7 @@ hash = "160ce78a2f3c5102f4540fcc6b9c274fcdd40bdef0218eea2736e17eece1d16a"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/survival/temperature.json"
-hash = "73fffdc824cb1cf7bd1d7460116aa7fe0c395cdc92dbfe448869e2409fda6049"
+hash = "69c135e3f737151c8920fc24ce5d7abd972f0f74c5e60d55e81626b8bdc0492c"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/survival/temperature_create.json"
@@ -2781,8 +2781,8 @@ hash = "db683b65dc15a03dd6de2d34d5dc6ad0e3490744ced513a8cc584784ee9d3d8b"
 metafile = true
 
 [[files]]
-file = "mods/create-galore-bridge-1.9.0.jar"
-hash = "ce4d22d0ff05c6d0e165bd081e3547133d0bc5600e4a667814c39f729c0afff0"
+file = "mods/create-galore-bridge-1.10.0.jar"
+hash = "9e9de83e17058454e14062f4caa53497d3518d43d1b733162319a457f000b5fa"
 
 [[files]]
 file = "mods/create-galore-lagwatch-1.0.0.jar"
