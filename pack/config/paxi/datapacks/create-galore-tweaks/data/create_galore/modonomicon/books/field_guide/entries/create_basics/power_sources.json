@@ -26,7 +26,7 @@
     {
       "type": "modonomicon:text",
       "title": "Power Sources",
-      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- [#](FFFFFF)\ue104[#]() Every network needs at least one **source** of rotation.\n- Small and simple: Hand Crank, Water Wheel, Windmill (with **Windcatchers**, not Create sails).\n- Big jobs: **Large Water Wheel** and **Steam Engine**.\n- [#](FFFFFF)\ue10a[#]() Blaze burners and engines make pollution here."
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- [#](FFFFFF)\ue104[#]() Every network needs at least one **source** of rotation.\n- Small and simple: Hand Crank, Water Wheel, Windmill.\n- Big jobs: **Large Water Wheel** and **Steam Engine**.\n- [#](FFFFFF)\ue10a[#]() Blaze burners and engines make pollution here."
     },
     {
       "type": "modonomicon:text",
@@ -63,7 +63,7 @@
         "item": "create:windmill_bearing"
       },
       "title": "Windmill Bearing",
-      "text": "Spins the structure in front of it. Here only [#](2E5AAC)[Windcatchers](entry://flight/wind_sailing)[#]() drive it; Create sails and wool are decoration. Needs at least 8, open air and [#](7A3C9A)[glue](entry://glossary/super_glue)[#](). It turns at wind speed; more Windcatchers add [#](2E5AAC)[capacity](entry://create_basics/stress)[#](), up to 8,192 SU."
+      "text": "Spins a structure of sails. At least 8 sail blocks are needed, and more sails spin it faster. Needs open air and [#](7A3C9A)[glue](entry://glossary/super_glue)[#]() to hold the structure."
     },
     {
       "type": "modonomicon:spotlight",
@@ -71,15 +71,7 @@
         "item": "create:white_sail"
       },
       "title": "Windmill Sail",
-      "text": "Place on a sail frame or any block. Right-click with dye to colour, shears turn it back to a frame. On a windmill bearing it is decoration here."
-    },
-    {
-      "type": "modonomicon:spotlight",
-      "item": {
-        "item": "aeronauticswinds:windcatcher_canvas"
-      },
-      "title": "Windcatcher",
-      "text": "The sail that powers windmills here: 2 from sticks, string and white wool. Place them on the bearing's structure like sails, broad side into the wind. Wind is faster over open ocean and up high. See [#](2E5AAC)[Sailing and Wind](entry://flight/wind_sailing)[#]()."
+      "text": "Place on a sail frame or any block. Right-click with dye to colour, shears turn it back to a frame."
     },
     {
       "type": "modonomicon:text",
