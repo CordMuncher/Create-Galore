@@ -36,6 +36,11 @@
       "text": "Summer crop. Out of season it grows only slowly. A glass roof keeps a patch growing at full speed."
     },
     {
+      "type": "modonomicon:text",
+      "title": "Out of season",
+      "text": "[#](FFFFFF)\ue101[#]() **Watch out:** bone meal on an out-of-season crop is used up but works only about 1 time in 6. Save it for crops in season.\\\n\\\nNaturalist snails nearby slow crops down; keep them out of the field."
+    },
+    {
       "type": "modonomicon:spotlight",
       "item": {
         "item": "farmersdelight:cabbage_seeds"
