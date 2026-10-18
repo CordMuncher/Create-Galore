@@ -315,6 +315,10 @@ file = "config/paxi/datapacks/create-galore-tweaks/data/animalhusbandry/recipe/a
 hash = "c7ef193c56bca6171ccda9409910befcba264dcafbc72e5574fbdc82e49c5a05"
 
 [[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/animalhusbandry/recipe/fried_egg.json"
+hash = "5a53cb8ab11ab44748e02a24fad1293c2048f4406f92be0e5e1ba0015041193f"
+
+[[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/aquamirae/worldgen/structure_set/shipwreck.json"
 hash = "67f9536a0965ee554ffdf061c23abb03358f6bd12b099c97f4d83dbab7578c4b"
 
@@ -345,6 +349,10 @@ hash = "78cb86d3a0f458c952b3d6a90fc5b725a074b196d7c49e25839886a2e5743085"
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/c/tags/item/foods/cherry.json"
 hash = "2b3e1c99a47460b1df37a021bbe923cf6abbdebd5062f2fe591f4192fac2794b"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/c/tags/item/foods/cooked_egg.json"
+hash = "509333e328a5eaf071c38442322ce44eaf5439af2d6fbae0f9bb7f9bc4e9da48"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/c/tags/item/foods/durian.json"
@@ -864,7 +872,7 @@ hash = "18244ee31b511d1fc4128607d3a9f295e84bc33f764d24297ab9156c1bf40ab3"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/food/animals.json"
-hash = "028f20d599db93eeb3f2ae6196d96a0b5d603bb50543569e481d1b31eb935739"
+hash = "0207bb4566d8314aa0b4ab386115d687c8b0c56252875f7ab07fe182fd55119d"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/food/bees.json"
@@ -1360,7 +1368,7 @@ hash = "07046df2776fb592871be47f24af6ea03edd2e77800ebf513f37df4b5b7c6362"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/survival/seasons_crops.json"
-hash = "160ce78a2f3c5102f4540fcc6b9c274fcdd40bdef0218eea2736e17eece1d16a"
+hash = "a1c1ec83873d755ca49634bd08c9fc280a1f35c675d40e1abd2d72811faaf77c"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/survival/temperature.json"
@@ -1376,7 +1384,7 @@ hash = "9684b75cf1a6cbf47c5b1070bb87578380dd29d6058ad38085b9211433d87c0c"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/survival/thirst.json"
-hash = "5800fe7b1a4d9f20c156145541bb026d07eb19cd9f0ff15595a0e3a174e303e9"
+hash = "5168d83eb9517fe64c982bfbfed5a5141a93e9654c786c1efec213165d2cd154"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/transport/coasters.json"
@@ -2043,6 +2051,18 @@ file = "config/paxi/datapacks/create-galore-tweaks/data/mynethersdelight/recipe/
 hash = "52e62729520a02784cf166c5510ee009ea89eea1c971851ac4aabd6954fbe397"
 
 [[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/naturalist/recipe/cooked_egg.json"
+hash = "a289f382a15e69a152c95c2a5c4274f9f83ca0c64ba8476ce54aa369c760fbab"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/naturalist/recipe/cooked_egg_from_campfire_cooking.json"
+hash = "d1aa8c5188fbf2b079062f9e63907528abf68e62704b5ee8e661e90190fc0aa7"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/naturalist/recipe/cooked_egg_from_smoking.json"
+hash = "bf19dbd230c34f8921ced1c95ae2fb8569c324922920d31d1d33054d3aa2309c"
+
+[[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/naturalist/tags/worldgen/biome/has_anglerfish.json"
 hash = "78211ca3f4a5f24669bc16b1132aa4dcd29c3d053564742f1728da77430c372b"
 
@@ -2449,7 +2469,7 @@ hash = "aee573eb310e2f13399f1fdcf1d904a31e148f7f112af6406f2ade4a94dc62cf"
 
 [[files]]
 file = "config/thirst/item_settings.toml"
-hash = "1f953e8c3b4822db477b0fdfe411c9adc5a2a2df56946f71ba5631f1c9ccf655"
+hash = "707aecb3bf91e7671fd0fdcc549c91285c20fd1b2c516a33594b22407d11fa27"
 
 [[files]]
 file = "config/towns_and_towers/structure_rarity_new.json5"
