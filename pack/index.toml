@@ -1216,7 +1216,7 @@ hash = "c845dd3486bb8a4b908e26cb9997851c7526c6a9dda6574674477f9b404c0e5f"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/glossary/bearing.json"
-hash = "10671a285725f9f0449ad865dc651ecaf5b6fd2ed6606ced2c2e8a7ecf215f4a"
+hash = "242e6a664ab3972cd8d2cf43900f6f1e1cb925334e6d3b948ba6c11fbd85a456"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/glossary/body_temperature.json"
@@ -1448,7 +1448,7 @@ hash = "49a52f4b27376f29500b6937021f4bbf631174173e2218dfc558ffba9e5f451e"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/industry/electricity.json"
-hash = "7a3910dc40dc2b2c80d90a575d3b034a2d0aff20eabcad1f65cef3694618e926"
+hash = "2539ef7b13acf93317821ec28b64a55532f8bd2890d2b2be77aa10391196b148"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/industry/enchanting.json"
@@ -1476,7 +1476,7 @@ hash = "37c8258119eb6f42ca6e85cef3b58c116f19325588d5804df1578b29482b9eef"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/industry/tfmg_engines.json"
-hash = "f50aa74bb836039f24ce916cc2a8c6cf445090625c46c2bba79335498e8d30fb"
+hash = "51a44606340c1ddc9fde62edace6a170e10ee1c1d1932a232527a8617d115b57"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/industry/tfmg_oil.json"
@@ -4401,8 +4401,8 @@ hash = "db683b65dc15a03dd6de2d34d5dc6ad0e3490744ced513a8cc584784ee9d3d8b"
 metafile = true
 
 [[files]]
-file = "mods/create-galore-bridge-1.13.0.jar"
-hash = "dfd770842de8850e465cc7ea4b81037a9b549b5d584a44991738d091e20c4538"
+file = "mods/create-galore-bridge-1.14.0.jar"
+hash = "6c11ae240235a116db17d83203ca55858976d08dfadac3ef6ab3b41914aabf36"
 
 [[files]]
 file = "mods/create-galore-lagwatch-1.0.0.jar"

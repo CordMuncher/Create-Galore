@@ -111,7 +111,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "The older single-block Accumulator still exists but its own tooltip says it is deprecated.\\\n\\\nTo carry FE storage on a moving contraption, the [Portable Energy Interface](item://createaddition:portable_energy_interface) swaps FE with a stationary one as it passes."
+      "text": "This version of Crafts & Additions has only the multiblock Accumulator; the older single-block one was removed.\\\n\\\nTo carry FE storage on a moving contraption, the [Portable Energy Interface](item://createaddition:portable_energy_interface) swaps FE with a stationary one as it passes."
     }
   ]
 }
