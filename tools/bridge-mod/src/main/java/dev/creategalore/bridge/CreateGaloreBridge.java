@@ -45,6 +45,7 @@ public final class CreateGaloreBridge {
         modBus.addListener(CreateGaloreBridge::addToTabs);
         modBus.addListener((FMLCommonSetupEvent event) -> KnifeUnify.resolve());
         GuideCleanup.register();
+        NatureHeal.register();
         if (FMLEnvironment.dist.isClient()) {
             BridgeClient.init(modBus);
         }

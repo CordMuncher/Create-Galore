@@ -17,6 +17,8 @@ public final class BridgeClient {
     }
 
     public static void init(IEventBus modBus) {
+        // Mods are built before Minecraft reads options.txt, so the file can still be fixed here.
+        KeyRebindMigration.run();
         modBus.addListener(BridgeClient::setup);
     }
 
