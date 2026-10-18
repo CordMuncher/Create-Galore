@@ -18,6 +18,14 @@ file = "config/alexscaves-general.toml"
 hash = "4b054bf6173fe8934404ca02ef3cf4f5434aa47d315a0b4a7ec859ecd4595244"
 
 [[files]]
+file = "config/alexscaves_biome_generation/forlorn_hollows.json"
+hash = "0386e67767266b649719ad88c75f9c3459640cb68812163112ccd0711d3ae60c"
+
+[[files]]
+file = "config/alexscaves_biome_generation/magnetic_caves.json"
+hash = "ed4b3ef8f8398fe0a9de30190df345351c7987d7365412c75e5c22cefd7d8f68"
+
+[[files]]
 file = "config/artifacts/items.toml"
 hash = "1867db2a5958350522416c4989199e28e97b28ed4fe4d8f651b34cb4cc79b58d"
 
@@ -1036,7 +1044,7 @@ hash = "df1a9597136bcacdcfaaeda50757b3fe30eb326005a086dc0e2c0fd59cc97726"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/exploration/alexs_caves.json"
-hash = "49528498ab6d118e9c224ac054339949b4c3be9ffaf53086c0af9f565ec4c6ae"
+hash = "3e5889889681017f402277efe8ceaf7ca7e988905d58d58882336104370be650"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/exploration/bosses.json"

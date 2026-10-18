@@ -33,6 +33,16 @@
       "text": "The six biomes:\n\n- **Magnetic Caves**\n- **Primordial Caves**: dinosaurs, minus the rideable Subterranodon\n- **Toxic Caves**: acid and uranium\n- **Abyssal Chasm**: a deep water trench\n- **Forlorn Hollows**\n- **Candy Cavity**"
     },
     {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Where they are.** Five of the six lie deep under land far from the sea: Primordial Caves under fairly inland ground, and Magnetic Caves, Toxic Caves, Forlorn Hollows and Candy Cavity under the most inland ground of all. The Abyssal Chasm lies under deep ocean."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "None starts within 400 blocks of world spawn (Toxic Caves and Forlorn Hollows: 650). Expect the nearest of each to be a few thousand blocks away, so a Cave Biome Map is worth crafting before you set out."
+    },
+    {
       "type": "modonomicon:spotlight",
       "item": {
         "item": "alexscaves:spelunkery_table"
