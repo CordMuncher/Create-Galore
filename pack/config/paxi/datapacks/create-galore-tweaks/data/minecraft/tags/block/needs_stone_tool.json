@@ -1,0 +1,33 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "alloyed:exposed_bronze_pillar",
+      "required": false
+    },
+    {
+      "id": "alloyed:weathered_bronze_pillar",
+      "required": false
+    },
+    {
+      "id": "alloyed:oxidized_bronze_pillar",
+      "required": false
+    },
+    {
+      "id": "alloyed:waxed_bronze_pillar",
+      "required": false
+    },
+    {
+      "id": "alloyed:waxed_exposed_bronze_pillar",
+      "required": false
+    },
+    {
+      "id": "alloyed:waxed_weathered_bronze_pillar",
+      "required": false
+    },
+    {
+      "id": "alloyed:waxed_oxidized_bronze_pillar",
+      "required": false
+    }
+  ]
+}

@@ -1903,6 +1903,14 @@ file = "config/paxi/datapacks/create-galore-tweaks/data/irons_spellbooks/recipe/
 hash = "cbb7a4cffecc98c810aa26adaac2c70ced9412dcb70c1aa76423c5196b109c2f"
 
 [[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/minecraft/tags/block/mineable/pickaxe.json"
+hash = "04bdb974492dbc139aef62f2cec014d53484efc8a8674147b9f1f79dbd7fa348"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/minecraft/tags/block/needs_stone_tool.json"
+hash = "34bdba7afe813820bb63f1bc270315c9bd30abdfbcf75631faacb74fe55a6e30"
+
+[[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/minecraft/tags/function/load.json"
 hash = "a72297eb2fdfe5642d95f970c5feb64346ae168624bcdc47396cb126bcd186cb"
 

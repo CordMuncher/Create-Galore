@@ -1,0 +1,133 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "createbigcannons:mortar_stone",
+      "required": false
+    },
+    {
+      "id": "createbigcannons:mortar_stone_projectile",
+      "required": false
+    },
+    {
+      "id": "createpropulsion:solid_fuel_thruster",
+      "required": false
+    },
+    {
+      "id": "createpropulsion:platinum_casing",
+      "required": false
+    },
+    {
+      "id": "createpropulsion:cable_relay",
+      "required": false
+    },
+    {
+      "id": "trainutilities:ch_platform_block",
+      "required": false
+    },
+    {
+      "id": "northstar:mercury_shelf_fungus_block",
+      "required": false
+    },
+    {
+      "id": "hybrid_aquatic:bone_fence",
+      "required": false
+    },
+    {
+      "id": "cnbridge:dimensional_drive",
+      "required": false
+    },
+    {
+      "id": "cnbridge:telemetry_reader",
+      "required": false
+    },
+    {
+      "id": "cnbridge:altitude_sensor",
+      "required": false
+    },
+    {
+      "id": "cnbridge:gyroscope",
+      "required": false
+    },
+    {
+      "id": "cnbridge:thruster",
+      "required": false
+    },
+    {
+      "id": "create_wizardry:channeler",
+      "required": false
+    },
+    {
+      "id": "create_wizardry:blaze_caster",
+      "required": false
+    },
+    {
+      "id": "create_wizardry:arcane_casing",
+      "required": false
+    },
+    {
+      "id": "alloyed:exposed_bronze_pillar",
+      "required": false
+    },
+    {
+      "id": "alloyed:weathered_bronze_pillar",
+      "required": false
+    },
+    {
+      "id": "alloyed:oxidized_bronze_pillar",
+      "required": false
+    },
+    {
+      "id": "alloyed:waxed_bronze_pillar",
+      "required": false
+    },
+    {
+      "id": "alloyed:waxed_exposed_bronze_pillar",
+      "required": false
+    },
+    {
+      "id": "alloyed:waxed_weathered_bronze_pillar",
+      "required": false
+    },
+    {
+      "id": "alloyed:waxed_oxidized_bronze_pillar",
+      "required": false
+    },
+    {
+      "id": "create_flight_control:attitude_hold",
+      "required": false
+    },
+    {
+      "id": "create_flight_control:mouse_flight_controller",
+      "required": false
+    },
+    {
+      "id": "create_flight_control:altitude_hold",
+      "required": false
+    },
+    {
+      "id": "create_flight_control:attitude_display",
+      "required": false
+    },
+    {
+      "id": "create_flight_control:hud_projector",
+      "required": false
+    },
+    {
+      "id": "create_flight_control:forward_indicator",
+      "required": false
+    },
+    {
+      "id": "create_flight_control:velocity_coupler",
+      "required": false
+    },
+    {
+      "id": "create_flight_control:distance_coupler",
+      "required": false
+    },
+    {
+      "id": "create_flight_control:angular_velocity_coupler",
+      "required": false
+    }
+  ]
+}
