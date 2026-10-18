@@ -41,7 +41,7 @@ install-server.bat C:\CreateGaloreServer        (Windows)
 ./install-server.sh ~/CreateGaloreServer        (Linux / macOS)
 ```
 
-The server gets 186 mods, the pack's Create Galore Bridge and Lag Watch, and Twilight Forest. The 42 client-only mods (Sodium, Iris, Distant Horizons, map add-ons, the ambiance layer and so on) are skipped automatically. Players still install the full `.mrpack`. Far terrain for Distant Horizons is sent from the server by Chunksmith, so Distant Horizons itself stays off the server.
+The server gets 185 mods, the pack's Create Galore Bridge and Lag Watch, and Twilight Forest. The 42 client-only mods (Sodium, Iris, Distant Horizons, map add-ons, the ambiance layer and so on) are skipped automatically. Players still install the full `.mrpack`. Far terrain for Distant Horizons is sent from the server by Chunksmith, so Distant Horizons itself stays off the server.
 
 The server opens a small window with a live memory graph and the player list, and warns in chat when TPS stays under 15, recording a spark profile you can open later. See [Lag alerts and profiles](docs/server-setup.md#lag-alerts-and-profiles).
 
