@@ -1,0 +1,125 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "createcafe:coffee_crop",
+      "required": false
+    },
+    {
+      "id": "createcafe:cassava_crop",
+      "required": false
+    },
+    {
+      "id": "aeronauticswinds:wild_cotton",
+      "required": false
+    },
+    {
+      "id": "garnished:almond_sapling",
+      "required": false
+    },
+    {
+      "id": "garnished:cashew_sapling",
+      "required": false
+    },
+    {
+      "id": "garnished:pistachio_sapling",
+      "required": false
+    },
+    {
+      "id": "garnished:chestnut_sapling",
+      "required": false
+    },
+    {
+      "id": "garnished:hazelnut_sapling",
+      "required": false
+    },
+    {
+      "id": "garnished:macadamia_sapling",
+      "required": false
+    },
+    {
+      "id": "garnished:peanut_sapling",
+      "required": false
+    },
+    {
+      "id": "garnished:pecan_sapling",
+      "required": false
+    },
+    {
+      "id": "garnished:walnut_sapling",
+      "required": false
+    },
+    {
+      "id": "garnished:nut_sapling",
+      "required": false
+    },
+    {
+      "id": "berries_and_cherries:strawberry_bush_sapling",
+      "required": false
+    },
+    {
+      "id": "berries_and_cherries:strawberry_bush_none",
+      "required": false
+    },
+    {
+      "id": "berries_and_cherries:blueberry_bush_sapling",
+      "required": false
+    },
+    {
+      "id": "berries_and_cherries:blueberry_bush_bottom",
+      "required": false
+    },
+    {
+      "id": "berries_and_cherries:none_blueberry_bush_bottom",
+      "required": false
+    },
+    {
+      "id": "berries_and_cherries:raspbery_bush_sapling",
+      "required": false
+    },
+    {
+      "id": "berries_and_cherries:raspberrybush",
+      "required": false
+    },
+    {
+      "id": "berries_and_cherries:raspberrybushnone",
+      "required": false
+    },
+    {
+      "id": "berries_and_cherries:raspberrybushnonetop",
+      "required": false
+    },
+    {
+      "id": "berries_and_cherries:black_grape_tree_sapling",
+      "required": false
+    },
+    {
+      "id": "berries_and_cherries:black_grape_tree_bottom",
+      "required": false
+    },
+    {
+      "id": "berries_and_cherries:none_black_grape_tree_bottom",
+      "required": false
+    },
+    {
+      "id": "berries_and_cherries:green_grape_tree_sapling",
+      "required": false
+    },
+    {
+      "id": "berries_and_cherries:green_grape_tree_bottom",
+      "required": false
+    },
+    {
+      "id": "berries_and_cherries:none_green_grape_tree_bottom",
+      "required": false
+    },
+    {
+      "id": "berries_and_cherries:cherry_tree_sapling",
+      "required": false
+    },
+    {
+      "id": "berries_and_cherries:oak_leaves",
+      "required": false
+    }
+  ]
+}

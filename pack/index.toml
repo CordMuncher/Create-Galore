@@ -1332,7 +1332,7 @@ hash = "07046df2776fb592871be47f24af6ea03edd2e77800ebf513f37df4b5b7c6362"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/survival/seasons_crops.json"
-hash = "9240a06562cc1ef3506dc16b31e25e751c713e66a8a660f7379de06011c8a639"
+hash = "b1e775969f92bbac73bf6617d4db0a942bea58e2801f59ebe3dbf6b87d88d0c5"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/survival/temperature.json"
@@ -2197,6 +2197,30 @@ hash = "1cc8a2cbfe574a8914b98d339cb5fe14f64c2f6f9437752ed0a8e5178488b1a6"
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/revamped_shipwrecks/worldgen/structure_set/shipwreck.json"
 hash = "3fff74490c710f1918b72bf9375cd4469d6db629db06829abd85c3611fa3c981"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/sereneseasons/tags/block/autumn_crops.json"
+hash = "052b94f0e1d61f1db7ce8b4b114306edd30ebad7ab226dc69389a39bf334fc03"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/sereneseasons/tags/block/spring_crops.json"
+hash = "6accf42fa81a2ae2d43804aec28cf335952797d6ec0709448235e545815dedfd"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/sereneseasons/tags/block/summer_crops.json"
+hash = "86e150e6361fc5018f8af662dbd4e7fd5a6045363a3cdc85d13de1a8b5e64e0b"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/sereneseasons/tags/item/autumn_crops.json"
+hash = "bbeefa9575199809cdb987458fc6ed0b90e3705ed4af1af3783d915ab37f08f7"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/sereneseasons/tags/item/spring_crops.json"
+hash = "73b8b9a9d7bfc6586a50944c1a753f07d2ca9a28af3907dc95afec6b8dab2250"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/sereneseasons/tags/item/summer_crops.json"
+hash = "0f54851c17e949a2aa3f2f19c03919a6908b4caf64eff4282388fdcd850b1f62"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/terralith/worldgen/structure_set/underground.json"
