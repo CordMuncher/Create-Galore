@@ -2331,6 +2331,22 @@ file = "config/paxi/datapacks/create-galore-tweaks/data/thirst/recipe/compat/cre
 hash = "b81f5339abb9eadad01034f97afaead2e67f5a409db509a2508e6ff2180937a0"
 
 [[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/trainutilities/advancement/door_ingrediants.json"
+hash = "c52a4d6151e6928f7b62c9fc459ffcf64301caa86aa690afd79a0dbcde1fc7fb"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/trainutilities/advancement/doors.json"
+hash = "1d0b7393d271b887ebf1b3c9e3ed9e88ca039f40981ae2170005a39ec73d8ea7"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/trainutilities/advancement/incomplete_prototype_door.json"
+hash = "dab39cfd4c820c47415a60d35cf1dd5c5b5223e3f6af7880b84f52e08e465c7e"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/trainutilities/advancement/platform_block.json"
+hash = "e11638548d9f044456d122a96dba7f8e9308124b9bea7ba514c5a713ef56ccf7"
+
+[[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/pack.mcmeta"
 hash = "191a49e2b330886d52b375721ac6bfff45ea9990ed937ddb8d453e659c4b17f1"
 
@@ -2793,8 +2809,8 @@ hash = "db683b65dc15a03dd6de2d34d5dc6ad0e3490744ced513a8cc584784ee9d3d8b"
 metafile = true
 
 [[files]]
-file = "mods/create-galore-bridge-1.10.0.jar"
-hash = "9e9de83e17058454e14062f4caa53497d3518d43d1b733162319a457f000b5fa"
+file = "mods/create-galore-bridge-1.11.0.jar"
+hash = "40b264fc18d2e8163acee2729ecae72ad39e5bac21ee661bedf75f8a6fffa50b"
 
 [[files]]
 file = "mods/create-galore-lagwatch-1.0.0.jar"
