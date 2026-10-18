@@ -3,7 +3,7 @@
   "minVersion": "0.8",
   "package": "dev.creategalore.bridge.mixin",
   "compatibilityLevel": "JAVA_21",
-  "mixins": ["SmogEmittersMixin", "WindsWeatherEffectsMixin", "DimensionalDriveShipMixin", "HighSeasBoatLevelsMixin", "WorldGenRegionBiomeMixin"],
+  "mixins": ["TagEntryMissingElementMixin", "SmogEmittersMixin", "WindsWeatherEffectsMixin", "DimensionalDriveShipMixin", "HighSeasBoatLevelsMixin", "WorldGenRegionBiomeMixin"],
   "client": ["ItemPropertiesInvoker", "ModonomiconTitleWidthMixin", "JoinNoticeFilterMixin", "TenBitWindowMixin"],
   "injectors": { "defaultRequire": 0 }
 }
