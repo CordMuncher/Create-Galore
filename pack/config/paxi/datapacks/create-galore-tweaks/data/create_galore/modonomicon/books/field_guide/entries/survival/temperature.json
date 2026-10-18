@@ -41,7 +41,7 @@
     {
       "type": "modonomicon:text",
       "title": "Seasons",
-      "text": "The [#](2E5AAC)[season](entry://survival/seasons)[#]() moves every biome's temperature: Mid Summer adds the most heat, Mid Winter takes the most away.\\\n\\\nIn a temperate forest a summer noon is about 100 °F and a winter night about 40 °F, both just outside the comfortable 45 to 100 °F."
+      "text": "The [#](2E5AAC)[season](entry://survival/seasons)[#]() moves every biome's temperature: Mid Summer adds the most heat, Mid Winter takes the most away.\\\n\\\nOn temperate plains a Mid Summer noon is about 94 °F and a winter night about 40 °F. Comfortable is 45 to 100 °F."
     },
     {
       "type": "modonomicon:text",
@@ -52,6 +52,16 @@
       "type": "modonomicon:text",
       "title": "",
       "text": "Leather or fur armor slows the drift enough to get through it; iron armor does not. See [#](2E5AAC)[Insulation and Heaters](entry://survival/temperature_gear)[#]()."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Hot days",
+      "text": "Deserts and badlands at a summer noon are over 100 °F on their own (about 115 °F in Mid Summer). Stay in the shade or underground, keep water handy, or wear [#](2E5AAC)[heat insulation](entry://survival/temperature_gear)[#]() such as Hoglin armor."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "A lit furnace, smoker, blast furnace, campfire or fire is hot. Standing 2 to 3 blocks from one in the open adds about 20 °F, inside a room about 7 °F, so a summer kitchen is best indoors.\\\n\\\nYou slowly get used to the climate you live in, which widens the comfortable range by up to about 20 °F."
     },
     {
       "type": "modonomicon:text",
@@ -76,7 +86,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "[#](FFFFFF)\ue103[#]() **In depth.** Cold Sweat is gentler here: body temperature moves at 0.6 speed, you are comfortable down to about 45 °F instead of 50 °F, winter and the cold ends of spring and autumn are half as cold, and each hit does half a heart every 2 seconds instead of a full heart."
+      "text": "[#](FFFFFF)\ue103[#]() **In depth.** Cold Sweat is gentler here: body temperature moves at 0.6 speed, you are comfortable down to about 45 °F instead of 50 °F, seasons are half as strong (summer is half as hot, winter half as cold, and the ends of spring and autumn move half as far), and each hit does half a heart every 2 seconds instead of a full heart."
     },
     {
       "type": "modonomicon:text",

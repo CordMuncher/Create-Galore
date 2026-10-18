@@ -403,7 +403,8 @@
 		# • seasonStart/Mid/End: The temperature offset at the start, middle, and end of the season
 		# • *units: The unit of temperature (C, F, or MC)
 		# ⌄ 
-		Summer = [0.4, 0.6, 0.4]
-		Autumn = [0.2, 0, -0.1]
+		# Create Galore: both sides are half of Cold Sweat's defaults (Summer [0.4,0.6,0.4], Winter [-0.4,-0.6,-0.4], Autumn [0.2,0,-0.2], Spring [-0.2,0,0.2]). The default summer +0.6 put temperate plains over the heat limit at noon with nothing nearby.
+		Summer = [0.2, 0.3, 0.2]
+		Autumn = [0.1, 0, -0.1]
 		Winter = [-0.2, -0.3, -0.2]
-		Spring = [-0.1, 0, 0.2]
+		Spring = [-0.1, 0, 0.1]

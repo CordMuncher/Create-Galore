@@ -43,7 +43,7 @@ hash = "c8c05ff0d9853da43b24b7dfe45efc8e93b5e742e8dc561baf099c8debc91367"
 
 [[files]]
 file = "config/coldsweat/world.toml"
-hash = "07f026b236af9a108218f8ded59975a8491ec5248d314acebbc6684463f39260"
+hash = "f9c34026888b0fb152b1ecc8369be1d90d8f1ed7275c530b73cf0d57fe94fa29"
 
 [[files]]
 file = "config/coldsweat_altitude-server.toml"
@@ -1660,7 +1660,7 @@ hash = "a1c1ec83873d755ca49634bd08c9fc280a1f35c675d40e1abd2d72811faaf77c"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/survival/temperature.json"
-hash = "04f37b50a872337c68a542681e66d3eb454411d539616f4841b6cb8e50751981"
+hash = "93b574c9bad058c2cec9908f939b7e3a2ffba364e873f25382251b4aaeaefccb"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/survival/temperature_create.json"
@@ -3237,6 +3237,14 @@ hash = "1ef4b4f7bd40080f102504d422b3feef3486d49fb1804fa776ff368eeced9090"
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/mcwroofs/loot_table/blocks/white_roof_slab.json"
 hash = "f6e1aaae5caa6f433379ab943afd6a891a437a51a50134116b4360d8c15328de"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/minecraft/tags/block/mineable/pickaxe.json"
+hash = "04bdb974492dbc139aef62f2cec014d53484efc8a8674147b9f1f79dbd7fa348"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/minecraft/tags/block/needs_stone_tool.json"
+hash = "34bdba7afe813820bb63f1bc270315c9bd30abdfbcf75631faacb74fe55a6e30"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/minecraft/tags/function/load.json"
