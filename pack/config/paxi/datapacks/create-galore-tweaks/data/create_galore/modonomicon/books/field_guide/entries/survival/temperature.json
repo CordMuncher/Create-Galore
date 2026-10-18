@@ -56,7 +56,12 @@
     {
       "type": "modonomicon:text",
       "title": "Water and danger",
-      "text": "Getting wet cools you, and a netherite diving suit makes you immune to that. Heat and cold can both be lethal.\\\n\\\nYou cannot sleep while overheating or freezing.\\\n\\\nAfter you spawn or die you get Grace, a short immunity to temperature damage."
+      "text": "Getting wet cools you, and a netherite diving suit makes you immune to that. Rain only soaks you so far, even after a swim; under a roof you dry off, faster where it's warm. Heat and cold can both be lethal."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Sleep and Grace",
+      "text": "You cannot sleep while overheating or freezing.\\\n\\\nAfter you spawn or die you get Grace, a short immunity to temperature damage."
     },
     {
       "type": "modonomicon:text",
