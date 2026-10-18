@@ -6,7 +6,7 @@ A big, long-term Minecraft modpack built around the Create mod. Think "Minecraft
 
 | | |
 |---|---|
-| **Version** | 0.2.7 |
+| **Version** | 0.2.8 |
 | **Minecraft** | 1.21.1 |
 | **Loader** | NeoForge **21.1.262** (pinned, don't update it, see [Known issues](#known-issues)) |
 | **Mods** | 228 from Modrinth + the pack's own small Create Galore Bridge and Lag Watch + Twilight Forest added by hand, plus 4 shader packs and the Fresh Animations resource pack |
@@ -15,7 +15,7 @@ A big, long-term Minecraft modpack built around the Create mod. Think "Minecraft
 
 ## Install (players)
 
-1. Download `Create-Galore-0.2.7.mrpack` from the [latest release](https://github.com/emresahin0906-code/Create-Galore/releases/latest). The older `.mrpack` files in the repo's top folder are past versions; don't import those.
+1. Download `Create-Galore-0.2.8.mrpack` from the [latest release](https://github.com/emresahin0906-code/Create-Galore/releases/latest). The older `.mrpack` files in the repo's top folder are past versions; don't import those.
 2. Import it:
    - **Prism Launcher:** Add Instance → Import → pick the `.mrpack`.
    - **Modrinth App:** drag the `.mrpack` onto the window (or File → Import).
@@ -148,7 +148,7 @@ Nothing on the list comes from space, every prize can be found again, and nothin
 **Gentler where it should be, harsh where it should be.**
 - Cataclysm and Mowzie's bosses have 70% health and 75% damage. All their structures still spawn.
 - Hostile Skies airship raids are rarer (every 25 minutes instead of 15, 5% starting chance instead of 10%).
-- Cold Sweat runs at 0.75x speed and deals half the temperature damage.
+- Cold Sweat runs at 0.6x speed and deals half the temperature damage. You're comfortable down to about 45 °F (default 50 °F), and the seasons' cold side is halved: Mid Winter takes about 13 °F off instead of 27 °F, the start of Spring and end of Autumn about 4 °F instead of 9 °F (summer heat unchanged). On a temperate beach a bare player starts freezing a few minutes into a Mid Winter night, and one lit campfire a few blocks away is enough to stay warm. Snowy biomes still need warm clothes, and the altitude cold above y 192 still needs a closed cabin (0.2.8).
 - Thirst: you can drink straight from water by crouching and right-clicking it with both hands empty (Thirst Was Reclaimed has this off by default). Raw water still makes you sick, so bottles and boiling stay the real answer. Drinking rain also works: stand under open sky in the rain and look straight up, with anything in your hands.
 - Create: Smog pollution is left at full strength on purpose.
 - Structures are spread out so each find counts (0.2.0): about twice vanilla's density on the surface, three times vanilla underground (mineshafts keep their own rate) and under the sea, and the sky as dense as vanilla's surface. Every kind of structure gets an equal share, so a mod with ten kinds turns up five times as often as one with two; boss lairs and the dungeons with the best loot stay rarer. Before this the pack placed about 15 times vanilla's surface density. How each layer was decided: `docs/structure-thinning/`.
@@ -239,7 +239,7 @@ A set of sound and small-visual mods that make the world feel more alive without
 | Left out **Create: Northstar Chemistry** | 1.0.0 crashes on startup with Northstar 0.6.6. Add it back when it updates. |
 | Removed **Borderless Window** | It did nothing on NVIDIA: the driver still treated its window as exclusive fullscreen, and the NVIDIA present setting below keeps a 10-bit monitor at 10-bit with or without it. One less mod to suspect when something goes wrong. |
 | Pinned **Animal Husbandry 0.4.2** | 0.5.0 crashes dedicated servers. |
-| Pinned **Cold Sweat: Altitude 0.7.0** | 0.8.x crashes on join with the pack's Cold Sweat 2.4.3.1. |
+| **Cold Sweat 2.4.4 + Altitude 0.8.1** | Altitude 0.8.x crashed on join with Cold Sweat 2.4.3.1, so it was pinned to 0.7.0 until both updated together in 0.2.1. |
 
 ## Known issues
 
@@ -292,6 +292,7 @@ All tests ran headless in a cloud machine (4 cores, 16 GB RAM, no GPU), so speed
 | 0.2.4 tool fix on a dedicated server: Create Deep Seas 3.4 lists six Abyss blocks it never adds, so vanilla dropped `minecraft:mineable/pickaxe`, `mineable/axe`, `mineable/shovel`, `minecraft:logs` and about 15 tags built on them (no tool counted as the right tool, leaves decayed). With Bridge 1.7.4 the server log shows only those six entries skipped, and stone, sand, dirt and oak logs are back in their mineable tags | ✅ |
 | 0.2.6 iron knife merge on a dedicated server: a chest holding a Berries and Cherries Iron Knife (damage 7, custom name) loads it as the Farmer's Delight Iron Knife with damage and name kept; a dropped one turns into it too. A Crafter with a Farmer's Delight knife and cherries makes Pitted Cherries and gives the knife back one point more worn. No new tag errors in the server log | ✅ |
 | 0.2.7 name tags under shaders, full client on a dedicated server (Mesa software rendering, Photon doesn't compile there): a named villager in a closed oak room showed a black plate and no name with Bliss on Bridge 1.8.0 and with only Iris and Sodium installed; with Bridge 1.9.0 the name is readable on a faint plate with Bliss and with Complementary + Euphoria Patches, and white on its plate in daylight against a wall; the normal name stays hidden behind blocks | ✅ |
+| 0.2.8 cold retune on a dedicated server with one client, bare player on a beach at midnight: before, Early Spring 42 °F and Mid Winter 23 °F; after, Early Spring 45 °F and Mid Winter 39 °F with body temperature falling 0.25 a second (damage starts at −100). A lit campfire two blocks away lifts Mid Winter to 54 °F and warms the player back up. Open platform at y 200 at Mid Summer noon: −2 °F, body −18 in 10 s, so the altitude cold still needs a cabin. The updated `world.toml` replaces an existing server's generated one when `install-server.sh` is run again | ✅ |
 | Real FPS, shaders, Distant Horizons visuals, gameplay feel | ❌ Needs a real PC with a GPU |
 
 **Memory:** about 9.3 GB of process memory on the server and 8-9.6 GB on the client with an 8 GB heap. A laptop with 16 GB can play but shouldn't host and play at the same time. A garbage collector benchmark on the server (pack's G1 flags vs Java defaults, Generational ZGC and Shenandoah, plus a 6 GB run) is in [docs/java-flags.md](docs/java-flags.md).

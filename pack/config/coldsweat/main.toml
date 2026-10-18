@@ -4,7 +4,7 @@
 	Difficulty = "normal"
 	#─────────────────────────────────────────────────────────────────────────
 	# The current version of Cold Sweat. This is used by the auto-updater
-	Version = "2.4.3.1"
+	Version = "2.4.4"
 	#─────────────────────────────────────────────────────────────────────────
 	# Allows Cold Sweat's configs to be automatically updated with new additions & formatting changes
 	"Auto Update" = true
@@ -14,7 +14,7 @@
 	# Defines the minimum habitable temperature
 	# Default: 0.4
 	# Range: -Infinity ~ Infinity
-	"Minimum Habitable Temperature" = 0.4
+	"Minimum Habitable Temperature" = 0.3
 	#─────────────────────────────────────────────────────────────────────────
 	# Defines the maximum habitable temperature
 	# Default: 1.511111111111111
@@ -24,7 +24,7 @@
 	# Rate at which the player's body temperature changes (default: 1.0 (100%))
 	# Default: 1.0
 	# Range: 0.0 ~ Infinity
-	"Rate Multiplier" = 0.75
+	"Rate Multiplier" = 0.6
 	#─────────────────────────────────────────────────────────────────────────
 	# Damage dealt to the player when they are too hot or too cold
 	# Default: 2.0
