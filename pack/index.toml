@@ -1307,6 +1307,10 @@ file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomico
 hash = "6ff05d7b9f7822e5cc8c23732a7335f4f26d207f392694394731581e0b53f6a8"
 
 [[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/start_here/first_food.json"
+hash = "c49e5689940eb84fd6ba54a95c147cc4695a29af79f80b4f670fab87027dc51a"
+
+[[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/start_here/performance.json"
 hash = "2de77fc3a5bb0cfd6ef7322c70eeee8ab213b3112baee94f26a18c6f02390107"
 
