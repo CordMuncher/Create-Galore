@@ -41,7 +41,12 @@
     {
       "type": "modonomicon:text",
       "title": "Seasons",
-      "text": "The [#](2E5AAC)[season](entry://survival/seasons)[#]() moves every biome's temperature: Mid Summer adds the most heat, Mid Winter takes the most away.\\\n\\\nIn a temperate forest a summer noon is about 100 °F and a winter night about 20 °F, both outside the comfortable 50 to 95 °F."
+      "text": "The [#](2E5AAC)[season](entry://survival/seasons)[#]() moves every biome's temperature: Mid Summer adds the most heat, Mid Winter takes the most away.\\\n\\\nIn a temperate forest a summer noon is about 100 °F and a winter night about 40 °F, both just outside the comfortable 45 to 100 °F."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Cold nights",
+      "text": "Nights are the coldest part of the day. Bare-skinned on a temperate beach in Mid Winter you start freezing after a few minutes.\\\n\\\nOne lit campfire within a few blocks keeps you warm there. Snowy biomes and peaks still need [#](2E5AAC)[warm clothes](entry://survival/temperature_gear)[#]() or a Hearth."
     },
     {
       "type": "modonomicon:text",
@@ -61,7 +66,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "[#](FFFFFF)\ue103[#]() **In depth.** Cold Sweat is gentler here: body temperature moves at 0.75 speed, and each hit does half a heart every 2 seconds instead of a full heart."
+      "text": "[#](FFFFFF)\ue103[#]() **In depth.** Cold Sweat is gentler here: body temperature moves at 0.6 speed, you are comfortable down to about 45 °F instead of 50 °F, winter and the cold ends of spring and autumn are half as cold, and each hit does half a heart every 2 seconds instead of a full heart."
     },
     {
       "type": "modonomicon:text",

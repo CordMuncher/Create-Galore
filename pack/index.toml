@@ -39,7 +39,11 @@ hash = "f77a6bf4cb60e20b35898c593a3c639b2948cc8eb0803c5d2ac07d489366d48a"
 
 [[files]]
 file = "config/coldsweat/main.toml"
-hash = "fd2e5a6ded40aec007a9520b49f221682570c98bdedbe57dd84e081e263145a8"
+hash = "c8c05ff0d9853da43b24b7dfe45efc8e93b5e742e8dc561baf099c8debc91367"
+
+[[files]]
+file = "config/coldsweat/world.toml"
+hash = "a38f8033cb6b604df8535a4cd9329c2f21d319d1802610b7e911925e2fc48346"
 
 [[files]]
 file = "config/cr_aero_structures-client.toml"
@@ -1344,7 +1348,7 @@ hash = "b1e775969f92bbac73bf6617d4db0a942bea58e2801f59ebe3dbf6b87d88d0c5"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/survival/temperature.json"
-hash = "c036fab8f15389938a1f2e7e3112b1db3f3db8dc41e7ac3be4808766a7ffd5fa"
+hash = "73fffdc824cb1cf7bd1d7460116aa7fe0c395cdc92dbfe448869e2409fda6049"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/survival/temperature_create.json"
