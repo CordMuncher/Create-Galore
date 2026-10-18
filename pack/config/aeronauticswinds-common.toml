@@ -1,0 +1,7 @@
+# Create Galore: only the settings the pack changes. NeoForge fills in every other key with its default.
+
+[weather]
+	#Make rain, snow, and storm precipitation only fall directly beneath clouds and stop above cloud altitude.
+	#Off in Create Galore: the cloud positions drift separately on the server and on each client, so rain you could see
+	#did not count as rain on the server (no drinking rain, no filling cauldrons). Rain now follows the normal weather.
+	rainOnlyBeneathClouds = false
