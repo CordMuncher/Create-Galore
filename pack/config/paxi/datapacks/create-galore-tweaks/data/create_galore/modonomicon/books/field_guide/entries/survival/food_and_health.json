@@ -39,7 +39,7 @@
     {
       "type": "modonomicon:text",
       "title": "Related survival",
-      "text": "Thirst has its own bar: [#](2E5AAC)[Thirst](entry://survival/thirst)[#](). Seasons decide what you can grow: [#](2E5AAC)[Seasons](entry://survival/seasons)[#](). [#](2E5AAC)[Cold Sweat](entry://survival/temperature)[#]() and [#](2E5AAC)[Smog](entry://survival/pollution)[#]() add their own hazards. Early food by area: [#](2E5AAC)[Food in Your First Days](entry://food/first_food)[#]()."
+      "text": "Thirst has its own bar: [#](2E5AAC)[Thirst](entry://survival/thirst)[#](), and it never stops you healing. Seasons decide what you can grow: [#](2E5AAC)[Seasons](entry://survival/seasons)[#](). [#](2E5AAC)[Cold Sweat](entry://survival/temperature)[#]() and [#](2E5AAC)[Smog](entry://survival/pollution)[#]() add their own hazards. Early food by area: [#](2E5AAC)[Food in Your First Days](entry://food/first_food)[#]()."
     },
     {
       "type": "modonomicon:text",

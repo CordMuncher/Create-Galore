@@ -20,12 +20,17 @@
     {
       "type": "modonomicon:text",
       "title": "Thirst",
-      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- [#](FFFFFF)\ue107[#]() The thirst bar drains; with nothing to drink you die\n- **Dirty** water makes you sick: only Acceptable and Purified are safe\n- **Boil** water in a campfire or furnace to raise its purity\n- A pumped **Sand Filter** supplies a base automatically"
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- [#](FFFFFF)\ue107[#]() The thirst bar drains; with nothing to drink you die\n- **Dirty** water makes you sick: only Acceptable and Purified are safe\n- **Boil** water in a campfire or furnace to raise its purity\n- A pumped **Sand Filter** supplies a base\n- Healing ignores water"
     },
     {
       "type": "modonomicon:text",
       "title": "",
       "text": "Thirst Was Reclaimed adds a thirst bar beside hunger. It drains as you play, and with nothing to drink you eventually die of dehydration.\\\n\\\nThere is also a hidden buffer called **quenched**, like [#](7A3C9A)[saturation](entry://glossary/saturation)[#]() for drinks. A good drink fills it."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Water and health",
+      "text": "At **3 droplets or less** you can't sprint. At zero you lose half a heart every 2 seconds until you drink, and on Normal that can kill you.\\\n\\\nThirst doesn't touch healing. Health comes back from food and [#](7A3C9A)[saturation](entry://glossary/saturation)[#]() exactly as in vanilla, however low your water is, and healing doesn't use up water."
     },
     {
       "type": "modonomicon:text",
@@ -93,7 +98,7 @@
     {
       "type": "modonomicon:text",
       "title": "Cold Sweat",
-      "text": "[#](FFFFFF)\ue103[#]() **In depth.** Thirst and [#](2E5AAC)[Cold Sweat](entry://survival/temperature)[#]() work together. The [#](2E5AAC)[Waterskin](entry://survival/temperature_gear)[#]() carries a purity like a bottle, and a furnace or campfire purifies it the same way.\\\n\\\nWith Cold Sweat, thirst lost while healing follows your body temperature, not just the biome's."
+      "text": "[#](FFFFFF)\ue103[#]() **In depth.** Thirst and [#](2E5AAC)[Cold Sweat](entry://survival/temperature)[#]() work together. The [#](2E5AAC)[Waterskin](entry://survival/temperature_gear)[#]() carries a purity like a bottle, and a furnace or campfire purifies it the same way."
     },
     {
       "type": "modonomicon:text",
