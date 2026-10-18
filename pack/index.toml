@@ -1859,6 +1859,10 @@ file = "config/paxi/datapacks/create-galore-tweaks/data/create_ltab/loot_table/r
 hash = "9e67ae486a8ca3402c2067912f9ad7f9b441c51fa9fafb3faee70a9aab8eb877"
 
 [[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_ltab/tags/worldgen/structure/big_structures_plains.json"
+hash = "d1d88fefb870d5bd924e78fd8589b193b7105385a269c3cba6672ff3a6c24e3c"
+
+[[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_ltab/worldgen/structure_set/cave_ruins.json"
 hash = "01c5213dca67528b53ac02bb758bef37a832d450d88a7ce2c135e27ae6aa3117"
 
@@ -2413,6 +2417,22 @@ hash = "178e1fd4a09e5dd8587c9f15403c609e51d08581bf5b0ed1d155850e7a40a0a3"
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/dungeons_arise/loot_table/chests/mushroom_village/mushroom_village_weaponry.json"
 hash = "f56596de77ab588b5c35573f06501c4071f73f96d6105c196d2404554d50dcf6"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/dungeons_arise/tags/worldgen/structure/bandit_towers.json"
+hash = "8d399ae3f4bf071c53bb4026a447ca9420396b3eeb5aab0051961a7c7e4873a2"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/dungeons_arise/tags/worldgen/structure/explorer_maps/infested_temple.json"
+hash = "c704c7214ef147b674b870da1643fc8ab3a663812f7261b3e0668d33fde8dfc9"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/dungeons_arise/tags/worldgen/structure/foundry.json"
+hash = "100a1aea9a01649c675809fdd7201ab198183673133ba61a615b169311141580"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/dungeons_arise/tags/worldgen/structure/shiraz_palace.json"
+hash = "3ea6f2f23fb04142ceef074242d1381d65878be9666ef524051f32bfd5aeb078"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/abyssal_stone_brick_slab.json"
@@ -3263,6 +3283,14 @@ file = "config/paxi/datapacks/create-galore-tweaks/data/irons_spellbooks/recipe/
 hash = "cbb7a4cffecc98c810aa26adaac2c70ced9412dcb70c1aa76423c5196b109c2f"
 
 [[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/irons_spellbooks/tags/worldgen/structure/ancient_battleground.json"
+hash = "f3ac65b1bde1fa944bb89a7ccc603795b4addf74566b4ca9ba370a930ccb139c"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/irons_spellbooks/tags/worldgen/structure/impaled_icebreaker.json"
+hash = "b6783a87efc2ef6fc40318275389d22211fcefa74ec9c55d24d982520347b5a2"
+
+[[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/kaisyn/loot_table/village/village_birch_forest_house.json"
 hash = "3e661a9470b5f763ccc1f736272cbcb0e6ff009178ff77db4590daff0353f8e0"
 
@@ -3321,6 +3349,10 @@ hash = "a72297eb2fdfe5642d95f970c5feb64346ae168624bcdc47396cb126bcd186cb"
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/minecraft/tags/item/beacon_payment_items.json"
 hash = "38900f83968c27a80817b5431ba59c8d9de11993a8f6bc750f269108db2f0caa"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/minecraft/tags/worldgen/structure/buried_treasure.json"
+hash = "2950ae776d790f3d6e34147f5928f39189f4bc55691c8ce7697029e4c18e68b7"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/minecraft/worldgen/structure_set/ocean_ruins.json"
@@ -3585,6 +3617,10 @@ hash = "4981864091e465a249956cbac9780469646740ddac31373b052d84155b968a7e"
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/nova_structures/loot_table/pots/pot_piglins.json"
 hash = "b2e3a5022030f48fb0cb3d260518de3400e7faa156567095d5a799d758788664"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/nova_structures/tags/worldgen/structure/end_lighthouse.json"
+hash = "9f3dc5eefc395afeaacbecd77d556fff4471867608f5d2c23a9277fdd94f0d6f"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/productivebees/loot_table/blocks/crimson_bee_nest.json"
