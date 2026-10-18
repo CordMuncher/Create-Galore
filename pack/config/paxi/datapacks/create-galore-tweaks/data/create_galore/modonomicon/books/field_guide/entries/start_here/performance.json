@@ -53,7 +53,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Shaders are optional and can cut frame rate a lot on weaker machines. First world creation is also slow because of how many mods add world generation. This settles after the first load.\\\n\\\n**Fullscreen** is F11. Screenshot key: F2."
+      "text": "Shaders are optional and can cut frame rate a lot on weaker machines. First world creation is also slow because of how many mods add world generation. This settles after the first load.\\\n\\\nName tags are drawn after the shader, so they stay readable with every pack.\\\n\\\n**Fullscreen** is F11. Screenshot key: F2."
     },
     {
       "type": "modonomicon:text",
