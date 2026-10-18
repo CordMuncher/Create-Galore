@@ -1,0 +1,18 @@
+modLoader = "javafml"
+loaderVersion = "[4,)"
+license = "MIT"
+
+[[mods]]
+modId = "create_galore_datacheck"
+version = "1.0.0"
+displayName = "Create Galore Data Check"
+authors = "Create Galore"
+description = '''Pack test tool, not part of the pack. /datacheck writes datacheck/report.txt: recipes that can never be made because an ingredient (item or fluid) matches nothing, usually an empty tag, and blocks that drop nothing because their loot table is missing.'''
+displayTest = "IGNORE_ALL_VERSION"
+
+[[dependencies.create_galore_datacheck]]
+modId = "neoforge"
+type = "required"
+versionRange = "[21.1,)"
+ordering = "NONE"
+side = "BOTH"

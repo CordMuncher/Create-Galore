@@ -3,7 +3,7 @@
   "minVersion": "0.8",
   "package": "dev.creategalore.bridge.mixin",
   "compatibilityLevel": "JAVA_21",
-  "mixins": ["TagEntryMissingElementMixin", "SmogEmittersMixin", "WindsWeatherEffectsMixin", "DimensionalDriveShipMixin", "HighSeasBoatLevelsMixin", "WorldGenRegionBiomeMixin", "ItemStackKnifeMixin", "KnifeCraftingRemainderMixin", "RainSoakCapMixin"],
+  "mixins": ["TagEntryMissingElementMixin", "SmogEmittersMixin", "WindsWeatherEffectsMixin", "DimensionalDriveShipMixin", "HighSeasBoatLevelsMixin", "WorldGenRegionBiomeMixin", "ItemStackKnifeMixin", "KnifeCraftingRemainderMixin", "RainSoakCapMixin", "DupeFixShipCheckMixin", "FoodTickHealMixin"],
   "client": ["ItemPropertiesInvoker", "ModonomiconTitleWidthMixin", "JoinNoticeFilterMixin", "TenBitWindowMixin", "NameTagDeferMixin", "NameTagFlushMixin"],
   "injectors": { "defaultRequire": 0 }
 }
