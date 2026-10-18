@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:chest",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:loot_table",
+          "value": "dungeons_arise:chests/mushroom_house/mushroom_house_normal"
+        }
+      ]
+    }
+  ]
+}
