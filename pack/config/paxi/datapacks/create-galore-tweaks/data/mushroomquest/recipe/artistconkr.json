@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {"item": "mushroomquest:artist_conk"},
+    {"tag": "c:dyes"}
+  ],
+  "result": {"id": "minecraft:painting", "count": 1}
+}

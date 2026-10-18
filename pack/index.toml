@@ -259,6 +259,14 @@ file = "config/paxi/datapacks/create-galore-tweaks/data/aeronauticsdiscovery/wor
 hash = "a235fa7299dc084217683eda27a898afd62b054dc55df5050a5b475d8bc493bc"
 
 [[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/alexscaves/loot_table/blocks/radrock_brick_slab.json"
+hash = "d79422bf0077470a5b92373b8e3f3534a2605dafa0feefc3d89eabc11d5b6038"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/alexscaves/loot_table/blocks/radrock_slab.json"
+hash = "2e5cc8ab06607ec22b4ea0752b5e8e09ff154a0a78faa81f539e3b5f193dea90"
+
+[[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/alexscaves/loot_table/entities/hullbreaker.json"
 hash = "81818ccfcec6360dd809783dc88c4e4c4ed19d63355b7702d25aa91ae831e7ed"
 
@@ -277,6 +285,18 @@ hash = "ca45056dd158cddbe5e76b0b5dced65c19a8f6c57b4dca51106d7cb9d9037f3f"
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/alexscaves/recipe/spelunkie.json"
 hash = "2398a07ae2edaf3704b6455da58b26a333edc6d9b8c51257b92d87d679ca2c9c"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/alloyed/loot_table/blocks/bronze_encased_cogwheel.json"
+hash = "f88e3e45e65313bca69fe167d6c895dcba30ca6b2c2c8710e1186964ef69495b"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/alloyed/loot_table/blocks/bronze_encased_large_cogwheel.json"
+hash = "c80f78e39de74b1502e96a9980545bb7122d633ffd128ff3ae99090bd944ecc6"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/alloyed/loot_table/blocks/bronze_encased_shaft.json"
+hash = "552744bd78985fe00fce0b7b8b61832ba18b41874dfab8877055675bcf2bc9b8"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/alloyed/recipe/crafting/steel_block_from_compacting.json"
@@ -311,8 +331,24 @@ file = "config/paxi/datapacks/create-galore-tweaks/data/alloyed/recipe/pressing/
 hash = "9e7763981dd64b9195c77ece7a070cbe77816b746d1eba55033c6cad8a7f0035"
 
 [[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/animalhusbandry/loot_table/blocks/brushing_post.json"
+hash = "c3b8abcca2444e9c02ad5cbec889979e620b402122ca20c5ecddade65174ef29"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/animalhusbandry/loot_table/blocks/chicken_nest.json"
+hash = "9c931a200661efe8a07ee9cf13c3336d9ad6f15905a5c7799f4943e91ac5c23e"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/animalhusbandry/loot_table/blocks/feeding_trough.json"
+hash = "fbc9f1056808c3f623cc89dca9e035e3ac85b7029350a143416209ff85977de6"
+
+[[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/animalhusbandry/recipe/animal_medicine.json"
 hash = "c7ef193c56bca6171ccda9409910befcba264dcafbc72e5574fbdc82e49c5a05"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/animalhusbandry/recipe/fried_egg.json"
+hash = "5a53cb8ab11ab44748e02a24fad1293c2048f4406f92be0e5e1ba0015041193f"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/aquamirae/worldgen/structure_set/shipwreck.json"
@@ -323,8 +359,248 @@ file = "config/paxi/datapacks/create-galore-tweaks/data/berries_and_cherries/rec
 hash = "5d03434fe1d31710c4d4e6c3759cc1cd2b30206e6cf0b55f2836d075f010a45d"
 
 [[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/betterend/loot_table/blocks/azure_jadestone_bricks_slab.json"
+hash = "a7238462ebb75eb5fdf5921a1a611dfb53ab35ca463faf3ac4b482477780a4c2"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/betterend/loot_table/blocks/azure_jadestone_slab.json"
+hash = "5d7d10d8e072dcf2eb37f52932b879fb41f5eb7a35614675937a9ca216d3993c"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/betterend/loot_table/blocks/crystal_moss_cover.json"
+hash = "2a60b3a79ebdcbdf922f83469f8ae2d0a7567b1f4bd30c34ad6d1ea60fe24099"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/betterend/loot_table/blocks/dragon_bone_slab.json"
+hash = "dd0e14fd6b9013f891b85dee7a0f3b4459f06945ab55ace1d248d34d9638202e"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/betterend/loot_table/blocks/dragon_tree_hanging_sign.json"
+hash = "54472fe2ab1e444a0690783b17ee4a304c98a5c26e9c8a46d3aabd8178511850"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/betterend/loot_table/blocks/dragon_tree_slab.json"
+hash = "6a2f3bb10aac19a4a39abb750531f5c2376162ccf11779b57e802aef6b2ccb81"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/betterend/loot_table/blocks/dragon_tree_wall_hanging_sign.json"
+hash = "3efbe231c216434ad8f1b7ecbc2f854aae77b5ee6972afed685a7d47e1235ece"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/betterend/loot_table/blocks/end_lotus_hanging_sign.json"
+hash = "def5a07a4f00b1f1ed272a0ac2a6c3d4ea2e64f880707745a5dd0d029b22607a"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/betterend/loot_table/blocks/end_lotus_slab.json"
+hash = "34952d6036e45745891fced94879ff11c63bfdd778758f77d4cce46f327529ae"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/betterend/loot_table/blocks/end_lotus_wall_hanging_sign.json"
+hash = "8aae6c857fd69ba0da52ed3916e141336a417ff7131caf3889588c3bd9147173"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/betterend/loot_table/blocks/end_stone_brick_cracked_slab.json"
+hash = "07f39644caaf5e58072860d4b90520de2f85094b49f70e563297761b2e65dd23"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/betterend/loot_table/blocks/end_stone_brick_weathered_slab.json"
+hash = "330aed76d2c52f2dbd42f03382ee1fafd3f4ceac37052f60762c036ce5d24419"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/betterend/loot_table/blocks/end_stone_slab.json"
+hash = "482d672d7c1001188444415b385a2f7b24e9e8d1a6819720af2b72379eee198f"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/betterend/loot_table/blocks/flavolite_bricks_slab.json"
+hash = "c8c49b06f3790ce710bd83e1672e09ed727de2dd8b6ddd32775ad1b9334841f0"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/betterend/loot_table/blocks/flavolite_slab.json"
+hash = "9345e678181b87813bed72b991723f7a5fe296467c4c0c96039f0887b8672781"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/betterend/loot_table/blocks/helix_tree_hanging_sign.json"
+hash = "d21fd687529fcd753eeab83ca42e0839533fbaa0f8f5e817f6a2d6d417e051c3"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/betterend/loot_table/blocks/helix_tree_slab.json"
+hash = "6bb752480a081cf4af62e44889e4bbb81fc1ef8e4f3f2f3687235254c11bf288"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/betterend/loot_table/blocks/helix_tree_wall_hanging_sign.json"
+hash = "332db9c7f2b6ac37e54306411223636d060e6e0be91984de0caf751d141629f4"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/betterend/loot_table/blocks/jellyshroom_hanging_sign.json"
+hash = "af1474a70e9cebb2f2e05a9f0164b5f2a216d65cdc5a5c79a7253db7eb716d9f"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/betterend/loot_table/blocks/jellyshroom_slab.json"
+hash = "9ffcaaeb74e6e8f88e750ee8f24bd05c75a9fea9fc03501c17aefd6d1986c8b9"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/betterend/loot_table/blocks/jellyshroom_wall_hanging_sign.json"
+hash = "bb12ca3248a3c0b29cc06c34c3ea5b8fd089c6a8bb4d08279319886cbba81ea5"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/betterend/loot_table/blocks/lacugrove_hanging_sign.json"
+hash = "07a4cc061ec63e89a8f80f91788d77c3ca7847c43879cc5f8c96130d55562922"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/betterend/loot_table/blocks/lacugrove_slab.json"
+hash = "fa952bdf9af0073d1896ae0d7378566683f66f84cfe7639de3d30c6e5e27a10d"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/betterend/loot_table/blocks/lacugrove_wall_hanging_sign.json"
+hash = "9ff8142759253c319a26c4b4ba560c11a0a68a44693da5b56c7d24582223d2c4"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/betterend/loot_table/blocks/lucernia_hanging_sign.json"
+hash = "8aaf7dabd10bbd3e84ec904d30be2e5921b41e526a551cb7e2d1c32707e313f7"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/betterend/loot_table/blocks/lucernia_jellyshroom_hanging_sign.json"
+hash = "cf909a055e6458a07f24d8eaaa1b53af59392e91c7ade1247c44135e74c52afa"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/betterend/loot_table/blocks/lucernia_jellyshroom_wall_hanging_sign.json"
+hash = "c362a0ec9eb1130fa9fc56fee002b7c5fdf43d5ac444bd15a2eb8ffe54d2024a"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/betterend/loot_table/blocks/lucernia_slab.json"
+hash = "98c6b83c1f1132a39d508c6e289b94834ffdec5cdd52b277732023a1c9021f8e"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/betterend/loot_table/blocks/lucernia_wall_hanging_sign.json"
+hash = "96a16438c61e2edcd7062a93d5ae8241258c56d783fe1fc599d76a1566b1cea7"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/betterend/loot_table/blocks/mossy_glowshroom_hanging_sign.json"
+hash = "f81c76216506e136fa32503626493f938de473c843d33900c08e2aaa54765093"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/betterend/loot_table/blocks/mossy_glowshroom_slab.json"
+hash = "1338c3a0da1b6336b349df54abcbb17368a017ce978334e079e98f19b724d9ab"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/betterend/loot_table/blocks/mossy_glowshroom_wall_hanging_sign.json"
+hash = "976a46ff89be6dc9dccd620882d17633f652a0e505c55c3837e04873c9a4c450"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/betterend/loot_table/blocks/neon_cactus_slab.json"
+hash = "75b80cdda2d9f632b309cf6aeb7e4a40d46945f444f7ebf96295369f7095826b"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/betterend/loot_table/blocks/pythadendron_hanging_sign.json"
+hash = "e156050205319a874b6eadcc68ec86c878d1ea1acbf0d5c765a2104d83816e32"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/betterend/loot_table/blocks/pythadendron_slab.json"
+hash = "1b2c4298829c15a665827b7252d7ec73c2d346de3f1b41b7ee567f662bb3804f"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/betterend/loot_table/blocks/pythadendron_wall_hanging_sign.json"
+hash = "7e700cca9b2821ea73d394fe42ac7613378001eaed22bd83082451f759b162de"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/betterend/loot_table/blocks/sandy_jadestone_bricks_slab.json"
+hash = "22289dae9d529bd29c49022c6d34c7e2ee9a3b4291af837a975d285e79d25024"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/betterend/loot_table/blocks/sandy_jadestone_slab.json"
+hash = "f4c5a537c9a29c524c07a1add420275e77f79d335cf7d994f3b9909895ce3037"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/betterend/loot_table/blocks/smaragdant_crystal_bricks_slab.json"
+hash = "f340edbf76621f038f116942331651fd4bd60c1c0d6daf9dd097725ff513c156"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/betterend/loot_table/blocks/smaragdant_crystal_slab.json"
+hash = "c734269127dd51010263b1da5c757870b0ee06faa9a11df2fce9cfdc6745ac91"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/betterend/loot_table/blocks/sulphuric_rock_bricks_slab.json"
+hash = "e9e8597e53b03e933080dcd76f8845c8402e6f2dc53a33c701b129944717dd48"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/betterend/loot_table/blocks/sulphuric_rock_slab.json"
+hash = "92a5d9bf39de07763ec38762ef8a8bcdf3f1a32eed7e91da30810efdfc2a1e55"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/betterend/loot_table/blocks/tenanea_hanging_sign.json"
+hash = "8aa5ce02c8bec34401a4de5def459d23979fc5a4e5bcf82f47e1baa8a98b0259"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/betterend/loot_table/blocks/tenanea_slab.json"
+hash = "d36facd74dc6675e89a65d479f8f10551eda3666cee2a44a2dbad94527e473a3"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/betterend/loot_table/blocks/tenanea_wall_hanging_sign.json"
+hash = "ec349d685396841086304dc2800c81dd6582b093f6783547db1375d27c09ba46"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/betterend/loot_table/blocks/terminite_slab.json"
+hash = "dcb87ec8b6df468cae64f1639ef6ad7928939c325b6ffb9b58bf6f012e2cd047"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/betterend/loot_table/blocks/thallasium_slab.json"
+hash = "833c62c0b8c97a2fc731d444ab4f381ae4748d2b6c11003b66c86018d56b8d80"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/betterend/loot_table/blocks/umbralith_bricks_slab.json"
+hash = "a2dae63becbe508c304ffcbf3d0e3bd10a9643056a02bb420f148c122d6f0c46"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/betterend/loot_table/blocks/umbralith_slab.json"
+hash = "c37e906181f74d4bdec4cef482d16aa0d77e91d8e90bee96f5d3b5fdb38d3f8b"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/betterend/loot_table/blocks/umbrella_tree_hanging_sign.json"
+hash = "c34f7dc6120be5ea09fba1c2b0049e94668bc7b8704bb4dd7d522c96b0f132ae"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/betterend/loot_table/blocks/umbrella_tree_slab.json"
+hash = "f81838700ecab18a1b30b54ac10c4fad3c01c79f7631b9ea26b25ed0c45dd254"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/betterend/loot_table/blocks/umbrella_tree_wall_hanging_sign.json"
+hash = "cc7993f7fc9e237a1dedf07c33f21f7bd1a5f068688764b85f0fb565fb6d41c2"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/betterend/loot_table/blocks/violecite_bricks_slab.json"
+hash = "00b9bae5b21332cd836f5af18e6d419ebd0b1b83bccd2d5c21b566a0f376b350"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/betterend/loot_table/blocks/violecite_slab.json"
+hash = "b9e88440f3407feca0b489e54140326787d1dd8c886dfb0e26fef296518d5ef3"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/betterend/loot_table/blocks/virid_jadestone_bricks_slab.json"
+hash = "5de28eff97f58f1b2c7a40034b631a76e266228993a867376e1431c6a92a7f1a"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/betterend/loot_table/blocks/virid_jadestone_slab.json"
+hash = "900abf958334eb0ae8aaf883f49d7114356ad30acacd3a50e5862a1c5e934040"
+
+[[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/betterend/recipe/additional_netherite.json"
 hash = "ded8107f6aa0cb602517e1784c01b839dac7f5d38a1fb3ac74e380528bc280a4"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/betterend/recipe/blossom_berry_jelly.json"
+hash = "5d0695c2f3efdca53b877a3f5a6c3074881f39abdd1d25e8ed597bd1cf5a4f0f"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/betterend/recipe/shadow_berry_jelly.json"
+hash = "7e73eada95e1cc681cf7d98b6fb7e9d0466fffccada82def70352926b8205f5f"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/betterend/recipe/sweet_berry_jelly.json"
+hash = "293c82ed5ee04f00ae50f6ecd0713d54867591936a47d5ec14451c915812a31c"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/c/tags/item/bale.json"
+hash = "f88ff7148fe57d71459e36b549d7d7c76fb4f0da48582d183d3a82b2fcbead88"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/c/tags/item/dusts.json"
@@ -345,6 +621,10 @@ hash = "78cb86d3a0f458c952b3d6a90fc5b725a074b196d7c49e25839886a2e5743085"
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/c/tags/item/foods/cherry.json"
 hash = "2b3e1c99a47460b1df37a021bbe923cf6abbdebd5062f2fe591f4192fac2794b"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/c/tags/item/foods/cooked_egg.json"
+hash = "509333e328a5eaf071c38442322ce44eaf5439af2d6fbae0f9bb7f9bc4e9da48"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/c/tags/item/foods/durian.json"
@@ -411,8 +691,24 @@ file = "config/paxi/datapacks/create-galore-tweaks/data/c/tags/item/mushrooms/tr
 hash = "b052c95dad05646520aaec21a0c3598c16c803d9ddfb058a35d1d09415f56f6d"
 
 [[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/c/tags/item/planks.json"
+hash = "1129e0794565a4cba0e1ccd950948124e04438b10725bb628a8d8702f185fcc7"
+
+[[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/c/tags/item/storage_blocks/raw_lead.json"
 hash = "7e43e1991b1d99af8610042f670745d4855ae927948f205d32e93b2b5193c726"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/cataclysm/loot_table/blocks/obsidian_fence.json"
+hash = "3a8f27dfb5138f416126f4e421c7d8884df59e3cf977d7579143b80fd0a1c97f"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/cataclysm/loot_table/blocks/polished_sandstone.json"
+hash = "3fcab3ea71dceca41c030d1a22278f80aad92e1a5adea6e4a88f27ef66b91200"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/cataclysm/loot_table/blocks/stone_tile_slab.json"
+hash = "cc29a305f9ab8812ec9fe6857726238b0ad8fde2707e3403cb2194e13235b898"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/cnbridge/recipe/dimensional_drive.json"
@@ -864,7 +1160,7 @@ hash = "b8123200726b51c2c67a98dbfbe0ce27cec386df71cd34117fdcd594058b521e"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/food/animals.json"
-hash = "028f20d599db93eeb3f2ae6196d96a0b5d603bb50543569e481d1b31eb935739"
+hash = "0207bb4566d8314aa0b4ab386115d687c8b0c56252875f7ab07fe182fd55119d"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/food/bees.json"
@@ -888,7 +1184,7 @@ hash = "722f3bc3d52de487ab6200b88f40a87682cdbd43c953b812432956b0c209e583"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/food/farmers_delight_addons.json"
-hash = "33427ee835985a900fbeff95c9bacd2910714f8def5e16d3054ff8e75720afe5"
+hash = "c274cb3cece0d08f9e4559474cca458fc2ad3375165f6a1a7be7e1fe2f46d78a"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/food/first_food.json"
@@ -1360,7 +1656,7 @@ hash = "07046df2776fb592871be47f24af6ea03edd2e77800ebf513f37df4b5b7c6362"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/survival/seasons_crops.json"
-hash = "160ce78a2f3c5102f4540fcc6b9c274fcdd40bdef0218eea2736e17eece1d16a"
+hash = "a1c1ec83873d755ca49634bd08c9fc280a1f35c675d40e1abd2d72811faaf77c"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/survival/temperature.json"
@@ -1376,7 +1672,7 @@ hash = "9684b75cf1a6cbf47c5b1070bb87578380dd29d6058ad38085b9211433d87c0c"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/survival/thirst.json"
-hash = "5800fe7b1a4d9f20c156145541bb026d07eb19cd9f0ff15595a0e3a174e303e9"
+hash = "5168d83eb9517fe64c982bfbfed5a5141a93e9654c786c1efec213165d2cd154"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/transport/coasters.json"
@@ -1651,8 +1947,288 @@ file = "config/paxi/datapacks/create-galore-tweaks/data/createcafe/recipe/mixing
 hash = "3e1fa6fd25a5212d046f562b4168fd48bb8f072fe580b0fc1a202e227712c5e8"
 
 [[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createcoasterseats/loot_table/blocks/black_lapbar_seat.json"
+hash = "721d9448b10eabb88612e8cf4d4bcd5b322edd650817d214840e6539e52537f0"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createcoasterseats/loot_table/blocks/black_restrictor_seat.json"
+hash = "2d73231293b6882e26db8019d72f51e8ab8d8b08c2d714051fdd5897b9a51e0a"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createcoasterseats/loot_table/blocks/blue_lapbar_seat.json"
+hash = "b3dfb65876cb81e2f4efd5698ae6d3f613921f1026dcbf99e4a3b99c859188d6"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createcoasterseats/loot_table/blocks/blue_restrictor_seat.json"
+hash = "b75364aa84f471cfc388668bef4836584ba0ea38f6472920a38bd6079aa1732b"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createcoasterseats/loot_table/blocks/brown_lapbar_seat.json"
+hash = "1447d346e0f69862d45c84896e1bc0f47144a4ce89a38191d211bbcd42061718"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createcoasterseats/loot_table/blocks/brown_restrictor_seat.json"
+hash = "14ad03bde6aafdfbc347d2877c1a5b341d1c34c8dd9a0308afc7c9c07039db6b"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createcoasterseats/loot_table/blocks/cyan_lapbar_seat.json"
+hash = "0f4a899fa91ea14bfb4736b6c5cf77edc084d2658d84dad30789937c953aaad3"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createcoasterseats/loot_table/blocks/cyan_restrictor_seat.json"
+hash = "4803187687a0185646d9ea8df8c3e71af1163cd1ca7c235c7a25b39e9888603d"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createcoasterseats/loot_table/blocks/gray_lapbar_seat.json"
+hash = "6247ae584a5652413249e763aa0250d1a4de7fff4a789cc76d9ed04f3a58c95d"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createcoasterseats/loot_table/blocks/gray_restrictor_seat.json"
+hash = "4a22021c8ad576028e76ae28ed59e009f61138818c130003a777ab5f36ed9979"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createcoasterseats/loot_table/blocks/green_lapbar_seat.json"
+hash = "15697191666caad60f2ef7de88d3405af584cf86b0a1b57607d4a001b391ff56"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createcoasterseats/loot_table/blocks/green_restrictor_seat.json"
+hash = "523eaac25059ecb76d874057060fd1c400c802e32898a4433c95eead3b40380f"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createcoasterseats/loot_table/blocks/light_blue_lapbar_seat.json"
+hash = "9e7731f8e45b8d9089c54d05700391e2601214fddf46a4bf5e4235c8a8b85433"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createcoasterseats/loot_table/blocks/light_blue_restrictor_seat.json"
+hash = "6fc0a5d079076dd114658ceab427833059b9a03f34d9580070ba7f023f6e7083"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createcoasterseats/loot_table/blocks/light_gray_lapbar_seat.json"
+hash = "5d233689fda634b1091ba2b217b94e079813878031ce1726930cda43d6f9deac"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createcoasterseats/loot_table/blocks/light_gray_restrictor_seat.json"
+hash = "b2d5c8803ef5fd850175e1772e4f4f97872df3a9afcc0757fddaccb53190f926"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createcoasterseats/loot_table/blocks/lime_lapbar_seat.json"
+hash = "112df127ebf11e759068cd07cda76c6eed5922509a59d8eae08d860844d80276"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createcoasterseats/loot_table/blocks/lime_restrictor_seat.json"
+hash = "39d8a27680fd4cbca9531999dacc7d9709a53d069c46fb0be187df5f88451e3d"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createcoasterseats/loot_table/blocks/magenta_lapbar_seat.json"
+hash = "6fab86e004cf2d746b7cb511fffc71334e56c04acd0a025434c3f8d9f93b0c63"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createcoasterseats/loot_table/blocks/magenta_restrictor_seat.json"
+hash = "aafb1453e6ca1a82988b412c1237286dcf9b8a8b855d923fdb295e7163271467"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createcoasterseats/loot_table/blocks/orange_lapbar_seat.json"
+hash = "42de140b0c31eaf6518d818d00da6f12d87308e8414d13e1321ebcbd3ce79e09"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createcoasterseats/loot_table/blocks/orange_restrictor_seat.json"
+hash = "95f27b02d161d1ecd767fffb1cc538622f428e15f851376ec85d0b2232bdb498"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createcoasterseats/loot_table/blocks/pink_lapbar_seat.json"
+hash = "90ded1c6df549ea931df6faa940c6e58b464031fdcfe2adc7a1fc1630d6abf92"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createcoasterseats/loot_table/blocks/pink_restrictor_seat.json"
+hash = "93916e2768a31d90a38b9d15783b2e7672f09fcd09d129b3668cd9a8906e7ca7"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createcoasterseats/loot_table/blocks/purple_lapbar_seat.json"
+hash = "42d09bef459c7430290cab1806518987deb5f04ec7d45b24a27579d53dcb6f3e"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createcoasterseats/loot_table/blocks/purple_restrictor_seat.json"
+hash = "6ffd2f6e53d9baa802f1a7e0ebde979b17bcaa372592be84d92097f235aef2f6"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createcoasterseats/loot_table/blocks/red_lapbar_seat.json"
+hash = "e3e4074ef33b39d1c4a42428179360bff0449e2b30d53ef2947a7ddd96d82a0c"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createcoasterseats/loot_table/blocks/red_restrictor_seat.json"
+hash = "09074d48e7bf4110b878be23caab37cfe90de58709594e84977dd745bd71c11b"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createcoasterseats/loot_table/blocks/white_lapbar_seat.json"
+hash = "d720f5b972e3e5de3430a5eab0ccd8b0d09a8d5e6a31349a4e8441627192c9c7"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createcoasterseats/loot_table/blocks/white_restrictor_seat.json"
+hash = "d255971be7d6c59487e5c3d5fc2d2f3faa22c3a405723a930be2563806e807b3"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createcoasterseats/loot_table/blocks/yellow_lapbar_seat.json"
+hash = "c8b05d04aaf7a15b9eafb6102e79fbdb1858ef890d768861820f08808b086dc5"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createcoasterseats/loot_table/blocks/yellow_restrictor_seat.json"
+hash = "94257dad27e17a719baa97d6391f11be1f8c04eca14c1e44abfa09e8e0ffe6e6"
+
+[[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/createdeco/recipe/placard.json"
 hash = "ddc3d0dd56b604d914bedbf2f985a2f0b5f7374eac79aad668a8a2cfd7cc154c"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createframed/loot_table/blocks/amber_cardboard_window_pane.json"
+hash = "1aa49a295610b0aadd0a39b667b8e7effe1d02c7c82f8ae2e6e8b4d2f952744b"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createframed/loot_table/blocks/aqua_cardboard_window_pane.json"
+hash = "77a76944665e2a4999e0e119e10f70e55c2b9d4d846958e539da02043459aca6"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createframed/loot_table/blocks/beige_cardboard_window_pane.json"
+hash = "0e1401fea626cc8568e7ded0be5564ad6431418d078804d9cdac5097072ad71d"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createframed/loot_table/blocks/black_cardboard_window_pane.json"
+hash = "f8a0c07b78d18297f7c722751c4d75709fc4ea592f43fbfa6667326dba9697be"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createframed/loot_table/blocks/blue_cardboard_window_pane.json"
+hash = "0cc2d13aa4c718310b4a81c2a422ede68088d78052d29ca11f650fad4c75b139"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createframed/loot_table/blocks/bound_brown_cardboard_block.json"
+hash = "db766527bb73173f9b651d6cbfc3818763fe856fa43518dcb6babbf6f6e38cb7"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createframed/loot_table/blocks/brown_cardboard_window_pane.json"
+hash = "44ac3ad12fea10e4c144d00388a8898c02360a7257eff6483b2fdef81f6f6b6b"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createframed/loot_table/blocks/coral_cardboard_window_pane.json"
+hash = "a5fe65d17048873e008d6811a2a248e72655b634c051508c49a51720bbb672ac"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createframed/loot_table/blocks/cyan_cardboard_window_pane.json"
+hash = "e71b5e3b00c837d2581f6b28e01ad5bc4e3201429ead43035bbe9f1474d5f1ac"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createframed/loot_table/blocks/forest_cardboard_window_pane.json"
+hash = "d3d652850b3dd9109ff291c720bac21d0e6d6e2b21429141c1f7c5d8eea0a2e5"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createframed/loot_table/blocks/ginger_cardboard_window_pane.json"
+hash = "495d02d0996873e3ded799256e28f6f84d5dd21a90c5ed438d59c8b049ab4823"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createframed/loot_table/blocks/gray_cardboard_window_pane.json"
+hash = "be1b2ac95aa91d24312943efec6e9199beb05b1dd281fb803a1aa2919e4a1d2c"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createframed/loot_table/blocks/green_cardboard_window_pane.json"
+hash = "c4974fa6617575a80a25378e3b98d0207f38e25680f6297ec0db75ddf209a2cd"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createframed/loot_table/blocks/horizontal_orange_stained_framed_glass.json"
+hash = "d25c333b5af0f18042ec976ae536356e61419970cd27f17da90e67db424bea00"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createframed/loot_table/blocks/horizontal_orange_stained_framed_glass_pane.json"
+hash = "f8cf6ee8c52f9da796c981c01296712af2c01dbf50fb3d2b88c19f0dd2fd9a79"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createframed/loot_table/blocks/horizontal_white_stained_framed_glass.json"
+hash = "9e5fd201c8e27719e12aa127da4a19abfe77a505208b684d7a03aca5ab564f95"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createframed/loot_table/blocks/horizontal_white_stained_framed_glass_pane.json"
+hash = "59375a3b4d675b2ab6bf7aedf1ac6ba062c2914a1cbd643f8ade65657bcd240a"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createframed/loot_table/blocks/indigo_cardboard_window_pane.json"
+hash = "f522d4465d1ffdb64b00a89fd4071417c92f6c2a556ef30586eb7634fda4f852"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createframed/loot_table/blocks/light_blue_cardboard_window_pane.json"
+hash = "6e47125a7e08d2ffbc71138e1bfe7180575237932c078ca204a9785b3755c37a"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createframed/loot_table/blocks/light_gray_cardboard_window_pane.json"
+hash = "bb391b4677c9dd5c5a8b708814ee2cd948813d01abe003859327b03dbd10b5d6"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createframed/loot_table/blocks/lime_cardboard_window_pane.json"
+hash = "33d5b6d063f4cd0bed39685dd5d4ab1f320b2c6d47e0b65c36732af23432010c"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createframed/loot_table/blocks/magenta_cardboard_window_pane.json"
+hash = "1793ecb93d1b5c634fc73b34899a71b8e569bf44d005c9adbbe0df7d16c3e969"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createframed/loot_table/blocks/maroon_cardboard_window_pane.json"
+hash = "dd79cb858869a7d78d913ccf7ae0382032495249e75c7417f79b7d63cf53b499"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createframed/loot_table/blocks/mint_cardboard_window_pane.json"
+hash = "d55a5a394d112fb83044d8d6cdab34f0f581db87ca321d16ed793e700239f70a"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createframed/loot_table/blocks/navy_cardboard_window_pane.json"
+hash = "6afa4887b6afe557f14cdd221bd692bff28a7700687846575482973b48168fcf"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createframed/loot_table/blocks/olive_cardboard_window_pane.json"
+hash = "1c5a6824bc33743f87233bc1c9ab8a3bb5b46e69c8e93acee952f6a029dbeebb"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createframed/loot_table/blocks/orange_cardboard_window_pane.json"
+hash = "589ab7eacb0e6a18274aee77e8d1375f64d078f9c776f3ba50145cadf6747f5e"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createframed/loot_table/blocks/pink_cardboard_window_pane.json"
+hash = "559cf9cc630930f9cec5d99b601379b368c61e6cd2c5d0ce4c335a06b69a8c34"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createframed/loot_table/blocks/purple_cardboard_window_pane.json"
+hash = "eef70e55a744a51fe5a85a139af94ecafd336a2e8f659a93d3f044ce22a9687c"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createframed/loot_table/blocks/red_cardboard_window_pane.json"
+hash = "f6ce884269e2c6d408a107e4f39c8f8e554f47ab2f40f4692c214be425feccb5"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createframed/loot_table/blocks/rose_cardboard_window_pane.json"
+hash = "aa7c53e8664b3738d91b30c4eff7e6687c873e5bb09104ec98da6ea5aa59ca65"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createframed/loot_table/blocks/slate_cardboard_window_pane.json"
+hash = "41d85d811d6ea5a311a388951942184316caec4704727d2661f6354504ac6227"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createframed/loot_table/blocks/tan_cardboard_window_pane.json"
+hash = "2257412183d8a876c2cd8c929c036819818b488c500c75ada8329d2795a66b78"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createframed/loot_table/blocks/teal_cardboard_window_pane.json"
+hash = "85e58985f9df6caeea658ff4df4c6aab6ad9cd5fbeb4d26e1b96582c5ee120da"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createframed/loot_table/blocks/verdant_cardboard_window_pane.json"
+hash = "661c3c2e79aa6b24da9992ea9d8b3245fd3feb184a7254e0511768427b8bae08"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createframed/loot_table/blocks/vertical_brown_stained_framed_glass_pane.json"
+hash = "8befbcebcd6ba00ecddb9146a3f668554c85326b243d2f009bec06e2d7b76a80"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createframed/loot_table/blocks/white_cardboard_window_pane.json"
+hash = "e36e76495319c69c5a9b02499193ab1804dfe80b3a3fe2681c8fce4fa41848b0"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createframed/loot_table/blocks/yellow_cardboard_window_pane.json"
+hash = "e4c2688c4daab3a9139a65e91242364e5fea23b9df3506b5ce1d7ec50e767502"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/createframed/recipe/integration/smelting/black_radon_lamp.json"
@@ -1767,6 +2343,18 @@ file = "config/paxi/datapacks/create-galore-tweaks/data/createnuclear/recipe/mix
 hash = "a4375d3f4ee098ad1c3776117bc1d7e2ceec3b3bf6cd0f27d99df9975cd66fb0"
 
 [[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createpropulsion/loot_table/blocks/cable_relay.json"
+hash = "49cfdc1b33abaf554351bd171fed236a1b1aa87a5e39bbf4165bd204bf4c76d2"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createpropulsion/loot_table/blocks/platinum_casing.json"
+hash = "75ec188e7a2c3f04e1c33474df13892ddaf7fc599c6d56c952e5b8a3000e4c18"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/createpropulsion/loot_table/blocks/solid_fuel_thruster.json"
+hash = "40d9bb52a451a359dcee717831d4530d615fc5bdfb0d24bf4219aaee97ad273b"
+
+[[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/createpropulsion/recipe/stonecutting/copycat_wing_from_zinc.json"
 hash = "55cae06821c95b4fc72fd7b4b6feaa2491cbfa786b5ae2c4beb4add5a57f4f61"
 
@@ -1777,6 +2365,618 @@ hash = "7ddf23378b6b4c8ffa2466432e1264e9b66cbd7b571dedb7defc2a48a5fd0019"
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/delightfulcreators/recipe/mixing/tomato_sauce_fluid.json"
 hash = "a9ddb36e8a9d13d3b99c96210497d614734b5ee90f7a3030a9dd63f1f23f891e"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/dndecor/loot_table/blocks/dark_metal_block_slab.json"
+hash = "8ba25c7098700121ef590db4a44eff7ac1e98b5228d3cf518b2957e6ffae3253"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/dndecor/loot_table/blocks/dark_metal_brick_slab.json"
+hash = "d6e5402c000ecaaab92a8bddc3763b04d78747a7e2c11ee04499275ddab0be3e"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/abyssal_stone_brick_slab.json"
+hash = "fb6c338cacc134bd637315579e8b6d9d6d0b5b157d78d95b02214a33681a9015"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/abyssal_stone_slab.json"
+hash = "c5ef828342bd7228239533e028c4dac9fe582271f4992f67c80e9d8bc84ec544"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/amber_remnant_brick_slab.json"
+hash = "f56d76fa94ccc51f601c78d4bff5611d40c4b8d6f6f784a20f7068f00a2aa8db"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/amber_remnant_slab.json"
+hash = "782c6545cd99b0f4ce08ae00939c404765ae04cc0d92cea4ec7515cedc52ee75"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/black_zultanite_brick_slab.json"
+hash = "6a8020455b7db8caf1509bdf18a729942a56df03ff330975fe072233d62febb1"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/black_zultanite_slab.json"
+hash = "b10bcce22ad3dbba02c6a3bdb5aee5d4c471d9d7a025c9ad6a9e41370018e912"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/blue_zultanite_brick_slab.json"
+hash = "04b63653761655529cb459e9edf11505cecd4c0fcd6ea77048e5eee81dec0edb"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/blue_zultanite_slab.json"
+hash = "a2b5e7b91874c19213036a99a3c51083676d59c73678d16952716cd1044e0f20"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/brown_zultanite_brick_slab.json"
+hash = "b73c14117179f13806dd84cafe342ac20148b40ef8bd54d99754e7fb16887b89"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/brown_zultanite_slab.json"
+hash = "52cdc2acaed9c1b7ec9f91a6b7797785330da1a8978491f0a62389235d001f69"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/carnotite_brick_slab.json"
+hash = "bff9ea0ec5951081662355e119cb159a7d50e658cc4703d9d2d9ea7b234ae752"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/carnotite_slab.json"
+hash = "6527a3412e814b8cb514c480fa189342dc280d9cd23c038c9925c38076e528d9"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/chiseled_dragon_stone_bricks.json"
+hash = "e7efaf7e936b2a0b02361a808b63a6d1e01556b11469ba0b9ead6732921602e8"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/chiseled_ritualistic_stone_bricks.json"
+hash = "8b1210d8e813037015844f283b9e2a448c549b8f538e02af1e3550a73260e1ae"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/cut_abyssal_stone_slab.json"
+hash = "f01bd1ba1bcef3dae4c7f7cd19711e23c06aea9a70b79044256211c2f0f7ea0a"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/cut_black_zultanite_slab.json"
+hash = "769219cb088a0ef2cad281b795b54575d54a413c82c78c38a2e8bc02ddcc10a9"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/cut_blue_zultanite_slab.json"
+hash = "b3ca48e73c8449425a80e4ba03f78fe65e2c827897ba895ac3a9b73f404f892d"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/cut_brown_zultanite_slab.json"
+hash = "f284c33d5bbbea94974481e3c8f6ea42e823219d77dba798f58cb83efa786e83"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/cut_carnotite_slab.json"
+hash = "5a6c0ae52aabfc47e981f7d7fd3e17e72e56e83c68167b9d3c13708d7c04ae58"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/cut_cyan_zultanite_slab.json"
+hash = "c30660440e20a22b006c9499ad1df51c10094bdb44429ff9e09a5d3fbda2b39d"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/cut_dragon_stone_slab.json"
+hash = "fb596f37faef6853dc38c46d0d69594a1a9e9bc2d2aef91b01cfafd6fe7ee3f8"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/cut_gray_zultanite_slab.json"
+hash = "8d7d41ca0f260c20cdcc451b67b8971ac608b4b85c296dd39ce42d32ec9dd2b7"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/cut_green_zultanite_slab.json"
+hash = "3e06b521bb2ddf55892ab6df11aeda5c5037b89e33e18f7c7d10b0d1f7aff866"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/cut_light_blue_zultanite_slab.json"
+hash = "ea3a9b0f65e0879205ada7070ec798a832c5252f2ee9e2af1e6d9f0bcaa9288f"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/cut_light_gray_zultanite_slab.json"
+hash = "80cd621f6b6f95d8c0a3799008312dbc2bf91d31dce13275b6cf7b9efd7f8c6f"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/cut_light_gray_zultanite_stairs.json"
+hash = "49a9cd499efd1da71a89b0931e251e3638f936e09bebb1da8ab7378c06fc3a1f"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/cut_light_gray_zultanite_wall.json"
+hash = "49d7c30820265619440e14cd7f12ef0ba0e30a203b4ff3ff47d9234b31701709"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/cut_lime_zultanite.json"
+hash = "f9e6084743c65c2ff475f21012c7da1101f51aad629a67745e1bc1849fe4c124"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/cut_lime_zultanite_slab.json"
+hash = "383425067829a1d025790495caf9861496a769e7ecbc10c7fdeb35c8dcda7f81"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/cut_magenta_zultanite_slab.json"
+hash = "4a3e0ad351546a30bc27abe3f410405e0a25199707a395e618c8bba67f8aeff9"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/cut_orange_zultanite_slab.json"
+hash = "0cf119c5e6201494cdc31ba5017383a9f0ae14a38889b228e55d99fdf6ee9448"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/cut_pink_zultanite_slab.json"
+hash = "7f61671e1ab6968462036572be495ef32867dbb399b978e6744601fa61d6dc4d"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/cut_purple_zultanite_slab.json"
+hash = "2e5c3879f54f526f0eadb0e7be73087fdb6b7beef578dbb8d47ed243605746b3"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/cut_red_zultanite_slab.json"
+hash = "5e71050881d76619da95d77591d714ee714969308272b676bfff962a5f2622c9"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/cut_ritualistic_stone_slab.json"
+hash = "4652e71f7d172f66c9c3cb96c24273b8696fd315b2008692a31da8bc22922949"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/cut_unstable_stone_slab.json"
+hash = "cc38b5be2082df6e1713f4041919d259d1e7807637e534f631c932c57c8c9e63"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/cut_white_zultanite_slab.json"
+hash = "34f5aa28cca1d96e92055633db4c101cfe98831ab0eb1ef807e26178a6a8b053"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/cut_yellow_zultanite_slab.json"
+hash = "64bad2159b2724a9fbc7934eb8ece375c4d9bf9466db589aaed19c151fba0ebb"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/cut_zultanite_slab.json"
+hash = "17d0fd1a64dac56f386b8578f48744b43500ab76d2d517922f0b924328f35fd3"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/cyan_zultanite_brick_slab.json"
+hash = "da0e9cd66f66f8e35ce80efd1efe0c257c70045fc4447f8b8c652b3d67562df8"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/cyan_zultanite_slab.json"
+hash = "7c7086a8f604c99d120baa69eea88c8b98d60ba3e180f89d68602ce267713105"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/dragon_stone_brick_slab.json"
+hash = "46617749e536795f298f7dffdb40540f582f2bce65050e3c195248c6cb6cd4a4"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/dragon_stone_slab.json"
+hash = "65903ce29f198482b56f6762904ab048ddad7901f50c8581786ce2722011500f"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/gray_zultanite_brick_slab.json"
+hash = "068e79424d421adcce9b6e3ef4908263f4566a7d08af1097038941ed7a9c7e80"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/gray_zultanite_slab.json"
+hash = "00ca5cdccee6987c11dabd684ec2202d549cfdde59769dd81d2c2ca65573c2c5"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/green_zultanite_brick_slab.json"
+hash = "a0fdf6b3a9f95c5eb652023416389cc439b217756162c86151d4a53818c5cd82"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/green_zultanite_slab.json"
+hash = "f6266816c8b46ba2fd45921c634b2cc3b064b3e7536f8f610c7b48d9a79a143c"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/light_blue_zultanite_brick_slab.json"
+hash = "97352f70bd292d5470a425a5335cd04333ec527916cd2424201f2b07ae74316c"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/light_blue_zultanite_slab.json"
+hash = "85e251530be968f76f36722a808a322dca25dc91d8d6f3c339e3698062df3151"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/light_gray_zultanite_brick_slab.json"
+hash = "bc53c6c091ad238bbaffffd7ecbac6c7c2b19917df35b2a5437a3dcd9452b21d"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/light_gray_zultanite_slab.json"
+hash = "7cdffb6e64d39abbacf3266901f4c60d628859527afc78ee4916553128144e14"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/lime_zultanite_brick_slab.json"
+hash = "d2880b45a00d16698bc0f2f94451d8760547b064601ff302268fb4518471e9bc"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/lime_zultanite_slab.json"
+hash = "a15d237815d1042d6ba70455e2fd95eb230246f3b8bbceca8f98ee059e0f6bbe"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/magenta_zultanite_brick_slab.json"
+hash = "9cbf073b3201e02120b2d6300f50dc940a88e977c10fec7907f159386e6b7b78"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/magenta_zultanite_slab.json"
+hash = "dcbc5b4aef2d3ddcc7d69049cb835f3a42c68161d68c10a08f403a2721d3a015"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/nut_slab.json"
+hash = "b693da7321002796458ee20f4717d84af177b5f806341ab7fe114310cf95d2dc"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/nut_window.json"
+hash = "d1082689d341f8c52517496e4641e49097817984a1f455b718a88338af547266"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/nut_window_pane.json"
+hash = "211fd8592b167748df91b372663c0dd94c0ecad769a614054192a4a70b44a7ed"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/orange_zultanite_brick_slab.json"
+hash = "35986abb67c2dcb2bdf0e202b605fc3240803cc2a3e758a34d2bcfc6dae374bc"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/orange_zultanite_slab.json"
+hash = "f1b944f5a8a8e88fff6813c6c565be944f5ab874f6c4968190ed2a6d6093d42c"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/pink_zultanite_brick_slab.json"
+hash = "5ab9076a81c5c2cfd4e45e2a348501775200369cc99dae763ac6efce50de879d"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/pink_zultanite_slab.json"
+hash = "5637717feb8de3e0a63bb7df5dac82a6bb56226bf674067f21140aa0a7e6ebec"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/polished_abyssal_stone_slab.json"
+hash = "a245551f5384acd5768959e137e041df4aaa07bcae72ef90e3b0387c7041bd0e"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/polished_black_zultanite_slab.json"
+hash = "0778fcbf8c4b86882124c191016198842c96f084be9a515e5fbc85679c0f6f18"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/polished_blue_zultanite_slab.json"
+hash = "65549c35e1bfbb2056c35ef0897f6232b88afe28be00459e60a3e1c54251b884"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/polished_brown_zultanite_slab.json"
+hash = "83ca48306621e0bb5be848688a65c80d13733204fbac41cf2d5920530c1e1b30"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/polished_carnotite_slab.json"
+hash = "ad5cf13259dd173f1ae214950ca94e1472ce65246cf0d15ed64c29dc6e822216"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/polished_cyan_zultanite_slab.json"
+hash = "5b0d9a2319b1675c2e3d27c6f0f95fbdd8ff5987bf89a272e2684adab32eb60a"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/polished_dragon_stone_slab.json"
+hash = "3cd6f26ca461276109003aafc632093b3bf7528c8ba2bb571999ed70bc257f98"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/polished_gray_zultanite_slab.json"
+hash = "5e2e432797f3e370e617738802f1063cb5a226333c38d944c85b2fd68dfea22b"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/polished_green_zultanite_slab.json"
+hash = "1fac923e5547641a6dea2726c4dc9497925ffe032c35c0344240f9bee4355c9d"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/polished_light_blue_zultanite_slab.json"
+hash = "ed2f4864eb5d3953de82ed496151d1d3ea31c72e3284564c99bc22f5ffe91335"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/polished_light_gray_zultanite_slab.json"
+hash = "12c1e1cef4f76d2608719dfa0209b890a1f0d02bef56bb34fd55521d72af66ce"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/polished_lime_zultanite_slab.json"
+hash = "62688f9db17c0d5969d989e218e4386bc583db9ab3e817f02feeb87cce31f491"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/polished_magenta_zultanite_slab.json"
+hash = "7a6771b3a4d8d9ebcdc26ab02ca5344e61cf3c69615f7d70d43052d1babcfcd1"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/polished_orange_zultanite_slab.json"
+hash = "cfebddc95afa64259a43f9ab1151bf4c366e9265eec3cf1bf2d7e4a73f7fc113"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/polished_pink_zultanite_slab.json"
+hash = "1153407ab88bfdae4722b8da4a4b1994aea29ec7ede8d8954c655c56b596bcb7"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/polished_purple_zultanite_slab.json"
+hash = "99d57c338dc359042a6ca033eefa710d3b5ad25b62cd8a9bbd8a2dfbfe696d99"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/polished_red_zultanite_slab.json"
+hash = "499df4654e47e74abcce504b2cccfebe583a74aeb31ec32b7ce6d29605ff4154"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/polished_ritualistic_stone.json"
+hash = "2d004bd08b2b7ebd2981f5d92d7470766a100b9a8445fac47eeff4a87524898a"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/polished_ritualistic_stone_slab.json"
+hash = "4f68ae9f30a3821b1d935e23ac66786f1b27d70879c74426bdfd4104d381e625"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/polished_ritualistic_stone_stairs.json"
+hash = "a505e7649618ab7ab04677a91d35f9901d36eaf8ee54d14756fc4f5d0520c5ff"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/polished_ritualistic_stone_wall.json"
+hash = "d0086f002f2d5bc88c13186f56b2df03aee96de72970a072d70ca315005b4100"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/polished_unstable_stone_slab.json"
+hash = "392d02f0b0e2a761a548ea09092b19378898cc678857746506fe474fc0ed871b"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/polished_white_zultanite_slab.json"
+hash = "cc174a31c3e8eca92a02246d234318ff287824e36d8a0082bdd5fd5118226d40"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/polished_yellow_zultanite_slab.json"
+hash = "004640cb8083cc4396a63f4cd4cf2e002b75138b82581e88a2ae3aa4de6c484c"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/polished_zultanite_slab.json"
+hash = "02c8aeca6643ebce14a7b58d397eac14b7d03546598c33f090299e5c033c98ce"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/purple_zultanite_brick_slab.json"
+hash = "9e7a6ece52a7d4d5cee24fedf39daef47de3fd53cef31e8e21b54df51f0be0b4"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/purple_zultanite_slab.json"
+hash = "1406b5d2316cadf536e0bf0045fba61b7becf3819fd70c081860e496c87c327e"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/red_zultanite_brick_slab.json"
+hash = "d4cd5b6ab920c18f043082f496ee2077f9465c08b7925936b7e8b74b300bb4e4"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/red_zultanite_slab.json"
+hash = "750dc2854676e78cc8a7c0a252051730ace2b4cc0f760631adc16016104d9f88"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/ritualistic_stone_brick_slab.json"
+hash = "26d666b05961c59e6e006c6925dc98e0eb92bf2625c234eacf4f96bc67e29b74"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/ritualistic_stone_brick_stairs.json"
+hash = "35e94039a1f919ae0b5c1214758d1e6d396dbf3635f7b232fb94bcc169c6ae77"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/ritualistic_stone_brick_wall.json"
+hash = "82cd6a34c73b12e3233f26c6558cb442838873916708056168cfee99a7f68b2d"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/ritualistic_stone_bricks.json"
+hash = "0d209c28817e1d34eea1e7d1319d30b78ee649192e39a89fe31450011d3a51b0"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/ritualistic_stone_slab.json"
+hash = "f4c6f07d9854bd8a355cb139fbe3388e64c59e690353ce3bf5fe48bfe4ebe86d"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/sepia_slab.json"
+hash = "f88b2c96766f54352ac6c46a4f3d740fe627e25818ee0336459942dbc2235918"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/sepia_window.json"
+hash = "36d4fb00fac9ebc97ca01040cb51e5c9c3afac0dc581c1e5c2292ef845e76f41"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/sepia_window_pane.json"
+hash = "970528c9d6292a1baa8f368bf28de2a86aa49f2130cc1ca073cecfcd7424acb5"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/small_abyssal_stone_brick_slab.json"
+hash = "67b7d31c20371a56bac033e1facbd8ac8cb0088c07e8fe13279c6bd4fb44dbfd"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/small_black_zultanite_brick_slab.json"
+hash = "a7118cfacfa6abcb8200793589b7569db6acfe80e7f15266d5f88678c15930fe"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/small_blue_zultanite_brick_slab.json"
+hash = "f144ee5f6ce7303c6ef7cd846a684bc06126ce71abdce5c8780311cff4839a47"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/small_brown_zultanite_brick_slab.json"
+hash = "f6671f83b2a998b15c2b2d8eef8442f28c651186bf05b25724aa030cd6944e90"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/small_carnotite_brick_slab.json"
+hash = "8d618cdc4ad01225bb644f9769661567031257884bf3d02890205473b528fdbe"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/small_cyan_zultanite_brick_slab.json"
+hash = "9806993254a24dad6e07463fb038084892f70d50661ebeb6cb7447bc0de9d7c3"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/small_dragon_stone_brick_slab.json"
+hash = "7c1642147fa1b4c0b6ac9346f39e549b17659ed5880538a31bf095b8079fab7c"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/small_gray_zultanite_brick_slab.json"
+hash = "854d001f66236b53e5e32784ac6032f6b0f2d3c4914bd360737dc7ea587665d7"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/small_green_zultanite_brick_slab.json"
+hash = "9ceb0387498a9dc4737376354bfb5218d498a08de174743b5c9ba65bde45fb71"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/small_light_blue_zultanite_brick_slab.json"
+hash = "769e5d048cdd9eb65386e8fb7c80315d5627b5643f494167994b0bbea73fd5c5"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/small_light_gray_zultanite_brick_slab.json"
+hash = "a0924705ad5c9e7bc60ccaeb6ababcbb4978d73bfddd8a058c5ad6e3b10bd7b1"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/small_lime_zultanite_brick_slab.json"
+hash = "21227c17876b4bd70ef19b3c61eb3a5a62c40a0a5596f30458656bb70c714119"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/small_magenta_zultanite_brick_slab.json"
+hash = "0220c9a178438d99ad69828df1b044fe2e1040ea0b44c9490e4223338f7d6853"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/small_orange_zultanite_brick_slab.json"
+hash = "440fa39b54178d54437c2ac6f8e0d5ea15f06a825372fcadff9be4d9cf18a70f"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/small_pink_zultanite_brick_slab.json"
+hash = "74d60ea045bcbe7dd99e8e5b74ce1404711983627d712b97be508511c08ea902"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/small_purple_zultanite_brick_slab.json"
+hash = "b0668fbf3a8ef014756bff585b36e8bc1d1789adfbcbf1463037fbd439671846"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/small_red_zultanite_brick_slab.json"
+hash = "28f8e3db6ddb5126a88039ada3152c566498a40aae22543deafa0a207df0a713"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/small_ritualistic_stone_brick_slab.json"
+hash = "2dd8f58d55cfd7705c5c678dbf6668c3f736560f1dc1e90a6e290b33e54b3848"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/small_unstable_stone_brick_slab.json"
+hash = "01b1bf4a141b666a33535ecc67b2f8666966c7a3d2060d00a0a57cbc3b66a07c"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/small_white_zultanite_brick_slab.json"
+hash = "5d96dbb77abe9a58c53d2f399eab9688f5e24385f5d1e9e66345e2478c27da72"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/small_yellow_zultanite_brick_slab.json"
+hash = "22486e26b34ec5b718695eb5b70d9a81879ebf66ff017e44882073ab8c05179a"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/small_zultanite_brick_slab.json"
+hash = "12c7a15adb46aaaf1789f790e9e2886a1053944b79e8727a2e5fe81477afa87d"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/smooth_abyssal_stone_slab.json"
+hash = "332031198dce1529c885fc04b4b5a42243fced801385a1a8d2b66f71ea0747c7"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/smooth_black_zultanite_slab.json"
+hash = "205ab827fa1476959527895ecbabff17143814df073e6cb3b6413d0ae3f18b3b"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/smooth_blue_zultanite_slab.json"
+hash = "c396f3f61e3f1e31cddd9453800f58393676cfde8298ef24dfcea9dc72a954f5"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/smooth_brown_zultanite_slab.json"
+hash = "db72102bfb7b0903b0dd8ed22bbf1d68fca51ab53c7beb5721d2a0c736f38a77"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/smooth_carnotite_slab.json"
+hash = "039df24e04bb1121e04a77880c91e4f82b28ace858bb4db066f036eb739425ec"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/smooth_cyan_zultanite_slab.json"
+hash = "904ae73bf3d4e1eb4e0019cdfe8b9f316a9e2b4b6f5691a532231ca828e503e3"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/smooth_dragon_stone_slab.json"
+hash = "07c924cd00a7df6c073a7cdf4ea888e6db5bbc6cd02aa5f4768d675677e67093"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/smooth_gray_zultanite_slab.json"
+hash = "0b9d2542ee42db670ba95179f29dee9a45be2176ae43c6f0cbe20f629abef618"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/smooth_green_zultanite_slab.json"
+hash = "9ce6f9e0e1366de171b98dacd54b2e557199b0ff77f120c2ddf71e980fc4dadc"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/smooth_light_blue_zultanite_slab.json"
+hash = "dc51ce5efe80670ca5f38502507e03ee9e7dcab769175547eba0f254233f4876"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/smooth_light_gray_zultanite_slab.json"
+hash = "613a20c178d4fe4bc70f6a083b1142de6ddca036b32aad0f796746742150852e"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/smooth_lime_zultanite_slab.json"
+hash = "f76374a4c87cce1403619e2b366335b9e91b3a87ca4bfbb784f7eae8a252ae50"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/smooth_magenta_zultanite_slab.json"
+hash = "d0b9501423435584d393c1391e3b0cde94fe43055a54eb6f2ed782710d21b3d4"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/smooth_orange_zultanite_slab.json"
+hash = "d59ad7af5638195be4abb6849897c7ed097f565fd225e4b2d336b9c88a3b1543"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/smooth_pink_zultanite_slab.json"
+hash = "f0afdb31f65631ec9c0166365496c7bac328b90af9a62dbef374aa2363ed5c9a"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/smooth_purple_zultanite_slab.json"
+hash = "b8236926a4dcfa6e5407dbfeb27e0714f1965c876169ba4a43854e16fde240cd"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/smooth_red_zultanite_slab.json"
+hash = "5230b81155184bc47eb4f5a9fcf70ad37c1801ffeafab7ddc502b022970c7288"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/smooth_ritualistic_stone_slab.json"
+hash = "f8106d9e5d02f84badd0a9c152da5b46dd5dcdabf527fb83387c73099a512823"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/smooth_unstable_stone_slab.json"
+hash = "a1b858bdbd853520677f5fcd50dac755a44352198b89f88782807afd258df8ef"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/smooth_white_zultanite_slab.json"
+hash = "ef11b1364becd5c1ed9875190a4b15b4df016e108090e7908b7563f70b497474"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/smooth_yellow_zultanite_slab.json"
+hash = "df8882d51c3eabb1ab62b3cd9f07499f4b31f673c39e56a6da695e10e1a397e0"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/smooth_zultanite_slab.json"
+hash = "570db3dd72df2daf589d6fdfe5e007bdd48b11e8b581c441d68ae10d2968ef3a"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/unstable_stone_brick_slab.json"
+hash = "86bda1f32d1e0a9ba964723962d7183c638e61e5d0bb5a4a3ff915d6702d573b"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/unstable_stone_slab.json"
+hash = "fc3911c67178c3d9b098e75af482c6cde9c55ad96d40c2cc97f8b00478094e30"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/white_zultanite_brick_slab.json"
+hash = "456ea3229fd0f20b19ecf18f3515713da4024ab2c940c0ed2dd0edc4413515c7"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/white_zultanite_slab.json"
+hash = "152cf464555cc8d7e5b46e6caeb69fecf5b63ab6d4ea8c724162bbb90f669332"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/yellow_zultanite_brick_slab.json"
+hash = "ee626b381d0d316296f20c8ef9044acd6f729825448e3995f9a5b7a1da185f0d"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/yellow_zultanite_slab.json"
+hash = "03fed2a0bbf7167c69c07669dec21976efa3ea68a768b7dff19d2b70b718919f"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/zultanite_brick_slab.json"
+hash = "86bceeb49e481c579b6ad3c1b81e33a42ba4d48af6127298e4a16b21dfc18b44"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/zultanite_slab.json"
+hash = "6a5ee5890b3ed80de123aa1534c209e39168bb30ec4e51e96a46d9adf7c48c04"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/recipe/crushing/crushed_salt.json"
@@ -1887,6 +3087,122 @@ file = "config/paxi/datapacks/create-galore-tweaks/data/hopo/worldgen/structure_
 hash = "d4cb3a503318eb449922b7ac6fff7d11a90edc44e0ffed0ff73ef75696b92dbd"
 
 [[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/hybrid_aquatic/loot_table/blocks/bamboo_coral_wall_fan.json"
+hash = "195aacf30f97e01ebf14ae2b7b8209bc0f5dd4d928cf0d52a2b41851430bb003"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/hybrid_aquatic/loot_table/blocks/bleached_bamboo_coral_wall_fan.json"
+hash = "90b092387ec4ce5b08ff459ccd1369723d0ea1460c62434802dfca67cf083a27"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/hybrid_aquatic/loot_table/blocks/bleached_brain_coral_wall_fan.json"
+hash = "4fb073cb345d324faafe95f6ca67905d04e7340c10760118846111821da12012"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/hybrid_aquatic/loot_table/blocks/bleached_bubble_coral_wall_fan.json"
+hash = "715ff8e2fa5ac57b2c4a84d25c49f8e1110452fefa520bacc6fcbbe9573c875e"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/hybrid_aquatic/loot_table/blocks/bleached_button_coral_wall_fan.json"
+hash = "e56acea8c0f9d2eb91f1192ca1c5765c26e7e214bc233d520dc780c630234c51"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/hybrid_aquatic/loot_table/blocks/bleached_fire_coral_wall_fan.json"
+hash = "09da044c361b7a3da541f3f2c2361263936f1e298dc724e799e59bfc34eefad6"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/hybrid_aquatic/loot_table/blocks/bleached_horn_coral_wall_fan.json"
+hash = "40532936b6ba2233b463b25af44d719047f5c7a648ff682deecbcc21ce0053b0"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/hybrid_aquatic/loot_table/blocks/bleached_leaf_coral_wall_fan.json"
+hash = "a38afb9212629995d833ece69e20134d86061b69f390cde410905456a1d1e669"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/hybrid_aquatic/loot_table/blocks/bleached_lophelia_coral_wall_fan.json"
+hash = "81502f687f8deff5fa6f27b6a48ff2a7ecd3e92e823c9728a1d34364cc1657d1"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/hybrid_aquatic/loot_table/blocks/bleached_rose_coral_wall_fan.json"
+hash = "a5e71639462abba4df95095f588ac8c6fba60faef056f994dca806cbf463b5b3"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/hybrid_aquatic/loot_table/blocks/bleached_sun_coral_wall_fan.json"
+hash = "921a261107d306c2c53ed9517d25be5f9a37b8c5b4cd3f63809fc5f6e5785934"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/hybrid_aquatic/loot_table/blocks/bleached_thorn_coral_wall_fan.json"
+hash = "ad337dfb7530c557208c720d6cca1a351d002d20749f24d3ca57fe897391a017"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/hybrid_aquatic/loot_table/blocks/bleached_tube_coral_wall_fan.json"
+hash = "3252a310b672ded180eac23b59cde24d0c9334b4a61f87b75583aaf139322899"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/hybrid_aquatic/loot_table/blocks/bleached_zigzag_coral_wall_fan.json"
+hash = "a704149a79c0e53035dd49cd1949d17fe99d1921a921248460060b7ab7ccd00e"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/hybrid_aquatic/loot_table/blocks/button_coral_wall_fan.json"
+hash = "7f35d5af82c3fed617907616f25ce8f2e0cd5a6f8bb78ef7fbdde0e3a3d4b060"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/hybrid_aquatic/loot_table/blocks/dead_bamboo_coral_wall_fan.json"
+hash = "05f5bdfce535f29590ad092fb467193089607666894611efeb0befbc23b4a7ba"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/hybrid_aquatic/loot_table/blocks/dead_button_coral_wall_fan.json"
+hash = "05b702347532aa05978953864dc729e4b337694f0065362d9a93bdad0346d31d"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/hybrid_aquatic/loot_table/blocks/dead_leaf_coral_wall_fan.json"
+hash = "fe1f257d6228983f30112142bb34b6f92c045a45efaa1b311d244f93b6f5f1be"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/hybrid_aquatic/loot_table/blocks/dead_lophelia_coral_wall_fan.json"
+hash = "3eab8091244545ebbc5375ef2810b847927e07b2817f369b9964861cdae4997b"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/hybrid_aquatic/loot_table/blocks/dead_rose_coral_wall_fan.json"
+hash = "b830b42cdd8bd76507fa5cace2d977b3bc0cbb6728f4cdcbe5a1a4ad87ec1e41"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/hybrid_aquatic/loot_table/blocks/dead_sun_coral_wall_fan.json"
+hash = "5aadb5337941af8a6dafcb302c613f451809e8973ac664d23f584438623a6e94"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/hybrid_aquatic/loot_table/blocks/dead_thorn_coral_wall_fan.json"
+hash = "18294b3c41a7da0543eb6c7ddbd3e3ac88208e361b29aa4fda6f346872088d6d"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/hybrid_aquatic/loot_table/blocks/dead_zigzag_coral_wall_fan.json"
+hash = "3bf2217d37f69861ac581ba93e4e28a849a88dda707c764bd1a900fd80e2c693"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/hybrid_aquatic/loot_table/blocks/leaf_coral_wall_fan.json"
+hash = "a13d3708c18bd2b866e6ed66898b190745dacf303c2f0e5994f5ed99856a32dc"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/hybrid_aquatic/loot_table/blocks/lophelia_coral_wall_fan.json"
+hash = "fa49cb13e629e4758541b222787555d52b568e485ef42a1a2e68962d06d3d8db"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/hybrid_aquatic/loot_table/blocks/rose_coral_wall_fan.json"
+hash = "8ed07ff548e3f9189c30671f9aab16b6d45e8535e9b5f02fa54ae9a347accc7f"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/hybrid_aquatic/loot_table/blocks/sun_coral_wall_fan.json"
+hash = "8aa13dc2c6362625d7d95ad29dd71fc09e92451d559090883bc8b28e2085d95b"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/hybrid_aquatic/loot_table/blocks/thorn_coral_wall_fan.json"
+hash = "5ff28c7dd1c75c4413c55365e45c0eda4a874045042ddf83de4c97ded61cacd1"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/hybrid_aquatic/loot_table/blocks/zigzag_coral_wall_fan.json"
+hash = "59b8daeb028479639fefeaff1a9be3100fc973575f5b3148464d751d0b98799c"
+
+[[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/hybrid_aquatic/worldgen/structure_set/whale_falls.json"
 hash = "01530e3f6f54bc13fdea3336db15173826e128d3fd2b1ffbd1282d12d66a610a"
 
@@ -1901,6 +3217,26 @@ hash = "694aa0e1f42ff2ba4d119f604fe90db5dd09cae79ee470b772f0a68f35b05fb4"
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/irons_spellbooks/recipe/sequenced_assembly/portal_frame.json"
 hash = "cbb7a4cffecc98c810aa26adaac2c70ced9412dcb70c1aa76423c5196b109c2f"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/mcwroofs/loot_table/blocks/base_roof_slab.json"
+hash = "6a80db1132ac3ef933e1898b473b68c6c561aec6d57b4ba107e43813f6137960"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/mcwroofs/loot_table/blocks/black_roof_slab.json"
+hash = "c90de5900416672ad735e112457cc6e496b553ada7b3db754307fd72e738e35a"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/mcwroofs/loot_table/blocks/gray_roof_slab.json"
+hash = "1cbe6b322a6fa922deef2a0e3c733c4141e4d6aa7da10e4d54a2b6c4d7ecf877"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/mcwroofs/loot_table/blocks/light_gray_roof_slab.json"
+hash = "1ef4b4f7bd40080f102504d422b3feef3486d49fb1804fa776ff368eeced9090"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/mcwroofs/loot_table/blocks/white_roof_slab.json"
+hash = "f6e1aaae5caa6f433379ab943afd6a891a437a51a50134116b4360d8c15328de"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/minecraft/tags/function/load.json"
@@ -2031,6 +3367,10 @@ file = "config/paxi/datapacks/create-galore-tweaks/data/mss/worldgen/structure_s
 hash = "886710e7c61c050fa49a7c27e5a7b330a3345bf0bb4c7830e90ed3af1c5fa8f9"
 
 [[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/mushroomquest/recipe/artistconkr.json"
+hash = "d58375058568a39b39cd677620baf53205f9baf4399c356b490bfae473e41b22"
+
+[[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/mynethersdelight/loot_modifiers/add_loot_bastion_hoglin_stable.json"
 hash = "2ca6a8c428d5bc964f68a1fd0a9ec125168fb7a04710c230fbe05b25a502690a"
 
@@ -2041,6 +3381,46 @@ hash = "d42d8060adf1daf267990ce9f752a7f26275cd6433283372a06c49763c2d5705"
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/mynethersdelight/recipe/crafting/blaze_powder_alt.json"
 hash = "52e62729520a02784cf166c5510ee009ea89eea1c971851ac4aabd6954fbe397"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/naturalist/loot_table/blocks/azure_froglass_pane.json"
+hash = "091df67fe07044f51c5d9037bc567b6f5a7fbf9f7497b6cfbc77d78c16d0ec2a"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/naturalist/loot_table/blocks/crimson_froglass_pane.json"
+hash = "9589b34b765139d734c7164221b04cd2fe4cd40beb62b961b0efc30b4442c002"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/naturalist/loot_table/blocks/cut_shellstone_slab.json"
+hash = "37c7163c34b5e373254d066b411ac4b76e669c0d8e60bc9e19e2998c697145f8"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/naturalist/loot_table/blocks/shellstone_brick_slab.json"
+hash = "16f8a6de7605f4c660881251e491bfc98d64d1d3a9d16356ae143d5092b55794"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/naturalist/loot_table/blocks/shellstone_slab.json"
+hash = "422329b4a158f8e0edfef35f597045cbbef04a3a654da59cdc16bce43874ab86"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/naturalist/loot_table/blocks/smooth_shellstone_slab.json"
+hash = "be1714515ea095430e07b63f3fc245b707f135169211bc4656fd5d77e86366bb"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/naturalist/loot_table/blocks/verdant_froglass_pane.json"
+hash = "2f25f2443774d067fffd2726e85e0f4a05f1b818737ac510be8084f053926c5c"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/naturalist/recipe/cooked_egg.json"
+hash = "a289f382a15e69a152c95c2a5c4274f9f83ca0c64ba8476ce54aa369c760fbab"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/naturalist/recipe/cooked_egg_from_campfire_cooking.json"
+hash = "d1aa8c5188fbf2b079062f9e63907528abf68e62704b5ee8e661e90190fc0aa7"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/naturalist/recipe/cooked_egg_from_smoking.json"
+hash = "bf19dbd230c34f8921ced1c95ae2fb8569c324922920d31d1d33054d3aa2309c"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/naturalist/tags/worldgen/biome/has_anglerfish.json"
@@ -2109,6 +3489,18 @@ hash = "ab155e751d08aeba8658a7c89cefa1b1cc844f3bd270066012d600b4bbc7f0fd"
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/northstar_aeronautics_compat/recipe/stellar_navigator.json"
 hash = "8c5bc952910af12e3f8385587fc0153eb862c6d9d84b6d041d446a2464a72953"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/productivebees/loot_table/blocks/crimson_bee_nest.json"
+hash = "0cfa5249d3533df27476cd369a480042c0e9eefd495054b43b0d615d4def9153"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/productivebees/loot_table/blocks/sugarbag_nest.json"
+hash = "d84274d36127c08d5af77d2e054522ae6800186390e7450d4a2962ba43a732a7"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/productivebees/loot_table/blocks/warped_bee_nest.json"
+hash = "fe27c80ae94e590bbc10177082ca358d69b6cf0ed5f634ceb7887f2782200d1b"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/productivebees/recipe/centrifuge/alloys/honeycomb_brass.json"
@@ -2227,6 +3619,10 @@ file = "config/paxi/datapacks/create-galore-tweaks/data/revamped_shipwrecks/worl
 hash = "3fff74490c710f1918b72bf9375cd4469d6db629db06829abd85c3611fa3c981"
 
 [[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/sereneseasons/loot_table/blocks/season_sensor.json"
+hash = "9707f452fccbd3bcb3c1a2d39f335a20f4a430750f65e1ec5dae0c169ba48576"
+
+[[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/sereneseasons/tags/block/autumn_crops.json"
 hash = "052b94f0e1d61f1db7ce8b4b114306edd30ebad7ab226dc69389a39bf334fc03"
 
@@ -2253,6 +3649,146 @@ hash = "0f54851c17e949a2aa3f2f19c03919a6908b4caf64eff4282388fdcd850b1f62"
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/terralith/worldgen/structure_set/underground.json"
 hash = "5bfdf1b9e094ce72f46809c2a59d511f322775383d7309bf44b6eded250b8301"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/tfmg/loot_table/blocks/asphalt_slab.json"
+hash = "9e5d615b4b8080e426d2f7694d22bda612e3aaec76560fe9a977ac66c317a9fa"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/tfmg/loot_table/blocks/black_concrete_slab.json"
+hash = "9bf9cbfee209f603937ddfff41eadbc1d3693fdbcd978b9247e7e409a090151c"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/tfmg/loot_table/blocks/black_rebar_concrete_slab.json"
+hash = "b7bdb2b24092db5963a00a772656438b311c9f599c5b0438bbe77cb69253e781"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/tfmg/loot_table/blocks/blue_concrete_slab.json"
+hash = "598298ecb070c88ce5dc09e67c22150009bf444123e7488155ff5adf0fc2911d"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/tfmg/loot_table/blocks/blue_rebar_concrete_slab.json"
+hash = "699eb4ad18242a3e98f14c3879585baeae41e1829b5d0a43941906114552ad1f"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/tfmg/loot_table/blocks/brown_concrete_slab.json"
+hash = "454369fe30fe141fb41d41f0e21cf625620c80c2bb1c1b6951a08ec8f3f457ec"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/tfmg/loot_table/blocks/brown_rebar_concrete_slab.json"
+hash = "f6d4238c740f0c59fb383846961824bb6debdda9b05cdebb44e820a2ae840346"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/tfmg/loot_table/blocks/concrete_slab.json"
+hash = "ccdda9d9b485e278fdf811b5444fe84cf2e00a8266e6291cab423ee4336f62b8"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/tfmg/loot_table/blocks/cyan_concrete_slab.json"
+hash = "cd47c5157d5e9f3e282617a014a66d09322707d844518485b6200f3ca74aca94"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/tfmg/loot_table/blocks/cyan_rebar_concrete_slab.json"
+hash = "483fafc2d9d2da2a27f778122cc264079bf6152069f9e0501165eb6cee675970"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/tfmg/loot_table/blocks/gray_concrete_slab.json"
+hash = "69b4ccce719b4ec59c5c85d816137812ca8020dd621c55378092d6f15c81714b"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/tfmg/loot_table/blocks/gray_rebar_concrete_slab.json"
+hash = "a329aaf9f5e44b8c89ee7d250459c338e9f6feefe7f0853869af7c98f4e09020"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/tfmg/loot_table/blocks/green_concrete_slab.json"
+hash = "625c4b5b6724910829e34a5bc62e2b03abd49362c81ddc3778d0878058fa086a"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/tfmg/loot_table/blocks/green_rebar_concrete_slab.json"
+hash = "94a2a1d7ca4f3211d0e820c20655186a616c3fdf5e372e7279f849286b1de4a6"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/tfmg/loot_table/blocks/light_blue_concrete_slab.json"
+hash = "15b153678e5f9e6176bf865874cd015121fd1f4dedc090cf1e5293f809fc5dcf"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/tfmg/loot_table/blocks/light_blue_rebar_concrete_slab.json"
+hash = "f74a579fd536c3c3e4aca57aad24080bd3999beb314e8d71841bf5d6b0f72c11"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/tfmg/loot_table/blocks/light_gray_concrete_slab.json"
+hash = "a62fdf87336cbb73154166df969f2fb39b3e0351c3a0cfe538e3b19a139dd620"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/tfmg/loot_table/blocks/light_gray_rebar_concrete_slab.json"
+hash = "36aa1f4bc78627382ee901fd9acfa8adf9d4c88f4b3d765d71e5d27858cca918"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/tfmg/loot_table/blocks/lime_concrete_slab.json"
+hash = "b2c0a6810d2f32e58447d38478fc795873fb8798a538b319d1a9c2176e97839d"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/tfmg/loot_table/blocks/lime_rebar_concrete_slab.json"
+hash = "2e7354a7b3621b205e85bc5b55c03b886aa84d2237a14366552c843b4bbb78f2"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/tfmg/loot_table/blocks/magenta_concrete_slab.json"
+hash = "afef262fd83cb3f313c5eb20ed74851731724cf4415a9b5289dfd67f74873702"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/tfmg/loot_table/blocks/magenta_rebar_concrete_slab.json"
+hash = "8d55c6023fd73d7d183ec49d23fcc442098779db890e54c61e3003495259c5ac"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/tfmg/loot_table/blocks/orange_concrete_slab.json"
+hash = "1c32fcf33a039e81fdb9a3f79cbc5738d0d2d3f15c279ebc88adddeefdf9e88c"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/tfmg/loot_table/blocks/orange_rebar_concrete_slab.json"
+hash = "8235f9c7ac70f47e1db14a93aedc9e0de8d11914c978461cd76eec6eb8d2582b"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/tfmg/loot_table/blocks/pink_concrete_slab.json"
+hash = "6df24f4585ca9a308562795f787c97460cfc951230c5f29535475c50a7358d7e"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/tfmg/loot_table/blocks/pink_rebar_concrete_slab.json"
+hash = "915d63a54e6830b53dd2a89c43c8d7d50b883204d49f87abc8fd416bbfd6f496"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/tfmg/loot_table/blocks/purple_concrete_slab.json"
+hash = "07c2413abeb1cc433c246d5689c5f2cb0b24a0010275e61179325a1693bc43df"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/tfmg/loot_table/blocks/purple_rebar_concrete_slab.json"
+hash = "aeef13e35f9d691df895fbc9d20494dc5d971af092cfb96849871f5786202566"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/tfmg/loot_table/blocks/rebar_concrete_slab.json"
+hash = "06b07b78be14af6cd551593449512b6491407221b07dfad5d482148c69141c8c"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/tfmg/loot_table/blocks/red_concrete_slab.json"
+hash = "a5b37399892ccfd1fe6c07a863023e49d8be3e5b7aa7f938c06d7d1b3ba83348"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/tfmg/loot_table/blocks/red_rebar_concrete_slab.json"
+hash = "a5f2c4212191f8da3c53281744cd867ac72d4be0c4f7140cde034a3843a6c602"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/tfmg/loot_table/blocks/white_concrete_slab.json"
+hash = "4f8ad45477a20447af610304168f898c7406902bf62382d1fe3e5e5c18906396"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/tfmg/loot_table/blocks/white_rebar_concrete_slab.json"
+hash = "7c8015711a9f42981aff95c398597ca502a841fb76ac88d9b471779163592884"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/tfmg/loot_table/blocks/yellow_concrete_slab.json"
+hash = "9315e89ab6501021a1ac84887d1d84cbaf3d570e5b671ac1c393402595738b5d"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/tfmg/loot_table/blocks/yellow_rebar_concrete_slab.json"
+hash = "99b697ce427cc0ad39c97fbb875045b870876cf6fcada62181c60b39edf08b3d"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/tfmg/recipe/blasting/lead_ingot_from_crushed_blasting.json"
@@ -2347,8 +3883,12 @@ file = "config/paxi/datapacks/create-galore-tweaks/data/trainutilities/advanceme
 hash = "e11638548d9f044456d122a96dba7f8e9308124b9bea7ba514c5a713ef56ccf7"
 
 [[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/trainutilities/loot_table/blocks/door_sbahn_cologne.json"
+hash = "b226108772a5e85fd5181f68de4895511c304fcc5ecf295d2c8391cce88bf81a"
+
+[[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/pack.mcmeta"
-hash = "191a49e2b330886d52b375721ac6bfff45ea9990ed937ddb8d453e659c4b17f1"
+hash = "9087233cb29440cbffe086d4fbccb557a2693d32f625fcc0a7cf4ffcff1870c6"
 
 [[files]]
 file = "config/paxi/optional/create-galore-with-elytra/data/betterend/loot_table/chests/end_village_bonus_loot.json"
@@ -2517,7 +4057,7 @@ hash = "aee573eb310e2f13399f1fdcf1d904a31e148f7f112af6406f2ade4a94dc62cf"
 
 [[files]]
 file = "config/thirst/item_settings.toml"
-hash = "1f953e8c3b4822db477b0fdfe411c9adc5a2a2df56946f71ba5631f1c9ccf655"
+hash = "707aecb3bf91e7671fd0fdcc549c91285c20fd1b2c516a33594b22407d11fa27"
 
 [[files]]
 file = "config/towns_and_towers/structure_rarity_new.json5"
@@ -2861,8 +4401,8 @@ hash = "db683b65dc15a03dd6de2d34d5dc6ad0e3490744ced513a8cc584784ee9d3d8b"
 metafile = true
 
 [[files]]
-file = "mods/create-galore-bridge-1.11.0.jar"
-hash = "de3e77c3f6f2a73f22844365bf03fa70fe35360c9757652a9855abb38d3748aa"
+file = "mods/create-galore-bridge-1.12.0.jar"
+hash = "44932abbe59abedabe6e1e69a391541ca310a84e3a1f1503141867b7046ed54c"
 
 [[files]]
 file = "mods/create-galore-lagwatch-1.0.0.jar"
