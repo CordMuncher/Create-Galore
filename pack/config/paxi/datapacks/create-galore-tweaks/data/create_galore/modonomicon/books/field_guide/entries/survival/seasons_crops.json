@@ -55,6 +55,29 @@
     },
     {
       "type": "modonomicon:text",
+      "title": "Pack additions",
+      "text": "Some crops came with no season data and grew all year. The pack gives them their real growing seasons:\n- **Coffee:** summer\n- **Cassava:** summer, autumn\n- **Bok choy:** spring, autumn\n- **Cotton:** summer, autumn"
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Berries",
+      "text": "Berries and Cherries bushes and trees follow seasons, also when regrowing fruit:\n- **Strawberry, cherry:** spring, summer\n- **Blueberry:** summer\n- **Raspberry, grapes:** summer, autumn"
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Nut trees",
+      "text": "Garnished nut trees grow from planted Cracked nuts:\n- **Almond:** spring, summer\n- **Cashew, pistachio:** summer\n- **The rest:** summer, autumn"
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "createcafe:coffee_beans"
+      },
+      "title": "Coffee Beans",
+      "text": "Summer crop. Tropical biomes (jungle, savanna, desert and similar) grow summer crops all year, so coffee, cassava and cashews do best there. Snowy biomes grow only winter crops."
+    },
+    {
+      "type": "modonomicon:text",
       "title": "Related",
       "text": "- [#](2E5AAC)[Seasons](entry://survival/seasons)[#]()\n- [#](2E5AAC)[Farmer's Delight](entry://food/farmers_delight)[#]()\n- [#](2E5AAC)[Kitchen Automation](entry://food/kitchen_automation)[#]()"
     }

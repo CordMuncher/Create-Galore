@@ -6,7 +6,7 @@ A big, long-term Minecraft modpack built around the Create mod. Think "Minecraft
 
 | | |
 |---|---|
-| **Version** | 0.2.2 |
+| **Version** | 0.2.3 |
 | **Minecraft** | 1.21.1 |
 | **Loader** | NeoForge **21.1.262** (pinned, don't update it, see [Known issues](#known-issues)) |
 | **Mods** | 228 from Modrinth + the pack's own small Create Galore Bridge and Lag Watch + Twilight Forest added by hand, plus 4 shader packs and the Fresh Animations resource pack |
@@ -15,7 +15,7 @@ A big, long-term Minecraft modpack built around the Create mod. Think "Minecraft
 
 ## Install (players)
 
-1. Download `Create-Galore-0.2.2.mrpack` from the [latest release](https://github.com/emresahin0906-code/Create-Galore/releases/latest). The older `.mrpack` files in the repo's top folder are past versions; don't import those.
+1. Download `Create-Galore-0.2.3.mrpack` from the [latest release](https://github.com/emresahin0906-code/Create-Galore/releases/latest). The older `.mrpack` files in the repo's top folder are past versions; don't import those.
 2. Import it:
    - **Prism Launcher:** Add Instance → Import → pick the `.mrpack`.
    - **Modrinth App:** drag the `.mrpack` onto the window (or File → Import).
@@ -117,6 +117,8 @@ Copper spools stay separate: TFMG's spool lays TFMG cable and is the only kind i
 - Critters and Companions' otter, Dumbo Octopus and Sea Bunny are off (Hybrid Aquatic covers them).
 - Create Connected's copycats are off in favour of Create: Copycats+. The rest of Create Connected stays.
 - Animal Husbandry's truffle (pigs dig it up) and Fungi Delight's truffle are interchangeable: either one makes Animal Medicine and the Fungi Delight dishes.
+
+**Every crop has seasons.** Serene Seasons only knows the crops some mod lists, so a few grew all year. The pack gives them their real-world seasons: Create Cafe coffee (summer) and cassava (summer, autumn), Garnished bok choy (spring, autumn) and nut trees (almond spring and summer, cashew and pistachio summer, the rest summer and autumn), Aeronautics Winds cotton (summer, autumn), and Berries and Cherries strawberries and cherries (spring, summer), blueberries (summer), raspberries and grapes (summer, autumn). Tropical biomes grow summer crops all year.
 
 **You travel by building.** Trains, airships, submarines, cars and hypertubes are the way around, so shortcuts that make them pointless are off. Sidegrades that cost something (Ender Pearls, a double jump, short Aether flights, the air-limited Jetpack) stay.
 - **No Elytra.** End City ships no longer get one, BetterEnd and Dungeons and Taverns loot gives Shulker Shells instead, and Incendium's paratroopers stop dropping theirs. If one still reaches a player in survival (old chunks, a mod we missed), it crumbles into 2 Phantom Membrane with a chat message. The Create Jetpack recipe takes a Shulker Shell where it used to take an Elytra. Iron's Spells' Angel Wings (Elytra flight as a spell) is off too.

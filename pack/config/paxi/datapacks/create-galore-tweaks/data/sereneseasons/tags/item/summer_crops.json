@@ -1,0 +1,81 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "createcafe:coffee_beans",
+      "required": false
+    },
+    {
+      "id": "createcafe:cassava_seeds",
+      "required": false
+    },
+    {
+      "id": "aeronauticswinds:cotton_seeds",
+      "required": false
+    },
+    {
+      "id": "garnished:cracked_almond",
+      "required": false
+    },
+    {
+      "id": "garnished:cracked_cashew",
+      "required": false
+    },
+    {
+      "id": "garnished:cracked_pistachio",
+      "required": false
+    },
+    {
+      "id": "garnished:cracked_chestnut",
+      "required": false
+    },
+    {
+      "id": "garnished:cracked_hazelnut",
+      "required": false
+    },
+    {
+      "id": "garnished:cracked_macadamia",
+      "required": false
+    },
+    {
+      "id": "garnished:cracked_peanut",
+      "required": false
+    },
+    {
+      "id": "garnished:cracked_pecan",
+      "required": false
+    },
+    {
+      "id": "garnished:cracked_walnut",
+      "required": false
+    },
+    {
+      "id": "garnished:nut_sapling",
+      "required": false
+    },
+    {
+      "id": "berries_and_cherries:strawberry_bush_sapling",
+      "required": false
+    },
+    {
+      "id": "berries_and_cherries:blueberry_bush_sapling",
+      "required": false
+    },
+    {
+      "id": "berries_and_cherries:raspbery_bush_sapling",
+      "required": false
+    },
+    {
+      "id": "berries_and_cherries:black_grape_tree_sapling",
+      "required": false
+    },
+    {
+      "id": "berries_and_cherries:green_grape_tree_sapling",
+      "required": false
+    },
+    {
+      "id": "berries_and_cherries:cherry_tree_sapling",
+      "required": false
+    }
+  ]
+}
