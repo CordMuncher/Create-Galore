@@ -1184,7 +1184,7 @@ hash = "722f3bc3d52de487ab6200b88f40a87682cdbd43c953b812432956b0c209e583"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/food/farmers_delight_addons.json"
-hash = "c274cb3cece0d08f9e4559474cca458fc2ad3375165f6a1a7be7e1fe2f46d78a"
+hash = "58cbccee4b554af8db2f7c53513bdc7282853ae33f4f5c7757812e7ad0ce1803"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/food/first_food.json"
@@ -4401,8 +4401,8 @@ hash = "db683b65dc15a03dd6de2d34d5dc6ad0e3490744ced513a8cc584784ee9d3d8b"
 metafile = true
 
 [[files]]
-file = "mods/create-galore-bridge-1.14.0.jar"
-hash = "6c11ae240235a116db17d83203ca55858976d08dfadac3ef6ab3b41914aabf36"
+file = "mods/create-galore-bridge-1.15.0.jar"
+hash = "238530baeb0fa5788947eb8e675d8864984ad711f769bfc65d82f13bbb5fa220"
 
 [[files]]
 file = "mods/create-galore-lagwatch-1.0.0.jar"
