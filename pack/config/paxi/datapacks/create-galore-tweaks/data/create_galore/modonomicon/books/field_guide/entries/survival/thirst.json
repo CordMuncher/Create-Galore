@@ -97,6 +97,11 @@
     },
     {
       "type": "modonomicon:text",
+      "title": "Cafe drinks",
+      "text": "These hydrate like a water bottle too:\n- Create Cafe milk teas and iced coffees\n- Garnished sweet tea\n- Hot chocolate (Confectionery and Alex's Caves)\n- Brewin' And Chewin' beer from a keg"
+    },
+    {
+      "type": "modonomicon:text",
       "title": "Cold Sweat",
       "text": "[#](FFFFFF)\ue103[#]() **In depth.** Thirst and [#](2E5AAC)[Cold Sweat](entry://survival/temperature)[#]() work together. The [#](2E5AAC)[Waterskin](entry://survival/temperature_gear)[#]() carries a purity like a bottle, and a furnace or campfire purifies it the same way."
     },

@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:smelting",
+  "ingredient": {
+    "type": "neoforge:difference",
+    "base": {
+      "tag": "c:eggs"
+    },
+    "subtracted": [
+      {
+        "item": "minecraft:egg"
+      },
+      {
+        "item": "mynethersdelight:strider_egg"
+      }
+    ]
+  },
+  "result": {
+    "id": "naturalist:cooked_egg"
+  },
+  "experience": 0.35,
+  "cookingtime": 200
+}
