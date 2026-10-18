@@ -704,7 +704,7 @@ hash = "54d2cc7caaf5436cb58073693e8fa0835053ac625e8f85a4c0b7d0141fb97df8"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/create_basics/power_sources.json"
-hash = "0c6bb70edc055c19e8dd45c9b71caeaa59919b6f42d63edf4b6c0d1bee5d966b"
+hash = "cbd0847285077ed984c6d1c52711fbf98d792dc6c96f6fd74912fdaab9132f41"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/create_basics/processing.json"
@@ -920,7 +920,7 @@ hash = "c845dd3486bb8a4b908e26cb9997851c7526c6a9dda6574674477f9b404c0e5f"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/glossary/bearing.json"
-hash = "10671a285725f9f0449ad865dc651ecaf5b6fd2ed6606ced2c2e8a7ecf215f4a"
+hash = "242e6a664ab3972cd8d2cf43900f6f1e1cb925334e6d3b948ba6c11fbd85a456"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/glossary/body_temperature.json"
@@ -1152,7 +1152,7 @@ hash = "49a52f4b27376f29500b6937021f4bbf631174173e2218dfc558ffba9e5f451e"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/industry/electricity.json"
-hash = "7a3910dc40dc2b2c80d90a575d3b034a2d0aff20eabcad1f65cef3694618e926"
+hash = "2539ef7b13acf93317821ec28b64a55532f8bd2890d2b2be77aa10391196b148"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/industry/enchanting.json"
