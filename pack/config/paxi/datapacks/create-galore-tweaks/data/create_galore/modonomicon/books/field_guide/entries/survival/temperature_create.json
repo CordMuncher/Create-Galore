@@ -62,7 +62,7 @@
     {
       "type": "modonomicon:text",
       "title": "Altitude",
-      "text": "Cold Sweat: Altitude splits the sky into temperature bands by [#](7A3C9A)[Y](entry://glossary/y_level)[#](), set in its own [#](7A3C9A)[config file](entry://glossary/config)[#](). Each band shows a message: \"The mountain air grows colder.\" from Y 128, \"The air grows colder at this altitude.\" from Y 192, \"The air grows thin and bitter.\" from Y 256. Deep caves are a little warmer."
+      "text": "Cold Sweat: Altitude splits the sky into temperature bands by [#](7A3C9A)[Y](entry://glossary/y_level)[#](), set in its own [#](7A3C9A)[config file](entry://glossary/config)[#](). Each band shows a message: \"The mountain air grows colder.\" from Y 128, \"The air grows colder at this altitude.\" from Y 192, \"The air grows thin and bitter.\" from Y 256. Below ground Cold Sweat's steady cave temperatures apply instead."
     },
     {
       "type": "modonomicon:text",
@@ -77,7 +77,7 @@
     {
       "type": "modonomicon:text",
       "title": "Protection",
-      "text": "[#](FFFFFF)\ue103[#]() **In depth.** Altitude adds no items of its own. Armor protection works through item [#](7A3C9A)[tags](entry://glossary/tags)[#]() that start empty, so nothing in this pack gives it.\\\n\\\nShelter can cut the effect: a roof and walls, or an enclosed Aeronautics ship."
+      "text": "[#](FFFFFF)\ue103[#]() **In depth.** Most of the chill up high is wind. A **Windproof Lining** (four leather around a phantom membrane) sews onto armor at a Sewing Table; with one on every piece most of the wind chill is gone. The band's own cold stays.\\\n\\\nA roof and walls, or an enclosed Aeronautics ship, cut it too."
     },
     {
       "type": "modonomicon:text",
