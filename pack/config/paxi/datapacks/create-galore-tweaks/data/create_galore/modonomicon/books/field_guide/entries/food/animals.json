@@ -74,6 +74,31 @@
     },
     {
       "type": "modonomicon:text",
+      "title": "Taming and breeding",
+      "text": "Cows, pigs, sheep, goats and chickens don't breed from wheat or carrots. The first food you hand a wild one tames it. After that, food only fills it, once a day.\\\n\\\nTamed pairs breed by themselves when both are healthy, happy (80 or more) and male and female, within 8 blocks."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Happiness starts at 30. A day with sky or light 8+ adds 5, a brushing adds 10 (once a day), grooming in the last 3 days adds 3. Fed and brushed daily, a pair is ready in about three days.\\\n\\\nFor a pair right now, use a [Fertility Potion](item://animalhusbandry:fertility_potion) on each. A Farm Magnifying Glass shows if it's male or female."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Sickness",
+      "text": "Each day a tamed animal may fall sick if it is unhappy (under 50), unfed for more than 3 days, crowded (over 5 animals within 4 blocks) or kept dark (no sky and light under 4). A torch-lit barn is fine.\\\n\\\nAfter 4 sick days it loses a heart a day and can die. Animal Medicine cures it."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Troughs and eggs",
+      "text": "A Feeding Trough holds feed or water, not both; tamed animals walk to it when hungry.\\\n\\\nOnly hens lay, and Broody hens never do. An egg laid on stone or planks breaks 4 times in 5; on dirt, sand, hay, wool or leaves 1 in 10. A Chicken Nest keeps them all."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Milk: wild cows milk as usual. A tamed cow gives milk only if she is female and not sick, a few buckets a day."
+    },
+    {
+      "type": "modonomicon:text",
       "title": "",
       "text": "Other animal mods:\n\n- **Critters and Companions** adds small creatures like red pandas, ferrets, koi and dragonflies. Its otter, Dumbo Octopus and Sea Bunny spawns are off.\n- **Naturalist** adds bears, deer, elephants, lions and more. Nine of its sea animals are off; see [#](2E5AAC)[Sea Life](entry://ocean/sea_life)[#]().\n- **Sniffers Sniff Delights** gives sniffers a job: see [#](2E5AAC)[Delight Add-ons](entry://food/farmers_delight_addons)[#]()."
     }
