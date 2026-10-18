@@ -860,7 +860,7 @@ hash = "b7b274d36f2e7ac69d7c93632479439b2a8e081146f1f006c066018097f52994"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/flight/wind_sailing.json"
-hash = "18244ee31b511d1fc4128607d3a9f295e84bc33f764d24297ab9156c1bf40ab3"
+hash = "b8123200726b51c2c67a98dbfbe0ce27cec386df71cd34117fdcd594058b521e"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/food/animals.json"
@@ -2407,6 +2407,58 @@ file = "config/paxi/optional/create-galore-with-elytra/pack.mcmeta"
 hash = "496612965e223ce5e5f35c83c8f6bd58bb98792b1ce1f50a02cc388d952b67a2"
 
 [[files]]
+file = "config/paxi/resourcepacks/create-galore-fixes/assets/create_power_loader/models/block/andesite_chunk_loader/item.json"
+hash = "4cca7630e6f17f2e3c5ce5c3d9c71006fac4c8b9dfc1b8873478b945352af445"
+
+[[files]]
+file = "config/paxi/resourcepacks/create-galore-fixes/assets/create_power_loader/models/block/brass_chunk_loader/item.json"
+hash = "e085aca1706f78406d2814db13f243b0b39d25f20751b1e44b75d6c5b858eb4d"
+
+[[files]]
+file = "config/paxi/resourcepacks/create-galore-fixes/assets/createcoasterseats/models/block/restrictor/lapbar.json"
+hash = "84e6caa2a56121ca0865f97851a34e12c8f741575336a81464ab88224ee36026"
+
+[[files]]
+file = "config/paxi/resourcepacks/create-galore-fixes/assets/createcoasterseats/models/item/lapbar_seat.json"
+hash = "edf5d9fe98e5b8ec4e8ad62ea68d84ecbf67ebd617f95cb9a62a80d89ab23fc0"
+
+[[files]]
+file = "config/paxi/resourcepacks/create-galore-fixes/assets/hybrid_aquatic/models/block/basking_shark_plushie.json"
+hash = "673ad9c58aba0d71ee7e4e01f6bfed0ca4669ded434cfb7e2aa347dfd4966148"
+
+[[files]]
+file = "config/paxi/resourcepacks/create-galore-fixes/assets/hybrid_aquatic/models/block/bull_shark_plushie.json"
+hash = "673ad9c58aba0d71ee7e4e01f6bfed0ca4669ded434cfb7e2aa347dfd4966148"
+
+[[files]]
+file = "config/paxi/resourcepacks/create-galore-fixes/assets/hybrid_aquatic/models/block/frilled_shark_plushie.json"
+hash = "673ad9c58aba0d71ee7e4e01f6bfed0ca4669ded434cfb7e2aa347dfd4966148"
+
+[[files]]
+file = "config/paxi/resourcepacks/create-galore-fixes/assets/hybrid_aquatic/models/block/great_white_shark_plushie.json"
+hash = "673ad9c58aba0d71ee7e4e01f6bfed0ca4669ded434cfb7e2aa347dfd4966148"
+
+[[files]]
+file = "config/paxi/resourcepacks/create-galore-fixes/assets/hybrid_aquatic/models/block/hammerhead_shark_plushie.json"
+hash = "673ad9c58aba0d71ee7e4e01f6bfed0ca4669ded434cfb7e2aa347dfd4966148"
+
+[[files]]
+file = "config/paxi/resourcepacks/create-galore-fixes/assets/hybrid_aquatic/models/block/thresher_shark_plushie.json"
+hash = "673ad9c58aba0d71ee7e4e01f6bfed0ca4669ded434cfb7e2aa347dfd4966148"
+
+[[files]]
+file = "config/paxi/resourcepacks/create-galore-fixes/assets/hybrid_aquatic/models/block/tiger_shark_plushie.json"
+hash = "673ad9c58aba0d71ee7e4e01f6bfed0ca4669ded434cfb7e2aa347dfd4966148"
+
+[[files]]
+file = "config/paxi/resourcepacks/create-galore-fixes/assets/hybrid_aquatic/models/block/whale_shark_plushie.json"
+hash = "673ad9c58aba0d71ee7e4e01f6bfed0ca4669ded434cfb7e2aa347dfd4966148"
+
+[[files]]
+file = "config/paxi/resourcepacks/create-galore-fixes/pack.mcmeta"
+hash = "4781360c414e1d9e3d7a57f198d8da70401ac8dfeb4cffd5f2d44a534d568ee8"
+
+[[files]]
 file = "config/paxi/resourcepacks/create-galore-guide/assets/create_galore/textures/font/guide_icons.png"
 hash = "f5061bee6ae8750f05b7c42e0793f17a15b55ce60f52b5162141b1f0a8319729"
 
@@ -2810,7 +2862,7 @@ metafile = true
 
 [[files]]
 file = "mods/create-galore-bridge-1.11.0.jar"
-hash = "40b264fc18d2e8163acee2729ecae72ad39e5bac21ee661bedf75f8a6fffa50b"
+hash = "de3e77c3f6f2a73f22844365bf03fa70fe35360c9757652a9855abb38d3748aa"
 
 [[files]]
 file = "mods/create-galore-lagwatch-1.0.0.jar"
