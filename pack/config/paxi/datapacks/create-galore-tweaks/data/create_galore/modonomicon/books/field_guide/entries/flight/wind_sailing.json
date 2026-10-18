@@ -91,7 +91,7 @@
         "item": "aeronauticswinds:wind_rider"
       },
       "title": "Wind Rider",
-      "text": "A hang glider. Jump while falling to open it, jump again to stow. Campfire thermals carry you up."
+      "text": "A hang glider. Jump while falling to open it; jump again or attack to stow. Campfire thermals carry you up. In third person (F5) the camera pulls back to show the whole glider; the distance is in Aeronautics Winds' client config."
     },
     {
       "type": "modonomicon:text",
