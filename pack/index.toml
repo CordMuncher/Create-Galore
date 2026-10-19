@@ -1004,7 +1004,7 @@ hash = "5593d1039e957a9739eb74b57cc1c3d7075d23dc89ce0e42048375fe8392b159"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/create_basics/materials.json"
-hash = "b576b199665e63ceb688a48f61bde5deaa0cc7992442fbf1bc019262568d0539"
+hash = "5a5556271948804280a15cf31806d1e565f7b12ea483ff7b0a25e5d9cc8bf42d"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/create_basics/packages.json"
@@ -1504,11 +1504,15 @@ hash = "d3199c62142384b14abfc6d9cb5f7b62452b032df3fe96c6c7790e735396b990"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/materials/ore_guide.json"
-hash = "2b71c30a4f07b55bf64b1ce52ccbaf4db84191627229a0b75b5e1b9a38c19110"
+hash = "d79b66a3e49be2afa00af15c6b3f8f35edd4d23526056598c0fcf937c5e90186"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/materials/shared_metals.json"
-hash = "8ed76122122e3aea3993b6a3a932eaa3620f7c3edae4de0b2af67749356e3a38"
+hash = "0520e894fe618d479560c0c44ef00699084039f1eb71a963394a660451a191f0"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/materials/whats_this_block.json"
+hash = "05f82f50d58cd69a4aecd5f99e6dc046fd632d64d276f263a8112987d81c4b18"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/ocean/aquamirae.json"
