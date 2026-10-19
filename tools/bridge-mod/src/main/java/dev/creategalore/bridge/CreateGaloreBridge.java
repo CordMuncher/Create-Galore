@@ -46,6 +46,7 @@ public final class CreateGaloreBridge {
         modBus.addListener((FMLCommonSetupEvent event) -> KnifeUnify.resolve());
         GuideCleanup.register();
         NatureHeal.register();
+        PredatorFeeding.register();
         if (FMLEnvironment.dist.isClient()) {
             BridgeClient.init(modBus);
         }

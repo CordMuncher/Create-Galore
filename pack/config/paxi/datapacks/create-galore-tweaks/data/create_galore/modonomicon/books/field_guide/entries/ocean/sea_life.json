@@ -33,6 +33,11 @@
       "text": "Biomes include:\n\n- Coral Reef, Deep Coral Reef, Seagrass Bed, Tide Pools\n- Red Meadow, Sulfuric Caves\n- Warm, Cold, Frozen and Lukewarm Trenches\n- a Tropical River biome on land\n\nNew coral types and bleached variants come with them."
     },
     {
+      "type": "modonomicon:text",
+      "title": "Hunters",
+      "text": "Orcas, sharks, squid and the big predatory fish hunt smaller fish and turtles. After a kill a hunter is full for about 45 seconds before it hunts again.\\\n\\\nPrey they kill leaves nothing behind, so a pod of orcas won't cover the sea in fish. For fish of your own, catch them with a rod or a fishing net."
+    },
+    {
       "type": "modonomicon:spotlight",
       "item": {
         "item": "hybrid_aquatic:ominous_conch"

@@ -1540,7 +1540,7 @@ hash = "e3648df3fa264fb50d7b4f73003ccaa3b79111aedc8bd602952e79a8a78a94d2"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/ocean/sea_life.json"
-hash = "0b3cac58a97eba1b2de9183222a1c526676f97bec17cee574e51c44b9ccd5024"
+hash = "da000f97a83de57631c30da5f46ee3a8a88a82552e16ee1c652fe926bb657cf1"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/ocean/submarines.json"
@@ -4537,8 +4537,8 @@ hash = "db683b65dc15a03dd6de2d34d5dc6ad0e3490744ced513a8cc584784ee9d3d8b"
 metafile = true
 
 [[files]]
-file = "mods/create-galore-bridge-1.15.0.jar"
-hash = "238530baeb0fa5788947eb8e675d8864984ad711f769bfc65d82f13bbb5fa220"
+file = "mods/create-galore-bridge-1.16.0.jar"
+hash = "5e4d36c738e5af1781431096d02b084d585390cf0d811ded05e8d8afa08c2bb2"
 
 [[files]]
 file = "mods/create-galore-lagwatch-1.0.0.jar"
