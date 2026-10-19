@@ -1312,7 +1312,7 @@ hash = "f388e791618af53b3569cea2755c6e5e0fbb4145b997cd012be871338085e5a5"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/flight/weather_and_danger.json"
-hash = "b7b274d36f2e7ac69d7c93632479439b2a8e081146f1f006c066018097f52994"
+hash = "23892c9f896cfb881124e51b8782c64f13f5c7982b1ff7c5ebe70c57ba1f4eb7"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/flight/wind_sailing.json"
@@ -4889,8 +4889,8 @@ hash = "db683b65dc15a03dd6de2d34d5dc6ad0e3490744ced513a8cc584784ee9d3d8b"
 metafile = true
 
 [[files]]
-file = "mods/create-galore-bridge-1.20.0.jar"
-hash = "3796de737851e4a300a3d648b11b8fca0a02316bcf50b1537cddb0536ffd9e29"
+file = "mods/create-galore-bridge-1.21.0.jar"
+hash = "d4be92295693c1cd3b6b169179cc58e0feac392f8bb62f777a12053c2db275dc"
 
 [[files]]
 file = "mods/create-galore-lagwatch-1.1.0.jar"
