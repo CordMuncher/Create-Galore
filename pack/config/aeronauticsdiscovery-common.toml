@@ -1,0 +1,83 @@
+[flyover]
+	#Maximum lifetime of a flyover in ticks before it despawns (20 ticks = 1 second)
+	# Default: 6000
+	# Range: > 1
+	maxLifetimeTicks = 6000
+	#Base cooldown between flyover spawns per macro chunk (20 ticks = 1 second)
+	# Default: 12000
+	# Range: > 1
+	baseCooldownTicks = 12000
+	#Length in blocks of each macro chunk.
+	# Default: 128
+	# Range: 16 ~ 512
+	macroChunkSize = 128
+	#Extra distance in blocks beyond render distance at which a flyover is force-despawned. Set to 0 to despawn exactly at render distance edge.
+	# Default: 64
+	# Range: 0 ~ 1024
+	maxUnloadDistance = 64
+	#When enabled, flyovers try to avoid spawning position where a block wall exists between the spawn point and the player. May introduce a minor performance overhead
+	obstacleCheck = false
+
+	[flyover.promotion]
+		#When enabled, if the player approaches a flyover fragment it will not despawn (NOTE: with large amounts of fragments this may cause a performance overhead).
+		enabled = false
+		#Range in blocks from the fragment at which promotion triggers.
+		# Default: 10.0
+		# Range: 1.0 ~ 128.0
+		range = 10.0
+
+[autopilot]
+	#Precision of the obstacle-avoidance raycasting used by the autopilot 'avoid' (horizontal) and 'terrain' (vertical clearance) goals.
+	#Controls the number of rays cast per tick and how finely the forward cone is sampled.
+	#LOW = fewest rays, MEDIUM = balanced, HIGH = finest detection (most rays per tick)
+	#Allowed Values: LOW, MEDIUM, HIGH
+	raycastPrecision = "MEDIUM"
+
+[impact]
+	#Minimum impact velocity (m/s) along the contact normal to fire a SubLevelImpactEvent. Set to 0 to fire on every collision.
+	# Default: 5.0
+	# Range: 0.0 ~ 1000.0
+	strengthThreshold = 5.0
+
+	[impact.explosion]
+		#Whether explosive pins destroy blocks on detonation.
+		blocks = true
+		#Whether explosions can create fire
+		fire = false
+		#Explosion mode: OPTIMIZED (no raycasting) or VANILLA (more accurate, can be very slow on sublevels).
+		#Allowed Values: OPTIMIZED, VANILLA
+		strategy = "OPTIMIZED"
+
+[trader]
+	#How long the SoaringTrader stays angry (prices doubled) after a crash or being hit, in ticks (20 ticks = 1 second).
+	# Default: 12000
+	# Range: > 1
+	angerDurationTicks = 12000
+	#When enabled, the SoaringTrader will always offer a structure map as long as any structure type exists within search range. When disabled, it picks one random structure type and only offers a map if that specific type is found.
+	guaranteedMap = true
+	#Enable or disable map trades for specific structures.
+	#Entries are structure registry names (e.g. "minecraft:woodland_mansion").
+	#Add entries to enable, remove entries to disable.
+	#Add modded structures as new entries (e.g. "modid:structure_id").
+	structureMaps = ["minecraft:woodland_mansion", "minecraft:jungle_pyramid", "minecraft:desert_pyramid", "minecraft:trail_ruins", "minecraft:igloo", "minecraft:ancient_city", "minecraft:trial_chambers"]
+
+[general]
+	#If enabled, all sublevels including the ones NOT created by this mod will be processed for internal physics detection.
+	# This makes event triggers such as 'External Force' pins work regardless of the sublevel internal data.  
+	# Useful while building using Pins.
+	processAll = false
+
+[bridge]
+	#When enabled, bridge planks orientation is always horizontal
+	levelPlanks = true
+	#When enabled, players can add planks to ropes by right-clicking on rope anchors with slabs
+	allowPlankPlacement = true
+
+[pin]
+	#Distance in blocks a player must be within to trigger pins armed with the Player Proximity trigger.
+	# Default: 5.0
+	# Range: 1.0 ~ 256.0
+	playerProximityRadius = 5.0
+	#When enabled, pins with the execute behavior run their inline command and/or datapack function.
+	#Set to true to globally enable execute pins. Runs at permission level 2, like command blocks.
+	executeEnabled = false

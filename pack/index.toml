@@ -6,6 +6,10 @@ hash = "517774e283d163ab1454ff385f2a8871fbc20f45022ae417845cce746afd439e"
 preserve = true
 
 [[files]]
+file = "config/aeronauticsdiscovery-common.toml"
+hash = "55f28641442201b388dce742b870d5438aa85b7cd091a21341ca9bd1a2c4c5bc"
+
+[[files]]
 file = "config/aeronauticswinds-common.toml"
 hash = "62255046d6484012079c13c27126fab748597af191e8b6d23bf0570ab029c357"
 
@@ -71,7 +75,7 @@ hash = "29208d8a0cf996ced5690dbd767ede4d3975cbe5f6d5025ab3f6f1c5e5fd5402"
 
 [[files]]
 file = "config/create_galore_lagwatch-common.toml"
-hash = "1c464ae0c10ce62b4ae1b5c99556e5afde94e59d78919ea64dd34042df9018d5"
+hash = "1a2365fa503a0ab36820485fa9f108eb629dc1a359e9929769da3ba8822270c6"
 
 [[files]]
 file = "config/create_structures_arise-server.toml"
@@ -4577,12 +4581,12 @@ hash = "db683b65dc15a03dd6de2d34d5dc6ad0e3490744ced513a8cc584784ee9d3d8b"
 metafile = true
 
 [[files]]
-file = "mods/create-galore-bridge-1.16.0.jar"
-hash = "5e4d36c738e5af1781431096d02b084d585390cf0d811ded05e8d8afa08c2bb2"
+file = "mods/create-galore-bridge-1.17.0.jar"
+hash = "5dd90447e7a30eee8b8239c016f5e18bebd0b832242fb36f7ff33e07cf71c9c8"
 
 [[files]]
-file = "mods/create-galore-lagwatch-1.0.0.jar"
-hash = "2bb446ae0d08e1944f275bd466a9f3e1d5d4a460a57012bf3602f7da748d49bc"
+file = "mods/create-galore-lagwatch-1.1.0.jar"
+hash = "d0671a121f4b47db6549d4b9f15aab61c1907f7a2e4350bde1c8d935cea8d815"
 
 [[files]]
 file = "mods/create-garnished.pw.toml"
