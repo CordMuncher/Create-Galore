@@ -24,10 +24,15 @@ public final class GuideAiNet {
     private GuideAiNet() {
     }
 
-    public static final int LIST = 0, OPEN = 1, ASK = 2, DELETE = 3;
+    public static final int LIST = 0, OPEN = 1, ASK = 2, DELETE = 3, SAVE = 4;
+    /** Page kinds: a conversation, or a page keeping one saved drawing or model. */
+    public static final int KIND_CHAT = ThreadStore.KIND_CHAT, KIND_DRAWING = ThreadStore.KIND_DRAWING, KIND_MODEL = ThreadStore.KIND_MODEL;
     public static final int WHO_PLAYER = 0, WHO_BOOK = 1, WHO_NOTE = 2, WHO_DIAGRAM = 3;
 
-    /** Client to server: list my pages, open one, ask on one (empty id starts a new page), or tear one out. */
+    /**
+     * Client to server: list my pages, open one, ask on one (empty id starts a new page), tear one out, or save a
+     * drawing on a page as a page of its own (text: the drawing's {@link #drawingKey}).
+     */
     public record Request(int action, String pageId, String text) implements CustomPacketPayload {
         public static final Type<Request> TYPE = new Type<>(id("ask_request"));
         static final StreamCodec<ByteBuf, Request> CODEC = StreamCodec.composite(
@@ -42,12 +47,13 @@ public final class GuideAiNet {
         }
     }
 
-    public record Summary(String id, String title, int questions, long updated) {
+    public record Summary(String id, String title, int questions, long updated, int kind) {
         static final StreamCodec<ByteBuf, Summary> CODEC = StreamCodec.composite(
                 ByteBufCodecs.stringUtf8(64), Summary::id,
                 ByteBufCodecs.stringUtf8(256), Summary::title,
                 ByteBufCodecs.VAR_INT, Summary::questions,
                 ByteBufCodecs.VAR_LONG, Summary::updated,
+                ByteBufCodecs.VAR_INT, Summary::kind,
                 Summary::new);
     }
 
@@ -74,7 +80,8 @@ public final class GuideAiNet {
     }
 
     /** Server to client: one page of conversation, and whether the book is still writing on it. */
-    public record View(String pageId, String title, List<Entry> entries, boolean pending, String notice) implements CustomPacketPayload {
+    public record View(String pageId, String title, List<Entry> entries, boolean pending, String notice, int kind)
+            implements CustomPacketPayload {
         public static final Type<View> TYPE = new Type<>(id("ask_view"));
         static final StreamCodec<ByteBuf, View> CODEC = StreamCodec.composite(
                 ByteBufCodecs.stringUtf8(64), View::pageId,
@@ -82,6 +89,7 @@ public final class GuideAiNet {
                 ByteBufCodecs.collection(ArrayList::new, Entry.CODEC, 512), View::entries,
                 ByteBufCodecs.BOOL, View::pending,
                 ByteBufCodecs.stringUtf8(1024), View::notice,
+                ByteBufCodecs.VAR_INT, View::kind,
                 View::new);
 
         @Override
@@ -111,6 +119,11 @@ public final class GuideAiNet {
         }
     }
 
+    /** Names a drawing on a page without sending it back up: both sides hash the same JSON text. */
+    public static String drawingKey(String json) {
+        return Integer.toHexString(json.hashCode()) + ":" + json.length();
+    }
+
     static String clip(String s, int max) {
         return s.length() <= max ? s : s.substring(0, max);
     }
@@ -126,7 +139,8 @@ public final class GuideAiNet {
     static void register(IEventBus modBus) {
         modBus.addListener((RegisterPayloadHandlersEvent event) -> {
             // Optional: a client or server without this Bridge version still connects; the button just says so.
-            var registrar = event.registrar("1").optional();
+            // Version 2 (pack 0.2.22): page kinds and saving drawings.
+            var registrar = event.registrar("2").optional();
             registrar.playToServer(Request.TYPE, codec(Request.CODEC), (payload, context) -> GuideAi.handle(payload, context.player()));
             registrar.playToClient(Pages.TYPE, codec(Pages.CODEC),
                     (payload, context) -> dev.creategalore.bridge.client.GuideAiClient.onPages(payload));
