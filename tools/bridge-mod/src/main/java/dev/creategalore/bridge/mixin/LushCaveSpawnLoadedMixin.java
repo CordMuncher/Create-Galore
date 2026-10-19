@@ -1,5 +1,6 @@
 package dev.creategalore.bridge.mixin;
 
+import dev.creategalore.bridge.ChunkLoadGuard;
 import io.github.bonsaistudi0s.crittersandcompanions.common.handler.LushCaveSpawnHandler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -19,12 +20,12 @@ public abstract class LushCaveSpawnLoadedMixin {
     @Inject(method = "findGround", at = @At("HEAD"), cancellable = true)
     private static void create_galore_bridge$groundOnlyIfLoaded(ServerLevel level, BlockPos candidate, EntityType<?> type,
                                                                CallbackInfoReturnable<BlockPos> cir) {
-        if (!level.isLoaded(candidate)) cir.setReturnValue(candidate);
+        if (!ChunkLoadGuard.ready(level, candidate)) cir.setReturnValue(candidate);
     }
 
     @Inject(method = "isValidSpawnPosition", at = @At("HEAD"), cancellable = true)
     private static void create_galore_bridge$validOnlyIfLoaded(ServerLevel level, BlockPos pos, EntityType<?> type,
                                                               CallbackInfoReturnable<Boolean> cir) {
-        if (!level.isLoaded(pos)) cir.setReturnValue(false);
+        if (!ChunkLoadGuard.ready(level, pos)) cir.setReturnValue(false);
     }
 }

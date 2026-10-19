@@ -2,6 +2,7 @@ package dev.creategalore.bridge.mixin;
 
 import com.simibubi.create.content.kinetics.RotationPropagator;
 import com.simibubi.create.content.kinetics.base.KineticBlockEntity;
+import dev.creategalore.bridge.ChunkLoadGuard;
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.core.BlockPos;
@@ -24,9 +25,9 @@ public abstract class KineticNeighboursLoadedMixin {
     private static void create_galore_bridge$onlyLoaded(KineticBlockEntity be, CallbackInfoReturnable<List<BlockPos>> cir) {
         Level level = be.getLevel();
         List<BlockPos> found = cir.getReturnValue();
-        if (level == null || found.stream().allMatch(level::isLoaded)) return;
+        if (level == null || found.stream().allMatch(p -> ChunkLoadGuard.ready(level, p))) return;
         List<BlockPos> loaded = new ArrayList<>(found.size());
-        for (BlockPos pos : found) if (level.isLoaded(pos)) loaded.add(pos);
+        for (BlockPos pos : found) if (ChunkLoadGuard.ready(level, pos)) loaded.add(pos);
         cir.setReturnValue(loaded);
     }
 }
