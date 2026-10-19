@@ -38,3 +38,16 @@ tellEveryone = true
 	# Default: 30
 	# Range: 0 ~ 10000
 	keep = 30
+
+[freeze]
+	#Catch single long freezes (the TPS alert above lets one short spell through on purpose) and write what
+	#the server thread was doing to logs/lagwatch.log, so the mod behind it is named. Costs nothing until a freeze.
+	enabled = true
+	#A tick that takes this long counts as a freeze. The server thread is looked at again at 2x, 4x, 8x... this while it lasts.
+	# Default: 2
+	# Range: 1 ~ 60
+	seconds = 2
+	#At most this many looks per freeze (5 looks at 2 s reach 32 s).
+	# Default: 5
+	# Range: 1 ~ 50
+	looks = 5

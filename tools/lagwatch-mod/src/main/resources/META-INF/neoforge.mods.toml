@@ -4,10 +4,10 @@ license = "MIT"
 
 [[mods]]
 modId = "create_galore_lagwatch"
-version = "1.0.0"
+version = "1.1.0"
 displayName = "Create Galore Lag Watch"
 authors = "Create Galore"
-description = '''Dedicated servers only: says in chat when TPS stays under 15, records a spark profile to a file automatically, and logs who was where and which entities were piling up. Does nothing on a client or in singleplayer.'''
+description = '''Dedicated servers only: says in chat when TPS stays under 15, records a spark profile to a file automatically, names the mod behind any single freeze of 2 s or more, and logs who was where and which entities were piling up. Does nothing on a client or in singleplayer.'''
 # Server-side only: players never need it to join.
 displayTest = "IGNORE_ALL_VERSION"
 

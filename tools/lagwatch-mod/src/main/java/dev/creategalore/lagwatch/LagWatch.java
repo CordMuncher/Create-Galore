@@ -10,7 +10,8 @@ import net.neoforged.neoforge.common.NeoForge;
 
 /**
  * Dedicated-server lag alarm. Says in chat when TPS stays low, records a spark profile to a file,
- * and writes a snapshot (players, entities, chunks) to logs/lagwatch.log. Never loads on a client.
+ * and writes a snapshot (players, entities, chunks) to logs/lagwatch.log. Single long freezes get the
+ * server thread's stack written there too. Never loads on a client.
  */
 @Mod(value = LagWatch.ID, dist = Dist.DEDICATED_SERVER)
 public final class LagWatch {
@@ -28,6 +29,9 @@ public final class LagWatch {
     static final ModConfigSpec.IntValue PROFILE_ONLY_TICKS_OVER_MS;
     static final ModConfigSpec.IntValue PROFILE_COOLDOWN_MINUTES;
     static final ModConfigSpec.IntValue KEEP_PROFILES;
+    static final ModConfigSpec.BooleanValue FREEZE;
+    static final ModConfigSpec.IntValue FREEZE_SECONDS;
+    static final ModConfigSpec.IntValue FREEZE_DUMPS;
 
     static {
         ModConfigSpec.Builder b = new ModConfigSpec.Builder();
@@ -53,6 +57,14 @@ public final class LagWatch {
         KEEP_PROFILES = b.comment("Delete the oldest Lag Watch profiles beyond this many. 0 keeps them all.")
                 .defineInRange("keep", 30, 0, 10000);
         b.pop();
+        b.push("freeze");
+        FREEZE = b.comment("Catch single long freezes (the TPS alert above lets one short spell through on purpose) and write what",
+                        "the server thread was doing to logs/lagwatch.log, so the mod behind it is named. Costs nothing until a freeze.")
+                .define("enabled", true);
+        FREEZE_SECONDS = b.comment("A tick that takes this long counts as a freeze. The server thread is looked at again at 2x, 4x, 8x... this while it lasts.")
+                .defineInRange("seconds", 2, 1, 60);
+        FREEZE_DUMPS = b.comment("At most this many looks per freeze (5 looks at 2 s reach 32 s).").defineInRange("looks", 5, 1, 50);
+        b.pop();
         SPEC = b.build();
     }
 
@@ -62,5 +74,9 @@ public final class LagWatch {
         NeoForge.EVENT_BUS.addListener(watcher::onServerStarted);
         NeoForge.EVENT_BUS.addListener(watcher::onTick);
         NeoForge.EVENT_BUS.addListener(watcher::onRegisterCommands);
+        FreezeWatch freezes = new FreezeWatch();
+        NeoForge.EVENT_BUS.addListener(freezes::onServerStarted);
+        NeoForge.EVENT_BUS.addListener(freezes::onServerStopping);
+        NeoForge.EVENT_BUS.addListener(freezes::onTick);
     }
 }
