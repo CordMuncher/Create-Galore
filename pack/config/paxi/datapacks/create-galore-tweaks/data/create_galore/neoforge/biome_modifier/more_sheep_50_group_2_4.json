@@ -1,0 +1,12 @@
+{
+  "type": "neoforge:add_spawns",
+  "biomes": [
+    "terralith:stony_spires"
+  ],
+  "spawners": {
+    "type": "minecraft:sheep",
+    "weight": 50,
+    "minCount": 2,
+    "maxCount": 4
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "type": "neoforge:add_spawns",
+  "biomes": [
+    "terralith:wintry_forest",
+    "terralith:wintry_lowlands"
+  ],
+  "spawners": {
+    "type": "minecraft:sheep",
+    "weight": 10,
+    "minCount": 3,
+    "maxCount": 3
+  }
+}

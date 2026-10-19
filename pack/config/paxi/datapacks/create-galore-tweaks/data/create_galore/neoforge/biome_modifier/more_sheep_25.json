@@ -1,0 +1,25 @@
+{
+  "type": "neoforge:add_spawns",
+  "biomes": [
+    "minecraft:grove",
+    "minecraft:jungle",
+    "minecraft:plains",
+    "minecraft:sunflower_plains",
+    "terralith:alpine_highlands",
+    "terralith:cloud_forest",
+    "terralith:forested_highlands",
+    "terralith:highlands",
+    "terralith:rocky_jungle",
+    "terralith:shrubland",
+    "terralith:snowy_maple_forest",
+    "terralith:steppe",
+    "terralith:tropical_jungle",
+    "terralith:yosemite_lowlands"
+  ],
+  "spawners": {
+    "type": "minecraft:sheep",
+    "weight": 25,
+    "minCount": 4,
+    "maxCount": 4
+  }
+}

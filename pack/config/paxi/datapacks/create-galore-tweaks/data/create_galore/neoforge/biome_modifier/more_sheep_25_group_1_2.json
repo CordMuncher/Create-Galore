@@ -1,0 +1,13 @@
+{
+  "type": "neoforge:add_spawns",
+  "biomes": [
+    "terralith:blooming_plateau",
+    "terralith:snowy_cherry_grove"
+  ],
+  "spawners": {
+    "type": "minecraft:sheep",
+    "weight": 25,
+    "minCount": 1,
+    "maxCount": 2
+  }
+}
