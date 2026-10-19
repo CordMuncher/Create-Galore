@@ -26,7 +26,7 @@
     {
       "type": "modonomicon:text",
       "title": "Animals and Husbandry",
-      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- [#](FFFFFF)\ue10c[#]() Animals have hunger, cleanliness, happiness, health and traits. Care changes what you get.\n- Check them in the **Farm Ledger**.\n- Brush them for happiness; sick ones need Animal Medicine.\n- Genes pass on traits, like Heavyweight's double meat."
+      "text": "[#](FFFFFF)[#]() **Key points**\n\n- [#](FFFFFF)[#]() Animals have hunger, cleanliness, happiness, health and traits. Care changes what you get.\n- Check them in the **Farm Ledger**.\n- Brush them for happiness; sick ones need Animal Medicine.\n- Genes pass on traits, like Heavyweight's double meat."
     },
     {
       "type": "modonomicon:text",
@@ -70,7 +70,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "[#](FFFFFF)\ue103[#]() **In depth.** The pack runs Animal Husbandry 0.4.2, so there are no rabbit genetics or Angora armor.\\\n\\\nWild animals never get hungry or sick. Care needs start once an animal is domesticated.\\\n\\\nBreeding is not instant: the mother carries the young for 3 days (cow), 2 days (sheep, goat) or 1.5 days (pig) before it is born."
+      "text": "[#](FFFFFF)[#]() **In depth.** The pack runs Animal Husbandry 0.4.2, so there are no rabbit genetics or Angora armor.\\\n\\\nWild animals never get hungry or sick. Care needs start once an animal is domesticated.\\\n\\\nBreeding is not instant: the mother carries the young for 3 days (cow), 2 days (sheep, goat) or 1.5 days (pig) before it is born."
     },
     {
       "type": "modonomicon:text",
@@ -96,6 +96,29 @@
       "type": "modonomicon:text",
       "title": "",
       "text": "Milk: wild cows milk as usual. A tamed cow gives milk only if she is female and not sick, a few buckets a day."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "minecraft:white_wool"
+      },
+      "title": "Finding sheep",
+      "text": "Sheep live in **plains, meadows, cherry groves, forests** (birch, dark, flower), **taiga, groves, windswept hills** and jungles."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Terralith lands with sheep: highlands, shrublands, steppe, valleys, spires and snowy taiga.\\\n\\\n**No sheep** in savanna, swamp, desert, badlands, snowy plains, beaches, mushroom fields or oceans.\\\n\\\nAnimals mostly appear when land is first generated, so look in land you haven't visited yet."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Wool without sheep",
+      "text": "- **4 string** craft 1 white wool. Spiders drop string; cobwebs give it to a sword or shears.\n- **Shepherd villagers** sell wool for an emerald from Apprentice on.\n- Four Alex's Caves **Dark Tatters** make black wool.\n- **Bulk Washing** (an Encased Fan through water) turns dyed wool white."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "[#](FFFFFF)[#]() **In depth.** Naturalist's small animals (snails, rats, moles, hedgehogs, snakes, birds) and other mods' critters share the spawn pool with farm animals. That made sheep up to 15 times rarer than in plain Minecraft.\\\n\\\nThe pack adds extra sheep spawns, so every biome that has sheep has them about as often as vanilla."
     },
     {
       "type": "modonomicon:text",

@@ -1172,7 +1172,7 @@ hash = "4a013d965855dd98fdb2037c212eb82626e960cca3af8f794e610a8fd04232e8"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/food/animals.json"
-hash = "0207bb4566d8314aa0b4ab386115d687c8b0c56252875f7ab07fe182fd55119d"
+hash = "1922f7e73bab22063c955db1d125bff8e1bfac440396117977736398f9de2bf4"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/food/bees.json"
@@ -1733,6 +1733,42 @@ hash = "6312af784f8b8c0d72863b5dd971b7dd6cb041514594619af9e6e015dae1941e"
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/multiblocks/steam_engine.json"
 hash = "1310db95be0cb0f2644ec81ed8583ee05c8987d1d5eb8488398cd9de26078712"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/neoforge/biome_modifier/more_sheep_10.json"
+hash = "168987f57d3b924104eceda7e2c56d4d546c4b31d01dd2ef80348cd06402c3a1"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/neoforge/biome_modifier/more_sheep_10_group_2_2.json"
+hash = "0385c80924e2043d7127decf7ebd9ebbbd8b243d21279b5fabf79cb63d5763bc"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/neoforge/biome_modifier/more_sheep_10_group_3_3.json"
+hash = "edcf971bbdf3f859b9775fd79f76998d64cb883cb05db526e9ebb20ea584c7ac"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/neoforge/biome_modifier/more_sheep_25.json"
+hash = "307a7a7254f47a3305d26692874ced1d4f3278e7262a2ecde6d8dfa08128a138"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/neoforge/biome_modifier/more_sheep_25_group_1_2.json"
+hash = "909377e48f9de859fa6c788b1d3628145ebf78f6c9c52a32bd43f00f39337072"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/neoforge/biome_modifier/more_sheep_50.json"
+hash = "0300baad45f18c7f2b977c253694b23f57290a4a122ca2a0624d9e22b40faa93"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/neoforge/biome_modifier/more_sheep_50_group_1_2.json"
+hash = "e8361ba0e28108cd230f07d478e0c598209f9f1d4af990be2cb29d8ec5aac037"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/neoforge/biome_modifier/more_sheep_50_group_2_2.json"
+hash = "0203ce0e0f7218882c19736d7eeebffede7bf937c2800a2a085f7df338b0d2fc"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/neoforge/biome_modifier/more_sheep_50_group_2_4.json"
+hash = "652549075fb6b42258b9b75dbec45b4b97148414c63716dd40bf3db3801f250f"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/neoforge/biome_modifier/no_subterranodon_roosts.json"
