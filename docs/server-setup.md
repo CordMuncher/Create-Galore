@@ -168,6 +168,29 @@ It never updates without an answer. If the update fails halfway (for example the
 
 Players still update their own game with the pre-launch updater (README, *Updating*); both sides need the same pack version.
 
+### The Field Guide's voice (your own API key)
+
+The Field Guide can answer questions in its own words: players press **Ask the Book** at the top right of the guide (or type `/askbook`), type a question, and the server asks Claude, with the whole guide, this server's real recipes, and what the asking player sees, carries and stands in and which advancements they have (so "what should I do next?" gets advice for where they are). The answer is typed onto the page as it is written, with a turning cog, a line saying what the book is up to and a soft quill sound (players can switch the sound off on the page). When a picture helps, or when asked, the book draws one on the page: free pixel drawings in the book's own colours with real item icons. It runs on your home server only, with your own Anthropic API key, and costs you API credit per question (about $0.11 each on Opus 5.5 at medium effort, so a $200 month is about 1,650 questions).
+
+The first time `start-server` runs with this version, after the update question, it asks once:
+
+```
+Give the book a voice? [N/Y] (no answer in 2 minutes = N):
+```
+
+- **N** (or no answer) keeps the book quiet. Say N on Exaroton or any server you rent or share. Exaroton never runs `start-server`, so it never has a key and the book tells players the voice is off.
+- **Y** asks for the key (paste it and press Enter; it doesn't show), checks it with Anthropic, and saves it.
+
+At every later start one line says whether the voice is on, and typing **K** and Enter within 5 seconds lets you paste a new key, or type `OFF` to turn the voice off and delete the key. `java -jar create-galore-updater.jar --api-key` in the server folder does the same any time.
+
+**Where the key lives.** In `anthropic.key` in a folder of your user account, never in the server folder: `%APPDATA%\create-galore` on Windows, `~/.config/create-galore` on Linux and macOS. The file can be read only by your account (owner-only access list on Windows, `chmod 600` elsewhere), so it is never in a world backup, a pack update, a crash report, the logs, or a config the game sends to players, and nothing in the game protocol can ask the server for it. Only the Bridge mod reads it, only on a dedicated server, and only sends it to Anthropic. Singleplayer and LAN worlds never use it.
+
+**Spending.** In the [Claude Console](https://platform.claude.com) put the key in its own workspace and give that workspace a monthly spend limit (for example $200), and leave auto-reload off. When the credit or the limit runs out the book says it has run out of ink, and the written guide keeps working.
+
+**Settings** are in `field-guide-ai.properties` next to the key (written the first time you answer): `model` (`claude-opus-5-5`; `claude-sonnet-5-5` costs about half), `effort` (`medium`; `high` thinks longer), `daily_questions` per player (100), `cooldown_seconds` between a player's questions (10) and `web_search` (`true`: when the guide, recipes and mod list have no answer, the book may look on Modrinth, the Minecraft wiki and each mod's own site, and says so). Restart the server after changing them. Each answered question puts one line in the server log with the player's UUID, the tokens used and the estimated cost; question and answer text are never logged.
+
+**Pages.** Every player has their own pages (separate conversations), kept in `world/create_galore_field_guide_ai/<player uuid>.json`. A new page starts fresh, so it only pays for the cached guide plus its question; the book suggests a new page after 15 questions on one page and stops at 30. Up to 50 pages are kept per player, the oldest dropped first.
+
 ### Updating by hand
 
 When the pack in this repo changes:

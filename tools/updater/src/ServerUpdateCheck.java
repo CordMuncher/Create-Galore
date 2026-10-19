@@ -7,7 +7,6 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.security.MessageDigest;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -42,13 +41,17 @@ final class ServerUpdateCheck {
     public static void main(String[] args) { System.exit(new ServerUpdateCheck().run(args)); }
 
     int run(String[] args) {
+        int code;
         try {
-            return check(Arrays.asList(args));
+            code = check(Arrays.asList(args));
         } catch (Exception e) {
             // Only the update itself can fail the start; a broken check must never keep the server down.
             out.println("Create Galore update check failed (" + e + "). Starting the server as it is.");
-            return 0;
+            code = 0;
         }
+        // The Field Guide's voice comes after the update question, and only when the server is about to start.
+        if (code == 0) FieldGuideKey.atServerStart(out);
+        return code;
     }
 
     int check(List<String> args) throws Exception {
@@ -163,23 +166,13 @@ final class ServerUpdateCheck {
         out.println("  Y  Yes, update, then start the server");
         out.println("  B  Back up the world first (into the backups folder), then update and start");
         out.println(line);
-        LinkedBlockingQueue<String> answers = new LinkedBlockingQueue<>();
-        Thread reader = new Thread(() -> {
-            try {
-                BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-                for (String s; (s = in.readLine()) != null; ) answers.add(s);
-            } catch (IOException ignored) { }
-            answers.add("\u0000"); // end of input
-        });
-        reader.setDaemon(true);
-        reader.start();
         while (true) {
             out.print("Update? [N/Y/B] (no answer in " + ANSWER_SECONDS / 60 + " minutes = N): ");
             out.flush();
-            String a = answers.poll(ANSWER_SECONDS, TimeUnit.SECONDS);
+            String a = Prompt.line(ANSWER_SECONDS);
             if (a == null) { out.println(); out.println("No answer."); return 'N'; }
             a = a.trim().toUpperCase(Locale.ROOT);
-            if (a.equals("\u0000")) return 'N';
+            if (a.equals(Prompt.END)) return 'N';
             if (a.equals("N") || a.equals("NO")) return 'N';
             if (a.equals("Y") || a.equals("YES")) return 'Y';
             if (a.equals("B") || a.equals("BACKUP")) return 'B';

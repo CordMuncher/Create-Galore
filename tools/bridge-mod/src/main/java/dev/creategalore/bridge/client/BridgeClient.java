@@ -20,6 +20,7 @@ public final class BridgeClient {
         // Mods are built before Minecraft reads options.txt, so the file can still be fixed here.
         KeyRebindMigration.run();
         modBus.addListener(BridgeClient::setup);
+        GuideAiClient.init();
     }
 
     private static void setup(FMLClientSetupEvent event) {

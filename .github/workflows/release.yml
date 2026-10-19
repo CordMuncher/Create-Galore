@@ -24,6 +24,7 @@ on:
       - 'docs/**'
       - 'README.md'
       - 'MODS.md'
+      - 'CHANGELOG.md'
       - 'tools/server-setup/**'
       - 'tools/build_server_bundle.py'
       - 'tools/updater/**'
@@ -31,6 +32,7 @@ on:
   pull_request:
     paths:
       - 'pack/**'
+      - 'CHANGELOG.md'
       - 'server/**'
       - 'tools/server-setup/**'
       - 'tools/build_server_bundle.py'
@@ -61,6 +63,9 @@ jobs:
           v=$(python3 -c "import tomllib; print(tomllib.load(open('pack/pack.toml','rb'))['version'])")
           echo "version=$v" >> "$GITHUB_OUTPUT"
           echo "Pack version $v"
+
+      - name: Check CHANGELOG.md has notes for this version
+        run: python3 tools/changelog_section.py "${{ steps.version.outputs.version }}"
 
       - name: Build the app's server data (fails if pack/index.toml is stale)
         id: bundle
@@ -178,6 +183,7 @@ jobs:
     permissions:
       contents: write
     steps:
+      - uses: actions/checkout@v4   # CHANGELOG.md and tools/changelog_section.py for the notes
       - uses: actions/download-artifact@v4
         with:
           name: release-files
@@ -195,6 +201,8 @@ jobs:
         run: |
           tag="v$V"
           ls -la out
+          # What changed comes first, from this version's CHANGELOG.md section; then how to play.
+          { python3 tools/changelog_section.py "$V"; echo; echo '---'; echo; } > changes.md
           cat > notes.md <<EOF
           **Create Galore $V** · Minecraft 1.21.1 · NeoForge 21.1.262 (don't update NeoForge)
 
@@ -217,6 +225,7 @@ jobs:
 
           Built from ${GITHUB_SHA::7}.
           EOF
+          cat changes.md notes.md > notes-full.md && mv notes-full.md notes.md
           if gh release view "$tag" >/dev/null 2>&1; then
             # Same version rebuilt: move the tag to this commit and replace the files.
             gh api -X PATCH "repos/$GH_REPO/git/refs/tags/$tag" -f sha="$GITHUB_SHA" -F force=true >/dev/null
