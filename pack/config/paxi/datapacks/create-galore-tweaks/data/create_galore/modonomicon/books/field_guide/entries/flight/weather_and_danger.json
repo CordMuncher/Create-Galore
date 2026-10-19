@@ -41,7 +41,7 @@
     {
       "type": "modonomicon:text",
       "title": "Hostile Skies",
-      "text": "Create Hostile Skies sends pillager airships after you, in tiers: **Scout, Patrol, Warship, Flagship**.\n\n- Higher tiers open as you kill captains.\n- Here they are rarer: an attempt every 25 minutes, starting at 5%% chance.\n- Bad Omen raises crew and loot. Ships can be captured."
+      "text": "Create Hostile Skies sends pillager airships after you, in tiers: **Scout, Patrol, Warship, Flagship**.\n\n- Your captain kills open higher tiers (accidents don't count).\n- Rarer here: a try every 25 minutes, from 5%% chance.\n- Bad Omen raises crew and loot. Ships can be captured."
     },
     {
       "type": "modonomicon:spotlight",
