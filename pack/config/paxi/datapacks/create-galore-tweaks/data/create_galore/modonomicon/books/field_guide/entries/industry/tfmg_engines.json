@@ -82,7 +82,7 @@
     {
       "type": "modonomicon:spotlight",
       "item": {
-        "item": "tfmg:large_transformer"
+        "item": "tfmg:large_coil"
       },
       "title": "Large Transformer",
       "text": "Built in place: two wound Large Coils side by side, then click one with a Laminated Magnetic Alloy Block, a Block of Steel and a Lubrication Oil bucket. Mining it returns both coils (turns kept) and the steel."
