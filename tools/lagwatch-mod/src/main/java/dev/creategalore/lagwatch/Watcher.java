@@ -291,7 +291,7 @@ final class Watcher {
         }
     }
 
-    private static void tell(MinecraftServer server, Component body) {
+    static void tell(MinecraftServer server, Component body) {
         MutableComponent msg = Component.literal("[Lag Watch] ").withStyle(ChatFormatting.GOLD).append(body);
         LOG.info(msg.getString());
         boolean everyone = LagWatch.TELL_EVERYONE.get();
@@ -300,7 +300,7 @@ final class Watcher {
         }
     }
 
-    private static void logFile(String text) {
+    static void logFile(String text) {
         Path file = FMLPaths.GAMEDIR.get().resolve("logs").resolve("lagwatch.log");
         try {
             Files.createDirectories(file.getParent());

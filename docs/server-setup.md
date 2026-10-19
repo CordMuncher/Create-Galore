@@ -219,6 +219,14 @@ A minute later it says where the profile went (`Profile saved: config/spark/lagw
 
 It records at most one profile every 10 minutes, so a long lag spell doesn't fill the disk, and it keeps the newest 30 Lag Watch profiles (profiles you save yourself with spark are never deleted). Each alert also goes into `logs/lagwatch.log` in the server folder, with the TPS, which dimensions had how many chunks and entities loaded, and **where every player was standing**. That last part usually tells you whose base was lagging.
 
+**Single freezes.** The TPS alert doesn't catch one long freeze: a server that stops for 8 seconds and then runs normally barely moves the average. So Lag Watch also watches each tick: when none has finished for **2 seconds**, it writes what the server thread is doing right then to `logs/lagwatch.log`, and looks again at 4, 8, 16 and 32 seconds while the freeze lasts. When the server is moving again, everyone sees `[Lag Watch] The server froze for 7.7 s. What it was stuck on is in logs/lagwatch.log.` Each entry starts with where every player was and a line like
+
+```
+Mod code on the server thread, innermost first: dev.ryanhcode.sable.physics, me.corvino.aeronauticsdiscovery.assembly.steps
+```
+
+which names the mods involved (innermost is closest to what was actually slow), followed by the full stack for a bug report. `ServerChunkCache.getChunk` near the top of the stack means the server was generating or loading a chunk and waiting for it; the first mod below it is the one that asked.
+
 **Commands** (operators only):
 - `/lagwatch` shows the current TPS and milliseconds per tick, and whether a lag spell is going on.
 - `/lagwatch test` fires a test alert right now and records a profile, so you can see that it all works. A test doesn't count toward the 10-minute limit.
@@ -236,7 +244,7 @@ It records at most one profile every 10 minutes, so a long lag spell doesn't fil
 
 The spark commands still work by hand too: `/spark tps` and `/spark health` for a quick look, `/spark profiler open` to see the last few minutes from spark's always-on background profiler.
 
-**Changing it.** Edit `config/create_galore_lagwatch-common.toml` in the server folder and restart: the TPS that counts as lag (`alertTps`), how long it has to last (`alertAfterSeconds`), whether everyone or only operators see the alert (`tellEveryone`), the profile length, the 10-minute limit and how many profiles to keep. `enabled = false` turns it off.
+**Changing it.** Edit `config/create_galore_lagwatch-common.toml` in the server folder and restart: the TPS that counts as lag (`alertTps`), how long it has to last (`alertAfterSeconds`), whether everyone or only operators see the alert (`tellEveryone`), the profile length, the 10-minute limit and how many profiles to keep. Under `[freeze]`: `seconds` (how long a tick must take before it counts as a freeze, 2 by default), `looks` (how many times one freeze is written down) and `enabled` for the freeze catcher alone. `enabled = false` at the top turns all of Lag Watch off.
 
 ## What was tested (2026-10-15)
 
