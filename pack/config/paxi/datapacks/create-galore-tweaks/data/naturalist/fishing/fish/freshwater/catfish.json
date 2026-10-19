@@ -1,0 +1,8 @@
+{
+  "fish": "naturalist:catfish",
+  "parent": "aquaculture:catfish",
+  "show_in_journal": false,
+  "associated_mods": [
+    "naturalist"
+  ]
+}

@@ -1,0 +1,56 @@
+{
+  "category": "fishing",
+  "name": "Where Fish Live",
+  "description": "Water type, biome, depth, time, weather, moon and season.",
+  "icon": {
+    "item": "tide:climate_gauge"
+  },
+  "x": 4,
+  "y": -1,
+  "sort_number": 5,
+  "parents": [
+    {
+      "entry": "fishing/casting",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": false
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Where Fish Live",
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- [#](FFFFFF)\ue107[#]() **Ocean and beach** water is salt; rivers, lakes and everything else is fresh.\n- The **biome** and its temperature decide most fish.\n- **Depth** matters: below y40 you catch cave fish.\n- **Time, weather, moon and season** decide the rare ones."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "A fish's journal page lists what it wants once you catch it. Before that, a **Fishy Note** from a crate (or one crafted from a fish and paper) shows the page.\\\n\\\nMost fish also have a favourite **temperature**: in the wrong climate they still bite, just rarely. Fiery and Permafrost hooks nudge it."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Fresh water** (rivers, lakes, swamps): trout, pike, perch, crappie, bass, walleye, carp, catfish and more. Swamps, jungles, deserts, cherry groves and frozen lakes each have their own.\\\n\\\n**Salt water**: cod, snapper, flounder, anchovy, tuna, sharks, rays, sailfish and Hybrid Aquatic's reef fish."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Underground** (water below y40): cave eels, glowfish, groupers, and the ore fish: **Iron Tetra**, **Gilded Minnow**, **Lapis Lanternfish**, **Crystal Shrimp**. Deeper means stranger fish; the deep dark, dripstone caves and trial chambers have their own.\\\n\\\nAlex's Caves biomes have their own fish too."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Rare fish** want a moment:\n\n- Five planet fish each bite in the ocean under one moon phase.\n- **Shooting Starfish**: deep ocean, full moon, at night.\n- **Coelacanth**: deep ocean, at night in rain.\n- **Bull Shark**: rivers from evening to morning."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "[#](FFFFFF)\ue10f[#]() **Legendary fish:** Shooting Starfish, Coelacanth, Devils Hole Pupfish (a narrow cave band, y20 to y30), Midas Fish (underground, needs 5 luck), Alpha Fish (overworld void) and Dragon Fish (End void). Catch one for **One in a Million**."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Seasons** count: some fish bite only in some seasons (brook trout skip autumn, sturgeon come in autumn and winter). The journal shows which.\\\n\\\nGadgets that show time, moon, depth, temperature and weather: [#](2E5AAC)[Fishing Gadgets](entry://fishing/gadgets)[#]()."
+    }
+  ]
+}

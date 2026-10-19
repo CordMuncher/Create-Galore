@@ -1,0 +1,5 @@
+{
+  "fish": "tide:catfish",
+  "parent": "aquaculture:catfish",
+  "show_in_journal": false
+}

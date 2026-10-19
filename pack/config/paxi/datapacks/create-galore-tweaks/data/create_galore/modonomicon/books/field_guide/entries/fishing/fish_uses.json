@@ -1,0 +1,51 @@
+{
+  "category": "fishing",
+  "name": "What Fish Are For",
+  "description": "Food, ore fish, gear and fish with odd effects.",
+  "icon": {
+    "item": "tide:iron_tetra"
+  },
+  "x": 2,
+  "y": 2,
+  "sort_number": 10,
+  "parents": [
+    {
+      "entry": "fishing/overview",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "What Fish Are For",
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- [#](FFFFFF)\ue10c[#]() Cook any fish on a campfire, smoker or furnace.\n- **Ore fish** craft into raw iron, raw gold, lapis and amethyst.\n- Some fish become **gear**: swords, a bow, boots.\n- A few fish have **effects** when eaten."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Tide fish cook into **Small**, plain or **Large Cooked Fish** depending on size. On a Farmer's Delight board a knife cuts any of them into 2 **raw fillets** and bone meal, the same fillets Aquaculture fish give.\\\n\\\nMeals: [#](2E5AAC)[Sea Food](entry://fishing/sea_food)[#]()."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Craft a fish into:**\n\n- Iron Tetra: 2 raw iron. Gilded Minnow: 2 raw gold.\n- Lapis Lanternfish: 2 lapis. Crystal Shrimp: 4 amethyst.\n- Glowfish: 2 glow ink sacs.\n- Enderfin: ender pearl. Endergazer: eye of ender. Elytrout: phantom membrane."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "- Luminescent Jellyfish or Sun Emblem: 8 **Jelly Torches**, which burn underwater.\n- Incandescent Larva and Pale Clubfish: bait.\n\n**Gear:** Sailfish, Swordfish and Blazing Swordfish are swords (the last sets things on fire). Shooting Starfish + bow: **Starlight Bow**. Dragon Fish + netherite boots: **Dragonfin Boots**, a jump in mid-air."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Eaten:** lava fish give Fire Resistance; Uranias Pisces, 10 minutes of Luck; Ender Glider and Mantyvern, Slow Falling; Chorus Cod teleports you like chorus fruit.\\\n\\\n[#](FFFFFF)\ue101[#]() **Watch out:** Witherfin gives Wither. Several Hybrid Aquatic fish poison you raw."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "[#](FFFFFF)\ue103[#]() **In depth.** The **Chasm Eel** usually eats through bedrock; that is off in this pack. Cats eat cookable fish. Tide's Fish Slices are replaced by Aquaculture's fillets."
+    }
+  ]
+}

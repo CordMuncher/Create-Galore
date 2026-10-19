@@ -1,0 +1,45 @@
+{
+  "behavior": "darts",
+  "conditions": [
+    {
+      "type": "tide:depth_range",
+      "max_y": 40,
+      "min_y": -20
+    },
+    {
+      "type": "tide:dimension",
+      "dimensions": [
+        "minecraft:overworld"
+      ]
+    },
+    {
+      "type": "tide:fluid",
+      "fluid": "water"
+    }
+  ],
+  "display_data": {
+    "entity": "hybrid_aquatic:anglerfish",
+    "roll": -90.0,
+    "x": 0.06,
+    "y": -0.2,
+    "z": 0.08
+  },
+  "fish": "hybrid_aquatic:anglerfish",
+  "journal_profile": {
+    "description": "journal.description.hybrid_aquatic.anglerfish",
+    "group": "underground",
+    "location": "journal.info.location.underground",
+    "rarity": "uncommon"
+  },
+  "selection_weight": 30.0,
+  "size": {
+    "record_high_cm": 75.0,
+    "typical_high_cm": 35.0,
+    "typical_low_cm": 20.0
+  },
+  "speed": 0.8,
+  "strength": 0.75,
+  "associated_mods": [
+    "hybrid_aquatic"
+  ]
+}

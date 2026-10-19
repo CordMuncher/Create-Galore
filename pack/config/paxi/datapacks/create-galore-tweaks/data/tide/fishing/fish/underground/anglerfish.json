@@ -1,0 +1,5 @@
+{
+  "fish": "tide:anglerfish",
+  "parent": "hybrid_aquatic:anglerfish",
+  "show_in_journal": false
+}

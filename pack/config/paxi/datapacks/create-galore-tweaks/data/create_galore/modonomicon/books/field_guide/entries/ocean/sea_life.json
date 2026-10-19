@@ -77,12 +77,12 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Other sea residents: [#](2E5AAC)[Aquamirae](entry://ocean/aquamirae)[#]() adds an icy ocean region with its own creatures and bosses, and **Critters and Companions** adds koi fish (its otter, Dumbo Octopus and Sea Bunny are off here). [#](2E5AAC)[Structures](entry://ocean/underwater_places)[#]() give them places to live. Fish worth catching: [#](2E5AAC)[Fishing](entry://ocean/fishing)[#]()."
+      "text": "Other sea residents: [#](2E5AAC)[Aquamirae](entry://ocean/aquamirae)[#]() adds an icy ocean region with its own creatures and bosses, and **Critters and Companions** adds koi fish (its otter, Dumbo Octopus and Sea Bunny are off here). [#](2E5AAC)[Structures](entry://ocean/underwater_places)[#]() give them places to live. Fish worth catching: [#](2E5AAC)[Fishing](entry://fishing/overview)[#]()."
     },
     {
       "type": "modonomicon:text",
       "title": "Related",
-      "text": "- [#](2E5AAC)[Aquamirae and the Ice Maze](entry://ocean/aquamirae)[#]()\n- [#](2E5AAC)[Diving Gear](entry://ocean/diving)[#]()\n- [#](2E5AAC)[Fishing](entry://ocean/fishing)[#]()\n- [#](2E5AAC)[Creatures](entry://exploration/creatures)[#]()"
+      "text": "- [#](2E5AAC)[Aquamirae and the Ice Maze](entry://ocean/aquamirae)[#]()\n- [#](2E5AAC)[Diving Gear](entry://ocean/diving)[#]()\n- [#](2E5AAC)[Fishing](entry://fishing/overview)[#]()\n- [#](2E5AAC)[Creatures](entry://exploration/creatures)[#]()"
     }
   ]
 }

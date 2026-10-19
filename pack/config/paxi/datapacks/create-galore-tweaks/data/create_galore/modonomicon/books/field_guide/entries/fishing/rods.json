@@ -1,0 +1,107 @@
+{
+  "category": "fishing",
+  "name": "Fishing Rods",
+  "description": "Every rod, what it is good at and where it comes from.",
+  "icon": {
+    "item": "tide:diamond_fishing_rod"
+  },
+  "x": 2,
+  "y": 0,
+  "sort_number": 2,
+  "parents": [
+    {
+      "entry": "fishing/overview",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": false
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Fishing Rods",
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- [#](FFFFFF)\ue10d[#]() Craft Stone, then upgrade at a **Smithing Table** with string as the template: iron, gold, amethyst, diamond.\n- Better rods last longer and hold more **bait**.\n- A **Netherite** or **Blazing** rod fishes in lava.\n- Six special rods are found, not made."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Every rod takes the usual fishing enchantments (Lure, Luck of the Sea, Unbreaking, Mending) and is repaired with string on an anvil. A rod that breaks gives back its line, bobber and hook.\\\n\\\nBait slots: how many different baits the rod holds at once (see [#](2E5AAC)[Bait](entry://fishing/bait)[#]())."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "minecraft:fishing_rod"
+      },
+      "title": "Fishing Rod",
+      "text": "3 sticks, 2 string. 32 uses, 1 bait slot. Old rods from before Tide are these, enchantments kept."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "tide:stone_fishing_rod"
+      },
+      "title": "Stone Fishing Rod",
+      "text": "Cobblestone and string. 48 uses, 1 bait slot. The usual base to smith from."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "tide:iron_fishing_rod"
+      },
+      "title": "Iron Fishing Rod",
+      "text": "Smith a plain or stone rod with an iron ingot. 64 uses, 1 bait slot."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "tide:golden_fishing_rod"
+      },
+      "title": "Golden Fishing Rod",
+      "text": "Smith with a gold ingot. 36 uses, 2 bait slots, +1 luck."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "tide:crystal_fishing_rod"
+      },
+      "title": "Crystal Fishing Rod",
+      "text": "Smith with an amethyst shard. 80 uses, 2 bait slots, and it chimes when a fish bites."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "tide:diamond_fishing_rod"
+      },
+      "title": "Diamond Fishing Rod",
+      "text": "Smith with a diamond. 128 uses, 2 bait slots, extra experience with every catch."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "tide:netherite_fishing_rod"
+      },
+      "title": "Netherite Fishing Rod",
+      "text": "Diamond rod + netherite ingot + Netherite Upgrade. 512 uses, 2 bait slots, fireproof, **fishes in lava**."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Found, not made** (256 uses each):\n\n- **Rod of Resonance**: ancient city chests. 3 slots; on a bite it tells you what is hooked.\n- **Prismarine Fishing Rod**: sometimes dropped by Elder Guardians. 3 slots; +1 speed and +1 luck in rain."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "- **Suncatcher**: a rare catch in plains. 6 slots; +1 luck in sunshine.\n- **Rod of the Hero**: an expert Fisherman villager sells it for 15 emeralds. 4 slots; an extra village item with every catch.\n- **Blazing Fishing Rod**: nether fortress chests. 4 slots, fishes in lava, and finds Nether lava fish anywhere."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "- **Beeline**: sometimes found when you harvest honeycomb from a hive. 5 slots.\n- **Midas Fishing Rod**: smith a golden rod with a **Midas Fish**. 3 slots, +1 luck and a bonus gold item with every catch.\\\n\\\nOwning all 14 rods earns **Hooked on Variety**."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "[#](FFFFFF)\ue103[#]() **In depth.** Two other rods keep the old cast-and-wait fishing with no timing game: **Alloyed**'s Steel Fishing Rod (see [#](2E5AAC)[Alloyed](entry://industry/alloyed)[#]()) and any Aquaculture rod you already own. Hybrid Aquatic hooks in the off hand work with both."
+    }
+  ]
+}

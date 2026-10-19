@@ -1,0 +1,54 @@
+{
+  "category": "fishing",
+  "name": "Bait",
+  "description": "Bait makes fish bite sooner or luckier; one is used per fish.",
+  "icon": {
+    "item": "tide:bait"
+  },
+  "x": 6,
+  "y": 0,
+  "sort_number": 4,
+  "parents": [
+    {
+      "entry": "fishing/angling_table",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": false
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Bait",
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- Bait goes **inside** the rod: hold the bait on your cursor and right-click the rod.\n- Each fish caught uses one bait from every slot.\n- Plain **Bait** and **Worms** make fish bite sooner; **Lucky Bait** brings rarer catches."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "In your inventory, pick up a bait stack and right-click the rod with it. Right-click the rod with an empty cursor to take bait back out.\\\n\\\nEach bait slot holds one kind of bait (a whole stack). A rod with two slots can carry two different baits, and both work."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Bait is used only when you land a **fish**: junk, treasure, crates and misses cost nothing.\n\n- **Bait**: bites much sooner.\n- **Worm**: bites sooner.\n- **Lucky Bait**: more luck.\n- **Magnetic Bait**: crates five times as often."
+    },
+    {
+      "type": "modonomicon:crafting_recipe",
+      "recipe_id_1": "tide:bait",
+      "text": "A crop, mushroom or small flower, rotten flesh, seeds and bone meal make 4 Bait."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "aquaculture:worm_farm"
+      },
+      "title": "Worm Farm",
+      "text": "Aquaculture's Worm Farm still makes **Worms**, and they work as bait in Tide rods. Feed it compostable scraps."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "- **Lucky Bait**: 8 Bait around a rabbit's foot make 16.\n- **Magnetic Bait**: lapis, 2 Bait, redstone, iron nuggets and prismarine make 4.\n- **Incandescent** and **Abyss Bait** come from void fish and make bites sooner.\n- Naturalist's **Butterflies** and **Caterpillars**, caught with a Capture Net, work like worms."
+    }
+  ]
+}
