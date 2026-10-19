@@ -1,0 +1,83 @@
+{
+  "category": "materials",
+  "name": "What's This Block?",
+  "description": "What every odd ore and stone you mine is for.",
+  "icon": {
+    "item": "create:asurine"
+  },
+  "x": 1,
+  "y": 2,
+  "sort_number": 4,
+  "parents": [
+    {
+      "entry": "materials/ore_guide",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "What's This Block?",
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- Every odd ore or stone you dig up has a use, listed here\n- Many coloured stones **crush** into metal or powder\n- **Zinc** has no best depth: look in caves\n- **Andesite** sits below about Y 60"
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Mining turns up a lot of blocks from different mods. Most are either a metal ore or a stone that a [#](2E5AAC)[Crushing Wheel](entry://create_basics/crushing)[#]() turns into something useful. The rest are building stone.\\\n\\\nJEI shows recipes for what a block **drops**, so look up the drop, not the ore block."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create:zinc_ore"
+      },
+      "title": "Finding Zinc",
+      "text": "Y -63 to 70, spread evenly, about as common as iron. No depth is better, so caves anywhere from Y -60 to 60 are the best place to look. Blue **asurine** also crushes to zinc."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "minecraft:andesite"
+      },
+      "title": "Finding Andesite",
+      "text": "Terralith keeps andesite out of hillsides. It forms big patches below about Y 60. Or craft it: diorite plus cobblestone makes two. Diorite is common around Y 0 to 30."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "createnuclear:nitrate"
+      },
+      "title": "Nitrate",
+      "text": "Drops from Nitrate Ore. Smelt it, blow a fan through powder snow onto it, then [#](2E5AAC)[mix](entry://glossary/mixing)[#]() it with ice into **Liquid Nitrogen**. A reactor cooled with it handles four times the heat water can. [#](2E5AAC)[Nuclear](entry://industry/nuclear)[#]()"
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "createnuclear:raw_thorium"
+      },
+      "title": "Raw Thorium",
+      "text": "Drops from Thorium Ore. It can't be smelted: crush it to dust, mix that into fluid and compact it into ingots for Thorium Rods. [#](2E5AAC)[Nuclear](entry://industry/nuclear)[#]()"
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Stones that give metal",
+      "text": "Create's striated stones [#](2E5AAC)[crush](entry://create_basics/crushing)[#]() into metal:\n- **Crimsite** (red): iron\n- **Veridium** (green): copper\n- **Ochrum** (yellow): gold\n- **Asurine** (blue): zinc\n\nTFMG's **galena** crushes to lead. Each gives a little per block."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Stones that give powder",
+      "text": "From TFMG:\n- **Bauxite**: bauxite powder, the start of aluminum\n- **Lignite**: coal when crushed\n- **Fireclay**: drops fireclay balls that smelt into Fireproof Bricks for the [#](2E5AAC)[blast furnace](entry://industry/tfmg_steel)[#]()\n\nNether **sulfur** crushes to sulfur dust."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Building stone",
+      "text": "These are mostly for building, with stonecutter shapes:\n- **Scoria** and **scorchia** (Create)\n- **Limestone**: also crushes to TFMG limesand\n- **Autunite** (Create Nuclear)\n- Tuff, calcite, dripstone\n\nCut or polished limestone crushes to nitrate and lead."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Other ores",
+      "text": "Lead, uranium, nickel, lithium, platinum and mithril ores smelt or crush like any metal. Depths and uses: [#](2E5AAC)[Ore Guide](entry://materials/ore_guide)[#]().\\\n\\\n[#](FFFFFF)\ue103[#]() **In depth.** Crushed nickel has no washing recipe; smelt it."
+    }
+  ]
+}

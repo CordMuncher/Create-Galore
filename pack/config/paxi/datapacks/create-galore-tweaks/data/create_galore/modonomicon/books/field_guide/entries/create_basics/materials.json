@@ -34,7 +34,7 @@
         "item": "create:andesite_alloy"
       },
       "title": "Andesite Alloy",
-      "text": "The first Create material. Andesite plus iron or zinc nuggets, crafted in a diagonal or [#](7A3C9A)[mixed](entry://glossary/mixing)[#]() in a basin."
+      "text": "The first Create material. Andesite plus iron or zinc nuggets, crafted in a diagonal or [#](7A3C9A)[mixed](entry://glossary/mixing)[#]() in a basin. Andesite sits below about Y 60, or craft it from diorite and cobblestone."
     },
     {
       "type": "modonomicon:spotlight",

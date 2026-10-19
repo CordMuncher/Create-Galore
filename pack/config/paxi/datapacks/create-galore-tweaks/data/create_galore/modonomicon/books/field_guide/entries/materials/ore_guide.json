@@ -13,12 +13,12 @@
     {
       "type": "modonomicon:text",
       "title": "Ore Guide",
-      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- [#](FFFFFF)\ue10d[#]() **Zinc**, for brass: Overworld, Y -63 to 70\n- **Lead** only generates as Create Nuclear's ore\n- [#](FFFFFF)\ue10f[#]() **Titanium** and **tungsten** exist only on Northstar's planets\n- Ores go further when crushed"
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- [#](FFFFFF)\ue10d[#]() **Zinc**, for brass: Overworld, Y -63 to 70\n- **Lead** ore is Create Nuclear's; galena gives a little\n- [#](FFFFFF)\ue10f[#]() **Titanium** and **tungsten** exist only on Northstar's planets\n- Ores go further when crushed"
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Where each metal comes from in this pack, read from the mods' world generation data. Depths are [#](7A3C9A)[Y levels](entry://glossary/y_level)[#](), Overworld unless noted.\\\n\\\nOres go further when [#](2E5AAC)[crushed](entry://materials/ore_doubling)[#](). Drillable veins: [#](2E5AAC)[Ore Excavation](entry://industry/ore_excavation)[#]()."
+      "text": "Where each metal comes from in this pack, read from the mods' world generation data. Depths are [#](7A3C9A)[Y levels](entry://glossary/y_level)[#](), Overworld unless noted.\\\n\\\nOres go further when [#](2E5AAC)[crushed](entry://materials/ore_doubling)[#](). Unknown block? [#](2E5AAC)[What's This Block?](entry://materials/whats_this_block)[#](). Drillable veins: [#](2E5AAC)[Ore Excavation](entry://industry/ore_excavation)[#]()."
     },
     {
       "type": "modonomicon:text",
@@ -31,12 +31,12 @@
         "item": "create:zinc_ore"
       },
       "title": "Zinc Ore",
-      "text": "Overworld, Y -63 to 70, stone and deepslate. Northstar's planets have their own zinc ores, and both count as zinc ore in recipes."
+      "text": "Overworld, Y -63 to 70, stone and deepslate. Spread evenly: no depth beats another, so look in caves. Northstar's planets have their own zinc ores, and both count as zinc ore in recipes."
     },
     {
       "type": "modonomicon:text",
       "title": "Create Nuclear",
-      "text": "- **Lead**: Y -16 to 60\n- **Uranium**: Y -63 to 16, sparse\n- **Thorium**: Y -16 to 55\n- **Nitrate**: Y -63 to 64\n\n[Autunite](item://createnuclear:autunite), a building stone, forms striated veins below Y 16."
+      "text": "- **Lead**: Y -16 to 60\n- **Uranium**: Y -63 to 16, sparse\n- **Thorium**: Y -16 to 55\n- **Nitrate**: Y -63 to 64, for reactor coolant\n\n[Autunite](item://createnuclear:autunite), a building stone, forms striated veins below Y 16."
     },
     {
       "type": "modonomicon:spotlight",
@@ -44,7 +44,7 @@
         "item": "createnuclear:lead_ore"
       },
       "title": "Lead Ore",
-      "text": "The pack's only generated lead, since TFMG's lead ore is off. Mining drops [Raw Lead](item://createnuclear:raw_lead). The ore block itself has no crushing recipe; crush the raw lead."
+      "text": "The pack's only lead ore, since TFMG's is off. Galena also crushes to a little lead. Mining drops [Raw Lead](item://createnuclear:raw_lead). The ore block itself has no crushing recipe; crush the raw lead."
     },
     {
       "type": "modonomicon:spotlight",
@@ -57,7 +57,7 @@
     {
       "type": "modonomicon:text",
       "title": "TFMG",
-      "text": "- **Nickel**: Y -63 to 20\n- **Lithium**: Y -63 to -5, sparse\n- **Bauxite**: a stone that crushes to powder, the start of aluminum\n- Galena: decorative, not an ore\n- Lead: off\n\nOil: [#](2E5AAC)[Oil](entry://industry/tfmg_oil)[#]()."
+      "text": "- **Nickel**: Y -63 to 20\n- **Lithium**: Y -63 to -5, sparse\n- **Bauxite**: a stone that crushes to powder, the start of aluminum\n- **Galena**: crushes to some lead\n- Lead: off\n\nOil: [#](2E5AAC)[Oil](entry://industry/tfmg_oil)[#]()."
     },
     {
       "type": "modonomicon:spotlight",
