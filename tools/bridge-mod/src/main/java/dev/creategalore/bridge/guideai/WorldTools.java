@@ -98,6 +98,7 @@ final class WorldTools {
                 + "title, and the visible ones that come right after what they have done. Use it with their inventory and "
                 + "surroundings to judge where they are in the game, for example when they ask what to do next.", new JsonObject()));
         tools.add(Diagrams.definition());
+        tools.add(Models.definition());
         return tools;
     }
 

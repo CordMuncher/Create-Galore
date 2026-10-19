@@ -32,6 +32,9 @@ final class DiagramPainter {
     private record Label(String text, int x, int y, int color) {
     }
 
+    private record Embedded(ModelView model, int x, int y, int w, int h) {
+    }
+
     /** One drawing, rasterised once; painting it is a handful of rectangle fills, icons and labels. */
     static final class Drawing {
         final String title, caption;
@@ -39,6 +42,7 @@ final class DiagramPainter {
         private final int[] pixels;
         private final List<Icon> icons = new ArrayList<>();
         private final List<Label> labels = new ArrayList<>();
+        private final List<Embedded> models = new ArrayList<>();
 
         private Drawing(String title, String caption, int height) {
             this.title = title;
@@ -155,6 +159,9 @@ final class DiagramPainter {
                     start = end;
                 }
             }
+            // Models the drawing holds, seen from the book's usual angle (turning them is for models on their own).
+            for (Embedded m : models)
+                m.model.draw(g, font, x0 + m.x * scale, y0 + m.y * scale, m.w * scale, m.h * scale, ModelView.YAW, ModelView.PITCH, 1);
             ItemStack hovered = ItemStack.EMPTY;
             float iconScale = scale / 2f;
             for (Icon icon : icons) {
@@ -166,15 +173,19 @@ final class DiagramPainter {
                 g.pose().popPose();
                 if (mouseX >= ix && mouseX < ix + size && mouseY >= iy && mouseY < iy + size) hovered = icon.stack;
             }
+            // Text is sized to the book pixels (a character about 3 wide, a line 5 tall) at every scale, so it lands where
+            // the book placed it and never runs into what it was drawn beside.
+            float textScale = scale / 2f;
             for (Label label : labels) {
-                int ly = y0 + label.y * scale;
+                g.pose().pushPose();
+                g.pose().translate(x0 + label.x * scale, y0 + label.y * scale, 200); // above item icons
+                g.pose().scale(textScale, textScale, 1);
+                int ly = 0;
                 for (String part : label.text.split("\n")) {
-                    g.pose().pushPose();
-                    g.pose().translate(0, 0, 200); // above item icons
-                    g.drawString(font, part, x0 + label.x * scale, ly, label.color, false);
-                    g.pose().popPose();
-                    ly += font.lineHeight;
+                    g.drawString(font, part, 0, ly, label.color, false);
+                    ly += 10;
                 }
+                g.pose().popPose();
             }
             y = y0 + height * scale + scale + 2;
             if (!caption.isEmpty()) {
@@ -241,6 +252,11 @@ final class DiagramPainter {
                 }
             }
             case "text" -> d.labels.add(new Label(str(s, "text"), x, y, color));
+            case "model" -> {
+                if (s.has("embedded") && s.get("embedded").isJsonObject())
+                    d.models.add(new Embedded(ModelView.parse(s.getAsJsonObject("embedded")), x, y,
+                            Math.min(Diagrams.WIDTH - x, intOr(s, "w", 16)), Math.min(d.height - y, intOr(s, "h", 16))));
+            }
             case "item" -> {
                 ResourceLocation id = ResourceLocation.tryParse(str(s, "item"));
                 var item = id == null ? Items.AIR : BuiltInRegistries.ITEM.get(id);

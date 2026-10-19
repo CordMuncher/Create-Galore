@@ -42,6 +42,8 @@ public final class GuideAi {
     private static final Logger LOG = LogUtils.getLogger();
     /** Model rounds per question: tool calls, then one last round that must answer. */
     private static final int MAX_ROUNDS = 8;
+    /** Drawings and models in one answer. */
+    private static final int MAX_DRAWINGS = 4;
     private static final String NOTICE_OFF = "The book's voice is off on this server. It only speaks on a home server whose owner "
             + "saved an Anthropic API key when starting it. The written guide works as always.";
     private static final String NOTICE_NOT_DEDICATED = "The book's voice only speaks on a dedicated home server, not in singleplayer "
@@ -199,6 +201,7 @@ public final class GuideAi {
                 sendPages(player, book, "");
             }
             case GuideAiNet.ASK -> ask(l, player, book, request.pageId(), request.text());
+            case GuideAiNet.SAVE -> save(l, player, book, request.pageId(), request.text());
             default -> {
             }
         }
@@ -228,6 +231,8 @@ public final class GuideAi {
             refusal = "Give the book a few seconds between questions.";
         else if (book.askedToday >= l.settings.dailyQuestions)
             refusal = "The book has answered " + l.settings.dailyQuestions + " of your questions today and needs to rest until tomorrow.";
+        else if (page != null && page.kind != ThreadStore.KIND_CHAT)
+            refusal = "This page keeps a saved drawing. Start a new page to ask.";
         else if (page != null && page.questions >= ThreadStore.MAX_QUESTIONS)
             refusal = "This page is full. Start a new page to keep asking.";
         if (refusal != null) {
@@ -235,7 +240,7 @@ public final class GuideAi {
             else sendPages(player, book, refusal);
             return;
         }
-        if (page == null) page = l.store.newPage(book, GuideAiNet.clip(question.replace('\n', ' '), 60));
+        if (page == null) page = l.store.newPage(book, GuideAiNet.clip(question.replace('\n', ' '), 60), ThreadStore.KIND_CHAT);
         ThreadStore.touch(book, page);
         page.entries.add(new GuideAiNet.Entry(GuideAiNet.WHO_PLAYER, question));
         book.askedToday++;
@@ -293,6 +298,49 @@ public final class GuideAi {
         if (player != null) sendView(player, page, "");
     }
 
+    /** Copies a drawing or model from a page onto a new page of its own, so the player can find it again. */
+    private static void save(Live l, ServerPlayer player, ThreadStore.Book book, String pageId, String key) {
+        ThreadStore.Page page = book.page(pageId);
+        if (page == null) {
+            sendPages(player, book, "That page is gone.");
+            return;
+        }
+        String found = null;
+        for (GuideAiNet.Entry e : page.entries)
+            if (e.who() == GuideAiNet.WHO_DIAGRAM && GuideAiNet.drawingKey(e.text()).equals(key)) found = e.text();
+        String json = found;
+        if (json == null || page.kind != ThreadStore.KIND_CHAT) {
+            sendView(player, page, "");
+            return;
+        }
+        for (ThreadStore.Page p : book.pages) {
+            if (p.kind != ThreadStore.KIND_CHAT && p.entries.stream().anyMatch(e -> e.who() == GuideAiNet.WHO_DIAGRAM && e.text().equals(json))) {
+                sendView(player, page, "Already saved as \"" + p.title + "\" in your pages.");
+                return;
+            }
+        }
+        if (ThreadStore.saved(book) >= ThreadStore.MAX_SAVED) {
+            sendView(player, page, "Your book holds " + ThreadStore.MAX_SAVED + " saved drawings. Tear one out to save another.");
+            return;
+        }
+        boolean model;
+        String name;
+        try {
+            JsonObject o = com.google.gson.JsonParser.parseString(json).getAsJsonObject();
+            model = Models.isModel(o);
+            name = GuideText.string(o, "title").strip();
+        } catch (RuntimeException e) {
+            model = false;
+            name = "";
+        }
+        if (name.isEmpty()) name = model ? "A model" : "A drawing";
+        ThreadStore.Page saved = l.store.newPage(book, GuideAiNet.clip(name, 60), model ? ThreadStore.KIND_MODEL : ThreadStore.KIND_DRAWING);
+        saved.entries.add(new GuideAiNet.Entry(GuideAiNet.WHO_NOTE, "Saved from the page \"" + page.title + "\"."));
+        saved.entries.add(new GuideAiNet.Entry(GuideAiNet.WHO_DIAGRAM, json));
+        l.store.save(player.getUUID());
+        sendView(player, page, "Saved as its own page, \"" + saved.title + "\". Find it under All pages.");
+    }
+
     private static boolean isPending(UUID id) {
         synchronized (pending) {
             return pending.contains(id);
@@ -302,18 +350,35 @@ public final class GuideAi {
     private static void sendPages(ServerPlayer player, ThreadStore.Book book, String notice) {
         List<GuideAiNet.Summary> list = new ArrayList<>();
         for (ThreadStore.Page p : book.pages)
-            list.add(new GuideAiNet.Summary(p.id, GuideAiNet.clip(p.title, 64), p.questions, p.updated));
+            list.add(new GuideAiNet.Summary(p.id, GuideAiNet.clip(p.title, 64), p.questions, p.updated, p.kind));
         send(player, new GuideAiNet.Pages(true, notice, list));
     }
 
     private static void sendView(ServerPlayer player, ThreadStore.Page page, String notice) {
-        List<GuideAiNet.Entry> entries = page.entries;
-        if (entries.size() > 500) entries = entries.subList(entries.size() - 500, entries.size());
-        if (notice.isEmpty() && page.edition < ThreadStore.EDITION && !page.entries.isEmpty())
+        // The newest entries that fit in one packet (models make pages heavy; the game drops a player over a packet too large).
+        int from = page.entries.size(), bytes = 0;
+        while (from > 0 && page.entries.size() - from < 500) {
+            int size = page.entries.get(from - 1).text().getBytes(java.nio.charset.StandardCharsets.UTF_8).length + 16;
+            if (bytes + size > VIEW_BUDGET) break;
+            bytes += size;
+            from--;
+        }
+        List<GuideAiNet.Entry> entries = new ArrayList<>(page.entries.subList(from, page.entries.size()));
+        // Drawings belong to the answer before them; don't start on one whose answer was cut off.
+        while (!entries.isEmpty() && entries.get(0).who() == GuideAiNet.WHO_DIAGRAM && from > 0) {
+            entries.remove(0);
+            from++;
+        }
+        if (from > 0) entries.add(0, new GuideAiNet.Entry(GuideAiNet.WHO_NOTE, "Earlier questions on this page are too long to show here."));
+        if (notice.isEmpty() && page.kind == ThreadStore.KIND_CHAT && page.edition < ThreadStore.EDITION && !page.entries.isEmpty())
             notice = "This page is from an older edition of the book. You can keep asking here; start a new page for the "
                     + "newest features.";
-        send(player, new GuideAiNet.View(page.id, GuideAiNet.clip(page.title, 64), List.copyOf(entries), isPending(player.getUUID()), notice));
+        send(player, new GuideAiNet.View(page.id, GuideAiNet.clip(page.title, 64), List.copyOf(entries), isPending(player.getUUID()),
+                notice, page.kind));
     }
+
+    /** Bytes of page text per view packet, well under the game's 1 MiB limit for one packet. */
+    private static final int VIEW_BUDGET = 700_000;
 
     private static void send(ServerPlayer player, net.minecraft.network.protocol.common.custom.CustomPacketPayload payload) {
         if (player.connection != null && player.connection.hasChannel(payload.type())) PacketDistributor.sendToPlayer(player, payload);
@@ -533,15 +598,32 @@ public final class GuideAi {
             String result;
             try {
                 if (name.equals("draw_diagram")) {
-                    String problem = l.server.submit(() -> Diagrams.check(input)).get(10, TimeUnit.SECONDS);
-                    if (problem == null && diagrams.size() >= 4) problem = "Not drawn: four drawings per answer is the limit.";
+                    // A copy: the check fills in any models the drawing holds, and the conversation keeps the input as sent.
+                    JsonObject drawing = input.deepCopy();
+                    List<String> earlier = List.copyOf(diagrams);
+                    String problem = l.server.submit(() -> Diagrams.check(drawing, earlier)).get(10, TimeUnit.SECONDS);
+                    if (problem == null && diagrams.size() >= MAX_DRAWINGS) problem = "Not drawn: " + MAX_DRAWINGS
+                            + " drawings and models per answer is the limit.";
                     if (problem == null) {
-                        diagrams.add(input.toString());
-                        streamer.diagram(input.toString());
+                        diagrams.add(drawing.toString());
+                        streamer.diagram(drawing.toString());
                         result = "Drawn as diagram " + diagrams.size() + ". Write [diagram " + diagrams.size()
                                 + "] on a line of its own in your answer where it should appear.";
                     } else {
                         result = problem;
+                    }
+                } else if (name.equals("build_model")) {
+                    Models.Result built = l.server.submit(() -> Models.build(input)).get(10, TimeUnit.SECONDS);
+                    if (built.problem() != null) {
+                        result = built.problem();
+                    } else if (diagrams.size() >= MAX_DRAWINGS) {
+                        result = "Not built: " + MAX_DRAWINGS + " drawings and models per answer is the limit.";
+                    } else {
+                        diagrams.add(built.model().toString());
+                        streamer.diagram(built.model().toString());
+                        result = "Built as diagram " + diagrams.size() + ". Write [diagram " + diagrams.size() + "] on a line of "
+                                + "its own in your answer where it should appear, or draw it into a diagram with a shape of kind "
+                                + "model and text \"" + diagrams.size() + "\".";
                     }
                 } else {
                     result = l.server.submit(() -> {

@@ -83,6 +83,8 @@ final class AskScreen extends Screen {
     private String title = "";
     private List<GuideAiNet.Entry> entries = List.of();
     private List<GuideAiNet.Summary> pages = List.of();
+    /** The open page's kind: a conversation, or a page keeping a saved drawing (no question line there). */
+    private int kind = GuideAiNet.KIND_CHAT;
     private boolean pending, enabled = true, heard;
     private String notice = "";
     private String draft = "", lastQuestion = "";
@@ -106,6 +108,16 @@ final class AskScreen extends Screen {
     private int laidOutWidth;
     private final Map<String, DiagramPainter.Drawing> drawings = new HashMap<>();
     private final Map<String, RecipeView> recipes = new HashMap<>();
+    private final Map<String, ModelView> models = new HashMap<>();
+    /** Drawings and models on screen this frame, for right-click saving, dragging and zooming. */
+    private final List<Hot> hots = new ArrayList<>();
+    private ModelView dragging;
+
+    private record Hot(int x, int y, int w, int h, String json, int entry, ModelView model) {
+        boolean contains(double mx, double my) {
+            return mx >= x && mx < x + w && my >= y && my < y + h;
+        }
+    }
 
     // Where things go, worked out from the window size: the frame, the paper inside it and the text area on it.
     private int frameX, frameY, frameW, frameH, paperX, paperY, paperW, paperH, textX, textW, contentTop, contentBottom;
@@ -128,7 +140,7 @@ final class AskScreen extends Screen {
         textW = paperW - 20;
         contentTop = paperY + 26;
         // Below the text: the question line (on an open page) and the row of buttons.
-        contentBottom = paperY + paperH - (pageId == null ? 26 : 46);
+        contentBottom = paperY + paperH - (pageId == null || kind != GuideAiNet.KIND_CHAT ? 26 : 46);
     }
 
     @Override
@@ -151,6 +163,11 @@ final class AskScreen extends Screen {
                         () -> GuideAiClient.send(GuideAiNet.DELETE, p.id(), "")));
                 tear.setTooltip(Tooltip.create(Component.literal("Tear out this page")));
             }
+        } else if (kind != GuideAiNet.KIND_CHAT) {
+            input = null;
+            askButton = null;
+            addRenderableWidget(new BookButton(textX, barY, 66, 16, Component.literal("All pages"), this::backToList));
+            addRenderableWidget(new BookButton(textX + 70, barY, 66, 16, Component.literal("New page"), this::openNew));
         } else {
             int inputY = paperY + paperH - 42;
             input = new EditBox(font, textX + 4, inputY + 4, textW - 48, 10, Component.literal("Your question"));
@@ -201,6 +218,7 @@ final class AskScreen extends Screen {
 
     private void openNew() {
         pageId = "";
+        kind = GuideAiNet.KIND_CHAT;
         title = "New page";
         entries = List.of();
         pending = false;
@@ -211,8 +229,9 @@ final class AskScreen extends Screen {
         rebuildWidgets();
     }
 
-    private void open(String id) {
+    private void open(String id, int pageKind) {
         pageId = id;
+        kind = pageKind;
         title = "";
         entries = List.of();
         notice = "";
@@ -262,6 +281,9 @@ final class AskScreen extends Screen {
         if (pageId == null || !(pageId.isEmpty() || pageId.equals(view.pageId()))) return;
         pageId = view.pageId();
         title = view.title();
+        boolean kindChanged = kind != view.kind();
+        kind = view.kind();
+        if (kindChanged) geometry();
         boolean finished = pending && !view.pending();
         entries = view.entries();
         // The question is on the page now, so the line it was typed on can clear; a refused one stays to retry.
@@ -331,8 +353,24 @@ final class AskScreen extends Screen {
         return super.keyPressed(key, scanCode, modifiers);
     }
 
+    private Hot hotAt(double mouseX, double mouseY) {
+        if (pageId == null || mouseY < contentTop || mouseY > contentBottom) return null;
+        for (Hot h : hots) if (h.contains(mouseX, mouseY)) return h;
+        return null;
+    }
+
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        Hot hot = hotAt(mouseX, mouseY);
+        if (hot != null && button == GLFW.GLFW_MOUSE_BUTTON_RIGHT && canSave(hot.entry)) {
+            GuideAiClient.send(GuideAiNet.SAVE, pageId, GuideAiNet.drawingKey(hot.json));
+            pageTurn();
+            return true;
+        }
+        if (hot != null && hot.model != null && button == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
+            dragging = hot.model;
+            return true;
+        }
         boolean handled = super.mouseClicked(mouseX, mouseY, button);
         // A button that switched views was replaced, but the screen still focuses it: typing went nowhere and Space
         // pressed it again. Focus the question line instead.
@@ -341,7 +379,30 @@ final class AskScreen extends Screen {
     }
 
     @Override
+    public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
+        if (dragging != null) {
+            dragging.turn(dragX, dragY);
+            return true;
+        }
+        return super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
+    }
+
+    @Override
+    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+        if (dragging != null && button == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
+            dragging = null;
+            return true;
+        }
+        return super.mouseReleased(mouseX, mouseY, button);
+    }
+
+    @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
+        Hot hot = hotAt(mouseX, mouseY);
+        if (hot != null && hot.model != null) {
+            hot.model.zoom(scrollY);
+            return true;
+        }
         if (pageId == null) {
             int max = Math.max(0, pages.size() - listRows());
             int next = Math.max(0, Math.min(max, listOffset - (int) Math.signum(scrollY)));
@@ -377,7 +438,7 @@ final class AskScreen extends Screen {
         g.drawString(font, h, paperX + (paperW - font.width(h)) / 2, paperY + 9, INK, false);
         g.fill(textX + 10, paperY + 20, textX + textW - 10, paperY + 21, RULE);
         g.fill(textX + 10, paperY + 21, textX + textW - 10, paperY + 22, PAPER_SHADE);
-        if (pageId != null) {
+        if (pageId != null && kind == GuideAiNet.KIND_CHAT) {
             // The question line: a strip of the frame's dark leather to write on.
             int y = paperY + paperH - 42;
             g.fill(textX - 1, y, textX + textW - 42, y + 18, BUTTON_EDGE);
@@ -431,6 +492,7 @@ final class AskScreen extends Screen {
         int view = contentBottom - contentTop, maxScroll = Math.max(0, page.height - view);
         if (stickToBottom || scroll > maxScroll) scroll = maxScroll;
         if (scroll >= maxScroll) stickToBottom = true;
+        hots.clear();
         g.enableScissor(paperX, contentTop, paperX + paperW, contentBottom);
         ItemStack hovered = page.paint(g, textX, contentTop - scroll, mouseX, mouseY, contentTop, contentBottom);
         g.disableScissor();
@@ -482,7 +544,7 @@ final class AskScreen extends Screen {
     // ---------- layout ----------
 
     /** One thing on the page at a fixed spot (relative to the top of the conversation). */
-    private sealed interface Piece permits Text, Icon, Box, Face, Drawn, Spinner, Shown {
+    private sealed interface Piece permits Text, Icon, Box, Face, Drawn, Spinner, Shown, Model {
     }
 
     private record Text(int x, int y, FormattedCharSequence text, int color) implements Piece {
@@ -497,7 +559,11 @@ final class AskScreen extends Screen {
     private record Face(int x, int y) implements Piece {
     }
 
-    private record Drawn(int x, int y, int w, DiagramPainter.Drawing drawing) implements Piece {
+    /** A drawing; entry is its place in the page's entries, or -1 while the answer is still being written. */
+    private record Drawn(int x, int y, int w, DiagramPainter.Drawing drawing, String json, int entry) implements Piece {
+    }
+
+    private record Model(int x, int y, int w, ModelView view, String json, int entry) implements Piece {
     }
 
     private record Spinner(int x, int y) implements Piece {
@@ -540,8 +606,23 @@ final class AskScreen extends Screen {
                             PlayerFaceRenderer.draw(g, minecraft.player.getSkin(), ox + f.x, oy + f.y, 8);
                     }
                     case Drawn d -> {
+                        int dh = d.drawing.screenHeight(font, d.w, scale);
+                        if (oy + d.y > clipBottom || oy + d.y + dh < clipTop) continue;
                         ItemStack h = d.drawing.paint(g, font, ox + d.x, oy + d.y, d.w, scale, mouseX, mouseY);
                         if (!h.isEmpty() && mouseIn) hovered = h;
+                        Hot hot = new Hot(ox + d.x, oy + d.y, d.w, dh, d.json, d.entry, null);
+                        hots.add(hot);
+                        if (mouseIn && hot.contains(mouseX, mouseY) && canSave(d.entry)) saveHint(g, hot);
+                    }
+                    case Model m -> {
+                        int mh = m.view.screenHeight(font, m.w);
+                        if (oy + m.y > clipBottom || oy + m.y + mh < clipTop) continue;
+                        Hot hot = new Hot(ox + m.x, oy + m.y, m.w, mh, m.json, m.entry, m.view);
+                        boolean over = mouseIn && hot.contains(mouseX, mouseY);
+                        m.view.paint(g, font, ox + m.x, oy + m.y, m.w, over || dragging == m.view
+                                ? (canSave(m.entry) ? "Drag to turn, scroll to zoom, right-click to save" : "Drag to turn, scroll to zoom")
+                                : null);
+                        hots.add(hot);
                     }
                     case Spinner s -> drawSpinner(g, ox + s.x, oy + s.y);
                     case Shown r -> {
@@ -552,6 +633,21 @@ final class AskScreen extends Screen {
             }
             return hovered;
         }
+    }
+
+    private boolean canSave(int entry) {
+        return entry >= 0 && kind == GuideAiNet.KIND_CHAT && pageId != null && !pageId.isEmpty();
+    }
+
+    /** "Right-click to save" in the drawing's bottom corner while the mouse is over it. */
+    private void saveHint(GuiGraphics g, Hot hot) {
+        String hint = "Right-click to save as a page";
+        int hw = font.width(hint) + 6, x = hot.x + hot.w - hw - 4, y = hot.y + hot.h - 13;
+        g.pose().pushPose();
+        g.pose().translate(0, 0, 300);
+        g.fill(x, y, x + hw, y + 10, 0xEEF9EED2);
+        g.drawString(font, hint, x + 3, y + 1, FADED, false);
+        g.pose().popPose();
     }
 
     /** A box with its corners cut, the way the guide draws its little plates. */
@@ -565,7 +661,7 @@ final class AskScreen extends Screen {
         Layout page = layout(w, true);
         String shown = liveText.substring(0, (int) Math.min(typed, liveText.length()));
         int y = page.height;
-        if (!shown.isEmpty() || !liveDiagrams.isEmpty()) y = addBook(page, y, shown, liveDiagrams, w, true);
+        if (!shown.isEmpty() || !liveDiagrams.isEmpty()) y = addBook(page, y, shown, liveDiagrams, List.of(), w, true);
         page.pieces.add(new Spinner(0, y));
         page.height = y + 18;
         return page;
@@ -574,18 +670,28 @@ final class AskScreen extends Screen {
     private Layout layout(int w, boolean live) {
         Layout page = new Layout();
         int y = 2;
+        boolean afterAnswer = false;
         for (int i = 0; i < entries.size(); i++) {
             GuideAiNet.Entry e = entries.get(i);
-            if (e.who() == GuideAiNet.WHO_DIAGRAM) continue; // drawn with the answer before it
+            if (e.who() == GuideAiNet.WHO_DIAGRAM) {
+                // Drawn with the answer before it; on a saved page it stands on its own.
+                if (!afterAnswer) y = addDrawing(page, y + 2, e.text(), 0, w - 12, i) + 8;
+                continue;
+            }
+            afterAnswer = e.who() == GuideAiNet.WHO_BOOK;
             switch (e.who()) {
                 case GuideAiNet.WHO_PLAYER -> y = addPlayer(page, y, e.text(), w);
                 case GuideAiNet.WHO_BOOK -> {
                     List<String> diagrams = new ArrayList<>();
-                    for (int j = i + 1; j < entries.size() && entries.get(j).who() == GuideAiNet.WHO_DIAGRAM; j++) diagrams.add(entries.get(j).text());
+                    List<Integer> at = new ArrayList<>();
+                    for (int j = i + 1; j < entries.size() && entries.get(j).who() == GuideAiNet.WHO_DIAGRAM; j++) {
+                        diagrams.add(entries.get(j).text());
+                        at.add(j);
+                    }
                     String text = e.text();
                     boolean typing = i == typingEntry;
                     if (typing) text = text.substring(0, (int) Math.min(typed, text.length()));
-                    y = addBook(page, y, text, diagrams, w, typing);
+                    y = addBook(page, y, text, diagrams, at, w, typing);
                 }
                 default -> y = addNote(page, y, e.text(), w, FADED);
             }
@@ -593,8 +699,8 @@ final class AskScreen extends Screen {
         if (entries.isEmpty() && !pending && !live)
             y = addNote(page, y + 6, "Ask anything about the pack: how something is made, what to do next, why a machine won't "
                     + "run, or what you're looking at. The book sees what you see and carry and the chests you've opened nearby, "
-                    + "never the map, and draws a little diagram when a picture helps.", w, FADED);
-        if (!notice.isEmpty()) y = addNote(page, y, notice, w, WARN);
+                    + "never the map, and draws a diagram or builds a little 3D model when a picture helps.", w, FADED);
+        if (!notice.isEmpty()) y = addNote(page, y, notice, w, notice.startsWith("Saved as") ? FADED : WARN);
         page.height = y;
         return page;
     }
@@ -630,7 +736,7 @@ final class AskScreen extends Screen {
      * bullets (with item icons where the book named an item), bold words and drawings. Each [diagram N] line becomes
      * drawing N; drawings it never placed go at the end.
      */
-    private int addBook(Layout page, int y, String text, List<String> diagrams, int w, boolean partial) {
+    private int addBook(Layout page, int y, String text, List<String> diagrams, List<Integer> at, int w, boolean partial) {
         page.pieces.add(new Icon(0, y, fieldGuide()));
         int x = 16, aw = w - 16 - 12;
         if (partial) text = hideUnfinished(text);
@@ -650,7 +756,7 @@ final class AskScreen extends Screen {
             if (m.matches()) {
                 int n = Integer.parseInt(m.group(1)) - 1;
                 if (n >= 0 && n < diagrams.size()) {
-                    y = addDrawing(page, y + 2, diagrams.get(n), x, aw) + 4;
+                    y = addDrawing(page, y + 2, diagrams.get(n), x, aw, n < at.size() ? at.get(n) : -1) + 4;
                     placed[n] = true;
                     first = false;
                 }
@@ -714,13 +820,19 @@ final class AskScreen extends Screen {
             first = false;
         }
         if (!partial)
-            for (int i = 0; i < diagrams.size(); i++) if (!placed[i]) y = addDrawing(page, y + 2, diagrams.get(i), x, aw) + 4;
+            for (int i = 0; i < diagrams.size(); i++)
+                if (!placed[i]) y = addDrawing(page, y + 2, diagrams.get(i), x, aw, i < at.size() ? at.get(i) : -1) + 4;
         return Math.max(y, top + 14) + 10;
     }
 
-    private int addDrawing(Layout page, int y, String json, int x, int w) {
+    private int addDrawing(Layout page, int y, String json, int x, int w, int entry) {
+        if (ModelView.isModel(json)) {
+            ModelView m = models.computeIfAbsent(json, ModelView::parse);
+            page.pieces.add(new Model(x, y, w, m, json, entry));
+            return y + m.screenHeight(font, w);
+        }
         DiagramPainter.Drawing d = drawings.computeIfAbsent(json, DiagramPainter::parse);
-        page.pieces.add(new Drawn(x, y, w, d));
+        page.pieces.add(new Drawn(x, y, w, d, json, entry));
         return y + d.screenHeight(font, w, DiagramPainter.scale(textW - 24));
     }
 
@@ -841,13 +953,13 @@ final class AskScreen extends Screen {
 
         @Override
         public void onPress() {
-            open(summary.page.id());
+            open(summary.page.id(), summary.page.kind());
         }
 
         @Override
         protected void renderWidget(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
             if (isHovered() || isFocused()) plate(g, getX(), getY(), width, height, ROW_HOVER, RULE);
-            g.renderItem(new ItemStack(Items.PAPER), getX() + 3, getY() + 3);
+            g.renderItem(icon(summary.page.kind()), getX() + 3, getY() + 3);
             int tx = getX() + 24, tw = width - 28;
             g.drawString(font, font.plainSubstrByWidth(summary.page.title(), tw), tx, getY() + 3, INK, false);
             g.drawString(font, font.plainSubstrByWidth(summary.meta, tw), tx, getY() + 12, FADED, false);
@@ -859,10 +971,22 @@ final class AskScreen extends Screen {
         }
     }
 
+    private static ItemStack icon(int kind) {
+        return switch (kind) {
+            case GuideAiNet.KIND_DRAWING -> new ItemStack(Items.PAINTING);
+            case GuideAiNet.KIND_MODEL -> new ItemStack(BuiltInRegistries.ITEM.getOptional(ResourceLocation.fromNamespaceAndPath("create", "schematic"))
+                    .orElse(Items.MAP));
+            default -> new ItemStack(Items.PAPER);
+        };
+    }
+
     private record GuiGraphicsSummary(GuideAiNet.Summary page, String meta) {
         GuiGraphicsSummary(GuideAiNet.Summary page) {
-            this(page, page.questions() + (page.questions() == 1 ? " question" : " questions") + ", last used "
-                    + DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT).format(new Date(page.updated())));
+            this(page, (switch (page.kind()) {
+                case GuideAiNet.KIND_DRAWING -> "Saved drawing";
+                case GuideAiNet.KIND_MODEL -> "Saved 3D model";
+                default -> page.questions() + (page.questions() == 1 ? " question" : " questions");
+            }) + ", last used " + DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT).format(new Date(page.updated())));
         }
     }
 }

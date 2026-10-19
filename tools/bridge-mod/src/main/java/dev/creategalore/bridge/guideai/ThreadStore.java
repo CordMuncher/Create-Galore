@@ -35,12 +35,19 @@ final class ThreadStore {
     static final int MAX_QUESTIONS = 30;
     private static final SecureRandom RANDOM = new SecureRandom();
 
-    /** Pages started before the book's 0.2.21 layout (formatted answers, recipes, storage) are edition 1. */
-    static final int EDITION = 2;
+    /**
+     * Pages started before the book's 0.2.21 layout (formatted answers, recipes, storage) are edition 1, pages from
+     * before its 3D models (0.2.22) edition 2.
+     */
+    static final int EDITION = 3;
+    /** A conversation, or a page that keeps one saved drawing or model. */
+    static final int KIND_CHAT = 0, KIND_DRAWING = 1, KIND_MODEL = 2;
+    static final int MAX_SAVED = 50;
 
     static final class Page {
         final String id;
         int edition = EDITION;
+        int kind = KIND_CHAT;
         String title;
         long updated;
         int questions;
@@ -74,13 +81,26 @@ final class ThreadStore {
         return books.computeIfAbsent(player, this::load);
     }
 
-    Page newPage(Book book, String title) {
+    /** Saved drawings never fall out: when the book is full, the oldest conversation goes. */
+    Page newPage(Book book, String title, int kind) {
         Page page = new Page(HexFormat.of().formatHex(randomBytes()));
         page.title = title;
+        page.kind = kind;
         page.updated = System.currentTimeMillis();
         book.pages.add(0, page);
-        while (book.pages.size() > MAX_PAGES) book.pages.remove(book.pages.size() - 1);
+        for (int i = book.pages.size() - 1; i > 0 && chats(book) > MAX_PAGES; i--)
+            if (book.pages.get(i).kind == KIND_CHAT) book.pages.remove(i);
         return page;
+    }
+
+    private static int chats(Book book) {
+        int n = 0;
+        for (Page p : book.pages) if (p.kind == KIND_CHAT) n++;
+        return n;
+    }
+
+    static int saved(Book book) {
+        return book.pages.size() - chats(book);
     }
 
     private static byte[] randomBytes() {
@@ -108,6 +128,7 @@ final class ThreadStore {
             o.addProperty("id", p.id);
             o.addProperty("title", p.title);
             o.addProperty("edition", p.edition);
+            o.addProperty("kind", p.kind);
             o.addProperty("updated", p.updated);
             o.addProperty("questions", p.questions);
             JsonArray entries = new JsonArray();
@@ -150,6 +171,7 @@ final class ThreadStore {
                 Page p = new Page(GuideText.string(o, "id"));
                 p.title = GuideText.string(o, "title");
                 p.edition = o.has("edition") ? o.get("edition").getAsInt() : 1;
+                p.kind = o.has("kind") ? o.get("kind").getAsInt() : KIND_CHAT;
                 p.updated = o.get("updated").getAsLong();
                 p.questions = o.get("questions").getAsInt();
                 for (JsonElement ee : o.getAsJsonArray("entries")) {
