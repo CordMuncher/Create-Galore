@@ -35,8 +35,12 @@ final class ThreadStore {
     static final int MAX_QUESTIONS = 30;
     private static final SecureRandom RANDOM = new SecureRandom();
 
+    /** Pages started before the book's 0.2.21 layout (formatted answers, recipes, storage) are edition 1. */
+    static final int EDITION = 2;
+
     static final class Page {
         final String id;
+        int edition = EDITION;
         String title;
         long updated;
         int questions;
@@ -103,6 +107,7 @@ final class ThreadStore {
             JsonObject o = new JsonObject();
             o.addProperty("id", p.id);
             o.addProperty("title", p.title);
+            o.addProperty("edition", p.edition);
             o.addProperty("updated", p.updated);
             o.addProperty("questions", p.questions);
             JsonArray entries = new JsonArray();
@@ -144,6 +149,7 @@ final class ThreadStore {
                 JsonObject o = pe.getAsJsonObject();
                 Page p = new Page(GuideText.string(o, "id"));
                 p.title = GuideText.string(o, "title");
+                p.edition = o.has("edition") ? o.get("edition").getAsInt() : 1;
                 p.updated = o.get("updated").getAsLong();
                 p.questions = o.get("questions").getAsInt();
                 for (JsonElement ee : o.getAsJsonArray("entries")) {

@@ -1792,7 +1792,7 @@ hash = "274ab1c01f7a5747813daefc3ed49de27479a62c6314d17d8be23bb1710942b0"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/start_here/welcome.json"
-hash = "9c7770032fb09dbabc42c6b8bceb7d07e1b3e883914a1b6f96db069c6e85c95d"
+hash = "e06945683fd59cbd39f072a292c06212039023f84370617ed631007e3cff0c26"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/start_here/where_to_begin.json"
@@ -4889,8 +4889,8 @@ hash = "db683b65dc15a03dd6de2d34d5dc6ad0e3490744ced513a8cc584784ee9d3d8b"
 metafile = true
 
 [[files]]
-file = "mods/create-galore-bridge-1.19.0.jar"
-hash = "66168c5587dfe080b2d8e8f4116b9e0b4cc0cd287809c68f1467e9e703052ba1"
+file = "mods/create-galore-bridge-1.21.0.jar"
+hash = "2c3fe52e2dc94c120747bd404af46a9281d1bec23e7323bd42638bb28fd92afd"
 
 [[files]]
 file = "mods/create-galore-lagwatch-1.1.0.jar"

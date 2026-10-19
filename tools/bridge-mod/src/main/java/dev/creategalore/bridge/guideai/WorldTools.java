@@ -60,8 +60,21 @@ final class WorldTools {
         tools.add(tool("look_at", "The block or creature under the asking player's crosshair (up to 8 blocks away): its name, "
                 + "the mod that adds it, its block state, how it is mined (tool tier, whether the player's held item can harvest it), "
                 + "and for Create machines what Engineer's Goggles would show (speed, stress, contents).", new JsonObject()));
-        tools.add(tool("get_inventory", "Everything the asking player carries: held item, hotbar, main inventory, armor, "
-                + "off hand and Curios slots, with item ids, the adding mod, counts, durability and enchantments.", new JsonObject()));
+        tools.add(tool("get_inventory", "Everything the asking player has: held item, hotbar, main inventory, armor, "
+                + "off hand and Curios slots, with item ids, the adding mod, counts, durability and enchantments, then the totals in "
+                + "storage they have opened within " + TouchedStorage.RANGE + " blocks, which count as theirs too.", new JsonObject()));
+        JsonObject storageProps = new JsonObject();
+        JsonObject filter = new JsonObject();
+        JsonArray filterType = new JsonArray();
+        filterType.add("string");
+        filterType.add("null");
+        filter.add("type", filterType);
+        filter.addProperty("description", "Part of an item's English name or id to look for, such as 'iron' or 'create:andesite_alloy'; null lists everything.");
+        storageProps.add("item", filter);
+        tools.add(tool("search_storage", "The chests, barrels, vaults and other storage the asking player has opened that are within "
+                + TouchedStorage.RANGE + " blocks of them, in this dimension. Their contents count as the player's own items. With "
+                + "an item it finds that item and says which container holds it and where (direction and distance from the player); "
+                + "with null it lists every item with its total.", storageProps));
         tools.add(tool("get_surroundings", "Where the asking player is and what they feel: dimension, biome, position, light, "
                 + "time and day, weather, season, body and world temperature (Cold Sweat), thirst, health, hunger and active effects.",
                 new JsonObject()));
@@ -121,6 +134,11 @@ final class WorldTools {
                 case "get_advancements" -> advancements(player, server);
                 case "lookup_recipes" -> recipes(server, GuideText.string(input, "item"), GuideText.string(input, "direction"));
                 case "find_items" -> findItems(GuideText.string(input, "query"));
+                case "search_storage" -> {
+                    TouchedStorage storage = GuideAi.storage();
+                    yield storage == null ? "Storage isn't tracked on this server." : storage.describe(player,
+                            input.has("item") && !input.get("item").isJsonNull() ? input.get("item").getAsString() : null, 150);
+                }
                 default -> "Unknown tool " + name + ".";
             };
         } catch (RuntimeException | LinkageError e) {
@@ -282,6 +300,8 @@ final class WorldTools {
         for (ItemStack s : inv.armor) if (!s.isEmpty()) out.append("\n  ").append(stack(s));
         String curios = Curios.list(player);
         if (!curios.isEmpty()) out.append("\nCurios:").append(curios);
+        TouchedStorage storage = GuideAi.storage();
+        if (storage != null) out.append("\nStorage nearby, which counts as theirs: ").append(storage.describe(player, null, 60));
         return out.toString();
     }
 

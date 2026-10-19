@@ -2,7 +2,6 @@ package dev.creategalore.bridge.client;
 
 import dev.creategalore.bridge.guideai.GuideAiNet;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
@@ -34,11 +33,41 @@ public final class GuideAiClient {
     private static void addButton(ScreenEvent.Init.Post event) {
         Screen screen = event.getScreen();
         if (!Modonomicon.isFieldGuide(screen) || Minecraft.getInstance().getConnection() == null) return;
-        int w = 90;
-        event.addListener(Button.builder(Component.literal("Ask the Book"), b -> Minecraft.getInstance().setScreen(new AskScreen(screen)))
-                .bounds(screen.width - w - 6, 6, w, 20)
-                .tooltip(net.minecraft.client.gui.components.Tooltip.create(Component.literal("Ask the Field Guide a question in your own words")))
-                .build());
+        event.addListener(new AskTab(screen));
+    }
+
+    /**
+     * A bookmark ribbon on the right edge of the guide, above Modonomicon's bookmarks and search ribbons and drawn
+     * the same way (tucked under the frame, nudged out on hover), with a speech bubble on it.
+     */
+    private static final class AskTab extends net.minecraft.client.gui.components.AbstractButton {
+        private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath("create_galore_bridge", "textures/gui/ask_tab.png");
+        private final Screen screen;
+
+        AskTab(Screen screen) {
+            // Where BookParentNodeScreen puts its search ribbon (frame is the screen less 30 on each side), two ribbons up.
+            super(screen.width - 31, screen.height - 43 - 44, 44, 20, Component.literal("Ask the Book"));
+            this.screen = screen;
+            setTooltip(net.minecraft.client.gui.components.Tooltip.create(Component.literal("Ask the Book: ask the Field Guide a question in your own words")));
+        }
+
+        @Override
+        public void onPress() {
+            Minecraft.getInstance().setScreen(new AskScreen(screen));
+        }
+
+        @Override
+        protected void renderWidget(net.minecraft.client.gui.GuiGraphics g, int mouseX, int mouseY, float partialTick) {
+            int x = getX() + (isHovered() ? 1 : 0), clip = screen.width - 30;
+            g.enableScissor(clip, getY(), screen.width, getY() + height);
+            g.blit(TEXTURE, x, getY(), 15, 0, 29, 20, 44, 20);
+            g.disableScissor();
+        }
+
+        @Override
+        protected void updateWidgetNarration(net.minecraft.client.gui.narration.NarrationElementOutput output) {
+            defaultButtonNarrationText(output);
+        }
     }
 
     /** Kept apart so Modonomicon's classes are only loaded when it is installed. */

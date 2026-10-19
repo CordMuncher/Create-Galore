@@ -66,6 +66,22 @@ public final class GuideAi {
         GuideAiNet.register(modBus);
         NeoForge.EVENT_BUS.addListener(GuideAi::onStarted);
         NeoForge.EVENT_BUS.addListener(GuideAi::onStopping);
+        NeoForge.EVENT_BUS.addListener((net.neoforged.neoforge.event.entity.player.PlayerInteractEvent.RightClickBlock e) -> {
+            TouchedStorage s = storage;
+            if (s != null) s.onRightClick(e);
+        });
+        NeoForge.EVENT_BUS.addListener((net.neoforged.neoforge.event.level.LevelEvent.Save e) -> {
+            TouchedStorage s = storage;
+            if (s != null && e.getLevel() instanceof net.minecraft.server.level.ServerLevel level
+                    && level.dimension() == net.minecraft.world.level.Level.OVERWORLD) s.save();
+        });
+    }
+
+    /** The storage players have opened; kept on a dedicated server even while the voice is off, so it is ready. */
+    private static volatile TouchedStorage storage;
+
+    static TouchedStorage storage() {
+        return storage;
     }
 
     private static void onStarted(ServerStartedEvent event) {
@@ -74,6 +90,7 @@ public final class GuideAi {
             offNotice = NOTICE_NOT_DEDICATED;
             return;
         }
+        storage = new TouchedStorage(server.getWorldPath(LevelResource.ROOT).resolve("create_galore_field_guide_ai"));
         GuideAiSettings settings = GuideAiSettings.load();
         if (settings == null) {
             offNotice = NOTICE_OFF;
@@ -109,6 +126,9 @@ public final class GuideAi {
     }
 
     private static void onStopping(ServerStoppingEvent event) {
+        TouchedStorage s = storage;
+        storage = null;
+        if (s != null) s.save();
         Live l = live;
         live = null;
         if (l != null) l.workers.shutdownNow();
@@ -289,6 +309,9 @@ public final class GuideAi {
     private static void sendView(ServerPlayer player, ThreadStore.Page page, String notice) {
         List<GuideAiNet.Entry> entries = page.entries;
         if (entries.size() > 500) entries = entries.subList(entries.size() - 500, entries.size());
+        if (notice.isEmpty() && page.edition < ThreadStore.EDITION && !page.entries.isEmpty())
+            notice = "This page is from an older edition of the book. You can keep asking here; start a new page for the "
+                    + "newest features.";
         send(player, new GuideAiNet.View(page.id, GuideAiNet.clip(page.title, 64), List.copyOf(entries), isPending(player.getUUID()), notice));
     }
 
