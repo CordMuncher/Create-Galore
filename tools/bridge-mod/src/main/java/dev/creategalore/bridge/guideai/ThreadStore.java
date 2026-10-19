@@ -35,11 +35,8 @@ final class ThreadStore {
     static final int MAX_QUESTIONS = 30;
     private static final SecureRandom RANDOM = new SecureRandom();
 
-    /**
-     * Pages started before the book's 0.2.21 layout (formatted answers, recipes, storage) are edition 1, pages from
-     * before its 3D models (0.2.22) edition 2.
-     */
-    static final int EDITION = 3;
+    /** Pages started before the book's 0.2.22 layout (formatted answers, recipes, storage, 3D models) are edition 1. */
+    static final int EDITION = 2;
     /** A conversation, or a page that keeps one saved drawing or model. */
     static final int KIND_CHAT = 0, KIND_DRAWING = 1, KIND_MODEL = 2;
     static final int MAX_SAVED = 50;
