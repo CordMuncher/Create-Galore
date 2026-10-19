@@ -1,0 +1,588 @@
+package dev.creategalore.bridge.guideai;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.mojang.logging.LogUtils;
+import java.net.URL;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.UUID;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.storage.LevelResource;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModList;
+import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.server.ServerStartedEvent;
+import net.neoforged.neoforge.event.server.ServerStoppingEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
+import org.slf4j.Logger;
+
+/**
+ * The Field Guide's voice: players ask the book in plain words and the server asks Claude, with the whole guide as
+ * a cached prefix and read-only tools that see what the asking player sees. Runs only on a dedicated server whose
+ * owner saved an API key at start (see {@link GuideAiSettings}); everywhere else the book says the voice is off.
+ * The key and the raw API traffic never leave this class's worker threads and the HTTPS connection.
+ */
+public final class GuideAi {
+    private static final Logger LOG = LogUtils.getLogger();
+    /** Model rounds per question: tool calls, then one last round that must answer. */
+    private static final int MAX_ROUNDS = 8;
+    private static final String NOTICE_OFF = "The book's voice is off on this server. It only speaks on a home server whose owner "
+            + "saved an Anthropic API key when starting it. The written guide works as always.";
+    private static final String NOTICE_NOT_DEDICATED = "The book's voice only speaks on a dedicated home server, not in singleplayer "
+            + "or a LAN world. The written guide works as always.";
+
+    private GuideAi() {
+    }
+
+    /** Everything the voice needs while the server runs; null while it is off. */
+    private record Live(MinecraftServer server, GuideAiSettings settings, AnthropicClient client, JsonArray system,
+                        JsonArray customTools, JsonArray webTools, ThreadStore store, ExecutorService workers) {
+    }
+
+    private static volatile Live live;
+    private static volatile String offNotice = NOTICE_OFF;
+    private static final Set<UUID> pending = new HashSet<>();
+    private static final Map<UUID, Long> lastAsked = new HashMap<>();
+    /** Request fields dropped after the API rejected them once (e.g. web tools on an account without them). */
+    private static volatile boolean webRejected, fallbacksRejected, strictRejected;
+
+    public static void register(IEventBus modBus) {
+        GuideAiNet.register(modBus);
+        NeoForge.EVENT_BUS.addListener(GuideAi::onStarted);
+        NeoForge.EVENT_BUS.addListener(GuideAi::onStopping);
+    }
+
+    private static void onStarted(ServerStartedEvent event) {
+        MinecraftServer server = event.getServer();
+        if (!FMLEnvironment.dist.isDedicatedServer()) {
+            offNotice = NOTICE_NOT_DEDICATED;
+            return;
+        }
+        GuideAiSettings settings = GuideAiSettings.load();
+        if (settings == null) {
+            offNotice = NOTICE_OFF;
+            LOG.info("Field Guide voice is off (no key saved for it; the updater asks at server start)");
+            return;
+        }
+        String guide = GuideText.guide(server.getResourceManager());
+        if (guide.length() < 1000) {
+            offNotice = "The book's voice is off: the server couldn't read the Field Guide.";
+            LOG.warn("Field Guide voice: the Field Guide text is missing ({} characters); staying off", guide.length());
+            return;
+        }
+        JsonArray system = new JsonArray();
+        system.add(textBlock(GuideText.PERSONA));
+        JsonObject reference = textBlock("The complete Create Galore Field Guide follows, then every mod on this server.\n\n"
+                + guide + "\n\n=== Mods on this server (mod id: name version) ===\n" + GuideText.mods());
+        // One cache entry for persona, tools and guide, kept for an hour so both players' questions reuse it.
+        JsonObject cache = new JsonObject();
+        cache.addProperty("type", "ephemeral");
+        cache.addProperty("ttl", "1h");
+        reference.add("cache_control", cache);
+        system.add(reference);
+        ExecutorService workers = Executors.newFixedThreadPool(2, r -> {
+            Thread t = new Thread(r, "Field Guide voice");
+            t.setDaemon(true);
+            return t;
+        });
+        live = new Live(server, settings, new AnthropicClient(settings.apiUrl, settings.key()), system, WorldTools.definitions(),
+                settings.webSearch ? webTools() : new JsonArray(), new ThreadStore(server.getWorldPath(LevelResource.ROOT)
+                .resolve("create_galore_field_guide_ai")), workers);
+        LOG.info("Field Guide voice is on: {} at {} effort, guide {} characters, web search {}", settings.model, settings.effort,
+                guide.length(), settings.webSearch ? "on" : "off");
+    }
+
+    private static void onStopping(ServerStoppingEvent event) {
+        Live l = live;
+        live = null;
+        if (l != null) l.workers.shutdownNow();
+        synchronized (pending) {
+            pending.clear();
+        }
+    }
+
+    private static JsonObject textBlock(String text) {
+        JsonObject o = new JsonObject();
+        o.addProperty("type", "text");
+        o.addProperty("text", text);
+        return o;
+    }
+
+    /** Web search and fetch, limited to Modrinth, the Minecraft wiki and each mod's own page; sorted so the cache holds. */
+    private static JsonArray webTools() {
+        Set<String> domains = new TreeSet<>(List.of("modrinth.com", "minecraft.wiki"));
+        Set<String> skip = Set.of("discord.gg", "discord.com", "youtube.com", "youtu.be", "patreon.com", "ko-fi.com", "twitter.com",
+                "x.com", "curseforge.com", "www.curseforge.com", "legacy.curseforge.com", "reddit.com", "twitch.tv", "paypal.com");
+        ModList.get().getMods().forEach(m -> m.getModURL().map(URL::getHost).ifPresent(host -> {
+            String h = host.toLowerCase(Locale.ROOT);
+            if (h.startsWith("www.")) h = h.substring(4);
+            if (!h.matches("[a-z0-9.-]{3,80}") || !h.contains(".") || skip.contains(h)) return;
+            domains.add(h);
+        }));
+        JsonArray allowed = new JsonArray();
+        domains.stream().limit(60).forEach(allowed::add);
+        JsonArray tools = new JsonArray();
+        JsonObject search = new JsonObject();
+        search.addProperty("type", "web_search_20260209");
+        search.addProperty("name", "web_search");
+        search.addProperty("max_uses", 2);
+        search.add("allowed_domains", allowed);
+        tools.add(search);
+        JsonObject fetch = new JsonObject();
+        fetch.addProperty("type", "web_fetch_20260209");
+        fetch.addProperty("name", "web_fetch");
+        fetch.addProperty("max_uses", 2);
+        fetch.add("allowed_domains", allowed.deepCopy());
+        tools.add(fetch);
+        return tools;
+    }
+
+    // ---------- requests from the book screen (server thread) ----------
+
+    static void handle(GuideAiNet.Request request, Player sender) {
+        if (!(sender instanceof ServerPlayer player)) return;
+        Live l = live;
+        if (l == null) {
+            send(player, new GuideAiNet.Pages(false, offNotice, List.of()));
+            return;
+        }
+        ThreadStore.Book book = l.store.book(player.getUUID());
+        switch (request.action()) {
+            case GuideAiNet.LIST -> sendPages(player, book, "");
+            case GuideAiNet.OPEN -> {
+                ThreadStore.Page page = book.page(request.pageId());
+                if (page == null) sendPages(player, book, "That page is gone.");
+                else sendView(player, page, "");
+            }
+            case GuideAiNet.DELETE -> {
+                ThreadStore.Page page = book.page(request.pageId());
+                if (page != null && !isPending(player.getUUID())) {
+                    book.pages.remove(page);
+                    l.store.save(player.getUUID());
+                }
+                sendPages(player, book, "");
+            }
+            case GuideAiNet.ASK -> ask(l, player, book, request.pageId(), request.text());
+            default -> {
+            }
+        }
+    }
+
+    private static void ask(Live l, ServerPlayer player, ThreadStore.Book book, String pageId, String rawQuestion) {
+        UUID id = player.getUUID();
+        String question = GuideAiNet.clip(rawQuestion.replaceAll("[\\p{Cntrl}&&[^\n]]", " ").strip(), GuideAiNet.MAX_QUESTION);
+        ThreadStore.Page page = pageId.isEmpty() ? null : book.page(pageId);
+        if (question.isEmpty()) {
+            if (page != null) sendView(player, page, "");
+            return;
+        }
+        if (!pageId.isEmpty() && page == null) {
+            sendPages(player, book, "That page is gone.");
+            return;
+        }
+        String refusal = null;
+        long now = System.currentTimeMillis();
+        String today = LocalDate.now().toString();
+        if (!today.equals(book.day)) {
+            book.day = today;
+            book.askedToday = 0;
+        }
+        if (isPending(id)) refusal = "The book is still writing its last answer.";
+        else if (lastAsked.containsKey(id) && now - lastAsked.get(id) < l.settings.cooldownSeconds * 1000L)
+            refusal = "Give the book a few seconds between questions.";
+        else if (book.askedToday >= l.settings.dailyQuestions)
+            refusal = "The book has answered " + l.settings.dailyQuestions + " of your questions today and needs to rest until tomorrow.";
+        else if (page != null && page.questions >= ThreadStore.MAX_QUESTIONS)
+            refusal = "This page is full. Start a new page to keep asking.";
+        if (refusal != null) {
+            if (page != null) sendView(player, page, refusal);
+            else sendPages(player, book, refusal);
+            return;
+        }
+        if (page == null) page = l.store.newPage(book, GuideAiNet.clip(question.replace('\n', ' '), 60));
+        ThreadStore.touch(book, page);
+        page.entries.add(new GuideAiNet.Entry(GuideAiNet.WHO_PLAYER, question));
+        book.askedToday++;
+        lastAsked.put(id, now);
+        synchronized (pending) {
+            pending.add(id);
+        }
+        l.store.save(id);
+        sendView(player, page, "");
+
+        // The API sees the conversation so far plus this question; the page only keeps it once it has an answer.
+        JsonArray messages = page.messages.deepCopy();
+        JsonObject user = new JsonObject();
+        user.addProperty("role", "user");
+        user.addProperty("content", player.getGameProfile().getName() + " asks: " + question);
+        messages.add(user);
+        String playerName = player.getGameProfile().getName();
+        ThreadStore.Page target = page;
+        l.workers.execute(() -> {
+            Outcome outcome;
+            try {
+                outcome = converse(l, id, target.id, messages);
+            } catch (InterruptedException e) {
+                return; // server stopping
+            } catch (RuntimeException e) {
+                LOG.warn("Field Guide voice: answering {} failed", playerName, e);
+                outcome = Outcome.failed("The book lost its train of thought (an error on the server). Try again.");
+            }
+            Outcome done = outcome;
+            l.server.execute(() -> finish(l, id, target, messages, done));
+        });
+    }
+
+    private static void finish(Live l, UUID id, ThreadStore.Page page, JsonArray messages, Outcome outcome) {
+        synchronized (pending) {
+            pending.remove(id);
+        }
+        if (live != l) return;
+        if (outcome.answer != null) {
+            page.entries.add(new GuideAiNet.Entry(GuideAiNet.WHO_BOOK, GuideAiNet.clipText(outcome.answer)));
+            for (String d : outcome.diagrams) page.entries.add(new GuideAiNet.Entry(GuideAiNet.WHO_DIAGRAM, d));
+            if (outcome.keep) {
+                page.messages = messages;
+                page.questions++;
+            }
+        }
+        if (outcome.note != null) page.entries.add(new GuideAiNet.Entry(GuideAiNet.WHO_NOTE, outcome.note));
+        if (outcome.answer != null && page.questions == ThreadStore.SUGGEST_NEW_PAGE)
+            page.entries.add(new GuideAiNet.Entry(GuideAiNet.WHO_NOTE, "This page is getting long. A new page answers faster and "
+                    + "costs less; the book still knows the whole guide there."));
+        ThreadStore.Book book = l.store.book(id);
+        ThreadStore.touch(book, page);
+        l.store.save(id);
+        ServerPlayer player = l.server.getPlayerList().getPlayer(id);
+        if (player != null) sendView(player, page, "");
+    }
+
+    private static boolean isPending(UUID id) {
+        synchronized (pending) {
+            return pending.contains(id);
+        }
+    }
+
+    private static void sendPages(ServerPlayer player, ThreadStore.Book book, String notice) {
+        List<GuideAiNet.Summary> list = new ArrayList<>();
+        for (ThreadStore.Page p : book.pages)
+            list.add(new GuideAiNet.Summary(p.id, GuideAiNet.clip(p.title, 64), p.questions, p.updated));
+        send(player, new GuideAiNet.Pages(true, notice, list));
+    }
+
+    private static void sendView(ServerPlayer player, ThreadStore.Page page, String notice) {
+        List<GuideAiNet.Entry> entries = page.entries;
+        if (entries.size() > 500) entries = entries.subList(entries.size() - 500, entries.size());
+        send(player, new GuideAiNet.View(page.id, GuideAiNet.clip(page.title, 64), List.copyOf(entries), isPending(player.getUUID()), notice));
+    }
+
+    private static void send(ServerPlayer player, net.minecraft.network.protocol.common.custom.CustomPacketPayload payload) {
+        if (player.connection != null && player.connection.hasChannel(payload.type())) PacketDistributor.sendToPlayer(player, payload);
+    }
+
+    // ---------- the conversation with the API (worker thread) ----------
+
+    /** What came of a question: the text to show, its drawings, a note under it, and whether it joins the page's history. */
+    private record Outcome(String answer, List<String> diagrams, String note, boolean keep) {
+        static Outcome failed(String note) {
+            return new Outcome(null, List.of(), note, false);
+        }
+    }
+
+    /**
+     * Sends the answer to the book as it is written: text in small batches (a few a second, so the screen can type it
+     * out), what the book is doing while it calls tools, and each drawing as it is made. Called from the worker thread;
+     * the packets go out from the server thread.
+     */
+    private static final class Streamer implements AnthropicClient.Listener {
+        private final Live l;
+        private final UUID player;
+        private final String pageId;
+        private final StringBuilder text = new StringBuilder();
+        private boolean reset = true;
+        private String status = "thinking";
+        private long lastSent;
+
+        Streamer(Live l, UUID player, String pageId) {
+            this.l = l;
+            this.player = player;
+            this.pageId = pageId;
+        }
+
+        /** A new round: whatever the book wrote before calling its tools is replaced by what comes next. */
+        void newRound() {
+            text.setLength(0);
+            reset = true;
+            status = "thinking";
+            flush("");
+        }
+
+        void status(String s) {
+            status = s;
+            flush("");
+        }
+
+        void diagram(String json) {
+            flush(json);
+        }
+
+        @Override
+        public void blockStart(JsonObject block) {
+            String type = GuideText.string(block, "type");
+            if (type.equals("tool_use") || type.equals("server_tool_use")) status(GuideText.string(block, "name"));
+            else if (type.equals("thinking") || type.equals("redacted_thinking")) status("thinking");
+            else if (type.equals("text") && !status.equals("writing")) status("writing");
+        }
+
+        @Override
+        public void text(String delta) {
+            text.append(delta);
+            if (System.currentTimeMillis() - lastSent >= 120) flush("");
+        }
+
+        void flush(String diagram) {
+            String chunk = text.toString();
+            text.setLength(0);
+            boolean r = reset;
+            reset = false;
+            lastSent = System.currentTimeMillis();
+            GuideAiNet.Live packet = new GuideAiNet.Live(pageId, r, chunk, status, diagram);
+            l.server.execute(() -> {
+                ServerPlayer p = l.server.getPlayerList().getPlayer(player);
+                if (p != null) send(p, packet);
+            });
+        }
+    }
+
+    private static Outcome converse(Live l, UUID playerId, String pageId, JsonArray messages) throws InterruptedException {
+        Usage usage = new Usage();
+        StringBuilder note = new StringBuilder();
+        List<String> diagrams = new ArrayList<>();
+        Streamer streamer = new Streamer(l, playerId, pageId);
+        try {
+            for (int round = 1; ; round++) {
+                boolean last = round >= MAX_ROUNDS;
+                if (round > 1) streamer.newRound();
+                JsonObject response = call(l, messages, last, streamer);
+                streamer.flush("");
+                usage.add(response);
+                JsonArray content = response.has("content") ? response.getAsJsonArray("content") : new JsonArray();
+                String stop = GuideText.string(response, "stop_reason");
+                if (stop.equals("refusal")) {
+                    usage.log(playerId, round, "refused");
+                    return new Outcome("The book would rather not answer that one. Ask it something else about the pack.", List.of(), null, false);
+                }
+                JsonObject assistant = new JsonObject();
+                assistant.addProperty("role", "assistant");
+                assistant.add("content", content);
+                messages.add(assistant);
+                switch (stop) {
+                    case "tool_use" -> {
+                        if (last) {
+                            note.append("The book ran out of time looking things up. ");
+                            usage.log(playerId, round, "rounds");
+                            return finishText(messages, diagrams, note, true);
+                        }
+                        messages.add(toolResults(l, playerId, content, diagrams, streamer));
+                    }
+                    case "pause_turn" -> {
+                        // A long web search paused the turn; sending the conversation back lets it carry on.
+                    }
+                    case "max_tokens" -> {
+                        note.append("The book ran out of page here; ask it to go on, or ask something narrower. ");
+                        usage.log(playerId, round, stop);
+                        return finishText(messages, diagrams, note, true);
+                    }
+                    case "model_context_window_exceeded" -> {
+                        note.append("This page is too long for the book to keep in mind. Start a new page. ");
+                        usage.log(playerId, round, stop);
+                        return finishText(messages, diagrams, note, false);
+                    }
+                    default -> {
+                        usage.log(playerId, round, stop);
+                        return finishText(messages, diagrams, note, true);
+                    }
+                }
+            }
+        } catch (AnthropicClient.ApiException e) {
+            LOG.warn("Field Guide voice: the API refused a request ({} {})", e.status, e.type);
+            return Outcome.failed(e.getMessage());
+        }
+    }
+
+    /** The answer is the text of the book's last turn; earlier "let me check" lines between tool calls are dropped. */
+    private static Outcome finishText(JsonArray messages, List<String> diagrams, StringBuilder note, boolean keep) {
+        String answer = "";
+        for (int i = messages.size() - 1; i >= 0 && answer.isEmpty(); i--) {
+            JsonObject m = messages.get(i).getAsJsonObject();
+            if (!GuideText.string(m, "role").equals("assistant")) break;
+            answer = text(m.getAsJsonArray("content"));
+        }
+        if (answer.isEmpty() && diagrams.isEmpty()) answer = "The book turned a few pages but found nothing to say. Try asking another way.";
+        String n = note.toString().strip();
+        return new Outcome(answer, List.copyOf(diagrams), n.isEmpty() ? null : n, keep);
+    }
+
+    private static String text(JsonArray content) {
+        StringBuilder out = new StringBuilder();
+        for (JsonElement e : content) {
+            JsonObject block = e.getAsJsonObject();
+            if (GuideText.string(block, "type").equals("text")) out.append(GuideText.string(block, "text"));
+        }
+        return out.toString().strip();
+    }
+
+    private static JsonObject call(Live l, JsonArray messages, boolean last, Streamer streamer)
+            throws AnthropicClient.ApiException, InterruptedException {
+        try {
+            return l.client.stream(body(l, messages, last), streamer);
+        } catch (AnthropicClient.ApiException e) {
+            String t = e.type.toLowerCase(Locale.ROOT);
+            if (e.status != 400) throw e;
+            if (!webRejected && l.webTools.size() > 0 && (t.contains("web_") || t.contains("domain"))) {
+                webRejected = true;
+                LOG.warn("Field Guide voice: the API rejected the web tools ({}); asking without them from now on", e.type);
+            } else if (!fallbacksRejected && t.contains("fallback")) {
+                fallbacksRejected = true;
+                LOG.warn("Field Guide voice: the API rejected the fallback setting ({}); asking without it from now on", e.type);
+            } else if (!strictRejected && (t.contains("strict") || t.contains("schema"))) {
+                strictRejected = true;
+                LOG.warn("Field Guide voice: the API rejected a strict tool schema ({}); sending the tools unchecked from now on", e.type);
+            } else {
+                throw e;
+            }
+            return call(l, messages, last, streamer);
+        }
+    }
+
+    static JsonObject body(Live l, JsonArray messages, boolean last) {
+        JsonObject body = new JsonObject();
+        body.addProperty("model", l.settings.model);
+        body.addProperty("max_tokens", l.settings.maxTokens);
+        body.add("system", l.system);
+        JsonArray tools = l.customTools.deepCopy();
+        if (strictRejected) tools.forEach(t -> t.getAsJsonObject().remove("strict"));
+        if (!webRejected) tools.addAll(l.webTools);
+        body.add("tools", tools);
+        if (last) {
+            JsonObject none = new JsonObject();
+            none.addProperty("type", "none");
+            body.add("tool_choice", none);
+        }
+        body.add("messages", messages);
+        JsonObject output = new JsonObject();
+        output.addProperty("effort", l.settings.effort);
+        body.add("output_config", output);
+        // A second cache entry (five minutes) at the end of the page, so a follow-up re-reads its page cheaply too.
+        JsonObject cache = new JsonObject();
+        cache.addProperty("type", "ephemeral");
+        body.add("cache_control", cache);
+        if (!fallbacksRejected) body.addProperty("fallbacks", "default");
+        return body;
+    }
+
+    /** Runs the book's tool calls on the server thread, for the player who asked, and returns them as one user turn. */
+    private static JsonObject toolResults(Live l, UUID playerId, JsonArray content, List<String> diagrams, Streamer streamer)
+            throws InterruptedException {
+        JsonArray results = new JsonArray();
+        for (JsonElement e : content) {
+            JsonObject block = e.getAsJsonObject();
+            if (!GuideText.string(block, "type").equals("tool_use")) continue;
+            String name = GuideText.string(block, "name");
+            JsonObject input = block.has("input") && block.get("input").isJsonObject() ? block.getAsJsonObject("input") : new JsonObject();
+            streamer.status(name);
+            String result;
+            try {
+                if (name.equals("draw_diagram")) {
+                    String problem = l.server.submit(() -> Diagrams.check(input)).get(10, TimeUnit.SECONDS);
+                    if (problem == null && diagrams.size() >= 4) problem = "Not drawn: four drawings per answer is the limit.";
+                    if (problem == null) {
+                        diagrams.add(input.toString());
+                        streamer.diagram(input.toString());
+                        result = "Drawn as diagram " + diagrams.size() + ". Write [diagram " + diagrams.size()
+                                + "] on a line of its own in your answer where it should appear.";
+                    } else {
+                        result = problem;
+                    }
+                } else {
+                    result = l.server.submit(() -> {
+                        ServerPlayer player = l.server.getPlayerList().getPlayer(playerId);
+                        return player == null ? "The player has left the server." : WorldTools.run(name, input, player, l.server);
+                    }).get(10, TimeUnit.SECONDS);
+                }
+            } catch (TimeoutException ex) {
+                result = "The server was too busy to look.";
+            } catch (java.util.concurrent.ExecutionException ex) {
+                result = "The tool failed on this server.";
+            }
+            JsonObject r = new JsonObject();
+            r.addProperty("type", "tool_result");
+            r.addProperty("tool_use_id", GuideText.string(block, "id"));
+            r.addProperty("content", GuideAiNet.clip(result, 20000));
+            results.add(r);
+        }
+        JsonObject user = new JsonObject();
+        user.addProperty("role", "user");
+        user.add("content", results);
+        return user;
+    }
+
+    /** Token use and an estimate of what one question cost, for the server log. Never logs any text. */
+    private static final class Usage {
+        long input, cacheRead, cacheWrite5m, cacheWrite1h, output, searches;
+        String model = "";
+
+        void add(JsonObject response) {
+            if (response.has("model")) model = GuideText.string(response, "model");
+            if (!response.has("usage") || !response.get("usage").isJsonObject()) return;
+            JsonObject u = response.getAsJsonObject("usage");
+            input += num(u, "input_tokens");
+            output += num(u, "output_tokens");
+            cacheRead += num(u, "cache_read_input_tokens");
+            if (u.has("cache_creation") && u.get("cache_creation").isJsonObject()) {
+                JsonObject c = u.getAsJsonObject("cache_creation");
+                cacheWrite5m += num(c, "ephemeral_5m_input_tokens");
+                cacheWrite1h += num(c, "ephemeral_1h_input_tokens");
+            } else {
+                cacheWrite5m += num(u, "cache_creation_input_tokens");
+            }
+            if (u.has("server_tool_use") && u.get("server_tool_use").isJsonObject())
+                searches += num(u.getAsJsonObject("server_tool_use"), "web_search_requests");
+        }
+
+        private static long num(JsonObject o, String key) {
+            try {
+                return o.has(key) && !o.get(key).isJsonNull() ? o.get(key).getAsLong() : 0;
+            } catch (RuntimeException e) {
+                return 0;
+            }
+        }
+
+        void log(UUID player, int rounds, String stop) {
+            // Dollars per million tokens: input, output, cache read, 5-minute write, 1-hour write.
+            double[] p = model.contains("opus") ? new double[] {4, 20, 0.2, 5, 8}
+                    : model.contains("sonnet") ? new double[] {2, 10, 0.1, 2.5, 4} : null;
+            String cost = p == null ? "unknown" : String.format(Locale.ROOT, "$%.3f", (input * p[0] + output * p[1] + cacheRead * p[2]
+                    + cacheWrite5m * p[3] + cacheWrite1h * p[4]) / 1e6 + searches * 0.01);
+            LOG.info("Field Guide voice answered {} ({}, {} rounds, {}): input {}, cache read {}, cache write {}+{}, output {}, "
+                    + "web searches {}, about {}", player, model, rounds, stop, input, cacheRead, cacheWrite5m, cacheWrite1h, output,
+                    searches, cost);
+        }
+    }
+}

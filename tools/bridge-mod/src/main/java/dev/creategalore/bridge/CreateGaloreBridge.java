@@ -1,6 +1,7 @@
 package dev.creategalore.bridge;
 
 import dev.creategalore.bridge.client.BridgeClient;
+import dev.creategalore.bridge.guideai.GuideAi;
 import java.util.List;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
@@ -47,6 +48,7 @@ public final class CreateGaloreBridge {
         GuideCleanup.register();
         NatureHeal.register();
         PredatorFeeding.register();
+        GuideAi.register(modBus);
         if (FMLEnvironment.dist.isClient()) {
             BridgeClient.init(modBus);
         }

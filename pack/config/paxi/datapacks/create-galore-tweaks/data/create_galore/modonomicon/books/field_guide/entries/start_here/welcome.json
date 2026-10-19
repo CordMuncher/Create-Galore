@@ -51,6 +51,11 @@
       "text": "**Searching**\\\nThe magnifying glass on the right searches the text of every page.\\\n\\\nNew to Create? [#](2E5AAC)[Rotation](entry://create_basics/rotation)[#]() is the first idea."
     },
     {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Ask the Book**\\\nOn a home server whose owner gave the book a voice, the **Ask the Book** button at the top right opens pages where you ask in your own words. It answers from this guide, the server's recipes, what you see and carry and your advancements, draws diagrams when they help, and never gives map locations. Also: /askbook."
+    },
+    {
       "type": "modonomicon:spotlight",
       "item": {
         "item": "minecraft:writable_book"

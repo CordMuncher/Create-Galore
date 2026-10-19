@@ -30,10 +30,20 @@ for m in lwjgl lwjgl-glfw lwjgl-opengl; do
   [ -s "$CACHE/$m-3.3.3.jar" ] || curl -sSfL --retry 4 -o "$CACHE/$m-3.3.3.jar" "https://repo1.maven.org/maven2/org/lwjgl/$m/3.3.3/$m-3.3.3.jar"
   CP="$CP$CACHE/$m-3.3.3.jar:"
 done
-# Compile-only stubs for the client classes the display mixins and the compass needle name; they are not packaged.
-mkdir -p "$WORK/stubs"
-javac --release 21 -nowarn -proc:none -cp "$CP" -d "$WORK/stubs" $(find "$HERE/stubs" -name '*.java')
-CP="$CP$WORK/stubs"
+# A server has no client classes either (the book screen, the compass needle and the display code use them).
+# The NeoForge installer puts a client in a cache once; it only downloads and patches Minecraft, nothing runs.
+NFV=$(basename "$(dirname "$NF")")
+CLIENT="$CACHE/client-$NFV"
+NFCLIENT="$CLIENT/libraries/net/neoforged/neoforge/$NFV/neoforge-$NFV-client.jar"
+if [ ! -s "$NFCLIENT" ]; then
+  mkdir -p "$CLIENT"
+  echo '{"profiles":{}}' > "$CLIENT/launcher_profiles.json"
+  curl -sSfL --retry 4 -o "$CACHE/neoforge-$NFV-installer.jar" \
+    "https://maven.neoforged.net/releases/net/neoforged/neoforge/$NFV/neoforge-$NFV-installer.jar"
+  (cd "$CACHE" && java -jar "neoforge-$NFV-installer.jar" --install-client "$CLIENT" > "$CACHE/client-install.log")
+fi
+# Patched client classes first, so they win over the server's copies of the same classes.
+CP="$NFCLIENT:$(ls "$CLIENT"/libraries/net/minecraft/client/*/client-*-srg.jar | head -1):$CP"
 
 mkdir -p "$WORK/classes"
 javac --release 21 -nowarn -proc:none -cp "$CP" -d "$WORK/classes" $(find "$HERE/src/main/java" -name '*.java')
