@@ -4507,6 +4507,10 @@ file = "config/paxi/resourcepacks/create-galore-guide/pack.mcmeta"
 hash = "024c3f3af4a47af34577bc953522b02a9eb8de40a852cdeafd6ac8b68522a60b"
 
 [[files]]
+file = "config/skywhales-common.toml"
+hash = "c9e57c2b3188b447f940e77b1598714feef9771a7af8356be6e68fc646dbf8fc"
+
+[[files]]
 file = "config/smog-common.toml"
 hash = "d4d247face0aae4f4ea732c84575a425708c2df053a78239ce41186250072d7f"
 
