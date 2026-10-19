@@ -367,6 +367,86 @@ file = "config/paxi/datapacks/create-galore-tweaks/data/animalhusbandry/recipe/f
 hash = "5a53cb8ab11ab44748e02a24fad1293c2048f4406f92be0e5e1ba0015041193f"
 
 [[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/aquaculture/bait/worm.json"
+hash = "912cc36c9c521d6f18c698cbe2ad8168e8946a4961481cf204a36fc5d74fd4ba"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/aquaculture/loot_table/box/neptunes_bounty.json"
+hash = "e41ff972989f43c8b640dcb20cbeb46aa0ddc9c4c72dacedb74aa972f3b7b0f0"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/aquaculture/loot_table/gameplay/fishing/treasure_leech.json"
+hash = "0d470a61085688b818ce4b453e199027d273cbb07781ea1865ebca64ccf5251a"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/aquaculture/loot_table/gameplay/fishing/treasure_neptunium.json"
+hash = "a125ca370997d6282e2e01d100dd1fbc1e654867b2b7c97e0fd0814e5dff4fc6"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/aquaculture/recipe/bobber.json"
+hash = "23a32162cdaf48501ee275127cb5986f6826313e37c64f9d1013d891893682fe"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/aquaculture/recipe/diamond_fishing_rod.json"
+hash = "7a6d000f64d8dd670dfdd84debdc3e49597e5437c2e895f12d6e6411e01b9a20"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/aquaculture/recipe/diamond_hook.json"
+hash = "467b22cb264d7df2716b9a396edbf01bcc9f45d0d4b7b48b4869d74da521d57a"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/aquaculture/recipe/double_hook.json"
+hash = "88e297b192875028a7e9fb15b4a92d324399370584a0a2d77b50f5cf9599373c"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/aquaculture/recipe/fishing_line.json"
+hash = "ee19bbd9fd892033b1f0b889f2941e8af6da77b3e862b0ed15020c3b5b7e7939"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/aquaculture/recipe/gold_hook.json"
+hash = "71b7cbfc66df05c55a56229a5032267f0c74d32ae5f959de631a6e3c73e4eb1c"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/aquaculture/recipe/golden_fishing_rod.json"
+hash = "b35cd978563f018ed74f1b5c518cacac595920db9feaa8626f4979ba71194c38"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/aquaculture/recipe/heavy_hook.json"
+hash = "e51a054818eb6a95127adc2dcee6297efb1710ec6ca1f67169a9306dbc49d117"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/aquaculture/recipe/iron_fishing_rod.json"
+hash = "f709003e26610c552ad45265618ccdbe0606abd43f6de26da917bdca1fe8fa71"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/aquaculture/recipe/iron_hook.json"
+hash = "5eded5d8c62bb1324546dbb1dfd60b55f2f4c89fccd557a43a0635ca6abde13c"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/aquaculture/recipe/light_hook.json"
+hash = "a6f82ae2b78a8de6f2e49ed01d7ee0a8aae7330b678dba284b602764b7506538"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/aquaculture/recipe/neptunium_fishing_rod.json"
+hash = "d0e07c3666bc3f3d3e6707222a9dd1693f420a995bc749fcd492b736e936ad35"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/aquaculture/recipe/nether_star_hook.json"
+hash = "6d54c60a0e94006e5433e8f04417c000c67a8020f33bfc84d5bfec5c16b814a5"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/aquaculture/recipe/note_hook.json"
+hash = "d763fd2321b11dd8b379cbd1a116c7e73c71f11631052290e355a0a68cdf9791"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/aquaculture/recipe/redstone_hook.json"
+hash = "1807d33e31c98f5dc9bec9efb5a16e49d2e4ebea5a42902ab55f78bbb07662dd"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/aquaculture/recipe/tackle_box.json"
+hash = "241355677e7be9d48ec57a711b89e03f9e206ed7c0b473418a4c14a68b5bd1f1"
+
+[[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/aquamirae/worldgen/structure_set/shipwreck.json"
 hash = "67f9536a0965ee554ffdf061c23abb03358f6bd12b099c97f4d83dbab7578c4b"
 
@@ -700,7 +780,7 @@ hash = "ca5c9c9dd3eff157a37ebba1175a3c694e2065fdff1afdf5aebf1e5da0067e54"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/c/tags/item/hidden_from_recipe_viewers.json"
-hash = "e93016c6f35a6ddc631393398fb7a779ee0e957c87c52e09c0a31ac009921c78"
+hash = "1ab17d0adbe316987cb8e03fa6245d09079471ce86d6bea3c3f4c19f7805d4ff"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/c/tags/item/mushrooms/truffle.json"
@@ -713,6 +793,10 @@ hash = "1129e0794565a4cba0e1ccd950948124e04438b10725bb628a8d8702f185fcc7"
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/c/tags/item/storage_blocks/raw_lead.json"
 hash = "7e43e1991b1d99af8610042f670745d4855ae927948f205d32e93b2b5193c726"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/cataclysm/fishing/fish/saltwater/lionfish.json"
+hash = "2b972c20ef4fd86eb4e7661f4bee74b8ba83d52a21d6f709bf8ff1e146ff1527"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/cataclysm/loot_table/blocks/obsidian_fence.json"
@@ -2427,6 +2511,10 @@ file = "config/paxi/datapacks/create-galore-tweaks/data/crittersandcompanions/lo
 hash = "7ddf23378b6b4c8ffa2466432e1264e9b66cbd7b571dedb7defc2a48a5fd0019"
 
 [[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/crittersandcompanions/loot_table/gameplay/fishing/treasure_clam.json"
+hash = "14f55348a85e3542b5dea2cc3fdbd71cf717f0f6f23f90b453447acaa1a74bd9"
+
+[[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/delightfulcreators/recipe/mixing/tomato_sauce_fluid.json"
 hash = "a9ddb36e8a9d13d3b99c96210497d614734b5ee90f7a3030a9dd63f1f23f891e"
 
@@ -2477,6 +2565,10 @@ hash = "100a1aea9a01649c675809fdd7201ab198183673133ba61a615b169311141580"
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/dungeons_arise/tags/worldgen/structure/shiraz_palace.json"
 hash = "3ea6f2f23fb04142ceef074242d1381d65878be9666ef524051f32bfd5aeb078"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/farmersdelight/recipe/cutting/fish_slice_cutting.json"
+hash = "6436e39a78c77cf115d2a54161b32485cb83e18632415f8b9a36a3b84a5fa314"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/abyssal_stone_brick_slab.json"
@@ -3191,6 +3283,18 @@ file = "config/paxi/datapacks/create-galore-tweaks/data/hopo/worldgen/structure_
 hash = "d4cb3a503318eb449922b7ac6fff7d11a90edc44e0ffed0ff73ef75696b92dbd"
 
 [[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/hybrid_aquatic/fishing/fish/freshwater/piranha.json"
+hash = "d9014ad858175692c5e4793993f49b6c4fad19479bd00e3541c52c0a7d249741"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/hybrid_aquatic/fishing/fish/misc/carp.json"
+hash = "4f5dd68966c0417d0099acfb2fc96277df0f88e847477b4e0e127de63ad21bf6"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/hybrid_aquatic/fishing/fish/misc/tuna.json"
+hash = "efa51e32a98b4a27f2546eaa74559cadaedc9c7a0da197419aabcf308221184f"
+
+[[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/hybrid_aquatic/loot_table/blocks/bamboo_coral_wall_fan.json"
 hash = "195aacf30f97e01ebf14ae2b7b8209bc0f5dd4d928cf0d52a2b41851430bb003"
 
@@ -3533,6 +3637,10 @@ hash = "d42d8060adf1daf267990ce9f752a7f26275cd6433283372a06c49763c2d5705"
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/mynethersdelight/recipe/crafting/blaze_powder_alt.json"
 hash = "52e62729520a02784cf166c5510ee009ea89eea1c971851ac4aabd6954fbe397"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/naturalist/fishing/fish/freshwater/catfish.json"
+hash = "3e22e21f0f7ad74689935425ee5a49e2ad067f25a2affc6993236f2588889ebc"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/naturalist/loot_table/blocks/azure_froglass_pane.json"
@@ -4043,6 +4151,98 @@ file = "config/paxi/datapacks/create-galore-tweaks/data/thirst/recipe/compat/cre
 hash = "b81f5339abb9eadad01034f97afaead2e67f5a409db509a2508e6ff2180937a0"
 
 [[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/tide/fishing/fish/freshwater/arapaima.json"
+hash = "9bf1afefd1108e1ac89d6a09d477d47b11debc2527bf53eb8470ecc96f346e43"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/tide/fishing/fish/freshwater/bluegill.json"
+hash = "099e2eb2a1d4be87922a8fec3b54476b38d9fb4f161ca6f650d725d37931ac08"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/tide/fishing/fish/freshwater/carp.json"
+hash = "1e4e719c27fc84033a5df882c27f01f88a3f1e372936428fa3d588eda508ca65"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/tide/fishing/fish/freshwater/catfish.json"
+hash = "44046eea171953e6857b989170d72b6cb900722bdbf2eb36bc8f6b3e1270e4fc"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/tide/fishing/fish/freshwater/rainbow_trout.json"
+hash = "4a7d094ad716f4c6d557f95bcf22287a0e7de46b6a71db3af6fc781a84e02814"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/tide/fishing/fish/freshwater/smallmouth_bass.json"
+hash = "08c3ff675bded71ddea76b6861641df37400d809504eee34a6916c460a3f42c9"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/tide/fishing/fish/saltwater/coelacanth.json"
+hash = "29bf5c687bb4adaa4dc3fbf1f1020dfdb23c39e8623ee2c5cd3a2c2679a428a2"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/tide/fishing/fish/saltwater/mackerel.json"
+hash = "7b15319b789c58a96946993db0216314987de587ba952bd4eaac7bfde3df867c"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/tide/fishing/fish/saltwater/tuna.json"
+hash = "75c71976b906a4777d8df2fd918afa261fedb3fb321f67a4b1cebb7d475911a9"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/tide/fishing/fish/underground/anglerfish.json"
+hash = "f32465f3dbe6bc6ffe8cf8600a6690cbadc3f27ddd21e09de57a7de16610a0b4"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/tide/fishing/fish/void/voidseeker.json"
+hash = "776a88481b096abbc01da6f9dcb01b90f1d0913fb17fcbace5caeececdfc3eeb"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/tide/neoforge/biome_modifier/add_anglerfish_spawns.json"
+hash = "99b969132018e9da1071065a8593ba9564928b1ed0aa5ae3ab45f9dac071f7d5"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/tide/neoforge/biome_modifier/add_arapaima_spawns.json"
+hash = "99b969132018e9da1071065a8593ba9564928b1ed0aa5ae3ab45f9dac071f7d5"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/tide/neoforge/biome_modifier/add_bluegill_spawns.json"
+hash = "99b969132018e9da1071065a8593ba9564928b1ed0aa5ae3ab45f9dac071f7d5"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/tide/neoforge/biome_modifier/add_carp_spawns.json"
+hash = "99b969132018e9da1071065a8593ba9564928b1ed0aa5ae3ab45f9dac071f7d5"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/tide/neoforge/biome_modifier/add_catfish_spawns.json"
+hash = "99b969132018e9da1071065a8593ba9564928b1ed0aa5ae3ab45f9dac071f7d5"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/tide/neoforge/biome_modifier/add_mackerel_spawns.json"
+hash = "99b969132018e9da1071065a8593ba9564928b1ed0aa5ae3ab45f9dac071f7d5"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/tide/neoforge/biome_modifier/add_rainbow_trout_spawns.json"
+hash = "99b969132018e9da1071065a8593ba9564928b1ed0aa5ae3ab45f9dac071f7d5"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/tide/neoforge/biome_modifier/add_smallmouth_bass_spawns.json"
+hash = "99b969132018e9da1071065a8593ba9564928b1ed0aa5ae3ab45f9dac071f7d5"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/tide/neoforge/biome_modifier/add_tuna_spawns.json"
+hash = "99b969132018e9da1071065a8593ba9564928b1ed0aa5ae3ab45f9dac071f7d5"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/tide/recipe/cooked_fish_slice_campfire_cooking.json"
+hash = "abecd3a63e8cf114e2f210c877029073181af861936d460f9c1b77a408c017d6"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/tide/recipe/cooked_fish_slice_smelting.json"
+hash = "f8e64056864b6a9f5e8064427ae0541349fa8f7ddc78a7fc02238f52d9c636c6"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/tide/recipe/cooked_fish_slice_smoking.json"
+hash = "dc283a18068d2a987d513b4a576fe873c37780eb28d8e010a3371eeb0288e0ff"
+
+[[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/trainutilities/advancement/door_ingrediants.json"
 hash = "c52a4d6151e6928f7b62c9fc459ffcf64301caa86aa690afd79a0dbcde1fc7fb"
 
@@ -4238,6 +4438,14 @@ hash = "aee573eb310e2f13399f1fdcf1d904a31e148f7f112af6406f2ade4a94dc62cf"
 [[files]]
 file = "config/thirst/item_settings.toml"
 hash = "707aecb3bf91e7671fd0fdcc549c91285c20fd1b2c516a33594b22407d11fa27"
+
+[[files]]
+file = "config/tide/tide_client.json"
+hash = "f33acc19c7d3163882aafb6bae672b73b02d21c99ec4d8997c64a1851e421f26"
+
+[[files]]
+file = "config/tide/tide_server.json"
+hash = "86700eea5f1165cddf07aa7cc33775a0f1cbc7f52f12ac77639bf267e275cb1e"
 
 [[files]]
 file = "config/towns_and_towers/structure_rarity_new.json5"
@@ -5301,6 +5509,16 @@ metafile = true
 [[files]]
 file = "mods/thirst-was-reclaimed.pw.toml"
 hash = "b5278a5f57605624aa821ab8058b7c717721444e3e8ca68fa5c815c08c97ad62"
+metafile = true
+
+[[files]]
+file = "mods/tide-extra-compatibility.pw.toml"
+hash = "3f15db8f2305460e5a0ff65ba3ff2e8ab2cf6226a13e1ad3ac186c2ac666e832"
+metafile = true
+
+[[files]]
+file = "mods/tide.pw.toml"
+hash = "7b4d98d9a07495eb4c8e7181a6fbff38ffed9cec7995104937cd17b764dcd9e0"
 metafile = true
 
 [[files]]

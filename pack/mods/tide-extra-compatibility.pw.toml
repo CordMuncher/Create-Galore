@@ -1,0 +1,13 @@
+name = "Tide Extra Compatibility"
+filename = "tide-extra-compatibility-2.3.0.jar"
+side = "both"
+
+[download]
+url = "https://cdn.modrinth.com/data/goMfyYSL/versions/mBsiIcyG/tide-extra-compatibility-2.3.0.jar"
+hash-format = "sha512"
+hash = "b9348f7014e2ff4b65741934ea5ef77e7034dba73491a7bc3189ebf24df2a0fc6abf35bd2d4b00a7b0fe079825828c4de9cd17a51f25027e8e972f62d74adca1"
+
+[update]
+[update.modrinth]
+mod-id = "goMfyYSL"
+version = "mBsiIcyG"
