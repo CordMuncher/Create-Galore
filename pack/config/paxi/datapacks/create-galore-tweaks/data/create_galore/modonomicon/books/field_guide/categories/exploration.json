@@ -4,7 +4,7 @@
   "icon": {
     "item": "minecraft:compass"
   },
-  "sort_number": 12,
+  "sort_number": 13,
   "display_mode": "node",
   "background": "modonomicon:textures/gui/dark_slate_seamless.png",
   "background_width": 512,

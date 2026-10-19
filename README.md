@@ -6,16 +6,16 @@ A big, long-term Minecraft modpack built around the Create mod. Think "Minecraft
 
 | | |
 |---|---|
-| **Version** | 0.2.16 |
+| **Version** | 0.2.18 |
 | **Minecraft** | 1.21.1 |
 | **Loader** | NeoForge **21.1.262** (pinned, don't update it, see [Known issues](#known-issues)) |
-| **Mods** | 228 from Modrinth + the pack's own small Create Galore Bridge and Lag Watch + Twilight Forest added by hand, plus 4 shader packs and the Fresh Animations resource pack |
+| **Mods** | 230 from Modrinth + the pack's own small Create Galore Bridge and Lag Watch + Twilight Forest added by hand, plus 4 shader packs and the Fresh Animations resource pack |
 | **Full mod list** | [MODS.md](MODS.md) |
 | **In-game help** | The Create Galore Field Guide, a searchable book every player gets on first join |
 
 ## Install (players)
 
-1. Download `Create-Galore-0.2.16.mrpack` from the [latest release](https://github.com/emresahin0906-code/Create-Galore/releases/latest). The older `.mrpack` files in the repo's top folder are past versions; don't import those.
+1. Download `Create-Galore-0.2.18.mrpack` from the [latest release](https://github.com/emresahin0906-code/Create-Galore/releases/latest). The older `.mrpack` files in the repo's top folder are past versions; don't import those.
 2. Import it:
    - **Prism Launcher:** Add Instance → Import → pick the `.mrpack`.
    - **Modrinth App:** drag the `.mrpack` onto the window (or File → Import).
@@ -41,7 +41,7 @@ install-server.bat C:\CreateGaloreServer        (Windows)
 ./install-server.sh ~/CreateGaloreServer        (Linux / macOS)
 ```
 
-The server gets 185 mods, the pack's Create Galore Bridge and Lag Watch, and Twilight Forest. The 42 client-only mods (Sodium, Iris, Distant Horizons, map add-ons, the ambiance layer and so on) are skipped automatically. Players still install the full `.mrpack`. Far terrain for Distant Horizons is sent from the server by Chunksmith, so Distant Horizons itself stays off the server.
+The server gets 187 mods, the pack's Create Galore Bridge and Lag Watch, and Twilight Forest. The 42 client-only mods (Sodium, Iris, Distant Horizons, map add-ons, the ambiance layer and so on) are skipped automatically. Players still install the full `.mrpack`. Far terrain for Distant Horizons is sent from the server by Chunksmith, so Distant Horizons itself stays off the server.
 
 The server opens a small window with a live memory graph and the player list, and warns in chat when TPS stays under 15, recording a spark profile you can open later. See [Lag alerts and profiles](docs/server-setup.md#lag-alerts-and-profiles).
 
@@ -83,11 +83,13 @@ The updater also keeps NeoForge on the pack's pinned version. In Prism, when an 
 
 ## The Field Guide
 
-Every player gets the **Create Galore Field Guide** on first join, and you can craft another from a Book and Andesite. It's a wiki, not a quest book: 15 sections and about 190 entries on how things work and how the mods connect, written for someone who has never played Create.
+Every player gets the **Create Galore Field Guide** on first join, and you can craft another from a Book and Andesite. It's a wiki, not a quest book: 16 sections and about 210 entries on how things work and how the mods connect, written for someone who has never played Create.
 
 A new player should open **Start Here > Your First Days** first: how to drink, where to find clean water, food and staying warm, the things that can kill you before you know the pack.
 
 Not sure what to eat? **Food in Your First Days** (a node beside Your First Days in Start Here, and in Food and Farming) goes area by area (beach, ocean, desert, savanna, jungle, plains, forest, taiga, snow, mountains, swamp, caves) through what you can forage, hunt, fish and cook with only a campfire, with the early-spring start and thirst in mind.
+
+**Fishing** has its own section: casting and the bite, rods and tackle, bait, where and when each fish bites, lava and void fishing, the journal, crates and what fish are for.
 
 Each section is a map. Entries are nodes, and the arrows show what comes first, so to reach something you follow its lines back (the six prizes all lead into the Stellar Core, for example). Everything is open from the start, with no locks, tasks or rewards. The magnifying glass on the right searches the text of every page. Editing notes: [docs/guidebook.md](docs/guidebook.md).
 
@@ -193,6 +195,14 @@ Nothing on the list comes from space, every prize can be found again, and nothin
 - **No advancement spam on a player's first join.** Create Train Utilities' four door and platform advancements used a pre-1.21 item check that the game reads as "any item", so the first item anyone picked up (the starter kit) announced Modern Age!, A first Draft!, Component Warehouse and Is this the REALITY? in chat. The tweaks datapack gives them the 1.21 form, so they unlock when you actually get a platform block, a door part, a door or a prototype door.
 - **The glider camera pulls back again** (Bridge 1.12.0). Aeronautics Winds centres the third-person camera on a Wind Rider pilot and pulls it back while gliding (`gliderThirdPersonDistance`, 5 blocks by default, in `config/aeronauticswinds-client.toml`), but that part of the mod never loaded on Minecraft 1.21.1 because it names camera methods with the wrong number types. The camera stayed at the normal third-person distance and the three glider camera options did nothing. The Bridge now does the same thing with the right methods, so the options work.
 - **Berry picking no longer hurts, and picked fruit stays** (Bridge 1.15.0). Berries and Cherries took 1.5 hearts for every grape, blueberry, strawberry, raspberry or cherry picked by hand without shears, and its bushes hurt everything inside them that wasn't a player or villager, dropped items too. Picked fruit spawns just above the plant and falls into it, so it was usually destroyed within a quarter second. Picking never hurts now, items in a bush are safe, and only raspberry bushes still prick living things that walk through them without armor. Grapevines, blueberry and strawberry bushes and cherry leaves have no thorns.
+- **Fishing runs on Tide 2** (0.2.18). Every fishing rod is now a Tide rod, including ones made before the update (enchantments kept): hold to cast, then click while the marker crosses the zone when a fish bites. More than 180 fish bite by water, biome, depth, time, weather, moon and season, from Tide, Hybrid Aquatic, Aquaculture, Alex's Caves, Naturalist and Critters and Companions. Lava fishing (Netherite or Blazing rod, or a Lavaproof Hook) and void fishing (Hook of the Depths, off End island edges) are new. Rods are upgraded with lines, hooks and bobbers at an Angling Table, and Aquaculture's Worms work as bait. Pack changes on top:
+  - **One of each fish.** Arapaima, bluegill, carp, catfish, rainbow trout, smallmouth bass and tuna existed in two or three mods; rods now catch only Aquaculture's (Tide's, Hybrid Aquatic's and Naturalist's copies no longer bite; ones already caught stay as they are). Tide's mackerel, coelacanth, anglerfish and mahi-mahi give way to Hybrid Aquatic's, Cataclysm's lionfish to Hybrid's, and the journal lists each fish once, so it can be finished. The Enchanted Pocket Watch takes Hybrid's coelacanth, and it counts as legendary.
+  - **Old Aquaculture rods** keep Aquaculture's own cast-and-wait fishing with their tackle, as does Alloyed's Steel Fishing Rod; Hybrid Aquatic hooks in the off hand still work with them. On a Tide rod Hybrid's hooks go on at the Angling Table.
+  - **Travel rule:** Tide's Voidseeker (eat it to go back to spawn) is off, and the Elytra in Tide's Purpur Crates are Shulker Shells, like every other Elytra source (the opt-in Elytra folder puts them back). Tide's bedrock-breaking items are off.
+  - **Fixes** (Bridge 1.18.0): a used bait came back whenever the rod was saved (Tide shares the bait stacks with the saved copy, so the save kept the old count); Hybrid Aquatic's Barbed, Glowing and Magnetic hooks did nothing on Tide rods (Tide checks their names in a way that never matches on 1.21.1); the Ominous Hook now calls up the Karkinos (and the CreeperMagnet Hook a creeper) on a Tide rod and breaks after one use, as on a plain rod.
+  - **Fishy Business** still unlocks for vanilla cod, salmon, pufferfish and tropical fish caught on any rod, so worlds that had it keep it.
+  - Tide's Fish Slices are replaced by Aquaculture's fillets: a Farmer's Delight knife cuts any Tide fish into 2 Raw Fillets and bone meal.
+  - The Field Guide's claim that Create: Let The Adventure Begin adds Create items to fishing was wrong (its fishing tables sit in the old 1.20 folder and never load) and is gone.
 - **Airships no longer freeze the server over new land** (Bridge 1.17.0, 0.2.17). Aeronautics Discovery's flyover airships cruise across the sky on their own, far from any player, and two things made the server generate the land under them on the spot and wait: building a flyover waited for its chunks inside the server tick (up to 13 s in a test), and every flying ship with nobody aboard loaded every chunk it touched the same way (up to 14 s). The server froze, players rubber-banded, and blocks they had just mined came back as ghost blocks until it caught up. Now those chunks load in the background like a player's do; an unmanned ship simply waits for them, and a ship with a player aboard still waits for its terrain as before. Two checks that run on every ship also waited for that unfinished land: Create Offroad's wheel mounts feeling for the ground (airplanes with landing gear, 6 s) and Create Deep Seas' "is this boat afloat" check (1 to 3 s, over and over); both now treat land that isn't ready as empty air for that tick. Sable (the physics behind every ship) did the same while anyone explored: when water settled in freshly generated land at the edge of the loaded area, it updated that block's collision by reading the next chunk over, which was still generating, and that chunk's water then pulled in the next one (freezes up to 16 s in a test). Those neighbours now count as air for that one update. One test server also never finished "Stopping the server" after airships had crossed new land, spinning on a chunk unload that could no longer happen; the Bridge now ends that retry. The same fix stops Critters and Companions' lush cave mob spawns and Create Simulated's neighbour check for a kinetic block starting up from loading chunks at the edge of the loaded area. The Soaring Trader also no longer offers mineshaft maps: mineshafts are everywhere, and searching for one froze the server for up to 6 s.
 - **Lag Watch names the mod behind a freeze** (Lag Watch 1.1.0, 0.2.17). Its TPS alert lets a single long freeze through (one 8 s stall barely moves the average), so now a freeze of 2 s or more writes what the server was stuck on to `logs/lagwatch.log`, and chat says when it is over. How to read it: [docs/server-setup.md](docs/server-setup.md#lag-alerts-and-profiles).
 - **Sheep are as common as in plain Minecraft again** (0.2.16). Naturalist's small animals (snails, rats, moles, hedgehogs, snakes, birds) and other mods' critters share the farm-animal spawn pool, which made sheep 2 to 15 times rarer than vanilla (meadows and cherry groves worst, forests about 4 times). The pack adds extra sheep spawns in the 60 biomes that have sheep, sized so each one is back near its vanilla odds (`create_galore/neoforge/biome_modifier/more_sheep_*.json` in the create-galore-tweaks datapack). Existing worlds get it in land generated from now on. Savanna and swamp still have none (Naturalist replaces farm animals there on purpose).
@@ -267,6 +277,7 @@ A set of sound and small-visual mods that make the world feel more alive without
 | Removed **Create: Northstar Structures** | Built for the old Northstar 0.5. The world won't load with Northstar 0.6. |
 | Left out **Create: Northstar Chemistry** | 1.0.0 crashes on startup with Northstar 0.6.6. Add it back when it updates. |
 | Removed **Create: Threaded Trains** | Its train worker thread read blocks next to a station (a Station Powered wait), which deadlocked the server: the world froze with no crash and no watchdog. Trains tick normally without it. |
+| Aquaculture's rods and tackle → **Tide 2** | Tide 2 runs fishing (hold to cast, a timing game on every bite, an Angling Table for lines, hooks and bobbers, bait slots, fish by biome, depth, time, weather, moon and season, a Fishing Journal). Aquaculture's rods, hooks, lines, bobbers and Tackle Box don't fit Tide rods, so they can't be crafted and are hidden from JEI; rods you already own keep working the old way. Aquaculture's fish, fillet knives, Worm Farm, Neptunium and Aquaculture Delight stay, and its fish bite on Tide rods through Tide Extra Compatibility. |
 | Removed **Borderless Window** | It did nothing on NVIDIA: the driver still treated its window as exclusive fullscreen, and the NVIDIA present setting below keeps a 10-bit monitor at 10-bit with or without it. One less mod to suspect when something goes wrong. |
 | Pinned **Animal Husbandry 0.4.2** | 0.5.0 crashes dedicated servers. |
 | **Cold Sweat 2.4.4 + Altitude 0.8.1** | Altitude 0.8.x crashed on join with Cold Sweat 2.4.3.1, so it was pinned to 0.7.0 until both updated together in 0.2.1. |

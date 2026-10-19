@@ -5,7 +5,7 @@
                                                      no-elytra and puts every original file back)
 Usage: python3 tools/build_no_elytra.py <folder with the pack's mod jars> <minecraft 1.21.1 client.jar>
 Needs nbtlib (pip install nbtlib). Run it again after updating Lootr, BetterEnd, Dungeons and Taverns,
-Incendium or Create Jetpack, then boot-test. The README explains the switch."""
+Incendium, Create Jetpack or Tide, then boot-test. The README explains the switch."""
 import io, json, os, re, sys, glob, zipfile, gzip
 import nbtlib
 
@@ -56,6 +56,7 @@ buf = io.BytesIO(); f.write(buf); write('data/minecraft/structure/end_city/ship.
 for pattern, paths in {
     'BetterEnd-*.jar': ['data/betterend/loot_table/chests/end_village_bonus_loot.json'],
     'dungeons-and-taverns-*.jar': [f'data/nova_structures/loot_table/chests/end_castle/vault_{v}.json' for v in ('brigattine', 'galleon', 'slope')],
+    'tide-neoforge-*.jar': ['data/tide/loot_table/chests/crates/end.json'],  # Purpur Crates reeled in from End water/void
 }.items():
     z = jar(pattern)
     for p in paths:

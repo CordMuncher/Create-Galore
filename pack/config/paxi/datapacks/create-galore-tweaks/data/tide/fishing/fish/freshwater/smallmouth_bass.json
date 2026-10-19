@@ -1,0 +1,5 @@
+{
+  "fish": "tide:smallmouth_bass",
+  "parent": "aquaculture:smallmouth_bass",
+  "show_in_journal": false
+}

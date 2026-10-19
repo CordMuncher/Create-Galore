@@ -1,0 +1,8 @@
+{
+  "fish": "cataclysm:lionfish",
+  "parent": "hybrid_aquatic:lionfish",
+  "show_in_journal": false,
+  "associated_mods": [
+    "cataclysm"
+  ]
+}

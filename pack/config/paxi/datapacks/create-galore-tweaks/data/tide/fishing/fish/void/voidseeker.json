@@ -1,0 +1,5 @@
+{
+  "fish": "tide:voidseeker",
+  "parent": "tide:darkness_eater",
+  "show_in_journal": false
+}

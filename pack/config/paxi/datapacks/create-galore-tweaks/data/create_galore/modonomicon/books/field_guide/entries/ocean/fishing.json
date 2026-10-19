@@ -1,13 +1,13 @@
 {
+  "type": "modonomicon:entry_link",
   "category": "ocean",
   "name": "Fishing",
-  "description": "Aquaculture 2 replaces plain fishing with dozens of fish across the ocean, rivers,...",
+  "description": "Rods, bait, where fish live and the journal. Opens the Fishing section.",
   "icon": {
-    "item": "aquaculture:iron_fishing_rod"
+    "item": "minecraft:fishing_rod"
   },
   "x": -1,
   "y": 1,
-  "sort_number": 9,
   "parents": [
     {
       "entry": "ocean/submarines",
@@ -16,61 +16,5 @@
       "line_reversed": true
     }
   ],
-  "pages": [
-    {
-      "type": "modonomicon:text",
-      "title": "Fishing",
-      "text": "**Aquaculture 2** replaces plain fishing with dozens of fish across the ocean, rivers, swamps and cold waters, and with rods, hooks, bait and lines you can swap. Its own fish bite on Aquaculture rods, from iron up; a plain rod catches vanilla and Hybrid Aquatic fish. Day-one fishing: [#](2E5AAC)[Food in Your First Days](entry://food/first_food)[#]()."
-    },
-    {
-      "type": "modonomicon:spotlight",
-      "item": {
-        "item": "aquaculture:iron_fishing_rod"
-      },
-      "title": "Iron Fishing Rod",
-      "text": "Rods come in Iron, Golden, Diamond and Neptunium. A better rod tolerates better hooks."
-    },
-    {
-      "type": "modonomicon:spotlight",
-      "item": {
-        "item": "aquaculture:tackle_box"
-      },
-      "title": "Tackle Box",
-      "text": "Holds hooks, line, bobber and bait in one place. Hooks have effects: Heavy, Light, Double, Redstone, Note, Glowstone, Quartz, Soul Sand, Obsidian and Nether Star."
-    },
-    {
-      "type": "modonomicon:spotlight",
-      "item": {
-        "item": "aquaculture:worm_farm"
-      },
-      "title": "Worm Farm",
-      "text": "Makes Worms, the standard bait. Fish are caught with bait on the line."
-    },
-    {
-      "type": "modonomicon:text",
-      "title": "",
-      "text": "Catches include cod, halibut, herring, salmon, pollock, trout, bass, catfish, piranha, arapaima, tuna, jellyfish and several turtles.\n\n- Plenty come in a bucket, so they can be moved.\n- Fillet them with a [Fillet Knife](item://aquaculture:iron_fillet_knife) for meat that cooks well.\n- Aquaculture's piranha and jellyfish are its own catches."
-    },
-    {
-      "type": "modonomicon:spotlight",
-      "item": {
-        "item": "aquaculture:neptunium_ingot"
-      },
-      "title": "Neptunium Ingot",
-      "text": "Rare fishing loot. Neptunium makes tools, armor and a bow, and can be smelted back from them."
-    },
-    {
-      "type": "modonomicon:spotlight",
-      "item": {
-        "item": "aquaculture:neptunes_bounty"
-      },
-      "title": "Neptune's Bounty",
-      "text": "A box of Neptunium loot, made from Neptunium ingots."
-    },
-    {
-      "type": "modonomicon:text",
-      "title": "",
-      "text": "Cooking: Aquaculture Delight and Ocean's Delight turn catches into meals, see [#](2E5AAC)[Sea Food](entry://ocean/sea_food)[#](). Hybrid Aquatic and Naturalist add their own fish, and Hybrid's hooks work for rare ones: see [#](2E5AAC)[Sea Life](entry://ocean/sea_life)[#]()."
-    }
-  ]
+  "entry_to_open": "create_galore:fishing/overview"
 }
