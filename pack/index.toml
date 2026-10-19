@@ -3551,6 +3551,10 @@ file = "config/paxi/datapacks/create-galore-tweaks/data/mcwroofs/loot_table/bloc
 hash = "f6e1aaae5caa6f433379ab943afd6a891a437a51a50134116b4360d8c15328de"
 
 [[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/minecraft/advancement/husbandry/fishy_business.json"
+hash = "f0aacbfabb9914fb902f6cdf873ac7ea2e2693976e86c01e372492f5880aa003"
+
+[[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/minecraft/loot_table/chests/village/village_leatherworker.json"
 hash = "d9c03e2506881dc040f44df080ad1d4595a209e119fe9e76d76b43bf6d2dab2d"
 
@@ -4885,8 +4889,8 @@ hash = "db683b65dc15a03dd6de2d34d5dc6ad0e3490744ced513a8cc584784ee9d3d8b"
 metafile = true
 
 [[files]]
-file = "mods/create-galore-bridge-1.17.0.jar"
-hash = "a93897516be7ad884f1450e29e8710933d5da64c211bc37ebdd571996000f1d2"
+file = "mods/create-galore-bridge-1.18.0.jar"
+hash = "732c81849789a95c3710add6a2edbcc4465c6456daacfc1902303e9bf0dbf36d"
 
 [[files]]
 file = "mods/create-galore-lagwatch-1.1.0.jar"
