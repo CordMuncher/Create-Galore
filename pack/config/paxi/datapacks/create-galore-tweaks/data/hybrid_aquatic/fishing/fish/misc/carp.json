@@ -1,17 +1,5 @@
 {
-  "parent": "tide:carp",
-  "display_data": {
-    "entity": "hybrid_aquatic:carp",
-    "roll": -90.0,
-    "x": 0.05,
-    "y": -0.15,
-    "z": 0.08
-  },
   "fish": "hybrid_aquatic:carp",
-  "journal_profile": {
-    "description": "journal.description.hybrid_aquatic.carp"
-  },
-  "selection_weight": 0.0,
-  "selection_quality": 0.0,
+  "parent": "aquaculture:carp",
   "show_in_journal": false
 }

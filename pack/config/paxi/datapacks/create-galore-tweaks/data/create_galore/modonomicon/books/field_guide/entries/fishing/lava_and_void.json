@@ -1,0 +1,46 @@
+{
+  "category": "fishing",
+  "name": "Lava and Void Fishing",
+  "description": "Fish in lava with the right rod or hook, and in the void below the world.",
+  "icon": {
+    "item": "tide:void_hook"
+  },
+  "x": 6,
+  "y": -1,
+  "sort_number": 6,
+  "parents": [
+    {
+      "entry": "fishing/where_fish_live",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": false
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Lava and Void Fishing",
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- [#](FFFFFF)\ue108[#]() **Lava**: use a Netherite or Blazing rod, or a **Lavaproof Hook** on any rod.\n- **Void**: fit a **Hook of the Depths**, then cast into the open void of the End.\n- Bites come more slowly in both."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Lava fishing** works in any lava pool. What you catch can't burn. Overworld lava gives ember koi, magma mackerel, obsidian pike and more; the Nether adds witherfin, soulscale and the Blazing Swordfish.\\\n\\\nThe **Blazing Fishing Rod** catches Nether lava fish anywhere."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Lava junk is obsidian fragments (4 make obsidian) and fish bones (bone meal). Lava crates are **Obsidian Crates**; break them with a diamond pickaxe or better.\\\n\\\n[#](FFFFFF)\ue101[#]() **Watch out:** **Witherfin** gives Wither when eaten. Most other lava fish give Fire Resistance."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Void fishing** needs the bobber below the world's void line: in **The End**, anything below y50, so cast off an island edge. In the Overworld it is y-70 and below, under the bedrock floor.\\\n\\\nEnd void fish include Enderfin (an ender pearl), Endergazer (an eye of ender), Elytrout (phantom membrane) and the legendary **Dragon Fish**."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "[#](FFFFFF)\ue103[#]() **In depth.** The Overworld void has its own fish, Alpha Fish among them. There are none for the Nether void.\\\n\\\nThe **Voidseeker**, which sends you to your spawn point when eaten, is off in this pack: it would skip every ride home. [#](2E5AAC)[Getting Around](entry://transport/getting_around)[#]()."
+    }
+  ]
+}

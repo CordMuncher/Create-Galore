@@ -7,7 +7,7 @@ The book is data, not a mod. It lives in the always-on Paxi datapack, so the ser
 ```
 pack/config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/
   book.json                       name, look, landing text
-  categories/<id>.json            the 15 sections (tabs)
+  categories/<id>.json            the 16 sections (tabs)
   entries/<category>/<entry>.json one node each
 ```
 

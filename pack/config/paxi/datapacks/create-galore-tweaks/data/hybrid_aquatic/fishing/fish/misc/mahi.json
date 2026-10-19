@@ -1,0 +1,54 @@
+{
+  "conditions": [
+    {
+      "type": "tide:saltwater"
+    },
+    {
+      "type": "tide:dimension",
+      "dimensions": [
+        "minecraft:overworld"
+      ]
+    },
+    {
+      "type": "tide:fluid",
+      "fluid": "water"
+    },
+    {
+      "type": "tide:above",
+      "y": 40
+    }
+  ],
+  "display_data": {
+    "entity": "hybrid_aquatic:mahi",
+    "roll": -90.0,
+    "shape": "2x1",
+    "x": 0.14,
+    "y": -0.35,
+    "z": 0.08
+  },
+  "fish": "hybrid_aquatic:mahi",
+  "journal_profile": {
+    "description": "journal.description.hybrid_aquatic.mahi",
+    "group": "saltwater",
+    "location": "journal.info.location.saltwater",
+    "rarity": "rare"
+  },
+  "modifiers": [
+    {
+      "type": "tide:temperature",
+      "preferred_temperature": 0.4,
+      "temperature_tolerance": 0.4
+    }
+  ],
+  "selection_weight": 9.0,
+  "size": {
+    "record_high_cm": 200.0,
+    "typical_high_cm": 130.0,
+    "typical_low_cm": 85.0
+  },
+  "speed": 1.4,
+  "strength": 0.7,
+  "associated_mods": [
+    "hybrid_aquatic"
+  ]
+}

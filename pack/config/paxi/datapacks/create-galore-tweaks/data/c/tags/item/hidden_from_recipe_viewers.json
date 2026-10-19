@@ -62,6 +62,9 @@
   "aquaculture:nether_star_hook",
   "aquaculture:fishing_line",
   "aquaculture:bobber",
-  "aquaculture:tackle_box"
+  "aquaculture:tackle_box",
+  "tide:mahi_mahi",
+  "tide:mahi_mahi_bucket",
+  "tide:mahi_mahi_spawn_egg"
  ]
 }

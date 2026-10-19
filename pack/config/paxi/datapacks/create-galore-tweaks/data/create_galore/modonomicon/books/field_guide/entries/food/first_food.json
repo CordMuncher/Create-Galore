@@ -50,12 +50,12 @@
     {
       "type": "modonomicon:text",
       "title": "Fishing",
-      "text": "A rod is 3 sticks and 2 string. It catches cod, salmon and Hybrid Aquatic's fish anywhere; cook them on the campfire.\\\n\\\n[#](FFFFFF)\ue101[#]() **Watch out:** pufferfish, lionfish, stonefish, blowfish, boxfish, hagfish and stingrays poison you raw. About 1 cast in 10."
+      "text": "A rod is 3 sticks and 2 string. Hold to cast; when a fish bites, click as the marker crosses the zone. Each biome has its own fish. Cook them on the campfire.\\\n\\\n[#](FFFFFF)\ue101[#]() **Watch out:** pufferfish, lionfish, stonefish, blowfish, boxfish, hagfish and stingrays poison you raw."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "[#](FFFFFF)\ue102[#]() **Tip:** no rod? Aquaculture's fish swim in ponds and rivers. Hit one and it drops itself, edible even raw.\\\n\\\nAquaculture's regional fish (piranha, halibut and the rest) bite only on its own rods, iron and up. See [#](2E5AAC)[Fishing](entry://ocean/fishing)[#]()."
+      "text": "[#](FFFFFF)\ue102[#]() **Tip:** no rod? Aquaculture's fish swim in ponds and rivers. Hit one and it drops itself, edible even raw.\\\n\\\nAquaculture's regional fish (piranha, halibut and the rest) bite on any rod now, in their own biomes. See [#](2E5AAC)[Fishing](entry://fishing/overview)[#]()."
     },
     {
       "type": "modonomicon:text",
@@ -202,7 +202,7 @@
     {
       "type": "modonomicon:text",
       "title": "Related",
-      "text": "- [#](2E5AAC)[Your First Days](entry://start_here/first_days)[#]()\n- [#](2E5AAC)[Thirst](entry://survival/thirst)[#]()\n- [#](2E5AAC)[Seasonal Crops](entry://survival/seasons_crops)[#]()\n- [#](2E5AAC)[Farmer's Delight](entry://food/farmers_delight)[#]()\n- [#](2E5AAC)[Fishing](entry://ocean/fishing)[#]()\n- [#](2E5AAC)[Sea Food](entry://ocean/sea_food)[#]()\n- [#](2E5AAC)[Animals and Husbandry](entry://food/animals)[#]()"
+      "text": "- [#](2E5AAC)[Your First Days](entry://start_here/first_days)[#]()\n- [#](2E5AAC)[Thirst](entry://survival/thirst)[#]()\n- [#](2E5AAC)[Seasonal Crops](entry://survival/seasons_crops)[#]()\n- [#](2E5AAC)[Farmer's Delight](entry://food/farmers_delight)[#]()\n- [#](2E5AAC)[Fishing](entry://fishing/overview)[#]()\n- [#](2E5AAC)[Sea Food](entry://fishing/sea_food)[#]()\n- [#](2E5AAC)[Animals and Husbandry](entry://food/animals)[#]()"
     }
   ]
 }

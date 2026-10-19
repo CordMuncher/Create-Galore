@@ -1,0 +1,82 @@
+{
+  "category": "fishing",
+  "name": "Fishing Gadgets",
+  "description": "Pocket watch, lunar calendar, climate gauge, depth meter, weather radio, fish finder.",
+  "icon": {
+    "item": "tide:fish_finder"
+  },
+  "x": 6,
+  "y": -2,
+  "sort_number": 7,
+  "parents": [
+    {
+      "entry": "fishing/where_fish_live",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Fishing Gadgets",
+      "text": "Tide's gadgets show the conditions fish care about. Hold one, wear it in a **Curios** slot, or place the block versions nearby, and its reading shows in the top corner of the screen. Right-click to read it once."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "tide:pocket_watch"
+      },
+      "title": "Pocket Watch",
+      "text": "The exact time. A clock and a chain."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "tide:lunar_calendar"
+      },
+      "title": "Lunar Calendar",
+      "text": "Tonight's moon phase. Paper, an ink sac and a spyglass. Can be placed."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "tide:climate_gauge"
+      },
+      "title": "Climate Gauge",
+      "text": "The biome's temperature, which fish care about. Glass, an iron nugget and redstone."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "tide:depth_meter"
+      },
+      "title": "Depth Meter",
+      "text": "Your height above or below sea level. Iron ingots, a stick and redstone."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "tide:weather_radio"
+      },
+      "title": "Weather Radio",
+      "text": "When the weather changes next. A lightning rod, redstone and copper. Placed as a block."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "tide:fish_finder"
+      },
+      "title": "Fish Finder",
+      "text": "All five readings at once. Made from all five gadgets."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "tide:enchanted_pocket_watch"
+      },
+      "title": "Enchanted Pocket Watch",
+      "text": "A Pocket Watch and a **Coelacanth**. Right-click a mob to freeze it in place (not bosses); again to free it. 10-second cooldown."
+    }
+  ]
+}

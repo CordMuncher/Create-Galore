@@ -1,0 +1,41 @@
+{
+  "category": "fishing",
+  "name": "Fishing",
+  "description": "How fishing works here: Tide runs every fishing rod.",
+  "icon": {
+    "item": "minecraft:fishing_rod"
+  },
+  "x": 0,
+  "y": 0,
+  "sort_number": 0,
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Fishing",
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- **Tide** runs fishing: hold to cast, then win a short timing game when a fish bites.\n- Where, when and how deep you fish decides what bites.\n- Upgrade rods at an **Angling Table**; bait makes fish bite sooner.\n- The **Fishing Journal** records every fish you catch."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Fishing in Create Galore is run by **Tide**. Every plain Fishing Rod is a Tide rod, including ones made before Tide joined the pack.\\\n\\\nMore than 180 fish bite across rivers, oceans, caves, lava and the void, from Tide itself, Hybrid Aquatic, Aquaculture, Alex's Caves and a few others."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Start here:\n\n- [#](2E5AAC)[Casting and the Bite](entry://fishing/casting)[#]()\n- [#](2E5AAC)[Fishing Rods](entry://fishing/rods)[#]()\n- [#](2E5AAC)[Where Fish Live](entry://fishing/where_fish_live)[#]()\n- [#](2E5AAC)[Bait](entry://fishing/bait)[#]()\n- [#](2E5AAC)[Fishing Journal and Trophies](entry://fishing/journal)[#]()\n- [#](2E5AAC)[What Fish Are For](entry://fishing/fish_uses)[#]()"
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "tide:fishing_journal"
+      },
+      "title": "Fishing Journal",
+      "text": "Every player gets one on joining. Catch a fish to unlock its page: where it lives, when it bites, and your biggest one so far."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "[#](FFFFFF)\ue102[#]() **Tip:** day one, a plain rod (3 sticks, 2 string) is enough. Any open river or sea gives fish to cook on a campfire. See [#](2E5AAC)[Food in Your First Days](entry://food/first_food)[#]().\\\n\\\nAquaculture's own rods and tackle are retired here; see [#](2E5AAC)[Aquaculture Fish and Old Rods](entry://fishing/aquaculture)[#]()."
+    }
+  ]
+}

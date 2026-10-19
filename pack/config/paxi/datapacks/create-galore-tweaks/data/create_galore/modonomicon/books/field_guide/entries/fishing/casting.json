@@ -1,0 +1,51 @@
+{
+  "category": "fishing",
+  "name": "Casting and the Bite",
+  "description": "Hold to cast, wait for the bite, then hit the timing bar.",
+  "icon": {
+    "item": "minecraft:cod"
+  },
+  "x": 2,
+  "y": -1,
+  "sort_number": 1,
+  "parents": [
+    {
+      "entry": "fishing/overview",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Casting and the Bite",
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- **Hold** use to charge a cast, release to throw. Longer hold, longer cast.\n- On a bite, **right-click** to start reeling.\n- A bar appears: right-click while the marker is in the coloured zone.\n- Miss and the fish gets away."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Casting.** Hold use with a rod: a bar fills over about a second. Let go to throw; a full bar throws furthest.\\\n\\\n**The bite.** The bobber dips with a splash. You have a second or two to right-click. Junk, treasure and crates reel straight in; a fish starts the timing game."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**The timing game.** A bar shows over your crosshair with a coloured zone in the middle and a marker sweeping across it. Right-click while the marker is inside the zone.\n\n- Inside: **Good**, the fish is yours.\n- Dead centre: **Perfect Catch!** and more experience.\n- Outside: **Miss**, the fish escapes."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Each fish moves the marker its own way: smooth swings, pauses, jitters or sudden darts. Strong fish have a narrow zone, fast fish a fast marker.\\\n\\\nIf you never click, the fish gives up after a few seconds and your line stays in the water. A miss costs a point of rod durability but no bait."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "[#](FFFFFF)\ue103[#]() **In depth.** **Open water** is a 5x5 patch of water at least two blocks deep with open air above it around the bobber. Surface crates and the best treasure only come from open water; fish don't care.\\\n\\\nRain on the bobber, or fishing under a roof, makes bites come a little faster in water."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Each bite rolls a fish, junk, treasure or a crate. Luck (Luck of the Sea, lucky bait, some rods and lines) moves the roll from junk toward treasure and rare fish. Lure and bait speed make bites come sooner.\\\n\\\nOperators can see the odds where they stand: cast, then type `/fishing test fish` (or `loot`, `crate`)."
+    }
+  ]
+}

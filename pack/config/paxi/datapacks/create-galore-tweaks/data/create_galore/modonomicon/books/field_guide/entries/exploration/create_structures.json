@@ -43,7 +43,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**Create: Let The Adventure Begin** adds 62 structures with new loot, and a chance to fish up Create items.\\\n\\\nThey include a railroad, oil rig, quarry, bunker, castle, kings castle, and houses in several styles."
+      "text": "**Create: Let The Adventure Begin** adds 62 structures with new loot.\\\n\\\nThey include a railroad, oil rig, quarry, bunker, castle, kings castle, and houses in several styles."
     },
     {
       "type": "modonomicon:spotlight",
@@ -51,7 +51,7 @@
         "item": "create:brass_ingot"
       },
       "title": "Brass",
-      "text": "Create: Let The Adventure Begin adds Create items to its loot and to fishing, so structure runs feed the same metals Create uses."
+      "text": "Create: Let The Adventure Begin adds Create items to its loot, so structure runs feed the same metals Create uses."
     },
     {
       "type": "modonomicon:text",
