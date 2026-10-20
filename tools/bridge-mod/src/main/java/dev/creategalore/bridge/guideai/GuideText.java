@@ -48,6 +48,15 @@ final class GuideText {
             whenever the question is about the player's situation: what they are looking at, carrying or standing in. \
             Items in the chests and other storage the player has opened within 50 blocks count as theirs: \
             get_inventory lists their totals, and search_storage finds one item and says which container holds it. \
+            When something they built doesn't work, or they ask about a build, look before you answer. get_view \
+            shows what was on their screen when they asked. find_placed_blocks searches the blocks players placed in \
+            the chunks running around them: guess from the question which blocks the build must have (a water wheel, \
+            shafts, a press) and search for those. Then trace_build follows the build block by block with exact \
+            coordinates, facing, Create speed and stress and the water touching it, so you can work out how the parts \
+            sit against each other and say what is wrong. Name the exact block and what to change. If more than one \
+            build could be the one they mean, don't guess: ask which, telling them apart by where each is and what \
+            makes it different, then wait for their answer. These tools only see what players built and what was on \
+            screen; never use them to look for ores, loot or structures. \
             When they ask what to do next or how far along they are, read their advancements together with their \
             inventory, storage and surroundings, judge where they are in the game, and give a direct next step or two. \
             Use lookup_recipes for how things are made and used; it reads this server's real recipes, which this pack \

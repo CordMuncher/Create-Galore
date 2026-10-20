@@ -53,7 +53,12 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**Ask the Book**\\\nOn a home server whose owner gave the book a voice, the **Ask the Book** ribbon (the speech bubble on the right edge of this book) opens pages where you ask in your own words. It answers from this guide, the server's recipes, what you see and carry, the chests you have opened nearby and your advancements, shows recipes, draws diagrams or builds 3D models you can turn when they help (right-click one to save it as a page), and never gives map locations. Also: /askbook."
+      "text": "**Ask the Book**\\\nOn a home server whose owner gave the book a voice, the **Ask the Book** ribbon (the speech bubble on the right edge of this book) opens pages where you ask in your own words. It answers from this guide, the server's recipes, what is on your screen, what you carry, the chests you have opened nearby and your advancements. Also: /askbook."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**What the book can do**\\\nIt shows recipes, and draws diagrams or builds 3D models you can turn when they help (right-click one to save it as a page).\\\n\\\nAsk why a build doesn't work and it finds the build near you and reads it block by block. It only sees blocks players placed, so it never finds ores or loot, and it never gives map locations."
     },
     {
       "type": "modonomicon:spotlight",

@@ -191,6 +191,8 @@ At every later start one line says whether the voice is on, and typing **K** and
 
 **Pages.** Every player has their own pages (separate conversations), kept in `world/create_galore_field_guide_ai/<player uuid>.json`. A new page starts fresh, so it only pays for the cached guide plus its question; the book suggests a new page after 15 questions on one page and stops at 30. Up to 50 pages are kept per player, the oldest dropped first.
 
+**Builds.** The book can find and read players' builds to explain why one doesn't work. The server keeps a list of every block a player placed (by hand, with a deployer, a bucket, belts or a schematicannon), and keeps it through pistons, contraptions and Sable ships, in `world/create_galore_field_guide_ai/placed_blocks.dat` (up to a million blocks). The book only searches the chunks the server simulates around the player asking, so a teammate's build nearby counts; it is intended for cooperative play. Blocks placed before 0.2.24 aren't on the list. An operator adds them with `/fieldguide builds add <from> <to>` (two corners, up to 128 blocks a side): the box is outlined, and the blocks count once you click **[Confirm]** in chat. Keep the box tight, since ground inside it counts as built too. `/fieldguide builds remove <from> <to>` takes blocks off the list the same way.
+
 ### Updating by hand
 
 When the pack in this repo changes:

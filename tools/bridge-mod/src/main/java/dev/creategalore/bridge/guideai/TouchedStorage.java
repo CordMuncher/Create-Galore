@@ -149,7 +149,7 @@ final class TouchedStorage {
     }
 
     /** "12 blocks north-east, 3 up" from the player to a block. */
-    private static String offset(BlockPos from, BlockPos to) {
+    static String offset(BlockPos from, BlockPos to) {
         int dx = to.getX() - from.getX(), dy = to.getY() - from.getY(), dz = to.getZ() - from.getZ();
         int dist = (int) Math.round(Math.sqrt((double) dx * dx + dz * dz));
         String ns = dz < -1 ? "north" : dz > 1 ? "south" : "", ew = dx > 1 ? "east" : dx < -1 ? "west" : "";

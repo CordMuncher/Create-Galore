@@ -72,10 +72,28 @@ public final class GuideAi {
             TouchedStorage s = storage;
             if (s != null) s.onRightClick(e);
         });
+        // Last, and only if nothing cancelled it, so a placement another mod refused isn't counted.
+        NeoForge.EVENT_BUS.addListener(net.neoforged.bus.api.EventPriority.LOWEST, (net.neoforged.neoforge.event.level.BlockEvent.EntityPlaceEvent e) -> {
+            PlacedBlocks p = placed;
+            if (p != null && !e.isCanceled()) p.onPlace(e);
+        });
+        NeoForge.EVENT_BUS.addListener(net.neoforged.bus.api.EventPriority.LOWEST, (net.neoforged.neoforge.event.level.BlockEvent.BreakEvent e) -> {
+            PlacedBlocks p = placed;
+            if (p != null && !e.isCanceled()) p.onBreak(e);
+        });
+        NeoForge.EVENT_BUS.addListener(net.neoforged.bus.api.EventPriority.LOWEST, (net.neoforged.neoforge.event.level.PistonEvent.Pre e) -> {
+            PlacedBlocks p = placed;
+            if (p != null && !e.isCanceled()) p.onPiston(e);
+        });
+        NeoForge.EVENT_BUS.addListener(BuildClaims::onCommands);
+        NeoForge.EVENT_BUS.addListener(BuildClaims::onTick);
         NeoForge.EVENT_BUS.addListener((net.neoforged.neoforge.event.level.LevelEvent.Save e) -> {
+            if (!(e.getLevel() instanceof net.minecraft.server.level.ServerLevel level)
+                    || level.dimension() != net.minecraft.world.level.Level.OVERWORLD) return;
             TouchedStorage s = storage;
-            if (s != null && e.getLevel() instanceof net.minecraft.server.level.ServerLevel level
-                    && level.dimension() == net.minecraft.world.level.Level.OVERWORLD) s.save();
+            if (s != null) s.save();
+            PlacedBlocks p = placed;
+            if (p != null) p.save();
         });
     }
 
@@ -86,6 +104,20 @@ public final class GuideAi {
         return storage;
     }
 
+    /** The blocks players have placed; kept on a dedicated server even while the voice is off, like storage. */
+    private static volatile PlacedBlocks placed;
+
+    static PlacedBlocks placed() {
+        return placed;
+    }
+
+    /** What each player had on screen when they last asked (server thread only). */
+    private static final Map<UUID, Vision.Snapshot> views = new HashMap<>();
+
+    static Vision.Snapshot view(UUID player) {
+        return views.get(player);
+    }
+
     private static void onStarted(ServerStartedEvent event) {
         MinecraftServer server = event.getServer();
         if (!FMLEnvironment.dist.isDedicatedServer()) {
@@ -93,6 +125,7 @@ public final class GuideAi {
             return;
         }
         storage = new TouchedStorage(server.getWorldPath(LevelResource.ROOT).resolve("create_galore_field_guide_ai"));
+        placed = new PlacedBlocks(server.getWorldPath(LevelResource.ROOT).resolve("create_galore_field_guide_ai"));
         GuideAiSettings settings = GuideAiSettings.load();
         if (settings == null) {
             offNotice = NOTICE_OFF;
@@ -131,6 +164,10 @@ public final class GuideAi {
         TouchedStorage s = storage;
         storage = null;
         if (s != null) s.save();
+        PlacedBlocks p = placed;
+        placed = null;
+        if (p != null) p.save();
+        views.clear();
         Live l = live;
         live = null;
         if (l != null) l.workers.shutdownNow();
@@ -200,14 +237,14 @@ public final class GuideAi {
                 }
                 sendPages(player, book, "");
             }
-            case GuideAiNet.ASK -> ask(l, player, book, request.pageId(), request.text());
+            case GuideAiNet.ASK -> ask(l, player, book, request.pageId(), request.text(), request.fov(), request.aspect());
             case GuideAiNet.SAVE -> save(l, player, book, request.pageId(), request.text());
             default -> {
             }
         }
     }
 
-    private static void ask(Live l, ServerPlayer player, ThreadStore.Book book, String pageId, String rawQuestion) {
+    private static void ask(Live l, ServerPlayer player, ThreadStore.Book book, String pageId, String rawQuestion, int fov, float aspect) {
         UUID id = player.getUUID();
         String question = GuideAiNet.clip(rawQuestion.replaceAll("[\\p{Cntrl}&&[^\n]]", " ").strip(), GuideAiNet.MAX_QUESTION);
         ThreadStore.Page page = pageId.isEmpty() ? null : book.page(pageId);
@@ -249,6 +286,13 @@ public final class GuideAi {
             pending.add(id);
         }
         l.store.save(id);
+        // What is on their screen right now; the book reads it only if it calls get_view.
+        try {
+            views.put(id, Vision.capture(player, fov, aspect, placed));
+        } catch (RuntimeException e) {
+            views.remove(id);
+            LOG.warn("Field Guide voice: couldn't take in what {} sees ({})", player.getGameProfile().getName(), e.toString());
+        }
         sendView(player, page, "");
 
         // The API sees the conversation so far plus this question; the page only keeps it once it has an answer.
@@ -639,7 +683,7 @@ public final class GuideAi {
             JsonObject r = new JsonObject();
             r.addProperty("type", "tool_result");
             r.addProperty("tool_use_id", GuideText.string(block, "id"));
-            r.addProperty("content", GuideAiNet.clip(result, 20000));
+            r.addProperty("content", GuideAiNet.clip(result, 40000));
             results.add(r);
         }
         JsonObject user = new JsonObject();
