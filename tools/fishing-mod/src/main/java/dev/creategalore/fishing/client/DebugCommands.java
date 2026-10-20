@@ -15,7 +15,9 @@ import net.neoforged.neoforge.common.NeoForge;
  * <ul>
  *   <li>{@code /cgfishc rodpose first|third <tx> <ty> <tz> <rx> <ry> <rz> <scale>}: the rod's placement in the hand;</li>
  *   <li>{@code /cgfishc rodload <0..1.2>} / {@code /cgfishc rodload off}: force the rod's bend;</li>
- *   <li>{@code /cgfishc holdpose <arm x> <arm y> <fish y> <fish z>}: the two-handed hold in third person.</li>
+ *   <li>{@code /cgfishc holdpose <arm x> <arm y> <fish y> <fish z>}: the two-handed hold in third person;</li>
+ *   <li>{@code /cgfishc fishpose first|third|ground|fixed|head <tx> <ty> <tz> <rx> <ry> <rz> <min> <max>}: where a
+ *   fish item is drawn in each view and how long it may be.</li>
  * </ul>
  */
 final class DebugCommands {
@@ -29,6 +31,11 @@ final class DebugCommands {
                                 .then(Commands.argument("which", StringArgumentType.word())
                                         .then(Commands.argument("values", StringArgumentType.greedyString())
                                                 .executes(c -> rodPose(c.getSource(), StringArgumentType.getString(c, "which"),
+                                                        StringArgumentType.getString(c, "values"))))))
+                        .then(Commands.literal("fishpose")
+                                .then(Commands.argument("which", StringArgumentType.word())
+                                        .then(Commands.argument("values", StringArgumentType.greedyString())
+                                                .executes(c -> fishPose(c.getSource(), StringArgumentType.getString(c, "which"),
                                                         StringArgumentType.getString(c, "values"))))))
                         .then(Commands.literal("holdpose")
                                 .then(Commands.argument("values", StringArgumentType.greedyString())
@@ -47,6 +54,17 @@ final class DebugCommands {
 
     private static int rodPose(CommandSourceStack source, String which, String values) {
         return set(source, which, which.equals("first") ? RodItemRenderer.FIRST_PERSON : RodItemRenderer.THIRD_PERSON, values);
+    }
+
+    private static int fishPose(CommandSourceStack source, String which, String values) {
+        float[] target = switch (which) {
+            case "first" -> FishItemRenderer.FIRST_PERSON;
+            case "third" -> FishItemRenderer.THIRD_PERSON;
+            case "ground" -> FishItemRenderer.GROUND;
+            case "fixed" -> FishItemRenderer.FIXED;
+            default -> FishItemRenderer.HEAD;
+        };
+        return set(source, which, target, values);
     }
 
     /** Sets the numbers in {@code target} from a space-separated list; "_" keeps a value. */

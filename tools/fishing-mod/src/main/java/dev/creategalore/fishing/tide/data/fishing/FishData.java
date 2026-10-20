@@ -73,6 +73,12 @@ public record FishData(Holder<Item> fish,
             BuiltInRegistries.ITEM.holderByNameCodec().optionalFieldOf("parent").forGetter(FishData::parent)
     ).apply(i, FishData::new));
 
+    /** This fish as its own species (no parent). */
+    public FishData asOriginal() {
+        return new FishData(fish, bucket, associatedMods, showInJournal, conditions, modifiers, weight, quality,
+                strength, speed, behavior, profile, size, display, Optional.empty());
+    }
+
     // ---- Lookups (Tide's API). Published by the species loader on the server and by the data sync on clients. ----
 
     private static volatile Map<Item, FishData> byItem = Map.of();

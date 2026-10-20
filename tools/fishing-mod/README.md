@@ -101,8 +101,16 @@ Tide 2 is not in the pack any more; this mod carries what players had from it, u
 - Fish (on the line, held up, in the catch screen) are drawn by `client/FishView` as their own mob's model where
   the item has a mob of the same id, sized from the model's measured extent to the fish's real length, and fattened
   to its weight if the model is slim.
+- Fish items (every mod's) are drawn as their mob's model too (`client/FishItems`, `FishItemRenderer`): held,
+  dropped, in item frames, on heads, at their catch's length within limits per view (the `FIRST_PERSON` ...
+  `FIXED` arrays). Which items, and which mob draws each, is read at startup from the fish files this mod ships
+  plus same-id water mobs; items another mod already renders itself are skipped. Inventory icons are the model
+  drawn once into a 64 px texture with a dark rim (`FishIcons`), baked a few per frame and rebuilt on resource
+  reload. Anything that can't be drawn (no world, a mob that throws, dropped fish beyond 16 blocks) is the sprite.
+  Trophies and uniques get a star in the slot and the rare / epic name colour.
 - Tuning without restarts: start the client with `-Dcgfish.debug=true` for `/cgfishc rodpose first|third ...`,
-  `/cgfishc rodload <load>|off` and `/cgfishc holdpose ...` (see `client/DebugCommands`), and model-size logging.
+  `/cgfishc rodload <load>|off`, `/cgfishc holdpose ...` and `/cgfishc fishpose first|third|ground|fixed|head ...`
+  (see `client/DebugCommands`), plus model-size logging and the list of fish items at startup.
 - `/cgfish hold <player> <species> <cm>` puts a fish of that size in a player's hands (catch screen and all).
 
 ## Balancing

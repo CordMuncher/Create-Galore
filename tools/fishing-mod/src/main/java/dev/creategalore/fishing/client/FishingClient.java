@@ -32,6 +32,8 @@ public final class FishingClient {
         FishingHud.init(modBus);
         RodItemRenderer.init(modBus);
         HoldPose.init(modBus);
+        FishItems.init(modBus);
+        FishIcons.init(modBus);
         NeoforgeClientEntrypoint.init(modBus);
         if (Boolean.getBoolean("cgfish.debug")) DebugCommands.init();
         CatchScreen.listen();

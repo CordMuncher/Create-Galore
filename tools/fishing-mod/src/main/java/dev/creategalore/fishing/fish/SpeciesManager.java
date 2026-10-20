@@ -135,9 +135,10 @@ public final class SpeciesManager extends SimplePreparableReloadListener<Species
             FishData d = data.get();
             Item item = d.fish().value();
             if (item == Items.AIR) continue;
-            // An old redirect for a Tide fish the aliases already send to its parent (tide:carp is now
-            // aquaculture:carp): merging a fish into itself would remove it.
-            if (d.parent().isPresent() && d.parent().get().value() == item) continue;
+            // A fish whose parent is now itself: an old redirect of a Tide fish the aliases already send to its
+            // parent (tide:carp is aquaculture:carp now), or a fish Tide merged into one of its own that the pack
+            // hands to this mod (Hybrid Aquatic's coelacanth, once merged into tide:coelacanth). It is its own species.
+            if (d.parent().isPresent() && d.parent().get().value() == item) d = d.asOriginal();
             if (d.parent().isPresent()) {
                 mergedInto.put(item, d.parent().get().value());
                 mergedData.put(item, d);

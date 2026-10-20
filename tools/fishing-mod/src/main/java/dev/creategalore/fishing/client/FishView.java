@@ -47,9 +47,50 @@ final class FishView {
     private FishView() {
     }
 
-    /** The display entity for a fish item, if the item has a mob of the same id. */
+    /** The mob that draws a fish item: the one its fish data names, else the one with the item's id. */
     static Optional<Entity> entity(ItemStack fish) {
-        return entity(BuiltInRegistries.ITEM.getKey(fish.getItem()));
+        return entity(FishItems.mob(fish).orElse(BuiltInRegistries.ITEM.getKey(fish.getItem())));
+    }
+
+    /** As {@link #entity(ItemStack)}, for callers that only ask whether there is one. */
+    static Optional<Entity> mob(ItemStack fish) {
+        return entity(fish);
+    }
+
+    /** The mob's model size facing +X at scale 1: length and height (blocks). */
+    static float[] extent(ItemStack fish) {
+        return entity(fish).map(e -> {
+            float[] box = bounds(e);
+            return new float[]{box[3] - box[0], box[4] - box[1]};
+        }).orElse(new float[]{1, 0.4f});
+    }
+
+    /** Draws the mob's model at scale 1, centred on the origin, facing +X, still (for icons). */
+    static void drawModel(ItemStack fish, PoseStack pose, MultiBufferSource buffers, int light) {
+        entity(fish).ifPresent(e -> {
+            float[] box = bounds(e);
+            pose.pushPose();
+            pose.translate(-(box[0] + box[3]) / 2, -(box[1] + box[4]) / 2, -(box[2] + box[5]) / 2);
+            face(e);
+            e.tickCount = 0;
+            render(e, pose, buffers, light, 0);
+            pose.popPose();
+        });
+    }
+
+    private static void render(Entity e, PoseStack pose, MultiBufferSource buffers, int light, float partial) {
+        EntityRenderDispatcher dispatcher = Minecraft.getInstance().getEntityRenderDispatcher();
+        dispatcher.setRenderShadow(false);
+        try {
+            dispatcher.render(e, 0, 0, 0, -90, partial, pose, buffers, light);
+        } catch (RuntimeException ex) {
+            // Some mob renderers expect a real, ticking entity; fall back to the item next time.
+            CACHE.put(e.getType(), Optional.empty());
+            CreateGaloreFishing.LOG.warn("Can't draw {} as a fish model, using its item instead: {}",
+                    BuiltInRegistries.ENTITY_TYPE.getKey(e.getType()), ex.toString());
+        } finally {
+            dispatcher.setRenderShadow(true);
+        }
     }
 
     static Optional<Entity> entity(ResourceLocation id) {
@@ -65,11 +106,15 @@ final class FishView {
         return CACHE.computeIfAbsent(type.get(), t -> {
             try {
                 Entity e = t.create(level);
-                if (e == null) return Optional.empty();
+                if (e == null) {
+                    CreateGaloreFishing.LOG.warn("Can't make a {} to draw as a fish model", BuiltInRegistries.ENTITY_TYPE.getKey(t));
+                    return Optional.empty();
+                }
                 ((EntityAccessor) e).cgfish$setWasTouchingWater(true);
                 e.setSilent(true);
                 return Optional.of(e);
             } catch (RuntimeException ex) {
+                CreateGaloreFishing.LOG.warn("Can't make a {} to draw as a fish model: {}", BuiltInRegistries.ENTITY_TYPE.getKey(t), ex.toString());
                 return Optional.empty();
             }
         });
@@ -148,16 +193,7 @@ final class FishView {
             pose.translate(-(box[0] + box[3]) / 2, -(box[1] + box[4]) / 2, -(box[2] + box[5]) / 2);
             face(e);
             e.tickCount = (int) clock;
-            EntityRenderDispatcher dispatcher = Minecraft.getInstance().getEntityRenderDispatcher();
-            dispatcher.setRenderShadow(false);
-            try {
-                dispatcher.render(e, 0, 0, 0, -90, clock - (int) clock, pose, buffers, light);
-            } catch (RuntimeException ex) {
-                // Some mob renderers expect a real, ticking entity; fall back to the item next time.
-                CACHE.put(e.getType(), Optional.empty());
-            } finally {
-                dispatcher.setRenderShadow(true);
-            }
+            render(e, pose, buffers, light, clock - (int) clock);
         } else {
             // A fish sprite in an item frame is half a block wide and faces left.
             float scale = length / 0.5f;
@@ -165,8 +201,14 @@ final class FishView {
             float girth = girth(kg, length, length / 3, length / 8);
             pose.scale(scale, scale * girth, scale);
             pose.mulPose(Axis.YP.rotationDegrees(180));
-            Minecraft.getInstance().getItemRenderer().renderStatic(fish, ItemDisplayContext.FIXED, light,
-                    OverlayTexture.NO_OVERLAY, pose, buffers, Minecraft.getInstance().level, 0);
+            if (FishItems.drawn(fish.getItem())) {
+                // Its item model would come straight back here: draw the sprite itself.
+                pose.translate(-0.5f, -0.5f, -0.5f);
+                FishItemRenderer.sprite(fish, ItemDisplayContext.FIXED, pose, buffers, light, OverlayTexture.NO_OVERLAY);
+            } else {
+                Minecraft.getInstance().getItemRenderer().renderStatic(fish, ItemDisplayContext.FIXED, light,
+                        OverlayTexture.NO_OVERLAY, pose, buffers, Minecraft.getInstance().level, 0);
+            }
         }
         pose.popPose();
     }

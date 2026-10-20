@@ -1,8 +1,9 @@
 package dev.creategalore.fishing.cast;
-import dev.creategalore.fishing.FishingRegistry;
+
 import dev.creategalore.fishing.fish.CatchInfo;
 import dev.creategalore.fishing.fish.Species;
 import dev.creategalore.fishing.sim.Fight;
+import dev.creategalore.fishing.sim.SizeClass;import dev.creategalore.fishing.FishingRegistry;
 import dev.creategalore.fishing.tackle.RodStats;
 import dev.creategalore.fishing.tide.data.FishingContext;
 import dev.creategalore.fishing.tide.data.TideCriteriaTriggers;
@@ -34,6 +35,7 @@ import net.minecraft.tags.ItemTags;
 import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.loot.BuiltInLootTables;
 import net.minecraft.world.level.storage.loot.LootParams;
@@ -64,6 +66,9 @@ public final class Catches {
         CatchInfo info = CatchInfo.of(bite.size(), bite.lengthCm(), bite.kg(), angler, day);
         fish.set(FishingRegistry.CATCH.get(), info);
         if (info.exact()) fish.set(DataComponents.MAX_STACK_SIZE, 1);
+        // Trophies and uniques show it in their name's colour, as rare items do.
+        if (bite.size() == SizeClass.TROPHY) fish.set(DataComponents.RARITY, Rarity.RARE);
+        if (bite.size() == SizeClass.UNIQUE) fish.set(DataComponents.RARITY, Rarity.EPIC);
         setAquacultureWeight(fish, species, bite.kg());
         return fish;
     }
