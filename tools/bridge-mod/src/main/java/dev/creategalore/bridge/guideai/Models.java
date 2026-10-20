@@ -5,16 +5,20 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import net.minecraft.commands.arguments.blocks.BlockStateParser;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.state.BlockState;
 
 /**
  * The book's 3D models: a small build the model writes block by block (or in boxes), which the book screen shows as
  * a hologram the player can turn and zoom (client/ModelView). The server checks every block state against this
- * server's blocks and passes the model on as JSON with each state written out in full, sharing the drawings'
- * numbering so [diagram N] places it in an answer.
+ * server's blocks, tries the machines in it (BuildCheck) and passes the model on as JSON with each state written out
+ * in full, sharing the drawings' numbering so [diagram N] places it in an answer.
  */
 public final class Models {
     public static final int MAX_SIZE = 16, MAX_ENTRIES = 256, MAX_LABELS = 12;
@@ -67,11 +71,19 @@ public final class Models {
         labels.add("items", label);
         props.add("labels", labels);
         props.add("caption", WorldTools.prop("string", "One short sentence under the model, or an empty string."));
+        props.add("shows_a_fault", WorldTools.prop("boolean", "True only when the model is meant to show a build that "
+                + "doesn't work (such as the player's own broken build); then it is built even when the rotation check finds faults."));
         return WorldTools.tool("build_model", "Builds a small 3D model out of real blocks, which the book shows as a "
                 + "hologram the player can turn around and zoom into. For things a flat drawing shows badly: how machines "
                 + "connect in space, which way blocks face, the shape of a build. Costs more than a drawing, so use it only "
-                + "when the third dimension matters or the player asks. It returns the model's number; write [diagram N] "
-                + "on a line of its own where it should appear, or put it inside a drawing with a shape of kind model.", props);
+                + "when the third dimension matters or the player asks. Before it is shown, the server tries the model's "
+                + "Create machines with Create's own rules (which faces take a shaft, cogs, belts, sources, water on wheels) "
+                + "and refuses a model with faults, saying what is wrong, so fix it and call again. Each block's facing "
+                + "decides which faces take rotation (a saw, press or drill takes its shaft at its back, the face opposite its "
+                + "facing): get it right rather than guessing (lookup_recipes or read_guide help). "
+                + "Water and lava can be shown flowing: a source is level=0, flowing water level=1 to 7 (higher = further "
+                + "from the source), falling water level=8. It returns the model's number; write [diagram N] on a line of "
+                + "its own where it should appear, or put it inside a drawing with a shape of kind model.", props);
     }
 
     private static JsonArray required(JsonObject properties) {
@@ -81,9 +93,10 @@ public final class Models {
     }
 
     /**
-     * The model as the book stores and shows it, or what to fix. Server thread (reads the block registry).
+     * The model as the book stores and shows it, or what to fix. Server thread (reads the block registry, and tries
+     * the model's machines in a scratch copy of {@code level}).
      */
-    static Result build(JsonObject input) {
+    static Result build(JsonObject input, ServerLevel level) {
         List<String> problems = new ArrayList<>();
         int sx = Diagrams.intOr(input, "size_x", 0), sy = Diagrams.intOr(input, "size_y", 0), sz = Diagrams.intOr(input, "size_z", 0);
         if (sx < 1 || sx > MAX_SIZE || sy < 1 || sy > MAX_SIZE || sz < 1 || sz > MAX_SIZE)
@@ -91,6 +104,7 @@ public final class Models {
         JsonArray in = input.has("blocks") && input.get("blocks").isJsonArray() ? input.getAsJsonArray("blocks") : new JsonArray();
         if (in.isEmpty() || in.size() > MAX_ENTRIES) problems.add("use 1 to " + MAX_ENTRIES + " block entries");
         JsonArray out = new JsonArray();
+        Map<String, BlockState> states = new HashMap<>();
         for (int i = 0; i < in.size() && i < MAX_ENTRIES && problems.size() < 10; i++) {
             if (!in.get(i).isJsonObject()) {
                 problems.add("entry " + i + " is not an object");
@@ -113,6 +127,7 @@ public final class Models {
             }
             JsonObject o = new JsonObject();
             o.addProperty("state", BlockStateParser.serialize(state));
+            states.put(BlockStateParser.serialize(state), state);
             o.addProperty("x", Math.min(x, x2));
             o.addProperty("y", Math.min(y, y2));
             o.addProperty("z", Math.min(z, z2));
@@ -144,6 +159,23 @@ public final class Models {
         if (GuideText.string(input, "title").length() > 60) problems.add("title longer than 60 characters");
         if (GuideText.string(input, "caption").length() > 240) problems.add("caption longer than 240 characters");
         if (!problems.isEmpty()) return Result.problem("Not built. Fix these and call again: " + String.join("; ", problems) + ".");
+        Map<BlockPos, BlockState> cells = new HashMap<>();
+        for (JsonElement e : out) {
+            JsonObject o = e.getAsJsonObject();
+            BlockState state = states.get(GuideText.string(o, "state"));
+            for (BlockPos p : BlockPos.betweenClosed(o.get("x").getAsInt(), o.get("y").getAsInt(), o.get("z").getAsInt(),
+                    o.get("x2").getAsInt(), o.get("y2").getAsInt(), o.get("z2").getAsInt())) {
+                if (state.isAir()) cells.remove(p);
+                else cells.put(p.immutable(), state);
+            }
+        }
+        BuildCheck.Report check = level == null ? null : BuildCheck.check(cells, level);
+        boolean showsFault = input.has("shows_a_fault") && input.get("shows_a_fault").isJsonPrimitive()
+                && input.get("shows_a_fault").getAsBoolean();
+        if (check != null && !check.faults().isEmpty() && !showsFault) {
+            return Result.problem("Not built: the machines in it wouldn't work as placed. Fix the model and call again (or "
+                    + "set shows_a_fault if it is meant to show a broken build).\n" + check.text());
+        }
         JsonObject model = new JsonObject();
         model.addProperty("type", "model");
         model.addProperty("title", GuideText.string(input, "title"));
@@ -155,12 +187,13 @@ public final class Models {
         model.add("size", size);
         model.add("blocks", out);
         model.add("labels", labels);
-        return new Result(model, null);
+        return new Result(model, null, check == null ? "" : check.text());
     }
 
-    record Result(JsonObject model, String problem) {
+    /** The model, or why it wasn't built; check is the rotation check's report for a built model (may be empty). */
+    record Result(JsonObject model, String problem, String check) {
         static Result problem(String problem) {
-            return new Result(null, problem);
+            return new Result(null, problem, "");
         }
     }
 

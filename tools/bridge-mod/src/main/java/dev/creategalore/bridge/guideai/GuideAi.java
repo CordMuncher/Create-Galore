@@ -663,7 +663,7 @@ public final class GuideAi {
                         result = problem;
                     }
                 } else if (name.equals("build_model")) {
-                    Models.Result built = l.server.submit(() -> Models.build(input)).get(10, TimeUnit.SECONDS);
+                    Models.Result built = l.server.submit(() -> Models.build(input, l.server.overworld())).get(10, TimeUnit.SECONDS);
                     if (built.problem() != null) {
                         result = built.problem();
                     } else if (diagrams.size() >= MAX_DRAWINGS) {
@@ -673,7 +673,8 @@ public final class GuideAi {
                         streamer.diagram(built.model().toString());
                         result = "Built as diagram " + diagrams.size() + ". Write [diagram " + diagrams.size() + "] on a line of "
                                 + "its own in your answer where it should appear, or draw it into a diagram with a shape of kind "
-                                + "model and text \"" + diagrams.size() + "\".";
+                                + "model and text \"" + diagrams.size() + "\"."
+                                + (built.check().isEmpty() ? "" : "\n" + built.check());
                     }
                 } else {
                     result = l.server.submit(() -> {

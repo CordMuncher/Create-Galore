@@ -4,6 +4,18 @@ Each pack version gets a section here, with **Added**, **Fixed** and **Removed**
 workflow copies the section for the version in `pack/pack.toml` to the top of the GitHub release, and the build
 fails when that section is missing.
 
+## 0.3.2
+
+### Added
+- **Ask the Book tries its 3D builds before showing them.** The server now places every model's blocks in a scratch copy and runs Create's own connection rules on them: which faces of each machine take a shaft, cogs meshing, belts, chain drives, water on a water wheel, and where rotation actually reaches. A model whose machines wouldn't work as placed is sent back to the book with the fault spelled out ("the shaft ends against the west face of the saw, which takes rotation only through its south face, its back"), and the book fixes it before you see it. It can still show a broken build on purpose, for example to show you what is wrong with yours.
+- **3D models show flowing water and lava** the way the world draws them, with their moving texture and sloping surface, instead of tinted glass cubes.
+- **Middle-drag moves a 3D model** around its frame (left-drag still turns it, scroll zooms).
+- Create Galore Bridge 1.27.0.
+
+### Fixed
+- **Labels no longer cover 3D models.** They sit in columns beside the model, each joined to its block by a line.
+- **Machines fed from the wrong side.** The book was told that a saw, press or drill takes its shaft at its back (the face opposite where it points), and the check above catches it when it gets that wrong.
+
 ## 0.3.1
 
 ### Added
