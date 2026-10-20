@@ -2,7 +2,6 @@ package dev.creategalore.bridge.guideai;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import java.util.ArrayList;
 import java.util.List;
@@ -98,12 +97,22 @@ public final class Diagrams {
     }
 
     private static JsonObject enumOf(String type, List<String> values, boolean orNull, String description) {
-        JsonObject o = orNull ? nullable(type, description) : WorldTools.prop(type, description);
+        JsonObject o = WorldTools.prop(type, description);
         JsonArray e = new JsonArray();
         values.forEach(e::add);
-        if (orNull) e.add(JsonNull.INSTANCE);
         o.add("enum", e);
-        return o;
+        if (!orNull) return o;
+        // Strict tool schemas reject an enum on a ["string", "null"] type, so a nullable enum is anyOf the enum or null.
+        o.remove("description");
+        JsonObject none = new JsonObject();
+        none.addProperty("type", "null");
+        JsonArray any = new JsonArray();
+        any.add(o);
+        any.add(none);
+        JsonObject wrapped = new JsonObject();
+        wrapped.add("anyOf", any);
+        wrapped.addProperty("description", description);
+        return wrapped;
     }
 
     /**
