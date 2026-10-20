@@ -210,6 +210,7 @@
   "block.create_galore_fishing.cleaning_table.progress": "Cleaning: %s of %s strokes",
   "entity.create_galore_fishing.chum": "Chum",
   "tooltip.create_galore_fishing.too_big_to_cook": "Too big to cook whole: clean it at a Cleaning Table",
+  "tooltip.create_galore_fishing.alive": "Still alive for %s:%s: put it in water to let it go",
   "tooltip.create_galore_fishing.part.bait.live": "Live bait: %s x%s",
   "block.create_galore_fishing.aquarium_tank": "Aquarium Tank",
   "message.create_galore_fishing.aquarium.status": "Aquarium %sx%sx%s: water %s of %s buckets, %s fish, fish meal %s",
@@ -225,6 +226,14 @@
   "message.create_galore_fishing.aquarium.fed": "Fed %s fish meal (%s waiting)",
   "message.create_galore_fishing.aquarium.no_spare": "No spare baitfish: the tank keeps two of each kind to breed",
   "block.create_galore_fishing.rod_holder": "Rod Holder",
+  "block.create_galore_fishing.reel_drive": "Basic Reel Drive",
+  "block.create_galore_fishing.geared_reel_drive": "Geared Reel Drive",
+  "block.create_galore_fishing.fuel_reel_drive": "Fuel Reel Drive",
+  "create_galore_fishing.drive.mode": "Between bites",
+  "create_galore_fishing.drive_mode.cast": "Cast and retrieve",
+  "create_galore_fishing.drive_mode.wait": "Cast and wait",
+  "create_galore_fishing.drive.cast_distance": "Cast distance",
+  "create_galore_fishing.drive.top_gear": "Top gear",
   "goggles.create_galore_fishing.title": "Rod machine:",
   "goggles.create_galore_fishing.no_rod": "No rod",
   "goggles.create_galore_fishing.line_in": "Line in",
@@ -242,5 +251,7 @@
   "goggles.create_galore_fishing.headroom": "Can wind against %s",
   "goggles.create_galore_fishing.stalled": "Stalled: the fish pulls more than it can turn",
   "goggles.create_galore_fishing.fuel": "Fuel: %s:%s",
-  "goggles.create_galore_fishing.banked_xp": "%s XP banked (paid when a rod goes in or out)"
+  "goggles.create_galore_fishing.banked_xp": "%s XP banked (paid when a rod goes in or out)",
+  "goggles.create_galore_fishing.spare_bait": "In store: %s x%s",
+  "goggles.create_galore_fishing.tank": "Tank: %s mB"
 }

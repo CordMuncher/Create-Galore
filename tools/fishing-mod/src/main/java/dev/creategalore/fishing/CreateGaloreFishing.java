@@ -1,8 +1,10 @@
 package dev.creategalore.fishing;
 
+import com.simibubi.create.api.stress.BlockStressValues;
 import dev.creategalore.fishing.aquarium.AquariumSelfTest;
 import dev.creategalore.fishing.bait.BaitSources;
 import dev.creategalore.fishing.bait.Chum;
+import dev.creategalore.fishing.cast.AliveFish;
 import dev.creategalore.fishing.cast.CatchHolding;
 import dev.creategalore.fishing.client.FishingClient;
 import dev.creategalore.fishing.command.FishingCommand;
@@ -12,6 +14,8 @@ import dev.creategalore.fishing.compat.TideAliases;
 import dev.creategalore.fishing.compat.TideSelfTest;
 import dev.creategalore.fishing.fish.SpeciesManager;
 import dev.creategalore.fishing.fish.SpeciesSelfTest;
+import dev.creategalore.fishing.machine.MachineSelfTest;
+import dev.creategalore.fishing.machine.ReelDriveBlockEntity;
 import dev.creategalore.fishing.net.FishingNet;
 import dev.creategalore.fishing.process.ProcessingSelfTest;
 import dev.creategalore.fishing.selftest.SelfTest;
@@ -59,12 +63,17 @@ public final class CreateGaloreFishing {
         TackleSelfTest.register();
         TideSelfTest.register();
         Chum.register();
+        AliveFish.register();
         BaitSources.register();
         ProcessingSelfTest.register();
         AquariumSelfTest.register();
+        MachineSelfTest.register();
         modBus.addListener((FMLCommonSetupEvent event) -> event.enqueueWork(() -> {
             DispenserBlock.registerProjectileBehavior(FishingRegistry.CHUM.get());
             if (ModList.get().isLoaded(IntegratedFarmingNets.MOD)) IntegratedFarmingNets.register();
+            // The drives' stress at rest, for Create's tooltips; while a fish is on it is set live (ReelDriveBlockEntity).
+            BlockStressValues.IMPACTS.register(FishingRegistry.REEL_DRIVE.get(), () -> ReelDriveBlockEntity.IDLE);
+            BlockStressValues.IMPACTS.register(FishingRegistry.GEARED_REEL_DRIVE.get(), () -> ReelDriveBlockEntity.IDLE);
         }));
         if (FMLEnvironment.dist.isClient()) {
             FishingClient.init(modBus);

@@ -51,6 +51,15 @@ public final class Gearbox {
         }
     }
 
+    /**
+     * Picks this tick's gear against a fight. The pull it shifts by is never taken below what a fish this fresh can
+     * still put on, so a fish that eases off for a moment (just struck, swimming at the angler) doesn't fool the
+     * gearbox into a high gear the next run would stall.
+     */
+    public void update(double torqueAtOne, Fight fight) {
+        update(torqueAtOne, Math.max(fight.pull(), 0.6 * fight.maxPull() * fight.stamina()));
+    }
+
     /** Sets the controls for this gear: retrieve speed scales with the ratio, the crank limit inversely. */
     public void apply(Controls controls, double torqueAtOne) {
         controls.retrieveScale = ratio();

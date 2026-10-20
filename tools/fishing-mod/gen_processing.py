@@ -105,6 +105,23 @@ OTHER = {
         "pattern": [" I ", " L ", "SSS"],
         "key": {"I": item("#c:plates/iron"), "L": item("#minecraft:logs"), "S": item("minecraft:smooth_stone_slab")},
         "result": result(M + "rod_holder", 2)}, []),
+    "crafting/reel_drive": ({
+        "type": "minecraft:crafting_shaped", "category": "misc",
+        "pattern": [" H ", "SCS"],
+        "key": {"H": item(M + "rod_holder"), "S": item("create:shaft"), "C": item("create:andesite_casing")},
+        "result": result(M + "reel_drive")}, []),
+    "crafting/geared_reel_drive": ({
+        "type": "minecraft:crafting_shaped", "category": "misc",
+        "pattern": [" H ", "GCG", " E "],
+        "key": {"H": item(M + "rod_holder"), "G": item("create:cogwheel"), "C": item("create:brass_casing"),
+                "E": item("create:electron_tube")},
+        "result": result(M + "geared_reel_drive")}, []),
+    "crafting/fuel_reel_drive": ({
+        "type": "minecraft:crafting_shaped", "category": "misc",
+        "pattern": [" T ", "CDC", " F "],
+        "key": {"T": item("create:fluid_tank"), "C": item("create:copper_casing"), "D": item(M + "geared_reel_drive"),
+                "F": item("minecraft:furnace")},
+        "result": result(M + "fuel_reel_drive")}, []),
     "crafting/live_bait_bucket": ({
         "type": "minecraft:crafting_shapeless", "category": "misc",
         "ingredients": [item("minecraft:water_bucket"), item("minecraft:iron_bars")],

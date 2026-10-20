@@ -19,7 +19,10 @@ src/main/resources/data/create_galore_fishing/recipe/compacting/fish_oil_from_oi
 src/main/resources/data/create_galore_fishing/recipe/compacting/fish_oil_from_scraps.json
 src/main/resources/data/create_galore_fishing/recipe/crafting/aquarium_tank.json
 src/main/resources/data/create_galore_fishing/recipe/crafting/cleaning_table.json
+src/main/resources/data/create_galore_fishing/recipe/crafting/fuel_reel_drive.json
+src/main/resources/data/create_galore_fishing/recipe/crafting/geared_reel_drive.json
 src/main/resources/data/create_galore_fishing/recipe/crafting/live_bait_bucket.json
+src/main/resources/data/create_galore_fishing/recipe/crafting/reel_drive.json
 src/main/resources/data/create_galore_fishing/recipe/crafting/rod_holder.json
 src/main/resources/data/create_galore_fishing/recipe/milling/fish_meal_from_bones.json
 src/main/resources/data/create_galore_fishing/recipe/milling/fish_meal_from_scraps.json

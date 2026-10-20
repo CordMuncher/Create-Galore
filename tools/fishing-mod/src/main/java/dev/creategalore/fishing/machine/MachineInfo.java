@@ -1,4 +1,5 @@
 package dev.creategalore.fishing.machine;
+
 import dev.creategalore.fishing.cast.CastHook;
 import dev.creategalore.fishing.fish.CatchInfo;
 import dev.creategalore.fishing.sim.Gearbox;
@@ -26,8 +27,13 @@ public final class MachineInfo {
     private MachineInfo() {
     }
 
-    /** What a drive adds to the readout (null for a plain holder). */
-    public record Drive(int gear, double headroomKg, boolean stalled, int fuelTicks, boolean fuelled) {
+    /**
+     * What a drive adds to the readout (null for a plain holder): its gear (geared drives), the pull it can still
+     * wind against or that it stalled, the bait it has in store, and for the fuel drive the fuel left (in ticks at
+     * full load) and its tank.
+     */
+    public record Drive(boolean geared, int gear, double headroomKg, boolean stalled, ItemStack spareBait,
+                        boolean fuelled, int fuelTicks, int tankMb) {
     }
 
     /** Client side: each machine's hook, by the machine's position (kept up by the hooks as they tick). */
@@ -84,13 +90,23 @@ public final class MachineInfo {
             }
         }
         if (drive != null) {
-            tooltip.add(line(Component.translatable(P + "gear", String.format(Locale.ROOT, "%.2f", Gearbox.GEARS[drive.gear()]))
-                    .withStyle(ChatFormatting.GRAY), 1));
+            if (drive.geared()) {
+                tooltip.add(line(Component.translatable(P + "gear", String.format(Locale.ROOT, "%.2f", Gearbox.GEARS[drive.gear()]))
+                        .withStyle(ChatFormatting.GRAY), 1));
+            }
             tooltip.add(line((drive.stalled() ? Component.translatable(P + "stalled").withStyle(ChatFormatting.RED)
                     : Component.translatable(P + "headroom", kg(drive.headroomKg())).withStyle(ChatFormatting.GRAY)), 1));
+            if (!drive.spareBait().isEmpty()) {
+                tooltip.add(line(Component.translatable(P + "spare_bait", drive.spareBait().getHoverName(), drive.spareBait().getCount())
+                        .withStyle(ChatFormatting.GRAY), 1));
+            }
             if (drive.fuelled()) {
-                tooltip.add(line(Component.translatable(P + "fuel", drive.fuelTicks() / 20 / 60, String.format(Locale.ROOT, "%02d",
-                        drive.fuelTicks() / 20 % 60)).withStyle(drive.fuelTicks() > 0 ? ChatFormatting.GRAY : ChatFormatting.RED), 1));
+                int seconds = drive.fuelTicks() / 20;
+                tooltip.add(line(Component.translatable(P + "fuel", seconds / 60, String.format(Locale.ROOT, "%02d", seconds % 60))
+                        .withStyle(drive.fuelTicks() > 0 ? ChatFormatting.GRAY : ChatFormatting.RED), 1));
+                if (drive.tankMb() > 0) {
+                    tooltip.add(line(Component.translatable(P + "tank", drive.tankMb()).withStyle(ChatFormatting.GRAY), 1));
+                }
             }
         }
         if (rod.bankedXp() > 0) {

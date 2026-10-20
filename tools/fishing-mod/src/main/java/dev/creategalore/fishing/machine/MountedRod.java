@@ -1,9 +1,12 @@
 package dev.creategalore.fishing.machine;
+
 import dev.creategalore.fishing.FishingRegistry;
+import dev.creategalore.fishing.cast.AliveFish;
 import dev.creategalore.fishing.cast.BiteSampler;
 import dev.creategalore.fishing.cast.CastHook;
-import dev.creategalore.fishing.cast.Catches;
 import dev.creategalore.fishing.cast.CatchHolding;
+import dev.creategalore.fishing.cast.Catches;
+import dev.creategalore.fishing.compat.SableShips;
 import dev.creategalore.fishing.fish.SpeciesManager;
 import dev.creategalore.fishing.tackle.RodItem;
 import dev.creategalore.fishing.tackle.RodStats;
@@ -231,10 +234,13 @@ public final class MountedRod {
         ItemStack rest = stack;
         for (Direction side : new Direction[]{Direction.DOWN, Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST}) {
             BlockPos at = be.getBlockPos().relative(side);
+            BlockEntity next = level.getBlockEntity(at);
+            // A row of drives would otherwise feed each other's bait slots with the catch.
+            if (next instanceof RodMount) continue;
             IItemHandler target = level.getCapability(Capabilities.ItemHandler.BLOCK, at, side.getOpposite());
             if (target == null) continue;
             // On a belt the fish is still alive for a while (a sorting line can put it back in the water).
-            boolean belt = isBelt(level.getBlockEntity(at));
+            boolean belt = isBelt(next);
             ItemStack sent = belt && SpeciesManager.of(rest).isPresent() ? alive(rest, level.getGameTime()) : rest;
             ItemStack left = ItemHandlerHelper.insertItemStacked(target, sent, false);
             if (left.getCount() < sent.getCount()) {
@@ -249,11 +255,9 @@ public final class MountedRod {
         return target != null && target.getClass().getName().startsWith("com.simibubi.create.content.kinetics.belt.");
     }
 
-    /** {@code fish} marked alive until {@link #ALIVE_TICKS} from {@code now}. */
+    /** {@code fish} marked alive until {@link #ALIVE_TICKS} from {@code now} (see {@link AliveFish}). */
     public static ItemStack alive(ItemStack fish, long now) {
-        ItemStack out = fish.copy();
-        out.set(FishingRegistry.ALIVE_UNTIL.get(), now + ALIVE_TICKS);
-        return out;
+        return AliveFish.mark(fish, now + ALIVE_TICKS);
     }
 
     /** Every tick on the server: the redstone pulse, a hanging fish working itself free, parts left with the angler. */
@@ -269,7 +273,9 @@ public final class MountedRod {
             changed();
         }
         if (angler != null) {
-            angler.setPos(mount.mountPos().getX() + 0.5, mount.mountPos().getY() + 0.5, mount.mountPos().getZ() + 0.5);
+            // Where the machine really is (on a ship its block entity sits in the ship's plot).
+            Vec3 at = SableShips.toWorld(level, Vec3.atCenterOf(mount.mountPos()));
+            angler.setPos(at.x, at.y, at.z);
             if (angler.getMainHandItem() != rod) angler.hold(rod);
             // Parts a broken rod gave back, and anything else the angler was handed, come out of the machine.
             var inventory = angler.getInventory();

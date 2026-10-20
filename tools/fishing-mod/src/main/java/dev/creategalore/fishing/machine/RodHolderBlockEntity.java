@@ -3,6 +3,7 @@ package dev.creategalore.fishing.machine;
 import com.simibubi.create.api.equipment.goggles.IHaveGoggleInformation;
 import dev.creategalore.fishing.FishingRegistry;
 import dev.creategalore.fishing.cast.CastHook;
+import dev.creategalore.fishing.compat.SableShips;
 import dev.creategalore.fishing.sim.Controls;
 import dev.creategalore.fishing.sim.Fight;
 import dev.creategalore.fishing.sim.Outcome;
@@ -63,7 +64,7 @@ public class RodHolderBlockEntity extends BlockEntity implements RodMount, IHave
 
     @Override
     public Vec3 tip() {
-        return MountedRod.tip(Vec3.atLowerCornerOf(worldPosition).add(rodBase()), rodFacing(), rod.stats());
+        return SableShips.toWorld(level, MountedRod.tip(Vec3.atLowerCornerOf(worldPosition).add(rodBase()), rodFacing(), rod.stats()));
     }
 
     @Override

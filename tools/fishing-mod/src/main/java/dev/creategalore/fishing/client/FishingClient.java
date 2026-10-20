@@ -2,6 +2,7 @@ package dev.creategalore.fishing.client;
 
 import dev.creategalore.fishing.FishingRegistry;
 import dev.creategalore.fishing.aquarium.AquariumBlock;
+import dev.creategalore.fishing.cast.AliveFish;
 import dev.creategalore.fishing.fish.CatchInfo;
 import dev.creategalore.fishing.process.WholeFishIngredient;
 import dev.creategalore.fishing.tide.loaders.neoforge.NeoforgeClientEntrypoint;
@@ -9,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
@@ -44,6 +46,8 @@ public final class FishingClient {
             event.registerBlockEntityRenderer(FishingRegistry.CLEANING_TABLE_ENTITY.get(), CleaningTableRenderer::new);
             event.registerBlockEntityRenderer(FishingRegistry.AQUARIUM_ENTITY.get(), AquariumRenderer::new);
             event.registerBlockEntityRenderer(FishingRegistry.ROD_HOLDER_ENTITY.get(), context -> new MountRenderer<>());
+            event.registerBlockEntityRenderer(FishingRegistry.REEL_DRIVE_ENTITY.get(), ReelDriveRenderer::new);
+            event.registerBlockEntityRenderer(FishingRegistry.FUEL_REEL_DRIVE_ENTITY.get(), context -> new MountRenderer<>());
         });
         modBus.addListener(FishingClient::fishOil);
         AquariumBlock.clientTick = AquariumSwim::tick;
@@ -52,6 +56,7 @@ public final class FishingClient {
         modBus.addListener((FMLClientSetupEvent event) -> event.enqueueWork(() -> {
             ItemBlockRenderTypes.setRenderLayer(FishingRegistry.FISH_OIL.get(), RenderType.translucent());
             ItemBlockRenderTypes.setRenderLayer(FishingRegistry.FLOWING_FISH_OIL.get(), RenderType.translucent());
+            ReelDriveRenderer.registerVisual();
         }));
         FishingInput.init(modBus);
         FishingHud.init(modBus);
@@ -100,6 +105,12 @@ public final class FishingClient {
         CatchInfo info = stack.get(FishingRegistry.CATCH.get());
         if (info != null && info.kg().orElse(0.0) >= WholeFishIngredient.MAX_KG) {
             lines.add(Component.translatable("tooltip.create_galore_fishing.too_big_to_cook").withStyle(ChatFormatting.DARK_AQUA));
+        }
+        long alive = Minecraft.getInstance().level == null ? 0 : AliveFish.ticksLeft(stack, Minecraft.getInstance().level);
+        if (alive > 0) {
+            long seconds = alive / 20;
+            lines.add(Component.translatable("tooltip.create_galore_fishing.alive", seconds / 60, String.format(Locale.ROOT, "%02d", seconds % 60))
+                    .withStyle(ChatFormatting.AQUA));
         }
         event.getToolTip().addAll(1, lines);
     }

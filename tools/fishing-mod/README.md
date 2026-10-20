@@ -51,7 +51,8 @@ jar lands in `pack/mods/create-galore-fishing-<version>.jar`; the version comes 
 | `bait` | bait kinds and diets, live bait and the Live-Bait Bucket, chum, worms from hoeing |
 | `process` | the Cleaning Table and its yields, the weight-limited fish ingredient, the `processing` self-test |
 | `aquarium` | Aquarium Tanks: the multiblock (`AquariumTanks`), its contents and breeding (`AquariumBlockEntity`), what right-clicks do (`AquariumUse`), the `aquarium` self-test |
-| `compat` | the move off Tide: `TideAliases` (old ids to their replacements), `TideRodConversion` (Tide-rigged rods to our parts), `RodSwap`, and the Tide self-tests; `IntegratedFarmingNets` (Fishing Net catches) |
+| `machine` | rod machines: `MountedRod` (what every machine shares), `MachineAngler` (the fake player a machine fishes as), the Rod Holder, the Basic / Geared Reel Drives (`ReelDriveBlockEntity`, a Create kinetic block) and the Fuel Reel Drive, with `ReelDrive` (what the drives share), their value boxes and goggles readout, and the `machines` self-test |
+| `compat` | the move off Tide: `TideAliases` (old ids to their replacements), `TideRodConversion` (Tide-rigged rods to our parts), `RodSwap`, and the Tide self-tests; `IntegratedFarmingNets` (Fishing Net catches); `LiquidFuels` (what the Fuel Reel Drive burns); `SableShips` (machines on ships) |
 | `tide` | Tide 2, ported (MPL-2.0): its 90 fish and their mobs, the journal, Fish Display, satchel, crates, gadgets and extras, its fish conditions and data, with its own mixins in `tide/mixin` |
 
 More packages arrive with each milestone (see DESIGN.md).
@@ -130,6 +131,43 @@ Tide 2 is not in the pack any more; this mod carries what players had from it, u
   Funnels and hoppers feed fish meal into slot 0 and take spare baitfish (the tank keeps two of each kind).
 - Fish swim client-side only (`client/AquariumSwim`), drawn as their mob's model at true length with the water by
   `client/AquariumRenderer`; the server keeps the list.
+
+## Rod machines
+
+- Every machine fishes as its own `MachineAngler` (a fake player that owns the hook and holds the machine's rod), so
+  bites, the fight and other mods' hooks work as for a player; the hook asks the machine (`RodMount`) what a
+  player's hands would do. The hook syncs the machine's position and goes to clients without an owner (its
+  `getAddEntityPacket` / `recreateFromPacket`), and clients draw the line from where the machine's renderer drew the
+  tip. Catches credit the player who set the rod in; triggers and stats are never fired on the fake player.
+- `MountedRod`: a rod goes in by right-click (a cast line goes with it and keeps its bite or fish), an empty hand
+  takes it out (the line, bite or fight go to the player) or takes a fish hanging at the tip. A landed catch banks
+  half the hand XP (`MACHINE_XP`), paid out each time a rod goes in or out; the catch goes into an inventory below
+  or beside the machine (never another rod machine: a row of drives would feed each other's bait slots), else the
+  first fish hangs at the tip for 30 s. A fish put on a Create belt is marked alive (`cast/AliveFish`).
+- Rod Holder: holds, sounds the alarm, pulses redstone on a bite (comparator: 15 on a bite, else the line's
+  tension), keeps a bite five seconds so someone can take the rod and strike.
+- Reel drives (`ReelDrive`): the Basic drive only cranks, at a speed from the shaft (32 RPM is the reel's own
+  speed), and keeps cranking while the drag slips (the reel wears fast). The Geared and Fuel drives have the
+  automatic `sim/Gearbox`, never crank while the drag slips, strike a bite themselves, and cast: Wait (the
+  default) casts once and holds, Cast winds the rig back slowly and casts again. They re-bait from a bait slot
+  (bait or a Live-Bait Bucket; hoppers and funnels reach it) before each cast and don't cast a bait rig without
+  bait. Value boxes on the back face: mode, cast distance, top gear (each is its own behaviour type with its own
+  save key and network id, `DriveSetting`, since Create keeps one behaviour per type).
+- Torque against drag: a shaft drive's stress is `ReelDriveBlockEntity.impact` (1 SU/RPM idle, plus 4 SU/RPM per kgf
+  of tension times the gear while cranking against a fish), set live but at most every half second and only on a
+  tenth's change. What it can wind against is what the network can spare (`torqueAtOne`). A drag a fish can lean
+  on that is more than the rotation can turn overstresses the network until the fish eases off: on a water wheel
+  (8 RPM, 256 SU) a 6 kg drag never stalls, a 10 kg one does with the Basic drive, not with the Geared drive's
+  lowest gear. The Fuel drive's engine has a fixed rating (12 kgf in gear 1) and burns furnace fuel from its slot
+  or a liquid fuel (Create: Liquid Fuel's map, `compat/LiquidFuels`) from its 4 B tank, a tenth while waiting and
+  all of it at full load, only while a rod is in with a line out or one to cast.
+- Ships (`compat/SableShips`): a machine's block entity on a Sable ship lives in the ship's plot, so its tip, cast
+  direction and angler position are projected into the world through Sable's companion library. A machine's rig
+  can't get further from the tip than the line it was set with, so a moving ship tows it; a towed lure dives to
+  its depth and works when the speed suits it, and the bite pool follows the water it passes.
+- Test tools: `/cgfish machine <pos>` (hook state and, for a drive, gear, what it can wind against, cranking,
+  stalled), `... bite [<species> <cm>]` (the next bite), `... hook <species> <cm>` (a fish on at once, struck: how
+  to put a fish on a Basic drive in a test).
 
 ## Visuals
 

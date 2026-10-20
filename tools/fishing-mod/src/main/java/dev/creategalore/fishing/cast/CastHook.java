@@ -1,4 +1,5 @@
 package dev.creategalore.fishing.cast;
+
 import dev.creategalore.fishing.bait.Chum;
 import dev.creategalore.fishing.fish.Species;
 import dev.creategalore.fishing.machine.MachineAngler;
@@ -114,6 +115,8 @@ public class CastHook extends FishingHook {
     private InteractionHand hand = InteractionHand.MAIN_HAND;
     private String medium = "water";
     private double castLimit;
+    /** A machine's line length while it waits (0 until set): towed from a moving machine, the rig follows at this. */
+    private double towLength;
     private boolean openWater;
     private BiteSampler.Pool pool = BiteSampler.Pool.EMPTY;
     private long poolBuiltAt = Long.MIN_VALUE;
@@ -211,6 +214,7 @@ public class CastHook extends FishingHook {
     public void handTo(Player angler) {
         if (getOwner() instanceof Player old && old.fishing == this) old.fishing = null;
         hand = InteractionHand.MAIN_HAND;
+        towLength = 0;
         setOwner(angler);
         boolean machine = angler instanceof MachineAngler;
         entityData.set(MOUNT, machine ? Optional.of(((MachineAngler) angler).mount().mountPos()) : Optional.empty());
@@ -448,7 +452,7 @@ public class CastHook extends FishingHook {
     private void waitForBite(Player owner, ItemStack rod, RodStats stats, Vec3 tip) {
         boolean reeling = reeling(owner);
         double retrieve = (stats.reel().map(TacklePart.Reel::retrieve).orElse(0.9)) / 20
-                * (owner instanceof MachineAngler angler ? angler.mount().retrieveScale() : 1);
+                * (owner instanceof MachineAngler angler ? angler.mount().retrieveScale(this) : 1);
         Vec3 pos = position();
         Vec3 toTip = new Vec3(tip.x - pos.x, 0, tip.z - pos.z);
         double flat = toTip.length();
@@ -456,13 +460,21 @@ public class CastHook extends FishingHook {
             discard();
             return;
         }
-        Vec3 step = reeling && flat > 1e-3 ? toTip.scale(Math.min(flat, retrieve) / flat) : Vec3.ZERO;
+        double pulled = reeling ? Math.min(flat, retrieve) : 0;
+        if (owner instanceof MachineAngler) {
+            // A machine that moves (trolling from a ship) tows its rig behind it: the line out can't get longer.
+            if (towLength <= 0) towLength = flat;
+            pulled = Math.max(pulled, flat - towLength);
+            towLength = Math.min(towLength, flat - pulled);
+        }
+        Vec3 step = pulled > 0 && flat > 1e-3 ? toTip.scale(pulled / flat) : Vec3.ZERO;
+        boolean moving = step.lengthSqr() > 1e-8;
         double x = pos.x + step.x;
         double z = pos.z + step.z;
         double y = pos.y;
         boolean inMedium = phase() == Phase.WAITING && FishingWater.in(level(), BlockPos.containing(x, y, z), medium);
         if (phase() == Phase.GROUNDED || !inMedium) {
-            if (reeling) setPos(x, Math.max(y, tip.y - 1.5), z);
+            if (moving) setPos(x, Math.max(y, tip.y - 1.5), z);
             return;
         }
         double surface = surfaceY();
@@ -472,10 +484,11 @@ public class CastHook extends FishingHook {
             case SINKER -> y = Math.max(bottom + 0.1, y - 0.08);
             case LURE -> {
                 TacklePart.Lure lure = (TacklePart.Lure) stats.terminal().orElseThrow();
-                double target = reeling ? Math.max(bottom + 0.3, surface - lure.dive()) : bottom + 0.2;
+                // Wound in or towed, a lure dives to its depth and works if the speed suits it.
+                double target = moving ? Math.max(bottom + 0.3, surface - lure.dive()) : bottom + 0.2;
                 y += Mth.clamp(target - y, -0.06, 0.06);
                 double speed = step.length() * 20;
-                double working = reeling ? (speed >= lure.speedMin() && speed <= lure.speedMax() ? 1 : 0.3)
+                double working = moving ? (speed >= lure.speedMin() && speed <= lure.speedMax() ? 1 : 0.3)
                         : (y > bottom + 0.3 ? 0.5 : 0.05);
                 lureWorking = 0.9 * lureWorking + 0.1 * working;
             }
@@ -920,6 +933,22 @@ public class CastHook extends FishingHook {
         forcedBite = fish;
         forceBite = true;
         cooldown = 0;
+    }
+
+    /**
+     * Test tool: {@code fish} is on the line now, struck and fighting (a line in the water only). Lets tests put a
+     * fish on a Basic Reel Drive, which can't strike by itself.
+     */
+    public boolean forceFight(BiteSampler.Bite fish) {
+        if (phase() != Phase.WAITING && phase() != Phase.BITE) return false;
+        Player owner = getPlayerOwner();
+        ItemStack rod = owner == null ? ItemStack.EMPTY : owner.getItemInHand(hand);
+        RodStats stats = RodStats.of(rod).orElse(null);
+        if (stats == null) return false;
+        catchKind = CatchKind.FISH;
+        bite = fish;
+        strike(owner, rod, stats, tipOf(owner));
+        return phase() == Phase.FIGHTING;
     }
 
     /** Test tool: the next bite is a crate, if one fits the spot. */

@@ -94,3 +94,39 @@ New content (all `create_galore_fishing:`), for the Field Guide's fishing sectio
   be farmed automatically.
 - Breaking a wall of a tank spills its fish; breaking off a whole end keeps them in what's left. An empty hand on
   a tank shows its size, water, fish and food.
+
+## Milestone 9: rod machines
+
+For the Field Guide's fishing section and the changelog (all `create_galore_fishing:`):
+
+- **Rod Holder** (an iron sheet over a log over three smooth stone slabs, makes two): right-click with a rod to
+  set it in (a cast line stays out), with an empty hand to take it out. A bite sounds an alarm, pulses redstone and
+  lights a comparator (which otherwise reads the line's tension); the bite lasts five seconds so someone can take
+  the rod and strike. Catches made from machines count for whoever set the rod in (journal, personal bests).
+- **Basic Reel Drive** (Rod Holder over an andesite casing between two shafts): a shaft runs through it side to side,
+  so a row of drives along a jetty runs off one shaft, a water wheel included. It only winds: hook the fish by hand,
+  set the rod in, and it fights at a speed from the shaft. It keeps winding while the drag slips, so the reel wears
+  fast.
+- **Geared Reel Drive** (Rod Holder, brass casing, two cogwheels, an electron tube): winds through an automatic
+  gearbox, never while the drag slips, strikes bites itself and casts. Its value boxes (back face) set the mode
+  (Cast and wait, the default, or Cast and retrieve, which winds a lure back slowly and casts again), the cast
+  distance and the top gear. A bait slot (by hand, hopper or funnel; a Live-Bait Bucket works) re-baits the rod
+  before each cast.
+- **Fuel Reel Drive** (Geared Reel Drive, two copper casings, a fluid tank, a furnace): the geared drive with its own
+  engine and no shafts, for boats. It burns furnace fuel from a slot, or lava, fish oil and any other Create: Liquid
+  Fuel fuel from a small tank, more the harder it works.
+- **Drag against rotation**: winding against a fish costs stress, more the harder it pulls. The drag set on the
+  rod (the most a fish can pull before line slips) has to suit the rotation: too much for it, and a fish leaning on
+  the drag overstresses the whole network until it tires (on one water wheel about 7.5 kg is the limit in normal
+  gear; the Geared drive gears down and copes with about four times that). The Fuel drive's engine stalls the same
+  way above its rating.
+- **Catches**: a drive or holder puts its catch into a chest, hopper, funnel or belt below or beside it; with nowhere
+  to go, the fish hangs from the rod tip for 30 seconds (an empty hand takes it). Machines earn half the XP a
+  player would, banked and paid out whenever a rod goes in or out (the goggles show it). No release bonus.
+- **Alive fish**: a fish kept from the hold-up screen while still alive, or put on a belt by a machine, stays alive
+  for the rest of its two minutes (its tooltip counts down). Dropped into water in that time (off a belt, out of a
+  chute, by hand) it swims away, for no XP: sorting lines can throw back what isn't wanted.
+- **Engineer's Goggles** on any rod machine: rod, bite or fish on and its tension, line out, drag, bait (and the
+  bait in store), reel wear, gear, what it can still wind against or that it stalled, fuel, banked XP.
+- **Trolling**: drives and holders work on Sable ships (Create: Aeronautics). The rig is towed behind at its line
+  length, a lure dives and works when the ship's speed suits it, and the fish bite where the ship passes.

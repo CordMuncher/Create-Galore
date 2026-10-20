@@ -8,6 +8,10 @@ import dev.creategalore.fishing.bait.LiveBaitBucketItem;
 import dev.creategalore.fishing.bait.ThrownChum;
 import dev.creategalore.fishing.cast.CastHook;
 import dev.creategalore.fishing.fish.CatchInfo;
+import dev.creategalore.fishing.machine.FuelReelDriveBlock;
+import dev.creategalore.fishing.machine.FuelReelDriveBlockEntity;
+import dev.creategalore.fishing.machine.ReelDriveBlock;
+import dev.creategalore.fishing.machine.ReelDriveBlockEntity;
 import dev.creategalore.fishing.machine.RodHolderBlock;
 import dev.creategalore.fishing.machine.RodHolderBlockEntity;
 import dev.creategalore.fishing.process.CleaningTableBlock;
@@ -284,6 +288,28 @@ public final class FishingRegistry {
             BLOCK_ENTITIES.register("rod_holder", () -> BlockEntityType.Builder.of(RodHolderBlockEntity::new,
                     ROD_HOLDER.get()).build(null));
 
+    public static final DeferredBlock<ReelDriveBlock> REEL_DRIVE = BLOCKS.register("reel_drive",
+            () -> new ReelDriveBlock(BlockBehaviour.Properties.of().mapColor(MapColor.STONE).strength(2.0f)
+                    .sound(SoundType.WOOD).noOcclusion(), false));
+    public static final DeferredItem<BlockItem> REEL_DRIVE_ITEM = ITEMS.registerSimpleBlockItem(REEL_DRIVE);
+    public static final DeferredBlock<ReelDriveBlock> GEARED_REEL_DRIVE = BLOCKS.register("geared_reel_drive",
+            () -> new ReelDriveBlock(BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_YELLOW).strength(2.0f)
+                    .sound(SoundType.WOOD).noOcclusion(), true));
+    public static final DeferredItem<BlockItem> GEARED_REEL_DRIVE_ITEM = ITEMS.registerSimpleBlockItem(GEARED_REEL_DRIVE);
+    /** One block entity type for the Basic and Geared drives; the block says which. */
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<ReelDriveBlockEntity>> REEL_DRIVE_ENTITY =
+            BLOCK_ENTITIES.register("reel_drive", () -> BlockEntityType.Builder.of(
+                    (pos, state) -> new ReelDriveBlockEntity(FishingRegistry.REEL_DRIVE_ENTITY.get(), pos, state),
+                    REEL_DRIVE.get(), GEARED_REEL_DRIVE.get()).build(null));
+    public static final DeferredBlock<FuelReelDriveBlock> FUEL_REEL_DRIVE = BLOCKS.register("fuel_reel_drive",
+            () -> new FuelReelDriveBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_ORANGE).strength(2.5f)
+                    .sound(SoundType.COPPER).noOcclusion()));
+    public static final DeferredItem<BlockItem> FUEL_REEL_DRIVE_ITEM = ITEMS.registerSimpleBlockItem(FUEL_REEL_DRIVE);
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<FuelReelDriveBlockEntity>> FUEL_REEL_DRIVE_ENTITY =
+            BLOCK_ENTITIES.register("fuel_reel_drive", () -> BlockEntityType.Builder.of(
+                    (pos, state) -> new FuelReelDriveBlockEntity(FishingRegistry.FUEL_REEL_DRIVE_ENTITY.get(), pos, state),
+                    FUEL_REEL_DRIVE.get()).build(null));
+
     public static final DeferredBlock<AquariumBlock> AQUARIUM_TANK = BLOCKS.register("aquarium_tank",
             () -> new AquariumBlock(BlockBehaviour.Properties.of().mapColor(MapColor.NONE).strength(1.0f)
                     .sound(SoundType.GLASS).noOcclusion().isValidSpawn((s, l, p, e) -> false)
@@ -311,6 +337,9 @@ public final class FishingRegistry {
                         out.accept(CLEANING_TABLE_ITEM.get());
                         out.accept(AQUARIUM_TANK_ITEM.get());
                         out.accept(ROD_HOLDER_ITEM.get());
+                        out.accept(REEL_DRIVE_ITEM.get());
+                        out.accept(GEARED_REEL_DRIVE_ITEM.get());
+                        out.accept(FUEL_REEL_DRIVE_ITEM.get());
                         GOODS.forEach(g -> out.accept(g.get()));
                     })
                     .build());
@@ -331,6 +360,10 @@ public final class FishingRegistry {
             event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, CLEANING_TABLE_ENTITY.get(), (table, side) -> table.items());
             event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, AQUARIUM_ENTITY.get(), (tank, side) -> tank.items());
             event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, AQUARIUM_ENTITY.get(), (tank, side) -> tank.fluids());
+            event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, REEL_DRIVE_ENTITY.get(),
+                    (drive, side) -> drive.drive().kind().geared() ? drive.drive().bait() : null);
+            event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, FUEL_REEL_DRIVE_ENTITY.get(), (drive, side) -> drive.items());
+            event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, FUEL_REEL_DRIVE_ENTITY.get(), (drive, side) -> drive.tank());
         });
     }
 }

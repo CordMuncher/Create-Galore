@@ -2,22 +2,33 @@ package dev.creategalore.fishing.client;
 
 import dev.creategalore.fishing.FishingRegistry;
 import dev.creategalore.fishing.cast.CastHook;
+import dev.creategalore.fishing.machine.FuelReelDriveBlockEntity;
+import dev.creategalore.fishing.machine.ReelDrive;
+import dev.creategalore.fishing.machine.ReelDriveBlockEntity;
+import dev.creategalore.fishing.machine.RodMount;
+import dev.creategalore.fishing.sim.Gearbox;
 import dev.creategalore.fishing.tackle.RodItem;
 import dev.creategalore.fishing.tackle.RodParts;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.function.BooleanSupplier;
+import java.util.function.Supplier;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.resources.sounds.AbstractTickableSoundInstance;
 import net.minecraft.client.resources.sounds.SoundInstance;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.common.NeoForge;
 
@@ -46,6 +57,7 @@ public final class FishingSounds {
     }
 
     private static final Map<Integer, State> STATES = new HashMap<>();
+    private static final Map<BlockEntity, DriveLoop> LOOPS = new HashMap<>();
 
     private FishingSounds() {
     }
@@ -63,11 +75,12 @@ public final class FishingSounds {
         }
         for (Entity e : level.entitiesForRendering()) {
             if (!(e instanceof CastHook hook) || e.distanceTo(mc.player) > HEAR_DISTANCE) continue;
-            Player owner = hook.getPlayerOwner();
-            if (owner == null) continue;
+            Angler angler = Angler.of(hook);
+            if (angler == null) continue;
             State s = STATES.computeIfAbsent(hook.getId(), id -> new State());
-            sounds(mc, hook, owner, s);
+            sounds(mc, hook, angler, s);
         }
+        drives(mc, level);
         // A held fish flaps now and then.
         for (Player p : level.players()) {
             if (p.distanceTo(mc.player) < HEAR_DISTANCE && HoldPose.holding(p) && p.getRandom().nextInt(40) == 0) {
@@ -89,15 +102,37 @@ public final class FishingSounds {
             if (s.crank != null) s.crank.finish();
         });
         STATES.clear();
+        LOOPS.values().forEach(DriveLoop::finish);
+        LOOPS.clear();
+        ReelDrive.CLIENT_DRIVES.clear();
     }
 
-    private static void sounds(Minecraft mc, CastHook hook, Player owner, State s) {
-        RandomSource random = owner.getRandom();
+    /**
+     * Who holds the line, for where its sounds come from: the player, or the machine the rod is set in (a machine's
+     * angler doesn't exist on clients).
+     */
+    record Angler(Supplier<Vec3> at, ItemStack rod, RandomSource random, BooleanSupplier gone) {
+        static Angler of(CastHook hook) {
+            Player owner = hook.getPlayerOwner();
+            if (owner != null) {
+                return new Angler(() -> new Vec3(owner.getX(), owner.getEyeY() - 0.4, owner.getZ()), owner.getItemInHand(hook.hand()),
+                        owner.getRandom(), owner::isRemoved);
+            }
+            BlockPos pos = hook.mountPos().orElse(null);
+            if (pos == null || !(hook.level().getBlockEntity(pos) instanceof RodMount mount)) return null;
+            Vec3 at = Vec3.atCenterOf(pos).add(0, 0.6, 0);
+            BlockEntity be = (BlockEntity) mount;
+            return new Angler(() -> at, mount.mounted().rod(), hook.getRandom(), be::isRemoved);
+        }
+    }
+
+    private static void sounds(Minecraft mc, CastHook hook, Angler owner, State s) {
+        RandomSource random = owner.random();
         float out = hook.lineOut();
         boolean fighting = hook.phase() == CastHook.Phase.FIGHTING;
         boolean slipping = fighting && hook.flag(CastHook.FLAG_SLIPPING);
         boolean reeling = hook.flag(CastHook.FLAG_REELING);
-        float reelPitch = reelPitch(owner.getItemInHand(hook.hand()));
+        float reelPitch = reelPitch(owner.rod());
 
         if (s.lastLineOut >= 0 && slipping) {
             s.payout += Math.max(0, out - s.lastLineOut) * 100;
@@ -141,6 +176,80 @@ public final class FishingSounds {
         at.level().playLocalSound(at.getX(), at.getEyeY() - 0.4, at.getZ(), sound, SoundSource.PLAYERS, volume, pitch, false);
     }
 
+    private static void play(Angler angler, SoundEvent sound, float volume, float pitch) {
+        Vec3 at = angler.at().get();
+        Minecraft.getInstance().level.playLocalSound(at.x, at.y, at.z, sound, SoundSource.PLAYERS, volume, pitch, false);
+    }
+
+    /**
+     * The drives' own sounds: a shaft drive hums while its reel winds (higher with shaft speed and gear, a low groan
+     * when it stalls), the fuel drive's engine putters while it runs and revs while it winds.
+     */
+    private static void drives(Minecraft mc, ClientLevel level) {
+        for (Iterator<BlockEntity> it = ReelDrive.CLIENT_DRIVES.iterator(); it.hasNext(); ) {
+            BlockEntity be = it.next();
+            if (be.isRemoved() || be.getLevel() != level) {
+                it.remove();
+                continue;
+            }
+            boolean near = Vec3.atCenterOf(be.getBlockPos()).distanceTo(mc.player.position()) < HEAR_DISTANCE;
+            boolean on = near && DriveLoop.sounding(be);
+            DriveLoop loop = LOOPS.get(be);
+            if (on && (loop == null || loop.isStopped())) {
+                loop = new DriveLoop(be);
+                LOOPS.put(be, loop);
+                mc.getSoundManager().play(loop);
+            } else if (!on && loop != null) {
+                loop.finish();
+                LOOPS.remove(be);
+            }
+        }
+        LOOPS.entrySet().removeIf(e -> e.getValue().isStopped());
+    }
+
+    /** A drive's motor hum or engine putter, looping while it runs. */
+    static final class DriveLoop extends AbstractTickableSoundInstance {
+        private final BlockEntity be;
+
+        DriveLoop(BlockEntity be) {
+            super(be instanceof FuelReelDriveBlockEntity ? FishingRegistry.MACHINE_ENGINE.get() : FishingRegistry.MACHINE_MOTOR.get(),
+                    SoundSource.BLOCKS, SoundInstance.createUnseededRandom());
+            this.be = be;
+            looping = true;
+            delay = 0;
+            Vec3 at = Vec3.atCenterOf(be.getBlockPos());
+            x = at.x;
+            y = at.y;
+            z = at.z;
+            tick();
+        }
+
+        static boolean sounding(BlockEntity be) {
+            if (be instanceof FuelReelDriveBlockEntity engine) return engine.running();
+            return be instanceof ReelDriveBlockEntity drive && drive.drive().winding();
+        }
+
+        @Override
+        public void tick() {
+            if (be.isRemoved()) {
+                stop();
+                return;
+            }
+            if (be instanceof FuelReelDriveBlockEntity engine) {
+                volume = 0.4f;
+                pitch = engine.drive().winding() ? (engine.drive().stalled() ? 0.75f : 1.15f) : 0.9f;
+            } else if (be instanceof ReelDriveBlockEntity drive) {
+                double turn = Math.abs(drive.getSpeed()) / ReelDriveBlockEntity.BASE_RPM * Gearbox.GEARS[drive.drive().gear()];
+                volume = 0.3f;
+                pitch = drive.drive().stalled() ? 0.5f : (float) Mth.clamp(0.7 + 0.3 * turn, 0.6, 1.6);
+            }
+        }
+
+        void finish() {
+            stop();
+        }
+    }
+
     /** Copper reels rattle high, brass purrs, big-game reels are deep. */
     static float reelPitch(ItemStack rod) {
         if (!(rod.getItem() instanceof RodItem)) return 1;
@@ -157,11 +266,11 @@ public final class FishingSounds {
 
     /** The looping crank whirr that follows the angler while they reel; heavier load, slower and lower. */
     static final class Crank extends AbstractTickableSoundInstance {
-        private final Player owner;
+        private final Angler owner;
         private final CastHook hook;
         private final float basePitch;
 
-        Crank(Player owner, CastHook hook, float basePitch) {
+        Crank(Angler owner, CastHook hook, float basePitch) {
             super(FishingRegistry.REEL_CRANK.get(), SoundSource.PLAYERS, SoundInstance.createUnseededRandom());
             this.owner = owner;
             this.hook = hook;
@@ -170,20 +279,23 @@ public final class FishingSounds {
             delay = 0;
             volume = 0.35f;
             pitch = basePitch;
-            x = owner.getX();
-            y = owner.getEyeY() - 0.4;
-            z = owner.getZ();
+            follow();
+        }
+
+        private void follow() {
+            Vec3 at = owner.at().get();
+            x = at.x;
+            y = at.y;
+            z = at.z;
         }
 
         @Override
         public void tick() {
-            if (owner.isRemoved() || hook.isRemoved()) {
+            if (owner.gone().getAsBoolean() || hook.isRemoved()) {
                 stop();
                 return;
             }
-            x = owner.getX();
-            y = owner.getEyeY() - 0.4;
-            z = owner.getZ();
+            follow();
             float load = hook.phase() == CastHook.Phase.FIGHTING ? Math.min(1, hook.tension()) : 0;
             boolean stalled = hook.flag(CastHook.FLAG_STALLED);
             pitch = basePitch * (stalled ? 0.6f : 1.05f - 0.35f * load);

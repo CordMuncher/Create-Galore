@@ -302,6 +302,18 @@ the fish eases off. So players pick drag against their rotational strength, not 
 - Recipes in Create style: reels by sequenced assembly, hooks/lures by pressing, braided line by
   mixing, bench/holders from Create parts. JEI shows everything.
 
+As built in milestone 9, where it differs from or fills in the above: k is 4 SU/RPM per kgf at gear 1 plus
+1 SU/RPM idle, so one water wheel (8 RPM, 256 SU) winds against about 7.75 kgf in gear 1 and 31 in the lowest; the
+reel turns at its own speed on a 32 RPM shaft (a quarter to three times that on slower or faster ones). The
+Geared drive's gearbox shifts by the larger of the fish's pull and what a fish that fresh can still put on, so a
+fish easing off for a moment doesn't put it in a gear the next run would stall. Wait is the default mode. The
+Fuel drive's engine is rated 12 kgf in gear 1 with a 4 B tank. Machine catches never go into another rod machine,
+and the first fish with nowhere to go hangs at the tip for 30 s. Fish kept alive from the hold-up screen are alive
+items too, not only those a machine puts on a belt. Trolling: instead of following ship velocity, a machine's rig
+simply can't get further from the tip than the line it was set with, so any moving machine tows it (the lure's
+speed through the water is then its real speed); clients draw the rod and line through the block entity renderer,
+which Sable already runs under the ship's transform.
+
 ### 6b. Live-bait bucket and aquarium tanks
 - **Live-Bait Bucket**: item holding baitfish/leeches (bundle-style storage, needs water to fill);
   right-click a rod in the inventory with it to load live bait; Geared/Fuel Reel Drives can be fed

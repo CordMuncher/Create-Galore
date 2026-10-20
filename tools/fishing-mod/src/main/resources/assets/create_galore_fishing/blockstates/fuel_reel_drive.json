@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "create_galore_fishing:block/fuel_reel_drive"
+    },
+    "facing=east": {
+      "model": "create_galore_fishing:block/fuel_reel_drive",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "create_galore_fishing:block/fuel_reel_drive",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "create_galore_fishing:block/fuel_reel_drive",
+      "y": 270
+    }
+  }
+}

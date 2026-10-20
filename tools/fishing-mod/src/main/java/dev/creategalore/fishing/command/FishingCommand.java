@@ -1,5 +1,6 @@
 package dev.creategalore.fishing.command;
 
+import com.mojang.brigadier.arguments.DoubleArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import dev.creategalore.fishing.CreateGaloreFishing;
@@ -9,7 +10,8 @@ import dev.creategalore.fishing.cast.CatchHolding;
 import dev.creategalore.fishing.cast.Catches;
 import dev.creategalore.fishing.fish.Species;
 import dev.creategalore.fishing.fish.SpeciesManager;
-import dev.creategalore.fishing.machine.RodMount;import com.mojang.brigadier.arguments.DoubleArgumentType;
+import dev.creategalore.fishing.machine.DriveMount;
+import dev.creategalore.fishing.machine.RodMount;
 import dev.creategalore.fishing.selftest.SelfTest;
 import dev.creategalore.fishing.sim.MonteCarlo;
 import java.io.IOException;
@@ -68,6 +70,12 @@ public final class FishingCommand {
                                         .then(Commands.argument("species", StringArgumentType.string())
                                                 .then(Commands.argument("cm", DoubleArgumentType.doubleArg(1, 1000))
                                                         .executes(ctx -> machine(ctx.getSource(), BlockPosArgument.getLoadedBlockPos(ctx, "pos"),
+                                                                StringArgumentType.getString(ctx, "species"),
+                                                                DoubleArgumentType.getDouble(ctx, "cm"))))))
+                                .then(Commands.literal("hook")
+                                        .then(Commands.argument("species", StringArgumentType.string())
+                                                .then(Commands.argument("cm", DoubleArgumentType.doubleArg(1, 1000))
+                                                        .executes(ctx -> machineHook(ctx.getSource(), BlockPosArgument.getLoadedBlockPos(ctx, "pos"),
                                                                 StringArgumentType.getString(ctx, "species"),
                                                                 DoubleArgumentType.getDouble(ctx, "cm"))))))))
                 .then(Commands.literal("crate")
@@ -132,7 +140,8 @@ public final class FishingCommand {
             return 0;
         }
         if (speciesId == null) {
-            source.sendSuccess(() -> Component.literal(hook.describe()), false);
+            String drive = mount instanceof DriveMount d ? " | drive " + d.drive().describe() : "";
+            source.sendSuccess(() -> Component.literal(hook.describe() + drive), false);
             return 1;
         }
         if (speciesId.isEmpty()) {
@@ -144,6 +153,25 @@ public final class FishingCommand {
         if (species == null) return 0;
         hook.forceBite(new BiteSampler.Bite(species, cm, species.size().weightKg(cm), species.size().classify(cm)));
         source.sendSuccess(() -> Component.literal(String.format(Locale.ROOT, "Next bite at the machine: %s, %.0f cm",
+                species.id(), cm)), false);
+        return 1;
+    }
+
+    /** Test tool: puts a fish on a machine's line at once, struck and fighting. */
+    private static int machineHook(CommandSourceStack source, BlockPos pos, String speciesId, double cm) {
+        if (!(source.getLevel().getBlockEntity(pos) instanceof RodMount mount) || mount.mounted().hook() == null) {
+            source.sendFailure(Component.literal("No rod machine with a line out at " + pos.toShortString()));
+            return 0;
+        }
+        Species species = species(source, speciesId);
+        if (species == null) return 0;
+        boolean on = mount.mounted().hook().forceFight(new BiteSampler.Bite(species, cm, species.size().weightKg(cm),
+                species.size().classify(cm)));
+        if (!on) {
+            source.sendFailure(Component.literal("The machine's line isn't in the water"));
+            return 0;
+        }
+        source.sendSuccess(() -> Component.literal(String.format(Locale.ROOT, "Fish on at the machine: %s, %.0f cm",
                 species.id(), cm)), false);
         return 1;
     }

@@ -172,7 +172,15 @@ public final class CatchHolding {
             player.displayClientMessage(Component.translatable("message.create_galore_fishing.released",
                     h.fish().getHoverName(), h.releaseXp()), true);
         } else {
-            Catches.give(player, List.of(h.fish()), h.keepXp());
+            ItemStack fish = h.fish();
+            if (alive) {
+                // Kept while still alive, it stays alive until its time is up: dropped into water before then, it swims
+                // off. What doesn't fit in the inventory lands at the angler's feet as a plain kept fish.
+                ItemStack marked = AliveFish.mark(fish, h.aliveUntil());
+                player.getInventory().add(marked);
+                fish = marked.isEmpty() ? ItemStack.EMPTY : fish.copyWithCount(marked.getCount());
+            }
+            Catches.give(player, fish.isEmpty() ? List.of() : List.of(fish), h.keepXp());
             FishingPressure.of(level).addCatch(level, h.water());
             recordBest(player, h);
         }
@@ -196,16 +204,20 @@ public final class CatchHolding {
 
     /** The released fish goes back: as its own swimming mob where the species has one, else just a splash. */
     static void swimOff(ServerLevel level, Holding h) {
-        BlockPos at = h.water();
+        swimOff(level, h.water(), h.species(), h.bite().lengthCm());
+    }
+
+    /** A fish of {@code species}, {@code cm} long, going back into the water at {@code at}. */
+    public static void swimOff(ServerLevel level, BlockPos at, Species species, double cm) {
         level.sendParticles(ParticleTypes.SPLASH, at.getX() + 0.5, at.getY() + 1, at.getZ() + 0.5, 20, 0.3, 0.1, 0.3, 0.1);
         level.playSound(null, at, SoundEvents.FISH_SWIM, SoundSource.NEUTRAL, 0.8f, 1f);
-        EntityType<?> type = entityFor(h.species());
+        EntityType<?> type = entityFor(species);
         if (type == null || FishingWater.medium(level, at) == null) return;
         Entity fish = type.spawn(level, at, MobSpawnType.BUCKET);
         if (fish == null) return;
         fish.setDeltaMovement(level.random.nextGaussian() * 0.2, -0.1, level.random.nextGaussian() * 0.2);
         // Tide's fish mobs carry their length; this one is the fish that was caught.
-        if (fish instanceof FishLengthHolder sized) sized.tide$setLength(h.bite().lengthCm());
+        if (fish instanceof FishLengthHolder sized) sized.tide$setLength(cm);
     }
 
     /** The live mob for a species: its display entity, else an entity with the fish item's id. */

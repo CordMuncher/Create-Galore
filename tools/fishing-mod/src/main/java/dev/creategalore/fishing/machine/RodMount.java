@@ -1,4 +1,5 @@
 package dev.creategalore.fishing.machine;
+
 import dev.creategalore.fishing.cast.CastHook;
 import dev.creategalore.fishing.sim.Controls;
 import dev.creategalore.fishing.sim.Fight;
@@ -24,8 +25,8 @@ public interface RodMount {
     /** Whether the reel turns this tick, outside a fight (retrieving a lure, winding in to recast). */
     boolean reeling(CastHook hook);
 
-    /** Retrieve speed outside a fight as a multiple of the reel's (gear and shaft speed). */
-    default double retrieveScale() {
+    /** Retrieve speed outside a fight as a multiple of the reel's (shaft speed; slow while working a lure). */
+    default double retrieveScale(CastHook hook) {
         return 1;
     }
 

@@ -82,7 +82,7 @@ public interface Angler {
             @Override
             public void act(Fight fight, Controls c) {
                 c.drag = drag;
-                box.update(torqueAtOne, fight.pull());
+                box.update(torqueAtOne, fight);
                 box.apply(c, torqueAtOne);
                 c.reeling = !fight.slipping();
                 c.crankThroughSlip = false;
