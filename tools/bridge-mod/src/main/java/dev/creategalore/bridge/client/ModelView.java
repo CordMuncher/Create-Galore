@@ -49,8 +49,9 @@ import org.lwjgl.opengl.GL11;
  * The book's 3D models: real blocks drawn as a small hologram on the page, which the player turns by dragging and
  * zooms with the wheel. Each block is drawn from its own model, faces hidden behind a neighbour are skipped, blocks
  * with moving parts (Create's shafts, cogs, water wheels, press heads, mixer whisks) also get their block entity
- * renderer as in the world, chests and other entity-drawn blocks are drawn as their item, and fluids stand in as
- * stained glass.
+ * renderer as in the world, chests and other entity-drawn blocks are drawn as their item, and water and lava flow
+ * as in the world (stained glass where they can't be drawn). Labels sit beside the model with a line to their spot,
+ * so they never cover it; middle-drag moves the model in its box.
  */
 final class ModelView {
     private static final int CANVAS = 0xFFE6DABA, FRAME = 0xFF8A7250, INK = 0xFF2B2014, FADED = 0xFF6E5E48, PAPER = 0xEEF9EED2;
@@ -73,6 +74,8 @@ final class ModelView {
      */
     private BlockEntity[] movers;
     private boolean moversMade;
+    /** The model's blocks in a small world of their own (Create's), so water and lava flow and look as placed; null without it. */
+    private net.minecraft.world.level.BlockAndTintGetter world;
     /**
      * Create draws its shafts, cogs and other turning parts from their block entities, and its models hand out their
      * shapes only when asked for a "virtual" block (the way Ponder scenes draw them); ask the same way.
@@ -95,7 +98,7 @@ final class ModelView {
             return net.createmod.ponder.render.VirtualRenderHelper.VIRTUAL_DATA;
         }
     }
-    float yaw = YAW, pitch = PITCH, zoom = 1;
+    float yaw = YAW, pitch = PITCH, zoom = 1, panX, panY;
 
     private ModelView(String title, String caption, int sx, int sy, int sz) {
         this.title = title;
@@ -153,17 +156,21 @@ final class ModelView {
 
     private static BlockState state(String text) {
         try {
-            BlockState s = BlockStateParser.parseForBlock(BuiltInRegistries.BLOCK.asLookup(), text, false).blockState();
-            // Fluids have no block model; show them as glass of their colour.
-            if (!s.getFluidState().isEmpty() && s.getRenderShape() == RenderShape.INVISIBLE) {
-                if (s.getFluidState().is(FluidTags.LAVA)) return Blocks.ORANGE_STAINED_GLASS.defaultBlockState();
-                if (s.getFluidState().is(FluidTags.WATER)) return Blocks.LIGHT_BLUE_STAINED_GLASS.defaultBlockState();
-                return Blocks.WHITE_STAINED_GLASS.defaultBlockState();
-            }
-            return s;
+            return BlockStateParser.parseForBlock(BuiltInRegistries.BLOCK.asLookup(), text, false).blockState();
         } catch (Exception e) {
             return null;
         }
+    }
+
+    /** A fluid block has no model; where the fluid can't be drawn as in the world, show it as glass of its colour. */
+    private static BlockState glassFor(BlockState s) {
+        if (s.getFluidState().is(FluidTags.LAVA)) return Blocks.ORANGE_STAINED_GLASS.defaultBlockState();
+        if (s.getFluidState().is(FluidTags.WATER)) return Blocks.LIGHT_BLUE_STAINED_GLASS.defaultBlockState();
+        return Blocks.WHITE_STAINED_GLASS.defaultBlockState();
+    }
+
+    private static boolean pureFluid(BlockState s) {
+        return !s.getFluidState().isEmpty() && s.getRenderShape() == RenderShape.INVISIBLE;
     }
 
     private static int clamp(int v) {
@@ -209,13 +216,17 @@ final class ModelView {
         box[1] = by;
         box[2] = bw;
         box[3] = bh;
-        draw(g, font, bx, by, bw, bh, yaw, pitch, zoom);
+        draw(g, font, bx, by, bw, bh, yaw, pitch, zoom, panX, panY);
         if (hint != null) {
-            int hw = font.width(hint) + 6;
+            List<FormattedCharSequence> lines = font.split(Component.literal(hint), bw - 12);
+            int hw = 0;
+            for (FormattedCharSequence l : lines) hw = Math.max(hw, font.width(l));
+            hw += 6;
+            int hh = lines.size() * 10;
             g.pose().pushPose();
             g.pose().translate(0, 0, 300);
-            g.fill(bx + bw - hw - 2, by + bh - 12, bx + bw - 2, by + bh - 2, PAPER);
-            g.drawString(font, hint, bx + bw - hw + 1, by + bh - 11, FADED, false);
+            g.fill(bx + bw - hw - 2, by + bh - hh - 2, bx + bw - 2, by + bh - 2, PAPER);
+            for (int i = 0; i < lines.size(); i++) g.drawString(font, lines.get(i), bx + bw - hw + 1, by + bh - hh - 1 + i * 10, FADED, false);
             g.pose().popPose();
         }
         y = by + bh + 4;
@@ -232,20 +243,33 @@ final class ModelView {
         pitch = Math.max(-89, Math.min(89, pitch + (float) dy * 0.9f));
     }
 
+    void pan(double dx, double dy) {
+        panX += (float) dx;
+        panY += (float) dy;
+    }
+
     void zoom(double steps) {
         zoom = Math.max(0.5f, Math.min(4f, zoom * (float) Math.pow(1.15, steps)));
     }
 
-    /** Draws the model filling the box (x, y, w, h) at this angle; labels on top. */
     void draw(GuiGraphics g, Font font, int x, int y, int w, int h, float yaw, float pitch, float zoom) {
+        draw(g, font, x, y, w, h, yaw, pitch, zoom, 0, 0);
+    }
+
+    /**
+     * Draws the model in the box (x, y, w, h) at this angle, moved by (panX, panY). With labels and room for them, the
+     * model keeps to the middle and the labels stand in columns either side, each with a line to its spot.
+     */
+    void draw(GuiGraphics g, Font font, int x, int y, int w, int h, float yaw, float pitch, float zoom, float panX, float panY) {
         Minecraft mc = Minecraft.getInstance();
         g.flush();
         g.enableScissor(x, y, x + w, y + h);
         PoseStack pose = g.pose();
         pose.pushPose();
+        int gutter = labels.isEmpty() || w < 150 ? 0 : Math.min(w / 4, labelWidth(font) + 10);
         float radius = 0.5f * (float) Math.sqrt(sx * sx + sy * sy + sz * sz);
-        float scale = Math.min(w, h) / (2 * radius) * 0.95f * zoom;
-        pose.translate(x + w / 2f, y + h / 2f, 50 + radius * scale);
+        float scale = Math.min(w - 2 * gutter, h) / (2 * radius) * 0.95f * zoom;
+        pose.translate(x + w / 2f + panX, y + h / 2f + panY, 50 + radius * scale);
         pose.scale(scale, -scale, scale);
         pose.mulPose(Axis.XP.rotationDegrees(pitch));
         pose.mulPose(Axis.YP.rotationDegrees(yaw));
@@ -256,13 +280,17 @@ final class ModelView {
         RandomSource random = RandomSource.create();
         if (!moversMade) {
             moversMade = true;
-            movers = makeMovers(mc);
+            makeMovers(mc);
         }
         for (int by = 0; by < sy; by++)
             for (int bz = 0; bz < sz; bz++)
                 for (int bx = 0; bx < sx; bx++) {
                     BlockState state = cells[index(bx, by, bz)];
                     if (state == null || hidden(bx, by, bz)) continue;
+                    if (!state.getFluidState().isEmpty() && !fluid(mc, state, bx, by, bz, pose, buffers) && pureFluid(state)) {
+                        state = glassFor(state);
+                    }
+                    if (pureFluid(state)) continue;
                     pose.pushPose();
                     pose.translate(bx, by, bz);
                     try {
@@ -284,15 +312,88 @@ final class ModelView {
         pose.popPose();
         // The model is drawn in front of the page; later page parts and tooltips must draw over it, not behind it.
         RenderSystem.clear(GL11.GL_DEPTH_BUFFER_BIT, Minecraft.ON_OSX);
-        for (int i = 0; i < labels.size(); i++) {
-            float[] p = spots.get(i);
-            int px = Math.round(p[0]), py = Math.round(p[1]), tw = font.width(labels.get(i).text);
-            int lx = Math.min(px + 5, x + w - tw - 3), ly = py - 4;
-            g.fill(px - 1, py - 1, px + 2, py + 2, INK);
-            g.fill(lx - 2, ly - 2, lx + tw + 2, ly + font.lineHeight, PAPER);
-            g.drawString(font, labels.get(i).text, lx, ly, INK, false);
+        if (gutter == 0) {
+            for (int i = 0; i < labels.size(); i++) {
+                float[] p = spots.get(i);
+                int px = Math.round(p[0]), py = Math.round(p[1]), tw = font.width(labels.get(i).text);
+                int lx = Math.min(px + 5, x + w - tw - 3), ly = py - 4;
+                g.fill(px - 1, py - 1, px + 2, py + 2, INK);
+                g.fill(lx - 2, ly - 2, lx + tw + 2, ly + font.lineHeight, PAPER);
+                g.drawString(font, labels.get(i).text, lx, ly, INK, false);
+            }
+        } else {
+            sideLabels(g, font, spots, x, y, w, h, gutter, x + w / 2f + panX);
         }
         g.disableScissor();
+    }
+
+    private int labelWidth(Font font) {
+        int most = 0;
+        for (Label l : labels) most = Math.max(most, font.width(l.text));
+        return most;
+    }
+
+    /**
+     * Labels in a column on the side their spot is on, top to bottom in the order of their spots, never overlapping,
+     * each joined to its spot by a thin line.
+     */
+    private void sideLabels(GuiGraphics g, Font font, List<float[]> spots, int x, int y, int w, int h, int gutter, float middle) {
+        record Placed(int index, List<FormattedCharSequence> lines, float spotY) {
+        }
+        List<Placed> left = new ArrayList<>(), right = new ArrayList<>();
+        for (int i = 0; i < labels.size(); i++) {
+            List<FormattedCharSequence> lines = font.split(Component.literal(labels.get(i).text), gutter - 6);
+            (spots.get(i)[0] < middle ? left : right).add(new Placed(i, lines, spots.get(i)[1]));
+        }
+        for (List<Placed> side : List.of(left, right)) {
+            boolean onLeft = side == left;
+            side.sort((a, b) -> Float.compare(a.spotY, b.spotY));
+            int total = 0;
+            for (Placed p : side) total += p.lines.size() * font.lineHeight + 4;
+            int top = y + 3, room = h - 6;
+            int[] tops = new int[side.size()];
+            int next = top;
+            for (int i = 0; i < side.size(); i++) {
+                int lh = side.get(i).lines.size() * font.lineHeight + 4;
+                // As near its spot as the labels above it and the room left below allow.
+                int want = Math.round(side.get(i).spotY) - lh / 2;
+                int below = 0;
+                for (int j = i + 1; j < side.size(); j++) below += side.get(j).lines.size() * font.lineHeight + 4;
+                int maxTop = total > room ? next : top + room - below - lh;
+                tops[i] = Math.max(next, Math.min(maxTop, want));
+                next = tops[i] + lh;
+            }
+            for (int i = 0; i < side.size(); i++) {
+                Placed p = side.get(i);
+                float[] spot = spots.get(p.index);
+                int tw = 0;
+                for (FormattedCharSequence line : p.lines) tw = Math.max(tw, font.width(line));
+                int lx = onLeft ? x + 3 : x + w - tw - 3, ly = tops[i] + 2;
+                int ax = onLeft ? lx + tw + 2 : lx - 2, ay = ly + font.lineHeight / 2;
+                line(g, ax, ay, Math.round(spot[0]), Math.round(spot[1]), FADED);
+                g.fill(Math.round(spot[0]) - 1, Math.round(spot[1]) - 1, Math.round(spot[0]) + 2, Math.round(spot[1]) + 2, INK);
+                g.fill(lx - 2, ly - 2, lx + tw + 2, ly + p.lines.size() * font.lineHeight, PAPER);
+                for (int k = 0; k < p.lines.size(); k++) g.drawString(font, p.lines.get(k), lx, ly + k * font.lineHeight, INK, false);
+            }
+        }
+    }
+
+    /** A one-pixel line. */
+    private static void line(GuiGraphics g, int x0, int y0, int x1, int y1, int color) {
+        int dx = Math.abs(x1 - x0), dy = -Math.abs(y1 - y0), sxs = x0 < x1 ? 1 : -1, sys = y0 < y1 ? 1 : -1, err = dx + dy;
+        for (int n = 0; n < 2000; n++) {
+            g.fill(x0, y0, x0 + 1, y0 + 1, color);
+            if (x0 == x1 && y0 == y1) break;
+            int e2 = 2 * err;
+            if (e2 >= dy) {
+                err += dy;
+                x0 += sxs;
+            }
+            if (e2 <= dx) {
+                err += dx;
+                y0 += sys;
+            }
+        }
     }
 
     /** True when every side touches a solid full block, so nothing of this block can be seen. */
@@ -325,18 +426,81 @@ final class ModelView {
         }
     }
 
-    private BlockEntity[] makeMovers(Minecraft mc) {
-        if (mc.level == null) return null;
+    private void makeMovers(Minecraft mc) {
+        if (mc.level == null) return;
         try {
-            return Movers.make(mc, cells, sx, sy, sz);
+            Movers.Made made = Movers.make(mc, cells, sx, sy, sz);
+            world = made.world();
+            movers = made.movers();
         } catch (RuntimeException | LinkageError e) {
-            return null;
+            world = null;
+            movers = null;
+        }
+    }
+
+    /**
+     * Water or lava drawn the way the world draws it, flowing towards lower levels, with its animated texture. The
+     * fluid renderer writes positions within a 16-block section, which is the model's own grid. False when it can't.
+     */
+    private boolean fluid(Minecraft mc, BlockState state, int x, int y, int z, PoseStack pose, MultiBufferSource buffers) {
+        if (world == null || fluidFailed) return false;
+        try {
+            VertexConsumer out = new PoseConsumer(buffers.getBuffer(net.minecraft.client.renderer.Sheets.translucentCullBlockSheet()), pose.last());
+            mc.getBlockRenderer().renderLiquid(new BlockPos(x, y, z), world, out, state, state.getFluidState());
+            return true;
+        } catch (RuntimeException | LinkageError e) {
+            fluidFailed = true;
+            return false;
+        }
+    }
+
+    private boolean fluidFailed;
+
+    /** Passes the fluid renderer's vertices through the model's transform, lit fully, in the entity vertex format. */
+    private record PoseConsumer(VertexConsumer out, PoseStack.Pose pose) implements VertexConsumer {
+        @Override
+        public VertexConsumer addVertex(float x, float y, float z) {
+            out.addVertex(pose, x, y, z);
+            return this;
+        }
+
+        @Override
+        public VertexConsumer setColor(int r, int g, int b, int a) {
+            out.setColor(r, g, b, a);
+            return this;
+        }
+
+        @Override
+        public VertexConsumer setUv(float u, float v) {
+            out.setUv(u, v);
+            return this;
+        }
+
+        @Override
+        public VertexConsumer setUv1(int u, int v) {
+            return this;
+        }
+
+        @Override
+        public VertexConsumer setUv2(int u, int v) {
+            out.setOverlay(OverlayTexture.NO_OVERLAY);
+            out.setLight(LightTexture.FULL_BRIGHT);
+            return this;
+        }
+
+        @Override
+        public VertexConsumer setNormal(float x, float y, float z) {
+            out.setNormal(pose, x, y, z);
+            return this;
         }
     }
 
     /** Kept apart so Create's classes are only touched when it is there. */
     private static final class Movers {
-        static BlockEntity[] make(Minecraft mc, BlockState[] cells, int sx, int sy, int sz) {
+        record Made(net.minecraft.world.level.BlockAndTintGetter world, BlockEntity[] movers) {
+        }
+
+        static Made make(Minecraft mc, BlockState[] cells, int sx, int sy, int sz) {
             // Not handed to Flywheel: Create's renderers then draw the moving parts themselves, as they do with Flywheel off.
             var world = new com.simibubi.create.foundation.virtualWorld.VirtualRenderWorld(mc.level, 0, sy, net.minecraft.core.Vec3i.ZERO, () -> {
             }) {
@@ -371,7 +535,7 @@ final class ModelView {
                             // drawn plainly
                         }
                     }
-            return any ? out : null;
+            return new Made(world, any ? out : null);
         }
     }
 

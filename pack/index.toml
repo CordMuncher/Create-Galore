@@ -4957,8 +4957,8 @@ hash = "db683b65dc15a03dd6de2d34d5dc6ad0e3490744ced513a8cc584784ee9d3d8b"
 metafile = true
 
 [[files]]
-file = "mods/create-galore-bridge-1.26.0.jar"
-hash = "47c061ba30560e7f639f9a68782b920fb31e41caacb41542a3df994e4edaaff6"
+file = "mods/create-galore-bridge-1.27.0.jar"
+hash = "a99c5747ea80ff98473cee6546ee2a03b66a92b470f2c31583c103790dac53b6"
 
 [[files]]
 file = "mods/create-galore-lagwatch-1.1.0.jar"

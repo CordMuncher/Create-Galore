@@ -112,6 +112,8 @@ final class AskScreen extends Screen {
     /** Drawings and models on screen this frame, for right-click saving, dragging and zooming. */
     private final List<Hot> hots = new ArrayList<>();
     private ModelView dragging;
+    /** The mouse button that is dragging it: left turns, middle moves. */
+    private int dragButton;
 
     private record Hot(int x, int y, int w, int h, String json, int entry, ModelView model) {
         boolean contains(double mx, double my) {
@@ -367,8 +369,9 @@ final class AskScreen extends Screen {
             pageTurn();
             return true;
         }
-        if (hot != null && hot.model != null && button == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
+        if (hot != null && hot.model != null && (button == GLFW.GLFW_MOUSE_BUTTON_LEFT || button == GLFW.GLFW_MOUSE_BUTTON_MIDDLE)) {
             dragging = hot.model;
+            dragButton = button;
             return true;
         }
         boolean handled = super.mouseClicked(mouseX, mouseY, button);
@@ -381,7 +384,8 @@ final class AskScreen extends Screen {
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
         if (dragging != null) {
-            dragging.turn(dragX, dragY);
+            if (dragButton == GLFW.GLFW_MOUSE_BUTTON_MIDDLE) dragging.pan(dragX, dragY);
+            else dragging.turn(dragX, dragY);
             return true;
         }
         return super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
@@ -389,7 +393,7 @@ final class AskScreen extends Screen {
 
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        if (dragging != null && button == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
+        if (dragging != null && button == dragButton) {
             dragging = null;
             return true;
         }
@@ -620,7 +624,8 @@ final class AskScreen extends Screen {
                         Hot hot = new Hot(ox + m.x, oy + m.y, m.w, mh, m.json, m.entry, m.view);
                         boolean over = mouseIn && hot.contains(mouseX, mouseY);
                         m.view.paint(g, font, ox + m.x, oy + m.y, m.w, over || dragging == m.view
-                                ? (canSave(m.entry) ? "Drag to turn, scroll to zoom, right-click to save" : "Drag to turn, scroll to zoom")
+                                ? (canSave(m.entry) ? "Drag to turn, middle-drag to move, scroll to zoom, right-click to save"
+                                        : "Drag to turn, middle-drag to move, scroll to zoom")
                                 : null);
                         hots.add(hot);
                     }
