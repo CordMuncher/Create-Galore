@@ -59,7 +59,7 @@ hash = "c8c05ff0d9853da43b24b7dfe45efc8e93b5e742e8dc561baf099c8debc91367"
 
 [[files]]
 file = "config/coldsweat/world.toml"
-hash = "f9c34026888b0fb152b1ecc8369be1d90d8f1ed7275c530b73cf0d57fe94fa29"
+hash = "9ce3c9132830942058b7a3afe90378288e7a48cc741c92ad4cab5aa21cb09e9c"
 
 [[files]]
 file = "config/coldsweat_altitude-server.toml"
