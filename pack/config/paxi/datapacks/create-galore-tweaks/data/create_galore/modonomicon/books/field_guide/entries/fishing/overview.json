@@ -40,7 +40,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "[#](FFFFFF)\ue102[#]() **Tip:** first fishing trip: a [](item://create_galore_fishing:bamboo_pole) (3 bamboo) needs no reel. Right-click it with a [](item://create_galore_fishing:string_line) and a [](item://create_galore_fishing:small_hook) in your inventory, add worms, and cast into any river. See [#](2E5AAC)[Food in Your First Days](entry://food/first_food)[#]().\\\n\\\nAquaculture's own rods: [#](2E5AAC)[Aquaculture Fish and Old Rods](entry://fishing/aquaculture)[#]()."
+      "text": "[#](FFFFFF)\ue102[#]() **Tip:** first fishing trip: a [](item://create_galore_fishing:bamboo_pole) (3 bamboo or sugar cane) needs no reel. Right-click it with a [](item://create_galore_fishing:string_line) and a [](item://create_galore_fishing:small_hook) in your inventory, add worms, and cast into any river. See [#](2E5AAC)[Food in Your First Days](entry://food/first_food)[#]().\\\n\\\nAquaculture's own rods: [#](2E5AAC)[Aquaculture Fish and Old Rods](entry://fishing/aquaculture)[#]()."
     }
   ]
 }

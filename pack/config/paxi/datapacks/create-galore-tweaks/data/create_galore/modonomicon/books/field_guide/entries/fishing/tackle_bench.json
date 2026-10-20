@@ -20,7 +20,7 @@
     {
       "type": "modonomicon:text",
       "title": "The Tackle Bench",
-      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- Put a rod in and fit a part in each slot; a **3D preview** shows the rod.\n- It shows what the rod is **rated** for and warns about the **weak link**.\n- Buttons set the **drag** and the float's depth.\n- Parts also go on by right-clicking the rod with them in your inventory."
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- Put a rod in and fit a part in each slot; a **3D preview** shows the rod.\n- It shows what the rod is **rated** for and warns about the **weak link**.\n- Buttons set the **drag** and the float depth.\n- Parts also go on by right-clicking the rod with them in your inventory."
     },
     {
       "type": "modonomicon:crafting_recipe",
@@ -36,6 +36,10 @@
       "type": "modonomicon:text",
       "title": "",
       "text": "**The rating** is the weakest of three: the blank's load, the line's test (or the leader's) and the reel's top drag. \"Fish to about\" is the heaviest average fighter that rating lands with a sensible drag.\\\n\\\nA new rod's drag starts at a third of the reel's range."
+    },
+    {
+      "type": "modonomicon:text",
+      "text": "**Float depth**: 0.5 to 8 m, 1.5 m at first. Bites are rolled where the bait hangs, just above the bottom at most, so fish that keep above or below a height see its real depth."
     },
     {
       "type": "modonomicon:text",
