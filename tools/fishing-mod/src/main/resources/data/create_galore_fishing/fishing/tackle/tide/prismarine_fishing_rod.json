@@ -1,0 +1,14 @@
+{
+  "item": "tide:prismarine_fishing_rod",
+  "_generated": "from tools/fishing-mod/gen_tackle.py; edit that, not this file",
+  "kind": "rod",
+  "length": 2.7,
+  "max_load": 12,
+  "action": "moderate",
+  "sections": 3,
+  "lure_min": 5,
+  "lure_max": 35,
+  "color": "#4a9a8a",
+  "grip": "#1a4a50",
+  "perk": "prismarine"
+}

@@ -1,0 +1,20 @@
+{
+    "associated_mods": ["crabbersdelight"],
+    "fish": "crabbersdelight:clawster",
+    "journal_profile": {
+        "description": "journal.description.crabbersdelight.clawster",
+        "group": "saltwater",
+        "location": "journal.info.location.saltwater",
+        "rarity": "uncommon"
+    },
+    "conditions": [
+        { "type": "tide:saltwater" },
+        { "type": "tide:dimension", "dimensions": ["minecraft:overworld"] },
+        { "type": "tide:fluid", "fluid": "water" },
+        { "type": "tide:above", "y": 40 }
+    ],
+    "selection_weight": 20.0,
+    "size": { "record_high_cm": 50.0, "typical_high_cm": 20.0, "typical_low_cm": 3.0 },
+    "speed": 0.2,
+    "strength": 0.5
+}

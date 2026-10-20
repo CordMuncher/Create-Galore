@@ -1,0 +1,29 @@
+{
+    "associated_mods": ["fintastic"],
+    "fish": "fintastic:sharkminnow",
+    "bucket": "fintastic:freshwater_shark_bucket",
+    "journal_profile": {
+        "description": "journal.description.fintastic.sharkminnow",
+        "group": "freshwater",
+        "location": "journal.info.location.jungle",
+        "rarity": "common"
+    },
+    "display_data": {
+        "entity": "fintastic:freshwater_shark",
+        "shape": "2x1",
+        "roll": -90,
+        "y": -0.35,
+        "z": 0.2
+    },
+    "conditions": [
+        { "type": "tide:freshwater" },
+        { "type": "tide:dimension", "dimensions": ["minecraft:overworld"] },
+        { "type": "tide:fluid", "fluid": "water" },
+        { "type": "tide:above", "y": 40 },
+        { "type": "tide:found_in", "biomes": ["#minecraft:is_jungle", "atmospheric:rainforest", "#minecraft:is_river"] }
+    ],
+    "selection_weight": 30.0,
+    "size": { "record_high_cm": 100.0, "typical_high_cm": 80.0, "typical_low_cm": 45.0 },
+    "speed": 0.5,
+    "strength": 0.7
+}

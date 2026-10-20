@@ -1,0 +1,7 @@
+{
+  "item": "aquaculture:leech",
+  "_generated": "from tools/fishing-mod/gen_tackle.py; edit that, not this file",
+  "kind": "bait",
+  "bait": "leech",
+  "size": 1
+}

@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    {
+      "tag": "c:nuggets/iron"
+    }
+  ],
+  "result": {
+    "id": "create_galore_fishing:small_hook",
+    "count": 3
+  }
+}

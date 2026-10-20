@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_luminescent_jellyfish": {
+      "conditions": {
+        "items": [
+          {
+            "items": "tide:luminescent_jellyfish"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "tide:jelly_torch_from_jellyfish"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_luminescent_jellyfish"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "tide:jelly_torch_from_jellyfish"
+    ]
+  }
+}

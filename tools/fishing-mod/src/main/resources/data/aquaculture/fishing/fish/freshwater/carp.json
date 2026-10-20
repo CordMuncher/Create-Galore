@@ -1,0 +1,30 @@
+{
+    "associated_mods": ["aquaculture"],
+    "fish": "aquaculture:carp",
+    "bucket": "aquaculture:carp_bucket",
+    "journal_profile": {
+        "description": "journal.description.aquaculture.carp",
+        "group": "freshwater",
+        "location": "journal.info.location.freshwater",
+        "rarity": "common"
+    },
+    "display_data": {
+        "entity": "aquaculture:carp",
+        "x": 0.1
+    },
+    "conditions": [
+        { "type": "tide:freshwater" },
+        { "type": "tide:dimension", "dimensions": ["minecraft:overworld"] },
+        { "type": "tide:fluid", "fluid": "water" },
+        { "type": "tide:above", "y": 40 },
+        { "type": "tide:seasons", "seasons": ["summer", "fall", "spring"] },
+        { "type": "tide:time_of_day", "ranges": [{ "max": 12000, "min": 0 }, { "max": 24000, "min": 18000 }] }
+    ],
+    "modifiers": [
+        { "type": "tide:temperature", "preferred_temperature": 0.15, "temperature_tolerance": 0.7 }
+    ],
+    "selection_weight": 40.0,
+    "size": { "record_high_cm": 110.0, "typical_high_cm": 90.0, "typical_low_cm": 85.0 },
+    "speed": 0.42,
+    "strength": 0.2
+}

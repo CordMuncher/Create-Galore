@@ -1,0 +1,31 @@
+{
+    "associated_mods": ["aquaculture"],
+    "fish": "aquaculture:muskellunge",
+    "bucket": "aquaculture:muskellunge_bucket",
+    "journal_profile": {
+        "description": "journal.description.aquaculture.muskellunge",
+        "group": "freshwater",
+        "location": "journal.info.location.freshwater",
+        "rarity": "common"
+    },
+    "display_data": {
+        "entity": "aquaculture:muskellunge",
+        "x": 0.1,
+        "y": -0.05,
+        "z": 0.05
+    },
+    "conditions": [
+        { "type": "tide:freshwater" },
+        { "type": "tide:dimension", "dimensions": ["minecraft:overworld"] },
+        { "type": "tide:fluid", "fluid": "water" },
+        { "type": "tide:above", "y": 40 },
+        { "type": "tide:seasons", "seasons": ["spring", "fall"] }
+    ],
+    "modifiers": [
+        { "type": "tide:temperature", "preferred_temperature": 0.1, "temperature_tolerance": 0.5 }
+    ],
+    "selection_weight": 40.0,
+    "size": { "record_high_cm": 145.0, "typical_high_cm": 100.0, "typical_low_cm": 90.0 },
+    "speed": 0.45,
+    "strength": 0.25
+}

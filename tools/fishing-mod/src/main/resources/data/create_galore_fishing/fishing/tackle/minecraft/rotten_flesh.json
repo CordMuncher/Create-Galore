@@ -1,0 +1,7 @@
+{
+  "item": "minecraft:rotten_flesh",
+  "_generated": "from tools/fishing-mod/gen_tackle.py; edit that, not this file",
+  "kind": "bait",
+  "bait": "cut_bait",
+  "size": 1
+}

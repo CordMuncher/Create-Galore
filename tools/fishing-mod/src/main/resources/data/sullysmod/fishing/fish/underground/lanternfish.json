@@ -1,0 +1,24 @@
+{
+    "associated_mods": ["sullysmod"],
+    "fish": "sullysmod:lanternfish",
+    "bucket": "sullysmod:lanternfish_bucket",
+    "journal_profile": {
+        "description": "journal.description.sullysmod.lanternfish",
+        "group": "underground",
+        "location": "journal.info.location.underground",
+        "rarity": "common"
+    },
+    "display_data": {
+        "entity": "sullysmod:lanternfish",
+        "x": 0.1
+    },
+    "conditions": [
+        { "type": "tide:dimension", "dimensions": ["minecraft:overworld"] },
+        { "type": "tide:fluid", "fluid": "water" },
+        { "type": "tide:depth_range", "max_y": 16, "min_y": -60 }
+    ],
+    "selection_weight": 40.0,
+    "size": { "record_high_cm": 25.0, "typical_high_cm": 18.0, "typical_low_cm": 10.0 },
+    "speed": 0.75,
+    "strength": 0.2
+}

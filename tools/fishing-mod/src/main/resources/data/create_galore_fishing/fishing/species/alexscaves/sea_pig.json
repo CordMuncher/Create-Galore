@@ -1,0 +1,23 @@
+{
+  "fish": "alexscaves:sea_pig",
+  "_generated": "from tools/fishing-mod/species.csv; edit that, not this file",
+  "size": {
+    "typical_low_cm": 10,
+    "typical_high_cm": 20,
+    "record_high_cm": 35
+  },
+  "length_weight": {
+    "a": 0.02,
+    "b": 3
+  },
+  "fight": {
+    "per_kg": 0.4,
+    "stamina": 0.6,
+    "speed": 0.4,
+    "runs": 0,
+    "jumps": 0,
+    "charges": 0.02,
+    "profile": "steady"
+  },
+  "feeding": "sea_bottom"
+}

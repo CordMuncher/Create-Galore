@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_lapis_lanternfish": {
+      "conditions": {
+        "items": [
+          {
+            "items": "tide:lapis_lanternfish"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "tide:lapis_from_lanternfish"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_lapis_lanternfish"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "tide:lapis_from_lanternfish"
+    ]
+  }
+}

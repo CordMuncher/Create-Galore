@@ -1,0 +1,18 @@
+{
+    "associated_mods": ["nether_additions"],
+    "fish": "nether_additions:lavacanth",
+    "journal_profile": {
+        "description": "journal.description.nether_additions.lavacanth",
+        "group": "lava",
+        "location": "journal.info.location.lava",
+        "rarity": "uncommon"
+    },
+    "conditions": [
+        { "type": "tide:dimension", "dimensions": ["minecraft:the_nether"] },
+        { "type": "tide:fluid", "fluid": "lava" }
+    ],
+    "selection_weight": 23.0,
+    "size": { "record_high_cm": 210.0, "typical_high_cm": 120.0, "typical_low_cm": 80.0 },
+    "speed": 0.4,
+    "strength": 1.2
+}

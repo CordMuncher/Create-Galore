@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    {
+      "item": "minecraft:clock"
+    },
+    {
+      "item": "minecraft:chain"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "tide:pocket_watch"
+  }
+}

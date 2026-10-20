@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    {
+      "tag": "c:nuggets/lead"
+    },
+    {
+      "item": "create_galore_fishing:large_hook"
+    },
+    {
+      "item": "minecraft:string"
+    }
+  ],
+  "result": {
+    "id": "create_galore_fishing:jig",
+    "count": 1
+  }
+}

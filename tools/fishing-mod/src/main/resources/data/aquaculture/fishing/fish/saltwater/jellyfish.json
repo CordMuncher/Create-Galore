@@ -1,0 +1,29 @@
+{
+    "associated_mods": ["aquaculture"],
+    "fish": "aquaculture:jellyfish",
+    "bucket": "aquaculture:jellyfish_bucket",
+    "journal_profile": {
+        "description": "journal.description.aquaculture.jellyfish",
+        "group": "saltwater",
+        "location": "journal.info.location.saltwater",
+        "rarity": "common"
+    },
+    "display_data": {
+        "entity": "aquaculture:jellyfish",
+        "roll": -90.0,
+        "x": 0.1,
+        "y": -0.2,
+        "z": 0.2
+    },
+    "conditions": [
+        { "type": "tide:saltwater" },
+        { "type": "tide:dimension", "dimensions": ["minecraft:overworld"] },
+        { "type": "tide:fluid", "fluid": "water" },
+        { "type": "tide:above", "y": 40 },
+        { "type": "tide:found_in", "biomes": ["#minecraft:is_ocean", "#minecraft:is_beach"] }
+    ],
+    "selection_weight": 40.0,
+    "size": { "record_high_cm": 100.0, "typical_high_cm": 80.0, "typical_low_cm": 10.0 },
+    "speed": 0.1,
+    "strength": 0.8
+}

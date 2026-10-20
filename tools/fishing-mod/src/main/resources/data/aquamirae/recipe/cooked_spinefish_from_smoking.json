@@ -1,0 +1,21 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "aquamirae"
+    }
+  ],
+  "type": "minecraft:smoking",
+  "category": "food",
+  "cookingtime": 75,
+  "experience": 1,
+  "ingredient": {
+    "type": "create_galore_fishing:whole_fish",
+    "base": {
+      "item": "aquamirae:spinefish"
+    }
+  },
+  "result": {
+    "id": "aquamirae:cooked_spinefish"
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "behavior": "darts",
+  "bucket": "tide:windbass_bucket",
+  "conditions": [
+    {
+      "type": "tide:found_in_structures",
+      "structures": [
+        "minecraft:trial_chambers"
+      ]
+    },
+    {
+      "type": "tide:below",
+      "y": 30
+    },
+    {
+      "type": "tide:dimension",
+      "dimensions": [
+        "minecraft:overworld"
+      ]
+    },
+    {
+      "type": "tide:fluid",
+      "fluid": "water"
+    }
+  ],
+  "display_data": {
+    "entity": "tide:windbass",
+    "x": -0.05,
+    "y": -0.15
+  },
+  "fish": "tide:windbass",
+  "journal_profile": {
+    "description": "journal.description.tide.windbass",
+    "group": "underground",
+    "location": "journal.info.location.trial_chambers",
+    "rarity": "very_rare"
+  },
+  "selection_weight": 20.0,
+  "size": {
+    "record_high_cm": 95.0,
+    "typical_high_cm": 60.0,
+    "typical_low_cm": 32.0
+  },
+  "speed": 1.5,
+  "strength": 0.72
+}

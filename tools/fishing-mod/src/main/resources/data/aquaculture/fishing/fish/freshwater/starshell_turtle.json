@@ -1,0 +1,23 @@
+{
+    "associated_mods": ["aquaculture", "twilightforest"],
+    "fish": "aquaculture:starshell_turtle",
+    "journal_profile": {
+        "description": "journal.description.aquaculture.starshell_turtle",
+        "group": "freshwater",
+        "location": "dimension.twilightforest.twilight_forest",
+        "rarity": "uncommon"
+    },
+    "display_data": {
+        "entity": "aquaculture:starshell_turtle"
+    },
+    "conditions": [
+        { "type": "tide:freshwater" },
+        { "type": "tide:dimension", "dimensions": ["twilightforest:twilight_forest"] },
+        { "type": "tide:fluid", "fluid": "water" },
+        { "type": "tide:above", "y": -10 }
+    ],
+    "selection_weight": 30.0,
+    "size": { "record_high_cm": 80.0, "typical_high_cm": 40.0, "typical_low_cm": 10.0 },
+    "speed": 0.25,
+    "strength": 0.7
+}

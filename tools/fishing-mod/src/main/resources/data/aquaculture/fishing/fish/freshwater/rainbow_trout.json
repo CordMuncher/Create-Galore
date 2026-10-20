@@ -1,0 +1,29 @@
+{
+    "associated_mods": ["aquaculture"],
+    "fish": "aquaculture:rainbow_trout",
+    "bucket": "aquaculture:rainbow_trout_bucket",
+    "journal_profile": {
+        "description": "journal.description.aquaculture.rainbow_trout",
+        "group": "freshwater",
+        "location": "journal.info.location.saltwater",
+        "rarity": "common"
+    },
+    "display_data": {
+        "entity": "aquaculture:rainbow_trout",
+        "x": 0.1
+    },
+    "conditions": [
+        { "type": "tide:freshwater" },
+        { "type": "tide:dimension", "dimensions": ["minecraft:overworld"] },
+        { "type": "tide:fluid", "fluid": "water" },
+        { "type": "tide:above", "y": 40 },
+        { "type": "tide:seasons", "seasons": ["spring", "summer", "winter"] }
+    ],
+    "modifiers": [
+        { "type": "tide:temperature", "preferred_temperature": -1, "temperature_tolerance": 0.75 }
+    ],
+    "selection_weight": 40.0,
+    "size": { "record_high_cm": 170.0, "typical_high_cm": 120.0, "typical_low_cm": 70.0 },
+    "speed": 0.45,
+    "strength": 0.35
+}

@@ -1,0 +1,12 @@
+{
+  "item": "create_galore_fishing:spinner",
+  "_generated": "from tools/fishing-mod/gen_tackle.py; edit that, not this file",
+  "kind": "lure",
+  "bait": "spinner",
+  "weight": 8,
+  "dive": 0.6,
+  "speed_min": 0.3,
+  "speed_max": 1.8,
+  "size": 0,
+  "color": "#e0b040"
+}

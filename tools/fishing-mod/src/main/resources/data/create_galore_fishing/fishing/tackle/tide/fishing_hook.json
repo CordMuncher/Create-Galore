@@ -1,0 +1,8 @@
+{
+  "item": "tide:fishing_hook",
+  "_generated": "from tools/fishing-mod/gen_tackle.py; edit that, not this file",
+  "kind": "hook",
+  "size": 4,
+  "hold": 1.0,
+  "luck": 0
+}

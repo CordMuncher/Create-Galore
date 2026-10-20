@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "SSS",
+    "STS",
+    "SSS"
+  ],
+  "key": {
+    "S": {
+      "item": "minecraft:string"
+    },
+    "T": {
+      "tag": "c:rods/wooden"
+    }
+  },
+  "result": {
+    "id": "create_galore_fishing:braided_line",
+    "count": 1
+  }
+}

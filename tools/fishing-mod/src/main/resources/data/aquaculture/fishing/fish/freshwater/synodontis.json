@@ -1,0 +1,31 @@
+{
+    "associated_mods": ["aquaculture"],
+    "fish": "aquaculture:synodontis",
+    "bucket": "aquaculture:synodontis_bucket",
+    "journal_profile": {
+        "description": "journal.description.aquaculture.synodontis",
+        "group": "freshwater",
+        "location": "journal.info.location.freshwater",
+        "rarity": "common"
+    },
+    "display_data": {
+        "entity": "aquaculture:synodontis",
+        "x": 0.1,
+        "y": 0.1
+    },
+    "conditions": [
+        { "type": "tide:freshwater" },
+        { "type": "tide:dimension", "dimensions": ["minecraft:overworld"] },
+        { "type": "tide:fluid", "fluid": "water" },
+        { "type": "tide:above", "y": 40 },
+        { "type": "tide:found_in", "biomes": ["minecraft:badlands", "minecraft:desert", "minecraft:eroded_badlands",
+                                              "minecraft:savanna", "minecraft:savanna_plateau", "minecraft:windswept_savanna", "minecraft:wooded_badlands"] }
+    ],
+    "modifiers": [
+        { "type": "tide:temperature", "preferred_temperature": 1, "temperature_tolerance": 0.75 }
+    ],
+    "selection_weight": 40.0,
+    "size": { "record_high_cm": 130.0, "typical_high_cm": 105.0, "typical_low_cm": 80.0 },
+    "speed": 0.45,
+    "strength": 0.3
+}

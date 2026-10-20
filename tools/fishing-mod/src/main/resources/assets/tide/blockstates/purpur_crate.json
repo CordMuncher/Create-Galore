@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "open=false": {
+      "model": "tide:block/purpur_crate"
+    },
+    "open=true": {
+      "model": "tide:block/purpur_crate_open"
+    }
+  }
+}

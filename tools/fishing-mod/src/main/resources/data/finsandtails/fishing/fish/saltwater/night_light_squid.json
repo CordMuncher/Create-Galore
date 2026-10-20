@@ -1,0 +1,27 @@
+{
+    "associated_mods": ["finsandtails"],
+    "fish": "finsandtails:night_light_squid",
+    "bucket": "finsandtails:night_light_squid_bucket",
+    "journal_profile": {
+        "description": "journal.description.finsandtails.night_light_squid",
+        "group": "saltwater",
+        "location": "biome.minecraft.frozen_ocean",
+        "rarity": "rare"
+    },
+    "display_data": {
+        "entity": "finsandtails:night_light_squid",
+        "z": 0.05
+    },
+    "conditions": [
+        { "type": "tide:saltwater" },
+        { "type": "tide:dimension", "dimensions": ["minecraft:overworld"] },
+        { "type": "tide:fluid", "fluid": "water" },
+        { "type": "tide:above", "y": 40 },
+        { "type": "tide:found_in", "biomes": ["minecraft:deep_frozen_ocean", "minecraft:frozen_ocean"] },
+        { "type": "tide:time_of_day", "ranges": [{"max": 23000, "min": 13000}]}
+    ],
+    "selection_weight": 15.0,
+    "size": { "record_high_cm": 40.0, "typical_high_cm": 20.0, "typical_low_cm": 15.0 },
+    "speed": 1.0,
+    "strength": 0.5
+}

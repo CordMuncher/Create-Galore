@@ -1,0 +1,30 @@
+{
+    "associated_mods": ["aquaculture"],
+    "fish": "aquaculture:capitaine",
+    "bucket": "aquaculture:capitaine_bucket",
+    "journal_profile": {
+        "description": "journal.description.aquaculture.capitaine",
+        "group": "freshwater",
+        "location": "journal.info.location.freshwater",
+        "rarity": "common"
+    },
+    "display_data": {
+        "entity": "aquaculture:capitaine",
+        "x": 0.1
+    },
+    "conditions": [
+        { "type": "tide:freshwater" },
+        { "type": "tide:dimension", "dimensions": ["minecraft:overworld"] },
+        { "type": "tide:fluid", "fluid": "water" },
+        { "type": "tide:above", "y": 40 },
+        { "type": "tide:found_in", "biomes": ["minecraft:badlands", "minecraft:desert", "minecraft:eroded_badlands",
+                                              "minecraft:savanna", "minecraft:savanna_plateau", "minecraft:windswept_savanna", "minecraft:wooded_badlands"] }
+    ],
+    "modifiers": [
+        { "type": "tide:temperature", "preferred_temperature": 1, "temperature_tolerance": 0.75 }
+    ],
+    "selection_weight": 40.0,
+    "size": { "record_high_cm": 140.0, "typical_high_cm": 110.0, "typical_low_cm": 85.0 },
+    "speed": 0.45,
+    "strength": 0.2
+}

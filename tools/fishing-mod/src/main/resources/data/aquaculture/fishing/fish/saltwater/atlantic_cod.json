@@ -1,0 +1,29 @@
+{
+    "associated_mods": ["aquaculture"],
+    "fish": "aquaculture:atlantic_cod",
+    "bucket": "aquaculture:atlantic_cod_bucket",
+    "journal_profile": {
+        "description": "journal.description.aquaculture.atlantic_cod",
+        "group": "saltwater",
+        "location": "journal.info.location.saltwater",
+        "rarity": "common"
+    },
+    "display_data": {
+        "entity": "aquaculture:atlantic_cod",
+        "x": 0.1
+    },
+    "conditions": [
+        { "type": "tide:saltwater" },
+        { "type": "tide:dimension", "dimensions": ["minecraft:overworld"] },
+        { "type": "tide:fluid", "fluid": "water" },
+        { "type": "tide:above", "y": 40 },
+        { "type": "tide:found_in", "biomes": ["#minecraft:is_ocean", "#minecraft:is_beach"] }
+    ],
+    "modifiers": [
+        { "type": "tide:temperature", "preferred_temperature": -1, "temperature_tolerance": 0.75 }
+    ],
+    "selection_weight": 40.0,
+    "size": { "record_high_cm": 190.0, "typical_high_cm": 120.0, "typical_low_cm": 60.0 },
+    "speed": 0.25,
+    "strength": 0.5
+}

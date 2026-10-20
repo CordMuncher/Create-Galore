@@ -1,0 +1,73 @@
+# Hand-tuned species values. gen_species.py turns each row into
+# src/main/resources/data/create_galore_fishing/fishing/species/<namespace>/<path>.json.
+# Empty cells keep the default (Tide's data, or SpeciesDefaults worked out from Tide's numbers and the name).
+# Sizes are cm; a is the length-weight coefficient (W[g] = a * L^3); per_kg is pull per kg of fish.
+# profile: early, middle, late, second_wind, steady, sulker. feeding: panfish, predator, sea_predator, bottom,
+# sea_bottom, reef, lava, void. toothy needs a steel leader.
+fish,typical_low,typical_high,record,a,feeding,per_kg,stamina,speed,profile,runs,jumps,charges,toothy,wary,note
+# Aquaculture: Tide Extra Compatibility gave many of these sizes that are far off (a metre-long bluegill).
+aquaculture:arapaima,150,250,300,0.007,predator,1.0,1.3,1.7,second_wind,0.12,0.12,,,,
+aquaculture:arrau_turtle,40,70,90,0.1,bottom,0.7,1.4,0.7,sulker,0.02,0.0,0.02,,,river turtle
+aquaculture:atlantic_cod,50,100,150,0.009,sea_bottom,,,,,,,,,,
+aquaculture:atlantic_halibut,70,150,250,0.013,sea_bottom,0.85,1.4,1.3,sulker,,,,,,
+aquaculture:atlantic_herring,20,35,45,0.009,reef,,,,,,,,,,baitfish
+aquaculture:bayad,40,80,110,0.009,bottom,,,,,,,,,,
+aquaculture:blackfish,30,60,90,0.02,sea_bottom,,,,,,,,,,tautog
+aquaculture:bluegill,15,25,40,0.025,panfish,,,,,,,,,,same fish as Tide's
+aquaculture:boulti,20,40,60,0.02,panfish,,,,,,,,,,Nile tilapia
+aquaculture:box_turtle,10,18,25,0.15,bottom,0.6,1.2,0.5,sulker,0.0,0.0,0.02,,,
+aquaculture:brown_shrooma,15,30,45,,,,,,,,,,,,
+aquaculture:brown_trout,30,60,100,0.011,predator,1.0,1.0,1.4,second_wind,0.08,0.15,,,0.6,
+aquaculture:capitaine,50,120,200,0.012,predator,0.95,1.2,1.5,,,,,,,Nile perch
+aquaculture:carp,40,80,120,0.018,bottom,0.75,1.4,1.0,middle,0.07,0.02,0.03,,0.5,same fish as Tide's
+aquaculture:catfish,40,75,155,0.009,bottom,0.7,1.4,1.1,sulker,0.04,0.01,0.03,,,same fish as Tide's
+aquaculture:gar,60,120,250,0.005,predator,0.9,1.1,1.6,early,0.1,0.08,,true,,
+aquaculture:jellyfish,10,40,80,0.003,reef,0.3,0.5,0.4,steady,0.0,0.0,0.0,,,
+aquaculture:minnow,4,10,15,0.01,panfish,,,,,,,,,,baitfish
+aquaculture:muskellunge,70,120,160,0.006,predator,0.95,1.2,1.6,early,0.1,0.06,0.04,true,0.3,
+aquaculture:pacific_halibut,70,150,250,0.013,sea_bottom,0.85,1.4,1.3,sulker,,,,,,
+aquaculture:perch,15,30,50,0.013,panfish,,,,,,,,,,
+aquaculture:pink_salmon,40,60,76,0.011,predator,1.1,1.1,1.6,second_wind,0.1,0.15,,,0.4,
+aquaculture:piranha,15,25,40,0.03,predator,1.0,0.8,1.6,early,0.08,0.05,0.06,true,,
+aquaculture:pollock,40,80,130,0.008,sea_bottom,,,,,,,,,,
+aquaculture:rainbow_trout,40,70,110,0.011,predator,1.0,1.0,1.4,second_wind,0.08,0.15,,,0.6,same fish as Tide's
+aquaculture:red_grouper,40,80,125,0.016,sea_predator,0.9,1.3,1.2,sulker,0.06,0.01,,,,
+aquaculture:red_shrooma,15,30,45,,,,,,,,,,,,
+aquaculture:smallmouth_bass,30,50,70,0.014,predator,0.9,1.0,1.4,middle,0.07,0.15,,,,same fish as Tide's
+aquaculture:starshell_turtle,20,40,60,0.12,bottom,0.65,1.3,0.6,sulker,0.0,0.0,0.02,,,
+aquaculture:synodontis,10,25,40,0.012,bottom,,,,,,,,,,
+aquaculture:tambaqui,50,90,110,0.03,bottom,0.85,1.2,1.2,middle,,,,,,eats fruit and seeds
+aquaculture:tuna,90,150,300,0.017,sea_predator,1.25,1.3,2.2,second_wind,0.18,0.03,0.03,,0.3,same fish as Tide's
+# Alex's Caves: several were metre-long.
+alexscaves:lanternfish,5,15,25,0.008,reef,,,,,,,,,,
+alexscaves:radgill,40,80,120,0.012,predator,,,,,,,,,,
+alexscaves:sea_pig,10,20,35,0.02,sea_bottom,0.4,0.6,0.4,steady,0.0,0.0,0.02,,,
+alexscaves:stinky_fish,20,40,60,0.012,,,,,,,,,,,
+alexscaves:sweetish_fish_blue,15,30,45,0.012,panfish,,,,,,,,,,candy fish
+alexscaves:sweetish_fish_green,15,30,45,0.012,panfish,,,,,,,,,,candy fish
+alexscaves:sweetish_fish_pink,15,30,45,0.012,panfish,,,,,,,,,,candy fish
+alexscaves:sweetish_fish_red,15,30,45,0.012,panfish,,,,,,,,,,candy fish
+alexscaves:sweetish_fish_yellow,15,30,45,0.012,panfish,,,,,,,,,,candy fish
+alexscaves:tripodfish,20,35,45,0.008,sea_bottom,,,,,,,,,,
+naturalist:bass,25,50,70,0.014,predator,0.9,1.0,1.4,middle,0.07,0.15,,,,
+crittersandcompanions:clam,5,10,15,0.05,sea_bottom,0.2,0.3,0.1,steady,0.0,0.0,0.0,,,clams come up as treasure
+# Famous fighters.
+minecraft:salmon,,,,,predator,1.1,1.1,1.7,second_wind,0.12,0.15,,,0.4,
+minecraft:cod,50,100,150,0.009,sea_bottom,0.8,1.0,1.1,middle,,,,,,
+tide:great_white_shark,,,,0.007,sea_predator,1.0,1.0,2.4,sulker,0.08,0.02,0.02,true,0.1,
+tide:bull_shark,,,,0.008,sea_predator,1.1,1.3,2.2,sulker,0.1,0.02,0.02,true,0.1,
+tide:sand_tiger_shark,,,,0.007,sea_predator,0.95,1.3,2.0,sulker,0.08,0.02,0.02,true,0.1,
+tide:swordfish,,,,0.005,sea_predator,1.2,1.3,2.6,second_wind,0.2,0.2,0.03,,,
+tide:sailfish,,,,0.005,sea_predator,1.15,1.2,2.8,second_wind,0.22,0.25,0.03,,,
+tide:sturgeon,,,,0.005,bottom,0.8,1.6,1.1,sulker,0.04,0.04,0.02,,,
+tide:pike,,,,0.006,predator,0.9,1.0,1.6,early,0.1,0.06,0.05,true,,
+tide:walleye,,,,0.009,predator,0.8,1.0,1.2,late,0.05,0.03,0.04,,0.3,
+tide:brook_trout,,,,0.011,predator,1.0,1.0,1.4,second_wind,0.08,0.15,,,0.6,
+tide:largemouth_bass,,,,0.014,predator,0.9,1.0,1.4,middle,0.07,0.15,,,,
+tide:manta_ray,,,,0.0025,sea_bottom,0.9,1.2,1.6,sulker,0.06,0.04,0.01,,,
+tide:dragon_fish,,,,0.002,void,1.1,1.6,2.4,second_wind,0.12,0.06,0.02,true,,legendary End fish
+hybrid_aquatic:mahi,,,,0.009,sea_predator,1.15,1.1,2.2,second_wind,0.15,0.15,,,,
+hybrid_aquatic:coelacanth,,,,0.015,sea_predator,1.0,1.5,1.4,sulker,0.05,0.02,0.02,,,legendary
+hybrid_aquatic:stingray,,,,0.004,sea_bottom,0.9,1.3,1.4,sulker,0.05,0.02,0.01,,,
+hybrid_aquatic:golden_dorado,,,,0.011,predator,1.15,1.1,2.0,second_wind,0.14,0.18,,true,,
+hybrid_aquatic:sunfish,12,22,38,0.025,panfish,,,,,,,,,,a Lepomis panfish; Tide data had a 60 cm record

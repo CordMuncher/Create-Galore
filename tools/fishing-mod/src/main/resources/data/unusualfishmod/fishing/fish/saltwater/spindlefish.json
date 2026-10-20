@@ -1,0 +1,26 @@
+{
+    "associated_mods": ["unusualfishmod"],
+    "fish": "unusualfishmod:raw_spindlefish",
+    "bucket": "unusualfishmod:spindlefish_bucket",
+    "journal_profile": {
+        "description": "journal.description.unusualfishmod.spindlefish",
+        "group": "saltwater",
+        "location": "biome.minecraft.warm_ocean",
+        "rarity": "common"
+    },
+    "display_data": {
+        "entity": "unusualfishmod:spindlefish"
+    },
+    "conditions": [
+        { "type": "tide:saltwater" },
+        { "type": "tide:dimension", "dimensions": ["minecraft:overworld"] },
+        { "type": "tide:fluid", "fluid": "water" },
+        { "type": "tide:above", "y": 40 },
+        { "type": "tide:found_in", "biomes": ["minecraft:warm_ocean"] },
+        { "type": "tide:has_enchantments", "enchantments": ["unusualfishmod:unusual_catch"] }
+    ],
+    "selection_weight": 40.0,
+    "size": { "record_high_cm": 150.0, "typical_high_cm": 105.0, "typical_low_cm": 85.0 },
+    "speed": 0.9,
+    "strength": 0.2
+}

@@ -1,0 +1,25 @@
+{
+    "associated_mods": ["mofus_better_end_"],
+    "fish": "mofus_better_end_:axefish_item",
+    "journal_profile": {
+        "description": "journal.description.mofus_better_end_.axefish",
+        "group": "void",
+        "location": "journal.info.location.void",
+        "rarity": "common"
+    },
+    "display_data": {
+        "entity": "mofus_better_end_:axefish",
+        "shape": "2x1",
+        "roll": -90.0,
+        "y": -0.75,
+        "z": 0.19
+    },
+    "conditions": [
+        { "type": "tide:dimension", "dimensions": ["mofus_better_end_:broken_constellation"] },
+        { "type": "tide:fluid", "fluid": "void" }
+    ],
+    "selection_weight": 50.0,
+    "size": { "record_high_cm": 250.0, "typical_high_cm": 185.0, "typical_low_cm": 30.0 },
+    "speed": 1.0,
+    "strength": 0.4
+}

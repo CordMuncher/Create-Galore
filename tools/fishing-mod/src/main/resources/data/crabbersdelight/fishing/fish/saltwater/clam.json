@@ -1,0 +1,20 @@
+{
+    "associated_mods": ["crabbersdelight"],
+    "fish": "crabbersdelight:clam",
+    "journal_profile": {
+        "description": "journal.description.crabbersdelight.clam",
+        "group": "saltwater",
+        "location": "journal.info.location.saltwater",
+        "rarity": "rare"
+    },
+    "conditions": [
+        { "type": "tide:saltwater" },
+        { "type": "tide:dimension", "dimensions": ["minecraft:overworld"] },
+        { "type": "tide:fluid", "fluid": "water" },
+        { "type": "tide:above", "y": 40 }
+    ],
+    "selection_weight": 15.0,
+    "size": { "record_high_cm": 300.0, "typical_high_cm": 80.0, "typical_low_cm": 10.0 },
+    "speed": 0.03,
+    "strength": 0.4
+}

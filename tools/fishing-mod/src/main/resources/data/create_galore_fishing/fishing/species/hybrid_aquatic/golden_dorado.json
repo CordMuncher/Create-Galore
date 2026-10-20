@@ -1,0 +1,18 @@
+{
+  "fish": "hybrid_aquatic:golden_dorado",
+  "_generated": "from tools/fishing-mod/species.csv; edit that, not this file",
+  "length_weight": {
+    "a": 0.011,
+    "b": 3
+  },
+  "fight": {
+    "per_kg": 1.15,
+    "stamina": 1.1,
+    "speed": 2,
+    "runs": 0.14,
+    "jumps": 0.18,
+    "profile": "second_wind",
+    "toothy": true
+  },
+  "feeding": "predator"
+}

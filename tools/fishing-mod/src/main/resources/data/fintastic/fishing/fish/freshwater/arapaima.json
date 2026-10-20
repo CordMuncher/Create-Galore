@@ -1,0 +1,29 @@
+{
+    "associated_mods": ["fintastic"],
+    "fish": "fintastic:arapaima",
+    "bucket": "fintastic:arapaima_bucket",
+    "journal_profile": {
+        "description": "journal.description.fintastic.arapaima",
+        "group": "freshwater",
+        "location": "journal.info.location.jungle",
+        "rarity": "uncommon"
+    },
+    "display_data": {
+        "entity": "fintastic:arapaima",
+        "shape": "3x1",
+        "roll": -90,
+        "y": -0.35,
+        "z": 0.25
+    },
+    "conditions": [
+        { "type": "tide:freshwater" },
+        { "type": "tide:dimension", "dimensions": ["minecraft:overworld"] },
+        { "type": "tide:fluid", "fluid": "water" },
+        { "type": "tide:above", "y": 40 },
+        { "type": "tide:found_in", "biomes": ["#minecraft:is_jungle", "atmospheric:rainforest"] }
+    ],
+    "selection_weight": 20.0,
+    "size": { "record_high_cm": 300.0, "typical_high_cm": 120.0, "typical_low_cm": 35.0 },
+    "speed": 0.5,
+    "strength": 0.8
+}

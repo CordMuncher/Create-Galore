@@ -1,0 +1,14 @@
+{
+    "type": "minecraft:fishing",
+    "pools": [
+        {
+            "bonus_rolls": 0.0,
+            "rolls": 1.0,
+            "entries": [
+                { "type": "minecraft:item", "name": "unusualfishmod:relucent_eggs" },
+                { "type": "minecraft:item", "name": "unusualfishmod:relucent_shard" },
+                { "type": "minecraft:item", "name": "unusualfishmod:lobster_spike" }
+            ]
+        }
+    ] 
+}

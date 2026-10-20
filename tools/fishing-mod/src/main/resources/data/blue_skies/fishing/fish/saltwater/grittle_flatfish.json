@@ -1,0 +1,26 @@
+{
+    "associated_mods": ["blue_skies"],
+    "fish": "blue_skies:grittle_flatfish",
+    "bucket": "blue_skies:ventium_grittle_flatfish_bucket",
+    "journal_profile": {
+        "description": "journal.description.blue_skies.grittle_flatfish",
+        "group": "saltwater",
+        "location": "generator.blue_skies.everbright",
+        "rarity": "common"
+    },
+    "display_data": {
+        "entity": "blue_skies:grittle_flatfish",
+        "shape": "2x1",
+        "x": 0.15,
+        "z": 0.05
+    },
+    "conditions": [
+        { "type": "tide:dimension", "dimensions": ["blue_skies:everbright"] },
+        { "type": "tide:fluid", "fluid": "water" },
+        { "type": "tide:found_in", "biomes": ["blue_skies:peeking_ocean", "blue_skies:deep_peeking_ocean"] }
+    ],
+    "selection_weight": 30.0,
+    "size": { "record_high_cm": 120.0, "typical_high_cm": 100.0, "typical_low_cm": 38.0 },
+    "speed": 0.5,
+    "strength": 0.3
+}

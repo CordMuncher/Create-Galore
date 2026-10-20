@@ -1,0 +1,15 @@
+{
+  "item": "create_galore_fishing:steel_rod",
+  "_generated": "from tools/fishing-mod/gen_tackle.py; edit that, not this file",
+  "kind": "rod",
+  "length": 3.0,
+  "max_load": 16,
+  "action": "fast",
+  "sections": 5,
+  "lure_min": 8,
+  "lure_max": 45,
+  "color": "#4a5560",
+  "grip": "#2b2b2e",
+  "telescopic": true,
+  "grip_style": "foam"
+}

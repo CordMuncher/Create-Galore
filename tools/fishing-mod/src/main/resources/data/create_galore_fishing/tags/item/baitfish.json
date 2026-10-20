@@ -1,0 +1,45 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "aquaculture:minnow",
+      "required": false
+    },
+    {
+      "id": "tide:anchovy",
+      "required": false
+    },
+    {
+      "id": "tide:guppy",
+      "required": false
+    },
+    {
+      "id": "hybrid_aquatic:danio",
+      "required": false
+    },
+    {
+      "id": "hybrid_aquatic:tetra",
+      "required": false
+    },
+    {
+      "id": "hybrid_aquatic:goldfish",
+      "required": false
+    },
+    {
+      "id": "aquaculture:goldfish",
+      "required": false
+    },
+    {
+      "id": "aquaculture:bluegill",
+      "required": false
+    },
+    {
+      "id": "aquaculture:atlantic_herring",
+      "required": false
+    },
+    {
+      "id": "hybrid_aquatic:herring",
+      "required": false
+    }
+  ]
+}

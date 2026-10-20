@@ -1,0 +1,26 @@
+{
+    "associated_mods": ["finsandtails"],
+    "fish": "finsandtails:wee_wee",
+    "bucket": "finsandtails:wee_wee_bucket",
+    "journal_profile": {
+        "description": "journal.description.finsandtails.wee_wee",
+        "group": "freshwater",
+        "location": "biome.minecraft.river",
+        "rarity": "common"
+    },
+    "display_data": {
+        "entity": "finsandtails:wee_wee",
+        "z": 0.04
+    },
+    "conditions": [
+        { "type": "tide:freshwater" },
+        { "type": "tide:dimension", "dimensions": ["minecraft:overworld"] },
+        { "type": "tide:fluid", "fluid": "water" },
+        { "type": "tide:above", "y": 40 },
+        { "type": "tide:found_in", "biomes": ["#minecraft:is_river"] }
+    ],
+    "selection_weight": 30.0,
+    "size": { "record_high_cm": 20.0, "typical_high_cm": 10.0, "typical_low_cm": 1.0 },
+    "speed": 0.6,
+    "strength": 0.05
+}

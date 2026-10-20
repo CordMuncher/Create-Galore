@@ -1,0 +1,14 @@
+{
+  "fish": "alexscaves:tripodfish",
+  "_generated": "from tools/fishing-mod/species.csv; edit that, not this file",
+  "size": {
+    "typical_low_cm": 20,
+    "typical_high_cm": 35,
+    "record_high_cm": 45
+  },
+  "length_weight": {
+    "a": 0.008,
+    "b": 3
+  },
+  "feeding": "sea_bottom"
+}

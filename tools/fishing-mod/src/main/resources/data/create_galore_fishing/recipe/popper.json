@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    {
+      "tag": "minecraft:planks"
+    },
+    {
+      "item": "minecraft:white_dye"
+    },
+    {
+      "item": "create_galore_fishing:medium_hook"
+    }
+  ],
+  "result": {
+    "id": "create_galore_fishing:popper",
+    "count": 1
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    {
+      "tag": "minecraft:planks"
+    },
+    {
+      "item": "minecraft:green_dye"
+    },
+    {
+      "item": "minecraft:glass_pane"
+    },
+    {
+      "item": "create_galore_fishing:medium_hook"
+    }
+  ],
+  "result": {
+    "id": "create_galore_fishing:crankbait",
+    "count": 1
+  }
+}

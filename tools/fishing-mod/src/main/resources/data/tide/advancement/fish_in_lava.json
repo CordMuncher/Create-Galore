@@ -1,0 +1,26 @@
+{
+  "parent": "tide:root",
+  "criteria": {
+    "fish_in_lava": {
+      "trigger": "tide:fish_in_lava"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.tide.fish_in_lava.description"
+    },
+    "icon": {
+      "count": 1,
+      "id": "tide:lavaproof_hook"
+    },
+    "title": {
+      "translate": "advancements.tide.fish_in_lava.title"
+    }
+  },
+  "requirements": [
+    [
+      "fish_in_lava"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

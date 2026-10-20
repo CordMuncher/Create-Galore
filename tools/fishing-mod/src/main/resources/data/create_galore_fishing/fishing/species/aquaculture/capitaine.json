@@ -1,0 +1,19 @@
+{
+  "fish": "aquaculture:capitaine",
+  "_generated": "from tools/fishing-mod/species.csv; edit that, not this file",
+  "size": {
+    "typical_low_cm": 50,
+    "typical_high_cm": 120,
+    "record_high_cm": 200
+  },
+  "length_weight": {
+    "a": 0.012,
+    "b": 3
+  },
+  "fight": {
+    "per_kg": 0.95,
+    "stamina": 1.2,
+    "speed": 1.5
+  },
+  "feeding": "predator"
+}

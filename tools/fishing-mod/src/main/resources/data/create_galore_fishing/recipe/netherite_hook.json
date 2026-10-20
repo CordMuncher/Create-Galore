@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    {
+      "item": "minecraft:netherite_scrap"
+    },
+    {
+      "item": "create_galore_fishing:large_hook"
+    },
+    {
+      "item": "create_galore_fishing:large_hook"
+    },
+    {
+      "item": "create_galore_fishing:large_hook"
+    },
+    {
+      "item": "create_galore_fishing:large_hook"
+    }
+  ],
+  "result": {
+    "id": "create_galore_fishing:netherite_hook",
+    "count": 4
+  }
+}

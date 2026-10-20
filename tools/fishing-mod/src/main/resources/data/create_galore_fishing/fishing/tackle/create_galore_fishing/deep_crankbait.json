@@ -1,0 +1,12 @@
+{
+  "item": "create_galore_fishing:deep_crankbait",
+  "_generated": "from tools/fishing-mod/gen_tackle.py; edit that, not this file",
+  "kind": "lure",
+  "bait": "crankbait",
+  "weight": 20,
+  "dive": 5.0,
+  "speed_min": 0.8,
+  "speed_max": 3.5,
+  "size": 2,
+  "color": "#305080"
+}

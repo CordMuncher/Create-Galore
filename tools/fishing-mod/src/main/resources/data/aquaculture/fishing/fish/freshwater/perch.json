@@ -1,0 +1,27 @@
+{
+    "associated_mods": ["aquaculture"],
+    "fish": "aquaculture:perch",
+    "bucket": "aquaculture:perch_bucket",
+    "journal_profile": {
+        "description": "journal.description.aquaculture.perch",
+        "group": "freshwater",
+        "location": "journal.info.location.swamp",
+        "rarity": "common"
+    },
+    "display_data": {
+        "entity": "aquaculture:perch",
+        "x": 0.1,
+        "y": 0.1
+    },
+    "conditions": [
+        { "type": "tide:freshwater" },
+        { "type": "tide:dimension", "dimensions": ["minecraft:overworld"] },
+        { "type": "tide:fluid", "fluid": "water" },
+        { "type": "tide:above", "y": 40 },
+        { "type": "tide:found_in", "biomes": ["#tide:has_swamp_fish"] }
+    ],
+    "selection_weight": 40.0,
+    "size": { "record_high_cm": 45.0, "typical_high_cm": 30.0, "typical_low_cm": 15.0 },
+    "speed": 0.1,
+    "strength": 0.4
+}

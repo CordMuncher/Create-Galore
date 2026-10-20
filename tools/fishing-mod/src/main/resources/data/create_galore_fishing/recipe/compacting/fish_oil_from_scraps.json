@@ -1,0 +1,23 @@
+{
+  "type": "create:compacting",
+  "ingredients": [
+    {
+      "item": "create_galore_fishing:fish_scraps"
+    },
+    {
+      "item": "create_galore_fishing:fish_scraps"
+    },
+    {
+      "item": "create_galore_fishing:fish_scraps"
+    },
+    {
+      "item": "create_galore_fishing:fish_scraps"
+    }
+  ],
+  "results": [
+    {
+      "amount": 100,
+      "id": "create_galore_fishing:fish_oil"
+    }
+  ]
+}

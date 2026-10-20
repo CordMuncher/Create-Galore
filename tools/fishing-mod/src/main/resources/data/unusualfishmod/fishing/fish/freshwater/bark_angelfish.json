@@ -1,0 +1,29 @@
+{
+    "associated_mods": ["unusualfishmod"],
+    "fish": "unusualfishmod:raw_bark_angelfish",
+    "bucket": "unusualfishmod:bark_angelfish_bucket",
+    "journal_profile": {
+        "description": "journal.description.unusualfishmod.bark_angelfish",
+        "group": "freshwater",
+        "location": "biome.minecraft.swamp",
+        "rarity": "common"
+    },
+    "display_data": {
+        "entity": "unusualfishmod:bark_angelfish",
+        "roll": -90,
+        "x": 0.1,
+        "z": 0.1
+    },
+    "conditions": [
+        { "type": "tide:freshwater" },
+        { "type": "tide:dimension", "dimensions": ["minecraft:overworld"] },
+        { "type": "tide:fluid", "fluid": "water" },
+        { "type": "tide:above", "y": 40 },
+        { "type": "tide:found_in", "biomes": ["minecraft:swamp"] },
+        { "type": "tide:has_enchantments", "enchantments": ["unusualfishmod:unusual_catch"] }
+    ],
+    "selection_weight": 40.0,
+    "size": { "record_high_cm": 50.0, "typical_high_cm": 20.0, "typical_low_cm": 5.0 },
+    "speed": 0.5,
+    "strength": 0.4
+}

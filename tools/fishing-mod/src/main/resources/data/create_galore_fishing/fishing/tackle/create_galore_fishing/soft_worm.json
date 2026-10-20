@@ -1,0 +1,12 @@
+{
+  "item": "create_galore_fishing:soft_worm",
+  "_generated": "from tools/fishing-mod/gen_tackle.py; edit that, not this file",
+  "kind": "lure",
+  "bait": "soft_plastic",
+  "weight": 6,
+  "dive": 1.0,
+  "speed_min": 0.1,
+  "speed_max": 1.2,
+  "size": 0,
+  "color": "#8050a0"
+}

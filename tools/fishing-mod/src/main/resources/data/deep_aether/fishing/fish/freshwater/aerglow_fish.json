@@ -1,0 +1,22 @@
+{
+    "associated_mods": ["deep_aether"],
+    "fish": "deep_aether:raw_aerglow_fish",
+    "bucket": "deep_aether:aerglow_fish_bucket",
+    "journal_profile": {
+        "description": "journal.description.deep_aether.aerglow_fish",
+        "group": "freshwater",
+        "location": "aether.menu_title.the_aether",
+        "rarity": "common"
+    },
+    "display_data": {
+        "entity": "deep_aether:aerglow_fish",
+        "x": -0.20
+    },
+    "conditions": [
+        { "type": "tide:dimension", "dimensions": ["aether:the_aether"] },
+        { "type": "tide:fluid", "fluid": "water" }
+    ],
+    "selection_weight": 50.0,
+    "size": {"record_high_cm": 200.0,"typical_high_cm": 115.0,"typical_low_cm": 65.0},
+    "strength": 0.5
+}

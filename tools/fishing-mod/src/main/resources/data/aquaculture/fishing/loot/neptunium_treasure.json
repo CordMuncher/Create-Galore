@@ -1,0 +1,12 @@
+{
+    "associated_mods": ["aquaculture"],
+    "conditions": [
+        { "type": "tide:dimension", "dimensions": ["minecraft:overworld"] },
+        { "type": "tide:fluid", "fluid": "water" },
+        { "type": "tide:above", "y": 40 },
+        { "type": "tide:open_water", "in_open_water": true }
+    ],
+    "loot_table": "aquaculture:gameplay/fishing/treasure_neptunium",
+    "quality": 2.0,
+    "weight": 5.0
+}

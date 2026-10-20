@@ -1,0 +1,158 @@
+{
+  "reel.drag": {
+    "subtitle": "subtitles.create_galore_fishing.reel.drag",
+    "sounds": [
+      {
+        "name": "create_galore_fishing:reel/drag1"
+      },
+      {
+        "name": "create_galore_fishing:reel/drag2"
+      },
+      {
+        "name": "create_galore_fishing:reel/drag3"
+      }
+    ]
+  },
+  "reel.crank": {
+    "subtitle": "subtitles.create_galore_fishing.reel.crank",
+    "sounds": [
+      {
+        "name": "create_galore_fishing:reel/crank_loop"
+      }
+    ]
+  },
+  "reel.grind": {
+    "subtitle": "subtitles.create_galore_fishing.reel.grind",
+    "sounds": [
+      {
+        "name": "create_galore_fishing:reel/grind"
+      }
+    ]
+  },
+  "reel.bail": {
+    "subtitle": "subtitles.create_galore_fishing.reel.bail",
+    "sounds": [
+      {
+        "name": "create_galore_fishing:reel/bail"
+      }
+    ]
+  },
+  "line.strain": {
+    "subtitle": "subtitles.create_galore_fishing.line.strain",
+    "sounds": [
+      {
+        "name": "create_galore_fishing:line/strain1"
+      },
+      {
+        "name": "create_galore_fishing:line/strain2"
+      }
+    ]
+  },
+  "line.snap": {
+    "subtitle": "subtitles.create_galore_fishing.line.snap",
+    "sounds": [
+      {
+        "name": "create_galore_fishing:line/snap"
+      }
+    ]
+  },
+  "line.zip": {
+    "subtitle": "subtitles.create_galore_fishing.line.zip",
+    "sounds": [
+      {
+        "name": "create_galore_fishing:line/zip"
+      }
+    ]
+  },
+  "line.whip": {
+    "subtitle": "subtitles.create_galore_fishing.line.whip",
+    "sounds": [
+      {
+        "name": "create_galore_fishing:line/whip"
+      }
+    ]
+  },
+  "cast.whoosh": {
+    "subtitle": "subtitles.create_galore_fishing.cast.whoosh",
+    "sounds": [
+      {
+        "name": "create_galore_fishing:cast/whoosh"
+      }
+    ]
+  },
+  "cast.plop": {
+    "subtitle": "subtitles.create_galore_fishing.cast.plop",
+    "sounds": [
+      {
+        "name": "create_galore_fishing:cast/plop_light"
+      },
+      {
+        "name": "create_galore_fishing:cast/plop_heavy"
+      }
+    ]
+  },
+  "bite.tap": {
+    "subtitle": "subtitles.create_galore_fishing.bite.tap",
+    "sounds": [
+      {
+        "name": "create_galore_fishing:bite/tap"
+      }
+    ]
+  },
+  "bite.strike": {
+    "subtitle": "subtitles.create_galore_fishing.bite.strike",
+    "sounds": [
+      {
+        "name": "create_galore_fishing:bite/strike"
+      }
+    ]
+  },
+  "catch.flop": {
+    "subtitle": "subtitles.create_galore_fishing.catch.flop",
+    "sounds": [
+      {
+        "name": "create_galore_fishing:catch/flop"
+      }
+    ]
+  },
+  "machine.alarm": {
+    "subtitle": "subtitles.create_galore_fishing.machine.alarm",
+    "sounds": [
+      {
+        "name": "create_galore_fishing:machine/alarm"
+      }
+    ]
+  },
+  "machine.motor": {
+    "subtitle": "subtitles.create_galore_fishing.machine.motor",
+    "sounds": [
+      {
+        "name": "create_galore_fishing:machine/motor_loop"
+      }
+    ]
+  },
+  "machine.engine": {
+    "subtitle": "subtitles.create_galore_fishing.machine.engine",
+    "sounds": [
+      {
+        "name": "create_galore_fishing:machine/engine_loop"
+      }
+    ]
+  },
+  "machine.shift": {
+    "subtitle": "subtitles.create_galore_fishing.machine.shift",
+    "sounds": [
+      {
+        "name": "create_galore_fishing:machine/shift"
+      }
+    ]
+  },
+  "machine.stall": {
+    "subtitle": "subtitles.create_galore_fishing.machine.stall",
+    "sounds": [
+      {
+        "name": "create_galore_fishing:machine/stall"
+      }
+    ]
+  }
+}

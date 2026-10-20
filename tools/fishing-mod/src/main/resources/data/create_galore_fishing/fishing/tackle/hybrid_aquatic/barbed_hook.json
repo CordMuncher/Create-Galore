@@ -1,0 +1,9 @@
+{
+  "item": "hybrid_aquatic:barbed_hook",
+  "_generated": "from tools/fishing-mod/gen_tackle.py; edit that, not this file",
+  "kind": "hook",
+  "size": 5,
+  "hold": 1.3,
+  "luck": 0,
+  "effect": "barbed"
+}

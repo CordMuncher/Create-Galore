@@ -1,0 +1,14 @@
+Create Galore Fishing
+=====================
+
+This mod's own code and art are under the MIT licence, see LICENSE.
+
+Tide 2 (https://github.com/Lightning-64/Tide-2) by Lightning64
+    Code under dev/creategalore/fishing/tide/ and the assets and data under the "tide" namespace (plus Tide's
+    files for other mods' fish) are ported from Tide 2 and modified. They remain under the Mozilla Public
+    License 2.0 (LICENSE-MPL-2.0). Every ported source file carries the MPL notice; the source
+    form is in the Create Galore repository under tools/fishing-mod/.
+
+Tide Extra Compatibility (https://modrinth.com/datapack/tide-extra-compatibility) by Silent Autopsy
+    Fish, crate and loot data for other mods' fish, included as published, under the MIT licence
+    (LICENSE-TIDE-EXTRA-COMPATIBILITY).

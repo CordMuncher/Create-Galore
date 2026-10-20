@@ -1,0 +1,28 @@
+{
+    "associated_mods": ["collectorsreap"],
+    "fish": "collectorsreap:platinum_bass",
+    "bucket": "collectorsreap:platinum_bass_bucket",
+    "journal_profile": {
+        "description": "journal.description.collectorsreap.platinum_bass",
+        "group": "freshwater",
+        "location": "journal.info.location.river",
+        "rarity": "common"
+    },
+    "display_data": {
+        "entity": "collectorsreap:platinum_bass",
+        "shape": "2x1",
+        "y": -0.1,
+        "z": 0.15
+    },
+    "conditions": [
+        { "type": "tide:freshwater" },
+        { "type": "tide:dimension", "dimensions": ["minecraft:overworld"] },
+        { "type": "tide:fluid", "fluid": "water" },
+        { "type": "tide:above", "y": 40 },
+        { "type": "tide:found_in", "biomes": ["#minecraft:is_river"] }
+    ],
+    "selection_weight": 20.0,
+    "size": { "record_high_cm": 200.0, "typical_high_cm": 120.0, "typical_low_cm": 75.0 },
+    "speed": 0.4,
+    "strength": 0.55
+}

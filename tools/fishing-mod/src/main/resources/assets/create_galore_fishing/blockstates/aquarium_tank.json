@@ -1,0 +1,152 @@
+{
+  "multipart": [
+    {
+      "when": {
+        "north": "false"
+      },
+      "apply": {
+        "model": "create_galore_fishing:block/aquarium/glass_north"
+      }
+    },
+    {
+      "when": {
+        "north": "false",
+        "up": "false"
+      },
+      "apply": {
+        "model": "create_galore_fishing:block/aquarium/bar_north_up"
+      }
+    },
+    {
+      "when": {
+        "north": "false",
+        "down": "false"
+      },
+      "apply": {
+        "model": "create_galore_fishing:block/aquarium/bar_north_down"
+      }
+    },
+    {
+      "when": {
+        "south": "false"
+      },
+      "apply": {
+        "model": "create_galore_fishing:block/aquarium/glass_south"
+      }
+    },
+    {
+      "when": {
+        "south": "false",
+        "up": "false"
+      },
+      "apply": {
+        "model": "create_galore_fishing:block/aquarium/bar_south_up"
+      }
+    },
+    {
+      "when": {
+        "south": "false",
+        "down": "false"
+      },
+      "apply": {
+        "model": "create_galore_fishing:block/aquarium/bar_south_down"
+      }
+    },
+    {
+      "when": {
+        "east": "false"
+      },
+      "apply": {
+        "model": "create_galore_fishing:block/aquarium/glass_east"
+      }
+    },
+    {
+      "when": {
+        "east": "false",
+        "up": "false"
+      },
+      "apply": {
+        "model": "create_galore_fishing:block/aquarium/bar_east_up"
+      }
+    },
+    {
+      "when": {
+        "east": "false",
+        "down": "false"
+      },
+      "apply": {
+        "model": "create_galore_fishing:block/aquarium/bar_east_down"
+      }
+    },
+    {
+      "when": {
+        "west": "false"
+      },
+      "apply": {
+        "model": "create_galore_fishing:block/aquarium/glass_west"
+      }
+    },
+    {
+      "when": {
+        "west": "false",
+        "up": "false"
+      },
+      "apply": {
+        "model": "create_galore_fishing:block/aquarium/bar_west_up"
+      }
+    },
+    {
+      "when": {
+        "west": "false",
+        "down": "false"
+      },
+      "apply": {
+        "model": "create_galore_fishing:block/aquarium/bar_west_down"
+      }
+    },
+    {
+      "when": {
+        "north": "false",
+        "east": "false"
+      },
+      "apply": {
+        "model": "create_galore_fishing:block/aquarium/post_north_east"
+      }
+    },
+    {
+      "when": {
+        "north": "false",
+        "west": "false"
+      },
+      "apply": {
+        "model": "create_galore_fishing:block/aquarium/post_north_west"
+      }
+    },
+    {
+      "when": {
+        "south": "false",
+        "east": "false"
+      },
+      "apply": {
+        "model": "create_galore_fishing:block/aquarium/post_south_east"
+      }
+    },
+    {
+      "when": {
+        "south": "false",
+        "west": "false"
+      },
+      "apply": {
+        "model": "create_galore_fishing:block/aquarium/post_south_west"
+      }
+    },
+    {
+      "when": {
+        "down": "false"
+      },
+      "apply": {
+        "model": "create_galore_fishing:block/aquarium/floor"
+      }
+    }
+  ]
+}

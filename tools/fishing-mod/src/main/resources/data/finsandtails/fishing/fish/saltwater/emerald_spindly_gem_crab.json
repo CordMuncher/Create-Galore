@@ -1,0 +1,26 @@
+{
+    "associated_mods": ["finsandtails"],
+    "fish": "finsandtails:emerald_spindly_gem_crab",
+    "bucket": "finsandtails:spindly_gem_crab_bucket",
+    "journal_profile": {
+        "description": "journal.description.finsandtails.emerald_spindly_gem_crab",
+        "group": "saltwater",
+        "location": "journal.info.location.saltwater_warm",
+        "rarity": "uncommon"
+    },
+    "display_data": {
+        "entity": "finsandtails:spindly_gem_crab",
+        "nbt": { "Variant": 0 }
+    },
+    "conditions": [
+        { "type": "tide:saltwater" },
+        { "type": "tide:dimension", "dimensions": ["minecraft:overworld"] },
+        { "type": "tide:fluid", "fluid": "water" },
+        { "type": "tide:above", "y": 40 },
+        { "type": "tide:found_in", "biomes": ["minecraft:warm_ocean"] }
+    ],
+    "selection_weight": 20.0,
+    "size": { "record_high_cm": 30.0, "typical_high_cm": 20.0, "typical_low_cm": 10.0 },
+    "speed": 0.4,
+    "strength": 0.1
+}

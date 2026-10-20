@@ -1,0 +1,229 @@
+{
+  "parent": "tide:root",
+  "criteria": {
+    "blazing": {
+      "conditions": {
+        "items": [
+          {
+            "items": "tide:blazing_fishing_rod"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "crystal": {
+      "conditions": {
+        "items": [
+          {
+            "items": "create_galore_fishing:steel_rod"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "diamond": {
+      "conditions": {
+        "items": [
+          {
+            "items": "create_galore_fishing:steel_rod"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "echo": {
+      "conditions": {
+        "items": [
+          {
+            "items": "tide:echo_fishing_rod"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "golden": {
+      "conditions": {
+        "items": [
+          {
+            "items": "create_galore_fishing:iron_rod"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "honeycomb": {
+      "conditions": {
+        "items": [
+          {
+            "items": "tide:honeycomb_fishing_rod"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "iron": {
+      "conditions": {
+        "items": [
+          {
+            "items": "create_galore_fishing:iron_rod"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "midas": {
+      "conditions": {
+        "items": [
+          {
+            "items": "tide:midas_fishing_rod"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "netherite": {
+      "conditions": {
+        "items": [
+          {
+            "items": "create_galore_fishing:netherite_rod"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "prismarine": {
+      "conditions": {
+        "items": [
+          {
+            "items": "tide:prismarine_fishing_rod"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "stone": {
+      "conditions": {
+        "items": [
+          {
+            "items": "create_galore_fishing:wooden_rod"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "sunflower": {
+      "conditions": {
+        "items": [
+          {
+            "items": "tide:sunflower_fishing_rod"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "village": {
+      "conditions": {
+        "items": [
+          {
+            "items": "tide:village_fishing_rod"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "wood": {
+      "conditions": {
+        "items": [
+          {
+            "items": "minecraft:fishing_rod"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "bamboo": {
+      "conditions": {
+        "items": [
+          {
+            "items": "create_galore_fishing:bamboo_pole"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "boat": {
+      "conditions": {
+        "items": [
+          {
+            "items": "create_galore_fishing:boat_rod"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.tide.all_fishing_rods.description"
+    },
+    "frame": "goal",
+    "icon": {
+      "count": 1,
+      "id": "tide:crystal_fishing_rod"
+    },
+    "title": {
+      "translate": "advancements.tide.all_fishing_rods.title"
+    }
+  },
+  "requirements": [
+    [
+      "blazing"
+    ],
+    [
+      "crystal"
+    ],
+    [
+      "diamond"
+    ],
+    [
+      "echo"
+    ],
+    [
+      "golden"
+    ],
+    [
+      "honeycomb"
+    ],
+    [
+      "iron"
+    ],
+    [
+      "midas"
+    ],
+    [
+      "netherite"
+    ],
+    [
+      "prismarine"
+    ],
+    [
+      "stone"
+    ],
+    [
+      "sunflower"
+    ],
+    [
+      "village"
+    ],
+    [
+      "wood"
+    ],
+    [
+      "bamboo"
+    ],
+    [
+      "boat"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

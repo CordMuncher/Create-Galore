@@ -1,0 +1,29 @@
+{
+    "associated_mods": ["fossil"],
+    "fish": "fossil:meat_nautilus",
+    "bucket": "fossil:bucket_item_nautilus",
+    "journal_profile": {
+        "description": "journal.description.fossil.nautilus",
+        "group": "saltwater",
+        "location": "biome.minecraft.ocean",
+        "rarity": "rare"
+    },
+    "display_data": {
+        "entity": "fossil:nautilus",
+        "shape": "2x1",
+        "roll": -90.0,
+        "y": -0.25,
+        "z": 0.25
+    },
+    "conditions": [
+        { "type": "tide:saltwater" },
+        { "type": "tide:dimension", "dimensions": ["minecraft:overworld"] },
+        { "type": "tide:fluid", "fluid": "water" },
+        { "type": "tide:above", "y": 40 },
+        { "type": "tide:found_in", "biomes": ["minecraft:ocean"] }
+    ],
+    "selection_weight": 15.0,
+    "size": { "record_high_cm": 150.0, "typical_high_cm": 100.0, "typical_low_cm": 65.0 },
+    "speed": 0.5,
+    "strength": 0.4
+}

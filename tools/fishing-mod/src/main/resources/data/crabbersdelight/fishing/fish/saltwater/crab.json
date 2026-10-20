@@ -1,0 +1,30 @@
+{
+    "associated_mods": ["crabbersdelight"],
+    "fish": "crabbersdelight:crab",
+    "bucket": "crabbersdelight:crab_bucket",
+    "journal_profile": {
+        "description": "journal.description.crabbersdelight.crab",
+        "group": "saltwater",
+        "location": "journal.info.location.coast",
+        "rarity": "uncommon"
+    },
+    "display_data": {
+        "entity": "crabbersdelight:crab",
+        "nbt": { "Variant": 1 },
+        "roll": -90,
+        "yaw": -90,
+        "y": -0.25,
+        "z": 0.25
+    },
+    "conditions": [
+        { "type": "tide:saltwater" },
+        { "type": "tide:dimension", "dimensions": ["minecraft:overworld"] },
+        { "type": "tide:fluid", "fluid": "water" },
+        { "type": "tide:above", "y": 40 },
+        { "type": "tide:found_in", "biomes": ["#minecraft:is_beach", "#minecraft:is_swamp"] }
+    ],
+    "selection_weight": 20.0,
+    "size": { "record_high_cm": 120.0, "typical_high_cm": 60.0, "typical_low_cm": 20.0 },
+    "speed": 0.1,
+    "strength": 0.7
+}

@@ -1,0 +1,23 @@
+{
+  "fish": "aquaculture:jellyfish",
+  "_generated": "from tools/fishing-mod/species.csv; edit that, not this file",
+  "size": {
+    "typical_low_cm": 10,
+    "typical_high_cm": 40,
+    "record_high_cm": 80
+  },
+  "length_weight": {
+    "a": 0.003,
+    "b": 3
+  },
+  "fight": {
+    "per_kg": 0.3,
+    "stamina": 0.5,
+    "speed": 0.4,
+    "runs": 0,
+    "jumps": 0,
+    "charges": 0,
+    "profile": "steady"
+  },
+  "feeding": "reef"
+}

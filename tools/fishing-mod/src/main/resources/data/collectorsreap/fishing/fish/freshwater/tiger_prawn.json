@@ -1,0 +1,27 @@
+{
+    "associated_mods": ["collectorsreap"],
+    "fish": "collectorsreap:tiger_prawn",
+    "bucket": "collectorsreap:tiger_prawn_bucket",
+    "journal_profile": {
+        "description": "journal.description.collectorsreap.tiger_prawn",
+        "group": "freshwater",
+        "location": "journal.info.location.freshwater",
+        "rarity": "uncommon"
+    },
+    "display_data": {
+        "entity": "collectorsreap:tiger_prawn",
+        "x": -0.1,
+        "z": 0.06
+    },
+    "conditions": [
+        { "type": "tide:freshwater" },
+        { "type": "tide:dimension", "dimensions": ["minecraft:overworld"] },
+        { "type": "tide:fluid", "fluid": "water" },
+        { "type": "tide:above", "y": 40 },
+        { "type": "tide:found_in", "biomes": ["#minecraft:is_river", "#minecraft:is_swamp"] }
+    ],
+    "selection_weight": 20.0,
+    "size": { "record_high_cm": 130.0, "typical_high_cm": 50.0, "typical_low_cm": 25.0 },
+    "speed": 0.3,
+    "strength": 0.5
+}

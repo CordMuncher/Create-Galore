@@ -1,0 +1,28 @@
+{
+    "associated_mods": ["fintastic"],
+    "fish": "fintastic:coelacanth",
+    "bucket": "fintastic:baby_coelacanth_bucket",
+    "journal_profile": {
+        "description": "journal.description.fintastic.coelacanth",
+        "group": "saltwater",
+        "location": "journal.info.location.saltwater",
+        "rarity": "uncommon"
+    },
+    "display_data": {
+        "entity": "fintastic:coelacanth",
+        "shape": "2x1",
+        "roll": -90,
+        "y": -0.6,
+        "z": 0.25
+    },
+    "conditions": [
+        { "type": "tide:dimension", "dimensions": ["minecraft:overworld"] },
+        { "type": "tide:fluid", "fluid": "water" },
+        { "type": "tide:above", "y": 40 },
+        { "type": "tide:found_in", "biomes": ["minecraft:warm_ocean", "minecraft:deep_lukewarm_ocean"] }
+    ],
+    "selection_weight": 20.0,
+    "size": { "record_high_cm": 115.0, "typical_high_cm": 80.0, "typical_low_cm": 30.0 },
+    "speed": 0.6,
+    "strength": 0.8
+}

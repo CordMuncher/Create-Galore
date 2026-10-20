@@ -1,0 +1,17 @@
+{
+  "fish": "hybrid_aquatic:mahi",
+  "_generated": "from tools/fishing-mod/species.csv; edit that, not this file",
+  "length_weight": {
+    "a": 0.009,
+    "b": 3
+  },
+  "fight": {
+    "per_kg": 1.15,
+    "stamina": 1.1,
+    "speed": 2.2,
+    "runs": 0.15,
+    "jumps": 0.15,
+    "profile": "second_wind"
+  },
+  "feeding": "sea_predator"
+}
