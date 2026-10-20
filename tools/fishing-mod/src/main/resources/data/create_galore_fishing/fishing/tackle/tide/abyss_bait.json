@@ -1,0 +1,7 @@
+{
+  "item": "tide:abyss_bait",
+  "_generated": "from tools/fishing-mod/gen_tackle.py; edit that, not this file",
+  "kind": "bait",
+  "bait": "void_bait",
+  "size": 1
+}

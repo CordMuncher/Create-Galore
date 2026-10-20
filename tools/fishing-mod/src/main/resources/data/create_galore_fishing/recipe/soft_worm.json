@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    {
+      "item": "tfmg:plastic_sheet"
+    },
+    {
+      "item": "minecraft:purple_dye"
+    },
+    {
+      "item": "create_galore_fishing:medium_hook"
+    }
+  ],
+  "result": {
+    "id": "create_galore_fishing:soft_worm",
+    "count": 2
+  }
+}

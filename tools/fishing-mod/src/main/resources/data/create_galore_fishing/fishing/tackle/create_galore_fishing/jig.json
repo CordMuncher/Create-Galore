@@ -1,0 +1,12 @@
+{
+  "item": "create_galore_fishing:jig",
+  "_generated": "from tools/fishing-mod/gen_tackle.py; edit that, not this file",
+  "kind": "lure",
+  "bait": "jig",
+  "weight": 10,
+  "dive": 3.0,
+  "speed_min": 0.1,
+  "speed_max": 1.0,
+  "size": 1,
+  "color": "#a04040"
+}

@@ -1,0 +1,9 @@
+{
+  "item": "create_galore_fishing:netherite_hook",
+  "_generated": "from tools/fishing-mod/gen_tackle.py; edit that, not this file",
+  "kind": "hook",
+  "size": 7,
+  "hold": 1.1,
+  "luck": 0,
+  "effect": "lava"
+}

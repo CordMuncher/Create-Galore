@@ -1,0 +1,7 @@
+{
+  "item": "minecraft:spider_eye",
+  "_generated": "from tools/fishing-mod/gen_tackle.py; edit that, not this file",
+  "kind": "bait",
+  "bait": "insect",
+  "size": 0
+}

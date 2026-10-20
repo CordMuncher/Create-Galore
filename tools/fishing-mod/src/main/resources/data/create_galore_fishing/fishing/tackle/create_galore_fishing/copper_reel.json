@@ -1,0 +1,13 @@
+{
+  "item": "create_galore_fishing:copper_reel",
+  "_generated": "from tools/fishing-mod/gen_tackle.py; edit that, not this file",
+  "kind": "reel",
+  "max_drag": 3,
+  "drag_steps": 8,
+  "retrieve": 1.0,
+  "power": 6,
+  "smooth": 0.3,
+  "capacity": 100,
+  "style": "spinning",
+  "color": "#c87840"
+}

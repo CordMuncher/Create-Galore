@@ -1,0 +1,13 @@
+{
+  "item": "create_galore_fishing:netherite_rod",
+  "_generated": "from tools/fishing-mod/gen_tackle.py; edit that, not this file",
+  "kind": "rod",
+  "length": 2.7,
+  "max_load": 30,
+  "action": "fast",
+  "sections": 4,
+  "lure_min": 10,
+  "lure_max": 80,
+  "lava": true,
+  "color": "#4a3f43"
+}

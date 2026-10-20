@@ -1,0 +1,13 @@
+{
+  "item": "create_galore_fishing:trolling_reel",
+  "_generated": "from tools/fishing-mod/gen_tackle.py; edit that, not this file",
+  "kind": "reel",
+  "max_drag": 30,
+  "drag_steps": 16,
+  "retrieve": 1.8,
+  "power": 45,
+  "smooth": 0.8,
+  "capacity": 600,
+  "style": "trolling",
+  "color": "#c0a040"
+}

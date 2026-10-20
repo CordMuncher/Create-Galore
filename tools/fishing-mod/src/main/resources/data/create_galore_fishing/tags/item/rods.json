@@ -1,0 +1,10 @@
+{
+  "values": [
+    "create_galore_fishing:bamboo_pole",
+    "create_galore_fishing:wooden_rod",
+    "create_galore_fishing:iron_rod",
+    "create_galore_fishing:steel_rod",
+    "create_galore_fishing:boat_rod",
+    "create_galore_fishing:netherite_rod"
+  ]
+}

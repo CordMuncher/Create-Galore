@@ -1,0 +1,12 @@
+{
+  "item": "create_galore_fishing:boat_rod",
+  "_generated": "from tools/fishing-mod/gen_tackle.py; edit that, not this file",
+  "kind": "rod",
+  "length": 2.1,
+  "max_load": 45,
+  "action": "moderate",
+  "sections": 2,
+  "lure_min": 30,
+  "lure_max": 200,
+  "color": "#2f3b4a"
+}

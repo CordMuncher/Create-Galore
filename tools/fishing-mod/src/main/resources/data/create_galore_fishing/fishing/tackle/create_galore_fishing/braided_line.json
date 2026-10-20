@@ -1,0 +1,10 @@
+{
+  "item": "create_galore_fishing:braided_line",
+  "_generated": "from tools/fishing-mod/gen_tackle.py; edit that, not this file",
+  "kind": "line",
+  "test": 18,
+  "stretch": 0.1,
+  "visibility": 0.8,
+  "meters": 200,
+  "color": "#3a6a3a"
+}

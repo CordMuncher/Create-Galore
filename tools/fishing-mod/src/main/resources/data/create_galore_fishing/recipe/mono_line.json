@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    {
+      "item": "tfmg:plastic_sheet"
+    },
+    {
+      "item": "tfmg:plastic_sheet"
+    },
+    {
+      "tag": "c:rods/wooden"
+    }
+  ],
+  "result": {
+    "id": "create_galore_fishing:mono_line",
+    "count": 1
+  }
+}

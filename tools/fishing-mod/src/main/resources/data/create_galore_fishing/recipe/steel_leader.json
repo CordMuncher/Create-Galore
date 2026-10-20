@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    {
+      "tag": "c:wires/iron"
+    },
+    {
+      "tag": "c:wires/iron"
+    },
+    {
+      "tag": "c:nuggets/iron"
+    }
+  ],
+  "result": {
+    "id": "create_galore_fishing:steel_leader",
+    "count": 2
+  }
+}

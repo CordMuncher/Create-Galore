@@ -1,0 +1,13 @@
+{
+  "item": "create_galore_fishing:steel_baitcaster",
+  "_generated": "from tools/fishing-mod/gen_tackle.py; edit that, not this file",
+  "kind": "reel",
+  "max_drag": 14,
+  "drag_steps": 12,
+  "retrieve": 1.6,
+  "power": 22,
+  "smooth": 0.75,
+  "capacity": 180,
+  "style": "baitcaster",
+  "color": "#506070"
+}

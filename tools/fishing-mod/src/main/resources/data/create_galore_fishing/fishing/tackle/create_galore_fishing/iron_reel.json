@@ -1,0 +1,13 @@
+{
+  "item": "create_galore_fishing:iron_reel",
+  "_generated": "from tools/fishing-mod/gen_tackle.py; edit that, not this file",
+  "kind": "reel",
+  "max_drag": 6,
+  "drag_steps": 10,
+  "retrieve": 1.2,
+  "power": 10,
+  "smooth": 0.5,
+  "capacity": 150,
+  "style": "spinning",
+  "color": "#a8a8a8"
+}
