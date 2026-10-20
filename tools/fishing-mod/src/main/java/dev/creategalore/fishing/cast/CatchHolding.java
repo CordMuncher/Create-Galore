@@ -1,9 +1,9 @@
 package dev.creategalore.fishing.cast;
 
-import com.mojang.serialization.Codec;
 import dev.creategalore.fishing.CreateGaloreFishing;
 import dev.creategalore.fishing.fish.Species;
 import dev.creategalore.fishing.net.CatchOffer;
+import dev.creategalore.fishing.tide.data.FishLengthHolder;import com.mojang.serialization.Codec;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -176,12 +176,15 @@ public final class CatchHolding {
         EntityType<?> type = entityFor(h.species());
         if (type == null || FishingWater.medium(level, at) == null) return;
         Entity fish = type.spawn(level, at, MobSpawnType.BUCKET);
-        if (fish != null) fish.setDeltaMovement(level.random.nextGaussian() * 0.2, -0.1, level.random.nextGaussian() * 0.2);
+        if (fish == null) return;
+        fish.setDeltaMovement(level.random.nextGaussian() * 0.2, -0.1, level.random.nextGaussian() * 0.2);
+        // Tide's fish mobs carry their length; this one is the fish that was caught.
+        if (fish instanceof FishLengthHolder sized) sized.tide$setLength(h.bite().lengthCm());
     }
 
     /** The live mob for a species: its display entity, else an entity with the fish item's id. */
     public static EntityType<?> entityFor(Species species) {
-        ResourceLocation id = species.tide().display().map(d -> d.entity().location()).orElse(species.id());
+        ResourceLocation id = species.tide().display().map(d -> d.entityKey().location()).orElse(species.id());
         return BuiltInRegistries.ENTITY_TYPE.containsKey(id) ? BuiltInRegistries.ENTITY_TYPE.get(id) : null;
     }
 }

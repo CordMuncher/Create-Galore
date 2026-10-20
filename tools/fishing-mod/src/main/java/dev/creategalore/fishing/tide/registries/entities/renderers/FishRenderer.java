@@ -1,0 +1,85 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ *
+ * Ported from Tide 2 (https://github.com/Lightning-64/Tide-2) by Lightning-64,
+ * modified for Create Galore Fishing.
+ */
+package dev.creategalore.fishing.tide.registries.entities.renderers;
+
+import dev.creategalore.fishing.tide.Tide;
+import dev.creategalore.fishing.tide.registries.entities.models.FishModel;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Axis;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.entity.MobRenderer;
+import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Mob;
+
+public class FishRenderer<M extends FishModel> extends MobRenderer<Mob, FishModel> {
+    private final ResourceLocation texLocation;
+    private final double xTiltScale;
+    private final float swimAnimSpeed;
+    private final float swimAnimScale;
+    private final boolean renderTranslucent;
+
+    public FishRenderer(String key, M model, EntityRendererProvider.Context context) {
+        super(context, model, model.shadowRadius());
+        this.texLocation = Tide.resource("textures/entity/fish/" + key + ".png");
+        this.xTiltScale = model.xTiltScale();
+        this.swimAnimSpeed = model.swimAnimSpeed();
+        this.swimAnimScale = model.swimAnimScale();
+        this.renderTranslucent = model.renderTranslucent();
+    }
+
+    public ResourceLocation getTextureLocation() {
+        return this.texLocation;
+    }
+
+    @Override
+    public ResourceLocation getTextureLocation(Mob entity) {
+        return this.getTextureLocation();
+    }
+
+    @Override
+
+    protected void setupRotations(Mob fish, PoseStack poseStack, float bob, float yBodyRot, float partialTick, float scale) {
+        super.setupRotations(fish, poseStack, bob, yBodyRot, partialTick, scale);
+
+        float f = swimAnimScale * 4.3f * Mth.sin(swimAnimSpeed * (fish.tickCount + partialTick));
+        poseStack.mulPose(Axis.YP.rotationDegrees(f));
+        if (!(fish.isInWaterOrBubble() || fish.isInLava()) && flipInAir()) {
+            poseStack.translate(0.1f, 0.1f, -0.1f);
+            poseStack.mulPose(Axis.ZP.rotationDegrees(90f));
+        }
+        else {
+            // temp workaround for a bug with alex's caves
+            float tilt = Mth.clamp((float) (fish.getDeltaMovement().y() * 1.5 * xTiltScale), -Mth.HALF_PI, Mth.HALF_PI);
+            if (Tide.PLATFORM.isModLoaded("alexscaves")) poseStack.mulPose(Axis.XP.rotation(tilt));
+            else {
+                fish.setXRot(tilt);
+                poseStack.mulPose(Axis.XP.rotation(Mth.lerp(partialTick, fish.xRotO, fish.getXRot())));
+            }
+        }
+    }
+
+    private boolean flipInAir() {
+        return model.flipInAir();
+    }
+
+    @Override
+    protected RenderType getRenderType(Mob fish, boolean isVisible, boolean renderTranslucent, boolean appearsGlowing) {
+        ResourceLocation texture = this.getTextureLocation(fish);
+        if (this.renderTranslucent) return RenderType.entityTranslucent(texture);
+        return super.getRenderType(fish, isVisible, renderTranslucent, appearsGlowing);
+    }
+
+    @Override
+    protected int getBlockLightLevel(Mob fish, BlockPos pos) {
+        return Math.max(super.getBlockLightLevel(fish, pos), model.brightnessOverride());
+    }
+}

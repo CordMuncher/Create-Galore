@@ -1,0 +1,32 @@
+{
+    "associated_mods": ["aquaculture"],
+    "fish": "aquaculture:gar",
+    "bucket": "aquaculture:gar_bucket",
+    "journal_profile": {
+        "description": "journal.description.aquaculture.gar",
+        "group": "freshwater",
+        "location": "journal.info.location.freshwater",
+        "rarity": "common"
+    },
+    "display_data": {
+        "entity": "aquaculture:gar",
+        "x": 0.1,
+        "y": -0.05,
+        "z": 0.05
+    },
+    "conditions": [
+        { "type": "tide:freshwater" },
+        { "type": "tide:dimension", "dimensions": ["minecraft:overworld"] },
+        { "type": "tide:fluid", "fluid": "water" },
+        { "type": "tide:above", "y": 40 },
+        { "type": "tide:found_in", "biomes": ["#minecraft:is_river"] },
+        { "type": "tide:seasons", "seasons": ["summer", "fall"] }
+    ],
+    "modifiers": [
+        { "type": "tide:temperature", "preferred_temperature": 1, "temperature_tolerance": 0.75 }
+    ],
+    "selection_weight": 40.0,
+    "size": { "record_high_cm": 145.0, "typical_high_cm": 105.0, "typical_low_cm": 85.0 },
+    "speed": 0.35,
+    "strength": 0.45
+}

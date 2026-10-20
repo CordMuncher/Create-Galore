@@ -1,0 +1,24 @@
+{
+    "associated_mods": ["aquaculture"],
+    "fish": "aquaculture:arrau_turtle",
+    "journal_profile": {
+        "description": "journal.description.aquaculture.arrau_turtle",
+        "group": "freshwater",
+        "location": "journal.info.location.jungle",
+        "rarity": "uncommon"
+    },
+    "display_data": {
+        "entity": "aquaculture:arrau_turtle"
+    },
+    "conditions": [
+        { "type": "tide:freshwater" },
+        { "type": "tide:dimension", "dimensions": ["minecraft:overworld"] },
+        { "type": "tide:fluid", "fluid": "water" },
+        { "type": "tide:above", "y": 40 },
+        { "type": "tide:found_in", "biomes": ["#tide:has_jungle_fish"] }
+    ],
+    "selection_weight": 30.0,
+    "size": { "record_high_cm": 80.0, "typical_high_cm": 40.0, "typical_low_cm": 10.0 },
+    "speed": 0.25,
+    "strength": 0.7
+}

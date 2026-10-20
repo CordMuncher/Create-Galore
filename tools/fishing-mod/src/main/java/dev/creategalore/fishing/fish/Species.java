@@ -1,9 +1,9 @@
 package dev.creategalore.fishing.fish;
-
+import dev.creategalore.fishing.tide.data.journal.FishRarity;
 import dev.creategalore.fishing.bait.BaitKind;
 import dev.creategalore.fishing.sim.FishFight;
 import dev.creategalore.fishing.sim.SizeModel;
-import dev.creategalore.fishing.tide.data.TideFishData;
+import dev.creategalore.fishing.tide.data.fishing.FishData;
 import java.util.Map;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
@@ -22,10 +22,10 @@ import net.minecraft.world.item.Item;
  * @param fillet   fillets per kg
  * @param oily     yields fish oil when processed
  */
-public record Species(ResourceLocation id, Item item, TideFishData tide, FishFight fight, SizeModel size,
+public record Species(ResourceLocation id, Item item, FishData tide, FishFight fight, SizeModel size,
                       Feeding feeding, Map<BaitKind, Double> diet, double wary, double fillet, boolean oily) {
 
-    public TideFishData.Rarity rarity() {
+    public FishRarity rarity() {
         return tide.profile().rarity();
     }
 

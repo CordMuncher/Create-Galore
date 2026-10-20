@@ -306,32 +306,30 @@ the fish eases off. So players pick drag against their rotational strength, not 
   be farmed and automated.
 
 ### 7. Tide removal and migration (nothing lost)
-- **Aliases** (one JSON table, ~386 items, ~8 blocks + BEs, ~105 entity types, ~9 components):
-  `tide:<x>` → our ids; the 12 skipped species → Aquaculture/Hybrid. Components with Tide-compatible
-  codecs: `fish_length`, `is_bucketable`, `fish_satchel_opened`, `fishy_note_variant`,
-  `satchel_contents`, `bait_contents`; `fishing_line/hook/bobber` → legacy components holding the raw
-  tag, decoded with registry context, partial results accepted.
-- **Rods**: `tide:<tier>_fishing_rod` → an assembled rod of the matching tier; on first inventory
-  tick, use or bench visit it gets the reel, line, hook and float that reflect it (e.g. iron rod +
-  iron line → Iron blank, Iron reel, braided line, medium hook, its bobber as float; netherite →
-  lava rod; loot rods keep their perks as named variants). Enchantments, damage and names kept.
-  Vanilla `minecraft:fishing_rod` and Alloyed's steel rod stacks become our Wooden / Steel rods when
-  created (the `ItemStackKnifeMixin` pattern); the vanilla rod recipe and loot entries make ours.
-- Tide fish keep their length (weight computed from it); displays keep their fish; bucketed and
-  swimming Tide fish carry over through the entity aliases.
-- **Pack changes on this branch**: remove `pack/mods/tide.pw.toml`,
-  `tide-extra-compatibility.pw.toml`, `pack/config/tide/`; move the pack's Tide data overrides in
-  `create-galore-tweaks` to our format/paths (`data/tide/fishing/**`, `*/fishing/fish/**`, `data/tide/
-  neoforge/biome_modifier/**`, `aquaculture/bait/worm.json`, Tide tags, Enchanted Pocket Watch recipe,
-  `fish_slice_cutting.json`); **remove every `tide:` entry from pack tags/recipes** (aliases would
-  otherwise make `c:hidden_from_recipe_viewers` hide Aquaculture's and Hybrid's canonical fish); keep
-  the crate Elytra overrides (same paths) and update `tools/build_no_elytra.py`'s jar pattern; add the
-  jar; refresh `index.toml` / `pack.toml` hashes (packwiz via `go install`, or sha256 by hand).
-- **Bridge**: delete its 3 Tide mixins from the source and mixin json only (so Bridge still builds
-  without Tide; at runtime they're already inert). No Bridge version bump or jar rebuild, since others
-  are actively working on Bridge.
-- Left to the integrators (listed precisely in `INTEGRATION.md`): pack version, CHANGELOG (incl.
-  "back up first; update mod and pack together"), MODS.md, README, Field Guide.
+As built in milestone 6 (details in README.md, "Ported Tide content", and INTEGRATION.md):
+- **Ported content keeps Tide's ids.** This mod registers it under the `tide` namespace with its assets and data
+  at `assets/tide`, `data/tide`, so saved items, buckets, swimming fish, displays, journal progress, advancements,
+  loot paths and the pack's `tide:` references load unchanged. Tide is declared `incompatible`. Code in
+  `dev.creategalore.fishing.tide` (MPL-2.0 notice on every file), copied by `port/port_tide.py` and fixed by hand
+  onto our registries, network and fish data; assets and data copied by `port/port_resources.py`.
+- **Aliases only for what isn't ported** (`compat/TideAliases.java`): the 12 handed-off species (item, bucket,
+  spawn egg, mob) to Aquaculture / Hybrid Aquatic / Darkness Eater; Tide's tier rods to our rods (stone → wooden,
+  iron/golden → iron, crystal/diamond → steel, netherite → netherite), its lines to ours by strength, the Angling
+  Table to the Tackle Bench, fish bones and slices to Aquaculture's.
+- **Rods**: a rod carrying Tide's `fishing_line/hook/bobber/bait_contents` components converts to our parts in a
+  player's inventory or at the bench (Tide's defaults fill gaps, a reel matching the rod is added); the 7 special
+  rods are our rod blanks with Tide's perks. Vanilla `minecraft:fishing_rod` and Alloyed's steel rod become our
+  Wooden / Steel rods at stack creation; recipes that take a fishing rod take ours.
+- Tide fish keep `tide:fish_length` (our catch data falls back to it); displays keep their fish and show our
+  catch data as a Trophy Mount.
+- **Pack changes on this branch**: `tide.pw.toml`, `tide-extra-compatibility.pw.toml` and `pack/config/tide/`
+  removed; in `create-galore-tweaks` the 12 fish redirects, 10 spawn overrides, 3 fish-slice recipes and
+  `aquaculture/bait/worm.json` removed and the 38 `tide:` entries taken out of `c:hidden_from_recipe_viewers`;
+  `tools/build_no_elytra.py` reads our jar; `index.toml` / `pack.toml` refreshed.
+- **Bridge**: its 3 Tide mixins deleted from the source and mixin json only. No Bridge version bump or jar
+  rebuild, since others are actively working on Bridge.
+- Left to the integrators (listed in `INTEGRATION.md`): pack version, CHANGELOG (incl. "back up first; update
+  mod and pack together"), MODS.md, README, Field Guide.
 
 ## Milestones (each ends with a commit + push to `emre/fishing-mod`)
 1. **Scaffold & test rig**: `build.sh`, server install for compiling/testing, empty mod boots on a

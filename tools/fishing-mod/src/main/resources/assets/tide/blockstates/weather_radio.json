@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "tide:block/weather_radio"
+    },
+    "facing=east": {
+      "model": "tide:block/weather_radio",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "tide:block/weather_radio",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "tide:block/weather_radio",
+      "y": 270
+    }
+  }
+}

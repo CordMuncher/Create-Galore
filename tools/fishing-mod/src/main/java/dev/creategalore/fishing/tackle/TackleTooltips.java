@@ -27,6 +27,9 @@ public final class TackleTooltips {
                 out.add(grey(Component.translatable(P + "rod.lures", num(r.lureMin()), num(r.lureMax()))));
                 if (!r.reel()) out.add(grey(Component.translatable(P + "rod.pole", num(r.fixedLine()))));
                 if (r.lava()) out.add(Component.translatable(P + "rod.lava").withStyle(ChatFormatting.GOLD));
+                // Tide's special rods keep Tide's own line for their bonus.
+                r.perk().ifPresent(perk -> out.add(Component.translatable("text.tide.rod_tooltip." + perk + "_bonus")
+                        .withStyle(ChatFormatting.GOLD)));
             }
             case TacklePart.Reel r -> {
                 out.add(grey(Component.translatable(P + "reel", RodStats.kg(r.maxDrag()), num(r.retrieve()), num(r.capacity()))));
@@ -50,9 +53,13 @@ public final class TackleTooltips {
                         num(l.weight()))));
                 out.add(grey(Component.translatable(P + "lure.run", num(l.dive()), num(l.speedMin()), num(l.speedMax()))));
             }
-            case TacklePart.Bait b -> out.add(grey(Component.translatable(b.live() ? P + "bait.live" : P + "bait",
-                    Component.translatable(P + "bait." + b.bait().getSerializedName()),
-                    Component.translatable(P + "size." + b.size()))));
+            case TacklePart.Bait b -> {
+                out.add(grey(Component.translatable(b.live() ? P + "bait.live" : P + "bait",
+                        Component.translatable(P + "bait." + b.bait().getSerializedName()),
+                        Component.translatable(P + "size." + b.size()))));
+                if (b.luck() != 0) out.add(Component.translatable(P + "bait.luck", b.luck()).withStyle(ChatFormatting.DARK_AQUA));
+                b.effect().ifPresent(e -> out.add(Component.translatable(P + "bait.effect." + e).withStyle(ChatFormatting.DARK_AQUA)));
+            }
         }
     }
 

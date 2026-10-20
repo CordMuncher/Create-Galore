@@ -1,0 +1,29 @@
+{
+    "associated_mods": ["aquaculture"],
+    "fish": "aquaculture:brown_trout",
+    "bucket": "aquaculture:brown_trout_bucket",
+    "journal_profile": {
+        "description": "journal.description.aquaculture.brown_trout",
+        "group": "freshwater",
+        "location": "journal.info.location.saltwater",
+        "rarity": "common"
+    },
+    "display_data": {
+        "entity": "aquaculture:brown_trout",
+        "x": 0.1
+    },
+    "conditions": [
+        { "type": "tide:freshwater" },
+        { "type": "tide:dimension", "dimensions": ["minecraft:overworld"] },
+        { "type": "tide:fluid", "fluid": "water" },
+        { "type": "tide:above", "y": 40 },
+        { "type": "tide:seasons", "seasons": ["fall", "summer", "winter"] }
+    ],
+    "modifiers": [
+        { "type": "tide:temperature", "preferred_temperature": 0, "temperature_tolerance": 0.8 }
+    ],
+    "selection_weight": 40.0,
+    "size": { "record_high_cm": 160.0, "typical_high_cm": 120.0, "typical_low_cm": 90.0 },
+    "speed": 0.4,
+    "strength": 0.3
+}

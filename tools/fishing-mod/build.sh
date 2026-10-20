@@ -51,7 +51,7 @@ CP="$NFCLIENT:$(ls "$CLIENT"/libraries/net/minecraft/client/*/client-*-srg.jar |
 mkdir -p "$WORK/classes"
 javac --release 21 -nowarn -proc:none -encoding UTF-8 -cp "$CP" -d "$WORK/classes" $(find "$HERE/src/main/java" -name '*.java')
 cp -r "$HERE/src/main/resources/." "$WORK/classes/"
-cp "$HERE/LICENSE" "$HERE/LICENSE-MPL-2.0" "$WORK/classes/META-INF/"
+cp "$HERE/LICENSE" "$HERE/LICENSE-MPL-2.0" "$HERE/LICENSE-TIDE-EXTRA-COMPATIBILITY" "$HERE/NOTICE" "$WORK/classes/META-INF/"
 rm -f "$HERE"/../../pack/mods/create-galore-fishing-*.jar
 (cd "$WORK/classes" && jar --create --date=2026-01-01T00:00:00Z --file "$OUT" .)
 echo "Built $OUT"

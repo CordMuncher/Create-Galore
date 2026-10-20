@@ -6,6 +6,16 @@
     "create_galore_fishing:iron_rod",
     "create_galore_fishing:steel_rod",
     "create_galore_fishing:boat_rod",
-    "create_galore_fishing:netherite_rod"
+    "create_galore_fishing:netherite_rod",
+    "minecraft:fishing_rod",
+    "#tide:fishing_rods",
+    {
+      "id": "#forge:tools/fishing_rods",
+      "required": false
+    },
+    {
+      "id": "#c:tools/fishing_rods",
+      "required": false
+    }
   ]
 }

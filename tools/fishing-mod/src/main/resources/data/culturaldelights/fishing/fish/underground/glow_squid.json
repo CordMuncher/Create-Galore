@@ -1,0 +1,28 @@
+{
+    "associated_mods": ["culturaldelights"],
+    "fish": "culturaldelights:glow_squid",
+    "bucket": "upgrade_aquatic:glow_squid_bucket",
+    "journal_profile": {
+        "description": "journal.description.minecraft.glow_squid",
+        "group": "underground",
+        "location": "journal.info.location.underground",
+        "rarity": "common"
+    },
+    "display_data": {
+        "entity": "minecraft:glow_squid",
+        "shape": "3x1",
+        "roll": 270.00,
+        "pitch": 90,
+        "yaw": -90,
+        "x": 0.25,
+        "z": 0.4
+    },
+    "conditions": [
+        { "type": "tide:dimension", "dimensions": ["minecraft:overworld"] },
+        { "type": "tide:fluid", "fluid": "water" },
+        { "type": "tide:below", "y": 40 }
+    ],
+    "selection_weight": 40.0,
+    "size": { "record_high_cm": 175.0, "typical_high_cm": 120.0, "typical_low_cm": 40.0 },
+    "strength": 0.6
+}

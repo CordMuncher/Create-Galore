@@ -1,0 +1,33 @@
+{
+    "associated_mods": ["rainbowreef"],
+    "fish": "rainbowreef:crab_meat",
+    "bucket": "rainbowreef:crab_bucket",
+    "journal_profile": {
+        "description": "journal.description.rainbowreef.crab",
+        "group": "saltwater",
+        "location": "journal.info.location.saltwater",
+        "rarity": "common"
+    },
+    "display_data": {
+        "entity": "rainbowreef:crab",
+        "nbt": { "Variant": 0 },
+        "roll": -90.0,
+        "yaw": -90.0,
+        "y": -0.2,
+        "z": 0.18
+    },
+    "conditions": [
+        { "type": "tide:dimension", "dimensions": ["minecraft:overworld"] },
+        { "type": "tide:fluid", "fluid": "water" },
+        { "type": "tide:above", "y": 40 },
+        { "type": "tide:found_in", "biomes": ["minecraft:lukewarm_ocean", "minecraft:deep_lukewarm_ocean", "#rainbowreef:warm_oceans", 
+                                                "minecraft:ocean", "minecraft:deep_ocean", "minecraft:cold_ocean", "minecraft:deep_cold_ocean",
+                                                "minecraft:beach", "minecraft:stony_shore", "minecraft:jungle", "minecraft:swamp",
+                                                "minecraft:mangrove_swamp", "seafarer:warm_reef"] 
+        }    
+    ],
+    "selection_weight": 30.0,
+    "size": { "record_high_cm": 60.0, "typical_high_cm": 30.0, "typical_low_cm": 15.0 },
+    "speed": 0.5,
+    "strength": 0.3
+}

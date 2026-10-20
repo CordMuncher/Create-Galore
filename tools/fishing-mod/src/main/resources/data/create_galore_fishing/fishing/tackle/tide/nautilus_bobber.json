@@ -1,0 +1,7 @@
+{
+  "item": "tide:nautilus_bobber",
+  "_generated": "from tools/fishing-mod/gen_tackle.py; edit that, not this file",
+  "kind": "float",
+  "weight": 5,
+  "color": "#d08a5a"
+}

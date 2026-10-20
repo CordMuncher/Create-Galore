@@ -1,0 +1,8 @@
+{
+  "item": "tide:magnetic_bait",
+  "_generated": "from tools/fishing-mod/gen_tackle.py; edit that, not this file",
+  "kind": "bait",
+  "bait": "worm",
+  "size": 0,
+  "effect": "magnetic"
+}

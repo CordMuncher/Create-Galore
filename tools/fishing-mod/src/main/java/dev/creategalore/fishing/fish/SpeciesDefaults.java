@@ -1,8 +1,9 @@
 package dev.creategalore.fishing.fish;
-
+import dev.creategalore.fishing.tide.data.journal.JournalGroup;
+import dev.creategalore.fishing.tide.data.fishing.SizeData;
 import dev.creategalore.fishing.sim.Curve;
 import dev.creategalore.fishing.sim.FishFight;
-import dev.creategalore.fishing.tide.data.TideFishData;
+import dev.creategalore.fishing.tide.data.fishing.FishData;
 import java.util.List;
 import java.util.Map;
 
@@ -87,7 +88,7 @@ public final class SpeciesDefaults {
         return 0.011;
     }
 
-    public static Feeding feeding(String path, TideFishData tide) {
+    public static Feeding feeding(String path, FishData tide) {
         switch (tide.profile().group()) {
             case LAVA -> {
                 return Feeding.LAVA;
@@ -104,15 +105,15 @@ public final class SpeciesDefaults {
         for (var e : FEEDING) {
             if (has(words, e.getKey())) return e.getValue();
         }
-        boolean salt = tide.profile().group() == TideFishData.Group.SALTWATER;
-        double typical = tide.size().map(TideFishData.Size::typicalHighCm).orElse(60.0);
+        boolean salt = tide.profile().group() == JournalGroup.SALTWATER;
+        double typical = tide.size().map(SizeData::typicalHighCm).orElse(60.0);
         if (typical < 25) return salt ? Feeding.REEF : Feeding.PANFISH;
         if (tide.strength() >= 0.6) return salt ? Feeding.SEA_PREDATOR : Feeding.PREDATOR;
         return salt ? Feeding.REEF : Feeding.PANFISH;
     }
 
     /** The fight Tide's minigame numbers suggest, adjusted by what the name tells about the fish. */
-    public static FishFight fight(String path, TideFishData tide) {
+    public static FishFight fight(String path, FishData tide) {
         List<String> words = words(path);
         double s = tide.strength();
         double v = tide.speed();
@@ -129,8 +130,8 @@ public final class SpeciesDefaults {
             case PLATEAU -> 0.03;
             default -> 0.05;
         } * (0.6 + 0.4 * v);
-        double jumps = has(words, JUMPERS) ? 0.12 : tide.behavior() == TideFishData.Behavior.PLATEAU ? 0.01 : 0.04;
-        double charges = tide.behavior() == TideFishData.Behavior.JITTER ? 0.08 : 0.05;
+        double jumps = has(words, JUMPERS) ? 0.12 : tide.behavior() == FishData.Behavior.PLATEAU ? 0.01 : 0.04;
+        double charges = tide.behavior() == FishData.Behavior.JITTER ? 0.08 : 0.05;
         return new FishFight(0.45 + 0.8 * s, 0.7 + 0.8 * s, 0.3 + 0.9 * v, profile, runs, jumps, charges,
                 has(words, TOOTHY));
     }

@@ -1,0 +1,29 @@
+{
+    "associated_mods": ["aquaculture"],
+    "fish": "aquaculture:pollock",
+    "bucket": "aquaculture:pollock_bucket",
+    "journal_profile": {
+        "description": "journal.description.aquaculture.pollock",
+        "group": "saltwater",
+        "location": "journal.info.location.saltwater",
+        "rarity": "common"
+    },
+    "display_data": {
+        "entity": "aquaculture:pollock",
+        "x": 0.1
+    },
+    "conditions": [
+        { "type": "tide:saltwater" },
+        { "type": "tide:dimension", "dimensions": ["minecraft:overworld"] },
+        { "type": "tide:fluid", "fluid": "water" },
+        { "type": "tide:above", "y": 40 },
+        { "type": "tide:found_in", "biomes": ["#minecraft:is_ocean", "#minecraft:is_beach"] }
+    ],
+    "modifiers": [
+        { "type": "tide:temperature", "preferred_temperature": -1, "temperature_tolerance": 0.75 }
+    ],
+    "selection_weight": 40.0,
+    "size": { "record_high_cm": 120.0, "typical_high_cm": 95.0, "typical_low_cm": 80.0 },
+    "speed": 0.35,
+    "strength": 0.3
+}

@@ -1,6 +1,5 @@
 package dev.creategalore.fishing.cast;
 
-import dev.creategalore.fishing.FishingRegistry;
 import dev.creategalore.fishing.fish.Species;
 import dev.creategalore.fishing.sim.Controls;
 import dev.creategalore.fishing.sim.Curve;
@@ -12,9 +11,14 @@ import dev.creategalore.fishing.tackle.RodItem;
 import dev.creategalore.fishing.tackle.RodParts;
 import dev.creategalore.fishing.tackle.RodStats;
 import dev.creategalore.fishing.tackle.TacklePart;
+import dev.creategalore.fishing.tide.data.FishingCondition;import dev.creategalore.fishing.FishingRegistry;
 import dev.creategalore.fishing.tide.data.FishingContext;
 import dev.creategalore.fishing.tide.data.FishingPlace;
+import dev.creategalore.fishing.tide.data.fishing.CatchTables;
+import dev.creategalore.fishing.tide.data.fishing.CrateData;
+import java.util.ArrayList;
 import java.util.List;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -90,7 +94,10 @@ public class CastHook extends FishingHook {
     static final FishFight DEAD_WEIGHT = new FishFight(0.6, 0.01, 0.4, Curve.preset("steady"), 0, 0, 0, false);
     private static final double GRAVITY = 0.04;
 
-    private enum CatchKind { FISH, JUNK, TREASURE }
+    private enum CatchKind { FISH, JUNK, TREASURE, CRATE }
+
+    /** Chance per bite of a loot crate (Tide's crates), where a crate fits the spot; luck and a magnetic hook raise it. */
+    private static final double CRATE_CHANCE = 0.013;
 
     private InteractionHand hand = InteractionHand.MAIN_HAND;
     private String medium = "water";
@@ -105,12 +112,15 @@ public class CastHook extends FishingHook {
     private CatchKind catchKind = CatchKind.FISH;
     private BiteSampler.Bite bite;
     private List<ItemStack> loot = List.of();
+    private CrateData crate;
+    private FishingContext context;
     private Fight fight;
     private final Controls controls = new Controls();
     private double heading;
     private boolean forceBite;
     /** Test tool: the fish the forced bite will be (null: whatever the pool gives). */
     private BiteSampler.Bite forcedBite;
+    private boolean forcedCrate;
 
     // Client-side interpolation of the server's positions (vanilla's hook ignores them).
     private int lerpSteps;
@@ -381,8 +391,10 @@ public class CastHook extends FishingHook {
         ServerLevel level = (ServerLevel) level();
         int luck = luck(owner, rod, stats);
         if (level.getGameTime() - poolBuiltAt > 100 || position().distanceToSqr(poolPos) > 16) {
-            FishingContext context = FishingPlace.context(level, position(), rod, RodItem.parts(rod).hook(), luck,
-                    medium, temperatureOffset(stats), false, openWater, random);
+            // The Blazing rod fishes Nether fish in any lava, as in Tide.
+            boolean netherLava = medium.equals("lava") && stats.rod().has("blazing");
+            context = FishingPlace.context(level, position(), rod, RodItem.parts(rod).hook(), luck,
+                    medium, temperatureOffset(stats), netherLava, openWater, random);
             pool = BiteSampler.pool(context, stats, lureWorking);
             poolBuiltAt = level.getGameTime();
             poolPos = position();
@@ -396,21 +408,30 @@ public class CastHook extends FishingHook {
         if (medium.equals("lava")) wait *= 1.6;
         if (medium.equals("void")) wait *= 1.8;
         if (level.isRaining()) wait *= 0.85;
+        if (stats.rod().has("prismarine") && level.isRainingAt(owner.blockPosition())) wait *= 0.8;
         wait = Mth.clamp(wait, 5, 240);
         if (!forceBite && random.nextDouble() >= 1 - Math.exp(-0.5 / wait)) return;
         forceBite = false;
 
+        boolean magnetic = stats.hook().map(h -> h.is("magnetic")).orElse(false)
+                || stats.bait().map(b -> b.is("magnetic")).orElse(false);
         double treasure = openWater ? Math.max(0, 0.02 + 0.015 * luck) : 0;
-        if (stats.hook().map(h -> h.is("magnetic")).orElse(false)) treasure *= 2;
+        if (magnetic) treasure *= 2;
         double junk = pool.total() <= 0 ? 0.6 : Math.max(0.02, 0.08 - 0.02 * luck);
+        double crateChance = CRATE_CHANCE * Math.max(0.25, 1 + 0.3 * luck) * (magnetic ? 2 : 1);
         double r = random.nextDouble();
         if (forcedBite != null) {
             catchKind = CatchKind.FISH;
             bite = forcedBite;
             forcedBite = null;
+        } else if ((forcedCrate || random.nextDouble() < crateChance)
+                && (crate = CatchTables.pickCrate(context, random).orElse(null)) != null) {
+            forcedCrate = false;
+            catchKind = CatchKind.CRATE;
+            bite = null;
         } else if (r < treasure || r < treasure + junk) {
             catchKind = r < treasure ? CatchKind.TREASURE : CatchKind.JUNK;
-            loot = Catches.lootFrom(this, rod, catchKind == CatchKind.TREASURE, luck);
+            loot = Catches.lootFrom(this, rod, context, catchKind == CatchKind.TREASURE, luck);
             if (loot.isEmpty()) return;
             bite = null;
         } else {
@@ -424,6 +445,7 @@ public class CastHook extends FishingHook {
             bite = rolled.get();
         }
         setPhase(Phase.BITE);
+        if (stats.rod().has("echo")) echo(owner);
         biteTicks = rig() == Rig.LURE ? 20 : 28;
         level.broadcastEntityEvent(this, EVENT_BITE);
         if (rig() == Rig.FLOAT || rig() == Rig.HOOK) {
@@ -435,11 +457,32 @@ public class CastHook extends FishingHook {
                 rig() == Rig.FLOAT ? 0.3f : 0.7f, 0.9f + random.nextFloat() * 0.2f);
     }
 
-    /** Luck of the Sea, the angler's luck attribute and a lucky hook. */
+    /** The Echo rod names what took the bait, as Tide's did. */
+    private void echo(Player owner) {
+        Component what = switch (catchKind) {
+            case FISH -> bite.species().item().getDescription();
+            case CRATE -> crate.blockProvider().getState(random, blockPosition()).getBlock().getName();
+            default -> loot.isEmpty() ? Component.literal("?") : loot.getFirst().getHoverName();
+        };
+        owner.displayClientMessage(Component.translatable("message.create_galore_fishing.echo", what)
+                .withStyle(ChatFormatting.DARK_AQUA), true);
+    }
+
+    /**
+     * Luck of the Sea, the angler's luck attribute, a lucky hook or bait, and the special rods' luck: Midas always,
+     * Sunflower in sunlight, Prismarine in rain (as in Tide).
+     */
     private static int luck(Player owner, ItemStack rod, RodStats stats) {
-        int luck = EnchantmentHelper.getFishingLuckBonus((ServerLevel) owner.level(), rod, owner);
+        Level level = owner.level();
+        int luck = EnchantmentHelper.getFishingLuckBonus((ServerLevel) level, rod, owner);
         luck += Math.round(owner.getLuck());
         luck += stats.hook().map(TacklePart.Hook::luck).orElse(0);
+        luck += stats.bait().map(TacklePart.Bait::luck).orElse(0);
+        TacklePart.Rod blank = stats.rod();
+        if (blank.has("midas")) luck++;
+        if (blank.has("sunflower") && level.isDay() && !level.isRaining() && level.dimensionType().hasSkyLight()
+                && level.canSeeSky(owner.blockPosition())) luck++;
+        if (blank.has("prismarine") && level.isRainingAt(owner.blockPosition())) luck++;
         return luck;
     }
 
@@ -490,7 +533,11 @@ public class CastHook extends FishingHook {
             entityData.set(FISH_KG, (float) bite.kg());
         } else {
             ff = DEAD_WEIGHT;
-            kg = catchKind == CatchKind.TREASURE ? 3 : 1;
+            kg = switch (catchKind) {
+                case CRATE -> 9;
+                case TREASURE -> 3;
+                default -> 1;
+            };
             hold = 1;
         }
         fight = new Fight(ff, stats.tackle(hold), kg, Math.max(3, tip.distanceTo(position())));
@@ -602,7 +649,9 @@ public class CastHook extends FishingHook {
             if (catchKind == CatchKind.FISH) {
                 Species species = bite.species();
                 ItemStack fish = Catches.fishItem(species, bite, owner.getGameProfile().getName(), level.getDayTime() / 24000);
-                List<ItemStack> drops = Catches.fire(this, owner, rod, List.of(fish), species, bite.kg());
+                List<ItemStack> landed = new ArrayList<>(List.of(fish));
+                Catches.perkBonus(this, owner, rod, stats, medium, luck(owner, rod, stats)).ifPresent(landed::add);
+                List<ItemStack> drops = Catches.fire(this, owner, rod, landed, species, bite.kg());
                 int xp = Catches.xp(species, bite, fight);
                 ItemStack held = drops.stream().filter(s -> s.getItem() == species.item()).findFirst().orElse(ItemStack.EMPTY);
                 if (!held.isEmpty() && owner instanceof net.minecraft.server.level.ServerPlayer player) {
@@ -614,6 +663,7 @@ public class CastHook extends FishingHook {
                     FishingPressure.of(level).addCatch(level, blockPosition());
                 }
                 TackleWear.tell(owner, Catches.describe(species, bite));
+                if (owner instanceof net.minecraft.server.level.ServerPlayer player) Catches.logInJournal(player, fish, bite);
                 if (rig() != Rig.LURE) {
                     RodParts parts = RodItem.parts(rod);
                     ItemStack bait = parts.bait();
@@ -622,6 +672,8 @@ public class CastHook extends FishingHook {
                         RodItem.setParts(rod, parts.with(RodParts.Slot.BAIT, bait));
                     }
                 }
+            } else if (catchKind == CatchKind.CRATE) {
+                Catches.pullCrate(this, owner, rod, crate, luck(owner, rod, stats));
             } else {
                 List<ItemStack> drops = Catches.fire(this, owner, rod, loot, null, 0);
                 Catches.give(owner, drops, catchKind == CatchKind.TREASURE ? 3 : 1);
@@ -709,12 +761,29 @@ public class CastHook extends FishingHook {
         cooldown = 0;
     }
 
+    /** Test tool: the next bite is a crate, if one fits the spot. */
+    public void forceCrate() {
+        forcedCrate = true;
+        forceBite = true;
+        cooldown = 0;
+    }
+
     /** One line describing the hook's state, for {@code /cgfish hook}. */
     public String describe() {
         StringBuilder b = new StringBuilder(phase().name()).append(' ').append(medium)
                 .append(String.format(java.util.Locale.ROOT, " out %.1f m", lineOut()));
         b.append(String.format(java.util.Locale.ROOT, ", %d species could bite (quality %.2f, mean wait %.0f s)",
                 pool.species().size(), pool.quality(), BiteSampler.meanWaitSeconds(pool)));
+        if (context != null) {
+            long crates = CatchTables.crates().stream().filter(c -> c.weightAt(context) > 0).count();
+            b.append(String.format(java.util.Locale.ROOT, ", open water %s, %d crates fit", openWater, crates));
+            for (CrateData crate : CatchTables.crates()) {
+                String table = crate.lootTable().map(k -> k.location().getPath()).orElse("?");
+                String failed = crate.conditions().stream().filter(c -> !c.test(context))
+                        .map(c -> c.type().id().getPath()).findFirst().orElse("ok");
+                b.append(' ').append(table.substring(table.lastIndexOf('/') + 1)).append(':').append(failed);
+            }
+        }
         if (fight != null) {
             b.append(String.format(java.util.Locale.ROOT, "; fight %s %.2f kg at %.1f m, tension %.1f/%.1f kg, drag %.1f, stamina %.2f, %s",
                     fishId(), fight.weight(), fight.distance(), fight.tension(), fight.tackle().breakingLoad(),

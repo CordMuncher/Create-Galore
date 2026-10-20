@@ -1,0 +1,30 @@
+{
+    "associated_mods": ["unusualfishmod"],
+    "fish": "unusualfishmod:raw_circus_fish",
+    "bucket": "unusualfishmod:circus_fish_bucket",
+    "journal_profile": {
+        "description": "journal.description.unusualfishmod.circus_fish",
+        "group": "saltwater",
+        "location": "biome.minecraft.lukewarm_ocean",
+        "rarity": "common"
+    },
+    "display_data": {
+        "entity": "unusualfishmod:circus",
+        "roll": -90,
+        "x": 0.1,
+        "y": -0.25,
+        "z": 0.23
+    },
+    "conditions": [
+        { "type": "tide:saltwater" },
+        { "type": "tide:dimension", "dimensions": ["minecraft:overworld"] },
+        { "type": "tide:fluid", "fluid": "water" },
+        { "type": "tide:above", "y": 40 },
+        { "type": "tide:found_in", "biomes": ["minecraft:lukewarm_ocean"] },
+        { "type": "tide:has_enchantments", "enchantments": ["unusualfishmod:unusual_catch"] }
+    ],
+    "selection_weight": 40.0,
+    "size": { "record_high_cm": 200.0, "typical_high_cm": 180.0, "typical_low_cm": 100.0 },
+    "speed": 1.3,
+    "strength": 0.6
+}

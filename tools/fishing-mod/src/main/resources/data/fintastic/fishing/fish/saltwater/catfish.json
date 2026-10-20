@@ -1,0 +1,29 @@
+{
+    "associated_mods": ["fintastic"],
+    "fish": "fintastic:catfish",
+    "bucket": "fintastic:catfish_bucket",
+    "journal_profile": {
+        "description": "journal.description.fintastic.catfish",
+        "group": "saltwater",
+        "location": "journal.info.location.saltwater",
+        "rarity": "common"
+    },
+    "display_data": {
+        "entity": "fintastic:catfish",
+        "nbt": { "Variant": 13 },
+        "shape": "2x1",
+        "roll": -90,
+        "y": -0.2,
+        "z": 0.2505
+    },
+    "conditions": [
+        { "type": "tide:dimension", "dimensions": ["minecraft:overworld"] },
+        { "type": "tide:fluid", "fluid": "water" },
+        { "type": "tide:above", "y": 40 },
+        { "type": "tide:found_in", "biomes": ["#minecraft:is_swamp", "#minecraft:is_jungle", "#minecraft:is_river", "minecraft:warm_ocean", "minecraft:lukewarm_ocean", "minecraft:deep_lukewarm_ocean"] }
+    ],
+    "selection_weight": 30.0,
+    "size": { "record_high_cm": 105.0, "typical_high_cm": 40.0, "typical_low_cm": 20.0 },
+    "speed": 0.2,
+    "strength": 0.55
+}

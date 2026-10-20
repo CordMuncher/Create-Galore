@@ -1,0 +1,16 @@
+{
+  "item": "tide:blazing_fishing_rod",
+  "_generated": "from tools/fishing-mod/gen_tackle.py; edit that, not this file",
+  "kind": "rod",
+  "length": 2.7,
+  "max_load": 20,
+  "action": "fast",
+  "sections": 4,
+  "lure_min": 10,
+  "lure_max": 60,
+  "lava": true,
+  "color": "#e0a020",
+  "grip": "#3a2a2e",
+  "grip_style": "foam",
+  "perk": "blazing"
+}

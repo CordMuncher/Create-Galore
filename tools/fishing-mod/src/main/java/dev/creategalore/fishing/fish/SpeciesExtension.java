@@ -1,10 +1,10 @@
 package dev.creategalore.fishing.fish;
-
+import dev.creategalore.fishing.tide.data.fishing.SizeData;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.creategalore.fishing.bait.BaitKind;
-import dev.creategalore.fishing.tide.data.TideFishData;
+import dev.creategalore.fishing.tide.data.fishing.FishData;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -32,7 +32,7 @@ import net.minecraft.resources.ResourceLocation;
  * {@code profile} is a preset name (see {@link dev.creategalore.fishing.sim.Curve#PRESETS}) or a list of
  * {@code [progress, intensity]} points. {@code diet} entries are merged over the feeding type's defaults.
  */
-public record SpeciesExtension(ResourceLocation fish, Optional<TideFishData.Size> size, Optional<FightData> fight,
+public record SpeciesExtension(ResourceLocation fish, Optional<SizeData> size, Optional<FightData> fight,
                                Optional<LengthWeight> lengthWeight,
                                Optional<Feeding> feeding, Map<BaitKind, Double> diet, Optional<Double> wary,
                                Optional<Double> fillet, Optional<Boolean> oily) {
@@ -60,7 +60,7 @@ public record SpeciesExtension(ResourceLocation fish, Optional<TideFishData.Size
 
     public static final Codec<SpeciesExtension> CODEC = RecordCodecBuilder.create(i -> i.group(
             ResourceLocation.CODEC.fieldOf("fish").forGetter(SpeciesExtension::fish),
-            TideFishData.Size.CODEC.optionalFieldOf("size").forGetter(SpeciesExtension::size),
+            SizeData.CODEC.optionalFieldOf("size").forGetter(SpeciesExtension::size),
             FightData.CODEC.optionalFieldOf("fight").forGetter(SpeciesExtension::fight),
             LengthWeight.CODEC.optionalFieldOf("length_weight").forGetter(SpeciesExtension::lengthWeight),
             Feeding.CODEC.optionalFieldOf("feeding").forGetter(SpeciesExtension::feeding),

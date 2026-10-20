@@ -1,0 +1,55 @@
+{
+	"texture_size": [32, 32],
+	"textures": {
+        "0": "tide:block/fish_display_2x1",
+        "particle": "tide:block/fish_display_2x1"
+	},
+	"elements": [
+		{
+			"from": [-7, 2, 15],
+			"to": [23, 14, 16],
+			"rotation": {"angle": 0, "axis": "y", "origin": [15, 7, 14]},
+			"faces": {
+				"north": {"uv": [0, 0, 15, 6], "texture": "#0"},
+				"east": {"uv": [15, 0, 15.5, 6], "texture": "#0"},
+				"south": {"uv": [15, 0, 0, 6], "texture": "#0"},
+				"west": {"uv": [15, 0, 15.5, 6], "texture": "#0"},
+				"up": {"uv": [15, 6.5, 0, 6], "texture": "#0"},
+				"down": {"uv": [0, 6, 15, 6.5], "texture": "#0"}
+			}
+		}
+	],
+	"gui_light": "front",
+	"display": {
+		"thirdperson_righthand": {
+			"rotation": [75, 0, 0],
+			"translation": [0, 3, 0],
+			"scale": [0.375, 0.375, 0.375]
+		},
+		"thirdperson_lefthand": {
+			"rotation": [75, 0, 0],
+			"translation": [0, 3, 0],
+			"scale": [0.375, 0.375, 0.375]
+		},
+		"firstperson_righthand": {
+			"rotation": [-45, -75, 0],
+			"translation": [12, 2, -6]
+		},
+		"firstperson_lefthand": {
+			"rotation": [-45, -75, 0],
+			"translation": [12, 2, -6]
+		},
+		"ground": {
+			"rotation": [90, 0, 0],
+			"translation": [0, 3, 0],
+			"scale": [0.25, 0.25, 0.25]
+		},
+		"head": {
+			"translation": [0, 0, -14]
+		},
+		"fixed": {
+			"translation": [0, 0, -3],
+			"scale": [0.5, 0.5, 0.5]
+		}
+	}
+}

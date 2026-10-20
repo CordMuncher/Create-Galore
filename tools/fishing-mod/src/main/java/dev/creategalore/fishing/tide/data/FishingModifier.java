@@ -53,6 +53,14 @@ public abstract class FishingModifier {
         final float preferred;
         final float tolerance;
 
+        public float preferred() {
+            return preferred;
+        }
+
+        public float tolerance() {
+            return tolerance;
+        }
+
         public Temperature(float preferred, float tolerance) {
             this.preferred = preferred;
             this.tolerance = tolerance;

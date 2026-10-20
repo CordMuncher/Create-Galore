@@ -1,0 +1,30 @@
+{
+    "associated_mods": ["aquaculture"],
+    "fish": "aquaculture:bluegill",
+    "bucket": "aquaculture:bluegill_bucket",
+    "journal_profile": {
+        "description": "journal.description.aquaculture.bluegill",
+        "group": "freshwater",
+        "location": "journal.info.location.freshwater",
+        "rarity": "common"
+    },
+    "display_data": {
+        "entity": "aquaculture:bluegill",
+        "x": 0.1,
+        "y": 0.1
+    },
+    "conditions": [
+        { "type": "tide:freshwater" },
+        { "type": "tide:dimension", "dimensions": ["minecraft:overworld"] },
+        { "type": "tide:fluid", "fluid": "water" },
+        { "type": "tide:above", "y": 40 },
+        { "type": "tide:seasons", "seasons": ["spring", "summer", "fall"] }
+    ],
+    "modifiers": [
+        { "type": "tide:temperature", "preferred_temperature": 0, "temperature_tolerance": 1.6 }
+    ],
+    "selection_weight": 40.0,
+    "size": { "record_high_cm": 118.0, "typical_high_cm": 100.0, "typical_low_cm": 85.0 },
+    "speed": 0.3,
+    "strength": 0.35
+}

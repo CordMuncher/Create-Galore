@@ -11,7 +11,7 @@ import net.neoforged.neoforge.server.ServerLifecycleHooks;
  * whenever a payload's layout does, so mismatched builds refuse to connect instead of misreading each other.
  */
 public final class FishingNet {
-    public static final String VERSION = "1";
+    public static final String VERSION = "2";
 
     private FishingNet() {
     }
@@ -28,6 +28,8 @@ public final class FishingNet {
         registrar.playToClient(CatchOffer.TYPE, CatchOffer.STREAM_CODEC,
                 (payload, context) -> dev.creategalore.fishing.client.ClientPackets.catchOffer(payload));
         registrar.playToServer(CatchChoice.TYPE, CatchChoice.STREAM_CODEC, CatchChoice::handle);
+        registrar.playToClient(FishDataSync.TYPE, FishDataSync.STREAM_CODEC,
+                (payload, context) -> FishDataSync.handle(payload));
     }
 
     /** True in singleplayer and on a LAN host, where the client shares the server's data already. */

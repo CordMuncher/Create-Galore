@@ -1,0 +1,7 @@
+{
+  "item": "tide:golden_apple_bobber",
+  "_generated": "from tools/fishing-mod/gen_tackle.py; edit that, not this file",
+  "kind": "float",
+  "weight": 5,
+  "color": "#e8c030"
+}

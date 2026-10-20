@@ -1,0 +1,141 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ *
+ * Ported from Tide 2 (https://github.com/Lightning-64/Tide-2) by Lightning-64,
+ * modified for Create Galore Fishing.
+ */
+package dev.creategalore.fishing.tide.data.informational;
+
+import dev.creategalore.fishing.tide.Tide;
+import dev.creategalore.fishing.tide.compat.CompatHelper;
+import dev.creategalore.fishing.tide.data.TideTags;
+import dev.creategalore.fishing.tide.network.messages.InfoDataMsg;
+import dev.creategalore.fishing.tide.registries.items.InfoItemContainer;
+import dev.creategalore.fishing.tide.registries.items.InformationalItem;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.state.BlockState;
+
+import java.util.*;
+
+public class FishingInfoManager {
+    private static final Map<UUID, Map<ResourceLocation, String>> CACHE = new HashMap<>();
+    private static final Map<UUID, Map<ResourceLocation, Integer>> TIMERS = new HashMap<>();
+    private static final Map<UUID, Integer> PROXIMITY_SCAN_TIMER = new HashMap<>();
+    private static final Map<UUID, Set<Item>> NEARBY_BLOCK_ITEMS = new HashMap<>();
+
+    private static boolean hasNewData = false;
+
+    public static void tick(ServerPlayer player) {
+        UUID id = player.getUUID();
+
+        CACHE.putIfAbsent(id, new HashMap<>());
+        TIMERS.putIfAbsent(id, new HashMap<>());
+
+        Map<ResourceLocation, String> cache = CACHE.get(id);
+        Map<ResourceLocation, Integer> timers = TIMERS.get(id);
+        Map<ResourceLocation, String> results = new HashMap<>();
+
+        hasNewData = false;
+
+        // gather data from active items
+        List<Item> surveyItems = getActiveInformationalItems(player);
+        for (Item item : surveyItems) {
+            if (!(item instanceof InformationalItem surveyItem)) continue;
+            ResourceLocation key = BuiltInRegistries.ITEM.getKey(item);
+
+            int timer = timers.getOrDefault(key, 0);
+            if (timer <= 0 || !cache.containsKey(key)) {
+                hasNewData = true;
+                String result = surveyItem.getResult(player.serverLevel(), player);
+                results.put(key, result);
+                cache.put(key, result);
+                timers.put(key, surveyItem.updatePeriod());
+            }
+            else {
+                if (cache.containsKey(key)) results.put(key, cache.get(key));
+                timers.put(key, timer - 1);
+            }
+        }
+
+        // remove stale entries
+        Set.copyOf(cache.keySet()).forEach(key -> {
+            Item item = BuiltInRegistries.ITEM.get(key);
+            if (surveyItems.contains(item)) return;
+            cache.remove(key);
+            timers.remove(key);
+            hasNewData = true;
+        });
+
+        // send new results to player
+        if (!hasNewData) return;
+        Tide.NETWORK.sendToPlayer(new InfoDataMsg(results), player);
+    }
+
+    private static List<Item> getActiveInformationalItems(ServerPlayer player) {
+        ArrayList<Item> items = new ArrayList<>();
+
+        Item mainhand = player.getMainHandItem().getItem();
+        Item offhand = player.getOffhandItem().getItem();
+
+        if (hasInfo(mainhand)) addInfoItem(items, mainhand);
+        if (hasInfo(offhand)) addInfoItem(items, offhand);
+
+        CompatHelper.addInformationItemsFromAccessories(player, items);
+        addNearbyPlacedItems(player, items);
+
+        return items;
+    }
+
+    @SuppressWarnings("deprecation")
+    public static boolean hasInfo(Item item) {
+        return item.builtInRegistryHolder().is(TideTags.Items.INFORMATIONAL);
+    }
+
+    public static void addInfoItem(ArrayList<Item> items, Item item) {
+        if (item instanceof InfoItemContainer container) {
+            container.getContainedInfoItems().forEach(c -> addInfoItem(items, c));
+            return;
+        }
+        if (!items.contains(item)) items.add(item);
+    }
+
+    private static void addNearbyPlacedItems(ServerPlayer player, ArrayList<Item> items) {
+        UUID id = player.getUUID();
+
+        int timer = PROXIMITY_SCAN_TIMER.getOrDefault(id, 0);
+        if (timer <= 0) {
+            Set<Item> found = scanForNearbyInformationalBlocks(player);
+            NEARBY_BLOCK_ITEMS.put(id, found);
+            PROXIMITY_SCAN_TIMER.put(id, 20);
+        }
+        else PROXIMITY_SCAN_TIMER.put(id, timer - 1);
+
+        Set<Item> nearby = NEARBY_BLOCK_ITEMS.get(id);
+        if (nearby == null || nearby.isEmpty()) return;
+        for (Item item : nearby) addInfoItem(items, item);
+    }
+
+    private static Set<Item> scanForNearbyInformationalBlocks(ServerPlayer player) {
+        Set<Item> found = new HashSet<>();
+
+        int radiusXZ = 6;
+        int radiusY = 3;
+        BlockPos center = player.blockPosition();
+
+        for (BlockPos pos : BlockPos.betweenClosed(
+                center.offset(-radiusXZ, -radiusY, -radiusXZ),
+                center.offset(radiusXZ, radiusY, radiusXZ))) {
+
+            BlockState state = player.serverLevel().getBlockState(pos);
+            if (state.is(TideTags.Blocks.INFORMATIONAL)) found.add(state.getBlock().asItem());
+        }
+
+        return found;
+    }
+}

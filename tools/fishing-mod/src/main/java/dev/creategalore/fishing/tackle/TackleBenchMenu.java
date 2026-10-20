@@ -1,6 +1,7 @@
 package dev.creategalore.fishing.tackle;
 
 import dev.creategalore.fishing.FishingRegistry;
+import dev.creategalore.fishing.compat.TideRodConversion;
 import net.minecraft.core.NonNullList;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -31,6 +32,7 @@ public class TackleBenchMenu extends AbstractContainerMenu {
     public static final float MAX_FLOAT_DEPTH = 8;
 
     private final ContainerLevelAccess access;
+    private final Player player;
     final BenchContainer bench = new BenchContainer();
 
     /** Client side. */
@@ -41,6 +43,7 @@ public class TackleBenchMenu extends AbstractContainerMenu {
     public TackleBenchMenu(int id, Inventory inventory, ContainerLevelAccess access) {
         super(FishingRegistry.TACKLE_BENCH_MENU.get(), id);
         this.access = access;
+        this.player = inventory.player;
         addSlot(new RodSlot(bench, ROD, 17, 36));
         for (RodParts.Slot part : RodParts.Slot.values()) {
             addSlot(new PartSlot(bench, part, 48 + part.ordinal() * 20, 18));
@@ -133,6 +136,12 @@ public class TackleBenchMenu extends AbstractContainerMenu {
         private final NonNullList<ItemStack> items = NonNullList.withSize(SIZE, ItemStack.EMPTY);
 
         private void loadParts() {
+            // A rod rigged with Tide that went straight from a chest to the bench (it never ticked in an inventory).
+            if (!player.level().isClientSide && TideRodConversion.needsConversion(items.get(ROD))) {
+                TideRodConversion.convert(items.get(ROD), bait -> {
+                    if (!player.getInventory().add(bait)) player.drop(bait, false);
+                });
+            }
             RodParts parts = RodItem.parts(items.get(ROD));
             for (RodParts.Slot s : RodParts.Slot.values()) {
                 items.set(FIRST_PART + s.ordinal(), items.get(ROD).isEmpty() ? ItemStack.EMPTY : parts.get(s));

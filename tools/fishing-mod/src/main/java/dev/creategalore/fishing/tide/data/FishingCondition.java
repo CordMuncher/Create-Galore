@@ -178,6 +178,14 @@ public abstract class FishingCondition {
             this.dimensions = dimensions;
         }
 
+        public List<ResourceKey<Level>> dimensions() {
+            return dimensions;
+        }
+
+        public boolean isOverworldOnly() {
+            return dimensions.size() == 1 && dimensions.get(0) == Level.OVERWORLD;
+        }
+
         @Override
         public Type type() {
             return TYPE;
@@ -425,6 +433,10 @@ public abstract class FishingCondition {
                 TimeRange.CODEC.listOf().fieldOf("ranges").forGetter((TimeOfDay c) -> c.ranges)).apply(i, TimeOfDay::new)));
         final List<TimeRange> ranges;
 
+        public List<TimeRange> ranges() {
+            return ranges;
+        }
+
         public TimeOfDay(List<TimeRange> ranges) {
             this.ranges = ranges;
         }
@@ -465,6 +477,10 @@ public abstract class FishingCondition {
                 WeatherType.CODEC.listOf().optionalFieldOf("types", List.of()).forGetter((Weather c) -> c.types)).apply(i, Weather::new)));
         final List<WeatherType> types;
 
+        public List<WeatherType> types() {
+            return types;
+        }
+
         public Weather(List<WeatherType> types) {
             this.types = types;
         }
@@ -487,6 +503,10 @@ public abstract class FishingCondition {
                 Codec.INT.listOf().optionalFieldOf("any_of", List.of()).forGetter((MoonPhase c) -> c.phases)).apply(i, MoonPhase::new)));
         final List<Integer> phases;
 
+        public List<Integer> phases() {
+            return phases;
+        }
+
         public MoonPhase(List<Integer> phases) {
             this.phases = phases;
         }
@@ -506,6 +526,10 @@ public abstract class FishingCondition {
         static final Type TYPE = register("seasons", RecordCodecBuilder.<Seasons>mapCodec(i -> i.group(
                 Season.CODEC.listOf().optionalFieldOf("seasons", Arrays.asList(Season.values())).forGetter((Seasons c) -> c.seasons)).apply(i, Seasons::new)));
         final List<Season> seasons;
+
+        public List<Season> seasons() {
+            return seasons;
+        }
 
         public Seasons(List<Season> seasons) {
             this.seasons = seasons;
@@ -530,6 +554,14 @@ public abstract class FishingCondition {
                 Codec.INT.optionalFieldOf("max", Integer.MAX_VALUE).forGetter((Luck c) -> c.max)).apply(i, Luck::new)));
         final int min;
         final int max;
+
+        public int min() {
+            return min;
+        }
+
+        public int max() {
+            return max;
+        }
 
         public Luck(int min, int max) {
             this.min = min;

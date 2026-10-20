@@ -6,6 +6,7 @@
     "create_galore_fishing:iron_rod",
     "create_galore_fishing:steel_rod",
     "create_galore_fishing:boat_rod",
-    "create_galore_fishing:netherite_rod"
+    "create_galore_fishing:netherite_rod",
+    "#tide:fishing_rods"
   ]
 }

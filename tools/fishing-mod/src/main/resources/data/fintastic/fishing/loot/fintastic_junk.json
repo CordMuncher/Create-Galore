@@ -1,0 +1,13 @@
+{
+    "associated_mods": ["fintastic"],
+    "conditions": [
+        { "type": "tide:dimension", "dimensions": ["minecraft:overworld"] },
+        { "type": "tide:fluid", "fluid": "water" },
+        { "type": "tide:above", "y": 40 },
+        { "type": "tide:open_water", "in_open_water": true},
+        { "type": "tide:found_in", "biomes": ["#fintastic:duckweed_biomes", "#fintastic:anubias_biomes", "#fintastic:hornwort_biomes"] }
+    ],
+    "loot_table": "fintastic:gameplay/fishing/junk",
+    "quality": -2.0,
+    "weight": 10.0
+}

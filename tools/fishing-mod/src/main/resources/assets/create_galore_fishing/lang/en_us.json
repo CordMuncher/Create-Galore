@@ -189,5 +189,9 @@
   "hud.create_galore_fishing.run": "It's running!",
   "hud.create_galore_fishing.drag": "Drag %s",
   "hud.create_galore_fishing.line": "Line %s / %s m",
-  "hud.create_galore_fishing.bite": "Bite! Hold use to strike"
+  "hud.create_galore_fishing.bite": "Bite! Hold use to strike",
+  "tooltip.create_galore_fishing.bait.luck": "+%s luck",
+  "tooltip.create_galore_fishing.bait.effect.magnetic": "Crates and treasure come up more often",
+  "message.create_galore_fishing.echo": "Echo: %s took the bait",
+  "journal.info.stats.heaviest": "Heaviest catch: %s"
 }

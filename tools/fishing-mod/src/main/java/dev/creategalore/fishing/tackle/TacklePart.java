@@ -103,10 +103,13 @@ public sealed interface TacklePart {
      * @param telescopic the sections nest inside each other and slide out on a cast
      * @param gripStyle  what the handle is made of, for the 3D model: cork, foam, wood or bamboo
      * @param finish     the blank's surface for the 3D model: paint, wood or bamboo
+     * @param perk       a special rod's bonus, from Tide's special rods: echo (names the fish on a bite), midas
+     *                   (+1 luck, bonus gold), prismarine (bites faster and +1 luck in rain), sunflower (+1 luck in
+     *                   sunlight), village (bonus loot) or blazing (Nether fish in any lava)
      */
     record Rod(double length, double maxLoad, Action action, int sections, double lureMin, double lureMax,
                boolean reel, double fixedLine, boolean lava, String color, String grip, boolean telescopic,
-               String gripStyle, String finish)
+               String gripStyle, String finish, Optional<String> perk)
             implements TacklePart {
         static final MapCodec<Rod> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
                 Codec.DOUBLE.fieldOf("length").forGetter(Rod::length),
@@ -122,8 +125,13 @@ public sealed interface TacklePart {
                 Codec.STRING.optionalFieldOf("grip", "#c9a26b").forGetter(Rod::grip),
                 Codec.BOOL.optionalFieldOf("telescopic", false).forGetter(Rod::telescopic),
                 Codec.STRING.optionalFieldOf("grip_style", "cork").forGetter(Rod::gripStyle),
-                Codec.STRING.optionalFieldOf("finish", "paint").forGetter(Rod::finish)
+                Codec.STRING.optionalFieldOf("finish", "paint").forGetter(Rod::finish),
+                Codec.STRING.optionalFieldOf("perk").forGetter(Rod::perk)
         ).apply(i, Rod::new));
+
+        public boolean has(String perk) {
+            return this.perk.map(perk::equals).orElse(false);
+        }
 
         @Override
         public Kind kind() {
@@ -286,13 +294,21 @@ public sealed interface TacklePart {
      *
      * @param size 0 small, 1 medium, 2 large
      * @param live a live bait (from the Live-Bait Bucket): predators like it much better
+     * @param luck   added to the angler's luck (Tide's Lucky Bait)
+     * @param effect {@code magnetic}: crates and treasure come up more often (Tide's Magnetic Bait)
      */
-    record Bait(BaitKind bait, int size, boolean live) implements TacklePart {
+    record Bait(BaitKind bait, int size, boolean live, int luck, Optional<String> effect) implements TacklePart {
         static final MapCodec<Bait> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
                 BaitKind.CODEC.fieldOf("bait").forGetter(Bait::bait),
                 Codec.INT.optionalFieldOf("size", 0).forGetter(Bait::size),
-                Codec.BOOL.optionalFieldOf("live", false).forGetter(Bait::live)
+                Codec.BOOL.optionalFieldOf("live", false).forGetter(Bait::live),
+                Codec.INT.optionalFieldOf("luck", 0).forGetter(Bait::luck),
+                Codec.STRING.optionalFieldOf("effect").forGetter(Bait::effect)
         ).apply(i, Bait::new));
+
+        public boolean is(String effect) {
+            return this.effect.map(effect::equals).orElse(false);
+        }
 
         @Override
         public Kind kind() {

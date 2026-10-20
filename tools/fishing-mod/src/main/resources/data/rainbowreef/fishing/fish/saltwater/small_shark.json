@@ -1,0 +1,31 @@
+{
+    "associated_mods": ["rainbowreef"],
+    "fish": "rainbowreef:raw_small_shark",
+    "bucket": "rainbowreef:smallshark_bucket",
+    "journal_profile": {
+        "description": "journal.description.rainbowreef.small_shark",
+        "group": "saltwater",
+        "location": "journal.info.location.saltwater_warm",
+        "rarity": "common"
+    },
+    "display_data": {
+        "entity": "rainbowreef:small_shark",
+        "nbt": { "Variant": 0 },
+        "shape": "2x1",
+        "roll": -90.0,
+        "x": 0.2,
+        "y": -0.2,
+        "z": 0.15
+    },
+    "conditions": [
+        { "type": "tide:saltwater" },
+        { "type": "tide:dimension", "dimensions": ["minecraft:overworld"] },
+        { "type": "tide:fluid", "fluid": "water" },
+        { "type": "tide:above", "y": 40 },
+        { "type": "tide:found_in", "biomes": ["minecraft:lukewarm_ocean", "minecraft:deep_lukewarm_ocean", "minecraft:warm_ocean", "seafarer:warm_reef"] }
+    ],
+    "selection_weight": 30.0,
+    "size": { "record_high_cm": 50.0, "typical_high_cm": 35.0, "typical_low_cm": 25.0 },
+    "speed": 0.5,
+    "strength": 0.5
+}

@@ -27,6 +27,16 @@ RODS = {
     "boat_rod": (2.1, 45, "moderate", 2, 30, 200, {"color": "#2f3b4a", "grip": "#262626", "grip_style": "foam"}),
     "netherite_rod": (2.7, 30, "fast", 4, 10, 80, {"lava": True, "color": "#4a3f43", "grip": "#3a2a2e", "grip_style": "foam"}),
 }
+# Tide's special rods (ported under their tide: ids), each with Tide's perk; see TacklePart.Rod.
+TIDE_RODS = {
+    "echo_fishing_rod": (2.4, 10, "fast", 3, 5, 30, {"color": "#0a5a64", "grip": "#1a2a30", "grip_style": "foam", "perk": "echo"}),
+    "prismarine_fishing_rod": (2.7, 12, "moderate", 3, 5, 35, {"color": "#4a9a8a", "grip": "#1a4a50", "perk": "prismarine"}),
+    "sunflower_fishing_rod": (2.1, 7, "moderate", 2, 3, 25, {"color": "#6d8d15", "grip": "#e8c020", "perk": "sunflower"}),
+    "village_fishing_rod": (2.1, 7, "moderate", 2, 3, 25, {"color": "#8a6a45", "grip": "#5a3e26", "grip_style": "wood", "finish": "wood", "perk": "village"}),
+    "blazing_fishing_rod": (2.7, 20, "fast", 4, 10, 60, {"lava": True, "color": "#e0a020", "grip": "#3a2a2e", "grip_style": "foam", "perk": "blazing"}),
+    "honeycomb_fishing_rod": (2.1, 8, "slow", 2, 3, 25, {"color": "#e78618", "grip": "#8a5a20"}),
+    "midas_fishing_rod": (2.4, 12, "fast", 3, 5, 35, {"color": "#e8c030", "grip": "#8a6a20", "perk": "midas"}),
+}
 REELS = {
     # name: max_drag, drag_steps, retrieve, power, smooth, capacity, style, color
     "copper_reel": (3, 8, 1.0, 6, 0.3, 100, "spinning", "#c87840"),
@@ -61,7 +71,7 @@ HOOKS = {
     "hybrid_aquatic:magnetic_hook": (4, 1.0, 1, "magnetic"),
     "hybrid_aquatic:creepermagnet_hook": (5, 1.0, 0, "creeper_magnet"),
     "hybrid_aquatic:ominous_hook": (8, 1.0, 0, "ominous"),
-    # Tide's hooks, while Tide is still installed (they become this mod's items when Tide leaves).
+    # Tide's hooks (ported under their tide: ids).
     "tide:fishing_hook": (4, 1.0, 0, None),
     "tide:lavaproof_hook": (6, 1.0, 0, "lava"),
     "tide:fiery_hook": (5, 1.0, 0, "fiery"),
@@ -79,6 +89,18 @@ TERMINALS = {
     M + "jig": {"kind": "lure", "bait": "jig", "weight": 10, "dive": 3.0, "speed_min": 0.1, "speed_max": 1.0, "size": 1, "color": "#a04040"},
     M + "popper": {"kind": "lure", "bait": "topwater", "weight": 10, "dive": 0.0, "speed_min": 0.2, "speed_max": 1.5, "size": 1, "color": "#f0f0a0"},
     M + "soft_worm": {"kind": "lure", "bait": "soft_plastic", "weight": 6, "dive": 1.0, "speed_min": 0.1, "speed_max": 1.2, "size": 0, "color": "#8050a0"},
+}
+# Tide's bobbers become floats: name, colour for the 3D float, weight (g).
+TIDE_BOBBERS = {
+    "red": ("#c03030", 4), "orange": ("#e0802a", 4), "yellow": ("#e8c838", 4), "lime": ("#80c838", 4),
+    "green": ("#4e7a2a", 4), "cyan": ("#2a9a9a", 4), "light_blue": ("#5ab0e0", 4), "blue": ("#3a4ab0", 4),
+    "purple": ("#8a3ab0", 4), "magenta": ("#c04ab0", 4), "pink": ("#e890b0", 4), "white": ("#eeeeee", 4),
+    "light_gray": ("#a0a0a0", 4), "gray": ("#5a5a5e", 4), "black": ("#2a2a2e", 4), "brown": ("#7a5232", 4),
+    "apple": ("#c02020", 5), "golden_apple": ("#e8c030", 5), "enchanted_golden_apple": ("#e8c030", 5),
+    "iron": ("#c8c8c8", 6), "golden": ("#e8c030", 6), "diamond": ("#4ae0d8", 5), "netherite": ("#4a3f43", 7),
+    "amethyst": ("#9a6ad0", 5), "echo": ("#0a5a64", 5), "chorus": ("#8a5a8e", 4), "feather": ("#e8e8e0", 2),
+    "lichen": ("#7a9a7a", 4), "nautilus": ("#d08a5a", 5), "pearl": ("#f0e8e0", 4), "heart": ("#d03040", 4),
+    "grassy": ("#5a9f33", 4), "duck": ("#f0d040", 4),
 }
 BAITS = {
     # item: bait kind, size (0 small, 1 medium, 2 large)
@@ -98,10 +120,12 @@ BAITS = {
     "hybrid_aquatic:raw_crayfish": ("crustacean", 1),
     "hybrid_aquatic:raw_tentacle": ("squid", 2),
     "naturalist:crab_meat": ("crustacean", 1),
-    # Tide's baits while Tide is installed.
+    # Tide's baits (ported under their tide: ids).
     "tide:bait": ("worm", 0),
     "tide:incandescent_bait": ("lava_bait", 1),
     "tide:abyss_bait": ("void_bait", 1),
+    "tide:lucky_bait": ("worm", 0, {"luck": 2}),
+    "tide:magnetic_bait": ("worm", 0, {"effect": "magnetic"}),
 }
 
 
@@ -120,6 +144,9 @@ def main():
     for name, (length, load, action, sections, lmin, lmax, extra) in RODS.items():
         write(M + name, {"kind": "rod", "length": length, "max_load": load, "action": action, "sections": sections,
                          "lure_min": lmin, "lure_max": lmax, **extra}, written)
+    for name, (length, load, action, sections, lmin, lmax, extra) in TIDE_RODS.items():
+        write("tide:" + name, {"kind": "rod", "length": length, "max_load": load, "action": action,
+                               "sections": sections, "lure_min": lmin, "lure_max": lmax, **extra}, written)
     for name, (drag, steps, retrieve, power, smooth, capacity, style, color) in REELS.items():
         write(M + name, {"kind": "reel", "max_drag": drag, "drag_steps": steps, "retrieve": retrieve, "power": power,
                          "smooth": smooth, "capacity": capacity, "style": style, "color": color}, written)
@@ -135,8 +162,10 @@ def main():
         write(item, data, written)
     for item, data in TERMINALS.items():
         write(item, data, written)
-    for item, (kind, size) in BAITS.items():
-        write(item, {"kind": "bait", "bait": kind, "size": size}, written)
+    for name, (color, weight) in TIDE_BOBBERS.items():
+        write(f"tide:{name}_bobber", {"kind": "float", "weight": weight, "color": color}, written)
+    for item, (kind, size, *extra) in BAITS.items():
+        write(item, {"kind": "bait", "bait": kind, "size": size, **(extra[0] if extra else {})}, written)
     removed = 0
     for old in OUT.rglob("*.json"):
         if old not in written and MARK in json.loads(old.read_text()):

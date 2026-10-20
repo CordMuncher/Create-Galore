@@ -1,0 +1,29 @@
+{
+    "associated_mods": ["aquaculture"],
+    "fish": "aquaculture:smallmouth_bass",
+    "bucket": "aquaculture:smallmouth_bass_bucket",
+    "journal_profile": {
+        "description": "journal.description.aquaculture.smallmouth_bass",
+        "group": "freshwater",
+        "location": "journal.info.location.freshwater",
+        "rarity": "common"
+    },
+    "display_data": {
+        "entity": "aquaculture:smallmouth_bass",
+        "x": 0.1
+    },
+    "conditions": [
+        { "type": "tide:freshwater" },
+        { "type": "tide:dimension", "dimensions": ["minecraft:overworld"] },
+        { "type": "tide:fluid", "fluid": "water" },
+        { "type": "tide:above", "y": 40 },
+        { "type": "tide:seasons", "seasons": ["spring", "summer", "fall"] }
+    ],
+    "modifiers": [
+        { "type": "tide:temperature", "preferred_temperature": -0.25, "temperature_tolerance": 0.78 }
+    ],
+    "selection_weight": 40.0,
+    "size": { "record_high_cm": 125.0, "typical_high_cm": 95.0, "typical_low_cm": 60.0 },
+    "speed": 0.25,
+    "strength": 0.4
+}

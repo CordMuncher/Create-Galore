@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "open=false": {
+      "model": "tide:block/wooden_crate"
+    },
+    "open=true": {
+      "model": "tide:block/wooden_crate_open"
+    }
+  }
+}

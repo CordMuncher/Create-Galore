@@ -2,12 +2,15 @@ package dev.creategalore.fishing.fish;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import dev.creategalore.fishing.FishingRegistry;
 import dev.creategalore.fishing.sim.SizeClass;
+import dev.creategalore.fishing.tide.data.item.TideDataComponents;
 import java.util.Locale;
 import java.util.Optional;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.world.item.ItemStack;
 
 /**
  * What is known about one caught fish, stored on its item.
@@ -53,6 +56,19 @@ public record CatchInfo(SizeClass size, Optional<Integer> lengthMm, Optional<Int
         }
         return new CatchInfo(size, Optional.of((int) Math.round(lengthCm * 10)), Optional.of((int) Math.round(kg * 1000)),
                 Optional.of(angler), Optional.of(day));
+    }
+
+    /**
+     * What is known about the fish on {@code stack}: its catch info, or for a fish caught with Tide (only Tide's
+     * length on it) the info its length gives through the species' length-weight curve. Server side (the client has
+     * no species table); empty for anything that isn't a known fish.
+     */
+    public static Optional<CatchInfo> read(ItemStack stack) {
+        CatchInfo info = stack.get(FishingRegistry.CATCH.get());
+        if (info != null) return Optional.of(info);
+        Double cm = stack.get(TideDataComponents.FISH_LENGTH);
+        if (cm == null || cm <= 0) return Optional.empty();
+        return SpeciesManager.of(stack).map(s -> of(s.size().classify(cm), cm, s.size().weightKg(cm), "", 0));
     }
 
     public boolean exact() {

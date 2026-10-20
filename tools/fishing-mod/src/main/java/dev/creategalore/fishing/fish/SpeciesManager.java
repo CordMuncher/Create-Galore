@@ -7,12 +7,14 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JsonOps;
 import dev.creategalore.fishing.CreateGaloreFishing;
 import dev.creategalore.fishing.bait.BaitKind;
+import dev.creategalore.fishing.net.FishDataSync;
 import dev.creategalore.fishing.sim.Curve;
 import dev.creategalore.fishing.sim.FishFight;
 import dev.creategalore.fishing.sim.SizeModel;
 import dev.creategalore.fishing.tide.data.FishingCondition;
 import dev.creategalore.fishing.tide.data.FishingModifier;
-import dev.creategalore.fishing.tide.data.TideFishData;
+import dev.creategalore.fishing.tide.data.fishing.FishData;
+import dev.creategalore.fishing.tide.data.fishing.SizeData;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -37,6 +39,8 @@ import net.minecraft.world.item.Items;
 import net.neoforged.fml.ModList;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
+import net.neoforged.neoforge.event.OnDatapackSyncEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 /**
  * Loads every fish species from data packs on each (re)load: Tide-format fish files from
@@ -56,11 +60,17 @@ public final class SpeciesManager extends SimplePreparableReloadListener<Species
     private static volatile Map<Item, Species> byItem = Map.of();
     private static volatile List<Species> species = List.of();
     private static volatile List<String> problems = List.of();
+    /** Every fish file that loaded, merged ones included: what Tide's API ({@link FishData}) and clients see. */
+    private static volatile List<FishData> published = List.of();
 
     public static void register() {
         FishingCondition.bootstrap();
         FishingModifier.bootstrap();
         NeoForge.EVENT_BUS.addListener((AddReloadListenerEvent event) -> event.addListener(new SpeciesManager()));
+        NeoForge.EVENT_BUS.addListener((OnDatapackSyncEvent event) -> {
+            FishDataSync payload = FishDataSync.of(published);
+            event.getRelevantPlayers().forEach(player -> PacketDistributor.sendToPlayer(player, payload));
+        });
     }
 
     /** Every species that can bite, in load order. */
@@ -106,13 +116,14 @@ public final class SpeciesManager extends SimplePreparableReloadListener<Species
     @Override
     protected void apply(Raw raw, ResourceManager resources, ProfilerFiller profiler) {
         List<String> trouble = new ArrayList<>();
-        Map<Item, TideFishData> originals = new LinkedHashMap<>();
+        Map<Item, FishData> originals = new LinkedHashMap<>();
         Map<Item, Item> mergedInto = new HashMap<>();
+        Map<Item, FishData> mergedData = new LinkedHashMap<>();
         for (Map.Entry<ResourceLocation, JsonElement> e : raw.fish().entrySet()) {
             if (!modsPresent(e.getValue())) continue;
             dropMissingBucket(e.getValue());
-            DataResult<TideFishData> parsed = TideFishData.CODEC.parse(JsonOps.INSTANCE, e.getValue());
-            Optional<TideFishData> data = parsed.result();
+            DataResult<FishData> parsed = FishData.CODEC.parse(JsonOps.INSTANCE, e.getValue());
+            Optional<FishData> data = parsed.result();
             if (data.isEmpty()) {
                 String fish = fishId(e.getValue());
                 // Data for a mod that isn't here (and doesn't say so in associated_mods): not a problem.
@@ -121,14 +132,20 @@ public final class SpeciesManager extends SimplePreparableReloadListener<Species
                 trouble.add(e.getKey() + ": " + why);
                 continue;
             }
-            TideFishData d = data.get();
+            FishData d = data.get();
             Item item = d.fish().value();
             if (item == Items.AIR) continue;
+            // An old redirect for a Tide fish the aliases already send to its parent (tide:carp is now
+            // aquaculture:carp): merging a fish into itself would remove it.
+            if (d.parent().isPresent() && d.parent().get().value() == item) continue;
             if (d.parent().isPresent()) {
                 mergedInto.put(item, d.parent().get().value());
+                mergedData.put(item, d);
+                originals.remove(item);
             } else {
                 originals.put(item, d);
                 mergedInto.remove(item);
+                mergedData.remove(item);
             }
         }
 
@@ -150,7 +167,7 @@ public final class SpeciesManager extends SimplePreparableReloadListener<Species
 
         List<Species> built = new ArrayList<>();
         Map<Item, Species> lookup = new IdentityHashMap<>();
-        for (Map.Entry<Item, TideFishData> e : originals.entrySet()) {
+        for (Map.Entry<Item, FishData> e : originals.entrySet()) {
             Species s = build(e.getKey(), e.getValue(), extensions.get(e.getKey()));
             built.add(s);
             lookup.put(e.getKey(), s);
@@ -162,6 +179,10 @@ public final class SpeciesManager extends SimplePreparableReloadListener<Species
         species = Collections.unmodifiableList(built);
         byItem = Collections.unmodifiableMap(lookup);
         problems = List.copyOf(trouble);
+        List<FishData> all = new ArrayList<>(originals.values());
+        all.addAll(mergedData.values());
+        published = List.copyOf(all);
+        FishData.publish(published);
         trouble.forEach(p -> CreateGaloreFishing.LOG.warn("Fishing data problem: {}", p));
         CreateGaloreFishing.LOG.info("Loaded {} fish species ({} items incl. merged ones, {} with our own data)",
                 built.size(), lookup.size(), extensions.size());
@@ -188,7 +209,7 @@ public final class SpeciesManager extends SimplePreparableReloadListener<Species
     }
 
     /** Combines Tide data, our extension (may be null) and the defaults into one species. */
-    static Species build(Item item, TideFishData tide, SpeciesExtension ext) {
+    static Species build(Item item, FishData tide, SpeciesExtension ext) {
         ResourceLocation id = BuiltInRegistries.ITEM.getKey(item);
         String path = id.getPath();
         FishFight base = SpeciesDefaults.fight(path, tide);
@@ -213,8 +234,8 @@ public final class SpeciesManager extends SimplePreparableReloadListener<Species
         }
         diet.putAll(feeding.diet());
         if (ext != null) diet.putAll(ext.diet());
-        TideFishData.Size size = (ext != null ? ext.size() : Optional.<TideFishData.Size>empty())
-                .or(tide::size).orElse(new TideFishData.Size(35, 60, Optional.empty(), 100));
+        SizeData size = (ext != null ? ext.size() : Optional.<SizeData>empty())
+                .or(tide::size).orElse(new SizeData(35, 60, 100));
         SizeModel model = new SizeModel(size.typicalLowCm(), size.typicalHighCm(), size.recordHighCm(), a, b);
         return new Species(id, item, tide, fight, model, feeding, Collections.unmodifiableMap(diet), wary, fillet, oily);
     }

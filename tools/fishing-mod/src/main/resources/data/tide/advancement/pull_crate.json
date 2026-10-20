@@ -1,0 +1,26 @@
+{
+  "parent": "tide:root",
+  "criteria": {
+    "pull_crate": {
+      "trigger": "tide:pull_crate"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.tide.pull_crate.description"
+    },
+    "icon": {
+      "count": 1,
+      "id": "tide:wooden_crate"
+    },
+    "title": {
+      "translate": "advancements.tide.pull_crate.title"
+    }
+  },
+  "requirements": [
+    [
+      "pull_crate"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

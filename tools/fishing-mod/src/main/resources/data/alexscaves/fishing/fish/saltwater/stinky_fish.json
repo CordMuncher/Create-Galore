@@ -1,0 +1,20 @@
+{
+    "associated_mods": ["alexscaves"],
+    "fish": "alexscaves:stinky_fish",
+    "journal_profile": {
+        "description": "journal.description.alexscaves.stinky_fish",
+        "group": "saltwater",
+        "location": "biome.alexscaves.abyssal_chasm",
+        "rarity": "legendary"
+    },
+    "conditions": [
+        { "type": "tide:saltwater" },
+        { "type": "tide:dimension", "dimensions": ["minecraft:overworld"] },
+        { "type": "tide:fluid", "fluid": "water" },
+        { "type": "tide:found_in", "biomes": ["alexscaves:abyssal_chasm"] }
+    ],
+    "selection_weight": 1.0,
+    "size": { "record_high_cm": 300.0, "typical_high_cm": 30.0, "typical_low_cm": 10.0 },
+    "speed": 2.0,
+    "strength": 1.0
+}

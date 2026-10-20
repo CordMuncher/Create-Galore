@@ -1,0 +1,30 @@
+{
+    "associated_mods": ["fintastic"],
+    "fish": "fintastic:featherback",
+    "bucket": "fintastic:featherback_bucket",
+    "journal_profile": {
+        "description": "journal.description.fintastic.featherback",
+        "group": "freshwater",
+        "location": "journal.info.location.swamp",
+        "rarity": "common"
+    },
+    "display_data": {
+        "entity": "fintastic:featherback",
+        "nbt": { "Variant": 21 },
+        "shape": "2x1",
+        "roll": -90,
+        "y": -0.4,
+        "z": 0.09
+    },
+    "conditions": [
+        { "type": "tide:freshwater" },
+        { "type": "tide:dimension", "dimensions": ["minecraft:overworld"] },
+        { "type": "tide:fluid", "fluid": "water" },
+        { "type": "tide:above", "y": 40 },
+        { "type": "tide:found_in", "biomes": ["#minecraft:is_swamp"] }
+    ],
+    "selection_weight": 30.0,
+    "size": { "record_high_cm": 35.0, "typical_high_cm": 20.0, "typical_low_cm": 10.0 },
+    "speed": 0.2,
+    "strength": 0.65
+}

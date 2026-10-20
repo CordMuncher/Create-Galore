@@ -1,0 +1,26 @@
+{
+    "associated_mods": ["aquaculture"],
+    "fish": "aquaculture:red_shrooma",
+    "bucket": "aquaculture:red_shrooma_bucket",
+    "journal_profile": {
+        "description": "journal.description.aquaculture.red_shrooma",
+        "group": "saltwater",
+        "location": "journal.info.location.mushroom_island",
+        "rarity": "uncommon"
+    },
+    "display_data": {
+        "entity": "aquaculture:red_shrooma",
+        "x": 0.1,
+        "y": 0.1
+    },
+    "conditions": [
+        { "type": "tide:dimension", "dimensions": ["minecraft:overworld"] },
+        { "type": "tide:fluid", "fluid": "water" },
+        { "type": "tide:above", "y": 40 },
+        { "type": "tide:found_in", "biomes": ["#tide:has_mushroom_fish"] }
+    ],
+    "selection_weight": 30.0,
+    "size": { "record_high_cm": 60.0, "typical_high_cm": 40.0, "typical_low_cm": 15.0 },
+    "speed": 0.7,
+    "strength": 0.4
+}

@@ -1,0 +1,13 @@
+{
+  "conditions": [
+    {
+      "type": "tide:found_in_structures",
+      "structures": [
+        "minecraft:trial_chambers"
+      ]
+    }
+  ],
+  "loot_table": "tide:gameplay/fishing/trial_chamber",
+  "quality": 1.0,
+  "weight": 20.0
+}

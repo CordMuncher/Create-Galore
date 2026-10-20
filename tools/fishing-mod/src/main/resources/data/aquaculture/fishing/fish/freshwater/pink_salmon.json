@@ -1,0 +1,29 @@
+{
+    "associated_mods": ["aquaculture"],
+    "fish": "aquaculture:pink_salmon",
+    "bucket": "aquaculture:pink_salmon_bucket",
+    "journal_profile": {
+        "description": "journal.description.aquaculture.pink_salmon",
+        "group": "freshwater",
+        "location": "journal.info.location.freshwater",
+        "rarity": "common"
+    },
+    "display_data": {
+        "entity": "aquaculture:pink_salmon",
+        "x": 0.1
+    },
+    "conditions": [
+        { "type": "tide:dimension", "dimensions": ["minecraft:overworld"] },
+        { "type": "tide:fluid", "fluid": "water" },
+        { "type": "tide:above", "y": 40 },
+        { "type": "tide:found_in", "biomes": ["#minecraft:is_river"] },
+        { "type": "tide:seasons", "seasons": ["summer", "fall", "winter"] }
+    ],
+    "modifiers": [
+        { "type": "tide:temperature", "preferred_temperature": -1, "temperature_tolerance": 0.75 }
+    ],
+    "selection_weight": 40.0,
+    "size": { "record_high_cm": 145.0, "typical_high_cm": 100.0, "typical_low_cm": 75.0 },
+    "speed": 0.35,
+    "strength": 0.4
+}

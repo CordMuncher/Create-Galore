@@ -1,0 +1,16 @@
+{
+  "item": "tide:village_fishing_rod",
+  "_generated": "from tools/fishing-mod/gen_tackle.py; edit that, not this file",
+  "kind": "rod",
+  "length": 2.1,
+  "max_load": 7,
+  "action": "moderate",
+  "sections": 2,
+  "lure_min": 3,
+  "lure_max": 25,
+  "color": "#8a6a45",
+  "grip": "#5a3e26",
+  "grip_style": "wood",
+  "finish": "wood",
+  "perk": "village"
+}

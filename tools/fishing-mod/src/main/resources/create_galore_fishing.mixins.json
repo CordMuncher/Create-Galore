@@ -4,7 +4,10 @@
   "package": "dev.creategalore.fishing.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
-    "EntityAccessor"
+    "EntityAccessor",
+    "FallingBlockEntityAccessor",
+    "PathNavigationAccessor",
+    "ItemStackRodSwapMixin"
   ],
   "client": [
     "PlayerModelHoldMixin"

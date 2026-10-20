@@ -1,0 +1,13 @@
+{
+    "associated_mods": ["unusualfishmod"],
+    "conditions": [
+        { "type": "tide:dimension", "dimensions": ["minecraft:overworld"] },
+        { "type": "tide:fluid", "fluid": "water" },
+        { "type": "tide:above", "y": 40 },
+        { "type": "tide:found_in", "biomes": ["#minecraft:is_river"] },
+        { "type": "tide:has_enchantments", "enchantments": ["unusualfishmod:unusual_catch"] }
+    ],
+    "loot_table": "unusualfishmod:gameplay/fishing/unusual_catch_river_treasure",
+    "quality": 2.0,
+    "weight": 20.0
+}

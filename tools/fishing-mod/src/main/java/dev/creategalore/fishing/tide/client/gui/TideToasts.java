@@ -1,0 +1,46 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ *
+ * Ported from Tide 2 (https://github.com/Lightning-64/Tide-2) by Lightning-64,
+ * modified for Create Galore Fishing.
+ */
+package dev.creategalore.fishing.tide.client.gui;
+
+import dev.creategalore.fishing.tide.Tide;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.toasts.Toast;
+import net.minecraft.client.gui.components.toasts.ToastComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+
+public class TideToasts {
+    // TODO: maybe make some custom art for this?
+    private static final ResourceLocation TEXTURE = Tide.resource("minecraft", "toast/recipe");
+
+    public static void display(Toast toast) {
+        Minecraft.getInstance().getToasts().addToast(toast);
+    }
+
+    public record NewPageToast(Component title, Component description, ItemStack displayedItem) implements Toast {
+        public NewPageToast(Component title, Component description, ItemStack displayedItem) {
+            this.title = title;
+            this.description = description;
+            this.displayedItem = displayedItem;
+            if (description == null) Tide.LOG.error("Component cannot be null");
+        }
+
+        @Override
+        public Visibility render(GuiGraphics graphics, ToastComponent component, long time) {
+            graphics.blitSprite(TEXTURE, 0, 0, this.width(), this.height());
+
+            graphics.drawString(component.getMinecraft().font, title, 30, 7, -11534256, false);
+            graphics.drawString(component.getMinecraft().font, description, 30, 18, -16777216, false);
+            graphics.renderFakeItem(displayedItem, 8, 8);
+            return (double) (time) >= 5000.0D * component.getNotificationDisplayTimeMultiplier() ? Visibility.HIDE : Visibility.SHOW;
+        }
+    }
+}

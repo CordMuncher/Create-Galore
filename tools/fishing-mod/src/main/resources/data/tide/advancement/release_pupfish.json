@@ -1,0 +1,28 @@
+{
+  "parent": "tide:catch_legendary",
+  "criteria": {
+    "release_pupfish": {
+      "trigger": "tide:released_pupfish"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.tide.release_pupfish.description"
+    },
+    "frame": "challenge",
+    "hidden": true,
+    "icon": {
+      "count": 1,
+      "id": "tide:devils_hole_pupfish"
+    },
+    "title": {
+      "translate": "advancements.tide.release_pupfish.title"
+    }
+  },
+  "requirements": [
+    [
+      "release_pupfish"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

@@ -1,0 +1,28 @@
+{
+    "associated_mods": ["naturalist"],
+    "fish": "naturalist:bass",
+    "bucket": "naturalist:bass_bucket",
+    "journal_profile": {
+        "description": "journal.description.naturalist.bass",
+        "group": "freshwater",
+        "location": "journal.info.location.swamp",
+        "rarity": "common"
+    },
+    "display_data": {
+        "entity": "naturalist:bass",
+        "roll": -90.0,
+        "y": -0.3,
+        "z": 0.15
+    },
+    "conditions": [
+        { "type": "tide:freshwater" },
+        { "type": "tide:dimension", "dimensions": ["minecraft:overworld"] },
+        { "type": "tide:fluid", "fluid": "water" },
+        { "type": "tide:above", "y": 40 },
+        { "type": "tide:found_in", "biomes": ["minecraft:swamp", "minecraft:mangrove_swamp", "#minecraft:is_river", "#c:is_swamp", "biomesoplenty:bayou", "biomesoplenty:bog", "biomesoplenty:wetland"] }
+    ],
+    "selection_weight": 30.0,
+    "size": { "record_high_cm": 180.0, "typical_high_cm": 120.0, "typical_low_cm": 60.0 },
+    "speed": 0.35,
+    "strength": 0.3
+}

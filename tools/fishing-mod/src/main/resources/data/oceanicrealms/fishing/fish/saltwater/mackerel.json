@@ -1,0 +1,28 @@
+{
+    "associated_mods": ["oceanicrealms"],
+    "fish": "oceanicrealms:mackerel_fish",
+    "bucket": "oceanicrealms:mackerel_fish_bucket",
+    "journal_profile": {
+        "description": "journal.description.oceanicrealms.mackerel",
+        "group": "saltwater",
+        "location": "journal.info.location.saltwater_warm",
+        "rarity": "common"
+    },
+    "display_data": {
+        "entity": "oceanicrealms:mackerel_fish",
+        "roll": -90.0,
+        "y": -0.15,
+        "z": 0.15
+    },
+    "conditions": [
+        { "type": "tide:saltwater" },
+        { "type": "tide:dimension", "dimensions": ["minecraft:overworld"] },
+        { "type": "tide:fluid", "fluid": "water" },
+        { "type": "tide:above", "y": 40 },
+        { "type": "tide:found_in", "biomes": ["minecraft:warm_ocean"] }
+    ],
+    "selection_weight": 40.0,
+    "size": { "record_high_cm": 80.0, "typical_high_cm": 50.0, "typical_low_cm": 30.0 },
+    "speed": 0.25,
+    "strength": 0.5
+}

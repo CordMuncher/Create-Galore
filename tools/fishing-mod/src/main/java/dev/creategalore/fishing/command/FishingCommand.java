@@ -1,5 +1,4 @@
 package dev.creategalore.fishing.command;
-
 import com.mojang.brigadier.arguments.DoubleArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
@@ -58,6 +57,9 @@ public final class FishingCommand {
                                                 .executes(ctx -> biteWith(ctx.getSource(), EntityArgument.getPlayer(ctx, "player"),
                                                         StringArgumentType.getString(ctx, "species"),
                                                         DoubleArgumentType.getDouble(ctx, "cm")))))))
+                .then(Commands.literal("crate")
+                        .then(Commands.argument("player", EntityArgument.player())
+                                .executes(ctx -> crate(ctx.getSource(), EntityArgument.getPlayer(ctx, "player")))))
                 .then(Commands.literal("hold")
                         .then(Commands.argument("player", EntityArgument.player())
                                 .then(Commands.argument("species", StringArgumentType.string())
@@ -98,6 +100,17 @@ public final class FishingCommand {
         hook.forceBite(new BiteSampler.Bite(species, cm, species.size().weightKg(cm), species.size().classify(cm)));
         source.sendSuccess(() -> Component.literal(String.format(Locale.ROOT, "Next bite: %s, %.0f cm, %.2f kg",
                 species.id(), cm, species.size().weightKg(cm))), false);
+        return 1;
+    }
+
+    /** Test tool: the next bite on a player's line is a loot crate (if one fits the spot). */
+    private static int crate(CommandSourceStack source, ServerPlayer player) {
+        if (!(player.fishing instanceof CastHook hook)) {
+            source.sendFailure(Component.literal(player.getGameProfile().getName() + " has no line out"));
+            return 0;
+        }
+        hook.forceCrate();
+        source.sendSuccess(() -> Component.literal("Next bite: a crate"), false);
         return 1;
     }
 

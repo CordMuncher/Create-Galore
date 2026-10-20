@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "tide:block/lunar_calendar"
+    },
+    "facing=east": {
+      "model": "tide:block/lunar_calendar",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "tide:block/lunar_calendar",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "tide:block/lunar_calendar",
+      "y": 270
+    }
+  }
+}

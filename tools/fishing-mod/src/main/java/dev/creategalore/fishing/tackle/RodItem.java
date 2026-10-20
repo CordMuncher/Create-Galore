@@ -3,6 +3,7 @@ package dev.creategalore.fishing.tackle;
 import dev.creategalore.fishing.FishingRegistry;
 import dev.creategalore.fishing.cast.CastHook;
 import dev.creategalore.fishing.cast.CatchHolding;
+import dev.creategalore.fishing.compat.TideRodConversion;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +13,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.SlotAccess;
 import net.minecraft.world.entity.player.Player;
@@ -58,6 +60,16 @@ public class RodItem extends Item {
     @Override
     public boolean shouldCauseReequipAnimation(ItemStack oldStack, ItemStack newStack, boolean slotChanged) {
         return slotChanged || oldStack.getItem() != newStack.getItem();
+    }
+
+    /** A rod rigged with Tide (its parts kept in Tide's components) becomes one of ours as soon as a player has it. */
+    @Override
+    public void inventoryTick(ItemStack stack, Level level, Entity entity, int slot, boolean selected) {
+        if (!level.isClientSide && entity instanceof Player player && TideRodConversion.needsConversion(stack)) {
+            TideRodConversion.convert(stack, bait -> {
+                if (!player.getInventory().add(bait)) player.drop(bait, false);
+            });
+        }
     }
 
     public static RodParts parts(ItemStack rod) {

@@ -13,6 +13,10 @@ description = '''Realistic-lite fishing for Create Galore: rods, reels, lines, h
 [[mixins]]
 config = "create_galore_fishing.mixins.json"
 
+# The ported Tide code's own mixins (fish length, satchel, journal lectern, pocket watch freeze, ...).
+[[mixins]]
+config = "create_galore_fishing_tide.mixins.json"
+
 [[dependencies.create_galore_fishing]]
 modId = "neoforge"
 type = "required"
@@ -25,6 +29,23 @@ modId = "create"
 type = "required"
 versionRange = "[6.0,)"
 ordering = "AFTER"
+side = "BOTH"
+
+# Our mod carries Tide's content (ported, under Tide's own "tide" ids), so the two can never load together.
+[[dependencies.create_galore_fishing]]
+modId = "tide"
+type = "incompatible"
+reason = "Create Galore Fishing replaces Tide and already includes its fish, journal and extras."
+versionRange = "*"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.create_galore_fishing]]
+modId = "mr_tide_extracompatibility"
+type = "incompatible"
+reason = "Create Galore Fishing already includes Tide Extra Compatibility's fish data."
+versionRange = "*"
+ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.create_galore_fishing]]

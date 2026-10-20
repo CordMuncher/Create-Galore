@@ -1,0 +1,28 @@
+{
+    "associated_mods": ["unusualfishmod"],
+    "fish": "unusualfishmod:raw_blind_sailfin",
+    "bucket": "unusualfishmod:blind_sailfin_bucket",
+    "journal_profile": {
+        "description": "journal.description.unusualfishmod.blind_sailfin",
+        "group": "underground",
+        "location": "journal.info.location.underground",
+        "rarity": "common"
+    },
+    "display_data": {
+        "entity": "unusualfishmod:blindsailfin",
+        "roll": -90,
+        "x": 0.1,
+        "y": -0.2,
+        "z": 0.2
+    },
+    "conditions": [
+        { "type": "tide:dimension", "dimensions": ["minecraft:overworld"] },
+        { "type": "tide:fluid", "fluid": "water" },
+        { "type": "tide:below", "y": 30 },
+        { "type": "tide:has_enchantments", "enchantments": ["unusualfishmod:unusual_catch"] }
+    ],
+    "selection_weight": 40.0,
+    "size": { "record_high_cm": 180.0, "typical_high_cm": 130.0, "typical_low_cm": 90.0 },
+    "speed": 0.3,
+    "strength": 0.6
+}

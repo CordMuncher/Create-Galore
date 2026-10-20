@@ -1,16 +1,29 @@
 package dev.creategalore.fishing.cast;
-
 import dev.creategalore.fishing.FishingRegistry;
 import dev.creategalore.fishing.fish.CatchInfo;
 import dev.creategalore.fishing.fish.Species;
 import dev.creategalore.fishing.sim.Fight;
+import dev.creategalore.fishing.tackle.RodStats;
+import dev.creategalore.fishing.tide.data.FishingContext;
+import dev.creategalore.fishing.tide.data.TideCriteriaTriggers;
+import dev.creategalore.fishing.tide.data.TideLootTables;
+import dev.creategalore.fishing.tide.data.fishing.CatchTables;
+import dev.creategalore.fishing.tide.data.fishing.CrateData;
+import dev.creategalore.fishing.tide.data.fishing.FishingLootData;
+import dev.creategalore.fishing.tide.data.item.TideItemData;
+import dev.creategalore.fishing.tide.data.loot.LootTableRef;
+import dev.creategalore.fishing.tide.registries.entities.misc.LootCrateEntity;
+import dev.creategalore.fishing.tide.util.TideUtils;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import net.minecraft.advancements.CriteriaTriggers;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -21,6 +34,8 @@ import net.minecraft.tags.ItemTags;
 import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.loot.BuiltInLootTables;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
@@ -120,12 +135,19 @@ public final class Catches {
                 SoundSource.PLAYERS, 0.8f, 1.1f);
     }
 
-    /** Junk or treasure from the vanilla fishing tables (other mods add to them), as vanilla rolls them. */
-    public static List<ItemStack> lootFrom(CastHook hook, ItemStack rod, boolean treasure, int luck) {
+    /**
+     * Junk or treasure, as vanilla rolls it, from the table Tide's {@code fishing/loot} data picks for the spot (lava
+     * and cave junk, Nether and ocean monument treasure, ...), else from the vanilla fishing tables (other mods add
+     * to those).
+     */
+    public static List<ItemStack> lootFrom(CastHook hook, ItemStack rod, FishingContext context, boolean treasure,
+                                           int luck) {
         ServerLevel level = (ServerLevel) hook.level();
-        LootTable table = level.getServer().reloadableRegistries().getLootTable(treasure
-                ? net.minecraft.world.level.storage.loot.BuiltInLootTables.FISHING_TREASURE
-                : net.minecraft.world.level.storage.loot.BuiltInLootTables.FISHING_JUNK);
+        ResourceKey<LootTable> key = (context == null ? Optional.<FishingLootData>empty()
+                : CatchTables.pickLoot(context, hook.getRandom(), treasure))
+                .map(FishingLootData::lootTable)
+                .orElse(treasure ? BuiltInLootTables.FISHING_TREASURE : BuiltInLootTables.FISHING_JUNK);
+        LootTable table = level.getServer().reloadableRegistries().getLootTable(key);
         LootParams params = new LootParams.Builder(level)
                 .withParameter(LootContextParams.ORIGIN, hook.position())
                 .withParameter(LootContextParams.TOOL, rod)
@@ -133,6 +155,63 @@ public final class Catches {
                 .withLuck(luck)
                 .create(LootContextParamSets.FISHING);
         return table.getRandomItems(params);
+    }
+
+    /**
+     * A loot crate reeled in: it flies out of the water toward the angler as Tide's crates do, and fills itself from
+     * its loot table where it lands. Fires {@code tide:pull_crate}.
+     */
+    public static void pullCrate(CastHook hook, Player angler, ItemStack rod, CrateData crate, int luck) {
+        ServerLevel level = (ServerLevel) hook.level();
+        BlockPos pos = hook.blockPosition();
+        BlockState water = level.getBlockState(pos);
+        BlockState block = crate.blockProvider().getState(hook.getRandom(), pos);
+        LootParams params = new LootParams.Builder(level)
+                .withParameter(LootContextParams.ORIGIN, hook.position())
+                .withParameter(LootContextParams.THIS_ENTITY, angler)
+                .withLuck(luck)
+                .create(LootContextParamSets.CHEST);
+        double dx = angler.getX() - pos.getX();
+        double dy = angler.getY() - pos.getY();
+        double dz = angler.getZ() - pos.getZ();
+        LootCrateEntity.create(level, pos, block, dx * 0.0666,
+                dy * 0.0666 + Math.sqrt(Math.sqrt(dx * dx + dy * dy + dz * dz)) * 0.082 + 0.27, dz * 0.0666,
+                params, crate.lootTable().map(LootTableRef::of).orElse(null));
+        // The crate leaves the water (or lava) it was pulled from as it was.
+        level.setBlock(pos, water, 3);
+        if (angler instanceof ServerPlayer player) TideCriteriaTriggers.PULLED_CRATE.trigger(player);
+        level.playSound(null, angler.getX(), angler.getY(), angler.getZ(), SoundEvents.FISHING_BOBBER_RETRIEVE,
+                SoundSource.PLAYERS, 0.8f, 0.8f);
+    }
+
+    /**
+     * The Midas and Village rods' extra catch, as in Tide: now and then a gold item or a bit of village loot comes
+     * up with the fish (never in lava).
+     */
+    public static Optional<ItemStack> perkBonus(CastHook hook, Player angler, ItemStack rod, RodStats stats,
+                                                String medium, int luck) {
+        if (medium.equals("lava")) return Optional.empty();
+        LootTableRef table = stats.rod().has("midas") ? TideLootTables.Fishing.BONUS_GOLD
+                : stats.rod().has("village") ? TideLootTables.Fishing.BONUS_VILLAGE : null;
+        if (table == null) return Optional.empty();
+        ServerLevel level = (ServerLevel) hook.level();
+        LootParams params = new LootParams.Builder(level)
+                .withParameter(LootContextParams.ORIGIN, hook.position())
+                .withParameter(LootContextParams.TOOL, rod)
+                .withParameter(LootContextParams.THIS_ENTITY, hook)
+                .withLuck(luck)
+                .create(LootContextParamSets.FISHING);
+        return table.getTable(level.getServer()).getRandomItems(params).stream().filter(s -> !s.isEmpty()).findFirst();
+    }
+
+    /**
+     * Logs a landed fish in the angler's Fishing Journal (Tide's), with its length, kept or released: the journal
+     * unlocks the species and keeps the angler's records.
+     */
+    public static void logInJournal(ServerPlayer angler, ItemStack fish, BiteSampler.Bite bite) {
+        ItemStack entry = fish.copy();
+        TideItemData.FISH_LENGTH.set(entry, bite.lengthCm());
+        TideUtils.tryLogCatch(entry, angler, bite.kg());
     }
 
     static Component describe(Species species, BiteSampler.Bite bite) {

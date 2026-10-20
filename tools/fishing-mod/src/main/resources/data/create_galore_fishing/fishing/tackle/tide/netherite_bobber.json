@@ -1,0 +1,7 @@
+{
+  "item": "tide:netherite_bobber",
+  "_generated": "from tools/fishing-mod/gen_tackle.py; edit that, not this file",
+  "kind": "float",
+  "weight": 7,
+  "color": "#4a3f43"
+}
