@@ -50,6 +50,7 @@ public final class CreateGaloreBridge {
         PredatorFeeding.register();
         CritterUnify.register();
         AirshipCaptains.register();
+        StructureFixes.register();
         GuideAi.register(modBus);
         if (FMLEnvironment.dist.isClient()) {
             BridgeClient.init(modBus);

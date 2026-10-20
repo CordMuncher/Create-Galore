@@ -248,6 +248,10 @@ The spark commands still work by hand too: `/spark tps` and `/spark health` for 
 
 **Changing it.** Edit `config/create_galore_lagwatch-common.toml` in the server folder and restart: the TPS that counts as lag (`alertTps`), how long it has to last (`alertAfterSeconds`), whether everyone or only operators see the alert (`tellEveryone`), the profile length, the 10-minute limit and how many profiles to keep. Under `[freeze]`: `seconds` (how long a tick must take before it counts as a freeze, 2 by default), `looks` (how many times one freeze is written down) and `enabled` for the freeze catcher alone. `enabled = false` at the top turns all of Lag Watch off.
 
+## Structure cache
+
+After the server starts it upgrades the structure files of other mods that were saved by older Minecraft versions, in the background, and keeps the upgraded copies in `cache/create_galore/` next to `world/`. The first start takes about 3 minutes for this (the server is playable meanwhile, the log says `Create Galore: old structure files ready in ...` when done) and uses about 114 MB; later starts only check it in a few seconds. Without it, the first chunk near a big dungeon or ruin froze the server for several seconds. The folder is safe to delete (it is rebuilt) and does not need to be in backups.
+
 ## What was tested (2026-10-15)
 
 On a cloud test machine (4 CPU cores, 16 GB RAM, no GPU) with this pack (0.1.1, 181 server mods + Twilight Forest):

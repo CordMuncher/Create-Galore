@@ -4,6 +4,14 @@ Each pack version gets a section here, with **Added**, **Fixed** and **Removed**
 workflow copies the section for the version in `pack/pack.toml` to the top of the GitHub release, and the build
 fails when that section is missing.
 
+## 0.3.8
+
+### Fixed
+- **No more long freezes near old dungeons and ruins.** When new or saved land near a big structure (When Dungeons Arise keeps, Incendium's sanctum and others) loaded, the server could stop for 5 to 20 s: most structure files from other mods were saved by older Minecraft versions and get upgraded on the server thread the first time they are needed, and Steam 'n' Rails and Brewin' and Chewin' each ran their own full upgrade pass over every structure file again, though they only ever change their own blocks. Those two passes now skip files that hold none of their blocks, and the server upgrades all old structure files once in the background after it starts (about 3 minutes on the first start, 114 MB in `cache/create_galore`, a few seconds on later starts) and reads the upgraded copy from then on. In a test, loading the chunks around a When Dungeons Arise keep froze the server for 21.3 s before and 2.3 s after.
+- **Jade no longer writes an error file when you look at some chests.** Looking at a chest the server had already turned into something else (a Lootr chest, a chest on a moving ship, a ghost block) made Jade ask for a chest inventory that wasn't there and fail with a NullPointerException. Such a chest now simply shows no inventory.
+- **Ask the Book's drawings use the strict format again.** The drawing tool's colour choices were described in a way the API rejects, so it always fell back to the slower loose format.
+- Create Galore Bridge 1.32.0.
+
 ## 0.3.7
 
 ### Added
