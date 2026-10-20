@@ -20,6 +20,11 @@
     {
       "type": "modonomicon:text",
       "title": "Creatures",
+      "text": "[#](FFFFFF)[#]() **Key points**\n\n- **Critters and Companions** and **Naturalist** add Overworld animals, many of them tameable.\n- Every snail and dragonfly can be tamed, and every snail gives slime in a bottle.\n- Hybrid Aquatic otters crack clams for pearls."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
       "text": "Two mods fill the Overworld with ordinary-feeling animals. They are vanilla-style: no bosses, no new dimension, just more to see and sometimes tame."
     },
     {
@@ -55,6 +60,29 @@
       },
       "title": "Capture Net",
       "text": "Naturalist's tool to catch small creatures like butterflies and firefly."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Snails and dragonflies",
+      "text": "All **snails** and **dragonflies** are Critters and Companions' ones. Every one can be tamed, 1 try in 10: snails with leaves, dragonflies with a spider eye.\\\n\\\nSnails drop snail shells and slime balls."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "crittersandcompanions:snail_slime_bottle"
+      },
+      "title": "Snail Slime",
+      "text": "Use a glass bottle on any grown snail: Critters' snail, Hybrid Aquatic's scalyfoot snail or the Moon's snail. Each snail refills every 5 minutes. A bottle crafts into a slime ball."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "- Hybrid Aquatic's **sea slug** fills a bottle with **Sea Bunny Slime** (the same 5 minutes); four make a Sea Bunny Slime Block.\n- Hand a Critters **clam** (a river fishing treasure) to a Hybrid Aquatic **otter**: it cracks it open, a **pearl** 1 time in 4, for Pearl Necklaces.\n- Frogs eat wild dragonflies and leave **froglass**; they never eat tamed ones."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Twilight Forest animals:\n\n- **Deer** drop venison, leather and antlers, like Overworld deer. Venison jerky dries from any venison.\n- **Boars** drop porkchops, fat and hide.\n- **Helmet crabs** drop raw crab and armor shards."
     },
     {
       "type": "modonomicon:text",

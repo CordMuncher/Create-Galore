@@ -1,4 +1,4 @@
-<!-- sources sha256:2c8706ec436137b9f294feed41cd9267bf9684055de78c5bf9b63e4cbd6ccb40 -->
+<!-- sources sha256:ac3f71899655d3d8d674b159f4fc2fcb6af4c261b304cd2fedbc89c331812d97 -->
 # Space (space)
 Northstar (rockets) and Aeronautics ship routes to the Moon, Mars, Mercury, Venus and orbits; oxygen, suits, metals.
 
@@ -44,7 +44,7 @@ Northstar (rockets) and Aeronautics ship routes to the Moon, Mars, Mercury, Venu
 - Four landable worlds: Moon, Mars, Mercury, Venus. Earth, Mars, Mercury, Venus also have an orbit dimension; Moon has none. Other bodies are sky scenery in the atlas.
 - Titanium ore on all four; tungsten only on Mercury. Temperatures from -270 C in orbit to 464 C on Venus.
 - Gravity, temperature, air: Moon 1.6, -183 C, none; Mars 3.71, -100 C, thin; Mercury 3.7, -200 to 434 C, none; Venus 8.87, 464 C, dense. Orbits: no gravity, -270 C.
-- Moon: Lunar Plains, hills, crater fields, caves of ice, glowstone, asurine. Ores: titanium, zinc, copper, iron, gold, diamond, redstone, lapis, glowstone. Mobs: Moon Eel, Lunargrade, Snail. Abandoned lunar bases can be explored.
+- Moon: Lunar Plains, hills, crater fields, caves of ice, glowstone, asurine. Ores: titanium, zinc, copper, iron, gold, diamond, redstone, lapis, glowstone. Mobs: Moon Eel, Lunargrade, Snail (bottle it for Snail Slime). Abandoned lunar bases can be explored.
   - Moon Titanium Ore [northstar:moon_titanium_ore]: smelt directly into a Titanium Ingot. shows item northstar:moon_titanium_ore
 - Mars: dunes, highlands, peaks, caverns with crimsite and overgrown plants. Ores: titanium, iron, copper, zinc, gold, diamond, quartz, redstone. Mobs: Cobra, Devil Moth, Root Toad, Echo Worm. Martian iron and ash make Martian steel (see space/space_materials). Also palms, tulips, Martian strawberry bushes.
   - Mars Titanium Ore [northstar:mars_titanium_ore]. shows item northstar:mars_titanium_ore

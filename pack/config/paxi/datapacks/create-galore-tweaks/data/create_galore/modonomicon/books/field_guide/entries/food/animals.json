@@ -123,7 +123,12 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Other animal mods:\n\n- **Critters and Companions** adds small creatures like red pandas, ferrets, koi and dragonflies. Its otter, Dumbo Octopus and Sea Bunny spawns are off.\n- **Naturalist** adds bears, deer, elephants, lions and more. Nine of its sea animals are off; see [#](2E5AAC)[Sea Life](entry://ocean/sea_life)[#]().\n- **Sniffers Sniff Delights** gives sniffers a job: see [#](2E5AAC)[Delight Add-ons](entry://food/farmers_delight_addons)[#]()."
+      "text": "Other animal mods:\n\n- **Critters and Companions** adds small creatures like red pandas, ferrets, koi, snails and dragonflies. Every snail and dragonfly can be tamed: see [#](2E5AAC)[Creatures](entry://exploration/creatures)[#](). Its otter, Dumbo Octopus and Sea Bunny spawns are off."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "- **Naturalist** adds bears, deer, elephants, lions and more. Nine of its sea animals are off; see [#](2E5AAC)[Sea Life](entry://ocean/sea_life)[#]().\n- **Sniffers Sniff Delights** gives sniffers a job: see [#](2E5AAC)[Delight Add-ons](entry://food/farmers_delight_addons)[#]()."
     }
   ]
 }

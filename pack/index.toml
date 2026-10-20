@@ -307,6 +307,10 @@ file = "config/paxi/datapacks/create-galore-tweaks/data/alexscaves/recipe/spelun
 hash = "2398a07ae2edaf3704b6455da58b26a333edc6d9b8c51257b92d87d679ca2c9c"
 
 [[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/alexscaves/tags/item/raw_meats.json"
+hash = "b678a949c0d4f5d5a54fc49351bb6c6df4ad0a9296dc9e5ceea771a2155115e7"
+
+[[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/alloyed/loot_table/blocks/bronze_encased_cogwheel.json"
 hash = "f88e3e45e65313bca69fe167d6c895dcba30ca6b2c2c8710e1186964ef69495b"
 
@@ -960,7 +964,7 @@ hash = "3daa914d8eb8ba341bab4ee67139688013b96e6785ce2267af939cd6d512a521"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/exploration.md"
-hash = "c0629b97cf5fd8d72f712aa6321033512d23df6980a3ac41b6332a4be7f242ee"
+hash = "6fef4ba85d0bc218e298d510488ccc7c8daf34c1a847adc03bda23b22dc12e97"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/fishing.md"
@@ -972,7 +976,7 @@ hash = "a3640c2898c684c6085d1fe86e7099a3421ee29c7b74eb3482995146df6c1e61"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/food.md"
-hash = "6e85c15ba969f50e6d272689eaa25c591e3dbeb3e69ef76a8ff6e775458926cf"
+hash = "a43c128ee24b55cb8030735b02f1eab26fa1cf4fc966c30755efea82bffd3449"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/glossary.md"
@@ -992,11 +996,11 @@ hash = "6542377c5fcf0b824a1196d8fea1d9c44737706bfa8d8509254e0ae799e9d192"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/ocean.md"
-hash = "74d72a969240271943bf0c601f9df1e58c39a56edbb83851b8f8e3628ab0dc25"
+hash = "441dc81c9a856eca48747d2dc79f17dfdcb480368288d58f3be07648dbf4070d"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/space.md"
-hash = "13b1fbce6d6904eed58e25085dcba108576d38f145d50f59a74fd67fd9fe1004"
+hash = "d3d8ca15bc6c7d72bf99b04eaeedb6e27570a39e61a999206cd004556d491ffe"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/stars.md"
@@ -1008,7 +1012,7 @@ hash = "e77436666b077982e9a4de7afbfd5f264d4a30bbd09bbaa68bfafe3af0a7cfcf"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/survival.md"
-hash = "eb28677abf3a20e0f956c7043e72d425390e7defdd0310302b8a93fd71f22eb1"
+hash = "c1bbf753add31088d9bb050de8af9f15a866341c7ffd25338eb4f2734782389d"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/transport.md"
@@ -1228,7 +1232,7 @@ hash = "de3647efacd1e520151e24664bcdf4c741a47e7b21a322f2cc4926e3f08b0858"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/exploration/creatures.json"
-hash = "d3f473803faf7c539bcc35d67de59a8304a5e80ba4916f7b79f52ece60063393"
+hash = "cf41ce11642be0e5079928e134220faedf3e83e42c6d26cb07d3e97816fc93b0"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/exploration/dimensions.json"
@@ -1384,7 +1388,7 @@ hash = "4a013d965855dd98fdb2037c212eb82626e960cca3af8f794e610a8fd04232e8"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/food/animals.json"
-hash = "2b2a9221424ce8a58209acf2bc7b2d48f1fc95083ec1f7056bb217e8479a396b"
+hash = "cac4959f5f7e79180db71df7e8cd1c1521cdc1844c048db5252421e77017b760"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/food/bees.json"
@@ -1756,7 +1760,7 @@ hash = "91c82c1c5557492932ffaa8cf65a4c2ed5ecb2ea9e2866c4c6e454c1350c230b"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/ocean/sea_life.json"
-hash = "ae8d0a52321a86201ffabd77b7b42d85b46b606b0af2859f188c5282657bdfde"
+hash = "f026c919c8b75fd2d9d738a382e9eabd74c5c47524cd3ec10ab7f8248ef049a7"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/ocean/submarines.json"
@@ -1772,7 +1776,7 @@ hash = "524eb880cb5bb097b6a3cd5ff154115452ab9b61471e7f22f6cacc38c6f76466"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/space/planets.json"
-hash = "6a0dabd62ae5f2cffbf5685d9ff4b0053d48e7dbb53eaeb5b19cb37707881677"
+hash = "4a5f8c324bf1d143c28f0e8c209cf7cebb2bc5bce0790b925789ab4abad5298d"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/space/reaching_space.json"
@@ -1884,7 +1888,7 @@ hash = "b3329e3ceb1d61a189c87cdbddd2597f72702bfdc925bb7718985d2780daf6f3"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/survival/seasons_crops.json"
-hash = "a1c1ec83873d755ca49634bd08c9fc280a1f35c675d40e1abd2d72811faaf77c"
+hash = "5d72281a2702d892398a2cd95462934a062b515c0c296da144a2d1b4f208cd85"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/survival/temperature.json"
@@ -2631,6 +2635,14 @@ file = "config/paxi/datapacks/create-galore-tweaks/data/createpropulsion/recipe/
 hash = "55cae06821c95b4fc72fd7b4b6feaa2491cbfa786b5ae2c4beb4add5a57f4f61"
 
 [[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/crittersandcompanions/loot_table/entities/dragonfly.json"
+hash = "35f21097daa6d57575c95303c95d9e560187c12fb21a1fb0afdf01ceb1ec4864"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/crittersandcompanions/loot_table/entities/snail.json"
+hash = "7ca21aa825d17fa2e2127b9d97096afe044ab1cc94ffe063802fa5bee078c4d1"
+
+[[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/crittersandcompanions/loot_table/gameplay/digging/treasure.json"
 hash = "7ddf23378b6b4c8ffa2466432e1264e9b66cbd7b571dedb7defc2a48a5fd0019"
 
@@ -2693,6 +2705,10 @@ hash = "3ea6f2f23fb04142ceef074242d1381d65878be9666ef524051f32bfd5aeb078"
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/farmersdelight/recipe/cutting/fish_slice_cutting.json"
 hash = "6436e39a78c77cf115d2a54161b32485cb83e18632415f8b9a36a3b84a5fa314"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/farmersdelight/tags/item/cabbage_roll_ingredients.json"
+hash = "b678a949c0d4f5d5a54fc49351bb6c6df4ad0a9296dc9e5ceea771a2155115e7"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/garnished/loot_table/blocks/abyssal_stone_brick_slab.json"
@@ -3635,6 +3651,10 @@ file = "config/paxi/datapacks/create-galore-tweaks/data/minecraft/tags/block/nee
 hash = "34bdba7afe813820bb63f1bc270315c9bd30abdfbcf75631faacb74fe55a6e30"
 
 [[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/minecraft/tags/entity_type/frog_food.json"
+hash = "316816cb1e45af7d6ca33b588ca543482ed4e1936abf57d731d71a2af05b8206"
+
+[[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/minecraft/tags/function/load.json"
 hash = "a72297eb2fdfe5642d95f970c5feb64346ae168624bcdc47396cb126bcd186cb"
 
@@ -4423,6 +4443,22 @@ file = "config/paxi/datapacks/create-galore-tweaks/data/trainutilities/loot_tabl
 hash = "b226108772a5e85fd5181f68de4895511c304fcc5ecf295d2c8391cce88bf81a"
 
 [[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/twilightforest/loot_table/entities/boar.json"
+hash = "85d62199f4b74a2bbce89bb0881e467b2fa50e24473e79715ee3c78df63b783e"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/twilightforest/loot_table/entities/deer.json"
+hash = "3eec265e7e9d157376e46642d8cf9cb9be1b3669fab7e116d843f465bf72cc67"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/twilightforest/loot_table/entities/helmet_crab.json"
+hash = "63c1e93f33b13d1c4465e460a3e1f58a7ea6bd6c13bc8c0fccfca03f83f4b291"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/twilightforest/recipe/venison_jerky.json"
+hash = "7317b30622c877c546c1766e8c7880d452ac4d826adff41594771b2adc280505"
+
+[[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/wythers/loot_table/chests/village/forest_ruins_big_house.json"
 hash = "3e661a9470b5f763ccc1f736272cbcb0e6ff009178ff77db4590daff0353f8e0"
 
@@ -4957,8 +4993,8 @@ hash = "db683b65dc15a03dd6de2d34d5dc6ad0e3490744ced513a8cc584784ee9d3d8b"
 metafile = true
 
 [[files]]
-file = "mods/create-galore-bridge-1.30.0.jar"
-hash = "d3283dfadec728914ab450a0fb4ea410bcb66f191d731343e4a79f59786fa441"
+file = "mods/create-galore-bridge-1.31.0.jar"
+hash = "d9aa504f70bc41f502d3ef54f0fbbaa4abbd6e0a09999a9bfffbe2a095e05f00"
 
 [[files]]
 file = "mods/create-galore-lagwatch-1.1.0.jar"

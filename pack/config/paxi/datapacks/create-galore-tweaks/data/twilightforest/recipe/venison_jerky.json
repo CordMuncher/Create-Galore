@@ -1,0 +1,22 @@
+{
+  "type": "twilightforest:drying",
+  "filter_time": 6000,
+  "input": [
+    {
+      "item": "naturalist:venison"
+    },
+    {
+      "item": "twilightforest:raw_venison"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "twilightforest:venison_jerky"
+  },
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "twilightforest"
+    }
+  ]
+}

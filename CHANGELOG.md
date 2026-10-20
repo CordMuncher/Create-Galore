@@ -4,6 +4,23 @@ Each pack version gets a section here, with **Added**, **Fixed** and **Removed**
 workflow copies the section for the version in `pack/pack.toml` to the top of the GitHub release, and the build
 fails when that section is missing.
 
+## 0.3.7
+
+### Added
+- **Every snail can be your friend.** Naturalist's snails couldn't be tamed (they hide in their shell whenever someone comes near), and only Critters and Companions' snails gave Snail Slime. Naturalist's snails now turn into Critters and Companions' snails as they appear, in new and old worlds alike (also from eggs, spawn eggs or a released caught snail), keeping their name and age. So every snail can be tamed with leaves (1 try in 10) and gives a Snail Slime bottle every 5 minutes. They still drop Naturalist's snail shells and slime balls, so dyed shells and Shellstone stay craftable.
+- **Every dragonfly can be tamed too.** Naturalist's dragonflies become Critters and Companions' ones the same way (tame them with a spider eye, give them armor). Frogs still eat wild ones and leave froglass, but never a tamed one.
+- **Slime from every snail.** A glass bottle on Hybrid Aquatic's scalyfoot snail or the Moon's snail (Northstar) gives Snail Slime, and on Hybrid Aquatic's sea slug Sea Bunny Slime (Critters and Companions' sea bunny is switched off in the pack, so its slime and Sea Bunny Slime Blocks had no source). Each animal refills every 5 minutes, like the Critters snail.
+- **Otters crack clams.** Hand a Critters and Companions clam (a river fishing treasure) to a Hybrid Aquatic otter and it breaks it open, with a pearl 1 time in 4, as the switched-off Critters otter did. Pearls and Pearl Necklaces had no other source.
+- Field Guide: Exploration > Creatures has a page on which animals now match.
+- Create Galore Bridge 1.31.0.
+
+### Fixed
+- **Twilight Forest animals drop what their Overworld cousins drop.** Its deer drop Naturalist's venison (the one the rest of the pack cooks with) and antlers, its boars drop fat and hide as well as porkchops, and its helmet crabs drop raw crab instead of cod. Venison jerky dries from either venison, and Naturalist's venison counts for cabbage rolls and Alex's Caves' raw meat like Twilight's.
+- **Froglass can be had.** Naturalist's dragonflies were meant to leave froglass when a frog ate them, but their loot looked for an old variant number and never dropped any. Frogs now leave one of the three froglass colours.
+
+### Removed
+- Naturalist's snails no longer slow down crops next to them (that came with Naturalist's own snail, which no longer stays in the world).
+
 ## 0.3.6
 
 ### Added
