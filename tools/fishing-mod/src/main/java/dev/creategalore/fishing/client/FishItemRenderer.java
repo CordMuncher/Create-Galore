@@ -1,5 +1,4 @@
 package dev.creategalore.fishing.client;
-
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
@@ -89,7 +88,7 @@ final class FishItemRenderer extends BlockEntityWithoutLevelRenderer {
         pose.mulPose(Axis.YP.rotationDegrees(left ? -place[4] : place[4]));
         pose.mulPose(Axis.ZP.rotationDegrees(left ? -place[5] : place[5]));
         // Out of the water the fish lies still; the swimming animation is for the line and the tank.
-        FishView.draw(stack, length * 100, kg(stack), pose, buffers, light, 0);
+        FishView.draw(stack, length * 100, drawnKg(stack, cm, length * 100), pose, buffers, light, 0);
         pose.popPose();
         return true;
     }
@@ -159,9 +158,15 @@ final class FishItemRenderer extends BlockEntityWithoutLevelRenderer {
         };
     }
 
-    private static double kg(ItemStack stack) {
+    /**
+     * The weight to draw a fish with when it is drawn {@code drawnCm} long instead of its real {@code realCm}: a
+     * shrunk fish keeps its build (weight goes with the cube of length) rather than getting a whole tuna's girth at
+     * a third of its length. 0 when its weight isn't known.
+     */
+    static double drawnKg(ItemStack stack, double realCm, double drawnCm) {
         CatchInfo info = stack.get(FishingRegistry.CATCH.get());
-        return info != null ? info.kg().orElse(0.0) : 0;
+        double kg = info != null ? info.kg().orElse(0.0) : 0;
+        return realCm <= 0 ? kg : kg * Math.pow(drawnCm / realCm, 3);
     }
 
     /** A gold star on trophies and a purple one on uniques, in the slot's top-left corner. */

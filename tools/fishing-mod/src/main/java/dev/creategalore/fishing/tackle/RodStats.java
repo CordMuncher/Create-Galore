@@ -1,5 +1,5 @@
 package dev.creategalore.fishing.tackle;
-
+import dev.creategalore.fishing.bait.LiveBait;
 import dev.creategalore.fishing.FishingRegistry;
 import dev.creategalore.fishing.sim.FishFight;
 import dev.creategalore.fishing.sim.SizeModel;
@@ -37,7 +37,8 @@ public final class RodStats {
         this.leader = TackleManager.of(parts.leader(), TacklePart.Leader.class);
         this.hook = TackleManager.of(parts.hook(), TacklePart.Hook.class);
         this.terminal = TackleManager.of(parts.terminal()).filter(p -> p.kind().isTerminal());
-        this.bait = TackleManager.of(parts.bait(), TacklePart.Bait.class);
+        Optional<TacklePart.Bait> bait = TackleManager.of(parts.bait(), TacklePart.Bait.class);
+        this.bait = LiveBait.isLive(parts.bait()) ? bait.map(TacklePart.Bait::alive) : bait;
     }
 
     /** Stats for a rod item; empty if the item isn't a rod with tackle data. */

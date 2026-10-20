@@ -1,5 +1,4 @@
 package dev.creategalore.fishing.fish;
-
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.creategalore.fishing.FishingRegistry;
@@ -54,8 +53,9 @@ public record CatchInfo(SizeClass size, Optional<Integer> lengthMm, Optional<Int
         if (kg < EXACT_FROM_KG && !size.isTrophy()) {
             return new CatchInfo(size, Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty());
         }
+        // No angler for a fish no one landed (a Fishing Net's catch, an old Tide fish).
         return new CatchInfo(size, Optional.of((int) Math.round(lengthCm * 10)), Optional.of((int) Math.round(kg * 1000)),
-                Optional.of(angler), Optional.of(day));
+                angler.isEmpty() ? Optional.empty() : Optional.of(angler), Optional.of(day));
     }
 
     /**

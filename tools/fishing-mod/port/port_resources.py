@@ -45,6 +45,9 @@ SKIP_FILES = {
     "data/tide/recipe/bone_meal_from_fish_bone.json",
     "data/farmersdelight/recipe/cutting/fish_slice_cutting.json",
 }
+# Tide's fish cooking recipes: gen_processing.py writes weight-limited versions of them.
+SKIP_FILES |= {f"data/tide/recipe/{food}_{how}.json" for food in ("cooked_fish", "large_cooked_fish", "small_cooked_fish")
+               for how in ("smelting", "smoking", "campfire_cooking")}
 KEEP_ROOTS = ("assets/", "data/")
 # Names this mod changes in Tide's English lang (the other locales keep Tide's).
 LANG_OVERRIDES = {

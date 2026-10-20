@@ -4,7 +4,10 @@
   "cookingtime": 100,
   "experience": 0.1,
   "ingredient": {
-    "tag": "tide:cookable/small_cooked_fish"
+    "type": "create_galore_fishing:whole_fish",
+    "base": {
+      "tag": "tide:cookable/small_cooked_fish"
+    }
   },
   "result": {
     "id": "tide:small_cooked_fish"

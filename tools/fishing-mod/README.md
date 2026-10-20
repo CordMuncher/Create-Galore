@@ -48,8 +48,9 @@ jar lands in `pack/mods/create-galore-fishing-<version>.jar`; the version comes 
 | `mixin` | our mixins: accessors (`EntityAccessor`, `FallingBlockEntityAccessor`, `PathNavigationAccessor`, in place of Tide's access transformer), `PlayerModelHoldMixin` (the hold-up pose), `ItemStackRodSwapMixin` (vanilla and Alloyed rods become ours) |
 | `sim` | the fight model: pure Java, no game classes, shared by the game and the Monte Carlo runner |
 | `fish` | species data: loads Tide-format fish files plus our extension files, fills in defaults |
-| `bait` | bait kinds and diets |
-| `compat` | the move off Tide: `TideAliases` (old ids to their replacements), `TideRodConversion` (Tide-rigged rods to our parts), `RodSwap`, and the Tide self-tests |
+| `bait` | bait kinds and diets, live bait and the Live-Bait Bucket, chum, worms from hoeing |
+| `process` | the Cleaning Table and its yields, the weight-limited fish ingredient, the `processing` self-test |
+| `compat` | the move off Tide: `TideAliases` (old ids to their replacements), `TideRodConversion` (Tide-rigged rods to our parts), `RodSwap`, and the Tide self-tests; `IntegratedFarmingNets` (Fishing Net catches) |
 | `tide` | Tide 2, ported (MPL-2.0): its 90 fish and their mobs, the journal, Fish Display, satchel, crates, gadgets and extras, its fish conditions and data, with its own mixins in `tide/mixin` |
 
 More packages arrive with each milestone (see DESIGN.md).
@@ -89,6 +90,31 @@ Tide 2 is not in the pack any more; this mod carries what players had from it, u
 - Self-tests: `aliases`, `tide`, `crates`, `spawns`, `components`. `/cgfish crate <player>` makes the next bite a
   crate (where one fits the spot: crates need open water, as in Tide).
 
+## Bait and processing
+
+- Data comes from one table, `gen_processing.py` (run it after editing): the Create recipes for bait (fan washing
+  dirt to mud and worms and mud to leeches and clay, maggots by mixing, boilies by heated mixing, chum, fish meal
+  by milling, fish oil by compacting), the Cleaning Table and Live-Bait Bucket recipes, shark skin to leather, the
+  item tags `baitfish`, `live_bait`, `roe_fish`, `oily_fish`, `sharks`, and fish oil's Blaze Burner entry in
+  Create: Liquid Fuel's data map. The files it wrote are listed in `processing_files.txt`. Baits' tackle data
+  (what each attracts) is in `gen_tackle.py` as before.
+- Big fish can't be cooked whole: every fish cooking recipe in the pack (vanilla's, Alex's Caves', Aquamirae's,
+  Better End's, Naturalist's, Tide's) is replaced under its own id by one whose ingredient is
+  `create_galore_fishing:whole_fish` (`process/WholeFishIngredient`), which refuses a fish known to weigh 3 kg or
+  more. The other mods are `ordering = "AFTER"` dependencies so our copies load over theirs, and the `processing`
+  self-test fails for any fish cooking recipe that can take a big fish and isn't limited (a new mod's, say).
+- The Cleaning Table (`process/CleaningTable*`): strokes and yields come from the fish's weight (`Cleaning`):
+  fillets, Hybrid Aquatic's steaks from 3 kg, roe, Aquaculture's bones, scraps (more for oily fish), shark skin. By
+  hand the parts go to the player; a Deployer (any fake player) leaves them in nine output slots for hoppers and
+  funnels, and the table takes the next fish only once those are empty.
+- Live bait: bait loaded from the Live-Bait Bucket (a bundle that only takes `#create_galore_fishing:live_bait`)
+  carries the `live_bait` component on the rod; a baitfish then counts as a live fish rather than cut bait. Taking
+  bait off the rod strips it.
+- Chum (`bait/Chum`): thrown (or dispensed) into water, bites within 8 blocks come up to 1.75x faster for three
+  minutes; `/cgfish hook` shows the factor. Kept in memory, not saved.
+- Fishing Nets (Create: Integrated Farming): `compat/IntegratedFarmingNets` registers a water and a lava catch
+  provider where Tide's was, so nets bring up this mod's fish (small ones favoured) about half the time.
+
 ## Visuals
 
 - Rods in the hands are drawn by `client/RodItemRenderer` + `client/RodModel` (boxes, no model files): the rod's
@@ -108,6 +134,8 @@ Tide 2 is not in the pack any more; this mod carries what players had from it, u
   drawn once into a 64 px texture with a dark rim (`FishIcons`), baked a few per frame and rebuilt on resource
   reload. Anything that can't be drawn (no world, a mob that throws, dropped fish beyond 16 blocks) is the sprite.
   Trophies and uniques get a star in the slot and the rare / epic name colour.
+- A fish on a Cleaning Table is drawn the same way (`client/CleaningTableRenderer`), lying on its side, with the
+  strokes done shown while the player looks at it.
 - Tuning without restarts: start the client with `-Dcgfish.debug=true` for `/cgfishc rodpose first|third ...`,
   `/cgfishc rodload <load>|off`, `/cgfishc holdpose ...` and `/cgfishc fishpose first|third|ground|fixed|head ...`
   (see `client/DebugCommands`), plus model-size logging and the list of fish items at startup.

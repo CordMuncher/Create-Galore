@@ -1,0 +1,24 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "aquaculture"
+    }
+  ],
+  "type": "create:milling",
+  "ingredients": [
+    {
+      "item": "aquaculture:fish_bones"
+    }
+  ],
+  "processing_time": 100,
+  "results": [
+    {
+      "id": "create_galore_fishing:fish_meal"
+    },
+    {
+      "id": "minecraft:bone_meal",
+      "chance": 0.5
+    }
+  ]
+}

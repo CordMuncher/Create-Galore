@@ -1,5 +1,4 @@
 package dev.creategalore.fishing.sim;
-
 import java.util.random.RandomGenerator;
 
 /**
@@ -35,6 +34,21 @@ public record SizeModel(double typicalLow, double typicalHigh, double record, do
     /** Length in cm of a fish weighing {@code kg} (inverse of {@link #weightKg}). */
     public double lengthCm(double kg) {
         return Math.pow(kg * 1000 / a, 1 / b);
+    }
+
+    /**
+     * The usual length of a fish of size class {@code size}: the middle of the class's band (for a young fish, a bit
+     * under the usual range). For fish whose exact size wasn't kept.
+     */
+    public double usualLengthCm(SizeClass size) {
+        double over = record - typicalHigh;
+        return switch (size) {
+            case YOUNG -> typicalLow * 0.8;
+            case COMMON -> (typicalLow + typicalHigh) / 2;
+            case LARGE -> typicalHigh + over * 0.25;
+            case TROPHY -> typicalHigh + over * 0.675;
+            case UNIQUE -> typicalHigh + over * 0.925;
+        };
     }
 
     /** The weight of a middle-of-the-range fish, for "how big was it" comparisons. */

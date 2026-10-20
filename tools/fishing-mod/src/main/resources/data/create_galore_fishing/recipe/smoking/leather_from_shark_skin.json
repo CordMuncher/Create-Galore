@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:smoking",
+  "category": "misc",
+  "cookingtime": 200,
+  "experience": 0.2,
+  "ingredient": {
+    "item": "create_galore_fishing:shark_skin"
+  },
+  "result": {
+    "id": "minecraft:leather"
+  }
+}

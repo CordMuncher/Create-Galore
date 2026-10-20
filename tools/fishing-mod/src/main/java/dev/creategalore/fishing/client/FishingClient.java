@@ -2,16 +2,26 @@ package dev.creategalore.fishing.client;
 
 import dev.creategalore.fishing.FishingRegistry;
 import dev.creategalore.fishing.fish.CatchInfo;
+import dev.creategalore.fishing.process.WholeFishIngredient;
 import dev.creategalore.fishing.tide.loaders.neoforge.NeoforgeClientEntrypoint;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.renderer.ItemBlockRenderTypes;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.entity.ThrownItemRenderer;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
+import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
+import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
+import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
+import net.neoforged.neoforge.client.model.DynamicFluidContainerModel;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 
@@ -26,8 +36,18 @@ public final class FishingClient {
     public static void init(IEventBus modBus) {
         modBus.addListener((RegisterMenuScreensEvent event) ->
                 event.register(FishingRegistry.TACKLE_BENCH_MENU.get(), TackleBenchScreen::new));
-        modBus.addListener((EntityRenderersEvent.RegisterRenderers event) ->
-                event.registerEntityRenderer(FishingRegistry.CAST_HOOK.get(), CastHookRenderer::new));
+        modBus.addListener((EntityRenderersEvent.RegisterRenderers event) -> {
+            event.registerEntityRenderer(FishingRegistry.CAST_HOOK.get(), CastHookRenderer::new);
+            event.registerEntityRenderer(FishingRegistry.THROWN_CHUM.get(), ThrownItemRenderer::new);
+            event.registerBlockEntityRenderer(FishingRegistry.CLEANING_TABLE_ENTITY.get(), CleaningTableRenderer::new);
+        });
+        modBus.addListener(FishingClient::fishOil);
+        modBus.addListener((RegisterColorHandlersEvent.Item event) ->
+                event.register(new DynamicFluidContainerModel.Colors(), FishingRegistry.FISH_OIL_BUCKET.get()));
+        modBus.addListener((FMLClientSetupEvent event) -> event.enqueueWork(() -> {
+            ItemBlockRenderTypes.setRenderLayer(FishingRegistry.FISH_OIL.get(), RenderType.translucent());
+            ItemBlockRenderTypes.setRenderLayer(FishingRegistry.FLOWING_FISH_OIL.get(), RenderType.translucent());
+        }));
         FishingInput.init(modBus);
         FishingHud.init(modBus);
         RodItemRenderer.init(modBus);
@@ -41,9 +61,41 @@ public final class FishingClient {
         NeoForge.EVENT_BUS.addListener(FishingClient::catchTooltip);
     }
 
-    /** Fish items belong to many mods, so the catch line is added by event rather than by the item class. */
+    /** Fish oil looks like water tinted amber, in the world, in tanks and in its bucket. */
+    private static void fishOil(RegisterClientExtensionsEvent event) {
+        event.registerFluidType(new IClientFluidTypeExtensions() {
+            private static final ResourceLocation STILL = ResourceLocation.withDefaultNamespace("block/water_still");
+            private static final ResourceLocation FLOW = ResourceLocation.withDefaultNamespace("block/water_flow");
+
+            @Override
+            public ResourceLocation getStillTexture() {
+                return STILL;
+            }
+
+            @Override
+            public ResourceLocation getFlowingTexture() {
+                return FLOW;
+            }
+
+            @Override
+            public int getTintColor() {
+                return 0xe8c89a30;
+            }
+        }, FishingRegistry.FISH_OIL_TYPE.get());
+    }
+
+    /**
+     * Fish items belong to many mods, so the catch line is added by event rather than by the item class. A fish too
+     * heavy to cook whole says where to take it.
+     */
     private static void catchTooltip(ItemTooltipEvent event) {
-        event.getToolTip().addAll(1, catchLines(event.getItemStack()));
+        ItemStack stack = event.getItemStack();
+        List<Component> lines = new ArrayList<>(catchLines(stack));
+        CatchInfo info = stack.get(FishingRegistry.CATCH.get());
+        if (info != null && info.kg().orElse(0.0) >= WholeFishIngredient.MAX_KG) {
+            lines.add(Component.translatable("tooltip.create_galore_fishing.too_big_to_cook").withStyle(ChatFormatting.DARK_AQUA));
+        }
+        event.getToolTip().addAll(1, lines);
     }
 
     /**

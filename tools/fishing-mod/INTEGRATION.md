@@ -55,3 +55,28 @@ What the shared docs still need (not touched here):
   that work on Tide rods"; both are now Create Galore Fishing's.
 - Cosmetic, known: Jade's look-at panel names the mod of ported `tide:` blocks as "tide" (item tooltips and JEI say
   Create Galore Fishing).
+
+## Milestone 8: bait and fish processing
+
+New content (all `create_galore_fishing:`), for the Field Guide's fishing section and the changelog:
+
+- **Bait from Create**: washing dirt, coarse or rooted dirt with a fan gives mud and sometimes worms; washing mud
+  gives clay and sometimes leeches. Maggots: mixing rotten flesh with dirt. Boilies: heated mixing of fish meal,
+  wheat flour, an egg and water. Hoeing grass or dirt now and then turns up a worm.
+- **Chum**: thrown into water (or fired from a dispenser), it brings bites up to 1.75 times faster within 8 blocks
+  for three minutes. Made by mixing two fish scraps with fish meal.
+- **Live-Bait Bucket** (water bucket + iron bars): holds up to 64 baitfish and leeches like a bundle. Right-clicking
+  a rod in the inventory with it loads live bait, which predators take far more readily than cut bait. Baitfish are
+  the `#create_galore_fishing:baitfish` tag (minnows, anchovies, guppies, danios, tetras, goldfish, bluegill,
+  herring).
+- **Cleaning Table** (three smooth stone slabs over logs and andesite alloy): lay a fish on it and cut it with a
+  knife (`#c:tools/knife`); heavier fish take more strokes and give more: fillets, steaks from 3 kg (Hybrid
+  Aquatic's), roe (sturgeon, salmon, herring, carp), bones, scraps, and shark skin from sharks. A Deployer works it
+  and hoppers or funnels empty it.
+- **Fish too big to cook whole**: a fish caught at 3 kg or more can't go in a furnace, smoker, campfire or Create's
+  fan; its tooltip says to clean it first. Smaller fish cook as before.
+- **Fish scraps, fish meal, fish oil, fish roe, shark skin**: scraps are cut bait and mill into fish meal (as do
+  Aquaculture's fish bones); scraps or a small oily fish press into fish oil, which burns in a Blaze Burner like
+  seed oil (Create: Liquid Fuel). Roe is food; shark skin smokes into leather.
+- **Fishing Nets** (Create: Integrated Farming) catch this mod's fish again, as they did Tide's.
+- Squid bait: Ocean's Delight tentacles count as squid bait.

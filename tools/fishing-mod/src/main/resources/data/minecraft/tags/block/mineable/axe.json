@@ -3,6 +3,7 @@
   "values": [
     "create_galore_fishing:tackle_bench",
     "tide:wooden_crate",
-    "tide:fish_display"
+    "tide:fish_display",
+    "create_galore_fishing:cleaning_table"
   ]
 }

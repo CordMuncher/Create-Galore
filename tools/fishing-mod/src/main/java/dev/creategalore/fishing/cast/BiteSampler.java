@@ -1,5 +1,4 @@
 package dev.creategalore.fishing.cast;
-
 import dev.creategalore.fishing.bait.BaitKind;
 import dev.creategalore.fishing.fish.Feeding;
 import dev.creategalore.fishing.fish.Species;
@@ -102,6 +101,36 @@ public final class BiteSampler {
         Offer offer = offer(rod);
         double length = s.size().sampleBitingLength(adapt(rng), offer.hook(), offer.size());
         if (Double.isNaN(length)) return Optional.empty();
+        return Optional.of(new Bite(s, length, s.size().weightKg(length), s.size().classify(length)));
+    }
+
+    /**
+     * What a Fishing Net (Create: Integrated Farming) brings up at {@code context}: any species that lives there, by
+     * its Tide weight but favouring small fish (a net holds a minnow better than a pike), and sized toward the small
+     * end of its range. No bait, hook or line comes into it. Empty if nothing lives here.
+     */
+    public static Optional<Bite> netCatch(FishingContext context, RandomSource rng) {
+        List<Species> kept = new ArrayList<>();
+        List<Double> weights = new ArrayList<>();
+        double total = 0;
+        for (Species s : SpeciesManager.all()) {
+            if (!s.medium().equals(context.medium()) || !s.tide().canBiteAt(context)) continue;
+            double w = s.tide().weightAt(context) / (1 + s.size().typicalWeightKg());
+            if (w <= 0) continue;
+            kept.add(s);
+            weights.add(w);
+            total += w;
+        }
+        if (total <= 0) return Optional.empty();
+        double pick = rng.nextDouble() * total;
+        int index = 0;
+        for (; index < kept.size() - 1; index++) {
+            pick -= weights.get(index);
+            if (pick <= 0) break;
+        }
+        Species s = kept.get(index);
+        var random = adapt(rng);
+        double length = Math.min(s.size().sampleLength(random), s.size().sampleLength(random));
         return Optional.of(new Bite(s, length, s.size().weightKg(length), s.size().classify(length)));
     }
 

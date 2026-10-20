@@ -483,6 +483,115 @@ def atlas():
     save(img, "tackle", ENTITY)
 
 
+# --- bait and fish processing ----------------------------------------------------------------------------------
+
+def maggots(name):
+    """Three plump cream grubs, two pixels thick, each with a darker head."""
+    s = Sprite()
+    grub = s.add_material("grub", "#ece0bc")
+    head = s.add_material("grub_head", "#9a7a50")
+    for x0, y0 in ((2, 3), (8, 7), (3, 11)):
+        s.rect(x0, y0, x0 + 4, y0 + 1, grub)
+        s.put(x0 + 2, y0 + 1, grub, "shadow")    # a segment line
+        s.rect(x0 + 5, y0, x0 + 5, y0 + 1, head)
+    save(s.render(), name)
+
+
+def boilies(name):
+    """Three round baits, the near one lit on its upper left."""
+    s = Sprite()
+    bait = s.add_material("boilie", "#d88a3a")
+    for cx, cy in ((5, 5), (10, 6), (7, 10)):
+        s.disc(cx, cy, 2.3, bait)
+        s.put(cx - 1, cy - 1, bait, "hi")
+    save(s.render(), name)
+
+
+def chum(name):
+    """A ball of mashed fish: reddish brown with darker flecks and a pale bit of scale."""
+    s = Sprite()
+    mash = s.add_material("chum", "#8a4a3a")
+    s.disc(7.5, 8, 5, mash)
+    for x, y in ((5, 6), (9, 9), (7, 11), (10, 5), (4, 9)):
+        s.put(x, y, mash, "shadow")
+    s.put(6, 5, mash, "hi")
+    s.dot(9, 7, "#d8d0c0")
+    save(s.render(), name)
+
+
+def fish_scraps(name):
+    """Offcuts: pink flesh, a silver bit of skin, a tail fin."""
+    s = Sprite()
+    flesh = s.add_material("flesh", "#e08a80")
+    skin = s.add_material("skin", "#a8b4bc")
+    s.rect(3, 8, 6, 10, flesh)
+    s.rect(8, 9, 11, 11, flesh)
+    s.rect(6, 4, 9, 6, skin)
+    s.put(10, 4, skin, "hi")
+    s.line(11, 5, 13, 3, skin)
+    s.line(11, 5, 13, 7, skin)
+    save(s.render(), name)
+
+
+def fish_meal(name):
+    """A heap of dry tan meal, like bone meal's pile."""
+    s = Sprite()
+    meal = s.add_material("meal", "#c8a868")
+    for y in range(6, 13):
+        half = (y - 5) * 5 // 7 + 1
+        s.rect(8 - half, y, 7 + half, y, meal)
+    for x, y in ((6, 9), (9, 10), (7, 12), (10, 12)):
+        s.put(x, y, meal, "shadow")
+    s.put(7, 6, meal, "hi")
+    save(s.render(), name)
+
+
+def fish_roe(name):
+    """A cluster of bright orange eggs: two-pixel beads, each lit on its upper left."""
+    s = Sprite()
+    egg = s.add_material("roe", "#f0782a")
+    beads = ((5, 4), (8, 4), (4, 7), (7, 7), (10, 7), (5, 10), (8, 10), (11, 10), (7, 13))
+    for x, y in beads:
+        s.rect(x, y, x + 1, y + 1, egg, "mid")
+    for x, y in beads:
+        s.put(x, y, egg, "hi")
+        s.put(x + 1, y + 1, egg, "shadow")
+    save(s.render(), name)
+
+
+def shark_skin(name):
+    """A stretched grey pelt like vanilla's leather: four corner flaps, a paler belly half, rough denticles."""
+    s = Sprite()
+    hide = s.add_material("hide", "#6a7a84")
+    belly = s.add_material("belly", "#b8c0c4")
+    for y in range(4, 12):
+        x0, x1 = (2, 13) if y in (4, 11) else (4, 11)
+        s.rect(x0, y, x1, y, hide if y < 8 else belly)
+    for x in (2, 3, 12, 13):
+        s.put(x, 3, hide)
+        s.put(x, 12, belly)
+    for x, y in ((5, 5), (8, 5), (10, 6), (6, 7), (9, 7)):
+        s.put(x, y, hide, "light")
+    save(s.render(), name)
+
+
+def live_bait_bucket(name):
+    """An iron bucket of water with a small fish showing at the top."""
+    s = Sprite()
+    water = s.add_material("water", "#3a6ad8")
+    fish = s.add_material("baitfish", "#d8a040")
+    for y in range(6, 15):
+        inset = (y - 6) // 4
+        s.rect(3 + inset, y, 12 - inset, y, "iron")
+    s.rect(4, 6, 11, 7, water, "mid")
+    s.put(6, 6, fish)
+    s.put(7, 6, fish, "light")
+    s.put(8, 7, fish, "shadow")
+    # The handle, drawn flat over the outline like vanilla's.
+    s.thread([(3, 5), (3, 4), (4, 3), (5, 2), (6, 2), (7, 2), (8, 2), (9, 2), (10, 2), (11, 3), (12, 4), (12, 5)], "#5a5a60")
+    save(s.render(), name)
+
+
 # --- the Tackle Bench's top overlay -----------------------------------------------------------------------------
 
 def bench_overlay():
@@ -537,6 +646,14 @@ def main():
                         ("deep_crankbait", "#3a6098"), ("jig", "#b04848"), ("popper", "#f2c838"),
                         ("soft_worm", "#8a58b0")):
         lure(name, name, color)
+    maggots("maggots")
+    boilies("boilies")
+    chum("chum")
+    fish_scraps("fish_scraps")
+    fish_meal("fish_meal")
+    fish_roe("fish_roe")
+    shark_skin("shark_skin")
+    live_bait_bucket("live_bait_bucket")
     atlas()
     bench_overlay()
     print("textures written")

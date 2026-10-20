@@ -1757,9 +1757,6 @@ data/tide/recipe/bobbers/red.json
 data/tide/recipe/bobbers/white.json
 data/tide/recipe/bobbers/yellow.json
 data/tide/recipe/climate_gauge.json
-data/tide/recipe/cooked_fish_campfire_cooking.json
-data/tide/recipe/cooked_fish_smelting.json
-data/tide/recipe/cooked_fish_smoking.json
 data/tide/recipe/depth_meter.json
 data/tide/recipe/dragonfin_boots_smithing.json
 data/tide/recipe/enchanted_pocket_watch.json
@@ -1781,9 +1778,6 @@ data/tide/recipe/iron_from_tetra.json
 data/tide/recipe/jelly_torch_from_jellyfish.json
 data/tide/recipe/jelly_torch_from_sun_emblem.json
 data/tide/recipe/lapis_from_lanternfish.json
-data/tide/recipe/large_cooked_fish_campfire_cooking.json
-data/tide/recipe/large_cooked_fish_smelting.json
-data/tide/recipe/large_cooked_fish_smoking.json
 data/tide/recipe/lavaproof_hook.json
 data/tide/recipe/lucky_bait.json
 data/tide/recipe/lunar_calendar.json
@@ -1794,9 +1788,6 @@ data/tide/recipe/obsidian_from_fragments.json
 data/tide/recipe/pearl_from_enderfin.json
 data/tide/recipe/permafrost_hook.json
 data/tide/recipe/pocket_watch.json
-data/tide/recipe/small_cooked_fish_campfire_cooking.json
-data/tide/recipe/small_cooked_fish_smelting.json
-data/tide/recipe/small_cooked_fish_smoking.json
 data/tide/recipe/starlight_bow.json
 data/tide/recipe/twilight_hook.json
 data/tide/recipe/void_hook.json

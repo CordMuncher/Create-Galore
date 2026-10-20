@@ -1,8 +1,14 @@
 package dev.creategalore.fishing;
 
 import com.mojang.serialization.Codec;
+import dev.creategalore.fishing.bait.ChumItem;
+import dev.creategalore.fishing.bait.LiveBaitBucketItem;
+import dev.creategalore.fishing.bait.ThrownChum;
 import dev.creategalore.fishing.cast.CastHook;
 import dev.creategalore.fishing.fish.CatchInfo;
+import dev.creategalore.fishing.process.CleaningTableBlock;
+import dev.creategalore.fishing.process.CleaningTableBlockEntity;
+import dev.creategalore.fishing.process.WholeFishIngredient;
 import dev.creategalore.fishing.tackle.LineItem;
 import dev.creategalore.fishing.tackle.RodItem;
 import dev.creategalore.fishing.tackle.RodParts;
@@ -14,28 +20,47 @@ import java.util.List;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 import net.minecraft.core.component.DataComponentType;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.util.Unit;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.flag.FeatureFlags;
+import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.Rarity;
+import net.minecraft.world.item.component.BundleContents;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.MapColor;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
+import net.neoforged.neoforge.common.SoundActions;
+import net.neoforged.neoforge.common.crafting.IngredientType;
+import net.neoforged.neoforge.fluids.BaseFlowingFluid;
+import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
 /** Everything this mod registers. Feature code refers to the holders here. */
 public final class FishingRegistry {
@@ -50,6 +75,12 @@ public final class FishingRegistry {
     public static final DeferredRegister<CreativeModeTab> TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, CreateGaloreFishing.ID);
     public static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(Registries.ENTITY_TYPE, CreateGaloreFishing.ID);
     public static final DeferredRegister<SoundEvent> SOUNDS = DeferredRegister.create(Registries.SOUND_EVENT, CreateGaloreFishing.ID);
+    public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES =
+            DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, CreateGaloreFishing.ID);
+    public static final DeferredRegister<FluidType> FLUID_TYPES = DeferredRegister.create(NeoForgeRegistries.Keys.FLUID_TYPES, CreateGaloreFishing.ID);
+    public static final DeferredRegister<Fluid> FLUIDS = DeferredRegister.create(Registries.FLUID, CreateGaloreFishing.ID);
+    public static final DeferredRegister<IngredientType<?>> INGREDIENT_TYPES =
+            DeferredRegister.create(NeoForgeRegistries.Keys.INGREDIENT_TYPES, CreateGaloreFishing.ID);
 
     // ---- Data components ----
 
@@ -71,6 +102,15 @@ public final class FishingRegistry {
     /** How frayed a line is, 0 (new) to 1 (about to go): weakens it. */
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Float>> LINE_WEAR =
             COMPONENTS.registerComponentType("line_wear", b -> b.persistent(Codec.FLOAT).networkSynchronized(ByteBufCodecs.FLOAT));
+    /** Bait on a rod that came out of a Live-Bait Bucket, still alive. */
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Unit>> LIVE =
+            COMPONENTS.registerComponentType("live_bait", b -> b.persistent(Unit.CODEC).networkSynchronized(StreamCodec.unit(Unit.INSTANCE)));
+
+    // ---- Ingredients ----
+
+    /** A fish light enough to cook or press whole. */
+    public static final DeferredHolder<IngredientType<?>, IngredientType<WholeFishIngredient>> WHOLE_FISH =
+            INGREDIENT_TYPES.register("whole_fish", () -> WholeFishIngredient.TYPE);
 
     // ---- Entities ----
 
@@ -79,6 +119,10 @@ public final class FishingRegistry {
             () -> EntityType.Builder.<CastHook>of(CastHook::new, MobCategory.MISC).noSave().noSummon()
                     .sized(0.25f, 0.25f).clientTrackingRange(10).updateInterval(2)
                     .build(CreateGaloreFishing.ID + ":cast_hook"));
+    /** A ball of chum in flight. */
+    public static final DeferredHolder<EntityType<?>, EntityType<ThrownChum>> THROWN_CHUM = ENTITIES.register("chum",
+            () -> EntityType.Builder.<ThrownChum>of(ThrownChum::new, MobCategory.MISC).sized(0.25f, 0.25f)
+                    .clientTrackingRange(4).updateInterval(10).build(CreateGaloreFishing.ID + ":chum"));
 
     // ---- Sounds (sounds.json points them at vanilla clips; resource packs can replace them) ----
 
@@ -166,12 +210,64 @@ public final class FishingRegistry {
         return item;
     }
 
+    // ---- Bait and fish processing ----
+
+    /** Bait and processing items, in the order the creative tab shows them. */
+    public static final List<DeferredItem<? extends Item>> GOODS = new ArrayList<>();
+
+    public static final DeferredItem<Item> MAGGOTS = good("maggots", () -> new Item(new Item.Properties()));
+    public static final DeferredItem<Item> BOILIES = good("boilies", () -> new Item(new Item.Properties()));
+    public static final DeferredItem<ChumItem> CHUM = good("chum", () -> new ChumItem(new Item.Properties().stacksTo(16)));
+    public static final DeferredItem<LiveBaitBucketItem> LIVE_BAIT_BUCKET = good("live_bait_bucket",
+            () -> new LiveBaitBucketItem(new Item.Properties().stacksTo(1)
+                    .component(DataComponents.BUNDLE_CONTENTS, BundleContents.EMPTY)));
+    public static final DeferredItem<Item> FISH_SCRAPS = good("fish_scraps", () -> new Item(new Item.Properties()));
+    public static final DeferredItem<Item> FISH_MEAL = good("fish_meal", () -> new Item(new Item.Properties()));
+    public static final DeferredItem<Item> FISH_ROE = good("fish_roe", () -> new Item(new Item.Properties()
+            .food(new FoodProperties.Builder().nutrition(2).saturationModifier(0.4f).build())));
+    public static final DeferredItem<Item> SHARK_SKIN = good("shark_skin", () -> new Item(new Item.Properties()));
+
+    private static <T extends Item> DeferredItem<T> good(String name, Supplier<T> factory) {
+        DeferredItem<T> item = ITEMS.register(name, factory);
+        GOODS.add(item);
+        return item;
+    }
+
+    // ---- Fish oil ----
+
+    public static final DeferredHolder<FluidType, FluidType> FISH_OIL_TYPE = FLUID_TYPES.register("fish_oil",
+            () -> new FluidType(FluidType.Properties.create().descriptionId("fluid_type.create_galore_fishing.fish_oil")
+                    .density(920).viscosity(2000).canExtinguish(false).canConvertToSource(false)
+                    .sound(SoundActions.BUCKET_FILL, SoundEvents.BUCKET_FILL).sound(SoundActions.BUCKET_EMPTY, SoundEvents.BUCKET_EMPTY)));
+    public static final DeferredHolder<Fluid, BaseFlowingFluid.Source> FISH_OIL = FLUIDS.register("fish_oil",
+            () -> new BaseFlowingFluid.Source(FishOil.PROPERTIES));
+    public static final DeferredHolder<Fluid, BaseFlowingFluid.Flowing> FLOWING_FISH_OIL = FLUIDS.register("flowing_fish_oil",
+            () -> new BaseFlowingFluid.Flowing(FishOil.PROPERTIES));
+    public static final DeferredBlock<LiquidBlock> FISH_OIL_BLOCK = BLOCKS.register("fish_oil",
+            () -> new LiquidBlock(FISH_OIL.get(), BlockBehaviour.Properties.ofFullCopy(Blocks.WATER).mapColor(MapColor.COLOR_YELLOW)));
+    public static final DeferredItem<BucketItem> FISH_OIL_BUCKET = good("fish_oil_bucket",
+            () -> new BucketItem(FISH_OIL.get(), new Item.Properties().craftRemainder(Items.BUCKET).stacksTo(1)));
+
+    /** Kept apart so the fluid holders above exist before the properties name them. */
+    private static final class FishOil {
+        static final BaseFlowingFluid.Properties PROPERTIES = new BaseFlowingFluid.Properties(FISH_OIL_TYPE, FISH_OIL,
+                FLOWING_FISH_OIL).bucket(FISH_OIL_BUCKET).block(FISH_OIL_BLOCK).slopeFindDistance(2).levelDecreasePerBlock(2);
+    }
+
     // ---- Blocks ----
 
     public static final DeferredBlock<TackleBenchBlock> TACKLE_BENCH = BLOCKS.register("tackle_bench",
             () -> new TackleBenchBlock(BlockBehaviour.Properties.of().mapColor(MapColor.WOOD).strength(2.5f)
                     .sound(SoundType.WOOD).noOcclusion()));
     public static final DeferredItem<BlockItem> TACKLE_BENCH_ITEM = ITEMS.registerSimpleBlockItem(TACKLE_BENCH);
+
+    public static final DeferredBlock<CleaningTableBlock> CLEANING_TABLE = BLOCKS.register("cleaning_table",
+            () -> new CleaningTableBlock(BlockBehaviour.Properties.of().mapColor(MapColor.STONE).strength(2.0f)
+                    .sound(SoundType.WOOD).noOcclusion()));
+    public static final DeferredItem<BlockItem> CLEANING_TABLE_ITEM = ITEMS.registerSimpleBlockItem(CLEANING_TABLE);
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<CleaningTableBlockEntity>> CLEANING_TABLE_ENTITY =
+            BLOCK_ENTITIES.register("cleaning_table", () -> BlockEntityType.Builder.of(CleaningTableBlockEntity::new,
+                    CLEANING_TABLE.get()).build(null));
 
     // ---- Menus ----
 
@@ -188,6 +284,8 @@ public final class FishingRegistry {
                         out.accept(TACKLE_BENCH_ITEM.get());
                         RODS.forEach(r -> out.accept(r.get()));
                         PARTS.forEach(p -> out.accept(p.get()));
+                        out.accept(CLEANING_TABLE_ITEM.get());
+                        GOODS.forEach(g -> out.accept(g.get()));
                     })
                     .build());
 
@@ -199,5 +297,11 @@ public final class FishingRegistry {
         TABS.register(modBus);
         ENTITIES.register(modBus);
         SOUNDS.register(modBus);
+        BLOCK_ENTITIES.register(modBus);
+        FLUID_TYPES.register(modBus);
+        FLUIDS.register(modBus);
+        INGREDIENT_TYPES.register(modBus);
+        modBus.addListener((RegisterCapabilitiesEvent event) -> event.registerBlockEntity(Capabilities.ItemHandler.BLOCK,
+                CLEANING_TABLE_ENTITY.get(), (table, side) -> table.items()));
     }
 }

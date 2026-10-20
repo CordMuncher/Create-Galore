@@ -1,5 +1,4 @@
 package dev.creategalore.fishing.client;
-
 import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -57,12 +56,12 @@ final class FishView {
         return entity(fish);
     }
 
-    /** The mob's model size facing +X at scale 1: length and height (blocks). */
+    /** The mob's model size facing +X at scale 1: length, height and width (blocks). */
     static float[] extent(ItemStack fish) {
         return entity(fish).map(e -> {
             float[] box = bounds(e);
-            return new float[]{box[3] - box[0], box[4] - box[1]};
-        }).orElse(new float[]{1, 0.4f});
+            return new float[]{box[3] - box[0], box[4] - box[1], box[5] - box[2]};
+        }).orElse(new float[]{1, 0.4f, 0.15f});
     }
 
     /** Draws the mob's model at scale 1, centred on the origin, facing +X, still (for icons). */

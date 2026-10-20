@@ -1,6 +1,7 @@
 package dev.creategalore.fishing.tackle;
-
 import dev.creategalore.fishing.FishingRegistry;
+import dev.creategalore.fishing.bait.LiveBait;
+import dev.creategalore.fishing.bait.LiveBaitBucketItem;
 import dev.creategalore.fishing.cast.CastHook;
 import dev.creategalore.fishing.cast.CatchHolding;
 import dev.creategalore.fishing.compat.TideRodConversion;
@@ -159,10 +160,12 @@ public class RodItem extends Item {
                                             SlotAccess cursorAccess) {
         if (action != ClickAction.SECONDARY || !slot.allowModification(player)) return false;
         RodParts parts = parts(rod);
+        if (cursor.getItem() instanceof LiveBaitBucketItem) return loadLive(rod, parts, cursor, player);
         if (cursor.isEmpty()) {
             ItemStack bait = parts.bait();
             if (bait.isEmpty()) return false;
-            cursorAccess.set(bait);
+            // Out of the water a live bait dies.
+            cursorAccess.set(LiveBait.dead(bait));
             setParts(rod, parts.with(RodParts.Slot.BAIT, ItemStack.EMPTY));
             player.playSound(SoundEvents.BUNDLE_REMOVE_ONE, 0.8f, 1f);
             return true;
@@ -197,6 +200,34 @@ public class RodItem extends Item {
         return true;
     }
 
+    /**
+     * Loads live bait from a Live-Bait Bucket: tops up the same live bait, or swaps whatever bait is on the rod for
+     * the bucket's (live bait goes back into the bucket, other bait to the inventory).
+     */
+    private static boolean loadLive(ItemStack rod, RodParts parts, ItemStack bucket, Player player) {
+        ItemStack fitted = parts.bait();
+        boolean live = LiveBait.isLive(fitted);
+        int room = live ? Math.min(BAIT_CAPACITY, fitted.getMaxStackSize()) - fitted.getCount() : BAIT_CAPACITY;
+        ItemStack taken = LiveBaitBucketItem.takeBait(bucket, room > 0 ? room : BAIT_CAPACITY, live ? fitted : ItemStack.EMPTY);
+        if (taken.isEmpty()) return false;
+        if (live && ItemStack.isSameItemSameComponents(fitted, taken)) {
+            if (room <= 0) {
+                LiveBaitBucketItem.putBack(bucket, taken);
+                return false;
+            }
+            fitted.grow(taken.getCount());
+            setParts(rod, parts.with(RodParts.Slot.BAIT, fitted));
+        } else {
+            setParts(rod, parts.with(RodParts.Slot.BAIT, taken));
+            if (!fitted.isEmpty()) {
+                ItemStack rest = live ? LiveBaitBucketItem.putBack(bucket, fitted) : fitted;
+                if (!rest.isEmpty() && !player.getInventory().add(rest)) player.drop(rest, false);
+            }
+        }
+        player.playSound(SoundEvents.BUCKET_EMPTY_FISH, 0.6f, 1.2f);
+        return true;
+    }
+
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
         RodStats.of(stack).ifPresent(stats -> describe(stats, stack, tooltip));
@@ -213,7 +244,8 @@ public class RodItem extends Item {
         part(out, "hook", parts.hook());
         part(out, "terminal", parts.terminal());
         if (!parts.bait().isEmpty()) {
-            out.add(Component.translatable(P + "part.bait", parts.bait().getHoverName(), parts.bait().getCount())
+            String key = LiveBait.isLive(parts.bait()) ? P + "part.bait.live" : P + "part.bait";
+            out.add(Component.translatable(key, parts.bait().getHoverName(), parts.bait().getCount())
                     .withStyle(ChatFormatting.DARK_GREEN));
         }
         if (stats.reel().isPresent()) {

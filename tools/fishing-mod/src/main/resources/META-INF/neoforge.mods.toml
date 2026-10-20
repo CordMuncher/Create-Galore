@@ -68,3 +68,40 @@ type = "optional"
 versionRange = "*"
 ordering = "AFTER"
 side = "BOTH"
+
+# Mods whose fish cooking recipes this mod replaces with weight-limited ones (same ids): loading after them puts
+# our data above theirs. Create: Integrated Farming's Fishing Net also gets our catch provider.
+[[dependencies.create_galore_fishing]]
+modId = "naturalist"
+type = "optional"
+versionRange = "*"
+ordering = "AFTER"
+side = "BOTH"
+
+[[dependencies.create_galore_fishing]]
+modId = "alexscaves"
+type = "optional"
+versionRange = "*"
+ordering = "AFTER"
+side = "BOTH"
+
+[[dependencies.create_galore_fishing]]
+modId = "aquamirae"
+type = "optional"
+versionRange = "*"
+ordering = "AFTER"
+side = "BOTH"
+
+[[dependencies.create_galore_fishing]]
+modId = "betterend"
+type = "optional"
+versionRange = "*"
+ordering = "AFTER"
+side = "BOTH"
+
+[[dependencies.create_galore_fishing]]
+modId = "create_integrated_farming"
+type = "optional"
+versionRange = "*"
+ordering = "AFTER"
+side = "BOTH"

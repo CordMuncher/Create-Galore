@@ -1,5 +1,6 @@
 package dev.creategalore.fishing.cast;
 
+import dev.creategalore.fishing.bait.Chum;
 import dev.creategalore.fishing.fish.Species;
 import dev.creategalore.fishing.sim.Controls;
 import dev.creategalore.fishing.sim.Curve;
@@ -402,6 +403,7 @@ public class CastHook extends FishingHook {
         double wait = BiteSampler.meanWaitSeconds(pool);
         wait *= 1 - 0.15 * EnchantmentHelper.getFishingTimeReduction(level, rod, owner) / 5;
         wait /= FishingPressure.of(level).biteFactor(level, blockPosition());
+        wait /= Chum.factor(level, position());
         boolean day = level.isDay();
         if (stats.hook().map(h -> h.is("barbed")).orElse(false) && day) wait *= 0.75;
         if (stats.hook().map(h -> h.is("glowing")).orElse(false) && !day) wait *= 0.75;
@@ -774,6 +776,9 @@ public class CastHook extends FishingHook {
                 .append(String.format(java.util.Locale.ROOT, " out %.1f m", lineOut()));
         b.append(String.format(java.util.Locale.ROOT, ", %d species could bite (quality %.2f, mean wait %.0f s)",
                 pool.species().size(), pool.quality(), BiteSampler.meanWaitSeconds(pool)));
+        if (level() instanceof ServerLevel server && Chum.around(server, position()) > 0) {
+            b.append(String.format(java.util.Locale.ROOT, ", chum x%.2f", Chum.factor(server, position())));
+        }
         if (context != null) {
             long crates = CatchTables.crates().stream().filter(c -> c.weightAt(context) > 0).count();
             b.append(String.format(java.util.Locale.ROOT, ", open water %s, %d crates fit", openWater, crates));

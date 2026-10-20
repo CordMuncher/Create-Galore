@@ -120,6 +120,23 @@ BAITS = {
     "hybrid_aquatic:raw_crayfish": ("crustacean", 1),
     "hybrid_aquatic:raw_tentacle": ("squid", 2),
     "naturalist:crab_meat": ("crustacean", 1),
+    "oceansdelight:tentacles": ("squid", 1),
+    "oceansdelight:cut_tentacles": ("squid", 0),
+    # This mod's own: Create-made bait and the Cleaning Table's scraps (cut bait).
+    "create_galore_fishing:maggots": ("maggot", 0),
+    "create_galore_fishing:boilies": ("boilie", 1),
+    "create_galore_fishing:fish_scraps": ("cut_bait", 1),
+    # Baitfish (#create_galore_fishing:baitfish): cut bait loose, live fish out of a Live-Bait Bucket.
+    "aquaculture:minnow": ("cut_bait", 0),
+    "tide:anchovy": ("cut_bait", 0),
+    "tide:guppy": ("cut_bait", 0),
+    "hybrid_aquatic:danio": ("cut_bait", 0),
+    "hybrid_aquatic:tetra": ("cut_bait", 0),
+    "hybrid_aquatic:goldfish": ("cut_bait", 0),
+    "aquaculture:goldfish": ("cut_bait", 0),
+    "aquaculture:bluegill": ("cut_bait", 1),
+    "aquaculture:atlantic_herring": ("cut_bait", 1),
+    "hybrid_aquatic:herring": ("cut_bait", 1),
     # Tide's baits (ported under their tide: ids).
     "tide:bait": ("worm", 0),
     "tide:incandescent_bait": ("lava_bait", 1),

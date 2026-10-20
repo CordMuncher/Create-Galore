@@ -1,0 +1,21 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "betterend"
+    }
+  ],
+  "type": "minecraft:smelting",
+  "category": "food",
+  "cookingtime": 200,
+  "experience": 0,
+  "ingredient": {
+    "type": "create_galore_fishing:whole_fish",
+    "base": {
+      "item": "betterend:end_fish_raw"
+    }
+  },
+  "result": {
+    "id": "betterend:end_fish_cooked"
+  }
+}

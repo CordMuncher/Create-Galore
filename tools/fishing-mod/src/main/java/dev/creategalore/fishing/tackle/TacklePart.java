@@ -1,5 +1,4 @@
 package dev.creategalore.fishing.tackle;
-
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -308,6 +307,11 @@ public sealed interface TacklePart {
 
         public boolean is(String effect) {
             return this.effect.map(effect::equals).orElse(false);
+        }
+
+        /** The same bait kept alive in a Live-Bait Bucket: a baitfish swims (live fish, not cut bait). */
+        public Bait alive() {
+            return new Bait(bait == BaitKind.CUT_BAIT ? BaitKind.LIVE_FISH : bait, size, true, luck, effect);
         }
 
         @Override

@@ -261,6 +261,15 @@ Tide's `tide:bait` converts to a generic mixed bait; Lucky and Magnetic bait sta
   mods' fish cooking recipes in data), which covers furnace, smoker, campfire and Create's fan with no
   mixin; the tooltip points to the table.
 
+As built in milestone 8, where it differs from the above: boilies are one heated mixing step (fish meal, flour,
+egg, water), with no compacting step and no extra item. Chum is thrown or fired from a dispenser; there's no feeder
+block. Yields follow the weight with one meat fraction for every species, and the per-species part is by tag (roe
+fish, oily fish, sharks). Roe comes by chance, not by season. Fish oil comes from pressing scraps or a whole small
+oily fish (the table gives oily fish more scraps). The knife tag is 1.21's `#c:tools/knife`. Tide's own
+`tide:cookable/*` tags are kept, since its ids stayed after milestone 6, so there's no new cookable tag. The 3 kg
+limit matches the catch data: a catch under 3 kg keeps no exact weight, so the limit only ever refuses fish that
+carry one.
+
 ### 6. Create machines, ships and trolling
 Every holder takes an assembled rod on top (the line stays out when you put a cast rod in), keeps
 the rod's own drag setting (scrolled in hand before you mount it; holders cannot change it), plays a bite

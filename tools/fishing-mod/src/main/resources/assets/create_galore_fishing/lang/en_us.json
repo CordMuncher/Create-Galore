@@ -193,5 +193,22 @@
   "tooltip.create_galore_fishing.bait.luck": "+%s luck",
   "tooltip.create_galore_fishing.bait.effect.magnetic": "Crates and treasure come up more often",
   "message.create_galore_fishing.echo": "Echo: %s took the bait",
-  "journal.info.stats.heaviest": "Heaviest catch: %s"
+  "journal.info.stats.heaviest": "Heaviest catch: %s",
+  "item.create_galore_fishing.maggots": "Maggots",
+  "item.create_galore_fishing.boilies": "Boilies",
+  "item.create_galore_fishing.chum": "Chum",
+  "item.create_galore_fishing.live_bait_bucket": "Live-Bait Bucket",
+  "item.create_galore_fishing.fish_scraps": "Fish Scraps",
+  "item.create_galore_fishing.fish_meal": "Fish Meal",
+  "item.create_galore_fishing.fish_roe": "Fish Roe",
+  "item.create_galore_fishing.shark_skin": "Shark Skin",
+  "item.create_galore_fishing.fish_oil_bucket": "Fish Oil Bucket",
+  "block.create_galore_fishing.fish_oil": "Fish Oil",
+  "fluid_type.create_galore_fishing.fish_oil": "Fish Oil",
+  "block.create_galore_fishing.cleaning_table": "Cleaning Table",
+  "block.create_galore_fishing.cleaning_table.hint": "Cut it with a knife",
+  "block.create_galore_fishing.cleaning_table.progress": "Cleaning: %s of %s strokes",
+  "entity.create_galore_fishing.chum": "Chum",
+  "tooltip.create_galore_fishing.too_big_to_cook": "Too big to cook whole: clean it at a Cleaning Table",
+  "tooltip.create_galore_fishing.part.bait.live": "Live bait: %s x%s"
 }
