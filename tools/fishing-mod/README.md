@@ -3,8 +3,8 @@
 The pack's own fishing mod, mod id `create_galore_fishing`. It replaces Tide 2 with realistic-lite fishing:
 tackle you assemble and see, a fight with drag, tension and a bending rod, real fish weights, bait and
 processing tied into Create, and rod holders / reel drives for boats. The full design and the milestone plan
-are in [DESIGN.md](DESIGN.md); [INTEGRATION.md](INTEGRATION.md) lists what the pack's docs and Field Guide need
-(kept up to date per milestone, finished at handover).
+are in [DESIGN.md](DESIGN.md); [INTEGRATION.md](INTEGRATION.md) is the handover: what the branch changes in the pack,
+what the pack's docs and Field Guide still need, what players get, the last full test and the open items.
 
 ## Build
 
