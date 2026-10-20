@@ -101,9 +101,12 @@ public sealed interface TacklePart {
      * @param color      blank colour for the 3D model, #rrggbb
      * @param grip       handle colour for the 3D model (cork, EVA foam, wood), #rrggbb
      * @param telescopic the sections nest inside each other and slide out on a cast
+     * @param gripStyle  what the handle is made of, for the 3D model: cork, foam, wood or bamboo
+     * @param finish     the blank's surface for the 3D model: paint, wood or bamboo
      */
     record Rod(double length, double maxLoad, Action action, int sections, double lureMin, double lureMax,
-               boolean reel, double fixedLine, boolean lava, String color, String grip, boolean telescopic)
+               boolean reel, double fixedLine, boolean lava, String color, String grip, boolean telescopic,
+               String gripStyle, String finish)
             implements TacklePart {
         static final MapCodec<Rod> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
                 Codec.DOUBLE.fieldOf("length").forGetter(Rod::length),
@@ -117,7 +120,9 @@ public sealed interface TacklePart {
                 Codec.BOOL.optionalFieldOf("lava", false).forGetter(Rod::lava),
                 Codec.STRING.optionalFieldOf("color", "#8a6a45").forGetter(Rod::color),
                 Codec.STRING.optionalFieldOf("grip", "#c9a26b").forGetter(Rod::grip),
-                Codec.BOOL.optionalFieldOf("telescopic", false).forGetter(Rod::telescopic)
+                Codec.BOOL.optionalFieldOf("telescopic", false).forGetter(Rod::telescopic),
+                Codec.STRING.optionalFieldOf("grip_style", "cork").forGetter(Rod::gripStyle),
+                Codec.STRING.optionalFieldOf("finish", "paint").forGetter(Rod::finish)
         ).apply(i, Rod::new));
 
         @Override

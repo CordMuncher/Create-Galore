@@ -27,7 +27,10 @@ import net.minecraft.world.phys.shapes.VoxelShape;
  */
 public class TackleBenchBlock extends HorizontalDirectionalBlock {
     public static final MapCodec<TackleBenchBlock> CODEC = simpleCodec(TackleBenchBlock::new);
-    private static final VoxelShape SHAPE = Shapes.or(Block.box(0, 12, 0, 16, 16, 16), Block.box(1, 0, 1, 15, 12, 15));
+    /** The table top, four legs and the shelf, as the model draws them. */
+    private static final VoxelShape SHAPE = Shapes.or(Block.box(0, 12, 0, 16, 16, 16),
+            Block.box(1, 0, 1, 4, 12, 4), Block.box(12, 0, 1, 15, 12, 4), Block.box(1, 0, 12, 4, 12, 15),
+            Block.box(12, 0, 12, 15, 12, 15), Block.box(2, 3, 2, 14, 5, 14));
     private static final Component TITLE = Component.translatable("container.create_galore_fishing.tackle_bench");
 
     public TackleBenchBlock(Properties properties) {

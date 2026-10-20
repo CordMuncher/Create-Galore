@@ -3,8 +3,12 @@
   "minVersion": "0.8",
   "package": "dev.creategalore.fishing.mixin",
   "compatibilityLevel": "JAVA_21",
-  "mixins": [],
-  "client": [],
+  "mixins": [
+    "EntityAccessor"
+  ],
+  "client": [
+    "PlayerModelHoldMixin"
+  ],
   "injectors": {
     "defaultRequire": 1
   }

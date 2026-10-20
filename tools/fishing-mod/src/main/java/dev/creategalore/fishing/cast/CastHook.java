@@ -72,6 +72,7 @@ public class CastHook extends FishingHook {
     /** The hooked fish's item id while fighting (empty otherwise), so clients can draw it. */
     private static final EntityDataAccessor<String> FISH = SynchedEntityData.defineId(CastHook.class, EntityDataSerializers.STRING);
     private static final EntityDataAccessor<Float> FISH_CM = SynchedEntityData.defineId(CastHook.class, EntityDataSerializers.FLOAT);
+    private static final EntityDataAccessor<Float> FISH_KG = SynchedEntityData.defineId(CastHook.class, EntityDataSerializers.FLOAT);
 
     public static final int FLAG_SLIPPING = 1;
     public static final int FLAG_STALLED = 2;
@@ -108,6 +109,8 @@ public class CastHook extends FishingHook {
     private final Controls controls = new Controls();
     private double heading;
     private boolean forceBite;
+    /** Test tool: the fish the forced bite will be (null: whatever the pool gives). */
+    private BiteSampler.Bite forcedBite;
 
     // Client-side interpolation of the server's positions (vanilla's hook ignores them).
     private int lerpSteps;
@@ -183,6 +186,7 @@ public class CastHook extends FishingHook {
         builder.define(FLAGS, (byte) 0);
         builder.define(FISH, "");
         builder.define(FISH_CM, 0f);
+        builder.define(FISH_KG, 0f);
     }
 
     public Phase phase() {
@@ -234,6 +238,10 @@ public class CastHook extends FishingHook {
 
     public float fishLengthCm() {
         return entityData.get(FISH_CM);
+    }
+
+    public float fishKg() {
+        return entityData.get(FISH_KG);
     }
 
     public InteractionHand hand() {
@@ -396,7 +404,11 @@ public class CastHook extends FishingHook {
         if (stats.hook().map(h -> h.is("magnetic")).orElse(false)) treasure *= 2;
         double junk = pool.total() <= 0 ? 0.6 : Math.max(0.02, 0.08 - 0.02 * luck);
         double r = random.nextDouble();
-        if (r < treasure || r < treasure + junk) {
+        if (forcedBite != null) {
+            catchKind = CatchKind.FISH;
+            bite = forcedBite;
+            forcedBite = null;
+        } else if (r < treasure || r < treasure + junk) {
             catchKind = r < treasure ? CatchKind.TREASURE : CatchKind.JUNK;
             loot = Catches.lootFrom(this, rod, catchKind == CatchKind.TREASURE, luck);
             if (loot.isEmpty()) return;
@@ -438,6 +450,13 @@ public class CastHook extends FishingHook {
     }
 
     private void biting(Player owner, ItemStack rod, RodStats stats, Vec3 tip) {
+        if (forcedBite != null) {
+            // A test bite asked for while another fish was already biting: that one gives way.
+            catchKind = CatchKind.FISH;
+            bite = forcedBite;
+            forcedBite = null;
+            forceBite = false;
+        }
         if (reeling(owner)) {
             strike(owner, rod, stats, tip);
             return;
@@ -468,6 +487,7 @@ public class CastHook extends FishingHook {
             hold = SizeModel.hookHold(stats.hookSize(), bite.lengthCm());
             entityData.set(FISH, BuiltInRegistries.ITEM.getKey(bite.species().item()).toString());
             entityData.set(FISH_CM, (float) bite.lengthCm());
+            entityData.set(FISH_KG, (float) bite.kg());
         } else {
             ff = DEAD_WEIGHT;
             kg = catchKind == CatchKind.TREASURE ? 3 : 1;
@@ -569,7 +589,7 @@ public class CastHook extends FishingHook {
      * fish leaves the rod straight and unable to soak shocks.
      */
     public static double rodAngle(Player owner, Vec3 tip, Vec3 fish) {
-        Vec3 rod = Vec3.directionFromRotation(owner.getXRot() - 25, owner.getYRot());
+        Vec3 rod = Vec3.directionFromRotation(owner.getXRot() - ROD_ABOVE_LOOK - ROD_LIFT, owner.getYRot());
         Vec3 toFish = fish.subtract(tip);
         if (toFish.lengthSqr() < 1e-6) return 0;
         return Math.acos(Mth.clamp(rod.dot(toFish.normalize()), -1, 1));
@@ -658,13 +678,33 @@ public class CastHook extends FishingHook {
                         random.nextGaussian() * 0.05, 0.15, random.nextGaussian() * 0.05);
             }
             if (id == EVENT_BITE) level().addParticle(ParticleTypes.BUBBLE, getX(), getY(), getZ(), 0, 0.1, 0);
+            if (id == EVENT_JUMP) jumpedAt = tickCount;
             return;
         }
         super.handleEntityEvent(id);
     }
 
+    /** How far above the angler's look the rod is held (degrees), as the first-person rod is drawn. */
+    public static final float ROD_ABOVE_LOOK = 25;
+    /**
+     * With a fish on, anglers lift the rod high so the blank works (degrees, on top of {@link #ROD_ABOVE_LOOK}): looking
+     * at the fish, the rod then stands about 55 degrees off the line, bends deep and soaks the fish's lunges. Drawn
+     * the same way, so what the rod looks like is what the fight gets.
+     */
+    public static final float ROD_LIFT = 30;
+
+    /** Client: when the hooked fish last jumped (tick count), for the renderer's leap; -100 if never. */
+    public int jumpedAt = -100;
+
     /** Test tool: the next bite roll succeeds (if anything at all would bite here). */
     public void forceBite() {
+        forceBite = true;
+        cooldown = 0;
+    }
+
+    /** Test tool: the next bite is this fish, whatever the spot and rig. */
+    public void forceBite(BiteSampler.Bite fish) {
+        forcedBite = fish;
         forceBite = true;
         cooldown = 0;
     }

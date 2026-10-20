@@ -46,9 +46,9 @@ public class TackleBenchMenu extends AbstractContainerMenu {
             addSlot(new PartSlot(bench, part, 48 + part.ordinal() * 20, 18));
         }
         for (int row = 0; row < 3; row++) {
-            for (int col = 0; col < 9; col++) addSlot(new Slot(inventory, col + row * 9 + 9, 8 + col * 18, 104 + row * 18));
+            for (int col = 0; col < 9; col++) addSlot(new Slot(inventory, col + row * 9 + 9, 8 + col * 18, 148 + row * 18));
         }
-        for (int col = 0; col < 9; col++) addSlot(new Slot(inventory, col, 8 + col * 18, 162));
+        for (int col = 0; col < 9; col++) addSlot(new Slot(inventory, col, 8 + col * 18, 206));
     }
 
     public ItemStack rod() {

@@ -2,6 +2,7 @@ package dev.creategalore.fishing.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Axis;
 import dev.creategalore.fishing.cast.CastHook;
 import dev.creategalore.fishing.tackle.RodItem;
 import net.minecraft.client.Minecraft;
@@ -10,10 +11,12 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 
 /**
@@ -46,7 +49,9 @@ public class CastHookRenderer extends EntityRenderer<CastHook> {
             vertex(vc, last, light, 0, 1, 0, 0);
             pose.popPose();
         }
-        Vec3 tip = RodTip.position(owner, hook.hand(), partialTick, entityRenderDispatcher);
+        if (hook.fishId() != null && hook.phase() == CastHook.Phase.FIGHTING) drawFish(hook, owner, partialTick, pose, buffers, light);
+        Vec3 tip = RodItemRenderer.tip(owner, hook.hand(), partialTick)
+                .orElseGet(() -> RodTip.position(owner, hook.hand(), partialTick, entityRenderDispatcher));
         Vec3 at = hook.getPosition(partialTick).add(0, 0.25, 0);
         float dx = (float) (tip.x - at.x);
         float dy = (float) (tip.y - at.y);
@@ -57,6 +62,34 @@ public class CastHookRenderer extends EntityRenderer<CastHook> {
         for (int i = 0; i <= 16; i++) stringVertex(dx, dy, dz, sag, line, last, i / 16f, (i + 1) / 16f);
         pose.popPose();
         super.render(hook, yaw, partialTick, pose, buffers, light);
+    }
+
+    /**
+     * The hooked fish at the end of the line, its own model at its own length: facing away from the angler (it's
+     * pulling), swimming hard, rolling a little with the strain, and leaping clear of the water when it jumps.
+     */
+    private static void drawFish(CastHook hook, Player owner, float partialTick, PoseStack pose, MultiBufferSource buffers,
+                                 int light) {
+        ItemStack fish = new ItemStack(BuiltInRegistries.ITEM.get(hook.fishId()));
+        if (fish.isEmpty()) return;
+        double cm = hook.fishLengthCm() > 0 ? hook.fishLengthCm() : 30;
+        float clock = hook.tickCount + partialTick;
+        Vec3 away = hook.getPosition(partialTick).subtract(owner.getPosition(partialTick));
+        float yaw = (float) Math.atan2(-away.z, away.x);
+        float since = clock - hook.jumpedAt;
+        float leap = since < 14 ? Mth.sin(since / 14 * Mth.PI) : 0;
+        // Just under the surface, where it can be seen through the water; close in it comes up and wallows.
+        double near = Mth.clamp((away.horizontalDistance() - 2.5) / 4, 0, 1);
+        float wallow = (float) (1 - near);
+        pose.pushPose();
+        pose.translate(0, -0.08 - 0.1 * near + leap * (0.6 + cm / 200), 0);
+        pose.mulPose(Axis.YP.rotation(yaw + Mth.sin(clock * 0.35f) * (0.25f + 0.35f * wallow)));
+        pose.mulPose(Axis.XP.rotationDegrees(Mth.sin(clock * 0.5f) * 35 * wallow));
+        // Nose up on the way out of a jump, down on the way back in.
+        if (leap > 0) pose.mulPose(Axis.ZP.rotationDegrees((since < 7 ? 1 : -1) * 35 * leap));
+        pose.mulPose(Axis.XP.rotationDegrees(Mth.sin(clock * 0.2f) * 10 * hook.tension() / Math.max(0.1f, hook.breakingLoad())));
+        FishView.draw(fish, cm, hook.fishKg(), pose, buffers, light, clock * 2.5f);
+        pose.popPose();
     }
 
     private static void vertex(VertexConsumer vc, PoseStack.Pose pose, int light, float x, int y, int u, int v) {
@@ -86,7 +119,10 @@ public class CastHookRenderer extends EntityRenderer<CastHook> {
         return TEXTURE;
     }
 
-    /** Where the rod tip is for drawing: in front of the first-person hand, or at the third-person hand. */
+    /**
+     * Where the rod tip is, estimated, for when the rod wasn't drawn this frame (out of view, another mod's hand
+     * renderer): in front of the first-person hand, or at the third-person hand.
+     */
     public static final class RodTip {
         private RodTip() {
         }

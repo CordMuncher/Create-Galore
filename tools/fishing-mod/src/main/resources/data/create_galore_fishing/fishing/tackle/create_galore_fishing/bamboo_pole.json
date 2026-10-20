@@ -11,5 +11,7 @@
   "reel": false,
   "fixed_line": 8,
   "color": "#c9b36b",
-  "grip": "#a89050"
+  "grip": "#a89050",
+  "grip_style": "bamboo",
+  "finish": "bamboo"
 }

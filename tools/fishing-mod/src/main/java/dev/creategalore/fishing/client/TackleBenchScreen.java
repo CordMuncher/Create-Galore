@@ -4,6 +4,7 @@ import dev.creategalore.fishing.FishingRegistry;
 import dev.creategalore.fishing.tackle.RodParts;
 import dev.creategalore.fishing.tackle.RodStats;
 import dev.creategalore.fishing.tackle.TackleBenchMenu;
+import dev.creategalore.fishing.tackle.TackleManager;
 import dev.creategalore.fishing.tackle.TacklePart;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,8 +37,8 @@ public class TackleBenchScreen extends AbstractContainerScreen<TackleBenchMenu> 
     public TackleBenchScreen(TackleBenchMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title);
         imageWidth = 176;
-        imageHeight = 186;
-        inventoryLabelY = 93;
+        imageHeight = 230;
+        inventoryLabelY = 137;
     }
 
     @Override
@@ -79,6 +80,10 @@ public class TackleBenchScreen extends AbstractContainerScreen<TackleBenchMenu> 
         }
         // Stats area.
         g.fill(x + 46, y + 38, x + 168, y + 89, 0xFFB4B4B4);
+        // The assembled rod, as it is now.
+        frame(g, x + 8, y + 92, 160, 42);
+        TackleManager.of(menu.rod(), TacklePart.Rod.class).ifPresent(blank -> RodModel.drawInGui(g, menu.rod(), blank,
+                x + 88, y + 113, 150, 34, (minecraft.player.tickCount + partialTick) * 0.08f));
     }
 
     private static void bevel(GuiGraphics g, int x, int y, int w, int h, int fill) {

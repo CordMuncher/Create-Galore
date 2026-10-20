@@ -68,6 +68,12 @@ public final class FishingSounds {
             State s = STATES.computeIfAbsent(hook.getId(), id -> new State());
             sounds(mc, hook, owner, s);
         }
+        // A held fish flaps now and then.
+        for (Player p : level.players()) {
+            if (p.distanceTo(mc.player) < HEAR_DISTANCE && HoldPose.holding(p) && p.getRandom().nextInt(40) == 0) {
+                play(p, FishingRegistry.CATCH_FLOP.get(), 0.5f, 0.85f + p.getRandom().nextFloat() * 0.3f);
+            }
+        }
         for (Iterator<Map.Entry<Integer, State>> it = STATES.entrySet().iterator(); it.hasNext(); ) {
             Map.Entry<Integer, State> e = it.next();
             Entity entity = level.getEntity(e.getKey());

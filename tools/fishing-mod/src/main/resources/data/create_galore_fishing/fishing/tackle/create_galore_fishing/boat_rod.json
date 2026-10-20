@@ -9,5 +9,6 @@
   "lure_min": 30,
   "lure_max": 200,
   "color": "#2f3b4a",
-  "grip": "#262626"
+  "grip": "#262626",
+  "grip_style": "foam"
 }

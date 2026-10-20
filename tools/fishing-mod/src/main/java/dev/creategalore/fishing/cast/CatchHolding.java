@@ -2,7 +2,6 @@ package dev.creategalore.fishing.cast;
 
 import com.mojang.serialization.Codec;
 import dev.creategalore.fishing.CreateGaloreFishing;
-import dev.creategalore.fishing.fish.CatchInfo;
 import dev.creategalore.fishing.fish.Species;
 import dev.creategalore.fishing.net.CatchOffer;
 import java.util.HashMap;
@@ -53,12 +52,16 @@ public final class CatchHolding {
     /** Fish heavier than this are held in both hands. */
     public static final double TWO_HANDS_KG = 4.0;
 
-    /** What everyone sees: the fish in the angler's hands. Not saved; only while holding. */
-    public record Held(ItemStack fish, boolean twoHands, long aliveUntil) {
+    /**
+     * What everyone sees: the fish in the angler's hands, with its length and weight (small fish items don't carry
+     * them) so it's drawn at its real size. Not saved; only while holding.
+     */
+    public record Held(ItemStack fish, boolean twoHands, long aliveUntil, float lengthCm, float kg) {
         public static final StreamCodec<RegistryFriendlyByteBuf, Held> STREAM_CODEC = StreamCodec.composite(
                 ItemStack.OPTIONAL_STREAM_CODEC, Held::fish, ByteBufCodecs.BOOL, Held::twoHands,
-                ByteBufCodecs.VAR_LONG, Held::aliveUntil, Held::new);
-        public static final Held NONE = new Held(ItemStack.EMPTY, false, 0);
+                ByteBufCodecs.VAR_LONG, Held::aliveUntil, ByteBufCodecs.FLOAT, Held::lengthCm,
+                ByteBufCodecs.FLOAT, Held::kg, Held::new);
+        public static final Held NONE = new Held(ItemStack.EMPTY, false, 0, 0, 0);
 
         public boolean holding() {
             return !fish.isEmpty();
@@ -113,7 +116,7 @@ public final class CatchHolding {
         long until = player.level().getGameTime() + ALIVE_TICKS;
         Holding h = new Holding(fish, species, bite, xp, (int) Math.round(xp * RELEASE_BONUS), until, water);
         HOLDING.put(player.getUUID(), h);
-        player.setData(HELD, new Held(fish.copy(), bite.kg() >= TWO_HANDS_KG, until));
+        player.setData(HELD, new Held(fish.copy(), bite.kg() >= TWO_HANDS_KG, until, (float) bite.lengthCm(), (float) bite.kg()));
         offer(player);
     }
 
@@ -180,14 +183,5 @@ public final class CatchHolding {
     public static EntityType<?> entityFor(Species species) {
         ResourceLocation id = species.tide().display().map(d -> d.entity().location()).orElse(species.id());
         return BuiltInRegistries.ENTITY_TYPE.containsKey(id) ? BuiltInRegistries.ENTITY_TYPE.get(id) : null;
-    }
-
-    /** XP the angler is owed for a catch by hand: kept and released numbers, for the screen. */
-    static ResourceLocation id(Species s) {
-        return s.id();
-    }
-
-    static String weight(double kg) {
-        return CatchInfo.weightText(kg);
     }
 }

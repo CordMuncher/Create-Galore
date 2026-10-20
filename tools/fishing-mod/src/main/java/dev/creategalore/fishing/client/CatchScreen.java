@@ -11,6 +11,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.client.event.InputEvent;
 import net.neoforged.neoforge.common.NeoForge;
@@ -23,7 +24,7 @@ import net.neoforged.neoforge.network.PacketDistributor;
  */
 public class CatchScreen extends Screen {
     private static final String P = "screen.create_galore_fishing.catch.";
-    private static final int W = 200;
+    private static final int W = 232;
     private static final int H = 150;
 
     /** The offer behind the screen, kept so the screen can be reopened. */
@@ -64,10 +65,12 @@ public class CatchScreen extends Screen {
     protected void init() {
         int x = (width - W) / 2;
         int y = (height - H) / 2;
+        // Wide enough for "Release (+999 XP)".
+        int button = (W - 28) / 2;
         addRenderableWidget(Button.builder(Component.translatable(P + "keep", offer.keepXp()), b -> choose(false))
-                .bounds(x + 10, y + H - 28, 85, 20).build());
+                .bounds(x + 10, y + H - 28, button, 20).build());
         release = addRenderableWidget(Button.builder(Component.translatable(P + "release", offer.releaseXp()), b -> choose(true))
-                .bounds(x + W - 95, y + H - 28, 85, 20).build());
+                .bounds(x + W - 10 - button, y + H - 28, button, 20).build());
     }
 
     private void choose(boolean let) {
@@ -111,12 +114,11 @@ public class CatchScreen extends Screen {
         int x = (width - W) / 2;
         int y = (height - H) / 2;
         g.drawString(font, offer.fish().getHoverName(), x + 8, y + 8, 0x404040, false);
-        // The fish, big.
-        g.pose().pushPose();
-        g.pose().translate(x + 12, y + 26, 0);
-        g.pose().scale(3, 3, 1);
-        g.renderItem(offer.fish(), 0, 0);
-        g.pose().popPose();
+        // The fish turning slowly in its window, side on.
+        float clock = (Minecraft.getInstance().player == null ? 0 : Minecraft.getInstance().player.tickCount) + partialTick;
+        g.enableScissor(x + 9, y + 23, x + 63, y + 77);
+        FishView.drawInGui(g, offer.fish(), offer.cm(), offer.kg(), x + 8, y + 22, x + 64, y + 78, 25 + 30 * Mth.sin(clock * 0.03f), clock);
+        g.disableScissor();
 
         int tx = x + 72;
         int ty = y + 24;

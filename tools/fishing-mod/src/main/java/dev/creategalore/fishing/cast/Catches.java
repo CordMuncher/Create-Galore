@@ -61,21 +61,29 @@ public final class Catches {
         if (type != null) fish.set((DataComponentType<Float>) type, (float) kg);
     }
 
+    /**
+     * Vanilla XP for a fish landed by hand (before the release bonus; machines get half): a base by rarity, more for
+     * a heavier fish (in absolute terms, and against its species' usual weight), trophies and unique fish extra, and
+     * scaled by how hard the fight was (peak pull against the tackle's rating, and its length). A small common
+     * panfish gives about 2, a 4 kg carp about 6, a big rare sea fish dozens.
+     */
     public static int xp(Species species, BiteSampler.Bite bite, Fight fight) {
         double base = switch (species.rarity()) {
-            case COMMON -> 2;
-            case UNCOMMON -> 4;
-            case RARE -> 8;
-            case VERY_RARE -> 15;
+            case COMMON -> 3;
+            case UNCOMMON -> 5;
+            case RARE -> 9;
+            case VERY_RARE -> 16;
             case LEGENDARY -> 40;
         };
-        double size = Math.max(0.5, Math.min(3, Math.sqrt(bite.kg() / Math.max(1e-4, species.size().typicalWeightKg()))));
+        double heft = 1 + 0.6 * Math.log1p(bite.kg());
+        double size = Math.max(0.6, Math.min(2.5, Math.sqrt(bite.kg() / Math.max(1e-4, species.size().typicalWeightKg()))));
         double klass = switch (bite.size()) {
             case TROPHY -> 1.5;
-            case UNIQUE -> 2;
+            case UNIQUE -> 2.5;
             default -> 1;
         };
-        return (int) Math.max(1, Math.round(base * size * klass * (0.5 + fight.difficulty())));
+        double effort = 0.6 + fight.difficulty();
+        return (int) Math.max(1, Math.min(1000, Math.round(base * heft * size * klass * effort)));
     }
 
     /**

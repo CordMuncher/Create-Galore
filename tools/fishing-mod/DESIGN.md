@@ -103,7 +103,9 @@ written to the stack (it lives on the hook entity).
   line colour, the terminal hanging at the tip. Sections slide out on cast and collapse when reeled
   in fully. Under load the sections rotate toward the line: bend = load / max load, spread by action
   (fast bends the tip, slow the whole blank), spring-lagged. Same renderer in hand (1st/3rd person),
-  in the bench preview and in holders.
+  in the bench preview and in holders. Rods are drawn shorter than life (0.55 × length + 0.45 blocks)
+  so they fit the view; the line leaves from the tip as drawn. The bench preview is sized from the
+  rod's measured geometry so the reel never leaves its frame.
 
 ### 2. Casting, bites and the fight (cheap proxy, server-authoritative)
 - **Hook entity extends vanilla `FishingHook`** (own `tick()` calling `baseTick()`, safe
@@ -139,9 +141,10 @@ written to the stack (it lives on the hook entity).
 - **Sync**: reeling and strikes use vanilla hold-to-use (server sees `isUsingItem`); drag changes are
   one validated, rate-limited packet; tension is a byte on the hook's synced data; the owner gets a
   HUD packet. Payloads are required (not optional), the mod being on both sides.
-- **XP**: every catch drops vanilla XP orbs at the angler: base by rarity (common → legendary) ×
-  size (weight relative to the species' typical range, trophies/uniques extra) × fight difficulty
-  (peak pull vs the tackle's limits and fight time). Junk gives none. Reel drives earn 50% of that
+- **XP**: every catch drops vanilla XP orbs at the angler: base by rarity (common 3 → legendary 40) ×
+  weight (absolute, 1 + 0.6 ln(1 + kg), and relative to the species' typical weight) × size class
+  (trophy 1.5, unique 2.5) × fight effort (peak pull vs the tackle's limits and fight time): a small
+  panfish ~2, a 4 kg carp ~6, big rare sea fish dozens. Junk gives none. Reel drives earn 50% of that
   and bank it (shown by Goggles), paying it out as orbs whenever a rod is placed in or taken out.
 - **Drag on the fly**: scrolling with the rod in hand (rebindable keys too) changes the drag in reel
   steps at any time: before casting, while waiting, mid-fight. It is stored on the rod. Holders and
@@ -156,7 +159,8 @@ written to the stack (it lives on the hook entity).
 
 ### 2b. Catch and release
 - **By hand**: when a fish lands, the angler lifts it and holds it, one-handed by the mouth for small
-  fish, in both hands for big ones (by weight / display size), seen by everyone in third person. A
+  fish, in both hands for big ones (4 kg and up), seen by everyone in third person. The fish is its own
+  mob's model at its real length (a block is a metre) and at least the girth its weight implies. A
   Minecraft-styled screen (vanilla panel look, the fish's 3D model turning in it) shows species,
   size class, weight, length, rarity, personal best, and two buttons clicked with the mouse:
   **Keep** (the fish item + XP, amount shown) and **Release** (XP + a release bonus, +25%, amount

@@ -1,9 +1,13 @@
 package dev.creategalore.fishing.command;
 
+import com.mojang.brigadier.arguments.DoubleArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import dev.creategalore.fishing.CreateGaloreFishing;
+import dev.creategalore.fishing.cast.BiteSampler;
 import dev.creategalore.fishing.cast.CastHook;
+import dev.creategalore.fishing.cast.CatchHolding;
+import dev.creategalore.fishing.cast.Catches;
 import dev.creategalore.fishing.fish.Species;
 import dev.creategalore.fishing.fish.SpeciesManager;
 import dev.creategalore.fishing.selftest.SelfTest;
@@ -19,7 +23,9 @@ import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 
 /** {@code /cgfish}: operator tools for testing and tuning the mod. All of it works from the server console. */
@@ -44,7 +50,23 @@ public final class FishingCommand {
                 .then(Commands.literal("bite")
                         .executes(ctx -> hook(ctx.getSource(), ctx.getSource().getPlayerOrException(), true))
                         .then(Commands.argument("player", EntityArgument.player())
-                                .executes(ctx -> hook(ctx.getSource(), EntityArgument.getPlayer(ctx, "player"), true))))
+                                .executes(ctx -> hook(ctx.getSource(), EntityArgument.getPlayer(ctx, "player"), true))
+                                .then(Commands.argument("species", StringArgumentType.string())
+                                        .suggests((ctx, builder) -> SharedSuggestionProvider.suggest(
+                                                SpeciesManager.all().stream().map(s -> "\"" + s.id() + "\""), builder))
+                                        .then(Commands.argument("cm", DoubleArgumentType.doubleArg(1, 1000))
+                                                .executes(ctx -> biteWith(ctx.getSource(), EntityArgument.getPlayer(ctx, "player"),
+                                                        StringArgumentType.getString(ctx, "species"),
+                                                        DoubleArgumentType.getDouble(ctx, "cm")))))))
+                .then(Commands.literal("hold")
+                        .then(Commands.argument("player", EntityArgument.player())
+                                .then(Commands.argument("species", StringArgumentType.string())
+                                        .suggests((ctx, builder) -> SharedSuggestionProvider.suggest(
+                                                SpeciesManager.all().stream().map(s -> "\"" + s.id() + "\""), builder))
+                                        .then(Commands.argument("cm", DoubleArgumentType.doubleArg(1, 1000))
+                                                .executes(ctx -> hold(ctx.getSource(), EntityArgument.getPlayer(ctx, "player"),
+                                                        StringArgumentType.getString(ctx, "species"),
+                                                        DoubleArgumentType.getDouble(ctx, "cm")))))))
                 .then(Commands.literal("simulate")
                         .then(Commands.literal("export").executes(ctx -> export(ctx.getSource())))
                         .then(Commands.argument("species", StringArgumentType.string())
@@ -63,6 +85,43 @@ public final class FishingCommand {
         Path dir = source.getServer().getServerDirectory().resolve(CreateGaloreFishing.ID);
         Files.createDirectories(dir);
         return dir;
+    }
+
+    /** Test tool: the player's next bite is this species at this length. */
+    private static int biteWith(CommandSourceStack source, ServerPlayer player, String speciesId, double cm) {
+        Species species = species(source, speciesId);
+        if (species == null) return 0;
+        if (!(player.fishing instanceof CastHook hook)) {
+            source.sendFailure(Component.literal(player.getGameProfile().getName() + " has no line out"));
+            return 0;
+        }
+        hook.forceBite(new BiteSampler.Bite(species, cm, species.size().weightKg(cm), species.size().classify(cm)));
+        source.sendSuccess(() -> Component.literal(String.format(Locale.ROOT, "Next bite: %s, %.0f cm, %.2f kg",
+                species.id(), cm, species.size().weightKg(cm))), false);
+        return 1;
+    }
+
+    private static Species species(CommandSourceStack source, String speciesId) {
+        ResourceLocation id = ResourceLocation.tryParse(speciesId);
+        Species species = id == null ? null : SpeciesManager.byId(id).orElse(null);
+        if (species == null) source.sendFailure(Component.literal("Unknown species " + speciesId));
+        return species;
+    }
+
+    /**
+     * Test tool: puts a landed fish of {@code cm} into a player's hands, as if just caught (Keep / Release screen and
+     * all), at the player's feet as the release spot.
+     */
+    private static int hold(CommandSourceStack source, ServerPlayer player, String speciesId, double cm) {
+        Species species = species(source, speciesId);
+        if (species == null) return 0;
+        double kg = species.size().weightKg(cm);
+        BiteSampler.Bite bite = new BiteSampler.Bite(species, cm, kg, species.size().classify(cm));
+        ItemStack fish = Catches.fishItem(species, bite, player.getGameProfile().getName(), player.level().getDayTime() / 24000);
+        CatchHolding.start(player, fish, species, bite, 5, player.blockPosition());
+        source.sendSuccess(() -> Component.literal(String.format(Locale.ROOT, "%s holds a %s of %.0f cm, %.2f kg",
+                player.getGameProfile().getName(), species.id(), cm, kg)), false);
+        return 1;
     }
 
     /** Shows a player's hook state, or (with {@code bite}) makes its next bite roll succeed. */

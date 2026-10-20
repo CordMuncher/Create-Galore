@@ -33,7 +33,11 @@ jar lands in `pack/mods/create-galore-fishing-<version>.jar`; the version comes 
 | (root) | `CreateGaloreFishing`, the entry point |
 | `command` | `/cgfish` |
 | `selftest` | the self-test runner; feature areas add suites with `SelfTest.suite` |
-| `client` | client-only code, only reached through `FishingClient.init` on the client |
+| `client` | client-only code, only reached through `FishingClient.init` on the client (rod and fish rendering, HUD, screens, sounds) |
+| `cast` | the hook entity, bites, the fight in the world, catch and release |
+| `tackle` | rod parts, their data, the rod item and the Tackle Bench |
+| `net` | payloads |
+| `mixin` | `EntityAccessor` (display fish told they're in water), `PlayerModelHoldMixin` (the hold-up pose) |
 | `sim` | the fight model: pure Java, no game classes, shared by the game and the Monte Carlo runner |
 | `fish` | species data: loads Tide-format fish files plus our extension files, fills in defaults |
 | `bait` | bait kinds and diets |
@@ -52,6 +56,22 @@ Hand-tuned values live in one table, `species.csv`. Edit it and run `python3 too
 which rewrites the extension files under `src/main/resources/data/create_galore_fishing/fishing/species/`. It
 fixes sizes Tide Extra Compatibility got wrong (a metre-long bluegill) and tunes the famous fighters.
 
+## Visuals
+
+- Rods in the hands are drawn by `client/RodItemRenderer` + `client/RodModel` (boxes, no model files): the rod's
+  item model is wrapped so the hands get the custom renderer and everything else keeps the sprite. Placement in the
+  hand is the `FIRST_PERSON` / `THIRD_PERSON` arrays; the bend, telescopic extension and crank are worked out per
+  frame from the hook's synced state. The renderer records where each tip was drawn and the line starts there.
+  The bend curls the blank toward the line, more of the way the heavier the load (rods take huge bends), so the
+  angle between rod and line decides how deep it goes; with a fish on the rod is lifted `CastHook.ROD_LIFT`
+  degrees, and the fight's rod-angle maths uses the same lift.
+- Fish (on the line, held up, in the catch screen) are drawn by `client/FishView` as their own mob's model where
+  the item has a mob of the same id, sized from the model's measured extent to the fish's real length, and fattened
+  to its weight if the model is slim.
+- Tuning without restarts: start the client with `-Dcgfish.debug=true` for `/cgfishc rodpose first|third ...`,
+  `/cgfishc rodload <load>|off` and `/cgfishc holdpose ...` (see `client/DebugCommands`), and model-size logging.
+- `/cgfish hold <player> <species> <cm>` puts a fish of that size in a player's hands (catch screen and all).
+
 ## Balancing
 
 - `/cgfish simulate <species|all> [fights]` runs the real fight code against every rig preset with a careful and a
@@ -59,6 +79,8 @@ fixes sizes Tide Extra Compatibility got wrong (a metre-long bluegill) and tunes
   spool rates, fight length, average weight and reel wear.
 - `/cgfish simulate export` writes `species.csv` for `tools/fishing-mod/sim.sh`, which runs the same Monte Carlo
   without a game (fixed seeds, so runs repeat).
+- Catch XP is `cast/Catches.xp`: a base by rarity, times weight (absolute and against the species' usual), size
+  class and fight effort; release by hand adds 25% (`CatchHolding.RELEASE_BONUS`), machines get half.
 - The `fight` self-test suite checks a few bands (cod and bass land on starter gear, tuna mostly don't, but do on
   boat gear).
 
