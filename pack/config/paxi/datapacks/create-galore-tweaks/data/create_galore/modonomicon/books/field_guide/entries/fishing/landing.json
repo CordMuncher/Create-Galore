@@ -1,0 +1,61 @@
+{
+  "category": "fishing",
+  "name": "Keep or Release",
+  "description": "Holding up a catch, experience, size classes and alive fish.",
+  "icon": {
+    "item": "minecraft:cod"
+  },
+  "x": 6,
+  "y": -2,
+  "sort_number": 3,
+  "parents": [
+    {
+      "entry": "fishing/the_fight",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": false
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Keep or Release",
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- A landed fish is **held up** and a screen asks: **Keep** or **Release**.\n- Releasing gives a quarter **more experience** and doesn't tire the spot.\n- Fish come in five **size classes**, from Young to Unique.\n- A caught fish stays **alive** for two minutes."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "A landed fish is lifted for everyone to see: by the mouth, or in both hands from 4 kg. The screen shows its species, size class, weight, length, rarity and your best of that species.\\\n\\\n**Keep** gives you the fish and its experience. **Release** gives the experience plus 25%%; the fish swims off and the spot isn't tired by it."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Close the screen and you keep holding the fish; right-click to open it again. You can't cast while holding one.\\\n\\\nThe fish lives two minutes from the catch. After that Release greys out (\"It didn't make it\") and the fish is kept. Logging out keeps it too."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Experience** per catch is a base by rarity, times the fish's weight (against its species' usual one, too), times 1.5 for a trophy or 2.5 for a unique, times how hard the fight was.\\\n\\\nA small common panfish gives about 2, a 4 kg carp about 6, a big rare sea fish dozens. Junk and treasure give a little."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Size classes**, from the species' usual size range:\n\n- **Young**: below it.\n- **Common**: inside it.\n- **Large**: above it.\n- **Trophy**: well toward the species' record.\n- **Unique**: close to the record. Very rare."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Every fish has a real **length and weight**. Fish under 3 kg stack by species and size class. Heavier fish, trophies and uniques are single items that carry their weight, length, who caught them and on which day. Trophies show their name in aqua, uniques in purple.\\\n\\\nEach catch goes into the [#](2E5AAC)[Fishing Journal](entry://fishing/journal)[#]()."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Alive fish.** A fish kept while still alive stays alive for the rest of its two minutes; its tooltip counts down. Dropped into water in that time (by hand, off a belt, out of a chute), it swims away, for no experience. Sorting lines can throw back what you don't want.\\\n\\\nA fish just caught goes into an [#](2E5AAC)[Aquarium Tank](entry://fishing/aquarium)[#]() alive."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "[#](FFFFFF)\ue103[#]() **In depth.** Fish items of every mod are drawn as their own animal's model, at their catch's size: in hand, dropped, in item frames, on a Trophy Mount and as the inventory icon. The fish on your line is drawn the same way.\\\n\\\nFishing events reach other mods as usual, so Fishy Business and Aquaculture's weights still work."
+    }
+  ]
+}

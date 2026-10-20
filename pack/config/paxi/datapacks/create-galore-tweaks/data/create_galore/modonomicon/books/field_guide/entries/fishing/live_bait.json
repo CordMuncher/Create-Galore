@@ -1,0 +1,59 @@
+{
+  "category": "fishing",
+  "name": "Live Bait and Chum",
+  "description": "The Live-Bait Bucket, baitfish, and chum for faster bites.",
+  "icon": {
+    "item": "create_galore_fishing:live_bait_bucket"
+  },
+  "x": 4,
+  "y": -1,
+  "sort_number": 8,
+  "parents": [
+    {
+      "entry": "fishing/bait",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": false
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Live Bait and Chum",
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- The **Live-Bait Bucket** keeps baitfish and leeches alive.\n- Bait loaded from it is **live**: predators take it far more readily.\n- **Chum** thrown into water brings faster bites nearby for three minutes.\n- Baitfish breed in an **Aquarium Tank**."
+    },
+    {
+      "type": "modonomicon:crafting_recipe",
+      "recipe_id_1": "create_galore_fishing:crafting/live_bait_bucket",
+      "text": "A water bucket and iron bars. It holds up to 64 baitfish and leeches, filled and emptied with the same clicks as a bundle."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Loading.** Right-click a rod in your inventory with the bucket: it loads one kind of bait from it, marked live. A loose baitfish on the rod is only cut bait.\\\n\\\nLive fish please river and sea predators half again as much as their favourite bait otherwise would. Taking live bait off the rod makes it ordinary bait."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Baitfish**: minnows, anchovies, guppies, danios, tetras, goldfish, bluegill and herring. Catch them on small hooks with worms or maggots.\\\n\\\nAquaculture's leeches count as live bait too. A Geared or Fuel Reel Drive takes the bucket in its bait slot."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create_galore_fishing:chum"
+      },
+      "title": "Chum",
+      "text": "[#](7A3C9A)[Mixing](entry://glossary/mixing)[#]() 2 Fish Scraps and 1 Fish Meal makes 2. Throw it into water, or fire it from a dispenser. Within 8 blocks bites come up to 1.75 times faster for three minutes."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Chum is strongest at the centre and for its first two minutes, then thins out. Several chum spots together bring bites up to 2.5 times faster.\\\n\\\n[#](FFFFFF)\ue102[#]() **Tip:** chum the water beside a row of [#](2E5AAC)[reel drives](entry://fishing/rod_machines)[#]()."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Related",
+      "text": "- [#](2E5AAC)[Aquarium Tanks](entry://fishing/aquarium)[#]()\n- [#](2E5AAC)[Bait](entry://fishing/bait)[#]()\n- [#](2E5AAC)[Cleaning Table and Fish Products](entry://fishing/cleaning)[#]()"
+    }
+  ]
+}

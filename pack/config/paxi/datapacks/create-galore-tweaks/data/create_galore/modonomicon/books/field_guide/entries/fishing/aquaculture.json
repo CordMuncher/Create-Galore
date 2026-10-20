@@ -6,8 +6,8 @@
     "item": "aquaculture:iron_fishing_rod"
   },
   "x": 2,
-  "y": 3,
-  "sort_number": 12,
+  "y": 5,
+  "sort_number": 20,
   "parents": [
     {
       "entry": "fishing/overview",
@@ -20,12 +20,12 @@
     {
       "type": "modonomicon:text",
       "title": "Aquaculture Fish and Old Rods",
-      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- Aquaculture's **fish** now bite on any rod, each in its own biome.\n- Its **rods, hooks, lines, bobbers and Tackle Box** can't be crafted any more.\n- Rods you **already own** still work, the old way.\n- Fillet knives, Worm Farm, Neptunium and its food all stay."
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- Aquaculture's **fish** bite on any rod, each in its own biome.\n- Its **rods, hooks, lines, bobbers and Tackle Box** can't be crafted.\n- Rods you **already own** still work, the classic way.\n- Fillet knives, Worm Farm, Neptunium and its food all stay."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Tide makes every new rod, and its tackle doesn't fit Aquaculture's rods (or the other way round). Two tackle systems side by side would only confuse, so Aquaculture's fishing gear is retired and its fish moved over to Tide.\\\n\\\nRetired items are hidden from JEI. Copies you own stay in your inventory and keep working."
+      "text": "Aquaculture's fishing gear is retired: one tackle system, not two. Retired items are hidden from JEI. Copies you own stay in your inventory and keep working.\\\n\\\nAquaculture's worms and leeches are bait on every rod here."
     },
     {
       "type": "modonomicon:text",
@@ -40,22 +40,17 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "[#](FFFFFF)\ue103[#]() **In depth.** Bluegill, carp, catfish, rainbow trout, smallmouth bass, tuna and arapaima also existed in Tide, and piranha, carp and tuna in Hybrid Aquatic. Each is one fish now, Aquaculture's, so the journal lists it once and recipes take one item."
+      "text": "[#](FFFFFF)\ue103[#]() **In depth.** Arapaima, bluegill, carp, catfish, rainbow trout, smallmouth bass and tuna are Aquaculture's fish, and mackerel, coelacanth, anglerfish and mahi-mahi Hybrid Aquatic's: one item each, so the journal lists each once and recipes take one item. Their weights match the catch."
     },
     {
       "type": "modonomicon:text",
       "title": "Old Rods",
-      "text": "An Aquaculture rod you already have keeps Aquaculture's own fishing: cast, wait for the splash, reel in. There is no timing game, and its catches come from Aquaculture's tables, not Tide's."
+      "text": "An Aquaculture rod you already have fishes Aquaculture's way: cast, wait for the splash, reel in. No fight, no drag; catches come from Aquaculture's tables.\\\n\\\nIts hook, line, bobber and bait go in through the rod's menu or an old Tackle Box, and fit no other rod."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Its hook, line, bobber and bait still go in through the rod's menu or an old Tackle Box. Aquaculture hooks don't fit Tide rods."
-    },
-    {
-      "type": "modonomicon:text",
-      "title": "",
-      "text": "**Hybrid Aquatic hooks** held in the **off hand** while you cast work with old Aquaculture rods and with [#](2E5AAC)[Alloyed](entry://industry/alloyed)[#]()'s Steel Fishing Rod, which also fishes the old way. On a Tide rod they go on at the [#](2E5AAC)[Angling Table](entry://fishing/angling_table)[#]() instead."
+      "text": "**Hybrid Aquatic hooks** held in the **off hand** while you cast work with old Aquaculture rods. On every other rod they go in the hook slot: [#](2E5AAC)[Reels, Lines and Hooks](entry://fishing/tackle)[#]()."
     },
     {
       "type": "modonomicon:spotlight",
@@ -63,7 +58,7 @@
         "item": "aquaculture:iron_fillet_knife"
       },
       "title": "Fillet Knife",
-      "text": "Iron, Gold, Diamond and Neptunium Fillet Knives still craft. Craft one with a fish for Raw Fillets; a Farmer's Delight knife on the cutting board does the same."
+      "text": "Iron, Gold, Diamond and Neptunium Fillet Knives still craft. Craft one with a fish for Raw Fillets by its weight; a Farmer's Delight knife on the cutting board, or the Cleaning Table, works too."
     },
     {
       "type": "modonomicon:spotlight",
@@ -71,12 +66,12 @@
         "item": "aquaculture:worm_farm"
       },
       "title": "Worm Farm",
-      "text": "Still makes **Worms**, which work as bait in Tide rods: [#](2E5AAC)[Bait](entry://fishing/bait)[#]()."
+      "text": "Still makes **Worms** from compostable scraps: [#](2E5AAC)[Bait](entry://fishing/bait)[#]()."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Neptunium still comes from [#](2E5AAC)[Neptune's Bounty](entry://fishing/crates)[#](), now reeled in on any rod in open water. The Neptunium rod is out of that loot.\\\n\\\nCreate **Integrated Farming**'s [#](2E5AAC)[Fishing Nets](entry://food/integrated_farming)[#]() are not rods. They fish on moving contraptions exactly as before."
+      "text": "Neptunium still comes from [#](2E5AAC)[Neptune's Bounty](entry://fishing/crates)[#](), reeled in on any rod in open water. The Neptunium rod is out of that loot.\\\n\\\nCreate **Integrated Farming**'s [#](2E5AAC)[Fishing Nets](entry://food/integrated_farming)[#]() are not rods. They fish on moving contraptions."
     }
   ]
 }

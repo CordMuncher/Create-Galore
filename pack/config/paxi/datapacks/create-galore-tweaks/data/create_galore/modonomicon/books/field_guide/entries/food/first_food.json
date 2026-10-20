@@ -50,12 +50,12 @@
     {
       "type": "modonomicon:text",
       "title": "Fishing",
-      "text": "A rod is 3 sticks and 2 string. Hold to cast; when a fish bites, click as the marker crosses the zone. Each biome has its own fish. Cook them on the campfire.\\\n\\\n[#](FFFFFF)\ue101[#]() **Watch out:** pufferfish, lionfish, stonefish, blowfish, boxfish, hagfish and stingrays poison you raw."
+      "text": "A **Bamboo Pole** (3 bamboo) needs no reel. In your inventory, right-click it with a String Line, a hook and worms. Hold to cast, strike when the float dips, hold to reel. Cook the fish on a campfire.\\\n\\\n[#](FFFFFF)\ue101[#]() **Watch out:** pufferfish, lionfish, stonefish, blowfish, boxfish, hagfish and stingrays poison you raw."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "[#](FFFFFF)\ue102[#]() **Tip:** no rod? Aquaculture's fish swim in ponds and rivers. Hit one and it drops itself, edible even raw.\\\n\\\nAquaculture's regional fish (piranha, halibut and the rest) bite on any rod now, in their own biomes. See [#](2E5AAC)[Fishing](entry://fishing/overview)[#]()."
+      "text": "[#](FFFFFF)\ue102[#]() **Tip:** no rod? Aquaculture's fish swim in ponds and rivers. Hit one and it drops itself, edible even raw.\\\n\\\nString Line: 4 string and a stick. Hooks: iron nuggets. Worms: hoeing grass turns one up now and then. Each biome has its own fish. See [#](2E5AAC)[Fishing](entry://fishing/overview)[#]()."
     },
     {
       "type": "modonomicon:text",

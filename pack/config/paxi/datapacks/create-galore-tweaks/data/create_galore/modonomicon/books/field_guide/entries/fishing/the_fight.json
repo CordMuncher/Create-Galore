@@ -1,0 +1,71 @@
+{
+  "category": "fishing",
+  "name": "The Fight",
+  "description": "Drag, tension, the rod's angle, and how a fish gets away.",
+  "icon": {
+    "item": "create_galore_fishing:brass_reel"
+  },
+  "x": 4,
+  "y": -2,
+  "sort_number": 2,
+  "parents": [
+    {
+      "entry": "fishing/casting",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": false
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "The Fight",
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- The **drag** gives line when a fish pulls harder than it: set it below what the line holds.\n- **Hold use** to reel; scroll or press **]** and **[** to change the drag.\n- Look **at the fish**: a bent rod soaks its runs and jumps.\n- Keep the line tight, or the hook comes loose."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Once struck, the fish pulls. While it pulls less than the drag, holding use reels it in, slower the harder it pulls. When it pulls more, the drag slips and line runs out at the fish's speed.\\\n\\\nA fish tires against the line's tension, so a drag set too light never wears it out. A tired fish within 1.5 m is landed; a fresh one bolts again."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Changing the drag.** Any time a rod is in hand: before casting, while waiting, mid-fight.\n\n- the **Drag +** / **Drag -** keys, **]** and **[** (rebind them under Create Galore Fishing in Controls)\n- the scroll wheel while a line is out, or while sneaking\n\nThe setting stays on the rod. A pole has no drag."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**The rod's angle.** The rod is held a little above where you look. Look at the fish and the rod bends, soaking the spikes of runs and jumps. Look away or up and it also adds side pressure, which tires the fish faster.\\\n\\\n[#](FFFFFF)\ue101[#]() **Watch out:** pointing the rod straight down the line soaks nothing. Every jump hits the line in full."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**The HUD** above the hotbar while a line is out:\n\n- a tension bar against what the rig breaks at: blue when slack, green, yellow from 60%%, red from 85%%, with a tick where the drag starts to slip\n- the drag, the line out and the line left\n- alerts: **Drag slipping**, **Slack line!**, **It's running!**"
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**How a fish gets away:**\n\n- **Snapped line**: tension over the line's test (or the leader's).\n- **Bitten off**: a toothy fish on line without a Steel Leader.\n- **Rod broke**: a load well over the blank's rating.\n- **Threw the hook**: slack for over a second, or a jump on a loose line.\n- **Spooled**: it took every metre on the reel."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "A snapped, bitten or spooled line loses the line that was out plus a few metres, and the hook, leader, float or lure and bait with it. A rod that breaks gives its parts back.\\\n\\\n**Wear.** Every fight wears the rod, the reel and the line. Reeling while the drag slips grinds the reel: it wears many times faster."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "[#](FFFFFF)\ue103[#]() **In depth.** A rod loaded above 70%% of its rating wears; above its rating it can crack. A worn rod holds less (down to 60%% when nearly broken), a frayed line breaks earlier (down to half its test), a worn reel's drag gets jerky.\\\n\\\nToothy fish include pike, muskellunge, gar, piranha, barracuda, sharks, morays, anglerfish, lionfish and the Dragon Fish."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "The fight has its own sounds: the drag ratchet clicks as line leaves the spool (a slow tick when a fish leans on it, a buzz on a run), the reel cranks and grinds, the line creaks above about 65%% of its breaking load, and snaps with a twang.\\\n\\\nLeaving the rod's hand, logging out or the chunk unloading reels the line in: a fish on is lost."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Related",
+      "text": "- [#](2E5AAC)[Keep or Release](entry://fishing/landing)[#]()\n- [#](2E5AAC)[Reels, Lines and Hooks](entry://fishing/tackle)[#]()\n- [#](2E5AAC)[The Tackle Bench](entry://fishing/tackle_bench)[#]()"
+    }
+  ]
+}

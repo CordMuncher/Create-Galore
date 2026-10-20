@@ -1,0 +1,56 @@
+{
+  "category": "fishing",
+  "name": "The Tackle Bench",
+  "description": "Fit parts to a rod, read its rating and weak-link warnings.",
+  "icon": {
+    "item": "create_galore_fishing:tackle_bench"
+  },
+  "x": 6,
+  "y": -3,
+  "sort_number": 6,
+  "parents": [
+    {
+      "entry": "fishing/tackle",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": false
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "The Tackle Bench",
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- Put a rod in and fit a part in each slot; a **3D preview** shows the rod.\n- It shows what the rod is **rated** for and warns about the **weak link**.\n- Buttons set the **drag** and the float's depth.\n- Parts also go on by right-clicking the rod with them in your inventory."
+    },
+    {
+      "type": "modonomicon:crafting_recipe",
+      "recipe_id_1": "create_galore_fishing:tackle_bench",
+      "text": "Iron sheets, string, planks and a crafting table. Like a crafting table it keeps nothing: the rod comes back with its parts when you close it."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Slots**: rod or pole, reel, line, leader (optional), hook, float/sinker/lure, bait. A pole has no reel slot. Taking a part out of its slot takes it off the rod.\\\n\\\nThe panel shows the rating, \"fish to about\" a weight, the longest cast and the metres of line."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**The rating** is the weakest of three: the blank's load, the line's test (or the leader's) and the reel's top drag. \"Fish to about\" is the heaviest average fighter that rating lands with a sensible drag.\\\n\\\nA new rod's drag starts at a third of the reel's range."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Weak-link warnings:**\n\n- drag over the line's test: a hard pull snaps it\n- drag over what the rod holds: it gets overloaded\n- a pole's line stronger than the pole: a big fish breaks the pole\n- a rig too light or heavy for the rod: casts fall short\n- a worn rod or reel, a frayed line"
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Without the bench.** In your inventory, pick up a part or bait and right-click the rod with it: it goes into its slot. Right-click the rod with an empty cursor to take the bait back off.\\\n\\\nA rod missing a part says so on its tooltip: \"Needs a reel\", \"Needs line\", \"Needs a hook, or a lure\"."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "[#](FFFFFF)\ue102[#]() **Tip:** set the drag to about a third of the line's test. A careful angler lands most river and lake fish on Iron or Steel gear; tuna, arapaima and sharks need the Heavy Boat Rod with heavy line and a Big-Game reel.\\\n\\\nRods and reels aren't repaired at the bench."
+    }
+  ]
+}

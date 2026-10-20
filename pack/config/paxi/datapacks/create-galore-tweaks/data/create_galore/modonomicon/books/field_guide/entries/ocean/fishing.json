@@ -2,9 +2,9 @@
   "type": "modonomicon:entry_link",
   "category": "ocean",
   "name": "Fishing",
-  "description": "Rods, bait, where fish live and the journal. Opens the Fishing section.",
+  "description": "Rods and tackle, the fight, bait, where fish live, rod machines and the journal. Opens the Fishing section.",
   "icon": {
-    "item": "minecraft:fishing_rod"
+    "item": "create_galore_fishing:wooden_rod"
   },
   "x": -1,
   "y": 1,

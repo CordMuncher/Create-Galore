@@ -1,8 +1,8 @@
 {
   "name": "Fishing",
-  "description": "Casting, rods, tackle, bait, where fish live, the journal and what to do with the catch.",
+  "description": "Rods and tackle, the bite and the fight, bait, where fish live, rod machines, aquariums and what to do with the catch.",
   "icon": {
-    "item": "minecraft:fishing_rod"
+    "item": "create_galore_fishing:wooden_rod"
   },
   "sort_number": 12,
   "display_mode": "node",

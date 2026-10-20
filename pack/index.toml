@@ -964,7 +964,7 @@ hash = "6fef4ba85d0bc218e298d510488ccc7c8daf34c1a847adc03bda23b22dc12e97"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/fishing.md"
-hash = "01e5c94f968d474fe83842994e04ea13212720b8303c66d1d675256e93d3d285"
+hash = "fc94db2634cb4b639a92cb8d2129968e5559c5555f94eda2e685b032f054bdc8"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/flight.md"
@@ -972,7 +972,7 @@ hash = "a3640c2898c684c6085d1fe86e7099a3421ee29c7b74eb3482995146df6c1e61"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/food.md"
-hash = "a43c128ee24b55cb8030735b02f1eab26fa1cf4fc966c30755efea82bffd3449"
+hash = "ee538201dd3b52ef5b9dbbcabf28d99b5a12e55a9f556d60520940eeba773c6c"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/glossary.md"
@@ -984,7 +984,7 @@ hash = "725f72c22e54f6b5f2c2029a3b8f9dcc4ceb33fb453fdd86432b45c42c6fff41"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/industry.md"
-hash = "060b0413e7b14b4b0b886c15fe4fb47d9b18a5818d5bffdaaf7bffaa9fdbcba6"
+hash = "aaf20f4c93860eee93f420d5b5126dbda3efc50519e25ed69bd0aaa30ff4c031"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/materials.md"
@@ -992,7 +992,7 @@ hash = "6542377c5fcf0b824a1196d8fea1d9c44737706bfa8d8509254e0ae799e9d192"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/ocean.md"
-hash = "441dc81c9a856eca48747d2dc79f17dfdcb480368288d58f3be07648dbf4070d"
+hash = "4bb8092c49f3fc58d5984fbad4fdf357e5416c429a2fad42ad86c1b158c70c10"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/space.md"
@@ -1012,7 +1012,7 @@ hash = "c1bbf753add31088d9bb050de8af9f15a866341c7ffd25338eb4f2734782389d"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/transport.md"
-hash = "1a2dc1a0db06cb1b90e8bff79ce13029b7a769191aa68f5daca948d5d560a801"
+hash = "ebe82d8553c4dd6036ec69bec7fb3d1c9568b407bfae94c23aa496fc54de7a7a"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/function/give_field_guide.mcfunction"
@@ -1040,7 +1040,7 @@ hash = "5680b33e1763ed1677602cb9607a1247390afcda95bb7b288fd1a9c0842c582d"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/categories/fishing.json"
-hash = "9bbfa593a69bffa637a06a88eaa3fafc424ccc41eef214fa5b5a64ca4561fba6"
+hash = "637757f5d78171ac28d008f28591cabe7d5a65dc0ee67c377f19c5e4a32c2001"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/categories/flight.json"
@@ -1283,56 +1283,88 @@ file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomico
 hash = "b22d53c88076d01a60d19b444beecc3578d6d3738578416a48d6f8ce8fa7a9c1"
 
 [[files]]
-file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/fishing/angling_table.json"
-hash = "3b59c6b11e95302b01e624d764988ab8ae048f5654de3d8f1dc96ae7c3fbed46"
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/fishing/aquaculture.json"
+hash = "067924e8789103a9f6e4f1f8c9ba863f927bc062baabe097cf4bfd2b0b9cb5cd"
 
 [[files]]
-file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/fishing/aquaculture.json"
-hash = "8fdf08837edb72fd3afd5c47e547770da2362e3365d83d6696379745f0637f89"
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/fishing/aquarium.json"
+hash = "52c9b70bdedfefce30661452afaca39f256374eb3bff99b3916c280c59205dcc"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/fishing/bait.json"
-hash = "05775dd2b3be7d4db477707f55128ab0c16ae08fba41aa1259e7cdf2f3178fc9"
+hash = "b9af9d3587b0acfc63e0827a7f09a94a5baa6638e1e9903f4fa3dc86ea29e790"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/fishing/casting.json"
-hash = "825fc66a6e653d8bc25e30de4f546239a11a33399d62929fb6819bf80a0a861f"
+hash = "ed88f94f24824b86b62c39f7a8cf2e228a9c9d0521b1c3508961b8162db40358"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/fishing/cleaning.json"
+hash = "1914dde300d230e50684a73ad3519c7c5ec9c9c72ebe7f39e1a11c5d3194a367"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/fishing/crates.json"
-hash = "984109f842b3fea7186d71634691faed44199b0afa1e15f5c9728d3a24e6ffea"
+hash = "bd2444de8924e3d41cc0fcc1b3cf04e797ec6144e14c21a37ce6e6fecf7b3347"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/fishing/fish_uses.json"
-hash = "7980bcb10050d4a121f2ce37d810f9e8728b29682cbdeca16f30e1d2bfdf5dc8"
+hash = "5d468bb84da67c0c616e9dbc94c23742ac4d93d4fbbc4fb2fd1644c3d7bff1a9"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/fishing/gadgets.json"
-hash = "444ed94a56d3a7e2c7346e63a2289e262584091a009241daca968532d4d0457d"
+hash = "8d42f1b8b5221fd4e73f5ad198c24e1a3c474e7780c4be6bf7cfd8f2fe78db92"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/fishing/journal.json"
-hash = "eafc1fa345b9af6160103b036fac87afcf756fb7d3f89e849dad682787d1644a"
+hash = "011ebbd69cce4e5d77038ee2a5ea72496a4eaf0f3746c98ab3acca557f070dd7"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/fishing/landing.json"
+hash = "7226990bde8d6a26aada4c50797b0d1ae051bda38f32f2063a54b8c72c03d19b"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/fishing/lava_and_void.json"
-hash = "72bf6c3dfa44e058c62eaed273e3eedf39c2c323beaa04a17c8bd9965a128c8c"
+hash = "33132fc62566106bda2f7643300c9b762d60dd9b51fc1e658cd738fc9c8ba59b"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/fishing/live_bait.json"
+hash = "98e82f06f2aa5bc96b3a59d52ef6bdab4da4a34f10718c64e921e5147dd3e282"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/fishing/overview.json"
-hash = "a137c2ecd1e8c8b38344562c97af0d1cacb1f879794a210a226e902f5f17cf63"
+hash = "0d22272b9387ef017e8d363131e5079a1f342182970154f4e0c377f515859ba9"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/fishing/rod_machines.json"
+hash = "6578af5fc28cd61df13fbd1c07dd79614b1bfd275b6cfc13fba924f0e021a095"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/fishing/rods.json"
-hash = "517bb5d60104fae6c9484a7640be73ee4d878af22147a5318e062de9d635acc0"
+hash = "97de827b415962089825653587767625f7dbfa72461b6fb02cf8f2abe3d165d6"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/fishing/sea_food.json"
-hash = "25a28a0f2ce99c85a0beaf9e7dcdcd67bad9cee197c2e2bcf3082a6e067a9aca"
+hash = "d5d095b11b1d2b61e1dee0777ae50bf7a21f80e007f72a392e62279a05447c78"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/fishing/tackle.json"
+hash = "76c97b3f0854eb5e060980b63b504bff973dfc1ebabb308c6aba3d5018956a95"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/fishing/tackle_bench.json"
+hash = "20e7f521cb1a63596c856c0bc2e36ac5666e09ae38330008e404d0937f5c6813"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/fishing/the_fight.json"
+hash = "aaa29f99fb6ee89388c08b5f999e61e53fbe238d57807471271a3fc5ab100c26"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/fishing/trolling.json"
+hash = "648831c726a1841b60bdeb24b7bafb551b5ecf30e99e4185d408b8452824af7b"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/fishing/where_fish_live.json"
-hash = "b9a97a05ec7e089b745dfdc6b6915bff2969aebf4f436015d22ab888ddaacd19"
+hash = "7c1460055906adf70f8b1b85ca54a240ef615a9ecda59d32e31fecaa92699195"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/flight/airships.json"
@@ -1412,7 +1444,7 @@ hash = "58cbccee4b554af8db2f7c53513bdc7282853ae33f4f5c7757812e7ad0ce1803"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/food/first_food.json"
-hash = "87074f67cf7ca6c1dd58912140d7fd21916b3554b2c2fc21df668c54e2c6e6d2"
+hash = "91c980dae077dbb7d3cfb34debb783d51242f0c173cff7090e44079caa6e16b8"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/food/garnished.json"
@@ -1420,7 +1452,7 @@ hash = "09fa194782c445c6b048ba127ce041aa5ad3dde26ae9d40e3e42db41871d1893"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/food/integrated_farming.json"
-hash = "130042749bdf15ae9477dd3bab272d6f97041b06670fd700b90addd60295f5ce"
+hash = "b658a424c65b9d9b988773b383dbf1577002818eb82deef9915ed051495254f1"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/food/kitchen_automation.json"
@@ -1660,7 +1692,7 @@ hash = "037ccfa7244736bdf664abaae741d5524d5d3e0dd83c1f77db6820d01d9e682a"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/industry/alloyed.json"
-hash = "6df9a4776afecc4dfea10d20661e85ebae5549f8689e69f99d54afd5dcdd23f0"
+hash = "3b95ffbf4dc5fa09cc64047c7ae53cebd6c1ec63372b7b34aab4c855157b4fa3"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/industry/cannons.json"
@@ -1680,7 +1712,7 @@ hash = "1c93942caf5050915b0d7fb38a0fb78ce944e8df58683b98252e98ced18e376a"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/industry/liquid_fuel.json"
-hash = "1791e0aace3c130956f9bd0e191838d99c85a791b919f0f054ae8fdce785efdc"
+hash = "9201663a9c8caf68e6267887a449f2825c02d974a3c6f38a4d4e795612daeef7"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/industry/nuclear.json"
@@ -1740,7 +1772,7 @@ hash = "6b0d88ba7f3a24e2961a47782a2afa596173222050bc7681598ccc93c31d2e2a"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/ocean/fishing.json"
-hash = "d1885c7627cc291b85074eccce96bc56e50f53bf5121386af79ead77166fbd68"
+hash = "df9dd4b67afb01c8d5c58f81b53e1621a263bab03ef87c5192b8b11361d9f64e"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/ocean/hulls_and_pressure.json"
@@ -1908,7 +1940,7 @@ hash = "18ca9a8243df56416e3b82561b145c1e8193aa148e70aa23179abb041facb6ff"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/transport/getting_around.json"
-hash = "f705e0d287b9afff08cdcc6774a0312fcca285783f4c1c011dbdf655885e9274"
+hash = "53ed6d34528e6164f09c578ebba642b201c73d883266fb419650ae046d30b454"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/transport/hypertubes.json"

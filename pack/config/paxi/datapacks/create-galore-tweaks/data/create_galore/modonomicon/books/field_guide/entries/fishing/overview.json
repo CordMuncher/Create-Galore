@@ -1,9 +1,9 @@
 {
   "category": "fishing",
   "name": "Fishing",
-  "description": "How fishing works here: Tide runs every fishing rod.",
+  "description": "How fishing works: rods built from parts, the bite, the fight and the catch.",
   "icon": {
-    "item": "minecraft:fishing_rod"
+    "item": "create_galore_fishing:wooden_rod"
   },
   "x": 0,
   "y": 0,
@@ -12,17 +12,22 @@
     {
       "type": "modonomicon:text",
       "title": "Fishing",
-      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- **Tide** runs fishing: hold to cast, then win a short timing game when a fish bites.\n- Where, when and how deep you fish decides what bites.\n- Upgrade rods at an **Angling Table**; bait makes fish bite sooner.\n- The **Fishing Journal** records every fish you catch."
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- Rods are **built from parts**: a blank, a reel, line, a hook and a float, sinker or lure.\n- Hold use to cast, **strike** when a fish bites, then fight it with the **drag** and the reel.\n- What bites depends on the water, the time and your bait.\n- Fish have real **weights**."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Fishing in Create Galore is run by **Tide**. Every plain Fishing Rod is a Tide rod, including ones made before Tide joined the pack.\\\n\\\nMore than 180 fish bite across rivers, oceans, caves, lava and the void, from Tide itself, Hybrid Aquatic, Aquaculture, Alex's Caves and a few others."
+      "text": "A rod is a blank with parts fitted to it at a [#](2E5AAC)[Tackle Bench](entry://fishing/tackle_bench)[#](), or by right-clicking the rod with a part in your inventory. A rod holds fish up to a weight set by its weakest part.\\\n\\\nMore than 180 fish bite across rivers, oceans, caves, lava and the void, from Create Galore Fishing, Hybrid Aquatic, Aquaculture, Alex's Caves and a few others."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Start here:\n\n- [#](2E5AAC)[Casting and the Bite](entry://fishing/casting)[#]()\n- [#](2E5AAC)[Fishing Rods](entry://fishing/rods)[#]()\n- [#](2E5AAC)[Where Fish Live](entry://fishing/where_fish_live)[#]()\n- [#](2E5AAC)[Bait](entry://fishing/bait)[#]()\n- [#](2E5AAC)[Fishing Journal and Trophies](entry://fishing/journal)[#]()\n- [#](2E5AAC)[What Fish Are For](entry://fishing/fish_uses)[#]()"
+      "text": "Start here:\n\n- [#](2E5AAC)[Casting and the Bite](entry://fishing/casting)[#]()\n- [#](2E5AAC)[The Fight](entry://fishing/the_fight)[#]()\n- [#](2E5AAC)[Keep or Release](entry://fishing/landing)[#]()\n- [#](2E5AAC)[Rods](entry://fishing/rods)[#]()\n- [#](2E5AAC)[Reels, Lines and Hooks](entry://fishing/tackle)[#]()\n- [#](2E5AAC)[Bait](entry://fishing/bait)[#]()\n- [#](2E5AAC)[Where Fish Live](entry://fishing/where_fish_live)[#]()"
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Further on:\n\n- [#](2E5AAC)[Cleaning Table and Fish Products](entry://fishing/cleaning)[#]()\n- [#](2E5AAC)[Rod Holder and Reel Drives](entry://fishing/rod_machines)[#]()\n- [#](2E5AAC)[Trolling from Ships](entry://fishing/trolling)[#]()\n- [#](2E5AAC)[Aquarium Tanks](entry://fishing/aquarium)[#]()\n- [#](2E5AAC)[Fishing Journal and Trophies](entry://fishing/journal)[#]()"
     },
     {
       "type": "modonomicon:spotlight",
@@ -30,12 +35,12 @@
         "item": "tide:fishing_journal"
       },
       "title": "Fishing Journal",
-      "text": "Every player gets one on joining. Catch a fish to unlock its page: where it lives, when it bites, and your biggest one so far."
+      "text": "Every player gets one on joining. Catch a fish to unlock its page: where it lives, when it bites, and your longest and heaviest so far."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "[#](FFFFFF)\ue102[#]() **Tip:** day one, a plain rod (3 sticks, 2 string) is enough. Any open river or sea gives fish to cook on a campfire. See [#](2E5AAC)[Food in Your First Days](entry://food/first_food)[#]().\\\n\\\nAquaculture's own rods and tackle are retired here; see [#](2E5AAC)[Aquaculture Fish and Old Rods](entry://fishing/aquaculture)[#]()."
+      "text": "[#](FFFFFF)\ue102[#]() **Tip:** first fishing trip: a [](item://create_galore_fishing:bamboo_pole) (3 bamboo) needs no reel. Right-click it with a [](item://create_galore_fishing:string_line) and a [](item://create_galore_fishing:small_hook) in your inventory, add worms, and cast into any river. See [#](2E5AAC)[Food in Your First Days](entry://food/first_food)[#]().\\\n\\\nAquaculture's own rods: [#](2E5AAC)[Aquaculture Fish and Old Rods](entry://fishing/aquaculture)[#]()."
     }
   ]
 }
