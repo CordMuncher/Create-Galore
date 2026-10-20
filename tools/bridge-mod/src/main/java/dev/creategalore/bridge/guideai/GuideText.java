@@ -4,11 +4,16 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import java.io.Reader;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 import java.util.ArrayList;
+import java.util.HexFormat;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
@@ -17,9 +22,9 @@ import net.neoforged.fml.ModList;
 import net.neoforged.neoforgespi.language.IModInfo;
 
 /**
- * The fixed start of every request: who the book is, then the whole Field Guide and the mod list as plain text.
- * It is read from the loaded datapacks (so it always matches the guide players see) and is byte-for-byte the same
- * for every player and every thread, which is what lets the API cache it. Nothing about a player goes in here.
+ * The fixed start of every request: who the book is, then the Field Guide's compact AI notes and the mod list as
+ * plain text. It is read from the loaded datapacks (so it always matches the guide players see) and is byte-for-byte
+ * the same for every player and every thread, which is what lets the API cache it. Nothing about a player goes in here.
  */
 final class GuideText {
     static final String BOOK = "modonomicon/books/field_guide";
@@ -30,13 +35,15 @@ final class GuideText {
             have read a great deal, you have opinions, and you are glad to be useful.
 
             Your job is to do the reading for the player. They ask in plain words; you gather what they need from the \
-            guide text below, the recipe list, and what your tools show about their surroundings and inventory, and you \
+            guide notes below, the recipe list, and what your tools show about their surroundings and inventory, and you \
             give a direct, practical answer. Combine facts and reason from them: if the guide doesn't say it outright \
             but it follows from what the guide and the player's situation show, say it, and mention that you are \
             working it out. If they ask for the best way to do something with what they have, recommend one and say \
             why. Keep answers as short as the question allows: a quick question gets a few sentences. \
-            Name the guide section and entry they can read for more. Each question starts with the player's name; \
-            call them by it now and then, not in every answer.
+            Name the guide section and entry they can read for more. The guide notes below are the Field Guide \
+            condensed for you: every fact it holds, written once. When they are too short on something the player \
+            needs, or you want the guide's exact words, read the entry with read_guide. Each question starts with the \
+            player's name; call them by it now and then, not in every answer.
 
             The one thing you don't do is play the game for them. Don't write exact boss builds, move-by-move fight \
             plans, or a complete factory or base to copy block by block. For those, name the items, mechanics and \
@@ -103,54 +110,172 @@ final class GuideText {
     private GuideText() {
     }
 
-    /** The Field Guide, section by section, as plain text. */
-    static String guide(ResourceManager resources) {
+    /** One entry as the voice reads it in full: its section, name and plain text. */
+    record Entry(String id, String section, String name, String text) {
+    }
+
+    /**
+     * The guide as the voice gets it. {@code notes} starts every conversation: each section's compact AI notes
+     * (data/create_galore/field_guide_ai/SECTION.md, every fact of the section written once), or the section's full
+     * text where its notes are missing or were written from older entries. {@code entries} holds every entry in full
+     * for read_guide. {@code full} is the whole book as it used to be sent, kept only to log the difference.
+     */
+    record Guide(String notes, Map<String, Entry> entries, int full, List<String> fullSections) {
+    }
+
+    static final String NOTES = "field_guide_ai";
+    private static volatile Guide current;
+
+    /** The guide the running voice was started with, for read_guide. */
+    static Guide current() {
+        return current;
+    }
+
+    static Guide load(ResourceManager resources) {
         Map<ResourceLocation, Resource> files = new TreeMap<>(resources.listResources(BOOK,
                 id -> id.getNamespace().equals("create_galore") && id.getPath().endsWith(".json")));
         Map<String, String> categories = new TreeMap<>();
-        Map<String, List<JsonObject>> entries = new TreeMap<>();
+        Map<String, List<JsonObject>> sections = new TreeMap<>();
+        Map<String, TreeMap<String, byte[]>> raw = new TreeMap<>();
         for (Map.Entry<ResourceLocation, Resource> file : files.entrySet()) {
             String path = file.getKey().getPath().substring(BOOK.length() + 1);
-            JsonObject json = read(file.getValue());
+            byte[] bytes = bytes(file.getValue());
+            JsonObject json = bytes == null ? null : parse(bytes);
             if (json == null) continue;
             if (path.startsWith("categories/")) {
                 categories.put(stem(path.substring("categories/".length())), string(json, "name"));
             } else if (path.startsWith("entries/")) {
-                String id = path.substring("entries/".length(), path.length() - ".json".length());
+                String rel = path.substring("entries/".length());
+                String id = rel.substring(0, rel.length() - ".json".length());
+                String section = id.substring(0, Math.max(0, id.indexOf('/')));
                 json.addProperty("$id", id);
-                entries.computeIfAbsent(id.substring(0, Math.max(0, id.indexOf('/'))), k -> new ArrayList<>()).add(json);
+                sections.computeIfAbsent(section, k -> new ArrayList<>()).add(json);
+                raw.computeIfAbsent(section, k -> new TreeMap<>()).put(rel, bytes);
             }
         }
-        StringBuilder out = new StringBuilder();
-        for (Map.Entry<String, List<JsonObject>> section : entries.entrySet()) {
+        Map<String, Entry> entries = new LinkedHashMap<>();
+        StringBuilder notes = new StringBuilder();
+        List<String> fullSections = new ArrayList<>();
+        int full = 0;
+        for (Map.Entry<String, List<JsonObject>> section : sections.entrySet()) {
             List<JsonObject> list = section.getValue();
             list.sort((a, b) -> {
                 int c = Integer.compare(intOf(a, "sort_number"), intOf(b, "sort_number"));
                 return c != 0 ? c : string(a, "$id").compareTo(string(b, "$id"));
             });
-            out.append("\n\n=== Section: ").append(categories.getOrDefault(section.getKey(), section.getKey())).append(" ===\n");
+            String name = categories.getOrDefault(section.getKey(), section.getKey());
+            StringBuilder text = new StringBuilder("\n\n=== Section: ").append(name).append(" ===\n");
             for (JsonObject entry : list) {
                 if (!entry.has("pages")) continue; // link nodes that only open an entry of another section
-                out.append("\n--- ").append(string(entry, "name")).append(" (entry ").append(string(entry, "$id")).append(") ---\n");
-                for (JsonElement p : entry.getAsJsonArray("pages")) {
-                    if (!p.isJsonObject()) continue;
-                    JsonObject page = p.getAsJsonObject();
-                    String title = string(page, "title");
-                    if (!title.isEmpty() && !title.equals(string(entry, "name"))) out.append(title).append('\n');
-                    String item = itemOf(page);
-                    if (!item.isEmpty()) out.append("[Shows item ").append(item).append("]\n");
-                    if (page.has("recipe_id_1")) {
-                        out.append("[Shows recipe ").append(string(page, "recipe_id_1"));
-                        if (page.has("recipe_id_2")) out.append(" and ").append(string(page, "recipe_id_2"));
-                        out.append("]\n");
-                    }
-                    if (page.has("multiblock_name")) out.append("[Shows the build: ").append(string(page, "multiblock_name")).append("]\n");
-                    String text = clean(string(page, "text"));
-                    if (!text.isEmpty()) out.append(text).append('\n');
-                }
+                Entry e = new Entry(string(entry, "$id"), section.getKey(), string(entry, "name"), entryText(entry));
+                entries.put(e.id(), e);
+                text.append("\n--- ").append(e.name()).append(" (entry ").append(e.id()).append(") ---\n").append(e.text());
+            }
+            full += text.length();
+            String own = sectionNotes(resources, section.getKey(), sourceHash(raw.get(section.getKey())));
+            if (own != null) {
+                notes.append("\n\n").append(own);
+            } else {
+                fullSections.add(section.getKey());
+                notes.append(text);
             }
         }
-        return out.toString().trim();
+        Guide guide = new Guide(notes.toString().trim(), entries, full, List.copyOf(fullSections));
+        current = guide;
+        return guide;
+    }
+
+    private static String entryText(JsonObject entry) {
+        StringBuilder out = new StringBuilder();
+        for (JsonElement p : entry.getAsJsonArray("pages")) {
+            if (!p.isJsonObject()) continue;
+            JsonObject page = p.getAsJsonObject();
+            String title = string(page, "title");
+            if (!title.isEmpty() && !title.equals(string(entry, "name"))) out.append(title).append('\n');
+            String item = itemOf(page);
+            if (!item.isEmpty()) out.append("[Shows item ").append(item).append("]\n");
+            if (page.has("recipe_id_1")) {
+                out.append("[Shows recipe ").append(string(page, "recipe_id_1"));
+                if (page.has("recipe_id_2")) out.append(" and ").append(string(page, "recipe_id_2"));
+                out.append("]\n");
+            }
+            if (page.has("multiblock_name")) out.append("[Shows the build: ").append(string(page, "multiblock_name")).append("]\n");
+            String text = clean(string(page, "text"));
+            if (!text.isEmpty()) out.append(text).append('\n');
+        }
+        return out.toString();
+    }
+
+    private static final Pattern STAMP = Pattern.compile("\\A<!-- sources sha256:([0-9a-f]{64}) -->\n");
+
+    /** A section's AI notes without their stamp, or null when they are missing or stamped against other entries. */
+    private static String sectionNotes(ResourceManager resources, String section, String hash) {
+        var resource = resources.getResource(ResourceLocation.fromNamespaceAndPath("create_galore", NOTES + "/" + section + ".md"));
+        if (resource.isEmpty()) return null;
+        byte[] bytes = bytes(resource.get());
+        if (bytes == null) return null;
+        String text = new String(bytes, StandardCharsets.UTF_8).replace("\r\n", "\n");
+        Matcher m = STAMP.matcher(text);
+        if (!m.find() || !m.group(1).equals(hash)) return null;
+        return text.substring(m.end()).trim();
+    }
+
+    /** Same as tools/guide_digest.py source_hash: each entry file's path under entries/ and its bytes, in path order. */
+    static String sourceHash(TreeMap<String, byte[]> files) {
+        try {
+            MessageDigest sha = MessageDigest.getInstance("SHA-256");
+            if (files != null) for (Map.Entry<String, byte[]> f : files.entrySet()) {
+                sha.update((f.getKey() + "\n").getBytes(StandardCharsets.UTF_8));
+                sha.update(f.getValue());
+                sha.update((byte) '\n');
+            }
+            return HexFormat.of().formatHex(sha.digest());
+        } catch (java.security.NoSuchAlgorithmException e) {
+            return "";
+        }
+    }
+
+    private static final int MAX_FOUND = 10;
+
+    /** read_guide: entries by id, or the entries whose text holds every word searched for. */
+    static String read(String query) {
+        Guide guide = current;
+        if (guide == null) return "The guide isn't loaded.";
+        List<String> ids = new ArrayList<>(), unknown = new ArrayList<>();
+        for (String word : query.strip().split("[\\s,]+")) {
+            if (guide.entries().containsKey(word)) ids.add(word);
+            else if (word.matches("[a-z0-9_]+/[a-z0-9_/]+")) unknown.add(word);
+        }
+        if (!ids.isEmpty()) {
+            StringBuilder out = new StringBuilder();
+            if (!unknown.isEmpty()) out.append("Not guide entries: ").append(String.join(", ", unknown)).append("\n\n");
+            for (String id : ids.stream().distinct().limit(6).toList()) {
+                Entry e = guide.entries().get(id);
+                out.append("--- ").append(e.name()).append(" (entry ").append(e.id()).append(") ---\n").append(e.text()).append('\n');
+            }
+            return out.toString().trim();
+        }
+        List<String> words = new ArrayList<>();
+        for (String w : query.toLowerCase(java.util.Locale.ROOT).split("[^\\p{L}\\p{N}_:/.-]+")) if (w.length() > 1) words.add(w);
+        if (words.isEmpty()) return "Give an entry id (such as create_basics/rotation) or words to search for.";
+        StringBuilder out = new StringBuilder();
+        int found = 0;
+        for (Entry e : guide.entries().values()) {
+            String hay = (e.name() + "\n" + e.text()).toLowerCase(java.util.Locale.ROOT);
+            if (!words.stream().allMatch(hay::contains)) continue;
+            if (found++ >= MAX_FOUND) continue;
+            String line = "";
+            for (String l : e.text().split("\n")) {
+                if (l.toLowerCase(java.util.Locale.ROOT).contains(words.get(0))) {
+                    line = l.length() > 220 ? l.substring(0, 220) + "..." : l;
+                    break;
+                }
+            }
+            out.append(e.id()).append(" | ").append(e.name()).append(line.isEmpty() ? "" : ": " + line).append('\n');
+        }
+        if (found == 0) return "No guide entry contains all of: " + String.join(", ", words) + ".";
+        return "Entries containing all of " + String.join(", ", words) + (found > MAX_FOUND ? " (first " + MAX_FOUND + " of " + found + ")" : "")
+                + ". Read one in full with its id.\n" + out.toString().trim();
     }
 
     /** Every mod on the server, for "which mod adds X" and for judging what a wiki may say. */
@@ -199,9 +324,17 @@ final class GuideText {
         return o;
     }
 
-    private static JsonObject read(Resource resource) {
-        try (Reader r = resource.openAsReader()) {
-            JsonElement e = JsonParser.parseReader(r);
+    private static byte[] bytes(Resource resource) {
+        try (InputStream in = resource.open()) {
+            return in.readAllBytes();
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private static JsonObject parse(byte[] bytes) {
+        try {
+            JsonElement e = JsonParser.parseString(new String(bytes, StandardCharsets.UTF_8));
             return e.isJsonObject() ? e.getAsJsonObject() : null;
         } catch (Exception e) {
             return null;

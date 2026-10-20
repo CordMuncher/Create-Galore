@@ -67,6 +67,9 @@ jobs:
       - name: Check CHANGELOG.md has notes for this version
         run: python3 tools/changelog_section.py "${{ steps.version.outputs.version }}"
 
+      - name: Check the Field Guide's AI notes match the guide
+        run: python3 tools/guide_digest.py --check
+
       - name: Build the app's server data (fails if pack/index.toml is stale)
         id: bundle
         run: |
