@@ -8,8 +8,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import net.createmod.catnip.levelWrappers.SchematicLevel;
 import net.minecraft.commands.arguments.blocks.BlockStateParser;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.state.BlockState;
@@ -111,9 +113,8 @@ public final class Models {
                 + "house, a bridge, a tower) the player can copy or take ideas from: build it as a skilled Minecraft builder "
                 + "would, at a size that gives it shape (a small sailing boat is about 12 to 20 blocks long), with stairs, "
                 + "slabs, trapdoors, fences, walls and buttons for curves and detail, two or three materials that go "
-                + "together, depth and trim instead of flat walls, and no plain boxes. Blocks keep exactly the state you give: "
-                + "fences, walls, panes and bars only join where you set north/east/south/west, and stairs only turn a "
-                + "corner with shape set. Write such builds as layers. Try a "
+                + "together, depth and trim instead of flat walls, and no plain boxes. Fences, walls, panes and bars join their "
+                + "neighbours and stairs turn corners by themselves, as when placed. Write such builds as layers. Try a "
                 + "build first with draft true and look at the pictures: fix whatever looks blocky, lopsided or wrong, "
                 + "then call again with draft false. Before a model is shown the server tries its Create machines with "
                 + "Create's own rules (which faces take a shaft, cogs, belts, sources, water on wheels) and refuses one "
@@ -221,6 +222,7 @@ public final class Models {
         if (GuideText.string(input, "title").length() > 60) problems.add("title longer than 60 characters");
         if (GuideText.string(input, "caption").length() > 240) problems.add("caption longer than 240 characters");
         if (!problems.isEmpty()) return Result.problem("Not built. Fix these and call again: " + String.join("; ", problems) + ".");
+        if (level != null) connect(cells, level);
         BuildCheck.Report check = level == null ? null : BuildCheck.check(cells, level);
         boolean showsFault = input.has("shows_a_fault") && input.get("shows_a_fault").isJsonPrimitive()
                 && input.get("shows_a_fault").getAsBoolean();
@@ -242,6 +244,33 @@ public final class Models {
         model.add("labels", labels);
         byte[] picture = draft ? Preview.render(cells, sx, sy, sz) : null;
         return new Result(model, null, check == null ? "" : check.text(), draft, picture);
+    }
+
+    /**
+     * Joins the blocks to their neighbours the way placing them in the world would: fences, walls, panes and bars
+     * connect, stairs turn corners, chests pair up. A block the update would remove (a torch with nothing to stand on)
+     * stays as written.
+     */
+    private static void connect(Map<BlockPos, BlockState> cells, ServerLevel level) {
+        try {
+            SchematicLevel world = new SchematicLevel(level);
+            cells.forEach((pos, state) -> world.setBlock(pos, state, 0));
+            for (int pass = 0; pass < 2; pass++) {
+                for (Map.Entry<BlockPos, BlockState> e : cells.entrySet()) {
+                    BlockPos pos = e.getKey();
+                    BlockState state = world.getBlockState(pos);
+                    for (Direction d : Direction.values()) {
+                        BlockPos next = pos.relative(d);
+                        BlockState updated = state.updateShape(d, world.getBlockState(next), world, pos, next);
+                        if (!updated.isAir()) state = updated;
+                    }
+                    world.setBlock(pos, state, 0);
+                }
+            }
+            for (Map.Entry<BlockPos, BlockState> e : cells.entrySet()) e.setValue(world.getBlockState(e.getKey()));
+        } catch (RuntimeException | LinkageError e) {
+            // Without Create's scratch level, or if a block's update fails, the blocks stay as written.
+        }
     }
 
     private static JsonArray array(JsonObject o, String key) {

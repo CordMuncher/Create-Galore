@@ -9,6 +9,7 @@ fails when that section is missing.
 ### Added
 - **Ask the Book builds proper builds.** Ask it to show you a boat, a cottage or a bridge and it now builds it the way a good Minecraft builder would: up to 32 blocks a side (was 16), with stairs, slabs, trapdoors and fences for curves and trim, written out layer by layer so a detailed build fits in one go. Before it shows a build it tries it as a draft and gets pictures of it (two corner views, the front and the side) to check the shape and colours, and fixes what looks off. In a test asking for "a proper boat", the old tool gave a brick box with a wool sheet for a sail; the new one gave a two-sail sloop with a curved hull, a stern cabin, a raised foredeck and a bowsprit.
 - Builds and explanations are kept apart: models that explain machines still keep to the blocks that matter.
+- Fences, walls, panes and bars in the book's models join their neighbours and stairs turn corners, as when you place them.
 - Create Galore Bridge 1.30.0.
 
 ### Fixed
