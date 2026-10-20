@@ -201,7 +201,10 @@
 	"Block Range" = 7
 	#─────────────────────────────────────────────────────────────────────────
 	# When set to true, uses Cold Sweat's temperature system to determine water freezing behavior
-	"Custom Freezing Behavior" = true
+	# Create Galore: off. Cold Sweat's freezing counts ice as a cold block, so a few ice blocks chilled the water
+	# next to them below freezing and the ice spread across lakes even in summer, faster than Serene Seasons melts it.
+	# Water now freezes by the biome and season (Serene Seasons), the same rule that decides snow.
+	"Custom Freezing Behavior" = false
 	#─────────────────────────────────────────────────────────────────────────
 	# When set to true, modifies ice blocks to be harvestable with a pickaxe and tweaks its mining speed
 	"Custom Ice Drops" = true

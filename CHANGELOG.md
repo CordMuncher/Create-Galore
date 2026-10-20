@@ -4,11 +4,16 @@ Each pack version gets a section here, with **Added**, **Fixed** and **Removed**
 workflow copies the section for the version in `pack/pack.toml` to the top of the GitHub release, and the build
 fails when that section is missing.
 
-## 0.3.3
+## 0.3.4
 
 ### Fixed
 - **Otters no longer wipe out the hermit crabs.** Hybrid Aquatic's otters live on the same sandy beaches as its hermit crabs and count every crab as food, hunting a new one each time they get hungry (about every 3 minutes). A hermit crab dies to a single bite and only a handful spawn around you, so a pair of otters kept a beach empty of them. Hermit crabs are now off the menu of every Hybrid Aquatic hunter (otters, octopuses, cuttlefish, wrasses, stingrays and the other crab eaters). Hunters still eat the other crabs, shrimp and fish, and fishing nets still catch hermit crabs. On a test server two hungry otters used to eat all 4 hermit crabs in a pen within 3 minutes; now all 4 live, while the fiddler crabs next to them still get eaten.
 - Create Galore Bridge 1.28.0.
+
+## 0.3.3
+
+### Fixed
+- **Lake ice in summer now melts instead of spreading.** Cold Sweat decided when water freezes, and it counts ice as a cold block: a few ice blocks chilled the water next to them below freezing, that water froze, and the ice crept across the lake even in Mid Summer, faster than the seasons could melt it. Water now freezes by biome and season (Serene Seasons), the same rule that decides when it snows, so ice can no longer feed itself. Ice already on a lake in a warm biome melts within a few minutes while you're nearby. Ice still cools you down as before, and blizzards still freeze lakes in winter and in cold biomes.
 
 ## 0.3.2
 

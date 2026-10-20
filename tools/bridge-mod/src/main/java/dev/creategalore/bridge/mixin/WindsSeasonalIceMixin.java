@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
  * plains in any season. While one is overhead it froze surface water up to 32 blocks around each player every 5 s
  * without asking the biome or the season, so lakes iced over in the middle of summer (its snow already checks the
  * biome, its water freezing did not). Freeze only water the game itself would freeze there: Biome.shouldFreeze, which
- * Cold Sweat answers from its world temperature (biome, season, time of day) and which also keeps water next to a
+ * Serene Seasons makes seasonal (the pack turns Cold Sweat's own freezing off) and which also keeps water next to a
  * light open. Ice that already formed melts over the warm seasons (Serene Seasons).
  */
 @Mixin(value = WeatherBlockEffects.class, remap = false)

@@ -59,7 +59,7 @@ hash = "c8c05ff0d9853da43b24b7dfe45efc8e93b5e742e8dc561baf099c8debc91367"
 
 [[files]]
 file = "config/coldsweat/world.toml"
-hash = "f9c34026888b0fb152b1ecc8369be1d90d8f1ed7275c530b73cf0d57fe94fa29"
+hash = "9ce3c9132830942058b7a3afe90378288e7a48cc741c92ad4cab5aa21cb09e9c"
 
 [[files]]
 file = "config/coldsweat_altitude-server.toml"
@@ -992,7 +992,7 @@ hash = "276d8806ce82ac1973fd5436b19482e757dbe921ced9811617e9cc1d5ca4c780"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/ocean.md"
-hash = "1a53f908009918d5ced81323c634fb2ff7597eafc4878895a388cb5545e652c1"
+hash = "ec970d052d6cfdfe37641fbfca1e2833cdb3e6e382db4ef7d00fa95f3bf5d6ee"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/space.md"
@@ -1756,7 +1756,7 @@ hash = "91c82c1c5557492932ffaa8cf65a4c2ed5ecb2ea9e2866c4c6e454c1350c230b"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/ocean/sea_life.json"
-hash = "3beae8ef7fea69fcbbc5f11f2bb82e84ab46ca1747bdee096c0e58e91eef5b12"
+hash = "ae8d0a52321a86201ffabd77b7b42d85b46b606b0af2859f188c5282657bdfde"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/ocean/submarines.json"
