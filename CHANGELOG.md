@@ -4,6 +4,31 @@ Each pack version gets a section here, with **Added**, **Fixed** and **Removed**
 workflow copies the section for the version in `pack/pack.toml` to the top of the GitHub release, and the build
 fails when that section is missing.
 
+## 0.3.9
+
+**Back up your world before updating, and update the pack on the server and every client together.** Tide 2's things convert to Create Galore Fishing when a world loads and can't be converted back.
+
+### Added
+- **Create Galore Fishing, the pack's own fishing mod.** Rods are built from parts at a new Tackle Bench: a blank (Bamboo Pole, Wooden, Iron, Steel Telescopic, Heavy Boat Rod, Netherite for lava), a reel, a line, a leader, a hook and a float, sinker or lure. The bench shows the rod's stats, the fish it suits and its weak link. Tackle is made from Create parts and TFMG steel, plastic and rubber.
+- **A real fight.** Hold use to cast, strike when the float dips or the rod tip taps, then fight the fish against the drag (scroll wheel, or `]` and `[`) while the HUD shows tension and line left. Lines snap above their test, rods crack above their load, toothy fish bite through anything but a leader, a slack line lets the hook come loose, and a big fish can strip the reel. Rods, reels and lines wear, but one fight never takes more than a tenth of a reel.
+- **Catch and release.** A landed fish is held up for everyone to see with a Keep or Release choice; release pays a quarter more XP and doesn't tire the spot. Fish have real weights and lengths in five size classes, heavy fish and trophies are single items carrying their weight, length, angler and day, and the Fishing Journal keeps each player's best.
+- **Bait from Create.** A fan washing dirt or mud turns up worms and leeches, mixing makes maggots, heated mixing makes boilies, and chum thrown in the water (or from a dispenser) brings bites faster nearby. The Live-Bait Bucket holds baitfish and leeches for live bait, which predators prefer. The float's depth, set at the Tackle Bench, decides where the bait hangs.
+- **Cleaning Table.** Cut fish with a knife (or a Deployer) into fillets, steaks, roe, bones, scraps and shark skin. Fish of 3 kg and more must be cleaned before they cook. Scraps mill into fish meal and press into fish oil, which a Blaze Burner burns.
+- **Rod machines.** The Rod Holder rings and pulses redstone on a bite; the Basic, Geared and Fuel Reel Drives wind, strike and cast on Create rotation (or their own engine), and a pulling fish costs stress. They work on Aeronautics ships, towing a lure behind for trolling, so the big sea fish come to boats. Many drives in one spot share its fish, so a bank of them doesn't out-fish moving.
+- **Aquarium tanks** of up to 8 blocks a side, with fish swimming at their real size, and baitfish that breed when fed fish meal.
+- Every fish item is drawn as its own 3D fish, at its catch's size.
+- Field Guide: the Fishing section is rewritten for all of this (tackle, the fight, landing, bait, live bait, cleaning, rod machines, trolling, aquariums), and Ask the Book's notes with it.
+- Create Galore Fishing 0.2.0, Create Galore Bridge 1.33.0.
+
+### Fixed
+- **Hooked on Variety can be earned.** It asked for a plain Fishing Rod, which the pack always turns into another rod.
+- The Bamboo Pole can be made from sugar cane too, so a first rod doesn't depend on finding bamboo.
+
+### Removed
+- **Tide 2 and Tide Extra Compatibility.** Everything players had from them stays, under the same ids: the fish and their mobs, the Fishing Journal and its progress, the crates, gadgets, special rods, Fish Displays (now Trophy Mounts), foods, hooks, baits and bobbers (as floats). Tide's plain rods become the matching new rods with their enchantments, name, damage and bait kept, the Angling Table becomes the Tackle Bench, and the vanilla Fishing Rod and Alloyed's Steel Fishing Rod become the Wooden and Steel rods.
+- Tide's grilled tuna recipes, which never worked (the pack's tuna is Aquaculture's).
+- The Enchanted Pocket Watch no longer freezes bosses from other mods (Cataclysm, Twilight Forest, Aether and others), only ordinary mobs.
+
 ## 0.3.8
 
 ### Fixed
