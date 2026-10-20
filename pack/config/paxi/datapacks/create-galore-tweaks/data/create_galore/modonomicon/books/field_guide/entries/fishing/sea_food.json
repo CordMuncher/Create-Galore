@@ -5,12 +5,12 @@
   "icon": {
     "item": "aquaculturedelight:fish_and_chips"
   },
-  "x": 4,
-  "y": 2,
-  "sort_number": 11,
+  "x": 6,
+  "y": 3,
+  "sort_number": 17,
   "parents": [
     {
-      "entry": "fishing/fish_uses",
+      "entry": "fishing/cleaning",
       "draw_arrow": true,
       "line_enabled": true,
       "line_reversed": false
@@ -25,7 +25,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "- **Ocean's Delight** cooks vanilla ocean mobs: squid, cod, kelp, sea pickles, pufferfish, guardians and even Elder Guardians.\n- **Aquaculture Delight** cooks [#](2E5AAC)[Aquaculture](entry://fishing/aquaculture)[#]()'s fish: perch, halibut, pollock, tuna, catfish, bass and turtle meat. They are caught on any rod now."
+      "text": "- **Ocean's Delight** cooks vanilla ocean mobs: squid, cod, kelp, sea pickles, pufferfish, guardians and even Elder Guardians.\n- **Aquaculture Delight** cooks [#](2E5AAC)[Aquaculture](entry://fishing/aquaculture)[#]()'s fish: perch, halibut, pollock, tuna, catfish, bass and turtle meat. They are caught on any rod."
     },
     {
       "type": "modonomicon:spotlight",
@@ -62,7 +62,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Any Tide fish cut on the board gives the same **raw fillets**, so every catch can go into these meals: [#](2E5AAC)[What Fish Are For](entry://fishing/fish_uses)[#]().\\\n\\\nThe same fish also feed automated kitchens: see [#](2E5AAC)[Kitchen Automation](entry://food/kitchen_automation)[#](). Hybrid Aquatic's clams cook into Cooked Clam, and Naturalist's clams give Clam Meat."
+      "text": "Fillets from the cutting board or the [#](2E5AAC)[Cleaning Table](entry://fishing/cleaning)[#]() go into these meals, so every catch can: [#](2E5AAC)[What Fish Are For](entry://fishing/fish_uses)[#]().\\\n\\\nThe same fish also feed automated kitchens: see [#](2E5AAC)[Kitchen Automation](entry://food/kitchen_automation)[#](). Hybrid Aquatic's clams cook into Cooked Clam, and Naturalist's clams give Clam Meat."
     }
   ]
 }

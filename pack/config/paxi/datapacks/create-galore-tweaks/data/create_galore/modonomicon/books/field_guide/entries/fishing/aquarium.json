@@ -1,0 +1,51 @@
+{
+  "category": "fishing",
+  "name": "Aquarium Tanks",
+  "description": "Glass tanks that show live fish and breed baitfish.",
+  "icon": {
+    "item": "create_galore_fishing:aquarium_tank"
+  },
+  "x": 6,
+  "y": -1,
+  "sort_number": 9,
+  "parents": [
+    {
+      "entry": "fishing/live_bait",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": false
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Aquarium Tanks",
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- Tank blocks that fill a **box** up to 8 on a side join into one tank.\n- [#](FFFFFF)\ue107[#]() Fill it **half** with water, then let fish in from buckets.\n- Fish swim inside at their real size.\n- Two baitfish of a kind, fed **Fish Meal**, breed."
+    },
+    {
+      "type": "modonomicon:crafting_recipe",
+      "recipe_id_1": "create_galore_fishing:crafting/aquarium_tank",
+      "text": "Four iron sheets and four glass make 4. The tank has an open top and a sand floor; long, shallow tanks work."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Water** comes by bucket or by pipe. Once the tank is at least half full, fish go in:\n\n- from any mod's fish bucket\n- a fish you've just caught and are holding up (it counts as kept)\n\nAn empty bucket scoops a fish back out into its bucket."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "A fish needs room by its size, and a tank longer than itself. An empty hand on the tank shows its size, water, fish and food.\\\n\\\nBreaking a wall spills the fish; breaking off a whole end keeps them in what is left."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Breeding baitfish.** Two or more of one baitfish species, fed Fish Meal (by hand, funnel or hopper), raise a young one every two minutes.\\\n\\\nThe Live-Bait Bucket scoops out the spare ones; the tank keeps two of each kind. Sneak with it to let its fish into the tank."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "[#](FFFFFF)\ue104[#]() **Automatic live bait.** Hoppers and funnels feed meal in and take spare baitfish out. A funnel into a Geared Reel Drive's bait slot keeps it baited with fish from the tank.\\\n\\\nSee [#](2E5AAC)[Moving Items](entry://create_basics/item_logistics)[#]()."
+    }
+  ]
+}

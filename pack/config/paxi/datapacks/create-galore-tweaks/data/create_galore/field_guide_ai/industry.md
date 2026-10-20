@@ -1,4 +1,4 @@
-<!-- sources sha256:7f09a693f7cd77aaf2dba2a6428873e4b726a15266829290964e98f282e92864 -->
+<!-- sources sha256:bd737e982ae19693b61534e340572d9ef4afeed37937b9b14295533a370c5c70 -->
 # Industry and Power (industry)
 Rotation vs FE, Crafts & Additions electricity, TFMG, liquid fuel burners, nuclear, ore excavation, chunk loaders, alloys, enchanting, fan effects, cannons.
 
@@ -74,7 +74,7 @@ Rotation vs FE, Crafts & Additions electricity, TFMG, liquid fuel burners, nucle
 
 ## industry/liquid_fuel | Burning Liquid Fuel
 - Blaze Burner normally eats solid fuel; two mods let it burn piped fluids -> oil products and biofuels reach Create heat (see create_basics/heat)
-- Create: Liquid Fuel [create:blaze_burner]: plain Blaze Burner takes piped lava, Seed Oil, Bioethanol, Peanut Oil, TFMG diesel, gasoline, kerosene, naphtha, heavy oil, napalm
+- Create: Liquid Fuel [create:blaze_burner]: plain Blaze Burner takes piped lava, Seed Oil, Bioethanol, Peanut Oil, Fish Oil (see fishing/cleaning), TFMG diesel, gasoline, kerosene, naphtha, heavy oil, napalm
   - Bioethanol, Peanut Oil, TFMG napalm superheat (blue flame); others only heat. Seed Oil and Bioethanol from Crafts & Additions; Peanut Oil from Garnished (see food/garnished). Peanut Oil burns 5,000 ticks (see glossary/tick) per bucket in either burner
 - Blaze Burner with Straw [createaddition:straw]: Crafts & Additions' version; add a Straw to a Blaze Burner; takes fuel from buckets or pipes
   - TFMG diesel, gasoline, crude oil, creosote all burn in Straw burner via shared fluid tags (see glossary/tags). Crude oil and creosote need Straw burner; TFMG's other fuels work in plain burner too
@@ -124,7 +124,7 @@ Rotation vs FE, Crafts & Additions electricity, TFMG, liquid fuel burners, nucle
 ## industry/alloyed | Alloyed: Steel and Bronze
 - Alloyed adds two alloys and the forge; steel and bronze become tools, armor, building blocks; both shared with other mods (see materials/shared_metals)
 - Alloy Forge [alloyed:forge]: forges Alloyed tools, armor, parts. Steel and bronze themselves come from heated (see create_basics/heat) Create mixer: bronze from copper, three zinc nuggets, cinder flour (see connections/balance)
-- Steel [tfmg:steel_ingot]: Alloyed's recipes now give TFMG steel; forge into pickaxes, swords, armor, horse armor, shears, fishing rods; any steel works. Steel Fishing Rod fishes the old way, no timing game (see fishing/rods). Farmer's Delight (see food/farmers_delight) gets a steel knife
+- Steel [tfmg:steel_ingot]: Alloyed's recipes now give TFMG steel; forge into pickaxes, swords, armor, horse armor, shears, fishing rods; any steel works. Its Steel Fishing Rod comes out as a Steel Telescopic Rod, ready for a reel and line (see fishing/rods). Farmer's Delight (see food/farmers_delight) gets a steel knife
 - Bronze [alloyed:bronze_ingot]: Alloyed's bronze is the pack's bronze; Big Cannons and TFMG bronze recipes give it too; used for casing, sheet, blocks; bronze blocks oxidize like copper, can be waxed
 - Bronze Bell [alloyed:bronze_bell]: playable block; rings when hit or redstone-powered; Wrench (see create_basics/tools_wrench) tunes it; Deployer (see create_basics/deployer) can ring it
 - Casings/building blocks: Steel Casing and Bronze Casing with encased (see glossary/encased) shafts and cogwheels (more tiers); steel catwalks, mesh fences, doors

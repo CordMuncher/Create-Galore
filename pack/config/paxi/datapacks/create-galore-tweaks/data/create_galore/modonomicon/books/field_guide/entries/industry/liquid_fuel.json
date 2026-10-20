@@ -33,7 +33,7 @@
         "item": "create:blaze_burner"
       },
       "title": "Create: Liquid Fuel",
-      "text": "A plain Blaze Burner takes piped fluid: lava, Seed Oil, Bioethanol, Peanut Oil, and TFMG's diesel, gasoline, kerosene, naphtha, heavy oil and napalm."
+      "text": "A plain Blaze Burner takes piped fluid: lava, Seed Oil, Bioethanol, Peanut Oil, [#](2E5AAC)[Fish Oil](entry://fishing/cleaning)[#](), and TFMG's diesel, gasoline, kerosene, naphtha, heavy oil and napalm."
     },
     {
       "type": "modonomicon:text",

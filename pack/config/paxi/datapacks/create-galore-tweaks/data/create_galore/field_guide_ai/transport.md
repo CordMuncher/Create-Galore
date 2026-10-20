@@ -1,4 +1,4 @@
-<!-- sources sha256:8894bb8f4b003e46706c06ce279b943ad0083e34e564a01e7ba90c537c6ffbaa -->
+<!-- sources sha256:9fc0e06e8391977bf18f5ebab082f0e77f52f488d6cf72ebc0e46b263f0932d1 -->
 # Trains and Rides (transport)
 How you cross the world: travel by building.
 
@@ -9,7 +9,7 @@ How you cross the world: travel by building.
   - Iron's Spells (see exploration/irons_spellbooks): Portal, Recall, Angel Wings, Portal Frames
   - Artifacts: Warp Drive
   - Alex's Caves (see exploration/alexs_caves): Subterranodon mount; Hullbreaker's Enigmatic Engine (so no buildable Submarine)
-  - Tide (see fishing/lava_and_void): Voidseeker fish (sent you to spawn point)
+  - Void fishing (see fishing/lava_and_void): the Voidseeker, a fish that sent you to your spawn point
 - Still in (each a short hop with a cost or time limit):
   - Ender Pearls
   - Aether (see exploration/aether) mounts and Valkyrie gear

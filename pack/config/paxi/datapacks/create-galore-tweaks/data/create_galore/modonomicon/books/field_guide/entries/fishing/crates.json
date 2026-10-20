@@ -6,8 +6,8 @@
     "item": "tide:wooden_crate"
   },
   "x": 4,
-  "y": 1,
-  "sort_number": 9,
+  "y": 2,
+  "sort_number": 14,
   "parents": [
     {
       "entry": "fishing/journal",
@@ -20,17 +20,22 @@
     {
       "type": "modonomicon:text",
       "title": "Crates and Treasure",
-      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- Now and then a **crate** flies out of the water and lands as a block; open it like a barrel.\n- Crates and the best treasure need **open water**.\n- **Neptune's Bounty** is how you find Neptunium.\n- Magnetic Bait brings far more crates."
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- Now and then a bite is a **crate**: it flies out of the water and lands as a block; open it like a barrel.\n- Crates and treasure need **open water**.\n- **Neptune's Bounty** is how you find Neptunium.\n- Luck and magnetic tackle bring more of both."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**Wooden Crates** change with where you fish: fresh or salt water at the surface, underground (y0 to y40) or deep (below y0, with diamonds). Each holds 6 to 10 stacks and a Fishy Note.\\\n\\\n**Obsidian Crates** come from lava, **Purpur Crates** from The End (shulker shells and End loot; the Elytra they used to hold are shulker shells here)."
+      "text": "About 1 bite in 75 is a crate, more with luck; a Magnetic Hook or Magnetic Bait doubles it.\\\n\\\n**Wooden Crates** change with where you fish: fresh or salt water at the surface, underground (y0 to y40) or deep (below y0, with diamonds). Each holds 6 to 10 stacks and a Fishy Note."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**Hybrid Aquatic crates** and crab pots come up too. Break them with an **axe** for their loot.\\\n\\\nOther treasure: name tags, saddles, enchanted books and gear, Neptunium nuggets, leeches, and Critters and Companions' clams in rivers. Ocean monuments, trial chambers and desert wells have their own catches."
+      "text": "**Obsidian Crates** come from lava, **Purpur Crates** from The End (shulker shells and End loot; the Elytra they used to hold are shulker shells here).\\\n\\\n**Hybrid Aquatic crates** and crab pots come up too. Break them with an **axe** for their loot."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Treasure** is about 1 bite in 50 in open water, more with luck, twice as much with magnetic tackle: name tags, saddles, enchanted books and gear, Neptunium nuggets, leeches, and Critters and Companions' clams in rivers. Ocean monuments, trial chambers and desert wells have their own catches."
     },
     {
       "type": "modonomicon:spotlight",

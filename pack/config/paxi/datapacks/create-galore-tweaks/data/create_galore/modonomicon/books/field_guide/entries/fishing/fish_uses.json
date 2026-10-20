@@ -6,8 +6,8 @@
     "item": "tide:iron_tetra"
   },
   "x": 2,
-  "y": 2,
-  "sort_number": 10,
+  "y": 3,
+  "sort_number": 15,
   "parents": [
     {
       "entry": "fishing/overview",
@@ -20,12 +20,17 @@
     {
       "type": "modonomicon:text",
       "title": "What Fish Are For",
-      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- [#](FFFFFF)\ue10c[#]() Cook any fish on a campfire, smoker or furnace.\n- **Ore fish** craft into raw iron, raw gold, lapis and amethyst.\n- Some fish become **gear**: swords, a bow, boots.\n- A few fish have **effects** when eaten."
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- [#](FFFFFF)\ue10c[#]() Cook fish under **3 kg** whole; clean bigger ones at a **Cleaning Table** first.\n- **Ore fish** craft into raw iron, raw gold, lapis and amethyst.\n- Some fish become **gear**: swords, a bow, boots.\n- A few fish have **effects** when eaten."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Tide fish cook into **Small**, plain or **Large Cooked Fish** depending on size. On a Farmer's Delight board a knife cuts any of them into 2 **raw fillets** and bone meal, the same fillets Aquaculture fish give.\\\n\\\nMeals: [#](2E5AAC)[Sea Food](entry://fishing/sea_food)[#]()."
+      "text": "A fish under 3 kg cooks whole on a campfire, in a smoker, furnace or a fan's smoking air. Many cook into **Small**, plain or **Large Cooked Fish** depending on the kind; others into their own cooked fish.\\\n\\\nA fish of 3 kg or more won't cook: its tooltip says to clean it at a [#](2E5AAC)[Cleaning Table](entry://fishing/cleaning)[#]()."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "On a Farmer's Delight cutting board a knife cuts the fish that cook into Cooked Fish into 2 **raw fillets** and bone meal, the same fillets Aquaculture's fish give.\\\n\\\nMeals: [#](2E5AAC)[Sea Food](entry://fishing/sea_food)[#]()."
     },
     {
       "type": "modonomicon:text",
@@ -35,7 +40,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "- Luminescent Jellyfish or Sun Emblem: 8 **Jelly Torches**, which burn underwater.\n- Incandescent Larva and Pale Clubfish: bait.\n\n**Gear:** Sailfish, Swordfish and Blazing Swordfish are swords (the last sets things on fire). Shooting Starfish + bow: **Starlight Bow**. Dragon Fish + netherite boots: **Dragonfin Boots**, a jump in mid-air."
+      "text": "- Luminescent Jellyfish or Sun Emblem: 8 **Jelly Torches**, which burn underwater.\n- Incandescent Larva and Pale Clubfish: 4 bait.\n\n**Gear:** Sailfish, Swordfish and Blazing Swordfish are swords (the last sets things on fire). Shooting Starfish + bow: **Starlight Bow**. Dragon Fish + netherite boots: **Dragonfin Boots**, a jump in mid-air."
     },
     {
       "type": "modonomicon:text",
@@ -45,7 +50,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "[#](FFFFFF)\ue103[#]() **In depth.** The **Chasm Eel** can't eat through bedrock. Cats eat cookable fish. Tide's Fish Slices are replaced by Aquaculture's fillets."
+      "text": "[#](FFFFFF)\ue103[#]() **In depth.** The **Chasm Eel** can't eat through bedrock. Cats eat cookable fish. The Inferno Guppy burns in a furnace for 160 seconds.\\\n\\\nThe 3 kg limit holds for every mod's fish and every way of cooking."
     }
   ]
 }

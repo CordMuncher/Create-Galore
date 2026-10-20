@@ -5,9 +5,9 @@
   "icon": {
     "item": "tide:fish_finder"
   },
-  "x": 6,
-  "y": -2,
-  "sort_number": 7,
+  "x": 4,
+  "y": 1,
+  "sort_number": 12,
   "parents": [
     {
       "entry": "fishing/where_fish_live",
@@ -20,7 +20,7 @@
     {
       "type": "modonomicon:text",
       "title": "Fishing Gadgets",
-      "text": "Tide's gadgets show the conditions fish care about. Hold one, wear it in a **Curios** slot, or place the block versions nearby, and its reading shows in the top corner of the screen. Right-click to read it once."
+      "text": "The gadgets show the conditions fish care about. Hold one, wear it in a [#](7A3C9A)[Curios](entry://glossary/curios)[#]() slot, or place the block versions nearby, and its reading shows in the top corner of the screen. Right-click to read it once."
     },
     {
       "type": "modonomicon:spotlight",
@@ -44,7 +44,7 @@
         "item": "tide:climate_gauge"
       },
       "title": "Climate Gauge",
-      "text": "The biome's temperature, which fish care about. Glass, an iron nugget and redstone."
+      "text": "The biome's temperature, which fish care about. Glass, an iron nugget and redstone. Weather and seasons don't change its reading."
     },
     {
       "type": "modonomicon:spotlight",

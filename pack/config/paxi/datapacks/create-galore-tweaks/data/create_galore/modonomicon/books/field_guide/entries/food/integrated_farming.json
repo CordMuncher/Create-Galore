@@ -55,7 +55,7 @@
         "item": "create_integrated_farming:fishing_net"
       },
       "title": "Fishing Net",
-      "text": "Made from Farmer's Delight's Safety Net. When moved on a contraption it fishes in open water like a rod, and it also catches small animals."
+      "text": "Made from Farmer's Delight's Safety Net. Moved on a contraption it fishes in open water or lava: the fish rods catch there, small ones most. It also catches small animals."
     },
     {
       "type": "modonomicon:text",

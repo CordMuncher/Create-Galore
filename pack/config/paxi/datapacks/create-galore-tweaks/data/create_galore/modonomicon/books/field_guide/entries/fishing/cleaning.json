@@ -1,0 +1,96 @@
+{
+  "category": "fishing",
+  "name": "Cleaning Table and Fish Products",
+  "description": "Cut big fish with a knife; scraps, meal, oil, roe and shark skin.",
+  "icon": {
+    "item": "create_galore_fishing:cleaning_table"
+  },
+  "x": 4,
+  "y": 3,
+  "sort_number": 16,
+  "parents": [
+    {
+      "entry": "fishing/fish_uses",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": false
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Cleaning Table and Fish Products",
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- Lay a fish on the **Cleaning Table** and cut it with a **knife**.\n- Heavier fish take more strokes and give more: fillets, steaks, roe, bones, scraps.\n- [#](FFFFFF)\ue104[#]() A **Deployer** with a knife works it; hoppers and funnels empty it.\n- Scraps become **Fish Meal** and **Fish Oil**."
+    },
+    {
+      "type": "modonomicon:crafting_recipe",
+      "recipe_id_1": "create_galore_fishing:crafting/cleaning_table",
+      "text": "Three smooth stone slabs over logs and andesite alloy. Any knife works."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Right-click the table with a fish to lay it on, then cut with a knife. The fish lies there as itself; look at it to see the strokes done.\\\n\\\nStrokes: two for a minnow, five at 3 kg, sixteen at 50 kg. The parts go to you."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**What a fish gives**, by weight:\n\n- raw **fillets**: about 3 from 1 kg, 8 from 10 kg\n- from 3 kg, most of those are Hybrid Aquatic **fish steaks**\n- **bones**: 1, plus 1 per 4 kg (up to 8)\n- **Fish Scraps**: 1 plus more with weight (up to 10)"
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "- **roe**, 4 times in 10, from sturgeon, salmon, herring and carp\n- **shark skin** from sharks\n\nOily fish (salmon, herring, mackerel, tuna, anchovy, trout) give half again as many scraps.\\\n\\\nA fish without a weight on it counts as a usual one of its size class."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "[#](FFFFFF)\ue104[#]() **Automated.** A [#](2E5AAC)[Deployer](entry://create_basics/deployer)[#]() holding a knife cuts the fish. Then the parts wait in the table's output for hoppers or funnels, and the table takes the next fish once it is empty. See [#](2E5AAC)[Moving Items](entry://create_basics/item_logistics)[#]()."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create_galore_fishing:fish_scraps"
+      },
+      "title": "Fish Scraps",
+      "text": "Cut bait on a rod. A millstone or crushing wheels turn one into 1 Fish Meal, sometimes 2. Aquaculture's fish bones mill into Fish Meal and bone meal."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create_galore_fishing:fish_meal"
+      },
+      "title": "Fish Meal",
+      "text": "For Boilies, Chum and feeding an Aquarium Tank. See [#](2E5AAC)[Crushing](entry://create_basics/crushing)[#]()."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create_galore_fishing:fish_oil_bucket"
+      },
+      "title": "Fish Oil",
+      "text": "[#](7A3C9A)[Compacting](entry://glossary/compacting)[#]() 4 Fish Scraps, or one small oily fish, gives 100 mB. It heats a Blaze Burner from a pipe and runs the Fuel Reel Drive."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create_galore_fishing:fish_roe"
+      },
+      "title": "Fish Roe",
+      "text": "Food, restoring 2 hunger points. From roe fish at the Cleaning Table."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "create_galore_fishing:shark_skin"
+      },
+      "title": "Shark Skin",
+      "text": "Smoke it, or cook it on a campfire, into leather."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Related",
+      "text": "- [#](2E5AAC)[Burning Liquid Fuel](entry://industry/liquid_fuel)[#]()\n- [#](2E5AAC)[Bait](entry://fishing/bait)[#]()\n- [#](2E5AAC)[Live Bait and Chum](entry://fishing/live_bait)[#]()\n- [#](2E5AAC)[Sea Food](entry://fishing/sea_food)[#]()"
+    }
+  ]
+}

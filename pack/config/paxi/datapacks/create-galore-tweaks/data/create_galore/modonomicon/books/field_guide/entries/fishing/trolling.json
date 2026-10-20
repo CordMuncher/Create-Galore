@@ -1,0 +1,46 @@
+{
+  "category": "fishing",
+  "name": "Trolling from Ships",
+  "description": "Rod machines on moving ships tow their rigs behind them.",
+  "icon": {
+    "item": "create_galore_fishing:trolling_reel"
+  },
+  "x": 4,
+  "y": 4,
+  "sort_number": 19,
+  "parents": [
+    {
+      "entry": "fishing/rod_machines",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": false
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Trolling from Ships",
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- Rod Holders and reel drives work on physics **ships**.\n- The rig is **towed** behind at its line's length.\n- A lure dives and works when the ship's speed suits it.\n- Fish bite from the water the ship passes over."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Build the machines into a ship (a [#](7A3C9A)[sub-level](entry://glossary/sub_level)[#](), such as a sailing ship or a surfaced submarine) and set rods in. A rig can't get further from the rod tip than the line it was cast with, so a moving ship tows it.\\\n\\\nSee [#](2E5AAC)[Building a Ship](entry://flight/ship_building)[#]() and [#](2E5AAC)[Sailing and Boats](entry://ocean/sailing)[#]()."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "A towed **crankbait** dives to its depth and works between its best speeds: 0.6 to 3 m/s, the Deep Crankbait 0.8 to 3.5 m/s down to 5 m. Too slow or too fast and fish mostly ignore it.\\\n\\\nThe fish that bite follow the water passed, so trolling spreads its catches instead of fishing out one spot."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "The **Fuel Reel Drive** needs no shafts, so it suits boats; a Geared drive works off the ship's own rotation.\\\n\\\n[#](FFFFFF)\ue102[#]() **Tip:** for tuna and sharks, rig a Heavy Boat Rod with a Big-Game Trolling Reel, Heavy Mono line, a Steel Leader and a Big-Game hook or a Deep Crankbait."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "[#](FFFFFF)\ue101[#]() **Watch out:** machines on a ship fish only while the ship is loaded, so stay aboard. Put a chest or belt beside the machines, or catches hang at the rod tip.\\\n\\\nSet the drag before setting the rod in: the machine keeps the rod's own."
+    }
+  ]
+}
