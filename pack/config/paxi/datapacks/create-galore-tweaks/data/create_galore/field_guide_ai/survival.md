@@ -1,4 +1,4 @@
-<!-- sources sha256:eba38c92629938c3eedc237391baa976e0850fa5b91e046f385d56a0c3c9ee22 -->
+<!-- sources sha256:5c1c823acea21371b672700c4921c7eac0676ffc60ddaabbd338ac965f1c38f5 -->
 # Survival Layers (survival)
 Layers: Temperature (Cold Sweat), Thirst, Seasons (Serene Seasons), Pollution (Create: Smog), food/health, death/graves.
 
@@ -76,7 +76,7 @@ Layers: Temperature (Cold Sweat), Thirst, Seasons (Serene Seasons), Pollution (C
 - Serene Seasons lists vanilla crops by season: wheat summer+autumn, carrots spring+autumn, etc. Mushrooms, nether wart, oak saplings grow year round.
 - Farmer's Delight (see food/farmers_delight) season data: Tomato: summer; Cabbage: autumn, winter; Onion: spring, autumn; Rice: summer, autumn.
 - Tomato Seeds [farmersdelight:tomato_seeds]: summer crop; out of season grows only slowly; glass roof keeps patch at full speed.
-- Watch out: bone meal on out-of-season crop is used up but works only ~1 time in 6; save for in-season crops. Naturalist snails nearby slow crops; keep them out of the field.
+- Watch out: bone meal on out-of-season crop is used up but works only ~1 time in 6; save for in-season crops.
 - Cabbage Seeds [farmersdelight:cabbage_seeds]: autumn and winter crop; one of few things growable in cold.
 - Fruits Delight trees: Spring: pear, peach, blueberry; Summer: lychee, mango, durian, lemon, pineapple; Autumn: apple, orange, fig, cranberry; Winter: persimmon, kiwi, hawberry.
 - Other mods: Seasonal Integration adds Berry Good's sweet berries (spring, winter) and glow berries, and My Nether's Delight peppers, to year round. Fungus Delight mushrooms grow in any season.

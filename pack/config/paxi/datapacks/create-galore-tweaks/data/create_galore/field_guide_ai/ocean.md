@@ -1,4 +1,4 @@
-<!-- sources sha256:77ae930041516105ff212482215203741890ee8487fffc9a1f8089bff45b48bf -->
+<!-- sources sha256:d21480ae414935870f0457d1b957858bab5852707a041eaf1fc2867d440396d1 -->
 # The Ocean (ocean)
 Create Deep Seas (submarines, High Seas surface ships), Aquatic Ambitions, sea life mods, Aquamirae, diving, structures.
 
@@ -71,7 +71,7 @@ Create Deep Seas (submarines, High Seas surface ships), Aquatic Ambitions, sea l
 - Naturalist: OFF here (Hybrid Aquatic covers them): anglerfish, blobfish, giant isopod, great white shark, piranha, jellyfish, starfish, crab, ray; their buckets and eggs hidden from JEI. Still spawn: whale, clam, bass, catfish and the rest.
 - Diving Suit [hybrid_aquatic:diving_suit]: Hybrid Aquatic's underwater armor; compare options in Diving Gear (see ocean/diving).
 - Whale [naturalist:whale_spawn_egg]: Naturalist whale still spawns. Clams drop Clam Meat (cooking).
-- Aquamirae (see ocean/aquamirae): icy ocean region, own creatures and bosses. Critters and Companions: adds koi fish (its otter, Dumbo Octopus, Sea Bunny are off). Structures (see ocean/underwater_places) give them homes. Fishing: (see fishing/overview).
+- Aquamirae (see ocean/aquamirae): icy ocean region, own creatures and bosses. Critters and Companions: adds koi fish (its otter, Dumbo Octopus, Sea Bunny are off; Hybrid Aquatic's sea slug gives Sea Bunny Slime and its otters crack clams: see exploration/creatures). Structures (see ocean/underwater_places) give them homes. Fishing: (see fishing/overview).
 - Related: Creatures (see exploration/creatures)
 
 ## ocean/aquamirae | Aquamirae and the Ice Maze

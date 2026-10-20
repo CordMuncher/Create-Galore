@@ -1,0 +1,55 @@
+{
+  "type": "minecraft:entity",
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "count": {
+                "type": "minecraft:uniform",
+                "max": 2.0,
+                "min": 0.0
+              },
+              "function": "minecraft:set_count"
+            }
+          ],
+          "name": "crittersandcompanions:dragonfly_wing"
+        }
+      ],
+      "rolls": 1.0
+    },
+    {
+      "rolls": 1.0,
+      "bonus_rolls": 0.0,
+      "conditions": [
+        {
+          "condition": "minecraft:damage_source_properties",
+          "predicate": {
+            "source_entity": {
+              "type": "minecraft:frog"
+            }
+          }
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "naturalist:azure_froglass"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "naturalist:verdant_froglass"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "naturalist:crimson_froglass"
+        }
+      ]
+    }
+  ],
+  "random_sequence": "crittersandcompanions:entities/dragonfly"
+}

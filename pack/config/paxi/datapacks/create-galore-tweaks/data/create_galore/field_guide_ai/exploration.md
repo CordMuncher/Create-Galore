@@ -1,4 +1,4 @@
-<!-- sources sha256:0c17ded43626a2421131feca39a3233957e0cc4c28b23782f42ad217e700c30e -->
+<!-- sources sha256:68c6a457737301f2421d18180e27699f8502e8ccc42e5d829c7011c366c14b2e -->
 # Exploration and Adventure (exploration)
 
 ## exploration/dimensions | Dimensions
@@ -219,4 +219,8 @@
 - Grappling Hook [crittersandcompanions:grappling_hook]
 - **Naturalist**: land animals: bears, deer, boar, lions, tigers, zebras, giraffes, elephants, hippos, rhinos, lizards, snakes, tortoises, ducks, turkeys, vultures, more. Nine sea animals **off**: anglerfish, blobfish, giant isopod, great white shark, piranha, jellyfish, starfish, crab, ray
 - Capture Net [naturalist:capture_net]: catches small creatures like butterflies and firefly
+- All **snails** and **dragonflies** are Critters and Companions'; every one can be tamed, 1 try in 10: snails with leaves, dragonflies with a spider eye. Snails drop snail shells and slime balls
+- Snail Slime [crittersandcompanions:snail_slime_bottle]: glass bottle on any grown snail (Critters' snail, Hybrid Aquatic's scalyfoot snail, the Moon's snail); each snail refills every 5 minutes; a bottle crafts into a slime ball
+- Hybrid Aquatic's **sea slug** fills a bottle with **Sea Bunny Slime** (same 5 minutes); four make a Sea Bunny Slime Block. Hand a Critters **clam** (river fishing treasure) to a Hybrid Aquatic **otter**: it cracks it, a **pearl** 1 time in 4, for Pearl Necklaces. Frogs eat wild dragonflies and leave **froglass**, never tamed ones
+- Twilight Forest animals: **deer** drop venison, leather and antlers like Overworld deer (venison jerky dries from any venison); **boars** drop porkchops, fat and hide; **helmet crabs** drop raw crab and armor shards
 - Sea creatures: Sea Life (see ocean/sea_life). Creature drops feed cooking in Farmer's Delight (see food/farmers_delight)
