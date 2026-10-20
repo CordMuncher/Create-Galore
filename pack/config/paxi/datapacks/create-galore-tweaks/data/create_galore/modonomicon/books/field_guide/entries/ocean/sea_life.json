@@ -38,6 +38,11 @@
       "text": "Orcas, sharks, squid and the big predatory fish hunt smaller fish and turtles. After a kill a hunter is full for about 45 seconds before it hunts again.\\\n\\\nPrey they kill leaves nothing behind, so a pod of orcas won't cover the sea in fish. For fish of your own, catch them with a rod or a fishing net."
     },
     {
+      "type": "modonomicon:text",
+      "title": "Crab Eaters",
+      "text": "Otters, octopuses, cuttlefish and some fish hunt crabs and shrimp the same way.\\\n\\\nHermit crabs are off every hunter's menu, so otters on a beach won't wipe them out. A fishing net still catches them."
+    },
+    {
       "type": "modonomicon:spotlight",
       "item": {
         "item": "hybrid_aquatic:ominous_conch"
