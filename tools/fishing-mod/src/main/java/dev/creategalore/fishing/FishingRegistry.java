@@ -1,6 +1,8 @@
 package dev.creategalore.fishing;
 
 import com.mojang.serialization.Codec;
+import dev.creategalore.fishing.cast.CastHook;
+import dev.creategalore.fishing.fish.CatchInfo;
 import dev.creategalore.fishing.tackle.LineItem;
 import dev.creategalore.fishing.tackle.RodItem;
 import dev.creategalore.fishing.tackle.RodParts;
@@ -15,6 +17,9 @@ import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.BlockItem;
@@ -43,6 +48,8 @@ public final class FishingRegistry {
             DeferredRegister.createDataComponents(CreateGaloreFishing.ID);
     public static final DeferredRegister<MenuType<?>> MENUS = DeferredRegister.create(Registries.MENU, CreateGaloreFishing.ID);
     public static final DeferredRegister<CreativeModeTab> TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, CreateGaloreFishing.ID);
+    public static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(Registries.ENTITY_TYPE, CreateGaloreFishing.ID);
+    public static final DeferredRegister<SoundEvent> SOUNDS = DeferredRegister.create(Registries.SOUND_EVENT, CreateGaloreFishing.ID);
 
     // ---- Data components ----
 
@@ -58,9 +65,30 @@ public final class FishingRegistry {
     /** Metres left on a spool of line. */
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> LINE_METERS =
             COMPONENTS.registerComponentType("line_meters", b -> b.persistent(Codec.INT).networkSynchronized(ByteBufCodecs.VAR_INT));
+    /** What is known about a caught fish (size class, and for big fish its exact numbers). */
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<CatchInfo>> CATCH =
+            COMPONENTS.registerComponentType("catch", b -> b.persistent(CatchInfo.CODEC).networkSynchronized(CatchInfo.STREAM_CODEC));
     /** How frayed a line is, 0 (new) to 1 (about to go): weakens it. */
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Float>> LINE_WEAR =
             COMPONENTS.registerComponentType("line_wear", b -> b.persistent(Codec.FLOAT).networkSynchronized(ByteBufCodecs.FLOAT));
+
+    // ---- Entities ----
+
+    /** The cast rig (float, sinker or lure) and, during a fight, the hooked fish. */
+    public static final DeferredHolder<EntityType<?>, EntityType<CastHook>> CAST_HOOK = ENTITIES.register("cast_hook",
+            () -> EntityType.Builder.<CastHook>of(CastHook::new, MobCategory.MISC).noSave().noSummon()
+                    .sized(0.25f, 0.25f).clientTrackingRange(10).updateInterval(2)
+                    .build(CreateGaloreFishing.ID + ":cast_hook"));
+
+    // ---- Sounds (sounds.json points them at vanilla clips; resource packs can replace them) ----
+
+    public static final DeferredHolder<SoundEvent, SoundEvent> DRAG_CLICK = sound("reel.drag");
+    public static final DeferredHolder<SoundEvent, SoundEvent> LINE_SNAP = sound("line.snap");
+    public static final DeferredHolder<SoundEvent, SoundEvent> LINE_STRAIN = sound("line.strain");
+
+    private static DeferredHolder<SoundEvent, SoundEvent> sound(String name) {
+        return SOUNDS.register(name, () -> SoundEvent.createVariableRangeEvent(CreateGaloreFishing.id(name)));
+    }
 
     // ---- Rods ----
 
@@ -154,5 +182,7 @@ public final class FishingRegistry {
         COMPONENTS.register(modBus);
         MENUS.register(modBus);
         TABS.register(modBus);
+        ENTITIES.register(modBus);
+        SOUNDS.register(modBus);
     }
 }

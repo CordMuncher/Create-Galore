@@ -1,0 +1,5 @@
+{
+  "reel.drag": {"subtitle": "subtitles.create_galore_fishing.reel.drag", "sounds": [{"name": "minecraft:random/click", "volume": 0.6, "pitch": 1.8}]},
+  "line.snap": {"subtitle": "subtitles.create_galore_fishing.line.snap", "sounds": [{"name": "minecraft:random/break", "pitch": 1.4}]},
+  "line.strain": {"subtitle": "subtitles.create_galore_fishing.line.strain", "sounds": [{"name": "minecraft:step/wood1", "volume": 0.5, "pitch": 1.6}]}
+}

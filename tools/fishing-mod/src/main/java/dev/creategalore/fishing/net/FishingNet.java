@@ -24,6 +24,7 @@ public final class FishingNet {
         PayloadRegistrar registrar = event.registrar(VERSION);
         registrar.playToClient(TackleManager.Sync.TYPE, TackleManager.Sync.STREAM_CODEC,
                 (payload, context) -> TackleManager.Sync.handle(payload));
+        registrar.playToServer(DragAdjust.TYPE, DragAdjust.STREAM_CODEC, DragAdjust::handle);
     }
 
     /** True in singleplayer and on a LAN host, where the client shares the server's data already. */

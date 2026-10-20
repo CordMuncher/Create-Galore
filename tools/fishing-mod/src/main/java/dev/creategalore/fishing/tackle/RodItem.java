@@ -1,10 +1,14 @@
 package dev.creategalore.fishing.tackle;
 
 import dev.creategalore.fishing.FishingRegistry;
+import dev.creategalore.fishing.cast.CastHook;
 import java.util.List;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.SlotAccess;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ClickAction;
@@ -12,6 +16,8 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.UseAnim;
+import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.common.ItemAbilities;
 import net.neoforged.neoforge.common.ItemAbility;
 
@@ -57,6 +63,59 @@ public class RodItem extends Item {
     public static void setParts(ItemStack rod, RodParts parts) {
         if (parts.isEmpty()) rod.remove(FishingRegistry.ROD_PARTS.get());
         else rod.set(FishingRegistry.ROD_PARTS.get(), parts);
+    }
+
+    /**
+     * With no line out, holding use charges a cast (release to cast; a full charge takes a second). With the line
+     * out, holding use reels in (and strikes when a fish bites); sneaking and using brings an idle line straight
+     * back.
+     */
+    @Override
+    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+        ItemStack rod = player.getItemInHand(hand);
+        if (player.fishing instanceof CastHook hook && !hook.isRemoved()) {
+            if (player.isShiftKeyDown() && hook.phase() != CastHook.Phase.FIGHTING) {
+                if (!level.isClientSide) hook.retrieve(rod);
+                return InteractionResultHolder.sidedSuccess(rod, level.isClientSide);
+            }
+            player.startUsingItem(hand);
+            return InteractionResultHolder.consume(rod);
+        }
+        if (player.fishing != null) {
+            // Someone else's hook (a vanilla rod's): reel that one in first.
+            if (!level.isClientSide) player.fishing.retrieve(rod);
+            return InteractionResultHolder.sidedSuccess(rod, level.isClientSide);
+        }
+        RodStats stats = RodStats.of(rod).orElse(null);
+        if (stats == null || !stats.canCast()) {
+            if (!level.isClientSide && stats != null) {
+                player.displayClientMessage(stats.missing().get(0).copy().withStyle(ChatFormatting.RED), true);
+            }
+            return InteractionResultHolder.fail(rod);
+        }
+        player.startUsingItem(hand);
+        return InteractionResultHolder.consume(rod);
+    }
+
+    @Override
+    public void releaseUsing(ItemStack rod, Level level, LivingEntity entity, int timeLeft) {
+        if (level.isClientSide || !(entity instanceof Player player) || player.fishing != null) return;
+        double charge = Math.min(1, (getUseDuration(rod, entity) - timeLeft) / (double) FULL_CHARGE_TICKS);
+        RodStats.of(rod).filter(RodStats::canCast)
+                .ifPresent(stats -> CastHook.cast(player, entity.getUsedItemHand(), stats, charge));
+    }
+
+    /** Ticks of holding use for a full-strength cast. */
+    public static final int FULL_CHARGE_TICKS = 20;
+
+    @Override
+    public int getUseDuration(ItemStack stack, LivingEntity entity) {
+        return 72000;
+    }
+
+    @Override
+    public UseAnim getUseAnimation(ItemStack stack) {
+        return UseAnim.NONE;
     }
 
     @Override

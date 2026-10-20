@@ -3,6 +3,7 @@ package dev.creategalore.fishing.command;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import dev.creategalore.fishing.CreateGaloreFishing;
+import dev.creategalore.fishing.cast.CastHook;
 import dev.creategalore.fishing.fish.Species;
 import dev.creategalore.fishing.fish.SpeciesManager;
 import dev.creategalore.fishing.selftest.SelfTest;
@@ -16,7 +17,9 @@ import java.util.Locale;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
+import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 
 /** {@code /cgfish}: operator tools for testing and tuning the mod. All of it works from the server console. */
@@ -34,6 +37,14 @@ public final class FishingCommand {
                                     return SharedSuggestionProvider.suggest(SelfTest.names(), builder);
                                 })
                                 .executes(ctx -> selftest(ctx.getSource(), StringArgumentType.getString(ctx, "suites")))))
+                .then(Commands.literal("hook")
+                        .executes(ctx -> hook(ctx.getSource(), ctx.getSource().getPlayerOrException(), false))
+                        .then(Commands.argument("player", EntityArgument.player())
+                                .executes(ctx -> hook(ctx.getSource(), EntityArgument.getPlayer(ctx, "player"), false))))
+                .then(Commands.literal("bite")
+                        .executes(ctx -> hook(ctx.getSource(), ctx.getSource().getPlayerOrException(), true))
+                        .then(Commands.argument("player", EntityArgument.player())
+                                .executes(ctx -> hook(ctx.getSource(), EntityArgument.getPlayer(ctx, "player"), true))))
                 .then(Commands.literal("simulate")
                         .then(Commands.literal("export").executes(ctx -> export(ctx.getSource())))
                         .then(Commands.argument("species", StringArgumentType.string())
@@ -52,6 +63,18 @@ public final class FishingCommand {
         Path dir = source.getServer().getServerDirectory().resolve(CreateGaloreFishing.ID);
         Files.createDirectories(dir);
         return dir;
+    }
+
+    /** Shows a player's hook state, or (with {@code bite}) makes its next bite roll succeed. */
+    private static int hook(CommandSourceStack source, ServerPlayer player, boolean bite) {
+        if (!(player.fishing instanceof CastHook hook)) {
+            source.sendFailure(Component.literal(player.getGameProfile().getName() + " has no line out"));
+            return 0;
+        }
+        if (bite) hook.forceBite();
+        String text = hook.describe();
+        source.sendSuccess(() -> Component.literal(text), false);
+        return 1;
     }
 
     private static int selftest(CommandSourceStack source, String suites) {
