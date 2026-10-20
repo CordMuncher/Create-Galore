@@ -31,14 +31,18 @@ public final class GuideAiNet {
 
     /**
      * Client to server: list my pages, open one, ask on one (empty id starts a new page), tear one out, or save a
-     * drawing on a page as a page of its own (text: the drawing's {@link #drawingKey}).
+     * drawing on a page as a page of its own (text: the drawing's {@link #drawingKey}). Every request carries the
+     * player's field of view (degrees, vertical) and window aspect, so the book knows how much of the world was on
+     * their screen when they asked.
      */
-    public record Request(int action, String pageId, String text) implements CustomPacketPayload {
+    public record Request(int action, String pageId, String text, int fov, float aspect) implements CustomPacketPayload {
         public static final Type<Request> TYPE = new Type<>(id("ask_request"));
         static final StreamCodec<ByteBuf, Request> CODEC = StreamCodec.composite(
                 ByteBufCodecs.VAR_INT, Request::action,
                 ByteBufCodecs.stringUtf8(64), Request::pageId,
                 ByteBufCodecs.stringUtf8(MAX_QUESTION * 4), Request::text,
+                ByteBufCodecs.VAR_INT, Request::fov,
+                ByteBufCodecs.FLOAT, Request::aspect,
                 Request::new);
 
         @Override
@@ -139,8 +143,8 @@ public final class GuideAiNet {
     static void register(IEventBus modBus) {
         modBus.addListener((RegisterPayloadHandlersEvent event) -> {
             // Optional: a client or server without this Bridge version still connects; the button just says so.
-            // Version 2 (pack 0.2.22): page kinds and saving drawings.
-            var registrar = event.registrar("2").optional();
+            // Version 2 (pack 0.2.22): page kinds and saving drawings. Version 3: field of view in requests, claim box.
+            var registrar = event.registrar("3").optional();
             registrar.playToServer(Request.TYPE, codec(Request.CODEC), (payload, context) -> GuideAi.handle(payload, context.player()));
             registrar.playToClient(Pages.TYPE, codec(Pages.CODEC),
                     (payload, context) -> dev.creategalore.bridge.client.GuideAiClient.onPages(payload));
@@ -148,7 +152,28 @@ public final class GuideAiNet {
                     (payload, context) -> dev.creategalore.bridge.client.GuideAiClient.onView(payload));
             registrar.playToClient(Live.TYPE, codec(Live.CODEC),
                     (payload, context) -> dev.creategalore.bridge.client.GuideAiClient.onLive(payload));
+            registrar.playToClient(ClaimBox.TYPE, codec(ClaimBox.CODEC),
+                    (payload, context) -> dev.creategalore.bridge.client.ClaimBoxView.show(payload));
         });
+    }
+
+    /**
+     * Server to client: outline this box (an operator's /fieldguide builds add or remove) for so many ticks; 0 ticks
+     * takes the outline away.
+     */
+    public record ClaimBox(net.minecraft.core.BlockPos min, net.minecraft.core.BlockPos max, boolean add, int ticks) implements CustomPacketPayload {
+        public static final Type<ClaimBox> TYPE = new Type<>(id("claim_box"));
+        static final StreamCodec<ByteBuf, ClaimBox> CODEC = StreamCodec.composite(
+                net.minecraft.core.BlockPos.STREAM_CODEC, ClaimBox::min,
+                net.minecraft.core.BlockPos.STREAM_CODEC, ClaimBox::max,
+                ByteBufCodecs.BOOL, ClaimBox::add,
+                ByteBufCodecs.VAR_INT, ClaimBox::ticks,
+                ClaimBox::new);
+
+        @Override
+        public Type<ClaimBox> type() {
+            return TYPE;
+        }
     }
 
     @SuppressWarnings("unchecked")

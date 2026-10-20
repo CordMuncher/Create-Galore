@@ -21,6 +21,7 @@ public final class GuideAiClient {
 
     static void init() {
         if (ModList.get().isLoaded("modonomicon")) NeoForge.EVENT_BUS.addListener(GuideAiClient::addButton);
+        NeoForge.EVENT_BUS.addListener(ClaimBoxView::render);
         // /askbook opens the same screen without the guide in hand.
         NeoForge.EVENT_BUS.addListener((RegisterClientCommandsEvent event) -> event.getDispatcher().register(
                 Commands.literal("askbook").executes(context -> {
@@ -84,7 +85,10 @@ public final class GuideAiClient {
     }
 
     static void send(int action, String pageId, String text) {
-        if (serverHasVoice()) PacketDistributor.sendToServer(new GuideAiNet.Request(action, pageId, text));
+        if (!serverHasVoice()) return;
+        Minecraft mc = Minecraft.getInstance();
+        float aspect = (float) mc.getWindow().getWidth() / Math.max(1, mc.getWindow().getHeight());
+        PacketDistributor.sendToServer(new GuideAiNet.Request(action, pageId, text, mc.options.fov().get(), aspect));
     }
 
     public static void onPages(GuideAiNet.Pages pages) {

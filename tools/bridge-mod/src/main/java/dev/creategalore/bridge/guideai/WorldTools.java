@@ -44,8 +44,9 @@ import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
 
 /**
  * What the book can see. Every tool reads only the player who asked, and only what that player could already see
- * for themselves: what's under their crosshair, what they carry, the weather they stand in, and the server's recipe
- * list. Nothing reveals map locations, hidden blocks or loot tables.
+ * for themselves: what's under their crosshair or on their screen, what they carry, the weather they stand in, the
+ * builds players made around them (Builds) and the server's recipe list. Nothing reveals map locations, hidden
+ * natural blocks or loot tables.
  */
 final class WorldTools {
     static final double REACH = 8.0;
@@ -60,6 +61,12 @@ final class WorldTools {
         tools.add(tool("look_at", "The block or creature under the asking player's crosshair (up to 8 blocks away): its name, "
                 + "the mod that adds it, its block state, how it is mined (tool tier, whether the player's held item can harvest it), "
                 + "and for Create machines what Engineer's Goggles would show (speed, stress, contents).", new JsonObject()));
+        tools.add(tool("get_view", "What was on the asking player's screen when they asked: every kind of block they could see "
+                + "out to " + Vision.RANGE + " blocks (through glass and water) with counts, nearest distance and where on screen, "
+                + "the exact x y z of placed blocks and machines in view, fluid surfaces, creatures and dropped items, and what "
+                + "the crosshair was on. Use it when the question is about something they are looking at, such as a build that "
+                + "doesn't work; then trace_build or read_area for the details.", new JsonObject()));
+        Builds.definitions(tools);
         tools.add(tool("get_inventory", "Everything the asking player has: held item, hotbar, main inventory, armor, "
                 + "off hand and Curios slots, with item ids, the adding mod, counts, durability and enchantments, then the totals in "
                 + "storage they have opened within " + TouchedStorage.RANGE + " blocks, which count as theirs too.", new JsonObject()));
@@ -140,11 +147,29 @@ final class WorldTools {
                     yield storage == null ? "Storage isn't tracked on this server." : storage.describe(player,
                             input.has("item") && !input.get("item").isJsonNull() ? input.get("item").getAsString() : null, 150);
                 }
+                case "get_view" -> {
+                    Vision.Snapshot view = GuideAi.view(player.getUUID());
+                    yield view == null ? "Nothing was taken in of what they see for this question." : view.text();
+                }
+                case "find_placed_blocks", "trace_build", "read_area" -> {
+                    PlacedBlocks placed = GuideAi.placed();
+                    if (placed == null) yield "Builds aren't tracked on this server.";
+                    Vision.Snapshot view = GuideAi.view(player.getUUID());
+                    yield switch (name) {
+                        case "find_placed_blocks" -> Builds.find(player, placed, GuideText.string(input, "query"));
+                        case "trace_build" -> Builds.trace(player, placed, view, pos(input, "x", "y", "z"));
+                        default -> Builds.area(player, placed, view, pos(input, "x1", "y1", "z1"), pos(input, "x2", "y2", "z2"));
+                    };
+                }
                 default -> "Unknown tool " + name + ".";
             };
         } catch (RuntimeException | LinkageError e) {
             return "The tool failed on this server (" + e.getClass().getSimpleName() + ").";
         }
+    }
+
+    private static BlockPos pos(JsonObject input, String x, String y, String z) {
+        return new BlockPos(Diagrams.intOr(input, x, 0), Diagrams.intOr(input, y, 0), Diagrams.intOr(input, z, 0));
     }
 
     // ---------- get_advancements ----------
