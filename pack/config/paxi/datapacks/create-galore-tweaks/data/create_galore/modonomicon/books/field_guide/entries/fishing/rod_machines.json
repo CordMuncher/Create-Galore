@@ -94,8 +94,12 @@
     },
     {
       "type": "modonomicon:text",
+      "text": "Machines get no bonus item from the Midas rod or the Rod of the Hero, and catch no treasure in the Nether. Overworld treasure and crates come as by hand.\\\n\\\nMachines fish only while their chunk is loaded."
+    },
+    {
+      "type": "modonomicon:text",
       "title": "",
-      "text": "[#](FFFFFF)\ue103[#]() **In depth.** A Geared drive on one water wheel (8 RPM) can take several minutes to wind in a big tuna in its lowest gear. A Basic drive grinding a strong fish through a slipping drag can wear out a reel in one fight.\\\n\\\nMachines fish only while their chunk is loaded. Create Integrated Farming's [#](2E5AAC)[Fishing Nets](entry://food/integrated_farming)[#]() catch the same fish, small ones most."
+      "text": "[#](FFFFFF)\ue103[#]() **In depth.** A Geared drive on one water wheel (8 RPM) can take several minutes to wind in a big tuna in its lowest gear. A Basic drive grinding a strong fish through a slipping drag wears its reel quickly, up to a tenth of it per fight.\\\n\\\nCreate Integrated Farming's [#](2E5AAC)[Fishing Nets](entry://food/integrated_farming)[#]() catch the same fish, small ones most."
     },
     {
       "type": "modonomicon:text",

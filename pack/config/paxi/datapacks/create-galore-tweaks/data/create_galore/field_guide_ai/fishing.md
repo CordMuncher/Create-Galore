@@ -1,4 +1,4 @@
-<!-- sources sha256:fa4d9d6bb4c53f0843edb4171f3109d8feede0f0f03ae1160b44589a0d26d7ea -->
+<!-- sources sha256:f45a0af1c6dcd03da71b9a4fed8d9fa55b8cd05fb498eb060229ca45a2117366 -->
 # Fishing (fishing)
 
 ## fishing/overview | Fishing
@@ -7,7 +7,7 @@
 - 180+ fish across rivers, oceans, caves, lava, void, from Create Galore Fishing, Hybrid Aquatic, Aquaculture, Alex's Caves, a few others
 - Start here: (see fishing/casting) (see fishing/the_fight) (see fishing/landing) (see fishing/rods) (see fishing/tackle) (see fishing/bait) (see fishing/where_fish_live). Further: (see fishing/cleaning) (see fishing/rod_machines) (see fishing/trolling) (see fishing/aquarium) (see fishing/journal)
 - Fishing Journal [tide:fishing_journal]: every player gets one on joining; catch a fish to unlock its page (where it lives, when it bites, your longest and heaviest)
-- Tip, first trip: a Bamboo Pole [create_galore_fishing:bamboo_pole] (3 bamboo) needs no reel; right-click it with a String Line [create_galore_fishing:string_line] and a Small Hook [create_galore_fishing:small_hook] in the inventory, add worms, cast into any river (see food/first_food)
+- Tip, first trip: a Bamboo Pole [create_galore_fishing:bamboo_pole] (3 bamboo or sugar cane) needs no reel; right-click it with a String Line [create_galore_fishing:string_line] and a Small Hook [create_galore_fishing:small_hook] in the inventory, add worms, cast into any river (see food/first_food)
 - Aquaculture's own rods: (see fishing/aquaculture)
 
 ## fishing/casting | Casting and the Bite
@@ -47,13 +47,13 @@
 ## fishing/rods | Rods
 - A **rod blank** is the base: length (longer casts further), load it holds before overload, **action**, casting range in grams. Bamboo Pole needs no reel; all other rods do. Heavy Boat Rod lands tuna and sharks. Netherite Rod fishes lava
 - Action: fast bends at the tip, slow along the whole blank; slow soaks shocks best, fast puts load through quicker. Rods bend toward the line as load grows
-- Bamboo Pole [create_galore_fishing:bamboo_pole] (shows recipe create_galore_fishing:bamboo_pole): 4 m, holds 4 kg, slow, casts 1-15 g; no reel, no drag, fixed 8 m of line; 150 uses
+- Bamboo Pole [create_galore_fishing:bamboo_pole] (shows recipe create_galore_fishing:bamboo_pole): 3 bamboo or 3 sugar cane; 4 m, holds 4 kg, slow, casts 1-15 g; no reel, no drag, fixed 8 m of line; 150 uses
 - Wooden Rod (shows recipe create_galore_fishing:wooden_rod): 2.1 m, 5 kg, moderate, 2-20 g; 250 uses. A plain rod of 3 sticks and 2 string is one too
 - Iron Rod (shows recipe create_galore_fishing:iron_rod): 2.4 m, 9 kg, fast, 5-30 g; 450 uses
 - Steel Telescopic Rod (shows recipe create_galore_fishing:steel_rod): 3 m, 16 kg, fast, 8-45 g; slides out on the cast; 800 uses; any steel works
 - Heavy Boat Rod (shows recipe create_galore_fishing:boat_rod): 2.1 m, 45 kg, moderate, casts 30-200 g; for tuna, arapaima, sharks, by hand or on a boat; 1200 uses
 - Netherite Rod [create_galore_fishing:netherite_rod]: smith Steel Telescopic Rod + netherite ingot + Netherite Upgrade; 2.7 m, 30 kg, fast, 10-80 g; fireproof, **fishes in lava**; 2000 uses
-- Found, not made (600 uses each): **Rod of Resonance**: ancient city chests; on a bite tells what took the bait. **Prismarine Fishing Rod**: Elder Guardian drop; in rain faster bites and +1 luck. **Suncatcher**: rare catch in plains; +1 luck in sunshine. **Rod of the Hero**: expert Fisherman villager, 15 emeralds; bonus village item every catch. **Blazing Fishing Rod**: nether fortress chests; fishes lava, catches Nether lava fish in any lava. **Beeline**: 1 time in 20 when harvesting honeycomb from a full hive. **Midas Fishing Rod**: smith an Iron Rod with a **Midas Fish**, string as template; +1 luck, bonus gold item every catch. Special rods take the same parts
+- Found, not made (600 uses each): **Rod of Resonance**: ancient city chests; on a bite tells what took the bait. **Prismarine Fishing Rod**: Elder Guardian drop; in rain faster bites and +1 luck. **Suncatcher**: rare catch in plains; +1 luck in sunshine. **Rod of the Hero**: expert Fisherman villager, 15 emeralds; bonus village item every catch reeled in by hand. **Blazing Fishing Rod**: nether fortress chests; fishes lava, catches Nether lava fish in any lava. **Beeline**: 1 time in 20 when harvesting honeycomb from a full hive. **Midas Fishing Rod**: smith an Iron Rod with a **Midas Fish**, string as template; +1 luck, bonus gold item every catch reeled in by hand. Special rods take the same parts
 - Special blanks: Resonance 2.4 m 10 kg; Prismarine 2.7 m 12 kg; Suncatcher and Rod of the Hero 2.1 m 7 kg; Blazing 2.7 m 20 kg; Beeline 2.1 m 8 kg slow; Midas 2.4 m 12 kg
 - Alloyed's Steel Fishing Rod is a Steel Telescopic Rod wherever one turns up
 - Older rods convert when a world loads them: Stone Fishing Rods -> Wooden Rods; Iron and Golden -> Iron Rods; Crystal and Diamond -> Steel Telescopic Rods; Netherite -> Netherite Rods; line, hook, bobber, bait come along with a matching reel
@@ -64,7 +64,7 @@
 - Tackle is crafted from Create parts (cogwheels, shafts, precision mechanisms, andesite alloy, iron/copper/brass sheets) plus TFMG steel, plastic, rubber; JEI (see start_here/tools) shows every recipe
 - Reels [create_galore_fishing:copper_reel] (max drag, line held): Copper Spinning 3 kg 100 m; Iron Spinning 6 kg 150 m; Brass Precision 10 kg 200 m; Steel Baitcaster 14 kg 180 m; Big-Game Trolling 30 kg 600 m. Better reels wind faster (1 to 1.8 m/s), crank harder, smoother drag soaks spikes (30% Copper, 85% Brass Precision). Durability: Copper 300, Iron 500, Brass and Steel 900, Big-Game 1500; a broken reel is gone
 - Lines [create_galore_fishing:string_line]: spool goes in the line slot; tooltip shows test, stretch, visibility, metres left. Test, stretch, visibility, metres: String 4 kg 70% 70% 100; Mono 8 kg 50% 40% 150; Clear 10 kg 30% 10% 150; Braided 18 kg 10% 80% 200; Heavy Mono 50 kg 45% 50% 600
-- Stretch soaks shocks (braid barely stretches, jumps hit hard). Shy fish (trout, salmon, carp, koi, char, grayling, bonefish) mind a visible line. Under 5 m of line left the rod can't cast
+- Stretch soaks shocks (braid barely stretches, jumps hit hard). Shy fish (trout, salmon, carp, koi, char, grayling, bonefish) mind a visible line. Braided Line is spun from 8 TFMG **Synthetic String** (a Rubber Sheet on a stonecutter makes 4) around a stick. Under 5 m of line left the rod can't cast
 - Leaders [create_galore_fishing:clear_leader]: optional, at the hook. Clear Leader 12 kg, 10% visible, hides strong line from shy fish. Steel Leader 60 kg; toothy fish can't bite through it, bite through anything else
 - Hooks [create_galore_fishing:small_hook]: Small (#10) panfish; Medium (#4); Large (1/0) pike, bass, carp; Big-Game (6/0) tuna, sharks. Far too big scares a fish off; too small holds badly
 - Golden and Netherite Hooks [create_galore_fishing:golden_hook]: Golden medium size, +1 luck; Netherite large, survives lava, any rod with it fishes lava
@@ -76,7 +76,7 @@
 - Lure weights: Soft Plastic Worm 6 g, Spinner 8 g, Jig and Popper 10 g, Spoon 12 g, Crankbait 14 g, Deep Crankbait 20 g
 
 ## fishing/tackle_bench | The Tackle Bench
-- Put a rod in, fit a part per slot; **3D preview** of the rod; shows what it is **rated** for and warns about the **weak link**; buttons set the **drag** and the float's depth. Parts also go on by right-clicking the rod with them in the inventory
+- Put a rod in, fit a part per slot; **3D preview** of the rod; shows what it is **rated** for and warns about the **weak link**; buttons set the **drag** and how deep the bait hangs under the float (0.5 to 8 m, 1.5 m at first; bites are rolled where the bait hangs, just above the bottom at most, so fish that keep above or below a height see its real depth). Parts also go on by right-clicking the rod with them in the inventory
 - Tackle Bench (shows recipe create_galore_fishing:tackle_bench): iron sheets, string, planks, crafting table. Keeps nothing: the rod comes back with its parts on close
 - Slots: rod or pole, reel, line, leader (optional), hook, float/sinker/lure, bait. A pole has no reel slot. Taking a part out of its slot takes it off the rod. Panel shows the rating, "fish to about" a weight, longest cast, metres of line
 - Rating = weakest of blank's load, line's (or leader's) test, reel's top drag. "Fish to about" = heaviest average fighter that rating lands with a sensible drag. A new rod's drag starts at a third of the reel's range
@@ -119,7 +119,7 @@
 - **Legendary**: Shooting Starfish, Coelacanth, Devils Hole Pupfish (narrow cave band y20 to y30), Midas Fish (underground, needs 5 luck), Alpha Fish (Overworld void), Dragon Fish (End void). Catch one for **One in a Million**
 - **Seasons** count (brook trout skip autumn, sturgeon come autumn and winter); journal shows which. Gadgets for time, moon, depth, temperature, weather: (see fishing/gadgets)
 - What you offer decides which fish living there bite: bait or lure each species likes; hook and bait size against its mouth; line visibility for shy fish; depth the rig sits at (a sinker reaches bottom fish); a lure's speed
-- Fished-out spots: every fish landed tires its chunk (see glossary/chunk); after four quick catches bites come half as often, never less than a fifth; tiredness halves every 10 minutes, so moving on or trolling pays. Released fish don't tire the spot. Chum (see fishing/live_bait) brings bites back up
+- Fished-out spots: every fish landed tires its chunk (see glossary/chunk); after four quick catches bites come half as often, a fished-out spot drops to a twentieth (a bite never takes over 4 minutes); tiredness halves every 10 minutes, so moving on or trolling pays. Released fish don't tire the spot. Chum (see fishing/live_bait) brings bites back up
 
 ## fishing/lava_and_void | Lava and Void Fishing
 - **Lava**: Netherite or Blazing rod, or a **Netherite** or **Lavaproof Hook** on any rod. **Void**: fit a **Hook of the Depths**, cast into the open void. Bites slower in both
@@ -142,7 +142,7 @@
 ## fishing/journal | Fishing Journal and Trophies
 - **Fishing Journal** fills a page per new fish; keeps your **longest, shortest, heaviest** of each. **Fishy Notes** show a page before catching. Show catches on a **Trophy Mount**
 - Lost journal: craft from any fish and a book; works on a lectern. Uncaught fish are black outlines. Page: where/when it bites (biome, depth, time, weather, moon, season, temperature), then count caught, when, records
-- Catches by your rod machines (see fishing/rod_machines) count as yours. Fill half the journal for **Aquatic Archivist**, all for **A Reel Completionist**. Best weight per species also shows on the Keep or Release screen
+- Catches by your rod machines (see fishing/rod_machines) count as yours. Fill half the journal for **Aquatic Archivist**, all for **A Reel Completionist**. Own every rod blank and special rod for **Hooked on Variety**. Best weight per species also shows on the Keep or Release screen
 - Fishy Note [tide:fishy_note]: every crate holds one, usually for an unfound fish; or craft any fish with paper; right-click to see that fish's page
 - Trophy Mount [tide:fish_display]: sticks around a log; hang on a wall, right-click with a fish to mount it at real size with weight, length, catcher; empty hand takes it back
 - Fish Satchel [tide:fish_satchel]: 4 leather around a fish; right-click to open; while open picked-up fish go straight in; holds 64 fish
@@ -197,8 +197,8 @@
 - Drag against rotation: winding against a fish costs stress (see glossary/su): 1 SU per RPM idle, plus 4 SU per RPM per kg of pull in normal gear. A fish leaning on a drag heavier than the network can turn overstresses (see glossary/overstressed) it until the fish eases off
 - On one water wheel: 6 kg drag never stalls a Basic drive, 10 kg does; about 7.5 kg is the limit in normal gear. Geared drive's lowest gear copes with about four times that, more slowly. Fuel drive's engine stalls the same way above its rating (see create_basics/stress)
 - Catches go into a chest, hopper, funnel or belt below or beside, never another rod machine; with nowhere to go the fish hangs from the rod tip for 30 seconds (empty hand takes it). A fish a machine puts on a belt is alive two minutes; off the belt into water it swims away
-- Experience: a machine earns half the hand amount per catch, no release bonus; banked, paid out whenever a rod goes in or out. Goggles (see glossary/goggles) show rod, bite or fish on and its tension, line out, drag, bait and bait in store, reel wear, gear, what it can still wind against, fuel, banked experience
-- In depth: a Geared drive on one water wheel (8 RPM) can take several minutes to wind in a big tuna in lowest gear; a Basic drive grinding a strong fish through a slipping drag can wear out a reel in one fight. Machines fish only while their chunk is loaded. Integrated Farming's Fishing Nets (see food/integrated_farming) catch the same fish, small ones most
+- Experience: a machine earns half the hand amount per catch, no release bonus; banked, paid out whenever a rod goes in or out. Machines get no bonus item from the Midas rod or Rod of the Hero and catch no treasure in the Nether; Overworld treasure and crates as by hand. Goggles (see glossary/goggles) show rod, bite or fish on and its tension, line out, drag, bait and bait in store, reel wear, gear, what it can still wind against, fuel, banked experience
+- In depth: a Geared drive on one water wheel (8 RPM) can take several minutes to wind in a big tuna in lowest gear; a Basic drive grinding a strong fish through a slipping drag wears its reel quickly, up to a tenth of it per fight. Machines fish only while their chunk is loaded. Integrated Farming's Fishing Nets (see food/integrated_farming) catch the same fish, small ones most
 - Related: (see fishing/trolling) (see create_basics/power_sources) (see fishing/live_bait) (see create_basics/item_logistics)
 
 ## fishing/trolling | Trolling from Ships

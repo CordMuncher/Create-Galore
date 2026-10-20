@@ -30,7 +30,7 @@
     {
       "type": "modonomicon:crafting_recipe",
       "recipe_id_1": "create_galore_fishing:bamboo_pole",
-      "text": "**Bamboo Pole**: 4 m, holds 4 kg, slow, casts 1-15 g. No reel and no drag: a fixed 8 m of line. 150 uses."
+      "text": "**Bamboo Pole**: 3 bamboo or 3 sugar cane. 4 m, holds 4 kg, slow, casts 1-15 g. No reel and no drag: a fixed 8 m of line. 150 uses."
     },
     {
       "type": "modonomicon:crafting_recipe",
@@ -68,12 +68,12 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "- **Suncatcher**: a rare catch in plains. +1 luck in sunshine.\n- **Rod of the Hero**: an expert Fisherman villager sells it for 15 emeralds. A bonus village item with every catch.\n- **Blazing Fishing Rod**: nether fortress chests. Fishes lava, and catches Nether lava fish in any lava."
+      "text": "- **Suncatcher**: a rare catch in plains. +1 luck in sunshine.\n- **Rod of the Hero**: an expert Fisherman villager sells it for 15 emeralds. A bonus village item with every catch you reel in by hand.\n- **Blazing Fishing Rod**: nether fortress chests. Fishes lava, and catches Nether lava fish in any lava."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "- **Beeline**: 1 time in 20 when you harvest honeycomb from a full hive.\n- **Midas Fishing Rod**: smith an Iron Rod with a **Midas Fish**, string as the template. +1 luck and a bonus gold item with every catch.\\\n\\\nSpecial rods take the same parts as any other."
+      "text": "- **Beeline**: 1 time in 20 when you harvest honeycomb from a full hive.\n- **Midas Fishing Rod**: smith an Iron Rod with a **Midas Fish**, string as the template. +1 luck and a bonus gold item with every catch you reel in by hand.\\\n\\\nSpecial rods take the same parts as any other."
     },
     {
       "type": "modonomicon:text",
