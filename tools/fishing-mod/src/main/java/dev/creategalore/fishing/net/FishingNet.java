@@ -25,6 +25,9 @@ public final class FishingNet {
         registrar.playToClient(TackleManager.Sync.TYPE, TackleManager.Sync.STREAM_CODEC,
                 (payload, context) -> TackleManager.Sync.handle(payload));
         registrar.playToServer(DragAdjust.TYPE, DragAdjust.STREAM_CODEC, DragAdjust::handle);
+        registrar.playToClient(CatchOffer.TYPE, CatchOffer.STREAM_CODEC,
+                (payload, context) -> dev.creategalore.fishing.client.ClientPackets.catchOffer(payload));
+        registrar.playToServer(CatchChoice.TYPE, CatchChoice.STREAM_CODEC, CatchChoice::handle);
     }
 
     /** True in singleplayer and on a LAN host, where the client shares the server's data already. */

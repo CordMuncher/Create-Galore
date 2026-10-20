@@ -9,5 +9,6 @@
   "lure_min": 10,
   "lure_max": 80,
   "lava": true,
-  "color": "#4a3f43"
+  "color": "#4a3f43",
+  "grip": "#3a2a2e"
 }

@@ -8,5 +8,6 @@
   "sections": 2,
   "lure_min": 30,
   "lure_max": 200,
-  "color": "#2f3b4a"
+  "color": "#2f3b4a",
+  "grip": "#262626"
 }

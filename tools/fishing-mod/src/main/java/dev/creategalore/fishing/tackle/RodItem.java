@@ -2,7 +2,11 @@ package dev.creategalore.fishing.tackle;
 
 import dev.creategalore.fishing.FishingRegistry;
 import dev.creategalore.fishing.cast.CastHook;
+import dev.creategalore.fishing.cast.CatchHolding;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.WeakHashMap;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
@@ -73,6 +77,12 @@ public class RodItem extends Item {
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         ItemStack rod = player.getItemInHand(hand);
+        if (player instanceof net.minecraft.server.level.ServerPlayer server && CatchHolding.holding(server)) {
+            // Hands are full with a fish: decide first.
+            CatchHolding.offer(server);
+            return InteractionResultHolder.fail(rod);
+        }
+        CHARGING.remove(player);
         if (player.fishing instanceof CastHook hook && !hook.isRemoved()) {
             if (player.isShiftKeyDown() && hook.phase() != CastHook.Phase.FIGHTING) {
                 if (!level.isClientSide) hook.retrieve(rod);
@@ -93,13 +103,27 @@ public class RodItem extends Item {
             }
             return InteractionResultHolder.fail(rod);
         }
+        CHARGING.put(player, Boolean.TRUE);
         player.startUsingItem(hand);
         return InteractionResultHolder.consume(rod);
     }
 
+    /**
+     * Players whose current use of a rod is a cast being charged (not reeling). Only those cast on release: someone
+     * who reeled a fish in and lets go of use afterwards mustn't throw the line straight back out. Keyed by the
+     * player object, so the client's and the integrated server's players stay apart.
+     */
+    private static final Map<Player, Boolean> CHARGING = Collections.synchronizedMap(new WeakHashMap<>());
+
+    /** True while {@code player} is holding use to charge a cast. */
+    public static boolean charging(Player player) {
+        return player.isUsingItem() && CHARGING.containsKey(player);
+    }
+
     @Override
     public void releaseUsing(ItemStack rod, Level level, LivingEntity entity, int timeLeft) {
-        if (level.isClientSide || !(entity instanceof Player player) || player.fishing != null) return;
+        if (!(entity instanceof Player player) || CHARGING.remove(player) == null) return;
+        if (level.isClientSide || player.fishing != null) return;
         double charge = Math.min(1, (getUseDuration(rod, entity) - timeLeft) / (double) FULL_CHARGE_TICKS);
         RodStats.of(rod).filter(RodStats::canCast)
                 .ifPresent(stats -> CastHook.cast(player, entity.getUsedItemHand(), stats, charge));

@@ -52,6 +52,10 @@ fuel-powered geared) where drag must be chosen against the build's torque or it 
 Also added by Emre: vanilla XP per catch scaled by fish size, fight difficulty and rarity; reel drives
 bank XP at 50% of the hand rate and pay it out when a rod is placed or removed; drag adjustable on
 the fly whenever the rod is in hand (before casting, waiting, mid-fight); drives never change drag.
+Catch and release (approved by Emre, details in § 2b): a fish landed by hand is held up for up to 2
+minutes with a Minecraft-styled Keep / Release screen; releasing by hand gives a bonus, machines
+never do; drives bank 50% XP the moment they successfully reel a fish in, whatever happens after.
+Everything stays Minecraft-styled: rods are built from rectangular sections, only some are telescopic.
 My reading of "can be told to cast (reel in slowly)": the Geared drive's Cast mode lobs the rig out
 and retrieves slowly to work a lure, recasting when it returns; Wait mode holds for other rigs.
 
@@ -94,7 +98,8 @@ written to the stack (it lives on the hook entity).
 - **Rod item**: not a `FishingRodItem` subclass (Hybrid Aquatic's mixin there would misfire);
   answers `ItemAbilities.FISHING_ROD_CAST`, sits in `#minecraft:enchantable/fishing` (Luck of the Sea
   → treasure/trophy odds, Lure → bite speed), no re-equip bob on component changes.
-- **3D rod model** (BEWLR): tapered telescopic sections with guides, handle, the actual reel model,
+- **3D rod model** (BEWLR), blocky like the rest of Minecraft: rectangular sections (no cylinders);
+  telescopic only for telescopic blanks (others are fixed sections), guides, handle, the reel model,
   line colour, the terminal hanging at the tip. Sections slide out on cast and collapse when reeled
   in fully. Under load the sections rotate toward the line: bend = load / max load, spread by action
   (fast bends the tip, slow the whole blank), spring-lagged. Same renderer in hand (1st/3rd person),
@@ -148,6 +153,48 @@ written to the stack (it lives on the hook entity).
   On a catch: advancement trigger, `ItemFishedEvent` (then our weight overwrites
   `aquaculture:fish_weight` so Aquaculture's own systems agree), vanilla junk/treasure tables still
   roll (Aquaculture/Critters treasure keeps working).
+
+### 2b. Catch and release
+- **By hand**: when a fish lands, the angler lifts it and holds it, one-handed by the mouth for small
+  fish, in both hands for big ones (by weight / display size), seen by everyone in third person. A
+  Minecraft-styled screen (vanilla panel look, the fish's 3D model turning in it) shows species,
+  size class, weight, length, rarity, personal best, and two buttons clicked with the mouse:
+  **Keep** (the fish item + XP, amount shown) and **Release** (XP + a release bonus, +25%, amount
+  shown; the fish swims off, no fishing pressure added). The angler may close the screen and keep
+  holding the fish; right-click reopens it. The fish lives 2 minutes from the catch: after that the
+  Release button greys out ("it didn't make it") and the fish is kept automatically. No casting while
+  holding a fish.
+- **Fish items stay alive 2 minutes** after the catch (catch time on the item, countdown in the
+  tooltip). An alive fish item that ends up in water (dropped, off a belt, out of a chute, thrown by
+  a Mechanical Arm) is released: species with a live mob swim off as that mob, others splash away. No
+  XP and no bonus for that; it lets sorting lines send unwanted fish back.
+- **Drives**: two states only. A fish escaping, snapping the line or throwing the hook before it is
+  reeled in banks nothing. A successful reel-in banks 50% of the hand XP at once, whatever happens
+  next: the fish goes onto a belt through a funnel, else into a connected inventory (chest, hopper),
+  else it dangles at the line's end waiting for a player (taking it with an empty hand = keeping it),
+  and after a while (~30 s) wriggles free and is gone. No release bonus ever for machine catches,
+  and a fish later returned to the water from a belt changes nothing.
+
+### 2c. Sound design (feel matters)
+Our own sounds, synthesized by `tools/fishing-mod/art/make_sounds.py` (numpy, encoded to Ogg Vorbis with
+ffmpeg), so nothing borrowed; each is a sound event with a subtitle, replaceable by resource packs.
+Continuous sounds are client-side tickable sound instances driven by the hook's synced state; one-shots
+come from the server.
+- **Drag ratchet**: one click per few centimetres of line actually leaving the spool, so the click rate
+  *is* the fish's run speed (a slow tick when it leans on the drag, a buzz on a run); pitch by reel
+  (copper rattly, brass smooth, big-game deep).
+- **Reel crank**: a looping gear whirr while reeling, pitched by retrieve speed, dropping and grinding
+  as the load nears what the crank can turn; an ugly grind when cranking against a slipping drag.
+- **Line strain**: a creak that fades in above ~65% of the breaking load and tightens toward a snap;
+  a hard *twang* on a snap; a soft whip on a thrown hook; a slack-line slap.
+- **Cast**: a whoosh scaled by the charge, line zipping off the spool in flight, the splash/plop of the
+  rig by its weight; the bail clack when reeling starts.
+- **Bites**: float plop and bob ticks, a rod-tip tap for sinkers, a sharp tug for lures; strike swish.
+- **Fight**: fish splashes and jump splashes by fish size, a big thrash when a fish bolts at the bank.
+- **Landing / catch and release**: lift splash, flop sounds while held, the release splash.
+- **Machines**: holder bite alarm (a clicker-style ratchet alarm, plus the bell), drive motor hum by RPM,
+  gear-shift clunk, stall groan, fuel-engine putter.
+- **Tackle Bench**: click of the drag knob, snap-on sounds for parts.
 
 ### 3. Fish
 - **Data**: the loader reads Tide's fish JSON format (so Tide's data, Tide Extra Compat's and the pack's
@@ -290,7 +337,8 @@ the fish eases off. So players pick drag against their rotational strength, not 
 3. **Tackle**: parts and data, rod component, Tackle Bench, ratings, wear.
 4. **Hook & fight in game**: cast, bites, strike, fight, catch, events/advancements, Aquaculture
    weight, Hybrid hooks.
-5. **Client visuals**: bending telescopic rod, line, HUD, catch card, fish at the line end. Tide is
+5. **Client visuals and sound**: bending blocky rod, line, HUD, the hold-up pose and Keep / Release
+   screen, fish at the line end, the fishing sounds (§ 2c). Tide is
    still in the pack at this point (our rods run alongside), so it is safe to try on a copy of a real
    world. **→ Stop for Emre's feedback with screenshots.**
 6. **Tide port & migration**: species/entities/spawns, journal, trophy mount, satchel, crates, gadgets
@@ -300,7 +348,8 @@ the fish eases off. So players pick drag against their rotational strength, not 
 8. **Bait & processing**: Create bait recipes, chum, Live-Bait Bucket, Cleaning Table,
    weight-limited cooking, fish meal/oil + Liquid Fuel, Integrated Farming net providers.
 9. **Create & ships**: Rod Holder, Basic / Geared / Fuel Reel Drives with the torque-vs-drag stall
-   rule, Goggles, trolling on Sable.
+   rule, catch handling (funnel/belt, inventory, dangling), banked XP, alive fish released from belts
+   into water, Goggles, trolling on Sable.
 10. **Aquarium tanks**: multiblock tanks, swimming display, baitfish breeding.
 11. **Handover**: balance pass from the sim, docs, `INTEGRATION.md`, final full-pack test.
 

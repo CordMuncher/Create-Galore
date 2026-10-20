@@ -20,12 +20,12 @@ M = "create_galore_fishing:"
 
 RODS = {
     # name: length, max_load, action, sections, lure_min, lure_max, extra
-    "bamboo_pole": (4.0, 4, "slow", 3, 1, 15, {"reel": False, "fixed_line": 8, "color": "#c9b36b"}),
-    "wooden_rod": (2.1, 5, "moderate", 2, 2, 20, {"color": "#8a6a45"}),
-    "iron_rod": (2.4, 9, "fast", 3, 5, 30, {"color": "#b8b8b8"}),
-    "steel_rod": (3.0, 16, "fast", 5, 8, 45, {"color": "#4a5560"}),
-    "boat_rod": (2.1, 45, "moderate", 2, 30, 200, {"color": "#2f3b4a"}),
-    "netherite_rod": (2.7, 30, "fast", 4, 10, 80, {"lava": True, "color": "#4a3f43"}),
+    "bamboo_pole": (4.0, 4, "slow", 3, 1, 15, {"reel": False, "fixed_line": 8, "color": "#c9b36b", "grip": "#a89050"}),
+    "wooden_rod": (2.1, 5, "moderate", 2, 2, 20, {"color": "#8a6a45", "grip": "#5a3e26"}),
+    "iron_rod": (2.4, 9, "fast", 3, 5, 30, {"color": "#b8b8b8", "grip": "#c9a26b"}),
+    "steel_rod": (3.0, 16, "fast", 5, 8, 45, {"color": "#4a5560", "grip": "#2b2b2e", "telescopic": True}),
+    "boat_rod": (2.1, 45, "moderate", 2, 30, 200, {"color": "#2f3b4a", "grip": "#262626"}),
+    "netherite_rod": (2.7, 30, "fast", 4, 10, 80, {"lava": True, "color": "#4a3f43", "grip": "#3a2a2e"}),
 }
 REELS = {
     # name: max_drag, drag_steps, retrieve, power, smooth, capacity, style, color

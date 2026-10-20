@@ -10,5 +10,6 @@
   "lure_max": 15,
   "reel": false,
   "fixed_line": 8,
-  "color": "#c9b36b"
+  "color": "#c9b36b",
+  "grip": "#a89050"
 }

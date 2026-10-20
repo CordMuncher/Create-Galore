@@ -25,6 +25,9 @@ public final class FishingClient {
         modBus.addListener((EntityRenderersEvent.RegisterRenderers event) ->
                 event.registerEntityRenderer(FishingRegistry.CAST_HOOK.get(), CastHookRenderer::new));
         FishingInput.init(modBus);
+        FishingHud.init(modBus);
+        CatchScreen.listen();
+        FishingSounds.init();
         NeoForge.EVENT_BUS.addListener(FishingClient::catchTooltip);
     }
 

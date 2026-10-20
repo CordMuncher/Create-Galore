@@ -83,8 +83,23 @@ public final class FishingRegistry {
     // ---- Sounds (sounds.json points them at vanilla clips; resource packs can replace them) ----
 
     public static final DeferredHolder<SoundEvent, SoundEvent> DRAG_CLICK = sound("reel.drag");
-    public static final DeferredHolder<SoundEvent, SoundEvent> LINE_SNAP = sound("line.snap");
+    public static final DeferredHolder<SoundEvent, SoundEvent> REEL_CRANK = sound("reel.crank");
+    public static final DeferredHolder<SoundEvent, SoundEvent> REEL_GRIND = sound("reel.grind");
+    public static final DeferredHolder<SoundEvent, SoundEvent> REEL_BAIL = sound("reel.bail");
     public static final DeferredHolder<SoundEvent, SoundEvent> LINE_STRAIN = sound("line.strain");
+    public static final DeferredHolder<SoundEvent, SoundEvent> LINE_SNAP = sound("line.snap");
+    public static final DeferredHolder<SoundEvent, SoundEvent> LINE_ZIP = sound("line.zip");
+    public static final DeferredHolder<SoundEvent, SoundEvent> LINE_WHIP = sound("line.whip");
+    public static final DeferredHolder<SoundEvent, SoundEvent> CAST_WHOOSH = sound("cast.whoosh");
+    public static final DeferredHolder<SoundEvent, SoundEvent> CAST_PLOP = sound("cast.plop");
+    public static final DeferredHolder<SoundEvent, SoundEvent> BITE_TAP = sound("bite.tap");
+    public static final DeferredHolder<SoundEvent, SoundEvent> BITE_STRIKE = sound("bite.strike");
+    public static final DeferredHolder<SoundEvent, SoundEvent> CATCH_FLOP = sound("catch.flop");
+    public static final DeferredHolder<SoundEvent, SoundEvent> MACHINE_ALARM = sound("machine.alarm");
+    public static final DeferredHolder<SoundEvent, SoundEvent> MACHINE_MOTOR = sound("machine.motor");
+    public static final DeferredHolder<SoundEvent, SoundEvent> MACHINE_ENGINE = sound("machine.engine");
+    public static final DeferredHolder<SoundEvent, SoundEvent> MACHINE_SHIFT = sound("machine.shift");
+    public static final DeferredHolder<SoundEvent, SoundEvent> MACHINE_STALL = sound("machine.stall");
 
     private static DeferredHolder<SoundEvent, SoundEvent> sound(String name) {
         return SOUNDS.register(name, () -> SoundEvent.createVariableRangeEvent(CreateGaloreFishing.id(name)));

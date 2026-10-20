@@ -12,6 +12,7 @@ from PIL import Image, ImageDraw
 HERE = pathlib.Path(__file__).resolve().parent
 ITEM = HERE.parent / "src/main/resources/assets/create_galore_fishing/textures/item"
 BLOCK = HERE.parent / "src/main/resources/assets/create_galore_fishing/textures/block"
+ENTITY = HERE.parent / "src/main/resources/assets/create_galore_fishing/textures/entity"
 
 
 def rgb(hexcolor, a=255):
@@ -191,6 +192,19 @@ def lure(name, kind, color):
     save(img, name)
 
 
+def tackle_grain():
+    """The 3D tackle models are coloured boxes; this light grey grain, tinted per part, gives them Minecraft's
+    pixel texture instead of flat plastic."""
+    import random
+    r = random.Random(7)
+    img = canvas()
+    for y in range(16):
+        for x in range(16):
+            v = r.choice((226, 234, 240, 246, 250, 255, 255))
+            px(img, x, y, (v, v, v, 255))
+    save(img, "tackle", ENTITY)
+
+
 def bench():
     top = Image.new("RGBA", (16, 16))
     side = Image.new("RGBA", (16, 16))
@@ -241,6 +255,7 @@ def main():
                         ("deep_crankbait", "#305080"), ("jig", "#a04040"), ("popper", "#f0f0a0"), ("soft_worm", "#8050a0")):
         lure(name, name, color)
     bench()
+    tackle_grain()
     print("textures written")
 
 

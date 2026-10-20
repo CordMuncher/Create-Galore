@@ -1,5 +1,6 @@
 package dev.creategalore.fishing;
 
+import dev.creategalore.fishing.cast.CatchHolding;
 import dev.creategalore.fishing.client.FishingClient;
 import dev.creategalore.fishing.command.FishingCommand;
 import dev.creategalore.fishing.fish.SpeciesManager;
@@ -30,6 +31,7 @@ public final class CreateGaloreFishing {
     public CreateGaloreFishing(IEventBus modBus) {
         FishingRegistry.register(modBus);
         FishingNet.register(modBus);
+        CatchHolding.register(modBus);
         NeoForge.EVENT_BUS.addListener(FishingCommand::register);
         SelfTest.register();
         SpeciesManager.register();

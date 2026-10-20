@@ -79,9 +79,11 @@ public class CastHook extends FishingHook {
     public static final int FLAG_SLACK = 8;
     public static final int FLAG_REELING = 16;
 
+    // Entity event ids: the client handles 21, 35 and 63 itself before the entity sees them (63 casts to Sniffer),
+    // and Entity/FishingHook use 31 and 53, so ours stay clear of those.
     public static final byte EVENT_BITE = 61;
     public static final byte EVENT_JUMP = 62;
-    public static final byte EVENT_SPLASH = 63;
+    public static final byte EVENT_SPLASH = 64;
 
     /** The rig's dead weight when junk or treasure is on the line. */
     static final FishFight DEAD_WEIGHT = new FishFight(0.6, 0.01, 0.4, Curve.preset("steady"), 0, 0, 0, false);
@@ -105,7 +107,6 @@ public class CastHook extends FishingHook {
     private Fight fight;
     private final Controls controls = new Controls();
     private double heading;
-    private int sound;
     private boolean forceBite;
 
     // Client-side interpolation of the server's positions (vanilla's hook ignores them).
@@ -141,8 +142,11 @@ public class CastHook extends FishingHook {
         hook.entityData.set(RIG, (byte) rigOf(stats).ordinal());
         hook.entityData.set(LINE_LEFT, (float) stats.lineMeters());
         player.level().addFreshEntity(hook);
-        player.level().playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.FISHING_BOBBER_THROW,
-                SoundSource.NEUTRAL, 0.5f, 0.4f / (player.getRandom().nextFloat() * 0.4f + 0.8f));
+        float whoosh = (float) (0.4 + 0.6 * Mth.clamp(charge, 0, 1));
+        player.level().playSound(null, player.getX(), player.getY(), player.getZ(), FishingRegistry.CAST_WHOOSH.get(),
+                SoundSource.PLAYERS, 0.4f + 0.4f * whoosh, 0.85f + 0.3f * whoosh);
+        player.level().playSound(null, player.getX(), player.getY(), player.getZ(), FishingRegistry.LINE_ZIP.get(),
+                SoundSource.PLAYERS, 0.35f, 0.9f + 0.2f * whoosh);
         return hook;
     }
 
@@ -305,7 +309,9 @@ public class CastHook extends FishingHook {
         openWater = FishingWater.openWater(level(), position());
         cooldown = 40;
         level().broadcastEntityEvent(this, EVENT_SPLASH);
-        level().playSound(null, blockPosition(), SoundEvents.FISHING_BOBBER_SPLASH, SoundSource.NEUTRAL, 0.3f, 1.2f);
+        float heavy = (float) Mth.clamp(stats.terminalWeight() / 40, 0, 1);
+        level().playSound(null, blockPosition(), FishingRegistry.CAST_PLOP.get(), SoundSource.NEUTRAL, 0.5f + 0.4f * heavy,
+                1.25f - 0.5f * heavy);
     }
 
     static boolean lavaProof(RodStats stats) {
@@ -408,8 +414,13 @@ public class CastHook extends FishingHook {
         setPhase(Phase.BITE);
         biteTicks = rig() == Rig.LURE ? 20 : 28;
         level.broadcastEntityEvent(this, EVENT_BITE);
-        level.playSound(null, blockPosition(), SoundEvents.FISHING_BOBBER_SPLASH, SoundSource.NEUTRAL, 0.35f,
-                1 + (random.nextFloat() - random.nextFloat()) * 0.4f);
+        if (rig() == Rig.FLOAT || rig() == Rig.HOOK) {
+            level.playSound(null, blockPosition(), SoundEvents.FISHING_BOBBER_SPLASH, SoundSource.NEUTRAL, 0.35f,
+                    1 + (random.nextFloat() - random.nextFloat()) * 0.4f);
+        }
+        // The rod tip taps (heard at the angler): the bite on a sinker or a lure is felt, not seen.
+        level.playSound(null, owner.getX(), owner.getY(), owner.getZ(), FishingRegistry.BITE_TAP.get(), SoundSource.PLAYERS,
+                rig() == Rig.FLOAT ? 0.3f : 0.7f, 0.9f + random.nextFloat() * 0.2f);
     }
 
     /** Luck of the Sea, the angler's luck attribute and a lucky hook. */
@@ -466,6 +477,7 @@ public class CastHook extends FishingHook {
         heading = Math.atan2(getZ() - tip.z, getX() - tip.x);
         setPhase(Phase.FIGHTING);
         entityData.set(BREAK, (float) stats.breakingLoad());
+        level().playSound(null, owner.getX(), owner.getY(), owner.getZ(), FishingRegistry.BITE_STRIKE.get(), SoundSource.PLAYERS, 0.7f, 1f);
         level().playSound(null, blockPosition(), SoundEvents.FISHING_BOBBER_SPLASH, SoundSource.NEUTRAL, 0.6f, 0.8f);
     }
 
@@ -523,9 +535,9 @@ public class CastHook extends FishingHook {
                 | (fight.running() ? FLAG_RUNNING : 0) | (fight.tension() < 0.06 * fight.maxPull() ? FLAG_SLACK : 0)
                 | (controls.reeling ? FLAG_REELING : 0);
         entityData.set(FLAGS, (byte) flags);
-        if (fight.slipping() && ++sound % 3 == 0) {
-            level().playSound(null, owner.getX(), owner.getY(), owner.getZ(), FishingRegistry.DRAG_CLICK.get(),
-                    SoundSource.PLAYERS, 0.35f, 0.9f + random.nextFloat() * 0.3f);
+        if (fight.jumped()) {
+            float size = (float) Mth.clamp(fight.weight() / 20, 0, 1);
+            level().playSound(null, blockPosition(), SoundEvents.GENERIC_SPLASH, SoundSource.NEUTRAL, 0.4f + 0.5f * size, 1.4f - 0.6f * size);
         }
         if (fight.outcome().over()) finish(owner, rod, stats, fight.outcome());
     }
@@ -571,8 +583,16 @@ public class CastHook extends FishingHook {
                 Species species = bite.species();
                 ItemStack fish = Catches.fishItem(species, bite, owner.getGameProfile().getName(), level.getDayTime() / 24000);
                 List<ItemStack> drops = Catches.fire(this, owner, rod, List.of(fish), species, bite.kg());
-                Catches.give(owner, drops, Catches.xp(species, bite, fight));
-                FishingPressure.of(level).addCatch(level, blockPosition());
+                int xp = Catches.xp(species, bite, fight);
+                ItemStack held = drops.stream().filter(s -> s.getItem() == species.item()).findFirst().orElse(ItemStack.EMPTY);
+                if (!held.isEmpty() && owner instanceof net.minecraft.server.level.ServerPlayer player) {
+                    // Lift it up: Keep or Release is the angler's call (see CatchHolding).
+                    Catches.give(owner, drops.stream().filter(s -> s != held).toList(), 0);
+                    CatchHolding.start(player, held, species, bite, xp, blockPosition());
+                } else {
+                    Catches.give(owner, drops, xp);
+                    FishingPressure.of(level).addCatch(level, blockPosition());
+                }
                 TackleWear.tell(owner, Catches.describe(species, bite));
                 if (rig() != Rig.LURE) {
                     RodParts parts = RodItem.parts(rod);
@@ -589,8 +609,8 @@ public class CastHook extends FishingHook {
         } else {
             TackleWear.tell(owner, Component.translatable("message.create_galore_fishing.lost." + outcome.name().toLowerCase(java.util.Locale.ROOT)));
             level().playSound(null, owner.getX(), owner.getY(), owner.getZ(),
-                    outcome.losesTackle() ? FishingRegistry.LINE_SNAP.get() : SoundEvents.FISHING_BOBBER_RETRIEVE,
-                    SoundSource.PLAYERS, 0.8f, 1f);
+                    outcome.losesTackle() || outcome == Outcome.ROD_BROKE ? FishingRegistry.LINE_SNAP.get() : FishingRegistry.LINE_WHIP.get(),
+                    SoundSource.PLAYERS, outcome.losesTackle() ? 0.9f : 0.6f, 1f);
         }
         TackleWear.apply(owner, slot, rod, fight, outcome);
         discard();

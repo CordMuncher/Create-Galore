@@ -92,16 +92,19 @@ public sealed interface TacklePart {
      *
      * @param length     metres; longer casts further
      * @param maxLoad    rated load before the blank is overloaded
-     * @param sections   telescopic sections (drawn on the 3D rod, slide out on a cast)
+     * @param sections   blank sections (drawn on the 3D rod; joined by ferrules, or nested when telescopic)
      * @param lureMin    lightest terminal weight (g) it casts well
      * @param lureMax    heaviest terminal weight (g) it casts well
      * @param reel       false for a pole: no reel seat, a fixed line, no drag
      * @param fixedLine  line length of a pole, metres
      * @param lava       can fish in lava (the line and rig survive it)
      * @param color      blank colour for the 3D model, #rrggbb
+     * @param grip       handle colour for the 3D model (cork, EVA foam, wood), #rrggbb
+     * @param telescopic the sections nest inside each other and slide out on a cast
      */
     record Rod(double length, double maxLoad, Action action, int sections, double lureMin, double lureMax,
-               boolean reel, double fixedLine, boolean lava, String color) implements TacklePart {
+               boolean reel, double fixedLine, boolean lava, String color, String grip, boolean telescopic)
+            implements TacklePart {
         static final MapCodec<Rod> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
                 Codec.DOUBLE.fieldOf("length").forGetter(Rod::length),
                 Codec.DOUBLE.fieldOf("max_load").forGetter(Rod::maxLoad),
@@ -112,7 +115,9 @@ public sealed interface TacklePart {
                 Codec.BOOL.optionalFieldOf("reel", true).forGetter(Rod::reel),
                 Codec.DOUBLE.optionalFieldOf("fixed_line", 0.0).forGetter(Rod::fixedLine),
                 Codec.BOOL.optionalFieldOf("lava", false).forGetter(Rod::lava),
-                Codec.STRING.optionalFieldOf("color", "#8a6a45").forGetter(Rod::color)
+                Codec.STRING.optionalFieldOf("color", "#8a6a45").forGetter(Rod::color),
+                Codec.STRING.optionalFieldOf("grip", "#c9a26b").forGetter(Rod::grip),
+                Codec.BOOL.optionalFieldOf("telescopic", false).forGetter(Rod::telescopic)
         ).apply(i, Rod::new));
 
         @Override
