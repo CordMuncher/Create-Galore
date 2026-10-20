@@ -31,12 +31,12 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "- **Burning pollutes.** Furnaces, burners and stoves add [#](2E5AAC)[smog](entry://survival/pollution)[#]() to their chunk. Smog keeps its default rates, so it stays punishing. Flues and [#](2E5AAC)[air scrubbers](entry://survival/pollution_control)[#]() fix it.\n- **Heat warms you.** Factories near you count toward [#](2E5AAC)[body temperature](entry://survival/temperature)[#]()."
+      "text": "- **Burning pollutes.** Furnaces, burners and stoves add [#](2E5AAC)[smog](entry://survival/pollution)[#]() to their chunk. Smog builds up fast and is punishing. Flues and [#](2E5AAC)[air scrubbers](entry://survival/pollution_control)[#]() fix it.\n- **Heat warms you.** Factories near you count toward [#](2E5AAC)[body temperature](entry://survival/temperature)[#]()."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "- **Height is cold.** [#](2E5AAC)[Cold Sweat: Altitude](entry://survival/temperature_create)[#]() makes the sky chilly, which matters for airships. Cold Sweat is tuned gentler than default.\n- **Water isn't clean.** Drink [#](2E5AAC)[purified water](entry://survival/thirst)[#](), or build a filter.\n- **Seasons turn.** Plan farms around them."
+      "text": "- **Height is cold.** [#](2E5AAC)[Cold Sweat: Altitude](entry://survival/temperature_create)[#]() makes the sky chilly, which matters for airships.\n- **Water isn't clean.** Drink [#](2E5AAC)[purified water](entry://survival/thirst)[#](), or build a filter.\n- **Seasons turn.** Plan farms around them."
     },
     {
       "type": "modonomicon:text",

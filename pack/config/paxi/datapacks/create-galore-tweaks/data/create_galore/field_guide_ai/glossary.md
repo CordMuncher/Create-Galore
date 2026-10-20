@@ -1,4 +1,4 @@
-<!-- sources sha256:eb9cb32f1c5dff1091c85d4ff3fd6b4305bf546fb8ddc4750fd52e9e194200b2 -->
+<!-- sources sha256:422907ffe7e29c637e12be8f8f5a83aa98ec503cd392b43ab8ef92e0a9e0afec -->
 # Words to Know (glossary)
 Short definitions of jargon the book uses unexplained, mostly Create and survival. Purple words in the book link to these entries; each lists where the word matters.
 
@@ -45,7 +45,7 @@ Short definitions of jargon the book uses unexplained, mostly Create and surviva
 
 ## glossary/config | Config
 - Config: a mod's settings file; whoever runs the game or server can change it. "Set by config" = value can differ in your world.
-- Pack tunes several, e.g. a gentler Cold Sweat. Files in the config folder; some open from the Mods menu.
+- Files in the config folder; some open from the Mods menu.
 - Matters: Stress (see create_basics/stress); Hulls and Pressure (see ocean/hulls_and_pressure); Seasons (see survival/seasons); Chunk Loaders (see industry/power_loader).
 
 ## glossary/copycat | Copycat

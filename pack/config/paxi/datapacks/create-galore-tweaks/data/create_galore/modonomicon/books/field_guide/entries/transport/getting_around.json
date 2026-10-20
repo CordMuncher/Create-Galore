@@ -1,7 +1,7 @@
 {
   "category": "transport",
   "name": "Getting Around",
-  "description": "In this pack you travel by building.",
+  "description": "Here you travel by building.",
   "icon": {
     "item": "create:controls"
   },
@@ -18,7 +18,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "In this pack you travel by building. Trains, airships, submarines, cars and hypertubes are how you cross the world, so the shortcuts that make them pointless are switched off.\\\n\\\nShort-range tricks that cost you something, like a double jump or a jetpack tank, are still in."
+      "text": "Here you travel by building. Trains, airships, submarines, cars and hypertubes are how you cross the world, so the shortcuts that make them pointless are switched off.\\\n\\\nShort-range tricks that cost you something, like a double jump or a jetpack tank, are still in."
     },
     {
       "type": "modonomicon:text",

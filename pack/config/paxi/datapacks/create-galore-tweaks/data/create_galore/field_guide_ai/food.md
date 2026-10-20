@@ -1,4 +1,4 @@
-<!-- sources sha256:db0d1220006715ed39c5d59d8430a0948af237c892a69ad1972923e0f6cec013 -->
+<!-- sources sha256:02312b11bd7201a3dd71b48c853a88aab8e9deb27c31ad529be8c18ffdcdb7f2 -->
 # Food and Farming (food)
 
 ## food/first_food | Food in Your First Days
@@ -175,5 +175,5 @@
 - Milk: wild cows milk as usual. Tamed cow gives milk only if female and not sick, a few buckets a day.
 - Finding sheep: shows item minecraft:white_wool. Sheep live in plains, meadows, cherry groves, forests (birch, dark, flower), taiga, groves, windswept hills, jungles. Terralith lands with sheep: highlands, shrublands, steppe, valleys, spires, snowy taiga. No sheep in savanna, swamp, desert, badlands, snowy plains, beaches, mushroom fields, oceans. Animals mostly appear when land is first generated: look in unvisited land.
 - Wool without sheep: 4 string craft 1 white wool (spiders drop string; cobwebs give it to a sword or shears); Shepherd villagers sell wool for an emerald from Apprentice on; four Alex's Caves Dark Tatters make black wool; Bulk Washing (Encased Fan through water) turns dyed wool white.
-- Naturalist's small animals (snails, rats, moles, hedgehogs, snakes, birds) and other mods' critters share the spawn pool with farm animals, making sheep up to 15 times rarer than vanilla. Pack adds extra sheep spawns, so every biome with sheep has them about as often as vanilla.
+- Naturalist's small animals (snails, rats, moles, hedgehogs, snakes, birds) and other mods' critters share the spawn pool with farm animals. Sheep have extra spawns of their own, so every biome with sheep has them about as often as vanilla.
 - Other animal mods: Critters and Companions: small creatures (red pandas, ferrets, koi, dragonflies); its otter, Dumbo Octopus, Sea Bunny spawns are off. Naturalist: bears, deer, elephants, lions, more; nine of its sea animals are off, see Sea Life (see ocean/sea_life). Sniffers Sniff Delights gives sniffers a job: see Delight Add-ons (see food/farmers_delight_addons).

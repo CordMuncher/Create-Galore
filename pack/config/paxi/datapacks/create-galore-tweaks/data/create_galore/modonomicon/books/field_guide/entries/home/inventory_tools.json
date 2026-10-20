@@ -28,7 +28,7 @@
         "item": "minecraft:hopper"
       },
       "title": "Inventory Profiles Next",
-      "text": "Sorts inventories with a button or key, moves matching stacks and locks slots. Auto-refill is off in this pack; turn it on in its [#](7A3C9A)[config](entry://glossary/config)[#]() screen."
+      "text": "Sorts inventories with a button or key, moves matching stacks and locks slots. Auto-refill starts off; turn it on in its [#](7A3C9A)[config](entry://glossary/config)[#]() screen."
     },
     {
       "type": "modonomicon:spotlight",

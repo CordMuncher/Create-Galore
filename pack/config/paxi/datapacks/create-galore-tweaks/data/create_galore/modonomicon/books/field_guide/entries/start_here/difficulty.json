@@ -25,7 +25,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "The pressure comes from **survival layers** instead. Four systems push on you over time, and each one is designed so machines can solve it. Cold Sweat is tuned gentler than its default here."
+      "text": "The pressure comes from **survival layers** instead. Four systems push on you over time, and each one is designed so machines can solve it. None of them is meant to be a constant fight against the weather."
     },
     {
       "type": "modonomicon:text",
@@ -53,7 +53,7 @@
         "item": "minecraft:iron_sword"
       },
       "title": "Fights",
-      "text": "Bosses and dungeon mobs are tuned to be memorable, not to wear you down. Cataclysm and Mowzie's bosses have 0.7x health and 0.75x damage."
+      "text": "Bosses and dungeon mobs are meant to be memorable, not to wear you down. The biggest, Cataclysm's Netherite Monstrosity, has 420 health; most bosses have 100 to 315. See [#](2E5AAC)[Bosses](entry://exploration/bosses)[#]()."
     }
   ]
 }

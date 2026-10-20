@@ -36,7 +36,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "[#](FFFFFF)\ue10b[#]() **Pack tuning:** Cataclysm's main bosses and all four Mowzie's bosses have **0.7x health** and **0.75x damage**. They are softened, not removed, and every boss structure still generates."
+      "text": "[#](FFFFFF)\ue10b[#]() **Boss health:** Netherite Monstrosity 420, Ignis 315, Ancient Remnant 315, Maledictus 294, Leviathan 280, Harbinger 273, Scylla 273, Ender Guardian 233, Frostmaw 175, Umvuthi 105, the Sculptor 98, Ferrous Wroughtnaut 28 (2 health is one heart). Every boss structure generates."
     },
     {
       "type": "modonomicon:text",
@@ -46,7 +46,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "[#](FFFFFF)\ue102[#]() **Tip:** boss drops often upgrade existing gear, so keep your best weapons around.\\\n\\\nIn this pack the Cataclysm boss gear has Create-flavoured recipes: see [#](2E5AAC)[Cataclysm x Create](entry://exploration/cataclysm_create)[#]()."
+      "text": "[#](FFFFFF)\ue102[#]() **Tip:** boss drops often upgrade existing gear, so keep your best weapons around.\\\n\\\nCataclysm's boss gear is made with Create machines: see [#](2E5AAC)[Cataclysm x Create](entry://exploration/cataclysm_create)[#]()."
     },
     {
       "type": "modonomicon:spotlight",

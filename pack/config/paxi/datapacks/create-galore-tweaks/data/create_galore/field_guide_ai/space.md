@@ -1,4 +1,4 @@
-<!-- sources sha256:e48db220ad69989a8929a4fa623bd1d73229b792479f728838d107b79688f3b3 -->
+<!-- sources sha256:2c8706ec436137b9f294feed41cd9267bf9684055de78c5bf9b63e4cbd6ccb40 -->
 # Space (space)
 Northstar (rockets) and Aeronautics ship routes to the Moon, Mars, Mercury, Venus and orbits; oxygen, suits, metals.
 

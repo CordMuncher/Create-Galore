@@ -25,12 +25,12 @@
     {
       "type": "modonomicon:text",
       "title": "How Far Apart",
-      "text": "Structures are spread out so each find counts. The surface has about twice as many as vanilla, shared evenly by kind: a mod with ten kinds of building turns up five times as often as one with two. The next of the same kind can be kilometres away."
+      "text": "Structures are spread out so each find counts. The surface holds about 6 per km² (one every 400 blocks or so), shared evenly by kind: a mod with ten kinds of building turns up five times as often as one with two. The next of the same kind can be kilometres away."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Below ground and under the sea there are about three times as many as vanilla; mineshafts keep their own rate. The sky holds about as many as vanilla's surface. Boss lairs and the dungeons with the best loot stay rarer than everyday builds."
+      "text": "Below ground there is roughly one per 250 by 250 blocks, plus mineshafts; a few hundred blocks of open ocean usually hold several places on the sea floor. The sky holds about 3 per km². Boss lairs and the dungeons with the best loot stay rarer than everyday builds."
     },
     {
       "type": "modonomicon:text",

@@ -333,6 +333,7 @@ public final class GuideAi {
             page.entries.add(new GuideAiNet.Entry(GuideAiNet.WHO_BOOK, GuideAiNet.clipText(outcome.answer)));
             for (String d : outcome.diagrams) page.entries.add(new GuideAiNet.Entry(GuideAiNet.WHO_DIAGRAM, d));
             if (outcome.keep) {
+                dropPictures(messages);
                 page.messages = messages;
                 page.questions++;
             }
@@ -564,6 +565,33 @@ public final class GuideAi {
         }
     }
 
+    /**
+     * Draft pictures only help while the book works on that answer; the page keeps a note in their place so later
+     * questions don't send them again.
+     */
+    private static void dropPictures(JsonArray messages) {
+        for (JsonElement m : messages) {
+            if (!m.isJsonObject() || !m.getAsJsonObject().has("content") || !m.getAsJsonObject().get("content").isJsonArray()) continue;
+            for (JsonElement block : m.getAsJsonObject().getAsJsonArray("content")) {
+                if (!block.isJsonObject() || !block.getAsJsonObject().has("content")) continue;
+                JsonElement parts = block.getAsJsonObject().get("content");
+                if (!parts.isJsonArray()) continue;
+                JsonArray kept = new JsonArray();
+                for (JsonElement part : parts.getAsJsonArray()) {
+                    if (part.isJsonObject() && GuideText.string(part.getAsJsonObject(), "type").equals("image")) {
+                        JsonObject note = new JsonObject();
+                        note.addProperty("type", "text");
+                        note.addProperty("text", "(The draft's picture was here.)");
+                        kept.add(note);
+                    } else {
+                        kept.add(part);
+                    }
+                }
+                block.getAsJsonObject().add("content", kept);
+            }
+        }
+    }
+
     /** The answer is the text of the book's last turn; earlier "let me check" lines between tool calls are dropped. */
     private static Outcome finishText(JsonArray messages, List<String> diagrams, StringBuilder note, boolean keep) {
         String answer = "";
@@ -646,6 +674,7 @@ public final class GuideAi {
             JsonObject input = block.has("input") && block.get("input").isJsonObject() ? block.getAsJsonObject("input") : new JsonObject();
             streamer.status(name);
             String result;
+            byte[] picture = null;
             try {
                 if (name.equals("draw_diagram")) {
                     // A copy: the check fills in any models the drawing holds, and the conversation keeps the input as sent.
@@ -666,6 +695,14 @@ public final class GuideAi {
                     Models.Result built = l.server.submit(() -> Models.build(input, l.server.overworld())).get(10, TimeUnit.SECONDS);
                     if (built.problem() != null) {
                         result = built.problem();
+                    } else if (built.draft()) {
+                        picture = built.picture();
+                        result = "Draft only, not in the answer. " + (picture == null ? "The pictures couldn't be drawn." :
+                                "The picture shows it from the front-left and back-right corners (top row) and straight from "
+                                + "the front and the right side (bottom row), in each block's shape and map colour, without "
+                                + "textures. Check the shape, proportions and colours; fix what looks wrong and try again, or "
+                                + "call with draft false to put it in the answer.")
+                                + (built.check().isEmpty() ? "" : "\n" + built.check());
                     } else if (diagrams.size() >= MAX_DRAWINGS) {
                         result = "Not built: " + MAX_DRAWINGS + " drawings and models per answer is the limit.";
                     } else {
@@ -690,7 +727,23 @@ public final class GuideAi {
             JsonObject r = new JsonObject();
             r.addProperty("type", "tool_result");
             r.addProperty("tool_use_id", GuideText.string(block, "id"));
-            r.addProperty("content", GuideAiNet.clip(result, 40000));
+            if (picture == null) {
+                r.addProperty("content", GuideAiNet.clip(result, 40000));
+            } else {
+                JsonArray parts = new JsonArray();
+                JsonObject text = new JsonObject();
+                text.addProperty("type", "text");
+                text.addProperty("text", GuideAiNet.clip(result, 40000));
+                parts.add(text);
+                JsonObject image = new JsonObject(), source = new JsonObject();
+                image.addProperty("type", "image");
+                source.addProperty("type", "base64");
+                source.addProperty("media_type", "image/png");
+                source.addProperty("data", java.util.Base64.getEncoder().encodeToString(picture));
+                image.add("source", source);
+                parts.add(image);
+                r.add("content", parts);
+            }
             results.add(r);
         }
         JsonObject user = new JsonObject();

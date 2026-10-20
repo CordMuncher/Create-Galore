@@ -63,7 +63,7 @@
         "item": "create:windmill_bearing"
       },
       "title": "Windmill Bearing",
-      "text": "In this pack only **Windcatchers** make power: at least 8, [#](7A3C9A)[glued](entry://glossary/super_glue)[#]() to the bearing. RPM follows the wind (about 5 near the ground, more up high and at sea). See [#](2E5AAC)[Sailing and Wind](entry://flight/wind_sailing)[#]()."
+      "text": "Only **Windcatchers** make power: at least 8, [#](7A3C9A)[glued](entry://glossary/super_glue)[#]() to the bearing. RPM follows the wind (about 5 near the ground, more up high and at sea). See [#](2E5AAC)[Sailing and Wind](entry://flight/wind_sailing)[#]()."
     },
     {
       "type": "modonomicon:spotlight",

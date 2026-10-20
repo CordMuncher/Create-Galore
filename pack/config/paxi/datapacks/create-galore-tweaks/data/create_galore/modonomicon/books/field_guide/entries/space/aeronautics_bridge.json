@@ -44,7 +44,7 @@
     {
       "type": "modonomicon:text",
       "title": "Recipe here",
-      "text": "In this pack the Dimensional Drive costs a [#](2E5AAC)[Stellar Core](entry://stars/stellar_core)[#](), 4 Titanium Ingots and 4 [#](2E5AAC)[Precision Mechanisms](entry://create_basics/brass_and_assembly)[#](). Press R over it in [#](2E5AAC)[JEI](entry://start_here/tools)[#]() to check. It can reach the Moon, Mars, Venus, Mercury, Earth and Earth Orbit."
+      "text": "The Dimensional Drive costs a [#](2E5AAC)[Stellar Core](entry://stars/stellar_core)[#](), 4 Titanium Ingots and 4 [#](2E5AAC)[Precision Mechanisms](entry://create_basics/brass_and_assembly)[#](). Press R over it in [#](2E5AAC)[JEI](entry://start_here/tools)[#]() to check. It can reach the Moon, Mars, Venus, Mercury, Earth and Earth Orbit."
     },
     {
       "type": "modonomicon:text",

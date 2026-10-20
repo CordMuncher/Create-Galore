@@ -44,7 +44,7 @@
         "item": "createnuclear:lead_ore"
       },
       "title": "Lead Ore",
-      "text": "The pack's only lead ore, since TFMG's is off. Galena also crushes to a little lead. Mining drops [Raw Lead](item://createnuclear:raw_lead). The ore block itself has no crushing recipe; crush the raw lead."
+      "text": "The only lead ore. Galena also crushes to a little lead. Mining drops [Raw Lead](item://createnuclear:raw_lead). The ore block itself has no crushing recipe; crush the raw lead."
     },
     {
       "type": "modonomicon:spotlight",

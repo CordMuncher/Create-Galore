@@ -1,4 +1,4 @@
-<!-- sources sha256:5190e77e6f6757a6d6432b42eec91a638d9ac99622731697b389961adc6797cb -->
+<!-- sources sha256:893d1dcaa126495abb14cf56bf567da8fff482367b7b0bc3ce003b3a499e8f88 -->
 # Start Here (start_here)
 
 ## start_here/welcome | Welcome to Create Galore
@@ -53,14 +53,14 @@
 
 ## start_here/difficulty | What to Expect
 - Combat is exciting, not punishing; bosses and dungeons are for adventure, not grind. Not the pack's focus if you want brutal fights.
-- Pressure comes from four survival layers; each designed so machines can solve it; Cold Sweat is tuned gentler than its default here (see survival/temperature).
+- Pressure comes from four survival layers; each designed so machines can solve it; none meant to be a constant fight against the weather (see survival/temperature).
   - Temperature (see survival/temperature); clothing and heated rooms help.
   - Thirst (see survival/thirst): water is a need.
   - Seasons (see survival/seasons): crops grow in their season.
   - Pollution (see survival/pollution): burners and engines pollute chunks (see glossary/chunk); air scrubbers clean them (see survival/pollution_control).
 - Dangers also in new worlds: Bosses (see exploration/bosses), Structures (see exploration/structures) before exploring far; Dimensions (see exploration/dimensions).
 - Watch out: snowy spawn, freezing damage after grace (see glossary/grace): insulated clothing + heat source (see survival/temperature) (see survival/temperature_gear).
-- Fights [minecraft:iron_sword]: bosses and dungeon mobs tuned to be memorable, not wear you down. Cataclysm and Mowzie's bosses have 0.7x health and 0.75x damage (see exploration/bosses).
+- Fights [minecraft:iron_sword]: bosses and dungeon mobs meant to be memorable, not wear you down. Biggest, Cataclysm's Netherite Monstrosity, has 420 health; most bosses 100 to 315 (see exploration/bosses).
 
 ## start_here/performance | Performance and Shaders
 - Heavy pack. Give the game 8 GB RAM on a 16 GB PC, or 12 GB on a big one (launcher instance settings). More than 16 GB doesn't help. README has matching Java flags.

@@ -26,7 +26,7 @@
     {
       "type": "modonomicon:text",
       "title": "L_Ender's Cataclysm",
-      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- Large, hard bosses guarding their own structures, for well-geared players.\n- [#](FFFFFF)\ue10b[#]() Main bosses softened here: 0.7x health, 0.75x damage.\n- Ability keys: **Home**, **End**, **Insert**, **Delete**.\n- [#](FFFFFF)\ue10d[#]() Boss gear is made with Create machines here: [#](2E5AAC)[Cataclysm x Create](entry://exploration/cataclysm_create)[#]()."
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- Large, hard bosses guarding their own structures, for well-geared players.\n- [#](FFFFFF)\ue10b[#]() Main bosses have 233 to 420 health (2 health is one heart).\n- Ability keys: **Home**, **End**, **Insert**, **Delete**.\n- [#](FFFFFF)\ue10d[#]() Boss gear is made with Create machines here: [#](2E5AAC)[Cataclysm x Create](entry://exploration/cataclysm_create)[#]()."
     },
     {
       "type": "modonomicon:text",
@@ -67,7 +67,7 @@
         "item": "cataclysm:the_incinerator"
       },
       "title": "The Incinerator",
-      "text": "Starts as a Netherite sword in this pack's recipe. Check [#](7A3C9A)[JEI](entry://glossary/jei)[#]()."
+      "text": "Its recipe starts with a Netherite sword. Check [#](7A3C9A)[JEI](entry://glossary/jei)[#]()."
     },
     {
       "type": "modonomicon:spotlight",
@@ -75,12 +75,12 @@
         "item": "cataclysm:the_annihilator"
       },
       "title": "The Annihilator",
-      "text": "Starts as a Netherite pickaxe in this pack's recipe. Check JEI."
+      "text": "Its recipe starts with a Netherite pickaxe. Check JEI."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "[#](FFFFFF)\ue103[#]() **In depth.** Tuned in this pack: the Netherite Monstrosity, Ignis, Harbinger, Leviathan, Scylla, Ancient Remnant, Maledictus and Ender Guardian have **0.7x health** and **0.75x damage**. They are softened, not removed. Other Cataclysm mobs use default stats."
+      "text": "[#](FFFFFF)\ue103[#]() **In depth.** Boss health (2 health is one heart): Netherite Monstrosity **420**, Ignis **315**, Ancient Remnant **315**, Maledictus **294**, Leviathan **280**, Harbinger **273**, Scylla **273**, Ender Guardian **233**."
     }
   ]
 }

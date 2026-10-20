@@ -1,7 +1,7 @@
 {
   "category": "glossary",
   "name": "Config",
-  "description": "The settings files mods read; some values here are tuned.",
+  "description": "The settings files mods read.",
   "icon": {
     "item": "minecraft:writable_book"
   },
@@ -13,7 +13,7 @@
     {
       "type": "modonomicon:text",
       "title": "Config",
-      "text": "A **config** is a mod's settings file. Whoever runs the game or server can change it.\\\n\\\n\"Set by config\" means the value can differ in your world. The pack tunes several, such as a gentler Cold Sweat. Files sit in the config folder; some open from the Mods menu."
+      "text": "A **config** is a mod's settings file. Whoever runs the game or server can change it.\\\n\\\n\"Set by config\" means the value can differ in your world. Files sit in the config folder; some open from the Mods menu."
     },
     {
       "type": "modonomicon:text",

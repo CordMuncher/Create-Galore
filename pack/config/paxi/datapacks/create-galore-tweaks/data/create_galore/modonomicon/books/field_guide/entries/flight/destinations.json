@@ -80,7 +80,7 @@
     {
       "type": "modonomicon:text",
       "title": "How often",
-      "text": "You cover ground faster in the air, so the sky is sparser than the ground. Expect **about 3 sky structures per km²**, the rate vanilla places structures on the surface: one every **600 blocks** or so."
+      "text": "You cover ground faster in the air, so the sky is sparser than the ground. Expect **about 3 sky structures per km²**, half the ground's rate: one every **600 blocks** or so."
     },
     {
       "type": "modonomicon:text",

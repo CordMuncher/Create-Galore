@@ -59,7 +59,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "[#](FFFFFF)\ue10b[#]() **Tuned in this pack:** the Ferrous Wroughtnaut, Umvuthi, Frostmaw and the Sculptor have 0.7x health and 0.75x damage. They are softened, not removed, and their structures still generate."
+      "text": "[#](FFFFFF)\ue10b[#]() **Boss health** (2 health is one heart): Frostmaw **175**, Umvuthi **105**, the Sculptor **98**, Ferrous Wroughtnaut **28**. Their structures generate as usual."
     }
   ]
 }

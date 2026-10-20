@@ -20,12 +20,12 @@
     {
       "type": "modonomicon:text",
       "title": "Seasons",
-      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- [#](FFFFFF)\ue10c[#]() Crops only grow in the right season; winter is hardest\n- By default a season is 24 days and a year 96\n- A glass roof or a farm deep underground gets around it\n- A **Calendar** shows the season and day"
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- [#](FFFFFF)\ue10c[#]() Crops only grow in the right season; winter is hardest\n- A season is 24 days and a year 96\n- A glass roof or a farm deep underground gets around it\n- A **Calendar** shows the season and day"
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Serene Seasons turns the Overworld year into four seasons: Spring, Summer, Autumn, Winter. Each splits into Early, Mid and Late.\\\n\\\nBy default every sub-season lasts 8 days, so a season is 24 days and a year 96. Foliage colors follow the season."
+      "text": "Serene Seasons turns the Overworld year into four seasons: Spring, Summer, Autumn, Winter. Each splits into Early, Mid and Late.\\\n\\\nEvery sub-season lasts 8 days, so a season is 24 days and a year 96. Foliage colors follow the season."
     },
     {
       "type": "modonomicon:spotlight",

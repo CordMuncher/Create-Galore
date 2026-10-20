@@ -35,7 +35,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Structure chests and some mobs hold **artifacts**: unique named weapons and tools, such as the Ragnarok bow, Firestorm crossbow, Trailblazer and Voltaic Trident.\\\n\\\nThe pack's no-Elytra datapack stops castle Paratroopers dropping wings. Incendium only reshapes newly generated Nether."
+      "text": "Structure chests and some mobs hold **artifacts**: unique named weapons and tools, such as the Ragnarok bow, Firestorm crossbow, Trailblazer and Voltaic Trident.\\\n\\\nCastle Paratroopers don't drop wings. Incendium only reshapes newly generated Nether."
     },
     {
       "type": "modonomicon:spotlight",

@@ -1,4 +1,4 @@
-<!-- sources sha256:9fc60afcc76554ed9d927c38f1efb4a8f120e1edb7ef4eedf3a56b9b13c81207 -->
+<!-- sources sha256:77ae930041516105ff212482215203741890ee8487fffc9a1f8089bff45b48bf -->
 # The Ocean (ocean)
 Create Deep Seas (submarines, High Seas surface ships), Aquatic Ambitions, sea life mods, Aquamirae, diving, structures.
 
@@ -101,7 +101,7 @@ Create Deep Seas (submarines, High Seas surface ships), Aquatic Ambitions, sea l
 - Structure mods rework the sea floor; destinations for a submarine (see ocean/submarines): ruins, wrecks, monuments with better loot than vanilla. Pressure matters: check depth with a Barometer (see ocean/hulls_and_pressure) first.
 - Ocean Monuments [minecraft:prismarine_bricks]: YUNG's Better Ocean Monuments rebuilds the vanilla monument. Prismarine can be crushed for lapis and XP.
 - Hopo Better Underwater Ruins and Revamped Shipwrecks replace vanilla ruins and shipwrecks with larger, more varied builds. MOS (Moog's Ocean Structures) adds many more: Atlantis ruins, temples, sunken ships, dragon skeletons, gardens, shrines.
-- How often: sea floor tuned to about 3 times vanilla's underwater rate; a few hundred blocks of open ocean usually hold several places. Common finds (small ruins, shipwrecks, whale falls) each get about the same share. Best-loot builds stay rare on purpose: MOS temples, Atlantis ruins, monuments, Hopo sunken city.
+- How often: sea floor is busy; a few hundred blocks of open ocean usually hold several places. Common finds (small ruins, shipwrecks, whale falls) each get about the same share. Best-loot builds stay rare on purpose: MOS temples, Atlantis ruins, monuments, Hopo sunken city.
 - Smaller finds: whale falls (Hybrid Aquatic), ocean wreckage (Towns and Towers), sunken boats (Creat Aeronautics Structures), flooded ruins from Create: Let The Adventure Begin, conduit ruins. Ice Maze of Aquamirae (see ocean/aquamirae) keeps ice spires and arches at full density (they are the biome); its frozen wrecks are thinned like other common wrecks.
 - Chests are normal loot, but Lootr (see exploration/lootr): in this pack loot chests are per player. Conduit and prismarine gear from here feeds Conduit Cages (see ocean/conduits).
 - Conduit [minecraft:conduit]: a conduit in a monument can be worked with Aquatic Ambitions' fan channeling.

@@ -40,7 +40,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "[#](FFFFFF)\ue103[#]() **In depth.** The Overworld void has its own fish, Alpha Fish among them. There are none for the Nether void.\\\n\\\nThe **Voidseeker**, which sends you to your spawn point when eaten, is off in this pack: it would skip every ride home. [#](2E5AAC)[Getting Around](entry://transport/getting_around)[#]()."
+      "text": "[#](FFFFFF)\ue103[#]() **In depth.** The Overworld void has its own fish, Alpha Fish among them. There are none for the Nether void.\\\n\\\nThe **Voidseeker** doesn't send you anywhere when eaten: there is no way home but the ride. [#](2E5AAC)[Getting Around](entry://transport/getting_around)[#]()."
     }
   ]
 }
