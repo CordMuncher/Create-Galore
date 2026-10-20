@@ -1,0 +1,24 @@
+{
+  "fish": "aquaculture:piranha",
+  "_generated": "from tools/fishing-mod/species.csv; edit that, not this file",
+  "size": {
+    "typical_low_cm": 15,
+    "typical_high_cm": 25,
+    "record_high_cm": 40
+  },
+  "length_weight": {
+    "a": 0.03,
+    "b": 3
+  },
+  "fight": {
+    "per_kg": 1,
+    "stamina": 0.8,
+    "speed": 1.6,
+    "runs": 0.08,
+    "jumps": 0.05,
+    "charges": 0.06,
+    "profile": "early",
+    "toothy": true
+  },
+  "feeding": "predator"
+}

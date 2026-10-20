@@ -1,0 +1,14 @@
+{
+  "fish": "aquaculture:atlantic_cod",
+  "_generated": "from tools/fishing-mod/species.csv; edit that, not this file",
+  "size": {
+    "typical_low_cm": 50,
+    "typical_high_cm": 100,
+    "record_high_cm": 150
+  },
+  "length_weight": {
+    "a": 0.009,
+    "b": 3
+  },
+  "feeding": "sea_bottom"
+}

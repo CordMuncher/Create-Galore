@@ -1,0 +1,18 @@
+{
+  "fish": "tide:sturgeon",
+  "_generated": "from tools/fishing-mod/species.csv; edit that, not this file",
+  "length_weight": {
+    "a": 0.005,
+    "b": 3
+  },
+  "fight": {
+    "per_kg": 0.8,
+    "stamina": 1.6,
+    "speed": 1.1,
+    "runs": 0.04,
+    "jumps": 0.04,
+    "charges": 0.02,
+    "profile": "sulker"
+  },
+  "feeding": "bottom"
+}

@@ -2,6 +2,8 @@ package dev.creategalore.fishing;
 
 import dev.creategalore.fishing.client.FishingClient;
 import dev.creategalore.fishing.command.FishingCommand;
+import dev.creategalore.fishing.fish.SpeciesManager;
+import dev.creategalore.fishing.fish.SpeciesSelfTest;
 import dev.creategalore.fishing.selftest.SelfTest;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
@@ -25,6 +27,8 @@ public final class CreateGaloreFishing {
     public CreateGaloreFishing(IEventBus modBus) {
         NeoForge.EVENT_BUS.addListener(FishingCommand::register);
         SelfTest.register();
+        SpeciesManager.register();
+        SpeciesSelfTest.register();
         if (FMLEnvironment.dist.isClient()) {
             FishingClient.init(modBus);
         }

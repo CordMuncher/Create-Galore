@@ -1,0 +1,19 @@
+{
+  "fish": "tide:walleye",
+  "_generated": "from tools/fishing-mod/species.csv; edit that, not this file",
+  "length_weight": {
+    "a": 0.009,
+    "b": 3
+  },
+  "fight": {
+    "per_kg": 0.8,
+    "stamina": 1,
+    "speed": 1.2,
+    "runs": 0.05,
+    "jumps": 0.03,
+    "charges": 0.04,
+    "profile": "late"
+  },
+  "feeding": "predator",
+  "wary": 0.3
+}

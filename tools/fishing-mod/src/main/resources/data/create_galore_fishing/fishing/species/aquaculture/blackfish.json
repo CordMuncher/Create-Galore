@@ -1,0 +1,14 @@
+{
+  "fish": "aquaculture:blackfish",
+  "_generated": "from tools/fishing-mod/species.csv; edit that, not this file",
+  "size": {
+    "typical_low_cm": 30,
+    "typical_high_cm": 60,
+    "record_high_cm": 90
+  },
+  "length_weight": {
+    "a": 0.02,
+    "b": 3
+  },
+  "feeding": "sea_bottom"
+}

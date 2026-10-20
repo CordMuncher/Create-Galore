@@ -1,0 +1,23 @@
+{
+  "fish": "aquaculture:arrau_turtle",
+  "_generated": "from tools/fishing-mod/species.csv; edit that, not this file",
+  "size": {
+    "typical_low_cm": 40,
+    "typical_high_cm": 70,
+    "record_high_cm": 90
+  },
+  "length_weight": {
+    "a": 0.1,
+    "b": 3
+  },
+  "fight": {
+    "per_kg": 0.7,
+    "stamina": 1.4,
+    "speed": 0.7,
+    "runs": 0.02,
+    "jumps": 0,
+    "charges": 0.02,
+    "profile": "sulker"
+  },
+  "feeding": "bottom"
+}

@@ -1,0 +1,9 @@
+{
+  "fish": "aquaculture:brown_shrooma",
+  "_generated": "from tools/fishing-mod/species.csv; edit that, not this file",
+  "size": {
+    "typical_low_cm": 15,
+    "typical_high_cm": 30,
+    "record_high_cm": 45
+  }
+}

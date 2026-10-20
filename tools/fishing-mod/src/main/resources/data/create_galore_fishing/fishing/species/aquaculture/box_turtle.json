@@ -1,0 +1,23 @@
+{
+  "fish": "aquaculture:box_turtle",
+  "_generated": "from tools/fishing-mod/species.csv; edit that, not this file",
+  "size": {
+    "typical_low_cm": 10,
+    "typical_high_cm": 18,
+    "record_high_cm": 25
+  },
+  "length_weight": {
+    "a": 0.15,
+    "b": 3
+  },
+  "fight": {
+    "per_kg": 0.6,
+    "stamina": 1.2,
+    "speed": 0.5,
+    "runs": 0,
+    "jumps": 0,
+    "charges": 0.02,
+    "profile": "sulker"
+  },
+  "feeding": "bottom"
+}

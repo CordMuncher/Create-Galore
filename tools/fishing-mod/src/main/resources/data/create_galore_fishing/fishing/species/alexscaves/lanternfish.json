@@ -1,0 +1,14 @@
+{
+  "fish": "alexscaves:lanternfish",
+  "_generated": "from tools/fishing-mod/species.csv; edit that, not this file",
+  "size": {
+    "typical_low_cm": 5,
+    "typical_high_cm": 15,
+    "record_high_cm": 25
+  },
+  "length_weight": {
+    "a": 0.008,
+    "b": 3
+  },
+  "feeding": "reef"
+}

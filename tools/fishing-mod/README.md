@@ -34,8 +34,33 @@ jar lands in `pack/mods/create-galore-fishing-<version>.jar`; the version comes 
 | `command` | `/cgfish` |
 | `selftest` | the self-test runner; feature areas add suites with `SelfTest.suite` |
 | `client` | client-only code, only reached through `FishingClient.init` on the client |
+| `sim` | the fight model: pure Java, no game classes, shared by the game and the Monte Carlo runner |
+| `fish` | species data: loads Tide-format fish files plus our extension files, fills in defaults |
+| `bait` | bait kinds and diets |
+| `tide` | code ported from Tide 2 (MPL-2.0): fish conditions, modifiers, the fish data record |
 
 More packages arrive with each milestone (see DESIGN.md).
+
+## Fish data
+
+Every fish comes from a Tide-format file, `data/<namespace>/fishing/fish/**.json` (where and when it bites, its
+sizes in cm, its journal page); the pack's own overrides of these keep working. Our values (fight, weight, diet)
+are in `data/<namespace>/fishing/species/**.json`; anything missing is worked out by `fish/SpeciesDefaults.java`
+from Tide's minigame numbers and the fish's name.
+
+Hand-tuned values live in one table, `species.csv`. Edit it and run `python3 tools/fishing-mod/gen_species.py`,
+which rewrites the extension files under `src/main/resources/data/create_galore_fishing/fishing/species/`. It
+fixes sizes Tide Extra Compatibility got wrong (a metre-long bluegill) and tunes the famous fighters.
+
+## Balancing
+
+- `/cgfish simulate <species|all> [fights]` runs the real fight code against every rig preset with a careful and a
+  careless angler and writes `create_galore_fishing/simulate.csv`: landing, snap, bite-off, rod, hook-throw and
+  spool rates, fight length, average weight and reel wear.
+- `/cgfish simulate export` writes `species.csv` for `tools/fishing-mod/sim.sh`, which runs the same Monte Carlo
+  without a game (fixed seeds, so runs repeat).
+- The `fight` self-test suite checks a few bands (cod and bass land on starter gear, tuna mostly don't, but do on
+  boat gear).
 
 ## Licences
 

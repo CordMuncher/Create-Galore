@@ -1,0 +1,14 @@
+{
+  "fish": "minecraft:salmon",
+  "_generated": "from tools/fishing-mod/species.csv; edit that, not this file",
+  "fight": {
+    "per_kg": 1.1,
+    "stamina": 1.1,
+    "speed": 1.7,
+    "runs": 0.12,
+    "jumps": 0.15,
+    "profile": "second_wind"
+  },
+  "feeding": "predator",
+  "wary": 0.4
+}

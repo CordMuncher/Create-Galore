@@ -1,0 +1,19 @@
+{
+  "fish": "tide:pike",
+  "_generated": "from tools/fishing-mod/species.csv; edit that, not this file",
+  "length_weight": {
+    "a": 0.006,
+    "b": 3
+  },
+  "fight": {
+    "per_kg": 0.9,
+    "stamina": 1,
+    "speed": 1.6,
+    "runs": 0.1,
+    "jumps": 0.06,
+    "charges": 0.05,
+    "profile": "early",
+    "toothy": true
+  },
+  "feeding": "predator"
+}
