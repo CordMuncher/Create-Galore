@@ -951,6 +951,70 @@ file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/cold_sweat
 hash = "6153f655aec1620b1b799b1e2aa1dffa50af403f109b9a4c80386ddf838491ed"
 
 [[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/connections.md"
+hash = "0eb2d908cbadc52815fdc511835295ad95a142f509debe3f70a2a1281e807883"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/create_basics.md"
+hash = "257a6af18df471de93636e4da456390026c1a2b85520ab9569c0a3c3926c8c4f"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/exploration.md"
+hash = "a1699d30c947a0a85601948bb41ddf9539624bbf14b5a076d88b7128bd12d5f7"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/fishing.md"
+hash = "b7f02b5d7406e153ddfdc56f53f589847d9c1cb62a354b184a2c4b9aa3b076de"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/flight.md"
+hash = "994fa61469c0f5d316f6454f349bfb0bdc4ce98fa4e90e0185760cc93ab1e4d2"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/food.md"
+hash = "6d986723552aec437155ff693af50830ce5c34a4317fb6545eac0fa0e5c75902"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/glossary.md"
+hash = "cfcdb9c9082d782697e3068921838146cf47af1b50531ee2c5129c8721d766a6"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/home.md"
+hash = "6a3d8f5a412a6103b2fdac5bf5d66520f5b3e637b7886ff616e753f515eb8986"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/industry.md"
+hash = "23a007e3dd1771a56bbd2c5e904651ca2781a6349a97088f2c43950e0753c96b"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/materials.md"
+hash = "276d8806ce82ac1973fd5436b19482e757dbe921ced9811617e9cc1d5ca4c780"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/ocean.md"
+hash = "1a53f908009918d5ced81323c634fb2ff7597eafc4878895a388cb5545e652c1"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/space.md"
+hash = "a74b88cebf065953b4ef352ef634d2a6890be9358e384d7927c9d6c7f3cb84a0"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/stars.md"
+hash = "1e93cf43b88c20bb16b0151e7218a5e34e5830e357e946c1f24285907bc0ddfc"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/start_here.md"
+hash = "a7b7d6936d55fad8da2e32c44b76e7417ab39b7b779d2c9b574d73a6e8a8c5a6"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/survival.md"
+hash = "492f5ffbd518a625d2489e184536a4bca7d07035f73580d0f3098d66d61e237f"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/transport.md"
+hash = "44c7d648d029326f0b58b7040e6af454ec76c13cb6f26c3d2747abb1afc0f31d"
+
+[[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/function/give_field_guide.mcfunction"
 hash = "8e9e30da9c1385f17227c7c538defa29b2e02259cc8f2576e1c48fb13c7b734b"
 
@@ -4893,8 +4957,8 @@ hash = "db683b65dc15a03dd6de2d34d5dc6ad0e3490744ced513a8cc584784ee9d3d8b"
 metafile = true
 
 [[files]]
-file = "mods/create-galore-bridge-1.25.0.jar"
-hash = "c90532c5733134f5f9c4bfa59344c182a488ac63b7b25b70a1389b1bebd0bb5d"
+file = "mods/create-galore-bridge-1.26.0.jar"
+hash = "47c061ba30560e7f639f9a68782b920fb31e41caacb41542a3df994e4edaaff6"
 
 [[files]]
 file = "mods/create-galore-lagwatch-1.1.0.jar"

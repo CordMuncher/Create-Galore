@@ -132,16 +132,22 @@ public final class GuideAi {
             LOG.info("Field Guide voice is off (no key saved for it; the updater asks at server start)");
             return;
         }
-        String guide = GuideText.guide(server.getResourceManager());
-        if (guide.length() < 1000) {
+        GuideText.Guide guide = GuideText.load(server.getResourceManager());
+        if (guide.notes().length() < 1000) {
             offNotice = "The book's voice is off: the server couldn't read the Field Guide.";
-            LOG.warn("Field Guide voice: the Field Guide text is missing ({} characters); staying off", guide.length());
+            LOG.warn("Field Guide voice: the Field Guide text is missing ({} characters); staying off", guide.notes().length());
             return;
+        }
+        if (!guide.fullSections().isEmpty()) {
+            LOG.warn("Field Guide voice: the AI notes of {} are missing or older than their entries, so those sections go to "
+                    + "the voice in full (tools/guide_digest.py --check says what to update)", guide.fullSections());
         }
         JsonArray system = new JsonArray();
         system.add(textBlock(GuideText.PERSONA));
-        JsonObject reference = textBlock("The complete Create Galore Field Guide follows, then every mod on this server.\n\n"
-                + guide + "\n\n=== Mods on this server (mod id: name version) ===\n" + GuideText.mods());
+        JsonObject reference = textBlock("The Create Galore Field Guide follows as compact notes: every fact of the guide, "
+                + "written once, one block per entry headed '## <entry id> | <entry name>' (a section that is sent in full "
+                + "instead uses '--- <entry name> (entry <entry id>) ---'). Then every mod on this server.\n\n"
+                + guide.notes() + "\n\n=== Mods on this server (mod id: name version) ===\n" + GuideText.mods());
         // One cache entry for persona, tools and guide, kept for an hour so both players' questions reuse it.
         JsonObject cache = new JsonObject();
         cache.addProperty("type", "ephemeral");
@@ -156,8 +162,8 @@ public final class GuideAi {
         live = new Live(server, settings, new AnthropicClient(settings.apiUrl, settings.key()), system, WorldTools.definitions(),
                 settings.webSearch ? webTools() : new JsonArray(), new ThreadStore(server.getWorldPath(LevelResource.ROOT)
                 .resolve("create_galore_field_guide_ai")), workers);
-        LOG.info("Field Guide voice is on: {} at {} effort, guide {} characters, web search {}", settings.model, settings.effort,
-                guide.length(), settings.webSearch ? "on" : "off");
+        LOG.info("Field Guide voice is on: {} at {} effort, guide notes {} characters (the full guide is {}), web search {}",
+                settings.model, settings.effort, guide.notes().length(), guide.full(), settings.webSearch ? "on" : "off");
     }
 
     private static void onStopping(ServerStoppingEvent event) {

@@ -104,6 +104,13 @@ final class WorldTools {
                 + "how many they have in each mod's tree, the most recent ones with their descriptions, every other one by "
                 + "title, and the visible ones that come right after what they have done. Use it with their inventory and "
                 + "surroundings to judge where they are in the game, for example when they ask what to do next.", new JsonObject()));
+        JsonObject guideProps = new JsonObject();
+        guideProps.add("query", prop("string", "One or more entry ids from the guide notes, such as 'create_basics/rotation "
+                + "industry/tfmg_steel', or words to search the whole guide for, such as 'brass funnel'."));
+        tools.add(tool("read_guide", "The Field Guide's own words: the full text of entries by id (up to 6), as players read "
+                + "them, or, given words instead, the entries that contain all of them. The notes in your instructions already "
+                + "hold every fact of the guide; read an entry when its notes are too short on what the player needs, when "
+                + "you want the guide's exact wording, or to search for something you can't place.", guideProps));
         tools.add(Diagrams.definition());
         tools.add(Models.definition());
         return tools;
@@ -142,6 +149,7 @@ final class WorldTools {
                 case "get_advancements" -> advancements(player, server);
                 case "lookup_recipes" -> recipes(server, GuideText.string(input, "item"), GuideText.string(input, "direction"));
                 case "find_items" -> findItems(GuideText.string(input, "query"));
+                case "read_guide" -> GuideText.read(GuideText.string(input, "query"));
                 case "search_storage" -> {
                     TouchedStorage storage = GuideAi.storage();
                     yield storage == null ? "Storage isn't tracked on this server." : storage.describe(player,

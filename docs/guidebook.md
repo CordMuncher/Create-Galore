@@ -101,3 +101,16 @@ ITEMS=/tmp/data/items.tsv RECIPES=/tmp/data/recipes python3 tools/validate_guide
 Vanilla items and recipes aren't in the mod jars: append them from the Minecraft client jar's `assets/minecraft/lang/en_us.json` and `data/minecraft/recipe/` the same way.
 
 `items.tsv` comes from lang files, so it can miss real items whose names live under another key (`cold_sweat:hearth` is one) and can't catch an ID that has a name but no item. Boot the game and grep the log for `modonomicon` to be sure: a bad entry is logged and skipped. Entry text reloads with `/reload`.
+
+## The book's voice reads compact notes
+
+Ask the Book doesn't start conversations with the guide as players read it. It gets **AI notes**: every fact of the guide written once, densely, without the key points, cross-references and repeats a human reader needs. They live next to the book in `data/create_galore/field_guide_ai/<section>.md`, one file per section, one `## <entry id> | <name>` block per entry. The voice can still read any entry in full with its `read_guide` tool.
+
+Each notes file starts with a stamp of the entry files it was written from. **When you change an entry, update its section's notes too**: put the changed facts in the entry's block, then
+
+```
+python3 tools/guide_digest.py --audit <section>   # every item id, recipe id, link and number of each entry is in its notes
+python3 tools/guide_digest.py --stamp <section>   # stamp the notes against the current entries
+```
+
+Until then the server sends that section to the voice in full (nothing is lost, it just costs more) and logs a warning, and CI fails on `python3 tools/guide_digest.py --check`. `--audit` only checks ids, links and numbers, so read the changed entry against its block for the rest. The hub sections (Start Here, Connections, Glossary) point to the topic entries that hold a fact in full instead of repeating it.
