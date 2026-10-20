@@ -1,5 +1,5 @@
 package dev.creategalore.fishing.command;
-import com.mojang.brigadier.arguments.DoubleArgumentType;
+
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import dev.creategalore.fishing.CreateGaloreFishing;
@@ -9,6 +9,7 @@ import dev.creategalore.fishing.cast.CatchHolding;
 import dev.creategalore.fishing.cast.Catches;
 import dev.creategalore.fishing.fish.Species;
 import dev.creategalore.fishing.fish.SpeciesManager;
+import dev.creategalore.fishing.machine.RodMount;import com.mojang.brigadier.arguments.DoubleArgumentType;
 import dev.creategalore.fishing.selftest.SelfTest;
 import dev.creategalore.fishing.sim.MonteCarlo;
 import java.io.IOException;
@@ -21,6 +22,8 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.EntityArgument;
+import net.minecraft.commands.arguments.coordinates.BlockPosArgument;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -57,6 +60,16 @@ public final class FishingCommand {
                                                 .executes(ctx -> biteWith(ctx.getSource(), EntityArgument.getPlayer(ctx, "player"),
                                                         StringArgumentType.getString(ctx, "species"),
                                                         DoubleArgumentType.getDouble(ctx, "cm")))))))
+                .then(Commands.literal("machine")
+                        .then(Commands.argument("pos", BlockPosArgument.blockPos())
+                                .executes(ctx -> machine(ctx.getSource(), BlockPosArgument.getLoadedBlockPos(ctx, "pos"), null, 0))
+                                .then(Commands.literal("bite")
+                                        .executes(ctx -> machine(ctx.getSource(), BlockPosArgument.getLoadedBlockPos(ctx, "pos"), "", 0))
+                                        .then(Commands.argument("species", StringArgumentType.string())
+                                                .then(Commands.argument("cm", DoubleArgumentType.doubleArg(1, 1000))
+                                                        .executes(ctx -> machine(ctx.getSource(), BlockPosArgument.getLoadedBlockPos(ctx, "pos"),
+                                                                StringArgumentType.getString(ctx, "species"),
+                                                                DoubleArgumentType.getDouble(ctx, "cm"))))))))
                 .then(Commands.literal("crate")
                         .then(Commands.argument("player", EntityArgument.player())
                                 .executes(ctx -> crate(ctx.getSource(), EntityArgument.getPlayer(ctx, "player")))))
@@ -100,6 +113,38 @@ public final class FishingCommand {
         hook.forceBite(new BiteSampler.Bite(species, cm, species.size().weightKg(cm), species.size().classify(cm)));
         source.sendSuccess(() -> Component.literal(String.format(Locale.ROOT, "Next bite: %s, %.0f cm, %.2f kg",
                 species.id(), cm, species.size().weightKg(cm))), false);
+        return 1;
+    }
+
+    /**
+     * Test tool for rod machines: shows the machine's hook state, or (with {@code bite}) makes its next bite roll
+     * succeed, as a given fish if {@code speciesId} is set ({@code ""}: whatever bites there).
+     */
+    private static int machine(CommandSourceStack source, BlockPos pos, String speciesId, double cm) {
+        if (!(source.getLevel().getBlockEntity(pos) instanceof RodMount mount)) {
+            source.sendFailure(Component.literal("No rod machine at " + pos.toShortString()));
+            return 0;
+        }
+        CastHook hook = mount.mounted().hook();
+        if (hook == null) {
+            source.sendFailure(Component.literal("The machine at " + pos.toShortString() + " has no line out"
+                    + (mount.mounted().rod().isEmpty() ? " (and no rod)" : "")));
+            return 0;
+        }
+        if (speciesId == null) {
+            source.sendSuccess(() -> Component.literal(hook.describe()), false);
+            return 1;
+        }
+        if (speciesId.isEmpty()) {
+            hook.forceBite();
+            source.sendSuccess(() -> Component.literal("Next bite at the machine: whatever comes"), false);
+            return 1;
+        }
+        Species species = species(source, speciesId);
+        if (species == null) return 0;
+        hook.forceBite(new BiteSampler.Bite(species, cm, species.size().weightKg(cm), species.size().classify(cm)));
+        source.sendSuccess(() -> Component.literal(String.format(Locale.ROOT, "Next bite at the machine: %s, %.0f cm",
+                species.id(), cm)), false);
         return 1;
     }
 

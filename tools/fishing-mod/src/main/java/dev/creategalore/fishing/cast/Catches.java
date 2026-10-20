@@ -43,6 +43,7 @@ import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.common.util.FakePlayer;
 import net.neoforged.neoforge.event.entity.player.ItemFishedEvent;
 
 /**
@@ -120,7 +121,8 @@ public final class Catches {
         if (species != null) out.forEach(stack -> {
             if (stack.getItem() == species.item()) setAquacultureWeight(stack, species, kg);
         });
-        if (angler instanceof ServerPlayer player) {
+        // A machine's fake angler earns no advancements or stats (they would make a player file for it).
+        if (angler instanceof ServerPlayer player && !(player instanceof FakePlayer)) {
             CriteriaTriggers.FISHING_ROD_HOOKED.trigger(player, rod, hook, out);
             for (ItemStack stack : out) {
                 if (stack.is(ItemTags.FISHES)) player.awardStat(Stats.FISH_CAUGHT, 1);
@@ -184,7 +186,7 @@ public final class Catches {
                 params, crate.lootTable().map(LootTableRef::of).orElse(null));
         // The crate leaves the water (or lava) it was pulled from as it was.
         level.setBlock(pos, water, 3);
-        if (angler instanceof ServerPlayer player) TideCriteriaTriggers.PULLED_CRATE.trigger(player);
+        if (angler instanceof ServerPlayer player && !(player instanceof FakePlayer)) TideCriteriaTriggers.PULLED_CRATE.trigger(player);
         level.playSound(null, angler.getX(), angler.getY(), angler.getZ(), SoundEvents.FISHING_BOBBER_RETRIEVE,
                 SoundSource.PLAYERS, 0.8f, 0.8f);
     }

@@ -1,7 +1,9 @@
 package dev.creategalore.fishing.cast;
-
 import dev.creategalore.fishing.bait.Chum;
 import dev.creategalore.fishing.fish.Species;
+import dev.creategalore.fishing.machine.MachineAngler;
+import dev.creategalore.fishing.machine.MachineInfo;
+import dev.creategalore.fishing.machine.RodMount;
 import dev.creategalore.fishing.sim.Controls;
 import dev.creategalore.fishing.sim.Curve;
 import dev.creategalore.fishing.sim.Fight;
@@ -19,15 +21,20 @@ import dev.creategalore.fishing.tide.data.fishing.CatchTables;
 import dev.creategalore.fishing.tide.data.fishing.CrateData;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerEntity;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -78,6 +85,10 @@ public class CastHook extends FishingHook {
     private static final EntityDataAccessor<String> FISH = SynchedEntityData.defineId(CastHook.class, EntityDataSerializers.STRING);
     private static final EntityDataAccessor<Float> FISH_CM = SynchedEntityData.defineId(CastHook.class, EntityDataSerializers.FLOAT);
     private static final EntityDataAccessor<Float> FISH_KG = SynchedEntityData.defineId(CastHook.class, EntityDataSerializers.FLOAT);
+    /** The machine holding the rod, when one does (its angler is a server-side fake player clients can't see). */
+    private static final EntityDataAccessor<Optional<BlockPos>> MOUNT = SynchedEntityData.defineId(CastHook.class, EntityDataSerializers.OPTIONAL_BLOCK_POS);
+    /** The angler's entity id (-1 for a machine), so clients follow the line when it changes hands. */
+    private static final EntityDataAccessor<Integer> OWNER = SynchedEntityData.defineId(CastHook.class, EntityDataSerializers.INT);
 
     public static final int FLAG_SLIPPING = 1;
     public static final int FLAG_STALLED = 2;
@@ -141,27 +152,108 @@ public class CastHook extends FishingHook {
      * flies a ballistic arc meant to land about {@code charge} of the rod's casting range away.
      */
     public static CastHook cast(Player player, InteractionHand hand, RodStats stats, double charge) {
-        CastHook hook = new CastHook(FishingRegistry.CAST_HOOK.get(), player.level());
-        hook.hand = hand;
-        hook.setOwner(player);
-        Vec3 tip = tip(player);
-        hook.setPos(tip.x, tip.y, tip.z);
         double distance = Math.max(3, stats.maxCast() * (0.25 + 0.75 * Mth.clamp(charge, 0, 1)));
-        hook.castLimit = distance;
         double elevation = Math.toRadians(Mth.clamp(-player.getXRot() + 20, 10, 55));
-        double speed = Math.sqrt(distance * GRAVITY / Math.sin(2 * elevation));
         double yaw = Math.toRadians(player.getYRot());
+        return launch(player, hand, stats, tip(player), new Vec3(-Math.sin(yaw), 0, Math.cos(yaw)), elevation, distance,
+                Mth.clamp(charge, 0, 1));
+    }
+
+    /**
+     * A machine's cast: {@code distance} blocks out along {@code direction} (flattened) from {@code tip}, at a
+     * medium arc. The Geared and Fuel Reel Drives cast this way.
+     */
+    public static CastHook castFrom(MachineAngler angler, RodStats stats, Vec3 tip, Vec3 direction, double distance) {
+        Vec3 flat = new Vec3(direction.x, 0, direction.z);
+        if (flat.lengthSqr() < 1e-6) flat = new Vec3(1, 0, 0);
+        double d = Mth.clamp(distance, 3, stats.maxCast());
+        return launch(angler, InteractionHand.MAIN_HAND, stats, tip, flat.normalize(), Math.toRadians(35), d,
+                d / Math.max(3, stats.maxCast()));
+    }
+
+    private static CastHook launch(Player angler, InteractionHand hand, RodStats stats, Vec3 tip, Vec3 flat,
+                                   double elevation, double distance, double charge) {
+        CastHook hook = new CastHook(FishingRegistry.CAST_HOOK.get(), angler.level());
+        hook.hand = hand;
+        hook.setPos(tip.x, tip.y, tip.z);
+        hook.handTo(angler);
+        hook.castLimit = distance;
+        double speed = Math.sqrt(distance * GRAVITY / Math.sin(2 * elevation));
         double horizontal = speed * Math.cos(elevation);
-        hook.setDeltaMovement(-Math.sin(yaw) * horizontal, speed * Math.sin(elevation), Math.cos(yaw) * horizontal);
+        hook.setDeltaMovement(flat.x * horizontal, speed * Math.sin(elevation), flat.z * horizontal);
         hook.entityData.set(RIG, (byte) rigOf(stats).ordinal());
         hook.entityData.set(LINE_LEFT, (float) stats.lineMeters());
-        player.level().addFreshEntity(hook);
-        float whoosh = (float) (0.4 + 0.6 * Mth.clamp(charge, 0, 1));
-        player.level().playSound(null, player.getX(), player.getY(), player.getZ(), FishingRegistry.CAST_WHOOSH.get(),
+        angler.level().addFreshEntity(hook);
+        float whoosh = (float) (0.4 + 0.6 * charge);
+        angler.level().playSound(null, tip.x, tip.y, tip.z, FishingRegistry.CAST_WHOOSH.get(),
                 SoundSource.PLAYERS, 0.4f + 0.4f * whoosh, 0.85f + 0.3f * whoosh);
-        player.level().playSound(null, player.getX(), player.getY(), player.getZ(), FishingRegistry.LINE_ZIP.get(),
+        angler.level().playSound(null, tip.x, tip.y, tip.z, FishingRegistry.LINE_ZIP.get(),
                 SoundSource.PLAYERS, 0.35f, 0.9f + 0.2f * whoosh);
         return hook;
+    }
+
+    // ---- Who holds the rod ----
+
+    /** The machine holding this hook's rod (server side), or null when a player holds it. */
+    public RodMount machine() {
+        return getOwner() instanceof MachineAngler angler ? angler.mount() : null;
+    }
+
+    /** Where the machine holding this hook's rod is (both sides); empty while a player holds it. */
+    public Optional<BlockPos> mountPos() {
+        return entityData.get(MOUNT);
+    }
+
+    /**
+     * Hands the line to {@code angler}: a player taking a cast rod out of a machine, or a machine given one. The rod
+     * goes with it (the caller moves the stack); the line, the bite or the fight carry on.
+     */
+    public void handTo(Player angler) {
+        if (getOwner() instanceof Player old && old.fishing == this) old.fishing = null;
+        hand = InteractionHand.MAIN_HAND;
+        setOwner(angler);
+        boolean machine = angler instanceof MachineAngler;
+        entityData.set(MOUNT, machine ? Optional.of(((MachineAngler) angler).mount().mountPos()) : Optional.empty());
+        entityData.set(OWNER, machine ? -1 : angler.getId());
+    }
+
+    @Override
+    public void onSyncedDataUpdated(EntityDataAccessor<?> key) {
+        super.onSyncedDataUpdated(key);
+        if (key == OWNER && level().isClientSide) {
+            if (getOwner() instanceof Player old && old.fishing == this) old.fishing = null;
+            int id = entityData.get(OWNER);
+            setOwner(id < 0 ? null : level().getEntity(id));
+        }
+    }
+
+    /** A machine's angler doesn't exist on clients, so its hook is sent without an owner. */
+    @Override
+    public Packet<ClientGamePacketListener> getAddEntityPacket(ServerEntity entity) {
+        Entity owner = getOwner();
+        return new ClientboundAddEntityPacket(this, entity, owner == null || owner instanceof MachineAngler ? -1 : owner.getId());
+    }
+
+    /**
+     * As Entity and Projectile do it, but without vanilla's fishing hook check that discards a hook whose player
+     * isn't on this client: a machine's hook never has one there.
+     */
+    @Override
+    public void recreateFromPacket(ClientboundAddEntityPacket packet) {
+        double x = packet.getX(), y = packet.getY(), z = packet.getZ();
+        syncPacketPositionCodec(x, y, z);
+        moveTo(x, y, z);
+        setXRot(packet.getXRot());
+        setYRot(packet.getYRot());
+        setId(packet.getId());
+        setUUID(packet.getUUID());
+        Entity owner = level().getEntity(packet.getData());
+        if (owner != null) setOwner(owner);
+    }
+
+    /** Where the rod tip is: the machine's, or ahead of a player's hand. */
+    private static Vec3 tipOf(Player owner) {
+        return owner instanceof MachineAngler angler ? angler.mount().tip() : tip(owner);
     }
 
     static Rig rigOf(RodStats stats) {
@@ -198,6 +290,8 @@ public class CastHook extends FishingHook {
         builder.define(FISH, "");
         builder.define(FISH_CM, 0f);
         builder.define(FISH_KG, 0f);
+        builder.define(MOUNT, Optional.empty());
+        builder.define(OWNER, -1);
     }
 
     public Phase phase() {
@@ -265,6 +359,11 @@ public class CastHook extends FishingHook {
     public void tick() {
         baseTick();
         if (level().isClientSide) {
+            mountPos().ifPresent(pos -> {
+                MachineInfo.CLIENT_HOOKS.put(pos, this);
+                // A machine's line is nobody's on this client (the player who set it in may still think it theirs).
+                for (Player p : level().players()) if (p.fishing == this) p.fishing = null;
+            });
             if (lerpSteps > 0) {
                 setPos(getX() + (lerpX - getX()) / lerpSteps, getY() + (lerpY - getY()) / lerpSteps,
                         getZ() + (lerpZ - getZ()) / lerpSteps);
@@ -283,7 +382,7 @@ public class CastHook extends FishingHook {
             discard();
             return;
         }
-        Vec3 tip = tip(owner);
+        Vec3 tip = tipOf(owner);
         switch (phase()) {
             case FLYING -> fly(owner, stats, tip);
             case WAITING, GROUNDED -> waitForBite(owner, rod, stats, tip);
@@ -338,6 +437,7 @@ public class CastHook extends FishingHook {
     }
 
     private boolean reeling(Player owner) {
+        if (owner instanceof MachineAngler angler) return angler.mount().reeling(this);
         return owner.isUsingItem() && owner.getUsedItemHand() == hand && owner.getUseItem().getItem() instanceof RodItem;
     }
 
@@ -347,7 +447,8 @@ public class CastHook extends FishingHook {
 
     private void waitForBite(Player owner, ItemStack rod, RodStats stats, Vec3 tip) {
         boolean reeling = reeling(owner);
-        double retrieve = (stats.reel().map(TacklePart.Reel::retrieve).orElse(0.9)) / 20;
+        double retrieve = (stats.reel().map(TacklePart.Reel::retrieve).orElse(0.9)) / 20
+                * (owner instanceof MachineAngler angler ? angler.mount().retrieveScale() : 1);
         Vec3 pos = position();
         Vec3 toTip = new Vec3(tip.x - pos.x, 0, tip.z - pos.z);
         double flat = toTip.length();
@@ -449,6 +550,10 @@ public class CastHook extends FishingHook {
         setPhase(Phase.BITE);
         if (stats.rod().has("echo")) echo(owner);
         biteTicks = rig() == Rig.LURE ? 20 : 28;
+        if (owner instanceof MachineAngler angler) {
+            biteTicks = angler.mount().biteTicks();
+            angler.mount().bite(this);
+        }
         level.broadcastEntityEvent(this, EVENT_BITE);
         if (rig() == Rig.FLOAT || rig() == Rig.HOOK) {
             level.playSound(null, blockPosition(), SoundEvents.FISHING_BOBBER_SPLASH, SoundSource.NEUTRAL, 0.35f,
@@ -502,7 +607,7 @@ public class CastHook extends FishingHook {
             forcedBite = null;
             forceBite = false;
         }
-        if (reeling(owner)) {
+        if (owner instanceof MachineAngler angler ? angler.mount().strikes(this) : reeling(owner)) {
             strike(owner, rod, stats, tip);
             return;
         }
@@ -586,12 +691,19 @@ public class CastHook extends FishingHook {
     }
 
     private void fighting(Player owner, ItemStack rod, RodStats stats, Vec3 tip) {
-        controls.reeling = reeling(owner);
         controls.drag = stats.drag();
         controls.crankLimit = Double.NaN;
         controls.retrieveScale = 1;
         controls.crankThroughSlip = true;
-        controls.rodAngle = rodAngle(owner, tip, position());
+        if (owner instanceof MachineAngler angler) {
+            // Held at a good working angle; the machine decides the rest.
+            controls.reeling = false;
+            controls.rodAngle = Math.toRadians(60);
+            angler.mount().fight(this, fight, stats, controls);
+        } else {
+            controls.reeling = reeling(owner);
+            controls.rodAngle = rodAngle(owner, tip, position());
+        }
         fight.tick(controls, BiteSampler.adapt(random));
         moveFish(tip);
 
@@ -646,6 +758,12 @@ public class CastHook extends FishingHook {
 
     private void finish(Player owner, ItemStack rod, RodStats stats, Outcome outcome) {
         EquipmentSlot slot = hand == InteractionHand.MAIN_HAND ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND;
+        if (owner instanceof MachineAngler angler) {
+            finishOnMachine(angler, rod, stats, outcome);
+            TackleWear.apply(owner, slot, rod, fight, outcome);
+            discard();
+            return;
+        }
         if (outcome == Outcome.LANDED) {
             ServerLevel level = (ServerLevel) level();
             if (catchKind == CatchKind.FISH) {
@@ -688,6 +806,47 @@ public class CastHook extends FishingHook {
         }
         TackleWear.apply(owner, slot, rod, fight, outcome);
         discard();
+    }
+
+    /** A machine's fight is over: what came up goes to the machine (it banks the XP and routes the items). */
+    private void finishOnMachine(MachineAngler angler, ItemStack rod, RodStats stats, Outcome outcome) {
+        RodMount machine = angler.mount();
+        if (outcome != Outcome.LANDED) {
+            level().playSound(null, blockPosition(), outcome.losesTackle() || outcome == Outcome.ROD_BROKE
+                    ? FishingRegistry.LINE_SNAP.get() : FishingRegistry.LINE_WHIP.get(), SoundSource.BLOCKS, 0.7f, 1f);
+            machine.lost(this, outcome);
+            return;
+        }
+        ServerLevel level = (ServerLevel) level();
+        switch (catchKind) {
+            case FISH -> {
+                Species species = bite.species();
+                ItemStack fish = Catches.fishItem(species, bite, machine.creditName(), level.getDayTime() / 24000);
+                List<ItemStack> landed = new ArrayList<>(List.of(fish));
+                Catches.perkBonus(this, angler, rod, stats, medium, luck(angler, rod, stats)).ifPresent(landed::add);
+                List<ItemStack> drops = Catches.fire(this, angler, rod, landed, species, bite.kg());
+                FishingPressure.of(level).addCatch(level, blockPosition());
+                if (rig() != Rig.LURE) {
+                    RodParts parts = RodItem.parts(rod);
+                    ItemStack bait = parts.bait();
+                    if (!bait.isEmpty()) {
+                        bait.shrink(1);
+                        RodItem.setParts(rod, parts.with(RodParts.Slot.BAIT, bait));
+                    }
+                }
+                machine.landed(this, drops, Catches.xp(species, bite, fight));
+            }
+            case CRATE -> {
+                Catches.pullCrate(this, angler, rod, crate, luck(angler, rod, stats));
+                machine.landed(this, List.of(), 0);
+            }
+            default -> machine.landed(this, Catches.fire(this, angler, rod, loot, null, 0), catchKind == CatchKind.TREASURE ? 3 : 1);
+        }
+    }
+
+    /** The fish that bit, for the machine's records (null for junk, treasure and crates). */
+    public BiteSampler.Bite bite() {
+        return catchKind == CatchKind.FISH ? bite : null;
     }
 
     // ---- Vanilla hook behaviour we replace ----

@@ -4,13 +4,16 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import dev.creategalore.fishing.cast.CastHook;
+import dev.creategalore.fishing.machine.RodMount;
 import dev.creategalore.fishing.tackle.RodItem;
+import java.util.Optional;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -34,7 +37,14 @@ public class CastHookRenderer extends EntityRenderer<CastHook> {
     @Override
     public void render(CastHook hook, float yaw, float partialTick, PoseStack pose, MultiBufferSource buffers, int light) {
         Player owner = hook.getPlayerOwner();
-        if (owner == null) return;
+        Optional<BlockPos> mount = hook.mountPos();
+        if (owner == null && mount.isEmpty()) return;
+        // A machine's rod: the line starts at the tip its renderer drew (else where the machine says it is).
+        Vec3 tip = mount.isPresent()
+                ? MountRenderer.tip(mount.get()).orElseGet(() -> hook.level().getBlockEntity(mount.get()) instanceof RodMount m
+                        ? m.tip() : hook.position().add(0, 1, 0))
+                : RodItemRenderer.tip(owner, hook.hand(), partialTick)
+                        .orElseGet(() -> RodTip.position(owner, hook.hand(), partialTick, entityRenderDispatcher));
         pose.pushPose();
         if (hook.fishId() == null && hook.rig() != CastHook.Rig.LURE) {
             pose.pushPose();
@@ -49,9 +59,9 @@ public class CastHookRenderer extends EntityRenderer<CastHook> {
             vertex(vc, last, light, 0, 1, 0, 0);
             pose.popPose();
         }
-        if (hook.fishId() != null && hook.phase() == CastHook.Phase.FIGHTING) drawFish(hook, owner, partialTick, pose, buffers, light);
-        Vec3 tip = RodItemRenderer.tip(owner, hook.hand(), partialTick)
-                .orElseGet(() -> RodTip.position(owner, hook.hand(), partialTick, entityRenderDispatcher));
+        if (hook.fishId() != null && hook.phase() == CastHook.Phase.FIGHTING) {
+            drawFish(hook, owner != null ? owner.getPosition(partialTick) : tip, partialTick, pose, buffers, light);
+        }
         Vec3 at = hook.getPosition(partialTick).add(0, 0.25, 0);
         float dx = (float) (tip.x - at.x);
         float dy = (float) (tip.y - at.y);
@@ -68,13 +78,13 @@ public class CastHookRenderer extends EntityRenderer<CastHook> {
      * The hooked fish at the end of the line, its own model at its own length: facing away from the angler (it's
      * pulling), swimming hard, rolling a little with the strain, and leaping clear of the water when it jumps.
      */
-    private static void drawFish(CastHook hook, Player owner, float partialTick, PoseStack pose, MultiBufferSource buffers,
+    private static void drawFish(CastHook hook, Vec3 angler, float partialTick, PoseStack pose, MultiBufferSource buffers,
                                  int light) {
         ItemStack fish = new ItemStack(BuiltInRegistries.ITEM.get(hook.fishId()));
         if (fish.isEmpty()) return;
         double cm = hook.fishLengthCm() > 0 ? hook.fishLengthCm() : 30;
         float clock = hook.tickCount + partialTick;
-        Vec3 away = hook.getPosition(partialTick).subtract(owner.getPosition(partialTick));
+        Vec3 away = hook.getPosition(partialTick).subtract(angler);
         float yaw = (float) Math.atan2(-away.z, away.x);
         float since = clock - hook.jumpedAt;
         float leap = since < 14 ? Mth.sin(since / 14 * Mth.PI) : 0;

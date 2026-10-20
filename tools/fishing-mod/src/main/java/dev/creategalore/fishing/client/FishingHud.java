@@ -1,5 +1,4 @@
 package dev.creategalore.fishing.client;
-
 import dev.creategalore.fishing.CreateGaloreFishing;
 import dev.creategalore.fishing.cast.CastHook;
 import dev.creategalore.fishing.tackle.RodStats;
@@ -36,7 +35,8 @@ public final class FishingHud {
     private static void render(GuiGraphics g, DeltaTracker delta) {
         Minecraft mc = Minecraft.getInstance();
         Player player = mc.player;
-        if (player == null || mc.options.hideGui || !(player.fishing instanceof CastHook hook)) return;
+        if (player == null || mc.options.hideGui || !(player.fishing instanceof CastHook hook)
+                || hook.mountPos().isPresent()) return;
         Font font = mc.font;
         int cx = g.guiWidth() / 2;
         // Above the action bar (drag changes are reported there) and the held item's name.

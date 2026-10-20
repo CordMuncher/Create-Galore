@@ -20,6 +20,7 @@ import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
+import net.neoforged.neoforge.client.event.RenderFrameEvent;
 import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 import net.neoforged.neoforge.client.model.DynamicFluidContainerModel;
@@ -42,6 +43,7 @@ public final class FishingClient {
             event.registerEntityRenderer(FishingRegistry.THROWN_CHUM.get(), ThrownItemRenderer::new);
             event.registerBlockEntityRenderer(FishingRegistry.CLEANING_TABLE_ENTITY.get(), CleaningTableRenderer::new);
             event.registerBlockEntityRenderer(FishingRegistry.AQUARIUM_ENTITY.get(), AquariumRenderer::new);
+            event.registerBlockEntityRenderer(FishingRegistry.ROD_HOLDER_ENTITY.get(), context -> new MountRenderer<>());
         });
         modBus.addListener(FishingClient::fishOil);
         AquariumBlock.clientTick = AquariumSwim::tick;
@@ -62,6 +64,7 @@ public final class FishingClient {
         CatchScreen.listen();
         FishingSounds.init();
         NeoForge.EVENT_BUS.addListener(FishingClient::catchTooltip);
+        NeoForge.EVENT_BUS.addListener((RenderFrameEvent.Pre event) -> MountRenderer.nextFrame());
     }
 
     /** Fish oil looks like water tinted amber, in the world, in tanks and in its bucket. */

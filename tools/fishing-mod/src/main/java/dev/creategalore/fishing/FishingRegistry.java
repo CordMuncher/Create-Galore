@@ -8,6 +8,8 @@ import dev.creategalore.fishing.bait.LiveBaitBucketItem;
 import dev.creategalore.fishing.bait.ThrownChum;
 import dev.creategalore.fishing.cast.CastHook;
 import dev.creategalore.fishing.fish.CatchInfo;
+import dev.creategalore.fishing.machine.RodHolderBlock;
+import dev.creategalore.fishing.machine.RodHolderBlockEntity;
 import dev.creategalore.fishing.process.CleaningTableBlock;
 import dev.creategalore.fishing.process.CleaningTableBlockEntity;
 import dev.creategalore.fishing.process.WholeFishIngredient;
@@ -104,6 +106,9 @@ public final class FishingRegistry {
     /** How frayed a line is, 0 (new) to 1 (about to go): weakens it. */
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Float>> LINE_WEAR =
             COMPONENTS.registerComponentType("line_wear", b -> b.persistent(Codec.FLOAT).networkSynchronized(ByteBufCodecs.FLOAT));
+    /** Game time until which a fish caught by a machine and put on a belt is still alive (dropped in water, it swims off). */
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Long>> ALIVE_UNTIL =
+            COMPONENTS.registerComponentType("alive_until", b -> b.persistent(Codec.LONG).networkSynchronized(ByteBufCodecs.VAR_LONG));
     /** Bait on a rod that came out of a Live-Bait Bucket, still alive. */
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Unit>> LIVE =
             COMPONENTS.registerComponentType("live_bait", b -> b.persistent(Unit.CODEC).networkSynchronized(StreamCodec.unit(Unit.INSTANCE)));
@@ -271,6 +276,14 @@ public final class FishingRegistry {
             BLOCK_ENTITIES.register("cleaning_table", () -> BlockEntityType.Builder.of(CleaningTableBlockEntity::new,
                     CLEANING_TABLE.get()).build(null));
 
+    public static final DeferredBlock<RodHolderBlock> ROD_HOLDER = BLOCKS.register("rod_holder",
+            () -> new RodHolderBlock(BlockBehaviour.Properties.of().mapColor(MapColor.WOOD).strength(1.5f)
+                    .sound(SoundType.WOOD).noOcclusion()));
+    public static final DeferredItem<BlockItem> ROD_HOLDER_ITEM = ITEMS.registerSimpleBlockItem(ROD_HOLDER);
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<RodHolderBlockEntity>> ROD_HOLDER_ENTITY =
+            BLOCK_ENTITIES.register("rod_holder", () -> BlockEntityType.Builder.of(RodHolderBlockEntity::new,
+                    ROD_HOLDER.get()).build(null));
+
     public static final DeferredBlock<AquariumBlock> AQUARIUM_TANK = BLOCKS.register("aquarium_tank",
             () -> new AquariumBlock(BlockBehaviour.Properties.of().mapColor(MapColor.NONE).strength(1.0f)
                     .sound(SoundType.GLASS).noOcclusion().isValidSpawn((s, l, p, e) -> false)
@@ -297,6 +310,7 @@ public final class FishingRegistry {
                         PARTS.forEach(p -> out.accept(p.get()));
                         out.accept(CLEANING_TABLE_ITEM.get());
                         out.accept(AQUARIUM_TANK_ITEM.get());
+                        out.accept(ROD_HOLDER_ITEM.get());
                         GOODS.forEach(g -> out.accept(g.get()));
                     })
                     .build());

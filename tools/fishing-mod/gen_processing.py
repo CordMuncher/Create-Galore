@@ -100,6 +100,11 @@ OTHER = {
         "pattern": ["IGI", "G G", "IGI"],
         "key": {"I": item("#c:plates/iron"), "G": item("#c:glass_blocks/colorless")},
         "result": result(M + "aquarium_tank", 4)}, []),
+    "crafting/rod_holder": ({
+        "type": "minecraft:crafting_shaped", "category": "misc",
+        "pattern": [" I ", " L ", "SSS"],
+        "key": {"I": item("#c:plates/iron"), "L": item("#minecraft:logs"), "S": item("minecraft:smooth_stone_slab")},
+        "result": result(M + "rod_holder", 2)}, []),
     "crafting/live_bait_bucket": ({
         "type": "minecraft:crafting_shapeless", "category": "misc",
         "ingredients": [item("minecraft:water_bucket"), item("minecraft:iron_bars")],

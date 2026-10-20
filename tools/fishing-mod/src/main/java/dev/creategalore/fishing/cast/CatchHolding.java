@@ -179,9 +179,14 @@ public final class CatchHolding {
     }
 
     private static void recordBest(ServerPlayer player, Holding h) {
+        recordBest(player, h.species(), h.bite().kg());
+    }
+
+    /** Notes a catch of {@code kg} as {@code player}'s personal best for the species if it beats it. */
+    public static void recordBest(ServerPlayer player, Species species, double kg) {
         Map<String, Integer> bests = player.getData(BESTS);
-        String key = h.species().id().toString();
-        int grams = (int) Math.round(h.bite().kg() * 1000);
+        String key = species.id().toString();
+        int grams = (int) Math.round(kg * 1000);
         if (grams > bests.getOrDefault(key, 0)) {
             Map<String, Integer> copy = new HashMap<>(bests);
             copy.put(key, grams);
