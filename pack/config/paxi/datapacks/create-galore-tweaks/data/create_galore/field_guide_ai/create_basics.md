@@ -1,4 +1,4 @@
-<!-- sources sha256:007ba9f24dae1584f0e02125d9d5478c6155257dd7c569f8b567384ed35a5241 -->
+<!-- sources sha256:677f00d66e6b0dd2caea12118529f7be88e31235e7e5b4ca30b4a908cc52aebc -->
 # Create: The Basics (create_basics)
 
 ## create_basics/rotation | Rotation
@@ -25,7 +25,7 @@
 - Hand Crank [create:hand_crank]: you power it. Hold Use to rotate one way, sneak and hold Use for the other. For testing and tiny jobs.
 - Water Wheel [create:water_wheel]: takes force from adjacent flowing water; extra sides in water do not add output. Low capacity, steady.
 - Large Water Wheel [create:large_water_wheel]: half the speed of a normal wheel, much higher stress capacity (see create_basics/stress).
-- Windmill Bearing [create:windmill_bearing]: THIS PACK: only Windcatchers make power: at least 8, glued (see glossary/super_glue) to the bearing. RPM follows wind (about 5 near ground, more up high and at sea). (see flight/wind_sailing)
+- Windmill Bearing [create:windmill_bearing]: Only Windcatchers make power: at least 8, glued (see glossary/super_glue) to the bearing. RPM follows wind (about 5 near ground, more up high and at sea). (see flight/wind_sailing)
 - Windmill Sail [create:white_sail]: place on a sail frame or any block; right-click with dye to colour, shears turn back to a frame. DECORATION ONLY in this pack: windmill of these gives 0 RPM.
 - Steam Engine [create:steam_engine]: sits on a boiler (see glossary/boiler) built from Fluid Tanks.
   - needs water and heat from a Blaze Burner; minimal boiler is 4 tanks

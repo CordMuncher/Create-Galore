@@ -1,4 +1,4 @@
-<!-- sources sha256:aba6bdb81e2779378740a5666ac8541bde974df23508cd0cd4fa21f502f3dd94 -->
+<!-- sources sha256:7f09a693f7cd77aaf2dba2a6428873e4b726a15266829290964e98f282e92864 -->
 # Industry and Power (industry)
 Rotation vs FE, Crafts & Additions electricity, TFMG, liquid fuel burners, nuclear, ore excavation, chunk loaders, alloys, enchanting, fan effects, cannons.
 
@@ -30,7 +30,7 @@ Rotation vs FE, Crafts & Additions electricity, TFMG, liquid fuel burners, nucle
 - Servo Motor: turns attached blocks to exact angle from redstone; needs FE. Electric Pump: FE-powered fluid pump
 - Burning fuel without rotation (see industry/liquid_fuel)
 - Shared with TFMG: TFMG uses Crafts & Additions' Copper Wire (its recipes take it; leftover TFMG copper wire converts 1:1 in crafting grid). TFMG keeps own Copper Spool: only TFMG spools fit its Winding Machine and lay TFMG cable (see materials/shared_metals)
-- This version of Crafts & Additions has only multiblock Accumulator; older single-block one removed
+- Crafts & Additions has only the multiblock Accumulator
 - Portable Energy Interface [createaddition:portable_energy_interface]: carries FE storage on moving contraption; swaps FE with a stationary one as it passes
 
 ## industry/tfmg_steel | TFMG Steel

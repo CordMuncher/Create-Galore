@@ -15,13 +15,14 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.state.BlockState;
 
 /**
- * The book's 3D models: a small build the model writes block by block (or in boxes), which the book screen shows as
- * a hologram the player can turn and zoom (client/ModelView). The server checks every block state against this
- * server's blocks, tries the machines in it (BuildCheck) and passes the model on as JSON with each state written out
- * in full, sharing the drawings' numbering so [diagram N] places it in an answer.
+ * The book's 3D models: a build the model writes as layers of palette characters and/or blocks and boxes, which the
+ * book screen shows as a hologram the player can turn and zoom (client/ModelView). The server checks every block state
+ * against this server's blocks, tries the machines in it (BuildCheck) and passes the model on as compact JSON (a
+ * palette and runs), sharing the drawings' numbering so [diagram N] places it in an answer. A draft is not added to
+ * the answer: the model gets pictures of it (Preview) to look at and fix first.
  */
 public final class Models {
-    public static final int MAX_SIZE = 16, MAX_ENTRIES = 256, MAX_LABELS = 12;
+    public static final int MAX_SIZE = 32, MAX_ENTRIES = 256, MAX_LABELS = 12, MAX_PALETTE = 60;
 
     private Models() {
     }
@@ -54,15 +55,43 @@ public final class Models {
         label.add("required", required(lp));
         label.addProperty("additionalProperties", false);
 
+        JsonObject key = new JsonObject();
+        key.addProperty("type", "object");
+        JsonObject kp = new JsonObject();
+        kp.add("key", WorldTools.prop("string", "One character that stands for this block in layers (not '.' or a space)."));
+        kp.add("block", WorldTools.prop("string", "The block state it stands for, written as in blocks."));
+        key.add("properties", kp);
+        key.add("required", required(kp));
+        key.addProperty("additionalProperties", false);
+
+        JsonObject row = new JsonObject();
+        row.addProperty("type", "string");
+        JsonObject layer = new JsonObject();
+        layer.addProperty("type", "array");
+        layer.add("items", row);
+
         JsonObject props = new JsonObject();
         props.add("title", WorldTools.prop("string", "A few words naming what the model shows, or an empty string."));
         props.add("size_x", WorldTools.prop("integer", "Width in blocks, 1 to " + MAX_SIZE + "."));
         props.add("size_y", WorldTools.prop("integer", "Height in blocks, 1 to " + MAX_SIZE + "."));
         props.add("size_z", WorldTools.prop("integer", "Depth in blocks, 1 to " + MAX_SIZE + "."));
+        JsonObject palette = new JsonObject();
+        palette.addProperty("type", "array");
+        palette.addProperty("description", "The characters layers use, at most " + MAX_PALETTE + "; empty when layers is.");
+        palette.add("items", key);
+        props.add("palette", palette);
+        JsonObject layers = new JsonObject();
+        layers.addProperty("type", "array");
+        layers.addProperty("description", "The build drawn slice by slice, bottom (y = 0) first: each layer is a list of "
+                + "rows from the back (z = 0) towards the player, each row a string with one palette character per cell "
+                + "from x = 0 rightwards, '.' or a space for air. Rows and layers left out are air. The best way to write "
+                + "a detailed build; can be empty when blocks says it all.");
+        layers.add("items", layer);
+        props.add("layers", layers);
         JsonObject blocks = new JsonObject();
         blocks.addProperty("type", "array");
-        blocks.addProperty("description", "Placed in order, later entries over earlier ones. At most " + MAX_ENTRIES
-                + "; use boxes for floors, walls and runs of shaft.");
+        blocks.addProperty("description", "Single blocks and boxes, placed in order over the layers, later entries over earlier "
+                + "ones. At most " + MAX_ENTRIES + "; boxes suit floors, walls and runs of shaft. Can be empty when layers says it all.");
         blocks.add("items", block);
         props.add("blocks", blocks);
         JsonObject labels = new JsonObject();
@@ -71,19 +100,29 @@ public final class Models {
         labels.add("items", label);
         props.add("labels", labels);
         props.add("caption", WorldTools.prop("string", "One short sentence under the model, or an empty string."));
+        props.add("draft", WorldTools.prop("boolean", "True to try the model first: you get pictures of it (two corner "
+                + "views, front and side) and the machine check, and nothing is added to the answer. Look, fix what looks "
+                + "wrong, then call again with draft false to put it in the answer."));
         props.add("shows_a_fault", WorldTools.prop("boolean", "True only when the model is meant to show a build that "
                 + "doesn't work (such as the player's own broken build); then it is built even when the rotation check finds faults."));
-        return WorldTools.tool("build_model", "Builds a small 3D model out of real blocks, which the book shows as a "
-                + "hologram the player can turn around and zoom into. For things a flat drawing shows badly: how machines "
-                + "connect in space, which way blocks face, the shape of a build. Costs more than a drawing, so use it only "
-                + "when the third dimension matters or the player asks. Before it is shown, the server tries the model's "
-                + "Create machines with Create's own rules (which faces take a shaft, cogs, belts, sources, water on wheels) "
-                + "and refuses a model with faults, saying what is wrong, so fix it and call again. Each block's facing "
-                + "decides which faces take rotation (a saw, press or drill takes its shaft at its back, the face opposite its "
-                + "facing): get it right rather than guessing (lookup_recipes or read_guide help). "
-                + "Water and lava can be shown flowing: a source is level=0, flowing water level=1 to 7 (higher = further "
-                + "from the source), falling water level=8. It returns the model's number; write [diagram N] on a line of "
-                + "its own where it should appear, or put it inside a drawing with a shape of kind model.", props);
+        return WorldTools.tool("build_model", "Builds a 3D model out of real blocks, up to " + MAX_SIZE + " a side, which "
+                + "the book shows as a hologram the player can turn around and zoom into. Two uses. To explain (how machines "
+                + "connect in space, which way blocks face): keep it to the blocks that matter. To show a build (a boat, a "
+                + "house, a bridge, a tower) the player can copy or take ideas from: build it as a skilled Minecraft builder "
+                + "would, at a size that gives it shape (a small sailing boat is about 12 to 20 blocks long), with stairs, "
+                + "slabs, trapdoors, fences, walls and buttons for curves and detail, two or three materials that go "
+                + "together, depth and trim instead of flat walls, and no plain boxes. Blocks keep exactly the state you give: "
+                + "fences, walls, panes and bars only join where you set north/east/south/west, and stairs only turn a "
+                + "corner with shape set. Write such builds as layers. Try a "
+                + "build first with draft true and look at the pictures: fix whatever looks blocky, lopsided or wrong, "
+                + "then call again with draft false. Before a model is shown the server tries its Create machines with "
+                + "Create's own rules (which faces take a shaft, cogs, belts, sources, water on wheels) and refuses one "
+                + "with faults, saying what is wrong, so fix it and call again. Each block's facing decides which faces "
+                + "take rotation (a saw, press or drill takes its shaft at its back, the face opposite its facing): get it "
+                + "right rather than guessing (lookup_recipes or read_guide help). Water and lava can be shown flowing: a "
+                + "source is level=0, flowing water level=1 to 7 (higher = further from the source), falling water "
+                + "level=8. It returns the model's number; write [diagram N] on a line of its own where it should appear, "
+                + "or put it inside a drawing with a shape of kind model.", props);
     }
 
     private static JsonArray required(JsonObject properties) {
@@ -101,10 +140,43 @@ public final class Models {
         int sx = Diagrams.intOr(input, "size_x", 0), sy = Diagrams.intOr(input, "size_y", 0), sz = Diagrams.intOr(input, "size_z", 0);
         if (sx < 1 || sx > MAX_SIZE || sy < 1 || sy > MAX_SIZE || sz < 1 || sz > MAX_SIZE)
             return Result.problem("Not built: size_x, size_y and size_z must each be 1 to " + MAX_SIZE + ".");
-        JsonArray in = input.has("blocks") && input.get("blocks").isJsonArray() ? input.getAsJsonArray("blocks") : new JsonArray();
-        if (in.isEmpty() || in.size() > MAX_ENTRIES) problems.add("use 1 to " + MAX_ENTRIES + " block entries");
-        JsonArray out = new JsonArray();
-        Map<String, BlockState> states = new HashMap<>();
+        Map<BlockPos, BlockState> cells = new HashMap<>();
+        Map<Character, BlockState> keys = new HashMap<>();
+        JsonArray palette = array(input, "palette");
+        if (palette.size() > MAX_PALETTE) problems.add("at most " + MAX_PALETTE + " palette entries");
+        for (int i = 0; i < Math.min(MAX_PALETTE, palette.size()) && problems.size() < 10; i++) {
+            if (!palette.get(i).isJsonObject()) continue;
+            JsonObject k = palette.get(i).getAsJsonObject();
+            String key = GuideText.string(k, "key");
+            if (key.length() != 1 || key.equals(".") || key.equals(" ")) {
+                problems.add("palette entry " + i + ": key must be one character other than '.' and a space");
+                continue;
+            }
+            BlockState state = parse(GuideText.string(k, "block"), "palette '" + key + "'", problems);
+            if (state != null) keys.put(key.charAt(0), state);
+        }
+        JsonArray layers = array(input, "layers");
+        if (layers.size() > sy) problems.add("layers has " + layers.size() + " layers but size_y is " + sy);
+        for (int y = 0; y < Math.min(sy, layers.size()) && problems.size() < 10; y++) {
+            JsonArray rows = layers.get(y).isJsonArray() ? layers.get(y).getAsJsonArray() : new JsonArray();
+            if (rows.size() > sz) problems.add("layer " + y + " has " + rows.size() + " rows but size_z is " + sz);
+            for (int z = 0; z < Math.min(sz, rows.size()) && problems.size() < 10; z++) {
+                String r = rows.get(z).isJsonPrimitive() ? rows.get(z).getAsString() : "";
+                if (r.length() > sx) problems.add("layer " + y + " row " + z + " is " + r.length() + " long but size_x is " + sx);
+                for (int x = 0; x < Math.min(sx, r.length()); x++) {
+                    char c = r.charAt(x);
+                    if (c == '.' || c == ' ') continue;
+                    BlockState state = keys.get(c);
+                    if (state == null) {
+                        if (problems.size() < 10) problems.add("layer " + y + " row " + z + ": '" + c + "' is not in the palette");
+                    } else if (!state.isAir()) {
+                        cells.put(new BlockPos(x, y, z), state);
+                    }
+                }
+            }
+        }
+        JsonArray in = array(input, "blocks");
+        if (in.size() > MAX_ENTRIES) problems.add("use at most " + MAX_ENTRIES + " block entries");
         for (int i = 0; i < in.size() && i < MAX_ENTRIES && problems.size() < 10; i++) {
             if (!in.get(i).isJsonObject()) {
                 problems.add("entry " + i + " is not an object");
@@ -112,31 +184,21 @@ public final class Models {
             }
             JsonObject b = in.get(i).getAsJsonObject();
             String raw = GuideText.string(b, "block").strip();
-            BlockState state;
-            try {
-                state = BlockStateParser.parseForBlock(BuiltInRegistries.BLOCK.asLookup(), raw, false).blockState();
-            } catch (CommandSyntaxException e) {
-                problems.add("entry " + i + ": " + raw + " is not a block state on this server (" + e.getRawMessage().getString() + ")");
-                continue;
-            }
+            BlockState state = parse(raw, "entry " + i, problems);
+            if (state == null) continue;
             int x = Diagrams.intOr(b, "x", -1), y = Diagrams.intOr(b, "y", -1), z = Diagrams.intOr(b, "z", -1);
             int x2 = Diagrams.intOr(b, "x2", x), y2 = Diagrams.intOr(b, "y2", y), z2 = Diagrams.intOr(b, "z2", z);
             if (!inside(x, sx) || !inside(y, sy) || !inside(z, sz) || !inside(x2, sx) || !inside(y2, sy) || !inside(z2, sz)) {
                 problems.add("entry " + i + " (" + raw + "): a corner is outside the " + sx + "x" + sy + "x" + sz + " model");
                 continue;
             }
-            JsonObject o = new JsonObject();
-            o.addProperty("state", BlockStateParser.serialize(state));
-            states.put(BlockStateParser.serialize(state), state);
-            o.addProperty("x", Math.min(x, x2));
-            o.addProperty("y", Math.min(y, y2));
-            o.addProperty("z", Math.min(z, z2));
-            o.addProperty("x2", Math.max(x, x2));
-            o.addProperty("y2", Math.max(y, y2));
-            o.addProperty("z2", Math.max(z, z2));
-            out.add(o);
+            for (BlockPos p : BlockPos.betweenClosed(x, y, z, x2, y2, z2)) {
+                if (state.isAir()) cells.remove(p);
+                else cells.put(p.immutable(), state);
+            }
         }
-        JsonArray labelsIn = input.has("labels") && input.get("labels").isJsonArray() ? input.getAsJsonArray("labels") : new JsonArray();
+        if (cells.isEmpty() && problems.isEmpty()) problems.add("the model has no blocks: fill layers or blocks");
+        JsonArray labelsIn = array(input, "labels");
         if (labelsIn.size() > MAX_LABELS) problems.add("at most " + MAX_LABELS + " labels");
         JsonArray labels = new JsonArray();
         for (int i = 0; i < Math.min(MAX_LABELS, labelsIn.size()); i++) {
@@ -159,20 +221,11 @@ public final class Models {
         if (GuideText.string(input, "title").length() > 60) problems.add("title longer than 60 characters");
         if (GuideText.string(input, "caption").length() > 240) problems.add("caption longer than 240 characters");
         if (!problems.isEmpty()) return Result.problem("Not built. Fix these and call again: " + String.join("; ", problems) + ".");
-        Map<BlockPos, BlockState> cells = new HashMap<>();
-        for (JsonElement e : out) {
-            JsonObject o = e.getAsJsonObject();
-            BlockState state = states.get(GuideText.string(o, "state"));
-            for (BlockPos p : BlockPos.betweenClosed(o.get("x").getAsInt(), o.get("y").getAsInt(), o.get("z").getAsInt(),
-                    o.get("x2").getAsInt(), o.get("y2").getAsInt(), o.get("z2").getAsInt())) {
-                if (state.isAir()) cells.remove(p);
-                else cells.put(p.immutable(), state);
-            }
-        }
         BuildCheck.Report check = level == null ? null : BuildCheck.check(cells, level);
         boolean showsFault = input.has("shows_a_fault") && input.get("shows_a_fault").isJsonPrimitive()
                 && input.get("shows_a_fault").getAsBoolean();
-        if (check != null && !check.faults().isEmpty() && !showsFault) {
+        boolean draft = input.has("draft") && input.get("draft").isJsonPrimitive() && input.get("draft").getAsBoolean();
+        if (check != null && !check.faults().isEmpty() && !showsFault && !draft) {
             return Result.problem("Not built: the machines in it wouldn't work as placed. Fix the model and call again (or "
                     + "set shows_a_fault if it is meant to show a broken build).\n" + check.text());
         }
@@ -185,15 +238,58 @@ public final class Models {
         size.add(sy);
         size.add(sz);
         model.add("size", size);
-        model.add("blocks", out);
+        compact(cells, sx, sy, sz, model);
         model.add("labels", labels);
-        return new Result(model, null, check == null ? "" : check.text());
+        byte[] picture = draft ? Preview.render(cells, sx, sy, sz) : null;
+        return new Result(model, null, check == null ? "" : check.text(), draft, picture);
+    }
+
+    private static JsonArray array(JsonObject o, String key) {
+        return o.has(key) && o.get(key).isJsonArray() ? o.getAsJsonArray(key) : new JsonArray();
+    }
+
+    private static BlockState parse(String raw, String where, List<String> problems) {
+        try {
+            return BlockStateParser.parseForBlock(BuiltInRegistries.BLOCK.asLookup(), raw.strip(), false).blockState();
+        } catch (CommandSyntaxException e) {
+            problems.add(where + ": " + raw + " is not a block state on this server (" + e.getRawMessage().getString() + ")");
+            return null;
+        }
+    }
+
+    /**
+     * The cells as the book stores them: a palette of states and runs along x as [palette index, x, y, z, x2, y2, z2],
+     * which keeps a detailed build small enough for a page.
+     */
+    private static void compact(Map<BlockPos, BlockState> cells, int sx, int sy, int sz, JsonObject model) {
+        Map<BlockState, Integer> index = new HashMap<>();
+        JsonArray palette = new JsonArray(), blocks = new JsonArray();
+        for (int y = 0; y < sy; y++)
+            for (int z = 0; z < sz; z++)
+                for (int x = 0; x < sx; x++) {
+                    BlockState state = cells.get(new BlockPos(x, y, z));
+                    if (state == null) continue;
+                    int end = x;
+                    while (end + 1 < sx && state.equals(cells.get(new BlockPos(end + 1, y, z)))) end++;
+                    Integer i = index.get(state);
+                    if (i == null) {
+                        i = index.size();
+                        index.put(state, i);
+                        palette.add(BlockStateParser.serialize(state));
+                    }
+                    JsonArray run = new JsonArray();
+                    for (int v : new int[] {i, x, y, z, end, y, z}) run.add(v);
+                    blocks.add(run);
+                    x = end;
+                }
+        model.add("palette", palette);
+        model.add("blocks", blocks);
     }
 
     /** The model, or why it wasn't built; check is the rotation check's report for a built model (may be empty). */
-    record Result(JsonObject model, String problem, String check) {
+    record Result(JsonObject model, String problem, String check, boolean draft, byte[] picture) {
         static Result problem(String problem) {
-            return new Result(null, problem, "");
+            return new Result(null, problem, "", false, null);
         }
     }
 

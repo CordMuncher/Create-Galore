@@ -1,4 +1,4 @@
-<!-- sources sha256:34fbbc0605e0e81804d66796a6be17ef78e360dfa49de70abedb97bebe963653 -->
+<!-- sources sha256:50852ca0ec68a03c309aa4cfd7fc7f513930cdf1cbc4f00e321ca47911dfd37d -->
 # Home, Storage and Maps (home)
 
 ## home/storage | Backpacks and Storage
@@ -13,7 +13,7 @@
 
 ## home/inventory_tools | Inventory Tools
 - Client-side helpers: Inventory Profiles Next (sorts, moves items), Mouse Tweaks (faster mouse use), Shulker Box Tooltip (previews contents). Settings in the Mods menu.
-- Inventory Profiles Next [minecraft:hopper]: sorts with a button or key, moves matching stacks, locks slots. Auto-refill is OFF in this pack; turn on in its config (see glossary/config) screen.
+- Inventory Profiles Next [minecraft:hopper]: sorts with a button or key, moves matching stacks, locks slots. Auto-refill starts off; turn on in its config (see glossary/config) screen.
 - Shulker Box Tooltip [minecraft:shulker_box]: hover a shulker box to see contents.
 - Mouse Tweaks: drag-split (hold click, drag over slots to spread a stack); scroll wheel over a slot moves items between inventories.
 - Containers: Storage (see home/storage).

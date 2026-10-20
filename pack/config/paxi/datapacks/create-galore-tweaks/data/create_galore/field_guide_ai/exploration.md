@@ -1,4 +1,4 @@
-<!-- sources sha256:247be2535ea1f82b8921091458efc9f2d9b6c68101e994952cbdbbd4cf563270 -->
+<!-- sources sha256:0c17ded43626a2421131feca39a3233957e0cc4c28b23782f42ad217e700c30e -->
 # Exploration and Adventure (exploration)
 
 ## exploration/dimensions | Dimensions
@@ -19,7 +19,7 @@
 - Structures: Forbidden Castle, Infernal Altar, Nether Reactor, Piglin Village, Ruined Lab, Sanctum, Quartz Kitchen, Abandoned Tower, Pipeline
 - Castles, Sanctum, Nether Reactor guarded by named mobs (knights, archers, pyros, cultists, apostles, more); Piglin villages have civilians and guards
 - Structure chests and some mobs hold **artifacts**: unique named weapons/tools (Ragnarok bow, Firestorm crossbow, Trailblazer, Voltaic Trident)
-- Pack's no-Elytra datapack stops castle Paratroopers dropping wings
+- Castle Paratroopers don't drop wings
 - Blaze Burner [create:blaze_burner]: Create's heat source; loaded with a blaze from a Nether fortress spawner. Create's heat (see create_basics/heat) starts here
 - Other mods: Cataclysm (see exploration/cataclysm) Nether bosses and arenas; Dungeons and Taverns (see exploration/structure_packs) Nether keeps, ports, skeleton towers
 - Nether ores: Ore Guide (see materials/ore_guide)
@@ -49,7 +49,7 @@
 - Ironwood Ingot [twilightforest:ironwood_ingot]: first metal; Steeleaf, Knightmetal, Fiery metal follow
 - Block of Knightmetal [twilightforest:knightmetal_block]: later metal, tougher than Ironwood and Steeleaf
 - Fiery Ingot [twilightforest:fiery_ingot]: from Hydra's Fiery Blood; Fiery tools set targets on fire
-- Uncrafting Table [twilightforest:uncrafting_table]: uncrafting is **switched off** in this pack (multiplied metal via stonecutter recipes); table still repairs and does its own special recipes
+- Uncrafting Table [twilightforest:uncrafting_table]: **can't uncraft**; table still repairs and does its own special recipes
 - Magic Map [twilightforest:filled_magic_map]: maps the forest. Charms of Keeping [twilightforest:charm_of_keeping_1] and Life also exist
 - Bosses in usual order: Naga, Lich, Minoshroom, Hydra, Knight Phantoms, Ur-Ghast, Alpha Yeti, Snow Queen. Each leaves a trophy. Boss Compasses (see stars/boss_compasses) find first four lairs. (see exploration/bosses)
 - Lich Trophy [twilightforest:lich_trophy]: one of eight trophies; bosses have spawner blocks in lairs
@@ -76,13 +76,13 @@
 - Uranium Rod [alexscaves:uranium_rod]: Alex's Caves has own uranium and a Nuclear Furnace; separate from Create Nuclear, check JEI (see glossary/jei) before mixing
 - Magnetic Caves add Magnetic Levitation Rail and Neodymium nodes
 - Abyssal Chasm is best reached in a Deep Seas (see ocean/submarines) submarine
-- Turned off (two rides skip the vehicle game): **Subterranodon** never spawns; **Submarine**: Hullbreaker no longer drops the Enigmatic Engine so the small sub can't be built; wrecks in chasm ruins can still be fixed. (see transport/getting_around)
+- Not in this world (two rides would skip the vehicle game): **Subterranodon** never spawns; **Submarine**: Hullbreaker no longer drops the Enigmatic Engine so the small sub can't be built; wrecks in chasm ruins can still be fixed. (see transport/getting_around)
 - Alex's Caves sulfur dust is not its own item here: its recipes (Slam, Spelunkie, Polymer Plate, gunpowder) use TFMG's sulfur dust; leftover Alex's dust converts 1:1 (see glossary/canonical_item) in a crafting grid
 
 ## exploration/structures | Structures
 - Guide to which structure mod adds what: villages, ruins, dungeons, forts, wrecks, much loot
-- Spacing: surface has about 2x vanilla's count, shared evenly by kind (mod with ten building kinds turns up 5x as often as one with two); next of same kind can be kilometres away
-- Below ground and under sea: about 3x vanilla; mineshafts keep own rate. Sky holds about as many as vanilla's surface. Boss lairs and best-loot dungeons stay rarer than everyday builds
+- Spacing: surface holds about 6 per km² (one every 400 blocks or so), shared evenly by kind (mod with ten building kinds turns up 5x as often as one with two); next of same kind can be kilometres away
+- Below ground roughly one per 250 by 250 blocks, plus mineshafts; a few hundred blocks of open ocean usually hold several sea-floor places. Sky holds about 3 per km². Boss lairs and best-loot dungeons stay rarer than everyday builds
 - Left as common as mods make them (part of the land): Ice Maze ice arches, Abyssal Chasm, Toxic Caves acid pits, wild cherry trees, berry bushes
 - Structure Packs (see exploration/structure_packs): Towns and Towers, Dungeons and Taverns, When Dungeons Arise, YUNG's
 - Create Structures (see exploration/create_structures): buildings with trains, airships, cranes, oil rigs
@@ -96,7 +96,7 @@
 - **When Dungeons Arise**: big roguelike builds: coliseum, aviary, bandit towers, foundry, illager forts, monasteries, shiraz palace, plague asylum, typhon, thornborn towers, mechanical nest; several have bosses
 - **YUNG's** reworks vanilla structures: Better Dungeons, Mineshafts, Strongholds, Desert Temples, Jungle Temples, Witch Huts, Ocean Monuments; same places, much better builds and loot
 - Dungeon Loot (chest [minecraft:chest]): chests are the reason to visit; Lootr makes them per-player
-- Underground builds thinned to about **3x vanilla's underground density**, roughly one per 250 by 250 blocks. Every kind still generates, common ones spaced out. Mineshafts, Trial Chambers, buried treasure keep usual rate
+- Underground builds spread to roughly **one per 250 by 250 blocks**. Every kind still generates, common ones spaced out. Mineshafts, Trial Chambers, buried treasure keep usual rate
 - Related: (see exploration/structures) (see exploration/lootr) (see exploration/create_structures)
 
 ## exploration/create_structures | Create Structures
@@ -120,10 +120,10 @@
 - Mowzie's Mobs (see exploration/mowzies_mobs): Wroughtnaut, Umvuthi, Frostmaw, the Sculptor
 - Twilight Forest (see exploration/twilight_forest): eight bosses with trophies
 - Aquamirae (see ocean/aquamirae): Ice Maze trio
-- **Pack tuning:** Cataclysm's main bosses and all four Mowzie's bosses have **0.7x health** and **0.75x damage**; softened not removed; every boss structure still generates
+- **Boss health** (2 health = 1 heart): Netherite Monstrosity 420, Ignis 315, Ancient Remnant 315, Maledictus 294, Leviathan 280, Harbinger 273, Scylla 273, Ender Guardian 233, Frostmaw 175, Umvuthi 105, the Sculptor 98, Ferrous Wroughtnaut 28. Every boss structure generates
 - Other bosses: Aether (see exploration/aether) dungeons end in Slider, Valkyrie Queen, Sun Spirit; Hybrid Aquatic has Karkinos; Iron's Spells (see exploration/magic) has Dead King and a Citadel; vanilla Wither, Dragon, Elder Guardian remain
 - Tip: boss drops often upgrade existing gear; keep best weapons
-- Cataclysm boss gear has Create-flavoured recipes (see exploration/cataclysm_create)
+- Cataclysm's boss gear is made with Create machines (see exploration/cataclysm_create)
 - Nether Star [minecraft:nether_star]: Wither's drop; goes into Create Nuclear's Reactor Controller and the Stellar Core (see stars/stellar_core)
 - Boss guides: (see exploration/cataclysm) (see exploration/mowzies_mobs) (see exploration/twilight_forest) (see ocean/aquamirae) (see exploration/magic) (see stars/boss_compasses)
 
@@ -132,15 +132,15 @@
 - Bosses: Netherite Monstrosity, Ignis, Harbinger, Leviathan, Scylla, Ancient Remnant, Maledictus, Ender Guardian, Ender Golem
 - Structures: **Sunken City** deep ocean (good submarine (see ocean/submarines) trip); **Burning Arena** Nether; **Ruined Citadel** End highlands and midlands; **Frosted Prison** snowy plains; **Cursed Pyramid** desert; **Ancient Factory**
 - Watch out: mod's own message says the Leviathan is invincible outside water; fight it wet
-- Pack tuning: Netherite Monstrosity, Ignis, Harbinger, Leviathan, Scylla, Ancient Remnant, Maledictus, Ender Guardian have **0.7x health** and **0.75x damage**; softened not removed; other Cataclysm mobs default stats
+- Boss health (2 health = 1 heart): Netherite Monstrosity **420**, Ignis **315**, Ancient Remnant **315**, Maledictus **294**, Leviathan **280**, Harbinger **273**, Scylla **273**, Ender Guardian **233**
 - Ability keys set in this pack: **Home** general ability; **End** boots; **Insert** helmet; **Delete** chestplate. Change under Controls, Cataclysm
 - Boss gear is made with Create machines here (see exploration/cataclysm_create); other bosses (see exploration/bosses)
 - Ignitium Ingot [cataclysm:ignitium_ingot]: boss material; Ignitium, Cursium, Black Steel each make a gear line
-- The Incinerator [cataclysm:the_incinerator]: starts as a Netherite sword in this pack's recipe; check JEI (see glossary/jei)
-- The Annihilator [cataclysm:the_annihilator]: starts as a Netherite pickaxe in this pack's recipe; check JEI
+- The Incinerator [cataclysm:the_incinerator]: recipe starts with a Netherite sword; check JEI (see glossary/jei)
+- The Annihilator [cataclysm:the_annihilator]: recipe starts with a Netherite pickaxe; check JEI
 
 ## exploration/cataclysm_create | Cataclysm x Create
-- **Cataclysm x Create Integration** is a data pack (see glossary/datapack): replaces Cataclysm gear recipes with Create ones; boss loot turned into equipment by machines, not a normal crafting table
+- **Cataclysm x Create Integration** is a data pack (see glossary/datapack): gives Cataclysm gear Create recipes; boss loot turned into equipment by machines, not at a crafting table
 - About 35 items made by Sequenced Assembly (see create_basics/brass_and_assembly): base item goes through Deployer, Press, Deployer steps with boss materials. A few use Mechanical Crafting (see glossary/mechanical_crafting)
 - Covered: weapons, armor, shields, smithing templates, summoning Eyes
 - Mechanical Fusion Anvil [cataclysm:mechanical_fusion_anvil]: made from an Anvil with Sturdy Sheets, Precision Mechanisms, Redstone Blocks
@@ -158,7 +158,7 @@
 - Earthrend Gauntlet [mowziesmobs:earthrend_gauntlet]: Sculptor's gauntlet; Geomancer set (staff, robe, beads) is his too
 - Smaller mobs: Foliaath, Lantern, Grottol (mineral creature), Bluff, Naga, Elokosa
 - Frostmaw's Ice Crystal [mowziesmobs:ice_crystal] is a weapon. (see exploration/bosses)
-- **Tuned in this pack:** Ferrous Wroughtnaut, Umvuthi, Frostmaw, the Sculptor have 0.7x health and 0.75x damage; softened not removed; structures still generate
+- **Boss health** (2 health = 1 heart): Frostmaw **175**, Umvuthi **105**, the Sculptor **98**, Ferrous Wroughtnaut **28**; structures generate as usual
 
 ## exploration/magic | Magic
 - Two mods: Iron's Spells 'n Spellbooks (see exploration/irons_spellbooks) full spellcasting; Create: Wizardry (see exploration/create_wizardry) bridges to Create machines with a new fluid, mana, and pipes
@@ -178,7 +178,7 @@
 - Inscription Table [irons_spellbooks:inscription_table]: writes spells into a spell book
 - Crafting uses: ink in five rarities, Arcane Essence, Mithril, Pyrium and Arcane Ingots, Upgrade Orbs (boost a school). Helpers: Alchemist Cauldron, Arcane Anvil, Pedestals. Rings and necklaces go in Curios slots (see exploration/gear)
 - World: wizard towers and a lost Citadel, defended by mage mobs: Pyromancer Tower, Archevoker's Evoker Fort, Ice Spider Den, Ancient Battleground, Catacombs, the Citadel (a Citadel Map exists). Bosses (see exploration/bosses)
-- Turned off: three spells would replace vehicles; never in loot, Scroll Forge or JEI (see glossary/jei): **Portal** (permanent two-way links), **Recall** (home from anywhere), **Angel Wings** (Elytra flight). Portal Frames and Hither-Thither Wand can't be crafted (see transport/getting_around)
+- Not in this world: three spells would replace vehicles; never in loot, Scroll Forge or JEI (see glossary/jei): **Portal** (permanent two-way links), **Recall** (home from anywhere), **Angel Wings** (Elytra flight). Portal Frames and Hither-Thither Wand can't be crafted (see transport/getting_around)
 - Create hooks in: Inks, Blood Vials, Timeless Slurry, several elixirs have Create filling/emptying recipes; Spout fills from fluid, Drain empties (see create_basics/fluids)
 - See also: (see exploration/create_wizardry) (see exploration/magic)
 

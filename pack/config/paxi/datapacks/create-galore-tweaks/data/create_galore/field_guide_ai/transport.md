@@ -1,6 +1,6 @@
-<!-- sources sha256:b7475ab73147c2601fa98667db2bbe5839418a2a0b458fc05adcf618230f4e7f -->
+<!-- sources sha256:8894bb8f4b003e46706c06ce279b943ad0083e34e564a01e7ba90c537c6ffbaa -->
 # Trains and Rides (transport)
-How you cross the world in this pack: travel by building.
+How you cross the world: travel by building.
 
 ## transport/getting_around | Getting Around
 - Pack rule: you travel by building (trains, airships, submarines, cars, hypertubes); shortcuts that make them pointless are switched off. Short-range tricks that cost something (double jump, jetpack tank) stay in.

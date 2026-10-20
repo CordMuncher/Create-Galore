@@ -1,4 +1,4 @@
-<!-- sources sha256:40cb00fea6afc83dd7b4116a0c7193b303d5d68a429949d76cd6b7b3b266801e -->
+<!-- sources sha256:0467f69192480d19c8fe28c4532189c97f5058a14343f8d5bed8813dd2be1144 -->
 # Ores and Metals (materials)
 
 ## materials/ore_guide | Ore Guide
@@ -9,7 +9,7 @@
 - Zinc from Create: Y -63 to 70. Brass (see create_basics/brass_and_assembly) = copper + zinc.
 - Zinc Ore [create:zinc_ore]: Overworld Y -63 to 70, stone and deepslate. Spread evenly, no depth beats another: look in caves. Northstar's planets have own zinc ores; both count as zinc ore in recipes.
 - Create Nuclear: Lead Y -16 to 60; Uranium Y -63 to 16, sparse; Thorium Y -16 to 55; Nitrate Y -63 to 64 (reactor coolant). Autunite [createnuclear:autunite]: building stone, striated veins below Y 16.
-- Lead Ore [createnuclear:lead_ore]: the pack's only lead ore (TFMG's is off). Galena also crushes to a little lead. Mining drops Raw Lead [createnuclear:raw_lead]. Ore block itself has no crushing recipe; crush the raw lead.
+- Lead Ore [createnuclear:lead_ore]: the only lead ore. Galena also crushes to a little lead. Mining drops Raw Lead [createnuclear:raw_lead]. Ore block itself has no crushing recipe; crush the raw lead.
 - Uranium Ore [createnuclear:uranium_ore]: deep, rare; feeds the reactor (see industry/nuclear). Alex's Caves (see exploration/alexs_caves) adds own uranium in Toxic Caves.
 - TFMG: Nickel Y -63 to 20; Lithium Y -63 to -5, sparse; Bauxite: stone that crushes to powder, start of aluminum; Galena: crushes to some lead; Lead: off. Oil: Oil (see industry/tfmg_oil).
 - Nickel Ore [tfmg:nickel_ore]: Y -63 to 20; nickel goes into TFMG alloys such as constantan. Lithium ore deeper, below Y -5.

@@ -86,7 +86,12 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "[#](FFFFFF)\ue103[#]() **In depth.** Cold Sweat is gentler here: body temperature moves at 0.6 speed, you are comfortable down to about 45 °F instead of 50 °F, seasons are half as strong (summer is half as hot, winter half as cold, and the ends of spring and autumn move half as far), and each hit does half a heart every 2 seconds instead of a full heart."
+      "text": "[#](FFFFFF)\ue103[#]() **In depth.** Body temperature moves at 0.6 speed (Cold Sweat's rate setting) and you are comfortable down to about 45 °F. Too hot or too cold, each hit does half a heart every 2 seconds."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Seasons shift the air.** Mid Winter is about 13.5 °F colder and Early and Late Winter about 9 °F colder; Summer is warmer by the same amounts. The start of spring and the end of autumn are about 4.5 °F colder, and the end of spring and the start of autumn about 4.5 °F warmer."
     },
     {
       "type": "modonomicon:text",

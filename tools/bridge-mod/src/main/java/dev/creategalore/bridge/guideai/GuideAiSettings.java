@@ -36,7 +36,7 @@ public final class GuideAiSettings {
     private GuideAiSettings(Properties p, String key) {
         this.model = p.getProperty("model", "claude-opus-5-5").trim();
         this.effort = p.getProperty("effort", "medium").trim().toLowerCase(Locale.ROOT);
-        this.maxTokens = intProperty(p, "max_tokens", 16000, 1024, 64000);
+        this.maxTokens = intProperty(p, "max_tokens", 32000, 1024, 64000);
         this.dailyQuestions = intProperty(p, "daily_questions", 100, 1, 10000);
         this.cooldownSeconds = intProperty(p, "cooldown_seconds", 10, 0, 3600);
         this.webSearch = !"false".equalsIgnoreCase(p.getProperty("web_search", "true").trim());

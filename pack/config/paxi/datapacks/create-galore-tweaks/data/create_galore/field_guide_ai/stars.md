@@ -1,4 +1,4 @@
-<!-- sources sha256:202e05456a02ca84421a12147a3cd03e88157af6898743404f622de15b319204 -->
+<!-- sources sha256:360813c3e82da3836c003830ed93bd780d0ffc9bd69fbe8cb09c8ada944be920 -->
 # The Road to the Stars (stars)
 Every way off the planet needs a Stellar Core; the core needs one prize from each big branch of the world.
 
@@ -50,7 +50,7 @@ Every way off the planet needs a Stellar Core; the core needs one prize from eac
 - Related: Why Space Is Locked (see stars/why), The Stellar Core (see stars/stellar_core), The Nether (see exploration/nether), Bosses (see exploration/bosses).
 
 ## stars/end | Prize: The End
-- Dragonskin [irons_spellbooks:dragonskin]: Ender Dragon drops 6 to 10 in this pack. A hull that has flown the void can hold it out. shows item irons_spellbooks:dragonskin
+- Dragonskin [irons_spellbooks:dragonskin]: Ender Dragon drops 6 to 10. A hull that has flown the void can hold it out. shows item irons_spellbooks:dragonskin
 - How: reach the End through a Stronghold portal and fight the dragon. Ranged builds help: arrows or autocannon (see industry/cannons) shots break the healing crystals. To fight again, place four End Crystals on the exit portal to bring the dragon back.
 - Related: Why Space Is Locked (see stars/why), The Stellar Core (see stars/stellar_core), The End (see exploration/the_end), Bosses (see exploration/bosses).
 

@@ -57,7 +57,7 @@
         "item": "twilightforest:uncrafting_table"
       },
       "title": "Uncrafting Table",
-      "text": "Uncrafting is **switched off** in this pack (it multiplied metal through stonecutter recipes). The table still repairs and does its own special recipes."
+      "text": "The table **can't uncraft**. The table still repairs and does its own special recipes."
     },
     {
       "type": "modonomicon:spotlight",

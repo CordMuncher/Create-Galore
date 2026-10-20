@@ -1,4 +1,4 @@
-<!-- sources sha256:b42cc852c18b0ff9788c663975959678af59a701cf06d9dabdd4b5dab96fe3cd -->
+<!-- sources sha256:eba38c92629938c3eedc237391baa976e0850fa5b91e046f385d56a0c3c9ee22 -->
 # Survival Layers (survival)
 Layers: Temperature (Cold Sweat), Thirst, Seasons (Serene Seasons), Pollution (Create: Smog), food/health, death/graves.
 
@@ -16,7 +16,8 @@ Layers: Temperature (Cold Sweat), Thirst, Seasons (Serene Seasons), Pollution (C
 - Caves/roofs: underground weather and season stop mattering: ~20 blocks down near 60 °F all year, a bit warmer deeper, unless lava near. A roof evens out heat/cold a little: cave or house is good for waiting out a winter night. The Aether is mild too.
 - Sleep: cannot sleep while overheating or freezing. Grace: after spawn or death, short immunity to temperature damage.
 - Altitude: higher is colder. Pack adds Cold Sweat: Altitude (see survival/temperature_create): splits height range into bands changing temperature, chill message in sky, shelter or sewn Windproof Lining cuts the effect. Bites on mountains, sky islands, airships.
-- THIS PACK (gentler Cold Sweat): body temperature moves at 0.6 speed; comfortable down to ~45 °F instead of 50 °F; seasons half as strong (summer half as hot, winter half as cold, ends of spring/autumn move half as far); each hit does half a heart every 2 seconds instead of a full heart.
+- Body temperature moves at 0.6 speed (Cold Sweat's rate setting); comfortable down to ~45 °F. Too hot or too cold: each hit does half a heart every 2 seconds.
+- Seasons shift air temperature: Mid Winter ~13.5 °F colder, Early/Late Winter ~9 °F colder; Summer warmer by the same amounts; start of spring and end of autumn ~4.5 °F colder; end of spring and start of autumn ~4.5 °F warmer.
 - Space: Cold Sweat covers Overworld and Aether only. Northstar's planets have own temperature system (set by each world + Temperature Regulator block), separate from Cold Sweat, one link: space suits count as warm clothing (suit keeps you warm on a cold night back home). Martian Steel suit keeps out heat too. (see space/planets)
 - Thirst now works with Cold Sweat (see survival/thirst).
 - Related: (see survival/temperature_gear), (see survival/temperature_create), (see create_basics/heat), (see survival/thirst), (see space/planets)
@@ -62,7 +63,7 @@ Layers: Temperature (Cold Sweat), Thirst, Seasons (Serene Seasons), Pollution (C
 - Related: (see survival/temperature), (see survival/temperature_gear), (see survival/food_and_health), (see create_basics/fluids), (see food/farmers_delight)
 
 ## survival/seasons | Seasons
-- Serene Seasons: Overworld year = Spring, Summer, Autumn, Winter, each Early/Mid/Late. Default each sub-season 8 days -> season 24 days, year 96. Foliage colors follow season.
+- Serene Seasons: Overworld year = Spring, Summer, Autumn, Winter, each Early/Mid/Late. Each sub-season 8 days -> season 24 days, year 96. Foliage colors follow season.
 - Calendar [sereneseasons:calendar]: tooltip shows current season and day. Crafted from a Clock and paper. Handy for planning plantings.
 - Weather: winter brings snow and ice generation. Rain/snow/storm frequency vary by season. Tropical biomes (deserts, badlands, savanna, jungle, similar) have Wet and Dry seasons instead.
 - Big rule: crops only grow in right season; out of season grow slowly. A config (see glossary/config) setting can make them stop or break instead. Tooltips may list crop seasons. Winter hardest: very few crops grow (see survival/seasons_crops).

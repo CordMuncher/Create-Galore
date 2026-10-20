@@ -127,7 +127,25 @@ final class ModelView {
         int sx = clamp(size.get(0).getAsInt()), sy = clamp(size.get(1).getAsInt()), sz = clamp(size.get(2).getAsInt());
         ModelView m = new ModelView(str(o, "title"), str(o, "caption"), sx, sy, sz);
         Map<String, BlockState> parsed = new HashMap<>();
-        for (JsonElement e : o.getAsJsonArray("blocks")) {
+        if (o.has("palette") && o.get("palette").isJsonArray()) {
+            // Compact form: a palette of states and runs [palette index, x, y, z, x2, y2, z2].
+            JsonArray palette = o.getAsJsonArray("palette");
+            BlockState[] states = new BlockState[palette.size()];
+            for (int i = 0; i < states.length; i++) states[i] = state(palette.get(i).getAsString());
+            for (JsonElement e : o.getAsJsonArray("blocks")) {
+                try {
+                    JsonArray r = e.getAsJsonArray();
+                    BlockState state = states[r.get(0).getAsInt()];
+                    if (state == null) continue;
+                    for (int x = Math.max(0, r.get(1).getAsInt()); x <= Math.min(sx - 1, r.get(4).getAsInt()); x++)
+                        for (int y = Math.max(0, r.get(2).getAsInt()); y <= Math.min(sy - 1, r.get(5).getAsInt()); y++)
+                            for (int z = Math.max(0, r.get(3).getAsInt()); z <= Math.min(sz - 1, r.get(6).getAsInt()); z++)
+                                m.cells[m.index(x, y, z)] = state.isAir() ? null : state;
+                } catch (RuntimeException ignored) {
+                    // skip the run
+                }
+            }
+        } else for (JsonElement e : o.getAsJsonArray("blocks")) {
             try {
                 JsonObject b = e.getAsJsonObject();
                 BlockState state = parsed.computeIfAbsent(str(b, "state"), ModelView::state);
@@ -440,13 +458,20 @@ final class ModelView {
 
     /**
      * Water or lava drawn the way the world draws it, flowing towards lower levels, with its animated texture. The
-     * fluid renderer writes positions within a 16-block section, which is the model's own grid. False when it can't.
+     * fluid renderer writes positions within a 16-block section, so the pose moves to that section's corner. False when it can't.
      */
     private boolean fluid(Minecraft mc, BlockState state, int x, int y, int z, PoseStack pose, MultiBufferSource buffers) {
         if (world == null || fluidFailed) return false;
         try {
+            // The fluid renderer writes positions within the block's 16-block section; move to that section's corner.
+            pose.pushPose();
+            pose.translate(x & ~15, y & ~15, z & ~15);
             VertexConsumer out = new PoseConsumer(buffers.getBuffer(net.minecraft.client.renderer.Sheets.translucentCullBlockSheet()), pose.last());
-            mc.getBlockRenderer().renderLiquid(new BlockPos(x, y, z), world, out, state, state.getFluidState());
+            try {
+                mc.getBlockRenderer().renderLiquid(new BlockPos(x, y, z), world, out, state, state.getFluidState());
+            } finally {
+                pose.popPose();
+            }
             return true;
         } catch (RuntimeException | LinkageError e) {
             fluidFailed = true;

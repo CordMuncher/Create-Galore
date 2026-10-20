@@ -45,7 +45,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "[#](FFFFFF)\ue103[#]() **In depth.** The **Chasm Eel** usually eats through bedrock; that is off in this pack. Cats eat cookable fish. Tide's Fish Slices are replaced by Aquaculture's fillets."
+      "text": "[#](FFFFFF)\ue103[#]() **In depth.** The **Chasm Eel** can't eat through bedrock. Cats eat cookable fish. Tide's Fish Slices are replaced by Aquaculture's fillets."
     }
   ]
 }

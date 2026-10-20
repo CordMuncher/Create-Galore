@@ -1,4 +1,4 @@
-<!-- sources sha256:7bc13f6170bce2b42ff3af7e1e49062b64388afdc1a5447498ef3f538e77053b -->
+<!-- sources sha256:0d5825c542714fb691d178329dfe394119460c34a727f6f83a4e564e1929a7d7 -->
 # Flight (flight)
 Create Aeronautics ships, lift, thrust, steering, wind, dangers and sky destinations.
 
@@ -144,7 +144,7 @@ Create Aeronautics ships, lift, thrust, steering, wind, dangers and sky destinat
 - Soaring Trader [aeronauticsdiscovery:soaring_trader_spawn_egg]: trader from Aeronautics Discovery; Pillager Aviator is hostile counterpart
 - Floating islands (Moog's Soaring Structures): vanilla-style islands: houses, towers, ruins, trees, volcanoes, an arena, floating Nether portal; loot and mobs
 - Island loot [minecraft:chest]: chests and mobs; bring a ship that can land
-- How often: sky sparser than ground (you cover ground faster in air); about 3 sky structures per km2, same rate vanilla places structures on surface: one every 600 blocks or so
+- How often: sky sparser than ground (you cover ground faster in air); about 3 sky structures per km2, half the ground's rate: one every 600 blocks or so
 - Common/rare: most sky structures equally common, so mods with many kinds (Moog's islands) show up more. Rarer prizes: island arena, volcano, towers, big Sky Village, steampunk airship, heavenly fortresses. Some islands only float over their own biome
 - The Aether (see exploration/aether): separate dimension of floating islands; portal = glowstone frame lit with water. Sky whales drift over Overworld ocean (see flight/weather_and_danger)
 - Ambrosium Shard [aether:ambrosium_shard]: basic Aether resource; Dimensions (see exploration/dimensions)

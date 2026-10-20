@@ -1,4 +1,4 @@
-<!-- sources sha256:2c94cd29079421270be3c8de084755b4a3f79243e5bcf7599ab0e827aa9da4c0 -->
+<!-- sources sha256:2b0eceb5081f384a84d027030c2bceeb04f7744fccb10a229f58ea6ff12e6496 -->
 # Fishing (fishing)
 
 ## fishing/overview | Fishing
@@ -85,7 +85,7 @@
 - **Void fishing**: bobber below world's void line: in **The End** anything below y50 (cast off an island edge); Overworld y-70 and below, under bedrock floor
 - End void fish: Enderfin (ender pearl), Endergazer (eye of ender), Elytrout (phantom membrane), legendary **Dragon Fish**
 - Overworld void has own fish, Alpha Fish among them. None for the Nether void
-- **Voidseeker** (eaten sends you to spawn point) is off in this pack: it would skip every ride home (see transport/getting_around)
+- **Voidseeker** doesn't send you anywhere when eaten: no way home but the ride (see transport/getting_around)
 
 ## fishing/gadgets | Fishing Gadgets
 - Tide gadgets show conditions fish care about. Hold one, wear in a **Curios** slot, or place block versions nearby; reading shows in top corner. Right-click to read once
@@ -124,7 +124,7 @@
 - **Gear**: Sailfish, Swordfish, Blazing Swordfish are swords (last sets things on fire). Shooting Starfish + bow: **Starlight Bow**. Dragon Fish + netherite boots: **Dragonfin Boots**, a jump in mid-air
 - **Eaten**: lava fish give Fire Resistance; Uranias Pisces 10 minutes of Luck; Ender Glider and Mantyvern Slow Falling; Chorus Cod teleports like chorus fruit
 - Watch out: Witherfin gives Wither; several Hybrid Aquatic fish poison you raw
-- **Chasm Eel** usually eats through bedrock; off in this pack. Cats eat cookable fish. Tide's Fish Slices are replaced by Aquaculture's fillets
+- **Chasm Eel** can't eat through bedrock. Cats eat cookable fish. Tide's Fish Slices are replaced by Aquaculture's fillets
 
 ## fishing/sea_food | Sea Food
 - Two Farmer's Delight (see food/farmers_delight) add-ons use its pot, cutting board, knives; meals follow the pack's normal food rules

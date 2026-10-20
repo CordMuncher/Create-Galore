@@ -1,4 +1,4 @@
-<!-- sources sha256:1f554f96a6505ad08106e191d40f432ab98a0a102b5d3a3eaee12f548b334f47 -->
+<!-- sources sha256:4968e979e45fcc3a8f2bf4fdeb6f287baecd522fab325d131397489d3e1b23d2 -->
 # How Things Connect (connections)
 Cross-mod joins. Shared hubs: rotation and electricity (and converters), heat (mostly Blaze Burner), liquid fuel (mostly oil), shared metals, vehicle destinations. Each entry points to the full entries.
 
@@ -71,9 +71,9 @@ Cross-mod joins. Shared hubs: rotation and electricity (and converters), heat (m
 
 ## connections/side_effects | Side Effects to Plan For
 - Systems react to what you build; not punishing alone but a big base notices all.
-- Burning pollutes (see survival/pollution): furnaces, burners, stoves add smog to their chunk. Smog keeps default rates, so it stays punishing. Flues and air scrubbers fix it (see survival/pollution_control).
+- Burning pollutes (see survival/pollution): furnaces, burners, stoves add smog to their chunk. Smog builds up fast and is punishing. Flues and air scrubbers fix it (see survival/pollution_control).
 - Heat warms you: factories near you count toward body temperature (see survival/temperature).
-- Height is cold: (see survival/temperature_create) matters for airships. Cold Sweat is tuned gentler than default.
+- Height is cold: (see survival/temperature_create) matters for airships.
 - Water isn't clean: drink purified water or build a filter (see survival/thirst).
 - Seasons turn: plan farms around them (see survival/seasons).
 - Cold Sweat and Thirst work together: Thirst Was Reclaimed uses Cold Sweat's temperature readings, so heat/cold around you feeds its thirst system. Dress for the weather, carry water.
