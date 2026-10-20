@@ -4,6 +4,12 @@ Each pack version gets a section here, with **Added**, **Fixed** and **Removed**
 workflow copies the section for the version in `pack/pack.toml` to the top of the GitHub release, and the build
 fails when that section is missing.
 
+## 0.3.5
+
+### Fixed
+- **Rain no longer comes and goes in short bursts.** Winds & Weather's map of weather regions scrolled faster the longer the world had existed (it multiplied its drift by the world's age instead of adding it up). After a day or two of a server running, the weather at one spot changed every few seconds, so its rain started, fell for 20 to 40 seconds and stopped, several times every few minutes. The map now moves at the steady speed it was built for: a rain spell from Winds lasts several minutes at any world age, and it rains just as often overall. Its storms, lightning, snow and puddles stop flickering the same way. On a test world aged like the server's, the weather at one spot changed 91 times in 6 minutes before (5 rain bursts) and 4 times after, and rain under a Winds rain region fell steadily for the whole 6 minutes. Normal and seasonal rain were already fixed in 0.2.20 and are unchanged.
+- Create Galore Bridge 1.29.0.
+
 ## 0.3.4
 
 ### Fixed
