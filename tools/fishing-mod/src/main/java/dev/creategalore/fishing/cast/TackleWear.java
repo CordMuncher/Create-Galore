@@ -26,6 +26,20 @@ public final class TackleWear {
     }
 
     /**
+     * The most of a reel's durability one fight can take. Cranking against a slipping drag still grinds a reel (the
+     * lesson the grind sound teaches), but holding use at the default drag through a strong fish used to take a
+     * whole Copper or Iron reel in a single fight; now it costs a tenth, so a careless angler goes through reels
+     * about ten fights apart instead of every fight. Careful play stays far below it.
+     */
+    public static final double MAX_REEL_WEAR_PER_FIGHT = 0.1;
+
+    /** Durability one fight takes from a reel with {@code maxDamage}: the fight's grinding, capped. */
+    public static int reelDamage(double reelWear, int maxDamage) {
+        int damage = 1 + (int) Math.round(reelWear * 3);
+        return Math.min(damage, Math.max(1, (int) Math.ceil(maxDamage * MAX_REEL_WEAR_PER_FIGHT)));
+    }
+
+    /**
      * Applies the wear of {@code fight} to {@code rod} (held by {@code angler} in {@code slot}, or in a holder when
      * {@code angler} is a fake player) and returns the rod (the same stack, or empty if it broke).
      */
@@ -34,7 +48,7 @@ public final class TackleWear {
 
         ItemStack reel = parts.reel();
         if (!reel.isEmpty() && reel.isDamageableItem()) {
-            int damage = 1 + (int) Math.round(fight.reelWear() * 3);
+            int damage = reelDamage(fight.reelWear(), reel.getMaxDamage());
             reel.setDamageValue(reel.getDamageValue() + damage);
             if (reel.getDamageValue() >= reel.getMaxDamage()) {
                 angler.level().playSound(null, angler.blockPosition(), SoundEvents.ITEM_BREAK, SoundSource.PLAYERS, 0.8f, 0.9f);

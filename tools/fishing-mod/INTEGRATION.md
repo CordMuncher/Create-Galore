@@ -103,8 +103,9 @@ All new ids are `create_galore_fishing:` unless they say `tide:`.
   Release gives a quarter more XP and doesn't tire the spot. The fish lives two minutes, after which it can only be
   kept. A fish kept while alive stays alive for the rest of that time (see "Rod machines": dropped into water, it
   swims off).
-- XP per catch: a base by rarity (2 for common up to 40 for legendary), times the fish's size against its species'
-  usual, 1.5 for a trophy or 2 for a unique, times how hard the fight was.
+- XP per catch: a base by rarity (common 3, uncommon 5, rare 9, very rare 16, legendary 40), times the fish's heft
+  (1 + 0.6 ln(1 + kg)) and its size against its species' usual (0.6-2.5), 1.5 for a trophy or 2.5 for a unique,
+  times how hard the fight was (0.6-2.6).
 - Fish have real weights from their length. Size classes are Young, Common, Large, Trophy and Unique. Fish under 3 kg
   stack per species and class; heavier fish, trophies and uniques are single items carrying weight, length, angler
   and day. Catches go in the Fishing Journal, and the catch screen shows the player's best for the species.
@@ -270,17 +271,16 @@ non-stop, rod pointed at the fish). Share of bitten fish landed by the careful a
 river and lake fish; tuna, arapaima and sharks need the boat rig. Every species but one (Tide's Dragon Fish) is landed
 at least half the time on some rig.
 
-Open question for Emre: careless play isn't punished much. On starter to steel gear the careless angler lands as
-often (85-93% against 83-87%) and faster (20-42 s against 33-52 s); what it pays is snapped lines (9-11% on
-starter and iron, against 0-1%) and reel wear 20 to 40 times higher. If careless fishing should land less, raise
-the snap risk or the reel wear's cost.
+Open question for Emre (answered in the balance pass, see [DECISIONS.md](DECISIONS.md), "Balance"): careless play
+isn't punished much. On starter to steel gear the careless angler lands as often (85-93% against 83-87%) and faster
+(20-42 s against 33-52 s); what it pays is snapped lines (9-11% on starter and iron, against 0-1%) and reel wear 20
+to 40 times higher. If careless fishing should land less, raise the snap risk or the reel wear's cost.
 
 ## Known issues and open items
 
-- **Tide's grilled tuna**: its three cooking recipes take `#tide:cookable/grilled_tuna`, which is empty because the
-  pack's tuna is Aquaculture's; they never fire (they didn't in the old pack either, where Tide's tuna was
-  redirected to Aquaculture's). Any tuna is also over the 3 kg cook-whole limit. Remove them, or make grilled tuna
-  from tuna steaks, if wanted.
+- **Tide's grilled tuna**: its three cooking recipes never fired (`#tide:cookable/grilled_tuna` is empty, and any
+  tuna is over the 3 kg cook-whole limit). Removed in the balance pass (0.2.0); the item stays registered and is
+  hidden from JEI.
 - **Bridge jar**: still lists its three removed Tide mixins (a warning at boot until it is rebuilt).
 - **Jade** names the mod of ported `tide:` blocks as "tide" (item tooltips and JEI say Create Galore Fishing).
 - **Sodium** logs once that `client/VertexBounds` (which measures fish models for their icons) doesn't use its fast
@@ -289,8 +289,8 @@ the snap risk or the reel wear's cost.
   marker until a player picks it up, so it doesn't stack with other fish of its kind there. Belt-to-water release is
   tested by code and by dropping fish into water; a full belt line wasn't built in game.
 - **Weak rotation and big fish**: a geared drive on one water wheel (8 RPM) needs several minutes to wind in a big
-  tuna in its lowest gear. The Basic drive grinding a strong fish through a slipping drag can wear a reel out in one
-  fight (in the sim, about 40 times the geared drive's wear on a tuna).
+  tuna in its lowest gear. The Basic drive grinding a strong fish through a slipping drag wears its reel about 40
+  times faster than the geared drive (in the sim, on a tuna); since 0.2.0 one fight takes at most a tenth of a reel.
 - **Translations**: this mod's own strings are English only; the strings ported from Tide keep Tide's eight locales.
 - **By design**: a line out isn't saved, so logging out or the chunk unloading reels it in (a fish on is lost).
   Machines on a ship fish only while the ship is loaded.

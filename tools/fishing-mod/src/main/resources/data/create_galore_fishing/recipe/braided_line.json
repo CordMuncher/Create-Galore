@@ -8,7 +8,7 @@
   ],
   "key": {
     "S": {
-      "item": "minecraft:string"
+      "item": "tfmg:synthetic_string"
     },
     "T": {
       "tag": "c:rods/wooden"

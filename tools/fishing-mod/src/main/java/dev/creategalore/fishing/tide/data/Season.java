@@ -48,8 +48,17 @@ public enum Season implements StringRepresentable {
         }
     }
 
+    /** Serene Seasons' own name for the season in {@code level} (for the self-test), or null without the mod. */
+    public static String sereneSeasonsName(Level level) {
+        return seasonsActive() ? SereneSeasons.name(level) : null;
+    }
+
     /** Kept in its own class so Serene Seasons' classes only load when the mod is there. */
     private static final class SereneSeasons {
+        static String name(Level level) {
+            return sereneseasons.api.season.SeasonHelper.getSeasonState(level).getSeason().name();
+        }
+
         static Season season(Level level) {
             return switch (sereneseasons.api.season.SeasonHelper.getSeasonState(level).getSeason()) {
                 case SPRING -> SPRING;

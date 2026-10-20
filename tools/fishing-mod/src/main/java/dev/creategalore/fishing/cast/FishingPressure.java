@@ -38,10 +38,21 @@ public final class FishingPressure extends SavedData {
         return p * Math.pow(0.5, elapsed / (double) HALF_LIFE_TICKS);
     }
 
-    /** Bite rate multiplier at {@code pos}: 1 untouched, 0.5 after four quick catches, never below 0.2. */
+    /**
+     * Bite rate multiplier at {@code pos}: 1 untouched, 0.5 after four quick catches, never below {@link #FLOOR}.
+     *
+     * <p>The floor sets how far a crowded spot can be fished out. One angler, or a couple of rods, never reach it (one
+     * rod landing fish back to back settles near 0.27, about 42 fish an hour). A bank of reel drives in one chunk
+     * does: 20 drives on a perfect rig land about 250 fish an hour between them (12 each; with a floor of 0.2 it was
+     * 600), while a rod trolled from a ship through water nobody has fished keeps the full rate, about 70 an hour.
+     * Worked out by {@code tools/fishing-mod/pressure_model.py}.
+     */
     public double biteFactor(ServerLevel level, BlockPos pos) {
-        return Math.max(0.2, 1 / (1 + 0.25 * at(level, pos)));
+        return Math.max(FLOOR, 1 / (1 + 0.25 * at(level, pos)));
     }
+
+    /** The lowest bite factor fishing pressure can bring a chunk to. */
+    public static final double FLOOR = 0.05;
 
     public void addCatch(ServerLevel level, BlockPos pos) {
         long key = ChunkPos.asLong(pos);

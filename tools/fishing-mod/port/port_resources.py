@@ -48,6 +48,11 @@ SKIP_FILES = {
 # Tide's fish cooking recipes: gen_processing.py writes weight-limited versions of them.
 SKIP_FILES |= {f"data/tide/recipe/{food}_{how}.json" for food in ("cooked_fish", "large_cooked_fish", "small_cooked_fish")
                for how in ("smelting", "smoking", "campfire_cooking")}
+# Grilled tuna cooked a whole tuna (#tide:cookable/grilled_tuna, empty since the pack's tuna is Aquaculture's, and
+# any tuna is far over the 3 kg cook-whole limit), so its recipes never fired. Balance pass: dropped with their
+# recipe-unlock advancements; the item stays registered for old worlds and is hidden from JEI by the pack.
+SKIP_FILES |= {f"data/tide/{kind}/grilled_tuna_{how}.json" for kind in ("recipe", "advancement/recipes/food")
+               for how in ("smelting", "smoking", "campfire_cooking")}
 KEEP_ROOTS = ("assets/", "data/")
 # Names this mod changes in Tide's English lang (the other locales keep Tide's).
 LANG_OVERRIDES = {
@@ -103,7 +108,8 @@ def merge_tag(path, content):
 def all_fishing_rods(adv):
     """Tide's "Hooked on Variety": its criteria keep their names (so earned progress stays) and point at the rods
     they load as now (through the aliases); our Bamboo Pole and Boat Rod join them."""
-    ours = {"stone": "wooden_rod", "iron": "iron_rod", "golden": "iron_rod", "crystal": "steel_rod",
+    # "wood" named vanilla's Fishing Rod, which never exists as itself any more (RodSwap makes it a Wooden Rod).
+    ours = {"wood": "wooden_rod", "stone": "wooden_rod", "iron": "iron_rod", "golden": "iron_rod", "crystal": "steel_rod",
             "diamond": "steel_rod", "netherite": "netherite_rod", "bamboo": "bamboo_pole", "boat": "boat_rod"}
     for name, rod in ours.items():
         adv["criteria"][name] = {"conditions": {"items": [{"items": "create_galore_fishing:" + rod}]},

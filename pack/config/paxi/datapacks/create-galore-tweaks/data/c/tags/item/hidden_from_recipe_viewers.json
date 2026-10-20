@@ -27,6 +27,7 @@
   "aquaculture:nether_star_hook",
   "aquaculture:fishing_line",
   "aquaculture:bobber",
-  "aquaculture:tackle_box"
+  "aquaculture:tackle_box",
+  "tide:grilled_tuna"
  ]
 }

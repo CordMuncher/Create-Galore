@@ -51,9 +51,9 @@ import net.neoforged.neoforge.event.entity.player.ItemFishedEvent;
  * the fish item (with its {@link CatchInfo}), vanilla's fishing advancement trigger and stat, NeoForge's
  * {@link ItemFishedEvent} (Aquaculture and other mods listen to it), and XP.
  *
- * <p>XP: a base by rarity (common 2, uncommon 4, rare 8, very rare 15, legendary 40), times the fish's size against a
- * typical one of its species (0.5-3), times 1.5 for a trophy or 2 for a unique, times the fight's difficulty
- * (0.5-2.5, see {@link Fight#difficulty}). Reel drives bank half of it.
+ * <p>XP: a base by rarity (common 3, uncommon 5, rare 9, very rare 16, legendary 40), times the fish's heft
+ * (1 + 0.6 ln(1 + kg)), times its size against a typical one of its species (0.6-2.5), times 1.5 for a trophy or 2.5
+ * for a unique, times the fight's effort (0.6 + {@link Fight#difficulty}, so 0.6-2.6). Reel drives bank half of it.
  */
 public final class Catches {
     private Catches() {

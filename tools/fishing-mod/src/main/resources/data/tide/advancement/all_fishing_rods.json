@@ -135,7 +135,7 @@
       "conditions": {
         "items": [
           {
-            "items": "minecraft:fishing_rod"
+            "items": "create_galore_fishing:wooden_rod"
           }
         ]
       },

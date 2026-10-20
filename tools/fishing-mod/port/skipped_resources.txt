@@ -287,6 +287,9 @@ data/tide/advancement/recipes/decorations/angling_table.json
 data/tide/advancement/recipes/food/cooked_fish_slice_campfire_cooking.json
 data/tide/advancement/recipes/food/cooked_fish_slice_smelting.json
 data/tide/advancement/recipes/food/cooked_fish_slice_smoking.json
+data/tide/advancement/recipes/food/grilled_tuna_campfire_cooking.json
+data/tide/advancement/recipes/food/grilled_tuna_smelting.json
+data/tide/advancement/recipes/food/grilled_tuna_smoking.json
 data/tide/advancement/recipes/misc/bone_meal_from_fish_bone.json
 data/tide/advancement/recipes/tools/copper_line.json
 data/tide/advancement/recipes/tools/diamond_line.json
@@ -351,6 +354,9 @@ data/tide/recipe/diamond_rod_smithing.json
 data/tide/recipe/fishing_line.json
 data/tide/recipe/gold_rod_smithing.json
 data/tide/recipe/golden_line.json
+data/tide/recipe/grilled_tuna_campfire_cooking.json
+data/tide/recipe/grilled_tuna_smelting.json
+data/tide/recipe/grilled_tuna_smoking.json
 data/tide/recipe/iron_line.json
 data/tide/recipe/iron_rod_smithing.json
 data/tide/recipe/netherite_rod_smithing.json

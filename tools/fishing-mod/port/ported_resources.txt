@@ -1342,9 +1342,6 @@ data/tide/advancement/recipes/decorations/fish_display.json
 data/tide/advancement/recipes/food/cooked_fish_campfire_cooking.json
 data/tide/advancement/recipes/food/cooked_fish_smelting.json
 data/tide/advancement/recipes/food/cooked_fish_smoking.json
-data/tide/advancement/recipes/food/grilled_tuna_campfire_cooking.json
-data/tide/advancement/recipes/food/grilled_tuna_smelting.json
-data/tide/advancement/recipes/food/grilled_tuna_smoking.json
 data/tide/advancement/recipes/food/large_cooked_fish_campfire_cooking.json
 data/tide/advancement/recipes/food/large_cooked_fish_smelting.json
 data/tide/advancement/recipes/food/large_cooked_fish_smoking.json
@@ -1770,9 +1767,6 @@ data/tide/recipe/fishing_journal.json
 data/tide/recipe/fishy_note_from_fish.json
 data/tide/recipe/glow_ink_from_fish.json
 data/tide/recipe/gold_from_minnow.json
-data/tide/recipe/grilled_tuna_campfire_cooking.json
-data/tide/recipe/grilled_tuna_smelting.json
-data/tide/recipe/grilled_tuna_smoking.json
 data/tide/recipe/incandescent_bait_from_larva.json
 data/tide/recipe/iron_from_tetra.json
 data/tide/recipe/jelly_torch_from_jellyfish.json

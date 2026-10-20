@@ -502,13 +502,25 @@ public class CastHook extends FishingHook {
         }
     }
 
+    /**
+     * Where the bait is, for who can bite: under a float it hangs at the depth set at the Tackle Bench (0.5-8 m,
+     * 1.5 by default), stopping just above the bottom; every other rig fishes where it is.
+     */
+    private Vec3 baitPosition(ItemStack rod) {
+        Vec3 at = position();
+        if (rig() != Rig.FLOAT || medium.equals("void")) return at;
+        float depth = rod.getOrDefault(FishingRegistry.FLOAT_DEPTH.get(), 1.5f);
+        double bottom = FishingWater.bottom(level(), blockPosition());
+        return new Vec3(at.x, Math.max(bottom + 0.3, at.y - depth), at.z);
+    }
+
     private void rollBite(Player owner, ItemStack rod, RodStats stats) {
         ServerLevel level = (ServerLevel) level();
         int luck = luck(owner, rod, stats);
         if (level.getGameTime() - poolBuiltAt > 100 || position().distanceToSqr(poolPos) > 16) {
             // The Blazing rod fishes Nether fish in any lava, as in Tide.
             boolean netherLava = medium.equals("lava") && stats.rod().has("blazing");
-            context = FishingPlace.context(level, position(), rod, RodItem.parts(rod).hook(), luck,
+            context = FishingPlace.context(level, baitPosition(rod), rod, RodItem.parts(rod).hook(), luck,
                     medium, temperatureOffset(stats), netherLava, openWater, random);
             pool = BiteSampler.pool(context, stats, lureWorking);
             poolBuiltAt = level.getGameTime();
@@ -533,6 +545,8 @@ public class CastHook extends FishingHook {
                 || stats.bait().map(b -> b.is("magnetic")).orElse(false);
         double treasure = openWater ? Math.max(0, 0.02 + 0.015 * luck) : 0;
         if (magnetic) treasure *= 2;
+        // The Nether's treasure is ancient debris and netherite scrap: by hand only, never from an unattended machine.
+        if (owner instanceof MachineAngler && level.dimension() == Level.NETHER) treasure = 0;
         double junk = pool.total() <= 0 ? 0.6 : Math.max(0.02, 0.08 - 0.02 * luck);
         double crateChance = CRATE_CHANCE * Math.max(0.25, 1 + 0.3 * luck) * (magnetic ? 2 : 1);
         double r = random.nextDouble();
@@ -835,8 +849,9 @@ public class CastHook extends FishingHook {
             case FISH -> {
                 Species species = bite.species();
                 ItemStack fish = Catches.fishItem(species, bite, machine.creditName(), level.getDayTime() / 24000);
+                // No Midas / Village bonus from machines: it comes with every catch (gold blocks, and now and then
+                // a Totem of Undying or an enchanted golden apple), which a bank of drives would print unattended.
                 List<ItemStack> landed = new ArrayList<>(List.of(fish));
-                Catches.perkBonus(this, angler, rod, stats, medium, luck(angler, rod, stats)).ifPresent(landed::add);
                 List<ItemStack> drops = Catches.fire(this, angler, rod, landed, species, bite.kg());
                 FishingPressure.of(level).addCatch(level, blockPosition());
                 if (rig() != Rig.LURE) {

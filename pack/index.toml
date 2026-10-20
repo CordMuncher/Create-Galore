@@ -784,7 +784,7 @@ hash = "ca5c9c9dd3eff157a37ebba1175a3c694e2065fdff1afdf5aebf1e5da0067e54"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/c/tags/item/hidden_from_recipe_viewers.json"
-hash = "822f139682b49cd9337a86322a9668e5099283546739ab681938cfdcd354178f"
+hash = "ece398c100c3e4589614af7c0fc22c0754aa159e204c33f7f7c992dbd8f48119"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/c/tags/item/mushrooms/truffle.json"
@@ -4347,6 +4347,10 @@ file = "config/paxi/datapacks/create-galore-tweaks/data/tide/recipe/enchanted_po
 hash = "56c0e0f6d8bd373612e7513526dd637599bd98cdd643599761571dcda67fe52b"
 
 [[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/tide/tags/entity_type/ignores_pocket_watch.json"
+hash = "8f8dabaa2dac0b8e4e8a06683e3c789544fddba2ca253a776f4cd30d05a92eed"
+
+[[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/tide/tags/item/legendary_fish.json"
 hash = "38b501da70df83e9c54d95ac706068769be438890cfee9ea169846df3650735a"
 
@@ -4917,8 +4921,8 @@ file = "mods/create-galore-bridge-1.33.0.jar"
 hash = "fb3445ae6f713d24d983a91fd43c6793a998cebacc84ae2395617cc3ccae2bc1"
 
 [[files]]
-file = "mods/create-galore-fishing-0.1.0.jar"
-hash = "cc765ef3af9b0e5af6389980a3b3cf6d0e5071487d23efadc782274e94cddbc4"
+file = "mods/create-galore-fishing-0.2.0.jar"
+hash = "7559737048046e6f30f06ba29a751146aaace0c670a072d4e6b995691269e040"
 
 [[files]]
 file = "mods/create-galore-lagwatch-1.1.0.jar"

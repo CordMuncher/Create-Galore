@@ -14,6 +14,7 @@ import dev.creategalore.fishing.tackle.RodStats;
 import dev.creategalore.fishing.tackle.TackleManager;
 import dev.creategalore.fishing.tackle.TacklePart;
 import dev.creategalore.fishing.tide.Tide;
+import dev.creategalore.fishing.tide.data.Season;
 import dev.creategalore.fishing.tide.data.fishing.CatchTables;
 import dev.creategalore.fishing.tide.data.fishing.CrateData;
 import dev.creategalore.fishing.tide.data.fishing.FishData;
@@ -135,6 +136,17 @@ public final class TideSelfTest {
             else r.fail(id + " is missing" + missing);
         }
         r.check(complete == fish.size(), complete + " of " + fish.size() + " ported species complete");
+
+        // Season conditions read Serene Seasons' real season (the pack runs it), not a stand-in.
+        ServerLevel overworld = server.overworld();
+        String serene = Season.sereneSeasonsName(overworld);
+        Season seen = Season.of(overworld);
+        if (serene == null) {
+            r.info("Serene Seasons isn't installed: season conditions always pass (fish see " + seen + ")");
+        } else {
+            r.check(seen.name().equals(serene) || (serene.equals("AUTUMN") && seen == Season.FALL),
+                    "fish see Serene Seasons' season (Serene Seasons " + serene + ", fish data " + seen.getSerializedName() + ")");
+        }
 
         // Tide's tackle is ours now: every hook, bait, bobber and special rod has tackle data.
         for (Item item : List.of(TideItems.FISHING_HOOK, TideItems.LAVAPROOF_HOOK, TideItems.FIERY_HOOK,
