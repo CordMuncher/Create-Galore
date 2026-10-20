@@ -50,6 +50,7 @@ jar lands in `pack/mods/create-galore-fishing-<version>.jar`; the version comes 
 | `fish` | species data: loads Tide-format fish files plus our extension files, fills in defaults |
 | `bait` | bait kinds and diets, live bait and the Live-Bait Bucket, chum, worms from hoeing |
 | `process` | the Cleaning Table and its yields, the weight-limited fish ingredient, the `processing` self-test |
+| `aquarium` | Aquarium Tanks: the multiblock (`AquariumTanks`), its contents and breeding (`AquariumBlockEntity`), what right-clicks do (`AquariumUse`), the `aquarium` self-test |
 | `compat` | the move off Tide: `TideAliases` (old ids to their replacements), `TideRodConversion` (Tide-rigged rods to our parts), `RodSwap`, and the Tide self-tests; `IntegratedFarmingNets` (Fishing Net catches) |
 | `tide` | Tide 2, ported (MPL-2.0): its 90 fish and their mobs, the journal, Fish Display, satchel, crates, gadgets and extras, its fish conditions and data, with its own mixins in `tide/mixin` |
 
@@ -114,6 +115,21 @@ Tide 2 is not in the pack any more; this mod carries what players had from it, u
   minutes; `/cgfish hook` shows the factor. Kept in memory, not saved.
 - Fishing Nets (Create: Integrated Farming): `compat/IntegratedFarmingNets` registers a water and a lava catch
   provider where Tide's was, so nets bring up this mod's fish (small ones favoured) about half the time.
+
+## Aquarium Tanks
+
+- Tank blocks that touch and fill a box (up to 8 on each side) are one tank; the box's lowest corner is the
+  controller and holds the water, the fish (as fish items with their length) and the fish meal. `AquariumTanks`
+  forms tanks a tick after a block is placed (its block entity exists by then) and splits them when one breaks:
+  what's left joins back up if it still fills a box and takes the contents, else the fish spill out. The six side
+  properties say which faces join the same tank; the multipart model (`art/make_aquarium_models.py`) leaves out
+  glass and frame there.
+- A fish needs room by its length (`AquariumBlockEntity.space`) and a tank longer than itself, and only goes in once
+  the tank is at least half full of water. Water comes by bucket or pipe (fluid capability).
+- Two or more of one `#create_galore_fishing:baitfish` species with fish meal raise a young one every two minutes.
+  Funnels and hoppers feed fish meal into slot 0 and take spare baitfish (the tank keeps two of each kind).
+- Fish swim client-side only (`client/AquariumSwim`), drawn as their mob's model at true length with the water by
+  `client/AquariumRenderer`; the server keeps the list.
 
 ## Visuals
 

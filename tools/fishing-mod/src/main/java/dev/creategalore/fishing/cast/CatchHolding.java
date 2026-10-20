@@ -1,5 +1,4 @@
 package dev.creategalore.fishing.cast;
-
 import dev.creategalore.fishing.CreateGaloreFishing;
 import dev.creategalore.fishing.fish.Species;
 import dev.creategalore.fishing.net.CatchOffer;
@@ -136,6 +135,28 @@ public final class CatchHolding {
             player.displayClientMessage(Component.translatable("message.create_galore_fishing.fish_died"), true);
             decide(player, false);
         }
+    }
+
+    /** The fish {@code player} is holding up, while it is still alive; empty otherwise. */
+    public static ItemStack aliveFish(ServerPlayer player) {
+        Holding h = HOLDING.get(player.getUUID());
+        return h == null || player.level().getGameTime() >= h.aliveUntil() ? ItemStack.EMPTY : h.fish().copy();
+    }
+
+    /**
+     * Keeps the held fish alive somewhere other than the inventory (an aquarium): the angler gets the keep XP and
+     * the personal best as for keeping it, and the fish item is returned for the tank. Empty if it isn't alive.
+     */
+    public static ItemStack keepAlive(ServerPlayer player) {
+        ItemStack fish = aliveFish(player);
+        if (fish.isEmpty()) return fish;
+        Holding h = HOLDING.remove(player.getUUID());
+        player.setData(HELD, Held.NONE);
+        ServerLevel level = player.serverLevel();
+        ExperienceOrb.award(level, player.position().add(0, 0.5, 0), h.keepXp());
+        FishingPressure.of(level).addCatch(level, h.water());
+        recordBest(player, h);
+        return fish;
     }
 
     /** Applies the angler's choice (or the default: keep). */

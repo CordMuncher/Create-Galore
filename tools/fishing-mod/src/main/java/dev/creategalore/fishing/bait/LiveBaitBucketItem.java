@@ -1,6 +1,8 @@
 package dev.creategalore.fishing.bait;
-import java.util.ArrayList;
+
+import dev.creategalore.fishing.aquarium.AquariumBlockEntity;import java.util.ArrayList;
 import java.util.List;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
@@ -12,6 +14,7 @@ import net.minecraft.world.item.BundleItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.BundleContents;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelReader;
 
 /**
  * A bucket of water that keeps baitfish and leeches alive: a bundle (same clicks, tooltip and fill bar, 64 small fish
@@ -41,6 +44,12 @@ public class LiveBaitBucketItem extends BundleItem {
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         return InteractionResultHolder.pass(player.getItemInHand(hand));
+    }
+
+    /** Sneaking on an Aquarium Tank still reaches the tank, which then lets the bucket's fish in. */
+    @Override
+    public boolean doesSneakBypassUse(ItemStack stack, LevelReader level, BlockPos pos, Player player) {
+        return level.getBlockEntity(pos) instanceof AquariumBlockEntity;
     }
 
     /**

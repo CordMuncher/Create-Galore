@@ -306,8 +306,9 @@ the fish eases off. So players pick drag against their rotational strength, not 
 - **Live-Bait Bucket**: item holding baitfish/leeches (bundle-style storage, needs water to fill);
   right-click a rod in the inventory with it to load live bait; Geared/Fuel Reel Drives can be fed
   from a bucket placed in their bait slot.
-- **Aquarium Tank**: glass tank blocks that join into one rectangular tank (Create's
-  `ConnectivityHandler` multiblock, as its vaults and fluid tanks do). Release fish from buckets
+- **Aquarium Tank**: glass tank blocks that join into one rectangular tank. As built (milestone 10) this is
+  our own multiblock rather than Create's `ConnectivityHandler`, whose shapes have a square base: an aquarium is
+  any box up to 8 on a side, so long, shallow tanks work. The top is open. Release fish from buckets
   into it; they swim inside as client-rendered models (stored in the block entity, not real
   entities, so big tanks cost little), capacity by volume and fish size; take them back out with a
   bucket. Show off live trophies, and **breed baitfish**: two or more of a small species, fed fish

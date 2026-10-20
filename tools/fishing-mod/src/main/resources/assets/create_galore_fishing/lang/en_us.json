@@ -210,5 +210,18 @@
   "block.create_galore_fishing.cleaning_table.progress": "Cleaning: %s of %s strokes",
   "entity.create_galore_fishing.chum": "Chum",
   "tooltip.create_galore_fishing.too_big_to_cook": "Too big to cook whole: clean it at a Cleaning Table",
-  "tooltip.create_galore_fishing.part.bait.live": "Live bait: %s x%s"
+  "tooltip.create_galore_fishing.part.bait.live": "Live bait: %s x%s",
+  "block.create_galore_fishing.aquarium_tank": "Aquarium Tank",
+  "message.create_galore_fishing.aquarium.status": "Aquarium %sx%sx%s: water %s of %s buckets, %s fish, fish meal %s",
+  "message.create_galore_fishing.aquarium.not_formed": "Not a tank yet: Aquarium Tank blocks join once they fill a box",
+  "message.create_galore_fishing.aquarium.full": "No room left in this tank",
+  "message.create_galore_fishing.aquarium.too_long": "That fish is longer than the tank",
+  "message.create_galore_fishing.aquarium.needs_water": "Fill the tank at least half with water first",
+  "message.create_galore_fishing.aquarium.water_full": "The tank is full of water",
+  "message.create_galore_fishing.aquarium.empty": "The tank is empty",
+  "message.create_galore_fishing.aquarium.in": "%s swims into the tank",
+  "message.create_galore_fishing.aquarium.scooped": "Scooped %s baitfish into the bucket",
+  "message.create_galore_fishing.aquarium.released": "Let %s baitfish into the tank",
+  "message.create_galore_fishing.aquarium.fed": "Fed %s fish meal (%s waiting)",
+  "message.create_galore_fishing.aquarium.no_spare": "No spare baitfish: the tank keeps two of each kind to breed"
 }

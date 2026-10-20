@@ -80,3 +80,17 @@ New content (all `create_galore_fishing:`), for the Field Guide's fishing sectio
   seed oil (Create: Liquid Fuel). Roe is food; shark skin smokes into leather.
 - **Fishing Nets** (Create: Integrated Farming) catch this mod's fish again, as they did Tide's.
 - Squid bait: Ocean's Delight tentacles count as squid bait.
+
+## Milestone 10: aquarium tanks
+
+- **Aquarium Tank** (four iron sheets and four glass, makes four): tank blocks that fill a box, up to 8 blocks on
+  each side, join into one tank with an open top and a sand floor. Fill it with water by bucket or pipe; once it is
+  at least half full, fish go in from any mod's fish bucket, and a fish just caught and held up goes in alive
+  (counted as kept). An empty bucket scoops a fish back out into its bucket. Fish swim inside as their real models
+  at their real size; a fish needs room by its size and a tank longer than itself.
+- **Baitfish breeding**: two or more of one baitfish species, fed fish meal (by hand, funnel or hopper), raise a young
+  one every two minutes. The Live-Bait Bucket scoops out the spare ones (the tank keeps two of each kind); sneaking
+  with it lets its own fish into the tank. Hoppers and funnels can take spare baitfish out too, so live bait can
+  be farmed automatically.
+- Breaking a wall of a tank spills its fish; breaking off a whole end keeps them in what's left. An empty hand on
+  a tank shows its size, water, fish and food.

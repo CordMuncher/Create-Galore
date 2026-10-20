@@ -17,6 +17,7 @@ src/main/resources/data/betterend/recipe/end_fish_smoker.json
 src/main/resources/data/create_galore_fishing/recipe/campfire_cooking/leather_from_shark_skin.json
 src/main/resources/data/create_galore_fishing/recipe/compacting/fish_oil_from_oily_fish.json
 src/main/resources/data/create_galore_fishing/recipe/compacting/fish_oil_from_scraps.json
+src/main/resources/data/create_galore_fishing/recipe/crafting/aquarium_tank.json
 src/main/resources/data/create_galore_fishing/recipe/crafting/cleaning_table.json
 src/main/resources/data/create_galore_fishing/recipe/crafting/live_bait_bucket.json
 src/main/resources/data/create_galore_fishing/recipe/milling/fish_meal_from_bones.json

@@ -95,6 +95,11 @@ OTHER = {
         "pattern": ["SSS", "LAL", "L L"],
         "key": {"S": item("minecraft:smooth_stone_slab"), "L": item("#minecraft:logs"), "A": item("create:andesite_alloy")},
         "result": result(M + "cleaning_table")}, []),
+    "crafting/aquarium_tank": ({
+        "type": "minecraft:crafting_shaped", "category": "building",
+        "pattern": ["IGI", "G G", "IGI"],
+        "key": {"I": item("#c:plates/iron"), "G": item("#c:glass_blocks/colorless")},
+        "result": result(M + "aquarium_tank", 4)}, []),
     "crafting/live_bait_bucket": ({
         "type": "minecraft:crafting_shapeless", "category": "misc",
         "ingredients": [item("minecraft:water_bucket"), item("minecraft:iron_bars")],

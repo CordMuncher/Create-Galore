@@ -1,6 +1,8 @@
 package dev.creategalore.fishing;
 
 import com.mojang.serialization.Codec;
+import dev.creategalore.fishing.aquarium.AquariumBlock;
+import dev.creategalore.fishing.aquarium.AquariumBlockEntity;
 import dev.creategalore.fishing.bait.ChumItem;
 import dev.creategalore.fishing.bait.LiveBaitBucketItem;
 import dev.creategalore.fishing.bait.ThrownChum;
@@ -269,6 +271,15 @@ public final class FishingRegistry {
             BLOCK_ENTITIES.register("cleaning_table", () -> BlockEntityType.Builder.of(CleaningTableBlockEntity::new,
                     CLEANING_TABLE.get()).build(null));
 
+    public static final DeferredBlock<AquariumBlock> AQUARIUM_TANK = BLOCKS.register("aquarium_tank",
+            () -> new AquariumBlock(BlockBehaviour.Properties.of().mapColor(MapColor.NONE).strength(1.0f)
+                    .sound(SoundType.GLASS).noOcclusion().isValidSpawn((s, l, p, e) -> false)
+                    .isRedstoneConductor((s, l, p) -> false).isSuffocating((s, l, p) -> false).isViewBlocking((s, l, p) -> false)));
+    public static final DeferredItem<BlockItem> AQUARIUM_TANK_ITEM = ITEMS.registerSimpleBlockItem(AQUARIUM_TANK);
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<AquariumBlockEntity>> AQUARIUM_ENTITY =
+            BLOCK_ENTITIES.register("aquarium_tank", () -> BlockEntityType.Builder.of(AquariumBlockEntity::new,
+                    AQUARIUM_TANK.get()).build(null));
+
     // ---- Menus ----
 
     public static final DeferredHolder<MenuType<?>, MenuType<TackleBenchMenu>> TACKLE_BENCH_MENU =
@@ -285,6 +296,7 @@ public final class FishingRegistry {
                         RODS.forEach(r -> out.accept(r.get()));
                         PARTS.forEach(p -> out.accept(p.get()));
                         out.accept(CLEANING_TABLE_ITEM.get());
+                        out.accept(AQUARIUM_TANK_ITEM.get());
                         GOODS.forEach(g -> out.accept(g.get()));
                     })
                     .build());
@@ -301,7 +313,10 @@ public final class FishingRegistry {
         FLUID_TYPES.register(modBus);
         FLUIDS.register(modBus);
         INGREDIENT_TYPES.register(modBus);
-        modBus.addListener((RegisterCapabilitiesEvent event) -> event.registerBlockEntity(Capabilities.ItemHandler.BLOCK,
-                CLEANING_TABLE_ENTITY.get(), (table, side) -> table.items()));
+        modBus.addListener((RegisterCapabilitiesEvent event) -> {
+            event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, CLEANING_TABLE_ENTITY.get(), (table, side) -> table.items());
+            event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, AQUARIUM_ENTITY.get(), (tank, side) -> tank.items());
+            event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, AQUARIUM_ENTITY.get(), (tank, side) -> tank.fluids());
+        });
     }
 }

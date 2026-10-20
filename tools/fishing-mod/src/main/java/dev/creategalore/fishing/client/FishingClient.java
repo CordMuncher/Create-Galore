@@ -1,6 +1,7 @@
 package dev.creategalore.fishing.client;
 
 import dev.creategalore.fishing.FishingRegistry;
+import dev.creategalore.fishing.aquarium.AquariumBlock;
 import dev.creategalore.fishing.fish.CatchInfo;
 import dev.creategalore.fishing.process.WholeFishIngredient;
 import dev.creategalore.fishing.tide.loaders.neoforge.NeoforgeClientEntrypoint;
@@ -40,8 +41,10 @@ public final class FishingClient {
             event.registerEntityRenderer(FishingRegistry.CAST_HOOK.get(), CastHookRenderer::new);
             event.registerEntityRenderer(FishingRegistry.THROWN_CHUM.get(), ThrownItemRenderer::new);
             event.registerBlockEntityRenderer(FishingRegistry.CLEANING_TABLE_ENTITY.get(), CleaningTableRenderer::new);
+            event.registerBlockEntityRenderer(FishingRegistry.AQUARIUM_ENTITY.get(), AquariumRenderer::new);
         });
         modBus.addListener(FishingClient::fishOil);
+        AquariumBlock.clientTick = AquariumSwim::tick;
         modBus.addListener((RegisterColorHandlersEvent.Item event) ->
                 event.register(new DynamicFluidContainerModel.Colors(), FishingRegistry.FISH_OIL_BUCKET.get()));
         modBus.addListener((FMLClientSetupEvent event) -> event.enqueueWork(() -> {

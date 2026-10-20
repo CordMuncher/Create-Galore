@@ -592,6 +592,37 @@ def live_bait_bucket(name):
     save(s.render(), name)
 
 
+# --- the Aquarium Tank ------------------------------------------------------------------------------------------
+
+def aquarium_frame():
+    """Dark steel for the tank's frame: brushed vertical grain, a lit top-left edge, a rivet every 8 pixels."""
+    base = ramp("#4e565e")
+    img = Image.new("RGBA", (16, 16))
+    rng = random.Random(7)
+    for y in range(16):
+        for x in range(16):
+            tone = "mid" if (x + rng.randrange(3)) % 5 else "shadow"
+            if x == 0 or y == 0:
+                tone = "light"
+            elif x == 15 or y == 15:
+                tone = "edge"
+            img.putpixel((x, y), base[tone] + (255,))
+    for x, y in ((3, 3), (11, 3), (3, 11), (11, 11)):
+        img.putpixel((x, y), base["hi"] + (255,))
+        img.putpixel((x + 1, y + 1), base["dark"] + (255,))
+    save(img, "aquarium_frame", BLOCK)
+
+
+def aquarium_glass():
+    """Clear glass with a faint blue-green cast and a couple of diagonal glints; no border (the frame is the border)."""
+    img = Image.new("RGBA", (16, 16), (200, 230, 235, 28))
+    for k in range(5):
+        img.putpixel((10 + k, 4 - k if 4 - k >= 0 else 0), (255, 255, 255, 110))
+        img.putpixel((2 + k, 13 - k), (255, 255, 255, 80))
+    img.putpixel((9, 5), (255, 255, 255, 70))
+    save(img, "aquarium_glass", BLOCK)
+
+
 # --- the Tackle Bench's top overlay -----------------------------------------------------------------------------
 
 def bench_overlay():
@@ -656,6 +687,8 @@ def main():
     live_bait_bucket("live_bait_bucket")
     atlas()
     bench_overlay()
+    aquarium_frame()
+    aquarium_glass()
     print("textures written")
 
 

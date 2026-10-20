@@ -1,5 +1,6 @@
 package dev.creategalore.fishing;
 
+import dev.creategalore.fishing.aquarium.AquariumSelfTest;
 import dev.creategalore.fishing.bait.BaitSources;
 import dev.creategalore.fishing.bait.Chum;
 import dev.creategalore.fishing.cast.CatchHolding;
@@ -60,6 +61,7 @@ public final class CreateGaloreFishing {
         Chum.register();
         BaitSources.register();
         ProcessingSelfTest.register();
+        AquariumSelfTest.register();
         modBus.addListener((FMLCommonSetupEvent event) -> event.enqueueWork(() -> {
             DispenserBlock.registerProjectileBehavior(FishingRegistry.CHUM.get());
             if (ModList.get().isLoaded(IntegratedFarmingNets.MOD)) IntegratedFarmingNets.register();
