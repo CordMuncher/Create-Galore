@@ -411,3 +411,40 @@ everywhere and computed in one place:
 
 **Iron Leader**: Emre asked for an intermediate between line and the Steel Leader (iron wire is late game). 12 kg
 test, 50% visible, teeth-proof like steel; 3 iron nuggets + 1 string (c:strings) -> 2, shapeless.
+
+## Fight feel: fish moods, a stretchy line, real slack (Fishing 0.3.10, pack 0.4.19)
+
+Emre (21 Oct): the bars were jittery, dropped to almost nothing the moment a fish swam toward him, and it felt like
+fighting a machine; slack from a fish swimming in is normal but was not shown, and the line never went slack. Fix the
+cause, not only smooth the display. What changed in `sim/Fight.java`:
+
+- **No per-tick noise.** The old pull carried a gaussian wobble every tick. Now the fish has a mood (`Fight.Mood`):
+  HOLD (steady pull with two slow sways, periods 3-6 s and 1.3-2.2 s, ±10% and ±5%, drifting round on a slow arc it
+  changes every 3-7 s), RUN (same chance and length as before: 1.5x pull, 1.8x speed, sweeps to one side), CHARGE
+  (same chance; comes in at 30-80% of its speed, picked per charge), SHAKE (new, 0.12 bouts/s x intensity, a ±22%
+  throb at 2.5-3.5 Hz for 0.6-1.4 s) and REST (new, tired fish under 45% stamina, 0.15 bouts/s, 1.5-3 s at 70% pull).
+  The effort follows its target with a 0.3 s lag (0.12 s into a run) instead of stepping.
+- **The line is a spring.** State: line out and stretch (fish distance = line out + stretch; below zero is slack).
+  Give = 0.12 x stretch x line out / test (line) + (0.4 + 0.6 x rod absorb) / rod rating (rod), metres per kgf.
+  Each tick one equation is solved by bisection for the tension: the fish swims at its speed x (1 - T/pull) when
+  the tension is under its pull and is dragged back at sqrt((T - pull) / water drag) when over; the reel winds
+  retrieve x (1 - T/crank); the rod's lift and an angler moving off add their bit; the drag caps the tension and
+  the rest goes out as line. Implicit, so a stiff braid on a short line is as steady as long mono. Winding down
+  (reel while the rod comes down) keeps its old meaning: the rod comes down at what the reel winds, unloaded.
+- **Slack is real.** A fish coming in faster than you wind, or the rod let down, leaves slack metres; they go to the
+  client (new synced value), the line hangs in a parabola (sag ~ sqrt(3 x span x slack / 8)) and the HUD says
+  "Swimming at you! Reel in the slack" (new flag). The hook-throw rules are unchanged (slack, fish not pulling,
+  not winding).
+- **Display.** The client eases the three bars, the rod bend and the line: quick to rise (60% a tick, so a jolt
+  shows at once), slower to fall (25% a tick). Statuses added: "Head shakes!", "It's sulking: gain line". The fish
+  swims round on its mood's arc instead of a random walk, deep on runs and sulks, near the top while shaking.
+- **Fixed on the way:** the fish's tilt and the reel-crank slowdown divided an already-normalised tension by the
+  line test again, so they barely moved on strong lines.
+
+Checks. All 25 fight rules pass (held-at-empty-spool, towing and walking-off-a-charge now measure line out, which
+is what they meant). Monte Carlo, every species x 5 rigs x careful/careless, 200 fights each, against the 0.4.18
+rules: landing rate moves 0.015 on average; per rig and angler the means move at most 1.8 points (pole careful
+72.3 -> 74.1%). Biggest single gains are heavy fish on too-light rigs that used to time out after 10 minutes and
+now often land, in about 7 (REST gives a patient angler a window): stingray on steel careful 25 -> 61%. Tension change
+per tick halved (tuna on iron 0.011 -> 0.005 of test). In-game: salmon fight landed with the new moods, bars eased,
+"Swimming at you" and "Slack line!" shown, the line sags in third person; 424 self-tests pass.

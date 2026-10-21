@@ -185,7 +185,7 @@ public final class FishingSounds {
         }
 
         if (s.strainCooldown > 0) s.strainCooldown--;
-        float tension = fighting ? hook.tension() : 0;
+        float tension = fighting ? hook.shownTension() : 0;
         if (tension > 0.65f && s.strainCooldown == 0) {
             float over = Math.min(1, (tension - 0.65f) / 0.35f);
             play(owner, FishingRegistry.LINE_STRAIN.get(), 0.25f + 0.55f * over, 0.9f + 0.35f * over);
@@ -355,7 +355,7 @@ public final class FishingSounds {
                 return;
             }
             follow();
-            float load = hook.phase() == CastHook.Phase.FIGHTING ? Math.min(1, hook.tension()) : 0;
+            float load = hook.phase() == CastHook.Phase.FIGHTING ? Math.min(1, hook.shownTension()) : 0;
             boolean stalled = hook.flag(CastHook.FLAG_STALLED);
             pitch = basePitch * (stalled ? 0.6f : 1.05f - 0.35f * load);
             volume = 0.3f + 0.2f * load;

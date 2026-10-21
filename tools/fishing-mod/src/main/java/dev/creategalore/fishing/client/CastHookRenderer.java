@@ -66,10 +66,14 @@ public class CastHookRenderer extends EntityRenderer<CastHook> {
         float dx = (float) (tip.x - at.x);
         float dy = (float) (tip.y - at.y);
         float dz = (float) (tip.z - at.z);
-        float sag = hook.phase() == CastHook.Phase.FIGHTING ? Mth.clamp(1 - hook.tension() * 1.5f, 0.02f, 1) : 1;
         VertexConsumer line = buffers.getBuffer(RenderType.lineStrip());
         PoseStack.Pose last = pose.last();
-        for (int i = 0; i <= 16; i++) stringVertex(dx, dy, dz, sag, line, last, i / 16f, (i + 1) / 16f);
+        if (hook.phase() == CastHook.Phase.FIGHTING) {
+            float droop = fightDroop(Mth.sqrt(dx * dx + dy * dy + dz * dz), hook.shownTension(), hook.shownSlack());
+            for (int i = 0; i <= 16; i++) droopVertex(dx, dy, dz, droop, line, last, i / 16f, (i + 1) / 16f);
+        } else {
+            for (int i = 0; i <= 16; i++) stringVertex(dx, dy, dz, 1, line, last, i / 16f, (i + 1) / 16f);
+        }
         pose.popPose();
         super.render(hook, yaw, partialTick, pose, buffers, light);
     }
@@ -97,7 +101,7 @@ public class CastHookRenderer extends EntityRenderer<CastHook> {
         pose.mulPose(Axis.XP.rotationDegrees(Mth.sin(clock * 0.5f) * 35 * wallow));
         // Nose up on the way out of a jump, down on the way back in.
         if (leap > 0) pose.mulPose(Axis.ZP.rotationDegrees((since < 7 ? 1 : -1) * 35 * leap));
-        pose.mulPose(Axis.XP.rotationDegrees(Mth.sin(clock * 0.2f) * 10 * hook.tension() / Math.max(0.1f, hook.breakingLoad())));
+        pose.mulPose(Axis.XP.rotationDegrees(Mth.sin(clock * 0.2f) * 10 * Mth.clamp(hook.shownTension(), 0, 1)));
         FishView.draw(fish, cm, hook.fishKg(), pose, buffers, light, clock * 2.5f);
         pose.popPose();
     }
@@ -105,6 +109,34 @@ public class CastHookRenderer extends EntityRenderer<CastHook> {
     private static void vertex(VertexConsumer vc, PoseStack.Pose pose, int light, float x, int y, int u, int v) {
         vc.addVertex(pose, x - 0.5f, y - 0.5f, 0).setColor(-1).setUv(u, v).setOverlay(OverlayTexture.NO_OVERLAY)
                 .setLight(light).setNormal(pose, 0, 1, 0);
+    }
+
+    /**
+     * How far the middle of a fighting line hangs below the straight line from tip to fish: a little under its own
+     * weight when nothing pulls, nearly straight under load, and with slack the extra line hangs in a curve (a
+     * parabola of length {@code span + slack} sags by about sqrt(3 span slack / 8)).
+     */
+    static float fightDroop(float span, float tension, float slack) {
+        float taut = 0.04f * span * (1 - Mth.clamp(tension * 4, 0, 1));
+        float loose = slack > 0.01f ? Mth.sqrt(3 * span * slack / 8) : 0;
+        return Math.min(taut + loose, 0.6f * span + 1);
+    }
+
+    /** One point of a fighting line: straight from the fish to the tip, hanging {@code droop} in the middle. */
+    private static void droopVertex(float x, float y, float z, float droop, VertexConsumer vc, PoseStack.Pose pose, float t, float next) {
+        float px = x * t;
+        float py = y * t - droop * 4 * t * (1 - t) + 0.25f;
+        float pz = z * t;
+        float nx = x * next - px;
+        float ny = y * next - droop * 4 * next * (1 - next) + 0.25f - py;
+        float nz = z * next - pz;
+        float len = Mth.sqrt(nx * nx + ny * ny + nz * nz);
+        if (len > 0) {
+            nx /= len;
+            ny /= len;
+            nz /= len;
+        }
+        vc.addVertex(pose, px, py, pz).setColor(0xFF000000).setNormal(pose, nx, ny, nz);
     }
 
     /** One point of the line, as vanilla draws it but with the droop scaled by {@code sag}. */

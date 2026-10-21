@@ -20,7 +20,7 @@
     {
       "type": "modonomicon:text",
       "title": "The Fight",
-      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- The **drag** gives line when a fish pulls harder than it: set it below what the line holds.\n- **Hold use** to reel, **left-click** to lift; **]**, **[** or scroll: drag.\n- Look **at the fish**: a bent rod soaks its runs and jumps.\n- Keep the line tight, or the hook comes loose."
+      "text": "[#](FFFFFF)[#]() **Key points**\n\n- The **drag** gives line when a fish pulls harder than it: set it below what the line holds.\n- **Hold use** to reel, **left-click** to lift; **]**, **[** or scroll: drag.\n- Look **at the fish**: a bent rod soaks its runs and jumps.\n- Keep the line tight, or the hook comes loose."
     },
     {
       "type": "modonomicon:text",
@@ -29,11 +29,19 @@
     },
     {
       "type": "modonomicon:text",
+      "text": "**What the fish does.** It holds and pulls, swaying as it works and drifting round you; it **runs**, pulling harder and sweeping off to one side; it **shakes its head** (the line throbs); it **swims at you**, and the line goes slack unless you reel faster than it comes; tired, it **sulks** a moment, pulling less: gain line then."
+    },
+    {
+      "type": "modonomicon:text",
+      "text": "**Stretch.** The line stretches and the rod bends, so the tension builds and eases rather than jumping. String and mono give a lot, which softens every lunge; braid hardly gives, so you feel everything at once. Slack line hangs in a curve from the tip."
+    },
+    {
+      "type": "modonomicon:text",
       "text": "**Lifting.** Hold attack (left click) to lift the rod; let go and it comes back down. It flicks up with a light fish and lifts slowly under a heavy one (the bar left of the tension bar).\\\n\\\nA lift draws the fish back by most of the rod's length (0.9 m of line per metre of rod), against the drag but not against the reel's crank."
     },
     {
       "type": "modonomicon:text",
-      "text": "**Pumping.** Reel while the rod comes down and it comes down as fast as the reel takes up the line, with no load on the crank. Lift, wind down, lift again: that brings in a fish too heavy to reel.\\\n\\\n[#](FFFFFF)\ue100[#]() **Watch out:** let the rod down without reeling and the line goes slack; slack for over a second can throw the hook."
+      "text": "**Pumping.** Reel while the rod comes down and it comes down as fast as the reel takes up the line, with no load on the crank. Lift, wind down, lift again: that brings in a fish too heavy to reel.\\\n\\\n[#](FFFFFF)[#]() **Watch out:** let the rod down without reeling and the line goes slack; slack for over a second can throw the hook."
     },
     {
       "type": "modonomicon:text",
@@ -43,7 +51,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**The rod's angle.** The rod is held a little above where you look, and up to 60\u00b0 higher while lifted. Look at the fish and the rod bends, soaking the spikes of runs and jumps. Look away or up and it also adds side pressure, which tires the fish faster.\\\n\\\n[#](FFFFFF)\ue101[#]() **Watch out:** pointing the rod straight down the line soaks nothing. Every jump hits the line in full."
+      "text": "**The rod's angle.** The rod is held a little above where you look, and up to 60° higher while lifted. Look at the fish and the rod bends, soaking the spikes of runs and jumps. Look away or up and it also adds side pressure, which tires the fish faster.\\\n\\\n[#](FFFFFF)[#]() **Watch out:** pointing the rod straight down the line soaks nothing. Every jump hits the line in full."
     },
     {
       "type": "modonomicon:text",
@@ -53,7 +61,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**Above the hotbar:** the drag, the line out and the line left, and the alerts **Drag slipping**, **Slack line!** and **It's running!** (only while the fish takes line)."
+      "text": "**Above the hotbar:** the drag, the line out and the line left, and the alerts **Drag slipping**, **Slack line!**, **Swimming at you!**, **It's running!** (only while the fish takes line), **Head shakes!** and **It's sulking**."
     },
     {
       "type": "modonomicon:text",
@@ -88,7 +96,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "[#](FFFFFF)\ue103[#]() **In depth.** A rod loaded above 70%% of its rating wears; above its rating it can crack. A worn rod holds less (down to 60%% when nearly broken), a frayed line holds less (down to half its test; the rod's tooltip, the drag readout and the HUD show what it holds now), a worn reel's drag gets jerky."
+      "text": "[#](FFFFFF)[#]() **In depth.** A rod loaded above 70%% of its rating wears; above its rating it can crack. A worn rod holds less (down to 60%% when nearly broken), a frayed line holds less (down to half its test; the rod's tooltip, the drag readout and the HUD show what it holds now), a worn reel's drag gets jerky."
     },
     {
       "type": "modonomicon:text",

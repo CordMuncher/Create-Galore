@@ -95,6 +95,10 @@ public class CastHook extends FishingHook {
     private static final EntityDataAccessor<Integer> OWNER = SynchedEntityData.defineId(CastHook.class, EntityDataSerializers.INT);
     /** How high the rod is lifted, 0..1 (see {@link RodLift}), so everyone sees it come up. */
     private static final EntityDataAccessor<Float> ROD_HEIGHT = SynchedEntityData.defineId(CastHook.class, EntityDataSerializers.FLOAT);
+    /** Metres of slack line while fighting, so clients draw it sagging. */
+    private static final EntityDataAccessor<Float> SLACK = SynchedEntityData.defineId(CastHook.class, EntityDataSerializers.FLOAT);
+    /** What the hooked fish is doing ({@link Fight.Mood} ordinal), for the HUD. */
+    private static final EntityDataAccessor<Byte> MOOD = SynchedEntityData.defineId(CastHook.class, EntityDataSerializers.BYTE);
 
     public static final int FLAG_SLIPPING = 1;
     public static final int FLAG_STALLED = 2;
@@ -103,6 +107,8 @@ public class CastHook extends FishingHook {
     public static final int FLAG_REELING = 16;
     /** The reel is grinding: cranked against a slipping drag past the half-second grace (it wears now). */
     public static final int FLAG_GRINDING = 32;
+    /** The fish is swimming at the angler faster than the line is wound in: slack is building. */
+    public static final int FLAG_COMING = 64;
 
     // Entity event ids: the client handles 21, 35 and 63 itself before the entity sees them (63 casts to Sniffer),
     // and Entity/FishingHook use 31 and 53, so ours stay clear of those.
@@ -145,6 +151,7 @@ public class CastHook extends FishingHook {
     /** {@link #recede}'s smoothed speed, m/s. */
     private double recedeSpeed;
     private double heading;
+    private double fishDepth = 0.7;
     private boolean forceBite;
     /** Test tool: the fish the forced bite will be (null: whatever the pool gives). */
     private BiteSampler.Bite forcedBite;
@@ -311,6 +318,8 @@ public class CastHook extends FishingHook {
         builder.define(MOUNT, Optional.empty());
         builder.define(OWNER, -1);
         builder.define(ROD_HEIGHT, 0f);
+        builder.define(SLACK, 0f);
+        builder.define(MOOD, (byte) 0);
     }
 
     public Phase phase() {
@@ -357,6 +366,45 @@ public class CastHook extends FishingHook {
 
     public boolean flag(int flag) {
         return (entityData.get(FLAGS) & flag) != 0;
+    }
+
+    /** Metres of slack line while fighting. */
+    public float slack() {
+        return entityData.get(SLACK);
+    }
+
+    /** What the hooked fish is doing. */
+    public Fight.Mood mood() {
+        Fight.Mood[] moods = Fight.Mood.values();
+        return moods[Math.floorMod(entityData.get(MOOD), moods.length)];
+    }
+
+    // What the client shows: the synced loads eased a little, quick to rise (a jolt shows at once) and slower to fall,
+    // so a bar or a bent rod reads as a strain rather than a flicker.
+    private float shownTension;
+    private float shownRodLoad;
+    private float shownReelLoad;
+    private float shownSlack;
+
+    public float shownTension() {
+        return shownTension;
+    }
+
+    public float shownRodLoad() {
+        return shownRodLoad;
+    }
+
+    /** Negative without a reel, as {@link #reelLoad()}. */
+    public float shownReelLoad() {
+        return reelLoad() < 0 ? -1 : shownReelLoad;
+    }
+
+    public float shownSlack() {
+        return shownSlack;
+    }
+
+    private static float ease(float shown, float target) {
+        return shown + (target - shown) * (target > shown ? 0.6f : 0.25f);
     }
 
     /** The hooked fish's item, or null while nothing is on. */
@@ -420,6 +468,10 @@ public class CastHook extends FishingHook {
                         getZ() + (lerpZ - getZ()) / lerpSteps);
                 lerpSteps--;
             }
+            shownTension = ease(shownTension, tension());
+            shownRodLoad = ease(shownRodLoad, rodLoad());
+            shownReelLoad = ease(shownReelLoad, Math.max(0, reelLoad()));
+            shownSlack += (slack() - shownSlack) * 0.35f;
             return;
         }
         Player owner = getPlayerOwner();
@@ -440,7 +492,7 @@ public class CastHook extends FishingHook {
             case BITE -> biting(owner, rod, stats, tip);
             case FIGHTING -> fighting(owner, rod, stats, tip);
         }
-        if (!isRemoved()) entityData.set(LINE_OUT, (float) tip.distanceTo(position()));
+        if (!isRemoved()) entityData.set(LINE_OUT, (float) (phase() == Phase.FIGHTING && fight != null ? fight.lineOut() : tip.distanceTo(position())));
     }
 
     private void fly(Player owner, RodStats stats, Vec3 tip) {
@@ -808,8 +860,11 @@ public class CastHook extends FishingHook {
         entityData.set(DRAG, (float) (stats.isPole() ? 0 : controls.drag));
         int flags = (fight.slipping() ? FLAG_SLIPPING : 0) | (fight.stalled() ? FLAG_STALLED : 0)
                 | (fight.running() && fight.takingLine() ? FLAG_RUNNING : 0) | (fight.slackLine() ? FLAG_SLACK : 0)
-                | (controls.reeling ? FLAG_REELING : 0) | (fight.grinding() ? FLAG_GRINDING : 0);
+                | (controls.reeling ? FLAG_REELING : 0) | (fight.grinding() ? FLAG_GRINDING : 0)
+                | (fight.comingAtYou() ? FLAG_COMING : 0);
         entityData.set(FLAGS, (byte) flags);
+        entityData.set(SLACK, (float) fight.slack());
+        entityData.set(MOOD, (byte) fight.mood().ordinal());
         if (fight.jumped()) {
             float size = (float) Mth.clamp(fight.weight() / 20, 0, 1);
             level().playSound(null, blockPosition(), SoundEvents.GENERIC_SPLASH, SoundSource.NEUTRAL, 0.4f + 0.5f * size, 1.4f - 0.6f * size);
@@ -832,9 +887,12 @@ public class CastHook extends FishingHook {
         return recedeSpeed;
     }
 
-    /** The hooked fish swims around the angler at the fight's distance, staying in its fluid. */
+    /**
+     * The hooked fish swims around the angler at the fight's distance, staying in its fluid: on a slow arc while it
+     * holds, sweeping off to one side on a run, near the top while it shakes its head, deep while it runs or sulks.
+     */
     private void moveFish(Vec3 tip) {
-        heading += random.nextGaussian() * (fight.running() ? 0.08 : 0.025);
+        heading += fight.turn() + random.nextGaussian() * 0.006;
         double distance = fight.distance();
         Vec3 next = null;
         for (int attempt = 0; attempt < 9 && next == null; attempt++) {
@@ -849,8 +907,15 @@ public class CastHook extends FishingHook {
         }
         if (next == null) return;
         double surface = medium.equals("void") ? FishingWater.voidSurface(level()) : FishingWater.surface(level(), BlockPos.containing(next));
-        double depth = fight.jumped() ? -0.6 : 0.7 + 0.5 * Math.sin(tickCount * 0.05);
-        setPos(next.x, surface - depth, next.z);
+        double want = switch (fight.mood()) {
+            case RUN -> 1.4;
+            case SHAKE -> 0.3;
+            case CHARGE -> 0.5;
+            case REST -> 1.1;
+            case HOLD -> 0.7 + 0.4 * Math.sin(tickCount * 0.05);
+        };
+        fishDepth += (want - fishDepth) * 0.08;
+        setPos(next.x, surface - (fight.jumped() ? -0.6 : fishDepth), next.z);
     }
 
     /**
@@ -1106,7 +1171,7 @@ public class CastHook extends FishingHook {
             b.append(String.format(java.util.Locale.ROOT, "; fight %s %.2f kg at %.1f m, tension %.1f/%.1f kg, drag %.1f, stamina %.2f, %s",
                     fishId(), fight.weight(), fight.distance(), fight.tension(), fight.tackle().breakingLoad(),
                     controls.drag, fight.stamina(), fight.outcome()));
-            b.append(String.format(java.util.Locale.ROOT, ", slack %.2f m, angle %.0f", fight.slack(), Math.toDegrees(controls.rodAngle)));
+            b.append(String.format(java.util.Locale.ROOT, ", slack %.2f m, angle %.0f, %s", fight.slack(), Math.toDegrees(controls.rodAngle), fight.mood()));
         }
         return b.toString();
     }

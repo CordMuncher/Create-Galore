@@ -102,9 +102,9 @@ public final class FightRules {
         idle.drag = 2;
         rng = new SplittableRandom(5);
         for (int i = 0; i < 1200 && !held.outcome().over(); i++) held.tick(idle, rng);
-        out.add(new Check(!held.outcome().over() && held.spooled() && held.distance() <= 40 && !held.slipping(),
-                String.format(Locale.ROOT, "a 5 kgf fish on an empty spool and 20 kg line is held at %.0f m (%s)",
-                        held.distance(), held.outcome())));
+        out.add(new Check(!held.outcome().over() && held.spooled() && held.lineOut() <= 40 && !held.slipping(),
+                String.format(Locale.ROOT, "a 5 kgf fish on an empty spool and 20 kg line is held with %.0f m out (%s)",
+                        held.lineOut(), held.outcome())));
         Fight strip = new Fight(steady(1.5, 1000), rig(2, 20, 40), 20, 35);
         rng = new SplittableRandom(6);
         while (!strip.outcome().over() && strip.ticks() < 2400) strip.tick(idle, rng);
@@ -127,7 +127,7 @@ public final class FightRules {
         for (int i = 0; i < 400 && !charge.outcome().over(); i++) {
             charge.tick(walk, rng);
             if (charge.charging()) charged++;
-            most = Math.max(most, charge.distance());
+            most = Math.max(most, charge.lineOut());
         }
         out.add(new Check(charged > 0 && most <= 20 + 1e-9, String.format(Locale.ROOT,
                 "walking off from a charging fish takes no line (most out %.1f m of 20, %d ticks charging)", most, charged)));
@@ -302,7 +302,7 @@ public final class FightRules {
         c.recede = 6;
         SplittableRandom rng = new SplittableRandom(7);
         for (int i = 0; i < 100; i++) fight.tick(c, rng);
-        double gained = fight.distance() - 20;
+        double gained = fight.lineOut() - 20;
         boolean ok = wantsLine ? gained > 5 : gained < 0.01;
         return new Check(ok, String.format(Locale.ROOT, "a %.1f kg fish behind a boat at 6 m/s on a 10 kg drag %s (%.1f m of line out in 5 s)",
                 kg, wantsLine ? "takes line" : "is towed", gained));

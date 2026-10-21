@@ -285,7 +285,7 @@ public final class RodItemRenderer extends BlockEntityWithoutLevelRenderer {
         if (hook == null) return Math.max(0, current - (float) Fight.LOWER_RATE * dt);
         float server = hook.rodHeight();
         if (player != Minecraft.getInstance().player) return current + (server - current) * Math.min(1, dt * 12);
-        double load = hook.phase() == CastHook.Phase.FIGHTING ? hook.rodLoad() : 0;
+        double load = hook.phase() == CastHook.Phase.FIGHTING ? hook.shownRodLoad() : 0;
         float local = RodLift.lifting(player) ? current + (float) Fight.liftRate(load) * dt
                 : current - (float) (hook.flag(CastHook.FLAG_REELING) && hook.phase() == CastHook.Phase.FIGHTING
                         ? Math.min(Fight.LOWER_RATE, 0.5) : Fight.LOWER_RATE) * dt;
@@ -310,7 +310,7 @@ public final class RodItemRenderer extends BlockEntityWithoutLevelRenderer {
         Vector3f toFish = null;
         if (hook != null) {
             load = switch (hook.phase()) {
-                case FIGHTING -> hook.rodLoad();
+                case FIGHTING -> hook.shownRodLoad();
                 case BITE -> 0.12f + 0.1f * Mth.sin(hook.tickCount * 1.7f);
                 case WAITING -> hook.flag(CastHook.FLAG_REELING) ? 0.06f : 0.02f;
                 default -> 0;
@@ -372,7 +372,7 @@ public final class RodItemRenderer extends BlockEntityWithoutLevelRenderer {
         if (!build.rod().telescopic()) motion.extension = 1;
 
         if (hook != null && hook.flag(CastHook.FLAG_REELING) && !hook.flag(CastHook.FLAG_STALLED)) {
-            float heavy = hook.phase() == CastHook.Phase.FIGHTING ? Mth.clamp(hook.tension() / Math.max(0.1f, hook.breakingLoad()), 0, 1) : 0;
+            float heavy = hook.phase() == CastHook.Phase.FIGHTING ? Mth.clamp(hook.shownTension(), 0, 1) : 0;
             motion.crank += dt * Mth.TWO_PI * 2.2f * (1.05f - 0.5f * heavy);
             motion.crank %= Mth.TWO_PI;
         }
