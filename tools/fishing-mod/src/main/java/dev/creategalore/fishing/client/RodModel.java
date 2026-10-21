@@ -143,10 +143,13 @@ final class RodModel {
         return rod.reel() ? 4 : 0;
     }
 
-    /** Half the blank's width at its butt, from how strong the rod is. */
+    /**
+     * Half the blank's width at its butt, from how strong the rod is: slim, as real blanks are (even a big-game rod's
+     * butt is about a thumb thick).
+     */
     private static float baseHalfWidth(TacklePart.Rod rod) {
-        if (!rod.reel()) return 0.75f;
-        return 0.45f + 0.35f * (float) Math.pow(Math.min(rod.maxLoad(), 45) / 45, 0.7);
+        if (!rod.reel()) return 0.42f;
+        return 0.24f + 0.2f * (float) Math.pow(Math.min(rod.maxLoad(), 45) / 45, 0.7);
     }
 
     /**
@@ -200,7 +203,7 @@ final class RodModel {
         float sectionLength = tele ? length / sections : length;
         float shown = tele ? sectionLength * (1 + (sections - 1) * Mth.clamp(state.extension(), 0, 1)) : length;
         float base = baseHalfWidth(rod);
-        float tipHalf = 0.38f * base + 0.02f;
+        float tipHalf = 0.3f * base + 0.03f;
 
         float[] weights = bendWeights(rod.action(), state.depth());
         pose.pushPose();

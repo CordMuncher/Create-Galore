@@ -19,6 +19,11 @@ import java.util.random.RandomGenerator;
  *   <li>An angler moving away from the fish (walking, or a boat) tows it: the water's drag on the fish, from its size
  *       and the speed, adds to its pull. A small fish on a strong rig is towed along; a big one takes line through
  *       the drag.</li>
+ *   <li>Lifting the rod (pumping): the rod comes up at a speed set by the load, fast as a flick with a light fish
+ *       and slow under a heavy one, and its tip drags the fish back by the rod's sweep, against the drag but not
+ *       against the reel's crank. Lowering it again leaves that much line slack, which the reel winds back with no
+ *       load on it; a slack line left too long can throw the hook. So a heavy fish the crank can't move is pumped
+ *       in: lift, then wind down.</li>
  *   <li>Runs and jumps add sudden spikes. Line stretch, a smooth drag and a bent rod soak part of each spike; a
  *       rod pointed straight down the line soaks nothing.</li>
  *   <li>Failures: tension over the breaking load snaps the line, a toothy fish bites through non-steel line,
@@ -48,6 +53,14 @@ public final class Fight {
     public static final double LINE_FRAY_PER_WEAR = 0.5;
     /** Water drag on a towed fish, kgf per kg^(2/3) per (m/s)^2. */
     public static final double TOW_DRAG = 0.07;
+    /** Rod lift speed with nothing on the line, in full lifts per second: a strike is a flick of a third of a second. */
+    public static final double LIFT_RATE = 3;
+    /** How much the load slows the lift: at the rod's rated load a lift is this many times + 1 slower. */
+    public static final double LIFT_HEAVY = 6;
+    /** How fast a rod let go of comes back down, in full lifts per second. */
+    public static final double LOWER_RATE = 0.8;
+    /** Slack (metres) up to which the line still counts as tight. */
+    public static final double SLACK_TIGHT = 0.05;
 
     private final FishFight fish;
     private final Tackle tackle;
@@ -81,6 +94,10 @@ public final class Fight {
     private double reelLife = Double.POSITIVE_INFINITY;
     private double rodLife = Double.POSITIVE_INFINITY;
     private double lineLife = Double.POSITIVE_INFINITY;
+    /** Rod height, 0 lowered to 1 fully lifted. */
+    private double rodHeight;
+    /** Line given back by lowering the rod and not yet wound in or taken by the fish, metres. */
+    private double slack;
 
     /**
      * @param fish          the species' fight data
@@ -107,6 +124,19 @@ public final class Fight {
         this.reelLife = reelDurabilityLeft;
         this.rodLife = rodDurabilityLeft;
         this.lineLife = lineFrayLeft;
+    }
+
+    /**
+     * How fast a rod lifts, in full lifts per second, against a line load of {@code rodLoad} (a share of the rod's
+     * rating): a light fish flicks up, a heavy one is a slow lift. The client draws its own rod with the same speed.
+     */
+    public static double liftRate(double rodLoad) {
+        return LIFT_RATE / (1 + LIFT_HEAVY * Math.max(0, rodLoad));
+    }
+
+    /** Where the rod starts when the fight does (it was being lifted for the strike). */
+    public void setRodHeight(double height) {
+        rodHeight = clamp(height, 0, 1);
     }
 
     /** Advances the fight by one tick. Does nothing once it is over. */
@@ -154,9 +184,44 @@ public final class Fight {
         double recede = Math.max(0, in.recede);
         // Towing the fish through the water as the angler moves off: drag from its size and the speed.
         double load = charging ? pull : pull + TOW_DRAG * Math.pow(weight, 2.0 / 3) * recede * recede;
-        slipping = !charging && load > drag;
+
+        // The rod: lifting draws the fish back by the tip's travel (once any slack is taken up), lowering gives slack.
+        // Winding while the rod comes down: it comes down as fast as the reel takes up the line ("winding down"), so
+        // the line stays tight and the crank turns with no load.
+        double drawn = 0;
+        boolean windingDown = false;
+        if (in.liftSweep > 0) {
+            double before = rodHeight;
+            windingDown = !in.lifting && in.reeling && rodHeight > 0;
+            double lower = windingDown ? Math.min(LOWER_RATE, retrieve / in.liftSweep) : LOWER_RATE;
+            rodHeight = in.lifting ? Math.min(1, rodHeight + liftRate(load / tackle.rodMaxLoad()) * DT)
+                    : Math.max(0, rodHeight - lower * DT);
+            double travel = (rodHeight - before) * in.liftSweep;
+            if (travel < 0) {
+                slack -= travel;
+            } else {
+                double taken = Math.min(slack, travel);
+                slack -= taken;
+                drawn = travel - taken;
+            }
+            if (windingDown) slack = Math.max(0, slack - retrieve * DT);
+        }
+        if (drawn > 0 && !charging) {
+            // Dragging the fish through the water at the tip's speed.
+            double speed = drawn / DT;
+            load += TOW_DRAG * Math.pow(weight, 2.0 / 3) * speed * speed;
+        }
+        boolean loose = slack > SLACK_TIGHT;
+        slipping = !charging && !loose && load > drag;
         stalled = false;
-        if (charging) {
+        if (loose && !charging) {
+            // Slack from a lowered rod: the reel winds it back unloaded, and the fish swims off with the rest.
+            double swim = Math.min(slack, fishSpeed * 0.8 * DT);
+            slack -= swim;
+            distance += swim;
+            if (in.reeling && !windingDown) slack = Math.max(0, slack - retrieve * DT);
+            tension = 0;
+        } else if (charging) {
             // Swimming at the angler. One who walks or sails off faster than that just tows it: the line is never
             // slack enough to come off the spool, so the gap can only close.
             distance -= Math.max(0, fish.speed() * 0.6 - recede) * DT;
@@ -170,7 +235,13 @@ public final class Fight {
         } else if (slipping) {
             distance += (fishSpeed * 0.8 + recede) * (1 - drag / load) * DT;
             tension = drag;
-        } else if (in.reeling) {
+        } else if (drawn > 0) {
+            // The lift brings the fish in; cranking at the same time adds what the reel can wind on top.
+            distance -= drawn;
+            if (in.reeling && load < crank) distance -= retrieve * (1 - load / crank) * DT;
+            stalled = in.reeling && load >= crank;
+            tension = in.reeling ? load * 1.1 : load;
+        } else if (in.reeling && !windingDown) {
             if (load >= crank) {
                 stalled = true;
                 tension = load;
@@ -297,6 +368,16 @@ public final class Fight {
 
     public double distance() {
         return distance;
+    }
+
+    /** Rod height, 0 lowered to 1 fully lifted. */
+    public double rodHeight() {
+        return rodHeight;
+    }
+
+    /** Metres of slack line from lowering the rod, not yet wound in. */
+    public double slack() {
+        return slack;
     }
 
     public double startDistance() {

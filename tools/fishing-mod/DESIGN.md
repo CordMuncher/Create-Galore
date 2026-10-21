@@ -119,7 +119,7 @@ written to the stack (it lives on the hook entity).
   structure, temperature), weighted by bait/lure preference, hook size vs mouth size, line visibility
   vs wariness, depth zone of the presentation, lure speed when trolling, chum in the area, and
   **fishing pressure** (catches dim a spot for a while, so moving and trolling pay). Bite shows as
-  float dips, rod-tip twitches or a strike; strike = right-click within a window ≥ ping + 300 ms.
+  float dips, rod-tip twitches or a strike; strike = right-click within a window ≥ ping + 300 ms. *As built (since the rod-lift change): strike = a lift of the rod (attack held), reeling never strikes; lifting also pumps a hooked fish and twitches a lure.*
 - **Size on the hook**: Tide's typical/record cm → weight by `W = a·L^b` (`a` by body shape), skewed
   by hook and bait size; classes Young / Common / Large / Trophy, plus rare Unique individuals.
 - **Per-species fight values** (the cheap ones Emre described): `fight_per_kg`, `stamina`, and a
@@ -138,7 +138,7 @@ written to the stack (it lives on the hook entity).
   tension > line test (or a toothy fish on non-steel), rod damage above max load, hook thrown after
   sustained slack. Stamina drains with tension, recovers when slack. A tired fish within ~2 m lands;
   heavy fish need a Landing Net in the off hand or may shake off at the surface.
-- **Sync**: reeling and strikes use vanilla hold-to-use (server sees `isUsingItem`); drag changes are
+- **Sync**: reeling uses vanilla hold-to-use (server sees `isUsingItem`); lifting the rod (attack held while the line is out) is a `LiftInput` packet on press and release, and the rod's height is synced on the hook; drag changes are
   one validated, rate-limited packet; tension is a byte on the hook's synced data; the owner gets a
   HUD packet. Payloads are required (not optional), the mod being on both sides.
 - **XP**: every catch drops vanilla XP orbs at the angler: base by rarity (common 3 → legendary 40) ×

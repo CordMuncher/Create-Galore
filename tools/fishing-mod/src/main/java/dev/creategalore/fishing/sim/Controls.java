@@ -24,6 +24,13 @@ public final class Controls {
     public boolean crankThroughSlip = true;
     /** How fast the rod tip moves away from the fish, m/s (walking off, or a boat under way); 0 in the simulator. */
     public double recede;
+    /** Lifting the rod (a player holding attack; see {@link Fight} for pumping). Machines never lift. */
+    public boolean lifting;
+    /**
+     * Metres of line one full lift of the rod, from low to high, draws back: about the rod's length. 0 (machines, the
+     * simulator's default anglers) leaves the rod where it is.
+     */
+    public double liftSweep;
 
     /** Returns the crank limit to use against {@code tackle}: {@link #crankLimit} if set, else the reel's power. */
     public double crankLimit(Tackle tackle) {

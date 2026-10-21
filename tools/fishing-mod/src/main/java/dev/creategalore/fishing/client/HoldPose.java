@@ -3,6 +3,7 @@ package dev.creategalore.fishing.client;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import dev.creategalore.fishing.FishingRegistry;
+import dev.creategalore.fishing.cast.CastHook;
 import dev.creategalore.fishing.cast.CatchHolding;
 import dev.creategalore.fishing.fish.CatchInfo;
 import net.minecraft.client.Minecraft;
@@ -70,9 +71,16 @@ public final class HoldPose {
         return phase < 0.2f ? Mth.sin(phase * 5 * Mth.TWO_PI * 2) * (1 - phase * 5) : 0;
     }
 
-    /** Arm poses for a player holding a fish; called after vanilla set up the model. */
+    /**
+     * Arm poses for a player holding a fish, or lifting their rod (the rod arm comes up with the rod, as everyone else
+     * sees it in third person); called after vanilla set up the model.
+     */
     public static void pose(PlayerModel<?> model, LivingEntity entity, float age) {
-        if (!(entity instanceof Player player) || !holding(player)) return;
+        if (!(entity instanceof Player player)) return;
+        if (!holding(player)) {
+            liftArm(model, player);
+            return;
+        }
         CatchHolding.Held held = player.getData(CatchHolding.HELD);
         float k = kick(age) * 0.08f;
         if (held.twoHands()) {
@@ -92,6 +100,16 @@ public final class HoldPose {
         }
         model.rightSleeve.copyFrom(model.rightArm);
         model.leftSleeve.copyFrom(model.leftArm);
+    }
+
+    private static void liftArm(PlayerModel<?> model, Player player) {
+        if (!(player.fishing instanceof CastHook hook) || hook.isRemoved()) return;
+        float h = hook.rodHeight();
+        if (h <= 0) return;
+        boolean rightHand = (hook.hand() == InteractionHand.MAIN_HAND) == (player.getMainArm() == HumanoidArm.RIGHT);
+        ModelPart arm = rightHand ? model.rightArm : model.leftArm;
+        arm.xRot -= 0.9f * h * h * (3 - 2 * h);
+        (rightHand ? model.rightSleeve : model.leftSleeve).copyFrom(arm);
     }
 
     /** Draws the held fish on other players (and on yourself in third person). */

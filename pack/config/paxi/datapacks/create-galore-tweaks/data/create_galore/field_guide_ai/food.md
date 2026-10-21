@@ -1,4 +1,4 @@
-<!-- sources sha256:1f5699c6980526df054e177af3590c5d07a664f903351c2b4792a7b8a4aafa49 -->
+<!-- sources sha256:0128974ccbe7bcd27050413d70d1cbfcd5d26095bac3ac7b9dbc0ac8400744ff -->
 # Food and Farming (food)
 
 ## food/first_food | Food in Your First Days
@@ -8,7 +8,7 @@
 - Campfire: 3 sticks, coal or charcoal, 3 logs. No coal: smelt a log in a furnace for charcoal. Cooks 4 things at once with no fuel, boils water, keeps you warm. Bowls: 3 planks make 4.
 - Board and knife: shows item farmersdelight:cutting_board. Cutting Board (4 planks, 2 sticks) + Flint Knife (flint, stick) slice pineapples, melons, pumpkins and cut meat. Cooking Pot needs iron, so comes later.
 - Everywhere: grass drops wheat seeds; short grass also coffee beans and cassava seeds (all three summer crops). Oak leaves drop apples (rare) and acorns. Mushroom stew: a brown + a red mushroom in a bowl, on a crafting table. Zombies sometimes drop onions.
-- Fishing: Bamboo Pole [create_galore_fishing:bamboo_pole] (3 bamboo or sugar cane) needs no reel. In inventory right-click it with a String Line (4 string + stick), a hook (iron nuggets) and worms. Hold to cast, strike when float dips, hold to reel. Cook fish on campfire.
+- Fishing: Bamboo Pole [create_galore_fishing:bamboo_pole] (3 bamboo or sugar cane) needs no reel. In inventory right-click it with a String Line (4 string + stick), a hook (iron nuggets) and worms. Hold to cast, left-click a bite, hold to reel. Cook fish on campfire.
   - Warning: pufferfish, lionfish, stonefish, blowfish, boxfish, hagfish, stingrays poison you raw.
   - Tip: no rod? Aquaculture's fish swim in ponds/rivers; hit one and it drops itself, edible even raw.
   - String Line: 4 string and a stick. Hooks: iron nuggets. Worms: hoeing grass turns one up now and then. Each biome has its own fish (see fishing/overview).

@@ -142,6 +142,7 @@ public final class FishingRegistry {
 
     public static final DeferredHolder<SoundEvent, SoundEvent> DRAG_CLICK = sound("reel.drag");
     public static final DeferredHolder<SoundEvent, SoundEvent> REEL_CRANK = sound("reel.crank");
+    public static final DeferredHolder<SoundEvent, SoundEvent> DRAG_SCREAM = sound("reel.drag_loop");
     public static final DeferredHolder<SoundEvent, SoundEvent> REEL_GRIND = sound("reel.grind");
     public static final DeferredHolder<SoundEvent, SoundEvent> REEL_BAIL = sound("reel.bail");
     public static final DeferredHolder<SoundEvent, SoundEvent> LINE_STRAIN = sound("line.strain");

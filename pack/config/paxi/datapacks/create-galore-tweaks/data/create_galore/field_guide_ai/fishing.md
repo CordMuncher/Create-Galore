@@ -1,9 +1,9 @@
-<!-- sources sha256:0b0bf0ca39e135e5b1c3c8c903c8490f7a13420e94b2a08b89cb7bf4f5084981 -->
+<!-- sources sha256:08db6afb4557b0aaa6ba77a6992f0fea4ab7ed4d5462dffb29fe7c74fcfa3046 -->
 # Fishing (fishing)
 
 ## fishing/overview | Fishing
 - Fishing runs on Create Galore Fishing. Rods are **built from parts**: a blank, a reel, line, a hook and a float, sinker or lure, fitted at a Tackle Bench (see fishing/tackle_bench) or by right-clicking the rod with a part in the inventory. A rod holds fish up to a weight set by its weakest part
-- Hold use to cast, **strike** on a bite, fight with the **drag** and reel. What bites depends on water, time and bait. Fish have real weights
+- Hold use to cast, **strike** by lifting the rod (attack) on a bite, fight with the **drag**, the reel and the rod. What bites depends on water, time and bait. Fish have real weights
 - 180+ fish across rivers, oceans, caves, lava, void, from Create Galore Fishing, Hybrid Aquatic, Aquaculture, Alex's Caves, a few others
 - Start here: (see fishing/casting) (see fishing/the_fight) (see fishing/landing) (see fishing/rods) (see fishing/tackle) (see fishing/bait) (see fishing/where_fish_live). Further: (see fishing/cleaning) (see fishing/rod_machines) (see fishing/trolling) (see fishing/aquarium) (see fishing/journal)
 - Fishing Journal [tide:fishing_journal]: every player gets one on joining; catch a fish to unlock its page (where it lives, when it bites, your longest and heaviest)
@@ -13,8 +13,8 @@
 ## fishing/casting | Casting and the Bite
 - **Hold** use to charge, let go to cast; full charge takes a second. A full cast goes 8 m plus 7 m per metre of rod; a rig far lighter/heavier than the rod's casting range ("Casts 5-30 g best" tooltip) falls short. A pole reaches only its 8 m of line; no cast goes past the line on the reel
 - A rod casts only with line and a hook (or a lure), and a reel unless it is a pole
-- Rigs: **float** holds bait at the surface, dips on a bite; **sinker** takes bait to the bottom, rod tip taps on a bite; **lure** needs no bait: wind it back by holding use, it dives to its depth and works at the speed it likes
-- Bite: plop on the float or tap on the rod, "Bite! Hold use to strike" blinks above the hotbar. **Strike** by using the rod within the window: about 1.4 s on a float or sinker, 1 s on a lure. Miss: the fish lets go, and 3 times in 10 takes the bait
+- Rigs: **float** holds bait at the surface, dips on a bite; **sinker** takes bait to the bottom, rod tip taps on a bite; **lure** needs no bait: wind it back by holding use, it dives to its depth and works at the speed it likes; lifting the rod twitches it toward you
+- Bite: plop on the float or tap on the rod, "Bite! Lift the rod to strike" blinks above the hotbar. **Strike** by lifting the rod (hold attack, left click) within the window: about 1.4 s on a float or sinker, 1 s on a lure. Reeling never sets the hook. The strike is a flick; a rod already held high has nothing left to lift, let it down first. Miss: the fish lets go, and 3 times in 10 takes the bait
 - Junk, treasure, crates are struck the same way and come in as a dead weight
 - Enchantments: Lure and Luck of the Sea work on every rod; each Lure level cuts the wait by about 15%; luck shifts the roll from junk toward treasure and rare fish. Unbreaking and Mending work
 - Wait times: a rig fish want in a good spot gets a bite about every 17 s on average; poor match about once a minute; bare hook nothing wants two minutes or more; no wait past four minutes. Rain shortens waits 15%. Lava waits 1.6 times as long, void 1.8 times
@@ -23,16 +23,18 @@
 
 ## fishing/the_fight | The Fight
 - **Drag** gives line when a fish pulls harder than it; set it below what the line holds. **Hold use** to reel (slower the harder it pulls); when it pulls more than the drag, the drag slips and line runs out at the fish's speed
+- **Lifting**: hold attack (left click) to lift the rod, let go and it comes back down; flicks up with a light fish, lifts slowly under a heavy one; a short bar left of the tension bar shows the height. A lift draws the fish back by most of the rod's length (0.9 m of line per metre of rod), against the drag but not against the reel's crank
+- **Pumping**: reel while the rod comes down and it comes down as fast as the reel takes up line, no load on the crank. Lift, wind down, lift again: brings in a fish too heavy to reel. Watch out: letting the rod down without reeling leaves slack; slack over a second can throw the hook
 - A fish tires against the line's tension, so a drag set too light never wears it out. A tired fish within 1.5 m is landed; a fresh one bolts again
 - Change drag any time a rod is in hand (before casting, waiting, mid-fight): **Drag +** / **Drag -** keys, default **]** and **[** (rebind under Create Galore Fishing in Controls), or scroll wheel while a line is out or while sneaking. Setting stays on the rod. A pole has no drag
-- Rod angle: rod held a little above where you look. Look at the fish: the rod bends and soaks spikes of runs and jumps. Look away or up: side pressure, tires the fish faster. Watch out: pointing the rod straight down the line soaks nothing; every jump hits the line in full
+- Rod angle: rod held a little above where you look, up to 60° higher while lifted. Look at the fish: the rod bends and soaks spikes of runs and jumps. Look away or up: side pressure, tires the fish faster. Watch out: pointing the rod straight down the line soaks nothing; every jump hits the line in full
 - HUD above hotbar: tension bar against what the rig breaks at (blue slack, green, yellow from 60%, red from 85%, tick where drag starts to slip), drag, line out, line left; alerts Drag slipping, Slack line!, It's running!
 - Losses: **snapped** line (tension over line's or leader's test); **bitten off** (toothy fish, no Steel Leader); **rod broke** (load well over the blank's rating, or rod worn through); **reel seized** (reel worn through; the line parts); **threw the hook** (slack over a second, or a jump on a loose line); **spooled** (took every metre, then snapped the line against the empty reel)
 - Snapped/bitten/spooled/seized: lose the line that was out plus a few metres, plus hook, leader, float or lure, bait. A broken rod gives its parts back
 - Wear: every fight wears every part a little, even an easy catch: rod and reel lose 1 durability, the line frays (a gently fought line lasts about 100 fights), leader, hook, float, sinker or lure each last about 200 fights (tooltip shows Worn %, line shows Frayed %; the tackle bench warns above 90%). Nothing lasts for ever. A rod, reel or line worn through breaks mid-fight and the fish is gone; a leader, hook, float, sinker or lure can wear out mid-fight too, but a hooked fish stays on. Check tackle before going after a big one (like a pickaxe before a long dig). Reeling while line runs out grinds the reel: after half a second it wears fast, with the square of the drag (half the reel's drag grinds a quarter as fast)
 - Walking or sailing away pulls on a hooked fish: a small one is towed along, a big one takes line through the drag
 - In depth: rod loaded above 70% of its rating wears, above its rating can crack. Worn rod holds less (down to 60% when nearly broken); frayed line breaks earlier (down to half its test) and wears out once frayed through; worn reel's drag gets jerky. Toothy fish: pike, muskellunge, gar, piranha, barracuda, sharks, morays, anglerfish, lionfish, Dragon Fish
-- Sounds: drag ratchet clicks as line leaves the spool (slow tick when leaning, buzz on a run), reel cranks and grinds, line creaks above about 65% of breaking load, snaps with a twang
+- Sounds: drag ratchet clicks as line leaves the spool (slow tick when leaning, a scream on a fast run), reel cranks and grinds, line creaks above about 65% of breaking load, snaps with a twang
 - Letting go of the rod, logging out or the chunk unloading reels the line in: a fish on is lost
 - Related: (see fishing/landing) (see fishing/tackle) (see fishing/tackle_bench)
 

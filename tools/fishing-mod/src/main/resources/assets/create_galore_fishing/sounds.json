@@ -13,6 +13,14 @@
       }
     ]
   },
+  "reel.drag_loop": {
+    "subtitle": "subtitles.create_galore_fishing.reel.drag_loop",
+    "sounds": [
+      {
+        "name": "create_galore_fishing:reel/drag_loop"
+      }
+    ]
+  },
   "reel.crank": {
     "subtitle": "subtitles.create_galore_fishing.reel.crank",
     "sounds": [
