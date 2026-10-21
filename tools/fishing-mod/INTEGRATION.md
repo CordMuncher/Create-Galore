@@ -290,7 +290,7 @@ to 40 times higher. If careless fishing should land less, raise the snap risk or
   tested by code and by dropping fish into water; a full belt line wasn't built in game.
 - **Weak rotation and big fish**: a geared drive on one water wheel (8 RPM) needs several minutes to wind in a big
   tuna in its lowest gear. The Basic drive grinding a strong fish through a slipping drag wears its reel about 40
-  times faster than the geared drive (in the sim, on a tuna); since 0.2.0 one fight takes at most a tenth of a reel.
+  times faster than the geared drive (in the sim, on a tuna); there is no cap (Emre, 0.3.0): it can wear a reel through in one fight, which loses the fish.
 - **Translations**: this mod's own strings are English only; the strings ported from Tide keep Tide's eight locales.
 - **By design**: a line out isn't saved, so logging out or the chunk unloading reels it in (a fish on is lost).
   Machines on a ship fish only while the ship is loaded.

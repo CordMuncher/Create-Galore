@@ -25,7 +25,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Once struck, the fish pulls. While it pulls less than the drag, holding use reels it in, slower the harder it pulls. When it pulls more, the drag slips and line runs out at the fish's speed.\\\n\\\nA fish tires against the line's tension, so a drag set too light never wears it out. A tired fish within 1.5 m is landed; a fresh one bolts again."
+      "text": "Once struck, the fish pulls. While it pulls less than the drag, holding use reels it in, slower the harder it pulls. When it pulls more, the drag slips and line runs out at the fish's speed.\\\n\\\nA fish tires against the line's tension, so a drag set too light never wears it out. A tired fish within 1.5 m is landed; a fresh one bolts again.\\\n\\\nWalking or sailing away pulls on the fish: a small one is towed along, a big one takes line through the drag."
     },
     {
       "type": "modonomicon:text",
@@ -45,12 +45,17 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**How a fish gets away:**\n\n- **Snapped line**: tension over the line's test (or the leader's).\n- **Bitten off**: a toothy fish on line without a Steel Leader.\n- **Rod broke**: a load well over the blank's rating.\n- **Threw the hook**: slack for over a second, or a jump on a loose line.\n- **Spooled**: it took every metre on the reel."
+      "text": "**How a fish gets away:**\n\n- **Snapped line**: tension over the line's test (or the leader's).\n- **Bitten off**: a toothy fish on line without a Steel Leader.\n- **Rod broke**: a load well over its rating, or worn through.\n- **Reel seized**: worn through; the line parts.\n- **Threw the hook**: slack for over a second, or a jump on a loose line.\n- **Spooled**: every metre out, then the line snapped."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "A snapped, bitten or spooled line loses the line that was out plus a few metres, and the hook, leader, float or lure and bait with it. A rod that breaks gives its parts back.\\\n\\\n**Wear.** Every fight wears the rod, the reel and the line. Reeling while the drag slips grinds the reel: it wears many times faster."
+      "text": "A snapped, bitten, spooled or seized line loses the line that was out plus a few metres, and the hook, leader, float or lure and bait with it. A rod that breaks gives its parts back."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Wear.** Every fight wears the rod, the reel and the line. Reeling while line runs out grinds the reel: after half a second it wears fast, with the square of the drag (half the reel's drag grinds a quarter as fast). A part worn through breaks mid-fight and the fish is gone."
     },
     {
       "type": "modonomicon:text",

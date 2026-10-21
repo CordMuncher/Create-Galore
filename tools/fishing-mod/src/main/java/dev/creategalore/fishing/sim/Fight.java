@@ -14,11 +14,16 @@ import java.util.random.RandomGenerator;
  *   <li>If the pull is more than the drag, the drag slips: line goes out at the fish's speed and the tension is the
  *       drag. Otherwise reeling gains line (slower the closer the pull gets to what the crank can wind against)
  *       and the tension is the pull. While the fish charges, the line goes slack unless the angler keeps
- *       reeling.</li>
+ *       reeling (or moves off faster than it comes). With the spool empty there is no line left to give: the drag
+ *       acts as locked.</li>
+ *   <li>An angler moving away from the fish (walking, or a boat) tows it: the water's drag on the fish, from its size
+ *       and the speed, adds to its pull. A small fish on a strong rig is towed along; a big one takes line through
+ *       the drag.</li>
  *   <li>Runs and jumps add sudden spikes. Line stretch, a smooth drag and a bent rod soak part of each spike; a
  *       rod pointed straight down the line soaks nothing.</li>
  *   <li>Failures: tension over the breaking load snaps the line, a toothy fish bites through non-steel line,
- *       overloading the rod can crack it, a slack line or a jump on a loose line can throw the hook.</li>
+ *       overloading the rod can crack it, a slack line or a jump on a loose line can throw the hook, and a rod or
+ *       reel worn through mid-fight breaks there and then.</li>
  *   <li>The fish tires in proportion to the tension it works against (so a drag set too light never tires it)
  *       and faster under side pressure; it recovers a little while the line is slack.</li>
  * </ol>
@@ -31,6 +36,16 @@ public final class Fight {
     public static final double DT = 0.05;
     /** Distance in metres at which a tired fish is landed. */
     public static final double LAND_DISTANCE = 1.5;
+    /** Ticks the drag may slip under a cranking angler before the reel starts to grind: time to let go of use. */
+    public static final int GRIND_GRACE_TICKS = 10;
+    /** Reel wear per second of cranking through a slipping drag at the reel's full drag; it scales with drag squared. */
+    public static final double GRIND_PER_SECOND = 4;
+    /** Durability one unit of {@link #reelWear()} costs a reel. */
+    public static final double REEL_DURABILITY_PER_WEAR = 3;
+    /** Durability one unit of {@link #rodWear()} costs a rod. */
+    public static final double ROD_DURABILITY_PER_WEAR = 15;
+    /** Water drag on a towed fish, kgf per kg^(2/3) per (m/s)^2. */
+    public static final double TOW_DRAG = 0.07;
 
     private final FishFight fish;
     private final Tackle tackle;
@@ -58,6 +73,11 @@ public final class Fight {
     private double reelWear;
     private double lineWear;
     private double highestTension;
+    private int grindTicks;
+    private boolean grinding;
+    private boolean spooled;
+    private double reelLife = Double.POSITIVE_INFINITY;
+    private double rodLife = Double.POSITIVE_INFINITY;
 
     /**
      * @param fish          the species' fight data
@@ -73,6 +93,15 @@ public final class Fight {
         this.endurance = fish.enduranceSeconds(weightKg);
         this.startDistance = Math.max(LAND_DISTANCE + 1, startDistance);
         this.distance = this.startDistance;
+    }
+
+    /**
+     * Durability the reel and rod have left (after the fight's base wear of 1 each). When the fight's wear uses it
+     * up, that part breaks mid-fight and the fish is gone. Unlimited unless set (the simulator).
+     */
+    public void wearLimits(double reelDurabilityLeft, double rodDurabilityLeft) {
+        this.reelLife = reelDurabilityLeft;
+        this.rodLife = rodDurabilityLeft;
     }
 
     /** Advances the fight by one tick. Does nothing once it is over. */
@@ -112,40 +141,55 @@ public final class Fight {
         pull = charging ? maxPull * 0.05 : Math.max(0, maxPull * intensity * staminaFactor * boost * (1 + jitter));
         double fishSpeed = fish.speed() * (0.4 + 0.6 * intensity) * (runLeft > 0 ? 1.8 : 1) * (0.3 + 0.7 * stamina);
 
-        // Drag, reel and line.
-        double drag = tackle.hasReel() ? clamp(in.drag, 0.05, tackle.reelMaxDrag()) : Double.POSITIVE_INFINITY;
+        // Drag, reel and line. An empty spool has nothing left to give: the drag is as good as locked.
+        spooled = tackle.hasReel() && distance >= tackle.lineCapacity();
+        double drag = tackle.hasReel() && !spooled ? clamp(in.drag, 0.05, tackle.reelMaxDrag()) : Double.POSITIVE_INFINITY;
         double crank = in.crankLimit(tackle);
         double retrieve = tackle.reelRetrieve() * in.retrieveScale;
-        slipping = !charging && pull > drag;
+        double recede = Math.max(0, in.recede);
+        // Towing the fish through the water as the angler moves off: drag from its size and the speed.
+        double load = charging ? pull : pull + TOW_DRAG * Math.pow(weight, 2.0 / 3) * recede * recede;
+        slipping = !charging && load > drag;
         stalled = false;
         if (charging) {
-            distance -= fish.speed() * 0.6 * DT;
+            // Swimming at the angler. One who walks or sails off faster than that just tows it: the line is never
+            // slack enough to come off the spool, so the gap can only close.
+            distance -= Math.max(0, fish.speed() * 0.6 - recede) * DT;
             if (in.reeling) {
                 distance -= retrieve * DT;
                 tension = maxPull * 0.08;
             } else {
-                tension = 0;
+                // Moving off faster than it comes keeps the line tight, as reeling does.
+                tension = recede > fish.speed() * 0.6 ? maxPull * 0.08 : 0;
             }
         } else if (slipping) {
-            distance += fishSpeed * 0.8 * (1 - drag / pull) * DT;
+            distance += (fishSpeed * 0.8 + recede) * (1 - drag / load) * DT;
             tension = drag;
-            reelWear += DT * 0.3 * drag / tackle.reelMaxDrag();
-            if (in.reeling && in.crankThroughSlip) {
-                // Cranking against a slipping drag: the gears grind (Fishing Planet's "reel overload").
-                reelWear += DT * 4 * (1 + (pull - drag) / drag);
-            }
         } else if (in.reeling) {
-            if (pull >= crank) {
+            if (load >= crank) {
                 stalled = true;
-                tension = pull;
+                tension = load;
             } else {
-                distance -= retrieve * (1 - pull / crank) * DT;
-                tension = pull * 1.1;
+                distance -= retrieve * (1 - load / crank) * DT;
+                tension = load * 1.1;
             }
         } else {
-            tension = pull;
+            tension = load;
         }
         distance = Math.max(LAND_DISTANCE, distance);
+        if (tackle.hasReel()) distance = Math.min(distance, tackle.lineCapacity());
+
+        // Cranking while the fish takes line (or against it on an empty spool, which is the reel's full drag): the
+        // gears grind (Fishing Planet's "reel overload"). Once the fish starts taking line the angler has half a
+        // second to stop cranking; after that it grinds with the square of the drag, so half the reel's drag grinds a
+        // quarter as fast as full.
+        boolean overloaded = slipping || spooled && stalled;
+        grindTicks = overloaded ? grindTicks + 1 : 0;
+        grinding = overloaded && in.reeling && in.crankThroughSlip && grindTicks > GRIND_GRACE_TICKS;
+        if (grinding) {
+            double share = slipping ? drag / tackle.reelMaxDrag() : 1;
+            reelWear += DT * GRIND_PER_SECOND * share * share;
+        }
 
         // Spikes, softened by stretch, a smooth drag and the bent rod.
         peakTension = tension;
@@ -160,7 +204,11 @@ public final class Fight {
 
         // Failures.
         if (peakTension > breakLoad) {
-            outcome = Outcome.LINE_SNAPPED;
+            outcome = spooled ? Outcome.SPOOLED : Outcome.LINE_SNAPPED;
+            return;
+        }
+        if (reelWear * REEL_DURABILITY_PER_WEAR >= reelLife) {
+            outcome = Outcome.REEL_BROKE;
             return;
         }
         if (fish.toothy() && !tackle.steelLeader() && (jumped || runStarted) && rng.nextDouble() < 0.25) {
@@ -169,7 +217,7 @@ public final class Fight {
         }
         double rodLoad = peakTension / tackle.rodMaxLoad();
         if (rodLoad > 0.7) rodWear += DT * (rodLoad - 0.7) * 2;
-        if (rodLoad > 1 && rng.nextDouble() < (rodLoad - 1) * 0.04) {
+        if (rodWear * ROD_DURABILITY_PER_WEAR >= rodLife || rodLoad > 1 && rng.nextDouble() < (rodLoad - 1) * 0.04) {
             outcome = Outcome.ROD_BROKE;
             return;
         }
@@ -199,10 +247,6 @@ public final class Fight {
         stamina = clamp(stamina, 0, 1);
         lineWear += DT * 0.02 * tension / breakLoad;
 
-        if (tackle.hasReel() && distance > tackle.lineCapacity()) {
-            outcome = Outcome.SPOOLED;
-            return;
-        }
         if (distance <= LAND_DISTANCE) {
             if (stamina < 0.35 || weight < 0.4) {
                 outcome = Outcome.LANDED;
@@ -279,6 +323,16 @@ public final class Fight {
 
     public boolean slipping() {
         return slipping;
+    }
+
+    /** Every metre of line is out: the reel can give no more. */
+    public boolean spooled() {
+        return spooled;
+    }
+
+    /** The reel ground this tick: cranked against a slipping drag (or an empty spool) past the half-second grace. */
+    public boolean grinding() {
+        return grinding;
     }
 
     /** The crank couldn't turn against the pull this tick (for drives: the network or engine stalled). */

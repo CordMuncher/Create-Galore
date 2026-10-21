@@ -1,4 +1,4 @@
-<!-- sources sha256:6de75f38db5ede9dc8cab0c84642fed59ae201801ace90885dfb08c4cd5637ee -->
+<!-- sources sha256:71a5bcca3769ce63743a80d48d46a5f1d1c4a1eb53487013ca121aa8ae0ecf3d -->
 # Fishing (fishing)
 
 ## fishing/overview | Fishing
@@ -27,9 +27,10 @@
 - Change drag any time a rod is in hand (before casting, waiting, mid-fight): **Drag +** / **Drag -** keys, default **]** and **[** (rebind under Create Galore Fishing in Controls), or scroll wheel while a line is out or while sneaking. Setting stays on the rod. A pole has no drag
 - Rod angle: rod held a little above where you look. Look at the fish: the rod bends and soaks spikes of runs and jumps. Look away or up: side pressure, tires the fish faster. Watch out: pointing the rod straight down the line soaks nothing; every jump hits the line in full
 - HUD above hotbar: tension bar against what the rig breaks at (blue slack, green, yellow from 60%, red from 85%, tick where drag starts to slip), drag, line out, line left; alerts Drag slipping, Slack line!, It's running!
-- Losses: **snapped** line (tension over line's or leader's test); **bitten off** (toothy fish, no Steel Leader); **rod broke** (load well over the blank's rating); **threw the hook** (slack over a second, or a jump on a loose line); **spooled** (took every metre on the reel)
-- Snapped/bitten/spooled: lose the line that was out plus a few metres, plus hook, leader, float or lure, bait. A broken rod gives its parts back
-- Wear: every fight wears rod, reel, line; reeling while the drag slips grinds the reel (wears many times faster)
+- Losses: **snapped** line (tension over line's or leader's test); **bitten off** (toothy fish, no Steel Leader); **rod broke** (load well over the blank's rating, or rod worn through); **reel seized** (reel worn through; the line parts); **threw the hook** (slack over a second, or a jump on a loose line); **spooled** (took every metre, then snapped the line against the empty reel)
+- Snapped/bitten/spooled/seized: lose the line that was out plus a few metres, plus hook, leader, float or lure, bait. A broken rod gives its parts back
+- Wear: every fight wears rod, reel, line; reeling while line runs out grinds the reel: after half a second it wears fast, with the square of the drag (half the reel's drag grinds a quarter as fast). A part worn through breaks mid-fight and the fish is gone
+- Walking or sailing away pulls on a hooked fish: a small one is towed along, a big one takes line through the drag
 - In depth: rod loaded above 70% of its rating wears, above its rating can crack. Worn rod holds less (down to 60% when nearly broken); frayed line breaks earlier (down to half its test); worn reel's drag gets jerky. Toothy fish: pike, muskellunge, gar, piranha, barracuda, sharks, morays, anglerfish, lionfish, Dragon Fish
 - Sounds: drag ratchet clicks as line leaves the spool (slow tick when leaning, buzz on a run), reel cranks and grinds, line creaks above about 65% of breaking load, snaps with a twang
 - Letting go of the rod, logging out or the chunk unloading reels the line in: a fish on is lost
@@ -82,7 +83,7 @@
 - Rating = weakest of blank's load, line's (or leader's) test, reel's top drag. "Fish to about" = heaviest average fighter that rating lands with a sensible drag. A new rod's drag starts at a third of the reel's range
 - Weak-link warnings: drag over the line's test (hard pull snaps it); drag over what the rod holds (overloaded); a pole's line stronger than the pole (big fish breaks the pole); rig too light/heavy for the rod (casts fall short); worn rod or reel, frayed line
 - Without the bench: in the inventory pick up a part or bait and right-click the rod; it goes in its slot. Empty cursor takes the bait back off. A rod missing a part says so on its tooltip: "Needs a reel", "Needs line", "Needs a hook, or a lure"
-- Tip: drag about a third of the line's test. A careful angler lands most river and lake fish on Iron or Steel gear; tuna, arapaima, sharks need the Heavy Boat Rod with heavy line and a Big-Game reel. Rods and reels aren't repaired at the bench
+- Tip: keep the drag below the line's test (the bench warns when it isn't). A careful angler lands most river and lake fish on Iron or Steel gear; tuna, arapaima, sharks need the Heavy Boat Rod with heavy line and a Big-Game reel. Rods and reels aren't repaired at the bench
 
 ## fishing/bait | Bait
 - Each fish has a **diet**; the right bait or lure brings far more bites. Bait goes in the rod's bait slot (right-click the rod with the bait stack on the cursor, or the Tackle Bench (see fishing/tackle_bench)); one used per fish landed; a lure is never used up. A missed bite takes the bait 3 times in 10. A bare hook catches something now and then, very slowly
@@ -198,14 +199,14 @@
 - On one water wheel: 6 kg drag never stalls a Basic drive, 10 kg does; about 7.5 kg is the limit in normal gear. Geared drive's lowest gear copes with about four times that, more slowly. Fuel drive's engine stalls the same way above its rating (see create_basics/stress)
 - Catches go into a chest, hopper, funnel or belt below or beside, never another rod machine; with nowhere to go the fish hangs from the rod tip for 30 seconds (empty hand takes it). A fish a machine puts on a belt is alive two minutes; off the belt into water it swims away
 - Experience: a machine earns half the hand amount per catch, no release bonus; banked, paid out whenever a rod goes in or out. Machines get no bonus item from the Midas rod or Rod of the Hero and catch no treasure in the Nether; Overworld treasure and crates as by hand. Goggles (see glossary/goggles) show rod, bite or fish on and its tension, line out, drag, bait and bait in store, reel wear, gear, what it can still wind against, fuel, banked experience
-- In depth: a Geared drive on one water wheel (8 RPM) can take several minutes to wind in a big tuna in lowest gear; a Basic drive grinding a strong fish through a slipping drag wears its reel quickly, up to a tenth of it per fight. Machines fish only while their chunk is loaded. Integrated Farming's Fishing Nets (see food/integrated_farming) catch the same fish, small ones most
+- In depth: a Geared drive on one water wheel (8 RPM) can take several minutes to wind in a big tuna in lowest gear; a Basic drive grinding a strong fish through a slipping drag wears its reel fast and can wear it through in one fight, which loses the fish. Machines fish only while their chunk is loaded. Integrated Farming's Fishing Nets (see food/integrated_farming) catch the same fish, small ones most
 - Related: (see fishing/trolling) (see create_basics/power_sources) (see fishing/live_bait) (see create_basics/item_logistics)
 
 ## fishing/trolling | Trolling from Ships
-- Rod Holders and reel drives work on physics **ships** (a sub-level (see glossary/sub_level), e.g. a sailing ship or a surfaced submarine). The rig is **towed** behind at its line length (it can't get further from the tip than the line it was cast with). See (see flight/ship_building) (see ocean/sailing)
+- Rod Holders and reel drives work on physics **ships** (a sub-level (see glossary/sub_level), e.g. a sailing ship or a surfaced submarine). The rig is **towed** behind at its line length (it can't get further from the tip than the line it was cast with). A small hooked fish is towed along; a big one takes line through the drag. See (see flight/ship_building) (see ocean/sailing)
 - A towed crankbait dives and works between its best speeds: 0.6 to 3 m/s; Deep Crankbait 0.8 to 3.5 m/s, down to 5 m. Too slow or fast: fish mostly ignore it. Fish that bite follow the water passed, so trolling spreads catches instead of fishing out one spot
 - Fuel Reel Drive needs no shafts, suits boats; a Geared drive works off the ship's own rotation. Tip: for tuna and sharks: Heavy Boat Rod, Big-Game Trolling Reel, Heavy Mono line, Steel Leader, Big-Game hook or Deep Crankbait
-- Watch out: machines on a ship fish only while the ship is loaded; stay aboard. Put a chest or belt beside the machines, or catches hang at the rod tip. Set the drag before setting the rod in (the machine keeps the rod's own and never winds while line slips, so a big tuna on a light drag can take line until it is lost; for tuna-sized fish set the drag to about two thirds of the line)
+- Watch out: machines on a ship fish only while the ship is loaded; stay aboard. Put a chest or belt beside the machines, or catches hang at the rod tip. Set the drag before setting the rod in (the machine keeps the rod's own and never winds while line slips); keep it below the line's test
 
 ## fishing/aquaculture | Aquaculture Fish and Old Rods
 - Aquaculture's **fish** bite on any rod, each in own biome. Its **rods, hooks, lines, bobbers, Tackle Box** can't be crafted; owned rods still work the classic way. Fillet knives, Worm Farm, Neptunium, its food stay

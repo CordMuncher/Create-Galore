@@ -4,6 +4,19 @@ Each pack version gets a section here, with **Added**, **Fixed** and **Removed**
 workflow copies the section for the version in `pack/pack.toml` to the top of the GitHub release, and the build
 fails when that section is missing.
 
+## 0.4.0
+
+### Added
+- **Moving away pulls on a hooked fish.** Walking off along the bank or sailing away tows the fish through the water: a small fish on a strong rig is dragged along, a big one takes line through the drag, and if you keep going the line holds at the end, snaps or runs out. This counts for reel drives trolling from ships too.
+
+### Fixed
+- **Reel wear follows the drag.** A reel wears from being cranked while line runs out through the drag, and only after half a second of it (time to let go of use). The higher the drag, the faster: at half the reel's drag it grinds a quarter as fast as at full drag. Letting line run out without cranking costs nothing extra.
+- **An empty spool holds.** When a fish has taken every metre, the reel has nothing left to give: the fish is held at the end of the line, and the line snaps if it pulls harder than the line holds.
+
+### Removed
+- **The cap on tackle wear.** One fight can now wear a reel or rod right through, and a part that gives out mid-fight loses the fish: a reel that seizes parts the line (the hook, rig and bait go with it), a broken rod hands its parts back. The Field Guide explains how to avoid it: keep the drag below your line's test, and stop cranking while line runs out.
+- Create Galore Fishing 0.3.0.
+
 ## 0.3.9
 
 **Back up your world before updating, and update the pack on the server and every client together.** Tide 2's things convert to Create Galore Fishing when a world loads and can't be converted back.
