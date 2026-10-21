@@ -1,4 +1,4 @@
-<!-- sources sha256:9fc0e06e8391977bf18f5ebab082f0e77f52f488d6cf72ebc0e46b263f0932d1 -->
+<!-- sources sha256:59f14db0e36af2a4c7105d04e806271a852e8f93ee7023e0ea697b057b2d3612 -->
 # Trains and Rides (transport)
 How you cross the world: travel by building.
 
@@ -82,15 +82,15 @@ How you cross the world: travel by building.
 ## transport/hypertubes | Hypertubes
 - Tubes you travel through at speed; connect entrances with tube blocks, anything stepping in is carried down the line. Create rotation (see create_basics/rotation) powers the entrance.
 - Build: hold a tube, right-click a placed tube, then place the next (placed tubes can be linked the same way). Wrench (see create_basics/tools_wrench) changes how many segments a span uses. Angle and distance between ends are limited. Hypertube [create_hypertube:hypertube]; shows item create_hypertube:hypertube
-- Entrance needs at least 16 RPM (see glossary/rpm) to admit you; faster rotation = faster travel. Wrench changes mode: manual lock (sneak to enter) or automatic lock. Escape key gets you out of a tube.
-  - Hypertube Entrance [create_hypertube:hypertube_entrance]: power from the shaft; if it says not enough speed, spin faster. shows item create_hypertube:hypertube_entrance
+- Entrance needs at least 16 RPM (see glossary/rpm) to admit you; faster rotation = faster travel. Wrench changes mode: manual lock (sneak to enter) or automatic lock. Place it facing the way the tube runs; you enter from your side. Escape key gets you out of a tube.
+  - Hypertube Entrance [create_hypertube:hypertube_entrance]: turns like a small cogwheel: mesh a cogwheel beside it; if it says not enough speed, spin faster. shows item create_hypertube:hypertube_entrance
   - Hypertube Accelerator [create_hypertube:hypertube_accelerator]: speeds up whoever passes; right-click for Brake mode instead. shows item create_hypertube:hypertube_accelerator
   - Hypertube Splitter [create_hypertube:hypertube_junction]: joins up to three tubes. Travellers steer with movement keys. Wrench cycles Continue (sends them down side tubes) and Center (straight). shows item create_hypertube:hypertube_junction
   - Tube Scanner [create_hypertube:tube_scanner_attachment]: signal while something travels the tube, 8 for babies, 15 for adults. Redstone Detector Attachments change modes remotely. shows item create_hypertube:tube_scanner_attachment
 - Related: Rotation (see create_basics/rotation), Stress (see create_basics/stress) power the entrance; Trains (see transport/trains) are the long-haul option.
 
 ## transport/jetpack | Jetpack
-- Create Jetpack [create_jetpack:jetpack]: a flyable backtank, built around a Copper Backtank (see ocean/diving); spends pressurised air, runs dry, needs refilling. shows item create_jetpack:jetpack
+- Create Jetpack [create_jetpack:jetpack]: a flyable backtank, built around a Copper Backtank (see ocean/diving); spends pressurised air, runs dry. Refill like the backtank: sneak-use it on a block to place it, turn the shaft on its top. shows item create_jetpack:jetpack
 - Controls: jump rises, sneak descends, N toggles engine (this pack's key; mod's own is G), H toggles hover. Rebind in Controls.
 - Netherite Jetpack [create_jetpack:netherite_jetpack]: same flight, built around a Netherite Backtank. Check JEI for the upgrade recipe. shows item create_jetpack:netherite_jetpack
 - Making: both crafted by mechanical crafting (see glossary/mechanical_crafting) from a Shulker Shell, Chutes, Brass plates, Precision Mechanisms and the backtank. Press R over one in JEI (see start_here/tools) for layout.

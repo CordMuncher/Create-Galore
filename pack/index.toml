@@ -992,7 +992,7 @@ hash = "e325c385267b4993fcd4d7f7e284dbc634407e69e26c0856ccd38e945e9d4d56"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/ocean.md"
-hash = "80de930dfddaa6ed06f73f4a4a5b7031c8df33062a571b1a34a65641210bbf23"
+hash = "4fe0747f3d79405f1382d21f7aa6e066a2fdd2131ff4d8b4d4e671de2c112c21"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/space.md"
@@ -1012,7 +1012,7 @@ hash = "27a22db8532f9d0553a82b3b5984a8380443c6c6f66b91b5fa396e72b2cb7f8f"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/transport.md"
-hash = "ebe82d8553c4dd6036ec69bec7fb3d1c9568b407bfae94c23aa496fc54de7a7a"
+hash = "dce84c7a05ecbb4e36e5118a5ce8908756cbae5df9e37631f55d2c295bf09216"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/function/give_field_guide.mcfunction"
@@ -1768,7 +1768,7 @@ hash = "f9f0caaf4e4d8f80299671e0aad04dc47879a8823de38512d8df5027c57ff1c7"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/ocean/diving.json"
-hash = "6b0d88ba7f3a24e2961a47782a2afa596173222050bc7681598ccc93c31d2e2a"
+hash = "b902cbf2f0429f9f830366a8a7534f586ce9903ac7326fdbe2045422f464605b"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/ocean/fishing.json"
@@ -1944,11 +1944,11 @@ hash = "53ed6d34528e6164f09c578ebba642b201c73d883266fb419650ae046d30b454"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/transport/hypertubes.json"
-hash = "3505ebc36620fa6243321da5db64243a858f372c3bb483308bcbc2d4decbf4f2"
+hash = "13f9fa6951bb0c350edbf67b95672677e392532c5b6bd61de962b668f5492119"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/transport/jetpack.json"
-hash = "a2436b6d819ce57ca8d8eb884f28d097eff1ed42f0f9aa733ba00446b1a4217f"
+hash = "1aabf43f253f63bbad6390a030cd0b62a56dee262d137dc35c16ea8d165e4374"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/transport/train_addons.json"
@@ -4918,7 +4918,7 @@ metafile = true
 
 [[files]]
 file = "mods/create-galore-bridge-1.52.0.jar"
-hash = "20929fd8f9355591f5d1c97f0257cd6823a462a8b3b4a006230fe4fce5f10721"
+hash = "fe153ac7c37ce3e1025efb8fb3e04a7d9aae56ef022c447f81d74626207e1c2d"
 
 [[files]]
 file = "mods/create-galore-fishing-0.3.10.jar"

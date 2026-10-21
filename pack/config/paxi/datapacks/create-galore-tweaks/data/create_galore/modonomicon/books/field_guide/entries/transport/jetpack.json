@@ -20,7 +20,7 @@
     {
       "type": "modonomicon:text",
       "title": "Jetpack",
-      "text": "The Create Jetpack is a backtank you can fly with. It is built around a [#](2E5AAC)[Copper Backtank](entry://ocean/diving)[#]() and spends pressurised air to lift you, so it runs dry and needs refilling."
+      "text": "The Create Jetpack is a backtank you can fly with. It is built around a [#](2E5AAC)[Copper Backtank](entry://ocean/diving)[#]() and spends pressurised air to lift you, so it runs dry. Refill it like the backtank: sneak-use it on a block to place it and turn the shaft on its top."
     },
     {
       "type": "modonomicon:spotlight",

@@ -43,7 +43,7 @@
     {
       "type": "modonomicon:text",
       "title": "Entrances",
-      "text": "An entrance needs at least **16 [#](7A3C9A)[RPM](entry://glossary/rpm)[#]()** to admit you, and faster rotation means faster travel.\n\n- A wrench changes the mode, between **manual lock** (sneak to enter) and **automatic lock**.\n- The **escape key** gets you out of a tube."
+      "text": "An entrance needs at least **16 [#](7A3C9A)[RPM](entry://glossary/rpm)[#]()** to admit you, and faster rotation means faster travel.\n\n- A wrench changes the mode, between **manual lock** (sneak to enter) and **automatic lock**.\n- Place it facing the way the tube runs; you enter from your side.\n- The **escape key** gets you out of a tube."
     },
     {
       "type": "modonomicon:spotlight",
@@ -51,7 +51,7 @@
         "item": "create_hypertube:hypertube_entrance"
       },
       "title": "Hypertube Entrance",
-      "text": "Power it from the shaft. If it says not enough speed, spin it faster."
+      "text": "It turns like a small cogwheel: mesh a cogwheel beside it. If it says not enough speed, spin it faster."
     },
     {
       "type": "modonomicon:spotlight",

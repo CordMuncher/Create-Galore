@@ -1,4 +1,4 @@
-<!-- sources sha256:3df1a267b0069259e51616e59adec51899aa6d5e69813d632bd6f712ba5b023d -->
+<!-- sources sha256:ea22320d8cf44c3f92fc7edf0deb0ffe30c3c47eaa876386ce24426259c5ba6b -->
 # The Ocean (ocean)
 Create Deep Seas (submarines, High Seas surface ships), Aquatic Ambitions, sea life mods, Aquamirae, diving, structures.
 
@@ -95,7 +95,7 @@ Create Deep Seas (submarines, High Seas surface ships), Aquatic Ambitions, sea l
 ## ocean/diving | Diving Gear
 - Several mods let you stay underwater; pick for the job: air, vision, speed, or a dry room.
 - Copper Diving Helmet [create:copper_diving_helmet]: Water Breathing while a worn Backtank has air. Create's own set.
-- Copper Backtank [create:copper_backtank]: wear for air; placed and spun by rotation (see create_basics/rotation) it refills itself. Netherite gear lets you dive in lava.
+- Copper Backtank [create:copper_backtank]: wear for air; to refill, sneak-use it on a block to place it and turn the shaft on its top with rotation (see create_basics/rotation). Netherite gear lets you dive in lava.
 - Reinforced Diving Helmet [hybrid_aquatic:reinforced_diving_helmet]: Hybrid Aquatic's suit also has Reinforced and Glowing versions.
 - Diving Weight [hybrid_aquatic:diving_weight]: sinks you faster.
 - Salvager Suit [aquamirae:salvager_suit]: full set supplies air and stops freezing in the Ice Maze (see ocean/aquamirae).
