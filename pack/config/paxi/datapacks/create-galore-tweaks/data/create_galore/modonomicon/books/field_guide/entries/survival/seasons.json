@@ -38,7 +38,7 @@
     {
       "type": "modonomicon:text",
       "title": "Weather",
-      "text": "Winter brings snow and ice generation. Rain, snow and storm frequency vary with the season. Tropical biomes (deserts, badlands, savanna, jungle and similar) have Wet and Dry seasons instead."
+      "text": "Winter brings snow and ice: lakes and rivers in cold places can freeze over. Oceans stay open all year (only frozen oceans freeze), so boats can always get out to sea. Rain, snow and storm frequency vary with the season. Tropical biomes (deserts, badlands, savanna, jungle and similar) have Wet and Dry seasons instead."
     },
     {
       "type": "modonomicon:text",

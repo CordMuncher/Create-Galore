@@ -1008,7 +1008,7 @@ hash = "6abf397785fe4b94bf22214cd55040fdb48b63d280981923eb465bb3c7d5395f"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/survival.md"
-hash = "c1bbf753add31088d9bb050de8af9f15a866341c7ffd25338eb4f2734782389d"
+hash = "27a22db8532f9d0553a82b3b5984a8380443c6c6f66b91b5fa396e72b2cb7f8f"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/transport.md"
@@ -1912,7 +1912,7 @@ hash = "d8f92494e82044f2596b6b629738b1ef16448c5a9b3d18610063585ba541c6e3"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/survival/seasons.json"
-hash = "b3329e3ceb1d61a189c87cdbddd2597f72702bfdc925bb7718985d2780daf6f3"
+hash = "2eadf2edc9f4b259f054716a1177476e9cf2da4a6a79dfe9ab227f5e9c213b1a"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/survival/seasons_crops.json"
@@ -4917,8 +4917,8 @@ hash = "db683b65dc15a03dd6de2d34d5dc6ad0e3490744ced513a8cc584784ee9d3d8b"
 metafile = true
 
 [[files]]
-file = "mods/create-galore-bridge-1.39.0.jar"
-hash = "f289ec15341c9b45f72b2ed9de1b36dbdc3d726547f2a573bb243ea0be54f150"
+file = "mods/create-galore-bridge-1.40.0.jar"
+hash = "da45701e6532ba31fed802a956f1804ba0802e649f2c97db38dcea641400a964"
 
 [[files]]
 file = "mods/create-galore-fishing-0.3.6.jar"
