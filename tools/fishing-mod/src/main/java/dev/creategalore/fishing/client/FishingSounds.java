@@ -39,7 +39,7 @@ import net.neoforged.neoforge.common.NeoForge;
  *   <li>drag ratchet: one click per {@link #CM_PER_CLICK} cm of line actually going out while the drag slips, so the
  *       click rate is the fish's run speed; pitched by the reel (copper rattly, brass smooth, big-game deep);</li>
  *   <li>reel crank: a looping whirr while reeling, slower and lower as the load rises;</li>
- *   <li>grind: cranking against a slipping drag;</li>
+ *   <li>grind: cranking against a slipping drag past the half-second grace, while it wears the reel;</li>
  *   <li>line strain: creaks that start at about 65% of the breaking load and come faster and louder toward a snap.</li>
  * </ul>
  * One-off sounds (cast, splash, bite, strike, snap) are played by the server.
@@ -158,7 +158,7 @@ public final class FishingSounds {
         }
 
         if (s.grindCooldown > 0) s.grindCooldown--;
-        if (reeling && slipping && s.grindCooldown == 0) {
+        if (fighting && hook.flag(CastHook.FLAG_GRINDING) && s.grindCooldown == 0) {
             play(owner, FishingRegistry.REEL_GRIND.get(), 0.5f, reelPitch * 0.9f);
             s.grindCooldown = 8;
         }

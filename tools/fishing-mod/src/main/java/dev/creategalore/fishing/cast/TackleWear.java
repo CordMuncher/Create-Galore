@@ -62,7 +62,10 @@ public final class TackleWear {
             reel.setDamageValue(reel.getDamageValue() + damage);
             if (reel.getDamageValue() >= reel.getMaxDamage()) {
                 angler.level().playSound(null, angler.blockPosition(), SoundEvents.ITEM_BREAK, SoundSource.PLAYERS, 0.8f, 0.9f);
-                tell(angler, Component.translatable("message.create_galore_fishing.reel_broke", reel.getHoverName()));
+                // A reel that seized mid-fight already said so ("Your reel seized..."); the action bar shows one line.
+                if (outcome != Outcome.REEL_BROKE) {
+                    tell(angler, Component.translatable("message.create_galore_fishing.reel_broke", reel.getHoverName()));
+                }
                 reel = ItemStack.EMPTY;
             }
             parts = parts.with(RodParts.Slot.REEL, reel);

@@ -57,6 +57,17 @@ public final class FightRules {
         SplittableRandom rng = new SplittableRandom(2);
         for (int i = 0; i < 200; i++) letGo.tick(idle, rng);
         out.add(new Check(letGo.reelWear() == 0 && letGo.slipping(), "a slipping drag alone doesn't wear the reel"));
+        // Cranking into a run that is already going gets the same half second to let go: a short press is free.
+        idle.reeling = true;
+        for (int i = 0; i < Fight.GRIND_GRACE_TICKS; i++) letGo.tick(idle, rng);
+        boolean graceOk = letGo.reelWear() == 0 && !letGo.grinding();
+        idle.reeling = false;
+        for (int i = 0; i < 20; i++) letGo.tick(idle, rng);
+        idle.reeling = true;
+        for (int i = 0; i < Fight.GRIND_GRACE_TICKS + 5; i++) letGo.tick(idle, rng);
+        out.add(new Check(graceOk && letGo.reelWear() > 0 && letGo.grinding(),
+                "pressing use during a long run grinds only after half a second of cranking into it"));
+        idle.reeling = false;
 
         // A reel with 30 durability left, ground at full drag (12 a second), seizes in about 3 s and the fish is lost.
         Fight seize = new Fight(steady(1.5, 1000), rig(10, 1000, 10_000), 20, 30);
@@ -97,6 +108,23 @@ public final class FightRules {
         // Towing: a boat at 6 m/s tows a 0.3 kg fish along on a 10 kg drag; a 15 kg fish takes line through it.
         out.add(tow(0.3, false));
         out.add(tow(15, true));
+
+        // A fish swimming at an angler who walks off faster just gets towed: no line comes off the spool.
+        Fight charge = new Fight(new FishFight(0.5, 1000, 1.0, new Curve(new double[]{0}, new double[]{1}), 0, 0, 1, false),
+                rig(10, 1000, 10_000), 0.5, 20);
+        Controls walk = new Controls();
+        walk.drag = 10;
+        walk.recede = 4;
+        rng = new SplittableRandom(8);
+        double most = 0;
+        int charged = 0;
+        for (int i = 0; i < 400 && !charge.outcome().over(); i++) {
+            charge.tick(walk, rng);
+            if (charge.charging()) charged++;
+            most = Math.max(most, charge.distance());
+        }
+        out.add(new Check(charged > 0 && most <= 20 + 1e-9, String.format(Locale.ROOT,
+                "walking off from a charging fish takes no line (most out %.1f m of 20, %d ticks charging)", most, charged)));
         return out;
     }
 

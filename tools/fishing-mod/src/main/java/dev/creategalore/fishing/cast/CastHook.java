@@ -96,6 +96,8 @@ public class CastHook extends FishingHook {
     public static final int FLAG_RUNNING = 4;
     public static final int FLAG_SLACK = 8;
     public static final int FLAG_REELING = 16;
+    /** The reel is grinding: cranked against a slipping drag past the half-second grace (it wears now). */
+    public static final int FLAG_GRINDING = 32;
 
     // Entity event ids: the client handles 21, 35 and 63 itself before the entity sees them (63 casts to Sniffer),
     // and Entity/FishingHook use 31 and 53, so ours stay clear of those.
@@ -131,8 +133,8 @@ public class CastHook extends FishingHook {
     private FishingContext context;
     private Fight fight;
     private final Controls controls = new Controls();
-    /** Where the rod tip was last tick, for how fast the angler moves away from a hooked fish. */
-    private Vec3 lastTip;
+    /** Where the angler (or the machine's rod tip) was last tick, for how fast it moves away from a hooked fish. */
+    private Vec3 lastAnchor;
     /** {@link #recede}'s smoothed speed, m/s. */
     private double recedeSpeed;
     private double heading;
@@ -680,7 +682,7 @@ public class CastHook extends FishingHook {
         }
         fight = new Fight(ff, stats.tackle(hold), kg, Math.max(3, tip.distanceTo(position())));
         TackleWear.setLimits(fight, rod);
-        lastTip = tip;
+        lastAnchor = null;
         heading = Math.atan2(getZ() - tip.z, getX() - tip.x);
         setPhase(Phase.FIGHTING);
         entityData.set(BREAK, (float) stats.breakingLoad());
@@ -728,7 +730,9 @@ public class CastHook extends FishingHook {
         controls.crankLimit = Double.NaN;
         controls.retrieveScale = 1;
         controls.crankThroughSlip = true;
-        controls.recede = recede(tip);
+        // A machine's rod tip moves only with what carries it (a ship); a player's swings with every turn of the
+        // head, so the player's body is what counts as moving away.
+        controls.recede = recede(owner instanceof MachineAngler ? tip : owner.getEyePosition());
         if (owner instanceof MachineAngler angler) {
             // Held at a good working angle; the machine decides the rest.
             controls.reeling = false;
@@ -748,7 +752,7 @@ public class CastHook extends FishingHook {
         entityData.set(DRAG, (float) (stats.isPole() ? 0 : controls.drag));
         int flags = (fight.slipping() ? FLAG_SLIPPING : 0) | (fight.stalled() ? FLAG_STALLED : 0)
                 | (fight.running() ? FLAG_RUNNING : 0) | (fight.tension() < 0.06 * fight.maxPull() ? FLAG_SLACK : 0)
-                | (controls.reeling ? FLAG_REELING : 0);
+                | (controls.reeling ? FLAG_REELING : 0) | (fight.grinding() ? FLAG_GRINDING : 0);
         entityData.set(FLAGS, (byte) flags);
         if (fight.jumped()) {
             float size = (float) Mth.clamp(fight.weight() / 20, 0, 1);
@@ -758,15 +762,16 @@ public class CastHook extends FishingHook {
     }
 
     /**
-     * How fast the rod tip moved away from the fish since last tick, in m/s: an angler walking off or a boat under
-     * way tows the fish (see {@link Fight}). A jump of more than 20 m (a teleport) counts as nothing.
+     * How fast {@code anchor} (the angler's body, or a machine's rod tip) moved away from the fish since last tick, in
+     * m/s: an angler walking off or a boat under way tows the fish (see {@link Fight}). Turning or looking around
+     * doesn't move the anchor. A jump of more than 20 m (a teleport) counts as nothing.
      */
-    private double recede(Vec3 tip) {
-        Vec3 last = lastTip == null ? tip : lastTip;
-        lastTip = tip;
-        if (last.distanceToSqr(tip) > 400) return recedeSpeed = 0;
-        double away = tip.distanceTo(position()) - last.distanceTo(position());
-        // Smoothed over a few ticks, so a flick of the rod tip isn't a yank; walking or sailing off is.
+    private double recede(Vec3 anchor) {
+        Vec3 last = lastAnchor == null ? anchor : lastAnchor;
+        lastAnchor = anchor;
+        if (last.distanceToSqr(anchor) > 400) return recedeSpeed = 0;
+        double away = anchor.distanceTo(position()) - last.distanceTo(position());
+        // Smoothed over a few ticks, so a step or a bob of the boat isn't a yank; walking or sailing off is.
         recedeSpeed = 0.7 * recedeSpeed + 0.3 * Math.max(0, away) / Fight.DT;
         return recedeSpeed;
     }

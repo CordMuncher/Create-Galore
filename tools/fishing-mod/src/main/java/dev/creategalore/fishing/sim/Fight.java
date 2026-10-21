@@ -14,7 +14,8 @@ import java.util.random.RandomGenerator;
  *   <li>If the pull is more than the drag, the drag slips: line goes out at the fish's speed and the tension is the
  *       drag. Otherwise reeling gains line (slower the closer the pull gets to what the crank can wind against)
  *       and the tension is the pull. While the fish charges, the line goes slack unless the angler keeps
- *       reeling. With the spool empty there is no line left to give: the drag acts as locked.</li>
+ *       reeling (or moves off faster than it comes). With the spool empty there is no line left to give: the drag
+ *       acts as locked.</li>
  *   <li>An angler moving away from the fish (walking, or a boat) tows it: the water's drag on the fish, from its size
  *       and the speed, adds to its pull. A small fish on a strong rig is towed along; a big one takes line through
  *       the drag.</li>
@@ -72,7 +73,8 @@ public final class Fight {
     private double reelWear;
     private double lineWear;
     private double highestTension;
-    private int slipTicks;
+    private int grindTicks;
+    private boolean grinding;
     private boolean spooled;
     private double reelLife = Double.POSITIVE_INFINITY;
     private double rodLife = Double.POSITIVE_INFINITY;
@@ -150,12 +152,15 @@ public final class Fight {
         slipping = !charging && load > drag;
         stalled = false;
         if (charging) {
-            distance += (recede - fish.speed() * 0.6) * DT;
+            // Swimming at the angler. One who walks or sails off faster than that just tows it: the line is never
+            // slack enough to come off the spool, so the gap can only close.
+            distance -= Math.max(0, fish.speed() * 0.6 - recede) * DT;
             if (in.reeling) {
                 distance -= retrieve * DT;
                 tension = maxPull * 0.08;
             } else {
-                tension = 0;
+                // Moving off faster than it comes keeps the line tight, as reeling does.
+                tension = recede > fish.speed() * 0.6 ? maxPull * 0.08 : 0;
             }
         } else if (slipping) {
             distance += (fishSpeed * 0.8 + recede) * (1 - drag / load) * DT;
@@ -175,11 +180,14 @@ public final class Fight {
         if (tackle.hasReel()) distance = Math.min(distance, tackle.lineCapacity());
 
         // Cranking while the fish takes line (or against it on an empty spool, which is the reel's full drag): the
-        // gears grind (Fishing Planet's "reel overload"). There's half a second to let go first; after that it grinds
-        // with the square of the drag, so half the reel's drag grinds a quarter as fast as full drag.
+        // gears grind (Fishing Planet's "reel overload"). The angler has half a second of cranking into it to let go
+        // (counted from when cranking and slipping first meet, so a short press during a long run is free too);
+        // after that it grinds with the square of the drag, so half the reel's drag grinds a quarter as fast as full.
         boolean overloaded = slipping || spooled && stalled;
-        slipTicks = overloaded ? slipTicks + 1 : 0;
-        if (overloaded && in.reeling && in.crankThroughSlip && slipTicks > GRIND_GRACE_TICKS) {
+        boolean cranking = overloaded && in.reeling && in.crankThroughSlip;
+        grindTicks = cranking ? grindTicks + 1 : 0;
+        grinding = cranking && grindTicks > GRIND_GRACE_TICKS;
+        if (grinding) {
             double share = slipping ? drag / tackle.reelMaxDrag() : 1;
             reelWear += DT * GRIND_PER_SECOND * share * share;
         }
@@ -321,6 +329,11 @@ public final class Fight {
     /** Every metre of line is out: the reel can give no more. */
     public boolean spooled() {
         return spooled;
+    }
+
+    /** The reel ground this tick: cranked against a slipping drag (or an empty spool) past the half-second grace. */
+    public boolean grinding() {
+        return grinding;
     }
 
     /** The crank couldn't turn against the pull this tick (for drives: the network or engine stalled). */
