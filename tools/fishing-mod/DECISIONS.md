@@ -166,3 +166,41 @@ were run on a dedicated server before and after (362 checks before, 365 after, a
   their weight. Small hooks bias toward smaller fish.
 - **Food values** of ported Tide foods are Tide's (cooked fish 6 / 0.6, large 10 / 1.2, small 4 / 0.4, roe 2 / 0.4)
   and unchanged from the Tide-era pack.
+
+## Integration (lead)
+
+- **Pack version 0.3.9, not 0.4.0.** You asked for 0.3 numbering on 20 Oct; a feature this big could justify 0.4.0,
+  but staying on the agreed numbering was the safer reading. Reverse: bump `pack/pack.toml` and the CHANGELOG heading.
+- **Bridge rebuilt as 1.33.0** without the three Tide mixins (the handover called it optional). A boot log without
+  "mixin target not found" warnings for a removed mod is worth one rebuild; its description no longer lists the Tide
+  fixes, which this mod now owns. Its `build.sh` also got the Mojang-library fallback for LWJGL that this mod's build
+  already had (Maven Central answered HTTP 429 here).
+
+## Field Guide
+
+- **The Fishing section went from 13 entries to 21**: the fight, landing, tackle, Tackle Bench, live bait, aquarium,
+  cleaning, rod machines and trolling each have their own entry so search finds them. The Angling Table entry became
+  the Tackle Bench entry.
+- **One neutral In-depth note in Rods explains converted rods**, because upgraded worlds hold them and a player who
+  finds a changed rod needs that. It describes what happens without comparing mods (no meta talk).
+- **XP is given as worked examples**, not a formula.
+- **Early food** now teaches the Bamboo Pole (bamboo or sugar cane), String Line, an iron-nugget hook and worms from
+  hoeing.
+- **`/cgfish hook`** is shown where the old guide showed Tide's `/fishing test`.
+- Everything the guide writer asked (Hooked on Variety, float depth, XP bases, day-one rod, Midas recipe, grilled
+  tuna) was settled in the balance pass above, and the guide matches it.
+
+## Old-world upgrade
+
+Tested on a played two-player 0.3.8 world (real Tide catches, journal, advancements, every kind of container, a Create
+contraption, a Sable ship, item frames, villagers, a far chunk left unloaded, a player mid-cast at shutdown), upgraded
+with `install-server.sh` and packwiz on the clients, restarted and checked again; nothing lost. Report:
+`modpack/fishing-mod/upgrade-test.md` in the project folder.
+
+- **Fishing lines stack to 64** (were 1). Tide's lines stacked to 64 and load as ours; any container that limits
+  stacks on load (ender chest and others) cut an old stack to one item. A spool that has been on a rod carries its
+  metres and doesn't stack with fresh ones. Reverse: `stacksTo(1)` in FishingRegistry (old stacks get cut again).
+- **Tide's spawn eggs for the duplicate species become Aquaculture buckets**, as the handover set it, so a stack of
+  them drops to one. They are creative-only, so this was left.
+- **Recipe-book entries and recipe advancements for removed Tide recipes are dropped** (grilled tuna, fish-bone bone
+  meal, Tide's rod smithing): the log says so once per player on the first load; players see nothing.
