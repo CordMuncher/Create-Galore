@@ -150,7 +150,11 @@ public final class Models {
                 + "Create's own rules (which faces take a shaft, cogs, belts, sources, water on wheels) and refuses one "
                 + "with faults, saying what is wrong, so fix it and call again. Each block's facing decides which faces "
                 + "take rotation (a saw, press or drill takes its shaft at its back, the face opposite its facing): get it "
-                + "right rather than guessing (lookup_recipes or read_guide help). Water and lava can be shown flowing: a "
+                + "right rather than guessing (lookup_recipes or read_guide help). Every block keeps the facing or axis you write "
+                + "and takes its default when you leave it out, often the wrong way (a Windcatcher panel's default lies flat), "
+                + "so write it on every block that has one. Sail rigs are checked the same way, with Winds & Weather's rules: "
+                + "Masts stack straight up, Yards run sideways out from a Mast along their axis, Sail Kit cloth hangs straight "
+                + "below a run of Yards facing across it, and Windcatcher panels stand upright with a sideways facing. Water and lava can be shown flowing: a "
                 + "source is level=0, flowing water level=1 to 7 (higher = further from the source), falling water "
                 + "level=8. To improve or fix something the player built, copy it in with from_world (find its bounds with "
                 + "trace_build or read_area first) and write only what changes; the player then sees their own build "
@@ -203,6 +207,7 @@ public final class Models {
         if (sx < 1 || sx > MAX_SIZE || sy < 1 || sy > MAX_SIZE || sz < 1 || sz > MAX_SIZE)
             return Result.problem("Not built: size_x, size_y and size_z must each be 1 to " + MAX_SIZE + ".");
         Map<Character, BlockState> keys = new HashMap<>();
+        java.util.Set<String> undirected = new java.util.TreeSet<>();
         JsonArray palette = array(input, "palette");
         if (palette.size() > MAX_PALETTE) problems.add("at most " + MAX_PALETTE + " palette entries");
         for (int i = 0; i < Math.min(MAX_PALETTE, palette.size()) && problems.size() < 10; i++) {
@@ -213,7 +218,7 @@ public final class Models {
                 problems.add("palette entry " + i + ": key must be one character other than '.' and a space");
                 continue;
             }
-            BlockState state = parse(GuideText.string(k, "block"), "palette '" + key + "'", problems);
+            BlockState state = parse(GuideText.string(k, "block"), "palette '" + key + "'", problems, undirected);
             if (state != null) keys.put(key.charAt(0), state);
         }
         JsonArray layers = array(input, "layers");
@@ -247,7 +252,7 @@ public final class Models {
             }
             JsonObject b = in.get(i).getAsJsonObject();
             String raw = GuideText.string(b, "block").strip();
-            BlockState state = parse(raw, "entry " + i, problems);
+            BlockState state = parse(raw, "entry " + i, problems, undirected);
             if (state == null) continue;
             int x = Diagrams.intOr(b, "x", -1), y = Diagrams.intOr(b, "y", -1), z = Diagrams.intOr(b, "z", -1);
             int x2 = Diagrams.intOr(b, "x2", x), y2 = Diagrams.intOr(b, "y2", y), z2 = Diagrams.intOr(b, "z2", z);
@@ -292,12 +297,12 @@ public final class Models {
             for (BlockPos p : base.keySet()) if (!cells.containsKey(p)) changes.put(p, true);
         }
         if (level != null) connect(cells, level);
-        BuildCheck.Report check = level == null ? null : BuildCheck.check(cells, level);
+        BuildCheck.Report check = join(level == null ? null : BuildCheck.check(cells, level), RigCheck.check(cells));
         boolean showsFault = input.has("shows_a_fault") && input.get("shows_a_fault").isJsonPrimitive()
                 && input.get("shows_a_fault").getAsBoolean();
         boolean draft = input.has("draft") && input.get("draft").isJsonPrimitive() && input.get("draft").getAsBoolean();
         if (check != null && !check.faults().isEmpty() && !showsFault && !draft) {
-            return Result.problem("Not built: the machines in it wouldn't work as placed. Fix the model and call again (or "
+            return Result.problem("Not built: blocks in it wouldn't work as placed. Fix the model and call again (or "
                     + "set shows_a_fault if it is meant to show a broken build).\n" + check.text());
         }
         JsonObject model = new JsonObject();
@@ -312,6 +317,9 @@ public final class Models {
         compact(cells, sx, sy, sz, model);
         model.add("labels", labels);
         String report = check == null ? "" : check.text();
+        report = (report.isEmpty() ? "" : report + "\n") + tally(cells);
+        if (!undirected.isEmpty()) report += "\nWritten without a facing or axis, so they took their default (check each is "
+                + "meant that way): " + String.join("; ", undirected) + ".";
         if (base != null) {
             model.add("changes", changeRuns(changes, sx, sy, sz));
             report = (report.isEmpty() ? "" : report + "\n") + changeReport(changes, cells, base, worldMin.subtract(offset), base.size());
@@ -347,13 +355,44 @@ public final class Models {
         }
     }
 
+    private static final java.util.Set<String> DIRECTIONS = java.util.Set.of("facing", "axis", "rotation");
+
+    private static <T extends Comparable<T>> String name(BlockState state, net.minecraft.world.level.block.state.properties.Property<T> prop) {
+        return prop.getName(state.getValue(prop));
+    }
+
+    /** Both checks' reports as one; either may be null (nothing of its kind in the model). */
+    private static BuildCheck.Report join(BuildCheck.Report a, BuildCheck.Report b) {
+        if (a == null || b == null) return a == null ? b : a;
+        List<String> faults = new ArrayList<>(a.faults());
+        faults.addAll(b.faults());
+        return new BuildCheck.Report(a.text() + "\n" + b.text(), faults);
+    }
+
+    /** What the model is made of, so a block that should have gone (or never come) shows up in the numbers. */
+    private static String tally(Map<BlockPos, BlockState> cells) {
+        Map<String, Integer> count = new java.util.TreeMap<>();
+        for (BlockState s : cells.values()) count.merge(BuiltInRegistries.BLOCK.getKey(s.getBlock()).toString(), 1, Integer::sum);
+        List<String> parts = new ArrayList<>();
+        count.entrySet().stream().sorted((x, y) -> y.getValue() - x.getValue())
+                .forEach(e -> parts.add(e.getValue() + " " + e.getKey()));
+        return "Blocks in the model: " + String.join(", ", parts) + ".";
+    }
+
     private static JsonArray array(JsonObject o, String key) {
         return o.has(key) && o.get(key).isJsonArray() ? o.getAsJsonArray(key) : new JsonArray();
     }
 
-    private static BlockState parse(String raw, String where, List<String> problems) {
+    private static BlockState parse(String raw, String where, List<String> problems, java.util.Set<String> undirected) {
         try {
-            return BlockStateParser.parseForBlock(BuiltInRegistries.BLOCK.asLookup(), raw.strip(), false).blockState();
+            BlockStateParser.BlockResult parsed = BlockStateParser.parseForBlock(BuiltInRegistries.BLOCK.asLookup(), raw.strip(), false);
+            BlockState state = parsed.blockState();
+            // A direction left out takes the block's default, which is often not what was meant (a flat sail panel).
+            for (net.minecraft.world.level.block.state.properties.Property<?> prop : state.getProperties()) {
+                if (DIRECTIONS.contains(prop.getName()) && !parsed.properties().containsKey(prop))
+                    undirected.add(BuiltInRegistries.BLOCK.getKey(state.getBlock()) + " (" + prop.getName() + "=" + name(state, prop) + ")");
+            }
+            return state;
         } catch (CommandSyntaxException e) {
             problems.add(where + ": " + raw + " is not a block state on this server (" + e.getRawMessage().getString() + ")");
             return null;

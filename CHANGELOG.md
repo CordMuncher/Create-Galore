@@ -4,6 +4,13 @@ Each pack version gets a section here, with **Added**, **Fixed** and **Removed**
 workflow copies the section for the version in `pack/pack.toml` to the top of the GitHub release, and the build
 fails when that section is missing.
 
+## 0.4.11
+
+### Fixed
+- **Ask the Book builds sails the right way up.** In the book's 3D models, sails lay flat like shelves and Yards floated as loose stubs beside the Mast. The book now checks rigging with Winds & Weather's own rules before it shows a model: Windcatcher panels stand upright, Yards run out from the Mast and join up, and Sail Kit cloth hangs below its Yard. Every model also lists the blocks it is made of, so a block the answer says is gone can't stay behind.
+- **The Field Guide's Sailing and Wind entry** no longer says only Windcatchers push ships. Windcatchers and Sail Kit cloth both catch wind on a ship, and only Windcatchers drive windmill bearings. A new page shows how a rig sits: which way a Windcatcher faces when placed, how Yards join, and where the cloth hangs.
+- Create Galore Bridge 1.39.0.
+
 ## 0.4.10
 
 ### Added
