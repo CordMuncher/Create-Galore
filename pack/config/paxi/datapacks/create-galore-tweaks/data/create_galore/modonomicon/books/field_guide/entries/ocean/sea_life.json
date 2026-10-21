@@ -45,6 +45,14 @@
     {
       "type": "modonomicon:spotlight",
       "item": {
+        "item": "garnished:voltaic_sea_grass"
+      },
+      "title": "Voltaic Sea Grass",
+      "text": "Glowing sea grass in cold oceans. Moving through it shocks you for 2 damage a hit, drowned too. Fish and other sea life swim through it unharmed.\\\n\\\nFan bulk freezing turns seagrass into it."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
         "item": "hybrid_aquatic:ominous_conch"
       },
       "title": "Ominous Conch",
