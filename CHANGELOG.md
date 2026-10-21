@@ -4,6 +4,12 @@ Each pack version gets a section here, with **Added**, **Fixed** and **Removed**
 workflow copies the section for the version in `pack/pack.toml` to the top of the GitHub release, and the build
 fails when that section is missing.
 
+## 0.4.15
+
+### Fixed
+- **The reel sounds like a reel again.** Winding a reel hummed like an engine. The sounds were rebuilt by comparing them with recordings of real spinning and fly reels: winding is now a fine, fizzy whirr with a light gear whine, the drag clicks are sharp ticks, a fast run makes the drag scream as a blur of those ticks, and cranking against a slipping drag sounds like gears skipping instead of a low groan.
+- Create Galore Fishing 0.3.8.
+
 ## 0.4.14
 
 ### Fixed

@@ -366,3 +366,30 @@ for Fishing Planet style stress bars; and reported a false "It's running!" and s
   of spoon bites in normal, cold, lukewarm and warm oceans (sea bass, grouper, snapper, tuna), so his spot was
   special; he chose to switch spots rather than chase it.
 
+## Reel sounds matched to real reels (Fishing 0.3.8, pack 0.4.15)
+
+Emre (21 Oct 2026) found the 0.4.8 reel sound worse than before: "like the hum of an engine", "a rudder trying to
+spin", and asked us to study real reels with spectrograms instead of guessing.
+
+- **References** (studied only, none of them ship; every sound is still synthesized): BBC Sound Effects fly reel
+  recordings NHU05039056 (paying out), NHU05039057/058 (reeling in); Red Library "Machines 2" R18-19 "Fishing Reel
+  Spins" (CC0, archive.org); OpenGameArt "Fisheefects" reel.wav; SoundBible "Reeling In Catch" (CC BY 3.0); and the
+  Tide reel sound the pack used before this mod. Freesound, YouTube and Pixabay were not reachable from the build
+  machine.
+- **What the real ones look like.** A spinning reel being wound is a dense, even, fizzy whirr: the waveform is
+  filled, not a row of clicks; energy sits mostly between 2 and 8 kHz (spectral centroid about 4 to 5 kHz), with a
+  narrow gear whine near 3.9 to 4 kHz, a swell once per handle turn (3 to 5 a second) and only about 1% of the
+  energy below 300 Hz. A drag or fly reel clicker is a train of sharp broadband ticks ringing 2 to 3 ms each, about
+  150 a second when line pays out fast, centroid near 10 kHz.
+- **What ours was.** The 0.4.8 crank loop put 92% of its energy below 300 Hz (a 68 Hz gear-mesh tone with 11
+  harmonics, centroid 215 Hz): that is the engine hum, and the game pitches it down further under load. The grind
+  had 61% below 300 Hz (a 95 Hz groan). The drag clicks rang at about 3.4 kHz for 20 ms, more a beep than a tick.
+- **What it is now** (`art/make_sounds.py`). Crank: three trains of 600 tiny ticks a second each, rung through
+  small inharmonic metal resonances (2.6 to 8.8 kHz), a coarser tick 24 times a second (anti-reverse and roller), a
+  band of noise at 3.8 to 4.15 kHz for the whine, and line-lay hiss, all swelling with four handle turns a second;
+  centroid 4.0 kHz, 2% below 300 Hz. Drag clicks: a bright 2 ms pawl tick around 4.2 to 5.3 kHz with a softer lift
+  tick before it. Drag scream: 160 of those a second, uneven, over line hiss. Grind: hard 1.4 to 6 kHz ticks every
+  4 to 20 ms over a gritty scrape, no drone. Side-by-side spectrograms were posted to Emre with this change.
+- The game code is unchanged (same events, pitches and volumes): the problem was the audio, not how it is played.
+- Still unheard by us: the build machine has no audio output, so the comparison is by spectrogram and numbers only.
+
