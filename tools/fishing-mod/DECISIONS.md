@@ -259,3 +259,22 @@ Emre's own calls, which replace B1 and the two play-test notes above.
 - In the sim, careful anglers still pay 1 durability a fight; a careless one (drag at 3/4 of the line, cranking
   non-stop) pays about 22 a fight on cod and 88 on salmon with a Copper reel (300), and can lose a whole Steel reel
   to one arapaima.
+
+## Every part wears a little (21 Oct 2026, mod 0.3.1, pack 0.4.1)
+
+Emre: "reels and all components should wear a bit regardless, no infinite rod, just not a lot and negligible".
+
+- **Rod and reel** already paid 1 durability per fight on top of overloading and grinding; unchanged.
+- **Line** frayed 0.01 a fight (plus half the fight's own fraying) but stopped at fully frayed and never went. Now a
+  line frayed through wears out after the fight ("Your Mono Line wore out"). An easy fight leaves about 100 fights in
+  a spool; a snapped line still cuts back to good line (its fraying resets).
+- **Leader, hook, float, sinker and lure** never wore. They now get a `part_wear` component, +0.005 a fight (200
+  fights), and wear out after the fight at 1. Bait is used up as before.
+- **Judgment calls:** the numbers (200 fights for small parts, about 100 for a line) are my picks for "negligible",
+  easy to change (`TackleWear.PART_WEAR_PER_FIGHT`, `LINE_WEAR_PER_FIGHT`). Wear is only added once a part has
+  fished, so unused parts keep stacking and old worlds' parts are untouched; a used part no longer stacks with new
+  ones (like a used tool). Hybrid Aquatic's special hooks keep their own durability for their effects and get the same
+  per-fight wear on top. Wear doesn't weaken these parts until they go (the line already weakens as it frays), and a
+  part doesn't wear out mid-fight: it goes after the fight, so a worn-out hook never loses a fish by itself.
+- Tooltips show "Worn: N%" and "Frayed: N%", worn parts show a durability bar, and the Tackle Bench warns when a
+  rigged part is past 90%.

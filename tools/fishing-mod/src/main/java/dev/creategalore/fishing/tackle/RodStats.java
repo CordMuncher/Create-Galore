@@ -173,6 +173,12 @@ public final class RodStats {
         if (rodCondition() < 0.25) out.add(Component.translatable("tooltip.create_galore_fishing.warn.worn_rod"));
         if (reel.isPresent() && reelCondition() < 0.25) out.add(Component.translatable("tooltip.create_galore_fishing.warn.worn_reel"));
         if (lineWear() > 0.6) out.add(Component.translatable("tooltip.create_galore_fishing.warn.frayed_line"));
+        for (RodParts.Slot s : new RodParts.Slot[]{RodParts.Slot.LEADER, RodParts.Slot.HOOK, RodParts.Slot.TERMINAL}) {
+            ItemStack part = parts.get(s);
+            if (part.getOrDefault(FishingRegistry.PART_WEAR.get(), 0f) > 0.9f) {
+                out.add(Component.translatable("tooltip.create_galore_fishing.warn.worn_part", part.getHoverName()));
+            }
+        }
         return out;
     }
 

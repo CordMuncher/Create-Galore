@@ -4,6 +4,12 @@ Each pack version gets a section here, with **Added**, **Fixed** and **Removed**
 workflow copies the section for the version in `pack/pack.toml` to the top of the GitHub release, and the build
 fails when that section is missing.
 
+## 0.4.1
+
+### Added
+- **Every fishing part wears a little.** Each fight, even an easy catch, wears every part of the rod by a small amount: the rod and reel lose 1 durability, the line frays until it wears out (about 100 easy fights), and leaders, hooks, floats, sinkers and lures each last about 200 fights. A part's tooltip shows how worn or frayed it is, a durability bar shows on worn parts, and the Tackle Bench warns when a part is close to giving out. A part that wears out is gone after the fight, with a message. Unused parts are untouched and still stack.
+- Create Galore Fishing 0.3.1.
+
 ## 0.4.0
 
 ### Added
