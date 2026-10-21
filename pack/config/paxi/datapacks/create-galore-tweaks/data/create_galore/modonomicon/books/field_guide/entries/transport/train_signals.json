@@ -63,6 +63,16 @@
     },
     {
       "type": "modonomicon:text",
+      "title": "Conductors",
+      "text": "A train with controls at both ends needs a conductor at **each** set to run its schedule both ways. With only one, stops behind the train get \"no suitable path\".\\\n\\\nDriving a scheduled train yourself pauses its schedule. Right-click the conductor with an empty hand to carry on."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Stations in the way",
+      "text": "A station stays in [#](7A3C9A)[Assembly Mode](entry://glossary/assemble)[#]() after a train is taken apart there. Until you switch it off, no scheduled train can pass through it, and they report \"no suitable path\" too."
+    },
+    {
+      "type": "modonomicon:text",
       "title": "Two modes",
       "text": "[#](FFFFFF)\ue103[#]() **In depth.** A [#](2E5AAC)[wrench](entry://create_basics/tools_wrench)[#]() switches a signal to its second mode. A brass-mode signal is meant to lead into ordinary ones: it holds a train back if, once inside, it could not leave the next segment at once. That keeps queued trains out of a busy junction."
     },

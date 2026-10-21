@@ -81,6 +81,11 @@
     },
     {
       "type": "modonomicon:text",
+      "title": "Riding along",
+      "text": "Sit in a seat when the train is fast. A player standing near the edge of a moving deck can slide off, and a hard stop at the end of a line throws standing riders.\\\n\\\nPassing through a Nether portal lets go of the controls: right-click them again on the other side."
+    },
+    {
+      "type": "modonomicon:text",
       "title": "Related",
       "text": "Signals, schedules, add-ons and how contraptions work in general.\n\n- [#](2E5AAC)[Signals and Schedules](entry://transport/train_signals)[#]()\n- [#](2E5AAC)[Train Add-ons](entry://transport/train_addons)[#]()\n- [#](2E5AAC)[Contraptions](entry://create_basics/contraptions)[#]()"
     }
