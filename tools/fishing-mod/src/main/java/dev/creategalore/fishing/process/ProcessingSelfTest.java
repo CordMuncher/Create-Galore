@@ -19,6 +19,7 @@ import dev.creategalore.fishing.tackle.TacklePart;
 import java.util.List;
 import java.util.Optional;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -26,6 +27,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -36,7 +39,9 @@ import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.crafting.SingleRecipeInput;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.fml.ModList;
 import net.neoforged.neoforge.common.util.FakePlayer;
@@ -179,6 +184,18 @@ public final class ProcessingSelfTest {
                 strokes++;
             }
             r.check(strokes == Cleaning.strokes(4), "a 4 kg fish took " + strokes + " strokes");
+            // The Deployer keeps using its knife on the now empty table; that mustn't hand it the parts.
+            BuiltInRegistries.ITEM.getTag(CleaningTableBlock.KNIVES).flatMap(knives -> knives.stream().findFirst()).ifPresent(knife -> {
+                deployer.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(knife));
+                BlockState state = level.getBlockState(pos);
+                BlockHitResult hit = new BlockHitResult(Vec3.atCenterOf(pos), Direction.UP, pos, false);
+                if (state.useItemOn(deployer.getMainHandItem(), level, deployer, InteractionHand.MAIN_HAND, hit)
+                        == ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION) {
+                    state.useWithoutItem(level, deployer, hit);
+                }
+                r.check(table.hasOutputs(), "a Deployer's knife on the empty table leaves the parts in the outputs");
+                deployer.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
+            });
             int out = 0;
             for (int slot = 1; slot < items.getSlots(); slot++) out += items.extractItem(slot, 64, false).getCount();
             r.check(out > 0 && !table.hasOutputs(), "the parts wait in the outputs for a hopper (" + out + " items)");

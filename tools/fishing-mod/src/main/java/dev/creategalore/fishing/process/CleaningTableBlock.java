@@ -28,6 +28,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import net.neoforged.neoforge.common.util.FakePlayer;
 
 /**
  * The Cleaning Table: lay a fish on it (right-click with the fish), then cut it with a knife ({@code #c:tools/knife})
@@ -79,18 +80,22 @@ public class CleaningTableBlock extends HorizontalDirectionalBlock implements En
         if (!(level.getBlockEntity(pos) instanceof CleaningTableBlockEntity table)) {
             return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         }
+        // A Deployer holding something mustn't fall through to the empty-hand take below: the parts it cut are left
+        // in the outputs for hoppers and funnels.
+        ItemInteractionResult pass = player instanceof FakePlayer ? ItemInteractionResult.SKIP_DEFAULT_BLOCK_INTERACTION
+                : ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         if (stack.is(KNIVES)) {
-            if (table.fish().isEmpty()) return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+            if (table.fish().isEmpty()) return pass;
             if (!level.isClientSide && table.stroke(player)) {
                 stack.hurtAndBreak(1, player, LivingEntity.getSlotForHand(hand));
             }
             return ItemInteractionResult.sidedSuccess(level.isClientSide);
         }
-        if (table.fish().isEmpty() && Cleaning.isFish(stack)) {
+        if (table.fish().isEmpty() && !table.hasOutputs() && Cleaning.isFish(stack)) {
             if (!level.isClientSide) table.place(player.getAbilities().instabuild ? stack.copy() : stack);
             return ItemInteractionResult.sidedSuccess(level.isClientSide);
         }
-        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+        return pass;
     }
 
     @Override
