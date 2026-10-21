@@ -52,6 +52,7 @@ public final class CreateGaloreBridge {
         CritterUnify.register();
         AirshipCaptains.register();
         StructureFixes.register();
+        ShipGluedWater.register();
         GuideAi.register(modBus);
         if (FMLEnvironment.dist.isClient()) {
             BridgeClient.init(modBus);
