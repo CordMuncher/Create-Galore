@@ -964,7 +964,7 @@ hash = "6fef4ba85d0bc218e298d510488ccc7c8daf34c1a847adc03bda23b22dc12e97"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/fishing.md"
-hash = "5713961debbde6257bacdefbceb210621cacc1ba0ca5e6406a7567e68cacaf2f"
+hash = "ac5ae4b75e541eae0465c3a63289c2eeb40ccb66a7591e7e45cb81a460cdfae1"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/flight.md"
@@ -1360,7 +1360,7 @@ hash = "aaa29f99fb6ee89388c08b5f999e61e53fbe238d57807471271a3fc5ab100c26"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/fishing/trolling.json"
-hash = "648831c726a1841b60bdeb24b7bafb551b5ecf30e99e4185d408b8452824af7b"
+hash = "9dc58dca63eb8415b08a26432f3ebd91965be1942d78d679824364b28171d654"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/fishing/where_fish_live.json"

@@ -1,4 +1,4 @@
-<!-- sources sha256:f45a0af1c6dcd03da71b9a4fed8d9fa55b8cd05fb498eb060229ca45a2117366 -->
+<!-- sources sha256:6de75f38db5ede9dc8cab0c84642fed59ae201801ace90885dfb08c4cd5637ee -->
 # Fishing (fishing)
 
 ## fishing/overview | Fishing
@@ -205,7 +205,7 @@
 - Rod Holders and reel drives work on physics **ships** (a sub-level (see glossary/sub_level), e.g. a sailing ship or a surfaced submarine). The rig is **towed** behind at its line length (it can't get further from the tip than the line it was cast with). See (see flight/ship_building) (see ocean/sailing)
 - A towed crankbait dives and works between its best speeds: 0.6 to 3 m/s; Deep Crankbait 0.8 to 3.5 m/s, down to 5 m. Too slow or fast: fish mostly ignore it. Fish that bite follow the water passed, so trolling spreads catches instead of fishing out one spot
 - Fuel Reel Drive needs no shafts, suits boats; a Geared drive works off the ship's own rotation. Tip: for tuna and sharks: Heavy Boat Rod, Big-Game Trolling Reel, Heavy Mono line, Steel Leader, Big-Game hook or Deep Crankbait
-- Watch out: machines on a ship fish only while the ship is loaded; stay aboard. Put a chest or belt beside the machines, or catches hang at the rod tip. Set the drag before setting the rod in (the machine keeps the rod's own)
+- Watch out: machines on a ship fish only while the ship is loaded; stay aboard. Put a chest or belt beside the machines, or catches hang at the rod tip. Set the drag before setting the rod in (the machine keeps the rod's own and never winds while line slips, so a big tuna on a light drag can take line until it is lost; for tuna-sized fish set the drag to about two thirds of the line)
 
 ## fishing/aquaculture | Aquaculture Fish and Old Rods
 - Aquaculture's **fish** bite on any rod, each in own biome. Its **rods, hooks, lines, bobbers, Tackle Box** can't be crafted; owned rods still work the classic way. Fillet knives, Worm Farm, Neptunium, its food stay

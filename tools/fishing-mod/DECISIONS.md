@@ -204,3 +204,28 @@ with `install-server.sh` and packwiz on the clients, restarted and checked again
   them drops to one. They are creative-only, so this was left.
 - **Recipe-book entries and recipe advancements for removed Tide recipes are dropped** (grilled tuna, fish-bone bone
   meal, Tide's rod smithing): the log says so once per player on the first load; players see nothing.
+
+## Play test
+
+Two players on a dedicated server, every feature by real input where player behaviour was the point; then a
+follow-up on trolling catches and belts. Reports: `modpack/fishing-mod/playtest.md` in the project folder (the full
+list of calls is in `DECISIONS-playtest.md` next to it).
+
+- **Pocket Watch: Aquamirae's Captain Cornelia and Maze Mother added to `tide:ignores_pocket_watch`** (optional
+  entries). They are arena bosses outside `#c:bosses`; the watch froze Cornelia solid. Illager Invasion's Archevoker
+  and Alex's Mobs' Tremorzilla and Forsaken were left freezable as big mobs rather than arena bosses.
+- **Boilies kept as they are.** The heated mixing works when the four inputs reach the basin together (funnel, chute
+  or one thrown stack); dropped in one at a time, Create's flour + water -> dough and Ratatouille's egg -> egg yolk
+  fire first. That is ordinary Create basin behaviour and changing it means removing other mods' recipes.
+- **XP orbs from Keep/Release spawn at the angler**, as vanilla fishing XP does; a player standing next to them can
+  pick some up.
+- **The pole's HUD shows "Line 9 / 8 m" while the float drifts.** Cosmetic, left.
+- **A boat's speed doesn't pull on a hooked fish.** The fight keeps the fish at the line's own distance wherever the
+  rod tip goes, so a boat speeding away tows the fish with no extra line or tension. Making speed count would change
+  the fight model and its balance, so it is yours to decide.
+- **A big fish on a light drag can beat a drive.** Geared and Fuel drives never wind while line slips (by design);
+  a 16.5 kg tuna at a third-of-line drag was worn out but still out-pulled it, and line crept out until it was lost
+  (8.7 kg tuna and a 19.3 kg opah landed on the same drag). The Field Guide's trolling page now says tuna-sized fish
+  want about two thirds of the line. Alternative for you: drives that tighten the drag on a tired fish.
+- **Alive fish in chests stay separate stacks** (the handover's known issue) until a player picks them up. A cheap
+  fix if wanted: round belt output's `alive_until` up to the next 30 s so close catches stack.
