@@ -992,7 +992,7 @@ hash = "e325c385267b4993fcd4d7f7e284dbc634407e69e26c0856ccd38e945e9d4d56"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/ocean.md"
-hash = "9b37816eabe6a51763aa17ae46888035b1926cba8b096f754cfb28480249fb9e"
+hash = "80de930dfddaa6ed06f73f4a4a5b7031c8df33062a571b1a34a65641210bbf23"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/space.md"
@@ -1776,11 +1776,11 @@ hash = "df9dd4b67afb01c8d5c58f81b53e1621a263bab03ef87c5192b8b11361d9f64e"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/ocean/hulls_and_pressure.json"
-hash = "4d3d1a5729a82feaacb0ce5f716785ba563bcc2d47196704f12b9d719a020376"
+hash = "a4db1a303879a5c0b2a3ec7a0f5ecd27f494bcaa114a7e529d45dc1d8737932e"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/ocean/sailing.json"
-hash = "d01ac56d36aa6464a5c6e7624c346a84fa799334b30e11e485a742a9f9636733"
+hash = "1957671f34fe67ceb03150d6d7da502f1979e63a774e6886c926a6712f0ba03c"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/ocean/sea_food.json"
@@ -1792,7 +1792,7 @@ hash = "bc802e94bf77d25cd37dad06fb6f99570b424092e2aec7e59cf92dc0c7ebb76e"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/ocean/submarines.json"
-hash = "97297be5351fcbd5e18b68f250f1bc860b152b311161fc99636291b06950430e"
+hash = "c2b7999e6ed03d62e8372b81f40eaad2bbc24f8cbf00990efd547bdd043fca49"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/ocean/underwater_places.json"
@@ -4878,7 +4878,7 @@ metafile = true
 
 [[files]]
 file = "mods/create-deep-seas.pw.toml"
-hash = "034d02209c640de464c54a7bc413bc3c08004e51026451ff9c5d5911275e60b4"
+hash = "b0c2ee7a02cba23cd306b324f158518264868cd3b1542346bf325e25f76d41a2"
 metafile = true
 
 [[files]]

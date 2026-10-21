@@ -1,16 +1,18 @@
-<!-- sources sha256:f34af7a6de252af7fb4b43e713799cf47b4fa72715b719dd8d16148322043bbb -->
+<!-- sources sha256:3df1a267b0069259e51616e59adec51899aa6d5e69813d632bd6f712ba5b023d -->
 # The Ocean (ocean)
 Create Deep Seas (submarines, High Seas surface ships), Aquatic Ambitions, sea life mods, Aquamirae, diving, structures.
 
 ## ocean/submarines | Submarines
 - Create Deep Seas adds submarines: Create-style contraption (see create_basics/contraptions), one solid physical vessel, built on Sable (see glossary/sub_level) and Aeronautics tech like airships (see flight/airships). Dives by changing own weight.
 - Floats until Ballast Tanks fill with sea water. Pump in -> heavier, sinks; pump out -> rises.
+- A Create pump pushes only the way its arrow points, whichever way its shaft spins, so a Gearshift does not reverse it. To switch between diving and rising, turn the pump round with a Wrench (see create_basics/tools_wrench), or let an Onboard Computer run Pump Controllers.
 - Ballast Vent [create_submarine:ballast_vent]: the sea valve; at least one face must touch the sea water. Every face takes a pipe. Pipe vent, pump and tanks together.
 - Ballast Tank [create_submarine:ballast_tank]: holds the water that weighs the ship down. Read capacity with Engineer's Goggles (see create_basics/tools_wrench).
 - Each empty tank lifts about 75 units of ship mass (`ballastLiftPerTank` in Deep Seas config (see glossary/config)). Plank ~1, iron block ~3.5, machines more; a small iron sub can need a dozen tanks.
 - Tip: fit a few spare tanks; a sub with barely enough lift sinks slowly even with every tank empty.
+- With full tanks a sub drops fast: past 15 blocks a second in deep water, so start pumping out before the bottom. A sub resting on the sea floor may only lift off once its tanks are nearly empty; give it a moment after the last tank drains.
 - Onboard Computer [create_submarine:command_sub]: depth autopilot. Click its screen to set target depth and speed; it drives the pumps to hold depth. With a Sonar on board it can also follow the sea floor and keep the keel clear.
-- Pump Controllers on the same ship are found automatically; pipe one between vent and tanks. More controllers or faster rotation = quicker dives.
+- Pump Controllers on the same ship are found automatically; pipe one between vent and tanks. More controllers or faster rotation = quicker dives. Without a Computer a Pump Controller works like an ordinary pump.
 - Sonar [create_submarine:sonar]: maps floor, rocks, ships and mines around you on the Computer's screen.
 - Pumps and thrusters run on Create rotation (see create_basics/rotation) and fluids (see create_basics/fluids).
 - Tip: press W over any Deep Seas block for its Ponder (see start_here/tools).
@@ -22,15 +24,16 @@ Create Deep Seas (submarines, High Seas surface ships), Aquatic Ambitions, sea l
 
 ## ocean/hulls_and_pressure | Hulls and Pressure
 - Deep water crushes blocks. Every block has a maximum depth; a ship is only as strong as its weakest block. Past its limit a block gives way: above a certain depth the room just floods through the hole; far deeper, a failing block implodes the whole ship.
-- Windows are the usual weak point: use pressurized glass. Glass, Iron and Copper Pressurized Glass resist pressure; plain glass does not.
+- Glass and wooden hatches give way first: use pressurized glass and iron hatches. Glass, Iron and Copper Pressurized Glass resist pressure; plain glass does not.
   - Iron Pressurized Glass [create_submarine:iron_pressurizer]; shows item create_submarine:iron_pressurizer
 - Goggles (see create_basics/tools_wrench) on a block show its hull tier: fragile, standard or reinforced.
+- Rated depths (the shape of the hull scales them up or down): plain glass 28 m, oak planks 44 m, wooden trapdoors and doors 49 m, copper trapdoors and doors 85 m, iron trapdoors and doors 99 m, iron block 101 m.
 - Pressure Barometer [create_submarine:barometer]: shows depth and pressure, compares ship pressure to what the weakest block can take. Attach a Display Link (see create_basics/redstone_and_control) to broadcast depth and hull state to a Display Board.
 - Industrial Alarm flashes and sounds faster every 5 m you sink past the safe depth.
 - Tuning: Deep Seas config (see glossary/config) has a max depth multiplier scaling every block; per-block depths are in config/submarine_hull.json.
 - Dry interior needs a sealed hull + Electrolyzer (water -> oxygen) + Oxygen Diffuser (spreads it through the ship; give it a redstone signal).
 - Electrolyzer [create_submarine:electrolyzer]: accepts FE power (see industry/electricity), or put a Shaft in its module slot to spin it with plain Create rotation.
-- Airlock to leave the ship underwater: two Decompression Chambers joined by pipes and a pump (see create_basics/fluids). Reverse the pump to dry it again.
+- Airlock to leave the ship underwater: two Decompression Chambers joined by pipes and a pump (see create_basics/fluids). Turn the pump round with a Wrench to dry it again.
   - Decompression Chamber [create_submarine:decompression_chamber]: airlock valve; pipe water in at the back to flood a room, or out to empty it.
   - Watch out: flood the airlock before opening the outer door deep down, or the sea crushes it in.
 - Create: Deep Seas, Lava Fix: players inside a sealed submarine submerged in lava no longer take fire or lava damage (interior is dry). Nothing to set up.
@@ -45,6 +48,8 @@ Create Deep Seas (submarines, High Seas surface ships), Aquatic Ambitions, sea l
 - Rudder at the stern tells sails which way is forward; mount it on a Swivel Bearing (see flight/ship_building) to steer.
 - Boat Engine [create_high_seas:boat_engine]: compact fuel-burning propeller; mount at the stern with the propeller in the water. Burns fuel (open fuel screen to see what it takes).
   - Right-click: take the tiller; sneak: let go. Sneak-click: fuel screen. Hold use at the helm and move the mouse to set a speed limit 0 to 15.
+  - The tiller needs fuel in the engine; right-click the engine with fuel in hand to load it.
+  - Watch out: a switched-on engine burns fuel all the time, even moored with nobody aboard (a coal lasts 80 seconds). Switch it off with the button in its fuel screen when leaving the boat.
 - Anchor [create_high_seas:anchor]: light in the air, one ton once it touches the bottom. Use a Steel Cable on it to connect a rope winch.
 - Oars give a stroke forward when used near water. Buoy: towable float you can ride and skip across the surface. Dyed Floaters from Deep Seas keep a plain boat on the surface.
 - Seaglide [create_high_seas:seaglide]: handheld twin fans for swimming; runs on your hunger, not fuel. Break the surface at speed to leap out.

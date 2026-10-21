@@ -65,7 +65,7 @@ Resource pack, turned on by default: [Fresh Animations](https://modrinth.com/res
 | [Create Confectionery](https://modrinth.com/mod/create-confectionery) | 1.1.3.b | both |
 | [Create Crafts & Additions](https://modrinth.com/mod/createaddition) | neoforge-1.21.1-1.7.2 | both |
 | [Create Deco](https://modrinth.com/mod/create-deco) | 2.1.3 | both |
-| [Create Deep Seas](https://modrinth.com/mod/create-deep-seas) | 3.4.0 | both |
+| [Create Deep Seas](https://modrinth.com/mod/create-deep-seas) | 3.4.4 | both |
 | [Create Dupe Fix](https://modrinth.com/mod/create-dup-fix) | 1.21.1-1.2 | both |
 | [Create Encased](https://modrinth.com/mod/create-encased) | 1.21.1-1.9.0-ht3 | both |
 | [Create Factory Logistics](https://modrinth.com/mod/create_factory_logistics) | 1.6.1 | both |
