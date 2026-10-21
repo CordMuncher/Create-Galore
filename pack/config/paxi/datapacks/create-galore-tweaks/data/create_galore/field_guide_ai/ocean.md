@@ -1,4 +1,4 @@
-<!-- sources sha256:0d0a0bee58a365cd3942f76593d771bdbc4f3c6a1a6b2256cd94c3c94b8efd69 -->
+<!-- sources sha256:f34af7a6de252af7fb4b43e713799cf47b4fa72715b719dd8d16148322043bbb -->
 # The Ocean (ocean)
 Create Deep Seas (submarines, High Seas surface ships), Aquatic Ambitions, sea life mods, Aquamirae, diving, structures.
 
@@ -66,6 +66,7 @@ Create Deep Seas (submarines, High Seas surface ships), Aquatic Ambitions, sea l
 - Hybrid Aquatic: well over a hundred new sea creatures (clownfish, seahorses, orcas, whale sharks, colossal squid...) plus new ocean biomes.
 - Biomes: Coral Reef, Deep Coral Reef, Seagrass Bed, Tide Pools, Red Meadow, Sulfuric Caves, Warm/Cold/Frozen/Lukewarm Trenches, a Tropical River biome on land. New coral types and bleached variants.
 - Hunters (orcas, sharks, squid, big predatory fish) hunt smaller fish and turtles; after a kill a hunter is full for about 45 seconds. Crab Eaters: otters, octopuses, cuttlefish and some fish hunt crabs and shrimp the same way. Hermit crabs are never hunted (Bridge tag create_galore_bridge:never_hunted), so otters on a beach won't wipe them out; a fishing net still catches them. Prey they kill leaves nothing, so orcas won't cover the sea in fish. For your own fish, use a rod or fishing net.
+- Voltaic Sea Grass [garnished:voltaic_sea_grass]: glowing sea grass in cold oceans. Moving through it shocks players for 2 damage a hit, drowned too. Fish and other sea life swim through it unharmed. Fan bulk freezing turns seagrass into it.
 - Ominous Conch [hybrid_aquatic:ominous_conch]: tied to Karkinos crab boss; check JEI (see start_here/tools) for uses.
 - Magnetic Hook [hybrid_aquatic:magnetic_hook]: one of several special hooks: Barbed, Glowing, CreeperMagnet, Ominous, Magnetic.
 - Naturalist: OFF here (Hybrid Aquatic covers them): anglerfish, blobfish, giant isopod, great white shark, piranha, jellyfish, starfish, crab, ray; their buckets and eggs hidden from JEI. Still spawn: whale, clam, bass, catfish and the rest.

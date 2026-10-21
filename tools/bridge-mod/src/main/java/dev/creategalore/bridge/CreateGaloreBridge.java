@@ -48,6 +48,7 @@ public final class CreateGaloreBridge {
         GuideCleanup.register();
         NatureHeal.register();
         PredatorFeeding.register();
+        VoltaicSeaGrass.register();
         CritterUnify.register();
         AirshipCaptains.register();
         StructureFixes.register();

@@ -992,7 +992,7 @@ hash = "6542377c5fcf0b824a1196d8fea1d9c44737706bfa8d8509254e0ae799e9d192"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/ocean.md"
-hash = "4bb8092c49f3fc58d5984fbad4fdf357e5416c429a2fad42ad86c1b158c70c10"
+hash = "9b37816eabe6a51763aa17ae46888035b1926cba8b096f754cfb28480249fb9e"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/space.md"
@@ -1788,7 +1788,7 @@ hash = "91c82c1c5557492932ffaa8cf65a4c2ed5ecb2ea9e2866c4c6e454c1350c230b"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/ocean/sea_life.json"
-hash = "f026c919c8b75fd2d9d738a382e9eabd74c5c47524cd3ec10ab7f8248ef049a7"
+hash = "bc802e94bf77d25cd37dad06fb6f99570b424092e2aec7e59cf92dc0c7ebb76e"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/ocean/submarines.json"
@@ -4917,8 +4917,8 @@ hash = "db683b65dc15a03dd6de2d34d5dc6ad0e3490744ced513a8cc584784ee9d3d8b"
 metafile = true
 
 [[files]]
-file = "mods/create-galore-bridge-1.37.0.jar"
-hash = "e71d184153a80aeb3501cdbb7d304eab05f87810e6a9933341dfbc48ee405675"
+file = "mods/create-galore-bridge-1.38.0.jar"
+hash = "abd2ff1bec7c63403f23e4457e66da3ebcfc258a1de298db67c974f02acf7104"
 
 [[files]]
 file = "mods/create-galore-fishing-0.3.4.jar"

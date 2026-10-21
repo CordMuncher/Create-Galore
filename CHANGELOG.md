@@ -4,6 +4,12 @@ Each pack version gets a section here, with **Added**, **Fixed** and **Removed**
 workflow copies the section for the version in `pack/pack.toml` to the top of the GitHub release, and the build
 fails when that section is missing.
 
+## 0.4.9
+
+### Fixed
+- **Dead fish floating up.** Voltaic sea grass no longer shocks fish, squid, dolphins, turtles and other sea life. Fish schools swam into its beds on the sea floor and died by the dozen, so dead fish kept floating up around you. It still shocks players, drowned and anything from land that falls in. The Field Guide (Ocean, Sea Life) now has a page on it.
+- Create Galore Bridge 1.38.0.
+
 ## 0.4.8
 
 ### Added
