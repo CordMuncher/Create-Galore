@@ -964,7 +964,7 @@ hash = "6fef4ba85d0bc218e298d510488ccc7c8daf34c1a847adc03bda23b22dc12e97"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/fishing.md"
-hash = "ac5ae4b75e541eae0465c3a63289c2eeb40ccb66a7591e7e45cb81a460cdfae1"
+hash = "0faa0b3d41b11ba0c6b9ece0d60fd97b6de554455c4e9c60b01ad55ef3be229a"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/flight.md"
@@ -1336,7 +1336,7 @@ hash = "815243ad170f5a3ec9ad98e54dbbe1c6d2306f5159aeb6fbc85b649c6d8d3bc1"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/fishing/rod_machines.json"
-hash = "095edb5f30cfb3450df5c47d79236f4fda24ada5623496bfe99bcd0aeeb1aa66"
+hash = "1b2403f343b0beac1af70ff1fd133bec4c47935662843f99fd927fed058d90ad"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/fishing/rods.json"
@@ -1352,15 +1352,15 @@ hash = "10481496da3f19604a4891d7908e66c8b9676988c6c2c85b07bdc5263edd69d0"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/fishing/tackle_bench.json"
-hash = "f779c3ed26911097660bba4b5b2b2e5bdb5889a022391243a0f49020e76bc10d"
+hash = "e4714df4305131dfef48908bbf6b26df3ee9c5af8de162ac4ce80e2096e5c11e"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/fishing/the_fight.json"
-hash = "aaa29f99fb6ee89388c08b5f999e61e53fbe238d57807471271a3fc5ab100c26"
+hash = "5524af87656d9ad8ded7c0c6209956bd929fb806927ae1e286e5e84c720bd789"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/fishing/trolling.json"
-hash = "9dc58dca63eb8415b08a26432f3ebd91965be1942d78d679824364b28171d654"
+hash = "01f933c35b7b9e56750d2f6a5fc012ab1cf824bd15b54a1aa3326bc8354ff5f0"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/fishing/where_fish_live.json"
@@ -4921,8 +4921,8 @@ file = "mods/create-galore-bridge-1.33.0.jar"
 hash = "fb3445ae6f713d24d983a91fd43c6793a998cebacc84ae2395617cc3ccae2bc1"
 
 [[files]]
-file = "mods/create-galore-fishing-0.2.0.jar"
-hash = "e48ae269a52b6d9f6d2b25d8a354ebb8a066f49e9ac5ad64a4ad85101aeed2ea"
+file = "mods/create-galore-fishing-0.3.0.jar"
+hash = "5da11eebf5ea5223da1ed3978dfcb23d83c5e637e8c9b88b213102d77672edd9"
 
 [[files]]
 file = "mods/create-galore-lagwatch-1.1.0.jar"

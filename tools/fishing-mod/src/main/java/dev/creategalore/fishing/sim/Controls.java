@@ -22,6 +22,8 @@ public final class Controls {
      * reel out fast; the geared drives pause instead.
      */
     public boolean crankThroughSlip = true;
+    /** How fast the rod tip moves away from the fish, m/s (walking off, or a boat under way); 0 in the simulator. */
+    public double recede;
 
     /** Returns the crank limit to use against {@code tackle}: {@link #crankLimit} if set, else the reel's power. */
     public double crankLimit(Tackle tackle) {

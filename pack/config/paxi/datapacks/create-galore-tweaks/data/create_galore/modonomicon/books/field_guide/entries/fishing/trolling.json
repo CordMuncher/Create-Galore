@@ -25,7 +25,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Build the machines into a ship (a [#](7A3C9A)[sub-level](entry://glossary/sub_level)[#](), such as a sailing ship or a surfaced submarine) and set rods in. A rig can't get further from the rod tip than the line it was cast with, so a moving ship tows it.\\\n\\\nSee [#](2E5AAC)[Building a Ship](entry://flight/ship_building)[#]() and [#](2E5AAC)[Sailing and Boats](entry://ocean/sailing)[#]()."
+      "text": "Build the machines into a ship (a [#](7A3C9A)[sub-level](entry://glossary/sub_level)[#](), such as a sailing ship or a surfaced submarine) and set rods in. A rig can't get further from the rod tip than the line it was cast with, so a moving ship tows it. A small hooked fish is towed along; a big one takes line through the drag.\\\n\\\nSee [#](2E5AAC)[Building a Ship](entry://flight/ship_building)[#]() and [#](2E5AAC)[Sailing and Boats](entry://ocean/sailing)[#]()."
     },
     {
       "type": "modonomicon:text",
@@ -40,7 +40,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "[#](FFFFFF)\ue101[#]() **Watch out:** machines on a ship fish only while the ship is loaded, so stay aboard. Put a chest or belt beside the machines, or catches hang at the rod tip.\\\n\\\nSet the drag before setting the rod in: the machine keeps the rod's own, and it never winds while line slips, so a big tuna on a light drag can take line until it is lost. For tuna-sized fish, set the drag to about two thirds of the line."
+      "text": "[#](FFFFFF)\ue101[#]() **Watch out:** machines on a ship fish only while the ship is loaded, so stay aboard. Put a chest or belt beside the machines, or catches hang at the rod tip.\\\n\\\nSet the drag before setting the rod in: the machine keeps the rod's own and never winds while line slips. Keep it below the line's test."
     }
   ]
 }

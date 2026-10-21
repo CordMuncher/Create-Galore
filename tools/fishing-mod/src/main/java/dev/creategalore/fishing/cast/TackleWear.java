@@ -17,26 +17,36 @@ import net.minecraft.world.item.ItemStack;
 
 /**
  * What a fight costs the tackle. Every fight wears the rod (more the longer it was loaded near its rating), the
- * reel (more while its drag slipped, much more if it was cranked while slipping) and the line (it frays). A line
- * that snaps, is bitten through or runs out loses what was out plus a few metres, and the hook, rig, leader and bait
- * go with it. A rod that breaks hands its parts back.
+ * reel (by cranking while its drag slipped, with the square of the drag) and the line (it frays). Nothing caps it: a
+ * careless angler can wear a reel or rod through in one fight, and a part that gives out mid-fight loses the fish
+ * (the fight checks the durability left, see {@link Fight#wearLimits}). A line that snaps, is bitten through, runs
+ * out or parts on a seized reel loses what was out plus a few metres, and the hook, rig, leader and bait go with it.
+ * A rod that breaks hands its parts back.
  */
 public final class TackleWear {
     private TackleWear() {
     }
 
-    /**
-     * The most of a reel's durability one fight can take. Cranking against a slipping drag still grinds a reel (the
-     * lesson the grind sound teaches), but holding use at the default drag through a strong fish used to take a
-     * whole Copper or Iron reel in a single fight; now it costs a tenth, so a careless angler goes through reels
-     * about ten fights apart instead of every fight. Careful play stays far below it.
-     */
-    public static final double MAX_REEL_WEAR_PER_FIGHT = 0.1;
+    /** Durability one fight takes from a reel: 1 for the fight, plus its grinding. */
+    public static int reelDamage(double reelWear) {
+        return 1 + (int) Math.round(reelWear * Fight.REEL_DURABILITY_PER_WEAR);
+    }
 
-    /** Durability one fight takes from a reel with {@code maxDamage}: the fight's grinding, capped. */
-    public static int reelDamage(double reelWear, int maxDamage) {
-        int damage = 1 + (int) Math.round(reelWear * 3);
-        return Math.min(damage, Math.max(1, (int) Math.ceil(maxDamage * MAX_REEL_WEAR_PER_FIGHT)));
+    /** Durability one fight takes from a rod: 1 for the fight, plus its overloading. */
+    public static int rodDamage(double rodWear) {
+        return 1 + (int) Math.round(rodWear * Fight.ROD_DURABILITY_PER_WEAR);
+    }
+
+    /**
+     * Tells {@code fight} how much the reel and rod on {@code rod} have left beyond the fight's base wear, so a part
+     * worn through mid-fight breaks there and then.
+     */
+    public static void setLimits(Fight fight, ItemStack rod) {
+        ItemStack reel = RodItem.parts(rod).reel();
+        double reelLeft = !reel.isEmpty() && reel.isDamageableItem()
+                ? reel.getMaxDamage() - reel.getDamageValue() - 1 : Double.POSITIVE_INFINITY;
+        double rodLeft = rod.isDamageableItem() ? rod.getMaxDamage() - rod.getDamageValue() - 1 : Double.POSITIVE_INFINITY;
+        fight.wearLimits(Math.max(0, reelLeft), Math.max(0, rodLeft));
     }
 
     /**
@@ -48,7 +58,7 @@ public final class TackleWear {
 
         ItemStack reel = parts.reel();
         if (!reel.isEmpty() && reel.isDamageableItem()) {
-            int damage = reelDamage(fight.reelWear(), reel.getMaxDamage());
+            int damage = outcome == Outcome.REEL_BROKE ? reel.getMaxDamage() : reelDamage(fight.reelWear());
             reel.setDamageValue(reel.getDamageValue() + damage);
             if (reel.getDamageValue() >= reel.getMaxDamage()) {
                 angler.level().playSound(null, angler.blockPosition(), SoundEvents.ITEM_BREAK, SoundSource.PLAYERS, 0.8f, 0.9f);
@@ -78,7 +88,7 @@ public final class TackleWear {
         }
         RodItem.setParts(rod, parts);
 
-        int damage = outcome == Outcome.ROD_BROKE ? rod.getMaxDamage() : 1 + (int) Math.round(fight.rodWear() * 15);
+        int damage = outcome == Outcome.ROD_BROKE ? rod.getMaxDamage() : rodDamage(fight.rodWear());
         if (rod.isDamageableItem() && rod.getDamageValue() + damage >= rod.getMaxDamage()) {
             // The blank is gone; the reel and the rest come back.
             giveParts(angler, parts);

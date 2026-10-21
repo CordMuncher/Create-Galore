@@ -1,8 +1,8 @@
 package dev.creategalore.fishing.fish;
 
-import dev.creategalore.fishing.cast.TackleWear;
 import dev.creategalore.fishing.selftest.SelfTest;
 import dev.creategalore.fishing.sim.Curve;
+import dev.creategalore.fishing.sim.FightRules;
 import dev.creategalore.fishing.sim.MonteCarlo;
 import dev.creategalore.fishing.sim.Outcome;
 import dev.creategalore.fishing.sim.TacklePresets;
@@ -60,43 +60,8 @@ public final class SpeciesSelfTest {
             check(r, "aquaculture:smallmouth_bass", "starter", 0.85, 1.0);
             check(r, "aquaculture:tuna", "starter", 0.0, 0.35);
             check(r, "aquaculture:tuna", "boat", 0.6, 1.0);
-            reelWear(r, "minecraft:cod", "starter", 300);
-            reelWear(r, "minecraft:salmon", "starter", 300);
+            for (FightRules.Check c : FightRules.run()) r.check(c.ok(), c.what());
         });
-    }
-
-    /**
-     * A player who never touches the drag and holds use the whole fight cranks through a slipping drag: the reel
-     * grinds, but one fight takes at most a tenth of it ({@link TackleWear#MAX_REEL_WEAR_PER_FIGHT}).
-     */
-    private static void reelWear(SelfTest.Report r, String id, String rig, int reelDurability) {
-        var species = SpeciesManager.byId(ResourceLocation.parse(id));
-        if (species.isEmpty()) {
-            r.info("skipped " + id + " (not loaded)");
-            return;
-        }
-        Species s = species.get();
-        dev.creategalore.fishing.sim.Angler holdsUse = new dev.creategalore.fishing.sim.Angler() {
-            @Override
-            public void act(dev.creategalore.fishing.sim.Fight fight, dev.creategalore.fishing.sim.Controls c) {
-                c.drag = fight.tackle().reelMaxDrag() / 3;
-                c.reeling = true;
-                c.crankThroughSlip = true;
-                c.rodAngle = Math.toRadians(40);
-            }
-
-            @Override
-            public String name() {
-                return "holds_use";
-            }
-        };
-        MonteCarlo.Result res = MonteCarlo.run(new MonteCarlo.Species(id, s.fight(), s.size()),
-                TacklePresets.ALL.get(rig), () -> holdsUse, 200, 7);
-        int raw = 1 + (int) Math.round(res.avgReelWear() * 3);
-        int damage = TackleWear.reelDamage(res.avgReelWear(), reelDurability);
-        r.check(damage <= Math.ceil(reelDurability * TackleWear.MAX_REEL_WEAR_PER_FIGHT), String.format(Locale.ROOT,
-                "%s on %s, drag untouched and use held: a fight takes %d of the reel's %d (uncapped %d), landed %.0f%%",
-                id, rig, damage, reelDurability, raw, res.rate(Outcome.LANDED) * 100));
     }
 
     private static void check(SelfTest.Report r, String id, String rig, double minLand, double maxLand) {

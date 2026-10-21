@@ -13,8 +13,10 @@ public enum Outcome {
     ROD_BROKE,
     /** The hook came out: slack line, a jump on a loose line, or a hook too small for the mouth. */
     HOOK_THROWN,
-    /** The fish took every metre on the spool. */
-    SPOOLED;
+    /** The fish took every metre on the spool, then broke the line against the empty reel. */
+    SPOOLED,
+    /** The reel wore through mid-fight (cranked against a slipping drag) and seized; the line parted. */
+    REEL_BROKE;
 
     public boolean over() {
         return this != FIGHTING;
@@ -22,6 +24,6 @@ public enum Outcome {
 
     /** Ends that cost the angler line and terminal tackle. */
     public boolean losesTackle() {
-        return this == LINE_SNAPPED || this == BITTEN_OFF || this == SPOOLED;
+        return this == LINE_SNAPPED || this == BITTEN_OFF || this == SPOOLED || this == REEL_BROKE;
     }
 }

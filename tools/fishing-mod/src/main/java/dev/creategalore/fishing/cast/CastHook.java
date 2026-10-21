@@ -131,6 +131,10 @@ public class CastHook extends FishingHook {
     private FishingContext context;
     private Fight fight;
     private final Controls controls = new Controls();
+    /** Where the rod tip was last tick, for how fast the angler moves away from a hooked fish. */
+    private Vec3 lastTip;
+    /** {@link #recede}'s smoothed speed, m/s. */
+    private double recedeSpeed;
     private double heading;
     private boolean forceBite;
     /** Test tool: the fish the forced bite will be (null: whatever the pool gives). */
@@ -675,6 +679,8 @@ public class CastHook extends FishingHook {
             hold = 1;
         }
         fight = new Fight(ff, stats.tackle(hold), kg, Math.max(3, tip.distanceTo(position())));
+        TackleWear.setLimits(fight, rod);
+        lastTip = tip;
         heading = Math.atan2(getZ() - tip.z, getX() - tip.x);
         setPhase(Phase.FIGHTING);
         entityData.set(BREAK, (float) stats.breakingLoad());
@@ -722,6 +728,7 @@ public class CastHook extends FishingHook {
         controls.crankLimit = Double.NaN;
         controls.retrieveScale = 1;
         controls.crankThroughSlip = true;
+        controls.recede = recede(tip);
         if (owner instanceof MachineAngler angler) {
             // Held at a good working angle; the machine decides the rest.
             controls.reeling = false;
@@ -748,6 +755,20 @@ public class CastHook extends FishingHook {
             level().playSound(null, blockPosition(), SoundEvents.GENERIC_SPLASH, SoundSource.NEUTRAL, 0.4f + 0.5f * size, 1.4f - 0.6f * size);
         }
         if (fight.outcome().over()) finish(owner, rod, stats, fight.outcome());
+    }
+
+    /**
+     * How fast the rod tip moved away from the fish since last tick, in m/s: an angler walking off or a boat under
+     * way tows the fish (see {@link Fight}). A jump of more than 20 m (a teleport) counts as nothing.
+     */
+    private double recede(Vec3 tip) {
+        Vec3 last = lastTip == null ? tip : lastTip;
+        lastTip = tip;
+        if (last.distanceToSqr(tip) > 400) return recedeSpeed = 0;
+        double away = tip.distanceTo(position()) - last.distanceTo(position());
+        // Smoothed over a few ticks, so a flick of the rod tip isn't a yank; walking or sailing off is.
+        recedeSpeed = 0.7 * recedeSpeed + 0.3 * Math.max(0, away) / Fight.DT;
+        return recedeSpeed;
     }
 
     /** The hooked fish swims around the angler at the fight's distance, staying in its fluid. */
