@@ -4,6 +4,12 @@ Each pack version gets a section here, with **Added**, **Fixed** and **Removed**
 workflow copies the section for the version in `pack/pack.toml` to the top of the GitHub release, and the build
 fails when that section is missing.
 
+## 0.4.6
+
+### Added
+- **The Field Guide glows while an answer waits.** When the book has answered and you haven't read it yet, the Field Guide item glows green with a dot in its corner in your hotbar and inventory, and the Ask the Book ribbon in the open guide glows too. It stays lit after you rejoin and goes out once you open the answer.
+- Create Galore Bridge 1.37.0.
+
 ## 0.4.5
 
 ### Fixed

@@ -103,6 +103,11 @@ public final class GuideAi {
         });
         NeoForge.EVENT_BUS.addListener((net.neoforged.neoforge.event.entity.player.PlayerEvent.PlayerLoggedOutEvent e) ->
                 viewing.remove(e.getEntity().getUUID()));
+        // Their page list on joining, so the Field Guide can show answers they haven't opened yet.
+        NeoForge.EVENT_BUS.addListener((net.neoforged.neoforge.event.entity.player.PlayerEvent.PlayerLoggedInEvent e) -> {
+            Live l = live;
+            if (l != null && e.getEntity() instanceof ServerPlayer player) sendPages(player, l.store.book(player.getUUID()), "");
+        });
         NeoForge.EVENT_BUS.addListener(BuildClaims::onCommands);
         NeoForge.EVENT_BUS.addListener(BuildClaims::onTick);
         NeoForge.EVENT_BUS.addListener((net.neoforged.neoforge.event.level.LevelEvent.Save e) -> {

@@ -68,7 +68,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**Several questions at once**\\\nYou can have it answering on up to three pages at once. When an answer lands on a page you aren't reading, or with the book closed, a notice slides in and the page glows green under All pages until you open it."
+      "text": "**Several questions at once**\\\nYou can have it answering on up to three pages at once. When an answer lands on a page you aren't reading, or with the book closed, a notice slides in and the page glows green under All pages until you open it. Until then the Field Guide itself glows green in your hotbar and inventory, and so does the Ask the Book ribbon."
     },
     {
       "type": "modonomicon:spotlight",
