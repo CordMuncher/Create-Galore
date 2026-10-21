@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Draws the mod's textures with Pillow: the 16x16 item icons, the Tackle Bench overlay and the material atlas the
+"""Draws the mod's textures with Pillow: the 16x16 item icons, the Tackle Bench's parts and the material atlas the
 3D tackle models are textured from.
 
 Run from anywhere; writes into src/main/resources/assets/create_galore_fishing/textures/.
@@ -623,28 +623,47 @@ def aquarium_glass():
     save(img, "aquarium_glass", BLOCK)
 
 
-# --- the Tackle Bench's top overlay -----------------------------------------------------------------------------
+# --- the Tackle Bench's parts -----------------------------------------------------------------------------------
 
-def bench_overlay():
-    """Tackle laid out on the bench top, drawn on transparency: the block model puts it over vanilla's own planks,
-    so the bench is built of the same wood as everything else."""
-    s = Sprite()
-    s.add_material("blank", "#b8b8b8")
-    for x in range(3, 12):
-        s.put(x, 14 - x, "blank")
-    for x in range(1, 4):
-        s.put(x, 14 - x, "cork")
-        s.put(x + 1, 14 - x, "cork")
-    s.rect(9, 9, 11, 11, "iron")               # a reel
-    s.put(12, 10, "black", "mid")
-    s.rect(1, 1, 4, 3, "oak")                  # a spool of line
-    s.rect(2, 1, 3, 3, s.add_material("line", "#d8e8d0"))
-    s.put(13, 3, "red")                        # a float
-    s.put(13, 2, "white")
-    hook_pts = [(6, 12), (6, 13), (5, 14), (4, 13)]
-    for x, y in hook_pts:
-        s.put(x, y, "iron")
-    save(s.render(), "tackle_bench_overlay", BLOCK)
+# Cells of tackle_bench_parts.png, 4x4 pixels each, eight to a row, in this order; make_bench_model.py maps the
+# small 3D parts on the bench (rod, reel, spool, vise, floats) onto them by name.
+BENCH_CELLS = [
+    ("rubber", "#2c2c30", "plain"), ("cork", "#c49a62", "cork"), ("blank", "#2e4766", "paint"),
+    ("brass", "#d6aa48", "metal"), ("gunmetal", "#4a5058", "metal"), ("iron", "#c4c4c8", "metal"),
+    ("ring", "#b8b8bc", "ring"), ("wrap", "#7a2a28", "thread"), ("line", "#d8e8d0", "thread"),
+    ("spool_wood", "#9c7a48", "wood"), ("red", "#c83a30", "paint"), ("white", "#eeeeea", "paint"),
+    ("lead", "#7c7e88", "plain"), ("dark_wood", "#4a3220", "wood"), ("green_line", "#6fa860", "thread"),
+    ("box_red", "#9a3428", "wood"), ("yellow", "#e8c040", "paint"), ("blank_green", "#3e5a3a", "paint"),
+]
+
+
+def bench_parts():
+    """32x32 of 4x4 cells, one material each, lit from the top left like the item icons: a light top row, a shaded
+    bottom row, and the material's grain (cork pores, wood grain, wound thread, a metal glint). The ring cell is an
+    open guide ring with a clear middle, for the rod's line guides."""
+    img = Image.new("RGBA", (32, 32))
+    for i, (_, color, kind) in enumerate(BENCH_CELLS):
+        r = ramp(color)
+        ox, oy = (i % 8) * 4, (i // 8) * 4
+        for y in range(4):
+            for x in range(4):
+                tone = "light" if y == 0 else "shadow" if y == 3 else "mid"
+                if kind == "cork" and (x, y) in ((1, 1), (3, 2), (0, 3)):
+                    tone = "edge"
+                elif kind == "wood":
+                    tone = ("light", "mid", "shadow", "mid")[x] if 0 < y < 3 else tone
+                elif kind == "thread":
+                    tone = "light" if y % 2 == 0 else "shadow"
+                elif kind == "metal" and x == 1 and y < 3:
+                    tone = "hi"
+                elif kind == "paint" and (x, y) == (1, 0):
+                    tone = "hi"
+                elif kind == "ring":
+                    if 0 < x < 3 and 0 < y < 3:
+                        continue
+                    tone = "light" if y == 0 or x == 0 else "shadow"
+                img.putpixel((ox + x, oy + y), r[tone] + (255,))
+    save(img, "tackle_bench_parts", BLOCK)
 
 
 def main():
@@ -686,7 +705,7 @@ def main():
     shark_skin("shark_skin")
     live_bait_bucket("live_bait_bucket")
     atlas()
-    bench_overlay()
+    bench_parts()
     aquarium_frame()
     aquarium_glass()
     print("textures written")

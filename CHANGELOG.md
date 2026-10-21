@@ -4,6 +4,12 @@ Each pack version gets a section here, with **Added**, **Fixed** and **Removed**
 workflow copies the section for the version in `pack/pack.toml` to the top of the GitHub release, and the build
 fails when that section is missing.
 
+## 0.4.10
+
+### Added
+- **A new look for the Tackle Bench.** The tackle on the bench is now real 3D: a rod lying on its guides with its tip over the edge, a reel on its foot, a spool of line, a small vise holding a blank with a fresh wrap, and a brass tin of floats and sinkers. The bench itself gets an andesite-cased top, andesite feet and corner brackets, and a tackle box and spare blanks on its shelf. It still fills one block with the same hitbox, so placed benches and builds around them stay as they are.
+- Create Galore Fishing 0.3.5.
+
 ## 0.4.9
 
 ### Fixed
