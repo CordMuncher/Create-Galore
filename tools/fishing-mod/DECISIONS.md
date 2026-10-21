@@ -14,6 +14,8 @@ were run on a dedicated server before and after (362 checks before, 365 after, a
 
 ### B1. Careless angling (the handover's open question)
 
+**Overruled by Emre on 21 Oct (0.4.0), see "Emre's fight rules" below: no cap.**
+
 - **Question**: careless play (drag high, reeling non-stop, rod pointed at the fish) lands about as often as careful
   play, and faster. Should it land less?
 - **Found**: the real problem is the player who never touches the drag (it starts at a third of the reel's) and
@@ -220,12 +222,37 @@ list of calls is in `DECISIONS-playtest.md` next to it).
 - **XP orbs from Keep/Release spawn at the angler**, as vanilla fishing XP does; a player standing next to them can
   pick some up.
 - **The pole's HUD shows "Line 9 / 8 m" while the float drifts.** Cosmetic, left.
-- **A boat's speed doesn't pull on a hooked fish.** The fight keeps the fish at the line's own distance wherever the
+- **A boat's speed doesn't pull on a hooked fish** (settled by Emre in 0.4.0, see below). The fight kept the fish at the line's own distance wherever the
   rod tip goes, so a boat speeding away tows the fish with no extra line or tension. Making speed count would change
   the fight model and its balance, so it is yours to decide.
-- **A big fish on a light drag can beat a drive.** Geared and Fuel drives never wind while line slips (by design);
+- **A big fish on a light drag can beat a drive** (settled by Emre in 0.4.0: drives keep the rod's drag; the guide
+  says only to keep the drag below the line's test). Geared and Fuel drives never wind while line slips (by design);
   a 16.5 kg tuna at a third-of-line drag was worn out but still out-pulled it, and line crept out until it was lost
   (8.7 kg tuna and a 19.3 kg opah landed on the same drag). The Field Guide's trolling page now says tuna-sized fish
   want about two thirds of the line. Alternative for you: drives that tighten the drag on a tired fish.
 - **Alive fish in chests stay separate stacks** (the handover's known issue) until a player picks them up. A cheap
   fix if wanted: round belt output's `alive_until` up to the next 30 s so close catches stack.
+
+## Emre's fight rules (21 Oct 2026, mod 0.3.0, pack 0.4.0)
+
+Emre's own calls, which replace B1 and the two play-test notes above.
+
+- **No cap on wear.** A careless angler can destroy a whole rod or reel in one fight; the guide explaining it is the
+  punishment. "Combat not punishing" means easier by degree, not by caps. `MAX_REEL_WEAR_PER_FIGHT` is gone.
+- **Reel wear comes from reeling while line runs out**, not from letting the drag slip. After half a second of slip
+  (`Fight.GRIND_GRACE_TICKS = 10`, time to let go of use) it grinds at `GRIND_PER_SECOND = 4` wear (12 durability) a
+  second times (drag / reel's top drag)^2, so half drag grinds a quarter as fast as full drag. Cranking against a
+  fish on an empty spool counts as full drag.
+- **A part worn through breaks mid-fight and the fish is gone.** The fight knows how much durability the rod and
+  reel have left; a reel ground through seizes (new outcome "reel seized", the line parts and the terminal tackle is
+  lost), a rod worn through breaks (its parts come back).
+- **An empty spool is a locked drag.** The fish is held at the end of the line; if it pulls more than the line
+  holds, the line snaps ("spooled").
+- **Moving away tows the fish.** Walking or sailing off adds the water's drag on the fish (0.07 kgf x kg^(2/3) x
+  speed^2) to its pull: a small fish on a strong rig is towed along, an evenly matched big one takes line through the
+  drag until the line holds, snaps or runs out. Smoothed over a few ticks so a flick of the rod isn't a yank.
+- **Reel drives never tighten the drag themselves.** The guide no longer gives fractions ("a third", "two thirds"):
+  it says to keep the drag below the line's test, and the Tackle Bench warns when it isn't.
+- In the sim, careful anglers still pay 1 durability a fight; a careless one (drag at 3/4 of the line, cranking
+  non-stop) pays about 22 a fight on cod and 88 on salmon with a Copper reel (300), and can lose a whole Steel reel
+  to one arapaima.
