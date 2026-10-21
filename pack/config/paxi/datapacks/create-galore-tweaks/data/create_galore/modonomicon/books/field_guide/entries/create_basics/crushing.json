@@ -20,7 +20,7 @@
     {
       "type": "modonomicon:text",
       "title": "Crushing and Ore Doubling",
-      "text": "Create turns one ore into more metal. You crush the raw ore, then wash or smelt the [#](2E5AAC)[crushed](entry://materials/ore_doubling)[#]() result. Two machines crush: the Millstone and Crushing Wheels."
+      "text": "Create turns one ore into more metal. You crush ore blocks mined with Silk Touch, then wash or smelt the [#](2E5AAC)[crushed](entry://materials/ore_doubling)[#]() result. Two machines crush: the Millstone and Crushing Wheels."
     },
     {
       "type": "modonomicon:spotlight",

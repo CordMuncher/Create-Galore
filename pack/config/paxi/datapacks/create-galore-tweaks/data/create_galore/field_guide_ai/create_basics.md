@@ -1,4 +1,4 @@
-<!-- sources sha256:677f00d66e6b0dd2caea12118529f7be88e31235e7e5b4ca30b4a908cc52aebc -->
+<!-- sources sha256:0070b582acdfa6568e1da85b78e4ad8f9a7a2ebf9bbe365124a6a234caa62d71 -->
 # Create: The Basics (create_basics)
 
 ## create_basics/rotation | Rotation
@@ -109,7 +109,7 @@
 - Related: (see create_basics/processing), (see create_basics/crushing), (see create_basics/heat)
 
 ## create_basics/crushing | Crushing and Ore Doubling
-- One ore -> more metal: crush raw ore, then wash or smelt the crushed result (see materials/ore_doubling). Two crushers: Millstone, Crushing Wheels.
+- One ore -> more metal: crush ore blocks mined with Silk Touch, then wash or smelt the crushed result (see materials/ore_doubling). Two crushers: Millstone, Crushing Wheels.
 - Millstone [create:millstone]: slow, cheap. Throw items in top, take result with right-click or automation. Good for flour, dyes, bone meal.
 - Crushing Wheels [create:crushing_wheel]: used as a pair spinning toward each other. Fast, standard ore crusher. Drop items in at top.
   - shows the build: Crushing Wheels (two gearboxes give wheels opposite spins from one shaft)

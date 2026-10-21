@@ -45,8 +45,8 @@ import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
 /**
  * What the book can see. Every tool reads only the player who asked, and only what that player could already see
  * for themselves: what's under their crosshair or on their screen, what they carry, the weather they stand in, the
- * builds players made around them (Builds) and the server's recipe list. Nothing reveals map locations, hidden
- * natural blocks or loot tables.
+ * builds players made around them (Builds), the server's recipe list and what a block drops when mined (Reach).
+ * Nothing reveals map locations, hidden natural blocks or chest and structure loot.
  */
 final class WorldTools {
     static final double REACH = 8.0;
@@ -100,10 +100,23 @@ final class WorldTools {
         findProps.add("query", prop("string", "Part of an item's English name or id, such as 'nitrate' or 'steel'."));
         tools.add(tool("find_items", "Item ids whose name or id contains the query, with the mod that adds each. Use it to "
                 + "turn a name the player typed into ids for lookup_recipes.", findProps));
-        tools.add(tool("get_advancements", "The asking player's advancements, the game's record of how far they have got: "
-                + "how many they have in each mod's tree, the most recent ones with their descriptions, every other one by "
-                + "title, and the visible ones that come right after what they have done. Use it with their inventory and "
-                + "surroundings to judge where they are in the game, for example when they ask what to do next.", new JsonObject()));
+        tools.add(tool("get_advancements", "The asking player's advancements, a record of things they have done: how many "
+                + "they have in each mod's tree, the most recent ones with their descriptions, every other one by title, and "
+                + "the next steps in each tree. A next step only means the one before it is done, not that they can do it "
+                + "yet; whether they can make something is what recipe_tree shows.", new JsonObject()));
+        JsonObject treeProps = new JsonObject();
+        treeProps.add("item", prop("string", "The item's id, such as 'create:mechanical_crafter', or its exact English name."));
+        treeProps.add("amount", prop("integer", "How many they want; 1 when unsure."));
+        tools.add(tool("recipe_tree", "Follows this server's recipes for an item all the way down to raw materials, measured "
+                + "against the asking player: how many of each part they already have (inventory and storage they have "
+                + "opened nearby), whether they have ever had one, the machine or station each step needs and whether they "
+                + "have used or made one, and the raw materials still to gather. Use it before telling a player they can "
+                + "make or reach something, or when they ask how far off it is.", treeProps));
+        JsonObject dropProps = new JsonObject();
+        dropProps.add("block", prop("string", "The block's id, such as 'minecraft:iron_ore', or its exact English name."));
+        tools.add(tool("block_drops", "What a block really drops on this server, rolled from its loot table many times: by "
+                + "hand or with the right tool, with Silk Touch, and with Fortune I to III, as the average and range per "
+                + "item. Use it for any claim about what mining a block gives or which enchantment gives more.", dropProps));
         JsonObject guideProps = new JsonObject();
         guideProps.add("query", prop("string", "One or more entry ids from the guide notes, such as 'create_basics/rotation "
                 + "industry/tfmg_steel', or words to search the whole guide for, such as 'brass funnel'."));
@@ -149,6 +162,8 @@ final class WorldTools {
                 case "get_advancements" -> advancements(player, server);
                 case "lookup_recipes" -> recipes(server, GuideText.string(input, "item"), GuideText.string(input, "direction"));
                 case "find_items" -> findItems(GuideText.string(input, "query"));
+                case "recipe_tree" -> Reach.tree(player, server, GuideText.string(input, "item"), Math.max(1, Diagrams.intOr(input, "amount", 1)));
+                case "block_drops" -> Reach.drops(player, GuideText.string(input, "block"));
                 case "read_guide" -> GuideText.read(GuideText.string(input, "query"));
                 case "search_storage" -> {
                     TouchedStorage storage = GuideAi.storage();
@@ -194,6 +209,9 @@ final class WorldTools {
         for (var holder : manager.getAllAdvancements()) {
             var display = holder.value().display();
             if (display.isEmpty()) continue; // recipe unlocks and other hidden bookkeeping
+            // A tree's root is usually granted the moment they join (BetterEnd's "enter a world that has a better End"), so
+            // it says nothing about how far they have got.
+            if (holder.value().parent().isEmpty()) continue;
             String mod = modName(holder.id().getNamespace());
             int[] count = perMod.computeIfAbsent(mod, k -> new int[2]);
             var progress = player.getAdvancements().getOrStartProgress(holder);
@@ -204,10 +222,11 @@ final class WorldTools {
                 java.time.Instant when = progress.getFirstProgressDate();
                 done.add(new Done(holder, when == null ? java.time.Instant.EPOCH : when));
             } else if (!display.get().isHidden()) {
-                // Next steps: not done yet, but the one before it is (or it starts a tree).
+                // Next steps: not done yet, but the one before it is, and that one is a real step rather than a root.
                 var parent = holder.value().parent().map(manager::get).orElse(null);
-                boolean open = parent == null || player.getAdvancements().getOrStartProgress(parent).isDone();
-                if (open && parent != null && next.size() < MAX_NEXT)
+                boolean open = parent != null && parent.value().parent().isPresent()
+                        && player.getAdvancements().getOrStartProgress(parent).isDone();
+                if (open && next.size() < MAX_NEXT)
                     next.add(display.get().getTitle().getString() + " (" + mod + "): " + display.get().getDescription().getString());
             }
         }
@@ -229,7 +248,7 @@ final class WorldTools {
                 out.append(", ").append(d.getTitle().getString());
         }
         if (done.size() > RECENT_ADVANCEMENTS) out.append('\n');
-        out.append("Next ones within reach (the one before is done):\n");
+        out.append("Next steps in their trees (the one before is done; not a sign they can do it yet):\n");
         if (next.isEmpty()) out.append("- none listed\n");
         next.forEach(n -> out.append("- ").append(n).append('\n'));
         return out.toString().strip();
@@ -504,7 +523,7 @@ final class WorldTools {
                 + (total > found.size() ? ", first " + found.size() + " shown" : "") + ":\n" + String.join("\n", found);
     }
 
-    private static Item resolveItem(String query) {
+    static Item resolveItem(String query) {
         String q = query.strip();
         ResourceLocation id = ResourceLocation.tryParse(q.toLowerCase(Locale.ROOT));
         if (id != null && q.contains(":") && BuiltInRegistries.ITEM.containsKey(id)) return BuiltInRegistries.ITEM.get(id);
@@ -517,7 +536,7 @@ final class WorldTools {
         return partial;
     }
 
-    private static List<ItemStack> outputs(Recipe<?> recipe, net.minecraft.core.HolderLookup.Provider registries) {
+    static List<ItemStack> outputs(Recipe<?> recipe, net.minecraft.core.HolderLookup.Provider registries) {
         List<ItemStack> out = new ArrayList<>();
         if (recipe instanceof ProcessingRecipe<?, ?> processing) {
             for (ProcessingOutput o : processing.getRollableResults()) out.add(o.getStack());
