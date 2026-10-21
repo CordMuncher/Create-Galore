@@ -70,16 +70,7 @@ public final class Catches {
         // Trophies and uniques show it in their name's colour, as rare items do.
         if (bite.size() == SizeClass.TROPHY) fish.set(DataComponents.RARITY, Rarity.RARE);
         if (bite.size() == SizeClass.UNIQUE) fish.set(DataComponents.RARITY, Rarity.EPIC);
-        setAquacultureWeight(fish, species, bite.kg());
         return fish;
-    }
-
-    /** Aquaculture fish show and fillet by their own weight component; keep it in step with ours. */
-    @SuppressWarnings("unchecked")
-    static void setAquacultureWeight(ItemStack fish, Species species, double kg) {
-        if (!species.id().getNamespace().equals("aquaculture")) return;
-        DataComponentType<?> type = BuiltInRegistries.DATA_COMPONENT_TYPE.get(AQUACULTURE_WEIGHT);
-        if (type != null) fish.set((DataComponentType<Float>) type, (float) kg);
     }
 
     /**
@@ -117,9 +108,11 @@ public final class Catches {
         ItemFishedEvent event = new ItemFishedEvent(out, 1, hook);
         NeoForge.EVENT_BUS.post(event);
         if (event.isCanceled()) return List.of();
-        // Aquaculture's own listener gives its fish a random weight; ours is the real one.
-        if (species != null) out.forEach(stack -> {
-            if (stack.getItem() == species.item()) setAquacultureWeight(stack, species, kg);
+        // Aquaculture's own listener can give its fish a random weight (in pounds, off in this pack); ours is the
+        // real one, shown in kilograms.
+        DataComponentType<?> weight = BuiltInRegistries.DATA_COMPONENT_TYPE.get(AQUACULTURE_WEIGHT);
+        if (species != null && weight != null) out.forEach(stack -> {
+            if (stack.getItem() == species.item()) stack.remove(weight);
         });
         // A machine's fake angler earns no advancements or stats (they would make a player file for it).
         if (angler instanceof ServerPlayer player && !(player instanceof FakePlayer)) {

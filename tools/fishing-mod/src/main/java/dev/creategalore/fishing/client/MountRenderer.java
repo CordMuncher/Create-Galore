@@ -39,6 +39,7 @@ class MountRenderer<T extends BlockEntity & RodMount> implements BlockEntityRend
 
     private static final Map<BlockPos, Tip> TIPS = new HashMap<>();
     private static final Map<BlockPos, float[]> SPRINGS = new HashMap<>();
+    private static final long START = System.nanoTime();
     private static long frame;
 
     /** Where the tip of the rod in the machine at {@code pos} was drawn lately, if it was. */
@@ -80,9 +81,12 @@ class MountRenderer<T extends BlockEntity & RodMount> implements BlockEntityRend
         RodModel.Result result = new RodModel(buffers, light).draw(pose, build, state);
         pose.popPose();
 
-        Vec3 cam = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
         Vector3f tip = result.tip();
-        TIPS.put(be.getBlockPos().immutable(), new Tip(cam.add(tip.x, tip.y, tip.z), frame));
+        // A shader pack's shadow pass draws the rod again from the sun: only the player's view says where the tip is.
+        if (!ShaderPass.shadow()) {
+            Vec3 cam = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
+            TIPS.put(be.getBlockPos().immutable(), new Tip(cam.add(tip.x, tip.y, tip.z), frame));
+        }
 
         ItemStack fish = mounted.dangling();
         if (!fish.isEmpty()) {
@@ -111,9 +115,12 @@ class MountRenderer<T extends BlockEntity & RodMount> implements BlockEntityRend
      * hand), sprung so the tip bucks and settles. The reel turns while the machine winds.
      */
     private static RodModel.Pose bend(BlockPos pos, RodModel.Build build, CastHook hook, PoseStack pose, float partialTick) {
-        float[] s = SPRINGS.computeIfAbsent(pos.immutable(), k -> new float[]{0, 0, System.nanoTime(), 1, 0, 0, 0});
-        long now = System.nanoTime();
-        float dt = Mth.clamp((now - (long) s[2]) / 1e9f, 0, 0.05f);
+        // Times are seconds since the game started: a float can't hold System.nanoTime() to the frame.
+        float now = (System.nanoTime() - START) / 1e9f;
+        float[] s = SPRINGS.computeIfAbsent(pos.immutable(), k -> new float[]{0, 0, now, 1, 0, 0, 0});
+        // A shader pack's shadow pass draws the rod again from the sun: show it as it is, without stepping the springs.
+        if (ShaderPass.shadow()) return pose(s);
+        float dt = Mth.clamp(now - s[2], 0, 0.05f);
         s[2] = now;
         float target = 0;
         float depth = 0;
@@ -144,6 +151,10 @@ class MountRenderer<T extends BlockEntity & RodMount> implements BlockEntityRend
         s[1] += (140 * (target - s[0]) - 15 * s[1]) * dt;
         s[0] += s[1] * dt;
         s[3] += (depth - s[3]) * Math.min(1, dt * 6);
+        return pose(s);
+    }
+
+    private static RodModel.Pose pose(float[] s) {
         Vector3f axis = new Vector3f(s[4], 0, s[5]);
         if (axis.lengthSquared() < 1e-5f) axis.set(1, 0, 0);
         return new RodModel.Pose(Math.max(0, s[0]), axis.normalize(), 1, s[6], s[3]);

@@ -15,8 +15,10 @@ import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
@@ -69,6 +71,7 @@ public final class FishingClient {
         CatchScreen.listen();
         FishingSounds.init();
         NeoForge.EVENT_BUS.addListener(FishingClient::catchTooltip);
+        NeoForge.EVENT_BUS.addListener(EventPriority.LOWEST, FishingClient::dropOtherWeights);
         NeoForge.EVENT_BUS.addListener((RenderFrameEvent.Pre event) -> MountRenderer.nextFrame());
     }
 
@@ -113,6 +116,16 @@ public final class FishingClient {
                     .withStyle(ChatFormatting.AQUA));
         }
         event.getToolTip().addAll(1, lines);
+    }
+
+    /**
+     * A fish caught with this mod shows its weight in kilograms; Aquaculture's own "Weight: N lbs" line (on fish
+     * caught before 0.4.3, which carried our kilograms in its pound field) would contradict it.
+     */
+    private static void dropOtherWeights(ItemTooltipEvent event) {
+        if (!event.getItemStack().has(FishingRegistry.CATCH.get())) return;
+        event.getToolTip().removeIf(line -> line.getContents() instanceof TranslatableContents t
+                && t.getKey().startsWith("aquaculture.fishWeight."));
     }
 
     /**
