@@ -49,6 +49,11 @@
       "text": "Burns items instead of fluid: coal, charcoal, wood or Blaze Cake. Easy to start with, since coal, charcoal and planks all work."
     },
     {
+      "type": "modonomicon:text",
+      "title": "Feeding it in flight",
+      "text": "Holds one fuel item at a time. A coal lasts about 3 minutes at full power, longer at low power.\\\n\\\nRight-click it with a Wrench to open its hatch. Then it pulls its next item by itself from a chest or other container against its intake end (opposite the flame)."
+    },
+    {
       "type": "modonomicon:spotlight",
       "item": {
         "item": "createpropulsion:ion_thruster"

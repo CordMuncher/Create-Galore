@@ -1,4 +1,4 @@
-<!-- sources sha256:b054ad5aba6e4bb4f2afed45e5c0e1af75393e415215ab2d15766b66d180329a -->
+<!-- sources sha256:0035e7cf929a67eb7ec1f9d4d220680a9636ac188fd1353cc08ae19d1f57104f -->
 # Flight (flight)
 Create Aeronautics ships, lift, thrust, steering, wind, dangers and sky destinations.
 
@@ -79,7 +79,7 @@ Create Aeronautics ships, lift, thrust, steering, wind, dangers and sky destinat
 - Create Propulsion: Simulated adds fuel thrusters, electric ion thrusters, steerable vector thrusters, wings, heat engines; need Aeronautics physics to be useful
 - Thruster [createpropulsion:thruster]: burns piped liquid fuel, throttled by redstone; oxidizer adds efficiency bonus; build 2x2 or 3x3 blocks of them and feed only the rear
 - Fuels accepted: Turpentine (from Pine Resin); TFMG diesel, gasoline, kerosene, naphtha; Northstar hydrocarbon, methane, biofuel, liquid hydrogen. Wrong fluid = no thrust (see industry/tfmg_oil) (see space/rocket_building)
-- Solid Fuel Thruster [createpropulsion:solid_fuel_thruster]: burns items not fluid: coal, charcoal, wood, Blaze Cake; easy start (coal, charcoal, planks all work)
+- Solid Fuel Thruster [createpropulsion:solid_fuel_thruster]: burns items not fluid: coal, charcoal, wood, Blaze Cake; easy start (coal, charcoal, planks all work); holds 1 fuel item, coal lasts ~3 min at full power (longer throttled); wrench opens its hatch, then it pulls the next item from a chest/container against its intake end (opposite the flame)
 - Ion Thruster [createpropulsion:ion_thruster]: Forge energy, no fuel; stores energy; generators can feed it from below (see industry/electricity)
 - Vector Thruster [createpropulsion:vector_thruster]: tilts to push any direction under redstone control; needs platinum (this mod adds it as an ore)
 - Wing [createpropulsion:wing]: plain wing blocks; smelt one -> Tempered Wing; Copycat (see glossary/copycat) versions copy another block's look

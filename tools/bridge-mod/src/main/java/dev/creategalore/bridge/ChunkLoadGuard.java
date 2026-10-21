@@ -10,9 +10,10 @@ import net.minecraft.world.level.Level;
  */
 public final class ChunkLoadGuard {
     /**
-     * Set while Aeronautics Discovery force-loads the chunks for an airship it is about to assemble. NeoForge's
-     * forceChunk then skips its "load it right now" call. The forced ticket still loads the chunks in the
-     * background, and Discovery already waits until every one of them is ticking before it builds the ship.
+     * Set while Aeronautics Discovery force-loads the chunks for an airship it is about to assemble, or under one it
+     * is despawning. NeoForge's forceChunk then skips its "load it right now" call. The forced ticket still loads
+     * the chunks in the background, and Discovery already waits until every one of them is ticking before it builds
+     * the ship or clears its crew.
      */
     public static boolean deferForcedLoads;
 
