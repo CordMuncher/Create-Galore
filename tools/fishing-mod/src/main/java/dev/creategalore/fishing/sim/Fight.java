@@ -180,13 +180,12 @@ public final class Fight {
         if (tackle.hasReel()) distance = Math.min(distance, tackle.lineCapacity());
 
         // Cranking while the fish takes line (or against it on an empty spool, which is the reel's full drag): the
-        // gears grind (Fishing Planet's "reel overload"). The angler has half a second of cranking into it to let go
-        // (counted from when cranking and slipping first meet, so a short press during a long run is free too);
-        // after that it grinds with the square of the drag, so half the reel's drag grinds a quarter as fast as full.
+        // gears grind (Fishing Planet's "reel overload"). Once the fish starts taking line the angler has half a
+        // second to stop cranking; after that it grinds with the square of the drag, so half the reel's drag grinds a
+        // quarter as fast as full.
         boolean overloaded = slipping || spooled && stalled;
-        boolean cranking = overloaded && in.reeling && in.crankThroughSlip;
-        grindTicks = cranking ? grindTicks + 1 : 0;
-        grinding = cranking && grindTicks > GRIND_GRACE_TICKS;
+        grindTicks = overloaded ? grindTicks + 1 : 0;
+        grinding = overloaded && in.reeling && in.crankThroughSlip && grindTicks > GRIND_GRACE_TICKS;
         if (grinding) {
             double share = slipping ? drag / tackle.reelMaxDrag() : 1;
             reelWear += DT * GRIND_PER_SECOND * share * share;

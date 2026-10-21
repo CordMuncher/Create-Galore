@@ -57,16 +57,12 @@ public final class FightRules {
         SplittableRandom rng = new SplittableRandom(2);
         for (int i = 0; i < 200; i++) letGo.tick(idle, rng);
         out.add(new Check(letGo.reelWear() == 0 && letGo.slipping(), "a slipping drag alone doesn't wear the reel"));
-        // Cranking into a run that is already going gets the same half second to let go: a short press is free.
+        // The half second runs from when the fish starts taking line: cranking into a run that has gone on longer
+        // grinds at once.
         idle.reeling = true;
-        for (int i = 0; i < Fight.GRIND_GRACE_TICKS; i++) letGo.tick(idle, rng);
-        boolean graceOk = letGo.reelWear() == 0 && !letGo.grinding();
-        idle.reeling = false;
-        for (int i = 0; i < 20; i++) letGo.tick(idle, rng);
-        idle.reeling = true;
-        for (int i = 0; i < Fight.GRIND_GRACE_TICKS + 5; i++) letGo.tick(idle, rng);
-        out.add(new Check(graceOk && letGo.reelWear() > 0 && letGo.grinding(),
-                "pressing use during a long run grinds only after half a second of cranking into it"));
+        letGo.tick(idle, rng);
+        out.add(new Check(letGo.reelWear() > 0 && letGo.grinding(),
+                "pressing use during a run that has lasted over half a second grinds at once"));
         idle.reeling = false;
 
         // A reel with 30 durability left, ground at full drag (12 a second), seizes in about 3 s and the fish is lost.

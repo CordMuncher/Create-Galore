@@ -243,6 +243,9 @@ Emre's own calls, which replace B1 and the two play-test notes above.
   (`Fight.GRIND_GRACE_TICKS = 10`, time to let go of use) it grinds at `GRIND_PER_SECOND = 4` wear (12 durability) a
   second times (drag / reel's top drag)^2, so half drag grinds a quarter as fast as full drag. Cranking against a
   fish on an empty spool counts as full drag.
+- **The half second counts from when the fish starts taking line**, as Emre put it. The in-game test tried
+  counting from each press of use instead (so a short press during a long run is free); that was reverted to the
+  rule as given, since tapping gains no line while the drag slips anyway.
 - **A part worn through breaks mid-fight and the fish is gone.** The fight knows how much durability the rod and
   reel have left; a reel ground through seizes (new outcome "reel seized", the line parts and the terminal tackle is
   lost), a rod worn through breaks (its parts come back).
