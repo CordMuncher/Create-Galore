@@ -50,7 +50,7 @@
     {
       "type": "modonomicon:text",
       "title": "Fishing",
-      "text": "A **Bamboo Pole** (3 bamboo or sugar cane) needs no reel. Right-click it in your inventory with a String Line, a hook and worms. Hold to cast, strike when the float dips, hold to reel. Cook fish on a campfire.\\\n\\\n[#](FFFFFF)\ue101[#]() **Watch out:** pufferfish, lionfish, stonefish, blowfish, boxfish, hagfish and stingrays poison you raw."
+      "text": "A **Bamboo Pole** (3 bamboo or sugar cane) needs no reel. Right-click it in your inventory with a String Line, a hook and worms. Hold to cast, left-click a bite, hold to reel. Cook fish on a campfire.\\\n\\\n[#](FFFFFF)\ue101[#]() **Watch out:** pufferfish, lionfish, stonefish, blowfish, boxfish, hagfish and stingrays poison you raw."
     },
     {
       "type": "modonomicon:text",

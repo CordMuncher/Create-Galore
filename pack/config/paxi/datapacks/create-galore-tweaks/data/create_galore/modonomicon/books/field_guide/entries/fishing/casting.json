@@ -20,7 +20,7 @@
     {
       "type": "modonomicon:text",
       "title": "Casting and the Bite",
-      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- **Hold** use to charge a cast and let go; a full charge takes a second.\n- A bite shows as a **dipping float** or a **tap** on the rod tip.\n- **Strike** by using the rod at once, within about a second.\n- A rod only casts with line and a hook (or a lure), and a reel unless it is a pole."
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- **Hold** use to charge a cast and let go; a full charge takes a second.\n- A bite shows as a **dipping float** or a **tap** on the rod tip.\n- **Strike** by **lifting the rod** (left click) within about a second.\n- A rod only casts with line and a hook (or a lure), and a reel unless it is a pole."
     },
     {
       "type": "modonomicon:text",
@@ -30,12 +30,12 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**Rigs.**\n\n- A **float** holds the bait at the surface and dips on a bite.\n- A **sinker** takes the bait to the bottom; the rod tip taps on a bite.\n- A **lure** needs no bait. Wind it back by holding use: it dives to its depth, and works when it moves at the speed it likes."
+      "text": "**Rigs.**\n\n- A **float** holds the bait at the surface and dips on a bite.\n- A **sinker** takes the bait to the bottom; the rod tip taps on a bite.\n- A **lure** needs no bait. Wind it back by holding use: it dives to its depth, and works when it moves at the speed it likes. Lifting the rod twitches it toward you."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**The bite.** A plop on the float or a tap on the rod, and **Bite! Hold use to strike** blinks above the hotbar. Use the rod within the window: about 1.4 seconds on a float or sinker, 1 second on a lure.\\\n\\\nMiss it and the fish lets go. Three times in ten it takes the bait with it."
+      "text": "**The bite.** A plop on the float or a tap on the rod, and **Bite! Lift the rod to strike** blinks above the hotbar. Left-click within the window: about 1.4 s on a float or sinker, 1 s on a lure. Reeling never sets the hook; a rod held high can't strike.\\\n\\\nMiss it and the fish lets go. Three times in ten it takes the bait with it."
     },
     {
       "type": "modonomicon:text",

@@ -90,6 +90,8 @@ public class CastHook extends FishingHook {
     private static final EntityDataAccessor<Optional<BlockPos>> MOUNT = SynchedEntityData.defineId(CastHook.class, EntityDataSerializers.OPTIONAL_BLOCK_POS);
     /** The angler's entity id (-1 for a machine), so clients follow the line when it changes hands. */
     private static final EntityDataAccessor<Integer> OWNER = SynchedEntityData.defineId(CastHook.class, EntityDataSerializers.INT);
+    /** How high the rod is lifted, 0..1 (see {@link RodLift}), so everyone sees it come up. */
+    private static final EntityDataAccessor<Float> ROD_HEIGHT = SynchedEntityData.defineId(CastHook.class, EntityDataSerializers.FLOAT);
 
     public static final int FLAG_SLIPPING = 1;
     public static final int FLAG_STALLED = 2;
@@ -133,6 +135,8 @@ public class CastHook extends FishingHook {
     private FishingContext context;
     private Fight fight;
     private final Controls controls = new Controls();
+    /** Rod height outside a fight (the fight keeps its own), 0 lowered to 1 lifted. */
+    private double rodHeight;
     /** Where the angler (or the machine's rod tip) was last tick, for how fast it moves away from a hooked fish. */
     private Vec3 lastAnchor;
     /** {@link #recede}'s smoothed speed, m/s. */
@@ -302,6 +306,7 @@ public class CastHook extends FishingHook {
         builder.define(FISH_KG, 0f);
         builder.define(MOUNT, Optional.empty());
         builder.define(OWNER, -1);
+        builder.define(ROD_HEIGHT, 0f);
     }
 
     public Phase phase() {
@@ -361,6 +366,33 @@ public class CastHook extends FishingHook {
 
     public InteractionHand hand() {
         return hand;
+    }
+
+    /** How high the angler holds the rod, 0 lowered to 1 lifted (server's value, synced). */
+    public float rodHeight() {
+        return entityData.get(ROD_HEIGHT);
+    }
+
+    /** Whether the angler is lifting the rod (a machine never does). */
+    private boolean lifting(Player owner) {
+        return !(owner instanceof MachineAngler) && RodLift.lifting(owner);
+    }
+
+    /**
+     * Moves the rod outside a fight: up at a flick's speed while lifting, back down when let go. Returns the metres
+     * of line the tip drew back this tick (0 when it isn't rising).
+     */
+    private double stepRod(Player owner, RodStats stats) {
+        double before = rodHeight;
+        rodHeight = lifting(owner) ? Math.min(1, rodHeight + Fight.liftRate(0) * Fight.DT)
+                : Math.max(0, rodHeight - Fight.LOWER_RATE * Fight.DT);
+        entityData.set(ROD_HEIGHT, (float) rodHeight);
+        return Math.max(0, rodHeight - before) * liftSweep(stats);
+    }
+
+    /** Metres of line one full lift of this rod draws back: most of its length. */
+    static double liftSweep(RodStats stats) {
+        return 0.9 * stats.rod().length();
     }
 
     // ---- Ticking ----
@@ -457,6 +489,8 @@ public class CastHook extends FishingHook {
 
     private void waitForBite(Player owner, ItemStack rod, RodStats stats, Vec3 tip) {
         boolean reeling = reeling(owner);
+        // Lifting the rod twitches the rig toward the angler by the tip's travel (working a lure or jig).
+        double twitch = stepRod(owner, stats);
         double retrieve = (stats.reel().map(TacklePart.Reel::retrieve).orElse(0.9)) / 20
                 * (owner instanceof MachineAngler angler ? angler.mount().retrieveScale(this) : 1);
         Vec3 pos = position();
@@ -466,7 +500,7 @@ public class CastHook extends FishingHook {
             discard();
             return;
         }
-        double pulled = reeling ? Math.min(flat, retrieve) : 0;
+        double pulled = Math.min(flat, (reeling ? retrieve : 0) + twitch);
         if (owner instanceof MachineAngler) {
             // A machine that moves (trolling from a ship) tows its rig behind it: the line out can't get longer.
             if (towLength <= 0) towLength = flat;
@@ -640,7 +674,13 @@ public class CastHook extends FishingHook {
             forcedBite = null;
             forceBite = false;
         }
-        if (owner instanceof MachineAngler angler ? angler.mount().strikes(this) : reeling(owner)) {
+        // A player strikes by lifting the rod sharply; one already held high can't strike until it comes down.
+        // Winding alone never sets the hook.
+        double heightBefore = rodHeight;
+        stepRod(owner, stats);
+        boolean struck = owner instanceof MachineAngler angler ? angler.mount().strikes(this)
+                : lifting(owner) && heightBefore < STRIKE_FROM && rodHeight > heightBefore;
+        if (struck) {
             strike(owner, rod, stats, tip);
             return;
         }
@@ -681,6 +721,7 @@ public class CastHook extends FishingHook {
             hold = 1;
         }
         fight = new Fight(ff, stats.tackle(hold), kg, Math.max(3, tip.distanceTo(position())));
+        fight.setRodHeight(rodHeight);
         TackleWear.setLimits(fight, rod);
         lastAnchor = null;
         heading = Math.atan2(getZ() - tip.z, getX() - tip.x);
@@ -740,9 +781,13 @@ public class CastHook extends FishingHook {
             angler.mount().fight(this, fight, stats, controls);
         } else {
             controls.reeling = reeling(owner);
-            controls.rodAngle = rodAngle(owner, tip, position());
+            controls.lifting = lifting(owner);
+            controls.liftSweep = liftSweep(stats);
+            controls.rodAngle = rodAngle(owner, tip, position(), fight.rodHeight());
         }
         fight.tick(controls, BiteSampler.adapt(random));
+        rodHeight = fight.rodHeight();
+        entityData.set(ROD_HEIGHT, (float) rodHeight);
         moveFish(tip);
 
         if (fight.jumped()) level().broadcastEntityEvent(this, EVENT_JUMP);
@@ -798,12 +843,13 @@ public class CastHook extends FishingHook {
     }
 
     /**
-     * The angle between the rod and the line. The rod is held about 25 degrees above where the angler looks, so
-     * looking at the fish gives a good bend; looking away or up adds side pressure; pointing at the water below the
-     * fish leaves the rod straight and unable to soak shocks.
+     * The angle between the rod and the line. The rod is held about 25 degrees above where the angler looks, and
+     * lifting raises it up to {@link #ROD_LIFT} more: lifted while looking at the fish it stands well off the line,
+     * bends deep and soaks the fish's lunges; lowered and pointed at the water below the fish it stays straight and
+     * soaks nothing.
      */
-    public static double rodAngle(Player owner, Vec3 tip, Vec3 fish) {
-        Vec3 rod = Vec3.directionFromRotation(owner.getXRot() - ROD_ABOVE_LOOK - ROD_LIFT, owner.getYRot());
+    public static double rodAngle(Player owner, Vec3 tip, Vec3 fish, double height) {
+        Vec3 rod = Vec3.directionFromRotation(owner.getXRot() - ROD_ABOVE_LOOK - ROD_LIFT * (float) height, owner.getYRot());
         Vec3 toFish = fish.subtract(tip);
         if (toFish.lengthSqr() < 1e-6) return 0;
         return Math.acos(Mth.clamp(rod.dot(toFish.normalize()), -1, 1));
@@ -954,11 +1000,12 @@ public class CastHook extends FishingHook {
     /** How far above the angler's look the rod is held (degrees), as the first-person rod is drawn. */
     public static final float ROD_ABOVE_LOOK = 25;
     /**
-     * With a fish on, anglers lift the rod high so the blank works (degrees, on top of {@link #ROD_ABOVE_LOOK}): looking
-     * at the fish, the rod then stands about 55 degrees off the line, bends deep and soaks the fish's lunges. Drawn
-     * the same way, so what the rod looks like is what the fight gets.
+     * How far a full lift raises the rod (degrees, on top of {@link #ROD_ABOVE_LOOK}). Drawn the same way, so what the
+     * rod looks like is what the fight gets.
      */
-    public static final float ROD_LIFT = 30;
+    public static final float ROD_LIFT = 60;
+    /** A strike needs the rod to start below this height (a lift already held high has nothing left to give). */
+    static final double STRIKE_FROM = 0.6;
 
     /** Client: when the hooked fish last jumped (tick count), for the renderer's leap; -100 if never. */
     public int jumpedAt = -100;
@@ -1002,7 +1049,7 @@ public class CastHook extends FishingHook {
     /** One line describing the hook's state, for {@code /cgfish hook}. */
     public String describe() {
         StringBuilder b = new StringBuilder(phase().name()).append(' ').append(medium)
-                .append(String.format(java.util.Locale.ROOT, " out %.1f m", lineOut()));
+                .append(String.format(java.util.Locale.ROOT, " out %.1f m, rod %.2f", lineOut(), rodHeight()));
         b.append(String.format(java.util.Locale.ROOT, ", %d species could bite (quality %.2f, mean wait %.0f s)",
                 pool.species().size(), pool.quality(), BiteSampler.meanWaitSeconds(pool)));
         if (level() instanceof ServerLevel server && Chum.around(server, position()) > 0) {
@@ -1022,6 +1069,7 @@ public class CastHook extends FishingHook {
             b.append(String.format(java.util.Locale.ROOT, "; fight %s %.2f kg at %.1f m, tension %.1f/%.1f kg, drag %.1f, stamina %.2f, %s",
                     fishId(), fight.weight(), fight.distance(), fight.tension(), fight.tackle().breakingLoad(),
                     controls.drag, fight.stamina(), fight.outcome()));
+            b.append(String.format(java.util.Locale.ROOT, ", slack %.2f m, angle %.0f", fight.slack(), Math.toDegrees(controls.rodAngle)));
         }
         return b.toString();
     }

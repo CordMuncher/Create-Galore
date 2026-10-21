@@ -12,7 +12,7 @@
     {
       "type": "modonomicon:text",
       "title": "Fishing",
-      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- Rods are **built from parts**: a blank, a reel, line, a hook and a float, sinker or lure.\n- Hold use to cast, **strike** when a fish bites, then fight it with the **drag** and the reel.\n- What bites depends on the water, the time and your bait.\n- Fish have real **weights**."
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- Rods are **built from parts**: a blank, a reel, line, a hook and a float, sinker or lure.\n- Hold use to cast, **left-click** to strike a bite, then fight it with the **drag** and the reel.\n- What bites depends on the water, the time and your bait.\n- Fish have real **weights**."
     },
     {
       "type": "modonomicon:text",

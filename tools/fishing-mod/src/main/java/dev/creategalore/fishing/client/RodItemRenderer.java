@@ -6,6 +6,8 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import dev.creategalore.fishing.CreateGaloreFishing;
 import dev.creategalore.fishing.cast.CastHook;
+import dev.creategalore.fishing.cast.RodLift;
+import dev.creategalore.fishing.sim.Fight;
 import dev.creategalore.fishing.tackle.RodItem;
 import dev.creategalore.fishing.tackle.RodParts;
 import dev.creategalore.fishing.tackle.TackleManager;
@@ -244,12 +246,12 @@ public final class RodItemRenderer extends BlockEntityWithoutLevelRenderer {
 
         Motion motion = player == null ? null : MOTION.computeIfAbsent(key(player, hand), k -> new Motion());
         if (motion != null) {
-            // A fish on: the rod comes up high (see CastHook.ROD_LIFT), springing up over a few frames.
-            boolean on = hook != null && hook.phase() == CastHook.Phase.FIGHTING;
+            // Lifted (attack held, see FishingInput): up by as much as CastHook.ROD_LIFT, as fast as the fight lets it.
             float dt = Mth.clamp((System.nanoTime() - motion.lastNanos) / 1e9f, 0, 0.05f);
-            motion.lift = Mth.clamp(motion.lift + (on ? 5f : -3f) * dt, 0, 1);
+            motion.lift = liftHeight(motion.lift, hook, player, dt);
             float eased = motion.lift * motion.lift * (3 - 2 * motion.lift);
-            pose.mulPose(Axis.XP.rotationDegrees(CastHook.ROD_LIFT * eased));
+            // In third person the arm comes up with it (HoldPose.liftArm, about 52 degrees); the rest is the wrist.
+            pose.mulPose(Axis.XP.rotationDegrees((first ? CastHook.ROD_LIFT : CastHook.ROD_LIFT - 52) * eased));
         }
         RodModel.Pose state = motion == null ? RodModel.Pose.REST : animate(motion, pose, build, hook, charging, first, player, hand, partialTick);
         RodModel.Result result = new RodModel(buffers, light).draw(pose, build, state);
@@ -272,6 +274,23 @@ public final class RodItemRenderer extends BlockEntityWithoutLevelRenderer {
             }
         }
         if (hook == null) dangle(pose, buffers, light, parts, result.tip(), first, build);
+    }
+
+    /**
+     * This frame's rod height. Your own rod follows your input at once, at the fight's lift speed for the load on it
+     * ({@link Fight#liftRate}), and is pulled gently toward the server's height so the two never drift apart; other
+     * anglers' rods follow the server's height.
+     */
+    private static float liftHeight(float current, CastHook hook, Player player, float dt) {
+        if (hook == null) return Math.max(0, current - (float) Fight.LOWER_RATE * dt);
+        float server = hook.rodHeight();
+        if (player != Minecraft.getInstance().player) return current + (server - current) * Math.min(1, dt * 12);
+        double load = hook.phase() == CastHook.Phase.FIGHTING ? hook.rodLoad() : 0;
+        float local = RodLift.lifting(player) ? current + (float) Fight.liftRate(load) * dt
+                : current - (float) (hook.flag(CastHook.FLAG_REELING) && hook.phase() == CastHook.Phase.FIGHTING
+                        ? Math.min(Fight.LOWER_RATE, 0.5) : Fight.LOWER_RATE) * dt;
+        local += (server - local) * Math.min(1, dt * 2);
+        return Mth.clamp(local, 0, 1);
     }
 
     /** Works out this frame's bend, extension and crank angle, springing toward where the line pulls. */
@@ -322,17 +341,18 @@ public final class RodItemRenderer extends BlockEntityWithoutLevelRenderer {
                 axis.normalize();
                 motion.axis.lerp(axis, Math.min(1, dt * 12)).normalize();
                 // A loaded rod curls until its tip lines up with the line; how far it gets there rises fast with the
-                // load (rods take huge bends without breaking). So holding the rod high or away from the fish, the
-                // line meets the blank at a wide angle and the blank curls into a deep U; pointing it at the fish,
-                // there is nothing to bend toward. Softer blanks give in sooner.
+                // load (rods are very bendy and take huge bends without breaking: a quarter of the rated load already
+                // brings the tip most of the way round). So holding the rod high or away from the fish, the line
+                // meets the blank at a wide angle and the blank curls into a deep U; pointing it at the fish, there
+                // is nothing to bend toward. Softer blanks give in sooner.
                 float give = switch (build.rod().action()) {
-                    case FAST -> 3.0f;
-                    case MODERATE -> 3.4f;
-                    case SLOW -> 4.0f;
+                    case FAST -> 6.5f;
+                    case MODERATE -> 7.5f;
+                    case SLOW -> 9f;
                 };
                 float share = 1 - (float) Math.exp(-give * Mth.clamp(load, 0, 1.5f));
                 float towardLine = (float) Math.acos(Mth.clamp(toFish.y, -1, 1));
-                target = Math.min(2.8f, towardLine * share * 0.97f);
+                target = Math.min(3.0f, towardLine * share * 0.97f);
                 depthTarget = share;
             }
         }

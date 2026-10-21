@@ -20,12 +20,20 @@
     {
       "type": "modonomicon:text",
       "title": "The Fight",
-      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- The **drag** gives line when a fish pulls harder than it: set it below what the line holds.\n- **Hold use** to reel; scroll or press **]** and **[** to change the drag.\n- Look **at the fish**: a bent rod soaks its runs and jumps.\n- Keep the line tight, or the hook comes loose."
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- The **drag** gives line when a fish pulls harder than it: set it below what the line holds.\n- **Hold use** to reel, **left-click** to lift; **]**, **[** or scroll: drag.\n- Look **at the fish**: a bent rod soaks its runs and jumps.\n- Keep the line tight, or the hook comes loose."
     },
     {
       "type": "modonomicon:text",
       "title": "",
       "text": "Once struck, the fish pulls. While it pulls less than the drag, holding use reels it in, slower the harder it pulls. When it pulls more, the drag slips and line runs out at the fish's speed.\\\n\\\nA fish tires against the line's tension, so a drag set too light never wears it out. A tired fish within 1.5 m is landed; a fresh one bolts again.\\\n\\\nWalking or sailing away pulls on the fish: a small one is towed along, a big one takes line through the drag."
+    },
+    {
+      "type": "modonomicon:text",
+      "text": "**Lifting.** Hold attack (left click) to lift the rod; let go and it comes back down. It flicks up with a light fish and lifts slowly under a heavy one (the bar left of the tension bar).\\\n\\\nA lift draws the fish back by most of the rod's length (0.9 m of line per metre of rod), against the drag but not against the reel's crank."
+    },
+    {
+      "type": "modonomicon:text",
+      "text": "**Pumping.** Reel while the rod comes down and it comes down as fast as the reel takes up the line, with no load on the crank. Lift, wind down, lift again: that brings in a fish too heavy to reel.\\\n\\\n[#](FFFFFF)\ue100[#]() **Watch out:** let the rod down without reeling and the line goes slack; slack for over a second can throw the hook."
     },
     {
       "type": "modonomicon:text",
@@ -35,7 +43,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**The rod's angle.** The rod is held a little above where you look. Look at the fish and the rod bends, soaking the spikes of runs and jumps. Look away or up and it also adds side pressure, which tires the fish faster.\\\n\\\n[#](FFFFFF)\ue101[#]() **Watch out:** pointing the rod straight down the line soaks nothing. Every jump hits the line in full."
+      "text": "**The rod's angle.** The rod is held a little above where you look, and up to 60\u00b0 higher while lifted. Look at the fish and the rod bends, soaking the spikes of runs and jumps. Look away or up and it also adds side pressure, which tires the fish faster.\\\n\\\n[#](FFFFFF)\ue101[#]() **Watch out:** pointing the rod straight down the line soaks nothing. Every jump hits the line in full."
     },
     {
       "type": "modonomicon:text",
@@ -75,7 +83,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "The fight has its own sounds: the drag ratchet clicks as line leaves the spool (a slow tick when a fish leans on it, a buzz on a run), the reel cranks and grinds, the line creaks above about 65%% of its breaking load, and snaps with a twang.\\\n\\\nLeaving the rod's hand, logging out or the chunk unloading reels the line in: a fish on is lost."
+      "text": "The fight has its own sounds: the drag ratchet clicks as line leaves the spool (a slow tick when a fish leans on it, a scream on a fast run), the reel cranks and grinds, the line creaks above about 65%% of its breaking load, and snaps with a twang.\\\n\\\nLeaving the rod's hand, logging out or the chunk unloading reels the line in: a fish on is lost."
     },
     {
       "type": "modonomicon:text",

@@ -37,7 +37,9 @@ import net.neoforged.neoforge.common.NeoForge;
  * exactly and cost no network traffic:
  * <ul>
  *   <li>drag ratchet: one click per {@link #CM_PER_CLICK} cm of line actually going out while the drag slips, so the
- *       click rate is the fish's run speed; pitched by the reel (copper rattly, brass smooth, big-game deep);</li>
+ *       click rate is the fish's run speed; on a fast run ({@link #SCREAM_SPEED} m/s and up) the clicks run together
+ *       into the drag's scream, a loop pitched up with the speed; pitched by the reel (copper rattly, brass smooth,
+ *       big-game deep);</li>
  *   <li>reel crank: a looping whirr while reeling, slower and lower as the load rises;</li>
  *   <li>grind: cranking against a slipping drag past the half-second grace, while it wears the reel;</li>
  *   <li>line strain: creaks that start at about 65% of the breaking load and come faster and louder toward a snap.</li>
@@ -46,12 +48,17 @@ import net.neoforged.neoforge.common.NeoForge;
  */
 public final class FishingSounds {
     private static final double CM_PER_CLICK = 12;
+    /** Line speed (m/s) from which the drag screams instead of clicking. */
+    private static final double SCREAM_SPEED = 0.8;
     private static final double HEAR_DISTANCE = 48;
 
     private static final class State {
         float lastLineOut = -1;
         double payout;
+        /** Line going out, m/s, smoothed. */
+        double speed;
         Crank crank;
+        Scream scream;
         int strainCooldown;
         int grindCooldown;
     }
@@ -92,6 +99,7 @@ public final class FishingSounds {
             Entity entity = level.getEntity(e.getKey());
             if (!(entity instanceof CastHook) || entity.isRemoved()) {
                 if (e.getValue().crank != null) e.getValue().crank.finish();
+                if (e.getValue().scream != null) e.getValue().scream.finish();
                 it.remove();
             }
         }
@@ -100,6 +108,7 @@ public final class FishingSounds {
     private static void clear() {
         STATES.values().forEach(s -> {
             if (s.crank != null) s.crank.finish();
+            if (s.scream != null) s.scream.finish();
         });
         STATES.clear();
         LOOPS.values().forEach(DriveLoop::finish);
@@ -134,8 +143,20 @@ public final class FishingSounds {
         boolean reeling = hook.flag(CastHook.FLAG_REELING);
         float reelPitch = reelPitch(owner.rod());
 
-        if (s.lastLineOut >= 0 && slipping) {
-            s.payout += Math.max(0, out - s.lastLineOut) * 100;
+        double gone = s.lastLineOut >= 0 && slipping ? Math.max(0, out - s.lastLineOut) : 0;
+        s.speed = 0.6 * s.speed + 0.4 * gone * 20;
+        boolean screaming = slipping && s.speed >= SCREAM_SPEED;
+        if (screaming && (s.scream == null || s.scream.isStopped())) {
+            s.scream = new Scream(owner, hook, s, reelPitch);
+            mc.getSoundManager().play(s.scream);
+        } else if (!screaming && s.scream != null) {
+            s.scream.finish();
+            s.scream = null;
+        }
+        if (screaming) {
+            s.payout = 0;
+        } else if (s.lastLineOut >= 0 && slipping) {
+            s.payout += gone * 100;
             int clicks = 0;
             while (s.payout >= CM_PER_CLICK && clicks < 4) {
                 s.payout -= CM_PER_CLICK;
@@ -262,6 +283,44 @@ public final class FishingSounds {
             case "trolling_reel" -> 0.72f;
             default -> 1.0f;
         };
+    }
+
+    /** The drag screaming while a fish runs: higher and louder the faster line goes out. */
+    static final class Scream extends AbstractTickableSoundInstance {
+        private final Angler owner;
+        private final CastHook hook;
+        private final State state;
+        private final float basePitch;
+
+        Scream(Angler owner, CastHook hook, State state, float basePitch) {
+            super(FishingRegistry.DRAG_SCREAM.get(), SoundSource.PLAYERS, SoundInstance.createUnseededRandom());
+            this.owner = owner;
+            this.hook = hook;
+            this.state = state;
+            this.basePitch = basePitch;
+            looping = true;
+            delay = 0;
+            tick();
+        }
+
+        @Override
+        public void tick() {
+            if (owner.gone().getAsBoolean() || hook.isRemoved()) {
+                stop();
+                return;
+            }
+            Vec3 at = owner.at().get();
+            x = at.x;
+            y = at.y;
+            z = at.z;
+            float speed = (float) state.speed;
+            pitch = basePitch * Mth.clamp(0.55f + 0.22f * speed, 0.55f, 1.6f);
+            volume = Mth.clamp(0.25f + 0.1f * speed, 0.25f, 0.6f);
+        }
+
+        void finish() {
+            stop();
+        }
     }
 
     /** The looping crank whirr that follows the angler while they reel; heavier load, slower and lower. */

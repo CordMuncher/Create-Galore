@@ -4,7 +4,7 @@
 Writes src/main/resources/assets/create_galore_fishing/sounds/<name>.ogg; sounds.json maps sound events to these.
 Mono 44.1 kHz, as Minecraft wants for positional sounds. Needs numpy and ffmpeg with libvorbis.
 
-    python3 tools/fishing-mod/art/make_sounds.py
+    python3 tools/fishing-mod/art/make_sounds.py [only these, e.g. reel/crank_loop]
 
 Each sound is a small recipe below: noise and tones shaped by envelopes and simple filters. Loops (crank, motor,
 engine) are built from whole periods so they repeat without a seam.
@@ -71,7 +71,12 @@ def norm(x, peak=0.9):
     return x if m == 0 else x * (peak / m)
 
 
+ONLY = set()
+
+
 def save(name, x):
+    if ONLY and name not in ONLY:
+        return
     (OUT / name).parent.mkdir(parents=True, exist_ok=True)
     pcm = (np.clip(x, -1, 1) * 32767).astype(np.int16)
     with tempfile.TemporaryDirectory() as tmp:
@@ -94,35 +99,121 @@ def click(freq, length=0.018, ring=0.004, grit=0.35):
     return (tone * 0.6 + burst) * env(n, 0.0004, ring)
 
 
+def pnoise(seconds, lo, hi, tilt=0.0):
+    """Band-limited noise that repeats seamlessly every `seconds` (built in the frequency domain), lo..hi Hz.
+
+    tilt > 0 makes it darker (amplitude falls as f^-tilt across the band)."""
+    n = int(seconds * RATE)
+    spec = np.zeros(n // 2 + 1, complex)
+    f = np.fft.rfftfreq(n, 1 / RATE)
+    band = (f >= lo) & (f <= hi)
+    mags = np.where(band, np.power(np.maximum(f, 1), -tilt), 0)
+    # Soft band edges, so it isn't a brick-wall filter.
+    mags *= np.clip((f - lo * 0.8) / (lo * 0.2 + 1), 0, 1) * np.clip((hi * 1.25 - f) / (hi * 0.25 + 1), 0, 1)
+    spec[:] = mags * np.exp(2j * np.pi * rng.random(len(f)))
+    x = np.fft.irfft(spec, n)
+    return x / (np.max(np.abs(x)) + 1e-9)
+
+
+def resonate(x, freqs, decay):
+    """Rings x through a few damped resonators (a small metal part): sum of decaying sines convolved, via FFT."""
+    n = len(x)
+    k = np.arange(int(decay * 6 * RATE)) / RATE
+    ir = sum(np.sin(2 * np.pi * fq * k) * np.exp(-k / decay) * w for fq, w in freqs)
+    y = np.fft.irfft(np.fft.rfft(x, n + len(ir)) * np.fft.rfft(ir, n + len(ir)))[:n]
+    return y
+
+
+def pawl(base, rough=1.0):
+    """One drag pawl snapping over a ratchet tooth: a tiny impact ringing the reel's metal (a few inharmonic
+    partials), with a softer lift tick just before it."""
+    length = 0.03
+    n = int(length * RATE)
+    imp = np.zeros(n)
+    imp[int(0.004 * RATE)] = 1.0
+    imp[0] = 0.25 * rough
+    imp += highpass(noise(length), 3000) * np.exp(-np.arange(n) / (0.0008 * RATE)) * 0.4 * rough
+    return resonate(imp, [(base, 1.0), (base * 1.47, 0.6), (base * 2.31, 0.35), (base * 0.52, 0.3)], 0.0022)
+
+
 def drag(variant):
-    """One pawl click of the drag ratchet. Played once per few cm of line out, so its rate is the run speed."""
-    base = [3600, 4200, 3100][variant]
-    x = np.concatenate([click(base, ring=0.0035), np.zeros(int(0.004 * RATE))])
-    x[:len(click(base * 0.5, ring=0.006))] += 0.35 * click(base * 0.5, ring=0.006)
-    return norm(x, 0.8)
+    """One pawl click of the drag ratchet. Played per few cm of line out while a fish takes line slowly; a fast run
+    plays the drag loop instead."""
+    base = [3300, 3700, 2950][variant]
+    return norm(pawl(base), 0.8)
+
+
+def drag_loop():
+    """The drag screaming under a running fish: the ratchet's clicks run together into a buzz (160 a second at
+    pitch 1, a little uneven), over the hiss of line leaving the spool and the spool's own whirr. One second,
+    seamless; the game sets the pitch from how fast line is going out."""
+    length = 1.0
+    n = int(length * RATE)
+    y = np.zeros(n)
+    clicks = 160
+    period = n // clicks
+    one = pawl(3400, rough=0.6)
+    for k in range(clicks):
+        start = k * period + int(rng.integers(-6, 7)) % period
+        part = one * (0.65 + 0.35 * rng.random())
+        end = min(n, start + len(part))
+        y[start:end] += part[:end - start]
+        if end - start < len(part):  # wrap around so the loop closes
+            y[:len(part) - (end - start)] += part[end - start:]
+    hiss = pnoise(length, 2500, 9000, 0.3) * 0.18
+    whirr = pnoise(length, 300, 1400, 0.8) * 0.12 * (1 + 0.3 * np.sin(2 * np.pi * 20 * t(length)))
+    return norm(y + hiss + whirr, 0.7)
 
 
 def crank_loop():
-    """Reel crank: gear teeth ticking over a soft whirr, one second, seamless."""
+    """A spinning reel being wound, one second, seamless: the handle goes round twice. Built like the real thing:
+    the main gear meshing with the pinion (a soft, slightly rough hum that swells and fades once per turn of the
+    handle, as the gears load and unload), the rotor and bail spinning five times faster (a whirr with a faint tick
+    each turn from the line roller), the line laying onto the spool (a hiss that rises and falls with the
+    oscillating spool), and the bearings' fine sizzle. No harsh clicks: a good reel purrs."""
     length = 1.0
     x = t(length)
-    teeth = 48  # ticks per second (a whole number, so the loop closes)
-    tick_len = int(RATE / teeth)
+    handle = 2  # turns a second
+    rotor = handle * 5  # gear ratio 5:1
+    turn = 0.5 + 0.5 * np.sin(2 * np.pi * handle * x)  # 0..1 once per handle turn
+    # Gear mesh: 34 teeth on the main gear -> 68 Hz, with harmonics, made rough by a little noise in its amplitude.
+    mesh_f = 34 * handle
+    mesh = sum(np.sin(2 * np.pi * mesh_f * k * x + rng.random() * 6.28) / k ** 1.3 for k in range(1, 12))
+    mesh *= 0.75 + 0.25 * pnoise(length, 20, 200)
+    mesh = mesh * (0.55 + 0.45 * turn)
+    # Pinion and rotor: a brighter whirr at rotor speed times its teeth, plus air from the spinning rotor.
+    pinion = sum(np.sin(2 * np.pi * rotor * 11 * k * x + rng.random() * 6.28) / k ** 1.8 for k in range(1, 8))
+    rotor_air = pnoise(length, 400, 2500, 0.6) * (0.6 + 0.4 * np.sin(2 * np.pi * rotor * x) ** 2)
+    # Line roller tick once per rotor turn, very soft.
     ticks = np.zeros(len(x))
-    one = click(2400, length=tick_len / RATE, ring=0.002, grit=0.2)
-    for k in range(teeth):
-        ticks[k * tick_len:k * tick_len + len(one)] += one * (0.6 + 0.4 * rng.random())
-    whirr = bandpass(noise(length), 900, 2.0) * 0.25 + 0.15 * np.sin(2 * np.pi * 96 * x)
-    return norm(ticks * 0.6 + whirr, 0.6)
+    tick = pawl(2200, rough=0.3) * 0.25
+    for k in range(rotor):
+        start = int(k * RATE / rotor)
+        ticks[start:start + len(tick)] += tick[:len(x) - start]
+    # Line onto the spool: hiss, swelling as the spool oscillates (once per handle turn).
+    lay = pnoise(length, 3000, 11000, 0.2) * (0.35 + 0.65 * (0.5 + 0.5 * np.cos(2 * np.pi * handle * x)))
+    bearings = pnoise(length, 6000, 14000) * 0.4
+    y = 0.42 * mesh / np.max(np.abs(mesh)) + 0.22 * pinion / np.max(np.abs(pinion)) + 0.2 * rotor_air \
+        + ticks + 0.15 * lay + 0.03 * bearings
+    return norm(y, 0.6)
 
 
 def grind():
-    """Cranking against a slipping drag: a rough, uneven grind."""
-    length = 0.45
+    """Cranking against a slipping drag: the handle forced round while the spool can't turn, gear teeth skipping and
+    crunching under load, uneven and gritty."""
+    length = 0.5
     x = t(length)
-    rough = bandpass(noise(length), 380, 1.5) * (0.6 + 0.4 * np.sin(2 * np.pi * 23 * x))
-    teeth = np.sign(np.sin(2 * np.pi * 61 * x)) * 0.2
-    return norm((rough + lowpass(teeth, 800)) * env(len(x), 0.02, 0.3), 0.7)
+    y = np.zeros(len(x))
+    pos = 0
+    while pos < len(x):
+        crunch = resonate(np.r_[1.0, np.zeros(int(0.03 * RATE))] * rng.uniform(0.5, 1.0),
+                          [(rng.uniform(700, 1100), 1.0), (rng.uniform(1600, 2400), 0.5), (180, 0.6)], 0.006)
+        end = min(len(x), pos + len(crunch))
+        y[pos:end] += crunch[:end - pos]
+        pos += int(rng.uniform(0.012, 0.035) * RATE)
+    rough = bandpass(noise(length), 450, 1.2) * 0.5
+    groan = np.sin(2 * np.pi * np.cumsum(95 + 15 * np.sin(2 * np.pi * 7 * x)) / RATE) * 0.35
+    return norm((y + rough + groan) * env(len(x), 0.015, 0.35), 0.75)
 
 
 def strain(variant):
@@ -275,6 +366,7 @@ def main():
     for v in range(3):
         save(f"reel/drag{v + 1}", drag(v))
     save("reel/crank_loop", crank_loop())
+    save("reel/drag_loop", drag_loop())
     save("reel/grind", grind())
     save("reel/bail", clack())
     for v in range(2):
@@ -297,4 +389,8 @@ def main():
 
 
 if __name__ == "__main__":
+    import sys
+    # Optional: only write these sounds, e.g. reel/crank_loop reel/drag_loop (the rest are still computed, so the
+    # random draws, and with them every other sound, stay the same).
+    ONLY.update(sys.argv[1:])
     main()

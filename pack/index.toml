@@ -964,7 +964,7 @@ hash = "6fef4ba85d0bc218e298d510488ccc7c8daf34c1a847adc03bda23b22dc12e97"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/fishing.md"
-hash = "a5b99d8a6c34981d045e2f48e66b3e695a400b6cc3ac8e97fc22a6a36b1731f6"
+hash = "0105df9729fe27899568173e147efbdc671cd0ba6f6071e2ee848093f9ae558b"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/flight.md"
@@ -972,7 +972,7 @@ hash = "a3640c2898c684c6085d1fe86e7099a3421ee29c7b74eb3482995146df6c1e61"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/food.md"
-hash = "7599e6eb2c885e29bab8a49b259e065ea19aacb60fd7510b950a1276899ad745"
+hash = "fe98a6a18fe2e052bb9e9e702067991129adc9ea24cbdbf0da11de0e1a55bcd7"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/glossary.md"
@@ -1296,7 +1296,7 @@ hash = "b9af9d3587b0acfc63e0827a7f09a94a5baa6638e1e9903f4fa3dc86ea29e790"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/fishing/casting.json"
-hash = "ed88f94f24824b86b62c39f7a8cf2e228a9c9d0521b1c3508961b8162db40358"
+hash = "1d950985a2b03bbc32af345d3f76d767e28a158a0c0feb2259ed8aa57fa09b3b"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/fishing/cleaning.json"
@@ -1332,7 +1332,7 @@ hash = "98e82f06f2aa5bc96b3a59d52ef6bdab4da4a34f10718c64e921e5147dd3e282"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/fishing/overview.json"
-hash = "815243ad170f5a3ec9ad98e54dbbe1c6d2306f5159aeb6fbc85b649c6d8d3bc1"
+hash = "fb3cb289efe9ad8999ab425e88719c8f0552e05b8911857e11c7b89655d9e855"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/fishing/rod_machines.json"
@@ -1356,7 +1356,7 @@ hash = "8b84c2820461518c8f2af8fbdd5224735104e67f35d1b571bdb26a966c24c366"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/fishing/the_fight.json"
-hash = "4d6c9630b7a33c1071c6d15c2683a48793b45023287f37ef834b46bd6884d847"
+hash = "ee6a5e0c88b954a446d3dd2f360396616a25cc2a6fd888728ed60cab00005425"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/fishing/trolling.json"
@@ -1444,7 +1444,7 @@ hash = "58cbccee4b554af8db2f7c53513bdc7282853ae33f4f5c7757812e7ad0ce1803"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/food/first_food.json"
-hash = "206d56fab52a82651a5d05b0d3087305f7116f0be98c11f8c9187877bf70d4c9"
+hash = "56c71600a106891a089be34335dc3639ac6e258391a071a79224734d75ed5e6d"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/food/garnished.json"
@@ -4921,8 +4921,8 @@ file = "mods/create-galore-bridge-1.37.0.jar"
 hash = "e71d184153a80aeb3501cdbb7d304eab05f87810e6a9933341dfbc48ee405675"
 
 [[files]]
-file = "mods/create-galore-fishing-0.3.3.jar"
-hash = "5a6d99637bd39630bce067aa452655ac71b510d2631b4bcf39a8eb0307c69719"
+file = "mods/create-galore-fishing-0.3.4.jar"
+hash = "ad696a9b0e95912f2861a554422b1eb8a4f8976df1b9d55af5e3edc1274168c9"
 
 [[files]]
 file = "mods/create-galore-lagwatch-1.1.0.jar"

@@ -67,6 +67,10 @@ public final class FishingHud {
                 Component text = Component.translatable(P + status);
                 g.drawString(font, text, cx - font.width(text) / 2, y - 11, statusColor(status), true);
             }
+            // How high the rod is lifted: a short upright bar left of the tension bar.
+            int h = Math.round(12 * Mth.clamp(hook.rodHeight(), 0, 1));
+            g.fill(x0 - 6, y - 8, x0 - 3, y + 6, 0xC0000000);
+            if (h > 0) g.fill(x0 - 5, y + 5 - h, x0 - 4, y + 5, 0xFFDDDDDD);
             String drag = hook.drag() > 0 ? String.format(Locale.ROOT, "%.1f kg", hook.drag()) : "-";
             g.drawString(font, Component.translatable(P + "drag", drag), x0, y + 8, 0xFFDDDDDD, true);
             Component line = Component.translatable(P + "line", Math.round(out), Math.round(left));
@@ -75,7 +79,7 @@ public final class FishingHud {
             Component line = Component.translatable(P + "line", Math.round(out), Math.round(left));
             g.drawString(font, line, cx - font.width(line) / 2, y + 8, 0xFFBBBBBB, true);
             if (hook.phase() == CastHook.Phase.BITE) {
-                Component bite = Component.translatable(P + "bite");
+                Component bite = Component.translatable(P + "bite", mc.options.keyAttack.getTranslatedKeyMessage());
                 long blink = player.level().getGameTime() / 3 % 2;
                 g.drawString(font, bite, cx - font.width(bite) / 2, y - 4, blink == 0 ? 0xFFFFE040 : 0xFFFF8020, true);
             }

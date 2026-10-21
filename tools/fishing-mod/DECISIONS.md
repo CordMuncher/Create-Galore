@@ -291,3 +291,43 @@ mining with a nearly broken pickaxe".
 - A line at its last bit of fraying parts as soon as the fish pulls, like a rod or reel on its last durability.
 - Leaders, hooks, floats, sinkers and lures still wear out at the end of the fight and never free a hooked fish,
   which is exactly what Emre asked for.
+
+## Rod lift, strikes, rod looks and reel sound (21 Oct 2026)
+
+Emre: the reel audio is "kind of mid"; rods look too thick and should bend "almost to a U"; there is no way to lift
+the rod, so no pull-and-reel, and no difficulty in the strike because winding a lure always hooks the fish ("you have
+to lift the rod ... if it's a strike, it's like a flick. If the fish is light, it's like an upwards flick. If the fish
+is heavy, it's like a slow lift", after Fishing Planet's mechanic, right click stays reeling, left click lifts); the
+rod bobs like a re-equipped item whenever use is let go.
+
+Judgment calls (none of them caps or assists, per Emre's fight rules):
+
+- **Controls.** Attack (left click) held while your own line is out lifts the rod; let go and it comes down. While
+  the line is out attack does nothing else (no punching or mining) and works while use is held too. It is read from
+  the key itself, so it can be rebound with vanilla's Attack key.
+- **Lift speed** is `Fight.liftRate(load / rod rating) = 3 / (1 + 6 x share)` full lifts a second: a third of a second
+  with nothing on (the strike flick), about half a second with a light fish, 1.6 s at three quarters of the rod's
+  rating, 2.3 s at its rating. Let go, it comes down at 0.8 lifts a second.
+- **Strike** needs a lift that starts below 60% height and actually rises during the bite window. Reeling no longer
+  strikes for players (the drives still strike on their own). Bite windows unchanged (1.4 s float/sinker, 1 s lure).
+- **Pumping (the fight model).** A full lift draws 0.9 m of line per metre of rod (the tip's sweep). It drags the fish
+  through the water at the tip's speed (the same water drag as boat towing), works against the drag but not the
+  reel's crank power, so a fish the crank stalls on can still be pumped. Reeling while the rod comes down lowers it
+  only as fast as the reel takes up line ("winding down"), with no load on the crank. Let down without reeling, the
+  line goes slack by the tip's travel; the fish swims the slack out, and slack for over a second can throw the hook
+  (the existing rule). FightRules self-test: lift 0.40 s (0.5 kg) vs 1.65 s (30 kg) on a 20 kg rod; an 8 kgf fish
+  over a 6 kgf crank gains 0 m in 30 s reeling only and 20 m pumping.
+- **Rod angle** follows the lift: 25 degrees above the look lowered, up to 60 more lifted (was a fixed 30 more with
+  a fish on). Not lifting at all now soaks a little less and puts less side pressure on the fish than before.
+- **Lures and floats**: a lift also twitches the rig toward you by the tip's travel.
+- **Machines** never lift; nothing changes for the Rod Holder or the drives.
+- **Rod looks.** Blank butt half-width 0.24-0.44 px (was 0.45-0.8), tip 30% of the butt; the pole 0.42 (was 0.75).
+  The bend reaches most of the way to the line at a quarter of the rod's rating and can curl 172 degrees, so a rod
+  lifted high over a close fish makes a U. Third person: the rod arm rises with the lift.
+- **Re-equip bob.** Vanilla lowers and re-raises the held item each time use is pressed on it
+  (`ItemInHandRenderer.itemUsed`); rods skip that (client mixin), so the rod stays put between casts and reels.
+- **Sounds** (still synthesized in `art/make_sounds.py`, nothing borrowed): the crank loop is modelled on a spinning
+  reel (main gear mesh swelling once per handle turn, the rotor's whirr, the line roller, line laying on the spool,
+  bearings) instead of a 48 Hz click buzz; drag clicks are pawl snaps ringing the reel's metal; a fast run (from
+  0.8 m/s) plays a new drag scream loop pitched by the run's speed; the grind is gear teeth crunching under load.
+- HUD: "Bite! Lift the rod (<attack key>) to strike", and a small rod-height bar left of the tension bar.

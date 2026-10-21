@@ -4,6 +4,20 @@ Each pack version gets a section here, with **Added**, **Fixed** and **Removed**
 workflow copies the section for the version in `pack/pack.toml` to the top of the GitHub release, and the build
 fails when that section is missing.
 
+## 0.4.8
+
+### Added
+- **Lift the rod with left click.** While your line is out, hold left click to lift the rod and let go to lower it. It flicks up when a fish is light and lifts slowly under a heavy one. A short bar next to the tension bar shows how high the rod is.
+- **Strike by lifting.** A bite is hooked only by lifting the rod within the window ("Bite! Lift the rod to strike"). Reeling through a bite no longer sets the hook, and a rod already held high can't strike until it comes down.
+- **Pumping.** A lift draws a hooked fish back by most of the rod's length, against the drag but not the reel's crank. Reel while the rod comes down and it winds that line in with no load on the reel: lift, wind down, lift again brings in a fish too heavy to reel. Let the rod drop without reeling and the line goes slack, which can throw the hook. A lift also twitches a lure or float toward you.
+- **New reel sounds.** A smoother spinning-reel crank, sharper drag clicks, a drag scream when a fish runs fast, and a harsher grind.
+- Create Galore Fishing 0.3.4.
+
+### Fixed
+- **Rods look and bend like rods.** Blanks are slimmer and bend much further under load, up to a U when you lift high over a close fish, and the tip bends toward where the line really pulls. In third person the arm comes up with the lift.
+- **No rod bob.** The rod no longer drops and comes back up each time you press or let go of right click.
+- Left click with the line out no longer punches or mines.
+
 ## 0.4.7
 
 ### Fixed

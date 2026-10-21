@@ -131,7 +131,67 @@ public final class FightRules {
         }
         out.add(new Check(charged > 0 && most <= 20 + 1e-9, String.format(Locale.ROOT,
                 "walking off from a charging fish takes no line (most out %.1f m of 20, %d ticks charging)", most, charged)));
+
+        // Lifting: a flick with a light fish, a slow lift under a heavy one.
+        double light = liftSeconds(0.5), heavy = liftSeconds(30);
+        out.add(new Check(light < 0.6 && heavy > 1.4, String.format(Locale.ROOT,
+                "a full lift takes %.2f s with a 0.5 kg fish and %.2f s with a 30 kg one on a 20 kg rod", light, heavy)));
+
+        // Pumping: a fish that pulls more than the crank can wind against (but less than the drag) can't be reeled
+        // in; lifting and winding down on the way back brings it in.
+        out.add(pump(false));
+        out.add(pump(true));
+
+        // Lowering the rod without winding leaves the line slack.
+        Fight lower = new Fight(steady(0.3, 1000), rig(10, 1000, 10_000), 2, 20);
+        lower.setRodHeight(1);
+        Controls drop = new Controls();
+        drop.drag = 10;
+        drop.liftSweep = 2.5;
+        rng = new SplittableRandom(11);
+        for (int i = 0; i < 10; i++) lower.tick(drop, rng);
+        out.add(new Check(lower.slack() > 0.3 && lower.tension() == 0, String.format(Locale.ROOT,
+                "lowering the rod without winding leaves %.2f m of slack line", lower.slack())));
         return out;
+    }
+
+    /** Seconds a full lift takes against a steady fish of {@code kg} (pulling 0.5 kgf per kg) on a 20 kg rod. */
+    private static double liftSeconds(double kg) {
+        Fight fight = new Fight(steady(0.5, 1000), new Tackle(20, 0.6, true, 50, 1.2, 100, 0.5, 10_000, 1000, 0.5,
+                Double.NaN, false, 1), kg, 20);
+        Controls c = new Controls();
+        c.drag = 50;
+        c.lifting = true;
+        c.liftSweep = 2.5;
+        SplittableRandom rng = new SplittableRandom(10);
+        while (fight.rodHeight() < 1 && fight.ticks() < 400 && !fight.outcome().over()) fight.tick(c, rng);
+        return fight.seconds();
+    }
+
+    /** 30 s against a steady 8 kgf fish on a 10 kg drag whose crank winds against 6 kgf at most. */
+    private static Check pump(boolean pumping) {
+        Fight fight = new Fight(steady(0.8, 1000), new Tackle(20, 0.6, true, 10, 1.2, 6, 0.5, 10_000, 1000, 0.5,
+                Double.NaN, false, 1), 10, 30);
+        Controls c = new Controls();
+        c.drag = 10;
+        c.liftSweep = 2.5;
+        SplittableRandom rng = new SplittableRandom(12);
+        boolean up = true;
+        for (int i = 0; i < 600 && !fight.outcome().over(); i++) {
+            if (pumping) {
+                if (up && fight.rodHeight() >= 1) up = false;
+                if (!up && fight.rodHeight() <= 0) up = true;
+                c.lifting = up;
+                c.reeling = !up;
+            } else {
+                c.reeling = true;
+            }
+            fight.tick(c, rng);
+        }
+        double gained = 30 - fight.distance();
+        boolean ok = pumping ? gained > 10 : gained < 0.5;
+        return new Check(ok, String.format(Locale.ROOT, "%s an 8 kgf fish the crank can't turn against gains %.1f m in 30 s",
+                pumping ? "pumping" : "reeling only", gained));
     }
 
     private static Check tow(double kg, boolean wantsLine) {
