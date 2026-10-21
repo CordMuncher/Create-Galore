@@ -53,6 +53,8 @@ public final class CreateGaloreBridge {
         AirshipCaptains.register();
         StructureFixes.register();
         ShipGluedWater.register();
+        ShipSeatRelog.register();
+        ContraptionSeatRelog.register();
         GuideAi.register(modBus);
         if (FMLEnvironment.dist.isClient()) {
             BridgeClient.init(modBus);

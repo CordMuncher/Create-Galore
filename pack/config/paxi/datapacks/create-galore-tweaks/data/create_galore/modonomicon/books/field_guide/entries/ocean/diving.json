@@ -36,7 +36,7 @@
         "item": "create:copper_backtank"
       },
       "title": "Copper Backtank",
-      "text": "Wear it for air. Placed and spun by [#](2E5AAC)[rotation](entry://create_basics/rotation)[#](), it refills itself. Netherite gear lets you dive in lava."
+      "text": "Wear it for air. To refill it, sneak-use it on a block to place it and turn the shaft on its top with [#](2E5AAC)[rotation](entry://create_basics/rotation)[#](). Netherite gear lets you dive in lava."
     },
     {
       "type": "modonomicon:spotlight",
