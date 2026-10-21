@@ -1,4 +1,4 @@
-<!-- sources sha256:59f14db0e36af2a4c7105d04e806271a852e8f93ee7023e0ea697b057b2d3612 -->
+<!-- sources sha256:4a4384568f22bf06c6b226e98a554510d25ab015fc7e416db1a8d7fc09355cd0 -->
 # Trains and Rides (transport)
 How you cross the world: travel by building.
 
@@ -29,6 +29,7 @@ How you cross the world: travel by building.
 - Train Controls [create:controls]: every train needs them. A second set facing the other way lets it leave a station in either direction. Right-click once assembled to drive: movement keys steer, mouse wheel sets top speed, sneak lets go.
 - Fuel: train moves faster if it finds fuel in chests/barrels glued to it; vault fuel is not burned. Hold space while driving to roll up to a station.
 - Track works in unloaded chunks (see glossary/chunk): trains still travel and stop, but on-board machines wait until a player is near.
+- Riding along: sit in a seat when the train is fast; a player standing near the edge of a moving deck can slide off, and a hard stop at the end of a line throws standing riders. Passing through a Nether portal lets go of the controls: right-click them again on the other side.
 - Related: Signals and Schedules (see transport/train_signals), Train Add-ons (see transport/train_addons), Contraptions (see create_basics/contraptions).
 
 ## transport/train_signals | Signals and Schedules
@@ -37,6 +38,8 @@ How you cross the world: travel by building.
 - Two modes (in depth): wrench (see create_basics/tools_wrench) switches a signal to its second mode. Brass-mode signal is meant to lead into ordinary ones: holds a train back if, once inside, it could not leave the next segment at once; keeps queued trains out of a busy junction.
 - Train Observer [create:track_observer]: select a track, place observer nearby. Fires when a train crosses the marker; can filter by cargo.
 - Train Schedule [create:schedule]: list of stops and conditions to leave each. Right-click to edit, then give to a driver; can be taken back any time. Any mob, or a Blaze Burner (see create_basics/heat), seated in front of Train Controls (see transport/trains) counts as a conductor. Stops are stations; conditions: delay, cargo level, redstone signal and more.
+- Conductors: a train with controls at both ends needs a conductor at EACH set to run its schedule both ways; with only one, stops behind the train get "no suitable path". Driving a scheduled train yourself pauses its schedule; right-click the conductor with an empty hand to carry on.
+- Stations in the way: a station stays in Assembly Mode (see glossary/assemble) after a train is taken apart there. Until it is switched off, no scheduled train can pass through it, and they also report "no suitable path".
 - Going further: Steam 'n' Rails adds track switches and semaphores; Railways Navigator adds route planning and penalty anchors that make trains avoid stretches of track (see transport/train_addons).
 - Related: Trains (see transport/trains), Train Add-ons (see transport/train_addons).
 
