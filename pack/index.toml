@@ -4348,7 +4348,7 @@ hash = "56c0e0f6d8bd373612e7513526dd637599bd98cdd643599761571dcda67fe52b"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/tide/tags/entity_type/ignores_pocket_watch.json"
-hash = "8f8dabaa2dac0b8e4e8a06683e3c789544fddba2ca253a776f4cd30d05a92eed"
+hash = "5af165dc6701bb4dcaeee1b3fb56d13c90b260595718228fddb5fb14d6480847"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/tide/tags/item/legendary_fish.json"
@@ -4922,7 +4922,7 @@ hash = "fb3445ae6f713d24d983a91fd43c6793a998cebacc84ae2395617cc3ccae2bc1"
 
 [[files]]
 file = "mods/create-galore-fishing-0.2.0.jar"
-hash = "5697c423f26e3ef099bbd56e578c3b13c3884904578f2329d2d7cd472c280bf2"
+hash = "e48ae269a52b6d9f6d2b25d8a354ebb8a066f49e9ac5ad64a4ad85101aeed2ea"
 
 [[files]]
 file = "mods/create-galore-lagwatch-1.1.0.jar"
