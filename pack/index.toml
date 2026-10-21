@@ -1012,7 +1012,7 @@ hash = "27a22db8532f9d0553a82b3b5984a8380443c6c6f66b91b5fa396e72b2cb7f8f"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/transport.md"
-hash = "dce84c7a05ecbb4e36e5118a5ce8908756cbae5df9e37631f55d2c295bf09216"
+hash = "02d8737e4bafa1dde17b9a14d895b9e65f0be1365986b25065240a7bc4316223"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/function/give_field_guide.mcfunction"
@@ -1956,11 +1956,11 @@ hash = "6fdb1f91e947905576a1aeaa78ce7a87b4a4a6f6075930fc853a6053d26d50a4"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/transport/train_signals.json"
-hash = "4dfbe475ffcffe03d2aebd11ab15864dedf0880a439224ad7e18ba4e2b12d7d4"
+hash = "307eba3cbcb547f7d5d37917e37e0c0f13aa3e4f1399923aa00c81035372253b"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/transport/trains.json"
-hash = "e9913eb0277000018b590add6a3c9abbc604d2a1a48fab3aa435fac57082237d"
+hash = "46e7c8542cbac22435d0671240a37aaac662f63dc4c4621e75d0f6a28327fa1a"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/multiblocks/crushing_wheels.json"
