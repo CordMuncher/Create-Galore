@@ -106,6 +106,45 @@ public final class TackleSelfTest {
             RodParts worn = RodItem.parts(used);
             r.check(worn.hook().isEmpty() && worn.line().isEmpty() && !worn.terminal().isEmpty() && !worn.reel().isEmpty(),
                     "a hook and a line worn through are gone after the fight; the rest stays");
+
+            // Emre's snap (0.4.12): a String Line (4 kg test) frayed 22.5% holds 3.55 kg, so a 3.6 kg drag is over it.
+            // The rod's tooltip, the drag readouts and the fight must all use that same number.
+            ItemStack frayed = rig(FishingRegistry.IRON_ROD.get(), FishingRegistry.IRON_REEL.get(),
+                    FishingRegistry.STRING_LINE.get(), FishingRegistry.MEDIUM_HOOK.get(), FishingRegistry.SPOON.get());
+            RodParts fp = RodItem.parts(frayed);
+            ItemStack snapLine = fp.line();
+            snapLine.set(FishingRegistry.LINE_WEAR.get(), 0.225f);
+            RodItem.setParts(frayed, fp.with(RodParts.Slot.LINE, snapLine));
+            frayed.set(FishingRegistry.DRAG_STEP.get(), 6);
+            RodStats fs = RodStats.of(frayed).orElseThrow();
+            r.check(Math.abs(fs.breakingLoad() - 3.55) < 1e-6 && fs.tackle(1).breakingLoad() == fs.breakingLoad(),
+                    String.format(Locale.ROOT, "a frayed line holds the same in the rod's stats and in the fight (%.3f / %.3f kg)",
+                            fs.breakingLoad(), fs.tackle(1).breakingLoad()));
+            r.check(Math.abs(fs.drag() - 3.6) < 1e-6 && fs.dragOverLine() && RodStats.kgHolds(fs.breakingLoad()).equals("3.5 kg")
+                            && fs.warnings().stream().anyMatch(c -> c.getContents() instanceof net.minecraft.network.chat.contents.TranslatableContents t
+                            && t.getKey().endsWith("warn.drag_over_line")),
+                    "a 3.6 kg drag on it shows as over the line (holds shown as " + RodStats.kgHolds(fs.breakingLoad()) + ", warned)");
+            // Any drag the readouts show as safe holds through hard fights, frayed line or not.
+            int snapped = 0;
+            for (int step = 0; step <= fs.dragSteps(); step++) {
+                frayed.set(FishingRegistry.DRAG_STEP.get(), step);
+                RodStats at = RodStats.of(frayed).orElseThrow();
+                if (at.dragOverLine()) continue;
+                java.util.SplittableRandom rng = new java.util.SplittableRandom(step);
+                for (int f = 0; f < 40; f++) {
+                    Fight fight = new Fight(new dev.creategalore.fishing.sim.FishFight(1.2, 2, 1.6,
+                            new dev.creategalore.fishing.sim.Curve(new double[]{0}, new double[]{1}), 0.3, 0.3, 0.05, false),
+                            at.tackle(1), 10, 30);
+                    dev.creategalore.fishing.sim.Controls c = new dev.creategalore.fishing.sim.Controls();
+                    c.drag = at.drag();
+                    while (!fight.outcome().over() && fight.ticks() < 1200) {
+                        c.reeling = fight.ticks() / 40 % 2 == 0;
+                        fight.tick(c, rng);
+                    }
+                    if (fight.outcome() == Outcome.LINE_SNAPPED) snapped++;
+                }
+            }
+            r.check(snapped == 0, "no drag shown as safe snaps the frayed line in hard fights (" + snapped + " snapped)");
         });
     }
 

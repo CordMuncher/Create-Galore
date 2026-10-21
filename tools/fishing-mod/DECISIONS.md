@@ -393,3 +393,21 @@ spin", and asked us to study real reels with spectrograms instead of guessing.
 - The game code is unchanged (same events, pitches and volumes): the problem was the audio, not how it is played.
 - Still unheard by us: the build machine has no audio output, so the comparison is by spectrogram and numbers only.
 
+## What a line holds, and the Iron Leader (Fishing 0.3.9, pack 0.4.18)
+
+Emre's String Line (4 kg test) snapped on a 3.6 kg drag: it was frayed 22.5% (toothy fish since 0.4.12), so it held
+`RodStats.frayedTest = test x (1 - 0.5 x wear)` = 3.55 kg, and nothing he looked at showed that number (the spare
+spool's tooltip said 4.0 kg test). The fray-weakens-the-line rule stays (it is wear and tear), but it is now visible
+everywhere and computed in one place:
+
+- `RodStats.frayedTest` is the only formula; the rod's stats, the fight's Tackle and the line item's tooltip use it.
+- `RodStats.kgHolds` rounds what a line holds DOWN to 0.1 kg, so a drag shown at or under it is never over it.
+- `RodStats.dragOverLine()` (drag > what it holds now) colours the drag message (red), the Tackle Bench drag line
+  (red), the HUD drag readout (red) and the rod tooltip's new "Line holds X" line (gold), and drives the warning.
+- The fight treats a drag exactly at the test as safe (the spike cap applies at drag <= test, was <).
+- Self-tests: Emre's exact rig (frayed 0.225, 3.6 kg) shows "3.5 kg" and the warning; stats and fight agree on
+  3.55 kg; every drag step shown as safe survives 40 hard fights each; a drag at exactly 3.55 on a 3.55 kg line,
+  300 fights, 0 snaps.
+
+**Iron Leader**: Emre asked for an intermediate between line and the Steel Leader (iron wire is late game). 12 kg
+test, 50% visible, teeth-proof like steel; 3 iron nuggets + 1 string (c:strings) -> 2, shapeless.

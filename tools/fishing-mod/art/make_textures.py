@@ -683,6 +683,7 @@ def main():
     spool("braided_line", "#4a7a42", braided=True)
     spool("heavy_line", "#f0d070")
     leader("clear_leader", "#c8e4f4")
+    leader("iron_leader", "#aaa29a", steel=True)
     leader("steel_leader", "#98a2a8", steel=True)
     hook("small_hook", 0)
     hook("medium_hook", 1)

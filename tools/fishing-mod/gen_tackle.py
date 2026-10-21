@@ -55,6 +55,7 @@ LINES = {
 }
 LEADERS = {
     "clear_leader": (12, 0.1, False, "#e0f0ff"),
+    "iron_leader": (12, 0.5, True, "#a8a098"),
     "steel_leader": (60, 0.6, True, "#909aa0"),
 }
 HOOKS = {

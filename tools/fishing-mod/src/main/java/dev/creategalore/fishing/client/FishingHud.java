@@ -23,7 +23,7 @@ import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
  * alerts for a bite, a slipping drag, a stalled reel, a slack line and a run.
  */
 public final class FishingHud {
-    private static final int TEXT_W = 140;
+    private static final int TEXT_W = 220;
     private static final int BAR_H = 70;
     private static final int BAR_W = 6;
     private static final int BAR_GAP = 28;
@@ -75,10 +75,16 @@ public final class FishingHud {
                 Component text = Component.translatable(P + status);
                 g.drawString(font, text, cx - font.width(text) / 2, y - 11, statusColor(status), true);
             }
-            String drag = hook.drag() > 0 ? String.format(Locale.ROOT, "%.1f kg", hook.drag()) : "-";
-            g.drawString(font, Component.translatable(P + "drag", drag), x0, y + 8, 0xFFDDDDDD, true);
+            // The drag against what the line holds now; red when it is over, as the line bar's tick is.
+            boolean over = hook.drag() > 0 && hook.drag() > hook.breakingLoad();
+            Component drag = hook.drag() > 0
+                    ? Component.translatable(P + "drag", RodStats.kg(hook.drag()), RodStats.kgHolds(hook.breakingLoad()))
+                    : Component.translatable(P + "drag.none");
+            g.drawString(font, drag, x0, y + 8, over ? 0xFFFF5050 : 0xFFDDDDDD, true);
             Component line = Component.translatable(P + "line", Math.round(out), Math.round(left));
-            g.drawString(font, line, x0 + TEXT_W - font.width(line), y + 8, 0xFFDDDDDD, true);
+            // Side by side when both fit, else the line count goes on the row below.
+            boolean fits = font.width(drag) + font.width(line) + 8 <= TEXT_W;
+            g.drawString(font, line, x0 + TEXT_W - font.width(line), fits ? y + 8 : y + 19, 0xFFDDDDDD, true);
         } else {
             Component line = Component.translatable(P + "line", Math.round(out), Math.round(left));
             g.drawString(font, line, cx - font.width(line) / 2, y + 8, 0xFFBBBBBB, true);

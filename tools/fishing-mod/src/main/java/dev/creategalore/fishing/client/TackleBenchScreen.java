@@ -128,7 +128,9 @@ public class TackleBenchScreen extends AbstractContainerScreen<TackleBenchMenu> 
             }
         }
         if (stats.reel().isPresent()) {
-            small(g, Component.translatable(P + "drag", RodStats.kg(stats.drag()), RodStats.kg(stats.reel().get().maxDrag())), 48, 66, TEXT);
+            // Red when the drag is over what the line holds now (frayed line holds less).
+            small(g, Component.translatable(P + "drag", RodStats.kg(stats.drag()), RodStats.kg(stats.reel().get().maxDrag()),
+                    RodStats.kgHolds(stats.breakingLoad())), 48, 66, stats.dragOverLine() ? 0xB02020 : TEXT);
         }
         if (stats.terminal().map(t -> t.kind() == TacklePart.Kind.FLOAT).orElse(false)) {
             float depth = rod.getOrDefault(FishingRegistry.FLOAT_DEPTH.get(), 1.5f);
