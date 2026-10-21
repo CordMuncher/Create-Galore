@@ -4,6 +4,12 @@ Each pack version gets a section here, with **Added**, **Fixed** and **Removed**
 workflow copies the section for the version in `pack/pack.toml` to the top of the GitHub release, and the build
 fails when that section is missing.
 
+## 0.4.5
+
+### Fixed
+- **Typing in JEI's search box no longer sorts your inventory.** Inventory Profiles Next sorts on R, and it didn't notice JEI's search box, so every R you typed there sorted the inventory (and R with T or M could move or throw everything). Its hotkeys now stay quiet while you type in JEI's search or any other text box. R still sorts when you aren't typing.
+- Create Galore Bridge 1.36.0.
+
 ## 0.4.4
 
 ### Fixed
