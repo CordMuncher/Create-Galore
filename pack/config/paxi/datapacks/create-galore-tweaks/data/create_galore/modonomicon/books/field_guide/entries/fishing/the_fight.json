@@ -55,12 +55,17 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**Wear.** Every fight wears every part a little, even an easy catch: the rod and reel lose 1 durability, the line frays until it wears out, and leader, hook, float, sinker or lure each last about 200 fights. A part's tooltip shows how worn it is."
+      "text": "**Wear.** Every fight wears every part a little, even an easy catch: the rod and reel lose 1 durability, the line frays until it wears out, and leader, hook, float, sinker or lure each last about 200 fights. Tooltips show how worn a part is."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**Grinding.** Reeling while line runs out grinds the reel: after half a second it wears fast, with the square of the drag (half the reel's drag grinds a quarter as fast). A part worn through breaks mid-fight and the fish is gone."
+      "text": "**Breaking.** A rod, reel or line worn through breaks mid-fight and the fish is gone. A leader, hook, float, sinker or lure can wear out mid-fight too, but a hooked fish stays on. Check your tackle before going after a big one."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Grinding.** Reeling while line runs out grinds the reel: after half a second it wears fast, with the square of the drag (half the reel's drag grinds a quarter as fast)."
     },
     {
       "type": "modonomicon:text",

@@ -274,7 +274,20 @@ Emre: "reels and all components should wear a bit regardless, no infinite rod, j
   easy to change (`TackleWear.PART_WEAR_PER_FIGHT`, `LINE_WEAR_PER_FIGHT`). Wear is only added once a part has
   fished, so unused parts keep stacking and old worlds' parts are untouched; a used part no longer stacks with new
   ones (like a used tool). Hybrid Aquatic's special hooks keep their own durability for their effects and get the same
-  per-fight wear on top. Wear doesn't weaken these parts until they go (the line already weakens as it frays), and a
-  part doesn't wear out mid-fight: it goes after the fight, so a worn-out hook never loses a fish by itself.
+  per-fight wear on top. Wear doesn't weaken these parts until they go (the line already weakens as it frays).
+  **Corrected by Emre in 0.4.2, see below.**
 - Tooltips show "Worn: N%" and "Frayed: N%", worn parts show a durability bar, and the Tackle Bench warns when a
   rigged part is past 90%.
+
+## Worn-through parts break mid-fight (21 Oct 2026, mod 0.3.2, pack 0.4.2)
+
+Emre: "rods, reels and lines can be worn and break mid fight and the fish escapes, lures and other can break but they
+dont make the fish leave if its already hook ... not fishing with a nearly broken rod is the same logic as not going
+mining with a nearly broken pickaxe".
+
+- Rod and reel already broke mid-fight (since 0.4.0). The line now does too: the fight knows how much fraying the line
+  can still take (`Fight.wearLimits(reel, rod, line)`), and when the fight's own fraying uses it up the line parts
+  (a normal snap: the fish, the frayed end and the terminal tackle go, good line stays on the spool).
+- A line at its last bit of fraying parts as soon as the fish pulls, like a rod or reel on its last durability.
+- Leaders, hooks, floats, sinkers and lures still wear out at the end of the fight and never free a hooked fish,
+  which is exactly what Emre asked for.
