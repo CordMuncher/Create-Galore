@@ -13,7 +13,7 @@
     {
       "type": "modonomicon:text",
       "title": "Submarines",
-      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- [#](FFFFFF)\ue107[#]() A sub floats until its **Ballast Tanks** fill with sea water. Pump in to sink, out to rise.\n- The **Ballast Vent** is the sea valve and must touch the water.\n- Each tank lifts about one block of mass.\n- The **Onboard Computer** can hold a target depth for you."
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- [#](FFFFFF)\ue107[#]() A sub floats until its **Ballast Tanks** fill with sea water. Pump in to sink, out to rise.\n- The **Ballast Vent** is the sea valve and must touch the water.\n- Each tank lifts about 75 units of ship mass.\n- The **Onboard Computer** can hold a target depth for you."
     },
     {
       "type": "modonomicon:text",
@@ -27,8 +27,16 @@
     },
     {
       "type": "modonomicon:text",
+      "text": "A Create pump pushes only the way its arrow points, whichever way its shaft spins, so a **Gearshift** does not reverse it.\\\n\\\nTo switch between diving and rising, turn the pump round with a [#](2E5AAC)[Wrench](entry://create_basics/tools_wrench)[#](), or let an **Onboard Computer** run **Pump Controllers** for you."
+    },
+    {
+      "type": "modonomicon:text",
       "title": "",
       "text": "Each empty tank lifts about **75 units of ship mass** (`ballastLiftPerTank` in the Deep Seas [#](7A3C9A)[config](entry://glossary/config)[#]()). A plank weighs about 1, an iron block about 3.5 and machines more, so a small iron sub can need a dozen tanks.\\\n\\\nFit a few **spare tanks**: a sub with barely enough lift sinks slowly even with every tank empty."
+    },
+    {
+      "type": "modonomicon:text",
+      "text": "With full tanks a sub drops fast: past 15 blocks a second in deep water, so start pumping out before the bottom.\\\n\\\nA sub resting on the sea floor may only lift off once its tanks are nearly empty. Give it a moment after the last tank drains."
     },
     {
       "type": "modonomicon:spotlight",
@@ -49,7 +57,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "The **Onboard Computer** can dive for you. Click its screen to set a target depth and speed, and it drives the pumps to hold that depth. **Pump Controllers** on the same ship are found automatically; pipe one between vent and tanks. More controllers or faster rotation mean quicker dives."
+      "text": "The **Onboard Computer** can dive for you. Click its screen to set a target depth and speed, and it drives the pumps to hold that depth. **Pump Controllers** on the same ship are found automatically; pipe one between vent and tanks. Without a Computer a Pump Controller works like an ordinary pump. More controllers or faster rotation mean quicker dives."
     },
     {
       "type": "modonomicon:spotlight",

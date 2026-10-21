@@ -62,6 +62,10 @@
       "text": "The engine burns fuel (open its fuel screen to see what it takes).\n\n- **Right-click** to take the tiller, **sneak** to let go.\n- **Sneak-click** for the fuel screen.\n- **Hold use** at the helm and move the mouse to set a speed limit from 0 to 15."
     },
     {
+      "type": "modonomicon:text",
+      "text": "You can only take the tiller with fuel in the engine. Right-click it with fuel in hand to load it.\\\n\\\n[#](FFFFFF)\ue101[#]() **Watch out:** a switched-on engine burns fuel all the time, even moored with nobody aboard: a coal lasts 80 seconds. Switch it off with the button in its fuel screen when you leave the boat."
+    },
+    {
       "type": "modonomicon:spotlight",
       "item": {
         "item": "create_high_seas:anchor"

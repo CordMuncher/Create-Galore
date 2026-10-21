@@ -20,12 +20,17 @@
     {
       "type": "modonomicon:text",
       "title": "Hulls and Pressure",
-      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- A ship is only as strong as its **weakest block**. Past its limit a block floods the room, or far deeper implodes the ship.\n- Windows are the usual weak point: use **pressurized glass**.\n- [#](FFFFFF)\ue107[#]() A dry interior needs a sealed hull, an **Electrolyzer** and an **Oxygen Diffuser**."
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- A ship is only as strong as its **weakest block**. Past its limit a block floods the room, or far deeper implodes the ship.\n- Glass and wooden hatches give way first: use **pressurized glass**.\n- [#](FFFFFF)\ue107[#]() A dry interior needs a sealed hull, an **Electrolyzer** and an **Oxygen Diffuser**."
     },
     {
       "type": "modonomicon:text",
       "title": "",
       "text": "Deep water crushes blocks. Every block has a **maximum depth**, and a ship is only as strong as its **weakest block**. The **Pressure Barometer** compares the pressure on the ship to what the weakest block can take. [#](2E5AAC)[Goggles](entry://create_basics/tools_wrench)[#]() show a block's hull tier: fragile, standard or reinforced."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Rated depths",
+      "text": "Each block has a rated depth, which the shape of the hull scales up or down:\n\n- Plain glass: 28 m\n- Oak planks: 44 m\n- Wooden trapdoors and doors: 49 m\n- Copper trapdoors and doors: 85 m\n- Iron trapdoors and doors: 99 m\n- Iron block: 101 m"
     },
     {
       "type": "modonomicon:text",
@@ -64,7 +69,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "To leave the ship underwater, build an airlock from two **Decompression Chambers** joined by [#](2E5AAC)[pipes and a pump](entry://create_basics/fluids)[#]().\\\n\\\n[#](FFFFFF)\ue101[#]() **Watch out:** flood the airlock before opening the outer door deep down, or the sea crushes it in.\\\n\\\nReverse the pump to dry it again."
+      "text": "To leave the ship underwater, build an airlock from two **Decompression Chambers** joined by [#](2E5AAC)[pipes and a pump](entry://create_basics/fluids)[#]().\\\n\\\n[#](FFFFFF)\ue101[#]() **Watch out:** flood the airlock before opening the outer door deep down, or the sea crushes it in.\\\n\\\nTurn the pump round with a Wrench to dry it again."
     },
     {
       "type": "modonomicon:spotlight",
@@ -77,7 +82,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "[#](FFFFFF)\ue103[#]() **In depth.** Hull limits can be tuned. Deep Seas has a max depth multiplier that scales every block, and per-block depths are stored in **config/submarine\\_hull.json**. Windows are the usual weak point, so use pressurized glass. Goggles on a block show its tier."
+      "text": "[#](FFFFFF)\ue103[#]() **In depth.** Hull limits can be tuned. Deep Seas has a max depth multiplier that scales every block, and per-block depths are stored in **config/submarine\\_hull.json**. Windows and wooden hatches are the usual weak points, so use pressurized glass and iron hatches. Goggles on a block show its tier."
     },
     {
       "type": "modonomicon:text",
