@@ -1,0 +1,380 @@
+package dev.creategalore.bridge.guideai;
+
+import com.simibubi.create.content.processing.recipe.ProcessingOutput;
+import com.simibubi.create.content.processing.recipe.ProcessingRecipe;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.stats.Stats;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.loot.LootParams;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
+
+/**
+ * How far a thing is from the player, from the server's own data rather than memory: the whole recipe tree down to
+ * what has to be gathered, with what the player has, has ever picked up or crafted, and the stations each step
+ * needs; and what a block really drops with each tool, rolled from its loot table (block drops only; chest and
+ * structure loot stay hidden).
+ */
+final class Reach {
+    private static final int MAX_DEPTH = 6, MAX_LINES = 45, DROP_ROLLS = 200;
+
+    private Reach() {
+    }
+
+    // ---------- recipe_tree ----------
+
+    private record Need(Item item, int count) {
+    }
+
+    static String tree(ServerPlayer player, MinecraftServer server, String itemQuery, int amount) {
+        Item item = WorldTools.resolveItem(itemQuery);
+        if (item == null) return "No item called '" + itemQuery + "'. Try find_items first.";
+        var registries = server.registryAccess();
+        Map<Item, List<RecipeHolder<?>>> makers = new HashMap<>();
+        for (RecipeHolder<?> holder : server.getRecipeManager().getRecipes()) {
+            try {
+                for (ItemStack out : WorldTools.outputs(holder.value(), registries))
+                    if (!out.isEmpty()) makers.computeIfAbsent(out.getItem(), k -> new ArrayList<>()).add(holder);
+            } catch (RuntimeException ignored) {
+                // A recipe that can't say what it makes can't be part of a path.
+            }
+        }
+        Map<Item, Integer> have = owned(player);
+        List<String> lines = new ArrayList<>();
+        Map<Item, String> gather = new LinkedHashMap<>();
+        Set<String> stations = new LinkedHashSet<>();
+        walk(player, server, new Need(item, Math.max(1, amount)), 0, new LinkedHashSet<>(), makers, have, lines, gather, stations);
+        StringBuilder out = new StringBuilder("Recipe tree for ").append(Math.max(1, amount)).append("x ")
+                .append(item.getDescription().getString()).append(" (").append(BuiltInRegistries.ITEM.getKey(item))
+                .append("), following one recipe per item (the one they can already make, else the plainest); \"have\" "
+                + "counts their inventory and the storage they opened nearby; an item they have enough of isn't followed further:\n");
+        lines.forEach(l -> out.append(l).append('\n'));
+        if (!gather.isEmpty()) {
+            out.append("To gather (found in the world, or no recipe: mined, found, dropped, fished or traded):\n");
+            gather.forEach((i, note) -> out.append("- ").append(note).append('\n'));
+        }
+        if (!stations.isEmpty()) out.append("Stations and machines along the way: ").append(String.join("; ", stations)).append(".\n");
+        out.append("Dimensions they have been to: ").append(String.join(", ", visited(player, server))).append('.');
+        return out.toString();
+    }
+
+    private static void walk(ServerPlayer player, MinecraftServer server, Need need, int depth, Set<Item> path,
+            Map<Item, List<RecipeHolder<?>>> makers, Map<Item, Integer> have, List<String> lines, Map<Item, String> gather,
+            Set<String> stations) {
+        if (lines.size() >= MAX_LINES) {
+            if (lines.size() == MAX_LINES) lines.add("  ".repeat(depth) + "- ...(tree cut short; ask recipe_tree for a part of it)");
+            return;
+        }
+        Item item = need.item;
+        String indent = "  ".repeat(depth);
+        int owned = have.getOrDefault(item, 0);
+        StringBuilder line = new StringBuilder(indent).append("- ").append(need.count).append("x ").append(item.getDescription().getString())
+                .append(" (").append(BuiltInRegistries.ITEM.getKey(item)).append("): have ").append(owned);
+        String history = history(player, item);
+        if (owned >= need.count) {
+            lines.add(line.append(", enough").toString());
+            return;
+        }
+        List<RecipeHolder<?>> options = makers.getOrDefault(item, List.of());
+        if (natural(item)) {
+            // Terrain (stone, End Stone, logs, sand, ores): found in the world, whatever odd recipes also make it.
+            lines.add(line.append(history).append("; found in the world").append(options.isEmpty() ? ""
+                    : " (" + options.size() + " recipe" + (options.size() > 1 ? "s" : "") + " also make it)").toString());
+            gather.putIfAbsent(item, item.getDescription().getString() + " (" + BuiltInRegistries.ITEM.getKey(item)
+                    + ", " + WorldTools.modName(BuiltInRegistries.ITEM.getKey(item).getNamespace()) + "): have " + owned + history);
+            return;
+        }
+        RecipeHolder<?> chosen = depth >= MAX_DEPTH ? null : choose(player, item, path, makers, have, server);
+        if (chosen == null) {
+            boolean looped = !options.isEmpty();
+            line.append(history).append(looped ? (depth >= MAX_DEPTH ? "; deeper than this tree goes" : "; only made from things further up this tree")
+                    : "; no recipe makes it");
+            lines.add(line.toString());
+            if (!looped) gather.putIfAbsent(item, item.getDescription().getString() + " (" + BuiltInRegistries.ITEM.getKey(item)
+                    + ", " + WorldTools.modName(BuiltInRegistries.ITEM.getKey(item).getNamespace()) + "): have " + owned + history);
+            return;
+        }
+        Recipe<?> recipe = chosen.value();
+        String station = station(recipe);
+        stations.add(station + stationHistory(player, recipe));
+        int makes = 1;
+        for (ItemStack out : WorldTools.outputs(recipe, server.registryAccess())) if (out.is(item)) makes = Math.max(1, out.getCount());
+        int crafts = (int) Math.ceil((need.count - owned) / (double) makes);
+        line.append(history).append("; made by ").append(station);
+        if (options.size() > 1) line.append(" (").append(options.size() - 1).append(" other recipe").append(options.size() > 2 ? "s" : "").append(")");
+        lines.add(line.toString());
+        path.add(item);
+        for (Map.Entry<Ingredient, Integer> e : grouped(recipe).entrySet()) {
+            Item pick = pick(e.getKey(), have, player);
+            if (pick == null) continue;
+            String alternatives = e.getKey().getItems().length > 1 ? " or " + (e.getKey().getItems().length - 1) + " others" : "";
+            int before = lines.size();
+            walk(player, server, new Need(pick, e.getValue() * crafts), depth + 1, path, makers, have, lines, gather, stations);
+            if (!alternatives.isEmpty() && lines.size() > before) lines.set(before, lines.get(before) + " [any of it" + alternatives + "]");
+        }
+        path.remove(item);
+    }
+
+    private static final List<TagKey<Block>> TERRAIN = List.of(BlockTags.BASE_STONE_OVERWORLD, BlockTags.BASE_STONE_NETHER,
+            BlockTags.LOGS, BlockTags.DIRT, BlockTags.SAND, block("c:end_stones"), block("c:ores"), block("c:gravels"),
+            block("c:sands"), block("c:netherracks"), block("c:obsidians"), block("c:stones"), block("c:cobblestones"));
+
+    private static TagKey<Block> block(String id) {
+        return TagKey.create(Registries.BLOCK, ResourceLocation.parse(id));
+    }
+
+    /** A block the world generates as terrain, so it is gathered rather than made. */
+    private static boolean natural(Item item) {
+        if (!(item instanceof BlockItem blockItem)) return false;
+        BlockState state = blockItem.getBlock().defaultBlockState();
+        for (TagKey<Block> tag : TERRAIN) if (state.is(tag)) return true;
+        return false;
+    }
+
+    /** The recipe to follow: never one that needs something further up the tree; one they can make now beats the rest. */
+    private static RecipeHolder<?> choose(ServerPlayer player, Item item, Set<Item> path, Map<Item, List<RecipeHolder<?>>> makers, Map<Item, Integer> have,
+            MinecraftServer server) {
+        RecipeHolder<?> best = null;
+        int bestScore = Integer.MAX_VALUE;
+        for (RecipeHolder<?> holder : makers.getOrDefault(item, List.of())) {
+            Map<Ingredient, Integer> parts = grouped(holder.value());
+            if (parts.isEmpty()) continue;
+            boolean circular = false, ready = true;
+            for (Map.Entry<Ingredient, Integer> e : parts.entrySet()) {
+                Item pick = pick(e.getKey(), have, player);
+                if (pick == null || path.contains(pick) || pick == item || onlyFrom(pick, item, makers, path)) circular = true;
+                else if (have.getOrDefault(pick, 0) < e.getValue()) ready = false;
+            }
+            if (circular) continue;
+            ResourceLocation type = BuiltInRegistries.RECIPE_TYPE.getKey(holder.value().getType());
+            String t = type == null ? "" : type.toString();
+            int score = (ready ? 0 : 100) + (t.startsWith("minecraft:") ? 0 : t.startsWith("create:") ? 10 : 20) + parts.size();
+            if (score < bestScore) {
+                bestScore = score;
+                best = holder;
+            }
+        }
+        return best;
+    }
+
+    /** True when every recipe for {@code ingredient} uses {@code target} or something further up (ingot <-> block, nugget). */
+    private static boolean onlyFrom(Item ingredient, Item target, Map<Item, List<RecipeHolder<?>>> makers, Set<Item> path) {
+        List<RecipeHolder<?>> list = makers.getOrDefault(ingredient, List.of());
+        if (list.isEmpty()) return false;
+        for (RecipeHolder<?> holder : list) {
+            boolean uses = false;
+            for (Ingredient i : holder.value().getIngredients()) {
+                if (i.isEmpty()) continue;
+                for (ItemStack s : i.getItems()) if (s.is(target) || path.contains(s.getItem())) uses = true;
+            }
+            if (!uses) return false;
+        }
+        return true;
+    }
+
+    private static Map<Ingredient, Integer> grouped(Recipe<?> recipe) {
+        Map<String, Ingredient> byKey = new LinkedHashMap<>();
+        Map<Ingredient, Integer> counts = new LinkedHashMap<>();
+        for (Ingredient i : recipe.getIngredients()) {
+            if (i.isEmpty() || i.getItems().length == 0) continue;
+            StringBuilder key = new StringBuilder();
+            for (ItemStack s : i.getItems()) key.append(BuiltInRegistries.ITEM.getKey(s.getItem())).append(',');
+            Ingredient same = byKey.computeIfAbsent(key.toString(), k -> i);
+            counts.merge(same, 1, Integer::sum);
+        }
+        return counts;
+    }
+
+    /**
+     * Of an ingredient's options, the one the player has most of; when they have none, the one they have had before,
+     * then the plainest (vanilla, then Create) rather than whichever a tag happens to list first (a Mars ore).
+     */
+    private static Item pick(Ingredient ingredient, Map<Item, Integer> have, ServerPlayer player) {
+        Item best = null;
+        long bestScore = Long.MIN_VALUE;
+        for (ItemStack s : ingredient.getItems()) {
+            Item item = s.getItem();
+            String ns = BuiltInRegistries.ITEM.getKey(item).getNamespace();
+            long score = (long) have.getOrDefault(item, 0) * 1000 + (history(player, item).startsWith(", ever") ? 100 : 0)
+                    + (ns.equals("minecraft") ? 10 : ns.equals("create") ? 5 : 0);
+            if (score > bestScore) {
+                bestScore = score;
+                best = item;
+            }
+        }
+        return best;
+    }
+
+    private static String history(ServerPlayer player, Item item) {
+        int picked = player.getStats().getValue(Stats.ITEM_PICKED_UP.get(item)), crafted = player.getStats().getValue(Stats.ITEM_CRAFTED.get(item));
+        int mined = item instanceof BlockItem b ? player.getStats().getValue(Stats.BLOCK_MINED.get(b.getBlock())) : 0;
+        if (picked + crafted + mined == 0) return ", never had one";
+        List<String> parts = new ArrayList<>();
+        if (picked > 0) parts.add("picked up " + picked);
+        if (mined > 0) parts.add("mined " + mined);
+        if (crafted > 0) parts.add("crafted " + crafted);
+        return ", ever " + String.join(", ", parts);
+    }
+
+    private static final Map<String, String> STATIONS = Map.ofEntries(
+            Map.entry("minecraft:crafting", "Crafting Table|minecraft:crafting_table"),
+            Map.entry("minecraft:smelting", "Furnace|minecraft:furnace"),
+            Map.entry("minecraft:blasting", "Blast Furnace|minecraft:blast_furnace"),
+            Map.entry("minecraft:smoking", "Smoker|minecraft:smoker"),
+            Map.entry("minecraft:campfire_cooking", "Campfire|minecraft:campfire"),
+            Map.entry("minecraft:stonecutting", "Stonecutter|minecraft:stonecutter"),
+            Map.entry("minecraft:smithing", "Smithing Table|minecraft:smithing_table"),
+            Map.entry("create:mixing", "Mechanical Mixer over a Basin|create:mechanical_mixer"),
+            Map.entry("create:compacting", "Mechanical Press over a Basin|create:mechanical_press"),
+            Map.entry("create:pressing", "Mechanical Press|create:mechanical_press"),
+            Map.entry("create:crushing", "Crushing Wheels|create:crushing_wheel"),
+            Map.entry("create:milling", "Millstone|create:millstone"),
+            Map.entry("create:cutting", "Mechanical Saw|create:mechanical_saw"),
+            Map.entry("create:mechanical_crafting", "Mechanical Crafters|create:mechanical_crafter"),
+            Map.entry("create:sequenced_assembly", "a sequenced assembly line (Deployers, Spouts, Presses, Saws on a belt)|create:deployer"),
+            Map.entry("create:deploying", "Deployer|create:deployer"),
+            Map.entry("create:filling", "Spout|create:spout"),
+            Map.entry("create:emptying", "Item Drain|create:item_drain"),
+            Map.entry("create:splashing", "Encased Fan through water|create:encased_fan"),
+            Map.entry("create:haunting", "Encased Fan through soul fire|create:encased_fan"),
+            Map.entry("create:item_application", "using one item on a block by hand|"));
+
+    private static String station(Recipe<?> recipe) {
+        ResourceLocation type = BuiltInRegistries.RECIPE_TYPE.getKey(recipe.getType());
+        String t = type == null ? "?" : type.toString();
+        String known = STATIONS.get(t);
+        String name = known != null ? known.split("\\|", -1)[0] : t + " (" + WorldTools.modName(type == null ? "?" : type.getNamespace()) + ")";
+        if (recipe instanceof ProcessingRecipe<?, ?> p) {
+            try {
+                var heat = p.getRequiredHeat();
+                if (heat != null && !heat.name().equals("NONE"))
+                    name += " with " + heat.name().toLowerCase(Locale.ROOT) + " heat (a Blaze Burner under the Basin)";
+            } catch (RuntimeException | LinkageError ignored) {
+                // Only basin recipes carry heat.
+            }
+        }
+        return name;
+    }
+
+    /** Whether they have, ever placed or crafted the station itself: the plainest sign of how far along they are. */
+    private static String stationHistory(ServerPlayer player, Recipe<?> recipe) {
+        ResourceLocation type = BuiltInRegistries.RECIPE_TYPE.getKey(recipe.getType());
+        String known = type == null ? null : STATIONS.get(type.toString());
+        if (known == null || known.endsWith("|")) return "";
+        Item station = BuiltInRegistries.ITEM.get(ResourceLocation.parse(known.split("\\|")[1]));
+        if (station == Items.AIR) return "";
+        int placed = player.getStats().getValue(Stats.ITEM_USED.get(station)), crafted = player.getStats().getValue(Stats.ITEM_CRAFTED.get(station));
+        return " (" + station.getDescription().getString() + ": " + (placed + crafted == 0 ? "never made or placed one"
+                : "placed " + placed + ", crafted " + crafted) + ")";
+    }
+
+    private static List<String> visited(ServerPlayer player, MinecraftServer server) {
+        List<String> out = new ArrayList<>(List.of("the Overworld"));
+        if (done(player, server, "minecraft:story/enter_the_nether")) out.add("the Nether");
+        if (done(player, server, "minecraft:story/enter_the_end")) out.add("the End");
+        String here = player.serverLevel().dimension().location().toString();
+        if (!here.startsWith("minecraft:")) out.add(here + " (where they are now)");
+        return out;
+    }
+
+    private static boolean done(ServerPlayer player, MinecraftServer server, String id) {
+        var holder = server.getAdvancements().get(ResourceLocation.parse(id));
+        return holder != null && player.getAdvancements().getOrStartProgress(holder).isDone();
+    }
+
+    /** Items in their inventory and in the storage they opened nearby, by item. */
+    private static Map<Item, Integer> owned(ServerPlayer player) {
+        Map<Item, Integer> have = new HashMap<>();
+        var inv = player.getInventory();
+        for (int i = 0; i < inv.getContainerSize(); i++) {
+            ItemStack s = inv.getItem(i);
+            if (!s.isEmpty()) have.merge(s.getItem(), s.getCount(), Integer::sum);
+        }
+        TouchedStorage storage = GuideAi.storage();
+        if (storage != null) storage.counts(player).forEach((item, n) -> have.merge(item, n, Integer::sum));
+        return have;
+    }
+
+    // ---------- block_drops ----------
+
+    static String drops(ServerPlayer player, String query) {
+        Block block = resolveBlock(query);
+        if (block == null) return "No block called '" + query + "'. Try find_items first.";
+        ServerLevel level = player.serverLevel();
+        BlockState state = block.defaultBlockState();
+        Item tool = state.is(BlockTags.MINEABLE_WITH_PICKAXE) ? Items.NETHERITE_PICKAXE : state.is(BlockTags.MINEABLE_WITH_AXE)
+                ? Items.NETHERITE_AXE : state.is(BlockTags.MINEABLE_WITH_SHOVEL) ? Items.NETHERITE_SHOVEL
+                : state.is(BlockTags.MINEABLE_WITH_HOE) ? Items.NETHERITE_HOE : Items.AIR;
+        var enchantments = level.registryAccess().registryOrThrow(Registries.ENCHANTMENT);
+        StringBuilder out = new StringBuilder("What ").append(block.getName().getString()).append(" (")
+                .append(BuiltInRegistries.BLOCK.getKey(block)).append(") drops, rolled ").append(DROP_ROLLS)
+                .append(" times from this server's loot table with each tool (average per block, and the range):\n");
+        String toolName = tool == Items.AIR ? "a bare hand" : "a " + tool.getDescription().getString();
+        out.append("- ").append(toolName).append(": ").append(roll(level, player, state, new ItemStack(tool))).append('\n');
+        ItemStack silk = new ItemStack(tool == Items.AIR ? Items.NETHERITE_PICKAXE : tool);
+        silk.enchant(enchantments.getHolderOrThrow(Enchantments.SILK_TOUCH), 1);
+        out.append("- with Silk Touch: ").append(roll(level, player, state, silk)).append('\n');
+        for (int lvl = 1; lvl <= 3; lvl++) {
+            ItemStack fortune = new ItemStack(tool == Items.AIR ? Items.NETHERITE_PICKAXE : tool);
+            fortune.enchant(enchantments.getHolderOrThrow(Enchantments.FORTUNE), lvl);
+            out.append("- with Fortune ").append("I".repeat(lvl)).append(": ").append(roll(level, player, state, fortune)).append('\n');
+        }
+        return out.toString().strip();
+    }
+
+    private static String roll(ServerLevel level, ServerPlayer player, BlockState state, ItemStack tool) {
+        Map<String, int[]> totals = new LinkedHashMap<>(); // sum, min, max
+        for (int i = 0; i < DROP_ROLLS; i++) {
+            LootParams.Builder params = new LootParams.Builder(level)
+                    .withParameter(LootContextParams.ORIGIN, player.position())
+                    .withParameter(LootContextParams.TOOL, tool)
+                    .withOptionalParameter(LootContextParams.THIS_ENTITY, player)
+                    .withOptionalParameter(LootContextParams.BLOCK_STATE, state);
+            Map<String, Integer> once = new HashMap<>();
+            for (ItemStack s : state.getDrops(params)) once.merge(s.getHoverName().getString(), s.getCount(), Integer::sum);
+            for (String name : totals.keySet()) once.putIfAbsent(name, 0);
+            boolean first = i == 0; // a drop first seen later was zero on the rolls before
+            for (Map.Entry<String, Integer> e : once.entrySet()) {
+                int[] t = totals.computeIfAbsent(e.getKey(), k -> new int[] {0, first ? Integer.MAX_VALUE : 0, 0});
+                t[0] += e.getValue();
+                t[1] = Math.min(t[1], e.getValue());
+                t[2] = Math.max(t[2], e.getValue());
+            }
+        }
+        if (totals.isEmpty()) return "nothing";
+        List<String> parts = new ArrayList<>();
+        totals.forEach((name, t) -> parts.add(String.format(Locale.ROOT, "%.2f %s (%d to %d)", t[0] / (double) DROP_ROLLS, name, t[1], t[2])));
+        return String.join(", ", parts);
+    }
+
+    private static Block resolveBlock(String query) {
+        String q = query.strip().toLowerCase(Locale.ROOT);
+        ResourceLocation id = ResourceLocation.tryParse(q);
+        if (id != null && q.contains(":") && BuiltInRegistries.BLOCK.containsKey(id)) return BuiltInRegistries.BLOCK.get(id);
+        Item item = WorldTools.resolveItem(query);
+        return item instanceof BlockItem b ? b.getBlock() : null;
+    }
+}

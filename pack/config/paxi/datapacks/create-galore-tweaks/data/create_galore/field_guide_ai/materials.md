@@ -1,4 +1,4 @@
-<!-- sources sha256:0467f69192480d19c8fe28c4532189c97f5058a14343f8d5bed8813dd2be1144 -->
+<!-- sources sha256:3b9d2d6012e0ab89fb0e4c20e7f2e43fb9ac2c357a2996e967de75cee0d43e32 -->
 # Ores and Metals (materials)
 
 ## materials/ore_guide | Ore Guide
@@ -29,6 +29,7 @@
 - One ore block -> 1 crushed ore, 75% chance of a second, experience nuggets, sometimes stone back. About 1.75 crushed ores per block; 2.25 from deepslate ore. Mine blocks with Silk Touch.
 - Crushing Wheel [create:crushing_wheel]: feed it ore blocks (Silk Touch).
 - Raw ore (what normal mining drops) crushes to one crushed ore: no gain. Only the ore block itself doubles.
+- Silk Touch or Fortune (both need an enchanted pickaxe), per iron, gold or zinc ore: Fortune III about 2.2 raw ore (Fortune II 1.75, Fortune I 1.33); Silk Touch then crush 1.75, or 2.25 from deepslate. Copper drops 2-5 raw: about 7.7 with Fortune III vs 5.25 crushed (7.25 deepslate).
 - Then smelt or wash (see glossary/washing) the crushed ore. Washing = Fan (see create_basics/fans) blowing through water: 9 nuggets + chance of byproduct (iron may add redstone; check JEI (see start_here/tools) per metal). Blasting: one ingot.
 - Crushed Raw Iron [create:crushed_raw_iron]: blast into one ingot, or wash with a Fan into nuggets plus byproduct chance. Crushed zinc works the same.
 - Which metals: Create covers copper, iron, gold, zinc. Tag (see glossary/tags) recipes also cover platinum, uranium, nickel, raw lead when a mod supplies them. Create's recipe for lead ore blocks is off.

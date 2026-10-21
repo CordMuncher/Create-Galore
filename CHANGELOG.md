@@ -4,6 +4,15 @@ Each pack version gets a section here, with **Added**, **Fixed** and **Removed**
 workflow copies the section for the version in `pack/pack.toml` to the top of the GitHub release, and the build
 fails when that section is missing.
 
+## 0.4.17
+
+### Fixed
+- **Ask the Book checks Create's real rules before it explains why a machine doesn't work.** It used to guess. Asked why a lava fan didn't smelt, it said the 16 RPM fan was too slow to reach the belt, when the air reached it fine and the belt was simply carrying items out of the air too fast. Reading a build now runs Create's own fan rules on the real machines: how far each fan's air reaches and where a block stops it, what each cell processes, which belts and depots it sweeps, and how long an item stays in the air on that belt against the 7.6 s processing needs, with the slowest belt speed that works.
+- **Ask the Book knows what blocks really drop.** It rolls a block's own loot table with a bare tool, Silk Touch and each Fortune level, so it no longer guesses whether Fortune or Silk Touch plus crushing gives more ore.
+- **Ask the Book judges what you can reach from the real recipe tree, not from advancements.** A new recipe tree follows an item's recipes down to raw materials and shows what you already have (inventory and nearby storage you opened), whether you ever had each part, the machines each step needs and whether you ever made one, what still has to be gathered and which dimensions you have been to. Advancements granted just for joining no longer count as progress, and the next ones in a tree are no longer called "within reach".
+- **The Field Guide's Ore Doubling page compares Silk Touch with Fortune.** Per iron, gold or zinc ore, Fortune III mines about 2.2 raw ore, more than the 1.75 crushed ores from a Silk Touched stone ore block (deepslate gives 2.25); copper gets about 7.7 with Fortune III against 5.25 crushed. Crushing and Ore Doubling no longer says to crush raw ore.
+- Create Galore Bridge 1.47.0.
+
 ## 0.4.16
 
 ### Fixed

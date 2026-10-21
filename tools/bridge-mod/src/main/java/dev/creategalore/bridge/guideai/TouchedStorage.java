@@ -73,6 +73,31 @@ final class TouchedStorage {
         dirty = true;
     }
 
+    /** Every item in the storage they have opened within {@link #RANGE} blocks, with its total. Server thread. */
+    Map<net.minecraft.world.item.Item, Integer> counts(ServerPlayer player) {
+        ServerLevel level = player.serverLevel();
+        BlockPos here = player.blockPosition();
+        LinkedHashSet<String> set = touched.get(player.getUUID());
+        Map<net.minecraft.world.item.Item, Integer> out = new LinkedHashMap<>();
+        if (set == null) return out;
+        String dim = level.dimension().location().toString();
+        IdentityHashMap<IItemHandler, Boolean> seen = new IdentityHashMap<>();
+        int containers = 0;
+        for (String k : set) {
+            BlockPos p = parse(k, dim);
+            if (p == null || p.distSqr(here) > (double) RANGE * RANGE || !level.isLoaded(p)) continue;
+            if (containers >= MAX_CONTAINERS) break;
+            IItemHandler handler = level.getCapability(Capabilities.ItemHandler.BLOCK, p, null);
+            if (handler == null || seen.put(handler, Boolean.TRUE) != null) continue;
+            containers++;
+            for (int i = 0; i < handler.getSlots(); i++) {
+                ItemStack s = handler.getStackInSlot(i);
+                if (!s.isEmpty()) out.merge(s.getItem(), s.getCount(), Integer::sum);
+            }
+        }
+        return out;
+    }
+
     private record Found(String id, String name, int count, List<String> where) {
     }
 

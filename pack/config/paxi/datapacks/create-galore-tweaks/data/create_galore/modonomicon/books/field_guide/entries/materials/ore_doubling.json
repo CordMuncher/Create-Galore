@@ -20,7 +20,7 @@
     {
       "type": "modonomicon:text",
       "title": "Ore Doubling",
-      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- [#](FFFFFF)\ue104[#]() Crush **ore blocks** (mined with Silk Touch): about 1.75 crushed ores each, 2.25 from deepslate\n- **Raw ore** crushes to just one: no gain\n- Then smelt the crushed ore, or [#](7A3C9A)[wash](entry://glossary/washing)[#]() it with a Fan for nuggets"
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- [#](FFFFFF)\ue104[#]() Crush **ore blocks** (mined with Silk Touch): about 1.75 crushed ores each, 2.25 from deepslate\n- **Raw ore** crushes to just one, but **Fortune III** mines about 2.2 per ore\n- Then smelt the crushed ore, or [#](7A3C9A)[wash](entry://glossary/washing)[#]() it with a Fan for nuggets"
     },
     {
       "type": "modonomicon:text",
@@ -48,6 +48,11 @@
       "border": true,
       "title": "",
       "text": "Ore blocks from Silk Touch double; raw ore doesn't."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Silk Touch or Fortune",
+      "text": "Both need an enchanted pickaxe. Per iron, gold or zinc ore:\n- **Fortune III**: about 2.2 raw ore (Fortune II 1.75, Fortune I 1.33)\n- **Silk Touch**, then crush: 1.75, or 2.25 from deepslate\n\nCopper drops 2 to 5 raw: about 7.7 with Fortune III, against 5.25 crushed (7.25 from deepslate)."
     },
     {
       "type": "modonomicon:spotlight",

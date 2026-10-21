@@ -956,7 +956,7 @@ hash = "bdf2d0bcdc90d7f3c07fa406dcf9573a8d89b049a541f9dd337a14ad1271ffd0"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/create_basics.md"
-hash = "3daa914d8eb8ba341bab4ee67139688013b96e6785ce2267af939cd6d512a521"
+hash = "8c5c653023d83329eb7185f07710e6def2b592f3180b213a9edf30438954c442"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/exploration.md"
@@ -988,7 +988,7 @@ hash = "aaf20f4c93860eee93f420d5b5126dbda3efc50519e25ed69bd0aaa30ff4c031"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/materials.md"
-hash = "6542377c5fcf0b824a1196d8fea1d9c44737706bfa8d8509254e0ae799e9d192"
+hash = "e325c385267b4993fcd4d7f7e284dbc634407e69e26c0856ccd38e945e9d4d56"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/ocean.md"
@@ -1140,7 +1140,7 @@ hash = "3dc0367765490ee0946af1fd1d1d3316b8ff447948e5e3427d6818815d303acf"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/create_basics/crushing.json"
-hash = "e4f8069553c2e4d4272fc574075cc3a3b7194122073920e4233a9c0246d7e7ad"
+hash = "a3ad4a720c61cb76a563d5c98c406e7a611e9a2f8ead07c193761c514c2ceb0d"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/create_basics/deployer.json"
@@ -1744,7 +1744,7 @@ hash = "b9d7303eb38ddd0092e3ad033975b1247ba0cd68e7bb3cd6a0606be3bd10e02a"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/materials/ore_doubling.json"
-hash = "d3199c62142384b14abfc6d9cb5f7b62452b032df3fe96c6c7790e735396b990"
+hash = "ae067c86c25ab2cd6060ced24ff471947e1d6548f20239758d914fb06fbfdccc"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/materials/ore_guide.json"
@@ -4917,8 +4917,8 @@ hash = "db683b65dc15a03dd6de2d34d5dc6ad0e3490744ced513a8cc584784ee9d3d8b"
 metafile = true
 
 [[files]]
-file = "mods/create-galore-bridge-1.41.0.jar"
-hash = "dbe39980eec7b2fa24788c0294d254f57dc2acd99442756ce4e15e8b7874547a"
+file = "mods/create-galore-bridge-1.47.0.jar"
+hash = "de8a7443f834399d2b8f377929aceca8f7a834d8645f7ed830c04a7f73349e4f"
 
 [[files]]
 file = "mods/create-galore-fishing-0.3.8.jar"

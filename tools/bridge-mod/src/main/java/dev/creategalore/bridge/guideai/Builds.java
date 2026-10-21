@@ -64,8 +64,10 @@ final class Builds {
                 + "block within " + GAP + " blocks of the last, until the build trails off. Returns every block with its x y z "
                 + "and full state (facing, axis), Create speed (RPM; the sign is the turning direction), whether it is a "
                 + "source, its kinetic network and that network's stress used of capacity, what Engineer's Goggles show for "
-                + "machines, and the fluids and other blocks touching the build. Use it to work out how the parts sit "
-                + "relative to each other. Big builds are cut off and say where to continue.", trace));
+                + "machines, the results of Create's own rules run on its machines (for a fan: how far its air really "
+                + "reaches, what each cell processes, and whether items on a belt stay in the air long enough), and the "
+                + "fluids and other blocks touching the build. Use it to work out how the parts sit relative to each "
+                + "other and why a machine does or doesn't work. Big builds are cut off and say where to continue.", trace));
         JsonObject area = new JsonObject();
         for (String k : new String[]{"x1", "y1", "z1", "x2", "y2", "z2"})
             area.add(k, WorldTools.prop("integer", k.endsWith("1") ? "One corner of the box." : "The opposite corner."));
@@ -407,6 +409,7 @@ final class Builds {
                     .append(": ").append(String.join("; ", lines)).append('\n');
         }
         if (!goggleText.isEmpty()) out.append("Engineer's Goggles show:\n").append(goggleText);
+        out.append(MachineCheck.check(level, build));
 
         // Everything solid touching the build that isn't part of it: the ground, a wall it sits in.
         LongOpenHashSet touching = new LongOpenHashSet();
