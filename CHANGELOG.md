@@ -27,7 +27,7 @@ fails when that section is missing.
 ### Removed
 - **Tide 2 and Tide Extra Compatibility.** Everything players had from them stays, under the same ids: the fish and their mobs, the Fishing Journal and its progress, the crates, gadgets, special rods, Fish Displays (now Trophy Mounts), foods, hooks, baits and bobbers (as floats). Tide's plain rods become the matching new rods with their enchantments, name, damage and bait kept, the Angling Table becomes the Tackle Bench, and the vanilla Fishing Rod and Alloyed's Steel Fishing Rod become the Wooden and Steel rods.
 - Tide's grilled tuna recipes, which never worked (the pack's tuna is Aquaculture's).
-- The Enchanted Pocket Watch no longer freezes bosses from other mods (Cataclysm, Twilight Forest, Aether and others), only ordinary mobs.
+- The Enchanted Pocket Watch no longer freezes bosses from other mods (Cataclysm, Twilight Forest, Aether, Aquamirae's Captain Cornelia and Maze Mother and others), only ordinary mobs.
 
 ## 0.3.8
 
