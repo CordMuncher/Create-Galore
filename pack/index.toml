@@ -968,7 +968,7 @@ hash = "0105df9729fe27899568173e147efbdc671cd0ba6f6071e2ee848093f9ae558b"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/flight.md"
-hash = "a3640c2898c684c6085d1fe86e7099a3421ee29c7b74eb3482995146df6c1e61"
+hash = "37d6cc816d1119dcb0eb90d64771d93e903856aee850c4440f3833c1eba61eb5"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/food.md"
@@ -1412,7 +1412,7 @@ hash = "23892c9f896cfb881124e51b8782c64f13f5c7982b1ff7c5ebe70c57ba1f4eb7"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/flight/wind_sailing.json"
-hash = "4a013d965855dd98fdb2037c212eb82626e960cca3af8f794e610a8fd04232e8"
+hash = "740e2ea09902e534f6dd06b5f7a976558e5efb669e8493422c10b73fbef116a4"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/food/animals.json"
@@ -4917,8 +4917,8 @@ hash = "db683b65dc15a03dd6de2d34d5dc6ad0e3490744ced513a8cc584784ee9d3d8b"
 metafile = true
 
 [[files]]
-file = "mods/create-galore-bridge-1.38.0.jar"
-hash = "abd2ff1bec7c63403f23e4457e66da3ebcfc258a1de298db67c974f02acf7104"
+file = "mods/create-galore-bridge-1.39.0.jar"
+hash = "f289ec15341c9b45f72b2ed9de1b36dbdc3d726547f2a573bb243ea0be54f150"
 
 [[files]]
 file = "mods/create-galore-fishing-0.3.5.jar"

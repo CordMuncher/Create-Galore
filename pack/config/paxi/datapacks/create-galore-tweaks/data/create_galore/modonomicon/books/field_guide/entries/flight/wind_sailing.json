@@ -20,7 +20,7 @@
     {
       "type": "modonomicon:text",
       "title": "Sailing and Wind",
-      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- [#](FFFFFF)\ue10e[#]() Wind has a speed and heading, and is stronger over open ocean and at altitude.\n- Only **Windcatchers** drive windmill bearings or push ships; ordinary Create sails are decoration.\n- A **Keel** stops sideways slip, and a **Rudder** on a Create shaft steers."
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- [#](FFFFFF)\ue10e[#]() Wind has a speed and heading, and is stronger over open ocean and at altitude.\n- Only **Windcatchers** drive windmill bearings. Ships are pushed by Windcatchers and Sail Kit cloth; ordinary Create sails are decoration.\n- A **Keel** stops sideways slip, and a **Rudder** on a Create shaft steers."
     },
     {
       "type": "modonomicon:text",
@@ -49,12 +49,17 @@
         "item": "aeronauticswinds:windcatcher_canvas"
       },
       "title": "Windcatcher",
-      "text": "**Only Windcatchers** drive windmill [#](7A3C9A)[bearings](entry://glossary/bearing)[#]() or push ships here; ordinary Create sails are decoration. They don't stick on their own: [#](7A3C9A)[glue](entry://glossary/super_glue)[#]() them to the bearing. Face the broad side into the wind."
+      "text": "**Only Windcatchers** drive windmill [#](7A3C9A)[bearings](entry://glossary/bearing)[#](). On a ship they catch wind like cloth sails do. Ordinary Create sails are decoration. They don't stick on their own: [#](7A3C9A)[glue](entry://glossary/super_glue)[#]() them to the bearing. Face the broad side into the wind."
     },
     {
       "type": "modonomicon:text",
       "title": "Rigging a sail",
-      "text": "- Stack **Masts** and run a **Yard** across them.\n- Use a packed Cotton or Canvas Sail on the Yard, then click the lower opposite corner.\n- Empty-hand clicks trim the yard in 8 steps.\n- Sneak-use the cloth to reef it.\n\nCotton is light and quick. Canvas is heavy and durable."
+      "text": "- Stack **Masts** and run a **Yard** across them.\n- Use a packed Cotton or Canvas Sail on the Yard, then click the lower opposite corner.\n- The cloth hangs straight below the Yard.\n- Empty-hand clicks trim the yard in 8 steps.\n- Sneak-use the cloth to reef it.\n- Cotton is light and quick. Canvas is heavy and durable."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "How the rig sits",
+      "text": "- A **Windcatcher** placed from the side stands upright, facing you. Placed looking up or down, it lies flat and catches no wind.\n- Panels side by side with one facing join into one sail.\n- A **Yard** runs out sideways from a Mast and joins whatever is at its ends."
     },
     {
       "type": "modonomicon:spotlight",

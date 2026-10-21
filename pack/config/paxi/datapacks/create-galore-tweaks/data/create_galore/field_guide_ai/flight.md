@@ -1,4 +1,4 @@
-<!-- sources sha256:0d5825c542714fb691d178329dfe394119460c34a727f6f83a4e564e1929a7d7 -->
+<!-- sources sha256:b054ad5aba6e4bb4f2afed45e5c0e1af75393e415215ab2d15766b66d180329a -->
 # Flight (flight)
 Create Aeronautics ships, lift, thrust, steering, wind, dangers and sky destinations.
 
@@ -102,11 +102,11 @@ Create Aeronautics ships, lift, thrust, steering, wind, dangers and sky destinat
 
 ## flight/wind_sailing | Sailing and Wind
 - Aeronautics: Winds & Weather adds real wind field and cloth sails. Wind has speed and heading, stronger over open ocean and at altitude, pushes ships rigged to catch it
-- Only Windcatchers drive windmill bearings or push ships; ordinary Create sails are decoration. Keel stops sideways slip; Rudder on Create shaft steers
+- Only Windcatchers drive windmill bearings. Ships are pushed by Windcatchers and Sail Kit cloth (both catch wind; cloth can be trimmed and reefed, Windcatcher panels can't); ordinary Create sails are decoration. Keel stops sideways slip; Rudder on Create shaft steers
 - Anemometer [aeronauticswinds:anemometer]: measures local wind speed, outputs as shaft rotation; goggles (see create_basics/tools_wrench) show exact figure
 - Wind Vane [aeronauticswinds:wind_vane]: settles on wind direction, turns lower shaft; goggles show compass bearing
-- Windcatcher [aeronauticswinds:windcatcher_canvas]: only Windcatchers drive windmill bearings (see glossary/bearing) or push ships here; don't stick on their own: glue (see glossary/super_glue) to the bearing; face broad side into wind
-- Rigging a sail: stack Masts, run a Yard across; use packed Cotton or Canvas Sail on Yard, click lower opposite corner; empty-hand clicks trim yard in 8 steps; sneak-use cloth to reef; Cotton light and quick, Canvas heavy and durable
+- Windcatcher [aeronauticswinds:windcatcher_canvas]: only Windcatchers drive windmill bearings (see glossary/bearing); on a ship they catch wind like cloth sails; don't stick on their own: glue (see glossary/super_glue) to the bearing; face broad side into wind; facing = way its broad face points: placed from the side it stands upright facing you (facing north/south/east/west), placed looking up/down it lies flat (facing up/down, catches no wind); panels side by side with same facing join into one sail
+- Rigging a sail: stack Masts (straight up), run a Yard out sideways from them (axis = way the run goes; joins Masts and Yards at its two ends); use packed Cotton or Canvas Sail on Yard, click lower opposite corner: cloth [aeronauticswinds:cotton_sail_cloth] fills cells straight below the Yard run, in its line, facing across it; empty-hand clicks trim yard in 8 steps; sneak-use cloth to reef; Cotton light and quick, Canvas heavy and durable
 - Yard [aeronauticswinds:yard]: run a rope from an Aeronautics Rope Coupling to a Rope Winch for continuous trim; shears detach it
 - Keel [aeronauticswinds:keel]: fits under hull fore and aft; stops sideways slip, turns angled wind into forward travel; extend for more grip
 - Rudder [aeronauticswinds:rudder]: driven by Create shaft setting steady angle; stack blades for deeper rudder; sneak-click to centre
