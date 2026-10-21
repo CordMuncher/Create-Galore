@@ -17,11 +17,11 @@ import net.minecraft.world.item.ItemStack;
 
 /**
  * What a fight costs the tackle. Every fight wears every part a little: the rod (more the longer it was loaded near
- * its rating), the reel (more by cranking while its drag slipped, with the square of the drag), the line (it frays,
- * and a line frayed through wears out) and the leader, hook and float, sinker or lure. Nothing lasts for ever and
- * nothing caps it: a
- * careless angler can wear a reel or rod through in one fight, and a part that gives out mid-fight loses the fish
- * (the fight checks the durability left, see {@link Fight#wearLimits}). A line that snaps, is bitten through, runs
+ * its rating), the reel (more by cranking while its drag slipped, with the square of the drag), the line (it frays)
+ * and the leader, hook and float, sinker or lure. Nothing lasts for ever and nothing caps it: a careless angler can
+ * wear a reel or rod through in one fight, and a rod, reel or line that gives out mid-fight loses the fish (the fight
+ * checks what each has left, see {@link Fight#wearLimits}). A leader, hook or terminal that wears out goes, but a
+ * fish already on stays on. A line that snaps, is bitten through, runs
  * out or parts on a seized reel loses what was out plus a few metres, and the hook, rig, leader and bait go with it.
  * A rod that breaks hands its parts back.
  */
@@ -36,7 +36,7 @@ public final class TackleWear {
 
     /** Fraying one fight puts on a line: the base, plus half the fight's own fraying. */
     public static double lineFray(double fightLineWear) {
-        return LINE_WEAR_PER_FIGHT + fightLineWear * 0.5;
+        return LINE_WEAR_PER_FIGHT + fightLineWear * Fight.LINE_FRAY_PER_WEAR;
     }
 
     /** Durability one fight takes from a reel: 1 for the fight, plus its grinding. */
@@ -50,15 +50,18 @@ public final class TackleWear {
     }
 
     /**
-     * Tells {@code fight} how much the reel and rod on {@code rod} have left beyond the fight's base wear, so a part
-     * worn through mid-fight breaks there and then.
+     * Tells {@code fight} how much the reel, rod and line on {@code rod} have left beyond the fight's base wear, so
+     * one worn through mid-fight breaks there and then.
      */
     public static void setLimits(Fight fight, ItemStack rod) {
         ItemStack reel = RodItem.parts(rod).reel();
         double reelLeft = !reel.isEmpty() && reel.isDamageableItem()
                 ? reel.getMaxDamage() - reel.getDamageValue() - 1 : Double.POSITIVE_INFINITY;
         double rodLeft = rod.isDamageableItem() ? rod.getMaxDamage() - rod.getDamageValue() - 1 : Double.POSITIVE_INFINITY;
-        fight.wearLimits(Math.max(0, reelLeft), Math.max(0, rodLeft));
+        ItemStack line = RodItem.parts(rod).line();
+        double lineLeft = line.isEmpty() ? Double.POSITIVE_INFINITY
+                : 1 - line.getOrDefault(FishingRegistry.LINE_WEAR.get(), 0f) - LINE_WEAR_PER_FIGHT;
+        fight.wearLimits(Math.max(0, reelLeft), Math.max(0, rodLeft), Math.max(0, lineLeft));
     }
 
     /**

@@ -4,6 +4,12 @@ Each pack version gets a section here, with **Added**, **Fixed** and **Removed**
 workflow copies the section for the version in `pack/pack.toml` to the top of the GitHub release, and the build
 fails when that section is missing.
 
+## 0.4.2
+
+### Fixed
+- **A worn-through line breaks mid-fight.** Like a rod or reel, a line frayed through now parts during the fight and the fish is gone, so check your tackle before going after a big one. Leaders, hooks, floats, sinkers and lures can wear out mid-fight too, but a fish already hooked stays on.
+- Create Galore Fishing 0.3.2.
+
 ## 0.4.1
 
 ### Added

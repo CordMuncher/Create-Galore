@@ -44,6 +44,8 @@ public final class Fight {
     public static final double REEL_DURABILITY_PER_WEAR = 3;
     /** Durability one unit of {@link #rodWear()} costs a rod. */
     public static final double ROD_DURABILITY_PER_WEAR = 15;
+    /** Fraying of a line (0 new, 1 worn through) per unit of a fight's line wear. */
+    public static final double LINE_FRAY_PER_WEAR = 0.5;
     /** Water drag on a towed fish, kgf per kg^(2/3) per (m/s)^2. */
     public static final double TOW_DRAG = 0.07;
 
@@ -78,6 +80,7 @@ public final class Fight {
     private boolean spooled;
     private double reelLife = Double.POSITIVE_INFINITY;
     private double rodLife = Double.POSITIVE_INFINITY;
+    private double lineLife = Double.POSITIVE_INFINITY;
 
     /**
      * @param fish          the species' fight data
@@ -96,12 +99,14 @@ public final class Fight {
     }
 
     /**
-     * Durability the reel and rod have left (after the fight's base wear of 1 each). When the fight's wear uses it
-     * up, that part breaks mid-fight and the fish is gone. Unlimited unless set (the simulator).
+     * Durability the reel and rod have left (after the fight's base wear of 1 each), and how much fraying the line
+     * can still take (after the fight's base fraying). When the fight's wear uses one up, that part breaks mid-fight
+     * and the fish is gone. Unlimited unless set (the simulator).
      */
-    public void wearLimits(double reelDurabilityLeft, double rodDurabilityLeft) {
+    public void wearLimits(double reelDurabilityLeft, double rodDurabilityLeft, double lineFrayLeft) {
         this.reelLife = reelDurabilityLeft;
         this.rodLife = rodDurabilityLeft;
+        this.lineLife = lineFrayLeft;
     }
 
     /** Advances the fight by one tick. Does nothing once it is over. */
@@ -203,7 +208,7 @@ public final class Fight {
         highestTension = Math.max(highestTension, peakTension);
 
         // Failures.
-        if (peakTension > breakLoad) {
+        if (peakTension > breakLoad || lineWear * LINE_FRAY_PER_WEAR >= lineLife) {
             outcome = spooled ? Outcome.SPOOLED : Outcome.LINE_SNAPPED;
             return;
         }

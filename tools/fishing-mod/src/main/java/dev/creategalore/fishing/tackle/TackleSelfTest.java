@@ -3,6 +3,7 @@ package dev.creategalore.fishing.tackle;
 import dev.creategalore.fishing.FishingRegistry;
 import dev.creategalore.fishing.cast.TackleWear;
 import dev.creategalore.fishing.selftest.SelfTest;
+import dev.creategalore.fishing.sim.Controls;
 import dev.creategalore.fishing.sim.Fight;
 import dev.creategalore.fishing.sim.FishFight;
 import dev.creategalore.fishing.sim.Outcome;
@@ -83,6 +84,20 @@ public final class TackleSelfTest {
                 r.check(after.get(slot).getOrDefault(FishingRegistry.PART_WEAR.get(), 0f) == TackleWear.PART_WEAR_PER_FIGHT,
                         "a gentle fight wears the " + slot + " " + after.get(slot).get(FishingRegistry.PART_WEAR.get()));
             }
+            // A rod, reel or line worn through breaks mid-fight and the fish is gone: a line nearly frayed through parts
+            // as soon as the fish pulls.
+            ItemStack frayedRig = used.copy();
+            ItemStack frayedLine = after.line();
+            frayedLine.set(FishingRegistry.LINE_WEAR.get(), 0.995f);
+            RodItem.setParts(frayedRig, after.with(RodParts.Slot.LINE, frayedLine));
+            Fight onFrayed = new Fight(FishFight.AVERAGE, RodStats.of(frayedRig).orElseThrow().tackle(1), 1, 20);
+            TackleWear.setLimits(onFrayed, frayedRig);
+            Controls hold = new Controls();
+            hold.drag = RodStats.of(frayedRig).orElseThrow().drag();
+            java.util.SplittableRandom random = new java.util.SplittableRandom(1);
+            while (!onFrayed.outcome().over() && onFrayed.ticks() < 200) onFrayed.tick(hold, random);
+            r.check(onFrayed.outcome() == Outcome.LINE_SNAPPED, "a line frayed through parts mid-fight (" + onFrayed.outcome() + ")");
+
             ItemStack nearlyHook = after.hook(), nearlyLine = after.line();
             nearlyHook.set(FishingRegistry.PART_WEAR.get(), 0.996f);
             nearlyLine.set(FishingRegistry.LINE_WEAR.get(), 0.995f);

@@ -67,7 +67,7 @@ public final class FightRules {
 
         // A reel with 30 durability left, ground at full drag (12 a second), seizes in about 3 s and the fish is lost.
         Fight seize = new Fight(steady(1.5, 1000), rig(10, 1000, 10_000), 20, 30);
-        seize.wearLimits(30, Double.POSITIVE_INFINITY);
+        seize.wearLimits(30, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);
         Controls crank = new Controls();
         crank.drag = 10;
         crank.reeling = true;
@@ -80,11 +80,21 @@ public final class FightRules {
         // A rod with 1 durability left, overloaded, breaks during the fight.
         Fight crack = new Fight(steady(1.0, 1000), new Tackle(5, 0.6, true, 10, 1.2, 100, 0.5, 10_000, 1000, 0.5,
                 Double.NaN, false, 1), 20, 30);
-        crack.wearLimits(Double.POSITIVE_INFINITY, 1);
+        crack.wearLimits(Double.POSITIVE_INFINITY, 1, Double.POSITIVE_INFINITY);
         idle.drag = 10;
         rng = new SplittableRandom(4);
         while (!crack.outcome().over() && crack.ticks() < 2000) crack.tick(idle, rng);
         out.add(new Check(crack.outcome() == Outcome.ROD_BROKE, "a rod worn through mid-fight breaks (" + crack.outcome() + ")"));
+
+        // A line nearly frayed through parts mid-fight under a load far below its test, and the fish is gone.
+        Fight fray = new Fight(steady(0.5, 1000), rig(10, 1000, 10_000), 10, 30);
+        fray.wearLimits(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, 0.001);
+        idle.drag = 10;
+        rng = new SplittableRandom(9);
+        while (!fray.outcome().over() && fray.ticks() < 2000) fray.tick(idle, rng);
+        out.add(new Check(fray.outcome() == Outcome.LINE_SNAPPED && fray.ticks() > 1,
+                String.format(Locale.ROOT, "a line frayed through parts mid-fight and loses the fish (%s after %.1f s)",
+                        fray.outcome(), fray.seconds())));
 
         // Empty spool: the drag is as good as locked. A fish that pulls less than the line is held; one that pulls
         // more breaks it.
