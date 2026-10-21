@@ -4,6 +4,12 @@ Each pack version gets a section here, with **Added**, **Fixed** and **Removed**
 workflow copies the section for the version in `pack/pack.toml` to the top of the GitHub release, and the build
 fails when that section is missing.
 
+## 0.4.14
+
+### Fixed
+- **The Tackle Bench no longer flickers.** Parts of its model (the reel's side plates, the spool, the brass tin, the tackle box lid, the vise clamp and the spare blanks) had faces lying on top of each other, which flicker as you move. Every part now has a single face in each place.
+- Create Galore Fishing 0.3.7.
+
 ## 0.4.13
 
 ### Fixed

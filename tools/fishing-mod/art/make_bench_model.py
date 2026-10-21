@@ -49,18 +49,49 @@ def block(start, end, texture, faces=ALL, uv=None):
 
 
 def disc(axis, centre, radius, lo, hi, cell, rotation=None):
-    """A round part as Minecraft draws round things: a plus of two boxes and a square between, so the outline steps
-    like a pixel circle. `axis` is the disc's axis, `lo`..`hi` its extent along it."""
-    out = []
-    for a, b in ((radius, radius * 0.55), (radius * 0.55, radius), (radius * 0.85, radius * 0.85)):
+    """A round part as Minecraft draws round things: a square with a slab on each side, so the outline steps like a
+    pixel circle. `axis` is the disc's axis, `lo`..`hi` its extent along it. The pieces only touch, never overlap,
+    so no two of their faces lie on top of each other (overlapping faces in one plane flicker)."""
+    i = "xyz".index(axis)
+    j, k = [n for n in range(3) if n != i]
+    sides = {0: ("west", "east"), 1: ("down", "up"), 2: ("north", "south")}
+    inner, outer, half = radius * 0.85, radius, radius * 0.55
+
+    def piece(spans, skip=()):
         s, e = list(centre), list(centre)
-        i = "xyz".index(axis)
-        others = [k for k in range(3) if k != i]
-        s[i], e[i] = lo, hi
-        s[others[0]], e[others[0]] = centre[others[0]] - a, centre[others[0]] + a
-        s[others[1]], e[others[1]] = centre[others[1]] - b, centre[others[1]] + b
-        out.append(part([round(v, 3) for v in s], [round(v, 3) for v in e], cell, rotation=rotation))
+        for n, (a, b) in spans.items():
+            s[n], e[n] = a, b
+        faces = tuple(f for f in ALL if f not in skip)
+        return part([round(v, 3) for v in s], [round(v, 3) for v in e], cell, faces, rotation)
+
+    cj, ck = centre[j], centre[k]
+    out = [piece({i: (lo, hi), j: (cj - inner, cj + inner), k: (ck - inner, ck + inner)})]
+    for n, m, c, cm in ((j, k, cj, ck), (k, j, ck, cj)):
+        out.append(piece({i: (lo, hi), n: (c - outer, c - inner), m: (cm - half, cm + half)}, (sides[n][1],)))
+        out.append(piece({i: (lo, hi), n: (c + inner, c + outer), m: (cm - half, cm + half)}, (sides[n][0],)))
     return out
+
+
+def overlapping_faces(elements):
+    """Pairs of faces that lie in the same plane, face the same way and overlap: those flicker (z-fighting).
+    Elements are only compared with others turned the same way."""
+    planes = {"west": (0, 0, -1), "east": (0, 1, 1), "down": (1, 0, -1), "up": (1, 1, 1),
+              "north": (2, 0, -1), "south": (2, 1, 1)}
+    seen, bad = [], []
+    for n, el in enumerate(elements):
+        rot = json.dumps(el.get("rotation"), sort_keys=True)
+        for f in el["faces"]:
+            axis, end, sign = planes[f]
+            at = (el["from"], el["to"])[end][axis]
+            a, b = [x for x in range(3) if x != axis]
+            rect = (el["from"][a], el["to"][a], el["from"][b], el["to"][b])
+            for m, rot2, f2, at2, rect2 in seen:
+                if rot2 == rot and f2 == f and abs(at2 - at) < 1e-6 and m != n \
+                        and min(rect[1], rect2[1]) - max(rect[0], rect2[0]) > 1e-6 \
+                        and min(rect[3], rect2[3]) - max(rect[2], rect2[2]) > 1e-6:
+                    bad.append((m, n, f, at))
+            seen.append((n, rot, f, at, rect))
+    return bad
 
 
 # --- the bench itself --------------------------------------------------------------------------------------------
@@ -89,13 +120,13 @@ for x, z in LEGS:
 # --- on the shelf: a tackle box and two spare blanks ----------------------------------------------------------
 
 SHELF = [
-    part([3, 5, 4.5], [10, 8, 10.5], "box_red"),
+    part([3, 5, 4.5], [10, 7.6, 10.5], "box_red"),
     part([2.9, 7.6, 4.4], [10.1, 8.0, 10.6], "dark_wood"),          # the lid's rim
     part([6, 6.2, 4.2], [7, 7.6, 4.5], "brass"),                     # latch
     part([5, 8, 7.1], [5.5, 9, 7.9], "brass"), part([7.5, 8, 7.1], [8, 9, 7.9], "brass"),
     part([5, 9, 7.1], [8, 9.5, 7.9], "dark_wood"),                   # handle
-    part([1, 5, 11.1], [15, 5.6, 11.7], "blank_green"),
-    part([1.5, 5, 12.3 - 1.4], [14.5, 5.8, 12.3 - 0.6], "blank"),
+    part([1, 5, 11.3], [15, 5.6, 11.9], "blank_green"),
+    part([1.5, 5, 10.6], [14.5, 5.8, 11.3], "blank"),
 ]
 
 # --- on the top --------------------------------------------------------------------------------------------------
@@ -160,13 +191,13 @@ def vise():
         part([x0 + 0.4, TOP + 1.7, 2.0], [x1 - 0.4, TOP + 2.9, 2.3], "brass"),
         part([x0 + 0.4, TOP + 1.0, 2.0], [x0 + 1.0, TOP + 1.6, 4.5], "iron"),       # guide rails
         part([x1 - 1.0, TOP + 1.0, 2.0], [x1 - 0.4, TOP + 1.6, 4.5], "iron"),
-        part([13.35, TOP + 1.6, -1.0], [13.85, TOP + 2.1, 1.2], "iron"),              # screw
+        part([13.35, TOP + 1.6, -0.6], [13.85, TOP + 2.1, 1.2], "iron"),              # screw
         part([12.2, TOP + 1.65, -1.0], [15.0, TOP + 2.05, -0.6], "iron"),             # T handle
         part([11.7, TOP + 1.5, -1.15], [12.2, TOP + 2.2, -0.45], "dark_wood"),
         part([15.0, TOP + 1.5, -1.15], [15.5, TOP + 2.2, -0.45], "dark_wood"),
         # The clamp under the bench's front edge.
         block([13.0, 12.2, -0.6], [14.2, TOP + 0.8, 0], "alloy", ALL, {f: [6, 2, 7, 8] for f in ALL}),
-        block([13.0, 12.2, -0.6], [14.2, 12.8, 1.5], "alloy", ALL, {f: [6, 2, 7, 3] for f in ALL}),
+        block([13.0, 12.2, 0], [14.2, 12.8, 1.5], "alloy", ALL, {f: [6, 2, 7, 3] for f in ALL}),
         part([13.35, 12.8, 0.9], [13.85, 13.0, 1.4], "iron"),
         # The blank in the jaws, and its wrap.
         part([10.4, TOP + 2.0, 3.0], [16.8, TOP + 2.6, 3.6], "blank_green"),
@@ -178,9 +209,11 @@ def vise():
 def tin():
     """An open brass tin at the back right with two floats and three lead sinkers."""
     x0, z0, x1, z1, h = 11.3, 11.6, 15.6, 15.4, 1.4
-    out = [part([x0, TOP, z0], [x1, TOP + 0.3, z1], "brass"),
-           part([x0, TOP, z0], [x1, TOP + h, z0 + 0.3], "brass"), part([x0, TOP, z1 - 0.3], [x1, TOP + h, z1], "brass"),
-           part([x0, TOP, z0], [x0 + 0.3, TOP + h, z1], "brass"), part([x1 - 0.3, TOP, z0], [x1, TOP + h, z1], "brass")]
+    b = TOP + 0.3      # the walls stand on the bottom, and the side walls between the end walls
+    out = [part([x0, TOP, z0], [x1, b, z1], "brass"),
+           part([x0, b, z0], [x1, TOP + h, z0 + 0.3], "brass"), part([x0, b, z1 - 0.3], [x1, TOP + h, z1], "brass"),
+           part([x0, b, z0 + 0.3], [x0 + 0.3, TOP + h, z1 - 0.3], "brass"),
+           part([x1 - 0.3, b, z0 + 0.3], [x1, TOP + h, z1 - 0.3], "brass")]
     for z in (12.4, 13.8):
         out += [part([11.9, TOP + 0.3, z - 0.45], [13.4, TOP + 1.2, z + 0.45], "red"),
                 part([13.4, TOP + 0.4, z - 0.4], [14.4, TOP + 1.1, z + 0.4], "white"),
@@ -209,6 +242,8 @@ def main():
              "elements": BODY + SHELF + rod() + reel() + spool() + vise() + tin() + hooks(),
              # The rod tip reaches past the block; shrink the icon a little so it fits the slot.
              "display": {"gui": {"rotation": [30, 225, 0], "scale": [0.58, 0.58, 0.58]}}}
+    bad = overlapping_faces(model["elements"])
+    assert not bad, f"faces on top of each other (element, element, face, plane): {bad}"
     path = ASSETS / "models/block/tackle_bench.json"
     path.write_text(json.dumps(model, indent=1) + "\n")
     print(f"wrote {path.name}: {len(model['elements'])} elements")
