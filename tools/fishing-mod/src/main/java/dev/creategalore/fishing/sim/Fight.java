@@ -9,30 +9,33 @@ import java.util.random.RandomGenerator;
  * weight and species), a hidden stamina, and an intensity that follows its species' {@link Curve} over the
  * fight's progress. Every tick:
  * <ol>
- *   <li>The fish pulls: {@code peak pull x intensity x stamina factor}, boosted during runs, near zero while it
- *       swims toward the angler ("charges").</li>
- *   <li>If the pull is more than the drag, the drag slips: line goes out at the fish's speed and the tension is the
- *       drag. Otherwise reeling gains line (slower the closer the pull gets to what the crank can wind against)
- *       and the tension is the pull. While the fish charges, the line goes slack unless the angler keeps
- *       reeling (or moves off faster than it comes). With the spool empty there is no line left to give: the drag
- *       acts as locked.</li>
+ *   <li>The fish decides what it is doing ({@link Mood}): holding and pulling steadily with a slow sway as it works,
+ *       running (more pull and speed, sweeping off to one side), swimming at the angler ("charging"), shaking its
+ *       head (a quick throb on the line) or, once tired, sulking for a moment. Its effort follows what it is doing
+ *       over a few tenths of a second instead of jumping: there is no per-tick noise.</li>
+ *   <li>The line is a spring. The rod's bend and the line's stretch (a lot for mono and string, hardly any for braid)
+ *       hold how far the fish is beyond the line out, and that stretch over the rig's give is the tension. Less
+ *       than none is slack line. The fish swims by the balance of its pull and the tension (free with no load,
+ *       dragged back through the water once the tension is more); the reel winds what its crank can against the
+ *       tension; the drag lets line go once the tension reaches it. With the spool empty there is no line left to
+ *       give: the drag acts as locked. A fish swimming at the angler faster than the line is wound leaves slack.</li>
  *   <li>An angler moving away from the fish (walking, or a boat) tows it: the water's drag on the fish, from its size
- *       and the speed, adds to its pull. A small fish on a strong rig is towed along; a big one takes line through
- *       the drag.</li>
+ *       and the speed, is what the line has to pull. A small fish on a strong rig is towed along; a big one takes
+ *       line through the drag.</li>
  *   <li>Lifting the rod (pumping): the rod comes up at a speed set by the load, fast as a flick with a light fish
- *       and slow under a heavy one, and its tip drags the fish back by the rod's sweep, against the drag but not
- *       against the reel's crank. Lowering it again leaves that much line slack, which the reel winds back with no
- *       load on it; a slack line left too long can throw the hook. So a heavy fish the crank can't move is pumped
- *       in: lift, then wind down.</li>
+ *       and slow under a heavy one, and its tip draws line back by the rod's sweep, against the drag but not
+ *       against the reel's crank. Lowering it gives that line back as slack; winding while it comes down ("winding
+ *       down") takes it up as it comes, the crank turning with no load. So a heavy fish the crank can't move is
+ *       pumped in: lift, then wind down.</li>
  *   <li>Runs and jumps add sudden spikes. Line stretch, a smooth drag and a bent rod soak part of each spike; a
- *       rod pointed straight down the line soaks nothing. A working drag set below the line's test always lets
- *       line go before the line breaks, so the spike can't snap it.</li>
- *   <li>Failures: tension over the breaking load snaps the line (only possible with the drag at or above the
- *       line's test, on a pole with no drag, or with the spool empty), a toothy fish chews non-steel line, fraying it
- *       a little all fight and more on each run or jump, in proportion to how big it is for the line (one far too
- *       big can bite straight through), overloading the rod can crack it, a slack line (the fish not pulling and
- *       the angler not winding) or a jump on a loose line can throw the hook, and a rod, reel or line worn through
- *       mid-fight breaks there and then.</li>
+ *       rod pointed straight down the line soaks nothing. A working drag set at or below the line's test always
+ *       lets line go before the line breaks, so the spike can't snap it.</li>
+ *   <li>Failures: tension over the breaking load snaps the line (only possible with the drag over the line's test,
+ *       on a pole with no drag, or with the spool empty), a toothy fish chews line without an iron or steel leader,
+ *       fraying it a little all fight and more on each run or jump, in proportion to how big it is for the line
+ *       (one far too big can bite straight through), overloading the rod can crack it, a slack line (the fish not
+ *       pulling and the angler not winding) or a jump on a loose line can throw the hook, and a rod, reel or line
+ *       worn through mid-fight breaks there and then.</li>
  *   <li>The fish tires in proportion to the tension it works against (so a drag set too light never tires it)
  *       and faster under side pressure; it recovers a little while the line is slack.</li>
  * </ol>
@@ -71,6 +74,22 @@ public final class Fight {
     public static final double TEETH_FRAY_PER_LUNGE = 0.05;
     /** Oversize (peak pull over line test) from which one lunge may bite straight through. */
     public static final double TEETH_CLEAN_BITE = 3;
+    /** Line give, metres per kgf, per metre out and unit of stretch, at 1 kg test. */
+    public static final double LINE_GIVE = 0.12;
+    /** How fast the fish's effort follows what it is doing, seconds; and into a run. */
+    public static final double EFFORT_TAU = 0.3;
+    public static final double EFFORT_TAU_RUN = 0.12;
+    /** The slow sway of a holding fish's pull (period 3-6 s) and the quicker one on top (1.3-2.2 s), as fractions. */
+    public static final double SWAY_SLOW = 0.10;
+    public static final double SWAY_FAST = 0.05;
+    /** Head shakes: bouts per second at full intensity, and how deep the throb is. */
+    public static final double SHAKE_RATE = 0.12;
+    public static final double SHAKE_DEPTH = 0.22;
+    /** A tired fish sulking: bouts per second once its stamina is under 45%, and its pull meanwhile. */
+    public static final double REST_RATE = 0.15;
+    public static final double REST_PULL = 0.7;
+    /** Most a holding fish turns round the angler, radians per tick. */
+    public static final double HOLD_TURN = 0.012;
 
     private final FishFight fish;
     private final Tackle tackle;
@@ -79,16 +98,36 @@ public final class Fight {
     private final double endurance;
     private final double startDistance;
 
-    private double distance;
+    /** Line off the spool, metres. */
+    private double lineOut;
+    /**
+     * How far the fish is beyond the line out, metres: the line's stretch and the rod's bend, which hold the tension.
+     * Below zero the line is slack by that much.
+     */
+    private double stretch;
     private double stamina = 1;
     private double pull;
     private double tension;
     private double peakTension;
     private boolean slipping;
     private boolean stalled;
-    private double runLeft;
-    private double chargeLeft;
-    private double jitter;
+    private Mood mood = Mood.HOLD;
+    private double moodLeft;
+    private double moodTime;
+    private double holdFor;
+    private double holdTurn;
+    /** Which way the fish is swimming round the angler, radians per tick (for the game to move it). */
+    private double turn;
+    private double shakeHz;
+    /** How fast this charge comes in, a share of the fish's speed. */
+    private double chargePace;
+    /** The fish's effort, following what it is doing over a few tenths of a second. */
+    private double effort;
+    private double swayPeriod1;
+    private double swayPeriod2;
+    private double swayPhase1;
+    private double swayPhase2;
+    private double slackFor;
     private int slackTicks;
     private int ticks;
     private Outcome outcome = Outcome.FIGHTING;
@@ -106,8 +145,6 @@ public final class Fight {
     private double lineLife = Double.POSITIVE_INFINITY;
     /** Rod height, 0 lowered to 1 fully lifted. */
     private double rodHeight;
-    /** Line given back by lowering the rod and not yet wound in or taken by the fish, metres. */
-    private double slack;
     /** Fraying from a toothy fish's teeth this fight (on top of the line's ordinary wear). */
     private double teethFray;
     /** Why the fight was lost, once it is. */
@@ -128,7 +165,21 @@ public final class Fight {
         this.maxPull = fish.maxPull(weightKg);
         this.endurance = fish.enduranceSeconds(weightKg);
         this.startDistance = Math.max(LAND_DISTANCE + 1, startDistance);
-        this.distance = this.startDistance;
+        this.lineOut = this.startDistance;
+    }
+
+    /** What the fish is doing. */
+    public enum Mood {
+        /** Pulling steadily, swaying as it works and drifting round on a slow arc. */
+        HOLD,
+        /** A run: a burst of extra pull and speed, sweeping off to one side. */
+        RUN,
+        /** Swimming at the angler: the line goes slack unless it is wound in as fast. */
+        CHARGE,
+        /** Head shakes: a quick throb on the line. */
+        SHAKE,
+        /** Tired, it sulks for a moment and pulls less. */
+        REST
     }
 
     /**
@@ -166,113 +217,142 @@ public final class Fight {
         double intensity = fish.profile().at(progress);
         double staminaFactor = 0.25 + 0.75 * stamina;
         double breakLoad = tackle.breakingLoad();
+        if (ticks == 1) {
+            swayPeriod1 = 3 + 3 * rng.nextDouble();
+            swayPeriod2 = 1.3 + 0.9 * rng.nextDouble();
+            swayPhase1 = 2 * Math.PI * rng.nextDouble();
+            swayPhase2 = 2 * Math.PI * rng.nextDouble();
+            holdTurn = (rng.nextDouble() * 2 - 1) * HOLD_TURN;
+        }
 
-        // Behaviour: runs, charges toward the angler, jumps and head shakes near the end.
-        if (runLeft > 0) {
-            runLeft -= DT;
-        } else if (chargeLeft <= 0 && rng.nextDouble() < fish.runs() * intensity * stamina * DT) {
-            runLeft = 1.5 + 2.5 * rng.nextDouble();
-            runStarted = true;
+        // Behaviour: what the fish is doing for the next second or few.
+        moodLeft -= DT;
+        moodTime += DT;
+        if (mood != Mood.HOLD && moodLeft <= 0) hold(rng);
+        if (mood == Mood.HOLD && moodTime > holdFor) hold(rng);
+        if (mood != Mood.RUN && mood != Mood.CHARGE && rng.nextDouble() < fish.runs() * intensity * stamina * DT) {
+            startRun(1.5 + 2.5 * rng.nextDouble(), rng);
+        } else if (mood == Mood.HOLD && rng.nextDouble() < fish.charges() * (0.5 + stamina) * DT) {
+            setMood(Mood.CHARGE, 0.8 + 1.7 * rng.nextDouble());
+            // Some come in lazily, some dash.
+            chargePace = 0.3 + 0.5 * rng.nextDouble();
+            turn = 0;
+        } else if (mood == Mood.HOLD && rng.nextDouble() < SHAKE_RATE * (0.4 + stamina) * intensity * DT) {
+            setMood(Mood.SHAKE, 0.6 + 0.8 * rng.nextDouble());
+            shakeHz = 2.5 + rng.nextDouble();
+            turn = 0;
+        } else if (mood == Mood.HOLD && stamina < 0.45 && rng.nextDouble() < REST_RATE * DT) {
+            setMood(Mood.REST, 1.5 + 1.5 * rng.nextDouble());
+            turn = 0.3 * holdTurn;
         }
-        if (chargeLeft > 0) {
-            chargeLeft -= DT;
-        } else if (runLeft <= 0 && rng.nextDouble() < fish.charges() * (0.5 + stamina) * DT) {
-            chargeLeft = 0.8 + 1.7 * rng.nextDouble();
-        }
-        boolean charging = chargeLeft > 0;
-        double distanceBefore = distance;
+        boolean charging = mood == Mood.CHARGE;
         double spike = 0;
-        if ((progress > 0.66 || distance < 8) && rng.nextDouble() < fish.jumps() * (0.3 + 0.7 * stamina) * DT) {
+        if ((progress > 0.66 || distance() < 8) && rng.nextDouble() < fish.jumps() * (0.3 + 0.7 * stamina) * DT) {
             jumped = true;
             spike += maxPull * (0.6 + 0.6 * rng.nextDouble()) * staminaFactor;
         }
         if (runStarted) spike += maxPull * 0.5 * staminaFactor;
 
-        jitter = 0.85 * jitter + 0.15 * rng.nextGaussian() * 0.25;
-        double boost = runLeft > 0 ? 1.5 : 1;
-        pull = charging ? maxPull * 0.05 : Math.max(0, maxPull * intensity * staminaFactor * boost * (1 + jitter));
-        double fishSpeed = fish.speed() * (0.4 + 0.6 * intensity) * (runLeft > 0 ? 1.8 : 1) * (0.3 + 0.7 * stamina);
+        // The pull: the species' intensity, how tired it is and what it is doing, with a slow sway as it works its
+        // tail and changes angle. Muscles don't step: the effort follows its target over a few tenths of a second,
+        // faster into a run. Head shakes ride on top as a quick throb the line passes on.
+        double seconds = ticks * DT;
+        double sway = 1 + SWAY_SLOW * Math.sin(2 * Math.PI * seconds / swayPeriod1 + swayPhase1)
+                + SWAY_FAST * Math.sin(2 * Math.PI * seconds / swayPeriod2 + swayPhase2);
+        double base = maxPull * intensity * staminaFactor;
+        double target = switch (mood) {
+            case RUN -> base * 1.5 * sway;
+            case CHARGE -> 0;
+            case REST -> base * REST_PULL;
+            default -> base * sway;
+        };
+        if (ticks == 1) effort = target;
+        double tau = mood == Mood.RUN && moodTime < 0.5 ? EFFORT_TAU_RUN : EFFORT_TAU;
+        effort += (target - effort) * Math.min(1, DT / tau);
+        double shake = mood == Mood.SHAKE ? SHAKE_DEPTH * Math.sin(2 * Math.PI * shakeHz * moodTime) : 0;
+        pull = Math.max(0, effort * (1 + shake));
+        double swim = fish.speed() * (0.4 + 0.6 * intensity) * (mood == Mood.RUN ? 1.8 : 1) * (0.3 + 0.7 * stamina) * 0.8;
+        double chargeSpeed = fish.speed() * chargePace;
+        double towDrag = TOW_DRAG * Math.pow(weight, 2.0 / 3);
 
         // Drag, reel and line. An empty spool has nothing left to give: the drag is as good as locked.
-        spooled = tackle.hasReel() && distance >= tackle.lineCapacity();
+        spooled = tackle.hasReel() && lineOut >= tackle.lineCapacity() - 1e-9;
         double drag = tackle.hasReel() && !spooled ? clamp(in.drag, 0.05, tackle.reelMaxDrag()) : Double.POSITIVE_INFINITY;
         double crank = in.crankLimit(tackle);
         double retrieve = tackle.reelRetrieve() * in.retrieveScale;
         double recede = Math.max(0, in.recede);
-        // Towing the fish through the water as the angler moves off: drag from its size and the speed.
-        double load = charging ? pull : pull + TOW_DRAG * Math.pow(weight, 2.0 / 3) * recede * recede;
 
-        // The rod: lifting draws the fish back by the tip's travel (once any slack is taken up), lowering gives slack.
-        // Winding while the rod comes down: it comes down as fast as the reel takes up the line ("winding down"), so
-        // the line stays tight and the crank turns with no load.
-        double drawn = 0;
+        // The rod: lifting draws line back by the tip's travel, lowering gives it. Winding while the rod comes down:
+        // it comes down as fast as the reel takes up the line ("winding down"): the angler's arms hold the fish while
+        // the crank turns with no load, and the line stays as it was.
+        double rodIn = 0;
         boolean windingDown = false;
         if (in.liftSweep > 0) {
             double before = rodHeight;
             windingDown = !in.lifting && in.reeling && rodHeight > 0;
             double lower = windingDown ? Math.min(LOWER_RATE, retrieve / in.liftSweep) : LOWER_RATE;
-            rodHeight = in.lifting ? Math.min(1, rodHeight + liftRate(load / tackle.rodMaxLoad()) * DT)
+            rodHeight = in.lifting ? Math.min(1, rodHeight + liftRate(tension / tackle.rodMaxLoad()) * DT)
                     : Math.max(0, rodHeight - lower * DT);
-            double travel = (rodHeight - before) * in.liftSweep;
-            if (travel < 0) {
-                slack -= travel;
-            } else {
-                double taken = Math.min(slack, travel);
-                slack -= taken;
-                drawn = travel - taken;
-            }
-            if (windingDown) slack = Math.max(0, slack - retrieve * DT);
+            rodIn = (rodHeight - before) * in.liftSweep;
         }
-        if (drawn > 0 && !charging) {
-            // Dragging the fish through the water at the tip's speed.
-            double speed = drawn / DT;
-            load += TOW_DRAG * Math.pow(weight, 2.0 / 3) * speed * speed;
-        }
-        boolean loose = slack > SLACK_TIGHT;
-        slipping = !charging && !loose && load > drag;
-        stalled = false;
-        if (loose && !charging) {
-            // Slack from a lowered rod: the reel winds it back unloaded, and the fish swims off with the rest.
-            double swim = Math.min(slack, fishSpeed * 0.8 * DT);
-            slack -= swim;
-            distance += swim;
-            if (in.reeling && !windingDown) slack = Math.max(0, slack - retrieve * DT);
+
+        // The line is a spring: the rod's bend and the line's stretch (mono a lot, braid hardly) store how far the
+        // fish is beyond the line out, and the tension is that stretch over the rig's give. A stretch below zero is
+        // slack. Each tick the fish swims by the balance of its pull against the tension (free with no load, slower
+        // as the tension nears its pull, dragged back through the water once the tension is more), the reel winds
+        // what its crank can against the tension, the rod and an angler moving off add their bit, and the drag lets
+        // line go once the tension reaches it. The tension that satisfies all of that at once is found by bisection,
+        // so a stiff braid on a short line is as steady as a long stretchy mono.
+        double give = give();
+        double before = stretch;
+        double cap = drag;
+        double fishPull = pull;
+        boolean reeling = in.reeling;
+        double drawn = rodIn;
+        boolean unloaded = windingDown;
+        java.util.function.DoubleUnaryOperator next = t -> before + drawn
+                + DT * (fishVelocity(t, fishPull, swim, charging, chargeSpeed, towDrag) + recede
+                + (reeling ? unloaded ? retrieve : retrieve * Math.max(0, 1 - t / crank) : 0));
+        double free = next.applyAsDouble(0);
+        double out = 0;
+        if (free <= 0) {
             tension = 0;
-        } else if (charging) {
-            // Swimming at the angler. One who walks or sails off faster than that just tows it: the line is never
-            // slack enough to come off the spool, so the gap can only close.
-            distance -= Math.max(0, fish.speed() * 0.6 - recede) * DT;
-            if (in.reeling) {
-                distance -= retrieve * DT;
-                tension = maxPull * 0.08;
-            } else {
-                // Moving off faster than it comes keeps the line tight, as reeling does.
-                tension = recede > fish.speed() * 0.6 ? maxPull * 0.08 : 0;
-            }
-        } else if (slipping) {
-            distance += (fishSpeed * 0.8 + recede) * (1 - drag / load) * DT;
-            tension = drag;
-        } else if (drawn > 0) {
-            // The lift brings the fish in; cranking at the same time adds what the reel can wind on top.
-            distance -= drawn;
-            if (in.reeling && load < crank) distance -= retrieve * (1 - load / crank) * DT;
-            stalled = in.reeling && load >= crank;
-            tension = in.reeling ? Math.min(load * 1.1, drag) : load;
-        } else if (in.reeling && !windingDown) {
-            if (load >= crank) {
-                stalled = true;
-                tension = load;
-            } else {
-                distance -= retrieve * (1 - load / crank) * DT;
-                // Winding adds a little to the pull, but never past the drag: the drag slips first.
-                tension = Math.min(load * 1.1, drag);
-            }
+            stretch = free;
         } else {
-            tension = load;
+            double hi = cap;
+            if (Double.isInfinite(hi)) {
+                hi = Math.max(1, 2 * maxPull);
+                while (hi < next.applyAsDouble(hi) / give) hi *= 2;
+            }
+            if (next.applyAsDouble(hi) / give >= hi) {
+                // At the drag: it slips, and what the fish gains goes out as line.
+                tension = hi;
+                stretch = hi * give;
+                out = next.applyAsDouble(hi) - stretch;
+            } else {
+                double lo = 0;
+                for (int i = 0; i < 40 && hi - lo > 1e-5 * (1 + hi); i++) {
+                    double mid = 0.5 * (lo + hi);
+                    if (next.applyAsDouble(mid) / give > mid) lo = mid;
+                    else hi = mid;
+                }
+                tension = 0.5 * (lo + hi);
+                stretch = tension * give;
+            }
         }
-        distance = Math.max(LAND_DISTANCE, distance);
-        if (tackle.hasReel()) distance = Math.min(distance, tackle.lineCapacity());
-        takingLine = distance > distanceBefore + 1e-9;
+        double wound = !reeling ? 0 : windingDown ? retrieve * DT : retrieve * Math.max(0, 1 - tension / crank) * DT;
+        double lineBefore = lineOut;
+        lineOut += out - wound - rodIn;
+        if (tackle.hasReel()) lineOut = Math.min(lineOut, tackle.lineCapacity());
+        lineOut = Math.max(lineOut, LAND_DISTANCE - stretch);
+        slipping = out > 1e-9 && Double.isFinite(cap);
+        stalled = reeling && !windingDown && tension >= crank;
+        takingLine = lineOut > lineBefore + 1e-9;
+        if (stretch < -SLACK_TIGHT) {
+            slackFor += DT;
+        } else {
+            slackFor = 0;
+        }
 
         // Cranking while the fish takes line (or against it on an empty spool, which is the reel's full drag): the
         // gears grind (Fishing Planet's "reel overload"). Once the fish starts taking line the angler has half a
@@ -378,15 +458,56 @@ public final class Fight {
         stamina = clamp(stamina, 0, 1);
         lineWear += DT * 0.02 * tension / breakLoad;
 
-        if (distance <= LAND_DISTANCE) {
+        if (distance() <= LAND_DISTANCE + 1e-9) {
             if (stamina < 0.35 || weight < 0.4) {
                 outcome = Outcome.LANDED;
-            } else if (runLeft <= 0) {
+            } else if (mood != Mood.RUN) {
                 // Still fresh at the angler's feet: it bolts again.
-                runLeft = 1.5;
-                runStarted = true;
+                startRun(1.5, rng);
             }
         }
+    }
+
+
+    /**
+     * How fast the fish moves away from the angler through the water at a line tension of {@code t}, in m/s: as fast
+     * as it swims with no load, slower as the tension nears its pull, and dragged back once the tension is more (the
+     * water's drag on it sets how fast). A fish swimming at the angler comes in on its own, faster if the line pulls.
+     */
+    private static double fishVelocity(double t, double pull, double swim, boolean charging, double chargeSpeed, double towDrag) {
+        if (charging) return -chargeSpeed - Math.sqrt(t / towDrag);
+        if (t < pull) return swim * (1 - t / pull);
+        return -Math.sqrt((t - pull) / towDrag);
+    }
+
+    /**
+     * The rig's give, in metres of stretch per kgf: the line's (by its stretch, how much is out and its test) plus the
+     * rod's bend (a soft rod gives more, a stout one less).
+     */
+    private double give() {
+        double line = LINE_GIVE * tackle.lineStretch() * Math.max(1, lineOut) / Math.max(0.1, tackle.lineTest());
+        double rod = (0.4 + 0.6 * tackle.rodAbsorb()) / Math.max(0.1, tackle.rodMaxLoad());
+        return Math.max(0.002, line + rod);
+    }
+
+    private void setMood(Mood next, double seconds) {
+        mood = next;
+        moodLeft = seconds;
+        moodTime = 0;
+    }
+
+    /** Back to holding: steady pulling, drifting round on a slow arc that it changes every few seconds. */
+    private void hold(RandomGenerator rng) {
+        setMood(Mood.HOLD, 0);
+        holdFor = 3 + 4 * rng.nextDouble();
+        holdTurn = (rng.nextDouble() * 2 - 1) * HOLD_TURN;
+        turn = holdTurn;
+    }
+
+    private void startRun(double seconds, RandomGenerator rng) {
+        setMood(Mood.RUN, seconds);
+        runStarted = true;
+        turn = (rng.nextBoolean() ? 1 : -1) * (0.03 + 0.04 * rng.nextDouble());
     }
 
     /** How much of the rod's shock-soaking works at this angle to the line: none straight down it, full at 30-100°. */
@@ -409,7 +530,7 @@ public final class Fight {
 
     /** 0 at the hook-set, 1 at the angler. */
     public double progress() {
-        return clamp(1 - (distance - LAND_DISTANCE) / (startDistance - LAND_DISTANCE), 0, 1);
+        return clamp(1 - (distance() - LAND_DISTANCE) / (startDistance - LAND_DISTANCE), 0, 1);
     }
 
     public Outcome outcome() {
@@ -453,8 +574,33 @@ public final class Fight {
         return load;
     }
 
+    /** Where the fish is: the line out plus its stretch (less when the line is slack). */
     public double distance() {
-        return distance;
+        return lineOut + stretch;
+    }
+
+    /** Line off the spool, metres. */
+    public double lineOut() {
+        return lineOut;
+    }
+
+    public Mood mood() {
+        return mood;
+    }
+
+    /** Which way the fish swims round the angler, radians per tick. */
+    public double turn() {
+        return turn;
+    }
+
+    /** The fish is swimming at the angler and the line has gone slack: wind faster. */
+    public boolean comingAtYou() {
+        return mood == Mood.CHARGE && stretch < -SLACK_TIGHT;
+    }
+
+    /** How long the line has been slack, seconds. */
+    public double slackSeconds() {
+        return slackFor;
     }
 
     /** Rod height, 0 lowered to 1 fully lifted. */
@@ -462,9 +608,9 @@ public final class Fight {
         return rodHeight;
     }
 
-    /** Metres of slack line from lowering the rod, not yet wound in. */
+    /** Metres of slack line: the fish closer than the line out (it swam in, or the rod was let down). */
     public double slack() {
-        return slack;
+        return Math.max(0, -stretch);
     }
 
     public double startDistance() {
@@ -514,7 +660,7 @@ public final class Fight {
     }
 
     public boolean charging() {
-        return chargeLeft > 0;
+        return mood == Mood.CHARGE;
     }
 
     public boolean jumped() {
@@ -526,7 +672,7 @@ public final class Fight {
     }
 
     public boolean running() {
-        return runLeft > 0;
+        return mood == Mood.RUN;
     }
 
     /** Hidden from players; for tests and drives. */

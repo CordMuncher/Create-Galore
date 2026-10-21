@@ -126,7 +126,7 @@ class MountRenderer<T extends BlockEntity & RodMount> implements BlockEntityRend
         float depth = 0;
         if (hook != null) {
             float load = switch (hook.phase()) {
-                case FIGHTING -> hook.rodLoad();
+                case FIGHTING -> hook.shownRodLoad();
                 case BITE -> 0.12f + 0.1f * Mth.sin(hook.tickCount * 1.7f);
                 case WAITING -> 0.02f;
                 default -> 0;

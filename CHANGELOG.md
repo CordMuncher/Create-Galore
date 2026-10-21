@@ -4,6 +4,13 @@ Each pack version gets a section here, with **Added**, **Fixed** and **Removed**
 workflow copies the section for the version in `pack/pack.toml` to the top of the GitHub release, and the build
 fails when that section is missing.
 
+## 0.4.19
+
+### Fixed
+- **Fighting a fish feels like a fish, not a machine.** The tension no longer jitters tick to tick and no longer drops to nothing the moment a fish turns. A hooked fish now holds and sways as it works, drifts round you, runs off to one side, shakes its head (the line throbs), swims at you, and sulks for a moment when tired (pull in line then). The line stretches and the rod bends, so the tension builds and eases smoothly: string and mono give a lot, braid hardly any.
+- **Slack line shows.** A fish swimming at you faster than you wind, or a rod let down, leaves slack: the line hangs in a curve and the HUD says "Swimming at you! Reel in the slack". The stress bars and the rod bend ease instead of flickering.
+- Create Galore Fishing 0.3.10.
+
 ## 0.4.18
 
 ### Added

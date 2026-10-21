@@ -1,6 +1,7 @@
 package dev.creategalore.fishing.client;
 import dev.creategalore.fishing.CreateGaloreFishing;
 import dev.creategalore.fishing.cast.CastHook;
+import dev.creategalore.fishing.sim.Fight;
 import dev.creategalore.fishing.tackle.RodStats;
 import java.util.Locale;
 import net.minecraft.client.DeltaTracker;
@@ -18,9 +19,11 @@ import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 /**
  * The fishing HUD while a line is out. During a fight, three upright stress bars at the right of the screen show how
  * hard the line (against its test, with a tick where the drag slips), the reel (against its drag and crank) and the
- * rod (against its rating) are working: green, yellow, red near breaking, the line blue while slack. Beside the rod's
+ * rod (against its rating) are working: green, yellow, red near breaking, the line blue while slack. The bars ease a
+ * little (quick up, slower down) so they read as strain, not flicker. Beside the rod's
  * bar a thin bar shows how high it is lifted. Above the hotbar: the drag setting, line out and left on the spool, and
- * alerts for a bite, a slipping drag, a stalled reel, a slack line and a run.
+ * alerts for a bite, a slipping drag, a stalled reel, a slack line, a fish swimming in, a run, head shakes and a sulking
+ * fish.
  */
 public final class FishingHud {
     private static final int TEXT_W = 220;
@@ -53,24 +56,28 @@ public final class FishingHud {
         float left = stats != null ? stats.lineMeters() : hook.lineLeft();
 
         if (hook.phase() == CastHook.Phase.FIGHTING) {
-            boolean slack = hook.flag(CastHook.FLAG_SLACK);
+            boolean coming = hook.flag(CastHook.FLAG_COMING);
+            boolean slack = hook.flag(CastHook.FLAG_SLACK) || hook.slack() > 0.1f;
             int x0 = cx - TEXT_W / 2;
             // Line, reel and rod, right of the crosshair's half of the screen, centred on it vertically.
             int right = g.guiWidth() - 16;
             int barsX = right - 2 * BAR_GAP - BAR_W;
             int top = g.guiHeight() / 2 - BAR_H / 2;
             float dragAt = hook.breakingLoad() > 0 ? hook.drag() / hook.breakingLoad() : 0;
-            stressBar(g, font, barsX, top, P + "bar.line", hook.tension(), slack, dragAt);
-            float reel = hook.reelLoad();
+            stressBar(g, font, barsX, top, P + "bar.line", hook.shownTension(), slack, dragAt);
+            float reel = hook.shownReelLoad();
             if (reel >= 0) stressBar(g, font, barsX + BAR_GAP, top, P + "bar.reel", reel, false, 0);
             int rodX = barsX + 2 * BAR_GAP;
-            stressBar(g, font, rodX, top, P + "bar.rod", hook.rodLoad(), false, 0);
+            stressBar(g, font, rodX, top, P + "bar.rod", hook.shownRodLoad(), false, 0);
             // How high the rod is lifted: a thin bar just right of the rod's.
             int h = Math.round(BAR_H * Mth.clamp(hook.rodHeight(), 0, 1));
             g.fill(rodX + BAR_W + 2, top - 1, rodX + BAR_W + 5, top + BAR_H + 1, 0xC0000000);
             if (h > 0) g.fill(rodX + BAR_W + 3, top + BAR_H - h, rodX + BAR_W + 4, top + BAR_H, 0xFFDDDDDD);
+            // What the fish is doing, when it matters: coming in faster than the line is wound, shaking its head,
+            // sulking (a moment to gain line).
             String status = hook.flag(CastHook.FLAG_STALLED) ? "stalled" : hook.flag(CastHook.FLAG_SLIPPING) ? "slipping"
-                    : slack ? "slack" : hook.flag(CastHook.FLAG_RUNNING) ? "run" : "";
+                    : coming ? "coming" : slack ? "slack" : hook.flag(CastHook.FLAG_RUNNING) ? "run"
+                    : hook.mood() == Fight.Mood.SHAKE ? "shaking" : hook.mood() == Fight.Mood.REST ? "sulking" : "";
             if (!status.isEmpty()) {
                 Component text = Component.translatable(P + status);
                 g.drawString(font, text, cx - font.width(text) / 2, y - 11, statusColor(status), true);
@@ -117,7 +124,8 @@ public final class FishingHud {
         return switch (status) {
             case "stalled" -> 0xFFFF6060;
             case "slipping" -> 0xFFFFD040;
-            case "slack" -> 0xFF80B0FF;
+            case "slack", "coming" -> 0xFF80B0FF;
+            case "sulking" -> 0xFFA0E0A0;
             default -> 0xFFFFFFFF;
         };
     }
