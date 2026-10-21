@@ -4,6 +4,12 @@ Each pack version gets a section here, with **Added**, **Fixed** and **Removed**
 workflow copies the section for the version in `pack/pack.toml` to the top of the GitHub release, and the build
 fails when that section is missing.
 
+## 0.4.4
+
+### Fixed
+- **Asking the book to change a model it built no longer fails.** After an answer where the book had tried out a build first, the next question on that page was refused with an error. Pages that already hit the error work again.
+- Create Galore Bridge 1.35.0.
+
 ## 0.4.3
 
 ### Added

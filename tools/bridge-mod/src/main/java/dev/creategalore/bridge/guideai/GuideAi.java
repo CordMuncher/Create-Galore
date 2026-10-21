@@ -346,6 +346,7 @@ public final class GuideAi {
 
         // The API sees the conversation so far plus this question; the page only keeps it once it has an answer.
         JsonArray messages = page.messages.deepCopy();
+        unbindThinking(messages);
         JsonObject user = new JsonObject();
         user.addProperty("role", "user");
         user.addProperty("content", player.getGameProfile().getName() + " asks: " + question);
@@ -650,9 +651,13 @@ public final class GuideAi {
         }
     }
 
+    private static final String PICTURE_NOTE = "(The draft's picture was here.)";
+
     /**
      * Draft pictures only help while the book works on that answer; the page keeps a note in their place so later
-     * questions don't send them again.
+     * questions don't send them again. The API binds each thinking block to everything before it, so the thinking
+     * written after a picture no longer matches once the picture is gone, and the next question on the page would be
+     * refused; those thinking blocks go too (earlier turns' thinking is optional).
      */
     private static void dropPictures(JsonArray messages) {
         for (JsonElement m : messages) {
@@ -666,7 +671,7 @@ public final class GuideAi {
                     if (part.isJsonObject() && GuideText.string(part.getAsJsonObject(), "type").equals("image")) {
                         JsonObject note = new JsonObject();
                         note.addProperty("type", "text");
-                        note.addProperty("text", "(The draft's picture was here.)");
+                        note.addProperty("text", PICTURE_NOTE);
                         kept.add(note);
                     } else {
                         kept.add(part);
@@ -674,6 +679,28 @@ public final class GuideAi {
                 }
                 block.getAsJsonObject().add("content", kept);
             }
+        }
+        unbindThinking(messages);
+    }
+
+    /**
+     * Takes the thinking out of the page's earlier turns once a picture note is in them: the API binds a thinking block
+     * to the whole conversation around it (its error names blocks on both sides of the note), so none can be trusted
+     * to match. Thinking from earlier turns is optional. Also run on each new question, which mends pages saved
+     * before this was done.
+     */
+    static void unbindThinking(JsonArray messages) {
+        if (!messages.toString().contains(PICTURE_NOTE)) return;
+        for (JsonElement m : messages) {
+            if (!m.isJsonObject()) continue;
+            JsonObject o = m.getAsJsonObject();
+            if (!GuideText.string(o, "role").equals("assistant") || !o.has("content") || !o.get("content").isJsonArray()) continue;
+            JsonArray kept = new JsonArray();
+            for (JsonElement block : o.getAsJsonArray("content")) {
+                String type = block.isJsonObject() ? GuideText.string(block.getAsJsonObject(), "type") : "";
+                if (!type.equals("thinking") && !type.equals("redacted_thinking")) kept.add(block);
+            }
+            o.add("content", kept);
         }
     }
 
