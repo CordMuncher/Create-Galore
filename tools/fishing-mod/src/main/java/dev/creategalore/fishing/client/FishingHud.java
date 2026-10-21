@@ -82,7 +82,9 @@ public final class FishingHud {
                     : Component.translatable(P + "drag.none");
             g.drawString(font, drag, x0, y + 8, over ? 0xFFFF5050 : 0xFFDDDDDD, true);
             Component line = Component.translatable(P + "line", Math.round(out), Math.round(left));
-            g.drawString(font, line, x0 + TEXT_W - font.width(line), y + 8, 0xFFDDDDDD, true);
+            // Side by side when both fit, else the line count goes on the row below.
+            boolean fits = font.width(drag) + font.width(line) + 8 <= TEXT_W;
+            g.drawString(font, line, x0 + TEXT_W - font.width(line), fits ? y + 8 : y + 19, 0xFFDDDDDD, true);
         } else {
             Component line = Component.translatable(P + "line", Math.round(out), Math.round(left));
             g.drawString(font, line, cx - font.width(line) / 2, y + 8, 0xFFBBBBBB, true);
