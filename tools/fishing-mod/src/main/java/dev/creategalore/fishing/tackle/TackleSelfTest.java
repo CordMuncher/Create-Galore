@@ -1,12 +1,19 @@
 package dev.creategalore.fishing.tackle;
 
 import dev.creategalore.fishing.FishingRegistry;
+import dev.creategalore.fishing.cast.TackleWear;
 import dev.creategalore.fishing.selftest.SelfTest;
+import dev.creategalore.fishing.sim.Fight;
+import dev.creategalore.fishing.sim.FishFight;
+import dev.creategalore.fishing.sim.Outcome;
 import io.netty.buffer.Unpooled;
 import java.util.Locale;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
@@ -59,6 +66,31 @@ public final class TackleSelfTest {
             r.check(RodStats.of(weak).orElseThrow().warnings().isEmpty(), "string line at the default drag has no warning");
             weak.set(FishingRegistry.DRAG_STEP.get(), 10);
             r.check(!RodStats.of(weak).orElseThrow().warnings().isEmpty(), "drag over the line test gives a warning");
+
+            // Every part wears a little each fight, even a gentle landed one, and wears out in the end.
+            ArmorStand angler = EntityType.ARMOR_STAND.create(server.overworld());
+            ItemStack used = rig(FishingRegistry.IRON_ROD.get(), FishingRegistry.IRON_REEL.get(),
+                    FishingRegistry.MONO_LINE.get(), FishingRegistry.MEDIUM_HOOK.get(), FishingRegistry.FLOAT.get());
+            RodItem.setParts(used, RodItem.parts(used).with(RodParts.Slot.LEADER, new ItemStack(FishingRegistry.CLEAR_LEADER.get())));
+            Fight gentle = new Fight(FishFight.AVERAGE, RodStats.of(used).orElseThrow().tackle(1), 1, 5);
+            TackleWear.apply(angler, EquipmentSlot.MAINHAND, used, gentle, Outcome.LANDED);
+            RodParts after = RodItem.parts(used);
+            r.check(used.getDamageValue() == 1 && after.reel().getDamageValue() == 1,
+                    "a gentle fight costs the rod " + used.getDamageValue() + " and the reel " + after.reel().getDamageValue() + " (want 1 each)");
+            r.check(Math.abs(after.line().getOrDefault(FishingRegistry.LINE_WEAR.get(), 0f) - TackleWear.LINE_WEAR_PER_FIGHT) < 1e-6,
+                    "a gentle fight frays the line " + after.line().get(FishingRegistry.LINE_WEAR.get()));
+            for (RodParts.Slot slot : new RodParts.Slot[]{RodParts.Slot.LEADER, RodParts.Slot.HOOK, RodParts.Slot.TERMINAL}) {
+                r.check(after.get(slot).getOrDefault(FishingRegistry.PART_WEAR.get(), 0f) == TackleWear.PART_WEAR_PER_FIGHT,
+                        "a gentle fight wears the " + slot + " " + after.get(slot).get(FishingRegistry.PART_WEAR.get()));
+            }
+            ItemStack nearlyHook = after.hook(), nearlyLine = after.line();
+            nearlyHook.set(FishingRegistry.PART_WEAR.get(), 0.996f);
+            nearlyLine.set(FishingRegistry.LINE_WEAR.get(), 0.995f);
+            RodItem.setParts(used, after.with(RodParts.Slot.HOOK, nearlyHook).with(RodParts.Slot.LINE, nearlyLine));
+            TackleWear.apply(angler, EquipmentSlot.MAINHAND, used, gentle, Outcome.LANDED);
+            RodParts worn = RodItem.parts(used);
+            r.check(worn.hook().isEmpty() && worn.line().isEmpty() && !worn.terminal().isEmpty() && !worn.reel().isEmpty(),
+                    "a hook and a line worn through are gone after the fight; the rest stays");
         });
     }
 

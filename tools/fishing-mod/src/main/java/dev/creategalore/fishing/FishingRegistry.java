@@ -110,6 +110,9 @@ public final class FishingRegistry {
     /** How frayed a line is, 0 (new) to 1 (about to go): weakens it. */
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Float>> LINE_WEAR =
             COMPONENTS.registerComponentType("line_wear", b -> b.persistent(Codec.FLOAT).networkSynchronized(ByteBufCodecs.FLOAT));
+    /** How worn a rigged leader, hook, float, sinker or lure is, 0 (new) to 1 (worn out): set only once it has fished. */
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Float>> PART_WEAR =
+            COMPONENTS.registerComponentType("part_wear", b -> b.persistent(Codec.FLOAT).networkSynchronized(ByteBufCodecs.FLOAT));
     /** Game time until which a fish caught by a machine and put on a belt is still alive (dropped in water, it swims off). */
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Long>> ALIVE_UNTIL =
             COMPONENTS.registerComponentType("alive_until", b -> b.persistent(Codec.LONG).networkSynchronized(ByteBufCodecs.VAR_LONG));

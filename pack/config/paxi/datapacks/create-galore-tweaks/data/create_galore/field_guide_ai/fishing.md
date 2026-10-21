@@ -1,4 +1,4 @@
-<!-- sources sha256:71a5bcca3769ce63743a80d48d46a5f1d1c4a1eb53487013ca121aa8ae0ecf3d -->
+<!-- sources sha256:c54d98f973937e54451ddee0f9b260c07698a32dd4a77c012d7df630955ff7c0 -->
 # Fishing (fishing)
 
 ## fishing/overview | Fishing
@@ -29,9 +29,9 @@
 - HUD above hotbar: tension bar against what the rig breaks at (blue slack, green, yellow from 60%, red from 85%, tick where drag starts to slip), drag, line out, line left; alerts Drag slipping, Slack line!, It's running!
 - Losses: **snapped** line (tension over line's or leader's test); **bitten off** (toothy fish, no Steel Leader); **rod broke** (load well over the blank's rating, or rod worn through); **reel seized** (reel worn through; the line parts); **threw the hook** (slack over a second, or a jump on a loose line); **spooled** (took every metre, then snapped the line against the empty reel)
 - Snapped/bitten/spooled/seized: lose the line that was out plus a few metres, plus hook, leader, float or lure, bait. A broken rod gives its parts back
-- Wear: every fight wears rod, reel, line; reeling while line runs out grinds the reel: after half a second it wears fast, with the square of the drag (half the reel's drag grinds a quarter as fast). A part worn through breaks mid-fight and the fish is gone
+- Wear: every fight wears every part a little, even an easy catch: rod and reel lose 1 durability, the line frays (a gently fought line lasts about 100 fights), leader, hook, float, sinker or lure each last about 200 fights (tooltip shows Worn %, line shows Frayed %; a worn-out part is gone after the fight, the tackle bench warns above 90%). Nothing lasts for ever. Reeling while line runs out grinds the reel: after half a second it wears fast, with the square of the drag (half the reel's drag grinds a quarter as fast). A part worn through breaks mid-fight and the fish is gone
 - Walking or sailing away pulls on a hooked fish: a small one is towed along, a big one takes line through the drag
-- In depth: rod loaded above 70% of its rating wears, above its rating can crack. Worn rod holds less (down to 60% when nearly broken); frayed line breaks earlier (down to half its test); worn reel's drag gets jerky. Toothy fish: pike, muskellunge, gar, piranha, barracuda, sharks, morays, anglerfish, lionfish, Dragon Fish
+- In depth: rod loaded above 70% of its rating wears, above its rating can crack. Worn rod holds less (down to 60% when nearly broken); frayed line breaks earlier (down to half its test) and wears out once frayed through; worn reel's drag gets jerky. Toothy fish: pike, muskellunge, gar, piranha, barracuda, sharks, morays, anglerfish, lionfish, Dragon Fish
 - Sounds: drag ratchet clicks as line leaves the spool (slow tick when leaning, buzz on a run), reel cranks and grinds, line creaks above about 65% of breaking load, snaps with a twang
 - Letting go of the rod, logging out or the chunk unloading reels the line in: a fish on is lost
 - Related: (see fishing/landing) (see fishing/tackle) (see fishing/tackle_bench)
@@ -81,7 +81,7 @@
 - Tackle Bench (shows recipe create_galore_fishing:tackle_bench): iron sheets, string, planks, crafting table. Keeps nothing: the rod comes back with its parts on close
 - Slots: rod or pole, reel, line, leader (optional), hook, float/sinker/lure, bait. A pole has no reel slot. Taking a part out of its slot takes it off the rod. Panel shows the rating, "fish to about" a weight, longest cast, metres of line
 - Rating = weakest of blank's load, line's (or leader's) test, reel's top drag. "Fish to about" = heaviest average fighter that rating lands with a sensible drag. A new rod's drag starts at a third of the reel's range
-- Weak-link warnings: drag over the line's test (hard pull snaps it); drag over what the rod holds (overloaded); a pole's line stronger than the pole (big fish breaks the pole); rig too light/heavy for the rod (casts fall short); worn rod or reel, frayed line
+- Weak-link warnings: drag over the line's test (hard pull snaps it); drag over what the rod holds (overloaded); a pole's line stronger than the pole (big fish breaks the pole); rig too light/heavy for the rod (casts fall short); worn rod or reel, frayed line, nearly worn-out leader, hook or terminal (above 90%)
 - Without the bench: in the inventory pick up a part or bait and right-click the rod; it goes in its slot. Empty cursor takes the bait back off. A rod missing a part says so on its tooltip: "Needs a reel", "Needs line", "Needs a hook, or a lure"
 - Tip: keep the drag below the line's test (the bench warns when it isn't). A careful angler lands most river and lake fish on Iron or Steel gear; tuna, arapaima, sharks need the Heavy Boat Rod with heavy line and a Big-Game reel. Rods and reels aren't repaired at the bench
 

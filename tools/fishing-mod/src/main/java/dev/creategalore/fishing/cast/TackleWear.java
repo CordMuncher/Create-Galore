@@ -16,8 +16,10 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 /**
- * What a fight costs the tackle. Every fight wears the rod (more the longer it was loaded near its rating), the
- * reel (by cranking while its drag slipped, with the square of the drag) and the line (it frays). Nothing caps it: a
+ * What a fight costs the tackle. Every fight wears every part a little: the rod (more the longer it was loaded near
+ * its rating), the reel (more by cranking while its drag slipped, with the square of the drag), the line (it frays,
+ * and a line frayed through wears out) and the leader, hook and float, sinker or lure. Nothing lasts for ever and
+ * nothing caps it: a
  * careless angler can wear a reel or rod through in one fight, and a part that gives out mid-fight loses the fish
  * (the fight checks the durability left, see {@link Fight#wearLimits}). A line that snaps, is bitten through, runs
  * out or parts on a seized reel loses what was out plus a few metres, and the hook, rig, leader and bait go with it.
@@ -25,6 +27,16 @@ import net.minecraft.world.item.ItemStack;
  */
 public final class TackleWear {
     private TackleWear() {
+    }
+
+    /** Wear one fight puts on a leader, hook, float, sinker or lure: one wears out after 200 fights. */
+    public static final float PART_WEAR_PER_FIGHT = 0.005f;
+    /** Fraying one fight puts on a line however gently it went: a line fought gently wears out after 100 fights. */
+    public static final double LINE_WEAR_PER_FIGHT = 0.01;
+
+    /** Fraying one fight puts on a line: the base, plus half the fight's own fraying. */
+    public static double lineFray(double fightLineWear) {
+        return LINE_WEAR_PER_FIGHT + fightLineWear * 0.5;
     }
 
     /** Durability one fight takes from a reel: 1 for the fight, plus its grinding. */
@@ -84,8 +96,17 @@ public final class TackleWear {
                 parts = parts.with(RodParts.Slot.LEADER, ItemStack.EMPTY).with(RodParts.Slot.HOOK, ItemStack.EMPTY)
                         .with(RodParts.Slot.TERMINAL, ItemStack.EMPTY).with(RodParts.Slot.BAIT, ItemStack.EMPTY);
             } else {
-                float wear = line.getOrDefault(FishingRegistry.LINE_WEAR.get(), 0f) + (float) (0.01 + fight.lineWear() * 0.5);
-                line.set(FishingRegistry.LINE_WEAR.get(), Math.min(1f, wear));
+                float wear = line.getOrDefault(FishingRegistry.LINE_WEAR.get(), 0f) + (float) lineFray(fight.lineWear());
+                if (wear >= 1) {
+                    angler.level().playSound(null, angler.blockPosition(), SoundEvents.ITEM_BREAK, SoundSource.PLAYERS, 0.6f, 1.2f);
+                    tell(angler, Component.translatable("message.create_galore_fishing.worn_out", line.getHoverName()));
+                    line = ItemStack.EMPTY;
+                } else {
+                    line.set(FishingRegistry.LINE_WEAR.get(), wear);
+                }
+                for (RodParts.Slot s : new RodParts.Slot[]{RodParts.Slot.LEADER, RodParts.Slot.HOOK, RodParts.Slot.TERMINAL}) {
+                    parts = parts.with(s, wearPart(angler, parts.get(s)));
+                }
             }
             parts = parts.with(RodParts.Slot.LINE, line);
         }
@@ -105,6 +126,19 @@ public final class TackleWear {
             if (rod.getDamageValue() >= rod.getMaxDamage()) rod.setCount(0);
         }
         return rod;
+    }
+
+    /** One fight's wear on a leader, hook or terminal; returns it, or empty once it has worn out. */
+    static ItemStack wearPart(LivingEntity angler, ItemStack part) {
+        if (part.isEmpty()) return part;
+        // Hooks with durability of their own (Hybrid Aquatic's) spend it on their effects; fights wear them here too.
+        float wear = part.getOrDefault(FishingRegistry.PART_WEAR.get(), 0f) + PART_WEAR_PER_FIGHT;
+        boolean worn = wear >= 1 - 1e-4f;
+        part.set(FishingRegistry.PART_WEAR.get(), wear);
+        if (!worn) return part;
+        angler.level().playSound(null, angler.blockPosition(), SoundEvents.ITEM_BREAK, SoundSource.PLAYERS, 0.6f, 1.2f);
+        tell(angler, Component.translatable("message.create_galore_fishing.worn_out", part.getHoverName()));
+        return ItemStack.EMPTY;
     }
 
     static void giveParts(LivingEntity angler, RodParts parts) {
