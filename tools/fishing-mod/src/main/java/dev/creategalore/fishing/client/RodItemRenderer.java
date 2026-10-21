@@ -38,6 +38,7 @@ import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.client.event.ModelEvent;
 import net.neoforged.neoforge.client.event.RenderFrameEvent;
+import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.client.event.RenderLivingEvent;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
@@ -99,6 +100,9 @@ public final class RodItemRenderer extends BlockEntityWithoutLevelRenderer {
         NeoForge.EVENT_BUS.addListener(EventPriority.LOWEST, (RenderLivingEvent.Pre<?, ?> event) -> rendering = event.getEntity());
         NeoForge.EVENT_BUS.addListener((RenderLivingEvent.Post<?, ?> event) -> rendering = null);
         NeoForge.EVENT_BUS.addListener((RenderFrameEvent.Pre event) -> frame++);
+        NeoForge.EVENT_BUS.addListener((RenderLevelStageEvent event) -> {
+            if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_SKY) worldProjection = event.getProjectionMatrix().m11();
+        });
     }
 
     private static Item[] rods() {
@@ -167,6 +171,9 @@ public final class RodItemRenderer extends BlockEntityWithoutLevelRenderer {
     private record Tip(boolean firstPerson, Vector3f point, float handProjection, int frame) {
     }
 
+    /** The world pass's projection (its m11), recorded each frame; NaN until the first frame. */
+    private static float worldProjection = Float.NaN;
+
     /** Frames rendered so far; a tip is fresh if drawn in the last couple of frames, however slow they are. */
     private static int frame;
 
@@ -185,7 +192,10 @@ public final class RodItemRenderer extends BlockEntityWithoutLevelRenderer {
             // The world (and the line) is drawn before the hand, so this is last frame's tip, kept in view space so
             // it follows the camera. The hand is projected with its own field of view: scale the point across the
             // view so it lands on the same pixel in the world's projection.
-            float k = tip.handProjection() / RenderSystem.getProjectionMatrix().m11();
+            // The world's projection as the main pass set it: a shader pack's shadow pass draws the line too, with its
+            // own projection current.
+            float world = Float.isNaN(worldProjection) ? RenderSystem.getProjectionMatrix().m11() : worldProjection;
+            float k = tip.handProjection() / world;
             Vector3f view = new Vector3f(tip.point()).mul(k, k, 1);
             camera.rotation().transform(view);
             return Optional.of(camera.getPosition().add(view.x, view.y, view.z));
@@ -245,12 +255,14 @@ public final class RodItemRenderer extends BlockEntityWithoutLevelRenderer {
         RodModel.Result result = new RodModel(buffers, light).draw(pose, build, state);
         pose.popPose();
 
-        if (player != null) {
+        // The tip is where the player sees it; a shadow pass draws the rod again from the sun.
+        if (player != null && !ShaderPass.shadow()) {
             Vector3f point = result.tip();
             if (first) {
-                // The hand's pose stack is camera-relative with world axes (vanilla multiplies in the inverse camera
-                // rotation); keep the tip in view space.
-                Vector3f view = mc.gameRenderer.getMainCamera().rotation().conjugate(new Quaternionf()).transform(new Vector3f(point));
+                // Keep the tip in view space. Vanilla draws the hand camera-relative with world axes (the inverse camera
+                // rotation is in the pose stack, the model-view matrix turns it back); a shader pack draws it straight
+                // in view space with an identity model-view. Either way the model-view matrix takes it to view space.
+                Vector3f view = RenderSystem.getModelViewMatrix().transformPosition(new Vector3f(point));
                 TIPS.put(key(player, hand), new Tip(true, view, RenderSystem.getProjectionMatrix().m11(), frame));
             } else {
                 Vec3 cam = mc.gameRenderer.getMainCamera().getPosition();
@@ -266,6 +278,11 @@ public final class RodItemRenderer extends BlockEntityWithoutLevelRenderer {
     private static RodModel.Pose animate(Motion motion, PoseStack pose, RodModel.Build build, CastHook hook,
                                          boolean charging, boolean first, Player player, InteractionHand hand,
                                          float partialTick) {
+        // A shader pack's shadow pass draws the rod again from the sun: show it as it is, without stepping the springs.
+        if (ShaderPass.shadow()) {
+            return new RodModel.Pose(Math.max(0, motion.bend), new Vector3f(motion.axis), motion.extension, motion.crank,
+                    motion.depth);
+        }
         long now = System.nanoTime();
         float dt = Mth.clamp((now - motion.lastNanos) / 1e9f, 0, 0.05f);
         motion.lastNanos = now;
@@ -283,9 +300,13 @@ public final class RodItemRenderer extends BlockEntityWithoutLevelRenderer {
             Vec3 d = hook.getPosition(partialTick).subtract(from);
             if (d.lengthSqr() > 1e-4) {
                 toFish = new Vector3f((float) d.x, (float) d.y, (float) d.z).normalize();
-                // Into the rod's own frame: the pose's rotation maps it to world axes, in both first and third person.
-                Matrix3f rot = new Matrix3f(pose.last().normal()).transpose();
-                rot.transform(toFish).normalize();
+                // Into the rod's own frame. The camera takes it to view space; the model-view matrix maps the pose
+                // stack's root to view space (vanilla's root has world axes and the camera's rotation in the
+                // model-view; a shader pack draws the first-person hand with its root already in view space); the
+                // pose's own rotation maps the rod's frame to the root.
+                Minecraft.getInstance().gameRenderer.getMainCamera().rotation().conjugate(new Quaternionf()).transform(toFish);
+                new Matrix3f(RenderSystem.getModelViewMatrix()).invert().transform(toFish);
+                new Matrix3f(pose.last().normal()).transpose().transform(toFish).normalize();
             }
         }
         if (!Float.isNaN(debugLoad)) {

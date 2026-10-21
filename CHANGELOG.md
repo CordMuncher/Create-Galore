@@ -4,6 +4,13 @@ Each pack version gets a section here, with **Added**, **Fixed** and **Removed**
 workflow copies the section for the version in `pack/pack.toml` to the top of the GitHub release, and the build
 fails when that section is missing.
 
+## 0.4.7
+
+### Fixed
+- **Fishing line with shaders.** With a shader pack on, the line in first person no longer runs off into the sky: it starts at the rod tip again, and the rod bends toward the fish instead of the wrong way. Without shaders and in third person nothing changes.
+- **Fish weight in one unit.** Aquaculture fish no longer also show "Weight: N lbs" (it was the kilogram figure with the wrong unit); the catch line's kilograms are the weight. Small Aquaculture fish caught from now on stack again.
+- Create Galore Fishing 0.3.3.
+
 ## 0.4.6
 
 ### Added
