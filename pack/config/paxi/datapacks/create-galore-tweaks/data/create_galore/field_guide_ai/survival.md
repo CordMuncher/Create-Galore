@@ -1,4 +1,4 @@
-<!-- sources sha256:5c1c823acea21371b672700c4921c7eac0676ffc60ddaabbd338ac965f1c38f5 -->
+<!-- sources sha256:531d8ffff3dce04ffaaecc58f32e9f28c95e0c374402a8b00aa31d3a8e6bccd2 -->
 # Survival Layers (survival)
 Layers: Temperature (Cold Sweat), Thirst, Seasons (Serene Seasons), Pollution (Create: Smog), food/health, death/graves.
 
@@ -65,7 +65,7 @@ Layers: Temperature (Cold Sweat), Thirst, Seasons (Serene Seasons), Pollution (C
 ## survival/seasons | Seasons
 - Serene Seasons: Overworld year = Spring, Summer, Autumn, Winter, each Early/Mid/Late. Each sub-season 8 days -> season 24 days, year 96. Foliage colors follow season.
 - Calendar [sereneseasons:calendar]: tooltip shows current season and day. Crafted from a Clock and paper. Handy for planning plantings.
-- Weather: winter brings snow and ice generation. Rain/snow/storm frequency vary by season. Tropical biomes (deserts, badlands, savanna, jungle, similar) have Wet and Dry seasons instead.
+- Weather: winter brings snow and ice; lakes/rivers in cold places can freeze. Oceans never freeze except frozen oceans (boats always reach the sea). Rain/snow/storm frequency vary by season. Tropical biomes (deserts, badlands, savanna, jungle, similar) have Wet and Dry seasons instead.
 - Big rule: crops only grow in right season; out of season grow slowly. A config (see glossary/config) setting can make them stop or break instead. Tooltips may list crop seasons. Winter hardest: very few crops grow (see survival/seasons_crops).
 - Greenhouses: plants under a glass roof count as in season, via greenhouse glass tag (see glossary/tags) (ordinary glass blocks). Crops deep underground are also fertile, below a height set in the config.
 - Season Sensor [sereneseasons:season_sensor]: redstone signal depending on season, like a Daylight Detector.

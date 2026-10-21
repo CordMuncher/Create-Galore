@@ -4,6 +4,12 @@ Each pack version gets a section here, with **Added**, **Fixed** and **Removed**
 workflow copies the section for the version in `pack/pack.toml` to the top of the GitHub release, and the build
 fails when that section is missing.
 
+## 0.4.13
+
+### Fixed
+- **Oceans no longer freeze over outside frozen ocean biomes.** Cold oceans were dotted with ice that made boating hard. Serene Seasons leaves oceans out of its seasons, so ice left there by earlier Winds & Weather blizzards or Cold Sweat's freezing never melted, and Cold Sweat's freezing, where it is still switched on, kept adding more. Now only frozen and deep frozen oceans freeze, and ice floating on any other ocean under open sky melts within a few minutes while someone is nearby, in any season. Lakes and rivers still freeze where it is cold enough. Player-placed ice on open ocean melts too, so use packed or blue ice for ice roads at sea.
+- Create Galore Bridge 1.40.0.
+
 ## 0.4.12
 
 ### Added
