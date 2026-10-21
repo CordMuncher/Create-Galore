@@ -1,13 +1,20 @@
 package dev.creategalore.bridge.client;
 
 import dev.creategalore.bridge.guideai.GuideAiNet;
+import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.commands.Commands;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModList;
+import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
+import net.neoforged.neoforge.client.event.RegisterItemDecorationsEvent;
 import net.neoforged.neoforge.client.event.ScreenEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.network.PacketDistributor;
@@ -19,8 +26,13 @@ public final class GuideAiClient {
     private GuideAiClient() {
     }
 
-    static void init() {
-        if (ModList.get().isLoaded("modonomicon")) NeoForge.EVENT_BUS.addListener(GuideAiClient::addButton);
+    static void init(IEventBus modBus) {
+        if (ModList.get().isLoaded("modonomicon")) {
+            NeoForge.EVENT_BUS.addListener(GuideAiClient::addButton);
+            modBus.addListener(GuideAiClient::decorate);
+        }
+        // Another server, another book: what was unread there means nothing here.
+        NeoForge.EVENT_BUS.addListener((ClientPlayerNetworkEvent.LoggingOut e) -> unread.clear());
         NeoForge.EVENT_BUS.addListener(ClaimBoxView::render);
         // /askbook opens the same screen without the guide in hand.
         NeoForge.EVENT_BUS.addListener((RegisterClientCommandsEvent event) -> event.getDispatcher().register(
@@ -29,6 +41,37 @@ public final class GuideAiClient {
                     mc.tell(() -> mc.setScreen(new AskScreen(null)));
                     return 1;
                 })));
+    }
+
+    /**
+     * While the book has an answer the player hasn't opened, the Field Guide glows green wherever it sits in a slot
+     * (hotbar, inventory, chests), with a dot in its corner, until the answer is read.
+     */
+    private static void decorate(RegisterItemDecorationsEvent event) {
+        var item = BuiltInRegistries.ITEM.get(ResourceLocation.fromNamespaceAndPath("modonomicon", "modonomicon"));
+        if (item == Items.AIR) return;
+        event.register(item, (g, font, stack, x, y) -> {
+            if (unread.isEmpty() || !isFieldGuide(stack)) return false;
+            double breath = 0.5 + 0.5 * Math.sin(Util.getMillis() / 450.0);
+            g.pose().pushPose();
+            g.pose().translate(0, 0, 200);
+            // A ring at the slot's edges (a fill over the whole slot would hide the book itself).
+            int edge = (int) (0x90 + 0x6F * breath) << 24 | 0x5FD64A, soft = (int) (0x40 + 0x50 * breath) << 24 | 0x4CB43A;
+            g.renderOutline(x, y, 16, 16, edge);
+            g.renderOutline(x + 1, y + 1, 14, 14, soft);
+            // A dot in the top right corner, like a new message.
+            g.fill(x + 11, y, x + 16, y + 5, 0xFF1F4A17);
+            g.fill(x + 12, y + 1, x + 15, y + 4, 0xFF6BE356);
+            g.pose().popPose();
+            return false;
+        });
+    }
+
+    private static final ResourceLocation BOOK_ID = ResourceLocation.fromNamespaceAndPath("modonomicon", "book_id");
+
+    static boolean isFieldGuide(ItemStack stack) {
+        var type = BuiltInRegistries.DATA_COMPONENT_TYPE.get(BOOK_ID);
+        return type != null && FIELD_GUIDE.equals(stack.get(type));
     }
 
     private static void addButton(ScreenEvent.Init.Post event) {
@@ -59,9 +102,14 @@ public final class GuideAiClient {
 
         @Override
         protected void renderWidget(net.minecraft.client.gui.GuiGraphics g, int mouseX, int mouseY, float partialTick) {
-            int x = getX() + (isHovered() ? 1 : 0), clip = screen.width - 30;
+            int x = getX() + (isHovered() || !unread.isEmpty() ? 1 : 0), clip = screen.width - 30;
             g.enableScissor(clip, getY(), screen.width, getY() + height);
             g.blit(TEXTURE, x, getY(), 15, 0, 29, 20, 44, 20);
+            if (!unread.isEmpty()) {
+                // An answer is waiting: the ribbon glows green, breathing.
+                double breath = 0.5 + 0.5 * Math.sin(Util.getMillis() / 450.0);
+                g.fill(x, getY(), x + 29, getY() + 20, (int) (0x40 + 0x50 * breath) << 24 | 0x4CB43A);
+            }
             g.disableScissor();
         }
 
@@ -134,7 +182,7 @@ public final class GuideAiClient {
         public Visibility render(net.minecraft.client.gui.GuiGraphics g, net.minecraft.client.gui.components.toasts.ToastComponent toasts, long time) {
             var font = toasts.getMinecraft().font;
             g.blitSprite(BACKGROUND, 0, 0, width(), height());
-            g.renderFakeItem(new net.minecraft.world.item.ItemStack(net.minecraft.core.registries.BuiltInRegistries.ITEM
+            g.renderFakeItem(new net.minecraft.world.item.ItemStack(BuiltInRegistries.ITEM
                     .getOptional(ResourceLocation.fromNamespaceAndPath("modonomicon", "modonomicon_red"))
                     .orElse(net.minecraft.world.item.Items.BOOK)), 8, 8);
             g.drawString(font, answered ? "The book has answered" : "The book couldn't answer", 30, 7, 0xFFFFFF00, false);
@@ -144,6 +192,8 @@ public final class GuideAiClient {
     }
 
     public static void onPages(GuideAiNet.Pages pages) {
+        // Also sent on joining, so the Field Guide can glow for answers left unread last time.
+        syncUnread(pages.pages());
         if (Minecraft.getInstance().screen instanceof AskScreen ask) ask.showPages(pages);
     }
 
