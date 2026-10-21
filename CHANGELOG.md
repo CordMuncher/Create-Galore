@@ -4,6 +4,13 @@ Each pack version gets a section here, with **Added**, **Fixed** and **Removed**
 workflow copies the section for the version in `pack/pack.toml` to the top of the GitHub release, and the build
 fails when that section is missing.
 
+## 0.4.16
+
+### Fixed
+- **Ships built in the water no longer leave a hole in the sea.** Assembling a ship (Physics Assembler or `/sable assemble`) left air in every spot its blocks had filled, and the water around never flowed back in, so a hull built with its planks in the water left a ship-shaped hole that stayed through restarts. A boat still sitting over that hole floated about 2 blocks too low and could lean hard to one side, with its rim under the waterline, and then sink. The sea now flows back into those spots within a few seconds of assembly, and the boat floats at its normal height where it was built. Holes left before this update stay: an operator can fill one with `/fill <from> <to> minecraft:water replace minecraft:air`, using a box from the bottom of the hole up to the water surface.
+- **Water no longer gets glued into ships.** Super glue spread over a hull built in the sea glued the water inside it to the ship along with the planks, so a block-shaped lump of water sailed along under and beside the boat (and inside its hold, which then counted as flooded). The Physics Assembler and Swivel Bearing now leave plain water and lava where they are; waterlogged blocks still come along. Ships built before this update are cleaned automatically, once, the first time each one loads: the water inside their glue is removed, nothing else on the ship changes, and water you put on a ship later is never touched.
+- Create Galore Bridge 1.41.0.
+
 ## 0.4.15
 
 ### Fixed
