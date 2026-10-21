@@ -1,0 +1,37 @@
+{
+    "associated_mods": ["fintastic"],
+    "fish": "fintastic:guppy",
+    "bucket": "fintastic:guppy_bucket",
+    "journal_profile": {
+        "description": "journal.description.fintastic.guppy",
+        "group": "freshwater",
+        "location": "journal.info.location.jungle",
+        "rarity": "common"
+    },
+    "display_data": {
+        "entity": "fintastic:guppy",
+        "nbt": {
+            "Variant": 7,
+            "FinColor": 12,
+            "TailColor": 12,
+            "HasMainPattern": true,
+            "MainPattern": 10,
+            "MainPatternColour": 14,
+            "HasDorsalFin": true
+        },
+        "roll": -90,
+        "y": -0.15,
+        "z": 0.08
+    },
+    "conditions": [
+        { "type": "tide:freshwater" },
+        { "type": "tide:dimension", "dimensions": ["minecraft:overworld"] },
+        { "type": "tide:fluid", "fluid": "water" },
+        { "type": "tide:above", "y": 40 },
+        { "type": "tide:found_in", "biomes": ["#minecraft:is_swamp", "#minecraft:is_jungle"] }
+    ],
+    "selection_weight": 40.0,
+    "size": { "record_high_cm": 25.0, "typical_high_cm": 5.0, "typical_low_cm": 0.1 },
+    "speed": 0.5,
+    "strength": 0.1
+}

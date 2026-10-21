@@ -1,0 +1,13 @@
+{
+  "item": "create_galore_fishing:iron_rod",
+  "_generated": "from tools/fishing-mod/gen_tackle.py; edit that, not this file",
+  "kind": "rod",
+  "length": 2.4,
+  "max_load": 9,
+  "action": "fast",
+  "sections": 3,
+  "lure_min": 5,
+  "lure_max": 30,
+  "color": "#b8b8b8",
+  "grip": "#c9a26b"
+}

@@ -1,0 +1,15 @@
+{
+  "item": "tide:echo_fishing_rod",
+  "_generated": "from tools/fishing-mod/gen_tackle.py; edit that, not this file",
+  "kind": "rod",
+  "length": 2.4,
+  "max_load": 10,
+  "action": "fast",
+  "sections": 3,
+  "lure_min": 5,
+  "lure_max": 30,
+  "color": "#0a5a64",
+  "grip": "#1a2a30",
+  "grip_style": "foam",
+  "perk": "echo"
+}

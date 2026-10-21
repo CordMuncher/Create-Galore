@@ -1,0 +1,14 @@
+{
+  "fish": "aquaculture:minnow",
+  "_generated": "from tools/fishing-mod/species.csv; edit that, not this file",
+  "size": {
+    "typical_low_cm": 4,
+    "typical_high_cm": 10,
+    "record_high_cm": 15
+  },
+  "length_weight": {
+    "a": 0.01,
+    "b": 3
+  },
+  "feeding": "panfish"
+}

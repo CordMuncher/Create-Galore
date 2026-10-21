@@ -1,0 +1,9 @@
+{
+  "values": {
+    "create_galore_fishing:fish_oil": {
+      "burnTime": 10,
+      "superHeat": false,
+      "amountConsumedPerTick": 2
+    }
+  }
+}

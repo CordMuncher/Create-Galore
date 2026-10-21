@@ -1,0 +1,27 @@
+{
+    "associated_mods": ["fintastic"],
+    "fish": "fintastic:dwarf_frog",
+    "bucket": "fintastic:dwarf_frog_bucket",
+    "journal_profile": {
+        "description": "journal.description.fintastic.dwarf_frog",
+        "group": "freshwater",
+        "location": "journal.info.location.jungle",
+        "rarity": "common"
+    },
+    "display_data": {
+        "entity": "fintastic:dwarf_frog",
+        "nbt": { "Variant": 2 },
+        "z": 0.009
+    },
+    "conditions": [
+        { "type": "tide:freshwater" },
+        { "type": "tide:dimension", "dimensions": ["minecraft:overworld"] },
+        { "type": "tide:fluid", "fluid": "water" },
+        { "type": "tide:above", "y": 40 },
+        { "type": "tide:found_in", "biomes": ["#minecraft:is_swamp", "#minecraft:is_jungle", "atmospheric:rainforest"] }
+    ],
+    "selection_weight": 30.0,
+    "size": { "record_high_cm": 35.0, "typical_high_cm": 12.0, "typical_low_cm": 8.0 },
+    "speed": 0.8,
+    "strength": 0.2
+}

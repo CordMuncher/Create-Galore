@@ -1,0 +1,27 @@
+{
+    "associated_mods": ["fintastic"],
+    "fish": "fintastic:small_catfish",
+    "bucket": "fintastic:small_catfish_bucket",
+    "journal_profile": {
+        "description": "journal.description.fintastic.small_catfish",
+        "group": "freshwater",
+        "location": "journal.info.location.jungle",
+        "rarity": "common"
+    },
+    "display_data": {
+        "entity": "fintastic:small_catfish",
+        "nbt": { "Variant": 0 },
+        "z": 0.009
+    },
+    "conditions": [
+        { "type": "tide:freshwater" },
+        { "type": "tide:dimension", "dimensions": ["minecraft:overworld"] },
+        { "type": "tide:fluid", "fluid": "water" },
+        { "type": "tide:above", "y": 40 },
+        { "type": "tide:found_in", "biomes": ["#minecraft:is_swamp", "#minecraft:is_jungle", "atmospheric:rainforest"] }
+    ],
+    "selection_weight": 30.0,
+    "size": { "record_high_cm": 40.0, "typical_high_cm": 20.0, "typical_low_cm": 5.0 },
+    "speed": 0.55,
+    "strength": 0.2
+}

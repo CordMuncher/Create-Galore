@@ -1,0 +1,20 @@
+{
+  "type": "create:mixing",
+  "ingredients": [
+    {
+      "item": "create_galore_fishing:fish_scraps"
+    },
+    {
+      "item": "create_galore_fishing:fish_scraps"
+    },
+    {
+      "item": "create_galore_fishing:fish_meal"
+    }
+  ],
+  "results": [
+    {
+      "id": "create_galore_fishing:chum",
+      "count": 2
+    }
+  ]
+}

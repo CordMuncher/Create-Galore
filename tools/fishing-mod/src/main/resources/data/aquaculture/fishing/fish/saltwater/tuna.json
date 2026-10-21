@@ -1,0 +1,26 @@
+{
+    "associated_mods": ["aquaculture"],
+    "fish": "aquaculture:tuna",
+    "bucket": "aquaculture:tuna_bucket",
+    "journal_profile": {
+        "description": "journal.description.aquaculture.tuna",
+        "group": "saltwater",
+        "location": "journal.info.location.saltwater",
+        "rarity": "common"
+    },
+    "display_data": {
+        "entity": "aquaculture:tuna",
+        "x": 0.1
+    },
+    "conditions": [
+        { "type": "tide:saltwater" },
+        { "type": "tide:dimension", "dimensions": ["minecraft:overworld"] },
+        { "type": "tide:fluid", "fluid": "water" },
+        { "type": "tide:above", "y": 40 },
+        { "type": "tide:found_in", "biomes": ["#minecraft:is_ocean", "#minecraft:is_beach"] }
+    ],
+    "selection_weight": 40.0,
+    "size": { "record_high_cm": 150.0, "typical_high_cm": 110.0, "typical_low_cm": 90.0 },
+    "speed": 0.5,
+    "strength": 0.8
+}

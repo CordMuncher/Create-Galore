@@ -1,0 +1,27 @@
+{
+    "associated_mods": ["fintastic"],
+    "fish": "fintastic:fairy_shrimp",
+    "bucket": "fintastic:artemia_bucket",
+    "journal_profile": {
+        "description": "journal.description.fintastic.fairy_shrimp",
+        "group": "freshwater",
+        "location": "journal.info.location.desert",
+        "rarity": "common"
+    },
+    "display_data": {
+        "entity": "fintastic:artemia",
+        "nbt": { "Variant": 0 },
+        "z": 0.06
+    },
+    "conditions": [
+        { "type": "tide:freshwater" },
+        { "type": "tide:dimension", "dimensions": ["minecraft:overworld"] },
+        { "type": "tide:fluid", "fluid": "water" },
+        { "type": "tide:above", "y": 40 },
+        { "type": "tide:found_in", "biomes": ["#minecraft:is_desert"] }
+    ],
+    "selection_weight": 30.0,
+    "size": { "record_high_cm": 60.0, "typical_high_cm": 30.0, "typical_low_cm": 10.0 },
+    "speed": 0.2,
+    "strength": 0.8
+}

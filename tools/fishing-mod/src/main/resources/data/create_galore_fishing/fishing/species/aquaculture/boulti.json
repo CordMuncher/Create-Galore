@@ -1,0 +1,14 @@
+{
+  "fish": "aquaculture:boulti",
+  "_generated": "from tools/fishing-mod/species.csv; edit that, not this file",
+  "size": {
+    "typical_low_cm": 20,
+    "typical_high_cm": 40,
+    "record_high_cm": 60
+  },
+  "length_weight": {
+    "a": 0.02,
+    "b": 3
+  },
+  "feeding": "panfish"
+}

@@ -1,0 +1,14 @@
+{
+  "fish": "hybrid_aquatic:sunfish",
+  "_generated": "from tools/fishing-mod/species.csv; edit that, not this file",
+  "size": {
+    "typical_low_cm": 12,
+    "typical_high_cm": 22,
+    "record_high_cm": 38
+  },
+  "length_weight": {
+    "a": 0.025,
+    "b": 3
+  },
+  "feeding": "panfish"
+}

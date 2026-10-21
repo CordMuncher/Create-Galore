@@ -1,0 +1,13 @@
+{
+  "item": "tide:honeycomb_fishing_rod",
+  "_generated": "from tools/fishing-mod/gen_tackle.py; edit that, not this file",
+  "kind": "rod",
+  "length": 2.1,
+  "max_load": 8,
+  "action": "slow",
+  "sections": 2,
+  "lure_min": 3,
+  "lure_max": 25,
+  "color": "#e78618",
+  "grip": "#8a5a20"
+}

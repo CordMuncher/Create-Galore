@@ -1,0 +1,27 @@
+{
+    "associated_mods": ["unusualfishmod"],
+    "fish": "unusualfishmod:raw_triple_twirl_pleco",
+    "bucket": "unusualfishmod:triple_twirl_pleco_bucket",
+    "journal_profile": {
+        "description": "journal.description.unusualfishmod.triple_twirl_pleco",
+        "group": "freshwater",
+        "location": "journal.info.location.river",
+        "rarity": "common"
+    },
+    "display_data": {
+        "entity": "unusualfishmod:triple_twirl_pleco",
+        "z": 0.04
+    },
+    "conditions": [
+        { "type": "tide:freshwater" },
+        { "type": "tide:dimension", "dimensions": ["minecraft:overworld"] },
+        { "type": "tide:fluid", "fluid": "water" },
+        { "type": "tide:above", "y": 40 },
+        { "type": "tide:found_in", "biomes": ["minecraft:river"] },
+        { "type": "tide:has_enchantments", "enchantments": ["unusualfishmod:unusual_catch"] }
+    ],
+    "selection_weight": 40.0,
+    "size": { "record_high_cm": 190.0, "typical_high_cm": 160.0, "typical_low_cm": 100.0 },
+    "speed": 0.2,
+    "strength": 0.5
+}

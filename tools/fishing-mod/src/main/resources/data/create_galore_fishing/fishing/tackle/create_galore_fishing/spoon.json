@@ -1,0 +1,12 @@
+{
+  "item": "create_galore_fishing:spoon",
+  "_generated": "from tools/fishing-mod/gen_tackle.py; edit that, not this file",
+  "kind": "lure",
+  "bait": "spoon",
+  "weight": 12,
+  "dive": 1.0,
+  "speed_min": 0.4,
+  "speed_max": 2.5,
+  "size": 1,
+  "color": "#d0d0d0"
+}

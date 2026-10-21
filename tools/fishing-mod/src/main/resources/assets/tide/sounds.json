@@ -1,0 +1,26 @@
+{
+   "journal_open": {
+      "subtitle": "subtitles.tide.journal_open",
+      "sounds": [
+         "tide:journal_open"
+      ]
+   },
+   "journal_close": {
+      "subtitle": "subtitles.tide.journal_close",
+      "sounds": [
+         "tide:journal_close"
+      ]
+   },
+   "page_flip": {
+      "subtitle": "subtitles.tide.page_flip",
+      "sounds": [
+         "tide:page_flip"
+      ]
+   },
+   "fishing_reel": {
+      "subtitle": "subtitles.item.fishing_rod.reel",
+      "sounds": [
+         "tide:fishing_reel"
+      ]
+   }
+}

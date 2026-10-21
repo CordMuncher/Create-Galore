@@ -1,0 +1,10 @@
+{
+  "item": "create_galore_fishing:clear_line",
+  "_generated": "from tools/fishing-mod/gen_tackle.py; edit that, not this file",
+  "kind": "line",
+  "test": 10,
+  "stretch": 0.3,
+  "visibility": 0.1,
+  "meters": 150,
+  "color": "#e0f0ff"
+}

@@ -1,13 +1,13 @@
 {
   "category": "fishing",
   "name": "Fishing Journal and Trophies",
-  "description": "The journal, fish sizes, notes, displays and the satchel.",
+  "description": "The journal, records, Fishy Notes, the Trophy Mount and the satchel.",
   "icon": {
     "item": "tide:fishing_journal"
   },
   "x": 2,
-  "y": 1,
-  "sort_number": 8,
+  "y": 2,
+  "sort_number": 13,
   "parents": [
     {
       "entry": "fishing/overview",
@@ -20,17 +20,17 @@
     {
       "type": "modonomicon:text",
       "title": "Fishing Journal and Trophies",
-      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- The **Fishing Journal** fills a page for each new fish you catch.\n- Every caught fish has a **length**; the journal keeps your biggest and smallest.\n- **Fishy Notes** show a fish's page before you catch it.\n- Mount fish on a **Fish Display**."
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- The **Fishing Journal** fills a page for each new fish you catch.\n- It keeps your **longest, shortest and heaviest** of each fish.\n- **Fishy Notes** show a fish's page before you catch it.\n- Show catches on a **Trophy Mount**."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Lost the journal? Craft one from any fish and a book. It also works on a lectern.\\\n\\\nUncaught fish are black outlines. A page shows where and when the fish bites (biome, depth, time, weather, moon, season, temperature), then how many you've caught, when, and your record sizes."
+      "text": "Lost the journal? Craft one from any fish and a book. It also works on a lectern.\\\n\\\nUncaught fish are black outlines. A page shows where and when the fish bites (biome, depth, time, weather, moon, season, temperature), then how many you've caught, when, and your records."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "A fish caught alive can go in a bucket: combine it with a water bucket in your inventory (lava fish need a lava bucket). The length stays with it.\\\n\\\nFill half the journal for **Aquatic Archivist**, all of it for **A Reel Completionist**."
+      "text": "Catches made by your [#](2E5AAC)[rod machines](entry://fishing/rod_machines)[#]() count as yours.\\\n\\\nFill half the journal for **Aquatic Archivist**, all of it for **A Reel Completionist**. Own every rod blank and special rod for **Hooked on Variety**. Your best weight of each species also shows on the Keep or Release screen."
     },
     {
       "type": "modonomicon:spotlight",
@@ -45,8 +45,8 @@
       "item": {
         "item": "tide:fish_display"
       },
-      "title": "Fish Display",
-      "text": "Sticks around a log. Hang it on a wall and right-click with a fish to mount it, shown at its real size. Empty hand takes it back."
+      "title": "Trophy Mount",
+      "text": "Sticks around a log. Hang it on a wall and right-click with a fish to mount it, shown at its real size with its weight, length and who caught it. An empty hand takes it back."
     },
     {
       "type": "modonomicon:spotlight",
@@ -59,7 +59,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "[#](FFFFFF)\ue103[#]() **In depth.** Aquaculture's fish mounts still work for its fish. Every caught fish carries its own length, so fish of different lengths don't stack."
+      "text": "[#](FFFFFF)\ue103[#]() **In depth.** Aquaculture's fish mounts still work for its fish. Fish under 3 kg stack by species and size class; bigger fish and trophies keep their own numbers and don't stack.\\\n\\\nFish swimming in the world can be caught in a water bucket as usual (lava fish need a lava bucket)."
     }
   ]
 }

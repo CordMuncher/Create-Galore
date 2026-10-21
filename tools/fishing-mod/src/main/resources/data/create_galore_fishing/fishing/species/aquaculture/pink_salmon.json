@@ -1,0 +1,23 @@
+{
+  "fish": "aquaculture:pink_salmon",
+  "_generated": "from tools/fishing-mod/species.csv; edit that, not this file",
+  "size": {
+    "typical_low_cm": 40,
+    "typical_high_cm": 60,
+    "record_high_cm": 76
+  },
+  "length_weight": {
+    "a": 0.011,
+    "b": 3
+  },
+  "fight": {
+    "per_kg": 1.1,
+    "stamina": 1.1,
+    "speed": 1.6,
+    "runs": 0.1,
+    "jumps": 0.15,
+    "profile": "second_wind"
+  },
+  "feeding": "predator",
+  "wary": 0.4
+}

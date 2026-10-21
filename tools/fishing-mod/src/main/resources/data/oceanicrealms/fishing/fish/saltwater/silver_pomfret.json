@@ -1,0 +1,29 @@
+{
+    "associated_mods": ["oceanicrealms"],
+    "fish": "oceanicrealms:silver_pomfret_fish",
+    "bucket": "oceanicrealms:silver_pomfret_fish_bucket",
+    "journal_profile": {
+        "description": "journal.description.oceanicrealms.silver_pomfret",
+        "group": "saltwater",
+        "location": "journal.info.location.saltwater_warm",
+        "rarity": "common"
+    },
+    "display_data": {
+        "entity": "oceanicrealms:silver_pomfret_fish",
+        "nbt": { "Variant": 1 },
+        "roll": -90.0,
+        "y": -0.2,
+        "z": 0.1
+    },
+    "conditions": [
+        { "type": "tide:saltwater" },
+        { "type": "tide:dimension", "dimensions": ["minecraft:overworld"] },
+        { "type": "tide:fluid", "fluid": "water" },
+        { "type": "tide:above", "y": 40 },
+        { "type": "tide:found_in", "biomes": ["minecraft:warm_ocean"] }
+    ],
+    "selection_weight": 40.0,
+    "size": { "record_high_cm": 85.0, "typical_high_cm": 55.0, "typical_low_cm": 25.0 },
+    "speed": 0.25,
+    "strength": 0.5
+}

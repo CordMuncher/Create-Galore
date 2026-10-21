@@ -1,0 +1,31 @@
+{
+  "render_type": "minecraft:translucent",
+  "textures": {
+    "frame": "create_galore_fishing:block/aquarium_frame",
+    "glass": "create_galore_fishing:block/aquarium_glass",
+    "sand": "minecraft:block/sand",
+    "particle": "create_galore_fishing:block/aquarium_frame"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        1
+      ],
+      "to": [
+        16,
+        16,
+        1
+      ],
+      "faces": {
+        "north": {
+          "texture": "#glass"
+        },
+        "south": {
+          "texture": "#glass"
+        }
+      }
+    }
+  ]
+}

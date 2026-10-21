@@ -1,0 +1,29 @@
+{
+    "associated_mods": ["rainbowreef"],
+    "fish": "rainbowreef:arrow_crab",
+    "bucket": "rainbowreef:arrow_crab_bucket",
+    "journal_profile": {
+        "description": "journal.description.rainbowreef.arrow_crab",
+        "group": "saltwater",
+        "location": "journal.info.location.saltwater_warm",
+        "rarity": "common"
+    },
+    "display_data": {
+        "entity": "rainbowreef:arrow_crab",
+        "nbt": { "Variant": 0 },
+        "shape": "2x1",
+        "yaw": 90.0,
+        "z": 0.1
+    },
+    "conditions": [
+        { "type": "tide:saltwater" },
+        { "type": "tide:dimension", "dimensions": ["minecraft:overworld"] },
+        { "type": "tide:fluid", "fluid": "water" },
+        { "type": "tide:above", "y": 40 },
+        { "type": "tide:found_in", "biomes": ["minecraft:warm_ocean", "seafarer:warm_reef"] }
+    ],
+    "selection_weight": 30.0,
+    "size": { "record_high_cm": 100.0, "typical_high_cm": 50.0, "typical_low_cm": 30.0 },
+    "speed": 0.2,
+    "strength": 0.6
+}

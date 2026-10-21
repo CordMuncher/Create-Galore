@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "  S",
+    " SS",
+    "GB "
+  ],
+  "key": {
+    "S": {
+      "tag": "c:ingots/steel"
+    },
+    "G": {
+      "item": "tfmg:rubber_sheet"
+    },
+    "B": {
+      "tag": "c:plates/brass"
+    }
+  },
+  "result": {
+    "id": "create_galore_fishing:boat_rod",
+    "count": 1
+  }
+}

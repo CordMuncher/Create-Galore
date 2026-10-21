@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    {
+      "tag": "c:plates/iron"
+    },
+    {
+      "tag": "c:nuggets/iron"
+    },
+    {
+      "item": "create_galore_fishing:medium_hook"
+    }
+  ],
+  "result": {
+    "id": "create_galore_fishing:spoon",
+    "count": 1
+  }
+}

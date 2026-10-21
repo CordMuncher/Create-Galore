@@ -1,0 +1,28 @@
+{
+    "associated_mods": ["seafarer"],
+    "fish": "seafarer:raw_horseshoe_crab",
+    "bucket": "seafarer:horseshoe_crab_bucket",
+    "journal_profile": {
+        "description": "journal.description.seafarer.horseshoe_crab",
+        "group": "saltwater",
+        "location": "biome.minecraft.beach",
+        "rarity": "uncommon"
+    },
+    "display_data": {
+        "entity": "seafarer:horseshoe_crab",
+        "shape": "2x1",
+        "x": 0.2,
+        "z": 0.04
+    },
+    "conditions": [
+        { "type": "tide:saltwater" },
+        { "type": "tide:dimension", "dimensions": ["minecraft:overworld"] },
+        { "type": "tide:fluid", "fluid": "water" },
+        { "type": "tide:above", "y": 40 },
+        { "type": "tide:found_in", "biomes": ["#minecraft:is_beach"] }
+    ],
+    "selection_weight": 20.0,
+    "size": { "record_high_cm": 150.0, "typical_high_cm": 100.0, "typical_low_cm": 50.0 },
+    "speed": 0.2,
+    "strength": 0.6
+}

@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    {
+      "item": "create_galore_fishing:mono_line"
+    },
+    {
+      "item": "create_galore_fishing:mono_line"
+    },
+    {
+      "item": "create_galore_fishing:mono_line"
+    },
+    {
+      "item": "tfmg:rubber_sheet"
+    }
+  ],
+  "result": {
+    "id": "create_galore_fishing:heavy_line",
+    "count": 1
+  }
+}

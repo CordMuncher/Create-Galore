@@ -1,0 +1,30 @@
+{
+    "associated_mods": ["aquaculture"],
+    "fish": "aquaculture:catfish",
+    "bucket": "aquaculture:catfish_bucket",
+    "journal_profile": {
+        "description": "journal.description.aquaculture.catfish",
+        "group": "freshwater",
+        "location": "journal.info.location.freshwater",
+        "rarity": "uncommon"
+    },
+    "display_data": {
+        "entity": "aquaculture:catfish",
+        "x": 0.1
+    },
+    "conditions": [
+        { "type": "tide:freshwater" },
+        { "type": "tide:dimension", "dimensions": ["minecraft:overworld"] },
+        { "type": "tide:fluid", "fluid": "water" },
+        { "type": "tide:above", "y": 40 },
+        { "type": "tide:seasons", "seasons": ["summer", "fall", "spring"] },
+        { "type": "tide:time_of_day", "ranges": [{ "max": 24000, "min": 12000 }] }
+    ],
+    "modifiers": [
+        { "type": "tide:temperature", "preferred_temperature": 0.4, "temperature_tolerance": 0.5 }
+    ],
+    "selection_weight": 30.0,
+    "size": { "record_high_cm": 105.0, "typical_high_cm": 85.0, "typical_low_cm": 65.0 },
+    "speed": 0.25,
+    "strength": 0.4
+}

@@ -1,0 +1,17 @@
+{
+  "item": "create_galore_fishing:bamboo_pole",
+  "_generated": "from tools/fishing-mod/gen_tackle.py; edit that, not this file",
+  "kind": "rod",
+  "length": 4.0,
+  "max_load": 4,
+  "action": "slow",
+  "sections": 3,
+  "lure_min": 1,
+  "lure_max": 15,
+  "reel": false,
+  "fixed_line": 8,
+  "color": "#c9b36b",
+  "grip": "#a89050",
+  "grip_style": "bamboo",
+  "finish": "bamboo"
+}

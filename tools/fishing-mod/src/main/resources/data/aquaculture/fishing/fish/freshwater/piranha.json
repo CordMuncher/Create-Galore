@@ -1,0 +1,27 @@
+{
+    "associated_mods": ["aquaculture"],
+    "fish": "aquaculture:piranha",
+    "bucket": "aquaculture:piranha_bucket",
+    "journal_profile": {
+        "description": "journal.description.aquaculture.piranha",
+        "group": "freshwater",
+        "location": "journal.info.location.jungle",
+        "rarity": "common"
+    },
+    "display_data": {
+        "entity": "aquaculture:piranha",
+        "x": 0.1,
+        "y": 0.1
+    },
+    "conditions": [
+        { "type": "tide:freshwater" },
+        { "type": "tide:dimension", "dimensions": ["minecraft:overworld"] },
+        { "type": "tide:fluid", "fluid": "water" },
+        { "type": "tide:above", "y": 40 },
+        { "type": "tide:found_in", "biomes": ["#tide:has_jungle_fish"] }
+    ],
+    "selection_weight": 40.0,
+    "size": { "record_high_cm": 35.0, "typical_high_cm": 25.0, "typical_low_cm": 5.0 },
+    "speed": 1.0,
+    "strength": 0.6
+}

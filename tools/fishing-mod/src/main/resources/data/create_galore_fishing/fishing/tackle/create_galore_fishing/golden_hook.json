@@ -1,0 +1,8 @@
+{
+  "item": "create_galore_fishing:golden_hook",
+  "_generated": "from tools/fishing-mod/gen_tackle.py; edit that, not this file",
+  "kind": "hook",
+  "size": 4,
+  "hold": 0.9,
+  "luck": 1
+}

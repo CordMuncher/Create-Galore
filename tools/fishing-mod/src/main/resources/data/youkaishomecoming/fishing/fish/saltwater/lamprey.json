@@ -1,0 +1,25 @@
+{
+    "associated_mods": ["youkaishomecoming"],
+    "fish": "youkaishomecoming:raw_lamprey",
+    "bucket": "youkaishomecoming:lamprey_bucket",
+    "journal_profile": {
+        "description": "journal.description.youkaishomecoming.lamprey",
+        "group": "saltwater",
+        "location": "journal.info.location.saltwater",
+        "rarity": "common"
+    },
+    "display_data": {
+        "entity": "youkaishomecoming:lamprey"
+    },
+    "conditions": [
+        { "type": "tide:dimension", "dimensions": ["minecraft:overworld"] },
+        { "type": "tide:fluid", "fluid": "water" },
+        { "type": "tide:above", "y": 40 },
+        { "type": "tide:found_in", "biomes": ["#minecraft:is_river", "#minecraft:is_ocean"] },
+        { "type": "tide:not", "a": { "type": "tide:found_in", "biomes": ["minecraft:warm_ocean"] } }
+    ],
+    "selection_weight": 30.0,
+    "size": { "record_high_cm": 200.0, "typical_high_cm": 140.0, "typical_low_cm": 100.0 },
+    "speed": 0.5,
+    "strength": 0.4
+}

@@ -1,0 +1,21 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "tide:bull_shark",
+      "required": false
+    },
+    {
+      "id": "tide:great_white_shark",
+      "required": false
+    },
+    {
+      "id": "tide:sand_tiger_shark",
+      "required": false
+    },
+    {
+      "id": "tide:shadow_shark",
+      "required": false
+    }
+  ]
+}

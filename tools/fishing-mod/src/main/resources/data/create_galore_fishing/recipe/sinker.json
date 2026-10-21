@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    {
+      "tag": "c:nuggets/lead"
+    }
+  ],
+  "result": {
+    "id": "create_galore_fishing:sinker",
+    "count": 2
+  }
+}

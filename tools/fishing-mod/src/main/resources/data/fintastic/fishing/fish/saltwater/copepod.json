@@ -1,0 +1,25 @@
+{
+    "associated_mods": ["fintastic"],
+    "fish": "fintastic:copepod",
+    "bucket": "fintastic:copepod_bucket",
+    "journal_profile": {
+        "description": "journal.description.fintastic.copepod",
+        "group": "saltwater",
+        "location": "journal.info.location.saltwater",
+        "rarity": "uncommon"
+    },
+    "display_data": {
+        "entity": "fintastic:copepod",
+        "nbt": { "Variant": 0 }
+    },
+    "conditions": [
+        { "type": "tide:dimension", "dimensions": ["minecraft:overworld"] },
+        { "type": "tide:fluid", "fluid": "water" },
+        { "type": "tide:above", "y": 40 },
+        { "type": "tide:found_in", "biomes": ["#minecraft:is_jungle", "#minecraft:is_forest", "#minecraft:is_mountain", "#minecraft:is_badlands", "#minecraft:is_savanna", "#minecraft:is_plains", "#minecraft:is_lush", "#minecraft:is_ocean"] }
+    ],
+    "selection_weight": 20.0,
+    "size": { "record_high_cm": 100.0, "typical_high_cm": 45.0, "typical_low_cm": 1.0 },
+    "speed": 0.25,
+    "strength": 0.6
+}

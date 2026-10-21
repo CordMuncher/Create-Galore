@@ -1,0 +1,28 @@
+{
+  "parent": "tide:catch_legendary",
+  "criteria": {
+    "freeze_coelacanth": {
+      "trigger": "tide:froze_coelacanth"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.tide.freeze_coelacanth.description"
+    },
+    "frame": "challenge",
+    "hidden": true,
+    "icon": {
+      "count": 1,
+      "id": "tide:coelacanth"
+    },
+    "title": {
+      "translate": "advancements.tide.freeze_coelacanth.title"
+    }
+  },
+  "requirements": [
+    [
+      "freeze_coelacanth"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

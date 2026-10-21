@@ -1,0 +1,30 @@
+{
+    "associated_mods": ["unusualfishmod"],
+    "fish": "unusualfishmod:raw_beaked_herring",
+    "bucket": "unusualfishmod:beaked_herring_bucket",
+    "journal_profile": {
+        "description": "journal.description.unusualfishmod.beaked_herring",
+        "group": "saltwater",
+        "location": "journal.info.location.saltwater",
+        "rarity": "common"
+    },
+    "display_data": {
+        "entity": "unusualfishmod:beaked_herring",
+        "roll": -90,
+        "x": 0.1,
+        "y": -0.1,
+        "z": 0.1
+    },
+    "conditions": [
+        { "type": "tide:saltwater" },
+        { "type": "tide:dimension", "dimensions": ["minecraft:overworld"] },
+        { "type": "tide:fluid", "fluid": "water" },
+        { "type": "tide:above", "y": 40 },
+        { "type": "tide:found_in", "biomes": ["minecraft:ocean"] },
+        { "type": "tide:has_enchantments", "enchantments": ["unusualfishmod:unusual_catch"] }
+    ],
+    "selection_weight": 40.0,
+    "size": { "record_high_cm": 90.0, "typical_high_cm": 75.0, "typical_low_cm": 5.0 },
+    "speed": 1.4,
+    "strength": 0.1
+}

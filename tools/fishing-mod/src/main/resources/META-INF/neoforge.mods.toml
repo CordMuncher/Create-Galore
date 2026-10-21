@@ -1,0 +1,107 @@
+modLoader = "javafml"
+loaderVersion = "[4,)"
+license = "MIT AND MPL-2.0"
+
+[[mods]]
+modId = "create_galore_fishing"
+version = "0.2.0"
+displayName = "Create Galore Fishing"
+authors = "Create Galore"
+credits = "Fish, models, journal and fishing data ported from Tide 2 by Lightning-64 (MPL-2.0); Aquaculture, Hybrid Aquatic and other mods' fish data adapted from Tide Extra Compatibility (MIT)."
+description = '''Realistic-lite fishing for Create Galore: rods, reels, lines, hooks and rigs you put together and see, with ratings and wear; casting, bites and a fight where the rod bends, the drag slips and fish tire; real fish weights; bait from Create machines; processing for big fish; rod holders and reel drives powered by Create or fuel, and trolling from ships.'''
+
+[[mixins]]
+config = "create_galore_fishing.mixins.json"
+
+# The ported Tide code's own mixins (fish length, satchel, journal lectern, pocket watch freeze, ...).
+[[mixins]]
+config = "create_galore_fishing_tide.mixins.json"
+
+[[dependencies.create_galore_fishing]]
+modId = "neoforge"
+type = "required"
+versionRange = "[21.1,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.create_galore_fishing]]
+modId = "create"
+type = "required"
+versionRange = "[6.0,)"
+ordering = "AFTER"
+side = "BOTH"
+
+# Our mod carries Tide's content (ported, under Tide's own "tide" ids), so the two can never load together.
+[[dependencies.create_galore_fishing]]
+modId = "tide"
+type = "incompatible"
+reason = "Create Galore Fishing replaces Tide and already includes its fish, journal and extras."
+versionRange = "*"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.create_galore_fishing]]
+modId = "mr_tide_extracompatibility"
+type = "incompatible"
+reason = "Create Galore Fishing already includes Tide Extra Compatibility's fish data."
+versionRange = "*"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.create_galore_fishing]]
+modId = "sable"
+type = "optional"
+versionRange = "*"
+ordering = "AFTER"
+side = "BOTH"
+
+[[dependencies.create_galore_fishing]]
+modId = "aquaculture"
+type = "optional"
+versionRange = "*"
+ordering = "AFTER"
+side = "BOTH"
+
+[[dependencies.create_galore_fishing]]
+modId = "hybrid_aquatic"
+type = "optional"
+versionRange = "*"
+ordering = "AFTER"
+side = "BOTH"
+
+# Mods whose fish cooking recipes this mod replaces with weight-limited ones (same ids): loading after them puts
+# our data above theirs. Create: Integrated Farming's Fishing Net also gets our catch provider.
+[[dependencies.create_galore_fishing]]
+modId = "naturalist"
+type = "optional"
+versionRange = "*"
+ordering = "AFTER"
+side = "BOTH"
+
+[[dependencies.create_galore_fishing]]
+modId = "alexscaves"
+type = "optional"
+versionRange = "*"
+ordering = "AFTER"
+side = "BOTH"
+
+[[dependencies.create_galore_fishing]]
+modId = "aquamirae"
+type = "optional"
+versionRange = "*"
+ordering = "AFTER"
+side = "BOTH"
+
+[[dependencies.create_galore_fishing]]
+modId = "betterend"
+type = "optional"
+versionRange = "*"
+ordering = "AFTER"
+side = "BOTH"
+
+[[dependencies.create_galore_fishing]]
+modId = "create_integrated_farming"
+type = "optional"
+versionRange = "*"
+ordering = "AFTER"
+side = "BOTH"

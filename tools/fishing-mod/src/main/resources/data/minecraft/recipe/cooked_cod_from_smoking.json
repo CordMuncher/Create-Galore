@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:smoking",
+  "category": "food",
+  "cookingtime": 100,
+  "experience": 0.35,
+  "ingredient": {
+    "type": "create_galore_fishing:whole_fish",
+    "base": {
+      "item": "minecraft:cod"
+    }
+  },
+  "result": {
+    "id": "minecraft:cooked_cod"
+  }
+}

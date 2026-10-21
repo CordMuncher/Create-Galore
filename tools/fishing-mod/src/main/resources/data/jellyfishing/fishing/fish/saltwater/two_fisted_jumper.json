@@ -1,0 +1,28 @@
+{
+    "associated_mods": ["jellyfishing"],
+    "fish": "jellyfishing:two_fisted_jumper",
+    "bucket": "jellyfishing:net_of_two_fisted_jumper",
+    "journal_profile": {
+        "description": "journal.description.jellyfishing.two_fisted_jumper",
+        "group": "saltwater",
+        "location": "biome.jellyfishing.jellyfish_fields",
+        "rarity": "uncommon"
+    },
+    "display_data": {
+        "entity": "jellyfishing:two_fisted_jumper",
+        "pitch": 90,
+        "x": -0.1,
+        "z": 0.25
+    },
+    "conditions": [
+        { "type": "tide:saltwater" },
+        { "type": "tide:dimension", "dimensions": ["minecraft:overworld"] },
+        { "type": "tide:fluid", "fluid": "water" },
+        { "type": "tide:above", "y": 40 },
+        { "type": "tide:found_in", "biomes": ["jellyfishing:jellyfish_fields", "jellyfishing:rock_bottom"] }
+    ],
+    "selection_weight": 20.0,
+    "size": { "record_high_cm": 155.0, "typical_high_cm": 75.0, "typical_low_cm": 20.0 },
+    "speed": 0.5,
+    "strength": 0.3
+}

@@ -1,0 +1,20 @@
+{
+  "fish": "aquaculture:tambaqui",
+  "_generated": "from tools/fishing-mod/species.csv; edit that, not this file",
+  "size": {
+    "typical_low_cm": 50,
+    "typical_high_cm": 90,
+    "record_high_cm": 110
+  },
+  "length_weight": {
+    "a": 0.03,
+    "b": 3
+  },
+  "fight": {
+    "per_kg": 0.85,
+    "stamina": 1.2,
+    "speed": 1.2,
+    "profile": "middle"
+  },
+  "feeding": "bottom"
+}

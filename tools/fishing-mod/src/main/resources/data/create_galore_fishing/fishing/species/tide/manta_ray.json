@@ -1,0 +1,18 @@
+{
+  "fish": "tide:manta_ray",
+  "_generated": "from tools/fishing-mod/species.csv; edit that, not this file",
+  "length_weight": {
+    "a": 0.0025,
+    "b": 3
+  },
+  "fight": {
+    "per_kg": 0.9,
+    "stamina": 1.2,
+    "speed": 1.6,
+    "runs": 0.06,
+    "jumps": 0.04,
+    "charges": 0.01,
+    "profile": "sulker"
+  },
+  "feeding": "sea_bottom"
+}

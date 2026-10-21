@@ -1,0 +1,28 @@
+{
+    "associated_mods": ["rainbowreef"],
+    "fish": "rainbowreef:raw_ray",
+    "bucket": "rainbowreef:spotted_eagle_ray_bucket",
+    "journal_profile": {
+        "description": "journal.description.rainbowreef.ray",
+        "group": "saltwater",
+        "location": "biome.minecraft.lukewarm_ocean",
+        "rarity": "common"
+    },
+    "display_data": {
+        "entity": "rainbowreef:ray",
+        "nbt": { "Variant": 0 },
+        "shape": "3x1",
+        "yaw": 90.0
+    },
+    "conditions": [
+        { "type": "tide:saltwater" },
+        { "type": "tide:dimension", "dimensions": ["minecraft:overworld"] },
+        { "type": "tide:fluid", "fluid": "water" },
+        { "type": "tide:above", "y": 40 },
+        { "type": "tide:found_in", "biomes": ["minecraft:lukewarm_ocean", "minecraft:deep_lukewarm_ocean"] }
+    ],
+    "selection_weight": 30.0,
+    "size": { "record_high_cm": 100.0, "typical_high_cm": 60.0, "typical_low_cm": 30.0 },
+    "speed": 0.6,
+    "strength": 0.4
+}

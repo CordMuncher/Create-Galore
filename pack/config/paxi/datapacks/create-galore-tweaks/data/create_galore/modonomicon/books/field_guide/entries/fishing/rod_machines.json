@@ -1,0 +1,110 @@
+{
+  "category": "fishing",
+  "name": "Rod Holder and Reel Drives",
+  "description": "Machines that hold, wind and cast rods, and how drag meets stress.",
+  "icon": {
+    "item": "create_galore_fishing:geared_reel_drive"
+  },
+  "x": 2,
+  "y": 4,
+  "sort_number": 18,
+  "parents": [
+    {
+      "entry": "fishing/overview",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Rod Holder and Reel Drives",
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- A **Rod Holder** sounds an alarm and pulses redstone on a bite.\n- [#](FFFFFF)\ue104[#]() **Reel drives** fight fish with rotation, or with an engine.\n- [#](FFFFFF)\ue105[#]() Winding costs **stress**: pick a drag your network can turn.\n- Catches go into a chest, funnel or belt."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Right-click any machine with a rod to set it in; a cast line stays out. An empty hand takes the rod back, with its line, bite or fight.\\\n\\\nCatches count as yours, the one who set the rod in: journal and personal bests. The machine keeps the rod's own drag; it never changes it."
+    },
+    {
+      "type": "modonomicon:crafting_recipe",
+      "recipe_id_1": "create_galore_fishing:crafting/rod_holder",
+      "text": "**Rod Holder**: an iron sheet over a log over three smooth stone slabs makes 2. It only holds: take the rod out to strike and fight by hand."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "On a bite the holder rattles a bite alarm, pulses redstone and lights a comparator at full (otherwise the comparator reads the line's tension). The bite lasts five seconds there, long enough to take the rod and strike.\\\n\\\nSee [#](2E5AAC)[Redstone and Displays](entry://create_basics/redstone_and_control)[#]()."
+    },
+    {
+      "type": "modonomicon:crafting_recipe",
+      "recipe_id_1": "create_galore_fishing:crafting/reel_drive",
+      "text": "**Basic Reel Drive**: a Rod Holder over an andesite casing between two shafts. A shaft runs through it side to side."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "The Basic drive only winds. Hook the fish by hand, set the rod in, and it fights at a speed from the shaft (the reel's own speed at 32 [#](7A3C9A)[RPM](entry://glossary/rpm)[#]()). A row of drives along a jetty runs off one shaft, a water wheel's included.\\\n\\\n[#](FFFFFF)\ue101[#]() **Watch out:** it keeps winding while the drag slips, so the reel wears fast."
+    },
+    {
+      "type": "modonomicon:crafting_recipe",
+      "recipe_id_1": "create_galore_fishing:crafting/geared_reel_drive",
+      "text": "**Geared Reel Drive**: a Rod Holder, a brass casing, two cogwheels and an electron tube. Shafts run through it like the Basic one."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "The Geared drive casts, strikes bites itself, and winds through an automatic gearbox: it shifts down when the fish pulls hard and up when it tires, and never winds while the drag slips.\\\n\\\nIts [#](7A3C9A)[value panels](entry://glossary/value_panel)[#]() on the back set the mode, the cast distance (3 to 48 blocks) and the top gear."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Modes:**\n\n- **Cast and wait** (the default): casts once and holds, for float, bottom and trolling rigs.\n- **Cast and retrieve**: winds a lure back slowly and casts again.\n\nA **bait slot** (by hand, hopper or funnel; a Live-Bait Bucket works) re-baits the rod before each cast."
+    },
+    {
+      "type": "modonomicon:crafting_recipe",
+      "recipe_id_1": "create_galore_fishing:crafting/fuel_reel_drive",
+      "text": "**Fuel Reel Drive**: a Geared Reel Drive, two copper casings, a fluid tank and a furnace. Geared behaviour with its own engine and no shafts: made for boats."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "[#](FFFFFF)\ue108[#]() It burns furnace fuel from a slot, or lava, Fish Oil and other [#](2E5AAC)[liquid fuels](entry://industry/liquid_fuel)[#]() from a 4-bucket tank. It burns a tenth as much while it waits, the full rate under full load, and only with a rod in.\\\n\\\nIts engine winds against 12 kg in normal gear, four times that in its lowest."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "[#](FFFFFF)\ue105[#]() **Drag against rotation.** Winding against a fish costs [#](7A3C9A)[stress](entry://glossary/su)[#](), more the harder it pulls: 1 SU per RPM idle, plus 4 SU per RPM for each kg of pull in normal gear.\\\n\\\nA fish leaning on a drag heavier than the network can turn [#](7A3C9A)[overstresses](entry://glossary/overstressed)[#]() it until the fish eases off."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "On one water wheel a 6 kg drag never stalls a Basic drive and a 10 kg one does; about 7.5 kg is the limit in normal gear. The Geared drive's lowest gear copes with about four times that, more slowly.\\\n\\\nThe Fuel drive's engine stalls the same way above its rating. See [#](2E5AAC)[Stress](entry://create_basics/stress)[#]()."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Catches** go into a chest, hopper, funnel or belt below or beside the machine, never into another rod machine. With nowhere to go, the fish hangs from the rod tip for 30 seconds; an empty hand takes it.\\\n\\\nA fish a machine puts on a belt is alive for two minutes: off the belt into water, it swims away."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Experience.** A machine earns half what you would for each catch, with no release bonus. It banks it and pays it out whenever a rod goes in or out.\\\n\\\n[#](FFFFFF)\ue104[#]() [#](7A3C9A)[Goggles](entry://glossary/goggles)[#]() show the rod, a bite or fish on and its tension, line out, drag, bait and bait in store, reel wear, gear, what it can still wind against, fuel and banked experience."
+    },
+    {
+      "type": "modonomicon:text",
+      "text": "Machines get no bonus item from the Midas rod or the Rod of the Hero, and catch no treasure in the Nether. Overworld treasure and crates come as by hand.\\\n\\\nMachines fish only while their chunk is loaded."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "[#](FFFFFF)\ue103[#]() **In depth.** A Geared drive on one water wheel (8 RPM) can take several minutes to wind in a big tuna in its lowest gear. A Basic drive grinding a strong fish through a slipping drag wears its reel quickly, up to a tenth of it per fight.\\\n\\\nCreate Integrated Farming's [#](2E5AAC)[Fishing Nets](entry://food/integrated_farming)[#]() catch the same fish, small ones most."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Related",
+      "text": "- [#](2E5AAC)[Trolling from Ships](entry://fishing/trolling)[#]()\n- [#](2E5AAC)[Power Sources](entry://create_basics/power_sources)[#]()\n- [#](2E5AAC)[Live Bait and Chum](entry://fishing/live_bait)[#]()\n- [#](2E5AAC)[Moving Items](entry://create_basics/item_logistics)[#]()"
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+    "associated_mods": ["undergarden"],
+    "fish": "undergarden:raw_gwibling",
+    "bucket": "undergarden:gwibling_bucket",
+    "journal_profile": {
+        "description": "journal.description.undergarden.gwibling",
+        "group": "freshwater",
+        "location": "The Undergarden",
+        "rarity": "common"
+    },
+    "display_data": {
+        "entity": "undergarden:gwibling"
+    },
+    "conditions": [
+        { "type": "tide:dimension", "dimensions": ["undergarden:undergarden"] },
+        { "type": "tide:fluid", "fluid": "water" }
+    ],
+    "selection_weight": 50.0,
+    "size": { "record_high_cm": 40.0, "typical_high_cm": 30.0, "typical_low_cm": 12.0 },
+    "speed": 0.5,
+    "strength": 0.25
+}

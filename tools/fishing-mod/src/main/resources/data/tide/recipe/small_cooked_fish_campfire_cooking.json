@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:campfire_cooking",
+  "category": "food",
+  "cookingtime": 600,
+  "experience": 0.35,
+  "ingredient": {
+    "type": "create_galore_fishing:whole_fish",
+    "base": {
+      "tag": "tide:cookable/small_cooked_fish"
+    }
+  },
+  "result": {
+    "id": "tide:small_cooked_fish"
+  }
+}

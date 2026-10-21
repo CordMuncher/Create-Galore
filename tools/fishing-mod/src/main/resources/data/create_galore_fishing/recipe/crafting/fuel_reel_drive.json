@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " T ",
+    "CDC",
+    " F "
+  ],
+  "key": {
+    "T": {
+      "item": "create:fluid_tank"
+    },
+    "C": {
+      "item": "create:copper_casing"
+    },
+    "D": {
+      "item": "create_galore_fishing:geared_reel_drive"
+    },
+    "F": {
+      "item": "minecraft:furnace"
+    }
+  },
+  "result": {
+    "id": "create_galore_fishing:fuel_reel_drive"
+  }
+}

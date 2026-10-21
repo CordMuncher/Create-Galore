@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "  B",
+    " B ",
+    "B  "
+  ],
+  "key": {
+    "B": [
+      {
+        "item": "minecraft:bamboo"
+      },
+      {
+        "item": "minecraft:sugar_cane"
+      }
+    ]
+  },
+  "result": {
+    "id": "create_galore_fishing:bamboo_pole",
+    "count": 1
+  }
+}

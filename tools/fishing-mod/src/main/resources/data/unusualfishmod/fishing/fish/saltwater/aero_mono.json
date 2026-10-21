@@ -1,0 +1,30 @@
+{
+    "associated_mods": ["unusualfishmod"],
+    "fish": "unusualfishmod:raw_aero_mono",
+    "bucket": "unusualfishmod:aero_mono_bucket",
+    "journal_profile": {
+        "description": "journal.description.unusualfishmod.aero_mono",
+        "group": "saltwater",
+        "location": "journal.info.location.saltwater",
+        "rarity": "common"
+    },
+    "display_data": {
+        "entity": "unusualfishmod:aero_mono",
+        "roll": -90,
+        "x": 0.1,
+        "y": -0.1,
+        "z": 0.1
+    },
+    "conditions": [
+        { "type": "tide:saltwater" },
+        { "type": "tide:dimension", "dimensions": ["minecraft:overworld"] },
+        { "type": "tide:fluid", "fluid": "water" },
+        { "type": "tide:above", "y": 40 },
+        { "type": "tide:found_in", "biomes": ["minecraft:ocean"] },
+        { "type": "tide:has_enchantments", "enchantments": ["unusualfishmod:unusual_catch"] }
+    ],
+    "selection_weight": 40.0,
+    "size": { "record_high_cm": 110.0, "typical_high_cm": 90.0, "typical_low_cm": 20.0 },
+    "speed": 1.0,
+    "strength": 0.4
+}

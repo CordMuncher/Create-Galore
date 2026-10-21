@@ -1,0 +1,7 @@
+{
+  "item": "tide:light_blue_bobber",
+  "_generated": "from tools/fishing-mod/gen_tackle.py; edit that, not this file",
+  "kind": "float",
+  "weight": 4,
+  "color": "#5ab0e0"
+}

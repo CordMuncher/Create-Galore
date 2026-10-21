@@ -1,0 +1,23 @@
+{
+  "fish": "crittersandcompanions:clam",
+  "_generated": "from tools/fishing-mod/species.csv; edit that, not this file",
+  "size": {
+    "typical_low_cm": 5,
+    "typical_high_cm": 10,
+    "record_high_cm": 15
+  },
+  "length_weight": {
+    "a": 0.05,
+    "b": 3
+  },
+  "fight": {
+    "per_kg": 0.2,
+    "stamina": 0.3,
+    "speed": 0.1,
+    "runs": 0,
+    "jumps": 0,
+    "charges": 0,
+    "profile": "steady"
+  },
+  "feeding": "sea_bottom"
+}

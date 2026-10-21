@@ -1,0 +1,27 @@
+{
+    "associated_mods": ["unusualfishmod"],
+    "fish": "unusualfishmod:raw_forkfish",
+    "bucket": "unusualfishmod:forkfish_bucket",
+    "journal_profile": {
+        "description": "journal.description.unusualfishmod.forkfish",
+        "group": "saltwater",
+        "location": "biome.minecraft.lukewarm_ocean",
+        "rarity": "common"
+    },
+    "display_data": {
+        "entity": "unusualfishmod:forkfish",
+        "z": 0.05
+    },
+    "conditions": [
+        { "type": "tide:saltwater" },
+        { "type": "tide:dimension", "dimensions": ["minecraft:overworld"] },
+        { "type": "tide:fluid", "fluid": "water" },
+        { "type": "tide:above", "y": 40 },
+        { "type": "tide:found_in", "biomes": ["minecraft:lukewarm_ocean"] },
+        { "type": "tide:has_enchantments", "enchantments": ["unusualfishmod:unusual_catch"] }
+    ],
+    "selection_weight": 40.0,
+    "size": { "record_high_cm": 190.0, "typical_high_cm": 150.0, "typical_low_cm": 90.0 },
+    "speed": 0.8,
+    "strength": 0.7
+}

@@ -1,0 +1,29 @@
+{
+    "associated_mods": ["crittersandcompanions"],
+    "fish": "crittersandcompanions:koi_fish",
+    "bucket": "crittersandcompanions:koi_fish_bucket",
+    "journal_profile": {
+        "description": "journal.description.crittersandcompanions.koi_fish",
+        "group": "freshwater",
+        "location": "journal.info.location.river",
+        "rarity": "uncommon"
+    },
+    "display_data": {
+        "entity": "crittersandcompanions:koi_fish",
+        "roll": -90,
+        "x": -0.1,
+        "y": -0.2,
+        "z": 0.23
+    },
+    "conditions": [
+        { "type": "tide:freshwater" },
+        { "type": "tide:dimension", "dimensions": ["minecraft:overworld"] },
+        { "type": "tide:fluid", "fluid": "water" },
+        { "type": "tide:above", "y": 40 },
+        { "type": "tide:found_in", "biomes": ["#minecraft:is_river"] }
+    ],
+    "selection_weight": 20.0,
+    "size": { "record_high_cm": 100.0, "typical_high_cm": 60.0, "typical_low_cm": 30.0 },
+    "speed": 0.95,
+    "strength": 0.5
+}

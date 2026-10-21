@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    {
+      "item": "create_galore_fishing:crankbait"
+    },
+    {
+      "item": "minecraft:glass_pane"
+    },
+    {
+      "tag": "c:nuggets/lead"
+    }
+  ],
+  "result": {
+    "id": "create_galore_fishing:deep_crankbait",
+    "count": 1
+  }
+}

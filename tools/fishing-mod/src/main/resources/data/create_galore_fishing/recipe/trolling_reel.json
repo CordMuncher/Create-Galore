@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "PLP",
+    "MBS",
+    "PPP"
+  ],
+  "key": {
+    "P": {
+      "tag": "c:plates/steel"
+    },
+    "L": {
+      "item": "create:large_cogwheel"
+    },
+    "M": {
+      "item": "create:precision_mechanism"
+    },
+    "B": {
+      "tag": "c:plates/brass"
+    },
+    "S": {
+      "item": "create:shaft"
+    }
+  },
+  "result": {
+    "id": "create_galore_fishing:trolling_reel",
+    "count": 1
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "type": "create:mixing",
+  "heat_requirement": "heated",
+  "ingredients": [
+    {
+      "item": "create_galore_fishing:fish_meal"
+    },
+    {
+      "tag": "c:flours/wheat"
+    },
+    {
+      "tag": "c:eggs"
+    },
+    {
+      "type": "neoforge:single",
+      "amount": 250,
+      "fluid": "minecraft:water"
+    }
+  ],
+  "results": [
+    {
+      "id": "create_galore_fishing:boilies",
+      "count": 4
+    }
+  ]
+}

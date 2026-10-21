@@ -1,0 +1,29 @@
+{
+    "associated_mods": ["naturalist"],
+    "fish": "naturalist:catfish",
+    "bucket": "naturalist:catfish_bucket",
+    "journal_profile": {
+        "description": "journal.description.naturalist.catfish",
+        "group": "freshwater",
+        "location": "journal.info.location.swamp",
+        "rarity": "common"
+    },
+    "display_data": {
+        "entity": "naturalist:catfish",
+        "shape": "2x1",
+        "roll": -90.0,
+        "y": -0.4,
+        "z": 0.35
+    },
+    "conditions": [
+        { "type": "tide:freshwater" },
+        { "type": "tide:dimension", "dimensions": ["minecraft:overworld"] },
+        { "type": "tide:fluid", "fluid": "water" },
+        { "type": "tide:above", "y": 40 },
+        { "type": "tide:found_in", "biomes": ["minecraft:swamp", "minecraft:mangrove_swamp", "#minecraft:is_river", "#c:is_swamp", "biomesoplenty:bayou", "biomesoplenty:bog", "biomesoplenty:wetland"] }
+    ],
+    "selection_weight": 30.0,
+    "size": { "record_high_cm": 250.0, "typical_high_cm": 160.0, "typical_low_cm": 100.0 },
+    "speed": 0.1,
+    "strength": 0.7
+}

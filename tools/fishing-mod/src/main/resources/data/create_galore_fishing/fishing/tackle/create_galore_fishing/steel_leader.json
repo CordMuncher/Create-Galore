@@ -1,0 +1,9 @@
+{
+  "item": "create_galore_fishing:steel_leader",
+  "_generated": "from tools/fishing-mod/gen_tackle.py; edit that, not this file",
+  "kind": "leader",
+  "test": 60,
+  "visibility": 0.6,
+  "steel": true,
+  "color": "#909aa0"
+}

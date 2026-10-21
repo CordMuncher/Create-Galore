@@ -1,0 +1,24 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "dev.creategalore.fishing.tide.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "AbstractFishMixin",
+    "BeehiveBlockMixin",
+    "CreatorModIdMixin",
+    "InventoryMixin",
+    "ItemMixin",
+    "LecternBlockMixin",
+    "MobBucketItemMixin",
+    "MobMixin",
+    "PlayerMixin",
+    "ProjectileWeaponItemMixin"
+  ],
+  "client": [
+    "EntityRenderDispatcherMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

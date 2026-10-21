@@ -1,0 +1,27 @@
+{
+    "associated_mods": ["more_jellyfish"],
+    "fish": "more_jellyfish:skellyfish",
+    "bucket": "more_jellyfish:net_of_skellyfish",
+    "journal_profile": {
+        "description": "journal.description.more_jellyfish.skellyfish",
+        "group": "underground",
+        "location": "journal.info.location.underground",
+        "rarity": "uncommon"
+    },
+    "display_data": {
+        "entity": "more_jellyfish:skellyfish",
+        "pitch": 90,
+        "x": -0.1,
+        "z": 0.2
+    },
+    "conditions": [
+        { "type": "tide:dimension", "dimensions": ["minecraft:overworld"] },
+        { "type": "tide:fluid", "fluid": "water" },
+        { "type": "tide:depth_range", "max_y": 30, "min_y": -50 },     
+        { "type": "tide:time_of_day", "ranges": [{"max": 24000, "min": 11000}] }
+    ],
+    "selection_weight": 20.0,
+    "size": { "record_high_cm": 100.0, "typical_high_cm": 50.0, "typical_low_cm": 10.0 },
+    "speed": 0.3,
+    "strength": 0.7
+}

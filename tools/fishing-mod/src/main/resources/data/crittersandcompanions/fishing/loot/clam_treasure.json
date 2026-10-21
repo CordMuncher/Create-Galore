@@ -1,0 +1,13 @@
+{
+    "associated_mods": ["crittersandcompanions"],
+    "conditions": [
+        { "type": "tide:freshwater" },
+        { "type": "tide:dimension", "dimensions": ["minecraft:overworld"] },
+        { "type": "tide:fluid", "fluid": "water" },
+        { "type": "tide:above", "y": 40 },
+        { "type": "tide:found_in", "biomes": ["#minecraft:is_river"] }
+    ],
+    "loot_table": "crittersandcompanions:gameplay/fishing/treasure_clam",
+    "quality": 2.0,
+    "weight": 5.0
+}

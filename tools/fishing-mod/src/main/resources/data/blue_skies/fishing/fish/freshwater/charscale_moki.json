@@ -1,0 +1,24 @@
+{
+    "associated_mods": ["blue_skies"],
+    "fish": "blue_skies:charscale_moki",
+    "bucket": "blue_skies:ventium_charscale_moki_bucket",
+    "journal_profile": {
+        "description": "journal.description.blue_skies.charscale_moki",
+        "group": "freshwater",
+        "location": "generator.blue_skies.everdawn",
+        "rarity": "common"
+    },
+    "display_data": {
+        "entity": "blue_skies:charscale_moki",
+        "y": -0.05
+    },
+    "conditions": [
+        { "type": "tide:dimension", "dimensions": ["blue_skies:everdawn"] },
+        { "type": "tide:fluid", "fluid": "water" },
+        { "type": "tide:found_in", "biomes": ["blue_skies:rising_creek", "blue_skies:moonlit_reservoir"] }
+    ],
+    "selection_weight": 30.0,
+    "size": { "record_high_cm": 105.0, "typical_high_cm": 60.0, "typical_low_cm": 15.0 },
+    "speed": 1.0,
+    "strength": 0.4
+}

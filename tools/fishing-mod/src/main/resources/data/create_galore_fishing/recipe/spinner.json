@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    {
+      "tag": "c:plates/brass"
+    },
+    {
+      "tag": "c:nuggets/iron"
+    },
+    {
+      "item": "create_galore_fishing:small_hook"
+    },
+    {
+      "item": "minecraft:red_dye"
+    }
+  ],
+  "result": {
+    "id": "create_galore_fishing:spinner",
+    "count": 1
+  }
+}

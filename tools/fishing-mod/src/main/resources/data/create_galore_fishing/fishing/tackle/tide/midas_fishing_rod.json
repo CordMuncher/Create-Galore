@@ -1,0 +1,14 @@
+{
+  "item": "tide:midas_fishing_rod",
+  "_generated": "from tools/fishing-mod/gen_tackle.py; edit that, not this file",
+  "kind": "rod",
+  "length": 2.4,
+  "max_load": 12,
+  "action": "fast",
+  "sections": 3,
+  "lure_min": 5,
+  "lure_max": 35,
+  "color": "#e8c030",
+  "grip": "#8a6a20",
+  "perk": "midas"
+}

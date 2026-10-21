@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    {
+      "item": "tide:pocket_watch"
+    },
+    {
+      "item": "tide:coelacanth"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "tide:enchanted_pocket_watch"
+  }
+}

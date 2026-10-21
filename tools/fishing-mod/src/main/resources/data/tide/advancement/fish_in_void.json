@@ -1,0 +1,26 @@
+{
+  "parent": "tide:fish_in_lava",
+  "criteria": {
+    "fish_in_void": {
+      "trigger": "tide:fish_in_void"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.tide.fish_in_void.description"
+    },
+    "icon": {
+      "count": 1,
+      "id": "tide:void_hook"
+    },
+    "title": {
+      "translate": "advancements.tide.fish_in_void.title"
+    }
+  },
+  "requirements": [
+    [
+      "fish_in_void"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

@@ -1,0 +1,30 @@
+{
+    "associated_mods": ["culturaldelights"],
+    "fish": "culturaldelights:squid",
+    "bucket": "upgrade_aquatic:squid_bucket",
+    "journal_profile": {
+        "description": "journal.description.minecraft.squid",
+        "group": "saltwater",
+        "location": "journal.info.location.saltwater",
+        "rarity": "common"
+    },
+    "display_data": {
+        "entity": "minecraft:squid",
+        "shape": "3x1",
+        "roll": 270.00,
+        "pitch": 90,
+        "yaw": -90,
+        "x": 0.25,
+        "z": 0.4
+    },
+    "conditions": [
+        { "type": "tide:saltwater" },
+        { "type": "tide:dimension", "dimensions": ["minecraft:overworld"] },
+        { "type": "tide:fluid", "fluid": "water" },
+        { "type": "tide:above", "y": 40 },
+        { "type": "tide:found_in", "biomes": ["#minecraft:is_ocean"] }
+    ],
+    "selection_weight": 40.0,
+    "size": { "record_high_cm": 175.0, "typical_high_cm": 120.0, "typical_low_cm": 40.0 },
+    "strength": 0.6
+}

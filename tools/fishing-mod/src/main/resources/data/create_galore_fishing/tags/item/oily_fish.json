@@ -1,0 +1,53 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "minecraft:salmon",
+      "required": false
+    },
+    {
+      "id": "aquaculture:pink_salmon",
+      "required": false
+    },
+    {
+      "id": "aquaculture:atlantic_herring",
+      "required": false
+    },
+    {
+      "id": "hybrid_aquatic:herring",
+      "required": false
+    },
+    {
+      "id": "hybrid_aquatic:mackerel",
+      "required": false
+    },
+    {
+      "id": "aquaculture:tuna",
+      "required": false
+    },
+    {
+      "id": "hybrid_aquatic:tuna",
+      "required": false
+    },
+    {
+      "id": "tide:anchovy",
+      "required": false
+    },
+    {
+      "id": "aquaculture:rainbow_trout",
+      "required": false
+    },
+    {
+      "id": "aquaculture:brown_trout",
+      "required": false
+    },
+    {
+      "id": "tide:brook_trout",
+      "required": false
+    },
+    {
+      "id": "hybrid_aquatic:trout",
+      "required": false
+    }
+  ]
+}

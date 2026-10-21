@@ -1,0 +1,29 @@
+{
+    "associated_mods": ["fossil"],
+    "fish": "fossil:meat_sturgeon",
+    "bucket": "fossil:bucket_item_sturgeon",
+    "journal_profile": {
+        "description": "journal.description.fossil.sturgeon",
+        "group": "freshwater",
+        "location": "journal.info.location.river",
+        "rarity": "common"
+    },
+    "display_data": {
+        "entity": "fossil:sturgeon",
+        "shape": "3x1",
+        "roll": -90.0,
+        "y": -0.25,
+        "z": 0.25
+    },
+    "conditions": [
+        { "type": "tide:freshwater" },
+        { "type": "tide:dimension", "dimensions": ["minecraft:overworld"] },
+        { "type": "tide:fluid", "fluid": "water" },
+        { "type": "tide:above", "y": 40 },
+        { "type": "tide:found_in", "biomes": ["minecraft:river"] }
+    ],
+    "selection_weight": 40.0,
+    "size": { "record_high_cm": 245.0, "typical_high_cm": 155.0, "typical_low_cm": 90.0 },
+    "speed": 0.8,
+    "strength": 0.4
+}

@@ -1,0 +1,27 @@
+{
+    "associated_mods": ["more_jellyfish"],
+    "fish": "more_jellyfish:emerald_jellyfish",
+    "bucket": "more_jellyfish:net_of_emerald_jellyfish",
+    "journal_profile": {
+        "description": "journal.description.more_jellyfish.emerald_jellyfish",
+        "group": "underground",
+        "location": "biome.minecraft.jagged_peaks",
+        "rarity": "rare"
+    },
+    "display_data": {
+        "entity": "more_jellyfish:emerald_jellyfish",
+        "pitch": 90,
+        "x": -0.1,
+        "z": 0.2
+    },
+    "conditions": [
+        { "type": "tide:dimension", "dimensions": ["minecraft:overworld"] },
+        { "type": "tide:fluid", "fluid": "water" },
+        { "type": "tide:above", "y": 100 },
+        { "type": "tide:found_in", "biomes": ["#minecraft:is_mountain"] }
+    ],
+    "selection_weight": 15.0,
+    "size": { "record_high_cm": 100.0, "typical_high_cm": 50.0, "typical_low_cm": 10.0 },
+    "speed": 0.3,
+    "strength": 0.5
+}

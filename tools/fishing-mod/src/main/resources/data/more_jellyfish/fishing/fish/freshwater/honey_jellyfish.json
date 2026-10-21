@@ -1,0 +1,29 @@
+{
+    "associated_mods": ["more_jellyfish"],
+    "fish": "more_jellyfish:honey_jellyfish",
+    "bucket": "more_jellyfish:net_of_honey_jellyfish",
+    "journal_profile": {
+        "description": "journal.description.more_jellyfish.honey_jellyfish",
+        "group": "freshwater",
+        "location": "journal.info.location.freshwater",
+        "rarity": "uncommon"
+    },
+    "display_data": {
+        "entity": "more_jellyfish:honey_jellyfish",
+        "pitch": 90,
+        "x": -0.1,
+        "z": 0.2
+    },
+    "conditions": [
+        { "type": "tide:freshwater" },
+        { "type": "tide:dimension", "dimensions": ["minecraft:overworld"] },
+        { "type": "tide:fluid", "fluid": "water" },
+        { "type": "tide:seasons", "seasons": ["spring", "summer"]},
+        { "type": "tide:found_in", "biomes": ["minecraft:plains", "minecraft:sunflower_plains", "minecraft:meadow", "minecraft:flower_forest", 
+                                                "minecraft:forest", "minecraft:birch_forest", "minecraft:old_growth_birch_forest", "minecraft:cherry_grove"] }
+    ],
+    "selection_weight": 20.0,
+    "size": { "record_high_cm": 100.0, "typical_high_cm": 50.0, "typical_low_cm": 10.0 },
+    "speed": 0.3,
+    "strength": 0.6
+}

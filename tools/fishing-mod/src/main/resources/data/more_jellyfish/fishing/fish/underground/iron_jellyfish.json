@@ -1,0 +1,26 @@
+{
+    "associated_mods": ["more_jellyfish"],
+    "fish": "more_jellyfish:iron_jellyfish",
+    "bucket": "more_jellyfish:net_of_iron_jellyfish",
+    "journal_profile": {
+        "description": "journal.description.more_jellyfish.iron_jellyfish",
+        "group": "underground",
+        "location": "journal.info.location.underground",
+        "rarity": "common"
+    },
+    "display_data": {
+        "entity": "more_jellyfish:iron_jellyfish",
+        "pitch": 90,
+        "x": -0.1,
+        "z": 0.2
+    },
+    "conditions": [
+        { "type": "tide:dimension", "dimensions": ["minecraft:overworld"] },
+        { "type": "tide:fluid", "fluid": "water" },
+        { "type": "tide:depth_range", "max_y": 40, "min_y": -50 }     
+    ],
+    "selection_weight": 30.0,
+    "size": { "record_high_cm": 100.0, "typical_high_cm": 50.0, "typical_low_cm": 10.0 },
+    "speed": 0.3,
+    "strength": 0.2
+}

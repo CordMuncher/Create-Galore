@@ -1,0 +1,29 @@
+{
+    "associated_mods": ["rainbowreef"],
+    "fish": "rainbowreef:raw_angelfish",
+    "bucket": "rainbowreef:angelfish_bucket",
+    "journal_profile": {
+        "description": "journal.description.rainbowreef.angelfish",
+        "group": "saltwater",
+        "location": "journal.info.location.saltwater_warm",
+        "rarity": "common"
+    },
+    "display_data": {
+        "entity": "rainbowreef:angelfish",
+        "nbt": { "Variant": 0 },
+        "roll": -90,
+        "y": -0.2,
+        "z": 0.08
+    },
+    "conditions": [
+        { "type": "tide:saltwater" },
+        { "type": "tide:dimension", "dimensions": ["minecraft:overworld"] },
+        { "type": "tide:fluid", "fluid": "water" },
+        { "type": "tide:above", "y": 40 },
+        { "type": "tide:found_in", "biomes": ["minecraft:warm_ocean", "seafarer:warm_reef"] }
+    ],
+    "selection_weight": 30.0,
+    "size": { "record_high_cm": 40.0, "typical_high_cm": 20.0, "typical_low_cm": 15.0 },
+    "speed": 0.5,
+    "strength": 0.2
+}

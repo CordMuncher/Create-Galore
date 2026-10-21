@@ -1,54 +1,81 @@
 {
   "category": "fishing",
   "name": "Bait",
-  "description": "Bait makes fish bite sooner or luckier; one is used per fish.",
+  "description": "What each fish eats, and bait made with Create.",
   "icon": {
-    "item": "tide:bait"
+    "item": "aquaculture:worm"
   },
-  "x": 6,
-  "y": 0,
-  "sort_number": 4,
+  "x": 2,
+  "y": -1,
+  "sort_number": 7,
   "parents": [
     {
-      "entry": "fishing/angling_table",
+      "entry": "fishing/overview",
       "draw_arrow": true,
       "line_enabled": true,
-      "line_reversed": false
+      "line_reversed": true
     }
   ],
   "pages": [
     {
       "type": "modonomicon:text",
       "title": "Bait",
-      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- Bait goes **inside** the rod: hold the bait on your cursor and right-click the rod.\n- Each fish caught uses one bait from every slot.\n- Plain **Bait** and **Worms** make fish bite sooner; **Lucky Bait** brings rarer catches."
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- Each fish has a **diet**: the right bait or lure brings far more bites.\n- Bait goes on the rod's bait slot; one is used per fish landed.\n- [#](FFFFFF)\ue107[#]() Create makes bait: **washing** dirt gives worms, mud gives leeches.\n- **Live** baitfish beat dead ones for predators."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "In your inventory, pick up a bait stack and right-click the rod with it. Right-click the rod with an empty cursor to take bait back out.\\\n\\\nEach bait slot holds one kind of bait (a whole stack). A rod with two slots can carry two different baits, and both work."
+      "text": "Right-click the rod with a bait stack on your cursor, or use the [#](2E5AAC)[Tackle Bench](entry://fishing/tackle_bench)[#](). One bait is used for every fish landed; a lure is never used up. A missed bite takes the bait 3 times in 10.\\\n\\\nA bare hook still catches something now and then, very slowly."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Bait is used only when you land a **fish**: junk, treasure, crates and misses cost nothing.\n\n- **Bait**: bites much sooner.\n- **Worm**: bites sooner.\n- **Lucky Bait**: more luck.\n- **Magnetic Bait**: crates five times as often."
+      "text": "**Who eats what:**\n\n- **Panfish**: worms, maggots, insects.\n- **River predators** (pike, bass, walleye): live fish, soft plastics, spinners, spoons, crankbaits.\n- **Bottom feeders** (carp, catfish): dough, boilies, worms."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "- **Sea predators** (tuna, sharks, mackerel): live fish, squid, cut bait, spoons.\n- **Sea bottom fish**: shrimp and crab, cut bait, squid.\n- **Reef fish**: shrimp and crab, squid, cut bait.\n- **Lava and void fish**: their own baits.\n\nThe fish's journal page shows where it lives."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Bait items:**\n\n- **Worms**, **Bait**, Lucky and Magnetic Bait: worm.\n- **Maggots**: maggot. **Leeches**: leech.\n- **Caterpillars**, **Butterflies**, spider eyes: insect.\n- **Dough**, bread: dough. **Boilies**: boilie."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "- Raw fillets, fish meat, **Fish Scraps**, rotten flesh, cod, salmon, loose baitfish: cut bait.\n- Shrimp, crayfish, crab meat: crustacean.\n- Tentacles, Cut Tentacles: squid.\n\nBait has a size too: small baits find small fish, big ones bigger fish."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "[#](FFFFFF)\ue104[#]() **Bait from Create:**\n\n- [#](7A3C9A)[Washing](entry://glossary/washing)[#]() dirt gives mud and worms (1 in 5); coarse dirt 12%%, rooted dirt 30%%.\n- Washing mud gives clay (half the time) and leeches (15%%).\n- [#](7A3C9A)[Mixing](entry://glossary/mixing)[#]() rotten flesh with dirt makes 4 Maggots."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "- [#](7A3C9A)[Heated](entry://glossary/heated)[#]() mixing of Fish Meal, wheat flour, an egg and 250 mB of water makes 4 **Boilies**.\n- Hoeing grass or dirt turns up a worm 1 time in 20.\n- Aquaculture's **Worm Farm** makes worms from compostable scraps.\\\n\\\nSee [#](2E5AAC)[Encased Fans](entry://create_basics/fans)[#]() and [#](2E5AAC)[Press, Mixer and Basin](entry://create_basics/processing)[#]()."
     },
     {
       "type": "modonomicon:crafting_recipe",
       "recipe_id_1": "tide:bait",
-      "text": "A crop, mushroom or small flower, rotten flesh, seeds and bone meal make 4 Bait."
-    },
-    {
-      "type": "modonomicon:spotlight",
-      "item": {
-        "item": "aquaculture:worm_farm"
-      },
-      "title": "Worm Farm",
-      "text": "Aquaculture's Worm Farm still makes **Worms**, and they work as bait in Tide rods. Feed it compostable scraps."
+      "text": "A crop, mushroom or small flower, rotten flesh, seeds and bone meal make 4 **Bait**, which counts as worms."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "- **Lucky Bait**: 8 Bait around a rabbit's foot make 16.\n- **Magnetic Bait**: lapis, 2 Bait, redstone, iron nuggets and prismarine make 4.\n- **Incandescent** and **Abyss Bait** come from void fish and make bites sooner.\n- Naturalist's **Butterflies** and **Caterpillars**, caught with a Capture Net, work like worms."
+      "text": "- **Lucky Bait**: 8 Bait around a rabbit's foot make 16. +2 luck.\n- **Magnetic Bait**: lapis, 2 Bait, redstone, iron nuggets and prismarine make 4. Twice the treasure and crates.\n- **Incandescent Bait** (from Incandescent Larva) for lava fish, **Abyss Bait** (from Pale Clubfish) for void fish."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "[#](FFFFFF)\ue103[#]() **In depth.** Diet strength, best first: panfish like worms, then maggots, insects, dough. River predators rank live fish, soft plastic, spinner and spoon, crankbait, jig, then topwater, leech, worm and cut bait. Bottom feeders take dough and boilies, then worms, maggots.\\\n\\\nLava and void fish take other bait a quarter as well as their own."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Related",
+      "text": "- [#](2E5AAC)[Live Bait and Chum](entry://fishing/live_bait)[#]()\n- [#](2E5AAC)[Cleaning Table and Fish Products](entry://fishing/cleaning)[#]()\n- [#](2E5AAC)[Where Fish Live](entry://fishing/where_fish_live)[#]()"
     }
   ]
 }

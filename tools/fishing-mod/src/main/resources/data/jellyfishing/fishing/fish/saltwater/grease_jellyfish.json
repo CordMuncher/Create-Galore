@@ -1,0 +1,28 @@
+{
+    "associated_mods": ["jellyfishing"],
+    "fish": "jellyfishing:grease_jellyfish",
+    "bucket": "jellyfishing:net_of_grease_jellyfish",
+    "journal_profile": {
+        "description": "journal.description.jellyfishing.grease_jellyfish",
+        "group": "saltwater",
+        "location": "biome.jellyfishing.jellyfish_fields",
+        "rarity": "uncommon"
+    },
+    "display_data": {
+        "entity": "jellyfishing:grease_jellyfish",
+        "pitch": 90,
+        "x": -0.1,
+        "z": 0.25
+    },
+    "conditions": [
+        { "type": "tide:saltwater" },
+        { "type": "tide:dimension", "dimensions": ["minecraft:overworld"] },
+        { "type": "tide:fluid", "fluid": "water" },
+        { "type": "tide:above", "y": 40 },
+        { "type": "tide:found_in", "biomes": ["jellyfishing:jellyfish_fields", "jellyfishing:rock_bottom"] }
+    ],
+    "selection_weight": 20.0,
+    "size": { "record_high_cm": 90.0, "typical_high_cm": 50.0, "typical_low_cm": 5.0 },
+    "speed": 0.8,
+    "strength": 0.2
+}

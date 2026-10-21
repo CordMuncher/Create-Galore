@@ -1,0 +1,25 @@
+{
+    "associated_mods": ["finsandtails"],
+    "fish": "finsandtails:teal_arrowfish",
+    "bucket": "finsandtails:teal_arrowfish_bucket",
+    "journal_profile": {
+        "description": "journal.description.finsandtails.teal_arrowfish",
+        "group": "saltwater",
+        "location": "biome.minecraft.cold_ocean",
+        "rarity": "common"
+    },
+    "display_data": {
+        "entity": "finsandtails:teal_arrowfish"
+    },
+    "conditions": [
+        { "type": "tide:saltwater" },
+        { "type": "tide:dimension", "dimensions": ["minecraft:overworld"] },
+        { "type": "tide:fluid", "fluid": "water" },
+        { "type": "tide:above", "y": 40 },
+        { "type": "tide:found_in", "biomes": ["minecraft:cold_ocean", "minecraft:deep_cold_ocean" ] }
+    ],
+    "selection_weight": 30.0,
+    "size": { "record_high_cm": 30.0, "typical_high_cm": 20.0, "typical_low_cm": 8.0 },
+    "speed": 0.6,
+    "strength": 0.2
+}

@@ -1,0 +1,25 @@
+{
+    "associated_mods": ["blue_skies"],
+    "fish": "blue_skies:municipal_monkfish",
+    "bucket": "blue_skies:ventium_municipal_monkfish_bucket",
+    "journal_profile": {
+        "description": "journal.description.blue_skies.municipal_monkfish",
+        "group": "saltwater",
+        "location": "generator.blue_skies.everbright",
+        "rarity": "common"
+    },
+    "display_data": {
+        "entity": "blue_skies:municipal_monkfish",
+        "y": -0.05,
+        "z": 0.07
+    },
+    "conditions": [
+        { "type": "tide:dimension", "dimensions": ["blue_skies:everbright"] },
+        { "type": "tide:fluid", "fluid": "water" },
+        { "type": "tide:found_in", "biomes": ["blue_skies:peeking_ocean", "blue_skies:deep_peeking_ocean"] }
+    ],
+    "selection_weight": 30.0,
+    "size": { "record_high_cm": 100.0, "typical_high_cm": 80.0, "typical_low_cm": 15.0 },
+    "speed": 0.9,
+    "strength": 0.1
+}

@@ -1,0 +1,29 @@
+{
+    "associated_mods": ["luminousworld"],
+    "fish": "luminousworld:sunny",
+    "bucket": "luminousworld:bucket_of_sunny",
+    "journal_profile": {
+        "description": "journal.description.luminousworld.sunny",
+        "group": "freshwater",
+        "location": "journal.info.location.river",
+        "rarity": "common"
+    },
+    "display_data": {
+        "entity": "luminousworld:sunny_fish",
+        "roll": -90,
+        "x": 0.2,
+        "y": -0.3,
+        "z": 0.15
+    },
+    "conditions": [
+        { "type": "tide:freshwater" },
+        { "type": "tide:dimension", "dimensions": ["minecraft:overworld"] },
+        { "type": "tide:fluid", "fluid": "water" },
+        { "type": "tide:above", "y": 40 },
+        { "type": "tide:found_in", "biomes": ["minecraft:river"] }
+    ],
+    "selection_weight": 30.0,
+    "size": { "record_high_cm": 100.0, "typical_high_cm": 80.0, "typical_low_cm": 45.0 },
+    "speed": 0.6,
+    "strength": 0.1
+}

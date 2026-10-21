@@ -1,0 +1,26 @@
+{
+    "associated_mods": ["bettas"],
+    "fish": "bettas:betta_fish",
+    "bucket": "bettas:betta_fish_bucket",
+    "journal_profile": {
+        "description": "journal.description.bettas.betta_fish",
+        "group": "freshwater",
+        "location": "journal.info.location.freshwater",
+        "rarity": "common"
+    },
+    "display_data": {
+        "entity": "bettas:betta_fish",
+        "nbt": { "Variant": 24 },
+        "y": 0.1
+    },
+    "conditions": [
+        { "type": "tide:freshwater" },
+        { "type": "tide:dimension", "dimensions": ["minecraft:overworld"] },
+        { "type": "tide:fluid", "fluid": "water" },
+        { "type": "tide:above", "y": 40 }
+    ],
+    "selection_weight": 40.0,
+    "size": { "record_high_cm": 25.0, "typical_high_cm": 6.0, "typical_low_cm": 0.1 },
+    "speed": 0.9,
+    "strength": 0.1
+}

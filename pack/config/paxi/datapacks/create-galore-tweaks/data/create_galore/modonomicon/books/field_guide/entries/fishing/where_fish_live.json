@@ -1,16 +1,16 @@
 {
   "category": "fishing",
   "name": "Where Fish Live",
-  "description": "Water type, biome, depth, time, weather, moon and season.",
+  "description": "Water, biome, depth, time, weather, moon, season, and fished-out spots.",
   "icon": {
     "item": "tide:climate_gauge"
   },
-  "x": 4,
-  "y": -1,
-  "sort_number": 5,
+  "x": 2,
+  "y": 0,
+  "sort_number": 10,
   "parents": [
     {
-      "entry": "fishing/casting",
+      "entry": "fishing/overview",
       "draw_arrow": true,
       "line_enabled": true,
       "line_reversed": false
@@ -25,7 +25,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "A fish's journal page lists what it wants once you catch it. Before that, a **Fishy Note** from a crate (or one crafted from a fish and paper) shows the page.\\\n\\\nMost fish also have a favourite **temperature**: in the wrong climate they still bite, just rarely. Fiery and Permafrost hooks nudge it."
+      "text": "A fish's journal page lists what it wants once you catch it. Before that, a **Fishy Note** shows the page.\\\n\\\nMost fish also have a favourite **temperature**: in the wrong climate they still bite, just rarely. Fiery and Permafrost hooks nudge it. A lake counts as the land biome around it."
     },
     {
       "type": "modonomicon:text",
@@ -45,12 +45,22 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "[#](FFFFFF)\ue10f[#]() **Legendary fish:** Shooting Starfish, Coelacanth, Devils Hole Pupfish (a narrow cave band, y20 to y30), Midas Fish (underground, needs 5 luck), Alpha Fish (overworld void) and Dragon Fish (End void). Catch one for **One in a Million**."
+      "text": "[#](FFFFFF)\ue10f[#]() **Legendary fish:** Shooting Starfish, Coelacanth, Devils Hole Pupfish (a narrow cave band, y20 to y30), Midas Fish (underground, needs 5 luck), Alpha Fish (Overworld void) and Dragon Fish (End void). Catch one for **One in a Million**."
     },
     {
       "type": "modonomicon:text",
       "title": "",
       "text": "**Seasons** count: some fish bite only in some seasons (brook trout skip autumn, sturgeon come in autumn and winter). The journal shows which.\\\n\\\nGadgets that show time, moon, depth, temperature and weather: [#](2E5AAC)[Fishing Gadgets](entry://fishing/gadgets)[#]()."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**What you offer** decides which of the fish living there bite:\n\n- the bait or lure each species likes\n- the hook and bait size against its mouth\n- how visible the line is, for shy fish\n- the depth the rig sits at: a sinker reaches bottom fish\n- a lure's speed"
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Fished-out spots.** Every fish landed tires its [#](7A3C9A)[chunk](entry://glossary/chunk)[#](): after four quick catches bites come half as often, and a fished-out spot drops to a twentieth. A bite still never takes more than 4 minutes. The tiredness halves every 10 minutes, so moving on, or trolling, pays.\\\n\\\nA released fish doesn't tire the spot. [#](2E5AAC)[Chum](entry://fishing/live_bait)[#]() brings bites back up."
     }
   ]
 }

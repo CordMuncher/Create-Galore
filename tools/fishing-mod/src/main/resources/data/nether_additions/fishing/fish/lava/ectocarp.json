@@ -1,0 +1,18 @@
+{
+    "associated_mods": ["nether_additions"],
+    "fish": "nether_additions:ectocarp",
+    "journal_profile": {
+        "description": "journal.description.nether_additions.ectocarp",
+        "group": "lava",
+        "location": "journal.info.location.lava",
+        "rarity": "very_rare"
+    },
+    "conditions": [
+        { "type": "tide:dimension", "dimensions": ["minecraft:the_nether"] },
+        { "type": "tide:fluid", "fluid": "lava" }
+    ],
+    "selection_weight": 5.0,
+    "size": { "record_high_cm": 130.0, "typical_high_cm": 70.0, "typical_low_cm": 25.0 },
+    "speed": 0.7,
+    "strength": 1.0
+}

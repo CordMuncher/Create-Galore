@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " H ",
+    "GCG",
+    " E "
+  ],
+  "key": {
+    "H": {
+      "item": "create_galore_fishing:rod_holder"
+    },
+    "G": {
+      "item": "create:cogwheel"
+    },
+    "C": {
+      "item": "create:brass_casing"
+    },
+    "E": {
+      "item": "create:electron_tube"
+    }
+  },
+  "result": {
+    "id": "create_galore_fishing:geared_reel_drive"
+  }
+}

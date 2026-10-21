@@ -1,0 +1,201 @@
+{
+  "category": "fishing",
+  "name": "Reels, Lines and Hooks",
+  "description": "Every part a rod takes, with its ratings.",
+  "icon": {
+    "item": "create_galore_fishing:medium_hook"
+  },
+  "x": 4,
+  "y": -3,
+  "sort_number": 5,
+  "parents": [
+    {
+      "entry": "fishing/rods",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": false
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Reels, Lines and Hooks",
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- **Reel**: its top drag, speed and line held.\n- **Line**: its **test** (the pull it snaps at), stretch and visibility.\n- **Hook** size picks the fish's size.\n- Floats, sinkers and lures set how bait is shown."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "[#](FFFFFF)\ue10d[#]() Tackle is made from Create parts in a crafting grid: cogwheels, shafts, precision mechanisms, andesite alloy, iron, copper and brass sheets, plus TFMG's steel, plastic and rubber. [#](2E5AAC)[JEI](entry://start_here/tools)[#]() shows every recipe."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": [
+        {
+          "item": "create_galore_fishing:copper_reel"
+        },
+        {
+          "item": "create_galore_fishing:iron_reel"
+        },
+        {
+          "item": "create_galore_fishing:brass_reel"
+        },
+        {
+          "item": "create_galore_fishing:steel_baitcaster"
+        },
+        {
+          "item": "create_galore_fishing:trolling_reel"
+        }
+      ],
+      "title": "Reels",
+      "text": "Max drag, line held:\n\n- Copper Spinning: 3 kg, 100 m\n- Iron Spinning: 6 kg, 150 m\n- Brass Precision: 10 kg, 200 m\n- Steel Baitcaster: 14 kg, 180 m\n- Big-Game Trolling: 30 kg, 600 m"
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Better reels also wind faster (1 to 1.8 m/s), crank harder against a pulling fish, and give a **smoother** drag that soaks sudden spikes: 30%% on the Copper reel, 85%% on the Brass Precision reel.\\\n\\\nReel durability: Copper 300, Iron 500, Brass and Steel 900, Big-Game 1500. A reel that breaks is gone."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": [
+        {
+          "item": "create_galore_fishing:string_line"
+        },
+        {
+          "item": "create_galore_fishing:mono_line"
+        },
+        {
+          "item": "create_galore_fishing:clear_line"
+        },
+        {
+          "item": "create_galore_fishing:braided_line"
+        },
+        {
+          "item": "create_galore_fishing:heavy_line"
+        }
+      ],
+      "title": "Lines",
+      "text": "A spool goes in the line slot. Its tooltip shows its test, stretch, visibility and the metres left."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Lines**: test, stretch, visibility, metres.\n\n- String: 4 kg, 70%%, 70%%, 100\n- Mono: 8 kg, 50%%, 40%%, 150\n- Clear: 10 kg, 30%%, 10%%, 150\n- Braided: 18 kg, 10%%, 80%%, 200\n- Heavy Mono: 50 kg, 45%%, 50%%, 600"
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Stretch** soaks shocks; braid barely stretches, so jumps hit hard. Shy fish (trout, salmon, carp, koi, char, grayling, bonefish) mind a **visible** line and bite less.\\\n\\\nBraided Line is spun from 8 of TFMG's **Synthetic String** (a Rubber Sheet on a stonecutter makes 4) around a stick.\\\n\\\nUnder 5 m of line left the rod can't be cast."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": [
+        {
+          "item": "create_galore_fishing:clear_leader"
+        },
+        {
+          "item": "create_galore_fishing:steel_leader"
+        }
+      ],
+      "title": "Leaders",
+      "text": "An optional short length at the hook. **Clear Leader**: 12 kg, 10%% visible, hides a strong line from shy fish. **Steel Leader**: 60 kg; toothy fish can't bite through it, and bite through anything else."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": [
+        {
+          "item": "create_galore_fishing:small_hook"
+        },
+        {
+          "item": "create_galore_fishing:medium_hook"
+        },
+        {
+          "item": "create_galore_fishing:large_hook"
+        },
+        {
+          "item": "create_galore_fishing:big_game_hook"
+        }
+      ],
+      "title": "Hooks",
+      "text": "Small (#10) for panfish, Medium (#4), Large (1/0) for pike, bass and carp, Big-Game (6/0) for tuna and sharks. A hook far too big for a fish scares it off; one too small holds badly."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": [
+        {
+          "item": "create_galore_fishing:golden_hook"
+        },
+        {
+          "item": "create_galore_fishing:netherite_hook"
+        }
+      ],
+      "title": "Golden and Netherite Hooks",
+      "text": "**Golden Hook**: medium size, +1 luck. **Netherite Hook**: large, survives lava. Any rod with it fishes lava."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Special hooks** keep their effects:\n\n- **Fiery**: water counts as warmer, so warm-water fish bite.\n- **Permafrost**: water counts as colder.\n- **Twilight**: fish act as if it were 12 hours later.\n- **Lavaproof**: fishes lava.\n- **Hook of the Depths**: fishes the void."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Hybrid Aquatic hooks** fit too:\n\n- **Barbed**: bites a quarter sooner by day, holds better.\n- **Glowing**: bites a quarter sooner at night.\n- **Magnetic**: +1 luck, twice the treasure and crates.\n- **CreeperMagnet**: the next bite is a creeper, flung at you."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "- **Ominous** (9 different crab claws): the next bite brings up **Karkinos**, Hybrid Aquatic's giant crab boss.\n\nCreeperMagnet and Ominous hooks wear with each use.\\\n\\\n[#](FFFFFF)\ue101[#]() **Watch out:** Karkinos lands at your feet. Fish from somewhere you can fight."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": [
+        {
+          "item": "create_galore_fishing:float"
+        },
+        {
+          "item": "create_galore_fishing:sinker"
+        }
+      ],
+      "title": "Float and Lead Sinker",
+      "text": "**Float** (4 g): bait at the surface, dips on a bite. **Lead Sinker** (15 g): bait on the bottom. Bobbers of every look (dyes, apples, gems, a duck and more) work as floats."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": [
+        {
+          "item": "create_galore_fishing:spoon"
+        },
+        {
+          "item": "create_galore_fishing:spinner"
+        },
+        {
+          "item": "create_galore_fishing:crankbait"
+        },
+        {
+          "item": "create_galore_fishing:deep_crankbait"
+        },
+        {
+          "item": "create_galore_fishing:jig"
+        },
+        {
+          "item": "create_galore_fishing:popper"
+        },
+        {
+          "item": "create_galore_fishing:soft_worm"
+        }
+      ],
+      "title": "Lures",
+      "text": "Dive depth, best speed (m/s):\n\n- Spinner: 0.6 m, 0.3-1.8\n- Spoon: 1 m, 0.4-2.5\n- Crankbait: 2 m, 0.6-3\n- Deep Crankbait: 5 m, 0.8-3.5"
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "- Jig: 3 m, 0.1-1, worked slowly near the bottom.\n- Popper: on the surface, 0.2-1.5.\n- Soft Plastic Worm: 1 m, 0.1-1.2.\n\nLures are kept between bites and lost only with the line. Predators like them best; see [#](2E5AAC)[Bait](entry://fishing/bait)[#]()."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "[#](FFFFFF)\ue103[#]() **In depth.** **Hook sizes** run from #12 (smallest) through #1, then 1/0 up to 8/0. The ideal hook grows with the fish: #12 for a 5 cm fish, 4/0 for a 2 m one. Bait size counts too: a big bait finds bigger fish.\\\n\\\n**Lure weights**: Soft Plastic Worm 6 g, Spinner 8 g, Jig and Popper 10 g, Spoon 12 g, Crankbait 14 g, Deep Crankbait 20 g."
+    }
+  ]
+}

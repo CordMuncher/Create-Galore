@@ -1,0 +1,32 @@
+{
+  "parent": "tide:get_bait",
+  "criteria": {
+    "catch_legendary": {
+      "conditions": {
+        "item": {
+          "items": "#tide:legendary_fish"
+        }
+      },
+      "trigger": "minecraft:fishing_rod_hooked"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.tide.catch_legendary.description"
+    },
+    "frame": "challenge",
+    "icon": {
+      "count": 1,
+      "id": "tide:shooting_starfish"
+    },
+    "title": {
+      "translate": "advancements.tide.catch_legendary.title"
+    }
+  },
+  "requirements": [
+    [
+      "catch_legendary"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

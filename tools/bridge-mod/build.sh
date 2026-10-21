@@ -27,7 +27,9 @@ CP=$( { ls "$SERVER"/libraries/net/minecraft/server/*/server-*-srg.jar
 CACHE="${XDG_CACHE_HOME:-$HOME/.cache}/create-galore-bridge"
 mkdir -p "$CACHE"
 for m in lwjgl lwjgl-glfw lwjgl-opengl; do
-  [ -s "$CACHE/$m-3.3.3.jar" ] || curl -sSfL --retry 4 -o "$CACHE/$m-3.3.3.jar" "https://repo1.maven.org/maven2/org/lwjgl/$m/3.3.3/$m-3.3.3.jar"
+  # Maven Central rate-limits busy machines (HTTP 429); Mojang's library server has the same jars.
+  [ -s "$CACHE/$m-3.3.3.jar" ] || curl -sSfL --retry 4 -o "$CACHE/$m-3.3.3.jar" "https://repo1.maven.org/maven2/org/lwjgl/$m/3.3.3/$m-3.3.3.jar" \
+    || curl -sSfL --retry 4 -o "$CACHE/$m-3.3.3.jar" "https://libraries.minecraft.net/org/lwjgl/$m/3.3.3/$m-3.3.3.jar"
   CP="$CP$CACHE/$m-3.3.3.jar:"
 done
 # A server has no client classes either (the book screen, the compass needle and the display code use them).

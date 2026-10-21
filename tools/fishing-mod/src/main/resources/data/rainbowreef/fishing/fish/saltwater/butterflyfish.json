@@ -1,0 +1,29 @@
+{
+    "associated_mods": ["rainbowreef"],
+    "fish": "rainbowreef:raw_butterflyfish",
+    "bucket": "rainbowreef:butterflyfish_bucket",
+    "journal_profile": {
+        "description": "journal.description.rainbowreef.butterflyfish",
+        "group": "saltwater",
+        "location": "journal.info.location.saltwater_warm",
+        "rarity": "common"
+    },
+    "display_data": {
+        "entity": "rainbowreef:butterflyfish",
+        "nbt": { "Variant": 0 },
+        "roll": -90.0,
+        "x": 0.1,
+        "y": -0.2,
+        "z": 0.09
+    },
+    "conditions": [
+        { "type": "tide:dimension", "dimensions": ["minecraft:overworld"] },
+        { "type": "tide:fluid", "fluid": "water" },
+        { "type": "tide:above", "y": 40 },
+        { "type": "tide:found_in", "biomes": ["minecraft:warm_ocean", "seafarer:warm_reef", "minecraft:mangrove_swamp"] }
+    ],
+    "selection_weight": 30.0,
+    "size": { "record_high_cm": 30.0, "typical_high_cm": 20.0, "typical_low_cm": 1.0 },
+    "speed": 0.6,
+    "strength": 0.2
+}

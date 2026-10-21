@@ -1,0 +1,20 @@
+{
+  "fish": "tide:great_white_shark",
+  "_generated": "from tools/fishing-mod/species.csv; edit that, not this file",
+  "length_weight": {
+    "a": 0.007,
+    "b": 3
+  },
+  "fight": {
+    "per_kg": 1,
+    "stamina": 1,
+    "speed": 2.4,
+    "runs": 0.08,
+    "jumps": 0.02,
+    "charges": 0.02,
+    "profile": "sulker",
+    "toothy": true
+  },
+  "feeding": "sea_predator",
+  "wary": 0.1
+}

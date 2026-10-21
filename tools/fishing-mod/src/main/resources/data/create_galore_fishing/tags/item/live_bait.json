@@ -1,0 +1,13 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "#create_galore_fishing:baitfish",
+      "required": false
+    },
+    {
+      "id": "aquaculture:leech",
+      "required": false
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+    "associated_mods": ["nether_additions"],
+    "fish": "nether_additions:goldhead_wrasse",
+    "journal_profile": {
+        "description": "journal.description.nether_additions.goldhead_wrasse",
+        "group": "lava",
+        "location": "journal.info.location.lava",
+        "rarity": "uncommon"
+    },
+    "conditions": [
+        { "type": "tide:dimension", "dimensions": ["minecraft:the_nether"] },
+        { "type": "tide:fluid", "fluid": "lava" }
+    ],
+    "selection_weight": 25.0,
+    "size": { "record_high_cm": 220.0, "typical_high_cm": 100.0, "typical_low_cm": 60.0 },
+    "speed": 1.0,
+    "strength": 1.8
+}

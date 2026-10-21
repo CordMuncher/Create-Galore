@@ -1,0 +1,29 @@
+{
+    "associated_mods": ["fintastic"],
+    "fish": "fintastic:gourami",
+    "bucket": "fintastic:gourami_bucket",
+    "journal_profile": {
+        "description": "journal.description.fintastic.gourami",
+        "group": "freshwater",
+        "location": "journal.info.location.swamp",
+        "rarity": "common"
+    },
+    "display_data": {
+        "entity": "fintastic:gourami",
+        "nbt": { "VariantSkin": 3, "VariantModel": 2 },
+        "roll": 180,
+        "x": -0.05,
+        "z": 0.05
+    },
+    "conditions": [
+        { "type": "tide:freshwater" },
+        { "type": "tide:dimension", "dimensions": ["minecraft:overworld"] },
+        { "type": "tide:fluid", "fluid": "water" },
+        { "type": "tide:above", "y": 40 },
+        { "type": "tide:found_in", "biomes": ["#minecraft:is_swamp"] }
+    ],
+    "selection_weight": 30.0,
+    "size": { "record_high_cm": 150.0, "typical_high_cm": 60.0, "typical_low_cm": 20.0 },
+    "speed": 0.3,
+    "strength": 0.5
+}

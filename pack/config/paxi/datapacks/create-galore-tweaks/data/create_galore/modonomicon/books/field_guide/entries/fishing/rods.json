@@ -1,107 +1,94 @@
 {
   "category": "fishing",
-  "name": "Fishing Rods",
-  "description": "Every rod, what it is good at and where it comes from.",
+  "name": "Rods",
+  "description": "Rod blanks: length, rating, action, and the special rods you find.",
   "icon": {
-    "item": "tide:diamond_fishing_rod"
+    "item": "create_galore_fishing:steel_rod"
   },
   "x": 2,
-  "y": 0,
-  "sort_number": 2,
+  "y": -3,
+  "sort_number": 4,
   "parents": [
     {
       "entry": "fishing/overview",
       "draw_arrow": true,
       "line_enabled": true,
-      "line_reversed": false
+      "line_reversed": true
     }
   ],
   "pages": [
     {
       "type": "modonomicon:text",
-      "title": "Fishing Rods",
-      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- [#](FFFFFF)\ue10d[#]() Craft Stone, then upgrade at a **Smithing Table** with string as the template: iron, gold, amethyst, diamond.\n- Better rods last longer and hold more **bait**.\n- A **Netherite** or **Blazing** rod fishes in lava.\n- Six special rods are found, not made."
+      "title": "Rods",
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- [#](FFFFFF)\ue10d[#]() A **rod blank** is the base: its length, the load it holds, its casting range.\n- The **Bamboo Pole** needs no reel; every other rod does.\n- The **Heavy Boat Rod** lands tuna and sharks.\n- The **Netherite Rod** fishes lava."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Every rod takes the usual fishing enchantments (Lure, Luck of the Sea, Unbreaking, Mending) and is repaired with string on an anvil. A rod that breaks gives back its line, bobber and hook.\\\n\\\nBait slots: how many different baits the rod holds at once (see [#](2E5AAC)[Bait](entry://fishing/bait)[#]())."
+      "text": "A blank has a **length** (longer casts further), a **load** it holds before it is overloaded, an **action** and a casting range in grams.\\\n\\\n**Action**: a fast rod bends at the tip, a slow one along the whole blank. Slow blanks soak shocks best; fast ones put the load through quicker. Rods bend toward the line as the load grows."
+    },
+    {
+      "type": "modonomicon:crafting_recipe",
+      "recipe_id_1": "create_galore_fishing:bamboo_pole",
+      "text": "**Bamboo Pole**: 3 bamboo or 3 sugar cane. 4 m, holds 4 kg, slow, casts 1-15 g. No reel and no drag: a fixed 8 m of line. 150 uses."
+    },
+    {
+      "type": "modonomicon:crafting_recipe",
+      "recipe_id_1": "create_galore_fishing:wooden_rod",
+      "text": "**Wooden Rod**: 2.1 m, holds 5 kg, moderate, 2-20 g. 250 uses. A plain rod of 3 sticks and 2 string is one too."
+    },
+    {
+      "type": "modonomicon:crafting_recipe",
+      "recipe_id_1": "create_galore_fishing:iron_rod",
+      "text": "**Iron Rod**: 2.4 m, holds 9 kg, fast, 5-30 g. 450 uses."
+    },
+    {
+      "type": "modonomicon:crafting_recipe",
+      "recipe_id_1": "create_galore_fishing:steel_rod",
+      "text": "**Steel Telescopic Rod**: 3 m, holds 16 kg, fast, 8-45 g. Slides out on the cast. 800 uses. Any steel works."
+    },
+    {
+      "type": "modonomicon:crafting_recipe",
+      "recipe_id_1": "create_galore_fishing:boat_rod",
+      "text": "**Heavy Boat Rod**: 2.1 m, holds 45 kg, moderate, casts 30-200 g. The rod for tuna, arapaima and sharks, by hand or on a boat. 1200 uses."
     },
     {
       "type": "modonomicon:spotlight",
       "item": {
-        "item": "minecraft:fishing_rod"
+        "item": "create_galore_fishing:netherite_rod"
       },
-      "title": "Fishing Rod",
-      "text": "3 sticks, 2 string. 32 uses, 1 bait slot. Old rods from before Tide are these, enchantments kept."
-    },
-    {
-      "type": "modonomicon:spotlight",
-      "item": {
-        "item": "tide:stone_fishing_rod"
-      },
-      "title": "Stone Fishing Rod",
-      "text": "Cobblestone and string. 48 uses, 1 bait slot. The usual base to smith from."
-    },
-    {
-      "type": "modonomicon:spotlight",
-      "item": {
-        "item": "tide:iron_fishing_rod"
-      },
-      "title": "Iron Fishing Rod",
-      "text": "Smith a plain or stone rod with an iron ingot. 64 uses, 1 bait slot."
-    },
-    {
-      "type": "modonomicon:spotlight",
-      "item": {
-        "item": "tide:golden_fishing_rod"
-      },
-      "title": "Golden Fishing Rod",
-      "text": "Smith with a gold ingot. 36 uses, 2 bait slots, +1 luck."
-    },
-    {
-      "type": "modonomicon:spotlight",
-      "item": {
-        "item": "tide:crystal_fishing_rod"
-      },
-      "title": "Crystal Fishing Rod",
-      "text": "Smith with an amethyst shard. 80 uses, 2 bait slots, and it chimes when a fish bites."
-    },
-    {
-      "type": "modonomicon:spotlight",
-      "item": {
-        "item": "tide:diamond_fishing_rod"
-      },
-      "title": "Diamond Fishing Rod",
-      "text": "Smith with a diamond. 128 uses, 2 bait slots, extra experience with every catch."
-    },
-    {
-      "type": "modonomicon:spotlight",
-      "item": {
-        "item": "tide:netherite_fishing_rod"
-      },
-      "title": "Netherite Fishing Rod",
-      "text": "Diamond rod + netherite ingot + Netherite Upgrade. 512 uses, 2 bait slots, fireproof, **fishes in lava**."
+      "title": "Netherite Rod",
+      "text": "Smith a Steel Telescopic Rod with a netherite ingot and a Netherite Upgrade. 2.7 m, holds 30 kg, fast, 10-80 g. Fireproof and **fishes in lava**. 2000 uses."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**Found, not made** (256 uses each):\n\n- **Rod of Resonance**: ancient city chests. 3 slots; on a bite it tells you what is hooked.\n- **Prismarine Fishing Rod**: sometimes dropped by Elder Guardians. 3 slots; +1 speed and +1 luck in rain."
+      "text": "**Found, not made** (600 uses each):\n\n- **Rod of Resonance**: ancient city chests. On a bite it tells you what took the bait.\n- **Prismarine Fishing Rod**: dropped by Elder Guardians. In rain, faster bites and +1 luck."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "- **Suncatcher**: a rare catch in plains. 6 slots; +1 luck in sunshine.\n- **Rod of the Hero**: an expert Fisherman villager sells it for 15 emeralds. 4 slots; an extra village item with every catch.\n- **Blazing Fishing Rod**: nether fortress chests. 4 slots, fishes in lava, and finds Nether lava fish anywhere."
+      "text": "- **Suncatcher**: a rare catch in plains. +1 luck in sunshine.\n- **Rod of the Hero**: an expert Fisherman villager sells it for 15 emeralds. A bonus village item with every catch you reel in by hand.\n- **Blazing Fishing Rod**: nether fortress chests. Fishes lava, and catches Nether lava fish in any lava."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "- **Beeline**: sometimes found when you harvest honeycomb from a hive. 5 slots.\n- **Midas Fishing Rod**: smith a golden rod with a **Midas Fish**. 3 slots, +1 luck and a bonus gold item with every catch.\\\n\\\nOwning all 14 rods earns **Hooked on Variety**."
+      "text": "- **Beeline**: 1 time in 20 when you harvest honeycomb from a full hive.\n- **Midas Fishing Rod**: smith an Iron Rod with a **Midas Fish**, string as the template. +1 luck and a bonus gold item with every catch you reel in by hand.\\\n\\\nSpecial rods take the same parts as any other."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "[#](FFFFFF)\ue103[#]() **In depth.** Two other rods keep the old cast-and-wait fishing with no timing game: **Alloyed**'s Steel Fishing Rod (see [#](2E5AAC)[Alloyed](entry://industry/alloyed)[#]()) and any Aquaculture rod you already own. Hybrid Aquatic hooks in the off hand work with both."
+      "text": "[#](FFFFFF)\ue103[#]() **In depth.** Special rod blanks: Rod of Resonance 2.4 m, 10 kg; Prismarine 2.7 m, 12 kg; Suncatcher and Rod of the Hero 2.1 m, 7 kg; Blazing 2.7 m, 20 kg; Beeline 2.1 m, 8 kg, slow; Midas 2.4 m, 12 kg.\\\n\\\nAlloyed's Steel Fishing Rod is a Steel Telescopic Rod wherever one turns up."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Older rods turn into these when a world loads them: Stone Fishing Rods become Wooden Rods; Iron and Golden ones, Iron Rods; Crystal and Diamond ones, Steel Telescopic Rods; Netherite ones, Netherite Rods. Their line, hook, bobber and bait come along, with a reel to match."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Related",
+      "text": "- [#](2E5AAC)[Reels, Lines and Hooks](entry://fishing/tackle)[#]()\n- [#](2E5AAC)[The Tackle Bench](entry://fishing/tackle_bench)[#]()\n- [#](2E5AAC)[TFMG Steel](entry://industry/tfmg_steel)[#]()\n- [#](2E5AAC)[Lava and Void Fishing](entry://fishing/lava_and_void)[#]()"
     }
   ]
 }

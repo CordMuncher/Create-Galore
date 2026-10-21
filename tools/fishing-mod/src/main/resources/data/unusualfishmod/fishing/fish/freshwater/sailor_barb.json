@@ -1,0 +1,30 @@
+{
+    "associated_mods": ["unusualfishmod"],
+    "fish": "unusualfishmod:raw_sailor_barb",
+    "bucket": "unusualfishmod:sailor_barb_bucket",
+    "journal_profile": {
+        "description": "journal.description.unusualfishmod.sailor_barb",
+        "group": "freshwater",
+        "location": "journal.info.location.swamp",
+        "rarity": "common"
+    },
+    "display_data": {
+        "entity": "unusualfishmod:sailor_barb",
+        "roll": -90,
+        "x": 0.1,
+        "y": -0.2,
+        "z": 0.15
+    },
+    "conditions": [
+        { "type": "tide:freshwater" },
+        { "type": "tide:dimension", "dimensions": ["minecraft:overworld"] },
+        { "type": "tide:fluid", "fluid": "water" },
+        { "type": "tide:above", "y": 40 },
+        { "type": "tide:found_in", "biomes": ["minecraft:swamp", "minecraft:mangrove_swamp"] },
+        { "type": "tide:has_enchantments", "enchantments": ["unusualfishmod:unusual_catch"] }
+    ],
+    "selection_weight": 40.0,
+    "size": { "record_high_cm": 220.0, "typical_high_cm": 180.0, "typical_low_cm": 100.0 },
+    "speed": 1.2,
+    "strength": 0.55
+}

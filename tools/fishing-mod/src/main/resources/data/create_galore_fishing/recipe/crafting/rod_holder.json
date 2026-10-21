@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " I ",
+    " L ",
+    "SSS"
+  ],
+  "key": {
+    "I": {
+      "tag": "c:plates/iron"
+    },
+    "L": {
+      "tag": "minecraft:logs"
+    },
+    "S": {
+      "item": "minecraft:smooth_stone_slab"
+    }
+  },
+  "result": {
+    "id": "create_galore_fishing:rod_holder",
+    "count": 2
+  }
+}

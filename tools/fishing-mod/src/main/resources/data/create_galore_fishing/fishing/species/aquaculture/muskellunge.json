@@ -1,0 +1,25 @@
+{
+  "fish": "aquaculture:muskellunge",
+  "_generated": "from tools/fishing-mod/species.csv; edit that, not this file",
+  "size": {
+    "typical_low_cm": 70,
+    "typical_high_cm": 120,
+    "record_high_cm": 160
+  },
+  "length_weight": {
+    "a": 0.006,
+    "b": 3
+  },
+  "fight": {
+    "per_kg": 0.95,
+    "stamina": 1.2,
+    "speed": 1.6,
+    "runs": 0.1,
+    "jumps": 0.06,
+    "charges": 0.04,
+    "profile": "early",
+    "toothy": true
+  },
+  "feeding": "predator",
+  "wary": 0.3
+}

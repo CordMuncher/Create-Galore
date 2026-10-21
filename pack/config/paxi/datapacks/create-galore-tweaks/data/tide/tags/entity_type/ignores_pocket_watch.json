@@ -1,0 +1,8 @@
+{
+  "replace": false,
+  "values": [
+    { "id": "#c:bosses", "required": false },
+    { "id": "aquamirae:captain_cornelia", "required": false },
+    { "id": "aquamirae:maze_mother", "required": false }
+  ]
+}

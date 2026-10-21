@@ -1,0 +1,12 @@
+{
+  "item": "create_galore_fishing:popper",
+  "_generated": "from tools/fishing-mod/gen_tackle.py; edit that, not this file",
+  "kind": "lure",
+  "bait": "topwater",
+  "weight": 10,
+  "dive": 0.0,
+  "speed_min": 0.2,
+  "speed_max": 1.5,
+  "size": 1,
+  "color": "#f0f0a0"
+}
