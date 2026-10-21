@@ -62,10 +62,17 @@ final class ModelView {
     private record Label(String text, float x, float y, float z) {
     }
 
+    /** A run of cells the book changed on a build copied from the world: added or replaced, or taken out. */
+    private record Change(int x, int y, int z, int x2, int y2, int z2, boolean removed) {
+    }
+
+    private static final int ADDED = 0xFF2FA12F, REMOVED = 0xFFD03A2A;
+
     final String title, caption;
     private final int sx, sy, sz;
     private final BlockState[] cells;
     private final List<Label> labels = new ArrayList<>();
+    private final List<Change> changes = new ArrayList<>();
     private final Map<BlockState, Boolean> hasQuads = new HashMap<>(), hasWorldQuads = new HashMap<>();
     /**
      * Block entities for the blocks whose moving parts are drawn by a block entity renderer (Create's shafts, cogs, water
@@ -156,6 +163,17 @@ final class ModelView {
                             if (x >= 0 && y >= 0 && z >= 0) m.cells[m.index(x, y, z)] = state.isAir() ? null : state;
             } catch (RuntimeException ignored) {
                 // skip the entry
+            }
+        }
+        if (o.has("changes") && o.get("changes").isJsonArray()) {
+            for (JsonElement e : o.getAsJsonArray("changes")) {
+                try {
+                    JsonArray r = e.getAsJsonArray();
+                    m.changes.add(new Change(r.get(0).getAsInt(), r.get(1).getAsInt(), r.get(2).getAsInt(), r.get(3).getAsInt(),
+                            r.get(4).getAsInt(), r.get(5).getAsInt(), r.get(6).getAsInt() == 1));
+                } catch (RuntimeException ignored) {
+                    // skip the run
+                }
             }
         }
         if (o.has("labels") && o.get("labels").isJsonArray()) {
@@ -321,6 +339,7 @@ final class ModelView {
                     pose.popPose();
                 }
         g.flush();
+        if (!changes.isEmpty()) outlineChanges(pose, buffers);
         // Where each label's cell lands on screen, while the model's transform is still in place.
         List<float[]> spots = new ArrayList<>();
         for (Label l : labels) {
@@ -342,7 +361,43 @@ final class ModelView {
         } else {
             sideLabels(g, font, spots, x, y, w, h, gutter, x + w / 2f + panX);
         }
+        if (!changes.isEmpty()) legend(g, font, x + 3, y + 3);
         g.disableScissor();
+    }
+
+    /**
+     * Green boxes round the blocks the book adds or replaces on a build copied from the world, red ones round the
+     * blocks to take out, a little outside the block so the box isn't hidden in its faces.
+     */
+    private void outlineChanges(PoseStack pose, MultiBufferSource.BufferSource buffers) {
+        VertexConsumer lines = buffers.getBuffer(RenderType.lines());
+        for (Change c : changes) {
+            int color = c.removed ? REMOVED : ADDED;
+            float r = (color >> 16 & 255) / 255f, gr = (color >> 8 & 255) / 255f, b = (color & 255) / 255f;
+            for (int bx = c.x; bx <= c.x2; bx++)
+                net.minecraft.client.renderer.LevelRenderer.renderLineBox(pose, lines, bx - 0.03, c.y - 0.03, c.z - 0.03,
+                        bx + 1.03, c.y2 + 1.03, c.z2 + 1.03, r, gr, b, 1f);
+        }
+        buffers.endBatch(RenderType.lines());
+    }
+
+    /** What the outlines mean, in the box's corner. */
+    private void legend(GuiGraphics g, Font font, int x, int y) {
+        boolean anyRemoved = changes.stream().anyMatch(Change::removed), anyAdded = changes.stream().anyMatch(c -> !c.removed);
+        int at = x;
+        g.pose().pushPose();
+        g.pose().translate(0, 0, 300);
+        if (anyAdded) at = legendItem(g, font, at, y, ADDED, "new or changed");
+        if (anyRemoved) legendItem(g, font, at, y, REMOVED, "take out");
+        g.pose().popPose();
+    }
+
+    private static int legendItem(GuiGraphics g, Font font, int x, int y, int color, String text) {
+        int w = font.width(text) + 14;
+        g.fill(x, y, x + w, y + 11, PAPER);
+        g.renderOutline(x + 2, y + 2, 7, 7, color);
+        g.drawString(font, text, x + 12, y + 2, INK, false);
+        return x + w + 3;
     }
 
     private int labelWidth(Font font) {

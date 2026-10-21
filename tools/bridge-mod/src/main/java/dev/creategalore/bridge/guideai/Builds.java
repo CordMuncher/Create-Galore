@@ -303,6 +303,45 @@ final class Builds {
         return out.toString();
     }
 
+    /** Blocks copied out of the world for a model (build_model's from_world), keyed by their place in the box; or why not. */
+    record Copy(BlockPos min, Map<BlockPos, BlockState> blocks, String problem) {
+    }
+
+    /**
+     * The blocks of a box that the book may read, as they stand: the placed ones, the water and lava in the box, the
+     * solid blocks touching a placed one (what it stands on or sits in) and what was on the player's screen. Everything
+     * else stays air, so a copy shows no more of the world than trace_build and read_area do.
+     */
+    static Copy copy(ServerPlayer player, PlacedBlocks placed, Vision.Snapshot view, BlockPos a, BlockPos b, int maxSide) {
+        ServerLevel level = player.serverLevel();
+        int radius = simulation(player);
+        BlockPos min = new BlockPos(Math.min(a.getX(), b.getX()), Math.min(a.getY(), b.getY()), Math.min(a.getZ(), b.getZ()));
+        BlockPos max = new BlockPos(Math.max(a.getX(), b.getX()), Math.max(a.getY(), b.getY()), Math.max(a.getZ(), b.getZ()));
+        if (max.getX() - min.getX() >= maxSide || max.getY() - min.getY() >= maxSide || max.getZ() - min.getZ() >= maxSide)
+            return new Copy(min, Map.of(), "the from_world box can be at most " + maxSide + " blocks a side");
+        if (!inRange(player, min, radius) || !inRange(player, max, radius))
+            return new Copy(min, Map.of(), "part of the from_world box is outside the chunks the server runs around the player");
+        LongOpenHashSet mine = new LongOpenHashSet();
+        for (BlockPos p : BlockPos.betweenClosed(min, max)) if (placed.isPlaced(level, p)) mine.add(p.asLong());
+        Map<BlockPos, BlockState> out = new HashMap<>();
+        for (BlockPos p : BlockPos.betweenClosed(min, max)) {
+            BlockState s = level.getBlockState(p);
+            if (s.isAir()) continue;
+            boolean take = mine.contains(p.asLong()) || !level.getFluidState(p).isEmpty() || (view != null && view.saw(level, p));
+            if (!take && !(s.getBlock() instanceof net.minecraft.world.level.block.LiquidBlock))
+                for (Direction d : Direction.values())
+                    if (mine.contains(p.relative(d).asLong())) {
+                        take = true;
+                        break;
+                    }
+            if (take) out.put(p.subtract(min), s);
+        }
+        if (mine.isEmpty()) return new Copy(min, Map.of(), "no player placed any block in the from_world box " + min.getX() + " "
+                + min.getY() + " " + min.getZ() + " to " + max.getX() + " " + max.getY() + " " + max.getZ()
+                + " (find_placed_blocks or trace_build give a build's bounds)");
+        return new Copy(min, out, null);
+    }
+
     /** The placed blocks in full, their networks, goggle readouts, and the fluids and blocks touching them. */
     private static String describe(ServerLevel level, PlacedBlocks placed, List<BlockPos> build, net.minecraft.world.level.levelgen.structure.BoundingBox box) {
         StringBuilder out = new StringBuilder();

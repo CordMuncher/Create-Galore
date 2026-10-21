@@ -1,4 +1,4 @@
-<!-- sources sha256:893d1dcaa126495abb14cf56bf567da8fff482367b7b0bc3ce003b3a499e8f88 -->
+<!-- sources sha256:95f6d9573483696327dbb4b7c8087a2e00d2fdab0e1f0ecf065a8ae17c1fcc16 -->
 # Start Here (start_here)
 
 ## start_here/welcome | Welcome to Create Galore
@@ -11,6 +11,7 @@
 - New to Create? Rotation (see create_basics/rotation) is the first idea.
 - Ask the Book: on a home server whose owner gave the book a voice, the Ask the Book ribbon (speech bubble on the right edge of the book) opens pages to ask in your own words; also /askbook. Answers from this guide, the server's recipes, what is on your screen, what you carry, chests you opened nearby, your advancements.
 - The book shows recipes, draws diagrams or builds 3D models you can turn (right-click one to save it as a page). Ask why a build doesn't work: it finds the build near you and reads it block by block. It only sees blocks players placed, so it never finds ores or loot, and never gives map locations.
+- Ask it to improve or fix a build: it copies the build into a 3D model with the changes outlined (green: add or change, red: take out). It can answer on up to three pages at once; an answer on a page you aren't reading (or with the book closed) brings a notice, and the page glows green under All pages until opened.
 - The Field Guide [minecraft:writable_book]: how to get/open it (see home/guide_shelf). See Tools of the Trade (see start_here/tools).
 
 ## start_here/first_days | Your First Days

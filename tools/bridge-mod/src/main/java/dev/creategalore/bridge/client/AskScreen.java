@@ -43,7 +43,7 @@ final class AskScreen extends Screen {
     private static final int TIMEOUT_MS = 4000;
     // The guide's colours: its paper, ink and headings, and the browns of its frame.
     private static final int PAPER = 0xFFF9EED2, PAPER_SHADE = 0xFFEFE0BC, INK = 0xFF2B2014, FADED = 0xFF7A6A50,
-            HEAD = 0xFF6B2E12, RULE = 0xFFD6C39A, WARN = 0xFF8A2A1A, YOU_FILL = 0xFFEADAB2, YOU_EDGE = 0xFF9C8058,
+            HEAD = 0xFF6B2E12, RULE = 0xFFD6C39A, WARN = 0xFF8A2A1A, GLOW = 0x4CB43A, UNREAD_FILL = 0xFFE3EEC6, YOU_FILL = 0xFFEADAB2, YOU_EDGE = 0xFF9C8058,
             BUTTON = 0xFFEFE2C2, BUTTON_HOVER = 0xFFFFF7E2, BUTTON_EDGE = 0xFF5A4630, ROW_HOVER = 0xFFF1E4C4;
     private static final ResourceLocation FRAME = ResourceLocation.fromNamespaceAndPath("modonomicon", "textures/gui/book_frame.png");
     private static final ResourceLocation SLATE = ResourceLocation.fromNamespaceAndPath("modonomicon", "textures/gui/dark_slate_seamless.png");
@@ -88,6 +88,8 @@ final class AskScreen extends Screen {
     private boolean pending, enabled = true, heard;
     private String notice = "";
     private String draft = "", lastQuestion = "";
+    /** Sent with the first question on a new page; the view that comes back with it is that page. */
+    private String ticket = "";
     private int listOffset, scroll;
     private boolean stickToBottom = true;
     private final long opened = Util.getMillis();
@@ -168,7 +170,7 @@ final class AskScreen extends Screen {
         } else if (kind != GuideAiNet.KIND_CHAT) {
             input = null;
             askButton = null;
-            addRenderableWidget(new BookButton(textX, barY, 66, 16, Component.literal("All pages"), this::backToList));
+            allPages(barY);
             addRenderableWidget(new BookButton(textX + 70, barY, 66, 16, Component.literal("New page"), this::openNew));
         } else {
             int inputY = paperY + paperH - 42;
@@ -185,7 +187,7 @@ final class AskScreen extends Screen {
             addRenderableWidget(input);
             setInitialFocus(input);
             askButton = addRenderableWidget(new BookButton(textX + textW - 38, inputY + 1, 38, 16, Component.literal("Ask"), this::ask));
-            addRenderableWidget(new BookButton(textX, barY, 66, 16, Component.literal("All pages"), this::backToList));
+            allPages(barY);
             addRenderableWidget(new BookButton(textX + 70, barY, 66, 16, Component.literal("New page"), this::openNew));
             BookButton sound = addRenderableWidget(new BookButton(textX + 140, barY, 70, 16, soundLabel(), null));
             sound.action = () -> {
@@ -195,6 +197,22 @@ final class AskScreen extends Screen {
             sound.setTooltip(Tooltip.create(Component.literal("The quill's scratching while the book writes")));
             updateAsk();
         }
+    }
+
+    /** "All pages", glowing while another page has an answer waiting. */
+    private void allPages(int barY) {
+        BookButton all = addRenderableWidget(new BookButton(textX, barY, 66, 16, Component.literal("All pages"), this::backToList));
+        all.glow = GuideAiClient.unread.stream().anyMatch(id -> !id.equals(pageId));
+        if (all.glow) all.setTooltip(Tooltip.create(Component.literal("The book has answered on another page")));
+    }
+
+    /** True while this page is open here, so its answer shows on it rather than as a notice. */
+    boolean isShowing(String id) {
+        return pageId != null && pageId.equals(id);
+    }
+
+    void unreadChanged() {
+        rebuildWidgets();
     }
 
     private static Component soundLabel() {
@@ -219,6 +237,8 @@ final class AskScreen extends Screen {
     }
 
     private void openNew() {
+        GuideAiClient.send(GuideAiNet.AWAY, "", "");
+        ticket = "";
         pageId = "";
         kind = GuideAiNet.KIND_CHAT;
         title = "New page";
@@ -234,6 +254,9 @@ final class AskScreen extends Screen {
     private void open(String id, int pageKind) {
         pageId = id;
         kind = pageKind;
+        pending = false;
+        ticket = "";
+        GuideAiClient.unread.remove(id);
         title = "";
         entries = List.of();
         notice = "";
@@ -246,6 +269,8 @@ final class AskScreen extends Screen {
 
     private void backToList() {
         pageId = null;
+        pending = false;
+        ticket = "";
         notice = "";
         GuideAiClient.send(GuideAiNet.LIST, "", "");
         rebuildWidgets();
@@ -254,7 +279,8 @@ final class AskScreen extends Screen {
     private void ask() {
         if (!enabled || pending || draft.isBlank()) return;
         lastQuestion = draft;
-        GuideAiClient.send(GuideAiNet.ASK, pageId == null ? "" : pageId, draft.strip());
+        if (pageId == null || pageId.isEmpty()) ticket = Long.toHexString(RANDOM.nextLong());
+        GuideAiClient.send(GuideAiNet.ASK, pageId == null ? "" : pageId, draft.strip(), ticket);
         pending = true;
         notice = "";
         clearLive();
@@ -267,21 +293,34 @@ final class AskScreen extends Screen {
         heard = true;
         enabled = update.enabled();
         pages = update.pages();
-        notice = update.notice();
+        GuideAiClient.syncUnread(pages);
+        if (pageId != null) GuideAiClient.unread.remove(pageId);
         listOffset = Math.max(0, Math.min(listOffset, pages.size() - listRows()));
         laidOut = null;
         if (!enabled) pageId = null;
-        // A page that was torn out elsewhere goes back to the list; a new page keeps its notice (a refused question).
+        // A page that was torn out elsewhere goes back to the list.
         if (pageId != null && !pageId.isEmpty() && pages.stream().noneMatch(p -> p.id().equals(pageId))) pageId = null;
-        pending = false;
+        if (pageId == null) {
+            notice = update.notice();
+            pending = false;
+        } else if (pageId.isEmpty() && !update.notice().isEmpty()) {
+            // The question on a new page was refused; it keeps the notice and the question to retry.
+            notice = update.notice();
+            pending = false;
+            ticket = "";
+        }
         rebuildWidgets();
     }
 
     void showView(GuideAiNet.View view) {
         heard = true;
-        // A page that just got its id (the first question on a new page) or the page already open.
-        if (pageId == null || !(pageId.isEmpty() || pageId.equals(view.pageId()))) return;
+        // The page already open, or the new page that just got its id with the first question asked on it. Answers on
+        // other pages don't take the player there; they come as a notice.
+        boolean adopt = pageId != null && pageId.isEmpty() && !ticket.isEmpty() && ticket.equals(view.ticket());
+        if (pageId == null || !(adopt || pageId.equals(view.pageId()))) return;
+        ticket = "";
         pageId = view.pageId();
+        GuideAiClient.unread.remove(pageId);
         title = view.title();
         boolean kindChanged = kind != view.kind();
         kind = view.kind();
@@ -315,7 +354,7 @@ final class AskScreen extends Screen {
     }
 
     void showLive(GuideAiNet.Live live) {
-        if (pageId == null || !pending || !(pageId.isEmpty() || pageId.equals(live.pageId()))) return;
+        if (pageId == null || !pending || !pageId.equals(live.pageId())) return;
         if (live.reset()) {
             liveText.setLength(0);
             typed = 0;
@@ -892,23 +931,44 @@ final class AskScreen extends Screen {
             flavor = next;
             flavorSince = now;
         }
-        // A turning cog, the way a Create machine shows it is working.
+        drawCog(g, x, y, 0.75f);
+        String dots = ".".repeat((int) (now / 400 % 4));
+        g.drawString(font, Component.literal(flavor + dots).withStyle(ChatFormatting.ITALIC), x + 16, y + 2, FADED, false);
+    }
+
+    /** A turning cog, the way a Create machine shows it is working; 1 is an item's full 16 pixels. */
+    private static void drawCog(GuiGraphics g, int x, int y, float size) {
         ItemStack cog = new ItemStack(BuiltInRegistries.ITEM.getOptional(ResourceLocation.fromNamespaceAndPath("create", "cogwheel"))
                 .orElse(Items.CLOCK));
+        float half = 8 * size;
         g.pose().pushPose();
-        g.pose().translate(x + 6, y + 6, 0);
-        g.pose().mulPose(com.mojang.math.Axis.ZP.rotationDegrees((now % 3600) / 10f));
-        g.pose().scale(0.75f, 0.75f, 1f);
+        g.pose().translate(x + half, y + half, 0);
+        g.pose().mulPose(com.mojang.math.Axis.ZP.rotationDegrees((Util.getMillis() % 3600) / 10f));
+        g.pose().scale(size, size, 1f);
         g.pose().translate(-8, -8, 0);
         g.renderItem(cog, 0, 0);
         g.pose().popPose();
-        String dots = ".".repeat((int) (now / 400 % 4));
-        g.drawString(font, Component.literal(flavor + dots).withStyle(ChatFormatting.ITALIC), x + 16, y + 2, FADED, false);
+    }
+
+    /** A soft green glow that breathes around something with an unread answer. */
+    private static void glowAround(GuiGraphics g, int x, int y, int w, int h) {
+        double breath = 0.5 + 0.5 * Math.sin(Util.getMillis() / 450.0);
+        for (int i = 3; i >= 1; i--) {
+            int alpha = (int) ((40 + 60 * breath) / i);
+            g.fill(x - i, y - i, x + w + i, y + h + i, alpha << 24 | GLOW);
+        }
     }
 
     @Override
     public void onClose() {
         if (minecraft != null) minecraft.setScreen(parent);
+    }
+
+    /** Closed or left for another screen: answers from now on are unread and come as a notice. */
+    @Override
+    public void removed() {
+        GuideAiClient.send(GuideAiNet.AWAY, "", "");
+        super.removed();
     }
 
     @Override
@@ -921,6 +981,7 @@ final class AskScreen extends Screen {
     /** A small plate of the guide's paper with a brown edge and ink lettering. */
     private final class BookButton extends AbstractButton {
         Runnable action;
+        boolean glow;
 
         BookButton(int x, int y, int w, int h, Component label, Runnable action) {
             super(x, y, w, h, label);
@@ -935,7 +996,8 @@ final class AskScreen extends Screen {
         @Override
         protected void renderWidget(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
             boolean lit = active && (isHovered() || isFocused());
-            plate(g, getX(), getY(), width, height, lit ? BUTTON_HOVER : BUTTON, active ? BUTTON_EDGE : RULE);
+            if (glow) glowAround(g, getX(), getY(), width, height);
+            plate(g, getX(), getY(), width, height, glow ? UNREAD_FILL : lit ? BUTTON_HOVER : BUTTON, active ? BUTTON_EDGE : RULE);
             if (lit) g.fill(getX() + 1, getY() + height - 2, getX() + width - 1, getY() + height - 1, RULE);
             Component label = getMessage();
             g.drawString(font, label, getX() + (width - font.width(label)) / 2, getY() + (height - 8) / 2, active ? INK : FADED, false);
@@ -963,11 +1025,20 @@ final class AskScreen extends Screen {
 
         @Override
         protected void renderWidget(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
-            if (isHovered() || isFocused()) plate(g, getX(), getY(), width, height, ROW_HOVER, RULE);
-            g.renderItem(icon(summary.page.kind()), getX() + 3, getY() + 3);
+            boolean unread = GuideAiClient.unread.contains(summary.page.id());
+            if (unread) {
+                glowAround(g, getX(), getY(), width, height);
+                plate(g, getX(), getY(), width, height, UNREAD_FILL, 0xFF000000 | GLOW);
+            } else if (isHovered() || isFocused()) {
+                plate(g, getX(), getY(), width, height, ROW_HOVER, RULE);
+            }
+            if (summary.page.writing()) drawCog(g, getX() + 3, getY() + 3, 1f);
+            else g.renderItem(icon(summary.page.kind()), getX() + 3, getY() + 3);
             int tx = getX() + 24, tw = width - 28;
             g.drawString(font, font.plainSubstrByWidth(summary.page.title(), tw), tx, getY() + 3, INK, false);
-            g.drawString(font, font.plainSubstrByWidth(summary.meta, tw), tx, getY() + 12, FADED, false);
+            String meta = summary.page.writing() ? "The book is writing" + ".".repeat((int) (Util.getMillis() / 400 % 4))
+                    : unread ? "New answer, " + summary.meta : summary.meta;
+            g.drawString(font, font.plainSubstrByWidth(meta, tw), tx, getY() + 12, unread ? 0xFF2F6B22 : FADED, false);
         }
 
         @Override

@@ -44,6 +44,8 @@ public final class GuideAi {
     private static final int MAX_ROUNDS = 8;
     /** Drawings and models in one answer. */
     private static final int MAX_DRAWINGS = 4;
+    /** Pages one player can have the book writing on at once. */
+    static final int MAX_AT_ONCE = 3;
     private static final String NOTICE_OFF = "The book's voice is off on this server. It only speaks on a home server whose owner "
             + "saved an Anthropic API key when starting it. The written guide works as always.";
     private static final String NOTICE_NOT_DEDICATED = "The book's voice only speaks on a dedicated home server, not in singleplayer "
@@ -59,7 +61,21 @@ public final class GuideAi {
 
     private static volatile Live live;
     private static volatile String offNotice = NOTICE_OFF;
-    private static final Set<UUID> pending = new HashSet<>();
+    /** The pages the book is writing on, per player. */
+    private static final Map<UUID, Set<String>> pending = new HashMap<>();
+    /** The page each player has open in the book, if any (server thread): its answers aren't unread. */
+    private static final Map<UUID, String> viewing = new HashMap<>();
+    /**
+     * What the book has written so far on each page it is writing on (server thread), so a page opened halfway
+     * through an answer shows it from the start.
+     */
+    private static final Map<String, Writing> writing = new HashMap<>();
+
+    private static final class Writing {
+        final StringBuilder text = new StringBuilder();
+        final List<String> diagrams = new ArrayList<>();
+        String status = "thinking";
+    }
     private static final Map<UUID, Long> lastAsked = new HashMap<>();
     /** Request fields dropped after the API rejected them once (e.g. web tools on an account without them). */
     private static volatile boolean webRejected, fallbacksRejected, strictRejected;
@@ -85,6 +101,8 @@ public final class GuideAi {
             PlacedBlocks p = placed;
             if (p != null && !e.isCanceled()) p.onPiston(e);
         });
+        NeoForge.EVENT_BUS.addListener((net.neoforged.neoforge.event.entity.player.PlayerEvent.PlayerLoggedOutEvent e) ->
+                viewing.remove(e.getEntity().getUUID()));
         NeoForge.EVENT_BUS.addListener(BuildClaims::onCommands);
         NeoForge.EVENT_BUS.addListener(BuildClaims::onTick);
         NeoForge.EVENT_BUS.addListener((net.neoforged.neoforge.event.level.LevelEvent.Save e) -> {
@@ -154,7 +172,8 @@ public final class GuideAi {
         cache.addProperty("ttl", "1h");
         reference.add("cache_control", cache);
         system.add(reference);
-        ExecutorService workers = Executors.newFixedThreadPool(2, r -> {
+        // Room for both players to have three pages being written at once.
+        ExecutorService workers = Executors.newFixedThreadPool(2 * MAX_AT_ONCE, r -> {
             Thread t = new Thread(r, "Field Guide voice");
             t.setDaemon(true);
             return t;
@@ -174,6 +193,8 @@ public final class GuideAi {
         placed = null;
         if (p != null) p.save();
         views.clear();
+        viewing.clear();
+        writing.clear();
         Live l = live;
         live = null;
         if (l != null) l.workers.shutdownNow();
@@ -228,29 +249,45 @@ public final class GuideAi {
             return;
         }
         ThreadStore.Book book = l.store.book(player.getUUID());
+        UUID id = player.getUUID();
         switch (request.action()) {
-            case GuideAiNet.LIST -> sendPages(player, book, "");
+            case GuideAiNet.LIST -> {
+                viewing.remove(id);
+                sendPages(player, book, "");
+            }
+            case GuideAiNet.AWAY -> viewing.remove(id);
             case GuideAiNet.OPEN -> {
                 ThreadStore.Page page = book.page(request.pageId());
-                if (page == null) sendPages(player, book, "That page is gone.");
-                else sendView(player, page, "");
+                if (page == null) {
+                    viewing.remove(id);
+                    sendPages(player, book, "That page is gone.");
+                } else {
+                    viewing.put(id, page.id);
+                    if (page.unread) {
+                        page.unread = false;
+                        l.store.save(id);
+                    }
+                    sendView(player, page, "");
+                    catchUp(player, page);
+                }
             }
             case GuideAiNet.DELETE -> {
                 ThreadStore.Page page = book.page(request.pageId());
-                if (page != null && !isPending(player.getUUID())) {
+                if (page != null && !isPending(id, page.id)) {
                     book.pages.remove(page);
-                    l.store.save(player.getUUID());
+                    l.store.save(id);
                 }
                 sendPages(player, book, "");
             }
-            case GuideAiNet.ASK -> ask(l, player, book, request.pageId(), request.text(), request.fov(), request.aspect());
+            case GuideAiNet.ASK -> ask(l, player, book, request.pageId(), request.text(), request.fov(), request.aspect(), request.ticket());
             case GuideAiNet.SAVE -> save(l, player, book, request.pageId(), request.text());
             default -> {
             }
         }
     }
 
-    private static void ask(Live l, ServerPlayer player, ThreadStore.Book book, String pageId, String rawQuestion, int fov, float aspect) {
+    private static void ask(Live l, ServerPlayer player, ThreadStore.Book book, String pageId, String rawQuestion, int fov, float aspect,
+                            String ticket) {
         UUID id = player.getUUID();
         String question = GuideAiNet.clip(rawQuestion.replaceAll("[\\p{Cntrl}&&[^\n]]", " ").strip(), GuideAiNet.MAX_QUESTION);
         ThreadStore.Page page = pageId.isEmpty() ? null : book.page(pageId);
@@ -269,7 +306,9 @@ public final class GuideAi {
             book.day = today;
             book.askedToday = 0;
         }
-        if (isPending(id)) refusal = "The book is still writing its last answer.";
+        if (page != null && isPending(id, page.id)) refusal = "The book is still writing its answer on this page.";
+        else if (pendingCount(id) >= MAX_AT_ONCE)
+            refusal = "The book is already writing " + MAX_AT_ONCE + " answers for you. Ask again when one of them is done.";
         else if (lastAsked.containsKey(id) && now - lastAsked.get(id) < l.settings.cooldownSeconds * 1000L)
             refusal = "Give the book a few seconds between questions.";
         else if (book.askedToday >= l.settings.dailyQuestions)
@@ -283,14 +322,18 @@ public final class GuideAi {
             else sendPages(player, book, refusal);
             return;
         }
+        boolean fresh = page == null;
         if (page == null) page = l.store.newPage(book, GuideAiNet.clip(question.replace('\n', ' '), 60), ThreadStore.KIND_CHAT);
         ThreadStore.touch(book, page);
         page.entries.add(new GuideAiNet.Entry(GuideAiNet.WHO_PLAYER, question));
+        page.unread = false;
         book.askedToday++;
         lastAsked.put(id, now);
         synchronized (pending) {
-            pending.add(id);
+            pending.computeIfAbsent(id, k -> new HashSet<>()).add(page.id);
         }
+        writing.put(page.id, new Writing());
+        viewing.put(id, page.id);
         l.store.save(id);
         // What is on their screen right now; the book reads it only if it calls get_view.
         try {
@@ -299,7 +342,7 @@ public final class GuideAi {
             views.remove(id);
             LOG.warn("Field Guide voice: couldn't take in what {} sees ({})", player.getGameProfile().getName(), e.toString());
         }
-        sendView(player, page, "");
+        sendView(player, page, "", fresh ? GuideAiNet.clip(ticket, 64) : "");
 
         // The API sees the conversation so far plus this question; the page only keeps it once it has an answer.
         JsonArray messages = page.messages.deepCopy();
@@ -326,8 +369,13 @@ public final class GuideAi {
 
     private static void finish(Live l, UUID id, ThreadStore.Page page, JsonArray messages, Outcome outcome) {
         synchronized (pending) {
-            pending.remove(id);
+            Set<String> mine = pending.get(id);
+            if (mine != null) {
+                mine.remove(page.id);
+                if (mine.isEmpty()) pending.remove(id);
+            }
         }
+        writing.remove(page.id);
         if (live != l) return;
         if (outcome.answer != null) {
             page.entries.add(new GuideAiNet.Entry(GuideAiNet.WHO_BOOK, GuideAiNet.clipText(outcome.answer)));
@@ -344,9 +392,23 @@ public final class GuideAi {
                     + "costs less; the book still knows the whole guide there."));
         ThreadStore.Book book = l.store.book(id);
         ThreadStore.touch(book, page);
+        // Unread until they open it, unless it is the page they have open now.
+        boolean open = page.id.equals(viewing.get(id));
+        page.unread = !open && book.pages.contains(page);
         l.store.save(id);
         ServerPlayer player = l.server.getPlayerList().getPlayer(id);
-        if (player != null) sendView(player, page, "");
+        if (player == null || !book.pages.contains(page)) return;
+        send(player, new GuideAiNet.Answered(page.id, GuideAiNet.clip(page.title, 64), outcome.answer != null));
+        if (open) sendView(player, page, "");
+        else if (!viewing.containsKey(id)) sendPages(player, book, "");
+    }
+
+    /** Opening a page the book is writing on: what it has written so far, as the live packets would have brought it. */
+    private static void catchUp(ServerPlayer player, ThreadStore.Page page) {
+        Writing w = writing.get(page.id);
+        if (w == null) return;
+        send(player, new GuideAiNet.Live(page.id, true, w.text.toString(), w.status, ""));
+        for (String d : w.diagrams) send(player, new GuideAiNet.Live(page.id, false, "", w.status, d));
     }
 
     /** Copies a drawing or model from a page onto a new page of its own, so the player can find it again. */
@@ -392,20 +454,34 @@ public final class GuideAi {
         sendView(player, page, "Saved as its own page, \"" + saved.title + "\". Find it under All pages.");
     }
 
-    private static boolean isPending(UUID id) {
+    private static boolean isPending(UUID id, String pageId) {
         synchronized (pending) {
-            return pending.contains(id);
+            Set<String> mine = pending.get(id);
+            return mine != null && mine.contains(pageId);
+        }
+    }
+
+    private static int pendingCount(UUID id) {
+        synchronized (pending) {
+            Set<String> mine = pending.get(id);
+            return mine == null ? 0 : mine.size();
         }
     }
 
     private static void sendPages(ServerPlayer player, ThreadStore.Book book, String notice) {
         List<GuideAiNet.Summary> list = new ArrayList<>();
         for (ThreadStore.Page p : book.pages)
-            list.add(new GuideAiNet.Summary(p.id, GuideAiNet.clip(p.title, 64), p.questions, p.updated, p.kind));
+            list.add(new GuideAiNet.Summary(p.id, GuideAiNet.clip(p.title, 64), p.questions, p.updated, p.kind,
+                    isPending(player.getUUID(), p.id), p.unread));
         send(player, new GuideAiNet.Pages(true, notice, list));
     }
 
     private static void sendView(ServerPlayer player, ThreadStore.Page page, String notice) {
+        sendView(player, page, notice, "");
+    }
+
+    /** ticket: the one the screen sent with the first question of a new page, so it knows this page is that one. */
+    private static void sendView(ServerPlayer player, ThreadStore.Page page, String notice, String ticket) {
         // The newest entries that fit in one packet (models make pages heavy; the game drops a player over a packet too large).
         int from = page.entries.size(), bytes = 0;
         while (from > 0 && page.entries.size() - from < 500) {
@@ -424,8 +500,8 @@ public final class GuideAi {
         if (notice.isEmpty() && page.kind == ThreadStore.KIND_CHAT && page.edition < ThreadStore.EDITION && !page.entries.isEmpty())
             notice = "This page is from an older edition of the book. You can keep asking here; start a new page for the "
                     + "newest features.";
-        send(player, new GuideAiNet.View(page.id, GuideAiNet.clip(page.title, 64), List.copyOf(entries), isPending(player.getUUID()),
-                notice, page.kind));
+        send(player, new GuideAiNet.View(page.id, GuideAiNet.clip(page.title, 64), List.copyOf(entries), isPending(player.getUUID(), page.id),
+                notice, page.kind, ticket));
     }
 
     /** Bytes of page text per view packet, well under the game's 1 MiB limit for one packet. */
@@ -503,8 +579,17 @@ public final class GuideAi {
             lastSent = System.currentTimeMillis();
             GuideAiNet.Live packet = new GuideAiNet.Live(pageId, r, chunk, status, diagram);
             l.server.execute(() -> {
+                Writing w = writing.get(pageId);
+                if (w != null) {
+                    // A new round starts the text over but keeps the drawings made so far (they are part of the answer).
+                    if (r) w.text.setLength(0);
+                    w.text.append(chunk);
+                    w.status = packet.status();
+                    if (!diagram.isEmpty()) w.diagrams.add(diagram);
+                }
                 ServerPlayer p = l.server.getPlayerList().getPlayer(player);
-                if (p != null) send(p, packet);
+                // Only to the page they have open; the others catch up when opened.
+                if (p != null && pageId.equals(viewing.get(player))) send(p, packet);
             });
         }
     }
@@ -692,7 +777,13 @@ public final class GuideAi {
                         result = problem;
                     }
                 } else if (name.equals("build_model")) {
-                    Models.Result built = l.server.submit(() -> Models.build(input, l.server.overworld())).get(10, TimeUnit.SECONDS);
+                    Models.Result built = l.server.submit(() -> {
+                        ServerPlayer player = l.server.getPlayerList().getPlayer(playerId);
+                        PlacedBlocks placedBlocks = placed;
+                        Models.Copier copier = player == null || placedBlocks == null ? null
+                                : (a, b, max) -> Builds.copy(player, placedBlocks, views.get(playerId), a, b, max);
+                        return Models.build(input, player != null ? player.serverLevel() : l.server.overworld(), copier);
+                    }).get(10, TimeUnit.SECONDS);
                     if (built.problem() != null) {
                         result = built.problem();
                     } else if (built.draft()) {
