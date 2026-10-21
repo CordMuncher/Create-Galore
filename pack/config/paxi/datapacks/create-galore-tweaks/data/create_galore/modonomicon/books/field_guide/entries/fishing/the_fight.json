@@ -88,12 +88,12 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "[#](FFFFFF)\ue103[#]() **In depth.** A rod loaded above 70%% of its rating wears; above its rating it can crack. A worn rod holds less (down to 60%% when nearly broken), a frayed line breaks earlier (down to half its test), a worn reel's drag gets jerky."
+      "text": "[#](FFFFFF)\ue103[#]() **In depth.** A rod loaded above 70%% of its rating wears; above its rating it can crack. A worn rod holds less (down to 60%% when nearly broken), a frayed line holds less (down to half its test; the rod's tooltip, the drag readout and the HUD show what it holds now), a worn reel's drag gets jerky."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Toothy fish include pike, muskellunge, gar, piranha, barracuda, sharks, morays, anglerfish, lionfish and the Dragon Fish. Without a steel leader their teeth fray the line a little all fight and more on each run or jump, with the square of their pull against the line's test; one pulling over three times the test can bite through at once."
+      "text": "Toothy fish include pike, muskellunge, gar, piranha, barracuda, sharks, morays, anglerfish, lionfish and the Dragon Fish. Without an iron or steel leader their teeth fray the line a little all fight and more on each run or jump, with the square of their pull against the line's test; one pulling over three times the test can bite through at once."
     },
     {
       "type": "modonomicon:text",

@@ -20,7 +20,9 @@ public class TackleItem extends Item {
         TackleManager.of(stack).ifPresent(part -> TackleTooltips.describe(part, stack, tooltip));
         Float frayed = stack.get(FishingRegistry.LINE_WEAR.get());
         if (frayed != null && frayed > 0) {
-            tooltip.add(Component.translatable("tooltip.create_galore_fishing.frayed", Math.round(frayed * 100)).withStyle(ChatFormatting.GRAY));
+            double test = TackleManager.of(stack, TacklePart.Line.class).map(TacklePart.Line::test).orElse(0.0);
+            tooltip.add(Component.translatable("tooltip.create_galore_fishing.frayed", Math.round(frayed * 100),
+                    RodStats.kgHolds(RodStats.frayedTest(test, frayed))).withStyle(ChatFormatting.GOLD));
         }
         Float worn = stack.get(FishingRegistry.PART_WEAR.get());
         if (worn != null && worn > 0) {

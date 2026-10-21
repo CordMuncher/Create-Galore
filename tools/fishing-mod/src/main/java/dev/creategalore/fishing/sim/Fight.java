@@ -294,9 +294,9 @@ public final class Fight {
             double peak = tension + spike * (1 - absorb);
             if (tackle.hasReel() && peak > drag) {
                 peak = drag + (peak - drag) * (0.55 - 0.45 * tackle.reelSmooth());
-                // A drag set below the line's test slips before the line can break: the jolt can take the line close
-                // to its test, never past it.
-                if (drag < breakLoad) peak = Math.min(peak, drag + (breakLoad - drag) * 0.9);
+                // A drag set at or below the line's test slips before the line can break: the jolt can take the
+                // line close to its test, never past it.
+                if (drag <= breakLoad) peak = Math.min(peak, drag + (breakLoad - drag) * 0.9);
             }
             peakTension = peak;
         }

@@ -925,7 +925,7 @@ public class CastHook extends FishingHook {
     private Component lossReason() {
         Loss loss = fight.loss();
         if (loss == null) return null;
-        String test = RodStats.kg(fight.tackle().breakingLoad());
+        String test = RodStats.kgHolds(fight.tackle().breakingLoad());
         return switch (loss) {
             case SNAP_DRAG -> Component.translatable(loss.key(), RodStats.kg(controls.drag), test);
             case SNAP_POLE -> Component.translatable(loss.key(), RodStats.kg(fight.highestTension()), test);

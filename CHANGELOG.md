@@ -4,6 +4,16 @@ Each pack version gets a section here, with **Added**, **Fixed** and **Removed**
 workflow copies the section for the version in `pack/pack.toml` to the top of the GitHub release, and the build
 fails when that section is missing.
 
+## 0.4.18
+
+### Added
+- **Iron Leader.** An early leader that teeth can't cut: 3 iron nuggets and a string make 2. It holds 12 kg, between line and the Steel Leader (60 kg), so saltwater fishing with pike, barracuda and other toothy fish no longer has to wait for iron wire.
+- **What your line holds now is shown everywhere.** A frayed line holds less than its test. The rod's tooltip now has a "Line holds 3.5 kg (frayed)" line, a frayed spool says "Frayed 23%: holds 3.5 kg now", and the drag message, the Tackle Bench and the HUD show the drag against that number, in red when the drag is over it.
+- Create Galore Fishing 0.3.9.
+
+### Fixed
+- **Line snapping on a drag that looked safe.** A String Line frayed by toothy fish held 3.55 kg, the 3.6 kg drag was over that, and nothing showed it. All the readouts now use the same number as the fight, rounded down so a drag shown as equal or lower always holds, and a drag set exactly at what the line holds no longer snaps it.
+
 ## 0.4.17
 
 ### Fixed

@@ -160,6 +160,12 @@ public final class FightRules {
         out.add(new Check(below.count(Outcome.LINE_SNAPPED) == 0 && below.highest < 4, String.format(Locale.ROOT,
                 "a 12 kgf fish that runs and jumps never snaps a 4 kg line on a 3.6 kg drag (%d of 300 snapped, highest %.2f kg)",
                 below.count(Outcome.LINE_SNAPPED), below.highest)));
+        // Set exactly at the test (what a frayed line holds, shown as equal to the drag), it still holds.
+        Bout at = bouts(wild(1.2, false), 10, new Tackle(100, 0.3, true, 6, 1.2, 100, 0.2, 10_000, 3.55, 0.2,
+                Double.NaN, false, 1), 3.55, 300, 27);
+        out.add(new Check(at.count(Outcome.LINE_SNAPPED) == 0, String.format(Locale.ROOT,
+                "a drag set exactly at what the line holds never snaps it (%d of 300 snapped, highest %.2f of 3.55 kg)",
+                at.count(Outcome.LINE_SNAPPED), at.highest)));
         Bout over = bouts(wild(1.2, false), 10, new Tackle(100, 0.3, true, 6, 1.2, 100, 0.2, 10_000, 4, 0.2,
                 Double.NaN, false, 1), 5, 300, 22);
         out.add(new Check(over.count(Outcome.LINE_SNAPPED) > 30 && over.allExplained, String.format(Locale.ROOT,

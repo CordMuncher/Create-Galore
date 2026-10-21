@@ -93,11 +93,14 @@
           "item": "create_galore_fishing:clear_leader"
         },
         {
+          "item": "create_galore_fishing:iron_leader"
+        },
+        {
           "item": "create_galore_fishing:steel_leader"
         }
       ],
       "title": "Leaders",
-      "text": "An optional short length at the hook. **Clear Leader**: 12 kg, 10%% visible, hides a strong line from shy fish. **Steel Leader**: 60 kg; toothy fish can't bite through it, and bite through anything else."
+      "text": "An optional short length at the hook. **Clear Leader**: 12 kg, 10%% visible, hides a strong line from shy fish. **Iron Leader**: 12 kg, from iron nuggets and string; teeth can't cut it. **Steel Leader**: 60 kg, the same for big fish. Teeth fray anything else."
     },
     {
       "type": "modonomicon:spotlight",

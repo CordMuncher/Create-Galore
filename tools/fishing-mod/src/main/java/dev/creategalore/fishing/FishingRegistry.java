@@ -200,6 +200,7 @@ public final class FishingRegistry {
     public static final DeferredItem<LineItem> HEAVY_LINE = part("heavy_line", () -> new LineItem(new Item.Properties().stacksTo(64)));
 
     public static final DeferredItem<TackleItem> CLEAR_LEADER = part("clear_leader", () -> new TackleItem(new Item.Properties().stacksTo(16)));
+    public static final DeferredItem<TackleItem> IRON_LEADER = part("iron_leader", () -> new TackleItem(new Item.Properties().stacksTo(16)));
     public static final DeferredItem<TackleItem> STEEL_LEADER = part("steel_leader", () -> new TackleItem(new Item.Properties().stacksTo(16)));
 
     public static final DeferredItem<TackleItem> SMALL_HOOK = part("small_hook", () -> new TackleItem(new Item.Properties()));

@@ -252,6 +252,11 @@ public class RodItem extends Item {
             out.add(Component.translatable(P + "drag", RodStats.kg(stats.drag()), RodStats.kg(stats.reel().get().maxDrag()))
                     .withStyle(ChatFormatting.AQUA));
         }
+        if (stats.line().isPresent()) {
+            // What the line (or leader) holds now, frayed or not: the number the drag has to stay under.
+            out.add(Component.translatable(P + (stats.lineWear() > 0 ? "holds.frayed" : "holds"), RodStats.kgHolds(stats.breakingLoad()))
+                    .withStyle(stats.dragOverLine() ? ChatFormatting.GOLD : ChatFormatting.AQUA));
+        }
         if (stats.canCast()) {
             out.add(Component.translatable(P + "rated", RodStats.kg(stats.ratedLoad()), RodStats.kg(stats.ratedFishKg()))
                     .withStyle(ChatFormatting.BLUE));

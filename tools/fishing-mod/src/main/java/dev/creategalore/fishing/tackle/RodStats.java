@@ -135,7 +135,20 @@ public final class RodStats {
     }
 
     public double lineTest() {
-        return line.map(l -> l.test() * (1 - 0.5 * lineWear())).orElse(0.0);
+        return line.map(l -> frayedTest(l.test(), lineWear())).orElse(0.0);
+    }
+
+    /**
+     * What a line of {@code test} holds once frayed by {@code wear} (0..1): down to half its test when worn through.
+     * The one place this is worked out, so the line's tooltip, the rod's, the drag readouts and the fight agree.
+     */
+    public static double frayedTest(double test, double wear) {
+        return test * (1 - 0.5 * Math.max(0, Math.min(1, wear)));
+    }
+
+    /** The drag is set over what the line (or leader) holds now: a hard pull can snap it. */
+    public boolean dragOverLine() {
+        return reel.isPresent() && line.isPresent() && drag() > breakingLoad();
     }
 
     /** What's missing before the rod can be cast; empty when it is ready. */
@@ -156,7 +169,7 @@ public final class RodStats {
     public List<Component> warnings() {
         List<Component> out = new ArrayList<>();
         double test = breakingLoad();
-        if (reel.isPresent() && line.isPresent() && drag() > test) {
+        if (dragOverLine()) {
             out.add(Component.translatable("tooltip.create_galore_fishing.warn.drag_over_line", kg(drag()), kg(test)));
         }
         if (reel.isPresent() && drag() > rodLoad()) {
@@ -252,6 +265,15 @@ public final class RodStats {
     /** Hold of the hook in a fish this long. */
     public double hookHold(double fishLengthCm) {
         return SizeModel.hookHold(hookSize(), fishLengthCm);
+    }
+
+    /**
+     * What a line holds, as {@link #kg} but rounded down, so a drag shown as equal to it is never over it: a drag
+     * shown at or under the line's number holds, one shown over it is red.
+     */
+    public static String kgHolds(double kg) {
+        if (Double.isInfinite(kg)) return "-";
+        return kg(kg < 10 ? Math.floor(kg * 10 + 1e-6) / 10 : Math.floor(kg + 1e-6));
     }
 
     /** "4.5 kg" with one decimal under 10 kg. */

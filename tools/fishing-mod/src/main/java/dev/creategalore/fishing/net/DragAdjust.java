@@ -56,10 +56,10 @@ public record DragAdjust(int steps) implements CustomPacketPayload {
             int step = Math.max(0, Math.min(stats.dragSteps(), stats.dragStep() + steps));
             rod.set(FishingRegistry.DRAG_STEP.get(), step);
             RodStats after = RodStats.of(rod).orElseThrow();
-            boolean over = after.drag() > after.breakingLoad();
             player.displayClientMessage(Component.translatable("message.create_galore_fishing.drag",
-                    RodStats.kg(after.drag()), RodStats.kg(after.reel().get().maxDrag()), step, after.dragSteps())
-                    .withStyle(over ? ChatFormatting.GOLD : ChatFormatting.AQUA), true);
+                    RodStats.kg(after.drag()), RodStats.kg(after.reel().get().maxDrag()), step, after.dragSteps(),
+                    RodStats.kgHolds(after.breakingLoad()))
+                    .withStyle(after.dragOverLine() ? ChatFormatting.RED : ChatFormatting.AQUA), true);
             player.level().playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.UI_BUTTON_CLICK.value(),
                     SoundSource.PLAYERS, 0.2f, 1.8f + 0.02f * step);
             return;
