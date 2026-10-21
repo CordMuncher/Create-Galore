@@ -48,12 +48,22 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**The HUD** above the hotbar while a line is out:\n\n- a tension bar against what the rig breaks at: blue when slack, green, yellow from 60%%, red from 85%%, with a tick where the drag starts to slip\n- the drag, the line out and the line left\n- alerts: **Drag slipping**, **Slack line!**, **It's running!**"
+      "text": "**The HUD** while a line is out:\n\n- three upright stress bars at the right: **Line** against its test (tick where the drag slips), **Reel** against its drag and crank, **Rod** against its rating: green, yellow from 60%%, red from 85%%, the line blue when slack\n- a thin bar by the rod's: how high it is lifted"
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**How a fish gets away:**\n\n- **Snapped line**: tension over the line's test (or the leader's).\n- **Bitten off**: a toothy fish on line without a Steel Leader.\n- **Rod broke**: a load well over its rating, or worn through.\n- **Reel seized**: worn through; the line parts.\n- **Threw the hook**: slack for over a second, or a jump on a loose line.\n- **Spooled**: every metre out, then the line snapped."
+      "text": "**Above the hotbar:** the drag, the line out and the line left, and the alerts **Drag slipping**, **Slack line!** and **It's running!** (only while the fish takes line)."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**How a fish gets away** (chat says what broke and why):\n\n- **Snapped line**: drag at or over the line's test (or the leader's). A drag below it slips first: the line holds.\n- **Bitten off**: teeth fray non-steel line, faster the bigger the fish is for it; one far too big bites through at once."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "- **Rod broke**: over its rating, or worn through.\n- **Reel seized**: ground through.\n- **Threw the hook**: slack line, a jump, or a hook too small.\n- **Spooled**: every metre out."
     },
     {
       "type": "modonomicon:text",
@@ -78,7 +88,12 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "[#](FFFFFF)\ue103[#]() **In depth.** A rod loaded above 70%% of its rating wears; above its rating it can crack. A worn rod holds less (down to 60%% when nearly broken), a frayed line breaks earlier (down to half its test), a worn reel's drag gets jerky.\\\n\\\nToothy fish include pike, muskellunge, gar, piranha, barracuda, sharks, morays, anglerfish, lionfish and the Dragon Fish."
+      "text": "[#](FFFFFF)\ue103[#]() **In depth.** A rod loaded above 70%% of its rating wears; above its rating it can crack. A worn rod holds less (down to 60%% when nearly broken), a frayed line breaks earlier (down to half its test), a worn reel's drag gets jerky."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Toothy fish include pike, muskellunge, gar, piranha, barracuda, sharks, morays, anglerfish, lionfish and the Dragon Fish. Without a steel leader their teeth fray the line a little all fight and more on each run or jump, with the square of their pull against the line's test; one pulling over three times the test can bite through at once."
     },
     {
       "type": "modonomicon:text",

@@ -4,6 +4,19 @@ Each pack version gets a section here, with **Added**, **Fixed** and **Removed**
 workflow copies the section for the version in `pack/pack.toml` to the top of the GitHub release, and the build
 fails when that section is missing.
 
+## 0.4.12
+
+### Added
+- **Lost fish say why.** When a fish gets away, chat now says what broke and why, with the numbers: the drag was set over the line's test (and by how much), its teeth chewed through a line with no steel leader, the reel seized from cranking while the drag slipped, the rod was loaded past its rating, the line went slack and it shook the hook, it jumped, the hook was too small for its mouth (with a hook size that holds), it took all your line, or a part was worn through.
+- **Stress bars for line, reel and rod.** The single tension bar above the hotbar is replaced by three upright bars at the right of the screen, one each for the line (against its test, with a tick where the drag slips), the reel (against its drag and crank) and the rod (against its rating). You can see which part is close to giving out and how evenly the rig is loaded. The rod-height bar sits next to the rod's.
+- **Toothy fish fray the line instead of snapping it at once.** Pike, sharks, morays and other toothy fish on a line with no steel leader now wear it down a little all fight and more on every run or jump, faster the bigger the fish is for the line. A small pike barely marks it; one that pulls over three times the line's test can still bite straight through. The fraying stays on the line, as other wear does.
+- Create Galore Fishing 0.3.6, and the operator tool `/cgfish pool <player>` (who would bite on that line and how big).
+
+### Fixed
+- **A line never snaps while the drag is below its test.** With the drag set under the line's test, the drag now always slips before the line breaks, through runs, jumps and winding. A line set this way breaks only when it is worn or frayed through, bitten through, or the drag is turned up past its test.
+- **"It's running!" only while the fish takes line.** It showed during any run, even with the drag holding and the fish coming in.
+- **Small fish no longer throw the hook while you reel them in.** A light or tired fish pulls next to nothing, and that counted as a slack line. Slack now means the fish isn't pulling and you aren't reeling, so a fish being wound in stays hooked.
+
 ## 0.4.11
 
 ### Fixed

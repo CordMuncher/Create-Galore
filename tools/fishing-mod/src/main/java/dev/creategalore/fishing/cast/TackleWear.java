@@ -34,9 +34,14 @@ public final class TackleWear {
     /** Fraying one fight puts on a line however gently it went: a line fought gently wears out after 100 fights. */
     public static final double LINE_WEAR_PER_FIGHT = 0.01;
 
-    /** Fraying one fight puts on a line: the base, plus half the fight's own fraying. */
-    public static double lineFray(double fightLineWear) {
-        return LINE_WEAR_PER_FIGHT + fightLineWear * Fight.LINE_FRAY_PER_WEAR;
+    /** Fraying one fight puts on a line: the base, plus half the fight's own wear, plus what teeth did to it. */
+    public static double lineFray(Fight fight) {
+        return lineFray(fight.lineWear(), fight.teethFray());
+    }
+
+    /** Fraying from a fight with this much line wear and fraying from teeth. */
+    public static double lineFray(double fightLineWear, double teethFray) {
+        return LINE_WEAR_PER_FIGHT + fightLineWear * Fight.LINE_FRAY_PER_WEAR + teethFray;
     }
 
     /** Durability one fight takes from a reel: 1 for the fight, plus its grinding. */
@@ -99,7 +104,7 @@ public final class TackleWear {
                 parts = parts.with(RodParts.Slot.LEADER, ItemStack.EMPTY).with(RodParts.Slot.HOOK, ItemStack.EMPTY)
                         .with(RodParts.Slot.TERMINAL, ItemStack.EMPTY).with(RodParts.Slot.BAIT, ItemStack.EMPTY);
             } else {
-                float wear = line.getOrDefault(FishingRegistry.LINE_WEAR.get(), 0f) + (float) lineFray(fight.lineWear());
+                float wear = line.getOrDefault(FishingRegistry.LINE_WEAR.get(), 0f) + (float) lineFray(fight);
                 if (wear >= 1) {
                     angler.level().playSound(null, angler.blockPosition(), SoundEvents.ITEM_BREAK, SoundSource.PLAYERS, 0.6f, 1.2f);
                     tell(angler, Component.translatable("message.create_galore_fishing.worn_out", line.getHoverName()));

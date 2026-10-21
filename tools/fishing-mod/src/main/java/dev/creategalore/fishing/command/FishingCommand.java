@@ -14,6 +14,7 @@ import dev.creategalore.fishing.machine.DriveMount;
 import dev.creategalore.fishing.machine.RodMount;
 import dev.creategalore.fishing.selftest.SelfTest;
 import dev.creategalore.fishing.sim.MonteCarlo;
+import dev.creategalore.fishing.tackle.RodStats;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -51,6 +52,9 @@ public final class FishingCommand {
                         .executes(ctx -> hook(ctx.getSource(), ctx.getSource().getPlayerOrException(), false))
                         .then(Commands.argument("player", EntityArgument.player())
                                 .executes(ctx -> hook(ctx.getSource(), EntityArgument.getPlayer(ctx, "player"), false))))
+                .then(Commands.literal("pool")
+                        .then(Commands.argument("player", EntityArgument.player())
+                                .executes(ctx -> pool(ctx.getSource(), EntityArgument.getPlayer(ctx, "player")))))
                 .then(Commands.literal("bite")
                         .executes(ctx -> hook(ctx.getSource(), ctx.getSource().getPlayerOrException(), true))
                         .then(Commands.argument("player", EntityArgument.player())
@@ -108,6 +112,38 @@ public final class FishingCommand {
         Path dir = source.getServer().getServerDirectory().resolve(CreateGaloreFishing.ID);
         Files.createDirectories(dir);
         return dir;
+    }
+
+    /**
+     * Test tool: who would bite on a player's line right now and how big: each species' share of 2000 rolled bites
+     * with the median and largest weight, biggest share first.
+     */
+    private static int pool(CommandSourceStack source, ServerPlayer player) {
+        if (!(player.fishing instanceof CastHook hook)) {
+            source.sendFailure(Component.literal(player.getGameProfile().getName() + " has no line out"));
+            return 0;
+        }
+        RodStats stats = RodStats.of(player.getMainHandItem()).orElse(null);
+        if (stats == null) {
+            source.sendFailure(Component.literal("Not holding a rod"));
+            return 0;
+        }
+        java.util.Map<Species, List<Double>> kg = new java.util.HashMap<>();
+        int nibbles = 0;
+        for (int i = 0; i < 2000; i++) {
+            var bite = BiteSampler.roll(hook.pool(), stats, player.getRandom());
+            if (bite.isEmpty()) nibbles++;
+            else kg.computeIfAbsent(bite.get().species(), s -> new ArrayList<>()).add(bite.get().kg());
+        }
+        StringBuilder b = new StringBuilder(String.format(Locale.ROOT, "hook %d, %d nibbles;", stats.hookSize(), nibbles));
+        kg.entrySet().stream().sorted((x, y) -> y.getValue().size() - x.getValue().size()).forEach(e -> {
+            List<Double> w = e.getValue();
+            w.sort(null);
+            b.append(String.format(Locale.ROOT, " %s %.0f%% %.2f/%.2f kg;", e.getKey().id().getPath(),
+                    w.size() / 20.0, w.get(w.size() / 2), w.get(w.size() - 1)));
+        });
+        source.sendSuccess(() -> Component.literal(b.toString()), false);
+        return 1;
     }
 
     /** Test tool: the player's next bite is this species at this length. */
