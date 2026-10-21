@@ -232,6 +232,10 @@ public final class ProcessingSelfTest {
 
     private static void chum(ServerLevel level, SelfTest.Report r) {
         Vec3 spot = new Vec3(1_000_000.5, 62, 1_000_000.5);
+        BlockPos water = new BlockPos(4, level.getMaxBuildHeight() - 3, 0);
+        // A run a minute ago left its chum here; the checks below count spots.
+        Chum.clearAround(level, spot);
+        Chum.clearAround(level, Vec3.atCenterOf(water));
         Chum.spread(level, spot);
         double here = Chum.factor(level, spot);
         double near = Chum.factor(level, spot.add(4, 0, 0));
@@ -240,7 +244,6 @@ public final class ProcessingSelfTest {
                 String.format(java.util.Locale.ROOT, "chum: bites x%.2f at the spot, x%.2f 4 blocks off, x%.2f outside", here, near, far));
         r.check(Chum.around(level, spot) == 1, "one chum spot is active there");
         // A real throw: a ball of chum dropped onto a water block spreads when it gets there.
-        BlockPos water = new BlockPos(4, level.getMaxBuildHeight() - 3, 0);
         level.setBlockAndUpdate(water, Blocks.WATER.defaultBlockState());
         try {
             ThrownChum ball = new ThrownChum(level, water.getX() + 0.5, water.getY() + 2.5, water.getZ() + 0.5);
@@ -250,6 +253,8 @@ public final class ProcessingSelfTest {
             r.check(ball.isRemoved() && Chum.around(level, Vec3.atCenterOf(water)) == 1, "a thrown ball of chum spreads in the water it lands in");
         } finally {
             level.removeBlock(water, false);
+            Chum.clearAround(level, spot);
+            Chum.clearAround(level, Vec3.atCenterOf(water));
         }
     }
 

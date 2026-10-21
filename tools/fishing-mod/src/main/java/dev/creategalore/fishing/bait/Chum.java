@@ -83,6 +83,12 @@ public final class Chum {
         return (int) spots.stream().filter(s -> s.until() > now && s.pos().distanceTo(pos) < RADIUS).count();
     }
 
+    /** Washes away the chum spots around {@code pos} (the self-test, so a second run starts clean). */
+    public static void clearAround(ServerLevel level, Vec3 pos) {
+        List<Spot> spots = SPOTS.get(level.dimension());
+        if (spots != null) spots.removeIf(s -> s.pos().distanceTo(pos) < RADIUS);
+    }
+
     private static void tick(ServerLevel level) {
         List<Spot> spots = SPOTS.get(level.dimension());
         if (spots == null) return;

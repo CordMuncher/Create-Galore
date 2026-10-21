@@ -223,10 +223,14 @@ public final class FishingCommand {
     }
 
     private static int selftest(CommandSourceStack source, String suites) {
-        int failures = SelfTest.run(source.getServer(), suites);
-        source.sendSuccess(() -> Component.literal("Self-test done: " + failures
-                + " failure(s). Reports are in the server folder under create_galore_fishing/."), true);
-        return failures == 0 ? 1 : 0;
+        int[] result = {-1};
+        boolean now = SelfTest.start(source.getServer(), suites, failures -> {
+            result[0] = failures;
+            source.sendSuccess(() -> Component.literal("Self-test done: " + failures
+                    + " failure(s). Reports are in the server folder under create_galore_fishing/."), true);
+        });
+        if (!now) source.sendSuccess(() -> Component.literal("Loading the test area first; the result follows in a moment."), true);
+        return result[0] == 0 ? 1 : 0;
     }
 
     /** Runs the Monte Carlo for one species (or all) against every rig preset; writes simulate.csv. */
