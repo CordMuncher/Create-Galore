@@ -124,96 +124,116 @@ def resonate(x, freqs, decay):
     return y
 
 
-def pawl(base, rough=1.0):
-    """One drag pawl snapping over a ratchet tooth: a tiny impact ringing the reel's metal (a few inharmonic
-    partials), with a softer lift tick just before it."""
-    length = 0.03
+def tick(partials, decay, grit=0.5):
+    """One tiny metal tick, the grain every reel sound is made of: an impulse ringing a few high, inharmonic partials
+    for a millisecond or so, over a burst of bright noise. Real reel recordings are trains of these (centroid near
+    10 kHz, almost nothing under 300 Hz), not tones."""
+    length = decay * 8 + 0.001
     n = int(length * RATE)
     imp = np.zeros(n)
-    imp[int(0.004 * RATE)] = 1.0
-    imp[0] = 0.25 * rough
-    imp += highpass(noise(length), 3000) * np.exp(-np.arange(n) / (0.0008 * RATE)) * 0.4 * rough
-    return resonate(imp, [(base, 1.0), (base * 1.47, 0.6), (base * 2.31, 0.35), (base * 0.52, 0.3)], 0.0022)
+    imp[0] = 1.0
+    imp += highpass(noise(length), 4000) * np.exp(-np.arange(n) / (0.0003 * RATE)) * grit
+    return resonate(imp, partials, decay)
+
+
+def scatter(n, grains, times, gains):
+    """Adds each grain at its time (samples) and gain into a buffer of n samples, wrapping the tail round to the
+    start so a loop closes without a seam."""
+    y = np.zeros(n)
+    for grain, at, g in zip(grains, times, gains):
+        at = int(at) % n
+        end = min(n, at + len(grain))
+        y[at:end] += grain[:end - at] * g
+        if end - at < len(grain):
+            y[:len(grain) - (end - at)] += grain[end - at:] * g
+    return y
+
+
+def pawl(base, rough=1.0):
+    """The drag clicker: a spring pawl snapping over one tooth of the spool's ratchet. A sharp, bright tick (the
+    BBC's fly reel recordings ring for 2 to 3 ms and have most of their energy above 3 kHz) with a softer lift tick
+    a fraction of a millisecond before it."""
+    hit = tick([(base, 1.0), (base * 1.53, 0.7), (base * 2.21, 0.45), (base * 0.41, 0.4)], 0.0022, 0.6 * rough)
+    lift = tick([(base * 1.8, 1.0), (base * 2.6, 0.5)], 0.0003, 0.3) * 0.25 * rough
+    y = np.zeros(len(hit) + int(0.0006 * RATE))
+    y[:len(lift)] += lift
+    y[int(0.0006 * RATE):] += hit
+    return y
 
 
 def drag(variant):
     """One pawl click of the drag ratchet. Played per few cm of line out while a fish takes line slowly; a fast run
     plays the drag loop instead."""
-    base = [3300, 3700, 2950][variant]
+    base = [4700, 5300, 4200][variant]
     return norm(pawl(base), 0.8)
 
 
 def drag_loop():
-    """The drag screaming under a running fish: the ratchet's clicks run together into a buzz (160 a second at
-    pitch 1, a little uneven), over the hiss of line leaving the spool and the spool's own whirr. One second,
-    seamless; the game sets the pitch from how fast line is going out."""
-    length = 1.0
-    n = int(length * RATE)
-    y = np.zeros(n)
+    """The drag screaming under a running fish: the clicker's ticks so close together (160 a second at pitch 1,
+    like the BBC fly reel paying out at about 150) that they blur into a buzz, each a little different in strength
+    and spacing, over the hiss of line leaving the spool. One second, seamless; the game sets the pitch from how
+    fast line is going out."""
+    n = RATE
     clicks = 160
-    period = n // clicks
-    one = pawl(3400, rough=0.6)
-    for k in range(clicks):
-        start = k * period + int(rng.integers(-6, 7)) % period
-        part = one * (0.65 + 0.35 * rng.random())
-        end = min(n, start + len(part))
-        y[start:end] += part[:end - start]
-        if end - start < len(part):  # wrap around so the loop closes
-            y[:len(part) - (end - start)] += part[end - start:]
-    hiss = pnoise(length, 2500, 9000, 0.3) * 0.18
-    whirr = pnoise(length, 300, 1400, 0.8) * 0.12 * (1 + 0.3 * np.sin(2 * np.pi * 20 * t(length)))
-    return norm(y + hiss + whirr, 0.7)
+    grains = [pawl(rng.uniform(4300, 5600), rough=rng.uniform(0.6, 1.0)) for _ in range(12)]
+    times = (np.arange(clicks) + rng.uniform(-0.12, 0.12, clicks)) * n / clicks
+    y = scatter(n, [grains[k % 12] for k in range(clicks)], times, rng.uniform(0.6, 1.0, clicks))
+    hiss = pnoise(1.0, 4000, 14000, 0.3) * 0.12
+    return norm(y + hiss, 0.7)
 
 
 def crank_loop():
-    """A spinning reel being wound, one second, seamless: the handle goes round twice. Built like the real thing:
-    the main gear meshing with the pinion (a soft, slightly rough hum that swells and fades once per turn of the
-    handle, as the gears load and unload), the rotor and bail spinning five times faster (a whirr with a faint tick
-    each turn from the line roller), the line laying onto the spool (a hiss that rises and falls with the
-    oscillating spool), and the bearings' fine sizzle. No harsh clicks: a good reel purrs."""
-    length = 1.0
-    x = t(length)
-    handle = 2  # turns a second
-    rotor = handle * 5  # gear ratio 5:1
-    turn = 0.5 + 0.5 * np.sin(2 * np.pi * handle * x)  # 0..1 once per handle turn
-    # Gear mesh: 34 teeth on the main gear -> 68 Hz, with harmonics, made rough by a little noise in its amplitude.
-    mesh_f = 34 * handle
-    mesh = sum(np.sin(2 * np.pi * mesh_f * k * x + rng.random() * 6.28) / k ** 1.3 for k in range(1, 12))
-    mesh *= 0.75 + 0.25 * pnoise(length, 20, 200)
-    mesh = mesh * (0.55 + 0.45 * turn)
-    # Pinion and rotor: a brighter whirr at rotor speed times its teeth, plus air from the spinning rotor.
-    pinion = sum(np.sin(2 * np.pi * rotor * 11 * k * x + rng.random() * 6.28) / k ** 1.8 for k in range(1, 8))
-    rotor_air = pnoise(length, 400, 2500, 0.6) * (0.6 + 0.4 * np.sin(2 * np.pi * rotor * x) ** 2)
-    # Line roller tick once per rotor turn, very soft.
-    ticks = np.zeros(len(x))
-    tick = pawl(2200, rough=0.3) * 0.25
-    for k in range(rotor):
-        start = int(k * RATE / rotor)
-        ticks[start:start + len(tick)] += tick[:len(x) - start]
-    # Line onto the spool: hiss, swelling as the spool oscillates (once per handle turn).
-    lay = pnoise(length, 3000, 11000, 0.2) * (0.35 + 0.65 * (0.5 + 0.5 * np.cos(2 * np.pi * handle * x)))
-    bearings = pnoise(length, 6000, 14000) * 0.4
-    y = 0.42 * mesh / np.max(np.abs(mesh)) + 0.22 * pinion / np.max(np.abs(pinion)) + 0.2 * rotor_air \
-        + ticks + 0.15 * lay + 0.03 * bearings
+    """A spinning reel being wound, one second, seamless, the handle going round four times (pitch slows it). Made
+    to match recordings of real spinning reels, which are a dense, even whirr, not a tone: the gear teeth, bearings
+    and line roller tick so fast (well over a thousand times a second, each tick a little different) that they blur
+    into a fizzy rattle between about 2 and 7 kHz, with a gear whine near 4 kHz on top, a coarser tick from the
+    anti-reverse and roller a couple of dozen times a second, and the hiss of line laying onto the spool. Nothing to
+    speak of below 300 Hz: a low hum is what made the old loop sound like an engine."""
+    n = RATE
+    x = t(1.0)
+    handle = 4
+    turn = 0.5 + 0.5 * np.sin(2 * np.pi * handle * x)
+    rattle = np.zeros(n)
+    for partials in ([(2600, 1.0), (4100, 0.7), (6300, 0.4)], [(3300, 1.0), (5200, 0.6), (7400, 0.3)],
+                     [(4500, 1.0), (6100, 0.5), (8800, 0.25)]):
+        count = 600
+        times = ((np.arange(count) + rng.uniform(0, 1, count)) * n / count).astype(int) % n
+        train = np.zeros(n)
+        np.add.at(train, times, rng.gamma(2.0, 0.5, count) * (0.6 + 0.4 * turn[times]))
+        # Rings the whole train through the part's resonances at once; wrap the ring-out to close the loop.
+        rung = resonate(np.r_[train, np.zeros(2000)], partials, rng.uniform(0.0005, 0.0009))
+        rung[:2000] += rung[n:]
+        rattle += rung[:n]
+    rattle /= np.max(np.abs(rattle))
+    coarse_n = 24
+    coarse = scatter(n, [tick([(f, 1.0), (f * 1.6, 0.5)], 0.0012, 0.4) for f in rng.uniform(1800, 3200, coarse_n)],
+                     (np.arange(coarse_n) + rng.uniform(-0.2, 0.2, coarse_n)) * n / coarse_n,
+                     rng.uniform(0.4, 1.0, coarse_n))
+    coarse /= np.max(np.abs(coarse))
+    whine = pnoise(1.0, 3800, 4150) * (0.75 + 0.25 * turn)
+    lay = pnoise(1.0, 5000, 12000, 0.6) * (0.4 + 0.6 * (0.5 + 0.5 * np.cos(2 * np.pi * handle * x)))
+    y = rattle + 0.35 * coarse + 0.35 * whine + 0.15 * lay
     return norm(y, 0.6)
 
 
 def grind():
-    """Cranking against a slipping drag: the handle forced round while the spool can't turn, gear teeth skipping and
-    crunching under load, uneven and gritty."""
+    """Cranking against a slipping drag: the handle forced round while the spool can't turn, gear teeth skipping
+    under load. Harsh and uneven like metal on metal: clusters of hard ticks in the 1 to 6 kHz range over a gritty
+    scrape, no low drone."""
     length = 0.5
-    x = t(length)
-    y = np.zeros(len(x))
+    n = int(length * RATE)
+    times, grains, gains = [], [], []
     pos = 0
-    while pos < len(x):
-        crunch = resonate(np.r_[1.0, np.zeros(int(0.03 * RATE))] * rng.uniform(0.5, 1.0),
-                          [(rng.uniform(700, 1100), 1.0), (rng.uniform(1600, 2400), 0.5), (180, 0.6)], 0.006)
-        end = min(len(x), pos + len(crunch))
-        y[pos:end] += crunch[:end - pos]
-        pos += int(rng.uniform(0.012, 0.035) * RATE)
-    rough = bandpass(noise(length), 450, 1.2) * 0.5
-    groan = np.sin(2 * np.pi * np.cumsum(95 + 15 * np.sin(2 * np.pi * 7 * x)) / RATE) * 0.35
-    return norm((y + rough + groan) * env(len(x), 0.015, 0.35), 0.75)
+    while pos < n:
+        times.append(pos)
+        base = rng.uniform(1400, 2600)
+        grains.append(tick([(base, 1.0), (base * 1.7, 0.7), (base * 2.6, 0.5)], rng.uniform(0.0012, 0.0025), 0.8))
+        gains.append(rng.uniform(0.4, 1.0))
+        pos += int(rng.uniform(0.004, 0.02) * RATE)
+    y = scatter(n + RATE, grains, times, gains)[:n]
+    y /= np.max(np.abs(y))
+    scrape = bandpass(noise(length), 2600, 1.5) * (0.5 + 0.5 * np.abs(lowpass(noise(length), 40)) * 8).clip(0, 1.5)
+    return norm((y + 0.35 * scrape / np.max(np.abs(scrape))) * env(n, 0.01, 0.3), 0.75)
 
 
 def strain(variant):

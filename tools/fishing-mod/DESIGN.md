@@ -188,7 +188,9 @@ come from the server.
   *is* the fish's run speed (a slow tick when it leans on the drag, a buzz on a run); pitch by reel
   (copper rattly, brass smooth, big-game deep).
 - **Reel crank**: a looping gear whirr while reeling, pitched by retrieve speed, dropping and grinding
-  as the load nears what the crank can turn; an ugly grind when cranking against a slipping drag.
+  as the load nears what the crank can turn; an ugly grind when cranking against a slipping drag. Modelled on
+  real reel recordings (see DECISIONS, "Reel sounds matched to real reels"): a dense rattle of tiny ticks between
+  about 2 and 7 kHz with a gear whine near 4 kHz, next to nothing below 300 Hz.
 - **Line strain**: a creak that fades in above ~65% of the breaking load and tightens toward a snap;
   a hard *twang* on a snap; a soft whip on a thrown hook; a slack-line slap.
 - **Cast**: a whoosh scaled by the charge, line zipping off the spool in flight, the splash/plop of the
