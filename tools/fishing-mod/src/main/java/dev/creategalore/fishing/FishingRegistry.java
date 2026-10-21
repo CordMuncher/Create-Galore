@@ -189,11 +189,11 @@ public final class FishingRegistry {
     public static final DeferredItem<TackleItem> STEEL_BAITCASTER = part("steel_baitcaster", () -> new TackleItem(new Item.Properties().durability(900).rarity(Rarity.UNCOMMON)));
     public static final DeferredItem<TackleItem> TROLLING_REEL = part("trolling_reel", () -> new TackleItem(new Item.Properties().durability(1500).rarity(Rarity.RARE)));
 
-    public static final DeferredItem<LineItem> STRING_LINE = part("string_line", () -> new LineItem(new Item.Properties().stacksTo(1)));
-    public static final DeferredItem<LineItem> MONO_LINE = part("mono_line", () -> new LineItem(new Item.Properties().stacksTo(1)));
-    public static final DeferredItem<LineItem> CLEAR_LINE = part("clear_line", () -> new LineItem(new Item.Properties().stacksTo(1)));
-    public static final DeferredItem<LineItem> BRAIDED_LINE = part("braided_line", () -> new LineItem(new Item.Properties().stacksTo(1)));
-    public static final DeferredItem<LineItem> HEAVY_LINE = part("heavy_line", () -> new LineItem(new Item.Properties().stacksTo(1)));
+    public static final DeferredItem<LineItem> STRING_LINE = part("string_line", () -> new LineItem(new Item.Properties().stacksTo(64)));
+    public static final DeferredItem<LineItem> MONO_LINE = part("mono_line", () -> new LineItem(new Item.Properties().stacksTo(64)));
+    public static final DeferredItem<LineItem> CLEAR_LINE = part("clear_line", () -> new LineItem(new Item.Properties().stacksTo(64)));
+    public static final DeferredItem<LineItem> BRAIDED_LINE = part("braided_line", () -> new LineItem(new Item.Properties().stacksTo(64)));
+    public static final DeferredItem<LineItem> HEAVY_LINE = part("heavy_line", () -> new LineItem(new Item.Properties().stacksTo(64)));
 
     public static final DeferredItem<TackleItem> CLEAR_LEADER = part("clear_leader", () -> new TackleItem(new Item.Properties().stacksTo(16)));
     public static final DeferredItem<TackleItem> STEEL_LEADER = part("steel_leader", () -> new TackleItem(new Item.Properties().stacksTo(16)));

@@ -79,6 +79,7 @@ public final class TideSelfTest {
             aliases(r, BuiltInRegistries.ITEM, TideAliases.items());
             aliases(r, BuiltInRegistries.BLOCK, TideAliases.blocks());
             aliases(r, BuiltInRegistries.ENTITY_TYPE, TideAliases.entities());
+            stackSizes(r);
             writeAliasTable(server, r);
         });
         SelfTest.suite("tide", TideSelfTest::species);
@@ -107,6 +108,21 @@ public final class TideSelfTest {
         } catch (IOException e) {
             r.fail("couldn't write the alias table: " + e);
         }
+    }
+
+    /**
+     * An old stack keeps its count only if what it loads as stacks at least as high: containers that limit stacks on
+     * load (an ender chest, any SimpleContainer) would cut it down. Tide's rods and buckets stacked to 1, everything
+     * else it had here to 64. Its spawn eggs (creative only) become Aquaculture's buckets, which stack to 1.
+     */
+    private static void stackSizes(SelfTest.Report r) {
+        TideAliases.items().forEach((from, to) -> {
+            String path = from.getPath();
+            if (path.endsWith("_fishing_rod") || path.endsWith("_bucket")) return;
+            int max = new net.minecraft.world.item.ItemStack(BuiltInRegistries.ITEM.get(to)).getMaxStackSize();
+            if (path.endsWith("_spawn_egg")) r.info(from + " (stack 64) loads as " + to + " (stack " + max + ")");
+            else r.check(max >= 64, from + " (stack 64) loads as " + to + ", which stacks to " + max);
+        });
     }
 
     private static <T> void aliases(SelfTest.Report r, Registry<T> registry, Map<ResourceLocation, ResourceLocation> table) {
