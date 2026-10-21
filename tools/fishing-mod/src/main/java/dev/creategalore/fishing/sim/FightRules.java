@@ -152,7 +152,102 @@ public final class FightRules {
         for (int i = 0; i < 10; i++) lower.tick(drop, rng);
         out.add(new Check(lower.slack() > 0.3 && lower.tension() == 0, String.format(Locale.ROOT,
                 "lowering the rod without winding leaves %.2f m of slack line", lower.slack())));
+
+        // A drag below the line's test never lets the line snap, however hard the fish runs and jumps; one set over
+        // the test does.
+        Bout below = bouts(wild(1.2, false), 10, new Tackle(100, 0.3, true, 6, 1.2, 100, 0.2, 10_000, 4, 0.2,
+                Double.NaN, false, 1), 3.6, 300, 21);
+        out.add(new Check(below.count(Outcome.LINE_SNAPPED) == 0 && below.highest < 4, String.format(Locale.ROOT,
+                "a 12 kgf fish that runs and jumps never snaps a 4 kg line on a 3.6 kg drag (%d of 300 snapped, highest %.2f kg)",
+                below.count(Outcome.LINE_SNAPPED), below.highest)));
+        Bout over = bouts(wild(1.2, false), 10, new Tackle(100, 0.3, true, 6, 1.2, 100, 0.2, 10_000, 4, 0.2,
+                Double.NaN, false, 1), 5, 300, 22);
+        out.add(new Check(over.count(Outcome.LINE_SNAPPED) > 30 && over.allExplained, String.format(Locale.ROOT,
+                "the same fish on a 5 kg drag (over the line's test) snaps it in %d of 300 fights, each saying why",
+                over.count(Outcome.LINE_SNAPPED))));
+
+        // Teeth on mono: a small toothy fish only frays the line a little, a bigger one frays it faster, and one far too
+        // big for the line bites straight through. A steel leader stops all of it.
+        Tackle mono = new Tackle(100, 0.6, true, 10, 1.2, 100, 0.5, 10_000, 4, 0.5, Double.NaN, false, 1);
+        Bout small = bouts(wild(1.0, true), 1.2, mono, 3, 200, 23);
+        Bout big = bouts(wild(1.0, true), 6, mono, 3, 200, 24);
+        Bout huge = bouts(wild(1.0, true), 16, mono, 3, 200, 25);
+        Bout steel = bouts(wild(1.0, true), 16, new Tackle(100, 0.6, true, 10, 1.2, 100, 0.5, 10_000, 4, 0.5, 60, true, 1),
+                3, 200, 26);
+        out.add(new Check(small.count(Outcome.BITTEN_OFF) == 0 && small.teeth > 0 && small.teeth < 0.05, String.format(Locale.ROOT,
+                "a toothy fish pulling 0.3x the line's test never bites through fresh mono and frays it %.3f a fight",
+                small.teeth)));
+        out.add(new Check(big.teeth > 10 * small.teeth, String.format(Locale.ROOT,
+                "one pulling 1.5x the test frays it %.3f a fight (%.0fx more), %d of 200 chewed through",
+                big.teeth, big.teeth / Math.max(1e-9, small.teeth), big.count(Outcome.BITTEN_OFF))));
+        out.add(new Check(huge.count(Outcome.BITTEN_OFF) > 100, String.format(Locale.ROOT,
+                "one pulling 4x the test bites through in %d of 200 fights", huge.count(Outcome.BITTEN_OFF))));
+        out.add(new Check(steel.count(Outcome.BITTEN_OFF) == 0 && steel.teeth == 0, "a steel leader is never bitten through"));
+
+        // A small, tired fish being wound in pulls next to nothing, but the line is moving: the hook stays. Stop
+        // winding with it not pulling, and the slack line lets it shake free.
+        Tackle strong = new Tackle(100, 0.6, true, 10, 1.2, 100, 0.5, 10_000, 20, 0.5, Double.NaN, false, 0.8);
+        FishFight limp = new FishFight(0.5, 0.05, 1.0, new Curve(new double[]{0}, new double[]{0.1}), 0, 0, 0, false);
+        int wound = 0, dropped = 0;
+        for (int f = 0; f < 200; f++) {
+            Fight in = new Fight(limp, strong, 0.3, 25);
+            Controls c = new Controls();
+            c.drag = 5;
+            c.reeling = true;
+            SplittableRandom r = new SplittableRandom(30 + f);
+            while (!in.outcome().over() && in.ticks() < 2400) in.tick(c, r);
+            if (in.outcome() == Outcome.HOOK_THROWN) wound++;
+            Fight still = new Fight(limp, strong, 0.3, 25);
+            c.reeling = false;
+            while (!still.outcome().over() && still.ticks() < 1200) still.tick(c, r);
+            if (still.loss() == Loss.HOOK_SLACK) dropped++;
+        }
+        out.add(new Check(wound == 0 && dropped > 20, String.format(Locale.ROOT,
+                "a limp 0.3 kg fish wound in never throws the hook (%d of 200); left on a slack line it does in %d of 200",
+                wound, dropped)));
         return out;
+    }
+
+    /** A fish that runs and jumps often, pulling {@code fightPerKg} per kg. */
+    private static FishFight wild(double fightPerKg, boolean toothy) {
+        return new FishFight(fightPerKg, 2, 1.6, new Curve(new double[]{0}, new double[]{1}), 0.3, 0.3, 0.05, toothy);
+    }
+
+    /** What {@code n} fights against one fish came to. */
+    private static final class Bout {
+        final int[] outcomes = new int[Outcome.values().length];
+        double highest;
+        double teeth;
+        boolean allExplained = true;
+
+        int count(Outcome o) {
+            return outcomes[o.ordinal()];
+        }
+    }
+
+    /**
+     * {@code n} fights of up to a minute, the angler winding half the time (in bursts) at {@code drag}, the rod held
+     * at a good angle; teeth is the mean fraying from teeth per fight.
+     */
+    private static Bout bouts(FishFight fish, double kg, Tackle tackle, double drag, int n, long seed) {
+        Bout b = new Bout();
+        SplittableRandom rng = new SplittableRandom(seed);
+        for (int f = 0; f < n; f++) {
+            Fight fight = new Fight(fish, tackle, kg, 30);
+            fight.wearLimits(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, 0.99);
+            Controls c = new Controls();
+            c.drag = drag;
+            c.rodAngle = Math.toRadians(60);
+            while (!fight.outcome().over() && fight.ticks() < 1200) {
+                c.reeling = fight.ticks() / 40 % 2 == 0;
+                fight.tick(c, rng);
+            }
+            b.outcomes[fight.outcome().ordinal()]++;
+            b.highest = Math.max(b.highest, fight.highestTension());
+            b.teeth += fight.teethFray() / n;
+            if (fight.outcome().over() && fight.outcome() != Outcome.LANDED && fight.loss() == null) b.allExplained = false;
+        }
+        return b;
     }
 
     /** Seconds a full lift takes against a steady fish of {@code kg} (pulling 0.5 kgf per kg) on a 20 kg rod. */

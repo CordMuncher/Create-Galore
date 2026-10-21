@@ -9,6 +9,7 @@ import dev.creategalore.fishing.sim.Controls;
 import dev.creategalore.fishing.sim.Curve;
 import dev.creategalore.fishing.sim.Fight;
 import dev.creategalore.fishing.sim.FishFight;
+import dev.creategalore.fishing.sim.Loss;
 import dev.creategalore.fishing.sim.Outcome;
 import dev.creategalore.fishing.sim.SizeModel;
 import dev.creategalore.fishing.tackle.RodItem;
@@ -79,6 +80,8 @@ public class CastHook extends FishingHook {
     private static final EntityDataAccessor<Float> DRAG = SynchedEntityData.defineId(CastHook.class, EntityDataSerializers.FLOAT);
     private static final EntityDataAccessor<Float> BREAK = SynchedEntityData.defineId(CastHook.class, EntityDataSerializers.FLOAT);
     private static final EntityDataAccessor<Float> ROD_LOAD = SynchedEntityData.defineId(CastHook.class, EntityDataSerializers.FLOAT);
+    /** How hard the reel works, as a fraction of what it can take (negative: no reel). */
+    private static final EntityDataAccessor<Float> REEL_LOAD = SynchedEntityData.defineId(CastHook.class, EntityDataSerializers.FLOAT);
     private static final EntityDataAccessor<Float> LINE_OUT = SynchedEntityData.defineId(CastHook.class, EntityDataSerializers.FLOAT);
     private static final EntityDataAccessor<Float> LINE_LEFT = SynchedEntityData.defineId(CastHook.class, EntityDataSerializers.FLOAT);
     private static final EntityDataAccessor<Byte> FLAGS = SynchedEntityData.defineId(CastHook.class, EntityDataSerializers.BYTE);
@@ -298,6 +301,7 @@ public class CastHook extends FishingHook {
         builder.define(DRAG, 0f);
         builder.define(BREAK, 1f);
         builder.define(ROD_LOAD, 0f);
+        builder.define(REEL_LOAD, 0f);
         builder.define(LINE_OUT, 0f);
         builder.define(LINE_LEFT, 0f);
         builder.define(FLAGS, (byte) 0);
@@ -336,6 +340,11 @@ public class CastHook extends FishingHook {
     /** Rod load as a fraction of its rating; drives how far the 3D rod bends. */
     public float rodLoad() {
         return entityData.get(ROD_LOAD);
+    }
+
+    /** Reel load as a fraction of what it can take, or negative for a pole with no reel. */
+    public float reelLoad() {
+        return entityData.get(REEL_LOAD);
     }
 
     public float lineOut() {
@@ -794,9 +803,11 @@ public class CastHook extends FishingHook {
         double load = fight.peakTension();
         entityData.set(TENSION, (float) (load / Math.max(0.01, fight.tackle().breakingLoad())));
         entityData.set(ROD_LOAD, (float) (load / Math.max(0.01, fight.tackle().rodMaxLoad())));
+        double reelLoad = fight.reelLoad(controls);
+        entityData.set(REEL_LOAD, (float) (Double.isNaN(reelLoad) ? -1 : reelLoad));
         entityData.set(DRAG, (float) (stats.isPole() ? 0 : controls.drag));
         int flags = (fight.slipping() ? FLAG_SLIPPING : 0) | (fight.stalled() ? FLAG_STALLED : 0)
-                | (fight.running() ? FLAG_RUNNING : 0) | (fight.tension() < 0.06 * fight.maxPull() ? FLAG_SLACK : 0)
+                | (fight.running() && fight.takingLine() ? FLAG_RUNNING : 0) | (fight.slackLine() ? FLAG_SLACK : 0)
                 | (controls.reeling ? FLAG_REELING : 0) | (fight.grinding() ? FLAG_GRINDING : 0);
         entityData.set(FLAGS, (byte) flags);
         if (fight.jumped()) {
@@ -899,12 +910,33 @@ public class CastHook extends FishingHook {
             }
         } else {
             TackleWear.tell(owner, Component.translatable("message.create_galore_fishing.lost." + outcome.name().toLowerCase(java.util.Locale.ROOT)));
+            // What broke and why, in chat where it stays readable.
+            Component why = lossReason();
+            if (why != null) owner.sendSystemMessage(why.copy().withStyle(net.minecraft.ChatFormatting.GRAY));
             level().playSound(null, owner.getX(), owner.getY(), owner.getZ(),
                     outcome.losesTackle() || outcome == Outcome.ROD_BROKE ? FishingRegistry.LINE_SNAP.get() : FishingRegistry.LINE_WHIP.get(),
                     SoundSource.PLAYERS, outcome.losesTackle() ? 0.9f : 0.6f, 1f);
         }
         TackleWear.apply(owner, slot, rod, fight, outcome);
         discard();
+    }
+
+    /** What broke or gave and why, for a lost fight; null if the fight didn't say. */
+    private Component lossReason() {
+        Loss loss = fight.loss();
+        if (loss == null) return null;
+        String test = RodStats.kg(fight.tackle().breakingLoad());
+        return switch (loss) {
+            case SNAP_DRAG -> Component.translatable(loss.key(), RodStats.kg(controls.drag), test);
+            case SNAP_POLE -> Component.translatable(loss.key(), RodStats.kg(fight.highestTension()), test);
+            case SPOOLED -> Component.translatable(loss.key(), Math.round(fight.tackle().lineCapacity()));
+            case ROD_OVERLOAD -> Component.translatable(loss.key(), RodStats.kg(fight.highestTension()),
+                    RodStats.kg(fight.tackle().rodMaxLoad()));
+            // A hook two sizes under the ideal still holds well (see SizeModel#hookHold).
+            case HOOK_HOLD -> Component.translatable(loss.key(), SizeModel.HOOK_SIZES[Mth.clamp((int) Math.ceil(
+                    SizeModel.idealHook(bite == null ? 30 : bite.lengthCm()) - 2), 0, SizeModel.HOOK_SIZES.length - 1)]);
+            default -> Component.translatable(loss.key());
+        };
     }
 
     /** A machine's fight is over: what came up goes to the machine (it banks the XP and routes the items). */
@@ -1044,6 +1076,11 @@ public class CastHook extends FishingHook {
         forcedCrate = true;
         forceBite = true;
         cooldown = 0;
+    }
+
+    /** Who could bite here with this rig, as last worked out, for {@code /cgfish pool}. */
+    public BiteSampler.Pool pool() {
+        return pool;
     }
 
     /** One line describing the hook's state, for {@code /cgfish hook}. */

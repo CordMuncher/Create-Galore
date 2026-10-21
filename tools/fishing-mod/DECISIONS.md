@@ -331,3 +331,38 @@ Judgment calls (none of them caps or assists, per Emre's fight rules):
   bearings) instead of a 48 Hz click buzz; drag clicks are pawl snaps ringing the reel's metal; a fast run (from
   0.8 m/s) plays a new drag scream loop pitched by the run's speed; the grind is gear teeth crunching under load.
 - HUD: "Bite! Lift the rod (<attack key>) to strike", and a small rod-height bar left of the tension bar.
+
+## Loss reasons, teeth, no snaps below the test, stress bars (Fishing 0.3.6, pack 0.4.12)
+
+Emre asked (2026-10-21) for a lost fish to say what broke and why; for toothy fish to wear the line rather than
+snap it at once, scaled by how oversized they are; for a line never to break while the drag is below its test;
+for Fishing Planet style stress bars; and reported a false "It's running!" and small fish lost while being reeled.
+
+- **No snap below the test.** Winding adds 10% to the pull but is now capped at the drag (the drag slips first).
+  Spikes from runs and jumps still pass part of themselves through a sticky drag, but with the drag under the
+  breaking load the peak is capped at drag + 90% of the margin to the test: the line can come close, never past.
+  A pole (no drag) and an empty spool (drag as good as locked) can still snap. A frayed line's test is already
+  lower, so a worn line on the same drag can still go; that is wear. FightRules: a 12 kgf fish that runs and jumps
+  on a 4 kg line at 3.6 kg drag, 300 fights, 0 snaps (highest 3.96 kg); at 5 kg drag all 300 snap.
+- **Teeth.** The flat 25% bite-off on every run or jump is gone. Oversize = the fish's peak pull / the rig's
+  breaking load. Without a steel leader teeth fray the line 0.002 x oversize per second of tension and
+  0.05 x oversize^2 per run or jump (`Fight.TEETH_*`). The fraying counts against the line's remaining life like its
+  other fraying (a line of unknown wear, in the simulator, counts as new: 1) and is saved on the line after the
+  fight. At oversize 3 or more, a run or jump can bite straight through (25% at 3, up to 50%). FightRules: 0.3x frays
+  0.037 a fight and never bites fresh mono; 1.5x frays 0.54 (22% of fights chewed through); 4x bites through in 198
+  of 200; steel never. In game a 130 cm moray (3.3 kg) on 4 kg string line at 3.6 kg drag landed and frayed the
+  line 16%.
+- **Slack.** The hook-thrown slack rule now needs the fish not pulling AND the angler not winding. A limp 0.3 kg
+  fish wound in: 0 of 200 lost; left on a slack line: all 200 shake free (unchanged rule).
+- **Running.** The HUD's "It's running!" needs a run and line actually going out this tick (`Fight.takingLine`).
+- **Loss reasons.** `sim/Loss` (12 causes) is set with every losing outcome; the hand-held hook sends its message
+  to chat (grey) with numbers: drag vs test, peak vs rod rating, spool length, a hook size that holds (ideal - 2).
+  The action bar keeps the short line. Machines are unchanged.
+- **Stress bars.** Three 70 px bars at the right, centred: line = tension / breaking load (drag tick, red at the
+  top when the drag is over the test, blue when slack); reel = max(tension / max drag, while winding tension /
+  crank power), full when grinding, hidden on a pole (synced as -1); rod = peak / rating (the same number that bends
+  the rod). The rod-height bar moved beside the rod's bar.
+- **Spoon question.** Emre saw only small mackerel on a spoon. `/cgfish pool` showed big fish making up about 70%
+  of spoon bites in normal, cold, lukewarm and warm oceans (sea bass, grouper, snapper, tuna), so his spot was
+  special; he chose to switch spots rather than chase it.
+

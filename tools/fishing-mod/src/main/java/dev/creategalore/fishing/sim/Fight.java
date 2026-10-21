@@ -25,10 +25,14 @@ import java.util.random.RandomGenerator;
  *       load on it; a slack line left too long can throw the hook. So a heavy fish the crank can't move is pumped
  *       in: lift, then wind down.</li>
  *   <li>Runs and jumps add sudden spikes. Line stretch, a smooth drag and a bent rod soak part of each spike; a
- *       rod pointed straight down the line soaks nothing.</li>
- *   <li>Failures: tension over the breaking load snaps the line, a toothy fish bites through non-steel line,
- *       overloading the rod can crack it, a slack line or a jump on a loose line can throw the hook, and a rod or
- *       reel worn through mid-fight breaks there and then.</li>
+ *       rod pointed straight down the line soaks nothing. A working drag set below the line's test always lets
+ *       line go before the line breaks, so the spike can't snap it.</li>
+ *   <li>Failures: tension over the breaking load snaps the line (only possible with the drag at or above the
+ *       line's test, on a pole with no drag, or with the spool empty), a toothy fish chews non-steel line, fraying it
+ *       a little all fight and more on each run or jump, in proportion to how big it is for the line (one far too
+ *       big can bite straight through), overloading the rod can crack it, a slack line (the fish not pulling and
+ *       the angler not winding) or a jump on a loose line can throw the hook, and a rod, reel or line worn through
+ *       mid-fight breaks there and then.</li>
  *   <li>The fish tires in proportion to the tension it works against (so a drag set too light never tires it)
  *       and faster under side pressure; it recovers a little while the line is slack.</li>
  * </ol>
@@ -61,6 +65,12 @@ public final class Fight {
     public static final double LOWER_RATE = 0.8;
     /** Slack (metres) up to which the line still counts as tight. */
     public static final double SLACK_TIGHT = 0.05;
+    /** Fraying per second from a toothy fish's teeth on non-steel line, per unit of oversize (pull over line test). */
+    public static final double TEETH_FRAY_PER_SECOND = 0.002;
+    /** Fraying from one run or jump of a toothy fish on non-steel line, times oversize squared. */
+    public static final double TEETH_FRAY_PER_LUNGE = 0.05;
+    /** Oversize (peak pull over line test) from which one lunge may bite straight through. */
+    public static final double TEETH_CLEAN_BITE = 3;
 
     private final FishFight fish;
     private final Tackle tackle;
@@ -98,6 +108,12 @@ public final class Fight {
     private double rodHeight;
     /** Line given back by lowering the rod and not yet wound in or taken by the fish, metres. */
     private double slack;
+    /** Fraying from a toothy fish's teeth this fight (on top of the line's ordinary wear). */
+    private double teethFray;
+    /** Why the fight was lost, once it is. */
+    private Loss loss;
+    private boolean takingLine;
+    private boolean slackLine;
 
     /**
      * @param fish          the species' fight data
@@ -164,6 +180,7 @@ public final class Fight {
             chargeLeft = 0.8 + 1.7 * rng.nextDouble();
         }
         boolean charging = chargeLeft > 0;
+        double distanceBefore = distance;
         double spike = 0;
         if ((progress > 0.66 || distance < 8) && rng.nextDouble() < fish.jumps() * (0.3 + 0.7 * stamina) * DT) {
             jumped = true;
@@ -240,20 +257,22 @@ public final class Fight {
             distance -= drawn;
             if (in.reeling && load < crank) distance -= retrieve * (1 - load / crank) * DT;
             stalled = in.reeling && load >= crank;
-            tension = in.reeling ? load * 1.1 : load;
+            tension = in.reeling ? Math.min(load * 1.1, drag) : load;
         } else if (in.reeling && !windingDown) {
             if (load >= crank) {
                 stalled = true;
                 tension = load;
             } else {
                 distance -= retrieve * (1 - load / crank) * DT;
-                tension = load * 1.1;
+                // Winding adds a little to the pull, but never past the drag: the drag slips first.
+                tension = Math.min(load * 1.1, drag);
             }
         } else {
             tension = load;
         }
         distance = Math.max(LAND_DISTANCE, distance);
         if (tackle.hasReel()) distance = Math.min(distance, tackle.lineCapacity());
+        takingLine = distance > distanceBefore + 1e-9;
 
         // Cranking while the fish takes line (or against it on an empty spool, which is the reel's full drag): the
         // gears grind (Fishing Planet's "reel overload"). Once the fish starts taking line the angler has half a
@@ -273,46 +292,82 @@ public final class Fight {
             double absorb = clamp(0.45 * tackle.lineStretch() + 0.25 * tackle.reelSmooth()
                     + 0.45 * tackle.rodAbsorb() * bendFactor(in.rodAngle), 0, 0.85);
             double peak = tension + spike * (1 - absorb);
-            if (tackle.hasReel() && peak > drag) peak = drag + (peak - drag) * (0.55 - 0.45 * tackle.reelSmooth());
+            if (tackle.hasReel() && peak > drag) {
+                peak = drag + (peak - drag) * (0.55 - 0.45 * tackle.reelSmooth());
+                // A drag set below the line's test slips before the line can break: the jolt can take the line close
+                // to its test, never past it.
+                if (drag < breakLoad) peak = Math.min(peak, drag + (breakLoad - drag) * 0.9);
+            }
             peakTension = peak;
         }
         highestTension = Math.max(highestTension, peakTension);
 
+        // Teeth on non-steel line: a little fraying all fight, more on every run or jump, by how big the fish is for
+        // the line. One far too big for it can bite straight through.
+        boolean teeth = fish.toothy() && !tackle.steelLeader();
+        boolean cleanBite = false;
+        if (teeth && tension > 0) {
+            double oversize = maxPull / breakLoad;
+            teethFray += DT * TEETH_FRAY_PER_SECOND * oversize;
+            if (jumped || runStarted) {
+                teethFray += TEETH_FRAY_PER_LUNGE * oversize * oversize;
+                cleanBite = oversize > TEETH_CLEAN_BITE && rng.nextDouble() < Math.min(0.5, 0.25 * (oversize - TEETH_CLEAN_BITE + 1));
+            }
+        }
+
         // Failures.
-        if (peakTension > breakLoad || lineWear * LINE_FRAY_PER_WEAR >= lineLife) {
+        if (peakTension > breakLoad) {
             outcome = spooled ? Outcome.SPOOLED : Outcome.LINE_SNAPPED;
+            loss = spooled ? Loss.SPOOLED : tackle.hasReel() ? Loss.SNAP_DRAG : Loss.SNAP_POLE;
+            return;
+        }
+        // A line of unknown wear (the simulator) counts as new: it frays through at 1.
+        if (cleanBite || teethFray > 0 && teethFray + lineWear * LINE_FRAY_PER_WEAR >= Math.min(1, lineLife)) {
+            outcome = Outcome.BITTEN_OFF;
+            loss = cleanBite ? Loss.BITTEN_CLEAN : Loss.BITTEN_CHEWED;
+            return;
+        }
+        if (lineWear * LINE_FRAY_PER_WEAR >= lineLife) {
+            outcome = Outcome.LINE_SNAPPED;
+            loss = Loss.SNAP_WORN;
             return;
         }
         if (reelWear * REEL_DURABILITY_PER_WEAR >= reelLife) {
             outcome = Outcome.REEL_BROKE;
-            return;
-        }
-        if (fish.toothy() && !tackle.steelLeader() && (jumped || runStarted) && rng.nextDouble() < 0.25) {
-            outcome = Outcome.BITTEN_OFF;
+            loss = Loss.REEL_SEIZED;
             return;
         }
         double rodLoad = peakTension / tackle.rodMaxLoad();
         if (rodLoad > 0.7) rodWear += DT * (rodLoad - 0.7) * 2;
-        if (rodWear * ROD_DURABILITY_PER_WEAR >= rodLife || rodLoad > 1 && rng.nextDouble() < (rodLoad - 1) * 0.04) {
+        if (rodWear * ROD_DURABILITY_PER_WEAR >= rodLife) {
             outcome = Outcome.ROD_BROKE;
+            loss = Loss.ROD_WORN;
+            return;
+        }
+        if (rodLoad > 1 && rng.nextDouble() < (rodLoad - 1) * 0.04) {
+            outcome = Outcome.ROD_BROKE;
+            loss = Loss.ROD_OVERLOAD;
             return;
         }
         double hold = tackle.hookHold();
-        // Slack means the line isn't tight on the fish at all (it swam toward the angler and nobody reeled), not
-        // merely a small fish pulling little.
-        boolean slack = tension < 0.06 * maxPull;
-        slackTicks = slack ? slackTicks + 1 : Math.max(0, slackTicks - 2);
+        // Slack means the fish isn't pulling and nobody is winding (it swam toward the angler, or the rod was let
+        // down), not merely a small fish pulling little while it is wound in: a hook being drawn in stays put.
+        slackLine = tension < 0.06 * maxPull && !in.reeling;
+        slackTicks = slackLine ? slackTicks + 1 : Math.max(0, slackTicks - 2);
         if (slackTicks > 20 && rng.nextDouble() < 0.01 + 0.03 * (1 - hold)) {
             outcome = Outcome.HOOK_THROWN;
+            loss = Loss.HOOK_SLACK;
             return;
         }
         // A jump throws the hook more often on a loose line: reeling through it keeps the line tight.
         if (jumped && rng.nextDouble() < (0.08 + 0.4 * (1 - hold)) * (in.reeling ? 0.4 : 1) * (charging ? 2 : 1)) {
             outcome = Outcome.HOOK_THROWN;
+            loss = Loss.HOOK_JUMP;
             return;
         }
         if (spike > 0 && hold < 0.5 && rng.nextDouble() < (0.5 - hold) * 0.6) {
             outcome = Outcome.HOOK_THROWN;
+            loss = Loss.HOOK_HOLD;
             return;
         }
 
@@ -364,6 +419,38 @@ public final class Fight {
     /** Ends the fight from outside (the angler cut the line, the rod left the hand...). */
     public void end(Outcome why) {
         if (!outcome.over()) outcome = why;
+    }
+
+    /** Why the fight was lost, or {@code null} while it goes on, once landed, or when ended from outside. */
+    public Loss loss() {
+        return loss;
+    }
+
+    /** The fish took line this tick (through the drag, or off a slack line). */
+    public boolean takingLine() {
+        return takingLine;
+    }
+
+    /** The line was slack this tick: the fish not pulling and the angler not winding. */
+    public boolean slackLine() {
+        return slackLine;
+    }
+
+    /** Fraying from teeth this fight, counted against the line like its other wear. */
+    public double teethFray() {
+        return teethFray;
+    }
+
+    /**
+     * How hard the reel is working, 0..1 and over: the tension against the most drag it can apply, or (while
+     * winding) against what its crank can wind against; a grinding reel is past its limit. NaN without a reel.
+     */
+    public double reelLoad(Controls in) {
+        if (!tackle.hasReel()) return Double.NaN;
+        if (grinding) return 1.1;
+        double load = tension / tackle.reelMaxDrag();
+        if (in.reeling) load = Math.max(load, tension / Math.max(0.01, in.crankLimit(tackle)));
+        return load;
     }
 
     public double distance() {

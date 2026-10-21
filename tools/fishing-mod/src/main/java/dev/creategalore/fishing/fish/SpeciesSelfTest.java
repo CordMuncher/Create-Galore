@@ -67,7 +67,7 @@ public final class SpeciesSelfTest {
             for (float w = 0; w < 1 - 1e-4f; w += TackleWear.PART_WEAR_PER_FIGHT) partFights++;
             r.check(partFights == 200, "a leader, hook, float, sinker or lure wears out after " + partFights + " fights (want 200)");
             int lineFights = 0;
-            for (float w = 0; w < 1; w += (float) TackleWear.lineFray(0)) lineFights++;
+            for (float w = 0; w < 1; w += (float) TackleWear.lineFray(0, 0)) lineFights++;
             r.check(lineFights >= 95 && lineFights <= 105, "a line fought gently wears out after " + lineFights + " fights (want about 100)");
             r.check(TackleWear.reelDamage(0) == 1 && TackleWear.rodDamage(0) == 1, "a gentle fight still costs the rod and the reel 1 durability");
         });
