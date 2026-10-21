@@ -66,6 +66,24 @@ public final class Models {
         key.add("required", required(kp));
         key.addProperty("additionalProperties", false);
 
+        JsonObject copy = new JsonObject();
+        copy.addProperty("type", "object");
+        JsonObject cp = new JsonObject();
+        cp.add("x1", WorldTools.prop("integer", "World x of one corner of the box to copy, as trace_build, read_area or "
+                + "find_placed_blocks give it."));
+        cp.add("y1", WorldTools.prop("integer", "See x1."));
+        cp.add("z1", WorldTools.prop("integer", "See x1."));
+        cp.add("x2", WorldTools.prop("integer", "World x of the opposite corner."));
+        cp.add("y2", WorldTools.prop("integer", "See x2."));
+        cp.add("z2", WorldTools.prop("integer", "See x2."));
+        cp.add("x", WorldTools.prop("integer", "The model cell the box's lowest corner (smallest x, y and z) goes to; 0 unless "
+                + "you need room on that side for something new."));
+        cp.add("y", WorldTools.prop("integer", "See x."));
+        cp.add("z", WorldTools.prop("integer", "See x."));
+        copy.add("properties", cp);
+        copy.add("required", required(cp));
+        copy.addProperty("additionalProperties", false);
+
         JsonObject row = new JsonObject();
         row.addProperty("type", "string");
         JsonObject layer = new JsonObject();
@@ -74,9 +92,21 @@ public final class Models {
 
         JsonObject props = new JsonObject();
         props.add("title", WorldTools.prop("string", "A few words naming what the model shows, or an empty string."));
-        props.add("size_x", WorldTools.prop("integer", "Width in blocks, 1 to " + MAX_SIZE + "."));
-        props.add("size_y", WorldTools.prop("integer", "Height in blocks, 1 to " + MAX_SIZE + "."));
-        props.add("size_z", WorldTools.prop("integer", "Depth in blocks, 1 to " + MAX_SIZE + "."));
+        props.add("size_x", WorldTools.prop("integer", "Width in blocks, 1 to " + MAX_SIZE + "; 0 with from_world to fit "
+                + "the copied box."));
+        props.add("size_y", WorldTools.prop("integer", "Height in blocks, 1 to " + MAX_SIZE + "; 0 with from_world to fit it."));
+        props.add("size_z", WorldTools.prop("integer", "Depth in blocks, 1 to " + MAX_SIZE + "; 0 with from_world to fit it."));
+        JsonObject fromWorld = new JsonObject();
+        fromWorld.addProperty("type", "array");
+        fromWorld.addProperty("description", "Empty, or one box of the player's world to copy into the model before layers "
+                + "and blocks apply, so you can change a build of theirs instead of writing it again: the blocks players "
+                + "placed in it, with the water and lava, the ground they touch and what was on the player's screen. Model "
+                + "x, y and z follow the world's (x east, y up, z south), so a world block at (x1 + a, y1 + b, z1 + c) "
+                + "lands at cell (x + a, y + b, z + c). Layers and blocks then write only the changes: a layer's '.' "
+                + "leaves the copied cell as it is, and minecraft:air takes a block out. The changes are outlined on the "
+                + "model for the player and listed back to you in world coordinates.");
+        fromWorld.add("items", copy);
+        props.add("from_world", fromWorld);
         JsonObject palette = new JsonObject();
         palette.addProperty("type", "array");
         palette.addProperty("description", "The characters layers use, at most " + MAX_PALETTE + "; empty when layers is.");
@@ -122,7 +152,10 @@ public final class Models {
                 + "take rotation (a saw, press or drill takes its shaft at its back, the face opposite its facing): get it "
                 + "right rather than guessing (lookup_recipes or read_guide help). Water and lava can be shown flowing: a "
                 + "source is level=0, flowing water level=1 to 7 (higher = further from the source), falling water "
-                + "level=8. It returns the model's number; write [diagram N] on a line of its own where it should appear, "
+                + "level=8. To improve or fix something the player built, copy it in with from_world (find its bounds with "
+                + "trace_build or read_area first) and write only what changes; the player then sees their own build "
+                + "with the changes outlined, and you get the changes in world coordinates to name in your answer. "
+                + "It returns the model's number; write [diagram N] on a line of its own where it should appear, "
                 + "or put it inside a drawing with a shape of kind model.", props);
     }
 
@@ -136,12 +169,39 @@ public final class Models {
      * The model as the book stores and shows it, or what to fix. Server thread (reads the block registry, and tries
      * the model's machines in a scratch copy of {@code level}).
      */
-    static Result build(JsonObject input, ServerLevel level) {
+    static Result build(JsonObject input, ServerLevel level, Copier copier) {
         List<String> problems = new ArrayList<>();
         int sx = Diagrams.intOr(input, "size_x", 0), sy = Diagrams.intOr(input, "size_y", 0), sz = Diagrams.intOr(input, "size_z", 0);
+        Map<BlockPos, BlockState> cells = new HashMap<>();
+        // A build copied from the world: its blocks are the starting point, and what changes on them is marked.
+        Map<BlockPos, BlockState> base = null;
+        BlockPos worldMin = null, offset = null;
+        JsonArray copies = array(input, "from_world");
+        if (copies.size() > 1) return Result.problem("Not built: from_world takes one box at most.");
+        if (copies.size() == 1 && copies.get(0).isJsonObject()) {
+            JsonObject c = copies.get(0).getAsJsonObject();
+            if (copier == null) return Result.problem("Not built: the player's world can't be read for this question.");
+            Builds.Copy copy = copier.copy(new BlockPos(Diagrams.intOr(c, "x1", 0), Diagrams.intOr(c, "y1", 0), Diagrams.intOr(c, "z1", 0)),
+                    new BlockPos(Diagrams.intOr(c, "x2", 0), Diagrams.intOr(c, "y2", 0), Diagrams.intOr(c, "z2", 0)), MAX_SIZE);
+            if (copy.problem() != null) return Result.problem("Not built: " + copy.problem() + ".");
+            offset = new BlockPos(Diagrams.intOr(c, "x", 0), Diagrams.intOr(c, "y", 0), Diagrams.intOr(c, "z", 0));
+            worldMin = copy.min();
+            int bx = Math.abs(Diagrams.intOr(c, "x2", 0) - Diagrams.intOr(c, "x1", 0)) + 1,
+                    by = Math.abs(Diagrams.intOr(c, "y2", 0) - Diagrams.intOr(c, "y1", 0)) + 1,
+                    bz = Math.abs(Diagrams.intOr(c, "z2", 0) - Diagrams.intOr(c, "z1", 0)) + 1;
+            if (sx == 0) sx = offset.getX() + bx;
+            if (sy == 0) sy = offset.getY() + by;
+            if (sz == 0) sz = offset.getZ() + bz;
+            if (offset.getX() < 0 || offset.getY() < 0 || offset.getZ() < 0 || offset.getX() + bx > sx || offset.getY() + by > sy
+                    || offset.getZ() + bz > sz)
+                return Result.problem("Not built: the copied " + bx + "x" + by + "x" + bz + " box placed at cell " + offset.getX() + " "
+                        + offset.getY() + " " + offset.getZ() + " doesn't fit in a " + sx + "x" + sy + "x" + sz + " model.");
+            base = new HashMap<>();
+            for (Map.Entry<BlockPos, BlockState> e : copy.blocks().entrySet()) base.put(e.getKey().offset(offset), e.getValue());
+            cells.putAll(base);
+        }
         if (sx < 1 || sx > MAX_SIZE || sy < 1 || sy > MAX_SIZE || sz < 1 || sz > MAX_SIZE)
             return Result.problem("Not built: size_x, size_y and size_z must each be 1 to " + MAX_SIZE + ".");
-        Map<BlockPos, BlockState> cells = new HashMap<>();
         Map<Character, BlockState> keys = new HashMap<>();
         JsonArray palette = array(input, "palette");
         if (palette.size() > MAX_PALETTE) problems.add("at most " + MAX_PALETTE + " palette entries");
@@ -170,7 +230,9 @@ public final class Models {
                     BlockState state = keys.get(c);
                     if (state == null) {
                         if (problems.size() < 10) problems.add("layer " + y + " row " + z + ": '" + c + "' is not in the palette");
-                    } else if (!state.isAir()) {
+                    } else if (state.isAir()) {
+                        cells.remove(new BlockPos(x, y, z));
+                    } else {
                         cells.put(new BlockPos(x, y, z), state);
                     }
                 }
@@ -222,6 +284,13 @@ public final class Models {
         if (GuideText.string(input, "title").length() > 60) problems.add("title longer than 60 characters");
         if (GuideText.string(input, "caption").length() > 240) problems.add("caption longer than 240 characters");
         if (!problems.isEmpty()) return Result.problem("Not built. Fix these and call again: " + String.join("; ", problems) + ".");
+        // What the model changes on the copied build, before blocks join up (a fence that now meets a new post isn't a change).
+        Map<BlockPos, Boolean> changes = new HashMap<>();
+        if (base != null) {
+            for (Map.Entry<BlockPos, BlockState> e : cells.entrySet())
+                if (!e.getValue().equals(base.get(e.getKey()))) changes.put(e.getKey(), false);
+            for (BlockPos p : base.keySet()) if (!cells.containsKey(p)) changes.put(p, true);
+        }
         if (level != null) connect(cells, level);
         BuildCheck.Report check = level == null ? null : BuildCheck.check(cells, level);
         boolean showsFault = input.has("shows_a_fault") && input.get("shows_a_fault").isJsonPrimitive()
@@ -242,8 +311,13 @@ public final class Models {
         model.add("size", size);
         compact(cells, sx, sy, sz, model);
         model.add("labels", labels);
+        String report = check == null ? "" : check.text();
+        if (base != null) {
+            model.add("changes", changeRuns(changes, sx, sy, sz));
+            report = (report.isEmpty() ? "" : report + "\n") + changeReport(changes, cells, base, worldMin.subtract(offset), base.size());
+        }
         byte[] picture = draft ? Preview.render(cells, sx, sy, sz) : null;
-        return new Result(model, null, check == null ? "" : check.text(), draft, picture);
+        return new Result(model, null, report, draft, picture);
     }
 
     /**
@@ -313,6 +387,56 @@ public final class Models {
                 }
         model.add("palette", palette);
         model.add("blocks", blocks);
+    }
+
+    /** Reads a box of the asking player's world for from_world (Builds.copy, with their view and the placed blocks). */
+    interface Copier {
+        Builds.Copy copy(BlockPos a, BlockPos b, int maxSide);
+    }
+
+    /** Changed cells as runs along x: [x, y, z, x2, y2, z2, kind], kind 0 for a block added or replaced, 1 for one taken out. */
+    private static JsonArray changeRuns(Map<BlockPos, Boolean> changes, int sx, int sy, int sz) {
+        JsonArray runs = new JsonArray();
+        for (int y = 0; y < sy; y++)
+            for (int z = 0; z < sz; z++)
+                for (int x = 0; x < sx; x++) {
+                    Boolean removed = changes.get(new BlockPos(x, y, z));
+                    if (removed == null) continue;
+                    int end = x;
+                    while (end + 1 < sx && removed.equals(changes.get(new BlockPos(end + 1, y, z)))) end++;
+                    JsonArray run = new JsonArray();
+                    for (int v : new int[] {x, y, z, end, y, z, removed ? 1 : 0}) run.add(v);
+                    runs.add(run);
+                    x = end;
+                }
+        return runs;
+    }
+
+    /** The changes in world coordinates (cell + origin), for the model to tell the player what to place and break. */
+    private static String changeReport(Map<BlockPos, Boolean> changes, Map<BlockPos, BlockState> cells, Map<BlockPos, BlockState> base,
+                                       BlockPos origin, int copied) {
+        StringBuilder out = new StringBuilder("Copied " + copied + " blocks from the world (world = cell + " + origin.getX() + " "
+                + origin.getY() + " " + origin.getZ() + "). ");
+        if (changes.isEmpty()) return out.append("Nothing in it changes yet.").toString();
+        out.append(changes.size()).append(changes.size() == 1 ? " cell changes" : " cells change").append(", outlined for the "
+                + "player (world x y z):\n");
+        List<BlockPos> sorted = new ArrayList<>(changes.keySet());
+        sorted.sort(java.util.Comparator.comparingInt((BlockPos q) -> q.getY()).thenComparingInt(q -> q.getZ()).thenComparingInt(q -> q.getX()));
+        int lines = 0;
+        for (BlockPos p : sorted) {
+            if (lines++ >= 80) {
+                out.append("...and ").append(changes.size() - 80).append(" more\n");
+                break;
+            }
+            BlockPos w = p.offset(origin);
+            String at = w.getX() + " " + w.getY() + " " + w.getZ();
+            BlockState was = base.get(p), now = cells.get(p);
+            if (changes.get(p)) out.append("- break ").append(BlockStateParser.serialize(was)).append(" at ").append(at).append('\n');
+            else if (was == null) out.append("- place ").append(BlockStateParser.serialize(now)).append(" at ").append(at).append('\n');
+            else out.append("- replace ").append(BlockStateParser.serialize(was)).append(" with ").append(BlockStateParser.serialize(now))
+                    .append(" at ").append(at).append('\n');
+        }
+        return out.toString().strip();
     }
 
     /** The model, or why it wasn't built; check is the rotation check's report for a built model (may be empty). */

@@ -85,10 +85,62 @@ public final class GuideAiClient {
     }
 
     static void send(int action, String pageId, String text) {
+        send(action, pageId, text, "");
+    }
+
+    static void send(int action, String pageId, String text, String ticket) {
         if (!serverHasVoice()) return;
         Minecraft mc = Minecraft.getInstance();
         float aspect = (float) mc.getWindow().getWidth() / Math.max(1, mc.getWindow().getHeight());
-        PacketDistributor.sendToServer(new GuideAiNet.Request(action, pageId, text, mc.options.fov().get(), aspect));
+        PacketDistributor.sendToServer(new GuideAiNet.Request(action, pageId, text, mc.options.fov().get(), aspect, ticket));
+    }
+
+    /** Pages with an answer the player hasn't opened yet, as the server last said plus answers since. */
+    static final java.util.Set<String> unread = new java.util.HashSet<>();
+
+    static void syncUnread(java.util.List<GuideAiNet.Summary> pages) {
+        unread.clear();
+        for (GuideAiNet.Summary p : pages) if (p.unread()) unread.add(p.id());
+    }
+
+    /**
+     * An answer is in. The page that is open shows it as it comes; anywhere else (another page, the list, the game
+     * with the book closed) a notice slides in, and the page glows in the list until it is opened.
+     */
+    public static void onAnswered(GuideAiNet.Answered answered) {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.screen instanceof AskScreen ask && ask.isShowing(answered.pageId())) return;
+        unread.add(answered.pageId());
+        if (mc.screen instanceof AskScreen ask) ask.unreadChanged();
+        mc.getToasts().addToast(new AnswerToast(answered.title(), answered.answered()));
+        if (AskSettings.sound())
+            mc.getSoundManager().play(net.minecraft.client.resources.sounds.SimpleSoundInstance.forUI(
+                    net.minecraft.sounds.SoundEvents.BOOK_PAGE_TURN, 1.0f, 0.8f));
+    }
+
+    /** "The book has answered" and the page's title, under a picture of the guide; gone after a few seconds. */
+    private static final class AnswerToast implements net.minecraft.client.gui.components.toasts.Toast {
+        private static final ResourceLocation BACKGROUND = ResourceLocation.withDefaultNamespace("toast/advancement");
+        private static final long SHOWN_MS = 7000;
+        private final String title;
+        private final boolean answered;
+
+        AnswerToast(String title, boolean answered) {
+            this.title = title;
+            this.answered = answered;
+        }
+
+        @Override
+        public Visibility render(net.minecraft.client.gui.GuiGraphics g, net.minecraft.client.gui.components.toasts.ToastComponent toasts, long time) {
+            var font = toasts.getMinecraft().font;
+            g.blitSprite(BACKGROUND, 0, 0, width(), height());
+            g.renderFakeItem(new net.minecraft.world.item.ItemStack(net.minecraft.core.registries.BuiltInRegistries.ITEM
+                    .getOptional(ResourceLocation.fromNamespaceAndPath("modonomicon", "modonomicon_red"))
+                    .orElse(net.minecraft.world.item.Items.BOOK)), 8, 8);
+            g.drawString(font, answered ? "The book has answered" : "The book couldn't answer", 30, 7, 0xFFFFFF00, false);
+            g.drawString(font, font.plainSubstrByWidth(title, width() - 36), 30, 18, 0xFFFFFFFF, false);
+            return time >= SHOWN_MS * toasts.getNotificationDisplayTimeMultiplier() ? Visibility.HIDE : Visibility.SHOW;
+        }
     }
 
     public static void onPages(GuideAiNet.Pages pages) {

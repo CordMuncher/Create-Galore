@@ -4,6 +4,14 @@ Each pack version gets a section here, with **Added**, **Fixed** and **Removed**
 workflow copies the section for the version in `pack/pack.toml` to the top of the GitHub release, and the build
 fails when that section is missing.
 
+## 0.4.3
+
+### Added
+- **Ask the Book improves your own builds.** Ask it to improve or fix something you built and it copies the build into a 3D model, makes its changes there and outlines them: green for blocks to add or change, red for blocks to take out. The answer says where each change goes.
+- **Up to three questions at once.** Ask on one page, start another and ask there while the first is still being answered. Answers no longer pull you to the page they land on.
+- **Answer notices.** When an answer lands on a page you aren't reading, or with the book closed, a notice slides in, and that page glows green under All pages until you open it.
+- Create Galore Bridge 1.34.0.
+
 ## 0.4.2
 
 ### Fixed

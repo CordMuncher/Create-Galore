@@ -48,6 +48,8 @@ final class ThreadStore {
         String title;
         long updated;
         int questions;
+        /** An answer came while the page wasn't open; cleared when it is opened. */
+        boolean unread;
         final List<GuideAiNet.Entry> entries = new ArrayList<>();
         JsonArray messages = new JsonArray();
 
@@ -128,6 +130,7 @@ final class ThreadStore {
             o.addProperty("kind", p.kind);
             o.addProperty("updated", p.updated);
             o.addProperty("questions", p.questions);
+            if (p.unread) o.addProperty("unread", true);
             JsonArray entries = new JsonArray();
             for (GuideAiNet.Entry e : p.entries) {
                 JsonObject eo = new JsonObject();
@@ -171,6 +174,7 @@ final class ThreadStore {
                 p.kind = o.has("kind") ? o.get("kind").getAsInt() : KIND_CHAT;
                 p.updated = o.get("updated").getAsLong();
                 p.questions = o.get("questions").getAsInt();
+                p.unread = o.has("unread") && o.get("unread").getAsBoolean();
                 for (JsonElement ee : o.getAsJsonArray("entries")) {
                     JsonObject eo = ee.getAsJsonObject();
                     p.entries.add(new GuideAiNet.Entry(eo.get("who").getAsInt(), GuideText.string(eo, "text")));

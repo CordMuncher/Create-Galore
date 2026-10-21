@@ -24,7 +24,8 @@ public final class GuideAiNet {
     private GuideAiNet() {
     }
 
-    public static final int LIST = 0, OPEN = 1, ASK = 2, DELETE = 3, SAVE = 4;
+    /** AWAY: the player isn't looking at any page (a new blank page, or the book closed). */
+    public static final int LIST = 0, OPEN = 1, ASK = 2, DELETE = 3, SAVE = 4, AWAY = 5;
     /** Page kinds: a conversation, or a page keeping one saved drawing or model. */
     public static final int KIND_CHAT = ThreadStore.KIND_CHAT, KIND_DRAWING = ThreadStore.KIND_DRAWING, KIND_MODEL = ThreadStore.KIND_MODEL;
     public static final int WHO_PLAYER = 0, WHO_BOOK = 1, WHO_NOTE = 2, WHO_DIAGRAM = 3;
@@ -33,9 +34,10 @@ public final class GuideAiNet {
      * Client to server: list my pages, open one, ask on one (empty id starts a new page), tear one out, or save a
      * drawing on a page as a page of its own (text: the drawing's {@link #drawingKey}). Every request carries the
      * player's field of view (degrees, vertical) and window aspect, so the book knows how much of the world was on
-     * their screen when they asked.
+     * their screen when they asked. A question that starts a new page carries a ticket the screen made up, which comes
+     * back on that page's view so the screen knows the new page is the one it asked on.
      */
-    public record Request(int action, String pageId, String text, int fov, float aspect) implements CustomPacketPayload {
+    public record Request(int action, String pageId, String text, int fov, float aspect, String ticket) implements CustomPacketPayload {
         public static final Type<Request> TYPE = new Type<>(id("ask_request"));
         static final StreamCodec<ByteBuf, Request> CODEC = StreamCodec.composite(
                 ByteBufCodecs.VAR_INT, Request::action,
@@ -43,6 +45,7 @@ public final class GuideAiNet {
                 ByteBufCodecs.stringUtf8(MAX_QUESTION * 4), Request::text,
                 ByteBufCodecs.VAR_INT, Request::fov,
                 ByteBufCodecs.FLOAT, Request::aspect,
+                ByteBufCodecs.stringUtf8(64), Request::ticket,
                 Request::new);
 
         @Override
@@ -51,14 +54,20 @@ public final class GuideAiNet {
         }
     }
 
-    public record Summary(String id, String title, int questions, long updated, int kind) {
-        static final StreamCodec<ByteBuf, Summary> CODEC = StreamCodec.composite(
-                ByteBufCodecs.stringUtf8(64), Summary::id,
-                ByteBufCodecs.stringUtf8(256), Summary::title,
-                ByteBufCodecs.VAR_INT, Summary::questions,
-                ByteBufCodecs.VAR_LONG, Summary::updated,
-                ByteBufCodecs.VAR_INT, Summary::kind,
-                Summary::new);
+    /** One page in the list: writing, the book is answering on it now; unread, an answer came that they haven't opened. */
+    public record Summary(String id, String title, int questions, long updated, int kind, boolean writing, boolean unread) {
+        private static final StreamCodec<ByteBuf, String> ID = ByteBufCodecs.stringUtf8(64), TITLE = ByteBufCodecs.stringUtf8(256);
+        // More fields than StreamCodec.composite takes, so written out.
+        static final StreamCodec<ByteBuf, Summary> CODEC = StreamCodec.of((buf, s) -> {
+            ID.encode(buf, s.id);
+            TITLE.encode(buf, s.title);
+            ByteBufCodecs.VAR_INT.encode(buf, s.questions);
+            ByteBufCodecs.VAR_LONG.encode(buf, s.updated);
+            ByteBufCodecs.VAR_INT.encode(buf, s.kind);
+            buf.writeBoolean(s.writing);
+            buf.writeBoolean(s.unread);
+        }, buf -> new Summary(ID.decode(buf), TITLE.decode(buf), ByteBufCodecs.VAR_INT.decode(buf), ByteBufCodecs.VAR_LONG.decode(buf),
+                ByteBufCodecs.VAR_INT.decode(buf), buf.readBoolean(), buf.readBoolean()));
     }
 
     /** Server to client: whether the voice is on here, a line to show if not, and the player's pages. */
@@ -83,18 +92,23 @@ public final class GuideAiNet {
                 Entry::new);
     }
 
-    /** Server to client: one page of conversation, and whether the book is still writing on it. */
-    public record View(String pageId, String title, List<Entry> entries, boolean pending, String notice, int kind)
+    /** Server to client: one page of conversation, whether the book is still writing on it, and the ticket of a new page. */
+    public record View(String pageId, String title, List<Entry> entries, boolean pending, String notice, int kind, String ticket)
             implements CustomPacketPayload {
         public static final Type<View> TYPE = new Type<>(id("ask_view"));
-        static final StreamCodec<ByteBuf, View> CODEC = StreamCodec.composite(
-                ByteBufCodecs.stringUtf8(64), View::pageId,
-                ByteBufCodecs.stringUtf8(256), View::title,
-                ByteBufCodecs.collection(ArrayList::new, Entry.CODEC, 512), View::entries,
-                ByteBufCodecs.BOOL, View::pending,
-                ByteBufCodecs.stringUtf8(1024), View::notice,
-                ByteBufCodecs.VAR_INT, View::kind,
-                View::new);
+        private static final StreamCodec<ByteBuf, String> ID = ByteBufCodecs.stringUtf8(64), TITLE = ByteBufCodecs.stringUtf8(256),
+                NOTICE = ByteBufCodecs.stringUtf8(1024);
+        private static final StreamCodec<ByteBuf, List<Entry>> ENTRIES = ByteBufCodecs.collection(ArrayList::new, Entry.CODEC, 512);
+        static final StreamCodec<ByteBuf, View> CODEC = StreamCodec.of((buf, v) -> {
+            ID.encode(buf, v.pageId);
+            TITLE.encode(buf, v.title);
+            ENTRIES.encode(buf, v.entries);
+            buf.writeBoolean(v.pending);
+            NOTICE.encode(buf, v.notice);
+            ByteBufCodecs.VAR_INT.encode(buf, v.kind);
+            ID.encode(buf, v.ticket);
+        }, buf -> new View(ID.decode(buf), TITLE.decode(buf), ENTRIES.decode(buf), buf.readBoolean(), NOTICE.decode(buf),
+                ByteBufCodecs.VAR_INT.decode(buf), ID.decode(buf)));
 
         @Override
         public Type<View> type() {
@@ -123,6 +137,24 @@ public final class GuideAiNet {
         }
     }
 
+    /**
+     * Server to client: the book finished an answer on this page (answered: false when it couldn't), sent wherever the
+     * player is, so a closed book or another page can tell them.
+     */
+    public record Answered(String pageId, String title, boolean answered) implements CustomPacketPayload {
+        public static final Type<Answered> TYPE = new Type<>(id("ask_answered"));
+        static final StreamCodec<ByteBuf, Answered> CODEC = StreamCodec.composite(
+                ByteBufCodecs.stringUtf8(64), Answered::pageId,
+                ByteBufCodecs.stringUtf8(256), Answered::title,
+                ByteBufCodecs.BOOL, Answered::answered,
+                Answered::new);
+
+        @Override
+        public Type<Answered> type() {
+            return TYPE;
+        }
+    }
+
     /** Names a drawing on a page without sending it back up: both sides hash the same JSON text. */
     public static String drawingKey(String json) {
         return Integer.toHexString(json.hashCode()) + ":" + json.length();
@@ -144,7 +176,8 @@ public final class GuideAiNet {
         modBus.addListener((RegisterPayloadHandlersEvent event) -> {
             // Optional: a client or server without this Bridge version still connects; the button just says so.
             // Version 2 (pack 0.2.22): page kinds and saving drawings. Version 3: field of view in requests, claim box.
-            var registrar = event.registrar("3").optional();
+            // Version 4: several pages written at once, unread pages, answer notices.
+            var registrar = event.registrar("4").optional();
             registrar.playToServer(Request.TYPE, codec(Request.CODEC), (payload, context) -> GuideAi.handle(payload, context.player()));
             registrar.playToClient(Pages.TYPE, codec(Pages.CODEC),
                     (payload, context) -> dev.creategalore.bridge.client.GuideAiClient.onPages(payload));
@@ -152,6 +185,8 @@ public final class GuideAiNet {
                     (payload, context) -> dev.creategalore.bridge.client.GuideAiClient.onView(payload));
             registrar.playToClient(Live.TYPE, codec(Live.CODEC),
                     (payload, context) -> dev.creategalore.bridge.client.GuideAiClient.onLive(payload));
+            registrar.playToClient(Answered.TYPE, codec(Answered.CODEC),
+                    (payload, context) -> dev.creategalore.bridge.client.GuideAiClient.onAnswered(payload));
             registrar.playToClient(ClaimBox.TYPE, codec(ClaimBox.CODEC),
                     (payload, context) -> dev.creategalore.bridge.client.ClaimBoxView.show(payload));
         });
