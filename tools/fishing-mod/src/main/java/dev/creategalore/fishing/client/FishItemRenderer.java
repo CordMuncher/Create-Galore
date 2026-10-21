@@ -117,7 +117,9 @@ final class FishItemRenderer extends BlockEntityWithoutLevelRenderer {
         PoseStack.Pose p = pose.last();
         int light = LightTexture.FULL_BRIGHT;
         int overlay = OverlayTexture.NO_OVERLAY;
-        float z = 0.5f;
+        // In front of the sprite's own depth (its front face is at 8.5/16): screens that draw the sprite as a shadow
+        // first, like the Fishing Journal, would otherwise hide the icon behind it.
+        float z = 1.0f;
         v.addVertex(p, 0, 0, z).setColor(-1).setUv(0, 1).setOverlay(overlay).setLight(light).setNormal(p, 0, 0, 1);
         v.addVertex(p, 1, 0, z).setColor(-1).setUv(1, 1).setOverlay(overlay).setLight(light).setNormal(p, 0, 0, 1);
         v.addVertex(p, 1, 1, z).setColor(-1).setUv(1, 0).setOverlay(overlay).setLight(light).setNormal(p, 0, 0, 1);
