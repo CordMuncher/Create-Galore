@@ -1,4 +1,4 @@
-<!-- sources sha256:40e6553c394add0649962f872846ac8ae7ed74455f4767e9bdb4bdcaf1954588 -->
+<!-- sources sha256:4ba839123c24f11ed40c744e8581ec9c5c23a75b18c82d9233d0ecf8f9817ec6 -->
 # Fishing (fishing)
 
 ## fishing/overview | Fishing
@@ -162,7 +162,7 @@
 - Neptunium [aquaculture:neptunium_ingot]: Aquaculture's sea metal for tools, armor, bow; nuggets also come as treasure; 9 make an ingot
 
 ## fishing/fish_uses | What Fish Are For
-- Cook fish under **3 kg** whole (campfire, smoker, furnace, a fan's smoking air); 3 kg or more won't cook, its tooltip says to clean it at a Cleaning Table (see fishing/cleaning). Many cook into **Small**, plain or **Large Cooked Fish** by kind; others into their own cooked fish. The 3 kg limit holds for every mod's fish and every way of cooking
+- Cook fish under **3 kg** whole (campfire, smoker, furnace, a fan's smoking air); 3 kg or more won't cook, its tooltip says to clean it at a Cleaning Table (see fishing/cleaning) or a Fish Cleaner (see fishing/fish_cleaner). Many cook into **Small**, plain or **Large Cooked Fish** by kind; others into their own cooked fish. The 3 kg limit holds for every mod's fish and every way of cooking
 - Farmer's Delight cutting board + knife: fish that cook into Cooked Fish -> 2 **raw fillets** + bone meal (same fillets as Aquaculture fish). Meals: (see fishing/sea_food)
 - **Craft a fish into**: Iron Tetra: 2 raw iron; Gilded Minnow: 2 raw gold; Lapis Lanternfish: 2 lapis; Crystal Shrimp: 4 amethyst; Glowfish: 2 glow ink sacs; Enderfin: ender pearl; Endergazer: eye of ender; Elytrout: phantom membrane; Luminescent Jellyfish or Sun Emblem: 8 **Jelly Torches** (burn underwater); Incandescent Larva and Pale Clubfish: 4 bait
 - **Gear**: Sailfish, Swordfish, Blazing Swordfish are swords (last sets things on fire). Shooting Starfish + bow: **Starlight Bow**. Dragon Fish + netherite boots: **Dragonfin Boots**, a jump in mid-air
@@ -171,14 +171,22 @@
 
 ## fishing/cleaning | Cleaning Table and Fish Products
 - Lay a fish on the **Cleaning Table** (right-click with the fish), cut with any **knife**; heavier fish take more strokes and give more. A Deployer (see create_basics/deployer) with a knife works it; hoppers and funnels empty it (see create_basics/item_logistics). Scraps become Fish Meal and Fish Oil
-- Cleaning Table (shows recipe create_galore_fishing:crafting/cleaning_table): three smooth stone slabs over logs and andesite alloy. The fish lies on it as itself; look at it to see strokes done. Strokes: two for a minnow, five at 3 kg, sixteen at 50 kg. By hand the parts go to you; with a Deployer they wait in the table's output, and the next fish goes on once it is empty
+- Cleaning Table (shows recipe create_galore_fishing:crafting/cleaning_table): three smooth stone slabs over logs and andesite alloy. The fish lies on it as itself; look at it to see strokes done. Strokes: two for a minnow, five at 3 kg, sixteen at 50 kg. By hand the parts go to you; with a Deployer they wait in the table's output, and the next fish goes on once it is empty. For a fish line the Fish Cleaner (see fishing/fish_cleaner) cleans only big fish and passes the rest
 - Yields by weight: raw **fillets** about 3 from 1 kg, 8 from 10 kg; from 3 kg most of those are Hybrid Aquatic **fish steaks**; **bones** 1 plus 1 per 4 kg (up to 8); **Fish Scraps** 1 plus more with weight (up to 10); **roe** 4 times in 10 from sturgeon, salmon, herring, carp; **shark skin** from sharks. Oily fish (salmon, herring, mackerel, tuna, anchovy, trout) give half again as many scraps. A fish without a weight on it counts as a usual one of its size class
 - Fish Scraps [create_galore_fishing:fish_scraps]: cut bait; millstone or crushing wheels -> 1 Fish Meal, sometimes 2. Aquaculture fish bones mill into Fish Meal + bone meal
 - Fish Meal [create_galore_fishing:fish_meal]: for Boilies, Chum, feeding an Aquarium Tank (see create_basics/crushing)
 - Fish Oil [create_galore_fishing:fish_oil_bucket]: compacting (see glossary/compacting) 4 Fish Scraps, or one small oily fish -> 100 mB; heats a Blaze Burner from a pipe; runs the Fuel Reel Drive
 - Fish Roe [create_galore_fishing:fish_roe]: food, restores 2 hunger points; from roe fish at the table
 - Shark Skin [create_galore_fishing:shark_skin]: smoke it or campfire-cook into leather
-- Related: (see industry/liquid_fuel) (see fishing/bait) (see fishing/live_bait) (see fishing/sea_food)
+- Related: (see fishing/fish_cleaner) (see industry/liquid_fuel) (see fishing/bait) (see fishing/live_bait) (see fishing/sea_food)
+
+## fishing/fish_cleaner | Fish Cleaner
+- A saw for a fish line: items go in the back, sides or top, out the front. A fish of **3 kg or more** (the ones furnace, smoker, campfire, fan won't cook; tooltip says so) is cut up like on the Cleaning Table (see fishing/cleaning); everything else (smaller fish, trophies under 3 kg, stacked common catches, non-fish) passes through **untouched**, catch data kept, even with the shaft stopped. The saw needs rotation (see create_basics/rotation)
+- Fish Cleaner (shows recipe create_galore_fishing:crafting/fish_cleaner): a knife over an andesite casing between two shafts, over a Cleaning Table
+- Same strokes as the table (five at 3 kg, sixteen at 50 kg) and same parts (fillets, steaks, roe, bones, scraps, shark skin). Two strokes a second at 32 RPM (see glossary/rpm), faster shafts cut faster. 4 SU per RPM, like Create's saw (see create_basics/stress)
+- Faces away from you when placed; shaft through it side to side. In: belt ending at back or sides, chute or hopper above, funnel. Out: belt, depot or chute in front, chest in front, or the ground; funnels and hoppers can pull from it too (see create_basics/item_logistics)
+- One big fish at a time; the next starts only once the last one's parts have left, so a blocked output stops the line, nothing lost. Small fish behind a big one wait. Empty hand takes out what is inside, uncut; goggles show the fish and strokes done
+- Related: (see fishing/cleaning) (see fishing/fish_uses) (see fishing/rod_machines) (see fishing/sea_food)
 
 ## fishing/sea_food | Sea Food
 - Two Farmer's Delight (see food/farmers_delight) add-ons use its pot, cutting board, knives; meals follow the pack's normal food rules

@@ -16,6 +16,8 @@ import dev.creategalore.fishing.machine.RodHolderBlock;
 import dev.creategalore.fishing.machine.RodHolderBlockEntity;
 import dev.creategalore.fishing.process.CleaningTableBlock;
 import dev.creategalore.fishing.process.CleaningTableBlockEntity;
+import dev.creategalore.fishing.process.FishCleanerBlock;
+import dev.creategalore.fishing.process.FishCleanerBlockEntity;
 import dev.creategalore.fishing.process.WholeFishIngredient;
 import dev.creategalore.fishing.tackle.LineItem;
 import dev.creategalore.fishing.tackle.RodItem;
@@ -284,6 +286,14 @@ public final class FishingRegistry {
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<CleaningTableBlockEntity>> CLEANING_TABLE_ENTITY =
             BLOCK_ENTITIES.register("cleaning_table", () -> BlockEntityType.Builder.of(CleaningTableBlockEntity::new,
                     CLEANING_TABLE.get()).build(null));
+    public static final DeferredBlock<FishCleanerBlock> FISH_CLEANER = BLOCKS.register("fish_cleaner",
+            () -> new FishCleanerBlock(BlockBehaviour.Properties.of().mapColor(MapColor.STONE).strength(2.0f)
+                    .sound(SoundType.WOOD).noOcclusion()));
+    public static final DeferredItem<BlockItem> FISH_CLEANER_ITEM = ITEMS.registerSimpleBlockItem(FISH_CLEANER);
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<FishCleanerBlockEntity>> FISH_CLEANER_ENTITY =
+            BLOCK_ENTITIES.register("fish_cleaner", () -> BlockEntityType.Builder.of(
+                    (pos, state) -> new FishCleanerBlockEntity(FishingRegistry.FISH_CLEANER_ENTITY.get(), pos, state),
+                    FISH_CLEANER.get()).build(null));
 
     public static final DeferredBlock<RodHolderBlock> ROD_HOLDER = BLOCKS.register("rod_holder",
             () -> new RodHolderBlock(BlockBehaviour.Properties.of().mapColor(MapColor.WOOD).strength(1.5f)
@@ -340,6 +350,7 @@ public final class FishingRegistry {
                         RODS.forEach(r -> out.accept(r.get()));
                         PARTS.forEach(p -> out.accept(p.get()));
                         out.accept(CLEANING_TABLE_ITEM.get());
+                        out.accept(FISH_CLEANER_ITEM.get());
                         out.accept(AQUARIUM_TANK_ITEM.get());
                         out.accept(ROD_HOLDER_ITEM.get());
                         out.accept(REEL_DRIVE_ITEM.get());
@@ -363,6 +374,7 @@ public final class FishingRegistry {
         INGREDIENT_TYPES.register(modBus);
         modBus.addListener((RegisterCapabilitiesEvent event) -> {
             event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, CLEANING_TABLE_ENTITY.get(), (table, side) -> table.items());
+            event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, FISH_CLEANER_ENTITY.get(), (cleaner, side) -> cleaner.items());
             event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, AQUARIUM_ENTITY.get(), (tank, side) -> tank.items());
             event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, AQUARIUM_ENTITY.get(), (tank, side) -> tank.fluids());
             event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, REEL_DRIVE_ENTITY.get(),

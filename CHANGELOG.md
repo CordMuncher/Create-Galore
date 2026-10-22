@@ -4,6 +4,12 @@ Each pack version gets a section here, with **Added**, **Fixed** and **Removed**
 workflow copies the section for the version in `pack/pack.toml` to the top of the GitHub release, and the build
 fails when that section is missing.
 
+## 0.4.26
+
+### Added
+- **Fish Cleaner**, a Create machine for fish lines. Fish come in from a belt, chute, hopper or funnel and leave from the front. Only fish too big to use whole (3 kg or more, the ones no furnace or smoker takes) are cut up, into the same fillets, steaks, roe, bones and scraps as at the Cleaning Table; every other fish and item passes through untouched. The saw runs on rotation (two cuts a second at 32 RPM, 4 SU per RPM). Crafted from a knife, two shafts, an andesite casing and a Cleaning Table. New Field Guide page in Fishing.
+- Create Galore Fishing 0.3.13.
+
 ## 0.4.25
 
 ### Fixed

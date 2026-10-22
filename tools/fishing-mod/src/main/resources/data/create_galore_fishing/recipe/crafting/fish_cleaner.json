@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " K ",
+    "SCS",
+    " T "
+  ],
+  "key": {
+    "K": {
+      "tag": "c:tools/knife"
+    },
+    "S": {
+      "item": "create:shaft"
+    },
+    "C": {
+      "item": "create:andesite_casing"
+    },
+    "T": {
+      "item": "create_galore_fishing:cleaning_table"
+    }
+  },
+  "result": {
+    "id": "create_galore_fishing:fish_cleaner"
+  }
+}

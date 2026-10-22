@@ -8,6 +8,7 @@
     "create_galore_fishing:rod_holder",
     "create_galore_fishing:reel_drive",
     "create_galore_fishing:geared_reel_drive",
-    "create_galore_fishing:fuel_reel_drive"
+    "create_galore_fishing:fuel_reel_drive",
+    "create_galore_fishing:fish_cleaner"
   ]
 }
