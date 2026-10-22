@@ -146,6 +146,56 @@ final class BuildCheck {
         return new Report(out.toString().trim(), faults);
     }
 
+    /**
+     * Each kinetic block's speed in RPM when every source in a model turns at its usual speed (a model holds no
+     * settings): engines and motors at their usual output, water wheels at their usual flow. {@code assumed} gets one
+     * line per source saying the speed used.
+     */
+    static Map<BlockPos, Float> rpm(Map<BlockPos, BlockState> blocks, ServerLevel level, List<String> assumed) {
+        Map<BlockPos, Float> out = new LinkedHashMap<>();
+        try {
+            SchematicLevel world = new SchematicLevel(level);
+            blocks.forEach((pos, state) -> world.setBlock(pos, state, 0));
+            Map<BlockPos, Cell> kinetic = new LinkedHashMap<>();
+            blocks.forEach((pos, state) -> {
+                if (state.getBlock() instanceof IRotate) kinetic.put(pos, new Cell(pos, state));
+            });
+            for (Cell src : kinetic.values()) {
+                // A steering wheel is a control, turned by hand only while steering: it drives nothing for long.
+                if (!isSource(src) || out.containsKey(src.pos) || name(src).contains("steering_wheel")) continue;
+                float r = nominalRpm(src.state);
+                assumed.add(name(src) + " at " + trim(r) + " RPM");
+                out.put(src.pos, r);
+                ArrayDeque<Cell> todo = new ArrayDeque<>(List.of(src));
+                while (!todo.isEmpty()) {
+                    Cell c = todo.poll();
+                    for (Cell n : neighbours(kinetic, c)) {
+                        float m = modifier(world, c, n);
+                        if (m == 0 || out.containsKey(n.pos)) continue;
+                        out.put(n.pos, out.get(c.pos) * m);
+                        todo.add(n);
+                    }
+                }
+            }
+        } catch (RuntimeException | LinkageError e) {
+            // Speeds stay unknown; the vehicle check then says what it couldn't work out.
+        }
+        return out;
+    }
+
+    /** The speed a source turns at when nobody has set it: what a player gets on placing it and starting it. */
+    private static float nominalRpm(BlockState state) {
+        String id = net.minecraft.core.registries.BuiltInRegistries.BLOCK.getKey(state.getBlock()).toString();
+        if (id.endsWith("portable_engine")) return 32; // 64 superheated with a Blaze Cake
+        if (id.contains("stirling")) return 64;
+        if (id.equals("create:large_water_wheel")) return 4;
+        if (id.equals("create:water_wheel")) return 8;
+        if (id.contains("windmill")) return 4;
+        if (id.equals("create:steam_engine")) return 32;
+        if (id.equals("create:creative_motor")) return 16;
+        return 32;
+    }
+
     private static boolean hasShaftAt(SchematicLevel world, Cell c, Direction d) {
         return ((IRotate) c.state.getBlock()).hasShaftTowards(world, c.pos, c.state, d);
     }

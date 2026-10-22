@@ -137,6 +137,9 @@ public final class Models {
                 + "wrong, then call again with draft false to put it in the answer."));
         props.add("shows_a_fault", WorldTools.prop("boolean", "True only when the model is meant to show a build that "
                 + "doesn't work (such as the player's own broken build); then it is built even when the rotation check finds faults."));
+        props.add("part_of_vehicle", WorldTools.prop("boolean", "True only when the model shows one part of a vehicle (an "
+                + "engine room, a rudder, a burner and its balloon) rather than the whole of it: the vehicle check's numbers "
+                + "come back but don't stop it being built. Leave it false for a whole boat, submarine, airship or car."));
         return WorldTools.tool("build_model", "Builds a 3D model out of real blocks, up to " + MAX_SIZE + " a side, which "
                 + "the book shows as a hologram the player can turn around and zoom into. Two uses. To explain (how machines "
                 + "connect in space, which way blocks face): keep it to the blocks that matter. To show a build (a boat, a "
@@ -154,7 +157,12 @@ public final class Models {
                 + "and takes its default when you leave it out, often the wrong way (a Windcatcher panel's default lies flat), "
                 + "so write it on every block that has one. Sail rigs are checked the same way, with Winds & Weather's rules: "
                 + "Masts stack straight up, Yards run sideways out from a Mast along their axis, Sail Kit cloth hangs straight "
-                + "below a run of Yards facing across it, and Windcatcher panels stand upright with a sideways facing. Water and lava can be shown flowing: a "
+                + "below a run of Yards facing across it, and Windcatcher panels stand upright with a sideways facing. Vehicles (a "
+                + "boat, submarine, airship, plane or Offroad car) get a vehicle check from the ship mods' own force rules, "
+                + "with every engine at its usual speed: mass against buoyancy or lift, whether it floats upright or "
+                + "capsizes, its centre of mass against its lift, thrust, top speed, turn rate, climb and ceiling, and "
+                + "faults when it would sink, capsize, not lift, not move or turn, or be too slow or clumsy to be of use. "
+                + "Fix those before recommending it, and give the player its numbers. Water and lava can be shown flowing: a "
                 + "source is level=0, flowing water level=1 to 7 (higher = further from the source), falling water "
                 + "level=8. To improve or fix something the player built, copy it in with from_world (find its bounds with "
                 + "trace_build or read_area first) and write only what changes; the player then sees their own build "
@@ -298,6 +306,8 @@ public final class Models {
         }
         if (level != null) connect(cells, level);
         BuildCheck.Report check = join(level == null ? null : BuildCheck.check(cells, level), RigCheck.check(cells));
+        check = join(check, vehicle(cells, level, input.has("part_of_vehicle") && input.get("part_of_vehicle").isJsonPrimitive()
+                && input.get("part_of_vehicle").getAsBoolean()));
         boolean showsFault = input.has("shows_a_fault") && input.get("shows_a_fault").isJsonPrimitive()
                 && input.get("shows_a_fault").getAsBoolean();
         boolean draft = input.has("draft") && input.get("draft").isJsonPrimitive() && input.get("draft").getAsBoolean();
@@ -359,6 +369,24 @@ public final class Models {
 
     private static <T extends Comparable<T>> String name(BlockState state, net.minecraft.world.level.block.state.properties.Property<T> prop) {
         return prop.getName(state.getValue(prop));
+    }
+
+    /**
+     * The vehicle check on a model, with every engine turning at its usual speed. A model of only part of a vehicle
+     * (an engine room, a rudder) still gets the numbers, but they don't stop it being built.
+     */
+    private static BuildCheck.Report vehicle(Map<BlockPos, BlockState> cells, ServerLevel level, boolean part) {
+        List<String> assumed = new ArrayList<>();
+        Map<BlockPos, Float> rpm = level == null ? Map.of() : BuildCheck.rpm(cells, level, assumed);
+        BuildCheck.Report r = VehicleCheck.check(cells, level, rpm, true);
+        if (r == null) return null;
+        String text = r.text();
+        int nl = text.indexOf('\n');
+        if (!assumed.isEmpty() && nl > 0)
+            text = text.substring(0, nl + 1) + "- Speeds worked out with " + String.join(", ", assumed) + ".\n" + text.substring(nl + 1);
+        if (!part) return new BuildCheck.Report(text, r.faults());
+        return new BuildCheck.Report(text.replace("- FAULT: ", "- As a whole vehicle these blocks alone would fail: ")
+                + "\n- (Marked part_of_vehicle: check the whole vehicle with its own model before recommending it.)", List.of());
     }
 
     /** Both checks' reports as one; either may be null (nothing of its kind in the model). */
