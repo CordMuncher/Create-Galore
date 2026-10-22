@@ -1,6 +1,5 @@
 package dev.creategalore.bridge;
 
-import com.endertech.minecraft.forge.blocks.ISmokeContainer;
 import com.endertech.minecraft.mods.adpother.blocks.Pollutant;
 import com.endertech.minecraft.mods.adpother.pollution.IFilterFrame;
 import it.unimi.dsi.fastutil.longs.LongArrayList;
@@ -18,8 +17,8 @@ import net.neoforged.neoforge.event.tick.LevelTickEvent;
 
 /**
  * Pressure in closed spaces. Smog trapped in a room presses on whatever filter frames sit in its ceiling: the fuller
- * the room, the faster smog is forced up through them, no pump needed. Gas a frame doesn't catch passes through
- * unfiltered, and a filter whose top is closed off lets nothing through (see the filter mixin), so the room keeps
+ * the room, the faster smog is forced up through them, no pump needed, as fast as the frames filter. A filter whose
+ * top is closed off lets nothing through (see the filter mixin), so the room keeps
  * filling until the machine making the smog blows (Pollution of the Realms' enclosed-emitter rule, or
  * {@link FanSmeltingSmog} for fans).
  */
@@ -28,7 +27,8 @@ public final class ExhaustPressure {
 
     private static final int MAX_SEEDS = 256;
     private static final int POCKETS_PER_SECOND = 4;
-    private static final int PUSH_PER_FRAME = 6;
+    private static final int PUSH_PER_FRAME = 8;
+    private static final long NONE = Long.MIN_VALUE;
 
     private static final Map<ResourceKey<Level>, LongLinkedOpenHashSet> SEEDS = new HashMap<>();
 
@@ -47,17 +47,27 @@ public final class ExhaustPressure {
         if (!(event.getLevel() instanceof ServerLevel level) || level.getGameTime() % 20 != 7) return;
         LongLinkedOpenHashSet seeds = SEEDS.get(level.dimension());
         if (seeds == null) return;
+        LongArrayList later = new LongArrayList();
         for (int done = 0; done < POCKETS_PER_SECOND && !seeds.isEmpty(); done++) {
             BlockPos start = BlockPos.of(seeds.removeFirstLong());
             if (!level.isLoaded(start) || !(level.getBlockState(start).getBlock() instanceof Pollutant)) continue;
             Exhaust.Pocket pocket = Exhaust.Pocket.scan(level, start, Exhaust.POCKET_LIMIT);
             pocket.cells.forEach(seeds::remove);
-            if (!pocket.open && !pocket.frames.isEmpty()) vent(level, pocket);
+            // A pocket still holding smog after venting is checked again next second, so filters keep working at
+            // their full rate on a sealed room even while nothing new flows in.
+            if (!pocket.open && !pocket.frames.isEmpty()) {
+                long left = vent(level, pocket);
+                if (left != NONE) later.add(left);
+            }
         }
+        later.forEach(packed -> { if (seeds.size() < MAX_SEEDS) seeds.add(packed); });
     }
 
-    /** Forces smog from a closed space up through the frames in its ceiling, faster the fuller the space is. */
-    private static void vent(ServerLevel level, Exhaust.Pocket pocket) {
+    /**
+     * Forces smog from a closed space up through the frames in its ceiling, faster the fuller the space is. Returns
+     * a cell still holding smog afterwards, or {@link #NONE}.
+     */
+    private static long vent(ServerLevel level, Exhaust.Pocket pocket) {
         LongArrayList gas = new LongArrayList();
         int units = 0;
         int room = 0;
@@ -71,7 +81,7 @@ public final class ExhaustPressure {
                 gas.add(packed);
             }
         }
-        if (units == 0) return;
+        if (units == 0) return NONE;
         // Highest smog first: that is what presses on the ceiling.
         gas.sort((a, b) -> Integer.compare(BlockPos.getY(b), BlockPos.getY(a)));
         float fullness = units / (float) room;
@@ -95,25 +105,27 @@ public final class ExhaustPressure {
             }
             frame = (frame + 1) % pocket.frames.size();
         }
+        for (long packed : gas) {
+            if (level.getBlockState(BlockPos.of(packed)).getBlock() instanceof Pollutant) return packed;
+        }
+        return NONE;
     }
 
     /**
-     * Pushes one unit of smog up into the frame stack starting at {@code base}. Each frame gets a chance to catch it
-     * (the filter mixin then lets the cleaned air out at the top); smog no frame catches leaves the top unfiltered.
-     * An empty or worn-out frame plugs the stack, as it does for pumps.
+     * Pushes one unit of smog up into the frame stack starting at {@code base}. Each frame in turn gets a chance to
+     * catch it (the filter mixin then lets the cleaned air out at the top); once every frame has used up this second's
+     * share, the stack holds the rest back. Smog never slips through a filter unfiltered.
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
     private static boolean forceThrough(ServerLevel level, BlockPos base, Pollutant<?> pollutant) {
         BlockPos.MutableBlockPos cursor = base.mutable();
         BlockState state = level.getBlockState(cursor);
         while (state.getBlock() instanceof IFilterFrame frame) {
-            if (!(state.getBlock() instanceof ISmokeContainer container) || !container.isActive(level, cursor)) return false;
             BlockEntity be = level.getBlockEntity(cursor);
             if (be != null && ((IFilterFrame) frame).fill(be, pollutant, 1) > 0) return true;
             cursor.move(0, 1, 0);
             state = level.getBlockState(cursor);
         }
-        BlockPos out = Exhaust.outlet(level, base);
-        return out != null && pollutant.pump(level, out);
+        return false;
     }
 }

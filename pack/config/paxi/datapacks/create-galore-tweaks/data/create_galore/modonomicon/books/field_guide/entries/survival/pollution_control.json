@@ -20,7 +20,7 @@
     {
       "type": "modonomicon:text",
       "title": "Exhaust Systems",
-      "text": "[#](FFFFFF)[#]() **Key points**\n\n- **Vents** pull smog into **Ducts**, a **Pump** pushes it up and out\n- [#](FFFFFF)[#]() A pump runs from an **Encased Fan** under it\n- **Filter Frames** on the way out catch smog and let out harmless exhaust\n- Filtered exhaust must reach the open sky"
+      "text": "[#](FFFFFF)[#]() **Key points**\n\n- **Vents** pull smog into **Ducts**, a **Pump** pushes it up and out\n- [#](FFFFFF)[#]() A pump runs from an **Encased Fan** under it\n- **Filter Frames** on the way out catch every kind of smog and let out harmless exhaust, with nothing to refill\n- Filtered exhaust must reach the open sky"
     },
     {
       "type": "modonomicon:text",
@@ -65,27 +65,31 @@
         "item": "adpother:iron_filter_frame"
       },
       "title": "Filter Frame",
-      "text": "Stack frames on the pump's outlet. Each holds one filter material, and the material picks the smog it catches. An iron frame holds 16 of it, gold 32, diamond 64."
+      "text": "Stack frames on the pump's outlet. Every frame catches all three kinds of smog (carbon, sulfur and dust) and needs nothing put in it. An iron frame filters 2 units a second, gold 4, diamond 8. Right-click a frame to see its rate."
     },
     {
       "type": "modonomicon:text",
-      "title": "Filter materials",
-      "text": "- Leaves: carbon, 8 units each, become Black Dye\n- Wool: sulfur, 8, Yellow Dye\n- Paper: dust, 8, Gray Dye\n- Filter Cartridge: carbon, 32\n- Brass Filter Cartridge: carbon and sulfur, 64\n- Precision Filter Cartridge: all three, 128"
+      "title": "Respirator filters",
+      "text": "Craft a **Respirator** with one of these to pick what it stops:\n- Leaves: carbon, 8 units each\n- Wool: sulfur, 8\n- Paper: dust, 8\n- Filter Cartridge: carbon, 32\n- Brass Filter Cartridge: carbon and sulfur, 64\n- Precision Filter Cartridge: all three, 128"
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Spent cartridges come out clogged. Wash them with a [#](2E5AAC)[Fan](entry://create_basics/fans)[#]() blowing through water to get them back, sometimes with Soot. Soot burns as fuel, makes black dye, or [#](7A3C9A)[compacts](entry://glossary/compacting)[#]() to Graphite and a Block of Soot."
+      "text": "A clogged cartridge comes clean with a [#](2E5AAC)[Fan](entry://create_basics/fans)[#]() blowing through water, sometimes with Soot. Soot burns as fuel, makes black dye, or [#](7A3C9A)[compacts](entry://glossary/compacting)[#]() to Graphite and a Block of Soot."
     },
     {
       "type": "modonomicon:text",
-      "title": "Byproducts",
-      "text": "A frame stops once its byproduct slot is full (16 in an iron frame). A hopper under the frame takes the dye or clogged cartridges out.\\\n\\\nA frame gives a redstone signal as it fills. An empty or full frame blocks the whole stack."
+      "title": "Busy stacks",
+      "text": "A frame never fills up or runs out. When smog arrives faster than a stack filters, the rest waits below until it can pass; nothing slips through unfiltered.\\\n\\\nTo filter faster, stack more frames or use gold or diamond ones. Two iron frames filter as much as one gold."
+    },
+    {
+      "type": "modonomicon:text",
+      "text": "A pump moves about 1.5 units a second whatever its speed, so one iron frame keeps up with it. Gold and diamond pay off in a sealed room's roof, where pressure pushes harder (see [#](2E5AAC)[Pressure and Sealed Casings](entry://survival/smog_pressure)[#]())."
     },
     {
       "type": "modonomicon:text",
       "title": "Mixed smog",
-      "text": "Smog that no frame in the stack catches leaves the top as it is. Stack one frame for each kind (leaves, then wool, then paper), or use one with Precision Cartridges."
+      "text": "Every frame catches carbon, sulfur and dust alike, so one stack handles mixed smog."
     },
     {
       "type": "modonomicon:text",

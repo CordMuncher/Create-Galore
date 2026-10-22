@@ -20,5 +20,7 @@
   "create_galore_bridge.jade.gas.medium": "Medium: %s units of pollution",
   "create_galore_bridge.jade.gas.heavy": "Heavy: %s units of pollution",
   "create_galore_bridge.jade.exhaust": "Harmless, not pollution",
-  "config.jade.plugin_create_galore_bridge.gas": "Smog and exhaust"
+  "config.jade.plugin_create_galore_bridge.gas": "Smog and exhaust",
+  "item.create_galore_bridge.filter_media": "Precision Filter Media",
+  "create_galore_bridge.filter_frame.rate": "Filters %s units of any smog a second."
 }
