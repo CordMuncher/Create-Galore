@@ -22,6 +22,8 @@ public final class BridgeClient {
         modBus.addListener(BridgeClient::setup);
         GuideAiClient.init(modBus);
         net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener(ShipGlueView::tick);
+        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener(SchematicTrace::tick);
+        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener(SchematicTrace::render);
     }
 
     private static void setup(FMLClientSetupEvent event) {
