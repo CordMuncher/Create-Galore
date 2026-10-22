@@ -1,4 +1,4 @@
-<!-- sources sha256:1108871b62e67894e63276865ceaaccc06b5a21ab220c1175c6cec5f5838363b -->
+<!-- sources sha256:a1e3680d742ecd713a5964702dd9917d26113570d4114d273b8d04aa4230d0dc -->
 # Flight (flight)
 Create Aeronautics ships, lift, thrust, steering, wind, dangers and sky destinations.
 
@@ -23,6 +23,7 @@ Create Aeronautics ships, lift, thrust, steering, wind, dangers and sky destinat
 - Honey Glue [simulated:honey_glue]: click two corners, ctrl-scroll to resize; only joins ships; also takes overlapping Super Glue; Super Glue does not take Honey Glue
 - Weight/splitting: blocks differ in weight (light, super heavy, slippery, fragile). Sections losing connection split off as separate ships; a Slime Ball merges any two
 - Swivel Bearing [simulated:swivel_bearing]: turns glued group in front into rotating sub-ship; rotation (see create_basics/rotation) passes through shaft; redstone unlocks it to spin freely
+- Steering a propeller: before assembling the ship, give the part the swivel should turn its own small glue box (it can sit inside the ship's glue); without one only the block on the swivel's face turns. Engine behind the bearing: rotation goes through it to the part. A Steering Wheel on a cogwheel next to the bearing turns it
 - Docking Connector [simulated:docking_connector]: two connectors align and lock into rigid link; items and fluids pass both ways; retract either to undock
 - Passing items across: once docked, move items with Create chutes or funnels (one feeding into the connector on one ship, one taking out of the connector on the other); vanilla hoppers don't pass items through them
 - Rope Winch [simulated:rope_winch]: link ships with Rope Coupling between winch and connector; rotation reels rope in/out; shears cut it
