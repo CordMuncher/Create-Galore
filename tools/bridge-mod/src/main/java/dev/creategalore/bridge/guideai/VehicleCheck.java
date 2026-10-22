@@ -26,7 +26,8 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 /**
  * Whether a vehicle would work and be usable, worked out from its blocks with the ship mods' own force rules: no
  * simulation, just the sums those rules come to. Masses and buoyant volumes come from Sable's own block properties;
- * buoyancy is Sable's 10.5 per submerged block plus High Seas' 16.5 per submerged hold cell (a boat); lift is
+ * buoyancy is Sable's 10.5 per submerged block plus High Seas' 16.5 per submerged hold cell (a boat), and 16.5 x the open
+ * part of a slab, stair or other partial block beside the hold (the Bridge's HighSeasHoldFloorsMixin); lift is
  * Aeronautics' 16.5 per filled m3 of balloon times air pressure and Levitite's 10 mass per block (hover only); thrust
  * is the Boat Engine's 36 x mass, a Submarine Propeller's 3 x RPM (x16 / x81 in a 2x2 / 3x3 square), a propeller's
  * 1.0 x RPM or a Propeller Bearing's 0.2 x sails^1.5 x RPM (each only up to its airflow speed), a thruster's rated
@@ -286,8 +287,70 @@ final class VehicleCheck {
     private static List<Floater> floaters(Body b, boolean holds) {
         List<Floater> list = new ArrayList<>();
         for (Part p : b.parts) if (p.shell && p.vol > 0) list.add(new Floater(p.cx(), p.cy(), p.cz(), WATER * p.vol, 1));
-        if (holds) for (BlockPos c : holdCells(b)) list.add(new Floater(c.getX() + 0.5, c.getY() + 0.5, c.getZ() + 0.5, HOLD, 0));
+        if (!holds) return list;
+        List<BlockPos> cells = holdCells(b);
+        for (BlockPos c : cells) list.add(new Floater(c.getX() + 0.5, c.getY() + 0.5, c.getZ() + 0.5, HOLD, 0));
+        for (double[] f : holdFloors(b, cells)) list.add(new Floater(f[0], f[1], f[2], HOLD * f[3], 0));
         return list;
+    }
+
+    /**
+     * The open part of each partial block (a slab floor, a stair) that opens onto a hold cell and nowhere else outside
+     * the hold, as {x, y, z, volume}: the same air HighSeasHoldFloorsMixin lifts.
+     */
+    private static List<double[]> holdFloors(Body b, List<BlockPos> cells) {
+        Set<BlockPos> hold = new HashSet<>(cells), seen = new HashSet<>();
+        List<double[]> out = new ArrayList<>();
+        for (BlockPos c : cells)
+            for (Direction d : Direction.values()) {
+                BlockPos p = c.relative(d);
+                BlockState s = b.blocks.get(p);
+                if (s == null || hold.contains(p) || !seen.add(p) || !b.solid(p)) continue;
+                VoxelShape shape = s.getCollisionShape(EmptyBlockGetter.INSTANCE, p);
+                if (Block.isShapeFullBlock(shape)) continue;
+                double[] open = openPart(shape);
+                boolean leaks = false;
+                for (Direction e : Direction.values()) {
+                    BlockPos n = p.relative(e);
+                    if (!hold.contains(n) && !b.solid(n) && opens(shape, e)) leaks = true;
+                }
+                if (open[3] > 0 && opens(shape, d.getOpposite()) && !leaks)
+                    out.add(new double[] {p.getX() + open[0], p.getY() + open[1], p.getZ() + open[2], open[3]});
+                else seen.remove(p);
+            }
+        return out;
+    }
+
+    /** {centre x, y, z within the cell, volume} of the part of a cell a collision shape leaves open (8^3 samples). */
+    private static double[] openPart(VoxelShape shape) {
+        List<AABB> boxes = shape.toAabbs();
+        double sx = 0, sy = 0, sz = 0;
+        int open = 0;
+        for (int i = 0; i < 512; i++) {
+            double x = ((i >> 6) + 0.5) / 8, y = ((i >> 3 & 7) + 0.5) / 8, z = ((i & 7) + 0.5) / 8;
+            if (boxes.stream().anyMatch(a -> a.contains(x, y, z))) continue;
+            open++;
+            sx += x;
+            sy += y;
+            sz += z;
+        }
+        return open == 0 ? new double[] {0.5, 0.5, 0.5, 0} : new double[] {sx / open, sy / open, sz / open, open / 512.0};
+    }
+
+    /** Whether any of a shape's face on side d is open. */
+    private static boolean opens(VoxelShape shape, Direction d) {
+        double w = d.getAxisDirection() == Direction.AxisDirection.POSITIVE ? 1 - 1e-3 : 1e-3;
+        for (int u = 0; u < 8; u++)
+            for (int v = 0; v < 8; v++) {
+                double a = (u + 0.5) / 8, c = (v + 0.5) / 8;
+                Vec3 q = switch (d.getAxis()) {
+                    case X -> new Vec3(w, a, c);
+                    case Y -> new Vec3(a, w, c);
+                    case Z -> new Vec3(a, c, w);
+                };
+                if (shape.toAabbs().stream().noneMatch(box -> box.contains(q))) return true;
+            }
+        return false;
     }
 
     /** High Seas' hold: an open cell with the hull somewhere west, east, north and south of it and a floor below. */
@@ -367,7 +430,7 @@ final class VehicleCheck {
 
     private static void boat(Body b, Map<BlockPos, Float> rpm, StringBuilder out, List<String> faults, List<String> notes, boolean quiet) {
         List<Floater> fl = floaters(b, true);
-        long holds = fl.stream().filter(f -> f.wetVolume == 0).count();
+        long holds = fl.stream().filter(f -> f.wetVolume == 0 && f.lift == HOLD).count();
         double h = waterline(b, fl, 0);
         if (Double.isNaN(h)) {
             faults.add(String.format(Locale.ROOT, "it sinks: fully under water its hull and hold lift at most %.0f against a "
@@ -383,7 +446,7 @@ final class VehicleCheck {
         }
         double draft = h - b.minY, freeboard = hullTop - h;
         double immersedHold = 0;
-        for (Floater f : fl) if (f.wetVolume == 0) immersedHold += under(f.y, h);
+        for (Floater f : fl) if (f.wetVolume == 0 && f.lift == HOLD) immersedHold += under(f.y, h);
         double wet = Math.min(1, immersedHold / 8);
         out.append(String.format(Locale.ROOT, "- Floats with %.1f blocks under water and %.1f of hull above (%d hold cells give "
                 + "High Seas lift).\n", draft, freeboard, holds));
