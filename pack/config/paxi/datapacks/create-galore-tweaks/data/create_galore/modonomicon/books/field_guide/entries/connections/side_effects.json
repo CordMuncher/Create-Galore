@@ -3,7 +3,7 @@
   "name": "Side Effects to Plan For",
   "description": "A few systems react to what you build.",
   "icon": {
-    "item": "smog:aerometer"
+    "item": "adpother:aerometer"
   },
   "x": 1,
   "y": -1,
@@ -31,7 +31,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "- **Burning pollutes.** Furnaces, burners and stoves add [#](2E5AAC)[smog](entry://survival/pollution)[#]() to their chunk. Smog builds up fast and is punishing. Flues and [#](2E5AAC)[air scrubbers](entry://survival/pollution_control)[#]() fix it.\n- **Heat warms you.** Factories near you count toward [#](2E5AAC)[body temperature](entry://survival/temperature)[#]()."
+      "text": "- **Burning pollutes.** Furnaces, burners and stoves add [#](2E5AAC)[smog](entry://survival/pollution)[#]() to the cloud over their chunk. A factory's cloud keeps growing and is punishing. [#](2E5AAC)[Exhaust systems](entry://survival/pollution_control)[#]() with filters fix it.\n- **Heat warms you.** Factories near you count toward [#](2E5AAC)[body temperature](entry://survival/temperature)[#]()."
     },
     {
       "type": "modonomicon:text",

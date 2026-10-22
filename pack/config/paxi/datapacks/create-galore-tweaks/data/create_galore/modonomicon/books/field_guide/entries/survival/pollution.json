@@ -1,9 +1,9 @@
 {
   "category": "survival",
   "name": "Pollution",
-  "description": "Create: Smog tracks air pollution per chunk.",
+  "description": "Smog you can see: it rises, gathers over your base and poisons what is under it.",
   "icon": {
-    "item": "smog:air_scrubber"
+    "item": "adpother:aerometer"
   },
   "x": 2,
   "y": -1,
@@ -20,58 +20,70 @@
     {
       "type": "modonomicon:text",
       "title": "Pollution",
-      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- [#](FFFFFF)\ue10a[#]() Anything that **burns** adds smog to its chunk\n- It spreads and fades slowly; rain, trees, water and plants help\n- [#](FFFFFF)\ue10b[#]() Heavy smog gives you Nausea and hurts crops and grass\n- Clean it up with Flues and scrubbers"
+      "text": "[#](FFFFFF)[#]() **Key points**\n\n- [#](FFFFFF)[#]() Burning and crushing make **smog you can see**: grey carbon, yellow sulfur and dust\n- It rises and gathers in a cloud high over your base\n- [#](FFFFFF)[#]() A thick cloud poisons everything under it\n- Wind moves it slowly, so a factory needs **exhaust and filters**"
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Create: Smog tracks air pollution per [#](7A3C9A)[chunk](entry://glossary/chunk)[#](). Anything that burns adds smog to the chunk it stands in.\\\n\\\nIt spreads to neighbours, fades slowly, and fades faster in rain. Trees, logs, water and plants absorb it."
-    },
-    {
-      "type": "modonomicon:text",
-      "title": "Why it exists",
-      "text": "It is pressure, not a wall. A few furnaces barely register; a big industrial base left alone gets bad. The fix is built from Create parts, so cleaning is part of the machine room.\\\n\\\n[#](2E5AAC)[Control it](entry://survival/pollution_control)[#]()."
+      "text": "Smog is real gas: blocks you can see and walk through. Fresh smoke rises until a roof or the cloud layer stops it (Y191, sulfur Y190) and settles there.\\\n\\\nUnder a roof it fills the room from the top down. Out in the open it gathers over the [#](7A3C9A)[chunk](entry://glossary/chunk)[#]() that made it."
     },
     {
       "type": "modonomicon:text",
       "title": "What pollutes",
-      "text": "Every source adds smog per second:\n- Campfire 1\n- Stove (Farmer's Delight) 2\n- Furnace, smoker 4\n- Blast furnace 8\n- Blaze Burner 16, superheated 32\n- Blaze Burner with Straw, the same"
+      "text": "- Furnace, smoker, blast furnace: 1 carbon and 0.1 sulfur per coal burned; other fuels have their own amounts\n- Blaze Burner, steam boiler, Farmer's Delight stove: about 1 carbon a minute while fuelled\n- Campfire: a little now and then\n- Crushing Wheels: about 4 dust a minute while working, Millstone 1"
     },
     {
-      "type": "modonomicon:spotlight",
-      "item": {
-        "item": "create:blaze_burner"
-      },
-      "title": "Blaze Burner",
-      "text": "The Create heat source pollutes while it burns fuel, so it is a common source in factories. One with no fuel is clean. See [#](2E5AAC)[Heat](entry://create_basics/heat)[#]()."
+      "type": "modonomicon:text",
+      "title": "Bulk smelting",
+      "text": "An [#](2E5AAC)[Encased Fan](entry://create_basics/fans)[#]() blowing through lava or a Blaze Burner makes no smog by itself. Each item it finishes does: 1 carbon for every 4 items blasted plus 1 sulfur for every 20, and 1 carbon for every 8 items smoked. Washing and haunting are clean."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Engines",
+      "text": "[#](2E5AAC)[TFMG](entry://industry/tfmg_engines)[#]() engines, coke ovens and blast furnaces pollute for the fuel they burn, so idle ones are clean."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "The cloud",
+      "text": "A chunk's pollution is the gas in the cloud layer above it. A gas block holds 1 to 3 units (light, medium, heavy).\\\n\\\nCarbon is measured against 512 units a chunk, sulfur against 128. The effects below start at a share of that."
     },
     {
       "type": "modonomicon:text",
       "title": "What it does",
-      "text": "[#](FFFFFF)\ue101[#]() **Watch out:** heavy pollution gives you Nausea. Toxic adds Poison and Weakness.\\\n\\\nLand suffers too: crops lose growth, flowers and grass die, grass turns to dirt, and in toxic air farmland does too."
+      "text": "[#](FFFFFF)[#]() **Watch out:** under a carbon cloud:\n- 30%% Mining Fatigue\n- 40%% Hunger\n- 50%% Weakness\n- 60%% Slowness\n- 70%% Poison\n- 80%% Nausea\n- 90%% Wither"
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Under a sulfur cloud:\n- 30%% Blindness\n- 60%% Poison\n- 90%% Wither\n\nStanding inside gas blinds you, and sulfur also poisons you. A respirator keeps it out."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Acid rain",
+      "text": "Sulfur in the air and in the rain kills crops, berry bushes, sugar cane, bamboo, ferns and bee nests. It turns grass, moss and farmland to podzol and pollutes water.\\\n\\\nCarbon in rain makes grass and plants grow. Stone and anything you build are never harmed."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Wind",
+      "text": "Wind pushes smog sideways a few blocks at a time, so a small base's smoke drifts off. Smog never fades on its own: a factory's cloud keeps growing until its exhaust is filtered."
     },
     {
       "type": "modonomicon:spotlight",
       "item": {
-        "item": "smog:aerometer"
+        "item": "adpother:aerometer"
       },
       "title": "Aerometer",
-      "text": "Hold it to read the air where you stand. The levels are Clean, Light Haze, Polluted, Heavily Polluted and Toxic."
+      "text": "Its needle shows how much smog is around you, and it beeps near gas. Put it in an item frame as an alarm."
     },
     {
       "type": "modonomicon:text",
-      "title": "Levels",
-      "text": "[#](FFFFFF)\ue103[#]() **In depth.** Levels by chunk value:\n- Light Haze 400\n- Polluted 1,800\n- Heavily Polluted 4,500\n- Toxic 8,000\n\nThe cap is 10,000."
-    },
-    {
-      "type": "modonomicon:text",
-      "title": "Other machines",
-      "text": "Any other machine that reports a \"lit\" state adds 3 per second.\\\n\\\n[#](2E5AAC)[TFMG](entry://industry/tfmg_engines)[#]() machines pollute only while burning fuel: engines 6 per block at full throttle (large 4), fireboxes 8, blast furnaces 30. Idle ones are clean. An Aerometer shows the real result."
+      "title": "Explosions",
+      "text": "[#](FFFFFF)[#]() **Watch out:** a machine whose smoke has nowhere to go, such as a sealed room already full of gas, blows up after a few tries and breaks. See [#](2E5AAC)[Pressure and Sealed Casings](entry://survival/smog_pressure)[#]().\\\n\\\nFire, torches and lava never set smog off."
     },
     {
       "type": "modonomicon:text",
       "title": "Related",
-      "text": "- [#](2E5AAC)[Clearing the Air](entry://survival/pollution_control)[#]()\n- [#](2E5AAC)[Burning Liquid Fuel](entry://industry/liquid_fuel)[#]()\n- [#](2E5AAC)[TFMG Oil and Fuels](entry://industry/tfmg_oil)[#]()\n- [#](2E5AAC)[Blaze Burner and Heat](entry://create_basics/heat)[#]()"
+      "text": "- [#](2E5AAC)[Exhaust Systems](entry://survival/pollution_control)[#]()\n- [#](2E5AAC)[Pressure and Sealed Casings](entry://survival/smog_pressure)[#]()\n- [#](2E5AAC)[Burning Liquid Fuel](entry://industry/liquid_fuel)[#]()\n- [#](2E5AAC)[TFMG Oil and Fuels](entry://industry/tfmg_oil)[#]()\n- [#](2E5AAC)[Blaze Burner and Heat](entry://create_basics/heat)[#]()"
     }
   ]
 }

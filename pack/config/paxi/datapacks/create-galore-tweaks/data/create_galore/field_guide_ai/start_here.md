@@ -1,4 +1,4 @@
-<!-- sources sha256:1e92bbd4953599a2f48fcd2c2e01c393b07add41c8c36ca73aebd69a7716499c -->
+<!-- sources sha256:80ac9d4b71b7eb3fd4d7e319e04fd16d9a15749f37a3b05231f782739aecf179 -->
 # Start Here (start_here)
 
 ## start_here/welcome | Welcome to Create Galore
@@ -58,7 +58,7 @@
   - Temperature (see survival/temperature); clothing and heated rooms help.
   - Thirst (see survival/thirst): water is a need.
   - Seasons (see survival/seasons): crops grow in their season.
-  - Pollution (see survival/pollution): burners and engines pollute chunks (see glossary/chunk); air scrubbers clean them (see survival/pollution_control).
+  - Pollution (see survival/pollution): burners and engines fill the sky over their chunks (see glossary/chunk) with smog; exhaust systems with filters clean it (see survival/pollution_control).
 - Dangers also in new worlds: Bosses (see exploration/bosses), Structures (see exploration/structures) before exploring far; Dimensions (see exploration/dimensions).
 - Watch out: snowy spawn, freezing damage after grace (see glossary/grace): insulated clothing + heat source (see survival/temperature) (see survival/temperature_gear).
 - Fights [minecraft:iron_sword]: bosses and dungeon mobs meant to be memorable, not wear you down. Biggest, Cataclysm's Netherite Monstrosity, has 420 health; most bosses 100 to 315 (see exploration/bosses).

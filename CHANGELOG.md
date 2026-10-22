@@ -4,6 +4,23 @@ Each pack version gets a section here, with **Added**, **Fixed** and **Removed**
 workflow copies the section for the version in `pack/pack.toml` to the top of the GitHub release, and the build
 fails when that section is missing.
 
+## 0.4.29
+
+### Added
+- **Smog you can see, and exhaust systems to deal with it.** Pollution of the Realms, Advanced Chimneys and ForgeEndertech join the pack. Burning and crushing make real gas blocks (grey carbon, yellow sulfur, dust) that rise, fill rooms from the ceiling down and gather in a cloud over the chunk that made them; a thick cloud poisons, slows and blinds. Vents, ducts, pumps and chimneys carry it to filter frames, and an Advanced Chimneys pump runs on Create power: a shaft, cog or gearbox under it at 16 RPM or more, or an Encased Fan facing up or down.
+- **Furnaces and fan bulk smelting pollute.** A furnace, smoker or blast furnace makes 1 carbon and 0.1 sulfur per coal. A fan makes no smog by blowing through lava or a Blaze Burner, only for each item it finishes: 1 carbon per 4 items blasted plus 1 sulfur per 20, and 1 carbon per 8 items smoked.
+- **Pressure.** Smog shut in a room is forced up through the filter frames in its ceiling with no pump, up to 6 units a second per frame, faster the fuller the room. A sealed space that can't vent blows up the machine inside it; a full fan casing explodes.
+- **Filtered Exhaust.** A filter lets out a pale, harmless haze that isn't pollution but still has to rise into the open sky before it thins away, so you can't filter into a closed room and forget it. A filter with its top closed off lets nothing through.
+- **Sealed belts.** A Create belt with Andesite or Brass Casing on it carries items through a wall but stops smog, so a bulk smelter can be boxed in with a belt in, a belt out and a filter on top.
+- Smog's Filter Cartridges (plain, Brass, Precision) work in filter frames. Put a hopper under a frame to take out what it catches.
+- Field Guide: Pollution rewritten, Exhaust Systems (was Pollution Control) rewritten, and a new page, Pressure and Sealed Casings.
+- Create Galore Bridge 1.59.0.
+
+### Removed
+- Smog's Air Scrubber, Flue, Respirator and Aerometer recipes. Pollution of the Realms' Respirator and Aerometer and Advanced Chimneys' parts take their place. Scrubbers already placed stay as decoration.
+- Acid rain no longer damages builds (cobblestone, paths, hay); it still changes plants and soil.
+- Pollution of the Realms' gas ignition, smog from lava meeting water, and smog from eating and feeding animals.
+
 ## 0.4.28
 
 ### Fixed

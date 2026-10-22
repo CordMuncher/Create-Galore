@@ -1,9 +1,9 @@
 {
   "category": "survival",
-  "name": "Clearing the Air",
-  "description": "Three tools: stop it at the source, scrub it out, or shield yourself.",
+  "name": "Exhaust Systems",
+  "description": "Vents, ducts, fan-driven pumps and filter stacks that clean smog before it leaves.",
   "icon": {
-    "item": "smog:respirator"
+    "item": "adchimneys:metal_pump"
   },
   "x": 4,
   "y": -1,
@@ -19,70 +19,109 @@
   "pages": [
     {
       "type": "modonomicon:text",
-      "title": "Clearing the Air",
-      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- **Flues** stacked above burners send smog high and wide\n- [#](FFFFFF)\ue104[#]() **Air Scrubbers** need rotation and a Filter Cartridge\n- Wash clogged cartridges with a Fan\n- A **Respirator** keeps smog out of you"
+      "title": "Exhaust Systems",
+      "text": "[#](FFFFFF)[#]() **Key points**\n\n- **Vents** pull smog into **Ducts**, a **Pump** pushes it up and out\n- [#](FFFFFF)[#]() A pump runs from an **Encased Fan** under it\n- **Filter Frames** on the way out catch smog and let out harmless exhaust\n- Filtered exhaust must reach the open sky"
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Three tools: stop it at the source, scrub it out, or shield yourself. Mix them. A tall Flue stack and a few scrubbers keep an average base clear."
+      "text": "Smoke left alone rises into the cloud over your base. An exhaust system catches it at the source, cleans it and lets it out high up.\\\n\\\nThe parts are Advanced Chimneys chimneys, vents, ducts and pumps, plus Filter Frames."
     },
     {
       "type": "modonomicon:spotlight",
       "item": {
-        "item": "smog:flue"
+        "item": "adchimneys:metal_chimney"
       },
-      "title": "Flue",
-      "text": "Stack these above a furnace or burner. Each block sends more of its output high and wide, instead of into the chunk below, up to 80%% total."
+      "title": "Chimney",
+      "text": "Stone, brick, metal and glass chimneys carry smoke up. One on top of a furnace or burner takes its smoke straight in. Smoke that leaves the top unfiltered still joins the cloud."
     },
     {
       "type": "modonomicon:spotlight",
       "item": {
-        "item": "smog:air_scrubber"
+        "item": "adchimneys:metal_vent"
       },
-      "title": "Air Scrubber",
-      "text": "[#](7A3C9A)[Kinetic](entry://glossary/kinetic_network)[#](): needs rotation and a Filter Cartridge. Cleans its own chunk and the four beside it, faster the faster it spins."
+      "title": "Vent",
+      "text": "The intake inside the room. It pulls in smog up to 4 blocks away. Join it to a pump with ducts. A stone version works the same."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "adchimneys:duct"
+      },
+      "title": "Duct",
+      "text": "Carries smog from vents and machines to a pump, up to 256 blocks. A duct joins a vent beside or above it, not below. A duct touching a machine takes its smoke straight in."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "adchimneys:metal_pump"
+      },
+      "title": "Pump",
+      "text": "[#](FFFFFF)[#]() Runs while an [#](2E5AAC)[Encased Fan](entry://create_basics/fans)[#]() right under it turns at 16 RPM or more, blowing up or down. The fan's [#](2E5AAC)[stress](entry://create_basics/stress)[#]() is what the pump costs. It pushes smog upward only, into the chimney or frames above it."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "adpother:iron_filter_frame"
+      },
+      "title": "Filter Frame",
+      "text": "Stack frames on the pump's outlet. Each holds one filter material, and the material picks the smog it catches. An iron frame holds 16 of it, gold 32, diamond 64."
     },
     {
       "type": "modonomicon:text",
-      "title": "How it works",
-      "text": "A scrubber wants a [#](2E5AAC)[rotation](entry://create_basics/rotation)[#]() input and [#](2E5AAC)[stress](entry://create_basics/stress)[#](). Funnels and chutes can feed cartridges, and a water pipe wets the filter for a bonus. It also works on a moving contraption, a bit slower."
-    },
-    {
-      "type": "modonomicon:spotlight",
-      "item": {
-        "item": "smog:filter_cartridge"
-      },
-      "title": "Filter Cartridge",
-      "text": "The basic filter. The Brass one holds four times as much, the Precision one sixteen times. Spent ones turn into clogged cartridges."
+      "title": "Filter materials",
+      "text": "- Leaves: carbon, 8 units each, become Black Dye\n- Wool: sulfur, 8, Yellow Dye\n- Paper: dust, 8, Gray Dye\n- Filter Cartridge: carbon, 32\n- Brass Filter Cartridge: carbon and sulfur, 64\n- Precision Filter Cartridge: all three, 128"
     },
     {
       "type": "modonomicon:text",
-      "title": "Washing",
-      "text": "Clogged cartridges are cleaned by a [#](2E5AAC)[Fan](entry://create_basics/fans)[#]() blowing through water. You get the cartridge back and sometimes Soot.\\\n\\\nSoot burns as fuel, makes black dye, or [#](7A3C9A)[compacts](entry://glossary/compacting)[#]() to Graphite and a Block of Soot."
+      "title": "",
+      "text": "Spent cartridges come out clogged. Wash them with a [#](2E5AAC)[Fan](entry://create_basics/fans)[#]() blowing through water to get them back, sometimes with Soot. Soot burns as fuel, makes black dye, or [#](7A3C9A)[compacts](entry://glossary/compacting)[#]() to Graphite and a Block of Soot."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Byproducts",
+      "text": "A frame stops once its byproduct slot is full (16 in an iron frame). A hopper under the frame takes the dye or clogged cartridges out.\\\n\\\nA frame gives a redstone signal as it fills. An empty or full frame blocks the whole stack."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Mixed smog",
+      "text": "Smog that no frame in the stack catches leaves the top as it is. Stack one frame for each kind (leaves, then wool, then paper), or use one with Precision Cartridges."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Filtered exhaust",
+      "text": "What a filter lets out is **filtered exhaust**: a pale haze, harmless and not pollution. It rises, slips up through chimneys and frames, and drifts along ceilings. Under the open sky it thins away within a couple of seconds."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "[#](FFFFFF)[#]() **Watch out:** exhaust is not air. A filter whose top is closed takes nothing. Exhaust trapped indoors stays, fills the room, and smog can't move into it. Give every filter a way up to the sky."
     },
     {
       "type": "modonomicon:spotlight",
       "item": {
-        "item": "smog:respirator"
+        "item": "adpother:iron_respirator"
       },
       "title": "Respirator",
-      "text": "Wear on the head or in an accessory slot. Keeps smog out of you and slowly clears what you breathed in. Wears down as it works."
+      "text": "Wear it on your head: it keeps smog out of your lungs and wears down as it works. Craft it with filter material to choose what it stops. Gold and diamond ones last longer. Create Backtanks and the Create Big Cannons gas mask protect too."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "adpother:iron_vacuum_tube"
+      },
+      "title": "Vacuum Tube",
+      "text": "Hold use to suck up the gas in front of you into Vacuum Bags in your inventory. Without a bag it blows the gas behind you."
     },
     {
       "type": "modonomicon:text",
-      "title": "Panels",
-      "text": "[#](FFFFFF)\ue103[#]() **In depth.** Scrubbers placed side by side share one cartridge and work as a panel, with more output for more stress. A flat 5x5 of 25 reaches upward to break the cloud above."
-    },
-    {
-      "type": "modonomicon:text",
-      "title": "Upgrades",
-      "text": "The Precision Cartridge uses [Electron Tubes](item://create:electron_tube) and Graphite, so the best filter sits behind [#](2E5AAC)[brass and assembly](entry://create_basics/brass_and_assembly)[#](). [Filter Medium](item://smog:filter_medium), pressed from soot and string, replaces wool in the basic cartridge."
+      "title": "In depth",
+      "text": "[#](FFFFFF)[#]() **In depth.** A hopper on a pump also pulls smog from 8 blocks around and 3 up. Encased Fans push smog blocks along their air stream.\\\n\\\nOld Air Scrubbers and Flues no longer clean or vent anything; they are decoration."
     },
     {
       "type": "modonomicon:text",
       "title": "Related",
-      "text": "- [#](2E5AAC)[Pollution](entry://survival/pollution)[#]()\n- [#](2E5AAC)[Encased Fans](entry://create_basics/fans)[#]()\n- [#](2E5AAC)[Stress](entry://create_basics/stress)[#]()\n- [#](2E5AAC)[Rotation](entry://create_basics/rotation)[#]()"
+      "text": "- [#](2E5AAC)[Pollution](entry://survival/pollution)[#]()\n- [#](2E5AAC)[Pressure and Sealed Casings](entry://survival/smog_pressure)[#]()\n- [#](2E5AAC)[Encased Fans](entry://create_basics/fans)[#]()\n- [#](2E5AAC)[Stress](entry://create_basics/stress)[#]()"
     }
   ]
 }

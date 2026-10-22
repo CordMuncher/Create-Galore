@@ -14,5 +14,6 @@
   "create_galore_bridge.glue_check.all": "Glue check: all %s blocks go aboard.",
   "create_galore_bridge.glue_check.loose": "Glue check: %s blocks go aboard, %s inside the glue stay behind (red).",
   "create_galore_bridge.glue_check.problem": "Glue check: the assembler would refuse: %s",
-  "create_galore_bridge.glue_check.nothing_attached": "nothing is on the assembler's sticky face."
+  "create_galore_bridge.glue_check.nothing_attached": "nothing is on the assembler's sticky face.",
+  "block.create_galore_bridge.filtered_exhaust": "Filtered Exhaust"
 }

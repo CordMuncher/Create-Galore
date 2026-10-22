@@ -1,6 +1,6 @@
-<!-- sources sha256:531d8ffff3dce04ffaaecc58f32e9f28c95e0c374402a8b00aa31d3a8e6bccd2 -->
+<!-- sources sha256:74859adbc21458050d0b119cdc9ca515f12217670ed934059377ab155c52685c -->
 # Survival Layers (survival)
-Layers: Temperature (Cold Sweat), Thirst, Seasons (Serene Seasons), Pollution (Create: Smog), food/health, death/graves.
+Layers: Temperature (Cold Sweat), Thirst, Seasons (Serene Seasons), Pollution (Pollution of the Realms smog, exhaust systems), food/health, death/graves.
 
 ## survival/temperature | Temperature
 - Cold Sweat gives body temperature. Hot/cold places push it; too far = damage and cannot sleep. Dress for biome, keep a heat source nearby. Higher is colder.
@@ -87,26 +87,41 @@ Layers: Temperature (Cold Sweat), Thirst, Seasons (Serene Seasons), Pollution (C
 - Related: (see survival/seasons), (see food/farmers_delight), (see food/kitchen_automation), (see food/first_food)
 
 ## survival/pollution | Pollution
-- Create: Smog tracks air pollution per chunk (see glossary/chunk). Anything that burns adds smog to its chunk. Spreads to neighbours, fades slowly, faster in rain. Trees, logs, water, plants absorb it.
-- Pressure, not a wall: few furnaces barely register; big industrial base left alone gets bad. Fix built from Create parts, cleaning is part of machine room (see survival/pollution_control).
-- Smog per second by source: Campfire 1; Stove (Farmer's Delight) 2; Furnace, smoker 4; Blast furnace 8; Blaze Burner 16, superheated 32; Blaze Burner with Straw: same.
-- Blaze Burner [create:blaze_burner]: pollutes while burning fuel, common factory source; no fuel = clean (see create_basics/heat).
-- Watch out: heavy pollution gives Nausea; Toxic adds Poison and Weakness. Land suffers: crops lose growth, flowers and grass die, grass -> dirt, in toxic air farmland too.
-- Aerometer [smog:aerometer]: hold to read air where you stand. Levels: Clean, Light Haze, Polluted, Heavily Polluted, Toxic.
-- Level thresholds by chunk value (in depth): Light Haze 400; Polluted 1,800; Heavily Polluted 4,500; Toxic 8,000; cap 10,000.
-- Other machines: any machine reporting a "lit" state adds 3 per second. TFMG (see industry/tfmg_engines) machines pollute only while burning fuel: engines 6 per block at full throttle (large 4), fireboxes 8, blast furnaces 30; idle ones clean. Aerometer shows real result.
-- Related: (see survival/pollution_control), (see industry/liquid_fuel), (see industry/tfmg_oil), (see create_basics/heat)
+- Smog is real gas (Pollution of the Realms): blocks you see and walk through. Kinds: grey carbon, yellow sulfur, dust. Fresh smoke rises until a roof or the cloud layer stops it (carbon Y191, sulfur Y190), settles there. Under a roof it fills the room from the top down; outside it gathers over the chunk that made it (see glossary/chunk).
+- What pollutes: furnace, smoker, blast furnace: 1 carbon + 0.1 sulfur per coal burned (other fuels own amounts). Blaze Burner, steam boiler, Farmer's Delight stove: ~1 carbon a minute while fuelled. Campfire: a little now and then. Crushing Wheels ~4 dust a minute while working, Millstone 1.
+- Bulk smelting: Encased Fan (see create_basics/fans) through lava or Blaze Burner makes no smog by itself; each finished item does: 1 carbon per 4 items blasted + 1 sulfur per 20; 1 carbon per 8 items smoked. Washing and haunting clean.
+- Engines: TFMG (see industry/tfmg_engines) engines, coke ovens, blast furnaces pollute for fuel burned; idle = clean.
+- The cloud: chunk pollution = gas in the cloud layer above it. Gas block holds 1 to 3 units (light, medium, heavy). Carbon measured against 512 units per chunk, sulfur 128; effects start at a share of that.
+- Watch out, under carbon cloud: 30% Mining Fatigue, 40% Hunger, 50% Weakness, 60% Slowness, 70% Poison, 80% Nausea, 90% Wither. Under sulfur cloud: 30% Blindness, 60% Poison, 90% Wither. Standing inside gas blinds; sulfur also poisons. Respirator keeps it out.
+- Acid rain: sulfur in air and rain kills crops, berry bushes, sugar cane, bamboo, ferns, bee nests; grass, moss, farmland -> podzol; pollutes water. Carbon in rain makes grass/plants grow. Stone and builds never harmed.
+- Wind pushes smog sideways a few blocks at a time; small base smoke drifts off. Smog never fades on its own: factory cloud keeps growing until exhaust is filtered.
+- Aerometer [adpother:aerometer]: needle shows smog around you, beeps near gas; item frame = alarm.
+- Watch out, explosions: machine whose smoke has nowhere to go (sealed room full of gas) blows up after a few tries and breaks (see survival/smog_pressure). Fire, torches, lava never set smog off.
+- Related: (see survival/pollution_control), (see survival/smog_pressure), (see industry/liquid_fuel), (see industry/tfmg_oil), (see create_basics/heat)
 
-## survival/pollution_control | Clearing the Air
-- Three tools: stop at source (Flues), scrub (Air Scrubbers), shield yourself (Respirator); mix them. Tall Flue stack + a few scrubbers keep an average base clear.
-- Flue [smog:flue]: stack above furnace/burner; each block sends more output high and wide instead of into the chunk below, up to 80% total.
-- Air Scrubber [smog:air_scrubber]: kinetic (see glossary/kinetic_network): needs rotation (see create_basics/rotation) and a Filter Cartridge, and stress (see create_basics/stress). Cleans own chunk and the four beside it, faster the faster it spins. Funnels and chutes can feed cartridges; a water pipe wets the filter for a bonus. Works on a moving contraption, a bit slower.
-- Filter Cartridge [smog:filter_cartridge]: basic filter. Brass one holds 4x as much, Precision one 16x. Spent ones become clogged cartridges.
-- Washing: clogged cartridges cleaned by a Fan (see create_basics/fans) blowing through water; cartridge returns, sometimes Soot. Soot burns as fuel, makes black dye, or compacts (see glossary/compacting) to Graphite and a Block of Soot.
-- Respirator [smog:respirator]: wear on head or in an accessory slot. Keeps smog out of you, slowly clears what you breathed in. Wears down as it works.
-- Panels (in depth): scrubbers side by side share one cartridge and work as a panel, more output for more stress. Flat 5x5 of 25 reaches upward to break the cloud above.
-- Upgrades: Precision Cartridge uses Electron Tubes [create:electron_tube] and Graphite, so best filter sits behind brass and assembly (see create_basics/brass_and_assembly). Filter Medium [smog:filter_medium], pressed from soot and string, replaces wool in the basic cartridge.
-- Related: (see survival/pollution), (see create_basics/fans), (see create_basics/stress), (see create_basics/rotation)
+## survival/pollution_control | Exhaust Systems
+- Key: Vents pull smog into Ducts, a Pump pushes it up and out; pump runs from an Encased Fan under it; Filter Frames on the way out catch smog and let out harmless exhaust; filtered exhaust must reach the open sky. Parts: Advanced Chimneys chimneys, vents, ducts, pumps + Filter Frames.
+- Chimney [adchimneys:metal_chimney]: stone, brick, metal, glass chimneys carry smoke up. One on top of a furnace/burner takes its smoke straight in. Smoke leaving the top unfiltered still joins the cloud.
+- Vent [adchimneys:metal_vent]: intake inside the room; pulls in smog up to 4 blocks away; join to pump with ducts. Stone version same.
+- Duct [adchimneys:duct]: carries smog from vents/machines to a pump, up to 256 blocks. Joins a vent beside or above it, not below. Duct touching a machine takes its smoke straight in.
+- Pump [adchimneys:metal_pump]: runs while an Encased Fan (see create_basics/fans) right under it turns >= 16 RPM, blowing up or down; the fan's stress (see create_basics/stress) is the pump's cost (a bare shaft does not run it). Pushes smog upward only, into the chimney or frames above.
+- Filter Frame [adpother:iron_filter_frame]: stack on the pump's outlet. One filter material each; material picks the smog. Iron holds 16 of it, gold 32, diamond 64.
+- Filter materials (units each): Leaves: carbon 8 -> Black Dye; Wool: sulfur 8 -> Yellow Dye; Paper: dust 8 -> Gray Dye; Filter Cartridge [smog:filter_cartridge]: carbon 32; Brass Filter Cartridge: carbon + sulfur 64; Precision Filter Cartridge: all three 128. Spent cartridges come out clogged; wash with a Fan through water to get them back, sometimes Soot. Soot burns as fuel, makes black dye, or compacts (see glossary/compacting) to Graphite and Block of Soot.
+- Byproducts: frame stops once byproduct slot full (16 in iron frame); hopper under the frame takes dye/clogged cartridges out. Frame gives redstone signal as it fills. Empty or full frame blocks the whole stack.
+- Mixed smog: smog no frame catches leaves the top as is. One frame per kind (leaves, wool, paper) or Precision Cartridges.
+- Filtered exhaust: what a filter lets out; pale haze, harmless, not pollution. Rises, slips up through chimneys/frames, drifts along ceilings; under open sky thins away in a couple of seconds. Watch out: not air. Filter with closed top takes nothing; exhaust trapped indoors stays, fills the room, smog can't move into it. Give every filter a way up to the sky.
+- Respirator [adpother:iron_respirator]: worn on head, keeps smog out of lungs, wears down. Craft with filter material to choose what it stops. Gold/diamond last longer. Create Backtanks and Create Big Cannons gas mask protect too.
+- Vacuum Tube [adpother:iron_vacuum_tube]: hold use to suck gas in front of you into Vacuum Bags in inventory; without a bag blows it behind you.
+- In depth: hopper on a pump pulls smog from 8 blocks around, 3 up. Encased Fans push smog blocks along their air stream. Old Air Scrubbers and Flues no longer clean or vent anything; decoration.
+- Related: (see survival/pollution), (see survival/smog_pressure), (see create_basics/fans), (see create_basics/stress)
+
+## survival/smog_pressure | Pressure and Sealed Casings
+- Smog shut in a sealed space is forced up through Filter Frames in its roof, no pump needed; fuller space = faster. Sealed = full blocks, no open side, no gap to sky, fewer than 2,048 blocks of room inside.
+- Rate: each roof frame takes up to 6 units a second; nearly empty space only seeps; packed one hits the limit. Frame top needs a way to the sky (open air or chimney).
+- Belts and gaps: smog leaks through anything without a full face: bare belts, fences, carpets, trapdoors. Andesite or Brass Casing on a belt where it passes the wall seals it: items ride through, smog stays in.
+- Sealed smelter: 1. fan, lava (or Blaze Burner) and belt inside a box of full blocks; 2. casing on the belt where it goes in and out; 3. Filter Frame in the roof with a hopper under it for dye; 4. open sky or chimney above the frame. Each item smelted sends smog up through the filter.
+- Watch out, overpressure: a sealed space that fills up has no room for more smoke. Furnace or other machine in it blows up after a few tries and breaks. Fan smelting into it blows the casing open (as hard as a Creeper) after 4 batches that find no room.
+- Related: (see survival/pollution_control), (see survival/pollution), (see create_basics/fans), (see create_basics/item_logistics)
 
 ## survival/food_and_health | Food and Health
 - AppleSkin shows what food does: food tooltips list hunger and saturation (see glossary/saturation); hunger bar shows how much a held item would restore; saturation appears as overlay. Useful with Farmer's Delight's larger food list (see food/farmers_delight).

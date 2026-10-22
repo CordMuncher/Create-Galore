@@ -1,9 +1,9 @@
 {
   "category": "glossary",
   "name": "Smog",
-  "description": "Air pollution from anything that burns.",
+  "description": "Visible gas pollution from anything that burns or crushes.",
   "icon": {
-    "item": "smog:aerometer"
+    "item": "adpother:aerometer"
   },
   "x": 8,
   "y": 5,
@@ -13,12 +13,12 @@
     {
       "type": "modonomicon:text",
       "title": "Smog",
-      "text": "**Smog** is Create: Smog's air pollution, tracked per chunk. Anything that burns adds some; it spreads to nearby chunks and fades slowly, faster in rain.\\\n\\\nHeavy smog gives Nausea, Toxic adds Poison and Weakness, and it harms crops. Flues and air scrubbers fix it. An Aerometer reads it."
+      "text": "**Smog** is pollution you can see: grey carbon, yellow sulfur and dust, as blocks of gas. It rises and gathers in a cloud over your base.\\\n\\\nA thick cloud brings Weakness, Poison, Blindness and worse, and sulfur rain kills crops. Exhaust systems with filters clean it. An Aerometer reads it."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**Where it matters**\n\n- [#](2E5AAC)[Pollution](entry://survival/pollution)[#]()\n- [#](2E5AAC)[Clearing the Air](entry://survival/pollution_control)[#]()"
+      "text": "**Where it matters**\n\n- [#](2E5AAC)[Pollution](entry://survival/pollution)[#]()\n- [#](2E5AAC)[Exhaust Systems](entry://survival/pollution_control)[#]()\n- [#](2E5AAC)[Pressure and Sealed Casings](entry://survival/smog_pressure)[#]()"
     }
   ]
 }

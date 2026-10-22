@@ -1,4 +1,4 @@
-<!-- sources sha256:f451a646b9f210fa5fc229954b829a268435b942485c3912015e8da2b2eb7489 -->
+<!-- sources sha256:1fa6353121ed1cd3284d10f862a3653d6ebec7b8065b3aee84a3c0b1a9deb77a -->
 # Words to Know (glossary)
 Short definitions of jargon the book uses unexplained, mostly Create and survival. Purple words in the book link to these entries; each lists where the word matters.
 
@@ -161,7 +161,7 @@ Short definitions of jargon the book uses unexplained, mostly Create and surviva
 - Matters: Brass and Assembly (see create_basics/brass_and_assembly); Deployer (see create_basics/deployer); Cataclysm x Create (see exploration/cataclysm_create); Space Metals (see space/space_materials).
 
 ## glossary/smog | Smog
-- Smog: Create: Smog's air pollution, tracked per chunk; effects and fixes (see survival/pollution) (see survival/pollution_control).
+- Smog: visible gas pollution (grey carbon, yellow sulfur, dust) as gas blocks; rises and gathers in a cloud over your base. Thick cloud: Weakness, Poison, Blindness and worse; sulfur rain kills crops. Exhaust systems with filters clean it; Aerometer reads it (see survival/pollution) (see survival/pollution_control) (see survival/smog_pressure).
 
 ## glossary/su | SU (Stress Units)
 - SU (stress units): measure Create power; sources give capacity, machines use impact (see create_basics/stress) (see create_basics/power_sources).
@@ -176,7 +176,7 @@ Short definitions of jargon the book uses unexplained, mostly Create and surviva
 - Matters: Contraptions (see create_basics/contraptions); Trains (see transport/trains); Building a Ship (see flight/ship_building); Building a Rocket (see space/rocket_building).
 
 ## glossary/superheated | Superheated
-- Superheated: stronger Blaze Burner level (blue flame) (see create_basics/heat). Fuels: Blaze Cake, or piped Bioethanol, Peanut Oil, napalm (see industry/liquid_fuel). Counts as heated too; makes twice the smog (see survival/pollution). Create Propulsion's burners can't superheat (see flight/propulsion).
+- Superheated: stronger Blaze Burner level (blue flame) (see create_basics/heat). Fuels: Blaze Cake, or piped Bioethanol, Peanut Oil, napalm (see industry/liquid_fuel). Counts as heated too (see survival/pollution). Create Propulsion's burners can't superheat (see flight/propulsion).
 - Matters: Blaze Burner and Heat (see create_basics/heat); Burning Liquid Fuel (see industry/liquid_fuel); Pollution (see survival/pollution).
 
 ## glossary/tags | Tags

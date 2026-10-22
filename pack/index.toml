@@ -6,6 +6,30 @@ hash = "517774e283d163ab1454ff385f2a8871fbc20f45022ae417845cce746afd439e"
 preserve = true
 
 [[files]]
+file = "config/adchimneys-common.toml"
+hash = "9561780f504b735f5570ac70adc103db75b15758ae34378f81bca8fee2d0d30a"
+
+[[files]]
+file = "config/adpother-common.toml"
+hash = "1d6e017c56ee9a18fb49a8365000aaafdf317cba248f216429b1ae7dc2381209"
+
+[[files]]
+file = "config/adpother/Impacts/environment.cfg"
+hash = "6b523deb0641d95e7ad8280c4bd23b540ff15d4fa7e3931736697ccfe26aab9f"
+
+[[files]]
+file = "config/adpother/Pollutants/carbon.cfg"
+hash = "fa7590f7a4d29a792d50922e9fb7b335fa2056a82dcb7a2a83528498f2575db0"
+
+[[files]]
+file = "config/adpother/Pollutants/dust.cfg"
+hash = "57fbb2403391b185d8b6aa43503956fd757425769d973914ed585d1ceed30ba5"
+
+[[files]]
+file = "config/adpother/Pollutants/sulfur.cfg"
+hash = "7b38015d65fe420a08357dd812b57490a8175b744b8bbfbd3f056d20a83da691"
+
+[[files]]
 file = "config/aeronauticsdiscovery-common.toml"
 hash = "55f28641442201b388dce742b870d5438aa85b7cd091a21341ca9bd1a2c4c5bc"
 
@@ -952,7 +976,7 @@ hash = "6153f655aec1620b1b799b1e2aa1dffa50af403f109b9a4c80386ddf838491ed"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/connections.md"
-hash = "bdf2d0bcdc90d7f3c07fa406dcf9573a8d89b049a541f9dd337a14ad1271ffd0"
+hash = "0f0cac64c6e4389f289df0f0203a9b165e614b06431d957232f9c63dcedbded8"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/create_basics.md"
@@ -976,7 +1000,7 @@ hash = "fe98a6a18fe2e052bb9e9e702067991129adc9ea24cbdbf0da11de0e1a55bcd7"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/glossary.md"
-hash = "0d360b00b9ab385cbd77bc065d1835c82a358fb6bf681d3323f00e6a81cfb061"
+hash = "4d0758b60dffb82b3341d6c70bb9b6f4ce14963e8354c3f693a317aa8aa17301"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/home.md"
@@ -1004,11 +1028,11 @@ hash = "5930680aa592130a2306ae7e452b88a1f52f4eb013f3331bd1fb6a5605e64b50"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/start_here.md"
-hash = "6abf397785fe4b94bf22214cd55040fdb48b63d280981923eb465bb3c7d5395f"
+hash = "a2826ead61e2bca1754c7ab665a30bdd6d491898d0515fda2109c8b1dc8a593b"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/survival.md"
-hash = "27a22db8532f9d0553a82b3b5984a8380443c6c6f66b91b5fa396e72b2cb7f8f"
+hash = "dc1106ff4aa503fda81317732eac3523dfe7d9be79ce5239ff3b6ad6e46cf28e"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/transport.md"
@@ -1100,15 +1124,15 @@ hash = "7b6709f0ff5908f5cc1c8defa1ea4f5527ec2145f39326deea91f6d445f4abfc"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/connections/farm_to_factory.json"
-hash = "d75be3b282533485fb25f22951b23ce2ffae62de6376f9a28b25eb25da01eee4"
+hash = "8ea69ee00976aa7a571490c6c3d2340a3a8db11f2035c9211e3a5d7781597c07"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/connections/fuel.json"
-hash = "e54a3850ab7f503c650738674bdb83e3668223c853a57fc1bfd0fc261ade926d"
+hash = "21984ea3a673195ebe1eb4efac38fca4b09cdb8b4794d3fe0c1d5034f72d498f"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/connections/heat.json"
-hash = "890fd8660362a0bbd395ddf1faf4b3a6cec2d005ecb3b585ec56222a49be6c9a"
+hash = "6d83897aa344f15cdf48e714ad7d30d376a539403fe5a49b6b34637a6aa9ce86"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/connections/metals.json"
@@ -1124,7 +1148,7 @@ hash = "d633021b9a7d0a194cc37395d9c60970728527f8b7d3c0d007dc6f71defc651c"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/connections/side_effects.json"
-hash = "04102f50c3676d73615542c46cce8cf0f862b1f9bc488c7ae9f1cef43da71fe5"
+hash = "b99209474864b756c61ddfa16820cc50e2467ca51572b3f510617b205c9a12ac"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/connections/vehicles.json"
@@ -1628,7 +1652,7 @@ hash = "515e6dbe0f49d3356dbfbf7e1daa80ff550bb984408bb2cf19fdfcab1ffe6463"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/glossary/smog.json"
-hash = "93b7ec67d1ef331c993e421a596b6e3f6de87afdc1b4e39917ec98e3b66bef3f"
+hash = "13ac3c40ea3d76c00b05af80b2f8d7be5fcb427a84b5ff754f33e06e8a2606e3"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/glossary/su.json"
@@ -1644,7 +1668,7 @@ hash = "9912b44095a4bfe50ca068c8b9d24b5920ff02f0f74adb32addb0e4b43680b5e"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/glossary/superheated.json"
-hash = "e9643f3fc9ead382b4c062d3a641d579de451eae04fe7af91b40e9fba26468b2"
+hash = "11453553adb1020715d9339ec8062a839062c65a79ab3f30baf28fd1cfa90bff"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/glossary/tags.json"
@@ -1868,7 +1892,7 @@ hash = "2ecaa13ff5b07379f2236422f6915f689d5238a035d1951e56aa965f01e8bde9"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/start_here/difficulty.json"
-hash = "0eb8313f62db71dddf38e7ddc3d85369135265306dcfd657c839642a01d4862b"
+hash = "fa71301a72789e69c1f10fd1b870479cd292faf7689e7c1dba9a42ac048c7205"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/start_here/first_days.json"
@@ -1908,11 +1932,11 @@ hash = "12883679f8e250e62e7b1e180c031b0d3e484849292b9965d26a2010f12136ce"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/survival/pollution.json"
-hash = "ec33e0b630d6043935e8184340116f935e3d117626ea2169d7d381247f184160"
+hash = "9201170e97ae320f94eee2a791cdce971adb0461c605a7a03ccc34e94c3682cc"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/survival/pollution_control.json"
-hash = "d8f92494e82044f2596b6b629738b1ef16448c5a9b3d18610063585ba541c6e3"
+hash = "2bb8452ee477cd8552639b8f78f983aa08dc85eed8fabe2462f73ea972d0f1a8"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/survival/seasons.json"
@@ -1921,6 +1945,10 @@ hash = "2eadf2edc9f4b259f054716a1177476e9cf2da4a6a79dfe9ab227f5e9c213b1a"
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/survival/seasons_crops.json"
 hash = "5d72281a2702d892398a2cd95462934a062b515c0c296da144a2d1b4f208cd85"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/survival/smog_pressure.json"
+hash = "ec619f61390bce3a16d5b09576a45fc21479da89f53917aeaa59fed7ecf04777"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/survival/temperature.json"
@@ -4127,6 +4155,22 @@ file = "config/paxi/datapacks/create-galore-tweaks/data/sereneseasons/tags/item/
 hash = "0f54851c17e949a2aa3f2f19c03919a6908b4caf64eff4282388fdcd850b1f62"
 
 [[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/smog/recipe/aerometer.json"
+hash = "03513844972f542f39f82229ead0076a536de2d2e7afcc5079785f148b403370"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/smog/recipe/air_scrubber.json"
+hash = "f522e3771dd5db64630975b829af5af487f654967ea46273a5c0e92faa35b97d"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/smog/recipe/flue.json"
+hash = "72e1e0728c1eca2937d64d3ed082baa136dfb1b68128b48557e198ac466c4b94"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/smog/recipe/respirator.json"
+hash = "bbd87c586ccada453af246275ba1f62bd2fc40b935b5d445ade7218967074218"
+
+[[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/terralith/worldgen/structure_set/underground.json"
 hash = "5bfdf1b9e094ce72f46809c2a59d511f322775383d7309bf44b6eded250b8301"
 
@@ -4548,7 +4592,7 @@ hash = "c9e57c2b3188b447f940e77b1598714feef9771a7af8356be6e68fc646dbf8fc"
 
 [[files]]
 file = "config/smog-common.toml"
-hash = "d4d247face0aae4f4ea732c84575a425708c2df053a78239ce41186250072d7f"
+hash = "7be6fcdf4af4806fe7f6680aae35b97a3d80aabcbd08bed3533ffda28a73d34f"
 
 [[files]]
 file = "config/sophisticatedbackpacks-server.toml"
@@ -4594,6 +4638,11 @@ hash = "38faa2af19c41a50340a2d50e7879b8b03c4e494b792b53a32fb7f0df2ee3064"
 [[files]]
 file = "config/wover/client.json"
 hash = "2adb47f027bc307b25168eff0666e84181f9c8d6e4318402e4a45fe9096d818f"
+
+[[files]]
+file = "mods/advanced-chimneys.pw.toml"
+hash = "8b1c78c3a507c852b91fe9fc28bcff26c8b7adfbae8a2ba87e460c97f1aa71b6"
+metafile = true
 
 [[files]]
 file = "mods/aeronautics-hot-air-fix.pw.toml"
@@ -4921,8 +4970,8 @@ hash = "db683b65dc15a03dd6de2d34d5dc6ad0e3490744ced513a8cc584784ee9d3d8b"
 metafile = true
 
 [[files]]
-file = "mods/create-galore-bridge-1.58.0.jar"
-hash = "558e4693b7c912d8ca79bed0b3611dd045fc46380cda4facbb7589143bfb6994"
+file = "mods/create-galore-bridge-1.59.0.jar"
+hash = "07749e22cc83182807db7dc0b3acb36e7729fef269c5c64bb18eb32eceb36872"
 
 [[files]]
 file = "mods/create-galore-fishing-0.3.13.jar"
@@ -5175,6 +5224,11 @@ metafile = true
 [[files]]
 file = "mods/ferrite-core.pw.toml"
 hash = "73360e397134d238ee8fd21d33fd7f9275e9441f74f8f1b6ed92278877c0b9f1"
+metafile = true
+
+[[files]]
+file = "mods/forgeendertech.pw.toml"
+hash = "ab734f97a68bdfce5a1356752abd462d3ba990fcf769e15b872f91fa15bfa6db"
 metafile = true
 
 [[files]]
@@ -5485,6 +5539,11 @@ metafile = true
 [[files]]
 file = "mods/playeranimator.pw.toml"
 hash = "93284ca7f2f23f0bb76d42b797cabf2aea1914ee9825bec82bf6ffe4c60dda0d"
+metafile = true
+
+[[files]]
+file = "mods/pollution-of-the-realms.pw.toml"
+hash = "b7b5ef66a6708eddd2c004fa76edd9da62e8b230acd365e4e1b226bab5d46f27"
 metafile = true
 
 [[files]]

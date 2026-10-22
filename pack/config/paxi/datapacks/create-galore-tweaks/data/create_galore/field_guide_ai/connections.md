@@ -1,4 +1,4 @@
-<!-- sources sha256:4968e979e45fcc3a8f2bf4fdeb6f287baecd522fab325d131397489d3e1b23d2 -->
+<!-- sources sha256:9cfe211191540d6f9b2819791227df8bf1a161853a050c31b216b73a8cc0989c -->
 # How Things Connect (connections)
 Cross-mod joins. Shared hubs: rotation and electricity (and converters), heat (mostly Blaze Burner), liquid fuel (mostly oil), shared metals, vehicle destinations. Each entry points to the full entries.
 
@@ -20,7 +20,7 @@ Cross-mod joins. Shared hubs: rotation and electricity (and converters), heat (m
 - Flight: burners lift hot air balloons (see flight/balloons_and_lift) on Aeronautics ships and keep crew warm against altitude cold.
 - Power: Stirling Engine turns heat below it into rotation (see flight/propulsion).
 - Water: boiling in a campfire or furnace purifies it (see survival/thirst).
-- Watch out: a fuelled burner is one of the biggest smog sources; put a Flue on top (see survival/pollution) (see survival/pollution_control).
+- Watch out: a fuelled burner is one of the biggest smog sources; give it a chimney or an exhaust system (see survival/pollution) (see survival/pollution_control).
 - Related: Burning Liquid Fuel (see industry/liquid_fuel).
 
 ## connections/fuel | Fuel Goes Everywhere
@@ -30,7 +30,7 @@ Cross-mod joins. Shared hubs: rotation and electricity (and converters), heat (m
   - Create Propulsion thrusters, Solid Fuel Thrusters, Turpentine: (see flight/propulsion)
   - Northstar rockets (own fuels, kerosene and naphtha; diesel and gasoline only run the Combustion Engine): (see space/rocket_building)
 - Not oil: Crafts & Additions Seed Oil and Bioethanol (from crops), Garnished Peanut Oil; Create: Liquid Fuel lets a plain Blaze Burner burn them, Bioethanol and Peanut Oil superheat (see industry/liquid_fuel).
-- Soot from air scrubbers burns as solid fuel (see survival/pollution_control).
+- Soot from washing clogged filter cartridges burns as solid fuel (see survival/pollution_control).
 - Related: Fluids, Pipes and Pumps (see create_basics/fluids).
 
 ## connections/metals | One Metal, Many Mods
@@ -57,7 +57,7 @@ Cross-mod joins. Shared hubs: rotation and electricity (and converters), heat (m
 - Links to know before a big farm (food touches seasons, Create machines, pollution, thirst).
 - Seasons decide what grows: most crops grow only in some seasons; greenhouses and underground farms get around it. Crops by Season (see survival/seasons_crops).
 - Create farms and cooks: harvesters and ploughs on contraptions (see create_basics/contraptions) reap fields; Slice & Dice's Sprinkler spreads Liquid Fertilizer; Central Kitchen lets arms and deployers run Farmer's Delight pots and boards (see food/kitchen_automation).
-- Smog hurts crops (see survival/pollution): keep burners away from fields or put scrubbers between.
+- Sulfur kills crops (see survival/pollution): sulfur smog and its rain kill crops, berry bushes, bee nests and turn farmland to podzol; keep burners away from fields or filter their exhaust.
 - Drinking water from Create: a pumped Sand Filter purifies it; compacting (see glossary/compacting) cactus gives clean water (see survival/thirst).
 - Bees link in through Enchantment Industry's super experience (see food/bees).
 - Related: Farmer's Delight (see food/farmers_delight), Seasons (see survival/seasons), Productive Bees (see food/bees).
@@ -71,7 +71,7 @@ Cross-mod joins. Shared hubs: rotation and electricity (and converters), heat (m
 
 ## connections/side_effects | Side Effects to Plan For
 - Systems react to what you build; not punishing alone but a big base notices all.
-- Burning pollutes (see survival/pollution): furnaces, burners, stoves add smog to their chunk. Smog builds up fast and is punishing. Flues and air scrubbers fix it (see survival/pollution_control).
+- Burning pollutes (see survival/pollution): furnaces, burners, stoves add smog to the cloud over their chunk. A factory's cloud keeps growing and is punishing. Exhaust systems with filters fix it (see survival/pollution_control).
 - Heat warms you: factories near you count toward body temperature (see survival/temperature).
 - Height is cold: (see survival/temperature_create) matters for airships.
 - Water isn't clean: drink purified water or build a filter (see survival/thirst).
