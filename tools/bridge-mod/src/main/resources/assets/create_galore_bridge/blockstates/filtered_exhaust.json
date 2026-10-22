@@ -1,0 +1,5 @@
+{
+  "variants": {
+    "": { "model": "create_galore_bridge:block/filtered_exhaust" }
+  }
+}

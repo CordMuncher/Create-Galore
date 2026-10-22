@@ -1,0 +1,56 @@
+{
+  "category": "survival",
+  "name": "Pressure and Sealed Casings",
+  "description": "Smog shut in a sealed casing forces itself up through a filter in the roof.",
+  "icon": {
+    "item": "create:andesite_casing"
+  },
+  "x": 6,
+  "y": -1,
+  "sort_number": 9,
+  "parents": [
+    {
+      "entry": "survival/pollution_control",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Pressure and Sealed Casings",
+      "text": "[#](FFFFFF)[#]() **Key points**\n\n- Smog shut in a sealed space is forced up through the **Filter Frames in its roof**, no pump needed\n- The fuller the space, the faster\n- A belt with **casing** on it seals a wall, a bare belt leaks\n- [#](FFFFFF)[#]() Full with nowhere to go, it blows up"
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Seal a smoky machine inside full blocks, put a Filter Frame in the roof, and its smog finds the way out through the filter.\\\n\\\nSealed means no open side, no gap to the sky, and fewer than 2,048 blocks of room inside."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "How fast",
+      "text": "Each frame in the roof takes up to 6 units a second. A nearly empty space only seeps; a packed one hits that limit.\\\n\\\nThe frame's top needs a way to the sky, as in any exhaust: open air above it, or a chimney."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Belts and gaps",
+      "text": "Smog leaks through anything without a full face: bare belts, fences, carpets, trapdoors. Put Andesite or Brass Casing on a belt where it passes the wall. Items ride through, smog stays in."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "A sealed smelter",
+      "text": "1. Fan, lava (or a Blaze Burner) and belt inside a box of full blocks\n2. Casing on the belt where it goes in and out\n3. A Filter Frame in the roof, a hopper under it for the dye\n4. Open sky or a chimney above the frame\n\nEach item smelted sends smog up through the filter."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Overpressure",
+      "text": "[#](FFFFFF)[#]() **Watch out:** a sealed space that fills up has no room for more smoke. A furnace or other machine in it blows up after a few tries and breaks. A fan smelting into it blows the casing open, as hard as a Creeper, after 4 batches that find no room."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Related",
+      "text": "- [#](2E5AAC)[Exhaust Systems](entry://survival/pollution_control)[#]()\n- [#](2E5AAC)[Pollution](entry://survival/pollution)[#]()\n- [#](2E5AAC)[Encased Fans](entry://create_basics/fans)[#]()\n- [#](2E5AAC)[Moving Items](entry://create_basics/item_logistics)[#]()"
+    }
+  ]
+}

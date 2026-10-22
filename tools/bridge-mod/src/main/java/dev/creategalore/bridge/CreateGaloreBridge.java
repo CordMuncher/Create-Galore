@@ -6,11 +6,14 @@ import java.util.List;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.material.PushReaction;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
+import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
@@ -20,6 +23,14 @@ public final class CreateGaloreBridge {
     public static final String ID = "create_galore_bridge";
 
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(ID);
+    public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(ID);
+
+    /** Cleaned air leaving a filter: harmless, but it has to get out under the open sky before it thins away. */
+    public static final DeferredBlock<FilteredExhaustBlock> FILTERED_EXHAUST = BLOCKS.register("filtered_exhaust",
+            () -> new FilteredExhaustBlock(BlockBehaviour.Properties.of().replaceable().noCollission().noOcclusion()
+                .noLootTable().instabreak().pushReaction(PushReaction.DESTROY).isValidSpawn((state, level, pos, type) -> false)
+                .isSuffocating((state, level, pos) -> false).isViewBlocking((state, level, pos) -> false)
+                .isRedstoneConductor((state, level, pos) -> false)));
 
     /** The space-age gate: every way off the planet needs one. Recipe lives in the pack datapack. */
     public static final DeferredItem<StellarCoreItem> STELLAR_CORE = ITEMS.register("stellar_core",
@@ -43,6 +54,7 @@ public final class CreateGaloreBridge {
 
     public CreateGaloreBridge(IEventBus modBus) {
         ITEMS.register(modBus);
+        BLOCKS.register(modBus);
         modBus.addListener(CreateGaloreBridge::addToTabs);
         modBus.addListener((FMLCommonSetupEvent event) -> KnifeUnify.resolve());
         GuideCleanup.register();
@@ -55,6 +67,7 @@ public final class CreateGaloreBridge {
         ShipGluedWater.register();
         ShipSeatRelog.register();
         ContraptionSeatRelog.register();
+        ExhaustPressure.register();
         GuideAi.register(modBus);
         ShipGlueCheck.register(modBus);
         if (FMLEnvironment.dist.isClient()) {

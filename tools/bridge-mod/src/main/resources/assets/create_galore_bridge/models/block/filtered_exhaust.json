@@ -1,0 +1,9 @@
+{
+  "parent": "minecraft:block/cube_all",
+  "render_type": "minecraft:translucent",
+  "ambientocclusion": false,
+  "textures": {
+    "all": "create_galore_bridge:block/filtered_exhaust",
+    "particle": "create_galore_bridge:block/filtered_exhaust"
+  }
+}

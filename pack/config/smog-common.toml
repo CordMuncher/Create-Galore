@@ -63,7 +63,7 @@
 	#Cleaning units per second at 64 RPM, scaling to 256 RPM.
 	# Default: 24.0
 	# Range: 0.0 ~ 10000.0
-	cleanRatePerSecond = 24.0
+	cleanRatePerSecond = 0.0
 	# Default: 24000
 	# Range: 1 ~ 10000000
 	cartridgeCapacity = 24000
@@ -86,7 +86,7 @@
 	# Range: 0.1 ~ 1000.0
 	adpotherRateMultiplier = 12.0
 	#Scrub the smog out of players and mobs standing in range, not just out of the world.
-	cleanEntities = true
+	cleanEntities = false
 	# Default: 16
 	# Range: 1 ~ 1000
 	precisionCartridgeMultiplier = 16
@@ -145,11 +145,11 @@
 	#below it every second, on top of sweeping up the gas around the source.
 	# Default: 120.0
 	# Range: 0.0 ~ 100000.0
-	ventPerSecond = 120.0
+	ventPerSecond = 0.0
 	#Pollution of the Realms mode: gas blocks a flue swallows per second, per block of column.
 	# Default: 12
 	# Range: 0 ~ 10000
-	capturePerSecondPerBlock = 12
+	capturePerSecondPerBlock = 0
 
 [respirator]
 	#Pollution a worn respirator pulls out of you per second. Costs one point of durability each time it does.
