@@ -4,6 +4,15 @@ Each pack version gets a section here, with **Added**, **Fixed** and **Removed**
 workflow copies the section for the version in `pack/pack.toml` to the top of the GitHub release, and the build
 fails when that section is missing.
 
+## 0.4.27
+
+### Added
+- **Glue check for ships.** Hold Super Glue or Honey Glue near a Physics Assembler (or wear Goggles and look at it) and the ship it would make is outlined before you pull the lever: blue around every block that goes aboard, red on every block inside the glue that stays behind, with a count above the hotbar. It updates about once a second, so you see each new glue box take effect.
+
+### Fixed
+- **One glue box around a ship is enough.** Blocks inside the glue used to join the ship only when a single glue box held both of two touching blocks, so wherever two boxes met side by side or overlapped the ship was cut, and big ships needed a pile of overlapping boxes that still lost parts. Now every glue box that overlaps or touches the ship's glue counts as one glue: draw one Honey Glue box (up to 48 blocks a side) around the hull, or several Super Glue boxes side by side, and every block touching the ship by a face or an edge inside it comes along. A block touching only at a corner, or floating free, still stays behind (it would fall off as its own piece), and the glue check shows it in red.
+- Create Galore Bridge 1.57.0.
+
 ## 0.4.26
 
 ### Added

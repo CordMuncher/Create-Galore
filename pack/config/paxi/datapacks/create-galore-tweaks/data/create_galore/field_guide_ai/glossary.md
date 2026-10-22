@@ -1,4 +1,4 @@
-<!-- sources sha256:422907ffe7e29c637e12be8f8f5a83aa98ec503cd392b43ab8ef92e0a9e0afec -->
+<!-- sources sha256:f451a646b9f210fa5fc229954b829a268435b942485c3912015e8da2b2eb7489 -->
 # Words to Know (glossary)
 Short definitions of jargon the book uses unexplained, mostly Create and survival. Purple words in the book link to these entries; each lists where the word matters.
 
@@ -172,7 +172,7 @@ Short definitions of jargon the book uses unexplained, mostly Create and surviva
 - Matters: Airships (see flight/airships); Building a Ship (see flight/ship_building); Ship Hardware (see flight/ship_hardware); Submarines (see ocean/submarines).
 
 ## glossary/super_glue | Super Glue
-- Super Glue: bonds blocks into one shape that moves together (see create_basics/contraptions). For ships, Honey Glue does the same job (see flight/ship_building).
+- Super Glue: bonds blocks into one shape that moves together (see create_basics/contraptions); click two corners to glue an area; blocks that hang on others need none. For ships, Honey Glue does the same job, and one box around the whole ship is enough (see flight/ship_building).
 - Matters: Contraptions (see create_basics/contraptions); Trains (see transport/trains); Building a Ship (see flight/ship_building); Building a Rocket (see space/rocket_building).
 
 ## glossary/superheated | Superheated
