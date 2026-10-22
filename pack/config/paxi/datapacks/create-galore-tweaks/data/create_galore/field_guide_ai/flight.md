@@ -1,4 +1,4 @@
-<!-- sources sha256:0035e7cf929a67eb7ec1f9d4d220680a9636ac188fd1353cc08ae19d1f57104f -->
+<!-- sources sha256:1108871b62e67894e63276865ceaaccc06b5a21ab220c1175c6cec5f5838363b -->
 # Flight (flight)
 Create Aeronautics ships, lift, thrust, steering, wind, dangers and sky destinations.
 
@@ -24,6 +24,7 @@ Create Aeronautics ships, lift, thrust, steering, wind, dangers and sky destinat
 - Weight/splitting: blocks differ in weight (light, super heavy, slippery, fragile). Sections losing connection split off as separate ships; a Slime Ball merges any two
 - Swivel Bearing [simulated:swivel_bearing]: turns glued group in front into rotating sub-ship; rotation (see create_basics/rotation) passes through shaft; redstone unlocks it to spin freely
 - Docking Connector [simulated:docking_connector]: two connectors align and lock into rigid link; items and fluids pass both ways; retract either to undock
+- Passing items across: once docked, move items with Create chutes or funnels (one feeding into the connector on one ship, one taking out of the connector on the other); vanilla hoppers don't pass items through them
 - Rope Winch [simulated:rope_winch]: link ships with Rope Coupling between winch and connector; rotation reels rope in/out; shears cut it
 - Watch out: bearings (see glossary/bearing) must be told not to disassemble when used with Steering Wheels or Torsion Springs. Springs let a bearing swing within an angle and return when input stops
 - Related: Airships (see flight/airships), Ship Hardware (see flight/ship_hardware), Contraptions (see create_basics/contraptions)
@@ -71,6 +72,8 @@ Create Aeronautics ships, lift, thrust, steering, wind, dangers and sky destinat
 - Smart Attitude Stabilizer [create_flight_control:attitude_hold]: modes Level, Level plus Heading, Hold Attitude; needs shaft stress (see create_basics/stress) from below and a linked computer
 - Altitude Hold Block [create_flight_control:altitude_hold]: holds current height, a set height, or only lifts when below a minimum; needs shaft power
 - Flight Control Terminal [create_flight_control:mouse_flight_controller]: mouse-driven flight, pitch, yaw, auto bank; bind a seat to it with tool gun first
+- Getting it to fly: a new computer only previews thrust and moves nothing; open it empty-handed, set Default: ON and press Apply Thrust. Craft keeps its last course when you leave the seat; set computer to Default: OFF to stop it
+- Mouse steering: open the Terminal empty-handed, turn it on, press Apply; link a Redstone Proxy to the Terminal, map one face to Mouse Control Switch, put a button on that face; each press turns mouse steering on or off
 - Smart Vector Thruster [create_flight_control:smart_vector_thruster]: nozzle swings inside a cone to push in direction computer asks
 - Other parts: Flight HUD Projector, Attitude Display, Navigation Terminal, Profile Builder; couplers for speed and distance; Redstone Proxy (redstone toggles modes). Fuel tanks link to thrusters within a short range
 - Related: Steering and Controls (see flight/controls), Thrusters and Engines (see flight/propulsion), Airships (see flight/airships)

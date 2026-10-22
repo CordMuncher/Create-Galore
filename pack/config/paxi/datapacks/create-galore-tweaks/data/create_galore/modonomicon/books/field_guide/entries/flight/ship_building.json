@@ -67,6 +67,11 @@
       "text": "Two connectors align and lock into a rigid link. Items and fluids can then pass both ways. Retract either to undock."
     },
     {
+      "type": "modonomicon:text",
+      "title": "Passing items across",
+      "text": "Once docked, move items through the connectors with Create chutes or funnels: one feeding into the connector on one ship, one taking out of the connector on the other. Vanilla hoppers don't pass items through them."
+    },
+    {
       "type": "modonomicon:spotlight",
       "item": {
         "item": "simulated:rope_winch"

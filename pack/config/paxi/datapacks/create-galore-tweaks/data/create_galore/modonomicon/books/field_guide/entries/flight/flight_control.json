@@ -69,6 +69,16 @@
       "text": "Mouse-driven flight with pitch, yaw and auto bank. Bind a seat to it with the tool gun first."
     },
     {
+      "type": "modonomicon:text",
+      "title": "Getting it to fly",
+      "text": "A new computer only previews thrust and moves nothing. Open it empty-handed, set **Default: ON** and press **Apply Thrust**.\\\n\\\nThe craft keeps its last course when you leave the seat. Set the computer to Default: OFF to stop it."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Mouse steering",
+      "text": "Open the Terminal empty-handed, turn it on and press Apply.\\\n\\\nThen link a Redstone Proxy to the Terminal, map one face to **Mouse Control Switch** and put a button on that face. Each press turns mouse steering on or off."
+    },
+    {
       "type": "modonomicon:spotlight",
       "item": {
         "item": "create_flight_control:smart_vector_thruster"
