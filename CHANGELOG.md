@@ -4,6 +4,12 @@ Each pack version gets a section here, with **Added**, **Fixed** and **Removed**
 workflow copies the section for the version in `pack/pack.toml` to the top of the GitHub release, and the build
 fails when that section is missing.
 
+## 0.4.22
+
+### Fixed
+- **The Tackle Bench drag readout no longer runs under the - and + buttons.** It is now two short lines, "Drag 3.6 kg of 6.0 kg" and "Line holds 4.0 kg", both left of the buttons (red when the drag is over what the line holds).
+- Create Galore Fishing 0.3.11.
+
 ## 0.4.21
 
 The vehicle bug pass: airships, boats, submarines, trains, coasters and cars driven by a player on a dedicated server. Most of these fixes were already inside the 0.4.20 files (Bridge 1.50.0 to 1.53.0 and Deep Seas 3.4.4 landed before that release) but its notes didn't list them, so they are listed here.
