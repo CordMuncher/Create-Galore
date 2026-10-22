@@ -253,8 +253,9 @@ final class ModelView {
         box[2] = bw;
         box[3] = bh;
         draw(g, font, bx, by, bw, bh, yaw, pitch, zoom, panX, panY);
+        int buttonW = schematicButton(g, font, bx, by, bw, bh, hint != null);
         if (hint != null) {
-            List<FormattedCharSequence> lines = font.split(Component.literal(hint), bw - 12);
+            List<FormattedCharSequence> lines = font.split(Component.literal(hint), Math.max(60, bw - buttonW - 16));
             int hw = 0;
             for (FormattedCharSequence l : lines) hw = Math.max(hw, font.width(l));
             hw += 6;
@@ -272,6 +273,89 @@ final class ModelView {
                 y += font.lineHeight;
             }
         }
+    }
+
+    // ---------- saving as a Create schematic ----------
+
+    /** Where the schematic button was last painted (x, y, w, h); w is 0 while it isn't shown. */
+    private final int[] saveButton = new int[4];
+    /** What the button says for a while after a save (the file name), and until when. */
+    private String saved;
+    private long savedUntil;
+
+    /**
+     * "Save as schematic" in the box's bottom left corner while the mouse is over the model, and the file name for a
+     * while after a save; its width, or 0 when not shown.
+     */
+    private int schematicButton(GuiGraphics g, Font font, int bx, int by, int bw, int bh, boolean over) {
+        boolean justSaved = saved != null && System.currentTimeMillis() < savedUntil;
+        saveButton[2] = 0;
+        if (!over && !justSaved) return 0;
+        String text = justSaved ? "Saved: " + saved : "Save as schematic";
+        int w = Math.min(bw - 8, font.width(text) + 8), x = bx + 2, y = by + bh - 14;
+        g.pose().pushPose();
+        g.pose().translate(0, 0, 300);
+        g.fill(x, y, x + w, y + 12, FRAME);
+        g.fill(x + 1, y + 1, x + w - 1, y + 11, justSaved ? 0xFFDCEBC8 : PAPER);
+        g.drawString(font, font.plainSubstrByWidth(text, w - 6), x + 4, y + 2, INK, false);
+        g.pose().popPose();
+        if (!justSaved) {
+            saveButton[0] = x;
+            saveButton[1] = y;
+            saveButton[2] = w;
+            saveButton[3] = 12;
+        }
+        return w;
+    }
+
+    boolean overSchematicButton(double mx, double my) {
+        return saveButton[2] > 0 && mx >= saveButton[0] && mx < saveButton[0] + saveButton[2] && my >= saveButton[1]
+                && my < saveButton[1] + saveButton[3];
+    }
+
+    void showSaved(String fileName) {
+        saved = fileName;
+        savedUntil = System.currentTimeMillis() + 5000;
+    }
+
+    /**
+     * The model as a structure file (the format Create's Schematic and Quill writes and its Schematic Table reads): every
+     * block but air, so a placed schematic never asks to clear what is around it. Flowing water and lava are left out:
+     * their sources make them again once placed. Null for a model with nothing in it.
+     */
+    net.minecraft.nbt.CompoundTag structure() {
+        Map<BlockState, Integer> index = new HashMap<>();
+        net.minecraft.nbt.ListTag palette = new net.minecraft.nbt.ListTag(), blocks = new net.minecraft.nbt.ListTag();
+        for (int y = 0; y < sy; y++)
+            for (int z = 0; z < sz; z++)
+                for (int x = 0; x < sx; x++) {
+                    BlockState state = cells[index(x, y, z)];
+                    if (state == null || state.isAir() || !state.getFluidState().isEmpty() && pureFluid(state)
+                            && !state.getFluidState().isSource()) continue;
+                    Integer i = index.get(state);
+                    if (i == null) {
+                        i = index.size();
+                        index.put(state, i);
+                        palette.add(net.minecraft.nbt.NbtUtils.writeBlockState(state));
+                    }
+                    net.minecraft.nbt.CompoundTag b = new net.minecraft.nbt.CompoundTag();
+                    b.put("pos", ints(x, y, z));
+                    b.putInt("state", i);
+                    blocks.add(b);
+                }
+        if (blocks.isEmpty()) return null;
+        net.minecraft.nbt.CompoundTag tag = new net.minecraft.nbt.CompoundTag();
+        tag.put("size", ints(sx, sy, sz));
+        tag.put("palette", palette);
+        tag.put("blocks", blocks);
+        tag.put("entities", new net.minecraft.nbt.ListTag());
+        return net.minecraft.nbt.NbtUtils.addCurrentDataVersion(tag);
+    }
+
+    private static net.minecraft.nbt.ListTag ints(int... values) {
+        net.minecraft.nbt.ListTag list = new net.minecraft.nbt.ListTag();
+        for (int v : values) list.add(net.minecraft.nbt.IntTag.valueOf(v));
+        return list;
     }
 
     void turn(double dx, double dy) {

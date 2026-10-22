@@ -1,4 +1,4 @@
-<!-- sources sha256:80ac9d4b71b7eb3fd4d7e319e04fd16d9a15749f37a3b05231f782739aecf179 -->
+<!-- sources sha256:50a6baf09ec4eced8131091c1aa7cc9e8721a86e81c9ebea52f242283c8cb082 -->
 # Start Here (start_here)
 
 ## start_here/welcome | Welcome to Create Galore
@@ -10,8 +10,8 @@
 - Maps: each section is a map; an arrow from entry A to B means A usually comes first, so follow lines back to reach something. Drag to move, scroll to zoom. Magnifying glass on the right searches the text of every page.
 - New to Create? Rotation (see create_basics/rotation) is the first idea.
 - Ask the Book: on a home server whose owner gave the book a voice, the Ask the Book ribbon (speech bubble on the right edge of the book) opens pages to ask in your own words; also /askbook. Answers from this guide, the server's recipes, what is on your screen, what you carry, chests you opened nearby, your advancements.
-- The book shows recipes, draws diagrams or builds 3D models you can turn (right-click one to save it as a page). Ask why a build doesn't work: it finds the build near you and reads it block by block. It only sees blocks players placed, so it never finds ores or loot, and never gives map locations.
-- Ask it to improve or fix a build: it copies the build into a 3D model with the changes outlined (green: add or change, red: take out). It can answer on up to three pages at once; an answer on a page you aren't reading (or with the book closed) brings a notice, and the page glows green under All pages until opened; until then the Field Guide item (hotbar, inventory) and the Ask the Book ribbon glow green too.
+- The book shows recipes, draws diagrams or builds 3D models you can turn (right-click one to keep it as a page). Ask why a build doesn't work: it finds the build near you and reads it block by block. It only sees blocks players placed, so it never finds ores or loot, and never gives map locations.
+- Ask it to improve or fix a build: it copies the build into a 3D model with the changes outlined (green: add or change, red: take out). Hovering a 3D model shows a Save as schematic button: the model goes into the player's own schematics folder as a Create schematic; an Empty Schematic (create:empty_schematic) in a Schematic Table (create:schematic_table) turns it into a Schematic (create:schematic), as with any schematic. Hold the Schematic and right-click to place it, move/turn/mirror it with Create's schematic tools (hold Left Alt to pick one); then with it in the off hand the build stays shown while placing blocks, each block vanishes once the right one is in its spot, a wrong block gets a red outline. It can answer on up to three pages at once; an answer on a page you aren't reading (or with the book closed) brings a notice, and the page glows green under All pages until opened; until then the Field Guide item (hotbar, inventory) and the Ask the Book ribbon glow green too.
 - The Field Guide [minecraft:writable_book]: how to get/open it (see home/guide_shelf). See Tools of the Trade (see start_here/tools).
 
 ## start_here/first_days | Your First Days

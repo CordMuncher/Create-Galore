@@ -58,12 +58,22 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**What the book can do**\\\nIt shows recipes, and draws diagrams or builds 3D models you can turn when they help (right-click one to save it as a page).\\\n\\\nAsk why a build doesn't work and it finds the build near you and reads it block by block. It only sees blocks players placed, so it never finds ores or loot, and it never gives map locations."
+      "text": "**What the book can do**\\\nIt shows recipes, and draws diagrams or builds 3D models you can turn when they help (right-click one to keep it as a page).\\\n\\\nAsk why a build doesn't work and it finds the build near you and reads it block by block. It only sees blocks players placed, so it never finds ores or loot, and it never gives map locations."
     },
     {
       "type": "modonomicon:text",
       "title": "",
       "text": "**Improving your builds**\\\nAsk it to improve or fix something you built and it copies the build into a 3D model with its changes outlined: green for blocks to add or change, red for blocks to take out."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Building from a model**\\\nHover a 3D model and press **Save as schematic**: it goes into your own schematics folder as a Create schematic. Put an [](item://create:empty_schematic) in a [](item://create:schematic_table), pick the file and you get a [](item://create:schematic) of it, the same as any schematic."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Tracing it**\\\nHold the Schematic and right-click to place it, then move, turn or mirror it with Create's schematic tools (hold Left Alt to pick one). Now put it in your off hand: the build stays shown while you place blocks, each block vanishes once the right one is in its spot, and a wrong block gets a red outline."
     },
     {
       "type": "modonomicon:text",

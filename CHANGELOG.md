@@ -4,6 +4,12 @@ Each pack version gets a section here, with **Added**, **Fixed** and **Removed**
 workflow copies the section for the version in `pack/pack.toml` to the top of the GitHub release, and the build
 fails when that section is missing.
 
+## 0.4.35
+
+### Added
+- **Ask the Book's 3D builds can be saved as Create schematics and traced in the world.** Hovering a model in the book shows a **Save as schematic** button, which writes it into your own `schematics` folder (no Litematica needed). An Empty Schematic in a Schematic Table turns it into a Schematic like any other, which you place, turn and mirror with Create's tools. Create shows a schematic only while it is in your main hand, so with a placed Schematic in your **off hand** the build now stays shown while you place blocks: each block drops out once the right one is in its spot, a wrong block gets a red outline, and a line above the hotbar counts the blocks left. Works on a dedicated server: each player saves and uploads their own copy. The Field Guide's Welcome entry explains it.
+- Create Galore Bridge 1.65.0.
+
 ## 0.4.33
 
 ### Fixed

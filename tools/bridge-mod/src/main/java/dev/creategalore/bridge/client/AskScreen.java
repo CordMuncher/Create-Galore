@@ -408,6 +408,14 @@ final class AskScreen extends Screen {
             pageTurn();
             return true;
         }
+        if (hot != null && hot.model != null && button == GLFW.GLFW_MOUSE_BUTTON_LEFT && hot.model.overSchematicButton(mouseX, mouseY)) {
+            String file = BookSchematics.save(hot.model);
+            if (file != null) {
+                hot.model.showSaved(file);
+                pageTurn();
+            }
+            return true;
+        }
         if (hot != null && hot.model != null && (button == GLFW.GLFW_MOUSE_BUTTON_LEFT || button == GLFW.GLFW_MOUSE_BUTTON_MIDDLE)) {
             dragging = hot.model;
             dragButton = button;
@@ -663,7 +671,7 @@ final class AskScreen extends Screen {
                         Hot hot = new Hot(ox + m.x, oy + m.y, m.w, mh, m.json, m.entry, m.view);
                         boolean over = mouseIn && hot.contains(mouseX, mouseY);
                         m.view.paint(g, font, ox + m.x, oy + m.y, m.w, over || dragging == m.view
-                                ? (canSave(m.entry) ? "Drag to turn, middle-drag to move, scroll to zoom, right-click to save"
+                                ? (canSave(m.entry) ? "Drag to turn, middle-drag to move, scroll to zoom, right-click to keep as a page"
                                         : "Drag to turn, middle-drag to move, scroll to zoom")
                                 : null);
                         hots.add(hot);
