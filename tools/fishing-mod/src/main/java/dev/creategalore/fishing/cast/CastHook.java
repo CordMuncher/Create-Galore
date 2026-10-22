@@ -29,6 +29,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
@@ -207,6 +208,11 @@ public class CastHook extends FishingHook {
         hook.entityData.set(RIG, (byte) rigOf(stats).ordinal());
         hook.entityData.set(LINE_LEFT, (float) stats.lineMeters());
         angler.level().addFreshEntity(hook);
+        // A drag over what the line holds now (a frayed line holds less) snaps it on the first hard pull: say so.
+        if (stats.dragOverLine() && angler instanceof ServerPlayer player) {
+            player.displayClientMessage(Component.translatable("message.create_galore_fishing.drag_over_line",
+                    RodStats.kg(stats.drag()), RodStats.kgHolds(stats.breakingLoad())).withStyle(ChatFormatting.RED), true);
+        }
         float whoosh = (float) (0.4 + 0.6 * charge);
         angler.level().playSound(null, tip.x, tip.y, tip.z, FishingRegistry.CAST_WHOOSH.get(),
                 SoundSource.PLAYERS, 0.4f + 0.4f * whoosh, 0.85f + 0.3f * whoosh);

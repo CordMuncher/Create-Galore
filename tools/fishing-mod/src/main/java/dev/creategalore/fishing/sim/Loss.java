@@ -6,8 +6,6 @@ public enum Loss {
     SNAP_DRAG,
     /** The fish pulled past the line's test on a pole, which has no drag to give line. */
     SNAP_POLE,
-    /** The line was frayed through by wear. */
-    SNAP_WORN,
     /** The fish took every metre on the spool. */
     SPOOLED,
     /** Teeth chewed through non-steel line over the fight. */

@@ -16,9 +16,10 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 /**
- * What a fight costs the tackle. Every fight wears every part a little: the rod (more the longer it was loaded near
- * its rating), the reel (more by cranking while its drag slipped, with the square of the drag), the line (it frays)
- * and the leader, hook and float, sinker or lure. Nothing lasts for ever and nothing caps it: a careless angler can
+ * What a fight costs the tackle. Every fight wears the rod (more the longer it was loaded near its rating), the reel
+ * (more by cranking while its drag slipped, with the square of the drag) and the leader, hook and float, sinker or
+ * lure a little. A line only gets weaker by fraying, which teeth do (Emre, 22 Oct): load and long fights never
+ * weaken it, it holds or it snaps. Nothing lasts for ever and nothing caps it: a careless angler can
  * wear a reel or rod through in one fight, and a rod, reel or line that gives out mid-fight loses the fish (the fight
  * checks what each has left, see {@link Fight#wearLimits}). A leader, hook or terminal that wears out goes, but a
  * fish already on stays on. A line that snaps, is bitten through, runs
@@ -31,17 +32,9 @@ public final class TackleWear {
 
     /** Wear one fight puts on a leader, hook, float, sinker or lure: one wears out after 200 fights. */
     public static final float PART_WEAR_PER_FIGHT = 0.005f;
-    /** Fraying one fight puts on a line however gently it went: a line fought gently wears out after 100 fights. */
-    public static final double LINE_WEAR_PER_FIGHT = 0.01;
-
-    /** Fraying one fight puts on a line: the base, plus half the fight's own wear, plus what teeth did to it. */
+    /** Fraying one fight puts on a line: only what teeth did. */
     public static double lineFray(Fight fight) {
-        return lineFray(fight.lineWear(), fight.teethFray());
-    }
-
-    /** Fraying from a fight with this much line wear and fraying from teeth. */
-    public static double lineFray(double fightLineWear, double teethFray) {
-        return LINE_WEAR_PER_FIGHT + fightLineWear * Fight.LINE_FRAY_PER_WEAR + teethFray;
+        return fight.teethFray();
     }
 
     /** Durability one fight takes from a reel: 1 for the fight, plus its grinding. */
@@ -55,7 +48,8 @@ public final class TackleWear {
     }
 
     /**
-     * Tells {@code fight} how much the reel, rod and line on {@code rod} have left beyond the fight's base wear, so
+     * Tells {@code fight} how much the reel and rod on {@code rod} have left beyond the fight's base wear, and how much
+     * fraying the line can still take, so
      * one worn through mid-fight breaks there and then.
      */
     public static void setLimits(Fight fight, ItemStack rod) {
@@ -65,7 +59,7 @@ public final class TackleWear {
         double rodLeft = rod.isDamageableItem() ? rod.getMaxDamage() - rod.getDamageValue() - 1 : Double.POSITIVE_INFINITY;
         ItemStack line = RodItem.parts(rod).line();
         double lineLeft = line.isEmpty() ? Double.POSITIVE_INFINITY
-                : 1 - line.getOrDefault(FishingRegistry.LINE_WEAR.get(), 0f) - LINE_WEAR_PER_FIGHT;
+                : 1 - line.getOrDefault(FishingRegistry.LINE_WEAR.get(), 0f);
         fight.wearLimits(Math.max(0, reelLeft), Math.max(0, rodLeft), Math.max(0, lineLeft));
     }
 
@@ -101,11 +95,18 @@ public final class TackleWear {
                     line.set(FishingRegistry.LINE_METERS.get(), left);
                     line.remove(FishingRegistry.LINE_WEAR.get());
                 }
+                // What was on the end goes: leader, hook, float or lure, and the one bait on the hook. Bait still
+                // waiting in the rod stays.
+                ItemStack bait = parts.bait();
+                bait.shrink(1);
                 parts = parts.with(RodParts.Slot.LEADER, ItemStack.EMPTY).with(RodParts.Slot.HOOK, ItemStack.EMPTY)
-                        .with(RodParts.Slot.TERMINAL, ItemStack.EMPTY).with(RodParts.Slot.BAIT, ItemStack.EMPTY);
+                        .with(RodParts.Slot.TERMINAL, ItemStack.EMPTY).with(RodParts.Slot.BAIT, bait);
             } else {
-                float wear = line.getOrDefault(FishingRegistry.LINE_WEAR.get(), 0f) + (float) lineFray(fight);
-                if (wear >= 1) {
+                double fray = lineFray(fight);
+                float wear = line.getOrDefault(FishingRegistry.LINE_WEAR.get(), 0f) + (float) fray;
+                if (fray <= 0) {
+                    // No teeth, no fraying: the line is as it was.
+                } else if (wear >= 1) {
                     angler.level().playSound(null, angler.blockPosition(), SoundEvents.ITEM_BREAK, SoundSource.PLAYERS, 0.6f, 1.2f);
                     tell(angler, Component.translatable("message.create_galore_fishing.worn_out", line.getHoverName()));
                     line = ItemStack.EMPTY;
