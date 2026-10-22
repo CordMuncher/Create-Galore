@@ -1,15 +1,11 @@
 package dev.creategalore.bridge;
 
-import com.simibubi.create.content.contraptions.glue.SuperGlueEntity;
 import dev.ryanhcode.sable.api.sublevel.SubLevelContainer;
 import dev.ryanhcode.sable.companion.math.BoundingBox3ic;
 import dev.ryanhcode.sable.sublevel.SubLevel;
 import dev.ryanhcode.sable.sublevel.plot.LevelPlot;
-import dev.simulated_team.simulated.content.entities.honey_glue.HoneyGlueEntity;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 import com.mojang.logging.LogUtils;
 import net.minecraft.core.BlockPos;
@@ -19,28 +15,33 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LiquidBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.saveddata.SavedData;
-import net.minecraft.world.phys.AABB;
 import net.neoforged.fml.ModList;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import org.slf4j.Logger;
 
 /**
- * Before 0.4.14 the Physics Assembler glued the sea into ships: every water (or lava) block inside a ship's super glue or
- * honey glue came along as a floating block (see SimAssemblyNoFluidsMixin). Ships assembled since then can't carry any,
- * so each older ship is cleaned once, the first time it is loaded: plain fluid blocks inside its glue are removed.
- * Waterlogged blocks are untouched. Ships assembled or split from now on are marked clean as they appear, so water put
- * on a ship later, or Deep Seas' flooding of a holed hull, is never touched.
+ * Before 0.4.16 the Physics Assembler glued the sea into ships: every water (or lava) block inside a ship's super glue or
+ * honey glue came along as a floating block (see SimAssemblyNoFluidsMixin), and before 0.4.22 a waterlogged block built
+ * in the sea came aboard with its water (see SableAssemblyWaterloggedMixin). That water also flowed out across the ship
+ * as thin sheets, past the glue. Ships assembled since can't carry any, so each older ship is cleaned once, the first
+ * time it is loaded: every loose fluid block on it is removed and every waterlogged block is dried. Ships cleaned by
+ * 0.4.16, which only removed the water inside the glue, get this second pass too. Ships assembled or split from now on
+ * are marked clean as they appear, so water put on a ship later, or Deep Seas' flooding of a holed hull, is never
+ * touched.
  */
 public final class ShipGluedWater {
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final int CHECK_INTERVAL = 20;
+    // 1: the glue-only clean of 0.4.16. 2: every loose fluid and waterlogged block (0.4.22).
+    private static final int CURRENT = 2;
 
     private ShipGluedWater() {
     }
@@ -50,9 +51,9 @@ public final class ShipGluedWater {
         NeoForge.EVENT_BUS.addListener(ShipGluedWater::onServerTick);
     }
 
-    /** A ship that comes out of assembly or a split now holds no glued water: never clean it. */
+    /** A ship that comes out of assembly or a split now holds no sea water: never clean it. */
     public static void markClean(ServerLevel level, UUID ship) {
-        Cleaned.get(level).add(ship);
+        Cleaned.get(level).set(ship, CURRENT);
     }
 
     private static void onServerTick(ServerTickEvent.Post event) {
@@ -62,13 +63,13 @@ public final class ShipGluedWater {
             SubLevelContainer container = SubLevelContainer.getContainer(level);
             if (container == null) continue;
             for (SubLevel ship : container.getAllSubLevels()) {
-                if (ship.isRemoved() || cleaned.contains(ship.getUniqueId())) continue;
+                if (ship.isRemoved() || cleaned.version(ship.getUniqueId()) >= CURRENT) continue;
                 LevelPlot plot = ship.getPlot();
                 if (plot == null || !loaded(level, plot)) continue;
-                int removed = clean(level, plot);
-                cleaned.add(ship.getUniqueId());
-                if (removed > 0) {
-                    LOGGER.info("Removed {} glued water blocks from ship {}", removed, ship.getUniqueId());
+                int[] counts = clean(level, plot);
+                cleaned.set(ship.getUniqueId(), CURRENT);
+                if (counts[0] + counts[1] > 0) {
+                    LOGGER.info("Removed {} water blocks from ship {} and dried {} waterlogged blocks", counts[0], ship.getUniqueId(), counts[1]);
                 }
             }
         }
@@ -87,38 +88,34 @@ public final class ShipGluedWater {
         return true;
     }
 
-    private static int clean(ServerLevel level, LevelPlot plot) {
+    // Returns {fluid blocks removed, waterlogged blocks dried}. No neighbour updates: the water next to each one is going
+    // too, and nothing on the ship should flow.
+    private static int[] clean(ServerLevel level, LevelPlot plot) {
         BoundingBox3ic b = plot.getBoundingBox();
-        AABB area = new AABB(b.minX(), b.minY(), b.minZ(), b.maxX() + 1, b.maxY() + 1, b.maxZ() + 1);
-        List<Entity> glues = new ArrayList<>(level.getEntitiesOfClass(SuperGlueEntity.class, area.inflate(1)));
-        glues.addAll(level.getEntitiesOfClass(HoneyGlueEntity.class, area.inflate(1)));
-        int removed = 0;
+        int removed = 0, dried = 0;
         BlockPos.MutableBlockPos p = new BlockPos.MutableBlockPos();
         for (int x = b.minX(); x <= b.maxX(); x++) {
             for (int y = b.minY(); y <= b.maxY(); y++) {
                 for (int z = b.minZ(); z <= b.maxZ(); z++) {
                     p.set(x, y, z);
-                    if (!(level.getBlockState(p).getBlock() instanceof LiquidBlock) || !glued(glues, p)) continue;
-                    // No neighbour updates: the water next to it is going too, and nothing on the ship should flow.
-                    level.setBlock(p, Blocks.AIR.defaultBlockState(), Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
-                    removed++;
+                    BlockState state = level.getBlockState(p);
+                    if (state.getBlock() instanceof LiquidBlock) {
+                        level.setBlock(p, Blocks.AIR.defaultBlockState(), Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
+                        removed++;
+                    } else if (state.hasProperty(BlockStateProperties.WATERLOGGED) && state.getValue(BlockStateProperties.WATERLOGGED)) {
+                        level.setBlock(p, state.setValue(BlockStateProperties.WATERLOGGED, false), Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
+                        dried++;
+                    }
                 }
             }
         }
-        return removed;
+        return new int[] {removed, dried};
     }
 
-    private static boolean glued(List<Entity> glues, BlockPos pos) {
-        for (Entity glue : glues) {
-            if (glue instanceof SuperGlueEntity s ? s.contains(pos) : ((HoneyGlueEntity) glue).contains(pos)) return true;
-        }
-        return false;
-    }
-
-    /** Ships already cleaned (or assembled clean), kept with the world. */
+    /** How far each ship has been cleaned (or that it was assembled clean), kept with the world. */
     private static final class Cleaned extends SavedData {
         private static final String NAME = "create_galore_ship_glued_water";
-        private final Set<UUID> ships = new HashSet<>();
+        private final Map<UUID, Integer> ships = new HashMap<>();
 
         static Cleaned get(ServerLevel level) {
             return level.getServer().overworld().getDataStorage()
@@ -127,24 +124,36 @@ public final class ShipGluedWater {
 
         private static Cleaned load(CompoundTag tag, HolderLookup.Provider registries) {
             Cleaned data = new Cleaned();
+            // 0.4.16 kept a plain list of the ships it had cleaned.
             for (Tag t : tag.getList("ships", Tag.TAG_STRING)) {
-                data.ships.add(UUID.fromString(t.getAsString()));
+                data.ships.put(UUID.fromString(t.getAsString()), 1);
+            }
+            CompoundTag versions = tag.getCompound("versions");
+            for (String id : versions.getAllKeys()) {
+                data.ships.put(UUID.fromString(id), versions.getInt(id));
             }
             return data;
         }
 
-        boolean contains(UUID ship) {
-            return ships.contains(ship);
+        int version(UUID ship) {
+            return ships.getOrDefault(ship, 0);
         }
 
-        void add(UUID ship) {
-            if (ships.add(ship)) setDirty();
+        void set(UUID ship, int version) {
+            Integer old = ships.put(ship, version);
+            if (old == null || old != version) setDirty();
         }
 
         @Override
         public CompoundTag save(CompoundTag tag, HolderLookup.Provider registries) {
+            CompoundTag versions = new CompoundTag();
             ListTag list = new ListTag();
-            ships.forEach(id -> list.add(StringTag.valueOf(id.toString())));
+            ships.forEach((id, version) -> {
+                versions.putInt(id.toString(), version);
+                list.add(StringTag.valueOf(id.toString()));
+            });
+            tag.put("versions", versions);
+            // The 0.4.16 list too, so a server moved back to an older pack doesn't clean these ships again.
             tag.put("ships", list);
             return tag;
         }
