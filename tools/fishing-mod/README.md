@@ -49,7 +49,7 @@ jar lands in `pack/mods/create-galore-fishing-<version>.jar`; the version comes 
 | `sim` | the fight model: pure Java, no game classes, shared by the game and the Monte Carlo runner |
 | `fish` | species data: loads Tide-format fish files plus our extension files, fills in defaults |
 | `bait` | bait kinds and diets, live bait and the Live-Bait Bucket, chum, worms from hoeing |
-| `process` | the Cleaning Table and its yields, the weight-limited fish ingredient, the `processing` self-test |
+| `process` | the Cleaning Table and the Fish Cleaner and their yields, the weight-limited fish ingredient, the `processing` self-test |
 | `aquarium` | Aquarium Tanks: the multiblock (`AquariumTanks`), its contents and breeding (`AquariumBlockEntity`), what right-clicks do (`AquariumUse`), the `aquarium` self-test |
 | `machine` | rod machines: `MountedRod` (what every machine shares), `MachineAngler` (the fake player a machine fishes as), the Rod Holder, the Basic / Geared Reel Drives (`ReelDriveBlockEntity`, a Create kinetic block) and the Fuel Reel Drive, with `ReelDrive` (what the drives share), their value boxes and goggles readout, and the `machines` self-test |
 | `compat` | the move off Tide: `TideAliases` (old ids to their replacements), `TideRodConversion` (Tide-rigged rods to our parts), `RodSwap`, and the Tide self-tests; `IntegratedFarmingNets` (Fishing Net catches); `LiquidFuels` (what the Fuel Reel Drive burns); `SableShips` (machines on ships) |
@@ -109,6 +109,12 @@ Tide 2 is not in the pack any more; this mod carries what players had from it, u
   fillets, Hybrid Aquatic's steaks from 3 kg, roe, Aquaculture's bones, scraps (more for oily fish), shark skin. By
   hand the parts go to the player; a Deployer (any fake player) leaves them in nine output slots for hoppers and
   funnels, and the table takes the next fish only once those are empty.
+- The Fish Cleaner (`process/FishCleaner*`): a Create kinetic block (shaft side to side, 4 SU/RPM like the saw) for
+  fish lines. Items come in through its item handler or `DirectBeltInputBehaviour` from any side but the front, and
+  leave by the front (belt/depot/chute, else an inventory, else dropped). Only `needsCleaning` fish (a fish the
+  `whole_fish` ingredient refuses, so 3 kg or more) are cut, with the table's strokes and yields, one stroke per
+  320 RPM-ticks; everything else passes through untouched, with or without rotation. A big fish is only cut once
+  the last one's parts have left, so they always fit in its nine output slots.
 - Live bait: bait loaded from the Live-Bait Bucket (a bundle that only takes `#create_galore_fishing:live_bait`)
   carries the `live_bait` component on the rod; a baitfish then counts as a live fish rather than cut bait. Taking
   bait off the rod strips it.
@@ -189,7 +195,9 @@ Tide 2 is not in the pack any more; this mod carries what players had from it, u
   reload. Anything that can't be drawn (no world, a mob that throws, dropped fish beyond 16 blocks) is the sprite.
   Trophies and uniques get a star in the slot and the rare / epic name colour.
 - A fish on a Cleaning Table is drawn the same way (`client/CleaningTableRenderer`), lying on its side, with the
-  strokes done shown while the player looks at it.
+  strokes done shown while the player looks at it. On a Fish Cleaner (`client/FishCleanerRenderer`) it lies along
+  Create's saw blade (stood up through the slot in the top) and slides forward as the strokes go; the shaft is
+  Create's own visual.
 - Tuning without restarts: start the client with `-Dcgfish.debug=true` for `/cgfishc rodpose first|third ...`,
   `/cgfishc rodload <load>|off`, `/cgfishc holdpose ...` and `/cgfishc fishpose first|third|ground|fixed|head ...`
   (see `client/DebugCommands`), plus model-size logging and the list of fish items at startup.

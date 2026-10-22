@@ -49,6 +49,7 @@ public final class FishingClient {
             event.registerBlockEntityRenderer(FishingRegistry.AQUARIUM_ENTITY.get(), AquariumRenderer::new);
             event.registerBlockEntityRenderer(FishingRegistry.ROD_HOLDER_ENTITY.get(), context -> new MountRenderer<>());
             event.registerBlockEntityRenderer(FishingRegistry.REEL_DRIVE_ENTITY.get(), ReelDriveRenderer::new);
+            event.registerBlockEntityRenderer(FishingRegistry.FISH_CLEANER_ENTITY.get(), FishCleanerRenderer::new);
             event.registerBlockEntityRenderer(FishingRegistry.FUEL_REEL_DRIVE_ENTITY.get(), context -> new MountRenderer<>());
         });
         modBus.addListener(FishingClient::fishOil);
@@ -59,6 +60,7 @@ public final class FishingClient {
             ItemBlockRenderTypes.setRenderLayer(FishingRegistry.FISH_OIL.get(), RenderType.translucent());
             ItemBlockRenderTypes.setRenderLayer(FishingRegistry.FLOWING_FISH_OIL.get(), RenderType.translucent());
             ReelDriveRenderer.registerVisual();
+            FishCleanerRenderer.registerVisual();
         }));
         FishingInput.init(modBus);
         FishingHud.init(modBus);

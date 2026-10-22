@@ -25,7 +25,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "A fish under 3 kg cooks whole on a campfire, in a smoker, furnace or a fan's smoking air. Many cook into **Small**, plain or **Large Cooked Fish** depending on the kind; others into their own cooked fish.\\\n\\\nA fish of 3 kg or more won't cook: its tooltip says to clean it at a [#](2E5AAC)[Cleaning Table](entry://fishing/cleaning)[#]()."
+      "text": "A fish under 3 kg cooks whole on a campfire, in a smoker, furnace or a fan's smoking air. Many cook into **Small**, plain or **Large Cooked Fish** depending on the kind; others into their own cooked fish.\\\n\\\nA fish of 3 kg or more won't cook: its tooltip says to clean it at a [#](2E5AAC)[Cleaning Table](entry://fishing/cleaning)[#]() or a [#](2E5AAC)[Fish Cleaner](entry://fishing/fish_cleaner)[#]()."
     },
     {
       "type": "modonomicon:text",

@@ -4,6 +4,26 @@ Each pack version gets a section here, with **Added**, **Fixed** and **Removed**
 workflow copies the section for the version in `pack/pack.toml` to the top of the GitHub release, and the build
 fails when that section is missing.
 
+## 0.4.26
+
+### Added
+- **Fish Cleaner**, a Create machine for fish lines. Fish come in from a belt, chute, hopper or funnel and leave from the front. Only fish too big to use whole (3 kg or more, the ones no furnace or smoker takes) are cut up, into the same fillets, steaks, roe, bones and scraps as at the Cleaning Table; every other fish and item passes through untouched. The saw runs on rotation (two cuts a second at 32 RPM, 4 SU per RPM). Crafted from a knife, two shafts, an andesite casing and a Cleaning Table. New Field Guide page in Fishing.
+- Create Galore Fishing 0.3.13.
+
+## 0.4.25
+
+### Fixed
+- **Water and ice look right with shader packs again.** Since the Deep Seas update in 0.4.20, with Complementary, Bliss or any other shader pack the sea drew as flat grey without reflections, and ice or anything else floating on it looked like dark glass sinking into the water. Deep Seas' submarine water hiding took over texture slots the shader pack was using; it now keeps to its own slots again.
+- Create Galore Bridge 1.56.0.
+
+## 0.4.24
+
+### Fixed
+- **A line only gets weaker by fraying from teeth.** Hard and long fights and plain use no longer weaken a line: it holds or it snaps. A line behind an Iron or Steel Leader never frays. A line already frayed keeps what it has until it snaps or you replace it.
+- **A snapped line no longer takes all your bait.** Only the bait on the hook goes with the leader, hook and float or lure; bait still waiting in the rod stays. The line left after a snap is unfrayed (the frayed part is what parted).
+- **A warning when you cast with the drag over what your line holds.** The action bar says, in red, that the line will snap and to lower the drag.
+- Create Galore Fishing 0.3.12.
+
 ## 0.4.23
 
 ### Fixed

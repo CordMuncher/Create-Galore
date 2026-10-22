@@ -1,5 +1,7 @@
 package dev.creategalore.fishing.process;
 
+import com.simibubi.create.content.kinetics.belt.behaviour.DirectBeltInputBehaviour;
+import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
 import dev.creategalore.fishing.FishingRegistry;
 import dev.creategalore.fishing.bait.BaitKind;
 import dev.creategalore.fishing.bait.Chum;
@@ -44,6 +46,7 @@ import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.fml.ModList;
+import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.common.util.FakePlayer;
 import net.neoforged.neoforge.common.util.FakePlayerFactory;
 import net.neoforged.neoforge.items.IItemHandler;
@@ -53,7 +56,8 @@ import net.neoforged.neoforge.registries.RegistryManager;
  * {@code /cgfish selftest processing}: the bait and processing recipes load, every fish cooking recipe that could
  * take a big fish is weight-limited and refuses one, the Cleaning Table's strokes and yields follow the weight and a
  * table worked by a fake player (as a Deployer is) fills its outputs, bait from a Live-Bait Bucket counts as live,
- * chum speeds bites near it only, fish oil is Blaze Burner fuel, and Fishing Nets have our catch provider.
+ * a Fish Cleaner passes small fish and other items on untouched and cuts only big ones (with rotation, as the table
+ * would), chum speeds bites near it only, fish oil is Blaze Burner fuel, and Fishing Nets have our catch provider.
  */
 public final class ProcessingSelfTest {
     private ProcessingSelfTest() {
@@ -63,7 +67,7 @@ public final class ProcessingSelfTest {
     static final List<String> RECIPES = List.of("splashing/dirt", "splashing/coarse_dirt", "splashing/rooted_dirt",
             "splashing/mud", "mixing/maggots", "mixing/boilies", "mixing/chum", "milling/fish_meal_from_scraps",
             "milling/fish_meal_from_bones", "compacting/fish_oil_from_scraps", "compacting/fish_oil_from_oily_fish",
-            "crafting/cleaning_table", "crafting/live_bait_bucket", "smoking/leather_from_shark_skin",
+            "crafting/cleaning_table", "crafting/fish_cleaner", "crafting/live_bait_bucket", "smoking/leather_from_shark_skin",
             "campfire_cooking/leather_from_shark_skin");
 
     public static void register() {
@@ -77,6 +81,7 @@ public final class ProcessingSelfTest {
         cooking(server, r);
         cleaning(r);
         table(server.overworld(), r);
+        cleaner(server.overworld(), r);
         liveBait(r);
         chum(server.overworld(), r);
         if (ModList.get().isLoaded("createliquidfuel")) {
@@ -202,6 +207,95 @@ public final class ProcessingSelfTest {
         } finally {
             level.removeBlock(pos, false);
         }
+    }
+
+    /**
+     * A real Fish Cleaner with a barrel in front of it, ticked by hand: what isn't too big to use whole goes into the
+     * barrel as it came, a big fish waits for rotation and is then cut in the table's number of strokes into the
+     * table's parts. Its belt input takes nothing from the front.
+     */
+    private static void cleaner(ServerLevel level, SelfTest.Report r) {
+        BlockPos pos = new BlockPos(0, level.getMaxBuildHeight() - 2, 3);
+        BlockPos front = pos.north();
+        level.setBlockAndUpdate(pos, FishingRegistry.FISH_CLEANER.get().defaultBlockState()
+                .setValue(FishCleanerBlock.HORIZONTAL_FACING, Direction.NORTH));
+        level.setBlockAndUpdate(front, Blocks.BARREL.defaultBlockState());
+        try {
+            if (!(level.getBlockEntity(pos) instanceof FishCleanerBlockEntity cleaner)) {
+                r.fail("the Fish Cleaner has its block entity");
+                return;
+            }
+            IItemHandler barrel = level.getCapability(Capabilities.ItemHandler.BLOCK, front, Direction.SOUTH);
+            IItemHandler items = cleaner.items();
+            ItemStack small = caught(Items.SALMON, SizeClass.TROPHY, 2.5);
+            ItemStack big = caught(Items.SALMON, SizeClass.LARGE, 6);
+            r.check(!FishCleanerBlockEntity.needsCleaning(small) && !FishCleanerBlockEntity.needsCleaning(new ItemStack(Items.COD))
+                    && FishCleanerBlockEntity.needsCleaning(big) && !FishCleanerBlockEntity.needsCleaning(new ItemStack(Items.STONE)),
+                    "only fish of " + WholeFishIngredient.MAX_KG + " kg or more need cleaning (a 2.5 kg trophy, a plain cod and stone don't)");
+            DirectBeltInputBehaviour belt = BlockEntityBehaviour.get(level, pos, DirectBeltInputBehaviour.TYPE);
+            r.check(belt != null && belt.canInsertFromSide(Direction.NORTH) && belt.canInsertFromSide(Direction.DOWN)
+                    && !belt.canInsertFromSide(Direction.SOUTH), "belts and chutes feed it from the back and top, not the front");
+
+            // Unpowered, small things go straight through.
+            r.check(items.insertItem(0, new ItemStack(Items.COD, 12), false).isEmpty(), "a stack of 12 cod goes in");
+            r.check(items.insertItem(0, new ItemStack(Items.STONE), true).getCount() == 1, "nothing else while they wait");
+            run(cleaner, 5);
+            items.insertItem(0, small.copy(), false);
+            run(cleaner, 5);
+            items.insertItem(0, new ItemStack(Items.KELP, 3), false);
+            run(cleaner, 5);
+            r.check(count(barrel, Items.COD) == 12 && count(barrel, Items.KELP) == 3 && cleaner.isEmpty(),
+                    "with no rotation, 12 cod and 3 kelp pass into the barrel in front");
+            r.check(contains(barrel, small), "the 2.5 kg trophy salmon passes whole, its catch data kept");
+
+            // A big fish waits for the saw.
+            r.check(items.insertItem(0, big.copy(), false).isEmpty(), "a 6 kg salmon goes in");
+            r.check(items.insertItem(0, big.copy(), true).getCount() == 1, "one big fish at a time");
+            run(cleaner, 100);
+            r.check(!cleaner.input().isEmpty() && cleaner.strokes() == 0 && count(barrel, Items.SALMON) == 1,
+                    "without rotation it isn't cut, nor passed on");
+            // Create's validation stops a block that turns with no source now and then, so the speed is set each tick.
+            int ticks = 0;
+            while (!cleaner.input().isEmpty() && ticks < 400) {
+                cleaner.setSpeed(32);
+                cleaner.tick();
+                ticks++;
+            }
+            run(cleaner, 20);
+            int expected = Cleaning.strokes(6) * (int) (FishCleanerBlockEntity.STROKE_WORK / 32);
+            r.check(cleaner.input().isEmpty() && Math.abs(ticks - expected) <= 1,
+                    "at 32 RPM it is cut in " + ticks + " ticks (" + Cleaning.strokes(6) + " strokes, two a second)");
+            int salmon = count(barrel, Items.SALMON);
+            int parts = 0;
+            for (int slot = 0; slot < barrel.getSlots(); slot++) {
+                ItemStack s = barrel.getStackInSlot(slot);
+                if (!s.isEmpty() && !s.is(Items.SALMON) && !s.is(Items.COD) && !s.is(Items.KELP)) parts += s.getCount();
+            }
+            r.check(salmon == 1 && parts > 0 && count(barrel, FishingRegistry.FISH_SCRAPS.get()) > 0 && cleaner.isEmpty(),
+                    "its parts (" + parts + " items, scraps among them) went into the barrel, and only the trophy is whole");
+        } finally {
+            level.removeBlock(pos, false);
+            level.removeBlock(front, false);
+        }
+    }
+
+    private static void run(FishCleanerBlockEntity cleaner, int ticks) {
+        for (int i = 0; i < ticks; i++) cleaner.tick();
+    }
+
+    private static int count(IItemHandler inventory, Item item) {
+        int n = 0;
+        for (int slot = 0; slot < inventory.getSlots(); slot++) {
+            if (inventory.getStackInSlot(slot).is(item)) n += inventory.getStackInSlot(slot).getCount();
+        }
+        return n;
+    }
+
+    private static boolean contains(IItemHandler inventory, ItemStack stack) {
+        for (int slot = 0; slot < inventory.getSlots(); slot++) {
+            if (ItemStack.isSameItemSameComponents(inventory.getStackInSlot(slot), stack)) return true;
+        }
+        return false;
     }
 
     private static void liveBait(SelfTest.Report r) {

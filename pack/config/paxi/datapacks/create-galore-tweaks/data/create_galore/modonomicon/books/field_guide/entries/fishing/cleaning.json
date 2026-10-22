@@ -45,7 +45,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "[#](FFFFFF)\ue104[#]() **Automated.** A [#](2E5AAC)[Deployer](entry://create_basics/deployer)[#]() holding a knife cuts the fish. Then the parts wait in the table's output for hoppers or funnels, and the table takes the next fish once it is empty. See [#](2E5AAC)[Moving Items](entry://create_basics/item_logistics)[#]()."
+      "text": "[#](FFFFFF)\ue104[#]() **Automated.** A [#](2E5AAC)[Deployer](entry://create_basics/deployer)[#]() holding a knife cuts the fish. Then the parts wait in the table's output for hoppers or funnels, and the table takes the next fish once it is empty. See [#](2E5AAC)[Moving Items](entry://create_basics/item_logistics)[#]().\\\n\\\nFor a fish line, the [#](2E5AAC)[Fish Cleaner](entry://fishing/fish_cleaner)[#]() cleans only the big fish and passes the rest on."
     },
     {
       "type": "modonomicon:spotlight",
@@ -90,7 +90,7 @@
     {
       "type": "modonomicon:text",
       "title": "Related",
-      "text": "- [#](2E5AAC)[Burning Liquid Fuel](entry://industry/liquid_fuel)[#]()\n- [#](2E5AAC)[Bait](entry://fishing/bait)[#]()\n- [#](2E5AAC)[Live Bait and Chum](entry://fishing/live_bait)[#]()\n- [#](2E5AAC)[Sea Food](entry://fishing/sea_food)[#]()"
+      "text": "- [#](2E5AAC)[Fish Cleaner](entry://fishing/fish_cleaner)[#]()\n- [#](2E5AAC)[Burning Liquid Fuel](entry://industry/liquid_fuel)[#]()\n- [#](2E5AAC)[Bait](entry://fishing/bait)[#]()\n- [#](2E5AAC)[Live Bait and Chum](entry://fishing/live_bait)[#]()\n- [#](2E5AAC)[Sea Food](entry://fishing/sea_food)[#]()"
     }
   ]
 }

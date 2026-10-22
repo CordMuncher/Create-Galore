@@ -16,6 +16,7 @@ import dev.creategalore.fishing.fish.SpeciesManager;
 import dev.creategalore.fishing.fish.SpeciesSelfTest;
 import dev.creategalore.fishing.machine.MachineSelfTest;
 import dev.creategalore.fishing.machine.ReelDriveBlockEntity;
+import dev.creategalore.fishing.process.FishCleanerBlockEntity;
 import dev.creategalore.fishing.net.FishingNet;
 import dev.creategalore.fishing.process.ProcessingSelfTest;
 import dev.creategalore.fishing.selftest.SelfTest;
@@ -74,6 +75,7 @@ public final class CreateGaloreFishing {
             // The drives' stress at rest, for Create's tooltips; while a fish is on it is set live (ReelDriveBlockEntity).
             BlockStressValues.IMPACTS.register(FishingRegistry.REEL_DRIVE.get(), () -> ReelDriveBlockEntity.IDLE);
             BlockStressValues.IMPACTS.register(FishingRegistry.GEARED_REEL_DRIVE.get(), () -> ReelDriveBlockEntity.IDLE);
+            BlockStressValues.IMPACTS.register(FishingRegistry.FISH_CLEANER.get(), () -> FishCleanerBlockEntity.IMPACT);
         }));
         if (FMLEnvironment.dist.isClient()) {
             FishingClient.init(modBus);

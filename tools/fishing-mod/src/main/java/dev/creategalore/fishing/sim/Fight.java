@@ -56,8 +56,6 @@ public final class Fight {
     public static final double REEL_DURABILITY_PER_WEAR = 3;
     /** Durability one unit of {@link #rodWear()} costs a rod. */
     public static final double ROD_DURABILITY_PER_WEAR = 15;
-    /** Fraying of a line (0 new, 1 worn through) per unit of a fight's line wear. */
-    public static final double LINE_FRAY_PER_WEAR = 0.5;
     /** Water drag on a towed fish, kgf per kg^(2/3) per (m/s)^2. */
     public static final double TOW_DRAG = 0.07;
     /** Rod lift speed with nothing on the line, in full lifts per second: a strike is a flick of a third of a second. */
@@ -135,7 +133,6 @@ public final class Fight {
     private boolean runStarted;
     private double rodWear;
     private double reelWear;
-    private double lineWear;
     private double highestTension;
     private int grindTicks;
     private boolean grinding;
@@ -145,7 +142,7 @@ public final class Fight {
     private double lineLife = Double.POSITIVE_INFINITY;
     /** Rod height, 0 lowered to 1 fully lifted. */
     private double rodHeight;
-    /** Fraying from a toothy fish's teeth this fight (on top of the line's ordinary wear). */
+    /** Fraying from a toothy fish's teeth this fight (the only thing that frays a line). */
     private double teethFray;
     /** Why the fight was lost, once it is. */
     private Loss loss;
@@ -184,7 +181,7 @@ public final class Fight {
 
     /**
      * Durability the reel and rod have left (after the fight's base wear of 1 each), and how much fraying the line
-     * can still take (after the fight's base fraying). When the fight's wear uses one up, that part breaks mid-fight
+     * can still take. When the fight's wear uses one up, that part breaks mid-fight
      * and the fish is gone. Unlimited unless set (the simulator).
      */
     public void wearLimits(double reelDurabilityLeft, double rodDurabilityLeft, double lineFrayLeft) {
@@ -402,14 +399,9 @@ public final class Fight {
             return;
         }
         // A line of unknown wear (the simulator) counts as new: it frays through at 1.
-        if (cleanBite || teethFray > 0 && teethFray + lineWear * LINE_FRAY_PER_WEAR >= Math.min(1, lineLife)) {
+        if (cleanBite || teethFray > 0 && teethFray >= Math.min(1, lineLife)) {
             outcome = Outcome.BITTEN_OFF;
             loss = cleanBite ? Loss.BITTEN_CLEAN : Loss.BITTEN_CHEWED;
-            return;
-        }
-        if (lineWear * LINE_FRAY_PER_WEAR >= lineLife) {
-            outcome = Outcome.LINE_SNAPPED;
-            loss = Loss.SNAP_WORN;
             return;
         }
         if (reelWear * REEL_DURABILITY_PER_WEAR >= reelLife) {
@@ -456,7 +448,6 @@ public final class Fight {
         stamina -= DT * effort * (1 + 0.6 * sidePressure(in.rodAngle)) / endurance;
         if (tension < 0.15 * maxPull) stamina += DT * 0.015;
         stamina = clamp(stamina, 0, 1);
-        lineWear += DT * 0.02 * tension / breakLoad;
 
         if (distance() <= LAND_DISTANCE + 1e-9) {
             if (stamina < 0.35 || weight < 0.4) {
@@ -707,10 +698,6 @@ public final class Fight {
 
     public double reelWear() {
         return reelWear;
-    }
-
-    public double lineWear() {
-        return lineWear;
     }
 
     /**
