@@ -24,9 +24,10 @@ import net.minecraft.world.phys.Vec3;
 public final class FanSmeltingSmog {
     private FanSmeltingSmog() {}
 
-    private static final float BLASTING_CARBON = 0.25f;
-    private static final float BLASTING_SULFUR = 0.05f;
-    private static final float SMOKING_CARBON = 0.125f;
+    /** Per finished item: a puff of smog right above it. */
+    private static final float BLASTING_CARBON = 1.0f;
+    private static final float BLASTING_SULFUR = 0.2f;
+    private static final float SMOKING_CARBON = 1.0f;
     /** Failed emissions in a row (within the window) before the space blows. */
     private static final int FAILS_TO_BLOW = 4;
     private static final long FAIL_WINDOW = 200;

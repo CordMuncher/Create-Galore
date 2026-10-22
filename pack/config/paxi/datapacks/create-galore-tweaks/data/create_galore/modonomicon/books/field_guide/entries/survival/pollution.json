@@ -29,13 +29,18 @@
     },
     {
       "type": "modonomicon:text",
+      "title": "Seeing smog",
+      "text": "Look at a gas block to see what it is and how thick it is (light, medium or heavy: 1 to 3 units). Crouch to look through it at the block behind."
+    },
+    {
+      "type": "modonomicon:text",
       "title": "What pollutes",
       "text": "- Furnace, smoker, blast furnace: 1 carbon and 0.1 sulfur per coal burned; other fuels have their own amounts\n- Blaze Burner, steam boiler, Farmer's Delight stove: about 1 carbon a minute while fuelled\n- Campfire: a little now and then\n- Crushing Wheels: about 4 dust a minute while working, Millstone 1"
     },
     {
       "type": "modonomicon:text",
       "title": "Bulk smelting",
-      "text": "An [#](2E5AAC)[Encased Fan](entry://create_basics/fans)[#]() blowing through lava or a Blaze Burner makes no smog by itself. Each item it finishes does: 1 carbon for every 4 items blasted plus 1 sulfur for every 20, and 1 carbon for every 8 items smoked. Washing and haunting are clean."
+      "text": "An [#](2E5AAC)[Encased Fan](entry://create_basics/fans)[#]() blowing through lava or a Blaze Burner makes no smog by itself. Each item it finishes puffs out smog right where it is: 1 carbon for every item blasted, plus 1 sulfur for every 5, and 1 carbon for every item smoked over fire or a campfire. A stack of 64 ores makes 64 carbon. Washing and haunting are clean."
     },
     {
       "type": "modonomicon:text",
