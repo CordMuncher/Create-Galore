@@ -4,6 +4,14 @@ Each pack version gets a section here, with **Added**, **Fixed** and **Removed**
 workflow copies the section for the version in `pack/pack.toml` to the top of the GitHub release, and the build
 fails when that section is missing.
 
+## 0.4.24
+
+### Fixed
+- **A line only gets weaker by fraying from teeth.** Hard and long fights and plain use no longer weaken a line: it holds or it snaps. A line behind an Iron or Steel Leader never frays. A line already frayed keeps what it has until it snaps or you replace it.
+- **A snapped line no longer takes all your bait.** Only the bait on the hook goes with the leader, hook and float or lure; bait still waiting in the rod stays. The line left after a snap is unfrayed (the frayed part is what parted).
+- **A warning when you cast with the drag over what your line holds.** The action bar says, in red, that the line will snap and to lower the drag.
+- Create Galore Fishing 0.3.12.
+
 ## 0.4.23
 
 ### Fixed

@@ -68,7 +68,7 @@ public final class TackleSelfTest {
             weak.set(FishingRegistry.DRAG_STEP.get(), 10);
             r.check(!RodStats.of(weak).orElseThrow().warnings().isEmpty(), "drag over the line test gives a warning");
 
-            // Every part wears a little each fight, even a gentle landed one, and wears out in the end.
+            // Every part but the line wears a little each fight, even a gentle landed one, and wears out in the end.
             ArmorStand angler = EntityType.ARMOR_STAND.create(server.overworld());
             ItemStack used = rig(FishingRegistry.IRON_ROD.get(), FishingRegistry.IRON_REEL.get(),
                     FishingRegistry.MONO_LINE.get(), FishingRegistry.MEDIUM_HOOK.get(), FishingRegistry.FLOAT.get());
@@ -78,34 +78,41 @@ public final class TackleSelfTest {
             RodParts after = RodItem.parts(used);
             r.check(used.getDamageValue() == 1 && after.reel().getDamageValue() == 1,
                     "a gentle fight costs the rod " + used.getDamageValue() + " and the reel " + after.reel().getDamageValue() + " (want 1 each)");
-            r.check(Math.abs(after.line().getOrDefault(FishingRegistry.LINE_WEAR.get(), 0f) - TackleWear.LINE_WEAR_PER_FIGHT) < 1e-6,
-                    "a gentle fight frays the line " + after.line().get(FishingRegistry.LINE_WEAR.get()));
+            // Emre (22 Oct): only teeth fray a line; a fight without them leaves it as it was.
+            r.check(!after.line().has(FishingRegistry.LINE_WEAR.get()),
+                    "a fight without teeth leaves the line unfrayed (" + after.line().get(FishingRegistry.LINE_WEAR.get()) + ")");
             for (RodParts.Slot slot : new RodParts.Slot[]{RodParts.Slot.LEADER, RodParts.Slot.HOOK, RodParts.Slot.TERMINAL}) {
                 r.check(after.get(slot).getOrDefault(FishingRegistry.PART_WEAR.get(), 0f) == TackleWear.PART_WEAR_PER_FIGHT,
                         "a gentle fight wears the " + slot + " " + after.get(slot).get(FishingRegistry.PART_WEAR.get()));
             }
-            // A rod, reel or line worn through breaks mid-fight and the fish is gone: a line nearly frayed through parts
-            // as soon as the fish pulls.
-            ItemStack frayedRig = used.copy();
-            ItemStack frayedLine = after.line();
-            frayedLine.set(FishingRegistry.LINE_WEAR.get(), 0.995f);
-            RodItem.setParts(frayedRig, after.with(RodParts.Slot.LINE, frayedLine));
-            Fight onFrayed = new Fight(FishFight.AVERAGE, RodStats.of(frayedRig).orElseThrow().tackle(1), 1, 20);
-            TackleWear.setLimits(onFrayed, frayedRig);
-            Controls hold = new Controls();
-            hold.drag = RodStats.of(frayedRig).orElseThrow().drag();
-            java.util.SplittableRandom random = new java.util.SplittableRandom(1);
-            while (!onFrayed.outcome().over() && onFrayed.ticks() < 200) onFrayed.tick(hold, random);
-            r.check(onFrayed.outcome() == Outcome.LINE_SNAPPED, "a line frayed through parts mid-fight (" + onFrayed.outcome() + ")");
-
             ItemStack nearlyHook = after.hook(), nearlyLine = after.line();
             nearlyHook.set(FishingRegistry.PART_WEAR.get(), 0.996f);
             nearlyLine.set(FishingRegistry.LINE_WEAR.get(), 0.995f);
             RodItem.setParts(used, after.with(RodParts.Slot.HOOK, nearlyHook).with(RodParts.Slot.LINE, nearlyLine));
             TackleWear.apply(angler, EquipmentSlot.MAINHAND, used, gentle, Outcome.LANDED);
             RodParts worn = RodItem.parts(used);
-            r.check(worn.hook().isEmpty() && worn.line().isEmpty() && !worn.terminal().isEmpty() && !worn.reel().isEmpty(),
-                    "a hook and a line worn through are gone after the fight; the rest stays");
+            r.check(worn.hook().isEmpty() && !worn.line().isEmpty() && !worn.terminal().isEmpty() && !worn.reel().isEmpty(),
+                    "a hook worn through is gone after the fight; a nearly frayed line fought without teeth stays, as does the rest");
+
+            // Emre (22 Oct): a snapped line loses what was on its end (leader, hook, rig and the bait on the hook), not
+            // the bait still waiting in the rod; the line left is the unfrayed part.
+            ItemStack lost = rig(FishingRegistry.IRON_ROD.get(), FishingRegistry.IRON_REEL.get(),
+                    FishingRegistry.STRING_LINE.get(), FishingRegistry.MEDIUM_HOOK.get(), FishingRegistry.SPOON.get());
+            RodParts lp = RodItem.parts(lost);
+            ItemStack lostLine = lp.line();
+            lostLine.set(FishingRegistry.LINE_WEAR.get(), 0.45f);
+            int metresBefore = LineItem.meters(lostLine);
+            RodItem.setParts(lost, lp.with(RodParts.Slot.LINE, lostLine)
+                    .with(RodParts.Slot.LEADER, new ItemStack(FishingRegistry.IRON_LEADER.get()))
+                    .with(RodParts.Slot.BAIT, new ItemStack(net.minecraft.world.item.Items.COD, 12)));
+            TackleWear.apply(angler, EquipmentSlot.MAINHAND, lost, gentle, Outcome.LINE_SNAPPED);
+            RodParts afterSnap = RodItem.parts(lost);
+            r.check(afterSnap.hook().isEmpty() && afterSnap.leader().isEmpty() && afterSnap.terminal().isEmpty()
+                            && afterSnap.bait().getCount() == 11,
+                    "a snapped line loses the leader, hook, rig and the one bait on the hook; " + afterSnap.bait().getCount() + " of 12 bait stay");
+            r.check(!afterSnap.line().isEmpty() && !afterSnap.line().has(FishingRegistry.LINE_WEAR.get())
+                            && LineItem.meters(afterSnap.line()) < metresBefore,
+                    "the line left after a snap is shorter and unfrayed (" + LineItem.meters(afterSnap.line()) + " of " + metresBefore + " m)");
 
             // Emre's snap (0.4.12): a String Line (4 kg test) frayed 22.5% holds 3.55 kg, so a 3.6 kg drag is over it.
             // The rod's tooltip, the drag readouts and the fight must all use that same number.

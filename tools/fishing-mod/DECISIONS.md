@@ -448,3 +448,24 @@ rules: landing rate moves 0.015 on average; per rig and angler the means move at
 now often land, in about 7 (REST gives a patient angler a window): stingray on steel careful 25 -> 61%. Tension change
 per tick halved (tuna on iron 0.011 -> 0.005 of test). In-game: salmon fight landed with the new moods, bars eased,
 "Swimming at you" and "Slack line!" shown, the line sags in third person; 424 self-tests pass.
+
+## 0.3.12: lines hold or snap, bait on a snap (pack 0.4.24)
+
+Emre lost a tuna on a frayed line behind an Iron Leader. The fraying was not from teeth: every fight frayed a line
+0.01 plus half its load wear (unbounded), and his hard tuna fights had taken the string line to 45% frayed, so it
+held 3.1 kg against a 3.6 kg drag at the hook-set. Emre (22 Oct): lines don't get progressively weaker; they hold
+or snap, and fraying (teeth) is the only thing that weakens them.
+
+- **Line wear removed.** No 0.01 per fight and no load fraying (`Fight.lineWear`, `LINE_FRAY_PER_WEAR` and the
+  `SNAP_WORN` loss are gone). `TackleWear.lineFray` is only the fight's teeth fraying; a fight without teeth leaves
+  the line's component untouched. Lines therefore last until snapped, spooled or chewed: this replaces the
+  "nothing lasts for ever" rule for lines only. Rod, reel, leader, hook and terminal wear are unchanged.
+- **Snap keeps queued bait.** A tackle-losing outcome now takes one bait (the one on the hook), not the whole bait
+  stack. The line left is unfrayed (already true, now tested).
+- **Cast warning.** Casting with the drag over what the line holds now says so in red on the action bar; the HUD,
+  tooltip and bench already showed it but were easy to miss.
+
+Checks. Fight rules 25/25 (the "frayed line parts mid-fight" rule became "a nearly frayed line fought hard by a fish
+without teeth holds"). Monte Carlo against 0.3.11, all species x 5 rigs x 2 anglers x 200 fights: mean landing rate
+moves 0.001; no rig or angler mean moves more than 0.2 points. In-game self-tests 424 pass (new: snap keeps 11 of
+12 bait and leaves a shorter unfrayed line; a fight without teeth leaves the line unfrayed).
