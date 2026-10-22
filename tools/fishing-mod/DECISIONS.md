@@ -470,7 +470,7 @@ without teeth holds"). Monte Carlo against 0.3.11, all species x 5 rigs x 2 angl
 moves 0.001; no rig or angler mean moves more than 0.2 points. In-game self-tests 424 pass (new: snap keeps 11 of
 12 bait and leaves a shorter unfrayed line; a fight without teeth leaves the line unfrayed).
 
-## 0.3.13: the Fish Cleaner (pack 0.4.25)
+## 0.3.13: the Fish Cleaner (pack 0.4.26)
 
 Emre (22 Oct) asked for a Create block that cleans the fish that are too big and passes the rest on.
 
