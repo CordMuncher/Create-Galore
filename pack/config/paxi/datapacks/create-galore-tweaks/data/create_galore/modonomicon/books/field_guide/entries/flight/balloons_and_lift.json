@@ -70,7 +70,7 @@
         "item": "aeronautics:levitite"
       },
       "title": "Levitite",
-      "text": "Keeps a ship afloat but **cannot gain height alone**; you need other forces. It resists slow motion strongly and less so at speed."
+      "text": "Keeps a ship afloat but **cannot gain height alone**; you need other forces. It resists slow motion strongly and less so at speed.\\\n\\\nEach block holds up 10 kpg of ship, itself included (Jade shows block weights). A heavier ship sinks slowly. Keep it level with the weight: a heavy stack on top of a small Levitite row tips over and falls."
     },
     {
       "type": "modonomicon:text",

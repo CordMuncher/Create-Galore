@@ -83,7 +83,7 @@
         "item": "aeroworks:gyroscope"
       },
       "title": "Aeroworks Gyroscope",
-      "text": "Helps hold a ship level. Hover over it for its status and stability."
+      "text": "Helps hold a ship level. It needs rotation: full strength at 256 RPM, drawing 16 su per RPM. Without rotation it does nothing. Hover over it for its status and stability."
     },
     {
       "type": "modonomicon:text",

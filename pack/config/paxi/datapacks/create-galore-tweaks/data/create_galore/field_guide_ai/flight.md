@@ -1,4 +1,4 @@
-<!-- sources sha256:a1e3680d742ecd713a5964702dd9917d26113570d4114d273b8d04aa4230d0dc -->
+<!-- sources sha256:87a41ca5230cb0dd7ae9e9002c35e03ebcedb7ae6ba959a84c829b994834d671 -->
 # Flight (flight)
 Create Aeronautics ships, lift, thrust, steering, wind, dangers and sky destinations.
 
@@ -37,7 +37,7 @@ Create Aeronautics ships, lift, thrust, steering, wind, dangers and sky destinat
 - Steam Vent [aeronautics:steam_vent]: steam lift; like Steam Engine needs heat, water, boiler (see glossary/boiler) space; (see create_basics/heat)
 - Altitude: lift weakens with altitude; ship settles where lift = weight; changing lift changes altitude. Altitude Sensor outputs redstone signal for height and, with goggles (see create_basics/tools_wrench), shows air pressure. Other worlds have very different air (see space/planets)
 - Levitite Blend [aeronautics:levitite_blend_bucket]: fluid from heated mixing (see glossary/mixing) of End Stone Powder, zinc nuggets, water; heat sets it into solid Levitite
-- Levitite [aeronautics:levitite]: keeps ship afloat but cannot gain height alone (needs other forces); resists slow motion strongly, less at speed
+- Levitite [aeronautics:levitite]: keeps ship afloat but cannot gain height alone (needs other forces); resists slow motion strongly, less at speed. Each block holds up 10 kpg of ship, itself included (Jade shows block weights); a heavier ship sinks slowly. Keep it level with the weight: a heavy stack on top of a small Levitite row tips over and falls
 - Sources: End Stone Powder from crushing End Stone; sky whale bone dust can replace it; Pearlescent Levitite = pink variant of same crystal; certain blocks break when Levitite sets (useful for casting molds)
 - Related: Airships (see flight/airships), Weather and Danger (see flight/weather_and_danger), Blaze Burner and Heat (see create_basics/heat), Fluids, Pipes and Pumps (see create_basics/fluids)
 
@@ -63,7 +63,7 @@ Create Aeronautics ships, lift, thrust, steering, wind, dangers and sky destinat
   - touching consoles join into one deck
 - Control Desk [aeroworks:control_desk]: mount modules in sockets; wrench removes them; they keep settings; styles change with materials
 - Mechanical Servo [aeroworks:mechanical_servo]: redstone strength -> angle within set range; Stepper Servos move in fixed steps, either direction
-- Aeroworks Gyroscope [aeroworks:gyroscope]: helps hold ship level; hover for status and stability
+- Aeroworks Gyroscope [aeroworks:gyroscope]: helps hold ship level; needs rotation (full strength at 256 RPM, draws 16 su per RPM); without rotation it does nothing; hover for status and stability
 - Related: Flight Control (see flight/flight_control), Propellers (see flight/propellers), Thrusters and Engines (see flight/propulsion)
 
 ## flight/flight_control | Flight Control
@@ -81,7 +81,7 @@ Create Aeronautics ships, lift, thrust, steering, wind, dangers and sky destinat
 
 ## flight/propulsion | Thrusters and Engines
 - Create Propulsion: Simulated adds fuel thrusters, electric ion thrusters, steerable vector thrusters, wings, heat engines; need Aeronautics physics to be useful
-- Thruster [createpropulsion:thruster]: burns piped liquid fuel, throttled by redstone; oxidizer adds efficiency bonus; build 2x2 or 3x3 blocks of them and feed only the rear
+- Thruster [createpropulsion:thruster]: burns piped liquid fuel, throttled by redstone; oxidizer adds efficiency bonus; build 2x2 or 3x3 blocks of them; pipe fuel into the end opposite the flame
 - Fuels accepted: Turpentine (from Pine Resin); TFMG diesel, gasoline, kerosene, naphtha; Northstar hydrocarbon, methane, biofuel, liquid hydrogen. Wrong fluid = no thrust (see industry/tfmg_oil) (see space/rocket_building)
 - Solid Fuel Thruster [createpropulsion:solid_fuel_thruster]: burns items not fluid: coal, charcoal, wood, Blaze Cake; easy start (coal, charcoal, planks all work); holds 1 fuel item, coal lasts ~3 min at full power (longer throttled); wrench opens its hatch, then it pulls the next item from a chest/container against its intake end (opposite the flame)
 - Ion Thruster [createpropulsion:ion_thruster]: Forge energy, no fuel; stores energy; generators can feed it from below (see industry/electricity)

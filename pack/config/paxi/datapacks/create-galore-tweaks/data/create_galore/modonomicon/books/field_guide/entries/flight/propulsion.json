@@ -33,7 +33,7 @@
         "item": "createpropulsion:thruster"
       },
       "title": "Thruster",
-      "text": "Burns liquid fuel piped in, throttled by redstone. An oxidizer adds an efficiency bonus. Build 2x2 or 3x3 blocks of them and feed only the rear."
+      "text": "Burns liquid fuel piped in, throttled by redstone. An oxidizer adds an efficiency bonus. Build 2x2 or 3x3 blocks of them. Pipe fuel into the end opposite the flame."
     },
     {
       "type": "modonomicon:text",
