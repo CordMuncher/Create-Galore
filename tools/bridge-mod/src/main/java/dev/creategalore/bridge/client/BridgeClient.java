@@ -21,6 +21,7 @@ public final class BridgeClient {
         KeyRebindMigration.run();
         modBus.addListener(BridgeClient::setup);
         GuideAiClient.init(modBus);
+        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener(ShipGlueView::tick);
     }
 
     private static void setup(FMLClientSetupEvent event) {

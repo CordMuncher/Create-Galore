@@ -20,7 +20,7 @@
     {
       "type": "modonomicon:text",
       "title": "Building a Ship",
-      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- [#](FFFFFF)\ue10d[#]() Glue a group with Super Glue or Honey Glue, then hold right-click on the **Physics Assembler** and pull its lever.\n- Only glued groups move together. The built ship stays fully usable.\n- Bearings used with Steering Wheels or Torsion Springs must be told not to disassemble."
+      "text": "[#](FFFFFF)[#]() **Key points**\n\n- [#](FFFFFF)[#]() Glue a group with Super Glue or Honey Glue, then hold right-click on the **Physics Assembler** and pull its lever.\n- Only glued groups move together. The built ship stays fully usable.\n- Bearings used with Steering Wheels or Torsion Springs must be told not to disassemble."
     },
     {
       "type": "modonomicon:text",
@@ -35,7 +35,17 @@
     {
       "type": "modonomicon:text",
       "title": "Assembling",
-      "text": "Select a group with Super Glue or Honey Glue, then **hold right-click** on the assembler and **pull the lever**.\n\n- Blocks along diagonal edges are included.\n- Once built, any Physics Assembler can [#](7A3C9A)[disassemble](entry://glossary/assemble)[#]() the ship.\n- The ship stays fully usable: walk on it, open chests, run machines."
+      "text": "Glue the ship, then **hold right-click** on the assembler and **pull the lever**.\n\n- Once built, any Physics Assembler can [#](7A3C9A)[disassemble](entry://glossary/assemble)[#]() the ship.\n- The ship stays fully usable: walk on it, open chests, run machines."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Gluing a ship",
+      "text": "One glue box around the whole ship is enough. Boxes that overlap or touch count as one.\n\n- A block touching the ship by a face or an edge inside the glue comes along.\n- A block touching only at a corner, or floating free, stays behind."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Checking the glue",
+      "text": "Hold Super Glue or Honey Glue near the assembler: **blue** outlines what goes aboard, **red** what stays behind. Goggles do the same while you look at the assembler.\\\n\\\nGround or seabed inside the glue and touching the hull comes along too."
     },
     {
       "type": "modonomicon:spotlight",
@@ -43,7 +53,7 @@
         "item": "simulated:honey_glue"
       },
       "title": "Honey Glue",
-      "text": "Click two corners and ctrl-scroll to resize. It only joins ships and also takes overlapping Super Glue. Super Glue does not take Honey Glue."
+      "text": "Click two corners and ctrl-scroll to resize, up to 48 blocks a side. Hold ALT to place a corner in midair. It only joins ships."
     },
     {
       "type": "modonomicon:text",
@@ -87,7 +97,7 @@
     {
       "type": "modonomicon:text",
       "title": "A rule that trips people up",
-      "text": "[#](FFFFFF)\ue101[#]() **Watch out:** [#](7A3C9A)[bearings](entry://glossary/bearing)[#]() must be told not to disassemble when used with Steering Wheels or Torsion Springs.\\\n\\\nSprings let a bearing swing within an angle and return when the input stops."
+      "text": "[#](FFFFFF)[#]() **Watch out:** [#](7A3C9A)[bearings](entry://glossary/bearing)[#]() must be told not to disassemble when used with Steering Wheels or Torsion Springs.\\\n\\\nSprings let a bearing swing within an angle and return when the input stops."
     },
     {
       "type": "modonomicon:text",

@@ -10,5 +10,9 @@
   "item.create_galore_bridge.boss_compass.wrong_dimension": "This compass only works in the %s.",
   "item.create_galore_bridge.boss_compass.found": "Nearest %s: %s (about %s blocks away). The needle points there now.",
   "item.create_galore_bridge.boss_compass.none": "No %s within %s blocks. Travel further and try again.",
-  "create_galore_bridge.guide_cleanup.removed": "An old copy of the Field Guide was taken from your inventory. The current Field Guide has everything it had and more."
+  "create_galore_bridge.guide_cleanup.removed": "An old copy of the Field Guide was taken from your inventory. The current Field Guide has everything it had and more.",
+  "create_galore_bridge.glue_check.all": "Glue check: all %s blocks go aboard.",
+  "create_galore_bridge.glue_check.loose": "Glue check: %s blocks go aboard, %s inside the glue stay behind (red).",
+  "create_galore_bridge.glue_check.problem": "Glue check: the assembler would refuse: %s",
+  "create_galore_bridge.glue_check.nothing_attached": "nothing is on the assembler's sticky face."
 }

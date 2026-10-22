@@ -1,4 +1,4 @@
-<!-- sources sha256:87a41ca5230cb0dd7ae9e9002c35e03ebcedb7ae6ba959a84c829b994834d671 -->
+<!-- sources sha256:875ed13c72125255906ffdb191014d731ffcd8a159dbb6767b73585e144d6606 -->
 # Flight (flight)
 Create Aeronautics ships, lift, thrust, steering, wind, dangers and sky destinations.
 
@@ -16,11 +16,12 @@ Create Aeronautics ships, lift, thrust, steering, wind, dangers and sky destinat
 ## flight/ship_building | Building a Ship
 - Ship = normal build turned into Simulated Contraption (see glossary/sub_level) by Physics Assembler [simulated:physics_assembler]; glue (see glossary/super_glue) decides membership: only glued groups move together
 - shows recipe simulated:physics_assembler; more Simulated parts in JEI (see start_here/tools)
-- Assemble: select group with Super Glue or Honey Glue, hold right-click on assembler, pull lever
-  - blocks along diagonal edges included
+- Assemble: glue the ship, hold right-click on assembler, pull lever
   - once built, any Physics Assembler can disassemble (see glossary/assemble) the ship
   - ship stays fully usable: walk on it, open chests, run machines
-- Honey Glue [simulated:honey_glue]: click two corners, ctrl-scroll to resize; only joins ships; also takes overlapping Super Glue; Super Glue does not take Honey Glue
+- Gluing a ship: one glue box around the whole ship is enough; glue boxes that overlap or touch (share a face) count as one. Starting from the block on the assembler's sticky face, every block touching an aboard block by a face or an edge inside that glue comes along (also blocks that stick or hang on their own, like slime). A block touching the rest only at a corner, or floating free, stays behind; so do a glue box standing apart from the ship (even by one block), air, plain water/lava, and unbreakable blocks
+- Checking the glue: hold Super Glue or Honey Glue near the assembler (or wear Goggles and look at it): blue outline = goes aboard, red checkered = inside the glue but stays behind; a line above the hotbar gives the counts. Ground or seabed inside the glue and touching the hull comes along too
+- Honey Glue [simulated:honey_glue]: click two corners, ctrl-scroll to resize, up to 48 blocks a side; hold ALT to place a corner in midair; only joins ships
 - Weight/splitting: blocks differ in weight (light, super heavy, slippery, fragile). Sections losing connection split off as separate ships; a Slime Ball merges any two
 - Swivel Bearing [simulated:swivel_bearing]: turns glued group in front into rotating sub-ship; rotation (see create_basics/rotation) passes through shaft; redstone unlocks it to spin freely
 - Steering a propeller: before assembling the ship, give the part the swivel should turn its own small glue box (it can sit inside the ship's glue); without one only the block on the swivel's face turns. Engine behind the bearing: rotation goes through it to the part. A Steering Wheel on a cogwheel next to the bearing turns it
