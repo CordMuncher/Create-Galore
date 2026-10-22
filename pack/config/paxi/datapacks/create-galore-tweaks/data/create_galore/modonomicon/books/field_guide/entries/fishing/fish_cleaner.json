@@ -1,0 +1,56 @@
+{
+  "category": "fishing",
+  "name": "Fish Cleaner",
+  "description": "A saw on a fish line: cleans the big fish, passes everything else on.",
+  "icon": {
+    "item": "create_galore_fishing:fish_cleaner"
+  },
+  "x": 6,
+  "y": 4,
+  "sort_number": 21,
+  "parents": [
+    {
+      "entry": "fishing/cleaning",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": false
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Fish Cleaner",
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- Put it in a fish line: fish go in the back, sides or top, and come out the front.\n- A fish of **3 kg or more** is cut up like on the [#](2E5AAC)[Cleaning Table](entry://fishing/cleaning)[#]().\n- Everything else passes through **untouched**.\n- [#](FFFFFF)\ue104[#]() The saw needs [#](2E5AAC)[rotation](entry://create_basics/rotation)[#]()."
+    },
+    {
+      "type": "modonomicon:crafting_recipe",
+      "recipe_id_1": "create_galore_fishing:crafting/fish_cleaner",
+      "text": "A knife over an andesite casing between two shafts, over a Cleaning Table."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Which fish it cleans",
+      "text": "Only fish too big to use whole: 3 kg or more, the ones no furnace, smoker, campfire or fan will cook. Their tooltip says so.\\\n\\\nSmaller fish, stacked catches and anything that isn't a fish go straight out the front as they came, catch data and all, even with the shaft stopped."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Cutting",
+      "text": "A big fish takes the same strokes as on the table: five at 3 kg, sixteen at 50 kg. At 32 [#](7A3C9A)[RPM](entry://glossary/rpm)[#]() the saw makes two strokes a second; faster shafts cut faster. It gives the table's parts: fillets, steaks, roe, bones, scraps, shark skin.\\\n\\\nIt costs 4 SU per RPM, like Create's saw. See [#](2E5AAC)[Stress](entry://create_basics/stress)[#]()."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Hooking it up",
+      "text": "It faces away from you when placed, with a shaft through it side to side.\\\n\\\n**In:** a belt ending at its back or side, a chute or hopper above, a funnel.\\\n**Out:** a belt, depot, chute or chest in front, else the ground. Funnels and hoppers can pull from it too. See [#](2E5AAC)[Moving Items](entry://create_basics/item_logistics)[#]()."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "It holds one big fish at a time and starts the next only when the last one's parts have left, so a blocked output stops the line instead of losing anything. Small fish queued behind a big one wait their turn.\\\n\\\nAn empty hand takes out whatever is inside, uncut. Goggles show the fish and the strokes done."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Related",
+      "text": "- [#](2E5AAC)[Cleaning Table and Fish Products](entry://fishing/cleaning)[#]()\n- [#](2E5AAC)[What Fish Are For](entry://fishing/fish_uses)[#]()\n- [#](2E5AAC)[Rod Holder and Reel Drives](entry://fishing/rod_machines)[#]()\n- [#](2E5AAC)[Sea Food](entry://fishing/sea_food)[#]()"
+    }
+  ]
+}

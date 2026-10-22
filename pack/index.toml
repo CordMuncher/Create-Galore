@@ -964,7 +964,7 @@ hash = "6fef4ba85d0bc218e298d510488ccc7c8daf34c1a847adc03bda23b22dc12e97"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/fishing.md"
-hash = "c52ecd533780ebd296f1e963743abce503c532ac1e387cc1534f53c86b6b1982"
+hash = "95f4583073f2f691b9b88fa6780275069c15098ffc4baa49d853d01053001073"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/flight.md"
@@ -1300,15 +1300,19 @@ hash = "1d950985a2b03bbc32af345d3f76d767e28a158a0c0feb2259ed8aa57fa09b3b"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/fishing/cleaning.json"
-hash = "1914dde300d230e50684a73ad3519c7c5ec9c9c72ebe7f39e1a11c5d3194a367"
+hash = "e71e0450e3f6424d7f054f2370b29adda223c0852b777fc32a3fcea45bafd4cb"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/fishing/crates.json"
 hash = "bd2444de8924e3d41cc0fcc1b3cf04e797ec6144e14c21a37ce6e6fecf7b3347"
 
 [[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/fishing/fish_cleaner.json"
+hash = "3e955bc85545687857c940fdc7adb329c08767390d8bfa5400779181daf2d631"
+
+[[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/fishing/fish_uses.json"
-hash = "5d468bb84da67c0c616e9dbc94c23742ac4d93d4fbbc4fb2fd1644c3d7bff1a9"
+hash = "ef063fecd3d7022249411360809252a67ce53a43c008cc56bac6e9403128ec45"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/fishing/gadgets.json"
@@ -4921,8 +4925,8 @@ file = "mods/create-galore-bridge-1.55.0.jar"
 hash = "cf985763f208df34440b018abc924c3431653b1718796895802649636e9c800d"
 
 [[files]]
-file = "mods/create-galore-fishing-0.3.12.jar"
-hash = "1609b77472076daa25f1919e345e76e0fcbe7f896938702a2dc2ac79ca758abb"
+file = "mods/create-galore-fishing-0.3.13.jar"
+hash = "1d823a121bb45dfd5dca8cd91203a1506193bac5cd53d790444b240b9257da89"
 
 [[files]]
 file = "mods/create-galore-lagwatch-1.1.0.jar"

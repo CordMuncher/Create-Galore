@@ -469,3 +469,27 @@ Checks. Fight rules 25/25 (the "frayed line parts mid-fight" rule became "a near
 without teeth holds"). Monte Carlo against 0.3.11, all species x 5 rigs x 2 anglers x 200 fights: mean landing rate
 moves 0.001; no rig or angler mean moves more than 0.2 points. In-game self-tests 424 pass (new: snap keeps 11 of
 12 bait and leaves a shorter unfrayed line; a fight without teeth leaves the line unfrayed).
+
+## 0.3.13: the Fish Cleaner (pack 0.4.25)
+
+Emre (22 Oct) asked for a Create block that cleans the fish that are too big and passes the rest on.
+
+- **Too big = what the furnace refuses.** `FishCleanerBlockEntity.needsCleaning` is a fish the `whole_fish`
+  ingredient refuses (known weight of 3 kg or more), the same line the cooking recipes and the tooltip use, so a
+  fish that comes out whole can always be cooked whole.
+- **Everything else passes**, not only small fish: a fish line also carries junk, treasure and bait, and a block that
+  refused them would stall the belt. Passing doesn't need rotation; only the saw does.
+- **Same strokes and parts as the table** (`Cleaning.strokes`, `Cleaning.yields`), one stroke per 320 RPM-ticks
+  (two a second at 32 RPM, like a player at the table), 4 SU per RPM like Create's saw. No knife wear: Create's
+  machines don't wear, and the knife is used up in the recipe.
+- **No overflow.** One big fish at a time, cut only once the last one's parts have left; small items queue in the
+  single input stack behind it. Out the front: Create's direct belt input (belt, depot, chute, funnel), else an
+  inventory, else dropped on open ground (one stack every 8 ticks).
+- Recipe: knife over shaft, andesite casing, shaft over a Cleaning Table.
+
+Checks. Processing self-test (new): only 3 kg-plus fish need cleaning; belts feed it from back and top, not the
+front; unpowered, 12 cod, 3 kelp and a 2.5 kg trophy salmon pass into a barrel unchanged (catch data kept); a 6 kg
+salmon waits without rotation, then is cut in 6 strokes (61 ticks at 32 RPM) into 16 parts. In-world on a full pack
+server with real Create belts, a hopper and a chute driven by creative motors: belt line, hopper-to-chest line and
+chute-to-ground line each passed cod, kelp, tropical fish and a 2.5 kg salmon whole and cut a 6 kg salmon and a
+12 kg cod. All 436 self-tests pass.
