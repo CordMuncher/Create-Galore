@@ -4,6 +4,22 @@ Each pack version gets a section here, with **Added**, **Fixed** and **Removed**
 workflow copies the section for the version in `pack/pack.toml` to the top of the GitHub release, and the build
 fails when that section is missing.
 
+## 0.4.21
+
+The vehicle bug pass: airships, boats, submarines, trains, coasters and cars driven by a player on a dedicated server. Most of these fixes were already inside the 0.4.20 files (Bridge 1.50.0 to 1.53.0 and Deep Seas 3.4.4 landed before that release) but its notes didn't list them, so they are listed here.
+
+### Fixed
+- **A propeller on a Swivel Bearing keeps its power on a ship**, so a steering wheel can turn a powered propeller. On a ship held by Super Glue the swivel took the whole ship with it (the motor ended up on the turning side and the propeller dropped to 0 su), and the Physics Assembler left smaller glue boxes, such as the swivel's own, behind in the world.
+- **You stay in your seat when you log back in.** Seats on ships, cars and coaster carts, and on any Create contraption (turning platforms, carts, gantries, train carriages), put you back down if the seat is still free. A train that drove on while you were away is found wherever it is in your dimension and you are taken back to your seat; while the game finds it you fall slowly if there is no ground under you.
+- **Logging back in on a ship built since the last world save no longer drops you from the sky.** You are held in place until the ship loads, then put back on its deck (a player who logged out at y 288 used to fall to the ground).
+- **Server freezes from Aeronautics Discovery.** Flyover airships no longer generate land inside the server tick when they despawn (2 to 14 s freezes), and a Soaring Trader no longer freezes the server for about 6 s looking for the structure on its map; the map joins its trades a moment later.
+- **Hypertubes show their name** when you look at them.
+- Create Deep Seas 3.4.0 to 3.4.4: ship checks no longer load chunks, the hull analysis of large ships no longer restarts forever, less server lag with many dry-hold ships. It adds the Vortex Engine coloured lights (off whenever a shader pack is on); if the game runs slow without shaders, switch it off with `enabled = false` in `config/create_submarine-vortex.toml`.
+- Create Galore Bridge 1.54.0 (these fixes came in 1.50.0, 1.52.0, 1.52.1 and 1.53.0).
+
+### Added
+- **Field Guide pages from driving the vehicles:** Steering a propeller; the steps that make a Flight Control craft fly and steer by mouse (Default ON, Apply Thrust, Terminal on, a Redstone Proxy button on Mouse Control Switch); docking connectors pass items through Create chutes and funnels (not hoppers) and fluids through pumps; how much a Levitite block holds up (10 kpg) and what happens past it; the Aeroworks Gyroscope needs rotation (full strength at 256 RPM); which end of a Thruster takes fuel and how to feed it from a chest; submarine tanks lift about 75 mass units, pumps only push the way their arrow points (turn them with a Wrench, a Gearshift doesn't reverse them), full tanks drop a sub fast, rated depths of hull blocks, hatches and doors; a switched-on Boat Engine burns fuel even moored and empty (switch it off in its fuel screen); riding trains (sit when fast, a portal lets go of the controls), a conductor at each end for two-way schedules, and a station left in Assembly Mode blocks scheduled trains; backtank and jetpack refills and hypertube placement corrected.
+
 ## 0.4.20
 
 ### Added
