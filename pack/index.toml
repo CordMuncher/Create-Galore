@@ -968,7 +968,7 @@ hash = "77a057ef57a3c4ece84b945d9698ffbe9fcf9bc7321ad93f8cce5004fef88f6e"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/flight.md"
-hash = "d6a46ef9574a477ee6ba9b281f8a6fbbbb194feba0eb15d49a97b85d6874c179"
+hash = "ec470679921a649b1836e6e165532454fc9da62bb0c731246f330f762c3e6e05"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/food.md"
@@ -1384,7 +1384,7 @@ hash = "fa6e5a7e29b56385d7425b173837fc5a833180e41d8c4a4f4088808aa4d72424"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/flight/flight_control.json"
-hash = "c3b1fa9919dfd55d94730e0d0823d4c564bc30d862e6f542ea1ce9fd69bc2f58"
+hash = "065ecf7d99866242e1b2081106007b4f6b6e663a810fb28028b0bd9f513d081b"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/flight/hangars.json"
@@ -1400,7 +1400,7 @@ hash = "cae3b5d6937a1a86eadb82b73dd6c202d21d90ee56dd77e3653037d28defcf3b"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/flight/ship_building.json"
-hash = "0cc8ec49a1f35b686a0ff105e51ac64ab472c97ada9c42d326b86e286899dbc5"
+hash = "ce2450775e359521bb2723d8c7c8b2631a916a838adc9edc53ebd9abe4a709bf"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/flight/ship_hardware.json"
