@@ -4,6 +4,15 @@ Each pack version gets a section here, with **Added**, **Fixed** and **Removed**
 workflow copies the section for the version in `pack/pack.toml` to the top of the GitHub release, and the build
 fails when that section is missing.
 
+## 0.4.36
+
+### Added
+- **Jade shows smog.** Look at a gas block to see what it is (Carbon, Sulfur, Dust or Filtered Exhaust) and how thick it is: light, medium or heavy, 1 to 3 units of pollution. Gas still doesn't stop your clicks, and crouching looks through it to the block behind.
+
+### Fixed
+- **Bulk smelting and cooking make real smog.** A fan's finished items now puff out 1 carbon each right where they are, on a belt, depot or dropped (plus 1 sulfur for every 5 items blasted), for blasting over lava or a Blaze Burner and smoking over fire or a campfire. It was 1 carbon per 4 items blasted and per 8 smoked, so small batches often looked like they made none.
+- Create Galore Bridge 1.66.0.
+
 ## 0.4.35
 
 ### Added

@@ -1,4 +1,4 @@
-<!-- sources sha256:74859adbc21458050d0b119cdc9ca515f12217670ed934059377ab155c52685c -->
+<!-- sources sha256:02c553c2c89743bd59c458c37b37c7d56add873e384df030a7fbddf9d2336926 -->
 # Survival Layers (survival)
 Layers: Temperature (Cold Sweat), Thirst, Seasons (Serene Seasons), Pollution (Pollution of the Realms smog, exhaust systems), food/health, death/graves.
 
@@ -89,7 +89,8 @@ Layers: Temperature (Cold Sweat), Thirst, Seasons (Serene Seasons), Pollution (P
 ## survival/pollution | Pollution
 - Smog is real gas (Pollution of the Realms): blocks you see and walk through. Kinds: grey carbon, yellow sulfur, dust. Fresh smoke rises until a roof or the cloud layer stops it (carbon Y191, sulfur Y190), settles there. Under a roof it fills the room from the top down; outside it gathers over the chunk that made it (see glossary/chunk).
 - What pollutes: furnace, smoker, blast furnace: 1 carbon + 0.1 sulfur per coal burned (other fuels own amounts). Blaze Burner, steam boiler, Farmer's Delight stove: ~1 carbon a minute while fuelled. Campfire: a little now and then. Crushing Wheels ~4 dust a minute while working, Millstone 1.
-- Bulk smelting: Encased Fan (see create_basics/fans) through lava or Blaze Burner makes no smog by itself; each finished item does: 1 carbon per 4 items blasted + 1 sulfur per 20; 1 carbon per 8 items smoked. Washing and haunting clean.
+- Looking at a gas block shows its kind and density (light/medium/heavy = 1-3 units); crouch to look through it.
+- Bulk smelting: Encased Fan (see create_basics/fans) through lava or Blaze Burner makes no smog by itself; each finished item puffs smog out where it is: 1 carbon per item blasted + 1 sulfur per 5; 1 carbon per item smoked (fire or campfire); 64 ores = 64 carbon. Washing and haunting clean.
 - Engines: TFMG (see industry/tfmg_engines) engines, coke ovens, blast furnaces pollute for fuel burned; idle = clean.
 - The cloud: chunk pollution = gas in the cloud layer above it. Gas block holds 1 to 3 units (light, medium, heavy). Carbon measured against 512 units per chunk, sulfur 128; effects start at a share of that.
 - Watch out, under carbon cloud: 30% Mining Fatigue, 40% Hunger, 50% Weakness, 60% Slowness, 70% Poison, 80% Nausea, 90% Wither. Under sulfur cloud: 30% Blindness, 60% Poison, 90% Wither. Standing inside gas blinds; sulfur also poisons. Respirator keeps it out.
