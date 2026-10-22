@@ -4921,8 +4921,8 @@ file = "mods/create-galore-bridge-1.55.0.jar"
 hash = "cf985763f208df34440b018abc924c3431653b1718796895802649636e9c800d"
 
 [[files]]
-file = "mods/create-galore-fishing-0.3.10.jar"
-hash = "648137f0bb3cce0a45e47ca04db22299b519f311e4bb07f211ac67c171092fc8"
+file = "mods/create-galore-fishing-0.3.11.jar"
+hash = "80c3b1cfe7c365b6c2ac7e92e4eb898eb6a845ec84fe34e9663260db1355b63f"
 
 [[files]]
 file = "mods/create-galore-lagwatch-1.1.0.jar"
