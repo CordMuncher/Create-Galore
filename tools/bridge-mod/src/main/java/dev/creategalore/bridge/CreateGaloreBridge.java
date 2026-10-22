@@ -73,6 +73,7 @@ public final class CreateGaloreBridge {
         ExhaustPressure.register();
         GuideAi.register(modBus);
         ShipGlueCheck.register(modBus);
+        AnimalCare.register();
         if (FMLEnvironment.dist.isClient()) {
             BridgeClient.init(modBus);
         }
