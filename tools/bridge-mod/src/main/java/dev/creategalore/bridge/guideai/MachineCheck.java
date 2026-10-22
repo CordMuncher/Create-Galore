@@ -48,7 +48,37 @@ final class MachineCheck {
             }
             fan(out, level, p, fan);
         }
-        return out.isEmpty() ? "" : "Machine checks (Create's own rules run on these machines as they are now):\n" + out;
+        String machines = out.isEmpty() ? "" : "Machine checks (Create's own rules run on these machines as they are now):\n" + out;
+        return machines + vehicle(level, build);
+    }
+
+    /** The vehicle check on the build's blocks as they stand, with each part turning as fast as it does now. */
+    private static String vehicle(ServerLevel level, List<BlockPos> build) {
+        Map<BlockPos, net.minecraft.world.level.block.state.BlockState> blocks = new LinkedHashMap<>();
+        for (BlockPos p : build) {
+            var s = level.getBlockState(p);
+            if (!s.isAir()) blocks.put(p.immutable(), s);
+        }
+        Map<BlockPos, Float> rpm = new LinkedHashMap<>();
+        boolean turning = false;
+        for (BlockPos p : blocks.keySet()) {
+            if (level.getBlockEntity(p) instanceof com.simibubi.create.content.kinetics.base.KineticBlockEntity k) {
+                rpm.put(p, k.getSpeed());
+                turning |= k.getSpeed() != 0;
+            }
+        }
+        String still = "";
+        if (!turning && !rpm.isEmpty()) {
+            // Engines off (or a ship not yet started): judge it at the speeds its engines give once running.
+            List<String> assumed = new ArrayList<>();
+            rpm = BuildCheck.rpm(blocks, level, assumed);
+            if (!assumed.isEmpty()) still = "- Nothing turns right now, so speeds are worked out with " + String.join(", ", assumed) + ".\n";
+        }
+        BuildCheck.Report r = VehicleCheck.check(blocks, level, rpm, false);
+        if (r == null) return "";
+        String text = r.text();
+        int nl = text.indexOf('\n');
+        return "\n" + (nl < 0 ? text : text.substring(0, nl + 1) + still + text.substring(nl + 1)) + "\n";
     }
 
     private static void fan(StringBuilder out, ServerLevel level, BlockPos pos, EncasedFanBlockEntity fan) {

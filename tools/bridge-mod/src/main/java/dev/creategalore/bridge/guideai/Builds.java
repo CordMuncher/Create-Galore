@@ -65,7 +65,9 @@ final class Builds {
                 + "and full state (facing, axis), Create speed (RPM; the sign is the turning direction), whether it is a "
                 + "source, its kinetic network and that network's stress used of capacity, what Engineer's Goggles show for "
                 + "machines, the results of Create's own rules run on its machines (for a fan: how far its air really "
-                + "reaches, what each cell processes, and whether items on a belt stay in the air long enough), and the "
+                + "reaches, what each cell processes, and whether items on a belt stay in the air long enough; for a vehicle: "
+                + "whether it floats upright or lifts, its top speed, turn rate, climb and ceiling, and what keeps it "
+                + "from being of use), and the "
                 + "fluids and other blocks touching the build. Use it to work out how the parts sit relative to each "
                 + "other and why a machine does or doesn't work. Big builds are cut off and say where to continue.", trace));
         JsonObject area = new JsonObject();

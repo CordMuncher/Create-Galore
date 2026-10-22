@@ -517,10 +517,52 @@ final class WorldTools {
             if (found.size() < MAX_RECIPES) found.add(describeRecipe(holder, registries));
         }
         String name = item.getDescription().getString() + " (" + BuiltInRegistries.ITEM.getKey(item) + ")";
+        if (total == 0 && !uses) {
+            String colours = otherColours(server, item);
+            if (colours != null) return colours;
+        }
         if (total == 0) return uses ? "No recipe on this server uses " + name + "." : "No recipe on this server makes " + name
                 + ". It may only come from mining, mobs, loot or trading.";
         return (uses ? "Recipes that use " : "Recipes that make ") + name + ", " + total + " found"
                 + (total > found.size() ? ", first " + found.size() + " shown" : "") + ":\n" + String.join("\n", found);
+    }
+
+    /**
+     * For a coloured item no recipe makes directly (a mod that crafts one colour and recolours it with a special
+     * recipe): the colour that is crafted, and the special recipes that change it. Null when that isn't the case.
+     */
+    private static String otherColours(MinecraftServer server, Item item) {
+        ResourceLocation key = BuiltInRegistries.ITEM.getKey(item);
+        String suffix = null;
+        for (net.minecraft.world.item.DyeColor c : net.minecraft.world.item.DyeColor.values())
+            if (key.getPath().startsWith(c.getName() + "_")) suffix = key.getPath().substring(c.getName().length() + 1);
+        if (suffix == null) return null;
+        var registries = server.registryAccess();
+        List<String> special = new ArrayList<>();
+        for (RecipeHolder<?> holder : server.getRecipeManager().getRecipes())
+            if (holder.id().getNamespace().equals(key.getNamespace()) && holder.id().getPath().contains(suffix)
+                    && holder.value() instanceof net.minecraft.world.item.crafting.CustomRecipe) special.add(holder.id().toString());
+        for (net.minecraft.world.item.DyeColor c : net.minecraft.world.item.DyeColor.values()) {
+            ResourceLocation other = ResourceLocation.fromNamespaceAndPath(key.getNamespace(), c.getName() + "_" + suffix);
+            if (other.equals(key) || !BuiltInRegistries.ITEM.containsKey(other)) continue;
+            Item o = BuiltInRegistries.ITEM.get(other);
+            List<String> made = new ArrayList<>();
+            for (RecipeHolder<?> holder : server.getRecipeManager().getRecipes()) {
+                try {
+                    if (outputs(holder.value(), registries).stream().anyMatch(st -> st.is(o))) made.add(describeRecipe(holder, registries));
+                } catch (RuntimeException e) {
+                    // skip
+                }
+                if (made.size() >= 2) break;
+            }
+            if (made.isEmpty()) continue;
+            return "No recipe makes " + item.getDescription().getString() + " (" + key + ") directly; it is one colour of "
+                    + "a block that is crafted as " + o.getDescription().getString() + " (" + other + ")"
+                    + (special.isEmpty() ? "" : " and changed to the other colours by the special recipe " + String.join(", ", special)
+                    + " (one the recipe list can't show; its name says what it does)")
+                    + ". Recipes that make " + o.getDescription().getString() + ":\n" + String.join("\n", made);
+        }
+        return null;
     }
 
     static Item resolveItem(String query) {

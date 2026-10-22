@@ -4,6 +4,15 @@ Each pack version gets a section here, with **Added**, **Fixed** and **Removed**
 workflow copies the section for the version in `pack/pack.toml` to the top of the GitHub release, and the build
 fails when that section is missing.
 
+## 0.4.20
+
+### Added
+- **Ask the Book checks the vehicles it designs.** Before a boat, submarine, airship or car reaches your page, the server sums the ship mods' own rules over its blocks: weight against buoyancy or lift, whether the hull rights itself when it heels, the balloon and burner, thrust from engines, propellers, thrusters and sails, the Levitite brake, top speed, turn rate, climb and ceiling. A design that would sink, capsize, fail to lift, split into loose pieces, crawl or barely turn goes back to the book to fix, and you get its real numbers. Ask about a vehicle you built and it reads the same numbers off your build. Measured on a server: a plank boat with a Boat Engine ran 16.4 blocks/s (check 17.4), a balloon ship topped out at y 200 (check about 210), and a Levitite raft with two small propellers crept at 0.07 blocks/s (check 0.09).
+
+### Fixed
+- **The book no longer says a Portable Engine can't be crafted.** Only the red one has a recipe and the other colours are dyed from it; the book now shows that recipe.
+- Create Galore Bridge 1.54.0.
+
 ## 0.4.19
 
 ### Fixed
