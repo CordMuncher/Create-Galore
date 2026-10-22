@@ -893,17 +893,26 @@ final class AskScreen extends Screen {
         return text;
     }
 
-    /** Inline markup: **bold**, {item ids} as the item's name, `code` as plain words. */
+    /**
+     * Inline markup: **bold** (which may hold item ids), {item ids} as the item's name, `code` as plain words. An id written
+     * with its name straight after it ("{create:attribute_filter} Attribute Filter") shows the name once.
+     */
     private static MutableComponent rich(String text) {
         MutableComponent out = Component.empty();
         Matcher m = INLINE.matcher(text);
         int at = 0;
         while (m.find()) {
+            if (m.start() < at) continue;
             if (m.start() > at) out.append(Component.literal(text.substring(at, m.start())));
-            if (m.group(1) != null) out.append(Component.literal(m.group(1)).withStyle(Style.EMPTY.withBold(true)));
-            else if (m.group(2) != null) out.append(Component.literal(itemName(m.group(2))).withStyle(Style.EMPTY.withBold(true)));
-            else out.append(Component.literal(m.group(3)));
             at = m.end();
+            if (m.group(1) != null) out.append(rich(m.group(1)).withStyle(Style.EMPTY.withBold(true)));
+            else if (m.group(2) != null) {
+                String name = itemName(m.group(2));
+                out.append(Component.literal(name).withStyle(Style.EMPTY.withBold(true)));
+                int skip = at;
+                while (skip < text.length() && text.charAt(skip) == ' ') skip++;
+                if (text.regionMatches(true, skip, name, 0, name.length())) at = skip + name.length();
+            } else out.append(Component.literal(m.group(3)));
         }
         if (at < text.length()) out.append(Component.literal(text.substring(at)));
         return out;

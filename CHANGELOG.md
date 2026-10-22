@@ -8,6 +8,7 @@ fails when that section is missing.
 
 ### Fixed
 - **Ask the Book talks about your build, not about how it worked it out.** After designing a boat it could say things like "it passed the ship mods' own vehicle check with no faults". It now just says what the build does and what to change, such as how it floats and how fast it goes.
+- **Item names in Ask the Book answers show properly.** An item written in bold, or with its name written straight after it, showed as raw text such as "{create:attribute_filter}Attribute Filter". It now shows as the item's name, once.
 - Create Galore Bridge 1.61.0.
 
 ## 0.4.30
