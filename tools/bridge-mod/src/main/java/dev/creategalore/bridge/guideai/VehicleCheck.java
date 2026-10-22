@@ -18,6 +18,9 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.EmptyBlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 
 /**
@@ -126,6 +129,7 @@ final class VehicleCheck {
             air(body, rpm, out, faults, notes);
         }
         pieces(blocks, model, faults, notes);
+        boatEngines(blocks, getter, faults);
         boolean redstone = blocks.values().stream().anyMatch(s -> s.isSignalSource() || id(s).contains("throttle_lever"));
         if (redstone) {
             boolean wire = blocks.values().stream().anyMatch(s -> s.is(net.minecraft.world.level.block.Blocks.REDSTONE_WIRE)
@@ -156,8 +160,9 @@ final class VehicleCheck {
     }
 
     /**
-     * Sable makes one ship of blocks that touch face to face or along an edge; a piece that touches the rest only at a
-     * corner, or not at all, becomes a ship of its own (or stays behind).
+     * Super Glue only takes blocks that share a face: its selection grows face to face from the first block, and a
+     * selection with blocks that touch the rest only along an edge or at a corner is refused ("Selected blocks must be
+     * connected"). So every piece of a ship has to share a face with the rest.
      */
     private static void pieces(Map<BlockPos, BlockState> blocks, boolean model, List<String> faults, List<String> notes) {
         Set<BlockPos> left = new HashSet<>();
@@ -175,8 +180,7 @@ final class VehicleCheck {
                 for (int dx = -1; dx <= 1; dx++)
                     for (int dy = -1; dy <= 1; dy++)
                         for (int dz = -1; dz <= 1; dz++) {
-                            int n = Math.abs(dx) + Math.abs(dy) + Math.abs(dz);
-                            if (n == 0 || n == 3) continue;
+                            if (Math.abs(dx) + Math.abs(dy) + Math.abs(dz) != 1) continue;
                             BlockPos q = p.offset(dx, dy, dz);
                             if (left.remove(q)) {
                                 piece.add(q);
@@ -191,9 +195,11 @@ final class VehicleCheck {
         List<String> rest = new ArrayList<>();
         for (int i = 1; i < Math.min(found.size(), 4); i++)
             rest.add(found.get(i).size() + " block" + (found.get(i).size() == 1 ? "" : "s") + " at " + xyz(found.get(i).get(0)));
-        String text = String.format(Locale.ROOT, "it is in %d pieces that don't touch (the main one %d blocks; %s%s): a ship is "
-                + "made only of blocks touching face to face or along an edge, so each other piece becomes a ship of its own and "
-                + "falls away or stays behind; join them (a balloon needs posts, ropes or a frame down to the deck)", found.size(),
+        String text = String.format(Locale.ROOT, "it is in %d pieces that don't share a face (the main one %d blocks; %s%s): Super "
+                + "Glue joins only blocks that touch face to face, and refuses a selection where blocks touch the rest only "
+                + "diagonally (along an edge or at a corner), so a stepped or diagonal hull can't be glued as it is; fill the "
+                + "steps so each block shares a face with the next (stairs and slabs work), and give a balloon posts or a frame "
+                + "down to the deck", found.size(),
                 found.get(0).size(), String.join("; ", rest), found.size() > 4 ? "; and more" : "");
         if (model) faults.add(text);
         else notes.add(text.replace("it is in", "the marked build is in"));
@@ -1161,6 +1167,45 @@ final class VehicleCheck {
             return dev.ryanhcode.sable.physics.config.block_properties.PhysicsBlockPropertyHelper.getVolume(s);
         } catch (RuntimeException | LinkageError e) {
             return 1;
+        }
+    }
+
+    /**
+     * The Boat Engine's own rules for a usable tiller: taking it (empty-hand right-click) is refused with "There is no room to sit
+     * at the tiller" when any block's collision touches the box HelmServer.tryMount tests at helmAnchor, and the engine can't be
+     * placed on top of a block (its propeller hangs in the space below).
+     */
+    private static void boatEngines(Map<BlockPos, BlockState> blocks, BlockGetter getter, List<String> faults) {
+        for (Map.Entry<BlockPos, BlockState> e : blocks.entrySet()) {
+            if (!id(e.getValue()).equals("create_high_seas:boat_engine")) continue;
+            BlockPos pos = e.getKey();
+            Direction f = facing(e.getValue());
+            if (f == null || !f.getAxis().isHorizontal()) continue;
+            BlockState below = blocks.get(pos.below());
+            if (below != null && !below.canBeReplaced())
+                faults.add("the Boat Engine at " + xyz(pos) + " sits on " + below.getBlock().getName().getString() + ", but a Boat Engine "
+                        + "can't be placed on top of a block: its propeller hangs in the block below, so mount it where that block is open "
+                        + "or water (over the stern edge)");
+            Vec3 a;
+            try {
+                a = com.maxenonyme.highseas.block.entity.BoatEngineBlockEntity.helmAnchor(pos, f);
+            } catch (LinkageError err) {
+                continue;
+            }
+            AABB seat = new AABB(a.x - 0.25, a.y + 0.3, a.z - 0.25, a.x + 0.25, a.y + 1.5, a.z + 0.25);
+            List<String> in = new ArrayList<>();
+            for (BlockPos q : BlockPos.betweenClosed(BlockPos.containing(seat.minX, seat.minY, seat.minZ),
+                    BlockPos.containing(seat.maxX, seat.maxY, seat.maxZ))) {
+                BlockState s = blocks.get(q);
+                if (s == null || s.getCollisionShape(getter, q).isEmpty()) continue;
+                VoxelShape shape = s.getCollisionShape(getter, q).move(q.getX(), q.getY(), q.getZ());
+                if (shape.toAabbs().stream().anyMatch(box -> box.intersects(seat))) in.add(s.getBlock().getName().getString() + " at " + xyz(q));
+            }
+            if (!in.isEmpty())
+                faults.add("no one can take the tiller of the Boat Engine at " + xyz(pos) + ": the engine needs open space for the "
+                        + "helmsman two blocks out from its " + f.getSerializedName() + " side (the side it faces), at its height and one "
+                        + "above, reaching a sliver into the column on the helmsman's left, and " + String.join(", ", in) + " fill that, so the "
+                        + "engine says there is no room to sit at the tiller; clear those blocks (a deck, carpet or top slab is fine)");
         }
     }
 
