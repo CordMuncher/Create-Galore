@@ -116,8 +116,8 @@ final class VehicleCheck {
         Body body = new Body(parts, m, cx, cy, cz, blocks);
 
         List<String> faults = new ArrayList<>(), notes = new ArrayList<>();
-        StringBuilder out = new StringBuilder("Vehicle check (the ship mods' own force rules summed over these blocks; "
-                + "estimates, not a simulation):\n");
+        StringBuilder out = new StringBuilder("How this vehicle floats, flies and handles, worked out from its blocks (estimates)"
+                + BuildCheck.FOR_YOU + ":\n");
         out.append(String.format(Locale.ROOT, "- Mass %.0f (Sable mass units; weight %.0f), %d blocks, %d x %d x %d.\n", m, G * m,
                 parts.size(), body.lenX, body.height, body.lenZ));
         if (air) air(body, rpm, out, faults, notes);
@@ -154,8 +154,8 @@ final class VehicleCheck {
         if (model && blocks.values().stream().noneMatch(s -> id(s).equals("simulated:physics_assembler")))
             notes.add("it needs a Physics Assembler (with the blocks glued) to become a moving ship");
         for (String n : notes) out.append("- ").append(n).append(".\n");
-        if (faults.isEmpty()) out.append("- No faults found.\n");
-        else for (String f : faults) out.append("- FAULT: ").append(f).append(".\n");
+        if (faults.isEmpty()) out.append("- Nothing here stops it working.\n");
+        else for (String f : faults) out.append("- PROBLEM: ").append(f).append(".\n");
         return new BuildCheck.Report(out.toString().trim(), faults);
     }
 

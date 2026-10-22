@@ -158,10 +158,10 @@ public final class Models {
                 + "so write it on every block that has one. Sail rigs are checked the same way, with Winds & Weather's rules: "
                 + "Masts stack straight up, Yards run sideways out from a Mast along their axis, Sail Kit cloth hangs straight "
                 + "below a run of Yards facing across it, and Windcatcher panels stand upright with a sideways facing. Vehicles (a "
-                + "boat, submarine, airship, plane or Offroad car) get a vehicle check from the ship mods' own force rules, "
+                + "boat, submarine, airship, plane or Offroad car) are worked out from their blocks, "
                 + "with every engine at its usual speed: mass against buoyancy or lift, whether it floats upright or "
                 + "capsizes, its centre of mass against its lift, thrust, top speed, turn rate, climb and ceiling, and "
-                + "faults when it would sink, capsize, not lift, not move or turn, or be too slow or clumsy to be of use. Every "
+                + "problems when it would sink, capsize, not lift, not move or turn, or be too slow or clumsy to be of use. Every "
                 + "block of a vehicle must share a face with the rest, since Super Glue refuses blocks that touch only "
                 + "diagonally: shape a hull's curves with stairs and slabs, not blocks stepped at their edges. "
                 + "Fix those before recommending it, and give the player its numbers. Water and lava can be shown flowing: a "
@@ -387,7 +387,7 @@ public final class Models {
         if (!assumed.isEmpty() && nl > 0)
             text = text.substring(0, nl + 1) + "- Speeds worked out with " + String.join(", ", assumed) + ".\n" + text.substring(nl + 1);
         if (!part) return new BuildCheck.Report(text, r.faults());
-        return new BuildCheck.Report(text.replace("- FAULT: ", "- As a whole vehicle these blocks alone would fail: ")
+        return new BuildCheck.Report(text.replace("- PROBLEM: ", "- As a whole vehicle these blocks alone would fail: ")
                 + "\n- (Marked part_of_vehicle: check the whole vehicle with its own model before recommending it.)", List.of());
     }
 
