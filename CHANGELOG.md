@@ -4,6 +4,12 @@ Each pack version gets a section here, with **Added**, **Fixed** and **Removed**
 workflow copies the section for the version in `pack/pack.toml` to the top of the GitHub release, and the build
 fails when that section is missing.
 
+## 0.4.23
+
+### Fixed
+- **No more thin sheet of water stuck to ships.** A waterlogged block built in the sea, such as a stair, slab or fence on the hull, went aboard holding its sea water, and that water could spill across the deck as a thin layer that sailed with the ship. Waterlogged blocks now go aboard dry and their water stays in the sea, and taking a ship apart in water waterlogs the blocks that land in it again. Every ship assembled before this version is cleaned once, the first time it loads: all loose water on it is removed (including water that had spread past the glue, which the 0.4.16 clean missed) and every waterlogged block on it is dried. Ships assembled from now on are never touched, so water you put on a ship later stays.
+- Create Galore Bridge 1.55.0.
+
 ## 0.4.21
 
 The vehicle bug pass: airships, boats, submarines, trains, coasters and cars driven by a player on a dedicated server. Most of these fixes were already inside the 0.4.20 files (Bridge 1.50.0 to 1.53.0 and Deep Seas 3.4.4 landed before that release) but its notes didn't list them, so they are listed here.
