@@ -4,6 +4,12 @@ Each pack version gets a section here, with **Added**, **Fixed** and **Removed**
 workflow copies the section for the version in `pack/pack.toml` to the top of the GitHub release, and the build
 fails when that section is missing.
 
+## 0.4.25
+
+### Fixed
+- **Water and ice look right with shader packs again.** Since the Deep Seas update in 0.4.20, with Complementary, Bliss or any other shader pack the sea drew as flat grey without reflections, and ice or anything else floating on it looked like dark glass sinking into the water. Deep Seas' submarine water hiding took over texture slots the shader pack was using; it now keeps to its own slots again.
+- Create Galore Bridge 1.56.0.
+
 ## 0.4.23
 
 ### Fixed
