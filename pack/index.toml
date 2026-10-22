@@ -4587,6 +4587,10 @@ file = "config/paxi/resourcepacks/create-galore-guide/pack.mcmeta"
 hash = "024c3f3af4a47af34577bc953522b02a9eb8de40a852cdeafd6ac8b68522a60b"
 
 [[files]]
+file = "config/sereneseasons/seasons.toml"
+hash = "2bc0318514b448d770365eebfbc9bbadc5b3f56931ff090d2b95ef38e974dd47"
+
+[[files]]
 file = "config/skywhales-common.toml"
 hash = "c9e57c2b3188b447f940e77b1598714feef9771a7af8356be6e68fc646dbf8fc"
 
@@ -4970,8 +4974,8 @@ hash = "db683b65dc15a03dd6de2d34d5dc6ad0e3490744ced513a8cc584784ee9d3d8b"
 metafile = true
 
 [[files]]
-file = "mods/create-galore-bridge-1.68.0.jar"
-hash = "d7b81b5e9cb43188cb7c8fb28d24c8ddbab00cb7de2e266fd6ae781f76cc517d"
+file = "mods/create-galore-bridge-1.69.0.jar"
+hash = "f186db9a64a841bb41483a2943d5c7348f6b666622eeba0d80209def3684cbdb"
 
 [[files]]
 file = "mods/create-galore-fishing-0.3.13.jar"
