@@ -4,6 +4,14 @@ Each pack version gets a section here, with **Added**, **Fixed** and **Removed**
 workflow copies the section for the version in `pack/pack.toml` to the top of the GitHub release, and the build
 fails when that section is missing.
 
+## 0.4.38
+
+### Fixed
+- **The Farm Magnifying Glass tells you why animals aren't breeding.** Tamed animals only mate on their own, when a healthy pair of a male and a female within 8 blocks both have happiness 80 or more. The glass showed neither the sex nor the happiness and said "Breeding: Ready" whenever there was no cooldown, so a pen of all ewes, or a crowded pen, looked ready and never bred. It now shows the animal's sex (♂ Male or ♀ Female), its happiness, and on the Breeding line what is missing: happiness 80, a tame mate of the other sex within 8 blocks (or that mate's happiness), or health. It also warns when the animal is crowded (6 or more animals within 4 blocks, which takes about 40 happiness a day, more than care gives) or hungry. The Farm Ledger's symbol at the top left also shows the sex, and females are a little smaller than males.
+- **A Fertility Potion no longer goes to waste on an old pick.** The first animal you give it to waits 30 seconds for its partner, but it stayed picked after that, and a ram stayed picked after mating, so a later potion paired with it, was used up and nothing happened. The pick now ends with those 30 seconds (a pregnant ewe keeps it for her lamb).
+- **The Field Guide and Ask the Book had it wrong:** they said the Farm Magnifying Glass shows if an animal is male or female. The Animals entry now says where the sex shows, what lowers happiness (crowding counts animals in the next pen too, through the fence), how to use the Fertility Potion, and what to check when a pen won't breed.
+- Create Galore Bridge 1.68.0.
+
 ## 0.4.37
 
 ### Added

@@ -39,7 +39,7 @@
         "item": "animalhusbandry:farm_ledger"
       },
       "title": "Farm Ledger",
-      "text": "Tracks hunger, cleanliness, growth, yield, fertility and happiness. The [Farm Magnifying Glass](item://animalhusbandry:magnifying_glass) inspects one animal: sickness, cooldowns, wool and milk."
+      "text": "Tracks hunger, cleanliness, growth, yield, fertility and happiness. The symbol at the top left is its sex. The [Farm Magnifying Glass](item://animalhusbandry:magnifying_glass) inspects one animal: sex, health, happiness, cooldowns, wool and milk, and why it isn't mating yet."
     },
     {
       "type": "modonomicon:spotlight",
@@ -80,7 +80,22 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Happiness starts at 30. A day with sky or light 8+ adds 5, a brushing adds 10 (once a day), grooming in the last 3 days adds 3. Fed and brushed daily, a pair is ready in about three days.\\\n\\\nFor a pair right now, use a [Fertility Potion](item://animalhusbandry:fertility_potion) on each. A Farm Magnifying Glass shows if it's male or female."
+      "text": "Happiness starts at 30. A day with sky or light 8+ adds 5, a brushing adds 10 (once a day), grooming in the last 3 days adds 3. Fed and brushed daily, a pair is ready in about three days. Once both are at 80, they usually mate within a day."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Unfed for more than a day takes 10 a day. A crowd takes the most: with 6 or more animals of any kind within 4 blocks, each loses about 40 a day, more than care gives, so a packed pen never mates. Fences don't stop it, so neighbouring pens count too. Give small groups room."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Mating now",
+      "text": "For a pair right now, use a [Fertility Potion](item://animalhusbandry:fertility_potion) on one, then on the other within 30 seconds. Only the second one uses up the potion.\\\n\\\nTwo of the same sex are refused with a message, so it also tells you which you have. Females are also a little smaller than males."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Pen won't breed?",
+      "text": "Check each animal with the Farm Magnifying Glass: it shows the sex, the happiness and what is missing.\\\n\\\nThe usual causes: all one sex, happiness under 80 (crowding, missed feeding), or animals that were never tamed (hand each its food once)."
     },
     {
       "type": "modonomicon:text",

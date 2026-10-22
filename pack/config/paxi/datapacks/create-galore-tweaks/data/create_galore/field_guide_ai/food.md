@@ -1,4 +1,4 @@
-<!-- sources sha256:0128974ccbe7bcd27050413d70d1cbfcd5d26095bac3ac7b9dbc0ac8400744ff -->
+<!-- sources sha256:d74e1f6221a7f0235b970f63febf7269382a64b81f58f392a7495d5957929d6c -->
 # Food and Farming (food)
 
 ## food/first_food | Food in Your First Days
@@ -160,8 +160,8 @@
 
 ## food/animals | Animals and Husbandry
 - Animal Husbandry: animals have hunger, cleanliness, happiness, health, inherited traits (genes); care changes what you get. Check them in the Farm Ledger. Brush for happiness; sick ones need Animal Medicine.
-- Farm Ledger: shows item animalhusbandry:farm_ledger. Tracks hunger, cleanliness, growth, yield, fertility, happiness. Farm Magnifying Glass [animalhusbandry:magnifying_glass] inspects one animal: sickness, cooldowns, wool, milk; shows if male or female.
-- Grooming: shows item animalhusbandry:brush. Brush animals to raise happiness. Feeding Troughs hold feed; Brushing Posts help grooming; sick animals need Animal Medicine [animalhusbandry:animal_medicine]. Fertility Potion [animalhusbandry:fertility_potion] readies a pair to mate (use on each for a pair right now).
+- Farm Ledger: shows item animalhusbandry:farm_ledger. Tracks hunger, cleanliness, growth, yield, fertility, happiness; the symbol at its top left is the animal's sex. Farm Magnifying Glass [animalhusbandry:magnifying_glass] inspects one animal: sex, health, happiness, cooldowns, wool, milk, and why it isn't mating yet (happiness under 80, no tame mate of the other sex within 8 blocks, mate unhappy, sick); warns when crowded or hungry.
+- Grooming: shows item animalhusbandry:brush. Brush animals to raise happiness. Feeding Troughs hold feed; Brushing Posts help grooming; sick animals need Animal Medicine [animalhusbandry:animal_medicine]. Fertility Potion [animalhusbandry:fertility_potion] readies a pair to mate.
 - Traits (see in ledger): Glutton grows fast; Truffle Snout finds more truffles; Heavyweight drops double meat and leather.
 - Eggs and Cheese: shows item animalhusbandry:chicken_nest. Chicken Nests hold eggs. Milk in a cauldron becomes cheese blocks and slices. Pigs with the right trait dig up truffles; either truffle (this one or Fungi Delight's) works in Animal Medicine and Fungi Delight dishes.
 - Create tie-ins: Roosts and Fishing Nets from Integrated Farming (see food/integrated_farming) handle poultry on contraptions; Ratatouille (see food/ratatouille)'s Spreader breeds animals. Bees: Productive Bees (see food/bees).
@@ -169,7 +169,10 @@
 - Wild animals never get hungry or sick; care needs start once domesticated.
 - Gestation: mother carries young 3 days (cow), 2 days (sheep, goat), 1.5 days (pig) before birth; breeding isn't instant.
 - Taming and breeding: cows, pigs, sheep, goats, chickens don't breed from wheat or carrots. First food handed to a wild one tames it; after that food only fills it, once a day. Tamed pairs breed by themselves when both healthy, happy (80 or more), male and female, within 8 blocks.
-  - Happiness starts at 30. Day with sky or light 8+ adds 5; brushing adds 10 (once a day); grooming in last 3 days adds 3. Fed and brushed daily, a pair is ready in ~3 days.
+  - Happiness starts at 30. Day with sky or light 8+ adds 5; brushing adds 10 (once a day); grooming in last 3 days adds 3. Fed and brushed daily, a pair is ready in ~3 days. Once both are at 80, they usually mate within a day.
+  - Unfed for more than a day takes 10 a day. Crowd takes the most: 6 or more animals of any kind within 4 blocks, each loses ~40 a day, more than care gives, so a packed pen never mates. Fences don't stop it, so neighbouring pens count too. Give small groups room.
+- Mating now: Fertility Potion on one, then on the other within 30 seconds; only the second uses up the potion. Two of the same sex are refused with a message, so it also tells you which you have. Females are a little smaller than males.
+- Pen won't breed: check each animal with the Farm Magnifying Glass: sex, happiness, what is missing. Usual causes: all one sex, happiness under 80 (crowding, missed feeding), animals not tamed (hand each its food once).
 - Sickness: each day a tamed animal may fall sick if unhappy (under 50), unfed for more than 3 days, crowded (over 5 animals within 4 blocks), or kept dark (no sky and light under 4). Torch-lit barn is fine. After 4 sick days it loses a heart a day and can die. Animal Medicine cures it.
 - Troughs and eggs: Feeding Trough holds feed or water, not both; tamed animals walk to it when hungry. Only hens lay; Broody hens never do. Egg laid on stone or planks breaks 4 times in 5; on dirt, sand, hay, wool, leaves 1 in 10. Chicken Nest keeps them all.
 - Milk: wild cows milk as usual. Tamed cow gives milk only if female and not sick, a few buckets a day.
