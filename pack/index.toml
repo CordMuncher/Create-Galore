@@ -968,7 +968,7 @@ hash = "95f4583073f2f691b9b88fa6780275069c15098ffc4baa49d853d01053001073"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/flight.md"
-hash = "8c7e980ee8ded8b486f51b84329564bb8b9947134554206eeaf643e8ed5b0646"
+hash = "347bee710ba59705ca30f9c2aacd133405dbb1d95b14dfb4943782b5ec040d05"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/food.md"
@@ -976,7 +976,7 @@ hash = "fe98a6a18fe2e052bb9e9e702067991129adc9ea24cbdbf0da11de0e1a55bcd7"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/glossary.md"
-hash = "0ddde99565e291e0b7ee71f2fac737d84f58a4c7094962e23645c7ebdea85bb0"
+hash = "0d360b00b9ab385cbd77bc065d1835c82a358fb6bf681d3323f00e6a81cfb061"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/home.md"
@@ -1404,7 +1404,7 @@ hash = "91e877b3554310f93f551ecdb213bdb9364d90397a255c0a00505dc2d0ed5e64"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/flight/ship_building.json"
-hash = "9cd1d37c18fe59d0d6efea052fb98f1394075afd4204fd459f9748f2848195aa"
+hash = "47d7cc7d68282de10c62b4a66a551a61fdcb8c634b81360c5212050a1fb53ec3"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/flight/ship_hardware.json"
@@ -1640,7 +1640,7 @@ hash = "7313d55d186152d8725ef21457287cfbb01cbb48de7738a13ce25f2d87a71720"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/glossary/super_glue.json"
-hash = "20623d7cfa5c10ca3b3667d038a893aff9ab45e21b3bf1b104ca49a66063b3b8"
+hash = "9912b44095a4bfe50ca068c8b9d24b5920ff02f0f74adb32addb0e4b43680b5e"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/glossary/superheated.json"
@@ -4921,8 +4921,8 @@ hash = "db683b65dc15a03dd6de2d34d5dc6ad0e3490744ced513a8cc584784ee9d3d8b"
 metafile = true
 
 [[files]]
-file = "mods/create-galore-bridge-1.56.0.jar"
-hash = "dd649ec8e2cba28448ace5ffb0507a071358e37bf4720950f430a1d6bea39a72"
+file = "mods/create-galore-bridge-1.57.0.jar"
+hash = "1f2228f922c8811ae98aa1fcb085ab8b6c0807496510e552b3860d2275ef05e4"
 
 [[files]]
 file = "mods/create-galore-fishing-0.3.13.jar"
