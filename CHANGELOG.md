@@ -4,6 +4,12 @@ Each pack version gets a section here, with **Added**, **Fixed** and **Removed**
 workflow copies the section for the version in `pack/pack.toml` to the top of the GitHub release, and the build
 fails when that section is missing.
 
+## 0.4.30
+
+### Fixed
+- **Boats driven by a Boat Engine no longer nose-dive or rear up.** The engine pushed from its own block at the stern, always level with the world and over three times as hard as the boat's weight, so the moment a boat pitched at all the push tipped it further: a hull reaching deeper than the engine dug its bow in about 18 degrees and crawled at 2.4 blocks/s, and an engine set low on a flat hull reared the boat up onto its end within 6 seconds of full throttle. Every boat came out bow-heavy or flipped, whatever its shape. The engine now pushes through the boat's centre of mass, at the height of its submerged hull, and still steers from the propeller. A boat lifts its bow a little as it speeds up and runs slightly bow-up: a plank boat runs 2.6 degrees bow-up at 17 blocks/s, and the same boat with a two-block-deep hull runs 4 degrees bow-up while speeding up and settles at about 1 degree at 19 blocks/s. Boats built before keep working, with nothing to change.
+- Create Galore Bridge 1.60.0.
+
 ## 0.4.29
 
 ### Added
