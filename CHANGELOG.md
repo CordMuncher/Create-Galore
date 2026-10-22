@@ -4,6 +4,13 @@ Each pack version gets a section here, with **Added**, **Fixed** and **Removed**
 workflow copies the section for the version in `pack/pack.toml` to the top of the GitHub release, and the build
 fails when that section is missing.
 
+## 0.4.28
+
+### Fixed
+- **Ask the Book no longer designs boats that can't be glued.** Super Glue only joins blocks that touch face to face and refuses a selection where a block touches the rest only along an edge or at a corner, but the book's vehicle check counted those as joined, so it could suggest a stepped, diagonal hull. Blocks must now share a face, and the book shapes hull curves with stairs and slabs.
+- **Ask the Book no longer puts a Boat Engine where nobody can take the tiller.** It now runs the engine's own test: the spot two blocks out from the side the engine faces must be clear at the engine's height and the block above (it reaches a sliver into the column on the helmsman's left; carpets, a deck and a top slab up high are fine), or the engine says there is no room to sit at the tiller. It also catches an engine set on top of a block, which can't be placed because its propeller hangs in the block below.
+- Create Galore Bridge 1.58.0.
+
 ## 0.4.27
 
 ### Added
