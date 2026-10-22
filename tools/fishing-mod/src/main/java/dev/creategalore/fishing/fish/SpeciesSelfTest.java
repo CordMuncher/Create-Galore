@@ -62,13 +62,11 @@ public final class SpeciesSelfTest {
             check(r, "aquaculture:tuna", "starter", 0.0, 0.35);
             check(r, "aquaculture:tuna", "boat", 0.6, 1.0);
             for (FightRules.Check c : FightRules.run()) r.check(c.ok(), c.what());
-            // Every part wears a little each fight, even a gentle one: nothing lasts for ever, nothing goes quickly.
+            // Every part but the line wears a little each fight, even a gentle one: nothing lasts for ever, nothing goes
+            // quickly. A line only frays from teeth.
             int partFights = 0;
             for (float w = 0; w < 1 - 1e-4f; w += TackleWear.PART_WEAR_PER_FIGHT) partFights++;
             r.check(partFights == 200, "a leader, hook, float, sinker or lure wears out after " + partFights + " fights (want 200)");
-            int lineFights = 0;
-            for (float w = 0; w < 1; w += (float) TackleWear.lineFray(0, 0)) lineFights++;
-            r.check(lineFights >= 95 && lineFights <= 105, "a line fought gently wears out after " + lineFights + " fights (want about 100)");
             r.check(TackleWear.reelDamage(0) == 1 && TackleWear.rodDamage(0) == 1, "a gentle fight still costs the rod and the reel 1 durability");
         });
     }

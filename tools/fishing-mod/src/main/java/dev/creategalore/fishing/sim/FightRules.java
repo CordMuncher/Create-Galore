@@ -86,14 +86,15 @@ public final class FightRules {
         while (!crack.outcome().over() && crack.ticks() < 2000) crack.tick(idle, rng);
         out.add(new Check(crack.outcome() == Outcome.ROD_BROKE, "a rod worn through mid-fight breaks (" + crack.outcome() + ")"));
 
-        // A line nearly frayed through parts mid-fight under a load far below its test, and the fish is gone.
+        // Emre (22 Oct): a line holds or snaps; load never weakens it. Only teeth fray it, so a line with almost no
+        // fraying left, fought by a fish without teeth well below its test, still holds however long the fight.
         Fight fray = new Fight(steady(0.5, 1000), rig(10, 1000, 10_000), 10, 30);
         fray.wearLimits(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, 0.001);
         idle.drag = 10;
         rng = new SplittableRandom(9);
         while (!fray.outcome().over() && fray.ticks() < 2000) fray.tick(idle, rng);
-        out.add(new Check(fray.outcome() == Outcome.LINE_SNAPPED && fray.ticks() > 1,
-                String.format(Locale.ROOT, "a line frayed through parts mid-fight and loses the fish (%s after %.1f s)",
+        out.add(new Check(fray.outcome() != Outcome.LINE_SNAPPED && fray.outcome() != Outcome.BITTEN_OFF,
+                String.format(Locale.ROOT, "a nearly frayed line fought hard by a fish without teeth holds (%s after %.1f s)",
                         fray.outcome(), fray.seconds())));
 
         // Empty spool: the drag is as good as locked. A fish that pulls less than the line is held; one that pulls
