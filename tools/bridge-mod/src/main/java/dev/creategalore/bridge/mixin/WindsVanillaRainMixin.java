@@ -18,6 +18,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  * Let Winds start and keep up rain and thunder while a player is in a wet or stormy region, keeping at least its
  * 10-15 s timer so it never lapses between checks, and never end weather it didn't start: the normal cycle ends that,
  * and Winds' own rain runs out by itself a few seconds after the region dries. /weather clear still wins.
+ * Only real rain, storms and snow start rain. Drizzle and light rain are three quarters of Winds' wet weather (about
+ * 16% of the time at any spot) and each one turned on full rain across the whole world, so with two players it rained
+ * 35-50% of the time; they now stay clouds. Sandstorms no longer start rain either.
  */
 @Mixin(value = VanillaWeatherSync.class, remap = false)
 public abstract class WindsVanillaRainMixin {
@@ -26,7 +29,8 @@ public abstract class WindsVanillaRainMixin {
         ci.cancel();
         ServerLevelData data = (ServerLevelData) level.getLevelData();
         if (data.getClearWeatherTime() > 0) return;
-        boolean rain = type.isWet() || type.isFrozen() || type == WeatherType.SANDSTORM;
+        boolean rain = type == WeatherType.RAIN || type == WeatherType.STORM || type == WeatherType.THUNDERSTORM
+            || type == WeatherType.MONSOON || type.isFrozen();
         boolean thunder = type == WeatherType.STORM || type == WeatherType.THUNDERSTORM
             || type == WeatherType.BLIZZARD || type == WeatherType.MONSOON;
         int hold = 200 + (int) (100.0 * intensity);

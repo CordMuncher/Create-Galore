@@ -4,6 +4,12 @@ Each pack version gets a section here, with **Added**, **Fixed** and **Removed**
 workflow copies the section for the version in `pack/pack.toml` to the top of the GitHub release, and the build
 fails when that section is missing.
 
+## 0.4.39
+
+### Fixed
+- **It no longer rains most of the time.** Two things added up. Winds & Weather's drizzle and light rain, which cover about 16% of the map at any moment, each switched on full rain over the whole world while any player stood under them, so with two players online that alone added 10 to 20 points. Serene Seasons' default winter starts a new rain or snow spell 0.5 to 1.5 days after the last one ends (precipitation 42% of the time), and its default summer is wetter than autumn. Now only Winds & Weather's real rain, storms and snow bring rain (drizzle and light rain stay as clouds, sandstorms no longer bring rain), and rain follows the seasons: spring about 24% of the time, summer about 16% (the driest), autumn and winter about 20%. Before, a two-player server got wet weather 35-50% of the time.
+- Create Galore Bridge 1.69.0.
+
 ## 0.4.38
 
 ### Fixed
