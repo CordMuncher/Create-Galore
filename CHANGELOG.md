@@ -4,6 +4,18 @@ Each pack version gets a section here, with **Added**, **Fixed** and **Removed**
 workflow copies the section for the version in `pack/pack.toml` to the top of the GitHub release, and the build
 fails when that section is missing.
 
+## 0.4.37
+
+### Added
+- **Filter frames need no upkeep.** Every Iron, Gold and Diamond Filter Frame now catches all three kinds of smog (carbon, sulfur and dust) with nothing put in it, and never fills up or runs out. Iron filters 2 units of smog a second, gold 4 and diamond 8; right-click a frame to see its rate. When smog comes faster than a stack filters, the rest waits below it, and none slips through unfiltered. Frames show filter media inside, so they never look empty. A pump moves about 1.5 units a second, so an iron frame keeps up with one pump; gold and diamond pay off in a sealed room's roof, where pressure pushes harder. Pressure now keeps working on a sealed room until it is empty.
+
+### Fixed
+- **Polluted water looks like water with shader packs.** Shader packs drew it as a bright, flat yellow block, and underwater it showed as a solid cube. Shader packs now draw it as water (see-through, with waves and reflections) with its yellow tint, and there are no faces where it meets clean water.
+- Create Galore Bridge 1.67.0.
+
+### Removed
+- Filter material in filter frames. Leaves, wool, paper, dye and cartridges already in a frame are used up when the world loads, and hoppers can no longer put anything in. Leaves, wool, paper and Smog's cartridges are still the filters you craft into a respirator.
+
 ## 0.4.36
 
 ### Added

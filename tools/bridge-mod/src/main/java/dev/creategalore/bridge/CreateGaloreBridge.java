@@ -32,6 +32,9 @@ public final class CreateGaloreBridge {
                 .isSuffocating((state, level, pos) -> false).isViewBlocking((state, level, pos) -> false)
                 .isRedstoneConductor((state, level, pos) -> false)));
 
+    /** What every filter frame shows inside it; frames need no material, so this is never made or handed out. */
+    public static final DeferredItem<Item> FILTER_MEDIA = ITEMS.register("filter_media", () -> new Item(new Item.Properties()));
+
     /** The space-age gate: every way off the planet needs one. Recipe lives in the pack datapack. */
     public static final DeferredItem<StellarCoreItem> STELLAR_CORE = ITEMS.register("stellar_core",
             () -> new StellarCoreItem(new Item.Properties().rarity(Rarity.EPIC).fireResistant().stacksTo(16)));

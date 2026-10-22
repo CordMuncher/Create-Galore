@@ -30,7 +30,7 @@
     {
       "type": "modonomicon:text",
       "title": "How fast",
-      "text": "Each frame in the roof takes up to 6 units a second. A nearly empty space only seeps; a packed one hits that limit.\\\n\\\nThe frame's top needs a way to the sky, as in any exhaust: open air above it, or a chimney."
+      "text": "Each frame in the roof takes smog as fast as it filters: iron 2 units a second, gold 4, diamond 8. A nearly empty space only seeps; a packed one hits that limit.\\\n\\\nThe frame's top needs a way to the sky, as in any exhaust: open air above it, or a chimney."
     },
     {
       "type": "modonomicon:text",
@@ -40,7 +40,7 @@
     {
       "type": "modonomicon:text",
       "title": "A sealed smelter",
-      "text": "1. Fan, lava (or a Blaze Burner) and belt inside a box of full blocks\n2. Casing on the belt where it goes in and out\n3. A Filter Frame in the roof, a hopper under it for the dye\n4. Open sky or a chimney above the frame\n\nEach item smelted sends smog up through the filter."
+      "text": "1. Fan, lava (or a Blaze Burner) and belt inside a box of full blocks\n2. Casing on the belt where it goes in and out\n3. A Filter Frame in the roof\n4. Open sky or a chimney above the frame\n\nEach item smelted sends smog up through the filter."
     },
     {
       "type": "modonomicon:text",

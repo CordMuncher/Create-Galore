@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "create_galore_bridge:block/filter_media"
+  }
+}

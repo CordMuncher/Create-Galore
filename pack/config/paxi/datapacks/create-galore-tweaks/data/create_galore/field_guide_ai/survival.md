@@ -1,4 +1,4 @@
-<!-- sources sha256:02c553c2c89743bd59c458c37b37c7d56add873e384df030a7fbddf9d2336926 -->
+<!-- sources sha256:f2a026a4be0c121e31e09bff06e42b9cec0da516eb688cb9ccf61de0f7a3fe3c -->
 # Survival Layers (survival)
 Layers: Temperature (Cold Sweat), Thirst, Seasons (Serene Seasons), Pollution (Pollution of the Realms smog, exhaust systems), food/health, death/graves.
 
@@ -101,15 +101,15 @@ Layers: Temperature (Cold Sweat), Thirst, Seasons (Serene Seasons), Pollution (P
 - Related: (see survival/pollution_control), (see survival/smog_pressure), (see industry/liquid_fuel), (see industry/tfmg_oil), (see create_basics/heat)
 
 ## survival/pollution_control | Exhaust Systems
-- Key: Vents pull smog into Ducts, a Pump pushes it up and out; pump runs from an Encased Fan under it; Filter Frames on the way out catch smog and let out harmless exhaust; filtered exhaust must reach the open sky. Parts: Advanced Chimneys chimneys, vents, ducts, pumps + Filter Frames.
+- Key: Vents pull smog into Ducts, a Pump pushes it up and out; pump runs from an Encased Fan under it; Filter Frames on the way out catch every kind of smog and let out harmless exhaust, nothing to refill; filtered exhaust must reach the open sky. Parts: Advanced Chimneys chimneys, vents, ducts, pumps + Filter Frames.
 - Chimney [adchimneys:metal_chimney]: stone, brick, metal, glass chimneys carry smoke up. One on top of a furnace/burner takes its smoke straight in. Smoke leaving the top unfiltered still joins the cloud.
 - Vent [adchimneys:metal_vent]: intake inside the room; pulls in smog up to 4 blocks away; join to pump with ducts. Stone version same.
 - Duct [adchimneys:duct]: carries smog from vents/machines to a pump, up to 256 blocks. Joins a vent beside or above it, not below. Duct touching a machine takes its smoke straight in.
 - Pump [adchimneys:metal_pump]: runs while an Encased Fan (see create_basics/fans) right under it turns >= 16 RPM, blowing up or down; the fan's stress (see create_basics/stress) is the pump's cost (a bare shaft does not run it). Pushes smog upward only, into the chimney or frames above.
-- Filter Frame [adpother:iron_filter_frame]: stack on the pump's outlet. One filter material each; material picks the smog. Iron holds 16 of it, gold 32, diamond 64.
-- Filter materials (units each): Leaves: carbon 8 -> Black Dye; Wool: sulfur 8 -> Yellow Dye; Paper: dust 8 -> Gray Dye; Filter Cartridge [smog:filter_cartridge]: carbon 32; Brass Filter Cartridge: carbon + sulfur 64; Precision Filter Cartridge: all three 128. Spent cartridges come out clogged; wash with a Fan through water to get them back, sometimes Soot. Soot burns as fuel, makes black dye, or compacts (see glossary/compacting) to Graphite and Block of Soot.
-- Byproducts: frame stops once byproduct slot full (16 in iron frame); hopper under the frame takes dye/clogged cartridges out. Frame gives redstone signal as it fills. Empty or full frame blocks the whole stack.
-- Mixed smog: smog no frame catches leaves the top as is. One frame per kind (leaves, wool, paper) or Precision Cartridges.
+- Filter Frame [adpother:iron_filter_frame]: stack on the pump's outlet. Every frame catches all three smogs (carbon, sulfur, dust), needs nothing put in it. Iron filters 2 units a second, gold 4, diamond 8. Right-click a frame to see its rate.
+- Respirator filters: craft a Respirator together with a filter material to pick what it stops (units each): Leaves: carbon 8; Wool: sulfur 8; Paper: dust 8; Filter Cartridge [smog:filter_cartridge]: carbon 32; Brass Filter Cartridge: carbon + sulfur 64; Precision Filter Cartridge: all three 128. A clogged cartridge comes clean with a Fan through water, sometimes Soot. Soot burns as fuel, makes black dye, or compacts (see glossary/compacting) to Graphite and Block of Soot.
+- Busy stacks: a frame never fills up or runs out. Smog arriving faster than a stack filters waits below until it can pass; nothing slips through unfiltered. Filter faster with more frames or gold/diamond ones; two iron frames = one gold. A pump moves about 1.5 units a second whatever its speed, so one iron frame keeps up with it; gold/diamond pay off in a sealed room's roof under pressure (see survival/smog_pressure).
+- Mixed smog: every frame catches carbon, sulfur and dust alike, so one stack handles mixed smog.
 - Filtered exhaust: what a filter lets out; pale haze, harmless, not pollution. Rises, slips up through chimneys/frames, drifts along ceilings; under open sky thins away in a couple of seconds. Watch out: not air. Filter with closed top takes nothing; exhaust trapped indoors stays, fills the room, smog can't move into it. Give every filter a way up to the sky.
 - Respirator [adpother:iron_respirator]: worn on head, keeps smog out of lungs, wears down. Craft with filter material to choose what it stops. Gold/diamond last longer. Create Backtanks and Create Big Cannons gas mask protect too.
 - Vacuum Tube [adpother:iron_vacuum_tube]: hold use to suck gas in front of you into Vacuum Bags in inventory; without a bag blows it behind you.
@@ -118,9 +118,9 @@ Layers: Temperature (Cold Sweat), Thirst, Seasons (Serene Seasons), Pollution (P
 
 ## survival/smog_pressure | Pressure and Sealed Casings
 - Smog shut in a sealed space is forced up through Filter Frames in its roof, no pump needed; fuller space = faster. Sealed = full blocks, no open side, no gap to sky, fewer than 2,048 blocks of room inside.
-- Rate: each roof frame takes up to 6 units a second; nearly empty space only seeps; packed one hits the limit. Frame top needs a way to the sky (open air or chimney).
+- Rate: each roof frame takes smog as fast as it filters (iron 2 units a second, gold 4, diamond 8); nearly empty space only seeps; packed one hits the limit. Frame top needs a way to the sky (open air or chimney).
 - Belts and gaps: smog leaks through anything without a full face: bare belts, fences, carpets, trapdoors. Andesite or Brass Casing on a belt where it passes the wall seals it: items ride through, smog stays in.
-- Sealed smelter: 1. fan, lava (or Blaze Burner) and belt inside a box of full blocks; 2. casing on the belt where it goes in and out; 3. Filter Frame in the roof with a hopper under it for dye; 4. open sky or chimney above the frame. Each item smelted sends smog up through the filter.
+- Sealed smelter: 1. fan, lava (or Blaze Burner) and belt inside a box of full blocks; 2. casing on the belt where it goes in and out; 3. Filter Frame in the roof; 4. open sky or chimney above the frame. Each item smelted sends smog up through the filter.
 - Watch out, overpressure: a sealed space that fills up has no room for more smoke. Furnace or other machine in it blows up after a few tries and breaks. Fan smelting into it blows the casing open (as hard as a Creeper) after 4 batches that find no room.
 - Related: (see survival/pollution_control), (see survival/pollution), (see create_basics/fans), (see create_basics/item_logistics)
 
