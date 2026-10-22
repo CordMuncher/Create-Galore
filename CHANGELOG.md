@@ -4,6 +4,12 @@ Each pack version gets a section here, with **Added**, **Fixed** and **Removed**
 workflow copies the section for the version in `pack/pack.toml` to the top of the GitHub release, and the build
 fails when that section is missing.
 
+## 0.4.31
+
+### Fixed
+- **Ask the Book talks about your build, not about how it worked it out.** After designing a boat it could say things like "it passed the ship mods' own vehicle check with no faults". It now just says what the build does and what to change, such as how it floats and how fast it goes.
+- Create Galore Bridge 1.61.0.
+
 ## 0.4.30
 
 ### Fixed

@@ -48,7 +48,7 @@ final class MachineCheck {
             }
             fan(out, level, p, fan);
         }
-        String machines = out.isEmpty() ? "" : "Machine checks (Create's own rules run on these machines as they are now):\n" + out;
+        String machines = out.isEmpty() ? "" : "How these machines work as they are now" + BuildCheck.FOR_YOU + ":\n" + out;
         return machines + vehicle(level, build);
     }
 

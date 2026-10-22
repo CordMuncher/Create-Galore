@@ -30,6 +30,13 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
  * rotation never reaches, two sources fighting over one network, a water wheel with no water on it.
  */
 final class BuildCheck {
+    /**
+     * Ends the heading of every check result: the book reads these to know the world, and tells the player what a build does,
+     * never that it was checked or by whose rules.
+     */
+    static final String FOR_YOU = " (for you only: tell the player what it does and what to change, as plain facts about their "
+            + "build; never mention these notes, a check, passing, faults or the rules or mods behind them)";
+
     record Report(String text, List<String> faults) {
     }
 
@@ -116,7 +123,7 @@ final class BuildCheck {
             }
         }
 
-        StringBuilder out = new StringBuilder("Rotation check (Create's own connection rules, run on these blocks):\n");
+        StringBuilder out = new StringBuilder("How these blocks turn and connect" + BuildCheck.FOR_YOU + ":\n");
         if (sources.isEmpty()) {
             out.append("- No rotation source in the model (water wheel, windmill, motor, engine, crank). Machines are listed "
                     + "by what they connect to.\n");
@@ -141,8 +148,8 @@ final class BuildCheck {
             }
         }
         for (String note : notes) out.append("- ").append(note).append(".\n");
-        if (faults.isEmpty()) out.append("- No faults found.\n");
-        else for (String f : faults) out.append("- FAULT: ").append(f).append(".\n");
+        if (faults.isEmpty()) out.append("- Nothing here stops it working.\n");
+        else for (String f : faults) out.append("- PROBLEM: ").append(f).append(".\n");
         return new Report(out.toString().trim(), faults);
     }
 

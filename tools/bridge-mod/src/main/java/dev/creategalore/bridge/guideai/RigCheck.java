@@ -80,10 +80,10 @@ final class RigCheck {
                 + "and it joins only the Masts and Yards at its two ends");
         if (!loose.isEmpty()) notes.add("aeronauticswinds:yard at " + list(loose) + " touches no Mast or Yard at its ends, so it "
                 + "floats as a loose stub; a Yard is placed against a Mast and runs out from it along its axis");
-        StringBuilder out = new StringBuilder("Rigging check (Winds & Weather's own placement rules, run on these blocks):\n");
+        StringBuilder out = new StringBuilder("How this rigging hangs" + BuildCheck.FOR_YOU + ":\n");
         for (String note : notes) out.append("- ").append(note).append(".\n");
-        if (faults.isEmpty()) out.append("- No faults found.\n");
-        else for (String f : faults) out.append("- FAULT: ").append(f).append(".\n");
+        if (faults.isEmpty()) out.append("- Nothing here stops it working.\n");
+        else for (String f : faults) out.append("- PROBLEM: ").append(f).append(".\n");
         return new BuildCheck.Report(out.toString().trim(), faults);
     }
 
