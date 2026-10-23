@@ -540,3 +540,20 @@ land, you drag the line. You don't add meters to it."
 - New self-test suite `tow` (a pool and a land strip in the sky): moving 12 m away drags the rig 12 m at the same line
   out, stepping back leaves it, moving off again doesn't add line. Client test on a flat ocean: 207 m of trolling at
   8.4 m/s kept the line at 25.3 m; walking backwards 40 m on sand kept it at 15.5 m.
+
+## 0.3.17: the line out holds still (pack 0.4.64)
+
+Emre (23 Oct, on 0.4.54): with the rod cast and not reeling, moving around still made the line go in and out.
+Reproduced in a client on 0.3.16: looking round took the shown line from 21.0 to 19.1 and back to 20.4 m, strafing
+and stepping toward the rig changed it too, and a diving lure or a sinking angler grew it. The HUD showed the straight
+distance from the rod tip to the rig, and the rod tip swings 1.6 m in front of the eyes plus 0.35 m to the side, so
+every turn of the head moved it; towing was also measured from the tip, so looking away dragged the rig in a little.
+
+- **The line shown is the line off the reel** (`lineOff`): what was cast, less what winding and lifts took back.
+  Looking round, strafing, jumping, stepping toward the rig (slack) or a lure diving no longer change it.
+- **A hand rod tows from the angler, not the swinging tip** (`towAnchor`); machines still tow from their fixed tip.
+  Looking round no longer moves the rig.
+- The strike still starts the fight at the real distance to the rig, so a strike on slack line starts shorter.
+- Self-test `tow` also looks round and strafes and checks the line shown never moves (12 checks). Client check:
+  21.0 m through looking round, strafing, stepping in and jumping; a crankbait trolled 110 m held 25.2 m; 2 s of
+  winding took it to 22.7 m.
