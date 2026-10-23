@@ -20,7 +20,7 @@
     {
       "type": "modonomicon:text",
       "title": "Pressure and Sealed Casings",
-      "text": "[#](FFFFFF)[#]() **Key points**\n\n- Smog shut in a sealed space is forced up through the **Filter Frames in its roof**, no pump needed\n- The fuller the space, the faster\n- A belt with **casing** on it seals a wall, a bare belt leaks\n- [#](FFFFFF)[#]() Full with nowhere to go, it blows up"
+      "text": "[#](FFFFFF)[#]() **Key points**\n\n- Smog shut in a sealed space is forced up through the **Filter Frames in its roof**, no pump needed\n- The fuller the space, the faster\n- A belt, shaft or pipe with **casing** on it seals a wall, a bare one leaks\n- [#](FFFFFF)[#]() Full with nowhere to go, it blows up"
     },
     {
       "type": "modonomicon:text",
@@ -35,12 +35,17 @@
     {
       "type": "modonomicon:text",
       "title": "Belts and gaps",
-      "text": "Smog leaks through anything without a full face: bare belts, fences, carpets, trapdoors. Put Andesite or Brass Casing on a belt where it passes the wall. Items ride through, smog stays in."
+      "text": "Smog leaks through anything without a full face: bare belts, shafts and pipes, fences, carpets, trapdoors. Put Andesite or Brass Casing on a belt where it passes the wall. Items ride through, smog stays in."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Shafts and pipes",
+      "text": "Case a shaft where it passes the wall with Andesite or Brass Casing, a fluid pipe with Copper Casing. Power and fluid go through, smog stays in.\\\n\\\nGearboxes, chain drives, clutches, gearshifts, encased cogwheels and fans are whole blocks and seal like stone. A shaft in a Metal Girder leaks."
     },
     {
       "type": "modonomicon:text",
       "title": "A sealed smelter",
-      "text": "1. Fan, lava (or a Blaze Burner) and belt inside a box of full blocks\n2. Casing on the belt where it goes in and out\n3. A Filter Frame in the roof\n4. Open sky or a chimney above the frame\n\nEach item smelted sends smog up through the filter."
+      "text": "1. Fan, lava (or a Blaze Burner) and belt inside a box of full blocks\n2. Casing on the belt where it goes in and out, and on any shaft or pipe through the wall\n3. A Filter Frame in the roof\n4. Open sky or a chimney above the frame\n\nEach item smelted sends smog up through the filter."
     },
     {
       "type": "modonomicon:text",

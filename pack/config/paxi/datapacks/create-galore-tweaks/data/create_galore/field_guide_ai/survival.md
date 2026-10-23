@@ -1,4 +1,4 @@
-<!-- sources sha256:1adb5cbcf0455b138e20f468884c07acf28c64b73a0d759281e46c8a6eb1ad93 -->
+<!-- sources sha256:558078cc3c010fa52091d31ed24d0dfd80c31e6468573cb20ce1e1b2f66788a8 -->
 # Survival Layers (survival)
 Layers: Temperature (Cold Sweat), Thirst, Seasons (Serene Seasons), Pollution (Pollution of the Realms smog, exhaust systems), food/health, death/graves.
 
@@ -119,8 +119,9 @@ Layers: Temperature (Cold Sweat), Thirst, Seasons (Serene Seasons), Pollution (P
 ## survival/smog_pressure | Pressure and Sealed Casings
 - Smog shut in a sealed space is forced up through Filter Frames in its roof, no pump needed; fuller space = faster. Sealed = full blocks, no open side, no gap to sky, fewer than 2,048 blocks of room inside.
 - Rate: each roof frame takes smog as fast as it filters (iron 2 units a second, gold 4, diamond 8); nearly empty space only seeps; packed one hits the limit. Frame top needs a way to the sky (open air or chimney).
-- Belts and gaps: smog leaks through anything without a full face: bare belts, fences, carpets, trapdoors. Andesite or Brass Casing on a belt where it passes the wall seals it: items ride through, smog stays in.
-- Sealed smelter: 1. fan, lava (or Blaze Burner) and belt inside a box of full blocks; 2. casing on the belt where it goes in and out; 3. Filter Frame in the roof; 4. open sky or chimney above the frame. Each item smelted sends smog up through the filter.
+- Belts and gaps: smog leaks through anything without a full face: bare belts, shafts and pipes, fences, carpets, trapdoors. Andesite or Brass Casing on a belt where it passes the wall seals it: items ride through, smog stays in.
+- Shafts and pipes: Andesite or Brass Casing on a shaft where it passes the wall (Encased Shaft), Copper Casing on a fluid pipe (Encased Fluid Pipe): power and fluid go through, smog stays in. Gearboxes, Encased Chain Drives, clutches, gearshifts, encased cogwheels and Encased Fans are whole blocks and seal like stone. A shaft through a Metal Girder still leaks.
+- Sealed smelter: 1. fan, lava (or Blaze Burner) and belt inside a box of full blocks; 2. casing on the belt where it goes in and out, and on any shaft or pipe through the wall; 3. Filter Frame in the roof; 4. open sky or chimney above the frame. Each item smelted sends smog up through the filter.
 - Watch out, overpressure: a sealed space that fills up has no room for more smoke. Furnace or other machine in it blows up after a few tries and breaks. Fan smelting into it blows the casing open (as hard as a Creeper) after 4 batches that find no room.
 - Related: (see survival/pollution_control), (see survival/pollution), (see create_basics/fans), (see create_basics/item_logistics)
 

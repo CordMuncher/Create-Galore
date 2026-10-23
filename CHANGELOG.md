@@ -4,6 +4,11 @@ Each pack version gets a section here, with **Added**, **Fixed** and **Removed**
 workflow copies the section for the version in `pack/pack.toml` to the top of the GitHub release, and the build
 fails when that section is missing.
 
+## 0.4.44
+
+### Added
+- **Field Guide: shafts and pipes through a sealed wall.** The Pressure and Sealed Casings page now says how to bring power and fluid into a sealed room without letting smog out: put Andesite or Brass Casing on a shaft where it passes the wall, and Copper Casing on a fluid pipe. Gearboxes, Encased Chain Drives, clutches, gearshifts, encased cogwheels and Encased Fans seal like stone; bare shafts, cogwheels and pipes leak, and so does a shaft in a Metal Girder. Checked with smog shut in a test room: none got out past any encased block, and it poured out past a bare shaft. Ask the Book knows it too.
+
 ## 0.4.43
 
 ### Fixed
