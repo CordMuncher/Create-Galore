@@ -44,5 +44,15 @@ public final class ChunkLoadGuard {
         return level.getChunkSource().getChunkNow(pos.getX() >> 4, pos.getZ() >> 4) != null;
     }
 
+    /** True when every chunk within this many blocks (sideways) of the spot is fully loaded right now. See {@link #ready}. */
+    public static boolean readyAround(Level level, BlockPos pos, int blocks) {
+        for (int cx = (pos.getX() - blocks) >> 4; cx <= (pos.getX() + blocks) >> 4; cx++) {
+            for (int cz = (pos.getZ() - blocks) >> 4; cz <= (pos.getZ() + blocks) >> 4; cz++) {
+                if (!ready(level, new BlockPos(cx << 4, pos.getY(), cz << 4))) return false;
+            }
+        }
+        return true;
+    }
+
     private ChunkLoadGuard() {}
 }
