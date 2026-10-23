@@ -56,7 +56,7 @@
     {
       "type": "modonomicon:text",
       "title": "Hot days",
-      "text": "Deserts and badlands at a summer noon are over 100 °F on their own (about 115 °F in Mid Summer). Stay in the shade or underground, keep water handy, or wear [#](2E5AAC)[heat insulation](entry://survival/temperature_gear)[#]() such as Hoglin armor."
+      "text": "Deserts and badlands at a summer noon are over 100 °F on their own (about 115 °F in Mid Summer). Stay in the shade or underground, keep water handy, or wear [#](2E5AAC)[heat insulation](entry://survival/temperature_gear)[#]() such as leather armor sewn with Rabbit Hide."
     },
     {
       "type": "modonomicon:text",
@@ -96,12 +96,17 @@
     {
       "type": "modonomicon:text",
       "title": "Space",
-      "text": "Cold Sweat covers the Overworld and Aether. Northstar's planets have their own temperature system, set by each world and a Temperature Regulator block. It is separate from Cold Sweat, with one link: space suits count as warm clothing, so a suit keeps you warm on a cold night back home. The Martian Steel suit keeps out heat too."
+      "text": "Cold Sweat covers the Overworld, the Nether, the End, the Aether and the Twilight Forest. The Nether is the hottest place of all: see [#](2E5AAC)[Nether Heat](entry://survival/nether_heat)[#]()."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Northstar's planets have their own temperature system, set by each world and a Temperature Regulator block. It is separate from Cold Sweat, with one link: space suits count as warm clothing, so a suit keeps you warm on a cold night back home. The Martian Steel suit keeps out heat too."
     },
     {
       "type": "modonomicon:text",
       "title": "Related",
-      "text": "Thirst now works with Cold Sweat: see [#](2E5AAC)[Thirst](entry://survival/thirst)[#]().\n\n- [#](2E5AAC)[Insulation and Heaters](entry://survival/temperature_gear)[#]()\n- [#](2E5AAC)[Create and Altitude Heat](entry://survival/temperature_create)[#]()\n- [#](2E5AAC)[Blaze Burner and Heat](entry://create_basics/heat)[#]()\n- [#](2E5AAC)[Thirst](entry://survival/thirst)[#]()\n- [#](2E5AAC)[Planets](entry://space/planets)[#]()"
+      "text": "Thirst now works with Cold Sweat: see [#](2E5AAC)[Thirst](entry://survival/thirst)[#]().\n\n- [#](2E5AAC)[Insulation and Heaters](entry://survival/temperature_gear)[#]()\n- [#](2E5AAC)[Nether Heat](entry://survival/nether_heat)[#]()\n- [#](2E5AAC)[Create and Altitude Heat](entry://survival/temperature_create)[#]()\n- [#](2E5AAC)[Blaze Burner and Heat](entry://create_basics/heat)[#]()\n- [#](2E5AAC)[Thirst](entry://survival/thirst)[#]()\n- [#](2E5AAC)[Planets](entry://space/planets)[#]()"
     }
   ]
 }

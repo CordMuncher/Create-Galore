@@ -1,0 +1,79 @@
+{
+  "category": "survival",
+  "name": "Nether Heat",
+  "description": "The Nether is hot enough to kill. Gear up first.",
+  "icon": {
+    "item": "minecraft:magma_block"
+  },
+  "x": -2,
+  "y": -2,
+  "sort_number": 3,
+  "parents": [
+    {
+      "entry": "survival/temperature",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Nether Heat",
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- [#](FFFFFF)\ue108[#]() The Nether is 130 to 180 °F, far hotter next to lava\n- Bare, you overheat in under a minute\n- [#](FFFFFF)\ue109[#]() Leather armor sewn with **Rabbit Hide** gives 6 to 17 minutes\n- Blue and Packed Ice make a cool spot"
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "The Nether's air is 130 to 180 °F. Lava within 7 blocks adds up to 200 °F more, so a portal beside a lava lake can read over 250 °F.\\\n\\\nIt is about 40 °F cooler while it is night in the Overworld."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Bare skin",
+      "text": "Unprotected, your body overheats in 15 to 45 seconds, and heat stroke hurts faster the hotter it is.\\\n\\\nIron, diamond and netherite armor carry no heat insulation of their own. Only sewn or furred armor slows the heat."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "minecraft:rabbit_hide"
+      },
+      "title": "Rabbit Hide",
+      "text": "The best heat insulator outside the Nether, tied with Chameleon Molt once it has turned toward heat. Sew it into leather armor at a [#](2E5AAC)[Sewing Table](entry://survival/temperature_gear)[#](): 19 hides fill a full set."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Before you go",
+      "text": "Leather armor full of Rabbit Hide lasts about 17 minutes in 166 °F air and about 6 minutes beside lava before you overheat.\\\n\\\nPlain leather lasts under 3 minutes."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Ice",
+      "text": "Packed Ice and Blue Ice cool the air around them, and neither melts.\\\n\\\nFour Blue Ice and four Packed Ice two blocks around you turn 166 °F into 86 °F, a safe spot by the portal. Beside lava they bring 262 °F down to about 150 °F."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Water",
+      "text": "A Waterskin chilled in an Icebox cools you from your hotbar until it warms up, about a minute. Drinking a cold one cools you at once.\\\n\\\nSee [#](2E5AAC)[Insulation and Heaters](entry://survival/temperature_gear)[#]() for both."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Safe ground",
+      "text": "Deep inside a Soul Sand Valley it is about 85 to 100 °F, which you can stand in.\\\n\\\n[#](FFFFFF)\ue102[#]() **Tip:** Fire Resistance stops heat damage while it lasts, though your body still heats up. Brewing it takes Nether ingredients, but some Overworld dungeon chests hold the potion."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Once you're in",
+      "text": "Hoglins drop Hoglin Hide. A Hoglin set lasts about 8 minutes on its own and longer with Rabbit Hide sewn in.\\\n\\\nSoul Sprouts grow in Soul Sand Valleys. Eating one cools you, and they fuel the Soulspring Lamp, which cools you in the Nether."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "[#](FFFFFF)\ue103[#]() **In depth.** 40 points of heat insulation make you heat up ten times slower. Leather armor carries 23, each sewn Rabbit Hide 1.5, Leather 1, Hoglin Hide 2, and the Hoglin set 46. Chameleon armor and Molt turn their insulation toward heat in about 2 minutes, reaching three quarters of their value.\\\n\\\nTimes here were taken at Overworld noon, the Nether's hottest."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Related",
+      "text": "- [#](2E5AAC)[Temperature](entry://survival/temperature)[#]()\n- [#](2E5AAC)[Insulation and Heaters](entry://survival/temperature_gear)[#]()\n- [#](2E5AAC)[The Nether](entry://exploration/nether)[#]()"
+    }
+  ]
+}

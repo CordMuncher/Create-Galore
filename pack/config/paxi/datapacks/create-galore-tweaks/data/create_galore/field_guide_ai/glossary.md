@@ -1,4 +1,4 @@
-<!-- sources sha256:4f47574f1385e951a16edb23fef536cb9a33d0658db40783b47aca83e73fd6b7 -->
+<!-- sources sha256:f8d0a333bbee8f68763bdd48a7fd1f9ee234f94fc20d647060a296243e3992cc -->
 # Words to Know (glossary)
 Short definitions of jargon the book uses unexplained, mostly Create and survival. Purple words in the book link to these entries; each lists where the word matters.
 
@@ -100,8 +100,8 @@ Short definitions of jargon the book uses unexplained, mostly Create and surviva
 - Matters: Blaze Burner and Heat (see create_basics/heat); Press, Mixer and Basin (see create_basics/processing); TFMG Steel (see industry/tfmg_steel).
 
 ## glossary/insulation | Insulation
-- Insulation: cold or heat resistance on armor, slows body temperature drift. Sewing Table sews on Goat Fur, Hoglin Hide; hover a piece to read it (see survival/temperature_gear) (see survival/temperature).
-- Matters: Insulation and Heaters (see survival/temperature_gear); Temperature (see survival/temperature); Your First Days (see start_here/first_days).
+- Insulation: cold or heat resistance on armor, slows body temperature drift. Sewing Table sews on Goat Fur (cold), Rabbit Hide or Hoglin Hide (heat); iron, diamond, netherite armor have none of their own; hover a piece to read it (see survival/temperature_gear) (see survival/temperature).
+- Matters: Insulation and Heaters (see survival/temperature_gear); Temperature (see survival/temperature); Nether Heat (see survival/nether_heat); Your First Days (see start_here/first_days).
 
 ## glossary/jei | JEI
 - JEI (Just Enough Items): lists every item and recipe beside inventory. Hover an item, press R for how to make it, U for what it is used in, A to bookmark.

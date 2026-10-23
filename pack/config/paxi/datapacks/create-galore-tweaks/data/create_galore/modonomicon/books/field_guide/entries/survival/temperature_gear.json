@@ -38,7 +38,7 @@
     {
       "type": "modonomicon:text",
       "title": "Fur and hide",
-      "text": "Goat Fur and Hoglin Hide come from goats and hoglins. Finished sets exist: Goat Fur, Hoglin and Chameleon Scale armor. Hover any piece to read its insulation."
+      "text": "Goat Fur and Hoglin Hide come from goats and hoglins. Rabbit Hide and Leather sew on too: Rabbit Hide is the best heat insulator outside the Nether, tied with Chameleon Molt once it has turned toward heat. Finished sets exist: Goat Fur, Hoglin and Chameleon Scale armor. Hover any piece to read its insulation."
     },
     {
       "type": "modonomicon:spotlight",
@@ -77,7 +77,7 @@
     {
       "type": "modonomicon:text",
       "title": "Related",
-      "text": "- [#](2E5AAC)[Temperature](entry://survival/temperature)[#]()\n- [#](2E5AAC)[Create and Altitude Heat](entry://survival/temperature_create)[#]()\n- [#](2E5AAC)[Blaze Burner and Heat](entry://create_basics/heat)[#]()"
+      "text": "- [#](2E5AAC)[Temperature](entry://survival/temperature)[#]()\n- [#](2E5AAC)[Nether Heat](entry://survival/nether_heat)[#]()\n- [#](2E5AAC)[Create and Altitude Heat](entry://survival/temperature_create)[#]()\n- [#](2E5AAC)[Blaze Burner and Heat](entry://create_basics/heat)[#]()"
     }
   ]
 }

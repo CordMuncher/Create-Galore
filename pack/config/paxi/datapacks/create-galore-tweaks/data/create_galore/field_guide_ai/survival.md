@@ -1,4 +1,4 @@
-<!-- sources sha256:558078cc3c010fa52091d31ed24d0dfd80c31e6468573cb20ce1e1b2f66788a8 -->
+<!-- sources sha256:438f695f9cc18a4cf323e800a761af5142e95eec8486bcd711372492375dcc13 -->
 # Survival Layers (survival)
 Layers: Temperature (Cold Sweat), Thirst, Seasons (Serene Seasons), Pollution (Pollution of the Realms smog, exhaust systems), food/health, death/graves.
 
@@ -9,7 +9,7 @@ Layers: Temperature (Cold Sweat), Thirst, Seasons (Serene Seasons), Pollution (P
 - World temperature = what the spot feels like: biome, season, time of day, height/depth, nearby fire, lava, ice, water. Body temperature drifts toward it; armor insulation and warm/cold blocks slow the drift.
 - Seasons (see survival/seasons) shift every biome: Mid Summer adds most heat, Mid Winter removes most. Temperate plains: Mid Summer noon ~94 °F, winter night ~40 °F. Comfortable range 45 to 100 °F.
 - Cold nights: nights coldest. Bare-skinned on temperate beach in Mid Winter you start freezing after a few minutes. One lit campfire within a few blocks keeps you warm there. Snowy biomes and peaks still need warm clothes (see survival/temperature_gear) or a Hearth. Leather or fur armor slows drift enough to get through; iron armor does not.
-- Hot days: deserts/badlands at summer noon >100 °F alone (~115 °F Mid Summer). Stay in shade/underground, keep water handy, or wear heat insulation (see survival/temperature_gear) e.g. Hoglin armor.
+- Hot days: deserts/badlands at summer noon >100 °F alone (~115 °F Mid Summer). Stay in shade/underground, keep water handy, or wear heat insulation (see survival/temperature_gear) e.g. leather armor sewn with Rabbit Hide.
 - Lit furnace, smoker, blast furnace, campfire, fire are hot: 2 to 3 blocks away in the open adds ~20 °F, inside a room ~7 °F -> summer kitchen best indoors.
 - You slowly acclimate to your climate: comfortable range widens by up to ~20 °F.
 - Water: getting wet cools you; netherite diving suit makes you immune to that. Rain only soaks so far, even after a swim; under a roof you dry off, faster where warm. Heat and cold can both be lethal.
@@ -18,20 +18,33 @@ Layers: Temperature (Cold Sweat), Thirst, Seasons (Serene Seasons), Pollution (P
 - Altitude: higher is colder. Pack adds Cold Sweat: Altitude (see survival/temperature_create): splits height range into bands changing temperature, chill message in sky, shelter or sewn Windproof Lining cuts the effect. Bites on mountains, sky islands, airships.
 - Body temperature moves at 0.6 speed (Cold Sweat's rate setting); comfortable down to ~45 °F. Too hot or too cold: each hit does half a heart every 2 seconds.
 - Seasons shift air temperature: Mid Winter ~13.5 °F colder, Early/Late Winter ~9 °F colder; Summer warmer by the same amounts; start of spring and end of autumn ~4.5 °F colder; end of spring and start of autumn ~4.5 °F warmer.
-- Space: Cold Sweat covers Overworld and Aether only. Northstar's planets have own temperature system (set by each world + Temperature Regulator block), separate from Cold Sweat, one link: space suits count as warm clothing (suit keeps you warm on a cold night back home). Martian Steel suit keeps out heat too. (see space/planets)
+- Cold Sweat covers Overworld, Nether, End, Aether, Twilight Forest. Nether is hottest of all (see survival/nether_heat).
+- Space: Northstar's planets have own temperature system (set by each world + Temperature Regulator block), separate from Cold Sweat, one link: space suits count as warm clothing (suit keeps you warm on a cold night back home). Martian Steel suit keeps out heat too. (see space/planets)
 - Thirst now works with Cold Sweat (see survival/thirst).
-- Related: (see survival/temperature_gear), (see survival/temperature_create), (see create_basics/heat), (see survival/thirst), (see space/planets)
+- Related: (see survival/temperature_gear), (see survival/nether_heat), (see survival/temperature_create), (see create_basics/heat), (see survival/thirst), (see space/planets)
 
 ## survival/temperature_gear | Insulation and Heaters
 - Armor is main defence: take any armor to a Sewing Table and sew insulation on. Insulators (Goat Fur, Hoglin Hide) have own item tab. JEI (see start_here/tools) has Sewing Recipes category.
 - Sewing Table [cold_sweat:sewing_table]: crafted from wool and planks. Adds insulation from items like Goat Fur to armor, held as cold or heat resistance.
-- Goat Fur and Hoglin Hide come from goats and hoglins. Finished sets: Goat Fur, Hoglin, Chameleon Scale armor. Hover a piece to read its insulation. Chameleon = Cold Sweat's tameable lizard, sheds scales for a set.
+- Goat Fur and Hoglin Hide come from goats and hoglins. Rabbit Hide and Leather sew on too: Rabbit Hide = best heat insulator outside the Nether, tied with Chameleon Molt once it has turned toward heat. Finished sets: Goat Fur, Hoglin, Chameleon Scale armor. Hover a piece to read its insulation. Chameleon = Cold Sweat's tameable lizard, sheds scales for a set.
 - Goat Fur Parka [cold_sweat:goat_fur_chestplate]: ready-made set piece; insulation in tooltip.
 - Blocks: Hearth keeps area around it comfortable, takes fuel (Hearth Fuel category in JEI). Boiler warms, Icebox cools. Put a Smokestack on top to make an area livable.
 - Hearth [cold_sweat:hearth]: fuel it, put in enclosed room. Switches on by itself when someone inside is too cold (or too hot, with cold fuel), burns fuel only then; no redstone needed. Boiler and Icebox work the same. Fuels and range in JEI.
 - Waterskin [cold_sweat:waterskin]: Cold Sweat's drink container; tooltip shows keys to drink/pour. Create Spout can fill it. Carries Thirst (see survival/thirst) purity: purify in furnace or campfire.
 - Full Create netherite diving set (see ocean/diving) (netherite backtank, diving helmet, netherite leggings, diving boots): adds heat dampening and shrugs off wet effect; backtank tooltip shows the hint.
-- Related: (see survival/temperature), (see survival/temperature_create), (see create_basics/heat)
+- Related: (see survival/temperature), (see survival/nether_heat), (see survival/temperature_create), (see create_basics/heat)
+
+## survival/nether_heat | Nether Heat
+- Nether air 130 to 180 °F; lava within 7 blocks adds up to 200 °F more, portal beside a lava lake can read over 250 °F. About 40 °F cooler while it is night in the Overworld.
+- Bare: body overheats in 15 to 45 seconds; heat stroke hurts faster the hotter it is. Iron, diamond, netherite armor carry no heat insulation of their own; only sewn or furred armor slows heat.
+- Rabbit Hide [minecraft:rabbit_hide]: best heat insulator outside the Nether, tied with Chameleon Molt once it has turned toward heat. Sew into leather armor at Sewing Table (see survival/temperature_gear): 19 hides fill a full set.
+- Before first trip: leather full of Rabbit Hide lasts ~17 minutes in 166 °F air, ~6 minutes beside lava before overheating. Plain leather under 3 minutes.
+- Ice: Packed Ice and Blue Ice cool the air around them, neither melts. 4 Blue Ice + 4 Packed Ice two blocks around you: 166 °F -> 86 °F (safe spot by portal). Beside lava 262 °F -> ~150 °F.
+- Water: Waterskin chilled in an Icebox cools you from the hotbar until it warms up (~a minute); drinking a cold one cools at once (see survival/temperature_gear).
+- Safe ground: deep inside a Soul Sand Valley ~85 to 100 °F, standable. Tip: Fire Resistance stops heat damage while it lasts (body still heats). Brewing needs Nether ingredients; some Overworld dungeon chests hold the potion.
+- Once in: hoglins drop Hoglin Hide. Hoglin set ~8 minutes alone, longer with Rabbit Hide sewn in. Soul Sprouts grow in Soul Sand Valleys: eating one cools you; they fuel the Soulspring Lamp, which cools you in the Nether.
+- In depth: 40 points of heat insulation = heat up ten times slower. Leather armor 23, each sewn Rabbit Hide 1.5, Leather 1, Hoglin Hide 2, Hoglin set 46. Chameleon armor and Molt turn their insulation toward heat in about 2 minutes, reaching three quarters of their value. Times taken at Overworld noon, the Nether's hottest.
+- Related: (see survival/temperature), (see survival/temperature_gear), (see exploration/nether)
 
 ## survival/temperature_create | Create and Altitude Heat
 - Create: Cold Sweat makes Create machines change temperature of nearby players; working factory heats the room. Heat idea: (see create_basics/heat).
