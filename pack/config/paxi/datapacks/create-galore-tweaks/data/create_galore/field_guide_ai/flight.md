@@ -1,4 +1,4 @@
-<!-- sources sha256:c59e2e19c09b04ecfb77e8fa971a60d50b2e6e38e1bb3e1dbe650b7c09816afd -->
+<!-- sources sha256:aaa4116bee192899550775308ef91584b85a3b1f06ffd9bc2acff552a04ff409 -->
 # Flight (flight)
 Create Aeronautics ships, lift, thrust, steering, wind, dangers and sky destinations.
 
@@ -84,10 +84,12 @@ Create Aeronautics ships, lift, thrust, steering, wind, dangers and sky destinat
 - Create Propulsion: Simulated adds fuel thrusters, electric ion thrusters, steerable vector thrusters, wings, heat engines; need Aeronautics physics to be useful
 - Thruster [createpropulsion:thruster]: burns piped liquid fuel, throttled by redstone; oxidizer adds efficiency bonus; build 2x2 or 3x3 blocks of them; pipe fuel into the end opposite the flame
 - Fuels accepted: Turpentine (from Pine Resin); TFMG diesel, gasoline, kerosene, naphtha; Northstar hydrocarbon, methane, biofuel, liquid hydrogen. Wrong fluid = no thrust (see industry/tfmg_oil) (see space/rocket_building)
-- Solid Fuel Thruster [createpropulsion:solid_fuel_thruster]: burns items not fluid: coal, charcoal, wood, Blaze Cake; easy start (coal, charcoal, planks all work); holds 1 fuel item, coal lasts ~3 min at full power (longer throttled); wrench opens its hatch, then it pulls the next item from a chest/container against its intake end (opposite the flame)
+- Solid Fuel Thruster [createpropulsion:solid_fuel_thruster]: burns items not fluid: coal, charcoal, wood, Blaze Cake; easy start (coal, charcoal, planks all work); only on/off (any redstone signal = full power); keep ~10 blocks clear behind the flame; holds 1 fuel item, coal lasts ~3 min at full power; wrench opens its hatch, then it pulls the next item from a chest/container against its intake end (opposite the flame)
 - Ion Thruster [createpropulsion:ion_thruster]: Forge energy, no fuel; stores energy; generators can feed it from below (see industry/electricity)
 - Vector Thruster [createpropulsion:vector_thruster]: tilts to push any direction under redstone control; needs platinum (this mod adds it as an ore)
 - Wing [createpropulsion:wing]: plain wing blocks; smelt one -> Tempered Wing; Copycat (see glossary/copycat) versions copy another block's look
+- Flying on wings: wings and Create sails lift the way their face points, more the faster the ship moves; a winged ship needs a forward run (thrusters) before it rises; build them flat facing up; keep lift centred over the weight left/right and nose/tail
+- Keeping a plane level: nothing levels a ship by itself, a plane tips over without help; put an Aeroworks Gyroscope (see flight/controls) on board, turned from below by an engine on the ship, full strength at 256 RPM; upright wings push sideways whenever moving, face them in cancelling pairs
 - Stirling Engine [createpropulsion:stirling_engine]: rotation from heat below it; Solid and Liquid Burners supply heat; can warm a boiler (see glossary/boiler) but cannot heat mixers or superheat anything (that still needs a Blaze Burner (see create_basics/heat))
 - Smaller parts: Redstone Transmission changes speed from signal (directly or stepwise); Tilt Adapters turn left/right difference into angle. Hold W (see start_here/tools) over Stirling Engine and burners for Ponders
 - Related: TFMG Oil and Fuels (see industry/tfmg_oil), Electricity (see industry/electricity), Blaze Burner and Heat (see create_basics/heat), Ore Guide (see materials/ore_guide)

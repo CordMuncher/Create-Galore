@@ -605,8 +605,10 @@ public final class GuideAi {
         StringBuilder note = new StringBuilder();
         List<String> diagrams = new ArrayList<>();
         Streamer streamer = new Streamer(l, playerId, pageId);
+        boolean rescued = false;
         try {
             for (int round = 1; ; round++) {
+                // Past the limit only for the one extra round that asks an empty answer to be written.
                 boolean last = round >= MAX_ROUNDS;
                 if (round > 1) streamer.newRound();
                 JsonObject response = call(l, messages, last, streamer);
@@ -627,9 +629,16 @@ public final class GuideAi {
                         if (last) {
                             note.append("The book ran out of time looking things up. ");
                             usage.log(playerId, round, "rounds");
-                            return finishText(messages, diagrams, note, true);
+                            // Its tool calls have no results, which the API refuses on the page's next question.
+                            return finishText(messages, diagrams, note, false);
                         }
-                        messages.add(toolResults(l, playerId, content, diagrams, streamer));
+                        JsonObject results = toolResults(l, playerId, content, diagrams, streamer);
+                        messages.add(results);
+                        int left = MAX_ROUNDS - round - 1;
+                        if (left == 0) addText(results, WRAP_UP);
+                        else if (left <= 2) addText(results, "(" + left + (left == 1 ? " more round" : " more rounds")
+                                + " of tool calls for this question; after that the tools close and you must write the answer "
+                                + "from what you have.)");
                     }
                     case "pause_turn" -> {
                         // A long web search paused the turn; sending the conversation back lets it carry on.
@@ -645,6 +654,17 @@ public final class GuideAi {
                         return finishText(messages, diagrams, note, false);
                     }
                     default -> {
+                        if (text(content).isEmpty() && !rescued) {
+                            // It stopped without writing anything (seen after a long run of drafts on the last, tool-less
+                            // round). Take that turn back and ask once more, plainly, for the answer.
+                            LOG.warn("Field Guide voice: round {} ended ({}) with no text (blocks: {}); asking for the answer",
+                                    round, stop, blockTypes(content));
+                            messages.remove(messages.size() - 1);
+                            addText(messages.get(messages.size() - 1).getAsJsonObject(), WRAP_UP_EMPTY);
+                            rescued = true;
+                            round = Math.max(round, MAX_ROUNDS - 1);
+                            continue;
+                        }
                         usage.log(playerId, round, stop);
                         return finishText(messages, diagrams, note, true);
                     }
@@ -654,6 +674,41 @@ public final class GuideAi {
             LOG.warn("Field Guide voice: the API refused a request ({} {})", e.status, e.type);
             return Outcome.failed(e.getMessage());
         }
+    }
+
+    /** Sent with the last round's tool results, when the tools close. */
+    private static final String WRAP_UP = "(The tools are closed for this question now. Write your answer to the player from "
+            + "what you have found. If a model or plan you worked on still fails a check, don't show it as finished: say "
+            + "plainly what you couldn't get right and what the player would have to change or try. Models and drawings "
+            + "already made can still go in with [diagram N].)";
+    /** Sent once when a turn ends with no text at all. */
+    private static final String WRAP_UP_EMPTY = "(Your last turn had no text, so the player saw no answer. Write the answer "
+            + "to their question now, in words, from what you have found. If you couldn't make something work, say what "
+            + "you tried, what stopped it, and what the player can do instead.)";
+
+    /** Adds a line of text to a user turn, after any tool results (a plain string turn becomes a list of blocks). */
+    private static void addText(JsonObject user, String text) {
+        JsonArray blocks;
+        if (user.has("content") && user.get("content").isJsonArray()) {
+            blocks = user.getAsJsonArray("content");
+        } else {
+            blocks = new JsonArray();
+            JsonObject first = new JsonObject();
+            first.addProperty("type", "text");
+            first.addProperty("text", user.has("content") ? GuideText.string(user, "content") : "");
+            blocks.add(first);
+            user.add("content", blocks);
+        }
+        JsonObject block = new JsonObject();
+        block.addProperty("type", "text");
+        block.addProperty("text", text);
+        blocks.add(block);
+    }
+
+    private static String blockTypes(JsonArray content) {
+        List<String> types = new ArrayList<>();
+        for (JsonElement e : content) types.add(e.isJsonObject() ? GuideText.string(e.getAsJsonObject(), "type") : "?");
+        return String.join(",", types);
     }
 
     private static final String PICTURE_NOTE = "(The draft's picture was here.)";
@@ -717,7 +772,11 @@ public final class GuideAi {
             if (!GuideText.string(m, "role").equals("assistant")) break;
             answer = text(m.getAsJsonArray("content"));
         }
-        if (answer.isEmpty() && diagrams.isEmpty()) answer = "The book turned a few pages but found nothing to say. Try asking another way.";
+        if (answer.isEmpty() && diagrams.isEmpty()) {
+            answer = "The book turned a few pages but found nothing to say. Try asking another way.";
+            // An empty turn in the page's history would make the API refuse the next question there.
+            keep = false;
+        }
         String n = note.toString().strip();
         return new Outcome(answer, List.copyOf(diagrams), n.isEmpty() ? null : n, keep);
     }
@@ -816,6 +875,7 @@ public final class GuideAi {
                                 : (a, b, max) -> Builds.copy(player, placedBlocks, views.get(playerId), a, b, max);
                         return Models.build(input, player != null ? player.serverLevel() : l.server.overworld(), copier, player);
                     }).get(10, TimeUnit.SECONDS);
+                    LOG.info("Field Guide voice: build_model {}", buildSummary(built));
                     if (built.problem() != null) {
                         result = built.problem();
                     } else if (built.draft()) {
@@ -876,6 +936,20 @@ public final class GuideAi {
         user.addProperty("role", "user");
         user.add("content", results);
         return user;
+    }
+
+    /**
+     * One line for the server log on each model the book builds: refused, or what the checks found in it, so a run of
+     * models that keep failing shows which check stopped them.
+     */
+    private static String buildSummary(Models.Result built) {
+        List<String> problems = new ArrayList<>();
+        for (String line : (built.problem() != null ? built.problem() : built.check()).split("\n"))
+            if (line.contains("PROBLEM")) problems.add(GuideAiNet.clip(line.strip(), 200));
+        if (built.problem() != null) return "refused: " + (problems.isEmpty() ? GuideAiNet.clip(built.problem().replace('\n', ' '), 300)
+                : String.join(" | ", problems));
+        return (built.draft() ? "draft" : "final") + (problems.isEmpty() ? ", checks passed" : ", " + problems.size()
+                + " problem" + (problems.size() == 1 ? "" : "s") + ": " + String.join(" | ", problems));
     }
 
     /** Token use and an estimate of what one question cost, for the server log. Never logs any text. */

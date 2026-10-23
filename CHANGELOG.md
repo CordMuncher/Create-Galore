@@ -4,6 +4,16 @@ Each pack version gets a section here, with **Added**, **Fixed** and **Removed**
 workflow copies the section for the version in `pack/pack.toml` to the top of the GitHub release, and the build
 fails when that section is missing.
 
+## 0.4.72
+
+### Added
+- **Ask the Book designs planes that fly.** Its vehicle check now understands wings and Create sails: they lift the way they face, more the faster the ship goes, so a winged draft gets its take-off speed, ceiling and drag from its wings. A short flight of the draft at full power and at the power that holds its height shows whether it stays level, and a failing draft gets a fix in numbers: how many blocks to move its wings toward the nose or tail, or how fast an Aeroworks Gyroscope has to turn to hold it level. Upright wings that push sideways and lift off the centre line are flagged too. The flights were checked against real ships on a test server (falling rafts within 1%, climb and speed within a few %), and on the test rig "earliest balanced create plane I can make" ends in a model that passes the checks and flies.
+- The Field Guide's Thrusters and Engines entry has two new pages, Flying on wings and Keeping it level, and says the Solid Fuel Thruster is only on or off and needs about 10 clear blocks behind its flame.
+- Create Galore Bridge 1.89.0.
+
+### Fixed
+- Ask the Book no longer answers "The book turned a few pages but found nothing to say" after a long design session. It is told when its last rounds of tools are coming, and if it still ends with nothing to say it is asked once more to answer with what it has, including what it could not build.
+
 ## 0.4.71
 
 ### Fixed
