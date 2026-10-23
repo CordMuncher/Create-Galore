@@ -1040,7 +1040,7 @@ hash = "ebcc9305940c50b022e6351bfc9fbf8419ca1e83f80c16caea06286bc586109a"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/survival.md"
-hash = "7404bf91e779cbc38d2762684df66b6bd16dca87a0e3bf37b7e2f4118f562cf6"
+hash = "3b1a8e31045939386e4f56cfe969ce139cad09c07fd0a6951549d6612e0f9fb3"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/transport.md"
@@ -1964,7 +1964,7 @@ hash = "5d8acdcf9363e68bd0e6f870f0c178a7d93716b1d2bfd65e1baf6eb8e4ee8828"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/survival/temperature.json"
-hash = "bfa461a1434f44b16639d12f26f64709c60300a4f01bac5613fe089653362eac"
+hash = "79075cbc344b87cac20ecc575ec5827ddd1bd7125fbbb7a49295c8721e6c3822"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/survival/temperature_create.json"

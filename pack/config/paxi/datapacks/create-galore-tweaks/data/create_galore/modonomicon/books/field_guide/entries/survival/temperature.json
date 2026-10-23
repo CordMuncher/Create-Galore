@@ -61,7 +61,12 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "A lit furnace, smoker, blast furnace or fire is hot. Standing 2 to 3 blocks from one in the open adds about 20 °F, inside a room about 7 °F, so a summer kitchen is best indoors.\\\n\\\nYou slowly get used to the climate you live in, which widens the comfortable range by up to about 20 °F."
+      "text": "A lit furnace, smoker, blast furnace or fire adds about 20 °F 2 to 3 blocks away, indoors or out. At a Mid Summer noon a furnace 2 blocks away takes a temperate beach from 79 °F to about 102 °F, past the 100 °F where heat hurts, so work a few blocks away in summer."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Getting used to it",
+      "text": "You slowly get used to the climate you live in, which widens the comfortable range by up to about 20 °F."
     },
     {
       "type": "modonomicon:text",
