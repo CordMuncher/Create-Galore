@@ -108,7 +108,16 @@ final class GuideText {
             labels. A model of a build (a boat, a house, a bridge, a farm to copy) is a showpiece: build it the way a \
             skilled Minecraft builder would, with real shape and detail, and take the time it needs. Plan it first, \
             write it as layers, then try it as a draft, look at the pictures and fix what looks blocky or off before you \
-            show it; one or two drafts are usually enough. A drawing can hold a model too, with a shape of kind model, \
+            show it; one or two drafts are usually enough. The checks a model gets back are the bare minimum for it to \
+            work: a build that fails them is always a bad build, but one that passes them isn't a good build for that \
+            alone. Design for the player who will use it: where they stand to steer and work each control (on the \
+            vehicle's own deck or floor, never hanging outside it or over the water), how they get aboard, in and \
+            around, and that nothing makes them fall off, squeeze through or stand somewhere no real player would. If \
+            a design only passes by a trick a real player wouldn't build, change the design: a ship balances by the \
+            shape of its hull and where its rooms and machines go, never by iron blocks or other dead weight bolted on \
+            (that is the player's own fix for a ship they built). Labels and captions name only \
+            what the model really has, pointing at the block that is that part: never label a cannon, engine or room \
+            that isn't built in. A drawing can hold a model too, with a shape of kind model, \
             when the model needs notes or arrows around it. Players can save any drawing or model as a page of its own. \
             When they ask you to improve, extend or fix something they built, show it on their own build: find its \
             bounds with trace_build or read_area, copy it into build_model with from_world and write only what \

@@ -1,4 +1,4 @@
-<!-- sources sha256:ea22320d8cf44c3f92fc7edf0deb0ffe30c3c47eaa876386ce24426259c5ba6b -->
+<!-- sources sha256:2ef9c01a0a4b9b6582c1d2cd2fc9a072aeb684941c315c50e590d60d0b55ad3d -->
 # The Ocean (ocean)
 Create Deep Seas (submarines, High Seas surface ships), Aquatic Ambitions, sea life mods, Aquamirae, diving, structures.
 
@@ -46,7 +46,7 @@ Create Deep Seas (submarines, High Seas surface ships), Aquatic Ambitions, sea l
 - Wind Vane [create_high_seas:wind_vane]: shows wind direction; steer along the arrow for top speed. Goggles (see create_basics/tools_wrench) show alignment as a percent.
 - Wind: baseline, gusts, extra strength in rain and thunderstorms. Terrain upwind can block it. Sailing straight into the wind keeps only part of your speed.
 - Rudder at the stern tells sails which way is forward; mount it on a Swivel Bearing (see flight/ship_building) to steer.
-- Boat Engine [create_high_seas:boat_engine]: compact fuel-burning propeller; mount at the stern with the propeller in the water. Burns fuel (open fuel screen to see what it takes).
+- Boat Engine [create_high_seas:boat_engine]: compact fuel-burning propeller; mount at the stern with the propeller in the water, facing into the boat: the helmsman stands two blocks in front of it (on the side it faces), so keep deck under that spot. Burns fuel (open fuel screen to see what it takes).
   - Right-click: take the tiller; sneak: let go. Sneak-click: fuel screen. Hold use at the helm and move the mouse to set a speed limit 0 to 15.
   - The tiller needs fuel in the engine; right-click the engine with fuel in hand to load it.
   - Watch out: a switched-on engine burns fuel all the time, even moored with nobody aboard (a coal lasts 80 seconds). Switch it off with the button in its fuel screen when leaving the boat.
