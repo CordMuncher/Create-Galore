@@ -1,7 +1,7 @@
 {
   "category": "exploration",
-  "name": "Gear and Curios",
-  "description": "Curios adds extra equipment slots beside armor: rings, necklaces, belts, hands and more.",
+  "name": "Gear and Accessories",
+  "description": "Rings, necklaces, hats, gloves and more, worn beside armor in the Accessories screen.",
   "icon": {
     "item": "artifacts:cloud_in_a_bottle"
   },
@@ -19,13 +19,13 @@
   "pages": [
     {
       "type": "modonomicon:text",
-      "title": "Gear and Curios",
-      "text": "**Curios** adds extra equipment slots beside armor: rings, necklaces, belts, hands and more. Several mods fill them, so you can wear gear on top of your armor."
+      "title": "Gear and Accessories",
+      "text": "Besides armor you wear **accessories**: rings, necklaces, hats, gloves, belts and more. They all go in the one [#](7A3C9A)[Accessories](entry://glossary/curios)[#]() screen (**G**), so you wear gear on top of your armor."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "In this pack these mods fill them:\n\n- **Artifacts**: hats, boots, gloves, belts and pendants\n- **Iron's Spells**: rings, necklaces, spell books\n- **Critters and Companions**: pearl necklaces"
+      "text": "Mods that make accessories:\n\n- **Artifacts**: hats, shoes, gloves, belts, pendants\n- **Iron's Spells**: rings, necklaces, spell books\n- **The Aether**: rings, pendants, gloves, capes, a shield\n- **Cataclysm**: amulets, belts, gloves, a ring\n- **Critters and Companions**: pearl necklaces"
     },
     {
       "type": "modonomicon:spotlight",

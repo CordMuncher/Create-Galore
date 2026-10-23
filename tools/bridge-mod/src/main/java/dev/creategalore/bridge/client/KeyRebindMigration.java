@@ -46,9 +46,26 @@ public final class KeyRebindMigration {
     private KeyRebindMigration() {
     }
 
+    /**
+     * Pack 0.4.40 replaced the three accessory screens with one wear screen on G (Curios' old key): Curios' and
+     * Accessories' keys come off their defaults so G isn't taken twice (bound again, they open the wear screen too).
+     */
+    private static final String WEAR_MARKER = "create_galore_bridge-keys-0.4.40.done";
+    private static final Map<String, String[]> WEAR_REBINDS = new LinkedHashMap<>();
+
+    static {
+        WEAR_REBINDS.put("key_key.curios.open.desc", new String[] {"key.keyboard.g", "key.keyboard.unknown"});
+        WEAR_REBINDS.put("key_accessories.key.open_accessories_screen", new String[] {"key.keyboard.comma", "key.keyboard.unknown"});
+    }
+
     public static void run() {
+        run(MARKER, REBINDS, "the pack 0.2.1 key rebinds");
+        run(WEAR_MARKER, WEAR_REBINDS, "the pack 0.4.40 key rebinds (one accessory screen on G)");
+    }
+
+    private static void run(String markerName, Map<String, String[]> rebinds, String what) {
         Path file = FMLPaths.GAMEDIR.get().resolve("options.txt");
-        Path marker = FMLPaths.CONFIGDIR.get().resolve(MARKER);
+        Path marker = FMLPaths.CONFIGDIR.get().resolve(markerName);
         try {
             if (Files.exists(marker)) {
                 return;
@@ -59,7 +76,7 @@ public final class KeyRebindMigration {
                 return;
             }
             List<String> lines = new ArrayList<>(Files.readAllLines(file, StandardCharsets.UTF_8));
-            Map<String, String[]> pending = new LinkedHashMap<>(REBINDS);
+            Map<String, String[]> pending = new LinkedHashMap<>(rebinds);
             List<String> moved = new ArrayList<>();
             for (int i = 0; i < lines.size(); i++) {
                 String line = lines.get(i);
@@ -79,7 +96,7 @@ public final class KeyRebindMigration {
                 moved.add(key.substring(4));
             });
             Files.write(file, lines, StandardCharsets.UTF_8);
-            Files.writeString(marker, "Create Galore Bridge moved the pack 0.2.1 key rebinds into options.txt once. Delete this file to run it again.\n");
+            Files.writeString(marker, "Create Galore Bridge moved " + what + " into options.txt once. Delete this file to run it again.\n");
             if (!moved.isEmpty()) {
                 LOG.info("Moved {} key(s) off clashing mod defaults to the pack's keys: {}", moved.size(), moved);
             }

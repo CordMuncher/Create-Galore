@@ -1,4 +1,4 @@
-<!-- sources sha256:68c6a457737301f2421d18180e27699f8502e8ccc42e5d829c7011c366c14b2e -->
+<!-- sources sha256:90bff550828453648bf02469d87860dd3e5f5321ce3b14c935373b7097f2150b -->
 # Exploration and Adventure (exploration)
 
 ## exploration/dimensions | Dimensions
@@ -176,7 +176,7 @@
 - Spell Books [irons_spellbooks:copper_spell_book]: Flimsy Journal (copper) up to Ancient Codex (netherite)
 - Scroll Forge [irons_spellbooks:scroll_forge]: where scrolls are made; polished deepslate and crying obsidian
 - Inscription Table [irons_spellbooks:inscription_table]: writes spells into a spell book
-- Crafting uses: ink in five rarities, Arcane Essence, Mithril, Pyrium and Arcane Ingots, Upgrade Orbs (boost a school). Helpers: Alchemist Cauldron, Arcane Anvil, Pedestals. Rings and necklaces go in Curios slots (see exploration/gear)
+- Crafting uses: ink in five rarities, Arcane Essence, Mithril, Pyrium and Arcane Ingots, Upgrade Orbs (boost a school). Helpers: Alchemist Cauldron, Arcane Anvil, Pedestals. Rings, necklaces and the spell book are worn in the Accessories screen (see exploration/gear)
 - World: wizard towers and a lost Citadel, defended by mage mobs: Pyromancer Tower, Archevoker's Evoker Fort, Ice Spider Den, Ancient Battleground, Catacombs, the Citadel (a Citadel Map exists). Bosses (see exploration/bosses)
 - Not in this world: three spells would replace vehicles; never in loot, Scroll Forge or JEI (see glossary/jei): **Portal** (permanent two-way links), **Recall** (home from anywhere), **Angel Wings** (Elytra flight). Portal Frames and Hither-Thither Wand can't be crafted (see transport/getting_around)
 - Create hooks in: Inks, Blood Vials, Timeless Slurry, several elixirs have Create filling/emptying recipes; Spout fills from fluid, Drain empties (see create_basics/fluids)
@@ -192,9 +192,9 @@
 - Blaze Caster [create_wizardry:blaze_caster]: contraption that casts scroll spells; must be superheated (see glossary/superheated); Impulse or Sentry modes. Holds a scroll, casts using mana; not every spell compatible. Heat is Create's (see create_basics/heat), blaze burner
 - Other fluids: Liquid Lightning, Blood (compressing meat or boiling mobs), Fire Ale, Netherward Tincture. Several made by Create processing (see create_basics/processing) such as mixing (see glossary/mixing); look up in JEI (see glossary/jei). Back to Magic (see exploration/magic)
 
-## exploration/gear | Gear and Curios
-- **Curios** adds extra equipment slots beside armor (rings, necklaces, belts, hands, more); wear on top of armor
-- Fillers here: **Artifacts** (hats, boots, gloves, belts, pendants); **Iron's Spells** (rings, necklaces, spell books); **Critters and Companions** (pearl necklaces)
+## exploration/gear | Gear and Accessories
+- Accessories (rings, necklaces, hats, gloves, belts, more) worn on top of armor, all in one Accessories (see glossary/curios) screen (G)
+- Mods that make them: **Artifacts** (hats, shoes, gloves, belts, pendants); **Iron's Spells** (rings, necklaces, spell books); **The Aether** (rings, pendants, gloves, capes, a shield); **Cataclysm** (amulets, belts, gloves, a ring); **Critters and Companions** (pearl necklaces)
 - Cloud in a Bottle [artifacts:cloud_in_a_bottle]: double jump; Artifacts item found in loot, not crafted
 - Universal Attractor [artifacts:universal_attractor]: pulls dropped items toward you
 - Snorkel [artifacts:snorkel]: underwater breathing helper, with Flippers and Aqua-Dashers; see Diving Gear

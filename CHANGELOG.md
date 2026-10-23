@@ -4,6 +4,21 @@ Each pack version gets a section here, with **Added**, **Fixed** and **Removed**
 workflow copies the section for the version in `pack/pack.toml` to the top of the GitHub release, and the build
 fails when that section is missing.
 
+## 0.4.40
+
+### Added
+- **One accessory screen.** Rings, necklaces, gloves, capes, backpacks, charms and everything else you wear now go in one Accessories screen, opened with the ring button next to your player in the inventory (in creative too) or with **G**. It shows your player with armor and off-hand on the left, the accessory slots beside them from head to feet, and your inventory below. Shift-click puts an accessory in its slot. Every mod still sees its items exactly where it expects them, so every effect works as before.
+- **Limits on what a person can wear:** one hat, one pair of goggles or glasses, one mask or respirator, up to 3 necklaces, one cape, one backpack, one body piece, two hands (a pair of gloves fills both, a single glove or bracer one), one shield accessory, up to 10 rings, one belt, one quiver, one spellbook, one pair of shoes, up to 3 charms and up to 3 gadgets. No two of the same necklace, charm or gadget; at most 2 of the same ring or hand item. Hover an empty slot to see what goes there and how many of that kind you wear.
+- **Show or hide each accessory on your character:** hover a worn item and click the small eye in its corner. Hidden items keep working.
+
+### Fixed
+- Accessories were split across three screens (Curios, Accessories and The Aether's), each with its own button and its own slots, so the same kind of item could be worn several times over (Aether rings plus Curios rings, two necklace slots in two screens).
+- **Your worn accessories carry over.** Everything that fits the new limits just shows up in the new screen. What doesn't fit (more of a kind than the limit, look-only cosmetic slots, or slots the new screen doesn't have) goes to your inventory with a chat message; if your inventory is full nothing is dropped: it is kept for you, and a chat button (shown at every join until you use it) gives it back once you have room.
+- Create Galore Bridge 1.70.0.
+
+### Removed
+- The Curios, Accessories and Aether accessory screens and their three inventory buttons (their keys open the new screen if you bound them again). Look-only cosmetic slots.
+
 ## 0.4.39
 
 ### Fixed

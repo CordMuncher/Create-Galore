@@ -1,4 +1,4 @@
-<!-- sources sha256:4ba839123c24f11ed40c744e8581ec9c5c23a75b18c82d9233d0ecf8f9817ec6 -->
+<!-- sources sha256:146f15624b340c4acc193826f899a618b608362e0db63593217d0f248c71f549 -->
 # Fishing (fishing)
 
 ## fishing/overview | Fishing
@@ -135,7 +135,7 @@
 - Overworld void has own fish (Alpha Fish, Darkness Eater among them); none for the Nether void. **Abyss Bait** is void fish's favourite; void bites take 1.8 times as long. No fish sends you home when eaten (see transport/getting_around)
 
 ## fishing/gadgets | Fishing Gadgets
-- Gadgets show conditions fish care about. Hold one, wear in a Curios (see glossary/curios) slot, or place block versions nearby; reading shows in the top corner. Right-click to read once
+- Gadgets show conditions fish care about. Hold one, wear in a Gadgets slot of the Accessories (see glossary/curios) screen, or place block versions nearby; reading shows in the top corner. Right-click to read once
 - Pocket Watch [tide:pocket_watch]: exact time; a clock and a chain
 - Lunar Calendar [tide:lunar_calendar]: tonight's moon phase; paper, ink sac, spyglass; can be placed
 - Climate Gauge [tide:climate_gauge]: biome temperature; glass, iron nugget, redstone; weather and seasons don't change its reading

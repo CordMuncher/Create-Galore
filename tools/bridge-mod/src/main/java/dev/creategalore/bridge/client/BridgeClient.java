@@ -21,6 +21,7 @@ public final class BridgeClient {
         KeyRebindMigration.run();
         modBus.addListener(BridgeClient::setup);
         GuideAiClient.init(modBus);
+        WearClient.init(modBus);
         net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener(ShipGlueView::tick);
         net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener(SchematicTrace::tick);
         net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener(SchematicTrace::render);

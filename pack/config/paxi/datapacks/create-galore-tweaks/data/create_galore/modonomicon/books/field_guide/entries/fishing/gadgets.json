@@ -20,7 +20,7 @@
     {
       "type": "modonomicon:text",
       "title": "Fishing Gadgets",
-      "text": "The gadgets show the conditions fish care about. Hold one, wear it in a [#](7A3C9A)[Curios](entry://glossary/curios)[#]() slot, or place the block versions nearby, and its reading shows in the top corner of the screen. Right-click to read it once."
+      "text": "The gadgets show the conditions fish care about. Hold one, wear it in a Gadgets slot of the [#](7A3C9A)[Accessories](entry://glossary/curios)[#]() screen, or place the block versions nearby, and its reading shows in the top corner of the screen. Right-click to read it once."
     },
     {
       "type": "modonomicon:spotlight",

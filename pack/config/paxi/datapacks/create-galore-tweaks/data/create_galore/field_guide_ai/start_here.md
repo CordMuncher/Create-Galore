@@ -1,4 +1,4 @@
-<!-- sources sha256:50a6baf09ec4eced8131091c1aa7cc9e8721a86e81c9ebea52f242283c8cb082 -->
+<!-- sources sha256:10d8fb9f975172548e1fcafd73215e7eef53231bf4f064defe2414cf28687d43 -->
 # Start Here (start_here)
 
 ## start_here/welcome | Welcome to Create Galore
@@ -36,10 +36,10 @@
 - Jade: point at block or mob; box names it, its mod, extra details (machine contents, crop growth).
 - AppleSkin: hunger and saturation (see glossary/saturation) tooltips (see survival/food_and_health).
 - Xaero's Minimap and World Map, waypoints, coordinates, train/ship display: Maps (see home/maps).
-- Changed keys (pack rebinds a few; rest default; check Options > Controls): Backpack open J; Jetpack toggle N; Accessories screen comma; Shader reload (Iris) F8; Aether invisibility =; Supplementaries quiver backtick; Stock ticker (Mobile Packages) period; Player networks semicolon; Cataclysm abilities Home, End, Insert, Delete; Railways Navigator overlay options backslash; Alex's Caves special ability apostrophe (').
+- Changed keys (pack rebinds a few; rest default; check Options > Controls): Backpack open J; Jetpack toggle N; Accessories screen G; Shader reload (Iris) F8; Aether invisibility =; Supplementaries quiver backtick; Stock ticker (Mobile Packages) period; Player networks semicolon; Cataclysm abilities Home, End, Insert, Delete; Railways Navigator overlay options backslash; Alex's Caves special ability apostrophe (').
   - TFMG vehicle: Engine start minus (-); Gear up right arrow; Gear down left arrow; Custom button F6.
   - Twilight Forest: Zoom F7; Hotbar swap F9; Map display cycle F12.
-  - Aether's own accessories key is unbound; comma opens the same screen.
+  - Every accessory, from any mod, goes in that one Accessories screen.
   - Watch out: importing the pack file again resets these; the pack's updater keeps your keys.
 - Related: Rotation (see create_basics/rotation), Stress (see create_basics/stress), Wrench and Goggles (see create_basics/tools_wrench), Maps and Waypoints (see home/maps)
 

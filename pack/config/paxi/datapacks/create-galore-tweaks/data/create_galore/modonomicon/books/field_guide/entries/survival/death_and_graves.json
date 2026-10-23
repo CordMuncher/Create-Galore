@@ -13,7 +13,7 @@
     {
       "type": "modonomicon:text",
       "title": "Death and Graves",
-      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- Dying leaves a **grave** with everything you carried.\n- Break the grave to get it all back, armour and Curios slots included.\n- The Latest Death waypoint on your map leads you back.\n- Anyone can break it, so a friend can fetch it."
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- Dying leaves a **grave** with everything you carried.\n- Break the grave to get it all back, armour and accessories included.\n- The Latest Death waypoint on your map leads you back.\n- Anyone can break it, so a friend can fetch it."
     },
     {
       "type": "modonomicon:spotlight",
@@ -21,12 +21,12 @@
         "item": "gravestone:gravestone"
       },
       "title": "Gravestone",
-      "text": "When you die, **GraveStone** puts a grave where you fell and stores your inventory, armour, offhand and Curios slots (backpack, charms) in it. Nothing drops on the ground, so nothing burns or despawns."
+      "text": "When you die, **GraveStone** puts a grave where you fell and stores your inventory, armour, offhand and accessories (backpack, rings, charms) in it. Nothing drops on the ground, so nothing burns or despawns."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Walk back and break the grave: every item goes back where it was. Aether gloves and pendants come back as normal items; put them on again with **comma**.\\\n\\\nYou also get an **Obituary**, a paper saying how and where you died. It disappears when you break the grave."
+      "text": "Walk back and break the grave: every item goes back where it was. Aether gloves and pendants come back as normal items; put them on again in the Accessories screen (**G**).\\\n\\\nYou also get an **Obituary**, a paper saying how and where you died. It disappears when you break the grave."
     },
     {
       "type": "modonomicon:text",

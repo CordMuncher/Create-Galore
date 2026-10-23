@@ -17,7 +17,7 @@ NF=$(ls "$SERVER"/libraries/net/neoforged/neoforge/*/neoforge-*-universal.jar | 
 # Mods bundle some libraries inside themselves (Create carries Ponder), so unpack those too.
 for j in "$NF" "$SERVER"/mods/*.jar; do
   mkdir -p "$WORK/jij/$(basename "$j")"
-  unzip -q -o -d "$WORK/jij/$(basename "$j")" "$j" 'META-INF/jarjar/*.jar' 2>/dev/null || true
+  unzip -q -o -d "$WORK/jij/$(basename "$j")" "$j" 'META-INF/jarjar/*.jar' 'META-INF/jars/*.jar' 2>/dev/null || true
 done
 CP=$( { ls "$SERVER"/libraries/net/minecraft/server/*/server-*-srg.jar
         find "$SERVER/libraries" -name '*.jar' ! -path '*/net/minecraft/server/*'
