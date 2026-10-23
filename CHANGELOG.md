@@ -4,6 +4,12 @@ Each pack version gets a section here, with **Added**, **Fixed** and **Removed**
 workflow copies the section for the version in `pack/pack.toml` to the top of the GitHub release, and the build
 fails when that section is missing.
 
+## 0.4.65
+
+### Fixed
+- **Bubbles no longer pile up under ships.** Bubbles live as long as they are in water, and the sea under a ship's hull still counted as water, so your breath bubbles rose against the hull and stayed there, with white pop bits around them. A bubble that reaches a ship's hull, or rises into the dry air of a ship's hold, now pops there the way it does under any other block, with the usual pop and sound. Bubbles everywhere else rise and pop as before. Checked on a test client under a floating boat: before, about 50 bubbles at a time sat against the hull after a burst of bubbles; now each one pops as it arrives and none stay.
+- Create Galore Bridge 1.84.0.
+
 ## 0.4.64
 
 ### Fixed
