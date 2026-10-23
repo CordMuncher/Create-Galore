@@ -49,6 +49,14 @@
     {
       "type": "modonomicon:spotlight",
       "item": {
+        "item": "minecraft:oak_fence"
+      },
+      "title": "Diagonal Fences",
+      "text": "A fence you place also joins a fence one block away across a corner, when the corner is clear and neither post already joins straight that way. Wood fences join wood fences; stone and metal fences join each other."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
         "item": "supplementaries:jar"
       },
       "title": "Supplementaries",
@@ -57,7 +65,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Furniture here is mostly decor. For seats on moving [#](2E5AAC)[contraptions](entry://create_basics/contraptions)[#](), Create's own Seat works, and [#](2E5AAC)[Coasters](entry://transport/coasters)[#]() add coaster seats.\\\n\\\nCafe-style decor ties into [#](2E5AAC)[Cozy Cafe](entry://food/cozy_cafe)[#]()."
+      "text": "Furniture here is mostly decor. For seats on moving [#](2E5AAC)[contraptions](entry://create_basics/contraptions)[#](), Create's own Seat works, and [#](2E5AAC)[Coasters](entry://transport/coasters)[#]() add coaster seats.\\\n\\\nCafe-style decor ties into [#](2E5AAC)[Cozy Cafe](entry://food/cozy_cafe)[#]().\\\n\\\nSneak and right-click a fence with an empty hand to turn its corner joins off, or back on. Fences in villages and other found buildings start without them."
     }
   ]
 }

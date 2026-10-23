@@ -1012,7 +1012,7 @@ hash = "7b72ada04feb693f3b1c9f1ea76ae1e9461394fa40962e04ae1e905923963a28"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/home.md"
-hash = "725f72c22e54f6b5f2c2029a3b8f9dcc4ceb33fb453fdd86432b45c42c6fff41"
+hash = "254aa4d6bae8a9f1244f998584bb4f59502a3147cf0d7836f0299f1ac49d8f9e"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/industry.md"
@@ -1700,7 +1700,7 @@ hash = "58c1fff57ded8ac11da9233e239042b29c408dc6ff978da841fd7ddd7356351a"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/home/building.json"
-hash = "59abe4d6130cc06695d0ed3535910dec69e03fb1aa65056a6f409df8c08ff2b1"
+hash = "a05537f0f28695fbaca13bd627e50b59c69ba55e60ac89a6f00184e8791f7f18"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/home/create_decor.json"
@@ -4990,8 +4990,8 @@ hash = "db683b65dc15a03dd6de2d34d5dc6ad0e3490744ced513a8cc584784ee9d3d8b"
 metafile = true
 
 [[files]]
-file = "mods/create-galore-bridge-1.81.0.jar"
-hash = "860032c0a448f22728ae39537a2ec6cdd73252deb879c777eec67623b0e81753"
+file = "mods/create-galore-bridge-1.82.0.jar"
+hash = "e53d579d1a0b9bbe517cc306529422410d86c0fceb895b84ccdc9efcee65f2a2"
 
 [[files]]
 file = "mods/create-galore-fishing-0.3.16.jar"
@@ -5179,6 +5179,11 @@ metafile = true
 [[files]]
 file = "mods/delightful-creators.pw.toml"
 hash = "ead7e6467df904f9fa779c021cff62bbd87e7943f394beec63a7f1ee3a74e4d5"
+metafile = true
+
+[[files]]
+file = "mods/diagonal-fences.pw.toml"
+hash = "632743d54d410c8b78fb92c94d8f3bb6a7a3faed45171f91e554877f94f82163"
 metafile = true
 
 [[files]]
@@ -5574,6 +5579,11 @@ metafile = true
 [[files]]
 file = "mods/productivebees.pw.toml"
 hash = "7aa8bf129e51bda25386e18ebcd0db7eae278e95227406e8101a320cacf2f9b6"
+metafile = true
+
+[[files]]
+file = "mods/puzzles-lib.pw.toml"
+hash = "2e0b31d4a3d4298045b368558ce7fe191a13bccb02a4524ca748598a9dcf4ca5"
 metafile = true
 
 [[files]]

@@ -4,6 +4,13 @@ Each pack version gets a section here, with **Added**, **Fixed** and **Removed**
 workflow copies the section for the version in `pack/pack.toml` to the top of the GitHub release, and the build
 fails when that section is missing.
 
+## 0.4.62
+
+### Added
+- **Fences join diagonally** ([Diagonal Fences](https://modrinth.com/mod/diagonal-fences) by Fuzs, with Puzzles Lib). A fence you place also joins a fence one block away across a corner, as long as the corner is clear and neither post already joins straight that way. Wood fences join wood fences of any kind, and stone and metal fences join each other. It works for the vanilla fences and those from Twilight Forest, The Aether, Alex's Caves, Cataclysm, Garnished, Hybrid Aquatic, My Nether's Delight and Alloyed's steel mesh fence; Better End's, Create Deco's mesh, Supplementaries' wicker, rope and copycat fences stay straight. Sneak and right-click a fence with an empty hand to turn its corner joins off, or back on. Fences already standing in your world, in villages and in other found buildings start without corner joins, and the same click gives them. A fence still drops as the same fence item. Checked on a test server and client: corner joins are kept on a Create cart contraption and a Sable ship, and look right with Sodium and with Complementary shaders. The Field Guide's Furniture and Decor page says so.
+- Ask the Book's models join fences diagonally too, like fences placed by hand, and a pinned or traced schematic accepts a placed fence whether or not it joins diagonally (the fence item now places a twin block of the fence, which used to count as the wrong block).
+- Create Galore Bridge 1.82.0.
+
 ## 0.4.61
 
 ### Fixed
