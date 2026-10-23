@@ -4,6 +4,12 @@ Each pack version gets a section here, with **Added**, **Fixed** and **Removed**
 workflow copies the section for the version in `pack/pack.toml` to the top of the GitHub release, and the build
 fails when that section is missing.
 
+## 0.4.57
+
+### Fixed
+- **Polluted patches on the sea sit flush with the water around them.** Where smog or acid rain turns a patch of sea yellow, the game drew that patch as a sunken square with see-through gaps along its edges, with and without shader packs: the clean water next to it counted as empty, so both sank their surface toward the edge. Polluted and clean water now share one smooth surface, and the patch shows only as a yellow tint on the water. Checked in a client with Complementary Reimagined and without shaders, next to single polluted blocks and 3x3 patches.
+- Create Galore Bridge 1.81.0.
+
 ## 0.4.56
 
 ### Fixed
