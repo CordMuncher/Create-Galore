@@ -26,6 +26,8 @@ public final class BridgeClient {
         net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener(SchematicTrace::tick);
         net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener(SchematicTrace::render);
         PinnedSchematicView.init();
+        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener(
+                (net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent.LoggingOut e) -> ShipAnimatedSprites.clear());
     }
 
     private static void setup(FMLClientSetupEvent event) {

@@ -4,6 +4,12 @@ Each pack version gets a section here, with **Added**, **Fixed** and **Removed**
 workflow copies the section for the version in `pack/pack.toml` to the top of the GitHub release, and the build
 fails when that section is missing.
 
+## 0.4.67
+
+### Fixed
+- **Fire on ships keeps flickering.** A campfire, fire, lava or any other animated block on a ship or other moving build froze on one frame, and only moved while the crosshair was on it or a campfire on land was in view at the same time. Sodium saves work by only animating textures it has seen drawn this frame. It sees the textures of land every frame, but ships are drawn through a different path, so it saw a ship's textures once, when the ship was built, and never again. Ships now tell it about their animated textures every frame they're drawn. Checked on a test server with a campfire on a ship and none on land: before the fix the flame stood still, after it the flame kept moving.
+- Create Galore Bridge 1.85.0.
+
 ## 0.4.61
 
 ### Fixed
