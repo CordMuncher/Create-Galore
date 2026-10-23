@@ -149,7 +149,7 @@ public final class Models {
                 + "slabs, trapdoors, fences, walls and buttons for curves and detail, two or three materials that go "
                 + "together and that the player holds where a block they hold would look as good (building_materials "
                 + "counts them; the result lists what the model takes against what they hold), depth and trim instead of flat walls, and no plain boxes. Fences, walls, panes and bars join their "
-                + "neighbours and stairs turn corners by themselves, as when placed. Write such builds as layers. Try a "
+                + "neighbours (fences also diagonally, to a fence at a free corner) and stairs turn corners by themselves, as when placed. Write such builds as layers. Try a "
                 + "build first with draft true and look at the pictures: fix whatever looks blocky, lopsided or wrong, "
                 + "then call again with draft false. Before a model is shown the server tries its Create machines with "
                 + "Create's own rules (which faces take a shaft, cogs, belts, sources, water on wheels) and refuses one "
@@ -478,7 +478,8 @@ public final class Models {
     /** What the model is made of, so a block that should have gone (or never come) shows up in the numbers. */
     private static String tally(Map<BlockPos, BlockState> cells) {
         Map<String, Integer> count = new java.util.TreeMap<>();
-        for (BlockState s : cells.values()) count.merge(BuiltInRegistries.BLOCK.getKey(s.getBlock()).toString(), 1, Integer::sum);
+        for (BlockState s : cells.values())
+            count.merge(BuiltInRegistries.BLOCK.getKey(dev.creategalore.bridge.DiagonalJoins.plain(s.getBlock())).toString(), 1, Integer::sum);
         List<String> parts = new ArrayList<>();
         count.entrySet().stream().sorted((x, y) -> y.getValue() - x.getValue())
                 .forEach(e -> parts.add(e.getValue() + " " + e.getKey()));
@@ -492,7 +493,8 @@ public final class Models {
     private static BlockState parse(String raw, String where, List<String> problems, java.util.Set<String> undirected) {
         try {
             BlockStateParser.BlockResult parsed = BlockStateParser.parseForBlock(BuiltInRegistries.BLOCK.asLookup(), raw.strip(), false);
-            BlockState state = parsed.blockState();
+            // A fence becomes the twin its item places (Diagonal Fences), so it joins diagonally as in the world.
+            BlockState state = dev.creategalore.bridge.DiagonalJoins.placed(parsed.blockState());
             // A direction left out takes the block's default, which is often not what was meant (a flat sail panel).
             for (net.minecraft.world.level.block.state.properties.Property<?> prop : state.getProperties()) {
                 if (DIRECTIONS.contains(prop.getName()) && !parsed.properties().containsKey(prop))
@@ -576,6 +578,8 @@ public final class Models {
             BlockPos w = p.offset(origin);
             String at = w.getX() + " " + w.getY() + " " + w.getZ();
             BlockState was = base.get(p), now = cells.get(p);
+            if (was != null) was = dev.creategalore.bridge.DiagonalJoins.plain(was);
+            if (now != null) now = dev.creategalore.bridge.DiagonalJoins.plain(now);
             if (changes.get(p)) out.append("- break ").append(BlockStateParser.serialize(was)).append(" at ").append(at).append('\n');
             else if (was == null) out.append("- place ").append(BlockStateParser.serialize(now)).append(" at ").append(at).append('\n');
             else out.append("- replace ").append(BlockStateParser.serialize(was)).append(" with ").append(BlockStateParser.serialize(now))
