@@ -416,6 +416,10 @@ final class AskScreen extends Screen {
             }
             return true;
         }
+        if (hot != null && hot.model != null && button == GLFW.GLFW_MOUSE_BUTTON_LEFT && hot.model.overMoveButton(mouseX, mouseY)) {
+            hot.model.togglePlaying();
+            return true;
+        }
         if (hot != null && hot.model != null && (button == GLFW.GLFW_MOUSE_BUTTON_LEFT || button == GLFW.GLFW_MOUSE_BUTTON_MIDDLE)) {
             dragging = hot.model;
             dragButton = button;

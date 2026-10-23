@@ -4,6 +4,18 @@ Each pack version gets a section here, with **Added**, **Fixed** and **Removed**
 workflow copies the section for the version in `pack/pack.toml` to the top of the GitHub release, and the build
 fails when that section is missing.
 
+## 0.4.66
+
+### Added
+- **Ask the Book designs builds that move.** Create builds can move, and the book now suggests a moving part where moving is its job: windmill sails, a door or drawbridge on a bearing, a turntable, a wall a piston slides aside, a portcullis or lift on a rope pulley, a gantry carrying a drill or harvester. A cottage still stands still. It names the block that moves the part, what drives it and how fast, and where the Super Glue goes.
+- **Moving parts move on the book's 3D models.** The part turns or slides on the model, with its glue areas drawn as green boxes and its rope drawn down from a pulley. A Move / Stop moving button sits beside Save as schematic. Saving a moving build as a schematic always saves it standing at its start, whatever point of its motion the model is showing.
+- **The book works out each moving part the way Create does.** It finds what comes along (glue, chassis, blocks that hang on others, a piston's push line) and checks the part's speed and its stress. A turning part must have its whole circle clear; a part that only turns a quarter is tried both ways round. A sliding part stops at the first block in its path, and drills and saws dig theirs. A windmill needs 8 Windcatchers and reports the su it gives (Winds & Weather's 8192 su ceiling included). The book also explains how each mover is started and reversed.
+- **New Contraptions pages in the Field Guide:** Builds that move, What comes along, Speed and room, Starting and steering.
+
+### Fixed
+- The book no longer counts a Mechanical Bearing as a power source when it checks a build's shafts.
+- Create Galore Bridge 1.85.0.
+
 ## 0.4.65
 
 ### Fixed

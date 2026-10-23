@@ -32,20 +32,37 @@ final class Preview {
 
     /** A PNG with four views of the cells, or null if it couldn't be drawn. */
     static byte[] render(Map<BlockPos, BlockState> cells, int sx, int sy, int sz) {
+        return render(cells, sx, sy, sz, null);
+    }
+
+    /**
+     * The four views, and with {@code moved} four more below them of the build with its moving parts at the end of
+     * their motion (which may reach outside the model's box, so those views are framed on everything).
+     */
+    static byte[] render(Map<BlockPos, BlockState> cells, int sx, int sy, int sz, Map<BlockPos, BlockState> moved) {
         try {
-            List<Box> boxes = boxes(cells);
-            BufferedImage img = new BufferedImage(VIEW * 2, VIEW * 2, BufferedImage.TYPE_INT_RGB);
+            BufferedImage img = new BufferedImage(VIEW * 2, VIEW * (moved == null ? 2 : 4), BufferedImage.TYPE_INT_RGB);
             Graphics2D g = img.createGraphics();
             g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             g.setColor(BACK);
             g.fillRect(0, 0, img.getWidth(), img.getHeight());
-            iso(g, boxes, sx, sy, sz, false, 0, 0, "front-left corner");
-            iso(g, boxes, sx, sy, sz, true, VIEW, 0, "back-right corner");
-            flat(g, boxes, sx, sy, sz, true, 0, VIEW, "front (looking towards -z)");
-            flat(g, boxes, sx, sy, sz, false, VIEW, VIEW, "right side (looking towards -x)");
-            g.setColor(INK);
-            g.drawLine(VIEW, 0, VIEW, VIEW * 2);
-            g.drawLine(0, VIEW, VIEW * 2, VIEW);
+            views(g, boxes(cells), sx, sy, sz, 0, "");
+            if (moved != null) {
+                int x0 = 0, y0 = 0, z0 = 0, x1 = sx, y1 = sy, z1 = sz;
+                for (BlockPos p : moved.keySet()) {
+                    x0 = Math.min(x0, p.getX());
+                    y0 = Math.min(y0, p.getY());
+                    z0 = Math.min(z0, p.getZ());
+                    x1 = Math.max(x1, p.getX() + 1);
+                    y1 = Math.max(y1, p.getY() + 1);
+                    z1 = Math.max(z1, p.getZ() + 1);
+                }
+                Map<BlockPos, BlockState> shifted = new java.util.HashMap<>();
+                for (Map.Entry<BlockPos, BlockState> e : moved.entrySet()) shifted.put(e.getKey().offset(-x0, -y0, -z0), e.getValue());
+                views(g, boxes(shifted), x1 - x0, y1 - y0, z1 - z0, VIEW * 2, "moved: ");
+                g.setColor(INK);
+                g.fillRect(0, VIEW * 2 - 1, VIEW * 2, 3);
+            }
             g.dispose();
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             ImageIO.write(img, "png", out);
@@ -57,6 +74,16 @@ final class Preview {
 
     /** One part of a block's shape, in model coordinates, with the block's colour. */
     private record Box(double x0, double y0, double z0, double x1, double y1, double z1, int rgb, boolean glassy) {
+    }
+
+    private static void views(Graphics2D g, List<Box> boxes, int sx, int sy, int sz, int oy, String prefix) {
+        iso(g, boxes, sx, sy, sz, false, 0, oy, prefix + "front-left corner");
+        iso(g, boxes, sx, sy, sz, true, VIEW, oy, prefix + "back-right corner");
+        flat(g, boxes, sx, sy, sz, true, 0, oy + VIEW, prefix + "front (looking towards -z)");
+        flat(g, boxes, sx, sy, sz, false, VIEW, oy + VIEW, prefix + "right side (looking towards -x)");
+        g.setColor(INK);
+        g.drawLine(VIEW, oy, VIEW, oy + VIEW * 2);
+        g.drawLine(0, oy + VIEW, VIEW * 2, oy + VIEW);
     }
 
     private static List<Box> boxes(Map<BlockPos, BlockState> cells) {

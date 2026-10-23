@@ -190,6 +190,26 @@ final class BuildCheck {
         return out;
     }
 
+    /** The kinetic blocks connected to {@code start} (shafts, cogs, belts, machines), start included; empty if it isn't kinetic. */
+    static java.util.Set<BlockPos> network(Map<BlockPos, BlockState> blocks, ServerLevel level, BlockPos start) {
+        java.util.Set<BlockPos> out = new java.util.LinkedHashSet<>();
+        SchematicLevel world = new SchematicLevel(level);
+        blocks.forEach((pos, state) -> world.setBlock(pos, state, 0));
+        Map<BlockPos, Cell> kinetic = new LinkedHashMap<>();
+        blocks.forEach((pos, state) -> {
+            if (state.getBlock() instanceof IRotate) kinetic.put(pos, new Cell(pos, state));
+        });
+        Cell first = kinetic.get(start);
+        if (first == null) return out;
+        out.add(start);
+        ArrayDeque<Cell> todo = new ArrayDeque<>(List.of(first));
+        while (!todo.isEmpty()) {
+            Cell c = todo.poll();
+            for (Cell n : neighbours(kinetic, c)) if (modifier(world, c, n) != 0 && out.add(n.pos)) todo.add(n);
+        }
+        return out;
+    }
+
     /** The speed a source turns at when nobody has set it: what a player gets on placing it and starting it. */
     private static float nominalRpm(BlockState state) {
         String id = net.minecraft.core.registries.BuiltInRegistries.BLOCK.getKey(state.getBlock()).toString();
@@ -271,7 +291,11 @@ final class BuildCheck {
     private static boolean isSource(Cell c) {
         if (!(c.state.getBlock() instanceof EntityBlock eb)) return false;
         try {
-            return eb.newBlockEntity(c.pos, c.state) instanceof GeneratingKineticBlockEntity;
+            var be = eb.newBlockEntity(c.pos, c.state);
+            // A Mechanical Bearing is built on the windmill's block entity but only takes rotation; the windmill makes it.
+            if (be instanceof com.simibubi.create.content.contraptions.bearing.MechanicalBearingBlockEntity
+                    && !(be instanceof com.simibubi.create.content.contraptions.bearing.WindmillBearingBlockEntity)) return false;
+            return be instanceof GeneratingKineticBlockEntity;
         } catch (RuntimeException e) {
             return false;
         }

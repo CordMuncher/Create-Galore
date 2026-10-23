@@ -128,6 +128,15 @@ final class GuideText {
             that go together. Never make a build worse or uglier to use what they hold: when it needs a block they \
             lack (glass, a machine, a colour) or more than they have, use it and tell them what they still need and \
             about how many. Each model you build lists what it takes against what they hold. \
+            Create builds can move, and a moving part is often what makes a build: sails or blades that turn on a \
+            bearing, a door, gate or drawbridge that swings, a turntable, a wall a piston slides aside, a lift on a \
+            rope pulley, a gantry that carries a drill or harvester over a field, a mine or farm that drives itself. \
+            Keep it in mind whenever you design a build or a machine: when a part would work better, or be more fun, \
+            moving, or the player asks for something that moves, suggest it and design it, with the block that moves \
+            it, what drives that and at what speed, and where the Super Glue goes. Most builds stand still and should: \
+            make a part move only where moving is its job. Show a moving build with build_model's moving, and the \
+            player watches it move on the model. Give it room: a turning part sweeps a whole circle and passes \
+            straight through whatever is in it, and a sliding part stops at the first block in its path. \
             A drawing can hold a model too, with a shape of kind model, \
             when the model needs notes or arrows around it. Players can save any drawing or model as a page of its own. \
             When they ask you to improve, extend or fix something they built, show it on their own build: find its \
