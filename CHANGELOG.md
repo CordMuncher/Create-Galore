@@ -4,6 +4,12 @@ Each pack version gets a section here, with **Added**, **Fixed** and **Removed**
 workflow copies the section for the version in `pack/pack.toml` to the top of the GitHub release, and the build
 fails when that section is missing.
 
+## 0.4.47
+
+### Fixed
+- **Ask the Book's labels can name a part hidden inside a build.** A label naming a part (barrels, chest, engine, cannon...) only counted the blocks right beside where it points, so a "cargo barrels" label on a cabin roof with the barrels inside under it could be refused, though it was true. It now also counts the part anywhere straight below or above that spot (or within two blocks), so honest labels on roofs and decks stay, and a label naming a part the build doesn't have is still refused.
+- Create Galore Bridge 1.74.1.
+
 ## 0.4.46
 
 ### Fixed

@@ -295,7 +295,7 @@ public final class Models {
             else if (!inside(x, sx) || !inside(y, sy) || !inside(z, sz)) problems.add("label " + i + " is outside the model");
             else {
                 String part = missingPart(text, cells, new BlockPos(x, y, z));
-                if (part != null) problems.add("label " + i + " ('" + text + "') names " + part + ", but no block at or next to "
+                if (part != null) problems.add("label " + i + " ('" + text + "') names " + part + ", but no block near "
                         + x + "," + y + "," + z + " is one (" + describeCell(cells, new BlockPos(x, y, z)) + "): point it at the "
                         + "real part, build the part in, or drop the label; a label only names what the model really has");
                 JsonObject o = new JsonObject();
@@ -406,21 +406,32 @@ public final class Models {
         PARTS.put("seat", id -> id.contains("seat") || id.contains("bench") || id.contains("chair") || id.contains("stair"));
         PARTS.put("vane", id -> id.contains("vane"));
         PARTS.put("winch", id -> id.contains("winch"));
-        PARTS.put("chest", id -> id.contains("chest") || id.contains("barrel") || id.contains("vault"));
+        java.util.function.Predicate<String> storage = id -> id.contains("chest") || id.contains("barrel") || id.contains("vault");
+        PARTS.put("chest", storage);
+        PARTS.put("barrel", storage);
         PARTS.put("furnace", id -> id.contains("furnace") || id.contains("smoker"));
         PARTS.put("lever", id -> id.contains("lever"));
     }
 
-    /** The part a label's words name when no block at or beside its cell is that part, else null. */
+    /**
+     * The part a label's words name when no block near its cell is that part, else null. Near is within two blocks, or
+     * anywhere straight above or below the cell and its neighbours: a label on a roof or deck honestly names the barrels
+     * or engine under it, though the label can only point at the outside.
+     */
     private static String missingPart(String text, Map<BlockPos, BlockState> cells, BlockPos at) {
         for (String w : text.toLowerCase(java.util.Locale.ROOT).split("[^a-z]+")) {
             String word = w.endsWith("s") && PARTS.containsKey(w.substring(0, w.length() - 1)) ? w.substring(0, w.length() - 1) : w;
             java.util.function.Predicate<String> is = PARTS.get(word);
             if (is == null) continue;
             boolean found = false;
-            for (BlockPos q : BlockPos.betweenClosed(at.offset(-1, -1, -1), at.offset(1, 1, 1))) {
-                BlockState s = cells.get(q);
-                if (s != null && is.test(net.minecraft.core.registries.BuiltInRegistries.BLOCK.getKey(s.getBlock()).toString())) found = true;
+            for (Map.Entry<BlockPos, BlockState> e : cells.entrySet()) {
+                BlockPos q = e.getKey();
+                int dx = Math.abs(q.getX() - at.getX()), dy = Math.abs(q.getY() - at.getY()), dz = Math.abs(q.getZ() - at.getZ());
+                if ((dx <= 1 && dz <= 1 || dx <= 2 && dy <= 2 && dz <= 2)
+                        && is.test(net.minecraft.core.registries.BuiltInRegistries.BLOCK.getKey(e.getValue().getBlock()).toString())) {
+                    found = true;
+                    break;
+                }
             }
             if (!found) return "a " + word;
         }
