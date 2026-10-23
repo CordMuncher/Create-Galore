@@ -1,4 +1,4 @@
-<!-- sources sha256:875ed13c72125255906ffdb191014d731ffcd8a159dbb6767b73585e144d6606 -->
+<!-- sources sha256:c59e2e19c09b04ecfb77e8fa971a60d50b2e6e38e1bb3e1dbe650b7c09816afd -->
 # Flight (flight)
 Create Aeronautics ships, lift, thrust, steering, wind, dangers and sky destinations.
 
@@ -144,7 +144,7 @@ Create Aeronautics ships, lift, thrust, steering, wind, dangers and sky destinat
 - Map of what pack puts in sky and on far worlds
 - Sky Villages (Create: Sky Village): villages between about 150 and 250 blocks up in Overworld; two kinds: Sky Village and Highwind Village; villagers and Create loot
 - Aeronautics builds (Creat Aeronautics Structures): airships, airballoons, crashed planes, boats, engineering house with Engineer villager, pillager versions
-- Discovery (Aeronautics Discovery): events: planes and balloons fly over Overworld at height, balloons appear in villages; adds Pillager Aviators, Soaring Traders, maps to temples, igloos, ancient cities, mineshafts
+- Discovery (Aeronautics Discovery): events: planes and balloons fly over Overworld at height (pilots climb over or steer around sky islands and anything else in their way), balloons appear in villages; adds Pillager Aviators, Soaring Traders, maps to temples, igloos, ancient cities, mineshafts
 - Pin Wand [aeronauticsdiscovery:pin_wand]: from Aeronautics Discovery; check tooltip in game for use
 - Soaring Trader [aeronauticsdiscovery:soaring_trader_spawn_egg]: trader from Aeronautics Discovery; Pillager Aviator is hostile counterpart
 - Floating islands (Moog's Soaring Structures): vanilla-style islands: houses, towers, ruins, trees, volcanoes, an arena, floating Nether portal; loot and mobs
