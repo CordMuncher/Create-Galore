@@ -169,7 +169,8 @@ Tide 2 is not in the pack any more; this mod carries what players had from it, u
   all of it at full load, only while a rod is in with a line out or one to cast.
 - Ships (`compat/SableShips`): a machine's block entity on a Sable ship lives in the ship's plot, so its tip, cast
   direction and angler position are projected into the world through Sable's companion library. A waiting rig
-  (machine or hand-held, `CastHook.towLength`) can't get further from the tip than the line it was set with, so a
+  (machine or hand-held, `CastHook.towLength`, measured from a machine's tip or a player's feet) can't get further than
+  the line it was set with, so a
   moving ship, a boat or an angler walking off tows it; a towed lure dives to
   its depth and works when the speed suits it, and the bite pool follows the water it passes.
 - Test tools: `/cgfish machine <pos>` (hook state and, for a drive, gear, what it can wind against, cranking,

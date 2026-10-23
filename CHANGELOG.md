@@ -4,6 +4,12 @@ Each pack version gets a section here, with **Added**, **Fixed** and **Removed**
 workflow copies the section for the version in `pack/pack.toml` to the top of the GitHub release, and the build
 fails when that section is missing.
 
+## 0.4.64
+
+### Fixed
+- **The line out holds still while you move.** With a rod cast and the reel left alone, the line out still went up and down as you looked round, strafed or stepped toward the rig, and grew as a lure dived. It showed the straight distance from the rod tip to the rig, and the tip swings about in front of you every time you turn your head. It now shows the line off the reel: what you cast, less what you wound back. Turning, strafing, jumping or walking toward the rig no longer changes it, and looking round no longer drags the rig toward you. Only winding, a lift of the rod or a fish taking line changes it. Checked in game: 21.0 m through looking round, strafing, stepping in and jumping; a crankbait trolled 110 m behind a boat held 25.2 m.
+- Create Galore Fishing 0.3.17.
+
 ## 0.4.63
 
 ### Fixed
