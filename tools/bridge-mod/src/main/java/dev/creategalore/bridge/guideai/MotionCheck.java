@@ -92,12 +92,13 @@ final class MotionCheck {
         glue.addProperty("description", "The Super Glue areas the player puts on, as boxes of cells: two blocks side by side "
                 + "inside one area stick together. Blocks that hang on others (torches, doors, ladders, carpets, sails on "
                 + "frames) and blocks on chassis faces come along without glue; everything else needs it. Often one box "
-                + "round the whole moving part.");
+                + "round the whole moving part; every block inside a box that touches the part comes along, so keep boxes off "
+                + "what stays put (a roof, a wall, the floor).");
         glue.add("items", box);
         mp.add("glue", glue);
         mp.add("travel", WorldTools.prop("integer", "How far it moves when it runs: for a bearing the degrees it turns (360 "
                 + "for a windmill, turntable or anything that keeps spinning, 90 for a door or drawbridge driven a quarter "
-                + "turn); for a piston, pulley or gantry the blocks it travels, 0 for as far as it can go."));
+                + "turn); for a piston or gantry the blocks it travels, for a pulley how far it lowers its load, 0 for as far as it can go."));
         mp.add("rpm", WorldTools.prop("integer", "The speed the player drives it at in RPM, 0 to take what the model's own "
                 + "source gives it."));
         mover.add("properties", mp);
@@ -111,7 +112,9 @@ final class MotionCheck {
         moving.addProperty("description", "Usually empty. The parts of the build that move as Create contraptions, at most "
                 + MAX_MOVERS + ": a windmill, a turning door, drawbridge or turntable, a piston-driven wall, a lift, a "
                 + "gantry crane. Each names the block that moves it and the glue the player puts on; the book plays the "
-                + "motion on the model, and you get back what moves with it, what it runs into, its speed and stress.");
+                + "motion on the model, and you get back what moves with it, what it runs into, its speed and stress. A "
+                + "windmill turns with at least " + minimumSails() + " Windcatchers (aeronauticswinds:windcatcher_canvas) on it. "
+                + "Write pistons retracted with their poles behind them, and a pulley's load where it starts: hanging under it, or resting lower down, straight below it.");
         moving.add("items", mover);
         return moving;
     }
@@ -186,6 +189,8 @@ final class MotionCheck {
         final Set<BlockPos> blocks = new LinkedHashSet<>();
         /** Blocks that come along but pass through the mover's own cell or the shaft it rides (piston poles): no sweep. */
         final Set<BlockPos> passing = new LinkedHashSet<>();
+        /** The Windcatchers a windmill carries. */
+        int sails;
         Direction.Axis axis;
         Direction step;
         int travel, asked, rpmAsked;
@@ -593,7 +598,8 @@ final class MotionCheck {
         List<String> parts = new ArrayList<>();
         tally.entrySet().stream().sorted((a, b) -> b.getValue() - a.getValue()).forEach(e -> parts.add(e.getValue() + " " + e.getKey()));
         int count = p.blocks.size() - p.passing.size();
-        out.append("- ").append(p.name()).append(count == 0 ? " moves only its own head" : " moves " + count + (count == 1 ? " block: " : " blocks: ")
+        p.sails = sails;
+        out.append("- ").append(p.name()).append(count == 0 ? " moves only its own head" : " carries " + count + (count == 1 ? " block: " : " blocks: ")
                 + String.join(", ", parts)).append(".\n");
         Map<String, Meet> met = new LinkedHashMap<>();
         if (p.kind == Kind.BEARING) {
@@ -620,6 +626,7 @@ final class MotionCheck {
                                 + "Sequenced Gearshift or a redstone signal timed to it" : "a full turn in " + trim(360 / degPerSecond) + " s")
                         .append(".\n");
             }
+            out.append("- The player sets it going by right-clicking the bearing with an empty hand, once it is built.\n");
             float hit = turnSweep(p, cells, world, Math.abs(p.degrees), dir, met);
             if (hit >= 0 && want < 360) {
                 // A part that turns only so far can be driven either way round: see if the other way is clear.
@@ -666,7 +673,9 @@ final class MotionCheck {
                 out.append(MechanicalPistonBlock.isStickyPiston(p.state) ? "; run backwards, the sticky piston pulls it back"
                         : "; run backwards, this piston comes back on its own and leaves the blocks out there (a sticky piston brings them back)");
             if (p.kind == Kind.GANTRY) out.append("; reversed, it rides back the other way");
-            if (p.kind == Kind.PULLEY) out.append(p.step == Direction.UP ? "; reversed, it lowers it again" : "; reversed, it draws it back up");
+            if (p.kind == Kind.PULLEY) out.append(p.step == Direction.UP ? "; reversed, it lowers it again. Built like this, it is first driven "
+                    + "the lowering way: its rope runs down to the load, takes hold and stops there, and reversed it then draws it up"
+                    : "; reversed, it draws it back up");
             out.append(".\n");
             if (!met.isEmpty() && met.values().stream().anyMatch(m -> m == Meet.DIGS)) out.append("- On its way ").append(diggings(met)).append(".\n");
         }
@@ -800,8 +809,33 @@ final class MotionCheck {
                                StringBuilder out, List<String> faults) {
         try {
             Set<BlockPos> done = new java.util.HashSet<>();
+            Map<BlockPos, Part> windmills = new HashMap<>();
+            for (Part p : parts) if (p.state.getBlock() instanceof WindmillBearingBlock) windmills.put(p.mover, p);
             for (Part p : parts) {
-                if (p.state.getBlock() instanceof WindmillBearingBlock || p.state.getBlock() instanceof ClockworkBearingBlock) continue;
+                if (p.state.getBlock() instanceof WindmillBearingBlock) {
+                    Set<BlockPos> network = BuildCheck.network(fixed, level, p.mover);
+                    if (!done.addAll(network)) continue;
+                    double need = 0, give = 0;
+                    for (BlockPos q : network) {
+                        Float r = rpm.get(q);
+                        BlockState s = fixed.get(q);
+                        if (r == null || s == null) continue;
+                        need += BlockStressValues.getImpact(s.getBlock()) * Math.abs(r);
+                        Part w = windmills.get(q);
+                        give += w != null ? windCapacity(w) : BlockStressValues.getCapacity(s.getBlock()) * Math.abs(r);
+                    }
+                    out.append("- ").append(p.name()).append(" gives ").append(trim((float) windCapacity(p))).append(" su at ")
+                            .append(trim(Math.abs(p.rpm))).append(" RPM from its ").append(p.sails).append(" Windcatchers (")
+                            .append(trim((float) (BlockStressValues.getCapacity(p.state.getBlock()) * windShare()))).append(" su per RPM for each one after the first, ")
+                            .append(trim((float) windCap())).append(" su at most); ").append(need > 0 ? "the machines it drives take " + trim((float) need) + " su" : "nothing on its shafts takes stress")
+                            .append(network.size() > 1 && give > windCapacity(p) + 1e-3 ? ", of the " + trim((float) give) + " su all its network's sources give" : "")
+                            .append(". It turns at the wind's speed, faster higher up and in a storm.\n");
+                    if (need > give + 1e-3)
+                        faults.add("the network " + p.name() + " drives is overstressed (" + trim((float) need) + " su asked of "
+                                + trim((float) give) + "), so all of it stops: add Windcatchers or another source, or gear it slower");
+                    continue;
+                }
+                if (p.state.getBlock() instanceof ClockworkBearingBlock) continue;
                 BlockPos at = p.kind == Kind.GANTRY ? p.mover.relative(p.state.getValue(BlockStateProperties.FACING).getOpposite()) : p.mover;
                 double own = BlockStressValues.getImpact(fixed.getOrDefault(at, p.state).getBlock()) * Math.abs(p.rpm);
                 Set<BlockPos> network = BuildCheck.network(fixed, level, at);
@@ -812,7 +846,8 @@ final class MotionCheck {
                     BlockState s = fixed.get(q);
                     if (r == null || s == null) continue;
                     need += BlockStressValues.getImpact(s.getBlock()) * Math.abs(r);
-                    double cap = BlockStressValues.getCapacity(s.getBlock()) * Math.abs(r);
+                    Part w = windmills.get(q);
+                    double cap = w != null ? windCapacity(w) : BlockStressValues.getCapacity(s.getBlock()) * Math.abs(r);
                     if (cap > 0) anySource = true;
                     give += cap;
                 }
@@ -833,6 +868,37 @@ final class MotionCheck {
             }
         } catch (RuntimeException | LinkageError e) {
             out.append("- (Stress couldn't be worked out for this model.)\n");
+        }
+    }
+
+    /**
+     * What a windmill gives in su, the way Winds & Weather works it out: Create's capacity per RPM, grown by a share of it
+     * for every Windcatcher after the first, times the speed, up to a ceiling.
+     */
+    private static double windCapacity(Part p) {
+        if (p.sails <= 0) return 0;
+        double perRpm = BlockStressValues.getCapacity(p.state.getBlock()) * (1 + Math.max(0, p.sails - 1) * windShare());
+        return Math.min(perRpm * Math.abs(p.rpm), windCap());
+    }
+
+    private static double windShare() {
+        try {
+            Object common = Class.forName("com.enzonic.aeronauticswinds.config.WindsConfig").getField("COMMON").get(null);
+            double v = (Double) ((net.neoforged.neoforge.common.ModConfigSpec.DoubleValue) common.getClass()
+                    .getField("windmillSuPerWindcatcher").get(common)).get();
+            return Math.abs(v - 0.65) < 1e-6 ? 0.55 : v; // Winds & Weather reads its old default as the new one
+        } catch (ReflectiveOperationException | RuntimeException | LinkageError e) {
+            return 0.55;
+        }
+    }
+
+    private static double windCap() {
+        try {
+            Object common = Class.forName("com.enzonic.aeronauticswinds.config.WindsConfig").getField("COMMON").get(null);
+            return (Double) ((net.neoforged.neoforge.common.ModConfigSpec.DoubleValue) common.getClass()
+                    .getField("windmillMaxStressCapacity").get(common)).get();
+        } catch (ReflectiveOperationException | RuntimeException | LinkageError e) {
+            return 8192;
         }
     }
 

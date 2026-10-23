@@ -79,8 +79,13 @@
     },
     {
       "type": "modonomicon:text",
+      "title": "Starting and steering",
+      "text": "- Bearing: right-click it with an empty hand to start it; it turns while its shaft turns.\n- Piston, pulley, gantry: start on their own and run until the end of their travel.\n- A Gearshift with a lever, in the line that drives it, sends it back; a Clutch stops it."
+    },
+    {
+      "type": "modonomicon:text",
       "title": "",
-      "text": "[#](FFFFFF)\ue101[#]() **Watch out:** a turning part passes straight through blocks in its circle. A sliding part stops at the first solid block in its path; drills and saws break theirs as they go."
+      "text": "[#](FFFFFF)\ue101[#]() **Watch out:** a turning part passes straight through blocks in its circle. A sliding part stops at the first solid block in its path; drills and saws break theirs as they go. A glue area takes every block in it that touches the part, so keep it off what stays put."
     },
     {
       "type": "modonomicon:text",
