@@ -4,6 +4,12 @@ Each pack version gets a section here, with **Added**, **Fixed** and **Removed**
 workflow copies the section for the version in `pack/pack.toml` to the top of the GitHub release, and the build
 fails when that section is missing.
 
+## 0.4.48
+
+### Fixed
+- **Reeling through a jump now keeps the fish on.** A jumping fish could throw the hook even while you wound the whole fight, with a message saying winding keeps the line tight. Winding only made it less likely, about one jump in ten still threw the hook. Now a jump throws the hook only on a loose line: when nobody is winding or lifting the rod, or when the fish swims at you faster than the reel takes the line up (the message then says so and tells you to lift the rod as well). A hook too small for the fish's mouth can still tear out on the jolt, with its own message. Checked in game: holding the reel through fights against a sailfish jumping three times a second, the old version threw the hook and the new one never did. Landing rates go up by about one point.
+- Create Galore Fishing 0.3.15.
+
 ## 0.4.47
 
 ### Fixed
