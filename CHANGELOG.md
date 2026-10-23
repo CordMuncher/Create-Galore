@@ -4,6 +4,12 @@ Each pack version gets a section here, with **Added**, **Fixed** and **Removed**
 workflow copies the section for the version in `pack/pack.toml` to the top of the GitHub release, and the build
 fails when that section is missing.
 
+## 0.4.56
+
+### Fixed
+- **No more crash when the game loses its block texture sheet while playing with shaders.** Every block is drawn from one big texture sheet. Once, in the middle of play, that sheet dropped out of the game's texture list. The next frame loaded a purple and black placeholder under its name, and with shaders on, Iris crashed on the placeholder while drawing the shadows of a Sable ship. The sheet, and the game's other model texture sheets, now can't be removed or replaced while the game runs. If one goes missing anyway, it's put back on the next frame instead of the placeholder. Mods that add textures from a background thread (Iron's Lib does this as soon as you join a world) now have that moved to the render thread, because the texture list isn't safe to change from two threads at once. Each of these cases writes a warning with the responsible mod to the log, in case it happens again. Checked on a test server with Complementary: forcing the sheet out mid-game crashed the client with the same error as before the fix, and after the fix the game kept running with its blocks drawn normally.
+- Create Galore Bridge 1.80.0.
+
 ## 0.4.55
 
 ### Fixed
