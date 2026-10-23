@@ -8,6 +8,7 @@ fails when that section is missing.
 
 ### Fixed
 - **Smoother frame rate around dropped items.** Subtle Effects gave every item lying on the ground a sparkle, even cobblestone, dirt and seeds, and spawned a new sparkle for it every tick. Each sparkle is a little physics particle that also checks for nearby ships, so a pile of drops by a farm or a mining spot meant thousands of them: in a client profile from a 9950X3D they took about 6 ms of every client tick (a hitch 20 times a second) and around 15% of the render thread, at 120 to 150 FPS without shaders. Items now sparkle only when they are uncommon or rarer (golden apples, enchanted gear, music discs and the like), the ones worth noticing on the ground. Checked on a test client with 100 cobblestone drops: 766 sparkles before, none after, and the particle tick went from 0.66 ms to 0.01 ms; 100 golden apples still sparkle.
+
 ## 0.4.56
 
 ### Fixed
