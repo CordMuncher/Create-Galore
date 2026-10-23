@@ -147,7 +147,7 @@ final class Reach {
     }
 
     /** A block the world generates as terrain, so it is gathered rather than made. */
-    private static boolean natural(Item item) {
+    static boolean natural(Item item) {
         if (!(item instanceof BlockItem blockItem)) return false;
         BlockState state = blockItem.getBlock().defaultBlockState();
         for (TagKey<Block> tag : TERRAIN) if (state.is(tag)) return true;
@@ -306,7 +306,7 @@ final class Reach {
     }
 
     /** Items in their inventory and in the storage they opened nearby, by item. */
-    private static Map<Item, Integer> owned(ServerPlayer player) {
+    static Map<Item, Integer> owned(ServerPlayer player) {
         Map<Item, Integer> have = new HashMap<>();
         var inv = player.getInventory();
         for (int i = 0; i < inv.getContainerSize(); i++) {

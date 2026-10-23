@@ -4,6 +4,12 @@ Each pack version gets a section here, with **Added**, **Fixed** and **Removed**
 workflow copies the section for the version in `pack/pack.toml` to the top of the GitHub release, and the build
 fails when that section is missing.
 
+## 0.4.46
+
+### Fixed
+- **Ask the Book builds out of what you have.** When asked to design a build it never looked at what you carried, so it fell back on its own favourite look: spruce hulls with dark oak trim, even with no spruce anywhere near you. It now counts your building blocks before it plans (inventory and the chests you opened nearby), grouped by material: a wood counts its logs, planks, stairs, slabs and fences together, a stone its polished and brick forms, so 48 oak logs read as about 190 blocks of oak. It also sees which trees and ground lie open around you. Where one wood or plain stone would look as good as another, it uses the one you have most of, or what grows around you; it no longer spreads one hull across five woods just because you hold a few of each; and it never makes a build worse to fit your stock. When a design really needs something you lack (glass, a lantern, more planks than you hold) it uses it anyway and tells you what you still need and about how many. Every model it builds is measured against what you hold. Checked with a test inventory of 1 spruce plank, 150 oak planks, 48 oak logs and 96 birch planks: asked for a cozy fishing boat, the book built it in oak and birch and listed the lanterns, barrels and chain still to make.
+- Create Galore Bridge 1.74.0.
+
 ## 0.4.45
 
 ### Fixed

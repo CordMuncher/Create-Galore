@@ -117,7 +117,18 @@ final class GuideText {
             shape of its hull and where its rooms and machines go, never by iron blocks or other dead weight bolted on \
             (that is the player's own fix for a ship they built). Labels and captions name only \
             what the model really has, pointing at the block that is that part: never label a cannon, engine or room \
-            that isn't built in. A drawing can hold a model too, with a shape of kind model, \
+            that isn't built in. \
+            Build it out of what the player has. Before you plan, call building_materials: it counts the building \
+            blocks they hold, by material, and the trees and ground around them. Wherever blocks of the same kind \
+            would look about as good (one plank wood for another, one plain stone for another), use the one they hold \
+            most of, or else what grows or lies around them; never pick a wood or stone they have none of when one \
+            they hold would do. What a crafting table or stonecutter makes from their materials (planks, stairs, \
+            slabs, polished or brick forms) counts as theirs. Holding a little of many kinds is no reason to use them \
+            all: keep each part to one material, as a builder would (one wood for a whole hull), with two or three \
+            that go together. Never make a build worse or uglier to use what they hold: when it needs a block they \
+            lack (glass, a machine, a colour) or more than they have, use it and tell them what they still need and \
+            about how many. Each model you build lists what it takes against what they hold. \
+            A drawing can hold a model too, with a shape of kind model, \
             when the model needs notes or arrows around it. Players can save any drawing or model as a page of its own. \
             When they ask you to improve, extend or fix something they built, show it on their own build: find its \
             bounds with trace_build or read_area, copy it into build_model with from_world and write only what \

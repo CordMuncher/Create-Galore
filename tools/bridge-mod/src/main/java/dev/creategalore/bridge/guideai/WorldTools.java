@@ -70,6 +70,12 @@ final class WorldTools {
         tools.add(tool("get_inventory", "Everything the asking player has: held item, hotbar, main inventory, armor, "
                 + "off hand and Curios slots, with item ids, the adding mod, counts, durability and enchantments, then the totals in "
                 + "storage they have opened within " + TouchedStorage.RANGE + " blocks, which count as theirs too.", new JsonObject()));
+        tools.add(tool("building_materials", "The building blocks the asking player holds (inventory and storage they have "
+                + "opened within " + TouchedStorage.RANGE + " blocks), grouped by material, each one block and everything a "
+                + "crafting table or stonecutter makes out of it alone (Oak Log: its planks, stairs, slabs, fences; Andesite: "
+                + "polished andesite and its stairs), with how many full blocks each makes; then the other building blocks "
+                + "they hold, and the trees and ground open to the sky within " + Materials.AROUND + " blocks. Call it before "
+                + "building a model for them to copy, to choose its materials.", new JsonObject()));
         JsonObject storageProps = new JsonObject();
         JsonObject filter = new JsonObject();
         JsonArray filterType = new JsonArray();
@@ -158,6 +164,7 @@ final class WorldTools {
             return switch (name) {
                 case "look_at" -> lookAt(player);
                 case "get_inventory" -> inventory(player);
+                case "building_materials" -> Materials.describe(player, server);
                 case "get_surroundings" -> surroundings(player);
                 case "get_advancements" -> advancements(player, server);
                 case "lookup_recipes" -> recipes(server, GuideText.string(input, "item"), GuideText.string(input, "direction"));
