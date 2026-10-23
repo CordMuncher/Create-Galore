@@ -3,6 +3,8 @@ package dev.creategalore.bridge.client;
 import com.endertech.minecraft.mods.adpother.blocks.Pollutant;
 import dev.creategalore.bridge.Exhaust;
 import dev.creategalore.bridge.FilteredExhaustBlock;
+import dev.ryanhcode.sable.Sable;
+import dev.ryanhcode.sable.sublevel.SubLevel;
 import java.util.Optional;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -52,10 +54,21 @@ final class GasJadeClient {
             ? eye.add(player.getViewVector(1f).scale(player.blockInteractionRange()))
             : hit.getLocation();
         BlockPos target = hit instanceof BlockHitResult block && hit.getType() == HitResult.Type.BLOCK ? block.getBlockPos() : null;
-        BlockPos head = BlockPos.containing(eye);
+        // A block on a ship is hit where the ship keeps its blocks (Sable's plot, millions of blocks away). Walking the
+        // line out there read every block on the way, every tick: anyone aiming at a ship froze. Bring the hit back to
+        // where the ship is seen, and stop at the ship's block there.
+        SubLevel ship = Sable.HELPER.getContaining(level, end);
+        if (ship != null) {
+            if (target != null) target = BlockPos.containing(ship.logicalPose().transformPosition(Vec3.atCenterOf(target)));
+            end = ship.logicalPose().transformPosition(end);
+        }
+        // Anything still out of reach (another mod's hit far away) is only looked through up to reach.
+        double reach = player.blockInteractionRange() + 1.0;
+        if (eye.distanceToSqr(end) > reach * reach) end = eye.add(end.subtract(eye).normalize().scale(reach));
+        BlockPos head = BlockPos.containing(eye), aimed = target;
         // The first gas cell in front of what you aim at, not counting the one your head is in.
         BlockPos gas = BlockGetter.traverseBlocks(eye, end, level, (lvl, pos) -> {
-            if (pos.equals(target)) return Optional.<BlockPos>empty();
+            if (pos.equals(aimed)) return Optional.<BlockPos>empty();
             return !pos.equals(head) && isGas(lvl.getBlockState(pos)) ? Optional.of(pos.immutable()) : null;
         }, lvl -> Optional.<BlockPos>empty()).orElse(null);
         if (gas == null) return accessor;
