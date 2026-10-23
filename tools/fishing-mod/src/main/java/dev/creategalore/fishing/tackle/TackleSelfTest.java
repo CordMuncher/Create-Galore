@@ -155,7 +155,7 @@ public final class TackleSelfTest {
         });
     }
 
-    static ItemStack rig(Item rod, Item reel, Item line, Item hook, Item terminal) {
+    public static ItemStack rig(Item rod, Item reel, Item line, Item hook, Item terminal) {
         ItemStack stack = new ItemStack(rod);
         RodItem.setParts(stack, RodParts.EMPTY.with(RodParts.Slot.REEL, new ItemStack(reel))
                 .with(RodParts.Slot.LINE, new ItemStack(line)).with(RodParts.Slot.HOOK, new ItemStack(hook))

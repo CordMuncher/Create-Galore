@@ -522,3 +522,21 @@ fight. The message promised something the rule didn't do: winding only multiplie
   69.5% -> 70.6% (careless), hook thrown 7.0% -> 6.2% and 4.1% -> 3.0%. Within the usual 1.5 point band.
 - Client test (flat ocean, Create + this mod, a test datapack making the sailfish jump 4 times a second): holding use
   from strike to end, 0.3.14 threw the hook with the old message; 0.3.15 never did.
+
+## 0.3.16: a closed reel tows the rig (pack 0.4.50)
+
+Emre (23 Oct): trolling from a boat, the line kept paying out the further he went, so 100 m of trolling without a
+bite would empty the reel. "Your reel is closed, as you troll, the lure comes with you. ... If you walk backwards on
+land, you drag the line. You don't add meters to it."
+
+- **Every waiting rig is towed at its line out.** Only rod machines held their line (`towLength`); a rod in hand left
+  the rig where it was, so the line out was just the distance to it. Now `towLength` is set when the rig lands and
+  holds for hand rods too: moving away (boat, walking backwards, a machine on a moving ship) drags the rig along at
+  that length, in water and on land. A rig being bitten (the strike window) is dragged too.
+- Moving toward the rig leaves it where it is (the line goes slack); winding and rod lifts take line in, slack first,
+  and only then pull the rig. Without slack this is the same retrieve as before.
+- Fights are unchanged: line only leaves the spool to a fish pulling past the drag, a boat speeding off still tows a
+  small fish and gives a big one line through the drag, and an empty spool still snaps the line.
+- New self-test suite `tow` (a pool and a land strip in the sky): moving 12 m away drags the rig 12 m at the same line
+  out, stepping back leaves it, moving off again doesn't add line. Client test on a flat ocean: 207 m of trolling at
+  8.4 m/s kept the line at 25.3 m; walking backwards 40 m on sand kept it at 15.5 m.
