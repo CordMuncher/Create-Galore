@@ -74,6 +74,7 @@ public final class CreateGaloreBridge {
         ExhaustPressure.register();
         GuideAi.register(modBus);
         ShipGlueCheck.register(modBus);
+        PinnedSchematics.register(modBus);
         AnimalCare.register();
         Wear.register(modBus);
         if (FMLEnvironment.dist.isClient()) {

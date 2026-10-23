@@ -4,6 +4,11 @@ Each pack version gets a section here, with **Added**, **Fixed** and **Removed**
 workflow copies the section for the version in `pack/pack.toml` to the top of the GitHub release, and the build
 fails when that section is missing.
 
+## 0.4.51
+
+### Added
+- **Pinned schematics: build a schematic by hand, together.** A placed Create Schematic only showed while someone held it in their hand, and only for them. Sneak-right-click a placed Schematic and press the new **Pin for everyone** button (or use `/schematic pin` while holding it): the build stays standing where it was placed as faint, see-through blocks, with nothing in your hands, and every player on the server sees it, including players who never had the schematic file. Place real blocks over the faint ones: the right block (facing the right way) simply fills its spot, and a wrong block turns red. Standing next to a pinned build shows how many blocks are left and how many are wrong. **Unpin** on the same screen, or `/schematic unpin` next to it, takes it down for everyone; `/schematic list` shows every pin with who pinned it. Pins are kept with the world, so they survive a restart. The Schematicannon works exactly as before and can still print a pinned build: the faint blocks fill in as it places them. Checked on a test server with two players: one pinned a hut from the placement screen, the other saw it straight away, both saw two wrong blocks turn red and right ones fill in, the pin came back after a server restart, a Schematicannon printed it, and unpinning took it away for both; the faint blocks stay faint with Complementary shaders too. Up to 120000 blocks per pin.
+- Create Galore Bridge 1.75.0.
 ## 0.4.50
 
 ### Fixed
