@@ -4,6 +4,11 @@ Each pack version gets a section here, with **Added**, **Fixed** and **Removed**
 workflow copies the section for the version in `pack/pack.toml` to the top of the GitHub release, and the build
 fails when that section is missing.
 
+## 0.4.73
+
+### Fixed
+- **The Field Guide's furnace numbers are right.** The Temperature entry said a lit furnace warms you about 20 °F in the open but only about 7 °F inside a room, so a summer kitchen was best indoors. Walls and a roof don't change it: measured with a player on a test server at a Mid Winter midnight, a furnace 2 blocks away added about 23 °F both on an open beach and inside a sealed stone room, and a campfire about 12 °F in both. The page now says so, and that at a Mid Summer noon a furnace 2 blocks away takes a temperate beach from 79 °F to about 102 °F, past the 100 °F where heat hurts. Getting used to the climate moved to a page of its own. The book's notes for Ask the Book say the same.
+
 ## 0.4.72
 
 ### Added

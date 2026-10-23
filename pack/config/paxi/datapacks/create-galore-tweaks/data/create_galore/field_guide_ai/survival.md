@@ -1,4 +1,4 @@
-<!-- sources sha256:6b4194c23487e37b4a33a95aad0641295f689e8484d9ceb480197ecb90e8f3b0 -->
+<!-- sources sha256:ec284e7a51e8a066deaf5e7496cb1a17b8e2275f3f542b5f50d23fa085a749ef -->
 # Survival Layers (survival)
 Layers: Temperature (Cold Sweat), Thirst, Seasons (Serene Seasons), Pollution (Pollution of the Realms smog, exhaust systems), food/health, death/graves.
 
@@ -10,7 +10,7 @@ Layers: Temperature (Cold Sweat), Thirst, Seasons (Serene Seasons), Pollution (P
 - Seasons (see survival/seasons) shift every biome: Mid Summer adds most heat, Mid Winter removes most. Temperate plains: Mid Summer noon ~94 °F, winter night ~40 °F. Comfortable range 45 to 100 °F.
 - Cold nights: nights coldest. Bare-skinned on temperate beach in Mid Winter you start freezing after a few minutes. One lit campfire within a few blocks keeps you warm there. Snowy biomes and peaks still need warm clothes (see survival/temperature_gear) or a Hearth. Leather or fur armor slows drift enough to get through; iron armor does not.
 - Hot days: deserts/badlands at summer noon >100 °F alone (~115 °F Mid Summer). Stay in shade/underground, keep water handy, or wear heat insulation (see survival/temperature_gear) e.g. leather armor sewn with Rabbit Hide.
-- Lit furnace, smoker, blast furnace, fire are hot: 2 to 3 blocks away in the open adds ~20 °F, inside a room ~7 °F -> summer kitchen best indoors.
+- Lit furnace, smoker, blast furnace, fire are hot: 2 to 3 blocks away adds ~20 °F, same indoors and outdoors (walls/roof don't block it). Mid Summer noon: a furnace 2 blocks away takes a temperate beach from 79 °F to ~102 °F, past the 100 °F where heat hurts -> work a few blocks away in summer.
 - Campfires: gentler than a furnace: ~12 °F warmer 2 blocks away, fades out over 7 blocks; two campfires ~24 °F; any number caps at 30 °F. Mid Winter night on temperate beach: one campfire within ~4 blocks keeps you comfortable.
 - You slowly acclimate to your climate: comfortable range widens by up to ~20 °F.
 - Water: getting wet cools you; netherite diving suit makes you immune to that. Rain only soaks so far, even after a swim; under a roof you dry off, faster where warm. Heat and cold can both be lethal.
