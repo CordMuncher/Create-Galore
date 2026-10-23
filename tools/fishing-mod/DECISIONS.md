@@ -504,3 +504,21 @@ Emre (23 Oct): the cast line looked black while the line strung along the rod lo
   yellow, braided green, pale grey with no line. Realistic as well: real lines are those colours, not black.
 - Both are drawn as Minecraft lines (unlit, flat colour), so shader packs treat them the same way and they stay
   matched with shaders on.
+
+## 0.3.15: a wound-in jump keeps the hook (pack 0.4.48)
+
+Emre (23 Oct): "It jumped and threw the hook. Winding through a jump keeps the line tight" while reeling the whole
+fight. The message promised something the rule didn't do: winding only multiplied the jump's hook-throw chance by
+0.4, so with an average hook about one jump in ten still threw it (one in five while the fish swam at the angler).
+
+- **A jump throws the hook only on a loose line.** Loose = nobody winding and the rod not being lifted, or the line
+  actually slack (stretch below -`SLACK_TIGHT`) because the fish swims at the angler faster than the reel winds.
+  Same chance as before on a loose line (0.08 + 0.4 x (1 - hold), doubled while it swims at the angler); none on a
+  tight one. A small hook can still tear out on the jump's jolt (`HOOK_HOLD`, which names a hook size that holds).
+- New loss `HOOK_JUMP_SLACK` with its own message for the outswum case, so the message always matches what happened.
+- FightRules check: a fish jumping 3 times a second never throws the hook while wound in (0 of 200), does with
+  nobody winding (200 of 200), and can when it outswims a slow reel.
+- Monte Carlo against the 94 exported species (400 fights each, every rig): landed 68.3% -> 69.0% (careful angler),
+  69.5% -> 70.6% (careless), hook thrown 7.0% -> 6.2% and 4.1% -> 3.0%. Within the usual 1.5 point band.
+- Client test (flat ocean, Create + this mod, a test datapack making the sailfish jump 4 times a second): holding use
+  from strike to end, 0.3.14 threw the hook with the old message; 0.3.15 never did.

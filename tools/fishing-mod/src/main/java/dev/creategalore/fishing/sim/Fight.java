@@ -431,10 +431,16 @@ public final class Fight {
             loss = Loss.HOOK_SLACK;
             return;
         }
-        // A jump throws the hook more often on a loose line: reeling through it keeps the line tight.
-        if (jumped && rng.nextDouble() < (0.08 + 0.4 * (1 - hold)) * (in.reeling ? 0.4 : 1) * (charging ? 2 : 1)) {
+        // A jump throws the hook only on a loose line: the fish leaps up and toward the angler and shakes its head
+        // in the air. Winding (or lifting the rod) through the jump takes that up and the line stays tight, so the
+        // hook stays put; a hook too small for its mouth can still tear out on the jolt (below). Winding doesn't
+        // help if the line is slack anyway because the fish swims at the angler faster than the reel takes it up.
+        boolean takingUp = in.reeling || rodIn > 1e-9;
+        boolean outswum = stretch < -SLACK_TIGHT;
+        if (jumped && (!takingUp || outswum)
+                && rng.nextDouble() < (0.08 + 0.4 * (1 - hold)) * (charging ? 2 : 1)) {
             outcome = Outcome.HOOK_THROWN;
-            loss = Loss.HOOK_JUMP;
+            loss = takingUp ? Loss.HOOK_JUMP_SLACK : Loss.HOOK_JUMP;
             return;
         }
         if (spike > 0 && hold < 0.5 && rng.nextDouble() < (0.5 - hold) * 0.6) {

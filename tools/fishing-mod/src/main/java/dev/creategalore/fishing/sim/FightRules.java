@@ -212,6 +212,34 @@ public final class FightRules {
         out.add(new Check(wound == 0 && dropped > 20, String.format(Locale.ROOT,
                 "a limp 0.3 kg fish wound in never throws the hook (%d of 200); left on a slack line it does in %d of 200",
                 wound, dropped)));
+
+        // A fish that jumps all the time, close in: winding through every jump keeps the line tight and it never
+        // throws the hook on one; with nobody winding it does. One swimming at the angler faster than a slow reel
+        // winds leaves the line slack even while winding, and then a jump can throw the hook.
+        FishFight jumper = new FishFight(0.8, 2, 1.6, new Curve(new double[]{0}, new double[]{1}), 0, 3, 0, false);
+        FishFight dasher = new FishFight(0.8, 2, 6, new Curve(new double[]{0}, new double[]{1}), 0, 3, 3, false);
+        Tackle slowReel = new Tackle(100, 0.6, true, 10, 0.3, 100, 0.5, 10_000, 20, 0.5, Double.NaN, false, 0.8);
+        int reeledThrown = 0, idleThrown = 0, outswum = 0;
+        for (int f = 0; f < 200; f++) {
+            SplittableRandom r = new SplittableRandom(500 + f);
+            Controls c = new Controls();
+            c.drag = 5;
+            c.rodAngle = Math.toRadians(60);
+            c.reeling = true;
+            Fight reeled = new Fight(jumper, strong, 3, 6);
+            while (!reeled.outcome().over() && reeled.ticks() < 600) reeled.tick(c, r);
+            if (reeled.loss() == Loss.HOOK_JUMP || reeled.loss() == Loss.HOOK_JUMP_SLACK) reeledThrown++;
+            Fight dashing = new Fight(dasher, slowReel, 3, 6);
+            while (!dashing.outcome().over() && dashing.ticks() < 600) dashing.tick(c, r);
+            if (dashing.loss() == Loss.HOOK_JUMP_SLACK) outswum++;
+            c.reeling = false;
+            Fight idle2 = new Fight(jumper, strong, 3, 6);
+            while (!idle2.outcome().over() && idle2.ticks() < 600) idle2.tick(c, r);
+            if (idle2.loss() == Loss.HOOK_JUMP) idleThrown++;
+        }
+        out.add(new Check(reeledThrown == 0 && idleThrown > 20 && outswum > 0, String.format(Locale.ROOT,
+                "a fish jumping 3 times a second never throws the hook while wound in (%d of 200); not wound, %d of 200;"
+                        + " outswimming a slow reel, %d of 200", reeledThrown, idleThrown, outswum)));
         return out;
     }
 

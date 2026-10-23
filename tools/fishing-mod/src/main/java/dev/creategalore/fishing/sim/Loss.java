@@ -20,8 +20,10 @@ public enum Loss {
     ROD_WORN,
     /** The line went slack (the fish not pulling, nobody winding) and the hook fell out. */
     HOOK_SLACK,
-    /** It jumped and threw the hook. */
+    /** It jumped and threw the hook while nobody was winding or lifting to keep the line tight. */
     HOOK_JUMP,
+    /** It jumped and threw the hook while swimming at the angler faster than the reel took the line up. */
+    HOOK_JUMP_SLACK,
     /** The hook was too small for its mouth and tore out on a lunge. */
     HOOK_HOLD;
 
