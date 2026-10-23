@@ -4990,8 +4990,8 @@ hash = "db683b65dc15a03dd6de2d34d5dc6ad0e3490744ced513a8cc584784ee9d3d8b"
 metafile = true
 
 [[files]]
-file = "mods/create-galore-bridge-1.83.0.jar"
-hash = "8a3d51208c00fe9dbc6b2c5d64e6103a1f198d6bc515e8ed1497b9566a2ba11e"
+file = "mods/create-galore-bridge-1.84.0.jar"
+hash = "99a255cc1ef576391e9b6f40353be20f0098dcfc4b0d676ab289ede54cbd9540"
 
 [[files]]
 file = "mods/create-galore-fishing-0.3.17.jar"
