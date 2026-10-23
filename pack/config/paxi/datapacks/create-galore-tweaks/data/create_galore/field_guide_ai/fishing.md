@@ -1,4 +1,4 @@
-<!-- sources sha256:584e933134a89ef58c4f3f3548be13f2b24ce4dcf8271a4eea45a5a0c0a4d82f -->
+<!-- sources sha256:f32d885dd6c783f6be1f9378bc168ea16d30deeb759e56f69ee1020b5066f01e -->
 # Fishing (fishing)
 
 ## fishing/overview | Fishing
@@ -13,7 +13,7 @@
 ## fishing/casting | Casting and the Bite
 - **Hold** use to charge, let go to cast; full charge takes a second. A full cast goes 8 m plus 7 m per metre of rod; a rig far lighter/heavier than the rod's casting range ("Casts 5-30 g best" tooltip) falls short. A pole reaches only its 8 m of line; no cast goes past the line on the reel
 - A rod casts only with line and a hook (or a lure), and a reel unless it is a pole
-- Rigs: **float** holds bait at the surface, dips on a bite; **sinker** takes bait to the bottom, rod tip taps on a bite; **lure** needs no bait: wind it back by holding use, it dives to its depth and works at the speed it likes; lifting the rod twitches it toward you
+- Rigs: **float** holds bait at the surface, dips on a bite; **sinker** takes bait to the bottom, rod tip taps on a bite; **lure** needs no bait: wind it back by holding use, it dives to its depth and works at the speed it likes; lifting the rod twitches it toward you. The reel holds its line while the rig waits: walking off or sailing away drags the rig along at the same line out
 - Bite: plop on the float or tap on the rod, "Bite! Lift the rod to strike" blinks above the hotbar. **Strike** by lifting the rod (hold attack, left click) within the window: about 1.4 s on a float or sinker, 1 s on a lure. Reeling never sets the hook. The strike is a flick; a rod already held high has nothing left to lift, let it down first. Miss: the fish lets go, and 3 times in 10 takes the bait
 - Junk, treasure, crates are struck the same way and come in as a dead weight
 - Enchantments: Lure and Luck of the Sea work on every rod; each Lure level cuts the wait by about 15%; luck shifts the roll from junk toward treasure and rare fish. Unbreaking and Mending work
@@ -215,7 +215,7 @@
 - Related: (see fishing/trolling) (see create_basics/power_sources) (see fishing/live_bait) (see create_basics/item_logistics)
 
 ## fishing/trolling | Trolling from Ships
-- Rod Holders and reel drives work on physics **ships** (a sub-level (see glossary/sub_level), e.g. a sailing ship or a surfaced submarine). The rig is **towed** behind at its line length (it can't get further from the tip than the line it was cast with). A small hooked fish is towed along; a big one takes line through the drag. See (see flight/ship_building) (see ocean/sailing)
+- A rod in hand trolls from any boat; Rod Holders and reel drives work on physics **ships** (a sub-level (see glossary/sub_level), e.g. a sailing ship or a surfaced submarine). The rig is **towed** behind at its line length (it can't get further from the tip than the line it was cast with, however far the boat goes); line only leaves the reel when a hooked fish pulls past the drag. A small hooked fish is towed along; a big one takes line through the drag. See (see flight/ship_building) (see ocean/sailing)
 - A towed crankbait dives and works between its best speeds: 0.6 to 3 m/s; Deep Crankbait 0.8 to 3.5 m/s, down to 5 m. Too slow or fast: fish mostly ignore it. Fish that bite follow the water passed, so trolling spreads catches instead of fishing out one spot
 - Fuel Reel Drive needs no shafts, suits boats; a Geared drive works off the ship's own rotation. Tip: for tuna and sharks: Heavy Boat Rod, Big-Game Trolling Reel, Heavy Mono line, Steel Leader, Big-Game hook or Deep Crankbait
 - Watch out: machines on a ship fish only while the ship is loaded; stay aboard. Put a chest or belt beside the machines, or catches hang at the rod tip. Set the drag before setting the rod in (the machine keeps the rod's own and never winds while line slips); keep it below the line's test

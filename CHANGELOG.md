@@ -4,6 +4,12 @@ Each pack version gets a section here, with **Added**, **Fixed** and **Removed**
 workflow copies the section for the version in `pack/pack.toml` to the top of the GitHub release, and the build
 fails when that section is missing.
 
+## 0.4.50
+
+### Fixed
+- **Trolling no longer pays out line.** With a rod in hand, the line out was simply how far you were from the rig, so trolling from a boat or walking backwards kept adding metres until the reel ran empty after a hundred metres or so without a bite. The reel is closed while the rig waits, so it now comes with you: sail off or walk backwards and you drag the rig along at the line you cast, on water and on land (rod machines on ships already did this). Walking back toward it just leaves slack, and winding takes the slack in before it moves the rig. Line only leaves the spool when a hooked fish pulls past the drag, and a boat speeding off with a fish on still tows a small one and gives a big one line through the drag. Checked in game: 207 m of trolling at boat speed kept the line at 25 m the whole way, and walking 40 m backwards on sand kept it at 15.5 m. The Field Guide's casting and trolling pages say so.
+- Create Galore Fishing 0.3.16.
+
 ## 0.4.49
 
 ### Added
