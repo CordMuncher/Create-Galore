@@ -42,6 +42,8 @@ final class VehicleCheck {
             CAR_BAD = 3, CAR_SLOW = 6, TURN_BAD = 3, TURN_SLOW = 8, CLIMB_BAD = 0.5, CLIMB_SLOW = 1, CEILING_BAD = 100;
     /** A hull in water turns about half as fast as its turning force alone gives (measured; it slides sideways). */
     private static final double TURN_SLIP = 0.45;
+    /** Resting trim or list, degrees: from the first it shows, from the second it is a fault. */
+    private static final double TRIM_NOTE = 1.5, TRIM_BAD = 5;
     /** The height an airship is judged at for lifting off (above most ground, below most mountains). */
     private static final double TAKEOFF_Y = 100;
 
@@ -258,6 +260,13 @@ final class VehicleCheck {
             return i;
         }
 
+        /** About the line across the keel through the centre of mass: the axis a hull trims (pitches) around. */
+        double iPitch() {
+            double i = 0;
+            for (Part p : parts) i += p.mass * (1 / 6.0 + sq(along(p.cx(), p.cz())) + sq(p.cy() - cy));
+            return i;
+        }
+
         /** Offset across the keel from the centre of mass. */
         double lateral(double x, double z) {
             return keel == Direction.Axis.X ? z - cz : x - cx;
@@ -381,20 +390,37 @@ final class VehicleCheck {
         return Math.max(0, Math.min(1, h - (y - 0.5)));
     }
 
+    /**
+     * Height of a floater's centre with the hull heeled by a (radians, about the keel line) and trimmed by p (about the
+     * line across it, both through the centre of mass); positive p raises the end ahead along the keel (+x or +z).
+     */
+    private static double tilted(Body b, Floater f, double a, double p) {
+        return b.cy + b.lateral(f.x, f.z) * Math.sin(a) + b.along(f.x, f.z) * Math.sin(p) + (f.y - b.cy) * Math.cos(a) * Math.cos(p);
+    }
+
     /** Lift at waterline h, the floaters heeled by angle a (radians) about the keel line through the centre of mass. */
     private static double lift(Body b, List<Floater> fl, double h, double a) {
-        double sum = 0, cos = Math.cos(a), sin = Math.sin(a);
-        for (Floater f : fl) sum += f.lift * under(b.cy + b.lateral(f.x, f.z) * sin + (f.y - b.cy) * cos, h);
+        return lift(b, fl, h, a, 0);
+    }
+
+    private static double lift(Body b, List<Floater> fl, double h, double a, double p) {
+        double sum = 0;
+        for (Floater f : fl) sum += f.lift * under(tilted(b, f, a, p), h);
         return sum;
     }
 
     /** The waterline the weight settles at, or NaN when everything under still can't hold it up. */
     private static double waterline(Body b, List<Floater> fl, double a) {
-        double lo = b.minY - b.height - 2, hi = b.maxY + b.height + 2, need = G * b.m;
-        if (lift(b, fl, hi, a) < need) return Double.NaN;
+        return waterline(b, fl, a, 0);
+    }
+
+    private static double waterline(Body b, List<Floater> fl, double a, double p) {
+        double reach = b.height + Math.max(b.lenX, b.lenZ) + 2;
+        double lo = b.minY - reach, hi = b.maxY + reach, need = G * b.m;
+        if (lift(b, fl, hi, a, p) < need) return Double.NaN;
         for (int i = 0; i < 50; i++) {
             double mid = (lo + hi) / 2;
-            if (lift(b, fl, mid, a) < need) lo = mid;
+            if (lift(b, fl, mid, a, p) < need) lo = mid;
             else hi = mid;
         }
         return hi;
@@ -453,6 +479,7 @@ final class VehicleCheck {
         if (freeboard < 0.6) faults.add(String.format(Locale.ROOT, "it rides with only %.1f blocks above the water: the deck "
                 + "is awash and any wave or turn floods it; make the hull lighter or the hold bigger", freeboard));
         stability(b, fl, wet, holds > 0, out, faults);
+        trim(b, fl, wet, holds > 0, hullTop, out, faults, notes);
 
         double vWet = wetVolume(b, fl, h);
         Thrusts t = waterThrust(b, rpm, h, faults, notes);
@@ -541,6 +568,129 @@ final class VehicleCheck {
         }
         out.append(line).append(".\n");
         if (bad != null) faults.add(bad);
+    }
+
+    /**
+     * How it sits at rest: the trim (fore and aft) and list (side to side) where the lift of the wet blocks and hold cells
+     * lines up with the centre of mass, with High Seas' self-righting (4 x wet rad/s² at full tilt) pulling toward level.
+     */
+    private static void trim(Body b, List<Floater> fl, double wet, boolean highSeas, double hullTop, StringBuilder out,
+            List<String> faults, List<String> notes) {
+        double help = highSeas ? 4 * wet : 0;
+        double pitch = rest(b, fl, true, help * b.iPitch()), list = rest(b, fl, false, help * b.iRoll());
+        Direction bow = bow(b);
+        // The ends of the keel and the sides, named from the bow when it has one.
+        Direction plus = b.keel == Direction.Axis.X ? Direction.EAST : Direction.SOUTH;
+        Direction side = b.keel == Direction.Axis.X ? Direction.SOUTH : Direction.EAST;
+        String ahead = bow == null ? plus.getName() + " end" : "bow", behind = bow == null ? plus.getOpposite().getName() + " end" : "stern";
+        double up = bow == null || bow == plus ? 1 : -1; // + when a positive pitch raises the end named first
+        String plusSide = bow == null ? side.getName() + " side" : (bow.getClockWise() == side ? "starboard" : "port");
+        String minusSide = bow == null ? side.getOpposite().getName() + " side" : plusSide.equals("starboard") ? "port" : "starboard";
+        if (Double.isNaN(pitch) || Math.abs(pitch) > Math.toRadians(40)) {
+            faults.add(String.format(Locale.ROOT, "it doesn't float level fore and aft: its weight sits so far toward one end "
+                    + "that it tips onto its %s and stands on end; move heavy blocks toward the middle, or give that end more hull",
+                    centreOfLift(b, fl)[0] * up > 0 ? behind : ahead));
+            return;
+        }
+        if (Double.isNaN(list) || Math.abs(list) > Math.toRadians(40)) {
+            faults.add("it doesn't float level side to side: its weight is so far off the middle that it rolls onto its side; "
+                    + "balance heavy blocks across it");
+            return;
+        }
+        double pd = Math.toDegrees(pitch) * up, ld = Math.toDegrees(list);
+        String trimText = Math.abs(pd) < 0.25 ? "level fore and aft" : String.format(Locale.ROOT, "%s %.1f° down", pd > 0 ? behind : ahead, Math.abs(pd));
+        String listText = Math.abs(ld) < 0.25 ? "level side to side" : String.format(Locale.ROOT, "%.1f° down to %s", Math.abs(ld), ld > 0 ? minusSide : plusSide);
+        out.append("- At rest with nobody aboard it sits ").append(trimText).append(" and ").append(listText);
+        // Weight to move to level it: lift centre minus centre of mass along each axis, times mass.
+        double[] off = centreOfLift(b, fl);
+        List<String> fix = new ArrayList<>();
+        if (Math.abs(pd) >= 0.25) fix.add(String.format(Locale.ROOT, "%.0f mass x blocks toward the %s", Math.abs(off[0]) * b.m, pd > 0 ? ahead : behind));
+        if (Math.abs(ld) >= 0.25) fix.add(String.format(Locale.ROOT, "%.0f toward %s", Math.abs(off[1]) * b.m, ld > 0 ? plusSide : minusSide));
+        if (!fix.isEmpty()) out.append(" (to level it, move weight: ").append(String.join(", ", fix)).append("; an iron block "
+                + "weighs 4, a plank 0.5, so one iron block moved 3 blocks is 12)");
+        out.append(".\n");
+        // The low end's freeboard at that trim.
+        double h = waterline(b, fl, list, pitch);
+        if (!Double.isNaN(h) && Math.abs(pd) >= 0.25) {
+            double lo = Double.MAX_VALUE;
+            for (Part p : b.parts) {
+                double a = b.along(p.cx(), p.cz());
+                lo = Math.min(lo, b.cy + a * Math.sin(pitch) + (hullTop - b.cy) * Math.cos(pitch) - h);
+            }
+            if (lo < 0.6) faults.add(String.format(Locale.ROOT, "trimmed %.1f° %s down at rest, its %s sits only %.1f blocks above "
+                    + "the water: it ships water there; move weight toward the %s", Math.abs(pd), pd > 0 ? behind : ahead,
+                    pd > 0 ? behind : ahead, Math.max(0, lo), pd > 0 ? ahead : behind));
+        }
+        if (Math.abs(pd) >= TRIM_BAD) faults.add(String.format(Locale.ROOT, "it sits %.1f° %s down at rest: move weight toward "
+                + "the %s until it sits level", Math.abs(pd), pd > 0 ? behind : ahead, pd > 0 ? ahead : behind));
+        else if (Math.abs(pd) >= TRIM_NOTE) notes.add(String.format(Locale.ROOT, "it sits %.1f° %s down at rest, which shows; a "
+                + "level hull looks and rides better", Math.abs(pd), pd > 0 ? behind : ahead));
+        if (Math.abs(ld) >= TRIM_BAD) faults.add(String.format(Locale.ROOT, "it lists %.1f° to %s at rest: balance its weight "
+                + "across it", Math.abs(ld), ld > 0 ? minusSide : plusSide));
+        else if (Math.abs(ld) >= TRIM_NOTE) notes.add(String.format(Locale.ROOT, "it lists %.1f° to %s at rest, which shows",
+                Math.abs(ld), ld > 0 ? minusSide : plusSide));
+    }
+
+    /** Where the hull's lift centres at level against the centre of mass: {along the keel, across it}, in blocks. */
+    private static double[] centreOfLift(Body b, List<Floater> fl) {
+        double h = waterline(b, fl, 0), sum = 0, a = 0, l = 0;
+        for (Floater f : fl) {
+            double w = f.lift * under(f.y, h);
+            sum += w;
+            a += w * b.along(f.x, f.z);
+            l += w * b.lateral(f.x, f.z);
+        }
+        return sum <= 0 ? new double[2] : new double[] {a / sum, l / sum};
+    }
+
+    /**
+     * The trim (pitch true) or heel angle, radians, at which the water's turning push on the hull balances High Seas'
+     * pull toward level ({@code righting} x sin of the angle); positive raises the + end of the keel or the + side. NaN
+     * when nothing within 45° balances it.
+     */
+    private static double rest(Body b, List<Floater> fl, boolean pitch, double righting) {
+        double step = Math.toRadians(0.25), max = Math.toRadians(45);
+        double m0 = moment(b, fl, 0, pitch, righting);
+        if (Double.isNaN(m0)) return Double.NaN;
+        if (Math.abs(m0) < 1e-9) return 0;
+        double dir = Math.signum(m0), prev = 0;
+        for (double x = step; x <= max + 1e-9; x += step) {
+            double m = moment(b, fl, dir * x, pitch, righting);
+            if (Double.isNaN(m)) return Double.NaN;
+            if (Math.signum(m) != dir) {
+                double lo = prev, hi = x;
+                for (int i = 0; i < 30; i++) {
+                    double mid = (lo + hi) / 2, mm = moment(b, fl, dir * mid, pitch, righting);
+                    if (Double.isNaN(mm) || Math.signum(mm) != dir) hi = mid;
+                    else lo = mid;
+                }
+                return dir * (lo + hi) / 2;
+            }
+            prev = x;
+        }
+        return Double.NaN;
+    }
+
+    /** The turning push raising the + end (pitch) or + side at angle x, less High Seas' self-righting. */
+    private static double moment(Body b, List<Floater> fl, double x, boolean pitch, double righting) {
+        double a = pitch ? 0 : x, p = pitch ? x : 0, h = waterline(b, fl, a, p);
+        if (Double.isNaN(h)) return Double.NaN;
+        double torque = 0, cos = Math.cos(x), sin = Math.sin(x);
+        for (Floater f : fl) {
+            double r = pitch ? b.along(f.x, f.z) : b.lateral(f.x, f.z), v = f.y - b.cy;
+            torque += f.lift * under(tilted(b, f, a, p), h) * (r * cos - v * sin);
+        }
+        return torque - righting * sin;
+    }
+
+    /** The way it goes ahead: its Boat Engine's facing, else its propellers' or thrusters'; null when nothing says. */
+    private static Direction bow(Body b) {
+        for (String id : new String[] {"create_high_seas:boat_engine", "create_submarine:submarine_propeller", "create_submarine:water_thruster"})
+            for (Part p : b.parts) {
+                Direction f = facing(p.state);
+                if (p.id.equals(id) && f != null && f.getAxis() == b.keel) return f;
+            }
+        return null;
     }
 
     // ---------- submarines ----------
@@ -794,6 +944,7 @@ final class VehicleCheck {
     private static void air(Body b, Map<BlockPos, Float> rpm, StringBuilder out, List<String> faults, List<String> notes) {
         // Balloons: each burner fills the envelope above it.
         Map<BlockPos, int[]> balloons = new java.util.LinkedHashMap<>(); // seed -> volume, burners
+        Map<BlockPos, double[]> centres = new java.util.HashMap<>(); // seed -> centre of its air
         double balloonY = 0;
         for (Part p : b.parts) {
             boolean burner = p.id.equals("aeronautics:adjustable_burner"), vent = p.id.equals("aeronautics:steam_vent");
@@ -819,8 +970,13 @@ final class VehicleCheck {
                 }
                 key = seed;
                 balloons.put(key, new int[] {cells.size(), 0, 0});
-                double ys = 0;
-                for (BlockPos c : cells) ys += c.getY() + 0.5;
+                double xs = 0, ys = 0, zs = 0;
+                for (BlockPos c : cells) {
+                    xs += c.getX() + 0.5;
+                    ys += c.getY() + 0.5;
+                    zs += c.getZ() + 0.5;
+                }
+                centres.put(key, new double[] {xs / cells.size(), ys / cells.size(), zs / cells.size()});
                 balloonY = Math.max(balloonY, ys / cells.size() - b.cy);
             }
             balloons.get(key)[1] += burner ? 500 : 5000;
@@ -962,12 +1118,98 @@ final class VehicleCheck {
         }
         if (stress > 0) notes.add(String.format(Locale.ROOT, "its propellers draw about %.0f stress units at these speeds; the "
                 + "engines turning them must supply that (a Portable Engine gives 2048, a Stirling Engine 4096)", stress));
+        hang(b, balloons, centres, all, out, faults, notes);
         // Pitch: a thrust line far above or below the centre of mass noses it up or down.
         double pitch = 0;
         for (Thrust t : side) pitch = Math.max(pitch, Math.abs(t.at.getY() + 0.5 - b.cy));
         if (pitch >= 4 && b.count("aeroworks:gyroscope") == 0)
             notes.add(String.format(Locale.ROOT, "its propellers push %.0f blocks off the height of its centre of mass, so it "
                     + "pitches when they run; a Gyroscope or lower propellers fix that", pitch));
+    }
+
+    /**
+     * How it hangs when hovering: a balloon lifts at the centre of its air, Levitite at its own blocks and an upward
+     * propeller where it sits, and the ship swings until that lift is straight above its centre of mass (Sable doesn't
+     * level anything; a Gyroscope does). Lift below the centre of mass turns it over.
+     */
+    private static void hang(Body b, Map<BlockPos, int[]> balloons, Map<BlockPos, double[]> centres, List<Thrust> all,
+            StringBuilder out, List<String> faults, List<String> notes) {
+        double sum = 0, a = 0, l = 0, v = 0;
+        for (Map.Entry<BlockPos, int[]> e : balloons.entrySet()) {
+            double[] c = centres.get(e.getKey());
+            double f = 16.5 * Math.min(e.getValue()[0], e.getValue()[1]);
+            if (c == null || f <= 0) continue;
+            sum += f;
+            a += f * b.along(c[0], c[2]);
+            l += f * b.lateral(c[0], c[2]);
+            v += f * (c[1] - b.cy);
+        }
+        List<Part> lev = b.parts.stream().filter(p -> p.state.is(LEVITITE) || p.id.equals("minecraft:end_stone")).toList();
+        double levTotal = 0;
+        for (Part p : lev) levTotal += p.state.is(LEVITITE) ? 110 : 22;
+        double levScale = levTotal > G * b.m ? G * b.m / levTotal : 1;
+        for (Part p : lev) {
+            double f = (p.state.is(LEVITITE) ? 110 : 22) * levScale;
+            sum += f;
+            a += f * b.along(p.cx(), p.cz());
+            l += f * b.lateral(p.cx(), p.cz());
+            v += f * (p.cy() - b.cy);
+        }
+        for (Thrust t : all) {
+            if (t.dir != Direction.UP) continue;
+            sum += t.force;
+            a += t.force * b.along(t.at.getX() + 0.5, t.at.getZ() + 0.5);
+            l += t.force * b.lateral(t.at.getX() + 0.5, t.at.getZ() + 0.5);
+            v += t.force * (t.at.getY() + 0.5 - b.cy);
+        }
+        if (sum <= 0) return;
+        a /= sum;
+        l /= sum;
+        v /= sum;
+        if (b.count("aeroworks:gyroscope") > 0) {
+            out.append(String.format(Locale.ROOT, "- Its lift centres %.1f blocks above its centre of mass; its Gyroscope holds it "
+                    + "level.\n", v));
+            return;
+        }
+        if (v <= 0.25) {
+            faults.add(String.format(Locale.ROOT, "it is top-heavy: its lift centres %.1f blocks %s its centre of mass, so it "
+                    + "turns over in the air; put the heavy blocks (engines, cargo) low, under the balloon, or add a Gyroscope",
+                    Math.abs(v), v < 0 ? "below" : "level with"));
+            return;
+        }
+        Direction bow = null;
+        double strongest = 0;
+        for (Thrust t : all)
+            if (t.dir.getAxis() == b.keel && t.force > strongest) {
+                strongest = t.force;
+                bow = t.dir;
+            }
+        Direction plus = b.keel == Direction.Axis.X ? Direction.EAST : Direction.SOUTH;
+        Direction side = b.keel == Direction.Axis.X ? Direction.SOUTH : Direction.EAST;
+        String ahead = bow == null ? plus.getName() + " end" : "bow", behind = bow == null ? plus.getOpposite().getName() + " end" : "stern";
+        double up = bow == null || bow == plus ? 1 : -1;
+        String plusSide = bow == null ? side.getName() + " side" : bow.getClockWise() == side ? "starboard" : "port";
+        String minusSide = bow == null ? side.getOpposite().getName() + " side" : plusSide.equals("starboard") ? "port" : "starboard";
+        // Swinging till the lift is over the centre of mass raises the end the lift sits toward.
+        double pd = Math.toDegrees(Math.atan2(a, v)) * up, ld = Math.toDegrees(Math.atan2(l, v));
+        String trimText = Math.abs(pd) < 0.25 ? "level fore and aft" : String.format(Locale.ROOT, "%s %.1f° down", pd > 0 ? behind : ahead, Math.abs(pd));
+        String listText = Math.abs(ld) < 0.25 ? "level side to side" : String.format(Locale.ROOT, "%.1f° down to %s", Math.abs(ld), ld > 0 ? minusSide : plusSide);
+        out.append(String.format(Locale.ROOT, "- Hovering it hangs %s and %s (its lift centres %.1f blocks above its centre of "
+                + "mass", trimText, listText, v));
+        List<String> fix = new ArrayList<>();
+        if (Math.abs(pd) >= 0.25) fix.add(String.format(Locale.ROOT, "%.0f mass x blocks toward the %s", Math.abs(a) * b.m, pd > 0 ? ahead : behind));
+        if (Math.abs(ld) >= 0.25) fix.add(String.format(Locale.ROOT, "%.0f toward %s", Math.abs(l) * b.m, ld > 0 ? plusSide : minusSide));
+        if (!fix.isEmpty()) out.append("; to level it, move weight: ").append(String.join(", ", fix));
+        out.append(").\n");
+        if (Math.abs(pd) >= TRIM_BAD) faults.add(String.format(Locale.ROOT, "it hangs %.1f° %s down: move weight toward the %s, "
+                + "or the balloon toward the %s, until it hangs level", Math.abs(pd), pd > 0 ? behind : ahead, pd > 0 ? ahead : behind,
+                pd > 0 ? behind : ahead));
+        else if (Math.abs(pd) >= TRIM_NOTE) notes.add(String.format(Locale.ROOT, "it hangs %.1f° %s down, which shows",
+                Math.abs(pd), pd > 0 ? behind : ahead));
+        if (Math.abs(ld) >= TRIM_BAD) faults.add(String.format(Locale.ROOT, "it hangs %.1f° down to %s: balance its weight across "
+                + "it", Math.abs(ld), ld > 0 ? minusSide : plusSide));
+        else if (Math.abs(ld) >= TRIM_NOTE) notes.add(String.format(Locale.ROOT, "it hangs %.1f° down to %s, which shows",
+                Math.abs(ld), ld > 0 ? minusSide : plusSide));
     }
 
     /**
