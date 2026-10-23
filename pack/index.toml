@@ -4624,6 +4624,10 @@ file = "config/subtle_effects/entities.toml"
 hash = "c55466d6b1e32e5e377ea22d41b7c37e4387701ade29e65caab4055023b57abc"
 
 [[files]]
+file = "config/subtle_effects/items.toml"
+hash = "1695397d289006ad5f0f02a18d4e0891829cae32357178ac4fccccb698de3466"
+
+[[files]]
 file = "config/terralith.json"
 hash = "cb8a5d8613fdcc2316654d573c1c06220b5db35802c8837f2dd4a11f1767bd4a"
 
