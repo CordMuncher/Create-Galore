@@ -8,6 +8,11 @@ fails when that section is missing.
 
 ### Fixed
 - **Smoother frame rate around dropped items.** Subtle Effects gave every item lying on the ground a sparkle, even cobblestone, dirt and seeds, and spawned a new sparkle for it every tick. Each sparkle is a little physics particle that also checks for nearby ships, so a pile of drops by a farm or a mining spot meant thousands of them: in a client profile from a 9950X3D they took about 6 ms of every client tick (a hitch 20 times a second) and around 15% of the render thread, at 120 to 150 FPS without shaders. Items now sparkle only when they are uncommon or rarer (golden apples, enchanted gear, music discs and the like), the ones worth noticing on the ground. Checked on a test client with 100 cobblestone drops: 766 sparkles before, none after, and the particle tick went from 0.66 ms to 0.01 ms; 100 golden apples still sparkle.
+## 0.4.56
+
+### Fixed
+- **No more crash when the game loses its block texture sheet while playing with shaders.** Every block is drawn from one big texture sheet. Once, in the middle of play, that sheet dropped out of the game's texture list. The next frame loaded a purple and black placeholder under its name, and with shaders on, Iris crashed on the placeholder while drawing the shadows of a Sable ship. The sheet, and the game's other model texture sheets, now can't be removed or replaced while the game runs. If one goes missing anyway, it's put back on the next frame instead of the placeholder. Mods that add textures from a background thread (Iron's Lib does this as soon as you join a world) now have that moved to the render thread, because the texture list isn't safe to change from two threads at once. Each of these cases writes a warning with the responsible mod to the log, in case it happens again. Checked on a test server with Complementary: forcing the sheet out mid-game crashed the client with the same error as before the fix, and after the fix the game kept running with its blocks drawn normally.
+- Create Galore Bridge 1.80.0.
 
 ## 0.4.55
 
