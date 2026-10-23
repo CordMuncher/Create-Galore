@@ -66,13 +66,18 @@ public class CastHookRenderer extends EntityRenderer<CastHook> {
         float dx = (float) (tip.x - at.x);
         float dy = (float) (tip.y - at.y);
         float dz = (float) (tip.z - at.z);
+        // The same colour as the line strung along the rod: the line the rod is wound with.
+        ItemStack rod = mount.isPresent()
+                ? hook.level().getBlockEntity(mount.get()) instanceof RodMount m ? m.mounted().rod() : ItemStack.EMPTY
+                : owner.getItemInHand(hook.hand());
+        int color = RodModel.lineColor(rod);
         VertexConsumer line = buffers.getBuffer(RenderType.lineStrip());
         PoseStack.Pose last = pose.last();
         if (hook.phase() == CastHook.Phase.FIGHTING) {
             float droop = fightDroop(Mth.sqrt(dx * dx + dy * dy + dz * dz), hook.shownTension(), hook.shownSlack());
-            for (int i = 0; i <= 16; i++) droopVertex(dx, dy, dz, droop, line, last, i / 16f, (i + 1) / 16f);
+            for (int i = 0; i <= 16; i++) droopVertex(dx, dy, dz, droop, color, line, last, i / 16f, (i + 1) / 16f);
         } else {
-            for (int i = 0; i <= 16; i++) stringVertex(dx, dy, dz, 1, line, last, i / 16f, (i + 1) / 16f);
+            for (int i = 0; i <= 16; i++) stringVertex(dx, dy, dz, 1, color, line, last, i / 16f, (i + 1) / 16f);
         }
         pose.popPose();
         super.render(hook, yaw, partialTick, pose, buffers, light);
@@ -123,7 +128,7 @@ public class CastHookRenderer extends EntityRenderer<CastHook> {
     }
 
     /** One point of a fighting line: straight from the fish to the tip, hanging {@code droop} in the middle. */
-    private static void droopVertex(float x, float y, float z, float droop, VertexConsumer vc, PoseStack.Pose pose, float t, float next) {
+    private static void droopVertex(float x, float y, float z, float droop, int color, VertexConsumer vc, PoseStack.Pose pose, float t, float next) {
         float px = x * t;
         float py = y * t - droop * 4 * t * (1 - t) + 0.25f;
         float pz = z * t;
@@ -136,11 +141,11 @@ public class CastHookRenderer extends EntityRenderer<CastHook> {
             ny /= len;
             nz /= len;
         }
-        vc.addVertex(pose, px, py, pz).setColor(0xFF000000).setNormal(pose, nx, ny, nz);
+        vc.addVertex(pose, px, py, pz).setColor(color).setNormal(pose, nx, ny, nz);
     }
 
     /** One point of the line, as vanilla draws it but with the droop scaled by {@code sag}. */
-    private static void stringVertex(float x, float y, float z, float sag, VertexConsumer vc, PoseStack.Pose pose, float t, float next) {
+    private static void stringVertex(float x, float y, float z, float sag, int color, VertexConsumer vc, PoseStack.Pose pose, float t, float next) {
         float px = x * t;
         float py = y * (t * t + t) * 0.5f * sag + y * t * (1 - sag) + 0.25f;
         float pz = z * t;
@@ -153,7 +158,7 @@ public class CastHookRenderer extends EntityRenderer<CastHook> {
             ny /= len;
             nz /= len;
         }
-        vc.addVertex(pose, px, py, pz).setColor(0xFF000000).setNormal(pose, nx, ny, nz);
+        vc.addVertex(pose, px, py, pz).setColor(color).setNormal(pose, nx, ny, nz);
     }
 
     @Override
