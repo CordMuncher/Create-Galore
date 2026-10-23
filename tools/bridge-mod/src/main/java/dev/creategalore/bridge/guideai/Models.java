@@ -25,6 +25,7 @@ import net.minecraft.world.level.block.state.BlockState;
  */
 public final class Models {
     public static final int MAX_SIZE = 32, MAX_ENTRIES = 256, MAX_LABELS = 12, MAX_PALETTE = 60;
+    private static final int MIN_HOLDINGS = 24;
 
     private Models() {
     }
@@ -146,7 +147,8 @@ public final class Models {
                 + "house, a bridge, a tower) the player can copy or take ideas from: build it as a skilled Minecraft builder "
                 + "would, at a size that gives it shape (a small sailing boat is about 12 to 20 blocks long), with stairs, "
                 + "slabs, trapdoors, fences, walls and buttons for curves and detail, two or three materials that go "
-                + "together, depth and trim instead of flat walls, and no plain boxes. Fences, walls, panes and bars join their "
+                + "together and that the player holds where a block they hold would look as good (building_materials "
+                + "counts them; the result lists what the model takes against what they hold), depth and trim instead of flat walls, and no plain boxes. Fences, walls, panes and bars join their "
                 + "neighbours and stairs turn corners by themselves, as when placed. Write such builds as layers. Try a "
                 + "build first with draft true and look at the pictures: fix whatever looks blocky, lopsided or wrong, "
                 + "then call again with draft false. Before a model is shown the server tries its Create machines with "
@@ -187,7 +189,7 @@ public final class Models {
      * The model as the book stores and shows it, or what to fix. Server thread (reads the block registry, and tries
      * the model's machines in a scratch copy of {@code level}).
      */
-    static Result build(JsonObject input, ServerLevel level, Copier copier) {
+    static Result build(JsonObject input, ServerLevel level, Copier copier, net.minecraft.server.level.ServerPlayer player) {
         List<String> problems = new ArrayList<>();
         int sx = Diagrams.intOr(input, "size_x", 0), sy = Diagrams.intOr(input, "size_y", 0), sz = Diagrams.intOr(input, "size_z", 0);
         Map<BlockPos, BlockState> cells = new HashMap<>();
@@ -338,6 +340,9 @@ public final class Models {
         model.add("labels", labels);
         String report = check == null ? "" : check.text();
         report = (report.isEmpty() ? "" : report + "\n") + tally(cells);
+        // A build to copy, not a few machines explaining a point: what it takes of the player's own materials.
+        String holdings = cells.size() < MIN_HOLDINGS || level == null ? null : Materials.against(cells, player, level.getServer());
+        if (holdings != null) report += "\n" + holdings;
         if (!undirected.isEmpty()) report += "\nWritten without a facing or axis, so they took their default (check each is "
                 + "meant that way): " + String.join("; ", undirected) + ".";
         if (base != null) {

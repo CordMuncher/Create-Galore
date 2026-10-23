@@ -814,7 +814,7 @@ public final class GuideAi {
                         PlacedBlocks placedBlocks = placed;
                         Models.Copier copier = player == null || placedBlocks == null ? null
                                 : (a, b, max) -> Builds.copy(player, placedBlocks, views.get(playerId), a, b, max);
-                        return Models.build(input, player != null ? player.serverLevel() : l.server.overworld(), copier);
+                        return Models.build(input, player != null ? player.serverLevel() : l.server.overworld(), copier, player);
                     }).get(10, TimeUnit.SECONDS);
                     if (built.problem() != null) {
                         result = built.problem();
