@@ -78,6 +78,11 @@
     {
       "type": "modonomicon:text",
       "title": "",
+      "text": "**Pinning it for everyone**\\\nSneak-right-click a placed Schematic and press **Pin for everyone**. The build stays where it is as faint blocks, with nothing in your hands, and every player on the server sees it. Build over it together: the right block fills its spot, a wrong one turns red. **Unpin** on that screen, or /schematic unpin next to it, takes it down; /schematic list shows every pin."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
       "text": "**Several questions at once**\\\nYou can have it answering on up to three pages at once. When an answer lands on a page you aren't reading, or with the book closed, a notice slides in and the page glows green under All pages until you open it. Until then the Field Guide itself glows green in your hotbar and inventory, and so does the Ask the Book ribbon."
     },
     {

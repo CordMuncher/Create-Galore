@@ -36,7 +36,7 @@ import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
  * hand) this keeps the build shown where it was placed, turned and mirrored as placed, with Create's own schematic
  * renderer. Blocks already in place (the same block facing the same way) drop out of it, so what is left is what is
  * still to do, and a different block in a spot gets a red outline. Client only: the server and other players see
- * nothing of it.
+ * nothing of it; {@link PinnedSchematicView} shows a pinned one to everyone.
  */
 public final class SchematicTrace {
     private static final Object WRONG = new Object();
@@ -69,9 +69,12 @@ public final class SchematicTrace {
             clear();
             return;
         }
-        String key = off.get(AllDataComponents.SCHEMATIC_OWNER) + "/" + off.get(AllDataComponents.SCHEMATIC_FILE) + "@"
-                + off.get(AllDataComponents.SCHEMATIC_ANCHOR) + " " + off.get(AllDataComponents.SCHEMATIC_ROTATION) + " "
-                + off.get(AllDataComponents.SCHEMATIC_MIRROR) + " " + mc.level.dimension().location();
+        String key = dev.creategalore.bridge.PinnedSchematics.placementKey(off, mc.level.dimension().location());
+        // Pinned right here already: the pin shows it, for everyone.
+        if (PinnedSchematicView.isPinned(key)) {
+            clear();
+            return;
+        }
         if (!key.equals(shownKey)) {
             clear();
             shownKey = key;
@@ -142,6 +145,11 @@ public final class SchematicTrace {
         for (Property<?> p : want.getProperties())
             if (PLACEMENT.contains(p.getName()) && have.hasProperty(p) && !Objects.equals(want.getValue(p), have.getValue(p))) return false;
         return true;
+    }
+
+    /** Whether an off-hand Schematic is being traced (it then has the action bar). */
+    static boolean active() {
+        return template != null;
     }
 
     static void render(RenderLevelStageEvent event) {
