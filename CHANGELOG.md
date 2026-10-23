@@ -4,6 +4,13 @@ Each pack version gets a section here, with **Added**, **Fixed** and **Removed**
 workflow copies the section for the version in `pack/pack.toml` to the top of the GitHub release, and the build
 fails when that section is missing.
 
+## 0.4.71
+
+### Fixed
+- **The Farm Magnifying Glass panel no longer stays floating after the animal dies.** The panel rides the animal for 5 seconds, and it was only taken down by the animal itself. If the animal died or was removed in those 5 seconds, the panel was left in the air where it had stood, for good: it is saved with the world. Now every panel takes itself down after 5 seconds, or as soon as its animal is dead or gone. Panels already left floating in a world disappear when their chunk loads. Checked on a test server with a real client: a cow killed right after inspecting left its panel behind before, and now the panel goes with it; a panel left from before the fix was gone after a restart.
+- **The glass tells the truth about a sick cow's milk.** A sick cow gives no milk, but the glass still showed her milk as ready (1 / 1). It now says "none while sick", and a bull shows no milk line at all. A sick animal's status also says which day of sickness it is on, that Animal Medicine cures it, and when it has started losing health (after 4 sick days).
+- Create Galore Bridge 1.88.0.
+
 ## 0.4.70
 
 ### Fixed

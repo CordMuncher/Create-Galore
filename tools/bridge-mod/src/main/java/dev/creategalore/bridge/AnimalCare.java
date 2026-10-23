@@ -33,11 +33,20 @@ import org.athisworkshop.animalhusbandry.registry.neoforge.ModAttachmentsImpl;
  * the first animal's 30 s of love ran out, or after the pair had mated (the male), a later potion paired with that
  * old mark, was used up and nothing happened. The mark now ends with the love (a pregnant mother keeps it, its lamb's
  * bonus needs it).
+ *
+ * The hologram is a text display riding the animal, and Animal Husbandry only took it down from the animal's own
+ * tick after 5 s. An animal killed or removed in those 5 s dropped its rider, and the panel then floated where the
+ * animal had been, for good (it is saved with the world). Every glass hologram now takes itself down after 5 s, or as
+ * soon as it isn't riding a living animal, and the ones already left floating go away when their chunk loads.
+ * A sick cow gives no milk and a bull none at all, so the glass no longer counts milk for them.
  */
 public final class AnimalCare {
     private static final int MATE_HAPPINESS = 80;
     private static final double MATE_RANGE = 8.0;
     private static final double CROWD_RANGE = 4.0;
+    private static final String HOLOGRAM = "AH_Hologram";
+    private static final int HOLOGRAM_TICKS = 100;
+    private static final int SICK_DAYS_HARMLESS = 4;
 
     private AnimalCare() {
     }
@@ -48,6 +57,13 @@ public final class AnimalCare {
     }
 
     private static void onTick(EntityTickEvent.Post event) {
+        if (event.getEntity() instanceof Display.TextDisplay display) {
+            if (!display.level().isClientSide && display.getTags().contains(HOLOGRAM)
+                && (display.tickCount > HOLOGRAM_TICKS || !(display.getVehicle() instanceof Animal animal) || !animal.isAlive())) {
+                display.discard();
+            }
+            return;
+        }
         if (!(event.getEntity() instanceof Animal animal) || animal.level().isClientSide || animal.tickCount % 20 != 0) return;
         if (!animal.hasData(ModAttachmentsImpl.CARE_DATA.get())) return;
         AnimalCareData care = ModAttachments.getCareData(animal);
@@ -60,13 +76,18 @@ public final class AnimalCare {
     /** The Farm Magnifying Glass hologram for a tamed animal, as Animal Husbandry draws it plus sex, happiness and why it isn't mating. */
     public static void inspect(Player player, Animal animal, AnimalCareData care) {
         animal.getPassengers().forEach(p -> {
-            if (p instanceof Display.TextDisplay && p.getTags().contains("AH_Hologram")) p.discard();
+            if (p instanceof Display.TextDisplay && p.getTags().contains(HOLOGRAM)) p.discard();
         });
         AnimalGenetics genetics = ModAttachments.getGenetics(animal);
         boolean male = genetics != null && genetics.isMale;
         MutableComponent text = Component.literal("§6§l✦ " + animal.getName().getString() + " ✦\n");
         text.append(Component.literal(male ? "§b♂ Male\n" : "§d♀ Female\n"));
-        text.append(Component.literal(care.isSick ? "§fStatus: §c✖ SICK\n" : "§fStatus: §a✔ HEALTHY\n"));
+        if (!care.isSick) {
+            text.append(Component.literal("§fStatus: §a✔ HEALTHY\n"));
+        } else {
+            text.append(Component.literal("§fStatus: §c✖ SICK " + (care.daysSick > SICK_DAYS_HARMLESS ? "§c(losing health)" : "§7(day " + (care.daysSick + 1) + ")")
+                + "\n§7Animal Medicine cures it\n"));
+        }
         text.append(Component.literal("§fHappiness: " + (care.happiness >= MATE_HAPPINESS ? "§a" : "§e") + care.happiness
             + " §7(mates at " + MATE_HAPPINESS + ")\n"));
 
@@ -90,7 +111,9 @@ public final class AnimalCare {
             text.append(Component.literal("§cHungry: " + care.daysSinceFed + " days §7(happiness falls)\n"));
         }
 
-        if (animal instanceof Cow) {
+        if (animal instanceof Cow && !male && care.isSick) {
+            text.append(Component.literal("§fMilk: §cnone while sick"));
+        } else if (animal instanceof Cow && !male) {
             long today = animal.level().getDayTime() / 24000L;
             int milked = today > care.lastMilkedTime / 24000L ? 0 : care.timesMilkedToday;
             int most = 1 + (int) ((genetics == null ? 0.5f : genetics.producYield) * 3.0f * care.getYieldMultiplier());
@@ -115,7 +138,7 @@ public final class AnimalCare {
         transformation.put("scale", scale);
         tag.put("transformation", transformation);
         hologram.load(tag);
-        hologram.addTag("AH_Hologram");
+        hologram.addTag(HOLOGRAM);
         animal.level().addFreshEntity(hologram);
         hologram.startRiding(animal, true);
     }
