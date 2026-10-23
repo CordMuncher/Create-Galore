@@ -165,6 +165,9 @@ public final class Models {
                 + "problems when it would sink, capsize, not lift, not move or turn, or be too slow or clumsy to be of use. Every "
                 + "block of a vehicle must share a face with the rest, since Super Glue refuses blocks that touch only "
                 + "diagonally: shape a hull's curves with stairs and slabs, not blocks stepped at their edges. "
+                + "Whoever drives stands on the vehicle: a Boat Engine's helmsman stands two blocks out from the side it faces, "
+                + "so it goes at the stern facing into the boat with deck under that spot, and every Steering Wheel, Throttle "
+                + "Lever or lever needs a spot on board within reach to stand at. "
                 + "Fix those before recommending it, and give the player its numbers. Water and lava can be shown flowing: a "
                 + "source is level=0, flowing water level=1 to 7 (higher = further from the source), falling water "
                 + "level=8. To improve or fix something the player built, copy it in with from_world (find its bounds with "
@@ -289,6 +292,10 @@ public final class Models {
             if (text.isEmpty() || text.length() > 40) problems.add("label " + i + ": text must be 1 to 40 characters");
             else if (!inside(x, sx) || !inside(y, sy) || !inside(z, sz)) problems.add("label " + i + " is outside the model");
             else {
+                String part = missingPart(text, cells, new BlockPos(x, y, z));
+                if (part != null) problems.add("label " + i + " ('" + text + "') names " + part + ", but no block at or next to "
+                        + x + "," + y + "," + z + " is one (" + describeCell(cells, new BlockPos(x, y, z)) + "): point it at the "
+                        + "real part, build the part in, or drop the label; a label only names what the model really has");
                 JsonObject o = new JsonObject();
                 o.addProperty("text", text);
                 o.addProperty("x", x);
@@ -366,6 +373,58 @@ public final class Models {
         } catch (RuntimeException | LinkageError e) {
             // Without Create's scratch level, or if a block's update fails, the blocks stay as written.
         }
+    }
+
+    /**
+     * Words a label uses for a working part, and the blocks that are that part: a label with one of them has to point at
+     * (or right next to) such a block, so the book can't name a cannon, engine or rudder the model doesn't have.
+     */
+    private static final Map<String, java.util.function.Predicate<String>> PARTS = new java.util.LinkedHashMap<>();
+
+    static {
+        java.util.function.Predicate<String> cannon = id -> id.startsWith("createbigcannons:") || id.contains("cannon");
+        PARTS.put("cannon", cannon);
+        PARTS.put("gun", cannon);
+        PARTS.put("keel", id -> id.contains("keel"));
+        PARTS.put("rudder", id -> id.contains("rudder"));
+        PARTS.put("sail", id -> id.contains("sail") || id.contains("windcatcher"));
+        PARTS.put("engine", id -> id.contains("engine"));
+        PARTS.put("motor", id -> id.contains("engine") || id.contains("motor"));
+        PARTS.put("tiller", id -> id.equals("create_high_seas:boat_engine"));
+        PARTS.put("helm", id -> id.equals("create_high_seas:boat_engine") || id.contains("steering_wheel"));
+        PARTS.put("propeller", id -> id.contains("propeller"));
+        PARTS.put("anchor", id -> id.contains("anchor"));
+        PARTS.put("mast", id -> id.contains("mast"));
+        PARTS.put("burner", id -> id.contains("burner"));
+        PARTS.put("thruster", id -> id.contains("thruster"));
+        PARTS.put("assembler", id -> id.contains("assembler"));
+        PARTS.put("seat", id -> id.contains("seat") || id.contains("bench") || id.contains("chair") || id.contains("stair"));
+        PARTS.put("vane", id -> id.contains("vane"));
+        PARTS.put("winch", id -> id.contains("winch"));
+        PARTS.put("chest", id -> id.contains("chest") || id.contains("barrel") || id.contains("vault"));
+        PARTS.put("furnace", id -> id.contains("furnace") || id.contains("smoker"));
+        PARTS.put("lever", id -> id.contains("lever"));
+    }
+
+    /** The part a label's words name when no block at or beside its cell is that part, else null. */
+    private static String missingPart(String text, Map<BlockPos, BlockState> cells, BlockPos at) {
+        for (String w : text.toLowerCase(java.util.Locale.ROOT).split("[^a-z]+")) {
+            String word = w.endsWith("s") && PARTS.containsKey(w.substring(0, w.length() - 1)) ? w.substring(0, w.length() - 1) : w;
+            java.util.function.Predicate<String> is = PARTS.get(word);
+            if (is == null) continue;
+            boolean found = false;
+            for (BlockPos q : BlockPos.betweenClosed(at.offset(-1, -1, -1), at.offset(1, 1, 1))) {
+                BlockState s = cells.get(q);
+                if (s != null && is.test(net.minecraft.core.registries.BuiltInRegistries.BLOCK.getKey(s.getBlock()).toString())) found = true;
+            }
+            if (!found) return "a " + word;
+        }
+        return null;
+    }
+
+    private static String describeCell(Map<BlockPos, BlockState> cells, BlockPos at) {
+        BlockState s = cells.get(at);
+        return s == null ? "that cell is empty" : "that cell holds " + s.getBlock().getName().getString();
     }
 
     private static final java.util.Set<String> DIRECTIONS = java.util.Set.of("facing", "axis", "rotation");

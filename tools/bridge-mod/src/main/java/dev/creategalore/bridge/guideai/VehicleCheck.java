@@ -48,7 +48,8 @@ final class VehicleCheck {
     private static final double TAKEOFF_Y = 100;
 
     private static final TagKey<Block> AIRTIGHT = tag("aeronautics:airtight"), LEVITITE = tag("aeronautics:levitite"),
-            SAILS = tag("create:windmill_sails"), HIGH_SEAS_SAILS = tag("create_high_seas:sails");
+            SAILS = tag("create:windmill_sails"), HIGH_SEAS_SAILS = tag("create_high_seas:sails"),
+            STORAGE_BLOCKS = tag("c:storage_blocks");
 
     private VehicleCheck() {
     }
@@ -132,7 +133,9 @@ final class VehicleCheck {
             air(body, rpm, out, faults, notes);
         }
         pieces(blocks, model, faults, notes);
+        if (model) ballast(blocks, getter, faults);
         boatEngines(blocks, getter, faults);
+        controls(blocks, getter, faults);
         boolean redstone = blocks.values().stream().anyMatch(s -> s.isSignalSource() || id(s).contains("throttle_lever"));
         if (redstone) {
             boolean wire = blocks.values().stream().anyMatch(s -> s.is(net.minecraft.world.level.block.Blocks.REDSTONE_WIRE)
@@ -606,8 +609,9 @@ final class VehicleCheck {
         List<String> fix = new ArrayList<>();
         if (Math.abs(pd) >= 0.25) fix.add(String.format(Locale.ROOT, "%.0f mass x blocks toward the %s", Math.abs(off[0]) * b.m, pd > 0 ? ahead : behind));
         if (Math.abs(ld) >= 0.25) fix.add(String.format(Locale.ROOT, "%.0f toward %s", Math.abs(off[1]) * b.m, ld > 0 ? plusSide : minusSide));
-        if (!fix.isEmpty()) out.append(" (to level it, move weight: ").append(String.join(", ", fix)).append("; an iron block "
-                + "weighs 4, a plank 0.5, so one iron block moved 3 blocks is 12)");
+        if (!fix.isEmpty()) out.append(" (its weight and lift are off by ").append(String.join(", ", fix)).append("; level it "
+                + "with the hull's own shape and layout: a fuller, wider hull under the heavy end, or the engine room, cargo and "
+                + "cabin moved toward the high end; a plank weighs 0.5)");
         out.append(".\n");
         // The low end's freeboard at that trim.
         double h = waterline(b, fl, list, pitch);
@@ -1199,7 +1203,8 @@ final class VehicleCheck {
         List<String> fix = new ArrayList<>();
         if (Math.abs(pd) >= 0.25) fix.add(String.format(Locale.ROOT, "%.0f mass x blocks toward the %s", Math.abs(a) * b.m, pd > 0 ? ahead : behind));
         if (Math.abs(ld) >= 0.25) fix.add(String.format(Locale.ROOT, "%.0f toward %s", Math.abs(l) * b.m, ld > 0 ? plusSide : minusSide));
-        if (!fix.isEmpty()) out.append("; to level it, move weight: ").append(String.join(", ", fix));
+        if (!fix.isEmpty()) out.append("; its weight and lift are off by ").append(String.join(", ", fix))
+                .append(": move the balloon or the gondola's rooms and machines to level it");
         out.append(").\n");
         if (Math.abs(pd) >= TRIM_BAD) faults.add(String.format(Locale.ROOT, "it hangs %.1f° %s down: move weight toward the %s, "
                 + "or the balloon toward the %s, until it hangs level", Math.abs(pd), pd > 0 ? behind : ahead, pd > 0 ? ahead : behind,
@@ -1511,7 +1516,126 @@ final class VehicleCheck {
                         + "helmsman two blocks out from its " + f.getSerializedName() + " side (the side it faces), at its height and one "
                         + "above, reaching a sliver into the column on the helmsman's left, and " + String.join(", ", in) + " fill that, so the "
                         + "engine says there is no room to sit at the tiller; clear those blocks (a deck, carpet or top slab is fine)");
+            // The helmsman is held at that spot only while at the tiller: on letting go they drop from it, so the
+            // vehicle has to be under their feet there, not open water beside the stern.
+            BlockPos spot = BlockPos.containing(a.x, a.y, a.z);
+            if (footing(blocks, getter, a) == null) {
+                String turn = "turn the engine to face into the boat, with deck (or a floor block) two blocks in from it";
+                for (Direction d : Direction.Plane.HORIZONTAL) {
+                    if (d == f) continue;
+                    Vec3 other;
+                    try {
+                        other = com.maxenonyme.highseas.block.entity.BoatEngineBlockEntity.helmAnchor(pos, d);
+                    } catch (LinkageError err) {
+                        break;
+                    }
+                    if (footing(blocks, getter, other) != null) {
+                        turn = "turn the engine to face " + d.getSerializedName() + ", into the boat, so the helmsman stands on the "
+                                + "deck at " + xyz(BlockPos.containing(other.x, other.y, other.z));
+                        break;
+                    }
+                }
+                faults.add("whoever takes the tiller of the Boat Engine at " + xyz(pos) + " stands two blocks out from the side it "
+                        + "faces (" + f.getSerializedName() + "), at " + xyz(spot) + ", and no block of the vehicle is under their feet "
+                        + "there: they would hang outside the boat at the tiller and fall off as soon as they let go; " + turn);
+            }
         }
+    }
+
+    /**
+     * Heavy storage blocks (iron, gold, copper and the like) carried as dead weight. A player may add one to trim a ship
+     * they built; a designed ship sits level by its hull shape and layout, so in a model they are a fault.
+     */
+    private static void ballast(Map<BlockPos, BlockState> blocks, BlockGetter getter, List<String> faults) {
+        Map<String, Integer> found = new java.util.TreeMap<>();
+        blocks.forEach((p, s) -> {
+            if (s.is(STORAGE_BLOCKS) && mass(getter, p, s) >= 2) found.merge(s.getBlock().getName().getString(), 1, Integer::sum);
+        });
+        if (found.isEmpty()) return;
+        List<String> what = new ArrayList<>();
+        found.forEach((n, c) -> what.add(c + " " + n));
+        faults.add("it carries " + String.join(", ", what) + " as dead weight: a designed ship sits level and upright by the "
+                + "shape of its hull and where its rooms and machines go, not by ballast (that is the player's own fix for a "
+                + "ship they built). Take the ballast out and shape or lay out the hull so it balances");
+    }
+
+    /** Controls a player has to stand at and use by hand, from the vehicle itself. */
+    private static boolean isControl(String id) {
+        return id.equals("simulated:steering_wheel") || id.equals("simulated:throttle_lever") || id.equals("simulated:linked_typewriter")
+                || id.equals("minecraft:lever") || id.equals("create_submarine:pump_controller");
+    }
+
+    /**
+     * Where a player's feet rest at {@code feet} (a point on the vehicle): the top of the highest vehicle block under the
+     * middle of their footprint, from half a block below to the 0.3 the helm's room test leaves free, or null when
+     * nothing of the vehicle is there to stand on.
+     */
+    private static Double footing(Map<BlockPos, BlockState> blocks, BlockGetter getter, Vec3 feet) {
+        AABB under = new AABB(feet.x - 0.15, feet.y - 0.5, feet.z - 0.15, feet.x + 0.15, feet.y + 0.3, feet.z + 0.15);
+        Double top = null;
+        for (BlockPos q : BlockPos.betweenClosed(BlockPos.containing(under.minX, under.minY, under.minZ),
+                BlockPos.containing(under.maxX, under.maxY, under.maxZ))) {
+            BlockState s = blocks.get(q);
+            if (s == null) continue;
+            VoxelShape shape = s.getCollisionShape(getter, q);
+            if (shape.isEmpty()) continue;
+            for (AABB box : shape.move(q.getX(), q.getY(), q.getZ()).toAabbs())
+                if (box.intersects(under) && box.maxY <= under.maxY && (top == null || box.maxY > top)) top = box.maxY;
+        }
+        return top;
+    }
+
+    /**
+     * Every Steering Wheel, Throttle Lever, lever and other hand control has to be in reach (a player's 4.5 blocks, from
+     * the eyes to the nearest point of the block) of a spot on the vehicle a player can stand on: vehicle blocks under
+     * the feet and room for a body above. A control that can only be worked from outside the vehicle, from the water or
+     * from thin air, is of no use once it moves.
+     */
+    private static void controls(Map<BlockPos, BlockState> blocks, BlockGetter getter, List<String> faults) {
+        List<BlockPos> controls = new ArrayList<>();
+        blocks.forEach((p, s) -> {
+            if (isControl(id(s))) controls.add(p);
+        });
+        if (controls.isEmpty()) return;
+        List<Vec3> eyes = new ArrayList<>();
+        for (Map.Entry<BlockPos, BlockState> e : blocks.entrySet()) {
+            // Nobody works a wheel standing on top of it.
+            if (isControl(id(e.getValue()))) continue;
+            BlockPos cell = e.getKey().above();
+            Vec3 feet = Vec3.atBottomCenterOf(cell);
+            Double top = footing(blocks, getter, feet.add(0, 0.25, 0));
+            if (top == null || top < cell.getY() - 0.5 || top > cell.getY() + 0.25) continue;
+            AABB body = new AABB(feet.x - 0.3, top + 0.01, feet.z - 0.3, feet.x + 0.3, top + 1.8, feet.z + 0.3);
+            if (blocked(blocks, getter, body)) continue;
+            eyes.add(new Vec3(feet.x, top + 1.62, feet.z));
+        }
+        List<String> out = new ArrayList<>();
+        for (BlockPos c : controls) {
+            AABB box = new AABB(c);
+            boolean reach = eyes.stream().anyMatch(eye -> {
+                double dx = Math.max(box.minX - eye.x, Math.max(0, eye.x - box.maxX));
+                double dy = Math.max(box.minY - eye.y, Math.max(0, eye.y - box.maxY));
+                double dz = Math.max(box.minZ - eye.z, Math.max(0, eye.z - box.maxZ));
+                return dx * dx + dy * dy + dz * dz <= 4.5 * 4.5;
+            });
+            if (!reach) out.add(blocks.get(c).getBlock().getName().getString() + " at " + xyz(c));
+        }
+        if (!out.isEmpty())
+            faults.add("no one can work " + String.join(", ", out) + " from the vehicle: there is no spot on board to stand within "
+                    + "reach (4.5 blocks) of it, with vehicle blocks underfoot and two blocks of room above. Put the controls by the "
+                    + "deck or cabin floor where the driver stands");
+    }
+
+    private static boolean blocked(Map<BlockPos, BlockState> blocks, BlockGetter getter, AABB body) {
+        for (BlockPos q : BlockPos.betweenClosed(BlockPos.containing(body.minX, body.minY, body.minZ),
+                BlockPos.containing(body.maxX, body.maxY, body.maxZ))) {
+            BlockState s = blocks.get(q);
+            if (s == null) continue;
+            VoxelShape shape = s.getCollisionShape(getter, q);
+            if (!shape.isEmpty() && shape.move(q.getX(), q.getY(), q.getZ()).toAabbs().stream().anyMatch(b -> b.intersects(body)))
+                return true;
+        }
+        return false;
     }
 
     /** Sable gives a block no buoyancy or drag when all six neighbours are full blocks. */

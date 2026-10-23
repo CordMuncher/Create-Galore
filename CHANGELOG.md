@@ -4,6 +4,15 @@ Each pack version gets a section here, with **Added**, **Fixed** and **Removed**
 workflow copies the section for the version in `pack/pack.toml` to the top of the GitHub release, and the build
 fails when that section is missing.
 
+## 0.4.45
+
+### Fixed
+- **Ask the Book no longer designs boats you have to hang off to steer.** It had mounted a Boat Engine backwards on a stern, so whoever took the tiller floated over the water outside the boat and dropped into the sea the moment they let go. A Boat Engine's helmsman stands two blocks out on the side the engine faces, so the book now only accepts a design with ship blocks under that spot: the engine goes at the stern facing into the boat, with deck under the driver. It tells you which way to turn an engine that faces out. Every Steering Wheel, Throttle Lever and lever on a vehicle also needs a spot on board to stand within reach of it. Checked on a test server with two real ships: with the engine facing in, the driver stood on the deck at the tiller and stayed aboard after letting go; with it facing out, the driver hung over the water and fell in, and the book's check refused that design.
+- **The book's labels only name parts the build really has.** A boat model labelled a "cannon" that wasn't there. A label naming a working part (cannon, engine, tiller, rudder, sail, mast, propeller, anchor, seat, chest and so on) now has to point at that part or right next to it, or the model isn't shown.
+- **Designed ships balance by their shape, not by ballast.** The book had levelled a boat by bolting an iron block to its stern. A ship the book designs may no longer carry iron, gold, copper or other metal blocks as dead weight; it has to sit level through its hull shape and where its rooms and machines go. Trimming your own ship with ballast is still up to you, and the book's tips for a boat that sits bow or stern down now point at the hull and layout.
+- **The book designs for the player who will use the build.** Passing its own checks is the least a design must do, not proof that it is good: it now thinks about where you stand to steer and work each control, how you get aboard and move around, and that nothing makes you fall off.
+- Create Galore Bridge 1.73.0.
+
 ## 0.4.44
 
 ### Added
