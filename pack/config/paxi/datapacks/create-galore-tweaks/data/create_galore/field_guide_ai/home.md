@@ -1,4 +1,4 @@
-<!-- sources sha256:50852ca0ec68a03c309aa4cfd7fc7f513930cdf1cbc4f00e321ca47911dfd37d -->
+<!-- sources sha256:7d2cd9db69c744df320ec4b33aa43b5ace84bc60137f11f123eb102c7a00a2c3 -->
 # Home, Storage and Maps (home)
 
 ## home/storage | Backpacks and Storage
@@ -22,6 +22,7 @@
 - Non-Create building mods: Handcrafted (furniture), Macaw's (doors, roofs, windows), Supplementaries (many small useful blocks). Create-flavoured decor: Create Decor (see home/create_decor).
 - Handcrafted [handcrafted:oak_table]: tables, benches, couches, desks, drawers, shelves, counters, beds, sheets, cushions in many wood types; trophies and pillar trims.
 - Macaw's Roofs [mcwroofs:oak_roof]: many roof shapes (attic, top and lower base roofs per wood and material); Roofing Hammer helps. Macaw's Doors and Windows follow same pattern.
+- Diagonal Fences [minecraft:oak_fence]: a placed fence also joins a fence one block away across a corner, when the corner is clear and neither post already joins straight that way. Wood fences join wood fences; stone and metal fences join each other (works for vanilla, Twilight Forest, Aether, Alex's Caves, Cataclysm, Garnished, Hybrid Aquatic, My Nether's Delight fences and Alloyed's steel mesh fence; not Better End, Create Deco mesh, Supplementaries wicker, rope or copycat fences). Sneak + right-click a fence with an empty hand turns its corner joins off or back on (the block becomes plain oak fence or its diagonal twin, same item and drop). Fences in villages and other found buildings start without them; the same click adds them.
 - Macaw's Windows [mcwwindows:oak_window]: resizeable windows, Window Hammer, Window Key. Macaw's Doors: many door styles, Garage Remote.
 - Supplementaries [supplementaries:jar]: jars hold small things; flags, awnings, bunting, candle holders, goblets, book piles, soap, a Wrench. Browse item list in JEI (see start_here/tools).
 - Furniture is mostly decor. Seats on moving contraptions (see create_basics/contraptions): Create's own Seat works; Coasters (see transport/coasters) add coaster seats.

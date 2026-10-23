@@ -138,6 +138,7 @@ public final class Models {
                 + "wrong, then call again with draft false to put it in the answer."));
         props.add("shows_a_fault", WorldTools.prop("boolean", "True only when the model is meant to show a build that "
                 + "doesn't work (such as the player's own broken build); then it is built even when the rotation check finds faults."));
+        props.add("moving", MotionCheck.definition());
         props.add("part_of_vehicle", WorldTools.prop("boolean", "True only when the model shows one part of a vehicle (an "
                 + "engine room, a rudder, a burner and its balloon) rather than the whole of it: the vehicle check's numbers "
                 + "come back but don't stop it being built. Leave it false for a whole boat, submarine, airship or car."));
@@ -149,7 +150,7 @@ public final class Models {
                 + "slabs, trapdoors, fences, walls and buttons for curves and detail, two or three materials that go "
                 + "together and that the player holds where a block they hold would look as good (building_materials "
                 + "counts them; the result lists what the model takes against what they hold), depth and trim instead of flat walls, and no plain boxes. Fences, walls, panes and bars join their "
-                + "neighbours and stairs turn corners by themselves, as when placed. Write such builds as layers. Try a "
+                + "neighbours (fences also diagonally, to a fence at a free corner) and stairs turn corners by themselves, as when placed. Write such builds as layers. Try a "
                 + "build first with draft true and look at the pictures: fix whatever looks blocky, lopsided or wrong, "
                 + "then call again with draft false. Before a model is shown the server tries its Create machines with "
                 + "Create's own rules (which faces take a shaft, cogs, belts, sources, water on wheels) and refuses one "
@@ -170,7 +171,12 @@ public final class Models {
                 + "Whoever drives stands on the vehicle: a Boat Engine's helmsman stands two blocks out from the side it faces, "
                 + "so it goes at the stern facing into the boat with deck under that spot, and every Steering Wheel, Throttle "
                 + "Lever or lever needs a spot on board within reach to stand at. "
-                + "Fix those before recommending it, and give the player its numbers. Water and lava can be shown flowing: a "
+                + "Fix those before recommending it, and give the player its numbers. Parts that move as Create contraptions "
+                + "(a windmill, a turning door or drawbridge, a turntable, a piston wall, a lift, a gantry crane) go in "
+                + "moving, with the Super Glue the player puts on: the server finds what comes along by Create's rules, plays "
+                + "the motion on the model and says what it runs into, how fast it goes and the stress, so give the bearing, "
+                + "piston or pulley room to move and glue every block that has to come along. Write pistons retracted, with "
+                + "their extension poles behind them. Water and lava can be shown flowing: a "
                 + "source is level=0, flowing water level=1 to 7 (higher = further from the source), falling water "
                 + "level=8. To improve or fix something the player built, copy it in with from_world (find its bounds with "
                 + "trace_build or read_area first) and write only what changes; the player then sees their own build "
@@ -317,7 +323,18 @@ public final class Models {
             for (BlockPos p : base.keySet()) if (!cells.containsKey(p)) changes.put(p, true);
         }
         if (level != null) connect(cells, level);
-        BuildCheck.Report check = join(level == null ? null : BuildCheck.check(cells, level), RigCheck.check(cells));
+        // Moving parts first: the blocks that ride on them leave the network they sit against, so the rotation check
+        // only looks at the blocks that stay put.
+        List<String> motionProblems = new ArrayList<>();
+        MotionCheck.Result motion = MotionCheck.check(cells, array(input, "moving"), level, sx, sy, sz, motionProblems);
+        if (!motionProblems.isEmpty()) return Result.problem("Not built. Fix these and call again: " + String.join("; ", motionProblems) + ".");
+        Map<BlockPos, BlockState> fixed = cells;
+        if (motion != null) {
+            fixed = new HashMap<>(cells);
+            motion.riding().forEach(fixed::remove);
+        }
+        BuildCheck.Report check = join(level == null ? null : BuildCheck.check(fixed, level), RigCheck.check(cells));
+        if (motion != null) check = join(check, motion.report());
         check = join(check, vehicle(cells, level, input.has("part_of_vehicle") && input.get("part_of_vehicle").isJsonPrimitive()
                 && input.get("part_of_vehicle").getAsBoolean()));
         boolean showsFault = input.has("shows_a_fault") && input.get("shows_a_fault").isJsonPrimitive()
@@ -338,6 +355,7 @@ public final class Models {
         model.add("size", size);
         compact(cells, sx, sy, sz, model);
         model.add("labels", labels);
+        if (motion != null) model.add("moving", motion.moving());
         String report = check == null ? "" : check.text();
         report = (report.isEmpty() ? "" : report + "\n") + tally(cells);
         // A build to copy, not a few machines explaining a point: what it takes of the player's own materials.
@@ -349,7 +367,7 @@ public final class Models {
             model.add("changes", changeRuns(changes, sx, sy, sz));
             report = (report.isEmpty() ? "" : report + "\n") + changeReport(changes, cells, base, worldMin.subtract(offset), base.size());
         }
-        byte[] picture = draft ? Preview.render(cells, sx, sy, sz) : null;
+        byte[] picture = !draft ? null : motion == null ? Preview.render(cells, sx, sy, sz) : Preview.render(cells, sx, sy, sz, motion.moved());
         return new Result(model, null, report, draft, picture);
     }
 
@@ -478,7 +496,8 @@ public final class Models {
     /** What the model is made of, so a block that should have gone (or never come) shows up in the numbers. */
     private static String tally(Map<BlockPos, BlockState> cells) {
         Map<String, Integer> count = new java.util.TreeMap<>();
-        for (BlockState s : cells.values()) count.merge(BuiltInRegistries.BLOCK.getKey(s.getBlock()).toString(), 1, Integer::sum);
+        for (BlockState s : cells.values())
+            count.merge(BuiltInRegistries.BLOCK.getKey(dev.creategalore.bridge.DiagonalJoins.plain(s.getBlock())).toString(), 1, Integer::sum);
         List<String> parts = new ArrayList<>();
         count.entrySet().stream().sorted((x, y) -> y.getValue() - x.getValue())
                 .forEach(e -> parts.add(e.getValue() + " " + e.getKey()));
@@ -492,7 +511,8 @@ public final class Models {
     private static BlockState parse(String raw, String where, List<String> problems, java.util.Set<String> undirected) {
         try {
             BlockStateParser.BlockResult parsed = BlockStateParser.parseForBlock(BuiltInRegistries.BLOCK.asLookup(), raw.strip(), false);
-            BlockState state = parsed.blockState();
+            // A fence becomes the twin its item places (Diagonal Fences), so it joins diagonally as in the world.
+            BlockState state = dev.creategalore.bridge.DiagonalJoins.placed(parsed.blockState());
             // A direction left out takes the block's default, which is often not what was meant (a flat sail panel).
             for (net.minecraft.world.level.block.state.properties.Property<?> prop : state.getProperties()) {
                 if (DIRECTIONS.contains(prop.getName()) && !parsed.properties().containsKey(prop))
@@ -576,6 +596,8 @@ public final class Models {
             BlockPos w = p.offset(origin);
             String at = w.getX() + " " + w.getY() + " " + w.getZ();
             BlockState was = base.get(p), now = cells.get(p);
+            if (was != null) was = dev.creategalore.bridge.DiagonalJoins.plain(was);
+            if (now != null) now = dev.creategalore.bridge.DiagonalJoins.plain(now);
             if (changes.get(p)) out.append("- break ").append(BlockStateParser.serialize(was)).append(" at ").append(at).append('\n');
             else if (was == null) out.append("- place ").append(BlockStateParser.serialize(now)).append(" at ").append(at).append('\n');
             else out.append("- replace ").append(BlockStateParser.serialize(was)).append(" with ").append(BlockStateParser.serialize(now))

@@ -1,0 +1,10 @@
+{
+    "vertex": "create_galore_bridge:ship_water_side",
+    "fragment": "create_galore_bridge:ship_water_side",
+    "samplers": [],
+    "uniforms": [
+        { "name": "ModelViewMat", "type": "matrix4x4", "count": 16, "values": [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0] },
+        { "name": "ProjMat", "type": "matrix4x4", "count": 16, "values": [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0] },
+        { "name": "CgPlane", "type": "float", "count": 4, "values": [0.0, 0.0, 0.0, 1.0] }
+    ]
+}

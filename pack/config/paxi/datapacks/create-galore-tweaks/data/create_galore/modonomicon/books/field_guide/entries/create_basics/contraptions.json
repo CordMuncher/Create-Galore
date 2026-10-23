@@ -64,6 +64,31 @@
     },
     {
       "type": "modonomicon:text",
+      "title": "Builds that move",
+      "text": "Any build can have a moving part: sails that turn, a door or drawbridge that swings on a bearing, a turntable, a wall a piston slides aside, a lift on a rope pulley, a gantry carrying a drill over a field.\\\n\\\nMost of a build stands still; make the part move that has a job moving."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "What comes along",
+      "text": "- The block touching the mover's face.\n- Blocks side by side inside one Super Glue area.\n- Blocks that hang on others: torches, doors, ladders, carpets.\n- Blocks on a chassis's sticky faces.\n- A piston also pushes the whole line in front of it.\n\nAt most 2048 blocks."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Speed and room",
+      "text": "- Bearing: 6 degrees a second per RPM (a full turn in 1.9 s at 32 RPM).\n- Piston, pulley, gantry: RPM / 25.6 blocks a second, 9.8 at most.\n- Bearings, pistons and pulleys take 4 SU per RPM."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Starting and steering",
+      "text": "- Bearing: right-click it with an empty hand to start it; it turns while its shaft turns.\n- Piston, pulley, gantry: start on their own and run until the end of their travel.\n- A Gearshift with a lever, in the line that drives it, sends it back; a Clutch stops it."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "[#](FFFFFF)\ue101[#]() **Watch out:** a turning part passes straight through blocks in its circle. A sliding part stops at the first solid block in its path; drills and saws break theirs as they go. A glue area takes every block in it that touches the part, so keep it off what stays put."
+    },
+    {
+      "type": "modonomicon:text",
       "title": "",
       "text": "**Working parts**: Mechanical Drills, Saws, Harvesters and Ploughs do their job to whatever they pass. [#](2E5AAC)[Deployers](entry://create_basics/deployer)[#]() and [#](2E5AAC)[funnels](entry://create_basics/item_logistics)[#]() on the structure pull from and push into storage that moves with it.\\\n\\\nStorage on a contraption is a chest or vault attached to the structure."
     },
@@ -79,6 +104,11 @@
       "type": "modonomicon:text",
       "title": "",
       "text": "**Bigger things**: Create Aeronautics builds flying ships out of the same idea, see [#](2E5AAC)[Airships](entry://flight/airships)[#](). Trains are contraptions too, see [#](2E5AAC)[Trains](entry://transport/trains)[#]()."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "[#](FFFFFF)\ue103[#]() **In depth.** A piston needs one extension pole behind it per block of reach, up to 64. Run back, a plain piston leaves its blocks out; a sticky one pulls them back. A rope pulley reaches 384 blocks down. A chassis grabs 8 blocks (a wrench sets 1 to 16). Stopping a bearing at a quarter turn takes a Sequenced Gearshift."
     },
     {
       "type": "modonomicon:text",

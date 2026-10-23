@@ -823,7 +823,10 @@ public final class GuideAi {
                         result = "Draft only, not in the answer. " + (picture == null ? "The pictures couldn't be drawn." :
                                 "The picture shows it from the front-left and back-right corners (top row) and straight from "
                                 + "the front and the right side (bottom row), in each block's shape and map colour, without "
-                                + "textures. Check the shape, proportions and colours; fix what looks wrong and try again, or "
+                                + "textures." + (built.model() != null && built.model().has("moving") ? " The lower half shows the "
+                                + "same four views with the moving parts at the end of their motion (a bearing's part a quarter "
+                                + "turn on, pistons, pulleys and gantries at the far end)." : "")
+                                + " Check the shape, proportions and colours; fix what looks wrong and try again, or "
                                 + "call with draft false to put it in the answer.")
                                 + (built.check().isEmpty() ? "" : "\n" + built.check());
                     } else if (diagrams.size() >= MAX_DRAWINGS) {

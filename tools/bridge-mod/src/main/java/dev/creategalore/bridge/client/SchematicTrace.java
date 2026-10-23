@@ -2,6 +2,7 @@ package dev.creategalore.bridge.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.simibubi.create.AllDataComponents;
+import dev.creategalore.bridge.DiagonalJoins;
 import com.simibubi.create.AllItems;
 import com.simibubi.create.content.schematics.SchematicItem;
 import com.simibubi.create.content.schematics.client.SchematicRenderer;
@@ -141,7 +142,8 @@ public final class SchematicTrace {
 
     /** The right block, sitting the right way; joins, power and water settle by themselves once placed. */
     static boolean same(BlockState want, BlockState have) {
-        if (want.getBlock() != have.getBlock()) return false;
+        // A fence placed by hand is Diagonal Fences' twin of the schematic's fence, and the other way round.
+        if (DiagonalJoins.plain(want.getBlock()) != DiagonalJoins.plain(have.getBlock())) return false;
         for (Property<?> p : want.getProperties())
             if (PLACEMENT.contains(p.getName()) && have.hasProperty(p) && !Objects.equals(want.getValue(p), have.getValue(p))) return false;
         return true;

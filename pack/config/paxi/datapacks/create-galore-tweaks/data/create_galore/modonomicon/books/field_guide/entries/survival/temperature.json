@@ -61,7 +61,12 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "A lit furnace, smoker, blast furnace, campfire or fire is hot. Standing 2 to 3 blocks from one in the open adds about 20 °F, inside a room about 7 °F, so a summer kitchen is best indoors.\\\n\\\nYou slowly get used to the climate you live in, which widens the comfortable range by up to about 20 °F."
+      "text": "A lit furnace, smoker, blast furnace or fire is hot. Standing 2 to 3 blocks from one in the open adds about 20 °F, inside a room about 7 °F, so a summer kitchen is best indoors.\\\n\\\nYou slowly get used to the climate you live in, which widens the comfortable range by up to about 20 °F."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Campfires",
+      "text": "A lit campfire is gentler than a furnace: about 12 °F warmer 2 blocks away, fading out over 7 blocks. Two campfires add about 24 °F, and no number of them adds more than 30 °F.\\\n\\\nOn a Mid Winter night on a temperate beach that is enough: one campfire within about 4 blocks keeps you comfortable."
     },
     {
       "type": "modonomicon:text",

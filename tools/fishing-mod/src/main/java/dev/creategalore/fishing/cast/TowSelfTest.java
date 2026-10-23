@@ -67,7 +67,10 @@ public final class TowSelfTest {
         placed.add(pos);
     }
 
-    /** Casts toward -x from {@code at}, then backs off along +x like a boat under way, steps back in, and off again. */
+    /**
+     * Casts toward -x from {@code at}, then backs off along +x like a boat under way, steps back in, looks round,
+     * strafes and goes off again. The line shown never changes, and the rig only moves when the line pulls it.
+     */
     private static void tow(ServerLevel level, FakePlayer player, ItemStack rod, Vec3 at, String where, SelfTest.Report r) {
         player.setPos(at.x, at.y, at.z);
         player.setYRot(90);
@@ -77,39 +80,66 @@ public final class TowSelfTest {
             for (int i = 0; i < 200 && hook.phase() == CastHook.Phase.FLYING && !hook.isRemoved(); i++) hook.tick();
             CastHook.Phase settled = hook.phase();
             if (!r.check(!hook.isRemoved() && settled != CastHook.Phase.FLYING, where + ": the rig settles (" + settled + ")")) return;
+            hook.tick();
             double start = flat(player, hook);
+            float shown = hook.lineOut();
             Vec3 rig = hook.position();
             // Away at 10 m/s for 12 m (a boat at speed).
-            move(player, hook, 12, 0.5);
+            float[] range = move(player, hook, 12, 0, 0.5);
             double away = flat(player, hook);
             double dragged = hook.position().subtract(rig).horizontalDistance();
-            r.check(Math.abs(away - start) < 0.05 && dragged > 11, String.format(Locale.ROOT,
-                    "%s: moving away 12 m drags the rig %.1f m and the line stays %.1f m (now %.1f)", where, dragged, start, away));
+            r.check(Math.abs(away - start) < 0.05 && dragged > 11 && steady(range, shown), String.format(Locale.ROOT,
+                    "%s: moving away 12 m drags the rig %.1f m, the line stays %.1f m (now %.1f, shown %.1f-%.1f of %.1f)",
+                    where, dragged, start, away, range[0], range[1], shown));
             // Back toward the rig: the line goes slack, the rig stays put.
             Vec3 before = hook.position();
-            move(player, hook, -5, 0.5);
-            r.check(hook.position().subtract(before).horizontalDistance() < 0.05,
-                    where + ": stepping back toward the rig leaves it where it is");
+            range = move(player, hook, -5, 0, 0.5);
+            r.check(hook.position().subtract(before).horizontalDistance() < 0.05 && steady(range, shown), String.format(Locale.ROOT,
+                    "%s: stepping back toward the rig leaves it where it is (shown %.1f-%.1f)", where, range[0], range[1]));
+            // Looking round swings the rod tip about the angler, but neither moves the rig nor changes the line.
+            before = hook.position();
+            range = new float[]{Float.MAX_VALUE, -Float.MAX_VALUE};
+            for (float yaw : new float[]{30, -30, 180, 120, 60, 90}) {
+                player.setYRot(yaw);
+                hook.tick();
+                range[0] = Math.min(range[0], hook.lineOut());
+                range[1] = Math.max(range[1], hook.lineOut());
+            }
+            r.check(hook.position().subtract(before).horizontalDistance() < 0.05 && steady(range, shown), String.format(Locale.ROOT,
+                    "%s: looking round leaves the rig and the line alone (shown %.1f-%.1f)", where, range[0], range[1]));
+            // Strafing back and forth: the line shown stays what it is.
+            range = move(player, hook, 0, 2, 0.2);
+            float[] back = move(player, hook, 0, -2, 0.2);
+            r.check(steady(range, shown) && steady(back, shown), String.format(Locale.ROOT,
+                    "%s: strafing leaves the line shown at %.1f m", where, shown));
             // Off again, further than before: it follows at the same line out, never more.
-            move(player, hook, 15, 0.5);
+            range = move(player, hook, 15, 0, 0.5);
             double again = flat(player, hook);
-            r.check(Math.abs(again - start) < 0.05 && hook.lineOut() < start + 2.5, String.format(Locale.ROOT,
-                    "%s: off again, the line out is still %.1f m (%.1f, shown %.1f)", where, start, again, hook.lineOut()));
+            r.check(Math.abs(again - start) < 0.05 && steady(range, shown), String.format(Locale.ROOT,
+                    "%s: off again, the line out is still %.1f m (%.1f, shown %.1f-%.1f)", where, start, again, range[0], range[1]));
         } finally {
             hook.discard();
         }
     }
 
-    private static void move(FakePlayer player, CastHook hook, double metres, double perTick) {
-        int steps = (int) Math.ceil(Math.abs(metres) / perTick);
+    private static boolean steady(float[] range, float shown) {
+        return Math.abs(range[0] - shown) < 0.01 && Math.abs(range[1] - shown) < 0.01;
+    }
+
+    /** Moves the angler {@code dx}, {@code dz} metres at {@code perTick}; returns the lowest and highest line shown. */
+    private static float[] move(FakePlayer player, CastHook hook, double dx, double dz, double perTick) {
+        float[] range = {Float.MAX_VALUE, -Float.MAX_VALUE};
+        int steps = (int) Math.ceil(Math.hypot(dx, dz) / perTick);
         for (int i = 0; i < steps && !hook.isRemoved(); i++) {
-            player.setPos(player.getX() + metres / steps, player.getY(), player.getZ());
+            player.setPos(player.getX() + dx / steps, player.getY(), player.getZ() + dz / steps);
             hook.tick();
+            range[0] = Math.min(range[0], hook.lineOut());
+            range[1] = Math.max(range[1], hook.lineOut());
         }
+        return range;
     }
 
     private static double flat(FakePlayer player, CastHook hook) {
-        Vec3 tip = CastHook.tip(player);
-        return Math.hypot(tip.x - hook.getX(), tip.z - hook.getZ());
+        return Math.hypot(player.getX() - hook.getX(), player.getZ() - hook.getZ());
     }
 }

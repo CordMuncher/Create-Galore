@@ -4,11 +4,53 @@ Each pack version gets a section here, with **Added**, **Fixed** and **Removed**
 workflow copies the section for the version in `pack/pack.toml` to the top of the GitHub release, and the build
 fails when that section is missing.
 
-## 0.4.67
+## 0.4.70
 
 ### Fixed
 - **Fire on ships keeps flickering.** A campfire, fire, lava or any other animated block on a ship or other moving build froze on one frame, and only moved while the crosshair was on it or a campfire on land was in view at the same time. Sodium saves work by only animating textures it has seen drawn this frame. It sees the textures of land every frame, but ships are drawn through a different path, so it saw a ship's textures once, when the ship was built, and never again. Ships now tell it about their animated textures every frame they're drawn. Checked on a test server with a campfire on a ship and none on land: before the fix the flame stood still, after it the flame kept moving.
+- Create Galore Bridge 1.87.0.
+
+## 0.4.67
+
+### Fixed
+- **Campfires are gentler.** A lit campfire now warms you by up to 15 °F (30 °F at most from any number of them), down from 25 °F and 50 °F, so it's a cozy spot to get through a cold night rather than nearly as hot as a furnace. Furnaces, smokers, blast furnaces, fire and lava are unchanged. Checked on a test server on a temperate beach at a Mid Winter midnight: 38 °F bare, 50 °F two blocks from one campfire (58 °F before), 46 °F four blocks away, so one campfire still keeps you comfortable there; at a Mid Summer noon in the open, 78 °F becomes 90 °F next to one campfire and 101 °F next to a furnace. The Field Guide's Temperature entry has a Campfires page with these numbers.
+
+## 0.4.66
+
+### Added
+- **Ask the Book designs builds that move.** Create builds can move, and the book now suggests a moving part where moving is its job: windmill sails, a door or drawbridge on a bearing, a turntable, a wall a piston slides aside, a portcullis or lift on a rope pulley, a gantry carrying a drill or harvester. A cottage still stands still. It names the block that moves the part, what drives it and how fast, and where the Super Glue goes.
+- **Moving parts move on the book's 3D models.** The part turns or slides on the model, with its glue areas drawn as green boxes and its rope drawn down from a pulley. A Move / Stop moving button sits beside Save as schematic. Saving a moving build as a schematic always saves it standing at its start, whatever point of its motion the model is showing.
+- **The book works out each moving part the way Create does.** It finds what comes along (glue, chassis, blocks that hang on others, a piston's push line) and checks the part's speed and its stress. A turning part must have its whole circle clear; a part that only turns a quarter is tried both ways round. A sliding part stops at the first block in its path, and drills and saws dig theirs. A windmill needs 8 Windcatchers and reports the su it gives (Winds & Weather's 8192 su ceiling included). The book also explains how each mover is started and reversed.
+- **New Contraptions pages in the Field Guide:** Builds that move, What comes along, Speed and room, Starting and steering.
+
+### Fixed
+- The book no longer counts a Mechanical Bearing as a power source when it checks a build's shafts.
 - Create Galore Bridge 1.85.0.
+
+## 0.4.65
+
+### Fixed
+- **Bubbles no longer pile up under ships.** Bubbles live as long as they are in water, and the sea under a ship's hull still counted as water, so your breath bubbles rose against the hull and stayed there, with white pop bits around them. A bubble that reaches a ship's hull, or rises into the dry air of a ship's hold, now pops there the way it does under any other block, with the usual pop and sound. Bubbles everywhere else rise and pop as before. Checked on a test client under a floating boat: before, about 50 bubbles at a time sat against the hull after a burst of bubbles; now each one pops as it arrives and none stay.
+- Create Galore Bridge 1.84.0.
+
+## 0.4.64
+
+### Fixed
+- **The line out holds still while you move.** With a rod cast and the reel left alone, the line out still went up and down as you looked round, strafed or stepped toward the rig, and grew as a lure dived. It showed the straight distance from the rod tip to the rig, and the tip swings about in front of you every time you turn your head. It now shows the line off the reel: what you cast, less what you wound back. Turning, strafing, jumping or walking toward the rig no longer changes it, and looking round no longer drags the rig toward you. Only winding, a lift of the rod or a fish taking line changes it. Checked in game: 21.0 m through looking round, strafing, stepping in and jumping; a crankbait trolled 110 m behind a boat held 25.2 m.
+- Create Galore Fishing 0.3.17.
+
+## 0.4.63
+
+### Fixed
+- **No more sea showing on a ship's deck from some angles.** The sea under a ship is hidden where it reaches into the hull, but the hidden shape leaves out railings, fences and other parts well above the water, so from spots where you looked over a railing or through a gap in it (into the motor launch's aft cockpit from the stern, along its bow deck from the bow) your line of sight left the shape and came back in, and the sea's surface drew across the dry deck in wedges, or over the whole floor. It was never real water and never got you wet. The sea is now hidden by where your line of sight meets the water: when that point is inside the hull, the water there is hidden, whatever the line of sight passed on the way. Checked on a test client with and without Complementary, from the stern and bow spots that showed it before, from inside the cabin, from around and under the boat: no water on the decks, and the sea around the boat looks as before.
+- Create Galore Bridge 1.83.0.
+
+## 0.4.62
+
+### Added
+- **Fences join diagonally** ([Diagonal Fences](https://modrinth.com/mod/diagonal-fences) by Fuzs, with Puzzles Lib). A fence you place also joins a fence one block away across a corner, as long as the corner is clear and neither post already joins straight that way. Wood fences join wood fences of any kind, and stone and metal fences join each other. It works for the vanilla fences and those from Twilight Forest, The Aether, Alex's Caves, Cataclysm, Garnished, Hybrid Aquatic, My Nether's Delight and Alloyed's steel mesh fence; Better End's, Create Deco's mesh, Supplementaries' wicker, rope and copycat fences stay straight. Sneak and right-click a fence with an empty hand to turn its corner joins off, or back on. Fences already standing in your world, in villages and in other found buildings start without corner joins, and the same click gives them. A fence still drops as the same fence item. Checked on a test server and client: corner joins are kept on a Create cart contraption and a Sable ship, and look right with Sodium and with Complementary shaders. The Field Guide's Furniture and Decor page says so.
+- Ask the Book's models join fences diagonally too, like fences placed by hand, and a pinned or traced schematic accepts a placed fence whether or not it joins diagonally (the fence item now places a twin block of the fence, which used to count as the wrong block).
+- Create Galore Bridge 1.82.0.
 
 ## 0.4.61
 

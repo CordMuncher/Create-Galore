@@ -1,4 +1,4 @@
-<!-- sources sha256:0070b582acdfa6568e1da85b78e4ad8f9a7a2ebf9bbe365124a6a234caa62d71 -->
+<!-- sources sha256:5fe6b1194f34a94fbdefcc7e80e8221c0a260512825ec1b6ec65bb43176f95e3 -->
 # Create: The Basics (create_basics)
 
 ## create_basics/rotation | Rotation
@@ -161,6 +161,12 @@
 - Linear Chassis [create:linear_chassis]: glues a row along its axis. Radial Chassis grabs a disc around its axis. Both work with wrench (see create_basics/tools_wrench) settings and chassis ranges.
 - Movers: Piston (pushes along a line); Rope Pulley (up/down); Gantry (slides on a shaft); Bearing (see glossary/bearing) (spins); Cart Assembler (rides a minecart).
 - Mechanical Bearing [create:mechanical_bearing]: rotates a structure: windmills (see create_basics/power_sources), rotating drills, turntables. Clockwork Bearing makes clock hands.
+- Builds that move: any build can have a moving part (sails that turn, door/drawbridge swinging on a bearing, turntable, wall a piston slides aside, lift on a rope pulley, gantry carrying a drill over a field). Most of a build stands still; make the part move that has a job moving.
+- What comes along: the block touching the mover's face; blocks side by side inside one Super Glue area; blocks that hang on others (torches, doors, ladders, carpets); blocks on a chassis's sticky faces; a piston also pushes the whole line in front of it. At most 2048 blocks.
+- Speed: Bearing 6 degrees/s per RPM (full turn 1.9 s at 32 RPM). Piston, pulley, gantry: RPM / 25.6 blocks/s, 9.8 at most. Bearings, pistons, pulleys take 4 SU per RPM.
+- Starting and steering: Bearing: right-click it with an empty hand to start it; it turns while its shaft turns. Piston, pulley, gantry start on their own and run until the end of their travel. A Gearshift with a lever, in the line that drives it, sends it back; a Clutch stops it.
+- Watch out: a turning part passes straight through blocks in its circle. A sliding part stops at the first solid block in its path; drills and saws break theirs as they go. A glue area takes every block in it that touches the part, so keep it off what stays put.
+- In depth: piston needs one extension pole behind it per block of reach, up to 64. Run back, a plain piston leaves its blocks out; a sticky one pulls them back. Rope pulley reaches 384 blocks down. Chassis grabs 8 blocks (wrench sets 1 to 16). Stopping a bearing at a quarter turn takes a Sequenced Gearshift.
 - Working parts: Mechanical Drills, Saws, Harvesters, Ploughs do their job to whatever they pass. Deployers (see create_basics/deployer) and funnels (see create_basics/item_logistics) on the structure pull from/push into storage that moves with it. Contraption storage = chest or vault attached to the structure.
 - Mechanical Drill [create:mechanical_drill]: breaks blocks in front, also while moving. Harvesters cut crops, Ploughs till soil.
 - Bigger: Create Aeronautics builds flying ships (see flight/airships); trains are contraptions too (see transport/trains).

@@ -134,6 +134,11 @@ public class CastHook extends FishingHook {
      * off or a boat or machine moving away drags the rig along at this length; only winding or a lift shortens it.
      */
     private double towLength;
+    /**
+     * Line off the reel while the rig waits: what was cast, less what was wound back. It is what the HUD shows, so
+     * looking round, strafing, bobbing or stepping toward the rig (slack) never change the number.
+     */
+    private double lineOff;
     private boolean openWater;
     private BiteSampler.Pool pool = BiteSampler.Pool.EMPTY;
     private long poolBuiltAt = Long.MIN_VALUE;
@@ -499,13 +504,24 @@ public class CastHook extends FishingHook {
             case FLYING -> {
                 fly(owner, stats, tip);
                 // Landed: the reel closes on the line that went out.
-                if (phase() != Phase.FLYING) towLength = Math.hypot(getX() - tip.x, getZ() - tip.z);
+                if (phase() != Phase.FLYING) {
+                    Vec3 anchor = towAnchor(owner, tip);
+                    towLength = Math.hypot(getX() - anchor.x, getZ() - anchor.z);
+                    lineOff = tip.distanceTo(position());
+                }
             }
             case WAITING, GROUNDED -> waitForBite(owner, rod, stats, tip);
-            case BITE -> biting(owner, rod, stats, tip);
+            case BITE -> biting(owner, rod, stats, tip, towAnchor(owner, tip));
             case FIGHTING -> fighting(owner, rod, stats, tip);
         }
-        if (!isRemoved()) entityData.set(LINE_OUT, (float) (phase() == Phase.FIGHTING && fight != null ? fight.lineOut() : tip.distanceTo(position())));
+        if (!isRemoved()) {
+            double out = switch (phase()) {
+                case FIGHTING -> fight != null ? fight.lineOut() : tip.distanceTo(position());
+                case FLYING -> tip.distanceTo(position());
+                default -> lineOff > 0 ? lineOff : tip.distanceTo(position());
+            };
+            entityData.set(LINE_OUT, (float) out);
+        }
     }
 
     private void fly(Player owner, RodStats stats, Vec3 tip) {
@@ -568,17 +584,23 @@ public class CastHook extends FishingHook {
         double retrieve = (stats.reel().map(TacklePart.Reel::retrieve).orElse(0.9)) / 20
                 * (owner instanceof MachineAngler angler ? angler.mount().retrieveScale(this) : 1);
         Vec3 pos = position();
-        Vec3 toTip = new Vec3(tip.x - pos.x, 0, tip.z - pos.z);
-        double flat = toTip.length();
-        if (reeling && flat < 1.6) {
+        if (reeling && Math.hypot(tip.x - pos.x, tip.z - pos.z) < 1.6) {
             discard();
             return;
         }
         // The line out is held at towLength: winding and lifts take line in (any slack first), and nothing lets it
         // out, so trolling from a boat, walking backwards or a machine on a moving ship tows the rig behind. Line only
-        // leaves the spool to a fish pulling past the drag.
+        // leaves the spool to a fish pulling past the drag. A hand rod measures it from the angler, not the rod tip,
+        // so looking round doesn't drag the rig about.
+        Vec3 anchor = towAnchor(owner, tip);
+        Vec3 toTip = new Vec3(anchor.x - pos.x, 0, anchor.z - pos.z);
+        double flat = toTip.length();
         if (towLength <= 0) towLength = flat;
-        towLength = Math.max(0.5, towLength - (reeling ? retrieve : 0) - twitch);
+        double wound = Math.min(towLength - 0.5, (reeling ? retrieve : 0) + twitch);
+        if (wound > 0) {
+            towLength -= wound;
+            lineOff = Math.max(0.5, lineOff - wound);
+        }
         double pulled = Mth.clamp(flat - towLength, 0, flat);
         Vec3 step = pulled > 0 && flat > 1e-3 ? toTip.scale(pulled / flat) : Vec3.ZERO;
         boolean moving = step.lengthSqr() > 1e-8;
@@ -739,7 +761,7 @@ public class CastHook extends FishingHook {
         return 0;
     }
 
-    private void biting(Player owner, ItemStack rod, RodStats stats, Vec3 tip) {
+    private void biting(Player owner, ItemStack rod, RodStats stats, Vec3 tip, Vec3 anchor) {
         if (forcedBite != null) {
             // A test bite asked for while another fish was already biting: that one gives way.
             catchKind = CatchKind.FISH;
@@ -757,7 +779,7 @@ public class CastHook extends FishingHook {
             strike(owner, rod, stats, tip);
             return;
         }
-        tow(tip);
+        tow(anchor);
         if (--biteTicks > 0) return;
         // Missed: the fish lets go, and may take the bait with it.
         setPhase(Phase.WAITING);
@@ -773,10 +795,18 @@ public class CastHook extends FishingHook {
         }
     }
 
+    /**
+     * Where a waiting line is measured from: a machine's rod tip, or the angler holding the rod (the tip swings a metre
+     * and a half about them as they look round).
+     */
+    private static Vec3 towAnchor(Player owner, Vec3 tip) {
+        return owner instanceof MachineAngler ? tip : owner.position();
+    }
+
     /** A fish mouthing the bait goes where the rig is dragged: moving away doesn't let more line out. */
-    private void tow(Vec3 tip) {
+    private void tow(Vec3 anchor) {
         Vec3 pos = position();
-        Vec3 toTip = new Vec3(tip.x - pos.x, 0, tip.z - pos.z);
+        Vec3 toTip = new Vec3(anchor.x - pos.x, 0, anchor.z - pos.z);
         double flat = toTip.length();
         if (towLength <= 0 || flat <= towLength) return;
         Vec3 step = toTip.scale((flat - towLength) / flat);

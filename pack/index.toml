@@ -87,7 +87,7 @@ hash = "c8c05ff0d9853da43b24b7dfe45efc8e93b5e742e8dc561baf099c8debc91367"
 
 [[files]]
 file = "config/coldsweat/world.toml"
-hash = "9ce3c9132830942058b7a3afe90378288e7a48cc741c92ad4cab5aa21cb09e9c"
+hash = "e67a5f04a20520d1384b5cf954ae16c260fc338b123d50ac9883d38eee31d56e"
 
 [[files]]
 file = "config/coldsweat_altitude-server.toml"
@@ -988,7 +988,7 @@ hash = "0f0cac64c6e4389f289df0f0203a9b165e614b06431d957232f9c63dcedbded8"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/create_basics.md"
-hash = "8c5c653023d83329eb7185f07710e6def2b592f3180b213a9edf30438954c442"
+hash = "c63ee4915aac03e180dc49e3f08f5623b43fc42462b81da758ff4c31de49d76d"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/exploration.md"
@@ -1012,7 +1012,7 @@ hash = "7b72ada04feb693f3b1c9f1ea76ae1e9461394fa40962e04ae1e905923963a28"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/home.md"
-hash = "725f72c22e54f6b5f2c2029a3b8f9dcc4ceb33fb453fdd86432b45c42c6fff41"
+hash = "254aa4d6bae8a9f1244f998584bb4f59502a3147cf0d7836f0299f1ac49d8f9e"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/industry.md"
@@ -1040,7 +1040,7 @@ hash = "ebcc9305940c50b022e6351bfc9fbf8419ca1e83f80c16caea06286bc586109a"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/survival.md"
-hash = "0047841a1b5c5c09896b89bb1648edf11eeb9d3b0b47f466b21c0214cfb0152b"
+hash = "7404bf91e779cbc38d2762684df66b6bd16dca87a0e3bf37b7e2f4118f562cf6"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/transport.md"
@@ -1168,7 +1168,7 @@ hash = "118ca28c1776b878a3d8bcd141e9472767ebd5b5238707198f67ef22301021ae"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/create_basics/contraptions.json"
-hash = "3dc0367765490ee0946af1fd1d1d3316b8ff447948e5e3427d6818815d303acf"
+hash = "f29baec74f524161d7b901b4025a26c133c25d6e34802b780b28fbea346d3667"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/create_basics/crushing.json"
@@ -1700,7 +1700,7 @@ hash = "58c1fff57ded8ac11da9233e239042b29c408dc6ff978da841fd7ddd7356351a"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/home/building.json"
-hash = "59abe4d6130cc06695d0ed3535910dec69e03fb1aa65056a6f409df8c08ff2b1"
+hash = "a05537f0f28695fbaca13bd627e50b59c69ba55e60ac89a6f00184e8791f7f18"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/home/create_decor.json"
@@ -1964,7 +1964,7 @@ hash = "5d8acdcf9363e68bd0e6f870f0c178a7d93716b1d2bfd65e1baf6eb8e4ee8828"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/survival/temperature.json"
-hash = "83a66af7b99a33cca8b376e99d015bd1090c80e8b4dde9b2f63247c3a7fd5ecb"
+hash = "bfa461a1434f44b16639d12f26f64709c60300a4f01bac5613fe089653362eac"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/survival/temperature_create.json"
@@ -4990,12 +4990,12 @@ hash = "db683b65dc15a03dd6de2d34d5dc6ad0e3490744ced513a8cc584784ee9d3d8b"
 metafile = true
 
 [[files]]
-file = "mods/create-galore-bridge-1.85.0.jar"
-hash = "055ffad4168c4e66cc2b822be80be4cec17827b97c540b7b10627d48315b1c0c"
+file = "mods/create-galore-bridge-1.87.0.jar"
+hash = "b7ea5c0c7e6c6eac1ae5ae9da11df4d00c2bf3aa5d527d6e541a855882ff9986"
 
 [[files]]
-file = "mods/create-galore-fishing-0.3.16.jar"
-hash = "036bc7ec1790dfae9cba30fba1ddb05c8a4b7d24504a90caf1bdbd96d7d76164"
+file = "mods/create-galore-fishing-0.3.17.jar"
+hash = "486c2a89d8cb49fd178a545a2af804f4ecc9bb69df4aabb17b8accfb1fb3ce32"
 
 [[files]]
 file = "mods/create-galore-lagwatch-1.1.0.jar"
@@ -5179,6 +5179,11 @@ metafile = true
 [[files]]
 file = "mods/delightful-creators.pw.toml"
 hash = "ead7e6467df904f9fa779c021cff62bbd87e7943f394beec63a7f1ee3a74e4d5"
+metafile = true
+
+[[files]]
+file = "mods/diagonal-fences.pw.toml"
+hash = "632743d54d410c8b78fb92c94d8f3bb6a7a3faed45171f91e554877f94f82163"
 metafile = true
 
 [[files]]
@@ -5574,6 +5579,11 @@ metafile = true
 [[files]]
 file = "mods/productivebees.pw.toml"
 hash = "7aa8bf129e51bda25386e18ebcd0db7eae278e95227406e8101a320cacf2f9b6"
+metafile = true
+
+[[files]]
+file = "mods/puzzles-lib.pw.toml"
+hash = "2e0b31d4a3d4298045b368558ce7fe191a13bccb02a4524ca748598a9dcf4ca5"
 metafile = true
 
 [[files]]
