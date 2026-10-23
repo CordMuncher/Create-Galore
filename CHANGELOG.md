@@ -4,6 +4,12 @@ Each pack version gets a section here, with **Added**, **Fixed** and **Removed**
 workflow copies the section for the version in `pack/pack.toml` to the top of the GitHub release, and the build
 fails when that section is missing.
 
+## 0.4.42
+
+### Added
+- **Ask the Book designs ships that sit level.** When the book designs or reads a boat, it now works out how the boat sits at rest with nobody aboard: bow down, stern down or leaning to one side, in degrees, and how much weight to move which way to level it. For an airship it works out how the ship hangs under its balloon. A boat that sits 5° or more off level, dips its low end near the water, or an airship top-heavy enough to turn over counts as a problem the book fixes before showing the design, so asking for a balanced ship gets one that sits level. Checked against 6 boats and 3 balloon ships on a test server: every one sat or hung within 0.4° of the book's figure.
+- Create Galore Bridge 1.71.0.
+
 ## 0.4.41
 
 ### Fixed
