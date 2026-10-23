@@ -4,6 +4,13 @@ Each pack version gets a section here, with **Added**, **Fixed** and **Removed**
 workflow copies the section for the version in `pack/pack.toml` to the top of the GitHub release, and the build
 fails when that section is missing.
 
+## 0.4.54
+
+### Fixed
+- **You stay dry inside a ship's hold.** Most boat decks sit a little under the waterline (the oak and dark oak motor launch about 0.3 blocks), and the sea only stays out for a player whose eyes or feet are in the hold's air. An open door, a stair or a slab belongs to the hull, so walking through a cabin doorway or standing on a stair counted as standing in the sea for a moment, and Cold Sweat soaked you on a dry deck. The hold now also counts the middle of your body, just above your feet, and any door, stair, slab or other partial block that opens onto the hold. Checked on a test server: walking back and forth through the launch's open cabin door used to soak you within seconds, now you stay dry, and swimming next to the boat still gets you wet.
+- **Logging in on a ship no longer soaks you.** For the few ticks until a ship loads after you join, you stood at its spot in the sea, and one of those ticks soaked you as much as a swim. Until the ship loads, and for 2 seconds after while its hold is being looked at, you count as on board. Checked with a server restart and two relogs on the launch's deck: no wet tick.
+- Create Galore Bridge 1.78.0.
+
 ## 0.4.53
 
 ### Fixed
