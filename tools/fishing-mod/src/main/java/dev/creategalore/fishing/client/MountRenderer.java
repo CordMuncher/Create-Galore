@@ -96,7 +96,7 @@ class MountRenderer<T extends BlockEntity & RodMount> implements BlockEntityRend
             double cm = FishItemRenderer.lengthCm(fish);
             float length = Mth.clamp((float) cm / 100, 0.15f, 1.6f);
             float drop = 0.35f;
-            int color = build.lineColor().orElse(0xFFDDDDDD);
+            int color = build.lineColor().orElse(RodModel.NO_LINE);
             VertexConsumer lines = buffers.getBuffer(RenderType.lines());
             PoseStack.Pose p = pose.last();
             lines.addVertex(p, local.x, local.y, local.z).setColor(color).setNormal(p, 0, -1, 0);

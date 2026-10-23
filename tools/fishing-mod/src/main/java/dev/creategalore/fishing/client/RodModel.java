@@ -48,6 +48,7 @@ final class RodModel {
     private static final float ATLAS_W = 64;
     private static final float ATLAS_H = 32;
     private static final int SEAT_COLOR = 0xFF6E6E72;
+    static final int NO_LINE = 0xFFDDDDDD;
 
     /**
      * Everything that changes from frame to frame. {@code bend} is the total angle the tip turns through (radians),
@@ -515,6 +516,12 @@ final class RodModel {
     private void vertex(PoseStack.Pose p, int argb, float x, float y, float z, float u, float v, float nx, float ny, float nz) {
         solid.addVertex(p, x, y, z).setColor(argb).setUv(u, v).setOverlay(OverlayTexture.NO_OVERLAY).setLight(light)
                 .setNormal(p, nx, ny, nz);
+    }
+
+    /** The colour of the line a rod is wound with (pale grey with none), everywhere the line is drawn. */
+    static int lineColor(ItemStack rod) {
+        return TackleManager.of(RodItem.parts(rod).line(), TacklePart.Line.class).map(l -> color(l.color()))
+                .orElse(NO_LINE);
     }
 
     /** "#rrggbb" to opaque ARGB; grey if it doesn't parse. */

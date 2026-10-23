@@ -493,3 +493,14 @@ salmon waits without rotation, then is cut in 6 strokes (61 ticks at 32 RPM) int
 server with real Create belts, a hopper and a chute driven by creative motors: belt line, hopper-to-chest line and
 chute-to-ground line each passed cod, kelp, tropical fish and a 2.5 kg salmon whole and cut a 6 kg salmon and a
 12 kg cod. All 436 self-tests pass.
+
+## 0.3.14: one line colour (pack 0.4.41)
+
+Emre (23 Oct): the cast line looked black while the line strung along the rod looked white; pick one and match.
+
+- **The line's own colour, everywhere.** The line through the guides, the spool, the dangling rig and a machine's
+  rod already used the fitted line's `color`; only the cast line (`CastHookRenderer`) was hard-coded black, vanilla's
+  colour. It now asks `RodModel.lineColor(rod)` too: string and mono near white, clear line pale blue, heavy line
+  yellow, braided green, pale grey with no line. Realistic as well: real lines are those colours, not black.
+- Both are drawn as Minecraft lines (unlit, flat colour), so shader packs treat them the same way and they stay
+  matched with shaders on.

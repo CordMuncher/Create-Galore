@@ -393,7 +393,7 @@ public final class RodItemRenderer extends BlockEntityWithoutLevelRenderer {
         pose.pushPose();
         pose.last().pose().identity();
         pose.last().normal().identity();
-        int lineColor = build.lineColor().orElse(0xFFDDDDDD);
+        int lineColor = build.lineColor().orElse(RodModel.NO_LINE);
         VertexConsumer lines = buffers.getBuffer(RenderType.lines());
         PoseStack.Pose root = pose.last();
         lines.addVertex(root, tip.x, tip.y, tip.z).setColor(lineColor).setNormal(root, down.x, down.y, down.z);

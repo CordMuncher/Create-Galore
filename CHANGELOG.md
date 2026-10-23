@@ -4,6 +4,12 @@ Each pack version gets a section here, with **Added**, **Fixed** and **Removed**
 workflow copies the section for the version in `pack/pack.toml` to the top of the GitHub release, and the build
 fails when that section is missing.
 
+## 0.4.41
+
+### Fixed
+- **The cast fishing line now has the same colour as the line on the rod.** It was always drawn black, while the line through the rod's guides showed the colour of the line you fitted. Now both show your line: string and mono near white, clear line pale blue, heavy line yellow, braided line green. With or without shaders.
+- Create Galore Fishing 0.3.14.
+
 ## 0.4.40
 
 ### Added
