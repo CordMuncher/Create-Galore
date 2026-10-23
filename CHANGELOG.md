@@ -4,6 +4,11 @@ Each pack version gets a section here, with **Added**, **Fixed** and **Removed**
 workflow copies the section for the version in `pack/pack.toml` to the top of the GitHub release, and the build
 fails when that section is missing.
 
+## 0.4.67
+
+### Fixed
+- **Campfires are gentler.** A lit campfire now warms you by up to 15 °F (30 °F at most from any number of them), down from 25 °F and 50 °F, so it's a cozy spot to get through a cold night rather than nearly as hot as a furnace. Furnaces, smokers, blast furnaces, fire and lava are unchanged. Checked on a test server on a temperate beach at a Mid Winter midnight: 38 °F bare, 50 °F two blocks from one campfire (58 °F before), 46 °F four blocks away, so one campfire still keeps you comfortable there; at a Mid Summer noon in the open, 78 °F becomes 90 °F next to one campfire and 101 °F next to a furnace. The Field Guide's Temperature entry has a Campfires page with these numbers.
+
 ## 0.4.66
 
 ### Added
