@@ -4,6 +4,12 @@ Each pack version gets a section here, with **Added**, **Fixed** and **Removed**
 workflow copies the section for the version in `pack/pack.toml` to the top of the GitHub release, and the build
 fails when that section is missing.
 
+## 0.4.53
+
+### Fixed
+- **Flyover planes no longer fly into sky islands.** Aeronautics Discovery's flyover planes held their heading and height with no idea what lay ahead, so they often flew straight into a floating island or sky building, crashed, and dropped their cargo where anyone could pick it up long before they had an aircraft to chase them with. Their pilots now plan a route: they know where sky islands and other structures stand along their course (worked out while the world generates, long before those blocks exist), look ahead for anything else solid in the air, and climb over or bank around it with room to spare, then turn back onto their old heading. Pillager patrols circling mansions and outposts and the Soaring Trader use the same planner. Nothing is loaded or generated for this, so it causes no freezes, and planes still spawn anywhere. Checked on a test server against a sky volcano island from 8 directions: without the change 6 of 8 planes crashed into it, with it none even entered its outline. A narrow sky tower, a pillager plane and a plain stone wall in the sky were crashed into before and flown around after. The Field Guide's Discovery page says so.
+- Create Galore Bridge 1.77.0.
+
 ## 0.4.52
 
 ### Fixed
