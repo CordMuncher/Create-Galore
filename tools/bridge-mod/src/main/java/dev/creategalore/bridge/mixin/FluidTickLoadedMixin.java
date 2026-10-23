@@ -16,7 +16,7 @@ public abstract class FluidTickLoadedMixin {
     @WrapOperation(method = "tickFluid", at = @At(value = "INVOKE",
         target = "Lnet/minecraft/world/level/material/FluidState;tick(Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;)V"))
     private void create_galore_bridge$flowWhenNeighboursReady(FluidState fluid, Level level, BlockPos pos, Operation<Void> original) {
-        if (!ChunkLoadGuard.readyAround(level, pos, 2)) {
+        if (!ChunkLoadGuard.readyAround(level, pos, ChunkLoadGuard.FLUID_REACH)) {
             level.scheduleTick(pos, fluid.getType(), fluid.getType().getTickDelay(level));
         } else {
             original.call(fluid, level, pos);

@@ -4,6 +4,12 @@ Each pack version gets a section here, with **Added**, **Fixed** and **Removed**
 workflow copies the section for the version in `pack/pack.toml` to the top of the GitHub release, and the build
 fails when that section is missing.
 
+## 0.4.55
+
+### Fixed
+- **The sea-exploring freeze fix now covers chunk edges fully.** Since 0.4.52, water at the edge of the loaded world only flows once the chunks around it are loaded. That check looked 2 blocks out, but one flow reaches further: the water lands a block away, wakes the blocks around it, and woken water looks at its own neighbours. Water two or three blocks from a chunk edge could still make the server wait for an unfinished chunk (a 2.3 s freeze while sailing). The check now looks 4 blocks out. Checked on a test server over 1,200 blocks of new coast and sea on 4 seeds: no waits for unloaded chunks from water, and no freezes while moving.
+- Create Galore Bridge 1.79.0.
+
 ## 0.4.54
 
 ### Fixed

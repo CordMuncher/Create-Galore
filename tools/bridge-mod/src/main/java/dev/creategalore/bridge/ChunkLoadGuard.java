@@ -44,6 +44,13 @@ public final class ChunkLoadGuard {
         return level.getChunkSource().getChunkNow(pos.getX() >> 4, pos.getZ() >> 4) != null;
     }
 
+    /**
+     * How far one flow of water reads the world: it lands a block away, wakes that block's neighbours, and each woken
+     * water block looks at its own neighbours (NeoForge's fluid mixing check). That is three blocks out; one more
+     * covers a block the wake-up changes. Two blocks (pack 0.4.52) still let a 2.3 s freeze through.
+     */
+    public static final int FLUID_REACH = 4;
+
     /** True when every chunk within this many blocks (sideways) of the spot is fully loaded right now. See {@link #ready}. */
     public static boolean readyAround(Level level, BlockPos pos, int blocks) {
         for (int cx = (pos.getX() - blocks) >> 4; cx <= (pos.getX() + blocks) >> 4; cx++) {
