@@ -51,7 +51,9 @@ import org.lwjgl.opengl.GL11;
  * with moving parts (Create's shafts, cogs, water wheels, press heads, mixer whisks) also get their block entity
  * renderer as in the world, chests and other entity-drawn blocks are drawn as their item, and water and lava flow
  * as in the world (stained glass where they can't be drawn). Labels sit beside the model with a line to their spot,
- * so they never cover it; middle-drag moves the model in its box.
+ * so they never cover it; middle-drag moves the model in its box. Parts that move as Create contraptions (what a
+ * bearing turns, a piston pushes, a pulley lowers or a gantry carries) play their motion over and over, with their
+ * Super Glue areas outlined while the mouse is over the model.
  */
 final class ModelView {
     private static final int CANVAS = 0xFFE6DABA, FRAME = 0xFF8A7250, INK = 0xFF2B2014, FADED = 0xFF6E5E48, PAPER = 0xEEF9EED2;
@@ -66,7 +68,37 @@ final class ModelView {
     private record Change(int x, int y, int z, int x2, int y2, int z2, boolean removed) {
     }
 
-    private static final int ADDED = 0xFF2FA12F, REMOVED = 0xFFD03A2A;
+    private static final int ADDED = 0xFF2FA12F, REMOVED = 0xFFD03A2A, GLUE = 0xFFA8C23A;
+
+    /**
+     * A moving part as the server worked it out: turning round the axis through its bearing's centre, or sliding a
+     * number of blocks one way and back, taking {@code seconds} for its motion at the speed it is driven.
+     */
+    private record Mover(boolean turn, Direction.Axis axis, float px, float py, float pz, float degrees, int dx, int dy, int dz,
+                         int blocks, float seconds, List<int[]> glue, int[] rope, int ropeEnd) {
+        /** Seconds spent resting at each end of a motion that goes there and back. */
+        static final float REST = 0.8f;
+
+        /** How far along the part is at {@code t} seconds: degrees turned, or blocks travelled. */
+        float at(float t) {
+            float run = Math.max(0.4f, seconds);
+            if (turn && Math.abs(degrees) >= 360) return degrees * ((t % run) / run);
+            float cycle = 2 * run + 2 * REST, c = t % cycle;
+            float f = c < run ? c / run : c < run + REST ? 1 : c < 2 * run + REST ? 1 - (c - run - REST) / run : 0;
+            return (turn ? degrees : blocks) * f;
+        }
+    }
+
+    private final List<Mover> moving = new ArrayList<>();
+    /** Which moving part each cell rides on, 1 and up, or 0 for a cell that stays put; null when nothing moves. */
+    private byte[] group;
+    /** True while the moving parts play; the player can stop them to look at the build at rest. */
+    private boolean playing = true;
+    /** True while a frame is drawn with its parts moved apart: blocks then only hide faces of blocks on the same part. */
+    private boolean apart;
+    private final long start = System.currentTimeMillis();
+    /** How far from the model's centre its moving parts reach anywhere in their motion, to fit them in the box. */
+    private float reach;
 
     final String title, caption;
     private final int sx, sy, sz;
@@ -176,6 +208,7 @@ final class ModelView {
                 }
             }
         }
+        if (o.has("moving") && o.get("moving").isJsonArray()) m.moving(o.getAsJsonArray("moving"));
         if (o.has("labels") && o.get("labels").isJsonArray()) {
             for (JsonElement e : o.getAsJsonArray("labels")) {
                 try {
@@ -188,6 +221,99 @@ final class ModelView {
             }
         }
         return m;
+    }
+
+    private void moving(JsonArray in) {
+        for (JsonElement e : in) {
+            if (moving.size() >= 120) break;
+            try {
+                JsonObject p = e.getAsJsonObject();
+                boolean turn = str(p, "kind").equals("turn");
+                Direction.Axis axis = turn ? Direction.Axis.byName(str(p, "axis")) : null;
+                if (turn && axis == null) continue;
+                JsonArray pivot = turn ? p.getAsJsonArray("pivot") : null, step = turn ? null : p.getAsJsonArray("step");
+                List<int[]> glue = new ArrayList<>();
+                if (p.has("glue")) for (JsonElement g : p.getAsJsonArray("glue")) {
+                    JsonArray b = g.getAsJsonArray();
+                    glue.add(new int[] {b.get(0).getAsInt(), b.get(1).getAsInt(), b.get(2).getAsInt(), b.get(3).getAsInt(), b.get(4).getAsInt(),
+                            b.get(5).getAsInt()});
+                }
+                Mover mv = new Mover(turn, axis, turn ? pivot.get(0).getAsInt() + 0.5f : 0, turn ? pivot.get(1).getAsInt() + 0.5f : 0,
+                        turn ? pivot.get(2).getAsInt() + 0.5f : 0, turn ? p.get("degrees").getAsFloat() : 0, turn ? 0 : step.get(0).getAsInt(),
+                        turn ? 0 : step.get(1).getAsInt(), turn ? 0 : step.get(2).getAsInt(), turn ? 0 : p.get("blocks").getAsInt(),
+                        p.get("seconds").getAsFloat(), glue, rope(p), ropeEnd(p));
+                moving.add(mv);
+                if (group == null) group = new byte[cells.length];
+                float cx = sx / 2f, cy = sy / 2f, cz = sz / 2f;
+                for (JsonElement r : p.getAsJsonArray("cells")) {
+                    JsonArray a = r.getAsJsonArray();
+                    for (int x = Math.max(0, a.get(0).getAsInt()); x <= Math.min(sx - 1, a.get(3).getAsInt()); x++) {
+                        int y = a.get(1).getAsInt(), z = a.get(2).getAsInt();
+                        if (y < 0 || z < 0 || y >= sy || z >= sz || group[index(x, y, z)] != 0) continue;
+                        group[index(x, y, z)] = (byte) moving.size();
+                        for (int corner = 0; corner < 8; corner++) {
+                            float qx = x + (corner & 1), qy = y + (corner >> 1 & 1), qz = z + (corner >> 2 & 1);
+                            float far = turn ? (float) Math.sqrt(sq(qx - mv.px) + sq(qy - mv.py) + sq(qz - mv.pz))
+                                    + (float) Math.sqrt(sq(mv.px - cx) + sq(mv.py - cy) + sq(mv.pz - cz))
+                                    : (float) Math.sqrt(sq(qx + mv.dx * mv.blocks - cx) + sq(qy + mv.dy * mv.blocks - cy) + sq(qz + mv.dz * mv.blocks - cz));
+                            reach = Math.max(reach, far);
+                        }
+                    }
+                }
+            } catch (RuntimeException ignored) {
+                // a moving part that can't be read stays still
+            }
+        }
+    }
+
+    /** A pulley's cell, for its rope; null for other movers. */
+    private static int[] rope(JsonObject p) {
+        if (!p.has("rope")) return null;
+        JsonArray r = p.getAsJsonArray("rope");
+        return new int[] {r.get(0).getAsInt(), r.get(1).getAsInt(), r.get(2).getAsInt()};
+    }
+
+    /** The top of a pulley's load at rest (one above its highest cell under the pulley), where the rope ends. */
+    private static int ropeEnd(JsonObject p) {
+        int[] r = rope(p);
+        if (r == null) return 0;
+        int top = Integer.MIN_VALUE;
+        for (JsonElement e : p.getAsJsonArray("cells")) {
+            JsonArray a = e.getAsJsonArray();
+            if (a.get(0).getAsInt() <= r[0] && a.get(3).getAsInt() >= r[0] && a.get(2).getAsInt() == r[2]) top = Math.max(top, a.get(1).getAsInt() + 1);
+        }
+        return top == Integer.MIN_VALUE ? r[1] : top;
+    }
+
+    /** A pulley's rope from its block down to its load, wherever the load is now. */
+    private void ropeLine(PoseStack pose, MultiBufferSource.BufferSource buffers, Mover mv, float along) {
+        VertexConsumer lines = buffers.getBuffer(RenderType.lines());
+        float x = mv.rope[0] + 0.5f, z = mv.rope[2] + 0.5f, top = mv.rope[1], bottom = mv.ropeEnd + mv.dy * along;
+        if (bottom >= top) return;
+        var last = pose.last();
+        lines.addVertex(last, x, top, z).setColor(0x5A, 0x46, 0x30, 255).setNormal(last, 0, -1, 0);
+        lines.addVertex(last, x, bottom, z).setColor(0x5A, 0x46, 0x30, 255).setNormal(last, 0, -1, 0);
+        buffers.endBatch(RenderType.lines());
+    }
+
+    private static float sq(float v) {
+        return v * v;
+    }
+
+    /** Moving parts play unless stopped. */
+    boolean moves() {
+        return !moving.isEmpty();
+    }
+
+    private int groupOf(int x, int y, int z) {
+        return group == null ? 0 : group[index(x, y, z)];
+    }
+
+    /** A neighbour as far as hiding faces goes: while parts are moved apart, only blocks on the same part count. */
+    private BlockState near(int x, int y, int z, int own) {
+        BlockState s = at(x, y, z);
+        if (s == null || !apart) return s;
+        return groupOf(x, y, z) == own ? s : null;
     }
 
     private static BlockState state(String text) {
@@ -253,7 +379,9 @@ final class ModelView {
         box[2] = bw;
         box[3] = bh;
         draw(g, font, bx, by, bw, bh, yaw, pitch, zoom, panX, panY);
+        glueShown = hint != null;
         int buttonW = schematicButton(g, font, bx, by, bw, bh, hint != null);
+        buttonW += moveButton(g, font, bx + buttonW + (buttonW > 0 ? 4 : 0), by, bw - buttonW, bh, hint != null);
         if (hint != null) {
             List<FormattedCharSequence> lines = font.split(Component.literal(hint), Math.max(60, bw - buttonW - 16));
             int hw = 0;
@@ -308,6 +436,39 @@ final class ModelView {
         return w;
     }
 
+    /** Where the play/stop button was last painted (x, y, w, h); w is 0 while it isn't shown. */
+    private final int[] playButton = new int[4];
+    private boolean glueShown;
+
+    /** "Stop" or "Move" beside the schematic button for a model with moving parts; its width plus a gap, or 0. */
+    private int moveButton(GuiGraphics g, Font font, int x, int by, int room, int bh, boolean over) {
+        playButton[2] = 0;
+        if (!over || moving.isEmpty()) return 0;
+        String text = playing ? "Stop moving" : "Move";
+        int w = Math.min(room - 8, font.width(text) + 8), y = by + bh - 14;
+        if (w < 20) return 0;
+        g.pose().pushPose();
+        g.pose().translate(0, 0, 300);
+        g.fill(x, y, x + w, y + 12, FRAME);
+        g.fill(x + 1, y + 1, x + w - 1, y + 11, PAPER);
+        g.drawString(font, font.plainSubstrByWidth(text, w - 6), x + 4, y + 2, INK, false);
+        g.pose().popPose();
+        playButton[0] = x;
+        playButton[1] = y;
+        playButton[2] = w;
+        playButton[3] = 12;
+        return w + 4;
+    }
+
+    boolean overMoveButton(double mx, double my) {
+        return playButton[2] > 0 && mx >= playButton[0] && mx < playButton[0] + playButton[2] && my >= playButton[1]
+                && my < playButton[1] + playButton[3];
+    }
+
+    void togglePlaying() {
+        playing = !playing;
+    }
+
     boolean overSchematicButton(double mx, double my) {
         return saveButton[2] > 0 && mx >= saveButton[0] && mx < saveButton[0] + saveButton[2] && my >= saveButton[1]
                 && my < saveButton[1] + saveButton[3];
@@ -321,7 +482,8 @@ final class ModelView {
     /**
      * The model as a structure file (the format Create's Schematic and Quill writes and its Schematic Table reads): every
      * block but air, so a placed schematic never asks to clear what is around it. Flowing water and lava are left out:
-     * their sources make them again once placed. Null for a model with nothing in it.
+     * their sources make them again once placed. A build with moving parts is saved standing at its start, as it is
+     * built: the motion on the model is only drawn, the cells never move. Null for a model with nothing in it.
      */
     net.minecraft.nbt.CompoundTag structure() {
         Map<BlockState, Integer> index = new HashMap<>();
@@ -387,7 +549,7 @@ final class ModelView {
         PoseStack pose = g.pose();
         pose.pushPose();
         int gutter = labels.isEmpty() || w < 150 ? 0 : Math.min(w / 4, labelWidth(font) + 10);
-        float radius = 0.5f * (float) Math.sqrt(sx * sx + sy * sy + sz * sz);
+        float radius = Math.max(0.5f * (float) Math.sqrt(sx * sx + sy * sy + sz * sz), reach);
         float scale = Math.min(w - 2 * gutter, h) / (2 * radius) * 0.95f * zoom;
         pose.translate(x + w / 2f + panX, y + h / 2f + panY, 50 + radius * scale);
         pose.scale(scale, -scale, scale);
@@ -402,26 +564,33 @@ final class ModelView {
             moversMade = true;
             makeMovers(mc);
         }
-        for (int by = 0; by < sy; by++)
-            for (int bz = 0; bz < sz; bz++)
-                for (int bx = 0; bx < sx; bx++) {
-                    BlockState state = cells[index(bx, by, bz)];
-                    if (state == null || hidden(bx, by, bz)) continue;
-                    if (!state.getFluidState().isEmpty() && !fluid(mc, state, bx, by, bz, pose, buffers) && pureFluid(state)) {
-                        state = glassFor(state);
-                    }
-                    if (pureFluid(state)) continue;
-                    pose.pushPose();
-                    pose.translate(bx, by, bz);
-                    try {
-                        BlockEntity mover = movers == null ? null : movers[index(bx, by, bz)];
-                        if (mover != null && !drawMover(mc, mover, state, bx, by, bz, pose, buffers, random)) movers[index(bx, by, bz)] = null;
-                        if (movers == null || movers[index(bx, by, bz)] == null) block(mc, blocks, state, bx, by, bz, pose, buffers, random);
-                    } catch (RuntimeException ignored) {
-                        // a block whose model can't be drawn out of the world is left out
-                    }
-                    pose.popPose();
+        apart = playing && !moving.isEmpty();
+        float t = (System.currentTimeMillis() - start) / 1000f;
+        for (int part = 0; part <= (apart ? moving.size() : 0); part++) {
+            Mover mv = part == 0 ? null : moving.get(part - 1);
+            float along = mv == null ? 0 : mv.at(t);
+            // A pulley's rope stays with the pulley, so it is drawn before the load moves.
+            if (mv != null && mv.rope != null) ropeLine(pose, buffers, mv, along);
+            if (mv != null) {
+                pose.pushPose();
+                if (mv.turn) {
+                    pose.translate(mv.px, mv.py, mv.pz);
+                    pose.mulPose((mv.axis == Direction.Axis.X ? Axis.XP : mv.axis == Direction.Axis.Y ? Axis.YP : Axis.ZP).rotationDegrees(along));
+                    pose.translate(-mv.px, -mv.py, -mv.pz);
+                } else {
+                    pose.translate(mv.dx * along, mv.dy * along, mv.dz * along);
                 }
+            }
+            drawCells(mc, blocks, pose, buffers, random, part);
+            if (mv != null) {
+                if (glueShown) glue(pose, buffers, mv);
+                pose.popPose();
+            }
+        }
+        if (!apart) for (Mover mv : moving) {
+            if (glueShown) glue(pose, buffers, mv);
+            if (mv.rope != null) ropeLine(pose, buffers, mv, 0);
+        }
         g.flush();
         if (!changes.isEmpty()) outlineChanges(pose, buffers);
         // Where each label's cell lands on screen, while the model's transform is still in place.
@@ -445,8 +614,46 @@ final class ModelView {
         } else {
             sideLabels(g, font, spots, x, y, w, h, gutter, x + w / 2f + panX);
         }
-        if (!changes.isEmpty()) legend(g, font, x + 3, y + 3);
+        if (!changes.isEmpty() || glueShown && moving.stream().anyMatch(mv -> !mv.glue.isEmpty())) legend(g, font, x + 3, y + 3);
         g.disableScissor();
+    }
+
+    /** The cells of one moving part (or, for 0, every cell that stays put; every cell while nothing is moved apart). */
+    private void drawCells(Minecraft mc, BlockRenderDispatcher blocks, PoseStack pose, MultiBufferSource.BufferSource buffers,
+                           RandomSource random, int part) {
+        for (int by = 0; by < sy; by++)
+            for (int bz = 0; bz < sz; bz++)
+                for (int bx = 0; bx < sx; bx++) {
+                    BlockState state = cells[index(bx, by, bz)];
+                    if (state == null || apart && groupOf(bx, by, bz) != part || hidden(bx, by, bz)) continue;
+                    if (!state.getFluidState().isEmpty() && !fluid(mc, state, bx, by, bz, pose, buffers) && pureFluid(state)) {
+                        state = glassFor(state);
+                    }
+                    if (pureFluid(state)) continue;
+                    pose.pushPose();
+                    pose.translate(bx, by, bz);
+                    try {
+                        BlockEntity mover = movers == null ? null : movers[index(bx, by, bz)];
+                        if (mover != null && !drawMover(mc, mover, state, bx, by, bz, pose, buffers, random)) movers[index(bx, by, bz)] = null;
+                        if (movers == null || movers[index(bx, by, bz)] == null) block(mc, blocks, state, bx, by, bz, pose, buffers, random);
+                    } catch (RuntimeException ignored) {
+                        // a block whose model can't be drawn out of the world is left out
+                    }
+                    pose.popPose();
+                }
+        // Each part's blocks go out with its own transform before the next part changes it.
+        buffers.endBatch();
+    }
+
+    /** A moving part's Super Glue areas, as Create outlines glue: a box a little outside the blocks. */
+    private void glue(PoseStack pose, MultiBufferSource.BufferSource buffers, Mover mv) {
+        if (mv.glue.isEmpty()) return;
+        VertexConsumer lines = buffers.getBuffer(RenderType.lines());
+        float r = (GLUE >> 16 & 255) / 255f, gr = (GLUE >> 8 & 255) / 255f, b = (GLUE & 255) / 255f;
+        for (int[] box : mv.glue)
+            net.minecraft.client.renderer.LevelRenderer.renderLineBox(pose, lines, box[0] - 0.06, box[1] - 0.06, box[2] - 0.06,
+                    box[3] + 1.06, box[4] + 1.06, box[5] + 1.06, r, gr, b, 1f);
+        buffers.endBatch(RenderType.lines());
     }
 
     /**
@@ -472,7 +679,8 @@ final class ModelView {
         g.pose().pushPose();
         g.pose().translate(0, 0, 300);
         if (anyAdded) at = legendItem(g, font, at, y, ADDED, "new or changed");
-        if (anyRemoved) legendItem(g, font, at, y, REMOVED, "take out");
+        if (anyRemoved) at = legendItem(g, font, at, y, REMOVED, "take out");
+        if (glueShown && moving.stream().anyMatch(mv -> !mv.glue.isEmpty())) legendItem(g, font, at, y, GLUE, "Super Glue");
         g.pose().popPose();
     }
 
@@ -555,7 +763,8 @@ final class ModelView {
 
     /** True when every side touches a solid full block, so nothing of this block can be seen. */
     private boolean hidden(int x, int y, int z) {
-        for (Direction d : SIDES) if (!occludes(at(x + d.getStepX(), y + d.getStepY(), z + d.getStepZ()), cells[index(x, y, z)], d)) return false;
+        int own = groupOf(x, y, z);
+        for (Direction d : SIDES) if (!occludes(near(x + d.getStepX(), y + d.getStepY(), z + d.getStepZ(), own), cells[index(x, y, z)], d)) return false;
         return true;
     }
 
@@ -726,7 +935,7 @@ final class ModelView {
         for (RenderType type : model.getRenderTypes(state, random, data)) {
             VertexConsumer out = buffers.getBuffer(RenderTypeHelper.getEntityRenderType(type, false));
             for (Direction side : SIDES) {
-                if (occludes(at(x + side.getStepX(), y + side.getStepY(), z + side.getStepZ()), state, side)) continue;
+                if (occludes(near(x + side.getStepX(), y + side.getStepY(), z + side.getStepZ(), groupOf(x, y, z)), state, side)) continue;
                 quads(mc, model, state, side, type, random, pose, out, data);
             }
             quads(mc, model, state, null, type, random, pose, out, data);
