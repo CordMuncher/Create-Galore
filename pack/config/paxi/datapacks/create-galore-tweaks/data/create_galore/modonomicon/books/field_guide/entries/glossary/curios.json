@@ -1,7 +1,7 @@
 {
   "category": "glossary",
-  "name": "Curios",
-  "description": "Extra equipment slots for rings, necklaces, belts and more.",
+  "name": "Accessories",
+  "description": "Rings, necklaces, hats, gloves and more, worn beside armor in one screen.",
   "icon": {
     "item": "artifacts:cloud_in_a_bottle"
   },
@@ -12,13 +12,28 @@
   "pages": [
     {
       "type": "modonomicon:text",
-      "title": "Curios",
-      "text": "**Curios** adds extra equipment slots beside armor: rings, necklaces, belts, hands and more. Gear worn there counts on top of your armor.\\\n\\\nArtifacts, Iron's Spells and Critters and Companions fill these slots."
+      "title": "Accessories",
+      "text": "**Accessories** are worn beside your armor: rings, necklaces, hats, goggles, gloves, belts, backpacks, charms and more. They count on top of your armor.\\\n\\\nOpen the **Accessories** screen with **G**, or with the small ring button at the top right of your picture in the inventory. Every accessory goes in that one screen."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**Where it matters**\n\n- [#](2E5AAC)[Gear and Curios](entry://exploration/gear)[#]()\n- [#](2E5AAC)[Iron's Spellbooks](entry://exploration/irons_spellbooks)[#]()\n- [#](2E5AAC)[Diving Gear](entry://ocean/diving)[#]()"
+      "text": "**How many you can wear**\n\n- Hat, eyes (goggles), face mask: 1 each\n- Necklaces: 3\n- Cape, back, body: 1 each\n- Hands: 2, one per hand\n- Shield: 1\n- Rings: 10\n- Belt, quiver, book, shoes: 1 each\n- Charms: 3\n- Gadgets: 3"
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "A **pair of gloves** (Aether gloves, Sticky Gloves, Blazing Grips) takes both hands; a single claw or glove takes one.\\\n\\\nNo two of the same item in one group, except rings and hands: up to 2 of the same. The limits hold however you put an item on, right-click included.\\\n\\\nEmpty slots say what goes in them and how many you wear."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "[#](FFFFFF)\ue102[#]() **Tip:** hover a worn item and click the small **eye** in its corner to hide it on your character. A hidden item still works; the eye stays crossed out until you show it again.\\\n\\\nShift-click an accessory in your inventory to put it on."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Where it matters**\n\n- [#](2E5AAC)[Gear and Accessories](entry://exploration/gear)[#]()\n- [#](2E5AAC)[Iron's Spellbooks](entry://exploration/irons_spellbooks)[#]()\n- [#](2E5AAC)[Diving Gear](entry://ocean/diving)[#]()\n- [#](2E5AAC)[Fishing Gadgets](entry://fishing/gadgets)[#]()"
     }
   ]
 }

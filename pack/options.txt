@@ -3,7 +3,7 @@ onboardAccessibility:false
 key_key.sophisticatedbackpacks.open_backpack:key.keyboard.j
 key_key.jetpack.toggle_active.description:key.keyboard.n
 key_create_mobile_packages.keyinfo.open_portable_stock_ticker:key.keyboard.period
-key_accessories.key.open_accessories_screen:key.keyboard.comma
+key_accessories.key.open_accessories_screen:key.keyboard.unknown
 key_create_mobile_packages.keyinfo.open_player_networks_screen:key.keyboard.semicolon
 key_key.cataclysm.ability:key.keyboard.home
 key_key.cataclysm.boots_ability:key.keyboard.end
@@ -16,6 +16,8 @@ key_key.createrailwaysnavigator.route_overlay_options:key.keyboard.backslash
 resourcePacks:["vanilla","mod_resources","file/FreshAnimations_v1.10.4.zip","file/create-galore-menu"]
 key_key.special_ability:key.keyboard.apostrophe
 key_key.aether.open_accessories.desc:key.keyboard.unknown
+key_key.curios.open.desc:key.keyboard.unknown
+key_key.create_galore_bridge.wear:key.keyboard.g
 key_tfmg.keyinfo.engine_start:key.keyboard.minus
 key_tfmg.keyinfo.transmission_shift_up:key.keyboard.right
 key_tfmg.keyinfo.transmission_shift_down:key.keyboard.left

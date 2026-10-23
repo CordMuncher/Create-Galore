@@ -1,0 +1,7 @@
+#List of slots to create or modify.
+#See documentation for syntax: https://docs.illusivesoulworks.com/curios/configuration#slot-configuration
+#
+#Create Galore: the accessory screen (Create Galore Bridge) shows one set of slots for every accessory mod and
+#limits how many of each kind are worn (10 rings, 3 necklaces, 3 charms...). These sizes only make the real Curios
+#slots big enough for those limits; the limits themselves are kept by the screen and hold everywhere.
+slots = ["id=head;size=3", "id=necklace;size=3", "id=ring;size=10", "id=rings;size=10", "id=hands;size=4", "id=belt;size=3", "id=charm;size=3", "id=informational;size=3"]

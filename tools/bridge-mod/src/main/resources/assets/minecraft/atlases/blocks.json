@@ -1,0 +1,5 @@
+{
+  "sources": [
+    {"type": "directory", "source": "wear_slot", "prefix": "wear_slot/"}
+  ]
+}

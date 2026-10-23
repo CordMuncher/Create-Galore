@@ -2,6 +2,7 @@ package dev.creategalore.bridge;
 
 import dev.creategalore.bridge.client.BridgeClient;
 import dev.creategalore.bridge.guideai.GuideAi;
+import dev.creategalore.bridge.wear.Wear;
 import java.util.List;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
@@ -74,6 +75,7 @@ public final class CreateGaloreBridge {
         GuideAi.register(modBus);
         ShipGlueCheck.register(modBus);
         AnimalCare.register();
+        Wear.register(modBus);
         if (FMLEnvironment.dist.isClient()) {
             BridgeClient.init(modBus);
         }

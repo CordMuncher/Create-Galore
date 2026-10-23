@@ -1,4 +1,4 @@
-<!-- sources sha256:f2a026a4be0c121e31e09bff06e42b9cec0da516eb688cb9ccf61de0f7a3fe3c -->
+<!-- sources sha256:1adb5cbcf0455b138e20f468884c07acf28c64b73a0d759281e46c8a6eb1ad93 -->
 # Survival Layers (survival)
 Layers: Temperature (Cold Sweat), Thirst, Seasons (Serene Seasons), Pollution (Pollution of the Realms smog, exhaust systems), food/health, death/graves.
 
@@ -131,7 +131,7 @@ Layers: Temperature (Cold Sweat), Thirst, Seasons (Serene Seasons), Pollution (P
 - Survival layers: (see survival/thirst), (see survival/seasons), (see survival/temperature), (see survival/pollution), (see food/farmers_delight)
 
 ## survival/death_and_graves | Death and Graves
-- Gravestone [gravestone:gravestone]: on death, GraveStone puts a grave where you fell, storing inventory, armour, offhand and Curios slots (backpack, charms). Nothing drops on ground, so nothing burns/despawns. Break the grave: every item goes back where it was. Aether gloves and pendants return as normal items; put on again with comma. Anyone can break it, so a friend can fetch it.
+- Gravestone [gravestone:gravestone]: on death, GraveStone puts a grave where you fell, storing inventory, armour, offhand and accessories (backpack, rings, charms). Nothing drops on ground, so nothing burns/despawns. Break the grave: every item goes back where it was. Aether gloves and pendants return as normal items; put on again in the Accessories screen (G). Anyone can break it, so a friend can fetch it.
 - The Latest Death waypoint on your map leads you back.
 - You also get an Obituary (paper: how and where you died); disappears when you break the grave.
 - Where graves land: Void (falling out of world, as in the End): just above bottom of the world, in the rock; dig down. Lava: in the lava where you died; bring Fire Resistance or drain it first. Water: on the spot, even deep underwater. On a ship: in the air where you died; ship flies on, grave stays; follow Latest Death waypoint and build up to it. Another planet: on that planet where you died; you wake on Earth, need a rocket to fetch it.
