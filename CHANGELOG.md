@@ -4,6 +4,12 @@ Each pack version gets a section here, with **Added**, **Fixed** and **Removed**
 workflow copies the section for the version in `pack/pack.toml` to the top of the GitHub release, and the build
 fails when that section is missing.
 
+## 0.4.63
+
+### Fixed
+- **No more sea showing on a ship's deck from some angles.** The sea under a ship is hidden where it reaches into the hull, but the hidden shape leaves out railings, fences and other parts well above the water, so from spots where you looked over a railing or through a gap in it (into the motor launch's aft cockpit from the stern, along its bow deck from the bow) your line of sight left the shape and came back in, and the sea's surface drew across the dry deck in wedges, or over the whole floor. It was never real water and never got you wet. The sea is now hidden by where your line of sight meets the water: when that point is inside the hull, the water there is hidden, whatever the line of sight passed on the way. Checked on a test client with and without Complementary, from the stern and bow spots that showed it before, from inside the cabin, from around and under the boat: no water on the decks, and the sea around the boat looks as before.
+- Create Galore Bridge 1.83.0.
+
 ## 0.4.62
 
 ### Added
