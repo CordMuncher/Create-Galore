@@ -4,6 +4,12 @@ Each pack version gets a section here, with **Added**, **Fixed** and **Removed**
 workflow copies the section for the version in `pack/pack.toml` to the top of the GitHub release, and the build
 fails when that section is missing.
 
+## 0.4.43
+
+### Fixed
+- **Looking at a ship no longer freezes the game.** Since 0.4.36, aiming at any block of an assembled ship (a Physics Assembler's lever included) dropped the game to about one frame every few seconds, for every player looking at it, with or without shaders, until the ship was taken apart. The look-up that lets Jade name smog in front of you followed the aim out to where the ship mod really keeps a ship's blocks, far outside the world, and read every block on the way each tick. It now stops at the ship you see and never looks past your reach; Jade still names smog hanging in front of a ship.
+- Create Galore Bridge 1.72.0.
+
 ## 0.4.42
 
 ### Added
