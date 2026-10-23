@@ -4,6 +4,14 @@ Each pack version gets a section here, with **Added**, **Fixed** and **Removed**
 workflow copies the section for the version in `pack/pack.toml` to the top of the GitHub release, and the build
 fails when that section is missing.
 
+## 0.4.52
+
+### Fixed
+- **No more server freezes while sailing into new terrain.** Water (and lava) flowing near the edge of the loaded world woke the blocks where it landed, and when that spot was in a chunk still being generated, the server stopped and waited for it: freezes of 2 to 7 s, one after another, while exploring by sea, and up to 28 s in testing. Chunks there start ticking a moment before their neighbours are done. Water now only flows once the chunks within two blocks of it are loaded, and tries again a quarter second later otherwise. Everywhere else it flows exactly as before, and settled water ends up the same.
+- **No more freezes from chimney smoke at the edge of the loaded world.** Advanced Chimneys follows the smoke of every fire, furnace and campfire (also the ones in villages and camps) through its connected chimney blocks every few seconds, and that search read blocks in chunks that were still generating, so the server waited for them: up to 28 s in testing. The search now stops at a chunk that isn't loaded yet and carries on a few seconds later.
+- Checked on a test server travelling 1,200 blocks of new coast and sea at 10 blocks a second, on the same seeds and route: in 8 runs the old version made the server wait for unloaded chunks 185 times (135 s in all, the longest 6 s and whole freezes of up to 28 s), in 6 runs the new one waited once, for 0.03 s.
+- Create Galore Bridge 1.76.0.
+
 ## 0.4.51
 
 ### Added
