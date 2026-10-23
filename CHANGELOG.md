@@ -4,6 +4,14 @@ Each pack version gets a section here, with **Added**, **Fixed** and **Removed**
 workflow copies the section for the version in `pack/pack.toml` to the top of the GitHub release, and the build
 fails when that section is missing.
 
+## 0.4.49
+
+### Added
+- **Field Guide: Nether Heat.** A new Survival page on surviving the Nether's heat, with numbers measured on a test server. The Nether's air is 130 to 180 °F, lava within 7 blocks adds up to 200 °F more, and it is about 40 °F cooler while it is night in the Overworld. With no heat insulation you overheat in 15 to 45 seconds. Iron, diamond and netherite armor have no heat insulation of their own. What works before your first trip: leather armor with Rabbit Hide sewn into all 19 slots lasts about 17 minutes in 166 °F air and about 6 minutes right next to lava. Four Blue Ice and four Packed Ice around you take 166 °F down to 86 °F, and neither melts. Waterskins chilled in an Icebox help, and Fire Resistance stops heat damage. Deep inside a Soul Sand Valley it is about 85 to 100 °F. Once you're in, a Hoglin set lasts about 8 minutes on its own. The Nether page now warns you to read it first, and Ask the Book knows all of it.
+
+### Fixed
+- **Ask the Book's Nether advice.** The guide said Cold Sweat only covers the Overworld and the Aether, so the book didn't know the Nether gets hot and told players to fetch Hoglin Hide, which only comes from the Nether, and go in quick bursts. Bursts were impossible without heat gear. The Temperature pages now say Cold Sweat covers the Overworld, Nether, End, Aether and Twilight Forest. They name Rabbit Hide as the best heat insulator outside the Nether (tied with Chameleon Molt once it has turned toward heat) and suggest it instead of Hoglin armor for hot days.
+
 ## 0.4.48
 
 ### Fixed

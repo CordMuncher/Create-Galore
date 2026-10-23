@@ -1,4 +1,4 @@
-<!-- sources sha256:90bff550828453648bf02469d87860dd3e5f5321ce3b14c935373b7097f2150b -->
+<!-- sources sha256:f55b243a53c536de6d7166549150b83604d97ec0c351b178268c0ffbb16572ac -->
 # Exploration and Adventure (exploration)
 
 ## exploration/dimensions | Dimensions
@@ -15,6 +15,7 @@
 
 ## exploration/nether | The Nether
 - **Incendium** rebuilds the Nether: new biomes, mobs, structures, loot; plays differently from vanilla. Only reshapes newly generated Nether
+- Watch out: the Nether is hot enough to kill you in under a minute; read (see survival/nether_heat) before your first trip
 - Biomes: Infernal Dunes, Inverted Forest, Quartz Flats, Toxic Heap, Volcanic Deltas, Weeping Valley, Ash Barrens, Withered Forest
 - Structures: Forbidden Castle, Infernal Altar, Nether Reactor, Piglin Village, Ruined Lab, Sanctum, Quartz Kitchen, Abandoned Tower, Pipeline
 - Castles, Sanctum, Nether Reactor guarded by named mobs (knights, archers, pyros, cultists, apostles, more); Piglin villages have civilians and guards
