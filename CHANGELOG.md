@@ -5,6 +5,16 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.4.79
+
+### Fixed
+- **Farm animals no longer starve beside full troughs.** A player's tamed animals kept going hungry, unhappy and sick in a farm with wheat in troughs everywhere, in the barn and out in the field. Animal Husbandry counts an animal's days on the world clock, but the animal only runs while its chunk is simulated: a farm left behind (a trip, another dimension, the far end of a big base) stood still, and the moment it ran again every animal counted all the missed days at once, unfed for each, losing 10 happiness a day and rolling for sickness from starving, before it could take a step to the trough beside it. Now an animal coming back eats one meal for each missed day except today from the troughs it can reach (nearest first, two for a Glutton), then walks over for today's. When its troughs run out partway, the days it went without still count.
+- **Hungry animals find the trough they can reach.** The trough search took the first trough in a square around the animal, not the nearest, and only managed paths 16 blocks long, so a trough 17 blocks off was never reached and the animal kept searching every other tick. It now walks to the nearest trough with its food it can get to within 20 blocks (4 up or down, paths up to 24 blocks), leaves a trough it can't reach for 30 s while it tries the next, and gives up a walk that takes over 30 s, so a crowd at one trough sends it to another.
+- **The Farm Magnifying Glass says when no trough in reach has an animal's food**, and what it eats (wheat for cows, sheep and goats, carrots or potatoes for pigs, seeds for chickens).
+- Checked on a test server with a barn and a fenced field, 30 tamed animals and 21 troughs, left alone for three 4-day trips: before, every animal ended sick at happiness 0 with the troughs still mostly full; now cows, sheep, goats and pigs came back each time fed, at happiness 77 to 100, and the troughs went down by what they ate. Cows 17 and 19 blocks from a lone trough never ate before and now walk to it.
+- The Field Guide's animal page says how troughs work.
+- Create Galore Bridge 1.94.0.
+
 ## 0.4.78
 
 ### Fixed

@@ -1,4 +1,4 @@
-<!-- sources sha256:d74e1f6221a7f0235b970f63febf7269382a64b81f58f392a7495d5957929d6c -->
+<!-- sources sha256:1e823404c3165f9e58687e084e05f5b95c3091effc2f8d4a16720d7d2617fcc0 -->
 # Food and Farming (food)
 
 ## food/first_food | Food in Your First Days
@@ -174,7 +174,8 @@
 - Mating now: Fertility Potion on one, then on the other within 30 seconds; only the second uses up the potion. Two of the same sex are refused with a message, so it also tells you which you have. Females are a little smaller than males.
 - Pen won't breed: check each animal with the Farm Magnifying Glass: sex, happiness, what is missing. Usual causes: all one sex, happiness under 80 (crowding, missed feeding), animals not tamed (hand each its food once).
 - Sickness: each day a tamed animal may fall sick if unhappy (under 50), unfed for more than 3 days, crowded (over 5 animals within 4 blocks), or kept dark (no sky and light under 4). Torch-lit barn is fine. After 4 sick days it loses a heart a day and can die. Animal Medicine cures it.
-- Troughs and eggs: Feeding Trough holds feed or water, not both; tamed animals walk to it when hungry. Only hens lay; Broody hens never do. Egg laid on stone or planks breaks 4 times in 5; on dirt, sand, hay, wool, leaves 1 in 10. Chicken Nest keeps them all.
+- Feeding Troughs: hold feed or water, not both. A hungry tamed animal walks to the nearest trough it can reach within 20 blocks that has its food: wheat (cows, sheep, goats), carrots or potatoes (pigs), seeds (chickens); once a day. A farm left behind keeps eating from its troughs while the player is away. Spread a few troughs around a pen so a herd doesn't crowd one. Farm Magnifying Glass says when no trough in reach has an animal's food.
+- Eggs: Only hens lay; Broody hens never do. Egg laid on stone or planks breaks 4 times in 5; on dirt, sand, hay, wool, leaves 1 in 10. Chicken Nest keeps them all.
 - Milk: wild cows milk as usual. Tamed cow gives milk only if female and not sick, a few buckets a day.
 - Finding sheep: shows item minecraft:white_wool. Sheep live in plains, meadows, cherry groves, forests (birch, dark, flower), taiga, groves, windswept hills, jungles. Terralith lands with sheep: highlands, shrublands, steppe, valleys, spires, snowy taiga. No sheep in savanna, swamp, desert, badlands, snowy plains, beaches, mushroom fields, oceans. Animals mostly appear when land is first generated: look in unvisited land.
 - Wool without sheep: 4 string craft 1 white wool (spiders drop string; cobwebs give it to a sword or shears); Shepherd villagers sell wool for an emerald from Apprentice on; four Alex's Caves Dark Tatters make black wool; Bulk Washing (Encased Fan through water) turns dyed wool white.
