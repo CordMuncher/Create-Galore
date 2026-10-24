@@ -44,7 +44,7 @@ when it ends.
 
 `metrics.py RUN_FOLDER` (Pillow and numpy) prints, per viewpoint and mode, the frame time, the shimmer between the
 still path's last 8 frames, the smear left two frames after the flick, and the edge contrast.
-`PC-RUNBOOK.md` is the round 1 recipe for an RTX PC.
+`PC-RUNBOOK.md` is the recipe for an RTX PC: round 1 (DLAA) and round 2 (FSR 3 next to DLAA).
 
 Each run folder has `manifest.json`: the modes (with the frame time on the still path and whether DLAA really ran),
 the viewpoints, the capture frames of each path and every screenshot.

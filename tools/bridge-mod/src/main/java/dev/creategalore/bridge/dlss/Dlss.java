@@ -84,6 +84,8 @@ public final class Dlss {
     private static String packProblem;
     /** A run failed: the pack's own anti-aliasing is back until shaders reload. */
     private static boolean failed;
+    /** The game is quitting: its last frames must not start DLSS again after it was closed. */
+    private static boolean shuttingDown;
 
     // For the session.
     /** Why DLSS cannot run on this computer, once that is known. */
@@ -197,7 +199,7 @@ public final class Dlss {
         lastFrameNanos = now;
 
         boolean wasActive = active;
-        active = wanted && profile != null && packProblem == null && !failed && ensureReady();
+        active = wanted && profile != null && packProblem == null && !failed && !shuttingDown && ensureReady();
         if (!active) {
             return;
         }
@@ -416,6 +418,7 @@ public final class Dlss {
     }
 
     private static void shutdown(GameShuttingDownEvent event) {
+        shuttingDown = true;
         if (RenderSystem.isOnRenderThread()) {
             closeAll();
         }

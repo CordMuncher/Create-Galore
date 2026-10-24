@@ -89,6 +89,10 @@ import org.lwjgl.system.MemoryStack;
  * result into the pass's outputs. Everything it changes in OpenGL's state is put back as it was, so Iris and
  * Minecraft's cached state stay right.
  *
+ * The copies keep OpenGL's row order (bottom row first), so DLSS sees the frame upside down; its developer DLL's
+ * watermark shows that. The motion vectors (+y up) and the jitter are in the same order, so to DLSS it is simply a
+ * consistent frame: round 1 on the PC found the unflipped jitter sign steadiest and the motion vectors pointing right.
+ *
  * Without a device the textures are plain OpenGL ones: for FSR 3 ({@link Fsr3Upscaler}, which runs in OpenGL), and
  * for the debug views (see {@link Dlss}), where the pass draws one of the inputs instead of a result, so the copies,
  * the pack's inputs and the write-back can be checked on any GPU.

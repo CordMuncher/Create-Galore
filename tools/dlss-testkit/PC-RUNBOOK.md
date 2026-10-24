@@ -1,4 +1,4 @@
-# DLAA round 1 on the PC: runbook
+# DLAA rounds 1 and 2 on the PC: runbook
 
 For the Claude Code session on Emre's PC (a local session he opens in the test folder, or Remote Control). Emre
 approved the plan in the "DLAA round 1: PC test plan" doc and the tools in this runbook on 2026-10-24; this file is
@@ -49,9 +49,17 @@ If the installer stops on a CurseForge-only file, take it from the repo's `pack/
 ## 3. Test kit, world, settings
 
 ```powershell
-Copy-Item $T\repo\tools\dlss-testkit\dist\create-galore-dlss-testkit-1.0.0.jar $T\instance\mods\
+Copy-Item $T\repo\tools\dlss-testkit\dist\create-galore-dlss-testkit-1.0.0.jar $T\instance\mods\ -Force
 Expand-Archive $T\repo\tools\dlss-testkit\world\dlaa-test.zip $T\instance\saves   # -> saves\dlaa-test
 ```
+
+If `$T\instance\saves\dlaa-test` is already there from an earlier round, keep it: it has the far terrain (Distant
+Horizons' database, about 230 MB for radius 64), so the hold in step 4 can be skipped.
+
+Ask Emre to check that the NVIDIA App's DLSS override is off (Graphics, Global settings, DLSS Override - Model
+Presets). It is his setting, outside the test folder, so he changes it, not the session. With it on, NGX uses the
+driver's own DLSS and its forced preset for every mode, and the developer DLL in run E is never loaded. Check after
+the first launch: `$T\instance\create-galore-dlss\nvsdk_ngx.log` has no `Feature dlss override enabled`.
 
 Before the first launch (create a file if it isn't there; the game adds the keys it misses):
 
@@ -59,7 +67,12 @@ Before the first launch (create a file if it isn't there; the game adds the keys
 - `$T\instance\config\iris.properties`: `enableShaders=true`, `shaderPack=Photon v1.3a + DLAA`. (The copy is made
   on the first launch; Iris takes it from then on.)
 - `$T\instance\options.txt` (the pack installs it): set or add `renderDistance:12`, `pauseOnLostFocus:false`,
-  `fullscreen:false`.
+  `fullscreen:false`, `tutorialStep:none` (the "Move with W, A, S and D" popup is drawn even with the HUD hidden and
+  would sit in the corner of every shot, since the camera never moves by key).
+- `$T\instance\config\fml.toml`: `earlyWindowControl = false`. Perfect Presentation needs NeoForge's early loading
+  window off: with it on, the first start with Perfect Presentation only turns it off and has to be closed and
+  started again. It also lets the window keep the full `--resolution` (with the early window, it is fitted to the
+  screen, 2560x1421 in round 1), so every run has the same picture size.
 - `$T\instance\config\DistantHorizons.toml` (the pack installs it): `lodChunkRenderDistanceRadius = 64` in place of
   the pack's 256 (Emre's call, 2026-10-24: far terrain still in every shot, built in minutes instead of hours; the
   setting is the player's choice in game anyway). Every run and mode uses the same 64. Also `numberOfThreads = 32`
@@ -76,9 +89,10 @@ Before the first launch (create a file if it isn't there; the game adds the keys
 ```
 
 Add `--jvm-arg=-Dcreate_galore_dlss_testkit.autorun=dlaa-test --jvm-arg=-Dcreate_galore_dlss_testkit.hold=900`: the
-game opens the test world, stands at the first viewpoint for 15 minutes and closes. That makes the chunks and
-Distant Horizons' far terrain (radius 64, see step 3) once, so every mode later sees the same distance. If the
-Distant Horizons database in the world folder still grew in the last minutes, hold again; if it stopped growing
+game opens the test world, flies at the first viewpoint for 15 minutes and closes. That makes the chunks and
+Distant Horizons' far terrain (radius 64, see step 3) once, so every mode later sees the same distance. From scratch
+it takes about 15 to 20 minutes with those settings. If the Distant Horizons database in the world folder
+(`DistantHorizons.sqlite` under `saves\dlaa-test`) still grew in the last minutes, hold again; if it stopped growing
 early, a shorter hold is fine next time. Then
 `$T\instance\logs\latest.log` must have:
 
@@ -127,3 +141,62 @@ Add a few crops (about 512x512, PNG) of leaves, glass and fence edges, same spot
 `results\<run>\`: a few MB in all, never whole screenshots. Commit them on the DLAA branch and push. If pushing
 isn't possible from this PC, tell Emre, so he can paste `REPORT.md` into the DLAA thread. Emre looks at the full
 screenshots with `$T\repo\tools\dlss-testkit\compare.html`.
+
+## Round 2: FSR 3 next to DLAA
+
+Same PC, same test folder, same tools as round 1, nothing new to install. Start it only when Emre says so. The
+Bridge can run AMD FSR 3.1 (OpenGL compute, any GPU) in DLSS's place, as a test engine; round 2 measures it on the
+4080 next to DLAA and Photon's TAA. It is only a test of how good FSR 3 looks here: never assume it matches DLSS, and
+report what the numbers and crops show.
+
+### Update
+
+Keep `$T\instance` and its `saves\dlaa-test` as they are (they have round 1's far terrain, so no hold is needed).
+Only the two jars change:
+
+```powershell
+git -C $T\repo pull
+Copy-Item $T\repo\pack\mods\create-galore-bridge-1.89.0.jar $T\instance\mods\ -Force
+Copy-Item $T\repo\tools\dlss-testkit\dist\create-galore-dlss-testkit-1.0.0.jar $T\instance\mods\ -Force
+```
+
+Check before the runs: `config\create_galore_bridge-display.properties` has `dlaa=true` and
+`perfectPresentation=false`, `config\fml.toml` has `earlyWindowControl = false`, `options.txt` has
+`tutorialStep:none`, the Distant Horizons settings from step 3 are unchanged, and the NVIDIA App's DLSS override is
+still off. The test kit sets `dlaaEngine` itself for each mode and puts the settings back after each run. Its config
+file from round 1 gets the `fsr3*` modes added on the first run.
+
+### Runs
+
+The launch command from step 4 with these JVM arguments (written as in step 5):
+
+| Run | Before it | Extra JVM arguments |
+| --- | --- | --- |
+| F | `perfectPresentation=false` | `...autorun=dlaa-test` `...modes=photon-taa+dlaa-default+fsr3` |
+| G | same | `...autorun=dlaa-test` `...modes=fsr3+fsr3-flip-x+fsr3-flip-y+fsr3-flip-xy` `...quick=true` |
+| H | same | `...autorun=dlaa-test` `...modes=fsr3-debug` `...quick=true` |
+| I | `perfectPresentation=true` | `...autorun=dlaa-test` `...modes=dlaa-default+fsr3` |
+
+The log of each run with an `fsr3` mode must have:
+
+- `DLAA: on for this shader pack, AMD FSR 3.1 in place of DLSS (testing)`
+- `DLAA: FSR 3.1 ready on NVIDIA GeForce RTX 4080 SUPER...` (the GPU's OpenGL name)
+- `DLAA: FSR 3.1 running at WIDTHxHEIGHT`
+
+and no `DLAA: FSR 3 not available`, `DLAA: stopped` or `did not compile`. FSR's shaders were only ever compiled by
+Mesa in the cloud, so NVIDIA's compiler is new to them: if a pass fails, copy the whole `DLAA:` line (it carries the
+compiler's message) and stop there. G repeats the cloud's jitter-sign check on real hardware (the cloud found the
+unflipped sign steadiest, as with DLSS). H is FSR's own debug view of its inputs and buffers, to compare with the
+cloud's. In I, FSR runs in OpenGL as before, with Perfect Presentation showing the frames.
+
+Also check that the game no longer sets DLSS or FSR up again while quitting: after the last `DLAA: ... running` line
+of a run, no new `ready` line before `Stopping!`.
+
+### Results
+
+`metrics.py` for each run folder, as in step 6. Write `$T\repo\tools\dlss-testkit\results\round2\REPORT.md`
+(metrics tables, `DLAA:` lines, the frame time of `fsr3` against `dlaa-default` and `photon-taa`, anything that
+looked wrong) and crops of the same spots as round 1 (`shore-fence-glass`, `glass-panes`, `canopy-leaves`, about
+512x512, from the settled still frame) for `photon-taa`, `dlaa-default` and `fsr3` under `results\round2\F\`, a
+few MB in all. Commit and push on the DLAA branch. Emre judges the look himself in `compare.html`.
+

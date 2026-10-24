@@ -486,6 +486,16 @@ public final class Capture {
         }
         server("gamemode creative @a");
         server(String.format(java.util.Locale.ROOT, "tp @a %.2f %.2f %.2f %.1f %.1f", first.x(), first.y(), first.z(), first.yaw(), first.pitch()));
+        // Creative alone only allows flight: without this the player drops into the lake and the far terrain is made
+        // around the lake bed instead.
+        IntegratedServer server = mc.getSingleplayerServer();
+        if (server != null) {
+            server.execute(() -> server.getPlayerList().getPlayers().forEach(player -> {
+                player.getAbilities().flying = true;
+                player.onUpdateAbilities();
+                player.setDeltaMovement(Vec3.ZERO);
+            }));
+        }
         log("holding at " + first.name() + " for " + seconds + " s, then closing");
         autorun = false;
         Util.ioPool().execute(() -> {

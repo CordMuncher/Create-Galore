@@ -1,10 +1,12 @@
 package dev.creategalore.bridge.dlss;
 
 import static org.lwjgl.opengl.GL11C.GL_NEAREST;
+import static org.lwjgl.opengl.GL11C.GL_RENDERER;
 import static org.lwjgl.opengl.GL11C.GL_TEXTURE_2D;
 import static org.lwjgl.opengl.GL11C.GL_TEXTURE_MAG_FILTER;
 import static org.lwjgl.opengl.GL11C.GL_TEXTURE_MIN_FILTER;
 import static org.lwjgl.opengl.GL11C.glDeleteTextures;
+import static org.lwjgl.opengl.GL11C.glGetString;
 import static org.lwjgl.opengl.GL12C.GL_TEXTURE_MAX_LEVEL;
 import static org.lwjgl.opengl.GL45C.glCreateTextures;
 import static org.lwjgl.opengl.GL45C.glTextureParameteri;
@@ -91,8 +93,10 @@ final class DlssDevice implements AutoCloseable {
     /** Perfect Presentation's device when it is showing frames, else a new one on OpenGL's GPU. */
     static DlssDevice open() {
         if (Presentation.d3dDevice() != 0L) {
-            return new DlssDevice(Presentation.d3dDevice(), Presentation.d3dContext(), Presentation.interopDevice(), true,
-                    "Perfect Presentation's device");
+            // Perfect Presentation made its device on the GPU OpenGL renders with, so that is the one to name.
+            String renderer = glGetString(GL_RENDERER);
+            String name = renderer == null ? "OpenGL's graphics card" : renderer.split("/", 2)[0];
+            return new DlssDevice(Presentation.d3dDevice(), Presentation.d3dContext(), Presentation.interopDevice(), true, name);
         }
         if (!GL.getCapabilitiesWGL().WGL_NV_DX_interop2) {
             throw new IllegalStateException("the OpenGL driver has no WGL_NV_DX_interop2");
