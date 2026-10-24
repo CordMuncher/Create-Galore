@@ -25,6 +25,8 @@ public final class DisplaySettings {
     public static final String DLAA_PRESET = "dlaaPreset";
     /** Testing only, not written to the file: color, motion or depth shows that DLSS input instead of DLSS. */
     public static final String DLAA_DEBUG_VIEW = "dlaaDebugView";
+    /** Testing only, not written to the file: x,y signs for the jitter handed to DLSS (1,1 unless a test shows otherwise). */
+    public static final String DLAA_JITTER_SIGN = "dlaaJitterSign";
 
     private static Properties cached;
 

@@ -23,8 +23,10 @@ final class Paths {
     private static final Map<String, Path> PATHS = new LinkedHashMap<>();
 
     static {
-        // Settled image: what each mode looks like once its history has converged.
-        PATHS.put("still", new Path(120, new int[] {119}, f -> HOLD));
+        // Settled image: what each mode looks like once its history has converged. The last 8 frames in a row show
+        // shimmer: with the camera still, whatever changes between them (besides the waving leaves, the same in every
+        // mode) is the anti-aliasing flickering.
+        PATHS.put("still", new Path(120, new int[] {112, 113, 114, 115, 116, 117, 118, 119}, f -> HOLD));
         // A fast 60 degree flick right and back: smearing during the turn, then how quickly newly seen areas clean up.
         PATHS.put("flick", new Path(160, new int[] {59, 64, 68, 70, 74, 84, 99, 104, 108, 110, 114, 124, 159}, f -> {
             float yaw;

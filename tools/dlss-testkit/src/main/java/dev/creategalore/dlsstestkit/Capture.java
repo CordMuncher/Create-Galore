@@ -48,16 +48,26 @@ public final class Capture {
 
     /** config/create_galore_dlss_testkit.json. */
     static final class Settings {
+        /** The first mode warms up longer: chunks finish building and Distant Horizons fills in before any capture. */
+        int firstWarmupFrames = 900;
         int warmupFrames = 240;
         int settleFrames = 120;
         long time = 3000;
         boolean freezeTicks = true;
         List<Mode> modes = new ArrayList<>(List.of(
-                new Mode("photon-taa", false, "default", null),
-                new Mode("dlaa-default", true, "default", null),
-                new Mode("dlaa-K", true, "K", null),
-                new Mode("dlaa-L", true, "L", null),
-                new Mode("dlaa-M", true, "M", null)));
+                new Mode("photon-taa", false, "default", null, null),
+                new Mode("dlaa-default", true, "default", null, null),
+                new Mode("dlaa-K", true, "K", null, null),
+                new Mode("dlaa-L", true, "L", null, null),
+                new Mode("dlaa-M", true, "M", null, null),
+                // Checks of the jitter's direction: with a wrong sign a still picture shimmers and blurs.
+                new Mode("sign-flip-x", true, "default", null, "-1,1"),
+                new Mode("sign-flip-y", true, "default", null, "1,-1"),
+                new Mode("sign-flip-xy", true, "default", null, "-1,-1"),
+                // What DLSS gets, drawn instead of DLSS's result (any GPU).
+                new Mode("debug-motion", true, "default", "motion", null),
+                new Mode("debug-depth", true, "default", "depth", null),
+                new Mode("debug-color", true, "default", "color", null)));
         // The DLAA test world (seed 20261024, scene built on the lakeshore at x 1023..1040, z 160..176).
         List<Viewpoint> viewpoints = new ArrayList<>(List.of(
                 new Viewpoint("shore", 1029.5, 64.0, 160.5, 0.0f, 8.0f),
@@ -66,8 +76,11 @@ public final class Capture {
         List<String> paths = new ArrayList<>(List.of("still", "flick", "pan", "strafe"));
     }
 
-    /** debugView (color, motion or depth) shows that DLSS input instead of DLSS, on any GPU. */
-    record Mode(String name, boolean dlaa, String preset, String debugView) {}
+    /**
+     * debugView (color, motion or depth) shows that DLSS input instead of DLSS, on any GPU; jitterSign ("x,y", default
+     * "1,1") flips the jitter the Bridge hands to DLSS.
+     */
+    record Mode(String name, boolean dlaa, String preset, String debugView, String jitterSign) {}
 
     record Viewpoint(String name, double x, double y, double z, float yaw, float pitch) {}
 
@@ -92,9 +105,12 @@ public final class Capture {
     private static int frameNanosCount;
     private static boolean savedHideGui;
     private static boolean savedBob;
+    private static boolean savedPauseOnLostFocus;
     private static int savedFov;
     private static double savedFovEffect;
     private static CameraType savedCamera;
+    /** The Bridge's display settings before the run (null: no file), put back when it ends. */
+    private static String savedBridgeConfig;
     private static int autorunWait;
 
     private Capture() {}
@@ -155,7 +171,8 @@ public final class Capture {
 
         List<Segment> segments = new ArrayList<>();
         for (Mode mode : modes) {
-            segments.add(new Segment("mode " + mode.name(), viewpoints.get(0), null, settings.warmupFrames, new int[0], () -> applyMode(mode), mode));
+            int warmup = segments.isEmpty() ? Math.max(settings.firstWarmupFrames, settings.warmupFrames) : settings.warmupFrames;
+            segments.add(new Segment("mode " + mode.name(), viewpoints.get(0), null, warmup, new int[0], () -> applyMode(mode), mode));
             for (Viewpoint viewpoint : viewpoints) {
                 segments.add(new Segment("settle " + viewpoint.name(), viewpoint, null, settings.settleFrames, new int[0], null, mode));
                 for (String path : paths) {
@@ -184,13 +201,21 @@ public final class Capture {
         frameNanosCount = 0;
         lastNanos = 0;
 
+        try {
+            Path bridgeFile = FMLPaths.CONFIGDIR.get().resolve(BRIDGE_CONFIG);
+            savedBridgeConfig = Files.exists(bridgeFile) ? Files.readString(bridgeFile) : null;
+        } catch (IOException e) {
+            return "could not read config/" + BRIDGE_CONFIG + ": " + e;
+        }
         savedHideGui = mc.options.hideGui;
         savedBob = mc.options.bobView().get();
+        savedPauseOnLostFocus = mc.options.pauseOnLostFocus;
         savedFov = mc.options.fov().get();
         savedFovEffect = mc.options.fovEffectScale().get();
         savedCamera = mc.options.getCameraType();
         mc.options.hideGui = true;
         mc.options.bobView().set(false);
+        mc.options.pauseOnLostFocus = false; // the pause menu would cover the shots if the window lost focus
         mc.options.fov().set(70);
         mc.options.fovEffectScale().set(0.0);
         mc.options.setCameraType(CameraType.FIRST_PERSON);
@@ -216,12 +241,14 @@ public final class Capture {
         Minecraft mc = Minecraft.getInstance();
         mc.options.hideGui = savedHideGui;
         mc.options.bobView().set(savedBob);
+        mc.options.pauseOnLostFocus = savedPauseOnLostFocus;
         mc.options.fov().set(savedFov);
         mc.options.fovEffectScale().set(savedFovEffect);
         mc.options.setCameraType(savedCamera);
         if (settings != null && settings.freezeTicks) {
             server("tick unfreeze");
         }
+        restoreBridgeConfig();
         writeManifest(why);
         log(why + "; screenshots in " + runDir);
         if (autorun) {
@@ -238,11 +265,33 @@ public final class Capture {
         }
     }
 
+    // The modes rewrote the Bridge's display settings; the game goes back to the player's own.
+    private static void restoreBridgeConfig() {
+        Path file = FMLPaths.CONFIGDIR.get().resolve(BRIDGE_CONFIG);
+        try {
+            if (savedBridgeConfig != null) {
+                Files.writeString(file, savedBridgeConfig);
+            } else {
+                Files.deleteIfExists(file);
+            }
+            if (!autorun) {
+                Iris.reload();
+            }
+        } catch (IOException | RuntimeException e) {
+            LOG.warn("DLAA test: could not put back config/{}: {}", BRIDGE_CONFIG, e.toString());
+        }
+    }
+
     static void beforeFrame(RenderFrameEvent.Pre event) {
         Minecraft mc = Minecraft.getInstance();
         if (!running) {
             // Autorun: start once the world has been showing for a while (chunks built).
             if (autorun && mc.player != null && mc.level != null && mc.screen == null && ++autorunWait == 200) {
+                long hold = Long.getLong(TestKit.MOD_ID + ".hold", 0);
+                if (hold > 0) {
+                    hold(mc, hold);
+                    return;
+                }
                 String error = start(System.getProperty(TestKit.MOD_ID + ".modes"), true);
                 if (error != null) {
                     log("autorun: " + error);
@@ -364,6 +413,11 @@ public final class Capture {
             } else {
                 props.remove("dlaaDebugView");
             }
+            if (mode.jitterSign() != null && !mode.jitterSign().isBlank()) {
+                props.setProperty("dlaaJitterSign", mode.jitterSign());
+            } else {
+                props.remove("dlaaJitterSign");
+            }
             try (Writer w = Files.newBufferedWriter(file)) {
                 props.store(w, "Create Galore Bridge display settings (last written by the DLAA test kit, mode " + mode.name() + ")");
             }
@@ -377,6 +431,7 @@ public final class Capture {
         info.addProperty("dlaa", mode.dlaa());
         info.addProperty("preset", mode.preset());
         info.addProperty("debugView", mode.debugView());
+        info.addProperty("jitterSign", mode.jitterSign());
         info.add("frameMs", new JsonObject());
         modeInfo.put(mode.name(), info);
         log("mode " + mode.name());
@@ -402,6 +457,33 @@ public final class Capture {
         } catch (ReflectiveOperationException | RuntimeException e) {
             return false;
         }
+    }
+
+    /**
+     * -Dcreate_galore_dlss_testkit.hold=SECONDS: stands at the first viewpoint that long, then closes the game, so chunks
+     * and Distant Horizons' far terrain are made once before any run.
+     */
+    private static void hold(Minecraft mc, long seconds) {
+        Viewpoint first;
+        try {
+            first = loadSettings().viewpoints.get(0);
+        } catch (IOException | RuntimeException e) {
+            log("autorun: could not read config/" + CONFIG + ": " + e);
+            mc.stop();
+            return;
+        }
+        server("gamemode creative @a");
+        server(String.format(java.util.Locale.ROOT, "tp @a %.2f %.2f %.2f %.1f %.1f", first.x(), first.y(), first.z(), first.yaw(), first.pitch()));
+        log("holding at " + first.name() + " for " + seconds + " s, then closing");
+        autorun = false;
+        Util.ioPool().execute(() -> {
+            try {
+                Thread.sleep(seconds * 1000);
+            } catch (InterruptedException ignored) {
+                Thread.currentThread().interrupt();
+            }
+            mc.execute(mc::stop);
+        });
     }
 
     private static void server(String command) {

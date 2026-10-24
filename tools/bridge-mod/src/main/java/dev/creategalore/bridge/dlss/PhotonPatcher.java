@@ -14,6 +14,8 @@ import java.util.Comparator;
 import java.util.HexFormat;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 import dev.creategalore.bridge.DisplaySettings;
@@ -27,6 +29,11 @@ import org.slf4j.LoggerFactory;
  * shared. Every change is an exact find-and-replace on Photon's text that must match once, so a different Photon
  * version is left alone instead of patched wrongly.
  *
+ * The copy is made from Colorwheel Patcher's "photon_v1.3a + Clrwl_X.Y.Z.zip" when there is one, so Create's
+ * contraptions keep their shader support (Colorwheel's programs take the same jitter, through taa_offset), and from
+ * photon_v1.3a.zip otherwise. Colorwheel Patcher makes its zip during mod setup, after Iris has loaded its pack, so a
+ * new or updated one is picked up when loading finishes ({@link #refresh()}, called by {@link Dlss}).
+ *
  * While DLSS runs (cg_dlss_active, set by {@link Dlss}), the patched pack:
  * - jitters with the Bridge's Halton sequence (cg_dlss_jitter_x/y, in pixels) instead of its own;
  * - turns its TAA pass (composite4) into a copy that also writes, into custom images, motion vectors from Photon's
@@ -37,8 +44,10 @@ import org.slf4j.LoggerFactory;
 public final class PhotonPatcher {
     private static final Logger LOG = LoggerFactory.getLogger("create_galore_bridge");
     /** Bumped when the patch changes, so existing copies are made again. */
-    private static final int PATCH_VERSION = 1;
-    static final String SOURCE_ZIP = "photon_v1.3a.zip";
+    private static final int PATCH_VERSION = 2;
+    private static final String BASE_ZIP = "photon_v1.3a.zip";
+    /** Colorwheel Patcher's copy of {@link #BASE_ZIP}; an outdated one gets a prefix and no longer matches. */
+    private static final Pattern COLORWHEEL_ZIP = Pattern.compile("photon_v1\\.3a \\+ Clrwl_(\\d+)\\.(\\d+)\\.(\\d+)\\.zip");
     static final String PATCHED_NAME = "Photon v1.3a + DLAA";
     private static final String MARKER = "create_galore_dlaa.txt";
 
@@ -60,19 +69,28 @@ public final class PhotonPatcher {
         }
     }
 
-    /** Makes or refreshes the patched copy if the pack's Photon zip is there. Never throws. */
-    static void run(Path shaderpacks) {
-        Path source = shaderpacks.resolve(SOURCE_ZIP);
-        if (!Files.isRegularFile(source)) {
-            LOG.info("DLAA: no shaderpacks/{}, so no Photon + DLAA copy", SOURCE_ZIP);
-            return;
+    /**
+     * When loading has finished, after Colorwheel Patcher's setup: makes the copy again if Colorwheel Patcher has just
+     * made or updated its zip. True if it did, so the shaders need a reload when the copy is the pack in use.
+     */
+    static synchronized boolean refresh() {
+        return DisplaySettings.get(DisplaySettings.DLAA) && run(FMLPaths.GAMEDIR.get().resolve("shaderpacks"));
+    }
+
+    /** Makes or refreshes the patched copy if the pack's Photon zip is there; true if it made it. Never throws. */
+    static boolean run(Path shaderpacks) {
+        Path source = source(shaderpacks);
+        if (source == null) {
+            LOG.info("DLAA: no shaderpacks/{}, so no Photon + DLAA copy", BASE_ZIP);
+            return false;
         }
+        String sourceName = source.getFileName().toString();
         Path target = shaderpacks.resolve(PATCHED_NAME);
         try {
-            String stamp = "patch " + PATCH_VERSION + " of " + SOURCE_ZIP + " sha256 " + sha256(Files.readAllBytes(source));
+            String stamp = "patch " + PATCH_VERSION + " of " + sourceName + " sha256 " + sha256(Files.readAllBytes(source));
             Path marker = target.resolve(MARKER);
             if (Files.isRegularFile(marker) && Files.readString(marker).trim().equals(stamp)) {
-                return;
+                return false;
             }
             Path work = Files.createTempDirectory(shaderpacks, ".dlaa-patch");
             try {
@@ -91,13 +109,46 @@ public final class PhotonPatcher {
                 Files.writeString(work.resolve(MARKER), stamp + "\n", StandardCharsets.UTF_8);
                 deleteTree(target);
                 Files.move(work, target, StandardCopyOption.ATOMIC_MOVE);
-                LOG.info("DLAA: made shaderpacks/{} from {}", PATCHED_NAME, SOURCE_ZIP);
+                // The first time, the copy starts with the player's Photon settings (Iris keeps them in PACK.txt).
+                Path options = shaderpacks.resolve(PATCHED_NAME + ".txt");
+                Path sourceOptions = shaderpacks.resolve(sourceName + ".txt");
+                if (!Files.exists(options) && Files.isRegularFile(sourceOptions)) {
+                    Files.copy(sourceOptions, options);
+                }
+                LOG.info("DLAA: made shaderpacks/{} from {}", PATCHED_NAME, sourceName);
+                return true;
             } finally {
                 deleteTree(work);
             }
         } catch (IOException | RuntimeException e) {
             LOG.warn("DLAA: could not make shaderpacks/{}: {}", PATCHED_NAME, e.toString());
+            return false;
         }
+    }
+
+    /** Colorwheel Patcher's newest Photon zip, else the plain one, else null. */
+    private static Path source(Path shaderpacks) {
+        Path best = null;
+        long bestVersion = -1;
+        try (Stream<Path> files = Files.list(shaderpacks)) {
+            for (Path file : (Iterable<Path>) files::iterator) {
+                Matcher m = COLORWHEEL_ZIP.matcher(file.getFileName().toString());
+                if (m.matches() && Files.isRegularFile(file)) {
+                    long version = Long.parseLong(m.group(1)) << 40 | Long.parseLong(m.group(2)) << 20 | Long.parseLong(m.group(3));
+                    if (version > bestVersion) {
+                        best = file;
+                        bestVersion = version;
+                    }
+                }
+            }
+        } catch (IOException | RuntimeException e) {
+            LOG.warn("DLAA: could not list shaderpacks/: {}", e.toString());
+        }
+        if (best != null) {
+            return best;
+        }
+        Path base = shaderpacks.resolve(BASE_ZIP);
+        return Files.isRegularFile(base) ? base : null;
     }
 
     private static String replaceOnce(String file, String text, String find, String replace) throws IOException {
@@ -148,7 +199,8 @@ public final class PhotonPatcher {
                                 + "    }\n"},
         });
         edits.put("shaders/program/final.fsh", new String[][] {
-                {"uniform vec2 taa_offset;\n", "uniform vec2 taa_offset;\nuniform float cg_dlss_active;\n"},
+                // (final.fsh declares taa_offset only for its distance view, so this goes next to an unconditional one.)
+                {"uniform float frameTimeCounter;\n", "uniform float frameTimeCounter;\nuniform float cg_dlss_active;\n"},
                 {"#ifndef CAS\n    return display_eotf(texelFetch(sampler, texel, 0).rgb);\n#endif\n",
                         "#ifndef CAS\n    return display_eotf(texelFetch(sampler, texel, 0).rgb);\n#endif\n"
                                 + "    if (cg_dlss_active > 0.5) { // DLAA's output is shown as DLSS made it\n"

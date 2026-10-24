@@ -12,9 +12,12 @@ import java.util.function.ToIntFunction;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import dev.creategalore.bridge.DisplaySettings;
+import net.irisshaders.iris.Iris;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.GameShuttingDownEvent;
@@ -35,8 +38,8 @@ import org.slf4j.LoggerFactory;
  * For testing: dlaaDebugView=color|motion|depth in the display settings (or the system property
  * create_galore_bridge.dlss.debugView) draws that DLSS input instead of running DLSS (any GPU, no NGX);
  * create_galore_bridge.dlss.dllDir loads nvngx_dlss.dll from another folder (the
- * SDK's dev build shows DLSS's own debug overlay); create_galore_bridge.dlss.jitterSign=x,y flips the jitter handed to
- * DLSS.
+ * SDK's dev build shows DLSS's own debug overlay); dlaaJitterSign=x,y in the display settings (or the system property
+ * create_galore_bridge.dlss.jitterSign) flips the jitter handed to DLSS.
  */
 public final class Dlss {
     private static final Logger LOG = LoggerFactory.getLogger("create_galore_bridge");
@@ -60,10 +63,9 @@ public final class Dlss {
     private static final int PRESET_L = 12;
     private static final int PRESET_M = 13;
 
-    private static final float[] JITTER_SIGN = jitterSign();
-
     // Read when shaders (re)load.
     private static boolean wanted;
+    private static float[] jitterSign = {1.0f, 1.0f};
     private static int preset = PRESET_DEFAULT;
     private static DlssPass.View debugView;
     private static PackProfile profile;
@@ -98,9 +100,25 @@ public final class Dlss {
     private Dlss() {}
 
     /** At mod construction: frees DLSS when the game closes (the patched pack copy is made earlier, see PhotonPatcher). */
-    public static void init() {
+    public static void init(IEventBus modBus) {
         NeoForge.EVENT_BUS.addListener(Dlss::shutdown);
+        modBus.addListener(Dlss::loadComplete);
         PhotonPatcher.prepare();
+    }
+
+    // Colorwheel Patcher makes its Photon zip during setup, after Iris loaded its pack: the copy follows it.
+    private static void loadComplete(FMLLoadCompleteEvent event) {
+        if (PhotonPatcher.refresh()) {
+            Minecraft.getInstance().execute(() -> {
+                if (PhotonPatcher.PATCHED_NAME.equals(Iris.getCurrentPackName())) {
+                    try {
+                        Iris.reload();
+                    } catch (IOException | RuntimeException e) {
+                        LOG.warn("DLAA: could not reload the shaders after remaking {}: {}", PhotonPatcher.PATCHED_NAME, e.toString());
+                    }
+                }
+            });
+        }
     }
 
     /** A shader pack pipeline was made (shaders loaded or reloaded): reads the settings and the pack's profile again. */
@@ -110,6 +128,7 @@ public final class Dlss {
         String presetName = DisplaySettings.getString(DisplaySettings.DLAA_PRESET, "default");
         preset = parsePreset(presetName);
         debugView = parseDebugView(DisplaySettings.getString(DisplaySettings.DLAA_DEBUG_VIEW, System.getProperty(DEBUG_VIEW_PROPERTY, "")));
+        jitterSign = parseJitterSign(DisplaySettings.getString(DisplaySettings.DLAA_JITTER_SIGN, System.getProperty(JITTER_SIGN_PROPERTY, "1,1")));
         failed = false;
         reset = true;
         missedFrames = 0;
@@ -127,7 +146,8 @@ public final class Dlss {
         if (packProblem != null) {
             LOG.info("DLAA: not used with this shader pack, {}", packProblem);
         } else {
-            LOG.info("DLAA: on for this shader pack, preset {}{}", presetName,
+            LOG.info("DLAA: on for this shader pack, preset {}{}{}", presetName,
+                    jitterSign[0] != 1.0f || jitterSign[1] != 1.0f ? ", jitter sign " + (int) jitterSign[0] + "," + (int) jitterSign[1] : "",
                     debugView != null ? " (debug view " + debugView.name().toLowerCase(Locale.ROOT) + ", DLSS itself not used)" : "");
         }
     }
@@ -228,7 +248,7 @@ public final class Dlss {
             int[] result = new int[1];
             pass.copyAndEvaluate(in, () -> result[0] = ngx.evaluate(device.context, pass.colorResource(), pass.outputResource(),
                     pass.depthResource(), pass.motionResource(), autoExposure ? 0L : pass.exposureResource(),
-                    jitterX * JITTER_SIGN[0], jitterY * JITTER_SIGN[1], 1.0f, 1.0f, resetNow, in.width(), in.height(), frameTimeMs));
+                    jitterX * jitterSign[0], jitterY * jitterSign[1], 1.0f, 1.0f, resetNow, in.width(), in.height(), frameTimeMs));
             ngx.drainLog();
             if (NgxLibrary.failed(result[0])) {
                 throw new IllegalStateException("DLSS failed: " + NgxLibrary.describe(result[0]));
@@ -309,7 +329,8 @@ public final class Dlss {
             throw new IllegalStateException("DLSS does not run on this graphics card (" + NgxLibrary.describe(support[4]) + ")");
         }
         pass = new DlssPass(device);
-        LOG.info("DLAA: NGX ready on {}, nvngx_dlss.dll from {}", device.adapterName, dllFolder);
+        LOG.info("DLAA: NGX ready on {} ({}), nvngx_dlss.dll from {}", device.adapterName,
+                device.shared ? "Perfect Presentation's DirectX device" : "its own DirectX device", dllFolder);
     }
 
     private static void shutdown(GameShuttingDownEvent event) {
@@ -396,14 +417,18 @@ public final class Dlss {
         }
     }
 
-    private static float[] jitterSign() {
-        String value = System.getProperty(JITTER_SIGN_PROPERTY, "1,1");
+    private static float[] parseJitterSign(String value) {
         String[] parts = value.split(",");
         try {
-            return new float[] {Math.signum(Float.parseFloat(parts[0].trim())), Math.signum(Float.parseFloat(parts[1].trim()))};
+            float x = Math.signum(Float.parseFloat(parts[0].trim()));
+            float y = Math.signum(Float.parseFloat(parts[1].trim()));
+            if (x != 0.0f && y != 0.0f) {
+                return new float[] {x, y};
+            }
         } catch (RuntimeException e) {
-            LOG.warn("DLAA: {} should be like 1,-1; using 1,1", JITTER_SIGN_PROPERTY);
-            return new float[] {1.0f, 1.0f};
+            // falls through
         }
+        LOG.warn("DLAA: jitter sign {} should be like 1,-1; using 1,1", value);
+        return new float[] {1.0f, 1.0f};
     }
 }
