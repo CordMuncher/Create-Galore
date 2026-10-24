@@ -109,7 +109,13 @@ final class DlssPass implements AutoCloseable {
         /** Motion vectors: red +x, green +y, blue -x/-y; 4 pixels or more is full brightness, still pixels black. */
         MOTION,
         /** DLSS depth: bright near, dark far, black sky. */
-        DEPTH
+        DEPTH,
+        /**
+         * How well the motion vectors line up last frame's colour with this frame's (the Bridge leaves the jitter
+         * out for it): black where they do, bright where something moved another way than its motion vector says.
+         * Packs that know cg_dlss_residual_albedo hand over surface colours for it, free of the lighting's noise.
+         */
+        RESIDUAL
     }
 
     private final DlssDevice device;
@@ -254,6 +260,13 @@ final class DlssPass implements AutoCloseable {
         return exposure.d3d;
     }
 
+    /** For testing: saves this frame's inputs (colour, motion, depth) as dir/name-color.npy and so on. */
+    void dump(java.nio.file.Path dir, String name) {
+        DebugDump.write(dir, name + "-color", color.gl, color.width, color.height, 4);
+        DebugDump.write(dir, name + "-motion", motion.gl, motion.width, motion.height, 2);
+        DebugDump.write(dir, name + "-depth", depth.gl, depth.width, depth.height, 1);
+    }
+
     /**
      * Draws {@code view} into draw buffers 0..max of the bound framebuffer: into those {@code profile} lists, keeping
      * alpha where the profile says so.
@@ -266,22 +279,25 @@ final class DlssPass implements AutoCloseable {
         ensureProgram(outputs, view);
         Texture source = switch (view) {
             case RESULT -> output;
-            case COLOR -> color;
+            case COLOR, RESIDUAL -> color;
             case MOTION -> motion;
             case DEPTH -> depth;
         };
-        int sourceUnit = glGetInteger(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS) - 1;
-        int exposureUnit = sourceUnit - 1;
+        // The source, the exposure, and for the residual view last frame's colour (kept in the unused output) and the motion.
+        String[] samplers = {"cg_dlss_source", "cg_dlss_exposure", "cg_dlss_previous", "cg_dlss_motion"};
+        Texture[] textures = {source, exposure, output, motion};
+        int topUnit = glGetInteger(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS) - 1;
 
         int oldProgram = glGetInteger(GL_CURRENT_PROGRAM);
         int oldVao = glGetInteger(GL_VERTEX_ARRAY_BINDING);
         int oldActive = glGetInteger(GL_ACTIVE_TEXTURE);
-        glActiveTexture(GL_TEXTURE0 + exposureUnit);
-        int oldExposureTexture = glGetInteger(GL_TEXTURE_BINDING_2D);
-        int oldExposureSampler = glGetInteger(GL_SAMPLER_BINDING);
-        glActiveTexture(GL_TEXTURE0 + sourceUnit);
-        int oldSourceTexture = glGetInteger(GL_TEXTURE_BINDING_2D);
-        int oldSourceSampler = glGetInteger(GL_SAMPLER_BINDING);
+        int[] oldTextures = new int[samplers.length];
+        int[] oldSamplers = new int[samplers.length];
+        for (int i = 0; i < samplers.length; i++) {
+            glActiveTexture(GL_TEXTURE0 + topUnit - i);
+            oldTextures[i] = glGetInteger(GL_TEXTURE_BINDING_2D);
+            oldSamplers[i] = glGetInteger(GL_SAMPLER_BINDING);
+        }
         boolean depthTest = glIsEnabled(GL_DEPTH_TEST);
         boolean stencilTest = glIsEnabled(GL_STENCIL_TEST);
         boolean scissorTest = glIsEnabled(GL_SCISSOR_TEST);
@@ -297,15 +313,14 @@ final class DlssPass implements AutoCloseable {
             }
         }
         try {
-            glBindTexture(GL_TEXTURE_2D, source.gl);
-            glBindSampler(sourceUnit, 0);
-            glActiveTexture(GL_TEXTURE0 + exposureUnit);
-            glBindTexture(GL_TEXTURE_2D, exposure.gl);
-            glBindSampler(exposureUnit, 0);
-            glProgramUniform1i(program, glGetUniformLocation(program, "cg_dlss_source"), sourceUnit);
-            int exposureLocation = glGetUniformLocation(program, "cg_dlss_exposure");
-            if (exposureLocation >= 0) {
-                glProgramUniform1i(program, exposureLocation, exposureUnit);
+            for (int i = 0; i < samplers.length; i++) {
+                int location = glGetUniformLocation(program, samplers[i]);
+                if (location >= 0) {
+                    glActiveTexture(GL_TEXTURE0 + topUnit - i);
+                    glBindTexture(GL_TEXTURE_2D, textures[i].gl);
+                    glBindSampler(topUnit - i, 0);
+                    glProgramUniform1i(program, location, topUnit - i);
+                }
             }
             glDisable(GL_DEPTH_TEST);
             glDisable(GL_STENCIL_TEST);
@@ -332,13 +347,16 @@ final class DlssPass implements AutoCloseable {
             setEnabled(GL_STENCIL_TEST, stencilTest);
             setEnabled(GL_SCISSOR_TEST, scissorTest);
             setEnabled(GL_CULL_FACE, cullFace);
-            glActiveTexture(GL_TEXTURE0 + exposureUnit);
-            glBindSampler(exposureUnit, oldExposureSampler);
-            glBindTexture(GL_TEXTURE_2D, oldExposureTexture);
-            glActiveTexture(GL_TEXTURE0 + sourceUnit);
-            glBindSampler(sourceUnit, oldSourceSampler);
-            glBindTexture(GL_TEXTURE_2D, oldSourceTexture);
+            for (int i = samplers.length - 1; i >= 0; i--) {
+                glActiveTexture(GL_TEXTURE0 + topUnit - i);
+                glBindSampler(topUnit - i, oldSamplers[i]);
+                glBindTexture(GL_TEXTURE_2D, oldTextures[i]);
+            }
             glActiveTexture(oldActive);
+        }
+        if (view == View.RESIDUAL) {
+            // This frame's colour is next frame's last one.
+            glCopyImageSubData(color.gl, GL_TEXTURE_2D, 0, 0, 0, 0, output.gl, GL_TEXTURE_2D, 0, 0, 0, 0, color.width, color.height, 1);
         }
     }
 
@@ -368,8 +386,11 @@ final class DlssPass implements AutoCloseable {
             program = 0;
         }
         StringBuilder fragment = new StringBuilder("#version 330 core\nuniform sampler2D cg_dlss_source;\n");
-        if (view == View.MOTION || view == View.DEPTH) {
+        if (view == View.MOTION || view == View.DEPTH || view == View.RESIDUAL) {
             fragment.append("uniform sampler2D cg_dlss_exposure;\n");
+        }
+        if (view == View.RESIDUAL) {
+            fragment.append("uniform sampler2D cg_dlss_previous;\nuniform sampler2D cg_dlss_motion;\n");
         }
         for (int i = 0; i < outputs; i++) {
             fragment.append("layout(location = ").append(i).append(") out vec4 cg_out").append(i).append(";\n");
@@ -386,6 +407,25 @@ final class DlssPass implements AutoCloseable {
             case DEPTH -> """
                         vec3 c = vec3(pow(texelFetch(cg_dlss_source, texel, 0).r, 0.25));
                         c /= max(texelFetch(cg_dlss_exposure, ivec2(0), 0).r, 1e-4);
+                    """;
+            // Last frame's colour where the motion vector says this pixel was (bilinear), against this frame's, both
+            // exposed and tone mapped like a picture; off the screen last frame counts as matching.
+            case RESIDUAL -> """
+                        float e = max(texelFetch(cg_dlss_exposure, ivec2(0), 0).r, 1e-4);
+                        ivec2 size = textureSize(cg_dlss_source, 0);
+                        vec2 p = gl_FragCoord.xy + texelFetch(cg_dlss_motion, texel, 0).rg - 0.5;
+                        vec3 c = vec3(0.0);
+                        if (all(greaterThanEqual(p, vec2(0.0))) && all(lessThanEqual(p, vec2(size - 1)))) {
+                            ivec2 i = ivec2(floor(p));
+                            ivec2 j = min(i + 1, size - 1);
+                            vec2 f = p - vec2(i);
+                            vec3 then = mix(mix(texelFetch(cg_dlss_previous, i, 0).rgb, texelFetch(cg_dlss_previous, ivec2(j.x, i.y), 0).rgb, f.x),
+                                            mix(texelFetch(cg_dlss_previous, ivec2(i.x, j.y), 0).rgb, texelFetch(cg_dlss_previous, j, 0).rgb, f.x), f.y);
+                            vec3 now = texelFetch(cg_dlss_source, texel, 0).rgb;
+                            then *= e;
+                            now *= e;
+                            c = clamp(abs(now / (1.0 + now) - then / (1.0 + then)) * 4.0, 0.0, 1.0) / e;
+                        }
                     """;
         });
         for (int i = 0; i < outputs; i++) {

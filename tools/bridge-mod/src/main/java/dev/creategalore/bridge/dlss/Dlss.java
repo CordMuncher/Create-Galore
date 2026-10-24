@@ -13,6 +13,7 @@ import java.util.function.ToIntFunction;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import dev.creategalore.bridge.DisplaySettings;
+import dev.creategalore.bridge.mixin.LevelRendererTicksAccessor;
 import net.irisshaders.iris.Iris;
 import net.irisshaders.iris.uniforms.CapturedRenderingState;
 import net.minecraft.client.Camera;
@@ -38,7 +39,7 @@ import org.slf4j.LoggerFactory;
  * (see {@link DlssDevice}). Anything missing (not Windows, no NVIDIA RTX card, no nvngx_dlss.dll, an unpatched pack, a
  * pack option that the patch does not cover) leaves the pack's own anti-aliasing in place and says why in the log.
  *
- * For testing: dlaaDebugView=color|motion|depth in the display settings (or the system property
+ * For testing: dlaaDebugView=color|motion|depth|residual in the display settings (or the system property
  * create_galore_bridge.dlss.debugView) draws that DLSS input instead of running DLSS (any GPU, no NGX);
  * dlaaEngine=fsr3 (or create_galore_bridge.dlss.engine) runs AMD FSR 3.1 in DLSS's place with FSR's own jitter
  * period ({@link Fsr3Upscaler}, OpenGL, any GPU), and dlaaDebugView=fsr3 shows FSR's own view of its buffers;
@@ -57,6 +58,7 @@ public final class Dlss {
     private static final String DEBUG_VIEW_PROPERTY = "create_galore_bridge.dlss.debugView";
     private static final String JITTER_SIGN_PROPERTY = "create_galore_bridge.dlss.jitterSign";
     private static final String ENGINE_PROPERTY = "create_galore_bridge.dlss.engine";
+    private static final String OBJECT_MOTION_PROPERTY = "create_galore_bridge.dlss.objectMotion";
     /** DLSS's jitter period; FSR 3 uses its own (8 at full size). */
     private static final int PHASES = 32;
     /** A camera move this far in one frame is a teleport: DLSS starts over instead of blending in the old place. */
@@ -75,6 +77,9 @@ public final class Dlss {
     private static float[] jitterSign = {1.0f, 1.0f};
     private static int preset = PRESET_DEFAULT;
     private static DlssPass.View debugView;
+    /** Things that move by themselves give their own motion vectors (else only the camera's motion; for comparing). */
+    private static boolean objectMotion = true;
+    private static volatile String[] dumpRequest;
     /** FSR 3 in place of DLSS (testing). */
     private static boolean fsr3;
     /** FSR 3 draws its own debug view. */
@@ -141,6 +146,7 @@ public final class Dlss {
 
     /** A shader pack pipeline was made (shaders loaded or reloaded): reads the settings and the pack's profile again. */
     public static void onPipelineCreated() {
+        ObjectMotion.reset();
         DisplaySettings.reload();
         wanted = DisplaySettings.get(DisplaySettings.DLAA);
         String presetName = DisplaySettings.getString(DisplaySettings.DLAA_PRESET, "default");
@@ -150,6 +156,8 @@ public final class Dlss {
         debugView = fsr3Debug ? null : parseDebugView(debugName);
         fsr3 = fsr3Debug || parseEngine(DisplaySettings.getString(DisplaySettings.DLAA_ENGINE, System.getProperty(ENGINE_PROPERTY, "dlss")));
         jitterSign = parseJitterSign(DisplaySettings.getString(DisplaySettings.DLAA_JITTER_SIGN, System.getProperty(JITTER_SIGN_PROPERTY, "1,1")));
+        objectMotion = !DisplaySettings.getString(DisplaySettings.DLAA_OBJECT_MOTION, System.getProperty(OBJECT_MOTION_PROPERTY, "true"))
+                .trim().equalsIgnoreCase("false");
         failed = false;
         reset = true;
         missedFrames = 0;
@@ -182,6 +190,7 @@ public final class Dlss {
      * {@code frameCounter} is the pack's frameCounter, so the jitter repeats with the pack's own frame sequence.
      */
     public static void beginFrame(int frameCounter) {
+        ObjectMotion.beginFrame(((LevelRendererTicksAccessor) Minecraft.getInstance().levelRenderer).create_galore_bridge$ticks());
         if (active) {
             missedFrames = ran ? 0 : missedFrames + 1;
             if (missedFrames >= MISSED_FRAMES_LIMIT) {
@@ -205,6 +214,9 @@ public final class Dlss {
         int index = Math.floorMod(frameCounter, fsr3 && debugView == null ? Fsr3Upscaler.phases(1, 1) : PHASES) + 1;
         jitterX = halton(index, 2) - 0.5f;
         jitterY = halton(index, 3) - 0.5f;
+        if (debugView == DlssPass.View.RESIDUAL) {
+            jitterX = jitterY = 0.0f; // so last frame's colour lines up exactly where nothing moved
+        }
 
         Minecraft minecraft = Minecraft.getInstance();
         Camera camera = minecraft.gameRenderer.getMainCamera();
@@ -216,6 +228,24 @@ public final class Dlss {
         lastLevel = new WeakReference<>(minecraft.level);
         lastCameraEntity = new WeakReference<>(camera.getEntity());
         lastCameraPosition = position;
+    }
+
+    /** False while testing without the motion of things that move by themselves (cg_dlss_object_motion). */
+    public static boolean objectMotion() {
+        return objectMotion;
+    }
+
+    /**
+     * For the DLAA test kit: in a debug view, saves the next frame's DLSS inputs as numpy arrays in {@code dir}
+     * ({@code name}-color.npy, -motion.npy, -depth.npy; see {@link DebugDump}).
+     */
+    public static void dumpNextFrame(String dir, String name) {
+        dumpRequest = new String[] {dir, name};
+    }
+
+    /** True in the residual test view: the pack hands over surface colours instead of the lit scene (cg_dlss_residual_albedo). */
+    public static boolean residualAlbedo() {
+        return active && debugView == DlssPass.View.RESIDUAL;
     }
 
     /** True while the pack should hand its frame to DLSS (cg_dlss_active). */
@@ -248,6 +278,11 @@ public final class Dlss {
             if (debugView != null) {
                 debugPass.ensureSize(in.width(), in.height());
                 debugPass.copyAndEvaluate(in, () -> {});
+                String[] dump = dumpRequest;
+                if (dump != null) {
+                    dumpRequest = null;
+                    debugPass.dump(java.nio.file.Path.of(dump[0]), dump[1]);
+                }
                 debugPass.writeBack(profile, debugView);
                 return;
             }
@@ -500,7 +535,7 @@ public final class Dlss {
             DlssPass.View view = DlssPass.View.valueOf(value);
             return view == DlssPass.View.RESULT ? null : view;
         } catch (IllegalArgumentException e) {
-            LOG.warn("DLAA: unknown debug view {}, use color, motion or depth", name);
+            LOG.warn("DLAA: unknown debug view {}, use color, motion, depth or residual", name);
             return null;
         }
     }

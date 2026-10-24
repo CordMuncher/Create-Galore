@@ -54,41 +54,58 @@ public final class Capture {
         int settleFrames = 120;
         long time = 3000;
         boolean freezeTicks = true;
+        /** Ticks a second while the camera is at the moving scene (20: real time; 1 suits software rendering). */
+        float sceneTickRate = 20;
+        /**
+         * The pack's clock per frame (waving leaves, water). 1/60 looks like a normal game; the residual check wants
+         * more, since leaves that move a fraction of a pixel a frame leave too little to measure.
+         */
+        float packSecondsPerFrame = 1.0f / 60.0f;
+        /** In the debug modes, also save the Bridge's exact inputs for each captured frame (MODE/raw/*.npy, for checks). */
+        boolean dumpRaw = false;
         List<Mode> modes = new ArrayList<>(List.of(
-                new Mode("photon-taa", false, "default", null, null, null),
-                new Mode("dlaa-default", true, "default", null, null, null),
-                new Mode("dlaa-K", true, "K", null, null, null),
-                new Mode("dlaa-L", true, "L", null, null, null),
-                new Mode("dlaa-M", true, "M", null, null, null),
+                new Mode("photon-taa", false, "default", null, null, null, null),
+                new Mode("dlaa-default", true, "default", null, null, null, null),
+                new Mode("dlaa-K", true, "K", null, null, null, null),
+                new Mode("dlaa-L", true, "L", null, null, null, null),
+                new Mode("dlaa-M", true, "M", null, null, null, null),
                 // Checks of the jitter's direction: with a wrong sign a still picture shimmers and blurs.
-                new Mode("sign-flip-x", true, "default", null, "-1,1", null),
-                new Mode("sign-flip-y", true, "default", null, "1,-1", null),
-                new Mode("sign-flip-xy", true, "default", null, "-1,-1", null),
+                new Mode("sign-flip-x", true, "default", null, "-1,1", null, null),
+                new Mode("sign-flip-y", true, "default", null, "1,-1", null, null),
+                new Mode("sign-flip-xy", true, "default", null, "-1,-1", null, null),
                 // What DLSS gets, drawn instead of DLSS's result (any GPU).
-                new Mode("debug-motion", true, "default", "motion", null, null),
-                new Mode("debug-depth", true, "default", "depth", null, null),
-                new Mode("debug-color", true, "default", "color", null, null),
+                new Mode("debug-motion", true, "default", "motion", null, null, null),
+                new Mode("debug-depth", true, "default", "depth", null, null, null),
+                new Mode("debug-color", true, "default", "color", null, null, null),
+                // How far each frame is from the last one moved along the motion vectors (black: the motion is right), with
+                // everything's own motion and with the camera's only: what the moving things' motion vectors fix.
+                new Mode("debug-residual", true, "default", "residual", null, null, null),
+                new Mode("debug-residual-camera", true, "default", "residual", null, null, false),
                 // AMD FSR 3.1 in DLSS's place (OpenGL, any GPU), its jitter checks and its own debug view.
-                new Mode("fsr3", true, "default", null, null, "fsr3"),
-                new Mode("fsr3-flip-x", true, "default", null, "-1,1", "fsr3"),
-                new Mode("fsr3-flip-y", true, "default", null, "1,-1", "fsr3"),
-                new Mode("fsr3-flip-xy", true, "default", null, "-1,-1", "fsr3"),
-                new Mode("fsr3-debug", true, "default", "fsr3", null, "fsr3")));
+                new Mode("fsr3", true, "default", null, null, "fsr3", null),
+                new Mode("fsr3-flip-x", true, "default", null, "-1,1", "fsr3", null),
+                new Mode("fsr3-flip-y", true, "default", null, "1,-1", "fsr3", null),
+                new Mode("fsr3-flip-xy", true, "default", null, "-1,-1", "fsr3", null),
+                new Mode("fsr3-debug", true, "default", "fsr3", null, "fsr3", null)));
         // The DLAA test world (seed 20261024, scene built on the lakeshore at x 1023..1040, z 160..176).
         List<Viewpoint> viewpoints = new ArrayList<>(List.of(
-                new Viewpoint("shore", 1029.5, 64.0, 160.5, 0.0f, 8.0f),
-                new Viewpoint("glass", 1029.5, 64.0, 168.5, 0.0f, -14.0f),
-                new Viewpoint("canopy", 1024.5, 88.0, 205.5, 180.0f, 22.0f)));
+                new Viewpoint("shore", 1029.5, 64.0, 160.5, 0.0f, 8.0f, null),
+                new Viewpoint("glass", 1029.5, 64.0, 168.5, 0.0f, -14.0f, null),
+                new Viewpoint("canopy", 1024.5, 88.0, 205.5, 180.0f, 22.0f, null),
+                // Looking out over the lake at things that move by themselves (see MovingScene).
+                new Viewpoint("moving", 1029.5, 66.0, 162.5, 180.0f, 14.0f, MovingScene.NAME)));
         List<String> paths = new ArrayList<>(List.of("still", "flick", "pan", "strafe"));
     }
 
     /**
-     * debugView (color, motion or depth) shows that DLSS input instead of DLSS, on any GPU (fsr3: FSR's own view);
-     * jitterSign ("x,y", default "1,1") flips the jitter the Bridge hands to DLSS; engine is dlss (null) or fsr3.
+     * debugView (color, motion, depth or residual) shows that instead of DLSS, on any GPU (fsr3: FSR's own view);
+     * jitterSign ("x,y", default "1,1") flips the jitter the Bridge hands to DLSS; engine is dlss (null) or fsr3;
+     * objectMotion false leaves only the camera's motion in the motion vectors (null: on).
      */
-    record Mode(String name, boolean dlaa, String preset, String debugView, String jitterSign, String engine) {}
+    record Mode(String name, boolean dlaa, String preset, String debugView, String jitterSign, String engine, Boolean objectMotion) {}
 
-    record Viewpoint(String name, double x, double y, double z, float yaw, float pitch) {}
+    /** scene: built there at run time (MovingScene.NAME), else null. */
+    record Viewpoint(String name, double x, double y, double z, float yaw, float pitch, String scene) {}
 
     /** One stretch of frames: the camera at each local frame, and the frames to save. */
     private record Segment(String label, Viewpoint viewpoint, String path, int length, int[] captures, Runnable onStart, Mode mode) {}
@@ -118,6 +135,7 @@ public final class Capture {
     /** The Bridge's display settings before the run (null: no file), put back when it ends. */
     private static String savedBridgeConfig;
     private static int autorunWait;
+    private static String activeScene;
 
     private Capture() {}
 
@@ -128,6 +146,12 @@ public final class Capture {
     /** Frames since the current mode started: the pack's frameCounter during a run. */
     public static int frame() {
         return frame;
+    }
+
+    /** The pack's clock step per frame during a run. */
+    public static float packSecondsPerFrame() {
+        Settings current = settings;
+        return current != null && current.packSecondsPerFrame > 0 ? current.packSecondsPerFrame : 1.0f / 60.0f;
     }
 
     static void armAutorun() {
@@ -166,13 +190,18 @@ public final class Capture {
             }
         }
         List<Viewpoint> viewpoints = settings.viewpoints;
+        String viewpointFilter = System.getProperty(TestKit.MOD_ID + ".viewpoints");
+        if (viewpointFilter != null && !viewpointFilter.isBlank()) {
+            List<String> wanted = List.of(viewpointFilter.trim().split("\\s*[,;+ ]\\s*"));
+            viewpoints = viewpoints.stream().filter(v -> wanted.contains(v.name())).toList();
+        }
         List<String> paths = settings.paths;
         if (Boolean.getBoolean(TestKit.MOD_ID + ".quick")) {
             viewpoints = viewpoints.subList(0, 1);
             paths = List.of("still", "flick");
         }
         if (viewpoints.isEmpty()) {
-            return "no viewpoints in config/" + CONFIG;
+            return "no viewpoints (or none of " + viewpointFilter + ") in config/" + CONFIG;
         }
 
         List<Segment> segments = new ArrayList<>();
@@ -206,6 +235,7 @@ public final class Capture {
         frameNanosSum = 0;
         frameNanosCount = 0;
         lastNanos = 0;
+        activeScene = null;
 
         try {
             Path bridgeFile = FMLPaths.CONFIGDIR.get().resolve(BRIDGE_CONFIG);
@@ -251,6 +281,11 @@ public final class Capture {
         mc.options.fov().set(savedFov);
         mc.options.fovEffectScale().set(savedFovEffect);
         mc.options.setCameraType(savedCamera);
+        if (settings != null) {
+            MovingScene.leave(settings);
+            MovingScene.remove();
+            activeScene = null;
+        }
         if (settings != null && settings.freezeTicks) {
             server("tick unfreeze");
         }
@@ -335,6 +370,10 @@ public final class Capture {
             if (current.onStart() != null) {
                 current.onStart().run();
             }
+            if (!running) {
+                return;
+            }
+            enterScene(current.viewpoint().scene());
         }
         frame++;
 
@@ -345,6 +384,9 @@ public final class Capture {
             if (c == local) {
                 pendingShot = current.label() + "-f" + String.format(Locale.ROOT, "%03d", local);
             }
+        }
+        if (pendingShot != null && settings.dumpRaw && current.mode().debugView() != null) {
+            requestDump(runDir.resolve(current.mode().name()).resolve("raw"), pendingShot);
         }
     }
 
@@ -374,6 +416,19 @@ public final class Capture {
         shot.addProperty("frame", local);
         shot.addProperty("file", file);
         shots.add(shot);
+    }
+
+    private static void enterScene(String scene) {
+        if (java.util.Objects.equals(scene, activeScene)) {
+            return;
+        }
+        if (activeScene != null) {
+            MovingScene.leave(settings);
+        }
+        activeScene = scene;
+        if (MovingScene.NAME.equals(scene)) {
+            MovingScene.enter(settings);
+        }
     }
 
     /** Pins the camera: same place and turn for the whole frame, no interpolation from the last tick, no fall. */
@@ -429,6 +484,11 @@ public final class Capture {
             } else {
                 props.remove("dlaaEngine");
             }
+            if (Boolean.FALSE.equals(mode.objectMotion())) {
+                props.setProperty("dlaaObjectMotion", "false");
+            } else {
+                props.remove("dlaaObjectMotion");
+            }
             try (Writer w = Files.newBufferedWriter(file)) {
                 props.store(w, "Create Galore Bridge display settings (last written by the DLAA test kit, mode " + mode.name() + ")");
             }
@@ -444,6 +504,7 @@ public final class Capture {
         info.addProperty("debugView", mode.debugView());
         info.addProperty("jitterSign", mode.jitterSign());
         info.addProperty("engine", mode.engine() != null ? mode.engine() : "dlss");
+        info.addProperty("objectMotion", !Boolean.FALSE.equals(mode.objectMotion()));
         info.add("frameMs", new JsonObject());
         modeInfo.put(mode.name(), info);
         log("mode " + mode.name());
@@ -461,6 +522,15 @@ public final class Capture {
         info.addProperty("dlaaActive", bridgeDlaaActive());
         frameNanosSum = 0;
         frameNanosCount = 0;
+    }
+
+    private static void requestDump(Path dir, String name) {
+        try {
+            Class.forName("dev.creategalore.bridge.dlss.Dlss").getMethod("dumpNextFrame", String.class, String.class)
+                    .invoke(null, dir.toString(), name);
+        } catch (ReflectiveOperationException | RuntimeException e) {
+            LOG.warn("DLAA test: the Bridge cannot save its inputs: {}", e.toString());
+        }
     }
 
     private static boolean bridgeDlaaActive() {
@@ -508,11 +578,16 @@ public final class Capture {
         });
     }
 
-    private static void server(String command) {
+    static void server(String command) {
         IntegratedServer server = Minecraft.getInstance().getSingleplayerServer();
         if (server != null) {
-            server.execute(() -> server.getCommands().performPrefixedCommand(server.createCommandSourceStack().withSuppressedOutput(), command));
+            server.execute(() -> runNow(server, command));
         }
+    }
+
+    /** On the server thread. */
+    static void runNow(IntegratedServer server, String command) {
+        server.getCommands().performPrefixedCommand(server.createCommandSourceStack().withSuppressedOutput(), command);
     }
 
     private static Settings loadSettings() throws IOException {

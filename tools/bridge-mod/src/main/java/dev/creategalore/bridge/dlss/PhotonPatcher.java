@@ -39,12 +39,15 @@ import org.slf4j.LoggerFactory;
  * - turns its TAA pass (composite4) into a copy that also writes, into custom images, motion vectors from Photon's
  *   own reprojection (Distant Horizons terrain included; the hand gets none, the sky rotation only), a DLSS depth and
  *   the exposure. The Bridge then runs DLSS and writes its result where TAA's would have gone;
+ * - gives things that move by themselves their own motion vectors (waving plants and leaves so far): the solid
+ *   gbuffers programs write them into colortex2, which Photon itself only uses with normal or specular mapping, POM
+ *   or TAAU, and composite4 takes them over the reprojection (see {@link #MOTION_INCLUDE});
  * - skips FXAA and CAS sharpening, so the picture is DLSS's own. With DLSS off it renders exactly as Photon does.
  */
 public final class PhotonPatcher {
     private static final Logger LOG = LoggerFactory.getLogger("create_galore_bridge");
     /** Bumped when the patch changes, so existing copies are made again. */
-    private static final int PATCH_VERSION = 2;
+    private static final int PATCH_VERSION = 4;
     private static final String BASE_ZIP = "photon_v1.3a.zip";
     /** Colorwheel Patcher's copy of {@link #BASE_ZIP}; an outdated one gets a prefix and no longer matches. */
     private static final Pattern COLORWHEEL_ZIP = Pattern.compile("photon_v1\\.3a \\+ Clrwl_(\\d+)\\.(\\d+)\\.(\\d+)\\.zip");
@@ -99,12 +102,16 @@ public final class PhotonPatcher {
                 }
                 for (Map.Entry<String, String[][]> file : edits().entrySet()) {
                     Path path = work.resolve(file.getKey());
+                    if (OPTIONAL.contains(file.getKey()) && !Files.isRegularFile(path)) {
+                        continue;
+                    }
                     String text = Files.readString(path, StandardCharsets.UTF_8);
                     for (String[] edit : file.getValue()) {
                         text = replaceOnce(file.getKey(), text, edit[0], edit[1]);
                     }
                     Files.writeString(path, text, StandardCharsets.UTF_8);
                 }
+                Files.writeString(work.resolve(MOTION_INCLUDE_FILE), MOTION_INCLUDE, StandardCharsets.UTF_8);
                 Files.writeString(work.resolve(PackProfile.FILE), PROFILE, StandardCharsets.UTF_8);
                 Files.writeString(work.resolve(MARKER), stamp + "\n", StandardCharsets.UTF_8);
                 deleteTree(target);
@@ -207,8 +214,229 @@ public final class PhotonPatcher {
                                 + "        return display_eotf(texelFetch(sampler, texel, 0).rgb);\n"
                                 + "    }\n"},
         });
+
+        // Motion of things that move by themselves (MOTION_INCLUDE). The wind can be asked for an earlier time and
+        // player position, so the solid programs can work out where a waving plant's vertex was last frame.
+        edits.put("shaders/include/vertex/displacement.glsl", new String[][] {
+                {"#include \"/include/misc/material_masks.glsl\"\n",
+                        "#include \"/include/misc/material_masks.glsl\"\n\n"
+                                + "// Create Galore DLAA: how far back in time and position to animate (set while the solid programs\n"
+                                + "// work out last frame's position, see cg_motion.glsl).\n"
+                                + "float cg_time_shift = 0.0;\n"
+                                + "vec3 cg_eye_shift = vec3(0.0);\n"},
+                {"        frameTimeCounter * wave_speed,\n", "        (frameTimeCounter - cg_time_shift) * wave_speed,\n"},
+                {"    float t = wind_speed * frameTimeCounter;\n", "    float t = wind_speed * (frameTimeCounter - cg_time_shift);\n"},
+                {"    vec3 to_player = eyePosition - world_pos;\n", "    vec3 to_player = eyePosition - cg_eye_shift - world_pos;\n"},
+        });
+        edits.put("shaders/program/gbuffers_all_solid.vsh", new String[][] {
+                {"#include \"/include/vertex/utility.glsl\"\n", "#include \"/include/vertex/utility.glsl\"\n" + VERTEX_MOTION_INPUTS
+                        + "\n#ifdef CG_MOTION_GBUFFER\n"
+                        + "// Set by the Create Galore Bridge while Sable draws a ship: takes a vertex from where it is now (relative to\n"
+                        + "// the camera) to where the ship had it last frame. All 0 for everything else (see ObjectMotion).\n"
+                        + "uniform mat4 cg_object_motion;\n"
+                        + "#endif\n"},
+                {"    vec3 pos = transform(gl_ModelViewMatrix, gl_Vertex.xyz);\n"
+                        + "    pos = view_to_scene_space(pos);\n"
+                        + "    pos = pos + cameraPosition;\n"
+                        + "    pos = animate_vertex(pos, is_top_vertex, light_levels.y, material_mask);\n"
+                        + "    pos = pos - cameraPosition;\n",
+                        vertexMotion("    ", false)},
+                {"    vec4 clip_pos = project(gl_ProjectionMatrix, view_pos);\n",
+                        "    vec4 clip_pos = project(gl_ProjectionMatrix, view_pos);\n"
+                                + "#ifdef CG_MOTION_GBUFFER\n"
+                                + "    cg_clip_now = clip_pos;\n"
+                                + "#endif\n"},
+        });
+        // Create's contraptions, trains and Sable's ships through Colorwheel: the Bridge's Colorwheel hook sets
+        // cg_flw_prev_pos, where Flywheel had the vertex last frame (DlssColorwheel).
+        edits.put("shaders/program/clrwl_solid.vsh", new String[][] {
+                {"#include \"/include/vertex/utility.glsl\"\n", "#include \"/include/vertex/utility.glsl\"\n" + VERTEX_MOTION_INPUTS
+                        + "\n#ifdef CG_MOTION_GBUFFER\n"
+                        + "// Last frame's flw_vertexPos (w 1), set by the Create Galore Bridge before this main runs; w 0 without it.\n"
+                        + "vec4 cg_flw_prev_pos = vec4(0.0);\n"
+                        + "#endif\n"},
+                {"\tvec3 pos = transform(gl_ModelViewMatrix, gl_Vertex.xyz);\n"
+                        + "\t     pos = view_to_scene_space(pos);\n"
+                        + "\t     pos = pos + cameraPosition;\n"
+                        + "\t     pos = animate_vertex(pos, is_top_vertex, light_levels.y, material_mask);\n"
+                        + "\t     pos = pos - cameraPosition;\n",
+                        vertexMotion("\t", true)},
+                {"\tvec4 clip_pos = project(gl_ProjectionMatrix, view_pos);\n",
+                        "\tvec4 clip_pos = project(gl_ProjectionMatrix, view_pos);\n"
+                                + "#ifdef CG_MOTION_GBUFFER\n"
+                                + "\tcg_clip_now = clip_pos;\n"
+                                + "#endif\n"},
+        });
+        String[][] solidTargets = {{"#ifdef SPECULAR_MAPPING\n/* RENDERTARGETS: 1,2 */\n#endif\n",
+                "#ifdef SPECULAR_MAPPING\n/* RENDERTARGETS: 1,2 */\n#endif\n\n"
+                        + "#include \"/include/cg_motion.glsl\"\n"
+                        + "#ifdef CG_MOTION_GBUFFER\n"
+                        + "/* RENDERTARGETS: 1,2 */\n"
+                        + "#endif\n"}};
+        edits.put("shaders/program/gbuffers_all_solid.fsh", new String[][] {
+                {solidTargets[0][0], solidTargets[0][1] + MOTION_FRAGMENT_INPUTS},
+                {"#if defined PROGRAM_GBUFFERS_PARTICLES\n    // Kill the little rain splash particles\n",
+                        MOTION_FRAGMENT_OUTPUT + "#if defined PROGRAM_GBUFFERS_PARTICLES\n    // Kill the little rain splash particles\n"},
+        });
+        // Lines and leads never move by themselves; they still say so, so colortex2 never keeps an older motion under them.
+        edits.put("shaders/program/clrwl_solid.fsh", new String[][] {
+                {solidTargets[0][0], solidTargets[0][1] + MOTION_FRAGMENT_INPUTS},
+                {"#if defined PROGRAM_GBUFFERS_PARTICLES\n\t// Kill the little rain splash particles\n",
+                        MOTION_FRAGMENT_OUTPUT + "#if defined PROGRAM_GBUFFERS_PARTICLES\n\t// Kill the little rain splash particles\n"},
+        });
+        edits.put("shaders/program/gbuffers_basic.fsh", new String[][] {
+                {"/* RENDERTARGETS: 0,1,2 */\n",
+                        "/* RENDERTARGETS: 0,1,2 */\n\n"
+                                + "#include \"/include/cg_motion.glsl\"\n"
+                                + "#ifdef CG_MOTION_GBUFFER\n"
+                                + "uniform int frameCounter;\n"
+                                + "#endif\n"},
+                {"    gbuffer_data_1.w = pack_unorm_2x8(specular_map.zw);\n#endif\n}\n",
+                        "    gbuffer_data_1.w = pack_unorm_2x8(specular_map.zw);\n#endif\n\n"
+                                + "#ifdef CG_MOTION_GBUFFER\n"
+                                + "    gbuffer_data_1 = cg_motion_encode(vec4(0.0), vec4(0.0), false, frameCounter, view_res);\n"
+                                + "#endif\n}\n"},
+        });
         return edits;
     }
+
+    /** Files Colorwheel Patcher adds: patched when there, skipped in a copy made from the plain Photon zip. */
+    private static final java.util.Set<String> OPTIONAL = java.util.Set.of("shaders/program/clrwl_solid.vsh", "shaders/program/clrwl_solid.fsh");
+
+    private static final String VERTEX_MOTION_INPUTS = """
+            #include "/include/cg_motion.glsl"
+
+            #ifdef CG_MOTION_GBUFFER
+            uniform mat4 gbufferPreviousModelView;
+            uniform mat4 gbufferPreviousProjection;
+            uniform vec3 previousCameraPosition;
+            uniform float frameTime;
+
+            out vec4 cg_clip_now;
+            out vec4 cg_clip_prev;
+            out float cg_moving;
+            #endif
+            """;
+
+    private static final String MOTION_FRAGMENT_INPUTS = """
+            #ifdef CG_MOTION_GBUFFER
+            in vec4 cg_clip_now;
+            in vec4 cg_clip_prev;
+            in float cg_moving;
+            #endif
+            """;
+
+    private static final String MOTION_FRAGMENT_OUTPUT = """
+            #ifdef CG_MOTION_GBUFFER
+                gbuffer_data_1 = cg_motion_encode(cg_clip_now, cg_clip_prev, cg_moving > 0.0, frameCounter, view_res);
+            #endif
+
+            """;
+
+    /**
+     * Photon's vertex position, from the model-view through its wind animation, with last frame's position worked out
+     * beside it: the same animation at last frame's time and player position, from where the vertex was last frame
+     * (for Colorwheel's programs where Flywheel had it, cg_flw_prev_pos; else where the ship carrying it had it,
+     * cg_object_motion, or here). Kept relative to the camera, so the motion stays exact far from the world's origin.
+     */
+    private static String vertexMotion(String indent, boolean flywheel) {
+        String i = indent;
+        String cont = indent.equals("\t") ? "\t     " : indent;
+        StringBuilder b = new StringBuilder();
+        b.append(i).append("vec3 pos = transform(gl_ModelViewMatrix, gl_Vertex.xyz);\n");
+        b.append(cont).append("pos = view_to_scene_space(pos);\n");
+        b.append("#ifdef CG_MOTION_GBUFFER\n");
+        if (flywheel) {
+            b.append(i).append("bool cg_carried = cg_flw_prev_pos.w > 0.0 && cg_flw_prev_pos.xyz != gl_Vertex.xyz;\n");
+            b.append(i).append("vec3 cg_scene_prev = cg_carried\n");
+            b.append(i).append("    ? view_to_scene_space(transform(gl_ModelViewMatrix, cg_flw_prev_pos.xyz)) : pos;\n");
+        } else {
+            b.append(i).append("bool cg_carried = cg_object_motion[3][3] != 0.0;\n");
+            b.append(i).append("vec3 cg_scene_prev = cg_carried ? (cg_object_motion * vec4(pos, 1.0)).xyz : pos;\n");
+        }
+        b.append("#endif\n");
+        b.append(cont).append("pos = pos + cameraPosition;\n");
+        b.append("#ifdef CG_MOTION_GBUFFER\n");
+        b.append(i).append("vec3 cg_world_pos = pos;\n");
+        b.append("#endif\n");
+        b.append(cont).append("pos = animate_vertex(pos, is_top_vertex, light_levels.y, material_mask);\n");
+        b.append("#ifdef CG_MOTION_GBUFFER\n");
+        b.append(i).append("// Last frame's position: the same wind at last frame's time and player position.\n");
+        b.append(i).append("vec3 cg_world_prev_base = cg_scene_prev + cameraPosition;\n");
+        b.append(i).append("cg_time_shift = frameTime;\n");
+        b.append(i).append("cg_eye_shift = cameraPosition - previousCameraPosition;\n");
+        b.append(i).append("vec3 cg_world_prev = animate_vertex(cg_world_prev_base, is_top_vertex, light_levels.y, material_mask);\n");
+        b.append(i).append("cg_time_shift = 0.0;\n");
+        b.append(i).append("cg_eye_shift = vec3(0.0);\n");
+        b.append(i).append("cg_moving = cg_carried || pos != cg_world_pos || cg_world_prev != cg_world_prev_base ? 1.0 : 0.0;\n");
+        b.append(i).append("cg_scene_prev += cg_world_prev - cg_world_prev_base;\n");
+        b.append(i).append("cg_clip_prev = gbufferPreviousProjection\n");
+        b.append(i).append("    * vec4(transform(gbufferPreviousModelView, cg_scene_prev + cameraPosition - previousCameraPosition), 1.0);\n");
+        b.append("#endif\n");
+        b.append(cont).append("pos = pos - cameraPosition;\n");
+        return b.toString();
+    }
+
+    private static final String MOTION_INCLUDE_FILE = "shaders/include/cg_motion.glsl";
+
+    /**
+     * shaders/include/cg_motion.glsl in the copy: motion vectors for things that move by themselves, so DLSS follows
+     * them instead of smearing them. The solid gbuffers programs write colortex2 (Photon's second gbuffer, RGBA16):
+     * xy the motion in render pixels towards the previous frame as two half floats, z full when xy is set (else
+     * composite4 reprojects the depth as for everything else), w this frame's frameCounter, so a pixel nothing
+     * solid drew this frame (the sky, Distant Horizons terrain) is never taken. Rendering into colortex2 keeps the
+     * nearest surface's motion by the depth test. Photon only uses colortex2 itself with normal or specular mapping,
+     * POM or TAAU; with any of those on, DLSS gets the reprojection alone as before.
+     */
+    private static final String MOTION_INCLUDE = """
+            // Create Galore DLAA: motion vectors for things that move by themselves (see PhotonPatcher in the Bridge).
+            #if !defined INCLUDE_CG_MOTION
+            #define INCLUDE_CG_MOTION
+
+            #if !defined NORMAL_MAPPING && !defined SPECULAR_MAPPING && !defined POM && !defined TAAU
+            #define CG_MOTION_GBUFFER
+            #endif
+
+            #ifdef CG_MOTION_GBUFFER
+            // Half floats by hand: Photon's programs are GLSL 4.00, packHalf2x16 needs 4.20. Below 2^-14 pixels is 0.
+            uint cg_half_bits(float v) {
+                uint b = floatBitsToUint(v);
+                uint sign_bit = (b >> 16u) & 0x8000u;
+                int e = int((b >> 23u) & 0xFFu) - 112;
+                if (e <= 0) return sign_bit;
+                if (e >= 31) return sign_bit | 0x7BFFu;
+                uint m = b & 0x7FFFFFu;
+                return sign_bit | min((uint(e) << 10u | m >> 13u) + (m >> 12u & 1u), 0x7BFFu);
+            }
+
+            float cg_half_value(uint h) {
+                uint e = h >> 10u & 0x1Fu;
+                return e == 0u ? 0.0 : uintBitsToFloat((h & 0x8000u) << 16u | (e + 112u) << 23u | (h & 0x3FFu) << 13u);
+            }
+
+            // From the unjittered clip positions now and last frame; not moving, or behind the camera in either frame,
+            // leaves it to composite4's reprojection.
+            vec4 cg_motion_encode(vec4 clip_now, vec4 clip_prev, bool moving, int frame, vec2 res) {
+                uvec2 bits = uvec2(0u);
+                uint set = 0u;
+                if (moving && clip_now.w > 0.0 && clip_prev.w > 0.0) {
+                    vec2 motion = (clip_prev.xy / clip_prev.w - clip_now.xy / clip_now.w) * 0.5 * res;
+                    bits = uvec2(cg_half_bits(motion.x), cg_half_bits(motion.y));
+                    set = 65535u;
+                }
+                return vec4(vec2(bits), float(set), float(uint(frame) & 0xFFFFu)) / 65535.0;
+            }
+
+            // True if a solid program drew this pixel this frame with its own motion (render pixels, to last frame).
+            bool cg_motion_decode(vec4 data, int frame, out vec2 motion) {
+                uvec4 u = uvec4(round(data * 65535.0));
+                motion = vec2(cg_half_value(u.x), cg_half_value(u.y));
+                return u.z == 65535u && u.w == (uint(frame) & 0xFFFFu);
+            }
+            #endif
+
+            #endif
+            """;
 
     private static final String C4_INPUTS = """
             // Create Galore DLAA: while DLSS runs this pass only copies the scene and hands DLSS its inputs.
@@ -216,6 +444,16 @@ public final class PhotonPatcher {
             layout(rg16f) writeonly uniform image2D cg_motion_img;
             layout(r32f) writeonly uniform image2D cg_depth_img;
             layout(r32f) writeonly uniform image2D cg_exposure_img;
+
+            #include "/include/cg_motion.glsl"
+            #ifdef CG_MOTION_GBUFFER
+            uniform sampler2D colortex2; // own motion of things that move by themselves (never TAAU's, see cg_motion.glsl)
+            uniform float cg_dlss_object_motion; // 0 while testing without it
+            uniform float cg_dlss_residual_albedo; // 1 in the residual test view: surface colours instead of the lit scene
+            uniform sampler2D colortex1; // gbuffer data 0 (TAAU, which uses it here, is off)
+            uniform sampler2D depthtex1;
+            uniform int frameCounter;
+            #endif
 
             void cg_dlss_inputs(ivec2 texel) {
                 float depth = texelFetch(depthtex0, texel, 0).x;
@@ -236,6 +474,14 @@ public final class PhotonPatcher {
                     vec3 previous = reproject_scene_space(view_to_scene_space(view_pos), sky, is_lod);
                     motion = (previous.xy - screen_pos.xy) * view_res;
                 }
+            #ifdef CG_MOTION_GBUFFER
+                // Something that moves by itself gave its own motion; behind a translucent surface that surface's stays.
+                vec2 own_motion;
+                if (cg_dlss_object_motion > 0.5 && !is_lod && cg_motion_decode(texelFetch(colortex2, texel, 0), frameCounter, own_motion)
+                        && texelFetch(depthtex1, texel, 0).x == depth) {
+                    motion = own_motion;
+                }
+            #endif
                 // DLSS depth, reversed and infinite like most engines: 1 at the near plane, towards 0 far away, 0 sky.
                 float dlss_depth = sky ? 0.0 : clamp(near / max(-view_pos.z, near), 0.0, 1.0);
 
@@ -254,6 +500,19 @@ public final class PhotonPatcher {
                     // Photon's colour, unfiltered; the Bridge writes DLSS's result over it after this pass. Alpha 0
                     // restarts Photon's TAA history cleanly if DLSS stops; texel 0 keeps the exposure as usual.
                     result = vec4(texelFetch(colortex0, texel, 0).rgb, 0.0);
+            #ifdef CG_MOTION_GBUFFER
+                    if (cg_dlss_residual_albedo > 0.5) {
+                        // For the residual test view: surface colours have none of the lighting's frame-to-frame noise,
+                        // so what is left after following the motion vectors is their error. Black sky, and no albedo
+                        // left over from earlier frames (colortex1 is not cleared).
+                        float data_x = texelFetch(colortex1, texel, 0).x;
+                        float data_y = texelFetch(colortex1, texel, 0).y;
+                        vec2 rg; rg.x = modf((65535.0 / 256.0) * data_x, rg.y);
+                        vec2 b_; b_.x = modf((65535.0 / 256.0) * data_y, b_.y);
+                        vec3 albedo = vec3(rg * vec2(256.0 / 255.0, 1.0 / 255.0), b_.x * (256.0 / 255.0));
+                        result.rgb = texelFetch(depthtex0, texel, 0).x < 1.0 ? albedo / max(exposure, 1e-4) : vec3(0.0);
+                    }
+            #endif
                     if (texel == ivec2(0)) result.a = exposure;
                     bloom_input = result.rgb;
                     return;

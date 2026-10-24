@@ -23,12 +23,14 @@ public final class DisplaySettings {
     public static final String PERFECT_PRESENTATION = "perfectPresentation";
     public static final String DLAA = "dlaa";
     public static final String DLAA_PRESET = "dlaaPreset";
-    /** Testing only, not written to the file: color, motion or depth shows that DLSS input instead of DLSS. */
+    /** Testing only, not written to the file: color, motion, depth or residual shows that DLSS input (or check) instead of DLSS. */
     public static final String DLAA_DEBUG_VIEW = "dlaaDebugView";
     /** Testing only, not written to the file: x,y signs for the jitter handed to DLSS (1,1 unless a test shows otherwise). */
     public static final String DLAA_JITTER_SIGN = "dlaaJitterSign";
     /** Testing only, not written to the file: dlss (the default) or fsr3 (AMD FSR 3.1 in DLSS's place, any GPU). */
     public static final String DLAA_ENGINE = "dlaaEngine";
+    /** Testing only, not written to the file: false leaves out the motion vectors of things that move by themselves. */
+    public static final String DLAA_OBJECT_MOTION = "dlaaObjectMotion";
 
     private static Properties cached;
 

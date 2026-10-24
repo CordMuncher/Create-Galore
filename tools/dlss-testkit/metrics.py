@@ -11,6 +11,11 @@ Prints a Markdown table per viewpoint, one row per mode:
 - edge contrast: average brightness gradient of the settled still frame. Higher isn't sharper on its own: aliasing,
   grain and sharpening halos (Photon's CAS) raise it too, so it only means something next to the pictures. In round
   1, Photon's TAA scored about a third higher than DLAA from exactly those, while DLAA was the cleaner image.
+
+Then, for the residual debug modes, a table per viewpoint of how far each frame is from the last frame moved along the
+motion vectors: average brightness (0-255) and the share of pixels above 16, per camera path. Black is right. The
+pack's own noise and newly uncovered areas always leave some, so compare debug-residual (everything's motion) with
+debug-residual-camera (the camera's only): the gap is what the moving things' own motion vectors fix.
 """
 import json
 import sys
@@ -62,6 +67,25 @@ def main():
             print(f"### {viewpoint}\n")
             print("| mode | DLAA ran | frame ms | shimmer (levels / >8) | residue (70 v 99 / 110 v 159) | edge contrast |")
             print("| --- | --- | --- | --- | --- | --- |")
+            print("\n".join(rows) + "\n")
+
+    paths = list(manifest["paths"])
+    for viewpoint in viewpoints:
+        rows = []
+        for mode in manifest["modes"]:
+            if mode.get("debugView") != "residual":
+                continue
+            cells = []
+            for path in paths:
+                shots = [luma(f) for (m, v, p, _), f in sorted(files.items()) if (m, v, p) == (mode["name"], viewpoint, path) and f.exists()]
+                cells.append(f"{np.mean([s.mean() for s in shots]):.2f} / {100 * np.mean([(s > 16).mean() for s in shots]):.2f}%" if shots else "-")
+            if any(c != "-" for c in cells):
+                motion = "everything" if mode.get("objectMotion", True) else "camera only"
+                rows.append(f"| {mode['name']} | {motion} | " + " | ".join(cells) + " |")
+        if rows:
+            print(f"### {viewpoint}: residual (level / >16)\n")
+            print("| mode | motion vectors | " + " | ".join(paths) + " |")
+            print("| --- | --- | " + " | ".join("---" for _ in paths) + " |")
             print("\n".join(rows) + "\n")
 
 

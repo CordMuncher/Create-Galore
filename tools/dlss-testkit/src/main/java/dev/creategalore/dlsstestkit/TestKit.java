@@ -18,8 +18,9 @@ import net.neoforged.neoforge.common.NeoForge;
  * where prints the camera, for adding viewpoints to config/create_galore_dlss_testkit.json.
  *
  * -Dcreate_galore_dlss_testkit.autorun=WORLD opens that world from the title screen, runs, and closes the game.
- * -Dcreate_galore_dlss_testkit.modes=a+b runs only those modes; -Dcreate_galore_dlss_testkit.quick=true runs only the
- * first viewpoint with the still and flick paths (for slow software rendering).
+ * -Dcreate_galore_dlss_testkit.modes=a+b runs only those modes, -Dcreate_galore_dlss_testkit.viewpoints=a+b only those
+ * viewpoints; -Dcreate_galore_dlss_testkit.quick=true runs only the first viewpoint with the still and flick paths (for
+ * slow software rendering).
  */
 @Mod(value = TestKit.MOD_ID, dist = Dist.CLIENT)
 public final class TestKit {
@@ -30,6 +31,7 @@ public final class TestKit {
         NeoForge.EVENT_BUS.addListener(TestKit::commands);
         NeoForge.EVENT_BUS.addListener(Capture::beforeFrame);
         NeoForge.EVENT_BUS.addListener(Capture::afterFrame);
+        NeoForge.EVENT_BUS.addListener(MovingScene::serverTick);
         NeoForge.EVENT_BUS.addListener(TestKit::titleScreen);
     }
 

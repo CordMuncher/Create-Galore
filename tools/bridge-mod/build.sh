@@ -46,9 +46,9 @@ if [ ! -s "$NFCLIENT" ]; then
 fi
 # Patched client classes first, so they win over the server's copies of the same classes.
 CP="$NFCLIENT:$(ls "$CLIENT"/libraries/net/minecraft/client/*/client-*-srg.jar | head -1):$CP"
-# Client-only mods the display code hooks into (DLAA uses Iris's classes). A server has none of them, so the pack's
-# own pinned jars are fetched once and checked against the pack's hashes; they are compiled against, not shipped.
-for m in iris; do
+# Client-only mods the display code hooks into (DLAA uses Iris's and Colorwheel's classes). A server has none of them,
+# so the pack's own pinned jars are fetched once and checked against the pack's hashes; they are compiled against, not shipped.
+for m in iris colorwheel; do
   META="$HERE/../../pack/mods/$m.pw.toml"
   JAR="$CACHE/$(sed -n 's/^filename = "\(.*\)"/\1/p' "$META")"
   HASH=$(sed -n 's/^hash = "\(.*\)"/\1/p' "$META")

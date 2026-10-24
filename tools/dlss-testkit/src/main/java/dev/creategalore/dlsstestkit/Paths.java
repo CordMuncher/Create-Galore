@@ -27,6 +27,8 @@ final class Paths {
         // shimmer: with the camera still, whatever changes between them (besides the waving leaves, the same in every
         // mode) is the anti-aliasing flickering.
         PATHS.put("still", new Path(120, new int[] {112, 113, 114, 115, 116, 117, 118, 119}, f -> HOLD));
+        // A short still look, for the residual views (they keep no history, so nothing needs to settle).
+        PATHS.put("brief", new Path(40, new int[] {32, 33, 34, 35, 36, 37, 38, 39}, f -> HOLD));
         // A fast 60 degree flick right and back: smearing during the turn, then how quickly newly seen areas clean up.
         PATHS.put("flick", new Path(160, new int[] {59, 64, 68, 70, 74, 84, 99, 104, 108, 110, 114, 124, 159}, f -> {
             float yaw;
