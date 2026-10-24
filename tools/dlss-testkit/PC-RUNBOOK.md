@@ -62,7 +62,9 @@ Before the first launch (create a file if it isn't there; the game adds the keys
   `fullscreen:false`.
 - `$T\instance\config\DistantHorizons.toml` (the pack installs it): `lodChunkRenderDistanceRadius = 64` in place of
   the pack's 256 (Emre's call, 2026-10-24: far terrain still in every shot, built in minutes instead of hours; the
-  setting is the player's choice in game anyway). Every run and mode uses the same 64.
+  setting is the player's choice in game anyway). Every run and mode uses the same 64. Also `numberOfThreads = 32`
+  under `[common.multiThreading]` in place of the pack's 2, so the far terrain builds on all of the 9950X3D's
+  threads (test folder only; it changes how fast it builds, not what it shows).
 - Window: Emre's monitor size if smaller than 2560x1440, else `--resolution 2560x1440`. Ask him or read it with
   `Get-CimInstance Win32_VideoController | Select CurrentHorizontalResolution, CurrentVerticalResolution`.
 
