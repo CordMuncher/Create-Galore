@@ -68,10 +68,15 @@ public final class Capture {
          * run DLSS or FSR its output too.
          */
         boolean dumpRaw = false;
+        /** Save the screenshots at all. Off for measuring frame times (profiling), as saving one holds up its frame. */
+        boolean screenshots = true;
         /** The moving scene's ship: degrees it turns and blocks it sways along x per server tick (at most, it eases). */
         float shipTurnDegreesPerTick = 0.75f;
         float shipSwayPerTick = 0.03f;
-        /** In the moving scene, show the hand (the HUD shows with it) holding a sword and swing it, to check its motion. */
+        /**
+         * In the moving scene, show the hand (the HUD shows with it) holding a sword and swing it, to check its motion; in
+         * the effects scene, show it holding the sword still, in front of the particles.
+         */
         boolean showHand = false;
         List<Mode> modes = new ArrayList<>(List.of(
                 new Mode("photon-taa", false, "default", null, null, null, null, null),
@@ -142,6 +147,8 @@ public final class Capture {
     private static String runId;
     private static Settings settings;
     private static JsonArray shots;
+    private static JsonArray timeline;
+    private static JsonObject openSegment;
     private static Map<String, JsonObject> modeInfo;
     private static Mode currentMode;
     private static long lastNanos;
@@ -256,6 +263,8 @@ public final class Capture {
             return "could not make " + runDir + ": " + e;
         }
         shots = new JsonArray();
+        timeline = new JsonArray();
+        openSegment = null;
         modeInfo = new LinkedHashMap<>();
         plan = segments;
         segment = -1;
@@ -347,6 +356,7 @@ public final class Capture {
             return;
         }
         running = false;
+        markSegment(null, System.nanoTime());
         Minecraft mc = Minecraft.getInstance();
         mc.options.hideGui = savedHideGui;
         mc.options.bobView().set(savedBob);
@@ -436,10 +446,12 @@ public final class Capture {
             segment++;
             local = 0;
             if (segment >= plan.size()) {
+                markSegment(null, now);
                 stop("run finished");
                 return;
             }
             current = plan.get(segment);
+            markSegment(current, now);
             if (current.onStart() != null) {
                 current.onStart().run();
             }
@@ -454,7 +466,7 @@ public final class Capture {
         place(mc.player, current.viewpoint(), pose);
         pendingShot = null;
         for (int c : current.captures()) {
-            if (c == local) {
+            if (c == local && settings.screenshots) {
                 pendingShot = current.label() + "-f" + String.format(Locale.ROOT, "%03d", local);
             }
         }
@@ -716,6 +728,32 @@ public final class Capture {
         }
     }
 
+    /**
+     * Ends the open segment's entry in the timeline and opens one for the next (null: none). Each entry has the segment's
+     * start and end on two clocks: System.nanoTime in ms, which on Windows is the performance counter (the clock of
+     * PresentMon's --qpc_time_ms, so its frames line up with the segments), and the wall clock in epoch ms (for Java Flight
+     * Recorder's samples).
+     */
+    private static void markSegment(Segment next, long nanos) {
+        long epoch = System.currentTimeMillis();
+        if (openSegment != null) {
+            openSegment.addProperty("endMs", nanos / 1e6);
+            openSegment.addProperty("endEpochMs", epoch);
+            openSegment = null;
+        }
+        if (next != null && timeline != null) {
+            openSegment = new JsonObject();
+            openSegment.addProperty("segment", next.label());
+            openSegment.addProperty("mode", next.mode().name());
+            openSegment.addProperty("viewpoint", next.viewpoint().name());
+            openSegment.addProperty("path", next.path());
+            openSegment.addProperty("frames", next.length());
+            openSegment.addProperty("startMs", nanos / 1e6);
+            openSegment.addProperty("startEpochMs", epoch);
+            timeline.add(openSegment);
+        }
+    }
+
     private static void writeManifest(String outcome) {
         if (runDir == null) {
             return;
@@ -744,6 +782,9 @@ public final class Capture {
         manifest.add("paths", paths);
         manifest.add("viewpoints", GSON.toJsonTree(settings.viewpoints));
         manifest.add("shots", shots);
+        manifest.addProperty("clock", "startMs/endMs: System.nanoTime in ms (on Windows the performance counter, as PresentMon's"
+                + " --qpc_time_ms); startEpochMs/endEpochMs: the wall clock");
+        manifest.add("timeline", timeline);
         try {
             Files.writeString(runDir.resolve("manifest.json"), GSON.toJson(manifest));
         } catch (IOException e) {

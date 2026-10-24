@@ -46,7 +46,8 @@ import org.slf4j.LoggerFactory;
  * create_galore_bridge.dlss.dllDir loads nvngx_dlss.dll from another folder (the
  * SDK's dev build shows DLSS's own debug overlay); dlaaJitterSign=x,y in the display settings (or the system property
  * create_galore_bridge.dlss.jitterSign) flips the jitter handed to DLSS; dlaaObjectMotion=false and
- * dlaaReactiveMask=false leave out the motion of things that move by themselves and FSR's masks, for comparing.
+ * dlaaReactiveMask=false leave out the motion of things that move by themselves and FSR's masks, for comparing;
+ * create_galore_bridge.dlss.markers=true names the DLAA work for GPU profilers ({@link Markers}).
  */
 public final class Dlss {
     private static final Logger LOG = LoggerFactory.getLogger("create_galore_bridge");
@@ -329,7 +330,7 @@ public final class Dlss {
             }
             reset = false;
             dumpIfAsked(pass, true);
-            pass.writeBack(profile, DlssPass.View.RESULT);
+            Markers.around("Create Galore DLAA: write back", () -> pass.writeBack(profile, DlssPass.View.RESULT));
         } catch (Throwable t) {
             failed = true;
             LOG.error("DLAA: stopped, the pack's own anti-aliasing is back from the next frame (reloading shaders tries DLAA again)", t);
@@ -349,7 +350,7 @@ public final class Dlss {
                 frameTimeMs, projection, fsr3Debug));
         reset = false;
         dumpIfAsked(fsrPass, true);
-        fsrPass.writeBack(profile, DlssPass.View.RESULT);
+        Markers.around("Create Galore DLAA: write back", () -> fsrPass.writeBack(profile, DlssPass.View.RESULT));
     }
 
     private static void dumpIfAsked(DlssPass from, boolean withOutput) {

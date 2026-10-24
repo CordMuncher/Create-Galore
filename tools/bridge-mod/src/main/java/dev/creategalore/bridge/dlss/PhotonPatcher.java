@@ -46,12 +46,16 @@ import org.slf4j.LoggerFactory;
  * - marks for FSR 3 where it should take this frame over its history ({@link #REACTIVE_INCLUDE}): particles, rain and
  *   the nether portal (the translucent programs), lava and fire (their materials); DLSS's current models take no
  *   such mask;
- * - skips FXAA and CAS sharpening, so the picture is DLSS's own. With DLSS off it renders exactly as Photon does.
+ * - keeps particles behind the first-person hand: Photon draws them into its translucent layer before the hand and
+ *   blends that layer over it, so they showed on top of the hand and, with the hand's motion vectors, smeared there.
+ *   The solid hand now clears that layer where it draws, as Minecraft itself draws the hand over everything;
+ * - skips FXAA and CAS sharpening, so the picture is DLSS's own. With DLSS off it renders as Photon does, apart from
+ *   the hand fix.
  */
 public final class PhotonPatcher {
     private static final Logger LOG = LoggerFactory.getLogger("create_galore_bridge");
     /** Bumped when the patch changes, so existing copies are made again. */
-    private static final int PATCH_VERSION = 6;
+    private static final int PATCH_VERSION = 7;
     private static final String BASE_ZIP = "photon_v1.3a.zip";
     /** Colorwheel Patcher's copy of {@link #BASE_ZIP}; an outdated one gets a prefix and no longer matches. */
     private static final Pattern COLORWHEEL_ZIP = Pattern.compile("photon_v1\\.3a \\+ Clrwl_(\\d+)\\.(\\d+)\\.(\\d+)\\.zip");
@@ -341,9 +345,10 @@ public final class PhotonPatcher {
                         + "/* RENDERTARGETS: 1,2 */\n"
                         + "#endif\n"}};
         edits.put("shaders/program/gbuffers_all_solid.fsh", new String[][] {
-                {solidTargets[0][0], solidTargets[0][1] + MOTION_FRAGMENT_INPUTS},
+                {solidTargets[0][0], solidTargets[0][1] + MOTION_FRAGMENT_INPUTS + HAND_COVER_OUTPUT},
                 {"#if defined PROGRAM_GBUFFERS_PARTICLES\n    // Kill the little rain splash particles\n",
-                        MOTION_FRAGMENT_OUTPUT + "#if defined PROGRAM_GBUFFERS_PARTICLES\n    // Kill the little rain splash particles\n"},
+                        MOTION_FRAGMENT_OUTPUT + HAND_COVER_WRITE
+                                + "#if defined PROGRAM_GBUFFERS_PARTICLES\n    // Kill the little rain splash particles\n"},
         });
         // Lines and leads never move by themselves; they still say so, so colortex2 never keeps an older motion under them.
         edits.put("shaders/program/clrwl_solid.fsh", new String[][] {
@@ -391,6 +396,25 @@ public final class PhotonPatcher {
             in vec4 cg_clip_prev;
             in float cg_moving;
             #endif
+            """;
+
+    /**
+     * The solid hand also writes colortex13, Photon's translucent layer, with nothing: particles drawn there before the
+     * hand (Photon blends that layer over the hand) no longer show through it. Translucent parts of held items are
+     * drawn after the solid hand, so they stay. Last of the program's RENDERTARGETS, so it is the one Iris uses.
+     */
+    private static final String HAND_COVER_OUTPUT = """
+            #ifdef PROGRAM_GBUFFERS_HAND
+            layout(location = 2) out vec4 cg_hand_cover;
+            /* RENDERTARGETS: 1,2,13 */
+            #endif
+            """;
+
+    private static final String HAND_COVER_WRITE = """
+            #ifdef PROGRAM_GBUFFERS_HAND
+                cg_hand_cover = vec4(0.0);
+            #endif
+
             """;
 
     private static final String MOTION_FRAGMENT_OUTPUT = """

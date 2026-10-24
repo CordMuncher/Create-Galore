@@ -51,12 +51,21 @@ final class EffectsScene {
 
     private static boolean built;
     private static boolean raining;
+    private static boolean handGiven;
 
     private EffectsScene() {}
 
-    /** The camera arrived at the effects viewpoint: build the scene the first time, start the rain, let the world tick. */
+    /**
+     * The camera arrived at the effects viewpoint: build the scene the first time, start the rain, let the world tick.
+     * With showHand, the hand holds a sword (still) in front of the particles and the rain.
+     */
     static void enter(Capture.Settings settings) {
         show();
+        if (settings.showHand) {
+            Minecraft.getInstance().options.hideGui = false;
+            Capture.server("item replace entity @a weapon.mainhand with minecraft:iron_sword");
+            handGiven = true;
+        }
         if (settings.freezeTicks) {
             Capture.server("tick unfreeze");
         }
@@ -94,6 +103,10 @@ final class EffectsScene {
     static void remove() {
         if (raining) {
             rain(false);
+        }
+        if (handGiven) {
+            handGiven = false;
+            Capture.server("item replace entity @a weapon.mainhand with air");
         }
         if (!built) {
             return;

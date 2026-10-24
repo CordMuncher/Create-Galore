@@ -384,3 +384,152 @@ Add crops of about 512x512 from the still frames, for each mode:
 
 That comes to a few MB in all. Commit and push on the DLAA branch, without any `raw\` files, then delete the `raw\`
 folders.
+
+## Profiling 1: where the time goes
+
+A brief for the PC session, not a fixed recipe. Emre asked on 2026-10-24 that the PC session runs this on its own:
+- it sets up the profiling tools;
+- it takes the captures below, plus any others the data calls for (say why);
+- it analyzes them and writes the report.
+
+It **does not fix anything** and changes no code. The report says where the time goes and what causes it, with the
+data to back it up. What to do about it is decided in the DLAA thread. Start only when Emre says so.
+
+### Rules
+
+- **As at the top of this file:**
+  - work in the test folder only;
+  - leave Emre's own install, worlds and server untouched;
+  - ask Emre before anything not covered here.
+- **Installs:** the profilers below may be installed normally, system-wide where they come as installers (Emre's
+  OK, 2026-10-24). Prefer portable builds. Administrator prompts are Emre's to click.
+- **A quiet PC:** no game server and no other game or launcher. Close what can be closed, and note what stayed open.
+- **The NVIDIA Control Panel:** its power setting stays as Emre has it ("Prefer maximum performance" off, the
+  baseline). If Perfect Presentation shows the GPU clocking down, report it. Ask Emre before measuring with that
+  setting changed for the test `java.exe`, as it is his setting.
+- **Raw captures stay on the PC** in `$T\profiling`: Nsight reports, JFR recordings and PresentMon CSVs. They hold
+  paths with the user name. The repo gets the report, small tables and cropped screenshots of timelines.
+
+### The questions
+
+1. **Frame time per mode.** What is the frame time of Photon's TAA (`photon-taa`), DLSS (`dlaa-default`) and FSR 3.1
+   (`fsr3`)? Is each mode held back by the CPU or the GPU? The PC was expected to be CPU-bound, so work that only
+   costs GPU time may be free here, but not on a GPU-bound laptop.
+2. **What the Bridge's work costs.**
+   - On the GPU: copying the inputs, DLSS or each FSR pass, writing the result back.
+   - On the CPU: working out the motion of mobs, the hand, machines and ships (`dlaa-default` against `dlaa-camera`,
+     which leaves it out), and anything else of the Bridge's on the render thread.
+3. **Where a frame's time goes overall.**
+   - The render thread's hot paths, by owner:
+     - the Bridge;
+     - Photon's programs (through Iris);
+     - Iris and Sodium;
+     - Flywheel and Colorwheel, and Create;
+     - Distant Horizons;
+     - other mods;
+     - Minecraft;
+     - the graphics driver.
+   - The GPU's biggest passes: shadow, the world's programs, Photon's deferred and composite passes, DLSS or FSR.
+4. **Perfect Presentation.** What does it change? Its DirectX copy, interop waits, GPU clocks, frame pacing.
+
+### Tools
+
+- **PresentMon 2.x, console build:** frame times and the CPU and GPU busy time of every frame.
+  - Download `PresentMon-2.*-x64.exe` from https://github.com/GameTechDev/PresentMon/releases, not the overlay app's
+    installer.
+  - It needs administrator rights.
+  - Use `--qpc_time_ms`: then its times use the clock of the test kit's timeline.
+- **NVIDIA Nsight Systems:** the timeline of CPU threads, OpenGL, DirectX 11, the GPU queue and presents together.
+  - Trace OpenGL with its GPU workload, plus DirectX 11, WDDM and CPU sampling.
+  - It should follow `java.exe` started by portablemc as a child process. If it doesn't, start `java.exe` directly
+    with the command line portablemc uses.
+- **NVIDIA Nsight Graphics, optional:** GPU Trace of single frames, if Nsight Systems doesn't split the GPU time
+  finely enough.
+- **Java Flight Recorder:** already in the JDK (`$T\tools\jdk21\bin\jfr.exe`) for the CPU.
+  - Start it with `$env:JDK_JAVA_OPTIONS = "-XX:StartFlightRecording=filename=$T\profiling\P4.jfr,settings=profile"`,
+    set in the shell before the launch, because portablemc can't pass a JVM argument with commas. The recording is
+    written when the game closes. Clear it afterwards (`Remove-Item Env:JDK_JAVA_OPTIONS`), so the other captures
+    run without it.
+  - `jfr view hot-methods` and `cpuprofile.py` read it. In the recording the render thread is called `main` (its
+    name before Minecraft renames it); `cpuprofile.py` knows.
+  - spark is in the pack too, if an in-game view helps.
+- If NVIDIA's downloads need a developer account login, ask Emre.
+
+### Setup
+
+- `git -C $T\repo pull`. Copy the Bridge jar again (`Remove-Item` the old one first), then the test kit jar.
+  - This Bridge marks its DLAA work for GPU profilers with `-Dcreate_galore_bridge.dlss.markers=true` (OpenGL debug
+    groups: `Create Galore DLAA: copy inputs`, `...: evaluate (DirectX)` for DLSS, `...: FSR <pass>` for each FSR
+    pass, `...: write back`). Without the flag nothing changes.
+  - This test kit writes a `timeline` into `manifest.json`: when each part of a run started and ended. The times are
+    in ms on the performance counter, PresentMon's `--qpc_time_ms`, and in epoch ms.
+- `options.txt`: `enableVsync:false` and `maxFps:260`. Note the old values, and put them back at the end.
+- `config\DistantHorizons.toml`: `numberOfThreads = 2` (the pack's own value), and back to 32 at the end.
+- `config\create_galore_dlss_testkit.json`: write it fresh, with `"screenshots": false`. Saving a screenshot holds
+  up its frame; the file with only `{"screenshots": false}` is enough.
+- `perfectPresentation=false`, except where a capture says on.
+
+### Captures
+
+These are the minimum. Each is the launch from step 4 with `--jvm-arg=-Dcreate_galore_dlss_testkit.autorun=dlaa-test`,
+`--jvm-arg=-Dcreate_galore_dlss_testkit.modes=<modes>` and `--jvm-arg=-Dcreate_galore_dlss_testkit.viewpoints=<viewpoints>`
+from the table, so every mode sees the same frames:
+
+| Capture | Perfect Presentation | Modes | Viewpoints | Tool |
+| --- | --- | --- | --- | --- |
+| P1, P2, P3 (the same run three times, for the noise) | off | `photon-taa+dlaa-default+dlaa-camera+fsr3` | `shore+glass+canopy+moving` | PresentMon |
+| P4 | off | `photon-taa+dlaa-default+dlaa-camera` | `moving` | Java Flight Recorder |
+| P5 | on | `photon-taa+dlaa-default+fsr3` | `shore+canopy` | PresentMon |
+| N1 | off | `photon-taa+dlaa-default+fsr3`, with `...markers=true` | `canopy+moving` | Nsight Systems, CPU sampling on |
+| N2 | on | `dlaa-default`, with `...markers=true` | `canopy` | Nsight Systems |
+
+- PresentMon: start it before the game with `--process_name java.exe --output_file $T\profiling\P1.csv --qpc_time_ms
+  --terminate_on_proc_exit --stop_existing_session --no_console_stats`. Check the process name with `Get-Process
+  java` and the options with `--help`. Admin rights: `Start-Process -Verb RunAs`.
+- Keep the Nsight captures to a run each, as their files grow fast. Shorter paths (`"paths": ["still", "flick"]`)
+  are fine there; say so.
+
+### Analysis
+
+```powershell
+$py = "$T\tools\uv\uv.exe"
+$shots = "$T\instance\screenshots\dlaa-test"
+& $py run --python 3.13 $T\repo\tools\dlss-testkit\frametimes.py $shots\<P1> $T\profiling\P1.csv $shots\<P2> $T\profiling\P2.csv $shots\<P3> $T\profiling\P3.csv
+& $py run --python 3.13 $T\repo\tools\dlss-testkit\frametimes.py $shots\<P5> $T\profiling\P5.csv
+& $py run --python 3.13 $T\repo\tools\dlss-testkit\cpuprofile.py $shots\<P4> $T\profiling\P4.jfr $T\tools\jdk21\bin\jfr.exe
+```
+
+- `frametimes.py`: per viewpoint and mode, the median and p90 frame time, the spread across P1 to P3, CPU and GPU
+  busy time, and the share of GPU-bound frames. If it says the clocks don't line up, report that with the CSV's
+  first lines.
+- `cpuprofile.py`: per mode, the render thread's share in the Bridge's DLAA code and its motion vector code, the
+  packages and the busiest methods.
+- From Nsight, per mode, the GPU ms per frame for:
+  - each `Create Galore DLAA` group;
+  - DLSS's DirectX work;
+  - the rest of the frame, split as far as the capture allows;
+  - the wait for the interop handover and the present.
+- Code injected by mixins shows up inside Minecraft's methods. Name the mod where the handler or mixin class shows
+  it.
+
+### Report
+
+Write `$T\repo\tools\dlss-testkit\results\profiling-1\REPORT.md`, then commit and push on the DLAA branch:
+
+- **Summary:** the four questions answered with numbers, and how sure each answer is (noise, repeats).
+- **Hot paths:** the top render thread paths and GPU passes. For each, give:
+  - what it is;
+  - its share or ms;
+  - who it belongs to;
+  - whether it changes with the mode;
+  - whether it's caused by the Bridge, by something else in the pack, or by the driver or hardware.
+  Leave out fixes. Say "this looks like" where it's a reading, not a measurement.
+- **Method:**
+  - tool versions and commands;
+  - the settings above and their old values;
+  - the driver and the Windows power plan (`powercfg /getactivescheme`);
+  - what was open;
+  - every `DLAA:` log line;
+  - anything that didn't go to plan.
+- **Data:** small tables (CSV summaries) and cropped timeline screenshots under `results\profiling-1\`. List where
+  the raw captures are on the PC.

@@ -451,6 +451,10 @@ final class Fsr3Upscaler implements AutoCloseable {
     }
 
     private void run(Pass pass, int groupsX, int groupsY) {
+        Markers.around(pass.label, () -> bindAndDispatch(pass, groupsX, groupsY));
+    }
+
+    private void bindAndDispatch(Pass pass, int groupsX, int groupsY) {
         glUseProgram(pass.program);
         for (int i = 0; i < pass.samplers.length; i++) {
             Tex texture = read(pass.samplers[i]);
@@ -603,11 +607,14 @@ final class Fsr3Upscaler implements AutoCloseable {
 
     /** One compiled pass and the textures and images it uses, by the SDK's names, in unit order. */
     private final class Pass {
+        /** Its debug group's name (see Markers). */
+        final String label;
         final int program;
         final String[] samplers;
         final String[] images;
 
         Pass(String name) throws IOException {
+            label = "Create Galore DLAA: FSR " + name;
             program = link(name, source(name));
             List<String> samplerNames = new ArrayList<>();
             List<String> imageNames = new ArrayList<>();

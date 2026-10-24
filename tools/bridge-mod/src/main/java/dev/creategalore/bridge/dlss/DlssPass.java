@@ -212,26 +212,31 @@ final class DlssPass implements AutoCloseable {
 
     /** Copies the inputs, hands the textures to D3D11 for {@code evaluate} (if there is a device), then takes them back. */
     void copyAndEvaluate(Inputs in, Runnable evaluate) {
-        // The pack wrote the motion, depth and exposure images with image stores in the pass that just ran.
-        glMemoryBarrier(GL_ALL_BARRIER_BITS);
-        glCopyImageSubData(in.colorTexture(), GL_TEXTURE_2D, 0, 0, 0, 0, color.gl, GL_TEXTURE_2D, 0, 0, 0, 0, in.width(), in.height(), 1);
-        glCopyImageSubData(in.motionTexture(), GL_TEXTURE_2D, 0, 0, 0, 0, motion.gl, GL_TEXTURE_2D, 0, 0, 0, 0, in.width(), in.height(), 1);
-        glCopyImageSubData(in.depthTexture(), GL_TEXTURE_2D, 0, 0, 0, 0, depth.gl, GL_TEXTURE_2D, 0, 0, 0, 0, in.width(), in.height(), 1);
-        glCopyImageSubData(in.exposureTexture(), GL_TEXTURE_2D, 0, 0, 0, 0, exposure.gl, GL_TEXTURE_2D, 0, 0, 0, 0, 1, 1, 1);
-        hasMask = mask != null && in.maskTexture() != 0;
-        if (hasMask) {
-            glCopyImageSubData(in.maskTexture(), GL_TEXTURE_2D, 0, 0, 0, 0, mask.gl, GL_TEXTURE_2D, 0, 0, 0, 0, in.width(), in.height(), 1);
-        }
+        Markers.around("Create Galore DLAA: copy inputs", () -> {
+            // The pack wrote the motion, depth and exposure images with image stores in the pass that just ran.
+            glMemoryBarrier(GL_ALL_BARRIER_BITS);
+            glCopyImageSubData(in.colorTexture(), GL_TEXTURE_2D, 0, 0, 0, 0, color.gl, GL_TEXTURE_2D, 0, 0, 0, 0, in.width(), in.height(), 1);
+            glCopyImageSubData(in.motionTexture(), GL_TEXTURE_2D, 0, 0, 0, 0, motion.gl, GL_TEXTURE_2D, 0, 0, 0, 0, in.width(), in.height(), 1);
+            glCopyImageSubData(in.depthTexture(), GL_TEXTURE_2D, 0, 0, 0, 0, depth.gl, GL_TEXTURE_2D, 0, 0, 0, 0, in.width(), in.height(), 1);
+            glCopyImageSubData(in.exposureTexture(), GL_TEXTURE_2D, 0, 0, 0, 0, exposure.gl, GL_TEXTURE_2D, 0, 0, 0, 0, 1, 1, 1);
+            hasMask = mask != null && in.maskTexture() != 0;
+            if (hasMask) {
+                glCopyImageSubData(in.maskTexture(), GL_TEXTURE_2D, 0, 0, 0, 0, mask.gl, GL_TEXTURE_2D, 0, 0, 0, 0, in.width(), in.height(), 1);
+            }
+        });
         if (shared.isEmpty()) {
-            evaluate.run();
+            Markers.around("Create Galore DLAA: evaluate", evaluate);
             return;
         }
-        device.unlock(shared);
-        try {
-            evaluate.run();
-        } finally {
-            device.lock(shared);
-        }
+        // The DirectX side (DLSS) runs between handing the shared textures over and taking them back.
+        Markers.around("Create Galore DLAA: evaluate (DirectX)", () -> {
+            device.unlock(shared);
+            try {
+                evaluate.run();
+            } finally {
+                device.lock(shared);
+            }
+        });
     }
 
     // The OpenGL side of the textures, for FSR 3.

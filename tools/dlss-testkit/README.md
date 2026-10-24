@@ -77,7 +77,8 @@ PC session (things that move, rain, fire and the portal).
   `ghostcheck.py RUN_FOLDER [NAME=X0,Y0,X1,Y1 ...]` (numpy, Pillow) checks them: with `dumpRaw`, the modes that run DLSS
   or FSR also save its output, and for each pair of frames it measures, where the picture changed in a way the motion
   vectors do not explain, how much of the last frame the output still shows (`kept`, 0 to 1), per box. It also writes
-  input and output crops of each box side by side into `RUN_FOLDER/ghostcheck/`.
+  input and output crops of each box side by side into `RUN_FOLDER/ghostcheck/`. `"showHand": true` shows the hand
+  there too, holding a sword still in front of the particles.
 - FSR gets two masks from the patched pack for these: where to trust this frame over its history (particles, rain,
   snow and the portal swirl, in red) and where a texture animates under still motion vectors (fire, soul fire and lava,
   in green). `debug-mask` shows them (any GPU). `"reactiveMask": false` on a mode (`fsr3-nomask`) runs FSR without
@@ -88,4 +89,16 @@ PC session (things that move, rain, fire and the portal).
   `/dlaatest scene remove` takes the scenes away again.
 
 Each run folder has `manifest.json`: the modes (with the frame time on the still path and whether DLAA really ran),
-the viewpoints, the capture frames of each path and every screenshot.
+the viewpoints, the capture frames of each path, every screenshot, and the timeline (when each part of the run
+started and ended).
+
+### Profiling
+
+- `"screenshots": false` saves no screenshots, since saving one holds up its frame.
+- `frametimes.py RUN_FOLDER [PRESENTMON.csv] ...` (standard library) puts each frame of a PresentMon capture (taken
+  with `--qpc_time_ms`) in the part of the run it fell in. Per viewpoint and mode, it prints the frame time, CPU and
+  GPU busy time, and how often the GPU set the pace. Several runs are pooled.
+- `cpuprofile.py RUN_FOLDER RECORDING.jfr` splits a Java Flight Recorder recording's render thread samples by mode,
+  for the share of the Bridge's DLAA and motion vector code.
+
+`PC-RUNBOOK.md`'s "Profiling 1" is the brief for the PC session.
