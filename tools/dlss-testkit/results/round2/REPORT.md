@@ -1,109 +1,129 @@
-# DLAA round 2: FSR 3 on the RTX 4080 SUPER (stopped at run F)
+# DLAA round 2: FSR 3 on the RTX 4080 SUPER (stopped at run F, twice)
 
-Run on Emre's PC on 2026-10-24, 15:35–15:45, by a Claude Code session in `C:\Users\coolm\Documents\Claude\MC-CREATE`
-(`$T`), following the round 2 section of `tools/dlss-testkit/PC-RUNBOOK.md` at `7d4787c`.
+Run on Emre's PC on 2026-10-24 by a Claude Code session in `C:\Users\coolm\Documents\Claude\MC-CREATE` (`$T`),
+following the round 2 section of `tools/dlss-testkit/PC-RUNBOOK.md`. Attempt 1 at 15:39 used the Bridge from `7d4787c`,
+attempt 2 at 16:09 the one from `29249ed`. Both stopped in run F's `fsr3` mode, so runs G (FSR jitter sign),
+H (FSR debug view) and I (FSR with Perfect Presentation) weren't started: all three need FSR running.
 
 ## Summary
 
-- **FSR 3 didn't start on the 4080, so the round stopped after run F.** In the `fsr3` mode the Bridge logged
-  `DLAA: FSR 3 not available, the shader pack keeps its own anti-aliasing: FSR 3 needs OpenGL 4.5`, one of the
-  runbook's stop conditions. Runs G (FSR jitter sign), H (FSR debug view) and I (FSR with Perfect Presentation) all
-  need FSR running, so they weren't started. No FSR shader was compiled, so nothing about NVIDIA's compiler is known yet.
-- **Cause:** Minecraft's OpenGL context reports version 3.3 on NVIDIA (`OpenGL Version: 3.3.0 NVIDIA 621.01`), and the
-  Bridge requires `GL.getCapabilities().OpenGL45` (`tools/bridge-mod/.../dlss/Dlss.java:355`), which LWJGL derives from
-  that reported version. NVIDIA reports the version the game asked for; Mesa (the cloud rig) reports its newest core
-  version for the same request, which is why it passed there. The GPU and driver do support 4.6.
-- **4.5 functions work in this context anyway:** the Bridge's DLSS path already calls the GL45C functions
-  `glCreateTextures`, `glTextureParameteri` (`DlssDevice.java:183–207`) and `glGetTextureLevelParameteri`
-  (`DlssPass.java:147–159`) on it, every launch, without error. Iris also compiles Photon's GLSL 4.x shaders here. So the check, not the hardware, is what stops FSR. Checking
-  for the functions FSR uses (for example LWJGL's `caps.glDispatchCompute`, `caps.glCreateTextures`,
-  `caps.glBindTextureUnit` being non-zero, or the matching `ARB_*` extensions) instead of `OpenGL45` would let it try.
-  Whether NVIDIA's compiler then accepts FSR's GLSL is the open question the runbook already flags.
-- **Checks that passed:** the NVIDIA App override is still off (NGX loads the pack's `nvngx_dlss.dll` 310.9.16, title
-  default preset K). The game no longer sets DLSS up again while quitting (`closed its DirectX device`, then
-  `Stopping!`, with no new `ready` line). With `earlyWindowControl = false` from the start, the picture is 2560x1440.
-- **Not tested** (they needed runs that didn't happen): the GPU name on the NGX line with Perfect Presentation (run I)
-  and the flying hold (no hold was needed; the world kept round 1's terrain).
+- **Attempt 2 (`29249ed`): FSR 3 gets past the function check, but its `luma_pyramid` pass doesn't link on NVIDIA:**
+
+  ```
+  DLAA: FSR 3 not available, the shader pack keeps its own anti-aliasing: FSR 3 pass luma_pyramid did not link: Compute info
+  ------------
+  (0) : error C7624: OpenGL does not allow greater than 8 image uniforms
+  ```
+
+  The runbook says to stop when a pass fails, so the round stopped here. The pass compiled; the link step rejected it.
+- **Why:** NVIDIA's OpenGL allows 8 image uniforms per compute shader, and `luma_pyramid` declares 9:
+  `rw_spd_global_atomic` (r32ui), `rw_frame_info`, `rw_spd_mip0` to `rw_spd_mip5` and `rw_farthest_depth_mip1`
+  (`fsr3/fsr3upscaler/ffx_fsr3upscaler_callbacks_gl.h`, bindings 2–10 in `ffx_fsr3upscaler_luma_pyramid_pass.glsl`).
+  Mesa in the cloud allows more, so it never showed. Counting image bindings in every pass, only `luma_pyramid` is over
+  8; `shading_change_pyramid` has 7, `prepare_inputs` 5, the rest 3 or fewer. Getting it to 8 would be enough. One way
+  is the SPD counter `rw_spd_global_atomic` as a buffer (an SSBO with an atomic uint) instead of an image. Whether the
+  other passes link on NVIDIA isn't known yet, because the Bridge stops at the first failure.
+- **Attempt 1 (`7d4787c`):** `FSR 3 needs OpenGL 4.5`, because Minecraft's context reports `OpenGL Version: 3.3.0
+  NVIDIA 621.01` and the Bridge checked `OpenGL45`. `29249ed` replaced that check, and attempt 2 confirms it works here.
+- **Checks that passed (both attempts):**
+  - The NVIDIA App override is still off. NGX loads the pack's `nvngx_dlss.dll` 310.9.16, with title default preset K.
+  - No DLSS set-up while quitting: `closed its DirectX device` comes right before `Stopping!`, with no new `ready` line.
+  - The picture is 2560x1440 throughout, with `earlyWindowControl = false` from the start.
+  - `photon-taa` and `dlaa-default` reproduce round 1.
+- **Not tested** (they needed later runs): the GPU name on the NGX line with Perfect Presentation (run I), and the
+  flying hold. No hold was needed, because the world kept round 1's terrain.
 
 ## Setup
 
-Same PC, folder, tools and instance as round 1 (see `../REPORT.md`), with the two jars from `7d4787c`:
+Same PC, folder, tools and instance as round 1 (see `../REPORT.md`). Only the jars changed:
 
-| | |
-| --- | --- |
-| Bridge | `pack/mods/create-galore-bridge-1.89.0.jar`, 1,139,792 bytes (FSR 3 engine, quit fix) |
-| Test kit | `tools/dlss-testkit/dist/create-galore-dlss-testkit-1.0.0.jar`, 27,095 bytes (`fsr3*` modes, flying hold) |
-| OpenGL | `OpenGL Vendor: NVIDIA Corporation`, `OpenGL Renderer: NVIDIA GeForce RTX 4080 SUPER/PCIe/SSE2`, `OpenGL Version: 3.3.0 NVIDIA 621.01`; Iris: `GPU: NVIDIA GeForce RTX 4080 SUPER/PCIe/SSE2 (Supports OpenGL 3.3.0 NVIDIA 621.01)` |
+| | Attempt 1 (15:39) | Attempt 2 (16:09) |
+| --- | --- | --- |
+| Bridge `create-galore-bridge-1.89.0.jar` | `7d4787c`, 1,139,792 bytes | `29249ed`, 1,140,278 bytes (FSR checks the functions it calls) |
+| Test kit `create-galore-dlss-testkit-1.0.0.jar` | `7d4787c`, 27,095 bytes | same |
 
-Checked before run F: `dlaa=true`, `perfectPresentation=false`, `earlyWindowControl = false`, `tutorialStep:none`,
-Distant Horizons at radius 64 on 32 threads, DH database 224.9 MB (round 1's terrain, so no hold).
+OpenGL as the game logs it: `OpenGL Vendor: NVIDIA Corporation`, `OpenGL Renderer: NVIDIA GeForce RTX 4080
+SUPER/PCIe/SSE2`, `OpenGL Version: 3.3.0 NVIDIA 621.01`. Checked before each attempt: `dlaa=true`,
+`perfectPresentation=false`, `earlyWindowControl = false`, `tutorialStep:none`, Distant Horizons at radius 64 on 32
+threads, DH database 224.9 MB (round 1's terrain, unchanged by either attempt).
 
-## Run F: Photon TAA, DLAA, FSR 3
+## Run F, attempt 2 (`29249ed`)
 
-Folder `$T\instance\screenshots\dlaa-test\20261024-154042`, outcome `run finished`, 243 shots, 2560x1440.
-`"dlaaActive": false` for `photon-taa` (intended) and `fsr3` (FSR not available). The manifest lists `fsr3` with
-`"engine": "fsr3"`.
+Folder `$T\instance\screenshots\dlaa-test\20261024-161101`, outcome `run finished`, 243 shots, 2560x1440.
+`"dlaaActive": false` for `photon-taa` (intended) and `fsr3` (FSR not available, `"engine": "fsr3"`).
 
 ```
-Run 20261024-154042 at 2560x1440, NVIDIA GeForce RTX 4080 SUPER/PCIe/SSE2, Photon v1.3a + DLAA (run finished)
+Run 20261024-161101 at 2560x1440, NVIDIA GeForce RTX 4080 SUPER/PCIe/SSE2, Photon v1.3a + DLAA (run finished)
 ```
 
 ### shore
 
 | mode | DLAA ran | frame ms | shimmer (levels / >8) | residue (70 v 99 / 110 v 159) | edge contrast |
 | --- | --- | --- | --- | --- | --- |
-| photon-taa | no | 9.03 | 1.17 / 2.36% | 3.72 / 3.07 | 6.34 |
-| dlaa-default | yes | 8.75 | 0.14 / 0.10% | 2.61 / 2.19 | 4.24 |
-| fsr3 | no | 8.74 | 1.21 / 2.55% | 3.79 / 3.10 | 6.31 |
+| photon-taa | no | 9.09 | 1.17 / 2.34% | 3.77 / 3.07 | 6.33 |
+| dlaa-default | yes | 8.94 | 0.14 / 0.09% | 2.60 / 2.17 | 4.24 |
+| fsr3 | no | 8.82 | 1.21 / 2.53% | 3.79 / 3.08 | 6.31 |
 
 ### glass
 
 | mode | DLAA ran | frame ms | shimmer (levels / >8) | residue (70 v 99 / 110 v 159) | edge contrast |
 | --- | --- | --- | --- | --- | --- |
-| photon-taa | no | 8.82 | 0.76 / 1.47% | 2.66 / 1.86 | 4.34 |
-| dlaa-default | yes | 8.77 | 0.05 / 0.00% | 1.38 / 1.02 | 3.07 |
-| fsr3 | no | 8.66 | 0.75 / 1.41% | 2.64 / 1.76 | 4.39 |
+| photon-taa | no | 8.83 | 0.75 / 1.43% | 2.71 / 1.84 | 4.32 |
+| dlaa-default | yes | 8.76 | 0.05 / 0.00% | 1.40 / 1.02 | 3.05 |
+| fsr3 | no | 8.66 | 0.74 / 1.37% | 2.69 / 1.75 | 4.37 |
 
 ### canopy
 
 | mode | DLAA ran | frame ms | shimmer (levels / >8) | residue (70 v 99 / 110 v 159) | edge contrast |
 | --- | --- | --- | --- | --- | --- |
-| photon-taa | no | 9.29 | 1.55 / 3.86% | 2.80 / 7.09 | 8.77 |
-| dlaa-default | yes | 8.78 | 0.22 / 0.13% | 1.70 / 4.00 | 5.49 |
-| fsr3 | no | 8.68 | 1.54 / 3.79% | 2.81 / 6.57 | 8.88 |
+| photon-taa | no | 8.77 | 1.55 / 3.86% | 2.80 / 7.09 | 8.77 |
+| dlaa-default | yes | 8.9 | 0.22 / 0.13% | 1.69 / 4.00 | 5.49 |
+| fsr3 | no | 8.66 | 1.54 / 3.79% | 2.81 / 6.57 | 8.88 |
 
-The `fsr3` rows are Photon's own TAA (the fallback the log names), within run-to-run noise of `photon-taa`; they say
-nothing about FSR. `photon-taa` and `dlaa-default` reproduce round 1 at the new picture size (round 1 run A at the
-shore: 1.18 and 0.14 shimmer). There is no FSR frame time to compare.
-
-No crops: FSR didn't produce a picture, and round 1 already has `photon-taa` and `dlaa-default` crops of the same spots.
-
-## DLAA log lines (run F)
+The `fsr3` rows are Photon's own TAA (the fallback the log names) and say nothing about FSR. There is no FSR frame
+time and no FSR picture, so no crops (round 1 has the `photon-taa` and `dlaa-default` crops of the same spots).
 
 ```
-15:39:18 Perfect Presentation: off (config/create_galore_bridge-display.properties)
-15:40:05.396 DLAA: on for this shader pack, preset default
-15:40:20.725 DLAA: on for this shader pack, preset default
-15:40:30.923 DLAA: NGX ready on NVIDIA GeForce RTX 4080 SUPER (its own DirectX device), nvngx_dlss.dll from C:\Users\coolm\Documents\Claude\MC-CREATE\instance\create-galore-dlss
+16:09:39 Perfect Presentation: off (config/create_galore_bridge-display.properties)
+16:10:25.047 DLAA: on for this shader pack, preset default
+16:10:37.768 DLAA: on for this shader pack, preset default
+16:10:47.595 DLAA: NGX ready on NVIDIA GeForce RTX 4080 SUPER (its own DirectX device), nvngx_dlss.dll from C:\Users\coolm\Documents\Claude\MC-CREATE\instance\create-galore-dlss
   NGX: feature dlss snippet: C:\Users\coolm\Documents\Claude\MC-CREATE\instance\create-galore-dlss/nvngx_dlss.dll version: 310.9.16
-15:40:33.002 DLAA: DLSS running at 2560x1440, preset default
+16:10:49.202 DLAA: DLSS running at 2560x1440, preset default
   NGX: (DLAA) App hint Preset Unspecified or Overridden, using title default Preset K
-15:40:44.503 DLAA test: mode photon-taa
-15:41:13.392 DLAA: on for this shader pack, preset default
-15:41:13.401 DLAA test: mode dlaa-default
-15:41:35.051 DLAA: on for this shader pack, AMD FSR 3.1 in place of DLSS (testing)
-15:41:35.061 DLAA test: mode fsr3
-15:41:35.062 DLAA: FSR 3 not available, the shader pack keeps its own anti-aliasing: FSR 3 needs OpenGL 4.5
-15:41:55.378 DLAA test: run finished; screenshots in C:\Users\coolm\Documents\Claude\MC-CREATE\instance\screenshots\dlaa-test\20261024-154042
-15:41:58.474 DLAA: closed its DirectX device
-15:41:58.483 Stopping!
+16:11:03.383 DLAA test: mode photon-taa
+16:11:33.052 DLAA: on for this shader pack, preset default
+16:11:33.071 DLAA test: mode dlaa-default
+16:11:54.766 DLAA: on for this shader pack, AMD FSR 3.1 in place of DLSS (testing)
+16:11:54.779 DLAA test: mode fsr3
+16:11:54.841 DLAA: FSR 3 not available, the shader pack keeps its own anti-aliasing: FSR 3 pass luma_pyramid did not link: Compute info
+------------
+(0) : error C7624: OpenGL does not allow greater than 8 image uniforms
+16:12:15.170 DLAA test: run finished; screenshots in C:\Users\coolm\Documents\Claude\MC-CREATE\instance\screenshots\dlaa-test\20261024-161101
+16:12:18.260 DLAA: closed its DirectX device
+16:12:18.268 Stopping!
 ```
 
-No NGX warnings, no `did not compile`, no `DLAA: stopped`. The `GL_INVALID_VALUE ... Invalid texture format` debug
-messages at startup (21 here) were already in round 1 (25 in run A) and come before the Bridge's DLAA lines.
+No NGX warnings, no `DLAA: stopped`, no `did not compile`. The `GL_INVALID_VALUE ... Invalid texture format` debug
+messages at startup were already in round 1 and come before the Bridge's DLAA lines.
+
+## Run F, attempt 1 (`7d4787c`)
+
+Folder `$T\instance\screenshots\dlaa-test\20261024-154042`, outcome `run finished`, 243 shots, 2560x1440, same modes
+and the same picture as attempt 2. The `fsr3` mode again fell back to Photon's TAA, this time because of the version
+check:
+
+```
+15:41:35.051 DLAA: on for this shader pack, AMD FSR 3.1 in place of DLSS (testing)
+15:41:35.062 DLAA: FSR 3 not available, the shader pack keeps its own anti-aliasing: FSR 3 needs OpenGL 4.5
+```
+
+Its numbers (shore: photon-taa 1.17 / 2.36 %, dlaa-default 0.14 / 0.10 %, fsr3 1.21 / 2.55 %; glass and canopy alike)
+are within a few hundredths of attempt 2 and are kept in `$T\round2-logs\metrics-F-attempt1.md`.
 
 ## To finish round 2
 
-Once the Bridge's FSR check accepts NVIDIA's 3.3-reported context (and a rebuilt jar is on the branch), runs F–I take
-about 15 minutes on this PC with the instance as it is: copy the new Bridge jar, then run F, G, H and I as the runbook
-lists them. The logs of this attempt are in `$T\round2-logs\`.
+With `luma_pyramid` at 8 image uniforms or fewer (and a rebuilt Bridge jar on the branch), runs F–I take about 15
+minutes on this PC with the instance as it is: copy the new Bridge jar, then run F, G, H and I as the runbook lists
+them. If another pass then fails on NVIDIA, its `DLAA:` line will name it. The logs of both attempts are in
+`$T\round2-logs\`.
