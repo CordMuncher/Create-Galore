@@ -5,6 +5,12 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.4.75
+
+### Fixed
+- **Joining a single player world no longer crashes with "Ticking player".** Cold Sweat sets up its list of temperature effects again on your side every time you join a world, by emptying it and filling it back up. In single player the world runs in the same game and reads that same list, so for a moment it found none of its temperature effects registered, and if it saved or sent your temperature in that moment (Cold Sweat: Altitude does on your first tick), the game crashed. Temperature effects loaded from the save in that moment could also be lost. The world already sets the list up when it starts, so in single player your side now leaves it alone; joining a server works as before. A dedicated server was never affected, since the game and the server there are separate programs. Reproduced on a test client by holding that moment open: before the fix it crashed every time with the same error a player saw, after it the world loaded and played normally.
+- Create Galore Bridge 1.91.0.
+
 ## 0.4.74
 
 ### Fixed
