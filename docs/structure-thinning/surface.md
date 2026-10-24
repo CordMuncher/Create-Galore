@@ -2,7 +2,7 @@
 
 Part of the 0.2.0 structure thinning (one thread per layer: surface, underground, underwater, sky; a final
 audit checks them together). This file is the surface layer: the target, how it was reached, and every
-judgment call, so Emre can see what was decided and why.
+judgment call, so it is clear what was decided and why.
 
 The numbers come from Structure Scan (`tools/structscan-mod`), which finds every structure from the seed
 without generating chunks. The plan is worked out by `tools/structure-thinning/plan.py` and written into the
@@ -11,7 +11,7 @@ configs by `tools/structure-thinning/apply.py`. `policy-surface.txt` holds the h
 
 ## Target
 
-Emre (2026-10-17): the surface gets **2× vanilla's surface density**. Vanilla's surface on seed 12345 (144 km²,
+Target (2026-10-17): the surface gets **2× vanilla's surface density**. Vanilla's surface on seed 12345 (144 km²,
 mineshafts left out) is 2.76 structures per km², so the target is **5.53 per km²**: on average one surface
 structure per 0.18 km², about 425 blocks between neighbours. Before this change the pack had 42.8 per km²
 (15.5×).
@@ -24,7 +24,7 @@ and the share it doesn't use goes to the others. Nothing is made more common tha
 
 Each entry: the problem, the call, and why. Newest last.
 
-1. **Mineshafts don't count and aren't thinned** (Emre's call). Better Mineshafts land in the surface layer in
+1. **Mineshafts don't count and aren't thinned** (a design call). Better Mineshafts land in the surface layer in
    the scan because their tall shafts push the middle of the bounding box up; they are left alone.
 2. **Who owns which structure set.** Spacing is set per structure set, and some sets place structures in more
    than one layer. Agreed between the four threads: a set belongs to the layer where most of its structures
@@ -33,7 +33,7 @@ Each entry: the problem, the call, and why. Newest last.
    balloons and airships). Their sky kinds are thinned to the sky thread's share per kind (3.7 per 64 km²).
 3. **Ice Maze arches and spirals stay as they are** and don't count toward the target (agreed with the
    underwater thread, which owns that Aquamirae set). They are the Ice Maze itself: the biome's terrain is
-   built from them, with no loot or mobs. Emre: a biome whose gimmick is its structures keeps them.
+   built from them, with no loot or mobs. A biome whose gimmick is its structures keeps them.
 4. **Alex's Caves' ocean trench stays as it is** and doesn't count. It is the "structure" that carves the
    Abyssal Chasm, where the Hullbreaker (the Immortal Embryo for the Stellar Core) lives. Thinning it would
    break the biome.
@@ -54,7 +54,7 @@ Each entry: the problem, the call, and why. Newest last.
 9. **Moog's structures read their config number differently** (about 1.66× the config value becomes the real
    spacing), so the first try left the Long Ship and Wanderer Raft 65% wider than planned. `apply.py` now
    scales each config number by the planned ratio instead of writing the scanned number.
-10. **Biome balance.** Emre: no biome should be crowded or empty by accident. The scan now records every
+10. **Biome balance.** No biome should be crowded or empty by accident. The scan now records every
     structure's biome, and `biome_check.py` groups biomes into families (forest, plains, snowy, desert,
     mountains, ...). Before thinning the land families ranged from 0.9× to 2.1× the average; with the plan,
     land families sit between about 0.7× (steep peaks and cliffs, where few buildings can stand) and 1.3×
@@ -75,7 +75,7 @@ Each entry: the problem, the call, and why. Newest last.
     in the same config file as its surface builds, so this thread set them to the sky thread's numbers
     (193, and 291 for the rare steampunk airship). The sky kinds inside When Dungeons Arise's and Aeronautics Structures' mixed sets keep their
     mods' own weights; only the set spacing changes.
-15. **Rare builds stay rarer** (Emre's clarification, 2026-10-17). Boss lairs and the big dungeons with the
+15. **Rare builds stay rarer** (clarified 2026-10-17). Boss lairs and the big dungeons with the
     best loot are not flattened to an even share. They are thinned in proportion with the whole surface (each
     keeps 19% of what it had, the same as the layer overall), and never more than half an ordinary kind's
     share, so they always stay rarer than everyday builds. Treated as rare: When Dungeons Arise's major

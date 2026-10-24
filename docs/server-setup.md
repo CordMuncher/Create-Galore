@@ -4,7 +4,7 @@ This guide covers the two servers the pack is meant to run on:
 
 | Who is playing | Where the world runs | Why |
 |---|---|---|
-| Emre (alone or together) | **Local dedicated server** on Emre's PC | Fastest CPU, no cost, plenty of RAM (64 GB) for server and game side by side |
+| The host (alone or together) | **Local dedicated server** on the host's PC | Fastest CPU, no cost, plenty of RAM (64 GB) for server and game side by side |
 | Only the second player | **Exaroton**, 8 GB to start (try 6 GB later) | Her laptop has 16 GB and the pack needs about 8 GB per side, so it can't host and play at once |
 
 Never host on the laptop while also playing on it. Use Exaroton for that.
@@ -19,7 +19,7 @@ The server gets **187 mods from the pack plus Twilight Forest**. The 42 client-o
 
 Versions that must match on the server and on every player's PC: Minecraft **1.21.1**, NeoForge **21.1.262** (not newer until it's tested with The Aether), and the same pack version.
 
-## Part 1: Local dedicated server (Emre's PC)
+## Part 1: Local dedicated server (the host's PC)
 
 ### Easiest: the Server Setup app (Windows)
 

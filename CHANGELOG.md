@@ -2,7 +2,8 @@
 
 Each pack version gets a section here, with **Added**, **Fixed** and **Removed** where they apply. The release
 workflow copies the section for the version in `pack/pack.toml` to the top of the GitHub release, and the build
-fails when that section is missing.
+fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
+describe the fix (the build fails on a name it knows).
 
 ## 0.4.73
 
@@ -246,7 +247,7 @@ fails when that section is missing.
 ## 0.4.33
 
 ### Fixed
-- **Boats with a slab floor no longer sit bow-down.** A boat floats on the air in its hold, but the air above a slab floor (or beside a stair, trapdoor or other partial block in the hull) gave no lift, as if the floor were a full block. That air sits in the middle and bow of most boats, while a solid stern kept all its lift, so slab-floored boats floated nose-down. It now lifts like the rest of the hold: Emre's slab-floored boat went from 2.4 degrees bow-down to 1.5 at rest, and from 1.3 to 0.6 at full speed (16.6 blocks/s). A partial block counts only where its open side faces the hold and nowhere else outside, and a flooded hold or a waterlogged block still lifts nothing, so overloaded boats still sink. Ask the Book's boat check counts the same air.
+- **Boats with a slab floor no longer sit bow-down.** A boat floats on the air in its hold, but the air above a slab floor (or beside a stair, trapdoor or other partial block in the hull) gave no lift, as if the floor were a full block. That air sits in the middle and bow of most boats, while a solid stern kept all its lift, so slab-floored boats floated nose-down. It now lifts like the rest of the hold: a test boat with a slab floor went from 2.4 degrees bow-down to 1.5 at rest, and from 1.3 to 0.6 at full speed (16.6 blocks/s). A partial block counts only where its open side faces the hold and nowhere else outside, and a flooded hold or a waterlogged block still lifts nothing, so overloaded boats still sink. Ask the Book's boat check counts the same air.
 - Create Galore Bridge 1.63.0.
 
 ## 0.4.31
