@@ -5,6 +5,12 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.4.74
+
+### Fixed
+- **Deep Seas' Pixel light style works.** The Vortex Engine's Pixel light style (`/vortex style light pixel`) never drew its own light: its shader names a variable `packed`, a word GLSL keeps for itself, so NVIDIA and Mesa drivers refused it on every start (the log showed "Couldn't load the Vortex pixel light shader") and the style quietly fell back to the soft Flood light. The pack now loads a copy of that shader with the variable renamed. Checked on the Mesa test rig: the error is gone, and the Vortex profiler now counts the test room's Sonar light in the pixel pass (0 before, 1 after). The default Flood style, the other styles, and play with a shader pack (where the Vortex lights switch themselves off) are unchanged.
+- Create Galore Bridge 1.90.0.
+
 ## 0.4.73
 
 ### Fixed
