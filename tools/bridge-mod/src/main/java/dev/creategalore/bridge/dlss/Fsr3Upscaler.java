@@ -114,6 +114,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.joml.Matrix4fc;
+import org.lwjgl.opengl.GL;
+import org.lwjgl.opengl.GLCapabilities;
 import org.lwjgl.system.MemoryStack;
 
 /**
@@ -259,6 +261,29 @@ final class Fsr3Upscaler implements AutoCloseable {
         glNamedBufferStorage(spdBuffer, SPD_SIZE, GL_DYNAMIC_STORAGE_BIT);
         linearSampler = sampler(GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
         pointSampler = sampler(GL_NEAREST, GL_NEAREST);
+    }
+
+    /**
+     * The OpenGL 4.1 to 4.5 functions the passes call that this context lacks, comma-separated, or null if it has them
+     * all. The functions are checked rather than the version: NVIDIA reports the version the game asked for (3.3 on
+     * the 4080) while having every 4.5 function (through the ARB extensions); Mesa reports its newest version.
+     */
+    static String missingFunctions() {
+        GLCapabilities caps = GL.getCapabilities();
+        String[] names = {"glProgramUniform1i", "glBindImageTexture", "glMemoryBarrier", "glDispatchCompute",
+                "glClearTexImage", "glBindTextureUnit", "glCreateBuffers", "glCreateSamplers", "glCreateTextures",
+                "glNamedBufferStorage", "glNamedBufferSubData", "glTextureParameteri", "glTextureStorage2D"};
+        long[] addresses = {caps.glProgramUniform1i, caps.glBindImageTexture, caps.glMemoryBarrier,
+                caps.glDispatchCompute, caps.glClearTexImage, caps.glBindTextureUnit, caps.glCreateBuffers,
+                caps.glCreateSamplers, caps.glCreateTextures, caps.glNamedBufferStorage, caps.glNamedBufferSubData,
+                caps.glTextureParameteri, caps.glTextureStorage2D};
+        List<String> missing = new ArrayList<>();
+        for (int i = 0; i < names.length; i++) {
+            if (addresses[i] == 0L) {
+                missing.add(names[i]);
+            }
+        }
+        return missing.isEmpty() ? null : String.join(", ", missing);
     }
 
     /** FSR's own jitter period for this scale (8 at native size): its Halton sequence repeats after this many frames. */

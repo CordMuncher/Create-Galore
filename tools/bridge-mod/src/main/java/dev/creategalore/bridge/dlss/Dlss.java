@@ -24,7 +24,6 @@ import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.GameShuttingDownEvent;
 import org.joml.Matrix4fc;
-import org.lwjgl.opengl.GL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -352,8 +351,9 @@ public final class Dlss {
             return false;
         }
         try {
-            if (!GL.getCapabilities().OpenGL45) {
-                throw new IllegalStateException("FSR 3 needs OpenGL 4.5");
+            String missing = Fsr3Upscaler.missingFunctions();
+            if (missing != null) {
+                throw new IllegalStateException("FSR 3 needs OpenGL 4.5, this one lacks " + missing);
             }
             fsr = new Fsr3Upscaler();
             fsrPass = new DlssPass(null);
