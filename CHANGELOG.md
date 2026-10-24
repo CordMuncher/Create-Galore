@@ -2,7 +2,20 @@
 
 Each pack version gets a section here, with **Added**, **Fixed** and **Removed** where they apply. The release
 workflow copies the section for the version in `pack/pack.toml` to the top of the GitHub release, and the build
-fails when that section is missing.
+fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
+describe the fix (the build fails on a name it knows).
+
+## 0.4.75
+
+### Fixed
+- **Joining a single player world no longer crashes with "Ticking player".** Cold Sweat sets up its list of temperature effects again on your side every time you join a world, by emptying it and filling it back up. In single player the world runs in the same game and reads that same list, so for a moment it found none of its temperature effects registered, and if it saved or sent your temperature in that moment (Cold Sweat: Altitude does on your first tick), the game crashed. Temperature effects loaded from the save in that moment could also be lost. The world already sets the list up when it starts, so in single player your side now leaves it alone; joining a server works as before. A dedicated server was never affected, since the game and the server there are separate programs. Reproduced on a test client by holding that moment open: before the fix it crashed every time with the same error a player saw, after it the world loaded and played normally.
+- Create Galore Bridge 1.91.0.
+
+## 0.4.74
+
+### Fixed
+- **Deep Seas' Pixel light style works.** The Vortex Engine's Pixel light style (`/vortex style light pixel`) never drew its own light: its shader names a variable `packed`, a word GLSL keeps for itself, so NVIDIA and Mesa drivers refused it on every start (the log showed "Couldn't load the Vortex pixel light shader") and the style quietly fell back to the soft Flood light. The pack now loads a copy of that shader with the variable renamed. Checked on the Mesa test rig: the error is gone, and the Vortex profiler now counts the test room's Sonar light in the pixel pass (0 before, 1 after). The default Flood style, the other styles, and play with a shader pack (where the Vortex lights switch themselves off) are unchanged.
+- Create Galore Bridge 1.90.0.
 
 ## 0.4.73
 
@@ -246,7 +259,7 @@ fails when that section is missing.
 ## 0.4.33
 
 ### Fixed
-- **Boats with a slab floor no longer sit bow-down.** A boat floats on the air in its hold, but the air above a slab floor (or beside a stair, trapdoor or other partial block in the hull) gave no lift, as if the floor were a full block. That air sits in the middle and bow of most boats, while a solid stern kept all its lift, so slab-floored boats floated nose-down. It now lifts like the rest of the hold: Emre's slab-floored boat went from 2.4 degrees bow-down to 1.5 at rest, and from 1.3 to 0.6 at full speed (16.6 blocks/s). A partial block counts only where its open side faces the hold and nowhere else outside, and a flooded hold or a waterlogged block still lifts nothing, so overloaded boats still sink. Ask the Book's boat check counts the same air.
+- **Boats with a slab floor no longer sit bow-down.** A boat floats on the air in its hold, but the air above a slab floor (or beside a stair, trapdoor or other partial block in the hull) gave no lift, as if the floor were a full block. That air sits in the middle and bow of most boats, while a solid stern kept all its lift, so slab-floored boats floated nose-down. It now lifts like the rest of the hold: a test boat with a slab floor went from 2.4 degrees bow-down to 1.5 at rest, and from 1.3 to 0.6 at full speed (16.6 blocks/s). A partial block counts only where its open side faces the hold and nowhere else outside, and a flooded hold or a waterlogged block still lifts nothing, so overloaded boats still sink. Ask the Book's boat check counts the same air.
 - Create Galore Bridge 1.63.0.
 
 ## 0.4.31

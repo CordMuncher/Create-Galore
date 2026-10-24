@@ -210,12 +210,14 @@ it on the 4080 with NVIDIA's shader compiler and real DLSS, and Emre judges the 
 
 ### Update
 
-Keep `$T\instance` and `saves\dlaa-test` (the far terrain stays). The two jars change, and the test kit's config is
-written fresh, since it needs the new `moving` viewpoint:
+Keep `$T\instance` and `saves\dlaa-test` (the far terrain stays). The two jars change (the Bridge is now 1.91.0, with
+pack 0.4.75's fixes; nothing else in the pack changed, so the old Bridge jar goes and the new one comes in), and the
+test kit's config is written fresh, since it needs the new `moving` viewpoint:
 
 ```powershell
 git -C $T\repo pull
-Copy-Item $T\repo\pack\mods\create-galore-bridge-1.89.0.jar $T\instance\mods\ -Force
+Remove-Item $T\instance\mods\create-galore-bridge-*.jar
+Copy-Item $T\repo\pack\mods\create-galore-bridge-1.91.0.jar $T\instance\mods\ -Force
 Copy-Item $T\repo\tools\dlss-testkit\dist\create-galore-dlss-testkit-1.0.0.jar $T\instance\mods\ -Force
 Remove-Item $T\instance\config\create_galore_dlss_testkit.json
 ```
