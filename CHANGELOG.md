@@ -5,6 +5,11 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.4.76
+
+### Fixed
+- **Updating a server from start-server no longer crashes right after the update.** When the Server Setup app updated a server from the update question at start, it rewrote the update check's own file (create-galore-updater.jar) while that check was still running. The update itself finished, but the check then failed with "NoClassDefFoundError: FieldGuideKey" instead of starting the server, and only started it on the next try. The app now leaves the running file alone and puts the new one next to it, which start-server swaps in the next time, and the check loads all of itself before updating, so a changed file under it can't break it either. Reproduced on a test machine by rewriting the check's file while it ran: the same error before the fix, the server starting after it. Nothing on an updated server was harmed by the crash: starting again was enough.
+
 ## 0.4.75
 
 ### Fixed

@@ -495,8 +495,9 @@ namespace CreateGalore.ServerSetup
         /// <summary>
         /// The update check start-server runs before the server (create-galore-updater.jar --server-start), and the
         /// record of which pack this folder now has, so the check can tell when the release is newer.
-        /// When that check is what runs this update, Windows keeps its jar locked: the new jar then goes next to it
-        /// as create-galore-updater.jar.new, and start-server swaps it in before the next check.
+        /// When that check is what runs this update, its Java still has the jar open and reads classes from it as it
+        /// goes, so the jar must not be rewritten under it (Java lets other programs write to an open jar): the new jar
+        /// then goes next to it as create-galore-updater.jar.new, and start-server swaps it in before the next check.
         /// </summary>
         void WriteUpdateCheck()
         {
@@ -508,7 +509,13 @@ namespace CreateGalore.ServerSetup
             string path = P("create-galore-updater.jar"), staged = path + ".new";
             try
             {
-                if (!File.Exists(path) || !File.ReadAllBytes(path).SequenceEqual(jar)) File.WriteAllBytes(path, jar);
+                // FileShare.None fails while anything else (the running check) has the jar open.
+                using (var f = new FileStream(path, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None))
+                using (var m = new MemoryStream())
+                {
+                    f.CopyTo(m);
+                    if (!m.ToArray().SequenceEqual(jar)) { f.SetLength(0); f.Write(jar, 0, jar.Length); }
+                }
                 if (File.Exists(staged)) File.Delete(staged);
             }
             catch (Exception e) when (e is IOException || e is UnauthorizedAccessException)

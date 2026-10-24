@@ -41,6 +41,9 @@ final class ServerUpdateCheck {
     public static void main(String[] args) { System.exit(new ServerUpdateCheck().run(args)); }
 
     int run(String[] args) {
+        // An update by the Server Setup app rewrites this jar while it runs, and Java reads classes from it lazily,
+        // so load every class now: after the update the old jar's entries are gone.
+        loadOwnClasses();
         int code;
         try {
             code = check(Arrays.asList(args));
@@ -52,6 +55,22 @@ final class ServerUpdateCheck {
         // The Field Guide's voice comes after the update question, and only when the server is about to start.
         if (code == 0) FieldGuideKey.atServerStart(out);
         return code;
+    }
+
+    static void loadOwnClasses() {
+        try {
+            Path jar = Paths.get(ServerUpdateCheck.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+            if (!Files.isRegularFile(jar)) return;
+            try (java.util.zip.ZipFile zip = new java.util.zip.ZipFile(jar.toFile())) {
+                for (ZipEntry e : Collections.list(zip.entries())) {
+                    String n = e.getName();
+                    if (n.endsWith(".class") && !n.contains("/"))
+                        Class.forName(n.substring(0, n.length() - 6), false, ServerUpdateCheck.class.getClassLoader());
+                }
+            }
+        } catch (Exception | LinkageError e) {
+            // Best effort: the classes still load the usual way.
+        }
     }
 
     int check(List<String> args) throws Exception {
