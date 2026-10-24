@@ -66,6 +66,8 @@ public final class Capture {
         /** The moving scene's ship: degrees it turns and blocks it sways along x per server tick (at most, it eases). */
         float shipTurnDegreesPerTick = 0.75f;
         float shipSwayPerTick = 0.03f;
+        /** In the moving scene, show the hand (the HUD shows with it) holding a sword and swing it, to check its motion. */
+        boolean showHand = false;
         List<Mode> modes = new ArrayList<>(List.of(
                 new Mode("photon-taa", false, "default", null, null, null, null),
                 new Mode("dlaa-default", true, "default", null, null, null, null),

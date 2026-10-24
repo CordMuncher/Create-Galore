@@ -39,15 +39,16 @@ import org.slf4j.LoggerFactory;
  * - turns its TAA pass (composite4) into a copy that also writes, into custom images, motion vectors from Photon's
  *   own reprojection (Distant Horizons terrain included; the hand gets none, the sky rotation only), a DLSS depth and
  *   the exposure. The Bridge then runs DLSS and writes its result where TAA's would have gone;
- * - gives things that move by themselves their own motion vectors (waving plants and leaves so far): the solid
- *   gbuffers programs write them into colortex2, which Photon itself only uses with normal or specular mapping, POM
- *   or TAAU, and composite4 takes them over the reprojection (see {@link #MOTION_INCLUDE});
+ * - gives things that move by themselves their own motion vectors (waving plants and leaves, Sable's ships, Create's
+ *   machines and contraptions through Colorwheel, entities, block entities and the hand through {@link EntityMotion}):
+ *   the solid gbuffers programs write them into colortex2, which Photon itself only uses with normal or specular
+ *   mapping, POM or TAAU, and composite4 takes them over the reprojection (see {@link #MOTION_INCLUDE});
  * - skips FXAA and CAS sharpening, so the picture is DLSS's own. With DLSS off it renders exactly as Photon does.
  */
 public final class PhotonPatcher {
     private static final Logger LOG = LoggerFactory.getLogger("create_galore_bridge");
     /** Bumped when the patch changes, so existing copies are made again. */
-    private static final int PATCH_VERSION = 4;
+    private static final int PATCH_VERSION = 5;
     private static final String BASE_ZIP = "photon_v1.3a.zip";
     /** Colorwheel Patcher's copy of {@link #BASE_ZIP}; an outdated one gets a prefix and no longer matches. */
     private static final Pattern COLORWHEEL_ZIP = Pattern.compile("photon_v1\\.3a \\+ Clrwl_(\\d+)\\.(\\d+)\\.(\\d+)\\.zip");
@@ -234,6 +235,14 @@ public final class PhotonPatcher {
                         + "// Set by the Create Galore Bridge while Sable draws a ship: takes a vertex from where it is now (relative to\n"
                         + "// the camera) to where the ship had it last frame. All 0 for everything else (see ObjectMotion).\n"
                         + "uniform mat4 cg_object_motion;\n"
+                        + "#endif\n"
+                        + "\n#if defined CG_MOTION_GBUFFER && (defined PROGRAM_GBUFFERS_ENTITIES || defined PROGRAM_GBUFFERS_BLOCK \\\n"
+                        + "    || defined PROGRAM_GBUFFERS_HAND || defined PROGRAM_GBUFFERS_SPIDEREYES)\n"
+                        + "#define CG_VERTEX_PREV\n"
+                        + "// Where the Create Galore Bridge had this vertex last frame (EntityMotion), in Iris's entity format: w 2\n"
+                        + "// relative to the camera now, w 3 in the vertex's own space with this frame's model-view (the hand), else\n"
+                        + "// not known.\n"
+                        + "layout(location = " + EntityMotion.LOCATION + ") in vec4 cg_prev_pos;\n"
                         + "#endif\n"},
                 {"    vec3 pos = transform(gl_ModelViewMatrix, gl_Vertex.xyz);\n"
                         + "    pos = view_to_scene_space(pos);\n"
@@ -353,6 +362,13 @@ public final class PhotonPatcher {
         } else {
             b.append(i).append("bool cg_carried = cg_object_motion[3][3] != 0.0;\n");
             b.append(i).append("vec3 cg_scene_prev = cg_carried ? (cg_object_motion * vec4(pos, 1.0)).xyz : pos;\n");
+            b.append("#ifdef CG_VERTEX_PREV\n");
+            b.append(i).append("bool cg_drawn_moving = (cg_prev_pos.w == 2.0 || cg_prev_pos.w == 3.0) && cg_prev_pos.xyz != gl_Vertex.xyz;\n");
+            b.append(i).append("if (cg_drawn_moving) {\n");
+            b.append(i).append("    cg_carried = true;\n");
+            b.append(i).append("    cg_scene_prev = view_to_scene_space(transform(gl_ModelViewMatrix, cg_prev_pos.xyz));\n");
+            b.append(i).append("}\n");
+            b.append("#endif\n");
         }
         b.append("#endif\n");
         b.append(cont).append("pos = pos + cameraPosition;\n");
@@ -372,6 +388,14 @@ public final class PhotonPatcher {
         b.append(i).append("cg_scene_prev += cg_world_prev - cg_world_prev_base;\n");
         b.append(i).append("cg_clip_prev = gbufferPreviousProjection\n");
         b.append(i).append("    * vec4(transform(gbufferPreviousModelView, cg_scene_prev + cameraPosition - previousCameraPosition), 1.0);\n");
+        if (!flywheel) {
+            b.append("#ifdef CG_VERTEX_PREV\n");
+            b.append(i).append("// The hand moves with the camera: only its own motion on the screen, through this frame's matrices.\n");
+            b.append(i).append("if (cg_drawn_moving && cg_prev_pos.w == 3.0) {\n");
+            b.append(i).append("    cg_clip_prev = project(gl_ProjectionMatrix, transform(gl_ModelViewMatrix, cg_prev_pos.xyz));\n");
+            b.append(i).append("}\n");
+            b.append("#endif\n");
+        }
         b.append("#endif\n");
         b.append(cont).append("pos = pos - cameraPosition;\n");
         return b.toString();

@@ -14,6 +14,11 @@ import net.neoforged.neoforge.event.tick.ServerTickEvent;
  * - A second motor turning a mechanical bearing with a glued cross of planks and wool on it (a contraption).
  * - A small Sable ship on the water, turned and swayed a little every server tick (a sub-level), slowly enough by
  *   default to stand on it.
+ * - Entities: a villager, an armor stand in iron armor holding a sword (the test world is peaceful, so no hostile mob
+ *   stays) and a red panda (a GeckoLib model, from Critters and Companions) go round in circles in front (moved every
+ *   server tick, so the mobs' legs swing), a dropped diamond sword spins in the air, a bell keeps ringing and a chest
+ *   keeps opening and closing.
+ * With showHand, the hand shows too (and the HUD with it) holding a sword, and swings every few ticks.
  * While the camera is there, the world ticks at sceneTickRate (the rest of the run is frozen): on slow software
  * rendering (about a frame a second) 1 tick a second keeps each frame's movement close to a normal game's.
  * /dlaatest scene build puts it up outside a run too, at the game's own tick rate, to look at and ride.
@@ -25,6 +30,9 @@ final class MovingScene {
     // Every sub-level around the scene (Sable's x, y and z filter the sub-levels' own positions), so nothing a run made
     // stays behind, even a piece that came loose.
     private static final String REMOVE_SHIPS = "sable remove @e[x=1013..1049,y=50..85,z=127..173]";
+    private static final String TAG = "cgtest";
+    private static final String MOB = "{NoAI:1b,NoGravity:1b,Silent:1b,Invulnerable:1b,PersistenceRequired:1b,Tags:[\"" + TAG + "\",\"%s\"]%s}";
+    private static final String BELL_POWER = "1036 64 156";
     private static final List<String> BUILD = List.of(
             REMOVE_SHIPS,
             CLEAR,
@@ -56,13 +64,27 @@ final class MovingScene {
             "fill 1028 66 146 1030 67 146 white_wool",
             "setblock 1027 65 143 lantern",
             "sable assemble area 1027 63 143 1031 67 147",
-            "sable name set @l " + SHIP);
+            "sable name set @l " + SHIP,
+            // Entities: three walkers (moved in serverTick), a spinning dropped sword, a bell, a chest.
+            "kill @e[tag=" + TAG + "]",
+            "summon villager 1028 64 157 " + String.format(MOB, "cgwalker1",
+                    ",VillagerData:{profession:\"minecraft:farmer\",level:1,type:\"minecraft:plains\"}"),
+            "summon armor_stand 1033 64 157 " + String.format(MOB, "cgwalker2", ",ShowArms:1b,ArmorItems:[{id:\"minecraft:iron_boots\",count:1},"
+                    + "{id:\"minecraft:iron_leggings\",count:1},{id:\"minecraft:iron_chestplate\",count:1},{id:\"minecraft:iron_helmet\",count:1}],"
+                    + "HandItems:[{id:\"minecraft:iron_sword\",count:1},{}]"),
+            "summon crittersandcompanions:red_panda 1025 64 159.5 " + String.format(MOB, "cgwalker3", ""),
+            "summon item 1030.5 65.5 156.5 {Item:{id:\"minecraft:diamond_sword\",count:1},NoGravity:1b,PickupDelay:32767,Age:0,Tags:[\"" + TAG + "\"]}",
+            "setblock 1035 64 156 bell[attachment=floor,facing=south]",
+            "setblock 1024 64 156 chest[facing=south]");
+    private static final net.minecraft.core.BlockPos CHEST = new net.minecraft.core.BlockPos(1024, 64, 156);
 
     private static boolean built;
     private static volatile boolean active;
     private static int ticks;
     private static volatile float turn = 0.75f;
     private static volatile float sway = 0.03f;
+    private static volatile boolean hand;
+    private static boolean handGiven;
 
     private MovingScene() {}
 
@@ -84,6 +106,12 @@ final class MovingScene {
         }
         turn = settings.shipTurnDegreesPerTick;
         sway = settings.shipSwayPerTick;
+        hand = settings.showHand;
+        if (hand) {
+            Minecraft.getInstance().options.hideGui = false;
+            Capture.server("item replace entity @a weapon.mainhand with minecraft:iron_sword");
+            handGiven = true;
+        }
         ticks = 0;
         active = true;
     }
@@ -108,6 +136,11 @@ final class MovingScene {
         }
         built = false;
         Capture.server(REMOVE_SHIPS);
+        Capture.server("kill @e[tag=" + TAG + "]");
+        if (handGiven) {
+            handGiven = false;
+            Capture.server("item replace entity @a weapon.mainhand with air");
+        }
         Capture.server("kill @e[type=create:stationary_contraption,x=1033,y=65,z=153,distance=..8]");
         Capture.server("kill @e[type=create:super_glue,x=1033,y=65,z=153,distance=..8]");
         Capture.server(CLEAR);
@@ -115,7 +148,11 @@ final class MovingScene {
         Capture.server("kill @e[type=item,x=1029,y=65,z=150,distance=..16]");
     }
 
-    /** Each server tick while the scene is shown: the ship turns and sways along x (shipTurnDegreesPerTick, shipSwayPerTick). */
+    /**
+     * Each server tick while the scene is shown: the ship turns and sways along x (shipTurnDegreesPerTick,
+     * shipSwayPerTick), the walkers take a step around their circles, the bell's power flips every 10 ticks (it rings
+     * when powered), the chest opens or closes every 12 and the hand swings every 8.
+     */
     static void serverTick(ServerTickEvent.Post event) {
         if (!active) {
             return;
@@ -128,5 +165,34 @@ final class MovingScene {
         ticks++;
         Capture.runNow(server, String.format(java.util.Locale.ROOT, "sable physics rotation @e[name=%s] add axis 0 1 0 %.4f global", SHIP, turn));
         Capture.runNow(server, String.format(java.util.Locale.ROOT, "sable physics translation @e[name=%s] add %.4f 0 0 global", SHIP, dx));
+        walk(server, "cgwalker1", 1028.0, 157.0, ticks);
+        walk(server, "cgwalker2", 1033.0, 157.0, -ticks);
+        walk(server, "cgwalker3", 1025.0, 159.5, ticks);
+        if (ticks % 10 == 0) {
+            Capture.runNow(server, "setblock " + BELL_POWER + (ticks % 20 == 0 ? " redstone_block" : " air"));
+        }
+        if (ticks % 12 == 0) {
+            // What a player opening it would send: the lid's open count. The lid takes 10 ticks to open or close.
+            server.overworld().blockEvent(CHEST, net.minecraft.world.level.block.Blocks.CHEST, 1, ticks % 24 == 0 ? 0 : 1);
+        }
+        if (hand && ticks % 8 == 0) {
+            Minecraft.getInstance().execute(() -> {
+                if (Minecraft.getInstance().player != null) {
+                    Minecraft.getInstance().player.swing(net.minecraft.world.InteractionHand.MAIN_HAND);
+                }
+            });
+        }
+    }
+
+    // A circle of 1.5 blocks in 120 ticks, facing along it (tick < 0 goes the other way round).
+    private static void walk(IntegratedServer server, String tag, double x, double z, int tick) {
+        double a = 2 * Math.PI * tick / 120.0;
+        double px = x + 1.5 * Math.cos(a);
+        double pz = z + 1.5 * Math.sin(a);
+        // Facing the direction of travel: minecraft yaw 0 looks along +z, 90 along -x.
+        double vx = -Math.sin(a) * Math.signum(tick == 0 ? 1 : tick);
+        double vz = Math.cos(a) * Math.signum(tick == 0 ? 1 : tick);
+        float yaw = (float) Math.toDegrees(Math.atan2(-vx, vz));
+        Capture.runNow(server, String.format(java.util.Locale.ROOT, "tp @e[tag=%s,limit=1] %.3f 64 %.3f %.1f 0", tag, px, pz, yaw));
     }
 }

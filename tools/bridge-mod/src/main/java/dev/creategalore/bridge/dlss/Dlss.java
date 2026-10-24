@@ -208,6 +208,7 @@ public final class Dlss {
 
         boolean wasActive = active;
         active = wanted && profile != null && packProblem == null && !failed && !shuttingDown && ensureReady();
+        EntityMotion.beginFrame(active, Minecraft.getInstance().gameRenderer.getMainCamera().getPosition());
         if (!active) {
             return;
         }
@@ -228,6 +229,11 @@ public final class Dlss {
         lastLevel = new WeakReference<>(minecraft.level);
         lastCameraEntity = new WeakReference<>(camera.getEntity());
         lastCameraPosition = position;
+    }
+
+    /** End of a level frame: what draws after it (screens, the inventory's player) is no part of the frame's motion. */
+    public static void endFrame() {
+        EntityMotion.endFrame();
     }
 
     /** False while testing without the motion of things that move by themselves (cg_dlss_object_motion). */

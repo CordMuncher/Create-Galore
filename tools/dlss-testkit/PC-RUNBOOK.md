@@ -277,3 +277,61 @@ on every pair of frames (the cloud: 55 to 68% less difference than with none). W
 lines, frame times of J's modes, and Emre's notes from the session. Add crops (about 512x512) around the cogwheels,
 the bearing's cross and the ship from J's flick and still frames for all four modes under `results\m2-run1\J\`, a few
 MB in all. Commit and push on the DLAA branch (no `raw\` files).
+
+## Milestone 2, PC run 2: entities
+
+Same PC, test folder and tools, nothing new to install. Start it only when Emre says so, after run 1. Photon's copy
+now also gives DLSS the motion of what the game draws vertex by vertex: mobs and players with their armor and held
+items, GeckoLib models, dropped items, block entities (chest lids, bells) and the first-person hand. The Bridge adds an
+attribute to Iris's entity vertex format with each vertex's position last frame. The cloud checked it exact for a
+walking villager, an armor stand in iron armor with a sword, a GeckoLib red panda, a spinning dropped sword, a chest
+opening and closing, a ringing bell and the swinging hand.
+
+### Update
+
+Same as run 1's update: pull, swap the Bridge jar (`Remove-Item` the old one first), copy the kit jar, delete the kit's
+config. The first launch remakes the Photon copy again (patch 5). The same log checks as run 1, plus: no `Missing
+elements in vertex` anywhere (a crash), and no `DLAA: entity motion attribute at` warning.
+
+The moving scene now also has, in front: a villager and an armor stand walking in circles, a red panda (Critters and
+Companions) walking in a circle at the front left, a diamond sword spinning in the air, a bell that keeps ringing and
+a chest that keeps opening and closing. The test world is peaceful, so the armor is on an armor stand.
+
+### Runs
+
+| Run | Before it | Extra JVM arguments |
+| --- | --- | --- |
+| L | `perfectPresentation=false` | `...autorun=dlaa-test` `...modes=photon-taa+dlaa-default+dlaa-camera+fsr3` `...viewpoints=moving` |
+| M | the config edit below | `...autorun=dlaa-test` `...modes=debug-motion+debug-residual` `...viewpoints=moving` |
+| N | `"showHand": true` too | `...autorun=dlaa-test` `...modes=debug-residual` `...viewpoints=moving` |
+
+Before M, set in `config\create_galore_dlss_testkit.json` (written by run L): `"paths": ["brief"]`,
+`"packSecondsPerFrame": 1.0`, `"dumpRaw": true`, `"shipTurnDegreesPerTick": 0.0` and `"shipSwayPerTick": 0.0` (the
+ship stands still, so the entities are easier to tell apart; at 20 ticks a second and 2560x1440 the walkers still
+move a few pixels per frame). Before N, add `"showHand": true`: the hand shows (with the HUD) holding a sword and
+swings. After N, delete the config file again.
+
+Compare L's frame times of `dlaa-default` and `dlaa-camera`: the difference is what working out the entities' motion
+costs the CPU (the cloud cannot measure it).
+
+### By eye, with Emre (about 15 minutes)
+
+As in run 1: `/dlaatest scene build`, then switch modes with `/dlaatest mode ...` and look at the walkers, the panda,
+the spinning sword, the chest and the bell, from the shore and close up. Then Emre swings his own sword and walks and
+looks around holding things (a sword, a block, a map), and if he wants spawns a few animals with spawn eggs and lets
+them wander (afterwards `/kill @e[type=!player,distance=..64]`). Write down what he says, especially anything that
+smears, trails or flickers on entities or the hand.
+
+### Results
+
+```powershell
+& $T\tools\uv\uv.exe run --python 3.13 --with pillow --with numpy $T\repo\tools\dlss-testkit\metrics.py <run L folder>
+& $T\tools\uv\uv.exe run --python 3.13 --with numpy $T\repo\tools\dlss-testkit\mvcheck.py <run M folder> panda=0,880,640,1400 chest=340,760,620,1080 stand=1800,940,2400,1400 bell=2160,880,2320,1040 villager=940,660,1140,1020 item=1360,680,1540,880
+& $T\tools\uv\uv.exe run --python 3.13 --with numpy $T\repo\tools\dlss-testkit\mvcheck.py <run N folder> hand=1280,720,2560,1440
+```
+
+The boxes are for a 2560x1440 window (scale them for another size); each is one thing's moving pixels, checked apart
+from the rest. With exact motion vectors k = 1 matches best in every table (sub-pixel motion, like the bell's quiet
+end, is too small to tell). Write `$T\repo\tools\dlss-testkit\results\m2-run2\REPORT.md` as for run 1 (outputs, log
+lines, frame times, Emre's notes) with crops around the walkers, the panda, the chest and the hand from L under
+`results\m2-run2\L\`. Commit and push on the DLAA branch (no `raw\` files).

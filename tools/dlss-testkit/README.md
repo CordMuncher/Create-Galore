@@ -51,8 +51,10 @@ run 1 (things that move).
 
 - The `moving` viewpoint looks at a scene the kit builds over the lake when a run gets there and takes away when the
   run ends (it sits in air the test world leaves empty, so the world file never changes): creative motors turning
-  shafts, cogwheels and a fan, a bearing turning a glued cross of wool, and a small Sable ship that turns and sways
-  every tick. While the camera is there the world ticks at `sceneTickRate` (20 on a real PC, 1 on slow software
+  shafts, cogwheels and a fan, a bearing turning a glued cross of wool, a small Sable ship that turns and sways
+  every tick, and entities: a villager, an armor stand in iron armor and a red panda (GeckoLib) walking in circles, a
+  dropped sword spinning, a bell ringing and a chest opening and closing. `"showHand": true` shows the hand too (and
+  the HUD with it), holding a sword that swings. While the camera is there the world ticks at `sceneTickRate` (20 on a real PC, 1 on slow software
   rendering, so each frame moves about as much as in a normal game); `shipTurnDegreesPerTick` and `shipSwayPerTick`
   set how fast the ship moves. `-Dcreate_galore_dlss_testkit.viewpoints=moving` runs only some viewpoints, and the
   `brief` path (40 frames standing still, the last 8 saved) is enough for a moving scene.
@@ -64,7 +66,7 @@ run 1 (things that move).
 - `"dumpRaw": true` also saves DLSS's raw inputs (colour, motion, depth as `.npy`) for each saved frame of a debug
   mode, and `mvcheck.py RUN_FOLDER` (numpy) checks them: for each pair of frames it moves the earlier one back along
   the motion vectors scaled by -1, 0, 0.5, 1 and 2 and prints the difference on the moving pixels, so right motion
-  vectors match best at 1. Sub-pixel motion is too small to measure on blocky textures: for this check set
+  vectors match best at 1. `NAME=X0,Y0,X1,Y1` boxes after the folder add a table each for one thing's pixels. Sub-pixel motion is too small to measure on blocky textures: for this check set
   `packSecondsPerFrame` (how far the shader pack's clock moves per frame, 1/60 normally) to 1.0 and the ship faster.
 - Outside a run, `/dlaatest scene build` puts the scene up at the game's own tick rate to look at, walk around and ride
   the ship, `/dlaatest mode NAME` switches the Bridge to one of the config's modes on the spot (`photon-taa`,
