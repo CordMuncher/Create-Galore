@@ -60,6 +60,9 @@ Before the first launch (create a file if it isn't there; the game adds the keys
   on the first launch; Iris takes it from then on.)
 - `$T\instance\options.txt` (the pack installs it): set or add `renderDistance:12`, `pauseOnLostFocus:false`,
   `fullscreen:false`.
+- `$T\instance\config\DistantHorizons.toml` (the pack installs it): `lodChunkRenderDistanceRadius = 64` in place of
+  the pack's 256 (Emre's call, 2026-10-24: far terrain still in every shot, built in minutes instead of hours; the
+  setting is the player's choice in game anyway). Every run and mode uses the same 64.
 - Window: Emre's monitor size if smaller than 2560x1440, else `--resolution 2560x1440`. Ask him or read it with
   `Get-CimInstance Win32_VideoController | Select CurrentHorizontalResolution, CurrentVerticalResolution`.
 
@@ -72,8 +75,9 @@ Before the first launch (create a file if it isn't there; the game adds the keys
 
 Add `--jvm-arg=-Dcreate_galore_dlss_testkit.autorun=dlaa-test --jvm-arg=-Dcreate_galore_dlss_testkit.hold=900`: the
 game opens the test world, stands at the first viewpoint for 15 minutes and closes. That makes the chunks and
-Distant Horizons' far terrain (radius 256, as the pack ships it) once, so every mode later sees the same distance. If
-the Distant Horizons database in the world folder still grew in the last minutes, hold again. Then
+Distant Horizons' far terrain (radius 64, see step 3) once, so every mode later sees the same distance. If the
+Distant Horizons database in the world folder still grew in the last minutes, hold again; if it stopped growing
+early, a shorter hold is fine next time. Then
 `$T\instance\logs\latest.log` must have:
 
 - `DLAA: made shaderpacks/Photon v1.3a + DLAA from photon_v1.3a + Clrwl_1.0.5.zip` (on this or the launch before)
