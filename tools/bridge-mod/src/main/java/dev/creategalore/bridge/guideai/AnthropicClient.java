@@ -28,7 +28,9 @@ import java.util.TreeMap;
 final class AnthropicClient {
     static final String VERSION = "2023-06-01";
     /** Lets a refused request retry on the model Anthropic recommends for that refusal category. */
-    static final String BETAS = "server-side-fallback-2026-07-01";
+    // Thinking binding controls let a request drop a thinking block whose conversation no longer matches instead of
+    // being refused (GuideAi sets prefix_mismatch_behavior).
+    static final String BETAS = "server-side-fallback-2026-07-01,thinking-binding-controls-2026-08-01";
 
     private final HttpClient http = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(15)).build();
     private final String baseUrl;

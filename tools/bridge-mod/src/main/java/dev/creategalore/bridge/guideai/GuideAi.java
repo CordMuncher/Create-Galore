@@ -78,7 +78,7 @@ public final class GuideAi {
     }
     private static final Map<UUID, Long> lastAsked = new HashMap<>();
     /** Request fields dropped after the API rejected them once (e.g. web tools on an account without them). */
-    private static volatile boolean webRejected, fallbacksRejected, strictRejected;
+    private static volatile boolean webRejected, fallbacksRejected, strictRejected, bindingRejected;
 
     public static void register(IEventBus modBus) {
         GuideAiNet.register(modBus);
@@ -613,6 +613,7 @@ public final class GuideAi {
                 boolean last = round >= MAX_ROUNDS;
                 if (round > 1) streamer.newRound();
                 JsonObject response = call(l, messages, last, streamer);
+                logDropped(response);
                 streamer.flush("");
                 usage.add(response);
                 JsonArray content = response.has("content") ? response.getAsJsonArray("content") : new JsonArray();
@@ -765,6 +766,45 @@ public final class GuideAi {
         }
     }
 
+    private static boolean hasThinking(JsonArray messages) {
+        for (JsonElement m : messages) {
+            if (!m.isJsonObject() || !m.getAsJsonObject().has("content") || !m.getAsJsonObject().get("content").isJsonArray()) continue;
+            for (JsonElement block : m.getAsJsonObject().getAsJsonArray("content")) {
+                String type = block.isJsonObject() ? GuideText.string(block.getAsJsonObject(), "type") : "";
+                if (type.equals("thinking") || type.equals("redacted_thinking")) return true;
+            }
+        }
+        return false;
+    }
+
+    /** Takes every thinking block out of the page's assistant turns. */
+    private static void stripThinking(JsonArray messages) {
+        for (JsonElement m : messages) {
+            if (!m.isJsonObject()) continue;
+            JsonObject o = m.getAsJsonObject();
+            if (!GuideText.string(o, "role").equals("assistant") || !o.has("content") || !o.get("content").isJsonArray()) continue;
+            JsonArray kept = new JsonArray();
+            for (JsonElement block : o.getAsJsonArray("content")) {
+                String type = block.isJsonObject() ? GuideText.string(block.getAsJsonObject(), "type") : "";
+                if (!type.equals("thinking") && !type.equals("redacted_thinking")) kept.add(block);
+            }
+            o.add("content", kept);
+        }
+    }
+
+    /** Logs the thinking blocks the API left out of a request, and why, so whatever changed the page can be found. */
+    private static void logDropped(JsonObject response) {
+        if (!response.has("input_transformations") || !response.get("input_transformations").isJsonArray()) return;
+        for (JsonElement e : response.getAsJsonArray("input_transformations")) {
+            if (!e.isJsonObject()) continue;
+            JsonObject t = e.getAsJsonObject();
+            String type = GuideText.string(t, "type");
+            if (!type.equals("thinking_dropped") && !type.equals("thinking_mismatch_allowed")) continue;
+            LOG.warn("Field Guide voice: the API {} a thinking block of the page ({})", type.equals("thinking_dropped")
+                    ? "left out" : "let through", t);
+        }
+    }
+
     /** The answer is the text of the book's last turn; earlier "let me check" lines between tool calls are dropped. */
     private static Outcome finishText(JsonArray messages, List<String> diagrams, StringBuilder note, boolean keep) {
         String answer = "";
@@ -807,6 +847,14 @@ public final class GuideAi {
             } else if (!strictRejected && (t.contains("strict") || t.contains("schema"))) {
                 strictRejected = true;
                 LOG.warn("Field Guide voice: the API rejected a strict tool schema ({}); sending the tools unchecked from now on", e.type);
+            } else if (!bindingRejected && (t.contains("block_binding") || t.contains("thinking-binding"))) {
+                bindingRejected = true;
+                LOG.warn("Field Guide voice: the API rejected the thinking binding setting ({}); asking without it from now on", e.type);
+            } else if (t.contains("signature") && hasThinking(messages)) {
+                // A thinking block the API no longer matches to this page refuses the whole question. Earlier thinking is
+                // optional: take all of it out (a leading run, which keeps the rest valid) and ask again.
+                LOG.warn("Field Guide voice: the API refused a page's earlier thinking ({}); asking again without it", e.type);
+                stripThinking(messages);
             } else {
                 throw e;
             }
@@ -818,6 +866,15 @@ public final class GuideAi {
         JsonObject body = new JsonObject();
         body.addProperty("model", l.settings.model);
         body.addProperty("max_tokens", l.settings.maxTokens);
+        if (!bindingRejected) {
+            // A thinking block that no longer matches the page is left out of that request instead of refusing it.
+            JsonObject binding = new JsonObject();
+            binding.addProperty("prefix_mismatch_behavior", "drop_block");
+            JsonObject thinking = new JsonObject();
+            thinking.addProperty("type", "adaptive");
+            thinking.add("block_binding", binding);
+            body.add("thinking", thinking);
+        }
         body.add("system", l.system);
         JsonArray tools = l.customTools.deepCopy();
         if (strictRejected) tools.forEach(t -> t.getAsJsonObject().remove("strict"));
@@ -848,7 +905,8 @@ public final class GuideAi {
             JsonObject block = e.getAsJsonObject();
             if (!GuideText.string(block, "type").equals("tool_use")) continue;
             String name = GuideText.string(block, "name");
-            JsonObject input = block.has("input") && block.get("input").isJsonObject() ? block.getAsJsonObject("input") : new JsonObject();
+            // A copy: the conversation must keep the call exactly as the API sent it, whatever a tool does with its input.
+            JsonObject input = block.has("input") && block.get("input").isJsonObject() ? block.getAsJsonObject("input").deepCopy() : new JsonObject();
             streamer.status(name);
             String result;
             byte[] picture = null;
