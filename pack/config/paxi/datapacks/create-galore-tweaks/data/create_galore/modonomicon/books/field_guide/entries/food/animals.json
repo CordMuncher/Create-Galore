@@ -104,8 +104,13 @@
     },
     {
       "type": "modonomicon:text",
-      "title": "Troughs and eggs",
-      "text": "A Feeding Trough holds feed or water, not both; tamed animals walk to it when hungry.\\\n\\\nOnly hens lay, and Broody hens never do. An egg laid on stone or planks breaks 4 times in 5; on dirt, sand, hay, wool or leaves 1 in 10. A Chicken Nest keeps them all."
+      "title": "Feeding Troughs",
+      "text": "A trough holds feed or water, not both. A hungry tamed animal walks to the nearest one it can reach within 20 blocks that has its food: **wheat** for cows, sheep and goats, **carrots** or **potatoes** for pigs, **seeds** for chickens, once a day.\\\n\\\nA farm you leave behind keeps eating from its troughs while you're away."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Spread a few troughs around a pen, so a herd doesn't crowd one. The Farm Magnifying Glass says when no trough in reach has an animal's food.\\\n\\\n**Eggs.** Only hens lay, and Broody hens never do. An egg laid on stone or planks breaks 4 times in 5; on dirt, sand, hay, wool or leaves 1 in 10. A Chicken Nest keeps them all."
     },
     {
       "type": "modonomicon:text",

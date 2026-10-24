@@ -76,6 +76,7 @@ public final class CreateGaloreBridge {
         ShipGlueCheck.register(modBus);
         PinnedSchematics.register(modBus);
         AnimalCare.register();
+        AnimalTroughs.register();
         Wear.register(modBus);
         if (FMLEnvironment.dist.isClient()) {
             BridgeClient.init(modBus);
