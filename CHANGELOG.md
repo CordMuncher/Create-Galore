@@ -5,6 +5,12 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.4.78
+
+### Fixed
+- **Ask the Book no longer stops answering on a page.** A player asked a follow-up on a page and the book only said it could not answer. The API refused the question because a piece of the book's earlier reasoning on that page no longer matched the page. Now the API leaves out reasoning that no longer matches and answers anyway, the book asks once more without its earlier reasoning if the API still refuses, and the server log names what no longer matched. A tool's answer can also no longer change the record of the call that asked for it. Checked on a test server against a stand-in API: a first question and a follow-up on the same page, a page whose reasoning was left out, and a refused page that answered on the second try.
+- Create Galore Bridge 1.93.0.
+
 ## 0.4.77
 
 ### Added
