@@ -1,15 +1,18 @@
 # DLAA round 1 on the PC: runbook
 
-For the Claude Code session on Emre's PC (Remote Control). Emre approved the plan in the "DLAA round 1: PC test plan"
-doc; this file is the how. Rules that come before anything here:
+For the Claude Code session on Emre's PC (a local session he opens in the test folder, or Remote Control). Emre
+approved the plan in the "DLAA round 1: PC test plan" doc and the tools in this runbook on 2026-10-24; this file is
+the how. Rules that come before anything here:
 
-- Work only inside `C:\CG-DLAA-Test`. Never open, read or change his Prism instance, pack install, worlds, server
-  files or anything else outside that folder. Nothing installed system-wide, no PATH or registry changes.
-- Ask Emre before each step that downloads, installs or launches the game.
+- Work only inside `C:\Users\coolm\Documents\Claude\MC-CREATE` (the test folder). Never open, read or change his
+  Prism instance, pack install, worlds, server files or anything else outside that folder. Nothing installed
+  system-wide, no PATH or registry changes.
+- No need to ask before each download, install or launch in this runbook. Ask Emre before any tool or step that is
+  not in it.
 - The game logs in offline as `CGTester`; never use his accounts.
 - Nothing is merged or released; results go to the DLAA branch only (`claude/project-thread-u2wmhh`).
 
-PowerShell, in `C:\CG-DLAA-Test`. `$T = "C:\CG-DLAA-Test"`.
+PowerShell, in the test folder: `$T = "C:\Users\coolm\Documents\Claude\MC-CREATE"`.
 
 ## 1. Tools
 
@@ -88,7 +91,7 @@ closes itself. Keep its window visible; it does not need focus.
 | B | same | `...autorun=dlaa-test` `...modes=dlaa-default+sign-flip-x+sign-flip-y+sign-flip-xy` `-Dcreate_galore_dlss_testkit.quick=true` |
 | C | same | `...autorun=dlaa-test` `...modes=debug-motion+debug-depth+debug-color` |
 | D | `perfectPresentation=true` | `...autorun=dlaa-test` `...modes=photon-taa+dlaa-default+dlaa-K` |
-| E | `perfectPresentation=false`; the DLSS developer DLL in `$T\dlss-dev\nvngx_dlss.dll` | `...autorun=dlaa-test` `...modes=dlaa-default` `...quick=true` `-Dcreate_galore_bridge.dlss.dllDir=C:\CG-DLAA-Test\dlss-dev` |
+| E | `perfectPresentation=false`; the DLSS developer DLL in `$T\dlss-dev\nvngx_dlss.dll` | `...autorun=dlaa-test` `...modes=dlaa-default` `...quick=true` `-Dcreate_galore_bridge.dlss.dllDir=$T\dlss-dev` |
 
 Write each argument as `--jvm-arg=-D...=...` (`...` = `create_galore_dlss_testkit`). The modes are the test kit's
 defaults, listed in `$T\instance\config\create_galore_dlss_testkit.json` after the first run.
@@ -105,7 +108,9 @@ For each run folder in `$T\instance\screenshots\dlaa-test\`:
 & $T\tools\uv\uv.exe run --python 3.13 --with pillow --with numpy $T\repo\tools\dlss-testkit\metrics.py <run folder>
 ```
 
-Report back: the metrics tables, each run's `outcome` and the modes with `"dlaaActive": false` from `manifest.json`,
-every `DLAA:` log line, and any NGX warnings. Push a few crops (about 512x512, PNG) of leaves, glass and fence edges,
-same spot in every mode, to `tools/dlss-testkit/results/<run>/` on the DLAA branch: a few MB in all, never whole
-screenshots. Emre looks at the full ones with `$T\repo\tools\dlss-testkit\compare.html`.
+Write `$T\repo\tools\dlss-testkit\results\REPORT.md`: the metrics tables, each run's `outcome` and the modes with
+`"dlaaActive": false` from `manifest.json`, every `DLAA:` log line, any NGX warnings, and anything that looked wrong.
+Add a few crops (about 512x512, PNG) of leaves, glass and fence edges, same spot in every mode, under
+`results\<run>\`: a few MB in all, never whole screenshots. Commit them on the DLAA branch and push. If pushing
+isn't possible from this PC, tell Emre, so he can paste `REPORT.md` into the DLAA thread. Emre looks at the full
+screenshots with `$T\repo\tools\dlss-testkit\compare.html`.
