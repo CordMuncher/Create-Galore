@@ -28,11 +28,7 @@
 
 #define FSR3UPSCALER_BIND_UAV_SPD_GLOBAL_ATOMIC               2
 #define FSR3UPSCALER_BIND_UAV_FRAME_INFO                      3
-#define FSR3UPSCALER_BIND_UAV_SPD_MIPS_LEVEL_0                4
-#define FSR3UPSCALER_BIND_UAV_SPD_MIPS_LEVEL_1                5
-#define FSR3UPSCALER_BIND_UAV_SPD_MIPS_LEVEL_2                6
-#define FSR3UPSCALER_BIND_UAV_SPD_MIPS_LEVEL_3                7
-#define FSR3UPSCALER_BIND_UAV_SPD_MIPS_LEVEL_4                8
+// Port change: only level 5 (the luma pyramid stores and reloads no other), so the pass stays within NVIDIA's 8 images.
 #define FSR3UPSCALER_BIND_UAV_SPD_MIPS_LEVEL_5                9
 #define FSR3UPSCALER_BIND_UAV_FARTHEST_DEPTH_MIP1             10
 

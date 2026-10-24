@@ -832,18 +832,25 @@ FfxFloat32x4 FrameInfo()
 }
 #endif
 
-#if defined(FSR3UPSCALER_BIND_UAV_SPD_MIPS_LEVEL_0)    && \
-    defined(FSR3UPSCALER_BIND_UAV_SPD_MIPS_LEVEL_1)    && \
-    defined(FSR3UPSCALER_BIND_UAV_SPD_MIPS_LEVEL_2)    && \
-    defined(FSR3UPSCALER_BIND_UAV_SPD_MIPS_LEVEL_3)    && \
-    defined(FSR3UPSCALER_BIND_UAV_SPD_MIPS_LEVEL_4)    && \
-    defined(FSR3UPSCALER_BIND_UAV_SPD_MIPS_LEVEL_5)
+// Port change: each SPD level is declared only when the pass binds it. NVIDIA counts every declared image against its
+// 8 per compute shader, used or not, and the luma pyramid touches only level 5 (all six made it 9 and it didn't link).
+#if defined(FSR3UPSCALER_BIND_UAV_SPD_MIPS_LEVEL_5)
 
+#if defined(FSR3UPSCALER_BIND_UAV_SPD_MIPS_LEVEL_0)
 layout (rg16f)          uniform image2D  rw_spd_mip0;
+#endif
+#if defined(FSR3UPSCALER_BIND_UAV_SPD_MIPS_LEVEL_1)
 layout (rg16f)          uniform image2D  rw_spd_mip1;
+#endif
+#if defined(FSR3UPSCALER_BIND_UAV_SPD_MIPS_LEVEL_2)
 layout (rg16f)          uniform image2D  rw_spd_mip2;
+#endif
+#if defined(FSR3UPSCALER_BIND_UAV_SPD_MIPS_LEVEL_3)
 layout (rg16f)          uniform image2D  rw_spd_mip3;
+#endif
+#if defined(FSR3UPSCALER_BIND_UAV_SPD_MIPS_LEVEL_4)
 layout (rg16f)          uniform image2D  rw_spd_mip4;
+#endif
 layout (rg16f) coherent uniform image2D  rw_spd_mip5;
 
 FfxFloat32x2 RWLoadPyramid(FFX_PARAMETER_IN FfxInt32x2 iPxPos, FFX_PARAMETER_IN FfxUInt32 index)
@@ -853,11 +860,21 @@ FfxFloat32x2 RWLoadPyramid(FFX_PARAMETER_IN FfxInt32x2 iPxPos, FFX_PARAMETER_IN 
             {                                             \
                 return imageLoad(rw_spd_mip##idx, iPxPos).xy; \
             }
+#if defined(FSR3UPSCALER_BIND_UAV_SPD_MIPS_LEVEL_0)
     LOAD(0);
+#endif
+#if defined(FSR3UPSCALER_BIND_UAV_SPD_MIPS_LEVEL_1)
     LOAD(1);
+#endif
+#if defined(FSR3UPSCALER_BIND_UAV_SPD_MIPS_LEVEL_2)
     LOAD(2);
+#endif
+#if defined(FSR3UPSCALER_BIND_UAV_SPD_MIPS_LEVEL_3)
     LOAD(3);
+#endif
+#if defined(FSR3UPSCALER_BIND_UAV_SPD_MIPS_LEVEL_4)
     LOAD(4);
+#endif
     LOAD(5);
 
     return FfxFloat32x2(0.0, 0.0);
@@ -873,11 +890,21 @@ void StorePyramid(FFX_PARAMETER_IN FfxInt32x2 iPxPos, FFX_PARAMETER_IN FfxFloat3
                 imageStore(rw_spd_mip##idx, iPxPos, vec4(outValue, 0.0, 0.0)); \
             }
 
+#if defined(FSR3UPSCALER_BIND_UAV_SPD_MIPS_LEVEL_0)
     STORE(0);
+#endif
+#if defined(FSR3UPSCALER_BIND_UAV_SPD_MIPS_LEVEL_1)
     STORE(1);
+#endif
+#if defined(FSR3UPSCALER_BIND_UAV_SPD_MIPS_LEVEL_2)
     STORE(2);
+#endif
+#if defined(FSR3UPSCALER_BIND_UAV_SPD_MIPS_LEVEL_3)
     STORE(3);
+#endif
+#if defined(FSR3UPSCALER_BIND_UAV_SPD_MIPS_LEVEL_4)
     STORE(4);
+#endif
     STORE(5);
 
 #undef STORE
