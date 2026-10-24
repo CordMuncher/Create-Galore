@@ -2,7 +2,7 @@
 
 The final check of the 0.2.0 structure thinning, after all four layers were merged (surface #42, underground #39,
 underwater #40 and #41, sky #38). It looks at the whole pack at once, on seeds no layer thread used, and fixes the one
-gap the layer threads left (sky airships and blimps). Emre's targets and bars:
+gap the layer threads left (sky airships and blimps). The pack's targets and bars:
 
 | Layer | Target | Bar |
 |---|---|---|
