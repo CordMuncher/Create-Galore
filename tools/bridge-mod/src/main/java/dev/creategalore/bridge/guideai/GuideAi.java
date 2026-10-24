@@ -186,6 +186,7 @@ public final class GuideAi {
         live = new Live(server, settings, new AnthropicClient(settings.apiUrl, settings.key()), system, WorldTools.definitions(),
                 settings.webSearch ? webTools() : new JsonArray(), new ThreadStore(server.getWorldPath(LevelResource.ROOT)
                 .resolve("create_galore_field_guide_ai")), workers);
+        Creatures.warmUp(server);
         LOG.info("Field Guide voice is on: {} at {} effort, guide notes {} characters (the full guide is {}), web search {}",
                 settings.model, settings.effort, guide.notes().length(), guide.full(), settings.webSearch ? "on" : "off");
     }
