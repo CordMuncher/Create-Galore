@@ -35,7 +35,7 @@ Set those three `UV_*` variables in every new shell (they keep uv's files in the
 ```powershell
 $java = "$T\tools\jdk21\bin\java.exe"
 # Installs Minecraft 1.21.1 + NeoForge 21.1.262 under $T\mc, without starting it (--dry).
-& $T\tools\uv\uv.exe tool run --python 3.13 portablemc==5.0.6 --main-dir $T\mc start --dry --jvm $java --mc-dir $T\instance neoforge::21.1.262
+& $T\tools\uv\uv.exe tool run --python 3.13 portablemc@5.0.6 --main-dir $T\mc start --dry --jvm $java --mc-dir $T\instance neoforge::21.1.262
 # The pack from the DLAA branch, client side, into $T\instance.
 Invoke-WebRequest "https://github.com/packwiz/packwiz-installer-bootstrap/releases/latest/download/packwiz-installer-bootstrap.jar" -OutFile $T\instance\packwiz-installer-bootstrap.jar
 Push-Location $T\instance
@@ -53,9 +53,12 @@ Copy-Item $T\repo\tools\dlss-testkit\dist\create-galore-dlss-testkit-1.0.0.jar $
 Expand-Archive $T\repo\tools\dlss-testkit\world\dlaa-test.zip $T\instance\saves   # -> saves\dlaa-test
 ```
 
-- `$T\instance\config\create_galore_bridge-display.properties`: `dlaa=true`, `perfectPresentation=false`, keep the rest.
-- `$T\instance\config\iris.properties`: `enableShaders=true`, `shaderPack=Photon v1.3a + DLAA`.
-- `$T\instance\options.txt` (after the first launch makes it): `renderDistance:12`, `pauseOnLostFocus:false`,
+Before the first launch (create a file if it isn't there; the game adds the keys it misses):
+
+- `$T\instance\config\create_galore_bridge-display.properties`: `dlaa=true`, `perfectPresentation=false`.
+- `$T\instance\config\iris.properties`: `enableShaders=true`, `shaderPack=Photon v1.3a + DLAA`. (The copy is made
+  on the first launch; Iris takes it from then on.)
+- `$T\instance\options.txt` (the pack installs it): set or add `renderDistance:12`, `pauseOnLostFocus:false`,
   `fullscreen:false`.
 - Window: Emre's monitor size if smaller than 2560x1440, else `--resolution 2560x1440`. Ask him or read it with
   `Get-CimInstance Win32_VideoController | Select CurrentHorizontalResolution, CurrentVerticalResolution`.
@@ -63,7 +66,7 @@ Expand-Archive $T\repo\tools\dlss-testkit\world\dlaa-test.zip $T\instance\saves 
 ## 4. First launch (checks only)
 
 ```powershell
-& $T\tools\uv\uv.exe tool run --python 3.13 portablemc==5.0.6 --main-dir $T\mc start --jvm $java --mc-dir $T\instance `
+& $T\tools\uv\uv.exe tool run --python 3.13 portablemc@5.0.6 --main-dir $T\mc start --jvm $java --mc-dir $T\instance `
   -u CGTester --resolution 2560x1440 --jvm-arg=-Xmx10G --jvm-arg=-Xms4G neoforge::21.1.262
 ```
 
@@ -96,9 +99,13 @@ closes itself. Keep its window visible; it does not need focus.
 Write each argument as `--jvm-arg=-D...=...` (`...` = `create_galore_dlss_testkit`). The modes are the test kit's
 defaults, listed in `$T\instance\config\create_galore_dlss_testkit.json` after the first run.
 
-Run D: the log must say `(Perfect Presentation's DirectX device)` on the NGX ready line. Run E: the developer DLL is
-`lib/Windows_x86_64/dev/nvngx_dlss.dll` from NVIDIA's DLSS repository at the same release (310.9.16, commit
-9981c6350dc58c0ce21f024fd65e31e851c31689); it draws NVIDIA's watermark and debug text over the picture.
+Run D: the log must say `(Perfect Presentation's DirectX device)` on the NGX ready line. Run E: the developer DLL of
+the same release (310.9.16) draws NVIDIA's watermark and debug text over the picture:
+
+```powershell
+New-Item -ItemType Directory $T\dlss-dev -Force
+Invoke-WebRequest "https://raw.githubusercontent.com/NVIDIA/DLSS/9981c6350dc58c0ce21f024fd65e31e851c31689/lib/Windows_x86_64/dev/nvngx_dlss.dll" -OutFile $T\dlss-dev\nvngx_dlss.dll
+```
 
 ## 6. Results
 
