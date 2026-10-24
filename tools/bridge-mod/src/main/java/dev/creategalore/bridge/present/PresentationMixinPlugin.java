@@ -15,6 +15,10 @@ public final class PresentationMixinPlugin implements IMixinConfigPlugin {
     @Override
     public void onLoad(String mixinPackage) {
         apply = FMLEnvironment.dist.isClient() && Presentation.decide();
+        if (FMLEnvironment.dist.isClient()) {
+            // The DLAA shader pack copy has to exist before Iris first looks for the selected pack.
+            dev.creategalore.bridge.dlss.PhotonPatcher.prepare();
+        }
     }
 
     @Override

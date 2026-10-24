@@ -31,12 +31,12 @@ import org.lwjgl.system.libffi.FFIType;
  * A signature is the argument kinds, a colon, then the return kind: P = pointer or SIZE_T, I = 32-bit int,
  * F = float (passed as its raw bits), V = void return. "PII:I" takes a pointer and two ints and returns an int.
  */
-final class Ffi {
+public final class Ffi {
     private static final Map<String, FFICIF> CIFS = new ConcurrentHashMap<>();
 
     private Ffi() {}
 
-    static long call(String sig, long function, long... args) {
+    public static long call(String sig, long function, long... args) {
         if (function == 0L) {
             throw new IllegalStateException("Null function pointer for " + sig);
         }
@@ -69,7 +69,7 @@ final class Ffi {
         }
     }
 
-    static long floatArg(float value) {
+    public static long floatArg(float value) {
         return Float.floatToRawIntBits(value);
     }
 

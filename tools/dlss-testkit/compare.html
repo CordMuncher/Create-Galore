@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DLAA Compare</title>
+<style>
+  :root {
+    --bg: #111317; --panel: #1b1e24; --line: #2c313a; --text: #e6e8eb; --dim: #9aa1ab;
+    --accent: #76b900; --warn: #ffb020; --a: #4aa3ff; --b: #ff7a45;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: var(--bg); color: var(--text);
+    font: 13px/1.4 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  body { display: grid; grid-template-rows: auto 1fr auto; height: 100vh; }
+  header { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; padding: 8px 12px;
+    background: var(--panel); border-bottom: 1px solid var(--line); }
+  header h1 { font-size: 14px; margin: 0 8px 0 0; font-weight: 600; }
+  label { color: var(--dim); display: inline-flex; gap: 6px; align-items: center; }
+  select, button { background: #262a31; color: var(--text); border: 1px solid var(--line); border-radius: 6px;
+    padding: 4px 8px; font: inherit; }
+  button.on { border-color: var(--accent); color: var(--accent); }
+  .tag-a { color: var(--a); font-weight: 600; }
+  .tag-b { color: var(--b); font-weight: 600; }
+  #stage { position: relative; overflow: hidden; display: grid; grid-template-columns: 1fr; background: #000; }
+  #stage.side { grid-template-columns: 1fr 1fr; gap: 2px; }
+  canvas { width: 100%; height: 100%; display: block; cursor: grab; touch-action: none; }
+  canvas.dragging { cursor: grabbing; }
+  #canvasB { display: none; }
+  #stage.side #canvasB { display: block; }
+  .label { position: absolute; top: 8px; padding: 2px 8px; border-radius: 4px; background: rgba(0,0,0,.65);
+    pointer-events: none; font-weight: 600; }
+  #labelA { left: 8px; color: var(--a); }
+  #labelB { right: 8px; color: var(--b); }
+  #stage.side #labelB { right: 8px; }
+  footer { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; padding: 8px 12px;
+    background: var(--panel); border-top: 1px solid var(--line); }
+  #scrub { flex: 1 1 240px; accent-color: var(--accent); }
+  #frameLabel { min-width: 110px; font-variant-numeric: tabular-nums; }
+  #info { color: var(--dim); }
+  .warn { color: var(--warn); }
+  #empty { position: absolute; inset: 0; display: grid; place-items: center; color: var(--dim); text-align: center; padding: 24px; }
+  #empty b { color: var(--text); }
+  kbd { background: #262a31; border: 1px solid var(--line); border-radius: 4px; padding: 0 4px; font-size: 12px; }
+  @media (max-width: 700px) { header, footer { font-size: 12px; } #stage.side { grid-template-columns: 1fr; grid-template-rows: 1fr 1fr; } }
+</style>
+</head>
+<body>
+<header>
+  <h1>DLAA Compare</h1>
+  <label><input type="file" id="folder" webkitdirectory directory multiple hidden><button id="open">Open run folder…</button></label>
+  <label>Shot <select id="shot"></select></label>
+  <label><span class="tag-a">A</span> <select id="modeA"></select></label>
+  <label><span class="tag-b">B</span> <select id="modeB"></select></label>
+  <span>
+    <button data-view="split" class="on">Split</button>
+    <button data-view="side">Side by side</button>
+    <button data-view="flip">Flip</button>
+    <button data-view="diff">Difference</button>
+  </span>
+  <label>Zoom <select id="zoom"><option value="fit">Fit</option><option>1</option><option>2</option><option>4</option><option>8</option></select></label>
+</header>
+<div id="stage">
+  <canvas id="canvasA"></canvas>
+  <canvas id="canvasB"></canvas>
+  <div class="label" id="labelA"></div>
+  <div class="label" id="labelB"></div>
+  <div id="empty"><div><b>Open a run folder</b><br>screenshots/dlaa-test/&lt;run&gt; from the test instance (it holds manifest.json).<br><br>
+    Drag the image to pan, scroll to zoom, drag the divider in Split.<br>
+    <kbd>←</kbd> <kbd>→</kbd> previous/next frame of the path, <kbd>↑</kbd> <kbd>↓</kbd> previous/next shot,
+    <kbd>Space</kbd> swap A and B, <kbd>1</kbd>-<kbd>9</kbd> pick A, <kbd>Shift</kbd>+<kbd>1</kbd>-<kbd>9</kbd> pick B.</div></div>
+</div>
+<footer>
+  <span id="frameLabel">frame –</span>
+  <input type="range" id="scrub" min="0" max="0" value="0">
+  <span id="info"></span>
+</footer>
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const canvasA = $('canvasA'), canvasB = $('canvasB'), stage = $('stage');
+  let manifest = null, files = new Map(), images = new Map();
+  let groups = [];            // [{key, viewpoint, path, frames:[...]}]
+  let group = 0, frameIndex = 0;
+  let view = 'split', split = 0.5, flipShowB = false;
+  let zoom = 1, fit = true, panX = 0, panY = 0;
+  const diffCache = new Map();
+
+  $('open').onclick = () => $('folder').click();
+  $('folder').onchange = async e => {
+    files = new Map();
+    for (const f of e.target.files) {
+      const parts = f.webkitRelativePath.split('/');
+      files.set(parts.slice(1).join('/'), f);
+    }
+    const m = files.get('manifest.json');
+    if (!m) { alert('That folder has no manifest.json. Pick screenshots/dlaa-test/<run>.'); return; }
+    manifest = JSON.parse(await m.text());
+    images.forEach(img => URL.revokeObjectURL(img.src));
+    images = new Map(); diffCache.clear();
+    buildGroups();
+    $('empty').style.display = 'none';
+    fit = true; draw();
+  };
+
+  function buildGroups() {
+    const byKey = new Map();
+    for (const s of manifest.shots) {
+      const key = s.viewpoint + ' · ' + s.path;
+      if (!byKey.has(key)) byKey.set(key, { key, viewpoint: s.viewpoint, path: s.path, frames: new Set() });
+      byKey.get(key).frames.add(s.frame);
+    }
+    groups = [...byKey.values()].map(g => ({ ...g, frames: [...g.frames].sort((a, b) => a - b) }));
+    $('shot').innerHTML = groups.map((g, i) => `<option value="${i}">${g.key}</option>`).join('');
+    const modes = manifest.modes.map(m => m.name);
+    const opts = modes.map((m, i) => `<option value="${m}">${i + 1}. ${m}</option>`).join('');
+    $('modeA').innerHTML = opts; $('modeB').innerHTML = opts;
+    $('modeA').value = modes.find(m => m.includes('taa')) || modes[0];
+    $('modeB').value = modes.find(m => m.startsWith('dlaa')) || modes[Math.min(1, modes.length - 1)];
+    group = 0; frameIndex = groups[0] ? groups[0].frames.length - 1 : 0;
+    syncControls();
+  }
+
+  function syncControls() {
+    $('shot').value = group;
+    const g = groups[group];
+    $('scrub').max = g ? g.frames.length - 1 : 0;
+    $('scrub').value = frameIndex;
+    $('frameLabel').textContent = g ? `frame ${g.frames[frameIndex]} (${frameIndex + 1}/${g.frames.length})` : 'frame –';
+    const info = [];
+    if (manifest) {
+      info.push(`${manifest.renderer || ''} · ${manifest.resolution ? manifest.resolution.join('×') : ''}`);
+      for (const name of [$('modeA').value, $('modeB').value]) {
+        const m = manifest.modes.find(x => x.name === name);
+        if (!m) continue;
+        const ms = g && m.frameMs ? m.frameMs[g.viewpoint] : undefined;
+        let s = `${name}: ${ms !== undefined ? ms + ' ms/frame' : 'no timing'}`;
+        if (m.dlaa && !m.debugView && m.dlaaActive === false) s = `<span class="warn">${s}, DLAA did NOT run</span>`;
+        info.push(s);
+      }
+    }
+    $('info').innerHTML = info.join(' &nbsp;|&nbsp; ');
+  }
+
+  function shotFile(mode) {
+    const g = groups[group]; if (!g) return null;
+    const frame = g.frames[frameIndex];
+    const s = manifest.shots.find(x => x.mode === mode && x.viewpoint === g.viewpoint && x.path === g.path && x.frame === frame);
+    return s ? s.file : null;
+  }
+
+  function load(file) {
+    if (!file) return Promise.resolve(null);
+    if (images.has(file)) return images.get(file).ready;
+    const f = files.get(file); if (!f) return Promise.resolve(null);
+    const img = new Image();
+    img.ready = new Promise(res => { img.onload = () => res(img); img.onerror = () => res(null); });
+    img.src = URL.createObjectURL(f);
+    images.set(file, img);
+    return img.ready;
+  }
+
+  async function difference(fa, fb, a, b) {
+    const key = fa + '|' + fb;
+    if (diffCache.has(key)) return diffCache.get(key);
+    const w = Math.min(a.width, b.width), h = Math.min(a.height, b.height);
+    const c = document.createElement('canvas'); c.width = w; c.height = h;
+    const x = c.getContext('2d');
+    x.drawImage(a, 0, 0); const da = x.getImageData(0, 0, w, h);
+    x.drawImage(b, 0, 0); const db = x.getImageData(0, 0, w, h);
+    const out = x.createImageData(w, h);
+    for (let i = 0; i < da.data.length; i += 4) {
+      // Brightness of the difference, times 4 so small changes show.
+      const d = (Math.abs(da.data[i] - db.data[i]) + Math.abs(da.data[i + 1] - db.data[i + 1]) + Math.abs(da.data[i + 2] - db.data[i + 2])) / 3;
+      const v = Math.min(255, d * 4);
+      out.data[i] = v; out.data[i + 1] = v; out.data[i + 2] = v; out.data[i + 3] = 255;
+    }
+    x.putImageData(out, 0, 0);
+    diffCache.set(key, c);
+    return c;
+  }
+
+  function sizeCanvas(c) {
+    const r = c.getBoundingClientRect(), dpr = window.devicePixelRatio || 1;
+    const w = Math.max(1, Math.round(r.width * dpr)), h = Math.max(1, Math.round(r.height * dpr));
+    if (c.width !== w || c.height !== h) { c.width = w; c.height = h; }
+    return dpr;
+  }
+
+  function transform(c, img, dpr) {
+    if (fit) {
+      zoom = Math.min(c.width / img.width, c.height / img.height) / dpr;
+      panX = 0; panY = 0;
+    }
+    const s = zoom * dpr;
+    const x = (c.width - img.width * s) / 2 + panX * dpr;
+    const y = (c.height - img.height * s) / 2 + panY * dpr;
+    return { s, x, y };
+  }
+
+  function paint(c, img, t, clipFrom, clipTo) {
+    const x = c.getContext('2d');
+    x.imageSmoothingEnabled = t.s < 1;
+    x.save();
+    if (clipFrom !== undefined) { x.beginPath(); x.rect(clipFrom, 0, clipTo - clipFrom, c.height); x.clip(); }
+    x.drawImage(img, t.x, t.y, img.width * t.s, img.height * t.s);
+    x.restore();
+  }
+
+  let drawToken = 0;
+  async function draw() {
+    if (!manifest) return;
+    const token = ++drawToken;
+    const ma = $('modeA').value, mb = $('modeB').value;
+    const fa = shotFile(ma), fb = shotFile(mb);
+    const [a, b] = await Promise.all([load(fa), load(fb)]);
+    if (token !== drawToken) return;
+    syncControls();
+    const dpr = sizeCanvas(canvasA);
+    const ctx = canvasA.getContext('2d');
+    ctx.fillStyle = '#000'; ctx.fillRect(0, 0, canvasA.width, canvasA.height);
+    $('labelA').textContent = ma + (a ? '' : ' (missing)');
+    $('labelB').textContent = mb + (b ? '' : ' (missing)');
+    $('labelB').style.display = (view === 'flip' || view === 'diff') ? 'none' : '';
+    const any = a || b; if (!any) return;
+    const t = transform(canvasA, any, dpr);
+    if (view === 'split') {
+      const at = canvasA.width * split;
+      if (a) paint(canvasA, a, t, 0, at);
+      if (b) paint(canvasA, b, t, at, canvasA.width);
+      ctx.fillStyle = '#fff'; ctx.fillRect(Math.round(at) - dpr, 0, 2 * dpr, canvasA.height);
+    } else if (view === 'side') {
+      if (a) paint(canvasA, a, t);
+      const dprB = sizeCanvas(canvasB);
+      const cb = canvasB.getContext('2d'); cb.fillStyle = '#000'; cb.fillRect(0, 0, canvasB.width, canvasB.height);
+      if (b) paint(canvasB, b, transform(canvasB, b, dprB));
+    } else if (view === 'flip') {
+      const img = flipShowB ? b : a;
+      $('labelA').textContent = (flipShowB ? mb : ma) + ' (Space flips)';
+      $('labelA').style.color = flipShowB ? 'var(--b)' : 'var(--a)';
+      if (img) paint(canvasA, img, t);
+    } else if (view === 'diff' && a && b) {
+      $('labelA').textContent = `difference ×4: ${ma} vs ${mb}`;
+      paint(canvasA, await difference(fa, fb, a, b), t);
+    }
+    if (view !== 'flip') $('labelA').style.color = '';
+  }
+
+  // Pan, zoom and the split divider.
+  let drag = null;
+  function pointer(c) {
+    c.addEventListener('pointerdown', e => {
+      c.setPointerCapture(e.pointerId);
+      const r = c.getBoundingClientRect();
+      const nearDivider = view === 'split' && Math.abs(e.clientX - r.left - r.width * split) < 12;
+      drag = { x: e.clientX, y: e.clientY, divider: nearDivider, r };
+      c.classList.add('dragging');
+    });
+    c.addEventListener('pointermove', e => {
+      if (!drag) {
+        const r = c.getBoundingClientRect();
+        c.style.cursor = view === 'split' && Math.abs(e.clientX - r.left - r.width * split) < 12 ? 'col-resize' : '';
+        return;
+      }
+      if (drag.divider) {
+        split = Math.min(1, Math.max(0, (e.clientX - drag.r.left) / drag.r.width));
+      } else {
+        fit = false;
+        panX += e.clientX - drag.x; panY += e.clientY - drag.y;
+        drag.x = e.clientX; drag.y = e.clientY;
+      }
+      draw();
+    });
+    const end = () => { drag = null; c.classList.remove('dragging'); };
+    c.addEventListener('pointerup', end); c.addEventListener('pointercancel', end);
+    c.addEventListener('wheel', e => {
+      e.preventDefault();
+      const r = c.getBoundingClientRect();
+      const old = zoom;
+      fit = false;
+      zoom = Math.min(32, Math.max(0.1, zoom * (e.deltaY < 0 ? 1.25 : 0.8)));
+      // Keep the point under the cursor still.
+      const cx = e.clientX - r.left - r.width / 2 - panX, cy = e.clientY - r.top - r.height / 2 - panY;
+      panX -= cx * (zoom / old - 1); panY -= cy * (zoom / old - 1);
+      draw();
+    }, { passive: false });
+  }
+  pointer(canvasA); pointer(canvasB);
+
+  document.querySelectorAll('[data-view]').forEach(b => b.onclick = () => {
+    view = b.dataset.view;
+    document.querySelectorAll('[data-view]').forEach(x => x.classList.toggle('on', x === b));
+    stage.classList.toggle('side', view === 'side');
+    draw();
+  });
+  $('zoom').onchange = e => {
+    if (e.target.value === 'fit') { fit = true; } else { fit = false; zoom = Number(e.target.value); panX = panY = 0; }
+    draw();
+  };
+  $('shot').onchange = e => { group = Number(e.target.value); frameIndex = groups[group].frames.length - 1; draw(); };
+  $('modeA').onchange = draw; $('modeB').onchange = draw;
+  $('scrub').oninput = e => { frameIndex = Number(e.target.value); draw(); };
+  window.addEventListener('resize', draw);
+  window.addEventListener('keydown', e => {
+    if (!manifest || e.target.tagName === 'SELECT') return;
+    const g = groups[group];
+    if (e.key === 'ArrowRight') { frameIndex = Math.min(g.frames.length - 1, frameIndex + 1); }
+    else if (e.key === 'ArrowLeft') { frameIndex = Math.max(0, frameIndex - 1); }
+    else if (e.key === 'ArrowDown') { group = Math.min(groups.length - 1, group + 1); frameIndex = groups[group].frames.length - 1; }
+    else if (e.key === 'ArrowUp') { group = Math.max(0, group - 1); frameIndex = groups[group].frames.length - 1; }
+    else if (e.key === ' ') {
+      e.preventDefault();
+      if (view === 'flip') { flipShowB = !flipShowB; }
+      else { const a = $('modeA').value; $('modeA').value = $('modeB').value; $('modeB').value = a; }
+    } else if (/^[1-9]$/.test(e.key) || (e.shiftKey && /^Digit[1-9]$/.test(e.code))) {
+      const n = Number(e.code.replace('Digit', '')) - 1;
+      const m = manifest.modes[n]; if (!m) return;
+      (e.shiftKey ? $('modeB') : $('modeA')).value = m.name;
+    } else return;
+    draw();
+  });
+})();
+</script>
+</body>
+</html>

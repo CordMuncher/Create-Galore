@@ -1,0 +1,8 @@
+name = "NVIDIA DLSS 310.9.16 (nvngx_dlss.dll)"
+filename = "nvngx_dlss.dll"
+side = "client"
+
+[download]
+url = "https://raw.githubusercontent.com/NVIDIA/DLSS/9981c6350dc58c0ce21f024fd65e31e851c31689/lib/Windows_x86_64/rel/nvngx_dlss.dll"
+hash-format = "sha512"
+hash = "0e1fbd01ef2374f68e6ff8728f8b394279e58670c02d1f2aadbc8927db97476eb7bc8dca2a3dfd17d13789e6b5ef101850dec836a7fda3e67d379d4a34dfae7d"

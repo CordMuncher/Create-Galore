@@ -1,0 +1,409 @@
+package dev.creategalore.bridge.dlss;
+
+import static org.lwjgl.opengl.GL11C.GL_VENDOR;
+import static org.lwjgl.opengl.GL11C.glGetString;
+
+import java.io.IOException;
+import java.lang.ref.WeakReference;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Locale;
+import java.util.function.ToIntFunction;
+
+import com.mojang.blaze3d.systems.RenderSystem;
+import dev.creategalore.bridge.DisplaySettings;
+import net.minecraft.client.Camera;
+import net.minecraft.client.Minecraft;
+import net.minecraft.world.phys.Vec3;
+import net.neoforged.fml.loading.FMLPaths;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.GameShuttingDownEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/**
+ * NVIDIA DLAA (DLSS at full resolution) in place of a shader pack's TAA, for packs patched for it (see
+ * {@link PhotonPatcher} and {@link PackProfile}). Each frame the Bridge picks the jitter (a 32-step Halton sequence,
+ * handed to the pack as cg_dlss_jitter_x/y), the pack's TAA pass turns into a copy that also writes DLSS's inputs, and
+ * right after that pass {@link DlssPass} runs DLSS and writes its result where TAA's would have gone.
+ *
+ * config/create_galore_bridge-display.properties: dlaa=true turns it on, dlaaPreset picks the DLSS preset; both are
+ * read again when shaders reload. It runs on Perfect Presentation's DirectX device when that is on, else on its own
+ * (see {@link DlssDevice}). Anything missing (not Windows, no NVIDIA RTX card, no nvngx_dlss.dll, an unpatched pack, a
+ * pack option that the patch does not cover) leaves the pack's own anti-aliasing in place and says why in the log.
+ *
+ * For testing: dlaaDebugView=color|motion|depth in the display settings (or the system property
+ * create_galore_bridge.dlss.debugView) draws that DLSS input instead of running DLSS (any GPU, no NGX);
+ * create_galore_bridge.dlss.dllDir loads nvngx_dlss.dll from another folder (the
+ * SDK's dev build shows DLSS's own debug overlay); create_galore_bridge.dlss.jitterSign=x,y flips the jitter handed to
+ * DLSS.
+ */
+public final class Dlss {
+    private static final Logger LOG = LoggerFactory.getLogger("create_galore_bridge");
+    /** NGX needs a GUID-like id from apps without an NVIDIA application id. */
+    private static final String PROJECT_ID = "0f4d213d-b46a-4c91-9f2f-baac70721d6b";
+    private static final String ENGINE_VERSION = "1.21.1";
+    /** In the game folder: nvngx_dlss.dll (put there by the pack's updater), the helper DLL and NGX's logs. */
+    private static final String FOLDER = "create-galore-dlss";
+    private static final String DLL_DIR_PROPERTY = "create_galore_bridge.dlss.dllDir";
+    private static final String DEBUG_VIEW_PROPERTY = "create_galore_bridge.dlss.debugView";
+    private static final String JITTER_SIGN_PROPERTY = "create_galore_bridge.dlss.jitterSign";
+    private static final int PHASES = 32;
+    /** A camera move this far in one frame is a teleport: DLSS starts over instead of blending in the old place. */
+    private static final double RESET_DISTANCE = 8.0;
+    /** Frames in a row the pack's pass may not run while DLSS is on before DLSS gives up (the jitter would show). */
+    private static final int MISSED_FRAMES_LIMIT = 3;
+    // NVSDK_NGX_DLSS_Hint_Render_Preset
+    private static final int PRESET_DEFAULT = 0;
+    private static final int PRESET_J = 10;
+    private static final int PRESET_K = 11;
+    private static final int PRESET_L = 12;
+    private static final int PRESET_M = 13;
+
+    private static final float[] JITTER_SIGN = jitterSign();
+
+    // Read when shaders (re)load.
+    private static boolean wanted;
+    private static int preset = PRESET_DEFAULT;
+    private static DlssPass.View debugView;
+    private static PackProfile profile;
+    private static String packProblem;
+    /** A run failed: the pack's own anti-aliasing is back until shaders reload. */
+    private static boolean failed;
+
+    // For the session.
+    /** Why DLSS cannot run on this computer, once that is known. */
+    private static String unavailable;
+    private static NgxLibrary ngx;
+    private static DlssDevice device;
+    private static DlssPass pass;
+    /** The debug views' pass: plain OpenGL textures, no DLSS. */
+    private static DlssPass debugPass;
+    private static int featureFlags = -1;
+    private static int featurePreset = -1;
+
+    // For the frame.
+    private static boolean active;
+    private static boolean ran;
+    private static int missedFrames;
+    private static float jitterX;
+    private static float jitterY;
+    private static boolean reset = true;
+    private static long lastFrameNanos;
+    private static float frameTimeMs = 16.7f;
+    private static WeakReference<Object> lastLevel = new WeakReference<>(null);
+    private static WeakReference<Object> lastCameraEntity = new WeakReference<>(null);
+    private static Vec3 lastCameraPosition;
+
+    private Dlss() {}
+
+    /** At mod construction: frees DLSS when the game closes (the patched pack copy is made earlier, see PhotonPatcher). */
+    public static void init() {
+        NeoForge.EVENT_BUS.addListener(Dlss::shutdown);
+        PhotonPatcher.prepare();
+    }
+
+    /** A shader pack pipeline was made (shaders loaded or reloaded): reads the settings and the pack's profile again. */
+    public static void onPipelineCreated() {
+        DisplaySettings.reload();
+        wanted = DisplaySettings.get(DisplaySettings.DLAA);
+        String presetName = DisplaySettings.getString(DisplaySettings.DLAA_PRESET, "default");
+        preset = parsePreset(presetName);
+        debugView = parseDebugView(DisplaySettings.getString(DisplaySettings.DLAA_DEBUG_VIEW, System.getProperty(DEBUG_VIEW_PROPERTY, "")));
+        failed = false;
+        reset = true;
+        missedFrames = 0;
+        profile = null;
+        packProblem = null;
+        if (!wanted) {
+            return;
+        }
+        try {
+            profile = PackProfile.current();
+            packProblem = profile == null ? "it is not patched for DLAA (" + PhotonPatcher.PATCHED_NAME + " is)" : profile.optionProblem();
+        } catch (IOException | RuntimeException e) {
+            packProblem = "its " + PackProfile.FILE + " could not be read: " + e;
+        }
+        if (packProblem != null) {
+            LOG.info("DLAA: not used with this shader pack, {}", packProblem);
+        } else {
+            LOG.info("DLAA: on for this shader pack, preset {}{}", presetName,
+                    debugView != null ? " (debug view " + debugView.name().toLowerCase(Locale.ROOT) + ", DLSS itself not used)" : "");
+        }
+    }
+
+    /**
+     * Start of a level frame, before the pack's uniforms update: decides whether DLSS runs and picks the jitter.
+     * {@code frameCounter} is the pack's frameCounter, so the jitter repeats with the pack's own frame sequence.
+     */
+    public static void beginFrame(int frameCounter) {
+        if (active) {
+            missedFrames = ran ? 0 : missedFrames + 1;
+            if (missedFrames >= MISSED_FRAMES_LIMIT) {
+                LOG.warn("DLAA: the pack's {} pass did not run for {} frames, using the pack's own anti-aliasing until shaders reload",
+                        profile.pass(), MISSED_FRAMES_LIMIT);
+                failed = true;
+            }
+        }
+        ran = false;
+        long now = System.nanoTime();
+        if (lastFrameNanos != 0L) {
+            frameTimeMs = Math.min(Math.max((now - lastFrameNanos) / 1.0e6f, 0.1f), 1000.0f);
+        }
+        lastFrameNanos = now;
+
+        boolean wasActive = active;
+        active = wanted && profile != null && packProblem == null && !failed && ensureReady();
+        if (!active) {
+            return;
+        }
+        int index = Math.floorMod(frameCounter, PHASES) + 1;
+        jitterX = halton(index, 2) - 0.5f;
+        jitterY = halton(index, 3) - 0.5f;
+
+        Minecraft minecraft = Minecraft.getInstance();
+        Camera camera = minecraft.gameRenderer.getMainCamera();
+        Vec3 position = camera.getPosition();
+        if (!wasActive || minecraft.level != lastLevel.get() || camera.getEntity() != lastCameraEntity.get()
+                || lastCameraPosition == null || position.distanceToSqr(lastCameraPosition) > RESET_DISTANCE * RESET_DISTANCE) {
+            reset = true;
+        }
+        lastLevel = new WeakReference<>(minecraft.level);
+        lastCameraEntity = new WeakReference<>(camera.getEntity());
+        lastCameraPosition = position;
+    }
+
+    /** True while the pack should hand its frame to DLSS (cg_dlss_active). */
+    public static boolean shaderActive() {
+        return active;
+    }
+
+    /** This frame's jitter in pixels, -0.5..0.5 (cg_dlss_jitter_x). */
+    public static float jitterX() {
+        return active ? jitterX : 0.0f;
+    }
+
+    public static float jitterY() {
+        return active ? jitterY : 0.0f;
+    }
+
+    /**
+     * A composite pass just drew, its framebuffer still bound. After the pack's TAA pass this runs DLSS on what it
+     * wrote. {@code imageIds} gives the OpenGL texture of one of the pack's custom images by name (0 if none).
+     */
+    public static void afterPass(String name, ToIntFunction<String> imageIds) {
+        if (!active || failed || !profile.pass().equals(name)) {
+            return;
+        }
+        ran = true;
+        try {
+            DlssPass.Inputs in = DlssPass.inputs(DlssPass.boundColorTexture(profile.colorAttachment()),
+                    image(imageIds, profile.motionImage()), image(imageIds, profile.depthImage()),
+                    image(imageIds, profile.exposureImage()));
+            if (debugView != null) {
+                debugPass.ensureSize(in.width(), in.height());
+                debugPass.copyAndEvaluate(in, () -> {});
+                debugPass.writeBack(profile, debugView);
+                return;
+            }
+            boolean resized = pass.ensureSize(in.width(), in.height());
+            // L always meters exposure itself; M is asked to as well, the pack's value is for J and K.
+            boolean autoExposure = preset == PRESET_L || preset == PRESET_M;
+            int flags = NgxLibrary.FLAG_IS_HDR | NgxLibrary.FLAG_MV_LOW_RES | NgxLibrary.FLAG_DEPTH_INVERTED
+                    | (autoExposure ? NgxLibrary.FLAG_AUTO_EXPOSURE : 0);
+            if (resized || flags != featureFlags || preset != featurePreset) {
+                featureFlags = -1;
+                int result = ngx.create(device.context, in.width(), in.height(), in.width(), in.height(),
+                        NgxLibrary.PERF_QUALITY_DLAA, flags, preset);
+                ngx.drainLog();
+                if (NgxLibrary.failed(result)) {
+                    throw new IllegalStateException("DLSS could not start at " + in.width() + "x" + in.height() + ": " + NgxLibrary.describe(result));
+                }
+                featureFlags = flags;
+                featurePreset = preset;
+                reset = true;
+                LOG.info("DLAA: DLSS running at {}x{}, preset {}", in.width(), in.height(), presetName(preset));
+            }
+            boolean resetNow = reset;
+            int[] result = new int[1];
+            pass.copyAndEvaluate(in, () -> result[0] = ngx.evaluate(device.context, pass.colorResource(), pass.outputResource(),
+                    pass.depthResource(), pass.motionResource(), autoExposure ? 0L : pass.exposureResource(),
+                    jitterX * JITTER_SIGN[0], jitterY * JITTER_SIGN[1], 1.0f, 1.0f, resetNow, in.width(), in.height(), frameTimeMs));
+            ngx.drainLog();
+            if (NgxLibrary.failed(result[0])) {
+                throw new IllegalStateException("DLSS failed: " + NgxLibrary.describe(result[0]));
+            }
+            reset = false;
+            pass.writeBack(profile, DlssPass.View.DLSS);
+        } catch (Throwable t) {
+            failed = true;
+            LOG.error("DLAA: stopped, the pack's own anti-aliasing is back from the next frame (reloading shaders tries DLAA again)", t);
+        }
+    }
+
+    private static int image(ToIntFunction<String> imageIds, String name) {
+        int id = imageIds.applyAsInt(name);
+        if (id <= 0) {
+            throw new IllegalStateException("the pack has no image " + name);
+        }
+        return id;
+    }
+
+    /** Loads NGX and opens the DirectX device the first time DLSS is needed. False (once logged) if it cannot run. */
+    private static boolean ensureReady() {
+        if (debugView != null) {
+            if (debugPass == null) {
+                debugPass = new DlssPass(null);
+            }
+            return true;
+        }
+        if (pass != null) {
+            return true;
+        }
+        if (unavailable != null) {
+            return false;
+        }
+        try {
+            open();
+            return true;
+        } catch (Throwable t) {
+            unavailable = t.getMessage() != null ? t.getMessage() : t.toString();
+            LOG.warn("DLAA: not available, the shader pack keeps its own anti-aliasing: {}", unavailable);
+            LOG.debug("DLAA: start-up failure", t);
+            closeAll();
+            return false;
+        }
+    }
+
+    private static void open() throws IOException {
+        if (!System.getProperty("os.name", "").startsWith("Windows")) {
+            throw new IllegalStateException("DLSS needs Windows");
+        }
+        String vendor = glGetString(GL_VENDOR);
+        if (vendor == null || !vendor.toLowerCase(Locale.ROOT).contains("nvidia")) {
+            throw new IllegalStateException("the game runs on " + vendor + ", DLSS needs an NVIDIA RTX graphics card");
+        }
+        Path folder = FMLPaths.GAMEDIR.get().resolve(FOLDER);
+        String dllDir = System.getProperty(DLL_DIR_PROPERTY);
+        Path dllFolder = dllDir != null && !dllDir.isBlank() ? Path.of(dllDir) : folder;
+        Path dll = dllFolder.resolve("nvngx_dlss.dll");
+        if (!Files.isRegularFile(dll)) {
+            throw new IllegalStateException("there is no " + dll + " (the pack's updater puts it there)");
+        }
+        Files.createDirectories(folder.resolve("ngx"));
+        ngx = NgxLibrary.load(folder);
+        device = DlssDevice.open();
+        int result = ngx.init(PROJECT_ID, ENGINE_VERSION, folder.resolve("ngx"), dllFolder, device.device, NgxLibrary.LOG_ON);
+        ngx.drainLog();
+        if (NgxLibrary.failed(result)) {
+            throw new IllegalStateException("NVIDIA NGX did not start: " + NgxLibrary.describe(result));
+        }
+        int[] support = ngx.query();
+        if (support == null) {
+            throw new IllegalStateException("NGX could not say whether DLSS runs here");
+        }
+        if (support[0] == 0) {
+            if (support[1] != 0) {
+                throw new IllegalStateException("DLSS needs NVIDIA driver " + support[2] + "." + support[3] + " or newer");
+            }
+            throw new IllegalStateException("DLSS does not run on this graphics card (" + NgxLibrary.describe(support[4]) + ")");
+        }
+        pass = new DlssPass(device);
+        LOG.info("DLAA: NGX ready on {}, nvngx_dlss.dll from {}", device.adapterName, dllFolder);
+    }
+
+    private static void shutdown(GameShuttingDownEvent event) {
+        if (RenderSystem.isOnRenderThread()) {
+            closeAll();
+        }
+    }
+
+    private static void closeAll() {
+        try {
+            if (pass != null) {
+                pass.close();
+            }
+            if (debugPass != null) {
+                debugPass.close();
+            }
+            if (ngx != null) {
+                ngx.shutdown();
+                ngx.drainLog();
+            }
+            if (device != null) {
+                device.close();
+            }
+        } catch (Throwable t) {
+            LOG.warn("DLAA: could not close cleanly: {}", t.toString());
+        } finally {
+            pass = null;
+            debugPass = null;
+            ngx = null;
+            device = null;
+            featureFlags = -1;
+            featurePreset = -1;
+            active = false;
+        }
+    }
+
+    /** The radical inverse of {@code index} in {@code base}: 0..1, evenly spread over any run of indices. */
+    private static float halton(int index, int base) {
+        float result = 0.0f;
+        float fraction = 1.0f;
+        while (index > 0) {
+            fraction /= base;
+            result += fraction * (index % base);
+            index /= base;
+        }
+        return result;
+    }
+
+    private static int parsePreset(String name) {
+        return switch (name.toUpperCase(Locale.ROOT)) {
+            case "J" -> PRESET_J;
+            case "K" -> PRESET_K;
+            case "L" -> PRESET_L;
+            case "M" -> PRESET_M;
+            case "DEFAULT", "" -> PRESET_DEFAULT;
+            default -> {
+                LOG.warn("DLAA: unknown dlaaPreset {}, using default (choose default, J, K, L or M)", name);
+                yield PRESET_DEFAULT;
+            }
+        };
+    }
+
+    private static String presetName(int preset) {
+        return switch (preset) {
+            case PRESET_J -> "J";
+            case PRESET_K -> "K";
+            case PRESET_L -> "L";
+            case PRESET_M -> "M";
+            default -> "default";
+        };
+    }
+
+    private static DlssPass.View parseDebugView(String name) {
+        String value = name.trim().toUpperCase(Locale.ROOT);
+        if (value.isEmpty()) {
+            return null;
+        }
+        try {
+            DlssPass.View view = DlssPass.View.valueOf(value);
+            return view == DlssPass.View.DLSS ? null : view;
+        } catch (IllegalArgumentException e) {
+            LOG.warn("DLAA: unknown debug view {}, use color, motion or depth", name);
+            return null;
+        }
+    }
+
+    private static float[] jitterSign() {
+        String value = System.getProperty(JITTER_SIGN_PROPERTY, "1,1");
+        String[] parts = value.split(",");
+        try {
+            return new float[] {Math.signum(Float.parseFloat(parts[0].trim())), Math.signum(Float.parseFloat(parts[1].trim()))};
+        } catch (RuntimeException e) {
+            LOG.warn("DLAA: {} should be like 1,-1; using 1,1", JITTER_SIGN_PROPERTY);
+            return new float[] {1.0f, 1.0f};
+        }
+    }
+}

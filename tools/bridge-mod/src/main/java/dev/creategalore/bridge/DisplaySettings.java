@@ -13,13 +13,18 @@ import org.slf4j.LoggerFactory;
 
 /**
  * config/create_galore_bridge-display.properties: the Bridge's client display switches. Missing keys are added with
- * their defaults (off) and existing values are kept. Read before the game window exists, so changes need a restart.
+ * their defaults (off) and existing values are kept. Read before the game window exists, so the window switches need a
+ * restart; the DLAA ones are read again whenever shaders reload ({@link #reload()}).
  */
 public final class DisplaySettings {
     private static final Logger LOG = LoggerFactory.getLogger("create_galore_bridge");
     public static final String FILE = "create_galore_bridge-display.properties";
     public static final String TEN_BIT_WINDOW = "tenBitWindow";
     public static final String PERFECT_PRESENTATION = "perfectPresentation";
+    public static final String DLAA = "dlaa";
+    public static final String DLAA_PRESET = "dlaaPreset";
+    /** Testing only, not written to the file: color, motion or depth shows that DLSS input instead of DLSS. */
+    public static final String DLAA_DEBUG_VIEW = "dlaaDebugView";
 
     private static Properties cached;
 
@@ -30,6 +35,18 @@ public final class DisplaySettings {
             cached = load();
         }
         return Boolean.parseBoolean(cached.getProperty(key, "false").trim());
+    }
+
+    public static synchronized String getString(String key, String fallback) {
+        if (cached == null) {
+            cached = load();
+        }
+        return cached.getProperty(key, fallback).trim();
+    }
+
+    /** Reads the file again on the next get (the DLAA settings apply on a shader reload). */
+    public static synchronized void reload() {
+        cached = null;
     }
 
     private static Properties load() {
@@ -43,9 +60,16 @@ public final class DisplaySettings {
             }
             boolean missing = props.putIfAbsent(TEN_BIT_WINDOW, "false") == null;
             missing |= props.putIfAbsent(PERFECT_PRESENTATION, "false") == null;
+            missing |= props.putIfAbsent(DLAA, "false") == null;
+            missing |= props.putIfAbsent(DLAA_PRESET, "default") == null;
             if (missing) {
                 try (Writer w = Files.newBufferedWriter(file)) {
-                    props.store(w, "Create Galore Bridge display settings. Both need a restart.\n"
+                    props.store(w, "Create Galore Bridge display settings. perfectPresentation and tenBitWindow need a restart;\n"
+                            + " dlaa and dlaaPreset apply when shaders reload (Iris's reload key, R by default).\n"
+                            + " dlaa: EXPERIMENTAL, Windows + NVIDIA RTX only. true replaces the shader pack's TAA with NVIDIA DLAA\n"
+                            + " (DLSS at full resolution) in packs patched for it: the Bridge makes a Photon v1.3a + DLAA copy in\n"
+                            + " shaderpacks/ at startup; pick that pack in the shader menu. Works with or without perfectPresentation.\n"
+                            + " dlaaPreset: default, J, K, L or M (DLSS render presets; default lets DLSS choose, K today).\n"
                             + " perfectPresentation: EXPERIMENTAL, Windows only. true shows the game through a DirectX swap chain\n"
                             + " (ported from Perfect Presentation by sidit77): borderless fullscreen at exclusive-fullscreen speed and\n"
                             + " Alt-Tab without a display mode change. Leave NVIDIA's Vulkan/OpenGL present method on Auto.\n"
