@@ -106,6 +106,16 @@ final class WorldTools {
         findProps.add("query", prop("string", "Part of an item's English name or id, such as 'nitrate' or 'steel'."));
         tools.add(tool("find_items", "Item ids whose name or id contains the query, with the mod that adds each. Use it to "
                 + "turn a name the player typed into ids for lookup_recipes.", findProps));
+        JsonObject creatureProps = new JsonObject();
+        creatureProps.add("query", prop("string", "A creature's name or id ('naga', 'mowziesmobs:frostmaw'), words for how "
+                + "it looks or acts ('green flies', 'hostile swims', 'boss'), a mod's name, 'nearby' for the creatures around "
+                + "the player now, or 'all' for every creature by mod."));
+        tools.add(tool("find_creatures", "Every creature on this server, from every mod. For a match: its name, id and mod, "
+                + "whether it flies, swims, is hostile or a boss, the main colours of its skin, health, attack, armor, size, "
+                + "the biomes it spawns in by itself and what a player's kill drops. 'nearby' lists the creatures within "
+                + Creatures.AROUND + " blocks of the player right now (how many, how far, how high, in sight or not), even "
+                + "ones that flew off screen. Use it whenever a player asks about a creature, above all one they describe "
+                + "by its looks or one your notes don't describe.", creatureProps));
         tools.add(tool("get_advancements", "The asking player's advancements, a record of things they have done: how many "
                 + "they have in each mod's tree, the most recent ones with their descriptions, every other one by title, and "
                 + "the next steps in each tree. A next step only means the one before it is done, not that they can do it "
@@ -169,6 +179,7 @@ final class WorldTools {
                 case "get_advancements" -> advancements(player, server);
                 case "lookup_recipes" -> recipes(server, GuideText.string(input, "item"), GuideText.string(input, "direction"));
                 case "find_items" -> findItems(GuideText.string(input, "query"));
+                case "find_creatures" -> Creatures.find(player, server, GuideText.string(input, "query"));
                 case "recipe_tree" -> Reach.tree(player, server, GuideText.string(input, "item"), Math.max(1, Diagrams.intOr(input, "amount", 1)));
                 case "block_drops" -> Reach.drops(player, GuideText.string(input, "block"));
                 case "read_guide" -> GuideText.read(GuideText.string(input, "query"));

@@ -66,6 +66,13 @@ final class GuideText {
             screen; never use them to look for ores, loot or structures. \
             When they ask what to do next or how far along they are, read their advancements together with their \
             inventory, storage and surroundings, judge where they are in the game, and give a direct next step or two. \
+            This world has hundreds of creatures from its mods, many more than your notes describe. When a player \
+            asks about a creature, above all one they describe by its looks ("a big green dragon breathing fire"), \
+            call find_creatures before you answer: 'nearby' shows what is around them now, words for its looks or \
+            how it acts find it in the full list, and a name gives its health, spawns and drops. Players name what \
+            they see by how it looks, so a "dragon" may be a winged serpent and "fire" may be acid or a spell. Never \
+            tell a player that a creature they saw doesn't exist or must be something else they didn't describe; if \
+            you can't place it, say which creatures fit best and ask what else they noticed. \
             Use lookup_recipes for how things are made and used; it reads this server's real recipes, which this pack \
             changes in many places, so trust it over anything you remember about a mod. Search the web only when the \
             guide, the recipe list and the mod list have no answer, and then say the answer comes from a mod's wiki \

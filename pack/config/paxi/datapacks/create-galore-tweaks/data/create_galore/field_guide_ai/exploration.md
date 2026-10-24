@@ -1,4 +1,4 @@
-<!-- sources sha256:f55b243a53c536de6d7166549150b83604d97ec0c351b178268c0ffbb16572ac -->
+<!-- sources sha256:f01967032202a1ebd0db13e48d62cdc415679b6fb4650ed8c3f543aac84a1a0f -->
 # Exploration and Adventure (exploration)
 
 ## exploration/dimensions | Dimensions
@@ -158,6 +158,7 @@
 - Sol Visage [mowziesmobs:sol_visage]: Umvuthi's mask. Umvuthana masks (Fury, Fear, Rage, Bliss, Misery, Faith) worn for abilities
 - Earthrend Gauntlet [mowziesmobs:earthrend_gauntlet]: Sculptor's gauntlet; Geomancer set (staff, robe, beads) is his too
 - Smaller mobs: Foliaath, Lantern, Grottol (mineral creature), Bluff, Naga, Elokosa
+- **Naga** [mowziesmobs:naga_fang]: big green winged sea serpent that looks like a dragon (players call it a dragon). Flies at night in ones and twos over beaches and stony shores by hills and mountains; spits acid balls (**3** damage + Poison) and swoops. Hit it while it spits or swoops (arrow easiest) and it crashes to the ground, easy to finish. **30** health. Drops Naga Fang [mowziesmobs:naga_fang]: Naga Fang Dagger, darts, Potion of Poison Resistance. Not the Twilight Forest Naga (giant snake boss, see exploration/twilight_forest)
 - Frostmaw's Ice Crystal [mowziesmobs:ice_crystal] is a weapon. (see exploration/bosses)
 - **Boss health** (2 health = 1 heart): Frostmaw **175**, Umvuthi **105**, the Sculptor **98**, Ferrous Wroughtnaut **28**; structures generate as usual
 

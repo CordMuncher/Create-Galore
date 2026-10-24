@@ -5,6 +5,16 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.4.77
+
+### Added
+- **Ask the Book knows every creature in the world.** It can now look up any creature from any mod: what it is called and which mod adds it, whether it flies, swims, is hostile or a boss, the main colours of its skin, its health, attack and size, the biomes it spawns in and what it drops, and which creatures are around you right now (even one that just flew off screen). Ask about something by how it looks ("a big green dragon that breathes fire") and it finds what fits, and it no longer tells you a creature you saw doesn't exist.
+- **The Field Guide describes the Naga.** The Mowzie's Mobs page now says what the Naga is (a big green winged sea serpent that looks like a dragon), where and when it flies, how it fights, how to bring it down and what it drops, and that the Twilight Forest's Naga is another creature.
+
+### Fixed
+- **Ask the Book no longer denies the Naga.** A player asked how to kill the big green fire breathing dragons flying around and was told they must mean the Ender Dragon or dragonflies. They were Mowzie's Mobs Nagas, which the book only knew by name. Checked on a test server with Nagas flying above a player: looking around finds them 26 blocks off and 5 up, "naga" gives both Nagas (Mowzie's flying one with 30 health and its Naga Fang, and the Twilight Forest boss), and "big green flying" lists the Naga among the large green flyers.
+- Create Galore Bridge 1.92.0.
+
 ## 0.4.76
 
 ### Fixed
