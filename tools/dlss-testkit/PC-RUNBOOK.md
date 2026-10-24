@@ -200,3 +200,78 @@ looked wrong) and crops of the same spots as round 1 (`shore-fence-glass`, `glas
 512x512, from the settled still frame) for `photon-taa`, `dlaa-default` and `fsr3` under `results\round2\F\`, a
 few MB in all. Commit and push on the DLAA branch. Emre judges the look himself in `compare.html`.
 
+
+## Milestone 2, PC run 1: things that move
+
+Same PC, test folder and tools as rounds 1 and 2, nothing new to install. Start it only when Emre says so. Photon's
+copy now gives DLSS the motion of things that move by themselves: waving leaves and grass, Sable ships, and Create's
+machines, contraptions and trains (through Colorwheel). The cloud checked that this motion is exact; this run checks
+it on the 4080 with NVIDIA's shader compiler and real DLSS, and Emre judges the look by eye, riding a ship.
+
+### Update
+
+Keep `$T\instance` and `saves\dlaa-test` (the far terrain stays). The two jars change, and the test kit's config is
+written fresh, since it needs the new `moving` viewpoint:
+
+```powershell
+git -C $T\repo pull
+Copy-Item $T\repo\pack\mods\create-galore-bridge-1.89.0.jar $T\instance\mods\ -Force
+Copy-Item $T\repo\tools\dlss-testkit\dist\create-galore-dlss-testkit-1.0.0.jar $T\instance\mods\ -Force
+Remove-Item $T\instance\config\create_galore_dlss_testkit.json
+```
+
+Check before the runs, as in round 2: `dlaa=true` and `perfectPresentation=false` in
+`config\create_galore_bridge-display.properties`, `earlyWindowControl = false`, `tutorialStep:none`, the Distant
+Horizons settings from step 3, and the NVIDIA App's DLSS override still off.
+
+The first launch remakes the Photon copy (the patch changed): its log has `DLAA: made shaderpacks/Photon v1.3a +
+DLAA from photon_v1.3a + Clrwl_1.0.5.zip`. Every run's log must have no `Could not compile shader`, no `this
+Colorwheel's shaders are not the ones the Bridge knows`, and the chat no `[Colorwheel] Current shader pack contains
+broken shaders`. If any of those shows, stop and report the lines around it.
+
+The `moving` viewpoint looks out over the lake from the shore. When a run first gets there, the test kit builds a
+moving scene over the water (a creative motor turning shafts, a cogwheel, a large cogwheel and a fan; a second motor
+turning a bearing with a glued cross; a small Sable ship that turns and sways) and removes it when the run ends.
+
+### Runs
+
+The launch command from step 4, with these JVM arguments (written as in step 5):
+
+| Run | Before it | Extra JVM arguments |
+| --- | --- | --- |
+| J | `perfectPresentation=false` | `...autorun=dlaa-test` `...modes=photon-taa+dlaa-default+dlaa-camera+fsr3` `-Dcreate_galore_dlss_testkit.viewpoints=moving` |
+| K | the config edit below | `...autorun=dlaa-test` `...modes=debug-motion+debug-residual` `...viewpoints=canopy+moving` |
+
+`dlaa-camera` is DLAA with only the camera's motion (as before this milestone), so J shows what the new motion
+vectors change. Before K, set these in `config\create_galore_dlss_testkit.json` (written by run J): `"paths":
+["brief"]`, `"packSecondsPerFrame": 1.0`, `"dumpRaw": true`, `"shipTurnDegreesPerTick": 20.0`, `"shipSwayPerTick":
+0.5`. K saves DLSS's exact inputs for 8 frames in a row (`debug-residual\raw\*.npy`, about 200 MB); leaves and the
+ship move fast so each frame moves them by a few pixels. After K, delete the config file again.
+
+### By eye, with Emre (about 15 minutes)
+
+Launch without the `autorun` argument, open the `dlaa-test` world, and give Emre these chat commands:
+
+- `/dlaatest scene build`: puts the moving scene up over the lake, at the game's normal speed. The ship turns
+  slowly; stand on it to ride it.
+- `/dlaatest mode dlaa-default`, `/dlaatest mode dlaa-camera`, `/dlaatest mode photon-taa`, `/dlaatest mode fsr3`:
+  switch anti-aliasing (the shaders reload, a few seconds).
+- `/dlaatest scene remove` when done, then `/dlaatest mode dlaa-default`.
+
+Emre looks at the cogs, the fan, the bearing's cross and the ship, from the shore and riding the ship, in each mode.
+If he wants, he builds a short train in creative there and rides it too. Write down what he says, especially about
+the ship's glass block and anything else that smears or trails.
+
+### Results
+
+```powershell
+& $T\tools\uv\uv.exe run --python 3.13 --with pillow --with numpy $T\repo\tools\dlss-testkit\metrics.py <run J folder>
+& $T\tools\uv\uv.exe run --python 3.13 --with numpy $T\repo\tools\dlss-testkit\mvcheck.py <run K folder>
+```
+
+`mvcheck.py` moves each frame back along the motion vectors scaled by k; with exact motion vectors k = 1 matches best
+on every pair of frames (the cloud: 55 to 68% less difference than with none). Write
+`$T\repo\tools\dlss-testkit\results\m2-run1\REPORT.md`: both outputs, the `DLAA:` log lines, any Colorwheel or shader
+lines, frame times of J's modes, and Emre's notes from the session. Add crops (about 512x512) around the cogwheels,
+the bearing's cross and the ship from J's flick and still frames for all four modes under `results\m2-run1\J\`, a few
+MB in all. Commit and push on the DLAA branch (no `raw\` files).

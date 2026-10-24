@@ -11,10 +11,12 @@ import net.neoforged.neoforge.event.tick.ServerTickEvent;
  * removed when the run ends, so the test world itself stays as it was (everything sits in air above the water, in
  * x 1023..1036, y 63..70, z 143..157, which is empty in the DLAA test world).
  * - A creative motor turning shafts, a cogwheel, a large cogwheel and an encased fan (Flywheel instances).
- * - A second motor turning a mechanical bearing with a cross of planks and wool on it (a contraption).
- * - A small Sable ship on the water, turned and swayed a little every server tick (a sub-level).
+ * - A second motor turning a mechanical bearing with a glued cross of planks and wool on it (a contraption).
+ * - A small Sable ship on the water, turned and swayed a little every server tick (a sub-level), slowly enough by
+ *   default to stand on it.
  * While the camera is there, the world ticks at sceneTickRate (the rest of the run is frozen): on slow software
  * rendering (about a frame a second) 1 tick a second keeps each frame's movement close to a normal game's.
+ * /dlaatest scene build puts it up outside a run too, at the game's own tick rate, to look at and ride.
  */
 final class MovingScene {
     static final String NAME = "moving";
@@ -37,6 +39,7 @@ final class MovingScene {
             "fill 1031 65 153 1035 65 153 white_wool",
             "fill 1033 63 153 1033 67 153 red_wool",
             "setblock 1033 65 153 oak_planks",
+            "create glue 1031 63 153 1035 67 153",
             // The ship: a 5x5 deck, a rail around it with a window, a mast and a sail, a lantern.
             "fill 1027 63 143 1031 63 147 spruce_planks",
             "fill 1027 64 143 1031 64 143 spruce_planks",
@@ -53,20 +56,29 @@ final class MovingScene {
     private static boolean built;
     private static volatile boolean active;
     private static int ticks;
+    private static volatile float turn = 0.75f;
+    private static volatile float sway = 0.03f;
 
     private MovingScene() {}
 
     /** The camera arrived at the moving viewpoint: build the scene the first time and let the world tick. */
     static void enter(Capture.Settings settings) {
+        show(settings);
+        if (settings.freezeTicks) {
+            Capture.server("tick unfreeze");
+        }
+        Capture.server("tick rate " + settings.sceneTickRate);
+    }
+
+    /** Builds the scene the first time and sets the ship going (at whatever rate the world ticks). */
+    static void show(Capture.Settings settings) {
         if (!built) {
             built = true;
             BUILD.forEach(Capture::server);
             Capture.log("built the moving scene");
         }
-        if (settings.freezeTicks) {
-            Capture.server("tick unfreeze");
-        }
-        Capture.server("tick rate " + settings.sceneTickRate);
+        turn = settings.shipTurnDegreesPerTick;
+        sway = settings.shipSwayPerTick;
         ticks = 0;
         active = true;
     }
@@ -92,12 +104,13 @@ final class MovingScene {
         built = false;
         Capture.server("sable remove @e[name=" + SHIP + "]");
         Capture.server("kill @e[type=create:stationary_contraption,x=1033,y=65,z=153,distance=..8]");
+        Capture.server("kill @e[type=create:super_glue,x=1033,y=65,z=153,distance=..8]");
         Capture.server(CLEAR);
         Capture.server(CLEAR);
         Capture.server("kill @e[type=item,x=1029,y=65,z=150,distance=..16]");
     }
 
-    /** Each server tick while the camera is there: the ship turns 4 degrees and sways along x (about 2 blocks each way). */
+    /** Each server tick while the scene is shown: the ship turns and sways along x (shipTurnDegreesPerTick, shipSwayPerTick). */
     static void serverTick(ServerTickEvent.Post event) {
         if (!active) {
             return;
@@ -106,9 +119,9 @@ final class MovingScene {
         if (server == null || event.getServer() != server) {
             return;
         }
-        double sway = 0.15 * Math.cos(2 * Math.PI * ticks / 80.0);
+        double dx = sway * Math.cos(2 * Math.PI * ticks / 80.0);
         ticks++;
-        Capture.runNow(server, "sable physics rotation @e[name=" + SHIP + "] add axis 0 1 0 4 global");
-        Capture.runNow(server, String.format(java.util.Locale.ROOT, "sable physics translation @e[name=%s] add %.4f 0 0 global", SHIP, sway));
+        Capture.runNow(server, String.format(java.util.Locale.ROOT, "sable physics rotation @e[name=%s] add axis 0 1 0 %.4f global", SHIP, turn));
+        Capture.runNow(server, String.format(java.util.Locale.ROOT, "sable physics translation @e[name=%s] add %.4f 0 0 global", SHIP, dx));
     }
 }

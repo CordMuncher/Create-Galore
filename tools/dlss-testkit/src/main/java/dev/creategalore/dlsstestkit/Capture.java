@@ -63,9 +63,14 @@ public final class Capture {
         float packSecondsPerFrame = 1.0f / 60.0f;
         /** In the debug modes, also save the Bridge's exact inputs for each captured frame (MODE/raw/*.npy, for checks). */
         boolean dumpRaw = false;
+        /** The moving scene's ship: degrees it turns and blocks it sways along x per server tick (at most, it eases). */
+        float shipTurnDegreesPerTick = 0.75f;
+        float shipSwayPerTick = 0.03f;
         List<Mode> modes = new ArrayList<>(List.of(
                 new Mode("photon-taa", false, "default", null, null, null, null),
                 new Mode("dlaa-default", true, "default", null, null, null, null),
+                // DLAA with only the camera's motion: what the motion vectors of things that move by themselves add.
+                new Mode("dlaa-camera", true, "default", null, null, null, false),
                 new Mode("dlaa-K", true, "K", null, null, null, null),
                 new Mode("dlaa-L", true, "L", null, null, null, null),
                 new Mode("dlaa-M", true, "M", null, null, null, null),
@@ -269,6 +274,45 @@ public final class Capture {
         return null;
     }
 
+    /** /dlaatest scene build|remove: the moving scene outside a run. */
+    static String scene(boolean build) {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.getSingleplayerServer() == null) {
+            return "open the DLAA test world in singleplayer first";
+        }
+        if (running) {
+            return "a run is going";
+        }
+        if (!build) {
+            MovingScene.remove();
+            return "removed the moving scene";
+        }
+        try {
+            MovingScene.show(loadSettings());
+        } catch (IOException | RuntimeException e) {
+            return "could not read config/" + CONFIG + ": " + e;
+        }
+        return "the moving scene is over the lake (stand on the ship to ride it); /dlaatest scene remove takes it away";
+    }
+
+    /** /dlaatest mode NAME: switches to that mode's anti-aliasing settings until the next switch (for looking by eye). */
+    static String useMode(String name) {
+        if (running) {
+            return "a run is going";
+        }
+        try {
+            settings = loadSettings();
+        } catch (IOException | RuntimeException e) {
+            return "could not read config/" + CONFIG + ": " + e;
+        }
+        for (Mode mode : settings.modes) {
+            if (mode.name().equals(name)) {
+                return writeMode(mode) ? "now " + name + " (the shaders reloaded)" : "could not switch to " + name;
+            }
+        }
+        return "no mode called " + name + " in config/" + CONFIG;
+    }
+
     static void stop(String why) {
         if (!running) {
             return;
@@ -459,6 +503,25 @@ public final class Capture {
     private static void applyMode(Mode mode) {
         currentMode = mode;
         frame = 0;
+        if (!writeMode(mode)) {
+            stop("could not switch to mode " + mode.name());
+            return;
+        }
+        JsonObject info = new JsonObject();
+        info.addProperty("name", mode.name());
+        info.addProperty("dlaa", mode.dlaa());
+        info.addProperty("preset", mode.preset());
+        info.addProperty("debugView", mode.debugView());
+        info.addProperty("jitterSign", mode.jitterSign());
+        info.addProperty("engine", mode.engine() != null ? mode.engine() : "dlss");
+        info.addProperty("objectMotion", !Boolean.FALSE.equals(mode.objectMotion()));
+        info.add("frameMs", new JsonObject());
+        modeInfo.put(mode.name(), info);
+        log("mode " + mode.name());
+    }
+
+    /** Writes the mode's settings into the Bridge's display settings and reloads the shaders; false if that failed. */
+    private static boolean writeMode(Mode mode) {
         Path file = FMLPaths.CONFIGDIR.get().resolve(BRIDGE_CONFIG);
         Properties props = new Properties();
         try {
@@ -493,21 +556,11 @@ public final class Capture {
                 props.store(w, "Create Galore Bridge display settings (last written by the DLAA test kit, mode " + mode.name() + ")");
             }
             Iris.reload();
+            return true;
         } catch (IOException | RuntimeException e) {
-            stop("could not switch to mode " + mode.name() + ": " + e);
-            return;
+            LOG.warn("DLAA test: could not switch to mode {}: {}", mode.name(), e.toString());
+            return false;
         }
-        JsonObject info = new JsonObject();
-        info.addProperty("name", mode.name());
-        info.addProperty("dlaa", mode.dlaa());
-        info.addProperty("preset", mode.preset());
-        info.addProperty("debugView", mode.debugView());
-        info.addProperty("jitterSign", mode.jitterSign());
-        info.addProperty("engine", mode.engine() != null ? mode.engine() : "dlss");
-        info.addProperty("objectMotion", !Boolean.FALSE.equals(mode.objectMotion()));
-        info.add("frameMs", new JsonObject());
-        modeInfo.put(mode.name(), info);
-        log("mode " + mode.name());
     }
 
     /** Average frame time over the still path, and whether the Bridge's DLAA really ran in this mode. */

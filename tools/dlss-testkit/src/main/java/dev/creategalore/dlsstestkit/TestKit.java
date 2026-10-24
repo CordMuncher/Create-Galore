@@ -15,7 +15,9 @@ import net.neoforged.neoforge.common.NeoForge;
 /**
  * The DLAA test kit: /dlaatest run [modes] plays every camera path at every viewpoint in each anti-aliasing mode and
  * saves screenshots at the same frames (screenshots/dlaa-test/RUN/MODE/...); /dlaatest stop ends a run; /dlaatest
- * where prints the camera, for adding viewpoints to config/create_galore_dlss_testkit.json.
+ * where prints the camera, for adding viewpoints to config/create_galore_dlss_testkit.json. For looking by eye:
+ * /dlaatest scene build|remove puts up or takes away the moving scene (MovingScene), /dlaatest mode NAME switches to
+ * one mode's anti-aliasing settings.
  *
  * -Dcreate_galore_dlss_testkit.autorun=WORLD opens that world from the title screen, runs, and closes the game.
  * -Dcreate_galore_dlss_testkit.modes=a+b runs only those modes, -Dcreate_galore_dlss_testkit.viewpoints=a+b only those
@@ -45,6 +47,12 @@ public final class TestKit {
                     Capture.stop("stopped by command");
                     return 1;
                 }))
+                .then(Commands.literal("scene")
+                        .then(Commands.literal("build").executes(c -> say(Capture.scene(true))))
+                        .then(Commands.literal("remove").executes(c -> say(Capture.scene(false)))))
+                .then(Commands.literal("mode")
+                        .then(Commands.argument("name", StringArgumentType.word())
+                                .executes(c -> say(Capture.useMode(StringArgumentType.getString(c, "name"))))))
                 .then(Commands.literal("where").executes(c -> {
                     Minecraft mc = Minecraft.getInstance();
                     String where = String.format(java.util.Locale.ROOT, "{\"x\": %.2f, \"y\": %.2f, \"z\": %.2f, \"yaw\": %.1f, \"pitch\": %.1f}",
@@ -52,6 +60,11 @@ public final class TestKit {
                     mc.player.displayClientMessage(Component.literal(where), false);
                     return 1;
                 })));
+    }
+
+    private static int say(String message) {
+        Minecraft.getInstance().player.displayClientMessage(Component.literal("DLAA test: " + message), false);
+        return 1;
     }
 
     private static int start(String modes) {

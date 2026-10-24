@@ -44,7 +44,31 @@ when it ends.
 
 `metrics.py RUN_FOLDER` (Pillow and numpy) prints, per viewpoint and mode, the frame time, the shimmer between the
 still path's last 8 frames, the smear left two frames after the flick, and the edge contrast.
-`PC-RUNBOOK.md` is the recipe for an RTX PC: round 1 (DLAA) and round 2 (FSR 3 next to DLAA).
+`PC-RUNBOOK.md` is the recipe for an RTX PC: round 1 (DLAA) and round 2 (FSR 3 next to DLAA), and milestone 2's
+run 1 (things that move).
+
+### Things that move
+
+- The `moving` viewpoint looks at a scene the kit builds over the lake when a run gets there and takes away when the
+  run ends (it sits in air the test world leaves empty, so the world file never changes): creative motors turning
+  shafts, cogwheels and a fan, a bearing turning a glued cross of wool, and a small Sable ship that turns and sways
+  every tick. While the camera is there the world ticks at `sceneTickRate` (20 on a real PC, 1 on slow software
+  rendering, so each frame moves about as much as in a normal game); `shipTurnDegreesPerTick` and `shipSwayPerTick`
+  set how fast the ship moves. `-Dcreate_galore_dlss_testkit.viewpoints=moving` runs only some viewpoints, and the
+  `brief` path (40 frames standing still, the last 8 saved) is enough for a moving scene.
+- `"objectMotion": false` on a mode hands DLSS camera motion only, as before milestone 2 (`dlaa-camera`), to see what
+  the objects' own motion vectors change.
+- `"debugView": "residual"` (`debug-residual`, `debug-residual-camera`) shows how far each pixel is from the frame
+  before once it is moved back along its motion vector: black where the motion vectors are right. With Photon it
+  compares the surfaces' own colour, as the lit picture has a new dither pattern every frame.
+- `"dumpRaw": true` also saves DLSS's raw inputs (colour, motion, depth as `.npy`) for each saved frame of a debug
+  mode, and `mvcheck.py RUN_FOLDER` (numpy) checks them: for each pair of frames it moves the earlier one back along
+  the motion vectors scaled by -1, 0, 0.5, 1 and 2 and prints the difference on the moving pixels, so right motion
+  vectors match best at 1. Sub-pixel motion is too small to measure on blocky textures: for this check set
+  `packSecondsPerFrame` (how far the shader pack's clock moves per frame, 1/60 normally) to 1.0 and the ship faster.
+- Outside a run, `/dlaatest scene build` puts the scene up at the game's own tick rate to look at, walk around and ride
+  the ship, `/dlaatest mode NAME` switches the Bridge to one of the config's modes on the spot (`photon-taa`,
+  `dlaa-default`, `dlaa-camera`, `fsr3`, ...), and `/dlaatest scene remove` takes the scene away again.
 
 Each run folder has `manifest.json`: the modes (with the frame time on the still path and whether DLAA really ran),
 the viewpoints, the capture frames of each path and every screenshot.
