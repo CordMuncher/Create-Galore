@@ -8,8 +8,9 @@ Prints a Markdown table per viewpoint, one row per mode:
   between modes is the anti-aliasing flickering. Lower is steadier.
 - residue: two frames after the flick stops, how far the picture still is from the settled one at the same pose
   (frames 70 vs 99, and 110 vs 159 after turning back). Lower means less smear and ghosting left over.
-- edge contrast: average brightness gradient of the settled still frame. Higher is sharper, but aliasing raises it
-  too, so it only means something next to the pictures.
+- edge contrast: average brightness gradient of the settled still frame. Higher isn't sharper on its own: aliasing,
+  grain and sharpening halos (Photon's CAS) raise it too, so it only means something next to the pictures. In round
+  1, Photon's TAA scored about a third higher than DLAA from exactly those, while DLAA was the cleaner image.
 """
 import json
 import sys

@@ -4,6 +4,14 @@ Run on Emre's PC on 2026-10-24, 13:56–14:58, by a Claude Code session in `C:\U
 (`$T`), following `tools/dlss-testkit/PC-RUNBOOK.md` at `3e7a2ea`. All five runs finished. The decisions Emre made
 during the session are listed under [Changes from the runbook](#changes-from-the-runbook).
 
+> **Correction, added after the report (2026-10-24).** The report first read Photon's TAA as the sharper image and
+> DLAA as softer. Looking at the full screenshots side by side in `compare.html` showed that reading was wrong. The
+> extra "sharpness" of Photon's TAA is not detail in the scene: it is CAS sharpening artifacts (halos along edges)
+> and TAA grain and speckle that boil from frame to frame, detail that isn't there. DLAA is the clean image: steady,
+> natural, with no invented edges. The `edge contrast` column counts those halos and that grain as edges, so a higher
+> number there doesn't mean a sharper picture. DLAA is the clear winner of round 1. The lines below that said
+> otherwise have been corrected and say so.
+
 ## Summary
 
 - **Step 4 checks passed.** The pack copy was made from Colorwheel's zip, NGX came up on the RTX 4080 SUPER, and DLSS ran.
@@ -12,9 +20,10 @@ during the session are listed under [Changes from the runbook](#changes-from-the
   DLAA, sign-flip and debug mode ran with DLAA active.
 - **DLAA against Photon's TAA (run A):** 7–15× less shimmer on the still path, 29–48 % less residue after the flick, and
   no frame-time cost (8.7–8.9 ms against 8.9–9.3 ms; the game ran at about 110 fps and was probably not GPU-bound).
-  To the eye, DLAA has no grain or crawling on glass, bars, fences or leaves, but texel detail is visibly softer than
-  Photon's TAA. Photon's TAA is sharpened by CAS, which the patched pack skips while DLSS runs. Edge contrast is lower
-  by about a third.
+  To the eye, DLAA has no grain or crawling on glass, bars, fences or leaves. *(Corrected, see above: this line first
+  said DLAA's texel detail was softer than Photon's TAA.)* Photon's TAA is sharpened by CAS, which the patched pack
+  skips while DLSS runs; what read as crisper texels there is CAS haloing and TAA grain, not real detail. Edge
+  contrast is lower by about a third because the metric counts those halos and that grain as edges.
 - **Presets:** `default` resolves to K (`App hint Preset Unspecified or Overridden, using title default Preset K`). On
   every viewpoint, `default` and K give the same numbers and are the best on shimmer and residue. L and M have 2–5× the
   shimmer of K, slightly more residue and the same frame time. NGX applied each requested preset
@@ -477,14 +486,18 @@ as it does for any DLSS game.
 | `results/D/` | `shore-fence-glass-*` × 3 modes | through Perfect Presentation (2560x1440 framing) |
 | `results/E/` | `shore-fence-glass-dlaa-default`, `watermark-strip-dlaa-default` | developer DLL; the upside-down watermark (720x70) |
 
-In the crops, Photon's TAA keeps crisp texel edges but has grain and speckle on glass, bars and leaves. DLAA is
-clean, but texel edges are softer. L and M look close to K at this size; the metrics separate them.
+In the crops, Photon's TAA has grain and speckle on glass, bars and leaves, and CAS halos along texel edges that look
+crisp at a glance but aren't detail in the scene. DLAA is clean and steady. *(Corrected, see above: this paragraph
+first called Photon's texel edges crisp and DLAA's softer.)* L and M look close to K at this size; the metrics
+separate them.
 
 ## For round 2
 
 - Look at the row order DLSS gets (the upside-down watermark). If the Y flip is intended, a note in the Bridge would
   save the next person the question.
-- If the softer look is unwanted, running Photon's CAS after DLSS is the obvious knob to try.
+- ~~If the softer look is unwanted, running Photon's CAS after DLSS is the obvious knob to try.~~ Dropped: DLAA isn't
+  soft (see the correction above), and CAS is what adds the halos. No sharpening pass after DLSS, and no sharpness
+  slider (DLSS's own sharpness setting is gone in SDK 310).
 - Runbook: check the NVIDIA App's DLSS override first; add `tutorialStep:none`; start run D twice, or set
   `earlyWindowControl = false` before A so that all runs have the same picture size. (DH radius 64 and 32 threads are
   in it now; from scratch the hold takes about 15–20 minutes with them.)
