@@ -1,5 +1,6 @@
 package dev.creategalore.bridge.dlss;
 
+import static org.lwjgl.opengl.GL11C.GL_RENDERER;
 import static org.lwjgl.opengl.GL11C.GL_VENDOR;
 import static org.lwjgl.opengl.GL11C.glGetString;
 
@@ -13,6 +14,7 @@ import java.util.function.ToIntFunction;
 import com.mojang.blaze3d.systems.RenderSystem;
 import dev.creategalore.bridge.DisplaySettings;
 import net.irisshaders.iris.Iris;
+import net.irisshaders.iris.uniforms.CapturedRenderingState;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.phys.Vec3;
@@ -21,6 +23,8 @@ import net.neoforged.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.GameShuttingDownEvent;
+import org.joml.Matrix4fc;
+import org.lwjgl.opengl.GL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,6 +41,8 @@ import org.slf4j.LoggerFactory;
  *
  * For testing: dlaaDebugView=color|motion|depth in the display settings (or the system property
  * create_galore_bridge.dlss.debugView) draws that DLSS input instead of running DLSS (any GPU, no NGX);
+ * dlaaEngine=fsr3 (or create_galore_bridge.dlss.engine) runs AMD FSR 3.1 in DLSS's place with FSR's own jitter
+ * period ({@link Fsr3Upscaler}, OpenGL, any GPU), and dlaaDebugView=fsr3 shows FSR's own view of its buffers;
  * create_galore_bridge.dlss.dllDir loads nvngx_dlss.dll from another folder (the
  * SDK's dev build shows DLSS's own debug overlay); dlaaJitterSign=x,y in the display settings (or the system property
  * create_galore_bridge.dlss.jitterSign) flips the jitter handed to DLSS.
@@ -51,6 +57,8 @@ public final class Dlss {
     private static final String DLL_DIR_PROPERTY = "create_galore_bridge.dlss.dllDir";
     private static final String DEBUG_VIEW_PROPERTY = "create_galore_bridge.dlss.debugView";
     private static final String JITTER_SIGN_PROPERTY = "create_galore_bridge.dlss.jitterSign";
+    private static final String ENGINE_PROPERTY = "create_galore_bridge.dlss.engine";
+    /** DLSS's jitter period; FSR 3 uses its own (8 at full size). */
     private static final int PHASES = 32;
     /** A camera move this far in one frame is a teleport: DLSS starts over instead of blending in the old place. */
     private static final double RESET_DISTANCE = 8.0;
@@ -68,6 +76,10 @@ public final class Dlss {
     private static float[] jitterSign = {1.0f, 1.0f};
     private static int preset = PRESET_DEFAULT;
     private static DlssPass.View debugView;
+    /** FSR 3 in place of DLSS (testing). */
+    private static boolean fsr3;
+    /** FSR 3 draws its own debug view. */
+    private static boolean fsr3Debug;
     private static PackProfile profile;
     private static String packProblem;
     /** A run failed: the pack's own anti-aliasing is back until shaders reload. */
@@ -81,6 +93,11 @@ public final class Dlss {
     private static DlssPass pass;
     /** The debug views' pass: plain OpenGL textures, no DLSS. */
     private static DlssPass debugPass;
+    /** Why FSR 3 cannot run here, once that is known. */
+    private static String fsr3Unavailable;
+    private static Fsr3Upscaler fsr;
+    /** FSR 3's pass: plain OpenGL textures like the debug views'. */
+    private static DlssPass fsrPass;
     private static int featureFlags = -1;
     private static int featurePreset = -1;
 
@@ -127,7 +144,10 @@ public final class Dlss {
         wanted = DisplaySettings.get(DisplaySettings.DLAA);
         String presetName = DisplaySettings.getString(DisplaySettings.DLAA_PRESET, "default");
         preset = parsePreset(presetName);
-        debugView = parseDebugView(DisplaySettings.getString(DisplaySettings.DLAA_DEBUG_VIEW, System.getProperty(DEBUG_VIEW_PROPERTY, "")));
+        String debugName = DisplaySettings.getString(DisplaySettings.DLAA_DEBUG_VIEW, System.getProperty(DEBUG_VIEW_PROPERTY, ""));
+        fsr3Debug = debugName.trim().equalsIgnoreCase("fsr3");
+        debugView = fsr3Debug ? null : parseDebugView(debugName);
+        fsr3 = fsr3Debug || parseEngine(DisplaySettings.getString(DisplaySettings.DLAA_ENGINE, System.getProperty(ENGINE_PROPERTY, "dlss")));
         jitterSign = parseJitterSign(DisplaySettings.getString(DisplaySettings.DLAA_JITTER_SIGN, System.getProperty(JITTER_SIGN_PROPERTY, "1,1")));
         failed = false;
         reset = true;
@@ -145,6 +165,10 @@ public final class Dlss {
         }
         if (packProblem != null) {
             LOG.info("DLAA: not used with this shader pack, {}", packProblem);
+        } else if (fsr3 && debugView == null) {
+            LOG.info("DLAA: on for this shader pack, AMD FSR 3.1 in place of DLSS (testing){}{}",
+                    jitterSign[0] != 1.0f || jitterSign[1] != 1.0f ? ", jitter sign " + (int) jitterSign[0] + "," + (int) jitterSign[1] : "",
+                    fsr3Debug ? " (FSR's debug view)" : "");
         } else {
             LOG.info("DLAA: on for this shader pack, preset {}{}{}", presetName,
                     jitterSign[0] != 1.0f || jitterSign[1] != 1.0f ? ", jitter sign " + (int) jitterSign[0] + "," + (int) jitterSign[1] : "",
@@ -177,7 +201,7 @@ public final class Dlss {
         if (!active) {
             return;
         }
-        int index = Math.floorMod(frameCounter, PHASES) + 1;
+        int index = Math.floorMod(frameCounter, fsr3 && debugView == null ? Fsr3Upscaler.phases(1, 1) : PHASES) + 1;
         jitterX = halton(index, 2) - 0.5f;
         jitterY = halton(index, 3) - 0.5f;
 
@@ -226,6 +250,10 @@ public final class Dlss {
                 debugPass.writeBack(profile, debugView);
                 return;
             }
+            if (fsr3) {
+                runFsr3(in);
+                return;
+            }
             boolean resized = pass.ensureSize(in.width(), in.height());
             // L always meters exposure itself; M is asked to as well, the pack's value is for J and K.
             boolean autoExposure = preset == PRESET_L || preset == PRESET_M;
@@ -254,11 +282,26 @@ public final class Dlss {
                 throw new IllegalStateException("DLSS failed: " + NgxLibrary.describe(result[0]));
             }
             reset = false;
-            pass.writeBack(profile, DlssPass.View.DLSS);
+            pass.writeBack(profile, DlssPass.View.RESULT);
         } catch (Throwable t) {
             failed = true;
             LOG.error("DLAA: stopped, the pack's own anti-aliasing is back from the next frame (reloading shaders tries DLAA again)", t);
         }
+    }
+
+    private static void runFsr3(DlssPass.Inputs in) {
+        boolean resized = fsrPass.ensureSize(in.width(), in.height());
+        if (fsr.ensureSize(in.width(), in.height(), in.width(), in.height()) || resized) {
+            reset = true;
+            LOG.info("DLAA: FSR 3.1 running at {}x{}", in.width(), in.height());
+        }
+        boolean resetNow = reset;
+        Matrix4fc projection = CapturedRenderingState.INSTANCE.getGbufferProjection();
+        fsrPass.copyAndEvaluate(in, () -> fsr.dispatch(fsrPass.colorTexture(), fsrPass.depthTexture(), fsrPass.motionTexture(),
+                fsrPass.exposureTexture(), fsrPass.outputTexture(), jitterX * jitterSign[0], jitterY * jitterSign[1], resetNow,
+                frameTimeMs, projection, fsr3Debug));
+        reset = false;
+        fsrPass.writeBack(profile, DlssPass.View.RESULT);
     }
 
     private static int image(ToIntFunction<String> imageIds, String name) {
@@ -277,6 +320,9 @@ public final class Dlss {
             }
             return true;
         }
+        if (fsr3) {
+            return ensureFsr3();
+        }
         if (pass != null) {
             return true;
         }
@@ -293,6 +339,42 @@ public final class Dlss {
             closeAll();
             return false;
         }
+    }
+
+    /** Compiles FSR 3's passes the first time it is needed. False (once logged) if it cannot run. */
+    private static boolean ensureFsr3() {
+        if (fsr != null) {
+            return true;
+        }
+        if (fsr3Unavailable != null) {
+            return false;
+        }
+        try {
+            if (!GL.getCapabilities().OpenGL45) {
+                throw new IllegalStateException("FSR 3 needs OpenGL 4.5");
+            }
+            fsr = new Fsr3Upscaler();
+            fsrPass = new DlssPass(null);
+            LOG.info("DLAA: FSR 3.1 ready on {}", glGetString(GL_RENDERER));
+            return true;
+        } catch (Throwable t) {
+            fsr3Unavailable = t.getMessage() != null ? t.getMessage() : t.toString();
+            LOG.warn("DLAA: FSR 3 not available, the shader pack keeps its own anti-aliasing: {}", fsr3Unavailable);
+            LOG.debug("DLAA: FSR 3 start-up failure", t);
+            closeFsr3();
+            return false;
+        }
+    }
+
+    private static void closeFsr3() {
+        if (fsr != null) {
+            fsr.close();
+        }
+        if (fsrPass != null) {
+            fsrPass.close();
+        }
+        fsr = null;
+        fsrPass = null;
     }
 
     private static void open() throws IOException {
@@ -347,6 +429,7 @@ public final class Dlss {
             if (debugPass != null) {
                 debugPass.close();
             }
+            closeFsr3();
             if (ngx != null) {
                 ngx.shutdown();
                 ngx.drainLog();
@@ -359,6 +442,8 @@ public final class Dlss {
         } finally {
             pass = null;
             debugPass = null;
+            fsr = null;
+            fsrPass = null;
             ngx = null;
             device = null;
             featureFlags = -1;
@@ -410,11 +495,22 @@ public final class Dlss {
         }
         try {
             DlssPass.View view = DlssPass.View.valueOf(value);
-            return view == DlssPass.View.DLSS ? null : view;
+            return view == DlssPass.View.RESULT ? null : view;
         } catch (IllegalArgumentException e) {
             LOG.warn("DLAA: unknown debug view {}, use color, motion or depth", name);
             return null;
         }
+    }
+
+    private static boolean parseEngine(String name) {
+        return switch (name.trim().toLowerCase(Locale.ROOT)) {
+            case "fsr3", "fsr" -> true;
+            case "dlss", "" -> false;
+            default -> {
+                LOG.warn("DLAA: unknown dlaaEngine {}, using DLSS (choose dlss or fsr3)", name);
+                yield false;
+            }
+        };
     }
 
     private static float[] parseJitterSign(String value) {

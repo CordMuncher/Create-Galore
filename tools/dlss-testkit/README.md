@@ -36,8 +36,11 @@ Distant Horizons' far terrain exist before the first run.
 `config/create_galore_dlss_testkit.json` (written on the first run) lists the modes, viewpoints and paths. A mode is
 `{"name", "dlaa", "preset"}` with an optional `"debugView": "motion" | "depth" | "color"`, which shows that DLSS input
 instead of DLSS (any GPU), and an optional `"jitterSign": "-1,1"` that flips the jitter handed to DLSS (the
-`sign-flip-*` modes check which way is right). `/dlaatest where` prints the camera for adding a viewpoint. A run puts
-the Bridge's display settings back when it ends.
+`sign-flip-*` modes check which way is right). `"engine": "fsr3"` runs AMD FSR 3.1 in DLSS's place (OpenGL compute,
+any GPU, so the cloud rig can run it for real): the `fsr3` mode, its own `fsr3-flip-*` jitter checks and `fsr3-debug`
+(`"debugView": "fsr3"`, FSR's own view of its buffers). Modes added to the kit later are added to an older config
+file's list. `/dlaatest where` prints the camera for adding a viewpoint. A run puts the Bridge's display settings back
+when it ends.
 
 `metrics.py RUN_FOLDER` (Pillow and numpy) prints, per viewpoint and mode, the frame time, the shimmer between the
 still path's last 8 frames, the smear left two frames after the flick, and the edge contrast.

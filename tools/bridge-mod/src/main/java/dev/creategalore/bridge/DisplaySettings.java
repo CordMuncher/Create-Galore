@@ -27,6 +27,8 @@ public final class DisplaySettings {
     public static final String DLAA_DEBUG_VIEW = "dlaaDebugView";
     /** Testing only, not written to the file: x,y signs for the jitter handed to DLSS (1,1 unless a test shows otherwise). */
     public static final String DLAA_JITTER_SIGN = "dlaaJitterSign";
+    /** Testing only, not written to the file: dlss (the default) or fsr3 (AMD FSR 3.1 in DLSS's place, any GPU). */
+    public static final String DLAA_ENGINE = "dlaaEngine";
 
     private static Properties cached;
 

@@ -89,16 +89,17 @@ import org.lwjgl.system.MemoryStack;
  * result into the pass's outputs. Everything it changes in OpenGL's state is put back as it was, so Iris and
  * Minecraft's cached state stay right.
  *
- * Without a device (the debug views, see {@link Dlss}) the textures are plain OpenGL ones and the pass draws one of
- * DLSS's inputs instead of its result, so the copies, the pack's inputs and the write-back can be checked on any GPU.
+ * Without a device the textures are plain OpenGL ones: for FSR 3 ({@link Fsr3Upscaler}, which runs in OpenGL), and
+ * for the debug views (see {@link Dlss}), where the pass draws one of the inputs instead of a result, so the copies,
+ * the pack's inputs and the write-back can be checked on any GPU.
  */
 final class DlssPass implements AutoCloseable {
     private static final int GL_RENDERBUFFER_TYPE = 0x8D41;
 
     /** What the pass draws into the pack's outputs. */
     enum View {
-        /** DLSS's result. */
-        DLSS,
+        /** The upscaler's result (DLSS, or FSR 3 in its textures without a device). */
+        RESULT,
         /** The pack's colour as DLSS gets it: jittered, not anti-aliased. */
         COLOR,
         /** Motion vectors: red +x, green +y, blue -x/-y; 4 pixels or more is full brightness, still pixels black. */
@@ -120,7 +121,7 @@ final class DlssPass implements AutoCloseable {
     private View programView;
     private int vao;
 
-    /** {@code device} is null for the debug views. */
+    /** {@code device} is null for FSR 3 and the debug views. */
     DlssPass(DlssDevice device) {
         this.device = device;
     }
@@ -208,6 +209,27 @@ final class DlssPass implements AutoCloseable {
         }
     }
 
+    // The OpenGL side of the textures, for FSR 3.
+    int colorTexture() {
+        return color.gl;
+    }
+
+    int motionTexture() {
+        return motion.gl;
+    }
+
+    int depthTexture() {
+        return depth.gl;
+    }
+
+    int exposureTexture() {
+        return exposure.gl;
+    }
+
+    int outputTexture() {
+        return output.gl;
+    }
+
     long colorResource() {
         return color.d3d;
     }
@@ -239,7 +261,7 @@ final class DlssPass implements AutoCloseable {
         }
         ensureProgram(outputs, view);
         Texture source = switch (view) {
-            case DLSS -> output;
+            case RESULT -> output;
             case COLOR -> color;
             case MOTION -> motion;
             case DEPTH -> depth;
@@ -350,7 +372,7 @@ final class DlssPass implements AutoCloseable {
         }
         fragment.append("void main() {\n    ivec2 texel = ivec2(gl_FragCoord.xy);\n");
         fragment.append(switch (view) {
-            case DLSS, COLOR -> "    vec3 c = texelFetch(cg_dlss_source, texel, 0).rgb;\n";
+            case RESULT, COLOR -> "    vec3 c = texelFetch(cg_dlss_source, texel, 0).rgb;\n";
             // The pack multiplies the scene by its exposure later; dividing here shows these at their own brightness.
             case MOTION -> """
                         vec2 mv = texelFetch(cg_dlss_source, texel, 0).rg;

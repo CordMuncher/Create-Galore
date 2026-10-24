@@ -55,19 +55,25 @@ public final class Capture {
         long time = 3000;
         boolean freezeTicks = true;
         List<Mode> modes = new ArrayList<>(List.of(
-                new Mode("photon-taa", false, "default", null, null),
-                new Mode("dlaa-default", true, "default", null, null),
-                new Mode("dlaa-K", true, "K", null, null),
-                new Mode("dlaa-L", true, "L", null, null),
-                new Mode("dlaa-M", true, "M", null, null),
+                new Mode("photon-taa", false, "default", null, null, null),
+                new Mode("dlaa-default", true, "default", null, null, null),
+                new Mode("dlaa-K", true, "K", null, null, null),
+                new Mode("dlaa-L", true, "L", null, null, null),
+                new Mode("dlaa-M", true, "M", null, null, null),
                 // Checks of the jitter's direction: with a wrong sign a still picture shimmers and blurs.
-                new Mode("sign-flip-x", true, "default", null, "-1,1"),
-                new Mode("sign-flip-y", true, "default", null, "1,-1"),
-                new Mode("sign-flip-xy", true, "default", null, "-1,-1"),
+                new Mode("sign-flip-x", true, "default", null, "-1,1", null),
+                new Mode("sign-flip-y", true, "default", null, "1,-1", null),
+                new Mode("sign-flip-xy", true, "default", null, "-1,-1", null),
                 // What DLSS gets, drawn instead of DLSS's result (any GPU).
-                new Mode("debug-motion", true, "default", "motion", null),
-                new Mode("debug-depth", true, "default", "depth", null),
-                new Mode("debug-color", true, "default", "color", null)));
+                new Mode("debug-motion", true, "default", "motion", null, null),
+                new Mode("debug-depth", true, "default", "depth", null, null),
+                new Mode("debug-color", true, "default", "color", null, null),
+                // AMD FSR 3.1 in DLSS's place (OpenGL, any GPU), its jitter checks and its own debug view.
+                new Mode("fsr3", true, "default", null, null, "fsr3"),
+                new Mode("fsr3-flip-x", true, "default", null, "-1,1", "fsr3"),
+                new Mode("fsr3-flip-y", true, "default", null, "1,-1", "fsr3"),
+                new Mode("fsr3-flip-xy", true, "default", null, "-1,-1", "fsr3"),
+                new Mode("fsr3-debug", true, "default", "fsr3", null, "fsr3")));
         // The DLAA test world (seed 20261024, scene built on the lakeshore at x 1023..1040, z 160..176).
         List<Viewpoint> viewpoints = new ArrayList<>(List.of(
                 new Viewpoint("shore", 1029.5, 64.0, 160.5, 0.0f, 8.0f),
@@ -77,10 +83,10 @@ public final class Capture {
     }
 
     /**
-     * debugView (color, motion or depth) shows that DLSS input instead of DLSS, on any GPU; jitterSign ("x,y", default
-     * "1,1") flips the jitter the Bridge hands to DLSS.
+     * debugView (color, motion or depth) shows that DLSS input instead of DLSS, on any GPU (fsr3: FSR's own view);
+     * jitterSign ("x,y", default "1,1") flips the jitter the Bridge hands to DLSS; engine is dlss (null) or fsr3.
      */
-    record Mode(String name, boolean dlaa, String preset, String debugView, String jitterSign) {}
+    record Mode(String name, boolean dlaa, String preset, String debugView, String jitterSign, String engine) {}
 
     record Viewpoint(String name, double x, double y, double z, float yaw, float pitch) {}
 
@@ -418,6 +424,11 @@ public final class Capture {
             } else {
                 props.remove("dlaaJitterSign");
             }
+            if (mode.engine() != null && !mode.engine().isBlank()) {
+                props.setProperty("dlaaEngine", mode.engine());
+            } else {
+                props.remove("dlaaEngine");
+            }
             try (Writer w = Files.newBufferedWriter(file)) {
                 props.store(w, "Create Galore Bridge display settings (last written by the DLAA test kit, mode " + mode.name() + ")");
             }
@@ -432,6 +443,7 @@ public final class Capture {
         info.addProperty("preset", mode.preset());
         info.addProperty("debugView", mode.debugView());
         info.addProperty("jitterSign", mode.jitterSign());
+        info.addProperty("engine", mode.engine() != null ? mode.engine() : "dlss");
         info.add("frameMs", new JsonObject());
         modeInfo.put(mode.name(), info);
         log("mode " + mode.name());
@@ -500,7 +512,17 @@ public final class Capture {
         }
         try (Reader r = Files.newBufferedReader(file)) {
             Settings loaded = GSON.fromJson(r, Settings.class);
-            return loaded != null ? loaded : new Settings();
+            if (loaded == null) {
+                return new Settings();
+            }
+            // Modes added to the kit after the file was written are offered too.
+            List<String> names = loaded.modes.stream().map(Mode::name).toList();
+            for (Mode mode : new Settings().modes) {
+                if (!names.contains(mode.name())) {
+                    loaded.modes.add(mode);
+                }
+            }
+            return loaded;
         }
     }
 
