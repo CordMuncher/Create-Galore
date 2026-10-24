@@ -45,6 +45,8 @@ public final class Capture {
     private static final String CONFIG = "create_galore_dlss_testkit.json";
     private static final String BRIDGE_CONFIG = "create_galore_bridge-display.properties";
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
+    /** Frames between putting the scenes up and the first mode, for the server to place them and the client to get them. */
+    private static final int SCENE_BUILD_FRAMES = 40;
 
     /** config/create_galore_dlss_testkit.json. */
     static final class Settings {
@@ -61,7 +63,10 @@ public final class Capture {
          * more, since leaves that move a fraction of a pixel a frame leave too little to measure.
          */
         float packSecondsPerFrame = 1.0f / 60.0f;
-        /** In the debug modes, also save the Bridge's exact inputs for each captured frame (MODE/raw/*.npy, for checks). */
+        /**
+         * Also save the Bridge's exact inputs for each captured frame (MODE/raw/*.npy, for checks), and in the modes that
+         * run DLSS or FSR its output too.
+         */
         boolean dumpRaw = false;
         /** The moving scene's ship: degrees it turns and blocks it sways along x per server tick (at most, it eases). */
         float shipTurnDegreesPerTick = 0.75f;
@@ -69,47 +74,56 @@ public final class Capture {
         /** In the moving scene, show the hand (the HUD shows with it) holding a sword and swing it, to check its motion. */
         boolean showHand = false;
         List<Mode> modes = new ArrayList<>(List.of(
-                new Mode("photon-taa", false, "default", null, null, null, null),
-                new Mode("dlaa-default", true, "default", null, null, null, null),
+                new Mode("photon-taa", false, "default", null, null, null, null, null),
+                new Mode("dlaa-default", true, "default", null, null, null, null, null),
                 // DLAA with only the camera's motion: what the motion vectors of things that move by themselves add.
-                new Mode("dlaa-camera", true, "default", null, null, null, false),
-                new Mode("dlaa-K", true, "K", null, null, null, null),
-                new Mode("dlaa-L", true, "L", null, null, null, null),
-                new Mode("dlaa-M", true, "M", null, null, null, null),
+                new Mode("dlaa-camera", true, "default", null, null, null, false, null),
+                new Mode("dlaa-K", true, "K", null, null, null, null, null),
+                new Mode("dlaa-L", true, "L", null, null, null, null, null),
+                new Mode("dlaa-M", true, "M", null, null, null, null, null),
                 // Checks of the jitter's direction: with a wrong sign a still picture shimmers and blurs.
-                new Mode("sign-flip-x", true, "default", null, "-1,1", null, null),
-                new Mode("sign-flip-y", true, "default", null, "1,-1", null, null),
-                new Mode("sign-flip-xy", true, "default", null, "-1,-1", null, null),
+                new Mode("sign-flip-x", true, "default", null, "-1,1", null, null, null),
+                new Mode("sign-flip-y", true, "default", null, "1,-1", null, null, null),
+                new Mode("sign-flip-xy", true, "default", null, "-1,-1", null, null, null),
                 // What DLSS gets, drawn instead of DLSS's result (any GPU).
-                new Mode("debug-motion", true, "default", "motion", null, null, null),
-                new Mode("debug-depth", true, "default", "depth", null, null, null),
-                new Mode("debug-color", true, "default", "color", null, null, null),
+                new Mode("debug-motion", true, "default", "motion", null, null, null, null),
+                new Mode("debug-depth", true, "default", "depth", null, null, null, null),
+                new Mode("debug-color", true, "default", "color", null, null, null, null),
                 // How far each frame is from the last one moved along the motion vectors (black: the motion is right), with
                 // everything's own motion and with the camera's only: what the moving things' motion vectors fix.
-                new Mode("debug-residual", true, "default", "residual", null, null, null),
-                new Mode("debug-residual-camera", true, "default", "residual", null, null, false),
+                new Mode("debug-residual", true, "default", "residual", null, null, null, null),
+                new Mode("debug-residual-camera", true, "default", "residual", null, null, false, null),
                 // AMD FSR 3.1 in DLSS's place (OpenGL, any GPU), its jitter checks and its own debug view.
-                new Mode("fsr3", true, "default", null, null, "fsr3", null),
-                new Mode("fsr3-flip-x", true, "default", null, "-1,1", "fsr3", null),
-                new Mode("fsr3-flip-y", true, "default", null, "1,-1", "fsr3", null),
-                new Mode("fsr3-flip-xy", true, "default", null, "-1,-1", "fsr3", null),
-                new Mode("fsr3-debug", true, "default", "fsr3", null, "fsr3", null)));
+                new Mode("fsr3", true, "default", null, null, "fsr3", null, null),
+                new Mode("fsr3-flip-x", true, "default", null, "-1,1", "fsr3", null, null),
+                new Mode("fsr3-flip-y", true, "default", null, "1,-1", "fsr3", null, null),
+                new Mode("fsr3-flip-xy", true, "default", null, "-1,-1", "fsr3", null, null),
+                new Mode("fsr3-debug", true, "default", "fsr3", null, "fsr3", null, null),
+                // FSR without the masks that tell it where to trust this frame over its history (particles, rain, the
+                // portal, fire and lava), and those masks themselves (red: reactive, green: composition; any GPU).
+                new Mode("fsr3-nomask", true, "default", null, null, "fsr3", null, false),
+                new Mode("debug-mask", true, "default", "mask", null, null, null, null)));
         // The DLAA test world (seed 20261024, scene built on the lakeshore at x 1023..1040, z 160..176).
         List<Viewpoint> viewpoints = new ArrayList<>(List.of(
                 new Viewpoint("shore", 1029.5, 64.0, 160.5, 0.0f, 8.0f, null),
                 new Viewpoint("glass", 1029.5, 64.0, 168.5, 0.0f, -14.0f, null),
                 new Viewpoint("canopy", 1024.5, 88.0, 205.5, 180.0f, 22.0f, null),
                 // Looking out over the lake at things that move by themselves (see MovingScene).
-                new Viewpoint("moving", 1029.5, 66.0, 162.5, 180.0f, 14.0f, MovingScene.NAME)));
+                new Viewpoint("moving", 1029.5, 66.0, 162.5, 180.0f, 14.0f, MovingScene.NAME),
+                // Particles, fire, lava, a nether portal and rain (see EffectsScene). It rains only here, but the pack's
+                // wet look fades slowly, so this one is best run on its own (viewpoints=effects).
+                new Viewpoint("effects", 1006.5, 68.0, 158.5, 180.0f, 14.0f, EffectsScene.NAME)));
         List<String> paths = new ArrayList<>(List.of("still", "flick", "pan", "strafe"));
     }
 
     /**
      * debugView (color, motion, depth or residual) shows that instead of DLSS, on any GPU (fsr3: FSR's own view);
      * jitterSign ("x,y", default "1,1") flips the jitter the Bridge hands to DLSS; engine is dlss (null) or fsr3;
-     * objectMotion false leaves only the camera's motion in the motion vectors (null: on).
+     * objectMotion false leaves only the camera's motion in the motion vectors (null: on); reactiveMask false hands FSR
+     * no masks (null: on; DLSS never gets them).
      */
-    record Mode(String name, boolean dlaa, String preset, String debugView, String jitterSign, String engine, Boolean objectMotion) {}
+    record Mode(String name, boolean dlaa, String preset, String debugView, String jitterSign, String engine, Boolean objectMotion,
+                Boolean reactiveMask) {}
 
     /** scene: built there at run time (MovingScene.NAME), else null. */
     record Viewpoint(String name, double x, double y, double z, float yaw, float pitch, String scene) {}
@@ -212,8 +226,16 @@ public final class Capture {
         }
 
         List<Segment> segments = new ArrayList<>();
+        // The scenes go up before the first mode switches the shaders, which rebuilds every chunk's mesh: so every mode
+        // sees them whole from its first frame (a scene built just after the switch once lost a section's update in
+        // the rebuild, and the first mode showed lake where its platform was).
+        List<String> scenes = viewpoints.stream().map(Viewpoint::scene).filter(java.util.Objects::nonNull).distinct().toList();
+        if (!scenes.isEmpty()) {
+            segments.add(new Segment("build scenes", viewpoints.get(0), null, SCENE_BUILD_FRAMES, new int[0],
+                    () -> scenes.forEach(Capture::buildScene), modes.get(0)));
+        }
         for (Mode mode : modes) {
-            int warmup = segments.isEmpty() ? Math.max(settings.firstWarmupFrames, settings.warmupFrames) : settings.warmupFrames;
+            int warmup = mode == modes.get(0) ? Math.max(settings.firstWarmupFrames, settings.warmupFrames) : settings.warmupFrames;
             segments.add(new Segment("mode " + mode.name(), viewpoints.get(0), null, warmup, new int[0], () -> applyMode(mode), mode));
             for (Viewpoint viewpoint : viewpoints) {
                 segments.add(new Segment("settle " + viewpoint.name(), viewpoint, null, settings.settleFrames, new int[0], null, mode));
@@ -276,8 +298,8 @@ public final class Capture {
         return null;
     }
 
-    /** /dlaatest scene build|remove: the moving scene outside a run. */
-    static String scene(boolean build) {
+    /** /dlaatest scene build [moving|effects] | remove: a test scene outside a run (remove takes both away). */
+    static String scene(boolean build, String which) {
         Minecraft mc = Minecraft.getInstance();
         if (mc.getSingleplayerServer() == null) {
             return "open the DLAA test world in singleplayer first";
@@ -287,7 +309,12 @@ public final class Capture {
         }
         if (!build) {
             MovingScene.remove();
-            return "removed the moving scene";
+            EffectsScene.remove();
+            return "removed the test scenes";
+        }
+        if (EffectsScene.NAME.equals(which)) {
+            EffectsScene.show();
+            return "the effects scene is over the lake west of the moving one, and it rains; /dlaatest scene remove takes it away";
         }
         try {
             MovingScene.show(loadSettings());
@@ -328,9 +355,9 @@ public final class Capture {
         mc.options.fovEffectScale().set(savedFovEffect);
         mc.options.setCameraType(savedCamera);
         if (settings != null) {
-            MovingScene.leave(settings);
+            leaveScene();
             MovingScene.remove();
-            activeScene = null;
+            EffectsScene.remove();
         }
         if (settings != null && settings.freezeTicks) {
             server("tick unfreeze");
@@ -431,7 +458,7 @@ public final class Capture {
                 pendingShot = current.label() + "-f" + String.format(Locale.ROOT, "%03d", local);
             }
         }
-        if (pendingShot != null && settings.dumpRaw && current.mode().debugView() != null) {
+        if (pendingShot != null && settings.dumpRaw && current.mode().dlaa()) {
             requestDump(runDir.resolve(current.mode().name()).resolve("raw"), pendingShot);
         }
     }
@@ -464,17 +491,34 @@ public final class Capture {
         shots.add(shot);
     }
 
+    private static void buildScene(String scene) {
+        if (MovingScene.NAME.equals(scene)) {
+            MovingScene.build();
+        } else if (EffectsScene.NAME.equals(scene)) {
+            EffectsScene.build();
+        }
+    }
+
     private static void enterScene(String scene) {
         if (java.util.Objects.equals(scene, activeScene)) {
             return;
         }
-        if (activeScene != null) {
-            MovingScene.leave(settings);
-        }
+        leaveScene();
         activeScene = scene;
         if (MovingScene.NAME.equals(scene)) {
             MovingScene.enter(settings);
+        } else if (EffectsScene.NAME.equals(scene)) {
+            EffectsScene.enter(settings);
         }
+    }
+
+    private static void leaveScene() {
+        if (MovingScene.NAME.equals(activeScene)) {
+            MovingScene.leave(settings);
+        } else if (EffectsScene.NAME.equals(activeScene)) {
+            EffectsScene.leave(settings);
+        }
+        activeScene = null;
     }
 
     /** Pins the camera: same place and turn for the whole frame, no interpolation from the last tick, no fall. */
@@ -517,6 +561,7 @@ public final class Capture {
         info.addProperty("jitterSign", mode.jitterSign());
         info.addProperty("engine", mode.engine() != null ? mode.engine() : "dlss");
         info.addProperty("objectMotion", !Boolean.FALSE.equals(mode.objectMotion()));
+        info.addProperty("reactiveMask", !Boolean.FALSE.equals(mode.reactiveMask()));
         info.add("frameMs", new JsonObject());
         modeInfo.put(mode.name(), info);
         log("mode " + mode.name());
@@ -553,6 +598,11 @@ public final class Capture {
                 props.setProperty("dlaaObjectMotion", "false");
             } else {
                 props.remove("dlaaObjectMotion");
+            }
+            if (Boolean.FALSE.equals(mode.reactiveMask())) {
+                props.setProperty("dlaaReactiveMask", "false");
+            } else {
+                props.remove("dlaaReactiveMask");
             }
             try (Writer w = Files.newBufferedWriter(file)) {
                 props.store(w, "Create Galore Bridge display settings (last written by the DLAA test kit, mode " + mode.name() + ")");

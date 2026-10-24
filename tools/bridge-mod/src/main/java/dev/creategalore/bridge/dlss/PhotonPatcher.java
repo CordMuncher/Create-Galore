@@ -43,12 +43,15 @@ import org.slf4j.LoggerFactory;
  *   machines and contraptions through Colorwheel, entities, block entities and the hand through {@link EntityMotion}):
  *   the solid gbuffers programs write them into colortex2, which Photon itself only uses with normal or specular
  *   mapping, POM or TAAU, and composite4 takes them over the reprojection (see {@link #MOTION_INCLUDE});
+ * - marks for FSR 3 where it should take this frame over its history ({@link #REACTIVE_INCLUDE}): particles, rain and
+ *   the nether portal (the translucent programs), lava and fire (their materials); DLSS's current models take no
+ *   such mask;
  * - skips FXAA and CAS sharpening, so the picture is DLSS's own. With DLSS off it renders exactly as Photon does.
  */
 public final class PhotonPatcher {
     private static final Logger LOG = LoggerFactory.getLogger("create_galore_bridge");
     /** Bumped when the patch changes, so existing copies are made again. */
-    private static final int PATCH_VERSION = 5;
+    private static final int PATCH_VERSION = 6;
     private static final String BASE_ZIP = "photon_v1.3a.zip";
     /** Colorwheel Patcher's copy of {@link #BASE_ZIP}; an outdated one gets a prefix and no longer matches. */
     private static final Pattern COLORWHEEL_ZIP = Pattern.compile("photon_v1\\.3a \\+ Clrwl_(\\d+)\\.(\\d+)\\.(\\d+)\\.zip");
@@ -101,7 +104,7 @@ public final class PhotonPatcher {
                 try (FileSystem zip = FileSystems.newFileSystem(source)) {
                     copyTree(zip.getPath("/"), work);
                 }
-                for (Map.Entry<String, String[][]> file : edits().entrySet()) {
+                for (Map.Entry<String, String[][]> file : edits(work).entrySet()) {
                     Path path = work.resolve(file.getKey());
                     if (OPTIONAL.contains(file.getKey()) && !Files.isRegularFile(path)) {
                         continue;
@@ -113,6 +116,7 @@ public final class PhotonPatcher {
                     Files.writeString(path, text, StandardCharsets.UTF_8);
                 }
                 Files.writeString(work.resolve(MOTION_INCLUDE_FILE), MOTION_INCLUDE, StandardCharsets.UTF_8);
+                Files.writeString(work.resolve(REACTIVE_INCLUDE_FILE), REACTIVE_INCLUDE, StandardCharsets.UTF_8);
                 Files.writeString(work.resolve(PackProfile.FILE), PROFILE, StandardCharsets.UTF_8);
                 Files.writeString(work.resolve(MARKER), stamp + "\n", StandardCharsets.UTF_8);
                 deleteTree(target);
@@ -168,8 +172,9 @@ public final class PhotonPatcher {
         return text.substring(0, at) + replace + text.substring(at + find.length());
     }
 
-    // Photon's files are LF-only; the anchors below are copied from v1.3a.
-    private static Map<String, String[][]> edits() {
+    // Photon's files are LF-only; the anchors below are copied from v1.3a. {@code work} is the unpacked copy, for the
+    // per-world program files that only include a shared one.
+    private static Map<String, String[][]> edits(Path work) throws IOException {
         Map<String, String[][]> edits = new LinkedHashMap<>();
         edits.put("shaders/shaders.properties", new String[][] {
                 {"uniform.vec2.taa_offset = vec2(jitter_x / viewWidth, jitter_y / viewWidth)",
@@ -180,13 +185,66 @@ public final class PhotonPatcher {
                                 + "# Create Galore DLAA: motion vectors, depth and exposure handed to DLSS (written by composite4)\n"
                                 + "image.cg_motion_img = none rg rg16f half_float false true 1.0 1.0\n"
                                 + "image.cg_depth_img = none red r32f float false true 1.0 1.0\n"
-                                + "image.cg_exposure_img = none red r32f float false false 1 1"},
+                                + "image.cg_exposure_img = none red r32f float false false 1 1\n"
+                                + "# FSR 3's masks: what the translucent programs mark (cleared every frame), and both masks as composite4\n"
+                                + "# hands them over (see cg_reactive.glsl)\n"
+                                + "image.cg_reactive_img = none red_integer r32ui unsigned_int true true 1.0 1.0\n"
+                                + "image.cg_mask_img = none rg rg16f half_float false true 1.0 1.0"},
         });
         String[][] imageExtension = {{"#version 400 compatibility\n",
                 "#version 400 compatibility\n#extension GL_ARB_shader_image_load_store : enable\n"}};
         edits.put("shaders/world0/composite4.fsh", imageExtension);
         edits.put("shaders/world-1/composite4.fsh", imageExtension);
         edits.put("shaders/world1/composite4.fsh", imageExtension);
+        // Every world's programs drawn by the translucent and weather programs mark FSR's reactive mask (image atomics).
+        String[][] reactiveExtension = {{"#version 400 compatibility\n",
+                "#version 400 compatibility\n#extension GL_ARB_shader_image_load_store : enable\n#define CG_REACTIVE_MASK\n"}};
+        for (String world : new String[] {"world0", "world-1", "world1"}) {
+            Path dir = work.resolve("shaders").resolve(world);
+            if (!Files.isDirectory(dir)) {
+                continue;
+            }
+            try (Stream<Path> files = Files.list(dir)) {
+                for (Path file : (Iterable<Path>) files.sorted()::iterator) {
+                    String name = file.getFileName().toString();
+                    if (name.endsWith(".fsh") && Files.isRegularFile(file)) {
+                        String text = Files.readString(file, StandardCharsets.UTF_8);
+                        if (text.contains("#include \"/program/gbuffers_all_translucent.fsh\"")
+                                || text.contains("#include \"/program/gbuffers_weather.fsh\"")) {
+                            edits.put("shaders/" + world + "/" + name, reactiveExtension);
+                        }
+                    }
+                }
+            }
+        }
+        edits.put("shaders/program/gbuffers_all_translucent.fsh", new String[][] {
+                {"#include \"/include/global.glsl\"\n", "#include \"/include/global.glsl\"\n#include \"/include/cg_reactive.glsl\"\n"},
+                {"    // Refraction data\n", """
+                        #ifdef CG_REACTIVE_MASK
+                            // Create Galore DLAA: particles by their opacity, and the nether portal's swirl (cg_reactive.glsl).
+                            float cg_reactive = is_nether_portal ? CG_REACTIVE_PORTAL : 0.0;
+                        #if defined PROGRAM_GBUFFERS_TEXTURED || defined PROGRAM_GBUFFERS_PARTICLES_TRANSLUCENT
+                            cg_reactive = max(cg_reactive, fragment_color.a * CG_REACTIVE_PARTICLES);
+                        #endif
+                            cg_mark_reactive(cg_reactive, depth1);
+                        #endif
+
+                            // Refraction data
+                        """},
+        });
+        edits.put("shaders/program/gbuffers_weather.fsh", new String[][] {
+                {"#include \"/include/global.glsl\"\n", "#include \"/include/global.glsl\"\n#include \"/include/cg_reactive.glsl\"\n"
+                        + "#ifdef CG_REACTIVE_MASK\nuniform sampler2D depthtex1;\n#endif\n"},
+                {"    frag_color.rgb *= frag_color.a;\n}", """
+                            frag_color.rgb *= frag_color.a;
+
+                        #ifdef CG_REACTIVE_MASK
+                            // Create Galore DLAA: rain and snow by their opacity (cg_reactive.glsl).
+                            cg_mark_reactive(base_color.a * (is_rain ? CG_REACTIVE_RAIN : CG_REACTIVE_SNOW),
+                                texelFetch(depthtex1, ivec2(gl_FragCoord.xy), 0).x);
+                        #endif
+                        }"""},
+        });
         edits.put("shaders/program/c4_taa_exposure.fsh", new String[][] {
                 {"void main() {\n    ivec2 texel = ivec2(gl_FragCoord.xy * taau_render_scale);\n",
                         C4_INPUTS + "void main() {\n    ivec2 texel = ivec2(gl_FragCoord.xy * taau_render_scale);\n" + C4_BRANCH},
@@ -462,6 +520,41 @@ public final class PhotonPatcher {
             #endif
             """;
 
+    private static final String REACTIVE_INCLUDE_FILE = "shaders/include/cg_reactive.glsl";
+
+    /**
+     * shaders/include/cg_reactive.glsl in the copy: FSR 3's reactive mask. Particles, rain, snow and the nether portal
+     * change in ways no motion vector follows (they move on their own, their textures scroll or swirl), so FSR should
+     * take this frame there instead of blending in its history, which smears them or fades them out. The translucent
+     * programs mark how much, per pixel, in front of the solid surface (the largest value wins); composite4 adds the
+     * solid materials whose textures animate and hands both to the Bridge (cg_mask_img). The programs whose world
+     * files enable image stores define CG_REACTIVE_MASK. AMD advises no more than 0.9.
+     */
+    private static final String REACTIVE_INCLUDE = """
+            // Create Galore DLAA: FSR 3's reactive mask (see PhotonPatcher in the Bridge).
+            #if !defined INCLUDE_CG_REACTIVE
+            #define INCLUDE_CG_REACTIVE
+
+            #ifdef CG_REACTIVE_MASK
+            #define CG_REACTIVE_PARTICLES 0.9 // times the particle's opacity
+            #define CG_REACTIVE_RAIN 0.5 // times the rain texture's opacity
+            #define CG_REACTIVE_SNOW 0.7
+            #define CG_REACTIVE_PORTAL 0.6
+
+            layout(r32ui) uniform uimage2D cg_reactive_img;
+
+            // Marks value (0..1) here if this fragment is in front of the solid surface (solid_depth, from depthtex1): the
+            // fragment shader can run for hidden fragments too, as these programs discard.
+            void cg_mark_reactive(float value, float solid_depth) {
+                if (value > 0.0 && gl_FragCoord.z <= solid_depth) {
+                    imageAtomicMax(cg_reactive_img, ivec2(gl_FragCoord.xy), uint(clamp(value, 0.0, 1.0) * 255.0 + 0.5));
+                }
+            }
+            #endif
+
+            #endif
+            """;
+
     private static final String C4_INPUTS = """
             // Create Galore DLAA: while DLSS runs this pass only copies the scene and hands DLSS its inputs.
             uniform float cg_dlss_active;
@@ -470,12 +563,19 @@ public final class PhotonPatcher {
             layout(r32f) writeonly uniform image2D cg_exposure_img;
 
             #include "/include/cg_motion.glsl"
+            #ifndef TAAU
+            uniform sampler2D colortex1; // gbuffer data 0 (TAAU, which uses it here, is off)
+            uniform sampler2D depthtex1;
+            // FSR 3's masks (see cg_reactive.glsl): r reactive, as the translucent programs marked it; g composition, for
+            // solid materials whose textures animate: lava (39), fire and magma (40), soul fire (43).
+            layout(r32ui) readonly uniform uimage2D cg_reactive_img;
+            layout(rg16f) writeonly uniform image2D cg_mask_img;
+            #define CG_COMPOSITION_ANIMATED 0.8
+            #endif
             #ifdef CG_MOTION_GBUFFER
             uniform sampler2D colortex2; // own motion of things that move by themselves (never TAAU's, see cg_motion.glsl)
             uniform float cg_dlss_object_motion; // 0 while testing without it
             uniform float cg_dlss_residual_albedo; // 1 in the residual test view: surface colours instead of the lit scene
-            uniform sampler2D colortex1; // gbuffer data 0 (TAAU, which uses it here, is off)
-            uniform sampler2D depthtex1;
             uniform int frameCounter;
             #endif
 
@@ -508,6 +608,15 @@ public final class PhotonPatcher {
             #endif
                 // DLSS depth, reversed and infinite like most engines: 1 at the near plane, towards 0 far away, 0 sky.
                 float dlss_depth = sky ? 0.0 : clamp(near / max(-view_pos.z, near), 0.0, 1.0);
+
+            #ifndef TAAU
+                float composition = 0.0;
+                if (!is_lod && texelFetch(depthtex1, texel, 0).x < 1.0) { // a solid surface drew here: its material
+                    uint material = uint(round(texelFetch(colortex1, texel, 0).y * 65535.0)) >> 8u;
+                    if (material == 39u || material == 40u || material == 43u) composition = CG_COMPOSITION_ANIMATED;
+                }
+                imageStore(cg_mask_img, texel, vec4(float(imageLoad(cg_reactive_img, texel).x) * (1.0 / 255.0), composition, 0.0, 0.0));
+            #endif
 
                 imageStore(cg_motion_img, texel, vec4(motion, 0.0, 0.0));
                 imageStore(cg_depth_img, texel, vec4(dlss_depth));
@@ -553,6 +662,7 @@ public final class PhotonPatcher {
             motionImage=cg_motion_img
             depthImage=cg_depth_img
             exposureImage=cg_exposure_img
+            maskImage=cg_mask_img
             requireOn=TAA
             requireOff=TAAU
             """;

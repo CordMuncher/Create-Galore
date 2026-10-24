@@ -67,6 +67,7 @@ import static org.lwjgl.opengl.GL30C.glGetFramebufferAttachmentParameteri;
 import static org.lwjgl.opengl.GL30C.glIsEnabledi;
 import static org.lwjgl.opengl.GL33C.GL_SAMPLER_BINDING;
 import static org.lwjgl.opengl.GL33C.glBindSampler;
+import static org.lwjgl.opengl.GL41C.glProgramUniform1f;
 import static org.lwjgl.opengl.GL41C.glProgramUniform1i;
 import static org.lwjgl.opengl.GL42C.GL_ALL_BARRIER_BITS;
 import static org.lwjgl.opengl.GL42C.glMemoryBarrier;
@@ -115,7 +116,9 @@ final class DlssPass implements AutoCloseable {
          * out for it): black where they do, bright where something moved another way than its motion vector says.
          * Packs that know cg_dlss_residual_albedo hand over surface colours for it, free of the lighting's noise.
          */
-        RESIDUAL
+        RESIDUAL,
+        /** FSR 3's masks from the pack: reactive red, transparency and composition green (black without them). */
+        MASK
     }
 
     private final DlssDevice device;
@@ -124,6 +127,9 @@ final class DlssPass implements AutoCloseable {
     private Texture depth;
     private Texture exposure;
     private Texture output;
+    /** The pack's masks for FSR 3 (only without a device: DLSS's current models take none). */
+    private Texture mask;
+    private boolean hasMask;
     private List<Texture> all = List.of();
     private List<DlssDevice.SharedTexture> shared = List.of();
     private int program;
@@ -136,8 +142,8 @@ final class DlssPass implements AutoCloseable {
         this.device = device;
     }
 
-    /** What the bound framebuffer's pass produced, for one run. */
-    record Inputs(int colorTexture, int width, int height, int motionTexture, int depthTexture, int exposureTexture) {}
+    /** What the bound framebuffer's pass produced, for one run; maskTexture 0 if the pack hands over no masks. */
+    record Inputs(int colorTexture, int width, int height, int motionTexture, int depthTexture, int exposureTexture, int maskTexture) {}
 
     /** Reads the colour texture of draw buffer {@code attachment} of the bound framebuffer; throws if it is unusable. */
     static int boundColorTexture(int attachment) {
@@ -149,14 +155,17 @@ final class DlssPass implements AutoCloseable {
         return glGetFramebufferAttachmentParameteri(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + attachment, GL_FRAMEBUFFER_ATTACHMENT_OBJECT_NAME);
     }
 
-    static Inputs inputs(int colorTexture, int motionTexture, int depthTexture, int exposureTexture) {
+    static Inputs inputs(int colorTexture, int motionTexture, int depthTexture, int exposureTexture, int maskTexture) {
         int width = glGetTextureLevelParameteri(colorTexture, 0, GL_TEXTURE_WIDTH);
         int height = glGetTextureLevelParameteri(colorTexture, 0, GL_TEXTURE_HEIGHT);
         requireFormat("colour", colorTexture, GL_RGBA16F, width, height);
         requireFormat("motion vector image", motionTexture, GL_RG16F, width, height);
         requireFormat("depth image", depthTexture, GL_R32F, width, height);
         requireFormat("exposure image", exposureTexture, GL_R32F, 1, 1);
-        return new Inputs(colorTexture, width, height, motionTexture, depthTexture, exposureTexture);
+        if (maskTexture != 0) {
+            requireFormat("mask image", maskTexture, GL_RG16F, width, height);
+        }
+        return new Inputs(colorTexture, width, height, motionTexture, depthTexture, exposureTexture, maskTexture);
     }
 
     private static void requireFormat(String what, int texture, int format, int width, int height) {
@@ -185,7 +194,9 @@ final class DlssPass implements AutoCloseable {
                 DlssDevice.D3D11_BIND_SHADER_RESOURCE, DlssDevice.ACCESS_WRITE_DISCARD);
         output = new Texture(width, height, GL_RGBA16F, DlssDevice.DXGI_FORMAT_R16G16B16A16_FLOAT,
                 DlssDevice.D3D11_BIND_SHADER_RESOURCE | DlssDevice.D3D11_BIND_UNORDERED_ACCESS, DlssDevice.ACCESS_READ_ONLY);
-        all = List.of(color, motion, depth, exposure, output);
+        mask = device == null ? new Texture(width, height, GL_RG16F, DlssDevice.DXGI_FORMAT_R16G16_FLOAT,
+                DlssDevice.D3D11_BIND_SHADER_RESOURCE, DlssDevice.ACCESS_WRITE_DISCARD) : null;
+        all = mask != null ? List.of(color, motion, depth, exposure, output, mask) : List.of(color, motion, depth, exposure, output);
         List<DlssDevice.SharedTexture> list = new ArrayList<>();
         for (Texture texture : all) {
             if (texture.shared != null) {
@@ -207,6 +218,10 @@ final class DlssPass implements AutoCloseable {
         glCopyImageSubData(in.motionTexture(), GL_TEXTURE_2D, 0, 0, 0, 0, motion.gl, GL_TEXTURE_2D, 0, 0, 0, 0, in.width(), in.height(), 1);
         glCopyImageSubData(in.depthTexture(), GL_TEXTURE_2D, 0, 0, 0, 0, depth.gl, GL_TEXTURE_2D, 0, 0, 0, 0, in.width(), in.height(), 1);
         glCopyImageSubData(in.exposureTexture(), GL_TEXTURE_2D, 0, 0, 0, 0, exposure.gl, GL_TEXTURE_2D, 0, 0, 0, 0, 1, 1, 1);
+        hasMask = mask != null && in.maskTexture() != 0;
+        if (hasMask) {
+            glCopyImageSubData(in.maskTexture(), GL_TEXTURE_2D, 0, 0, 0, 0, mask.gl, GL_TEXTURE_2D, 0, 0, 0, 0, in.width(), in.height(), 1);
+        }
         if (shared.isEmpty()) {
             evaluate.run();
             return;
@@ -240,6 +255,11 @@ final class DlssPass implements AutoCloseable {
         return output.gl;
     }
 
+    /** The pack's masks for FSR 3 this frame, 0 if it handed over none. */
+    int maskTexture() {
+        return hasMask ? mask.gl : 0;
+    }
+
     long colorResource() {
         return color.d3d;
     }
@@ -260,11 +280,21 @@ final class DlssPass implements AutoCloseable {
         return exposure.d3d;
     }
 
-    /** For testing: saves this frame's inputs (colour, motion, depth) as dir/name-color.npy and so on. */
-    void dump(java.nio.file.Path dir, String name) {
+    /**
+     * For testing: saves this frame's inputs (colour, motion, depth) as dir/name-color.npy and so on, and with
+     * {@code withOutput} what DLSS or FSR made of them (name-output.npy) and the pack's exposure (name-exposure.npy).
+     */
+    void dump(java.nio.file.Path dir, String name, boolean withOutput) {
         DebugDump.write(dir, name + "-color", color.gl, color.width, color.height, 4);
         DebugDump.write(dir, name + "-motion", motion.gl, motion.width, motion.height, 2);
         DebugDump.write(dir, name + "-depth", depth.gl, depth.width, depth.height, 1);
+        if (hasMask) {
+            DebugDump.write(dir, name + "-mask", mask.gl, mask.width, mask.height, 2);
+        }
+        if (withOutput) {
+            DebugDump.write(dir, name + "-exposure", exposure.gl, exposure.width, exposure.height, 1);
+            DebugDump.write(dir, name + "-output", output.gl, output.width, output.height, 4);
+        }
     }
 
     /**
@@ -282,6 +312,7 @@ final class DlssPass implements AutoCloseable {
             case COLOR, RESIDUAL -> color;
             case MOTION -> motion;
             case DEPTH -> depth;
+            case MASK -> hasMask ? mask : depth; // (all black without masks, see the view's shader)
         };
         // The source, the exposure, and for the residual view last frame's colour (kept in the unused output) and the motion.
         String[] samplers = {"cg_dlss_source", "cg_dlss_exposure", "cg_dlss_previous", "cg_dlss_motion"};
@@ -330,6 +361,9 @@ final class DlssPass implements AutoCloseable {
                 glDisablei(GL_BLEND, i);
                 boolean written = contains(profile.outputAttachments(), i);
                 glColorMaski(i, written, written, written, written && !profile.keepsAlpha(i));
+            }
+            if (view == View.MASK) {
+                glProgramUniform1f(program, glGetUniformLocation(program, "cg_dlss_has_mask"), hasMask ? 1.0f : 0.0f);
             }
             glUseProgram(program);
             glBindVertexArray(vao);
@@ -386,11 +420,14 @@ final class DlssPass implements AutoCloseable {
             program = 0;
         }
         StringBuilder fragment = new StringBuilder("#version 330 core\nuniform sampler2D cg_dlss_source;\n");
-        if (view == View.MOTION || view == View.DEPTH || view == View.RESIDUAL) {
+        if (view == View.MOTION || view == View.DEPTH || view == View.RESIDUAL || view == View.MASK) {
             fragment.append("uniform sampler2D cg_dlss_exposure;\n");
         }
         if (view == View.RESIDUAL) {
             fragment.append("uniform sampler2D cg_dlss_previous;\nuniform sampler2D cg_dlss_motion;\n");
+        }
+        if (view == View.MASK) {
+            fragment.append("uniform float cg_dlss_has_mask;\n");
         }
         for (int i = 0; i < outputs; i++) {
             fragment.append("layout(location = ").append(i).append(") out vec4 cg_out").append(i).append(";\n");
@@ -406,6 +443,10 @@ final class DlssPass implements AutoCloseable {
                     """;
             case DEPTH -> """
                         vec3 c = vec3(pow(texelFetch(cg_dlss_source, texel, 0).r, 0.25));
+                        c /= max(texelFetch(cg_dlss_exposure, ivec2(0), 0).r, 1e-4);
+                    """;
+            case MASK -> """
+                        vec3 c = vec3(texelFetch(cg_dlss_source, texel, 0).rg * cg_dlss_has_mask, 0.0);
                         c /= max(texelFetch(cg_dlss_exposure, ivec2(0), 0).r, 1e-4);
                     """;
             // Last frame's colour where the motion vector says this pixel was (bilinear), against this frame's, both
@@ -487,7 +528,8 @@ final class DlssPass implements AutoCloseable {
         }
         all = List.of();
         shared = List.of();
-        color = motion = depth = exposure = output = null;
+        color = motion = depth = exposure = output = mask = null;
+        hasMask = false;
     }
 
     @Override

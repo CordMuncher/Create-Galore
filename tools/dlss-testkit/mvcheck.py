@@ -1,15 +1,16 @@
 #!/usr/bin/env python3
 """Checks motion vectors against the pictures: python mvcheck.py RUN_FOLDER [NAME=X0,Y0,X1,Y1 ...] (needs numpy).
 
-Uses the raw DLSS inputs the test kit saves with "dumpRaw": true in a debug mode (MODE/raw/*-color.npy, -motion.npy,
--depth.npy, for consecutive frames). With Photon in the residual view the colour is the surfaces' own colour, which
-has no frame-to-frame noise, so each frame should match the one before it once every pixel is moved back along its
-motion vector. For each pair of frames this moves the earlier one back by the motion vectors scaled by k and prints the
+Uses the raw DLSS inputs the test kit saves with "dumpRaw": true in the residual view (MODE/raw/*-color.npy,
+-motion.npy, -depth.npy, for consecutive frames; other modes' raw files are for ghostcheck.py). With Photon there the
+colour is the surfaces' own colour, which has no frame-to-frame noise, so each frame should match the one before it
+once every pixel is moved back along its motion vector. For each pair of frames this moves the earlier one back by the motion vectors scaled by k and prints the
 average difference on the pixels that move: if the motion vectors are right, k = 1 matches best. A best k of -1 means
 they point the wrong way, 0 that they are no better than none, 2 or 0.5 that they are too short or too long.
 Each NAME=X0,Y0,X1,Y1 (pixels, from the picture's top left) adds a table for the moving pixels inside that box only,
 to check one thing (a mob, the hand) apart from the rest.
 """
+import json
 import re
 import sys
 from pathlib import Path
@@ -36,7 +37,11 @@ def main():
     for arg in sys.argv[2:]:
         name, _, numbers = arg.partition("=")
         boxes.append((name, tuple(int(v) for v in numbers.split(","))))
+    manifest = run / "manifest.json"
+    views = {m["name"]: m.get("debugView") for m in json.loads(manifest.read_text())["modes"]} if manifest.exists() else {}
     for raw in sorted(run.glob("*/raw")):
+        if views.get(raw.parent.name, "residual") != "residual":
+            continue
         frames = {}
         for f in raw.glob("*-color.npy"):
             name = f.name[: -len("-color.npy")]

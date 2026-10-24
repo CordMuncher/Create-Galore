@@ -16,8 +16,8 @@ import net.neoforged.neoforge.common.NeoForge;
  * The DLAA test kit: /dlaatest run [modes] plays every camera path at every viewpoint in each anti-aliasing mode and
  * saves screenshots at the same frames (screenshots/dlaa-test/RUN/MODE/...); /dlaatest stop ends a run; /dlaatest
  * where prints the camera, for adding viewpoints to config/create_galore_dlss_testkit.json. For looking by eye:
- * /dlaatest scene build|remove puts up or takes away the moving scene (MovingScene), /dlaatest mode NAME switches to
- * one mode's anti-aliasing settings.
+ * /dlaatest scene build [moving|effects] puts up the moving scene (MovingScene) or the effects scene (EffectsScene),
+ * /dlaatest scene remove takes them away, /dlaatest mode NAME switches to one mode's anti-aliasing settings.
  *
  * -Dcreate_galore_dlss_testkit.autorun=WORLD opens that world from the title screen, runs, and closes the game.
  * -Dcreate_galore_dlss_testkit.modes=a+b runs only those modes, -Dcreate_galore_dlss_testkit.viewpoints=a+b only those
@@ -48,8 +48,10 @@ public final class TestKit {
                     return 1;
                 }))
                 .then(Commands.literal("scene")
-                        .then(Commands.literal("build").executes(c -> say(Capture.scene(true))))
-                        .then(Commands.literal("remove").executes(c -> say(Capture.scene(false)))))
+                        .then(Commands.literal("build").executes(c -> say(Capture.scene(true, MovingScene.NAME)))
+                                .then(Commands.literal(MovingScene.NAME).executes(c -> say(Capture.scene(true, MovingScene.NAME))))
+                                .then(Commands.literal(EffectsScene.NAME).executes(c -> say(Capture.scene(true, EffectsScene.NAME)))))
+                        .then(Commands.literal("remove").executes(c -> say(Capture.scene(false, null)))))
                 .then(Commands.literal("mode")
                         .then(Commands.argument("name", StringArgumentType.word())
                                 .executes(c -> say(Capture.useMode(StringArgumentType.getString(c, "name"))))))

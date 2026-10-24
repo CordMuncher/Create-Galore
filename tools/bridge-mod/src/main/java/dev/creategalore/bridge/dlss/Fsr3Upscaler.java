@@ -125,8 +125,9 @@ import org.lwjgl.system.MemoryStack;
  * ffx_fsr3upscaler.cpp does: its internal textures, its constants, its clears and its seven passes in order.
  *
  * Inputs as DLSS gets them: HDR colour before the pack's exposure, motion vectors in render pixels towards the
- * previous frame without jitter, depth reversed and infinite (near / view depth) and the pack's exposure. No reactive
- * or transparency mask, no sharpening. Render size and output size are kept apart like the SDK does; the Bridge uses
+ * previous frame without jitter, depth reversed and infinite (near / view depth) and the pack's exposure; plus the
+ * pack's reactive mask (red) and transparency and composition mask (green) in one texture, when it has them. No
+ * sharpening. Render size and output size are kept apart like the SDK does; the Bridge uses
  * the same size for both (native anti-aliasing).
  *
  * Everything it changes in OpenGL's state is put back, so Iris and Minecraft's cached state stay right.
@@ -227,6 +228,7 @@ final class Fsr3Upscaler implements AutoCloseable {
     private Tex inDepth;
     private Tex inMotion;
     private Tex inExposure;
+    private Tex inMask;
     private Tex outColor;
 
     /** Compiles the passes (the first time takes a moment). Throws if this OpenGL cannot run them. */
@@ -331,16 +333,17 @@ final class Fsr3Upscaler implements AutoCloseable {
 
     /**
      * One frame: reads the inputs (OpenGL textures at render size: RGBA16F colour, R32F depth, RG16F motion, 1x1 R32F
-     * exposure) and writes {@code output} (RGBA16F, output size). {@code jitterX/Y} is this frame's jitter in pixels
+     * exposure, RG16F masks or 0 for none) and writes {@code output} (RGBA16F, output size). {@code jitterX/Y} is this frame's jitter in pixels
      * as the pack applied it, {@code projection} the frame's unjittered projection. {@code debugView} draws FSR's own
      * view of its buffers instead.
      */
-    void dispatch(int color, int depth, int motion, int exposure, int output, float jitterX, float jitterY,
+    void dispatch(int color, int depth, int motion, int exposure, int mask, int output, float jitterX, float jitterY,
             boolean reset, float frameTimeMs, Matrix4fc projection, boolean debugView) {
         inColor = new Tex(color, GL_RGBA16F, renderWidth, renderHeight, 1);
         inDepth = new Tex(depth, GL_R32F, renderWidth, renderHeight, 1);
         inMotion = new Tex(motion, GL_RG16F, renderWidth, renderHeight, 1);
         inExposure = new Tex(exposure, GL_R32F, 1, 1, 1);
+        inMask = mask != 0 ? new Tex(mask, GL_RG16F, renderWidth, renderHeight, 1) : defaultReactivity;
         outColor = new Tex(output, GL_RGBA16F, upscaleWidth, upscaleHeight, 1);
 
         boolean resetAccumulation = reset || firstExecution;
@@ -473,7 +476,7 @@ final class Fsr3Upscaler implements AutoCloseable {
             case "r_input_depth" -> inDepth;
             case "r_input_exposure" -> inExposure;
             case "r_frame_info" -> frameInfo;
-            case "r_reactive_mask", "r_transparency_and_composition_mask" -> defaultReactivity;
+            case "r_reactive_mask", "r_transparency_and_composition_mask" -> inMask;
             case "r_reconstructed_previous_nearest_depth" -> reconstructedPreviousNearestDepth;
             case "r_dilated_motion_vectors" -> dilatedMotionVectors;
             case "r_dilated_depth" -> dilatedDepth;

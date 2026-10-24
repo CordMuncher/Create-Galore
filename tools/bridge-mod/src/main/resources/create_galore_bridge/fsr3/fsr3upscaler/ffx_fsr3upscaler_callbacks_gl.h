@@ -333,7 +333,7 @@ uniform sampler2D  r_transparency_and_composition_mask;
 
 FfxFloat32 LoadTransparencyAndCompositionMask(FfxUInt32x2 iPxPos)
 {
-	return texelFetch(r_transparency_and_composition_mask, FfxInt32x2(iPxPos), 0).r;
+	return texelFetch(r_transparency_and_composition_mask, FfxInt32x2(iPxPos), 0).g;
 }
 
 FfxInt32x2 GetTransparencyAndCompositionMaskResourceDimensions()
@@ -343,7 +343,7 @@ FfxInt32x2 GetTransparencyAndCompositionMaskResourceDimensions()
 
 FfxFloat32 SampleTransparencyAndCompositionMask(FfxFloat32x2 fUV)
 {
-    return textureLod(r_transparency_and_composition_mask, fUV, 0.0).x;
+    return textureLod(r_transparency_and_composition_mask, fUV, 0.0).y;
 }
 #endif
 

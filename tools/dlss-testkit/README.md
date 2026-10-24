@@ -34,7 +34,7 @@ Or start the game with `-Dcreate_galore_dlss_testkit.autorun=dlaa-test`: it open
 Distant Horizons' far terrain exist before the first run.
 
 `config/create_galore_dlss_testkit.json` (written on the first run) lists the modes, viewpoints and paths. A mode is
-`{"name", "dlaa", "preset"}` with an optional `"debugView": "motion" | "depth" | "color"`, which shows that DLSS input
+`{"name", "dlaa", "preset"}` with an optional `"debugView": "motion" | "depth" | "color" | "mask"`, which shows that DLSS input
 instead of DLSS (any GPU), and an optional `"jitterSign": "-1,1"` that flips the jitter handed to DLSS (the
 `sign-flip-*` modes check which way is right). `"engine": "fsr3"` runs AMD FSR 3.1 in DLSS's place (OpenGL compute,
 any GPU, so the cloud rig can run it for real): the `fsr3` mode, its own `fsr3-flip-*` jitter checks and `fsr3-debug`
@@ -45,15 +45,15 @@ when it ends.
 `metrics.py RUN_FOLDER` (Pillow and numpy) prints, per viewpoint and mode, the frame time, the shimmer between the
 still path's last 8 frames, the smear left two frames after the flick, and the edge contrast.
 `PC-RUNBOOK.md` is the recipe for an RTX PC: round 1 (DLAA) and round 2 (FSR 3 next to DLAA), and milestone 2's
-run 1 (things that move).
+PC session (things that move, rain, fire and the portal).
 
 ### Things that move
 
-- The `moving` viewpoint looks at a scene the kit builds over the lake when a run gets there and takes away when the
-  run ends (it sits in air the test world leaves empty, so the world file never changes): creative motors turning
-  shafts, cogwheels and a fan, a bearing turning a glued cross of wool, a small Sable ship that turns and sways
-  every tick, and entities: a villager, an armor stand in iron armor and a red panda (GeckoLib) walking in circles, a
-  dropped sword spinning, a bell ringing and a chest opening and closing. `"showHand": true` shows the hand too (and
+- The `moving` viewpoint looks at a scene the kit builds over the lake when a run that goes there starts, and takes
+  away when the run ends (it sits in air the test world leaves empty, so the world file never changes): creative
+  motors turning shafts, cogwheels and a fan, a bearing turning a glued cross of wool, a small Sable ship that turns
+  and sways every tick, and entities: a villager, an armor stand in iron armor and a red panda (GeckoLib) walking in
+  circles, a dropped sword spinning, a bell ringing and a chest opening and closing. `"showHand": true` shows the hand too (and
   the HUD with it), holding a sword that swings. While the camera is there the world ticks at `sceneTickRate` (20 on a real PC, 1 on slow software
   rendering, so each frame moves about as much as in a normal game); `shipTurnDegreesPerTick` and `shipSwayPerTick`
   set how fast the ship moves. `-Dcreate_galore_dlss_testkit.viewpoints=moving` runs only some viewpoints, and the
@@ -63,14 +63,29 @@ run 1 (things that move).
 - `"debugView": "residual"` (`debug-residual`, `debug-residual-camera`) shows how far each pixel is from the frame
   before once it is moved back along its motion vector: black where the motion vectors are right. With Photon it
   compares the surfaces' own colour, as the lit picture has a new dither pattern every frame.
-- `"dumpRaw": true` also saves DLSS's raw inputs (colour, motion, depth as `.npy`) for each saved frame of a debug
-  mode, and `mvcheck.py RUN_FOLDER` (numpy) checks them: for each pair of frames it moves the earlier one back along
-  the motion vectors scaled by -1, 0, 0.5, 1 and 2 and prints the difference on the moving pixels, so right motion
-  vectors match best at 1. `NAME=X0,Y0,X1,Y1` boxes after the folder add a table each for one thing's pixels. Sub-pixel motion is too small to measure on blocky textures: for this check set
-  `packSecondsPerFrame` (how far the shader pack's clock moves per frame, 1/60 normally) to 1.0 and the ship faster.
-- Outside a run, `/dlaatest scene build` puts the scene up at the game's own tick rate to look at, walk around and ride
-  the ship, `/dlaatest mode NAME` switches the Bridge to one of the config's modes on the spot (`photon-taa`,
-  `dlaa-default`, `dlaa-camera`, `fsr3`, ...), and `/dlaatest scene remove` takes the scene away again.
+- `"dumpRaw": true` also saves DLSS's raw inputs (colour, motion, depth as `.npy`) for each saved frame of a mode that
+  runs the Bridge (and outside the debug views its output and the exposure), and `mvcheck.py RUN_FOLDER` (numpy) checks
+  the residual view's: for each pair of frames it moves the earlier one back along the motion vectors scaled by -1, 0,
+  0.5, 1 and 2 and prints the difference on the moving pixels, so right motion vectors match best at 1.
+  `NAME=X0,Y0,X1,Y1` boxes after the folder add a table each for one thing's pixels. Sub-pixel motion is too small to
+  measure on blocky textures: for this check set `packSecondsPerFrame` (how far the shader pack's clock moves per
+  frame, 1/60 normally) to 1.0 and the ship faster.
+- The `effects` viewpoint looks at a second scene the kit builds over the lake west of the first, for things the
+  motion vectors cannot follow: a nether portal, fire on netherrack, a campfire's smoke, a lava pool fed by a lava
+  fall, a water fall, and rain (on at full strength while the camera is there, off again when it leaves). The pack's
+  wet look fades out slowly after rain, so run this viewpoint on its own (`viewpoints=effects`).
+  `ghostcheck.py RUN_FOLDER [NAME=X0,Y0,X1,Y1 ...]` (numpy, Pillow) checks them: with `dumpRaw`, the modes that run DLSS
+  or FSR also save its output, and for each pair of frames it measures, where the picture changed in a way the motion
+  vectors do not explain, how much of the last frame the output still shows (`kept`, 0 to 1), per box. It also writes
+  input and output crops of each box side by side into `RUN_FOLDER/ghostcheck/`.
+- FSR gets two masks from the patched pack for these: where to trust this frame over its history (particles, rain,
+  snow and the portal swirl, in red) and where a texture animates under still motion vectors (fire, soul fire and lava,
+  in green). `debug-mask` shows them (any GPU). `"reactiveMask": false` on a mode (`fsr3-nomask`) runs FSR without
+  them, to compare. DLSS gets no mask: NVIDIA's current models ignore it and its guide says not to send one.
+- Outside a run, `/dlaatest scene build` puts the moving scene up at the game's own tick rate to look at, walk around
+  and ride the ship (`/dlaatest scene build effects` the effects scene, with rain), `/dlaatest mode NAME` switches the
+  Bridge to one of the config's modes on the spot (`photon-taa`, `dlaa-default`, `dlaa-camera`, `fsr3`, ...), and
+  `/dlaatest scene remove` takes the scenes away again.
 
 Each run folder has `manifest.json`: the modes (with the frame time on the still path and whether DLAA really ran),
 the viewpoints, the capture frames of each path and every screenshot.

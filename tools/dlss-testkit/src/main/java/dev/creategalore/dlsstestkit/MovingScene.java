@@ -7,9 +7,10 @@ import net.minecraft.client.server.IntegratedServer;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 
 /**
- * Things that move by themselves, for the "moving" viewpoint: built over the lake when a run first gets there and
- * removed when the run ends, so the test world itself stays as it was (everything sits in air above the water, in
- * x 1023..1036, y 63..70, z 143..157, which is empty in the DLAA test world).
+ * Things that move by themselves, for the "moving" viewpoint: built over the lake when a run that goes there starts
+ * (nothing moves until the camera gets there) and removed when the run ends, so the test world itself stays as it was
+ * (everything sits in air above the water, in x 1023..1036, y 63..70, z 143..157, which is empty in the DLAA test
+ * world).
  * - A creative motor turning shafts, a cogwheel, a large cogwheel and an encased fan (Flywheel instances).
  * - A second motor turning a mechanical bearing with a glued cross of planks and wool on it (a contraption).
  * - A small Sable ship on the water, turned and swayed a little every server tick (a sub-level), slowly enough by
@@ -97,13 +98,18 @@ final class MovingScene {
         Capture.server("tick rate " + settings.sceneTickRate);
     }
 
-    /** Builds the scene the first time and sets the ship going (at whatever rate the world ticks). */
-    static void show(Capture.Settings settings) {
+    /** Puts the scene up, once; nothing moves yet. */
+    static void build() {
         if (!built) {
             built = true;
             BUILD.forEach(Capture::server);
             Capture.log("built the moving scene");
         }
+    }
+
+    /** Builds the scene the first time and sets the ship going (at whatever rate the world ticks). */
+    static void show(Capture.Settings settings) {
+        build();
         turn = settings.shipTurnDegreesPerTick;
         sway = settings.shipSwayPerTick;
         hand = settings.showHand;

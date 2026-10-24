@@ -21,11 +21,12 @@ import net.irisshaders.iris.shaderpack.option.values.OptionValues;
  * colorAttachment: that pass's colour output DLSS reads. outputAttachments: the outputs DLSS's result is written to;
  * keepAlpha: those of them whose alpha the pack still needs. motionImage, depthImage, exposureImage: the pack's
  * custom images holding motion vectors (render pixels, towards the previous frame), DLSS depth (1 near, 0 sky) and
- * the exposure (1x1). requireOn / requireOff: pack options that must be on / off for the patch to apply (an option
- * Iris does not offer keeps the value the pack's source gives it, which the patcher checked).
+ * the exposure (1x1). maskImage (optional): FSR 3's masks, reactive in red and transparency and composition in green
+ * (RG16F, 0..1). requireOn / requireOff: pack options that must be on / off for the patch to apply (an option Iris
+ * does not offer keeps the value the pack's source gives it, which the patcher checked).
  */
 record PackProfile(String pass, int colorAttachment, int[] outputAttachments, int[] keepAlpha, String motionImage,
-                   String depthImage, String exposureImage, List<String> requireOn, List<String> requireOff) {
+                   String depthImage, String exposureImage, String maskImage, List<String> requireOn, List<String> requireOff) {
     static final String FILE = "shaders/create_galore_dlss.properties";
 
     /** The current pack's profile, or null if it has none. */
@@ -60,6 +61,7 @@ record PackProfile(String pass, int colorAttachment, int[] outputAttachments, in
         return new PackProfile(required(props, "pass"), Integer.parseInt(required(props, "colorAttachment")),
                 ints(required(props, "outputAttachments")), ints(props.getProperty("keepAlpha", "")),
                 required(props, "motionImage"), required(props, "depthImage"), required(props, "exposureImage"),
+                props.getProperty("maskImage", "").isBlank() ? null : props.getProperty("maskImage").trim(),
                 names(props.getProperty("requireOn", "")), names(props.getProperty("requireOff", "")));
     }
 

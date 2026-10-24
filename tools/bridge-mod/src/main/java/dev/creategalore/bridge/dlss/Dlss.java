@@ -39,13 +39,14 @@ import org.slf4j.LoggerFactory;
  * (see {@link DlssDevice}). Anything missing (not Windows, no NVIDIA RTX card, no nvngx_dlss.dll, an unpatched pack, a
  * pack option that the patch does not cover) leaves the pack's own anti-aliasing in place and says why in the log.
  *
- * For testing: dlaaDebugView=color|motion|depth|residual in the display settings (or the system property
+ * For testing: dlaaDebugView=color|motion|depth|residual|mask in the display settings (or the system property
  * create_galore_bridge.dlss.debugView) draws that DLSS input instead of running DLSS (any GPU, no NGX);
  * dlaaEngine=fsr3 (or create_galore_bridge.dlss.engine) runs AMD FSR 3.1 in DLSS's place with FSR's own jitter
  * period ({@link Fsr3Upscaler}, OpenGL, any GPU), and dlaaDebugView=fsr3 shows FSR's own view of its buffers;
  * create_galore_bridge.dlss.dllDir loads nvngx_dlss.dll from another folder (the
  * SDK's dev build shows DLSS's own debug overlay); dlaaJitterSign=x,y in the display settings (or the system property
- * create_galore_bridge.dlss.jitterSign) flips the jitter handed to DLSS.
+ * create_galore_bridge.dlss.jitterSign) flips the jitter handed to DLSS; dlaaObjectMotion=false and
+ * dlaaReactiveMask=false leave out the motion of things that move by themselves and FSR's masks, for comparing.
  */
 public final class Dlss {
     private static final Logger LOG = LoggerFactory.getLogger("create_galore_bridge");
@@ -59,6 +60,7 @@ public final class Dlss {
     private static final String JITTER_SIGN_PROPERTY = "create_galore_bridge.dlss.jitterSign";
     private static final String ENGINE_PROPERTY = "create_galore_bridge.dlss.engine";
     private static final String OBJECT_MOTION_PROPERTY = "create_galore_bridge.dlss.objectMotion";
+    private static final String REACTIVE_MASK_PROPERTY = "create_galore_bridge.dlss.reactiveMask";
     /** DLSS's jitter period; FSR 3 uses its own (8 at full size). */
     private static final int PHASES = 32;
     /** A camera move this far in one frame is a teleport: DLSS starts over instead of blending in the old place. */
@@ -79,6 +81,8 @@ public final class Dlss {
     private static DlssPass.View debugView;
     /** Things that move by themselves give their own motion vectors (else only the camera's motion; for comparing). */
     private static boolean objectMotion = true;
+    /** FSR 3 gets the pack's reactive and composition masks (else none; for comparing). */
+    private static boolean reactiveMask = true;
     private static volatile String[] dumpRequest;
     /** FSR 3 in place of DLSS (testing). */
     private static boolean fsr3;
@@ -157,6 +161,8 @@ public final class Dlss {
         fsr3 = fsr3Debug || parseEngine(DisplaySettings.getString(DisplaySettings.DLAA_ENGINE, System.getProperty(ENGINE_PROPERTY, "dlss")));
         jitterSign = parseJitterSign(DisplaySettings.getString(DisplaySettings.DLAA_JITTER_SIGN, System.getProperty(JITTER_SIGN_PROPERTY, "1,1")));
         objectMotion = !DisplaySettings.getString(DisplaySettings.DLAA_OBJECT_MOTION, System.getProperty(OBJECT_MOTION_PROPERTY, "true"))
+                .trim().equalsIgnoreCase("false");
+        reactiveMask = !DisplaySettings.getString(DisplaySettings.DLAA_REACTIVE_MASK, System.getProperty(REACTIVE_MASK_PROPERTY, "true"))
                 .trim().equalsIgnoreCase("false");
         failed = false;
         reset = true;
@@ -242,8 +248,9 @@ public final class Dlss {
     }
 
     /**
-     * For the DLAA test kit: in a debug view, saves the next frame's DLSS inputs as numpy arrays in {@code dir}
-     * ({@code name}-color.npy, -motion.npy, -depth.npy; see {@link DebugDump}).
+     * For the DLAA test kit: saves the next frame's DLSS inputs as numpy arrays in {@code dir} ({@code name}-color.npy,
+     * -motion.npy, -depth.npy; see {@link DebugDump}), and outside the debug views DLSS's or FSR's output too
+     * (-output.npy).
      */
     public static void dumpNextFrame(String dir, String name) {
         dumpRequest = new String[] {dir, name};
@@ -280,15 +287,12 @@ public final class Dlss {
         try {
             DlssPass.Inputs in = DlssPass.inputs(DlssPass.boundColorTexture(profile.colorAttachment()),
                     image(imageIds, profile.motionImage()), image(imageIds, profile.depthImage()),
-                    image(imageIds, profile.exposureImage()));
+                    image(imageIds, profile.exposureImage()),
+                    profile.maskImage() != null && reactiveMask ? image(imageIds, profile.maskImage()) : 0);
             if (debugView != null) {
                 debugPass.ensureSize(in.width(), in.height());
                 debugPass.copyAndEvaluate(in, () -> {});
-                String[] dump = dumpRequest;
-                if (dump != null) {
-                    dumpRequest = null;
-                    debugPass.dump(java.nio.file.Path.of(dump[0]), dump[1]);
-                }
+                dumpIfAsked(debugPass, false);
                 debugPass.writeBack(profile, debugView);
                 return;
             }
@@ -324,6 +328,7 @@ public final class Dlss {
                 throw new IllegalStateException("DLSS failed: " + NgxLibrary.describe(result[0]));
             }
             reset = false;
+            dumpIfAsked(pass, true);
             pass.writeBack(profile, DlssPass.View.RESULT);
         } catch (Throwable t) {
             failed = true;
@@ -340,10 +345,19 @@ public final class Dlss {
         boolean resetNow = reset;
         Matrix4fc projection = CapturedRenderingState.INSTANCE.getGbufferProjection();
         fsrPass.copyAndEvaluate(in, () -> fsr.dispatch(fsrPass.colorTexture(), fsrPass.depthTexture(), fsrPass.motionTexture(),
-                fsrPass.exposureTexture(), fsrPass.outputTexture(), jitterX * jitterSign[0], jitterY * jitterSign[1], resetNow,
+                fsrPass.exposureTexture(), fsrPass.maskTexture(), fsrPass.outputTexture(), jitterX * jitterSign[0], jitterY * jitterSign[1], resetNow,
                 frameTimeMs, projection, fsr3Debug));
         reset = false;
+        dumpIfAsked(fsrPass, true);
         fsrPass.writeBack(profile, DlssPass.View.RESULT);
+    }
+
+    private static void dumpIfAsked(DlssPass from, boolean withOutput) {
+        String[] dump = dumpRequest;
+        if (dump != null) {
+            dumpRequest = null;
+            from.dump(java.nio.file.Path.of(dump[0]), dump[1], withOutput);
+        }
     }
 
     private static int image(ToIntFunction<String> imageIds, String name) {
@@ -541,7 +555,7 @@ public final class Dlss {
             DlssPass.View view = DlssPass.View.valueOf(value);
             return view == DlssPass.View.RESULT ? null : view;
         } catch (IllegalArgumentException e) {
-            LOG.warn("DLAA: unknown debug view {}, use color, motion, depth or residual", name);
+            LOG.warn("DLAA: unknown debug view {}, use color, motion, depth, residual or mask", name);
             return null;
         }
     }

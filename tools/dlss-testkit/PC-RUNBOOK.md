@@ -201,18 +201,38 @@ looked wrong) and crops of the same spots as round 1 (`shore-fence-glass`, `glas
 few MB in all. Commit and push on the DLAA branch. Emre judges the look himself in `compare.html`.
 
 
-## Milestone 2, PC run 1: things that move
+## Milestone 2, PC session: things that move
 
-Same PC, test folder and tools as rounds 1 and 2, nothing new to install. Start it only when Emre says so. Photon's
-copy now gives DLSS the motion of things that move by themselves: waving leaves and grass, Sable ships, and Create's
-machines, contraptions and trains (through Colorwheel). The cloud checked that this motion is exact; this run checks
-it on the 4080 with NVIDIA's shader compiler and real DLSS, and Emre judges the look by eye, riding a ship.
+One session in place of the two runs planned before (Emre, 2026-10-24). Same PC, test folder and tools as rounds 1
+and 2, nothing new to install. Start it only when Emre says so. Photon's copy now gives DLSS the motion of things
+that move by themselves:
+
+- waving leaves and grass;
+- Sable ships;
+- Create's machines, contraptions and trains (through Colorwheel);
+- what the game draws vertex by vertex: mobs and players with their armor and held items, GeckoLib models, dropped
+  items, block entities (chest lids, bells) and the first-person hand. The Bridge adds an attribute with each
+  vertex's position last frame to Iris's entity vertex format.
+
+Some things have no motion that the motion vectors could follow: particles, rain and snow, fire, lava and the
+portal's swirl. DLSS gets nothing extra for them. NVIDIA's current models ignore the "bias current colour" mask, and
+NVIDIA's guide says not to send one. FSR gets two masks from the patched pack. The red one marks where to trust this
+frame over FSR's history (particles, rain, the portal). The green one marks where a texture animates under still
+motion vectors (fire and lava).
+
+The cloud checked that the motion vectors are exact, and that the masks cut FSR's smear on fire, lava and the
+portal. This session checks all of it on the 4080 with NVIDIA's shader compiler and real DLSS, and Emre judges the
+look by eye. Is DLSS without masks as clean as FSR with them?
+
+**Frame times don't count in this session.** Emre may host his game server meanwhile, pinned to the CCD without the 3D
+V-Cache, with the test game on the X3D CCD. That's fine for pictures, but frame times get noisy. CPU costs, such as
+what working out the entities' motion costs, are measured later in a profiling pass on a quiet PC. Note in the
+report whether the server ran.
 
 ### Update
 
-Keep `$T\instance` and `saves\dlaa-test` (the far terrain stays). The two jars change (the Bridge is now 1.91.0, with
-pack 0.4.75's fixes; nothing else in the pack changed, so the old Bridge jar goes and the new one comes in), and the
-test kit's config is written fresh, since it needs the new `moving` viewpoint:
+Keep `$T\instance` and `saves\dlaa-test` (the far terrain stays). Swap the two jars and delete the test kit's config,
+so it is written fresh with the new viewpoints and modes:
 
 ```powershell
 git -C $T\repo pull
@@ -222,18 +242,44 @@ Copy-Item $T\repo\tools\dlss-testkit\dist\create-galore-dlss-testkit-1.0.0.jar $
 Remove-Item $T\instance\config\create_galore_dlss_testkit.json
 ```
 
-Check before the runs, as in round 2: `dlaa=true` and `perfectPresentation=false` in
-`config\create_galore_bridge-display.properties`, `earlyWindowControl = false`, `tutorialStep:none`, the Distant
-Horizons settings from step 3, and the NVIDIA App's DLSS override still off.
+Check before the runs, as in round 2:
+
+- `dlaa=true` and `perfectPresentation=false` in `config\create_galore_bridge-display.properties`;
+- `earlyWindowControl = false` and `tutorialStep:none`;
+- the Distant Horizons settings from step 3;
+- the NVIDIA App's DLSS override still off.
 
 The first launch remakes the Photon copy (the patch changed): its log has `DLAA: made shaderpacks/Photon v1.3a +
-DLAA from photon_v1.3a + Clrwl_1.0.5.zip`. Every run's log must have no `Could not compile shader`, no `this
-Colorwheel's shaders are not the ones the Bridge knows`, and the chat no `[Colorwheel] Current shader pack contains
-broken shaders`. If any of those shows, stop and report the lines around it.
+DLAA from photon_v1.3a + Clrwl_1.0.5.zip`. Every run's log must have none of these:
 
-The `moving` viewpoint looks out over the lake from the shore. When a run first gets there, the test kit builds a
-moving scene over the water (a creative motor turning shafts, a cogwheel, a large cogwheel and a fan; a second motor
-turning a bearing with a glued cross; a small Sable ship that turns and sways) and removes it when the run ends.
+- `Could not compile shader` or `Failed to create shader rendering pipeline`;
+- `this Colorwheel's shaders are not the ones the Bridge knows`;
+- `Missing elements in vertex` (a crash);
+- `DLAA: entity motion attribute at` (a warning).
+
+The chat must not show `[Colorwheel] Current shader pack contains broken shaders`. If any of these shows, stop and
+report the lines around it.
+
+The test kit builds two scenes over the lake when a run that goes to their viewpoint starts, and removes them when
+the run ends, so the world file never changes:
+
+- `moving`, looking out from the shore:
+  - a creative motor turning shafts, a cogwheel, a large cogwheel and a fan;
+  - a second motor turning a bearing with a glued cross;
+  - a small Sable ship that turns and sways;
+  - in front, a villager and an armor stand in iron armor walking in circles, and a red panda (Critters and
+    Companions) walking a circle at the front left;
+  - a diamond sword spinning in the air, a bell that keeps ringing, and a chest that keeps opening and closing.
+- `effects`, west of it:
+  - a nether portal;
+  - fire on netherrack;
+  - a campfire;
+  - a lava pool fed by a lava fall;
+  - a water fall into the lake;
+  - rain at full strength from the first frame while the camera is there. The pack's wet look fades out slowly
+    after rain, so the effects viewpoint gets a run of its own.
+
+The test world is peaceful, so the armor is on an armor stand.
 
 ### Runs
 
@@ -242,96 +288,99 @@ The launch command from step 4, with these JVM arguments (written as in step 5):
 | Run | Before it | Extra JVM arguments |
 | --- | --- | --- |
 | J | `perfectPresentation=false` | `...autorun=dlaa-test` `...modes=photon-taa+dlaa-default+dlaa-camera+fsr3` `-Dcreate_galore_dlss_testkit.viewpoints=moving` |
-| K | the config edit below | `...autorun=dlaa-test` `...modes=debug-motion+debug-residual` `...viewpoints=canopy+moving` |
+| K | config edit 1 | `...autorun=dlaa-test` `...modes=photon-taa+dlaa-default+fsr3+fsr3-nomask+debug-mask` `...viewpoints=effects` |
+| L | config edit 2 | `...autorun=dlaa-test` `...modes=debug-motion+debug-residual` `...viewpoints=canopy+moving` |
+| M | config edit 3 | `...autorun=dlaa-test` `...modes=debug-motion+debug-residual` `...viewpoints=moving` |
+| N | config edit 4 | `...autorun=dlaa-test` `...modes=debug-residual` `...viewpoints=moving` |
 
-`dlaa-camera` is DLAA with only the camera's motion (as before this milestone), so J shows what the new motion
-vectors change. Before K, set these in `config\create_galore_dlss_testkit.json` (written by run J): `"paths":
-["brief"]`, `"packSecondsPerFrame": 1.0`, `"dumpRaw": true`, `"shipTurnDegreesPerTick": 20.0`, `"shipSwayPerTick":
-0.5`. K saves DLSS's exact inputs for 8 frames in a row (`debug-residual\raw\*.npy`, about 200 MB); leaves and the
-ship move fast so each frame moves them by a few pixels. After K, delete the config file again.
+The modes:
 
-### By eye, with Emre (about 15 minutes)
+- `dlaa-camera` is DLAA with only the camera's motion, as before this milestone. J shows what the new motion vectors
+  change.
+- `fsr3-nomask` is FSR without its masks.
+- `debug-mask` shows the masks themselves: red is reactive, green is composition.
 
-Launch without the `autorun` argument, open the `dlaa-test` world, and give Emre these chat commands:
+The config edits go into `config\create_galore_dlss_testkit.json`, which run J writes:
 
-- `/dlaatest scene build`: puts the moving scene up over the lake, at the game's normal speed. The ship turns
-  slowly; stand on it to ride it.
-- `/dlaatest mode dlaa-default`, `/dlaatest mode dlaa-camera`, `/dlaatest mode photon-taa`, `/dlaatest mode fsr3`:
-  switch anti-aliasing (the shaders reload, a few seconds).
-- `/dlaatest scene remove` when done, then `/dlaatest mode dlaa-default`.
+1. Before K: `"paths": ["brief"]` and `"dumpRaw": true`. K saves DLSS's and FSR's inputs and outputs for the last 8
+   frames (`MODE\raw\*.npy`, about 0.6 GB per mode at 2560x1440).
+2. Before L: also `"packSecondsPerFrame": 1.0`, `"shipTurnDegreesPerTick": 20.0` and `"shipSwayPerTick": 0.5`. Leaves
+   and the ship move fast, so each frame moves them by a few pixels.
+3. Before M: `"shipTurnDegreesPerTick": 0.0` and `"shipSwayPerTick": 0.0`. The ship stands still, so the entities are
+   easier to tell apart. At 20 ticks a second and 2560x1440, the walkers still move a few pixels per frame.
+4. Before N: `"showHand": true`. The hand shows, with the HUD, holding a sword, and swings.
 
-Emre looks at the cogs, the fan, the bearing's cross and the ship, from the shore and riding the ship, in each mode.
-If he wants, he builds a short train in creative there and rides it too. Write down what he says, especially about
-the ship's glass block and anything else that smears or trails.
+After N, delete the config file again.
 
-### Results
+### By eye, with Emre (about 25 minutes)
 
-```powershell
-& $T\tools\uv\uv.exe run --python 3.13 --with pillow --with numpy $T\repo\tools\dlss-testkit\metrics.py <run J folder>
-& $T\tools\uv\uv.exe run --python 3.13 --with numpy $T\repo\tools\dlss-testkit\mvcheck.py <run K folder>
-```
+Launch without the `autorun` argument and open the `dlaa-test` world. Switch anti-aliasing with these commands (the
+shaders reload, which takes a few seconds):
 
-`mvcheck.py` moves each frame back along the motion vectors scaled by k; with exact motion vectors k = 1 matches best
-on every pair of frames (the cloud: 55 to 68% less difference than with none). Write
-`$T\repo\tools\dlss-testkit\results\m2-run1\REPORT.md`: both outputs, the `DLAA:` log lines, any Colorwheel or shader
-lines, frame times of J's modes, and Emre's notes from the session. Add crops (about 512x512) around the cogwheels,
-the bearing's cross and the ship from J's flick and still frames for all four modes under `results\m2-run1\J\`, a few
-MB in all. Commit and push on the DLAA branch (no `raw\` files).
+- `/dlaatest mode dlaa-default`
+- `/dlaatest mode dlaa-camera`
+- `/dlaatest mode photon-taa`
+- `/dlaatest mode fsr3`
+- `/dlaatest mode fsr3-nomask`
 
-## Milestone 2, PC run 2: entities
+1. Moving things, about 15 minutes. `/dlaatest scene build` puts the moving scene up over the lake at the game's
+   normal speed.
+   - Emre looks at the cogs, the fan, the bearing's cross, the ship, the walkers, the panda, the spinning sword, the
+     chest and the bell. He watches from the shore, close up and riding the ship (stand on it), in `dlaa-default`,
+     `dlaa-camera`, `photon-taa` and `fsr3`.
+   - If he wants, he builds a short train in creative and rides it.
+   - Then he swings his own sword, and walks and looks around holding things (a sword, a block, a map).
+   - If he wants, he spawns a few animals with spawn eggs and lets them wander. Afterwards, run
+     `/kill @e[type=!player,distance=..64]`.
+   - `/dlaatest scene remove` when done.
+2. Rain, fire and the portal, about 10 minutes. `/dlaatest scene build effects` puts up the effects scene and starts
+   the rain.
+   - Emre looks at the portal, the fire, the campfire's smoke, the lava fall and pool, the water fall and the rain.
+     He stands still and turns the camera, in `dlaa-default`, `fsr3`, `fsr3-nomask` and `photon-taa`.
+   - `/dlaatest scene remove` takes the scene away and stops the rain.
 
-Same PC, test folder and tools, nothing new to install. Start it only when Emre says so, after run 1. Photon's copy
-now also gives DLSS the motion of what the game draws vertex by vertex: mobs and players with their armor and held
-items, GeckoLib models, dropped items, block entities (chest lids, bells) and the first-person hand. The Bridge adds an
-attribute to Iris's entity vertex format with each vertex's position last frame. The cloud checked it exact for a
-walking villager, an armor stand in iron armor with a sword, a GeckoLib red panda, a spinning dropped sword, a chest
-opening and closing, a ringing bell and the swinging hand.
+Then `/dlaatest mode dlaa-default`. Write down what he says, especially:
 
-### Update
-
-Same as run 1's update: pull, swap the Bridge jar (`Remove-Item` the old one first), copy the kit jar, delete the kit's
-config. The first launch remakes the Photon copy again (patch 5). The same log checks as run 1, plus: no `Missing
-elements in vertex` anywhere (a crash), and no `DLAA: entity motion attribute at` warning.
-
-The moving scene now also has, in front: a villager and an armor stand walking in circles, a red panda (Critters and
-Companions) walking in a circle at the front left, a diamond sword spinning in the air, a bell that keeps ringing and
-a chest that keeps opening and closing. The test world is peaceful, so the armor is on an armor stand.
-
-### Runs
-
-| Run | Before it | Extra JVM arguments |
-| --- | --- | --- |
-| L | `perfectPresentation=false` | `...autorun=dlaa-test` `...modes=photon-taa+dlaa-default+dlaa-camera+fsr3` `...viewpoints=moving` |
-| M | the config edit below | `...autorun=dlaa-test` `...modes=debug-motion+debug-residual` `...viewpoints=moving` |
-| N | `"showHand": true` too | `...autorun=dlaa-test` `...modes=debug-residual` `...viewpoints=moving` |
-
-Before M, set in `config\create_galore_dlss_testkit.json` (written by run L): `"paths": ["brief"]`,
-`"packSecondsPerFrame": 1.0`, `"dumpRaw": true`, `"shipTurnDegreesPerTick": 0.0` and `"shipSwayPerTick": 0.0` (the
-ship stands still, so the entities are easier to tell apart; at 20 ticks a second and 2560x1440 the walkers still
-move a few pixels per frame). Before N, add `"showHand": true`: the hand shows (with the HUD) holding a sword and
-swings. After N, delete the config file again.
-
-Compare L's frame times of `dlaa-default` and `dlaa-camera`: the difference is what working out the entities' motion
-costs the CPU (the cloud cannot measure it).
-
-### By eye, with Emre (about 15 minutes)
-
-As in run 1: `/dlaatest scene build`, then switch modes with `/dlaatest mode ...` and look at the walkers, the panda,
-the spinning sword, the chest and the bell, from the shore and close up. Then Emre swings his own sword and walks and
-looks around holding things (a sword, a block, a map), and if he wants spawns a few animals with spawn eggs and lets
-them wander (afterwards `/kill @e[type=!player,distance=..64]`). Write down what he says, especially anything that
-smears, trails or flickers on entities or the hand.
+- anything that smears, trails or flickers: the ship's glass block, the entities, the hand;
+- which mode keeps the fire, lava, portal and particles clean;
+- whether rain fades out or leaves streaks;
+- whether anything shimmers more under rain.
 
 ### Results
 
 ```powershell
-& $T\tools\uv\uv.exe run --python 3.13 --with pillow --with numpy $T\repo\tools\dlss-testkit\metrics.py <run L folder>
-& $T\tools\uv\uv.exe run --python 3.13 --with numpy $T\repo\tools\dlss-testkit\mvcheck.py <run M folder> panda=0,880,640,1400 chest=340,760,620,1080 stand=1800,940,2400,1400 bell=2160,880,2320,1040 villager=940,660,1140,1020 item=1360,680,1540,880
-& $T\tools\uv\uv.exe run --python 3.13 --with numpy $T\repo\tools\dlss-testkit\mvcheck.py <run N folder> hand=1280,720,2560,1440
+$py = "$T\tools\uv\uv.exe"
+& $py run --python 3.13 --with pillow --with numpy $T\repo\tools\dlss-testkit\metrics.py <run J folder>
+& $py run --python 3.13 --with pillow --with numpy $T\repo\tools\dlss-testkit\ghostcheck.py <run K folder> portal=330,760,590,1070 fire=780,920,1050,1090 campfire=1110,930,1240,1090 lavafall=1440,510,1590,820 lavapool=1400,810,1870,990 waterfall=1930,410,2150,980 smoke=1950,920,2130,1050 sky=0,0,2560,400 bricks=600,1160,1280,1300
+& $py run --python 3.13 --with numpy $T\repo\tools\dlss-testkit\mvcheck.py <run L folder>
+& $py run --python 3.13 --with numpy $T\repo\tools\dlss-testkit\mvcheck.py <run M folder> panda=0,880,640,1400 chest=340,760,620,1080 stand=1800,940,2400,1400 bell=2160,880,2320,1040 villager=940,660,1140,1020 item=1360,680,1540,880
+& $py run --python 3.13 --with numpy $T\repo\tools\dlss-testkit\mvcheck.py <run N folder> hand=1280,720,2560,1440
 ```
 
-The boxes are for a 2560x1440 window (scale them for another size); each is one thing's moving pixels, checked apart
-from the rest. With exact motion vectors k = 1 matches best in every table (sub-pixel motion, like the bell's quiet
-end, is too small to tell). Write `$T\repo\tools\dlss-testkit\results\m2-run2\REPORT.md` as for run 1 (outputs, log
-lines, frame times, Emre's notes) with crops around the walkers, the panda, the chest and the hand from L under
-`results\m2-run2\L\`. Commit and push on the DLAA branch (no `raw\` files).
+The boxes are for a 2560x1440 window. Scale them for another size. Each box is one thing's pixels, checked apart from
+the rest.
+
+- `mvcheck.py` moves each frame back along the motion vectors, scaled by k. With exact motion vectors, k = 1 matches
+  best in every table. The cloud found 55 to 68% less difference than with no motion vectors. Sub-pixel motion, like
+  the bell's quiet end, is too small to tell.
+- `ghostcheck.py` finds the pixels the motion vectors cannot explain and shows how much of the last frame the output
+  still shows there: `kept` from 0 to 1, and `off` in levels from this frame's input. Lower on the portal, fire,
+  lava and smoke means less smear. `bricks` is the still platform under the rain, the reference for normal
+  anti-aliasing. Compare `dlaa-default` with `fsr3` and `fsr3-nomask`. In the cloud at 1280x720,
+  the masks cut FSR's `off` by about 30 to 45% on those boxes: lava pool from 16.0 to 9.3, portal from 11.3 to 6.6,
+  fire from 14.2 to 9.5.
+
+Write `$T\repo\tools\dlss-testkit\results\m2\REPORT.md` with:
+
+- the script outputs, without conclusions from J's frame times;
+- the `DLAA:` log lines, and any Colorwheel or shader lines;
+- whether the game server ran meanwhile;
+- Emre's notes from the session.
+
+Add crops of about 512x512 from the still frames, for each mode:
+
+- under `results\m2\J\`: the cogwheels, the bearing's cross, the ship, the walkers, the panda and the chest;
+- under `results\m2\K\`: the portal, the fire and the lava, plus K's `ghostcheck\*.png` sheets.
+
+That comes to a few MB in all. Commit and push on the DLAA branch, without any `raw\` files, then delete the `raw\`
+folders.
