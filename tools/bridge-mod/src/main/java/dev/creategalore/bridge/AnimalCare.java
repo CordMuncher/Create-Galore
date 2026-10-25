@@ -110,6 +110,10 @@ public final class AnimalCare {
         if (care.daysSinceFed > 1) {
             text.append(Component.literal("§cHungry: " + care.daysSinceFed + " days §7(happiness falls)\n"));
         }
+        if (care.daysSinceFed > 0 && !AnimalTroughs.foodInReach(animal)) {
+            text.append(Component.literal("§cNo trough it can reach has its food §7(eats " + AnimalTroughs.foodNames(animal)
+                + ", within " + AnimalTroughs.REACH + " blocks)\n"));
+        }
 
         if (animal instanceof Cow && !male && care.isSick) {
             text.append(Component.literal("§fMilk: §cnone while sick"));

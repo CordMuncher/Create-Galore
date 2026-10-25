@@ -5,6 +5,37 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.4.79
+
+### Fixed
+- **Farm animals no longer starve beside full troughs.** A player's tamed animals kept going hungry, unhappy and sick in a farm with wheat in troughs everywhere, in the barn and out in the field. Animal Husbandry counts an animal's days on the world clock, but the animal only runs while its chunk is simulated: a farm left behind (a trip, another dimension, the far end of a big base) stood still, and the moment it ran again every animal counted all the missed days at once, unfed for each, losing 10 happiness a day and rolling for sickness from starving, before it could take a step to the trough beside it. Now an animal coming back eats one meal for each missed day except today from the troughs it can reach (nearest first, two for a Glutton), then walks over for today's. When its troughs run out partway, the days it went without still count.
+- **Hungry animals find the trough they can reach.** The trough search took the first trough in a square around the animal, not the nearest, and only managed paths 16 blocks long, so a trough 17 blocks off was never reached and the animal kept searching every other tick. It now walks to the nearest trough with its food it can get to within 20 blocks (4 up or down, paths up to 24 blocks), leaves a trough it can't reach for 30 s while it tries the next, and gives up a walk that takes over 30 s, so a crowd at one trough sends it to another.
+- **The Farm Magnifying Glass says when no trough in reach has an animal's food**, and what it eats (wheat for cows, sheep and goats, carrots or potatoes for pigs, seeds for chickens).
+- Checked on a test server with a barn and a fenced field, 30 tamed animals and 21 troughs, left alone for three 4-day trips: before, every animal ended sick at happiness 0 with the troughs still mostly full; now cows, sheep, goats and pigs came back each time fed, at happiness 77 to 100, and the troughs went down by what they ate. Cows 17 and 19 blocks from a lone trough never ate before and now walk to it.
+- The Field Guide's animal page says how troughs work.
+- Create Galore Bridge 1.94.0.
+
+## 0.4.78
+
+### Fixed
+- **Ask the Book no longer stops answering on a page.** A player asked a follow-up on a page and the book only said it could not answer. The API refused the question because a piece of the book's earlier reasoning on that page no longer matched the page. Now the API leaves out reasoning that no longer matches and answers anyway, the book asks once more without its earlier reasoning if the API still refuses, and the server log names what no longer matched. A tool's answer can also no longer change the record of the call that asked for it. Checked on a test server against a stand-in API: a first question and a follow-up on the same page, a page whose reasoning was left out, and a refused page that answered on the second try.
+- Create Galore Bridge 1.93.0.
+
+## 0.4.77
+
+### Added
+- **Ask the Book knows every creature in the world.** It can now look up any creature from any mod: what it is called and which mod adds it, whether it flies, swims, is hostile or a boss, the main colours of its skin, its health, attack and size, the biomes it spawns in and what it drops, and which creatures are around you right now (even one that just flew off screen). Ask about something by how it looks ("a big green dragon that breathes fire") and it finds what fits, and it no longer tells you a creature you saw doesn't exist.
+- **The Field Guide describes the Naga.** The Mowzie's Mobs page now says what the Naga is (a big green winged sea serpent that looks like a dragon), where and when it flies, how it fights, how to bring it down and what it drops, and that the Twilight Forest's Naga is another creature.
+
+### Fixed
+- **Ask the Book no longer denies the Naga.** A player asked how to kill the big green fire breathing dragons flying around and was told they must mean the Ender Dragon or dragonflies. They were Mowzie's Mobs Nagas, which the book only knew by name. Checked on a test server with Nagas flying above a player: looking around finds them 26 blocks off and 5 up, "naga" gives both Nagas (Mowzie's flying one with 30 health and its Naga Fang, and the Twilight Forest boss), and "big green flying" lists the Naga among the large green flyers.
+- Create Galore Bridge 1.92.0.
+
+## 0.4.76
+
+### Fixed
+- **Updating a server from start-server no longer crashes right after the update.** When the Server Setup app updated a server from the update question at start, it rewrote the update check's own file (create-galore-updater.jar) while that check was still running. The update itself finished, but the check then failed with "NoClassDefFoundError: FieldGuideKey" instead of starting the server, and only started it on the next try. The app now leaves the running file alone and puts the new one next to it, which start-server swaps in the next time, and the check loads all of itself before updating, so a changed file under it can't break it either. Reproduced on a test machine by rewriting the check's file while it ran: the same error before the fix, the server starting after it. Nothing on an updated server was harmed by the crash: starting again was enough.
+
 ## 0.4.75
 
 ### Fixed

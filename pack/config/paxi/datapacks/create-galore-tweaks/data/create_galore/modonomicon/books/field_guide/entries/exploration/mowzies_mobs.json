@@ -57,6 +57,19 @@
       "text": "Smaller mobs: Foliaath, Lantern, Grottol (a mineral creature), Bluff, Naga and Elokosa.\\\n\\\nFrostmaw's [Ice Crystal](item://mowziesmobs:ice_crystal) is a weapon. Bosses: [#](2E5AAC)[Bosses](entry://exploration/bosses)[#]()."
     },
     {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "mowziesmobs:naga_fang"
+      },
+      "title": "Naga",
+      "text": "A big green winged sea serpent that looks like a dragon. At night Nagas fly in ones and twos over beaches and stony shores by hills and mountains, spitting balls of acid (**3** damage and Poison) and swooping at you."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Hit a Naga while it spits or swoops (an arrow is easiest) and it crashes to the ground, where it is easy to finish. It has **30** health.\\\n\\\nIt drops a [Naga Fang](item://mowziesmobs:naga_fang), for a Naga Fang Dagger, darts or a Potion of Poison Resistance.\\\n\\\nThe Twilight Forest's Naga is another creature, a giant snake boss: [#](2E5AAC)[Twilight Forest](entry://exploration/twilight_forest)[#]()."
+    },
+    {
       "type": "modonomicon:text",
       "title": "",
       "text": "[#](FFFFFF)\ue10b[#]() **Boss health** (2 health is one heart): Frostmaw **175**, Umvuthi **105**, the Sculptor **98**, Ferrous Wroughtnaut **28**. Their structures generate as usual."
