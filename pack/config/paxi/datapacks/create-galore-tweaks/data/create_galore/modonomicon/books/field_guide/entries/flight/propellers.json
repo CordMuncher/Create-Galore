@@ -71,6 +71,11 @@
     },
     {
       "type": "modonomicon:text",
+      "title": "Big fans",
+      "text": "A Propeller Bearing pushes 0.2 x sails^1.5 x RPM for 2 stress units per sail per RPM, so a big fan pushes more for the same engines: 13 sails at 128 RPM push 1200, more than four Wooden Propellers at 256 RPM.\\\n\\\nTwo Portable Engines on one shaft at the same speed add up their stress and turn one such fan."
+    },
+    {
+      "type": "modonomicon:text",
       "title": "Through gearboxes",
       "text": "[#](FFFFFF)\ue101[#]() **Watch out:** a gearbox turns its straight-through side the other way from its sideways sides. Propellers fed through different gearbox faces can push against each other.\\\n\\\nWatch which way each one blows, and wrench the front of any that pushes backward to reverse it."
     },
