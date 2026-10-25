@@ -55,7 +55,7 @@ import org.slf4j.LoggerFactory;
 public final class PhotonPatcher {
     private static final Logger LOG = LoggerFactory.getLogger("create_galore_bridge");
     /** Bumped when the patch changes, so existing copies are made again. */
-    private static final int PATCH_VERSION = 7;
+    private static final int PATCH_VERSION = 8;
     private static final String BASE_ZIP = "photon_v1.3a.zip";
     /** Colorwheel Patcher's copy of {@link #BASE_ZIP}; an outdated one gets a prefix and no longer matches. */
     private static final Pattern COLORWHEEL_ZIP = Pattern.compile("photon_v1\\.3a \\+ Clrwl_(\\d+)\\.(\\d+)\\.(\\d+)\\.zip");
@@ -67,7 +67,7 @@ public final class PhotonPatcher {
     private PhotonPatcher() {}
 
     /**
-     * Makes the copy when DLAA is on. Runs while mixins load, before Iris first looks for its shader pack; touches
+     * Makes the copy unless DLAA is set to off. Runs while mixins load, before Iris first looks for its shader pack; touches
      * no game classes.
      */
     public static synchronized void prepare() {
@@ -75,7 +75,7 @@ public final class PhotonPatcher {
             return;
         }
         prepared = true;
-        if (DisplaySettings.get(DisplaySettings.DLAA)) {
+        if (!"off".equals(DisplaySettings.dlaaEngine())) {
             run(FMLPaths.GAMEDIR.get().resolve("shaderpacks"));
         }
     }
@@ -85,7 +85,7 @@ public final class PhotonPatcher {
      * made or updated its zip. True if it did, so the shaders need a reload when the copy is the pack in use.
      */
     static synchronized boolean refresh() {
-        return DisplaySettings.get(DisplaySettings.DLAA) && run(FMLPaths.GAMEDIR.get().resolve("shaderpacks"));
+        return !"off".equals(DisplaySettings.dlaaEngine()) && run(FMLPaths.GAMEDIR.get().resolve("shaderpacks"));
     }
 
     /** Makes or refreshes the patched copy if the pack's Photon zip is there; true if it made it. Never throws. */
@@ -401,18 +401,28 @@ public final class PhotonPatcher {
     /**
      * The solid hand also writes colortex13, Photon's translucent layer, with nothing: particles drawn there before the
      * hand (Photon blends that layer over the hand) no longer show through it. Translucent parts of held items are
-     * drawn after the solid hand, so they stay. Last of the program's RENDERTARGETS, so it is the one Iris uses.
+     * drawn after the solid hand, so they stay. Last of the program's RENDERTARGETS, so it is the one Iris uses. Where
+     * the program keeps no colortex2 (normal mapping, specular mapping and motion vectors off, as with POM alone or
+     * TAAU), gbuffer_data_1 carries the cover to colortex13 instead, so colortex2 stays as Photon leaves it.
      */
     private static final String HAND_COVER_OUTPUT = """
             #ifdef PROGRAM_GBUFFERS_HAND
+            #if defined NORMAL_MAPPING || defined SPECULAR_MAPPING || defined CG_MOTION_GBUFFER
             layout(location = 2) out vec4 cg_hand_cover;
             /* RENDERTARGETS: 1,2,13 */
+            #else
+            /* RENDERTARGETS: 1,13 */
+            #endif
             #endif
             """;
 
     private static final String HAND_COVER_WRITE = """
             #ifdef PROGRAM_GBUFFERS_HAND
+            #if defined NORMAL_MAPPING || defined SPECULAR_MAPPING || defined CG_MOTION_GBUFFER
                 cg_hand_cover = vec4(0.0);
+            #else
+                gbuffer_data_1 = vec4(0.0);
+            #endif
             #endif
 
             """;

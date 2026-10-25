@@ -4660,11 +4660,6 @@ file = "config/wover/client.json"
 hash = "2adb47f027bc307b25168eff0666e84181f9c8d6e4318402e4a45fe9096d818f"
 
 [[files]]
-file = "create-galore-dlss/nvngx_dlss.pw.toml"
-hash = "05b49207bf0097065ea4c865c1cc8743246802babb9710c4c5d0aaa3ac59690c"
-metafile = true
-
-[[files]]
 file = "mods/advanced-chimneys.pw.toml"
 hash = "8b1c78c3a507c852b91fe9fc28bcff26c8b7adfbae8a2ba87e460c97f1aa71b6"
 metafile = true
@@ -4995,8 +4990,8 @@ hash = "db683b65dc15a03dd6de2d34d5dc6ad0e3490744ced513a8cc584784ee9d3d8b"
 metafile = true
 
 [[files]]
-file = "mods/create-galore-bridge-1.94.0.jar"
-hash = "da89c9ee250a44bc78cbac7aeba46b8cf1f0c8d6dc7e964cd4751a640d73953b"
+file = "mods/create-galore-bridge-1.95.0.jar"
+hash = "c7440ea4419c5d42516e6c7f6a1f222e16fa3899baa8952b9565aba7fdb49eba"
 
 [[files]]
 file = "mods/create-galore-fishing-0.3.17.jar"

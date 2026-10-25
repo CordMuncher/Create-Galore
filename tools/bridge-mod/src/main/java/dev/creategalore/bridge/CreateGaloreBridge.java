@@ -10,6 +10,7 @@ import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.PushReaction;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.loading.FMLEnvironment;
@@ -56,7 +57,7 @@ public final class CreateGaloreBridge {
         return ITEMS.register(name, () -> new BossCompassItem(new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON), structure, TWILIGHT));
     }
 
-    public CreateGaloreBridge(IEventBus modBus) {
+    public CreateGaloreBridge(IEventBus modBus, ModContainer container) {
         ITEMS.register(modBus);
         BLOCKS.register(modBus);
         modBus.addListener(CreateGaloreBridge::addToTabs);
@@ -79,7 +80,7 @@ public final class CreateGaloreBridge {
         AnimalTroughs.register();
         Wear.register(modBus);
         if (FMLEnvironment.dist.isClient()) {
-            BridgeClient.init(modBus);
+            BridgeClient.init(modBus, container);
         }
     }
 

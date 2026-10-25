@@ -34,19 +34,23 @@ import org.slf4j.LoggerFactory;
  * handed to the pack as cg_dlss_jitter_x/y), the pack's TAA pass turns into a copy that also writes DLSS's inputs, and
  * right after that pass {@link DlssPass} runs DLSS and writes its result where TAA's would have gone.
  *
- * config/create_galore_bridge-display.properties: dlaa=true turns it on, dlaaPreset picks the DLSS preset; both are
- * read again when shaders reload. It runs on Perfect Presentation's DirectX device when that is on, else on its own
- * (see {@link DlssDevice}). Anything missing (not Windows, no NVIDIA RTX card, no nvngx_dlss.dll, an unpatched pack, a
- * pack option that the patch does not cover) leaves the pack's own anti-aliasing in place and says why in the log.
+ * config/create_galore_bridge-display.properties (or the settings screen, {@link DlaaScreen}): dlaa picks the engine,
+ * auto (DLSS where it can run, else AMD FSR 3.1 at full resolution), dlss, fsr3 or off; dlaaPreset picks the DLSS
+ * preset. Both are read again when shaders reload. DLSS runs on Perfect Presentation's DirectX device when that is on,
+ * else on its own (see {@link DlssDevice}). Anything missing (not Windows, no NVIDIA RTX card, no nvngx_dlss.dll, an
+ * unpatched pack, a pack option that the patch does not cover) leaves the pack's own anti-aliasing in place, says why
+ * in the log and once in a notice, and the settings screen shows it. An engine that took the game down while it
+ * started stays off until the player tries it again ({@link StartGuard}).
  *
  * For testing: dlaaDebugView=color|motion|depth|residual|mask in the display settings (or the system property
  * create_galore_bridge.dlss.debugView) draws that DLSS input instead of running DLSS (any GPU, no NGX);
- * dlaaEngine=fsr3 (or create_galore_bridge.dlss.engine) runs AMD FSR 3.1 in DLSS's place with FSR's own jitter
- * period ({@link Fsr3Upscaler}, OpenGL, any GPU), and dlaaDebugView=fsr3 shows FSR's own view of its buffers;
+ * FSR 3.1 runs with its own jitter period ({@link Fsr3Upscaler}, OpenGL, any GPU), and dlaaDebugView=fsr3 shows
+ * FSR's own view of its buffers;
  * create_galore_bridge.dlss.dllDir loads nvngx_dlss.dll from another folder (the
  * SDK's dev build shows DLSS's own debug overlay); dlaaJitterSign=x,y in the display settings (or the system property
  * create_galore_bridge.dlss.jitterSign) flips the jitter handed to DLSS; dlaaObjectMotion=false and
  * dlaaReactiveMask=false leave out the motion of things that move by themselves and FSR's masks, for comparing;
+ * dlaaAutoExposure=true has DLSS meter the exposure itself with presets J and K too (L and M always do);
  * create_galore_bridge.dlss.markers=true names the DLAA work for GPU profilers ({@link Markers}).
  */
 public final class Dlss {
@@ -54,12 +58,14 @@ public final class Dlss {
     /** NGX needs a GUID-like id from apps without an NVIDIA application id. */
     private static final String PROJECT_ID = "0f4d213d-b46a-4c91-9f2f-baac70721d6b";
     private static final String ENGINE_VERSION = "1.21.1";
-    /** In the game folder: nvngx_dlss.dll (put there by the pack's updater), the helper DLL and NGX's logs. */
-    private static final String FOLDER = "create-galore-dlss";
+    /** In the game folder: nvngx_dlss.dll (the player's own), the helper DLL, NGX's logs and the start marks. */
+    static final String FOLDER = "create-galore-dlss";
+    /** The nvngx_dlss.dll this was tested with (NVIDIA's DLSS SDK on GitHub). */
+    static final String TESTED_DLL_VERSION = "310.9.16";
+    static final String DLL = "nvngx_dlss.dll";
     private static final String DLL_DIR_PROPERTY = "create_galore_bridge.dlss.dllDir";
     private static final String DEBUG_VIEW_PROPERTY = "create_galore_bridge.dlss.debugView";
     private static final String JITTER_SIGN_PROPERTY = "create_galore_bridge.dlss.jitterSign";
-    private static final String ENGINE_PROPERTY = "create_galore_bridge.dlss.engine";
     private static final String OBJECT_MOTION_PROPERTY = "create_galore_bridge.dlss.objectMotion";
     private static final String REACTIVE_MASK_PROPERTY = "create_galore_bridge.dlss.reactiveMask";
     /** DLSS's jitter period; FSR 3 uses its own (8 at full size). */
@@ -70,22 +76,26 @@ public final class Dlss {
     private static final int MISSED_FRAMES_LIMIT = 3;
     // NVSDK_NGX_DLSS_Hint_Render_Preset
     private static final int PRESET_DEFAULT = 0;
-    private static final int PRESET_J = 10;
-    private static final int PRESET_K = 11;
     private static final int PRESET_L = 12;
     private static final int PRESET_M = 13;
 
     // Read when shaders (re)load.
+    /** auto, dlss, fsr3 or off. */
+    private static String engine = "auto";
     private static boolean wanted;
     private static float[] jitterSign = {1.0f, 1.0f};
     private static int preset = PRESET_DEFAULT;
+    /** DLSS refused the preset typed in, so it runs default. */
+    private static boolean presetFellBack;
+    /** DLSS meters the exposure itself with J and K too (testing). */
+    private static boolean autoExposureTest;
     private static DlssPass.View debugView;
     /** Things that move by themselves give their own motion vectors (else only the camera's motion; for comparing). */
     private static boolean objectMotion = true;
     /** FSR 3 gets the pack's reactive and composition masks (else none; for comparing). */
     private static boolean reactiveMask = true;
     private static volatile String[] dumpRequest;
-    /** FSR 3 in place of DLSS (testing). */
+    /** FSR 3 runs, not DLSS: picked, or Auto's choice where DLSS cannot run. */
     private static boolean fsr3;
     /** FSR 3 draws its own debug view. */
     private static boolean fsr3Debug;
@@ -99,6 +109,13 @@ public final class Dlss {
     // For the session.
     /** Why DLSS cannot run on this computer, once that is known. */
     private static String unavailable;
+    /** It cannot only because nvngx_dlss.dll is missing: looked for again when shaders reload. */
+    private static boolean unavailableNoDll;
+    private static String adapterName;
+    private static String fsrRenderer;
+    private static StartGuard dlssGuard;
+    private static StartGuard fsrGuard;
+    private static final java.util.Set<String> noticesShown = new java.util.HashSet<>();
     private static NgxLibrary ngx;
     private static DlssDevice device;
     private static DlssPass pass;
@@ -153,13 +170,22 @@ public final class Dlss {
     public static void onPipelineCreated() {
         ObjectMotion.reset();
         DisplaySettings.reload();
-        wanted = DisplaySettings.get(DisplaySettings.DLAA);
+        engine = DisplaySettings.dlaaEngine();
+        wanted = !engine.equals("off");
         String presetName = DisplaySettings.getString(DisplaySettings.DLAA_PRESET, "default");
         preset = parsePreset(presetName);
+        presetFellBack = false;
+        autoExposureTest = DisplaySettings.get(DisplaySettings.DLAA_AUTO_EXPOSURE);
         String debugName = DisplaySettings.getString(DisplaySettings.DLAA_DEBUG_VIEW, System.getProperty(DEBUG_VIEW_PROPERTY, ""));
         fsr3Debug = debugName.trim().equalsIgnoreCase("fsr3");
         debugView = fsr3Debug ? null : parseDebugView(debugName);
-        fsr3 = fsr3Debug || parseEngine(DisplaySettings.getString(DisplaySettings.DLAA_ENGINE, System.getProperty(ENGINE_PROPERTY, "dlss")));
+        if (fsr3Debug) {
+            engine = "fsr3";
+        }
+        fsr3 = engine.equals("fsr3");
+        if (unavailableNoDll) {
+            unavailable = null; // looks for nvngx_dlss.dll again
+        }
         jitterSign = parseJitterSign(DisplaySettings.getString(DisplaySettings.DLAA_JITTER_SIGN, System.getProperty(JITTER_SIGN_PROPERTY, "1,1")));
         objectMotion = !DisplaySettings.getString(DisplaySettings.DLAA_OBJECT_MOTION, System.getProperty(OBJECT_MOTION_PROPERTY, "true"))
                 .trim().equalsIgnoreCase("false");
@@ -179,16 +205,17 @@ public final class Dlss {
         } catch (IOException | RuntimeException e) {
             packProblem = "its " + PackProfile.FILE + " could not be read: " + e;
         }
-        if (packProblem != null) {
-            LOG.info("DLAA: not used with this shader pack, {}", packProblem);
-        } else if (fsr3 && debugView == null) {
-            LOG.info("DLAA: on for this shader pack, AMD FSR 3.1 in place of DLSS (testing){}{}",
-                    jitterSign[0] != 1.0f || jitterSign[1] != 1.0f ? ", jitter sign " + (int) jitterSign[0] + "," + (int) jitterSign[1] : "",
-                    fsr3Debug ? " (FSR's debug view)" : "");
+        String jitter = jitterSign[0] != 1.0f || jitterSign[1] != 1.0f ? ", jitter sign " + (int) jitterSign[0] + "," + (int) jitterSign[1] : "";
+        if (profile == null && packProblem != null) {
+            LOG.info("DLAA: not used with the shader pack {}, {}", Iris.getCurrentPackName(), packProblem);
+        } else if (packProblem != null) {
+            LOG.info("DLAA: off with these {} options, {}", PhotonPatcher.PATCHED_NAME, packProblem);
+        } else if (debugView != null) {
+            LOG.info("DLAA: on for this shader pack, debug view {} (DLSS itself not used){}", debugView.name().toLowerCase(Locale.ROOT), jitter);
         } else {
-            LOG.info("DLAA: on for this shader pack, preset {}{}{}", presetName,
-                    jitterSign[0] != 1.0f || jitterSign[1] != 1.0f ? ", jitter sign " + (int) jitterSign[0] + "," + (int) jitterSign[1] : "",
-                    debugView != null ? " (debug view " + debugView.name().toLowerCase(Locale.ROOT) + ", DLSS itself not used)" : "");
+            LOG.info("DLAA: on for this shader pack, engine {}, DLSS preset {}{}{}{}", engine, presetName(preset),
+                    presetName.equalsIgnoreCase(presetName(preset)) || presetName.isEmpty() ? "" : " (set to " + presetName + ")",
+                    autoExposureTest ? ", DLSS auto exposure (testing)" : "", jitter + (fsr3Debug ? " (FSR's debug view)" : ""));
         }
     }
 
@@ -214,6 +241,9 @@ public final class Dlss {
         lastFrameNanos = now;
 
         boolean wasActive = active;
+        if (wanted && profile != null && packProblem != null) {
+            notice("pack:" + packProblem, "DLAA is off with these Photon options", packProblem);
+        }
         active = wanted && profile != null && packProblem == null && !failed && !shuttingDown && ensureReady();
         EntityMotion.beginFrame(active, Minecraft.getInstance().gameRenderer.getMainCamera().getPosition());
         if (!active) {
@@ -302,22 +332,34 @@ public final class Dlss {
                 return;
             }
             boolean resized = pass.ensureSize(in.width(), in.height());
-            // L always meters exposure itself; M is asked to as well, the pack's value is for J and K.
-            boolean autoExposure = preset == PRESET_L || preset == PRESET_M;
+            int usePreset = presetFellBack ? PRESET_DEFAULT : preset;
+            // NVIDIA: DLSS takes the game's exposure with J and K only, L and M always meter it themselves (asked to
+            // here as well). The pack's exposure is the one its tone mapping uses, as DLSS wants.
+            boolean autoExposure = usePreset == PRESET_L || usePreset == PRESET_M || autoExposureTest;
             int flags = NgxLibrary.FLAG_IS_HDR | NgxLibrary.FLAG_MV_LOW_RES | NgxLibrary.FLAG_DEPTH_INVERTED
                     | (autoExposure ? NgxLibrary.FLAG_AUTO_EXPOSURE : 0);
-            if (resized || flags != featureFlags || preset != featurePreset) {
+            if (resized || flags != featureFlags || usePreset != featurePreset) {
                 featureFlags = -1;
+                dlssGuard.starting();
                 int result = ngx.create(device.context, in.width(), in.height(), in.width(), in.height(),
-                        NgxLibrary.PERF_QUALITY_DLAA, flags, preset);
+                        NgxLibrary.PERF_QUALITY_DLAA, flags, usePreset);
                 ngx.drainLog();
+                if (NgxLibrary.failed(result) && usePreset != PRESET_DEFAULT) {
+                    LOG.warn("DLAA: DLSS refused preset {} ({}), running its default preset", presetName(usePreset), NgxLibrary.describe(result));
+                    presetFellBack = true;
+                    usePreset = PRESET_DEFAULT;
+                    result = ngx.create(device.context, in.width(), in.height(), in.width(), in.height(),
+                            NgxLibrary.PERF_QUALITY_DLAA, flags, usePreset);
+                    ngx.drainLog();
+                }
                 if (NgxLibrary.failed(result)) {
                     throw new IllegalStateException("DLSS could not start at " + in.width() + "x" + in.height() + ": " + NgxLibrary.describe(result));
                 }
                 featureFlags = flags;
-                featurePreset = preset;
+                featurePreset = usePreset;
                 reset = true;
-                LOG.info("DLAA: DLSS running at {}x{}, preset {}", in.width(), in.height(), presetName(preset));
+                LOG.info("DLAA: DLSS running at {}x{}, preset {}{}", in.width(), in.height(), presetName(usePreset),
+                        autoExposure ? ", DLSS meters the exposure" : ", the pack's exposure");
             }
             boolean resetNow = reset;
             int[] result = new int[1];
@@ -329,16 +371,22 @@ public final class Dlss {
                 throw new IllegalStateException("DLSS failed: " + NgxLibrary.describe(result[0]));
             }
             reset = false;
+            dlssGuard.ran();
             dumpIfAsked(pass, true);
             Markers.around("Create Galore DLAA: write back", () -> pass.writeBack(profile, DlssPass.View.RESULT));
         } catch (Throwable t) {
             failed = true;
+            guard().stopped();
             LOG.error("DLAA: stopped, the pack's own anti-aliasing is back from the next frame (reloading shaders tries DLAA again)", t);
+            notice("failed:" + t, "DLAA stopped after an error", "Photon's own anti-aliasing is back. Reloading shaders (F8) tries again; the log says what went wrong.");
         }
     }
 
     private static void runFsr3(DlssPass.Inputs in) {
         boolean resized = fsrPass.ensureSize(in.width(), in.height());
+        if (resized) {
+            fsrGuard.starting();
+        }
         if (fsr.ensureSize(in.width(), in.height(), in.width(), in.height()) || resized) {
             reset = true;
             LOG.info("DLAA: FSR 3.1 running at {}x{}", in.width(), in.height());
@@ -349,6 +397,7 @@ public final class Dlss {
                 fsrPass.exposureTexture(), fsrPass.maskTexture(), fsrPass.outputTexture(), jitterX * jitterSign[0], jitterY * jitterSign[1], resetNow,
                 frameTimeMs, projection, fsr3Debug));
         reset = false;
+        fsrGuard.ran();
         dumpIfAsked(fsrPass, true);
         Markers.around("Create Galore DLAA: write back", () -> fsrPass.writeBack(profile, DlssPass.View.RESULT));
     }
@@ -369,7 +418,7 @@ public final class Dlss {
         return id;
     }
 
-    /** Loads NGX and opens the DirectX device the first time DLSS is needed. False (once logged) if it cannot run. */
+    /** Readies the engine the setting picks (Auto: DLSS where it can run, else FSR 3). False if none can run. */
     private static boolean ensureReady() {
         if (debugView != null) {
             if (debugPass == null) {
@@ -377,23 +426,60 @@ public final class Dlss {
             }
             return true;
         }
-        if (fsr3) {
-            return ensureFsr3();
+        switch (engine) {
+            case "fsr3" -> {
+                fsr3 = true;
+                return ensureFsr3();
+            }
+            case "dlss" -> {
+                fsr3 = false;
+                if (ensureDlss()) {
+                    return true;
+                }
+                notice("dlss:" + unavailable, "DLAA is off: DLSS can't run", noticeText(unavailable));
+                return false;
+            }
+            default -> {
+                if (ensureDlss()) {
+                    fsr3 = false;
+                    return true;
+                }
+                if (!fsr3) {
+                    fsr3 = true;
+                    LOG.info("DLAA: Auto uses AMD FSR 3.1, DLSS can't run here: {}", unavailable);
+                    // No notice where DLSS was never possible (no NVIDIA card): FSR 3 is what Auto is for there.
+                    if (unavailableNoDll || vendorIsNvidia()) {
+                        notice("auto:" + unavailable, "DLAA: AMD FSR 3.1 in place of DLSS", noticeText(unavailable));
+                    }
+                }
+                return ensureFsr3();
+            }
         }
+    }
+
+    /** Loads NGX and opens the DirectX device the first time DLSS is needed. False (once logged) if it cannot run. */
+    private static boolean ensureDlss() {
         if (pass != null) {
             return true;
         }
         if (unavailable != null) {
             return false;
         }
+        if (guards() && dlssGuard.crashed()) {
+            unavailable = "the game closed while DLSS was starting last time, so it stays off until you pick Try again on the DLAA settings screen";
+            unavailableNoDll = false;
+            return false;
+        }
         try {
+            dlssGuard.starting();
             open();
             return true;
         } catch (Throwable t) {
+            dlssGuard.stopped();
             unavailable = t.getMessage() != null ? t.getMessage() : t.toString();
-            LOG.warn("DLAA: not available, the shader pack keeps its own anti-aliasing: {}", unavailable);
+            LOG.warn("DLAA: DLSS not available: {}", unavailable);
             LOG.debug("DLAA: start-up failure", t);
-            closeAll();
+            closeDlss();
             return false;
         }
     }
@@ -403,25 +489,71 @@ public final class Dlss {
         if (fsr != null) {
             return true;
         }
+        if (fsr3Unavailable == null && guards() && fsrGuard.crashed()) {
+            fsr3Unavailable = "the game closed while FSR 3 was starting last time, so it stays off until you pick Try again on the DLAA settings screen";
+        }
         if (fsr3Unavailable != null) {
+            notice("fsr3:" + fsr3Unavailable, "DLAA is off: FSR 3 can't run", fsr3Unavailable);
             return false;
         }
         try {
+            fsrGuard.starting();
             String missing = Fsr3Upscaler.missingFunctions();
             if (missing != null) {
                 throw new IllegalStateException("FSR 3 needs OpenGL 4.5, this one lacks " + missing);
             }
             fsr = new Fsr3Upscaler();
             fsrPass = new DlssPass(null);
-            LOG.info("DLAA: FSR 3.1 ready on {}", glGetString(GL_RENDERER));
+            fsrRenderer = glGetString(GL_RENDERER);
+            LOG.info("DLAA: AMD FSR 3.1 ready on {} (OpenGL {})", fsrRenderer, glGetString(org.lwjgl.opengl.GL11C.GL_VERSION));
             return true;
         } catch (Throwable t) {
+            fsrGuard.stopped();
             fsr3Unavailable = t.getMessage() != null ? t.getMessage() : t.toString();
             LOG.warn("DLAA: FSR 3 not available, the shader pack keeps its own anti-aliasing: {}", fsr3Unavailable);
             LOG.debug("DLAA: FSR 3 start-up failure", t);
             closeFsr3();
             return false;
         }
+    }
+
+    /** Makes the start guards once the game folder is known. */
+    private static boolean guards() {
+        if (dlssGuard == null) {
+            Path folder = FMLPaths.GAMEDIR.get().resolve(FOLDER);
+            dlssGuard = new StartGuard(folder, "DLSS");
+            fsrGuard = new StartGuard(folder, "FSR3");
+        }
+        return true;
+    }
+
+    private static StartGuard guard() {
+        guards();
+        return fsr3 ? fsrGuard : dlssGuard;
+    }
+
+    private static boolean vendorIsNvidia() {
+        String vendor = glGetString(GL_VENDOR);
+        return vendor != null && vendor.toLowerCase(Locale.ROOT).contains("nvidia");
+    }
+
+    /** A notice in the corner, once per reason and session: the log has the details. */
+    private static void notice(String key, String title, String text) {
+        if (!noticesShown.add(key)) {
+            return;
+        }
+        Minecraft minecraft = Minecraft.getInstance();
+        minecraft.getToasts().addToast(net.minecraft.client.gui.components.toasts.SystemToast.multiline(minecraft, NOTICE,
+                net.minecraft.network.chat.Component.literal(title), net.minecraft.network.chat.Component.literal(text)));
+    }
+
+    private static final net.minecraft.client.gui.components.toasts.SystemToast.SystemToastId NOTICE =
+            new net.minecraft.client.gui.components.toasts.SystemToast.SystemToastId(10000L);
+
+    private static String noticeText(String reason) {
+        return unavailableNoDll
+                ? "nvngx_dlss.dll is missing: put it in the DLSS folder (Mods, Create Galore Bridge, Config, Open DLSS folder) and reload shaders (F8)."
+                : reason;
     }
 
     private static void closeFsr3() {
@@ -444,11 +576,12 @@ public final class Dlss {
             throw new IllegalStateException("the game runs on " + vendor + ", DLSS needs an NVIDIA RTX graphics card");
         }
         Path folder = FMLPaths.GAMEDIR.get().resolve(FOLDER);
-        String dllDir = System.getProperty(DLL_DIR_PROPERTY);
-        Path dllFolder = dllDir != null && !dllDir.isBlank() ? Path.of(dllDir) : folder;
-        Path dll = dllFolder.resolve("nvngx_dlss.dll");
-        if (!Files.isRegularFile(dll)) {
-            throw new IllegalStateException("there is no " + dll + " (the pack's updater puts it there)");
+        Path dllFolder = dllFolder();
+        Path dll = dllFolder.resolve(DLL);
+        unavailableNoDll = !Files.isRegularFile(dll);
+        if (unavailableNoDll) {
+            throw new IllegalStateException("there is no " + dll + " (not part of the pack: bring your own, DLSS "
+                    + TESTED_DLL_VERSION + " or newer, see the DLAA settings screen)");
         }
         Files.createDirectories(folder.resolve("ngx"));
         ngx = NgxLibrary.load(folder);
@@ -469,12 +602,18 @@ public final class Dlss {
             throw new IllegalStateException("DLSS does not run on this graphics card (" + NgxLibrary.describe(support[4]) + ")");
         }
         pass = new DlssPass(device);
-        LOG.info("DLAA: NGX ready on {} ({}), nvngx_dlss.dll from {}", device.adapterName,
-                device.shared ? "Perfect Presentation's DirectX device" : "its own DirectX device", dllFolder);
+        adapterName = device.adapterName;
+        LOG.info("DLAA: NGX ready on {} ({}; OpenGL on {}), nvngx_dlss.dll {} from {} (tested with {})", device.adapterName,
+                device.shared ? "Perfect Presentation's DirectX device" : "its own DirectX device", glGetString(GL_RENDERER),
+                DllVersion.read(dll), dllFolder, TESTED_DLL_VERSION);
     }
 
     private static void shutdown(GameShuttingDownEvent event) {
         shuttingDown = true;
+        if (dlssGuard != null) {
+            dlssGuard.stopped();
+            fsrGuard.stopped();
+        }
         if (RenderSystem.isOnRenderThread()) {
             closeAll();
         }
@@ -482,13 +621,26 @@ public final class Dlss {
 
     private static void closeAll() {
         try {
-            if (pass != null) {
-                pass.close();
-            }
             if (debugPass != null) {
                 debugPass.close();
             }
             closeFsr3();
+        } catch (Throwable t) {
+            LOG.warn("DLAA: could not close cleanly: {}", t.toString());
+        } finally {
+            debugPass = null;
+            fsr = null;
+            fsrPass = null;
+            active = false;
+        }
+        closeDlss();
+    }
+
+    private static void closeDlss() {
+        try {
+            if (pass != null) {
+                pass.close();
+            }
             if (ngx != null) {
                 ngx.shutdown();
                 ngx.drainLog();
@@ -500,14 +652,10 @@ public final class Dlss {
             LOG.warn("DLAA: could not close cleanly: {}", t.toString());
         } finally {
             pass = null;
-            debugPass = null;
-            fsr = null;
-            fsrPass = null;
             ngx = null;
             device = null;
             featureFlags = -1;
             featurePreset = -1;
-            active = false;
         }
     }
 
@@ -523,28 +671,114 @@ public final class Dlss {
         return result;
     }
 
+    /**
+     * default, or a letter: DLSS numbers its presets A = 1 to Z = 26. Any letter goes to DLSS, which runs its default
+     * for one it has no preset for (DLSS 310.9 has E and F, old, and J to M; A to D were removed, G to I, N and O
+     * are spare), so a newer nvngx_dlss.dll's presets can be tried; one DLSS refuses runs as default too.
+     */
     private static int parsePreset(String name) {
-        return switch (name.toUpperCase(Locale.ROOT)) {
-            case "J" -> PRESET_J;
-            case "K" -> PRESET_K;
-            case "L" -> PRESET_L;
-            case "M" -> PRESET_M;
-            case "DEFAULT", "" -> PRESET_DEFAULT;
-            default -> {
-                LOG.warn("DLAA: unknown dlaaPreset {}, using default (choose default, J, K, L or M)", name);
-                yield PRESET_DEFAULT;
-            }
-        };
+        String value = name.trim().toUpperCase(Locale.ROOT);
+        if (value.isEmpty() || value.equals("DEFAULT")) {
+            return PRESET_DEFAULT;
+        }
+        if (value.length() == 1 && value.charAt(0) >= 'A' && value.charAt(0) <= 'Z') {
+            return value.charAt(0) - 'A' + 1;
+        }
+        LOG.warn("DLAA: unknown dlaaPreset {}, using default (choose default or a letter: J, K, L, M, ...)", name);
+        return PRESET_DEFAULT;
     }
 
     private static String presetName(int preset) {
-        return switch (preset) {
-            case PRESET_J -> "J";
-            case PRESET_K -> "K";
-            case PRESET_L -> "L";
-            case PRESET_M -> "M";
-            default -> "default";
-        };
+        return preset >= 1 && preset <= 26 ? String.valueOf((char) ('A' + preset - 1)) : "default";
+    }
+
+    /** True if the tested DLSS has a preset by this letter (E and F, which are old, and J to M). */
+    static boolean knownPreset(char letter) {
+        return letter == 'E' || letter == 'F' || (letter >= 'J' && letter <= 'M');
+    }
+
+    // For the settings screen (DlaaScreen).
+
+    /** Where DLSS reads nvngx_dlss.dll from: create-galore-dlss in the game folder (or the dllDir test property). */
+    static Path dllFolder() {
+        String dllDir = System.getProperty(DLL_DIR_PROPERTY);
+        return dllDir != null && !dllDir.isBlank() ? Path.of(dllDir) : FMLPaths.GAMEDIR.get().resolve(FOLDER);
+    }
+
+    /** The version of the nvngx_dlss.dll there, "unknown" if it has none, or null if there is none. */
+    static String foundDllVersion() {
+        Path dll = dllFolder().resolve(DLL);
+        if (!Files.isRegularFile(dll)) {
+            return null;
+        }
+        String version = DllVersion.read(dll);
+        return version != null ? version : "unknown";
+    }
+
+    /** True if an engine took the game down while starting and stays off until {@link #tryAgain()}. */
+    static boolean crashed() {
+        guards();
+        return dlssGuard.crashed() || fsrGuard.crashed();
+    }
+
+    /** Clears the crash marks so both engines may start again (on the next shader reload). */
+    static void tryAgain() {
+        guards();
+        dlssGuard.clear();
+        fsrGuard.clear();
+        if (unavailable != null && unavailable.startsWith("the game closed")) {
+            unavailable = null;
+        }
+        if (fsr3Unavailable != null && fsr3Unavailable.startsWith("the game closed")) {
+            fsr3Unavailable = null;
+        }
+    }
+
+    /** The settings were saved: makes the Photon copy if it is now needed, and reloads shaders if it is in use. */
+    static void settingsChanged() {
+        DisplaySettings.reload();
+        PhotonPatcher.refresh();
+        if (PhotonPatcher.PATCHED_NAME.equals(Iris.getCurrentPackName()) && Iris.getIrisConfig().areShadersEnabled()) {
+            try {
+                Iris.reload();
+            } catch (IOException | RuntimeException e) {
+                LOG.warn("DLAA: could not reload the shaders: {}", e.toString());
+            }
+        }
+    }
+
+    /** What DLAA does right now, in a line for the settings screen. */
+    static String status() {
+        if (!wanted) {
+            return "Off: Photon keeps its own anti-aliasing (TAA).";
+        }
+        if (!Iris.getIrisConfig().areShadersEnabled() || !PhotonPatcher.PATCHED_NAME.equals(Iris.getCurrentPackName())) {
+            return "Waiting: pick the shader pack \"" + PhotonPatcher.PATCHED_NAME + "\" in Iris's shader menu.";
+        }
+        if (packProblem != null) {
+            return "Off with these Photon options: " + packProblem + ".";
+        }
+        if (failed) {
+            return "Stopped after an error (the log says which). Photon's TAA is back; reloading shaders tries again.";
+        }
+        if (debugView != null) {
+            return "Debug view " + debugView.name().toLowerCase(Locale.ROOT) + " (testing).";
+        }
+        if (active && !fsr3) {
+            return "On: NVIDIA DLAA on " + adapterName + ", preset " + presetName(presetFellBack ? PRESET_DEFAULT : preset)
+                    + (presetFellBack ? " (DLSS refused " + presetName(preset) + ")" : "") + ".";
+        }
+        if (active) {
+            return "On: AMD FSR 3.1 at full resolution on " + fsrRenderer
+                    + (engine.equals("auto") && unavailable != null ? ". DLSS can't run: " + unavailable : "") + ".";
+        }
+        if (engine.equals("dlss") && unavailable != null) {
+            return "Off, DLSS can't run: " + unavailable + ".";
+        }
+        if (fsr3Unavailable != null && (fsr3 || engine.equals("fsr3"))) {
+            return "Off, FSR 3 can't run: " + fsr3Unavailable + ".";
+        }
+        return "Starts in a world.";
     }
 
     private static DlssPass.View parseDebugView(String name) {
@@ -559,17 +793,6 @@ public final class Dlss {
             LOG.warn("DLAA: unknown debug view {}, use color, motion, depth, residual or mask", name);
             return null;
         }
-    }
-
-    private static boolean parseEngine(String name) {
-        return switch (name.trim().toLowerCase(Locale.ROOT)) {
-            case "fsr3", "fsr" -> true;
-            case "dlss", "" -> false;
-            default -> {
-                LOG.warn("DLAA: unknown dlaaEngine {}, using DLSS (choose dlss or fsr3)", name);
-                yield false;
-            }
-        };
     }
 
     private static float[] parseJitterSign(String value) {

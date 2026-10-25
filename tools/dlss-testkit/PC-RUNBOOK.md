@@ -43,6 +43,15 @@ Push-Location $T\instance
 Pop-Location
 ```
 
+The pack no longer downloads `nvngx_dlss.dll` (players bring their own, since pack 0.4.80), and the installer
+deletes the copy an earlier round got from it. Put NVIDIA's own copy back (the DLSS SDK the Bridge was tested with,
+310.9.16) if `$T\instance\create-galore-dlss\nvngx_dlss.dll` is missing:
+
+```powershell
+New-Item -ItemType Directory -Force $T\instance\create-galore-dlss | Out-Null
+Invoke-WebRequest "https://raw.githubusercontent.com/NVIDIA/DLSS/9981c6350dc58c0ce21f024fd65e31e851c31689/lib/Windows_x86_64/rel/nvngx_dlss.dll" -OutFile $T\instance\create-galore-dlss\nvngx_dlss.dll
+```
+
 Check: `$T\instance\create-galore-dlss\nvngx_dlss.dll` exists, and `$T\instance\mods` has `create-galore-bridge-*.jar`.
 If the installer stops on a CurseForge-only file, take it from the repo's `pack/` folder (same as a normal install).
 
@@ -63,7 +72,8 @@ the first launch: `$T\instance\create-galore-dlss\nvsdk_ngx.log` has no `Feature
 
 Before the first launch (create a file if it isn't there; the game adds the keys it misses):
 
-- `$T\instance\config\create_galore_bridge-display.properties`: `dlaa=true`, `perfectPresentation=false`.
+- `$T\instance\config\create_galore_bridge-display.properties`: `dlaa=true`, `perfectPresentation=false`. (`dlaa=true`
+  still means DLSS, with `dlaaEngine` picking FSR 3 for the test kit's FSR modes; players pick auto, dlss, fsr3 or off.)
 - `$T\instance\config\iris.properties`: `enableShaders=true`, `shaderPack=Photon v1.3a + DLAA`. (The copy is made
   on the first launch; Iris takes it from then on.)
 - `$T\instance\options.txt` (the pack installs it): set or add `renderDistance:12`, `pauseOnLostFocus:false`,

@@ -1,4 +1,4 @@
-<!-- sources sha256:13f9a5b841e36576bef237ee0f1110c2c80fd264ddee53408a0cdd459efbb068 -->
+<!-- sources sha256:7ba2165f20a4d297dbbcd1b3b338220003e5e1e6389734509e9d22aa77f8ffc4 -->
 # Start Here (start_here)
 
 ## start_here/welcome | Welcome to Create Galore
@@ -68,6 +68,10 @@
 - Distant Horizons [minecraft:spyglass]: draws far terrain as simplified chunks (see glossary/chunk); see much further than normal render distance. Useful for airships, submarine, the Moon; costs memory and some frame rate. Holes near you while flying fast fill in once chunks arrive. Tip: turn its settings down first if the game stutters.
 - Laptop (16 GB RAM): game 8 GB, no more; play plugged in; Distant Horizons render distance 128 or lower (pack ships 256); render distance 10, simulation distance 8; skip shaders or use Solas (lightest); don't host the server on it while you play.
 - Shaders (optional, via Iris): Options > Video Settings > Shader Packs. Complementary Reimagined (with Euphoria Patches), Bliss, Photon, Solas. For Bliss or Photon pick the copy ending in "+ Clrwl" so contraptions are shaded right. Shaders can cut frame rate a lot on weaker machines.
+- DLAA (experimental, optional, not widely tested yet): only with the shader pack "Photon v1.3a + DLAA", a copy of Photon + Clrwl the pack makes at startup; pick it under Shader Packs. Replaces Photon's own anti-aliasing (TAA) with NVIDIA DLAA or AMD FSR 3.1 at full resolution: sharper, far less shimmer on leaves, fences, water. No upscaling (no frame rate gain); costs about 1.2 ms per frame on an RTX 4080 at 1440p.
+- DLAA settings: DLAA... button at the top of the shader pack menu, or Mods > Create Galore Bridge > Config. Anti-aliasing Auto (NVIDIA DLAA on an RTX card with nvngx_dlss.dll, else FSR 3.1), NVIDIA DLAA, AMD FSR 3.1 native, Off (Photon's TAA). DLSS preset Default (K), K, J, L, M, or any typed letter (one DLSS has no preset for runs as default). Changes reload the shaders.
+- DLSS needs the player's own nvngx_dlss.dll (not part of the pack), DLSS 310.9.16 tested: the settings screen has Get it from NVIDIA (NVIDIA's DLSS SDK on GitHub), Open DLSS folder (create-galore-dlss in the game folder) and shows the found version; close the game before replacing it, reload shaders (F8) after adding it. FSR 3.1 needs nothing (any card with OpenGL 4.5).
+- DLAA can't run (no RTX card, missing DLL, Photon option it doesn't cover such as Photon's TAAU): a notice says why, Photon keeps its TAA, settings screen status line says it too. Engine that closed the game while starting stays off until Try again on the settings screen. Log lines start with "DLAA:" (graphics card, engine, preset, why off).
 - First world creation is slow (many mods add world generation); settles after first load.
 - Name tags are drawn after the shader, readable with every pack.
 - Fullscreen F11; screenshot F2.
@@ -75,7 +79,7 @@
 - Chunksmith pregenerates terrain on the /cs commands, ahead of an airship or train; yields to players so you can keep playing. Its automatic run on world entry (4096-block radius every join) is switched off here.
 - NVIDIA card + 10-bit monitor: set Vulkan/OpenGL present method to Prefer layered on DXGI Swapchain in NVIDIA Control Panel, or the driver still switches a 10-bit monitor to 8-bit. With shaders this can cap the GPU at about half speed; set back to Auto if you don't need 10-bit.
 - Black strobing after that change on some GPUs/drivers: appears when VSync (or adaptive VSync) is on and Max Framerate is Unlimited. Fix: VSync off (RivaTuner can then cap FPS smoothly), or cap Max Framerate at or below monitor refresh rate.
-- Perfect Presentation (Windows, experimental): shows game through DirectX; fullscreen is a fast borderless window, Alt-Tab instant, 10-bit stays 10-bit. Enable with perfectPresentation=true in config (see glossary/config) file config/create_galore_bridge-display.properties, restart twice. On NVIDIA set Power management mode to Prefer maximum performance for javaw.exe.
+- Perfect Presentation (Windows, experimental): shows game through DirectX; fullscreen is a fast borderless window, Alt-Tab instant, 10-bit stays 10-bit. Turn on in the display settings (DLAA... button in the shader pack menu, or Mods > Create Galore Bridge > Config; saved as perfectPresentation=true in config (see glossary/config) file config/create_galore_bridge-display.properties), restart twice. On NVIDIA set Power management mode to Prefer maximum performance for javaw.exe.
 - More: Welcome to Create Galore (see start_here/welcome), Tools of the Trade (see start_here/tools)
 
 ## start_here/playing_together | Playing Together
