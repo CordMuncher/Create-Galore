@@ -5,6 +5,17 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.4.88
+
+### Fixed
+- **Ask the Book gave up on early propeller planes.** Asked for an early plane, it worked out that a Portable Engine's 32 RPM gives Wooden Propellers too little airflow (2.4 blocks a second) and said a propeller plane couldn't be built yet. It can: geared up to 256 RPM the same propellers blow 25.6 blocks a second. The book's checks now say how to get there (three cog steps up from 32 RPM, one engine turning two propellers) and how much sail wing a plane wants for its weight, and the book keeps redesigning until a plane flies instead of settling for less.
+- **Better-looking planes from Ask the Book.** It now designs planes that read as aircraft: a body narrowing to a tail with a flat stabiliser and an upright fin, long slim wings (or stacked biplane wings on struts), the engine in the nose or on the wings, landing gear, and a cockpit with the seat and every lever grouped in reach like a dashboard, never scattered over the wings. Wings and tail are Create sails, a quarter of the weight of Wing blocks.
+- **Propellers turning against each other.** Through a gearbox, a propeller beside the input turns the other way from one straight through it, so half of a plane's propellers can push backwards. Ask the Book's models worked out those turns wrong and now get them right, and its check names the propellers that push against the others and says to reverse them with a wrench.
+- **Planes that rolled over and spiraled down.** A plane with no Gyroscope has nothing holding its wings level, and one that passed the book's check rolled into a spiral on a test flight. The check now asks for a Gyroscope, which a Portable Engine's own 32 RPM can turn for a small plane.
+- **Fences on ships weighed as much as full blocks.** A fence placed by its item (which can join diagonally) weighed 1 on a ship instead of a fence's 0.25, so fence-railed decks and plane bodies were four times too heavy there. It now weighs what a fence does.
+- Field Guide (Propellers): new pages on spinning propellers fast enough to fly, gearing up, propellers turning against each other through gearboxes, sail wings, and a worked example of a biplane that flies (tested: takes off at about 15 blocks a second, cruises near 16). Field Guide (Propulsion): Keeping it level now says a Portable Engine's speed holds a small plane.
+- Create Galore Bridge 1.102.0.
+
 ## 0.4.87
 
 ### Fixed

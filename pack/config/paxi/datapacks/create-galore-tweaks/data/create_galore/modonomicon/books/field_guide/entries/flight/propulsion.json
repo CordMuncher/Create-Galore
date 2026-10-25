@@ -80,12 +80,12 @@
     {
       "type": "modonomicon:text",
       "title": "Flying on wings",
-      "text": "Wings and Create sails lift the way their face points, and lift more the faster the ship moves. A winged ship needs a run before it rises: build them flat, facing up, and push forward with thrusters.\\\n\\\nKeep the lift centred over the weight, left to right and nose to tail."
+      "text": "Wings and Create sails lift the way their face points, and lift more the faster the ship moves. A winged ship needs a run before it rises: build them flat, facing up, and push forward with thrusters or fast [#](2E5AAC)[propellers](entry://flight/propellers)[#]().\\\n\\\nKeep the lift centred over the weight, left to right and nose to tail."
     },
     {
       "type": "modonomicon:text",
       "title": "Keeping it level",
-      "text": "Nothing levels a ship by itself, so a plane tips over without help. Put an [#](2E5AAC)[Aeroworks Gyroscope](entry://flight/controls)[#]() on board and turn it from below with an engine on the ship. It holds full strength at 256 RPM.\\\n\\\nWings standing upright push sideways whenever the ship moves, so face them in pairs that cancel out."
+      "text": "Nothing levels a ship by itself, so a plane tips over without help. Put an [#](2E5AAC)[Aeroworks Gyroscope](entry://flight/controls)[#]() on board, turned from below by an engine on the ship: full strength at 256 RPM, though a Portable Engine's 32 RPM holds a small plane.\\\n\\\nUpright wings push sideways whenever the ship moves, so face them in pairs that cancel out."
     },
     {
       "type": "modonomicon:spotlight",
