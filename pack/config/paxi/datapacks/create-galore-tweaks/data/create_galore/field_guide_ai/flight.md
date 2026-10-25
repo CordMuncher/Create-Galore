@@ -1,4 +1,4 @@
-<!-- sources sha256:7959e85d7e0e401114b0ee40a98d91adb8fd3d2d83688469914a55a9fc5c20a3 -->
+<!-- sources sha256:5959e6b209595796cd406f2e2e136023c0e199d516908f6b0b8e266ff4448969 -->
 # Flight (flight)
 Create Aeronautics ships, lift, thrust, steering, wind, dangers and sky destinations.
 
@@ -37,6 +37,8 @@ Create Aeronautics ships, lift, thrust, steering, wind, dangers and sky destinat
 - Hot Air Burner [aeronautics:adjustable_burner]: redstone fills balloon above from top down; max output set in its panel (see glossary/value_panel); several burners can feed one balloon
 - Steam Vent [aeronautics:steam_vent]: steam lift; like Steam Engine needs heat, water, boiler (see glossary/boiler) space; (see create_basics/heat)
 - Altitude: lift weakens with altitude; ship settles where lift = weight; changing lift changes altitude. Altitude Sensor outputs redstone signal for height and, with goggles (see create_basics/tools_wrench), shows air pressure. Other worlds have very different air (see space/planets)
+- Speed and drag: every envelope block drags as the ship moves (about as much as three blocks' worth of its weight), so an envelope bigger than the load needs makes it slower; size it to the weight with room to climb (each m3 of hot air holds up about 1.5 mass low down, less higher up). Mount propellers about level with the middle of the envelope: low ones tip the nose up at speed
+- A sky base that flies (in depth): 7 by 11 gondola (bed, smoker, crafting table, eight barrels and chests) under a 290 m3 envelope, two pods beside the envelope each with two Portable Engines geared to 128 RPM on a 13-sail Propeller Bearing: cruises at about 9 blocks a second, climbs to about y 210; a lever at the helm for each pod's clutch, through Redstone Links, steers it
 - Levitite Blend [aeronautics:levitite_blend_bucket]: fluid from heated mixing (see glossary/mixing) of End Stone Powder, zinc nuggets, water; heat sets it into solid Levitite
 - Levitite [aeronautics:levitite]: keeps ship afloat but cannot gain height alone (needs other forces); resists slow motion strongly, less at speed. Each block holds up 10 kpg of ship, itself included (Jade shows block weights); a heavier ship sinks slowly. Keep it level with the weight: a heavy stack on top of a small Levitite row tips over and falls
 - Sources: End Stone Powder from crushing End Stone; sky whale bone dust can replace it; Pearlescent Levitite = pink variant of same crystal; certain blocks break when Levitite sets (useful for casting molds)
@@ -51,6 +53,7 @@ Create Aeronautics ships, lift, thrust, steering, wind, dangers and sky destinat
 - Limits: propeller already moving through air pushes less; thrust fades with altitude; little use where no air
 - Fast enough to fly: a propeller pushes only up to its airflow speed: Wooden/Andesite Propeller a tenth of its RPM, Propeller Bearing 0.05 x the square root of its sails x RPM; a plane must pass its take-off speed below that, so spin props at 256 RPM (the most a shaft turns): 25.6 blocks a second
 - Gearing up: each large cogwheel driving a small one doubles the speed; a Portable Engine's 32 RPM takes three steps to reach 256; at 256 RPM a Wooden Propeller draws 1024 stress units, so one Portable Engine turns two
+- Big fans: a Propeller Bearing pushes 0.2 x sails^1.5 x RPM for 2 stress units per sail per RPM, so a big fan pushes more for the same engines: 13 sails at 128 RPM push 1200 (airflow 23 blocks a second), more than four Wooden Propellers at 256 RPM; two Portable Engines on one shaft at the same speed add up their stress and turn one such fan
 - Watch out, through gearboxes: a gearbox turns its straight-through side the other way from its sideways sides, so propellers fed through different gearbox faces can push against each other; watch which way each blows, wrench the front of any pushing backward to reverse it
 - Sail wings: Create sails lift like Wing blocks at a quarter of the weight, so early planes fly on sail wings; two wings stacked on struts double the lift; allow about three sails facing up per full block's weight in the rest (plank half a block; slab, fence or trapdoor a quarter)
 - Symmetric Sail [simulated:white_symmetric_sail]: only drag, never lift; angle for turning/stabilising; on a windmill bearing gives 0 RPM here; windmills need Windcatchers

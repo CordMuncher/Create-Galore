@@ -39,7 +39,7 @@ final class VehicleCheck {
     private static final double G = 11, WATER = 10.5, HOLD = 16.5, DAMP = 0.09, WATER_DRAG = 1.7, ENVELOPE_DRAG = 0.33;
     /** Usable thresholds, blocks a second and degrees a second: below the first a vehicle is of no real use. */
     private static final double BOAT_BAD = 2, BOAT_SLOW = 4, SUB_BAD = 1, SUB_SLOW = 2, AIR_BAD = 2.5, AIR_SLOW = 5,
-            CAR_BAD = 3, CAR_SLOW = 6, TURN_BAD = 3, TURN_SLOW = 8, CLIMB_BAD = 0.5, CLIMB_SLOW = 1, CEILING_BAD = 100;
+            CAR_BAD = 3, CAR_SLOW = 6, AIRSHIP_GOOD = 8, TURN_BAD = 3, TURN_SLOW = 8, CLIMB_BAD = 0.5, CLIMB_SLOW = 1, CEILING_BAD = 100;
     /** A hull in water turns about half as fast as its turning force alone gives (measured; it slides sideways). */
     private static final double TURN_SLIP = 0.45;
     /** Resting trim or list, degrees: from the first it shows, from the second it is a fault. */
@@ -1110,6 +1110,8 @@ final class VehicleCheck {
                     (int) TAKEOFF_Y, describe(side), wings.list.isEmpty() ? airtight + " envelope blocks and its mass"
                     : wings.count + " wings and its mass"));
             judgeSpeed(v, AIR_BAD, AIR_SLOW, "aircraft", faults, notes);
+            if (filled > 0 && wings.count == 0 && lev == 0 && v < AIRSHIP_GOOD)
+                airshipAdvice(b, v, drag, filled, balloonY, p0, faults, notes);
             double fastest = 0;
             for (Thrust t : side) if (t.airflow < Double.MAX_VALUE) fastest = Math.max(fastest, t.airflow);
             if (fastest > 0 && fastest < AIR_SLOW * 1.5 && v < AIR_SLOW)
@@ -1157,7 +1159,8 @@ final class VehicleCheck {
         }
         if (stress > 0) notes.add(String.format(Locale.ROOT, "its propellers draw about %.0f stress units at these speeds; the "
                 + "engines turning them must supply that (a Portable Engine gives 2048, a Stirling Engine 4096)", stress));
-        hang(b, balloons, centres, all, out, faults, notes);
+        double liftAbove = hang(b, balloons, centres, all, out, faults, notes);
+        if (liftAbove > 0.25 && wings.count == 0 && best != null && v > 0.5) cruisePitch(b, side, best, v, p0, liftAbove, faults, notes);
         // Pitch: a thrust line far above or below the centre of mass noses it up or down.
         double pitch = 0;
         for (Thrust t : side) pitch = Math.max(pitch, Math.abs(t.at.getY() + 0.5 - b.cy));
@@ -1204,7 +1207,14 @@ final class VehicleCheck {
 
     private static Wings wings(Body b) {
         Wings w = new Wings();
+        // A propeller bearing's sails spin with it as its own contraption: they push as its propeller, not as wings.
+        Set<BlockPos> spinning = new HashSet<>();
         for (Part p : b.parts) {
+            Direction f = facing(p.state);
+            if (p.id.endsWith("propeller_bearing") && f != null) sails(b, p.pos, f, spinning);
+        }
+        for (Part p : b.parts) {
+            if (spinning.contains(p.pos)) continue;
             if (!(p.state.getBlock() instanceof dev.ryanhcode.sable.api.block.BlockSubLevelLiftProvider lp)) continue;
             Direction push;
             double lift, par, free;
@@ -1494,7 +1504,41 @@ final class VehicleCheck {
      * propeller where it sits, and the ship swings until that lift is straight above its centre of mass (Sable doesn't
      * level anything; a Gyroscope does). Lift below the centre of mass turns it over.
      */
-    private static void hang(Body b, Map<BlockPos, int[]> balloons, Map<BlockPos, double[]> centres, List<Thrust> all,
+    /**
+     * At speed the air drags on every envelope block at its own height and the propellers push at theirs, so a thrust line
+     * below the middle of the drag tips the nose up (above it, down) until the lift over the centre of mass swings it back:
+     * sin(pitch) = drag x (drag height - thrust height) / (weight x lift height).
+     */
+    private static void cruisePitch(Body b, List<Thrust> side, Direction best, double v, double p0, double liftAbove,
+            List<String> faults, List<String> notes) {
+        double drag = DAMP * b.m * v, dragY = DAMP * b.m * v * b.cy;
+        for (Part p : b.parts) {
+            double d = airtight(p.state) ? ENVELOPE_DRAG * p0 * v : p.state.is(LEVITITE) ? 0.55 * v : 0;
+            drag += d;
+            dragY += d * p.cy();
+        }
+        double push = 0, pushY = 0;
+        for (Thrust t : side) {
+            if (!(t.dir == best || t.reversible && t.dir == best.getOpposite())) continue;
+            double f = t.airflow < Double.MAX_VALUE ? t.force * Math.max(0, 1 - v / t.airflow) : t.force;
+            push += f;
+            pushY += f * (t.at.getY() + 0.5);
+        }
+        if (push <= 0 || drag <= 0) return;
+        double dy = dragY / drag, ty = pushY / push, gap = dy - ty;
+        double pitch = Math.toDegrees(Math.asin(Math.max(-1, Math.min(1, drag * gap / (G * b.m * liftAbove)))));
+        if (Math.abs(pitch) < 4) return;
+        String text = String.format(Locale.ROOT, "at full speed it pitches about %.0f° nose %s: its propellers push %.1f blocks %s the "
+                + "middle of its drag (the envelope, about %.0f blocks above its lowest block), so the air holds the top back while they drive "
+                + "the bottom on; mount the propellers about level with the middle of the envelope (on pods beside it or on the "
+                + "frame that holds it), or lower the envelope toward them", Math.abs(pitch), gap > 0 ? "up" : "down",
+                Math.abs(gap), gap > 0 ? "below" : "above", dy - b.minY);
+        if (Math.abs(pitch) >= 10) faults.add(text);
+        else notes.add(text);
+    }
+
+    /** Hangs it under its lift; returns how far the lift centres above the centre of mass (NaN when nothing lifts it). */
+    private static double hang(Body b, Map<BlockPos, int[]> balloons, Map<BlockPos, double[]> centres, List<Thrust> all,
             StringBuilder out, List<String> faults, List<String> notes) {
         double sum = 0, a = 0, l = 0, v = 0;
         for (Map.Entry<BlockPos, int[]> e : balloons.entrySet()) {
@@ -1524,20 +1568,20 @@ final class VehicleCheck {
             l += t.force * b.lateral(t.at.getX() + 0.5, t.at.getZ() + 0.5);
             v += t.force * (t.at.getY() + 0.5 - b.cy);
         }
-        if (sum <= 0) return;
+        if (sum <= 0) return Double.NaN;
         a /= sum;
         l /= sum;
         v /= sum;
         if (b.count("aeroworks:gyroscope") > 0) {
             out.append(String.format(Locale.ROOT, "- Its lift centres %.1f blocks above its centre of mass; its Gyroscope holds it "
                     + "level.\n", v));
-            return;
+            return Double.NaN;
         }
         if (v <= 0.25) {
             faults.add(String.format(Locale.ROOT, "it is top-heavy: its lift centres %.1f blocks %s its centre of mass, so it "
                     + "turns over in the air; put the heavy blocks (engines, cargo) low, under the balloon, or add a Gyroscope",
                     Math.abs(v), v < 0 ? "below" : "level with"));
-            return;
+            return Double.NaN;
         }
         Direction bow = null;
         double strongest = 0;
@@ -1573,6 +1617,7 @@ final class VehicleCheck {
                 + "it", Math.abs(ld), ld > 0 ? minusSide : plusSide));
         else if (Math.abs(ld) >= TRIM_NOTE) notes.add(String.format(Locale.ROOT, "it hangs %.1f° down to %s, which shows",
                 Math.abs(ld), ld > 0 ? minusSide : plusSide));
+        return v;
     }
 
     /**
@@ -1598,6 +1643,34 @@ final class VehicleCheck {
      * The speed a steady push settles at: the first speed where linear drag, Levitite's low-speed brake
      * (brake·v·exp(-1.5 v²/9)) and propellers losing grip as they near their airflow (overAir·v) use it all up.
      */
+    /**
+     * What a slow balloon needs, in the two things that decide its speed: push (propellers lose it toward their airflow)
+     * and drag, which is mostly its envelope (every envelope block drags, so an envelope bigger than its load needs costs
+     * speed). Push is given for the two ways an early airship gets it: Wooden Propellers at 256 RPM (256 force, 1024 stress
+     * each, two per Portable Engine) and a Propeller Bearing with 13 sails at 128 RPM (0.2 x 13^1.5 x 128 = 1200 force,
+     * 3328 stress, two Portable Engines on one shaft).
+     */
+    private static void airshipAdvice(Body b, double v, double drag, double filled, double balloonY, double p0,
+            List<String> faults, List<String> notes) {
+        double u = AIRSHIP_GOOD, want = drag * u;
+        int wooden = (int) Math.ceil(want / (256 * p0 * (1 - u / 25.6)));
+        int bearings = (int) Math.ceil(want / (1200 * p0 * (1 - u / 23.1)));
+        StringBuilder text = new StringBuilder(String.format(Locale.ROOT, "at %.1f blocks/s it is too slow to travel on (an "
+                + "airship wants about %.0f): at that speed its drag is about %.0f, so it needs that much push there. Spin "
+                + "propellers fast, since each pushes only up to its airflow: %d Wooden Propeller%s at 256 RPM (geared up three "
+                + "cog steps from a Portable Engine's 32 RPM; one engine turns two), or %d Propeller Bearing%s with 13 sails at "
+                + "128 RPM (two cog steps; two Portable Engines on the same shaft turn one, as engines at the same speed add up "
+                + "their stress). A bearing's big fan pushes more for the same engines", v, u, want, wooden, wooden == 1 ? "" : "s",
+                bearings, bearings == 1 ? "" : "s"));
+        double need = G * b.m / (16.5 * pressure(200 + balloonY));
+        if (filled > need * 1.3)
+            text.append(String.format(Locale.ROOT, ". Its envelope also holds %.0f m3 where about %.0f would carry it to y 200, "
+                    + "and every envelope block drags (each as much as %.0f mass of ship): a smaller envelope sized to its load "
+                    + "is faster", filled, need, ENVELOPE_DRAG * p0 / DAMP));
+        if (v < AIR_SLOW) faults.add(text.toString());
+        else notes.add(text.toString());
+    }
+
     private static double terminal(double force, double linear, double brake, double overAir) {
         if (force <= 0) return 0;
         for (double v = 0.005; v < 80; v += 0.005) {
@@ -1767,6 +1840,10 @@ final class VehicleCheck {
 
     /** Sail blocks on a propeller bearing's face, in the plane in front of it. */
     private static int sails(Body b, BlockPos bearing, Direction f) {
+        return sails(b, bearing, f, new HashSet<>());
+    }
+
+    private static int sails(Body b, BlockPos bearing, Direction f, Set<BlockPos> found) {
         BlockPos start = bearing.relative(f);
         if (!b.blocks.containsKey(start)) return 0;
         Set<BlockPos> seen = new HashSet<>(List.of(start));
@@ -1775,7 +1852,10 @@ final class VehicleCheck {
         while (!todo.isEmpty() && seen.size() < 128) {
             BlockPos p = todo.poll();
             BlockState s = b.blocks.get(p);
-            if (s.is(SAILS)) count++;
+            if (s.is(SAILS)) {
+                count++;
+                found.add(p);
+            }
             for (Direction d : Direction.values()) {
                 if (d.getAxis() == f.getAxis()) continue;
                 BlockPos n = p.relative(d);
