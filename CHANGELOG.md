@@ -5,6 +5,15 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.4.87
+
+### Fixed
+- **Sea showing inside a ship when you stand in a cabin or hold.** Looking out of a cabin through a doorway, the sea's surface could show on the deck or the floor of the next room, only from some angles, with or without shader packs. 0.4.63 fixed this for a player standing outside the hull; from inside, the pack still left it to Sable, whose check gives up where a line of sight leaves the hull through a doorway (doors and walls well above the waterline aren't part of the shape it checks) and comes back in. The pack's check now covers a player inside the hull too. A player inside a submerged submarine keeps Sable's check, since Create Deep Seas' underwater fog in there depends on it.
+- **Rain splashing on hidden water above a ship's deck.** On a deck that sits below the waterline (a laden boat), rain splashed on the sea's surface the hull keeps out, a little above the deck, so the drops showed where the hidden water was even from angles where the water itself didn't. Elsewhere on ships the splashes could float up to a block over the deck or sink into a roof. Rain now splashes on the ship's own deck and roof, unless the world has something over the ship there or open sea really covers it.
+
+### Added
+- Create Galore Bridge 1.101.0.
+
 ## 0.4.86
 
 ### Fixed
