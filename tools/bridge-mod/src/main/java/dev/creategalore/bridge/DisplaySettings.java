@@ -65,7 +65,7 @@ public final class DisplaySettings {
             + " dlaaCustomScale: true shows a 25-100% slider on the settings screen instead of the standard modes.\n"
             + " reflex: off, on or boost. NVIDIA Reflex low latency (boost also keeps the GPU clocks up), applied at once.\n"
             + " Needs an NVIDIA card (GTX 900 or newer) and perfectPresentation=true; the settings screen turns that on\n"
-            + " with it. With Max Framerate set, Reflex keeps that cap.\n"
+            + " with it. With Max Framerate set, Reflex keeps that cap (where it helps most: use one the card can hold).\n"
             + " perfectPresentation: EXPERIMENTAL, Windows only. true shows the game through a DirectX swap chain\n"
             + " (ported from Perfect Presentation by sidit77): borderless fullscreen at exclusive-fullscreen speed and\n"
             + " Alt-Tab without a display mode change. Leave NVIDIA's Vulkan/OpenGL present method on Auto.\n"

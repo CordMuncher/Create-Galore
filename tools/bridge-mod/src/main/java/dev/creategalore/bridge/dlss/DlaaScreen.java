@@ -451,7 +451,7 @@ public final class DlaaScreen extends Screen {
             case "on" -> "Experimental, Windows and NVIDIA (GTX 900 or newer): the driver starts each frame as late as it can"
                     + " while keeping the graphics card busy, and the game reads the mouse just before it draws, to shorten the"
                     + " time from moving the mouse to seeing it. Needs Perfect Presentation, which this turns on (after a"
-                    + " restart). With a Max Framerate set, Reflex keeps that cap.";
+                    + " restart). Works best with a Max Framerate the card can hold, which Reflex then keeps.";
             case "boost" -> "Like On, and the graphics card keeps its clocks up even when it waits on the processor: a little"
                     + " less delay where the processor holds the frame rate back, for more power.";
             default -> "The game reads input and paces its frames as it always does.";

@@ -118,7 +118,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**NVIDIA Reflex** (Windows, NVIDIA GTX 900 or newer, experimental) is on the same screen. The driver starts each frame as late as it can while keeping the card busy, and the game reads the mouse just before it draws, so the view follows the mouse sooner. Picking it turns on Perfect Presentation, which it needs: restart once. **On + Boost** also keeps the card's clocks up."
+      "text": "**NVIDIA Reflex** (Windows, NVIDIA GTX 900 or newer, experimental) is on the same screen. The driver starts each frame as late as it can, and the game reads the mouse just before it draws, so the view follows the mouse sooner. It works best with a Max Framerate the card can hold. Picking it turns on Perfect Presentation, which it needs: restart once."
     },
     {
       "type": "modonomicon:text",

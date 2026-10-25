@@ -766,6 +766,8 @@ Start only when Emre says so. Same PC, test folder and tools as before; about 45
 optional by-feel part. **Frame times count here** (latency follows the GPU's load): a quiet PC as in profiling 1, no
 game server. Reflex ships in pack 0.5.2 (Bridge 1.106.0) as an experimental NVIDIA Reflex setting without waiting for
 this run (Emre, 2026-10-25 20:29); this run measures what it does and decides what changes next.
+**Done 2026-10-25 with Bridge 1.105.0** (L1, L2 and by feel): [results/reflex1/REPORT.md](results/reflex1/REPORT.md).
+Step 4 (the settings screen) is for a later session with 1.106.0 or newer.
 
 **What it tests.** The game renders with OpenGL, which NVIDIA Reflex has no API for. With Perfect Presentation on, the
 frames go to the window through a Direct3D 11 swap chain, and the Bridge can run Reflex (NVAPI) on that D3D11 device:
@@ -843,7 +845,9 @@ the background; F11 if it opened windowed is fine).
 2. **Perfect Presentation off, `...runs=L2`** (about 10 minutes): `lat-base`, `lat-late`, `lat-ra1` and `lat-ra0`
    (Sodium's render-ahead limit 1 and 0), `lat-ra1-late`, `lat-cap`, `lat-cap-late`.
 3. **By feel, optional (about 10 minutes, with Emre).** Launch 1's settings (Perfect Presentation on) with
-   `...autorun=dlaa-test` and `...byEye=lat-base` instead of `...runs=`: the game opens the world and stays open at
+   `...autorun=dlaa-test`, one short run first (`...modes=lat-base`, `...viewpoints=moving`, `...paths=still`; without
+   a run list autorun plays the whole default test, and the chat can't be opened during it) and `...byEye=lat-base`:
+   after that run the game stays open at
    the moving scene. Emre flicks the camera around and builds a little. The session switches with
    `/dlaatest mode lat-late`, `/dlaatest mode lat-reflex` and back to `/dlaatest mode lat-base` when he says next
    (this only switches Reflex and the late read; the frame cap and Sodium stay as `options.txt` and Sodium have
