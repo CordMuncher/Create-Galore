@@ -5,6 +5,12 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.4.86
+
+### Fixed
+- **Ask the Book now sees what is in barrels and chests aboard ships.** The book counts the storage a player has opened within 50 blocks as theirs, but storage on an assembled ship (or any other Sable vehicle) never counted: the ship keeps its blocks in a space of its own far out in the world, and the book measured the 50 blocks to there. It now measures to where the ship is right now, so a barrel on deck counts while the ship sails or turns, and the book says it's aboard a ship and in which direction. Storage opened before the ship was assembled stays counted once it's aboard, and again when the ship is taken apart. Checked on a test server: a barrel of diamonds opened on a platform, then assembled into a ship, and a barrel of emeralds opened on the ship both showed up, and kept showing up after the ship was moved 30 blocks and turned; the old version found neither once they were aboard. Barrels that went aboard before this update need opening once more.
+- Create Galore Bridge 1.100.0.
+
 ## 0.4.85
 
 ### Fixed
