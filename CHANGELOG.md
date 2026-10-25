@@ -5,6 +5,16 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.5.5
+
+### Fixed
+- **Ask the Book's starter brass mixer never filled its output chest.** A player built the book's "Starter brass mixer, chest to chest": the brass out chest sat beside the Blaze Burner, one block down from the basin's side, and stayed empty while the brass piled up in the basin. A basin only pushes its results into the spot one block down beside it when that spot takes items the way a belt does (a depot, belt or chute, or a funnel facing up and set to insert, on top of a chest) and the block beside the basin itself is open; a chest, barrel or hopper there gets nothing. The book now works out where every basin and millstone in its builds sends its results, by Create's own rule, and won't show a build whose output can't work: a chest a basin can't reach, a funnel set to pull instead of insert, a solid block closing the side, or a millstone next to chests with no hopper, chute or funnel pulling from it (a millstone never pushes). It also tells a player whose own build has the problem what to change and how many finished items are waiting in the machine. Checked on a test server with the same layout: the brass stayed in the basin; with the chest one block lower and a funnel on it (placed while sneaking) the brass went into the chest, and with a depot in that spot onto the depot.
+- **Mixers too slow to work.** A Mechanical Mixer needs at least 30 RPM and stands still below that (a test mixer at 16 RPM never started; at 64 RPM it made brass). The book now sees the speed each machine in a model gets and won't show a mixer driven straight off a water wheel (8 RPM) without gearing it up; with a motor it says to set the motor faster.
+- Field Guide (Processing): the basin output page now says exactly which blocks take a basin's results and where they go, and that a chest needs a funnel on top.
+
+### Added
+- Create Galore Bridge 1.109.0.
+
 ## 0.5.4
 
 ### Fixed
