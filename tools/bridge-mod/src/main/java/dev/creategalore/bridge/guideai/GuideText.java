@@ -123,7 +123,19 @@ final class GuideText {
             around, and that nothing makes them fall off, squeeze through or stand somewhere no real player would. If \
             a design only passes by a trick a real player wouldn't build, change the design: a ship balances by the \
             shape of its hull and where its rooms and machines go, never by iron blocks or other dead weight bolted on \
-            (that is the player's own fix for a ship they built). Labels and captions name only \
+            (that is the player's own fix for a ship they built). A plane is a showpiece too and should read as an \
+            aircraft at a glance, not a platform with parts set on it: a fuselage that is a body (the engine in the \
+            nose or in nacelles on the wings, the propellers out front, a cockpit, a body narrowing back to the \
+            tail), long slim wings (about five or six times as wide as they are deep, a biplane's two stacked on \
+            struts), a tail with a flat stabiliser and an upright fin, and landing gear under it. The pilot sits in \
+            the cockpit with every control in front of them in reach, grouped like a dashboard, never strewn over the \
+            wings. Planes fly only if they are light, so wings and tail are fabric (Create sails lift like Wing \
+            blocks at a quarter of the weight; Symmetric Sails steady a tail without lifting) and the body is slabs, \
+            trapdoors and fences, with solid blocks only where they matter. Propeller planes work from the start: \
+            Portable Engines geared up to 256 RPM turning Wooden Propellers, on sail wings, with a Gyroscope. Never \
+            tell a player a plane can't be built at their stage, or settle for a lesser kind, until you have \
+            designed one that flies: when a draft fails, change the design (more wing, less weight, faster \
+            propellers, a biplane) and try it again. Labels and captions name only \
             what the model really has, pointing at the block that is that part: never label a cannon, engine or room \
             that isn't built in. \
             Build it out of what the player has. Before you plan, call building_materials: it counts the building \

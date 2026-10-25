@@ -82,6 +82,7 @@ final class BuildCheck {
         // Follow rotation out from every source, the way Create spreads it: relative speed 1 at the source.
         Map<BlockPos, Float> speed = new LinkedHashMap<>();
         Map<BlockPos, BlockPos> sourceOf = new LinkedHashMap<>();
+        Map<BlockPos, Direction> fed = new java.util.HashMap<>();
         List<Cell> sources = new ArrayList<>();
         java.util.Set<BlockPos> conflicts = new java.util.LinkedHashSet<>();
         for (Cell c : kinetic.values()) if (isSource(c)) sources.add(c);
@@ -97,13 +98,14 @@ final class BuildCheck {
             while (!todo.isEmpty()) {
                 Cell c = todo.poll();
                 for (Cell n : neighbours(kinetic, c)) {
-                    float m = modifier(world, c, n);
+                    float m = modifier(world, c, n, fed);
                     if (m == 0) continue;
                     float s = speed.get(c.pos) * m;
                     Float had = speed.get(n.pos);
                     if (had == null) {
                         speed.put(n.pos, s);
                         sourceOf.put(n.pos, src.pos);
+                        feed(fed, n, c);
                         todo.add(n);
                     } else if (Math.abs(had - s) > 1e-3) {
                         conflicts.add(n.pos);
@@ -160,6 +162,7 @@ final class BuildCheck {
      */
     static Map<BlockPos, Float> rpm(Map<BlockPos, BlockState> blocks, ServerLevel level, List<String> assumed) {
         Map<BlockPos, Float> out = new LinkedHashMap<>();
+        Map<BlockPos, Direction> fed = new java.util.HashMap<>();
         try {
             SchematicLevel world = new SchematicLevel(level);
             blocks.forEach((pos, state) -> world.setBlock(pos, state, 0));
@@ -177,9 +180,10 @@ final class BuildCheck {
                 while (!todo.isEmpty()) {
                     Cell c = todo.poll();
                     for (Cell n : neighbours(kinetic, c)) {
-                        float m = modifier(world, c, n);
+                        float m = modifier(world, c, n, fed);
                         if (m == 0 || out.containsKey(n.pos)) continue;
                         out.put(n.pos, out.get(c.pos) * m);
+                        feed(fed, n, c);
                         todo.add(n);
                     }
                 }
@@ -251,6 +255,15 @@ final class BuildCheck {
 
     /** Create's RotationPropagator.getRotationSpeedModifier, on block states: 0 when the two don't connect. */
     static float modifier(SchematicLevel world, Cell from, Cell to) {
+        return modifier(world, from, to, Map.of());
+    }
+
+    /**
+     * How fast and which way {@code to} turns for each turn of {@code from}; {@code fed} holds the face each block
+     * reached so far took its rotation in through, since a gearbox turns its other faces' shafts each its own way by
+     * that face, and a powered gearshift or clutch turns or cuts its far side.
+     */
+    static float modifier(SchematicLevel world, Cell from, Cell to, Map<BlockPos, Direction> fed) {
         BlockState sf = from.state, st = to.state;
         IRotate df = (IRotate) sf.getBlock(), dt = (IRotate) st.getBlock();
         BlockPos diff = to.pos.subtract(from.pos);
@@ -261,7 +274,10 @@ final class BuildCheck {
         Direction dir = Direction.getNearest(diff.getX(), diff.getY(), diff.getZ());
         boolean aligned = diff.distManhattan(BlockPos.ZERO) == 1;
         boolean byAxis = aligned && df.hasShaftTowards(world, from.pos, sf, dir) && dt.hasShaftTowards(world, to.pos, st, dir.getOpposite());
-        if (byAxis) return 1;
+        if (byAxis) {
+            float back = axisModifier(st, dir.getOpposite(), fed.get(to.pos));
+            return axisModifier(sf, dir, fed.get(from.pos)) * (back == 0 ? 0 : 1 / back);
+        }
         if (aligned && sf.getBlock() instanceof ChainDriveBlock && st.getBlock() instanceof ChainDriveBlock)
             return ChainDriveBlock.areBlocksConnected(sf, st, dir) ? 1 : 0;
         if (ICogWheel.isLargeCog(sf) && ICogWheel.isLargeCog(st)) {
@@ -278,6 +294,25 @@ final class BuildCheck {
         if (ICogWheel.isSmallCog(sf) && ICogWheel.isSmallCog(st) && aligned && !ICogWheel.isLargeCog(st)
                 && dir.getAxis() != df.getRotationAxis(sf) && df.getRotationAxis(sf) == dt.getRotationAxis(st)) return -1;
         return 0;
+    }
+
+    /** Notes the face {@code to} took its rotation in through, when it came straight along a shaft from {@code from}. */
+    private static void feed(Map<BlockPos, Direction> fed, Cell to, Cell from) {
+        BlockPos d = from.pos.subtract(to.pos);
+        if (d.distManhattan(BlockPos.ZERO) == 1) fed.put(to.pos, Direction.getNearest(d.getX(), d.getY(), d.getZ()));
+    }
+
+    /** Create's own rule (RotationPropagator.getAxisModifier) for a gearbox, gearshift or clutch turned through {@code fed}. */
+    private static float axisModifier(BlockState state, Direction out, Direction fed) {
+        if (fed == null) return 1;
+        String id = BuiltInRegistries.BLOCK.getKey(state.getBlock()).toString();
+        if (id.equals("create:gearbox"))
+            return out.getAxis() == fed.getAxis() ? out == fed ? 1 : -1 : out.getAxisDirection() == fed.getAxisDirection() ? -1 : 1;
+        boolean powered = state.hasProperty(BlockStateProperties.POWERED) && state.getValue(BlockStateProperties.POWERED);
+        if (out == fed || !powered) return 1;
+        if (id.equals("create:gearshift")) return -1;
+        if (id.equals("create:clutch")) return 0;
+        return 1;
     }
 
     private static boolean largeToSmall(BlockState large, BlockState small, IRotate smallDef, BlockPos diff) {
