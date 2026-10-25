@@ -5,6 +5,14 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.5.6
+
+### Fixed
+- **Taking off the Charm of Shrinking could leave a player small.** A player on a server took the charm off in the wear screen and stayed half size. Artifacts puts a wearable's effects (size, speed, health, attack and so on) on the player and takes them off only when the accessory mods tell it the item left its slot; when that news goes missing, the effect stays for good, even through a restart. The pack now checks every player once a second and at login, and takes off any Artifacts effect whose item they no longer wear anywhere (accessory slots, armor or hands), and the server log says when it does, so the missing step can be traced. A player who is stuck small now goes back to full size as soon as they join. Checked on a test server: an effect left behind with nothing worn was gone within a second, and the charm, Power Glove, Feral Claws, Bunny Hoppers, Crystal Heart and Novelty Drinking Hat kept all their effects while worn, in the wear screen's Curios slots and when put on with a right-click. Every normal way of taking the charm off in the wear screen (drag, shift-click, number keys, Q, after a relog, after a restart, hidden or shown) already worked there, also as seen by a second player.
+
+### Added
+- Create Galore Bridge 1.110.0.
+
 ## 0.5.5
 
 ### Fixed
