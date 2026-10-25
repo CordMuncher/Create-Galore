@@ -13,6 +13,15 @@ A big, long-term Minecraft modpack built around the Create mod. Think "Minecraft
 | **Full mod list** | [MODS.md](MODS.md) |
 | **In-game help** | The Create Galore Field Guide, a searchable book every player gets on first join |
 
+<table>
+<tr>
+<td><img src="docs/fishing-golden-hour.jpg" alt="Fishing from a moving boat at golden hour, sun on the water, a floating island and tall stone pillars on the horizon"></td>
+<td><img src="docs/fishing-sunset.jpg" alt="The same boat at sunset under a purple and orange sky"></td>
+</tr>
+</table>
+
+*Fishing from a moving boat at golden hour and at sunset. Photon shaders with DLSS upscaling (preset K, Quality), straight from play.*
+
 ## Install (players)
 
 1. Download `Create-Galore-0.5.4.mrpack` from the [latest release](https://github.com/emresahin0906-code/Create-Galore/releases/latest). The older `.mrpack` files in the repo's top folder are past versions; don't import those.
