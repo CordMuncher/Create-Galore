@@ -54,6 +54,12 @@ public final class DisplaySettings {
     public static final String PACER_TARGET_US = "pacerTargetUs";
     /** Testing only, not written to the file: true has the Max Framerate cap wait at the frame's start, before input (see FrameLatency). */
     public static final String FRAME_CAP_AT_START = "frameCapAtStart";
+    /** The frame counter: off, basic or detailed (see FpsOverlay). */
+    public static final String FPS_COUNTER = "fpsCounter";
+    /** The frame counter's corner: top-left, top-right, bottom-left or bottom-right. */
+    public static final String FPS_COUNTER_CORNER = "fpsCounterCorner";
+    /** true: the frame counter see-through and moving a pixel now and then, for OLED screens. */
+    public static final String FPS_COUNTER_DIM = "fpsCounterDim";
 
     private static final String COMMENT = "Create Galore Bridge display settings, also on the settings screen (Mods, Create Galore Bridge,\n"
             + " Config, or the DLAA button in the shader pack menu). perfectPresentation and tenBitWindow need a restart;\n"
@@ -72,6 +78,9 @@ public final class DisplaySettings {
             + " reflex: off, on or boost. NVIDIA Reflex low latency (boost also keeps the GPU clocks up), applied at once.\n"
             + " Needs an NVIDIA card (GTX 900 or newer) and perfectPresentation=true; the settings screen turns that on\n"
             + " with it. With Max Framerate set, Reflex keeps that cap (where it helps most: use one the card can hold).\n"
+            + " fpsCounter: off, basic (the frame rate, small, in a corner) or detailed (also the frame time, the 1% and 0.1%\n"
+            + " lows of the last 10 seconds and a frame time graph). fpsCounterCorner: top-left, top-right, bottom-left or\n"
+            + " bottom-right. fpsCounterDim: true for OLED screens: see-through, and it moves a pixel every two minutes.\n"
             + " perfectPresentation: EXPERIMENTAL, Windows only. true shows the game through a DirectX swap chain\n"
             + " (ported from Perfect Presentation by sidit77): borderless fullscreen at exclusive-fullscreen speed and\n"
             + " Alt-Tab without a display mode change. Leave NVIDIA's Vulkan/OpenGL present method on Auto.\n"
@@ -159,6 +168,9 @@ public final class DisplaySettings {
             missing |= props.putIfAbsent(DLAA, "auto") == null;
             missing |= props.putIfAbsent(DLAA_PRESET, "default") == null;
             missing |= props.putIfAbsent(REFLEX, "off") == null;
+            missing |= props.putIfAbsent(FPS_COUNTER, "off") == null;
+            missing |= props.putIfAbsent(FPS_COUNTER_CORNER, "top-right") == null;
+            missing |= props.putIfAbsent(FPS_COUNTER_DIM, "false") == null;
             if (missing) {
                 try (Writer w = Files.newBufferedWriter(file)) {
                     props.store(w, COMMENT);

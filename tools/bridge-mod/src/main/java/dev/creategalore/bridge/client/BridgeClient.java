@@ -21,6 +21,7 @@ public final class BridgeClient {
         KeyRebindMigration.run();
         modBus.addListener(BridgeClient::setup);
         modBus.addListener(ShipWaterCutaway::registerShaders);
+        modBus.addListener(FpsOverlay::registerLayer);
         GuideAiClient.init(modBus);
         WearClient.init(modBus);
         net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener(ShipGlueView::tick);
