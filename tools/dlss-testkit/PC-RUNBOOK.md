@@ -696,3 +696,66 @@ per scale, the frame rate tables of F1 and F2 (median and p90 frame time, fps, G
 ("Emre's notes", as in milestone 2's report); crops of the same spots
 as round 1 (about 512x512, from the settled still frame) for each mode of U1 under `results\upscale1\U1\`, a few MB
 in all. Commit and push on the DLAA branch.
+
+## Crash 1: DLSS restarting at a new render size with Perfect Presentation on
+
+Start only when Emre says so. Same PC, test folder and tools as before; about 40 minutes, three launches, no by-eye
+part, no PresentMon. Frame times don't count here (his server may run).
+
+**What happened.** In Emre's own game on 0.4.82 (2026-10-25 15:41), switching the preset from K to L and the render
+resolution from Native to Performance at once crashed the game: `EXCEPTION_ACCESS_VIOLATION` in `nvwgf2umx.dll`
+(NVIDIA's DirectX 11 driver), under `wglDXUnregisterObjectNV`, from `DlssPass.closeTextures`. That's DLSS's old textures
+being freed for the new render size, on the first frame after the shaders reloaded. Perfect Presentation was on, so DLSS
+ran on Perfect Presentation's DirectX device. Every earlier restart at a new size (dozens in Upscaling 1) ran with
+Perfect Presentation off. After restarting, he switched sizes twice more without a crash, so it doesn't happen every time.
+
+**What 1.98.0 changes.** DLSS opens a DirectX 11 device of its own also with Perfect Presentation on (the NGX ready line
+says `(its own DirectX device; ...)`). On a restart it releases the DLSS feature before its textures go, and waits for
+the GPU to finish with them. The crash guard (`dlss-starting.txt`) now covers the textures being swapped as well.
+
+**The run.** `C1` is built into the kit (it gets added to an existing kit config). It plays `dlaa-default`, `q-dlss-K`,
+`bal-dlss-M`, `perf-dlss-L` and `ultra-dlss-K` 12 times over: 60 DLSS restarts, each one at a new render size and most
+with a new preset, at `shore` with the `brief` path and no screenshots. It runs about 10 minutes.
+
+### Settings (put back afterwards)
+
+- `config\create_galore_bridge-display.properties`: `dlaa=dlss`, `perfectPresentation=true` for launches 1 and 2,
+  `false` for launch 3. Note the old values.
+- `config\fml.toml`: `earlyWindowControl = false`, as in step 3. Perfect Presentation needs it off.
+- `nvngx_dlss.dll` 310.9.16 is still in `$T\instance\create-galore-dlss`.
+- Before each launch, delete `$T\instance\create-galore-dlss\dlss-starting.txt` and `dlss-crashed.txt` if they are
+  there. Otherwise a crash in the launch before keeps DLSS off.
+
+### Launches
+
+Write each argument as `--jvm-arg=-D...=...` (`...` = `create_galore_dlss_testkit`): `...autorun=dlaa-test` and
+`...runs=` as below.
+
+1. **The old Bridge, Perfect Presentation on, `...runs=C1`.** This shows the crash happens in the kit at all.
+   ```powershell
+   Remove-Item $T\instance\mods\create-galore-bridge-*.jar
+   Invoke-WebRequest -Uri https://raw.githubusercontent.com/emresahin0906-code/Create-Galore/553b0ba7c02526bba2f02e06abae9626de0384a7/pack/mods/create-galore-bridge-1.97.0.jar -OutFile $T\instance\mods\create-galore-bridge-1.97.0.jar
+   ```
+   1.97.0 is 0.4.83's Bridge, which has the same DLSS code as 0.4.82's. A crash is expected. When it comes, copy
+   `$T\instance\hs_err_pid*.log` to `$T\crash1\` and note the time and how many `DLAA: DLSS running at` lines the log
+   has. If all 60 restarts finish without a crash, say so: the kit then doesn't reproduce it, and launch 2 proves less.
+2. **The new Bridge, Perfect Presentation on, `...runs=C1+C1`** (120 restarts).
+   ```powershell
+   git -C $T\repo pull
+   Remove-Item $T\instance\mods\create-galore-bridge-*.jar
+   Copy-Item $T\repo\pack\mods\create-galore-bridge-1.98.0.jar $T\instance\mods\
+   Copy-Item $T\repo\tools\dlss-testkit\dist\create-galore-dlss-testkit-1.0.0.jar $T\instance\mods\ -Force
+   ```
+   It must finish both runs. The log must have `(its own DirectX device; OpenGL on ...)` on the NGX ready line, and 120
+   `DLAA: DLSS running at` lines, with presets K, K, M, L, K in turn. It must have no `DLAA: stopped`, no `the GPU did not
+   finish` and no `hs_err_pid*.log`.
+3. **The new Bridge, Perfect Presentation off, `...runs=C1`.** The same checks for 60 restarts.
+
+If launch 2 or 3 crashes, stop: copy the `hs_err_pid*.log` and the log, and report.
+
+### Results
+
+Write `$T\repo\tools\dlss-testkit\results\crash1\REPORT.md`. For each launch, give the Bridge version, whether Perfect
+Presentation was on, the restarts done (count of `DLSS running at` lines), and the crash time if there was one. For a
+crash, give the `hs_err` file's top frames, its Java frames and `siginfo`. Include the NGX ready line, and anything
+else that looked wrong. Don't commit the hs_err files: they name his user folder. Commit and push on the DLAA branch.
