@@ -53,7 +53,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**DLAA** (experimental, optional, not widely tested yet) works only with the shader pack **Photon v1.3a + DLAA**, a copy of Photon + Clrwl the pack makes at startup: pick it under Shader Packs. It replaces Photon's own anti-aliasing with NVIDIA DLSS or AMD FSR 3.1: a sharper picture with far less shimmer on leaves, fences and water."
+      "text": "**DLAA** (optional) works only with the shader pack **Photon v1.3a + DLAA**, a copy of Photon + Clrwl the pack makes at startup: pick it under Shader Packs. It replaces Photon's own anti-aliasing with NVIDIA DLSS or AMD FSR 3.1: a sharper picture with far less shimmer on leaves, fences and water."
     },
     {
       "type": "modonomicon:text",

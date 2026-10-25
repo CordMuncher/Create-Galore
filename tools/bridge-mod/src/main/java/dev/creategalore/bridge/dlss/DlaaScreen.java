@@ -97,7 +97,7 @@ public final class DlaaScreen extends Screen {
                                 button -> screen.getMinecraft().setScreen(new DlaaScreen(screen)))
                         .bounds(screen.width - 66, 6, 60, 20)
                         .tooltip(net.minecraft.client.gui.components.Tooltip.create(Component.literal(
-                                "Experimental: NVIDIA DLAA or AMD FSR 3.1 in place of Photon's TAA (shader pack " + PhotonPatcher.PATCHED_NAME + ")")))
+                                "NVIDIA DLSS or AMD FSR 3.1 in place of Photon's TAA, at full resolution or upscaling (shader pack " + PhotonPatcher.PATCHED_NAME + ")")))
                         .build());
             }
         });
@@ -189,7 +189,7 @@ public final class DlaaScreen extends Screen {
         super.render(graphics, open != null ? -1 : mouseX, open != null ? -1 : mouseY, partialTick);
         int left = width / 2 - WIDTH / 2;
         graphics.drawCenteredString(font, title, width / 2, 6, 0xFFFFFF);
-        lines(graphics, "EXPERIMENTAL and optional, not widely tested yet. Only with the shader pack \""
+        lines(graphics, "Optional. Only with the shader pack \""
                 + PhotonPatcher.PATCHED_NAME + "\": pick it in the shader menu.", left, 18, 0xFFDD66, 3);
         int y = 122;
         String picked = preset.equals("other") ? letter : preset;

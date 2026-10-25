@@ -6,16 +6,16 @@ A big, long-term Minecraft modpack built around the Create mod. Think "Minecraft
 
 | | |
 |---|---|
-| **Version** | 0.4.88 |
+| **Version** | 0.5.0 |
 | **Minecraft** | 1.21.1 |
 | **Loader** | NeoForge **21.1.262** (pinned, don't update it, see [Known issues](#known-issues)) |
-| **Mods** | 232 from Modrinth + the pack's own Create Galore Bridge (1.102.0), Create Galore Fishing (0.3.17) and Lag Watch (1.1.0) + Twilight Forest added by hand, plus 4 shader packs and the Fresh Animations resource pack |
+| **Mods** | 232 from Modrinth + the pack's own Create Galore Bridge (1.103.0), Create Galore Fishing (0.3.17) and Lag Watch (1.1.0) + Twilight Forest added by hand, plus 4 shader packs and the Fresh Animations resource pack |
 | **Full mod list** | [MODS.md](MODS.md) |
 | **In-game help** | The Create Galore Field Guide, a searchable book every player gets on first join |
 
 ## Install (players)
 
-1. Download `Create-Galore-0.4.88.mrpack` from the [latest release](https://github.com/emresahin0906-code/Create-Galore/releases/latest). The older `.mrpack` files in the repo's top folder are past versions; don't import those.
+1. Download `Create-Galore-0.5.0.mrpack` from the [latest release](https://github.com/emresahin0906-code/Create-Galore/releases/latest). The older `.mrpack` files in the repo's top folder are past versions; don't import those.
 2. Import it:
    - **Prism Launcher:** Add Instance → Import → pick the `.mrpack`.
    - **Modrinth App:** drag the `.mrpack` onto the window (or File → Import).
@@ -23,7 +23,7 @@ A big, long-term Minecraft modpack built around the Create mod. Think "Minecraft
    The launcher downloads every mod at its pinned version (about 860 MB) and unpacks the pack's configs and datapacks.
 3. **Add Twilight Forest by hand.** It isn't on Modrinth, so it can't be inside the pack file. Put `twilightforest-1.21.1-4.8.3345-universal.jar` (CurseForge, version 4.8.3345) into the instance's `mods` folder.
 4. Give the game its memory and Java flags in the instance's Java settings: **12 GB with Generational ZGC** on a PC with 32 GB or more, **8 GB with G1** on a 16 GB laptop. Set minimum and maximum memory to the same value. The exact lines to paste for Prism and the Modrinth App, the benchmark behind them and the upper limits are in **[docs/java-flags.md](docs/java-flags.md)**.
-5. Optional shaders are already in the `shaderpacks` folder: **Complementary Reimagined + Euphoria Patches** (recommended), Bliss, Photon and Solas (lightest). Turn one on in Options → Video Settings → Shader Packs. For Bliss or Photon, pick the copy whose name ends in **+ Clrwl** (Colorwheel Patcher makes it at launch), so Create contraptions get shaded properly. Experimental and optional: **Photon v1.3a + DLAA** (made at launch from Photon + Clrwl) swaps Photon's anti-aliasing for NVIDIA DLAA or AMD FSR 3.1 at full resolution. Its settings are behind the **DLAA...** button in the shader pack menu; DLSS needs your own `nvngx_dlss.dll` (not part of the pack, the screen links NVIDIA's copy).
+5. Optional shaders are already in the `shaderpacks` folder: **Complementary Reimagined + Euphoria Patches** (recommended), Bliss, Photon and Solas (lightest). Turn one on in Options → Video Settings → Shader Packs. For Bliss or Photon, pick the copy whose name ends in **+ Clrwl** (Colorwheel Patcher makes it at launch), so Create contraptions get shaded properly. Optional: **Photon v1.3a + DLAA** (made at launch from Photon + Clrwl) swaps Photon's anti-aliasing for NVIDIA DLAA or AMD FSR 3.1 at full resolution. Its settings are behind the **DLAA...** button in the shader pack menu; DLSS needs your own `nvngx_dlss.dll` (not part of the pack, the screen links NVIDIA's copy).
 
 6. Optional: give the instance the pack icon. Download `Create-Galore-icon.png` from the release and pick it in the launcher (Prism: click the instance icon; Modrinth App: instance settings). A `.mrpack` can't carry an icon, so launchers show their default one.
 
