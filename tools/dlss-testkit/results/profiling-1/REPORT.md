@@ -175,8 +175,8 @@ The pack's part, split by the OpenGL call that starts each timing row (canopy, a
 | `glMultiDrawElementsIndirect` | 0.04–0.07 | Distant Horizons or Sodium |
 
 - **The split into shadow, the world's programs, and Photon's deferred and composite passes isn't possible from this
-  capture.** Neither Iris nor Photon names its passes for profilers. Nsight Graphics' GPU Trace (optional in the brief)
-  could split it. It wasn't set up in this session.
+  capture.** In it, neither Iris nor Photon named its passes. "Optional follow-ups" below has a way to get it if it's
+  wanted.
 - In the moving view, the pack's GPU work differs from mode to mode (8.84 / 7.29 / 5.53 ms) because the scene played
   differently in each traced run, so only the canopy view is compared across modes.
 
@@ -311,6 +311,37 @@ The pack's part, split by the OpenGL call that starts each timing row (canopy, a
    - Caused by Perfect Presentation's DirectX present path and the interop between OpenGL and DirectX.
    - With it off, the blit to the window takes 0.03 ms instead, and the wait is on the CPU in `SwapBuffers`.
 
+## Optional follow-ups
+
+These are optional. They can be sent back to profiling if the DLAA thread wants the answers. Neither needs a new tool:
+both use the tools and captures of this session. Times are estimates.
+
+1. **What DLAA saves on Photon's side.** From N1 as it is, without a new capture; about 15–20 minutes.
+   - The Bridge's work runs where Photon's TAA pass is in the frame. While DLSS runs, that pass only copies the scene
+     and hands DLSS its inputs (`PhotonPatcher`).
+   - Lining up the photon-taa and dlaa-default frames in N1 and comparing that pass's GPU time would show how much of
+     Photon's TAA cost DLAA removes.
+   - It answers an open point from this report. Photon's own work costs the same in both modes (5.38 against 5.40 ms
+     in the canopy view). So either the TAA pass was cheap to begin with, or Photon still does most of its work with
+     DLAA on.
+2. **The pack's GPU time split by pass, with names.** One more Nsight Systems capture; about 30 minutes, if Iris can
+   do it.
+   - Iris may have a debug option that names its passes for profilers. This wasn't checked; a look in the Iris jar of
+     the test instance would show it.
+   - If it has one:
+     - turn it on in the test instance;
+     - repeat N1 with the same command;
+     - read the passes (shadow, the world, deferred, composite) the way the Bridge's groups were read here;
+     - turn it off again.
+   - If it doesn't, the split needs Nsight Graphics (see below).
+
+**Not planned: Nsight Graphics.**
+- It would take about 1–1.5 hours, and it may not capture this game at all.
+- It intercepts the graphics API much as Nsight Systems' DirectX 11 tracing does, which crashed the game (Method,
+  point 5).
+- This game is a hard case: OpenGL with NVIDIA-only extensions, plus the Bridge's link between OpenGL and its own
+  DirectX device.
+
 ## Method
 
 **Tools:**
@@ -320,7 +351,7 @@ The pack's part, split by the OpenGL call that starts each timing row (canopy, a
 - Python 3.13 through uv 0.13.5 for the analysis: the test kit's `frametimes.py` and `cpuprofile.py`, plus small
   scripts of this session that read the captures. Those are kept on the PC (see "Data").
 - The game: Minecraft 1.21.1, NeoForge 21.1.262, launched by portablemc 5.0.6 as in step 4, offline as `CGTester`.
-- Nsight Graphics wasn't used.
+- Nsight Graphics wasn't used (see "Optional follow-ups").
 
 **Commands:**
 - **PresentMon (P1–P3, P5):** after the game's own `java.exe` had run for 8 s:
