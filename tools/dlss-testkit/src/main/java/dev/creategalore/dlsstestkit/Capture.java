@@ -138,6 +138,20 @@ public final class Capture {
             // What DLSS gets at a render scale (any GPU): the corner of the pack's buffers, stretched over the window.
             modes.add(new Mode("perf-debug-color", true, "default", "color", null, null, null, null, 0.5f));
             modes.add(new Mode("perf-debug-motion", true, "default", "motion", null, null, null, null, 0.5f));
+            // Input latency (Reflex 1): the game as it is, input read again just before rendering, Reflex's markers
+            // alone (the driver's report, nothing changed), Reflex low latency and boost; then capped at 60 fps by the
+            // game's limiter or by Reflex's; then Sodium's CPU render-ahead limit (3 is Sodium's default).
+            modes.add(Mode.latency("lat-base", "off", false, 3, 260));
+            modes.add(Mode.latency("lat-late", "off", true, 3, 260));
+            modes.add(Mode.latency("lat-markers", "markers", false, 3, 260));
+            modes.add(Mode.latency("lat-reflex", "on", true, 3, 260));
+            modes.add(Mode.latency("lat-boost", "boost", true, 3, 260));
+            modes.add(Mode.latency("lat-cap", "off", false, 3, 60));
+            modes.add(Mode.latency("lat-cap-late", "off", true, 3, 60));
+            modes.add(Mode.latency("lat-cap-reflex", "on", true, 3, 60));
+            modes.add(Mode.latency("lat-ra1", "off", false, 1, 260));
+            modes.add(Mode.latency("lat-ra0", "off", false, 0, 260));
+            modes.add(Mode.latency("lat-ra1-late", "off", true, 1, 260));
         }
         // The DLAA test world (seed 20261024, scene built on the lakeshore at x 1023..1040, z 160..176).
         List<Viewpoint> viewpoints = new ArrayList<>(List.of(
@@ -154,7 +168,8 @@ public final class Capture {
          * Named runs for -Dcreate_galore_dlss_testkit.runs=A+B, which plays them one after another in one game. Upscaling 1
          * (PC-RUNBOOK.md): F1 and F2 measure frame rates (no screenshots), U1 to U7 save the pictures. Crash 1: C1
          * restarts DLSS 60 times, each time at another render size and mostly another preset (no pictures). S1: Create's
-         * machines under a near lintel at full size and two render scales (all should show).
+         * machines under a near lintel at full size and two render scales (all should show). Reflex 1: L1 with Perfect
+         * Presentation on (Reflex needs it), L2 with it off (Sodium's render-ahead limit), each mode twice.
          */
         List<Run> runs = new ArrayList<>(List.of(
                 new Run("F1", "photon-taa+dlaa-default+fsr3+perf-taau+perf-dlss-K+perf-dlss-M+perf-dlss-L+perf-fsr3"
@@ -171,7 +186,11 @@ public final class Capture {
                 new Run("C1", "dlaa-default+q-dlss-K+bal-dlss-M+perf-dlss-L+ultra-dlss-K", "shore", "brief", null, false, null, 12),
                 new Run("H1", "photon-taa+dlaa-default+fsr3+perf-taau+perf-dlss-L", "hand", "still+rise", null, true, null),
                 new Run("R1", "photon-taa", "ride+ride-east", "ride", null, true, null),
-                new Run("S1", "photon-taa+perf-taau+ultra-taau", "cull", "brief", null, true, null)));
+                new Run("S1", "photon-taa+perf-taau+ultra-taau", "cull", "brief", null, true, null),
+                new Run("L1", "lat-base+lat-late+lat-markers+lat-reflex+lat-boost+lat-cap+lat-cap-late+lat-cap-reflex",
+                        "shore+canopy", "latency", null, false, null, 2),
+                new Run("L2", "lat-base+lat-late+lat-ra1+lat-ra0+lat-ra1-late+lat-cap+lat-cap-late", "shore+canopy", "latency", null,
+                        false, null, 2)));
     }
 
     /**
@@ -192,13 +211,28 @@ public final class Capture {
      * objectMotion false leaves only the camera's motion in the motion vectors (null: on); reactiveMask false hands FSR
      * no masks (null: on; DLSS never gets them); renderScale (null: full resolution) turns on the DLAA pack's own
      * upscaling (Photon's TAAU) at that render scale, so DLSS or FSR upscale (or with dlaa false the pack itself); mipBias (null: 0) is added to the
-     * textures' mip bias while DLSS or FSR runs (NVIDIA's guide asks for -1 more than the render scale's own).
+     * textures' mip bias while DLSS or FSR runs (NVIDIA's guide asks for -1 more than the render scale's own); reflex,
+     * latePoll, renderAhead and fpsCap (null: as they are) are the input latency switches (see {@link #latency}).
      */
     record Mode(String name, boolean dlaa, String preset, String debugView, String jitterSign, String engine, Boolean objectMotion,
-                Boolean reactiveMask, Float renderScale, Float mipBias) {
+                Boolean reactiveMask, Float renderScale, Float mipBias, String reflex, Boolean latePoll, Integer renderAhead,
+                Integer fpsCap) {
         Mode(String name, boolean dlaa, String preset, String debugView, String jitterSign, String engine, Boolean objectMotion,
              Boolean reactiveMask) {
             this(name, dlaa, preset, debugView, jitterSign, engine, objectMotion, reactiveMask, null, null);
+        }
+
+        Mode(String name, boolean dlaa, String preset, String debugView, String jitterSign, String engine, Boolean objectMotion,
+             Boolean reactiveMask, Float renderScale, Float mipBias) {
+            this(name, dlaa, preset, debugView, jitterSign, engine, objectMotion, reactiveMask, renderScale, mipBias, null, null, null, null);
+        }
+
+        /**
+         * An input latency mode: DLAA as played, reflex (off, markers, on, boost; needs Perfect Presentation), input read
+         * again just before rendering (latePoll), Sodium's CPU render-ahead limit and the frame cap (260: none; vsync off).
+         */
+        static Mode latency(String name, String reflex, boolean latePoll, int renderAhead, int fpsCap) {
+            return new Mode(name, true, "default", null, null, null, null, null, null, null, reflex, latePoll, renderAhead, fpsCap);
         }
 
         Mode(String name, boolean dlaa, String preset, String debugView, String jitterSign, String engine, Boolean objectMotion,
@@ -248,6 +282,10 @@ public final class Capture {
     private static int savedFov;
     private static double savedFovEffect;
     private static CameraType savedCamera;
+    private static int savedFrameLimit;
+    private static boolean savedVsync;
+    /** Sodium's CPU render-ahead limit before the run (null: Sodium not found). */
+    private static Integer savedRenderAhead;
     /** The Bridge's display settings before the run (null: no file), put back when it ends. */
     private static String savedBridgeConfig;
     /** The DLAA pack's options before the run (null: no file), put back when it ends. */
@@ -424,6 +462,10 @@ public final class Capture {
         savedFov = mc.options.fov().get();
         savedFovEffect = mc.options.fovEffectScale().get();
         savedCamera = mc.options.getCameraType();
+        savedFrameLimit = mc.options.framerateLimit().get();
+        savedVsync = mc.options.enableVsync().get();
+        savedRenderAhead = sodiumRenderAhead(null);
+        bridgeLatency("measure", true);
         mc.options.hideGui = true;
         mc.options.bobView().set(false);
         mc.options.pauseOnLostFocus = false; // the pause menu would cover the shots if the window lost focus
@@ -503,6 +545,12 @@ public final class Capture {
         mc.options.fov().set(savedFov);
         mc.options.fovEffectScale().set(savedFovEffect);
         mc.options.setCameraType(savedCamera);
+        mc.options.framerateLimit().set(savedFrameLimit);
+        mc.options.enableVsync().set(savedVsync);
+        if (savedRenderAhead != null) {
+            sodiumRenderAhead(savedRenderAhead);
+        }
+        bridgeLatency("measure", false);
         if (settings != null) {
             leaveScene();
             MovingScene.remove();
@@ -612,15 +660,18 @@ public final class Capture {
         }
         long now = System.nanoTime();
         Segment current = segment >= 0 ? plan.get(segment) : null;
-        if (current != null && current.path() != null && "still".equals(current.path()) && lastNanos != 0) {
+        if (current != null && timed(current) && lastNanos != 0) {
             frameNanosSum += now - lastNanos;
             frameNanosCount++;
         }
         lastNanos = now;
 
         if (segment < 0 || ++local >= current.length()) {
-            if (current != null && current.path() != null && "still".equals(current.path())) {
+            if (current != null && timed(current)) {
                 recordFrameTime(current);
+            }
+            if (current != null && "latency".equals(current.path())) {
+                recordLatency(current);
             }
             segment++;
             local = 0;
@@ -633,6 +684,9 @@ public final class Capture {
             markSegment(current, now);
             if (current.onStart() != null) {
                 current.onStart().run();
+            }
+            if ("latency".equals(current.path())) {
+                bridgeLatencyWindow(); // a fresh window for this segment
             }
             if (!running) {
                 return;
@@ -767,11 +821,20 @@ public final class Capture {
     private static void applyMode(Mode mode) {
         currentMode = mode;
         frame = 0;
+        Minecraft mc = Minecraft.getInstance();
+        if (mode.fpsCap() != null) {
+            mc.options.framerateLimit().set(mode.fpsCap());
+            mc.options.enableVsync().set(false);
+        }
+        if (mode.renderAhead() != null && sodiumRenderAhead(mode.renderAhead()) == null) {
+            log("Sodium's render-ahead limit could not be set; mode " + mode.name() + " runs with Sodium's own");
+        }
         if (!writeMode(mode)) {
             stop("could not switch to mode " + mode.name());
             return;
         }
-        JsonObject info = new JsonObject();
+        // A mode played again (a run's cycles) keeps its entry: its latency windows add up there.
+        JsonObject info = modeInfo.containsKey(mode.name()) ? modeInfo.get(mode.name()) : new JsonObject();
         info.addProperty("name", mode.name());
         info.addProperty("dlaa", mode.dlaa());
         info.addProperty("preset", mode.preset());
@@ -782,7 +845,18 @@ public final class Capture {
         info.addProperty("reactiveMask", !Boolean.FALSE.equals(mode.reactiveMask()));
         info.addProperty("renderScale", mode.renderScale() != null ? mode.renderScale() : 1.0f);
         info.addProperty("mipBias", mode.mipBias() != null ? mode.mipBias() : 0.0f);
-        info.add("frameMs", new JsonObject());
+        if (mode.reflex() != null || mode.latePoll() != null || mode.renderAhead() != null || mode.fpsCap() != null) {
+            info.addProperty("reflex", mode.reflex() != null ? mode.reflex() : "off");
+            info.addProperty("latePoll", Boolean.TRUE.equals(mode.latePoll()));
+            info.addProperty("renderAhead", mode.renderAhead());
+            info.addProperty("fpsCap", mode.fpsCap());
+            if (!info.has("latency")) {
+                info.add("latency", new JsonObject());
+            }
+        }
+        if (!info.has("frameMs")) {
+            info.add("frameMs", new JsonObject());
+        }
         modeInfo.put(mode.name(), info);
         log("mode " + mode.name());
     }
@@ -829,6 +903,16 @@ public final class Capture {
             } else {
                 props.remove("dlaaMipBias");
             }
+            if (mode.reflex() != null && !mode.reflex().isBlank()) {
+                props.setProperty("reflex", mode.reflex());
+            } else {
+                props.remove("reflex");
+            }
+            if (Boolean.TRUE.equals(mode.latePoll())) {
+                props.setProperty("latePoll", "true");
+            } else {
+                props.remove("latePoll");
+            }
             try (Writer w = Files.newBufferedWriter(file)) {
                 props.store(w, "Create Galore Bridge display settings (last written by the DLAA test kit, mode " + mode.name() + ")");
             }
@@ -860,6 +944,65 @@ public final class Capture {
         frameNanosCount = 0;
     }
 
+    /** Paths whose frame time goes into the manifest (the others save screenshots, which hold frames up). */
+    private static boolean timed(Segment segment) {
+        return "still".equals(segment.path()) || "latency".equals(segment.path());
+    }
+
+    /** The Bridge's latency numbers over the latency path, per viewpoint (a list: one per time the mode played). */
+    private static void recordLatency(Segment segment) {
+        JsonObject info = modeInfo.get(segment.mode().name());
+        Map<String, Object> window = bridgeLatencyWindow();
+        if (info == null || window == null || !info.has("latency")) {
+            return;
+        }
+        JsonObject latency = info.getAsJsonObject("latency");
+        if (!latency.has(segment.viewpoint().name())) {
+            latency.add(segment.viewpoint().name(), new JsonArray());
+        }
+        latency.getAsJsonArray(segment.viewpoint().name()).add(GSON.toJsonTree(window)); // one per time the mode played
+    }
+
+    /** The Bridge's latency window (FrameLatency.window, which also starts a new one); null without it. */
+    @SuppressWarnings("unchecked")
+    private static Map<String, Object> bridgeLatencyWindow() {
+        Object window = bridgeLatency("window", null);
+        return window instanceof Map<?, ?> map ? (Map<String, Object>) map : null;
+    }
+
+    /** Calls FrameLatency.measure(on) (method "measure") or FrameLatency.window() (on null); null if the Bridge has none. */
+    private static Object bridgeLatency(String method, Boolean on) {
+        try {
+            Class<?> latency = Class.forName("dev.creategalore.bridge.latency.FrameLatency");
+            return on != null ? latency.getMethod(method, boolean.class).invoke(null, on) : latency.getMethod(method).invoke(null);
+        } catch (ReflectiveOperationException | RuntimeException e) {
+            if (on == null || on) {
+                LOG.warn("DLAA test: this Bridge has no latency meter: {}", e.toString());
+            }
+            return null;
+        }
+    }
+
+    /**
+     * Sodium's CPU render-ahead limit (how many frames the CPU may get ahead of the GPU; Sodium reads it every frame):
+     * sets it to {@code value} unless null, and returns what it was (null if Sodium's option could not be reached).
+     */
+    private static Integer sodiumRenderAhead(Integer value) {
+        try {
+            Object options = Class.forName("net.caffeinemc.mods.sodium.client.SodiumClientMod").getMethod("options").invoke(null);
+            Object advanced = options.getClass().getField("advanced").get(options);
+            java.lang.reflect.Field limit = advanced.getClass().getField("cpuRenderAheadLimit");
+            int old = limit.getInt(advanced);
+            if (value != null) {
+                limit.setInt(advanced, value);
+            }
+            return old;
+        } catch (ReflectiveOperationException | RuntimeException e) {
+            LOG.warn("DLAA test: Sodium's render-ahead limit is out of reach: {}", e.toString());
+            return null;
+        }
+    }
+
     private static void requestDump(Path dir, String name) {
         try {
             Class.forName("dev.creategalore.bridge.dlss.Dlss").getMethod("dumpNextFrame", String.class, String.class)
@@ -879,6 +1022,14 @@ public final class Capture {
             LOG.warn("DLAA test: the Bridge does not say which pack options set the render scale, using Photon's: {}", e.toString());
         }
         return PHOTON_SCALE_OPTIONS;
+    }
+
+    private static boolean bridgePresentationActive() {
+        try {
+            return (boolean) Class.forName("dev.creategalore.bridge.present.Presentation").getMethod("active").invoke(null);
+        } catch (ReflectiveOperationException | RuntimeException e) {
+            return false;
+        }
     }
 
     private static boolean bridgeDlaaActive() {
@@ -1052,6 +1203,7 @@ public final class Capture {
         manifest.addProperty("outcome", outcome);
         manifest.addProperty("renderer", RenderSystem.isOnRenderThread() ? com.mojang.blaze3d.platform.GlUtil.getRenderer() : "?");
         manifest.addProperty("shaderPack", Iris.getCurrentPackName());
+        manifest.addProperty("perfectPresentation", bridgePresentationActive());
         JsonArray size = new JsonArray();
         size.add(mc.getWindow().getWidth());
         size.add(mc.getWindow().getHeight());

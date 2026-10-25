@@ -117,3 +117,14 @@ started and ended).
   for the share of the Bridge's DLAA and motion vector code.
 
 `PC-RUNBOOK.md`'s "Profiling 1" is the brief for the PC session.
+
+### Input latency
+
+- The `lat-*` modes switch the Bridge's latency tests (testing only, in the display properties: `reflex` off, markers,
+  on or boost, which needs Perfect Presentation; `latePoll`, input read again just before rendering), Sodium's CPU
+  render-ahead limit and the frame cap (vsync off). The `latency` path holds still for 600 frames while the Bridge
+  measures from the game last reading input to the GPU finishing the frame; `manifest.json` gets those numbers per
+  mode and viewpoint, one entry each time the mode played (runs L1 and L2 play each mode twice).
+- `latency.py RUN_FOLDER ...` (standard library) prints them as tables, with each mode's change against the first.
+
+`PC-RUNBOOK.md`'s "Reflex 1" is the brief for the PC session.

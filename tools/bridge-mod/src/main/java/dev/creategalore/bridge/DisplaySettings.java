@@ -42,6 +42,12 @@ public final class DisplaySettings {
     public static final String DLAA_MIP_BIAS = "dlaaMipBias";
     /** true: the settings screen sets the render resolution with a slider instead of the standard modes. */
     public static final String DLAA_CUSTOM_SCALE = "dlaaCustomScale";
+    /** Testing only, not written to the file: NVIDIA Reflex with Perfect Presentation, off, markers, on or boost (see FrameLatency). */
+    public static final String REFLEX = "reflex";
+    /** Testing only, not written to the file: true reads input again just before each frame renders (see FrameLatency). */
+    public static final String LATE_POLL = "latePoll";
+    /** Testing only, not written to the file: true logs the input latency every 10 seconds (see FrameLatency). */
+    public static final String LATENCY_LOG = "latencyLog";
 
     private static final String COMMENT = "Create Galore Bridge display settings, also on the settings screen (Mods, Create Galore Bridge,\n"
             + " Config, or the DLAA button in the shader pack menu). perfectPresentation and tenBitWindow need a restart;\n"
@@ -68,6 +74,7 @@ public final class DisplaySettings {
             + " loading window (config/fml.toml).";
 
     private static Properties cached;
+    private static volatile int generation;
 
     private DisplaySettings() {}
 
@@ -105,6 +112,12 @@ public final class DisplaySettings {
     /** Reads the file again on the next get (the DLAA settings apply on a shader reload). */
     public static synchronized void reload() {
         cached = null;
+        generation++;
+    }
+
+    /** Changes whenever the settings may have changed (a reload or a save), for code that keeps its own copy. */
+    public static int generation() {
+        return generation;
     }
 
     /** Writes {@code values} into the file, keeping its other keys. False (logged) if it could not be written. */
@@ -112,6 +125,7 @@ public final class DisplaySettings {
         Properties props = load();
         props.putAll(values);
         cached = props;
+        generation++;
         Path file = FMLPaths.CONFIGDIR.get().resolve(FILE);
         try (Writer w = Files.newBufferedWriter(file)) {
             props.store(w, COMMENT);

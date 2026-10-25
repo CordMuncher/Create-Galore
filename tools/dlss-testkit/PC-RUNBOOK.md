@@ -759,3 +759,105 @@ Write `$T\repo\tools\dlss-testkit\results\crash1\REPORT.md`. For each launch, gi
 Presentation was on, the restarts done (count of `DLSS running at` lines), and the crash time if there was one. For a
 crash, give the `hs_err` file's top frames, its Java frames and `siginfo`. Include the NGX ready line, and anything
 else that looked wrong. Don't commit the hs_err files: they name his user folder. Commit and push on the DLAA branch.
+
+## Reflex 1: input latency with Reflex, a late input read and Sodium's render-ahead limit
+
+Start only when Emre says so. Same PC, test folder and tools as before; about 45 minutes, two launches and an
+optional by-feel part. **Frame times count here** (latency follows the GPU's load): a quiet PC as in profiling 1, no
+game server. Nothing of this is merged until Emre has tested it (Emre, 2026-10-25).
+
+**What it tests.** The game renders with OpenGL, which NVIDIA Reflex has no API for. With Perfect Presentation on, the
+frames go to the window through a Direct3D 11 swap chain, and the Bridge can run Reflex (NVAPI) on that D3D11 device:
+the driver's sleep at the start of each frame, then input, plus markers for where each frame's game work, rendering
+and present are. Whether that lowers the latency of the OpenGL frames behind it is the open question. Two things that
+need no NVIDIA run alongside:
+- **Late input read** (`latePoll`): Minecraft reads input while presenting the frame before; anything it waits for
+  after that (Sodium's render-ahead wait, Perfect Presentation's swap chain wait, the game's frame cap) ages it. The
+  Bridge can read input again just before the mouse turns the camera.
+- **Sodium's CPU render-ahead limit** (`cpu_render_ahead_limit`, 3): how many frames the CPU may get ahead of the
+  GPU. 1 or 0 should lower latency and may cost frame rate.
+
+**How it's measured.** The Bridge's latency meter: from the game last reading input to the GPU finishing that frame
+(an OpenGL timestamp, matched to the CPU clock every second), median and 90th percentile, on any GPU. The swap and the
+screen add the same on top in every mode, so the modes compare; this is not click-to-photon. With Reflex markers on,
+the driver's own report of its last 64 frames goes next to it.
+
+### Update
+
+The DLAA branch was restarted from main after 0.5.1, so fetch it instead of pulling:
+
+```powershell
+git -C $T\repo fetch origin
+git -C $T\repo checkout -B claude/project-thread-u2wmhh origin/claude/project-thread-u2wmhh
+Remove-Item $T\instance\mods\create-galore-bridge-*.jar
+Copy-Item $T\repo\pack\mods\create-galore-bridge-1.105.0.jar $T\instance\mods\
+Copy-Item $T\repo\tools\dlss-testkit\dist\create-galore-dlss-testkit-1.0.0.jar $T\instance\mods\ -Force
+```
+
+1.105.0 is 0.5.1's Bridge plus the latency test code. It changes nothing unless the display settings ask (`reflex`,
+`latePoll`, `latencyLog`, testing only); the kit's latency modes set those themselves.
+
+### Settings (note the old values, put them back afterwards)
+
+- `config\create_galore_bridge-display.properties`: `dlaa=dlss` (DLAA at full resolution, as Emre plays),
+  `perfectPresentation=true` for launch 1, `false` for launch 2. `nvngx_dlss.dll` 310.9.16 still in
+  `$T\instance\create-galore-dlss`.
+- `config\fml.toml`: `earlyWindowControl = false` (Perfect Presentation needs it).
+- `config\DistantHorizons.toml`: `numberOfThreads = 2`, as in profiling 1.
+- `options.txt`: nothing. Each latency mode sets the frame cap (unlimited, or 60) and turns vsync off itself, and
+  sets Sodium's render-ahead limit; the run puts all three back when it ends.
+- The kit's config: nothing; the runs L1 and L2 are built in (added to an existing config) and save no screenshots.
+- **Only look, don't change:** the NVIDIA Control Panel's 3D settings for `java.exe` / `javaw.exe` and the global
+  ones: Low Latency Mode, Max Frame Rate, Vertical sync, G-SYNC, Power management mode. And the monitor's refresh
+  rate (Windows display settings). Write all of them in the report; a control panel Low Latency Mode of Ultra or a
+  frame cap there changes what the modes mean.
+
+### Launches
+
+The launch from step 4 (2560x1440), with `--jvm-arg=-Dcreate_galore_dlss_testkit.autorun=dlaa-test` and `...runs=`
+as below. The game window stays in front with focus during the runs (fullscreen behaves differently from a window in
+the background; F11 if it opened windowed is fine).
+
+1. **Perfect Presentation on, `...runs=L1`** (about 12 minutes). Modes, each played twice, at `shore` and `canopy`,
+   600 frames held still each:
+
+   | Mode | What |
+   | --- | --- |
+   | `lat-base` | the game as it is (Reflex off, frame cap off) |
+   | `lat-late` | input read again just before rendering |
+   | `lat-markers` | Reflex markers only (the driver's report, nothing changed) |
+   | `lat-reflex` | Reflex low latency (sleep, then input) + late read |
+   | `lat-boost` | the same with Reflex boost (GPU clocks held up) |
+   | `lat-cap` | 60 fps cap, the game's own limiter |
+   | `lat-cap-late` | 60 fps cap, game's limiter, late read |
+   | `lat-cap-reflex` | 60 fps cap by Reflex instead of the game's limiter, low latency on, late read |
+
+   The log must have `Latency test: NVIDIA Reflex started on Perfect Presentation's Direct3D 11 device` and, in the
+   Reflex modes, `Latency test: Reflex low latency on, ...; driver low latency on, ...`. If it says
+   `Latency test: Reflex unavailable: ...` or `Reflex stopped after an error`, copy that line and go on (the other
+   modes still count). Also check for `Perfect Presentation: DXGI swap chain ready`.
+2. **Perfect Presentation off, `...runs=L2`** (about 10 minutes): `lat-base`, `lat-late`, `lat-ra1` and `lat-ra0`
+   (Sodium's render-ahead limit 1 and 0), `lat-ra1-late`, `lat-cap`, `lat-cap-late`.
+3. **By feel, optional (about 10 minutes, with Emre).** Launch 1's settings (Perfect Presentation on) with
+   `...autorun=dlaa-test` and `...byEye=lat-base` instead of `...runs=`: the game opens the world and stays open at
+   the moving scene. Emre flicks the camera around and builds a little. The session switches with
+   `/dlaatest mode lat-late`, `/dlaatest mode lat-reflex` and back to `/dlaatest mode lat-base` when he says next
+   (this only switches Reflex and the late read; the frame cap and Sodium stay as `options.txt` and Sodium have
+   them). Write down what he says per mode, especially whether the camera feels more direct, and whether he can tell
+   at all.
+
+If a launch crashes, copy `hs_err_pid*.log` and the log's last 100 lines, and report.
+
+### Results
+
+`python latency.py <L1 folder> <L2 folder>` (`screenshots\dlaa-test\<time>-L1` and `-L2`). Write
+`$T\repo\tools\dlss-testkit\results\reflex1\REPORT.md`:
+- its tables, and per launch the change of each mode's median latency and of its fps against `lat-base`, at both
+  viewpoints, with how far the two repeats of a mode differ;
+- the `Latency test:` lines and the `Perfect Presentation:` and `DLAA:` lines;
+- the control panel settings and refresh rate from Settings, what stayed open on the PC;
+- for the Reflex modes: whether the driver says low latency is on and uses the game's sleep, the driver's numbers
+  next to the Bridge's, and the unit check (about 1 expected);
+- Emre's by-feel notes, if that part ran.
+
+Commit and push on the DLAA branch. Don't commit hs_err files (they name his user folder).

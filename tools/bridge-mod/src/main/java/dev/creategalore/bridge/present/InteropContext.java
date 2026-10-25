@@ -237,6 +237,10 @@ final class InteropContext implements AutoCloseable {
         return memGetAddress(code);
     }
 
+    long device() {
+        return device;
+    }
+
     void makeCurrent() {
         openglContext.makeCurrent();
     }

@@ -165,6 +165,11 @@ public final class Presentation {
         return true;
     }
 
+    /** The Direct3D 11 device showing the game (an ID3D11Device*), 0 while Perfect Presentation is off. */
+    public static long d3dDevice() {
+        return active() && interop != null ? interop.device() : 0L;
+    }
+
     public static void close() {
         if (active() && interop != null) {
             interop.close();
@@ -178,7 +183,9 @@ public final class Presentation {
         if (!active()) {
             return false;
         }
+        dev.creategalore.bridge.latency.FrameLatency.presentStart();
         interop.present();
+        dev.creategalore.bridge.latency.FrameLatency.presentEnd();
         return true;
     }
 
