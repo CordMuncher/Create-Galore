@@ -5,6 +5,16 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.4.84
+
+### Fixed
+- **Crash when changing the DLSS preset or render resolution with Perfect Presentation on.** A player switched the preset from K to L and the render resolution at the same moment, and the game closed: NVIDIA's DirectX driver crashed while DLSS's textures from the old size were freed. With Perfect Presentation on, DLSS shared Perfect Presentation's DirectX device, and every earlier test of a new render size had run with Perfect Presentation off. DLSS now always runs on a DirectX device of its own, lets go of its textures before they are freed, and waits for the graphics card to finish with them. Should the game still close while DLSS restarts, DLSS stays off until **Try again** on the settings screen, as it already did for a crash while starting. The crash didn't happen every time, so a crash log is welcome if it ever comes back.
+
+### Added
+- **Dropdowns on the DLAA settings screen.** Anti-aliasing, DLSS preset and Render resolution each open a list of every option, so one click picks any of them (they used to step through the options one click at a time). Hovering an option says what it does.
+- Field Guide (Performance): presets L and M also keep Photon's underwater light shafts and the specks in the water clean, where K and FSR smear them a little.
+- Create Galore Bridge 1.98.0.
+
 ## 0.4.83
 
 ### Added
