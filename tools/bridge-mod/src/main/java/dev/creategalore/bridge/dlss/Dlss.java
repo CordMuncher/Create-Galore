@@ -159,8 +159,12 @@ public final class Dlss {
 
     private Dlss() {}
 
-    /** At mod construction: frees DLSS when the game closes (the patched pack copy is made earlier, see PhotonPatcher). */
+    /**
+     * At mod construction: frees DLSS when the game closes (the patched pack copy is made earlier, see PhotonPatcher), and
+     * puts in place a DLL found on this PC that had to wait for the old one to be let go.
+     */
     public static void init(IEventBus modBus) {
+        DlssFinder.applyPending();
         NeoForge.EVENT_BUS.addListener(Dlss::shutdown);
         modBus.addListener(Dlss::loadComplete);
         PhotonPatcher.prepare();
