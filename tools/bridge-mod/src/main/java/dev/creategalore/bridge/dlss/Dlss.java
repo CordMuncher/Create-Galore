@@ -111,6 +111,8 @@ public final class Dlss {
     private static boolean fsr3Debug;
     private static PackProfile profile;
     private static String packProblem;
+    /** {@link #packProblem} for a shader pack that is not made for DLAA. */
+    private static final String NO_PROFILE = "it is not made for DLAA (it has no " + PackProfile.FILE + ")";
     /** A run failed: the pack's own anti-aliasing is back until shaders reload. */
     private static boolean failed;
     /** The game is quitting: its last frames must not start DLSS again after it was closed. */
@@ -220,7 +222,7 @@ public final class Dlss {
         try {
             // (Also with DLAA off: the pack's own upscaling renders at the Bridge's render size.)
             profile = PackProfile.current();
-            packProblem = profile == null ? "it is not patched for DLAA (" + PhotonPatcher.PATCHED_NAME + " is)" : profile.optionProblem();
+            packProblem = profile == null ? NO_PROFILE : profile.optionProblem();
             renderScaleSetting = profile == null ? 1.0f : profile.renderScale();
         } catch (IOException | RuntimeException e) {
             packProblem = "its " + PackProfile.FILE + " could not be read: " + e;
@@ -233,9 +235,10 @@ public final class Dlss {
         if (profile == null && packProblem != null) {
             LOG.info("DLAA: not used with the shader pack {}, {}", Iris.getCurrentPackName(), packProblem);
         } else if (packProblem != null) {
-            LOG.info("DLAA: off with these {} options, {}", PhotonPatcher.PATCHED_NAME, packProblem);
+            LOG.info("DLAA: off with these {} options, {}", Iris.getCurrentPackName(), packProblem);
         } else if (debugView != null) {
-            LOG.info("DLAA: on for this shader pack, debug view {} (DLSS itself not used){}", debugView.name().toLowerCase(Locale.ROOT), jitter);
+            LOG.info("DLAA: on for this shader pack, debug view {} (DLSS itself not used), {}{}", debugView.name().toLowerCase(Locale.ROOT),
+                    renderScaleSetting < 1.0f ? "upscaling from " + Math.round(snappedScale() * 100.0f) + "% of the window" : "full resolution", jitter);
         } else {
             LOG.info("DLAA: on for this shader pack, engine {}, DLSS preset {}{}, {}{}{}{}", engine, presetName(preset),
                     presetName.equalsIgnoreCase(presetName(preset)) || presetName.isEmpty() ? "" : " (set to " + presetName + ")",
@@ -273,7 +276,7 @@ public final class Dlss {
 
         boolean wasActive = active;
         if (wanted && profile != null && packProblem != null) {
-            notice("pack:" + packProblem, "DLAA is off with these Photon options", packProblem);
+            notice("pack:" + packProblem, "DLAA is off with these shader pack options", packProblem);
         }
         active = wanted && profile != null && packProblem == null && !failed && !shuttingDown && ensureReady();
         EntityMotion.beginFrame(active, Minecraft.getInstance().gameRenderer.getMainCamera().getPosition());
@@ -327,6 +330,12 @@ public final class Dlss {
     /** True while the pack should hand its frame to DLSS (cg_dlss_active). */
     public static boolean shaderActive() {
         return active;
+    }
+
+    /** For the test kit: the pack the render resolution goes into, its upscaling switch and its render scale option. */
+    public static String[] renderScaleOptions() {
+        RenderScaleTarget target = RenderScaleTarget.current();
+        return new String[] {target.pack(), target.upscaling(), target.scale()};
     }
 
     /** This frame's jitter in pixels, -0.5..0.5 (cg_dlss_jitter_x). */
@@ -475,7 +484,7 @@ public final class Dlss {
             failed = true;
             guard().stopped();
             LOG.error("DLAA: stopped, the pack's own anti-aliasing is back from the next frame (reloading shaders tries DLAA again)", t);
-            notice("failed:" + t, "DLAA stopped after an error", "Photon's own anti-aliasing is back. Reloading shaders (F8) tries again; the log says what went wrong.");
+            notice("failed:" + t, "DLAA stopped after an error", "The shader pack's own anti-aliasing is back. Reloading shaders (F8) tries again; the log says what went wrong.");
         }
     }
 
@@ -838,11 +847,11 @@ public final class Dlss {
         }
     }
 
-    /** The settings were saved: makes the Photon copy if it is now needed, and reloads shaders if it is in use. */
+    /** The settings were saved: makes the Photon copy if it is now needed, and reloads shaders if a DLAA pack is in use. */
     static void settingsChanged() {
         DisplaySettings.reload();
         PhotonPatcher.refresh();
-        if (PhotonPatcher.PATCHED_NAME.equals(Iris.getCurrentPackName()) && Iris.getIrisConfig().areShadersEnabled()) {
+        if (Iris.getIrisConfig().areShadersEnabled() && (PhotonPatcher.PATCHED_NAME.equals(Iris.getCurrentPackName()) || hasProfile())) {
             try {
                 Iris.reload();
             } catch (IOException | RuntimeException e) {
@@ -851,19 +860,30 @@ public final class Dlss {
         }
     }
 
+    private static boolean hasProfile() {
+        try {
+            return PackProfile.current() != null;
+        } catch (IOException | RuntimeException e) {
+            return false;
+        }
+    }
+
     /** What DLAA does right now, in a line for the settings screen. */
     static String status() {
         if (!wanted) {
-            return "Off: Photon keeps its own anti-aliasing (TAA).";
+            return "Off: the shader pack keeps its own anti-aliasing.";
         }
-        if (!Iris.getIrisConfig().areShadersEnabled() || !PhotonPatcher.PATCHED_NAME.equals(Iris.getCurrentPackName())) {
-            return "Waiting: pick the shader pack \"" + PhotonPatcher.PATCHED_NAME + "\" in Iris's shader menu.";
+        if (!Iris.getIrisConfig().areShadersEnabled() || Iris.getCurrentPack().isEmpty() || NO_PROFILE.equals(packProblem)) {
+            return "Waiting: pick a shader pack made for DLAA, such as \"" + PhotonPatcher.PATCHED_NAME + "\", in Iris's shader menu.";
+        }
+        if (profile == null && packProblem != null) {
+            return "Off: the shader pack's " + PackProfile.FILE + " could not be read (the log says why).";
         }
         if (packProblem != null) {
-            return "Off with these Photon options: " + packProblem + ".";
+            return "Off with these shader pack options: " + packProblem + ".";
         }
         if (failed) {
-            return "Stopped after an error (the log says which). Photon's TAA is back; reloading shaders tries again.";
+            return "Stopped after an error (the log says which). The pack's own anti-aliasing is back; reloading shaders tries again.";
         }
         if (debugView != null) {
             return "Debug view " + debugView.name().toLowerCase(Locale.ROOT) + " (testing).";

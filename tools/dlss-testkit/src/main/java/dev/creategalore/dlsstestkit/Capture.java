@@ -44,8 +44,8 @@ public final class Capture {
     private static final Logger LOG = LoggerFactory.getLogger(TestKit.MOD_ID);
     private static final String CONFIG = "create_galore_dlss_testkit.json";
     private static final String BRIDGE_CONFIG = "create_galore_bridge-display.properties";
-    /** The DLAA pack's options (Iris's file beside it): the modes set its upscaling. */
-    private static final String PACK_OPTIONS = "Photon v1.3a + DLAA.txt";
+    /** Without the Bridge's answer: the Photon copy and its upscaling options (see {@link #scaleOptions}). */
+    private static final String[] PHOTON_SCALE_OPTIONS = {"Photon v1.3a + DLAA", "TAAU", "TAAU_RENDER_SCALE"};
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
     /** Frames between putting the scenes up and the first mode, for the server to place them and the client to get them. */
     private static final int SCENE_BUILD_FRAMES = 40;
@@ -190,8 +190,8 @@ public final class Capture {
      * debugView (color, motion, depth or residual) shows that instead of DLSS, on any GPU (fsr3: FSR's own view);
      * jitterSign ("x,y", default "1,1") flips the jitter the Bridge hands to DLSS; engine is dlss (null) or fsr3;
      * objectMotion false leaves only the camera's motion in the motion vectors (null: on); reactiveMask false hands FSR
-     * no masks (null: on; DLSS never gets them); renderScale (null: full resolution) turns on Photon's TAAU at that
-     * render scale, so DLSS or FSR upscale (or with dlaa false Photon's TAAU itself); mipBias (null: 0) is added to the
+     * no masks (null: on; DLSS never gets them); renderScale (null: full resolution) turns on the DLAA pack's own
+     * upscaling (Photon's TAAU) at that render scale, so DLSS or FSR upscale (or with dlaa false the pack itself); mipBias (null: 0) is added to the
      * textures' mip bias while DLSS or FSR runs (NVIDIA's guide asks for -1 more than the render scale's own).
      */
     record Mode(String name, boolean dlaa, String preset, String debugView, String jitterSign, String engine, Boolean objectMotion,
@@ -252,6 +252,8 @@ public final class Capture {
     private static String savedBridgeConfig;
     /** The DLAA pack's options before the run (null: no file), put back when it ends. */
     private static String savedPackOptions;
+    /** The DLAA pack the modes set the upscaling of, its upscaling switch and its render scale option (from the Bridge). */
+    private static String[] scaleOptions = PHOTON_SCALE_OPTIONS;
     private static int autorunWait;
     /** The autorun's runs still to come, in this same game. */
     private static final java.util.ArrayDeque<Run> queued = new java.util.ArrayDeque<>();
@@ -410,7 +412,8 @@ public final class Capture {
         try {
             Path bridgeFile = FMLPaths.CONFIGDIR.get().resolve(BRIDGE_CONFIG);
             savedBridgeConfig = Files.exists(bridgeFile) ? Files.readString(bridgeFile) : null;
-            Path packFile = Iris.getShaderpacksDirectory().resolve(PACK_OPTIONS);
+            scaleOptions = bridgeRenderScaleOptions();
+            Path packFile = Iris.getShaderpacksDirectory().resolve(scaleOptions[0] + ".txt");
             savedPackOptions = Files.exists(packFile) ? Files.readString(packFile) : null;
         } catch (IOException e) {
             return "could not read config/" + BRIDGE_CONFIG + ": " + e;
@@ -550,7 +553,7 @@ public final class Capture {
             } else {
                 Files.deleteIfExists(file);
             }
-            Path packFile = Iris.getShaderpacksDirectory().resolve(PACK_OPTIONS);
+            Path packFile = Iris.getShaderpacksDirectory().resolve(scaleOptions[0] + ".txt");
             if (savedPackOptions != null) {
                 Files.writeString(packFile, savedPackOptions);
             } else {
@@ -831,9 +834,9 @@ public final class Capture {
             }
             // The render scale is the pack's own option: Iris applies queued options on the reload and saves them.
             Float scale = mode.renderScale();
-            Iris.getShaderPackOptionQueue().put("TAAU", Boolean.toString(scale != null && scale < 1.0f));
+            Iris.getShaderPackOptionQueue().put(scaleOptions[1], Boolean.toString(scale != null && scale < 1.0f));
             if (scale != null && scale < 1.0f) {
-                Iris.getShaderPackOptionQueue().put("TAAU_RENDER_SCALE", String.format(Locale.ROOT, "%.2f", scale));
+                Iris.getShaderPackOptionQueue().put(scaleOptions[2], String.format(Locale.ROOT, "%.2f", scale));
             }
             Iris.reload();
             return true;
@@ -864,6 +867,18 @@ public final class Capture {
         } catch (ReflectiveOperationException | RuntimeException e) {
             LOG.warn("DLAA test: the Bridge cannot save its inputs: {}", e.toString());
         }
+    }
+
+    private static String[] bridgeRenderScaleOptions() {
+        try {
+            String[] options = (String[]) Class.forName("dev.creategalore.bridge.dlss.Dlss").getMethod("renderScaleOptions").invoke(null);
+            if (options != null && options.length == 3) {
+                return options;
+            }
+        } catch (ReflectiveOperationException | RuntimeException e) {
+            LOG.warn("DLAA test: the Bridge does not say which pack options set the render scale, using Photon's: {}", e.toString());
+        }
+        return PHOTON_SCALE_OPTIONS;
     }
 
     private static boolean bridgeDlaaActive() {

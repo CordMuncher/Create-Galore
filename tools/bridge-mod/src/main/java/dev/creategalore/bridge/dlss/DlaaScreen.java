@@ -30,7 +30,7 @@ import net.neoforged.neoforge.common.NeoForge;
  * nvngx_dlss.dll (or one found on this PC, see {@link DlssFinder}), and the window switches. Opens from the mod list
  * (Create Galore Bridge, Config) and from a DLAA button in Iris's shader pack menu. Saved to
  * config/create_galore_bridge-display.properties when it closes, the render resolution into the DLAA pack's own options
- * (Photon's TAAU and TAAU Render Scale); DLAA changes reload the shaders.
+ * (Photon's TAAU and TAAU Render Scale, see {@link RenderScaleTarget}); DLAA changes reload the shaders.
  */
 public final class DlaaScreen extends Screen {
     /** Where NVIDIA publishes nvngx_dlss.dll, in its DLSS SDK. */
@@ -39,16 +39,14 @@ public final class DlaaScreen extends Screen {
     private static final List<String> ENGINES = List.of("auto", "dlss", "fsr3", "off");
     /** The presets offered by name; "other" takes a typed letter. */
     private static final List<String> PRESETS = List.of("default", "K", "J", "L", "M", "other");
-    /** The standard render resolutions (Photon's TAAU Render Scale for each), then custom (the slider). */
+    /** The standard render resolutions (the pack's render scale option for each), then custom (the slider). */
     private static final List<String> SCALES = List.of("native", "quality", "balanced", "performance", "ultra", "custom");
     private static final Map<String, String> SCALE_VALUES = Map.of("quality", "0.67", "balanced", "0.58", "performance", "0.50", "ultra", "0.33");
-    // Photon's options for it.
-    private static final String TAA = "TAA";
-    private static final String TAAU = "TAAU";
-    private static final String TAAU_RENDER_SCALE = "TAAU_RENDER_SCALE";
     private static final int WIDTH = 300;
 
     private final Screen parent;
+    /** The pack whose options hold the render resolution. */
+    private final RenderScaleTarget target = RenderScaleTarget.current();
     private final Map<String, String> initial = new HashMap<>();
     private String engine;
     private String preset;
@@ -97,7 +95,8 @@ public final class DlaaScreen extends Screen {
                                 button -> screen.getMinecraft().setScreen(new DlaaScreen(screen)))
                         .bounds(screen.width - 66, 6, 60, 20)
                         .tooltip(net.minecraft.client.gui.components.Tooltip.create(Component.literal(
-                                "NVIDIA DLSS or AMD FSR 3.1 in place of Photon's TAA, at full resolution or upscaling (shader pack " + PhotonPatcher.PATCHED_NAME + ")")))
+                                "NVIDIA DLSS or AMD FSR 3.1 in place of the shader pack's own anti-aliasing, at full resolution or upscaling"
+                                        + " (shader packs made for DLAA, such as " + PhotonPatcher.PATCHED_NAME + ")")))
                         .build());
             }
         });
@@ -189,7 +188,7 @@ public final class DlaaScreen extends Screen {
         super.render(graphics, open != null ? -1 : mouseX, open != null ? -1 : mouseY, partialTick);
         int left = width / 2 - WIDTH / 2;
         graphics.drawCenteredString(font, title, width / 2, 6, 0xFFFFFF);
-        lines(graphics, "Optional. Only with the shader pack \""
+        lines(graphics, "Optional. Only with a shader pack made for DLAA, such as \""
                 + PhotonPatcher.PATCHED_NAME + "\": pick it in the shader menu.", left, 18, 0xFFDD66, 3);
         int y = 122;
         String picked = preset.equals("other") ? letter : preset;
@@ -244,7 +243,7 @@ public final class DlaaScreen extends Screen {
         Map<String, String> pack = packOptions();
         boolean packChanged = !pack.equals(initialPackOptions);
         if (packChanged) {
-            savePackOptions(pack);
+            target.write(pack);
         }
         if (!values.equals(initial)) {
             DisplaySettings.save(values);
@@ -266,27 +265,21 @@ public final class DlaaScreen extends Screen {
         return values;
     }
 
-    /** Photon's options for the render resolution picked: TAAU off at native, else on at the scale. */
+    /** The pack's options for the render resolution picked: upscaling off at native, else on at the scale. */
     private Map<String, String> packOptions() {
         Map<String, String> options = new HashMap<>();
-        options.put(TAAU, Boolean.toString(!scale.equals("native")));
+        options.put(target.upscaling(), Boolean.toString(!scale.equals("native")));
         if (!scale.equals("native")) {
-            options.put(TAAU_RENDER_SCALE, scale.equals("custom")
+            options.put(target.scale(), scale.equals("custom")
                     ? String.format(Locale.ROOT, "%.2f", customPercent / 100.0) : SCALE_VALUES.get(scale));
         }
         return options;
     }
 
-    /** The render resolution as the DLAA pack's options have it (Iris keeps them in its .txt beside the pack). */
+    /** The render resolution as the DLAA pack's options have it. */
     private void readRenderScale() {
-        java.util.Properties options = new java.util.Properties();
-        Path file = net.irisshaders.iris.Iris.getShaderpacksDirectory().resolve(PhotonPatcher.PATCHED_NAME + ".txt");
-        try (java.io.Reader reader = Files.newBufferedReader(file)) {
-            options.load(reader);
-        } catch (IOException | RuntimeException e) {
-            // Photon's defaults: TAA on, TAAU off
-        }
-        String value = options.getProperty(TAAU_RENDER_SCALE, "0.75").trim();
+        RenderScaleTarget.Setting setting = target.read();
+        String value = setting.scale() == null ? "0.75" : setting.scale();
         int percent;
         try {
             percent = Math.round(Float.parseFloat(value) * 100.0f);
@@ -294,36 +287,8 @@ public final class DlaaScreen extends Screen {
             percent = 75;
         }
         customPercent = Math.max(25, Math.min(100, percent));
-        boolean upscaling = Boolean.parseBoolean(options.getProperty(TAAU, "false").trim())
-                && !options.getProperty(TAA, "true").trim().equalsIgnoreCase("false");
         String standard = SCALE_VALUES.entrySet().stream().filter(e -> e.getValue().equals(value)).map(Map.Entry::getKey).findFirst().orElse(null);
-        scale = !upscaling ? "native" : DisplaySettings.get(DisplaySettings.DLAA_CUSTOM_SCALE) || standard == null ? "custom" : standard;
-    }
-
-    /**
-     * Into the DLAA pack's options: through Iris's queue when it is the pack in use (the reload after this applies and
-     * saves them), else into its .txt for when it is picked.
-     */
-    private static void savePackOptions(Map<String, String> options) {
-        if (PhotonPatcher.PATCHED_NAME.equals(net.irisshaders.iris.Iris.getCurrentPackName())) {
-            net.irisshaders.iris.Iris.getShaderPackOptionQueue().putAll(options);
-            return;
-        }
-        Path file = net.irisshaders.iris.Iris.getShaderpacksDirectory().resolve(PhotonPatcher.PATCHED_NAME + ".txt");
-        java.util.Properties stored = new java.util.Properties();
-        try {
-            if (Files.isRegularFile(file)) {
-                try (java.io.Reader reader = Files.newBufferedReader(file)) {
-                    stored.load(reader);
-                }
-            }
-            stored.putAll(options);
-            try (java.io.Writer writer = Files.newBufferedWriter(file)) {
-                stored.store(writer, null);
-            }
-        } catch (IOException | RuntimeException e) {
-            org.slf4j.LoggerFactory.getLogger("create_galore_bridge").warn("DLAA: could not write {}: {}", file, e.toString());
-        }
+        scale = !setting.upscaling() ? "native" : DisplaySettings.get(DisplaySettings.DLAA_CUSTOM_SCALE) || standard == null ? "custom" : standard;
     }
 
     private void refreshDll() {
@@ -348,7 +313,7 @@ public final class DlaaScreen extends Screen {
         return Component.literal(switch (value) {
             case "dlss" -> "NVIDIA DLSS";
             case "fsr3" -> "AMD FSR 3.1";
-            case "off" -> "Off (Photon's own)";
+            case "off" -> "Off (the pack's own)";
             default -> "Auto";
         });
     }
@@ -357,7 +322,7 @@ public final class DlaaScreen extends Screen {
         return switch (value) {
             case "dlss" -> "Only NVIDIA DLSS (DLAA at full resolution): Windows, an NVIDIA RTX card and your own nvngx_dlss.dll.";
             case "fsr3" -> "Only AMD FSR 3.1: any graphics card with OpenGL 4.5, nothing to download.";
-            case "off" -> "Photon's own anti-aliasing (TAA, or TAAU when upscaling), as in plain Photon.";
+            case "off" -> "The shader pack's own anti-aliasing (in Photon: TAA, or TAAU when upscaling).";
             default -> "NVIDIA DLSS where it can run (Windows, an NVIDIA RTX card, your own nvngx_dlss.dll), else AMD FSR 3.1.";
         };
     }
@@ -384,7 +349,7 @@ public final class DlaaScreen extends Screen {
                         case "performance" -> "half";
                         default -> "1/3";
                     } + " of the window's width and height and upscales: faster, a little softer. With anti-aliasing Off,"
-                    + " Photon's own upscaling (TAAU) does it.";
+                    + " the shader pack's own upscaling (Photon's TAAU) does it.";
         };
     }
 
