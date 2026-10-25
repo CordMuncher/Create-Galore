@@ -334,6 +334,7 @@ public final class Models {
             motion.riding().forEach(fixed::remove);
         }
         BuildCheck.Report check = join(level == null ? null : BuildCheck.check(fixed, level), RigCheck.check(cells));
+        if (level != null) check = join(check, OutputCheck.check(fixed, level));
         if (motion != null) check = join(check, motion.report());
         check = join(check, vehicle(cells, level, input.has("part_of_vehicle") && input.get("part_of_vehicle").isJsonPrimitive()
                 && input.get("part_of_vehicle").getAsBoolean()));
