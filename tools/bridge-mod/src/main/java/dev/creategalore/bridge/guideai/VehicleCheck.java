@@ -1001,8 +1001,12 @@ final class VehicleCheck {
             all.add(t);
             if (isPropeller(p.id)) stress += propellerStress(b, p, rpm);
         }
+        all = againstEachOther(b, all, rpm, faults);
         double up = 0;
-        for (Thrust t : all) if (t.dir == Direction.UP || t.reversible && t.dir == Direction.DOWN) up += t.force;
+        for (Thrust t : all) {
+            if (t.dir == Direction.UP || t.reversible && t.dir == Direction.DOWN) up += t.force;
+            else if (t.dir == Direction.DOWN && !t.reversible && t.airflow < Double.MAX_VALUE) up -= t.force;
+        }
         List<Thrust> side = all.stream().filter(t -> t.dir.getAxis().isHorizontal()).toList();
 
         double p0 = pressure(TAKEOFF_Y);
@@ -1015,6 +1019,8 @@ final class VehicleCheck {
         for (Direction d : Direction.Plane.HORIZONTAL) {
             double props = 0, propsOverAir = 0, thrusters = 0;
             for (Thrust t : side) {
+                // A propeller turning the wrong way pushes back at full strength (its air meets the ship head on).
+                if (t.dir == d.getOpposite() && !t.reversible && t.airflow < Double.MAX_VALUE) props -= t.force * p0;
                 if (!(t.dir == d || t.reversible && t.dir == d.getOpposite())) continue;
                 if (t.airflow < Double.MAX_VALUE) {
                     props += t.force * p0;
@@ -1022,7 +1028,8 @@ final class VehicleCheck {
                 } else thrusters += t.force;
             }
             double u = terminal(props + thrusters, drag + wings.drag(d.getAxis(), p0), 16.5 * lev, propsOverAir);
-            if (u > v) {
+            // Reversible propellers push as hard either way; it flies the way they face, not tail first.
+            if (u > v + 1e-9 || best != null && u > v - 1e-9 && facingPush(side, d) > facingPush(side, best)) {
                 v = u;
                 best = d;
             }
@@ -1054,6 +1061,7 @@ final class VehicleCheck {
                     + "%.1f at that speed, though each also adds its own mass and drag), or", Math.ceil((G * b.m - lift0) / each), each)
                     : "forward thrust first; then", needSpeed, wings.down > 0 ? "; and turn its downward-facing wings up" : "",
                     (G * b.m - lift0) / G));
+            propPlaneAdvice(b, wings, side, best, rpm, needSpeed, faults);
         } else if (lift0 < G * b.m) {
             faults.add(String.format(Locale.ROOT, "it can't take off: lift at y %d is %.0f, short of its weight %.0f by %.0f "
                     + "(about %.0f m3 more balloon, or %.0f mass less)", (int) TAKEOFF_Y, lift0, G * b.m, G * b.m - lift0,
@@ -1290,6 +1298,12 @@ final class VehicleCheck {
         }
         if (gyros > 0 && spin == 0) faults.add("its Gyroscope isn't turning, so it holds nothing level: drive it from an engine on "
                 + "board (full strength at " + (int) GYRO_RPM + " RPM, drawing 16 stress units per RPM)");
+        // Side to side nothing rights a plane: a wing lifts the way it faces however it leans, so the smallest lean
+        // tips its lift, it slides toward the low wing and spirals down (a biplane flown without one did, within 20 s).
+        if (gyros == 0 && other < weight) faults.add("nothing holds its wings level side to side: a wing lifts the way it faces "
+                + "however the plane leans, so the smallest lean grows into a spiral down. It needs an Aeroworks Gyroscope on "
+                + "board, turned from below by an engine on the ship (a Portable Engine's own 32 RPM, through a gearbox under "
+                + "it, holds a small plane level)");
         double gyro = gyros == 0 ? 0 : spin / gyros;
         Trial trial = trial(b, w, side, best, v, 0, gyro);
         out.append(trial.describe());
@@ -1410,8 +1424,12 @@ final class VehicleCheck {
         }
         List<double[]> pushes = new ArrayList<>(); // fore, up, force, airflow, along (1) or up (0)
         for (Thrust t : side) {
-            if (t.dir != best && !(t.reversible && t.dir == best.getOpposite())) continue;
             double a = forward(b, best, t.at.getX() + 0.5, t.at.getZ() + 0.5) - ca, h = t.at.getY() + 0.5 - b.cy - ch;
+            if (t.dir == best.getOpposite() && !t.reversible && t.airflow < Double.MAX_VALUE) {
+                pushes.add(new double[] {a, h, -t.force, Double.MAX_VALUE, 1});
+                continue;
+            }
+            if (t.dir != best && !(t.reversible && t.dir == best.getOpposite())) continue;
             pushes.add(new double[] {a, h, t.force, t.airflow, 1});
         }
         // The gyroscope's strength, as Aeroworks works it out: its RPM share, capped by its authority (5000 each at
@@ -1587,6 +1605,100 @@ final class VehicleCheck {
             if (drag >= force - overAir * v) return v;
         }
         return 80;
+    }
+
+    /**
+     * What keeps a propeller plane on the ground, in the two things that decide it: propellers push only up to their
+     * airflow (0.1 x RPM for a Wooden or Andesite Propeller, 0.05 x √sails x RPM for a Propeller Bearing), so they must
+     * turn fast enough to pass the take-off speed; and the take-off speed falls with more wing and less weight, where
+     * a Wing block weighs four times a Create sail that lifts the same.
+     */
+    private static void propPlaneAdvice(Body b, Wings w, List<Thrust> side, Direction best, Map<BlockPos, Float> rpm,
+            double needSpeed, List<String> faults) {
+        double fastest = 0, slowest = Double.MAX_VALUE;
+        boolean thrusters = false;
+        for (Thrust t : side) {
+            if (best != null && t.dir.getAxis() != best.getAxis()) continue;
+            if (t.airflow == Double.MAX_VALUE) thrusters = true;
+            else {
+                fastest = Math.max(fastest, t.airflow);
+                slowest = Math.min(slowest, Math.abs(rpm.getOrDefault(t.at, 0f)));
+            }
+        }
+        if (fastest > 0 && !thrusters && needSpeed > 0.75 * fastest) {
+            String spin = slowest < 256 ? String.format(Locale.ROOT, "spin them at 256 RPM, the most a shaft turns (they turn %.0f "
+                    + "now; each large cogwheel driving a small one doubles the speed, so a Portable Engine's 32 takes three "
+                    + "such steps, and at 256 a Wooden Propeller pushes air at 25.6 blocks/s and draws 1024 stress units, so one "
+                    + "Portable Engine turns two), and ", slowest) : "";
+            faults.add(String.format(Locale.ROOT, "its propellers push air at only %.1f blocks/s and their push falls to nothing as "
+                    + "it nears that, short of the %.1f blocks/s it needs to take off: %slower the take-off speed with more wing "
+                    + "for its weight (a propeller plane wants about three sails facing up per mass of everything else, and a "
+                    + "take-off speed well under three quarters of its propellers' airflow)", fastest, needSpeed, spin));
+        }
+        double heavy = 0;
+        int count = 0;
+        for (Wings.Wing wing : w.list) {
+            if (wing.part().state.is(SAILS) || wing.part().mass <= 0.25) continue;
+            heavy += wing.part().mass - 0.25;
+            count++;
+        }
+        if (count > 0) faults.add(String.format(Locale.ROOT, "its %d heavy wing blocks weigh %.0f more than Create sails would "
+                + "(a sail weighs 0.25 and lifts the same, so sail wings, like a fabric-covered biplane's, take off far slower)",
+                count, heavy));
+    }
+
+    /**
+     * A Wooden or Andesite Propeller pushes along its facing or against it by which way its shaft turns (times -1 when
+     * a wrench has reversed it), so two that face alike but turn opposite ways, as through a gearbox's straight-on and
+     * sideways faces, push against each other. Which way a whole drive turns is the builder's to set, so among the
+     * propellers facing one way, the larger push counts as pushing the way they face and the others as pushing back.
+     */
+    private static List<Thrust> againstEachOther(Body b, List<Thrust> all, Map<BlockPos, Float> rpm, List<String> faults) {
+        Map<Direction, double[]> by = new java.util.EnumMap<>(Direction.class);
+        Map<Thrust, Integer> spin = new java.util.IdentityHashMap<>();
+        for (Thrust t : all) {
+            BlockState s = b.blocks.get(t.at);
+            String id = s == null ? "" : id(s);
+            if (!id.equals("aeronautics:wooden_propeller") && !id.equals("aeronautics:andesite_propeller")) continue;
+            float r = rpm.getOrDefault(t.at, 0f);
+            if (r == 0) continue;
+            boolean reversed = s.getProperties().stream().anyMatch(q -> q.getName().equals("reversed")
+                    && q instanceof net.minecraft.world.level.block.state.properties.BooleanProperty bp && s.getValue(bp));
+            int sign = (int) Math.signum(r * t.dir.getAxisDirection().getStep() * (reversed ? -1 : 1));
+            spin.put(t, sign);
+            by.computeIfAbsent(t.dir, k -> new double[2])[sign > 0 ? 0 : 1] += t.force;
+        }
+        List<Thrust> out = new ArrayList<>();
+        Map<Direction, List<String>> wrong = new java.util.EnumMap<>(Direction.class);
+        for (Thrust t : all) {
+            Integer sign = spin.get(t);
+            if (sign == null) {
+                out.add(t);
+                continue;
+            }
+            double[] f = by.get(t.dir);
+            int forward = f[0] >= f[1] ? 1 : -1;
+            // Its spin sets which way it pushes, so a sideways one no longer counts as pushing either way (one facing up
+            // or down still lifts whichever way the whole drive turns).
+            if (sign == forward) out.add(t.dir.getAxis().isVertical() ? t : new Thrust(t.at, t.dir, t.force, t.airflow, t.what, false));
+            else {
+                out.add(new Thrust(t.at, t.dir.getOpposite(), t.force, t.airflow, t.what, false));
+                wrong.computeIfAbsent(t.dir, k -> new ArrayList<>()).add(xyz(t.at));
+            }
+        }
+        wrong.forEach((d, at) -> faults.add(String.format(Locale.ROOT, "the propeller%s at %s turn%s the other way from the "
+                + "other%s facing %s, so %s push%s backward against them: reverse %s with a wrench (or turn %s shaft the "
+                + "other way)", at.size() == 1 ? "" : "s", String.join(", ", at), at.size() == 1 ? "s" : "",
+                at.size() == 1 ? "s" : "s", d.getName(), at.size() == 1 ? "it" : "they", at.size() == 1 ? "es" : "",
+                at.size() == 1 ? "it" : "each", at.size() == 1 ? "its" : "their")));
+        return out;
+    }
+
+    /** The push of the propellers and thrusters facing that way (not reversed to it). */
+    private static double facingPush(List<Thrust> side, Direction d) {
+        double sum = 0;
+        for (Thrust t : side) if (t.dir == d) sum += t.force;
+        return sum;
     }
 
     private static String describe(List<Thrust> list) {

@@ -60,12 +60,37 @@
       "text": "A propeller already moving through air pushes less, because the air is moving too. Thrust also fades with altitude, and props are of little use where there is no air."
     },
     {
+      "type": "modonomicon:text",
+      "title": "Fast enough to fly",
+      "text": "A propeller pushes only up to its **airflow** speed: a tenth of its RPM for a Wooden or Andesite Propeller, 0.05 x the square root of its sails x RPM for a Propeller Bearing.\\\n\\\nA plane must pass its take-off speed below that, so spin its propellers at 256 RPM, the most a shaft turns: 25.6 blocks a second."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Gearing up",
+      "text": "Each large cogwheel driving a small one doubles the speed, so a Portable Engine's 32 RPM takes three such steps to reach 256.\\\n\\\nAt 256 RPM a Wooden Propeller draws 1024 stress units, so one Portable Engine turns two of them."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Through gearboxes",
+      "text": "[#](FFFFFF)\ue101[#]() **Watch out:** a gearbox turns its straight-through side the other way from its sideways sides. Propellers fed through different gearbox faces can push against each other.\\\n\\\nWatch which way each one blows, and wrench the front of any that pushes backward to reverse it."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Sail wings",
+      "text": "Create sails lift like Wing blocks at a quarter of the weight, so early planes fly on sail wings. Two wings stacked on struts double the lift.\\\n\\\nAllow about three sails facing up per full block's weight in the rest: a plank weighs half a block; a slab, fence or trapdoor a quarter."
+    },
+    {
       "type": "modonomicon:spotlight",
       "item": {
         "item": "simulated:white_symmetric_sail"
       },
       "title": "Symmetric Sail",
       "text": "Only makes drag, never lift. Angle it for turning or stabilising. On a windmill bearing it gives 0 RPM here; windmills need Windcatchers."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "A plane that flies",
+      "text": "[#](FFFFFF)\ue103[#]() **In depth.** A 19-block biplane with about 130 sails, two Portable Engines at 256 RPM on four Wooden Propellers and a Gyroscope on a third engine takes off at about 15 blocks a second and cruises near 16.\\\n\\\nClutches levered from the seat cut either side to turn: flick them, since held it spins and sinks."
     },
     {
       "type": "modonomicon:text",
