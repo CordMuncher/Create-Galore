@@ -25,7 +25,7 @@ from pathlib import Path
 FRAME = ("MsBetweenAppStart", "MsBetweenPresents", "FrameTime")
 CPU_BUSY = ("MsCPUBusy", "CPUBusy")
 GPU_BUSY = ("MsGPUBusy", "GPUBusy")
-START = ("CPUStartTime", "CPUStartQPCTime", "TimeInSeconds")
+START = ("CPUStartQPCTimeInMs", "CPUStartQPCTime", "CPUStartTime", "TimeInSeconds")
 
 
 def pick(header, names):

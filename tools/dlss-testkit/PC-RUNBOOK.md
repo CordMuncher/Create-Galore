@@ -439,14 +439,17 @@ data to back it up. What to do about it is decided in the DLAA thread. Start onl
     installer.
   - It needs administrator rights.
   - Use `--qpc_time_ms`: then its times use the clock of the test kit's timeline.
-- **NVIDIA Nsight Systems:** the timeline of CPU threads, OpenGL, DirectX 11, the GPU queue and presents together.
-  - Trace OpenGL with its GPU workload, plus DirectX 11, WDDM and CPU sampling.
+- **NVIDIA Nsight Systems:** the timeline of CPU threads, OpenGL, the GPU queue and presents together.
+  - Trace OpenGL with its GPU workload, OpenGL annotations, WDDM, CPU sampling and GPU metrics. **Not DirectX 11:**
+    its interception crashed the game where the Bridge makes its DirectX device (profiling 1), so DLSS shows as a gap
+    in the OpenGL queue. Record with `--delay`/`--duration` around the run only; a full-length trace grew past what
+    the importer could load.
   - It should follow `java.exe` started by portablemc as a child process. If it doesn't, start `java.exe` directly
     with the command line portablemc uses.
 - **NVIDIA Nsight Graphics, optional:** GPU Trace of single frames, if Nsight Systems doesn't split the GPU time
   finely enough.
 - **Java Flight Recorder:** already in the JDK (`$T\tools\jdk21\bin\jfr.exe`) for the CPU.
-  - Start it with `$env:JDK_JAVA_OPTIONS = "-XX:StartFlightRecording=filename=$T\profiling\P4.jfr,settings=profile"`,
+  - Start it with `$env:JDK_JAVA_OPTIONS = "-XX:StartFlightRecording=filename=$T\profiling\P4.jfr,settings=profile,jdk.ExecutionSample#period=1ms,jdk.NativeMethodSample#period=1ms"`,
     set in the shell before the launch, because portablemc can't pass a JVM argument with commas. The recording is
     written when the game closes. Clear it afterwards (`Remove-Item Env:JDK_JAVA_OPTIONS`), so the other captures
     run without it.
@@ -483,9 +486,11 @@ from the table, so every mode sees the same frames:
 | N1 | off | `photon-taa+dlaa-default+fsr3`, with `...markers=true` | `canopy+moving` | Nsight Systems, CPU sampling on |
 | N2 | on | `dlaa-default`, with `...markers=true` | `canopy` | Nsight Systems |
 
-- PresentMon: start it before the game with `--process_name java.exe --output_file $T\profiling\P1.csv --qpc_time_ms
-  --terminate_on_proc_exit --stop_existing_session --no_console_stats`. Check the process name with `Get-Process
-  java` and the options with `--help`. Admin rights: `Start-Process -Verb RunAs`.
+- PresentMon: portablemc first runs a short-lived `java.exe`, so don't capture by process name. Wait for the game's
+  own `java.exe` (a few seconds after launch), then attach to it: `--process_id <pid> --output_file
+  $T\profiling\P1.csv --qpc_time_ms --timed 240 --terminate_after_timed --stop_existing_session
+  --no_console_stats` (`--timed` long enough for the run). Admin rights: `Start-Process -Verb RunAs`. PresentMon
+  2.6 calls the start column `CPUStartQPCTimeInMs`; `frametimes.py` reads it.
 - Keep the Nsight captures to a run each, as their files grow fast. Shorter paths (`"paths": ["still", "flick"]`)
   are fine there; say so.
 
