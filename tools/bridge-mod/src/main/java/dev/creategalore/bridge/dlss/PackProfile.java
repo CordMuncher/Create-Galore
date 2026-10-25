@@ -26,7 +26,7 @@ import net.irisshaders.iris.shaderpack.option.values.OptionValues;
  * does not offer keeps the value the pack's source gives it, which the patcher checked). renderScaleOptions
  * (optional): the pack's upscaling switch and its render scale option; with the switch on, the pack renders at that
  * scale into the lower left corner of its buffers and DLSS upscales it, at the size the Bridge rounds it to
- * (cg_render_scale).
+ * (taau_render_scale).
  */
 record PackProfile(String pass, int colorAttachment, int[] outputAttachments, int[] keepAlpha, String motionImage,
                    String depthImage, String exposureImage, String maskImage, List<String> requireOn, List<String> requireOff,

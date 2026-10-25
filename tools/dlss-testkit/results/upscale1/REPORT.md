@@ -337,6 +337,17 @@ stay on the PC (`$T\upscale1\emre-photo-ship-seethrough-*.jpg`).*
 - Its `ship_water_close` shader logs `could not find uniform named ModelViewMat` and `... ProjMat` at each shader
   load. That was already so in profiling 1, so it isn't new, and it may be unrelated.
 
+**Resolved after the session (patch 11, Bridge 1.96.0).** It was the upscaling patch, not the water cutaway.
+- Create Deep Seas culls the terrain and water inside ship hulls in the shader. It reads Sable's hull depth buffers at
+  `gl_FragCoord`, and when the program has Photon's `taau_render_scale`, at `gl_FragCoord.xy / taau_render_scale`,
+  because those buffers are window-sized while TAAU renders into the lower left corner.
+- Patches 9 and 10 made `taau_render_scale` a `#define` for the Bridge's `cg_render_scale`. Iris's preprocessor
+  expands that away before Deep Seas looks, so it read the buffers at the unscaled pixel. The hull's depth range then
+  landed on terrain at twice (Performance) or three times (Ultra Performance) the hull's screen position, and cut
+  holes there wherever that terrain sat at the hull's depth.
+- Patch 11 declares `uniform vec2 taau_render_scale` under Photon's own name, and the Bridge sets that uniform. With
+  upscaling off it stays Photon's `const float taau_render_scale = 1.0`, as before.
+
 ## Every `DLAA:` line
 
 The folder is shortened to `$T`. Counts are over the whole launch, including the by-eye part. The runbook's lines

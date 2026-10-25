@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
  *
  * Upscaling: with the pack's upscaling on (Photon's TAAU, see {@link PackProfile#renderScale()}), the frame renders
  * at a lower size into the corner of the pack's buffers. The Bridge rounds the pack's render scale to whole pixels per
- * axis (cg_render_scale, which Photon's own TAAU renders at too) and DLSS or FSR 3.1 upscale that size to the window's;
+ * axis (taau_render_scale, which Photon's own TAAU renders at too) and DLSS or FSR 3.1 upscale that size to the window's;
  * the jitter period grows with the scale and the textures' mip bias follows it (cg_mip_bias).
  *
  * config/create_galore_bridge-display.properties (or the settings screen, {@link DlaaScreen}): dlaa picks the engine,
@@ -334,7 +334,7 @@ public final class Dlss {
         return active ? jitterY : 0.0f;
     }
 
-    /** The render size over the window's, per axis (cg_render_scale): the pack's render scale in whole pixels. */
+    /** The render size over the window's, per axis (taau_render_scale): the pack's render scale in whole pixels. */
     public static org.joml.Vector2f renderScale() {
         return new org.joml.Vector2f((float) renderWidth / displayWidth, (float) renderHeight / displayHeight);
     }

@@ -53,14 +53,14 @@ import org.slf4j.LoggerFactory;
  *   the hand fix;
  * - upscales with Photon's own TAAU path: with TAAU on, the scene renders into the lower left corner of the buffers
  *   at the render size and composite4 makes the window-sized picture, so DLSS or FSR take the corner and make it
- *   instead. The render scale comes from the Bridge (cg_render_scale, TAAU_RENDER_SCALE rounded to whole pixels per
+ *   instead. The render scale comes from the Bridge (taau_render_scale, TAAU_RENDER_SCALE rounded to whole pixels per
  *   axis, offered down to 0.25) so the render size is exact, and the textures' mip bias with it (cg_mip_bias).
  *   Photon's own TAAU renders the same size, so it can be compared at the same internal resolution.
  */
 public final class PhotonPatcher {
     private static final Logger LOG = LoggerFactory.getLogger("create_galore_bridge");
     /** Bumped when the patch changes, so existing copies are made again. */
-    private static final int PATCH_VERSION = 10;
+    private static final int PATCH_VERSION = 11;
     private static final String BASE_ZIP = "photon_v1.3a.zip";
     /** Colorwheel Patcher's copy of {@link #BASE_ZIP}; an outdated one gets a prefix and no longer matches. */
     private static final Pattern COLORWHEEL_ZIP = Pattern.compile("photon_v1\\.3a \\+ Clrwl_(\\d+)\\.(\\d+)\\.(\\d+)\\.zip");
@@ -214,9 +214,9 @@ public final class PhotonPatcher {
                 {"#if defined TAA && defined TAAU\nconst float taau_render_scale = TAAU_RENDER_SCALE;\n#else\n",
                         "#if defined TAA && defined TAAU\n"
                                 + "// Create Galore DLAA: the render size over the window's, per axis: TAAU_RENDER_SCALE rounded to whole\n"
-                                + "// pixels by the Create Galore Bridge.\n"
-                                + "uniform vec2 cg_render_scale;\n"
-                                + "#define taau_render_scale cg_render_scale\n"
+                                + "// pixels by the Create Galore Bridge. A uniform under Photon's own name, as mods that look for it in the\n"
+                                + "// program still find it (Create Deep Seas culls the terrain behind ship hulls at gl_FragCoord over it).\n"
+                                + "uniform vec2 taau_render_scale;\n"
                                 + "#else\n"},
                 {"\n// Helper functions\n",
                         "\n// Create Galore DLAA: the textures' mip bias, log2 of the render scale (as Photon has it), plus the Bridge's\n"
