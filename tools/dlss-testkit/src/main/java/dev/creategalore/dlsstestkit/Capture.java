@@ -81,6 +81,8 @@ public final class Capture {
         float rideSpeedPerTick = 0.3f;
         /** The ride scene's ship: "boat" (a deep hull and a mast), "hull" (a shallow hull) or "deck" (rides high). */
         String rideShip = "boat";
+        /** How far the ride scene's ship heaves up and down, like a boat on waves (0: it only floats). */
+        float rideBobBlocks = 0.0f;
         /** View bobbing on the ride scene's ship, as players have it (the rest of a run turns it off). */
         boolean rideViewBob = true;
         /**
@@ -151,7 +153,8 @@ public final class Capture {
         /**
          * Named runs for -Dcreate_galore_dlss_testkit.runs=A+B, which plays them one after another in one game. Upscaling 1
          * (PC-RUNBOOK.md): F1 and F2 measure frame rates (no screenshots), U1 to U7 save the pictures. Crash 1: C1
-         * restarts DLSS 60 times, each time at another render size and mostly another preset (no pictures).
+         * restarts DLSS 60 times, each time at another render size and mostly another preset (no pictures). S1: Create's
+         * machines under a near lintel at full size and two render scales (all should show).
          */
         List<Run> runs = new ArrayList<>(List.of(
                 new Run("F1", "photon-taa+dlaa-default+fsr3+perf-taau+perf-dlss-K+perf-dlss-M+perf-dlss-L+perf-fsr3"
@@ -167,7 +170,8 @@ public final class Capture {
                 new Run("U7", "perf-debug-color+perf-debug-motion", null, null, true, null, null),
                 new Run("C1", "dlaa-default+q-dlss-K+bal-dlss-M+perf-dlss-L+ultra-dlss-K", "shore", "brief", null, false, null, 12),
                 new Run("H1", "photon-taa+dlaa-default+fsr3+perf-taau+perf-dlss-L", "hand", "still+rise", null, true, null),
-                new Run("R1", "photon-taa", "ride+ride-east", "ride", null, true, null)));
+                new Run("R1", "photon-taa", "ride+ride-east", "ride", null, true, null),
+                new Run("S1", "photon-taa+perf-taau+ultra-taau", "cull", "brief", null, true, null)));
     }
 
     /**
@@ -213,7 +217,9 @@ public final class Capture {
             // Standing on a sailing ship with a sword in hand (see RideScene), looking west (the morning sun behind)
             // and east (the sun ahead). Only the turn counts there: the ship carries the player.
             new Viewpoint("ride", RideScene.DECK_X, RideScene.DECK_Y, RideScene.DECK_Z, 90.0f, -10.0f, RideScene.NAME),
-            new Viewpoint("ride-east", RideScene.DECK_X, RideScene.DECK_Y, RideScene.DECK_Z, -90.0f, -10.0f, RideScene.NAME));
+            new Viewpoint("ride-east", RideScene.DECK_X, RideScene.DECK_Y, RideScene.DECK_Z, -90.0f, -10.0f, RideScene.NAME),
+            // Create's machines under a near lintel (see CullScene): all in plain view, at any render scale.
+            new Viewpoint("cull", CullScene.X, CullScene.Y, CullScene.Z, 180.0f, 0.0f, CullScene.NAME));
 
     /** One stretch of frames: the camera at each local frame, and the frames to save. */
     private record Segment(String label, Viewpoint viewpoint, String path, int length, int[] captures, Runnable onStart, Mode mode) {}
@@ -343,12 +349,12 @@ public final class Capture {
         if (pathFilter != null && !pathFilter.isBlank()) {
             paths = List.of(pathFilter.trim().split("\\s*[,;+ ]\\s*"));
         }
+        if (viewpoints.isEmpty()) {
+            return "no viewpoints (or none of " + viewpointFilter + ") in config/" + CONFIG;
+        }
         if (Boolean.TRUE.equals(run.quick())) {
             viewpoints = viewpoints.subList(0, 1);
             paths = List.of("still", "flick");
-        }
-        if (viewpoints.isEmpty()) {
-            return "no viewpoints (or none of " + viewpointFilter + ") in config/" + CONFIG;
         }
 
         List<Segment> segments = new ArrayList<>();
@@ -448,6 +454,7 @@ public final class Capture {
             MovingScene.remove();
             EffectsScene.remove();
             RideScene.remove();
+            CullScene.remove();
             return "removed the test scenes";
         }
         if (EffectsScene.NAME.equals(which)) {
@@ -498,6 +505,7 @@ public final class Capture {
             MovingScene.remove();
             EffectsScene.remove();
             RideScene.remove();
+            CullScene.remove();
         }
         if (settings != null && settings.freezeTicks) {
             server("tick unfreeze");
@@ -681,6 +689,8 @@ public final class Capture {
             EffectsScene.build();
         } else if (RideScene.NAME.equals(scene)) {
             RideScene.build(settings);
+        } else if (CullScene.NAME.equals(scene)) {
+            CullScene.build();
         }
     }
 

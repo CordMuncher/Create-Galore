@@ -5,6 +5,17 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.5.0
+
+**DLSS and FSR for Photon are ready, so the pack moves to 0.5.** Pick the shader pack **Photon v1.3a + DLAA** (the pack makes it from Photon + Clrwl at startup) and open the **DLAA...** button beside the shader list. NVIDIA DLSS (DLAA at full resolution, or Quality, Balanced, Performance, Ultra Performance or a custom 25 to 100% render resolution, presets K, L and M) or AMD FSR 3.1 takes over from Photon's own anti-aliasing. Everything that moves by itself hands it motion vectors (waving plants and leaves, ships, Create's machines and contraptions, mobs, dropped items and the item in your hand), so moving things stay sharp instead of smearing, and leaves, fences and distant mobs stop shimmering. It came together over 0.4.80 to 0.4.84 and has since been played on an RTX 4080 desktop and an RTX 3070 laptop; FSR 3.1 has only been tried on NVIDIA cards so far. The settings screen, the README and the Field Guide no longer call it experimental. This release fixes the two problems that play turned up.
+
+### Fixed
+- **Create's shafts and cogwheels vanishing at some angles below full render resolution.** With DLSS, FSR or Photon's own upscaling at less than 100%, machines in plain view could disappear depending on where you looked. Colorwheel (which draws Create's machines under shaders) skips a machine that a depth check says nearer blocks hide, and that check read the depth picture as if it covered the whole screen, while Photon draws the smaller frame into one corner of it; so each machine was checked against whatever showed further up and to the right, often a nearer block or tree. The check now reads the corner Photon draws into. Checked in a test scene, a row of shafts and cogwheels under a stone overhang just ahead: at 50% render resolution the upper row (five shafts and two cogwheels) was gone; with the fix every one of them shows at 50% and 33%, as at full resolution.
+- **The item in your hand flickering while you stand on a sailing boat (with a shader pack).** Sable gives each ship a daylight level and lights the held item and everything aboard by it. It measured that level at the middle of the ship, which on many boats sits at the waterline, where the top block of water is one step darker than open sky, so as the boat bobbed the level flipped back and forth and the item in your hand dimmed and brightened. The level now also counts the daylight just over the ship and only follows a one- or two-step change once it has held for a second; sailing into a cave or diving still darkens it at once. Checked on a test boat heaving 0.8 blocks: the level flipped 6 times in 420 frames before and stayed at full daylight after.
+
+### Added
+- Create Galore Bridge 1.103.0.
+
 ## 0.4.88
 
 ### Fixed

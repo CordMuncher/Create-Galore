@@ -4,9 +4,8 @@ import net.minecraft.client.Minecraft;
 
 /**
  * The held item, for the "hand" viewpoint: the hand shows (and the HUD with it) holding a sword, nothing else changes.
- * With the "rise" path it shows how the light on a held item holds up while the player moves fast without moving
- * their arm (riding a boat, flying): Photon lit the hand with shadow map texels that slid past the player's own
- * shadow as they moved, so its light flickered.
+ * With the "rise" path it shows whether the light on a held item holds while the player moves fast without moving
+ * their arm (flying); the "ride" viewpoints (see RideScene) do the same standing on a sailing ship.
  */
 final class HandScene {
     static final String NAME = "hand";

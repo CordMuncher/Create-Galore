@@ -14,16 +14,17 @@ import net.minecraft.client.server.IntegratedServer;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 
 /**
- * Standing on a ship that sails in a straight line, for the "ride" viewpoints: a small Sable ship (rideShip "boat": a
- * deep hull, a deck, a rail and a short mast ahead, so the ship reaches above the player's head and its middle floats
- * about at the waterline, like many boats; "hull": the same without the mast and with a shallower hull; "deck": just a
- * deck and a rail, riding high; open sky above all of them) on the open water south of the lake scene, sailing along x at rideSpeedPerTick and
- * turning back
- * every LEG ticks, so it stays on the water (x 940..1120 is open sea at z 90..110 in the DLAA test world). The player
- * stands on its deck holding a sword (the hand and the HUD show) and is never pinned: the ship carries them, as when
- * standing on a moving boat in a game. Each frame there writes a line of ride.csv in the mode's folder: where the
- * player is, their walk animation (what their model's arms and legs swing by), the light the held item gets and the
- * ship's sky light scale (Sable's measure of the daylight over the ship, which scales that light).
+ * Standing on a ship that sails in a straight line, for the "ride" viewpoints. A small Sable ship on the open water
+ * south of the lake scene (x 940..1120 is open sea at z 90..110 in the DLAA test world), open sky above it; rideShip
+ * picks it: "boat", a deep hull, a deck, a rail and a short mast ahead, so the ship reaches above the player's head and
+ * its middle floats about at the waterline, like many boats; "hull", a shallower hull and a stub of a mast, lower in
+ * the water; "deck", just a deck and a rail, riding high. It sails along x at rideSpeedPerTick, turning back every LEG
+ * ticks so it stays on the water, and with rideBobBlocks heaves up and down by that much every BOB_TICKS like a boat on
+ * waves. The player stands on its deck holding a sword (the hand and the HUD show) and is never pinned: the ship
+ * carries them, as when standing on a moving boat in a game. Each frame there writes a line of ride.csv in the mode's
+ * folder: where the player is, their walk animation (what their model's arms and legs swing by), the light the held
+ * item gets and the ship's sky light scale (Sable's measure of the daylight over the ship, which scales that light;
+ * it flipped between 14 and 15 as a boat bobbed at the waterline, and the held item's light with it).
  * Built when the camera first gets there and removed when the run ends.
  */
 final class RideScene {
@@ -36,6 +37,8 @@ final class RideScene {
     private static final String REMOVE_SHIPS = "sable remove @e[x=900..1160,y=40..100,z=70..130]";
     /** Ticks the ship sails one way before it turns back. */
     private static final int LEG = 100;
+    /** Ticks of one heave, up and down. */
+    private static final int BOB_TICKS = 40;
     // A 7x5 deck with a rail around it, all spruce planks, so it assembles as one sub-level.
     private static final List<String> DECK = List.of(
             "fill 958 63 98 964 63 102 spruce_planks",
@@ -46,7 +49,8 @@ final class RideScene {
     // Under the deck, a hull two blocks deep (a bottom and a ring of sides, air inside), in the water.
     private static final List<String> HULL = List.of(
             "fill 958 61 98 964 61 102 spruce_planks",
-            "fill 958 62 98 964 62 102 spruce_planks hollow");
+            "fill 958 62 98 964 62 102 spruce_planks hollow",
+            "fill 959 64 100 959 65 100 spruce_log");
     // A hull four blocks deep and a mast at the bow (ahead of the player looking west), four blocks over the deck.
     private static final List<String> BOAT = List.of(
             "fill 958 59 98 964 59 102 spruce_planks",
@@ -59,6 +63,7 @@ final class RideScene {
     private static volatile boolean active;
     private static int ticks;
     private static volatile float speed = 0.3f;
+    private static volatile float heave;
     private static Path csvFile;
     private static BufferedWriter csv;
 
@@ -93,6 +98,7 @@ final class RideScene {
     static void enter(Capture.Settings settings, float yaw, float pitch) {
         build(settings);
         speed = settings.rideSpeedPerTick;
+        heave = settings.rideBobBlocks;
         Minecraft mc = Minecraft.getInstance();
         mc.options.hideGui = false;
         // As players have it (the rest of a run turns it off): its sway follows the player's own steps.
@@ -148,8 +154,9 @@ final class RideScene {
             return;
         }
         double dx = (ticks / LEG) % 2 == 0 ? speed : -speed;
+        double dy = heave * (Math.sin(2 * Math.PI * (ticks + 1) / BOB_TICKS) - Math.sin(2 * Math.PI * ticks / BOB_TICKS));
         ticks++;
-        Capture.runNow(server, String.format(Locale.ROOT, "sable physics translation @e[name=%s] add %.4f 0 0 global", SHIP, dx));
+        Capture.runNow(server, String.format(Locale.ROOT, "sable physics translation @e[name=%s] add %.4f %.4f 0 global", SHIP, dx, dy));
     }
 
     /** Each frame there: one line of the mode's ride.csv. */
