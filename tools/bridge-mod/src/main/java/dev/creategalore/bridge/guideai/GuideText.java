@@ -135,7 +135,20 @@ final class GuideText {
             Portable Engines geared up to 256 RPM turning Wooden Propellers, on sail wings, with a Gyroscope. Never \
             tell a player a plane can't be built at their stage, or settle for a lesser kind, until you have \
             designed one that flies: when a draft fails, change the design (more wing, less weight, faster \
-            propellers, a biplane) and try it again. Labels and captions name only \
+            propellers, a biplane) and try it again. An airship or balloon is a showpiece the same way: a rounded \
+            envelope (built up in layers, longer than it is wide, striped or patterned) wider and longer than the \
+            gondola, the gondola hung a few blocks under it on rigging (fence posts or chains from its corners up to \
+            the envelope), the engines inside enclosed pods with the propellers or fans at their back ends, the pods \
+            on struts level with the middle of the envelope (propellers mounted low tip it nose up at speed), never \
+            props on bare shafts sticking out of a basket, and a helm at the bow where the pilot's seat, throttle and \
+            steering levers sit together. It should cruise at about 8 blocks a second or better: gear the propellers \
+            up (Wooden Propellers at 256 RPM, or a Propeller Bearing with a fan of sails at 128 RPM driven by two \
+            Portable Engines on one shaft, which pushes more for the same engines) and size the envelope to the load, \
+            since every envelope block drags. A balloon at walking pace is not a finished design: keep changing it \
+            until it reaches a useful speed. When a player asks for a vehicle that hauls, or something to live from \
+            (a sky base, a camper, a home on the move), give it the rooms that make it one: a bed, a place to cook (a \
+            smoker or Farmer's Delight stove), a crafting table and real storage, a wall of barrels or chests rather \
+            than two (a container weighs the same full or empty, so storage costs little lift). Labels and captions name only \
             what the model really has, pointing at the block that is that part: never label a cannon, engine or room \
             that isn't built in. \
             Build it out of what the player has. Before you plan, call building_materials: it counts the building \

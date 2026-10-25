@@ -125,6 +125,23 @@ final class BuildCheck {
             }
         }
 
+        // Machines that stand still below their minimum speed (a mixer needs medium speed): a water wheel's speed is
+        // fixed, so that is a fault; other sources can be set faster, so it is a note on the speed the model assumes.
+        Map<BlockPos, Float> rpm = rpm(blocks, level, new ArrayList<>());
+        for (Cell c : kinetic.values()) {
+            IRotate.SpeedLevel min = ((IRotate) c.state.getBlock()).getMinimumRequiredSpeedLevel();
+            Float r = rpm.get(c.pos);
+            if (min == IRotate.SpeedLevel.NONE || r == null || Math.abs(r) >= min.getSpeedValue() || !sourceOf.containsKey(c.pos)) continue;
+            Cell src = kinetic.get(sourceOf.get(c.pos));
+            String slow = name(c) + " turns at " + trim(Math.abs(r)) + " RPM, but needs at least " + trim(min.getSpeedValue())
+                    + " RPM to work, and below that it stands still";
+            if (src.state.getBlock() instanceof WaterWheelBlock || src.state.getBlock() instanceof LargeWaterWheelBlock)
+                faults.add(slow + " (" + name(src) + " always turns at " + trim(nominalRpm(src.state)) + " RPM; speed it up with "
+                        + "gears: a large cogwheel driving a small one doubles the speed)");
+            else notes.add(slow + " with " + name(src) + " at its usual " + trim(nominalRpm(src.state)) + " RPM; set the source "
+                    + "faster or gear it up (a large cogwheel driving a small one doubles the speed)");
+        }
+
         StringBuilder out = new StringBuilder("How these blocks turn and connect" + BuildCheck.FOR_YOU + ":\n");
         if (sources.isEmpty()) {
             out.append("- No rotation source in the model (water wheel, windmill, motor, engine, crank). Machines are listed "

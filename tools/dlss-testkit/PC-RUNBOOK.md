@@ -973,3 +973,83 @@ If a launch crashes, copy `hs_err_pid*.log` and the log's last 100 lines, and re
 - Emre's by-feel notes, if that part ran.
 
 Commit and push on the DLAA branch. Don't commit hs_err files (they name his user folder).
+
+## Pacer 2: the pacer again, with the queue read without a flush
+
+Start only when Emre says so. Same PC, test folder, tools and settings as Pacer 1; about 25 minutes, two launches, no
+by-feel part. **Frame times count here**: a quiet PC, no game server.
+
+**What it tests.** Pacer 1 (`results/pacer1/REPORT.md`) found two things:
+- With Perfect Presentation on, every mode ran about 30% slower than in Reflex 1, with no GPU queue at all, so the
+  pacer had nothing to do. The likely cause was the Bridge's own measurement: a GPU timestamp flushed at the start of
+  each frame's rendering, which made the CPU wait for the GPU's previous frame. Bridge 1.110.0 has no flush there: it
+  reads the queue as the GPU's finish of the frame before minus the CPU's start of rendering (below 0, the GPU waited).
+- Without Perfect Presentation, the pacer halved the latency (16.0 / 18.8 ms to 7.9 / 8.5 ms) but cost 6% fps with its
+  automatic target (about 2 ms). Longer targets should cost less: this run tries 3000 and 5000 us.
+
+It also checks that the frame cap now waits at the frame's start by default (`lat-cap-default`: a 60 fps cap with no
+test switches), which Pacer 1 showed matches Reflex's cap.
+
+**First check, before anything else in the results:** `lat-base` with Perfect Presentation on should be back near
+Reflex 1's 171 / 154 fps (shore / canopy). If it is still near Pacer 1's 116 / 113 fps, say so at the top of the
+report: the flush wasn't the cause.
+
+### Update
+
+```powershell
+git -C $T\repo fetch origin
+git -C $T\repo checkout -B claude/project-thread-u2wmhh origin/claude/project-thread-u2wmhh
+Remove-Item $T\instance\mods\create-galore-bridge-*.jar
+Copy-Item $T\repo\pack\mods\create-galore-bridge-*.jar $T\instance\mods\
+Copy-Item $T\repo\tools\dlss-testkit\dist\create-galore-dlss-testkit-1.0.0.jar $T\instance\mods\ -Force
+```
+
+The Bridge there is 1.110.0, a test build (not released). It also has the new frame counter and the display settings
+screen in two tabs; neither changes anything unless picked on that screen.
+
+### Settings
+
+As Pacer 1 (note the old values, put them back afterwards): `dlaa=dlss`, `perfectPresentation=true` for launch 1
+and `false` for launch 2, `earlyWindowControl = false`, Distant Horizons `numberOfThreads = 2`. Look at the NVIDIA
+Control Panel and the refresh rate again and write them down; change nothing.
+
+### Launches
+
+The launch from step 4 (2560x1440), `--jvm-arg=-Dcreate_galore_dlss_testkit.autorun=dlaa-test` and `...runs=` as
+below, the window in front with focus.
+
+1. **Perfect Presentation on, `...runs=L5`** (about 13 minutes). Each mode twice, at `shore` and `canopy`:
+
+   | Mode | What |
+   | --- | --- |
+   | `lat-base` | the game as it is |
+   | `lat-late` | late input read |
+   | `lat-reflex` | Reflex on + late read (as 0.5.2 ships it) |
+   | `lat-pacer` | GPU pacer (automatic target) + late read |
+   | `lat-pacer-2000` | the same, target 2000 us |
+   | `lat-pacer-4000` | the same, target 4000 us |
+   | `lat-reflex-pacer` | Reflex on + GPU pacer (automatic) + late read |
+   | `lat-cap-default` | 60 fps cap, nothing else switched: the Bridge's default cap at the frame's start |
+
+   The log must have `Latency: the frame cap waits at the start of the frame, before input`,
+   `Latency: GPU pacer on, frames may queue on the GPU as much as they vary`, `... 2000 us ...`, `... 4000 us ...`,
+   `Latency: waits use a high resolution timer` and `Reflex: started on Perfect Presentation's Direct3D 11 device`.
+   Copy any `Latency:` or `Reflex:` WARN or ERROR line.
+2. **Perfect Presentation off, `...runs=L6`** (about 10 minutes): `lat-base`, `lat-ra1-late`, `lat-pacer`,
+   `lat-pacer-3000`, `lat-pacer-5000`, `lat-ra1-pacer`.
+
+If a launch crashes, copy `hs_err_pid*.log` and the log's last 100 lines, and report.
+
+### Results
+
+`python latency.py <L5 folder> <L6 folder>`. Write `$T\repo\tools\dlss-testkit\results\pacer2\REPORT.md`:
+- first, the `lat-base` frame rate with Perfect Presentation on against Reflex 1 (171 / 154) and Pacer 1 (116 / 113);
+- per launch, each mode's median latency, its change and its fps change against `lat-base` at both viewpoints, the
+  repeats' spread, the queue (median and `q10`), and with the pacer its wait, how late the wait ended and its target;
+- in one line each: with Perfect Presentation on, is there a queue now, and does the pacer bring the latency down at
+  what fps cost; which target keeps the frame rate within 3% (with and without Perfect Presentation) and at what
+  latency; does Reflex add anything on top of the pacer; does `lat-cap-default` give about Pacer 1's `lat-cap-start`
+  (8.8 / 8.6 ms);
+- the `Latency:` and `Reflex:` lines, the control panel settings and refresh rate.
+
+Commit and push on the DLAA branch. Don't commit hs_err files (they name his user folder).

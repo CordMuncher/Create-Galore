@@ -49,7 +49,7 @@ final class MachineCheck {
             fan(out, level, p, fan);
         }
         String machines = out.isEmpty() ? "" : "How these machines work as they are now" + BuildCheck.FOR_YOU + ":\n" + out;
-        return machines + vehicle(level, build);
+        return machines + OutputCheck.live(level, build) + vehicle(level, build);
     }
 
     /** The vehicle check on the build's blocks as they stand, with each part turning as fast as it does now. */

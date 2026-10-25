@@ -77,7 +77,12 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**Basin output**: put a belt, funnel, depot or chute below and to the side, and the basin shows a faucet and pushes finished items out. With no output block it keeps results inside, useful when they are ingredients for the next step.\\\n\\\nIf you pull from a basin, use a [#](2E5AAC)[filter](entry://create_basics/item_logistics)[#]() so unprocessed items stay."
+      "text": "**Basin output**: the basin shows a faucet and pushes finished items into the spot **one block down, beside it**. A depot, belt or chute there takes them, or a funnel facing up on a chest, placed while sneaking so it inserts. The block beside the basin itself must stay open."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "A chest or barrel in that spot gets nothing. Put it one block lower with a funnel on top, so the funnel sits in the spot. With no output the basin keeps results inside, useful when they are ingredients for the next step.\\\n\\\nIf you pull from a basin, use a [#](2E5AAC)[filter](entry://create_basics/item_logistics)[#]() so unprocessed items stay."
     },
     {
       "type": "modonomicon:text",

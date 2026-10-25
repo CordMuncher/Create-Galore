@@ -5,6 +5,32 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.5.5
+
+### Fixed
+- **Ask the Book's starter brass mixer never filled its output chest.** A player built the book's "Starter brass mixer, chest to chest": the brass out chest sat beside the Blaze Burner, one block down from the basin's side, and stayed empty while the brass piled up in the basin. A basin only pushes its results into the spot one block down beside it when that spot takes items the way a belt does (a depot, belt or chute, or a funnel facing up and set to insert, on top of a chest) and the block beside the basin itself is open; a chest, barrel or hopper there gets nothing. The book now works out where every basin and millstone in its builds sends its results, by Create's own rule, and won't show a build whose output can't work: a chest a basin can't reach, a funnel set to pull instead of insert, a solid block closing the side, or a millstone next to chests with no hopper, chute or funnel pulling from it (a millstone never pushes). It also tells a player whose own build has the problem what to change and how many finished items are waiting in the machine. Checked on a test server with the same layout: the brass stayed in the basin; with the chest one block lower and a funnel on it (placed while sneaking) the brass went into the chest, and with a depot in that spot onto the depot.
+- **Mixers too slow to work.** A Mechanical Mixer needs at least 30 RPM and stands still below that (a test mixer at 16 RPM never started; at 64 RPM it made brass). The book now sees the speed each machine in a model gets and won't show a mixer driven straight off a water wheel (8 RPM) without gearing it up; with a motor it says to set the motor faster.
+- Field Guide (Processing): the basin output page now says exactly which blocks take a basin's results and where they go, and that a chest needs a funnel on top.
+
+### Added
+- Create Galore Bridge 1.109.0.
+
+## 0.5.4
+
+### Fixed
+- **Ask the Book's balloons crawled.** Asked for a balloon that can fly anywhere, hang and haul, it geared its propellers only to 64 RPM, gave it an envelope more than twice as big as its load needed, flew it at 1.2 blocks a second and said it couldn't make a faster one. Every envelope block drags, so a too-big envelope costs speed, and propellers push only up to their airflow, so slow ones never get going. The book's checks now say how much push an airship needs to cruise at a useful 8 blocks a second, how many geared-up Wooden Propellers or Propeller Bearing fans give it, and when the envelope is bigger than the load needs, and the book keeps redesigning until it gets there.
+- **Airships that tip nose up at speed.** Propellers mounted below the envelope push the bottom on while the air holds the top back, so a balloon with low propellers flew pitched about 30° nose up. The check now works out that tilt and says to mount the propellers level with the middle of the envelope.
+- **Sails on a Propeller Bearing counted as wings** in Ask the Book's checks, so a fan of sails was judged as if it lifted the ship and made it slide sideways. They now count only as the bearing's propeller.
+- **Better-looking airships, and a real base when asked.** Ask the Book now builds a rounded envelope wider and longer than the gondola, hangs the gondola under it on rigging, puts the engines in enclosed pods level with the envelope's middle with the fans at their back ends (never propellers on bare shafts), and sets the seat, throttle and steering levers together at a helm. Asked for something that hauls or to live from, it gives the gondola a bed, a place to cook, a crafting table and a wall of storage rather than two chests (a container weighs the same full or empty).
+- Field Guide (Propellers): a new page on big fans: a Propeller Bearing with 13 sails at 128 RPM pushes more than four Wooden Propellers at 256 RPM, and two Portable Engines on one shaft turn one. Field Guide (Balloons and Lift): new pages on speed and drag, and a worked example of a sky base that flies (tested: about 9 blocks a second, up to about y 210).
+- Create Galore Bridge 1.108.0.
+
+## 0.5.3
+
+### Added
+- **The game now writes down what it was stuck on when it hangs.** A player's game stopped responding for good while entering the Nether, and the log just stopped, with nothing that named the cause (the server was fine). When the game stops drawing for 10 s, the Create Galore Bridge now writes what every part of the game is doing to `logs/create-galore-client-freeze.log` in the instance folder, again at 20, 40 and 80 s, and notes when the game moves again. It also names any two parts of the game that are waiting on each other. It writes only while the game is hung and costs nothing otherwise. Checked on a test client with a staged 25 s hang: the file names the hang and the code it was stuck in. If the game hangs, send that file.
+- Create Galore Bridge 1.107.0.
+
 ## 0.5.2
 
 ### Added
