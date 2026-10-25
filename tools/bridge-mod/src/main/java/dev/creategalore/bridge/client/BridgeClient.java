@@ -19,6 +19,7 @@ public final class BridgeClient {
     public static void init(IEventBus modBus, net.neoforged.fml.ModContainer container) {
         // Mods are built before Minecraft reads options.txt, so the file can still be fixed here.
         KeyRebindMigration.run();
+        FrameFreezeWatch.init();
         modBus.addListener(BridgeClient::setup);
         modBus.addListener(ShipWaterCutaway::registerShaders);
         GuideAiClient.init(modBus);

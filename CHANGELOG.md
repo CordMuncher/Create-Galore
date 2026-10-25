@@ -5,6 +5,12 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.5.3
+
+### Added
+- **The game now writes down what it was stuck on when it hangs.** A player's game stopped responding for good while entering the Nether, and the log just stopped, with nothing that named the cause (the server was fine). When the game stops drawing for 10 s, the Create Galore Bridge now writes what every part of the game is doing to `logs/create-galore-client-freeze.log` in the instance folder, again at 20, 40 and 80 s, and notes when the game moves again. It also names any two parts of the game that are waiting on each other. It writes only while the game is hung and costs nothing otherwise. Checked on a test client with a staged 25 s hang: the file names the hang and the code it was stuck in. If the game hangs, send that file.
+- Create Galore Bridge 1.107.0.
+
 ## 0.5.2
 
 ### Added
