@@ -1,0 +1,111 @@
+#version 430 compatibility
+// The DLSS point. This pass hands DLSS (or FSR) everything it needs, then the Create Galore Bridge runs it right
+// after this pass and writes its result over this pass's output (see create_galore_dlss.properties):
+// - the scene in linear light (colortex0), jittered and not anti-aliased;
+// - motion vectors in render pixels towards last frame, unjittered (cg_motion_img): a surface's own where it moves
+//   by itself (colortex7), else where the camera's motion takes its depth, Distant Horizons' included;
+// - DLSS depth, 1 at the near plane falling towards 0 far away, 0 for the sky (cg_depth_img);
+// - the exposure the scene is in (cg_exposure_img), 1: the pack doesn't expose yet.
+// While upscaling, the frame fills the lower left corner of the buffers at the render size and only that is handed
+// over. Without the Bridge, or with DLSS off, the final pass shows this pass's output itself.
+
+#include "/lib/buffers.glsl"
+#include "/lib/motion.glsl"
+#include "/lib/color.glsl"
+
+uniform sampler2D colortex0;
+uniform sampler2D colortex7;
+uniform sampler2D depthtex0;
+uniform mat4 gbufferProjectionInverse;
+uniform float near;
+uniform float cg_dlss_object_motion; // 0 while the Bridge tests without the motion of things that move by themselves
+
+#ifdef DISTANT_HORIZONS
+uniform sampler2D dhDepthTex0;
+uniform mat4 dhProjectionInverse;
+uniform mat4 dhPreviousProjection;
+#endif
+
+layout(rg16f) writeonly uniform image2D cg_motion_img;
+layout(r32f) writeonly uniform image2D cg_depth_img;
+layout(r32f) writeonly uniform image2D cg_exposure_img;
+
+in vec2 v_uv;
+
+/* RENDERTARGETS: 0 */
+layout(location = 0) out vec4 out_color;
+
+// The hand's depth is squeezed into the middle of the range (Iris draws it at MC_HAND_DEPTH of its own).
+const float hand_depth_limit = 0.5 + 0.5 * MC_HAND_DEPTH;
+
+vec3 unproject(mat4 projection_inverse, vec2 ndc, float depth) {
+    vec4 view = projection_inverse * vec4(ndc, depth * 2.0 - 1.0, 1.0);
+    return view.xyz / view.w;
+}
+
+// Motion in render pixels from this pixel (ndc) to where its surface was last frame.
+vec2 motion_to(vec4 clip_prev, vec2 ndc, vec2 size) {
+    return clip_prev.w > 0.0 ? (clip_prev.xy / clip_prev.w - ndc) * 0.5 * size : vec2(0.0);
+}
+
+float dlss_depth(vec3 view) {
+    return clamp(near / max(-view.z, near), 0.0, 1.0);
+}
+
+void main() {
+    ivec2 texel = ivec2(gl_FragCoord.xy);
+    vec2 size = render_size();
+    if (any(greaterThanEqual(vec2(texel) + 0.5, size))) {
+        out_color = vec4(0.0); // outside the frame while upscaling
+        return;
+    }
+
+    vec3 scene_color = texelFetch(colortex0, texel, 0).rgb;
+    scene_color = clamp(scene_color, 0.0, 1.0); // Minecraft's colours end at white (and no NaN reaches DLSS)
+    out_color = vec4(srgb_to_linear(scene_color), 1.0);
+
+    // This pixel's centre without the jitter, in normalised device coordinates.
+    vec2 ndc = (vec2(texel) + 0.5 - vec2(cg_dlss_jitter_x, cg_dlss_jitter_y)) / size * 2.0 - 1.0;
+    float depth = texelFetch(depthtex0, texel, 0).r;
+    vec2 motion;
+    float depth_out;
+
+    if (depth < 1.0) {
+        bool hand = depth < hand_depth_limit;
+        float z = hand ? (depth - 0.5) / MC_HAND_DEPTH + 0.5 : depth;
+        vec3 view = unproject(gbufferProjectionInverse, ndc, z);
+        depth_out = dlss_depth(view);
+        // The hand moves with the camera; the rest of the world stands still unless it said otherwise.
+        motion = hand ? vec2(0.0) : motion_to(previous_clip(view_to_scene(view), gbufferPreviousProjection), ndc, size);
+    } else {
+#ifdef DISTANT_HORIZONS
+        float dh_depth = texelFetch(dhDepthTex0, texel, 0).r;
+#else
+        float dh_depth = 1.0;
+#endif
+        if (dh_depth < 1.0) {
+#ifdef DISTANT_HORIZONS
+            vec3 view = unproject(dhProjectionInverse, ndc, dh_depth);
+            depth_out = dlss_depth(view);
+            motion = motion_to(previous_clip(view_to_scene(view), dhPreviousProjection), ndc, size);
+#endif
+        } else {
+            // The sky only turns with the camera.
+            vec3 direction = mat3(gbufferModelViewInverse) * unproject(gbufferProjectionInverse, ndc, 1.0);
+            vec4 clip_prev = gbufferPreviousProjection * vec4(mat3(gbufferPreviousModelView) * direction, 0.0);
+            depth_out = 0.0;
+            motion = motion_to(clip_prev, ndc, size);
+        }
+    }
+
+    vec4 own = texelFetch(colortex7, texel, 0);
+    if (own.b > 0.5 && cg_dlss_object_motion > 0.5) {
+        motion = own.rg;
+    }
+
+    imageStore(cg_motion_img, texel, vec4(motion, 0.0, 0.0));
+    imageStore(cg_depth_img, texel, vec4(depth_out));
+    if (texel == ivec2(0)) {
+        imageStore(cg_exposure_img, ivec2(0), vec4(1.0));
+    }
+}

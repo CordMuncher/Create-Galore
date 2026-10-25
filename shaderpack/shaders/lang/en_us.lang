@@ -1,0 +1,7 @@
+profile.PURE_AA=Pure anti-aliasing
+profile.PURE_AA.comment=Minecraft's own look with only DLSS or FSR anti-aliasing on top, at full size (DLAA).
+
+option.UPSCALING=Upscaling
+option.UPSCALING.comment=Render the world smaller and let DLSS or FSR bring it up to the window's size, for more frames. Off: they only anti-alias at full size (DLAA). Needs the Create Galore Bridge; without it the frame is stretched up plainly.
+option.RENDER_SCALE=Render Scale
+option.RENDER_SCALE.comment=How big the world renders while upscaling, per side of the window. 0.67 is DLSS Quality, 0.58 Balanced, 0.5 Performance and 0.33 Ultra Performance.
