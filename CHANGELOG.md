@@ -5,6 +5,12 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.4.85
+
+### Fixed
+- **Another exploring freeze: lava hardening along a seam.** Deep underground, world generation leaves water and lava side by side. When water flows onto such a seam, the first lava block turns to stone or obsidian, that wakes the next lava block along the seam, and so on, all in the same moment. A long seam carried this past the edge of the loaded world into chunks that were still being generated, and the server waited for each of them (a 3.9 s freeze while exploring new land). Lava next to a chunk that isn't loaded yet now waits for its next tick (a second and a half) and hardens then, the way it would have, and the seam carries on once that chunk is ready. Checked on a test server: a 192-block lava seam running out of the loaded area made the server load 7 chunks on the spot before; now it loads none, stops at the edge, and finishes hardening by itself once those chunks load.
+- Create Galore Bridge 1.99.0.
+
 ## 0.4.84
 
 ### Fixed

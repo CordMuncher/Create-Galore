@@ -1,8 +1,12 @@
 package dev.creategalore.bridge;
 
+import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
+
+import java.util.Map;
+import java.util.WeakHashMap;
 
 /**
  * Flags for the places where a mod asked for a chunk and waited for it on the server thread. When that chunk was
@@ -59,6 +63,30 @@ public final class ChunkLoadGuard {
             }
         }
         return true;
+    }
+
+    /**
+     * How far lava (or any fluid that mixes) reads the world when a neighbour wakes it: the blocks touching it, then
+     * the shape updates of the stone it may turn into reach one block further.
+     */
+    public static final int MIXING_REACH = 2;
+
+    /** Fluid blocks whose mixing waited for a chunk to finish loading, per world. Server thread only. */
+    private static final Map<Level, LongOpenHashSet> MIXING_LATER = new WeakHashMap<>();
+    /** A spot leaves the list when its fluid ticks; one whose fluid was removed first never does, so the list is capped. */
+    private static final int MIXING_LATER_MAX = 4096;
+
+    /** Remembers that the fluid here should check for mixing at its next tick. */
+    public static void mixLater(Level level, BlockPos pos) {
+        LongOpenHashSet later = MIXING_LATER.computeIfAbsent(level, l -> new LongOpenHashSet());
+        if (later.size() >= MIXING_LATER_MAX) later.clear();
+        later.add(pos.asLong());
+    }
+
+    /** True (once) when the fluid here was told to check for mixing later. */
+    public static boolean takeMixLater(Level level, BlockPos pos) {
+        LongOpenHashSet later = MIXING_LATER.get(level);
+        return later != null && !later.isEmpty() && later.remove(pos.asLong());
     }
 
     private ChunkLoadGuard() {}
