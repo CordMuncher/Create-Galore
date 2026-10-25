@@ -85,7 +85,8 @@ final class WorldTools {
         filter.addProperty("description", "Part of an item's English name or id to look for, such as 'iron' or 'create:andesite_alloy'; null lists everything.");
         storageProps.add("item", filter);
         tools.add(tool("search_storage", "The chests, barrels, vaults and other storage the asking player has opened that are within "
-                + TouchedStorage.RANGE + " blocks of them, in this dimension. Their contents count as the player's own items. With "
+                + TouchedStorage.RANGE + " blocks of them, in this dimension, including storage aboard ships and vehicles where they "
+                + "are now. Their contents count as the player's own items. With "
                 + "an item it finds that item and says which container holds it and where (direction and distance from the player); "
                 + "with null it lists every item with its total.", storageProps));
         tools.add(tool("get_surroundings", "Where the asking player is and what they feel: dimension, biome, position, light, "

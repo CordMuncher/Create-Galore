@@ -53,7 +53,8 @@ final class GuideText {
             Only state what the guide, the recipe list or your tools support, or what clearly follows from them. If \
             something isn't covered, say so plainly and suggest where in the guide they might look. Use your tools \
             whenever the question is about the player's situation: what they are looking at, carrying or standing in. \
-            Items in the chests and other storage the player has opened within 50 blocks count as theirs: \
+            Items in the chests and other storage the player has opened within 50 blocks count as theirs, aboard \
+            ships too: \
             get_inventory lists their totals, and search_storage finds one item and says which container holds it. \
             When something they built doesn't work, or they ask about a build, look before you answer. get_view \
             shows what was on their screen when they asked. find_placed_blocks searches the blocks players placed in \

@@ -15,12 +15,14 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
  * Keeps the Field Guide's "placed by a player" mark on blocks Sable moves: assembling a ship or vehicle moves its
- * blocks into the ship's plot, and taking it apart moves them back into the world, both through moveBlocks.
+ * blocks into the ship's plot, and taking it apart moves them back into the world, both through moveBlocks. The
+ * storage players have opened (which the book counts as theirs) is carried along too.
  */
 @Mixin(value = SubLevelAssemblyHelper.class, remap = false)
 public abstract class SableMovePlacedMixin {
     @Unique
-    private record create_galore_bridge$Move(ServerLevel from, ServerLevel to, List<BlockPos> olds, List<BlockPos> news) {
+    private record create_galore_bridge$Move(ServerLevel from, ServerLevel to, List<BlockPos> olds, List<BlockPos> news,
+                                             List<BlockPos> storageOlds, List<BlockPos> storageNews) {
     }
 
     @Unique
@@ -29,15 +31,19 @@ public abstract class SableMovePlacedMixin {
     @Inject(method = "moveBlocks", at = @At("HEAD"))
     private static void create_galore_bridge$rememberPlaced(ServerLevel level, SubLevelAssemblyHelper.AssemblyTransform transform,
                                                          Iterable<BlockPos> blocks, CallbackInfo ci) {
-        List<BlockPos> olds = new ArrayList<>(), news = new ArrayList<>();
-        if (PlacedMoves.active(level)) {
-            for (BlockPos p : blocks) {
-                if (!PlacedMoves.isPlaced(level, p)) continue;
+        List<BlockPos> olds = new ArrayList<>(), news = new ArrayList<>(), storageOlds = new ArrayList<>(), storageNews = new ArrayList<>();
+        boolean placed = PlacedMoves.active(level);
+        for (BlockPos p : blocks) {
+            if (placed && PlacedMoves.isPlaced(level, p)) {
                 olds.add(p.immutable());
                 news.add(transform.apply(p).immutable());
             }
+            if (PlacedMoves.isTouchedStorage(level, p)) {
+                storageOlds.add(p.immutable());
+                storageNews.add(transform.apply(p).immutable());
+            }
         }
-        create_galore_bridge$moves.push(new create_galore_bridge$Move(level, transform.getLevel(), olds, news));
+        create_galore_bridge$moves.push(new create_galore_bridge$Move(level, transform.getLevel(), olds, news, storageOlds, storageNews));
     }
 
     @Inject(method = "moveBlocks", at = @At("RETURN"))
@@ -47,5 +53,6 @@ public abstract class SableMovePlacedMixin {
         if (move == null) return;
         move.olds().forEach(p -> PlacedMoves.forget(move.from(), p));
         move.news().forEach(p -> PlacedMoves.mark(move.to(), p));
+        PlacedMoves.storageMoved(move.from(), move.to(), move.storageOlds(), move.storageNews());
     }
 }

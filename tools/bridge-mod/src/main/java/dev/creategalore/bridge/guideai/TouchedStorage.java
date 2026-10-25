@@ -30,6 +30,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.ChestBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.ChestType;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.items.IItemHandler;
@@ -40,6 +41,10 @@ import org.slf4j.Logger;
  * remembered when the player right-clicks it and it holds items (anything with an item handler: chests, barrels,
  * Create vaults, drawers). Asking only looks at the ones within {@link #RANGE} blocks in the player's dimension, in
  * loaded chunks, so a chest opened far away is never counted. Kept per world, next to the book's pages.
+ *
+ * <p>A barrel on a Sable ship really sits in the ship's plot, far out in the world, and keeps that position while
+ * the ship sails; it is measured from where the ship has it now ({@link Ships#toWorld}). Assembling or taking a ship
+ * apart moves the blocks, and {@link #moved} carries the list along.
  */
 final class TouchedStorage {
     private static final Logger LOG = LogUtils.getLogger();
@@ -85,7 +90,7 @@ final class TouchedStorage {
         int containers = 0;
         for (String k : set) {
             BlockPos p = parse(k, dim);
-            if (p == null || p.distSqr(here) > (double) RANGE * RANGE || !level.isLoaded(p)) continue;
+            if (p == null || worldPos(level, p).distSqr(here) > (double) RANGE * RANGE || !level.isLoaded(p)) continue;
             if (containers >= MAX_CONTAINERS) break;
             IItemHandler handler = level.getCapability(Capabilities.ItemHandler.BLOCK, p, null);
             if (handler == null || seen.put(handler, Boolean.TRUE) != null) continue;
@@ -110,20 +115,24 @@ final class TouchedStorage {
         BlockPos here = player.blockPosition();
         LinkedHashSet<String> set = touched.get(player.getUUID());
         String dim = level.dimension().location().toString();
-        List<BlockPos> near = new ArrayList<>();
+        // The block where it is kept, and where it stands in the world now (not the same on a ship).
+        Map<BlockPos, BlockPos> near = new LinkedHashMap<>();
         if (set != null) {
             for (String k : set) {
                 BlockPos p = parse(k, dim);
-                if (p != null && p.distSqr(here) <= (double) RANGE * RANGE) near.add(p);
+                if (p == null) continue;
+                BlockPos w = worldPos(level, p);
+                if (w.distSqr(here) <= (double) RANGE * RANGE) near.put(p, w);
             }
         }
-        near.sort(Comparator.comparingDouble(p -> p.distSqr(here)));
+        List<BlockPos> order = new ArrayList<>(near.keySet());
+        order.sort(Comparator.comparingDouble(p -> near.get(p).distSqr(here)));
         String f = filter == null ? "" : filter.strip().toLowerCase(Locale.ROOT);
         Map<String, Found> items = new LinkedHashMap<>();
         IdentityHashMap<IItemHandler, Boolean> seen = new IdentityHashMap<>();
         int containers = 0;
         List<String> gone = new ArrayList<>();
-        for (BlockPos p : near) {
+        for (BlockPos p : order) {
             if (containers >= MAX_CONTAINERS) break;
             if (!level.isLoaded(p)) continue;
             IItemHandler handler = level.getCapability(Capabilities.ItemHandler.BLOCK, p, null);
@@ -134,7 +143,8 @@ final class TouchedStorage {
             // Blocks of one multiblock (a Create vault) can hand out the same handler; count it once.
             if (seen.put(handler, Boolean.TRUE) != null) continue;
             containers++;
-            String where = level.getBlockState(p).getBlock().getName().getString() + " " + offset(here, p);
+            BlockPos now = near.get(p);
+            String where = level.getBlockState(p).getBlock().getName().getString() + (now.equals(p) ? " " : " aboard a ship, ") + offset(here, now);
             for (int i = 0; i < handler.getSlots(); i++) {
                 ItemStack s = handler.getStackInSlot(i);
                 if (s.isEmpty()) continue;
@@ -182,6 +192,37 @@ final class TouchedStorage {
         StringBuilder s = new StringBuilder(dist <= 1 ? "right here" : dist + " blocks " + dir);
         if (Math.abs(dy) > 1) s.append(", ").append(Math.abs(dy)).append(dy > 0 ? " up" : " down");
         return s.toString();
+    }
+
+    /** Where a block stands in the world right now: itself, or for a block on a Sable ship, where the ship has it. */
+    private static BlockPos worldPos(ServerLevel level, BlockPos pos) {
+        Vec3 w = Ships.toWorld(level, pos);
+        return w == null ? pos : BlockPos.containing(w);
+    }
+
+    /** Whether anyone has opened the storage at pos. Server thread. */
+    boolean isTouched(ServerLevel level, BlockPos pos) {
+        String key = key(level, pos);
+        for (LinkedHashSet<String> set : touched.values()) if (set.contains(key)) return true;
+        return false;
+    }
+
+    /**
+     * Blocks moved from olds in one level to news (same index) in another: a ship assembled into its plot or taken
+     * apart. Each opened container keeps its place in the list under its new position. Server thread, after the move.
+     */
+    void moved(ServerLevel from, ServerLevel to, List<BlockPos> olds, List<BlockPos> news) {
+        Map<String, String> renamed = new HashMap<>();
+        for (int i = 0; i < olds.size(); i++) renamed.put(key(from, olds.get(i)), key(to, canonical(to, news.get(i))));
+        if (renamed.isEmpty()) return;
+        for (Map.Entry<UUID, LinkedHashSet<String>> e : touched.entrySet()) {
+            LinkedHashSet<String> set = e.getValue();
+            if (set.stream().noneMatch(renamed::containsKey)) continue;
+            LinkedHashSet<String> next = new LinkedHashSet<>();
+            for (String k : set) next.add(renamed.getOrDefault(k, k));
+            e.setValue(next);
+            dirty = true;
+        }
     }
 
     /** One half of a double chest stands for both, so opening either half is the same chest. */
