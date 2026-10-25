@@ -6,16 +6,16 @@ A big, long-term Minecraft modpack built around the Create mod. Think "Minecraft
 
 | | |
 |---|---|
-| **Version** | 0.5.2 |
+| **Version** | 0.5.3 |
 | **Minecraft** | 1.21.1 |
 | **Loader** | NeoForge **21.1.262** (pinned, don't update it, see [Known issues](#known-issues)) |
-| **Mods** | 232 from Modrinth + the pack's own Create Galore Bridge (1.106.0), Create Galore Fishing (0.3.17) and Lag Watch (1.1.0) + Twilight Forest added by hand, plus 4 shader packs and the Fresh Animations resource pack |
+| **Mods** | 232 from Modrinth + the pack's own Create Galore Bridge (1.107.0), Create Galore Fishing (0.3.17) and Lag Watch (1.1.0) + Twilight Forest added by hand, plus 4 shader packs and the Fresh Animations resource pack |
 | **Full mod list** | [MODS.md](MODS.md) |
 | **In-game help** | The Create Galore Field Guide, a searchable book every player gets on first join |
 
 ## Install (players)
 
-1. Download `Create-Galore-0.5.2.mrpack` from the [latest release](https://github.com/emresahin0906-code/Create-Galore/releases/latest). The older `.mrpack` files in the repo's top folder are past versions; don't import those.
+1. Download `Create-Galore-0.5.3.mrpack` from the [latest release](https://github.com/emresahin0906-code/Create-Galore/releases/latest). The older `.mrpack` files in the repo's top folder are past versions; don't import those.
 2. Import it:
    - **Prism Launcher:** Add Instance → Import → pick the `.mrpack`.
    - **Modrinth App:** drag the `.mrpack` onto the window (or File → Import).
@@ -332,6 +332,7 @@ None of these stop the game.
   - Turn VSync off and keep Max Framerate at Unlimited.
   - Keep VSync on and set Max Framerate in Video Settings to your monitor's refresh rate or lower.
   - Keep Max Framerate at Unlimited, VSync off, and cap FPS with an external limiter such as RivaTuner Statistics Server. Minecraft's own limiter can stutter and may not reach its cap, so this gives the smoothest frame times.
+- **The game can hang when entering the Nether.** A player's game sometimes stopped responding for good while stepping through a Nether portal, with nothing in the log (other times the same portal works). The cause isn't known yet. Since 0.5.3, when the game stops drawing for 10 s it writes what every part of it is doing to `logs/create-galore-client-freeze.log` in the instance folder; please send that file after a hang.
 - **First world creation is slow** (about 45 s for the spawn area on the test machine) because of all the world-gen mods. Normal after that.
 
 ## What was tested
