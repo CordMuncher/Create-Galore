@@ -33,6 +33,10 @@ final class NgxLibrary {
     // NVSDK_NGX_Result
     static final int RESULT_SUCCESS = 0x1;
     // NVSDK_NGX_PerfQuality_Value
+    static final int PERF_QUALITY_MAX_PERF = 0;
+    static final int PERF_QUALITY_BALANCED = 1;
+    static final int PERF_QUALITY_MAX_QUALITY = 2;
+    static final int PERF_QUALITY_ULTRA_PERFORMANCE = 3;
     static final int PERF_QUALITY_DLAA = 5;
     // NVSDK_NGX_DLSS_Feature_Flags
     static final int FLAG_IS_HDR = 1;

@@ -548,3 +548,104 @@ Write `$T\repo\tools\dlss-testkit\results\profiling-1\REPORT.md`, then commit an
   - anything that didn't go to plan.
 - **Data:** small tables (CSV summaries) and cropped timeline screenshots under `results\profiling-1\`. List where
   the raw captures are on the PC.
+
+
+## Upscaling 1: DLSS and FSR from a lower render resolution
+
+Start only when Emre says so. Same PC, test folder and tools as before. The Bridge now upscales through Photon's own
+TAAU path: with Photon's TAAU on, the frame renders at a lower size and DLSS or FSR 3.1 make the window-sized picture
+from it. The Bridge rounds the render size to whole pixels, and Photon's own TAAU renders the same size, so every
+mode at one scale gets the same internal resolution. **Compare each upscaler with Photon's TAAU at the same scale, not
+with native TAA** (Emre, 2026-10-25). Nothing of this is merged until Emre has tested it.
+
+### Update
+
+```powershell
+git -C $T\repo pull
+Remove-Item $T\instance\mods\create-galore-bridge-*.jar
+Copy-Item $T\repo\pack\mods\create-galore-bridge-1.96.0.jar $T\instance\mods\
+Copy-Item $T\repo\tools\dlss-testkit\dist\create-galore-dlss-testkit-1.0.0.jar $T\instance\mods\ -Force
+```
+
+Keep `$T\instance`, its world and its settings as they are. Check before the runs: `config\create_galore_bridge-display.properties`
+has `dlaa=true` and `perfectPresentation=false`, and `nvngx_dlss.dll` (310.9.16) is still in
+`$T\instance\create-galore-dlss`. The kit's config gets the new modes added on the first run. Each mode sets
+Photon's `TAAU` and `TAAU_RENDER_SCALE` itself, and the run puts the pack's options back when it ends.
+
+### Runs
+
+Write each argument as `--jvm-arg=-D...=...` (`...` = `create_galore_dlss_testkit`), as in step 5.
+
+| Run | Extra JVM arguments |
+| --- | --- |
+| U1 | `...autorun=dlaa-test` `...modes=perf-taau+perf-dlss-K+perf-dlss-M+perf-dlss-L+perf-fsr3+dlaa-default` |
+| U2 | `...autorun=dlaa-test` `...modes=ultra-taau+ultra-dlss-K+ultra-dlss-M+ultra-dlss-L+ultra-fsr3` |
+| U3 | `...autorun=dlaa-test` `...modes=bal-taau+bal-dlss-K+bal-dlss-M+bal-dlss-L+bal-fsr3` |
+| U4 | `...autorun=dlaa-test` `...modes=q-taau+q-dlss-K+q-fsr3` |
+| U5 | `...autorun=dlaa-test` `...modes=perf-taau+perf-dlss-K+perf-dlss-M+perf-fsr3` `...viewpoints=moving` `...paths=brief` |
+| U6 | `...autorun=dlaa-test` `...modes=perf-dlss-K+perf-dlss-K-bias+perf-fsr3+perf-fsr3-bias` `...quick=true` |
+| U7 | `...autorun=dlaa-test` `...modes=perf-debug-color+perf-debug-motion` `...quick=true` |
+
+For U5 use the moving-scene settings from the milestone 2 session (`sceneTickRate` 20, `showHand` true).
+
+The log of each run must have, for each upscaling mode:
+
+- `DLAA: on for this shader pack, engine dlss, DLSS preset K, upscaling from 50% of the window` (the preset and the
+  scale of that mode; `engine fsr3` for the FSR modes);
+- `DLAA: DLSS running at 1280x720 to 2560x1440 (Performance, 50%), preset K, the pack's exposure` (M and L say
+  `DLSS meters the exposure`), or `DLAA: FSR 3.1 running at 1280x720 to 2560x1440 (Performance, 50%)`;
+
+and no `DLAA: stopped`, `DLSS could not start` or `Failed to create shader rendering pipeline`. The `X-taau` modes
+have no DLAA lines of their own: Photon's TAAU runs. If a DLSS mode stops, copy the whole `DLAA:` line and the end
+of `create-galore-dlss\nvsdk_ngx.log` and go on with the other runs.
+
+What to look at:
+
+- U1 to U4: each upscaler against `X-taau` at the same scale: sharpness of textures, leaves and fences, shimmer on
+  the still path, smearing after the flick, ghosting behind moving things. Frame times come from "Frame rate"
+  below; `frameMs` in `manifest.json` is only rough here, as saving screenshots holds up frames. The 4080 is an Ada
+  card, where L and M run fast; NVIDIA says they cost much more on RTX 20 and 30 cards (no FP8), so their frame times
+  here say nothing about those.
+- U5: things that move at Performance.
+- U6: NVIDIA's full mip bias (one more mip level of detail than the render scale's) against the scale's own: sharper
+  textures, or more shimmer and moiré on the blocks' pixel art?
+- U7: what DLSS gets, the render-sized frame stretched over the window: the whole view, no black or doubled edges,
+  motion vectors as in milestone 2.
+
+### By eye, with Emre
+
+Open `compare.html` on the U1 to U4 run folders and go through them with Emre: each upscaler against `X-taau` at one
+scale at a time. He judges the look; write down what he says.
+
+### Frame rate (PresentMon only)
+
+Frame rate only, cheaply: no Nsight, no Java Flight Recorder. Run it after U1 to U7, on a quiet PC as in profiling 1
+(Emre closes everything else; note what stayed open).
+- The setup from "Profiling 1", Setup: `enableVsync:false`, `maxFps:260` (unlimited), `numberOfThreads = 2` in
+  `DistantHorizons.toml`, `perfectPresentation=false`, and `"screenshots": false` in the kit's config.
+- PresentMon as in profiling 1 (the same build in `$T\tools`): attach to the game's own `java.exe`, elevated, with
+  `--process_id <pid> --output_file $T\profiling\F1.csv --qpc_time_ms --timed 600 --terminate_after_timed
+  --stop_existing_session --no_console_stats`. If the game's `run finished` line comes after PresentMon stopped, run
+  it again with a longer `--timed`.
+
+| Run | Extra JVM arguments |
+| --- | --- |
+| F1 | `...autorun=dlaa-test` `...modes=photon-taa+dlaa-default+fsr3+perf-taau+perf-dlss-K+perf-dlss-M+perf-dlss-L+perf-fsr3+ultra-taau+ultra-dlss-K+ultra-dlss-M+ultra-dlss-L+ultra-fsr3` `...viewpoints=shore+canopy` |
+| F2 | `...autorun=dlaa-test` `...modes=photon-taa+dlaa-default+fsr3+q-taau+q-dlss-K+q-fsr3+bal-taau+bal-dlss-K+bal-dlss-M+bal-dlss-L+bal-fsr3` `...viewpoints=shore+canopy` |
+
+- `frametimes.py` on each run folder with its CSV, as in profiling 1's Analysis.
+- The native modes are the baselines each upscaler is measured against: Photon's TAA (`photon-taa`), DLAA
+  (`dlaa-default`) and FSR 3.1 at full resolution (`fsr3`). They also line up with profiling 1 (shore 5.43, 6.20 and
+  6.17 ms, canopy 5.87, 7.31 and 7.20 ms, in `results\profiling-1\REPORT.md`). If they are within about 0.8 ms of
+  those, the runs compare; if not, say so next to the tables.
+- The PC was GPU-bound with DLAA, but Photon's TAA was about half CPU-bound at about 5–7 ms a frame. So expect the
+  low scales to run into the CPU: report the share of GPU-bound frames per mode, as profiling 1 did.
+- Put the settings back afterwards as profiling 1 did ("Afterwards" in its report), and `"screenshots": true`.
+
+### Results
+
+`metrics.py` for each run folder. Write `$T\repo\tools\dlss-testkit\results\upscale1\REPORT.md`: the metrics tables
+per scale, the frame rate tables of F1 and F2 (median and p90 frame time, fps, GPU-bound share, per scale against
+`X-taau` and the three native modes), the `DLAA:` lines, anything that looked wrong, and Emre's verdicts; crops of the same spots
+as round 1 (about 512x512, from the settled still frame) for each mode of U1 under `results\upscale1\U1\`, a few MB
+in all. Commit and push on the DLAA branch.

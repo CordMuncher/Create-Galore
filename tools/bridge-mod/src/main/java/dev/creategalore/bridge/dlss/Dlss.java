@@ -34,6 +34,11 @@ import org.slf4j.LoggerFactory;
  * handed to the pack as cg_dlss_jitter_x/y), the pack's TAA pass turns into a copy that also writes DLSS's inputs, and
  * right after that pass {@link DlssPass} runs DLSS and writes its result where TAA's would have gone.
  *
+ * Upscaling: with the pack's upscaling on (Photon's TAAU, see {@link PackProfile#renderScale()}), the frame renders
+ * at a lower size into the corner of the pack's buffers. The Bridge rounds the pack's render scale to whole pixels per
+ * axis (cg_render_scale, which Photon's own TAAU renders at too) and DLSS or FSR 3.1 upscale that size to the window's;
+ * the jitter period grows with the scale and the textures' mip bias follows it (cg_mip_bias).
+ *
  * config/create_galore_bridge-display.properties (or the settings screen, {@link DlaaScreen}): dlaa picks the engine,
  * auto (DLSS where it can run, else AMD FSR 3.1 at full resolution), dlss, fsr3 or off; dlaaPreset picks the DLSS
  * preset. Both are read again when shaders reload. DLSS runs on Perfect Presentation's DirectX device when that is on,
@@ -68,14 +73,15 @@ public final class Dlss {
     private static final String JITTER_SIGN_PROPERTY = "create_galore_bridge.dlss.jitterSign";
     private static final String OBJECT_MOTION_PROPERTY = "create_galore_bridge.dlss.objectMotion";
     private static final String REACTIVE_MASK_PROPERTY = "create_galore_bridge.dlss.reactiveMask";
-    /** DLSS's jitter period; FSR 3 uses its own (8 at full size). */
+    /** DLSS's shortest jitter period (NVIDIA: at least 8 times the scale factor squared); FSR 3 uses its own (8 at full size). */
     private static final int PHASES = 32;
     /** A camera move this far in one frame is a teleport: DLSS starts over instead of blending in the old place. */
     private static final double RESET_DISTANCE = 8.0;
     /** Frames in a row the pack's pass may not run while DLSS is on before DLSS gives up (the jitter would show). */
     private static final int MISSED_FRAMES_LIMIT = 3;
-    // NVSDK_NGX_DLSS_Hint_Render_Preset
+    // NVSDK_NGX_DLSS_Hint_Render_Preset: 0 lets DLSS choose; the setting's default is K.
     private static final int PRESET_DEFAULT = 0;
+    private static final int PRESET_K = 11;
     private static final int PRESET_L = 12;
     private static final int PRESET_M = 13;
 
@@ -89,6 +95,10 @@ public final class Dlss {
     private static boolean presetFellBack;
     /** DLSS meters the exposure itself with J and K too (testing). */
     private static boolean autoExposureTest;
+    /** The pack's render scale: 1 without upscaling. */
+    private static float renderScaleSetting = 1.0f;
+    /** Added to the textures' mip bias while DLSS or FSR runs (testing). */
+    private static float extraMipBias;
     private static DlssPass.View debugView;
     /** Things that move by themselves give their own motion vectors (else only the camera's motion; for comparing). */
     private static boolean objectMotion = true;
@@ -130,6 +140,11 @@ public final class Dlss {
     private static int featurePreset = -1;
 
     // For the frame.
+    /** The window's size and the render size in it (the same without upscaling). */
+    private static int displayWidth = 1;
+    private static int displayHeight = 1;
+    private static int renderWidth = 1;
+    private static int renderHeight = 1;
     private static boolean active;
     private static boolean ran;
     private static int missedFrames;
@@ -176,6 +191,7 @@ public final class Dlss {
         preset = parsePreset(presetName);
         presetFellBack = false;
         autoExposureTest = DisplaySettings.get(DisplaySettings.DLAA_AUTO_EXPOSURE);
+        extraMipBias = parseFloat(DisplaySettings.getString(DisplaySettings.DLAA_MIP_BIAS, "0"), -4.0f, 1.0f);
         String debugName = DisplaySettings.getString(DisplaySettings.DLAA_DEBUG_VIEW, System.getProperty(DEBUG_VIEW_PROPERTY, ""));
         fsr3Debug = debugName.trim().equalsIgnoreCase("fsr3");
         debugView = fsr3Debug ? null : parseDebugView(debugName);
@@ -196,14 +212,18 @@ public final class Dlss {
         missedFrames = 0;
         profile = null;
         packProblem = null;
-        if (!wanted) {
-            return;
-        }
+        renderScaleSetting = 1.0f;
         try {
+            // (Also with DLAA off: the pack's own upscaling renders at the Bridge's render size.)
             profile = PackProfile.current();
             packProblem = profile == null ? "it is not patched for DLAA (" + PhotonPatcher.PATCHED_NAME + " is)" : profile.optionProblem();
+            renderScaleSetting = profile == null ? 1.0f : profile.renderScale();
         } catch (IOException | RuntimeException e) {
             packProblem = "its " + PackProfile.FILE + " could not be read: " + e;
+        }
+        if (!wanted) {
+            profile = null;
+            return;
         }
         String jitter = jitterSign[0] != 1.0f || jitterSign[1] != 1.0f ? ", jitter sign " + (int) jitterSign[0] + "," + (int) jitterSign[1] : "";
         if (profile == null && packProblem != null) {
@@ -213,8 +233,10 @@ public final class Dlss {
         } else if (debugView != null) {
             LOG.info("DLAA: on for this shader pack, debug view {} (DLSS itself not used){}", debugView.name().toLowerCase(Locale.ROOT), jitter);
         } else {
-            LOG.info("DLAA: on for this shader pack, engine {}, DLSS preset {}{}{}{}", engine, presetName(preset),
+            LOG.info("DLAA: on for this shader pack, engine {}, DLSS preset {}{}, {}{}{}{}", engine, presetName(preset),
                     presetName.equalsIgnoreCase(presetName(preset)) || presetName.isEmpty() ? "" : " (set to " + presetName + ")",
+                    renderScaleSetting < 1.0f ? "upscaling from " + Math.round(snappedScale() * 100.0f) + "% of the window" : "full resolution",
+                    extraMipBias != 0.0f ? ", mip bias " + extraMipBias + " more (testing)" : "",
                     autoExposureTest ? ", DLSS auto exposure (testing)" : "", jitter + (fsr3Debug ? " (FSR's debug view)" : ""));
         }
     }
@@ -239,6 +261,11 @@ public final class Dlss {
             frameTimeMs = Math.min(Math.max((now - lastFrameNanos) / 1.0e6f, 0.1f), 1000.0f);
         }
         lastFrameNanos = now;
+        com.mojang.blaze3d.pipeline.RenderTarget target = Minecraft.getInstance().getMainRenderTarget();
+        displayWidth = Math.max(1, target.width);
+        displayHeight = Math.max(1, target.height);
+        renderWidth = renderSize(displayWidth);
+        renderHeight = renderSize(displayHeight);
 
         boolean wasActive = active;
         if (wanted && profile != null && packProblem != null) {
@@ -249,7 +276,8 @@ public final class Dlss {
         if (!active) {
             return;
         }
-        int index = Math.floorMod(frameCounter, fsr3 && debugView == null ? Fsr3Upscaler.phases(1, 1) : PHASES) + 1;
+        int index = Math.floorMod(frameCounter, fsr3 && debugView == null ? Fsr3Upscaler.phases(renderWidth, displayWidth)
+                : dlssPhases(renderWidth, displayWidth)) + 1;
         jitterX = halton(index, 2) - 0.5f;
         jitterY = halton(index, 3) - 0.5f;
         if (debugView == DlssPass.View.RESIDUAL) {
@@ -306,6 +334,62 @@ public final class Dlss {
         return active ? jitterY : 0.0f;
     }
 
+    /** The render size over the window's, per axis (cg_render_scale): the pack's render scale in whole pixels. */
+    public static org.joml.Vector2f renderScale() {
+        return new org.joml.Vector2f((float) renderWidth / displayWidth, (float) renderHeight / displayHeight);
+    }
+
+    /** The textures' mip bias (cg_mip_bias): log2 of the render scale as the pack has it, plus dlaaMipBias while DLSS or FSR runs. */
+    public static float mipBias() {
+        return (float) (Math.log((double) renderWidth / displayWidth) / Math.log(2.0)) + (active && debugView == null ? extraMipBias : 0.0f);
+    }
+
+    /** The render size for a window size: the pack's render scale in whole pixels (2/3 for 0.67 and 1/3 for 0.33). */
+    private static int renderSize(int display) {
+        return renderScaleSetting >= 1.0f ? display : Math.max(1, Math.min(display, Math.round(display * snappedScale())));
+    }
+
+    private static float snappedScale() {
+        float scale = renderScaleSetting;
+        return Math.abs(scale - 2.0f / 3.0f) < 0.005f ? 2.0f / 3.0f : Math.abs(scale - 1.0f / 3.0f) < 0.005f ? 1.0f / 3.0f : scale;
+    }
+
+    /** NVIDIA: a jitter period of at least 8 times the scale factor squared; never shorter than {@link #PHASES}. */
+    private static int dlssPhases(int render, int display) {
+        double factor = (double) display / render;
+        return Math.max(PHASES, (int) Math.ceil(8.0 * factor * factor));
+    }
+
+    /** DLSS's mode for a render width (it picks the preset per mode): DLAA at full size, else the nearest standard one. */
+    private static int perfQuality(int render, int display) {
+        float ratio = (float) render / display;
+        if (ratio >= 0.99f) {
+            return NgxLibrary.PERF_QUALITY_DLAA;
+        }
+        if (ratio >= 0.62f) {
+            return NgxLibrary.PERF_QUALITY_MAX_QUALITY;
+        }
+        if (ratio >= 0.54f) {
+            return NgxLibrary.PERF_QUALITY_BALANCED;
+        }
+        return ratio >= 0.42f ? NgxLibrary.PERF_QUALITY_MAX_PERF : NgxLibrary.PERF_QUALITY_ULTRA_PERFORMANCE;
+    }
+
+    /** Like Performance (1280x720 to 2560x1440, 50%), for the log and the settings screen. */
+    static String modeName(int render, int display) {
+        if (render >= display) {
+            return "full resolution";
+        }
+        String name = switch (Math.round(100.0f * render / display)) {
+            case 67 -> "Quality";
+            case 58 -> "Balanced";
+            case 50 -> "Performance";
+            case 33 -> "Ultra Performance";
+            default -> "custom";
+        };
+        return name + ", " + Math.round(100.0f * render / display) + "%";
+    }
+
     /**
      * A composite pass just drew, its framebuffer still bound. After the pack's TAA pass this runs DLSS on what it
      * wrote. {@code imageIds} gives the OpenGL texture of one of the pack's custom images by name (0 if none).
@@ -319,9 +403,10 @@ public final class Dlss {
             DlssPass.Inputs in = DlssPass.inputs(DlssPass.boundColorTexture(profile.colorAttachment()),
                     image(imageIds, profile.motionImage()), image(imageIds, profile.depthImage()),
                     image(imageIds, profile.exposureImage()),
-                    profile.maskImage() != null && reactiveMask ? image(imageIds, profile.maskImage()) : 0);
+                    profile.maskImage() != null && reactiveMask ? image(imageIds, profile.maskImage()) : 0,
+                    Dlss::renderSize);
             if (debugView != null) {
-                debugPass.ensureSize(in.width(), in.height());
+                debugPass.ensureSize(in.renderWidth(), in.renderHeight(), in.width(), in.height());
                 debugPass.copyAndEvaluate(in, () -> {});
                 dumpIfAsked(debugPass, false);
                 debugPass.writeBack(profile, debugView);
@@ -331,8 +416,9 @@ public final class Dlss {
                 runFsr3(in);
                 return;
             }
-            boolean resized = pass.ensureSize(in.width(), in.height());
+            boolean resized = pass.ensureSize(in.renderWidth(), in.renderHeight(), in.width(), in.height());
             int usePreset = presetFellBack ? PRESET_DEFAULT : preset;
+            int mode = perfQuality(in.renderWidth(), in.width());
             // NVIDIA: DLSS takes the game's exposure with J and K only, L and M always meter it themselves (asked to
             // here as well). The pack's exposure is the one its tone mapping uses, as DLSS wants.
             boolean autoExposure = usePreset == PRESET_L || usePreset == PRESET_M || autoExposureTest;
@@ -341,31 +427,35 @@ public final class Dlss {
             if (resized || flags != featureFlags || usePreset != featurePreset) {
                 featureFlags = -1;
                 dlssGuard.starting();
-                int result = ngx.create(device.context, in.width(), in.height(), in.width(), in.height(),
-                        NgxLibrary.PERF_QUALITY_DLAA, flags, usePreset);
+                int result = ngx.create(device.context, in.renderWidth(), in.renderHeight(), in.width(), in.height(),
+                        mode, flags, usePreset);
                 ngx.drainLog();
                 if (NgxLibrary.failed(result) && usePreset != PRESET_DEFAULT) {
                     LOG.warn("DLAA: DLSS refused preset {} ({}), running its default preset", presetName(usePreset), NgxLibrary.describe(result));
                     presetFellBack = true;
                     usePreset = PRESET_DEFAULT;
-                    result = ngx.create(device.context, in.width(), in.height(), in.width(), in.height(),
-                            NgxLibrary.PERF_QUALITY_DLAA, flags, usePreset);
+                    autoExposure = autoExposureTest;
+                    flags = NgxLibrary.FLAG_IS_HDR | NgxLibrary.FLAG_MV_LOW_RES | NgxLibrary.FLAG_DEPTH_INVERTED
+                            | (autoExposure ? NgxLibrary.FLAG_AUTO_EXPOSURE : 0);
+                    result = ngx.create(device.context, in.renderWidth(), in.renderHeight(), in.width(), in.height(),
+                            mode, flags, usePreset);
                     ngx.drainLog();
                 }
                 if (NgxLibrary.failed(result)) {
-                    throw new IllegalStateException("DLSS could not start at " + in.width() + "x" + in.height() + ": " + NgxLibrary.describe(result));
+                    throw new IllegalStateException("DLSS could not start at " + sizes(in) + ": " + NgxLibrary.describe(result));
                 }
                 featureFlags = flags;
                 featurePreset = usePreset;
                 reset = true;
-                LOG.info("DLAA: DLSS running at {}x{}, preset {}{}", in.width(), in.height(), presetName(usePreset),
+                LOG.info("DLAA: DLSS running at {}, preset {}{}", sizes(in), presetName(usePreset),
                         autoExposure ? ", DLSS meters the exposure" : ", the pack's exposure");
             }
             boolean resetNow = reset;
+            long exposure = (featureFlags & NgxLibrary.FLAG_AUTO_EXPOSURE) != 0 ? 0L : pass.exposureResource();
             int[] result = new int[1];
             pass.copyAndEvaluate(in, () -> result[0] = ngx.evaluate(device.context, pass.colorResource(), pass.outputResource(),
-                    pass.depthResource(), pass.motionResource(), autoExposure ? 0L : pass.exposureResource(),
-                    jitterX * jitterSign[0], jitterY * jitterSign[1], 1.0f, 1.0f, resetNow, in.width(), in.height(), frameTimeMs));
+                    pass.depthResource(), pass.motionResource(), exposure,
+                    jitterX * jitterSign[0], jitterY * jitterSign[1], 1.0f, 1.0f, resetNow, in.renderWidth(), in.renderHeight(), frameTimeMs));
             ngx.drainLog();
             if (NgxLibrary.failed(result[0])) {
                 throw new IllegalStateException("DLSS failed: " + NgxLibrary.describe(result[0]));
@@ -383,13 +473,13 @@ public final class Dlss {
     }
 
     private static void runFsr3(DlssPass.Inputs in) {
-        boolean resized = fsrPass.ensureSize(in.width(), in.height());
+        boolean resized = fsrPass.ensureSize(in.renderWidth(), in.renderHeight(), in.width(), in.height());
         if (resized) {
             fsrGuard.starting();
         }
-        if (fsr.ensureSize(in.width(), in.height(), in.width(), in.height()) || resized) {
+        if (fsr.ensureSize(in.renderWidth(), in.renderHeight(), in.width(), in.height()) || resized) {
             reset = true;
-            LOG.info("DLAA: FSR 3.1 running at {}x{}", in.width(), in.height());
+            LOG.info("DLAA: FSR 3.1 running at {}", sizes(in));
         }
         boolean resetNow = reset;
         Matrix4fc projection = CapturedRenderingState.INSTANCE.getGbufferProjection();
@@ -400,6 +490,12 @@ public final class Dlss {
         fsrGuard.ran();
         dumpIfAsked(fsrPass, true);
         Markers.around("Create Galore DLAA: write back", () -> fsrPass.writeBack(profile, DlssPass.View.RESULT));
+    }
+
+    /** Like 2560x1440 (full resolution), or 1280x720 to 2560x1440 (Performance, 50%). */
+    private static String sizes(DlssPass.Inputs in) {
+        return (in.renderWidth() == in.width() && in.renderHeight() == in.height() ? "" : in.renderWidth() + "x" + in.renderHeight() + " to ")
+                + in.width() + "x" + in.height() + " (" + modeName(in.renderWidth(), in.width()) + ")";
     }
 
     private static void dumpIfAsked(DlssPass from, boolean withOutput) {
@@ -672,20 +768,20 @@ public final class Dlss {
     }
 
     /**
-     * default, or a letter: DLSS numbers its presets A = 1 to Z = 26. Any letter goes to DLSS, which runs its default
-     * for one it has no preset for (DLSS 310.9 has E and F, old, and J to M; A to D were removed, G to I, N and O
+     * default (K, at every render scale), or a letter: DLSS numbers its presets A = 1 to Z = 26. Any letter goes to
+     * DLSS, which runs its own default for one it has no preset for (DLSS 310.9 has E and F, old, and J to M; A to D were removed, G to I, N and O
      * are spare), so a newer nvngx_dlss.dll's presets can be tried; one DLSS refuses runs as default too.
      */
     private static int parsePreset(String name) {
         String value = name.trim().toUpperCase(Locale.ROOT);
         if (value.isEmpty() || value.equals("DEFAULT")) {
-            return PRESET_DEFAULT;
+            return PRESET_K;
         }
         if (value.length() == 1 && value.charAt(0) >= 'A' && value.charAt(0) <= 'Z') {
             return value.charAt(0) - 'A' + 1;
         }
-        LOG.warn("DLAA: unknown dlaaPreset {}, using default (choose default or a letter: J, K, L, M, ...)", name);
-        return PRESET_DEFAULT;
+        LOG.warn("DLAA: unknown dlaaPreset {}, using default, K (choose default or a letter: J, K, L, M, ...)", name);
+        return PRESET_K;
     }
 
     private static String presetName(int preset) {
@@ -764,12 +860,16 @@ public final class Dlss {
         if (debugView != null) {
             return "Debug view " + debugView.name().toLowerCase(Locale.ROOT) + " (testing).";
         }
+        String size = renderWidth < displayWidth || renderHeight < displayHeight
+                ? "upscaling " + renderWidth + "x" + renderHeight + " to " + displayWidth + "x" + displayHeight
+                : "at full resolution";
         if (active && !fsr3) {
-            return "On: NVIDIA DLAA on " + adapterName + ", preset " + presetName(presetFellBack ? PRESET_DEFAULT : preset)
+            return "On: NVIDIA " + (size.startsWith("at") ? "DLAA" : "DLSS " + size) + " on " + adapterName + ", preset "
+                    + presetName(presetFellBack ? PRESET_DEFAULT : preset)
                     + (presetFellBack ? " (DLSS refused " + presetName(preset) + ")" : "") + ".";
         }
         if (active) {
-            return "On: AMD FSR 3.1 at full resolution on " + fsrRenderer
+            return "On: AMD FSR 3.1 " + size + " on " + fsrRenderer
                     + (engine.equals("auto") && unavailable != null ? ". DLSS can't run: " + unavailable : "") + ".";
         }
         if (engine.equals("dlss") && unavailable != null) {
@@ -793,6 +893,19 @@ public final class Dlss {
             LOG.warn("DLAA: unknown debug view {}, use color, motion, depth, residual or mask", name);
             return null;
         }
+    }
+
+    private static float parseFloat(String value, float min, float max) {
+        try {
+            float f = Float.parseFloat(value.trim());
+            if (Float.isFinite(f)) {
+                return Math.max(min, Math.min(max, f));
+            }
+        } catch (RuntimeException e) {
+            // falls through
+        }
+        LOG.warn("DLAA: {} is not a number, using 0", value);
+        return 0.0f;
     }
 
     private static float[] parseJitterSign(String value) {

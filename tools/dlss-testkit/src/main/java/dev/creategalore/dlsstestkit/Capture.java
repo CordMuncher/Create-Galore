@@ -44,6 +44,8 @@ public final class Capture {
     private static final Logger LOG = LoggerFactory.getLogger(TestKit.MOD_ID);
     private static final String CONFIG = "create_galore_dlss_testkit.json";
     private static final String BRIDGE_CONFIG = "create_galore_bridge-display.properties";
+    /** The DLAA pack's options (Iris's file beside it): the modes set its upscaling. */
+    private static final String PACK_OPTIONS = "Photon v1.3a + DLAA.txt";
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
     /** Frames between putting the scenes up and the first mode, for the server to place them and the client to get them. */
     private static final int SCENE_BUILD_FRAMES = 40;
@@ -108,6 +110,25 @@ public final class Capture {
                 // portal, fire and lava), and those masks themselves (red: reactive, green: composition; any GPU).
                 new Mode("fsr3-nomask", true, "default", null, null, "fsr3", null, false),
                 new Mode("debug-mask", true, "default", "mask", null, null, null, null)));
+        {
+            // Upscaling: at each standard render scale Photon's own TAAU against DLSS with K (the default), M and L
+            // (made for low render resolutions) and FSR 3.1, all at the same render size.
+            String[][] scales = {{"q", "0.67"}, {"bal", "0.58"}, {"perf", "0.50"}, {"ultra", "0.33"}};
+            for (String[] scale : scales) {
+                float s = Float.parseFloat(scale[1]);
+                modes.add(new Mode(scale[0] + "-taau", false, "default", null, null, null, null, null, s));
+                modes.add(new Mode(scale[0] + "-dlss-K", true, "K", null, null, null, null, null, s));
+                modes.add(new Mode(scale[0] + "-dlss-M", true, "M", null, null, null, null, null, s));
+                modes.add(new Mode(scale[0] + "-dlss-L", true, "L", null, null, null, null, null, s));
+                modes.add(new Mode(scale[0] + "-fsr3", true, "default", null, null, "fsr3", null, null, s));
+            }
+            // NVIDIA's full mip bias (one more mip level of detail) against the render scale's own.
+            modes.add(new Mode("perf-dlss-K-bias", true, "K", null, null, null, null, null, 0.5f, -1.0f));
+            modes.add(new Mode("perf-fsr3-bias", true, "default", null, null, "fsr3", null, null, 0.5f, -1.0f));
+            // What DLSS gets at a render scale (any GPU): the corner of the pack's buffers, stretched over the window.
+            modes.add(new Mode("perf-debug-color", true, "default", "color", null, null, null, null, 0.5f));
+            modes.add(new Mode("perf-debug-motion", true, "default", "motion", null, null, null, null, 0.5f));
+        }
         // The DLAA test world (seed 20261024, scene built on the lakeshore at x 1023..1040, z 160..176).
         List<Viewpoint> viewpoints = new ArrayList<>(List.of(
                 new Viewpoint("shore", 1029.5, 64.0, 160.5, 0.0f, 8.0f, null),
@@ -125,10 +146,22 @@ public final class Capture {
      * debugView (color, motion, depth or residual) shows that instead of DLSS, on any GPU (fsr3: FSR's own view);
      * jitterSign ("x,y", default "1,1") flips the jitter the Bridge hands to DLSS; engine is dlss (null) or fsr3;
      * objectMotion false leaves only the camera's motion in the motion vectors (null: on); reactiveMask false hands FSR
-     * no masks (null: on; DLSS never gets them).
+     * no masks (null: on; DLSS never gets them); renderScale (null: full resolution) turns on Photon's TAAU at that
+     * render scale, so DLSS or FSR upscale (or with dlaa false Photon's TAAU itself); mipBias (null: 0) is added to the
+     * textures' mip bias while DLSS or FSR runs (NVIDIA's guide asks for -1 more than the render scale's own).
      */
     record Mode(String name, boolean dlaa, String preset, String debugView, String jitterSign, String engine, Boolean objectMotion,
-                Boolean reactiveMask) {}
+                Boolean reactiveMask, Float renderScale, Float mipBias) {
+        Mode(String name, boolean dlaa, String preset, String debugView, String jitterSign, String engine, Boolean objectMotion,
+             Boolean reactiveMask) {
+            this(name, dlaa, preset, debugView, jitterSign, engine, objectMotion, reactiveMask, null, null);
+        }
+
+        Mode(String name, boolean dlaa, String preset, String debugView, String jitterSign, String engine, Boolean objectMotion,
+             Boolean reactiveMask, Float renderScale) {
+            this(name, dlaa, preset, debugView, jitterSign, engine, objectMotion, reactiveMask, renderScale, null);
+        }
+    }
 
     /** scene: built there at run time (MovingScene.NAME), else null. */
     record Viewpoint(String name, double x, double y, double z, float yaw, float pitch, String scene) {}
@@ -162,6 +195,8 @@ public final class Capture {
     private static CameraType savedCamera;
     /** The Bridge's display settings before the run (null: no file), put back when it ends. */
     private static String savedBridgeConfig;
+    /** The DLAA pack's options before the run (null: no file), put back when it ends. */
+    private static String savedPackOptions;
     private static int autorunWait;
     private static String activeScene;
 
@@ -224,6 +259,10 @@ public final class Capture {
             viewpoints = viewpoints.stream().filter(v -> wanted.contains(v.name())).toList();
         }
         List<String> paths = settings.paths;
+        String pathFilter = System.getProperty(TestKit.MOD_ID + ".paths");
+        if (pathFilter != null && !pathFilter.isBlank()) {
+            paths = List.of(pathFilter.trim().split("\\s*[,;+ ]\\s*"));
+        }
         if (Boolean.getBoolean(TestKit.MOD_ID + ".quick")) {
             viewpoints = viewpoints.subList(0, 1);
             paths = List.of("still", "flick");
@@ -278,6 +317,8 @@ public final class Capture {
         try {
             Path bridgeFile = FMLPaths.CONFIGDIR.get().resolve(BRIDGE_CONFIG);
             savedBridgeConfig = Files.exists(bridgeFile) ? Files.readString(bridgeFile) : null;
+            Path packFile = Iris.getShaderpacksDirectory().resolve(PACK_OPTIONS);
+            savedPackOptions = Files.exists(packFile) ? Files.readString(packFile) : null;
         } catch (IOException e) {
             return "could not read config/" + BRIDGE_CONFIG + ": " + e;
         }
@@ -397,6 +438,12 @@ public final class Capture {
                 Files.writeString(file, savedBridgeConfig);
             } else {
                 Files.deleteIfExists(file);
+            }
+            Path packFile = Iris.getShaderpacksDirectory().resolve(PACK_OPTIONS);
+            if (savedPackOptions != null) {
+                Files.writeString(packFile, savedPackOptions);
+            } else {
+                Files.deleteIfExists(packFile);
             }
             if (!autorun) {
                 Iris.reload();
@@ -574,6 +621,8 @@ public final class Capture {
         info.addProperty("engine", mode.engine() != null ? mode.engine() : "dlss");
         info.addProperty("objectMotion", !Boolean.FALSE.equals(mode.objectMotion()));
         info.addProperty("reactiveMask", !Boolean.FALSE.equals(mode.reactiveMask()));
+        info.addProperty("renderScale", mode.renderScale() != null ? mode.renderScale() : 1.0f);
+        info.addProperty("mipBias", mode.mipBias() != null ? mode.mipBias() : 0.0f);
         info.add("frameMs", new JsonObject());
         modeInfo.put(mode.name(), info);
         log("mode " + mode.name());
@@ -616,8 +665,19 @@ public final class Capture {
             } else {
                 props.remove("dlaaReactiveMask");
             }
+            if (mode.mipBias() != null && mode.mipBias() != 0.0f) {
+                props.setProperty("dlaaMipBias", Float.toString(mode.mipBias()));
+            } else {
+                props.remove("dlaaMipBias");
+            }
             try (Writer w = Files.newBufferedWriter(file)) {
                 props.store(w, "Create Galore Bridge display settings (last written by the DLAA test kit, mode " + mode.name() + ")");
+            }
+            // The render scale is the pack's own option: Iris applies queued options on the reload and saves them.
+            Float scale = mode.renderScale();
+            Iris.getShaderPackOptionQueue().put("TAAU", Boolean.toString(scale != null && scale < 1.0f));
+            if (scale != null && scale < 1.0f) {
+                Iris.getShaderPackOptionQueue().put("TAAU_RENDER_SCALE", String.format(Locale.ROOT, "%.2f", scale));
             }
             Iris.reload();
             return true;

@@ -50,12 +50,17 @@ import org.slf4j.LoggerFactory;
  *   blends that layer over it, so they showed on top of the hand and, with the hand's motion vectors, smeared there.
  *   The solid hand now clears that layer where it draws, as Minecraft itself draws the hand over everything;
  * - skips FXAA and CAS sharpening, so the picture is DLSS's own. With DLSS off it renders as Photon does, apart from
- *   the hand fix.
+ *   the hand fix;
+ * - upscales with Photon's own TAAU path: with TAAU on, the scene renders into the lower left corner of the buffers
+ *   at the render size and composite4 makes the window-sized picture, so DLSS or FSR take the corner and make it
+ *   instead. The render scale comes from the Bridge (cg_render_scale, TAAU_RENDER_SCALE rounded to whole pixels per
+ *   axis, offered down to 0.25) so the render size is exact, and the textures' mip bias with it (cg_mip_bias).
+ *   Photon's own TAAU renders the same size, so it can be compared at the same internal resolution.
  */
 public final class PhotonPatcher {
     private static final Logger LOG = LoggerFactory.getLogger("create_galore_bridge");
     /** Bumped when the patch changes, so existing copies are made again. */
-    private static final int PATCH_VERSION = 8;
+    private static final int PATCH_VERSION = 9;
     private static final String BASE_ZIP = "photon_v1.3a.zip";
     /** Colorwheel Patcher's copy of {@link #BASE_ZIP}; an outdated one gets a prefix and no longer matches. */
     private static final Pattern COLORWHEEL_ZIP = Pattern.compile("photon_v1\\.3a \\+ Clrwl_(\\d+)\\.(\\d+)\\.(\\d+)\\.zip");
@@ -182,9 +187,16 @@ public final class PhotonPatcher {
         Map<String, String[][]> edits = new LinkedHashMap<>();
         edits.put("shaders/shaders.properties", new String[][] {
                 {"uniform.vec2.taa_offset = vec2(jitter_x / viewWidth, jitter_y / viewWidth)",
-                        // DLSS wants the full sub-pixel range; Photon's vertex shaders scale this by 0.66.
-                        "uniform.vec2.taa_offset = if(cg_dlss_active > 0.5, vec2(cg_dlss_jitter_x / (0.33 * viewWidth), "
+                        // DLSS wants the full sub-pixel range; Photon's vertex shaders scale this by 0.66, except
+                        // with TAAU, where a render pixel is a pixel of the buffers (the frame is drawn into their
+                        // lower left corner).
+                        "#if defined TAA && defined TAAU\n"
+                                + "uniform.vec2.taa_offset = if(cg_dlss_active > 0.5, vec2(2.0 * cg_dlss_jitter_x / viewWidth, "
+                                + "2.0 * cg_dlss_jitter_y / viewHeight), vec2(jitter_x / viewWidth, jitter_y / viewWidth))\n"
+                                + "#else\n"
+                                + "uniform.vec2.taa_offset = if(cg_dlss_active > 0.5, vec2(cg_dlss_jitter_x / (0.33 * viewWidth), "
                                 + "cg_dlss_jitter_y / (0.33 * viewHeight)), vec2(jitter_x / viewWidth, jitter_y / viewWidth))\n"
+                                + "#endif\n"
                                 + "\n"
                                 + "# Create Galore DLAA: motion vectors, depth and exposure handed to DLSS (written by composite4)\n"
                                 + "image.cg_motion_img = none rg rg16f half_float false true 1.0 1.0\n"
@@ -194,6 +206,61 @@ public final class PhotonPatcher {
                                 + "# hands them over (see cg_reactive.glsl)\n"
                                 + "image.cg_reactive_img = none red_integer r32ui unsigned_int true true 1.0 1.0\n"
                                 + "image.cg_mask_img = none rg rg16f half_float false true 1.0 1.0"},
+        });
+
+        // Upscaling (TAAU): the render scale comes from the Bridge, per axis and in whole render pixels, so DLSS
+        // and FSR get an exact render size and Photon's own TAAU renders the same one; the texture mip bias with it.
+        edits.put("shaders/include/global.glsl", new String[][] {
+                {"#if defined TAA && defined TAAU\nconst float taau_render_scale = TAAU_RENDER_SCALE;\n#else\n",
+                        "#if defined TAA && defined TAAU\n"
+                                + "// Create Galore DLAA: the render size over the window's, per axis: TAAU_RENDER_SCALE rounded to whole\n"
+                                + "// pixels by the Create Galore Bridge.\n"
+                                + "uniform vec2 cg_render_scale;\n"
+                                + "#define taau_render_scale cg_render_scale\n"
+                                + "#else\n"},
+                {"\n// Helper functions\n",
+                        "\n// Create Galore DLAA: the textures' mip bias, log2 of the render scale (as Photon has it), plus the Bridge's\n"
+                                + "// dlaaMipBias while DLSS or FSR runs.\n"
+                                + "uniform float cg_mip_bias;\n"
+                                + "\n// Helper functions\n"},
+        });
+        StringBuilder lowScales = new StringBuilder();
+        for (int percent = 25; percent < 50; percent++) {
+            lowScales.append("0.").append(percent).append(' ');
+        }
+        edits.put("shaders/settings.glsl", new String[][] {
+                {"#define TAAU_RENDER_SCALE 0.75 // [0.50 ", "#define TAAU_RENDER_SCALE 0.75 // [" + lowScales + "0.50 "},
+        });
+        // The clouds' depth helper took the scale as a float.
+        edits.put("shaders/program/d1_clouds.fsh", new String[][] {
+                {"float depth_max_4x4(sampler2D depth_sampler, float scale) {", "float depth_max_4x4(sampler2D depth_sampler, vec2 scale) {"},
+                {"rcp(float(taau_render_scale));", "rcp(vec2(taau_render_scale));"},
+                {"depth_max_4x4(depthtex1, taau_render_scale);", "depth_max_4x4(depthtex1, vec2(taau_render_scale));"},
+                {"depth_max_4x4(lod_depth_tex, lod_depth_tex_scale);", "depth_max_4x4(lod_depth_tex, vec2(lod_depth_tex_scale));"},
+        });
+        // TAAU's colour limits for its own resolve go into colortex1 and colortex2; while DLSS runs this pass hands
+        // on what is there instead (the gbuffer data and the motion of things that move by themselves).
+        edits.put("shaders/program/c3_taau_prep.fsh", new String[][] {
+                {"layout(location = 0) out vec3 min_color;\nlayout(location = 1) out vec3 max_color;\n",
+                        "layout(location = 0) out vec4 cg_out_1;\nlayout(location = 1) out vec4 cg_out_2;\n"},
+                {"uniform sampler2D colortex0;\n",
+                        "uniform sampler2D colortex0;\n\n"
+                                + "// Create Galore DLAA: while DLSS runs, composite4 takes colortex1 and colortex2 as the gbuffers left them.\n"
+                                + "uniform sampler2D colortex1;\n"
+                                + "uniform sampler2D colortex2;\n"
+                                + "uniform float cg_dlss_active;\n"
+                                + "vec3 min_color;\n"
+                                + "vec3 max_color;\n"},
+                {"void main() {\n    ivec2 texel = ivec2(gl_FragCoord.xy);\n",
+                        "void main() {\n    ivec2 texel = ivec2(gl_FragCoord.xy);\n\n"
+                                + "    if (cg_dlss_active > 0.5) {\n"
+                                + "        cg_out_1 = texelFetch(colortex1, texel, 0);\n"
+                                + "        cg_out_2 = texelFetch(colortex2, texel, 0);\n"
+                                + "        return;\n"
+                                + "    }\n"},
+                {"    max_color = max_color * 0.5 + 0.5;\n}", "    max_color = max_color * 0.5 + 0.5;\n\n"
+                        + "    cg_out_1 = vec4(min_color, 1.0);\n"
+                        + "    cg_out_2 = vec4(max_color, 1.0);\n}"},
         });
         String[][] imageExtension = {{"#version 400 compatibility\n",
                 "#version 400 compatibility\n#extension GL_ARB_shader_image_load_store : enable\n"}};
@@ -369,11 +436,22 @@ public final class PhotonPatcher {
                                 + "    gbuffer_data_1 = cg_motion_encode(vec4(0.0), vec4(0.0), false, frameCounter, view_res);\n"
                                 + "#endif\n}\n"},
         });
+        // The texture mip bias follows the Bridge (cg_mip_bias, see global.glsl above).
+        String[] mipBias = {"const float lod_bias = log2(taau_render_scale);\n", "#define lod_bias cg_mip_bias\n"};
+        for (String program : new String[] {"gbuffers_all_solid", "gbuffers_all_translucent", "gbuffers_armor_glint",
+                "gbuffers_damagedblock", "clrwl_solid", "clrwl_translucent", "clrwl_glint", "clrwl_damagedblock"}) {
+            edits.merge("shaders/program/" + program + ".fsh", new String[][] {mipBias}, (a, b) -> {
+                String[][] both = java.util.Arrays.copyOf(a, a.length + b.length);
+                System.arraycopy(b, 0, both, a.length, b.length);
+                return both;
+            });
+        }
         return edits;
     }
 
     /** Files Colorwheel Patcher adds: patched when there, skipped in a copy made from the plain Photon zip. */
-    private static final java.util.Set<String> OPTIONAL = java.util.Set.of("shaders/program/clrwl_solid.vsh", "shaders/program/clrwl_solid.fsh");
+    private static final java.util.Set<String> OPTIONAL = java.util.Set.of("shaders/program/clrwl_solid.vsh", "shaders/program/clrwl_solid.fsh",
+            "shaders/program/clrwl_translucent.fsh", "shaders/program/clrwl_glint.fsh", "shaders/program/clrwl_damagedblock.fsh");
 
     private static final String VERTEX_MOTION_INPUTS = """
             #include "/include/cg_motion.glsl"
@@ -429,7 +507,7 @@ public final class PhotonPatcher {
 
     private static final String MOTION_FRAGMENT_OUTPUT = """
             #ifdef CG_MOTION_GBUFFER
-                gbuffer_data_1 = cg_motion_encode(cg_clip_now, cg_clip_prev, cg_moving > 0.0, frameCounter, view_res);
+                gbuffer_data_1 = cg_motion_encode(cg_clip_now, cg_clip_prev, cg_moving > 0.0, frameCounter, view_res * taau_render_scale);
             #endif
 
             """;
@@ -501,15 +579,16 @@ public final class PhotonPatcher {
      * xy the motion in render pixels towards the previous frame as two half floats, z full when xy is set (else
      * composite4 reprojects the depth as for everything else), w this frame's frameCounter, so a pixel nothing
      * solid drew this frame (the sky, Distant Horizons terrain) is never taken. Rendering into colortex2 keeps the
-     * nearest surface's motion by the depth test. Photon only uses colortex2 itself with normal or specular mapping,
-     * POM or TAAU; with any of those on, DLSS gets the reprojection alone as before.
+     * nearest surface's motion by the depth test. Photon only uses colortex2 itself with normal or specular mapping
+     * (and POM is left out too); with any of those on, DLSS gets the reprojection alone as before. TAAU keeps its
+     * colour limits there from composite3 on, which hands colortex2 on unchanged while DLSS runs instead.
      */
     private static final String MOTION_INCLUDE = """
             // Create Galore DLAA: motion vectors for things that move by themselves (see PhotonPatcher in the Bridge).
             #if !defined INCLUDE_CG_MOTION
             #define INCLUDE_CG_MOTION
 
-            #if !defined NORMAL_MAPPING && !defined SPECULAR_MAPPING && !defined POM && !defined TAAU
+            #if !defined NORMAL_MAPPING && !defined SPECULAR_MAPPING && !defined POM
             #define CG_MOTION_GBUFFER
             #endif
 
@@ -598,24 +677,28 @@ public final class PhotonPatcher {
 
             #include "/include/cg_motion.glsl"
             #ifndef TAAU
-            uniform sampler2D colortex1; // gbuffer data 0 (TAAU, which uses it here, is off)
+            uniform sampler2D colortex1; // gbuffer data 0 (with TAAU declared above; composite3 hands it on while DLSS runs)
+            #endif
             uniform sampler2D depthtex1;
             // FSR 3's masks (see cg_reactive.glsl): r reactive, as the translucent programs marked it; g composition, for
             // solid materials whose textures animate: lava (39), fire and magma (40), soul fire (43).
             layout(r32ui) readonly uniform uimage2D cg_reactive_img;
             layout(rg16f) writeonly uniform image2D cg_mask_img;
             #define CG_COMPOSITION_ANIMATED 0.8
-            #endif
             #ifdef CG_MOTION_GBUFFER
-            uniform sampler2D colortex2; // own motion of things that move by themselves (never TAAU's, see cg_motion.glsl)
+            #ifndef TAAU
+            uniform sampler2D colortex2; // own motion of things that move by themselves (with TAAU declared above, as colortex1)
+            #endif
             uniform float cg_dlss_object_motion; // 0 while testing without it
             uniform float cg_dlss_residual_albedo; // 1 in the residual test view: surface colours instead of the lit scene
             uniform int frameCounter;
             #endif
 
+            // texel is a render pixel: with TAAU the frame fills the lower left corner of the buffers at the render size.
             void cg_dlss_inputs(ivec2 texel) {
+                vec2 render_res = view_res * taau_render_scale;
                 float depth = texelFetch(depthtex0, texel, 0).x;
-                vec3 screen_pos = vec3((vec2(texel) + 0.5) * view_pixel_size, depth);
+                vec3 screen_pos = vec3((vec2(texel) + 0.5) / render_res, depth);
                 bool is_lod = false;
             #ifdef LOD_MOD_ACTIVE
                 float depth_lod = texelFetch(lod_depth_tex, texel, 0).x;
@@ -628,9 +711,9 @@ public final class PhotonPatcher {
                 vec3 view_pos = screen_to_view_space(screen_pos, false, is_lod);
                 vec2 motion = vec2(0.0); // the hand moves with the camera
                 if (!hand) {
-                    // Towards where this pixel was last frame, in pixels. The sky only turns with the camera.
+                    // Towards where this pixel was last frame, in render pixels. The sky only turns with the camera.
                     vec3 previous = reproject_scene_space(view_to_scene_space(view_pos), sky, is_lod);
-                    motion = (previous.xy - screen_pos.xy) * view_res;
+                    motion = (previous.xy - screen_pos.xy) * render_res;
                 }
             #ifdef CG_MOTION_GBUFFER
                 // Something that moves by itself gave its own motion; behind a translucent surface that surface's stays.
@@ -643,14 +726,12 @@ public final class PhotonPatcher {
                 // DLSS depth, reversed and infinite like most engines: 1 at the near plane, towards 0 far away, 0 sky.
                 float dlss_depth = sky ? 0.0 : clamp(near / max(-view_pos.z, near), 0.0, 1.0);
 
-            #ifndef TAAU
                 float composition = 0.0;
                 if (!is_lod && texelFetch(depthtex1, texel, 0).x < 1.0) { // a solid surface drew here: its material
                     uint material = uint(round(texelFetch(colortex1, texel, 0).y * 65535.0)) >> 8u;
                     if (material == 39u || material == 40u || material == 43u) composition = CG_COMPOSITION_ANIMATED;
                 }
                 imageStore(cg_mask_img, texel, vec4(float(imageLoad(cg_reactive_img, texel).x) * (1.0 / 255.0), composition, 0.0, 0.0));
-            #endif
 
                 imageStore(cg_motion_img, texel, vec4(motion, 0.0, 0.0));
                 imageStore(cg_depth_img, texel, vec4(dlss_depth));
@@ -661,30 +742,34 @@ public final class PhotonPatcher {
 
     private static final String C4_BRANCH = """
 
-            #ifndef TAAU
                 if (cg_dlss_active > 0.5) {
-                    cg_dlss_inputs(texel);
-                    // Photon's colour, unfiltered; the Bridge writes DLSS's result over it after this pass. Alpha 0
-                    // restarts Photon's TAA history cleanly if DLSS stops; texel 0 keeps the exposure as usual.
-                    result = vec4(texelFetch(colortex0, texel, 0).rgb, 0.0);
+                    // This pass draws at the window's size. DLSS gets the frame pixel for pixel: all of it, or with
+                    // TAAU the lower left corner it was rendered into (the Bridge copies only that part).
+                    ivec2 cg_texel = ivec2(gl_FragCoord.xy);
+                    result = vec4(0.0);
+                    if (all(lessThan(vec2(cg_texel) + 0.5, view_res * taau_render_scale))) {
+                        cg_dlss_inputs(cg_texel);
+                        // Photon's colour, unfiltered; the Bridge writes DLSS's result over it after this pass. Alpha 0
+                        // restarts Photon's TAA history cleanly if DLSS stops; texel 0 keeps the exposure as usual.
+                        result = vec4(texelFetch(colortex0, cg_texel, 0).rgb, 0.0);
             #ifdef CG_MOTION_GBUFFER
-                    if (cg_dlss_residual_albedo > 0.5) {
-                        // For the residual test view: surface colours have none of the lighting's frame-to-frame noise,
-                        // so what is left after following the motion vectors is their error. Black sky, and no albedo
-                        // left over from earlier frames (colortex1 is not cleared).
-                        float data_x = texelFetch(colortex1, texel, 0).x;
-                        float data_y = texelFetch(colortex1, texel, 0).y;
-                        vec2 rg; rg.x = modf((65535.0 / 256.0) * data_x, rg.y);
-                        vec2 b_; b_.x = modf((65535.0 / 256.0) * data_y, b_.y);
-                        vec3 albedo = vec3(rg * vec2(256.0 / 255.0, 1.0 / 255.0), b_.x * (256.0 / 255.0));
-                        result.rgb = texelFetch(depthtex0, texel, 0).x < 1.0 ? albedo / max(exposure, 1e-4) : vec3(0.0);
-                    }
+                        if (cg_dlss_residual_albedo > 0.5) {
+                            // For the residual test view: surface colours have none of the lighting's frame-to-frame
+                            // noise, so what is left after following the motion vectors is their error. Black sky, and
+                            // no albedo left over from earlier frames (colortex1 is not cleared).
+                            float data_x = texelFetch(colortex1, cg_texel, 0).x;
+                            float data_y = texelFetch(colortex1, cg_texel, 0).y;
+                            vec2 rg; rg.x = modf((65535.0 / 256.0) * data_x, rg.y);
+                            vec2 b_; b_.x = modf((65535.0 / 256.0) * data_y, b_.y);
+                            vec3 albedo = vec3(rg * vec2(256.0 / 255.0, 1.0 / 255.0), b_.x * (256.0 / 255.0));
+                            result.rgb = texelFetch(depthtex0, cg_texel, 0).x < 1.0 ? albedo / max(exposure, 1e-4) : vec3(0.0);
+                        }
             #endif
-                    if (texel == ivec2(0)) result.a = exposure;
+                    }
+                    if (cg_texel == ivec2(0)) result.a = exposure;
                     bloom_input = result.rgb;
                     return;
                 }
-            #endif
             """;
 
     private static final String PROFILE = """
@@ -698,7 +783,7 @@ public final class PhotonPatcher {
             exposureImage=cg_exposure_img
             maskImage=cg_mask_img
             requireOn=TAA
-            requireOff=TAAU
+            renderScaleOptions=TAAU,TAAU_RENDER_SCALE
             """;
 
     private static void copyTree(Path from, Path to) throws IOException {

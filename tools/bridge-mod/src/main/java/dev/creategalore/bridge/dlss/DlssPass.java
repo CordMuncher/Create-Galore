@@ -69,6 +69,7 @@ import static org.lwjgl.opengl.GL33C.GL_SAMPLER_BINDING;
 import static org.lwjgl.opengl.GL33C.glBindSampler;
 import static org.lwjgl.opengl.GL41C.glProgramUniform1f;
 import static org.lwjgl.opengl.GL41C.glProgramUniform1i;
+import static org.lwjgl.opengl.GL41C.glProgramUniform2f;
 import static org.lwjgl.opengl.GL42C.GL_ALL_BARRIER_BITS;
 import static org.lwjgl.opengl.GL42C.glMemoryBarrier;
 import static org.lwjgl.opengl.GL43C.glCopyImageSubData;
@@ -87,7 +88,8 @@ import org.lwjgl.system.MemoryStack;
 /**
  * The OpenGL side of one DLSS run, right after the pack's TAA pass while its framebuffer is still bound: copy the
  * pass's colour, motion vectors, depth and exposure into the textures shared with D3D11, let DLSS run, then draw its
- * result into the pass's outputs. Everything it changes in OpenGL's state is put back as it was, so Iris and
+ * result into the pass's outputs. When upscaling, the inputs are the render-sized lower left corner of the pack's
+ * window-sized buffers, and the result is window-sized. Everything it changes in OpenGL's state is put back as it was, so Iris and
  * Minecraft's cached state stay right.
  *
  * The copies keep OpenGL's row order (bottom row first), so DLSS sees the frame upside down; its developer DLL's
@@ -142,8 +144,12 @@ final class DlssPass implements AutoCloseable {
         this.device = device;
     }
 
-    /** What the bound framebuffer's pass produced, for one run; maskTexture 0 if the pack hands over no masks. */
-    record Inputs(int colorTexture, int width, int height, int motionTexture, int depthTexture, int exposureTexture, int maskTexture) {}
+    /**
+     * What the bound framebuffer's pass produced, for one run: window-sized textures (width x height) holding the
+     * frame in their lower left renderWidth x renderHeight. maskTexture 0 if the pack hands over no masks.
+     */
+    record Inputs(int colorTexture, int width, int height, int renderWidth, int renderHeight, int motionTexture, int depthTexture,
+                  int exposureTexture, int maskTexture) {}
 
     /** Reads the colour texture of draw buffer {@code attachment} of the bound framebuffer; throws if it is unusable. */
     static int boundColorTexture(int attachment) {
@@ -155,7 +161,9 @@ final class DlssPass implements AutoCloseable {
         return glGetFramebufferAttachmentParameteri(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + attachment, GL_FRAMEBUFFER_ATTACHMENT_OBJECT_NAME);
     }
 
-    static Inputs inputs(int colorTexture, int motionTexture, int depthTexture, int exposureTexture, int maskTexture) {
+    /** {@code renderSize} gives the render width or height for the window's. */
+    static Inputs inputs(int colorTexture, int motionTexture, int depthTexture, int exposureTexture, int maskTexture,
+                         java.util.function.IntUnaryOperator renderSize) {
         int width = glGetTextureLevelParameteri(colorTexture, 0, GL_TEXTURE_WIDTH);
         int height = glGetTextureLevelParameteri(colorTexture, 0, GL_TEXTURE_HEIGHT);
         requireFormat("colour", colorTexture, GL_RGBA16F, width, height);
@@ -165,7 +173,8 @@ final class DlssPass implements AutoCloseable {
         if (maskTexture != 0) {
             requireFormat("mask image", maskTexture, GL_RG16F, width, height);
         }
-        return new Inputs(colorTexture, width, height, motionTexture, depthTexture, exposureTexture, maskTexture);
+        return new Inputs(colorTexture, width, height, renderSize.applyAsInt(width), renderSize.applyAsInt(height),
+                motionTexture, depthTexture, exposureTexture, maskTexture);
     }
 
     private static void requireFormat(String what, int texture, int format, int width, int height) {
@@ -178,9 +187,9 @@ final class DlssPass implements AutoCloseable {
         }
     }
 
-    /** True if the textures were (re)made for a new size, which needs a new DLSS feature too. */
-    boolean ensureSize(int width, int height) {
-        if (color != null && color.width == width && color.height == height) {
+    /** True if the textures were (re)made for new sizes, which needs a new DLSS feature too. */
+    boolean ensureSize(int width, int height, int outputWidth, int outputHeight) {
+        if (color != null && color.width == width && color.height == height && output.width == outputWidth && output.height == outputHeight) {
             return false;
         }
         closeTextures();
@@ -192,7 +201,7 @@ final class DlssPass implements AutoCloseable {
                 DlssDevice.D3D11_BIND_SHADER_RESOURCE, DlssDevice.ACCESS_WRITE_DISCARD);
         exposure = new Texture(1, 1, GL_R32F, DlssDevice.DXGI_FORMAT_R32_FLOAT,
                 DlssDevice.D3D11_BIND_SHADER_RESOURCE, DlssDevice.ACCESS_WRITE_DISCARD);
-        output = new Texture(width, height, GL_RGBA16F, DlssDevice.DXGI_FORMAT_R16G16B16A16_FLOAT,
+        output = new Texture(outputWidth, outputHeight, GL_RGBA16F, DlssDevice.DXGI_FORMAT_R16G16B16A16_FLOAT,
                 DlssDevice.D3D11_BIND_SHADER_RESOURCE | DlssDevice.D3D11_BIND_UNORDERED_ACCESS, DlssDevice.ACCESS_READ_ONLY);
         mask = device == null ? new Texture(width, height, GL_RG16F, DlssDevice.DXGI_FORMAT_R16G16_FLOAT,
                 DlssDevice.D3D11_BIND_SHADER_RESOURCE, DlssDevice.ACCESS_WRITE_DISCARD) : null;
@@ -215,13 +224,15 @@ final class DlssPass implements AutoCloseable {
         Markers.around("Create Galore DLAA: copy inputs", () -> {
             // The pack wrote the motion, depth and exposure images with image stores in the pass that just ran.
             glMemoryBarrier(GL_ALL_BARRIER_BITS);
-            glCopyImageSubData(in.colorTexture(), GL_TEXTURE_2D, 0, 0, 0, 0, color.gl, GL_TEXTURE_2D, 0, 0, 0, 0, in.width(), in.height(), 1);
-            glCopyImageSubData(in.motionTexture(), GL_TEXTURE_2D, 0, 0, 0, 0, motion.gl, GL_TEXTURE_2D, 0, 0, 0, 0, in.width(), in.height(), 1);
-            glCopyImageSubData(in.depthTexture(), GL_TEXTURE_2D, 0, 0, 0, 0, depth.gl, GL_TEXTURE_2D, 0, 0, 0, 0, in.width(), in.height(), 1);
+            int w = in.renderWidth();
+            int h = in.renderHeight();
+            glCopyImageSubData(in.colorTexture(), GL_TEXTURE_2D, 0, 0, 0, 0, color.gl, GL_TEXTURE_2D, 0, 0, 0, 0, w, h, 1);
+            glCopyImageSubData(in.motionTexture(), GL_TEXTURE_2D, 0, 0, 0, 0, motion.gl, GL_TEXTURE_2D, 0, 0, 0, 0, w, h, 1);
+            glCopyImageSubData(in.depthTexture(), GL_TEXTURE_2D, 0, 0, 0, 0, depth.gl, GL_TEXTURE_2D, 0, 0, 0, 0, w, h, 1);
             glCopyImageSubData(in.exposureTexture(), GL_TEXTURE_2D, 0, 0, 0, 0, exposure.gl, GL_TEXTURE_2D, 0, 0, 0, 0, 1, 1, 1);
             hasMask = mask != null && in.maskTexture() != 0;
             if (hasMask) {
-                glCopyImageSubData(in.maskTexture(), GL_TEXTURE_2D, 0, 0, 0, 0, mask.gl, GL_TEXTURE_2D, 0, 0, 0, 0, in.width(), in.height(), 1);
+                glCopyImageSubData(in.maskTexture(), GL_TEXTURE_2D, 0, 0, 0, 0, mask.gl, GL_TEXTURE_2D, 0, 0, 0, 0, w, h, 1);
             }
         });
         if (shared.isEmpty()) {
@@ -370,6 +381,9 @@ final class DlssPass implements AutoCloseable {
             if (view == View.MASK) {
                 glProgramUniform1f(program, glGetUniformLocation(program, "cg_dlss_has_mask"), hasMask ? 1.0f : 0.0f);
             }
+            // The input views stretch the render-sized inputs over the window.
+            glProgramUniform2f(program, glGetUniformLocation(program, "cg_dlss_view_scale"),
+                    (float) source.width / output.width, (float) source.height / output.height);
             glUseProgram(program);
             glBindVertexArray(vao);
             glDrawArrays(GL_TRIANGLES, 0, 3);
@@ -424,7 +438,7 @@ final class DlssPass implements AutoCloseable {
             glDeleteProgram(program);
             program = 0;
         }
-        StringBuilder fragment = new StringBuilder("#version 330 core\nuniform sampler2D cg_dlss_source;\n");
+        StringBuilder fragment = new StringBuilder("#version 330 core\nuniform sampler2D cg_dlss_source;\nuniform vec2 cg_dlss_view_scale;\n");
         if (view == View.MOTION || view == View.DEPTH || view == View.RESIDUAL || view == View.MASK) {
             fragment.append("uniform sampler2D cg_dlss_exposure;\n");
         }
@@ -437,7 +451,7 @@ final class DlssPass implements AutoCloseable {
         for (int i = 0; i < outputs; i++) {
             fragment.append("layout(location = ").append(i).append(") out vec4 cg_out").append(i).append(";\n");
         }
-        fragment.append("void main() {\n    ivec2 texel = ivec2(gl_FragCoord.xy);\n");
+        fragment.append("void main() {\n    ivec2 texel = ivec2(gl_FragCoord.xy * cg_dlss_view_scale);\n");
         fragment.append(switch (view) {
             case RESULT, COLOR -> "    vec3 c = texelFetch(cg_dlss_source, texel, 0).rgb;\n";
             // The pack multiplies the scene by its exposure later; dividing here shows these at their own brightness.
@@ -459,7 +473,7 @@ final class DlssPass implements AutoCloseable {
             case RESIDUAL -> """
                         float e = max(texelFetch(cg_dlss_exposure, ivec2(0), 0).r, 1e-4);
                         ivec2 size = textureSize(cg_dlss_source, 0);
-                        vec2 p = gl_FragCoord.xy + texelFetch(cg_dlss_motion, texel, 0).rg - 0.5;
+                        vec2 p = vec2(texel) + texelFetch(cg_dlss_motion, texel, 0).rg;
                         vec3 c = vec3(0.0);
                         if (all(greaterThanEqual(p, vec2(0.0))) && all(lessThanEqual(p, vec2(size - 1)))) {
                             ivec2 i = ivec2(floor(p));
