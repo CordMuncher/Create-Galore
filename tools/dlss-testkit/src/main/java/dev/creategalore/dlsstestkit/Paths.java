@@ -57,6 +57,8 @@ final class Paths {
         // in a row show whatever on screen changes only because the player rides along, such as the light on a held
         // item.
         PATHS.put("ride", new Path(160, captureRun(112, 48), f -> HOLD));
+        // Input latency: 600 frames held still, nothing saved; the Bridge's latency numbers are taken over them.
+        PATHS.put("latency", new Path(600, new int[0], f -> HOLD));
     }
 
     static final List<String> NAMES = List.copyOf(PATHS.keySet());

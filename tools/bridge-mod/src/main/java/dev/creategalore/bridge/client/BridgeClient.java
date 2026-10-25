@@ -30,6 +30,8 @@ public final class BridgeClient {
         dev.creategalore.bridge.dlss.Dlss.init(modBus);
         dev.creategalore.bridge.dlss.DlaaScreen.register(modBus, container);
         net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener(
+                (net.neoforged.neoforge.event.GameShuttingDownEvent e) -> dev.creategalore.bridge.latency.FrameLatency.shutdown());
+        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener(
                 (net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent.LoggingOut e) -> ShipAnimatedSprites.clear());
     }
 

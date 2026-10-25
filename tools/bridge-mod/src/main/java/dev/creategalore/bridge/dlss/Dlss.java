@@ -64,7 +64,7 @@ public final class Dlss {
     private static final String PROJECT_ID = "0f4d213d-b46a-4c91-9f2f-baac70721d6b";
     private static final String ENGINE_VERSION = "1.21.1";
     /** In the game folder: nvngx_dlss.dll (the player's own), the helper DLL, NGX's logs and the start marks. */
-    static final String FOLDER = "create-galore-dlss";
+    public static final String FOLDER = "create-galore-dlss";
     /** The nvngx_dlss.dll this was tested with (NVIDIA's DLSS SDK on GitHub). */
     static final String TESTED_DLL_VERSION = "310.9.16";
     static final String DLL = "nvngx_dlss.dll";

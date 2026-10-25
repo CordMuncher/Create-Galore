@@ -9,6 +9,8 @@ import java.util.Locale;
 import java.util.Map;
 
 import dev.creategalore.bridge.DisplaySettings;
+import dev.creategalore.bridge.latency.FrameLatency;
+import dev.creategalore.bridge.present.Presentation;
 import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.client.gui.GuiGraphics;
@@ -27,7 +29,8 @@ import net.neoforged.neoforge.common.NeoForge;
 
 /**
  * The Bridge's display settings: the DLAA engine and DLSS preset, the render resolution, the bring-your-own
- * nvngx_dlss.dll (or one found on this PC, see {@link DlssFinder}), and the window switches. Opens from the mod list
+ * nvngx_dlss.dll (or one found on this PC, see {@link DlssFinder}), the window switches and NVIDIA Reflex (which turns
+ * Perfect Presentation on with it, see {@link FrameLatency}). Opens from the mod list
  * (Create Galore Bridge, Config) and from a DLAA button in Iris's shader pack menu. Saved to
  * config/create_galore_bridge-display.properties when it closes, the render resolution into the DLAA pack's own options
  * (Photon's TAAU and TAAU Render Scale, see {@link RenderScaleTarget}); DLAA changes reload the shaders.
@@ -42,7 +45,10 @@ public final class DlaaScreen extends Screen {
     /** The standard render resolutions (the pack's render scale option for each), then custom (the slider). */
     private static final List<String> SCALES = List.of("native", "quality", "balanced", "performance", "ultra", "custom");
     private static final Map<String, String> SCALE_VALUES = Map.of("quality", "0.67", "balanced", "0.58", "performance", "0.50", "ultra", "0.33");
+    private static final List<String> REFLEX_MODES = List.of("off", "on", "boost");
     private static final int WIDTH = 300;
+    private static final net.minecraft.client.gui.components.toasts.SystemToast.SystemToastId RESTART =
+            new net.minecraft.client.gui.components.toasts.SystemToast.SystemToastId(10000L);
 
     private final Screen parent;
     /** The pack whose options hold the render resolution. */
@@ -53,12 +59,18 @@ public final class DlaaScreen extends Screen {
     private String letter;
     private boolean perfectPresentation;
     private boolean tenBitWindow;
+    /** off, on or boost. */
+    private String reflex;
     private String scale;
     /** The custom render scale, 25 to 100 (%). */
     private int customPercent;
     private Map<String, String> initialPackOptions;
     private EditBox letterBox;
     private ScaleSlider slider;
+    private CycleButton<Boolean> presentationButton;
+    private Choice<String> reflexChoice;
+    /** The top of the buttons under the status lines: higher on a short screen, so Done still fits. */
+    private int buttonsTop = 166;
     private final List<Choice<?>> choices = new java.util.ArrayList<>();
     /** The setting whose list of values is open, if one is. */
     private Choice<?> open;
@@ -80,6 +92,8 @@ public final class DlaaScreen extends Screen {
                 : PRESETS.contains(letter) ? letter : "other";
         perfectPresentation = DisplaySettings.get(DisplaySettings.PERFECT_PRESENTATION);
         tenBitWindow = DisplaySettings.get(DisplaySettings.TEN_BIT_WINDOW);
+        String reflexValue = DisplaySettings.getString(DisplaySettings.REFLEX, "off").toLowerCase(Locale.ROOT);
+        reflex = reflexValue.equals("true") ? "on" : REFLEX_MODES.contains(reflexValue) ? reflexValue : "off";
         readRenderScale();
         initial.putAll(values());
         initialPackOptions = packOptions();
@@ -133,7 +147,11 @@ public final class DlaaScreen extends Screen {
         slider.visible = scale.equals("custom");
         addRenderableWidget(slider);
 
-        int y = 166;
+        boolean crashed = Dlss.crashed() || FrameLatency.crashed();
+        // The DLL buttons, Try again, the window switches and Reflex, then Done 28 lower; on a short screen (a big GUI
+        // scale) the status lines get one line less.
+        buttonsTop = 166 + 24 * (crashed ? 3 : 2) + 48 <= height ? 166 : 142;
+        int y = buttonsTop;
         int third = (WIDTH - 8) / 3;
         addRenderableWidget(Button.builder(Component.literal("Find on this PC"), button -> {
                     DlssFinder.Result result = DlssFinder.find();
@@ -153,23 +171,40 @@ public final class DlaaScreen extends Screen {
                         "NVIDIA's DLSS SDK on GitHub: download nvngx_dlss.dll and put it in the DLSS folder.")))
                 .bounds(left + 2 * (third + 4), y, WIDTH - 2 * (third + 4), 20).build());
         y += 24;
-        if (Dlss.crashed()) {
+        if (crashed) {
             addRenderableWidget(Button.builder(Component.literal("Try again (turned off after the game closed while starting)"), button -> {
                         Dlss.tryAgain();
+                        FrameLatency.tryAgain();
                         button.active = false;
                     })
                     .bounds(left, y, WIDTH, 20).build());
             y += 24;
         }
-        addRenderableWidget(CycleButton.onOffBuilder(perfectPresentation)
+        presentationButton = addRenderableWidget(CycleButton.onOffBuilder(perfectPresentation)
                 .withTooltip(value -> net.minecraft.client.gui.components.Tooltip.create(Component.literal(
                         "Experimental, Windows only, needs a restart: shows the game through a DirectX swap chain, so borderless"
-                                + " fullscreen runs at exclusive fullscreen speed and Alt-Tab never changes the display mode.")))
-                .create(left, y, half, 20, Component.literal("Perfect Presentation"), (button, value) -> perfectPresentation = value));
+                                + " fullscreen runs at exclusive fullscreen speed and Alt-Tab never changes the display mode."
+                                + " NVIDIA Reflex needs it.")))
+                .create(left, y, half, 20, Component.literal("Perfect Presentation"), (button, value) -> {
+                    perfectPresentation = value;
+                    if (!value && !reflex.equals("off")) {
+                        reflex = "off"; // Reflex runs on its DirectX device
+                        reflexChoice.value = "off";
+                        reflexChoice.update();
+                    }
+                }));
         addRenderableWidget(CycleButton.onOffBuilder(tenBitWindow)
                 .withTooltip(value -> net.minecraft.client.gui.components.Tooltip.create(Component.literal(
                         "Experimental, needs a restart: asks for a 10-bit game window.")))
                 .create(left + half + 4, y, half, 20, Component.literal("10-bit window"), (button, value) -> tenBitWindow = value));
+        y += 24;
+        reflexChoice = choice("NVIDIA Reflex", REFLEX_MODES, reflex, DlaaScreen::reflexLabel, DlaaScreen::reflexTooltip, left, y, half, value -> {
+            reflex = value;
+            if (!value.equals("off") && !perfectPresentation) {
+                perfectPresentation = true; // Reflex runs on its DirectX device
+                presentationButton.setValue(true);
+            }
+        });
         addRenderableWidget(Button.builder(Component.literal("Done"), button -> onClose())
                 .bounds(width / 2 - 100, Math.max(y + 28, height - 28), 200, 20).build());
         refreshDll();
@@ -196,11 +231,24 @@ public final class DlaaScreen extends Screen {
             // NVIDIA (DLSS 4.5): RTX 20 and 30 cards have no native FP8, so L and M cost more there. Nothing is checked or locked.
             // Two lines at most, so the DLL line keeps its room.
             y = lines(graphics, "L and M are made for RTX 40 and 50 cards and cost more on RTX 20 and 30 (no FP8): if frames drop,"
-                    + " use K.", left, y, 0xFFAA44, 2);
+                    + " use K.", left, y, 0xFFAA44, buttonsTop < 166 ? 1 : 2);
         }
         // What "Find on this PC" did takes the DLL line's place (it names the version), and room from the status.
-        y = lines(graphics, Dlss.status(), left, y, 0xAAAAAA, findLine != null ? 1 : 3);
-        lines(graphics, findLine != null ? findLine : dllLine, left, y + 2, findLine != null ? 0x88DD88 : 0xFFFFFF, (164 - y) / 10);
+        // The status keeps a line however short the screen; the DLL line takes what fits above the buttons.
+        y = lines(graphics, Dlss.status(), left, y, 0xAAAAAA, Math.min(findLine != null ? 1 : 3, Math.max(1, (buttonsTop - 12 - y) / 10)));
+        lines(graphics, findLine != null ? findLine : dllLine, left, y + 2, findLine != null ? 0x88DD88 : 0xFFFFFF, (buttonsTop - y) / 10);
+        FrameLatency.Status reflexStatus = reflexStatus();
+        if (reflexStatus != null) {
+            // Beside the Reflex setting: one line centred on the button, two filling its height; the rest on hover.
+            int half = (WIDTH - 4) / 2;
+            int x = left + half + 4;
+            int rowY = reflexChoice.button.getY();
+            int count = font.split(Component.literal(reflexStatus.text()), half).size();
+            lines(graphics, reflexStatus.text(), x, count > 1 ? rowY + 1 : rowY + 6, reflexStatus.problem() ? 0xFFAA44 : 0x88DD88, 2, half);
+            if (open == null && reflexStatus.detail() != null && mouseX >= x && mouseX < x + half && mouseY >= rowY && mouseY < rowY + 20) {
+                setTooltipForNextRenderPass(font.split(Component.literal(reflexStatus.detail()), 220));
+            }
+        }
         if (open != null) {
             open.renderList(graphics, mouseX, mouseY);
         }
@@ -229,7 +277,11 @@ public final class DlaaScreen extends Screen {
 
     /** Draws {@code text} wrapped to the screen's width, at most {@code max} lines; returns the y below it. */
     private int lines(GuiGraphics graphics, String text, int x, int y, int color, int max) {
-        List<FormattedCharSequence> lines = font.split(Component.literal(text), WIDTH);
+        return lines(graphics, text, x, y, color, max, WIDTH);
+    }
+
+    private int lines(GuiGraphics graphics, String text, int x, int y, int color, int max, int width) {
+        List<FormattedCharSequence> lines = font.split(Component.literal(text), width);
         for (int i = 0; i < Math.min(max, lines.size()); i++) {
             graphics.drawString(font, lines.get(i), x, y, color);
             y += 10;
@@ -248,6 +300,17 @@ public final class DlaaScreen extends Screen {
         if (!values.equals(initial)) {
             DisplaySettings.save(values);
         }
+        boolean presentationChanged = !values.get(DisplaySettings.PERFECT_PRESENTATION).equals(initial.get(DisplaySettings.PERFECT_PRESENTATION));
+        if (presentationChanged && perfectPresentation) {
+            Presentation.switchedOn();
+        }
+        if (presentationChanged || !values.get(DisplaySettings.TEN_BIT_WINDOW).equals(initial.get(DisplaySettings.TEN_BIT_WINDOW))) {
+            minecraft.getToasts().addToast(net.minecraft.client.gui.components.toasts.SystemToast.multiline(minecraft, RESTART,
+                    Component.literal("Restart the game"), Component.literal(presentationChanged && perfectPresentation && !reflex.equals("off")
+                            ? "NVIDIA Reflex runs once Perfect Presentation starts, after a restart."
+                            : presentationChanged ? "Perfect Presentation " + (perfectPresentation ? "starts" : "stops") + " after a restart."
+                            : "The 10-bit window setting applies after a restart.")));
+        }
         if (packChanged || dllAdded || !values.get(DisplaySettings.DLAA).equals(initial.get(DisplaySettings.DLAA))
                 || !values.get(DisplaySettings.DLAA_PRESET).equals(initial.get(DisplaySettings.DLAA_PRESET))) {
             Dlss.settingsChanged();
@@ -261,6 +324,7 @@ public final class DlaaScreen extends Screen {
         values.put(DisplaySettings.DLAA_PRESET, preset.equals("other") ? (letter.isEmpty() ? "default" : letter) : preset);
         values.put(DisplaySettings.PERFECT_PRESENTATION, Boolean.toString(perfectPresentation));
         values.put(DisplaySettings.TEN_BIT_WINDOW, Boolean.toString(tenBitWindow));
+        values.put(DisplaySettings.REFLEX, reflex);
         values.put(DisplaySettings.DLAA_CUSTOM_SCALE, Boolean.toString(scale.equals("custom")));
         return values;
     }
@@ -289,6 +353,27 @@ public final class DlaaScreen extends Screen {
         customPercent = Math.max(25, Math.min(100, percent));
         String standard = SCALE_VALUES.entrySet().stream().filter(e -> e.getValue().equals(value)).map(Map.Entry::getKey).findFirst().orElse(null);
         scale = !setting.upscaling() ? "native" : DisplaySettings.get(DisplaySettings.DLAA_CUSTOM_SCALE) || standard == null ? "custom" : standard;
+    }
+
+    /** What Reflex does or will do, beside its setting; null while it is off. */
+    private FrameLatency.Status reflexStatus() {
+        if (reflex.equals("off")) {
+            return null;
+        }
+        if (Util.getPlatform() != Util.OS.WINDOWS) {
+            return new FrameLatency.Status("Needs Windows and an NVIDIA card.", "NVIDIA Reflex runs only on Windows, with an NVIDIA"
+                    + " graphics card (GTX 900 or newer).", true);
+        }
+        if (!Presentation.active()) {
+            return Presentation.requested()
+                    ? new FrameLatency.Status("Can't run: Perfect Presentation failed.", "Perfect Presentation, which Reflex runs on,"
+                            + " could not start this time; the game log says why (lines starting with Perfect Presentation:).", true)
+                    : new FrameLatency.Status("Runs after you restart the game.", "Reflex runs on Perfect Presentation's DirectX"
+                            + " device, and Perfect Presentation starts with the game: restart it once.", true);
+        }
+        FrameLatency.Status running = FrameLatency.status();
+        return running == null || !reflex.equals(initial.get(DisplaySettings.REFLEX))
+                ? new FrameLatency.Status("Starts when you close this screen.", null, false) : running;
     }
 
     private void refreshDll() {
@@ -350,6 +435,26 @@ public final class DlaaScreen extends Screen {
                         default -> "1/3";
                     } + " of the window's width and height and upscales: faster, a little softer. With anti-aliasing Off,"
                     + " the shader pack's own upscaling (Photon's TAAU) does it.";
+        };
+    }
+
+    private static Component reflexLabel(String value) {
+        return Component.literal(switch (value) {
+            case "on" -> "On";
+            case "boost" -> "On + Boost";
+            default -> "Off";
+        });
+    }
+
+    private static String reflexTooltip(String value) {
+        return switch (value) {
+            case "on" -> "Experimental, Windows and NVIDIA (GTX 900 or newer): the driver starts each frame as late as it can"
+                    + " while keeping the graphics card busy, and the game reads the mouse just before it draws, to shorten the"
+                    + " time from moving the mouse to seeing it. Needs Perfect Presentation, which this turns on (after a"
+                    + " restart). Works best with a Max Framerate the card can hold, which Reflex then keeps.";
+            case "boost" -> "Like On, and the graphics card keeps its clocks up even when it waits on the processor: a little"
+                    + " less delay where the processor holds the frame rate back, for more power.";
+            default -> "The game reads input and paces its frames as it always does.";
         };
     }
 
