@@ -36,6 +36,7 @@ public final class TestKit {
         NeoForge.EVENT_BUS.addListener(Capture::beforeFrame);
         NeoForge.EVENT_BUS.addListener(Capture::afterFrame);
         NeoForge.EVENT_BUS.addListener(MovingScene::serverTick);
+        NeoForge.EVENT_BUS.addListener(RideScene::serverTick);
         NeoForge.EVENT_BUS.addListener(TestKit::titleScreen);
     }
 
