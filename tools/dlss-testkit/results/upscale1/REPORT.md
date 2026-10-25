@@ -222,6 +222,11 @@ What they show, and where they part from what Emre saw:
   - So in this view the extra bias makes no visible difference, sharper or shimmerier. DLSS's frames differ between
     any two runs (3.6 levels), so it can't be told apart there.
   - Whether the bias reaches the block textures at all would be worth a look.
+  - **Checked afterwards (cloud, llvmpipe, 1280x720, FSR at native):** it does. Against bias 0, an extra -4 changed the
+    far leaves in the canopy view (mean 0.78 levels, 2.0% of pixels by more than 8, against 0.45 / 0.46% between two
+    frames of the same mode), and left everything close by alone. Close textures already sample their sharpest mip, so
+    an extra bias can only show at a distance; in the shore view nearly every textured block is near and the far
+    terrain is Distant Horizons' (no block textures), which is why U6 saw no change.
 - **U7 (what DLSS gets):**
   - `perf-debug-color` shows the whole view, stretched from the 1280x720 corner to the window, with no black or doubled
     edges.
