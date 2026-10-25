@@ -162,6 +162,11 @@ public final class Capture {
             modes.add(Mode.latency("lat-reflex-pacer", "on", true, 3, 260, 0, false));
             modes.add(Mode.latency("lat-ra1-pacer", "off", true, 1, 260, 0, false));
             modes.add(Mode.latency("lat-cap-start", "off", true, 3, 60, null, true));
+            // Pacer 2: the queue read without a flush, longer targets, and the frame cap as the Bridge now has it by default.
+            modes.add(Mode.latency("lat-pacer-3000", "off", true, 3, 260, 3000, false));
+            modes.add(Mode.latency("lat-pacer-4000", "off", true, 3, 260, 4000, false));
+            modes.add(Mode.latency("lat-pacer-5000", "off", true, 3, 260, 5000, false));
+            modes.add(Mode.latency("lat-cap-default", "off", false, 3, 60, null, null));
         }
         // The DLAA test world (seed 20261024, scene built on the lakeshore at x 1023..1040, z 160..176).
         List<Viewpoint> viewpoints = new ArrayList<>(List.of(
@@ -205,6 +210,10 @@ public final class Capture {
                 new Run("L3", "lat-base+lat-late+lat-pacer+lat-pacer-500+lat-pacer-2000+lat-reflex+lat-reflex-pacer+lat-cap-late"
                         + "+lat-cap-start+lat-cap-reflex", "shore+canopy", "latency", null, false, null, 2),
                 new Run("L4", "lat-base+lat-late+lat-ra1-late+lat-pacer+lat-ra1-pacer+lat-pacer-500+lat-cap-late+lat-cap-start",
+                        "shore+canopy", "latency", null, false, null, 2),
+                new Run("L5", "lat-base+lat-late+lat-reflex+lat-pacer+lat-pacer-2000+lat-pacer-4000+lat-reflex-pacer+lat-cap-default",
+                        "shore+canopy", "latency", null, false, null, 2),
+                new Run("L6", "lat-base+lat-ra1-late+lat-pacer+lat-pacer-3000+lat-pacer-5000+lat-ra1-pacer",
                         "shore+canopy", "latency", null, false, null, 2)));
     }
 
@@ -252,19 +261,20 @@ public final class Capture {
 
         /**
          * An input latency mode: DLAA as played, reflex (off, markers, on, boost; needs Perfect Presentation), input read
-         * again just before rendering (latePoll), Sodium's CPU render-ahead limit and the frame cap (260: none; vsync off).
+         * again just before rendering (latePoll), Sodium's CPU render-ahead limit and the frame cap (260: none; vsync off),
+         * kept by the game's limiter.
          */
         static Mode latency(String name, String reflex, boolean latePoll, int renderAhead, int fpsCap) {
-            return new Mode(name, true, "default", null, null, null, null, null, null, null, reflex, latePoll, renderAhead, fpsCap);
+            return latency(name, reflex, latePoll, renderAhead, fpsCap, null, false);
         }
 
         /**
          * The same with the GPU pacer (pacerUs: how long a frame may still queue on the GPU, in microseconds, 0 for the
-         * automatic target; null: off)
-         * and the frame cap waiting at the frame's start, before input (capAtStart).
+         * automatic target; null: off) and the frame cap waiting at the frame's start, before input (capAtStart true),
+         * in the game's limiter (false) or as the Bridge has it by default (null; at the frame's start from 1.108.0).
          */
         static Mode latency(String name, String reflex, boolean latePoll, int renderAhead, int fpsCap, Integer pacerUs,
-                            boolean capAtStart) {
+                            Boolean capAtStart) {
             return new Mode(name, true, "default", null, null, null, null, null, null, null, reflex, latePoll, renderAhead, fpsCap,
                     pacerUs, capAtStart);
         }
@@ -885,7 +895,7 @@ public final class Capture {
             info.addProperty("renderAhead", mode.renderAhead());
             info.addProperty("fpsCap", mode.fpsCap());
             info.addProperty("pacerUs", mode.pacerUs());
-            info.addProperty("capAtStart", Boolean.TRUE.equals(mode.capAtStart()));
+            info.addProperty("capAtStart", mode.capAtStart());
             if (!info.has("latency")) {
                 info.add("latency", new JsonObject());
             }
@@ -956,8 +966,8 @@ public final class Capture {
                 props.remove("gpuPacer");
                 props.remove("pacerTargetUs");
             }
-            if (Boolean.TRUE.equals(mode.capAtStart())) {
-                props.setProperty("frameCapAtStart", "true");
+            if (mode.capAtStart() != null) {
+                props.setProperty("frameCapAtStart", Boolean.toString(mode.capAtStart()));
             } else {
                 props.remove("frameCapAtStart");
             }

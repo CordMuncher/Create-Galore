@@ -1,6 +1,5 @@
 package dev.creategalore.bridge.latency;
 
-import static org.lwjgl.opengl.GL11C.glFlush;
 import static org.lwjgl.opengl.GL15C.GL_QUERY_RESULT;
 import static org.lwjgl.opengl.GL15C.GL_QUERY_RESULT_AVAILABLE;
 import static org.lwjgl.opengl.GL15C.glDeleteQueries;
@@ -20,9 +19,12 @@ import java.util.Arrays;
  * CPU's once a second (glGetInteger64(GL_TIMESTAMP) against System.nanoTime). Leaves out what follows on every setup
  * alike: the swap, the display's wait for its refresh and the screen itself.
  *
- * A second timestamp, flushed to the GPU right where the frame's rendering starts ({@link #renderStart()}), shows how
- * long that start waited behind earlier frames' work (the queue the GPU pacer keeps short) and how long the GPU sat
- * idle before it. Each finished frame goes to the {@link Listener}, if any.
+ * How long a frame's rendering waited behind the frame before on the GPU (the queue the GPU pacer keeps short): from
+ * where its rendering started on the CPU ({@link #renderStart()}) to the GPU finishing the frame before. Below 0, the
+ * GPU sat idle that long before the frame came. No query or flush of its own there: a glFlush at the start of each
+ * frame stalled the CPU behind the GPU's previous frame with Perfect Presentation on (a third of the frame rate in the
+ * Pacer 1 run). Leaves out the little GPU work between frames (the swap, Perfect Presentation's copy). Each finished
+ * frame goes to the {@link Listener}, if any.
  */
 final class LatencyMeter {
     private static final int RING = 16;
@@ -30,15 +32,16 @@ final class LatencyMeter {
     /** A window nobody reads (the pacer alone) starts over at this many frames instead of growing. */
     static final int MAX_WINDOW = 1 << 16;
 
-    /** A frame the GPU finished, all ns: its rendering's wait in the GPU's queue, the GPU's idle time before it (-1: unknown), its GPU time. */
+    /**
+     * A frame the GPU finished, all ns: how long its rendering waited on the GPU behind the frame before (below 0: the
+     * GPU waited for it), and the time from the frame before's end on the GPU to its own.
+     */
     interface Listener {
-        void frameDone(long queue, long gap, long gpu);
+        void frameDone(long queue, long interval);
     }
 
     private final Listener listener;
-    private final int[] begins = new int[RING];
     private final int[] ends = new int[RING];
-    private final boolean[] begun = new boolean[RING];
     private final long[] renderNanos = new long[RING];
     private final long[] inputNanos = new long[RING];
     private final long[] submitNanos = new long[RING];
@@ -46,34 +49,26 @@ final class LatencyMeter {
     private int pending;
     private long gpuMinusCpu;
     private long calibratedAt;
-    /** The GPU's end of the last frame read (GPU clock), 0 if the frame before the next one wasn't measured. */
-    private long lastEnd;
+    /** Where the frame being made started rendering (CPU clock), 0 if it hasn't. */
+    private long rendering;
+    /** When the GPU finished the last frame read (CPU clock), 0 if the frame before the next one wasn't measured. */
+    private long lastDone;
 
     private double[] latencies = new double[1024];
     private double[] cpuToGpu = new double[1024];
     private double[] queues = new double[1024];
-    private double[] gaps = new double[1024];
     private int count;
     private int timed;
-    private int gapped;
     private long windowStart = System.nanoTime();
 
     LatencyMeter(Listener listener) {
         this.listener = listener;
-        glGenQueries(begins);
         glGenQueries(ends);
     }
 
     /** Where the frame's rendering starts (after any wait for the GPU, the swap chain or the pacer, and the late read). */
     void renderStart() {
-        if (pending == RING) {
-            collect(true);
-        }
-        int slot = (head + pending) % RING;
-        glQueryCounter(begins[slot], GL_TIMESTAMP);
-        glFlush(); // on its way now, so the GPU's time for it is when it could have started
-        renderNanos[slot] = System.nanoTime();
-        begun[slot] = true;
+        rendering = System.nanoTime();
     }
 
     /** At the end of the frame's OpenGL work: {@code input} is when input was last read for it. */
@@ -90,6 +85,8 @@ final class LatencyMeter {
         glQueryCounter(ends[slot], GL_TIMESTAMP);
         inputNanos[slot] = input;
         submitNanos[slot] = now;
+        renderNanos[slot] = rendering;
+        rendering = 0L;
         pending++;
     }
 
@@ -114,19 +111,14 @@ final class LatencyMeter {
             if (inputNanos[head] != 0L) {
                 add((done - inputNanos[head]) / 1.0e6, (done - submitNanos[head]) / 1.0e6);
             }
-            if (begun[head]) {
-                long start = glGetQueryObjecti64(begins[head], GL_QUERY_RESULT);
-                long queue = start - gpuMinusCpu - renderNanos[head];
-                long gap = lastEnd != 0L ? start - lastEnd : -1L;
-                addTimes(queue / 1.0e6, gap / 1.0e6);
+            if (lastDone != 0L && renderNanos[head] != 0L) {
+                long queue = lastDone - renderNanos[head];
+                addQueue(queue / 1.0e6);
                 if (listener != null) {
-                    listener.frameDone(queue, gap, end - start);
+                    listener.frameDone(queue, done - lastDone);
                 }
-                begun[head] = false;
-                lastEnd = end;
-            } else {
-                lastEnd = 0L;
             }
+            lastDone = done;
             head = (head + 1) % RING;
             pending--;
         }
@@ -145,28 +137,21 @@ final class LatencyMeter {
         count++;
     }
 
-    private void addTimes(double queueMs, double gapMs) {
+    private void addQueue(double queueMs) {
         if (timed == MAX_WINDOW) {
             timed = 0;
-            gapped = 0;
         }
         if (timed == queues.length) {
             queues = Arrays.copyOf(queues, timed * 2);
         }
         queues[timed++] = queueMs;
-        if (gapMs >= 0) {
-            if (gapped == gaps.length) {
-                gaps = Arrays.copyOf(gaps, gapped * 2);
-            }
-            gaps[gapped++] = gapMs;
-        }
     }
 
     /**
      * Since the last call: median and 90th percentile of input to GPU done, median of the frame's end on the CPU to
-     * GPU done (how far the GPU runs behind), all ms; the frames counted and the frames a second; then the medians of
-     * the rendering's wait in the GPU's queue and of the GPU's idle time between frames, and the 90th percentile of
-     * that idle time (ms; NaN without render start times).
+     * GPU done (how far the GPU runs behind), all ms; the frames counted and the frames a second; then the median and
+     * 10th percentile of the rendering's wait behind the frame before on the GPU (ms, below 0 the GPU waited; NaN
+     * without render start times).
      */
     double[] window() {
         long now = System.nanoTime();
@@ -174,18 +159,15 @@ final class LatencyMeter {
         double[] values = Arrays.copyOf(latencies, count);
         double[] behind = Arrays.copyOf(cpuToGpu, count);
         double[] queue = Arrays.copyOf(queues, timed);
-        double[] gap = Arrays.copyOf(gaps, gapped);
         double[] result = {percentile(values, 0.5), percentile(values, 0.9), percentile(behind, 0.5), count,
-                seconds > 0 ? count / seconds : 0, percentile(queue, 0.5), percentile(gap, 0.5), percentile(gap, 0.9)};
+                seconds > 0 ? count / seconds : 0, percentile(queue, 0.5), percentile(queue, 0.1)};
         count = 0;
         timed = 0;
-        gapped = 0;
         windowStart = now;
         return result;
     }
 
     void close() {
-        glDeleteQueries(begins);
         glDeleteQueries(ends);
     }
 

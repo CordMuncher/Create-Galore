@@ -34,8 +34,10 @@ import org.slf4j.LoggerFactory;
  * how long it may still queue; unset or auto: from how much the frames vary). For uncapped play, where Reflex's driver
  * can't see the OpenGL queue.
  *
- * frameCapAtStart (testing): the Max Framerate cap waits at the start of the frame, before input is read, instead of
- * in the game's limiter after the frame (Reflex's own cap does the same while Reflex runs). Any GPU.
+ * The Max Framerate cap waits at the start of the frame, before input is read, instead of in the game's limiter after
+ * the frame (Reflex's own cap does the same while Reflex runs). Any GPU: in the Pacer 1 run it matched Reflex's cap
+ * (8.8 ms input to GPU done at 60 fps with Perfect Presentation, the game's limiter 16.7). frameCapAtStart=false
+ * (testing) leaves the cap to the game's limiter.
  *
  * latencyLog (testing): logs {@link LatencyMeter}'s numbers (and Reflex's report) every 10 seconds. The test kit
  * measures through {@link #measure(boolean)} and {@link #window()} instead.
@@ -300,8 +302,8 @@ public final class FrameLatency {
 
     /**
      * The numbers since the last call: inputToGpuMs and inputToGpuP90Ms (input read to the GPU done with the frame),
-     * gpuBehindMs (the frame's end on the CPU to the GPU done), frames, fps, gpuQueueMs (the rendering's start waiting
-     * in the GPU's queue), gpuGapMs and gpuGapP90Ms (the GPU's time between frames, idle plus the swap's work), reflex
+     * gpuBehindMs (the frame's end on the CPU to the GPU done), frames, fps, gpuQueueMs and gpuQueueP10Ms (median and
+     * 10th percentile of the rendering's start waiting behind the frame before on the GPU; below 0 the GPU waited), reflex
      * (what Reflex did), the switches, with the GPU pacer its wait (pacerWaitMs) and how late that ended (pacerLateUs,
      * pacerLateP90Us), and, when Reflex sent markers, the driver's report of its last 64 frames (driver...).
      */
@@ -315,8 +317,7 @@ public final class FrameLatency {
             result.put("frames", w[3]);
             result.put("fps", round(w[4]));
             result.put("gpuQueueMs", round(w[5]));
-            result.put("gpuGapMs", round(w[6]));
-            result.put("gpuGapP90Ms", round(w[7]));
+            result.put("gpuQueueP10Ms", round(w[6]));
         }
         result.put("reflex", reflexState());
         result.put("latePoll", latePoll);
@@ -406,7 +407,7 @@ public final class FrameLatency {
         }
         pacing = pace;
         pacerTarget = target;
-        boolean cap = DisplaySettings.get(DisplaySettings.FRAME_CAP_AT_START);
+        boolean cap = !DisplaySettings.getString(DisplaySettings.FRAME_CAP_AT_START, "true").equalsIgnoreCase("false");
         if (cap != capAtStart) {
             LOG.info("Latency: the frame cap waits {}", cap ? "at the start of the frame, before input" : "in the game's limiter");
         }

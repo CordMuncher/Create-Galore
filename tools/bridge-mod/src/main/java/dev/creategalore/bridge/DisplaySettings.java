@@ -52,7 +52,7 @@ public final class DisplaySettings {
     public static final String GPU_PACER = "gpuPacer";
     /** Testing only, not written to the file: how long, in microseconds, the GPU pacer lets a frame queue on the GPU (auto unless set). */
     public static final String PACER_TARGET_US = "pacerTargetUs";
-    /** Testing only, not written to the file: true has the Max Framerate cap wait at the frame's start, before input (see FrameLatency). */
+    /** Testing only, not written to the file: false leaves the Max Framerate cap to the game's limiter, after the frame, instead of the frame's start (see FrameLatency). */
     public static final String FRAME_CAP_AT_START = "frameCapAtStart";
     /** The frame counter: off, basic or detailed (see FpsOverlay). */
     public static final String FPS_COUNTER = "fpsCounter";

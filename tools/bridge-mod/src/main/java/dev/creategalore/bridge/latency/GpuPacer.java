@@ -8,17 +8,18 @@ import java.util.Arrays;
  * just before rendering instead (then reading input, see {@link FrameLatency}) makes the frame reach the GPU about when
  * the GPU gets to it. Reflex does this for Direct3D games, but its driver can't see OpenGL work.
  *
- * {@link LatencyMeter} times each frame's rendering start on the GPU: how long it waited there behind earlier work
- * (the queue), and how long the GPU sat idle before it (idle: the time between frames beyond the shortest seen lately,
- * as some GPU work, the swap's for one, always falls there). Their difference is how far ahead of the GPU the frame
- * came. One frame's longer wait moves every later frame back with it, so the queue is the sum of the waits: the wait
+ * {@link LatencyMeter} tells how far ahead of the GPU each frame came: how long its rendering waited behind the frame
+ * before (below 0: the GPU sat idle that long). One frame's longer wait moves every later frame back with it, so the
+ * queue is the sum of the waits: the wait
  * is a steady part that learns slowly what the frame rate needs (integral) plus a part that follows the difference to
  * the target (proportional). Waiting more each frame instead overshoots and swings (a simulation of the loop showed
  * it), as the GPU's answer comes a frame or two late.
  *
  * The target is how long a frame may still queue, so the GPU never runs dry when a frame takes a little longer on the
  * CPU: fixed (pacerTargetUs), or by default three times how much the frames' arrival varies from one to the next,
- * at least 250 us. In the simulation that kept the frame rate within about 1% while taking most of the queue away.
+ * at least 250 us. In the simulation that kept the frame rate within about 1% while taking most of the queue away;
+ * on the RTX 4080 (Pacer 1, without Perfect Presentation) it settled at about 2 ms and cost 6%, with the GPU never
+ * idle between frames, so the GPU likely catches up with the CPU within a frame: the PC run tries longer targets.
  */
 final class GpuPacer implements LatencyMeter.Listener {
     private static final double PROPORTIONAL = 0.3;
@@ -39,12 +40,10 @@ final class GpuPacer implements LatencyMeter.Listener {
     private final long[] aheads = new long[HISTORY];
     private int aheadCount;
 
-    private final long[] gaps = new long[HISTORY];
-    private final long[] gpuTimes = new long[HISTORY];
-    private int gapCount;
-    private int gpuCount;
-    private long shortestGap;
-    private long gpuMedian;
+    /** The time between the GPU's frame ends: no wait is longer than a frame. */
+    private final long[] intervals = new long[HISTORY];
+    private int intervalCount;
+    private long intervalMedian;
     private int sinceSort;
 
     private double[] waits = new double[1024];
@@ -70,24 +69,19 @@ final class GpuPacer implements LatencyMeter.Listener {
     }
 
     @Override
-    public void frameDone(long queue, long gap, long gpu) {
-        gpuTimes[gpuCount++ % HISTORY] = gpu;
-        if (gap >= 0) {
-            gaps[gapCount++ % HISTORY] = gap;
-        }
+    public void frameDone(long queue, long interval) {
+        intervals[intervalCount++ % HISTORY] = interval;
         if (++sinceSort >= 8) {
             sinceSort = 0;
-            shortestGap = low(gaps, Math.min(gapCount, HISTORY));
-            gpuMedian = median(gpuTimes, Math.min(gpuCount, HISTORY));
+            intervalMedian = median(intervals, Math.min(intervalCount, HISTORY));
         }
-        long idle = gap >= 0 && gapCount >= 8 ? Math.max(0L, gap - shortestGap) : 0L;
-        long ahead = queue - idle; // below 0: the GPU waited for this frame
+        long ahead = queue; // below 0: the GPU waited for this frame
         aheads[aheadCount++ % HISTORY] = ahead;
         if (fixedTarget < 0 && aheadCount >= 16 && sinceSort == 0) {
             target = Math.max(MIN_TARGET, (long) (JITTER_MARGIN * jitter()));
         }
         long error = ahead - target;
-        long limit = Math.min(MAX_WAIT, gpuMedian);
+        long limit = Math.min(MAX_WAIT, intervalMedian);
         steady = Math.max(0L, Math.min(limit, steady + (long) (INTEGRAL * error)));
         wait = Math.max(0L, Math.min(limit, steady + (long) (PROPORTIONAL * error)));
     }
@@ -132,16 +126,6 @@ final class GpuPacer implements LatencyMeter.Listener {
         waits[waitCount] = waitMs;
         lates[waitCount] = lateUs;
         waitCount++;
-    }
-
-    /** The 10th percentile of the first {@code n} values. */
-    private static long low(long[] values, int n) {
-        if (n == 0) {
-            return 0L;
-        }
-        long[] sorted = Arrays.copyOf(values, n);
-        Arrays.sort(sorted);
-        return sorted[n / 10];
     }
 
     private static long median(long[] values, int n) {
