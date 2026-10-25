@@ -113,7 +113,12 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**Perfect Presentation** (Windows, experimental) shows the game through DirectX: fullscreen is a fast borderless window, Alt-Tab is instant and a 10-bit monitor stays 10-bit. Turn it on in the display settings (the **DLAA...** button in the shader pack menu) and restart twice. On NVIDIA, set Power management mode to Prefer maximum performance for javaw.exe."
+      "text": "**Perfect Presentation** (Windows, experimental) shows the game through DirectX: fullscreen is a fast borderless window, Alt-Tab is instant and a 10-bit monitor stays 10-bit. Turn it on in the display settings (the **DLAA...** button in the shader pack menu) and restart. On NVIDIA, set Power management mode to Prefer maximum performance for javaw.exe."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**NVIDIA Reflex** (Windows, NVIDIA GTX 900 or newer, experimental) is on the same screen. The driver starts each frame as late as it can while keeping the card busy, and the game reads the mouse just before it draws, so the view follows the mouse sooner. Picking it turns on Perfect Presentation, which it needs: restart once. **On + Boost** also keeps the card's clocks up."
     },
     {
       "type": "modonomicon:text",

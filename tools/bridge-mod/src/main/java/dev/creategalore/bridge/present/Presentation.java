@@ -70,6 +70,24 @@ public final class Presentation {
         return requested && !failed;
     }
 
+    /** True if Perfect Presentation was on when the game started, even if it then failed (see {@link #active()}). */
+    public static boolean requested() {
+        return requested;
+    }
+
+    /**
+     * Perfect Presentation was just switched on in the settings. NeoForge's early loading window would make an OpenGL
+     * game window first at the next launch, so it goes off now and one restart is enough.
+     */
+    public static void switchedOn() {
+        if (System.getProperty("os.name", "").startsWith("Windows")
+                && FMLConfig.getBoolConfigValue(FMLConfig.ConfigValue.EARLY_WINDOW_CONTROL)) {
+            FMLConfig.updateConfig(FMLConfig.ConfigValue.EARLY_WINDOW_CONTROL, false);
+            LOG.info("Perfect Presentation: switched on in the settings, turned earlyWindowControl off in config/fml.toml "
+                    + "so it starts with the next launch");
+        }
+    }
+
     // --- Window.<init> ---
 
     /** Window hints: the OpenGL ones describe the hidden context instead, the game window gets no client API. */

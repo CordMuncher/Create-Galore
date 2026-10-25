@@ -5,33 +5,44 @@ import java.util.Locale;
 import java.util.Map;
 
 import dev.creategalore.bridge.DisplaySettings;
+import dev.creategalore.bridge.dlss.Dlss;
+import dev.creategalore.bridge.dlss.StartGuard;
 import dev.creategalore.bridge.present.Presentation;
 import net.minecraft.client.Minecraft;
+import net.neoforged.fml.loading.FMLPaths;
 import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Input latency tests (testing only, off unless the display settings ask). Three things, each switched on its own:
+ * NVIDIA Reflex (the display settings' NVIDIA Reflex: off, on or boost) and the input latency tests. Three switches:
  *
- * reflex (off, markers, on, boost): NVIDIA Reflex on Perfect Presentation's D3D11 device ({@link Reflex}). Each frame
- * starts with Reflex's sleep and then reads input, so the driver can start it as late as still keeps the GPU busy;
- * markers tell the driver where each frame's game work, rendering and present are (markers alone: its latency report
- * without changing anything). On and boost also take over a frame rate cap from the game's own limiter, which waits
- * after the frame instead of before input.
+ * reflex (off, on, boost; markers for testing): NVIDIA Reflex on Perfect Presentation's D3D11 device ({@link Reflex}),
+ * so it needs Perfect Presentation (the settings screen turns that on with it). Each frame starts with Reflex's sleep
+ * and then reads input, so the driver can start it as late as still keeps the GPU busy; markers tell the driver where
+ * each frame's game work, rendering and present are (markers alone: its latency report without changing anything). On
+ * and boost also take over a frame rate cap from the game's own limiter, which waits after the frame instead of before
+ * input. A start that took the game down keeps Reflex off until Try again ({@link StartGuard}).
  *
  * latePoll: read input again just before the mouse turns the camera, after any wait for the GPU or the swap chain
  * (Sodium's render-ahead limit at the start of the frame, Perfect Presentation's swap chain, the game's frame cap).
  * Minecraft reads input only while presenting the frame before, so whatever it waits for after that ages the input.
+ * On with Reflex on or boost unless the setting says otherwise (testing only, not written to the file).
  *
- * latencyLog: logs {@link LatencyMeter}'s numbers (and Reflex's report) every 10 seconds. The test kit measures through
- * {@link #measure(boolean)} and {@link #window()} instead.
+ * latencyLog (testing): logs {@link LatencyMeter}'s numbers (and Reflex's report) every 10 seconds. The test kit
+ * measures through {@link #measure(boolean)} and {@link #window()} instead.
  */
 public final class FrameLatency {
     private static final Logger LOG = LoggerFactory.getLogger("create_galore_bridge");
     private static final long LOG_NANOS = 10_000_000_000L;
 
     enum ReflexMode { OFF, MARKERS, ON, BOOST }
+
+    /**
+     * What Reflex does, for the settings screen: a few words beside the setting, the whole story when the mouse is on
+     * them (or null), and whether it is wanted but doesn't run.
+     */
+    public record Status(String text, String detail, boolean problem) {}
 
     private static int generation = -1;
     private static ReflexMode reflexMode = ReflexMode.OFF;
@@ -40,7 +51,10 @@ public final class FrameLatency {
     private static boolean measuring;
 
     private static Reflex reflex;
+    private static StartGuard guard;
     private static String reflexState = "off";
+    /** Why Reflex isn't running, in a few words for the settings screen. */
+    private static String reflexShort = "";
     private static boolean reflexTried;
     private static boolean reflexSleeping;
     /** What the driver was last told: low latency, boost, frame interval (us); null: nothing yet. */
@@ -80,6 +94,7 @@ public final class FrameLatency {
                 pollEvents(); // input after the sleep, as NVIDIA asks (markers alone change nothing)
             }
             reflex.marker(Reflex.SIMULATION_START, frameId);
+            guard().ran();
         } catch (RuntimeException e) {
             reflexFailed(e);
         }
@@ -170,6 +185,51 @@ public final class FrameLatency {
         }
     }
 
+    // --- the settings screen ---
+
+    /** What Reflex does now, for the settings screen; null while the setting is off. */
+    public static Status status() {
+        if (reflexMode == ReflexMode.OFF) {
+            return null;
+        }
+        if (reflex == null) {
+            return reflexTried ? new Status(reflexShort, "Reflex can't run: " + reflexState + ".", true) : new Status("Starting.", null, false);
+        }
+        if (reflexMode == ReflexMode.MARKERS) {
+            return new Status("Markers only (testing).", "The driver gets Reflex's markers for its latency report; nothing else changes.", false);
+        }
+        try {
+            String driver = reflex.status();
+            return reflex.lowLatency()
+                    ? new Status("Running: the driver confirms it.", "The NVIDIA driver runs low latency mode"
+                            + (reflexMode == ReflexMode.BOOST ? " with boost" : "") + " (" + driver + ").", false)
+                    : new Status("Running, but the driver says off.", "The NVIDIA driver reports low latency mode off (" + driver
+                            + "). The NVIDIA Control Panel's Low Latency Mode or a driver update may help.", true);
+        } catch (RuntimeException e) {
+            return new Status("Running.", "The driver's status is unavailable: " + e.getMessage(), false);
+        }
+    }
+
+    /** True if Reflex took the game down while starting and stays off until {@link #tryAgain()}. */
+    public static boolean crashed() {
+        return guard().crashed();
+    }
+
+    /** Clears the crash mark: Reflex starts again with the next frame, if it is on. */
+    public static void tryAgain() {
+        guard().clear();
+        if (reflex == null) {
+            reflexTried = false;
+        }
+    }
+
+    /** The game is closing: not a crash, even within Reflex's first frames. */
+    public static void shutdown() {
+        if (guard != null) {
+            guard.stopped();
+        }
+    }
+
     // --- the test kit ---
 
     /** Measure from now on (or stop); the kit reads the numbers with {@link #window()}. */
@@ -248,17 +308,19 @@ public final class FrameLatency {
             try {
                 reflex.setMode(false, false, 0);
                 reflexApplied = null;
+                guard().stopped();
             } catch (RuntimeException e) {
                 reflexFailed(e);
             }
         }
         if (wanted != reflexMode) {
-            LOG.info("Latency test: Reflex {}", wanted.name().toLowerCase(Locale.ROOT));
+            LOG.info("Reflex: {}", wanted.name().toLowerCase(Locale.ROOT));
         }
         reflexMode = wanted;
-        boolean poll = DisplaySettings.get(DisplaySettings.LATE_POLL);
+        String pollSetting = DisplaySettings.getString(DisplaySettings.LATE_POLL, "");
+        boolean poll = pollSetting.isEmpty() ? wanted.compareTo(ReflexMode.ON) >= 0 : Boolean.parseBoolean(pollSetting);
         if (poll != latePoll) {
-            LOG.info("Latency test: input read again just before rendering {}", poll ? "on" : "off");
+            LOG.info("Latency: input read again just before rendering {}", poll ? "on" : "off");
         }
         latePoll = poll;
         logging = DisplaySettings.get(DisplaySettings.LATENCY_LOG);
@@ -266,14 +328,42 @@ public final class FrameLatency {
 
     private static void startReflex() {
         reflexTried = true;
+        if (!Presentation.active()) {
+            boolean windows = System.getProperty("os.name", "").startsWith("Windows");
+            reflexState = !windows ? "it needs Windows and an NVIDIA graphics card"
+                    : Presentation.requested() ? "Perfect Presentation, which it needs, could not start (the log says why)"
+                    : "it needs Perfect Presentation, which starts after a restart";
+            reflexShort = !windows ? "Needs Windows and an NVIDIA card." : Presentation.requested() ? "Can't run: Perfect Presentation failed."
+                    : "Runs after you restart the game.";
+            LOG.warn("Reflex: can't run, {}", reflexState);
+            return;
+        }
+        if (guard().crashed()) {
+            reflexState = "the game closed while it was starting last time, so it stays off until you pick Try again";
+            reflexShort = "Off after a crash: Try again.";
+            return;
+        }
+        guard().starting();
         try {
             reflex = Reflex.start(Presentation.d3dDevice());
-            LOG.info("Latency test: NVIDIA Reflex started on Perfect Presentation's Direct3D 11 device");
+            LOG.info("Reflex: started on Perfect Presentation's Direct3D 11 device (NVIDIA NVAPI)");
         } catch (RuntimeException | LinkageError e) {
+            guard().stopped();
             reflex = null;
-            reflexState = "unavailable: " + e.getMessage();
-            LOG.warn("Latency test: Reflex {}", reflexState);
+            String reason = String.valueOf(e.getMessage());
+            boolean noNvapi = reason.startsWith("Could not load nvapi64.dll");
+            reflexState = noNvapi ? "it needs an NVIDIA graphics card and driver (no nvapi64.dll)" : reason;
+            reflexShort = noNvapi ? "Can't run: needs an NVIDIA card." : "Can't run (point here for why).";
+            LOG.warn("Reflex: can't run, {}", reason);
         }
+    }
+
+    /** Made once the game folder is known: the start marks go next to DLSS's. */
+    private static StartGuard guard() {
+        if (guard == null) {
+            guard = new StartGuard(FMLPaths.GAMEDIR.get().resolve(Dlss.FOLDER), "Reflex", "Reflex");
+        }
+        return guard;
     }
 
     private static void applyReflexMode() {
@@ -285,7 +375,7 @@ public final class FrameLatency {
         if (reflexApplied == null || !java.util.Arrays.equals(reflexApplied, wanted)) {
             reflex.setMode(lowLatency, boost, interval);
             reflexApplied = wanted;
-            LOG.info("Latency test: Reflex low latency {}, boost {}, frame cap {}; {}", lowLatency ? "on" : "off", boost ? "on" : "off",
+            LOG.info("Reflex: low latency {}, boost {}, frame cap {}; {}", lowLatency ? "on" : "off", boost ? "on" : "off",
                     limit > 0 ? limit + " fps (Reflex's)" : "none", reflex.status());
         }
     }
@@ -297,10 +387,12 @@ public final class FrameLatency {
     }
 
     private static void reflexFailed(RuntimeException e) {
-        LOG.error("Latency test: Reflex stopped after an error, the frames go on without it", e);
-        reflexState = "stopped after an error: " + e.getMessage();
+        LOG.error("Reflex: stopped after an error, the frames go on without it", e);
+        reflexState = "it stopped after an error: " + e.getMessage();
+        reflexShort = "Stopped after an error.";
         reflex = null;
         reflexSleeping = false;
+        guard().stopped();
     }
 
     private static void pollEvents() {

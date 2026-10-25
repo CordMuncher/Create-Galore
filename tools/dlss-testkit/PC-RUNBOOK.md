@@ -764,7 +764,8 @@ else that looked wrong. Don't commit the hs_err files: they name his user folder
 
 Start only when Emre says so. Same PC, test folder and tools as before; about 45 minutes, two launches and an
 optional by-feel part. **Frame times count here** (latency follows the GPU's load): a quiet PC as in profiling 1, no
-game server. Nothing of this is merged until Emre has tested it (Emre, 2026-10-25).
+game server. Reflex ships in pack 0.5.2 (Bridge 1.106.0) as an experimental NVIDIA Reflex setting without waiting for
+this run (Emre, 2026-10-25 20:29); this run measures what it does and decides what changes next.
 
 **What it tests.** The game renders with OpenGL, which NVIDIA Reflex has no API for. With Perfect Presentation on, the
 frames go to the window through a Direct3D 11 swap chain, and the Bridge can run Reflex (NVAPI) on that D3D11 device:
@@ -790,12 +791,15 @@ The DLAA branch was restarted from main after 0.5.1, so fetch it instead of pull
 git -C $T\repo fetch origin
 git -C $T\repo checkout -B claude/project-thread-u2wmhh origin/claude/project-thread-u2wmhh
 Remove-Item $T\instance\mods\create-galore-bridge-*.jar
-Copy-Item $T\repo\pack\mods\create-galore-bridge-1.105.0.jar $T\instance\mods\
+Copy-Item $T\repo\pack\mods\create-galore-bridge-*.jar $T\instance\mods\
 Copy-Item $T\repo\tools\dlss-testkit\dist\create-galore-dlss-testkit-1.0.0.jar $T\instance\mods\ -Force
 ```
 
-1.105.0 is 0.5.1's Bridge plus the latency test code. It changes nothing unless the display settings ask (`reflex`,
-`latePoll`, `latencyLog`, testing only); the kit's latency modes set those themselves.
+The Bridge there is 1.105.0 (the test build) or 1.106.0 (the 0.5.2 release with the NVIDIA Reflex setting); either
+works the same here. Reflex and the late read change nothing unless the display settings ask (`reflex`, plus
+`latePoll` and `latencyLog` for testing; the late read is on with `reflex=on` or `boost` unless `latePoll` says
+otherwise); the kit's latency modes set those themselves. In 1.106.0 the log lines start with `Reflex:` and
+`Latency:` instead of `Latency test:`.
 
 ### Settings (note the old values, put them back afterwards)
 
@@ -832,10 +836,10 @@ the background; F11 if it opened windowed is fine).
    | `lat-cap-late` | 60 fps cap, game's limiter, late read |
    | `lat-cap-reflex` | 60 fps cap by Reflex instead of the game's limiter, low latency on, late read |
 
-   The log must have `Latency test: NVIDIA Reflex started on Perfect Presentation's Direct3D 11 device` and, in the
-   Reflex modes, `Latency test: Reflex low latency on, ...; driver low latency on, ...`. If it says
-   `Latency test: Reflex unavailable: ...` or `Reflex stopped after an error`, copy that line and go on (the other
-   modes still count). Also check for `Perfect Presentation: DXGI swap chain ready`.
+   The log must have `Latency test: NVIDIA Reflex started on Perfect Presentation's Direct3D 11 device` (1.106.0:
+   `Reflex: started on Perfect Presentation's Direct3D 11 device`) and, in the Reflex modes, `... low latency on,
+   ...; driver low latency on, ...`. If it says Reflex is unavailable or can't run, or `Reflex stopped after an
+   error`, copy that line and go on (the other modes still count). Also check for `Perfect Presentation: DXGI swap chain ready`.
 2. **Perfect Presentation off, `...runs=L2`** (about 10 minutes): `lat-base`, `lat-late`, `lat-ra1` and `lat-ra0`
    (Sodium's render-ahead limit 1 and 0), `lat-ra1-late`, `lat-cap`, `lat-cap-late`.
 3. **By feel, optional (about 10 minutes, with Emre).** Launch 1's settings (Perfect Presentation on) with
@@ -845,6 +849,13 @@ the background; F11 if it opened windowed is fine).
    (this only switches Reflex and the late read; the frame cap and Sodium stay as `options.txt` and Sodium have
    them). Write down what he says per mode, especially whether the camera feels more direct, and whether he can tell
    at all.
+
+4. **The settings screen (1.106.0 only, 5 minutes).** Start with `perfectPresentation=false` and `reflex=off`, no kit
+   autorun. On the DLAA... screen pick NVIDIA Reflex: On. Perfect Presentation must switch to ON by itself and the
+   text beside Reflex say `Runs after you restart the game.`; Done shows a "Restart the game" notice. Check
+   `config\fml.toml` now has `earlyWindowControl = false` and the display properties `reflex=on` and
+   `perfectPresentation=true`. Restart once: the screen must say `Running: the driver confirms it.` (its tooltip has
+   the driver's line). Turning Perfect Presentation OFF must set Reflex to Off. Put the settings back afterwards.
 
 If a launch crashes, copy `hs_err_pid*.log` and the log's last 100 lines, and report.
 
@@ -858,6 +869,7 @@ If a launch crashes, copy `hs_err_pid*.log` and the log's last 100 lines, and re
 - the control panel settings and refresh rate from Settings, what stayed open on the PC;
 - for the Reflex modes: whether the driver says low latency is on and uses the game's sleep, the driver's numbers
   next to the Bridge's, and the unit check (about 1 expected);
-- Emre's by-feel notes, if that part ran.
+- Emre's by-feel notes, if that part ran;
+- the settings screen check (step 4): what each step showed.
 
 Commit and push on the DLAA branch. Don't commit hs_err files (they name his user folder).

@@ -5,6 +5,13 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.5.2
+
+### Added
+- **NVIDIA Reflex (experimental).** The DLAA... screen has a new setting, NVIDIA Reflex: Off, On or On + Boost. With it on, the NVIDIA driver starts each frame as late as it can while keeping the graphics card busy, and the game reads the mouse again just before it draws, to shorten the time from moving the mouse to seeing it. Boost also keeps the card's clocks up, for a little less delay where the processor holds the frame rate back. With a Max Framerate set, Reflex keeps that cap instead of the game's own limiter. Reflex has no OpenGL version, so it runs on Perfect Presentation's DirectX device: picking it turns Perfect Presentation on, a notice says to restart the game, and one restart is enough (the screen also turns off NeoForge's early loading screen, which Perfect Presentation needs; before, turning it on took two restarts). Beside the setting the screen says what Reflex is doing: running with the driver confirming low latency mode, waiting for the restart, or why it can't run (it needs Windows and an NVIDIA card, GTX 900 or newer). Turning Perfect Presentation off turns Reflex off with it, and if the game ever closes while Reflex starts, Reflex stays off until Try again on the same screen. How much it lowers the delay on a real PC hasn't been measured yet. Checked in a test game (Linux, no NVIDIA card): the setting saves and loads, picking On switched Perfect Presentation on, and Reflex said why it can't run instead of starting.
+- Field Guide (Performance and Shaders): a page on NVIDIA Reflex; Perfect Presentation now takes one restart.
+- Create Galore Bridge 1.106.0.
+
 ## 0.5.1
 
 ### Fixed

@@ -42,9 +42,9 @@ public final class DisplaySettings {
     public static final String DLAA_MIP_BIAS = "dlaaMipBias";
     /** true: the settings screen sets the render resolution with a slider instead of the standard modes. */
     public static final String DLAA_CUSTOM_SCALE = "dlaaCustomScale";
-    /** Testing only, not written to the file: NVIDIA Reflex with Perfect Presentation, off, markers, on or boost (see FrameLatency). */
+    /** NVIDIA Reflex on Perfect Presentation's DirectX device: off, on or boost (markers for testing; see FrameLatency). */
     public static final String REFLEX = "reflex";
-    /** Testing only, not written to the file: true reads input again just before each frame renders (see FrameLatency). */
+    /** Testing only, not written to the file: true or false reads input again just before each frame renders, or not (unset: with Reflex on). */
     public static final String LATE_POLL = "latePoll";
     /** Testing only, not written to the file: true logs the input latency every 10 seconds (see FrameLatency). */
     public static final String LATENCY_LOG = "latencyLog";
@@ -63,6 +63,9 @@ public final class DisplaySettings {
             + " Upscaling: the render resolution is the shader pack's own upscaling options (in Photon TAAU and TAAU Render\n"
             + " Scale; Render resolution on the settings screen); DLSS or FSR 3.1 upscale from it to the window.\n"
             + " dlaaCustomScale: true shows a 25-100% slider on the settings screen instead of the standard modes.\n"
+            + " reflex: off, on or boost. NVIDIA Reflex low latency (boost also keeps the GPU clocks up), applied at once.\n"
+            + " Needs an NVIDIA card (GTX 900 or newer) and perfectPresentation=true; the settings screen turns that on\n"
+            + " with it. With Max Framerate set, Reflex keeps that cap.\n"
             + " perfectPresentation: EXPERIMENTAL, Windows only. true shows the game through a DirectX swap chain\n"
             + " (ported from Perfect Presentation by sidit77): borderless fullscreen at exclusive-fullscreen speed and\n"
             + " Alt-Tab without a display mode change. Leave NVIDIA's Vulkan/OpenGL present method on Auto.\n"
@@ -149,6 +152,7 @@ public final class DisplaySettings {
             missing |= props.putIfAbsent(PERFECT_PRESENTATION, "false") == null;
             missing |= props.putIfAbsent(DLAA, "auto") == null;
             missing |= props.putIfAbsent(DLAA_PRESET, "default") == null;
+            missing |= props.putIfAbsent(REFLEX, "off") == null;
             if (missing) {
                 try (Writer w = Files.newBufferedWriter(file)) {
                     props.store(w, COMMENT);

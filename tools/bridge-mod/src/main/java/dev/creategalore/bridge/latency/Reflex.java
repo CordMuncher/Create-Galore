@@ -145,6 +145,14 @@ final class Reflex {
         }
     }
 
+    /** True if the driver says low latency mode is on. */
+    boolean lowLatency() {
+        memSet(statusParams, 0, SLEEP_STATUS_SIZE);
+        memPutInt(statusParams, SLEEP_STATUS_SIZE | 1 << 16);
+        check("NvAPI_D3D_GetSleepStatus", (int) Ffi.call("PP:I", getSleepStatus, device, statusParams));
+        return memGetByte(statusParams + 4) != 0;
+    }
+
     /** What the driver made of the request: low latency on, its last sleep, and whether the game's Sleep calls are used. */
     String status() {
         memSet(statusParams, 0, SLEEP_STATUS_SIZE);
