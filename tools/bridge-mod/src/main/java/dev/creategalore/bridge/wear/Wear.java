@@ -40,6 +40,7 @@ public final class Wear {
         WearMenu.register(modBus);
         WearRules.register();
         WearMigration.register();
+        WearLeftovers.register();
         NeoForge.EVENT_BUS.addListener(Wear::onCommands);
         NeoForge.EVENT_BUS.addListener(Wear::onMenuOpen);
         modBus.addListener((RegisterPayloadHandlersEvent event) -> {
