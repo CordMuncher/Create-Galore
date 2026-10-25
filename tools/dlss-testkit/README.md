@@ -40,7 +40,22 @@ instead of DLSS (any GPU), and an optional `"jitterSign": "-1,1"` that flips the
 any GPU, so the cloud rig can run it for real): the `fsr3` mode, its own `fsr3-flip-*` jitter checks and `fsr3-debug`
 (`"debugView": "fsr3"`, FSR's own view of its buffers). Modes added to the kit later are added to an older config
 file's list. `/dlaatest where` prints the camera for adding a viewpoint. A run puts the Bridge's display settings back
-when it ends.
+when it ends, and the DLAA pack's own options too.
+
+Upscaling: `"renderScale": 0.5` on a mode turns on Photon's TAAU at that render scale (the kit queues Photon's
+`TAAU` and `TAAU_RENDER_SCALE` options and reloads), so DLSS or FSR upscale from it, or with `"dlaa": false`
+Photon's own TAAU does, at the same render size (the Bridge rounds it to whole pixels for both). The default modes
+compare, at each standard scale (`q` 67%, `bal` 58%, `perf` 50%, `ultra` 33%), `X-taau` (Photon's TAAU), `X-dlss-K`,
+`X-dlss-M`, `X-dlss-L` and `X-fsr3`. `"mipBias": -1` adds that to the textures' mip bias while DLSS or FSR runs
+(NVIDIA's guide asks for one more mip level of detail than the render scale's own; `perf-dlss-K-bias`,
+`perf-fsr3-bias`), and `perf-debug-color` and `perf-debug-motion` show DLSS's render-sized inputs stretched over
+the window. `-Dcreate_galore_dlss_testkit.paths=brief` runs only those paths.
+
+Several runs in one game: `-Dcreate_galore_dlss_testkit.runs=F1+F2+U1` plays the config's named runs (`"runs"`: each
+with its modes, viewpoints, paths, quick, and `screenshots` and `showHand` for that run) one after another without a
+restart, each into its own folder (`<time>-<run>`); the built-in ones are Upscaling 1's (`PC-RUNBOOK.md`).
+`-Dcreate_galore_dlss_testkit.byEye=perf-dlss-K` keeps the game open after the last run for looking by eye: the moving
+scene at normal speed, the player at its viewpoint, the shaders in that mode.
 
 `metrics.py RUN_FOLDER` (Pillow and numpy) prints, per viewpoint and mode, the frame time, the shimmer between the
 still path's last 8 frames, the smear left two frames after the flick, and the edge contrast.

@@ -23,10 +23,17 @@ import net.irisshaders.iris.shaderpack.option.values.OptionValues;
  * custom images holding motion vectors (render pixels, towards the previous frame), DLSS depth (1 near, 0 sky) and
  * the exposure (1x1). maskImage (optional): FSR 3's masks, reactive in red and transparency and composition in green
  * (RG16F, 0..1). requireOn / requireOff: pack options that must be on / off for the patch to apply (an option Iris
- * does not offer keeps the value the pack's source gives it, which the patcher checked).
+ * does not offer keeps the value the pack's source gives it, which the patcher checked). renderScaleOptions
+ * (optional): the pack's upscaling switch and its render scale option; with the switch on, the pack renders at that
+ * scale into the lower left corner of its buffers and DLSS upscales it, at the size the Bridge rounds it to
+ * (taau_render_scale).
  */
 record PackProfile(String pass, int colorAttachment, int[] outputAttachments, int[] keepAlpha, String motionImage,
-                   String depthImage, String exposureImage, String maskImage, List<String> requireOn, List<String> requireOff) {
+                   String depthImage, String exposureImage, String maskImage, List<String> requireOn, List<String> requireOff,
+                   List<String> renderScaleOptions) {
+    /** The lowest render scale the Bridge takes (a quarter of the window's width and height). */
+    static final float MIN_RENDER_SCALE = 0.25f;
+
     static final String FILE = "shaders/create_galore_dlss.properties";
 
     /** The current pack's profile, or null if it has none. */
@@ -62,7 +69,35 @@ record PackProfile(String pass, int colorAttachment, int[] outputAttachments, in
                 ints(required(props, "outputAttachments")), ints(props.getProperty("keepAlpha", "")),
                 required(props, "motionImage"), required(props, "depthImage"), required(props, "exposureImage"),
                 props.getProperty("maskImage", "").isBlank() ? null : props.getProperty("maskImage").trim(),
-                names(props.getProperty("requireOn", "")), names(props.getProperty("requireOff", "")));
+                names(props.getProperty("requireOn", "")), names(props.getProperty("requireOff", "")),
+                names(props.getProperty("renderScaleOptions", "")));
+    }
+
+    /**
+     * The render scale the pack's current options ask for: 1 without upscaling (or a profile without it), else the
+     * scale option's value, from {@link #MIN_RENDER_SCALE} to 1.
+     */
+    float renderScale() {
+        if (renderScaleOptions.size() != 2) {
+            return 1.0f;
+        }
+        OptionValues values = Iris.getCurrentPack().map(pack -> pack.getShaderPackOptions().getOptionValues()).orElse(null);
+        if (values == null || !values.getOptionSet().getBooleanOptions().containsKey(renderScaleOptions.get(0))
+                || !values.getBooleanValueOrDefault(renderScaleOptions.get(0))
+                || !values.getOptionSet().getStringOptions().containsKey(renderScaleOptions.get(1))) {
+            return 1.0f;
+        }
+        for (String option : requireOn) {
+            if (values.getOptionSet().getBooleanOptions().containsKey(option) && !values.getBooleanValueOrDefault(option)) {
+                return 1.0f; // (the pack only upscales with its TAA on)
+            }
+        }
+        try {
+            float scale = Float.parseFloat(values.getStringValueOrDefault(renderScaleOptions.get(1)).trim());
+            return Float.isFinite(scale) ? Math.max(MIN_RENDER_SCALE, Math.min(1.0f, scale)) : 1.0f;
+        } catch (RuntimeException e) {
+            return 1.0f;
+        }
     }
 
     /** Null when the pack's current option values allow DLSS, else why not. */

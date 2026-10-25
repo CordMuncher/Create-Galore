@@ -44,9 +44,13 @@ public final class Capture {
     private static final Logger LOG = LoggerFactory.getLogger(TestKit.MOD_ID);
     private static final String CONFIG = "create_galore_dlss_testkit.json";
     private static final String BRIDGE_CONFIG = "create_galore_bridge-display.properties";
+    /** The DLAA pack's options (Iris's file beside it): the modes set its upscaling. */
+    private static final String PACK_OPTIONS = "Photon v1.3a + DLAA.txt";
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
     /** Frames between putting the scenes up and the first mode, for the server to place them and the client to get them. */
     private static final int SCENE_BUILD_FRAMES = 40;
+    /** Frames between one run of -D...runs and the next. */
+    private static final int NEXT_RUN_FRAMES = 40;
 
     /** config/create_galore_dlss_testkit.json. */
     static final class Settings {
@@ -108,6 +112,25 @@ public final class Capture {
                 // portal, fire and lava), and those masks themselves (red: reactive, green: composition; any GPU).
                 new Mode("fsr3-nomask", true, "default", null, null, "fsr3", null, false),
                 new Mode("debug-mask", true, "default", "mask", null, null, null, null)));
+        {
+            // Upscaling: at each standard render scale Photon's own TAAU against DLSS with K (the default), M and L
+            // (made for low render resolutions) and FSR 3.1, all at the same render size.
+            String[][] scales = {{"q", "0.67"}, {"bal", "0.58"}, {"perf", "0.50"}, {"ultra", "0.33"}};
+            for (String[] scale : scales) {
+                float s = Float.parseFloat(scale[1]);
+                modes.add(new Mode(scale[0] + "-taau", false, "default", null, null, null, null, null, s));
+                modes.add(new Mode(scale[0] + "-dlss-K", true, "K", null, null, null, null, null, s));
+                modes.add(new Mode(scale[0] + "-dlss-M", true, "M", null, null, null, null, null, s));
+                modes.add(new Mode(scale[0] + "-dlss-L", true, "L", null, null, null, null, null, s));
+                modes.add(new Mode(scale[0] + "-fsr3", true, "default", null, null, "fsr3", null, null, s));
+            }
+            // NVIDIA's full mip bias (one more mip level of detail) against the render scale's own.
+            modes.add(new Mode("perf-dlss-K-bias", true, "K", null, null, null, null, null, 0.5f, -1.0f));
+            modes.add(new Mode("perf-fsr3-bias", true, "default", null, null, "fsr3", null, null, 0.5f, -1.0f));
+            // What DLSS gets at a render scale (any GPU): the corner of the pack's buffers, stretched over the window.
+            modes.add(new Mode("perf-debug-color", true, "default", "color", null, null, null, null, 0.5f));
+            modes.add(new Mode("perf-debug-motion", true, "default", "motion", null, null, null, null, 0.5f));
+        }
         // The DLAA test world (seed 20261024, scene built on the lakeshore at x 1023..1040, z 160..176).
         List<Viewpoint> viewpoints = new ArrayList<>(List.of(
                 new Viewpoint("shore", 1029.5, 64.0, 160.5, 0.0f, 8.0f, null),
@@ -119,16 +142,50 @@ public final class Capture {
                 // wet look fades slowly, so this one is best run on its own (viewpoints=effects).
                 new Viewpoint("effects", 1006.5, 68.0, 158.5, 180.0f, 14.0f, EffectsScene.NAME)));
         List<String> paths = new ArrayList<>(List.of("still", "flick", "pan", "strafe"));
+        /**
+         * Named runs for -Dcreate_galore_dlss_testkit.runs=A+B, which plays them one after another in one game. Upscaling 1
+         * (PC-RUNBOOK.md): F1 and F2 measure frame rates (no screenshots), U1 to U7 save the pictures.
+         */
+        List<Run> runs = new ArrayList<>(List.of(
+                new Run("F1", "photon-taa+dlaa-default+fsr3+perf-taau+perf-dlss-K+perf-dlss-M+perf-dlss-L+perf-fsr3"
+                        + "+ultra-taau+ultra-dlss-K+ultra-dlss-M+ultra-dlss-L+ultra-fsr3", "shore+canopy", null, null, false, null),
+                new Run("F2", "photon-taa+dlaa-default+fsr3+q-taau+q-dlss-K+q-fsr3+bal-taau+bal-dlss-K+bal-dlss-M+bal-dlss-L"
+                        + "+bal-fsr3", "shore+canopy", null, null, false, null),
+                new Run("U1", "perf-taau+perf-dlss-K+perf-dlss-M+perf-dlss-L+perf-fsr3+dlaa-default", null, null, null, null, null),
+                new Run("U2", "ultra-taau+ultra-dlss-K+ultra-dlss-M+ultra-dlss-L+ultra-fsr3", null, null, null, null, null),
+                new Run("U3", "bal-taau+bal-dlss-K+bal-dlss-M+bal-dlss-L+bal-fsr3", null, null, null, null, null),
+                new Run("U4", "q-taau+q-dlss-K+q-fsr3", null, null, null, null, null),
+                new Run("U5", "perf-taau+perf-dlss-K+perf-dlss-M+perf-fsr3", "moving", "brief", null, null, true),
+                new Run("U6", "perf-dlss-K+perf-dlss-K-bias+perf-fsr3+perf-fsr3-bias", null, null, true, null, null),
+                new Run("U7", "perf-debug-color+perf-debug-motion", null, null, true, null, null)));
     }
+
+    /**
+     * A run: modes, viewpoints and paths as the -D properties write them (a+b; null: all), quick as -D...quick, and
+     * screenshots and showHand in place of the config's for this run (null: the config's).
+     */
+    record Run(String name, String modes, String viewpoints, String paths, Boolean quick, Boolean screenshots, Boolean showHand) {}
 
     /**
      * debugView (color, motion, depth or residual) shows that instead of DLSS, on any GPU (fsr3: FSR's own view);
      * jitterSign ("x,y", default "1,1") flips the jitter the Bridge hands to DLSS; engine is dlss (null) or fsr3;
      * objectMotion false leaves only the camera's motion in the motion vectors (null: on); reactiveMask false hands FSR
-     * no masks (null: on; DLSS never gets them).
+     * no masks (null: on; DLSS never gets them); renderScale (null: full resolution) turns on Photon's TAAU at that
+     * render scale, so DLSS or FSR upscale (or with dlaa false Photon's TAAU itself); mipBias (null: 0) is added to the
+     * textures' mip bias while DLSS or FSR runs (NVIDIA's guide asks for -1 more than the render scale's own).
      */
     record Mode(String name, boolean dlaa, String preset, String debugView, String jitterSign, String engine, Boolean objectMotion,
-                Boolean reactiveMask) {}
+                Boolean reactiveMask, Float renderScale, Float mipBias) {
+        Mode(String name, boolean dlaa, String preset, String debugView, String jitterSign, String engine, Boolean objectMotion,
+             Boolean reactiveMask) {
+            this(name, dlaa, preset, debugView, jitterSign, engine, objectMotion, reactiveMask, null, null);
+        }
+
+        Mode(String name, boolean dlaa, String preset, String debugView, String jitterSign, String engine, Boolean objectMotion,
+             Boolean reactiveMask, Float renderScale) {
+            this(name, dlaa, preset, debugView, jitterSign, engine, objectMotion, reactiveMask, renderScale, null);
+        }
+    }
 
     /** scene: built there at run time (MovingScene.NAME), else null. */
     record Viewpoint(String name, double x, double y, double z, float yaw, float pitch, String scene) {}
@@ -162,7 +219,15 @@ public final class Capture {
     private static CameraType savedCamera;
     /** The Bridge's display settings before the run (null: no file), put back when it ends. */
     private static String savedBridgeConfig;
+    /** The DLAA pack's options before the run (null: no file), put back when it ends. */
+    private static String savedPackOptions;
     private static int autorunWait;
+    /** The autorun's runs still to come, in this same game. */
+    private static final java.util.ArrayDeque<Run> queued = new java.util.ArrayDeque<>();
+    private static boolean queuedRuns;
+    /** -D...byEye: the mode to switch to once the moving scene is up after the runs (null: none pending). */
+    private static String byEyeMode;
+    private static int byEyeWait;
     private static String activeScene;
 
     private Capture() {}
@@ -195,8 +260,18 @@ public final class Capture {
         }
     }
 
-    /** Starts a run; null if it started, else why not. */
+    /** Starts a run of the modes in modeFilter (null: all) and the -D properties' viewpoints and paths; null if it started, else why not. */
     static String start(String modeFilter, boolean fromAutorun) {
+        return start(propertyRun(modeFilter));
+    }
+
+    private static Run propertyRun(String modeFilter) {
+        return new Run(null, modeFilter, System.getProperty(TestKit.MOD_ID + ".viewpoints"),
+                System.getProperty(TestKit.MOD_ID + ".paths"), Boolean.getBoolean(TestKit.MOD_ID + ".quick"), null, null);
+    }
+
+    private static String start(Run run) {
+        String modeFilter = run.modes();
         Minecraft mc = Minecraft.getInstance();
         if (running) {
             return "a run is already going";
@@ -209,6 +284,12 @@ public final class Capture {
         } catch (IOException | RuntimeException e) {
             return "could not read config/" + CONFIG + ": " + e;
         }
+        if (run.screenshots() != null) {
+            settings.screenshots = run.screenshots();
+        }
+        if (run.showHand() != null) {
+            settings.showHand = run.showHand();
+        }
         List<Mode> modes = new ArrayList<>(settings.modes);
         if (modeFilter != null && !modeFilter.isBlank()) {
             List<String> wanted = List.of(modeFilter.trim().split("\\s*[,;+ ]\\s*"));
@@ -218,13 +299,17 @@ public final class Capture {
             }
         }
         List<Viewpoint> viewpoints = settings.viewpoints;
-        String viewpointFilter = System.getProperty(TestKit.MOD_ID + ".viewpoints");
+        String viewpointFilter = run.viewpoints();
         if (viewpointFilter != null && !viewpointFilter.isBlank()) {
             List<String> wanted = List.of(viewpointFilter.trim().split("\\s*[,;+ ]\\s*"));
             viewpoints = viewpoints.stream().filter(v -> wanted.contains(v.name())).toList();
         }
         List<String> paths = settings.paths;
-        if (Boolean.getBoolean(TestKit.MOD_ID + ".quick")) {
+        String pathFilter = run.paths();
+        if (pathFilter != null && !pathFilter.isBlank()) {
+            paths = List.of(pathFilter.trim().split("\\s*[,;+ ]\\s*"));
+        }
+        if (Boolean.TRUE.equals(run.quick())) {
             viewpoints = viewpoints.subList(0, 1);
             paths = List.of("still", "flick");
         }
@@ -255,7 +340,7 @@ public final class Capture {
                 }
             }
         }
-        runId = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss"));
+        runId = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss")) + (run.name() != null ? "-" + run.name() : "");
         runDir = mc.gameDirectory.toPath().resolve("screenshots").resolve("dlaa-test").resolve(runId);
         try {
             Files.createDirectories(runDir);
@@ -278,6 +363,8 @@ public final class Capture {
         try {
             Path bridgeFile = FMLPaths.CONFIGDIR.get().resolve(BRIDGE_CONFIG);
             savedBridgeConfig = Files.exists(bridgeFile) ? Files.readString(bridgeFile) : null;
+            Path packFile = Iris.getShaderpacksDirectory().resolve(PACK_OPTIONS);
+            savedPackOptions = Files.exists(packFile) ? Files.readString(packFile) : null;
         } catch (IOException e) {
             return "could not read config/" + BRIDGE_CONFIG + ": " + e;
         }
@@ -302,7 +389,7 @@ public final class Capture {
             server("tick freeze");
         }
         running = true;
-        log("run " + runId + ": " + modes.size() + " modes, " + viewpoints.size() + " viewpoints, paths " + paths
+        log("run " + runId + (queued.isEmpty() ? "" : " (" + queued.size() + " more after it)") + ": " + modes.size() + " modes, " + viewpoints.size() + " viewpoints, paths " + paths
                 + ", " + segments.stream().mapToInt(Segment::length).sum() + " frames");
         return null;
     }
@@ -375,8 +462,22 @@ public final class Capture {
         restoreBridgeConfig();
         writeManifest(why);
         log(why + "; screenshots in " + runDir);
+        if (autorun && "run finished".equals(why) && !queued.isEmpty()) {
+            // The next run starts in a moment, in this same game: no restart between runs.
+            autorunWait = 200 - NEXT_RUN_FRAMES;
+            return;
+        }
+        String byEye = System.getProperty(TestKit.MOD_ID + ".byEye");
+        if (autorun && byEye != null && !byEye.isBlank() && mc.player != null) {
+            // Stay in this game for looking by eye: no restart after the runs.
+            autorun = false;
+            queued.clear();
+            startByEye(byEye.trim());
+            return;
+        }
         if (autorun) {
             autorun = false;
+            queued.clear();
             // Give the last screenshots a moment to reach the disk.
             Util.ioPool().execute(() -> {
                 try {
@@ -398,6 +499,12 @@ public final class Capture {
             } else {
                 Files.deleteIfExists(file);
             }
+            Path packFile = Iris.getShaderpacksDirectory().resolve(PACK_OPTIONS);
+            if (savedPackOptions != null) {
+                Files.writeString(packFile, savedPackOptions);
+            } else {
+                Files.deleteIfExists(packFile);
+            }
             if (!autorun) {
                 Iris.reload();
             }
@@ -409,18 +516,36 @@ public final class Capture {
     static void beforeFrame(RenderFrameEvent.Pre event) {
         Minecraft mc = Minecraft.getInstance();
         if (!running) {
+            if (byEyeMode != null && mc.player != null && ++byEyeWait == NEXT_RUN_FRAMES) {
+                String mode = byEyeMode;
+                byEyeMode = null;
+                log(useMode(mode) + "; by eye now: /dlaatest mode NAME switches, /dlaatest scene remove takes the scene away");
+            }
             // Autorun: start once the world has been showing for a while (chunks built).
             if (autorun && mc.player != null && mc.level != null && mc.screen == null && ++autorunWait == 200) {
-                long hold = Long.getLong(TestKit.MOD_ID + ".hold", 0);
-                if (hold > 0) {
-                    hold(mc, hold);
-                    return;
+                if (!queuedRuns) {
+                    queuedRuns = true;
+                    long hold = Long.getLong(TestKit.MOD_ID + ".hold", 0);
+                    if (hold > 0) {
+                        hold(mc, hold);
+                        return;
+                    }
+                    String error = queueRuns();
+                    if (error != null) {
+                        log("autorun: " + error);
+                        mc.stop();
+                        return;
+                    }
                 }
-                String error = start(System.getProperty(TestKit.MOD_ID + ".modes"), true);
-                if (error != null) {
-                    log("autorun: " + error);
-                    mc.stop();
+                while (!queued.isEmpty()) {
+                    Run run = queued.poll();
+                    String error = start(run);
+                    if (error == null) {
+                        return;
+                    }
+                    log("autorun: " + (run.name() != null ? run.name() + ": " : "") + error);
                 }
+                mc.stop();
             }
             return;
         }
@@ -574,6 +699,8 @@ public final class Capture {
         info.addProperty("engine", mode.engine() != null ? mode.engine() : "dlss");
         info.addProperty("objectMotion", !Boolean.FALSE.equals(mode.objectMotion()));
         info.addProperty("reactiveMask", !Boolean.FALSE.equals(mode.reactiveMask()));
+        info.addProperty("renderScale", mode.renderScale() != null ? mode.renderScale() : 1.0f);
+        info.addProperty("mipBias", mode.mipBias() != null ? mode.mipBias() : 0.0f);
         info.add("frameMs", new JsonObject());
         modeInfo.put(mode.name(), info);
         log("mode " + mode.name());
@@ -616,8 +743,19 @@ public final class Capture {
             } else {
                 props.remove("dlaaReactiveMask");
             }
+            if (mode.mipBias() != null && mode.mipBias() != 0.0f) {
+                props.setProperty("dlaaMipBias", Float.toString(mode.mipBias()));
+            } else {
+                props.remove("dlaaMipBias");
+            }
             try (Writer w = Files.newBufferedWriter(file)) {
                 props.store(w, "Create Galore Bridge display settings (last written by the DLAA test kit, mode " + mode.name() + ")");
+            }
+            // The render scale is the pack's own option: Iris applies queued options on the reload and saves them.
+            Float scale = mode.renderScale();
+            Iris.getShaderPackOptionQueue().put("TAAU", Boolean.toString(scale != null && scale < 1.0f));
+            if (scale != null && scale < 1.0f) {
+                Iris.getShaderPackOptionQueue().put("TAAU_RENDER_SCALE", String.format(Locale.ROOT, "%.2f", scale));
             }
             Iris.reload();
             return true;
@@ -656,6 +794,52 @@ public final class Capture {
         } catch (ReflectiveOperationException | RuntimeException e) {
             return false;
         }
+    }
+
+    /**
+     * -Dcreate_galore_dlss_testkit.byEye=MODE: after the runs the game stays open for looking by eye. The moving scene
+     * goes up at the game's normal speed, the player stands at its viewpoint (flying, so not in the lake), and a moment
+     * later the shaders switch to that mode (after the scene, so the switch's rebuild of the chunks can't lose a part).
+     */
+    private static void startByEye(String mode) {
+        log(scene(true, null));
+        Viewpoint at = settings.viewpoints.stream().filter(v -> MovingScene.NAME.equals(v.scene())).findFirst()
+                .orElse(settings.viewpoints.get(0));
+        server(String.format(Locale.ROOT, "tp @a %.2f %.2f %.2f %.1f %.1f", at.x(), at.y(), at.z(), at.yaw(), at.pitch()));
+        IntegratedServer server = Minecraft.getInstance().getSingleplayerServer();
+        if (server != null) {
+            server.execute(() -> server.getPlayerList().getPlayers().forEach(player -> {
+                player.getAbilities().flying = true;
+                player.onUpdateAbilities();
+                player.setDeltaMovement(Vec3.ZERO);
+            }));
+        }
+        byEyeMode = mode;
+        byEyeWait = 0;
+    }
+
+    /** The autorun's runs: those named in -D...runs=A+B (the config's runs), in that order, else one from the -D properties. */
+    private static String queueRuns() {
+        String names = System.getProperty(TestKit.MOD_ID + ".runs");
+        if (names == null || names.isBlank()) {
+            queued.add(propertyRun(System.getProperty(TestKit.MOD_ID + ".modes")));
+            return null;
+        }
+        List<Run> known;
+        try {
+            known = loadSettings().runs;
+        } catch (IOException | RuntimeException e) {
+            return "could not read config/" + CONFIG + ": " + e;
+        }
+        for (String name : names.trim().split("\\s*[,;+ ]\\s*")) {
+            Run run = known.stream().filter(r -> name.equals(r.name())).findFirst().orElse(null);
+            if (run == null) {
+                queued.clear();
+                return "no run called " + name + " in config/" + CONFIG;
+            }
+            queued.add(run);
+        }
+        return null;
     }
 
     /**
@@ -719,9 +903,20 @@ public final class Capture {
             }
             // Modes added to the kit after the file was written are offered too.
             List<String> names = loaded.modes.stream().map(Mode::name).toList();
-            for (Mode mode : new Settings().modes) {
+            Settings defaults = new Settings();
+            for (Mode mode : defaults.modes) {
                 if (!names.contains(mode.name())) {
                     loaded.modes.add(mode);
+                }
+            }
+            // So are runs.
+            if (loaded.runs == null) {
+                loaded.runs = new ArrayList<>();
+            }
+            List<String> runNames = loaded.runs.stream().map(Run::name).toList();
+            for (Run run : defaults.runs) {
+                if (!runNames.contains(run.name())) {
+                    loaded.runs.add(run);
                 }
             }
             return loaded;

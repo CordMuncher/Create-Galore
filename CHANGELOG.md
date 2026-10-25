@@ -5,6 +5,21 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.4.82
+
+### Added
+- **Upscaling for Photon v1.3a + DLAA (experimental, optional, not widely tested yet).** The DLAA settings screen has a new **Render resolution** choice: Native (100%), Quality (67%), Balanced (58%), Performance (50%), Ultra Performance (33%), or Custom, with a slider from 25% to 100% of the window's width and height. Below native, Photon renders the scene at that size and NVIDIA DLSS or AMD FSR 3.1 make the window-sized picture from it, for more frames. Native is DLAA as before. With the anti-aliasing set to Off, Photon's own upscaler (TAAU) does it.
+- On a test PC with an RTX 4080 Super at 2560x1440:
+  - **DLSS at Quality** looked the same as full resolution and ran about as fast as Photon's own TAA at full resolution (5.28 against 5.21 ms a frame in a forest view), 15 to 20% faster than DLAA.
+  - **DLSS at Performance** looked like a slightly softer 1440p, 25 to 31% faster than DLAA. Reflections and shadows under moving things take a moment longer to settle.
+  - **FSR 3.1** holds up at Quality, with only glass and fine particles a little unsteady. Below that it stays smooth but never quite resolves (far leaves crawl, particles trail), so cards without DLSS do best at Quality.
+  - **Photon's own upscaler** is soft and smeary at these sizes.
+- **DLSS presets for upscaling.** K stays the default at every render resolution. L (made for Ultra Performance) and M (made for Performance) are worth trying from Balanced down; at Performance, L was the sharpest of the three. L and M are made for RTX 40 and 50 cards: RTX 20 and 30 cards lack FP8, so they cost more there, and the settings screen says to stay on K if the frame rate drops.
+- Create Galore Bridge 1.96.0.
+
+### Fixed
+- The DLAA copy of Photon no longer logs "#endif without #if" whenever Photon's upscaler is on (a stray line at the end of one of Photon's files).
+
 ## 0.4.81
 
 ### Fixed

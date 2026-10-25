@@ -38,6 +38,10 @@ public final class DisplaySettings {
     public static final String DLAA_REACTIVE_MASK = "dlaaReactiveMask";
     /** Testing only, not written to the file: true has DLSS meter the exposure itself with presets J and K too. */
     public static final String DLAA_AUTO_EXPOSURE = "dlaaAutoExposure";
+    /** Testing only, not written to the file: added to the textures' mip bias while DLSS or FSR runs (NVIDIA's guide: -1). */
+    public static final String DLAA_MIP_BIAS = "dlaaMipBias";
+    /** true: the settings screen sets the render resolution with a slider instead of the standard modes. */
+    public static final String DLAA_CUSTOM_SCALE = "dlaaCustomScale";
 
     private static final String COMMENT = "Create Galore Bridge display settings, also on the settings screen (Mods, Create Galore Bridge,\n"
             + " Config, or the DLAA button in the shader pack menu). perfectPresentation and tenBitWindow need a restart;\n"
@@ -47,8 +51,11 @@ public final class DisplaySettings {
             + " NVIDIA DLAA (DLSS at full resolution) or AMD FSR 3.1 at full resolution. auto: DLSS on an NVIDIA RTX card\n"
             + " with nvngx_dlss.dll in create-galore-dlss/ (not part of the pack: bring your own), else FSR 3.1;\n"
             + " dlss, fsr3: only that one; off: Photon's own TAA (and no copy). Works with or without perfectPresentation.\n"
-            + " dlaaPreset: default, J, K, L, M or any other letter (DLSS render presets; default lets DLSS choose, K today;\n"
-            + " a letter DLSS has no preset for runs as default).\n"
+            + " dlaaPreset: default (K), J, K, L, M or any other letter (DLSS render presets; L and M are made for low render\n"
+            + " resolutions; a letter DLSS has no preset for runs as DLSS's own default).\n"
+            + " Upscaling: the render resolution is Photon's TAAU and TAAU Render Scale shader options (Render resolution on the\n"
+            + " settings screen); DLSS or FSR 3.1 upscale from it to the window. dlaaCustomScale: true shows a 25-100% slider\n"
+            + " on the settings screen instead of the standard modes.\n"
             + " perfectPresentation: EXPERIMENTAL, Windows only. true shows the game through a DirectX swap chain\n"
             + " (ported from Perfect Presentation by sidit77): borderless fullscreen at exclusive-fullscreen speed and\n"
             + " Alt-Tab without a display mode change. Leave NVIDIA's Vulkan/OpenGL present method on Auto.\n"

@@ -548,3 +548,151 @@ Write `$T\repo\tools\dlss-testkit\results\profiling-1\REPORT.md`, then commit an
   - anything that didn't go to plan.
 - **Data:** small tables (CSV summaries) and cropped timeline screenshots under `results\profiling-1\`. List where
   the raw captures are on the PC.
+
+
+## Upscaling 1: DLSS and FSR from a lower render resolution
+
+Start only when Emre says so. Same PC, test folder and tools as before. The Bridge now upscales through Photon's own
+TAAU path: with Photon's TAAU on, the frame renders at a lower size and DLSS or FSR 3.1 make the window-sized picture
+from it. The Bridge rounds the render size to whole pixels, and Photon's own TAAU renders the same size, so every
+mode at one scale gets the same internal resolution. **Compare each upscaler with Photon's TAAU at the same scale, not
+with native TAA** (Emre, 2026-10-25). Nothing of this is merged until Emre has tested it.
+
+### Update
+
+```powershell
+git -C $T\repo pull
+Remove-Item $T\instance\mods\create-galore-bridge-*.jar
+Copy-Item $T\repo\pack\mods\create-galore-bridge-1.96.0.jar $T\instance\mods\
+Copy-Item $T\repo\tools\dlss-testkit\dist\create-galore-dlss-testkit-1.0.0.jar $T\instance\mods\ -Force
+```
+
+Keep `$T\instance`, its world and its settings as they are, apart from the Setup below. Check before the launch:
+`config\create_galore_bridge-display.properties` has `dlaa=true` and `perfectPresentation=false`, and
+`nvngx_dlss.dll` (310.9.16) is still in `$T\instance\create-galore-dlss`. The kit's config gets the new modes added
+on the first run. Each mode sets Photon's `TAAU` and `TAAU_RENDER_SCALE` itself, and each run puts the pack's options
+back when it ends.
+
+### Setup
+
+One launch does every run: the kit switches modes, render scales and engines in place (each switch only reloads the
+shaders), and with `...runs=` it plays several runs one after another in the same game, so the game starts once. The
+settings below are set once, before that launch, and put back after it.
+- The setup from "Profiling 1", Setup: `options.txt` with `enableVsync:false` and `maxFps:260` (unlimited),
+  `numberOfThreads = 2` in `config\DistantHorizons.toml`, `perfectPresentation=false`. Note the old values.
+- The kit's config (`config\create_galore_dlss_testkit.json`): no `"screenshots": false` (each run sets it itself), and
+  `sceneTickRate` 20 as in the milestone 2 session. The runs F1 to U7 are built into the kit and get added to an
+  existing config.
+- A quiet PC for the first part, F1 and F2, as in profiling 1: Emre closes everything else; note what stayed open.
+
+### The launch
+
+Write each argument as `--jvm-arg=-D...=...` (`...` = `create_galore_dlss_testkit`), as in step 5:
+
+`...autorun=dlaa-test` `...runs=F1+F2+U1+U2+U3+U4+U5+U6+U7` `...byEye=perf-dlss-K`
+
+| Run | What | Modes | Viewpoints, paths |
+| --- | --- | --- | --- |
+| F1 | frame rate, no screenshots | `photon-taa+dlaa-default+fsr3`, then per scale (`perf`, `ultra`) `X-taau+X-dlss-K+X-dlss-M+X-dlss-L+X-fsr3` | `shore+canopy`, all paths |
+| F2 | frame rate, no screenshots | `photon-taa+dlaa-default+fsr3+q-taau+q-dlss-K+q-fsr3+bal-taau+bal-dlss-K+bal-dlss-M+bal-dlss-L+bal-fsr3` | `shore+canopy`, all paths |
+| U1 | pictures, Performance | `perf-taau+perf-dlss-K+perf-dlss-M+perf-dlss-L+perf-fsr3+dlaa-default` | all |
+| U2 | pictures, Ultra Performance | `ultra-taau+ultra-dlss-K+ultra-dlss-M+ultra-dlss-L+ultra-fsr3` | all |
+| U3 | pictures, Balanced | `bal-taau+bal-dlss-K+bal-dlss-M+bal-dlss-L+bal-fsr3` | all |
+| U4 | pictures, Quality | `q-taau+q-dlss-K+q-fsr3` | all |
+| U5 | things that move, with the hand | `perf-taau+perf-dlss-K+perf-dlss-M+perf-fsr3` | `moving`, `brief` |
+| U6 | mip bias | `perf-dlss-K+perf-dlss-K-bias+perf-fsr3+perf-fsr3-bias` | quick |
+| U7 | what DLSS gets | `perf-debug-color+perf-debug-motion` | quick |
+
+- Each run gets its own folder, `screenshots\dlaa-test\<time>-<run>`, and the chat says `run ... (N more after it)`.
+  After U7 the game stays open for "By eye, with Emre" below (that's `...byEye`; without it the game closes).
+- PresentMon, for F1 and F2: as in profiling 1 (the same build in `$T\tools`), attached to the game's own `java.exe`,
+  elevated: `--process_id <pid> --output_file $T\profiling\F.csv --qpc_time_ms --timed 1800 --terminate_after_timed
+  --stop_existing_session --no_console_stats`. Its capture only needs to cover F1 and F2; it can stop during the U
+  runs. If F2's `run finished` line comes after PresentMon stopped, measure F2 again on its own later
+  (`...runs=F2`) with a longer `--timed`.
+- If the game stops part way (a crash, or DLSS takes it down), start it again with only the runs that hadn't
+  finished, for example `...runs=U4+U5+U6+U7` (and `...byEye`). Report what happened.
+- Afterwards, put the settings back as profiling 1 did ("Afterwards" in its report).
+
+The log must have, for each upscaling mode:
+
+- `DLAA: on for this shader pack, engine dlss, DLSS preset K, upscaling from 50% of the window` (the preset and the
+  scale of that mode; `engine fsr3` for the FSR modes);
+- `DLAA: DLSS running at 1280x720 to 2560x1440 (Performance, 50%), preset K, the pack's exposure` (M and L say
+  `DLSS meters the exposure`), or `DLAA: FSR 3.1 running at 1280x720 to 2560x1440 (Performance, 50%)`;
+
+and no `DLAA: stopped`, `DLSS could not start` or `Failed to create shader rendering pipeline`. The `X-taau` modes
+have no DLAA lines of their own: Photon's TAAU runs. If a DLSS mode stops, copy the whole `DLAA:` line and the end
+of `create-galore-dlss\nvsdk_ngx.log`.
+
+### Frame rate (F1 and F2)
+
+Frame rate only, cheaply: PresentMon, no Nsight, no Java Flight Recorder.
+- `frametimes.py` on the F1 and F2 folders with `F.csv` (one CSV serves both: it lines frames up with each run's
+  timeline), as in profiling 1's Analysis.
+- The native modes are the baselines each upscaler is measured against: Photon's TAA (`photon-taa`), DLAA
+  (`dlaa-default`) and FSR 3.1 at full resolution (`fsr3`). They also line up with profiling 1 (shore 5.43, 6.20 and
+  6.17 ms, canopy 5.87, 7.31 and 7.20 ms, in `results\profiling-1\REPORT.md`). If they are within about 0.8 ms of
+  those, the runs compare; if not, say so next to the tables.
+- The PC was GPU-bound with DLAA, but Photon's TAA was about half CPU-bound at about 5–7 ms a frame. So expect the
+  low scales to run into the CPU: report the share of GPU-bound frames per mode, as profiling 1 did.
+- Profiling 1's open point: DLSS's p90 was 0.2–0.8 ms above FSR's, and under Nsight the write back after DLSS
+  sometimes blocked for about 3.9 ms. Compare the p90 of each DLSS mode with the FSR mode at the same scale (and
+  `dlaa-default` with `fsr3`), and say whether the gap is still there without a tracer.
+- The 4080 is an Ada card, where L and M run fast; NVIDIA says they cost much more on RTX 20 and 30 cards (no FP8), so
+  their frame times here say nothing about those.
+
+### What to look at
+
+- U1 to U4: each upscaler against `X-taau` at the same scale: sharpness of textures, leaves and fences, shimmer on
+  the still path, smearing after the flick, ghosting behind moving things. (`frameMs` in their manifests is rough,
+  as saving screenshots holds up frames; the frame rates come from F1 and F2.)
+- U5: things that move at Performance, and the hand.
+- U6: NVIDIA's full mip bias (one more mip level of detail than the render scale's) against the scale's own: sharper
+  textures, or more shimmer and moiré on the blocks' pixel art?
+- U7: what DLSS gets, the render-sized frame stretched over the window: the whole view, no black or doubled edges,
+  motion vectors as in milestone 2.
+
+### By eye, with Emre (Performance, about 30 minutes)
+
+Emre asked for this (2026-10-25): numbers alone don't show how much the upscaling changes the look. It works like
+milestone 2's "By eye, with Emre": while Emre plays and watches, the session types the `/dlaatest` commands into the
+game's chat (computer use). Only the moving scene; no rain or effects scene.
+
+When U7 ends, the game stays open: the moving scene goes up over the lake at the game's normal speed, Emre stands at
+its viewpoint (flying, so he doesn't drop into the lake), and a moment later the shaders switch to `perf-dlss-K`. The
+chat says `now perf-dlss-K (the shaders reloaded); by eye now`. Tell Emre it's his turn.
+
+1. **`perf-dlss-K`** (DLSS preset K at Performance, 50%): already on. Emre walks, flies and rides the ship (stand on
+   it). He looks at the cogs, the fan, the bearing's cross, the ship, the walkers, the panda, the spinning sword, the
+   chest and the bell, from the shore, close up and riding; he swings his own sword and holds things. If he wants, he
+   builds a short train and rides it, or spawns a few animals (`/kill @e[type=!player,distance=..64]` afterwards).
+2. When he says next: **`/dlaatest mode perf-fsr3`** (FSR 3.1 at Performance).
+3. When he says next: **`/dlaatest mode perf-taau`** (Photon's own TAAU at Performance).
+4. Then he concludes, or asks for more. Any mode switches the same way, `/dlaatest mode NAME`:
+   - at a scale: `q-` (Quality, 67%), `bal-` (Balanced, 58%), `perf-` (Performance, 50%), `ultra-` (Ultra Performance,
+     33%), followed by `dlss-K`, `dlss-M`, `dlss-L`, `fsr3` or `taau`, for example `q-dlss-K` or `ultra-dlss-L`;
+   - at full resolution: `dlaa-default` (DLAA, K), `dlaa-M`, `dlaa-L`, `fsr3`, `photon-taa`;
+   - another render scale (say 80%): Esc, Options, Video Settings, Shader Packs, the `DLAA...` button: Render
+     resolution `Custom`, then the slider. Leaving the screen applies it. The next `/dlaatest mode` sets its own scale
+     again.
+5. When he's done: `/dlaatest scene remove`, then `/dlaatest mode dlaa-default` (Photon's TAAU goes off again), and
+   close the game. Then put back the settings from Setup.
+
+At every mode, write down what Emre says with the mode's name, as close to his words as you can, especially:
+- how much sharper or softer each looks than the others, and than DLAA at full resolution if he asks for it;
+- anything that smears, trails, ghosts or flickers: the ship's glass block, the entities, the hand, leaves;
+- shimmer on fences, leaves and far terrain while standing still;
+- whether he'd play at that setting.
+
+If he wants to look at the saved pictures too: `compare.html` on the U1 to U4 folders, each upscaler against `X-taau`
+at one scale at a time.
+
+### Results
+
+`metrics.py` for each run folder. Write `$T\repo\tools\dlss-testkit\results\upscale1\REPORT.md`: the metrics tables
+per scale, the frame rate tables of F1 and F2 (median and p90 frame time, fps, GPU-bound share, per scale against
+`X-taau` and the three native modes), the `DLAA:` lines, anything that looked wrong, and Emre's by-eye notes per mode
+("Emre's notes", as in milestone 2's report); crops of the same spots
+as round 1 (about 512x512, from the settled still frame) for each mode of U1 under `results\upscale1\U1\`, a few MB
+in all. Commit and push on the DLAA branch.
