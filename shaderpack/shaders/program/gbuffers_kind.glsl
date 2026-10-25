@@ -9,6 +9,8 @@
 #if !defined PROGRAM_KIND
 #define PROGRAM_KIND
 
+#include "/lib/settings.glsl"
+
 // Iris's entity vertex format (mobs, block entities, held items): the Bridge's cg_prev_pos, Minecraft's two light
 // directions, the hurt and creeper flash (entityColor).
 // (One condition per line: GLSL before 4.20 has no line continuation.)
@@ -78,5 +80,32 @@ int key_flags() {
     return 0;
 #endif
 }
+
+#ifdef LIT_WORLD
+// How each program's draws are lit in the lit overworld (see deferred.fsh):
+// - LIT_GBUFFER: they leave their surface for the deferred pass to light (terrain, mobs, block entities, the hand,
+//   Create's machines). The LIT_SELF ones among them light themselves and leave only that (particles, lines, what
+//   Iris draws through the textured programs), which holds whether Iris draws them before the deferred pass or after.
+// - LIT_FORWARD: drawn after the deferred pass, over the lit scene, and lit by their own program (water and glass,
+//   translucent held items, rain, clouds, Create's translucent parts).
+// - LIT_GLOW: they only add light (glowing eyes, the enchantment glint, lightning).
+// - LIT_SKY: Minecraft's sky, which the deferred pass draws instead.
+#if defined PROGRAM_SKYBASIC || defined PROGRAM_SKYTEXTURED
+#define LIT_SKY
+#elif defined PROGRAM_WATER || defined PROGRAM_HAND_WATER || defined PROGRAM_WEATHER || defined PROGRAM_CLOUDS
+#define LIT_FORWARD
+#elif defined PROGRAM_CLRWL_TRANSLUCENT
+#define LIT_FORWARD
+#elif defined PROGRAM_SPIDEREYES || defined PROGRAM_ARMOR_GLINT || defined PROGRAM_LIGHTNING
+#define LIT_GLOW
+#elif defined PROGRAM_CLRWL_GLINT || defined PROGRAM_CLRWL_ADDITIVE || defined PROGRAM_CLRWL_LIGHTNING
+#define LIT_GLOW
+#else
+#define LIT_GBUFFER
+#if defined PROGRAM_PARTICLES || defined PROGRAM_TEXTURED || defined PROGRAM_TEXTURED_LIT || defined PROGRAM_BASIC
+#define LIT_SELF
+#endif
+#endif
+#endif
 
 #endif

@@ -1,7 +1,39 @@
 profile.PURE_AA=Pure anti-aliasing
 profile.PURE_AA.comment=Minecraft's own look with only DLSS or FSR anti-aliasing on top, at full size (DLAA).
+profile.SKY=Sky and light
+profile.SKY.comment=The overworld under a real sky: the sun's and the moon's light and shadows, the stars, and an exposure that follows day and night, anti-aliased at full size (DLAA).
 
 option.UPSCALING=Upscaling
 option.UPSCALING.comment=Render the world smaller and let DLSS or FSR bring it up to the window's size, for more frames. Off: they only anti-alias at full size (DLAA). Needs the Create Galore Bridge; without it the frame is stretched up plainly.
 option.RENDER_SCALE=Render Scale
 option.RENDER_SCALE.comment=How big the world renders while upscaling, per side of the window. 0.67 is DLSS Quality, 0.58 Balanced, 0.5 Performance and 0.33 Ultra Performance.
+
+option.LIGHTING=Sky and Light
+option.LIGHTING.comment=The overworld under a physically based sky, lit by the sun, the moon and the sky, with torches and every other light through Minecraft's light levels. Off: Minecraft's own look. The End, the Nether and other dimensions keep their own look either way.
+screen.LIGHT=Light
+screen.LIGHT.comment=Exposure, nights and the sun's path.
+option.EXPOSURE=Exposure
+option.EXPOSURE.comment=Brighter or darker than the automatic exposure, in stops.
+option.NIGHT_LIGHT=Night Light
+option.NIGHT_LIGHT.comment=How bright the moon and the stars light the night, times. A real moon is too dark to play by, so 1 is already twelve times brighter.
+option.sunPathRotation=Sun Path Tilt
+option.sunPathRotation.comment=How far the sun's path leans towards the south, in degrees. 0 is Minecraft's own, straight overhead.
+
+option.SHADOWS=Shadows
+option.SHADOWS.comment=The sun's and the moon's shadows. They hold still as you move, so DLSS keeps them sharp. Off: what is under a roof is still shaded by Minecraft's sky light.
+screen.SHADOW=Shadow Settings
+screen.SHADOW.comment=How far and how sharp the shadows reach, and what casts them.
+option.shadowMapResolution=Shadow Resolution
+option.shadowMapResolution.comment=The shadow map's size. Higher is sharper and costs more memory and time.
+option.shadowDistance=Shadow Distance
+option.shadowDistance.comment=How far around you the shadows reach, in blocks. Past it they fade into Minecraft's sky light shading. The same resolution over a longer distance is blurrier.
+option.SHADOW_SOFTNESS=Shadow Softness
+option.SHADOW_SOFTNESS.comment=How soft the shadows' edges are, in shadow map texels.
+option.SHADOW_ENTITIES=Mob Shadows
+option.SHADOW_ENTITIES.comment=Mobs, animals, items and minecarts cast shadows.
+option.SHADOW_BLOCK_ENTITIES=Block Entity Shadows
+option.SHADOW_BLOCK_ENTITIES.comment=Chests, signs, banners and other block entities cast shadows.
+option.SHADOW_PLAYER=Your Shadow
+option.SHADOW_PLAYER.comment=You cast a shadow, in first person too.
+option.SHADOW_MACHINES=Create Shadows
+option.SHADOW_MACHINES.comment=Create's machines, contraptions and trains cast shadows.

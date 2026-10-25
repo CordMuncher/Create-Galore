@@ -6,8 +6,12 @@
 // copy shows through cave mouths and dug holes, and its water over the near shore), and its water only where
 // Minecraft drew nothing.
 
+#include "/lib/settings.glsl"
 #include "/lib/frame.glsl"
 #include "/lib/vanilla.glsl"
+#ifdef LIT_WORLD
+#include "/lib/lit.glsl"
+#endif
 
 #ifdef PROGRAM_DH_WATER
 uniform sampler2D depthtex0;
@@ -15,9 +19,25 @@ uniform sampler2D depthtex0;
 
 in vec4 v_color;
 in vec3 v_fog_pos;
+#ifdef LIT_WORLD
+in vec3 v_normal;
+in vec2 v_level;
+#ifdef PROGRAM_DH_GENERIC
+flat in int v_dh_material;
+#endif
+#endif
 
+#if defined LIT_WORLD && !defined PROGRAM_DH_WATER
+// The lit overworld: its terrain into the G-buffer for the deferred pass, without the shadow map (which doesn't reach
+// it); anything else it draws (generic objects) lit by itself, as particles are (see gbuffers.fsh).
+/* RENDERTARGETS: 0,1,2 */
+layout(location = 0) out vec4 out_color;
+layout(location = 1) out vec4 out_albedo;
+layout(location = 2) out vec4 out_surface;
+#else
 /* RENDERTARGETS: 0 */
 layout(location = 0) out vec4 out_color;
+#endif
 
 void main() {
     if (outside_render_area(gl_FragCoord.xy)) {
@@ -35,5 +55,39 @@ void main() {
     }
 #endif
     // Its fog is measured at every pixel, as Distant Horizons' own shaders do (its triangles can be very long).
+#ifdef LIT_WORLD
+    vec3 dir = normalize(v_fog_pos - gbufferModelViewInverse[3].xyz);
+#if defined PROGRAM_DH_TERRAIN
+    out_color = vec4(0.0, 0.0, 0.0, 1.0);
+    out_albedo = v_color;
+    out_surface = encode_surface(v_normal, v_level, MATERIAL_LIT, 1.0);
+#elif defined PROGRAM_DH_WATER
+    // Lit here: the light past the shadow map's reach goes by the sky light (see lighting.glsl).
+    vec3 rgb = light_surface(srgb_to_linear(v_color.rgb), v_normal, v_level, v_fog_pos, false, false) * exposure();
+    rgb = apply_fog_lit(rgb, fog_distance(v_fog_pos), dir, fog_range());
+    out_color = with_sky_reflection(vec4(rgb, v_color.a), v_normal, dir, v_level.y);
+#else
+    // Its other objects, lit here: its clouds, the beacons' beams past the render distance, and any a mod adds.
+    // It gives its clouds and beams full block and sky light, so that its own shaders draw them as bright as
+    // their colour.
+    float dist = fog_distance(v_fog_pos);
+    vec3 rgb;
+    if (v_dh_material == DH_BLOCK_ILLUMINATED) {
+        rgb = glow(v_color.rgb) * fog_fade(dist);
+    } else if (v_dh_material == DH_BLOCK_UNKNOWN) {
+        // Its clouds come in Minecraft's cloud colour, which darkens them by night and in the rain as the sun and
+        // the sky do here: white like Minecraft's own clouds (see gbuffers.fsh), under the open sky.
+        rgb = light_surface(srgb_to_linear(vec3(0.9)), v_normal, vec2(0.0, 1.0), v_fog_pos, false, false) * exposure();
+        rgb = apply_fog_lit(rgb, dist, dir, fog_range());
+    } else {
+        rgb = light_surface(srgb_to_linear(v_color.rgb), v_normal, v_level, v_fog_pos, false, false) * exposure();
+        rgb = apply_fog_lit(rgb, dist, dir, fog_range());
+    }
+    out_color = vec4(rgb, v_color.a);
+    out_albedo = vec4(0.0, 0.0, 0.0, v_color.a);
+    out_surface = encode_surface(v_normal, v_level, MATERIAL_SELF, 1.0);
+#endif
+#else
     out_color = vec4(apply_fog(v_color.rgb, fog_distance(v_fog_pos)), v_color.a);
+#endif
 }

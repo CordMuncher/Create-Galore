@@ -5,10 +5,12 @@
 // - motion vectors in render pixels towards last frame, unjittered (cg_motion_img): a surface's own where it moves
 //   by itself (colortex7), else where the camera's motion takes its depth, Distant Horizons' included;
 // - DLSS depth, 1 at the near plane falling towards 0 far away, 0 for the sky (cg_depth_img);
-// - the exposure the scene is in (cg_exposure_img), 1: the pack doesn't expose yet.
+// - the exposure the scene is in (cg_exposure_img), 1: the lit overworld's frame comes exposed already (see
+//   globals.glsl), and everywhere else is Minecraft's own colours.
 // While upscaling, the frame fills the lower left corner of the buffers at the render size and only that is handed
 // over. Without the Bridge, or with DLSS off, the final pass shows this pass's output itself.
 
+#include "/lib/settings.glsl"
 #include "/lib/buffers.glsl"
 #include "/lib/motion.glsl"
 #include "/lib/color.glsl"
@@ -61,8 +63,16 @@ void main() {
     }
 
     vec3 scene_color = texelFetch(colortex0, texel, 0).rgb;
+#ifdef LIT_WORLD
+    // Light, exposed: past the tone curve's white all the same (and no NaN or infinity reaches DLSS).
+    if (any(isnan(scene_color)) || any(isinf(scene_color))) {
+        scene_color = vec3(0.0);
+    }
+    out_color = vec4(clamp(scene_color, 0.0, 1024.0), 1.0);
+#else
     scene_color = clamp(scene_color, 0.0, 1.0); // Minecraft's colours end at white (and no NaN reaches DLSS)
     out_color = vec4(srgb_to_linear(scene_color), 1.0);
+#endif
 
     // This pixel's centre without the jitter, in normalised device coordinates.
     vec2 ndc = (vec2(texel) + 0.5 - vec2(cg_dlss_jitter_x, cg_dlss_jitter_y)) / size * 2.0 - 1.0;

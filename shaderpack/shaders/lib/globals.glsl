@@ -1,0 +1,51 @@
+// What the overworld's programs share each frame (a 16 by 1 image, see shaders.properties): the sun's and the
+// moon's light where you are and the sky's light all around, worked out by the begin passes before anything is
+// drawn, and the exposure, which the metering pass (exposure.csh, after DLSS) moves for the next frame. An image
+// rather than a storage buffer: Iris turns the whole pack off if the video memory it is told is free (none, at
+// times, when it is full or on some drivers) is less than a storage buffer asks for.
+//
+// Light is in real units: radiance in kcd/m² (1000 nits), illuminance in klux. The frame holds it times the
+// exposure, so the sun at noon and a torch at midnight both fit half floats; the final pass tone maps it.
+
+#if !defined LIB_GLOBALS
+#define LIB_GLOBALS
+
+#define G_SUN_DIR 0      // xyz towards the sun, world space; w how far it is above the horizon (sin)
+#define G_MOON_DIR 1     // the same for the moon
+#define G_SUN_LIGHT 2    // rgb the sun's illuminance on a surface facing it, through the air down to you
+#define G_MOON_LIGHT 3   // rgb the same for the moon (its phase included)
+#define G_LIGHT_DIR 4    // the light that casts the shadows (the sun by day, the moon by night), world space
+#define G_LIGHT_COLOR 5  // rgb its illuminance, as G_SUN_LIGHT or G_MOON_LIGHT
+#define G_SKY_CUBE 6     // 6 to 11: rgb the sky's (and the ground's) light on a surface facing +x, -x, +y, -y, +z, -z
+#define G_EXPOSURE 12    // x the exposure (frame values per kcd/m²), y its log2, z the metered log2 luminance
+
+#ifdef GLOBALS_WRITE
+// The passes that work them out (frame_globals.csh, exposure.csh).
+layout(rgba32f) uniform image2D cg_globals_img;
+#define global(i) imageLoad(cg_globals_img, ivec2(i, 0))
+void set_global(int i, vec4 value) {
+    imageStore(cg_globals_img, ivec2(i, 0), value);
+}
+#else
+uniform sampler2D cg_globals_tex;
+#define global(i) texelFetch(cg_globals_tex, ivec2(i, 0), 0)
+#endif
+
+#define g_sun_dir global(G_SUN_DIR)
+#define g_moon_dir global(G_MOON_DIR)
+#define g_sun_light global(G_SUN_LIGHT)
+#define g_moon_light global(G_MOON_LIGHT)
+#define g_light_dir global(G_LIGHT_DIR)
+#define g_light_color global(G_LIGHT_COLOR)
+#define g_exposure_data global(G_EXPOSURE)
+
+float exposure() {
+    return g_exposure_data.x;
+}
+
+// Whether the exposure has been worked out yet (the image starts empty when the pack loads).
+bool exposure_ready(vec4 data) {
+    return data.x > 0.0 && data.y >= -8.0 && data.y <= 13.0;
+}
+
+#endif

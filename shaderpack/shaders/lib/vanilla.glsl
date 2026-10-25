@@ -58,15 +58,20 @@ float fog_amount(float dist, float start, float end) {
 
 // The fog range for this draw. With Distant Horizons the ordinary distance fog moves out to the edge of its terrain,
 // the way Minecraft's own sits at the edge of the render distance, so the two meet without a seam. Fog in water,
-// lava, powder snow, blindness and foggy biomes ends well before the render distance and stays as it is.
-vec2 fog_range() {
+// lava, powder snow, blindness and foggy biomes ends well before the render distance and stays as it is. shape:
+// the fog's shape (fogShape), for passes Iris gives none.
+vec2 fog_range_shaped(int shape) {
 #ifdef DISTANT_HORIZONS
-    if (dhRenderDistance > 0 && fogShape == 1 && fogEnd >= 0.95 * far) {
+    if (dhRenderDistance > 0 && shape == 1 && fogEnd >= 0.95 * far) {
         float end = float(dhRenderDistance);
         return vec2(end - clamp(end / 10.0, 4.0, 64.0), end);
     }
 #endif
     return vec2(fogStart, fogEnd);
+}
+
+vec2 fog_range() {
+    return fog_range_shaped(fogShape);
 }
 
 vec3 apply_fog(vec3 color, float dist) {

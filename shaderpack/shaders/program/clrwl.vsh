@@ -10,6 +10,10 @@ out vec2 v_uv;
 out float v_fog_dist;
 out vec4 v_clip_now;
 out vec4 v_clip_prev;
+#ifdef LIT_WORLD
+out vec3 v_normal;    // world space: Colorwheel hands Flywheel's normal over as gl_Normal
+out vec3 v_scene_pos;
+#endif
 
 // Where Flywheel had this vertex last frame (w 1), in Flywheel's world space: the Create Galore Bridge's Colorwheel
 // hook works it out and sets it before this main runs; w stays 0 without the Bridge.
@@ -30,4 +34,8 @@ void main() {
 
     v_uv = gl_MultiTexCoord0.xy;
     v_fog_dist = fog_distance(scene_pos);
+#ifdef LIT_WORLD
+    v_normal = gl_Normal;
+    v_scene_pos = scene_pos;
+#endif
 }

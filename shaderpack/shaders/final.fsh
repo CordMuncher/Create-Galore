@@ -1,11 +1,15 @@
 #version 330 compatibility
 // The screen. With DLSS (or FSR) running, the Create Galore Bridge has already written its full-size result over
 // colortex0. Without it, a frame the pack rendered smaller (upscaling on, the Bridge's DLSS off) is brought up to
-// the window's size here with a Catmull-Rom filter. Either way the linear light goes back to sRGB for the screen.
+// the window's size here with a Catmull-Rom filter. Either way the linear light goes back to sRGB for the screen:
+// through the tone curve in the lit overworld (see tonemap.glsl), else as it is.
 
 #include "/lib/settings.glsl"
 #include "/lib/frame.glsl"
 #include "/lib/color.glsl"
+#ifdef LIT_WORLD
+#include "/lib/tonemap.glsl"
+#endif
 
 uniform sampler2D colortex0;
 
@@ -58,5 +62,9 @@ void main() {
     } else {
         color = upscale(gl_FragCoord.xy);
     }
+#ifdef LIT_WORLD
+    out_color = vec4(tone_map(color * exp2(EXPOSURE)), 1.0);
+#else
     out_color = vec4(linear_to_srgb(color), 1.0);
+#endif
 }

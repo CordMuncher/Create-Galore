@@ -12,8 +12,8 @@
 #define LIB_MOTION
 
 #include "/lib/frame.glsl"
+#include "/lib/view.glsl"
 
-uniform mat4 gbufferModelViewInverse;
 uniform mat4 gbufferPreviousModelView;
 uniform mat4 gbufferPreviousProjection;
 

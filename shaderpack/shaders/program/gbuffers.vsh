@@ -1,9 +1,13 @@
 // Every world program's vertex stage: Minecraft's own vertex colour, lighting and fog distance (see vanilla.glsl),
 // the clip position now and last frame for motion vectors, and the frame's place on the screen (see frame.glsl).
+// In the lit overworld the vertex keeps its surface colour, normal and light levels instead (see lit.glsl).
 
 #include "/program/gbuffers_kind.glsl"
 #include "/lib/motion.glsl"
 #include "/lib/vanilla.glsl"
+#ifdef LIT_WORLD
+#include "/lib/lit.glsl"
+#endif
 
 out vec2 v_uv;
 out vec4 v_color;   // Minecraft's vertexColor: tint, mob shading and (for terrain) the lightmap
@@ -11,6 +15,16 @@ out vec3 v_light;   // the lightmap where Minecraft applies it after the hurt fl
 out float v_fog_dist; // Minecraft's vertexDistance (see fog_distance)
 out vec4 v_clip_now;
 out vec4 v_clip_prev;
+#ifdef LIT_WORLD
+out vec3 v_normal;    // world space
+out vec2 v_level;     // block and sky light, 0..1
+out vec3 v_scene_pos;
+flat out int v_material;
+#endif
+
+#if defined LIT_WORLD && defined PROGRAM_WATER
+in vec4 mc_Entity; // the block's number in block.properties
+#endif
 
 #ifdef ENTITY_FORMAT
 // Where the Create Galore Bridge had this vertex last frame, in Iris's entity format: w 2 in the vertex's own space,
@@ -75,6 +89,27 @@ void main() {
     int flags = key_flags();
     v_color = gl_Color;
     v_light = vec3(1.0);
+#ifdef LIT_WORLD
+    vec3 normal = gl_NormalMatrix * gl_Normal;
+    normal = dot(normal, normal) > 1e-8 ? normalize(mat3(gbufferModelViewInverse) * normal) : vec3(0.0, 1.0, 0.0);
+    v_normal = normal;
+    v_scene_pos = scene_pos;
+    v_material = MATERIAL_LIT;
+    // Block and sky light as Minecraft packs them (0..240).
+    v_level = clamp(gl_MultiTexCoord1.xy / 240.0, 0.0, 1.0);
+#if defined PROGRAM_TERRAIN || defined PROGRAM_WATER
+    if (is_plant_normal(normal)) {
+        v_material = MATERIAL_PLANT;
+    } else {
+        v_color.rgb /= face_shade(normal);
+    }
+#endif
+#ifdef PROGRAM_WATER
+    if (int(mc_Entity.x + 0.5) == BLOCK_WATER) {
+        v_material = MATERIAL_WATER;
+    }
+#endif
+#else
     if ((flags & KEY_MOB_SHADING) != 0) {
         v_color.rgb *= mob_shade(gl_Normal);
     }
@@ -87,6 +122,7 @@ void main() {
             v_light = lightmap_texel(light);
         }
     }
+#endif
 
 #if defined PROGRAM_SKYBASIC
     v_fog_dist = length(scene_pos); // the sky's fog is round
