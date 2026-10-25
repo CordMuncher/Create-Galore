@@ -5,6 +5,14 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.5.1
+
+### Fixed
+- **DLSS and FSR settings only worked with Photon.** The DLAA... screen, its status line and the render resolution assumed the shader pack was Photon v1.3a + DLAA. They now work with any shader pack made for DLAA (one that carries `shaders/create_galore_dlss.properties`): the screen and its messages speak of "the shader pack" instead of Photon, the status line says when the pack in use isn't made for DLAA, changing a setting reloads any such pack, and the render resolution sets that pack's own upscaling options (Photon's are still TAAU and TAAU Render Scale). This readies the Bridge for a shader pack of the pack's own. Checked in a test game with Photon v1.3a + DLAA and with a second pack made for DLAA: picking Performance turned on Photon's TAAU at 50%, picking Quality turned on the other pack's upscaling at 67%, and the screen read both back. The comment at the top of `config/create_galore_bridge-display.properties` no longer calls DLAA experimental, as the settings screen hasn't since 0.5.0.
+
+### Added
+- Create Galore Bridge 1.104.0.
+
 ## 0.5.0
 
 **DLSS and FSR for Photon are ready, so the pack moves to 0.5.** Pick the shader pack **Photon v1.3a + DLAA** (the pack makes it from Photon + Clrwl at startup) and open the **DLAA...** button beside the shader list. NVIDIA DLSS (DLAA at full resolution, or Quality, Balanced, Performance, Ultra Performance or a custom 25 to 100% render resolution, presets K, L and M) or AMD FSR 3.1 takes over from Photon's own anti-aliasing. Everything that moves by itself hands it motion vectors (waving plants and leaves, ships, Create's machines and contraptions, mobs, dropped items and the item in your hand), so moving things stay sharp instead of smearing, and leaves, fences and distant mobs stop shimmering. It came together over 0.4.80 to 0.4.84 and has since been played on an RTX 4080 desktop and an RTX 3070 laptop; FSR 3.1 has only been tried on NVIDIA cards so far. The settings screen, the README and the Field Guide no longer call it experimental. This release fixes the two problems that play turned up.

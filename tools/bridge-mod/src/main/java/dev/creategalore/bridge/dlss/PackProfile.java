@@ -42,6 +42,11 @@ record PackProfile(String pass, int colorAttachment, int[] outputAttachments, in
         if (name == null || Iris.getCurrentPack().isEmpty()) {
             return null;
         }
+        return of(name);
+    }
+
+    /** The profile of the pack called {@code name} in the shaderpacks folder (in use or not), or null if it has none. */
+    static PackProfile of(String name) throws IOException {
         Path pack = Iris.getShaderpacksDirectory().resolve(name);
         Properties props = new Properties();
         if (Files.isDirectory(pack)) {
