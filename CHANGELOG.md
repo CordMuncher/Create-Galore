@@ -5,6 +5,12 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.4.81
+
+### Fixed
+- **Aeronautics levitite keeps its look with Photon v1.3a + DLAA.** The DLAA copy of Photon gives its programs one more vertex input (where a mob or block entity was last frame, for its motion vectors), and IrisVeil, which builds the shader pack version of levitite's own crystal shader, refuses any input it doesn't know ("Unsupported Levitite shaderpack vertex input"). So with that pack picked, levitite was drawn without its shader pack version. Levitite and the other Veil-drawn blocks now get that input as "not known", so their motion vectors are the camera's alone. Checked on a test client: all three levitite programs (block, translucent and shadow) build again under the DLAA pack. Photon and the other shader packs were never affected.
+- Create Galore Bridge 1.95.1.
+
 ## 0.4.80
 
 ### Added
