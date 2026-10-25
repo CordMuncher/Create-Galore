@@ -34,5 +34,6 @@ void main() {
         discard;
     }
 #endif
-    out_color = vec4(apply_fog(v_color.rgb, v_fog_pos), v_color.a);
+    // Its fog is measured at every pixel, as Distant Horizons' own shaders do (its triangles can be very long).
+    out_color = vec4(apply_fog(v_color.rgb, fog_distance(v_fog_pos)), v_color.a);
 }

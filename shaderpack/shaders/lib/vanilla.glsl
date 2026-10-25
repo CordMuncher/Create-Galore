@@ -40,7 +40,9 @@ float mob_shade(vec3 normal) {
     return min(1.0, (l0 + l1) * 0.6 + 0.4);
 }
 
-// Fog distance (fog.glsl): round, or for terrain fog a cylinder around the camera.
+// Fog distance (fog.glsl): round, or for terrain fog a cylinder around the camera. Minecraft measures it at each
+// vertex and lets it run straight across the triangle (vertexDistance), which puts a little more fog inside a big
+// triangle, like the sky's, than measuring every pixel would: the programs do the same.
 float fog_distance(vec3 pos) {
     return fogShape == 0 ? length(pos) : max(length(pos.xz), abs(pos.y));
 }
@@ -67,16 +69,15 @@ vec2 fog_range() {
     return vec2(fogStart, fogEnd);
 }
 
-vec3 apply_fog(vec3 color, vec3 pos) {
+vec3 apply_fog(vec3 color, float dist) {
     vec2 range = fog_range();
-    return mix(color, fogColor, fog_amount(fog_distance(pos), range.x, range.y));
+    return mix(color, fogColor, fog_amount(dist, range.x, range.y));
 }
 
 // What glows and adds itself to the scene (enchantment glint, eyes, lightning) fades out in the fog instead
 // (linear_fog_fade).
-float fog_fade(vec3 pos) {
+float fog_fade(float dist) {
     vec2 range = fog_range();
-    float dist = fog_distance(pos);
     if (dist <= range.x || range.y <= range.x) {
         return 1.0;
     }

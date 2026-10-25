@@ -8,7 +8,7 @@
 out vec2 v_uv;
 out vec4 v_color;   // Minecraft's vertexColor: tint, mob shading and (for terrain) the lightmap
 out vec3 v_light;   // the lightmap where Minecraft applies it after the hurt flash (mobs, particles); else 1
-out vec3 v_fog_pos; // what the fog distance is measured from
+out float v_fog_dist; // Minecraft's vertexDistance (see fog_distance)
 out vec4 v_clip_now;
 out vec4 v_clip_prev;
 
@@ -88,11 +88,13 @@ void main() {
         }
     }
 
-#if defined PROGRAM_CLOUDS || defined HAND
-    v_fog_pos = view_pos.xyz;
+#if defined PROGRAM_SKYBASIC
+    v_fog_dist = length(scene_pos); // the sky's fog is round
+#elif defined PROGRAM_CLOUDS || defined HAND
+    v_fog_dist = fog_distance(view_pos.xyz);
 #elif defined PROGRAM_BEACONBEAM
-    v_fog_pos = vec3(0.0, 0.0, -view_pos.z); // the beam's fog goes by depth along the view
+    v_fog_dist = abs(view_pos.z); // the beam's fog goes by depth along the view
 #else
-    v_fog_pos = scene_pos;
+    v_fog_dist = fog_distance(scene_pos);
 #endif
 }

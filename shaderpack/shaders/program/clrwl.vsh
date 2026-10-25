@@ -7,7 +7,7 @@
 #include "/lib/vanilla.glsl"
 
 out vec2 v_uv;
-out vec3 v_fog_pos;
+out float v_fog_dist;
 out vec4 v_clip_now;
 out vec4 v_clip_prev;
 
@@ -29,5 +29,5 @@ void main() {
     gl_Position = place_on_screen(clip);
 
     v_uv = gl_MultiTexCoord0.xy;
-    v_fog_pos = scene_pos;
+    v_fog_dist = fog_distance(scene_pos);
 }

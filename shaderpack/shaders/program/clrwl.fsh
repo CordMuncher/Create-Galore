@@ -9,7 +9,7 @@
 uniform sampler2D gtexture;
 
 in vec2 v_uv;
-in vec3 v_fog_pos;
+in float v_fog_dist;
 in vec4 v_clip_now;
 in vec4 v_clip_prev;
 
@@ -34,13 +34,13 @@ void main() {
 #elif defined PROGRAM_CLRWL_GLINT || defined PROGRAM_CLRWL_ADDITIVE || defined PROGRAM_CLRWL_LIGHTNING
     // Light that adds itself to what is there (the glint, glowing parts): it fades out in the fog, and adds nothing
     // to the motion behind it.
-    out_color = vec4(color.rgb * fog_fade(v_fog_pos), color.a);
+    out_color = vec4(color.rgb * fog_fade(v_fog_dist), color.a);
     out_motion = vec4(0.0);
 #else
     color.rgb = mix(color.rgb, overlay.rgb, overlay.a);
     // Colorwheel hands the light over at the lightmap's texel centres; Minecraft samples blocks between them.
     color.rgb *= lightmap_smooth(light - 1.0 / 32.0);
-    color.rgb = apply_fog(color.rgb, v_fog_pos);
+    color.rgb = apply_fog(color.rgb, v_fog_dist);
     out_color = color;
     out_motion = vec4(motion_vector(v_clip_now, v_clip_prev), MOTION_WORLD, color.a > 0.1 ? 1.0 : 0.0);
 #endif

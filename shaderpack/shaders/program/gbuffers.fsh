@@ -17,7 +17,7 @@ uniform vec4 entityColor; // the hurt and creeper flash: rgb its colour, a how m
 in vec2 v_uv;
 in vec4 v_color;
 in vec3 v_light;
-in vec3 v_fog_pos;
+in float v_fog_dist;
 in vec4 v_clip_now;
 in vec4 v_clip_prev;
 
@@ -57,15 +57,15 @@ void main() {
     // The sky's dome fades into the fog colour towards the horizon; the sunrise glow has no fog, and the stars are
     // drawn with the fog moved out of the way.
     if (renderStage != MC_RENDER_STAGE_SUNSET) {
-        color.rgb = mix(color.rgb, fogColor, fog_amount(length(v_fog_pos), fogStart, fogEnd));
+        color.rgb = mix(color.rgb, fogColor, fog_amount(v_fog_dist, fogStart, fogEnd));
     }
 #elif defined PROGRAM_ARMOR_GLINT
-    color.rgb *= fog_fade(v_fog_pos) * v_color.a; // (Iris hands the glint's strength over in the vertex alpha)
+    color.rgb *= fog_fade(v_fog_dist) * v_color.a; // (Iris hands the glint's strength over in the vertex alpha)
 #elif defined FOG_FADES
-    color *= fog_fade(v_fog_pos);
+    color *= fog_fade(v_fog_dist);
 #else
     if (fogShape >= 0) { // Iris marks the draws Minecraft doesn't fog (-1)
-        color.rgb = apply_fog(color.rgb, v_fog_pos);
+        color.rgb = apply_fog(color.rgb, v_fog_dist);
     }
 #endif
 
