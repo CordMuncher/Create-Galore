@@ -30,7 +30,7 @@ public abstract class LatencyMinecraftMixin {
 
     @WrapOperation(method = "runTick", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/systems/RenderSystem;limitDisplayFPS(I)V"))
     private void create_galore_bridge$frameCap(int fps, Operation<Void> original) {
-        if (!FrameLatency.reflexLimitsFrameRate(fps)) {
+        if (!FrameLatency.limitsFrameRate(fps)) {
             original.call(fps);
         }
     }

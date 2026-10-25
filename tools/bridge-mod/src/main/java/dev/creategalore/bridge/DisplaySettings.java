@@ -48,6 +48,12 @@ public final class DisplaySettings {
     public static final String LATE_POLL = "latePoll";
     /** Testing only, not written to the file: true logs the input latency every 10 seconds (see FrameLatency). */
     public static final String LATENCY_LOG = "latencyLog";
+    /** Testing only, not written to the file: true waits just before each frame renders so it doesn't queue on the GPU (see GpuPacer). */
+    public static final String GPU_PACER = "gpuPacer";
+    /** Testing only, not written to the file: how long, in microseconds, the GPU pacer lets a frame queue on the GPU (auto unless set). */
+    public static final String PACER_TARGET_US = "pacerTargetUs";
+    /** Testing only, not written to the file: true has the Max Framerate cap wait at the frame's start, before input (see FrameLatency). */
+    public static final String FRAME_CAP_AT_START = "frameCapAtStart";
 
     private static final String COMMENT = "Create Galore Bridge display settings, also on the settings screen (Mods, Create Galore Bridge,\n"
             + " Config, or the DLAA button in the shader pack menu). perfectPresentation and tenBitWindow need a restart;\n"

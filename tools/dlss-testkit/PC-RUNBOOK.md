@@ -877,3 +877,99 @@ If a launch crashes, copy `hs_err_pid*.log` and the log's last 100 lines, and re
 - the settings screen check (step 4): what each step showed.
 
 Commit and push on the DLAA branch. Don't commit hs_err files (they name his user folder).
+
+## Pacer 1: the GPU pacer for uncapped play, and a frame cap that waits before input
+
+Start only when Emre says so. Same PC, test folder, tools and settings as Reflex 1; about 40 minutes, two launches
+and an optional by-feel part. **Frame times count here**: a quiet PC as in profiling 1, no game server.
+
+**What it tests.** Reflex 1 found that uncapped, Reflex's sleep adds nothing beyond the late input read: the driver
+sees no OpenGL work, so it can't keep the GPU's queue short. Emre plays uncapped with G-SYNC. Two things, both on
+any GPU, that don't need the driver:
+- **GPU pacer** (`gpuPacer`, `pacerTargetUs`): the Bridge flushes a GPU timestamp where each frame's rendering starts
+  and reads how long that start waited on the GPU behind earlier frames (the queue). It then waits just before
+  rendering (before the late read) by about that much, so the frame reaches the GPU about when the GPU gets to it.
+  The target is how long a frame may still queue, so the GPU never runs dry when a frame takes a little longer on
+  the CPU. By default it sets itself to three times how much the frames' arrival varies from one frame to the next
+  (at least 250 us); `pacerTargetUs` fixes it instead (the kit tries 500 and 2000 us). The wait is a slowly learned
+  steady part plus a part that follows the error, so it shouldn't swing. Expected: the uncapped latency moves toward
+  Reflex 1's capped best (8.7 ms) at the same frame rate. **A frame rate drop of more than about 3% is a failure**,
+  whatever the latency.
+- **Frame cap at the frame's start** (`frameCapAtStart`): the Max Framerate cap waits at the start of the frame,
+  before input, as Reflex's limiter does, instead of in the game's limiter after the frame. Reflex 1: the game's
+  60 fps cap with the late read was 16.7 ms with Perfect Presentation, Reflex's 8.7 ms. This shows whether the
+  difference is where the wait sits (then any GPU gets it) or something only the driver does.
+
+The waits use a high resolution Windows timer and spin only the last half millisecond; the log says
+`Latency: waits use a high resolution timer`. `latency.py` shows how late the pacer's waits end (`late`, us).
+
+### Update
+
+```powershell
+git -C $T\repo fetch origin
+git -C $T\repo checkout -B claude/project-thread-u2wmhh origin/claude/project-thread-u2wmhh
+Remove-Item $T\instance\mods\create-galore-bridge-*.jar
+Copy-Item $T\repo\pack\mods\create-galore-bridge-*.jar $T\instance\mods\
+Copy-Item $T\repo\tools\dlss-testkit\dist\create-galore-dlss-testkit-1.0.0.jar $T\instance\mods\ -Force
+```
+
+The Bridge there is 1.107.0, a test build with the pacer (not released). The pacer and the frame cap change nothing
+unless the display settings ask (testing only, not written by the game); the kit's modes set them.
+
+### Settings
+
+As Reflex 1 (note the old values, put them back afterwards): `dlaa=dlss`, `perfectPresentation=true` for launch 1
+and `false` for launch 2, `earlyWindowControl = false`, Distant Horizons `numberOfThreads = 2`. Look at the NVIDIA
+Control Panel (Low Latency Mode, Max Frame Rate, Vertical sync, G-SYNC, Power management) and the refresh rate again
+and write them down; change nothing.
+
+### Launches
+
+The launch from step 4 (2560x1440), `--jvm-arg=-Dcreate_galore_dlss_testkit.autorun=dlaa-test` and `...runs=` as
+below, the window in front with focus.
+
+1. **Perfect Presentation on, `...runs=L3`** (about 15 minutes). Each mode twice, at `shore` and `canopy`:
+
+   | Mode | What |
+   | --- | --- |
+   | `lat-base` | the game as it is |
+   | `lat-late` | late input read |
+   | `lat-pacer` | GPU pacer (target set from the jitter) + late read |
+   | `lat-pacer-500` | the same, target fixed at 500 us |
+   | `lat-pacer-2000` | the same, 2000 us |
+   | `lat-reflex` | Reflex on + late read (as 0.5.2 ships it) |
+   | `lat-reflex-pacer` | Reflex on + GPU pacer (target from the jitter) + late read |
+   | `lat-cap-late` | 60 fps cap, the game's limiter, late read |
+   | `lat-cap-start` | 60 fps cap waiting at the frame's start, late read (no Reflex) |
+   | `lat-cap-reflex` | 60 fps cap by Reflex, late read |
+
+   The log must have `Latency: GPU pacer on, frames may queue on the GPU as much as they vary`,
+   `Latency: GPU pacer on, frames may queue 500 us on the GPU` (and 2000), `Latency: the frame cap waits at the start of the frame, before input`, `Latency: waits use a high resolution
+   timer` and `Reflex: started on Perfect Presentation's Direct3D 11 device`. Copy any `Latency:` or `Reflex:` WARN or
+   ERROR line.
+2. **Perfect Presentation off, `...runs=L4`** (about 12 minutes): `lat-base`, `lat-late`, `lat-ra1-late` (Sodium's
+   render-ahead 1, Reflex 1's best without Perfect Presentation), `lat-pacer`, `lat-ra1-pacer` (render-ahead 1 +
+   pacer), `lat-pacer-500`, `lat-cap-late`, `lat-cap-start`.
+3. **By feel, optional (about 10 minutes, with Emre).** Launch 1's settings, uncapped as Emre plays: before the
+   launch set `maxFps:260` (Unlimited) and `enableVsync:false` in the test instance's `options.txt` (note the old
+   values, put them back afterwards). One short run first (`...modes=lat-base`, `...viewpoints=moving`,
+   `...paths=still`) and `...byEye=lat-base`. Switch with `/dlaatest mode lat-reflex` (0.5.2's Reflex), then
+   `/dlaatest mode lat-reflex-pacer`, then `/dlaatest mode lat-pacer` (no Reflex), and back to `lat-base`, when he
+   says next. Write down what he says per mode: whether the pacer feels more direct than 0.5.2's Reflex, and whether
+   anything stutters or feels uneven (that would be the pacer's wait swinging).
+
+If a launch crashes, copy `hs_err_pid*.log` and the log's last 100 lines, and report.
+
+### Results
+
+`python latency.py <L3 folder> <L4 folder>`. Write `$T\repo\tools\dlss-testkit\results\pacer1\REPORT.md`:
+- per launch, each mode's median latency, its change and its fps change against `lat-base` at both viewpoints, the
+  repeats' spread, and the new columns: the GPU queue, the GPU's time between frames (median and 90%), and with the
+  pacer its wait, how late the wait ended and the target it used (`pacerTargetUs` in the manifest's latency
+  windows: the automatic one as measured);
+- in one line each: does the pacer bring the uncapped latency near 8.7 ms, at what fps cost; which target is best;
+  is the automatic one as good as the best fixed one; does Reflex add anything on top of the pacer; does `lat-cap-start` match `lat-cap-reflex` or `lat-cap-late`;
+- the `Latency:` and `Reflex:` lines, the control panel settings and refresh rate;
+- Emre's by-feel notes, if that part ran.
+
+Commit and push on the DLAA branch. Don't commit hs_err files (they name his user folder).
