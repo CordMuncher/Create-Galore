@@ -60,7 +60,7 @@ import org.slf4j.LoggerFactory;
 public final class PhotonPatcher {
     private static final Logger LOG = LoggerFactory.getLogger("create_galore_bridge");
     /** Bumped when the patch changes, so existing copies are made again. */
-    private static final int PATCH_VERSION = 9;
+    private static final int PATCH_VERSION = 10;
     private static final String BASE_ZIP = "photon_v1.3a.zip";
     /** Colorwheel Patcher's copy of {@link #BASE_ZIP}; an outdated one gets a prefix and no longer matches. */
     private static final Pattern COLORWHEEL_ZIP = Pattern.compile("photon_v1\\.3a \\+ Clrwl_(\\d+)\\.(\\d+)\\.(\\d+)\\.zip");
@@ -258,9 +258,10 @@ public final class PhotonPatcher {
                                 + "        cg_out_2 = texelFetch(colortex2, texel, 0);\n"
                                 + "        return;\n"
                                 + "    }\n"},
-                {"    max_color = max_color * 0.5 + 0.5;\n}", "    max_color = max_color * 0.5 + 0.5;\n\n"
+                // (Photon's file ends with a stray #endif, which Iris's preprocessor logs as an error whenever TAAU is on.)
+                {"    max_color = max_color * 0.5 + 0.5;\n}\n\n#endif\n", "    max_color = max_color * 0.5 + 0.5;\n\n"
                         + "    cg_out_1 = vec4(min_color, 1.0);\n"
-                        + "    cg_out_2 = vec4(max_color, 1.0);\n}"},
+                        + "    cg_out_2 = vec4(max_color, 1.0);\n}\n\n"},
         });
         String[][] imageExtension = {{"#version 400 compatibility\n",
                 "#version 400 compatibility\n#extension GL_ARB_shader_image_load_store : enable\n"}};

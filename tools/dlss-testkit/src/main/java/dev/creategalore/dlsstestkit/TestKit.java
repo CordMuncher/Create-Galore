@@ -22,7 +22,9 @@ import net.neoforged.neoforge.common.NeoForge;
  * -Dcreate_galore_dlss_testkit.autorun=WORLD opens that world from the title screen, runs, and closes the game.
  * -Dcreate_galore_dlss_testkit.modes=a+b runs only those modes, -Dcreate_galore_dlss_testkit.viewpoints=a+b only those
  * viewpoints; -Dcreate_galore_dlss_testkit.quick=true runs only the first viewpoint with the still and flick paths (for
- * slow software rendering).
+ * slow software rendering). -Dcreate_galore_dlss_testkit.runs=A+B plays the config's named runs (Capture.Settings.runs)
+ * one after another instead, in the same game, and closes it after the last; with -Dcreate_galore_dlss_testkit.byEye=MODE
+ * the game stays open after the runs instead, in that mode, in the moving scene at normal speed, for looking by eye.
  */
 @Mod(value = TestKit.MOD_ID, dist = Dist.CLIENT)
 public final class TestKit {

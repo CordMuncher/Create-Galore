@@ -51,6 +51,12 @@ compare, at each standard scale (`q` 67%, `bal` 58%, `perf` 50%, `ultra` 33%), `
 `perf-fsr3-bias`), and `perf-debug-color` and `perf-debug-motion` show DLSS's render-sized inputs stretched over
 the window. `-Dcreate_galore_dlss_testkit.paths=brief` runs only those paths.
 
+Several runs in one game: `-Dcreate_galore_dlss_testkit.runs=F1+F2+U1` plays the config's named runs (`"runs"`: each
+with its modes, viewpoints, paths, quick, and `screenshots` and `showHand` for that run) one after another without a
+restart, each into its own folder (`<time>-<run>`); the built-in ones are Upscaling 1's (`PC-RUNBOOK.md`).
+`-Dcreate_galore_dlss_testkit.byEye=perf-dlss-K` keeps the game open after the last run for looking by eye: the moving
+scene at normal speed, the player at its viewpoint, the shaders in that mode.
+
 `metrics.py RUN_FOLDER` (Pillow and numpy) prints, per viewpoint and mode, the frame time, the shimmer between the
 still path's last 8 frames, the smear left two frames after the flick, and the edge contrast.
 `PC-RUNBOOK.md` is the recipe for an RTX PC: round 1 (DLAA) and round 2 (FSR 3 next to DLAA), and milestone 2's
