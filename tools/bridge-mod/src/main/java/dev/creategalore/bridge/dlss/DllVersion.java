@@ -19,6 +19,42 @@ final class DllVersion {
 
     /** Like 310.9.16 (a last part of 0 left out), or null if the file has no version. */
     static String read(Path dll) {
+        ByteBuffer resources = resources(dll);
+        if (resources == null) {
+            return null;
+        }
+        for (int at = 0; at + 16 <= resources.limit(); at += 4) {
+            if (resources.getInt(at) == FIXED_FILE_INFO_SIGNATURE && resources.getInt(at + 4) == 0x00010000) {
+                int high = resources.getInt(at + 8);
+                int low = resources.getInt(at + 12);
+                String version = (high >>> 16) + "." + (high & 0xFFFF) + "." + (low >>> 16);
+                return (low & 0xFFFF) == 0 ? version : version + "." + (low & 0xFFFF);
+            }
+        }
+        return null;
+    }
+
+    /** True if the DLL's resources hold {@code text} (as Windows keeps its version strings, UTF-16), such as its company. */
+    static boolean hasString(Path dll, String text) {
+        ByteBuffer resources = resources(dll);
+        if (resources == null) {
+            return false;
+        }
+        byte[] wanted = text.getBytes(java.nio.charset.StandardCharsets.UTF_16LE);
+        outer:
+        for (int at = 0; at + wanted.length <= resources.limit(); at++) {
+            for (int i = 0; i < wanted.length; i++) {
+                if (resources.get(at + i) != wanted[i]) {
+                    continue outer;
+                }
+            }
+            return true;
+        }
+        return false;
+    }
+
+    /** The DLL's resource section, or null if it isn't a DLL or has none. */
+    private static ByteBuffer resources(Path dll) {
         try (FileChannel file = FileChannel.open(dll, StandardOpenOption.READ)) {
             int peHeader = read(file, 0x3C, 4).getInt();
             ByteBuffer coff = read(file, peHeader, 24);
@@ -31,19 +67,10 @@ final class DllVersion {
             for (int i = 0; i < sections; i++) {
                 byte[] name = new byte[8];
                 table.get(i * 40, name);
-                if (!new String(name, java.nio.charset.StandardCharsets.US_ASCII).startsWith(".rsrc")) {
-                    continue;
-                }
-                int size = table.getInt(i * 40 + 16);
-                int offset = table.getInt(i * 40 + 20);
-                ByteBuffer resources = read(file, Integer.toUnsignedLong(offset), Math.min(size, MAX_RESOURCES));
-                for (int at = 0; at + 16 <= resources.limit(); at += 4) {
-                    if (resources.getInt(at) == FIXED_FILE_INFO_SIGNATURE && resources.getInt(at + 4) == 0x00010000) {
-                        int high = resources.getInt(at + 8);
-                        int low = resources.getInt(at + 12);
-                        String version = (high >>> 16) + "." + (high & 0xFFFF) + "." + (low >>> 16);
-                        return (low & 0xFFFF) == 0 ? version : version + "." + (low & 0xFFFF);
-                    }
+                if (new String(name, java.nio.charset.StandardCharsets.US_ASCII).startsWith(".rsrc")) {
+                    int size = table.getInt(i * 40 + 16);
+                    int offset = table.getInt(i * 40 + 20);
+                    return read(file, Integer.toUnsignedLong(offset), Math.min(size, MAX_RESOURCES));
                 }
             }
             return null;

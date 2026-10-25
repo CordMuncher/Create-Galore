@@ -5,6 +5,12 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.4.83
+
+### Added
+- **Find on this PC** on the DLAA settings screen. DLSS needs `nvngx_dlss.dll`, which isn't part of the pack. The NVIDIA app keeps the DLSS versions it downloads (for DLSS Override or a game's update) in `C:\ProgramData\NVIDIA\NGX\models\dlss`, and this button copies the newest one from there into the pack's DLSS folder, so NVIDIA removing or updating theirs later changes nothing. It looks only in that folder, and only when pressed. If there's none, it says so, and **Get from NVIDIA** and **Open DLSS folder** work as before. A DLL the game is already using is swapped for the newer one at the next start. Closing the screen after it found one reloads the shaders, so DLSS starts without a restart.
+- Create Galore Bridge 1.97.0.
+
 ## 0.4.82
 
 ### Added

@@ -58,7 +58,12 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Its settings are behind the **DLAA...** button at the top of the shader pack menu (also Mods > Create Galore Bridge > Config). **Auto** uses NVIDIA DLAA on an RTX card and FSR 3.1 on any other card. DLSS needs your own nvngx\\_dlss.dll, which isn't part of the pack: that screen has **Get it from NVIDIA** and **Open DLSS folder**, and shows the version it found."
+      "text": "Its settings are behind the **DLAA...** button at the top of the shader pack menu (also Mods > Create Galore Bridge > Config). **Auto** uses NVIDIA DLAA on an RTX card and FSR 3.1 on any other card."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "DLSS needs your own nvngx\\_dlss.dll, which isn't part of the pack. **Find on this PC** copies it from where the NVIDIA app keeps its DLSS downloads. If there's none, use **Get from NVIDIA** and **Open DLSS folder**. The screen shows the version it has."
     },
     {
       "type": "modonomicon:text",

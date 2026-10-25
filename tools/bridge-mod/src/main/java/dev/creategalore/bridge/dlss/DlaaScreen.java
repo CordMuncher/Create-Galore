@@ -27,10 +27,10 @@ import net.neoforged.neoforge.common.NeoForge;
 
 /**
  * The Bridge's display settings: the DLAA engine and DLSS preset, the render resolution, the bring-your-own
- * nvngx_dlss.dll, and the window switches. Opens from the mod list (Create Galore Bridge, Config) and from a DLAA
- * button in Iris's shader pack menu. Saved to config/create_galore_bridge-display.properties when it closes, the
- * render resolution into the DLAA pack's own options (Photon's TAAU and TAAU Render Scale); DLAA changes reload the
- * shaders.
+ * nvngx_dlss.dll (or one found on this PC, see {@link DlssFinder}), and the window switches. Opens from the mod list
+ * (Create Galore Bridge, Config) and from a DLAA button in Iris's shader pack menu. Saved to
+ * config/create_galore_bridge-display.properties when it closes, the render resolution into the DLAA pack's own options
+ * (Photon's TAAU and TAAU Render Scale); DLAA changes reload the shaders.
  */
 public final class DlaaScreen extends Screen {
     /** Where NVIDIA publishes nvngx_dlss.dll, in its DLSS SDK. */
@@ -62,6 +62,10 @@ public final class DlaaScreen extends Screen {
     private EditBox letterBox;
     private ScaleSlider slider;
     private String dllLine;
+    /** What "Find on this PC" did, until the screen closes. */
+    private String findLine;
+    /** "Find on this PC" put a DLL in place: closing reloads the shaders so DLSS can start with it. */
+    private boolean dllAdded;
     private int ticks;
 
     public DlaaScreen(Screen parent) {
@@ -133,10 +137,24 @@ public final class DlaaScreen extends Screen {
         addRenderableWidget(slider);
 
         int y = 166;
+        int third = (WIDTH - 8) / 3;
+        addRenderableWidget(Button.builder(Component.literal("Find on this PC"), button -> {
+                    DlssFinder.Result result = DlssFinder.find();
+                    findLine = result.message();
+                    dllAdded |= result.changed();
+                    refreshDll();
+                })
+                .tooltip(net.minecraft.client.gui.components.Tooltip.create(Component.literal(
+                        "Looks for nvngx_dlss.dll where the NVIDIA app keeps the DLSS versions it downloaded"
+                                + " (ProgramData\\NVIDIA\\NGX), and copies the newest into the DLSS folder. Nowhere else, and only"
+                                + " when you press this.")))
+                .bounds(left, y, third, 20).build());
         addRenderableWidget(Button.builder(Component.literal("Open DLSS folder"), button -> openDllFolder())
-                .bounds(left, y, half, 20).build());
-        addRenderableWidget(Button.builder(Component.literal("Get it from NVIDIA"), ConfirmLinkScreen.confirmLink(this, DLL_PAGE))
-                .bounds(left + half + 4, y, half, 20).build());
+                .bounds(left + third + 4, y, third, 20).build());
+        addRenderableWidget(Button.builder(Component.literal("Get from NVIDIA"), ConfirmLinkScreen.confirmLink(this, DLL_PAGE))
+                .tooltip(net.minecraft.client.gui.components.Tooltip.create(Component.literal(
+                        "NVIDIA's DLSS SDK on GitHub: download nvngx_dlss.dll and put it in the DLSS folder.")))
+                .bounds(left + 2 * (third + 4), y, WIDTH - 2 * (third + 4), 20).build());
         y += 24;
         if (Dlss.crashed()) {
             addRenderableWidget(Button.builder(Component.literal("Try again (turned off after the game closed while starting)"), button -> {
@@ -181,8 +199,9 @@ public final class DlaaScreen extends Screen {
             y = lines(graphics, "L and M are made for RTX 40 and 50 cards. RTX 20 and 30 cards lack FP8, so they cost more there:"
                     + " if frames drop, use K.", left, y, 0xFFAA44, 2);
         }
-        y = lines(graphics, Dlss.status(), left, y, 0xAAAAAA, 3);
-        lines(graphics, dllLine, left, y + 2, 0xFFFFFF, (164 - y) / 10);
+        // What "Find on this PC" did takes the DLL line's place (it names the version), and room from the status.
+        y = lines(graphics, Dlss.status(), left, y, 0xAAAAAA, findLine != null ? 1 : 3);
+        lines(graphics, findLine != null ? findLine : dllLine, left, y + 2, findLine != null ? 0x88DD88 : 0xFFFFFF, (164 - y) / 10);
     }
 
     /** Draws {@code text} wrapped to the screen's width, at most {@code max} lines; returns the y below it. */
@@ -206,7 +225,7 @@ public final class DlaaScreen extends Screen {
         if (!values.equals(initial)) {
             DisplaySettings.save(values);
         }
-        if (packChanged || !values.get(DisplaySettings.DLAA).equals(initial.get(DisplaySettings.DLAA))
+        if (packChanged || dllAdded || !values.get(DisplaySettings.DLAA).equals(initial.get(DisplaySettings.DLAA))
                 || !values.get(DisplaySettings.DLAA_PRESET).equals(initial.get(DisplaySettings.DLAA_PRESET))) {
             Dlss.settingsChanged();
         }
@@ -287,7 +306,7 @@ public final class DlaaScreen extends Screen {
         String found = Dlss.foundDllVersion();
         dllLine = found == null
                 ? "nvngx_dlss.dll: not found. DLSS needs your own (not in the pack): " + Dlss.TESTED_DLL_VERSION
-                        + " or newer in the DLSS folder, then reload shaders (F8)."
+                        + " or newer in the DLSS folder (find it on this PC or get it from NVIDIA), then reload shaders (F8)."
                 : "nvngx_dlss.dll: " + found + " (tested with " + Dlss.TESTED_DLL_VERSION + "). Close the game before replacing it.";
     }
 
