@@ -41,8 +41,8 @@ import org.slf4j.LoggerFactory;
  *
  * config/create_galore_bridge-display.properties (or the settings screen, {@link DlaaScreen}): dlaa picks the engine,
  * auto (DLSS where it can run, else AMD FSR 3.1 at full resolution), dlss, fsr3 or off; dlaaPreset picks the DLSS
- * preset. Both are read again when shaders reload. DLSS runs on Perfect Presentation's DirectX device when that is on,
- * else on its own (see {@link DlssDevice}). Anything missing (not Windows, no NVIDIA RTX card, no nvngx_dlss.dll, an
+ * preset. Both are read again when shaders reload. DLSS runs on a DirectX 11 device of its own (see {@link DlssDevice}),
+ * also with Perfect Presentation on. Anything missing (not Windows, no NVIDIA RTX card, no nvngx_dlss.dll, an
  * unpatched pack, a pack option that the patch does not cover) leaves the pack's own anti-aliasing in place, says why
  * in the log and once in a notice, and the settings screen shows it. An engine that took the game down while it
  * started stays off until the player tries it again ({@link StartGuard}).
@@ -420,7 +420,7 @@ public final class Dlss {
                 runFsr3(in);
                 return;
             }
-            boolean resized = pass.ensureSize(in.renderWidth(), in.renderHeight(), in.width(), in.height());
+            boolean newSize = pass.needsSize(in.renderWidth(), in.renderHeight(), in.width(), in.height());
             int usePreset = presetFellBack ? PRESET_DEFAULT : preset;
             int mode = perfQuality(in.renderWidth(), in.width());
             // NVIDIA: DLSS takes the game's exposure with J and K only, L and M always meter it themselves (asked to
@@ -428,9 +428,12 @@ public final class Dlss {
             boolean autoExposure = usePreset == PRESET_L || usePreset == PRESET_M || autoExposureTest;
             int flags = NgxLibrary.FLAG_IS_HDR | NgxLibrary.FLAG_MV_LOW_RES | NgxLibrary.FLAG_DEPTH_INVERTED
                     | (autoExposure ? NgxLibrary.FLAG_AUTO_EXPOSURE : 0);
-            if (resized || flags != featureFlags || usePreset != featurePreset) {
+            if (newSize || flags != featureFlags || usePreset != featurePreset) {
                 featureFlags = -1;
                 dlssGuard.starting();
+                // DLSS lets go of the textures it ran on before they are freed for a new size.
+                ngx.release();
+                pass.ensureSize(in.renderWidth(), in.renderHeight(), in.width(), in.height());
                 int result = ngx.create(device.context, in.renderWidth(), in.renderHeight(), in.width(), in.height(),
                         mode, flags, usePreset);
                 ngx.drainLog();
@@ -703,8 +706,8 @@ public final class Dlss {
         }
         pass = new DlssPass(device);
         adapterName = device.adapterName;
-        LOG.info("DLAA: NGX ready on {} ({}; OpenGL on {}), nvngx_dlss.dll {} from {} (tested with {})", device.adapterName,
-                device.shared ? "Perfect Presentation's DirectX device" : "its own DirectX device", glGetString(GL_RENDERER),
+        LOG.info("DLAA: NGX ready on {} (its own DirectX device; OpenGL on {}), nvngx_dlss.dll {} from {} (tested with {})",
+                device.adapterName, glGetString(GL_RENDERER),
                 DllVersion.read(dll), dllFolder, TESTED_DLL_VERSION);
     }
 
@@ -738,12 +741,13 @@ public final class Dlss {
 
     private static void closeDlss() {
         try {
-            if (pass != null) {
-                pass.close();
-            }
+            // NGX first: its DLSS feature ran on the pass's textures.
             if (ngx != null) {
                 ngx.shutdown();
                 ngx.drainLog();
+            }
+            if (pass != null) {
+                pass.close();
             }
             if (device != null) {
                 device.close();

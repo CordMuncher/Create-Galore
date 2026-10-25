@@ -78,7 +78,12 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "With an RTX card, Quality looks like Native and runs faster; Performance is a little softer and faster still. FSR looks best at Quality.\\\n\\\nFrom Balanced down, presets L and M are worth a try: L is the sharpest at Performance. They are made for RTX 40 and 50 cards; on RTX 20 and 30 cards they cost more frames, so stay on K there if the frame rate drops."
+      "text": "With an RTX card, Quality looks like Native and runs faster; Performance is a little softer and faster still. FSR looks best at Quality.\\\n\\\nFrom Balanced down, presets L and M are worth a try: L is the sharpest at Performance."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "L and M also keep underwater light shafts and the specks in the water clean, where K and FSR smear them a little.\\\n\\\nThey are made for RTX 40 and 50 cards; on RTX 20 and 30 cards they cost more frames, so stay on K there if the frame rate drops."
     },
     {
       "type": "modonomicon:text",

@@ -144,7 +144,8 @@ public final class Capture {
         List<String> paths = new ArrayList<>(List.of("still", "flick", "pan", "strafe"));
         /**
          * Named runs for -Dcreate_galore_dlss_testkit.runs=A+B, which plays them one after another in one game. Upscaling 1
-         * (PC-RUNBOOK.md): F1 and F2 measure frame rates (no screenshots), U1 to U7 save the pictures.
+         * (PC-RUNBOOK.md): F1 and F2 measure frame rates (no screenshots), U1 to U7 save the pictures. Crash 1: C1
+         * restarts DLSS 60 times, each time at another render size and mostly another preset (no pictures).
          */
         List<Run> runs = new ArrayList<>(List.of(
                 new Run("F1", "photon-taa+dlaa-default+fsr3+perf-taau+perf-dlss-K+perf-dlss-M+perf-dlss-L+perf-fsr3"
@@ -157,14 +158,21 @@ public final class Capture {
                 new Run("U4", "q-taau+q-dlss-K+q-fsr3", null, null, null, null, null),
                 new Run("U5", "perf-taau+perf-dlss-K+perf-dlss-M+perf-fsr3", "moving", "brief", null, null, true),
                 new Run("U6", "perf-dlss-K+perf-dlss-K-bias+perf-fsr3+perf-fsr3-bias", null, null, true, null, null),
-                new Run("U7", "perf-debug-color+perf-debug-motion", null, null, true, null, null)));
+                new Run("U7", "perf-debug-color+perf-debug-motion", null, null, true, null, null),
+                new Run("C1", "dlaa-default+q-dlss-K+bal-dlss-M+perf-dlss-L+ultra-dlss-K", "shore", "brief", null, false, null, 12)));
     }
 
     /**
-     * A run: modes, viewpoints and paths as the -D properties write them (a+b; null: all), quick as -D...quick, and
-     * screenshots and showHand in place of the config's for this run (null: the config's).
+     * A run: modes, viewpoints and paths as the -D properties write them (a+b; null: all), quick as -D...quick,
+     * screenshots and showHand in place of the config's for this run (null: the config's), and cycles: how many times
+     * it plays its modes over (null: once).
      */
-    record Run(String name, String modes, String viewpoints, String paths, Boolean quick, Boolean screenshots, Boolean showHand) {}
+    record Run(String name, String modes, String viewpoints, String paths, Boolean quick, Boolean screenshots, Boolean showHand,
+               Integer cycles) {
+        Run(String name, String modes, String viewpoints, String paths, Boolean quick, Boolean screenshots, Boolean showHand) {
+            this(name, modes, viewpoints, paths, quick, screenshots, showHand, null);
+        }
+    }
 
     /**
      * debugView (color, motion, depth or residual) shows that instead of DLSS, on any GPU (fsr3: FSR's own view);
@@ -326,8 +334,15 @@ public final class Capture {
             segments.add(new Segment("build scenes", viewpoints.get(0), null, SCENE_BUILD_FRAMES, new int[0],
                     () -> scenes.forEach(Capture::buildScene), modes.get(0)));
         }
-        for (Mode mode : modes) {
-            int warmup = mode == modes.get(0) ? Math.max(settings.firstWarmupFrames, settings.warmupFrames) : settings.warmupFrames;
+        if (run.cycles() != null && run.cycles() > 1) {
+            List<Mode> once = List.copyOf(modes);
+            for (int i = 1; i < run.cycles(); i++) {
+                modes.addAll(once);
+            }
+        }
+        for (int m = 0; m < modes.size(); m++) {
+            Mode mode = modes.get(m);
+            int warmup = m == 0 ? Math.max(settings.firstWarmupFrames, settings.warmupFrames) : settings.warmupFrames;
             segments.add(new Segment("mode " + mode.name(), viewpoints.get(0), null, warmup, new int[0], () -> applyMode(mode), mode));
             for (Viewpoint viewpoint : viewpoints) {
                 segments.add(new Segment("settle " + viewpoint.name(), viewpoint, null, settings.settleFrames, new int[0], null, mode));

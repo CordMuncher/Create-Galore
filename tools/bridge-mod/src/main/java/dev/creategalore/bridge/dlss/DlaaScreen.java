@@ -61,6 +61,9 @@ public final class DlaaScreen extends Screen {
     private Map<String, String> initialPackOptions;
     private EditBox letterBox;
     private ScaleSlider slider;
+    private final List<Choice<?>> choices = new java.util.ArrayList<>();
+    /** The setting whose list of values is open, if one is. */
+    private Choice<?> open;
     private String dllLine;
     /** What "Find on this PC" did, until the screen closes. */
     private String findLine;
@@ -104,17 +107,13 @@ public final class DlaaScreen extends Screen {
     protected void init() {
         int left = width / 2 - WIDTH / 2;
         int half = (WIDTH - 4) / 2;
-        addRenderableWidget(CycleButton.<String>builder(DlaaScreen::engineLabel)
-                .withValues(ENGINES).withInitialValue(engine)
-                .withTooltip(value -> net.minecraft.client.gui.components.Tooltip.create(Component.literal(engineTooltip(value))))
-                .create(left, 50, WIDTH, 20, Component.literal("Anti-aliasing"), (button, value) -> engine = value));
-        addRenderableWidget(CycleButton.<String>builder(DlaaScreen::presetLabel)
-                .withValues(PRESETS).withInitialValue(preset)
-                .withTooltip(value -> net.minecraft.client.gui.components.Tooltip.create(Component.literal(presetTooltip(value))))
-                .create(left, 74, WIDTH - 64, 20, Component.literal("DLSS preset"), (button, value) -> {
-                    preset = value;
-                    letterBox.visible = value.equals("other");
-                }));
+        open = null;
+        choices.clear();
+        choice("Anti-aliasing", ENGINES, engine, DlaaScreen::engineLabel, DlaaScreen::engineTooltip, left, 50, WIDTH, value -> engine = value);
+        choice("DLSS preset", PRESETS, preset, DlaaScreen::presetLabel, DlaaScreen::presetTooltip, left, 74, WIDTH - 64, value -> {
+            preset = value;
+            letterBox.visible = value.equals("other");
+        });
         letterBox = new EditBox(font, left + WIDTH - 60, 74, 60, 20, Component.literal("Preset letter"));
         letterBox.setMaxLength(1);
         letterBox.setFilter(text -> text.isEmpty() || Character.isLetter(text.charAt(0)));
@@ -124,14 +123,13 @@ public final class DlaaScreen extends Screen {
         letterBox.visible = preset.equals("other");
         addRenderableWidget(letterBox);
         // Custom shares its row with the slider.
-        addRenderableWidget(CycleButton.<String>builder(DlaaScreen::scaleLabel)
-                .withValues(SCALES).withInitialValue(scale)
-                .withTooltip(value -> net.minecraft.client.gui.components.Tooltip.create(Component.literal(scaleTooltip(value))))
-                .create(left, 98, scale.equals("custom") ? half : WIDTH, 20, Component.literal("Render resolution"), (button, value) -> {
-                    scale = value;
-                    button.setWidth(value.equals("custom") ? half : WIDTH);
-                    slider.visible = value.equals("custom");
-                }));
+        Choice<String> resolution = choice("Render resolution", SCALES, scale, DlaaScreen::scaleLabel, DlaaScreen::scaleTooltip, left, 98,
+                scale.equals("custom") ? half : WIDTH, null);
+        resolution.onPick = value -> {
+            scale = value;
+            resolution.button.setWidth(value.equals("custom") ? half : WIDTH);
+            slider.visible = value.equals("custom");
+        };
         slider = new ScaleSlider(left + half + 4, 98, half);
         slider.visible = scale.equals("custom");
         addRenderableWidget(slider);
@@ -187,7 +185,8 @@ public final class DlaaScreen extends Screen {
 
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        super.render(graphics, mouseX, mouseY, partialTick);
+        // While a list is open, what lies under it doesn't light up or show its tooltip.
+        super.render(graphics, open != null ? -1 : mouseX, open != null ? -1 : mouseY, partialTick);
         int left = width / 2 - WIDTH / 2;
         graphics.drawCenteredString(font, title, width / 2, 6, 0xFFFFFF);
         lines(graphics, "EXPERIMENTAL and optional, not widely tested yet. Only with the shader pack \""
@@ -196,12 +195,37 @@ public final class DlaaScreen extends Screen {
         String picked = preset.equals("other") ? letter : preset;
         if (picked.equals("L") || picked.equals("M")) {
             // NVIDIA (DLSS 4.5): RTX 20 and 30 cards have no native FP8, so L and M cost more there. Nothing is checked or locked.
-            y = lines(graphics, "L and M are made for RTX 40 and 50 cards. RTX 20 and 30 cards lack FP8, so they cost more there:"
-                    + " if frames drop, use K.", left, y, 0xFFAA44, 2);
+            // Two lines at most, so the DLL line keeps its room.
+            y = lines(graphics, "L and M are made for RTX 40 and 50 cards and cost more on RTX 20 and 30 (no FP8): if frames drop,"
+                    + " use K.", left, y, 0xFFAA44, 2);
         }
         // What "Find on this PC" did takes the DLL line's place (it names the version), and room from the status.
         y = lines(graphics, Dlss.status(), left, y, 0xAAAAAA, findLine != null ? 1 : 3);
         lines(graphics, findLine != null ? findLine : dllLine, left, y + 2, findLine != null ? 0x88DD88 : 0xFFFFFF, (164 - y) / 10);
+        if (open != null) {
+            open.renderList(graphics, mouseX, mouseY);
+        }
+    }
+
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (open != null) {
+            // A click picks what it is on, or else only closes the list.
+            Choice<?> list = open;
+            open = null;
+            list.click(mouseX, mouseY);
+            return true;
+        }
+        return super.mouseClicked(mouseX, mouseY, button);
+    }
+
+    @Override
+    public boolean keyPressed(int key, int scanCode, int modifiers) {
+        if (open != null && key == org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE) {
+            open = null;
+            return true;
+        }
+        return super.keyPressed(key, scanCode, modifiers);
     }
 
     /** Draws {@code text} wrapped to the screen's width, at most {@code max} lines; returns the y below it. */
@@ -370,6 +394,102 @@ public final class DlaaScreen extends Screen {
             case "other" -> "Other letter:";
             default -> value;
         });
+    }
+
+    private <T> Choice<T> choice(String name, List<T> values, T value, java.util.function.Function<T, Component> label,
+                                 java.util.function.Function<T, String> tooltip, int x, int y, int width,
+                                 java.util.function.Consumer<T> onPick) {
+        Choice<T> choice = new Choice<>(name, values, value, label, tooltip, onPick);
+        choice.button = addRenderableWidget(Button.builder(Component.empty(), button -> open = open == choice ? null : choice)
+                .bounds(x, y, width, 20).build());
+        choice.update();
+        choices.add(choice);
+        return choice;
+    }
+
+    /**
+     * A setting as a button that opens the list of its values under it (over it if there's no room): all of them in
+     * view, one click to open and one to pick.
+     */
+    private final class Choice<T> {
+        private static final int ROW = 16;
+        final String name;
+        final List<T> values;
+        final java.util.function.Function<T, Component> label;
+        final java.util.function.Function<T, String> tooltip;
+        java.util.function.Consumer<T> onPick;
+        T value;
+        Button button;
+
+        Choice(String name, List<T> values, T value, java.util.function.Function<T, Component> label,
+               java.util.function.Function<T, String> tooltip, java.util.function.Consumer<T> onPick) {
+            this.name = name;
+            this.values = values;
+            this.value = value;
+            this.label = label;
+            this.tooltip = tooltip;
+            this.onPick = onPick;
+        }
+
+        void update() {
+            button.setMessage(Component.literal(name + ": ").append(label.apply(value)).append(" \u25BE"));
+            button.setTooltip(net.minecraft.client.gui.components.Tooltip.create(Component.literal(tooltip.apply(value))));
+        }
+
+        private int listWidth() {
+            int widest = 0;
+            for (T v : values) {
+                widest = Math.max(widest, font.width(label.apply(v)));
+            }
+            return Math.max(button.getWidth(), widest + 16);
+        }
+
+        private int listTop() {
+            int below = button.getBottom();
+            return below + values.size() * ROW <= height ? below : button.getY() - values.size() * ROW;
+        }
+
+        /** The value at this point of the open list, or -1. */
+        private int at(double mouseX, double mouseY) {
+            int top = listTop();
+            if (mouseX < button.getX() || mouseX >= button.getX() + listWidth() || mouseY < top) {
+                return -1;
+            }
+            int row = (int) ((mouseY - top) / ROW);
+            return row < values.size() ? row : -1;
+        }
+
+        void click(double mouseX, double mouseY) {
+            int row = at(mouseX, mouseY);
+            if (row >= 0) {
+                value = values.get(row);
+                update();
+                onPick.accept(value);
+            }
+        }
+
+        void renderList(GuiGraphics graphics, int mouseX, int mouseY) {
+            int x = button.getX();
+            int top = listTop();
+            int w = listWidth();
+            int hovered = at(mouseX, mouseY);
+            graphics.pose().pushPose();
+            graphics.pose().translate(0.0f, 0.0f, 300.0f); // over the widgets under it
+            graphics.fill(x, top, x + w, top + values.size() * ROW, 0xFF101010); // opaque: no text shows through
+            graphics.renderOutline(x, top, w, values.size() * ROW, 0xFFA0A0A0);
+            for (int i = 0; i < values.size(); i++) {
+                int rowTop = top + i * ROW;
+                if (i == hovered) {
+                    graphics.fill(x + 1, rowTop, x + w - 1, rowTop + ROW, 0xFF404040);
+                }
+                boolean picked = values.get(i).equals(value);
+                graphics.drawString(font, label.apply(values.get(i)), x + 8, rowTop + (ROW - 8) / 2, picked ? 0xFFFFDD66 : 0xFFFFFFFF);
+            }
+            graphics.pose().popPose();
+            if (hovered >= 0) {
+                setTooltipForNextRenderPass(font.split(Component.literal(tooltip.apply(values.get(hovered))), 220));
+            }
+        }
     }
 
     /** The custom render scale, 25% to 100% in steps of 1%. */

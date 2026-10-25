@@ -198,23 +198,6 @@ public final class Presentation {
         return true;
     }
 
-    // --- DLAA (dev.creategalore.bridge.dlss) runs DLSS on this device instead of opening its own ---
-
-    /** The swap chain's ID3D11Device, or 0 when frames are not going through it. */
-    public static long d3dDevice() {
-        return active() && interop != null ? interop.device() : 0L;
-    }
-
-    /** The device's immediate ID3D11DeviceContext, or 0. NGX keeps its state as it found it. */
-    public static long d3dContext() {
-        return active() && interop != null ? interop.context() : 0L;
-    }
-
-    /** The device's WGL_NV_DX_interop handle (from wglDXOpenDeviceNV), or 0. */
-    public static long interopDevice() {
-        return active() && interop != null ? interop.interopDevice() : 0L;
-    }
-
     public static void resize() {
         if (!active()) {
             return;

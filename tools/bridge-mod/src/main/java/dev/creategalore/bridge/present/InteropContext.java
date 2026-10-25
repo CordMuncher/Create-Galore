@@ -241,18 +241,6 @@ final class InteropContext implements AutoCloseable {
         openglContext.makeCurrent();
     }
 
-    long device() {
-        return device;
-    }
-
-    long context() {
-        return context;
-    }
-
-    long interopDevice() {
-        return interopDevice;
-    }
-
     void setSyncInterval(int interval) {
         // Sodium Extra's adaptive sync asks for -1; a swap chain has no adaptive mode, so that means no vsync.
         this.syncInterval = Math.max(0, interval);

@@ -1,12 +1,10 @@
 package dev.creategalore.bridge.dlss;
 
 import static org.lwjgl.opengl.GL11C.GL_NEAREST;
-import static org.lwjgl.opengl.GL11C.GL_RENDERER;
 import static org.lwjgl.opengl.GL11C.GL_TEXTURE_2D;
 import static org.lwjgl.opengl.GL11C.GL_TEXTURE_MAG_FILTER;
 import static org.lwjgl.opengl.GL11C.GL_TEXTURE_MIN_FILTER;
 import static org.lwjgl.opengl.GL11C.glDeleteTextures;
-import static org.lwjgl.opengl.GL11C.glGetString;
 import static org.lwjgl.opengl.GL12C.GL_TEXTURE_MAX_LEVEL;
 import static org.lwjgl.opengl.GL45C.glCreateTextures;
 import static org.lwjgl.opengl.GL45C.glTextureParameteri;
@@ -29,7 +27,6 @@ import java.util.List;
 
 import dev.creategalore.bridge.present.Com;
 import dev.creategalore.bridge.present.Ffi;
-import dev.creategalore.bridge.present.Presentation;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.opengl.EXTMemoryObject;
 import org.lwjgl.opengl.EXTMemoryObjectWin32;
@@ -40,9 +37,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The Direct3D 11 device DLSS runs on, and the textures OpenGL shares with it through WGL_NV_DX_interop2. With Perfect
- * Presentation on, this is the swap chain's own device (NGX leaves the immediate context's state as it found it);
- * otherwise DLAA opens a device of its own on the GPU OpenGL renders with, so it works without Perfect Presentation.
+ * The Direct3D 11 device DLSS runs on, and the textures OpenGL shares with it through WGL_NV_DX_interop2. DLAA opens a
+ * device of its own on the GPU OpenGL renders with, also when Perfect Presentation shows the frames through a swap chain
+ * device of its own. On that shared device, freeing DLSS's textures for a new render size crashed NVIDIA's driver
+ * inside wglDXUnregisterObjectNV (RTX 4080 Super, driver 621.01), which dozens of restarts on a device of DLAA's own
+ * never did.
  */
 final class DlssDevice implements AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger("create_galore_bridge");
@@ -64,10 +63,17 @@ final class DlssDevice implements AutoCloseable {
     static final int ACCESS_READ_ONLY = 0;
     static final int ACCESS_WRITE_DISCARD = 2;
 
-    // Vtable slots, counting inherited methods (IUnknown 0-2, IDXGIObject 3-6).
+    // Vtable slots, counting inherited methods (IUnknown 0-2, then IDXGIObject 3-6, or for the context ID3D11DeviceChild 3-6).
     private static final int FACTORY1_ENUM_ADAPTERS1 = 12;
     private static final int ADAPTER1_GET_DESC1 = 10;
     private static final int DEVICE_CREATE_TEXTURE_2D = 5;
+    private static final int DEVICE_CREATE_QUERY = 24;
+    private static final int CONTEXT_END = 28;
+    private static final int CONTEXT_GET_DATA = 29;
+    private static final int CONTEXT_FLUSH = 111;
+    private static final int S_FALSE = 1;
+    /** How long {@link #waitIdle} waits for the GPU at most. */
+    private static final long IDLE_TIMEOUT_NANOS = 2_000_000_000L;
 
     private static final long IID_IDXGI_FACTORY1 = Com.guid(0x770aae78, 0xf26f, 0x4dba, 0xa8, 0x29, 0x25, 0x3c, 0x83, 0xd1, 0xb3, 0x87);
 
@@ -79,25 +85,17 @@ final class DlssDevice implements AutoCloseable {
     final long device;
     final long context;
     final long interopDevice;
-    final boolean shared;
     final String adapterName;
 
-    private DlssDevice(long device, long context, long interopDevice, boolean shared, String adapterName) {
+    private DlssDevice(long device, long context, long interopDevice, String adapterName) {
         this.device = device;
         this.context = context;
         this.interopDevice = interopDevice;
-        this.shared = shared;
         this.adapterName = adapterName;
     }
 
-    /** Perfect Presentation's device when it is showing frames, else a new one on OpenGL's GPU. */
+    /** A new device on the GPU OpenGL renders with. */
     static DlssDevice open() {
-        if (Presentation.d3dDevice() != 0L) {
-            // Perfect Presentation made its device on the GPU OpenGL renders with, so that is the one to name.
-            String renderer = glGetString(GL_RENDERER);
-            String name = renderer == null ? "OpenGL's graphics card" : renderer.split("/", 2)[0];
-            return new DlssDevice(Presentation.d3dDevice(), Presentation.d3dContext(), Presentation.interopDevice(), true, name);
-        }
         if (!GL.getCapabilitiesWGL().WGL_NV_DX_interop2) {
             throw new IllegalStateException("the OpenGL driver has no WGL_NV_DX_interop2");
         }
@@ -153,7 +151,7 @@ final class DlssDevice implements AutoCloseable {
                 Com.release(device);
                 WindowsUtil.windowsThrowException("wglDXOpenDeviceNV failed");
             }
-            return new DlssDevice(device, context, interop, false, name);
+            return new DlssDevice(device, context, interop, name);
         }
     }
 
@@ -241,11 +239,37 @@ final class DlssDevice implements AutoCloseable {
         return handles;
     }
 
+    /**
+     * Waits (at most {@link #IDLE_TIMEOUT_NANOS}) until the GPU has finished what this device was given so far, so a
+     * texture that DLSS read or wrote is no longer in use when it is freed.
+     */
+    void waitIdle() {
+        try (MemoryStack stack = stackPush()) {
+            long desc = memAddress(stack.calloc(8, 8)); // D3D11_QUERY_DESC: D3D11_QUERY_EVENT (0), no flags
+            long out = stack.nmalloc(8, 8);
+            Com.check("CreateQuery", device, DEVICE_CREATE_QUERY, "PP", desc, out);
+            long query = memGetAddress(out);
+            try {
+                Com.call(context, CONTEXT_END, "P:V", query);
+                Com.call(context, CONTEXT_FLUSH, ":V");
+                long deadline = System.nanoTime() + IDLE_TIMEOUT_NANOS;
+                int hr;
+                while ((hr = (int) Com.call(context, CONTEXT_GET_DATA, "PPII:I", query, 0L, 0, 0)) == S_FALSE) {
+                    if (System.nanoTime() > deadline) {
+                        LOG.warn("DLAA: the GPU did not finish DLSS's work within {} s", IDLE_TIMEOUT_NANOS / 1_000_000_000L);
+                        return;
+                    }
+                    Thread.onSpinWait();
+                }
+                Com.checkHr("GetData", hr);
+            } finally {
+                Com.release(query);
+            }
+        }
+    }
+
     @Override
     public void close() {
-        if (shared) {
-            return; // Perfect Presentation closes its own device
-        }
         wglDXCloseDeviceNV(interopDevice);
         Com.release(context);
         Com.release(device);
