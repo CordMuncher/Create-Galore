@@ -1,0 +1,28 @@
+modLoader = "javafml"
+loaderVersion = "[4,)"
+license = "MIT"
+
+[[mods]]
+modId = "create_galore_dlss_testkit"
+version = "1.0.0"
+displayName = "Create Galore DLAA Test Kit"
+authors = "Create Galore"
+description = '''Test tool for the Bridge's DLAA, never part of the pack: flies the camera along fixed paths in the DLAA test world and saves screenshots at the same frames for every anti-aliasing mode, for the side-by-side viewer (tools/dlss-testkit/compare.html).'''
+displayTest = "IGNORE_ALL_VERSION"
+
+[[mixins]]
+config = "create_galore_dlss_testkit.mixins.json"
+
+[[dependencies.create_galore_dlss_testkit]]
+modId = "neoforge"
+type = "required"
+versionRange = "[21.1,)"
+ordering = "NONE"
+side = "CLIENT"
+
+[[dependencies.create_galore_dlss_testkit]]
+modId = "iris"
+type = "required"
+versionRange = "[1.8,)"
+ordering = "AFTER"
+side = "CLIENT"

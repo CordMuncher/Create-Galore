@@ -53,6 +53,21 @@
     {
       "type": "modonomicon:text",
       "title": "",
+      "text": "**DLAA** (experimental, optional, not widely tested yet) works only with the shader pack **Photon v1.3a + DLAA**, a copy of Photon + Clrwl the pack makes at startup: pick it under Shader Packs. It replaces Photon's own anti-aliasing with NVIDIA DLAA or AMD FSR 3.1 at full resolution: a sharper picture with far less shimmer on leaves, fences and water."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Its settings are behind the **DLAA...** button at the top of the shader pack menu (also Mods > Create Galore Bridge > Config). **Auto** uses NVIDIA DLAA on an RTX card and FSR 3.1 on any other card. DLSS needs your own nvngx\\_dlss.dll, which isn't part of the pack: that screen has **Get it from NVIDIA** and **Open DLSS folder**, and shows the version it found."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "The DLSS preset is K unless you pick J, L, M or type another letter; a letter DLSS has no preset for runs as K. If DLAA can't run, a notice says why and Photon keeps its own anti-aliasing. If the game closes while DLSS or FSR starts, that one stays off until you press **Try again** on the settings screen. Log lines about it start with DLAA:."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
       "text": "Shaders are optional and can cut frame rate a lot on weaker machines. First world creation is also slow because of how many mods add world generation. This settles after the first load.\\\n\\\nName tags are drawn after the shader, so they stay readable with every pack.\\\n\\\n**Fullscreen** is F11. Screenshot key: F2."
     },
     {
@@ -78,7 +93,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**Perfect Presentation** (Windows, experimental) shows the game through DirectX: fullscreen is a fast borderless window, Alt-Tab is instant and a 10-bit monitor stays 10-bit. Turn it on with perfectPresentation=true in the [#](7A3C9A)[config](entry://glossary/config)[#]() file config/create\\_galore\\_bridge-display.properties and restart twice. On NVIDIA, set Power management mode to Prefer maximum performance for javaw.exe."
+      "text": "**Perfect Presentation** (Windows, experimental) shows the game through DirectX: fullscreen is a fast borderless window, Alt-Tab is instant and a 10-bit monitor stays 10-bit. Turn it on in the display settings (the **DLAA...** button in the shader pack menu) and restart twice. On NVIDIA, set Power management mode to Prefer maximum performance for javaw.exe."
     },
     {
       "type": "modonomicon:text",

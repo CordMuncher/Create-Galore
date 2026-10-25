@@ -16,7 +16,7 @@ public final class BridgeClient {
     private BridgeClient() {
     }
 
-    public static void init(IEventBus modBus) {
+    public static void init(IEventBus modBus, net.neoforged.fml.ModContainer container) {
         // Mods are built before Minecraft reads options.txt, so the file can still be fixed here.
         KeyRebindMigration.run();
         modBus.addListener(BridgeClient::setup);
@@ -27,6 +27,8 @@ public final class BridgeClient {
         net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener(SchematicTrace::tick);
         net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener(SchematicTrace::render);
         PinnedSchematicView.init();
+        dev.creategalore.bridge.dlss.Dlss.init(modBus);
+        dev.creategalore.bridge.dlss.DlaaScreen.register(modBus, container);
         net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener(
                 (net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent.LoggingOut e) -> ShipAnimatedSprites.clear());
     }

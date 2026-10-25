@@ -1,0 +1,5 @@
+cg_ngx.dll is built from tools/bridge-mod/native/cg_ngx.cpp (Create Galore, MIT) linked with nvsdk_ngx_s.lib from the
+NVIDIA DLSS SDK 310.9.16 (https://github.com/NVIDIA/DLSS/tree/v310.9.16). The NVIDIA parts are included in object code
+form only and are licensed under the NVIDIA RTX SDKs License (https://github.com/NVIDIA/DLSS/blob/v310.9.16/LICENSE.txt),
+not under the MIT license: they may not be reverse engineered, decompiled or disassembled, or redistributed on their own.
+nvngx_dlss.dll is not part of this mod; the pack's updater downloads it from NVIDIA's DLSS repository at the same tag.

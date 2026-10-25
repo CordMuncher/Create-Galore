@@ -5,6 +5,15 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.4.80
+
+### Added
+- **DLAA for Photon (experimental, optional, not widely tested yet).** At launch the pack now makes a second copy of Photon, **Photon v1.3a + DLAA** (built from Photon + Clrwl, so contraptions stay shaded right). Pick it under Shader Packs and Photon's own anti-aliasing (TAA) is replaced by NVIDIA DLAA (DLSS at full resolution) or AMD FSR 3.1 at full resolution: a much sharper picture with far less shimmer and smearing on leaves, fences, water and anything that moves, including mobs, the held item, Create contraptions, trains and ships. It doesn't upscale, so the frame rate stays about the same (it costs about 1.2 ms a frame on an RTX 4080 at 1440p). On a test PC with an RTX 4080 Super, DLAA cut the frame-to-frame shimmer 7 to 15 times against Photon's TAA. Only Photon is supported; the other shader packs are unchanged.
+- **Display settings screen.** The **DLAA...** button at the top of the shader pack menu (also Mods, Create Galore Bridge, Config) picks the anti-aliasing (Auto: NVIDIA DLAA on an RTX card, else FSR 3.1; NVIDIA DLAA; AMD FSR 3.1 native; Off) and the DLSS preset (Default, which is K, or K, J, L, M, or any other letter: one DLSS has no preset for runs as default), shows what runs right now and why DLAA is off when it is, and also turns Perfect Presentation and the 10-bit window on and off. Changing the anti-aliasing or preset reloads the shaders.
+- **Bring your own DLSS.** DLSS needs `nvngx_dlss.dll`, which isn't part of the pack. The settings screen links NVIDIA's own copy (Get it from NVIDIA), opens the folder it goes in (Open DLSS folder), and shows the version it found next to the one this was tested with (310.9.16). FSR 3.1 needs nothing and runs on any graphics card with OpenGL 4.5.
+- When DLAA can't run (no NVIDIA RTX card for DLSS, no `nvngx_dlss.dll`, a Photon option it doesn't cover such as Photon's own upscaler), a notice says why once and Photon keeps its own anti-aliasing. If the game closes while DLSS or FSR is starting, that one stays off from the next launch until you press Try again on the settings screen. The log says which graphics card, engine and preset DLAA uses, and why it is off, on lines starting with `DLAA:`.
+- Create Galore Bridge 1.95.0.
+
 ## 0.4.79
 
 ### Fixed
