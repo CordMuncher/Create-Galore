@@ -1,5 +1,6 @@
 package dev.creategalore.bridge.mixin;
 
+import com.maxenonyme.createsubmarine.submarine.client.SubmarineFogHandler;
 import dev.creategalore.bridge.client.ShipWaterCutaway;
 import dev.ryanhcode.sable.render.region.SimpleCulledRenderRegion;
 import dev.ryanhcode.sable.render.water_occlusion.WaterOcclusionRenderer;
@@ -33,10 +34,12 @@ public abstract class ShipWaterCutawayMixin {
     private void create_galore_bridge$atTheWater(Matrix4f modelView, Matrix4f projection, CallbackInfo ci) {
         if (!WaterOcclusionRenderer.isEnabled() || regions.isEmpty() || !ShipWaterCutaway.ready()) return;
         WaterOcclusionContainer<?> container = WaterOcclusionContainer.getContainer(level);
-        // A camera inside a hull keeps Sable's own pass.
-        if (container == null || container.isOccluded(Minecraft.getInstance().gameRenderer.getMainCamera().getPosition())) return;
+        if (container == null) return;
+        boolean inside = container.isOccluded(Minecraft.getInstance().gameRenderer.getMainCamera().getPosition());
+        // A camera inside a submerged hold keeps Sable's own pass: Deep Seas' fog in there reads its far buffer.
+        if (inside && SubmarineFogHandler.shouldFog()) return;
         updateFramebuffers(true);
-        ShipWaterCutaway.render(regions, closeBuffer, farBuffer, modelView, projection);
+        ShipWaterCutaway.render(regions, closeBuffer, farBuffer, modelView, projection, inside);
         ci.cancel();
     }
 }
