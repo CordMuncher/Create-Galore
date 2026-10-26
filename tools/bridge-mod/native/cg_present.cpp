@@ -666,6 +666,15 @@ CG_API int cg_present_tearing() {
     return g_tearing ? 1 : 0;
 }
 
+/**
+ * Whether DXGI holds the swap chain in exclusive full screen (GetFullscreenState): 1 yes, 0 no, -1 it can't say. The
+ * presenter never asks for exclusive full screen; for the log when the window changes.
+ */
+CG_API int cg_present_fullscreen_state() {
+    BOOL fullscreen = FALSE;
+    return g_swapChain && SUCCEEDED(g_swapChain->GetFullscreenState(&fullscreen, nullptr)) ? (fullscreen ? 1 : 0) : -1;
+}
+
 /** NT handle of a shared fence for OpenGL to import (GL_HANDLE_TYPE_D3D12_FENCE_EXT): 0 OpenGL done, 1 D3D12 done. */
 CG_API HANDLE cg_present_fence_handle(int which) {
     return which == 0 ? g_glFenceHandle : g_doneFenceHandle;

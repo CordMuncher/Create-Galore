@@ -75,6 +75,8 @@ public final class FrameLatency {
     private static boolean reflexSleeping;
     /** What the driver was last told: low latency, boost, frame interval (us); null: nothing yet. */
     private static int[] reflexApplied;
+    /** The settings (low latency, boost, the player's cap) of the last logged Reflex mode. */
+    private static int[] reflexLogged;
 
     private static boolean pacing;
     /** How long a frame may queue (ns), below 0 automatic; with pacerKeepsRate the player's On instead. */
@@ -122,9 +124,12 @@ public final class FrameLatency {
         }
     }
 
-    /** Waits for the frame cap's next frame, then reads input (what the game's limiter does after the frame instead). */
+    /**
+     * Waits for the frame cap's next frame, then reads input (what the game's limiter does after the frame instead).
+     * The cap counts frames on screen: with AMD's frame generation, fewer are rendered.
+     */
     private static void capWait() {
-        long interval = 1_000_000_000L / startCap;
+        long interval = 1_000_000_000L * FrameGen.capShownPerRendered() / startCap;
         long now = System.nanoTime();
         if (now - nextFrame > interval || nextFrame - now > interval) {
             nextFrame = now; // more than a frame behind, or the cap changed: the cadence starts over
@@ -412,6 +417,7 @@ public final class FrameLatency {
             try {
                 reflex.setMode(false, false, 0);
                 reflexApplied = null;
+                reflexLogged = null;
                 guard().stopped();
             } catch (RuntimeException e) {
                 reflexFailed(e);
@@ -508,17 +514,28 @@ public final class FrameLatency {
         return guard;
     }
 
+    /**
+     * Reflex's mode and frame cap, when they change. The cap counts frames on screen: with AMD's frame generation Reflex
+     * (NVAPI's) gets a rendered rate that gives the cap on screen, while through Streamline it counts DLSS's generated
+     * frames itself. Logged when the player's settings change, not each time frame generation goes off and on.
+     */
     private static void applyReflexMode() {
         boolean lowLatency = reflexMode.compareTo(ReflexMode.ON) >= 0;
         boolean boost = reflexMode == ReflexMode.BOOST;
         int limit = lowLatency ? frameLimit() : 0;
-        int interval = limit > 0 ? 1_000_000 / limit : 0;
+        int shownPerRendered = FrameGen.capShownPerRendered();
+        int interval = limit > 0 ? 1_000_000 * shownPerRendered / limit : 0;
         int[] wanted = {lowLatency ? 1 : 0, boost ? 1 : 0, interval};
         if (reflexApplied == null || !java.util.Arrays.equals(reflexApplied, wanted)) {
             reflex.setMode(lowLatency, boost, interval);
             reflexApplied = wanted;
-            LOG.info("Reflex: low latency {}, boost {}, frame cap {}; {}", lowLatency ? "on" : "off", boost ? "on" : "off",
-                    limit > 0 ? limit + " fps (Reflex's)" : "none", reflex.status());
+            int[] settings = {wanted[0], wanted[1], limit};
+            if (!java.util.Arrays.equals(reflexLogged, settings)) {
+                reflexLogged = settings;
+                LOG.info("Reflex: low latency {}, boost {}, frame cap {}; {}", lowLatency ? "on" : "off", boost ? "on" : "off",
+                        limit == 0 ? "none" : shownPerRendered > 1 ? limit + " fps on screen, " + limit / shownPerRendered
+                                + " rendered (Reflex's)" : limit + " fps (Reflex's)", reflex.status());
+            }
         }
     }
 

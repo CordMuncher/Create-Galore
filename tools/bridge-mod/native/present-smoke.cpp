@@ -525,7 +525,9 @@ int main(int argc, char** argv) {
     }
     char name[256];
     cg_present_adapter_name(name, sizeof name);
-    printf("adapter %s, tearing %d, window %dx%d\n", name, cg_present_tearing(), width, height);
+    int fullscreenState = cg_present_fullscreen_state();
+    printf("adapter %s, tearing %d, window %dx%d, DXGI full screen state %d\n", name, cg_present_tearing(), width, height,
+            fullscreenState);
 
     makeTestQueue();
 
@@ -565,7 +567,7 @@ int main(int argc, char** argv) {
 
     releaseTestQueue();
     cg_present_destroy();
-    bool pass = first == 0 && second == 0 && third == 0 && timed > 0 && badTimes == 0;
+    bool pass = first == 0 && second == 0 && third == 0 && timed > 0 && badTimes == 0 && fullscreenState == 0;
 
     // Frame generation's plumbing with the stand-in backend.
     g_fg = new FakeBackend(true);

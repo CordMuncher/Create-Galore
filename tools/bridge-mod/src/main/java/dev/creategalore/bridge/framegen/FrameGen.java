@@ -589,6 +589,22 @@ public final class FrameGen {
         return generating;
     }
 
+    /**
+     * The presenter showed a frame that wasn't drawn for it (Minecraft presents again while it changes the window mode),
+     * with frame generation off: the next frame that generates starts over.
+     */
+    public static void presentedAlone() {
+        generating = false;
+    }
+
+    /**
+     * For the frame cap: frames shown per rendered one while AMD's frame generation generates, so a cap counts the frames
+     * on screen as it does with DLSS (whose Reflex, through Streamline, counts them itself); else 1.
+     */
+    public static int capShownPerRendered() {
+        return generating && backend() == BACKEND_FSR ? 1 + Math.max(1, FRAME.framesToGenerate) : 1;
+    }
+
     /** The swap chain resized: no frame generation for a few frames. */
     public static void resized() {
         afterResize = AFTER_RESIZE;

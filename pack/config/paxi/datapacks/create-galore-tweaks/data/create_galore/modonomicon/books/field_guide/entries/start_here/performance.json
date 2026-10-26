@@ -143,6 +143,11 @@
     {
       "type": "modonomicon:text",
       "title": "",
+      "text": "With frame generation on, **Max Framerate** counts the frames on screen, with DLSS and with FSR: a cap of 120 shows 120 frames a second, 60 drawn by the game and 60 made between them."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
       "text": "**Frame counter** on the same tab: **Basic** shows the frame rate in a corner; **Detailed** adds the frame time, the 1%% and 0.1%% lows and a graph of the last few seconds. Pick the **Corner**. **Dim for OLED** keeps it faint and moves it a pixel now and then so it can't burn in. F3 and F1 hide it."
     },
     {

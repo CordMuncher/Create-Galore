@@ -48,13 +48,14 @@ final class DlssFinder {
 
     /** What one model's copy came to: NVIDIA's newest version (null: none there) and what happened to it. */
     private record Copy(String version, String have, boolean copied, boolean pending, String error) {
-        /** For the screen: "DLSS 310.9.16 copied" and the like. */
+        /** For the screen, one sentence: "DLSS 310.9.16: already up to date." and the like. */
         String text(String label) {
-            return version == null ? "no " + label
-                    : error != null ? label + " " + version + " could not be copied (" + error + ")"
-                    : pending ? label + " " + version + " copied, in use after a restart"
-                    : copied ? label + " " + version + " copied"
-                    : label + " " + version + ", yours (" + have + ") is as new";
+            return version == null ? label + ": not in NVIDIA's folder."
+                    : error != null ? label + " " + version + ": couldn't be copied (" + error + ")."
+                    : pending ? label + " " + version + ": copied from NVIDIA's folder, used after a restart."
+                    : copied ? label + " " + version + ": copied from NVIDIA's folder."
+                    : compare(have, version) == 0 ? label + " " + version + ": already up to date."
+                    : label + ": yours (" + have + ") is newer than NVIDIA's (" + version + ").";
         }
     }
 
@@ -73,8 +74,7 @@ final class DlssFinder {
             return new Result("Nothing found in NVIDIA's folder (" + nvidiaFolder().getParent() + "). The NVIDIA app puts DLSS there"
                     + " once it has updated DLSS for a game. Get it from NVIDIA instead.", false);
         }
-        return new Result("NVIDIA's folder: " + dlss.text("DLSS") + "; " + dlssg.text("frame generation") + ".",
-                dlss.copied() && !dlss.pending());
+        return new Result(dlss.text("DLSS") + " " + dlssg.text("Frame generation"), dlss.copied() && !dlss.pending());
     }
 
     /** The newest {@code name} of NVIDIA's {@code model} folder, from version {@code major} on, copied into the DLSS folder. */

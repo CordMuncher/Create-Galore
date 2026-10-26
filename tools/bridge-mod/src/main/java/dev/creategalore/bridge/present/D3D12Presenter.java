@@ -113,6 +113,7 @@ final class D3D12Presenter implements Presenter {
     private final long completed;
     private final long timingSwitch;
     private final long nowNs;
+    private final long fullscreenState;
     private final NativeHelper dll;
     private final long device;
     private final String adapter;
@@ -155,6 +156,8 @@ final class D3D12Presenter implements Presenter {
     private long fgOff;
     /** The frame drawn and not yet presented asked for generated frames. */
     private boolean presentGenerates;
+    /** A frame went to frame generation's backend (cg_fg_frame) since the last Present. */
+    private boolean frameSent;
     private boolean resizePending;
     private int pendingWidth;
     private int pendingHeight;
@@ -187,6 +190,7 @@ final class D3D12Presenter implements Presenter {
         completed = dll.symbol("cg_present_completed");
         timingSwitch = dll.symbol("cg_present_timing");
         nowNs = dll.symbol("cg_present_now_ns");
+        fullscreenState = dll.symbol("cg_present_fullscreen_state");
 
         FrameGen.Start frameGen = FrameGen.start(glGetString(GL_RENDERER));
         boolean prepared = frameGen != null && prepareFrameGeneration(frameGen);
@@ -300,6 +304,11 @@ final class D3D12Presenter implements Presenter {
             Ffi.call(":V", fgOff);
             drainFrameGenLog();
         }
+    }
+
+    /** For the log: 1 if DXGI holds the swap chain in exclusive full screen, 0 if not, -1 if it can't say. */
+    int exclusiveFullscreen() {
+        return (int) Ffi.call(":I", fullscreenState);
     }
 
     /** An export of cg_present.dll. */
@@ -447,6 +456,7 @@ final class D3D12Presenter implements Presenter {
                     fg.framesToGenerate, fg.camera) != 0;
             FrameGen.frameSent(sent, sent ? null : errorText());
             presentGenerates = sent && fg.generate();
+            frameSent = sent;
         }
         long done = Ffi.call("IP:P", draw, slot, openglValue);
         if (done < 0) {
@@ -647,6 +657,16 @@ final class D3D12Presenter implements Presenter {
 
     @Override
     public void present() {
+        if (frameGeneration && fgOn) {
+            if (!frameSent) {
+                // A present without a frame drawn for it: Minecraft presents once more while it changes the window
+                // mode (Window.updateFullscreen), after the resize it brought. It goes out without generated frames,
+                // so the resize can follow it at once (NVIDIA: frame generation off before a resize).
+                Ffi.call(":V", fgOff);
+                FrameGen.presentedAlone();
+            }
+            frameSent = false;
+        }
         int hr = (int) Ffi.call("I:I", presentFrame, syncInterval);
         if (hr < 0) {
             throw new IllegalStateException(errorText());
