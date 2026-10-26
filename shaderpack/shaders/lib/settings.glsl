@@ -8,6 +8,10 @@
 // (create_galore_dlss.properties) and sets the render size the programs see (taau_render_scale).
 //#define UPSCALING
 #define RENDER_SCALE 0.67 // [0.33 0.5 0.58 0.67 0.77 0.85]
+// The noise what samples a little each frame steps by (soft shadows, ambient occlusion, reflections, the water's
+// light), which the upscaler averages out over frames: 0 a smooth pattern made for TAA, 1 white noise (see
+// pixel_noise in lighting.glsl). Which one DLSS resolves more cleanly is for the eye to judge.
+#define NOISE_PATTERN 0 // [0 1]
 
 #ifdef UPSCALING
 const float upscaling_render_scale = RENDER_SCALE;
@@ -100,6 +104,9 @@ const float upscaling_render_scale = RENDER_SCALE;
 // shadow pass finds what reaches into the water, so what casts no shadow makes no ripples). Both only bend the
 // light on the water (see water.glsl).
 #define WATER_WAVES 1.0             // [0.0 0.5 1.0 1.5 2.0]
+// Reflections of the world on water (and puddles), from what the screen shows (see reflection.glsl): how far and how
+// finely a reflected ray looks. 0: the sky only.
+#define REFLECTION_QUALITY 2        // [0 1 2 3]
 #define WATER_RIPPLES
 #define WATER_RIPPLES_STRENGTH 1.0  // [0.5 1.0 1.5 2.0 3.0]
 #ifdef WATER_RIPPLES

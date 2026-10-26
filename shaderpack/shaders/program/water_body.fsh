@@ -1,15 +1,17 @@
 // The overworld's water (its composite pass), after everything translucent is drawn and before DLSS: the water
 // program only left its surface (see gbuffer.glsl), and this draws the water from it. From above: what lies under the
-// surface seen through the water between them (dimmed and turning blue-green with depth, hazy with the light the
-// water scatters, see water_body.glsl), with the sky and the sun reflected on top. From under water: the water
-// between you and everything you see, lit where it is, so the far water stays as bright as the light there wherever
-// you are; and the surface from below, which shows the sky through a round window above you (light bends into the
-// water) and mirrors the water all around it.
+// surface, seen along the ray the surface bends, through the water between them (dimmed and turning blue-green with
+// depth, hazy with the light the water scatters, see water_body.glsl), with the world reflected on top where the
+// screen shows it (see reflection.glsl) and the sky and the sun elsewhere, and foam where the water meets the shore
+// or something churns it. From under water: the water between you and everything you see, lit where it is, so the
+// far water stays as bright as the light there wherever you are; and the surface from below, which shows the sky
+// through a round window above you (light bends into the water) and mirrors the water all around it.
 
 #include "/lib/settings.glsl"
 #include "/lib/motion.glsl"
 #include "/lib/lit.glsl"
 #include "/lib/water_body.glsl"
+#include "/lib/water.glsl"
 
 uniform sampler2D colortex0;
 uniform sampler2D colortex4;
@@ -17,13 +19,17 @@ uniform sampler2D colortex5;
 uniform sampler2D colortex6;
 uniform sampler2D depthtex0;
 uniform sampler2D depthtex1;
+uniform mat4 gbufferModelView;
 uniform mat4 gbufferProjection;
 uniform mat4 gbufferProjectionInverse;
 
+#include "/lib/reflection.glsl"
+
 in vec2 v_uv;
 
-/* RENDERTARGETS: 0 */
+/* RENDERTARGETS: 0,3 */
 layout(location = 0) out vec4 out_color;
+layout(location = 1) out vec4 out_previous; // the frame kept for the next one's reflections (see gbuffer.glsl)
 
 // The hand's depth is squeezed into the middle of the range (Iris draws it at MC_HAND_DEPTH of its own).
 const float hand_depth_limit = 0.5 + 0.5 * MC_HAND_DEPTH;
@@ -36,30 +42,14 @@ vec3 unproject(mat4 projection_inverse, vec2 ndc, float depth) {
     return view.xyz / view.w;
 }
 
-float fresnel_schlick(float cos_theta) {
-    return 0.02 + 0.98 * pow(1.0 - clamp(cos_theta, 0.0, 1.0), 5.0);
+float fresnel_water(float cos_theta) {
+    return fresnel_schlick(cos_theta, vec3(0.02)).x;
 }
 
-// The sun's (or the moon's) glint on the water: the light (klux) on a surface facing n, mirrored towards the eye
-// (view_dir from the eye) by GGX microfacets, a little rougher far off so it doesn't sparkle from pixel to pixel.
+// The sun's (or the moon's) glint on the water (view_dir from the eye), a little rougher far off so it doesn't
+// sparkle from pixel to pixel.
 vec3 water_glint(vec3 n, vec3 view_dir, float dist, float lit) {
-    vec3 l = g_light_dir.xyz;
-    vec3 v = -view_dir;
-    float n_dot_l = dot(n, l);
-    float n_dot_v = max(dot(n, v), 1e-3);
-    if (n_dot_l <= 0.0 || lit <= 0.0) {
-        return vec3(0.0);
-    }
-    vec3 h = normalize(l + v);
-    float n_dot_h = max(dot(n, h), 0.0);
-    float alpha = 0.03 + 0.0015 * dist;
-    float a2 = alpha * alpha;
-    float d = n_dot_h * n_dot_h * (a2 - 1.0) + 1.0;
-    float ggx = a2 / (PI * d * d);
-    float k = alpha * 0.5;
-    float g = n_dot_l / (n_dot_l * (1.0 - k) + k) * n_dot_v / (n_dot_v * (1.0 - k) + k);
-    float f = fresnel_schlick(dot(h, v));
-    return g_light_color.rgb * lit * ggx * g * f / (4.0 * n_dot_v);
+    return sun_glint(n, view_dir, 0.03 + 0.0015 * dist, vec3(0.02), lit);
 }
 
 void main() {
@@ -67,6 +57,7 @@ void main() {
     vec2 size = render_size();
     if (any(greaterThanEqual(vec2(texel) + 0.5, size))) {
         out_color = vec4(0.0); // outside the frame while upscaling
+        out_previous = out_color;
         return;
     }
     vec3 scene = texelFetch(colortex0, texel, 0).rgb;
@@ -76,6 +67,7 @@ void main() {
     float depth_all = texelFetch(depthtex0, texel, 0).r;
     if ((!surface && !inside) || depth_all < hand_depth_limit) {
         out_color = vec4(scene, 1.0); // no water here, or the hand in front of it
+        out_previous = out_color;
         return;
     }
 
@@ -110,34 +102,95 @@ void main() {
             float sin2_t = water_ior * water_ior * (1.0 - cos_i * cos_i);
             float f = 1.0;
             if (sin2_t < 1.0) {
-                f = fresnel_schlick(sqrt(1.0 - sin2_t));
+                f = fresnel_water(sqrt(1.0 - sin2_t));
                 vec3 t = refract(dir, n, water_ior);
                 if (sky_behind && dist_glass <= 0.0) {
                     beyond = sky_radiance(normalize(vec3(t.x, max(t.y, 0.02), t.z))) * exposure();
                 }
             }
+            // What it mirrors: the water below, and what the screen shows down there (the bottom, a boat's hull).
+            vec3 p = eye + dir * dist_water;
+            vec3 r = reflect(dir, n);
+            float m_end = water_ray_limit;
+            vec3 m_seen = vec3(0.0);
+#if REFLECTION_QUALITY > 0
+            vec3 hit = reflection_trace(depthtex1, mat3(gbufferModelView) * p + gbufferModelView[3].xyz,
+                    mat3(gbufferModelView) * r, noise, hand_depth_limit);
+            if (hit.z > 0.0) {
+                ivec2 h = ivec2(hit.xy);
+                vec3 o = mat3(gbufferModelViewInverse) * unproject(gbufferProjectionInverse,
+                        (vec2(h) + 0.5 - vec2(cg_dlss_jitter_x, cg_dlss_jitter_y)) / size * 2.0 - 1.0,
+                        texelFetch(depthtex1, h, 0).r) + gbufferModelViewInverse[3].xyz;
+                m_end = mix(water_ray_limit, min(length(o - p), water_ray_limit), hit.z);
+                m_seen = texelFetch(colortex0, h, 0).rgb * hit.z;
+            }
+#endif
             vec3 mirrored = vec3(0.0);
             vec3 m_through;
-            water_ray(eye + dir * dist_water, reflect(dir, n), 0.0, water_ray_limit, 6, noise, mirrored, m_through);
-            beyond = beyond * (1.0 - f) + mirrored * exposure() * f;
+            water_ray(p, r, 0.0, m_end, 6, noise, mirrored, m_through);
+            beyond = beyond * (1.0 - f) + (mirrored * exposure() + m_seen * m_through) * f;
         }
         vec3 light, through;
         water_ray(eye, dir, 0.0, end, water_steps_inside, noise, light, through);
         color = beyond * through + light * exposure();
     } else {
-        // From above: the water under the surface, then the surface, reflecting the sky where it sees it.
+        // From above: the water under the surface, then the surface, reflecting the world where it sees it.
         vec3 n = decode_normal(water.rg);
         n = dot(n, dir) > 0.0 ? -n : n;
-        vec3 light, through;
-        water_ray(eye, dir, dist_water, dist_opaque, 10, noise, light, through);
-        vec3 body = scene * through + light * exposure();
-
         vec3 p = eye + dir * dist_water;
-        float f = fresnel_schlick(dot(-dir, n));
+        vec3 p_view = mat3(gbufferModelView) * p + gbufferModelView[3].xyz;
+        vec2 jitter = vec2(cg_dlss_jitter_x, cg_dlss_jitter_y);
+
+        // What lies under it, along the ray the surface bends: about where that ray meets the bottom, if the screen
+        // shows water over something there (not the shore in front of it). Where it doesn't (that point is off the
+        // screen or behind the hand), what the pixel itself shows under the surface, through as much water as the
+        // bent ray would go through down to the same depth, so the two don't differ in how deep they look.
+        vec3 under = scene;
+        vec3 under_from = eye;
+        vec3 under_dir = dir;
+        float under_a = dist_water;
+        float under_b = dist_opaque;
+        if (!sky_behind) {
+            vec3 t = refract(dir, n, 1.0 / water_ior);
+            float below = max(p.y - (eye.y + dir.y * dist_opaque), 0.0);
+            under_from = p;
+            under_dir = t;
+            under_a = 0.0;
+            under_b = min(below / max(-t.y, 0.05), dist_opaque - dist_water);
+            vec3 q = p + t * min(dist_opaque - dist_water, 4.0);
+            vec3 at = reflection_pixel(mat3(gbufferModelView) * q + gbufferModelView[3].xyz);
+            if (at.z > 0.0 && all(greaterThanEqual(at.xy, vec2(0.0))) && all(lessThan(at.xy, size))) {
+                ivec2 bent = ivec2(at.xy);
+                float d = texelFetch(depthtex1, bent, 0).r;
+                if (texelFetch(colortex4, bent, 0).a > 0.5 && d < 1.0 && d >= hand_depth_limit) {
+                    vec3 o = mat3(gbufferModelViewInverse)
+                            * unproject(gbufferProjectionInverse, (vec2(bent) + 0.5 - jitter) / size * 2.0 - 1.0, d)
+                            + gbufferModelViewInverse[3].xyz;
+                    if (length(o - eye) > texelFetch(colortex5, bent, 0).r) {
+                        under = texelFetch(colortex0, bent, 0).rgb;
+                        under_from = p;
+                        under_dir = normalize(o - p);
+                        under_a = 0.0;
+                        under_b = length(o - p);
+                    }
+                }
+            }
+        }
+        vec3 light, through;
+        water_ray(under_from, under_dir, under_a, under_b, 10, noise, light, through);
+        vec3 body = under * through + light * exposure();
+
+        float f = fresnel_water(dot(-dir, n));
         vec3 r = reflect(dir, n);
-        r = normalize(vec3(r.x, max(r.y, 0.02), r.z));
+        r = normalize(vec3(r.x, max(r.y, 0.02), r.z)); // a wave can't turn the reflection down into the water
         float open_sky = smoothstep(12.0 / 15.0, 14.5 / 15.0, water.b);
-        vec3 reflection = sky_radiance(r) * open_sky;
+        vec3 reflection = sky_radiance(r) * open_sky * exposure();
+#if REFLECTION_QUALITY > 0
+        vec3 hit = reflection_trace(depthtex1, p_view, mat3(gbufferModelView) * r, noise, hand_depth_limit);
+        if (hit.z > 0.0) {
+            reflection = mix(reflection, texelFetch(colortex0, ivec2(hit.xy), 0).rgb, hit.z);
+        }
+#endif
         float lit = 1.0;
 #ifdef SHADOW_MAP
         vec3 coord = shadow_coord(p);
@@ -146,7 +199,26 @@ void main() {
         }
 #endif
         lit *= open_sky;
-        color = body * (1.0 - f) + (reflection * f + water_glint(n, dir, dist_water, lit)) * exposure();
+        color = body * (1.0 - f) + reflection * f + water_glint(n, dir, dist_water, lit) * exposure();
+
+        // Foam: a band where the water meets the shore or a wall, and where something churns it (a wake).
+        float churn = 0.0;
+        if (!sky_behind) {
+            churn = 1.0 - smoothstep(0.05, 0.4, p.y - (eye.y + dir.y * dist_opaque));
+        }
+#ifdef LIT_WATER_RIPPLES
+        churn = max(churn, smoothstep(0.4, 1.2, length(ripple_slope(p))));
+#endif
+        if (churn > 0.0) {
+            vec3 w = wave_coord(p);
+            vec2 drift = frameTimeCounter * vec2(0.031, -0.022);
+            float bubbles = 0.5 * (wave_noise(w.xz * 9.0 + drift) + wave_noise(golden_turn * w.xz * 13.0 - drift));
+            float foam = smoothstep(1.0 - churn, 1.15 - churn, bubbles);
+            if (foam > 0.0) {
+                vec3 white = forward_lit(vec3(0.85), vec3(0.0, 1.0, 0.0), vec2(0.0, water.b), p, false);
+                color = mix(color, white, foam * 0.85);
+            }
+        }
         // Minecraft's fog in front of it, as the deferred pass fogs what is opaque.
         color = apply_fog_lit(color, max(length(p.xz), abs(p.y)), dir, fog_range_shaped(1));
     }
@@ -154,4 +226,5 @@ void main() {
         color = scene;
     }
     out_color = vec4(color, 1.0);
+    out_previous = out_color;
 }

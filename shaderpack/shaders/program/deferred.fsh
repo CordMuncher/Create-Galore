@@ -11,6 +11,7 @@
 uniform sampler2D colortex0;
 uniform sampler2D colortex1;
 uniform sampler2D colortex2;
+uniform sampler2D colortex3;
 uniform sampler2D colortex9;
 uniform sampler2D depthtex0;
 uniform mat4 gbufferModelView;
@@ -21,6 +22,8 @@ uniform mat4 gbufferProjectionInverse;
 uniform sampler2D dhDepthTex0;
 uniform mat4 dhProjectionInverse;
 #endif
+
+#include "/lib/reflection.glsl"
 
 #ifdef LIT_CLOUDS
 #include "/lib/clouds.glsl"
@@ -59,6 +62,38 @@ const float hand_depth_limit = 0.5 + 0.5 * MC_HAND_DEPTH;
 vec3 unproject(mat4 projection_inverse, vec2 ndc, float depth) {
     vec4 view = projection_inverse * vec4(ndc, depth * 2.0 - 1.0, 1.0);
     return view.xyz / view.w;
+}
+
+// What last frame's picture showed where this frame's render pixel is (rgb, a 1), or a 0 where it was off the screen:
+// the reflections on puddles and polished floors come from it, as this frame's isn't drawn yet.
+vec4 previous_frame_at(vec2 pixel) {
+    vec2 size = render_size();
+    ivec2 p = ivec2(pixel);
+    float d = texelFetch(depthtex0, p, 0).r;
+    vec2 ndc = (vec2(p) + 0.5 - vec2(cg_dlss_jitter_x, cg_dlss_jitter_y)) / size * 2.0 - 1.0;
+    vec4 clip = previous_clip(view_to_scene(unproject(gbufferProjectionInverse, ndc, d)), gbufferPreviousProjection);
+    if (clip.w <= 0.0) {
+        return vec4(0.0);
+    }
+    vec2 prev = (clip.xy / clip.w * 0.5 + 0.5) * size;
+    if (any(lessThan(prev, vec2(0.5))) || any(greaterThan(prev, size - 0.5))) {
+        return vec4(0.0);
+    }
+    return vec4(texture(colortex3, prev / window_size()).rgb, 1.0);
+}
+
+// The world mirrored in a smooth surface at view (view space) along r (world space), in the frame's units: what the
+// screen showed there, else the sky, as much of it as the surface sees (open_sky).
+vec3 mirrored(vec3 view, vec3 r, float open_sky, float noise) {
+    vec3 reflection = sky_radiance(normalize(vec3(r.x, max(r.y, 0.02), r.z))) * open_sky * exposure();
+#if REFLECTION_QUALITY > 0
+    vec3 hit = reflection_trace(depthtex0, view, mat3(gbufferModelView) * r, noise, hand_depth_limit);
+    if (hit.z > 0.0) {
+        vec4 seen = previous_frame_at(hit.xy);
+        reflection = mix(reflection, seen.rgb, hit.z * seen.a);
+    }
+#endif
+    return reflection;
 }
 
 #if defined SHADOW_MAP && defined CONTACT_SHADOWS
@@ -252,22 +287,30 @@ void main() {
         vec3 scene_pos = view_to_scene(view);
         vec3 albedo = srgb_to_linear(texelFetch(colortex1, texel, 0).rgb);
         vec2 occlusion = texelFetch(colortex9, texel, 0).rg;
-        bool foliage = material == MATERIAL_LIT && occlusion.g > 0.5;
+        int kind = material == MATERIAL_LIT ? decode_surface_kind(occlusion.g) : SURFACE_PLAIN;
+        bool foliage = kind == SURFACE_LEAVES;
         vec3 normal = decode_normal(surface.rg);
-        // Minecraft's corners, and what the screen shows around a solid surface (leaves and plants have only theirs:
-        // their own holes and blades would shade them).
+        // Minecraft's corners, and what the screen shows around a surface (plants have only theirs: every blade
+        // would shade the next). In a tree the leaves seen through the gaps of the outer ones lie deeper in, so
+        // they get less of the light all around: the tree has depth, without its outside going dark.
         float ao = occlusion.r;
 #if AO_QUALITY > 0
-        if (!lod && depth >= hand_depth_limit && material == MATERIAL_LIT && !foliage) {
-            vec2 q = gl_FragCoord.yx + vec2(17.0, 43.0) + 5.588238 * float((frameCounter + 29) & 63);
-            float noise_step = fract(52.9829189 * fract(dot(q, vec2(0.06711056, 0.00583715))));
-            ao = min(ao, screen_ao(texel, view, mat3(gbufferModelView) * normal, pixel_noise(), noise_step));
+        if (!lod && depth >= hand_depth_limit && material == MATERIAL_LIT) {
+            float screen = screen_ao(texel, view, mat3(gbufferModelView) * normal, pixel_noise(), pixel_noise(1u));
+            ao = min(ao, foliage ? mix(1.0, screen, 0.75) : screen);
         }
 #endif
         vec2 light = decode_light(surface);
-        // Rain darkens what it wets and leaves a film of water on it (not on plants, which shed it).
-        float wet = material == MATERIAL_LIT ? wetness_at(normal, light.y) : 0.0;
-        albedo *= 1.0 - 0.35 * wet;
+        // Rain leaves a film of water on what it falls on while it falls (not on plants, which shed it) and soaks
+        // into it, darker and deeper in colour the more it takes in, for a while after the shine has gone; puddles
+        // stand in the dips of flat ground, damp around them, for a while longer (see wet.glsl).
+        vec2 wetness = material == MATERIAL_LIT ? wetness_at(normal, light.y) : vec2(0.0);
+        float wet = wetness.x;
+        vec2 puddle = vec2(0.0);
+        if (material == MATERIAL_LIT && !lod && depth >= hand_depth_limit) {
+            puddle = puddle_at(scene_pos, normal, light.y, kind);
+        }
+        albedo = soaked(albedo, max(wetness.y, puddle.y), porosity_of(kind)) * (1.0 - 0.25 * puddle.x);
         float contact = 1.0;
 #if defined SHADOW_MAP && defined CONTACT_SHADOWS
         // Not on plants: in a meadow every blade would find another in front of it and the grass would go dark.
@@ -283,7 +326,35 @@ void main() {
         lit = vec3(ao * 10.0);
 #endif
         if (wet > 0.0) {
-            lit = with_wet_film(lit, normal, dir, wet);
+            lit = with_wet_film(lit, normal, dir, wet * 0.5 * (1.0 - puddle.x));
+        }
+        if (puddle.x > 0.0) {
+            // Still water: the world mirrored, rings where raindrops fall on it, the sun's glint.
+            // (The rings fade out a little way off, where they would only sparkle from pixel to pixel.)
+            vec2 rings = rain_ripple_slope(scene_pos, cg_rain_here * (1.0 - smoothstep(8.0, 24.0, length(scene_pos))));
+            vec3 n = normalize(vec3(-rings.x, 1.0, -rings.y));
+            float f = fresnel_schlick(dot(-dir, n), vec3(0.02)).x * puddle.x;
+            lit = mix(lit, mirrored(view, reflect(dir, n), 1.0, pixel_noise()), f)
+                    + sun_glint(n, dir, 0.03, vec3(0.02), glint_visibility(scene_pos, normal, light.y)) * exposure()
+                    * puddle.x;
+        } else if ((kind == SURFACE_METAL || kind == SURFACE_POLISHED) && !lod) {
+            // Metal reflects in its own colour, blurred (its surface is rough); polished stone a little, sharper,
+            // mostly at a glancing angle.
+            bool metal = kind == SURFACE_METAL;
+            vec3 f0 = metal ? albedo : vec3(0.04);
+            vec3 f = fresnel_schlick(dot(-dir, normal), f0);
+            float open_sky = smoothstep(12.0 / 15.0, 14.5 / 15.0, light.y);
+            vec3 r = reflect(dir, normal);
+            vec3 around;
+            if (metal) {
+                around = mix(sky_irradiance(r) / PI, sky_radiance(normalize(vec3(r.x, max(r.y, 0.02), r.z))), 0.35)
+                        * open_sky * exposure();
+            } else {
+                around = mirrored(view, r, open_sky, pixel_noise());
+            }
+            float glint = glint_visibility(scene_pos, normal, light.y);
+            lit = lit * (metal ? 0.6 : 1.0 - f.g) + around * f * (metal ? 0.6 : 0.8)
+                    + sun_glint(normal, dir, metal ? 0.3 : 0.12, f0, glint) * exposure();
         }
         // Minecraft's fog: a cylinder around you in the open air, round in water and the like (Iris gives this pass
         // no fog shape).

@@ -35,7 +35,7 @@ in vec3 v_scene_pos;
 flat in int v_material;
 #if defined PROGRAM_TERRAIN
 flat in float v_emission; // the light the block gives, 0..1
-flat in int v_foliage;    // 1 for leaves
+flat in int v_surface;    // what it is made of (SURFACE_)
 in float v_ao;
 #else
 uniform ivec4 blendFunc; // the draw's blending (all 0 when off)
@@ -98,15 +98,23 @@ void lit_output(vec4 color, int flags) {
     normal = dot(normal, dir) > 0.0 ? -normal : normal;
     vec3 rgb = forward_lit(vec3(0.9), normal, vec2(0.0, 1.0), v_scene_pos, false);
 #elif defined PROGRAM_WEATHER
-    // Rain and snow: lit like plants, through, by the sky and the sun. Raindrops are clear water, so the rain keeps
-    // only a little of its texture's blue (lit, the full blue reads as blue paint).
+    // Rain and snow: lit like plants, through, by the sky, the sun and the lights near them. Raindrops are clear
+    // water: pale grey streaks, fainter than Minecraft's blue lines (its rain texture is the blue one).
+    if (color.b > 1.2 * color.r) {
+        color = vec4(vec3(0.8), color.a * 0.5);
+    }
     vec3 rgb = forward_lit(mix(vec3(luminance(color.rgb)), color.rgb, 0.3), vec3(0.0, 1.0, 0.0), v_level, v_scene_pos, true);
 #elif defined PROGRAM_WATER
     float dist = length(v_scene_pos - gbufferModelViewInverse[3].xyz);
     if (v_material == MATERIAL_WATER) {
         // The top of water (either side of it) with its waves and ripples (see water.glsl); the composite pass draws
         // the rest.
-        vec3 normal = abs(v_normal.y) > 0.9 ? water_normal(v_scene_pos) : v_normal;
+        vec3 normal = v_normal;
+        if (abs(v_normal.y) > 0.9) {
+            vec3 view_dir = (v_scene_pos - gbufferModelViewInverse[3].xyz) / max(dist, 1e-4);
+            vec3 at = v_normal.y > 0.0 ? wave_parallax(v_scene_pos, view_dir, dist) : v_scene_pos;
+            normal = water_normal(at, dist, v_level.y);
+        }
         out_color = vec4(0.0);
         out_water = vec4(encode_normal(normal), v_level.y, 1.0);
         out_water_dist = vec4(dist, 0.0, 0.0, 1.0);
@@ -179,8 +187,8 @@ void lit_output(vec4 color, int flags) {
 #endif
         out_albedo = color;
 #ifdef PROGRAM_TERRAIN
-        // Leaves let light through them (see light_surface).
-        out_occlusion = vec4(v_ao, float(v_foliage), 0.0, 1.0);
+        // Leaves let light through them, metal shines, rain soaks into sand (see deferred.fsh).
+        out_occlusion = vec4(v_ao, float(v_surface) / 7.0, 0.0, 1.0);
 #endif
         out_surface = encode_surface(v_normal, v_level, v_material, weight);
     }

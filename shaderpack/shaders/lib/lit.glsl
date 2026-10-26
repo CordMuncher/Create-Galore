@@ -14,7 +14,7 @@
 uniform int isEyeInWater;       // 1 water, 2 lava, 3 powder snow
 uniform float blindness;
 uniform float darknessFactor;
-uniform ivec2 eyeBrightnessSmooth; // the light where you are, 0..240 (block, sky)
+#include "/lib/weather.glsl"
 
 // What glows by itself (glowing eyes, the beacon's beam, the enchantment glint, a charged creeper's swirl) looks on
 // the screen as it does in Minecraft, whatever the exposure: a colour of 1 is this much in the frame.
@@ -63,9 +63,8 @@ vec3 fog_color_lit(vec3 dir) {
     return medium / PI * ambient * (1.0 - max(blindness, darknessFactor));
 }
 
-// Rain and snow where you are, faded in and out (see shaders.properties): 0..1 each.
-uniform float cg_rain_here;
-uniform float cg_snow_here;
+// Rain and snow where you are (cg_rain_here, cg_snow_here: see wet.glsl).
+#include "/lib/wet.glsl"
 
 // The haze of falling rain or snow over dist blocks in the open air: they let you see about a kilometre in rain,
 // 400 blocks in a thunderstorm and 600 in snow. Indoors and underground (where little sky reaches you) there is
@@ -92,6 +91,31 @@ vec3 forward_lit(vec3 srgb, vec3 normal, vec2 light, vec3 scene_pos, bool plant)
     return light_surface(srgb_to_linear(srgb), normal, light, scene_pos, plant, true) * exposure();
 }
 
+// Schlick's Fresnel: how much a surface reflects (f0 head on) at an angle whose cosine is cos_theta.
+vec3 fresnel_schlick(float cos_theta, vec3 f0) {
+    return f0 + (1.0 - f0) * pow(1.0 - clamp(cos_theta, 0.0, 1.0), 5.0);
+}
+
+// The sun's (or the moon's) light mirrored towards the eye by a surface facing n (view_dir from the eye), rough as
+// GGX alpha, reflecting f0 head on, where lit (0..1) of the light reaches it: kcd/m², not exposed.
+vec3 sun_glint(vec3 n, vec3 view_dir, float alpha, vec3 f0, float lit) {
+    vec3 l = g_light_dir.xyz;
+    vec3 v = -view_dir;
+    float n_dot_l = dot(n, l);
+    float n_dot_v = max(dot(n, v), 1e-3);
+    if (n_dot_l <= 0.0 || lit <= 0.0) {
+        return vec3(0.0);
+    }
+    vec3 h = normalize(l + v);
+    float n_dot_h = max(dot(n, h), 0.0);
+    float a2 = alpha * alpha;
+    float d = n_dot_h * n_dot_h * (a2 - 1.0) + 1.0;
+    float ggx = a2 / (PI * d * d);
+    float k = alpha * 0.5;
+    float g = n_dot_l / (n_dot_l * (1.0 - k) + k) * n_dot_v / (n_dot_v * (1.0 - k) + k);
+    return g_light_color.rgb * lit * ggx * g * fresnel_schlick(dot(h, v), f0) / (4.0 * n_dot_v);
+}
+
 // Water, glass and ice reflect the sky (Schlick's Fresnel for water) where they see it. color: the surface lit and
 // fogged, as alpha-blended over what is behind it; view_dir from the eye.
 vec4 with_sky_reflection(vec4 color, vec3 normal, vec3 view_dir, float sky) {
@@ -107,12 +131,26 @@ vec4 with_sky_reflection(vec4 color, vec3 normal, vec3 view_dir, float sky) {
     return vec4(rgb, alpha);
 }
 
-// Rain wets what it falls on (see shaders.properties for cg_wet): how wet a surface with sky light sky (0..1)
-// facing normal is, the tops most.
-uniform float cg_wet;
+// Rain wets what it falls on (see shaders.properties for cg_wet and cg_damp): how wet a surface with sky light sky
+// (0..1) facing normal is, the tops most: the film of water on it (x) and how damp it is under that (y), which dries
+// more slowly.
+vec2 wetness_at(vec3 normal, float sky) {
+    return vec2(cg_wet, cg_damp) * smoothstep(13.5 / 15.0, 14.5 / 15.0, sky) * mix(0.35, 1.0, max(normal.y, 0.0));
+}
 
-float wetness_at(vec3 normal, float sky) {
-    return cg_wet * smoothstep(13.5 / 15.0, 14.5 / 15.0, sky) * mix(0.35, 1.0, max(normal.y, 0.0));
+// A surface's colour (albedo) when soaked by damp (0..1), by how much water it takes in (porosity, 0..1): water in
+// its pores keeps the light bouncing inside it longer, so it comes out darker and deeper in colour, mid tones the
+// most (Sébastien Lagarde's wet surfaces, Remember Me): towards its colour squared.
+vec3 soaked(vec3 albedo, float damp, float porosity) {
+    float soak = damp * porosity;
+    return mix(albedo, albedo * albedo, 0.85 * soak) * (1.0 - 0.2 * soak);
+}
+
+// How much water a surface of a kind (SURFACE_) takes in: sand and soil the most, leaves, metal and polished stone
+// hardly (the water stays on them as a film).
+float porosity_of(int kind) {
+    return kind == SURFACE_SAND ? 1.0 : kind == SURFACE_SOIL ? 0.9 : kind == SURFACE_LEAVES ? 0.25
+            : kind == SURFACE_METAL ? 0.05 : kind == SURFACE_POLISHED ? 0.15 : 0.6;
 }
 
 // The film of water on a wet surface (wet 0..1): it reflects the sky (Schlick's Fresnel for water, the sky half

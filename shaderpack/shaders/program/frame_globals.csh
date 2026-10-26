@@ -14,7 +14,7 @@ uniform vec3 shadowLightPosition;
 uniform ivec3 cameraPositionInt;
 uniform vec3 cameraPositionFract;
 uniform int worldDay;
-uniform float frameTimeCounter; // seconds, back to 0 each hour
+#include "/lib/frame.glsl"
 uniform vec4 lightningBoltPosition; // a lightning bolt this frame: xyz where it is from the camera, w 1
 
 shared vec3 shared_cube[64 * 6];

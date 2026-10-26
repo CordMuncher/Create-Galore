@@ -17,6 +17,7 @@ uniform vec2 taau_render_scale;
 uniform float viewWidth;
 uniform float viewHeight;
 uniform int frameCounter; // for what takes turns from frame to frame
+uniform float frameTimeCounter; // seconds, back to 0 each hour
 
 vec2 window_size() {
     return vec2(viewWidth, viewHeight);

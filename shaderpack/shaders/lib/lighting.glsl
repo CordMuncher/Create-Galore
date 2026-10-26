@@ -10,7 +10,11 @@
 #include "/lib/settings.glsl"
 #include "/lib/frame.glsl"
 #include "/lib/globals.glsl"
+#include "/lib/noise.glsl"
 #include "/lib/shadow.glsl"
+#ifdef SHADOW_MAP
+#include "/lib/water.glsl"
+#endif
 #include "/lib/light_volume.glsl"
 #include "/lib/medium.glsl"
 #ifdef LIT_CLOUDS
@@ -25,11 +29,23 @@ uniform float screenBrightness;     // Minecraft's Brightness setting, 0 (Moody)
 uniform float nightVision;
 uniform float darknessLightFactor;  // the Darkness effect's pulse
 
-// A number 0..1 for this pixel and frame, spread evenly over the screen (Jorge Jimenez's interleaved gradient
-// noise), for what samples a few points of many: the upscaler evens out what it leaves (fragment stages only).
-float pixel_noise() {
-    vec2 p = gl_FragCoord.xy + 5.588238 * float(frameCounter & 63);
+// A number 0..1 for this pixel and frame, for what samples a few points of many: the upscaler evens out what it
+// leaves (fragment stages only); seed: another number for each use (0..3). Noise Pattern 0: spread evenly over the
+// screen and moved on each frame (Jorge Jimenez's interleaved gradient noise, made for TAA). 1: white noise, a hash
+// of the pixel and the frame (Jarzynski and Olano's PCG), with no pattern across the screen, which is what NVIDIA
+// asks Ray Reconstruction to be given.
+float pixel_noise(uint seed) {
+#if NOISE_PATTERN == 1
+    return hash_to_float(hash_pcg3d(uvec3(uvec2(gl_FragCoord.xy), (uint(frameCounter) << 2u) | seed))).x;
+#else
+    vec2 p = seed == 0u ? gl_FragCoord.xy : gl_FragCoord.yx + vec2(17.0, 43.0) * float(seed);
+    p += 5.588238 * float((frameCounter + 29 * int(seed)) & 63);
     return fract(52.9829189 * fract(dot(p, vec2(0.06711056, 0.00583715))));
+#endif
+}
+
+float pixel_noise() {
+    return pixel_noise(0u);
 }
 
 // A light level 15 surface gets light_block_lux of torchlight (torch_color, see light_volume.glsl): a little more than
@@ -98,6 +114,24 @@ float direct_visibility(vec3 scene_pos, vec3 normal, float sky, bool shadowed) {
     return by_sky * clouds;
 }
 
+// The same, from one sharp look at the shadow map: for the sun's glint on water and polished things, where a soft
+// shadow edge would only blur the glint.
+float glint_visibility(vec3 scene_pos, vec3 normal, float sky) {
+#ifdef LIT_CLOUDS
+    float clouds = cloud_shadow(scene_pos, g_light_dir.xyz);
+#else
+    float clouds = 1.0;
+#endif
+    float lit = smoothstep(12.0 / 15.0, 14.5 / 15.0, sky) * clouds;
+#ifdef SHADOW_MAP
+    vec3 coord = shadow_coord(scene_pos + normal * 0.05);
+    if (lit > 0.0 && all(greaterThan(coord, vec3(0.0))) && all(lessThan(coord, vec3(1.0)))) {
+        lit *= texture(shadowtex1HW, vec3(coord.xy, coord.z - 0.00002));
+    }
+#endif
+    return lit;
+}
+
 // How much of the light all around reaches a surface whose occlusion (the share of the directions around it that
 // are open) is ao: more than that, as light bounces between the sides of a crease, the more so the lighter they are
 // (Jimenez et al.'s fit, for the surface's own albedo).
@@ -124,7 +158,7 @@ vec3 light_surface(vec3 albedo, vec3 normal, vec2 light, vec3 scene_pos, bool pl
     float water_depth = shadowed ? shadow_water_depth(scene_pos) : 0.0;
     if (water_depth > 0.0) {
         float below = water_depth * max(g_light_dir.y, 0.1);
-        water_direct = water_transmittance(water_depth);
+        water_direct = water_transmittance(water_depth) * water_caustics(scene_pos, water_depth, length(scene_pos));
         water_sky = water_transmittance(1.5 * below);
         light.y = min(light.y + below / 15.0, 1.0);
     }
@@ -136,18 +170,21 @@ vec3 light_surface(vec3 albedo, vec3 normal, vec2 light, vec3 scene_pos, bool pl
     if (foliage || plant) {
         // Leaves and plants let the light through: a quarter of it reaches every side of a leaf, and what lies in
         // the shade of other leaves or blades gets what they let through (less the more of them), greener for it.
-        // A plant is lit as if it faced the light (a little less when it's low).
+        // A tree's leaves let through less than a blade of grass does: the inside of a tree glows a little, a
+        // depth of shade under its sunlit top rather than lit up as brightly. A plant is lit as if it faced the
+        // light (a little less when it's low).
         float n_l = dot(normal, g_light_dir.xyz);
         float facing = plant ? n_dot_l : 0.25 + 0.75 * max(n_l, 0.0);
         float vis = direct_visibility(scene_pos, g_light_dir.xyz, light.y, shadowed);
         float through = 0.0;
 #ifdef SHADOW_MAP
         if (shadowed) {
-            through = shadow_through(scene_pos, plant ? 0.75 : 1.25) * smoothstep(1.0 / 15.0, 4.0 / 15.0, light.y);
+            through = shadow_through(scene_pos, plant ? 0.75 : 1.0) * smoothstep(1.0 / 15.0, 4.0 / 15.0, light.y)
+                    * (plant ? 1.0 : 0.45);
         }
 #endif
         float glow = clamp(through - vis, 0.0, 1.0) + (plant ? 0.0 : max(-n_l, 0.0) * 0.5);
-        vec3 tint = mix(vec3(1.0), clamp(albedo * 2.5, 0.0, 1.0), glow);
+        vec3 tint = mix(vec3(1.0), clamp(albedo * 2.5, 0.0, 1.0), 0.6 * min(glow, 1.0));
         direct = g_light_color.rgb * water_direct * contact * facing * max(vis, through) * tint;
     } else if (n_dot_l > 0.0 && contact > 0.0) {
         direct = g_light_color.rgb * water_direct * n_dot_l * contact * direct_visibility(scene_pos, normal, light.y, shadowed);

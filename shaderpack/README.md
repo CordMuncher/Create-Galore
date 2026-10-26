@@ -83,6 +83,31 @@ Bugs and lighting (alpha 2):
   they look dimmest) and deepened.
 - The eyes adapt faster: about a second into a dark room.
 
+Water, rain and reflections (alpha 3, the Reflections and Noise Pattern options):
+
+- Waves that never repeat: Alpha Piscium's layers of cellular noise, each turned by the golden angle from the last
+  and all warped by a slow curl field, the full swell at sea and less of it on lakes, rivers and swamps. Up close
+  the crests hide what lies behind them (parallax).
+- Water from above: what lies under it seen along the ray the surface bends, the world mirrored where the screen
+  shows it (screen-space reflections) and the sky elsewhere, the sun's glint, and foam where the water meets the
+  shore or something churns it.
+- Caustics: the waves gather the sunlight into a net of bright lines on what lies under them, sharp in a block or
+  two of water and broad and faint deeper down, with coloured edges. Their brightness follows the area ratio of
+  the bent light (the method Evan Wallace's WebGL water made popular), through ripples finer than the waves.
+- Rain: the film of water on everything shines while it falls and dries soon after; what it soaked into darkens
+  and deepens in colour by what it is made of (sand and soil the most, metal hardly, after Sébastien Lagarde's wet
+  surfaces) and stays damp for a while longer. Puddles fill the dips of a fixed pattern on flat ground under the
+  open sky over the first half minute of rain, mirror the world with raindrop rings on them, and shrink back into
+  their deepest spots over about four minutes after. Rain streaks are pale and clear, and the air glows softly
+  around lights in the rain.
+- Metal blocks reflect the sky in their own colour, and polished stone and quartz mirror the world faintly.
+- Trees: less light through the crown, so its inside lies in shade under the sunlit top, ambient occlusion from
+  the screen on the leaves, and the light all around them leaning more on which way they face (after Ghost of
+  Tsushima's stylized lighting), so a crown reads as round.
+- Noise Pattern: the noise that soft shadows, ambient occlusion and reflections take their few samples by, either
+  a smooth pattern made for TAA or white noise (what NVIDIA asks Ray Reconstruction to be given), for comparing
+  which one DLSS resolves more calmly.
+
 From milestone 1, in every preset:
 
 - Motion vectors for everything that moves: the camera, mobs and block entities, the hand, Sable ships, Create's
@@ -106,14 +131,16 @@ where they go. Without the Bridge the pack still runs, with no anti-aliasing.
   (`vanilla.glsl`), colour encodings and the options; for the lit overworld the air (`atmosphere.glsl`), the sky
   (`sky.glsl`, `celestial.glsl`, `stars.glsl`), the clouds (`clouds.glsl`, `noise.glsl`), the G-buffer
   (`gbuffer.glsl`), the lighting (`lighting.glsl`, `lit.glsl`, `shadow.glsl`, `light_volume.glsl`), the water
-  (`water.glsl`, `water_body.glsl`, `medium.glsl`), the bloom (`bloom.glsl`), the values its passes share
+  (`water.glsl`, `water_body.glsl`, `medium.glsl`), reflections (`reflection.glsl`), the weather and what rain does
+  (`weather.glsl`, `wet.glsl`), the bloom (`bloom.glsl`), the values its passes share
   (`globals.glsl`) and the tone mapping (`tonemap.glsl`); for the End its sky (`end_sky.glsl`).
-- `shaders/textures/`: the clouds' noise textures and phase functions.
+- `shaders/textures/`: the clouds' noise textures and phase functions, and the water's wave textures.
 - `shaders/composite1.fsh`: the DLSS point, which hands the frame over. `shaders/final.fsh`: the screen.
 - The `gbuffers_*`, `clrwl_*` and `dh_*` files in `shaders/` only pick a program and include it.
 - `shaders/world0/` (the overworld) and `shaders/world1/` (the End): each dimension's programs. Most are copies
   that `dimensions.sh` writes (run it after adding or removing a program); each dimension's own passes live only
   there. Dimensions without a folder use the programs in `shaders/`.
+- `tools/wave_textures.py`: makes the wave textures from Alpha Piscium's (see License).
 - `tools/bounce_check.py`: runs the bounce light's flood on a few small rooms and compares it with radiosity, to
   check a change to its settings before trying it in game (needs numpy).
 
@@ -133,7 +160,9 @@ takes its license; each ported file says where it came from. So far: the air and
 (`lib/celestial.glsl`), the tone mapping (`lib/tonemap.glsl`, AgX after Troy Sobotka, with the MIT AgX code
 Alpha Piscium credits), and the clouds with their textures (`lib/clouds.glsl`, `lib/noise.glsl`,
 `program/cloud_ambient.csh`, `program/clouds_march.csh`, `program/clouds_gather.csh`, `shaders/textures/`, all
-from Alpha Piscium; the hashes after Jarzynski and Olano, the gradient noise after Inigo Quilez, MIT).
+from Alpha Piscium; the hashes after Jarzynski and Olano, the gradient noise after Inigo Quilez, MIT), and the
+water's waves with their textures (`lib/water.glsl`; `shaders/textures/wave_noise.bin` and `wave_curl.bin`, made
+from Alpha Piscium's `noise_5.bin` and `water_hf_curl.bin` by `tools/wave_textures.py`).
 
 The ambient occlusion follows Jimenez et al.'s ground-truth ambient occlusion as Intel's XeGTAO lays it out (MIT,
 https://github.com/GameTechDev/XeGTAO); its license is in `THIRD-PARTY-NOTICES.md` too.

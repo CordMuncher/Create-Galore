@@ -11,8 +11,9 @@
 //            block and sky light below (7 bits each), a how much of it the draw writes. The programs blend it by that
 //            alpha (see shaders.properties), always 0 or 1, so a draw over a surface (a mob's shadow, a charged
 //            creeper's swirl) leaves the surface under it as it was. Cleared to 0: nothing drawn.
-// colortex9: the surface's occlusion (RG8): r Minecraft's smooth lighting corners (1 in the open, less in a corner or
-//            a crease, see separateAo in shaders.properties), g 1 for leaves. Blended by alpha as colortex2 is.
+// colortex9: the surface's occlusion and kind (RG8): r Minecraft's smooth lighting corners (1 in the open, less in a
+//            corner or a crease, see separateAo in shaders.properties), g what it is made of (SURFACE_, over 7).
+//            Blended by alpha as colortex2 is.
 //            Cleared to 1 and 0: what draws nothing here (Distant Horizons' terrain) has no corners.
 //
 // And what the translucent water program leaves for the composite pass, which draws the water (see water_body.fsh):
@@ -20,6 +21,9 @@
 //            there is water. The nearest drawn wins: water writes alpha 1, the other translucent blocks 0.
 // colortex5: how far that surface is from the eye (blocks, R32F), likewise.
 // colortex6: how far the nearest other translucent block (glass, ice) is from the eye, where there is one.
+//
+// colortex3: the frame as the water pass leaves it (R11F_G11F_B10F, kept from frame to frame), for the next frame's
+//            reflections on puddles and polished floors, which are lit before this frame's picture exists.
 
 #if !defined LIB_GBUFFER
 #define LIB_GBUFFER
@@ -47,6 +51,8 @@ const vec4 colortex5ClearColor = vec4(0.0, 0.0, 0.0, 0.0);
 const int colortex6Format = R32F;
 const bool colortex6Clear = true;
 const vec4 colortex6ClearColor = vec4(0.0, 0.0, 0.0, 0.0);
+const int colortex3Format = R11F_G11F_B10F;
+const bool colortex3Clear = false;
 */
 #endif
 
@@ -57,9 +63,25 @@ const vec4 colortex6ClearColor = vec4(0.0, 0.0, 0.0, 0.0);
 // Only between a translucent program's stages, never in the G-buffer:
 #define MATERIAL_WATER 4
 
+// What a surface is made of, as far as the light cares (colortex9's g, as SURFACE_ / 7).
+#define SURFACE_PLAIN 0
+#define SURFACE_LEAVES 1   // lets light through (see light_surface)
+#define SURFACE_METAL 2    // shines (iron, gold, copper, brass)
+#define SURFACE_POLISHED 3 // a soft sheen (polished stone, quartz, glazed terracotta, packed ice)
+#define SURFACE_SOIL 4     // takes most rain in: puddles only in its deepest dips
+#define SURFACE_SAND 5     // takes all rain in: damp, never a puddle (sand, gravel, snow)
+
+int decode_surface_kind(float g) {
+    return int(g * 7.0 + 0.5);
+}
+
 // The blocks block.properties numbers (mc_Entity.x).
 #define BLOCK_WATER 10001
 #define BLOCK_LEAVES 10002 // every block tagged as leaves, modded ones too
+#define BLOCK_METAL 10003
+#define BLOCK_POLISHED 10004
+#define BLOCK_SOIL 10005
+#define BLOCK_SAND 10006
 #define BLOCK_LIGHT_RED 10101 // 10101..10109: lights with colours of their own (see shadow.vsh)
 #define BLOCK_LIGHT_LAST 10109
 
