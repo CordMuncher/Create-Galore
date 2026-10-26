@@ -29,10 +29,12 @@ import org.slf4j.LoggerFactory;
  * Minecraft reads input only while presenting the frame before, so whatever it waits for after that ages the input.
  * On with Reflex on or boost, or the GPU pacer, unless the setting says otherwise (testing only, not written to the file).
  *
- * gpuPacer and pacerTargetUs (testing): the {@link GpuPacer} waits just before rendering, before the late read, so the
- * frame's rendering reaches the GPU about when the GPU gets to it instead of queueing behind earlier frames (target:
- * how long it may still queue; unset or auto: from how much the frames vary). For uncapped play, where Reflex's driver
- * can't see the OpenGL queue.
+ * gpuPacing (off, on, lowest): the {@link GpuPacer} waits just before rendering, before the late read, so the frame's
+ * rendering reaches the GPU about when the GPU gets to it instead of queueing behind earlier frames. For uncapped play,
+ * where Reflex's driver can't see the OpenGL queue. On keeps a queue that costs no frames (a share of the frame time,
+ * at least 4 or 5 ms), lowest the shortest the frames' timing allows (about 6% fewer frames on the RTX 4080).
+ * gpuPacer and pacerTargetUs (testing) override it: true or false, and how long a frame may still queue (auto: from how
+ * much the frames vary).
  *
  * The Max Framerate cap waits at the start of the frame, before input is read, instead of in the game's limiter after
  * the frame (Reflex's own cap does the same while Reflex runs). Any GPU: in the Pacer 1 run it matched Reflex's cap
@@ -71,7 +73,9 @@ public final class FrameLatency {
     private static int[] reflexApplied;
 
     private static boolean pacing;
+    /** How long a frame may queue (ns), below 0 automatic; with pacerKeepsRate the player's On instead. */
     private static long pacerTarget;
+    private static boolean pacerKeepsRate;
     private static GpuPacer pacer;
     private static boolean capAtStart;
     /** The frame cap the wait at the frame's start keeps (0: none, the game's limiter or Reflex's has it). */
@@ -97,7 +101,7 @@ public final class FrameLatency {
         reflexSleeping = false;
         boolean metering = measuring || logging || pacing;
         if (metering && meter == null) {
-            pacer = pacing ? new GpuPacer(pacerTarget) : null;
+            pacer = !pacing ? null : pacerKeepsRate ? GpuPacer.keepingFrameRate(Presentation.active()) : new GpuPacer(pacerTarget);
             meter = new LatencyMeter(pacer);
             lastLog = System.nanoTime();
         } else if (!metering && meter != null) {
@@ -322,6 +326,7 @@ public final class FrameLatency {
         result.put("reflex", reflexState());
         result.put("latePoll", latePoll);
         result.put("gpuPacer", pacing);
+        result.put("pacerKeepsRate", pacing && pacerKeepsRate);
         result.put("frameCapAtStart", capAtStart);
         if (pacer != null) {
             double[] p = pacer.window();
@@ -390,9 +395,14 @@ public final class FrameLatency {
             LOG.info("Reflex: {}", wanted.name().toLowerCase(Locale.ROOT));
         }
         reflexMode = wanted;
-        boolean pace = DisplaySettings.get(DisplaySettings.GPU_PACER);
-        String targetSetting = DisplaySettings.getString(DisplaySettings.PACER_TARGET_US, "auto");
+        String pacingSetting = DisplaySettings.getString(DisplaySettings.GPU_PACING, "off").toLowerCase(Locale.ROOT);
+        boolean lowest = pacingSetting.equals("lowest");
+        boolean on = lowest || pacingSetting.equals("on");
+        String paceTest = DisplaySettings.getString(DisplaySettings.GPU_PACER, "");
+        boolean pace = paceTest.isEmpty() ? on : Boolean.parseBoolean(paceTest);
+        String targetSetting = DisplaySettings.getString(DisplaySettings.PACER_TARGET_US, "");
         long target = -1L; // automatic
+        boolean keepsRate = targetSetting.isEmpty() && on && !lowest;
         if (!targetSetting.isEmpty() && !targetSetting.equalsIgnoreCase("auto")) {
             try {
                 target = Math.max(0L, Long.parseLong(targetSetting)) * 1000L;
@@ -400,13 +410,16 @@ public final class FrameLatency {
                 LOG.warn("Latency: {}={} is neither auto nor microseconds, using auto", DisplaySettings.PACER_TARGET_US, targetSetting);
             }
         }
-        if (pace != pacing || pace && target != pacerTarget) {
+        if (pace != pacing || pace && (target != pacerTarget || keepsRate != pacerKeepsRate)) {
             closeMeter(); // made again with (or without) the pacer at the next frame
-            LOG.info("Latency: GPU pacer {}", !pace ? "off" : target < 0 ? "on, frames may queue on the GPU as much as they vary"
+            LOG.info("Latency: GPU pacer {}", !pace ? "off"
+                    : keepsRate ? "on, frames may queue on the GPU a share of the frame time that keeps the frame rate"
+                    : target < 0 ? "on, frames may queue on the GPU as much as they vary"
                     : "on, frames may queue " + target / 1000 + " us on the GPU");
         }
         pacing = pace;
         pacerTarget = target;
+        pacerKeepsRate = keepsRate;
         boolean cap = !DisplaySettings.getString(DisplaySettings.FRAME_CAP_AT_START, "true").equalsIgnoreCase("false");
         if (cap != capAtStart) {
             LOG.info("Latency: the frame cap waits {}", cap ? "at the start of the frame, before input" : "in the game's limiter");

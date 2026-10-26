@@ -167,6 +167,8 @@ public final class Capture {
             modes.add(Mode.latency("lat-pacer-4000", "off", true, 3, 260, 4000, false));
             modes.add(Mode.latency("lat-pacer-5000", "off", true, 3, 260, 5000, false));
             modes.add(Mode.latency("lat-cap-default", "off", false, 3, 60, null, null));
+            // The player's GPU pacing On (a share of the frame time, at least 4 or 5 ms).
+            modes.add(Mode.latency("lat-pacing-on", "off", true, 3, 260, -1, null));
         }
         // The DLAA test world (seed 20261024, scene built on the lakeshore at x 1023..1040, z 160..176).
         List<Viewpoint> viewpoints = new ArrayList<>(List.of(
@@ -270,7 +272,7 @@ public final class Capture {
 
         /**
          * The same with the GPU pacer (pacerUs: how long a frame may still queue on the GPU, in microseconds, 0 for the
-         * automatic target; null: off) and the frame cap waiting at the frame's start, before input (capAtStart true),
+         * automatic target, -1 for the player's setting On (gpuPacing=on); null: off) and the frame cap waiting at the frame's start, before input (capAtStart true),
          * in the game's limiter (false) or as the Bridge has it by default (null; at the frame's start from 1.108.0).
          */
         static Mode latency(String name, String reflex, boolean latePoll, int renderAhead, int fpsCap, Integer pacerUs,
@@ -959,11 +961,15 @@ public final class Capture {
             } else {
                 props.remove("latePoll");
             }
-            if (mode.pacerUs() != null) {
+            if (mode.pacerUs() != null && mode.pacerUs() < 0) {
+                props.setProperty("gpuPacing", "on");
+                props.remove("gpuPacer");
+                props.remove("pacerTargetUs");
+            } else if (mode.pacerUs() != null) {
                 props.setProperty("gpuPacer", "true");
                 props.setProperty("pacerTargetUs", mode.pacerUs() > 0 ? Integer.toString(mode.pacerUs()) : "auto");
             } else {
-                props.remove("gpuPacer");
+                props.setProperty("gpuPacer", "false"); // whatever the player's gpuPacing says
                 props.remove("pacerTargetUs");
             }
             if (mode.capAtStart() != null) {

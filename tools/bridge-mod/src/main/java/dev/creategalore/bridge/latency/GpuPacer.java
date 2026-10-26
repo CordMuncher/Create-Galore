@@ -16,10 +16,12 @@ import java.util.Arrays;
  * it), as the GPU's answer comes a frame or two late.
  *
  * The target is how long a frame may still queue, so the GPU never runs dry when a frame takes a little longer on the
- * CPU: fixed (pacerTargetUs), or by default three times how much the frames' arrival varies from one to the next,
- * at least 250 us. In the simulation that kept the frame rate within about 1% while taking most of the queue away;
- * on the RTX 4080 (Pacer 1, without Perfect Presentation) it settled at about 2 ms and cost 6%, with the GPU never
- * idle between frames, so the GPU likely catches up with the CPU within a frame: the PC run tries longer targets.
+ * CPU. Automatic (the player's Lowest, or pacerTargetUs=auto): three times how much the frames' arrival varies from one
+ * to the next, at least 250 us; on the RTX 4080 at about 160 fps (Pacer 2) that took 3 ms more off than Reflex but cost
+ * 6% of the frame rate, as the render thread feeds the GPU slower than it draws during parts of each frame (the queue's
+ * low end under about 3 to 4 ms costs frames). {@link #keepingFrameRate(boolean)} (the player's On): a share of the
+ * frame time, at least 4 ms with Perfect Presentation or 5 ms without, which cost nothing there (+3/0% and +1/-1%) and
+ * still took 1.5 to 7 ms off. Fixed: pacerTargetUs (testing).
  */
 final class GpuPacer implements LatencyMeter.Listener {
     private static final double PROPORTIONAL = 0.3;
@@ -30,8 +32,10 @@ final class GpuPacer implements LatencyMeter.Listener {
     private static final double JITTER_MARGIN = 3.0;
     private static final long MIN_TARGET = 250_000L;
 
-    /** The fixed target, or below 0 for the automatic one. */
+    /** The fixed target (with a share: the least), or below 0 for the automatic one. */
     private final long fixedTarget;
+    /** Above 0: the target is this share of the frame time, at least fixedTarget. */
+    private final double share;
     private long target;
     private long steady;
     private long wait;
@@ -52,8 +56,21 @@ final class GpuPacer implements LatencyMeter.Listener {
 
     /** {@code targetNanos}: how long a frame may still queue on the GPU, or below 0 to set that from the jitter. */
     GpuPacer(long targetNanos) {
+        this(targetNanos, 0.0);
+    }
+
+    private GpuPacer(long targetNanos, double share) {
         fixedTarget = targetNanos;
+        this.share = share;
         target = targetNanos >= 0 ? targetNanos : 2_000_000L; // automatic: careful until there is a measure
+    }
+
+    /**
+     * The player's On: a frame may queue 65% of the frame time, at least 4 ms, with Perfect Presentation
+     * ({@code presentation}); 80%, at least 5 ms, without (its frames queue longer before the GPU gets them).
+     */
+    static GpuPacer keepingFrameRate(boolean presentation) {
+        return presentation ? new GpuPacer(4_000_000L, 0.65) : new GpuPacer(5_000_000L, 0.8);
     }
 
     /** Just before the frame's rendering: the wait the queue asks for. */
@@ -77,8 +94,12 @@ final class GpuPacer implements LatencyMeter.Listener {
         }
         long ahead = queue; // below 0: the GPU waited for this frame
         aheads[aheadCount++ % HISTORY] = ahead;
-        if (fixedTarget < 0 && aheadCount >= 16 && sinceSort == 0) {
-            target = Math.max(MIN_TARGET, (long) (JITTER_MARGIN * jitter()));
+        if (aheadCount >= 16 && sinceSort == 0) {
+            if (share > 0.0) {
+                target = Math.max(fixedTarget, (long) (share * intervalMedian));
+            } else if (fixedTarget < 0) {
+                target = Math.max(MIN_TARGET, (long) (JITTER_MARGIN * jitter()));
+            }
         }
         long error = ahead - target;
         long limit = Math.min(MAX_WAIT, intervalMedian);

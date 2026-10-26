@@ -48,9 +48,11 @@ public final class DisplaySettings {
     public static final String LATE_POLL = "latePoll";
     /** Testing only, not written to the file: true logs the input latency every 10 seconds (see FrameLatency). */
     public static final String LATENCY_LOG = "latencyLog";
-    /** Testing only, not written to the file: true waits just before each frame renders so it doesn't queue on the GPU (see GpuPacer). */
+    /** off, on or lowest: wait just before each frame renders so it doesn't queue on the GPU (see GpuPacer). */
+    public static final String GPU_PACING = "gpuPacing";
+    /** Testing only, not written to the file: true or false turns the GPU pacer on or off whatever gpuPacing says. */
     public static final String GPU_PACER = "gpuPacer";
-    /** Testing only, not written to the file: how long, in microseconds, the GPU pacer lets a frame queue on the GPU (auto unless set). */
+    /** Testing only, not written to the file: how long, in microseconds, the GPU pacer lets a frame queue on the GPU, or auto (unset: as gpuPacing says). */
     public static final String PACER_TARGET_US = "pacerTargetUs";
     /** Testing only, not written to the file: false leaves the Max Framerate cap to the game's limiter, after the frame, instead of the frame's start (see FrameLatency). */
     public static final String FRAME_CAP_AT_START = "frameCapAtStart";
@@ -78,6 +80,9 @@ public final class DisplaySettings {
             + " reflex: off, on or boost. NVIDIA Reflex low latency (boost also keeps the GPU clocks up), applied at once.\n"
             + " Needs an NVIDIA card (GTX 900 or newer) and perfectPresentation=true; the settings screen turns that on\n"
             + " with it. With Max Framerate set, Reflex keeps that cap (where it helps most: use one the card can hold).\n"
+            + " gpuPacing: off, on or lowest, any graphics card. The game waits just before drawing each frame so it reaches\n"
+            + " the graphics card about when the card is ready, instead of queueing behind earlier frames: shorter input\n"
+            + " delay without a frame cap. on keeps the frame rate; lowest is a little quicker still, for about 6% fewer frames.\n"
             + " fpsCounter: off, basic (the frame rate, small, in a corner) or detailed (also the frame time, the 1% and 0.1%\n"
             + " lows of the last 10 seconds and a frame time graph). fpsCounterCorner: top-left, top-right, bottom-left or\n"
             + " bottom-right. fpsCounterDim: true for OLED screens: see-through, and it moves a pixel every two minutes.\n"
@@ -168,6 +173,7 @@ public final class DisplaySettings {
             missing |= props.putIfAbsent(DLAA, "auto") == null;
             missing |= props.putIfAbsent(DLAA_PRESET, "default") == null;
             missing |= props.putIfAbsent(REFLEX, "off") == null;
+            missing |= props.putIfAbsent(GPU_PACING, "off") == null;
             missing |= props.putIfAbsent(FPS_COUNTER, "off") == null;
             missing |= props.putIfAbsent(FPS_COUNTER_CORNER, "top-right") == null;
             missing |= props.putIfAbsent(FPS_COUNTER_DIM, "false") == null;

@@ -36,7 +36,7 @@ import net.neoforged.neoforge.common.NeoForge;
 /**
  * The Bridge's display settings, in two tabs. Anti-aliasing: the DLAA engine and DLSS preset, the render resolution,
  * the bring-your-own nvngx_dlss.dll (or one found on this PC, see {@link DlssFinder}). Display: the window switches,
- * NVIDIA Reflex (which turns Perfect Presentation on with it, see {@link FrameLatency}) and the frame counter
+ * NVIDIA Reflex (which turns Perfect Presentation on with it, see {@link FrameLatency}), GPU pacing and the frame counter
  * ({@link FpsOverlay}). Opens from the mod list
  * (Create Galore Bridge, Config) and from a DLAA button in Iris's shader pack menu. Saved to
  * config/create_galore_bridge-display.properties when it closes, the render resolution into the DLAA pack's own options
@@ -53,6 +53,7 @@ public final class DlaaScreen extends Screen {
     private static final List<String> SCALES = List.of("native", "quality", "balanced", "performance", "ultra", "custom");
     private static final Map<String, String> SCALE_VALUES = Map.of("quality", "0.67", "balanced", "0.58", "performance", "0.50", "ultra", "0.33");
     private static final List<String> REFLEX_MODES = List.of("off", "on", "boost");
+    private static final List<String> PACING_MODES = List.of("off", "on", "lowest");
     private static final List<String> FPS_MODES = List.of(FpsOverlay.OFF, FpsOverlay.BASIC, FpsOverlay.DETAILED);
     private static final List<String> CORNERS = List.of(FpsOverlay.TOP_LEFT, FpsOverlay.TOP_RIGHT, FpsOverlay.BOTTOM_LEFT, FpsOverlay.BOTTOM_RIGHT);
     private static final int WIDTH = 300;
@@ -70,6 +71,8 @@ public final class DlaaScreen extends Screen {
     private boolean tenBitWindow;
     /** off, on or boost. */
     private String reflex;
+    /** off, on or lowest. */
+    private String gpuPacing;
     private String scale;
     private String fpsCounter;
     private String fpsCorner;
@@ -81,6 +84,7 @@ public final class DlaaScreen extends Screen {
     private ScaleSlider slider;
     private CycleButton<Boolean> presentationButton;
     private Choice<String> reflexChoice;
+    private Choice<String> pacingChoice;
     private final Page antiAliasingPage = new Page("Anti-aliasing");
     private final Page displayPage = new Page("Display");
     /** The tab open: 0 anti-aliasing, 1 display. */
@@ -113,6 +117,8 @@ public final class DlaaScreen extends Screen {
         tenBitWindow = DisplaySettings.get(DisplaySettings.TEN_BIT_WINDOW);
         String reflexValue = DisplaySettings.getString(DisplaySettings.REFLEX, "off").toLowerCase(Locale.ROOT);
         reflex = reflexValue.equals("true") ? "on" : REFLEX_MODES.contains(reflexValue) ? reflexValue : "off";
+        String pacingValue = DisplaySettings.getString(DisplaySettings.GPU_PACING, "off").toLowerCase(Locale.ROOT);
+        gpuPacing = PACING_MODES.contains(pacingValue) ? pacingValue : "off";
         String fpsValue = DisplaySettings.getString(DisplaySettings.FPS_COUNTER, FpsOverlay.OFF).toLowerCase(Locale.ROOT);
         fpsCounter = FPS_MODES.contains(fpsValue) ? fpsValue : FpsOverlay.OFF;
         String cornerValue = DisplaySettings.getString(DisplaySettings.FPS_COUNTER_CORNER, FpsOverlay.TOP_RIGHT).toLowerCase(Locale.ROOT);
@@ -232,6 +238,9 @@ public final class DlaaScreen extends Screen {
             }
         });
         y += 24;
+        pacingChoice = choice("GPU pacing", PACING_MODES, gpuPacing, DlaaScreen::pacingLabel, DlaaScreen::pacingTooltip, left, y, half,
+                value -> gpuPacing = value);
+        y += 24;
         choice("Frame counter", FPS_MODES, fpsCounter, DlaaScreen::fpsLabel, DlaaScreen::fpsTooltip, left, y, half, value -> fpsCounter = value);
         add(CycleButton.onOffBuilder(fpsDim)
                 .withTooltip(value -> net.minecraft.client.gui.components.Tooltip.create(Component.literal(
@@ -336,6 +345,13 @@ public final class DlaaScreen extends Screen {
                 setTooltipForNextRenderPass(font.split(Component.literal(reflexStatus.detail()), 220));
             }
         }
+        if (!gpuPacing.equals("off")) {
+            int half = (WIDTH - 4) / 2;
+            String hint = gpuPacing.equals("on") ? "Shorter delay, same frame rate." : "Shortest delay, about 6% fewer frames.";
+            int count = font.split(Component.literal(hint), half).size();
+            int rowY = pacingChoice.button.getY();
+            lines(graphics, hint, left + half + 4, count > 1 ? rowY + 1 : rowY + 6, gpuPacing.equals("on") ? 0x88DD88 : 0xFFDD66, 2, half);
+        }
     }
 
     @Override
@@ -412,6 +428,7 @@ public final class DlaaScreen extends Screen {
         values.put(DisplaySettings.PERFECT_PRESENTATION, Boolean.toString(perfectPresentation));
         values.put(DisplaySettings.TEN_BIT_WINDOW, Boolean.toString(tenBitWindow));
         values.put(DisplaySettings.REFLEX, reflex);
+        values.put(DisplaySettings.GPU_PACING, gpuPacing);
         values.put(DisplaySettings.DLAA_CUSTOM_SCALE, Boolean.toString(scale.equals("custom")));
         values.put(DisplaySettings.FPS_COUNTER, fpsCounter);
         values.put(DisplaySettings.FPS_COUNTER_CORNER, fpsCorner);
@@ -545,6 +562,26 @@ public final class DlaaScreen extends Screen {
             case "boost" -> "Like On, and the graphics card keeps its clocks up even when it waits on the processor: a little"
                     + " less delay where the processor holds the frame rate back, for more power.";
             default -> "The game reads input and paces its frames as it always does.";
+        };
+    }
+
+    private static Component pacingLabel(String value) {
+        return Component.literal(switch (value) {
+            case "on" -> "On";
+            case "lowest" -> "Lowest";
+            default -> "Off";
+        });
+    }
+
+    private static String pacingTooltip(String value) {
+        return switch (value) {
+            case "on" -> "Any graphics card: the game waits just before drawing each frame, so the frame reaches the graphics"
+                    + " card about when the card is ready for it instead of waiting in a queue behind earlier frames, while the"
+                    + " mouse input in it ages. A short queue stays, so no frames are lost. For playing without a frame cap:"
+                    + " a Max Framerate the card can hold already keeps the queue empty.";
+            case "lowest" -> "Like On, with the queue as short as the frames' timing allows: a little less delay still, for"
+                    + " about 6% fewer frames.";
+            default -> "Frames queue on the graphics card as they always have.";
         };
     }
 
