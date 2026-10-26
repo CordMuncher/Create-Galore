@@ -5,7 +5,7 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
-## 0.5.14
+## 0.5.15
 
 ### Added
 - **FSR frame generation (experimental).** The Display tab's **Frame generation** setting has **Off**, **DLSS** and **FSR**. FSR is AMD FSR 3.1 frame generation: like DLSS Frame Generation it shows a frame of its own between every two the game renders, so motion looks about twice as smooth, for a little more input delay, and it is built from the same inputs (the world without the HUD, the HUD on its own, depth and motion), so the hotbar, chat and crosshair stay sharp. It runs on any graphics card Perfect Presentation's DirectX 12 runs on, NVIDIA RTX 20 and 30 series included, and works best from about 60 fps without it. It runs beside DLSS or FSR anti-aliasing, either one. Picking it turns on Perfect Presentation and DirectX 12; Reflex stays as set. The Bridge ships AMD's FidelityFX SDK 2.0.0 frame generation DLLs for it, and the game checks AMD's signature on them before loading them.
@@ -24,6 +24,15 @@ describe the fix (the build fails on a name it knows).
 
 ### Removed
 - **The game no longer copies nvngx_dlssg.dll from NVIDIA's folder at every start.** DLSS Frame Generation uses only the copy in the DLSS folder, like DLSS uses nvngx_dlss.dll, so an NVIDIA app update can't swap the model under it.
+
+## 0.5.14
+
+### Fixed
+- **The game could stop while loading mods, with Hybrid Aquatic named in the error.** Now and then a start ended in "Mod loading issue for: hybrid_aquatic" with an `ArrayIndexOutOfBoundsException` in `Object2IntOpenHashMap.rehash`, and the next start loaded fine. Every kind of entity numbers its synced data (health, variant, size and so on) in one list the whole game shares, and NeoForge builds several mods at once while it loads them. Hybrid Aquatic sets up all its fish and sharks while it is built, so when another mod set up its own entities at the same moment, two threads wrote to the list together and broke it as it grew. The same thing can also leave the list so tangled that loading hangs forever with the processor busy, or quietly give two entities' data the same number. Entities now take turns on that list. On a test server with the whole pack, 16 threads filling one list together 300 times broke it in 41 rounds (the same error as the crash) and lost entries in 2 more, and a second try hung for good; with the fix, two runs of 300 rounds came through clean, and Hybrid Aquatic's sharks and orcas spawn as before.
+- **A start that failed to load its mods wiped the resource pack list and every mod key binding from options.txt.** On a failed start the game still saved its options, while the mods' key bindings and resource packs had never been added, so the next good start came up without Fresh Animations, the pack's menu art or any changed mod keys. A failed start now leaves options.txt as it was. Checked on a test client with a mod that fails on purpose: before the fix the error screen alone emptied the resource pack list and dropped all 24 of the pack's mod key bindings; with it the file stayed byte for byte the same.
+
+### Added
+- Create Galore Bridge 1.123.0.
 
 ## 0.5.13
 
