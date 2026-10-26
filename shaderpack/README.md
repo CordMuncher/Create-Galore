@@ -39,6 +39,23 @@ Clouds, weather and the End (milestone 3, the Clouds and End Sky options):
 - The End: a nebula across a starry void, in place of Minecraft's (and BetterEnd's) sky, fading into the End's own
   fog at the horizon. The End keeps Minecraft's own light for now.
 
+Light and water (milestone 4, the Coloured Light, Bounce Light and Water Ripples options; all three need Shadows):
+
+- Coloured light: every light lights the world in its own colour, soul lanterns blue, redstone red, sea lanterns
+  cool white, and every modded light the colour of its own texture, so they need no list of blocks. The shadow pass
+  marks the lights, solid blocks and stained glass in a volume of blocks around you, and the light spreads through
+  it a block a frame, mixing where lights meet and tinted by glass. It only colours the light: how bright it is
+  stays Minecraft's light level, so it never reaches further or leaks where Minecraft's light doesn't.
+- Bounce light: sunlight bounces off the world in the colour of what it falls on. The shadow map keeps the colour
+  and facing of every surface the sun lights, each one sends its reflected light into the blocks in front of it,
+  and it spreads through the same volume, fading within a few blocks, stopped by solid blocks and dimmed by leaves:
+  a room lights up from its sunlit floor, a red carpet tints the walls around it. Nothing in it is random, so there
+  is no noise for DLSS or FSR to smear.
+- Water: small wind waves on every water surface, and ripples where you, mobs, boats, Sable ships and Create's
+  water wheels move through it, with wakes behind them. The ripples are a wave simulation on a grid around you,
+  stepped 60 times a second whatever the frame rate; the shadow pass finds what reaches into the water. Both only
+  bend the surface's light, so the water itself never moves and its motion vectors stay exact.
+
 From milestone 1, in both profiles:
 
 - Motion vectors for everything that moves: the camera, mobs and block entities, the hand, Sable ships, Create's
@@ -55,12 +72,14 @@ where they go. Without the Bridge the pack still runs, with no anti-aliasing.
 - `shaders/program/`: the shared programs. `gbuffers_kind.glsl` says what each world program draws and how vanilla
   shades it; `gbuffers.vsh/fsh` draw the world, `clrwl.*` Colorwheel's, `dh.*` Distant Horizons'. The lit overworld
   adds `air.csh` (the sky's tables), `frame_globals.csh` (the frame's light), `cloud_ambient.csh`,
-  `clouds_march.csh` and `clouds_gather.csh` (the cumulus), `deferred.fsh` (the lighting), `exposure.csh` and
-  `shadow.*`; the End adds `end_sky.fsh`.
+  `clouds_march.csh` and `clouds_gather.csh` (the cumulus), `deferred.fsh` (the lighting), `exposure.csh`,
+  `shadow.*`, `light_bounce.csh` and `light_flood.csh` (the coloured and bounce light) and `water_sim.csh` (the
+  ripples); the End adds `end_sky.fsh`.
 - `shaders/lib/`: render size and jitter (`frame.glsl`), motion vectors (`motion.glsl`), vanilla's lighting and fog
   (`vanilla.glsl`), colour encodings and the options; for the lit overworld the air (`atmosphere.glsl`), the sky
   (`sky.glsl`, `celestial.glsl`, `stars.glsl`), the clouds (`clouds.glsl`, `noise.glsl`), the G-buffer
-  (`gbuffer.glsl`), the lighting (`lighting.glsl`, `lit.glsl`, `shadow.glsl`), the values its passes share
+  (`gbuffer.glsl`), the lighting (`lighting.glsl`, `lit.glsl`, `shadow.glsl`, `light_volume.glsl`), the water
+  (`water.glsl`), the values its passes share
   (`globals.glsl`) and the tone mapping (`tonemap.glsl`); for the End its sky (`end_sky.glsl`).
 - `shaders/textures/`: the clouds' noise textures and phase functions.
 - `shaders/composite.fsh`: the DLSS point, which hands the frame over. `shaders/final.fsh`: the screen.
