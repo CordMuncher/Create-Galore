@@ -56,6 +56,10 @@ public final class DisplaySettings {
     public static final String PACER_TARGET_US = "pacerTargetUs";
     /** Testing only, not written to the file: false leaves the Max Framerate cap to the game's limiter, after the frame, instead of the frame's start (see FrameLatency). */
     public static final String FRAME_CAP_AT_START = "frameCapAtStart";
+    /** Testing only, not written to the file: dx11 (the default) or dx12, the DirectX version Perfect Presentation shows the game with (needs a restart). */
+    public static final String PRESENTER = "presenter";
+    /** Testing only, not written to the file: true has the DirectX 12 presenter compare two shown frames with the game's, pixel by pixel, in the log. */
+    public static final String PRESENT_CHECK = "presentCheck";
     /** The frame counter: off, basic or detailed (see FpsOverlay). */
     public static final String FPS_COUNTER = "fpsCounter";
     /** The frame counter's corner: top-left, top-right, bottom-left or bottom-right. */

@@ -5,18 +5,13 @@ import static org.lwjgl.system.MemoryUtil.memAddress;
 import static org.lwjgl.system.MemoryUtil.memUTF8;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.HexFormat;
 
 import dev.creategalore.bridge.present.Ffi;
+import dev.creategalore.bridge.present.NativeHelper;
 import org.lwjgl.system.MemoryStack;
-import org.lwjgl.system.windows.WinBase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,7 +22,6 @@ import org.slf4j.LoggerFactory;
  */
 final class NgxLibrary {
     private static final Logger LOG = LoggerFactory.getLogger("create_galore_bridge");
-    private static final String RESOURCE = "/natives/windows-x64/cg_ngx.dll";
     private static final int ABI = 1;
 
     // NVSDK_NGX_Result
@@ -54,57 +48,20 @@ final class NgxLibrary {
     private final long shutdown;
     private final long logNext;
 
-    private NgxLibrary(Path dll) {
-        long module = WinBase.LoadLibrary(dll.toString());
-        if (module == 0L) {
-            throw new IllegalStateException("Could not load " + dll + " (error " + WinBase.getLastError() + ")");
-        }
-        int abi = (int) Ffi.call(":I", symbol(module, "cg_ngx_abi"));
-        if (abi != ABI) {
-            throw new IllegalStateException(dll + " is helper version " + abi + ", the Bridge needs " + ABI);
-        }
-        init = symbol(module, "cg_ngx_init");
-        query = symbol(module, "cg_ngx_query");
-        create = symbol(module, "cg_ngx_create");
-        evaluate = symbol(module, "cg_ngx_evaluate");
-        release = symbol(module, "cg_ngx_release");
-        shutdown = symbol(module, "cg_ngx_shutdown");
-        logNext = symbol(module, "cg_ngx_log_next");
+    private NgxLibrary(NativeHelper dll) {
+        dll.checkAbi(ABI);
+        init = dll.symbol("cg_ngx_init");
+        query = dll.symbol("cg_ngx_query");
+        create = dll.symbol("cg_ngx_create");
+        evaluate = dll.symbol("cg_ngx_evaluate");
+        release = dll.symbol("cg_ngx_release");
+        shutdown = dll.symbol("cg_ngx_shutdown");
+        logNext = dll.symbol("cg_ngx_log_next");
     }
 
     /** Unpacks the helper into {@code folder} (if that exact build is not there yet) and loads it. */
     static NgxLibrary load(Path folder) throws IOException {
-        byte[] bytes;
-        try (InputStream in = NgxLibrary.class.getResourceAsStream(RESOURCE)) {
-            if (in == null) {
-                throw new IOException("The mod jar has no " + RESOURCE);
-            }
-            bytes = in.readAllBytes();
-        }
-        Path dll = folder.resolve("cg_ngx-" + sha256(bytes).substring(0, 12) + ".dll");
-        if (!Files.exists(dll) || Files.size(dll) != bytes.length) {
-            Files.createDirectories(folder);
-            Path temp = Files.createTempFile(folder, "cg_ngx", ".tmp");
-            Files.write(temp, bytes);
-            Files.move(temp, dll, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
-        }
-        return new NgxLibrary(dll);
-    }
-
-    private static String sha256(byte[] bytes) {
-        try {
-            return HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(bytes));
-        } catch (NoSuchAlgorithmException e) {
-            throw new IllegalStateException(e);
-        }
-    }
-
-    private static long symbol(long module, String name) {
-        long function = WinBase.GetProcAddress(module, name);
-        if (function == 0L) {
-            throw new IllegalStateException("cg_ngx.dll has no " + name);
-        }
-        return function;
+        return new NgxLibrary(NativeHelper.load("cg_ngx", folder));
     }
 
     static boolean failed(int result) {

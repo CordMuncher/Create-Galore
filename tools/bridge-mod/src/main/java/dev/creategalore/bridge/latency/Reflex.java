@@ -15,8 +15,8 @@ import dev.creategalore.bridge.present.Com;
 import dev.creategalore.bridge.present.Ffi;
 
 /**
- * NVIDIA Reflex through NVAPI, on the Direct3D 11 device Perfect Presentation shows the game with. The game still
- * renders with OpenGL, which Reflex has no API for; whether pacing the D3D11 device's frames lowers the latency of the
+ * NVIDIA Reflex through NVAPI, on the DirectX device (Direct3D 11 or 12) Perfect Presentation shows the game with. The
+ * game still renders with OpenGL, which Reflex has no API for; whether pacing that device's frames lowers the latency of the
  * OpenGL frames behind them is what this tests (LatencyMeter measures either way).
  *
  * nvapi64.dll exports only nvapi_QueryInterface, which hands out each function by its id. Ids, structures and marker
@@ -82,10 +82,10 @@ final class Reflex {
         getSleepStatus = function(queryInterface, ID_D3D_GET_SLEEP_STATUS, "NvAPI_D3D_GetSleepStatus");
     }
 
-    /** Reflex on {@code device} (an ID3D11Device); throws with the reason when NVAPI or the driver can't. */
+    /** Reflex on {@code device} (an ID3D11Device or ID3D12Device); throws with the reason when NVAPI or the driver can't. */
     static Reflex start(long device) {
         if (device == 0L) {
-            throw new IllegalStateException("no Direct3D 11 device (Perfect Presentation is off or did not start)");
+            throw new IllegalStateException("no DirectX device (Perfect Presentation is off or did not start)");
         }
         long queryInterface = Com.function("nvapi64.dll", "nvapi_QueryInterface");
         check("NvAPI_Initialize", (int) Ffi.call(":I", function(queryInterface, ID_INITIALIZE, "NvAPI_Initialize")));

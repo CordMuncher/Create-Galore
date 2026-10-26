@@ -1053,3 +1053,75 @@ If a launch crashes, copy `hs_err_pid*.log` and the log's last 100 lines, and re
 - the `Latency:` and `Reflex:` lines, the control panel settings and refresh rate.
 
 Commit and push on the DLAA branch. Don't commit hs_err files (they name his user folder).
+
+## Presenter 1: Perfect Presentation on DirectX 12
+
+Start only when Emre says so. Same PC, test folder, tools and settings as Pacer 2; about 25 minutes, two launches, no
+by-feel part. **Frame times count here**: a quiet PC, no game server.
+
+**What it tests.** Frame generation (NVIDIA's DLSS Frame Generation and AMD's FSR frame generation) needs the game shown
+through a Direct3D 12 swap chain. Bridge 1.113.0 has one (`presenter=dx12`, testing only): the same swap chain, frame
+latency and blit as today's Direct3D 11 path, with OpenGL handing each frame over through textures and fences it
+imports from Direct3D 12 (`GL_EXT_memory_object_win32`, `GL_EXT_semaphore_win32`). It should look and feel exactly
+like `presenter=dx11` (today's path, still the default). This run compares the two: frame rate, input latency, Reflex
+and GPU pacing on each, and with `presentCheck=true` the DirectX 12 back buffer against the game's own frame, pixel by
+pixel. No frame generation yet.
+
+### Update
+
+```powershell
+git -C $T\repo fetch origin
+git -C $T\repo checkout -B claude/project-thread-u2wmhh origin/claude/project-thread-u2wmhh
+Remove-Item $T\instance\mods\create-galore-bridge-*.jar
+Copy-Item $T\repo\pack\mods\create-galore-bridge-*.jar $T\instance\mods\
+Copy-Item $T\repo\tools\dlss-testkit\dist\create-galore-dlss-testkit-1.0.0.jar $T\instance\mods\ -Force
+```
+
+The Bridge there is 1.113.0, a test build (not released). It unpacks `cg_present-<hash>.dll` into
+`$T\instance\create-galore-dlss` the first time DirectX 12 starts.
+
+### Settings
+
+As Pacer 2 (note the old values, put them back afterwards): `dlaa=dlss`, `perfectPresentation=true` for both launches,
+`earlyWindowControl = false`, Distant Horizons `numberOfThreads = 2`. In `config\create_galore_bridge-display.properties`
+add `presenter=dx11` for launch 1 and `presenter=dx12` plus `presentCheck=true` for launch 2 (remove all three
+afterwards; the game never writes them). Look at the NVIDIA Control Panel and the refresh rate again and write them
+down; change nothing.
+
+### Launches
+
+The launch from step 4 (2560x1440), `--jvm-arg=-Dcreate_galore_dlss_testkit.autorun=dlaa-test` and
+`--jvm-arg=-Dcreate_galore_dlss_testkit.runs=P1`, the window in front with focus. P1 plays each mode twice, at `shore`
+and `canopy` (about 11 minutes):
+
+| Mode | What |
+| --- | --- |
+| `lat-base` | the game as it is |
+| `lat-pacing-on` | GPU pacing On, as players pick it (a share of the frame time) |
+| `lat-pacer` | GPU pacing Lowest (the automatic target) |
+| `lat-reflex` | Reflex on + late read |
+| `lat-cap-default` | 60 fps cap, nothing else switched |
+
+1. **`presenter=dx11`.** The log must have `Perfect Presentation: DXGI swap chain ready on DirectX 11` and
+   `Reflex: started on Perfect Presentation's DirectX 11 device`.
+2. **`presenter=dx12`, `presentCheck=true`.** The log must have `Perfect Presentation: DirectX 12 on <the card>`,
+   `Perfect Presentation: DXGI swap chain ready on DirectX 12` and `Reflex: started on Perfect Presentation's
+   DirectX 12 device`, and two `Perfect Presentation check:` lines (about 10 seconds in, on a menu, and later in the
+   world). If it says `DirectX 12 could not start, using DirectX 11`, copy that line and the exception under it, and
+   stop: the rest would only repeat launch 1. Also look at the game while it runs: the picture right way up, the
+   colours as in launch 1, no flicker, no black frames, and Alt-Tab out and back once at the end.
+
+If a launch crashes, copy `hs_err_pid*.log` and the log's last 100 lines, and report.
+
+### Results
+
+`python latency.py <launch 1 folder> <launch 2 folder>`. Write `$T\repo\tools\dlss-testkit\results\presenter1\REPORT.md`:
+- whether DirectX 12 started, the `Perfect Presentation:` lines and both `Perfect Presentation check:` lines (exact
+  match, or how many pixels differ and by how much);
+- per mode and viewpoint, DirectX 12 against DirectX 11: median latency, fps, the queue (median and `q10`), and with
+  the pacer its target and wait;
+- in one line each: same frame rate (within 2%)? same latency (within 0.5 ms)? does Reflex start and confirm low
+  latency on DirectX 12? does GPU pacing On still cost no frames? anything that looked different on screen;
+- the `Latency:`, `Reflex:` and `Perfect Presentation` WARN or ERROR lines, the control panel settings and refresh rate.
+
+Commit and push on the DLAA branch. Don't commit hs_err files (they name his user folder).

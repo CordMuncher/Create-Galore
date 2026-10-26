@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
 /**
  * NVIDIA Reflex (the display settings' NVIDIA Reflex: off, on or boost) and the input latency tests. Three switches:
  *
- * reflex (off, on, boost; markers for testing): NVIDIA Reflex on Perfect Presentation's D3D11 device ({@link Reflex}),
+ * reflex (off, on, boost; markers for testing): NVIDIA Reflex on Perfect Presentation's DirectX device ({@link Reflex}),
  * so it needs Perfect Presentation (the settings screen turns that on with it). Each frame starts with Reflex's sleep
  * and then reads input, so the driver can start it as late as still keeps the GPU busy; markers tell the driver where
  * each frame's game work, rendering and present are (markers alone: its latency report without changing anything). On
@@ -457,7 +457,7 @@ public final class FrameLatency {
         guard().starting();
         try {
             reflex = Reflex.start(Presentation.d3dDevice());
-            LOG.info("Reflex: started on Perfect Presentation's Direct3D 11 device (NVIDIA NVAPI)");
+            LOG.info("Reflex: started on Perfect Presentation's {} device (NVIDIA NVAPI)", Presentation.api());
         } catch (RuntimeException | LinkageError e) {
             guard().stopped();
             reflex = null;

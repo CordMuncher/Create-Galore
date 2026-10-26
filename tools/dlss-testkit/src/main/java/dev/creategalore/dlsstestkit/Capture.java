@@ -187,7 +187,7 @@ public final class Capture {
          * restarts DLSS 60 times, each time at another render size and mostly another preset (no pictures). S1: Create's
          * machines under a near lintel at full size and two render scales (all should show). Reflex 1: L1 with Perfect
          * Presentation on (Reflex needs it), L2 with it off (Sodium's render-ahead limit), each mode twice. Pacer 1: L3
-         * with Perfect Presentation on, L4 with it off.
+         * with Perfect Presentation on, L4 with it off. Presenter 1: P1 once with each presenter (dx11, dx12).
          */
         List<Run> runs = new ArrayList<>(List.of(
                 new Run("F1", "photon-taa+dlaa-default+fsr3+perf-taau+perf-dlss-K+perf-dlss-M+perf-dlss-L+perf-fsr3"
@@ -216,7 +216,9 @@ public final class Capture {
                 new Run("L5", "lat-base+lat-late+lat-reflex+lat-pacer+lat-pacer-2000+lat-pacer-4000+lat-reflex-pacer+lat-cap-default",
                         "shore+canopy", "latency", null, false, null, 2),
                 new Run("L6", "lat-base+lat-ra1-late+lat-pacer+lat-pacer-3000+lat-pacer-5000+lat-ra1-pacer",
-                        "shore+canopy", "latency", null, false, null, 2)));
+                        "shore+canopy", "latency", null, false, null, 2),
+                new Run("P1", "lat-base+lat-pacing-on+lat-pacer+lat-reflex+lat-cap-default", "shore+canopy", "latency", null,
+                        false, null, 2)));
     }
 
     /**
