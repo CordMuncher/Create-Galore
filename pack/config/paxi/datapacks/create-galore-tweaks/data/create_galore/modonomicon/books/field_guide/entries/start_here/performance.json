@@ -133,7 +133,12 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**Frame generation** (same tab, experimental, NVIDIA RTX 40 and 50 only): DLSS Frame Generation shows a frame of its own between every two the game draws, so motion looks about twice as smooth, for a little more input delay. It needs DLSS or FSR anti-aliasing and Windows' Hardware-accelerated GPU scheduling. Picking it turns on Perfect Presentation, DirectX 12 and Reflex: restart once."
+      "text": "**Frame generation** (same tab, experimental) shows a frame of its own between every two the game draws, so motion looks about twice as smooth, for a little more input delay. **DLSS** runs on NVIDIA RTX 40 and 50 cards; **FSR** runs on other cards too and is best from about 60 fps. Both need DLSS or FSR anti-aliasing."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Picking one turns on Perfect Presentation and DirectX 12 (DLSS also turns on Reflex): restart once. After that it turns on and off at once; switching between DLSS and FSR needs a restart. DLSS also needs Windows' Hardware-accelerated GPU scheduling and NVIDIA's nvngx\\_dlssg.dll: **Find on this PC** on the Upscaling tab copies it."
     },
     {
       "type": "modonomicon:text",

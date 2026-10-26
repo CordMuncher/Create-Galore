@@ -5,6 +5,18 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.5.14
+
+### Added
+- **FSR frame generation (experimental).** The Display tab's **Frame generation** setting has **Off**, **DLSS** and **FSR**. FSR is AMD FSR 3.1 frame generation: like DLSS Frame Generation it shows a frame of its own between every two the game renders, so motion looks about twice as smooth, for a little more input delay, and it is built from the same inputs (the world without the HUD, the HUD on its own, depth and motion), so the hotbar, chat and crosshair stay sharp. It runs on any graphics card Perfect Presentation's DirectX 12 runs on, NVIDIA RTX 20 and 30 series included, and works best from about 60 fps without it. It runs beside DLSS or FSR anti-aliasing, either one. Picking it turns on Perfect Presentation and DirectX 12; Reflex stays as set. The Bridge ships AMD's FidelityFX SDK 2.0.0 frame generation DLLs for it, and the game checks AMD's signature on them before loading them.
+- **Frame generation turns on and off at once.** Whenever DirectX 12 starts, the game loads the frame generation picked last (before any is picked: DLSS on an RTX 40 or 50 card that has nvngx_dlssg.dll, else FSR), so turning it off, or on again, takes effect as the settings screen closes, without a restart. Switching between DLSS and FSR still needs one; the screen says so beside the setting.
+- **Find on this PC copies nvngx_dlssg.dll too.** The Upscaling tab's button copies the newest nvngx_dlss.dll and the newest nvngx_dlssg.dll (DLSS Frame Generation's model) from where the NVIDIA app keeps them into the DLSS folder, once, when pressed. You can also put your own in with **Open DLSS folder**. On an RTX 40 or 50 card the tab shows its version beside the one it was tested with (310.9.16).
+- Field Guide (Performance and Shaders): FSR frame generation and turning it on and off.
+- Create Galore Bridge 1.122.0.
+
+### Removed
+- **The game no longer copies nvngx_dlssg.dll from NVIDIA's folder at every start.** DLSS Frame Generation uses only the copy in the DLSS folder, like DLSS uses nvngx_dlss.dll, so an NVIDIA app update can't swap the model under it.
+
 ## 0.5.13
 
 ### Added

@@ -646,7 +646,8 @@ public final class DlaaScreen extends Screen {
         }
         if (dlss && !dlssFrameGenCard) {
             return new FrameLatency.Status("Needs an NVIDIA RTX 40 or 50 card.", "NVIDIA DLSS Frame Generation runs only with a"
-                    + " GeForce RTX 40 or 50 series card (or an RTX Ada or Blackwell workstation card); AMD FSR runs on any."
+                    + " GeForce RTX 40 or 50 series card (or an RTX Ada or Blackwell workstation card); FSR frame generation"
+                    + " runs on other cards too."
                     + (renderer == null ? "" : " This graphics card: " + renderer + "."), true);
         }
         if (frameGen.equals("off")) {
@@ -707,11 +708,11 @@ public final class DlaaScreen extends Screen {
                     + " input delay. Needs Perfect Presentation on DirectX 12 and NVIDIA Reflex, which this turns on, DLSS or FSR"
                     + " anti-aliasing (Upscaling tab), and nvngx_dlssg.dll in the DLSS folder (Find on this PC). Turns on and off"
                     + " at once; switching from FSR needs a restart.";
-            case "fsr" -> "Experimental, any graphics card: AMD FSR 3.1 frame generation shows a frame of its own between every"
-                    + " two the game renders, so the picture moves about twice as smoothly, for a little more input delay. Best"
-                    + " from about 60 frames a second without it. Needs Perfect Presentation on DirectX 12, which this turns on,"
-                    + " and DLSS or FSR anti-aliasing (Upscaling tab). Turns on and off at once; switching from DLSS needs a"
-                    + " restart.";
+            case "fsr" -> "Experimental, any graphics card DirectX 12 runs on here (NVIDIA cards do): AMD FSR 3.1 frame generation"
+                    + " shows a frame of its own between every two the game renders, so the picture moves about twice as"
+                    + " smoothly, for a little more input delay. Best from about 60 frames a second without it. Needs Perfect"
+                    + " Presentation on DirectX 12, which this turns on, and DLSS or FSR anti-aliasing (Upscaling tab). Turns on"
+                    + " and off at once; switching from DLSS needs a restart.";
             default -> "The game shows the frames it renders.";
         };
     }
