@@ -5,6 +5,32 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.5.8
+
+### Added
+- **GPU pacing: shorter input delay when playing uncapped, on any graphics card.** In the display settings (the **DLAA...** button, Display tab): Off, On or Lowest. Without a frame cap the processor gets ahead of the graphics card and each frame waits in a queue on the card while the mouse input in it ages; NVIDIA Reflex's driver can't see that queue, as the game draws with OpenGL. The game now waits just before drawing each frame, so the frame reaches the card about when the card is ready, and reads the mouse again right before it draws. **On** keeps a short queue that costs no frames; **Lowest** keeps it as short as the frames' timing allows, for about 6% fewer frames. Measured on an RTX 4080 at 1440p with DLAA, from the game reading input to the card finishing the frame (median): with Perfect Presentation 11.9 ms off, 9.8 ms On, 8.4 ms Lowest (Reflex alone 10.5 ms); without it 14.4 ms off, 10.5 ms On, 8.2 ms Lowest, at the same frame rate with On.
+- **A frame counter.** Display tab: Off, Basic (the frame rate, small, in a corner) or Detailed (also the frame time, the 1% and 0.1% lows of the last 10 seconds and a graph of the last frames, yellow and red for long frames). Pick the corner; in the top right it moves under the status effect icons. **Dim for OLED** makes it see-through and moves it a pixel every two minutes so it can't burn in. It stays the same size at any GUI scale, and F3 and F1 hide it.
+- **The display settings have two tabs**, Anti-aliasing and Display, so everything fits on screen at 1440p with the automatic GUI scale.
+- Field Guide (Performance and Shaders): GPU pacing, the frame counter and Max Framerate's input delay.
+- Create Galore Bridge 1.112.0.
+
+### Fixed
+- **Max Framerate added input delay.** The game's own limiter waited after each frame, so the input read for the next frame had already aged by that wait. The cap now waits at the start of the frame, before the game reads the mouse, on any graphics card, as Reflex's own cap does: at a 60 fps cap on an RTX 4080 with Perfect Presentation, 8.8 ms from input to the card finishing the frame (Reflex's cap 8.9 ms), where the game's limiter took 29 ms.
+
+## 0.5.7
+
+### Added
+- **Groundwork for possible future shaders.** Some behind-the-scenes improvements to how the Bridge works with shader packs. Nothing changes in game with the shader packs the pack ships with.
+- Create Galore Bridge 1.111.0.
+
+## 0.5.6
+
+### Fixed
+- **Taking off the Charm of Shrinking could leave a player small.** A player on a server took the charm off in the wear screen and stayed half size. Artifacts puts a wearable's effects (size, speed, health, attack and so on) on the player and takes them off only when the accessory mods tell it the item left its slot; when that news goes missing, the effect stays for good, even through a restart. The pack now checks every player once a second and at login, and takes off any Artifacts effect whose item they no longer wear anywhere (accessory slots, armor or hands), and the server log says when it does, so the missing step can be traced. A player who is stuck small now goes back to full size as soon as they join. Checked on a test server: an effect left behind with nothing worn was gone within a second, and the charm, Power Glove, Feral Claws, Bunny Hoppers, Crystal Heart and Novelty Drinking Hat kept all their effects while worn, in the wear screen's Curios slots and when put on with a right-click. Every normal way of taking the charm off in the wear screen (drag, shift-click, number keys, Q, after a relog, after a restart, hidden or shown) already worked there, also as seen by a second player.
+
+### Added
+- Create Galore Bridge 1.110.0.
+
 ## 0.5.5
 
 ### Fixed

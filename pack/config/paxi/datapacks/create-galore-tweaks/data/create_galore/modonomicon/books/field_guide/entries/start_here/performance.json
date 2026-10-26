@@ -113,12 +113,22 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**Perfect Presentation** (Windows, experimental) shows the game through DirectX: fullscreen is a fast borderless window, Alt-Tab is instant and a 10-bit monitor stays 10-bit. Turn it on in the display settings (the **DLAA...** button in the shader pack menu) and restart. On NVIDIA, set Power management mode to Prefer maximum performance for javaw.exe."
+      "text": "**Perfect Presentation** (Windows, experimental) shows the game through DirectX: fullscreen is a fast borderless window, Alt-Tab is instant and a 10-bit monitor stays 10-bit. Turn it on in the display settings (the **DLAA...** button in the shader pack menu, **Display** tab) and restart. On NVIDIA, set Power management mode to Prefer maximum performance for javaw.exe."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**NVIDIA Reflex** (Windows, NVIDIA GTX 900 or newer, experimental) is on the same screen. The driver starts each frame as late as it can, and the game reads the mouse just before it draws, so the view follows the mouse sooner. It works best with a Max Framerate the card can hold. Picking it turns on Perfect Presentation, which it needs: restart once."
+      "text": "**NVIDIA Reflex** (Windows, NVIDIA GTX 900 or newer, experimental) is on the same tab. The driver starts each frame as late as it can, and the game reads the mouse just before it draws, so the view follows the mouse sooner. It works best with a Max Framerate the card can hold. Picking it turns on Perfect Presentation, which it needs: restart once."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**GPU pacing** (any card, same tab) is for playing uncapped. The game waits just before drawing each frame, so the frame doesn't queue on the card and the view follows the mouse sooner. **On** keeps the frame rate; **Lowest** cuts a little more delay for about 6%% fewer frames.\\\n\\\nA **Max Framerate** the card can hold gives the shortest delay of all, on any card."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Frame counter** on the same tab: **Basic** shows the frame rate in a corner; **Detailed** adds the frame time, the 1%% and 0.1%% lows and a graph of the last few seconds. Pick the **Corner**. **Dim for OLED** keeps it faint and moves it a pixel now and then so it can't burn in. F3 and F1 hide it."
     },
     {
       "type": "modonomicon:text",
