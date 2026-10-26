@@ -5,7 +5,7 @@
 // buffer is that picture the right way up with the colours in place, before and after a resize, over 300 frames each,
 // and again with 3 buffers and frame latency 2. The GPU timestamps (cg_present_timing) must come back in order.
 //
-// Frame generation's plumbing (ABI 3) with a stand-in backend: it must get the queue and swap chain calls, a frame call
+// Frame generation's plumbing (ABI 4) with a stand-in backend: it must get the queue and swap chain calls, a frame call
 // with the four inputs before each draw, a presented call after each Present, and the presenter must signal a later
 // "D3D12 done" value for the slot's inputs; no waitable object, frame latency refused, stop and shutdown on destroy.
 // A backend that can't start must leave a presenter without it (cg_fg_error says why), and Streamline without

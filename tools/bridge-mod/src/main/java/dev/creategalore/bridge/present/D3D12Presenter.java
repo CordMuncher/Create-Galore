@@ -84,7 +84,9 @@ import org.slf4j.LoggerFactory;
  */
 final class D3D12Presenter implements Presenter {
     private static final Logger LOG = LoggerFactory.getLogger("create_galore_bridge");
-    private static final int ABI = 3;
+    private static final int ABI = 4;
+    /** Present's DXGI_STATUS_OCCLUDED: the window can't be seen (minimized). */
+    private static final int DXGI_STATUS_OCCLUDED = 0x087A0001;
     private static final int RING_SIZE = 3;
     private static final int WAIT_ABANDONED = 0x80;
     private static final int WAIT_TIMEOUT = 0x102;
@@ -139,6 +141,9 @@ final class D3D12Presenter implements Presenter {
     private final int[][] fgMemories = new int[RING_SIZE][FrameGen.INPUTS];
     private int fgWidth;
     private int fgHeight;
+    private long fgOff;
+    /** The frame drawn and not yet presented asked for generated frames. */
+    private boolean presentGenerates;
     private boolean resizePending;
     private int pendingWidth;
     private int pendingHeight;
@@ -223,6 +228,7 @@ final class D3D12Presenter implements Presenter {
                 fgState = dll.symbol("cg_fg_state");
                 fgCreateInputs = dll.symbol("cg_fg_create_inputs");
                 fgReleaseInputs = dll.symbol("cg_fg_release_inputs");
+                fgOff = dll.symbol("cg_fg_off");
                 FrameGen.started(adapter);
             } else {
                 FrameGen.unavailable(memUTF8(Ffi.call(":P", dll.symbol("cg_fg_error"))));
@@ -261,6 +267,18 @@ final class D3D12Presenter implements Presenter {
     /** True while frame generation runs (Streamline loaded, so Reflex goes through it). */
     boolean frameGeneration() {
         return frameGeneration;
+    }
+
+    /**
+     * The game window was minimized or brought back: frame generation goes off at once, before the next Present
+     * (NVIDIA asks for it off around window changes), and stays off until the window is back.
+     */
+    void minimizedChanged(boolean minimized) {
+        FrameGen.minimized(minimized);
+        if (minimized && frameGeneration) {
+            Ffi.call(":V", fgOff);
+            drainFrameGenLog();
+        }
     }
 
     /** An export of cg_present.dll. */
@@ -407,6 +425,7 @@ final class D3D12Presenter implements Presenter {
             boolean sent = Ffi.call("IIIIIIP:I", fgFrame, slot, fg.frameIndex, fg.flags, fg.renderWidth, fg.renderHeight,
                     fg.framesToGenerate, fg.camera) != 0;
             FrameGen.frameSent(sent, sent ? null : errorText());
+            presentGenerates = sent && fg.generate();
         }
         long done = Ffi.call("IP:P", draw, slot, openglValue);
         if (done < 0) {
@@ -612,6 +631,9 @@ final class D3D12Presenter implements Presenter {
             throw new IllegalStateException(errorText());
         }
         if (frameGeneration) {
+            boolean generated = presentGenerates;
+            presentGenerates = false;
+            FrameGen.hidden(hr == DXGI_STATUS_OCCLUDED);
             try (MemoryStack stack = stackPush()) {
                 long state = stack.nmalloc(8, 7 * 8);
                 Ffi.call("P:V", fgState, state);
@@ -622,7 +644,7 @@ final class D3D12Presenter implements Presenter {
                 FrameGen.presented(numbers, syncInterval);
             }
             drainFrameGenLog();
-            if (resizePending) {
+            if (resizePending && !generated) {
                 // This frame went out without generated frames: now the swap chain may change.
                 resizePending = false;
                 resizeNow(pendingWidth, pendingHeight);
@@ -632,7 +654,9 @@ final class D3D12Presenter implements Presenter {
 
     @Override
     public void resizeSwapChain(int width, int height) {
-        if (frameGeneration && FrameGen.generating()) {
+        // The resize waits while frames are generated, or the frame drawn already asked for them (Minecraft polls
+        // window events between drawing a frame and presenting it).
+        if (frameGeneration && (FrameGen.generating() || presentGenerates)) {
             resizePending = true;
             pendingWidth = width;
             pendingHeight = height;

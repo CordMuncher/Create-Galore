@@ -38,7 +38,7 @@
 #define CG_API extern "C" __declspec(dllexport)
 
 // Bumped whenever a function below changes; the Java side refuses a helper with another version.
-static const int CG_PRESENT_ABI = 3;
+static const int CG_PRESENT_ABI = 4;
 
 static const UINT MAX_BUFFERS = 3;  // swap chain buffers: 2 as on the Direct3D 11 path, 3 for testing
 static const int RING = 3;          // shared textures OpenGL copies into, as on the Direct3D 11 path
@@ -1082,6 +1082,13 @@ CG_API int cg_fg_frame(int slot, unsigned frameIndex, int flags, int renderWidth
 /** The "D3D12 done" value after which OpenGL may write {@code slot}'s inputs again (0: any time). */
 CG_API unsigned long long cg_fg_inputs_done(int slot) {
     return slot >= 0 && slot < RING ? g_fgDone[slot] : 0;
+}
+
+/** Frame generation off from the next Present on, without waiting for the next frame (the window was minimized). */
+CG_API void cg_fg_off() {
+    if (g_fg) {
+        g_fg->off();
+    }
 }
 
 /** FgState's seven numbers, in its order, into {@code out} (zeros without frame generation). */

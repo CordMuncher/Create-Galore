@@ -229,6 +229,14 @@ public final class FrameLatency {
         return frameId;
     }
 
+    /**
+     * Frame generation: a present that came without a frame of Minecraft's of its own gets the next frame number, so
+     * Streamline never sees two presents under one (its markers then are only the present's).
+     */
+    public static long extraFrameId() {
+        return ++frameId;
+    }
+
     /** The game read input (RenderSystem.pollEvents, while presenting). */
     public static void polled() {
         lastPoll = System.nanoTime();
@@ -346,8 +354,11 @@ public final class FrameLatency {
             try {
                 double[] report = reflex.latency();
                 if (report != null) {
-                    result.put("driverInputToGpuMs", round(report[0]));
-                    result.put("driverInputToGpuP90Ms", round(report[1]));
+                    // Streamline's report has no input time (its input marker is gone), so no number there.
+                    if (Double.isFinite(report[0])) {
+                        result.put("driverInputToGpuMs", round(report[0]));
+                        result.put("driverInputToGpuP90Ms", round(report[1]));
+                    }
                     result.put("driverSimToGpuMs", round(report[2]));
                     result.put("driverSimToGpuP90Ms", round(report[3]));
                     result.put("driverGpuActiveMs", round(report[4]));
@@ -551,9 +562,13 @@ public final class FrameLatency {
                     w.get("pacerWaitMs"), w.get("pacerLateUs"), w.get("gpuQueueMs")));
         }
         if (w.containsKey("driverSimToGpuMs")) {
-            line.append(String.format(Locale.ROOT, "; driver: input to GPU end %s ms (90%%: %s), frame start to GPU end %s ms, GPU busy %s of %s ms",
-                    w.get("driverInputToGpuMs"), w.get("driverInputToGpuP90Ms"), w.get("driverSimToGpuMs"), w.get("driverGpuActiveMs"),
-                    w.get("driverGpuFrameMs")));
+            line.append("; driver: ");
+            if (w.containsKey("driverInputToGpuMs")) {
+                line.append(String.format(Locale.ROOT, "input to GPU end %s ms (90%%: %s), ", w.get("driverInputToGpuMs"),
+                        w.get("driverInputToGpuP90Ms")));
+            }
+            line.append(String.format(Locale.ROOT, "frame start to GPU end %s ms, GPU busy %s of %s ms", w.get("driverSimToGpuMs"),
+                    w.get("driverGpuActiveMs"), w.get("driverGpuFrameMs")));
         }
         return line.toString();
     }

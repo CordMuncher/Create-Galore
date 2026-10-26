@@ -191,6 +191,7 @@ public final class Dlss {
     /** A shader pack pipeline was made (shaders loaded or reloaded): reads the settings and the pack's profile again. */
     public static void onPipelineCreated() {
         ObjectMotion.reset();
+        FrameGen.pipelineCreated();
         DisplaySettings.reload();
         engine = DisplaySettings.dlaaEngine();
         wanted = !engine.equals("off");

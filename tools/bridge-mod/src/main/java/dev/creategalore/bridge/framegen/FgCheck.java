@@ -32,9 +32,10 @@ import org.slf4j.LoggerFactory;
  * Copy: each input against its source with the rows flipped (hudless and UI alpha exactly; depth and motion exactly
  * inside the render-sized corner, motion's y negated, 0 outside). Camera: for every 7th pixel of the corner with
  * depth, its position one frame back by clip to last frame's clip, against where its motion vector points. Where only
- * the camera moved the two agree, so the median error is a fraction of a pixel when the matrices, the depth and the
- * motion vectors are all in the same convention; the hand and things that move by themselves stray. The medians with
- * motion's x or y turned the other way say which sign would be wrong.
+ * the camera moved the two agree, so the median error is a fraction of a pixel (plus a small share of the motion, see
+ * MOTION_SHARE) when the matrices, the depth and the motion vectors are all in the same convention; the hand and things
+ * that move by themselves stray. The medians with motion's x or y turned the other way say which sign would be wrong.
+ * Values compare bit for bit where they aren't numbers (a pack's NaN copies through as it is).
  */
 final class FgCheck {
     private static final Logger LOG = LoggerFactory.getLogger("create_galore_bridge");
@@ -42,13 +43,25 @@ final class FgCheck {
     /** The camera check counts only when the motion vectors move this much (render pixels, median). */
     private static final double MOVING = 0.5;
     private static final double GOOD_ERROR = 0.25;
+    /**
+     * The error the check allows on top, as a share of the motion: rounding grows with it (motion is a 16-bit float, a
+     * step of up to 1/1024 of the value), while a wrong sign or matrix is off by about the whole motion. Turning a
+     * quarter of the screen in one frame (the cloud's slow frames) came out at 0.04 to 0.5% off.
+     */
+    private static final double MOTION_SHARE = 0.005;
 
     private static int count;
 
     private FgCheck() {}
 
+    /** Equal, or both not a number. */
+    private static boolean same(float a, float b) {
+        return a == b || Float.isNaN(a) && Float.isNaN(b);
+    }
+
+    /** {@code note}: what is special about this frame, for the log line (null: nothing). */
     static void run(int[] targets, int hudless, int frame, int depth, int motion, int width, int height, int renderWidth,
-                    int renderHeight, boolean noHud, FgCamera camera, boolean cameraValid) {
+                    int renderHeight, boolean noHud, FgCamera camera, boolean cameraValid, String note) {
         int pixels = width * height;
         ByteBuffer outHudless = MemoryUtil.memAlloc(pixels * 4);
         ByteBuffer outAlpha = MemoryUtil.memAlloc(pixels);
@@ -99,11 +112,11 @@ final class FgCheck {
                     float my = outMotion.getFloat(o * 8 + 4);
                     if (x < renderWidth && y < renderHeight) {
                         int r = (renderHeight - 1 - y) * width + x;
-                        if (d != inDepth.getFloat(r * 4)) {
+                        if (!same(d, inDepth.getFloat(r * 4))) {
                             badDepth++;
                             first = first != null ? first : "depth at (" + x + ", " + y + ")";
                         }
-                        if (mx != inMotion.getFloat(r * 8) || my != -inMotion.getFloat(r * 8 + 4)) {
+                        if (!same(mx, inMotion.getFloat(r * 8)) || !same(my, -inMotion.getFloat(r * 8 + 4))) {
                             badMotion++;
                             first = first != null ? first : "motion at (" + x + ", " + y + ")";
                         }
@@ -121,10 +134,11 @@ final class FgCheck {
                             + "(first: %s)", badHudless, badAlpha, badDepth, badMotion, badOutside, first);
             String cameraText = cameraValid ? cameraCheck(outDepth, outMotion, width, renderWidth, renderHeight, camera)
                     : "no camera this frame";
+            String label = note != null ? count + " (" + note + ")" : String.valueOf(count);
             if (bad == 0) {
-                LOG.info("Frame generation check {}: {}; {}", count, copy, cameraText);
+                LOG.info("Frame generation check {}: {}; {}", label, copy, cameraText);
             } else {
-                LOG.warn("Frame generation check {}: {}; {}", count, copy, cameraText);
+                LOG.warn("Frame generation check {}: {}; {}", label, copy, cameraText);
             }
             if (count == 1 || count % 12 == 0) {
                 LOG.info("Frame generation check {}: camera fov {} deg, aspect {} (render {}), near {}, far {}, jitter {}, {} px, "
@@ -196,7 +210,8 @@ final class FgCheck {
         double median = median(error, n);
         double p90 = percentile(error, n, 0.9);
         double move = median(moved, n);
-        String verdict = move < MOVING ? "too little motion to judge" : median <= GOOD_ERROR ? "camera ok" : "CAMERA DISAGREES";
+        String verdict = move < MOVING ? "too little motion to judge"
+                : median <= GOOD_ERROR + move * MOTION_SHARE ? "camera ok" : "CAMERA DISAGREES";
         return String.format(Locale.ROOT, "%s: motion vectors vs camera off by %.3f px median (90%%: %.3f) over %d pixels; "
                         + "motion %.2f px median (camera says %.2f); with x turned %.3f, with y turned %.3f",
                 verdict, median, p90, n, move, median(expectedMove, n), median(flipX, n), median(flipY, n));

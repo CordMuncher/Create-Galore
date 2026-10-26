@@ -40,8 +40,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Frame generation, TESTING ONLY (keys in the display settings, nothing on the settings screen): NVIDIA DLSS Frame
- * Generation through Streamline, in Perfect Presentation's DirectX 12 presenter (cg_present.dll's cg_fg_* calls and
+ * Frame generation, EXPERIMENTAL (Display tab, "Frame generation"; RTX 40 and 50 cards): NVIDIA DLSS Frame Generation
+ * through Streamline, in Perfect Presentation's DirectX 12 presenter (cg_present.dll's cg_fg_* calls and
  * tools/bridge-mod/native/cg_streamline.cpp). Each frame, once DLSS or FSR ran and the HUD is drawn, the presenter has
  * {@link FgCapture} write the frame's inputs (the world without the HUD, the HUD's coverage, depth and motion vectors)
  * into textures shared with DirectX 12, hands over the camera ({@link FgCamera}), and Streamline shows generated frames
@@ -51,17 +51,19 @@ import org.slf4j.LoggerFactory;
  * form for any backend, so another backend in cg_present.dll takes them as they are, beside DLSS or FSR upscaling.
  *
  * It generates only while that can work, as NVIDIA asks: a world that DLSS or FSR drew this frame, its copy without the
- * HUD (HudSplit; with the HUD hidden by F1 the frame itself), no screen open but chat, the window neither minimized nor
- * resizing (the frame before a resize goes out without, and a few after it), and Streamline reporting no problem and
- * a window at least its minimum size. Otherwise the frame goes out as it is.
+ * HUD (HudSplit; with the HUD hidden by F1 the frame itself), no screen open but chat, the first frames of a new shader
+ * pipeline past, the window neither minimized, hidden nor resizing (the frame before a resize goes out without, and a
+ * few after it), and Streamline reporting no problem and a window at least its minimum size. Otherwise the frame goes
+ * out as it is.
  *
- * Keys (config/create_galore_bridge-display.properties, not written there): frameGen=dlss turns it on (at the next
- * start, with perfectPresentation=true and presenter=dx12; nvngx_dlssg.dll beside nvngx_dlss.dll, found in NVIDIA's
- * folder by itself if it isn't); frameGenFrames frames generated per rendered one (1); frameGenUi=false hands the HUD
- * over as part of the picture; frameGenStreamline a folder of Streamline's development DLLs instead of the shipped
- * ones; frameGenVerbose=true a verbose Streamline log (create-galore-dlss/streamline-logs). frameGenView=hudless,
- * alpha, depth or motion shows that input instead of the game, and frameGenCheck=true checks the inputs and the
- * camera every 5 seconds ({@link FgCheck}); both work without the presenter, on any graphics card.
+ * Keys (config/create_galore_bridge-display.properties): frameGen=dlss turns it on (at the next start, with
+ * perfectPresentation=true and presenter=dx12, which the settings screen sets with it; nvngx_dlssg.dll beside
+ * nvngx_dlss.dll, found in NVIDIA's folder by itself if it isn't). For testing, not written there: frameGenFrames
+ * frames generated per rendered one (1); frameGenUi=false hands the HUD over as part of the picture; frameGenStreamline
+ * a folder of Streamline's development DLLs instead of the shipped ones; frameGenVerbose=true a verbose Streamline log
+ * (create-galore-dlss/streamline-logs). frameGenView=hudless, alpha, depth or motion shows that input instead of the
+ * game, and frameGenCheck=true checks the inputs and the camera every 5 seconds ({@link FgCheck}); both work without the
+ * presenter, on any graphics card.
  */
 public final class FrameGen {
     private static final Logger LOG = LoggerFactory.getLogger("create_galore_bridge");
@@ -72,8 +74,13 @@ public final class FrameGen {
             "sl.pcl.dll", "license.txt", "reflex.license.txt", "3rd-party-licenses.md"};
     /** Minecraft's near plane (GameRenderer). */
     private static final float NEAR = 0.05f;
-    /** Frames after a resize without frame generation (NVIDIA: off around window changes). */
+    /** Frames after a resize or a restored window without frame generation (NVIDIA: off around window changes). */
     private static final int AFTER_RESIZE = 3;
+    /**
+     * Upscaled frames after the shader pack's pipeline was made (loaded, reloaded, resized) without frame generation:
+     * the first ones' motion vectors don't hold yet (the pack has no last frame to reproject to).
+     */
+    private static final int AFTER_RELOAD = 3;
     /** Frames without frame generation after Streamline reported a problem, before trying again. */
     private static final int AFTER_PROBLEM = 300;
     /** Failed calls in a row before frame generation stays off for the game. */
@@ -120,7 +127,13 @@ public final class FrameGen {
     private static final Frame FRAME = new Frame();
     private static final FgCamera camera = new FgCamera();
 
+    /** The cards DLSS Frame Generation runs on (OpenGL's renderer string): GeForce RTX 40 and 50, RTX Ada and Blackwell. */
+    private static final java.util.regex.Pattern SUPPORTED_CARD = java.util.regex.Pattern.compile(
+            "RTX\\s+[45]0[5-9]0|RTX.*\\b(?:Ada|Blackwell)\\b");
+
     // The session.
+    private static boolean requested;
+    private static String unavailable;
     private static boolean running;
     private static String broken;
     private static FgCapture capture;
@@ -141,6 +154,8 @@ public final class FrameGen {
     private static int renderWidth;
     private static int renderHeight;
     private static boolean upscalerReset;
+    /** Upscaled frames since the shader pack's pipeline was made. */
+    private static int sinceReload = AFTER_RELOAD;
 
     // Generating.
     private static boolean generating;
@@ -154,6 +169,11 @@ public final class FrameGen {
     private static boolean confirmed;
     private static boolean vsyncWarned;
     private static int failures;
+    /** The frame number the last frame went out with, so no two presents share one (see {@link #frame}). */
+    private static long lastFrameIndex = Long.MIN_VALUE;
+    private static int repeatedFrames;
+    private static volatile boolean minimized;
+    private static boolean hidden;
 
     // Testing without the presenter: the inputs in plain OpenGL textures.
     private static final int[] local = new int[INPUTS];
@@ -180,6 +200,7 @@ public final class FrameGen {
             LOG.warn("Frame generation: unknown {}={}, off (dlss or off)", DisplaySettings.FRAME_GEN, mode);
             return null;
         }
+        requested = true;
         try {
             Path root = FMLPaths.GAMEDIR.get().resolve(Dlss.FOLDER);
             String development = DisplaySettings.getString(DisplaySettings.FRAME_GEN_STREAMLINE, "");
@@ -194,8 +215,15 @@ public final class FrameGen {
             }
             Path logs = root.resolve("streamline-logs");
             Files.createDirectories(logs);
+            String model = Dlss.readyFrameGenerationDll();
             LOG.info("Frame generation: NVIDIA DLSS Frame Generation through Streamline {} from {}; {}", STREAMLINE_VERSION,
-                    plugins, Dlss.readyFrameGenerationDll());
+                    plugins, model);
+            if (model.startsWith("no ")) {
+                unavailable("no nvngx_dlssg.dll, NVIDIA's frame generation model. NVIDIA's software keeps it in"
+                        + " C:\\ProgramData\\NVIDIA\\NGX\\models\\dlssg, where the game looks at every start; or put it into "
+                        + Dlss.dllFolder() + " (it is in NVIDIA's Streamline SDK on GitHub, bin/x64)");
+                return null;
+            }
             return new Start(BACKEND_DLSSG, plugins, Dlss.dllFolder(), logs, flags);
         } catch (IOException | RuntimeException e) {
             unavailable("Streamline could not be readied: " + e);
@@ -227,6 +255,7 @@ public final class FrameGen {
 
     /** Frame generation was asked for but can't run (the presenter goes on without it). */
     public static void unavailable(String reason) {
+        unavailable = reason;
         LOG.warn("Frame generation: off, {}", reason);
     }
 
@@ -239,6 +268,21 @@ public final class FrameGen {
     /** True while the presenter runs with frame generation (Streamline loaded). */
     public static boolean running() {
         return running;
+    }
+
+    /** True if the presenter was asked for frame generation at its start. */
+    public static boolean requested() {
+        return requested;
+    }
+
+    /** Why frame generation didn't start, or stopped for this game; null if neither. */
+    public static String problem() {
+        return broken != null ? broken : running ? null : unavailable;
+    }
+
+    /** True for a card DLSS Frame Generation runs on, by OpenGL's renderer string (NVIDIA: RTX 40 and 50 series). */
+    public static boolean supportedCard(String renderer) {
+        return renderer != null && renderer.contains("NVIDIA") && SUPPORTED_CARD.matcher(renderer).find();
     }
 
     // --- the frame ---
@@ -273,6 +317,30 @@ public final class FrameGen {
         return wanted();
     }
 
+    /** Dlss: the shader pack's pipeline was made; its first frames' motion vectors don't hold yet. */
+    public static void pipelineCreated() {
+        sinceReload = 0;
+    }
+
+    /**
+     * The window was minimized or brought back (GLFW's iconify callback, on the render thread while it polls events).
+     * The presenter turns frame generation off at once on minimizing (NVIDIA: off before window changes).
+     */
+    public static void minimized(boolean now) {
+        if (minimized && !now) {
+            afterResize = AFTER_RESIZE;
+        }
+        minimized = now;
+    }
+
+    /** The presenter: Present said the window can't be seen (DXGI_STATUS_OCCLUDED), or that it can again. */
+    public static void hidden(boolean now) {
+        if (hidden && !now) {
+            afterResize = AFTER_RESIZE;
+        }
+        hidden = now;
+    }
+
     /**
      * DLSS or FSR just ran on the pack's frame (Dlss.afterPass): its motion and depth images (the window's size, the
      * frame in their lower left render-sized corner), the jitter it rendered with (render pixels, +y up), whether
@@ -292,6 +360,9 @@ public final class FrameGen {
         renderWidth = renderW;
         renderHeight = renderH;
         upscalerReset = reset;
+        if (sinceReload <= AFTER_RELOAD) {
+            sinceReload++;
+        }
         Minecraft minecraft = Minecraft.getInstance();
         Vec3 position = minecraft.gameRenderer.getMainCamera().getPosition();
         camera.update(CapturedRenderingState.INSTANCE.getGbufferModelView(), CapturedRenderingState.INSTANCE.getGbufferProjection(),
@@ -309,6 +380,19 @@ public final class FrameGen {
         Minecraft minecraft = Minecraft.getInstance();
         Frame frame = FRAME;
         long id = FrameLatency.frameId();
+        boolean repeated = id == lastFrameIndex;
+        if (repeated) {
+            // A second present without a new game frame (something drew and presented outside Minecraft's frame): it
+            // gets a number of its own, as Streamline allows one set of constants per frame number, and no generated
+            // frames, as nothing new was rendered.
+            id = FrameLatency.extraFrameId();
+            repeatedFrames++;
+            if (repeatedFrames == 1) {
+                LOG.info("Frame generation: a frame was presented twice in one game frame; the extra one goes out on its own, "
+                        + "without generated frames. From: {}", caller());
+            }
+        }
+        lastFrameIndex = id;
         boolean inputs = upscaledFrame == id && inputWidth == width && inputHeight == height;
         int hudless = HudSplit.hudless();
         boolean noHud = hudless == 0 && minecraft.options.hideGui && minecraft.screen == null;
@@ -322,7 +406,8 @@ public final class FrameGen {
         frame.noHud = noHud;
         frame.depth = depthTexture;
         frame.motion = motionTexture;
-        String off = offReason(minecraft, inputs, hudless != 0 || noHud, width, height, resizing);
+        String off = repeated ? "a second present in one game frame" : offReason(minecraft, inputs, hudless != 0 || noHud, width,
+                height, resizing);
         if (off == null) {
             frame.flags |= FRAME_GENERATE | (ui ? FRAME_UI : 0);
             if (!generating || upscalerReset || !camera.continuous()) {
@@ -356,14 +441,20 @@ public final class FrameGen {
         if (minecraft.screen != null && !(minecraft.screen instanceof ChatScreen)) {
             return "a screen is open";
         }
-        if (width <= 0 || height <= 0 || glfwGetWindowAttrib(minecraft.getWindow().getWindow(), GLFW_ICONIFIED) != 0) {
+        if (minimized || width <= 0 || height <= 0 || glfwGetWindowAttrib(minecraft.getWindow().getWindow(), GLFW_ICONIFIED) != 0) {
             return "the window is minimized";
+        }
+        if (hidden) {
+            return "the window can't be seen";
         }
         if (resizing || afterResize > 0) {
             return "the window is resizing";
         }
         if (!inputs) {
             return "DLSS or FSR didn't run this frame (DLAA on, a shader pack made for it, no debug view)";
+        }
+        if (sinceReload < AFTER_RELOAD) {
+            return "the shaders were just loaded";
         }
         if (!hudless) {
             return "no copy of the world without the HUD this frame";
@@ -520,10 +611,17 @@ public final class FrameGen {
             capture.run(local, source, main.getColorTextureId(), depthTexture, motionTexture, width, height, renderWidth, renderHeight,
                     noHud);
             long now = System.nanoTime();
-            if (check && now - nextCheck >= 0L) {
+            // The frames after a reload, which frame generation skips, are checked each, to show they need skipping.
+            boolean afterReload = sinceReload <= AFTER_RELOAD;
+            if (check && (afterReload || now - nextCheck >= 0L)) {
                 nextCheck = now + CHECK_EVERY;
+                String note = afterReload ? "frame " + sinceReload + " after the shader pipeline was made"
+                        + (sinceReload < AFTER_RELOAD ? ", frame generation skips it" : "") : null;
+                if (upscalerReset) {
+                    note = (note != null ? note + ", " : "") + "the upscaler started over";
+                }
                 FgCheck.run(local, source, main.getColorTextureId(), depthTexture, motionTexture, width, height, renderWidth,
-                        renderHeight, noHud, camera, true);
+                        renderHeight, noHud, camera, true, note);
             }
             if (view != 0) {
                 if (fgView == null) {
@@ -553,6 +651,23 @@ public final class FrameGen {
         }
         localWidth = width;
         localHeight = height;
+    }
+
+    /** Where the present came from, for the log: the call stack outside the Bridge's presenter, a few frames. */
+    private static String caller() {
+        StringBuilder text = new StringBuilder();
+        int shown = 0;
+        for (StackTraceElement element : Thread.currentThread().getStackTrace()) {
+            String type = element.getClassName();
+            if (type.startsWith("java.") || type.startsWith("dev.creategalore.bridge.framegen") || type.startsWith("dev.creategalore.bridge.present")) {
+                continue;
+            }
+            text.append(shown == 0 ? "" : " < ").append(type.substring(type.lastIndexOf('.') + 1)).append('.').append(element.getMethodName());
+            if (++shown == 8) {
+                break;
+            }
+        }
+        return text.toString();
     }
 
     private static int parseInt(String value, int fallback) {

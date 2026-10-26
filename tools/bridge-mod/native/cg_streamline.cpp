@@ -360,6 +360,21 @@ public:
         }
     }
 
+    void off() override {
+        if (!m_optionsSet || m_options.mode == sl::DLSSGMode::eOff) {
+            return;
+        }
+        sl::DLSSGOptions options = m_options;
+        options.mode = sl::DLSSGMode::eOff;
+        sl::Result result = m_api.dlssgSetOptions(sl::ViewportHandle(0), options);
+        if (result != sl::Result::eOk) {
+            m_optionsSet = false;
+            failed("slDLSSGSetOptions (off)", result);
+            return;
+        }
+        m_options = options;
+    }
+
     void beforeResize() override {
         if (m_optionsSet && m_options.mode != sl::DLSSGMode::eOff) {
             fgLog('W', "Frame generation was on when the swap chain resized: it is turned off one frame before a resize");

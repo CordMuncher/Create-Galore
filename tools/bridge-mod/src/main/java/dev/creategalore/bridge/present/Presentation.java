@@ -12,6 +12,7 @@ import dev.creategalore.bridge.DisplaySettings;
 import net.neoforged.fml.loading.FMLConfig;
 import net.neoforged.fml.loading.FMLPaths;
 import org.lwjgl.glfw.GLFWNativeWin32;
+import org.lwjgl.glfw.GLFWWindowIconifyCallback;
 import org.lwjgl.system.MemoryStack;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -142,6 +143,9 @@ public final class Presentation {
             openglContext = new WglContext(FLAGS);
             presenter = startPresenter(GLFWNativeWin32.glfwGetWin32Window(handle), openglContext);
             window = handle;
+            if (presenter instanceof D3D12Presenter d3d12 && d3d12.frameGeneration()) {
+                watchMinimize(handle, d3d12);
+            }
             hideFromGlVersionCheck();
             LOG.info("Perfect Presentation: DXGI swap chain ready on {} (OpenGL on a hidden context)", presenter.api());
             return handle;
@@ -159,6 +163,17 @@ public final class Presentation {
             }
             return create.apply(monitor);
         }
+    }
+
+    /** Tells frame generation when the window is minimized or back, before the game's next frame (any earlier callback still runs). */
+    private static void watchMinimize(long handle, D3D12Presenter d3d12) {
+        GLFWWindowIconifyCallback[] previous = new GLFWWindowIconifyCallback[1];
+        previous[0] = glfwSetWindowIconifyCallback(handle, (w, iconified) -> {
+            if (previous[0] != null) {
+                previous[0].invoke(w, iconified);
+            }
+            d3d12.minimizedChanged(iconified);
+        });
     }
 
     /** Direct3D 12 when presenter=dx12 and it starts, else Direct3D 11. */

@@ -1636,3 +1636,68 @@ branch. Don't commit hs_err files or Streamline logs whole (they name his user f
 What comes of it: if frame generation runs and looks right, the next step is its own settings entry and FSR's frame
 generation on the same inputs; if the pacer gets in Reflex's way with frame generation on, it is switched off while
 frame generation runs.
+
+## DLSS-G 2: frame generation re-check, with the player setting
+
+Start only when Emre says so. About 20 minutes with Emre at the keyboard; no unattended part.
+
+**What it checks.** Bridge 1.118.0 (pack 0.5.10) has the fixes for what DLSS-G 1 found, and frame generation's own
+setting (Display tab, **Frame generation: Off / DLSS**, experimental, only selectable on RTX 40 and 50 cards):
+- after a shader reload, frame generation waits for the first frames of the new pipeline (DLSS-G 1's 5 `CAMERA
+  DISAGREES`, motion vectors of about 70,000 px);
+- a second present in one game frame gets its own frame number and no generated frame (DLSS-G 1's
+  `eErrorDuplicatedConstants`, at loading and when the chat first opened);
+- the frame before a swap chain resize really goes out without frame generation (DLSS-G 1's 4 `Frame generation was
+  on when the swap chain resized` warnings);
+- minimising turns frame generation off at once, and it stays off while Windows says the window can't be seen
+  (DLSS-G 1's flood of `RSYNC: Flip queue is empty!!!`).
+
+### Update and settings
+
+The Update block of DLSS-G 1 (fetch, checkout, copy the Bridge and the test kit). The instance's mods must have
+`create-galore-bridge-1.118.0.jar`. In `config\create_galore_bridge-display.properties` note the old values, then set
+`dlaa=dlss`, `perfectPresentation=false`, `presenter=dx11`, `reflex=off`, `fpsCounter=detailed`, `frameGen=off`, and add
+`frameGenCheck=true`. Shader pack: Photon v1.3a + DLAA. The launch from step 4 (2560x1440) without `autorun`.
+
+### 1. The setting, about 3 minutes
+
+In the shader pack menu, **Upscaling & Display...**, tab **Display**. Emre picks **Frame generation: DLSS**. It must
+turn **Perfect Presentation** on, **DirectX** to 12 and **NVIDIA Reflex** to On; the status beside the row says
+`Experimental. Starts after a restart.` Hover the row and the status: the text must read right to him. Done: a toast
+asks for a restart. Check the settings file has `frameGen=dlss`, `perfectPresentation=true`, `presenter=dx12`,
+`reflex=on`. Close the game and launch again; in the world, open the same tab: the status must say `Experimental:
+running.` Take an F2 screenshot of the tab.
+
+### 2. Play, about 10 minutes
+
+Open `dlaa-test`, `/gamemode creative`. Then:
+- **F8 three times**, a few seconds apart. Each time the log must have `Frame generation: off, the shaders were just
+  loaded`, then `on`. The checks right after it are labelled `(frame N after the shader pipeline was made, frame
+  generation skips it)` for N 1 and 2, then `(frame 3 after the shader pipeline was made)`. Turn while pressing F8.
+  No `CAMERA DISAGREES` on frame 3 or any later check.
+- **Open the chat** (T), type a few letters, close it; then `/` and a few letters, so the command suggestions appear.
+  No `eErrorDuplicatedConstants` anywhere in the log. If the log has `Frame generation: a frame was presented twice in
+  one game frame ... From: ...`, copy that line whole.
+- **The command suggestions, two ways.** With the list showing, Emre types and deletes letters so it appears, moves and
+  changes, and says how it looks. Then add `frameGenUi=false` to the settings file, press F8, and do the same: is the
+  list better, worse or the same? (With `false` NVIDIA gets the HUD as part of the picture instead of apart.) Is the
+  rest of the HUD (hotbar, chat, crosshair) still clean with `false`? Remove the line and F8.
+- **Resize**: drag the window's edge a few times, maximise and restore, Alt-Tab away and back. No `Frame generation was
+  on when the swap chain resized` WARN. Each resize: `Frame generation: off, the window is resizing`, then `on`.
+- **Minimise** for about 10 seconds and bring it back: `Frame generation: off, the window is minimized` at once, then
+  `on` after it's back. Count the `Flip queue is empty` lines in the game log and in the newest Streamline log, and
+  compare with DLSS-G 1 (357 and 16,658).
+- Then just play for a few minutes and say whether anything looks worse than in DLSS-G 1.
+
+Close the game.
+
+### Results
+
+Write `$T\repo\tools\dlss-testkit\results\dlssg2\REPORT.md`: the status texts seen in step 1 and the screenshot; every
+`Frame generation` log line that isn't a plain check (the `(native)` ones too) and every check line that isn't `copy
+ok`; the counts asked for above; what Emre said about the command suggestions both ways, and about the picture. Any
+Streamline warning or error line (those lines only). Put the settings back (and remove `frameGenCheck`), then commit
+and push on the DLAA branch.
+
+What comes of it: if everything above holds, frame generation stops being called experimental in a later release;
+the command suggestions get fixed together with AMD's FSR frame generation.

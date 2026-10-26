@@ -133,6 +133,11 @@
     {
       "type": "modonomicon:text",
       "title": "",
+      "text": "**Frame generation** (same tab, experimental, NVIDIA RTX 40 and 50 only): DLSS Frame Generation shows a frame of its own between every two the game draws, so motion looks about twice as smooth, for a little more input delay. It needs DLSS or FSR anti-aliasing and Windows' Hardware-accelerated GPU scheduling. Picking it turns on Perfect Presentation, DirectX 12 and Reflex: restart once."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
       "text": "**Frame counter** on the same tab: **Basic** shows the frame rate in a corner; **Detailed** adds the frame time, the 1%% and 0.1%% lows and a graph of the last few seconds. Pick the **Corner**. **Dim for OLED** keeps it faint and moves it a pixel now and then so it can't burn in. F3 and F1 hide it."
     },
     {

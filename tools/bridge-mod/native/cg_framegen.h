@@ -102,6 +102,8 @@ public:
     virtual void presented(ID3D12CommandQueue* queue) = 0;
     /** The swap chain is about to resize or change its fullscreen state. */
     virtual void beforeResize() = 0;
+    /** Off at once, before the next frame (the window was minimized: NVIDIA asks for off around window changes). */
+    virtual void off() {}
     virtual void state(FgState& state) = 0;
     /** The presenter is about to release the swap chain and the inputs: let go of them. */
     virtual void stop() = 0;
