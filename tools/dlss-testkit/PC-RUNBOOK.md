@@ -1301,6 +1301,7 @@ Commit and push on the DLAA branch. Don't commit hs_err files (they name his use
 ## Pacer 3: GPU pacing on DirectX 12
 
 Start only when Emre says so. It isn't urgent: it's for the day DirectX 12 becomes Perfect Presentation's default.
+It can share a session with HUD split 1 (below; that one first).
 Same PC, test folder and settings as Presenter 3, **no PresentMon and no nvidia-smi** (no administrator prompts).
 About 55 minutes, four launches, no by-feel part. **Frame times count here**: a quiet PC, no game server, nothing else
 started.
@@ -1401,6 +1402,11 @@ Commit and push on the DLAA branch. Don't commit hs_err files (they name his use
 
 Start only when Emre says so. About 20 minutes, one launch, by eye with Emre (he plays; the log and the saved pictures
 do the checking). Frame times don't count, except the short comparison in step 4.
+
+**With Pacer 3 in one session (about 75 minutes).** Do this section first, while Emre is at the keyboard, then Pacer 3,
+which needs no one, only a quiet PC. Use Pacer 3's Update (it also copies the test kit); it covers both. Between the
+two: remove `hudSplitCheck`, `hudSplit` and `hudSplitView` from the settings file (without them the split is off) and
+put `presenter` and `fpsCounter` back to their old values, so Pacer 3 starts from its own settings.
 
 **What it tests.** Bridge 1.116.0 (a test build on this branch) can keep, every frame, a copy of the picture just before
 the HUD (the world with its full-screen effects such as nausea and the vignette, but no HUD) and record in the frame's
