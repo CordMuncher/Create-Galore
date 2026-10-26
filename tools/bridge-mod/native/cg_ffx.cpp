@@ -195,9 +195,21 @@ public:
         return true;
     }
 
+    bool setOn(bool on) override {
+        m_on = on;
+        return true;
+    }
+
     HRESULT createSwapChain(IDXGIFactory4* factory, ID3D12CommandQueue* queue, HWND hwnd, const DXGI_SWAP_CHAIN_DESC1& desc,
             IDXGISwapChain1** swapChain) override {
         *swapChain = nullptr;
+        if (!m_on) {  // the presenter's own swap chain: nothing of AMD's between it and the window
+            HRESULT hr = factory->CreateSwapChainForHwnd(queue, hwnd, &desc, nullptr, nullptr, swapChain);
+            if (FAILED(hr)) {
+                fgFail("CreateSwapChainForHwnd: HRESULT 0x%08X", (unsigned) hr);
+            }
+            return hr;
+        }
         DXGI_SWAP_CHAIN_DESC1 chainDesc = desc;
         IDXGISwapChain4* proxy = nullptr;
         ffxCreateContextDescFrameGenerationSwapChainForHwndDX12 create = {};
@@ -218,17 +230,22 @@ public:
             return E_FAIL;
         }
         m_swapChainContext = context;
-        m_swapChain = proxy;  // its context holds a reference until shutdown; the presenter gets this one
+        m_swapChain = proxy;  // its context holds a reference until swapChainReleased; the presenter gets this one
         m_format = desc.Format;
         m_waitable = proxy->GetFrameLatencyWaitableObject();
         // As AMD's sample, after a swap chain made another way: DXGI leaves the window alone (no Alt+Enter).
         factory->MakeWindowAssociation(hwnd, DXGI_MWA_NO_WINDOW_CHANGES);
-        // The frame generation context now, at the window's size, so a card or driver it can't run on falls back at
-        // once; it is made again when the back buffer's size changes.
+        // The frame generation context now, at the swap chain's size, so a card or driver it can't run on falls back
+        // at once; it is made again when the back buffer's size changes.
         RECT client = {};
-        if (GetClientRect(hwnd, &client) && client.right > 0 && client.bottom > 0
-                && !createContext((UINT) client.right, (UINT) client.bottom)) {
-            proxy->Release();  // shutdown destroys the swap chain's context
+        UINT width = desc.Width;
+        UINT height = desc.Height;
+        if ((!width || !height) && GetClientRect(hwnd, &client)) {
+            width = (UINT) client.right;
+            height = (UINT) client.bottom;
+        }
+        if (width > 0 && height > 0 && !createContext(width, height)) {
+            proxy->Release();  // swapChainReleased destroys the swap chain's context
             return E_FAIL;
         }
         *swapChain = proxy;
@@ -237,6 +254,10 @@ public:
 
     bool waitable() const override {
         return true;
+    }
+
+    bool ownsWaitable() const override {
+        return m_on;  // AMD's swap chain made it and leaves it to the game
     }
 
     bool composesUi() const override {
@@ -354,7 +375,7 @@ public:
         m_prepare = false;
     }
 
-    void shutdown() override {
+    void swapChainReleased() override {
         stop();
         if (m_swapChainContext) {
             // The last reference: AMD's swap chain waits for its presents and goes, with the real one.
@@ -363,14 +384,19 @@ public:
         }
         m_swapChain = nullptr;
         if (m_waitable) {
-            CloseHandle(m_waitable);  // AMD's swap chain made it and leaves it to the game
+            CloseHandle(m_waitable);
             m_waitable = nullptr;
         }
+    }
+
+    void shutdown() override {
+        swapChainReleased();
     }
 
 private:
     Api m_api;
     int m_flags;
+    bool m_on = true;
     ID3D12Device* m_device = nullptr;
     ffxContext m_swapChainContext = nullptr;
     IDXGISwapChain4* m_swapChain = nullptr;

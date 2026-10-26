@@ -26,7 +26,8 @@
 // ABI 5 adds AMD FidelityFX frame generation (cg_ffx.cpp): its swap chain keeps the waitable object, and it draws the
 // HUD over every frame it presents from a texture of its own, so on frames it generates around the presenter cuts the
 // frame in two in one pass: the hudless input into the back buffer, and the HUD (frame - hudless * (1 - alpha), with
-// alpha) into that texture (cg_fg_create_inputs makes it).
+// alpha) into that texture (cg_fg_create_inputs makes it). And frame generation turns on and off while the game runs
+// (cg_fg_enable): the backend stays loaded, and the swap chain is made again, frame generation's or a plain one.
 //
 // All functions must be called on one thread (the render thread). Built by build-present.sh with clang and lld-link
 // against the Windows SDK, and Streamline's headers for cg_streamline.cpp. Graphics DLLs are loaded at run time
@@ -85,7 +86,9 @@ static IDXGIAdapter1* g_adapter;
 static ID3D12Device* g_device;
 static ID3D12CommandQueue* g_queue;
 static IDXGISwapChain3* g_swapChain;
+static HWND g_hwnd;
 static HANDLE g_waitable;
+static bool g_waitableOwned;         // closed here, not by the frame generation backend that made the swap chain
 static UINT g_swapFlags;
 static bool g_tearing;
 static UINT g_bufferCount = 2;
@@ -118,6 +121,7 @@ static int g_lastSlot = -1;          // the slot cg_present_draw last drew
 
 // Frame generation: the backend (cg_fg_prepare), why it was dropped, its inputs ring.
 static FgBackend* g_fg;
+static bool g_fgOn = true;           // the swap chain is frame generation's and it is asked each frame (cg_fg_enable)
 static char g_fgError[1024];
 static ID3D12Resource* g_fgInputs[RING][FG_INPUTS];
 static HANDLE g_fgHandles[RING][FG_INPUTS];
@@ -297,6 +301,70 @@ static HRESULT resizeSwapChain(UINT count, UINT width, UINT height) {
         g_bufferCount = count;
     }
     return getBackBuffers() ? S_OK : E_FAIL;
+}
+
+/** The backend while frame generation is on (cg_fg_enable), else null: the presenter then asks nothing of it. */
+static FgBackend* fgOn() {
+    return g_fgOn ? g_fg : nullptr;
+}
+
+/**
+ * The swap chain on the window (through the backend if there is one: frame generation's while it is on, else a plain
+ * one), {@code width} x {@code height} (0: the window's size), with its frame latency waitable object at latency 1,
+ * without its back buffers (getBackBuffers). False on failure.
+ */
+static bool createSwapChain(UINT width, UINT height) {
+    // With DLSS Frame Generation on, the backend paces the frames (Reflex) without a frame latency waitable object;
+    // AMD's swap chain keeps one (its own, closed by the backend), which the presenter waits on as without it.
+    bool waitable = !g_fg || g_fg->waitable();
+    g_swapFlags = (waitable ? DXGI_SWAP_CHAIN_FLAG_FRAME_LATENCY_WAITABLE_OBJECT : 0)
+            | (g_tearing ? DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING : 0);
+    DXGI_SWAP_CHAIN_DESC1 desc = {};
+    desc.Width = width;
+    desc.Height = height;
+    desc.Format = SWAP_FORMAT;
+    desc.SampleDesc.Count = 1;
+    desc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+    desc.BufferCount = g_bufferCount;
+    desc.Scaling = DXGI_SCALING_NONE;
+    desc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
+    desc.AlphaMode = DXGI_ALPHA_MODE_UNSPECIFIED;
+    desc.Flags = g_swapFlags;
+    IDXGISwapChain1* swapChain1 = nullptr;
+    HRESULT hr = g_fg ? g_fg->createSwapChain(g_factory, g_queue, g_hwnd, desc, &swapChain1)
+            : g_factory->CreateSwapChainForHwnd(g_queue, g_hwnd, &desc, nullptr, nullptr, &swapChain1);
+    if (FAILED(hr)) {
+        return g_fg ? false : fail("CreateSwapChainForHwnd", hr);  // a backend says why itself
+    }
+    hr = swapChain1->QueryInterface(IID_PPV_ARGS(&g_swapChain));
+    release(swapChain1);
+    if (FAILED(hr)) {
+        return fail("QueryInterface(IDXGISwapChain3)", hr);
+    }
+    if (waitable) {
+        hr = g_swapChain->SetMaximumFrameLatency(1);
+        if (FAILED(hr)) {
+            return fail("SetMaximumFrameLatency", hr);
+        }
+        g_waitable = g_swapChain->GetFrameLatencyWaitableObject();
+        g_waitableOwned = !g_fg || !g_fg->ownsWaitable();
+    }
+    return true;
+}
+
+/** Lets go of the swap chain, its back buffers and waitable object (the GPU idle), and tells the backend. */
+static void releaseSwapChain() {
+    releaseBackBuffers();
+    release(g_readback);
+    if (g_waitableOwned) {
+        closeHandle(g_waitable);
+    }
+    g_waitable = nullptr;  // else the backend's: closed after its swap chain goes
+    g_waitableOwned = false;
+    release(g_swapChain);
+    if (g_fg) {
+        g_fg->swapChainReleased();  // also after a createSwapChain that failed half way
+    }
 }
 
 /** Performance counter ticks in nanoseconds: the clock of System.nanoTime on Windows. */
@@ -507,34 +575,10 @@ static bool createPresenter(HWND hwnd, const LUID* luid, int flags) {
             g_tearing = SUCCEEDED(factory5->CheckFeatureSupport(DXGI_FEATURE_PRESENT_ALLOW_TEARING, &allow, sizeof allow)) && allow;
             release(factory5);
         }
-        // With DLSS Frame Generation the backend paces the frames (Reflex) without a frame latency waitable object;
-        // AMD's swap chain keeps one (its own, closed by the backend), which the presenter waits on as without it.
-        bool waitable = !g_fg || g_fg->waitable();
-        g_swapFlags = (waitable ? DXGI_SWAP_CHAIN_FLAG_FRAME_LATENCY_WAITABLE_OBJECT : 0)
-                | (g_tearing ? DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING : 0);
-
-        DXGI_SWAP_CHAIN_DESC1 desc = {};
-        desc.Format = SWAP_FORMAT;
-        desc.SampleDesc.Count = 1;
-        desc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+        g_hwnd = hwnd;
         g_bufferCount = 2;
-        desc.BufferCount = g_bufferCount;
-        desc.Scaling = DXGI_SCALING_NONE;
-        desc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
-        desc.AlphaMode = DXGI_ALPHA_MODE_UNSPECIFIED;
-        desc.Flags = g_swapFlags;
-        IDXGISwapChain1* swapChain1 = nullptr;
-        hr = g_fg ? g_fg->createSwapChain(g_factory, g_queue, hwnd, desc, &swapChain1)
-                : g_factory->CreateSwapChainForHwnd(g_queue, hwnd, &desc, nullptr, nullptr, &swapChain1);
-        if (FAILED(hr)) { if (!g_fg) fail("CreateSwapChainForHwnd", hr); break; }
-        hr = swapChain1->QueryInterface(IID_PPV_ARGS(&g_swapChain));
-        release(swapChain1);
-        if (FAILED(hr)) { fail("QueryInterface(IDXGISwapChain3)", hr); break; }
-        if (waitable) {
-            hr = g_swapChain->SetMaximumFrameLatency(1);
-            if (FAILED(hr)) { fail("SetMaximumFrameLatency", hr); break; }
-            g_waitable = g_swapChain->GetFrameLatencyWaitableObject();
-        }
+        if (g_fg && !g_fg->setOn(g_fgOn)) break;
+        if (!createSwapChain(0, 0)) break;
 
         D3D12_DESCRIPTOR_HEAP_DESC rtvDesc = {D3D12_DESCRIPTOR_HEAP_TYPE_RTV, MAX_BUFFERS + 1, D3D12_DESCRIPTOR_HEAP_FLAG_NONE, 0};
         hr = g_device->CreateDescriptorHeap(&rtvDesc, IID_PPV_ARGS(&g_rtvHeap));
@@ -717,10 +761,11 @@ CG_API long long cg_present_draw(int slot, unsigned long long glValue) {
         fail("command list Reset", hr);
         return -1;
     }
-    if (g_fg) {
-        g_fg->record(g_list);
+    FgBackend* fg = fgOn();
+    if (fg) {
+        fg->record(g_list);
     }
-    bool split = g_fg && g_fg->uiApart() && g_splitPipeline && g_fgUi && g_fgInputs[slot][FG_HUDLESS];
+    bool split = fg && fg->uiApart() && g_splitPipeline && g_fgUi && g_fgInputs[slot][FG_HUDLESS];
     bool timed = g_timing && g_queryHeap;
     if (timed) {
         g_list->EndQuery(g_queryHeap, D3D12_QUERY_TYPE_TIMESTAMP, (UINT) f * 2);
@@ -818,8 +863,8 @@ CG_API int cg_present_present(int syncInterval) {
         HRESULT reason = hr == DXGI_ERROR_DEVICE_REMOVED ? g_device->GetDeviceRemovedReason() : hr;
         wsprintfA(g_error, "Present failed: HRESULT 0x%08X (reason 0x%08X)", (unsigned) hr, (unsigned) reason);
     }
-    if (g_fg) {
-        g_fg->presented(g_queue);
+    if (FgBackend* fg = fgOn()) {
+        fg->presented(g_queue);
         g_queue->Signal(g_doneFence, ++g_doneValue);
         if (g_lastSlot >= 0) {
             g_fgDone[g_lastSlot] = g_doneValue;
@@ -833,8 +878,8 @@ CG_API int cg_present_present(int syncInterval) {
  * presented before must have had it off (DLSS-G's guide: Present may deadlock otherwise).
  */
 CG_API int cg_present_resize(int width, int height) {
-    if (g_fg) {
-        g_fg->beforeResize();
+    if (FgBackend* fg = fgOn()) {
+        fg->beforeResize();
     }
     return (int) resizeSwapChain(0, (UINT) width, (UINT) height);
 }
@@ -1021,7 +1066,7 @@ CG_API int cg_present_capture_read(unsigned char* out, long long capacity, int* 
     return 1;
 }
 
-// --- Frame generation (ABI 3; AMD's in ABI 5) ---
+// --- Frame generation (ABI 3; AMD's and cg_fg_enable in ABI 5) ---
 
 /**
  * Before cg_present_create, once: the frame generation backend to start with it. {@code backend} FG_BACKEND_DLSSG:
@@ -1050,6 +1095,45 @@ CG_API int cg_fg_prepare(int backend, const wchar_t* pluginFolder, const wchar_t
 /** 1 while the presenter runs with frame generation's backend. */
 CG_API int cg_fg_active() {
     return g_fg && g_swapChain ? 1 : 0;
+}
+
+/**
+ * Frame generation on or off, with a backend from cg_fg_prepare. Before cg_present_create: how it starts (on by
+ * default). After: at once, between frames, by making the swap chain again, as NVIDIA's DLSS-G guide asks (section 18:
+ * frame generation's swap chain costs a copy and a second queue even while it doesn't generate). The frame before
+ * must have gone out without generated frames, as before a resize. The inputs stay; the caller releases them while it
+ * is off. 1 on success; 0 if it couldn't change (cg_present_error says why, the presenter goes on as it was); -1 if
+ * no swap chain could be made again.
+ */
+CG_API int cg_fg_enable(int on) {
+    if (!g_fg) {
+        return failText("cg_fg_enable: no frame generation backend");
+    }
+    bool want = on != 0;
+    if (!g_swapChain) {
+        g_fgOn = want;
+        return 1;
+    }
+    if (want == g_fgOn) {
+        return 1;
+    }
+    waitIdle();
+    if (g_fgOn) {
+        g_fg->stop();  // off: the backend lets go of the HUD texture and its context (AMD), turns itself off (Streamline)
+    }
+    UINT width = g_backWidth;  // the same size as before (the window's, unless a resize is on its way)
+    UINT height = g_backHeight;
+    releaseSwapChain();
+    if (g_fg->setOn(want) && createSwapChain(width, height) && getBackBuffers()) {
+        g_fgOn = want;
+        return 1;
+    }
+    char reason[sizeof g_error];
+    lstrcpynA(reason, g_error, sizeof reason);
+    releaseSwapChain();
+    bool back = g_fg->setOn(g_fgOn) && createSwapChain(width, height) && getBackBuffers();
+    lstrcpynA(g_error, reason, sizeof g_error);
+    return back ? 0 : -1;
 }
 
 /** Why cg_present_create went on without frame generation, "" if it didn't. */
@@ -1154,8 +1238,9 @@ CG_API int cg_fg_create_inputs(int width, int height, HANDLE* handles, UINT64* s
  */
 CG_API int cg_fg_frame(int slot, unsigned frameIndex, int flags, int renderWidth, int renderHeight, int framesToGenerate,
         const float* camera) {
-    if (!g_fg || !g_swapChain) {
-        return failText("cg_fg_frame: no frame generation");
+    FgBackend* fg = fgOn();
+    if (!fg || !g_swapChain) {
+        return failText(g_fg ? "cg_fg_frame: frame generation is off" : "cg_fg_frame: no frame generation");
     }
     if (slot < 0 || slot >= RING) {
         return failText("cg_fg_frame: no such slot");
@@ -1176,7 +1261,7 @@ CG_API int cg_fg_frame(int slot, unsigned frameIndex, int flags, int renderWidth
     frame.framesToGenerate = framesToGenerate;
     frame.camera = (flags & FG_FRAME_CAMERA) ? camera : nullptr;
     frame.ui = g_fgUi;
-    return g_fg->frame(frame) ? 1 : 0;
+    return fg->frame(frame) ? 1 : 0;
 }
 
 /** The "D3D12 done" value after which OpenGL may write {@code slot}'s inputs again (0: any time). */
@@ -1186,8 +1271,8 @@ CG_API unsigned long long cg_fg_inputs_done(int slot) {
 
 /** Frame generation off from the next Present on, without waiting for the next frame (the window was minimized). */
 CG_API void cg_fg_off() {
-    if (g_fg) {
-        g_fg->off();
+    if (FgBackend* fg = fgOn()) {
+        fg->off();
     }
 }
 
@@ -1252,20 +1337,16 @@ CG_API void cg_present_destroy() {
     release(g_rootSignature);
     release(g_splitPipeline);
     release(g_splitRootSignature);
-    releaseBackBuffers();
+    releaseSwapChain();
     release(g_srvHeap);
     release(g_rtvHeap);
-    if (g_fg && g_fg->waitable()) {
-        g_waitable = nullptr;  // the backend's: closed after its swap chain goes
-    } else {
-        closeHandle(g_waitable);
-    }
-    release(g_swapChain);
     if (g_fg) {
         g_fg->shutdown();  // after the swap chain, before the device
         delete g_fg;
         g_fg = nullptr;
     }
+    g_fgOn = true;
+    g_hwnd = nullptr;
     g_lastSlot = -1;
     release(g_glFence);
     closeHandle(g_glFenceHandle);

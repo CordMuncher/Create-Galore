@@ -90,6 +90,13 @@ public:
     virtual bool supports(const LUID& adapter) = 0;
     /** The device was made (before the queue and the swap chain). */
     virtual bool deviceCreated(ID3D12Device* device) = 0;
+    /**
+     * Frame generation on or off from the next swap chain on (cg_fg_enable), called while there is none: after
+     * deviceCreated, or once the presenter released the swap chain (swapChainReleased). Off, createSwapChain makes a
+     * swap chain without frame generation and the presenter calls nothing per frame (frame, uiApart, record, presented,
+     * beforeResize, off), so it costs nothing (NVIDIA's DLSS-G guide, section 18). False on failure (cg_present_error).
+     */
+    virtual bool setOn(bool on) = 0;
     /** Makes the presenting queue; returns the native queue, which the presenter uses for everything. */
     virtual HRESULT createQueue(ID3D12Device* device, const D3D12_COMMAND_QUEUE_DESC& desc, ID3D12CommandQueue** queue) {
         return device->CreateCommandQueue(&desc, IID_PPV_ARGS(queue));
@@ -103,10 +110,12 @@ public:
         return factory->CreateSwapChainForHwnd(queue, hwnd, &desc, nullptr, nullptr, swapChain);
     }
     /**
-     * Whether the swap chain keeps its frame latency waitable object (owned by the backend, closed at shutdown), which
-     * the presenter then waits on at frame latency 1 as without frame generation. Otherwise the backend paces (Reflex).
+     * Whether the swap chain has a frame latency waitable object, which the presenter then waits on at frame latency 1
+     * as without frame generation. Otherwise the backend paces (Reflex).
      */
     virtual bool waitable() const { return false; }
+    /** Whether that object is the backend's (closed with its swap chain) rather than the presenter's. */
+    virtual bool ownsWaitable() const { return false; }
     /** Whether the backend draws FgFrame::ui over every frame it presents (cg_fg_create_inputs makes the texture). */
     virtual bool composesUi() const { return false; }
     /** A frame is about to be drawn and presented. False on failure (cg_present_error). */
@@ -124,6 +133,8 @@ public:
     virtual void state(FgState& state) = 0;
     /** The presenter is about to release the swap chain and the inputs: let go of them. */
     virtual void stop() = 0;
+    /** The presenter released the swap chain createSwapChain made (the GPU idle): let go of what came with it. */
+    virtual void swapChainReleased() {}
     /** After the swap chain is released, before the device is: shuts the backend down. */
     virtual void shutdown() = 0;
 };

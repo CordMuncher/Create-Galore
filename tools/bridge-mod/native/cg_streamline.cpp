@@ -88,6 +88,8 @@ struct Api {
     PFun_slShutdown* shutdown;
     PFun_slIsFeatureSupported* isFeatureSupported;
     PFun_slIsFeatureLoaded* isFeatureLoaded;
+    PFun_slSetFeatureLoaded* setFeatureLoaded;
+    PFun_slFreeResources* freeResources;
     PFun_slSetTagForFrame* setTagForFrame;
     PFun_slSetConstants* setConstants;
     PFun_slGetFeatureRequirements* getFeatureRequirements;
@@ -225,6 +227,38 @@ public:
             fgLog('I', line);
         }
         return true;
+    }
+
+    bool setOn(bool on) override {
+        if (on == m_on) {
+            return true;
+        }
+        if (!on) {
+            // Off for a while (the player turned it off): its memory goes too, as NVIDIA asks with
+            // eRetainResourcesWhenOff (stop set the mode to off). Then the plugin stops hooking, so the swap chain
+            // made next is a plain one.
+            sl::Result result = m_api.freeResources(sl::kFeatureDLSS_G, sl::ViewportHandle(0));
+            if (result != sl::Result::eOk) {
+                char line[120];
+                wsprintfA(line, "slFreeResources (DLSS-G): %s; it goes off all the same", resultName(result));
+                fgLog('W', line);
+            }
+        }
+        sl::Result result = m_api.setFeatureLoaded(sl::kFeatureDLSS_G, on);
+        if (result != sl::Result::eOk) {
+            return failed(on ? "slSetFeatureLoaded (on)" : "slSetFeatureLoaded (off)", result);
+        }
+        m_on = on;
+        m_optionsSet = false;
+        m_tagged = false;
+        m_generating = false;
+        return true;
+    }
+
+    bool waitable() const override {
+        // Streamline's pacer owns the waitable object while DLSS-G is loaded; without it the swap chain is a plain
+        // one (NVIDIA's guide, 12.1).
+        return !m_on;
     }
 
     HRESULT createQueue(ID3D12Device* device, const D3D12_COMMAND_QUEUE_DESC& desc, ID3D12CommandQueue** queue) override {
@@ -392,7 +426,7 @@ public:
     }
 
     void stop() override {
-        if (m_deviceSet && m_api.dlssgSetOptions) {
+        if (m_on && m_deviceSet && m_api.dlssgSetOptions) {
             sl::DLSSGOptions options{};
             options.mode = sl::DLSSGMode::eOff;
             m_api.dlssgSetOptions(sl::ViewportHandle(0), options);
@@ -486,6 +520,7 @@ private:
     ID3D12CommandQueue* m_proxyQueue = nullptr;
     IDXGIFactory4* m_proxyFactory = nullptr;
     bool m_deviceSet = false;
+    bool m_on = true;
     sl::FrameToken* m_token = nullptr;
     bool m_tagged = false;
     float m_camera[FG_CAMERA_FLOATS];
@@ -592,6 +627,8 @@ FgBackend* createStreamlineBackend(const wchar_t* pluginFolder, const wchar_t* d
     if (!proc(module, "slInit", api.init) || !proc(module, "slShutdown", api.shutdown)
             || !proc(module, "slIsFeatureSupported", api.isFeatureSupported)
             || !proc(module, "slIsFeatureLoaded", api.isFeatureLoaded)
+            || !proc(module, "slSetFeatureLoaded", api.setFeatureLoaded)
+            || !proc(module, "slFreeResources", api.freeResources)
             || !proc(module, "slSetTagForFrame", api.setTagForFrame) || !proc(module, "slSetConstants", api.setConstants)
             || !proc(module, "slGetFeatureRequirements", api.getFeatureRequirements)
             || !proc(module, "slGetFeatureVersion", api.getFeatureVersion)

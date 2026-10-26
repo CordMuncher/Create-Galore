@@ -9,7 +9,9 @@
 // with the four inputs before each draw, a presented call after each Present, and the presenter must signal a later
 // "D3D12 done" value for the slot's inputs; no waitable object, frame latency refused, stop and shutdown on destroy.
 // A stand-in that composes the HUD itself, as AMD's does, must get the waitable object and a HUD texture, and on its
-// frames the back buffer must be the hudless input and the HUD texture frame - hudless * (1 - alpha) with alpha. A
+// frames the back buffer must be the hudless input and the HUD texture frame - hudless * (1 - alpha) with alpha.
+// Turned off while the presenter runs (cg_fg_enable), the swap chain must be a plain one with the presenter's waitable
+// object and the backend asked nothing, and on again it must generate as before; also when it starts off. A
 // backend that can't start must leave a presenter without it (cg_fg_error says why), and Streamline and FidelityFX
 // without their DLLs must refuse to prepare. "present-smoke.exe --streamline <folder>" instead tries NVIDIA's real
 // Streamline DLLs from that folder (under Wine there is no NVIDIA card: the presenter must go on without them), and
@@ -181,13 +183,14 @@ static bool readTexture(ID3D12Resource* texture, D3D12_RESOURCE_STATES state, un
 
 /** What the stand-in backend saw (it is deleted on cg_present_destroy). */
 static struct {
-    int supports, devices, frames, framesWithInputs, badFrames, presented, resizes, stops, shutdowns, splits;
+    int supports, devices, frames, framesWithInputs, badFrames, presented, resizes, stops, shutdowns, splits, switches;
     unsigned lastIndex;
 } g_fake;
 
 /**
  * A frame generation backend that checks what the presenter hands it and makes the queue wait on its own fence; with
- * {@code composes}, one that keeps the waitable object and the HUD apart on the frames it generates, as AMD's does.
+ * {@code composes}, one that keeps the waitable object (its own while on) and the HUD apart on the frames it
+ * generates, as AMD's does. Off, its swap chain is a plain one with the presenter's waitable object, as Streamline's.
  */
 class FakeBackend : public FgBackend {
 public:
@@ -202,8 +205,16 @@ public:
         g_fake.devices++;
         return SUCCEEDED(device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&m_fence)));
     }
+    bool setOn(bool on) override {
+        g_fake.switches += on != m_on ? 1 : 0;
+        m_on = on;
+        return true;
+    }
     bool frame(const FgFrame& frame) override {
         g_fake.frames++;
+        if (!m_on) {
+            g_fake.badFrames++;  // the presenter asks nothing while it's off
+        }
         bool inputs = true;
         for (int j = 0; j < FG_INPUTS; j++) {
             if (!frame.inputs[j]) {
@@ -234,10 +245,14 @@ public:
         g_fake.lastIndex = frame.frameIndex;
         return true;
     }
-    bool waitable() const override { return m_composes; }
+    bool waitable() const override { return m_composes || !m_on; }
+    bool ownsWaitable() const override { return m_composes && m_on; }
     bool composesUi() const override { return m_composes; }
     bool uiApart() const override { return m_split; }
     void presented(ID3D12CommandQueue* queue) override {
+        if (ownsWaitable()) {
+            m_waitable = g_waitable;  // closed with the swap chain, as AMD's backend does
+        }
         m_split = false;
         g_fake.presented++;
         queue->Signal(m_fence, ++m_value);
@@ -249,6 +264,12 @@ public:
         state.maxGenerated = 1;
     }
     void stop() override { g_fake.stops++; }
+    void swapChainReleased() override {
+        if (m_waitable) {
+            CloseHandle(m_waitable);
+            m_waitable = nullptr;
+        }
+    }
     void shutdown() override {
         g_fake.shutdowns++;
         if (m_fence) {
@@ -260,6 +281,8 @@ private:
     bool m_works;
     bool m_composes;
     bool m_split = false;
+    bool m_on = true;
+    HANDLE m_waitable = nullptr;
     ID3D12Fence* m_fence = nullptr;
     UINT64 m_value = 0;
 };
@@ -429,8 +452,8 @@ static int runFrames(int width, int height, unsigned long long& glValue, bool fg
 
 /**
  * A real backend from {@code folder} (Streamline, or FidelityFX with {@code ffx}): prepare, create (going on without it
- * if it can't run), frames (and if it runs, a resize and frames again), destroy; FidelityFX's frames keep the HUD apart,
- * as the mod's do.
+ * if it can't run), frames (and if it runs, a resize and frames again, then off, frames, on and frames), destroy;
+ * FidelityFX's frames keep the HUD apart, as the mod's do.
  */
 static int realBackend(HWND hwnd, int width, int height, const char* folder, bool ffx, bool unsignedDlls) {
     wchar_t path[MAX_PATH];
@@ -451,6 +474,14 @@ static int realBackend(HWND hwnd, int width, int height, const char* folder, boo
         result = runFrames(width, height, glValue, active, active && ffx) == 0 ? 0 : 1;
         if (result == 0 && active) {  // and after a resize, which makes the backend start over at the new size
             result = cg_present_resize(800, 600) >= 0 && runFrames(800, 600, glValue, true, ffx) == 0 ? 0 : 1;
+        }
+        if (result == 0 && active) {  // turned off and on again
+            int off = cg_fg_enable(0);
+            printf("off: %d %s, waitable %s\n", off, off == 1 ? "" : cg_present_error(), g_waitable ? "yes" : "no");
+            result = off == 1 && runFrames(800, 600, glValue) == 0 ? 0 : 1;
+            int on = result == 0 ? cg_fg_enable(1) : 0;
+            printf("on: %d %s, waitable %s\n", on, on == 1 ? "" : cg_present_error(), g_waitable ? "yes" : "no");
+            result = on == 1 && runFrames(800, 600, glValue, true, ffx) == 0 ? 0 : 1;
         }
         long long state[7];
         cg_fg_state(state);
@@ -576,29 +607,53 @@ int main(int argc, char** argv) {
     }
     cg_present_destroy();
 
-    // A backend that composes the HUD itself: the waitable object stays, and on its frames the HUD goes apart.
+    // A backend that composes the HUD itself: the waitable object stays, and on its frames the HUD goes apart. Turned
+    // off and on again while the presenter runs: off, the swap chain is a plain one with the presenter's waitable
+    // object and the backend is asked nothing; on again, frames generate as before.
     g_fake = {};
     g_frameIndex = 0;
     g_fg = new FakeBackend(true, true);
     bool composePass = cg_present_create(hwnd, nullptr, 0) && cg_fg_active();
-    HANDLE composeWaitable = composePass ? g_waitable : nullptr;
     if (composePass) {
         makeTestQueue();
-        bool waitable = composeWaitable != nullptr;  // each frame waits on it (runFrames)
+        bool waitable = g_waitable != nullptr && !g_waitableOwned;  // each frame waits on it (runFrames)
         glValue = 0;
         int composeFirst = runFrames(width, height, glValue, true, true);
-        int composeResized = composeFirst < 0 ? -1 : cg_present_resize(800, 600);
+        bool off = composeFirst == 0 && cg_fg_enable(0) == 1 && g_waitable != nullptr && g_waitableOwned
+                && !cg_fg_frame(0, g_frameIndex + 1, FG_FRAME_GENERATE, 1, 1, 1, nullptr);
+        int composeOff = off ? runFrames(width, height, glValue) : -1;
+        bool on = composeOff == 0 && cg_fg_enable(1) == 1 && g_waitable != nullptr && !g_waitableOwned;
+        int composeResized = on ? cg_present_resize(800, 600) : -1;
         int composeSecond = composeResized < 0 ? -1 : runFrames(800, 600, glValue, true, true);
         releaseTestQueue();
         cg_present_destroy();
         // The presenter leaves the waitable object to the backend that owns the swap chain.
-        composePass = waitable && composeFirst == 0 && composeSecond == 0 && g_fake.frames == 600 && g_fake.splits == 600
-                && g_fake.badFrames == 0 && g_fake.presented == 600 && g_fake.shutdowns == 1 && !g_fg
-                && g_waitable == nullptr;
-        CloseHandle(composeWaitable);
+        composePass = waitable && off && on && composeSecond == 0 && g_fake.frames == 600 && g_fake.splits == 600
+                && g_fake.badFrames == 0 && g_fake.presented == 600 && g_fake.switches == 2 && g_fake.shutdowns == 1
+                && !g_fg && g_waitable == nullptr;
     }
-    printf("HUD apart: %d frames, %d split, %d bad, %d presented, %d shutdowns: %s\n", g_fake.frames, g_fake.splits,
-            g_fake.badFrames, g_fake.presented, g_fake.shutdowns, composePass ? "ok" : "FAILED");
+    printf("HUD apart, off and on again: %d frames, %d split, %d bad, %d presented, %d switches, %d shutdowns: %s\n",
+            g_fake.frames, g_fake.splits, g_fake.badFrames, g_fake.presented, g_fake.switches, g_fake.shutdowns,
+            composePass ? "ok" : "FAILED");
+
+    // A backend that starts off (the setting was off at the start): a plain swap chain, then on and off again.
+    g_fake = {};
+    g_frameIndex = 0;
+    g_fg = new FakeBackend(true);
+    bool startOff = cg_fg_enable(0) == 1 && cg_present_create(hwnd, nullptr, 0) && cg_fg_active() && g_waitable != nullptr;
+    if (startOff) {
+        makeTestQueue();
+        glValue = 0;
+        startOff = runFrames(width, height, glValue) == 0 && cg_fg_enable(1) == 1 && g_waitable == nullptr
+                && runFrames(width, height, glValue, true) == 0 && cg_fg_enable(0) == 1 && g_waitable != nullptr
+                && runFrames(width, height, glValue) == 0;
+        releaseTestQueue();
+    }
+    cg_present_destroy();
+    startOff = startOff && g_fake.frames == 300 && g_fake.presented == 300 && g_fake.badFrames == 0 && g_fake.switches == 3
+            && g_fake.shutdowns == 1 && g_fgOn;
+    printf("starting off, then on and off: %d frames, %d bad, %d switches: %s\n", g_fake.frames, g_fake.badFrames,
+            g_fake.switches, startOff ? "ok" : "FAILED");
 
     // Streamline and FidelityFX without their DLLs refuse to prepare.
     bool noStreamline = !cg_fg_prepare(FG_BACKEND_DLSSG, L"C:\\no-such-folder", L"C:\\no-such-folder", L"C:\\no-such-folder", 0)
@@ -608,7 +663,7 @@ int main(int argc, char** argv) {
             && !g_fg;
     printf("FidelityFX without its DLLs: \"%s\": %s\n", cg_present_error(), noFfx ? "ok" : "FAILED");
 
-    pass = pass && fgPass && fallback && composePass && noStreamline && noFfx;
+    pass = pass && fgPass && fallback && composePass && startOff && noStreamline && noFfx;
     printf(pass ? "SMOKE PASS\n" : "SMOKE FAIL\n");
     return pass ? 0 : 1;
 }
