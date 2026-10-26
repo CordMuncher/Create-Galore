@@ -102,7 +102,7 @@ public final class FpsOverlay {
             readSettings();
         }
         Minecraft mc = Minecraft.getInstance();
-        if (mode.equals(OFF) || mc.getDebugOverlay().showDebugScreen() || count == 0) {
+        if (mode.equals(OFF) || mc.options.hideGui || mc.getDebugOverlay().showDebugScreen() || count == 0) {
             return;
         }
         long now = System.nanoTime();

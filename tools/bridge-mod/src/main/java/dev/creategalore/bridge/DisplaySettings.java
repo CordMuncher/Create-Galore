@@ -62,6 +62,12 @@ public final class DisplaySettings {
     public static final String PRESENT_CHECK = "presentCheck";
     /** Testing only, not written to the file: true logs GPU timestamps around the DirectX 12 hand-off (see PresentTiming). */
     public static final String PRESENT_TIMING = "presentTiming";
+    /** Testing only, not written to the file: true keeps a copy of the world without the HUD each frame and the HUD's coverage in alpha (see HudSplit). */
+    public static final String HUD_SPLIT = "hudSplit";
+    /** Testing only, not written to the file: hudless, alpha, ui or marks shows that part of the HUD split instead of the game. */
+    public static final String HUD_SPLIT_VIEW = "hudSplitView";
+    /** Testing only, not written to the file: true checks the HUD split every 5 seconds (log, screenshots/hud-split). */
+    public static final String HUD_SPLIT_CHECK = "hudSplitCheck";
     /** The frame counter: off, basic or detailed (see FpsOverlay). */
     public static final String FPS_COUNTER = "fpsCounter";
     /** The frame counter's corner: top-left, top-right, bottom-left or bottom-right. */

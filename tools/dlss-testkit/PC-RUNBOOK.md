@@ -1329,7 +1329,8 @@ Copy-Item $T\repo\pack\mods\create-galore-bridge-*.jar $T\instance\mods\
 Copy-Item $T\repo\tools\dlss-testkit\dist\create-galore-dlss-testkit-1.0.0.jar $T\instance\mods\ -Force
 ```
 
-The Bridge is 1.115.0 (released in pack 0.5.9). Its test keys `presentGlWait`, `presentSync`, `presentFrameLatency`,
+The Bridge is 1.115.0 (released in pack 0.5.9) or the 1.116.0 test build (the same plus the HUD split, which stays
+off unless its test keys are set; see HUD split 1). Its test keys `presentGlWait`, `presentSync`, `presentFrameLatency`,
 `presentBuffers` and `presentQueuePriority` are gone: if any is still in the test folder's display settings, remove
 it. The kit's first run in each game clears any test scene an earlier game left in the world (the log says
 `cleared the test scenes`); there's no need to remove scenes by hand.
@@ -1395,3 +1396,84 @@ On gets its own rule on DirectX 12 (`GpuPacer.keepingFrameRate` per presenter); 
 higher, its margin gets looked at. Otherwise nothing changes.
 
 Commit and push on the DLAA branch. Don't commit hs_err files (they name his user folder).
+
+## HUD split 1: the world without the HUD, and the HUD's coverage
+
+Start only when Emre says so. About 20 minutes, one launch, by eye with Emre (he plays; the log and the saved pictures
+do the checking). Frame times don't count, except the short comparison in step 4.
+
+**What it tests.** Bridge 1.116.0 (a test build on this branch) can keep, every frame, a copy of the picture just before
+the HUD (the world with its full-screen effects such as nausea and the vignette, but no HUD) and record in the frame's
+alpha channel how much the HUD covers each pixel: 0 where the world shows through, 1 under solid HUD. The picture on
+the screen must not change. From the two, the HUD's own colour follows exactly. The cloud test (Linux, Mesa, with and
+without Photon, about 150 checks) found nothing out of place; this is the same on the RTX 4080 at full speed, with
+Perfect Presentation on DirectX 12, Photon + DLSS and the pack's whole HUD.
+
+`hudSplitCheck=true` turns it on and compares the copy with the frame every 5 seconds: a log line `HUD split check N`
+each time, and when the scene changed, pictures in `$T\instance\screenshots\hud-split\` (`check-N-frame.png`, `-hudless`,
+`-alpha`, `-ui` over a grey checkerboard, and `-marks`). It counts:
+- **leaks**: pixels the HUD changed without recording coverage (magenta in the marks picture);
+- **under**: the HUD darkened the world without coverage (yellow);
+- **over**: light the HUD added on top (cyan; fine for the HUD's colour, lost with alpha alone).
+
+All three should stay 0. A check stalls one frame (it reads the frame back), so the frame counter dips every 5 s.
+
+### Update
+
+```powershell
+git -C $T\repo fetch origin
+git -C $T\repo checkout -B claude/project-thread-u2wmhh origin/claude/project-thread-u2wmhh
+Remove-Item $T\instance\mods\create-galore-bridge-*.jar
+Copy-Item $T\repo\pack\mods\create-galore-bridge-*.jar $T\instance\mods\
+```
+
+The instance's mods must have `create-galore-bridge-1.116.0.jar`.
+
+### Settings
+
+Note the old values and put them back afterwards. In `config\create_galore_bridge-display.properties`:
+`dlaa=dlss`, `perfectPresentation=true`, `presenter=dx12`, `fpsCounter=detailed`, and add the line
+`hudSplitCheck=true`. Shader pack: Photon v1.3a + DLAA. Nothing else changes.
+
+### Launch
+
+The launch from step 4 (2560x1440) without the `autorun` argument; open the `dlaa-test` world, then `/gamemode creative`
+(the start is next to the lake). The log must have `HUD split: on, checks every 5 s`, `HUD split: world copy taken after
+the vignette` and `HUD split: N HUD layers; drawn before the camera overlays ...`.
+
+1. **The HUD, about 8 minutes.** Hold each for about 15 seconds (three checks):
+   - the HUD as it is, then `/gamemode survival` for the hearts and food, standing on land (back to creative after);
+   - F3; then chat open with a few letters typed;
+   - `/bossbar add cg:test "HUD test"` and `/bossbar set cg:test players @s`, then `/title @s title "Title"`, then
+     `/bossbar remove cg:test`;
+   - `/item replace entity @s armor.head with carved_pumpkin` (then `... with air`);
+   - a spyglass in hand, held to the eye (right mouse);
+   - `/effect give @s nausea 20`;
+   - the inventory (E), the pause menu (Esc), the options screen; F1.
+2. **By eye, about 5 minutes.** Play normally for a while. Emre tells whether anything looks different from usual:
+   flicker, a wrong colour, the HUD or the menu blur looking off.
+3. **The views, about 5 minutes.** Add `hudSplitView=ui` to the settings file and press F8 (the shaders reload; the log
+   says `HUD split: on, view ui, ...`). Then change it to `marks`, `hudless` and `alpha`, F8 each time. What each
+   should show:
+   - `ui`: only the HUD, over a grey checkerboard; no world;
+   - `marks`: the world dimmed, no magenta, yellow or cyan anywhere;
+   - `hudless`: the world with no HUD at all (no hotbar, crosshair, chat, minimap, frame counter);
+   - `alpha`: white where the HUD is, black elsewhere.
+   Take an F2 screenshot of each. Remove the `hudSplitView` line and F8.
+4. **The cost, about 2 minutes.** Stand still at one spot looking at the lake. Note the frame counter's average with
+   `hudSplitCheck=true` replaced by `hudSplit=true` (no checks, the split alone), F8, 20 seconds; then with that line
+   removed, F8, 20 seconds.
+
+### Results
+
+Write `$T\repo\tools\dlss-testkit\results\hud-split1\REPORT.md`:
+- every `HUD split` log line that isn't a check, and every check line whose leaks, under or over isn't 0, with its
+  `-frame.png` and `-marks.png` copied next to the report;
+- per scene in step 1: the check lines (copy them), and the marks pictures if any are coloured;
+- what Emre saw in step 2, and the four view screenshots from step 3 (copied next to the report);
+- the frame rate with and without the split (step 4);
+- any `HUD split` WARN line, and any `Perfect Presentation` or `DLAA:` WARN or ERROR line.
+
+Then remove `hudSplitCheck`, `hudSplit` and `hudSplitView` from the settings file and put the old values back. Commit and
+push on the DLAA branch. Don't commit hs_err files (they name his user folder).
+
