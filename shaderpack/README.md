@@ -89,6 +89,8 @@ where they go. Without the Bridge the pack still runs, with no anti-aliasing.
 - `shaders/world0/` (the overworld) and `shaders/world1/` (the End): each dimension's programs. Most are copies
   that `dimensions.sh` writes (run it after adding or removing a program); each dimension's own passes live only
   there. Dimensions without a folder use the programs in `shaders/`.
+- `tools/bounce_check.py`: runs the bounce light's flood on a few small rooms and compares it with radiosity, to
+  check a change to its settings before trying it in game (needs numpy).
 
 ## Build
 
