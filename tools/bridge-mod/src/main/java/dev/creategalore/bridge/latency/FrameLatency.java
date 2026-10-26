@@ -101,7 +101,7 @@ public final class FrameLatency {
         reflexSleeping = false;
         boolean metering = measuring || logging || pacing;
         if (metering && meter == null) {
-            pacer = !pacing ? null : pacerKeepsRate ? GpuPacer.keepingFrameRate(Presentation.active()) : new GpuPacer(pacerTarget);
+            pacer = !pacing ? null : pacerKeepsRate ? GpuPacer.keepingFrameRate(Presentation.active(), Presentation.directX12()) : new GpuPacer(pacerTarget);
             meter = new LatencyMeter(pacer);
             lastLog = System.nanoTime();
         } else if (!metering && meter != null) {

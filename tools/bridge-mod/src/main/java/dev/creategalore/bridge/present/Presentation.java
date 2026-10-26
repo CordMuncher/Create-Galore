@@ -183,6 +183,11 @@ public final class Presentation {
         return active() && presenter != null ? presenter.api() : null;
     }
 
+    /** True while Perfect Presentation shows the game through DirectX 12. */
+    public static boolean directX12() {
+        return active() && presenter instanceof D3D12Presenter;
+    }
+
     /** True if presenter=dx12 at launch but DirectX 12 could not start, so Perfect Presentation runs on DirectX 11. */
     public static boolean dx12FellBack() {
         return active() && dx12FellBack;

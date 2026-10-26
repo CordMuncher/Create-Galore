@@ -16,18 +16,29 @@
 // (promoted to PIXEL_SHADER_RESOURCE on use, decayed back when the list completes), back buffers are COMMON (= PRESENT)
 // at Present.
 //
+// Frame generation (cg_fg_*, ABI 3): a backend (cg_framegen.h; NVIDIA DLSS Frame Generation through Streamline,
+// cg_streamline.cpp) makes the queue and the swap chain, and each frame takes a second ring of shared textures OpenGL
+// writes (the world without the HUD, the HUD's coverage, depth, motion), synchronized with the same two fences: the
+// presenting queue waits for "OpenGL done" before the frame's work, and signals "D3D12 done" after the backend has
+// finished with the frame's inputs (cg_fg_inputs_done). With a backend the swap chain has no frame latency waitable
+// object (the backend paces through Reflex), and its buffer count and frame latency stay as they are.
+//
 // All functions must be called on one thread (the render thread). Built by build-present.sh with clang and lld-link
-// against the Windows SDK; no third-party SDK. Graphics DLLs are loaded at run time (cg_present_create).
+// against the Windows SDK, and Streamline's headers for cg_streamline.cpp. Graphics DLLs are loaded at run time
+// (cg_present_create, cg_fg_prepare).
 
 #include <windows.h>
+#include <stdarg.h>
 #include <d3d12.h>
 #include <dxgi1_6.h>
 #include <d3dcompiler.h>
 
+#include "cg_framegen.h"
+
 #define CG_API extern "C" __declspec(dllexport)
 
 // Bumped whenever a function below changes; the Java side refuses a helper with another version.
-static const int CG_PRESENT_ABI = 2;
+static const int CG_PRESENT_ABI = 3;
 
 static const UINT MAX_BUFFERS = 3;  // swap chain buffers: 2 as on the Direct3D 11 path, 3 for testing
 static const int RING = 3;          // shared textures OpenGL copies into, as on the Direct3D 11 path
@@ -38,6 +49,13 @@ static const DXGI_FORMAT RING_FORMAT = DXGI_FORMAT_R8G8B8A8_UNORM;
 // cg_present_create flags
 static const int FLAG_DEBUG_LAYER = 1;
 static const int FLAG_HIGH_PRIORITY = 2;   // the queue at D3D12_COMMAND_QUEUE_PRIORITY_HIGH
+
+// cg_fg_prepare backends
+static const int FG_BACKEND_DLSSG = 1;
+
+// The frame generation inputs' formats (FgInput order), as cg_framegen.h describes them.
+static const DXGI_FORMAT FG_FORMATS[FG_INPUTS] = {DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8_UNORM, DXGI_FORMAT_R32_FLOAT,
+    DXGI_FORMAT_R16G16_FLOAT};
 
 static char g_error[1024];
 
@@ -77,6 +95,23 @@ static UINT64 g_doneValue;
 static HANDLE g_event;
 static ID3D12Resource* g_ring[RING];
 static HANDLE g_ringHandles[RING];
+static int g_lastSlot = -1;          // the slot cg_present_draw last drew
+
+// Frame generation: the backend (cg_fg_prepare), why it was dropped, its inputs ring.
+static FgBackend* g_fg;
+static char g_fgError[1024];
+static ID3D12Resource* g_fgInputs[RING][FG_INPUTS];
+static HANDLE g_fgHandles[RING][FG_INPUTS];
+static UINT64 g_fgDone[RING];        // the "D3D12 done" value after the backend let go of each slot's inputs
+
+// Frame generation's log lines (cg_fg_log_next), from any thread.
+static const int LOG_LINES = 128;
+static const int LOG_LINE = 320;
+static SRWLOCK g_logLock = SRWLOCK_INIT;
+static char g_log[LOG_LINES][LOG_LINE];
+static int g_logStart;
+static int g_logCount;
+static int g_logDropped;
 
 // Testing: a copy of one drawn back buffer (cg_present_capture_request / cg_present_capture_read).
 static bool g_captureRequested;
@@ -132,11 +167,36 @@ static bool failText(const char* text) {
     return false;
 }
 
-static FARPROC symbol(const char* dll, const char* name) {
-    HMODULE module = GetModuleHandleA(dll);
-    if (!module) {
-        module = LoadLibraryA(dll);
+bool fgFail(const char* format, ...) {
+    va_list args;
+    va_start(args, format);
+    wvsprintfA(g_error, format, args);
+    va_end(args);
+    return false;
+}
+
+void fgLog(char level, const char* message) {
+    AcquireSRWLockExclusive(&g_logLock);
+    if (g_logCount < LOG_LINES) {
+        char* line = g_log[(g_logStart + g_logCount++) % LOG_LINES];
+        line[0] = level;
+        lstrcpynA(line + 1, message, LOG_LINE - 1);
+        int end = lstrlenA(line);
+        while (end > 1 && (line[end - 1] == '\n' || line[end - 1] == '\r')) {
+            line[--end] = 0;
+        }
+    } else {
+        g_logDropped++;
     }
+    ReleaseSRWLockExclusive(&g_logLock);
+}
+
+/**
+ * {@code name} from {@code dll}, which stays loaded: LoadLibrary takes a reference of the presenter's own even when
+ * the DLL is loaded already, as Streamline loads dxgi.dll and d3d12.dll too and lets go of them at slShutdown.
+ */
+static FARPROC symbol(const char* dll, const char* name) {
+    HMODULE module = LoadLibraryA(dll);
     return module ? GetProcAddress(module, name) : nullptr;
 }
 
@@ -348,13 +408,8 @@ CG_API const char* cg_present_error() {
     return g_error;
 }
 
-/**
- * Creates the device, queue and swap chain on {@code hwnd}. {@code luid} (8 bytes, or null for the first adapter)
- * picks the adapter: OpenGL's GL_DEVICE_LUID_EXT, so both APIs run on the same GPU. 1 on success, 0 on failure
- * (cg_present_error says why; everything made so far is released).
- */
-CG_API int cg_present_create(HWND hwnd, const LUID* luid, int flags) {
-    g_error[0] = 0;
+/** cg_present_create's work, with the frame generation backend if there is one. False on failure (g_error). */
+static bool createPresenter(HWND hwnd, const LUID* luid, int flags) {
     CreateDXGIFactory2Fn createFactory = (CreateDXGIFactory2Fn) symbol("dxgi.dll", "CreateDXGIFactory2");
     D3D12CreateDeviceFn createDevice = (D3D12CreateDeviceFn) symbol("d3d12.dll", "D3D12CreateDevice");
     if (!createFactory || !createDevice) {
@@ -377,14 +432,21 @@ CG_API int cg_present_create(HWND hwnd, const LUID* luid, int flags) {
         if (FAILED(hr)) { fail("CreateDXGIFactory2", hr); break; }
         hr = luid ? g_factory->EnumAdapterByLuid(*luid, IID_PPV_ARGS(&g_adapter)) : g_factory->EnumAdapters1(0, &g_adapter);
         if (FAILED(hr)) { fail(luid ? "EnumAdapterByLuid (OpenGL's adapter)" : "EnumAdapters1", hr); break; }
+        if (g_fg) {
+            DXGI_ADAPTER_DESC1 adapterDesc = {};
+            hr = g_adapter->GetDesc1(&adapterDesc);
+            if (FAILED(hr)) { fail("GetDesc1", hr); break; }
+            if (!g_fg->supports(adapterDesc.AdapterLuid)) break;
+        }
         hr = createDevice(g_adapter, D3D_FEATURE_LEVEL_11_0, IID_PPV_ARGS(&g_device));
         if (FAILED(hr)) { fail("D3D12CreateDevice", hr); break; }
+        if (g_fg && !g_fg->deviceCreated(g_device)) break;
 
         D3D12_COMMAND_QUEUE_DESC queueDesc = {};
         queueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
         queueDesc.Priority = (flags & FLAG_HIGH_PRIORITY) ? D3D12_COMMAND_QUEUE_PRIORITY_HIGH : D3D12_COMMAND_QUEUE_PRIORITY_NORMAL;
-        hr = g_device->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&g_queue));
-        if (FAILED(hr)) { fail("CreateCommandQueue", hr); break; }
+        hr = g_fg ? g_fg->createQueue(g_device, queueDesc, &g_queue) : g_device->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&g_queue));
+        if (FAILED(hr)) { if (!g_fg) fail("CreateCommandQueue", hr); break; }
 
         IDXGIFactory5* factory5 = nullptr;
         if (SUCCEEDED(g_factory->QueryInterface(IID_PPV_ARGS(&factory5)))) {
@@ -392,7 +454,9 @@ CG_API int cg_present_create(HWND hwnd, const LUID* luid, int flags) {
             g_tearing = SUCCEEDED(factory5->CheckFeatureSupport(DXGI_FEATURE_PRESENT_ALLOW_TEARING, &allow, sizeof allow)) && allow;
             release(factory5);
         }
-        g_swapFlags = DXGI_SWAP_CHAIN_FLAG_FRAME_LATENCY_WAITABLE_OBJECT | (g_tearing ? DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING : 0);
+        // With frame generation the backend owns the frame latency waitable object (Reflex paces the frames).
+        g_swapFlags = (g_fg ? 0 : DXGI_SWAP_CHAIN_FLAG_FRAME_LATENCY_WAITABLE_OBJECT)
+                | (g_tearing ? DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING : 0);
 
         DXGI_SWAP_CHAIN_DESC1 desc = {};
         desc.Format = SWAP_FORMAT;
@@ -405,14 +469,17 @@ CG_API int cg_present_create(HWND hwnd, const LUID* luid, int flags) {
         desc.AlphaMode = DXGI_ALPHA_MODE_UNSPECIFIED;
         desc.Flags = g_swapFlags;
         IDXGISwapChain1* swapChain1 = nullptr;
-        hr = g_factory->CreateSwapChainForHwnd(g_queue, hwnd, &desc, nullptr, nullptr, &swapChain1);
-        if (FAILED(hr)) { fail("CreateSwapChainForHwnd", hr); break; }
+        hr = g_fg ? g_fg->createSwapChain(g_factory, g_queue, hwnd, desc, &swapChain1)
+                : g_factory->CreateSwapChainForHwnd(g_queue, hwnd, &desc, nullptr, nullptr, &swapChain1);
+        if (FAILED(hr)) { if (!g_fg) fail("CreateSwapChainForHwnd", hr); break; }
         hr = swapChain1->QueryInterface(IID_PPV_ARGS(&g_swapChain));
         release(swapChain1);
         if (FAILED(hr)) { fail("QueryInterface(IDXGISwapChain3)", hr); break; }
-        hr = g_swapChain->SetMaximumFrameLatency(1);
-        if (FAILED(hr)) { fail("SetMaximumFrameLatency", hr); break; }
-        g_waitable = g_swapChain->GetFrameLatencyWaitableObject();
+        if (!g_fg) {
+            hr = g_swapChain->SetMaximumFrameLatency(1);
+            if (FAILED(hr)) { fail("SetMaximumFrameLatency", hr); break; }
+            g_waitable = g_swapChain->GetFrameLatencyWaitableObject();
+        }
 
         D3D12_DESCRIPTOR_HEAP_DESC rtvDesc = {D3D12_DESCRIPTOR_HEAP_TYPE_RTV, MAX_BUFFERS, D3D12_DESCRIPTOR_HEAP_FLAG_NONE, 0};
         hr = g_device->CreateDescriptorHeap(&rtvDesc, IID_PPV_ARGS(&g_rtvHeap));
@@ -441,9 +508,30 @@ CG_API int cg_present_create(HWND hwnd, const LUID* luid, int flags) {
         g_frame = 0;
         g_event = CreateEventA(nullptr, FALSE, FALSE, nullptr);
         if (!g_event) { fail("CreateEvent", HRESULT_FROM_WIN32(GetLastError())); break; }
+        g_lastSlot = -1;
+        for (int i = 0; i < RING; i++) {
+            g_fgDone[i] = 0;
+        }
         ok = true;
     } while (false);
+    return ok;
+}
 
+/**
+ * Creates the device, queue and swap chain on {@code hwnd}. {@code luid} (8 bytes, or null for the first adapter)
+ * picks the adapter: OpenGL's GL_DEVICE_LUID_EXT, so both APIs run on the same GPU. With a frame generation backend
+ * (cg_fg_prepare) that can't start, everything is made again without it (cg_fg_error says why). 1 on success, 0 on
+ * failure (cg_present_error says why; everything made so far is released).
+ */
+CG_API int cg_present_create(HWND hwnd, const LUID* luid, int flags) {
+    g_error[0] = 0;
+    bool ok = createPresenter(hwnd, luid, flags);
+    if (!ok && g_fg) {
+        lstrcpynA(g_fgError, g_error, sizeof g_fgError);
+        cg_present_destroy();  // shuts the backend down
+        g_error[0] = 0;
+        ok = createPresenter(hwnd, luid, flags);
+    }
     if (!ok) {
         char reason[sizeof g_error];
         lstrcpynA(reason, g_error, sizeof reason);
@@ -531,9 +619,12 @@ CG_API int cg_present_create_textures(int width, int height, HANDLE* handles, UI
     return 1;
 }
 
-/** Waits for the swap chain's frame latency object (frame latency 1). Returns WaitForSingleObject's result. */
+/**
+ * Waits for the swap chain's frame latency object (frame latency 1). Returns WaitForSingleObject's result; at once
+ * WAIT_OBJECT_0 with frame generation, whose backend owns the object.
+ */
 CG_API int cg_present_wait(int timeoutMs) {
-    return (int) WaitForSingleObject(g_waitable, (DWORD) timeoutMs);
+    return g_waitable ? (int) WaitForSingleObject(g_waitable, (DWORD) timeoutMs) : (int) WAIT_OBJECT_0;
 }
 
 /**
@@ -559,6 +650,9 @@ CG_API long long cg_present_draw(int slot, unsigned long long glValue) {
     if (FAILED(hr)) {
         fail("command list Reset", hr);
         return -1;
+    }
+    if (g_fg) {
+        g_fg->record(g_list);
     }
     bool timed = g_timing && g_queryHeap;
     if (timed) {
@@ -624,6 +718,7 @@ CG_API long long cg_present_draw(int slot, unsigned long long glValue) {
     g_allocatorValue[f] = g_doneValue;
     g_timedValue[f] = timed ? glValue : 0;
     g_frame++;
+    g_lastSlot = slot;
     if (capture) {
         g_captureRequested = false;
         g_readbackValue = g_doneValue;
@@ -631,7 +726,11 @@ CG_API long long cg_present_draw(int slot, unsigned long long glValue) {
     return (long long) g_doneValue;
 }
 
-/** Presents the back buffer: {@code syncInterval} 0 tears where the system allows it. Returns the HRESULT. */
+/**
+ * Presents the back buffer: {@code syncInterval} 0 tears where the system allows it. With frame generation, the queue
+ * then waits until the backend is done with the inputs of the slot last drawn, and signals cg_fg_inputs_done's value.
+ * Returns the HRESULT (with frame generation, the last one its presenting thread got).
+ */
 CG_API int cg_present_present(int syncInterval) {
     UINT flags = syncInterval == 0 && g_tearing ? DXGI_PRESENT_ALLOW_TEARING : 0;
     HRESULT hr = g_swapChain->Present((UINT) syncInterval, flags);
@@ -639,11 +738,24 @@ CG_API int cg_present_present(int syncInterval) {
         HRESULT reason = hr == DXGI_ERROR_DEVICE_REMOVED ? g_device->GetDeviceRemovedReason() : hr;
         wsprintfA(g_error, "Present failed: HRESULT 0x%08X (reason 0x%08X)", (unsigned) hr, (unsigned) reason);
     }
+    if (g_fg) {
+        g_fg->presented(g_queue);
+        g_queue->Signal(g_doneFence, ++g_doneValue);
+        if (g_lastSlot >= 0) {
+            g_fgDone[g_lastSlot] = g_doneValue;
+        }
+    }
     return (int) hr;
 }
 
-/** Resizes the swap chain's buffers (0 x 0: the window's size). Returns the HRESULT. */
+/**
+ * Resizes the swap chain's buffers (0 x 0: the window's size). Returns the HRESULT. With frame generation, the frame
+ * presented before must have had it off (DLSS-G's guide: Present may deadlock otherwise).
+ */
 CG_API int cg_present_resize(int width, int height) {
+    if (g_fg) {
+        g_fg->beforeResize();
+    }
     return (int) resizeSwapChain(0, (UINT) width, (UINT) height);
 }
 
@@ -653,11 +765,19 @@ CG_API int cg_present_set_buffers(int count) {
         failText("cg_present_set_buffers: 2 or 3 buffers");
         return E_INVALIDARG;
     }
+    if (g_fg && count != (int) g_bufferCount) {
+        failText("cg_present_set_buffers: not with frame generation");
+        return E_NOTIMPL;
+    }
     return count == (int) g_bufferCount ? S_OK : (int) resizeSwapChain((UINT) count, g_backWidth, g_backHeight);
 }
 
 /** Testing: the swap chain's maximum frame latency (1 by default; the waitable object follows it). Returns the HRESULT. */
 CG_API int cg_present_set_frame_latency(int frames) {
+    if (g_fg) {
+        failText("cg_present_set_frame_latency: not with frame generation (its backend owns the frame latency)");
+        return E_NOTIMPL;
+    }
     HRESULT hr = g_swapChain->SetMaximumFrameLatency((UINT) frames);
     if (FAILED(hr)) {
         fail("SetMaximumFrameLatency", hr);
@@ -821,9 +941,185 @@ CG_API int cg_present_capture_read(unsigned char* out, long long capacity, int* 
     return 1;
 }
 
+// --- Frame generation (ABI 3) ---
+
+/**
+ * Before cg_present_create, once: the frame generation backend to start with it. {@code backend} FG_BACKEND_DLSSG:
+ * NVIDIA DLSS Frame Generation through Streamline from {@code pluginFolder}, nvngx_dlssg.dll from {@code dllFolder},
+ * Streamline's logs in {@code logFolder}, {@code flags} FgStreamlineFlag. 1 when it is ready for cg_present_create,
+ * 0 with the reason in cg_present_error.
+ */
+CG_API int cg_fg_prepare(int backend, const wchar_t* pluginFolder, const wchar_t* dllFolder, const wchar_t* logFolder,
+        int flags) {
+    g_error[0] = 0;
+    g_fgError[0] = 0;
+    if (g_fg || g_device) {
+        return failText("cg_fg_prepare: once, before cg_present_create");
+    }
+    if (backend != FG_BACKEND_DLSSG) {
+        return failText("cg_fg_prepare: unknown backend");
+    }
+    g_fg = createStreamlineBackend(pluginFolder, dllFolder, logFolder, flags);
+    return g_fg ? 1 : 0;
+}
+
+/** 1 while the presenter runs with frame generation's backend. */
+CG_API int cg_fg_active() {
+    return g_fg && g_swapChain ? 1 : 0;
+}
+
+/** Why cg_present_create went on without frame generation, "" if it didn't. */
+CG_API const char* cg_fg_error() {
+    return g_fgError;
+}
+
+static void releaseFgInputs() {
+    bool any = false;
+    for (int i = 0; i < RING; i++) {
+        for (int j = 0; j < FG_INPUTS; j++) {
+            any |= g_fgInputs[i][j] != nullptr;
+        }
+    }
+    if (!any) {
+        return;
+    }
+    if (g_fg) {
+        g_fg->stop();  // off, and Streamline lets go of the inputs (null tags)
+    }
+    waitIdle();
+    for (int i = 0; i < RING; i++) {
+        for (int j = 0; j < FG_INPUTS; j++) {
+            release(g_fgInputs[i][j]);
+            closeHandle(g_fgHandles[i][j]);
+        }
+        g_fgDone[i] = 0;
+    }
+}
+
+/** Releases frame generation's inputs (frame generation goes off first; the GPU finishes with them). */
+CG_API void cg_fg_release_inputs() {
+    releaseFgInputs();
+}
+
+/**
+ * Makes frame generation's inputs: three slots of four textures (FgInput order and formats, cg_framegen.h),
+ * {@code width} x {@code height} (the back buffer's size). Fills {@code handles} and {@code sizes} (twelve each, slot
+ * by slot) as cg_present_create_textures does. 1 on success.
+ */
+CG_API int cg_fg_create_inputs(int width, int height, HANDLE* handles, UINT64* sizes) {
+    releaseFgInputs();
+    D3D12_HEAP_PROPERTIES heap = {};
+    heap.Type = D3D12_HEAP_TYPE_DEFAULT;
+    D3D12_RESOURCE_DESC desc = {};
+    desc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+    desc.Width = (UINT64) width;
+    desc.Height = (UINT) height;
+    desc.DepthOrArraySize = 1;
+    desc.MipLevels = 1;
+    desc.SampleDesc.Count = 1;
+    desc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
+    desc.Flags = D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
+    for (int j = 0; j < FG_INPUTS; j++) {
+        desc.Format = FG_FORMATS[j];
+        UINT64 size = g_device->GetResourceAllocationInfo(0, 1, &desc).SizeInBytes;
+        for (int i = 0; i < RING; i++) {
+            HRESULT hr = g_device->CreateCommittedResource(&heap, SHARED ? D3D12_HEAP_FLAG_SHARED : D3D12_HEAP_FLAG_NONE,
+                    &desc, D3D12_RESOURCE_STATE_COMMON, nullptr, IID_PPV_ARGS(&g_fgInputs[i][j]));
+            if (FAILED(hr)) {
+                releaseFgInputs();
+                return fail("CreateCommittedResource (frame generation input)", hr);
+            }
+            hr = SHARED ? g_device->CreateSharedHandle(g_fgInputs[i][j], nullptr, GENERIC_ALL, nullptr, &g_fgHandles[i][j]) : S_OK;
+            if (FAILED(hr)) {
+                releaseFgInputs();
+                return fail("CreateSharedHandle (frame generation input)", hr);
+            }
+            handles[i * FG_INPUTS + j] = g_fgHandles[i][j];
+            sizes[i * FG_INPUTS + j] = size;
+        }
+    }
+    return 1;
+}
+
+/**
+ * Before cg_present_draw of {@code slot}: the frame for frame generation. {@code frameIndex} is the game's frame (the
+ * one Reflex's markers carry), {@code flags} FgFrameFlag, depth and motion fill the top left {@code renderWidth} x
+ * {@code renderHeight}, {@code framesToGenerate} 1 for one generated frame per rendered one, {@code camera}
+ * FG_CAMERA_FLOATS floats (null without FG_FRAME_CAMERA). 1 on success.
+ */
+CG_API int cg_fg_frame(int slot, unsigned frameIndex, int flags, int renderWidth, int renderHeight, int framesToGenerate,
+        const float* camera) {
+    if (!g_fg || !g_swapChain) {
+        return failText("cg_fg_frame: no frame generation");
+    }
+    if (slot < 0 || slot >= RING) {
+        return failText("cg_fg_frame: no such slot");
+    }
+    FgFrame frame = {};
+    for (int j = 0; j < FG_INPUTS; j++) {
+        frame.inputs[j] = g_fgInputs[slot][j];
+    }
+    frame.frameIndex = frameIndex;
+    frame.flags = flags;
+    frame.renderWidth = (UINT) renderWidth;
+    frame.renderHeight = (UINT) renderHeight;
+    frame.backWidth = g_backWidth;
+    frame.backHeight = g_backHeight;
+    frame.framesToGenerate = framesToGenerate;
+    frame.camera = (flags & FG_FRAME_CAMERA) ? camera : nullptr;
+    return g_fg->frame(frame) ? 1 : 0;
+}
+
+/** The "D3D12 done" value after which OpenGL may write {@code slot}'s inputs again (0: any time). */
+CG_API unsigned long long cg_fg_inputs_done(int slot) {
+    return slot >= 0 && slot < RING ? g_fgDone[slot] : 0;
+}
+
+/** FgState's seven numbers, in its order, into {@code out} (zeros without frame generation). */
+CG_API void cg_fg_state(long long* out) {
+    FgState state = {};
+    if (g_fg) {
+        g_fg->state(state);
+    }
+    out[0] = state.generating;
+    out[1] = state.status;
+    out[2] = state.framesPresented;
+    out[3] = state.minSize;
+    out[4] = state.maxGenerated;
+    out[5] = state.vsyncSupported;
+    out[6] = state.errors;
+}
+
+/** The oldest of frame generation's log lines into {@code out}, its level letter (E, W, I) first. 1 if there was one. */
+CG_API int cg_fg_log_next(char* out, int size) {
+    if (size <= 1) {
+        return 0;
+    }
+    AcquireSRWLockExclusive(&g_logLock);
+    int found = 0;
+    if (g_logDropped > 0) {
+        char line[40];
+        wsprintfA(line, "W%d log lines dropped", g_logDropped);
+        lstrcpynA(out, line, size);
+        g_logDropped = 0;
+        found = 1;
+    } else if (g_logCount > 0) {
+        lstrcpynA(out, g_log[g_logStart], size);
+        g_logStart = (g_logStart + 1) % LOG_LINES;
+        g_logCount--;
+        found = 1;
+    }
+    ReleaseSRWLockExclusive(&g_logLock);
+    return found;
+}
+
 /** Releases everything (after the GPU has finished). Safe to call more than once. */
 CG_API void cg_present_destroy() {
     waitIdle();
+    releaseFgInputs();
+    if (g_fg) {
+        g_fg->stop();
+    }
     cg_present_release_textures();
     release(g_readback);
     g_captureRequested = false;
@@ -843,6 +1139,12 @@ CG_API void cg_present_destroy() {
     release(g_rtvHeap);
     closeHandle(g_waitable);
     release(g_swapChain);
+    if (g_fg) {
+        g_fg->shutdown();  // after the swap chain, before the device
+        delete g_fg;
+        g_fg = nullptr;
+    }
+    g_lastSlot = -1;
     release(g_glFence);
     closeHandle(g_glFenceHandle);
     release(g_doneFence);

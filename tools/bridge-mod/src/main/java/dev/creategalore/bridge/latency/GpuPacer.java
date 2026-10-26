@@ -19,9 +19,11 @@ import java.util.Arrays;
  * CPU. Automatic (the player's Lowest, or pacerTargetUs=auto): three times how much the frames' arrival varies from one
  * to the next, at least 250 us; on the RTX 4080 at about 160 fps (Pacer 2) that took 3 ms more off than Reflex but cost
  * 6% of the frame rate, as the render thread feeds the GPU slower than it draws during parts of each frame (the queue's
- * low end under about 3 to 4 ms costs frames). {@link #keepingFrameRate(boolean)} (the player's On): a share of the
- * frame time, at least 4 ms with Perfect Presentation or 5 ms without, which cost nothing there (+3/0% and +1/-1%) and
- * still took 1.5 to 7 ms off. Fixed: pacerTargetUs (testing).
+ * low end under about 3 to 4 ms costs frames). {@link #keepingFrameRate(boolean, boolean)} (the player's On): a share of
+ * the frame time, at least 4 ms with Perfect Presentation on DirectX 11 or 5 ms without, which cost nothing there (+3/0%
+ * and +1/-1%) and still took 1.5 to 7 ms off; at least 3 ms on DirectX 12, whose frames queue about 1 ms less, so 4 ms
+ * hardly waited there while 3 ms kept the frame rate (within 1%) and took 0.7 to 1.1 ms more off (Pacer 3). Fixed:
+ * pacerTargetUs (testing).
  */
 final class GpuPacer implements LatencyMeter.Listener {
     private static final double PROPORTIONAL = 0.3;
@@ -66,10 +68,14 @@ final class GpuPacer implements LatencyMeter.Listener {
     }
 
     /**
-     * The player's On: a frame may queue 65% of the frame time, at least 4 ms, with Perfect Presentation
-     * ({@code presentation}); 80%, at least 5 ms, without (its frames queue longer before the GPU gets them).
+     * The player's On: a frame may queue 50% of the frame time, at least 3 ms, on DirectX 12 ({@code directX12});
+     * 65%, at least 4 ms, with Perfect Presentation on DirectX 11 ({@code presentation}); 80%, at least 5 ms, without
+     * (its frames queue longer before the GPU gets them).
      */
-    static GpuPacer keepingFrameRate(boolean presentation) {
+    static GpuPacer keepingFrameRate(boolean presentation, boolean directX12) {
+        if (directX12) {
+            return new GpuPacer(3_000_000L, 0.5);
+        }
         return presentation ? new GpuPacer(4_000_000L, 0.65) : new GpuPacer(5_000_000L, 0.8);
     }
 
