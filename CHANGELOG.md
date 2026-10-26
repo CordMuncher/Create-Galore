@@ -5,6 +5,16 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.5.9
+
+### Added
+- **DirectX 12 for Perfect Presentation (experimental).** The display settings' Display tab has a **DirectX** setting: **11** (the default) or **12 (experimental)**, which Perfect Presentation shows the game through. DirectX 12 is not recommended as the default yet: on an RTX 4080 Super at 1440p it ran at the same frame rate as DirectX 11 (within 0-3%) with marginally lower input delay (0.5 to 1.0 ms), the picture identical pixel for pixel, and Reflex, GPU pacing and G-SYNC working on both. Picking 12 turns Perfect Presentation on; restart once. Where DirectX 12 can't start (it needs an OpenGL driver that can share textures with DirectX 12: NVIDIA's can, Intel's can't, AMD's is untested), the game runs on DirectX 11 and the screen says so beside the setting.
+- Field Guide (Performance and Shaders): the DirectX setting.
+- Create Galore Bridge 1.115.0.
+
+### Fixed
+- **The DLAA... button is now Upscaling & Display...**, with the tabs Upscaling and Display: besides DLAA it holds AMD FSR 3.1, the render resolution, Perfect Presentation, DirectX, NVIDIA Reflex, GPU pacing and the frame counter, which the old name hid.
+
 ## 0.5.8
 
 ### Added

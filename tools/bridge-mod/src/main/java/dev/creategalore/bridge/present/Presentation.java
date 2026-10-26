@@ -19,7 +19,8 @@ import org.slf4j.LoggerFactory;
 /**
  * Perfect Presentation for NeoForge: the game window gets no OpenGL context; the game renders on a hidden OpenGL
  * context and each frame is shown through a DXGI flip-model swap chain, on Direct3D 11 ({@link InteropContext}) or,
- * with presenter=dx12 (testing for now), Direct3D 12 ({@link D3D12Presenter}, falling back to 11). Borderless
+ * with presenter=dx12 (experimental, a choice on the settings screen), Direct3D 12 ({@link D3D12Presenter}, falling
+ * back to 11). Borderless
  * fullscreen then runs like exclusive fullscreen, Alt-Tab never changes the display mode (no 10-bit to 8-bit flash on
  * NVIDIA), and NVIDIA's "Prefer layered on DXGI Swapchain" present method is not needed (it held the GPU at ~55%).
  *
@@ -41,6 +42,8 @@ public final class Presentation {
 
     private static boolean requested;
     private static boolean failed;
+    /** DirectX 12 was asked for at launch but could not start, so Direct3D 11 runs. */
+    private static boolean dx12FellBack;
     private static final WglContext.ContextFlags FLAGS = new WglContext.ContextFlags();
     private static final List<int[]> SWALLOWED_HINTS = new ArrayList<>();
     private static Presenter presenter;
@@ -167,6 +170,7 @@ public final class Presentation {
                         DisplaySettings.get(DisplaySettings.PRESENT_CHECK));
             } catch (Throwable t) {
                 LOG.warn("Perfect Presentation: DirectX 12 could not start, using DirectX 11", t);
+                dx12FellBack = true;
             }
         } else if (!api.equals("dx11")) {
             LOG.warn("Unknown {}={} in {}, using dx11 (choose dx11 or dx12)", DisplaySettings.PRESENTER, api, DisplaySettings.FILE);
@@ -177,6 +181,11 @@ public final class Presentation {
     /** "DirectX 11" or "DirectX 12" while Perfect Presentation runs, else null. */
     public static String api() {
         return active() && presenter != null ? presenter.api() : null;
+    }
+
+    /** True if presenter=dx12 at launch but DirectX 12 could not start, so Perfect Presentation runs on DirectX 11. */
+    public static boolean dx12FellBack() {
+        return active() && dx12FellBack;
     }
 
     /**

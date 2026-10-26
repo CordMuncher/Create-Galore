@@ -1,7 +1,7 @@
 // cg_present.dll: the Bridge mod's DirectX 12 presenter.
 //
-// Shows the game's frames through a DXGI flip-model swap chain on a Direct3D 12 command queue, the swap chain NVIDIA
-// Streamline (DLSS Frame Generation) and AMD FidelityFX (frame generation swap chain) wrap or replace in a D3D12 game.
+// Shows the game's frames through a DXGI flip-model swap chain on a Direct3D 12 command queue, as a Direct3D 12 game
+// does; a choice beside the Direct3D 11 path (Perfect Presentation's), which stays the default.
 // The game still renders with OpenGL on a hidden context. Each frame its colour texture is copied into one of three
 // textures that Direct3D 12 shares with OpenGL (EXT_external_objects_win32: the texture's NT handle is imported as an
 // OpenGL memory object), and two shared D3D12 fences, imported as OpenGL semaphores, order the two APIs on the GPU:

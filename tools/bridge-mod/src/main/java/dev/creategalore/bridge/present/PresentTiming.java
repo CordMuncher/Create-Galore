@@ -23,9 +23,8 @@ import org.slf4j.LoggerFactory;
  * Testing (presentTiming=true): where the time goes between OpenGL finishing a frame and Direct3D 12 drawing it, on the
  * GPU. OpenGL takes a timestamp before its hand-off (the wait for Direct3D 12, if any, and the copy) and one after;
  * cg_present.dll takes one where its draw starts (after the queue's wait for OpenGL) and one where it ends. Both GPU
- * clocks are matched to the performance counter together every quarter second, so their drift cancels. Logged when the
- * settings change (the test kit's modes) and every 10 seconds: the hand-off, OpenGL done to Direct3D 12 draw start, and
- * the draw, as medians and 90th percentiles.
+ * clocks are matched to the performance counter together every quarter second, so their drift cancels. Logged every 10
+ * seconds: the hand-off, OpenGL done to Direct3D 12 draw start, and the draw, as medians and 90th percentiles.
  */
 final class PresentTiming implements AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger("create_galore_bridge");
@@ -46,7 +45,6 @@ final class PresentTiming implements AutoCloseable {
     private long maxSpread;
     private long lastCalibration;
     private long windowStart;
-    private String label = "";
 
     private final long[] handOff = new long[MAX_FRAMES];
     private final long[] toDirectx = new long[MAX_FRAMES];
@@ -66,12 +64,6 @@ final class PresentTiming implements AutoCloseable {
 
     private long now() {
         return Ffi.call(":P", nowNs);
-    }
-
-    /** What the next lines are measuring (the presenter's switches), for the log. Ends the window so far. */
-    void label(String text) {
-        report();
-        label = text;
     }
 
     /** Before OpenGL's hand-off of frame {@code value} (a wait for Direct3D 12 if {@code waits}, and the copy). */
@@ -150,9 +142,9 @@ final class PresentTiming implements AutoCloseable {
     private void report() {
         long now = now();
         if (count >= 30) {
-            LOG.info(String.format(Locale.ROOT, "Perfect Presentation timing (DirectX 12, %s): %d frames, %d timed; OpenGL hand-off %s;"
+            LOG.info(String.format(Locale.ROOT, "Perfect Presentation timing (DirectX 12): %d frames, %d timed; OpenGL hand-off %s;"
                     + " OpenGL done to DirectX 12 draw start %s; DirectX 12 draw %s; OpenGL waited for DirectX 12 in %d frames;"
-                    + " clocks matched within %d us", label, frames, count, stat(handOff), stat(toDirectx), stat(draw), openglWaits,
+                    + " clocks matched within %d us", frames, count, stat(handOff), stat(toDirectx), stat(draw), openglWaits,
                     maxSpread / 1000));
         }
         count = 0;

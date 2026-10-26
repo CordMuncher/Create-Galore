@@ -3,7 +3,7 @@ package dev.creategalore.bridge.present;
 /**
  * Shows the game's frames through a DXGI swap chain on the game window, while the game renders with OpenGL on a hidden
  * context: {@link InteropContext} (Direct3D 11, Perfect Presentation's way) or {@link D3D12Presenter} (Direct3D 12,
- * the swap chain frame generation needs). Called on the render thread only.
+ * experimental). Called on the render thread only.
  */
 interface Presenter extends AutoCloseable {
     /** The DirectX device showing the game (ID3D11Device* or ID3D12Device*), for NVIDIA Reflex. */

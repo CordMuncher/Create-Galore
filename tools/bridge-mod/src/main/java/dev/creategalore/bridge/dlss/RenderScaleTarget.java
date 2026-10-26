@@ -13,7 +13,7 @@ import net.irisshaders.iris.Iris;
 import net.irisshaders.iris.shaderpack.option.values.OptionValues;
 
 /**
- * Where the render resolution is set (the DLAA screen and the test kit): the shader pack in use when it is made for
+ * Where the render resolution is set (the Upscaling & Display screen and the test kit): the shader pack in use when it is made for
  * DLAA and has an upscaling switch (renderScaleOptions in its profile, see {@link PackProfile}), else the Photon copy.
  * The resolution is the pack's own options, so the pack renders at that size whether DLSS, FSR or the pack's own
  * upscaling makes the window's picture from it.

@@ -144,6 +144,12 @@ final class RideScene {
         Capture.server(REFILL);
     }
 
+    /** Takes the scene away even if this game didn't build it: an earlier game may have left it standing. */
+    static void clear() {
+        built = true;
+        remove();
+    }
+
     /** Each server tick while the camera is there: the ship sails on, turning back every LEG ticks. */
     static void serverTick(ServerTickEvent.Post event) {
         if (!active) {

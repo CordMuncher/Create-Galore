@@ -578,7 +578,7 @@ public final class Dlss {
             return false;
         }
         if (guards() && dlssGuard.crashed()) {
-            unavailable = "the game closed while DLSS was starting last time, so it stays off until you pick Try again on the DLAA settings screen";
+            unavailable = "the game closed while DLSS was starting last time, so it stays off until you pick Try again on the Upscaling & Display screen";
             unavailableNoDll = false;
             return false;
         }
@@ -602,7 +602,7 @@ public final class Dlss {
             return true;
         }
         if (fsr3Unavailable == null && guards() && fsrGuard.crashed()) {
-            fsr3Unavailable = "the game closed while FSR 3 was starting last time, so it stays off until you pick Try again on the DLAA settings screen";
+            fsr3Unavailable = "the game closed while FSR 3 was starting last time, so it stays off until you pick Try again on the Upscaling & Display screen";
         }
         if (fsr3Unavailable != null) {
             notice("fsr3:" + fsr3Unavailable, "DLAA is off: FSR 3 can't run", fsr3Unavailable);
@@ -693,7 +693,7 @@ public final class Dlss {
         unavailableNoDll = !Files.isRegularFile(dll);
         if (unavailableNoDll) {
             throw new IllegalStateException("there is no " + dll + " (not part of the pack: bring your own, DLSS "
-                    + TESTED_DLL_VERSION + " or newer, see the DLAA settings screen)");
+                    + TESTED_DLL_VERSION + " or newer, see the Upscaling & Display screen)");
         }
         Files.createDirectories(folder.resolve("ngx"));
         ngx = NgxLibrary.load(folder);

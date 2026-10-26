@@ -34,11 +34,12 @@ import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.common.NeoForge;
 
 /**
- * The Bridge's display settings, in two tabs. Anti-aliasing: the DLAA engine and DLSS preset, the render resolution,
- * the bring-your-own nvngx_dlss.dll (or one found on this PC, see {@link DlssFinder}). Display: the window switches,
- * NVIDIA Reflex (which turns Perfect Presentation on with it, see {@link FrameLatency}), GPU pacing and the frame counter
- * ({@link FpsOverlay}). Opens from the mod list
- * (Create Galore Bridge, Config) and from a DLAA button in Iris's shader pack menu. Saved to
+ * Upscaling & Display, the Bridge's display settings, in two tabs. Upscaling: the DLAA engine and DLSS preset, the
+ * render resolution, the bring-your-own nvngx_dlss.dll (or one found on this PC, see {@link DlssFinder}). Display: the
+ * window switches and Perfect Presentation's DirectX version (12 is experimental, and picking it turns Perfect
+ * Presentation on), NVIDIA Reflex (which turns Perfect Presentation on with it, see {@link FrameLatency}), GPU pacing
+ * and the frame counter ({@link FpsOverlay}). Opens from the mod list (Create Galore Bridge, Config) and from an
+ * Upscaling & Display button in Iris's shader pack menu. Saved to
  * config/create_galore_bridge-display.properties when it closes, the render resolution into the DLAA pack's own options
  * (Photon's TAAU and TAAU Render Scale, see {@link RenderScaleTarget}); DLAA changes reload the shaders.
  */
@@ -52,6 +53,7 @@ public final class DlaaScreen extends Screen {
     /** The standard render resolutions (the pack's render scale option for each), then custom (the slider). */
     private static final List<String> SCALES = List.of("native", "quality", "balanced", "performance", "ultra", "custom");
     private static final Map<String, String> SCALE_VALUES = Map.of("quality", "0.67", "balanced", "0.58", "performance", "0.50", "ultra", "0.33");
+    private static final List<String> APIS = List.of("dx11", "dx12");
     private static final List<String> REFLEX_MODES = List.of("off", "on", "boost");
     private static final List<String> PACING_MODES = List.of("off", "on", "lowest");
     private static final List<String> FPS_MODES = List.of(FpsOverlay.OFF, FpsOverlay.BASIC, FpsOverlay.DETAILED);
@@ -69,6 +71,8 @@ public final class DlaaScreen extends Screen {
     private String letter;
     private boolean perfectPresentation;
     private boolean tenBitWindow;
+    /** dx11 or dx12: the DirectX version Perfect Presentation shows the game with. */
+    private String api;
     /** off, on or boost. */
     private String reflex;
     /** off, on or lowest. */
@@ -83,11 +87,12 @@ public final class DlaaScreen extends Screen {
     private EditBox letterBox;
     private ScaleSlider slider;
     private CycleButton<Boolean> presentationButton;
+    private Choice<String> apiChoice;
     private Choice<String> reflexChoice;
     private Choice<String> pacingChoice;
-    private final Page antiAliasingPage = new Page("Anti-aliasing");
+    private final Page antiAliasingPage = new Page("Upscaling");
     private final Page displayPage = new Page("Display");
-    /** The tab open: 0 anti-aliasing, 1 display. */
+    /** The tab open: 0 upscaling, 1 display. */
     private int page;
     private TabNavigationBar tabBar;
     /** The tab whose widgets init is making. */
@@ -105,7 +110,7 @@ public final class DlaaScreen extends Screen {
     private int ticks;
 
     public DlaaScreen(Screen parent) {
-        super(Component.literal("Create Galore display settings"));
+        super(Component.literal("Upscaling & Display"));
         this.parent = parent;
         DisplaySettings.reload();
         engine = DisplaySettings.dlaaEngine();
@@ -115,6 +120,8 @@ public final class DlaaScreen extends Screen {
                 : PRESETS.contains(letter) ? letter : "other";
         perfectPresentation = DisplaySettings.get(DisplaySettings.PERFECT_PRESENTATION);
         tenBitWindow = DisplaySettings.get(DisplaySettings.TEN_BIT_WINDOW);
+        String apiValue = DisplaySettings.getString(DisplaySettings.PRESENTER, "dx11").toLowerCase(Locale.ROOT);
+        api = perfectPresentation && apiValue.equals("dx12") ? "dx12" : "dx11";
         String reflexValue = DisplaySettings.getString(DisplaySettings.REFLEX, "off").toLowerCase(Locale.ROOT);
         reflex = reflexValue.equals("true") ? "on" : REFLEX_MODES.contains(reflexValue) ? reflexValue : "off";
         String pacingValue = DisplaySettings.getString(DisplaySettings.GPU_PACING, "off").toLowerCase(Locale.ROOT);
@@ -129,18 +136,20 @@ public final class DlaaScreen extends Screen {
         initialPackOptions = packOptions();
     }
 
-    /** At mod construction (client): the mod list's Config button and the shader pack menu's DLAA button. */
+    /** At mod construction (client): the mod list's Config button and the shader pack menu's Upscaling & Display button. */
     public static void register(IEventBus modBus, ModContainer container) {
         container.registerExtensionPoint(IConfigScreenFactory.class, (mod, parent) -> new DlaaScreen(parent));
         NeoForge.EVENT_BUS.addListener((ScreenEvent.Init.Post event) -> {
             Screen screen = event.getScreen();
             if (screen.getClass().getName().equals(IRIS_PACK_SCREEN)) {
-                event.addListener(Button.builder(Component.literal("DLAA..."),
-                                button -> screen.getMinecraft().setScreen(new DlaaScreen(screen)))
-                        .bounds(screen.width - 66, 6, 60, 20)
+                Component label = Component.literal("Upscaling & Display...");
+                int buttonWidth = screen.getMinecraft().font.width(label) + 16;
+                event.addListener(Button.builder(label, button -> screen.getMinecraft().setScreen(new DlaaScreen(screen)))
+                        .bounds(screen.width - buttonWidth - 6, 6, buttonWidth, 20)
                         .tooltip(net.minecraft.client.gui.components.Tooltip.create(Component.literal(
                                 "NVIDIA DLSS or AMD FSR 3.1 in place of the shader pack's own anti-aliasing, at full resolution or upscaling"
-                                        + " (shader packs made for DLAA, such as " + PhotonPatcher.PATCHED_NAME + ")")))
+                                        + " (shader packs made for DLAA, such as " + PhotonPatcher.PATCHED_NAME + "), and the display"
+                                        + " settings: Perfect Presentation, NVIDIA Reflex, GPU pacing and the frame counter.")))
                         .build());
             }
         });
@@ -224,11 +233,24 @@ public final class DlaaScreen extends Screen {
                         reflexChoice.value = "off";
                         reflexChoice.update();
                     }
+                    if (!value && !api.equals("dx11")) {
+                        api = "dx11"; // the DirectX version is Perfect Presentation's
+                        apiChoice.value = "dx11";
+                        apiChoice.update();
+                    }
                 }));
         add(CycleButton.onOffBuilder(tenBitWindow)
                 .withTooltip(value -> net.minecraft.client.gui.components.Tooltip.create(Component.literal(
                         "Experimental, needs a restart: asks for a 10-bit game window.")))
                 .create(left + half + 4, y, half, 20, Component.literal("10-bit window"), (button, value) -> tenBitWindow = value));
+        y += 24;
+        apiChoice = choice("DirectX", APIS, api, DlaaScreen::apiLabel, DlaaScreen::apiTooltip, left, y, half, value -> {
+            api = value;
+            if (value.equals("dx12") && !perfectPresentation) {
+                perfectPresentation = true; // the DirectX version is Perfect Presentation's
+                presentationButton.setValue(true);
+            }
+        });
         y += 24;
         reflexChoice = choice("NVIDIA Reflex", REFLEX_MODES, reflex, DlaaScreen::reflexLabel, DlaaScreen::reflexTooltip, left, y, half, value -> {
             reflex = value;
@@ -331,8 +353,19 @@ public final class DlaaScreen extends Screen {
     }
 
     private void renderDisplay(GuiGraphics graphics, int left, int mouseX, int mouseY) {
-        lines(graphics, "Window, input delay and frame counter. Perfect Presentation and the 10-bit window need a restart.",
-                left, 28, 0xAAAAAA, 2);
+        lines(graphics, "Window, input delay and frame counter. Perfect Presentation, DirectX and the 10-bit window need a"
+                + " restart.", left, 28, 0xAAAAAA, 2);
+        FrameLatency.Status apiStatus = apiStatus();
+        if (apiStatus != null) {
+            int half = (WIDTH - 4) / 2;
+            int x = left + half + 4;
+            int rowY = apiChoice.button.getY();
+            int count = font.split(Component.literal(apiStatus.text()), half).size();
+            lines(graphics, apiStatus.text(), x, count > 1 ? rowY + 1 : rowY + 6, apiStatus.problem() ? 0xFFAA44 : 0xFFDD66, 2, half);
+            if (open == null && apiStatus.detail() != null && mouseX >= x && mouseX < x + half && mouseY >= rowY && mouseY < rowY + 20) {
+                setTooltipForNextRenderPass(font.split(Component.literal(apiStatus.detail()), 220));
+            }
+        }
         FrameLatency.Status reflexStatus = reflexStatus();
         if (reflexStatus != null) {
             // Beside the Reflex setting: one line centred on the button, two filling its height; the rest on hover.
@@ -407,11 +440,13 @@ public final class DlaaScreen extends Screen {
         if (presentationChanged && perfectPresentation) {
             Presentation.switchedOn();
         }
-        if (presentationChanged || !values.get(DisplaySettings.TEN_BIT_WINDOW).equals(initial.get(DisplaySettings.TEN_BIT_WINDOW))) {
+        boolean apiChanged = !values.get(DisplaySettings.PRESENTER).equals(initial.get(DisplaySettings.PRESENTER));
+        if (presentationChanged || apiChanged || !values.get(DisplaySettings.TEN_BIT_WINDOW).equals(initial.get(DisplaySettings.TEN_BIT_WINDOW))) {
             minecraft.getToasts().addToast(net.minecraft.client.gui.components.toasts.SystemToast.multiline(minecraft, RESTART,
                     Component.literal("Restart the game"), Component.literal(presentationChanged && perfectPresentation && !reflex.equals("off")
                             ? "NVIDIA Reflex runs once Perfect Presentation starts, after a restart."
                             : presentationChanged ? "Perfect Presentation " + (perfectPresentation ? "starts" : "stops") + " after a restart."
+                            : apiChanged ? "Perfect Presentation switches to DirectX " + (api.equals("dx12") ? "12" : "11") + " after a restart."
                             : "The 10-bit window setting applies after a restart.")));
         }
         if (packChanged || dllAdded || !values.get(DisplaySettings.DLAA).equals(initial.get(DisplaySettings.DLAA))
@@ -427,6 +462,7 @@ public final class DlaaScreen extends Screen {
         values.put(DisplaySettings.DLAA_PRESET, preset.equals("other") ? (letter.isEmpty() ? "default" : letter) : preset);
         values.put(DisplaySettings.PERFECT_PRESENTATION, Boolean.toString(perfectPresentation));
         values.put(DisplaySettings.TEN_BIT_WINDOW, Boolean.toString(tenBitWindow));
+        values.put(DisplaySettings.PRESENTER, api);
         values.put(DisplaySettings.REFLEX, reflex);
         values.put(DisplaySettings.GPU_PACING, gpuPacing);
         values.put(DisplaySettings.DLAA_CUSTOM_SCALE, Boolean.toString(scale.equals("custom")));
@@ -460,6 +496,35 @@ public final class DlaaScreen extends Screen {
         customPercent = Math.max(25, Math.min(100, percent));
         String standard = SCALE_VALUES.entrySet().stream().filter(e -> e.getValue().equals(value)).map(Map.Entry::getKey).findFirst().orElse(null);
         scale = !setting.upscaling() ? "native" : DisplaySettings.get(DisplaySettings.DLAA_CUSTOM_SCALE) || standard == null ? "custom" : standard;
+    }
+
+    /** What DirectX 12 does or will do, beside the DirectX setting; null for DirectX 11 when nothing is pending. */
+    private FrameLatency.Status apiStatus() {
+        String running = Presentation.api();
+        boolean dx12 = api.equals("dx12");
+        String detail = "Experimental and not recommended as the default yet. In tests DirectX 12 ran at the same frame rate"
+                + " as DirectX 11 with marginally lower input delay. If anything looks or feels wrong, go back to 11.";
+        if (dx12 && Util.getPlatform() != Util.OS.WINDOWS) {
+            return new FrameLatency.Status("Needs Windows.", "Perfect Presentation, and with it DirectX, runs only on Windows.", true);
+        }
+        if (dx12 && Presentation.requested() && !Presentation.active()) {
+            return new FrameLatency.Status("Can't run: Perfect Presentation failed.", "Perfect Presentation, which shows the"
+                    + " game through DirectX, could not start this time; the game log says why (lines starting with Perfect"
+                    + " Presentation:).", true);
+        }
+        if (dx12 && Presentation.dx12FellBack()) {
+            return new FrameLatency.Status("Couldn't start: on DirectX 11.", "DirectX 12 could not start this time, so the game"
+                    + " runs on DirectX 11; the game log says why (lines starting with Perfect Presentation:). It needs an OpenGL"
+                    + " driver that shares textures with DirectX 12: NVIDIA's does, Intel's doesn't.", true);
+        }
+        if (dx12 && !"DirectX 12".equals(running)) {
+            return new FrameLatency.Status("Experimental. Starts after a restart.", detail, false);
+        }
+        if (dx12) {
+            return new FrameLatency.Status("Experimental: marginally lower delay.", detail, false);
+        }
+        return perfectPresentation && "DirectX 12".equals(running)
+                ? new FrameLatency.Status("Back to 11 after a restart.", null, false) : null;
     }
 
     /** What Reflex does or will do, beside its setting; null while it is off. */
@@ -543,6 +608,18 @@ public final class DlaaScreen extends Screen {
                     } + " of the window's width and height and upscales: faster, a little softer. With anti-aliasing Off,"
                     + " the shader pack's own upscaling (Photon's TAAU) does it.";
         };
+    }
+
+    private static Component apiLabel(String value) {
+        return Component.literal(value.equals("dx12") ? "12 (experimental)" : "11");
+    }
+
+    private static String apiTooltip(String value) {
+        return value.equals("dx12")
+                ? "Experimental, not recommended as the default yet: Perfect Presentation shows the game through DirectX 12."
+                        + " Marginally lower input delay than DirectX 11 in tests, at the same frame rate. Needs Perfect"
+                        + " Presentation, which this turns on, and a restart. Where DirectX 12 can't start, the game uses 11."
+                : "The default: Perfect Presentation shows the game through DirectX 11.";
     }
 
     private static Component reflexLabel(String value) {

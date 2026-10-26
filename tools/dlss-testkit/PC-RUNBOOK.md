@@ -1059,13 +1059,12 @@ Commit and push on the DLAA branch. Don't commit hs_err files (they name his use
 Start only when Emre says so. Same PC, test folder, tools and settings as Pacer 2; about 25 minutes, two launches, no
 by-feel part. **Frame times count here**: a quiet PC, no game server.
 
-**What it tests.** Frame generation (NVIDIA's DLSS Frame Generation and AMD's FSR frame generation) needs the game shown
-through a Direct3D 12 swap chain. Bridge 1.113.0 has one (`presenter=dx12`, testing only): the same swap chain, frame
+**What it tests.** Bridge 1.113.0 can show the game through a Direct3D 12 swap chain (`presenter=dx12`, testing only): the same swap chain, frame
 latency and blit as today's Direct3D 11 path, with OpenGL handing each frame over through textures and fences it
 imports from Direct3D 12 (`GL_EXT_memory_object_win32`, `GL_EXT_semaphore_win32`). It should look and feel exactly
 like `presenter=dx11` (today's path, still the default). This run compares the two: frame rate, input latency, Reflex
 and GPU pacing on each, and with `presentCheck=true` the DirectX 12 back buffer against the game's own frame, pixel by
-pixel. No frame generation yet.
+pixel.
 
 ### Update
 
@@ -1127,6 +1126,9 @@ If a launch crashes, copy `hs_err_pid*.log` and the log's last 100 lines, and re
 Commit and push on the DLAA branch. Don't commit hs_err files (they name his user folder).
 
 ## Presenter 2: where DirectX 12 loses its 11%
+
+*Done (`results\presenter2\REPORT.md`). Bridge 1.115.0 dropped the switches below (none helped) and the kit dropped
+`P2X` and the `p-` modes; `P2` stays. Kept as the record of the run.*
 
 Start only when Emre says so. Same PC, test folder, tools and settings as Presenter 1; about 35 minutes, three
 launches, no by-feel part. **Frame times count here**: a quiet PC, no game server. PresentMon needs administrator

@@ -44,16 +44,6 @@ public final class Capture {
     private static final Logger LOG = LoggerFactory.getLogger(TestKit.MOD_ID);
     private static final String CONFIG = "create_galore_dlss_testkit.json";
     private static final String BRIDGE_CONFIG = "create_galore_bridge-display.properties";
-    /**
-     * Presenter 2: the DirectX 12 presenter's live test switches (Bridge 1.114.0) each p- mode sets, on top of lat-base;
-     * every other mode leaves them at the Bridge's defaults. With presenter=dx11 they change nothing.
-     */
-    private static final Map<String, Map<String, String>> PRESENTER_SWITCHES = Map.of(
-            "p-wait-always", Map.of("presentGlWait", "always"),
-            "p-nvx", Map.of("presentSync", "nvx"),
-            "p-buffers3", Map.of("presentBuffers", "3"),
-            "p-latency2", Map.of("presentFrameLatency", "2"));
-    private static final List<String> PRESENTER_KEYS = List.of("presentGlWait", "presentSync", "presentBuffers", "presentFrameLatency");
     /** Without the Bridge's answer: the Photon copy and its upscaling options (see {@link #scaleOptions}). */
     private static final String[] PHOTON_SCALE_OPTIONS = {"Photon v1.3a + DLAA", "TAAU", "TAAU_RENDER_SCALE"};
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
@@ -179,11 +169,6 @@ public final class Capture {
             modes.add(Mode.latency("lat-cap-default", "off", false, 3, 60, null, null));
             // The player's GPU pacing On (a share of the frame time, at least 4 or 5 ms).
             modes.add(Mode.latency("lat-pacing-on", "off", true, 3, 260, -1, null));
-            // Presenter 2: lat-base with one of the DirectX 12 presenter's switches (PRESENTER_SWITCHES): OpenGL waiting
-            // for Direct3D 12 every frame (as Bridge 1.113.0), NVIDIA's progress fences, 3 buffers, frame latency 2.
-            for (String name : PRESENTER_SWITCHES.keySet().stream().sorted().toList()) {
-                modes.add(Mode.latency(name, "off", false, 3, 260));
-            }
         }
         // The DLAA test world (seed 20261024, scene built on the lakeshore at x 1023..1040, z 160..176).
         List<Viewpoint> viewpoints = new ArrayList<>(List.of(
@@ -203,7 +188,7 @@ public final class Capture {
          * machines under a near lintel at full size and two render scales (all should show). Reflex 1: L1 with Perfect
          * Presentation on (Reflex needs it), L2 with it off (Sodium's render-ahead limit), each mode twice. Pacer 1: L3
          * with Perfect Presentation on, L4 with it off. Presenter 1: P1 once with each presenter (dx11, dx12).
-         * Presenter 2: P2 with dx11 and with dx12 at high queue priority, P2X (the switches) with dx12.
+         * Presenter 2 and 3: P2 with dx11 and with dx12.
          */
         List<Run> runs = new ArrayList<>(List.of(
                 new Run("F1", "photon-taa+dlaa-default+fsr3+perf-taau+perf-dlss-K+perf-dlss-M+perf-dlss-L+perf-fsr3"
@@ -235,9 +220,7 @@ public final class Capture {
                         "shore+canopy", "latency", null, false, null, 2),
                 new Run("P1", "lat-base+lat-pacing-on+lat-pacer+lat-reflex+lat-cap-default", "shore+canopy", "latency", null,
                         false, null, 2),
-                new Run("P2", "lat-base+lat-reflex+lat-cap-default", "shore+canopy", "latency", null, false, null, 2),
-                new Run("P2X", "lat-base+p-wait-always+p-nvx+p-buffers3+p-latency2+lat-reflex+lat-cap-default", "shore+canopy",
-                        "latency", null, false, null, 2)));
+                new Run("P2", "lat-base+lat-reflex+lat-cap-default", "shore+canopy", "latency", null, false, null, 2)));
     }
 
     /**
@@ -326,6 +309,8 @@ public final class Capture {
     private record Segment(String label, Viewpoint viewpoint, String path, int length, int[] captures, Runnable onStart, Mode mode) {}
 
     private static boolean running;
+    /** This game's first run has taken away the scenes an earlier game may have left standing. */
+    private static boolean leftoversCleared;
     private static boolean autorun;
     private static int frame;
     private static List<Segment> plan = List.of();
@@ -469,6 +454,13 @@ public final class Capture {
         // sees them whole from its first frame (a scene built just after the switch once lost a section's update in
         // the rebuild, and the first mode showed lake where its platform was).
         List<String> scenes = viewpoints.stream().map(Viewpoint::scene).filter(java.util.Objects::nonNull).distinct().toList();
+        if (!leftoversCleared) {
+            // A scene an earlier game left standing (the by-eye scene stays when the player quits) would sit beside
+            // viewpoints that don't expect it and cost every mode frames: the game's first run takes them all away.
+            leftoversCleared = true;
+            segments.add(new Segment("clear old scenes", viewpoints.get(0), null, SCENE_BUILD_FRAMES, new int[0],
+                    Capture::clearScenes, modes.get(0)));
+        }
         if (!scenes.isEmpty()) {
             segments.add(new Segment("build scenes", viewpoints.get(0), null, SCENE_BUILD_FRAMES, new int[0],
                     () -> scenes.forEach(Capture::buildScene), modes.get(0)));
@@ -563,10 +555,7 @@ public final class Capture {
             return "a run is going";
         }
         if (!build) {
-            MovingScene.remove();
-            EffectsScene.remove();
-            RideScene.remove();
-            CullScene.remove();
+            clearScenes();
             return "removed the test scenes";
         }
         if (EffectsScene.NAME.equals(which)) {
@@ -806,6 +795,15 @@ public final class Capture {
         shots.add(shot);
     }
 
+    /** Takes every test scene away, built in this game or left standing by an earlier one. */
+    private static void clearScenes() {
+        MovingScene.clear();
+        EffectsScene.clear();
+        RideScene.clear();
+        CullScene.clear();
+        log("cleared the test scenes");
+    }
+
     private static void buildScene(String scene) {
         if (MovingScene.NAME.equals(scene)) {
             MovingScene.build();
@@ -923,9 +921,6 @@ public final class Capture {
                 info.add("latency", new JsonObject());
             }
         }
-        if (PRESENTER_SWITCHES.containsKey(mode.name())) {
-            info.add("presenter", GSON.toJsonTree(PRESENTER_SWITCHES.get(mode.name())));
-        }
         if (!info.has("frameMs")) {
             info.add("frameMs", new JsonObject());
         }
@@ -1001,8 +996,6 @@ public final class Capture {
             } else {
                 props.remove("frameCapAtStart");
             }
-            PRESENTER_KEYS.forEach(props::remove);
-            PRESENTER_SWITCHES.getOrDefault(mode.name(), Map.of()).forEach(props::setProperty);
             try (Writer w = Files.newBufferedWriter(file)) {
                 props.store(w, "Create Galore Bridge display settings (last written by the DLAA test kit, mode " + mode.name() + ")");
             }
@@ -1211,6 +1204,7 @@ public final class Capture {
                 player.setDeltaMovement(Vec3.ZERO);
             }));
         }
+        clearScenes();
         log("holding at " + first.name() + " for " + seconds + " s, then closing");
         autorun = false;
         Util.ioPool().execute(() -> {
