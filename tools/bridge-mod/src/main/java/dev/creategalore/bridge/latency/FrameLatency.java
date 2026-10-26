@@ -5,6 +5,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import dev.creategalore.bridge.DisplaySettings;
+import dev.creategalore.bridge.framegen.FrameGen;
 import dev.creategalore.bridge.dlss.Dlss;
 import dev.creategalore.bridge.dlss.StartGuard;
 import dev.creategalore.bridge.present.Presentation;
@@ -22,9 +23,10 @@ import org.slf4j.LoggerFactory;
  * and then reads input, so the driver can start it as late as still keeps the GPU busy; markers tell the driver where
  * each frame's game work, rendering and present are (markers alone: its latency report without changing anything). On
  * and boost also take over a frame rate cap from the game's own limiter, which waits after the frame instead of before
- * input. A start that took the game down keeps Reflex off until Try again ({@link StartGuard}). While DLSS Frame
- * Generation runs (testing, see FrameGen) Reflex goes through Streamline ({@link StreamlineReflex}) and is at least on,
- * as NVIDIA's frame generation needs; the GPU pacer stays as set beside it.
+ * input. A start that took the game down keeps Reflex off until Try again ({@link StartGuard}). While Streamline runs
+ * for DLSS Frame Generation (see FrameGen) Reflex goes through it ({@link StreamlineReflex}), and is at least on while
+ * frame generation is, as NVIDIA's needs; the GPU pacer stays as set beside it. AMD's frame generation leaves Reflex
+ * as set.
  *
  * latePoll: read input again just before the mouse turns the camera, after any wait for the GPU or the swap chain
  * (Sodium's render-ahead limit at the start of the frame, Perfect Presentation's swap chain, the game's frame cap).
@@ -400,7 +402,7 @@ public final class FrameLatency {
             case "boost" -> ReflexMode.BOOST;
             default -> ReflexMode.OFF;
         };
-        if (Presentation.frameGeneration() && wanted.compareTo(ReflexMode.ON) < 0) {
+        if (Presentation.streamline() && FrameGen.on() && wanted.compareTo(ReflexMode.ON) < 0) {
             if (reflexMode != ReflexMode.ON) {
                 LOG.info("Reflex: on, though set to {}: frame generation needs it", wanted.name().toLowerCase(Locale.ROOT));
             }
@@ -480,9 +482,9 @@ public final class FrameLatency {
         }
         guard().starting();
         try {
-            if (Presentation.frameGeneration()) {
+            if (Presentation.streamline()) {
                 reflex = StreamlineReflex.start();
-                LOG.info("Reflex: started through Streamline, as frame generation needs ({})", reflex.status());
+                LOG.info("Reflex: started through Streamline, as DLSS Frame Generation needs ({})", reflex.status());
             } else {
                 reflex = NvapiReflex.start(Presentation.d3dDevice());
                 LOG.info("Reflex: started on Perfect Presentation's {} device (NVIDIA NVAPI)", Presentation.api());

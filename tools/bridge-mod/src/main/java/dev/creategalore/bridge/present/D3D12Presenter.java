@@ -22,6 +22,7 @@ import static org.lwjgl.opengl.EXTSemaphoreWin32.GL_LUID_SIZE_EXT;
 import static org.lwjgl.opengl.EXTSemaphoreWin32.glImportSemaphoreWin32HandleEXT;
 import static org.lwjgl.opengl.GL11C.GL_NO_ERROR;
 import static org.lwjgl.opengl.GL11C.GL_RGBA;
+import static org.lwjgl.opengl.GL11C.GL_RENDERER;
 import static org.lwjgl.opengl.GL11C.GL_RGBA8;
 import static org.lwjgl.opengl.GL11C.GL_TEXTURE_2D;
 import static org.lwjgl.opengl.GL11C.GL_TEXTURE_HEIGHT;
@@ -32,6 +33,7 @@ import static org.lwjgl.opengl.GL11C.glDeleteTextures;
 import static org.lwjgl.opengl.GL11C.glFinish;
 import static org.lwjgl.opengl.GL11C.glGetError;
 import static org.lwjgl.opengl.GL11C.glGetIntegerv;
+import static org.lwjgl.opengl.GL11C.glGetString;
 import static org.lwjgl.opengl.GL43C.glCopyImageSubData;
 import static org.lwjgl.opengl.GL45C.glCreateTextures;
 import static org.lwjgl.opengl.GL45C.glGetTextureImage;
@@ -75,16 +77,18 @@ import org.slf4j.LoggerFactory;
  * the display settings change); presentCheck=true compares two presented back buffers with the game's frames, pixel by
  * pixel, and logs it.
  *
- * Frame generation (testing, {@link FrameGen}): with frameGen set, Streamline starts with the presenter (cg_fg_prepare)
- * and owns the real swap chain. A second ring of slots, four textures each (the inputs, in FrameGen.INPUT_FORMATS),
+ * Frame generation ({@link FrameGen}): its backend (Streamline, or AMD's FidelityFX) starts with the presenter
+ * (cg_fg_prepare) and, while frame generation is on, owns the real swap chain; turning it on or off makes the swap
+ * chain again between two frames (cg_fg_enable). A second ring of slots, four textures each (the inputs, in FrameGen.INPUT_FORMATS),
  * goes with the first: each frame FrameGen writes the slot's inputs after the copy, both are in the semaphores' texture
  * lists, cg_fg_frame hands the slot and the camera over before the draw, and OpenGL writes a slot again only after the
- * backend let go of its inputs (cg_fg_inputs_done). A swap chain resize while frames are generated waits for the next
- * frame to go out without (NVIDIA: frame generation off around window changes).
+ * backend let go of its inputs (cg_fg_inputs_done); the ring goes while frame generation is off. A swap chain resize
+ * or a switch while frames are generated waits for a frame to go out without (NVIDIA: frame generation off around
+ * window changes).
  */
 final class D3D12Presenter implements Presenter {
     private static final Logger LOG = LoggerFactory.getLogger("create_galore_bridge");
-    private static final int ABI = 4;
+    private static final int ABI = 5;
     /** Present's DXGI_STATUS_OCCLUDED: the window can't be seen (minimized). */
     private static final int DXGI_STATUS_OCCLUDED = 0x087A0001;
     private static final int RING_SIZE = 3;
@@ -129,8 +133,15 @@ final class D3D12Presenter implements Presenter {
     private int settingsGeneration = -1;
     private PresentTiming timing;
 
-    /** Frame generation runs: Streamline owns the swap chain behind this presenter's. */
+    /** Frame generation's backend runs (on or off). */
     private boolean frameGeneration;
+    /** Its backend, FrameGen.BACKEND_DLSSG or BACKEND_FSR. */
+    private int fgBackend;
+    /** Frame generation is on: its backend owns the swap chain behind this presenter's. */
+    private boolean fgOn;
+    private long fgEnable;
+    /** Turning it on or off failed once: not tried again. */
+    private boolean fgSwitchFailed;
     private long fgFrame;
     private long fgInputsDone;
     private long fgState;
@@ -177,7 +188,7 @@ final class D3D12Presenter implements Presenter {
         timingSwitch = dll.symbol("cg_present_timing");
         nowNs = dll.symbol("cg_present_now_ns");
 
-        FrameGen.Start frameGen = FrameGen.start();
+        FrameGen.Start frameGen = FrameGen.start(glGetString(GL_RENDERER));
         boolean prepared = frameGen != null && prepareFrameGeneration(frameGen);
 
         try (MemoryStack stack = stackPush()) {
@@ -223,13 +234,15 @@ final class D3D12Presenter implements Presenter {
             frameGeneration = Ffi.call(":I", dll.symbol("cg_fg_active")) != 0;
             drainFrameGenLog();
             if (frameGeneration) {
+                fgBackend = frameGen.backend();
+                fgOn = frameGen.on();
                 fgFrame = dll.symbol("cg_fg_frame");
                 fgInputsDone = dll.symbol("cg_fg_inputs_done");
                 fgState = dll.symbol("cg_fg_state");
                 fgCreateInputs = dll.symbol("cg_fg_create_inputs");
                 fgReleaseInputs = dll.symbol("cg_fg_release_inputs");
                 fgOff = dll.symbol("cg_fg_off");
-                FrameGen.started(adapter);
+                FrameGen.started(adapter, fgOn);
             } else {
                 FrameGen.unavailable(memUTF8(Ffi.call(":P", dll.symbol("cg_fg_error"))));
             }
@@ -246,8 +259,11 @@ final class D3D12Presenter implements Presenter {
             drainFrameGenLog();
             if (!ready) {
                 FrameGen.unavailable(memUTF8(Ffi.call(":P", error)));
+                return false;
             }
-            return ready;
+            fgEnable = dll.symbol("cg_fg_enable");
+            Ffi.call("I:I", fgEnable, start.on() ? 1 : 0); // how it starts: before the swap chain, always fine
+            return true;
         }
     }
 
@@ -264,9 +280,14 @@ final class D3D12Presenter implements Presenter {
         }
     }
 
-    /** True while frame generation runs (Streamline loaded, so Reflex goes through it). */
+    /** True while frame generation's backend runs, on or off. */
     boolean frameGeneration() {
         return frameGeneration;
+    }
+
+    /** True while Streamline runs (DLSS Frame Generation's backend, on or off), so Reflex goes through it. */
+    boolean streamline() {
+        return frameGeneration && fgBackend == FrameGen.BACKEND_DLSSG;
     }
 
     /**
@@ -275,7 +296,7 @@ final class D3D12Presenter implements Presenter {
      */
     void minimizedChanged(boolean minimized) {
         FrameGen.minimized(minimized);
-        if (minimized && frameGeneration) {
+        if (minimized && frameGeneration && fgOn) {
             Ffi.call(":V", fgOff);
             drainFrameGenLog();
         }
@@ -363,7 +384,7 @@ final class D3D12Presenter implements Presenter {
             createRing(width, height);
         }
         FrameGen.Frame fg = null;
-        if (frameGeneration) {
+        if (frameGeneration && fgOn) {
             if (width != fgWidth || height != fgHeight) {
                 createFgRing(width, height);
             }
@@ -649,7 +670,33 @@ final class D3D12Presenter implements Presenter {
                 resizePending = false;
                 resizeNow(pendingWidth, pendingHeight);
             }
+            boolean on = FrameGen.on();
+            if (on != fgOn && !generated && !fgSwitchFailed) {
+                switchFrameGeneration(on); // likewise: off, this frame was its last; on, the next is the first
+            }
         }
+    }
+
+    /**
+     * Turns frame generation on or off between two frames: the swap chain is made again (NVIDIA: frame generation's
+     * swap chain costs a copy and a second queue even while it doesn't generate), and its inputs go while it is off.
+     */
+    private void switchFrameGeneration(boolean on) {
+        if (!on) {
+            closeFgRing();
+        }
+        int result = (int) Ffi.call("I:I", fgEnable, on ? 1 : 0);
+        drainFrameGenLog();
+        if (result < 0) {
+            throw new IllegalStateException(errorText());
+        }
+        if (result == 0) {
+            fgSwitchFailed = true;
+            FrameGen.stop("it could not be turned " + (on ? "on" : "off") + ": " + errorText());
+            return;
+        }
+        fgOn = on;
+        FrameGen.switched(on);
     }
 
     @Override

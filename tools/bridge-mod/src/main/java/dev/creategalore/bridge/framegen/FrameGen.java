@@ -40,28 +40,32 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Frame generation, EXPERIMENTAL (Display tab, "Frame generation"; RTX 40 and 50 cards): NVIDIA DLSS Frame Generation
- * through Streamline, in Perfect Presentation's DirectX 12 presenter (cg_present.dll's cg_fg_* calls and
- * tools/bridge-mod/native/cg_streamline.cpp). Each frame, once DLSS or FSR ran and the HUD is drawn, the presenter has
- * {@link FgCapture} write the frame's inputs (the world without the HUD, the HUD's coverage, depth and motion vectors)
- * into textures shared with DirectX 12, hands over the camera ({@link FgCamera}), and Streamline shows generated frames
- * between the rendered ones from Present on. Reflex then runs through Streamline (see FrameLatency).
+ * Frame generation, EXPERIMENTAL (Display tab, "Frame generation"), in Perfect Presentation's DirectX 12 presenter
+ * (cg_present.dll's cg_fg_* calls): NVIDIA DLSS Frame Generation through Streamline on RTX 40 and 50 cards
+ * (tools/bridge-mod/native/cg_streamline.cpp), or AMD FSR 3.1 frame generation through AMD's FidelityFX SDK on any card
+ * (cg_ffx.cpp). Each frame, once DLSS or FSR ran and the HUD is drawn, the presenter has {@link FgCapture} write the
+ * frame's inputs (the world without the HUD, the HUD's coverage, depth and motion vectors) into textures shared with
+ * DirectX 12, hands over the camera ({@link FgCamera}), and the backend shows generated frames between the rendered
+ * ones from Present on. The inputs come from whichever upscaler ran ({@link #upscaled}) in one form for either backend,
+ * so either runs beside DLSS or FSR upscaling. With Streamline loaded, Reflex runs through it (see FrameLatency).
  *
- * Made for AMD's FSR frame generation to follow: the inputs come from whichever upscaler ran ({@link #upscaled}) in one
- * form for any backend, so another backend in cg_present.dll takes them as they are, beside DLSS or FSR upscaling.
+ * One backend loads whenever the presenter starts on DirectX 12 ({@link #start}), so frame generation turns on and off
+ * at once: the presenter makes its swap chain again each time ({@link #on()}, {@link #switched}). Picking the other
+ * backend needs a restart.
  *
  * It generates only while that can work, as NVIDIA asks: a world that DLSS or FSR drew this frame, its copy without the
  * HUD (HudSplit; with the HUD hidden by F1 the frame itself), no screen open but chat, the first frames of a new shader
  * pipeline past, the window neither minimized, hidden nor resizing (the frame before a resize goes out without, and a
- * few after it), and Streamline reporting no problem and a window at least its minimum size. Otherwise the frame goes
+ * few after it), and the backend reporting no problem and a window at least its minimum size. Otherwise the frame goes
  * out as it is.
  *
- * Keys (config/create_galore_bridge-display.properties): frameGen=dlss turns it on (at the next start, with
- * perfectPresentation=true and presenter=dx12, which the settings screen sets with it; nvngx_dlssg.dll beside
- * nvngx_dlss.dll, found in NVIDIA's folder by itself if it isn't). For testing, not written there: frameGenFrames
+ * Keys (config/create_galore_bridge-display.properties): frameGen=dlss or fsr turns it on (with perfectPresentation=true
+ * and presenter=dx12, which the settings screen sets with it; DLSS needs nvngx_dlssg.dll beside nvngx_dlss.dll, the
+ * player's own or copied from NVIDIA's folder by the screen's Find on this PC); frameGenType, the backend loaded while
+ * it is off (the screen writes the last one picked). For testing, not written there: frameGenFrames
  * frames generated per rendered one (1); frameGenUi=false hands the HUD over as part of the picture; frameGenStreamline
  * a folder of Streamline's development DLLs instead of the shipped ones; frameGenVerbose=true a verbose Streamline log
- * (create-galore-dlss/streamline-logs). frameGenView=hudless, alpha, depth or motion shows that input instead of the
+ * (create-galore-dlss/streamline-logs), or AMD's debug checks and every message of theirs in the game log. frameGenView=hudless, alpha, depth or motion shows that input instead of the
  * game, and frameGenCheck=true checks the inputs and the camera every 5 seconds ({@link FgCheck}); both work without the
  * presenter, on any graphics card.
  */
@@ -72,6 +76,11 @@ public final class FrameGen {
     private static final String STREAMLINE_RESOURCES = "/natives/windows-x64/streamline/";
     private static final String[] STREAMLINE_FILES = {"sl.interposer.dll", "sl.common.dll", "sl.dlss_g.dll", "sl.reflex.dll",
             "sl.pcl.dll", "license.txt", "reflex.license.txt", "3rd-party-licenses.md"};
+    /** AMD's FidelityFX frame generation DLLs and licence, in the mod jar; unpacked into create-galore-dlss/fidelityfx-VERSION. */
+    private static final String FIDELITYFX_VERSION = "2.0.0";
+    private static final String FIDELITYFX_RESOURCES = "/natives/windows-x64/fidelityfx/";
+    private static final String[] FIDELITYFX_FILES = {"amd_fidelityfx_loader_dx12.dll", "amd_fidelityfx_framegeneration_dx12.dll",
+            "license.md"};
     /** Minecraft's near plane (GameRenderer). */
     private static final float NEAR = 0.05f;
     /** Frames after a resize or a restored window without frame generation (NVIDIA: off around window changes). */
@@ -89,8 +98,10 @@ public final class FrameGen {
 
     // cg_framegen.h
     public static final int BACKEND_DLSSG = 1;
+    public static final int BACKEND_FSR = 2;
     private static final int SL_DEVELOPMENT = 1;
     private static final int SL_VERBOSE = 2;
+    private static final int FFX_VERBOSE = 2;
     public static final int FRAME_GENERATE = 1;
     public static final int FRAME_RESET = 2;
     public static final int FRAME_CAMERA = 4;
@@ -101,9 +112,11 @@ public final class FrameGen {
     // sl::DLSSGStatus bits
     private static final String[] STATUS_NAMES = {"resolution too low", "Reflex not detected", "HDR format not supported",
             "common constants invalid", "GetCurrentBackBufferIndex not called", "reserved 5"};
+    // cg_ffx.cpp's status bits
+    private static final String[] FFX_STATUS_NAMES = {"its context could not be made at this size", "a call failed"};
 
-    /** What the presenter needs to start frame generation (cg_fg_prepare). */
-    public record Start(int backend, Path pluginFolder, Path dllFolder, Path logFolder, int flags) {}
+    /** What the presenter needs to start frame generation (cg_fg_prepare), and whether it starts on (cg_fg_enable). */
+    public record Start(int backend, Path pluginFolder, Path dllFolder, Path logFolder, int flags, boolean on) {}
 
     /** One frame for the presenter: cg_fg_frame's arguments, and the capture's sources. */
     public static final class Frame {
@@ -133,6 +146,8 @@ public final class FrameGen {
 
     // The session.
     private static boolean requested;
+    /** The backend the presenter loaded (BACKEND_DLSSG or BACKEND_FSR), 0 before. */
+    private static int backend;
     private static String unavailable;
     private static boolean running;
     private static String broken;
@@ -187,58 +202,90 @@ public final class FrameGen {
 
     // --- the presenter's start ---
 
-    /**
-     * At the presenter's start, before its swap chain: unpacks Streamline and finds nvngx_dlssg.dll. Null when frame
-     * generation is off, or can't start (then logged).
-     */
-    public static Start start() {
+    /** The frameGen setting: off, dlss or fsr. */
+    public static String setting() {
         String mode = DisplaySettings.getString(DisplaySettings.FRAME_GEN, "off").toLowerCase(Locale.ROOT);
-        if (mode.equals("off") || mode.isEmpty() || mode.equals("false")) {
-            return null;
+        return switch (mode) {
+            case "dlss" -> "dlss";
+            case "fsr", "fsr3" -> "fsr";
+            default -> "off";
+        };
+    }
+
+    /** A backend's setting value: dlss, fsr, or off for none. */
+    public static String settingOf(int backend) {
+        return backend == BACKEND_DLSSG ? "dlss" : backend == BACKEND_FSR ? "fsr" : "off";
+    }
+
+    /**
+     * At the presenter's start on DirectX 12, before its swap chain: the backend it loads, on if frameGen asks for it,
+     * else off until it does. frameGen's (dlss or fsr), else frameGenType's, else DLSS Frame Generation on an RTX 40 or
+     * 50 card with nvngx_dlssg.dll in the DLSS folder, else AMD's; DLSS only on those cards. Unpacks Streamline or
+     * FidelityFX. {@code renderer} is OpenGL's name for the card. Null if it can't load (logged).
+     */
+    public static Start start(String renderer) {
+        String mode = setting();
+        String picked = !mode.equals("off") ? mode
+                : DisplaySettings.getString(DisplaySettings.FRAME_GEN_TYPE, "").toLowerCase(Locale.ROOT);
+        boolean dlssCard = supportedCard(renderer);
+        String model = Dlss.readyFrameGenerationDll();
+        String type;
+        if (picked.equals("fsr") || picked.equals("dlss") && dlssCard) {
+            type = picked;
+        } else if (picked.equals("dlss")) {
+            LOG.info("Frame generation: NVIDIA's needs an RTX 40 or 50 card ({}); AMD's loads instead", renderer);
+            type = "fsr";
+        } else {
+            type = dlssCard && model != null ? "dlss" : "fsr";
         }
-        if (!mode.equals("dlss")) {
-            LOG.warn("Frame generation: unknown {}={}, off (dlss or off)", DisplaySettings.FRAME_GEN, mode);
-            return null;
-        }
+        boolean on = mode.equals(type);
         requested = true;
         try {
             Path root = FMLPaths.GAMEDIR.get().resolve(Dlss.FOLDER);
+            boolean verbose = DisplaySettings.get(DisplaySettings.FRAME_GEN_VERBOSE);
+            if (type.equals("fsr")) {
+                Path folder = unpack(root.resolve("fidelityfx-" + FIDELITYFX_VERSION), FIDELITYFX_RESOURCES, FIDELITYFX_FILES);
+                LOG.info("Frame generation: AMD FSR 3.1 frame generation (FidelityFX SDK {}) from {}, {}", FIDELITYFX_VERSION, folder,
+                        on ? "on" : "off until turned on");
+                backend = BACKEND_FSR;
+                return new Start(BACKEND_FSR, folder, folder, folder, verbose ? FFX_VERBOSE : 0, on);
+            }
             String development = DisplaySettings.getString(DisplaySettings.FRAME_GEN_STREAMLINE, "");
             Path plugins;
-            int flags = DisplaySettings.get(DisplaySettings.FRAME_GEN_VERBOSE) ? SL_VERBOSE : 0;
+            int flags = verbose ? SL_VERBOSE : 0;
             if (!development.isEmpty()) {
                 plugins = Path.of(development);
                 flags |= SL_DEVELOPMENT | SL_VERBOSE;
                 LOG.warn("Frame generation: Streamline's development DLLs from {} (not signature checked)", plugins);
             } else {
-                plugins = unpackStreamline(root.resolve("streamline-" + STREAMLINE_VERSION));
+                plugins = unpack(root.resolve("streamline-" + STREAMLINE_VERSION), STREAMLINE_RESOURCES, STREAMLINE_FILES);
+            }
+            if (model == null) {
+                unavailable("no nvngx_dlssg.dll, NVIDIA's frame generation model, in " + Dlss.dllFolder() + " (the Upscaling"
+                        + " tab's Find on this PC copies it from NVIDIA's software, or put your own there with Open DLSS folder)");
+                return null;
             }
             Path logs = root.resolve("streamline-logs");
             Files.createDirectories(logs);
-            String model = Dlss.readyFrameGenerationDll();
-            LOG.info("Frame generation: NVIDIA DLSS Frame Generation through Streamline {} from {}; {}", STREAMLINE_VERSION,
-                    plugins, model);
-            if (model.startsWith("no ")) {
-                unavailable("no nvngx_dlssg.dll, NVIDIA's frame generation model. NVIDIA's software keeps it in"
-                        + " C:\\ProgramData\\NVIDIA\\NGX\\models\\dlssg, where the game looks at every start; or put it into "
-                        + Dlss.dllFolder() + " (it is in NVIDIA's Streamline SDK on GitHub, bin/x64)");
-                return null;
-            }
-            return new Start(BACKEND_DLSSG, plugins, Dlss.dllFolder(), logs, flags);
+            LOG.info("Frame generation: NVIDIA DLSS Frame Generation through Streamline {} from {}; nvngx_dlssg.dll {} (tested with"
+                    + " {}) from {}, {}", STREAMLINE_VERSION, plugins, model, Dlss.testedFrameGenerationDllVersion(), Dlss.dllFolder(),
+                    on ? "on" : "off until turned on");
+            backend = BACKEND_DLSSG;
+            return new Start(BACKEND_DLSSG, plugins, Dlss.dllFolder(), logs, flags, on);
         } catch (IOException | RuntimeException e) {
-            unavailable("Streamline could not be readied: " + e);
+            unavailable((type.equals("fsr") ? "FidelityFX" : "Streamline") + " could not be readied: " + e);
             return null;
         }
     }
 
-    /** Writes the shipped Streamline files into {@code folder} unless the same ones are there. */
-    private static Path unpackStreamline(Path folder) throws IOException {
+    /** Writes the shipped {@code files} from {@code resources} into {@code folder} unless the same ones are there. */
+    private static Path unpack(Path folder, String resources, String[] files) throws IOException {
         Files.createDirectories(folder);
-        for (String name : STREAMLINE_FILES) {
+        for (String name : files) {
             byte[] bytes;
-            try (InputStream in = FrameGen.class.getResourceAsStream(STREAMLINE_RESOURCES + name)) {
+            try (InputStream in = FrameGen.class.getResourceAsStream(resources + name)) {
                 if (in == null) {
-                    throw new IOException("the mod jar has no " + STREAMLINE_RESOURCES + name);
+                    throw new IOException("the mod jar has no " + resources + name);
                 }
                 bytes = in.readAllBytes();
             }
@@ -256,18 +303,39 @@ public final class FrameGen {
     /** Frame generation was asked for but can't run (the presenter goes on without it). */
     public static void unavailable(String reason) {
         unavailable = reason;
+        backend = 0;
         LOG.warn("Frame generation: off, {}", reason);
     }
 
-    /** The presenter runs with frame generation. */
-    public static void started(String adapter) {
+    /** The presenter runs with frame generation's backend, {@code on} or off. */
+    public static void started(String adapter, boolean on) {
         running = true;
-        LOG.info("Frame generation: ready in the DirectX 12 presenter on {}; Reflex goes through Streamline", adapter);
+        LOG.info("Frame generation: ready in the DirectX 12 presenter on {}, {}{}", adapter, on ? "on" : "off",
+                backend == BACKEND_DLSSG ? "; Reflex goes through Streamline" : "");
     }
 
-    /** True while the presenter runs with frame generation (Streamline loaded). */
+    /** True while the presenter runs with frame generation's backend loaded (on or off). */
     public static boolean running() {
         return running;
+    }
+
+    /** The backend loaded (BACKEND_DLSSG or BACKEND_FSR) while {@link #running()}, else 0. */
+    public static int backend() {
+        return running ? backend : 0;
+    }
+
+    /** True while frameGen asks for the backend that runs, and it hasn't stopped: the presenter then has it on. */
+    public static boolean on() {
+        return running && broken == null && setting().equals(settingOf(backend));
+    }
+
+    /** The presenter turned frame generation on or off (its swap chain made again). */
+    public static void switched(boolean on) {
+        generating = false;
+        confirmed = false;
+        lastOff = "";
+        afterResize = AFTER_RESIZE;
+        LOG.info("Frame generation: turned {}", on ? "on" : "off");
     }
 
     /** True if the presenter was asked for frame generation at its start. */
@@ -309,7 +377,7 @@ public final class FrameGen {
     /** True while anything needs the inputs: frame generation, or its test view or check. */
     private static boolean wanted() {
         settings();
-        return running && broken == null || view != 0 || check;
+        return on() || view != 0 || check;
     }
 
     /** For HudSplit: frame generation needs the world copy without the HUD. */
@@ -435,6 +503,9 @@ public final class FrameGen {
         if (broken != null) {
             return "stopped for this game: " + broken;
         }
+        if (!on()) {
+            return "turned off";
+        }
         if (minecraft.level == null) {
             return "no world";
         }
@@ -460,7 +531,7 @@ public final class FrameGen {
             return "no copy of the world without the HUD this frame";
         }
         if (afterProblem > 0) {
-            return "Streamline reported " + statusText(lastStatus);
+            return reporter() + " reported " + statusText(lastStatus);
         }
         if (minSize > 0 && Math.min(width, height) < minSize) {
             return "the window is below frame generation's smallest size, " + minSize + " pixels";
@@ -536,8 +607,8 @@ public final class FrameGen {
         }
         if (status != 0) {
             if (status != lastStatus) {
-                LOG.warn("Frame generation: Streamline reports {} (status {}); off for {} frames, then tried again", statusText(status),
-                        status, AFTER_PROBLEM);
+                LOG.warn("Frame generation: {} reports {} (status {}); off for {} frames, then tried again", reporter(),
+                        statusText(status), status, AFTER_PROBLEM);
             }
             lastStatus = status;
             afterProblem = AFTER_PROBLEM;
@@ -552,11 +623,17 @@ public final class FrameGen {
         }
     }
 
+    /** Who reports the backend's status: Streamline or FidelityFX. */
+    private static String reporter() {
+        return backend == BACKEND_FSR ? "FidelityFX" : "Streamline";
+    }
+
     private static String statusText(long status) {
+        String[] statusNames = backend == BACKEND_FSR ? FFX_STATUS_NAMES : STATUS_NAMES;
         List<String> names = new ArrayList<>();
-        for (int i = 0; i < STATUS_NAMES.length; i++) {
+        for (int i = 0; i < statusNames.length; i++) {
             if ((status & (1L << i)) != 0) {
-                names.add(STATUS_NAMES[i]);
+                names.add(statusNames[i]);
             }
         }
         return names.isEmpty() ? "status " + status : String.join(", ", names);

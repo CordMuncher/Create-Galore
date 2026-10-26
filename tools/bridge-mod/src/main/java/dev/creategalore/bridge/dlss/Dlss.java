@@ -68,6 +68,8 @@ public final class Dlss {
     public static final String FOLDER = "create-galore-dlss";
     /** The nvngx_dlss.dll this was tested with (NVIDIA's DLSS SDK on GitHub). */
     static final String TESTED_DLL_VERSION = "310.9.16";
+    /** The nvngx_dlssg.dll (DLSS Frame Generation's model) frame generation was tested with. */
+    static final String TESTED_FG_DLL_VERSION = "310.9.16";
     static final String DLL = "nvngx_dlss.dll";
     private static final String DLL_DIR_PROPERTY = "create_galore_bridge.dlss.dllDir";
     private static final String DEBUG_VIEW_PROPERTY = "create_galore_bridge.dlss.debugView";
@@ -828,12 +830,28 @@ public final class Dlss {
     }
 
     /**
-     * Frame generation is starting (testing, see FrameGen): puts a nvngx_dlssg.dll that waited for the old one in place,
-     * and copies one from NVIDIA's folder if there is none or NVIDIA's is newer. What it did, for the log.
+     * DLSS Frame Generation is starting (see FrameGen): puts a nvngx_dlssg.dll that waited for the old one in place.
+     * The version of the one in the DLSS folder ({@link #frameGenerationDllVersion()}); NVIDIA's folder is read only
+     * by the settings screen's Find on this PC.
      */
     public static String readyFrameGenerationDll() {
         DlssFinder.applyPending();
-        return DlssFinder.findFrameGeneration();
+        return frameGenerationDllVersion();
+    }
+
+    /** The version of the nvngx_dlssg.dll in the DLSS folder, "unknown" if it has none, or null if there is none. */
+    public static String frameGenerationDllVersion() {
+        Path dll = dllFolder().resolve(DlssFinder.FG_DLL);
+        if (!Files.isRegularFile(dll)) {
+            return null;
+        }
+        String version = DllVersion.read(dll);
+        return version != null ? version : "unknown";
+    }
+
+    /** The nvngx_dlssg.dll version frame generation was tested with. */
+    public static String testedFrameGenerationDllVersion() {
+        return TESTED_FG_DLL_VERSION;
     }
 
     /** The version of the nvngx_dlss.dll there, "unknown" if it has none, or null if there is none. */

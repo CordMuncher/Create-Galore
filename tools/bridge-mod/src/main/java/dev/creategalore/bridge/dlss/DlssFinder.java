@@ -21,14 +21,13 @@ import org.slf4j.LoggerFactory;
  * changes nothing here. A DLL the game has loaded can't be replaced: the copy then waits beside it as
  * nvngx_dlss.dll.new and takes over at the next start ({@link #applyPending()}).
  *
- * Frame generation (testing) takes nvngx_dlssg.dll the same way from the dlssg folder beside it, by itself when it
- * starts ({@link #findFrameGeneration()}).
+ * The same press copies DLSS Frame Generation's nvngx_dlssg.dll from the dlssg folder beside it the same way. The game
+ * never reads NVIDIA's folder by itself: NVIDIA updates those files often, and the copies here change only when the
+ * player asks (or puts their own in the DLSS folder).
  */
 final class DlssFinder {
     private static final Logger LOG = LoggerFactory.getLogger("create_galore_bridge");
-    private static final String PENDING = Dlss.DLL + ".new";
     static final String FG_DLL = "nvngx_dlssg.dll";
-    private static final String FG_PENDING = FG_DLL + ".new";
 
     private DlssFinder() {}
 
@@ -47,84 +46,59 @@ final class DlssFinder {
                 .resolve("NVIDIA").resolve("NGX").resolve("models").resolve(model).resolve("versions");
     }
 
-    /**
-     * Copies the newest nvngx_dlssg.dll from NVIDIA's dlssg folder into the DLSS folder unless the one there is as new,
-     * or waits as nvngx_dlssg.dll.new if the game has that one loaded. What it did, for the log.
-     */
-    static String findFrameGeneration() {
-        if (!System.getProperty("os.name", "").startsWith("Windows")) {
-            return "not Windows";
+    /** What one model's copy came to: NVIDIA's newest version (null: none there) and what happened to it. */
+    private record Copy(String version, String have, boolean copied, boolean pending, String error) {
+        /** For the screen: "DLSS 310.9.16 copied" and the like. */
+        String text(String label) {
+            return version == null ? "no " + label
+                    : error != null ? label + " " + version + " could not be copied (" + error + ")"
+                    : pending ? label + " " + version + " copied, in use after a restart"
+                    : copied ? label + " " + version + " copied"
+                    : label + " " + version + ", yours (" + have + ") is as new";
         }
-        Path versions = nvidiaFolder("dlssg");
-        Path best = null;
-        String bestVersion = null;
-        for (Path file : candidates(versions)) {
-            String version = DllVersion.read(file);
-            // DLSS Frame Generation started at 3.0; Streamline's NGX checks NVIDIA's signature when it loads it.
-            if (version != null && major(version) >= 3 && DllVersion.hasString(file, "NVIDIA")
-                    && (bestVersion == null || compare(version, bestVersion) > 0)) {
-                best = file;
-                bestVersion = version;
-            }
-        }
-        Path folder = Dlss.dllFolder();
-        Path dll = folder.resolve(FG_DLL);
-        String have = Files.isRegularFile(dll) ? DllVersion.read(dll) : null;
-        if (best == null) {
-            return have != null ? FG_DLL + " " + have + " (none in NVIDIA's folder " + versions + ")"
-                    : "no " + FG_DLL + " in " + folder + " or NVIDIA's folder " + versions;
-        }
-        if (have != null && compare(have, bestVersion) >= 0) {
-            return FG_DLL + " " + have + " (NVIDIA's folder has " + bestVersion + ")";
-        }
-        try {
-            Files.createDirectories(folder);
-            Path pending = folder.resolve(FG_PENDING);
-            Files.copy(best, pending, StandardCopyOption.REPLACE_EXISTING);
-            try {
-                Files.move(pending, dll, StandardCopyOption.REPLACE_EXISTING);
-            } catch (IOException e) {
-                if (have == null) {
-                    throw e;
-                }
-                return FG_DLL + " " + have + "; copied " + bestVersion + " from " + best + ", in place at the next start";
-            }
-        } catch (IOException e) {
-            return (have != null ? FG_DLL + " " + have : "no " + FG_DLL) + "; could not copy " + bestVersion + " from " + best
-                    + ": " + e.getMessage();
-        }
-        return FG_DLL + " " + bestVersion + ", copied from " + best;
     }
 
+    /**
+     * Pressing "Find on this PC": copies the newest nvngx_dlss.dll and nvngx_dlssg.dll from NVIDIA's folders into the
+     * DLSS folder, each unless the one there is as new. {@code changed} if nvngx_dlss.dll was put in place now.
+     */
     static Result find() {
         if (!System.getProperty("os.name", "").startsWith("Windows")) {
             return new Result("DLSS runs only on Windows.", false);
         }
-        Path versions = nvidiaFolder();
+        // An NVIDIA DLL from DLSS 2 on, and Frame Generation from 3 on (NGX checks NVIDIA's signature when it loads them).
+        Copy dlss = copyNewest("dlss", Dlss.DLL, 2);
+        Copy dlssg = copyNewest("dlssg", FG_DLL, 3);
+        if (dlss.version() == null && dlssg.version() == null) {
+            return new Result("Nothing found in NVIDIA's folder (" + nvidiaFolder().getParent() + "). The NVIDIA app puts DLSS there"
+                    + " once it has updated DLSS for a game. Get it from NVIDIA instead.", false);
+        }
+        return new Result("NVIDIA's folder: " + dlss.text("DLSS") + "; " + dlssg.text("frame generation") + ".",
+                dlss.copied() && !dlss.pending());
+    }
+
+    /** The newest {@code name} of NVIDIA's {@code model} folder, from version {@code major} on, copied into the DLSS folder. */
+    private static Copy copyNewest(String model, String name, int major) {
+        Path versions = nvidiaFolder(model);
         Path best = null;
         String bestVersion = null;
         for (Path file : candidates(versions)) {
             String version = DllVersion.read(file);
-            // An NVIDIA DLL from DLSS 2 on (NGX itself checks NVIDIA's signature when it loads it).
-            if (version != null && major(version) >= 2 && DllVersion.hasString(file, "NVIDIA")
+            if (version != null && major(version) >= major && DllVersion.hasString(file, "NVIDIA")
                     && (bestVersion == null || compare(version, bestVersion) > 0)) {
                 best = file;
                 bestVersion = version;
             }
         }
-        if (best == null) {
-            return new Result("No DLSS found in NVIDIA's folder (" + versions.getParent() + "). The NVIDIA app puts it there once it"
-                    + " has updated DLSS for a game. Get it from NVIDIA instead.", false);
-        }
         Path folder = Dlss.dllFolder();
-        Path dll = folder.resolve(Dlss.DLL);
+        Path dll = folder.resolve(name);
         String have = Files.isRegularFile(dll) ? DllVersion.read(dll) : null;
-        if (have != null && compare(have, bestVersion) >= 0) {
-            return new Result("Found DLSS " + bestVersion + " in NVIDIA's folder; yours (" + have + ") is as new, so it stays.", false);
+        if (best == null || have != null && compare(have, bestVersion) >= 0) {
+            return new Copy(bestVersion, have, false, false, null);
         }
         try {
             Files.createDirectories(folder);
-            Path pending = folder.resolve(PENDING);
+            Path pending = folder.resolve(name + ".new");
             Files.copy(best, pending, StandardCopyOption.REPLACE_EXISTING);
             try {
                 Files.move(pending, dll, StandardCopyOption.REPLACE_EXISTING);
@@ -133,16 +107,15 @@ final class DlssFinder {
                     throw e;
                 }
                 // The game has the old one loaded.
-                LOG.info("DLAA: copied DLSS {} from {}; it replaces {} at the next start", bestVersion, best, have);
-                return new Result("Copied DLSS " + bestVersion + " from NVIDIA's folder. It replaces " + have
-                        + " when you restart the game.", false);
+                LOG.info("DLAA: copied {} {} from {}; it replaces {} at the next start", name, bestVersion, best, have);
+                return new Copy(bestVersion, have, true, true, null);
             }
         } catch (IOException e) {
             LOG.warn("DLAA: could not copy {} into {}: {}", best, folder, e.toString());
-            return new Result("Found DLSS " + bestVersion + " in NVIDIA's folder but could not copy it: " + e.getMessage(), false);
+            return new Copy(bestVersion, have, false, false, e.getMessage());
         }
-        LOG.info("DLAA: copied DLSS {} from {} into {}", bestVersion, best, folder);
-        return new Result("Copied DLSS " + bestVersion + " from NVIDIA's folder into the DLSS folder.", true);
+        LOG.info("DLAA: copied {} {} from {} into {}", name, bestVersion, best, folder);
+        return new Copy(bestVersion, have, true, false, null);
     }
 
     /** At mod construction, before DLSS loads: a copy that waited for the old DLL to be let go takes its place. */

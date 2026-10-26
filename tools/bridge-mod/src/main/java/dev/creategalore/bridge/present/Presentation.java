@@ -204,11 +204,11 @@ public final class Presentation {
     }
 
     /**
-     * True while frame generation runs in the DirectX 12 presenter (testing, see FrameGen): Streamline is loaded, so
-     * Reflex goes through it.
+     * True while the DirectX 12 presenter runs with Streamline loaded (DLSS Frame Generation's backend, on or off, see
+     * FrameGen), so Reflex goes through it.
      */
-    public static boolean frameGeneration() {
-        return active() && presenter instanceof D3D12Presenter d3d12 && d3d12.frameGeneration();
+    public static boolean streamline() {
+        return active() && presenter instanceof D3D12Presenter d3d12 && d3d12.streamline();
     }
 
     /** An export of the DirectX 12 presenter's cg_present.dll; throws while it doesn't run. */

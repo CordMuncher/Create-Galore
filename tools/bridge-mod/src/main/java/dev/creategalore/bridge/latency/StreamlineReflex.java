@@ -8,9 +8,9 @@ import dev.creategalore.bridge.present.Ffi;
 import dev.creategalore.bridge.present.Presentation;
 
 /**
- * NVIDIA Reflex through Streamline (sl.reflex and sl.pcl), while DLSS Frame Generation runs in Perfect Presentation's
- * DirectX 12 presenter: NVIDIA's frame generation needs it, with its sleep and the PC Latency markers every frame, and
- * NVAPI's Reflex can't run beside it. The calls go through cg_present.dll (cg_sl_reflex_options, cg_sl_reflex_sleep,
+ * NVIDIA Reflex through Streamline (sl.reflex and sl.pcl), while Streamline runs in Perfect Presentation's DirectX 12
+ * presenter for DLSS Frame Generation (on or off): NVIDIA's frame generation needs it, with its sleep and the PC
+ * Latency markers every frame, and NVAPI's Reflex can't run beside Streamline. The calls go through cg_present.dll (cg_sl_reflex_options, cg_sl_reflex_sleep,
  * cg_sl_marker, cg_sl_reflex_state in tools/bridge-mod/native/cg_streamline.cpp), which turns each frame id into
  * Streamline's frame token, the same one frame generation's constants and the present markers use.
  */
@@ -43,10 +43,10 @@ final class StreamlineReflex implements Reflex {
         error = Presentation.presenterSymbol("cg_present_error");
     }
 
-    /** Streamline's Reflex; throws unless frame generation runs (with Streamline) in Perfect Presentation's presenter. */
+    /** Streamline's Reflex; throws unless Streamline runs in Perfect Presentation's presenter. */
     static StreamlineReflex start() {
-        if (!Presentation.frameGeneration()) {
-            throw new IllegalStateException("frame generation isn't running, so Streamline isn't either");
+        if (!Presentation.streamline()) {
+            throw new IllegalStateException("Streamline isn't running");
         }
         return new StreamlineReflex();
     }
