@@ -60,7 +60,7 @@ import org.slf4j.LoggerFactory;
 public final class PhotonPatcher {
     private static final Logger LOG = LoggerFactory.getLogger("create_galore_bridge");
     /** Bumped when the patch changes, so existing copies are made again. */
-    private static final int PATCH_VERSION = 11;
+    private static final int PATCH_VERSION = 12;
     private static final String BASE_ZIP = "photon_v1.3a.zip";
     /** Colorwheel Patcher's copy of {@link #BASE_ZIP}; an outdated one gets a prefix and no longer matches. */
     private static final Pattern COLORWHEEL_ZIP = Pattern.compile("photon_v1\\.3a \\+ Clrwl_(\\d+)\\.(\\d+)\\.(\\d+)\\.zip");
@@ -725,7 +725,9 @@ public final class PhotonPatcher {
                 }
             #endif
                 // DLSS depth, reversed and infinite like most engines: 1 at the near plane, towards 0 far away, 0 sky.
-                float dlss_depth = sky ? 0.0 : clamp(near / max(-view_pos.z, near), 0.0, 1.0);
+                // near over clip w, so it follows the projection with view bobbing in it as frame generation's camera does.
+                float clip_w = (gbufferProjection * vec4(view_pos, 1.0)).w;
+                float dlss_depth = sky ? 0.0 : clamp(near / max(clip_w, near), 0.0, 1.0);
 
                 float composition = 0.0;
                 if (!is_lod && texelFetch(depthtex1, texel, 0).x < 1.0) { // a solid surface drew here: its material

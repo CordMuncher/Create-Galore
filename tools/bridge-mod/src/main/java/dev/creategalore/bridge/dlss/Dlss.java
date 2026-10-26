@@ -13,6 +13,7 @@ import java.util.function.ToIntFunction;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import dev.creategalore.bridge.DisplaySettings;
+import dev.creategalore.bridge.framegen.FrameGen;
 import dev.creategalore.bridge.mixin.LevelRendererTicksAccessor;
 import net.irisshaders.iris.Iris;
 import net.irisshaders.iris.uniforms.CapturedRenderingState;
@@ -190,6 +191,7 @@ public final class Dlss {
     /** A shader pack pipeline was made (shaders loaded or reloaded): reads the settings and the pack's profile again. */
     public static void onPipelineCreated() {
         ObjectMotion.reset();
+        FrameGen.pipelineCreated();
         DisplaySettings.reload();
         engine = DisplaySettings.dlaaEngine();
         wanted = !engine.equals("off");
@@ -478,6 +480,8 @@ public final class Dlss {
             }
             reset = false;
             dlssGuard.ran();
+            FrameGen.upscaled(in.motionTexture(), in.depthTexture(), in.width(), in.height(), in.renderWidth(), in.renderHeight(),
+                    jitterX * jitterSign[0], jitterY * jitterSign[1], resetNow, frameTimeMs);
             dumpIfAsked(pass, true);
             Markers.around("Create Galore DLAA: write back", () -> pass.writeBack(profile, DlssPass.View.RESULT));
         } catch (Throwable t) {
@@ -504,6 +508,8 @@ public final class Dlss {
                 frameTimeMs, projection, fsr3Debug));
         reset = false;
         fsrGuard.ran();
+        FrameGen.upscaled(in.motionTexture(), in.depthTexture(), in.width(), in.height(), in.renderWidth(), in.renderHeight(),
+                jitterX * jitterSign[0], jitterY * jitterSign[1], resetNow, frameTimeMs);
         dumpIfAsked(fsrPass, true);
         Markers.around("Create Galore DLAA: write back", () -> fsrPass.writeBack(profile, DlssPass.View.RESULT));
     }
@@ -812,10 +818,22 @@ public final class Dlss {
 
     // For the settings screen (DlaaScreen).
 
-    /** Where DLSS reads nvngx_dlss.dll from: create-galore-dlss in the game folder (or the dllDir test property). */
-    static Path dllFolder() {
+    /**
+     * Where DLSS reads nvngx_dlss.dll from (and frame generation nvngx_dlssg.dll): create-galore-dlss in the game folder
+     * (or the dllDir test property).
+     */
+    public static Path dllFolder() {
         String dllDir = System.getProperty(DLL_DIR_PROPERTY);
         return dllDir != null && !dllDir.isBlank() ? Path.of(dllDir) : FMLPaths.GAMEDIR.get().resolve(FOLDER);
+    }
+
+    /**
+     * Frame generation is starting (testing, see FrameGen): puts a nvngx_dlssg.dll that waited for the old one in place,
+     * and copies one from NVIDIA's folder if there is none or NVIDIA's is newer. What it did, for the log.
+     */
+    public static String readyFrameGenerationDll() {
+        DlssFinder.applyPending();
+        return DlssFinder.findFrameGeneration();
     }
 
     /** The version of the nvngx_dlss.dll there, "unknown" if it has none, or null if there is none. */

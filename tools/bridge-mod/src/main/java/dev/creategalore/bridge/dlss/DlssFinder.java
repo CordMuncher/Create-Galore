@@ -20,10 +20,15 @@ import org.slf4j.LoggerFactory;
  * is pressed, takes the newest version and keeps a copy in the DLSS folder, so NVIDIA updating or removing theirs later
  * changes nothing here. A DLL the game has loaded can't be replaced: the copy then waits beside it as
  * nvngx_dlss.dll.new and takes over at the next start ({@link #applyPending()}).
+ *
+ * Frame generation (testing) takes nvngx_dlssg.dll the same way from the dlssg folder beside it, by itself when it
+ * starts ({@link #findFrameGeneration()}).
  */
 final class DlssFinder {
     private static final Logger LOG = LoggerFactory.getLogger("create_galore_bridge");
     private static final String PENDING = Dlss.DLL + ".new";
+    static final String FG_DLL = "nvngx_dlssg.dll";
+    private static final String FG_PENDING = FG_DLL + ".new";
 
     private DlssFinder() {}
 
@@ -32,9 +37,63 @@ final class DlssFinder {
 
     /** NVIDIA's folder of DLSS versions. */
     static Path nvidiaFolder() {
+        return nvidiaFolder("dlss");
+    }
+
+    /** NVIDIA's folder of versions of one model: dlss, dlssg (frame generation), dlssd. */
+    private static Path nvidiaFolder(String model) {
         String programData = System.getenv("ProgramData");
         return Path.of(programData != null && !programData.isBlank() ? programData : "C:\\ProgramData")
-                .resolve("NVIDIA").resolve("NGX").resolve("models").resolve("dlss").resolve("versions");
+                .resolve("NVIDIA").resolve("NGX").resolve("models").resolve(model).resolve("versions");
+    }
+
+    /**
+     * Copies the newest nvngx_dlssg.dll from NVIDIA's dlssg folder into the DLSS folder unless the one there is as new,
+     * or waits as nvngx_dlssg.dll.new if the game has that one loaded. What it did, for the log.
+     */
+    static String findFrameGeneration() {
+        if (!System.getProperty("os.name", "").startsWith("Windows")) {
+            return "not Windows";
+        }
+        Path versions = nvidiaFolder("dlssg");
+        Path best = null;
+        String bestVersion = null;
+        for (Path file : candidates(versions)) {
+            String version = DllVersion.read(file);
+            // DLSS Frame Generation started at 3.0; Streamline's NGX checks NVIDIA's signature when it loads it.
+            if (version != null && major(version) >= 3 && DllVersion.hasString(file, "NVIDIA")
+                    && (bestVersion == null || compare(version, bestVersion) > 0)) {
+                best = file;
+                bestVersion = version;
+            }
+        }
+        Path folder = Dlss.dllFolder();
+        Path dll = folder.resolve(FG_DLL);
+        String have = Files.isRegularFile(dll) ? DllVersion.read(dll) : null;
+        if (best == null) {
+            return have != null ? FG_DLL + " " + have + " (none in NVIDIA's folder " + versions + ")"
+                    : "no " + FG_DLL + " in " + folder + " or NVIDIA's folder " + versions;
+        }
+        if (have != null && compare(have, bestVersion) >= 0) {
+            return FG_DLL + " " + have + " (NVIDIA's folder has " + bestVersion + ")";
+        }
+        try {
+            Files.createDirectories(folder);
+            Path pending = folder.resolve(FG_PENDING);
+            Files.copy(best, pending, StandardCopyOption.REPLACE_EXISTING);
+            try {
+                Files.move(pending, dll, StandardCopyOption.REPLACE_EXISTING);
+            } catch (IOException e) {
+                if (have == null) {
+                    throw e;
+                }
+                return FG_DLL + " " + have + "; copied " + bestVersion + " from " + best + ", in place at the next start";
+            }
+        } catch (IOException e) {
+            return (have != null ? FG_DLL + " " + have : "no " + FG_DLL) + "; could not copy " + bestVersion + " from " + best
+                    + ": " + e.getMessage();
+        }
+        return FG_DLL + " " + bestVersion + ", copied from " + best;
     }
 
     static Result find() {
@@ -89,13 +148,15 @@ final class DlssFinder {
     /** At mod construction, before DLSS loads: a copy that waited for the old DLL to be let go takes its place. */
     static void applyPending() {
         Path folder = Dlss.dllFolder();
-        Path pending = folder.resolve(PENDING);
-        if (Files.isRegularFile(pending)) {
-            try {
-                Files.move(pending, folder.resolve(Dlss.DLL), StandardCopyOption.REPLACE_EXISTING);
-                LOG.info("DLAA: nvngx_dlss.dll {} from NVIDIA's folder is in place", DllVersion.read(folder.resolve(Dlss.DLL)));
-            } catch (IOException e) {
-                LOG.warn("DLAA: could not put {} in place: {}", pending, e.toString());
+        for (String name : new String[] {Dlss.DLL, FG_DLL}) {
+            Path pending = folder.resolve(name + ".new");
+            if (Files.isRegularFile(pending)) {
+                try {
+                    Files.move(pending, folder.resolve(name), StandardCopyOption.REPLACE_EXISTING);
+                    LOG.info("DLAA: {} {} from NVIDIA's folder is in place", name, DllVersion.read(folder.resolve(name)));
+                } catch (IOException e) {
+                    LOG.warn("DLAA: could not put {} in place: {}", pending, e.toString());
+                }
             }
         }
     }

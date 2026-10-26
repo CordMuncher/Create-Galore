@@ -1297,3 +1297,407 @@ If a launch crashes, copy `hs_err_pid*.log` and the log's last 100 lines, and re
   fullscreen` on both.
 
 Commit and push on the DLAA branch. Don't commit hs_err files (they name his user folder).
+
+## Pacer 3: GPU pacing on DirectX 12
+
+Start only when Emre says so. It isn't urgent: it's for the day DirectX 12 becomes Perfect Presentation's default.
+It can share a session with HUD split 1 (below; that one first).
+Same PC, test folder and settings as Presenter 3, **no PresentMon and no nvidia-smi** (no administrator prompts).
+About 55 minutes, four launches, no by-feel part. **Frame times count here**: a quiet PC, no game server, nothing else
+started.
+
+**What it tests.** GPU pacing (the Display tab's GPU pacing, `gpuPacing`) was tuned on DirectX 11 in Pacer 2
+(`results\pacer2\REPORT.md`):
+- **On** lets a frame queue on the GPU for 65% of the frame time, at least 4 ms, with Perfect Presentation (80%, at
+  least 5 ms, without). On the RTX 4080 at about 165 fps that is about 4 ms. It cost no frames there (+3 / 0%) and
+  cut the latency from 11.9 to 9.8 ms.
+- **Lowest** sets the target from how much the frames vary (about 1–2.5 ms). It cut the latency to 8.4 ms for about
+  6% fewer frames.
+
+DirectX 12 (Bridge 1.115.0, pack 0.5.9, the Display tab's DirectX setting) hands each frame to Direct3D 12 after
+OpenGL finishes it, so the GPU gets a little more work per frame and the frames queue a little differently. Presenter 3
+measured about 1 ms less queue on DirectX 12 at `lat-base`, and Presenter 1 (before the 1.114.0 fix) saw Lowest's
+target swing more on DirectX 12 (1.8–4.0 ms against 0.6–2.3). This run measures the same targets on both presenters,
+alternating, to tell whether On's rule and Lowest still fit on DirectX 12 or need their own numbers there.
+
+### Update
+
+```powershell
+git -C $T\repo fetch origin
+git -C $T\repo checkout -B claude/project-thread-u2wmhh origin/claude/project-thread-u2wmhh
+Remove-Item $T\instance\mods\create-galore-bridge-*.jar
+Copy-Item $T\repo\pack\mods\create-galore-bridge-*.jar $T\instance\mods\
+Copy-Item $T\repo\tools\dlss-testkit\dist\create-galore-dlss-testkit-1.0.0.jar $T\instance\mods\ -Force
+```
+
+The Bridge is 1.115.0 (released in pack 0.5.9) or the 1.116.0 test build (the same plus the HUD split, which stays
+off unless its test keys are set; see HUD split 1). Its test keys `presentGlWait`, `presentSync`, `presentFrameLatency`,
+`presentBuffers` and `presentQueuePriority` are gone: if any is still in the test folder's display settings, remove
+it. The kit's first run in each game clears any test scene an earlier game left in the world (the log says
+`cleared the test scenes`); there's no need to remove scenes by hand.
+
+### Settings
+
+As Presenter 3 (note the old values, put them back afterwards): `dlaa=dlss`, `perfectPresentation=true`,
+`earlyWindowControl = false`, Distant Horizons `numberOfThreads = 2`, `gpuPacing=off` (the kit's modes switch the
+pacer themselves). The API is the setting `presenter=dx11` or `presenter=dx12` in
+`config\create_galore_bridge-display.properties` (the Display tab's DirectX). Set it in the file before each launch, as
+the table says; no other test keys. Look at the NVIDIA Control Panel and the refresh rate again and write them down;
+change nothing.
+
+### Launches
+
+The launch from step 4 (2560x1440), `--jvm-arg=-Dcreate_galore_dlss_testkit.autorun=dlaa-test` and
+`--jvm-arg=-Dcreate_galore_dlss_testkit.runs=L7`, the window in front with focus, in this order:
+
+| Launch | `presenter` |
+| --- | --- |
+| 1 | `dx11` |
+| 2 | `dx12` |
+| 3 | `dx11` |
+| 4 | `dx12` |
+
+L7 plays each mode twice at `shore` and `canopy` (about 11 minutes):
+
+| Mode | What |
+| --- | --- |
+| `lat-base` | the game as it is |
+| `lat-pacing-on` | GPU pacing On (65% of the frame time, at least 4 ms) + late read |
+| `lat-pacer` | GPU pacing Lowest (the automatic target) + late read |
+| `lat-pacer-3000` | the pacer at 3000 us + late read |
+| `lat-pacer-5000` | the pacer at 5000 us + late read |
+| `lat-reflex` | Reflex on + late read, for comparison |
+
+- The log must have `DXGI swap chain ready on DirectX 11` or `... on DirectX 12` to match the launch, and the run's
+  `manifest.json` has `"presenter"` with the same.
+- It must also have `Latency: GPU pacer on, frames may queue on the GPU a share of the frame time that keeps the frame
+  rate`, `... as much as they vary`, `... 3000 us on the GPU`, `... 5000 us on the GPU` and `Reflex: started on
+  Perfect Presentation's DirectX 12 device` (or `DirectX 11`). Copy any `Perfect Presentation`, `Latency:` or `Reflex:` WARN or ERROR line.
+- Check that PresentMon and nvidia-smi aren't running, as in Presenter 3.
+
+If a launch crashes, copy `hs_err_pid*.log` and the log's last 100 lines, and report.
+
+### Results
+
+`python latency.py` on the four run folders (each folder's header line names its presenter). Write
+`$T\repo\tools\dlss-testkit\results\pacer3\REPORT.md`:
+- per mode, viewpoint and launch: fps and its change against that launch's `lat-base`, latency (median and 90th
+  percentile), the queue (median and `q10`), and with the pacer its target, wait and how late the wait ended;
+- per presenter, the two launches averaged: for each pacer mode the fps change and the latency against `lat-base`;
+- in one line each, for DirectX 12 against DirectX 11:
+  - **On:** does it still keep the frame rate (within about 2% of `lat-base`) on DirectX 12, and at what latency? Which
+    of 3000, On (about 4000) and 5000 is the shortest target that keeps the frame rate on each presenter?
+  - **Lowest:** its fps cost and latency on each, and how much its target swings (the target column over the plays);
+  - **Reflex:** about the same on both, as in Presenter 3?
+  - **the queue at `lat-base`:** still about 1 ms shorter on DirectX 12?
+- the `Perfect Presentation`, `Latency:` and `Reflex:` lines, the control panel settings and refresh rate.
+
+What comes of it: if DirectX 12's shortest frame-keeping target differs from DirectX 11's by more than about 0.5 ms,
+On gets its own rule on DirectX 12 (`GpuPacer.keepingFrameRate` per presenter); if Lowest's cost there is clearly
+higher, its margin gets looked at. Otherwise nothing changes.
+
+Commit and push on the DLAA branch. Don't commit hs_err files (they name his user folder).
+
+## HUD split 1: the world without the HUD, and the HUD's coverage
+
+Start only when Emre says so. About 20 minutes, one launch, by eye with Emre (he plays; the log and the saved pictures
+do the checking). Frame times don't count, except the short comparison in step 4.
+
+**With Pacer 3 in one session (about 75 minutes).** Do this section first, while Emre is at the keyboard, then Pacer 3,
+which needs no one, only a quiet PC. Use Pacer 3's Update (it also copies the test kit); it covers both. Between the
+two: remove `hudSplitCheck`, `hudSplit` and `hudSplitView` from the settings file (without them the split is off) and
+put `presenter` and `fpsCounter` back to their old values, so Pacer 3 starts from its own settings.
+
+**What it tests.** Bridge 1.116.0 (a test build on this branch) can keep, every frame, a copy of the picture just before
+the HUD (the world with its full-screen effects such as nausea and the vignette, but no HUD) and record in the frame's
+alpha channel how much the HUD covers each pixel: 0 where the world shows through, 1 under solid HUD. The picture on
+the screen must not change. From the two, the HUD's own colour follows exactly. The cloud test (Linux, Mesa, with and
+without Photon, about 150 checks) found nothing out of place; this is the same on the RTX 4080 at full speed, with
+Perfect Presentation on DirectX 12, Photon + DLSS and the pack's whole HUD.
+
+`hudSplitCheck=true` turns it on and compares the copy with the frame every 5 seconds: a log line `HUD split check N`
+each time, and when the scene changed, pictures in `$T\instance\screenshots\hud-split\` (`check-N-frame.png`, `-hudless`,
+`-alpha`, `-ui` over a grey checkerboard, and `-marks`). It counts:
+- **leaks**: pixels the HUD changed without recording coverage (magenta in the marks picture);
+- **under**: the HUD darkened the world without coverage (yellow);
+- **over**: light the HUD added on top (cyan; fine for the HUD's colour, lost with alpha alone).
+
+All three should stay 0. A check stalls one frame (it reads the frame back), so the frame counter dips every 5 s.
+
+### Update
+
+```powershell
+git -C $T\repo fetch origin
+git -C $T\repo checkout -B claude/project-thread-u2wmhh origin/claude/project-thread-u2wmhh
+Remove-Item $T\instance\mods\create-galore-bridge-*.jar
+Copy-Item $T\repo\pack\mods\create-galore-bridge-*.jar $T\instance\mods\
+```
+
+The instance's mods must have `create-galore-bridge-1.116.0.jar`.
+
+### Settings
+
+Note the old values and put them back afterwards. In `config\create_galore_bridge-display.properties`:
+`dlaa=dlss`, `perfectPresentation=true`, `presenter=dx12`, `fpsCounter=detailed`, and add the line
+`hudSplitCheck=true`. Shader pack: Photon v1.3a + DLAA. Nothing else changes.
+
+### Launch
+
+The launch from step 4 (2560x1440) without the `autorun` argument; open the `dlaa-test` world, then `/gamemode creative`
+(the start is next to the lake). The log must have `HUD split: on, checks every 5 s`, `HUD split: world copy taken after
+the vignette` and `HUD split: N HUD layers; drawn before the camera overlays ...`.
+
+1. **The HUD, about 8 minutes.** Hold each for about 15 seconds (three checks):
+   - the HUD as it is, then `/gamemode survival` for the hearts and food, standing on land (back to creative after);
+   - F3; then chat open with a few letters typed;
+   - `/bossbar add cg:test "HUD test"` and `/bossbar set cg:test players @s`, then `/title @s title "Title"`, then
+     `/bossbar remove cg:test`;
+   - `/item replace entity @s armor.head with carved_pumpkin` (then `... with air`);
+   - a spyglass in hand, held to the eye (right mouse);
+   - `/effect give @s nausea 20`;
+   - the inventory (E), the pause menu (Esc), the options screen; F1.
+2. **By eye, about 5 minutes.** Play normally for a while. Emre tells whether anything looks different from usual:
+   flicker, a wrong colour, the HUD or the menu blur looking off.
+3. **The views, about 5 minutes.** Add `hudSplitView=ui` to the settings file and press F8 (the shaders reload; the log
+   says `HUD split: on, view ui, ...`). Then change it to `marks`, `hudless` and `alpha`, F8 each time. What each
+   should show:
+   - `ui`: only the HUD, over a grey checkerboard; no world;
+   - `marks`: the world dimmed, no magenta, yellow or cyan anywhere;
+   - `hudless`: the world with no HUD at all (no hotbar, crosshair, chat, minimap, frame counter);
+   - `alpha`: white where the HUD is, black elsewhere.
+   Take an F2 screenshot of each. Remove the `hudSplitView` line and F8.
+4. **The cost, about 2 minutes.** Stand still at one spot looking at the lake. Note the frame counter's average with
+   `hudSplitCheck=true` replaced by `hudSplit=true` (no checks, the split alone), F8, 20 seconds; then with that line
+   removed, F8, 20 seconds.
+
+### Results
+
+Write `$T\repo\tools\dlss-testkit\results\hud-split1\REPORT.md`:
+- every `HUD split` log line that isn't a check, and every check line whose leaks, under or over isn't 0, with its
+  `-frame.png` and `-marks.png` copied next to the report;
+- per scene in step 1: the check lines (copy them), and the marks pictures if any are coloured;
+- what Emre saw in step 2, and the four view screenshots from step 3 (copied next to the report);
+- the frame rate with and without the split (step 4);
+- any `HUD split` WARN line, and any `Perfect Presentation` or `DLAA:` WARN or ERROR line.
+
+Then remove `hudSplitCheck`, `hudSplit` and `hudSplitView` from the settings file and put the old values back. Commit and
+push on the DLAA branch. Don't commit hs_err files (they name his user folder).
+
+## DLSS-G 1: DLSS Frame Generation, first run
+
+Start only when Emre says so. About 50 minutes: part A by eye with Emre (about 25 minutes, he plays), then part B, two
+latency launches that need no one, only a quiet PC (about 20 minutes). Frame times count only in part B.
+
+**What it tests.** Bridge 1.117.0 (a test build on this branch) adds NVIDIA DLSS Frame Generation to Perfect
+Presentation's DirectX 12 presenter, through NVIDIA Streamline 2.14.16 (its signed production DLLs ship in the Bridge).
+For every frame the game renders, the driver makes one more, shown between it and the frame before. It is built from
+the frame without the HUD and the HUD's coverage (both from HUD split, see HUD split 1), DLSS's depth and motion
+vectors, and the camera. It runs only with the test key `frameGen=dlss`; nothing about it is in the settings screen.
+
+The cloud has no NVIDIA GPU, so it checked only the game's half: that the inputs land in the right place, the right
+way up, and that the motion vectors agree with the camera (`frameGenCheck`, below; Mesa, FSR 3, a few hundred
+checks). This is the first time Streamline, NVIDIA's frame generation and the presenter run together.
+
+With frame generation on, Reflex goes through Streamline (NVIDIA requires it with frame generation) and is always at
+least On, whatever the Display tab says; the GPU pacer stays as set. Part B tells whether the pacer still helps beside
+Reflex when frames are generated, or gets in its way.
+
+### Before anything: what NVIDIA needs
+
+Frame generation needs an RTX 40 or 50 card, Windows 10 2004 or newer, **Hardware-accelerated GPU scheduling on**,
+and vertical sync in the NVIDIA Control Panel at "Use the 3D application setting". Read them, change nothing:
+
+```powershell
+(Get-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Control\GraphicsDrivers" -ErrorAction SilentlyContinue).HwSchMode   # 2: on
+[Environment]::OSVersion.Version                                                                                      # build 19041 or newer
+```
+
+If `HwSchMode` isn't 2, stop and tell Emre: turning it on is his call (a Windows setting, then a restart). Ask him
+to look at the NVIDIA Control Panel's Vertical sync (Manage 3D settings) and say what it is set to.
+
+### Update
+
+```powershell
+git -C $T\repo fetch origin
+git -C $T\repo checkout -B claude/project-thread-u2wmhh origin/claude/project-thread-u2wmhh
+Remove-Item $T\instance\mods\create-galore-bridge-*.jar
+Copy-Item $T\repo\pack\mods\create-galore-bridge-*.jar $T\instance\mods\
+Copy-Item $T\repo\tools\dlss-testkit\dist\create-galore-dlss-testkit-1.0.0.jar $T\instance\mods\ -Force
+```
+
+The instance's mods must have `create-galore-bridge-1.117.0.jar`.
+
+**nvngx_dlssg.dll** (NVIDIA's frame generation model) isn't shipped. At the start the Bridge copies the newest one
+from NVIDIA's own folder, `C:\ProgramData\NVIDIA\NGX\models\dlssg\versions`, where the NVIDIA app and the driver keep
+it, into `$T\instance\create-galore-dlss\` (the same way the Display tab's "Find on this PC" does for DLSS). The log
+line `Frame generation: NVIDIA DLSS Frame Generation through Streamline 2.14.16 from ...;` ends with what it found.
+If it says `no nvngx_dlssg.dll in ...`, take NVIDIA's copy from the Streamline SDK release (276 MB) and launch again:
+
+```powershell
+Invoke-WebRequest "https://github.com/NVIDIA-RTX/Streamline/releases/download/v2.14.16/streamline-sdk-v2.14.16.zip" -OutFile $T\tools\streamline-sdk-v2.14.16.zip
+(Get-FileHash $T\tools\streamline-sdk-v2.14.16.zip).Hash   # 32041E51DB0CAB709A271B72A352281B690C2ABBD669A827809401A5DD23956B
+Add-Type -AssemblyName System.IO.Compression.FileSystem
+$z = [IO.Compression.ZipFile]::OpenRead("$T\tools\streamline-sdk-v2.14.16.zip")
+[IO.Compression.ZipFileExtensions]::ExtractToFile(($z.Entries | Where-Object FullName -eq "bin/x64/nvngx_dlssg.dll"), "$T\instance\create-galore-dlss\nvngx_dlssg.dll", $true)
+$z.Dispose()
+```
+
+### Settings
+
+Note the old values and put them back afterwards. In `config\create_galore_bridge-display.properties`: `dlaa=dlss`,
+`perfectPresentation=true`, `presenter=dx12`, `fpsCounter=detailed`, `gpuPacing=off`, `reflex=off`, and add the lines
+`frameGen=dlss` and `frameGenCheck=true`. No `hudSplit` keys (frame generation turns the split on by itself). Shader
+pack: Photon v1.3a + DLAA. `earlyWindowControl = false` as before.
+
+### Part A: does it run, and does it look right (Emre plays)
+
+The launch from step 4 (2560x1440) without the `autorun` argument; open the `dlaa-test` world, then
+`/gamemode creative`. The log must have, in this order:
+
+- `Frame generation: NVIDIA DLSS Frame Generation through Streamline 2.14.16 from ...; nvngx_dlssg.dll VERSION, ...`
+- `DXGI swap chain ready on DirectX 12` and `Frame generation: ready in the DirectX 12 presenter on NVIDIA GeForce RTX 4080 SUPER; Reflex goes through Streamline`
+- `Reflex: on, though set to off: frame generation needs it` and `Reflex: started through Streamline, as frame generation needs (...)`
+- once in the world: `Frame generation: on, 1 generated per rendered frame, the HUD ...` and `Frame generation: running, 2 frames shown per rendered one (...)`
+- every 5 s: `Frame generation check N: ...` with `copy ok`, and every 12th check (and the first) a camera line ending in
+  `camera ok` or `too little motion to judge`.
+
+If frame generation doesn't start, copy every `Frame generation` line (with the `(native)` ones) and the newest file
+in `$T\instance\create-galore-dlss\streamline-logs\`, and report; don't go on to part B.
+
+1. **By eye, about 15 minutes.** Emre plays normally: walking, turning fast, flying, near Create machines, in water,
+   with the inventory, chat and F3 open now and then, and F1. He tells what he sees against frame generation off (he
+   knows the game without it): smoothness, any doubled or torn edges when turning, the HUD and text staying sharp and
+   still (no wobble or ghost copies of the hotbar, chat or crosshair), anything strange around the hand, water,
+   leaves, particles. Each `Frame generation: off, REASON` and `on` line in the log should match a menu, pause or
+   window change (in menus and while paused it is off on purpose).
+2. **Resize, about 2 minutes.** Drag the window's edge a few times, then maximise and restore it, then minimise and
+   bring it back. The game must keep running; the log says `Frame generation: off, ...` and then `on` after each.
+3. **The views, about 5 minutes.** Add `frameGenView=hudless` and press F8 (the log says `Frame generation: view
+   hudless, checks every 5 s`); then `alpha`, `depth` and `motion`, F8 each time. What each should show, upright and
+   filling the window:
+   - `hudless`: the world with no HUD at all;
+   - `alpha`: white where the HUD is, black elsewhere;
+   - `depth`: near things bright, far things dark, the sky black;
+   - `motion`: black standing still; turning right, the world turns red; turning left, blue; looking down, green;
+     looking up, blue-ish.
+   Take an F2 screenshot of each while turning. Remove `frameGenView` and F8.
+4. **Frame rate, about 2 minutes.** Stand still at one spot looking at the lake: note the frame counter's average for
+   20 seconds. (The counter counts the frames the game renders; ask Emre whether the NVIDIA app's overlay, if he
+   uses it, shows about twice as many.)
+
+Close the game.
+
+### Part B: Reflex alone against Reflex with the GPU pacer, frame generation on and off
+
+A quiet PC, nothing else running, the window in front with focus. Remove `frameGenCheck` from the settings file
+(checks stall a frame every 5 s) and keep `frameGenView` out. The launch from step 4 with
+`--jvm-arg=-Dcreate_galore_dlss_testkit.autorun=dlaa-test` and `--jvm-arg=-Dcreate_galore_dlss_testkit.runs=G1`:
+
+| Launch | `frameGen` |
+| --- | --- |
+| 1 | `dlss` |
+| 2 | `off` |
+
+G1 plays each mode twice at `shore` and `canopy` (about 7 minutes):
+
+| Mode | What |
+| --- | --- |
+| `lat-reflex` | Reflex on + late read |
+| `lat-reflex-pacing-on` | Reflex on + GPU pacing On + late read |
+| `lat-pacing-on` | GPU pacing On + late read (with frame generation, Reflex is on anyway) |
+
+- Launch 1's log must have `Frame generation: running, 2 frames shown ...`, launch 2's no `Frame generation` line.
+- Both must have `Reflex: started ...` (launch 1 `through Streamline`, launch 2 `on Perfect Presentation's DirectX 12
+  device`) and `Latency: GPU pacer on, frames may queue on the GPU a share of the frame time that keeps the frame
+  rate`. Copy any `Frame generation`, `Perfect Presentation`, `Latency:` or `Reflex:` WARN or ERROR line, and any
+  `Frame generation: Streamline reports ...` line.
+
+If a launch crashes, copy `hs_err_pid*.log`, the log's last 100 lines and the newest Streamline log, and report.
+
+### Results
+
+`python latency.py` on the two run folders. Write `$T\repo\tools\dlss-testkit\results\dlssg1\REPORT.md`:
+- the requirement check (HwSchMode, Windows build, the control panel's vertical sync), and which nvngx_dlssg.dll
+  version was used and where from;
+- part A: every `Frame generation` log line that isn't a check (the `(native)` ones too), the check lines that aren't
+  `copy ok` and every camera line; what Emre saw in step 1 and whether anything looked worse than without frame
+  generation; the four view screenshots (copied next to the report); the frame rate in step 4;
+- part B, per mode, viewpoint and launch: fps (rendered), latency (median and 90th percentile), the queue (median and
+  `q10`), the driver's report (frame start to GPU end) and the pacer's target and wait; then in one line each:
+  - **with frame generation:** does the pacer beside Reflex keep the frame rate (within about 2% of `lat-reflex`) and
+    lower the latency, or cost frames? Any `Streamline reports` line in its modes?
+  - **without:** the same comparison, against Presenter 3 and Pacer 3;
+  - **frame generation's cost:** `lat-reflex` fps and latency with it against without;
+- the newest file in `create-galore-dlss\streamline-logs\` if it has any warning or error line (copy those lines only).
+
+Then put the settings back (remove `frameGen`, `frameGenCheck` and `frameGenView`). Commit and push on the DLAA
+branch. Don't commit hs_err files or Streamline logs whole (they name his user folder).
+
+What comes of it: if frame generation runs and looks right, the next step is its own settings entry and FSR's frame
+generation on the same inputs; if the pacer gets in Reflex's way with frame generation on, it is switched off while
+frame generation runs.
+
+## DLSS-G 2: frame generation re-check, with the player setting
+
+Start only when Emre says so. About 20 minutes with Emre at the keyboard; no unattended part.
+
+**What it checks.** Bridge 1.118.0 (pack 0.5.10) has the fixes for what DLSS-G 1 found, and frame generation's own
+setting (Display tab, **Frame generation: Off / DLSS**, experimental, only selectable on RTX 40 and 50 cards):
+- after a shader reload, frame generation waits for the first frames of the new pipeline (DLSS-G 1's 5 `CAMERA
+  DISAGREES`, motion vectors of about 70,000 px);
+- a second present in one game frame gets its own frame number and no generated frame (DLSS-G 1's
+  `eErrorDuplicatedConstants`, at loading and when the chat first opened);
+- the frame before a swap chain resize really goes out without frame generation (DLSS-G 1's 4 `Frame generation was
+  on when the swap chain resized` warnings);
+- minimising turns frame generation off at once, and it stays off while Windows says the window can't be seen
+  (DLSS-G 1's flood of `RSYNC: Flip queue is empty!!!`).
+
+### Update and settings
+
+The Update block of DLSS-G 1 (fetch, checkout, copy the Bridge and the test kit). The instance's mods must have
+`create-galore-bridge-1.118.0.jar`. In `config\create_galore_bridge-display.properties` note the old values, then set
+`dlaa=dlss`, `perfectPresentation=false`, `presenter=dx11`, `reflex=off`, `fpsCounter=detailed`, `frameGen=off`, and add
+`frameGenCheck=true`. Shader pack: Photon v1.3a + DLAA. The launch from step 4 (2560x1440) without `autorun`.
+
+### 1. The setting, about 3 minutes
+
+In the shader pack menu, **Upscaling & Display...**, tab **Display**. Emre picks **Frame generation: DLSS**. It must
+turn **Perfect Presentation** on, **DirectX** to 12 and **NVIDIA Reflex** to On; the status beside the row says
+`Experimental. Starts after a restart.` Hover the row and the status: the text must read right to him. Done: a toast
+asks for a restart. Check the settings file has `frameGen=dlss`, `perfectPresentation=true`, `presenter=dx12`,
+`reflex=on`. Close the game and launch again; in the world, open the same tab: the status must say `Experimental:
+running.` Take an F2 screenshot of the tab.
+
+### 2. Play, about 10 minutes
+
+Open `dlaa-test`, `/gamemode creative`. Then:
+- **F8 three times**, a few seconds apart. Each time the log must have `Frame generation: off, the shaders were just
+  loaded`, then `on`. The checks right after it are labelled `(frame N after the shader pipeline was made, frame
+  generation skips it)` for N 1 and 2, then `(frame 3 after the shader pipeline was made)`. Turn while pressing F8.
+  No `CAMERA DISAGREES` on frame 3 or any later check.
+- **Open the chat** (T), type a few letters, close it; then `/` and a few letters, so the command suggestions appear.
+  No `eErrorDuplicatedConstants` anywhere in the log. If the log has `Frame generation: a frame was presented twice in
+  one game frame ... From: ...`, copy that line whole.
+- **The command suggestions, two ways.** With the list showing, Emre types and deletes letters so it appears, moves and
+  changes, and says how it looks. Then add `frameGenUi=false` to the settings file, press F8, and do the same: is the
+  list better, worse or the same? (With `false` NVIDIA gets the HUD as part of the picture instead of apart.) Is the
+  rest of the HUD (hotbar, chat, crosshair) still clean with `false`? Remove the line and F8.
+- **Resize**: drag the window's edge a few times, maximise and restore, Alt-Tab away and back. No `Frame generation was
+  on when the swap chain resized` WARN. Each resize: `Frame generation: off, the window is resizing`, then `on`.
+- **Minimise** for about 10 seconds and bring it back: `Frame generation: off, the window is minimized` at once, then
+  `on` after it's back. Count the `Flip queue is empty` lines in the game log and in the newest Streamline log, and
+  compare with DLSS-G 1 (357 and 16,658).
+- Then just play for a few minutes and say whether anything looks worse than in DLSS-G 1.
+
+Close the game.
+
+### Results
+
+Write `$T\repo\tools\dlss-testkit\results\dlssg2\REPORT.md`: the status texts seen in step 1 and the screenshot; every
+`Frame generation` log line that isn't a plain check (the `(native)` ones too) and every check line that isn't `copy
+ok`; the counts asked for above; what Emre said about the command suggestions both ways, and about the picture. Any
+Streamline warning or error line (those lines only). Put the settings back (and remove `frameGenCheck`), then commit
+and push on the DLAA branch.
+
+What comes of it: if everything above holds, frame generation stops being called experimental in a later release;
+the command suggestions get fixed together with AMD's FSR frame generation.

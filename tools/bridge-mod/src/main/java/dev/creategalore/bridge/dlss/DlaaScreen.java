@@ -10,6 +10,7 @@ import java.util.Map;
 
 import dev.creategalore.bridge.DisplaySettings;
 import dev.creategalore.bridge.client.FpsOverlay;
+import dev.creategalore.bridge.framegen.FrameGen;
 import dev.creategalore.bridge.latency.FrameLatency;
 import dev.creategalore.bridge.present.Presentation;
 import net.minecraft.ChatFormatting;
@@ -37,8 +38,9 @@ import net.neoforged.neoforge.common.NeoForge;
  * Upscaling & Display, the Bridge's display settings, in two tabs. Upscaling: the DLAA engine and DLSS preset, the
  * render resolution, the bring-your-own nvngx_dlss.dll (or one found on this PC, see {@link DlssFinder}). Display: the
  * window switches and Perfect Presentation's DirectX version (12 is experimental, and picking it turns Perfect
- * Presentation on), NVIDIA Reflex (which turns Perfect Presentation on with it, see {@link FrameLatency}), GPU pacing
- * and the frame counter ({@link FpsOverlay}). Opens from the mod list (Create Galore Bridge, Config) and from an
+ * Presentation on), NVIDIA Reflex (which turns Perfect Presentation on with it, see {@link FrameLatency}), GPU pacing,
+ * frame generation (experimental, RTX 40 and 50 only; picking it turns Perfect Presentation on DirectX 12 and Reflex on,
+ * see {@link FrameGen}) and the frame counter ({@link FpsOverlay}). Opens from the mod list (Create Galore Bridge, Config) and from an
  * Upscaling & Display button in Iris's shader pack menu. Saved to
  * config/create_galore_bridge-display.properties when it closes, the render resolution into the DLAA pack's own options
  * (Photon's TAAU and TAAU Render Scale, see {@link RenderScaleTarget}); DLAA changes reload the shaders.
@@ -56,6 +58,7 @@ public final class DlaaScreen extends Screen {
     private static final List<String> APIS = List.of("dx11", "dx12");
     private static final List<String> REFLEX_MODES = List.of("off", "on", "boost");
     private static final List<String> PACING_MODES = List.of("off", "on", "lowest");
+    private static final List<String> FRAME_GEN_MODES = List.of("off", "dlss");
     private static final List<String> FPS_MODES = List.of(FpsOverlay.OFF, FpsOverlay.BASIC, FpsOverlay.DETAILED);
     private static final List<String> CORNERS = List.of(FpsOverlay.TOP_LEFT, FpsOverlay.TOP_RIGHT, FpsOverlay.BOTTOM_LEFT, FpsOverlay.BOTTOM_RIGHT);
     private static final int WIDTH = 300;
@@ -77,6 +80,11 @@ public final class DlaaScreen extends Screen {
     private String reflex;
     /** off, on or lowest. */
     private String gpuPacing;
+    /** off or dlss. */
+    private String frameGen;
+    /** OpenGL's name for the graphics card, and whether frame generation runs on it (Windows, RTX 40 or 50). */
+    private final String renderer;
+    private final boolean frameGenCard;
     private String scale;
     private String fpsCounter;
     private String fpsCorner;
@@ -90,6 +98,7 @@ public final class DlaaScreen extends Screen {
     private Choice<String> apiChoice;
     private Choice<String> reflexChoice;
     private Choice<String> pacingChoice;
+    private Choice<String> frameGenChoice;
     private final Page antiAliasingPage = new Page("Upscaling");
     private final Page displayPage = new Page("Display");
     /** The tab open: 0 upscaling, 1 display. */
@@ -126,6 +135,15 @@ public final class DlaaScreen extends Screen {
         reflex = reflexValue.equals("true") ? "on" : REFLEX_MODES.contains(reflexValue) ? reflexValue : "off";
         String pacingValue = DisplaySettings.getString(DisplaySettings.GPU_PACING, "off").toLowerCase(Locale.ROOT);
         gpuPacing = PACING_MODES.contains(pacingValue) ? pacingValue : "off";
+        frameGen = DisplaySettings.getString(DisplaySettings.FRAME_GEN, "off").equalsIgnoreCase("dlss") ? "dlss" : "off";
+        String glRenderer;
+        try {
+            glRenderer = com.mojang.blaze3d.platform.GlUtil.getRenderer();
+        } catch (RuntimeException e) {
+            glRenderer = null;
+        }
+        renderer = glRenderer;
+        frameGenCard = Util.getPlatform() == Util.OS.WINDOWS && FrameGen.supportedCard(renderer);
         String fpsValue = DisplaySettings.getString(DisplaySettings.FPS_COUNTER, FpsOverlay.OFF).toLowerCase(Locale.ROOT);
         fpsCounter = FPS_MODES.contains(fpsValue) ? fpsValue : FpsOverlay.OFF;
         String cornerValue = DisplaySettings.getString(DisplaySettings.FPS_COUNTER_CORNER, FpsOverlay.TOP_RIGHT).toLowerCase(Locale.ROOT);
@@ -221,6 +239,7 @@ public final class DlaaScreen extends Screen {
 
         building = displayPage.widgets;
         y = 52;
+        int step = height < 268 ? 22 : 24; // seven rows and Done fit a 240 high screen
         presentationButton = add(CycleButton.onOffBuilder(perfectPresentation)
                 .withTooltip(value -> net.minecraft.client.gui.components.Tooltip.create(Component.literal(
                         "Experimental, Windows only, needs a restart: shows the game through a DirectX swap chain, so borderless"
@@ -238,20 +257,26 @@ public final class DlaaScreen extends Screen {
                         apiChoice.value = "dx11";
                         apiChoice.update();
                     }
+                    if (!value) {
+                        frameGenOff(); // it runs in Perfect Presentation's DirectX 12 presenter
+                    }
                 }));
         add(CycleButton.onOffBuilder(tenBitWindow)
                 .withTooltip(value -> net.minecraft.client.gui.components.Tooltip.create(Component.literal(
                         "Experimental, needs a restart: asks for a 10-bit game window.")))
                 .create(left + half + 4, y, half, 20, Component.literal("10-bit window"), (button, value) -> tenBitWindow = value));
-        y += 24;
+        y += step;
         apiChoice = choice("DirectX", APIS, api, DlaaScreen::apiLabel, DlaaScreen::apiTooltip, left, y, half, value -> {
             api = value;
             if (value.equals("dx12") && !perfectPresentation) {
                 perfectPresentation = true; // the DirectX version is Perfect Presentation's
                 presentationButton.setValue(true);
             }
+            if (value.equals("dx11")) {
+                frameGenOff(); // it runs on DirectX 12
+            }
         });
-        y += 24;
+        y += step;
         reflexChoice = choice("NVIDIA Reflex", REFLEX_MODES, reflex, DlaaScreen::reflexLabel, DlaaScreen::reflexTooltip, left, y, half, value -> {
             reflex = value;
             if (!value.equals("off") && !perfectPresentation) {
@@ -259,21 +284,41 @@ public final class DlaaScreen extends Screen {
                 presentationButton.setValue(true);
             }
         });
-        y += 24;
+        y += step;
         pacingChoice = choice("GPU pacing", PACING_MODES, gpuPacing, DlaaScreen::pacingLabel, DlaaScreen::pacingTooltip, left, y, half,
                 value -> gpuPacing = value);
-        y += 24;
+        y += step;
+        frameGenChoice = choice("Frame generation", FRAME_GEN_MODES, frameGen, DlaaScreen::frameGenLabel, DlaaScreen::frameGenTooltip,
+                left, y, half, value -> {
+                    frameGen = value;
+                    if (value.equals("dlss")) {
+                        // It runs in Perfect Presentation's DirectX 12 presenter, and NVIDIA requires Reflex with it.
+                        perfectPresentation = true;
+                        presentationButton.setValue(true);
+                        api = "dx12";
+                        apiChoice.value = "dx12";
+                        apiChoice.update();
+                        if (reflex.equals("off")) {
+                            reflex = "on";
+                            reflexChoice.value = "on";
+                            reflexChoice.update();
+                        }
+                    }
+                });
+        // Only on the cards it runs on; where it is already on, it can still be turned off.
+        frameGenChoice.button.active = frameGenCard || frameGen.equals("dlss");
+        y += step;
         choice("Frame counter", FPS_MODES, fpsCounter, DlaaScreen::fpsLabel, DlaaScreen::fpsTooltip, left, y, half, value -> fpsCounter = value);
         add(CycleButton.onOffBuilder(fpsDim)
                 .withTooltip(value -> net.minecraft.client.gui.components.Tooltip.create(Component.literal(
                         "For OLED screens: the frame counter is see-through, without its dark backing, and moves by a pixel"
                                 + " every two minutes, so it doesn't burn in.")))
                 .create(left + half + 4, y, half, 20, Component.literal("Dim for OLED"), (button, value) -> fpsDim = value));
-        y += 24;
+        y += step;
         choice("Corner", CORNERS, fpsCorner, DlaaScreen::cornerLabel, value -> "Where the frame counter sits. In the top right"
                 + " it moves down under the status effect icons.", left, y, half, value -> fpsCorner = value);
         if (FrameLatency.crashed()) {
-            y += 24;
+            y += step;
             tryAgain(left, y);
         }
         bottom = Math.max(bottom, y);
@@ -296,6 +341,14 @@ public final class DlaaScreen extends Screen {
         tabs.setTabArea(new ScreenRectangle(0, tabsBottom, width, height - tabsBottom));
         tabBar.selectTab(page, false);
         refreshDll();
+    }
+
+    private void frameGenOff() {
+        if (!frameGen.equals("off")) {
+            frameGen = "off";
+            frameGenChoice.value = "off";
+            frameGenChoice.update();
+        }
     }
 
     /** Adds a widget to the tab being built (shown while that tab is open). */
@@ -353,8 +406,8 @@ public final class DlaaScreen extends Screen {
     }
 
     private void renderDisplay(GuiGraphics graphics, int left, int mouseX, int mouseY) {
-        lines(graphics, "Window, input delay and frame counter. Perfect Presentation, DirectX and the 10-bit window need a"
-                + " restart.", left, 28, 0xAAAAAA, 2);
+        lines(graphics, "Perfect Presentation, the 10-bit window, DirectX and frame generation need a restart.", left, 28,
+                0xAAAAAA, 2);
         FrameLatency.Status apiStatus = apiStatus();
         if (apiStatus != null) {
             int half = (WIDTH - 4) / 2;
@@ -376,6 +429,17 @@ public final class DlaaScreen extends Screen {
             lines(graphics, reflexStatus.text(), x, count > 1 ? rowY + 1 : rowY + 6, reflexStatus.problem() ? 0xFFAA44 : 0x88DD88, 2, half);
             if (open == null && reflexStatus.detail() != null && mouseX >= x && mouseX < x + half && mouseY >= rowY && mouseY < rowY + 20) {
                 setTooltipForNextRenderPass(font.split(Component.literal(reflexStatus.detail()), 220));
+            }
+        }
+        FrameLatency.Status frameGenStatus = frameGenStatus();
+        if (frameGenStatus != null) {
+            int half = (WIDTH - 4) / 2;
+            int x = left + half + 4;
+            int rowY = frameGenChoice.button.getY();
+            int count = font.split(Component.literal(frameGenStatus.text()), half).size();
+            lines(graphics, frameGenStatus.text(), x, count > 1 ? rowY + 1 : rowY + 6, frameGenStatus.problem() ? 0xFFAA44 : 0xFFDD66, 2, half);
+            if (open == null && frameGenStatus.detail() != null && mouseX >= x && mouseX < x + half && mouseY >= rowY && mouseY < rowY + 20) {
+                setTooltipForNextRenderPass(font.split(Component.literal(frameGenStatus.detail()), 220));
             }
         }
         if (!gpuPacing.equals("off")) {
@@ -441,9 +505,14 @@ public final class DlaaScreen extends Screen {
             Presentation.switchedOn();
         }
         boolean apiChanged = !values.get(DisplaySettings.PRESENTER).equals(initial.get(DisplaySettings.PRESENTER));
-        if (presentationChanged || apiChanged || !values.get(DisplaySettings.TEN_BIT_WINDOW).equals(initial.get(DisplaySettings.TEN_BIT_WINDOW))) {
+        boolean frameGenChanged = !values.get(DisplaySettings.FRAME_GEN).equals(initial.get(DisplaySettings.FRAME_GEN));
+        if (presentationChanged || apiChanged || frameGenChanged
+                || !values.get(DisplaySettings.TEN_BIT_WINDOW).equals(initial.get(DisplaySettings.TEN_BIT_WINDOW))) {
+            boolean frameGenOn = frameGen.equals("dlss");
             minecraft.getToasts().addToast(net.minecraft.client.gui.components.toasts.SystemToast.multiline(minecraft, RESTART,
-                    Component.literal("Restart the game"), Component.literal(presentationChanged && perfectPresentation && !reflex.equals("off")
+                    Component.literal("Restart the game"), Component.literal(frameGenChanged
+                            ? "Frame generation " + (frameGenOn ? "starts" : "stops") + " after a restart."
+                            : presentationChanged && perfectPresentation && !reflex.equals("off")
                             ? "NVIDIA Reflex runs once Perfect Presentation starts, after a restart."
                             : presentationChanged ? "Perfect Presentation " + (perfectPresentation ? "starts" : "stops") + " after a restart."
                             : apiChanged ? "Perfect Presentation switches to DirectX " + (api.equals("dx12") ? "12" : "11") + " after a restart."
@@ -465,6 +534,7 @@ public final class DlaaScreen extends Screen {
         values.put(DisplaySettings.PRESENTER, api);
         values.put(DisplaySettings.REFLEX, reflex);
         values.put(DisplaySettings.GPU_PACING, gpuPacing);
+        values.put(DisplaySettings.FRAME_GEN, frameGen);
         values.put(DisplaySettings.DLAA_CUSTOM_SCALE, Boolean.toString(scale.equals("custom")));
         values.put(DisplaySettings.FPS_COUNTER, fpsCounter);
         values.put(DisplaySettings.FPS_COUNTER_CORNER, fpsCorner);
@@ -529,6 +599,10 @@ public final class DlaaScreen extends Screen {
 
     /** What Reflex does or will do, beside its setting; null while it is off. */
     private FrameLatency.Status reflexStatus() {
+        if (reflex.equals("off") && frameGen.equals("dlss") && perfectPresentation && api.equals("dx12")) {
+            return new FrameLatency.Status("Stays on: frame generation needs it.", "NVIDIA requires Reflex with frame generation:"
+                    + " while frame generation runs, Reflex is on whatever this says.", false);
+        }
         if (reflex.equals("off")) {
             return null;
         }
@@ -546,6 +620,54 @@ public final class DlaaScreen extends Screen {
         FrameLatency.Status running = FrameLatency.status();
         return running == null || !reflex.equals(initial.get(DisplaySettings.REFLEX))
                 ? new FrameLatency.Status("Starts when you close this screen.", null, false) : running;
+    }
+
+    /** What frame generation does or will do, beside its setting; null while it is off and could run. */
+    private FrameLatency.Status frameGenStatus() {
+        if (!frameGenCard) {
+            return new FrameLatency.Status(Util.getPlatform() == Util.OS.WINDOWS ? "Needs an NVIDIA RTX 40 or 50 card."
+                    : "Needs Windows and an RTX 40 or 50.", "NVIDIA DLSS Frame Generation runs only on Windows, with a GeForce RTX 40"
+                    + " or 50 series card (or an RTX Ada or Blackwell workstation card)." + (renderer == null ? ""
+                    : " This graphics card: " + renderer + "."), frameGen.equals("dlss"));
+        }
+        boolean running = FrameGen.running();
+        if (frameGen.equals("off")) {
+            return running ? new FrameLatency.Status("Stops after a restart.", null, false) : null;
+        }
+        if (engine.equals("off")) {
+            return new FrameLatency.Status("Needs DLSS or FSR (Upscaling tab).", "Frame generation is made from what NVIDIA DLSS"
+                    + " or AMD FSR 3.1 use: pick one of them as Anti-aliasing, with a shader pack made for it.", true);
+        }
+        if (!FrameGen.requested() || !initial.get(DisplaySettings.FRAME_GEN).equals("dlss")) {
+            return new FrameLatency.Status("Experimental. Starts after a restart.", FRAME_GEN_DETAIL, false);
+        }
+        String problem = FrameGen.problem();
+        if (problem != null) {
+            return new FrameLatency.Status(running ? "Stopped: hover for why." : "Couldn't start: hover for why.",
+                    "Frame generation " + (running ? "stopped for this game: " : "could not start: ") + problem
+                            + ". The game log has more (lines starting with Frame generation:).", true);
+        }
+        return running ? new FrameLatency.Status("Experimental: running.", FRAME_GEN_DETAIL, false)
+                : new FrameLatency.Status("Can't run: DirectX 12 didn't start.", "Frame generation runs in Perfect Presentation's"
+                        + " DirectX 12 presenter, which could not start this time; the game log says why (lines starting with"
+                        + " Perfect Presentation:).", true);
+    }
+
+    private static final String FRAME_GEN_DETAIL = "Experimental. Pauses in menus and while the game is paused, and runs"
+            + " only with DLSS or FSR anti-aliasing. Needs Windows with Hardware-accelerated GPU scheduling on and Vertical"
+            + " sync in the NVIDIA Control Panel at \"Use the 3D application setting\".";
+
+    private static Component frameGenLabel(String value) {
+        return Component.literal(value.equals("dlss") ? "DLSS" : "Off");
+    }
+
+    private static String frameGenTooltip(String value) {
+        return value.equals("dlss")
+                ? "Experimental, NVIDIA RTX 40 and 50 cards only: NVIDIA DLSS Frame Generation shows a frame of its own between"
+                        + " every two the game renders, so the picture moves about twice as smoothly, for a little more input delay."
+                        + " Needs Perfect Presentation on DirectX 12 and NVIDIA Reflex, which this turns on, DLSS or FSR"
+                        + " anti-aliasing (Upscaling tab), and a restart."
+                : "The game shows the frames it renders.";
     }
 
     private void refreshDll() {

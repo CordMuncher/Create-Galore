@@ -5,6 +5,17 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.5.10
+
+### Added
+- **Frame generation (experimental, NVIDIA RTX 40 and 50 series only).** The display settings' Display tab has a **Frame generation** setting: **Off** or **DLSS**. NVIDIA DLSS Frame Generation shows a frame of its own between every two the game renders, so motion looks about twice as smooth, for a little more input delay. It is built from the world without the HUD, the HUD on its own, depth and motion, so the hotbar, chat and crosshair stay sharp. On an RTX 4080 Super at 1440p with DLSS at full resolution and Reflex, uncapped, the game rendered 118 fps where it renders 165 without it (making the extra frames costs the card time) and the screen showed twice that, about 43% more frames than without; from input to the rendered frame being done took 12.4 ms against 9.6 ms (median). It needs Windows 10 2004 or newer with Hardware-accelerated GPU scheduling on, Vertical sync in the NVIDIA Control Panel at "Use the 3D application setting", and DLSS or FSR anti-aliasing running (Upscaling tab, with a shader pack made for it). Picking it turns on Perfect Presentation, DirectX 12 and NVIDIA Reflex, which NVIDIA requires with it; restart once. It pauses in menus, while the game is paused, for a moment after a shader reload or a resize, and while the window is minimised or hidden. The screen says beside the setting whether it runs, and why not when it can't. On other graphics cards the setting is greyed out. Known: the chat's command suggestion list can smear for a frame as it appears.
+- The Bridge ships NVIDIA Streamline 2.14.16 for it. NVIDIA's frame generation model, nvngx_dlssg.dll, isn't in the pack: the game copies the newest one from the folder where NVIDIA's software keeps it (C:\ProgramData\NVIDIA\NGX\models\dlssg) into create-galore-dlss at every start.
+- Field Guide (Performance and Shaders): frame generation.
+- Create Galore Bridge 1.118.0.
+
+### Fixed
+- **GPU pacing On waited too little on DirectX 12.** Frames queue about 1 ms less on DirectX 12 than on 11, so On's target was longer than the queue and it rarely waited. On DirectX 12, On now lets a frame queue half a frame, at least 3 ms: on an RTX 4080 Super at 1440p, 8.9 ms from input to the frame being done instead of 9.6 ms, at the same frame rate. It still helps with frame generation on (11.9 ms against Reflex's 12.4 ms).
+
 ## 0.5.9
 
 ### Added

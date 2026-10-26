@@ -12,6 +12,7 @@ import dev.creategalore.bridge.DisplaySettings;
 import net.neoforged.fml.loading.FMLConfig;
 import net.neoforged.fml.loading.FMLPaths;
 import org.lwjgl.glfw.GLFWNativeWin32;
+import org.lwjgl.glfw.GLFWWindowIconifyCallback;
 import org.lwjgl.system.MemoryStack;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -142,6 +143,9 @@ public final class Presentation {
             openglContext = new WglContext(FLAGS);
             presenter = startPresenter(GLFWNativeWin32.glfwGetWin32Window(handle), openglContext);
             window = handle;
+            if (presenter instanceof D3D12Presenter d3d12 && d3d12.frameGeneration()) {
+                watchMinimize(handle, d3d12);
+            }
             hideFromGlVersionCheck();
             LOG.info("Perfect Presentation: DXGI swap chain ready on {} (OpenGL on a hidden context)", presenter.api());
             return handle;
@@ -159,6 +163,17 @@ public final class Presentation {
             }
             return create.apply(monitor);
         }
+    }
+
+    /** Tells frame generation when the window is minimized or back, before the game's next frame (any earlier callback still runs). */
+    private static void watchMinimize(long handle, D3D12Presenter d3d12) {
+        GLFWWindowIconifyCallback[] previous = new GLFWWindowIconifyCallback[1];
+        previous[0] = glfwSetWindowIconifyCallback(handle, (w, iconified) -> {
+            if (previous[0] != null) {
+                previous[0].invoke(w, iconified);
+            }
+            d3d12.minimizedChanged(iconified);
+        });
     }
 
     /** Direct3D 12 when presenter=dx12 and it starts, else Direct3D 11. */
@@ -181,6 +196,27 @@ public final class Presentation {
     /** "DirectX 11" or "DirectX 12" while Perfect Presentation runs, else null. */
     public static String api() {
         return active() && presenter != null ? presenter.api() : null;
+    }
+
+    /** True while Perfect Presentation shows the game through DirectX 12. */
+    public static boolean directX12() {
+        return active() && presenter instanceof D3D12Presenter;
+    }
+
+    /**
+     * True while frame generation runs in the DirectX 12 presenter (testing, see FrameGen): Streamline is loaded, so
+     * Reflex goes through it.
+     */
+    public static boolean frameGeneration() {
+        return active() && presenter instanceof D3D12Presenter d3d12 && d3d12.frameGeneration();
+    }
+
+    /** An export of the DirectX 12 presenter's cg_present.dll; throws while it doesn't run. */
+    public static long presenterSymbol(String name) {
+        if (!(active() && presenter instanceof D3D12Presenter d3d12)) {
+            throw new IllegalStateException("the DirectX 12 presenter isn't running");
+        }
+        return d3d12.symbol(name);
     }
 
     /** True if presenter=dx12 at launch but DirectX 12 could not start, so Perfect Presentation runs on DirectX 11. */

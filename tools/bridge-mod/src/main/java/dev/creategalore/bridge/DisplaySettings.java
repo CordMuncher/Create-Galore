@@ -62,6 +62,26 @@ public final class DisplaySettings {
     public static final String PRESENT_CHECK = "presentCheck";
     /** Testing only, not written to the file: true logs GPU timestamps around the DirectX 12 hand-off (see PresentTiming). */
     public static final String PRESENT_TIMING = "presentTiming";
+    /** Testing only, not written to the file: true keeps a copy of the world without the HUD each frame and the HUD's coverage in alpha (see HudSplit). */
+    public static final String HUD_SPLIT = "hudSplit";
+    /** Testing only, not written to the file: hudless, alpha, ui or marks shows that part of the HUD split instead of the game. */
+    public static final String HUD_SPLIT_VIEW = "hudSplitView";
+    /** Testing only, not written to the file: true checks the HUD split every 5 seconds (log, screenshots/hud-split). */
+    public static final String HUD_SPLIT_CHECK = "hudSplitCheck";
+    /** off or dlss: NVIDIA DLSS Frame Generation in the DirectX 12 presenter, experimental, RTX 40 and 50 (needs a restart; see FrameGen). */
+    public static final String FRAME_GEN = "frameGen";
+    /** Testing only, not written to the file: frames generated per rendered one (1, the default: twice the frame rate). */
+    public static final String FRAME_GEN_FRAMES = "frameGenFrames";
+    /** Testing only, not written to the file: false has frame generation take the HUD as part of the picture instead of apart. */
+    public static final String FRAME_GEN_UI = "frameGenUi";
+    /** Testing only, not written to the file: a folder of Streamline's development DLLs to run instead of the mod's (no signature check). */
+    public static final String FRAME_GEN_STREAMLINE = "frameGenStreamline";
+    /** Testing only, not written to the file: true has Streamline log verbosely (create-galore-dlss/streamline-logs). */
+    public static final String FRAME_GEN_VERBOSE = "frameGenVerbose";
+    /** Testing only, not written to the file: hudless, alpha, depth or motion shows that frame generation input instead of the game. */
+    public static final String FRAME_GEN_VIEW = "frameGenView";
+    /** Testing only, not written to the file: true checks frame generation's inputs and camera every 5 seconds (log). */
+    public static final String FRAME_GEN_CHECK = "frameGenCheck";
     /** The frame counter: off, basic or detailed (see FpsOverlay). */
     public static final String FPS_COUNTER = "fpsCounter";
     /** The frame counter's corner: top-left, top-right, bottom-left or bottom-right. */
@@ -89,6 +109,10 @@ public final class DisplaySettings {
             + " gpuPacing: off, on or lowest, any graphics card. The game waits just before drawing each frame so it reaches\n"
             + " the graphics card about when the card is ready, instead of queueing behind earlier frames: shorter input\n"
             + " delay without a frame cap. on keeps the frame rate; lowest is a little quicker still, for about 6% fewer frames.\n"
+            + " frameGen: off or dlss, EXPERIMENTAL, needs a restart. NVIDIA DLSS Frame Generation: the graphics card shows a\n"
+            + " frame of its own between every two the game renders. Needs an NVIDIA RTX 40 or 50 card, Windows with\n"
+            + " Hardware-accelerated GPU scheduling on, perfectPresentation=true with presenter=dx12 (the settings screen\n"
+            + " sets both with it) and dlaa running (DLSS or FSR 3.1). Reflex stays on while it runs.\n"
             + " fpsCounter: off, basic (the frame rate, small, in a corner) or detailed (also the frame time, the 1% and 0.1%\n"
             + " lows of the last 10 seconds and a frame time graph). fpsCounterCorner: top-left, top-right, bottom-left or\n"
             + " bottom-right. fpsCounterDim: true for OLED screens: see-through, and it moves a pixel every two minutes.\n"
@@ -185,6 +209,7 @@ public final class DisplaySettings {
             missing |= props.putIfAbsent(PRESENTER, "dx11") == null;
             missing |= props.putIfAbsent(REFLEX, "off") == null;
             missing |= props.putIfAbsent(GPU_PACING, "off") == null;
+            missing |= props.putIfAbsent(FRAME_GEN, "off") == null;
             missing |= props.putIfAbsent(FPS_COUNTER, "off") == null;
             missing |= props.putIfAbsent(FPS_COUNTER_CORNER, "top-right") == null;
             missing |= props.putIfAbsent(FPS_COUNTER_DIM, "false") == null;

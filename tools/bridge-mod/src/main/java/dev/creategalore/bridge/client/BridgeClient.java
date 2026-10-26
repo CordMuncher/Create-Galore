@@ -25,6 +25,8 @@ public final class BridgeClient {
         modBus.addListener(FpsOverlay::registerLayer);
         GuideAiClient.init(modBus);
         WearClient.init(modBus);
+        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener(net.neoforged.bus.api.EventPriority.HIGHEST, false,
+                net.neoforged.neoforge.client.event.RenderGuiLayerEvent.Pre.class, dev.creategalore.bridge.hud.HudSplit::beforeLayer);
         net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener(ShipGlueView::tick);
         net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener(SchematicTrace::tick);
         net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener(SchematicTrace::render);

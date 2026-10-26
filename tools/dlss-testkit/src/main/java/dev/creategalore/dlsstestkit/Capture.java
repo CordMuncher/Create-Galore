@@ -169,6 +169,8 @@ public final class Capture {
             modes.add(Mode.latency("lat-cap-default", "off", false, 3, 60, null, null));
             // The player's GPU pacing On (a share of the frame time, at least 4 or 5 ms).
             modes.add(Mode.latency("lat-pacing-on", "off", true, 3, 260, -1, null));
+            // DLSS-G 1: Reflex with GPU pacing On beside it (frame generation needs Reflex, the pacer stays as set).
+            modes.add(Mode.latency("lat-reflex-pacing-on", "on", true, 3, 260, -1, null));
         }
         // The DLAA test world (seed 20261024, scene built on the lakeshore at x 1023..1040, z 160..176).
         List<Viewpoint> viewpoints = new ArrayList<>(List.of(
@@ -188,7 +190,8 @@ public final class Capture {
          * machines under a near lintel at full size and two render scales (all should show). Reflex 1: L1 with Perfect
          * Presentation on (Reflex needs it), L2 with it off (Sodium's render-ahead limit), each mode twice. Pacer 1: L3
          * with Perfect Presentation on, L4 with it off. Presenter 1: P1 once with each presenter (dx11, dx12).
-         * Presenter 2 and 3: P2 with dx11 and with dx12.
+         * Presenter 2 and 3: P2 with dx11 and with dx12. Pacer 3: L7, GPU pacing's targets, once with each presenter.
+         * DLSS-G 1: G1, Reflex alone against Reflex with GPU pacing On, with frame generation on and off.
          */
         List<Run> runs = new ArrayList<>(List.of(
                 new Run("F1", "photon-taa+dlaa-default+fsr3+perf-taau+perf-dlss-K+perf-dlss-M+perf-dlss-L+perf-fsr3"
@@ -220,7 +223,10 @@ public final class Capture {
                         "shore+canopy", "latency", null, false, null, 2),
                 new Run("P1", "lat-base+lat-pacing-on+lat-pacer+lat-reflex+lat-cap-default", "shore+canopy", "latency", null,
                         false, null, 2),
-                new Run("P2", "lat-base+lat-reflex+lat-cap-default", "shore+canopy", "latency", null, false, null, 2)));
+                new Run("P2", "lat-base+lat-reflex+lat-cap-default", "shore+canopy", "latency", null, false, null, 2),
+                new Run("L7", "lat-base+lat-pacing-on+lat-pacer+lat-pacer-3000+lat-pacer-5000+lat-reflex", "shore+canopy",
+                        "latency", null, false, null, 2),
+                new Run("G1", "lat-reflex+lat-reflex-pacing-on+lat-pacing-on", "shore+canopy", "latency", null, false, null, 2)));
     }
 
     /**
@@ -1053,7 +1059,17 @@ public final class Capture {
         if (!latency.has(segment.viewpoint().name())) {
             latency.add(segment.viewpoint().name(), new JsonArray());
         }
-        latency.getAsJsonArray(segment.viewpoint().name()).add(GSON.toJsonTree(window)); // one per time the mode played
+        // A number the Bridge couldn't measure in this window (NaN, as with frame generation on) is left out: JSON has
+        // no NaN, and the manifest would fail to write.
+        Map<String, Object> measured = new LinkedHashMap<>();
+        window.forEach((key, value) -> {
+            if (value instanceof Number n && !Double.isFinite(n.doubleValue())) {
+                LOG.warn("DLAA test: {} at {}: {} has no value ({}), left out", segment.mode().name(), segment.viewpoint().name(), key, value);
+            } else {
+                measured.put(key, value);
+            }
+        });
+        latency.getAsJsonArray(segment.viewpoint().name()).add(GSON.toJsonTree(measured)); // one per time the mode played
     }
 
     /** The Bridge's latency window (FrameLatency.window, which also starts a new one); null without it. */
@@ -1122,6 +1138,24 @@ public final class Capture {
             return (boolean) Class.forName("dev.creategalore.bridge.present.Presentation").getMethod("active").invoke(null);
         } catch (ReflectiveOperationException | RuntimeException e) {
             return false;
+        }
+    }
+
+    /** "DirectX 11" or "DirectX 12" while Perfect Presentation runs, else null (or a Bridge before 1.113.0). */
+    private static String bridgePresenter() {
+        try {
+            return (String) Class.forName("dev.creategalore.bridge.present.Presentation").getMethod("api").invoke(null);
+        } catch (ReflectiveOperationException | RuntimeException e) {
+            return null;
+        }
+    }
+
+    /** The Bridge's frame generation at the run's end: off, generating, or off with why (null: no such Bridge). */
+    private static String bridgeFrameGeneration() {
+        try {
+            return (String) Class.forName("dev.creategalore.bridge.framegen.FrameGen").getMethod("state").invoke(null);
+        } catch (ReflectiveOperationException | RuntimeException e) {
+            return null;
         }
     }
 
@@ -1298,6 +1332,8 @@ public final class Capture {
         manifest.addProperty("renderer", RenderSystem.isOnRenderThread() ? com.mojang.blaze3d.platform.GlUtil.getRenderer() : "?");
         manifest.addProperty("shaderPack", Iris.getCurrentPackName());
         manifest.addProperty("perfectPresentation", bridgePresentationActive());
+        manifest.addProperty("presenter", bridgePresenter());
+        manifest.addProperty("frameGeneration", bridgeFrameGeneration());
         JsonArray size = new JsonArray();
         size.add(mc.getWindow().getWidth());
         size.add(mc.getWindow().getHeight());

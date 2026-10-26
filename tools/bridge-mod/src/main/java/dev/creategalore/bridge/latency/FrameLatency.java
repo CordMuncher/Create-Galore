@@ -22,7 +22,9 @@ import org.slf4j.LoggerFactory;
  * and then reads input, so the driver can start it as late as still keeps the GPU busy; markers tell the driver where
  * each frame's game work, rendering and present are (markers alone: its latency report without changing anything). On
  * and boost also take over a frame rate cap from the game's own limiter, which waits after the frame instead of before
- * input. A start that took the game down keeps Reflex off until Try again ({@link StartGuard}).
+ * input. A start that took the game down keeps Reflex off until Try again ({@link StartGuard}). While DLSS Frame
+ * Generation runs (testing, see FrameGen) Reflex goes through Streamline ({@link StreamlineReflex}) and is at least on,
+ * as NVIDIA's frame generation needs; the GPU pacer stays as set beside it.
  *
  * latePoll: read input again just before the mouse turns the camera, after any wait for the GPU or the swap chain
  * (Sodium's render-ahead limit at the start of the frame, Perfect Presentation's swap chain, the game's frame cap).
@@ -101,7 +103,7 @@ public final class FrameLatency {
         reflexSleeping = false;
         boolean metering = measuring || logging || pacing;
         if (metering && meter == null) {
-            pacer = !pacing ? null : pacerKeepsRate ? GpuPacer.keepingFrameRate(Presentation.active()) : new GpuPacer(pacerTarget);
+            pacer = !pacing ? null : pacerKeepsRate ? GpuPacer.keepingFrameRate(Presentation.active(), Presentation.directX12()) : new GpuPacer(pacerTarget);
             meter = new LatencyMeter(pacer);
             lastLog = System.nanoTime();
         } else if (!metering && meter != null) {
@@ -139,7 +141,7 @@ public final class FrameLatency {
         }
         try {
             applyReflexMode();
-            reflex.sleep();
+            reflex.sleep(frameId);
             reflexSleeping = true;
             if (reflexMode != ReflexMode.MARKERS) {
                 pollEvents(); // input after the sleep, as NVIDIA asks (markers alone change nothing)
@@ -221,6 +223,19 @@ public final class FrameLatency {
     }
 
     // --- RenderSystem ---
+
+    /** The frame's id, counted from the start: the one Reflex's markers carry (frame generation's frame index). */
+    public static long frameId() {
+        return frameId;
+    }
+
+    /**
+     * Frame generation: a present that came without a frame of Minecraft's of its own gets the next frame number, so
+     * Streamline never sees two presents under one (its markers then are only the present's).
+     */
+    public static long extraFrameId() {
+        return ++frameId;
+    }
 
     /** The game read input (RenderSystem.pollEvents, while presenting). */
     public static void polled() {
@@ -339,8 +354,11 @@ public final class FrameLatency {
             try {
                 double[] report = reflex.latency();
                 if (report != null) {
-                    result.put("driverInputToGpuMs", round(report[0]));
-                    result.put("driverInputToGpuP90Ms", round(report[1]));
+                    // Streamline's report has no input time (its input marker is gone), so no number there.
+                    if (Double.isFinite(report[0])) {
+                        result.put("driverInputToGpuMs", round(report[0]));
+                        result.put("driverInputToGpuP90Ms", round(report[1]));
+                    }
                     result.put("driverSimToGpuMs", round(report[2]));
                     result.put("driverSimToGpuP90Ms", round(report[3]));
                     result.put("driverGpuActiveMs", round(report[4]));
@@ -382,6 +400,12 @@ public final class FrameLatency {
             case "boost" -> ReflexMode.BOOST;
             default -> ReflexMode.OFF;
         };
+        if (Presentation.frameGeneration() && wanted.compareTo(ReflexMode.ON) < 0) {
+            if (reflexMode != ReflexMode.ON) {
+                LOG.info("Reflex: on, though set to {}: frame generation needs it", wanted.name().toLowerCase(Locale.ROOT));
+            }
+            wanted = ReflexMode.ON;
+        }
         if (wanted != reflexMode && reflex != null && wanted == ReflexMode.OFF) {
             try {
                 reflex.setMode(false, false, 0);
@@ -456,8 +480,13 @@ public final class FrameLatency {
         }
         guard().starting();
         try {
-            reflex = Reflex.start(Presentation.d3dDevice());
-            LOG.info("Reflex: started on Perfect Presentation's {} device (NVIDIA NVAPI)", Presentation.api());
+            if (Presentation.frameGeneration()) {
+                reflex = StreamlineReflex.start();
+                LOG.info("Reflex: started through Streamline, as frame generation needs ({})", reflex.status());
+            } else {
+                reflex = NvapiReflex.start(Presentation.d3dDevice());
+                LOG.info("Reflex: started on Perfect Presentation's {} device (NVIDIA NVAPI)", Presentation.api());
+            }
         } catch (RuntimeException | LinkageError e) {
             guard().stopped();
             reflex = null;
@@ -533,9 +562,13 @@ public final class FrameLatency {
                     w.get("pacerWaitMs"), w.get("pacerLateUs"), w.get("gpuQueueMs")));
         }
         if (w.containsKey("driverSimToGpuMs")) {
-            line.append(String.format(Locale.ROOT, "; driver: input to GPU end %s ms (90%%: %s), frame start to GPU end %s ms, GPU busy %s of %s ms",
-                    w.get("driverInputToGpuMs"), w.get("driverInputToGpuP90Ms"), w.get("driverSimToGpuMs"), w.get("driverGpuActiveMs"),
-                    w.get("driverGpuFrameMs")));
+            line.append("; driver: ");
+            if (w.containsKey("driverInputToGpuMs")) {
+                line.append(String.format(Locale.ROOT, "input to GPU end %s ms (90%%: %s), ", w.get("driverInputToGpuMs"),
+                        w.get("driverInputToGpuP90Ms")));
+            }
+            line.append(String.format(Locale.ROOT, "frame start to GPU end %s ms, GPU busy %s of %s ms", w.get("driverSimToGpuMs"),
+                    w.get("driverGpuActiveMs"), w.get("driverGpuFrameMs")));
         }
         return line.toString();
     }

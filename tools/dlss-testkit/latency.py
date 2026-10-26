@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Input latency per mode and viewpoint: python latency.py RUN_FOLDER [RUN_FOLDER ...] (standard library only).
 
-Reads each run's manifest.json (runs L1 and L2 of Reflex 1, L3 and L4 of Pacer 1, L5 and L6 of Pacer 2 in PC-RUNBOOK.md). For each mode and
-viewpoint it prints the Bridge's numbers over the latency path, one row per time the mode played:
+Reads each run's manifest.json (runs L1 and L2 of Reflex 1, L3 and L4 of Pacer 1, L5 and L6 of Pacer 2, L7 of Pacer 3, G1 of DLSS-G 1 in PC-RUNBOOK.md). For each mode
+and viewpoint it prints the Bridge's numbers over the latency path, one row per time the mode played:
 - input to GPU ms: the median and 90th percentile time from the game last reading input to the GPU finishing that
   frame (Bridge LatencyMeter; what the swap and the screen add comes on top, the same in every mode);
 - GPU behind ms: the median time from the frame's end on the CPU to the GPU finishing it (how far the GPU trails);
@@ -14,7 +14,8 @@ viewpoint it prints the Bridge's numbers over the latency path, one row per time
   queue target at the window's end (us; the automatic one as measured);
 - with Reflex markers: the driver's own report of its last 64 frames (input to GPU end, frame start to GPU end, GPU
   busy of GPU frame time). Its unit check should be about 1 (its times are microseconds).
-Then the change of each mode's median against the run's first mode at the same viewpoint (lat-base in each run).
+Then the change of each mode's median against the run's first mode at the same viewpoint (lat-base in each run; lat-reflex
+in G1).
 """
 import json
 import statistics
@@ -35,7 +36,8 @@ def main(folders):
     for folder in folders:
         manifest = json.loads((Path(folder) / "manifest.json").read_text(encoding="utf-8"))
         print(f"\n== {manifest.get('run')} ({manifest.get('outcome')}), {manifest.get('renderer')}, "
-              f"Perfect Presentation {'on' if manifest.get('perfectPresentation') else 'off'}, "
+              f"Perfect Presentation {'on' + (' (' + manifest['presenter'] + ')' if manifest.get('presenter') else '') if manifest.get('perfectPresentation') else 'off'}, "
+              f"{'frame generation ' + manifest['frameGeneration'] + ', ' if manifest.get('frameGeneration') not in (None, 'off') else ''}"
               f"{'x'.join(str(v) for v in manifest.get('resolution', []))}")
         base = {}
         print(f"{'mode':16} {'viewpoint':9} {'input>GPU':>9} {'p90':>6} {'behind':>6} {'fps':>6} {'queue':>6} {'gap':>5} "
