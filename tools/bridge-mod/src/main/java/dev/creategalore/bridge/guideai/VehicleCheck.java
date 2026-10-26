@@ -117,7 +117,7 @@ final class VehicleCheck {
         cx /= m;
         cy /= m;
         cz /= m;
-        Body body = new Body(parts, m, cx, cy, cz, blocks);
+        Body body = new Body(parts, m, cx, cy, cz, blocks, driveAxis(parts));
 
         List<String> faults = new ArrayList<>(), notes = new ArrayList<>();
         StringBuilder out = new StringBuilder("How this vehicle floats, flies and handles, worked out from its blocks (estimates)"
@@ -132,6 +132,7 @@ final class VehicleCheck {
             // Propellers or wings alone: a boat if one of them is a water propeller, else judged as an aircraft.
             air(body, rpm, out, faults, notes);
         }
+        if (getter instanceof net.minecraft.server.level.ServerLevel level) drive(body, rpm, level, faults);
         pieces(blocks, model, faults, notes);
         if (model) ballast(blocks, getter, faults);
         boatEngines(blocks, getter, faults);
@@ -211,6 +212,220 @@ final class VehicleCheck {
         else notes.add(text.replace("it is in", "the marked build is in"));
     }
 
+    /** The horizontal axis most of its propellers, thrusters and Boat Engines push along; null when none push sideways. */
+    private static Direction.Axis driveAxis(List<Part> parts) {
+        int x = 0, z = 0;
+        for (Part p : parts) {
+            if (!isPropeller(p.id) && !isThruster(p.id) && !p.id.equals("create_high_seas:boat_engine")
+                    && !p.id.equals("create_submarine:submarine_propeller")) continue;
+            Direction f = facing(p.state);
+            if (f == null) continue;
+            if (f.getAxis() == Direction.Axis.X) x++;
+            else if (f.getAxis() == Direction.Axis.Z) z++;
+        }
+        return x == z ? null : x > z ? Direction.Axis.X : Direction.Axis.Z;
+    }
+
+    /**
+     * Each propeller drive line against the engines on it: Create stops a whole network when what it turns draws more stress
+     * than its sources give (a Portable Engine 2048 at its 32 RPM, whatever the gears do to the speed), so an engine that
+     * isn't on the line, or one too few, leaves the propellers standing still.
+     */
+    private static void drive(Body b, Map<BlockPos, Float> rpm, net.minecraft.server.level.ServerLevel level, List<String> faults) {
+        Map<BlockPos, Part> at = new java.util.HashMap<>();
+        for (Part p : b.parts) at.put(p.pos, p);
+        Set<BlockPos> done = new HashSet<>();
+        for (Part p : b.parts) {
+            if (!isPropeller(p.id) || done.contains(p.pos) || rpm.getOrDefault(p.pos, 0f) == 0) continue;
+            Set<BlockPos> line = BuildCheck.network(b.blocks, level, p.pos);
+            done.addAll(line);
+            double need = 0, give = 0;
+            List<String> props = new ArrayList<>();
+            int engines = 0;
+            for (BlockPos q : line) {
+                BlockState s = b.blocks.get(q);
+                if (s == null) continue;
+                float r = Math.abs(rpm.getOrDefault(q, 0f));
+                String id = id(s);
+                if (isPropeller(id) && at.containsKey(q)) {
+                    need += propellerStress(b, at.get(q), rpm);
+                    props.add(xyz(q));
+                } else {
+                    need += com.simibubi.create.api.stress.BlockStressValues.getImpact(s.getBlock()) * r;
+                }
+                double cap = com.simibubi.create.api.stress.BlockStressValues.getCapacity(s.getBlock());
+                if (cap <= 0 && id.endsWith("portable_engine")) cap = 64;
+                if (cap > 0 && r > 0) {
+                    give += cap * r;
+                    engines++;
+                }
+            }
+            if (need <= give + 1) continue;
+            int more = (int) Math.ceil((need - give) / 2048);
+            faults.add(String.format(Locale.ROOT, "the propeller%s at %s draw%s about %.0f stress units, but the %d engine%s on %s "
+                    + "drive line give%s %.0f, so Create stalls the whole line and nothing turns: put %d more Portable Engine%s on "
+                    + "that same line (each gives 2048 at any gearing; its front must meet a shaft end or a cogwheel's axle), or "
+                    + "draw less (fewer sails, or a lower gear)", props.size() == 1 ? "" : "s", String.join(", ", props),
+                    props.size() == 1 ? "s" : "", need, engines, engines == 1 ? "" : "s", props.size() == 1 ? "its" : "their",
+                    engines == 1 ? "s" : "", give, more, more == 1 ? "" : "s"));
+        }
+    }
+
+    /** Whether the vehicle check looks at these blocks at all: they hold something that floats, flies, drives or pushes. */
+    static boolean vehicle(Map<BlockPos, BlockState> blocks) {
+        for (BlockState s : blocks.values()) {
+            String id = id(s);
+            if (id.equals("create_submarine:oxygene_diffuser") || id.endsWith(":hull_controller") || id.equals("create_submarine:ballast_tank")
+                    || id.equals("create_high_seas:boat_engine") || id.equals("create_submarine:submarine_propeller")
+                    || id.equals("create_submarine:water_thruster") || id.equals("aeronauticswinds:keel") || id.equals("aeronauticswinds:rudder")
+                    || id.equals("create_high_seas:rudder") || s.is(HIGH_SEAS_SAILS) || id.equals("aeronautics:adjustable_burner")
+                    || id.equals("aeronautics:steam_vent") || s.is(LEVITITE) || id.equals("offroad:wheel_mount")
+                    || isPropeller(id) || isThruster(id) || liftScalar(s) > 0) return true;
+        }
+        return false;
+    }
+
+    /**
+     * Fills the corner steps of a vehicle model so every block shares a face with the rest, as Super Glue needs: where two
+     * pieces touch only along an edge, the empty cell between them on the inner side of the curve (the one with more blocks
+     * around it, so a rounded envelope keeps its outline) takes the block around it; a touch at a single corner first gets
+     * one cell to turn it into an edge. Gaps wider than that are left for the check to name. Returns the cells filled.
+     */
+    static List<BlockPos> closeSteps(Map<BlockPos, BlockState> cells, int sx, int sy, int sz) {
+        List<BlockPos> added = new ArrayList<>();
+        if (!vehicle(cells)) return added;
+        java.util.function.Predicate<BlockPos> inBox = q -> q.getX() >= 0 && q.getY() >= 0 && q.getZ() >= 0 && q.getX() < sx
+                && q.getY() < sy && q.getZ() < sz;
+        java.util.function.Predicate<BlockPos> open = q -> inBox.test(q) && !cells.containsKey(q);
+        for (int pass = 0; pass < 96; pass++) {
+            Map<BlockPos, Integer> label = labels(cells);
+            if (new HashSet<>(label.values()).size() < 2) break;
+            Set<Long> edges = edgePairs(label);
+            java.util.TreeSet<BlockPos> candidates = new java.util.TreeSet<>(java.util.Comparator.<BlockPos>comparingInt(q -> q.getY())
+                    .thenComparingInt(q -> q.getZ()).thenComparingInt(q -> q.getX()));
+            for (BlockPos p : label.keySet()) for (Direction d : Direction.values()) if (open.test(p.relative(d))) candidates.add(p.relative(d));
+            List<BlockPos> ranked = new ArrayList<>();
+            Map<BlockPos, Integer> score = new java.util.HashMap<>();
+            for (BlockPos c : candidates) {
+                if (overBurner(cells, c)) continue;
+                Set<Integer> faces = new HashSet<>();
+                for (Direction d : Direction.values()) {
+                    Integer l = label.get(c.relative(d));
+                    if (l != null) faces.add(l);
+                }
+                boolean joins = faces.size() >= 2;
+                // Or it turns a corner touch into an edge one: a block of another piece meets it along an edge.
+                boolean steps = false;
+                if (!joins && faces.size() == 1) {
+                    int own = faces.iterator().next();
+                    for (int dx = -1; dx <= 1 && !steps; dx++)
+                        for (int dy = -1; dy <= 1 && !steps; dy++)
+                            for (int dz = -1; dz <= 1 && !steps; dz++) {
+                                if (Math.abs(dx) + Math.abs(dy) + Math.abs(dz) != 2) continue;
+                                Integer l = label.get(c.offset(dx, dy, dz));
+                                if (l != null && l != own && !edges.contains(pair(own, l))) steps = true;
+                            }
+                }
+                if (!joins && !steps) continue;
+                int around = 0;
+                for (BlockPos q : BlockPos.betweenClosed(c.offset(-1, -1, -1), c.offset(1, 1, 1))) if (label.containsKey(q)) around++;
+                score.put(c, around + (joins ? 1000 : 0));
+                ranked.add(c);
+            }
+            // Highest score first; the candidates came in a fixed order, and the sort keeps it among equals.
+            ranked.sort((a, b) -> score.get(b) - score.get(a));
+            BlockPos best = null;
+            BlockState fill = null;
+            for (BlockPos c : ranked) {
+                fill = fillFor(cells, c);
+                if (fill != null) {
+                    best = c;
+                    break;
+                }
+            }
+            if (best == null || added.size() >= 48) break;
+            cells.put(best, fill);
+            added.add(best);
+        }
+        return added;
+    }
+
+    /** A cell in a burner's or steam vent's open column: a block there would become the balloon's roof over it. */
+    private static boolean overBurner(Map<BlockPos, BlockState> cells, BlockPos c) {
+        for (BlockPos q = c.below(); q.getY() >= 0; q = q.below()) {
+            BlockState s = cells.get(q);
+            if (s == null || s.isAir()) continue;
+            String id = id(s);
+            return id.equals("aeronautics:adjustable_burner") || id.equals("aeronautics:steam_vent");
+        }
+        return false;
+    }
+
+    /** Face-connected pieces of the solid blocks, by number. */
+    private static Map<BlockPos, Integer> labels(Map<BlockPos, BlockState> cells) {
+        Map<BlockPos, Integer> label = new java.util.HashMap<>();
+        int n = 0;
+        for (Map.Entry<BlockPos, BlockState> e : cells.entrySet()) {
+            BlockState s = e.getValue();
+            if (s.isAir() || s.getBlock() instanceof net.minecraft.world.level.block.LiquidBlock || label.containsKey(e.getKey())) continue;
+            ArrayDeque<BlockPos> todo = new ArrayDeque<>(List.of(e.getKey()));
+            label.put(e.getKey(), n);
+            while (!todo.isEmpty()) {
+                BlockPos p = todo.poll();
+                for (Direction d : Direction.values()) {
+                    BlockPos q = p.relative(d);
+                    BlockState qs = cells.get(q);
+                    if (qs == null || qs.isAir() || qs.getBlock() instanceof net.minecraft.world.level.block.LiquidBlock || label.containsKey(q)) continue;
+                    label.put(q, n);
+                    todo.add(q);
+                }
+            }
+            n++;
+        }
+        return label;
+    }
+
+    /** The pairs of pieces that already meet along an edge somewhere (one cell there joins them, no corner step needed). */
+    private static Set<Long> edgePairs(Map<BlockPos, Integer> label) {
+        Set<Long> out = new HashSet<>();
+        for (Map.Entry<BlockPos, Integer> e : label.entrySet()) {
+            BlockPos p = e.getKey();
+            for (int dx = -1; dx <= 1; dx++)
+                for (int dy = -1; dy <= 1; dy++)
+                    for (int dz = -1; dz <= 1; dz++) {
+                        if (Math.abs(dx) + Math.abs(dy) + Math.abs(dz) != 2) continue;
+                        Integer l = label.get(p.offset(dx, dy, dz));
+                        if (l != null && !l.equals(e.getValue())) out.add(pair(e.getValue(), l));
+                    }
+        }
+        return out;
+    }
+
+    private static long pair(int a, int b) {
+        return ((long) Math.min(a, b) << 32) | Math.max(a, b);
+    }
+
+    /**
+     * The block a filled step takes: the commonest plain full block beside it, else the commonest of the nearest ones (a
+     * step between two cogs takes the casing or hull around them); never a machine or container.
+     */
+    private static BlockState fillFor(Map<BlockPos, BlockState> cells, BlockPos at) {
+        for (int r = 1; r <= 64; r++) {
+            Map<BlockState, Integer> full = new java.util.TreeMap<>(java.util.Comparator.comparing(BlockState::toString));
+            for (Map.Entry<BlockPos, BlockState> e : cells.entrySet()) {
+                BlockPos p = e.getKey();
+                int d = Math.abs(p.getX() - at.getX()) + Math.abs(p.getY() - at.getY()) + Math.abs(p.getZ() - at.getZ());
+                if (d != r) continue;
+                BlockState s = e.getValue();
+                if (s.isAir() || s.getBlock() instanceof net.minecraft.world.level.block.EntityBlock
+                        || !s.isCollisionShapeFullBlock(EmptyBlockGetter.INSTANCE, p)) continue;
+                full.merge(s, 1, Integer::sum);
+            }
+            if (!full.isEmpty()) return java.util.Collections.max(full.entrySet(), Map.Entry.comparingByValue()).getKey();
+        }
+        return null;
+    }
+
     // ---------- the body: mass, inertia, shape ----------
 
     private static final class Body {
@@ -221,7 +436,7 @@ final class VehicleCheck {
         /** The long horizontal axis: a hull's keel line. */
         final Direction.Axis keel;
 
-        Body(List<Part> parts, double m, double cx, double cy, double cz, Map<BlockPos, BlockState> blocks) {
+        Body(List<Part> parts, double m, double cx, double cy, double cz, Map<BlockPos, BlockState> blocks, Direction.Axis drive) {
             this.parts = parts;
             this.m = m;
             this.cx = cx;
@@ -246,7 +461,8 @@ final class VehicleCheck {
             lenX = x1 - x0 + 1;
             lenZ = z1 - z0 + 1;
             height = y1 - y0 + 1;
-            keel = lenX >= lenZ ? Direction.Axis.X : Direction.Axis.Z;
+            // What drives it along sets its keel line, even where pods or outriggers make it wider than it is long.
+            keel = drive != null ? drive : lenX >= lenZ ? Direction.Axis.X : Direction.Axis.Z;
         }
 
         /** Moment of inertia about the vertical axis through the centre of mass (each block a unit cube). */
@@ -1608,13 +1824,21 @@ final class VehicleCheck {
         if (!fix.isEmpty()) out.append("; its weight and lift are off by ").append(String.join(", ", fix))
                 .append(": move the balloon or the gondola's rooms and machines to level it");
         out.append(").\n");
-        if (Math.abs(pd) >= TRIM_BAD) faults.add(String.format(Locale.ROOT, "it hangs %.1f° %s down: move weight toward the %s, "
-                + "or the balloon toward the %s, until it hangs level", Math.abs(pd), pd > 0 ? behind : ahead, pd > 0 ? ahead : behind,
-                pd > 0 ? behind : ahead));
+        // Sliding the balloon (or everything under it) by d moves lift and weight apart by d x the rest's share of the mass.
+        double envelope = 0;
+        for (Part p : b.parts) if (airtight(p.state)) envelope += p.mass;
+        double slide = Math.abs(a) * b.m / Math.max(b.m - envelope, 0.25 * b.m);
+        if (Math.abs(pd) >= TRIM_BAD) faults.add(String.format(Locale.ROOT, "it hangs %.1f° %s down: slide the balloon about %.0f "
+                + "block%s toward the %s, or the gondola with everything under the balloon that far toward the %s (or move its heavy "
+                + "rooms and machines that way), until it hangs level", Math.abs(pd), pd > 0 ? behind : ahead, Math.max(1, slide),
+                Math.round(Math.max(1, slide)) == 1 ? "" : "s", pd > 0 ? behind : ahead, pd > 0 ? ahead : behind));
         else if (Math.abs(pd) >= TRIM_NOTE) notes.add(String.format(Locale.ROOT, "it hangs %.1f° %s down, which shows",
                 Math.abs(pd), pd > 0 ? behind : ahead));
-        if (Math.abs(ld) >= TRIM_BAD) faults.add(String.format(Locale.ROOT, "it hangs %.1f° down to %s: balance its weight across "
-                + "it", Math.abs(ld), ld > 0 ? minusSide : plusSide));
+        double sideways = Math.abs(l) * b.m / Math.max(b.m - envelope, 0.25 * b.m);
+        if (Math.abs(ld) >= TRIM_BAD) faults.add(String.format(Locale.ROOT, "it hangs %.1f° down to %s: slide the balloon about %.0f "
+                + "block%s toward %s, or balance the weight under it across it (the same side to side)", Math.abs(ld),
+                ld > 0 ? minusSide : plusSide, Math.max(1, sideways), Math.round(Math.max(1, sideways)) == 1 ? "" : "s",
+                ld > 0 ? minusSide : plusSide));
         else if (Math.abs(ld) >= TRIM_NOTE) notes.add(String.format(Locale.ROOT, "it hangs %.1f° down to %s, which shows",
                 Math.abs(ld), ld > 0 ? minusSide : plusSide));
         return v;

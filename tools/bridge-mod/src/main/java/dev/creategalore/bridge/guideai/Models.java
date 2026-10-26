@@ -322,6 +322,10 @@ public final class Models {
                 if (!e.getValue().equals(base.get(e.getKey()))) changes.put(e.getKey(), false);
             for (BlockPos p : base.keySet()) if (!cells.containsKey(p)) changes.put(p, true);
         }
+        boolean showsFault = input.has("shows_a_fault") && input.get("shows_a_fault").isJsonPrimitive()
+                && input.get("shows_a_fault").getAsBoolean();
+        // A vehicle's corner steps are filled so it glues as one piece; the book is told where, so it builds them in.
+        List<BlockPos> steps = showsFault || base != null ? List.of() : VehicleCheck.closeSteps(cells, sx, sy, sz);
         if (level != null) connect(cells, level);
         // Moving parts first: the blocks that ride on them leave the network they sit against, so the rotation check
         // only looks at the blocks that stay put.
@@ -338,8 +342,6 @@ public final class Models {
         if (motion != null) check = join(check, motion.report());
         check = join(check, vehicle(cells, level, input.has("part_of_vehicle") && input.get("part_of_vehicle").isJsonPrimitive()
                 && input.get("part_of_vehicle").getAsBoolean()));
-        boolean showsFault = input.has("shows_a_fault") && input.get("shows_a_fault").isJsonPrimitive()
-                && input.get("shows_a_fault").getAsBoolean();
         boolean draft = input.has("draft") && input.get("draft").isJsonPrimitive() && input.get("draft").getAsBoolean();
         if (check != null && !check.faults().isEmpty() && !showsFault && !draft) {
             return Result.problem("Not built: blocks in it wouldn't work as placed. Fix the model and call again (or "
@@ -358,6 +360,7 @@ public final class Models {
         model.add("labels", labels);
         if (motion != null) model.add("moving", motion.moving());
         String report = check == null ? "" : check.text();
+        if (!steps.isEmpty()) report = (report.isEmpty() ? "" : report + "\n") + stepReport(steps, cells);
         report = (report.isEmpty() ? "" : report + "\n") + tally(cells);
         // A build to copy, not a few machines explaining a point: what it takes of the player's own materials.
         String holdings = cells.size() < MIN_HOLDINGS || level == null ? null : Materials.against(cells, player, level.getServer());
@@ -484,6 +487,19 @@ public final class Models {
         if (!part) return new BuildCheck.Report(text, r.faults());
         return new BuildCheck.Report(text.replace("- PROBLEM: ", "- As a whole vehicle these blocks alone would fail: ")
                 + "\n- (Marked part_of_vehicle: check the whole vehicle with its own model before recommending it.)", List.of());
+    }
+
+    /** Where corner steps were filled, so the book's next version has them and its words match the model. */
+    private static String stepReport(List<BlockPos> steps, Map<BlockPos, BlockState> cells) {
+        List<String> where = new ArrayList<>();
+        for (int i = 0; i < Math.min(steps.size(), 24); i++) {
+            BlockPos p = steps.get(i);
+            where.add(p.getX() + "," + p.getY() + "," + p.getZ() + " (" + BuiltInRegistries.BLOCK.getKey(cells.get(p).getBlock()).getPath() + ")");
+        }
+        return "Filled " + steps.size() + " corner step" + (steps.size() == 1 ? "" : "s") + " where blocks met only along an edge or "
+                + "at a corner, so the whole vehicle shares faces and Super Glue takes it as one (this model already has them; "
+                + "keep them in any later version, and count them in the materials): " + String.join("; ", where)
+                + (steps.size() > 24 ? "; and more" : "") + ".";
     }
 
     /** Both checks' reports as one; either may be null (nothing of its kind in the model). */
