@@ -271,6 +271,11 @@ final class VehicleCheck {
         }
     }
 
+    /** " (+z)" and so on: a way named by the model's axis. */
+    private static String axis(Direction d) {
+        return " (" + (d.getAxisDirection() == Direction.AxisDirection.POSITIVE ? "+" : "-") + d.getAxis().getName() + ")";
+    }
+
     /** Whether the vehicle check looks at these blocks at all: they hold something that floats, flies, drives or pushes. */
     static boolean vehicle(Map<BlockPos, BlockState> blocks) {
         for (BlockState s : blocks.values()) {
@@ -805,6 +810,11 @@ final class VehicleCheck {
         double up = bow == null || bow == plus ? 1 : -1; // + when a positive pitch raises the end named first
         String plusSide = bow == null ? side.getName() + " side" : (bow.getClockWise() == side ? "starboard" : "port");
         String minusSide = bow == null ? side.getOpposite().getName() + " side" : plusSide.equals("starboard") ? "port" : "starboard";
+        // With the model's own axis, so a fix in blocks ("slide it toward the stern") says which way that is.
+        ahead += axis(bow == null ? plus : bow);
+        behind += axis(bow == null ? plus.getOpposite() : bow.getOpposite());
+        plusSide += axis(side);
+        minusSide += axis(side.getOpposite());
         if (Double.isNaN(pitch) || Math.abs(pitch) > Math.toRadians(40)) {
             faults.add(String.format(Locale.ROOT, "it doesn't float level fore and aft: its weight sits so far toward one end "
                     + "that it tips onto its %s and stands on end; move heavy blocks toward the middle, or give that end more hull",
@@ -1812,6 +1822,11 @@ final class VehicleCheck {
         double up = bow == null || bow == plus ? 1 : -1;
         String plusSide = bow == null ? side.getName() + " side" : bow.getClockWise() == side ? "starboard" : "port";
         String minusSide = bow == null ? side.getOpposite().getName() + " side" : plusSide.equals("starboard") ? "port" : "starboard";
+        // With the model's own axis, so a fix in blocks ("slide it toward the stern") says which way that is.
+        ahead += axis(bow == null ? plus : bow);
+        behind += axis(bow == null ? plus.getOpposite() : bow.getOpposite());
+        plusSide += axis(side);
+        minusSide += axis(side.getOpposite());
         // Swinging till the lift is over the centre of mass raises the end the lift sits toward.
         double pd = Math.toDegrees(Math.atan2(a, v)) * up, ld = Math.toDegrees(Math.atan2(l, v));
         String trimText = Math.abs(pd) < 0.25 ? "level fore and aft" : String.format(Locale.ROOT, "%s %.1f° down", pd > 0 ? behind : ahead, Math.abs(pd));
