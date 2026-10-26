@@ -610,6 +610,8 @@ public final class GuideAi {
         Usage usage = new Usage();
         StringBuilder note = new StringBuilder();
         List<String> diagrams = new ArrayList<>();
+        // Every model built for this answer, so the next version can start from one (build_model's from_draft).
+        List<Models.Draft> drafts = new ArrayList<>();
         Streamer streamer = new Streamer(l, playerId, pageId);
         boolean rescued = false;
         int limit = MAX_ROUNDS;
@@ -640,7 +642,7 @@ public final class GuideAi {
                             // Its tool calls have no results, which the API refuses on the page's next question.
                             return finishText(messages, diagrams, note, false);
                         }
-                        JsonObject results = toolResults(l, playerId, content, diagrams, streamer);
+                        JsonObject results = toolResults(l, playerId, content, diagrams, drafts, streamer);
                         messages.add(results);
                         if (limit < DESIGN_ROUNDS && calls(content, "build_model")) limit = DESIGN_ROUNDS;
                         int left = limit - round - 1;
@@ -914,7 +916,8 @@ public final class GuideAi {
     }
 
     /** Runs the book's tool calls on the server thread, for the player who asked, and returns them as one user turn. */
-    private static JsonObject toolResults(Live l, UUID playerId, JsonArray content, List<String> diagrams, Streamer streamer)
+    private static JsonObject toolResults(Live l, UUID playerId, JsonArray content, List<String> diagrams,
+            List<Models.Draft> drafts, Streamer streamer)
             throws InterruptedException {
         JsonArray results = new JsonArray();
         for (JsonElement e : content) {
@@ -948,7 +951,7 @@ public final class GuideAi {
                         PlacedBlocks placedBlocks = placed;
                         Models.Copier copier = player == null || placedBlocks == null ? null
                                 : (a, b, max) -> Builds.copy(player, placedBlocks, views.get(playerId), a, b, max);
-                        return Models.build(input, player != null ? player.serverLevel() : l.server.overworld(), copier, player);
+                        return Models.build(input, player != null ? player.serverLevel() : l.server.overworld(), copier, player, drafts);
                     }).get(10, TimeUnit.SECONDS);
                     LOG.info("Field Guide voice: build_model {}", buildSummary(built));
                     if (built.problem() != null) {

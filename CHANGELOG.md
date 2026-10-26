@@ -5,6 +5,13 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.5.13
+
+### Added
+- **Ask the Book revises its designs instead of redrawing them.** Every change to a model used to mean writing the whole build out again, layer by layer, so fixing a blimp meant rewriting hundreds of rows for each one-block fix, and a long design ran out of room before its faults were fixed. The book can now start a model from any it built earlier for the same answer and write only what changes; slide a whole part (the balloon a block back, the gondola toward the bow) in one step; draw an envelope, dome or rounded hull as one rounded shell, or a hollow box, in a single entry; and repaint the blocks already in a box (a stripe round an envelope). Checked on a test server: a hauling blimp was written in one go with its rounded envelope, and moving its second engines took a 700-byte change that fixed both faults, where the same model written out in full is about ten times that.
+- Trim and list fixes name the way in the model's own axes too ("slide the balloon toward the stern (-z)"), so the book can make the change without guessing which end is which.
+- Create Galore Bridge 1.121.0.
+
 ## 0.5.12
 
 ### Fixed
