@@ -5,6 +5,14 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.5.12
+
+### Fixed
+- **Water and stained glass vanished from shader shadows whenever a ship was in view.** With any Sable ship on screen, shader packs got no water or stained glass in their shadow map: no light caustics under water, no coloured light through stained glass, and the water's depth for light was missing. Aeronautics' levitite is drawn with tessellation in the shadow pass right before the translucent terrain, and that left Iris drawing Sodium's water and glass as tessellation patches, which the graphics driver refuses. Each terrain draw now starts without that setting, and on a test machine water and glass landed in the shadow map with a ship in view.
+
+### Added
+- Create Galore Bridge 1.120.0.
+
 ## 0.5.11
 
 ### Fixed
