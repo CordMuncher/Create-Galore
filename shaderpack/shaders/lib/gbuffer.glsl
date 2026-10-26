@@ -38,8 +38,25 @@ const vec4 colortex2ClearColor = vec4(0.0, 0.0, 0.0, 0.0);
 
 // The blocks block.properties numbers (mc_Entity.x).
 #define BLOCK_WATER 10001
+#define BLOCK_LEAVES 10002 // every block tagged as leaves, modded ones too
 #define BLOCK_LIGHT_RED 10101 // 10101..10109: lights with colours of their own (see shadow.vsh)
 #define BLOCK_LIGHT_LAST 10109
+
+// Grass, flowers and crops: their crossed quads face diagonally across the ground (and Minecraft doesn't shade them).
+bool is_plant_normal(vec3 n) {
+    return abs(n.y) < 0.01 && abs(abs(n.x) - abs(n.z)) < 0.01;
+}
+
+// The shading Minecraft gives each face of a block (Sodium bakes it into the vertex colour with oldLighting): up
+// 1, down 0.5, north and south 0.8, east and west 0.6, by the face's nearest direction. The sun and the sky shade
+// the faces now, so the programs take it out again (and the shadow pass, for the bounce light's colours).
+float face_shade(vec3 n) {
+    vec3 a = abs(n);
+    if (a.y >= a.x && a.y >= a.z) {
+        return n.y > 0.0 ? 1.0 : 0.5;
+    }
+    return a.z >= a.x ? 0.8 : 0.6;
+}
 
 vec2 oct_wrap(vec2 v) {
     return (1.0 - abs(v.yx)) * vec2(v.x >= 0.0 ? 1.0 : -1.0, v.y >= 0.0 ? 1.0 : -1.0);

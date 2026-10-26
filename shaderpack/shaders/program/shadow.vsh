@@ -3,8 +3,9 @@
 // shadow camera's matrices as gl_ModelViewMatrix and gl_ProjectionMatrix, and snaps it to whole steps as you move.
 //
 // The world's blocks (shadow_solid, shadow_cutout, shadow_water: PROGRAM_SHADOW_TERRAIN) also mark what each block
-// around you is for the coloured light (see light_volume.glsl): lights, solid cubes and tinting glass. And for the
-// ripples (see water.glsl, shadow.fsh) the water's surface, and everything else what reaches into it.
+// around you is for the coloured light and the bounce light (see light_volume.glsl): lights, solid cubes, tinting
+// glass and leaves; and hand their colour and facing on for the bounce light (shadow.fsh). And for the ripples (see
+// water.glsl, shadow.fsh) the water's surface, and everything else what reaches into it.
 
 #define PROGRAM_SHADOW
 #include "/lib/settings.glsl"
@@ -13,12 +14,16 @@
 out vec2 v_uv;
 out float v_alpha;
 
-#if defined LIT_COLORED_LIGHT || defined LIT_WATER_RIPPLES
+#if defined LIT_VOXELS || defined LIT_WATER_RIPPLES
 uniform mat4 shadowModelViewInverse;
 uniform vec3 cameraPositionFract;
 #endif
-#if defined PROGRAM_SHADOW_TERRAIN && (defined LIT_COLORED_LIGHT || defined LIT_WATER_RIPPLES)
+#if defined PROGRAM_SHADOW_TERRAIN && (defined LIT_VOXELS || defined LIT_WATER_RIPPLES)
 in vec4 mc_Entity; // the block's number in block.properties
+#endif
+#if defined PROGRAM_SHADOW_TERRAIN && defined LIT_GI && !defined PROGRAM_SHADOW_WATER
+out vec3 v_tint;   // the vertex colour without Minecraft's face shading (the biome's grass and leaf colours)
+out vec3 v_normal; // world space
 #endif
 #ifdef LIT_WATER_RIPPLES
 out vec3 v_scene_pos;
@@ -27,7 +32,7 @@ flat out int v_water_top; // 1 on the top of water
 #endif
 #endif
 
-#if defined PROGRAM_SHADOW_TERRAIN && defined LIT_COLORED_LIGHT
+#if defined PROGRAM_SHADOW_TERRAIN && defined LIT_VOXELS
 #include "/lib/light_volume.glsl"
 #include "/lib/color.glsl"
 
@@ -36,6 +41,8 @@ in vec2 mc_midTexCoord; // the middle of the vertex's face in the texture atlas
 
 uniform sampler2D gtexture;
 layout(r32ui) uniform uimage3D cg_voxel_img;
+
+#ifdef LIT_COLORED_LIGHT
 
 // The colours of the lights block.properties lists (linear, brightest channel 1).
 vec3 listed_light_color(int id) {
@@ -92,20 +99,24 @@ vec3 light_color(vec3 texture_color) {
     vec3 torch = torch_color / torch_color.r;
     return mix(torch, c, own);
 }
+#endif
 
-void mark_block(vec3 scene_pos) {
+// uv: the vertex's place in the texture atlas.
+void mark_block(vec3 scene_pos, vec2 uv) {
     ivec3 block = light_volume_block(scene_pos + at_midBlock.xyz / 64.0, cameraPositionFract);
     if (!in_light_volume(block)) {
         return;
     }
     int id = int(mc_Entity.x + 0.5);
+#ifdef LIT_COLORED_LIGHT
     float level = at_midBlock.w;
     // One vertex of each face is enough for a light (they all read the same texture).
     if (level > 0.5 && (gl_VertexID & 3) == 0) {
         vec3 c = id >= BLOCK_LIGHT_RED && id <= BLOCK_LIGHT_LAST
-                ? listed_light_color(id) : light_color(face_light_color(v_uv, mc_midTexCoord));
-        imageAtomicMax(cg_voxel_img, block + ivec3(0, 0, light_volume_depth), light_mark(level, c));
+                ? listed_light_color(id) : light_color(face_light_color(uv, mc_midTexCoord));
+        imageAtomicMax(cg_voxel_img, block + ivec3(0, 0, section_lights * light_volume_depth), light_mark(level, c));
     }
+#endif
 #if defined PROGRAM_SHADOW_SOLID
     // A solid block stops the light if all its vertices sit on its corners (a full cube; a slab or a stair has some
     // inside the block).
@@ -118,19 +129,28 @@ void mark_block(vec3 scene_pos) {
         vec3 tint = mix(vec3(1.0), srgb_to_linear(texel.rgb), texel.a);
         imageAtomicOr(cg_voxel_img, block, tint_mark(tint / max(tint.r, max(tint.g, max(tint.b, 1e-4)))));
     }
+#elif defined PROGRAM_SHADOW_CUTOUT
+    if (id == BLOCK_LEAVES && (gl_VertexID & 3) == 0) {
+        imageAtomicOr(cg_voxel_img, block, mark_foliage);
+    }
 #endif
 }
 #endif
 
 void main() {
     gl_Position = gl_ProjectionMatrix * (gl_ModelViewMatrix * gl_Vertex);
-    v_uv = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
+    vec2 uv = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
+    v_uv = uv;
     v_alpha = gl_Color.a;
-#if defined LIT_COLORED_LIGHT || defined LIT_WATER_RIPPLES
+#if defined LIT_VOXELS || defined LIT_WATER_RIPPLES
     vec3 scene_pos = (shadowModelViewInverse * (gl_ModelViewMatrix * gl_Vertex)).xyz;
 #endif
-#if defined PROGRAM_SHADOW_TERRAIN && defined LIT_COLORED_LIGHT
-    mark_block(scene_pos);
+#if defined PROGRAM_SHADOW_TERRAIN && defined LIT_VOXELS
+    mark_block(scene_pos, uv);
+#endif
+#if defined PROGRAM_SHADOW_TERRAIN && defined LIT_GI && !defined PROGRAM_SHADOW_WATER
+    v_normal = normalize(mat3(shadowModelViewInverse) * (gl_NormalMatrix * gl_Normal));
+    v_tint = is_plant_normal(v_normal) ? gl_Color.rgb : gl_Color.rgb / face_shade(v_normal);
 #endif
 #ifdef LIT_WATER_RIPPLES
     v_scene_pos = scene_pos;

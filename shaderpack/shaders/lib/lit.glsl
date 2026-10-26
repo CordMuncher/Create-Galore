@@ -28,22 +28,6 @@ float luminance(vec3 c) {
     return dot(c, vec3(0.2126, 0.7152, 0.0722));
 }
 
-// Grass, flowers and crops: their crossed quads face diagonally across the ground (and Minecraft doesn't shade them).
-bool is_plant_normal(vec3 n) {
-    return abs(n.y) < 0.01 && abs(abs(n.x) - abs(n.z)) < 0.01;
-}
-
-// The shading Minecraft gives each face of a block (Sodium bakes it into the vertex colour with oldLighting): up
-// 1, down 0.5, north and south 0.8, east and west 0.6, by the face's nearest direction. The sun and the sky shade
-// the faces now, so the programs take it out again.
-float face_shade(vec3 n) {
-    vec3 a = abs(n);
-    if (a.y >= a.x && a.y >= a.z) {
-        return n.y > 0.0 ? 1.0 : 0.5;
-    }
-    return a.z >= a.x ? 0.8 : 0.6;
-}
-
 // What the fog fades into, looking along dir (world space), in kcd/m² (not exposed): the sky just over the horizon
 // in the open air, else Minecraft's own fog colour (water, lava, powder snow) lit by the light where you are.
 vec3 fog_color_lit(vec3 dir) {

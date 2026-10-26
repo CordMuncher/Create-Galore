@@ -1,4 +1,4 @@
-// The overworld's shadowcomp passes 2 to 4: one step each of the ripples' wave equation (see water.glsl), for as
+// The overworld's shadowcomp passes 3 to 5: one step each of the ripples' wave equation (see water.glsl), for as
 // many steps as this frame has (WATER_STEP: which of them this pass is). The state, each cell's height now and a
 // step ago, alternates between the two halves of its image: each step reads one and writes the other. The first
 // step reads last frame's state where the camera's move put each cell in it.

@@ -42,11 +42,23 @@ const float upscaling_render_scale = RENDER_SCALE;
 // Coloured light, in the lit overworld with shadows on (the shadow pass finds the lights, see light_volume.glsl): each
 // light's colour, read from its own texture, spread through the blocks around you, so soul lanterns light blue,
 // redstone red and sea lanterns cool white, modded lights included. Strength: how much of a light's colour shows
-// (0 every light is torchlight). Range: how many blocks across the volume the colours spread in is (half as high).
+// (0 every light is torchlight).
 #define COLORED_LIGHT
 #define COLORED_LIGHT_SATURATION 1.0 // [0.0 0.25 0.5 0.75 1.0 1.25 1.5]
-#define COLORED_LIGHT_RANGE 128      // [64 128 192 256]
+// How many blocks across (and half as high) the volume around you is that the coloured light and the bounce light
+// spread through; past it lights are torchlight and nothing bounces.
+#define LIGHT_RANGE 128 // [64 128 192 256]
 #ifdef COLORED_LIGHT
+#endif
+
+// Bounce light (global illumination), in the lit overworld with shadows on: sunlight (and moonlight) that falls on
+// the world and bounces off it, in the colour of what it bounced off, lighting rooms from their sunlit windows and
+// floors, and the shade under trees and overhangs. Steady from frame to frame (no noise for the upscaler to smear):
+// it spreads through a volume of blocks around you (see light_volume.glsl). Where the open sky lights a surface,
+// the sky's light already holds the ground's bounce, so it adds little there.
+#define GI
+#define GI_STRENGTH 1.0 // [0.25 0.5 0.75 1.0 1.25 1.5 2.0]
+#ifdef GI
 #endif
 
 // Water, in the lit overworld: small wind waves on every water surface (Waves: how high, 0 none), and ripples where
@@ -109,6 +121,15 @@ const float upscaling_render_scale = RENDER_SCALE;
 #define LIT_WATER_RIPPLES
 #endif
 
+#if defined LIT_WORLD && defined SHADOWS && defined GI
+#define LIT_GI
+#endif
+
+// The volume of blocks around you that the coloured light and the bounce light spread through.
+#if defined LIT_COLORED_LIGHT || defined LIT_GI
+#define LIT_VOXELS
+#endif
+
 #ifdef LIT_WORLD
 // The sun's path leans towards the south, as it does away from the equator (Minecraft's own runs straight overhead).
 const float sunPathRotation = -20.0; // [-40.0 -30.0 -20.0 -10.0 0.0 10.0 20.0 30.0 40.0]
@@ -118,7 +139,21 @@ const float shadowDistance = 128.0; // [64.0 96.0 128.0 160.0 192.0 256.0]
 // The shadow camera follows you in steps of two blocks, so the shadows hold still as you move (no warping either:
 // every texel covers the same ground everywhere).
 const float shadowIntervalSize = 2.0;
-const bool shadowHardwareFiltering = true;
+// Hardware depth compares on shadowtex1 (the shadows, see shadow.glsl); shadowtex0 stays plain depth, for the bounce
+// light's source to read (light_bounce.csh). Nothing translucent draws into the shadow map, so the two are the same.
+const bool shadowHardwareFiltering1 = true;
+#ifdef GI
+// The colour (sRGB-ish: the square root of linear) and the facing (octahedral) of what the light falls on, for the
+// bounce light (see shadow.fsh); cleared to nothing every frame.
+/*
+const int shadowcolor0Format = RGBA8;
+const int shadowcolor1Format = RGBA8;
+const bool shadowcolor0Clear = true;
+const vec4 shadowcolor0ClearColor = vec4(0.0, 0.0, 0.0, 0.0);
+const bool shadowcolor1Clear = true;
+const vec4 shadowcolor1ClearColor = vec4(0.0, 0.0, 0.0, 0.0);
+*/
+#endif
 #endif
 #endif
 

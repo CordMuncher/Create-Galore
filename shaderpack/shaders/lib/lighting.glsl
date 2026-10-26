@@ -1,7 +1,8 @@
-// Light on the overworld's surfaces, in real units (see globals.glsl): the sun or the moon, the sky all around, and
-// the blocks' own light. Minecraft's light levels say how much of the sky a surface sees (sky light) and how much
-// light torches and every other light-giving block, modded ones too, put on it (block light), each through
-// Minecraft's own brightness curve. Shared by the deferred pass (opaque surfaces) and the translucent programs.
+// Light on the overworld's surfaces, in real units (see globals.glsl): the sun or the moon, the sky all around, the
+// sunlight bouncing off the world (see light_volume.glsl), and the blocks' own light. Minecraft's light levels say how
+// much of the sky a surface sees (sky light) and how much light torches and every other light-giving block, modded
+// ones too, put on it (block light), each through Minecraft's own brightness curve. Shared by the deferred pass
+// (opaque surfaces) and the translucent programs.
 
 #if !defined LIB_LIGHTING
 #define LIB_LIGHTING
@@ -83,6 +84,9 @@ vec3 light_surface(vec3 albedo, vec3 normal, vec2 light, vec3 scene_pos, bool pl
     }
     vec3 sky = sky_irradiance(n) * light_curve(light.y);
     vec3 irradiance = direct + sky + block_irradiance(light.x, block_light_color(scene_pos, n));
+#ifdef LIT_GI
+    irradiance += g_light_color.rgb * bounce_light(scene_pos, n, light.y);
+#endif
     return albedo / PI * irradiance * (1.0 - 0.9 * darknessLightFactor);
 }
 
