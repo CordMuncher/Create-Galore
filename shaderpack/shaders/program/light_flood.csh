@@ -3,7 +3,7 @@
 // volume, a light level dimmer (each channel in proportion, so the colour stays), or its own light if it is a light;
 // a solid cube takes none, tinting glass tints it. Bounce light: each block takes what the sunlit surfaces around it
 // reflected into it this frame (light_bounce.csh), and a share of its six neighbours' (bounce_pass, less through
-// leaves); a solid cube takes none. As the camera moves into another block, last frame's volume is read where this
+// leaves), a solid neighbour sending some of its own back; a solid cube takes none. As the camera moves into another block, last frame's volume is read where this
 // block was in it.
 
 #define PROGRAM_LIGHT_FLOOD
@@ -75,9 +75,17 @@ void main() {
                 imageLoad(cg_voxel_img, block + ivec3(0, 0, (section_bounce_added + 1) * light_volume_depth)).r,
                 imageLoad(cg_voxel_img, block + ivec3(0, 0, (section_bounce_added + 2) * light_volume_depth)).r)
                 / bounce_scale;
-        vec3 around = previous_light(prev + ivec3(1, 0, 0), section_bounce) + previous_light(prev - ivec3(1, 0, 0), section_bounce)
-                + previous_light(prev + ivec3(0, 1, 0), section_bounce) + previous_light(prev - ivec3(0, 1, 0), section_bounce)
-                + previous_light(prev + ivec3(0, 0, 1), section_bounce) + previous_light(prev - ivec3(0, 0, 1), section_bounce);
+        // A solid neighbour sends some of this block's light back (bounce_wall_reflect), an open one its own.
+        vec3 here = previous_light(prev, section_bounce);
+        vec3 around = vec3(0.0);
+        for (int i = 0; i < 6; i++) {
+            ivec3 d = ivec3(0);
+            d[i >> 1] = (i & 1) == 0 ? 1 : -1;
+            ivec3 n = block + d;
+            bool wall = in_light_volume(n)
+                    && marks_solid(imageLoad(cg_voxel_img, n + ivec3(0, 0, section_marks * light_volume_depth)).r);
+            around += wall ? here * bounce_wall_reflect : previous_light(prev + d, section_bounce);
+        }
         float pass = bounce_pass * ((marks & mark_foliage) != 0u ? bounce_foliage_pass : 1.0);
         bounce = added + around * (pass / 6.0);
         if ((marks & mark_tinted) != 0u) {
@@ -85,7 +93,7 @@ void main() {
         }
         // Halfway from last frame's towards this, so it settles rather than flickers where the shadow map's samples
         // move across the blocks (as the sun moves, and the shadow map with you).
-        bounce = mix(previous_light(prev, section_bounce), bounce, 0.5);
+        bounce = mix(here, bounce, 0.5);
     }
     store_light(block, section_bounce, bounce);
 #endif

@@ -61,6 +61,10 @@ const float upscaling_render_scale = RENDER_SCALE;
 #ifdef GI
 #endif
 
+// For tuning, not in the settings screens (set it in the pack's .txt): 1 shows only the bounce light, as it falls on
+// a white surface.
+#define DEBUG_VIEW 0 // [0 1]
+
 // Water, in the lit overworld: small wind waves on every water surface (Waves: how high, 0 none), and ripples where
 // you, mobs, boats, ships and Create's water wheels move through it, with wakes behind them (with shadows on: the
 // shadow pass finds what reaches into the water, so what casts no shadow makes no ripples). Both only bend the

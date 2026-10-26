@@ -125,6 +125,9 @@ void main() {
         float wet = material == MATERIAL_LIT ? wetness_at(normal, light.y) : 0.0;
         albedo *= 1.0 - 0.35 * wet;
         vec3 lit = light_surface(albedo, normal, light, scene_pos, material == MATERIAL_PLANT, !lod) * exposure();
+#if DEBUG_VIEW == 1 && defined LIT_GI
+        lit = g_light_color.rgb * bounce_light(scene_pos, normal, light.y) / PI * exposure();
+#endif
         if (wet > 0.0) {
             lit = with_wet_film(lit, normal, dir, wet);
         }

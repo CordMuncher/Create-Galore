@@ -79,8 +79,9 @@ void lit_output(vec4 color, int flags) {
     normal = dot(normal, dir) > 0.0 ? -normal : normal;
     vec3 rgb = forward_lit(vec3(0.9), normal, vec2(0.0, 1.0), v_scene_pos, false);
 #elif defined PROGRAM_WEATHER
-    // Rain and snow: lit like plants, through, by the sky and the sun.
-    vec3 rgb = forward_lit(color.rgb, vec3(0.0, 1.0, 0.0), v_level, v_scene_pos, true);
+    // Rain and snow: lit like plants, through, by the sky and the sun. Raindrops are clear water, so the rain keeps
+    // only a little of its texture's blue (lit, the full blue reads as blue paint).
+    vec3 rgb = forward_lit(mix(vec3(luminance(color.rgb)), color.rgb, 0.3), vec3(0.0, 1.0, 0.0), v_level, v_scene_pos, true);
 #elif defined PROGRAM_WATER
     // The top of water bends the light with its waves and ripples (see water.glsl).
     vec3 normal = v_material == MATERIAL_WATER && v_normal.y > 0.9 ? water_normal(v_scene_pos) : v_normal;

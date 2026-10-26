@@ -56,13 +56,17 @@ const uint mark_tinted = 4u;     // see-through, tinting what passes; bits 8.. t
 const uint mark_foliage = 8u;    // leaves, which the bounce light only partly gets through
 
 // Of the bounce light a block takes from its neighbours, how much it passes on (the rest is lost, as light is to the
-// surfaces around it that aren't in the volume): it falls to a third about 2.5 blocks from where it bounced. Through
-// leaves, half of that.
+// surfaces around it that aren't in the volume): in the open it falls to a third about 2.5 blocks from where it
+// bounced. Through leaves, half of that.
 const float bounce_pass = 0.97;
 const float bounce_foliage_pass = 0.5;
-// A sunlit floor reflecting some light into the block over it leaves about 4 times that there, once the flood has
-// settled (4.03 for bounce_pass 0.97); a surface right over the floor sees nothing but floor and gets all of it once.
-const float bounce_peak = 4.0;
+// What a solid block next to it sends back of a block's bounce light (a middling surface, between dark stone and
+// white concrete): the bounces after the first, which fill a room from its sunlit patch.
+const float bounce_wall_reflect = 0.5;
+// A sunlit floor reflecting some light into the block over it leaves about 6 times that there, once the flood has
+// settled (5.98 for bounce_pass 0.97 and bounce_wall_reflect 0.5); a surface right over the floor sees nothing but
+// floor and gets all of it once.
+const float bounce_peak = 6.0;
 
 // The volume's block at a position relative to the camera (scene space): blocks counted from the volume's corner.
 ivec3 light_volume_block(vec3 scene_pos, vec3 camera_fract) {
