@@ -37,8 +37,8 @@ import net.neoforged.neoforge.common.NeoForge;
 /**
  * Upscaling & Display, the Bridge's display settings, in two tabs. Upscaling: the DLAA engine and DLSS preset, the
  * render resolution, the bring-your-own nvngx_dlss.dll and nvngx_dlssg.dll (or ones found on this PC, see
- * {@link DlssFinder}). Display: the window switches and Perfect Presentation's DirectX version (12 is experimental, and
- * picking it turns Perfect Presentation on), NVIDIA Reflex (which turns Perfect Presentation on with it, see
+ * {@link DlssFinder}). Display: the window switches and Perfect Presentation's DirectX version (picking 12 turns
+ * Perfect Presentation on; a fresh install on Windows starts with both, see DisplaySettings), NVIDIA Reflex (which turns Perfect Presentation on with it, see
  * {@link FrameLatency}), GPU pacing, frame generation (experimental: NVIDIA's on RTX 40 and 50 cards, AMD's on any;
  * picking one turns Perfect Presentation on DirectX 12 on, and NVIDIA's Reflex too, see {@link FrameGen}) and the frame
  * counter ({@link FpsOverlay}). Opens from the mod list (Create Galore Bridge, Config) and from an Upscaling & Display
@@ -247,9 +247,9 @@ public final class DlaaScreen extends Screen {
         int step = height < 268 ? 22 : 24; // seven rows and Done fit a 240 high screen
         presentationButton = add(CycleButton.onOffBuilder(perfectPresentation)
                 .withTooltip(value -> net.minecraft.client.gui.components.Tooltip.create(Component.literal(
-                        "Experimental, Windows only, needs a restart: shows the game through a DirectX swap chain, so borderless"
-                                + " fullscreen runs at exclusive fullscreen speed and Alt-Tab never changes the display mode."
-                                + " NVIDIA Reflex needs it.")))
+                        "Windows only, needs a restart: shows the game through a DirectX swap chain, so borderless fullscreen"
+                                + " runs at exclusive fullscreen speed and Alt-Tab never changes the display mode. NVIDIA Reflex"
+                                + " and frame generation need it.")))
                 .create(left, y, half, 20, Component.literal("Perfect Presentation"), (button, value) -> {
                     perfectPresentation = value;
                     if (!value && !reflex.equals("off")) {
@@ -582,8 +582,8 @@ public final class DlaaScreen extends Screen {
     private FrameLatency.Status apiStatus() {
         String running = Presentation.api();
         boolean dx12 = api.equals("dx12");
-        String detail = "Experimental and not recommended as the default yet. In tests DirectX 12 ran at the same frame rate"
-                + " as DirectX 11 with marginally lower input delay. If anything looks or feels wrong, go back to 11.";
+        String detail = "In tests DirectX 12 ran at the same frame rate as DirectX 11 with marginally lower input delay, and"
+                + " frame generation needs it. If anything looks or feels wrong, try 11.";
         if (dx12 && Util.getPlatform() != Util.OS.WINDOWS) {
             return new FrameLatency.Status("Needs Windows.", "Perfect Presentation, and with it DirectX, runs only on Windows.", true);
         }
@@ -598,10 +598,10 @@ public final class DlaaScreen extends Screen {
                     + " driver that shares textures with DirectX 12: NVIDIA's does, Intel's doesn't.", true);
         }
         if (dx12 && !"DirectX 12".equals(running)) {
-            return new FrameLatency.Status("Experimental. Starts after a restart.", detail, false);
+            return new FrameLatency.Status("Starts after a restart.", detail, false);
         }
         if (dx12) {
-            return new FrameLatency.Status("Experimental: marginally lower delay.", detail, false);
+            return new FrameLatency.Status("Running: marginally lower delay.", detail, false);
         }
         return perfectPresentation && "DirectX 12".equals(running)
                 ? new FrameLatency.Status("Back to 11 after a restart.", null, false) : null;
@@ -785,15 +785,17 @@ public final class DlaaScreen extends Screen {
     }
 
     private static Component apiLabel(String value) {
-        return Component.literal(value.equals("dx12") ? "12 (experimental)" : "11");
+        return Component.literal(value.equals("dx12") ? "12" : "11");
     }
 
     private static String apiTooltip(String value) {
         return value.equals("dx12")
-                ? "Experimental, not recommended as the default yet: Perfect Presentation shows the game through DirectX 12."
-                        + " Marginally lower input delay than DirectX 11 in tests, at the same frame rate. Needs Perfect"
-                        + " Presentation, which this turns on, and a restart. Where DirectX 12 can't start, the game uses 11."
-                : "The default: Perfect Presentation shows the game through DirectX 11.";
+                ? "Perfect Presentation shows the game through DirectX 12, where a fresh install starts. Marginally lower"
+                        + " input delay than DirectX 11 in tests, at the same frame rate, and frame generation needs it. Needs"
+                        + " Perfect Presentation, which this turns on, and a restart. Where DirectX 12 can't start, the game"
+                        + " uses 11."
+                : "Perfect Presentation shows the game through DirectX 11: for a graphics card whose OpenGL driver can't share"
+                        + " textures with DirectX 12. Needs a restart.";
     }
 
     private static Component reflexLabel(String value) {

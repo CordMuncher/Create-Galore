@@ -8,13 +8,16 @@ import java.nio.file.Path;
 import java.util.Map;
 import java.util.Properties;
 
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.fml.loading.FMLPaths;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * config/create_galore_bridge-display.properties: the Bridge's client display switches. Missing keys are added with
- * their defaults and existing values are kept. Read before the game window exists, so the window switches need a
+ * their defaults and existing values are kept. A fresh install on Windows (no file yet) starts with Perfect
+ * Presentation on DirectX 12; a file from before keeps what it says, and a key it lacks gets the old default (off,
+ * DirectX 11), so nobody's setup changes under them. Read before the game window exists, so the window switches need a
  * restart; the DLAA ones are read again whenever shaders reload ({@link #reload()}). The display settings screen
  * ({@code DlaaScreen}) writes them with {@link #save(Map)}.
  */
@@ -56,7 +59,7 @@ public final class DisplaySettings {
     public static final String PACER_TARGET_US = "pacerTargetUs";
     /** Testing only, not written to the file: false leaves the Max Framerate cap to the game's limiter, after the frame, instead of the frame's start (see FrameLatency). */
     public static final String FRAME_CAP_AT_START = "frameCapAtStart";
-    /** dx11 (the default) or dx12 (experimental): the DirectX version Perfect Presentation shows the game with (needs a restart). */
+    /** dx12 (a fresh install's) or dx11: the DirectX version Perfect Presentation shows the game with (needs a restart). */
     public static final String PRESENTER = "presenter";
     /** Testing only, not written to the file: true has the DirectX 12 presenter compare two shown frames with the game's, pixel by pixel, in the log. */
     public static final String PRESENT_CHECK = "presentCheck";
@@ -122,16 +125,16 @@ public final class DisplaySettings {
             + " fpsCounter: off, basic (the frame rate, small, in a corner) or detailed (also the frame time, the 1% and 0.1%\n"
             + " lows of the last 10 seconds and a frame time graph). fpsCounterCorner: top-left, top-right, bottom-left or\n"
             + " bottom-right. fpsCounterDim: true for OLED screens: see-through, and it moves a pixel every two minutes.\n"
-            + " perfectPresentation: EXPERIMENTAL, Windows only. true shows the game through a DirectX swap chain\n"
+            + " perfectPresentation: Windows only, on in a fresh install. true shows the game through a DirectX swap chain\n"
             + " (ported from Perfect Presentation by sidit77): borderless fullscreen at exclusive-fullscreen speed and\n"
             + " Alt-Tab without a display mode change. Leave NVIDIA's Vulkan/OpenGL present method on Auto.\n"
-            + " Needs an NVIDIA or AMD driver with WGL_NV_DX_interop2. Turns off NeoForge's early loading window.\n"
-            + " On NVIDIA also set Power management mode to Prefer maximum performance for javaw.exe, or the\n"
-            + " driver keeps the GPU clocks low.\n"
-            + " presenter: dx11 or dx12, the DirectX version Perfect Presentation shows the game with. dx12 is EXPERIMENTAL\n"
-            + " and not recommended as the default yet: marginally lower input delay than dx11 in tests, same frame rate.\n"
-            + " Needs an OpenGL driver that shares textures with DirectX 12 (NVIDIA's does, Intel's doesn't); where it\n"
-            + " can't start, the game uses dx11.\n"
+            + " Needs an NVIDIA or AMD driver with WGL_NV_DX_interop2. Turns off NeoForge's early loading window, so\n"
+            + " it starts from the launch after the one that turned it on. On NVIDIA also set Power management mode to\n"
+            + " Prefer maximum performance for javaw.exe, or the driver keeps the GPU clocks low.\n"
+            + " presenter: dx12 (a fresh install's) or dx11, the DirectX version Perfect Presentation shows the game with.\n"
+            + " dx12: marginally lower input delay than dx11 in tests, same frame rate; frame generation needs it. Needs an\n"
+            + " OpenGL driver that shares textures with DirectX 12 (NVIDIA's does, Intel's doesn't); where it can't\n"
+            + " start, the game uses dx11.\n"
             + " tenBitWindow: EXPERIMENTAL. true asks for a 10-bit game window, meant to keep a 10-bit monitor at 10-bit\n"
             + " in fullscreen. It did not stop the 8-bit switch on an RTX 4080 Super. Turns off NeoForge's early\n"
             + " loading window (config/fml.toml).";
@@ -203,16 +206,23 @@ public final class DisplaySettings {
         Path file = FMLPaths.CONFIGDIR.get().resolve(FILE);
         Properties props = new Properties();
         try {
-            if (Files.exists(file)) {
+            boolean fresh = !Files.exists(file);
+            if (!fresh) {
                 try (Reader r = Files.newBufferedReader(file)) {
                     props.load(r);
                 }
             }
+            // A fresh install on Windows starts on Perfect Presentation and DirectX 12; an older file keeps the old
+            // defaults for keys it lacks (off, DirectX 11), so a setup the player never changed stays as it was.
+            boolean present = fresh && FMLEnvironment.dist.isClient() && System.getProperty("os.name", "").startsWith("Windows");
+            if (present) {
+                LOG.info("Display settings: a fresh {}, starting with Perfect Presentation on DirectX 12 (Windows)", FILE);
+            }
             boolean missing = props.putIfAbsent(TEN_BIT_WINDOW, "false") == null;
-            missing |= props.putIfAbsent(PERFECT_PRESENTATION, "false") == null;
+            missing |= props.putIfAbsent(PERFECT_PRESENTATION, Boolean.toString(present)) == null;
             missing |= props.putIfAbsent(DLAA, "auto") == null;
             missing |= props.putIfAbsent(DLAA_PRESET, "default") == null;
-            missing |= props.putIfAbsent(PRESENTER, "dx11") == null;
+            missing |= props.putIfAbsent(PRESENTER, present ? "dx12" : "dx11") == null;
             missing |= props.putIfAbsent(REFLEX, "off") == null;
             missing |= props.putIfAbsent(GPU_PACING, "off") == null;
             missing |= props.putIfAbsent(FRAME_GEN, "off") == null;

@@ -113,12 +113,12 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**Perfect Presentation** (Windows, experimental) shows the game through DirectX: fullscreen is a fast borderless window, Alt-Tab is instant and a 10-bit monitor stays 10-bit. Turn it on in the display settings (the **Upscaling & Display...** button in the shader pack menu, **Display** tab) and restart. On NVIDIA, set Power management mode to Prefer maximum performance for javaw.exe."
+      "text": "**Perfect Presentation** (Windows) shows the game through DirectX: fullscreen is a fast borderless window, Alt-Tab is instant and a 10-bit monitor stays 10-bit. It is switched on or off in the display settings (the **Upscaling & Display...** button in the shader pack menu, **Display** tab); restart after. On NVIDIA, set Power management mode to Prefer maximum performance for javaw.exe."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**DirectX** (same tab) picks what Perfect Presentation runs on: **11**, or **12**, which is experimental and not recommended as the default yet. In tests 12 gave marginally lower input delay at the same frame rate. Picking 12 turns Perfect Presentation on; restart once. Where 12 can't start, the game runs on 11 and the screen says so."
+      "text": "**DirectX** (same tab) picks what Perfect Presentation runs on: **12** or **11**. In tests 12 gave marginally lower input delay at the same frame rate, and frame generation needs it. Picking 12 turns Perfect Presentation on; restart once. Where 12 can't start, the game runs on 11 and the screen says so."
     },
     {
       "type": "modonomicon:text",

@@ -60,8 +60,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Shows the game's frames through a Direct3D 12 flip-model swap chain on the game window (presenter=dx12, an
- * experimental choice on the settings screen). The Direct3D side is cg_present.dll (tools/bridge-mod/native/cg_present.cpp). Each
+ * Shows the game's frames through a Direct3D 12 flip-model swap chain on the game window (presenter=dx12, a choice on
+ * the settings screen and a fresh install's). The Direct3D side is cg_present.dll (tools/bridge-mod/native/cg_present.cpp). Each
  * frame the game's colour texture is copied into one of three textures that Direct3D 12 made and OpenGL imported
  * (EXT_memory_object_win32), and two Direct3D 12 fences imported as OpenGL semaphores (EXT_semaphore_win32) order the
  * two APIs on the GPU: OpenGL signals one after its copy, the D3D12 queue waits for it before drawing that texture to

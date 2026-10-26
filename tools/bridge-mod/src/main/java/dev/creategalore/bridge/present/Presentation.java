@@ -20,8 +20,8 @@ import org.slf4j.LoggerFactory;
 /**
  * Perfect Presentation for NeoForge: the game window gets no OpenGL context; the game renders on a hidden OpenGL
  * context and each frame is shown through a DXGI flip-model swap chain, on Direct3D 11 ({@link InteropContext}) or,
- * with presenter=dx12 (experimental, a choice on the settings screen), Direct3D 12 ({@link D3D12Presenter}, falling
- * back to 11). Borderless
+ * with presenter=dx12 (a choice on the settings screen, and a fresh install's), Direct3D 12 ({@link D3D12Presenter},
+ * falling back to 11). Borderless
  * fullscreen then runs like exclusive fullscreen, Alt-Tab never changes the display mode (no 10-bit to 8-bit flash on
  * NVIDIA), and NVIDIA's "Prefer layered on DXGI Swapchain" present method is not needed (it held the GPU at ~55%).
  *
@@ -30,8 +30,8 @@ import org.slf4j.LoggerFactory;
  * OpenGL version check is pointed away from the context-less window (see hideFromGlVersionCheck), and the main
  * target is copied to D3D11 instead of shared (see {@link InteropContext}).
  *
- * EXPERIMENTAL, OFF BY DEFAULT, Windows only: config/create_galore_bridge-display.properties, perfectPresentation=true.
- * The mixins are only applied when it is on ({@link PresentationMixinPlugin}). If the DirectX side cannot start (no
+ * Windows only, on in a fresh install (see DisplaySettings): config/create_galore_bridge-display.properties,
+ * perfectPresentation=true. The mixins are only applied when it is on ({@link PresentationMixinPlugin}). If the DirectX side cannot start (no
  * WGL_NV_DX_interop2, no D3D11), the game logs the error and falls back to a normal OpenGL window.
  */
 public final class Presentation {
