@@ -5,6 +5,12 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.5.7
+
+### Added
+- **Groundwork for possible future shaders.** Some behind-the-scenes improvements to how the Bridge works with shader packs. Nothing changes in game with the shader packs the pack ships with.
+- Create Galore Bridge 1.111.0.
+
 ## 0.5.6
 
 ### Fixed
