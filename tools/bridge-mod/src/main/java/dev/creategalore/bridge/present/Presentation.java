@@ -188,6 +188,22 @@ public final class Presentation {
         return active() && presenter instanceof D3D12Presenter;
     }
 
+    /**
+     * True while frame generation runs in the DirectX 12 presenter (testing, see FrameGen): Streamline is loaded, so
+     * Reflex goes through it.
+     */
+    public static boolean frameGeneration() {
+        return active() && presenter instanceof D3D12Presenter d3d12 && d3d12.frameGeneration();
+    }
+
+    /** An export of the DirectX 12 presenter's cg_present.dll; throws while it doesn't run. */
+    public static long presenterSymbol(String name) {
+        if (!(active() && presenter instanceof D3D12Presenter d3d12)) {
+            throw new IllegalStateException("the DirectX 12 presenter isn't running");
+        }
+        return d3d12.symbol(name);
+    }
+
     /** True if presenter=dx12 at launch but DirectX 12 could not start, so Perfect Presentation runs on DirectX 11. */
     public static boolean dx12FellBack() {
         return active() && dx12FellBack;

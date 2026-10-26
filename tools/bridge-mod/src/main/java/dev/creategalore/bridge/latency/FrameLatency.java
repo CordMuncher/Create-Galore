@@ -22,7 +22,9 @@ import org.slf4j.LoggerFactory;
  * and then reads input, so the driver can start it as late as still keeps the GPU busy; markers tell the driver where
  * each frame's game work, rendering and present are (markers alone: its latency report without changing anything). On
  * and boost also take over a frame rate cap from the game's own limiter, which waits after the frame instead of before
- * input. A start that took the game down keeps Reflex off until Try again ({@link StartGuard}).
+ * input. A start that took the game down keeps Reflex off until Try again ({@link StartGuard}). While DLSS Frame
+ * Generation runs (testing, see FrameGen) Reflex goes through Streamline ({@link StreamlineReflex}) and is at least on,
+ * as NVIDIA's frame generation needs; the GPU pacer stays as set beside it.
  *
  * latePoll: read input again just before the mouse turns the camera, after any wait for the GPU or the swap chain
  * (Sodium's render-ahead limit at the start of the frame, Perfect Presentation's swap chain, the game's frame cap).
@@ -139,7 +141,7 @@ public final class FrameLatency {
         }
         try {
             applyReflexMode();
-            reflex.sleep();
+            reflex.sleep(frameId);
             reflexSleeping = true;
             if (reflexMode != ReflexMode.MARKERS) {
                 pollEvents(); // input after the sleep, as NVIDIA asks (markers alone change nothing)
@@ -221,6 +223,11 @@ public final class FrameLatency {
     }
 
     // --- RenderSystem ---
+
+    /** The frame's id, counted from the start: the one Reflex's markers carry (frame generation's frame index). */
+    public static long frameId() {
+        return frameId;
+    }
 
     /** The game read input (RenderSystem.pollEvents, while presenting). */
     public static void polled() {
@@ -382,6 +389,12 @@ public final class FrameLatency {
             case "boost" -> ReflexMode.BOOST;
             default -> ReflexMode.OFF;
         };
+        if (Presentation.frameGeneration() && wanted.compareTo(ReflexMode.ON) < 0) {
+            if (reflexMode != ReflexMode.ON) {
+                LOG.info("Reflex: on, though set to {}: frame generation needs it", wanted.name().toLowerCase(Locale.ROOT));
+            }
+            wanted = ReflexMode.ON;
+        }
         if (wanted != reflexMode && reflex != null && wanted == ReflexMode.OFF) {
             try {
                 reflex.setMode(false, false, 0);
@@ -456,8 +469,13 @@ public final class FrameLatency {
         }
         guard().starting();
         try {
-            reflex = Reflex.start(Presentation.d3dDevice());
-            LOG.info("Reflex: started on Perfect Presentation's {} device (NVIDIA NVAPI)", Presentation.api());
+            if (Presentation.frameGeneration()) {
+                reflex = StreamlineReflex.start();
+                LOG.info("Reflex: started through Streamline, as frame generation needs ({})", reflex.status());
+            } else {
+                reflex = NvapiReflex.start(Presentation.d3dDevice());
+                LOG.info("Reflex: started on Perfect Presentation's {} device (NVIDIA NVAPI)", Presentation.api());
+            }
         } catch (RuntimeException | LinkageError e) {
             guard().stopped();
             reflex = null;

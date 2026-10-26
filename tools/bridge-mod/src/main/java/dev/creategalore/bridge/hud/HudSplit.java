@@ -81,6 +81,7 @@ import java.util.Set;
 
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import dev.creategalore.bridge.DisplaySettings;
+import dev.creategalore.bridge.framegen.FrameGen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
@@ -112,7 +113,8 @@ import org.slf4j.LoggerFactory;
  * hudSplitView=hudless, alpha, ui or marks shows that instead of the game (ui over a grey checkerboard; marks: magenta
  * where the HUD changed the picture with no coverage, yellow where the HUD darkened it, cyan where it added light);
  * hudSplitCheck=true compares them every 5 seconds ("HUD split check" log lines, pictures in screenshots/hud-split).
- * Either of the two turns it on too.
+ * Either of the two turns it on too, and so does frame generation (testing, see FrameGen), which takes the copy as its
+ * world without the HUD and alpha as the HUD's coverage ({@link #hudless()}).
  */
 public final class HudSplit {
     private static final Logger LOG = LoggerFactory.getLogger("create_galore_bridge");
@@ -121,6 +123,8 @@ public final class HudSplit {
 
     private static int generation = -1;
     private static boolean enabled;
+    /** Frame generation wanted it when the settings were read. */
+    private static boolean forFrameGen;
     /** Index into VIEWS. */
     private static int view;
     private static boolean check;
@@ -131,6 +135,8 @@ public final class HudSplit {
     private static boolean taken;
     private static String takenAt;
     private static boolean seenCameraOverlays;
+    /** The copy of the frame about to go to the window, 0 if it has none. */
+    private static int readyHudless;
     private static int frames;
     /** The first frame's HUD layers in drawing order, logged once. */
     private static List<String> layers;
@@ -157,7 +163,8 @@ public final class HudSplit {
         view = Math.max(0, VIEWS.indexOf(v.equals("leaks") ? "marks" : v));
         check = DisplaySettings.get(DisplaySettings.HUD_SPLIT_CHECK);
         boolean was = enabled;
-        enabled = DisplaySettings.get(DisplaySettings.HUD_SPLIT) || view != 0 || check;
+        forFrameGen = FrameGen.wantsHudSplit();
+        enabled = DisplaySettings.get(DisplaySettings.HUD_SPLIT) || view != 0 || check || forFrameGen;
         if (enabled && !GL.getCapabilities().OpenGL45) {
             if (!unavailable) {
                 LOG.warn("HUD split: needs OpenGL 4.5, which this driver doesn't have; off");
@@ -165,15 +172,15 @@ public final class HudSplit {
             unavailable = true;
         }
         if (enabled != was || enabled) {
-            LOG.info("HUD split: {}{}{}", enabled && !unavailable ? "on" : "off",
-                    view != 0 ? ", view " + VIEWS.get(view) : "", check ? ", checks every 5 s" : "");
+            LOG.info("HUD split: {}{}{}{}", enabled && !unavailable ? "on" : "off",
+                    view != 0 ? ", view " + VIEWS.get(view) : "", check ? ", checks every 5 s" : "", forFrameGen ? ", for frame generation" : "");
         }
         nextCheck = 0L;
     }
 
     /** Gui.render starts: this frame's HUD. */
     public static void hudStart() {
-        if (generation != DisplaySettings.generation()) {
+        if (generation != DisplaySettings.generation() || forFrameGen != FrameGen.wantsHudSplit()) {
             readSettings();
         }
         inFrame = enabled && !unavailable;
@@ -242,6 +249,7 @@ public final class HudSplit {
     /** Minecraft.runTick, just before the frame goes to the window. */
     public static void frameEnd() {
         HudSplitBlend.end();
+        readyHudless = 0;
         if (!inFrame) {
             return;
         }
@@ -257,6 +265,7 @@ public final class HudSplit {
         if (main.width != width || main.height != height) {
             return; // resized during the frame
         }
+        readyHudless = hudless;
         if (check) {
             long now = System.nanoTime();
             if (now - nextCheck >= 0L) {
@@ -267,6 +276,15 @@ public final class HudSplit {
         if (view != 0) {
             drawView(main);
         }
+    }
+
+    /**
+     * The world copy (the main target's size and format) of the frame about to go to the window, its alpha the HUD's
+     * coverage; 0 if this frame has none (off, the HUD wasn't drawn, the window resized). Valid from frameEnd until the
+     * next frame's HUD.
+     */
+    public static int hudless() {
+        return readyHudless;
     }
 
     private static void take(GuiGraphics graphics, String place) {

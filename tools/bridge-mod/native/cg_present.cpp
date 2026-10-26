@@ -103,6 +103,8 @@ static char g_fgError[1024];
 static ID3D12Resource* g_fgInputs[RING][FG_INPUTS];
 static HANDLE g_fgHandles[RING][FG_INPUTS];
 static UINT64 g_fgDone[RING];        // the "D3D12 done" value after the backend let go of each slot's inputs
+static UINT g_fgWidth;               // the inputs' size
+static UINT g_fgHeight;
 
 // Frame generation's log lines (cg_fg_log_next), from any thread.
 static const int LOG_LINES = 128;
@@ -994,6 +996,8 @@ static void releaseFgInputs() {
         }
         g_fgDone[i] = 0;
     }
+    g_fgWidth = 0;
+    g_fgHeight = 0;
 }
 
 /** Releases frame generation's inputs (frame generation goes off first; the GPU finishes with them). */
@@ -1038,6 +1042,8 @@ CG_API int cg_fg_create_inputs(int width, int height, HANDLE* handles, UINT64* s
             sizes[i * FG_INPUTS + j] = size;
         }
     }
+    g_fgWidth = (UINT) width;
+    g_fgHeight = (UINT) height;
     return 1;
 }
 
@@ -1061,6 +1067,9 @@ CG_API int cg_fg_frame(int slot, unsigned frameIndex, int flags, int renderWidth
     }
     frame.frameIndex = frameIndex;
     frame.flags = flags;
+    if (g_fgWidth != g_backWidth || g_fgHeight != g_backHeight) {
+        frame.flags &= ~FG_FRAME_GENERATE;  // inputs made for another size: the window is resizing
+    }
     frame.renderWidth = (UINT) renderWidth;
     frame.renderHeight = (UINT) renderHeight;
     frame.backWidth = g_backWidth;

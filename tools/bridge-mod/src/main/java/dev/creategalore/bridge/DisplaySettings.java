@@ -68,6 +68,20 @@ public final class DisplaySettings {
     public static final String HUD_SPLIT_VIEW = "hudSplitView";
     /** Testing only, not written to the file: true checks the HUD split every 5 seconds (log, screenshots/hud-split). */
     public static final String HUD_SPLIT_CHECK = "hudSplitCheck";
+    /** Testing only, not written to the file: dlss starts NVIDIA DLSS Frame Generation with the DirectX 12 presenter (needs a restart; see FrameGen). */
+    public static final String FRAME_GEN = "frameGen";
+    /** Testing only, not written to the file: frames generated per rendered one (1, the default: twice the frame rate). */
+    public static final String FRAME_GEN_FRAMES = "frameGenFrames";
+    /** Testing only, not written to the file: false has frame generation take the HUD as part of the picture instead of apart. */
+    public static final String FRAME_GEN_UI = "frameGenUi";
+    /** Testing only, not written to the file: a folder of Streamline's development DLLs to run instead of the mod's (no signature check). */
+    public static final String FRAME_GEN_STREAMLINE = "frameGenStreamline";
+    /** Testing only, not written to the file: true has Streamline log verbosely (create-galore-dlss/streamline-logs). */
+    public static final String FRAME_GEN_VERBOSE = "frameGenVerbose";
+    /** Testing only, not written to the file: hudless, alpha, depth or motion shows that frame generation input instead of the game. */
+    public static final String FRAME_GEN_VIEW = "frameGenView";
+    /** Testing only, not written to the file: true checks frame generation's inputs and camera every 5 seconds (log). */
+    public static final String FRAME_GEN_CHECK = "frameGenCheck";
     /** The frame counter: off, basic or detailed (see FpsOverlay). */
     public static final String FPS_COUNTER = "fpsCounter";
     /** The frame counter's corner: top-left, top-right, bottom-left or bottom-right. */

@@ -1483,3 +1483,156 @@ Write `$T\repo\tools\dlss-testkit\results\hud-split1\REPORT.md`:
 Then remove `hudSplitCheck`, `hudSplit` and `hudSplitView` from the settings file and put the old values back. Commit and
 push on the DLAA branch. Don't commit hs_err files (they name his user folder).
 
+## DLSS-G 1: DLSS Frame Generation, first run
+
+Start only when Emre says so. About 50 minutes: part A by eye with Emre (about 25 minutes, he plays), then part B, two
+latency launches that need no one, only a quiet PC (about 20 minutes). Frame times count only in part B.
+
+**What it tests.** Bridge 1.117.0 (a test build on this branch) adds NVIDIA DLSS Frame Generation to Perfect
+Presentation's DirectX 12 presenter, through NVIDIA Streamline 2.14.16 (its signed production DLLs ship in the Bridge).
+For every frame the game renders, the driver makes one more, shown between it and the frame before. It is built from
+the frame without the HUD and the HUD's coverage (both from HUD split, see HUD split 1), DLSS's depth and motion
+vectors, and the camera. It runs only with the test key `frameGen=dlss`; nothing about it is in the settings screen.
+
+The cloud has no NVIDIA GPU, so it checked only the game's half: that the inputs land in the right place, the right
+way up, and that the motion vectors agree with the camera (`frameGenCheck`, below; Mesa, FSR 3, a few hundred
+checks). This is the first time Streamline, NVIDIA's frame generation and the presenter run together.
+
+With frame generation on, Reflex goes through Streamline (NVIDIA requires it with frame generation) and is always at
+least On, whatever the Display tab says; the GPU pacer stays as set. Part B tells whether the pacer still helps beside
+Reflex when frames are generated, or gets in its way.
+
+### Before anything: what NVIDIA needs
+
+Frame generation needs an RTX 40 or 50 card, Windows 10 2004 or newer, **Hardware-accelerated GPU scheduling on**,
+and vertical sync in the NVIDIA Control Panel at "Use the 3D application setting". Read them, change nothing:
+
+```powershell
+(Get-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Control\GraphicsDrivers" -ErrorAction SilentlyContinue).HwSchMode   # 2: on
+[Environment]::OSVersion.Version                                                                                      # build 19041 or newer
+```
+
+If `HwSchMode` isn't 2, stop and tell Emre: turning it on is his call (a Windows setting, then a restart). Ask him
+to look at the NVIDIA Control Panel's Vertical sync (Manage 3D settings) and say what it is set to.
+
+### Update
+
+```powershell
+git -C $T\repo fetch origin
+git -C $T\repo checkout -B claude/project-thread-u2wmhh origin/claude/project-thread-u2wmhh
+Remove-Item $T\instance\mods\create-galore-bridge-*.jar
+Copy-Item $T\repo\pack\mods\create-galore-bridge-*.jar $T\instance\mods\
+Copy-Item $T\repo\tools\dlss-testkit\dist\create-galore-dlss-testkit-1.0.0.jar $T\instance\mods\ -Force
+```
+
+The instance's mods must have `create-galore-bridge-1.117.0.jar`.
+
+**nvngx_dlssg.dll** (NVIDIA's frame generation model) isn't shipped. At the start the Bridge copies the newest one
+from NVIDIA's own folder, `C:\ProgramData\NVIDIA\NGX\models\dlssg\versions`, where the NVIDIA app and the driver keep
+it, into `$T\instance\create-galore-dlss\` (the same way the Display tab's "Find on this PC" does for DLSS). The log
+line `Frame generation: NVIDIA DLSS Frame Generation through Streamline 2.14.16 from ...;` ends with what it found.
+If it says `no nvngx_dlssg.dll in ...`, take NVIDIA's copy from the Streamline SDK release (276 MB) and launch again:
+
+```powershell
+Invoke-WebRequest "https://github.com/NVIDIA-RTX/Streamline/releases/download/v2.14.16/streamline-sdk-v2.14.16.zip" -OutFile $T\tools\streamline-sdk-v2.14.16.zip
+(Get-FileHash $T\tools\streamline-sdk-v2.14.16.zip).Hash   # 32041E51DB0CAB709A271B72A352281B690C2ABBD669A827809401A5DD23956B
+Add-Type -AssemblyName System.IO.Compression.FileSystem
+$z = [IO.Compression.ZipFile]::OpenRead("$T\tools\streamline-sdk-v2.14.16.zip")
+[IO.Compression.ZipFileExtensions]::ExtractToFile(($z.Entries | Where-Object FullName -eq "bin/x64/nvngx_dlssg.dll"), "$T\instance\create-galore-dlss\nvngx_dlssg.dll", $true)
+$z.Dispose()
+```
+
+### Settings
+
+Note the old values and put them back afterwards. In `config\create_galore_bridge-display.properties`: `dlaa=dlss`,
+`perfectPresentation=true`, `presenter=dx12`, `fpsCounter=detailed`, `gpuPacing=off`, `reflex=off`, and add the lines
+`frameGen=dlss` and `frameGenCheck=true`. No `hudSplit` keys (frame generation turns the split on by itself). Shader
+pack: Photon v1.3a + DLAA. `earlyWindowControl = false` as before.
+
+### Part A: does it run, and does it look right (Emre plays)
+
+The launch from step 4 (2560x1440) without the `autorun` argument; open the `dlaa-test` world, then
+`/gamemode creative`. The log must have, in this order:
+
+- `Frame generation: NVIDIA DLSS Frame Generation through Streamline 2.14.16 from ...; nvngx_dlssg.dll VERSION, ...`
+- `DXGI swap chain ready on DirectX 12` and `Frame generation: ready in the DirectX 12 presenter on NVIDIA GeForce RTX 4080 SUPER; Reflex goes through Streamline`
+- `Reflex: on, though set to off: frame generation needs it` and `Reflex: started through Streamline, as frame generation needs (...)`
+- once in the world: `Frame generation: on, 1 generated per rendered frame, the HUD ...` and `Frame generation: running, 2 frames shown per rendered one (...)`
+- every 5 s: `Frame generation check N: ...` with `copy ok`, and every 12th check (and the first) a camera line ending in
+  `camera ok` or `too little motion to judge`.
+
+If frame generation doesn't start, copy every `Frame generation` line (with the `(native)` ones) and the newest file
+in `$T\instance\create-galore-dlss\streamline-logs\`, and report; don't go on to part B.
+
+1. **By eye, about 15 minutes.** Emre plays normally: walking, turning fast, flying, near Create machines, in water,
+   with the inventory, chat and F3 open now and then, and F1. He tells what he sees against frame generation off (he
+   knows the game without it): smoothness, any doubled or torn edges when turning, the HUD and text staying sharp and
+   still (no wobble or ghost copies of the hotbar, chat or crosshair), anything strange around the hand, water,
+   leaves, particles. Each `Frame generation: off, REASON` and `on` line in the log should match a menu, pause or
+   window change (in menus and while paused it is off on purpose).
+2. **Resize, about 2 minutes.** Drag the window's edge a few times, then maximise and restore it, then minimise and
+   bring it back. The game must keep running; the log says `Frame generation: off, ...` and then `on` after each.
+3. **The views, about 5 minutes.** Add `frameGenView=hudless` and press F8 (the log says `Frame generation: view
+   hudless, checks every 5 s`); then `alpha`, `depth` and `motion`, F8 each time. What each should show, upright and
+   filling the window:
+   - `hudless`: the world with no HUD at all;
+   - `alpha`: white where the HUD is, black elsewhere;
+   - `depth`: near things bright, far things dark, the sky black;
+   - `motion`: black standing still; turning right, the world turns red; turning left, blue; looking down, green;
+     looking up, blue-ish.
+   Take an F2 screenshot of each while turning. Remove `frameGenView` and F8.
+4. **Frame rate, about 2 minutes.** Stand still at one spot looking at the lake: note the frame counter's average for
+   20 seconds. (The counter counts the frames the game renders; ask Emre whether the NVIDIA app's overlay, if he
+   uses it, shows about twice as many.)
+
+Close the game.
+
+### Part B: Reflex alone against Reflex with the GPU pacer, frame generation on and off
+
+A quiet PC, nothing else running, the window in front with focus. Remove `frameGenCheck` from the settings file
+(checks stall a frame every 5 s) and keep `frameGenView` out. The launch from step 4 with
+`--jvm-arg=-Dcreate_galore_dlss_testkit.autorun=dlaa-test` and `--jvm-arg=-Dcreate_galore_dlss_testkit.runs=G1`:
+
+| Launch | `frameGen` |
+| --- | --- |
+| 1 | `dlss` |
+| 2 | `off` |
+
+G1 plays each mode twice at `shore` and `canopy` (about 7 minutes):
+
+| Mode | What |
+| --- | --- |
+| `lat-reflex` | Reflex on + late read |
+| `lat-reflex-pacing-on` | Reflex on + GPU pacing On + late read |
+| `lat-pacing-on` | GPU pacing On + late read (with frame generation, Reflex is on anyway) |
+
+- Launch 1's log must have `Frame generation: running, 2 frames shown ...`, launch 2's no `Frame generation` line.
+- Both must have `Reflex: started ...` (launch 1 `through Streamline`, launch 2 `on Perfect Presentation's DirectX 12
+  device`) and `Latency: GPU pacer on, frames may queue on the GPU a share of the frame time that keeps the frame
+  rate`. Copy any `Frame generation`, `Perfect Presentation`, `Latency:` or `Reflex:` WARN or ERROR line, and any
+  `Frame generation: Streamline reports ...` line.
+
+If a launch crashes, copy `hs_err_pid*.log`, the log's last 100 lines and the newest Streamline log, and report.
+
+### Results
+
+`python latency.py` on the two run folders. Write `$T\repo\tools\dlss-testkit\results\dlssg1\REPORT.md`:
+- the requirement check (HwSchMode, Windows build, the control panel's vertical sync), and which nvngx_dlssg.dll
+  version was used and where from;
+- part A: every `Frame generation` log line that isn't a check (the `(native)` ones too), the check lines that aren't
+  `copy ok` and every camera line; what Emre saw in step 1 and whether anything looked worse than without frame
+  generation; the four view screenshots (copied next to the report); the frame rate in step 4;
+- part B, per mode, viewpoint and launch: fps (rendered), latency (median and 90th percentile), the queue (median and
+  `q10`), the driver's report (frame start to GPU end) and the pacer's target and wait; then in one line each:
+  - **with frame generation:** does the pacer beside Reflex keep the frame rate (within about 2% of `lat-reflex`) and
+    lower the latency, or cost frames? Any `Streamline reports` line in its modes?
+  - **without:** the same comparison, against Presenter 3 and Pacer 3;
+  - **frame generation's cost:** `lat-reflex` fps and latency with it against without;
+- the newest file in `create-galore-dlss\streamline-logs\` if it has any warning or error line (copy those lines only).
+
+Then put the settings back (remove `frameGen`, `frameGenCheck` and `frameGenView`). Commit and push on the DLAA
+branch. Don't commit hs_err files or Streamline logs whole (they name his user folder).
+
+What comes of it: if frame generation runs and looks right, the next step is its own settings entry and FSR's frame
+generation on the same inputs; if the pacer gets in Reflex's way with frame generation on, it is switched off while
+frame generation runs.

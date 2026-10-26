@@ -50,6 +50,7 @@ import java.nio.IntBuffer;
 import java.nio.file.Path;
 
 import dev.creategalore.bridge.DisplaySettings;
+import dev.creategalore.bridge.framegen.FrameGen;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GLCapabilities;
 import org.lwjgl.system.MemoryStack;
@@ -73,10 +74,17 @@ import org.slf4j.LoggerFactory;
  * Testing only: presentTiming=true logs GPU timestamps around the hand-off ({@link PresentTiming}; read again whenever
  * the display settings change); presentCheck=true compares two presented back buffers with the game's frames, pixel by
  * pixel, and logs it.
+ *
+ * Frame generation (testing, {@link FrameGen}): with frameGen set, Streamline starts with the presenter (cg_fg_prepare)
+ * and owns the real swap chain. A second ring of slots, four textures each (the inputs, in FrameGen.INPUT_FORMATS),
+ * goes with the first: each frame FrameGen writes the slot's inputs after the copy, both are in the semaphores' texture
+ * lists, cg_fg_frame hands the slot and the camera over before the draw, and OpenGL writes a slot again only after the
+ * backend let go of its inputs (cg_fg_inputs_done). A swap chain resize while frames are generated waits for the next
+ * frame to go out without (NVIDIA: frame generation off around window changes).
  */
 final class D3D12Presenter implements Presenter {
     private static final Logger LOG = LoggerFactory.getLogger("create_galore_bridge");
-    private static final int ABI = 2;
+    private static final int ABI = 3;
     private static final int RING_SIZE = 3;
     private static final int WAIT_ABANDONED = 0x80;
     private static final int WAIT_TIMEOUT = 0x102;
@@ -119,6 +127,22 @@ final class D3D12Presenter implements Presenter {
     private int settingsGeneration = -1;
     private PresentTiming timing;
 
+    /** Frame generation runs: Streamline owns the swap chain behind this presenter's. */
+    private boolean frameGeneration;
+    private long fgFrame;
+    private long fgInputsDone;
+    private long fgState;
+    private long fgLogNext;
+    private long fgCreateInputs;
+    private long fgReleaseInputs;
+    private final int[][] fgTextures = new int[RING_SIZE][FrameGen.INPUTS];
+    private final int[][] fgMemories = new int[RING_SIZE][FrameGen.INPUTS];
+    private int fgWidth;
+    private int fgHeight;
+    private boolean resizePending;
+    private int pendingWidth;
+    private int pendingHeight;
+
     /**
      * Starts Direct3D 12 on {@code hwnd}, on the GPU {@code openglContext} runs on, and leaves that context current.
      * Throws if anything is missing; then nothing is left behind and the caller still owns {@code openglContext}.
@@ -148,6 +172,9 @@ final class D3D12Presenter implements Presenter {
         timingSwitch = dll.symbol("cg_present_timing");
         nowNs = dll.symbol("cg_present_now_ns");
 
+        FrameGen.Start frameGen = FrameGen.start();
+        boolean prepared = frameGen != null && prepareFrameGeneration(frameGen);
+
         try (MemoryStack stack = stackPush()) {
             // The LUID of the adapter OpenGL runs on (EXT_external_objects_win32), so Direct3D 12 opens the same one.
             ByteBuffer luid = stack.calloc(GL_LUID_SIZE_EXT);
@@ -162,6 +189,10 @@ final class D3D12Presenter implements Presenter {
                 LOG.warn("Perfect Presentation: OpenGL gave no adapter LUID, DirectX 12 takes the first adapter");
             }
             if ((int) Ffi.call("PPI:I", dll.symbol("cg_present_create"), hwnd, known ? memAddress(luid) : 0L, 0) == 0) {
+                if (prepared) {
+                    drainFrameGenLog();
+                    FrameGen.unavailable("the DirectX 12 presenter could not start");
+                }
                 throw new IllegalStateException(errorText());
             }
             ByteBuffer name = stack.calloc(256);
@@ -183,6 +214,58 @@ final class D3D12Presenter implements Presenter {
             LOG.info("Perfect Presentation: DirectX 12 on {} (OpenGL node mask {}, tearing {})", adapter,
                     nodeMask.get(0), tearing ? "allowed" : "not supported");
         }
+        if (prepared) {
+            frameGeneration = Ffi.call(":I", dll.symbol("cg_fg_active")) != 0;
+            drainFrameGenLog();
+            if (frameGeneration) {
+                fgFrame = dll.symbol("cg_fg_frame");
+                fgInputsDone = dll.symbol("cg_fg_inputs_done");
+                fgState = dll.symbol("cg_fg_state");
+                fgCreateInputs = dll.symbol("cg_fg_create_inputs");
+                fgReleaseInputs = dll.symbol("cg_fg_release_inputs");
+                FrameGen.started(adapter);
+            } else {
+                FrameGen.unavailable(memUTF8(Ffi.call(":P", dll.symbol("cg_fg_error"))));
+            }
+        }
+    }
+
+    /** Starts frame generation's backend before the swap chain exists (cg_fg_prepare). False (logged) if it can't. */
+    private boolean prepareFrameGeneration(FrameGen.Start start) {
+        fgLogNext = dll.symbol("cg_fg_log_next");
+        try (MemoryStack stack = stackPush()) {
+            boolean ready = Ffi.call("IPPPI:I", dll.symbol("cg_fg_prepare"), start.backend(),
+                    memAddress(stack.UTF16(start.pluginFolder().toString())), memAddress(stack.UTF16(start.dllFolder().toString())),
+                    memAddress(stack.UTF16(start.logFolder().toString())), start.flags()) != 0;
+            drainFrameGenLog();
+            if (!ready) {
+                FrameGen.unavailable(memUTF8(Ffi.call(":P", error)));
+            }
+            return ready;
+        }
+    }
+
+    /** Hands frame generation's native log lines to the game's log. */
+    private void drainFrameGenLog() {
+        if (fgLogNext == 0L) {
+            return;
+        }
+        try (MemoryStack stack = stackPush()) {
+            ByteBuffer line = stack.calloc(512);
+            for (int i = 0; i < 256 && Ffi.call("PI:I", fgLogNext, memAddress(line), line.capacity()) != 0; i++) {
+                FrameGen.nativeLog(memUTF8(memAddress(line)));
+            }
+        }
+    }
+
+    /** True while frame generation runs (Streamline loaded, so Reflex goes through it). */
+    boolean frameGeneration() {
+        return frameGeneration;
+    }
+
+    /** An export of cg_present.dll. */
+    long symbol(String name) {
+        return dll.symbol(name);
     }
 
     private static int importFence(long handle) {
@@ -261,15 +344,34 @@ final class D3D12Presenter implements Presenter {
         if (width != ringWidth || height != ringHeight) {
             createRing(width, height);
         }
+        FrameGen.Frame fg = null;
+        if (frameGeneration) {
+            if (width != fgWidth || height != fgHeight) {
+                createFgRing(width, height);
+            }
+            fg = FrameGen.frame(width, height, resizePending);
+        }
         int slot = ringIndex;
         ringIndex = (ringIndex + 1) % RING_SIZE;
+        boolean fgInputs = fg != null && fgTextures[slot][0] != 0;
         try (MemoryStack stack = stackPush()) {
             IntBuffer noBuffers = stack.mallocInt(0);
-            IntBuffer texture = stack.ints(textures[slot]);
-            IntBuffer layout = stack.ints(GL_LAYOUT_GENERAL_EXT);
+            IntBuffer texture = stack.mallocInt(fgInputs ? 1 + FrameGen.INPUTS : 1);
+            texture.put(0, textures[slot]);
+            if (fgInputs) {
+                texture.put(1, fgTextures[slot]);
+            }
+            IntBuffer layout = stack.mallocInt(texture.capacity());
+            for (int i = 0; i < layout.capacity(); i++) {
+                layout.put(i, GL_LAYOUT_GENERAL_EXT);
+            }
             // Direct3D 12 drew from this texture a few frames ago; OpenGL may overwrite it once that is done, which the
-            // CPU can usually see already (then a GPU wait would only cost a trip through the scheduler).
+            // CPU can usually see already (then a GPU wait would only cost a trip through the scheduler). Frame
+            // generation's inputs are free a little later, once its backend is done with them.
             long lastDraw = slotDone[slot];
+            if (fgInputs) {
+                lastDraw = Math.max(lastDraw, Ffi.call("I:P", fgInputsDone, slot));
+            }
             boolean wait = lastDraw != 0L && Ffi.call(":P", completed) < lastDraw;
             if (timing != null) {
                 timing.beforeHandOff(openglValue + 1, wait);
@@ -279,6 +381,9 @@ final class D3D12Presenter implements Presenter {
                 glWaitSemaphoreEXT(directxDone, noBuffers, texture, layout);
             }
             glCopyImageSubData(glTexture, GL_TEXTURE_2D, 0, 0, 0, 0, textures[slot], GL_TEXTURE_2D, 0, 0, 0, 0, width, height, 1);
+            if (fg != null && fg.generate() && (!fgInputs || !FrameGen.capture(fg, fgTextures[slot], glTexture, width, height))) {
+                fg.flags &= ~FrameGen.FRAME_GENERATE;
+            }
             openglValue++;
             if (timing != null) {
                 timing.afterCopy(openglValue);
@@ -297,6 +402,11 @@ final class D3D12Presenter implements Presenter {
                 memFree(frame);
                 frame = null;
             }
+        }
+        if (fg != null) {
+            boolean sent = Ffi.call("IIIIIIP:I", fgFrame, slot, fg.frameIndex, fg.flags, fg.renderWidth, fg.renderHeight,
+                    fg.framesToGenerate, fg.camera) != 0;
+            FrameGen.frameSent(sent, sent ? null : errorText());
         }
         long done = Ffi.call("IP:P", draw, slot, openglValue);
         if (done < 0) {
@@ -383,29 +493,39 @@ final class D3D12Presenter implements Presenter {
      * others check it against the allocation, so the allocation size goes first and 0 second.
      */
     private void importTexture(int i, long handle, long size, int width, int height) {
+        try {
+            int[] imported = importShared(handle, size, width, height, GL_RGBA8);
+            memories[i] = imported[0];
+            textures[i] = imported[1];
+            slotDone[i] = 0L;
+        } catch (IllegalStateException e) {
+            closeRing();
+            throw e;
+        }
+    }
+
+    /** A shared DirectX 12 texture as an OpenGL one: {memory object, texture}. Throws if OpenGL can't take it. */
+    private static int[] importShared(long handle, long size, int width, int height, int format) {
         int glError = GL_NO_ERROR;
         for (long tried : new long[] {size, 0L}) {
             drainGlErrors();
-            memories[i] = glCreateMemoryObjectsEXT();
-            glMemoryObjectParameteriEXT(memories[i], GL_DEDICATED_MEMORY_OBJECT_EXT, GL_TRUE);
-            glImportMemoryWin32HandleEXT(memories[i], tried, GL_HANDLE_TYPE_D3D12_RESOURCE_EXT, handle);
-            textures[i] = glCreateTextures(GL_TEXTURE_2D);
-            glTextureStorageMem2DEXT(textures[i], 1, GL_RGBA8, width, height, memories[i], 0L);
+            int memory = glCreateMemoryObjectsEXT();
+            glMemoryObjectParameteriEXT(memory, GL_DEDICATED_MEMORY_OBJECT_EXT, GL_TRUE);
+            glImportMemoryWin32HandleEXT(memory, tried, GL_HANDLE_TYPE_D3D12_RESOURCE_EXT, handle);
+            int texture = glCreateTextures(GL_TEXTURE_2D);
+            glTextureStorageMem2DEXT(texture, 1, format, width, height, memory, 0L);
             glError = glGetError();
             if (glError == GL_NO_ERROR) {
-                slotDone[i] = 0L;
                 if (tried != size) {
-                    LOG.info("Perfect Presentation: OpenGL took the DirectX 12 textures with size 0");
+                    LOG.info("Perfect Presentation: OpenGL took a DirectX 12 texture (format 0x{}) with size 0", Integer.toHexString(format));
                 }
-                return;
+                return new int[] {memory, texture};
             }
-            glDeleteTextures(textures[i]);
-            glDeleteMemoryObjectsEXT(memories[i]);
-            textures[i] = 0;
-            memories[i] = 0;
+            glDeleteTextures(texture);
+            glDeleteMemoryObjectsEXT(memory);
         }
-        closeRing();
-        throw new IllegalStateException(String.format("OpenGL could not import the DirectX 12 texture (GL error 0x%04X)", glError));
+        throw new IllegalStateException(String.format("OpenGL could not import the DirectX 12 texture (format 0x%X, GL error 0x%04X)",
+                format, glError));
     }
 
     private void closeRing() {
@@ -430,18 +550,103 @@ final class D3D12Presenter implements Presenter {
         ringHeight = 0;
     }
 
+    /** Frame generation's inputs for each slot, the back buffer's size. On failure frame generation stops for the game. */
+    private void createFgRing(int width, int height) {
+        closeFgRing();
+        fgWidth = width;
+        fgHeight = height;
+        int count = RING_SIZE * FrameGen.INPUTS;
+        try (MemoryStack stack = stackPush()) {
+            long handles = stack.nmalloc(8, count * 8);
+            long sizes = stack.nmalloc(8, count * 8);
+            if (Ffi.call("IIPP:I", fgCreateInputs, width, height, handles, sizes) == 0) {
+                throw new IllegalStateException(errorText());
+            }
+            for (int i = 0; i < RING_SIZE; i++) {
+                for (int j = 0; j < FrameGen.INPUTS; j++) {
+                    int k = i * FrameGen.INPUTS + j;
+                    int[] imported = importShared(memGetAddress(handles + k * 8L), memGetLong(sizes + k * 8L), width, height,
+                            FrameGen.INPUT_FORMATS[j]);
+                    fgMemories[i][j] = imported[0];
+                    fgTextures[i][j] = imported[1];
+                }
+            }
+        } catch (IllegalStateException e) {
+            closeFgRing();
+            fgWidth = width; // not again every frame
+            fgHeight = height;
+            FrameGen.stop("its inputs could not be made: " + e.getMessage());
+        }
+    }
+
+    private void closeFgRing() {
+        boolean any = false;
+        for (int i = 0; i < RING_SIZE; i++) {
+            FrameGen.forget(fgTextures[i]);
+            for (int j = 0; j < FrameGen.INPUTS; j++) {
+                any |= fgTextures[i][j] != 0;
+                if (fgTextures[i][j] != 0) {
+                    glDeleteTextures(fgTextures[i][j]);
+                    fgTextures[i][j] = 0;
+                }
+                if (fgMemories[i][j] != 0) {
+                    glDeleteMemoryObjectsEXT(fgMemories[i][j]);
+                    fgMemories[i][j] = 0;
+                }
+            }
+        }
+        if (any) {
+            glFinish(); // OpenGL is done with the textures before Direct3D 12 frees them
+        }
+        if (fgReleaseInputs != 0L) {
+            Ffi.call(":V", fgReleaseInputs); // frame generation lets go of them first
+        }
+        fgWidth = 0;
+        fgHeight = 0;
+    }
+
     @Override
     public void present() {
         int hr = (int) Ffi.call("I:I", presentFrame, syncInterval);
         if (hr < 0) {
             throw new IllegalStateException(errorText());
         }
+        if (frameGeneration) {
+            try (MemoryStack stack = stackPush()) {
+                long state = stack.nmalloc(8, 7 * 8);
+                Ffi.call("P:V", fgState, state);
+                long[] numbers = new long[7];
+                for (int i = 0; i < numbers.length; i++) {
+                    numbers[i] = memGetLong(state + i * 8L);
+                }
+                FrameGen.presented(numbers, syncInterval);
+            }
+            drainFrameGenLog();
+            if (resizePending) {
+                // This frame went out without generated frames: now the swap chain may change.
+                resizePending = false;
+                resizeNow(pendingWidth, pendingHeight);
+            }
+        }
     }
 
     @Override
     public void resizeSwapChain(int width, int height) {
+        if (frameGeneration && FrameGen.generating()) {
+            resizePending = true;
+            pendingWidth = width;
+            pendingHeight = height;
+            return;
+        }
+        resizeNow(width, height);
+    }
+
+    private void resizeNow(int width, int height) {
         if ((int) Ffi.call("II:I", resize, width, height) < 0) {
             throw new IllegalStateException(errorText());
+        }
+        if (frameGeneration) {
+            FrameGen.resized();
         }
     }
 
@@ -451,6 +656,7 @@ final class D3D12Presenter implements Presenter {
             timing.close();
             timing = null;
         }
+        closeFgRing();
         closeRing();
         glDeleteSemaphoresEXT(openglDone);
         glDeleteSemaphoresEXT(directxDone);
