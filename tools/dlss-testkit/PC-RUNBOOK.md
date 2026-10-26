@@ -1236,3 +1236,62 @@ Write `$T\repo\tools\dlss-testkit\results\presenter2\REPORT.md`:
 
 Keep the PresentMon and nvidia-smi CSVs in `$T\presenter2` (they stay on the PC). Commit the report and push on the DLAA
 branch. Don't commit hs_err files (they name his user folder).
+
+## Presenter 3: DirectX 11 against DirectX 12 without capture tools
+
+Start only when Emre says so. Same PC, test folder, tools and settings as Presenter 2, but **no PresentMon and no
+nvidia-smi**: no administrator prompts. About 20 minutes, four launches, no by-feel part. **Frame times count here**: a
+quiet PC, no game server, nothing else started.
+
+**What it tests.** In Presenter 2 (`results\presenter2\REPORT.md`) DirectX 12 ran exactly as in Presenter 1 (about
+152 / 138 fps at `lat-base`), but DirectX 11 ran 5–10% below every earlier session (160 / 140 against 170–171 /
+154–156). The only new thing was the capture tools. DirectX 12 was shown not to care about PresentMon; DirectX 11
+wasn't. So the real gap is either today's 1–5% (if the PC changed) or still about 10% (if the tools slow DirectX 11
+only). Alternating the two presenters with no tools settles it.
+
+### Update
+
+Nothing to update: Bridge 1.114.0 and the test kit from Presenter 2 stay (check `git -C $T\repo log -1` is at or after
+`4f0d9385`, and the instance's mods have `create-galore-bridge-1.114.0.jar`).
+
+### Settings
+
+As Presenter 2 (note the old values, put them back afterwards): `dlaa=dlss`, `perfectPresentation=true`,
+`earlyWindowControl = false`, Distant Horizons `numberOfThreads = 2`. In `config\create_galore_bridge-display.properties`
+only `presenter=dx11` or `presenter=dx12`, nothing else of the test keys (no `presentTiming`, `presentCheck` or
+`presentQueuePriority`). Remove `presenter` afterwards.
+
+### Launches
+
+The launch from step 4 (2560x1440), `--jvm-arg=-Dcreate_galore_dlss_testkit.autorun=dlaa-test` and
+`--jvm-arg=-Dcreate_galore_dlss_testkit.runs=P2`, the window in front with focus, in this order:
+
+| Launch | Presenter |
+| --- | --- |
+| 1 | `dx11` |
+| 2 | `dx12` |
+| 3 | `dx11` |
+| 4 | `dx12` |
+
+- Check that nothing else is running that wasn't in Presenter 2's list (PresentMon and nvidia-smi must not be: look for
+  `PresentMon*` and `nvidia-smi` processes, and a leftover `PresentMon` ETW session with `logman query -ets`; if one is
+  left, say so, and stop it only with Emre's OK).
+- The log must have `DXGI swap chain ready on DirectX 11` or `... on DirectX 12` to match the launch.
+- **Only if** the DirectX 11 launches come out at least 5% faster than Presenter 2's DirectX 11 (160 / 140 fps at
+  `lat-base`, 165 / 142 at `lat-reflex`): a fifth launch, `dx11` with only nvidia-smi running (as in Presenter 2's step
+  1, no PresentMon, no prompt), to tell which tool cost the frames.
+
+If a launch crashes, copy `hs_err_pid*.log` and the log's last 100 lines, and report.
+
+### Results
+
+`latency.py` on all four (or five) run folders. Write `$T\repo\tools\dlss-testkit\results\presenter3\REPORT.md`:
+- per mode and viewpoint and launch: fps and latency (median, and first plays), the queue;
+- the gap: DirectX 12 against DirectX 11, the two launches of each averaged, for `lat-base` and `lat-reflex`, in fps
+  and in ms per frame;
+- in one line each: is DirectX 11 back at about 170 / 155 (Presenter 1 and earlier)? Is DirectX 12 still at about 152 /
+  138? So is the real gap about 10% or about 2–4%? With the fifth launch: did nvidia-smi alone cost DirectX 11 frames?
+- the `Perfect Presentation`, `Latency:` and `Reflex:` WARN or ERROR lines, and whether Reflex's report says `G-SYNC
+  fullscreen` on both.
+
+Commit and push on the DLAA branch. Don't commit hs_err files (they name his user folder).
