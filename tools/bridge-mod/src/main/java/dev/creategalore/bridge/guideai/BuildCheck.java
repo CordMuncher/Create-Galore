@@ -88,8 +88,20 @@ final class BuildCheck {
         for (Cell c : kinetic.values()) if (isSource(c)) sources.add(c);
         for (Cell src : sources) {
             if (speed.containsKey(src.pos)) {
-                notes.add(name(src) + " drives the same network as " + name(kinetic.get(sourceOf.get(src.pos)))
-                        + "; sources on one network must turn it at the same speed and direction, or it breaks");
+                Cell first = kinetic.get(sourceOf.get(src.pos));
+                Integer a = spin(first), b = spin(src);
+                if (a != null && b != null && Math.abs(Math.abs(speed.get(src.pos)) - 1) < 1e-3) {
+                    // Both are Portable Engines, which turn the same speed; only the way round can disagree.
+                    if (a * Math.signum(speed.get(src.pos)) == b) notes.add(name(src) + " drives the same line as " + name(first)
+                            + ", turning it the same way, so their stress adds up");
+                    else notes.add(name(src) + " drives the same line as " + name(first) + " but, as each comes from placing, "
+                            + "turns it the other way, which would break the line: tell the player to set it to turn the other "
+                            + "way (its Rotation Direction setting, the value box on the engine) before lighting it; "
+                            + "then their stress adds up");
+                } else {
+                    notes.add(name(src) + " drives the same network as " + name(first)
+                            + "; sources on one network must turn it at the same speed and direction, or it breaks");
+                }
                 continue;
             }
             speed.put(src.pos, 1f);
@@ -116,6 +128,15 @@ final class BuildCheck {
         for (BlockPos p : conflicts) {
             faults.add(name(kinetic.get(p)) + " is reached at two different speeds or directions, so the network would "
                     + "break (Create pops a block off): gear ratios or a loop of cogs disagree");
+        }
+
+        // A source whose output face meets nothing that takes rotation turns nothing, however the rest is geared.
+        if (kinetic.size() > sources.size()) {
+            for (Cell src : sources) {
+                if (name(src).contains("steering_wheel") || neighbours(kinetic, src).stream().anyMatch(n -> modifier(world, src, n) != 0)) continue;
+                faults.add(name(src) + " turns nothing: it drives only through " + outputs(world, src) + ", and nothing there takes "
+                        + "its rotation" + turnTo(world, kinetic, src));
+            }
         }
 
         for (Cell c : kinetic.values()) {
@@ -363,6 +384,43 @@ final class BuildCheck {
             if (s != null && s.getFluidState().is(FluidTags.WATER)) return true;
         }
         return false;
+    }
+
+    /**
+     * Which way a Portable Engine turns its shaft as placed (+1 or -1 along its axis): its speed is set along the way it
+     * faces, until its rotation setting is changed. Null for other sources.
+     */
+    private static Integer spin(Cell c) {
+        if (!name(c).contains("portable_engine") || !c.state.hasProperty(BlockStateProperties.HORIZONTAL_FACING)) return null;
+        return c.state.getValue(BlockStateProperties.HORIZONTAL_FACING).getAxisDirection() == Direction.AxisDirection.POSITIVE ? 1 : -1;
+    }
+
+    /** The faces a source drives through, named for the player. */
+    private static String outputs(SchematicLevel world, Cell c) {
+        List<String> faces = new ArrayList<>();
+        for (Direction d : Direction.values()) if (hasShaftAt(world, c, d)) faces.add(face(d, c.state));
+        return faces.isEmpty() ? "its cog teeth" : "its " + String.join(" and ", faces);
+    }
+
+    /**
+     * A facing that would join an idle source to the blocks around it, said as the fix; empty when no turn of it in place
+     * connects (then it has to move: an engine sits at the end of a shaft or against a cog's axle, with its front to it).
+     */
+    private static String turnTo(SchematicLevel world, Map<BlockPos, Cell> kinetic, Cell src) {
+        var facing = src.state.hasProperty(BlockStateProperties.HORIZONTAL_FACING) ? BlockStateProperties.HORIZONTAL_FACING
+                : src.state.hasProperty(BlockStateProperties.FACING) ? BlockStateProperties.FACING : null;
+        if (facing != null) {
+            for (Direction d : facing.getPossibleValues()) {
+                if (d == src.state.getValue(facing)) continue;
+                Cell turned = new Cell(src.pos, src.state.setValue(facing, d));
+                for (Cell n : neighbours(kinetic, turned))
+                    if (modifier(world, turned, n) != 0)
+                        return ": turn it to face " + face(d, turned.state).replace(" face (its front)", "") + ", toward " + name(n)
+                                + ", or move it so its front meets a shaft end or a cog's axle";
+            }
+        }
+        return ": move it so its output meets a shaft end or a cogwheel's axle (two engines can share one shaft from its two "
+                + "ends, or each drive its own shaft into the same cogwheel train), with nothing but the drive line in front of it";
     }
 
     private static String relative(float s) {

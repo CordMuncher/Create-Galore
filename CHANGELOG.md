@@ -5,6 +5,33 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.5.13
+
+### Added
+- **Ask the Book revises its designs instead of redrawing them.** Every change to a model used to mean writing the whole build out again, layer by layer, so fixing a blimp meant rewriting hundreds of rows for each one-block fix, and a long design ran out of room before its faults were fixed. The book can now start a model from any it built earlier for the same answer and write only what changes; slide a whole part (the balloon a block back, the gondola toward the bow) in one step; draw an envelope, dome or rounded hull as one rounded shell, or a hollow box, in a single entry; and repaint the blocks already in a box (a stripe round an envelope). Checked on a test server: a hauling blimp was written in one go with its rounded envelope, and moving its second engines took a 700-byte change that fixed both faults, where the same model written out in full is about ten times that.
+- Trim and list fixes name the way in the model's own axes too ("slide the balloon toward the stern (-z)"), so the book can make the change without guessing which end is which.
+- Create Galore Bridge 1.121.0.
+
+## 0.5.12
+
+### Fixed
+- **Water and stained glass vanished from shader shadows whenever a ship was in view.** With any Sable ship on screen, shader packs got no water or stained glass in their shadow map: no light caustics under water, no coloured light through stained glass, and the water's depth for light was missing. Aeronautics' levitite is drawn with tessellation in the shadow pass right before the translucent terrain, and that left Iris drawing Sodium's water and glass as tessellation patches, which the graphics driver refuses. Each terrain draw now starts without that setting, and on a test machine water and glass landed in the shadow map with a ship in view.
+
+### Added
+- Create Galore Bridge 1.120.0.
+
+## 0.5.11
+
+### Fixed
+- **Ask the Book gave up on bigger vehicle designs and left the player its faults to fix.** Asked for a brass age blimp that can haul, the book handed over a plan in words with "two faults I didn't get fixed" (a second Portable Engine in each pod facing into the back of the first and doing nothing, and a rounded envelope Super Glue wouldn't take) plus a stern-down trim it never levelled, and no 3D model. It had run out of rounds: a question got 8 rounds of looking things up and drafting, and a vehicle takes a draft and a fix per round, several times over. Once the book starts building a model it now gets up to 20 rounds, it is told that fixing what its checks find is its own work and never the player's, and with rounds running short it spends them fixing the design, simplifying it if need be, rather than looking more up.
+- **The book's checks now name those faults and their fixes exactly.** An engine whose front meets nothing that takes rotation is a fault, with the facing that would connect it or how to move it. Each propeller drive line is weighed against the engines really on it (a Portable Engine gives 2048 stress units at any gearing), so a line that would stall says how many engines it is short. Two Portable Engines on one line that would turn it opposite ways (as two engines facing each other do as placed, which breaks the line) get the instruction to flip one's Rotation Direction setting, and then their stress adds up. Checked on a test server: two engines facing each other on one shaft popped one off; with one set to the other direction the line held 4096 stress units.
+- **Corner steps in the book's vehicles are filled so Super Glue takes them.** Where blocks of a vehicle model meet only along an edge or at a corner (a rounded envelope, cogwheels meshing across a gap), the book fills the step on the inner side of the curve with the block around it, so the outline stays and the whole vehicle glues as one piece. Steps above a burner are left open.
+- **An airship that hangs nose or stern down is told how far to slide its balloon** (or the gondola under it) to level it, and the same for a list to one side.
+- **A vehicle's bow is the way its propellers push**, so an airship with wide engine pods or a plane wider than it is long gets its trim, turning and roll worked out along the right line.
+
+### Added
+- Create Galore Bridge 1.119.0.
+
 ## 0.5.10
 
 ### Added
