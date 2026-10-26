@@ -59,7 +59,7 @@ vec3 fog_color_lit(vec3 dir) {
     medium *= (isEyeInWater == 3 ? 0.6 : 0.12) / max(luminance(medium), 1e-4);
     vec2 eye = clamp(vec2(eyeBrightnessSmooth) / 240.0, 0.0, 1.0);
     vec3 ambient = (sky_irradiance(vec3(0.0, 1.0, 0.0)) + g_light_color.rgb * max(g_light_dir.y, 0.0)) * light_curve(eye.y)
-            + block_irradiance(eye.x);
+            + block_irradiance(eye.x, block_light_color(vec3(0.0), vec3(0.0)));
     return medium / PI * ambient * (1.0 - max(blindness, darknessFactor));
 }
 

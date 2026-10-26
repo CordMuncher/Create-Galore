@@ -38,6 +38,8 @@ const vec4 colortex2ClearColor = vec4(0.0, 0.0, 0.0, 0.0);
 
 // The blocks block.properties numbers (mc_Entity.x).
 #define BLOCK_WATER 10001
+#define BLOCK_LIGHT_RED 10101 // 10101..10109: lights with colours of their own (see shadow.vsh)
+#define BLOCK_LIGHT_LAST 10109
 
 vec2 oct_wrap(vec2 v) {
     return (1.0 - abs(v.yx)) * vec2(v.x >= 0.0 ? 1.0 : -1.0, v.y >= 0.0 ? 1.0 : -1.0);

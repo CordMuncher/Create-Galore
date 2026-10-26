@@ -23,15 +23,15 @@ uniform mat4 dhProjectionInverse;
 #ifdef LIT_CLOUDS
 #include "/lib/clouds.glsl"
 
-uniform sampler2D cg_cloud_hist_a_tex;
-uniform sampler2D cg_cloud_hist_b_tex;
+uniform sampler2D cg_cloud_hist_tex;
 
 // The cumulus in front of what a pixel sees (rgb their light with the air in front of them, a how much of what is
 // behind gets through), from the image the gather pass wrote this frame (see clouds_gather.csh), at the point the
 // pixel sees (in unjittered render pixels).
 vec4 cumulus_at(vec2 point) {
-    vec2 uv = clamp(point, vec2(0.5), render_size() - 0.5) / window_size();
-    return (frameCounter & 1) == 0 ? texture(cg_cloud_hist_a_tex, uv) : texture(cg_cloud_hist_b_tex, uv);
+    vec2 size = window_size();
+    vec2 at = clamp(point, vec2(0.5), render_size() - 0.5) + vec2((frameCounter & 1) == 0 ? 0.0 : size.x, 0.0);
+    return texture(cg_cloud_hist_tex, at / vec2(2.0 * size.x, size.y));
 }
 
 // The sky with the clouds: the cumulus over the air, and the cirrus between the air and what is beyond it.

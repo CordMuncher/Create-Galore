@@ -1,4 +1,4 @@
-// What the overworld's programs share each frame (a 16 by 1 image, see shaders.properties): the sun's and the
+// What the overworld's programs share each frame (a 32 by 1 image, see shaders.properties): the sun's and the
 // moon's light where you are and the sky's light all around, worked out by the begin passes before anything is
 // drawn, and the exposure, which the metering pass (exposure.csh, after DLSS) moves for the next frame. An image
 // rather than a storage buffer: Iris turns the whole pack off if the video memory it is told is free (none, at
@@ -21,6 +21,8 @@
 #define G_CLOUD_PLACE 13 // xy where the cumulus' patterns are under you (km, modulo 128), zw the cirrus' (modulo 4096)
 #define G_CLOUD_DETAIL 14 // xyz how far the wind has carried the cumulus' billows through their bodies (km)
 #define G_FLASH 15       // rgb the radiance a lightning bolt lights the sky with this frame (kcd/m²)
+#define G_WATER 16       // the ripples (see water.glsl): x steps this frame, y steps before it (modulo 2), z the clock
+#define G_WATER_ORIGIN 17 // xy the ripples' grid corner after this frame's steps (cells, modulo 2^20), zw before them
 
 #ifdef GLOBALS_WRITE
 // The passes that work them out (frame_globals.csh, exposure.csh).

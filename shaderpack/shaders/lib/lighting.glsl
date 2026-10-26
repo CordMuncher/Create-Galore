@@ -9,6 +9,7 @@
 #include "/lib/settings.glsl"
 #include "/lib/globals.glsl"
 #include "/lib/shadow.glsl"
+#include "/lib/light_volume.glsl"
 #ifdef LIT_CLOUDS
 #include "/lib/clouds.glsl"
 #endif
@@ -21,8 +22,7 @@ uniform float screenBrightness;     // Minecraft's Brightness setting, 0 (Moody)
 uniform float nightVision;
 uniform float darknessLightFactor;  // the Darkness effect's pulse
 
-// Torchlight: a warm 3000 K or so, luminance 1. A light level 15 surface gets light_block_lux.
-const vec3 torch_color = vec3(1.453, 0.916, 0.494);
+// A light level 15 surface gets light_block_lux of torchlight (torch_color, see light_volume.glsl).
 const float light_block_lux = 0.012;
 // What a surface gets with no light at all, so caves aren't pure black (Minecraft mixes its lightmap a little towards
 // grey); the Brightness setting raises it as it raises Minecraft's.
@@ -42,9 +42,10 @@ vec3 sky_irradiance(vec3 n) {
             + w.z * global(G_SKY_CUBE + (n.z >= 0.0 ? 4 : 5)).rgb;
 }
 
-// The light from the blocks and the floor, for a block light level (0..1).
-vec3 block_irradiance(float block) {
-    vec3 light = torch_color * light_block_lux * light_curve(block);
+// The light from the blocks (their colour, luminance 1, see light_volume.glsl) and the floor, for a block light
+// level (0..1).
+vec3 block_irradiance(float block, vec3 color) {
+    vec3 light = color * light_block_lux * light_curve(block);
     vec3 floor_light = vec3(light_floor_lux * (1.0 + 7.0 * screenBrightness));
     // Night vision lights everything up, as Minecraft's does.
     floor_light += vec3(light_floor_lux * 400.0 * nightVision);
@@ -81,7 +82,7 @@ vec3 light_surface(vec3 albedo, vec3 normal, vec2 light, vec3 scene_pos, bool pl
         direct = g_light_color.rgb * n_dot_l * direct_visibility(scene_pos, plant ? g_light_dir.xyz : normal, light.y, shadowed);
     }
     vec3 sky = sky_irradiance(n) * light_curve(light.y);
-    vec3 irradiance = direct + sky + block_irradiance(light.x);
+    vec3 irradiance = direct + sky + block_irradiance(light.x, block_light_color(scene_pos, n));
     return albedo / PI * irradiance * (1.0 - 0.9 * darknessLightFactor);
 }
 

@@ -7,6 +7,9 @@
 #include "/lib/vanilla.glsl"
 #ifdef LIT_WORLD
 #include "/lib/lit.glsl"
+#ifdef PROGRAM_WATER
+#include "/lib/water.glsl"
+#endif
 #endif
 
 uniform sampler2D gtexture;
@@ -78,6 +81,10 @@ void lit_output(vec4 color, int flags) {
 #elif defined PROGRAM_WEATHER
     // Rain and snow: lit like plants, through, by the sky and the sun.
     vec3 rgb = forward_lit(color.rgb, vec3(0.0, 1.0, 0.0), v_level, v_scene_pos, true);
+#elif defined PROGRAM_WATER
+    // The top of water bends the light with its waves and ripples (see water.glsl).
+    vec3 normal = v_material == MATERIAL_WATER && v_normal.y > 0.9 ? water_normal(v_scene_pos) : v_normal;
+    vec3 rgb = forward_lit(color.rgb, normal, v_level, v_scene_pos, v_material == MATERIAL_PLANT);
 #else
     vec3 rgb = forward_lit(color.rgb, v_normal, v_level, v_scene_pos, v_material == MATERIAL_PLANT);
 #endif
@@ -90,7 +97,9 @@ void lit_output(vec4 color, int flags) {
 #endif
     rgb = apply_fog_lit(rgb, v_fog_dist, dir, fog_range());
     out_color = vec4(rgb, color.a);
-#if defined PROGRAM_WATER || defined PROGRAM_CLRWL_TRANSLUCENT
+#if defined PROGRAM_WATER
+    out_color = with_sky_reflection(out_color, normal, dir, v_level.y);
+#elif defined PROGRAM_CLRWL_TRANSLUCENT
     out_color = with_sky_reflection(out_color, v_normal, dir, v_level.y);
 #endif
 #else // LIT_GBUFFER

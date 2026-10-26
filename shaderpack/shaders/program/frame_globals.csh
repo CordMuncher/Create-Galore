@@ -129,6 +129,21 @@ void main() {
     set_global(G_CLOUD_DETAIL, vec4(detail, 0.0));
 #endif
 
+#ifdef LIT_WATER_RIPPLES
+    // The ripples step 60 times a second of the game's clock (see water.glsl): as many steps as ticks of that have
+    // passed since last frame, at most 3. Their grid moves to centre on the camera's cell with the first step.
+    vec4 water = global(G_WATER);
+    vec4 grid = global(G_WATER_ORIGIN);
+    float ticks = floor(frameTimeCounter * 60.0) - floor(water.z * 60.0);
+    float steps = clamp(ticks < 0.0 ? ticks + 216000.0 : ticks, 0.0, 3.0);
+    const int wrap = 1 << 20;
+    ivec2 camera_cell = cameraPositionInt.xz * 4 + ivec2(floor(cameraPositionFract.xz * 4.0));
+    ivec2 corner = ((camera_cell - 256) % wrap + wrap) % wrap;
+    vec2 next_corner = steps > 0.0 ? vec2(corner) : grid.xy;
+    set_global(G_WATER, vec4(steps, mod(water.y + water.x, 2.0), frameTimeCounter, 0.0));
+    set_global(G_WATER_ORIGIN, vec4(next_corner, grid.xy));
+#endif
+
     // The first frame (the image starts at zero): an exposure for what the sky lights the world with, until the
     // metering pass (exposure.csh, after DLSS) takes over.
     if (!exposure_ready(g_exposure_data)) {

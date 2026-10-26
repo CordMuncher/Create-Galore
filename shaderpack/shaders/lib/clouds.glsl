@@ -18,6 +18,7 @@
 
 #include "/lib/settings.glsl"
 #include "/lib/globals.glsl"
+#include "/lib/frame.glsl"
 #include "/lib/noise.glsl"
 #include "/lib/sky.glsl"
 
@@ -28,7 +29,6 @@ uniform sampler3D cg_cumulus_detail2_tex; // finer billows, and wisps
 uniform sampler3D cg_cumulus_curl_tex;    // curl noise that twists them
 uniform sampler2D cg_cirrus_tex;
 uniform sampler2D cg_cloud_amb_tex;       // the light around the clouds (cloud_ambient.csh)
-uniform int frameCounter;
 
 // Quality: how many render pixels a ray stands for (per side), the march's steps (fewer for short rays, more for
 // long ones), the steps towards the light, and whether those see the billows.

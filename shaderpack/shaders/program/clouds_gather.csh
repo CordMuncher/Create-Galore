@@ -2,8 +2,8 @@
 // from this frame's rays and the pixel's history, found where its clouds were last frame. Ported from Alpha
 // Piscium's clouds/ss/Accum: Lanczos filters over both, sharper as the history grows; the history pulled into the
 // range this frame's rays show around the pixel (Marty McFly's ellipsoid clipping), so moving clouds don't trail;
-// up to 16 frames blended. The history alternates between two images, one written each frame while the other is
-// read; the lighting pass reads the one written (see deferred2.fsh).
+// up to 16 frames blended. The history alternates between two halves of its images (side by side, each the window's
+// size), one written each frame while the other is read; the lighting pass reads the one written (see deferred2.fsh).
 
 #include "/lib/clouds.glsl"
 #include "/lib/motion.glsl"
@@ -13,14 +13,10 @@ const vec2 workGroupsRender = vec2(1.0, 1.0);
 
 uniform sampler2D cg_cloud_low_tex;
 uniform sampler2D cg_cloud_dist_tex;
-uniform sampler2D cg_cloud_hist_a_tex;
-uniform sampler2D cg_cloud_hist_b_tex;
-uniform sampler2D cg_cloud_len_a_tex;
-uniform sampler2D cg_cloud_len_b_tex;
-layout(rgba16f) writeonly uniform image2D cg_cloud_hist_a_img;
-layout(rgba16f) writeonly uniform image2D cg_cloud_hist_b_img;
-layout(r16f) writeonly uniform image2D cg_cloud_len_a_img;
-layout(r16f) writeonly uniform image2D cg_cloud_len_b_img;
+uniform sampler2D cg_cloud_hist_tex;
+uniform sampler2D cg_cloud_len_tex;
+layout(rgba16f) writeonly uniform image2D cg_cloud_hist_img;
+layout(r16f) writeonly uniform image2D cg_cloud_len_img;
 uniform mat4 gbufferProjectionInverse;
 
 const float max_frames = 16.0;
@@ -56,7 +52,10 @@ void main() {
     if (any(greaterThanEqual(vec2(texel) + 0.5, size))) {
         return;
     }
-    bool write_a = (frameCounter & 1) == 0;
+    // This frame's half of the history, and last frame's.
+    int half_width = imageSize(cg_cloud_hist_img).x / 2;
+    ivec2 write_half = ivec2((frameCounter & 1) == 0 ? 0 : half_width, 0);
+    ivec2 read_half = ivec2(half_width, 0) - write_half;
     ivec2 low_size = ivec2(ceil(size / float(CLOUD_SCALE)));
 
     // Where this pixel's centre falls among this frame's rays (ray q went through (q + offset) * CLOUD_SCALE).
@@ -86,8 +85,8 @@ void main() {
             for (int x = 0; x < 4; x++) {
                 ivec2 at = clamp(origin + ivec2(x - 1, y - 1), ivec2(0), ivec2(size) - 1);
                 float w = wx[x] * wy[y];
-                vec4 data = write_a ? texelFetch(cg_cloud_hist_b_tex, at, 0) : texelFetch(cg_cloud_hist_a_tex, at, 0);
-                float frames = write_a ? texelFetch(cg_cloud_len_b_tex, at, 0).r : texelFetch(cg_cloud_len_a_tex, at, 0).r;
+                vec4 data = texelFetch(cg_cloud_hist_tex, read_half + at, 0);
+                float frames = texelFetch(cg_cloud_len_tex, read_half + at, 0).r;
                 prev += data * w;
                 prev_frames += frames * w;
                 weight_sum += w;
@@ -145,11 +144,6 @@ void main() {
     float frames = min(prev_frames + 1.0, max_frames);
     vec4 result = mix(prev, current, 1.0 / frames);
     result = vec4(clamp(result.rgb, 0.0, 65000.0), clamp(result.a, 0.0, 1.0));
-    if (write_a) {
-        imageStore(cg_cloud_hist_a_img, texel, result);
-        imageStore(cg_cloud_len_a_img, texel, vec4(frames));
-    } else {
-        imageStore(cg_cloud_hist_b_img, texel, result);
-        imageStore(cg_cloud_len_b_img, texel, vec4(frames));
-    }
+    imageStore(cg_cloud_hist_img, write_half + texel, result);
+    imageStore(cg_cloud_len_img, write_half + texel, vec4(frames));
 }

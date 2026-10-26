@@ -39,6 +39,26 @@ const float upscaling_render_scale = RENDER_SCALE;
 #ifdef SHADOW_MACHINES
 #endif
 
+// Coloured light, in the lit overworld with shadows on (the shadow pass finds the lights, see light_volume.glsl): each
+// light's colour, read from its own texture, spread through the blocks around you, so soul lanterns light blue,
+// redstone red and sea lanterns cool white, modded lights included. Strength: how much of a light's colour shows
+// (0 every light is torchlight). Range: how many blocks across the volume the colours spread in is (half as high).
+#define COLORED_LIGHT
+#define COLORED_LIGHT_SATURATION 1.0 // [0.0 0.25 0.5 0.75 1.0 1.25 1.5]
+#define COLORED_LIGHT_RANGE 128      // [64 128 192 256]
+#ifdef COLORED_LIGHT
+#endif
+
+// Water, in the lit overworld: small wind waves on every water surface (Waves: how high, 0 none), and ripples where
+// you, mobs, boats, ships and Create's water wheels move through it, with wakes behind them (with shadows on: the
+// shadow pass finds what reaches into the water, so what casts no shadow makes no ripples). Both only bend the
+// light on the water (see water.glsl).
+#define WATER_WAVES 1.0             // [0.0 0.5 1.0 1.5 2.0]
+#define WATER_RIPPLES
+#define WATER_RIPPLES_STRENGTH 1.0  // [0.5 1.0 1.5 2.0 3.0]
+#ifdef WATER_RIPPLES
+#endif
+
 // Clouds, in the lit overworld: cumulus as a lit volume a kilometre and more up, and cirrus high above them, drifting
 // with the wind (see clouds.glsl). They take over from Minecraft's clouds and cast shadows on the ground.
 #define CLOUDS
@@ -79,6 +99,14 @@ const float upscaling_render_scale = RENDER_SCALE;
 
 #if defined LIT_WORLD && defined CLOUDS
 #define LIT_CLOUDS
+#endif
+
+#if defined LIT_WORLD && defined SHADOWS && defined COLORED_LIGHT
+#define LIT_COLORED_LIGHT
+#endif
+
+#if defined LIT_WORLD && defined SHADOWS && defined WATER_RIPPLES
+#define LIT_WATER_RIPPLES
 #endif
 
 #ifdef LIT_WORLD
