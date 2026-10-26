@@ -1807,3 +1807,155 @@ Streamline logs whole (they name his user folder).
 What comes of it (Emre's plan, 2026-10-26): if it all holds, the PR merges; then DLSS frame generation stops being
 experimental, FSR frame generation stays experimental until some play sessions show it behaving, DirectX 12 becomes
 the default, and the pack goes to 0.6.
+
+## Frame generation 3: leaving full screen, the far terrain overlay and the FSR cap
+
+Start only when Emre says so. About 25 minutes with Emre at the keyboard (steps 1 to 4), a timed run that
+needs no one (step 5), then Emre flips NVIDIA's frame generation model override (step 6) and, if it takes, the timed
+run again with it. Steps 1 to 4 are pass or fail, plus what Emre sees.
+
+**What it checks.** Bridge 1.124.0 (this branch, pack 0.5.15; it also has main's lock against the random "Mod loading
+issue for: hybrid_aquatic" crash) fixes what Frame generation 2 found:
+- **F11 couldn't leave full screen.** The kit launches with `--resolution 2560x1440`, the screen's own size, and that
+  run started in full screen, so the window Minecraft brought back was as big as the screen, at (0, 0), its title bar
+  above the screen's top edge: it looked like full screen (`results\fg2\f11-logs.txt`: every F11 resized to
+  2560x1440 again). Now a window that doesn't fit the screen's work area comes back fitted to it, with its title bar
+  and the taskbar showing. Minecraft also no longer takes the screen's size as the window's when the full screen
+  resolution changes while in full screen.
+- **`Frame generation was on when the swap chain resized`** at F11: Minecraft presents once more while it changes the
+  mode, with no frame drawn for it, and that present went out generating. Now it turns frame generation off and the
+  resize follows at once.
+- **Distant Horizons' far terrain drawn over the world** (upside down) after F11 or a resize with the shader pack on,
+  with DLSS and with FSR (photos `results\fg2\photo-dh-overlay-*.jpg`); only a shader reload (F8) fixed it. Iris
+  handed Distant Horizons' framebuffers the world's new depth buffer at the resize; now Distant Horizons gets its own
+  back on its next frame.
+- **FSR and Max Framerate.** With FSR the cap counted rendered frames (a 120 cap showed about 200). Now it counts frames
+  on screen, as with DLSS: 120 shows 120, 60 rendered.
+- **Find on this PC** says one sentence per file, for example `DLSS 310.9.16: already up to date. Frame generation
+  310.9.16: already up to date.`
+
+### Update and settings
+
+```powershell
+git -C $T\repo fetch origin
+git -C $T\repo checkout -B claude/project-thread-u2wmhh origin/claude/project-thread-u2wmhh
+Remove-Item $T\instance\mods\create-galore-bridge-*.jar
+Copy-Item $T\repo\pack\mods\create-galore-bridge-*.jar $T\instance\mods\
+Get-ChildItem $T\instance\mods\create-galore-bridge-*.jar | Select-Object Name
+```
+
+Only `create-galore-bridge-1.124.0.jar`. In `config\create_galore_bridge-display.properties` note the old values, then
+set `dlaa=dlss`, `perfectPresentation=true`, `presenter=dx12`, `reflex=on`, `gpuPacing=off`, `fpsCounter=detailed`,
+`frameGen=dlss`, `frameGenType=dlss`, and remove any `frameGenCheck` and `frameGenUi` line. In `options.txt` note the
+old values, then set `fullscreen:true` (as Frame generation 2 started) and `maxFps:260` (Unlimited) and
+`enableVsync:false`. Shader pack: Photon v1.3a + DLAA. The launch from step 4 (2560x1440) without `autorun`.
+
+For every step: copy each `Perfect Presentation:` line, each `Frame generation` line that isn't a plain check, and
+each WARN or ERROR line from `create_galore_bridge` written during it, with its time. The `from:` part of the
+`Perfect Presentation` lines says what asked for the change; keep it whole.
+
+### 1. Leaving full screen with DLSS, about 8 minutes
+
+Launch; the game starts in full screen. Open `dlaa-test`, `/gamemode creative`, look out over the far terrain (Distant
+Horizons' part, past the normal chunks).
+
+- **F11 out.** Expected: a window with its title bar and the taskbar below it, a little smaller than the screen. The log
+  has `Perfect Presentation: the window to come back after full screen, 2560x1440, is bigger than the screen's work
+  area; it comes back as WxH at (x, y)`, then `Perfect Presentation: a window, WxH at (x, y); from: ...`, then `the
+  window is now WxH, the game has it as a window, DXGI windowed`. Emre says whether it looks like a normal window.
+- **F11 in.** Full screen again: `Perfect Presentation: borderless full screen, 2560x1440 at (0, 0); from: ...` and
+  `the window is now 2560x1440, the game has it in full screen, DXGI windowed`.
+- **Five more times out and in**, a few seconds apart, turning the camera between. Every one must work.
+- **Drag** the window (out of full screen) to about half the screen by its corner, move it off centre, F11 in, F11 out:
+  it must come back at that size and place (no `bigger than the screen's work area` line this time). Then **maximise**
+  with the title bar button, F11 in, F11 out: say what comes back (maximised, or a window the size of the work area).
+- **The far terrain**, after every F11 and every drag: it must stay where it belongs, never drawn over the near world
+  or upside down as in the Frame generation 2 photos. Each resize logs `Distant Horizons: its own depth buffer goes
+  back on its framebuffers (Iris gave them the world's new one at the resize)`. If the overlay shows up anyway, take a
+  phone photo, note after which step and whether that line came, and press F8 once to check that a shader reload
+  still clears it.
+- **No** `Frame generation was on when the swap chain resized` WARN anywhere. Each mode change has `Frame generation:
+  off, the window is resizing`, then it comes back `on`.
+- **Minimise from full screen**: Win+D, wait about 10 seconds, click the game in the taskbar. It must come back in full
+  screen with the picture right: `Frame generation: off, the window is minimized`, then `on`. Then once more from a
+  window (F11 out first), with the title bar's minimise button.
+
+### 2. The cap and the Find text with DLSS, about 4 minutes
+
+- **Find on this PC** (shader pack menu, **Upscaling & Display...**, tab **Upscaling**): read out the line under the
+  button whole. One sentence per file (`DLSS ...: ...` then `Frame generation ...: ...`), each saying what happened to
+  that file.
+- **The cap.** Video Settings, **Max Framerate** 120. The game's own counter (top left) shows rendered frames; the
+  NVIDIA app's overlay (Alt+R) shows frames on screen. Expected: the overlay about 120, the counter about 60. Then Max
+  Framerate back to Unlimited. Copy the `Reflex: low latency on, boost ..., frame cap ...` lines.
+
+### 3. FSR, about 6 minutes
+
+Display tab, **Frame generation: FSR**, Done, close the game, launch again (it starts in full screen, as the last
+session left it; if it doesn't, F11 once and note it). The log has `Frame generation: AMD FSR 3.1 frame generation
+(FidelityFX SDK 2.0.0) from ..., on`. In `dlaa-test`:
+- **F11 out and in three times**, one drag and F11 in and out, looking at the far terrain each time, as in step 1. The
+  same log lines, no WARN.
+- **The cap**: Max Framerate 120. The overlay about 120, the counter about 60, and the log has `Reflex: low latency on,
+  boost ..., frame cap 120; 120 fps on screen, 60 rendered (Reflex's)`. Then Unlimited.
+- One minimise (Win+D) and back.
+
+### 4. Frame generation off, and DirectX 11, about 4 minutes
+
+- Display tab, **Frame generation: Off** (it turns off when the screen closes, no restart). F11 out and in twice, one
+  drag. The same `Perfect Presentation` lines; the far terrain stays right.
+- **DirectX: 11**, Done, close, launch again (Perfect Presentation stays on; frame generation needs DirectX 12, so it
+  stays off). F11 out and in twice, one drag, one Win+D. The same `Perfect Presentation` lines, without `DXGI windowed`
+  if DirectX 11 doesn't report it; the far terrain stays right.
+
+Close the game. If a start crashes with `Mod loading issue` (any mod), copy the crash report and the log's last 100
+lines: main's lock should have stopped it.
+
+### 5. Timed run with NVIDIA's own frame generation model (no one needed, about 3 minutes)
+
+The baseline for step 6. Settings file: `presenter=dx12`, `frameGen=dlss`, `frameGenType=dlss`, `reflex=on`,
+`gpuPacing=off`, no `frameGenCheck`; `options.txt`: `fullscreen:true`, `maxFps:260`, `enableVsync:false`. The NVIDIA
+app's DLSS overrides as Emre has them now (all off, N/A in the overlay). A quiet PC, the window in front with focus.
+`New-Item -ItemType Directory $T\fg3 -Force`. Launch as in Frame generation 2 step 5 (`autorun=dlaa-test`,
+`runs=G1`), with PresentMon attached as there, elevated, to `$T\fg3\B0.csv`, adding `--set_circular_buffer_size 4096` (Frame generation 2's first launch lost 0.14% of its
+frames without it). The log must have `Frame generation: running, 2 frames shown per rendered one`.
+
+### 6. NVIDIA's Frame Generation Preset B (Emre flips it, about 8 minutes)
+
+Games can't pick NVIDIA's frame generation model; the NVIDIA app can override it. When everything above is done, stop
+and hand over to Emre:
+- Emre sets the override **globally** in the NVIDIA app (Graphics, Global Settings, the DLSS override for the Frame
+  Generation model: **Preset B**). A per-program override on the kit's `java.exe` may not reach a game that shows
+  through its own DirectX 12 swap chain, so the global one is the test.
+- Launch the game again (no `autorun`), open `dlaa-test`. In the NVIDIA overlay (Alt+R), the DLSS override lines: does
+  it say an override is **active** for frame generation, and which **preset**? Emre reads them out; a phone photo of
+  the overlay goes in the results. Also copy any line naming a preset or a model from the game log and the newest
+  Streamline log.
+- **If it sticks** (the overlay says Preset B, active): open the chat, `/` and a few letters so the command suggestions
+  show, type and delete letters. Is the smear on the suggestions (Frame generation 2: "garbles them one frame") gone,
+  less, or the same? Emre plays a minute and says whether the picture or the feel differs. Then close the game and do
+  step 5's timed launch again, PresentMon to `$T\fg3\B1.csv`, with the override still on.
+- **If it doesn't stick** (N/A, or not active): note what the overlay says and skip the timed launch.
+
+Afterwards Emre sets the NVIDIA app back as he wants it (say what it was: all overrides off).
+
+### Results
+
+```powershell
+$py = "$T\tools\uv\uv.exe"
+& $py run --python 3.13 $T\repo\tools\dlss-testkit\latency.py <step 5 run folder> <step 6 run folder>
+& $py run --python 3.13 $T\repo\tools\dlss-testkit\frametimes.py <step 5 run folder> $T\fg3\B0.csv <step 6 run folder> $T\fg3\B1.csv
+```
+
+Write `$T\repo\tools\dlss-testkit\results\fg3\REPORT.md`: per step, what Emre saw (window or not, the far terrain, the
+picture after minimise), the copied log lines, the Find line word for word, the cap numbers (overlay and counter) with
+DLSS and with FSR. For step 6: what the overlay said (active or not, which preset), the suggestions and what Emre saw,
+and if it stuck, per mode and viewpoint, NVIDIA's own model against Preset B: rendered fps, input to GPU end (median
+and 90th percentile), shown-frame interval (median, p10, p90) and pair ratio (median, p90); then one line on whether
+Preset B costs or gains frames or latency. Phone photos go in the same folder. Put the
+settings and `options.txt` back as noted (or as Emre wants them), then commit and push on the DLAA branch. Don't
+commit hs_err files or Streamline logs whole (they name his user folder).
+
+What comes of it: if every step passes, the PR can merge once Emre says so (Emre's plan, 2026-10-26: DLSS frame
+generation no longer experimental, FSR frame generation still experimental, DirectX 12 the default, Perfect
+Presentation on for new installs, pack 0.6).

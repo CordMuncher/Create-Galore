@@ -75,7 +75,7 @@ public final class FrameLatency {
     private static boolean reflexSleeping;
     /** What the driver was last told: low latency, boost, frame interval (us); null: nothing yet. */
     private static int[] reflexApplied;
-    /** The settings (low latency, boost, the player's cap) of the last logged Reflex mode. */
+    /** The settings (low latency, boost, the player's cap) and frames shown per rendered one of the last logged Reflex mode. */
     private static int[] reflexLogged;
 
     private static boolean pacing;
@@ -517,7 +517,8 @@ public final class FrameLatency {
     /**
      * Reflex's mode and frame cap, when they change. The cap counts frames on screen: with AMD's frame generation Reflex
      * (NVAPI's) gets a rendered rate that gives the cap on screen, while through Streamline it counts DLSS's generated
-     * frames itself. Logged when the player's settings change, not each time frame generation goes off and on.
+     * frames itself. Logged when the player's settings change, and once more when frame generation first changes what a
+     * cap renders, not each time it goes off and on.
      */
     private static void applyReflexMode() {
         boolean lowLatency = reflexMode.compareTo(ReflexMode.ON) >= 0;
@@ -530,8 +531,9 @@ public final class FrameLatency {
             reflex.setMode(lowLatency, boost, interval);
             reflexApplied = wanted;
             int[] settings = {wanted[0], wanted[1], limit};
-            if (!java.util.Arrays.equals(reflexLogged, settings)) {
-                reflexLogged = settings;
+            boolean changed = reflexLogged == null || !java.util.Arrays.equals(java.util.Arrays.copyOf(reflexLogged, 3), settings);
+            if (changed || shownPerRendered > reflexLogged[3]) {
+                reflexLogged = new int[] {settings[0], settings[1], settings[2], shownPerRendered};
                 LOG.info("Reflex: low latency {}, boost {}, frame cap {}; {}", lowLatency ? "on" : "off", boost ? "on" : "off",
                         limit == 0 ? "none" : shownPerRendered > 1 ? limit + " fps on screen, " + limit / shownPerRendered
                                 + " rendered (Reflex's)" : limit + " fps (Reflex's)", reflex.status());

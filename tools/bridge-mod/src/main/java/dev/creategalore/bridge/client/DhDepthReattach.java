@@ -1,5 +1,8 @@
 package dev.creategalore.bridge.client;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Distant Horizons' terrain keeps its own depth buffer under Iris after a window resize (IrisDhDepthResizeMixin,
  * IrisDhDepthReattachMixin). On a resize Iris points every framebuffer of its render targets that has a depth
@@ -10,6 +13,7 @@ package dev.creategalore.bridge.client;
  * (Iris & Distant Horizons)" mod (mzg, MIT).
  */
 public final class DhDepthReattach {
+    private static final Logger LOG = LoggerFactory.getLogger("create_galore_bridge");
     private static volatile boolean needed;
 
     private DhDepthReattach() {}
@@ -25,6 +29,7 @@ public final class DhDepthReattach {
             return false;
         }
         needed = false;
+        LOG.info("Distant Horizons: its own depth buffer goes back on its framebuffers (Iris gave them the world's new one at the resize)");
         return true;
     }
 }
