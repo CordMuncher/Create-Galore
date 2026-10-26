@@ -1297,3 +1297,101 @@ If a launch crashes, copy `hs_err_pid*.log` and the log's last 100 lines, and re
   fullscreen` on both.
 
 Commit and push on the DLAA branch. Don't commit hs_err files (they name his user folder).
+
+## Pacer 3: GPU pacing on DirectX 12
+
+Start only when Emre says so. It isn't urgent: it's for the day DirectX 12 becomes Perfect Presentation's default.
+Same PC, test folder and settings as Presenter 3, **no PresentMon and no nvidia-smi** (no administrator prompts).
+About 55 minutes, four launches, no by-feel part. **Frame times count here**: a quiet PC, no game server, nothing else
+started.
+
+**What it tests.** GPU pacing (the Display tab's GPU pacing, `gpuPacing`) was tuned on DirectX 11 in Pacer 2
+(`results\pacer2\REPORT.md`):
+- **On** lets a frame queue on the GPU for 65% of the frame time, at least 4 ms, with Perfect Presentation (80%, at
+  least 5 ms, without). On the RTX 4080 at about 165 fps that is about 4 ms. It cost no frames there (+3 / 0%) and
+  cut the latency from 11.9 to 9.8 ms.
+- **Lowest** sets the target from how much the frames vary (about 1–2.5 ms). It cut the latency to 8.4 ms for about
+  6% fewer frames.
+
+DirectX 12 (Bridge 1.115.0, pack 0.5.9, the Display tab's DirectX setting) hands each frame to Direct3D 12 after
+OpenGL finishes it, so the GPU gets a little more work per frame and the frames queue a little differently. Presenter 3
+measured about 1 ms less queue on DirectX 12 at `lat-base`, and Presenter 1 (before the 1.114.0 fix) saw Lowest's
+target swing more on DirectX 12 (1.8–4.0 ms against 0.6–2.3). This run measures the same targets on both presenters,
+alternating, to tell whether On's rule and Lowest still fit on DirectX 12 or need their own numbers there.
+
+### Update
+
+```powershell
+git -C $T\repo fetch origin
+git -C $T\repo checkout -B claude/project-thread-u2wmhh origin/claude/project-thread-u2wmhh
+Remove-Item $T\instance\mods\create-galore-bridge-*.jar
+Copy-Item $T\repo\pack\mods\create-galore-bridge-*.jar $T\instance\mods\
+Copy-Item $T\repo\tools\dlss-testkit\dist\create-galore-dlss-testkit-1.0.0.jar $T\instance\mods\ -Force
+```
+
+The Bridge is 1.115.0 (released in pack 0.5.9). Its test keys `presentGlWait`, `presentSync`, `presentFrameLatency`,
+`presentBuffers` and `presentQueuePriority` are gone: if any is still in the test folder's display settings, remove
+it. The kit's first run in each game clears any test scene an earlier game left in the world (the log says
+`cleared the test scenes`); there's no need to remove scenes by hand.
+
+### Settings
+
+As Presenter 3 (note the old values, put them back afterwards): `dlaa=dlss`, `perfectPresentation=true`,
+`earlyWindowControl = false`, Distant Horizons `numberOfThreads = 2`, `gpuPacing=off` (the kit's modes switch the
+pacer themselves). The API is the setting `presenter=dx11` or `presenter=dx12` in
+`config\create_galore_bridge-display.properties` (the Display tab's DirectX). Set it in the file before each launch, as
+the table says; no other test keys. Look at the NVIDIA Control Panel and the refresh rate again and write them down;
+change nothing.
+
+### Launches
+
+The launch from step 4 (2560x1440), `--jvm-arg=-Dcreate_galore_dlss_testkit.autorun=dlaa-test` and
+`--jvm-arg=-Dcreate_galore_dlss_testkit.runs=L7`, the window in front with focus, in this order:
+
+| Launch | `presenter` |
+| --- | --- |
+| 1 | `dx11` |
+| 2 | `dx12` |
+| 3 | `dx11` |
+| 4 | `dx12` |
+
+L7 plays each mode twice at `shore` and `canopy` (about 11 minutes):
+
+| Mode | What |
+| --- | --- |
+| `lat-base` | the game as it is |
+| `lat-pacing-on` | GPU pacing On (65% of the frame time, at least 4 ms) + late read |
+| `lat-pacer` | GPU pacing Lowest (the automatic target) + late read |
+| `lat-pacer-3000` | the pacer at 3000 us + late read |
+| `lat-pacer-5000` | the pacer at 5000 us + late read |
+| `lat-reflex` | Reflex on + late read, for comparison |
+
+- The log must have `DXGI swap chain ready on DirectX 11` or `... on DirectX 12` to match the launch, and the run's
+  `manifest.json` has `"presenter"` with the same.
+- It must also have `Latency: GPU pacer on, frames may queue on the GPU a share of the frame time that keeps the frame
+  rate`, `... as much as they vary`, `... 3000 us on the GPU`, `... 5000 us on the GPU` and `Reflex: started on
+  Perfect Presentation's DirectX 12 device` (or `DirectX 11`). Copy any `Perfect Presentation`, `Latency:` or `Reflex:` WARN or ERROR line.
+- Check that PresentMon and nvidia-smi aren't running, as in Presenter 3.
+
+If a launch crashes, copy `hs_err_pid*.log` and the log's last 100 lines, and report.
+
+### Results
+
+`python latency.py` on the four run folders (each folder's header line names its presenter). Write
+`$T\repo\tools\dlss-testkit\results\pacer3\REPORT.md`:
+- per mode, viewpoint and launch: fps and its change against that launch's `lat-base`, latency (median and 90th
+  percentile), the queue (median and `q10`), and with the pacer its target, wait and how late the wait ended;
+- per presenter, the two launches averaged: for each pacer mode the fps change and the latency against `lat-base`;
+- in one line each, for DirectX 12 against DirectX 11:
+  - **On:** does it still keep the frame rate (within about 2% of `lat-base`) on DirectX 12, and at what latency? Which
+    of 3000, On (about 4000) and 5000 is the shortest target that keeps the frame rate on each presenter?
+  - **Lowest:** its fps cost and latency on each, and how much its target swings (the target column over the plays);
+  - **Reflex:** about the same on both, as in Presenter 3?
+  - **the queue at `lat-base`:** still about 1 ms shorter on DirectX 12?
+- the `Perfect Presentation`, `Latency:` and `Reflex:` lines, the control panel settings and refresh rate.
+
+What comes of it: if DirectX 12's shortest frame-keeping target differs from DirectX 11's by more than about 0.5 ms,
+On gets its own rule on DirectX 12 (`GpuPacer.keepingFrameRate` per presenter); if Lowest's cost there is clearly
+higher, its margin gets looked at. Otherwise nothing changes.
+
+Commit and push on the DLAA branch. Don't commit hs_err files (they name his user folder).

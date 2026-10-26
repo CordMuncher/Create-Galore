@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Input latency per mode and viewpoint: python latency.py RUN_FOLDER [RUN_FOLDER ...] (standard library only).
 
-Reads each run's manifest.json (runs L1 and L2 of Reflex 1, L3 and L4 of Pacer 1, L5 and L6 of Pacer 2 in PC-RUNBOOK.md). For each mode and
+Reads each run's manifest.json (runs L1 and L2 of Reflex 1, L3 and L4 of Pacer 1, L5 and L6 of Pacer 2, L7 of Pacer 3 in PC-RUNBOOK.md). For each mode and
 viewpoint it prints the Bridge's numbers over the latency path, one row per time the mode played:
 - input to GPU ms: the median and 90th percentile time from the game last reading input to the GPU finishing that
   frame (Bridge LatencyMeter; what the swap and the screen add comes on top, the same in every mode);
@@ -35,7 +35,7 @@ def main(folders):
     for folder in folders:
         manifest = json.loads((Path(folder) / "manifest.json").read_text(encoding="utf-8"))
         print(f"\n== {manifest.get('run')} ({manifest.get('outcome')}), {manifest.get('renderer')}, "
-              f"Perfect Presentation {'on' if manifest.get('perfectPresentation') else 'off'}, "
+              f"Perfect Presentation {'on' + (' (' + manifest['presenter'] + ')' if manifest.get('presenter') else '') if manifest.get('perfectPresentation') else 'off'}, "
               f"{'x'.join(str(v) for v in manifest.get('resolution', []))}")
         base = {}
         print(f"{'mode':16} {'viewpoint':9} {'input>GPU':>9} {'p90':>6} {'behind':>6} {'fps':>6} {'queue':>6} {'gap':>5} "

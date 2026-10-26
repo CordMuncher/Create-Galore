@@ -188,7 +188,7 @@ public final class Capture {
          * machines under a near lintel at full size and two render scales (all should show). Reflex 1: L1 with Perfect
          * Presentation on (Reflex needs it), L2 with it off (Sodium's render-ahead limit), each mode twice. Pacer 1: L3
          * with Perfect Presentation on, L4 with it off. Presenter 1: P1 once with each presenter (dx11, dx12).
-         * Presenter 2 and 3: P2 with dx11 and with dx12.
+         * Presenter 2 and 3: P2 with dx11 and with dx12. Pacer 3: L7, GPU pacing's targets, once with each presenter.
          */
         List<Run> runs = new ArrayList<>(List.of(
                 new Run("F1", "photon-taa+dlaa-default+fsr3+perf-taau+perf-dlss-K+perf-dlss-M+perf-dlss-L+perf-fsr3"
@@ -220,7 +220,9 @@ public final class Capture {
                         "shore+canopy", "latency", null, false, null, 2),
                 new Run("P1", "lat-base+lat-pacing-on+lat-pacer+lat-reflex+lat-cap-default", "shore+canopy", "latency", null,
                         false, null, 2),
-                new Run("P2", "lat-base+lat-reflex+lat-cap-default", "shore+canopy", "latency", null, false, null, 2)));
+                new Run("P2", "lat-base+lat-reflex+lat-cap-default", "shore+canopy", "latency", null, false, null, 2),
+                new Run("L7", "lat-base+lat-pacing-on+lat-pacer+lat-pacer-3000+lat-pacer-5000+lat-reflex", "shore+canopy",
+                        "latency", null, false, null, 2)));
     }
 
     /**
@@ -1125,6 +1127,15 @@ public final class Capture {
         }
     }
 
+    /** "DirectX 11" or "DirectX 12" while Perfect Presentation runs, else null (or a Bridge before 1.113.0). */
+    private static String bridgePresenter() {
+        try {
+            return (String) Class.forName("dev.creategalore.bridge.present.Presentation").getMethod("api").invoke(null);
+        } catch (ReflectiveOperationException | RuntimeException e) {
+            return null;
+        }
+    }
+
     private static boolean bridgeDlaaActive() {
         try {
             return (boolean) Class.forName("dev.creategalore.bridge.dlss.Dlss").getMethod("shaderActive").invoke(null);
@@ -1298,6 +1309,7 @@ public final class Capture {
         manifest.addProperty("renderer", RenderSystem.isOnRenderThread() ? com.mojang.blaze3d.platform.GlUtil.getRenderer() : "?");
         manifest.addProperty("shaderPack", Iris.getCurrentPackName());
         manifest.addProperty("perfectPresentation", bridgePresentationActive());
+        manifest.addProperty("presenter", bridgePresenter());
         JsonArray size = new JsonArray();
         size.add(mc.getWindow().getWidth());
         size.add(mc.getWindow().getHeight());
