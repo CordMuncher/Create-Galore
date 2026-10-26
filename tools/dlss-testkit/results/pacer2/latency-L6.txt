@@ -1,0 +1,39 @@
+
+== 20261026-094018-L6 (run finished), NVIDIA GeForce RTX 4080 SUPER/PCIe/SSE2, Perfect Presentation off, 2560x1440
+mode             viewpoint input>GPU    p90 behind    fps  queue   gap gap90   q10  wait  late   tgt  drv in>GPU drv p90 drv sim>GPU  GPU busy/frame  unit  reflex
+lat-base         shore          12.2   16.5    6.7    171    6.1     -     -   3.2     -     -     -           -       -           -               -     -  off
+lat-base         shore          16.5   16.6   13.1    179   10.9     -     -   9.3     -     -     -           -       -           -               -     -  off
+                 shore     median 14.4 ms, +0.0 ms against the first mode, repeats 12.2-16.5
+lat-base         canopy         18.6   18.7   14.1    157   12.3     -     -   9.0     -     -     -           -       -           -               -     -  off
+lat-base         canopy         18.7   18.7   15.5    159   12.3     -     -  10.7     -     -     -           -       -           -               -     -  off
+                 canopy    median 18.6 ms, +0.0 ms against the first mode, repeats 18.6-18.7
+lat-ra1-late     shore          11.0   11.1    6.3    176    5.4     -     -   3.1     -     -     -           -       -           -               -     -  off
+lat-ra1-late     shore          11.1   11.1    7.7    179    5.5     -     -   3.9     -     -     -           -       -           -               -     -  off
+                 shore     median 11.0 ms, -3.4 ms against the first mode, repeats 11.0-11.1
+lat-ra1-late     canopy         12.5   12.5    8.8    158    6.2     -     -   4.3     -     -     -           -       -           -               -     -  off
+lat-ra1-late     canopy         12.5   12.6    9.4    159    6.2     -     -   4.7     -     -     -           -       -           -               -     -  off
+                 canopy    median 12.5 ms, -6.2 ms against the first mode, repeats 12.5-12.5
+lat-pacer        shore           8.4    9.7    4.2    164    2.5     -     -   0.9   1.6     0  2482           -       -           -               -     -  off
+lat-pacer        shore           8.1    9.1    4.4    166    2.3     -     -   0.8   2.0     0  2301           -       -           -               -     -  off
+                 shore     median 8.2 ms, -6.1 ms against the first mode, repeats 8.1-8.4
+lat-pacer        canopy          9.2   10.9    5.0    148    2.6     -     -   1.0   2.3     0  2241           -       -           -               -     -  off
+lat-pacer        canopy          8.7   10.1    5.4    152    2.2     -     -   0.8   2.9     0  1888           -       -           -               -     -  off
+                 canopy    median 8.9 ms, -9.7 ms against the first mode, repeats 8.7-9.2
+lat-ra1-pacer    shore           8.3    9.2    4.3    164    2.5     -     -   0.8   1.8     0  2247           -       -           -               -     -  off
+lat-ra1-pacer    shore           8.1    9.3    4.4    165    2.4     -     -   0.2   2.0     0  2099           -       -           -               -     -  off
+                 shore     median 8.2 ms, -6.2 ms against the first mode, repeats 8.1-8.3
+lat-ra1-pacer    canopy          9.0    9.9    5.4    149    2.5     -     -   0.8   2.6     0  2551           -       -           -               -     -  off
+lat-ra1-pacer    canopy          8.9   10.4    5.5    148    2.4     -     -   0.3   2.6     0  1745           -       -           -               -     -  off
+                 canopy    median 8.9 ms, -9.7 ms against the first mode, repeats 8.9-9.0
+lat-pacer-3000   shore           8.6   10.5    4.7    165    2.8     -     -   0.8   1.6     0  3000           -       -           -               -     -  off
+lat-pacer-3000   shore           8.6   10.4    5.0    170    2.9     -     -   1.4   1.8     0  3000           -       -           -               -     -  off
+                 shore     median 8.6 ms, -5.8 ms against the first mode, repeats 8.6-8.6
+lat-pacer-3000   canopy          9.2   11.7    5.8    148    2.8     -     -  -0.2   2.6     0  3000           -       -           -               -     -  off
+lat-pacer-3000   canopy          9.3   11.2    6.1    155    2.9     -     -   1.4   2.8     0  3000           -       -           -               -     -  off
+                 canopy    median 9.2 ms, -9.4 ms against the first mode, repeats 9.2-9.3
+lat-pacer-5000   shore          10.4   12.8    6.9    177    4.8     -     -   3.0   1.6     0  5000           -       -           -               -     -  off
+lat-pacer-5000   shore          10.6   12.5    7.1    176    4.9     -     -   3.2   1.7     0  5000           -       -           -               -     -  off
+                 shore     median 10.5 ms, -3.9 ms against the first mode, repeats 10.4-10.6
+lat-pacer-5000   canopy         11.3   13.2    8.2    157    5.0     -     -   2.9   2.7     0  5000           -       -           -               -     -  off
+lat-pacer-5000   canopy         11.3   13.3    8.3    157    5.0     -     -   3.0   2.8     0  5000           -       -           -               -     -  off
+                 canopy    median 11.3 ms, -7.3 ms against the first mode, repeats 11.3-11.3

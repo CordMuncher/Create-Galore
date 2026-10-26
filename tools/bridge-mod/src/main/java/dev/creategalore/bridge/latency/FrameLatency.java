@@ -27,7 +27,19 @@ import org.slf4j.LoggerFactory;
  * latePoll: read input again just before the mouse turns the camera, after any wait for the GPU or the swap chain
  * (Sodium's render-ahead limit at the start of the frame, Perfect Presentation's swap chain, the game's frame cap).
  * Minecraft reads input only while presenting the frame before, so whatever it waits for after that ages the input.
- * On with Reflex on or boost unless the setting says otherwise (testing only, not written to the file).
+ * On with Reflex on or boost, or the GPU pacer, unless the setting says otherwise (testing only, not written to the file).
+ *
+ * gpuPacing (off, on, lowest): the {@link GpuPacer} waits just before rendering, before the late read, so the frame's
+ * rendering reaches the GPU about when the GPU gets to it instead of queueing behind earlier frames. For uncapped play,
+ * where Reflex's driver can't see the OpenGL queue. On keeps a queue that costs no frames (a share of the frame time,
+ * at least 4 or 5 ms), lowest the shortest the frames' timing allows (about 6% fewer frames on the RTX 4080).
+ * gpuPacer and pacerTargetUs (testing) override it: true or false, and how long a frame may still queue (auto: from how
+ * much the frames vary).
+ *
+ * The Max Framerate cap waits at the start of the frame, before input is read, instead of in the game's limiter after
+ * the frame (Reflex's own cap does the same while Reflex runs). Any GPU: in the Pacer 1 run it matched Reflex's cap
+ * (8.8 ms input to GPU done at 60 fps with Perfect Presentation, the game's limiter 16.7). frameCapAtStart=false
+ * (testing) leaves the cap to the game's limiter.
  *
  * latencyLog (testing): logs {@link LatencyMeter}'s numbers (and Reflex's report) every 10 seconds. The test kit
  * measures through {@link #measure(boolean)} and {@link #window()} instead.
@@ -60,6 +72,16 @@ public final class FrameLatency {
     /** What the driver was last told: low latency, boost, frame interval (us); null: nothing yet. */
     private static int[] reflexApplied;
 
+    private static boolean pacing;
+    /** How long a frame may queue (ns), below 0 automatic; with pacerKeepsRate the player's On instead. */
+    private static long pacerTarget;
+    private static boolean pacerKeepsRate;
+    private static GpuPacer pacer;
+    private static boolean capAtStart;
+    /** The frame cap the wait at the frame's start keeps (0: none, the game's limiter or Reflex's has it). */
+    private static int startCap;
+    private static long nextFrame;
+
     private static long frameId;
     private static long lastPoll;
     private static long input;
@@ -70,16 +92,45 @@ public final class FrameLatency {
 
     // --- Minecraft.runTick ---
 
-    /** First thing in a frame: Reflex's sleep, then input. */
+    /** First thing in a frame: Reflex's sleep or the frame cap's wait, then input. */
     public static void frameStart() {
         if (generation != DisplaySettings.generation()) {
             readSettings();
         }
         frameId++;
         reflexSleeping = false;
-        if (reflexMode == ReflexMode.OFF) {
-            return;
+        boolean metering = measuring || logging || pacing;
+        if (metering && meter == null) {
+            pacer = !pacing ? null : pacerKeepsRate ? GpuPacer.keepingFrameRate(Presentation.active()) : new GpuPacer(pacerTarget);
+            meter = new LatencyMeter(pacer);
+            lastLog = System.nanoTime();
+        } else if (!metering && meter != null) {
+            closeMeter();
         }
+        if (reflexMode != ReflexMode.OFF) {
+            reflexFrameStart();
+        }
+        if (startCap > 0 && startCap != frameLimit()) {
+            startCap = 0; // the cap changed or went (the game's limiter isn't called at all without one)
+        }
+        if (startCap > 0 && !reflexCaps()) {
+            capWait();
+        }
+    }
+
+    /** Waits for the frame cap's next frame, then reads input (what the game's limiter does after the frame instead). */
+    private static void capWait() {
+        long interval = 1_000_000_000L / startCap;
+        long now = System.nanoTime();
+        if (now - nextFrame > interval || nextFrame - now > interval) {
+            nextFrame = now; // more than a frame behind, or the cap changed: the cadence starts over
+        }
+        PreciseWait.until(nextFrame);
+        nextFrame += interval;
+        pollEvents();
+    }
+
+    private static void reflexFrameStart() {
         if (reflex == null && !reflexTried) {
             startReflex();
         }
@@ -109,10 +160,16 @@ public final class FrameLatency {
         if (fromPresentation != Presentation.active()) {
             return;
         }
+        if (pacer != null) {
+            pacer.beforeRender();
+        }
         if (latePoll) {
             pollEvents();
         }
         input = lastPoll;
+        if (meter != null) {
+            meter.renderStart();
+        }
         if (reflexSleeping) {
             try {
                 reflex.marker(Reflex.INPUT_SAMPLE, frameId);
@@ -133,16 +190,8 @@ public final class FrameLatency {
                 reflexFailed(e);
             }
         }
-        if (!measuring && !logging) {
-            if (meter != null) {
-                meter.close();
-                meter = null;
-            }
-            return;
-        }
         if (meter == null) {
-            meter = new LatencyMeter();
-            lastLog = System.nanoTime();
+            return;
         }
         meter.frameSubmitted(input);
         if (logging && !measuring && System.nanoTime() - lastLog > LOG_NANOS) {
@@ -152,11 +201,23 @@ public final class FrameLatency {
     }
 
     /**
-     * True when Reflex keeps this frame rate cap ({@code fps}, what the game's limiter was about to wait for), so the
-     * game's own limiter (which waits after the frame) stays out. Menus without a world cap at 60 by the game's own.
+     * True when Reflex or the wait at the frame's start keeps this frame rate cap ({@code fps}, what the game's limiter
+     * was about to wait for), so the game's own limiter (which waits after the frame) stays out. Menus without a world
+     * cap at 60 by the game's own.
      */
-    public static boolean reflexLimitsFrameRate(int fps) {
-        return reflexSleeping && reflexApplied != null && reflexApplied[2] > 0 && fps == frameLimit();
+    public static boolean limitsFrameRate(int fps) {
+        boolean ours = fps > 0 && fps == frameLimit();
+        if (ours && reflexCaps()) {
+            startCap = 0;
+            return true;
+        }
+        startCap = ours && capAtStart ? fps : 0;
+        return startCap > 0;
+    }
+
+    /** True while Reflex's sleep keeps the frame cap. */
+    private static boolean reflexCaps() {
+        return reflexSleeping && reflexApplied != null && reflexApplied[2] > 0;
     }
 
     // --- RenderSystem ---
@@ -237,13 +298,18 @@ public final class FrameLatency {
         measuring = on;
         if (on && meter != null) {
             meter.window(); // start a fresh window
+            if (pacer != null) {
+                pacer.window();
+            }
         }
     }
 
     /**
      * The numbers since the last call: inputToGpuMs and inputToGpuP90Ms (input read to the GPU done with the frame),
-     * gpuBehindMs (the frame's end on the CPU to the GPU done), frames, fps, reflex (what Reflex did) and, when Reflex
-     * sent markers, the driver's report of its last 64 frames (driver...).
+     * gpuBehindMs (the frame's end on the CPU to the GPU done), frames, fps, gpuQueueMs and gpuQueueP10Ms (median and
+     * 10th percentile of the rendering's start waiting behind the frame before on the GPU; below 0 the GPU waited), reflex
+     * (what Reflex did), the switches, with the GPU pacer its wait (pacerWaitMs) and how late that ended (pacerLateUs,
+     * pacerLateP90Us), and, when Reflex sent markers, the driver's report of its last 64 frames (driver...).
      */
     public static Map<String, Object> window() {
         Map<String, Object> result = new LinkedHashMap<>();
@@ -254,9 +320,21 @@ public final class FrameLatency {
             result.put("gpuBehindMs", round(w[2]));
             result.put("frames", w[3]);
             result.put("fps", round(w[4]));
+            result.put("gpuQueueMs", round(w[5]));
+            result.put("gpuQueueP10Ms", round(w[6]));
         }
         result.put("reflex", reflexState());
         result.put("latePoll", latePoll);
+        result.put("gpuPacer", pacing);
+        result.put("pacerKeepsRate", pacing && pacerKeepsRate);
+        result.put("frameCapAtStart", capAtStart);
+        if (pacer != null) {
+            double[] p = pacer.window();
+            result.put("pacerTargetUs", pacer.target() / 1000);
+            result.put("pacerWaitMs", round(p[0]));
+            result.put("pacerLateUs", round(p[1]));
+            result.put("pacerLateP90Us", round(p[2]));
+        }
         if (reflexSleeping && reflex != null) {
             try {
                 double[] report = reflex.latency();
@@ -317,8 +395,41 @@ public final class FrameLatency {
             LOG.info("Reflex: {}", wanted.name().toLowerCase(Locale.ROOT));
         }
         reflexMode = wanted;
+        String pacingSetting = DisplaySettings.getString(DisplaySettings.GPU_PACING, "off").toLowerCase(Locale.ROOT);
+        boolean lowest = pacingSetting.equals("lowest");
+        boolean on = lowest || pacingSetting.equals("on");
+        String paceTest = DisplaySettings.getString(DisplaySettings.GPU_PACER, "");
+        boolean pace = paceTest.isEmpty() ? on : Boolean.parseBoolean(paceTest);
+        String targetSetting = DisplaySettings.getString(DisplaySettings.PACER_TARGET_US, "");
+        long target = -1L; // automatic
+        boolean keepsRate = targetSetting.isEmpty() && on && !lowest;
+        if (!targetSetting.isEmpty() && !targetSetting.equalsIgnoreCase("auto")) {
+            try {
+                target = Math.max(0L, Long.parseLong(targetSetting)) * 1000L;
+            } catch (NumberFormatException e) {
+                LOG.warn("Latency: {}={} is neither auto nor microseconds, using auto", DisplaySettings.PACER_TARGET_US, targetSetting);
+            }
+        }
+        if (pace != pacing || pace && (target != pacerTarget || keepsRate != pacerKeepsRate)) {
+            closeMeter(); // made again with (or without) the pacer at the next frame
+            LOG.info("Latency: GPU pacer {}", !pace ? "off"
+                    : keepsRate ? "on, frames may queue on the GPU a share of the frame time that keeps the frame rate"
+                    : target < 0 ? "on, frames may queue on the GPU as much as they vary"
+                    : "on, frames may queue " + target / 1000 + " us on the GPU");
+        }
+        pacing = pace;
+        pacerTarget = target;
+        pacerKeepsRate = keepsRate;
+        boolean cap = !DisplaySettings.getString(DisplaySettings.FRAME_CAP_AT_START, "true").equalsIgnoreCase("false");
+        if (cap != capAtStart) {
+            LOG.info("Latency: the frame cap waits {}", cap ? "at the start of the frame, before input" : "in the game's limiter");
+        }
+        capAtStart = cap;
+        if (!cap) {
+            startCap = 0;
+        }
         String pollSetting = DisplaySettings.getString(DisplaySettings.LATE_POLL, "");
-        boolean poll = pollSetting.isEmpty() ? wanted.compareTo(ReflexMode.ON) >= 0 : Boolean.parseBoolean(pollSetting);
+        boolean poll = pollSetting.isEmpty() ? wanted.compareTo(ReflexMode.ON) >= 0 || pace : Boolean.parseBoolean(pollSetting);
         if (poll != latePoll) {
             LOG.info("Latency: input read again just before rendering {}", poll ? "on" : "off");
         }
@@ -395,6 +506,14 @@ public final class FrameLatency {
         guard().stopped();
     }
 
+    private static void closeMeter() {
+        if (meter != null) {
+            meter.close();
+            meter = null;
+        }
+        pacer = null;
+    }
+
     private static void pollEvents() {
         GLFW.glfwPollEvents();
         polled();
@@ -409,6 +528,10 @@ public final class FrameLatency {
                 "input to GPU done median %s ms (90%%: %s), GPU %s ms behind the CPU, %s fps; Reflex %s; late input read %s",
                 w.get("inputToGpuMs"), w.get("inputToGpuP90Ms"), w.get("gpuBehindMs"), w.get("fps"), w.get("reflex"),
                 latePoll ? "on" : "off"));
+        if (w.containsKey("pacerWaitMs")) {
+            line.append(String.format(Locale.ROOT, "; GPU pacer waits %s ms (%s us late), the GPU's queue %s ms",
+                    w.get("pacerWaitMs"), w.get("pacerLateUs"), w.get("gpuQueueMs")));
+        }
         if (w.containsKey("driverSimToGpuMs")) {
             line.append(String.format(Locale.ROOT, "; driver: input to GPU end %s ms (90%%: %s), frame start to GPU end %s ms, GPU busy %s of %s ms",
                     w.get("driverInputToGpuMs"), w.get("driverInputToGpuP90Ms"), w.get("driverSimToGpuMs"), w.get("driverGpuActiveMs"),
