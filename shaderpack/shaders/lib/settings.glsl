@@ -34,7 +34,7 @@ const float upscaling_render_scale = RENDER_SCALE;
 #define SKY_FALLOFF 1.0  // [1.0 1.5 2.0 3.0]
 // How fast the blocks' light fades away from a light: its block light level's brightness to this power. 1: as
 // Minecraft's, where one torch lights a room almost evenly; higher gathers the light into pools around each light.
-#define BLOCK_FALLOFF 2.0 // [1.0 1.5 2.0 2.5 3.0]
+#define BLOCK_FALLOFF 1.5 // [1.0 1.5 2.0 2.5 3.0]
 
 // Blocks that give light glow where their texture is bright (a torch's flame, a lantern's light, lava): how bright.
 #define EMISSION 1.0     // [0.0 0.5 1.0 1.5 2.0 3.0 4.0]

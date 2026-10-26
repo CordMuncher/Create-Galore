@@ -32,8 +32,9 @@ float pixel_noise() {
     return fract(52.9829189 * fract(dot(p, vec2(0.06711056, 0.00583715))));
 }
 
-// A light level 15 surface gets light_block_lux of torchlight (torch_color, see light_volume.glsl).
-const float light_block_lux = 0.012;
+// A light level 15 surface gets light_block_lux of torchlight (torch_color, see light_volume.glsl): a little more than
+// a real torch gives up close, so a room lit by its lamps reads as lit, not as a dim night.
+const float light_block_lux = 0.024;
 // What a surface gets with no light at all, so caves aren't pure black (Minecraft mixes its lightmap a little towards
 // grey); the Brightness setting raises it as it raises Minecraft's.
 const float light_floor_lux = 0.00008;
