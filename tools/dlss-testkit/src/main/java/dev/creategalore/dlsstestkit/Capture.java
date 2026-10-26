@@ -1059,7 +1059,17 @@ public final class Capture {
         if (!latency.has(segment.viewpoint().name())) {
             latency.add(segment.viewpoint().name(), new JsonArray());
         }
-        latency.getAsJsonArray(segment.viewpoint().name()).add(GSON.toJsonTree(window)); // one per time the mode played
+        // A number the Bridge couldn't measure in this window (NaN, as with frame generation on) is left out: JSON has
+        // no NaN, and the manifest would fail to write.
+        Map<String, Object> measured = new LinkedHashMap<>();
+        window.forEach((key, value) -> {
+            if (value instanceof Number n && !Double.isFinite(n.doubleValue())) {
+                LOG.warn("DLAA test: {} at {}: {} has no value ({}), left out", segment.mode().name(), segment.viewpoint().name(), key, value);
+            } else {
+                measured.put(key, value);
+            }
+        });
+        latency.getAsJsonArray(segment.viewpoint().name()).add(GSON.toJsonTree(measured)); // one per time the mode played
     }
 
     /** The Bridge's latency window (FrameLatency.window, which also starts a new one); null without it. */
