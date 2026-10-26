@@ -23,12 +23,18 @@ const float upscaling_render_scale = RENDER_SCALE;
 // how many points of the shadow map each one takes (smoother soft edges).
 #define SHADOW_SOFTNESS 1.0 // [0.0 0.5 1.0 1.5 2.0 3.0]
 #define SHADOW_QUALITY 3    // [1 2 3 4]
+// Contact shadows: what is too small for the shadow map (grass, feet, a fence's rails) still shadows what lies right
+// behind it, from the screen's depth.
+#define CONTACT_SHADOWS
 #define EXPOSURE 0.0     // [-2.0 -1.5 -1.0 -0.5 0.0 0.5 1.0 1.5 2.0]
 #define NIGHT_LIGHT 1.0  // [0.25 0.5 1.0 1.5 2.0 3.0]
 // How fast the sky's light fades as a place sees less of the sky (into rooms, caves, forests): its sky light level's
 // brightness to this power. 1: as Minecraft's sky light, which lights a room with a window almost as well as the
 // shade outside; higher leaves more of a room to the light bouncing in through its window.
 #define SKY_FALLOFF 1.0  // [1.0 1.5 2.0 3.0]
+// How fast the blocks' light fades away from a light: its block light level's brightness to this power. 1: as
+// Minecraft's, where one torch lights a room almost evenly; higher gathers the light into pools around each light.
+#define BLOCK_FALLOFF 2.0 // [1.0 1.5 2.0 2.5 3.0]
 
 // Blocks that give light glow where their texture is bright (a torch's flame, a lantern's light, lava): how bright.
 #define EMISSION 1.0     // [0.0 0.5 1.0 1.5 2.0 3.0 4.0]

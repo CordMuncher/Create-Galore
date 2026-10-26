@@ -15,12 +15,15 @@
 out vec2 v_uv;
 out float v_alpha;
 
-#if defined LIT_VOXELS || defined LIT_WATER_RIPPLES
+#if defined LIT_VOXELS || defined LIT_WATER_RIPPLES || defined PROGRAM_SHADOW_TERRAIN
 uniform mat4 shadowModelViewInverse;
+#endif
+#if defined LIT_VOXELS || defined LIT_WATER_RIPPLES
 uniform vec3 cameraPositionFract;
 #endif
 #ifdef PROGRAM_SHADOW_TERRAIN
 in vec4 mc_Entity; // the block's number in block.properties
+flat out int v_thin; // 1 for leaves and plants, which let light through (see shadow_through)
 #endif
 #ifdef PROGRAM_SHADOW_WATER
 flat out int v_water; // 1 for water (not glass, ice, slime or honey)
@@ -145,7 +148,11 @@ void main() {
     gl_Position = gl_ProjectionMatrix * (gl_ModelViewMatrix * gl_Vertex);
     vec2 uv = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
     v_uv = uv;
+#if defined PROGRAM_SHADOW_TERRAIN && defined LIGHTING
+    v_alpha = 1.0; // the block's alpha holds its smooth lighting corners instead (separateAo, see gbuffers.vsh)
+#else
     v_alpha = gl_Color.a;
+#endif
 #if defined LIT_VOXELS || defined LIT_WATER_RIPPLES
     vec3 scene_pos = (shadowModelViewInverse * (gl_ModelViewMatrix * gl_Vertex)).xyz;
 #endif
@@ -158,6 +165,10 @@ void main() {
 #endif
 #ifdef PROGRAM_SHADOW_WATER
     v_water = int(mc_Entity.x + 0.5) == BLOCK_WATER ? 1 : 0;
+#endif
+#ifdef PROGRAM_SHADOW_TERRAIN
+    vec3 world_normal = mat3(shadowModelViewInverse) * (gl_NormalMatrix * gl_Normal);
+    v_thin = int(mc_Entity.x + 0.5) == BLOCK_LEAVES || is_plant_normal(world_normal) ? 1 : 0;
 #endif
 #ifdef LIT_WATER_RIPPLES
     v_scene_pos = scene_pos;

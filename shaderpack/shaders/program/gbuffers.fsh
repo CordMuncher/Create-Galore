@@ -174,7 +174,7 @@ void lit_output(vec4 color, int flags) {
 #ifdef PROGRAM_TERRAIN
         // A block that gives light glows where its texture is bright (see block_emission), fading in the fog.
         if (v_emission > 0.0) {
-            out_color.rgb = block_emission(color.rgb, v_emission) * exposure() * fog_fade(v_fog_dist);
+            out_color.rgb = block_emission(color.rgb, v_emission) * fog_fade(v_fog_dist);
         }
 #endif
         out_albedo = color;

@@ -8,9 +8,10 @@ without patching anything. Effects are added one at a time, each built to be ups
 
 ## What it does now
 
-Two profiles: **Pure AA** is Minecraft's own look with only DLSS or FSR on top; **Sky** (the default) lights the
-overworld itself and gives the End a sky of its own. The Nether and modded dimensions keep Minecraft's own look in
-both; no dimension but the overworld ever gets the overworld's sky.
+Five presets: **Pure AA** is Minecraft's own look with only DLSS or FSR on top; **Low**, **Medium**, **High** (the
+default) and **Ultra** light the overworld itself, with more of the effects the higher they go, and give the End a
+sky of its own. The Nether and modded dimensions keep Minecraft's own look in all of them; no dimension but the
+overworld ever gets the overworld's sky.
 
 Sky and light (milestone 2, the Lighting option):
 
@@ -19,11 +20,10 @@ Sky and light (milestone 2, the Lighting option):
 - The world lit in real units by the sun or the moon (their colour and strength from the air they shine through),
   the sky all around, and the blocks' light levels. Torches and every modded light light the world through
   Minecraft's light levels, so they work without any list of blocks.
-- Shadows from a steady shadow map: not warped, snapped to whole steps as you move, filtered the same way every
-  frame, so DLSS and FSR see the same shadow from one frame to the next. Options say what casts them (mobs, block
-  entities, you, Create's machines and contraptions) and how far they reach.
-- Water and glass reflect the sky; Distant Horizons' terrain is lit the same way past the shadows' reach, and its
-  clouds and beacon beams are lit as clouds and glow.
+- Shadows from a steady shadow map: not warped, and snapped to whole steps as you move. Options say what casts them
+  (mobs, block entities, you, Create's machines and contraptions) and how far they reach.
+- Glass reflects the sky; Distant Horizons' terrain is lit the same way past the shadows' reach, and its clouds and
+  beacon beams are lit as clouds and glow.
 - Exposure metered after DLSS, adapting like eyes (fast to darken, slower to brighten), and AgX tone mapping with
   Alpha Piscium's look after DLSS, at the window's size.
 
@@ -58,7 +58,32 @@ Light and water (milestone 4, the Coloured Light, Bounce Light and Water Ripples
   stepped 60 times a second whatever the frame rate; the shadow pass finds what reaches into the water. Both only
   bend the surface's light, so the water itself never moves and its motion vectors stay exact.
 
-From milestone 1, in both profiles:
+Bugs and lighting (alpha 2):
+
+- Soft shadows that stay sharp where a thing meets its shadow and soften the farther the light falls past it (a
+  search of the shadow map for how far away the caster is, then a filter that wide), with the taps turned for each
+  pixel and frame for DLSS and FSR to even out. Contact shadows from the screen's depth catch what the shadow map is
+  too coarse for: grass, feet, a fence's rails.
+- No more sunlight in sealed rooms: Iris left parts of the world out of the shadow map that it judged unable to
+  shadow what you see (and out of the coloured and bounce light's volume with them); the pack has it draw everything
+  in range.
+- Water drawn as a body, after everything translucent: it takes the red out of the light first, then the green, and
+  scatters a little of it, lit where the water is (shafts of sunlight through the shadow map, the sky from above,
+  the coloured light), so the far water stays as bright as the light there wherever you are. From below, the sky
+  shows through a round window over you and the surface mirrors the water around it; from above it reflects the
+  sky and glints in the sun. Water draws into the shadow map, so the light knows how deep a point lies.
+- Light through leaves: a tree's far side gets the light its leaves let through, greener for it.
+- Blocks that give light glow where their texture is bright, modded ones too; by day the blocks' light holds up
+  in the shade, so a lantern under a roof lights it. Bloom after DLSS, a pyramid of blurs at the window's size.
+- Ambient occlusion: Minecraft's smooth lighting corners darken only the light all around now, not the sun's, with
+  ground-truth ambient occlusion from the screen's depth on top (more directions and steps the higher the preset).
+  Under a roof, a floor gets the sky's light in the colour of the low sky around it rather than the deep blue
+  overhead.
+- Light Style: coloured lights brought towards torchlight's brightness to the eye (blue and purple the most, as
+  they look dimmest) and deepened.
+- The eyes adapt faster: about a second into a dark room.
+
+From milestone 1, in every preset:
 
 - Motion vectors for everything that moves: the camera, mobs and block entities, the hand, Sable ships, Create's
   machines and contraptions (through Colorwheel), and Distant Horizons' terrain.
@@ -75,16 +100,16 @@ where they go. Without the Bridge the pack still runs, with no anti-aliasing.
   shades it; `gbuffers.vsh/fsh` draw the world, `clrwl.*` Colorwheel's, `dh.*` Distant Horizons'. The lit overworld
   adds `air.csh` (the sky's tables), `frame_globals.csh` (the frame's light), `cloud_ambient.csh`,
   `clouds_march.csh` and `clouds_gather.csh` (the cumulus), `deferred.fsh` (the lighting), `exposure.csh`,
-  `shadow.*`, `light_bounce.csh` and `light_flood.csh` (the coloured and bounce light) and `water_sim.csh` (the
-  ripples); the End adds `end_sky.fsh`.
+  `shadow.*`, `light_bounce.csh` and `light_flood.csh` (the coloured and bounce light), `water_sim.csh` (the
+  ripples), `water_body.fsh` (the water, after the translucent things) and `bloom.csh`; the End adds `end_sky.fsh`.
 - `shaders/lib/`: render size and jitter (`frame.glsl`), motion vectors (`motion.glsl`), vanilla's lighting and fog
   (`vanilla.glsl`), colour encodings and the options; for the lit overworld the air (`atmosphere.glsl`), the sky
   (`sky.glsl`, `celestial.glsl`, `stars.glsl`), the clouds (`clouds.glsl`, `noise.glsl`), the G-buffer
   (`gbuffer.glsl`), the lighting (`lighting.glsl`, `lit.glsl`, `shadow.glsl`, `light_volume.glsl`), the water
-  (`water.glsl`), the values its passes share
+  (`water.glsl`, `water_body.glsl`, `medium.glsl`), the bloom (`bloom.glsl`), the values its passes share
   (`globals.glsl`) and the tone mapping (`tonemap.glsl`); for the End its sky (`end_sky.glsl`).
 - `shaders/textures/`: the clouds' noise textures and phase functions.
-- `shaders/composite.fsh`: the DLSS point, which hands the frame over. `shaders/final.fsh`: the screen.
+- `shaders/composite1.fsh`: the DLSS point, which hands the frame over. `shaders/final.fsh`: the screen.
 - The `gbuffers_*`, `clrwl_*` and `dh_*` files in `shaders/` only pick a program and include it.
 - `shaders/world0/` (the overworld) and `shaders/world1/` (the End): each dimension's programs. Most are copies
   that `dimensions.sh` writes (run it after adding or removing a program); each dimension's own passes live only
@@ -109,6 +134,9 @@ takes its license; each ported file says where it came from. So far: the air and
 Alpha Piscium credits), and the clouds with their textures (`lib/clouds.glsl`, `lib/noise.glsl`,
 `program/cloud_ambient.csh`, `program/clouds_march.csh`, `program/clouds_gather.csh`, `shaders/textures/`, all
 from Alpha Piscium; the hashes after Jarzynski and Olano, the gradient noise after Inigo Quilez, MIT).
+
+The ambient occlusion follows Jimenez et al.'s ground-truth ambient occlusion as Intel's XeGTAO lays it out (MIT,
+https://github.com/GameTechDev/XeGTAO); its license is in `THIRD-PARTY-NOTICES.md` too.
 
 The clouds' isotropic multiple scattering is from **HanPi Volume Cloud** by AshenOneArt (MIT, with attribution):
 https://github.com/AshenOneArt/HPVolumeCloud. Its license is in `THIRD-PARTY-NOTICES.md`, which ships in the zip.

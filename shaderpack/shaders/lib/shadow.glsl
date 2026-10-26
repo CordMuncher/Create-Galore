@@ -18,7 +18,7 @@
 uniform sampler2DShadow shadowtex1HW; // what is opaque, with hardware depth compares (filtered between texels)
 uniform sampler2D shadowtex1;         // the same as plain depth, for the search
 uniform sampler2D shadowtex0;         // everything, the water's surface too
-uniform sampler2D shadowcolor1;       // b 1 where water lies over what is opaque (shadow.fsh)
+uniform sampler2D shadowcolor1;       // b 1 where water lies over what is opaque, a 0.5 leaves and plants (shadow.fsh)
 uniform mat4 shadowModelView;
 uniform mat4 shadowProjection;
 
@@ -118,14 +118,21 @@ float shadow_visibility(vec3 scene_pos, vec3 normal, vec3 light_dir, float beyon
     return mix(sum / float(shadow_filter_taps), beyond, fade);
 }
 
-// How far the light has come through whatever is nearest the light above a point (scene space), in blocks: 0 where
-// nothing is in its way (or past the shadow map). For light through leaves.
-float shadow_thickness(vec3 scene_pos) {
+// How much of the light gets through to a point (scene space) when what is nearest the light above it is leaves or
+// plants (shadowcolor1's a, see shadow.fsh): less the further the light has come through them, depth blocks for
+// each e-fold. 0 under anything else (and past the shadow map).
+float shadow_through(vec3 scene_pos, float depth) {
     vec3 coord = shadow_coord(scene_pos);
     if (any(lessThan(coord, vec3(0.0))) || any(greaterThan(coord, vec3(1.0)))) {
         return 0.0;
     }
-    return max(coord.z - textureLod(shadowtex1, coord.xy, 0.0).r, 0.0) * shadow_depth_blocks();
+    ivec2 texel = ivec2(coord.xy * float(shadowMapResolution));
+    float kind = texelFetch(shadowcolor1, texel, 0).a;
+    if (kind > 0.75) {
+        return 0.0; // something solid
+    }
+    float through = max(coord.z - texelFetch(shadowtex1, texel, 0).r, 0.0) * shadow_depth_blocks();
+    return exp(-max(through - 0.25, 0.0) / depth);
 }
 
 // How deep under water a point (scene space) lies towards the light (blocks): from the water's surface the shadow map

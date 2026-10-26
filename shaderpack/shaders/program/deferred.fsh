@@ -61,7 +61,7 @@ vec3 unproject(mat4 projection_inverse, vec2 ndc, float depth) {
     return view.xyz / view.w;
 }
 
-#ifdef SHADOW_MAP
+#if defined SHADOW_MAP && defined CONTACT_SHADOWS
 // Contact shadows: what the shadow map is too coarse for (a blade of grass, your feet on the ground, a flower's
 // stem) still shades what lies right behind it from the light. The screen's depth is followed a short way towards
 // the light from the surface (a little further far off, where a pixel covers more); anything in front of the path by
@@ -269,8 +269,9 @@ void main() {
         float wet = material == MATERIAL_LIT ? wetness_at(normal, light.y) : 0.0;
         albedo *= 1.0 - 0.35 * wet;
         float contact = 1.0;
-#ifdef SHADOW_MAP
-        if (!lod && depth >= hand_depth_limit && (foliage || dot(material == MATERIAL_PLANT ? g_light_dir.xyz : normal, g_light_dir.xyz) > 0.0)) {
+#if defined SHADOW_MAP && defined CONTACT_SHADOWS
+        // Not on plants: in a meadow every blade would find another in front of it and the grass would go dark.
+        if (!lod && depth >= hand_depth_limit && material == MATERIAL_LIT && (foliage || dot(normal, g_light_dir.xyz) > 0.0)) {
             contact = contact_shadow(view, pixel_noise());
         }
 #endif

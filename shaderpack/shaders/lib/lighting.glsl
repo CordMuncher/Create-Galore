@@ -48,6 +48,11 @@ float sky_light_curve(float level) {
     return pow(light_curve(level), SKY_FALLOFF);
 }
 
+// The blocks' light for a block light level (0..1): Minecraft's curve, to the power BLOCK_FALLOFF.
+float block_light_curve(float level) {
+    return pow(light_curve(level), BLOCK_FALLOFF);
+}
+
 // The sky's light falling on a surface facing n: exact for a block's six faces (see frame_globals.csh), blended
 // between them for any other direction.
 vec3 sky_irradiance(vec3 n) {
@@ -57,15 +62,15 @@ vec3 sky_irradiance(vec3 n) {
             + w.z * global(G_SKY_CUBE + (n.z >= 0.0 ? 4 : 5)).rgb;
 }
 
-// By day the blocks' light is at least this much in the frame (frame units, times BLOCK_LIGHT_DAY): about a third of
-// what lights a grey surface at the exposure's key, so a lantern shows in the shade.
-const float light_block_day_frame = 3.0;
+// By day the blocks' light is at least this much in the frame (frame units, times BLOCK_LIGHT_DAY): a few times what
+// lights the shade by day at the exposure's key, so a lantern visibly lights the shade around it.
+const float light_block_day_frame = 16.0;
 
 // The light from the blocks (their colour, luminance 1, see light_volume.glsl) and the floor, for a block light
 // level (0..1).
 vec3 block_irradiance(float block, vec3 color) {
     float lux = max(light_block_lux, light_block_day_frame * BLOCK_LIGHT_DAY / exposure());
-    vec3 light = color * lux * light_curve(block);
+    vec3 light = color * lux * block_light_curve(block);
     vec3 floor_light = vec3(light_floor_lux * (1.0 + 7.0 * screenBrightness));
     // Night vision lights everything up, as Minecraft's does.
     floor_light += vec3(light_floor_lux * 400.0 * nightVision);
@@ -127,24 +132,36 @@ vec3 light_surface(vec3 albedo, vec3 normal, vec2 light, vec3 scene_pos, bool pl
     vec3 n = plant ? vec3(0.0, 1.0, 0.0) : normal;
     float n_dot_l = plant ? 0.4 + 0.6 * max(g_light_dir.y, 0.0) : max(dot(normal, g_light_dir.xyz), 0.0);
     vec3 direct = vec3(0.0);
-    if (foliage) {
-        // Leaves let the light through: a quarter of it reaches every side of a leaf, and the shade inside a tree
-        // gets what the leaves between it and the light let through (less the more of them), greener for it.
+    if (foliage || plant) {
+        // Leaves and plants let the light through: a quarter of it reaches every side of a leaf, and what lies in
+        // the shade of other leaves or blades gets what they let through (less the more of them), greener for it.
+        // A plant is lit as if it faced the light (a little less when it's low).
         float n_l = dot(normal, g_light_dir.xyz);
+        float facing = plant ? n_dot_l : 0.25 + 0.75 * max(n_l, 0.0);
         float vis = direct_visibility(scene_pos, g_light_dir.xyz, light.y, shadowed);
         float through = 0.0;
 #ifdef SHADOW_MAP
         if (shadowed) {
-            through = exp(-max(shadow_thickness(scene_pos) - 0.25, 0.0) / 1.25) * smoothstep(1.0 / 15.0, 4.0 / 15.0, light.y);
+            through = shadow_through(scene_pos, plant ? 0.75 : 1.25) * smoothstep(1.0 / 15.0, 4.0 / 15.0, light.y);
         }
 #endif
-        vec3 tint = mix(vec3(1.0), clamp(albedo * 2.5, 0.0, 1.0), clamp(through - vis, 0.0, 1.0) + max(-n_l, 0.0) * 0.5);
-        direct = g_light_color.rgb * water_direct * contact * (0.25 + 0.75 * max(n_l, 0.0)) * max(vis, through) * tint;
+        float glow = clamp(through - vis, 0.0, 1.0) + (plant ? 0.0 : max(-n_l, 0.0) * 0.5);
+        vec3 tint = mix(vec3(1.0), clamp(albedo * 2.5, 0.0, 1.0), glow);
+        direct = g_light_color.rgb * water_direct * contact * facing * max(vis, through) * tint;
     } else if (n_dot_l > 0.0 && contact > 0.0) {
-        direct = g_light_color.rgb * water_direct * n_dot_l * contact
-                * direct_visibility(scene_pos, plant ? g_light_dir.xyz : normal, light.y, shadowed);
+        direct = g_light_color.rgb * water_direct * n_dot_l * contact * direct_visibility(scene_pos, normal, light.y, shadowed);
     }
-    vec3 around = sky_irradiance(n) * sky_light_curve(light.y) * water_sky
+    // Under a roof the sky a surface facing up sees is the low sky around it, not the deep blue overhead: as much
+    // light, in the colour of the sky's sides.
+    vec3 sky = sky_irradiance(n);
+    float covered = (1.0 - smoothstep(13.0 / 15.0, 1.0, light.y)) * max(n.y, 0.0);
+    if (covered > 0.0) {
+        vec3 side = 0.25 * (global(G_SKY_CUBE).rgb + global(G_SKY_CUBE + 1).rgb + global(G_SKY_CUBE + 4).rgb
+                + global(G_SKY_CUBE + 5).rgb);
+        const vec3 luma = vec3(0.2126, 0.7152, 0.0722);
+        sky = mix(sky, side * (dot(sky, luma) / max(dot(side, luma), 1e-8)), covered);
+    }
+    vec3 around = sky * sky_light_curve(light.y) * water_sky
             + block_irradiance(light.x, block_light_color(scene_pos, n));
 #ifdef LIT_GI
     around += g_light_color.rgb * bounce_light(scene_pos, n, light.y);

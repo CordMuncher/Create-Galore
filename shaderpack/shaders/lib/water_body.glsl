@@ -60,7 +60,7 @@ void water_light_at(vec3 p, out vec3 direct, out vec3 around) {
         vec3 light = light_volume_sample(at, section_color);
         float peak = max(light.r, max(light.g, light.b));
         if (peak > 1e-3) {
-            around += block_light_tint(light) * light_block_lux * light_curve(peak) * fade / (4.0 * PI) * 4.0;
+            around += block_light_tint(light) * light_block_lux * block_light_curve(peak) * fade / (4.0 * PI) * 4.0;
         }
     }
 #endif

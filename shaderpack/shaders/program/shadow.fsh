@@ -35,9 +35,14 @@ in vec3 v_normal;
 #ifdef PROGRAM_SHADOW_WATER
 flat in int v_water;
 #endif
+#ifdef PROGRAM_SHADOW_TERRAIN
+flat in int v_thin;
+#endif
 /* RENDERTARGETS: 0,1 */
 layout(location = 0) out vec4 shadow_color;  // rgb the square root of the linear colour, a 1 (drawn)
-layout(location = 1) out vec4 shadow_facing; // rg the world-space normal (octahedral), b water over it
+// rg the world-space normal (octahedral), b water over it, a 0.5 for leaves and plants (light gets through them, see
+// shadow_through) and 1 for the rest.
+layout(location = 1) out vec4 shadow_facing;
 
 void main() {
     vec4 texel = texture(gtexture, v_uv);
@@ -63,7 +68,10 @@ void main() {
     shadow_facing = vec4(0.0, 0.0, float(v_water), 0.0);
 #elif defined LIT_GI && defined PROGRAM_SHADOW_TERRAIN
     shadow_color = vec4(sqrt(srgb_to_linear(texel.rgb * v_tint)), 1.0);
-    shadow_facing = vec4(encode_normal(v_normal), 0.0, 1.0);
+    shadow_facing = vec4(encode_normal(v_normal), 0.0, v_thin != 0 ? 0.5 : 1.0);
+#elif defined PROGRAM_SHADOW_TERRAIN
+    shadow_color = vec4(0.0, 0.0, 0.0, 1.0);
+    shadow_facing = vec4(0.5, 0.5, 0.0, v_thin != 0 ? 0.5 : 1.0);
 #else
     shadow_color = vec4(0.0, 0.0, 0.0, 1.0);
     shadow_facing = vec4(0.5, 0.5, 0.0, 1.0);

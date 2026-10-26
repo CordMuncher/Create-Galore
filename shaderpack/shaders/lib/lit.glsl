@@ -28,15 +28,19 @@ float luminance(vec3 c) {
     return dot(c, vec3(0.2126, 0.7152, 0.0722));
 }
 
-// What a block that gives light gives off by itself (kcd/m², not exposed), for its light level (0..1): the bright
-// parts of its texture glow (a torch's flame, not its stick; a lantern's light, not its frame), as bright as a lamp's
-// face at level 15, so they stand out by day and glow at night.
-const float emission_luminance = 16.0 * EMISSION;
+// What a block that gives light gives off by itself (in the frame's units, exposed), for its light level (0..1): the
+// bright parts of its texture glow (a torch's flame, not its stick; a lantern's light, not its frame). By day as
+// bright as a lamp's face, so they stand out; in the dark no more than a few times what the eyes have adapted to, so
+// they glow in their own colours with their texture showing, rather than burning out white as a camera would see
+// them.
+const float emission_luminance = 16.0;  // kcd/m² at level 15
+const float emission_frame_max = 10.0;  // frame units at level 15
 
 vec3 block_emission(vec3 srgb, float level) {
     vec3 c = srgb_to_linear(srgb);
     float peak = max(c.r, max(c.g, c.b));
-    return c * smoothstep(0.2, 0.8, peak) * level * level * emission_luminance;
+    return c * smoothstep(0.2, 0.8, peak) * level * level * min(emission_luminance * exposure(), emission_frame_max)
+            * EMISSION;
 }
 
 // What the fog fades into, looking along dir (world space), in kcd/m² (not exposed): the sky just over the horizon

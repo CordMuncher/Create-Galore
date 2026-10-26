@@ -1,7 +1,13 @@
 profile.PURE_AA=Pure anti-aliasing
 profile.PURE_AA.comment=Minecraft's own look with only DLSS or FSR anti-aliasing on top, at full size (DLAA).
-profile.SKY=Sky and light
-profile.SKY.comment=The overworld under a real sky: the sun's and the moon's light and shadows, the stars, clouds, and an exposure that follows day and night, and the End under a sky of its own, anti-aliased at full size (DLAA).
+profile.LOW=Low
+profile.LOW.comment=The overworld under a real sky: the sun's and the moon's soft shadows, clouds, coloured light, glowing lights with bloom, and water with ripples; the End under a sky of its own. For laptops.
+profile.MEDIUM=Medium
+profile.MEDIUM.comment=Low, plus sunlight bouncing off the world, contact shadows for small things, and ambient occlusion.
+profile.HIGH=High
+profile.HIGH.comment=Medium with smoother shadows, ambient occlusion and clouds.
+profile.ULTRA=Ultra
+profile.ULTRA.comment=High with the sharpest shadow map, the steadiest shadows, ambient occlusion and clouds, and coloured and bounce light reaching further. For a fast desktop card.
 
 option.UPSCALING=Upscaling
 option.UPSCALING.comment=Render the world smaller and let DLSS or FSR bring it up to the window's size, for more frames. Off: they only anti-alias at full size (DLAA). Needs the Create Galore Bridge; without it the frame is stretched up plainly.
@@ -18,6 +24,8 @@ option.NIGHT_LIGHT=Night Light
 option.NIGHT_LIGHT.comment=How bright the moon and the stars light the night, times. A real moon is too dark to play by, so 1 is already twelve times brighter.
 option.SKY_FALLOFF=Sky Light Falloff
 option.SKY_FALLOFF.comment=How fast the sky's light fades into rooms, caves and forests. 1: as Minecraft's, where a room with a window gets almost as much sky as the shade outside. Higher: darker rooms, lit more by the sunlight bouncing in.
+option.BLOCK_FALLOFF=Block Light Falloff
+option.BLOCK_FALLOFF.comment=How fast the light of torches, lanterns and every other light fades away from them. 1: as Minecraft's, where one torch lights a room almost evenly. Higher: pools of light around each one, darker between them.
 option.sunPathRotation=Sun Path Tilt
 option.sunPathRotation.comment=How far the sun's path leans towards the south, in degrees. 0 is Minecraft's own, straight overhead.
 
@@ -53,6 +61,8 @@ option.LIGHT_RANGE=Light Range
 option.LIGHT_RANGE.comment=How many blocks across (and half as high) the lights' colours and the bounce light spread around you. Past it, lights are torchlight and nothing bounces. More costs video memory and time.
 option.SHADOW_SOFTNESS=Shadow Softness
 option.SHADOW_SOFTNESS.comment=How soft shadows grow away from what casts them. They stay sharp where a thing meets its shadow. 0 is the sun's own size.
+option.CONTACT_SHADOWS=Contact Shadows
+option.CONTACT_SHADOWS.comment=Shadows of what is too small for the shadow map (grass, feet, a fence's rails) on what lies right behind it, worked out from the screen.
 option.SHADOW_QUALITY=Shadow Quality
 option.SHADOW_QUALITY.comment=How many points of the shadow map each shadow takes: smoother soft edges, for more time.
 value.SHADOW_QUALITY.1=Low

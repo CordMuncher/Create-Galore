@@ -15,7 +15,7 @@ const int bloom_levels = 7;
 // How much each level takes of the blur of the level below it (the rest its own): more spreads the glow wider.
 const float bloom_spread = 0.7;
 // How much of the frame the glow takes (and leaves it): a little, so only what is much brighter shows.
-const float bloom_amount = 0.05 * BLOOM;
+const float bloom_amount = 0.08 * BLOOM;
 
 // A level's size (texels): level 1 half the window's, each one after half the one before.
 ivec2 bloom_size(int level) {
