@@ -75,6 +75,9 @@ void main() {
     if (v_dh_material == DH_BLOCK_ILLUMINATED) {
         rgb = glow(v_color.rgb) * fog_fade(dist);
     } else if (v_dh_material == DH_BLOCK_UNKNOWN) {
+#ifdef LIT_CLOUDS
+        discard; // the pack draws its own clouds (see clouds.glsl)
+#endif
         // Its clouds come in Minecraft's cloud colour, which darkens them by night and in the rain as the sun and
         // the sky do here: white like Minecraft's own clouds (see gbuffers.fsh), under the open sky.
         rgb = light_surface(srgb_to_linear(vec3(0.9)), v_normal, vec2(0.0, 1.0), v_fog_pos, false, false) * exposure();

@@ -5,11 +5,17 @@
 #define GLOBALS_WRITE
 #include "/lib/globals.glsl"
 #include "/lib/sky.glsl"
+#include "/lib/settings.glsl"
 
 layout(local_size_x = 64) in;
 const ivec3 workGroups = ivec3(1, 1, 1);
 
 uniform vec3 shadowLightPosition;
+uniform ivec3 cameraPositionInt;
+uniform vec3 cameraPositionFract;
+uniform int worldDay;
+uniform float frameTimeCounter; // seconds, back to 0 each hour
+uniform vec4 lightningBoltPosition; // a lightning bolt this frame: xyz where it is from the camera, w 1
 
 shared vec3 shared_cube[64 * 6];
 
@@ -64,11 +70,11 @@ void main() {
     float clear = 1.0 - 0.95 * rainStrength;
     vec3 sun_light = vec3(0.0);
     if (atm_ray_sphere(origin, sun_dir, atm_bottom) < 0.0) {
-        sun_light = sun_illuminance * texture(cg_trans_lut, atm_trans_uv(height, sun_dir.y)).rgb * clear;
+        sun_light = sun_illuminance * atm_trans(height, sun_dir.y) * clear;
     }
     vec3 moon_light = vec3(0.0);
     if (atm_ray_sphere(origin, moon_dir, atm_bottom) < 0.0) {
-        moon_light = moon_illuminance() * texture(cg_trans_lut, atm_trans_uv(height, moon_dir.y)).rgb * clear;
+        moon_light = moon_illuminance() * atm_trans(height, moon_dir.y) * clear;
     }
     set_global(G_SUN_DIR, vec4(sun_dir, sun_dir.y));
     set_global(G_MOON_DIR, vec4(moon_dir, moon_dir.y));
@@ -86,9 +92,42 @@ void main() {
     vec3 ground_irradiance = sun_light * max(sun_dir.y, 0.0) + moon_light * max(moon_dir.y, 0.0) + sky_up;
     vec3 ground = ground_albedo / PI * ground_irradiance;
     const float ground_view[6] = float[6](0.5 * PI, 0.5 * PI, 0.0, PI, 0.5 * PI, 0.5 * PI);
-    for (int j = 0; j < 6; j++) {
-        set_global(G_SKY_CUBE + j, vec4(shared_cube[j] + ground * ground_view[j], 0.0));
+    // A lightning bolt lights the whole sky up for the moment it is there, bluish white, less from farther away.
+    vec3 flash = vec3(0.0);
+    if (lightningBoltPosition.w > 0.5) {
+        flash = vec3(0.8, 0.85, 1.0) * 1.5 * clamp(200.0 / max(length(lightningBoltPosition.xyz), 1.0), 0.2, 1.0);
     }
+    set_global(G_FLASH, vec4(flash, 0.0));
+    const float sky_view[6] = float[6](0.5 * PI, 0.5 * PI, PI, 0.0, 0.5 * PI, 0.5 * PI);
+    for (int j = 0; j < 6; j++) {
+        set_global(G_SKY_CUBE + j, vec4(shared_cube[j] + ground * ground_view[j] + flash * sky_view[j], 0.0));
+    }
+
+#ifdef CLOUDS
+    // The wind carries the clouds along with the game's clock (a day lasts 1200 s), so every player sees the same
+    // ones; the cirrus, higher up, twice as fast. Whole metres a day, so the drift stays exact on any day: modulo
+    // 128 km for the cumulus, whose patterns repeat by that, and for the cirrus, whose don't, starting over every
+    // 4096 days (modulo 4096 km, to keep it exact).
+    const uvec2 cumulus_wind = uvec2(vec2(5400.0, 4200.0) * CLOUD_WIND); // m a day
+    const uvec2 cirrus_wind = cumulus_wind * 2u;
+    uint day = uint(max(worldDay, 0));
+    vec2 today = vec2(float(worldTime) / 24000.0);
+    vec2 cumulus_drift = vec2((cumulus_wind * (day % 128000u)) % 128000u) + vec2(cumulus_wind) * today;
+    vec2 cirrus_drift = vec2((cirrus_wind * (day % 4096u)) % 4096000u) + vec2(cirrus_wind) * today;
+    // Where the camera is, in metres (blocks), modulo the same.
+    vec2 camera_128 = vec2((cameraPositionInt.xz % 128000 + 128000) % 128000) + cameraPositionFract.xz;
+    vec2 camera_4096 = vec2((cameraPositionInt.xz % 4096000 + 4096000) % 4096000) + cameraPositionFract.xz;
+    set_global(G_CLOUD_PLACE, vec4(mod(camera_128 + cumulus_drift, 128000.0) * 0.001,
+            mod(camera_4096 + cirrus_drift, 4096000.0) * 0.001));
+    // The billows move through the cloud bodies a little, by frame time for smooth motion: whole 2 km steps an hour,
+    // which their textures repeat by, so the counter going back to 0 each hour doesn't show. And a slow wobble.
+    float t = frameTimeCounter;
+    const float hour = 2.0 * PI / 3600.0;
+    vec3 detail = vec3(8.0, 0.0, 4.0) * CLOUD_WIND * (t / 3600.0)
+            + vec3(-0.15, 0.05, 0.09) * 0.006 * sin(t * hour * 344.0 + 0.5)
+            + vec3(0.23, -0.06, 0.12) * 0.009 * sin(t * hour * 229.0 + 0.2);
+    set_global(G_CLOUD_DETAIL, vec4(detail, 0.0));
+#endif
 
     // The first frame (the image starts at zero): an exposure for what the sky lights the world with, until the
     // metering pass (exposure.csh, after DLSS) takes over.

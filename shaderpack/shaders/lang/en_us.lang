@@ -1,7 +1,7 @@
 profile.PURE_AA=Pure anti-aliasing
 profile.PURE_AA.comment=Minecraft's own look with only DLSS or FSR anti-aliasing on top, at full size (DLAA).
 profile.SKY=Sky and light
-profile.SKY.comment=The overworld under a real sky: the sun's and the moon's light and shadows, the stars, and an exposure that follows day and night, anti-aliased at full size (DLAA).
+profile.SKY.comment=The overworld under a real sky: the sun's and the moon's light and shadows, the stars, clouds, and an exposure that follows day and night, and the End under a sky of its own, anti-aliased at full size (DLAA).
 
 option.UPSCALING=Upscaling
 option.UPSCALING.comment=Render the world smaller and let DLSS or FSR bring it up to the window's size, for more frames. Off: they only anti-alias at full size (DLAA). Needs the Create Galore Bridge; without it the frame is stretched up plainly.
@@ -37,3 +37,40 @@ option.SHADOW_PLAYER=Your Shadow
 option.SHADOW_PLAYER.comment=You cast a shadow, in first person too.
 option.SHADOW_MACHINES=Create Shadows
 option.SHADOW_MACHINES.comment=Create's machines, contraptions and trains cast shadows.
+
+option.CLOUDS=Clouds
+option.CLOUDS.comment=Cumulus a kilometre and more up, lit by the sun, the moon and the sky, and cirrus high above them, drifting with the wind. They take over from Minecraft's clouds. Off: Minecraft's own clouds.
+screen.CLOUD=Cloud Settings
+screen.CLOUD.comment=How the clouds look, how many there are, and what they cost.
+option.CLOUD_QUALITY=Cloud Quality
+option.CLOUD_QUALITY.comment=How finely the cumulus are worked out. Each step up costs more time.
+value.CLOUD_QUALITY.1=Low
+value.CLOUD_QUALITY.2=Medium
+value.CLOUD_QUALITY.3=High
+value.CLOUD_QUALITY.4=Ultra
+option.CLOUD_SHADOWS=Cloud Shadows
+option.CLOUD_SHADOWS.comment=The cumulus shade the ground under them, and the shade drifts with them.
+option.CLOUD_COVERAGE=Cloud Cover
+option.CLOUD_COVERAGE.comment=How much of the sky the cumulus cover on a clear day. Rain covers most of it, and a thunderstorm nearly all of it, whatever this says.
+option.CLOUD_DENSITY=Cloud Density
+option.CLOUD_DENSITY.comment=How thick the cumulus are, times. Thicker clouds are darker underneath and sharper edged.
+option.CLOUD_HEIGHT=Cloud Height
+option.CLOUD_HEIGHT.comment=How far above sea level the cumulus start, in kilometres (a block is a metre). Under 0.3 they would touch the highest mountains.
+option.CLOUD_THICKNESS=Cloud Thickness
+option.CLOUD_THICKNESS.comment=How tall the cumulus can grow, in kilometres.
+option.CLOUD_WIND=Wind
+option.CLOUD_WIND.comment=How fast the wind carries the clouds, times. 1 is a light breeze, about 6 m/s. 0 holds them still.
+option.CIRRUS=Cirrus
+option.CIRRUS.comment=Thin, wispy ice clouds nine kilometres up, over the cumulus.
+option.CIRRUS_COVERAGE=Cirrus Cover
+option.CIRRUS_COVERAGE.comment=How much of the sky the cirrus cover.
+
+option.END_SKY=End Sky
+option.END_SKY.comment=The End under a sky of its own: a nebula across a void full of stars, fading into each biome's fog at the horizon. Off: Minecraft's (or BetterEnd's) End sky. The End keeps Minecraft's own light either way.
+screen.END=End Sky Settings
+screen.END.comment=How bright the End's nebula and stars are.
+option.END_NEBULA=Nebula
+option.END_NEBULA.comment=How bright the nebula glows, times. 0 leaves the stars alone.
+option.END_STARS=Stars
+option.END_STARS.comment=How bright the stars are, times.
+

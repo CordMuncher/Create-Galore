@@ -170,4 +170,63 @@ vec3 atm_skyview_dir(vec2 uv) {
     return vec3(sin(angle) * cos_lat, sin(lat), -cos(angle) * cos_lat);
 }
 
+// ---- Using the tables (the passes after the begin passes that make them).
+
+uniform sampler2D cg_trans_lut;
+uniform sampler2D cg_msctr_lut;
+
+vec3 atm_trans(float height, float cos_zenith) {
+    return texture(cg_trans_lut, atm_trans_uv(height, cos_zenith)).rgb;
+}
+
+vec3 atm_msctr(float height, float cos_zenith) {
+    return texture(cg_msctr_lut, atm_msctr_uv(height, cos_zenith)).rgb / atm_msctr_scale;
+}
+
+// Light scattered within a step of extinction e and transmittance t (Frostbite's energy-conserving integration).
+vec3 atm_step_integral(vec3 in_scatter, vec3 e, vec3 t) {
+    return (in_scatter - in_scatter * t) / max(e, vec3(1e-9));
+}
+
+// Rays under the horizon run on to a ground this far below sea level, so the haze glows on past the horizon line
+// instead of ending at the planet's edge (Alpha Piscium's BOTTOM_OFFSET).
+const float atm_below_ground = 8.0;
+
+// Light from one source scattered towards the eye within a step at p (h from the centre), per unit of its
+// illuminance: once (unless the planet shades p) and many times (the multiple scattering table).
+vec3 atm_scatter_from(vec3 p, float h, vec3 light_dir, vec3 view_dir, vec3 rayleigh, vec3 mie, vec3 scattering) {
+    vec3 up = p / h;
+    float cos_zenith = dot(up, light_dir);
+    float shadow = atm_ray_sphere(p, light_dir, atm_bottom - atm_below_ground) < 0.0 ? 1.0 : 0.0;
+    float cos_theta = dot(view_dir, light_dir);
+    vec3 single = shadow * atm_trans(h, cos_zenith) * (rayleigh * atm_phase_rayleigh(cos_theta) + mie * atm_phase_mie(cos_theta));
+    return single + atm_msctr(h, cos_zenith) * scattering;
+}
+
+// The air's light towards the eye along a ray from origin for len km, lit by the sun and the moon (their
+// illuminance above the air), in the given number of steps; transmittance: how much of what is behind gets through.
+vec3 atm_segment(vec3 origin, vec3 dir, float len, int steps, vec3 sun_dir, vec3 sun_light, vec3 moon_dir, vec3 moon_light,
+        out vec3 transmittance) {
+    Air air = atm_air();
+    float step_len = len / float(steps);
+    vec3 radiance = vec3(0.0);
+    vec3 depth = vec3(0.0);
+    for (int i = 0; i < steps; i++) {
+        vec3 p = origin + dir * ((float(i) + 0.5) * step_len);
+        float h = max(length(p), atm_bottom);
+        vec3 density = atm_density(h - atm_bottom);
+        vec3 e = atm_extinction(air, density);
+        vec3 t_step = exp(-e * step_len);
+        vec3 rayleigh = atm_rayleigh * density.x;
+        vec3 mie = air.mie_scattering * density.y;
+        vec3 scattering = rayleigh + mie;
+        vec3 in_scatter = atm_scatter_from(p, h, sun_dir, dir, rayleigh, mie, scattering) * sun_light
+                + atm_scatter_from(p, h, moon_dir, dir, rayleigh, mie, scattering) * moon_light;
+        radiance += exp(-depth) * atm_step_integral(in_scatter, e, t_step);
+        depth += e * step_len;
+    }
+    transmittance = exp(-depth);
+    return radiance;
+}
+
 #endif

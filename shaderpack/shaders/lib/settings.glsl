@@ -39,11 +39,46 @@ const float upscaling_render_scale = RENDER_SCALE;
 #ifdef SHADOW_MACHINES
 #endif
 
-// This program draws the overworld with the pack's own sky and light (its copy in world0/, see world0.sh).
+// Clouds, in the lit overworld: cumulus as a lit volume a kilometre and more up, and cirrus high above them, drifting
+// with the wind (see clouds.glsl). They take over from Minecraft's clouds and cast shadows on the ground.
+#define CLOUDS
+#define CLOUD_QUALITY 3     // [1 2 3 4]
+#define CLOUD_HEIGHT 1.0    // [0.3 0.5 0.75 1.0 1.25 1.5 2.0 3.0]
+#define CLOUD_THICKNESS 2.0 // [0.5 1.0 1.5 2.0 2.5 3.0 4.0]
+#define CLOUD_COVERAGE 0.5  // [0.0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0]
+#define CLOUD_DENSITY 1.0   // [0.25 0.5 0.75 1.0 1.5 2.0 3.0]
+#define CLOUD_WIND 1.0      // [0.0 0.5 1.0 1.5 2.0 3.0 4.0]
+#define CIRRUS
+#define CIRRUS_COVERAGE 0.4 // [0.0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0]
+#define CLOUD_SHADOWS
+#ifdef CLOUDS
+#endif
+#ifdef CIRRUS
+#endif
+#ifdef CLOUD_SHADOWS
+#endif
+
+// The End's own sky (its programs are in world1/): a nebula across a starry void, in place of Minecraft's (and
+// BetterEnd's) sky, fading into the End's fog at the horizon. The End keeps Minecraft's own light for now. Off: its
+// own sky too.
+#define END_SKY
+#define END_NEBULA 1.0 // [0.0 0.25 0.5 0.75 1.0 1.5 2.0]
+#define END_STARS 1.0  // [0.0 0.5 1.0 1.5 2.0 3.0]
+#ifdef END_SKY
+#endif
+#if defined WORLD_END && defined END_SKY
+#define END_OWN_SKY
+#endif
+
+// This program draws the overworld with the pack's own sky and light (its copy in world0/, see dimensions.sh).
 #ifdef WORLD_OVERWORLD
 #ifdef LIGHTING
 #define LIT_WORLD
 #endif
+#endif
+
+#if defined LIT_WORLD && defined CLOUDS
+#define LIT_CLOUDS
 #endif
 
 #ifdef LIT_WORLD

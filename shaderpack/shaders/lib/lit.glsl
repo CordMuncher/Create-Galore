@@ -63,10 +63,23 @@ vec3 fog_color_lit(vec3 dir) {
     return medium / PI * ambient * (1.0 - max(blindness, darknessFactor));
 }
 
+// Rain and snow where you are, faded in and out (see shaders.properties): 0..1 each.
+uniform float cg_rain_here;
+uniform float cg_snow_here;
+
+// The haze of falling rain or snow over dist blocks in the open air: they let you see about a kilometre in rain,
+// 400 blocks in a thunderstorm and 600 in snow. Indoors and underground (where little sky reaches you) there is
+// none between you and what you see.
+float weather_haze(float dist) {
+    float density = cg_rain_here * mix(1.0 / 1000.0, 1.0 / 400.0, thunderStrength) + cg_snow_here / 600.0;
+    float open_sky = smoothstep(0.4, 0.9, float(eyeBrightnessSmooth.y) / 240.0);
+    return (1.0 - exp(-dist * density)) * open_sky * (1.0 - float(isEyeInWater != 0));
+}
+
 // Fog over something lit to color (frame units) at a fog distance dist, seen along dir, in a fog range (see
-// fog_range). Light that glows by itself fades out instead (fog_fade).
+// fog_range), and the haze of the weather. Light that glows by itself fades out instead (fog_fade).
 vec3 apply_fog_lit(vec3 color, float dist, vec3 dir, vec2 range) {
-    float amount = fog_amount(dist, range.x, range.y);
+    float amount = 1.0 - (1.0 - fog_amount(dist, range.x, range.y)) * (1.0 - weather_haze(dist));
     return amount > 0.0 ? mix(color, fog_color_lit(dir) * exposure(), amount) : color;
 }
 
@@ -88,6 +101,25 @@ vec4 with_sky_reflection(vec4 color, vec3 normal, vec3 view_dir, float sky) {
     float alpha = 1.0 - (1.0 - f) * (1.0 - color.a);
     vec3 rgb = (reflection * f + color.rgb * color.a * (1.0 - f)) / max(alpha, 1e-4);
     return vec4(rgb, alpha);
+}
+
+// Rain wets what it falls on (see shaders.properties for cg_wet): how wet a surface with sky light sky (0..1)
+// facing normal is, the tops most.
+uniform float cg_wet;
+
+float wetness_at(vec3 normal, float sky) {
+    return cg_wet * smoothstep(13.5 / 15.0, 14.5 / 15.0, sky) * mix(0.35, 1.0, max(normal.y, 0.0));
+}
+
+// The film of water on a wet surface (wet 0..1): it reflects the sky (Schlick's Fresnel for water, the sky half
+// blurred, as the surface under it is rough) over the surface's own light (frame units).
+vec3 with_wet_film(vec3 color, vec3 normal, vec3 view_dir, float wet) {
+    float cos_theta = clamp(dot(-view_dir, normal), 0.0, 1.0);
+    float f = (0.02 + 0.98 * pow(1.0 - cos_theta, 5.0)) * wet;
+    vec3 r = reflect(view_dir, normal);
+    r = normalize(vec3(r.x, max(r.y, 0.02), r.z));
+    vec3 reflection = mix(sky_irradiance(r) / PI, sky_radiance(r), 0.5) * exposure();
+    return mix(color, reflection, f);
 }
 
 #endif

@@ -9,6 +9,9 @@
 #include "/lib/settings.glsl"
 #include "/lib/globals.glsl"
 #include "/lib/shadow.glsl"
+#ifdef LIT_CLOUDS
+#include "/lib/clouds.glsl"
+#endif
 
 #ifndef PI
 #define PI 3.14159265358979
@@ -49,17 +52,22 @@ vec3 block_irradiance(float block) {
 }
 
 // How much of the sun's (or the moon's) light a surface at scene_pos gets: the shadow map where it reaches, else its
-// sky light (a surface that sees little of the sky is under something). shadowed: false where the shadow map doesn't
+// sky light (a surface that sees little of the sky is under something), and what the clouds let through. shadowed: false where the shadow map doesn't
 // reach (Distant Horizons' terrain).
 float direct_visibility(vec3 scene_pos, vec3 normal, float sky, bool shadowed) {
+#ifdef LIT_CLOUDS
+    float clouds = cloud_shadow(scene_pos, g_light_dir.xyz);
+#else
+    float clouds = 1.0;
+#endif
     // Under a roof or deep in a cave the light can't reach, whatever the shadow map says at its edges.
     float by_sky = smoothstep(12.0 / 15.0, 14.5 / 15.0, sky);
 #ifdef SHADOW_MAP
     if (shadowed) {
-        return shadow_visibility(scene_pos, normal, g_light_dir.xyz, by_sky) * smoothstep(1.0 / 15.0, 4.0 / 15.0, sky);
+        return shadow_visibility(scene_pos, normal, g_light_dir.xyz, by_sky) * smoothstep(1.0 / 15.0, 4.0 / 15.0, sky) * clouds;
     }
 #endif
-    return by_sky;
+    return by_sky * clouds;
 }
 
 // The light a surface reflects towards the eye (kcd/m², not yet exposed): albedo linear, normal world space, light

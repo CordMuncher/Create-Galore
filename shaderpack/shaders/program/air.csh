@@ -8,17 +8,6 @@
 
 #include "/lib/atmosphere.glsl"
 
-uniform sampler2D cg_trans_lut;
-uniform sampler2D cg_msctr_lut;
-
-vec3 trans_lut(float height, float cos_zenith) {
-    return texture(cg_trans_lut, atm_trans_uv(height, cos_zenith)).rgb;
-}
-
-vec3 msctr_lut(float height, float cos_zenith) {
-    return texture(cg_msctr_lut, atm_msctr_uv(height, cos_zenith)).rgb / atm_msctr_scale;
-}
-
 // From origin along dir to the top of the air or the ground; false if the ray misses the air.
 bool ray_through_air(vec3 origin, vec3 dir, float ground, out float len) {
     float t_ground = atm_ray_sphere(origin, dir, ground);
@@ -29,11 +18,6 @@ bool ray_through_air(vec3 origin, vec3 dir, float ground, out float len) {
     }
     len = t_ground >= 0.0 ? min(t_ground, t_top) : t_top;
     return true;
-}
-
-// Light scattered within a step of extinction e and transmittance t (Frostbite's energy-conserving integration).
-vec3 step_integral(vec3 in_scatter, vec3 e, vec3 t) {
-    return (in_scatter - in_scatter * t) / max(e, vec3(1e-9));
 }
 
 #if defined AIR_TRANSMITTANCE
@@ -111,9 +95,9 @@ void main() {
             vec3 scattering = atm_rayleigh * density.x + air.mie_scattering * density.y;
             float cos_zenith = dot(p / h, light_dir);
             float shadow = atm_ray_sphere(p, light_dir, atm_bottom) < 0.0 ? 1.0 : 0.0;
-            vec3 in_scatter = shadow * trans_lut(h, cos_zenith) * scattering * uniform_phase;
-            light += to_origin * step_integral(in_scatter, e, t_step);
-            transfer += to_origin * step_integral(scattering, e, t_step);
+            vec3 in_scatter = shadow * atm_trans(h, cos_zenith) * scattering * uniform_phase;
+            light += to_origin * atm_step_integral(in_scatter, e, t_step);
+            transfer += to_origin * atm_step_integral(scattering, e, t_step);
             depth += e * step_len;
         }
         // Where the ray ends on the ground, the light the ground sends back.
@@ -122,7 +106,7 @@ void main() {
         if (abs(end_height - atm_bottom) < 0.01) {
             vec3 up = end / end_height;
             float n_dot_l = max(dot(up, light_dir), 0.0);
-            light += trans_lut(atm_bottom + 0.01, dot(up, light_dir)) * exp(-depth) * ground_albedo * n_dot_l / PI;
+            light += atm_trans(atm_bottom + 0.01, dot(up, light_dir)) * exp(-depth) * ground_albedo * n_dot_l / PI;
         }
     }
     const float sphere_solid_angle = 4.0 * PI;
@@ -155,49 +139,17 @@ layout(rgba16f) writeonly uniform image2D cg_skyview_img;
 
 uniform vec3 cameraPosition;
 
-// Rays under the horizon run on to a ground this far below sea level, so the haze glows on past the horizon line
-// instead of ending at the planet's edge (Alpha Piscium's BOTTOM_OFFSET).
-const float below_ground = 8.0;
-
-// Light from one source scattered towards the eye within a step, per unit of its illuminance.
-vec3 scatter_from(vec3 p, float h, vec3 light_dir, vec3 view_dir, vec3 rayleigh, vec3 mie, vec3 scattering) {
-    vec3 up = p / h;
-    float cos_zenith = dot(up, light_dir);
-    float shadow = atm_ray_sphere(p, light_dir, atm_bottom - below_ground) < 0.0 ? 1.0 : 0.0;
-    float cos_theta = dot(view_dir, light_dir);
-    vec3 single = shadow * trans_lut(h, cos_zenith) * (rayleigh * atm_phase_rayleigh(cos_theta) + mie * atm_phase_mie(cos_theta));
-    return single + msctr_lut(h, cos_zenith) * scattering;
-}
-
 void main() {
     ivec2 texel = ivec2(gl_GlobalInvocationID.xy);
     vec3 dir = atm_skyview_dir((vec2(texel) + 0.5) / vec2(atm_skyview_size));
     vec3 origin = vec3(0.0, atm_height(cameraPosition.y), 0.0);
 
-    Air air = atm_air();
-    vec3 sun_dir = sun_dir_world();
-    vec3 moon_dir = moon_dir_world();
-    vec3 moon_light = moon_illuminance();
     vec3 radiance = vec3(0.0);
     float len;
-    if (ray_through_air(origin, dir, atm_bottom - below_ground, len)) {
-        const int steps = 32;
-        float step_len = len / float(steps);
-        vec3 depth = vec3(0.0);
-        for (int i = 0; i < steps; i++) {
-            vec3 p = origin + dir * ((float(i) + 0.5) * step_len);
-            float h = max(length(p), atm_bottom);
-            vec3 density = atm_density(h - atm_bottom);
-            vec3 e = atm_extinction(air, density);
-            vec3 t_step = exp(-e * step_len);
-            vec3 rayleigh = atm_rayleigh * density.x;
-            vec3 mie = air.mie_scattering * density.y;
-            vec3 scattering = rayleigh + mie;
-            vec3 in_scatter = scatter_from(p, h, sun_dir, dir, rayleigh, mie, scattering) * sun_illuminance
-                    + scatter_from(p, h, moon_dir, dir, rayleigh, mie, scattering) * moon_light;
-            radiance += exp(-depth) * step_integral(in_scatter, e, t_step);
-            depth += e * step_len;
-        }
+    if (ray_through_air(origin, dir, atm_bottom - atm_below_ground, len)) {
+        vec3 transmittance;
+        radiance = atm_segment(origin, dir, len, 32, sun_dir_world(), sun_illuminance, moon_dir_world(), moon_illuminance(),
+                transmittance);
     }
     imageStore(cg_skyview_img, texel, vec4(radiance, 1.0));
 }

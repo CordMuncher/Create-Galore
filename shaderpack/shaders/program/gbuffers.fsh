@@ -66,6 +66,9 @@ void lit_output(vec4 color, int flags) {
 #endif
 #elif defined LIT_FORWARD
     vec3 dir = normalize(v_scene_pos - gbufferModelViewInverse[3].xyz);
+#if defined PROGRAM_CLOUDS && defined LIT_CLOUDS
+    discard; // the pack draws its own (see clouds.glsl)
+#endif
 #if defined PROGRAM_CLOUDS
     // Minecraft's clouds come untextured and unlit, in boxes: lit by the sun and the sky by the faces' own normals,
     // white, keeping only their alpha.
@@ -169,6 +172,9 @@ void main() {
 #else
     color.rgb *= v_light;
 
+#if defined END_OWN_SKY && (defined PROGRAM_SKYBASIC || defined PROGRAM_SKYTEXTURED)
+    discard; // the End draws its own sky instead (see end_sky.glsl)
+#endif
 #if defined PROGRAM_SKYBASIC
     // The sky's dome fades into the fog colour towards the horizon; the sunrise glow has no fog, and the stars are
     // drawn with the fog moved out of the way.

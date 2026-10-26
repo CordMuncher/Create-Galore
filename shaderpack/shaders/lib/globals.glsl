@@ -18,6 +18,9 @@
 #define G_LIGHT_COLOR 5  // rgb its illuminance, as G_SUN_LIGHT or G_MOON_LIGHT
 #define G_SKY_CUBE 6     // 6 to 11: rgb the sky's (and the ground's) light on a surface facing +x, -x, +y, -y, +z, -z
 #define G_EXPOSURE 12    // x the exposure (frame values per kcd/m²), y its log2, z the metered log2 luminance
+#define G_CLOUD_PLACE 13 // xy where the cumulus' patterns are under you (km, modulo 128), zw the cirrus' (modulo 4096)
+#define G_CLOUD_DETAIL 14 // xyz how far the wind has carried the cumulus' billows through their bodies (km)
+#define G_FLASH 15       // rgb the radiance a lightning bolt lights the sky with this frame (kcd/m²)
 
 #ifdef GLOBALS_WRITE
 // The passes that work them out (frame_globals.csh, exposure.csh).
