@@ -60,6 +60,18 @@ public final class DisplaySettings {
     public static final String PRESENTER = "presenter";
     /** Testing only, not written to the file: true has the DirectX 12 presenter compare two shown frames with the game's, pixel by pixel, in the log. */
     public static final String PRESENT_CHECK = "presentCheck";
+    /** Testing only, not written to the file: needed (the default) or always, when OpenGL waits for DirectX 12 on the GPU before reusing a texture. */
+    public static final String PRESENT_GL_WAIT = "presentGlWait";
+    /** Testing only, not written to the file: ext (the default) or nvx, the OpenGL side of the DirectX 12 fences (EXT_semaphore or GL_NVX_progress_fence). */
+    public static final String PRESENT_SYNC = "presentSync";
+    /** Testing only, not written to the file: the DirectX 12 swap chain's frame latency, 1 (the default) to 3. */
+    public static final String PRESENT_FRAME_LATENCY = "presentFrameLatency";
+    /** Testing only, not written to the file: the DirectX 12 swap chain's buffers, 2 (the default) or 3. */
+    public static final String PRESENT_BUFFERS = "presentBuffers";
+    /** Testing only, not written to the file: normal (the default) or high, the DirectX 12 queue's priority (needs a restart). */
+    public static final String PRESENT_QUEUE_PRIORITY = "presentQueuePriority";
+    /** Testing only, not written to the file: true logs GPU timestamps around the DirectX 12 hand-off (see PresentTiming). */
+    public static final String PRESENT_TIMING = "presentTiming";
     /** The frame counter: off, basic or detailed (see FpsOverlay). */
     public static final String FPS_COUNTER = "fpsCounter";
     /** The frame counter's corner: top-left, top-right, bottom-left or bottom-right. */

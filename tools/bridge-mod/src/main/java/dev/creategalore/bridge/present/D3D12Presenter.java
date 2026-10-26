@@ -30,12 +30,15 @@ import static org.lwjgl.opengl.GL11C.GL_TRUE;
 import static org.lwjgl.opengl.GL11C.GL_UNSIGNED_BYTE;
 import static org.lwjgl.opengl.GL11C.glDeleteTextures;
 import static org.lwjgl.opengl.GL11C.glFinish;
+import static org.lwjgl.opengl.GL11C.glFlush;
 import static org.lwjgl.opengl.GL11C.glGetError;
 import static org.lwjgl.opengl.GL11C.glGetIntegerv;
 import static org.lwjgl.opengl.GL43C.glCopyImageSubData;
 import static org.lwjgl.opengl.GL45C.glCreateTextures;
 import static org.lwjgl.opengl.GL45C.glGetTextureImage;
 import static org.lwjgl.opengl.GL45C.glGetTextureLevelParameteri;
+import static org.lwjgl.opengl.NVXProgressFence.glSignalSemaphoreui64NVX;
+import static org.lwjgl.opengl.NVXProgressFence.glWaitSemaphoreui64NVX;
 import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.system.MemoryUtil.memAddress;
 import static org.lwjgl.system.MemoryUtil.memAlloc;
@@ -48,7 +51,9 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.nio.file.Path;
+import java.util.Locale;
 
+import dev.creategalore.bridge.DisplaySettings;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GLCapabilities;
 import org.lwjgl.system.MemoryStack;
@@ -65,11 +70,21 @@ import org.slf4j.LoggerFactory;
  *
  * Same swap chain, flags, frame latency 1 and blit shader as {@link InteropContext}, which stays the fallback: this
  * needs both extensions, which NVIDIA's OpenGL driver has (Intel's lacks the D3D12 handle types; AMD's is untested).
- * Testing only: presentCheck=true compares two presented back buffers with the game's frames, pixel by pixel, and logs it.
+ * OpenGL waits for Direct3D 12 only when the CPU sees the texture's last draw isn't finished yet (three frames back,
+ * it almost always is).
+ *
+ * Testing only (Presenter 2, read again whenever the display settings change, so the test kit's modes switch them):
+ * presentGlWait=always waits for Direct3D 12 on the GPU every frame, as Bridge 1.113.0 did; presentSync=nvx signals and
+ * waits with NVIDIA's GL_NVX_progress_fence on the same fences instead of EXT_semaphore's texture hand-over;
+ * presentFrameLatency (1, 2 or 3) and presentBuffers (2 or 3) change the swap chain; presentTiming=true logs GPU
+ * timestamps around the hand-off ({@link PresentTiming}). At startup only: presentQueuePriority=high. presentCheck=true
+ * compares presented back buffers with the game's frames, pixel by pixel (two at the start and one after each change
+ * of these switches), and logs it.
  */
 final class D3D12Presenter implements Presenter {
     private static final Logger LOG = LoggerFactory.getLogger("create_galore_bridge");
-    private static final int ABI = 1;
+    private static final int ABI = 2;
+    private static final int FLAG_HIGH_PRIORITY = 2;
     private static final int RING_SIZE = 3;
     private static final int WAIT_ABANDONED = 0x80;
     private static final int WAIT_TIMEOUT = 0x102;
@@ -77,6 +92,8 @@ final class D3D12Presenter implements Presenter {
     /** The frames (counted from the start) whose back buffers presentCheck compares: a menu, then likely the world. */
     private static final int CHECK_FRAME = 600;
     private static final int CHECK_FRAME_LATER = 6000;
+    /** presentCheck also compares this many frames after the switches change. */
+    private static final int CHECK_AFTER_CHANGE = 300;
 
     private final WglContext openglContext;
     private final long error;
@@ -89,6 +106,13 @@ final class D3D12Presenter implements Presenter {
     private final long destroy;
     private final long captureRequest;
     private final long captureRead;
+    private final long completed;
+    private final long setBuffers;
+    private final long setFrameLatency;
+    private final long timingSwitch;
+    private final long nowNs;
+    private final NativeHelper dll;
+    private final boolean nvxAvailable;
     private final long device;
     private final String adapter;
     private final int openglDone;
@@ -104,6 +128,15 @@ final class D3D12Presenter implements Presenter {
     private int syncInterval = 1;
     private final boolean check;
     private int frames;
+    private int checkAt = -1;
+
+    private int settingsGeneration = -1;
+    private String switches;
+    private boolean waitAlways;
+    private boolean nvx;
+    private int frameLatency = 1;
+    private int buffers = 2;
+    private PresentTiming timing;
 
     /**
      * Starts Direct3D 12 on {@code hwnd}, on the GPU {@code openglContext} runs on, and leaves that context current.
@@ -118,7 +151,8 @@ final class D3D12Presenter implements Presenter {
             throw new IllegalStateException("the OpenGL driver lacks " + (!caps.OpenGL45 ? "OpenGL 4.5"
                     : !caps.GL_EXT_memory_object_win32 ? "GL_EXT_memory_object_win32" : "GL_EXT_semaphore_win32"));
         }
-        NativeHelper dll = NativeHelper.load("cg_present", folder);
+        nvxAvailable = caps.GL_NVX_progress_fence;
+        dll = NativeHelper.load("cg_present", folder);
         dll.checkAbi(ABI);
         error = dll.symbol("cg_present_error");
         createTextures = dll.symbol("cg_present_create_textures");
@@ -130,6 +164,13 @@ final class D3D12Presenter implements Presenter {
         destroy = dll.symbol("cg_present_destroy");
         captureRequest = dll.symbol("cg_present_capture_request");
         captureRead = dll.symbol("cg_present_capture_read");
+        completed = dll.symbol("cg_present_completed");
+        setBuffers = dll.symbol("cg_present_set_buffers");
+        setFrameLatency = dll.symbol("cg_present_set_frame_latency");
+        timingSwitch = dll.symbol("cg_present_timing");
+        nowNs = dll.symbol("cg_present_now_ns");
+        boolean highPriority = DisplaySettings.getString(DisplaySettings.PRESENT_QUEUE_PRIORITY, "normal")
+                .equalsIgnoreCase("high");
 
         try (MemoryStack stack = stackPush()) {
             // The LUID of the adapter OpenGL runs on (EXT_external_objects_win32), so Direct3D 12 opens the same one.
@@ -144,7 +185,8 @@ final class D3D12Presenter implements Presenter {
             if (!known) {
                 LOG.warn("Perfect Presentation: OpenGL gave no adapter LUID, DirectX 12 takes the first adapter");
             }
-            if ((int) Ffi.call("PPI:I", dll.symbol("cg_present_create"), hwnd, known ? memAddress(luid) : 0L, 0) == 0) {
+            if ((int) Ffi.call("PPI:I", dll.symbol("cg_present_create"), hwnd, known ? memAddress(luid) : 0L,
+                    highPriority ? FLAG_HIGH_PRIORITY : 0) == 0) {
                 throw new IllegalStateException(errorText());
             }
             ByteBuffer name = stack.calloc(256);
@@ -163,8 +205,9 @@ final class D3D12Presenter implements Presenter {
                 Ffi.call(":V", destroy);
                 throw new IllegalStateException(String.format("OpenGL could not import the DirectX 12 fences (GL error 0x%04X)", glError));
             }
-            LOG.info("Perfect Presentation: DirectX 12 on {} (OpenGL node mask {}, tearing {})", adapter, nodeMask.get(0),
-                    tearing ? "allowed" : "not supported");
+            LOG.info("Perfect Presentation: DirectX 12 on {} (OpenGL node mask {}, tearing {}, queue priority {},"
+                    + " GL_NVX_progress_fence {})", adapter, nodeMask.get(0), tearing ? "allowed" : "not supported",
+                    highPriority ? "high" : "normal", nvxAvailable ? "available" : "not available");
         }
     }
 
@@ -215,8 +258,77 @@ final class D3D12Presenter implements Presenter {
         }
     }
 
+    /** Testing: the Presenter 2 switches, read again whenever the display settings change (see the class comment). */
+    private void applySettings() {
+        int generation = DisplaySettings.generation();
+        if (generation == settingsGeneration) {
+            return;
+        }
+        settingsGeneration = generation;
+        waitAlways = DisplaySettings.getString(DisplaySettings.PRESENT_GL_WAIT, "needed").equalsIgnoreCase("always");
+        boolean wantNvx = DisplaySettings.getString(DisplaySettings.PRESENT_SYNC, "ext").equalsIgnoreCase("nvx");
+        if (wantNvx && !nvxAvailable) {
+            LOG.warn("Perfect Presentation: presentSync=nvx, but the OpenGL driver has no GL_NVX_progress_fence; using EXT_semaphore");
+        }
+        nvx = wantNvx && nvxAvailable;
+        int latency = number(DisplaySettings.PRESENT_FRAME_LATENCY, 1, 1, 3);
+        if (latency != frameLatency) {
+            if ((int) Ffi.call("I:I", setFrameLatency, latency) < 0) {
+                LOG.warn("Perfect Presentation: {}", errorText());
+            } else {
+                frameLatency = latency;
+            }
+        }
+        int count = number(DisplaySettings.PRESENT_BUFFERS, 2, 2, 3);
+        if (count != buffers) {
+            if ((int) Ffi.call("I:I", setBuffers, count) < 0) {
+                throw new IllegalStateException(errorText());
+            }
+            buffers = count;
+        }
+        boolean timed = DisplaySettings.get(DisplaySettings.PRESENT_TIMING);
+        if (timed && timing == null) {
+            if (Ffi.call("I:I", timingSwitch, 1) != 0) {
+                timing = new PresentTiming(dll, nowNs);
+            } else {
+                LOG.warn("Perfect Presentation timing: {}", errorText());
+            }
+        } else if (!timed && timing != null) {
+            Ffi.call("I:I", timingSwitch, 0);
+            timing.close();
+            timing = null;
+        }
+        String now = String.format(Locale.ROOT, "OpenGL waits %s, %s fences, frame latency %d, %d buffers",
+                waitAlways ? "every frame" : "when needed", nvx ? "NVX" : "EXT", frameLatency, buffers);
+        if (!now.equals(switches)) {
+            LOG.info("Perfect Presentation: DirectX 12 hand-off: {}", now);
+            if (switches != null && check) {
+                checkAt = frames + CHECK_AFTER_CHANGE;
+            }
+            switches = now;
+        }
+        if (timing != null) {
+            timing.label(now);
+        }
+    }
+
+    private static int number(String key, int fallback, int min, int max) {
+        String value = DisplaySettings.getString(key, Integer.toString(fallback));
+        try {
+            int parsed = Integer.parseInt(value);
+            if (parsed >= min && parsed <= max) {
+                return parsed;
+            }
+        } catch (NumberFormatException ignored) {
+            // warned below
+        }
+        LOG.warn("Unknown {}={} in {}, using {} ({} to {})", key, value, DisplaySettings.FILE, fallback, min, max);
+        return fallback;
+    }
+
     @Override
     public void blitToSwapChain(int glTexture) {
+        applySettings();
         int width = glGetTextureLevelParameteri(glTexture, 0, GL_TEXTURE_WIDTH);
         int height = glGetTextureLevelParameteri(glTexture, 0, GL_TEXTURE_HEIGHT);
         if (width != ringWidth || height != ringHeight) {
@@ -228,18 +340,34 @@ final class D3D12Presenter implements Presenter {
             IntBuffer noBuffers = stack.mallocInt(0);
             IntBuffer texture = stack.ints(textures[slot]);
             IntBuffer layout = stack.ints(GL_LAYOUT_GENERAL_EXT);
-            if (slotDone[slot] != 0L) {
-                // Direct3D 12 drew from this texture a few frames ago; OpenGL may overwrite it once that is done.
-                glSemaphoreParameterui64EXT(directxDone, GL_D3D12_FENCE_VALUE_EXT, slotDone[slot]);
+            // Direct3D 12 drew from this texture a few frames ago; OpenGL may overwrite it once that is done, which the
+            // CPU can usually see already (then a GPU wait would only cost a trip through the scheduler).
+            long lastDraw = slotDone[slot];
+            boolean wait = lastDraw != 0L && (waitAlways || Ffi.call(":P", completed) < lastDraw);
+            if (timing != null) {
+                timing.beforeHandOff(openglValue + 1, wait);
+            }
+            if (wait && nvx) {
+                glWaitSemaphoreui64NVX(0, stack.ints(directxDone), stack.longs(lastDraw));
+            } else if (wait) {
+                glSemaphoreParameterui64EXT(directxDone, GL_D3D12_FENCE_VALUE_EXT, lastDraw);
                 glWaitSemaphoreEXT(directxDone, noBuffers, texture, layout);
             }
             glCopyImageSubData(glTexture, GL_TEXTURE_2D, 0, 0, 0, 0, textures[slot], GL_TEXTURE_2D, 0, 0, 0, 0, width, height, 1);
             openglValue++;
-            glSemaphoreParameterui64EXT(openglDone, GL_D3D12_FENCE_VALUE_EXT, openglValue);
-            glSignalSemaphoreEXT(openglDone, noBuffers, texture, layout); // also flushes, as the spec says
+            if (timing != null) {
+                timing.afterCopy(openglValue);
+            }
+            if (nvx) {
+                glSignalSemaphoreui64NVX(0, stack.ints(openglDone), stack.longs(openglValue));
+                glFlush(); // the NVX signal doesn't flush by itself, and Direct3D 12 is waiting for it
+            } else {
+                glSemaphoreParameterui64EXT(openglDone, GL_D3D12_FENCE_VALUE_EXT, openglValue);
+                glSignalSemaphoreEXT(openglDone, noBuffers, texture, layout); // also flushes, as the spec says
+            }
         }
         frames++;
-        boolean checking = check && (frames == CHECK_FRAME || frames == CHECK_FRAME_LATER);
+        boolean checking = check && (frames == CHECK_FRAME || frames == CHECK_FRAME_LATER || frames == checkAt);
         ByteBuffer frame = null;
         if (checking) {
             frame = memAlloc(width * height * 4);
@@ -258,6 +386,9 @@ final class D3D12Presenter implements Presenter {
         if (frame != null) {
             compare(frame, width, height);
             memFree(frame);
+        }
+        if (timing != null) {
+            timing.frameDone();
         }
     }
 
@@ -299,10 +430,11 @@ final class D3D12Presenter implements Presenter {
                 }
             }
             if (differ == 0) {
-                LOG.info("Perfect Presentation check: DirectX 12 back buffer {}x{} matches the game's frame exactly", width, height);
+                LOG.info("Perfect Presentation check: DirectX 12 back buffer {}x{} matches the game's frame exactly ({})", width,
+                        height, switches);
             } else {
-                LOG.warn("Perfect Presentation check: {} of {} pixels differ from the game's frame (largest delta {}; {})",
-                        differ, (long) width * height, maxDelta, first);
+                LOG.warn("Perfect Presentation check: {} of {} pixels differ from the game's frame (largest delta {}; {}; {})",
+                        differ, (long) width * height, maxDelta, first, switches);
             }
         } finally {
             memFree(back);
@@ -395,6 +527,10 @@ final class D3D12Presenter implements Presenter {
 
     @Override
     public void close() {
+        if (timing != null) {
+            timing.close();
+            timing = null;
+        }
         closeRing();
         glDeleteSemaphoresEXT(openglDone);
         glDeleteSemaphoresEXT(directxDone);

@@ -2,7 +2,8 @@
 // Windows. It builds the presenter into itself unshared (CG_PRESENT_UNSHARED: Wine's D3D12 has no shared handles) and
 // plays OpenGL's part on a second D3D12 queue: writes a picture into a ring texture bottom row first, as OpenGL stores
 // a frame, signals the "OpenGL done" fence, and has the presenter draw and present. Then it checks a captured back
-// buffer is that picture the right way up with the colours in place, before and after a resize, over 300 frames each.
+// buffer is that picture the right way up with the colours in place, before and after a resize, over 300 frames each,
+// and again with 3 buffers and frame latency 2. The GPU timestamps (cg_present_timing) must come back in order.
 #define CG_PRESENT_UNSHARED
 #include "cg_present.cpp"
 
@@ -171,6 +172,10 @@ int main() {
     g_device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&g_testFence));
     g_testEvent = CreateEventA(nullptr, FALSE, FALSE, nullptr);
 
+    if (!cg_present_timing(1)) {
+        printf("timing failed: %s\n", cg_present_error());
+        return 1;
+    }
     unsigned long long glValue = 0;
     int first = runFrames(width, height, glValue);
     int resized = cg_present_resize(800, 600);
@@ -179,6 +184,27 @@ int main() {
         return 1;
     }
     int second = first < 0 ? -1 : runFrames(800, 600, glValue);
+    if (cg_present_set_buffers(3) < 0 || cg_present_set_frame_latency(2) < 0) {
+        printf("3 buffers / frame latency 2 failed: %s\n", cg_present_error());
+        return 1;
+    }
+    int third = second < 0 ? -1 : runFrames(800, 600, glValue);
+
+    // Timestamps: the draws' OpenGL values rising, each start before its end and no later than now.
+    static long long records[64 * 3];
+    int timed = cg_present_timings(records, 64);
+    long long now = cg_present_now_ns();
+    int badTimes = 0;
+    long long longest = 0;
+    for (int i = 0; i < timed; i++) {
+        long long value = records[i * 3], start = records[i * 3 + 1], end = records[i * 3 + 2];
+        if ((i > 0 && value <= records[(i - 1) * 3]) || start > end || end > now + 1000000) {
+            badTimes++;
+        }
+        longest = end - start > longest ? end - start : longest;
+    }
+    printf("timestamps: %d draws kept, %d out of order, longest draw %lld us, completed value %llu\n", timed, badTimes,
+            longest / 1000, cg_present_completed());
 
     g_testList->Release();
     g_testAllocator->Release();
@@ -186,7 +212,7 @@ int main() {
     g_testFence->Release();
     CloseHandle(g_testEvent);
     cg_present_destroy();
-    bool pass = first == 0 && second == 0;
+    bool pass = first == 0 && second == 0 && third == 0 && timed > 0 && badTimes == 0;
     printf(pass ? "SMOKE PASS\n" : "SMOKE FAIL\n");
     return pass ? 0 : 1;
 }

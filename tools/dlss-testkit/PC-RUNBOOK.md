@@ -1125,3 +1125,114 @@ If a launch crashes, copy `hs_err_pid*.log` and the log's last 100 lines, and re
 - the `Latency:`, `Reflex:` and `Perfect Presentation` WARN or ERROR lines, the control panel settings and refresh rate.
 
 Commit and push on the DLAA branch. Don't commit hs_err files (they name his user folder).
+
+## Presenter 2: where DirectX 12 loses its 11%
+
+Start only when Emre says so. Same PC, test folder, tools and settings as Presenter 1; about 35 minutes, three
+launches, no by-feel part. **Frame times count here**: a quiet PC, no game server. PresentMon needs administrator
+rights, so each launch shows Emre one Windows prompt (UAC) to click; tell him before each one.
+
+**What it tests.** Presenter 1 (`results\presenter1\REPORT.md`): DirectX 12 showed the game pixel-exact, but about 11%
+fewer frames in every uncapped mode, 0.3–1.5 ms more input latency and lower GPU use, and Reflex's report lost
+`G-SYNC fullscreen`. Bridge 1.114.0 (test build) changes one thing by default and adds switches to find the rest:
+- **New default:** OpenGL waits for Direct3D 12 on the GPU, before writing a texture again, only when the CPU sees that
+  texture's last draw isn't finished (three frames back it almost always is). 1.113.0 waited every frame, which may
+  cost a trip through Windows' GPU scheduler each time.
+- **Switches** (the test kit's `p-` modes set them live, on top of `lat-base`): `p-wait-always` (the GPU wait every frame,
+  as 1.113.0), `p-nvx` (NVIDIA's `GL_NVX_progress_fence` on the same fences, without EXT_semaphore's texture hand-over),
+  `p-buffers3` (3 swap chain buffers), `p-latency2` (frame latency 2). At startup only: `presentQueuePriority=high`.
+- **Timing:** with `presentTiming=true` the log gets a `Perfect Presentation timing` line at each mode change and every
+  10 seconds: GPU timestamps of OpenGL's hand-off (its wait, if any, and the copy), from OpenGL done to Direct3D 12's
+  draw starting, and the draw itself.
+- **PresentMon** says how Windows shows each frame (`Hardware: Independent Flip` is what G-SYNC and tearing need;
+  `Composed: Flip` means the desktop compositor copies every frame) and how long the GPU was busy and idle per frame.
+  **nvidia-smi** samples the GPU's utilization and clocks.
+
+### Update
+
+```powershell
+git -C $T\repo fetch origin
+git -C $T\repo checkout -B claude/project-thread-u2wmhh origin/claude/project-thread-u2wmhh
+Remove-Item $T\instance\mods\create-galore-bridge-*.jar
+Copy-Item $T\repo\pack\mods\create-galore-bridge-*.jar $T\instance\mods\
+Copy-Item $T\repo\tools\dlss-testkit\dist\create-galore-dlss-testkit-1.0.0.jar $T\instance\mods\ -Force
+New-Item -ItemType Directory -Force $T\presenter2 | Out-Null
+```
+
+The Bridge there is 1.114.0, a test build (not released). Its `cg_present.dll` is a new build (helper version 2), so
+it unpacks under a new name in `$T\instance\create-galore-dlss`.
+
+### Settings
+
+As Presenter 1 (note the old values, put them back afterwards): `dlaa=dlss`, `perfectPresentation=true`,
+`earlyWindowControl = false`, Distant Horizons `numberOfThreads = 2`. In `config\create_galore_bridge-display.properties`:
+
+| Launch | Add | Run |
+| --- | --- | --- |
+| 1 | `presenter=dx11` | `P2` |
+| 2 | `presenter=dx12`, `presentTiming=true`, `presentCheck=true` | `P2X` |
+| 3 | `presenter=dx12`, `presentTiming=true`, `presentQueuePriority=high` | `P2` |
+
+Remove all of them afterwards (the game never writes them). Look at the NVIDIA Control Panel, the G-SYNC setting and the
+refresh rate again and write them down; change nothing.
+
+### Launches
+
+The launch from step 4 (2560x1440), `--jvm-arg=-Dcreate_galore_dlss_testkit.autorun=dlaa-test` and
+`--jvm-arg=-Dcreate_galore_dlss_testkit.runs=<run>`, the window in front with focus. Each run plays its modes twice, at
+`shore` and `canopy`. P2 is `lat-base`, `lat-reflex` and `lat-cap-default` (about 2 minutes after the world loads); P2X
+is `lat-base`, `p-wait-always`, `p-nvx`, `p-buffers3`, `p-latency2`, `lat-reflex` and `lat-cap-default` (about 5).
+
+For each launch `<n>`:
+1. **nvidia-smi**, started just before the launch and stopped after the game closes:
+   ```powershell
+   $smi = Start-Process nvidia-smi -ArgumentList '--query-gpu=timestamp,utilization.gpu,clocks.gr,clocks.mem,power.draw,pstate','--format=csv,nounits','-lms','250','-f',"$T\presenter2\L<n>-gpu.csv" -WindowStyle Hidden -PassThru
+   # ... after the game has closed:
+   Stop-Process -Id $smi.Id
+   ```
+2. **PresentMon** (the console build in `$T\tools`, as in profiling 1), attached to the game's own `java.exe` once it
+   has started (a few seconds after launch; portablemc's first `java.exe` is short-lived), elevated with
+   `Start-Process -Verb RunAs` (Emre clicks the prompt): `--process_id <pid> --output_file $T\presenter2\L<n>.csv
+   --qpc_time_ms --timed 900 --terminate_after_timed --terminate_on_proc_exit --stop_existing_session
+   --no_console_stats`. Check the CSV grows.
+3. The log must have `Perfect Presentation: DXGI swap chain ready on DirectX 11` (launch 1) or `... on DirectX 12`
+   (launches 2 and 3) and `Reflex: started on Perfect Presentation's DirectX <11 or 12> device`. On DirectX 12 also
+   `Perfect Presentation: DirectX 12 on <the card> (..., queue priority <normal or high>, GL_NVX_progress_fence
+   <available or not available>)`. If it says `DirectX 12 could not start, using DirectX 11`, copy that line and the
+   exception under it, and stop.
+4. Launch 2 must have a `Perfect Presentation: DirectX 12 hand-off:` line for each switch as its mode starts, and a
+   `Perfect Presentation check:` line two times at the start and once 300 frames after each switch: each should say
+   `matches the game's frame exactly`. A `pixels differ` line is a finding: copy it whole.
+
+If a launch crashes, copy `hs_err_pid*.log` and the log's last 100 lines, and report.
+
+### Results
+
+```powershell
+$py = "$T\tools\uv\uv.exe"
+$shots = "$T\instance\screenshots\dlaa-test"
+& $py run --python 3.13 $T\repo\tools\dlss-testkit\latency.py $shots\<L1 run> $shots\<L2 run> $shots\<L3 run>
+foreach ($n in 1, 2, 3) {   # one launch at a time: frametimes.py would pool the launches' same-named modes
+  & $py run --python 3.13 $T\repo\tools\dlss-testkit\frametimes.py $shots\<L$n run> $T\presenter2\L$n.csv
+}
+& $py run --python 3.13 $T\repo\tools\dlss-testkit\gpustats.py $shots\<L1 run> $T\presenter2\L1-gpu.csv $shots\<L2 run> $T\presenter2\L2-gpu.csv $shots\<L3 run> $T\presenter2\L3-gpu.csv
+```
+
+Write `$T\repo\tools\dlss-testkit\results\presenter2\REPORT.md`:
+- **Present mode** per launch and mode (PresentMon's most common, with its share). Does DirectX 12 get `Hardware:
+  Independent Flip` like DirectX 11? If not, which mode, and does any switch change it?
+- **Per mode and viewpoint**, each launch against launch 1 (DirectX 11): fps, input latency (median), PresentMon's GPU
+  busy and GPU wait per frame and time until displayed, and nvidia-smi's GPU utilization and graphics clock.
+- **The new default:** launch 2's `lat-base` against launch 1's `lat-base` and against launch 2's `p-wait-always` (the
+  1.113.0 way). How much of the 11% is gone?
+- **Each switch** (`p-nvx`, `p-buffers3`, `p-latency2`, and launch 3's high priority): fps and latency against launch 2's
+  `lat-base`, in one line each.
+- **The timing lines**, per mode (match them to the `DLAA test: mode` lines by time): OpenGL hand-off, OpenGL done to
+  DirectX 12 draw start and the draw, medians and 90th percentiles, how often OpenGL still waited, and the clocks'
+  match. Is OpenGL done to draw start under 0.2 ms in any mode?
+- **Reflex's report** on each launch: does it say `G-SYNC fullscreen`?
+- The `Perfect Presentation`, `Latency:` and `Reflex:` WARN or ERROR lines, every `Perfect Presentation check:` line,
+  the control panel settings, G-SYNC setting and refresh rate.
+
+Keep the PresentMon and nvidia-smi CSVs in `$T\presenter2` (they stay on the PC). Commit the report and push on the DLAA
+branch. Don't commit hs_err files (they name his user folder).

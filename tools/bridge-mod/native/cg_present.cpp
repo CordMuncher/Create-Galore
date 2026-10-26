@@ -10,9 +10,11 @@
 //  - before OpenGL writes the same texture again, it waits for the "D3D12 done" value of that texture's last draw.
 //
 // The swap chain, its flags, the frame latency of 1 and the blit shader are those of the Direct3D 11 path
-// (InteropContext.java, from Perfect Presentation), which stays the fallback. Resource states follow Microsoft's
-// implicit state rules: the shared textures stay in COMMON outside a command list (promoted to
-// PIXEL_SHADER_RESOURCE on use, decayed back when the list completes), back buffers are COMMON (= PRESENT) at Present.
+// (InteropContext.java, from Perfect Presentation), which stays the fallback. For testing, the buffer count (2 or 3),
+// the frame latency and the queue's priority can be changed, and each draw can take GPU timestamps (Presenter 2).
+// Resource states follow Microsoft's implicit state rules: the shared textures stay in COMMON outside a command list
+// (promoted to PIXEL_SHADER_RESOURCE on use, decayed back when the list completes), back buffers are COMMON (= PRESENT)
+// at Present.
 //
 // All functions must be called on one thread (the render thread). Built by build-present.sh with clang and lld-link
 // against the Windows SDK; no third-party SDK. Graphics DLLs are loaded at run time (cg_present_create).
@@ -25,9 +27,9 @@
 #define CG_API extern "C" __declspec(dllexport)
 
 // Bumped whenever a function below changes; the Java side refuses a helper with another version.
-static const int CG_PRESENT_ABI = 1;
+static const int CG_PRESENT_ABI = 2;
 
-static const UINT BUFFERS = 2;      // swap chain buffers, as on the Direct3D 11 path
+static const UINT MAX_BUFFERS = 3;  // swap chain buffers: 2 as on the Direct3D 11 path, 3 for testing
 static const int RING = 3;          // shared textures OpenGL copies into, as on the Direct3D 11 path
 static const int FRAMES = 3;        // command allocators in flight
 static const DXGI_FORMAT SWAP_FORMAT = DXGI_FORMAT_B8G8R8A8_UNORM;
@@ -35,6 +37,7 @@ static const DXGI_FORMAT RING_FORMAT = DXGI_FORMAT_R8G8B8A8_UNORM;
 
 // cg_present_create flags
 static const int FLAG_DEBUG_LAYER = 1;
+static const int FLAG_HIGH_PRIORITY = 2;   // the queue at D3D12_COMMAND_QUEUE_PRIORITY_HIGH
 
 static char g_error[1024];
 
@@ -52,7 +55,8 @@ static IDXGISwapChain3* g_swapChain;
 static HANDLE g_waitable;
 static UINT g_swapFlags;
 static bool g_tearing;
-static ID3D12Resource* g_backBuffers[BUFFERS];
+static UINT g_bufferCount = 2;
+static ID3D12Resource* g_backBuffers[MAX_BUFFERS];
 static UINT g_backWidth;
 static UINT g_backHeight;
 static ID3D12DescriptorHeap* g_rtvHeap;
@@ -79,6 +83,18 @@ static bool g_captureRequested;
 static ID3D12Resource* g_readback;
 static D3D12_PLACED_SUBRESOURCE_FOOTPRINT g_readbackFootprint;
 static UINT64 g_readbackValue;
+
+// Testing: GPU timestamps at the start and end of each draw (cg_present_timing), as performance counter nanoseconds.
+static const int TIMING_RECORDS = 64;
+static bool g_timing;
+static ID3D12QueryHeap* g_queryHeap;
+static ID3D12Resource* g_queryReadback;
+static UINT64 g_timedValue[FRAMES];        // the OpenGL value of the draw each allocator timed, 0: none
+static double g_nsPerTick;
+static UINT64 g_calibrationGpu;
+static long long g_calibrationNs;
+static long long g_records[TIMING_RECORDS][3];
+static int g_recordCount;
 
 static const char BLIT_SHADER[] =
     "struct VSOut { float4 pos : SV_Position; float2 uv : TEXCOORD0; };\n"
@@ -143,7 +159,7 @@ static D3D12_CPU_DESCRIPTOR_HANDLE rtv(UINT index) {
 }
 
 static bool getBackBuffers() {
-    for (UINT i = 0; i < BUFFERS; i++) {
+    for (UINT i = 0; i < g_bufferCount; i++) {
         HRESULT hr = g_swapChain->GetBuffer(i, IID_PPV_ARGS(&g_backBuffers[i]));
         if (FAILED(hr)) {
             return fail("GetBuffer", hr);
@@ -157,9 +173,62 @@ static bool getBackBuffers() {
 }
 
 static void releaseBackBuffers() {
-    for (UINT i = 0; i < BUFFERS; i++) {
+    for (UINT i = 0; i < MAX_BUFFERS; i++) {
         release(g_backBuffers[i]);
     }
+}
+
+/** ResizeBuffers with {@code count} buffers (0: as many as now) of {@code width} x {@code height} (0: the window's). */
+static HRESULT resizeSwapChain(UINT count, UINT width, UINT height) {
+    waitIdle();
+    releaseBackBuffers();
+    release(g_readback);
+    HRESULT hr = g_swapChain->ResizeBuffers(count, width, height, DXGI_FORMAT_UNKNOWN, g_swapFlags);
+    if (FAILED(hr)) {
+        fail("ResizeBuffers", hr);
+        return hr;
+    }
+    if (count != 0) {
+        g_bufferCount = count;
+    }
+    return getBackBuffers() ? S_OK : E_FAIL;
+}
+
+/** Performance counter ticks in nanoseconds: the clock of System.nanoTime on Windows. */
+static long long qpcNanos(LONGLONG ticks) {
+    static LONGLONG frequency;
+    if (!frequency) {
+        LARGE_INTEGER f;
+        QueryPerformanceFrequency(&f);
+        frequency = f.QuadPart;
+    }
+    return ticks / frequency * 1000000000LL + ticks % frequency * 1000000000LL / frequency;
+}
+
+/** A GPU timestamp of the queue in performance counter nanoseconds, by the last cg_present_calibrate. */
+static long long gpuNanos(UINT64 timestamp) {
+    return g_calibrationNs + (long long) ((double) (long long) (timestamp - g_calibrationGpu) * g_nsPerTick);
+}
+
+/** Keeps the timestamps of the draw allocator {@code f} last recorded (its work is done) for cg_present_timings. */
+static void collectTiming(int f) {
+    if (!g_timedValue[f] || !g_queryReadback) {
+        return;
+    }
+    D3D12_RANGE read = {(SIZE_T) f * 16, (SIZE_T) f * 16 + 16};
+    void* mapped = nullptr;
+    if (SUCCEEDED(g_queryReadback->Map(0, &read, &mapped))) {
+        const UINT64* ticks = (const UINT64*) ((unsigned char*) mapped + f * 16);
+        if (g_recordCount < TIMING_RECORDS && ticks[1] >= ticks[0]) {
+            g_records[g_recordCount][0] = (long long) g_timedValue[f];
+            g_records[g_recordCount][1] = gpuNanos(ticks[0]);
+            g_records[g_recordCount][2] = gpuNanos(ticks[1]);
+            g_recordCount++;
+        }
+        D3D12_RANGE written = {0, 0};
+        g_queryReadback->Unmap(0, &written);
+    }
+    g_timedValue[f] = 0;
 }
 
 static bool createPipeline() {
@@ -313,6 +382,7 @@ CG_API int cg_present_create(HWND hwnd, const LUID* luid, int flags) {
 
         D3D12_COMMAND_QUEUE_DESC queueDesc = {};
         queueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
+        queueDesc.Priority = (flags & FLAG_HIGH_PRIORITY) ? D3D12_COMMAND_QUEUE_PRIORITY_HIGH : D3D12_COMMAND_QUEUE_PRIORITY_NORMAL;
         hr = g_device->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&g_queue));
         if (FAILED(hr)) { fail("CreateCommandQueue", hr); break; }
 
@@ -328,7 +398,8 @@ CG_API int cg_present_create(HWND hwnd, const LUID* luid, int flags) {
         desc.Format = SWAP_FORMAT;
         desc.SampleDesc.Count = 1;
         desc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-        desc.BufferCount = BUFFERS;
+        g_bufferCount = 2;
+        desc.BufferCount = g_bufferCount;
         desc.Scaling = DXGI_SCALING_NONE;
         desc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
         desc.AlphaMode = DXGI_ALPHA_MODE_UNSPECIFIED;
@@ -343,7 +414,7 @@ CG_API int cg_present_create(HWND hwnd, const LUID* luid, int flags) {
         if (FAILED(hr)) { fail("SetMaximumFrameLatency", hr); break; }
         g_waitable = g_swapChain->GetFrameLatencyWaitableObject();
 
-        D3D12_DESCRIPTOR_HEAP_DESC rtvDesc = {D3D12_DESCRIPTOR_HEAP_TYPE_RTV, BUFFERS, D3D12_DESCRIPTOR_HEAP_FLAG_NONE, 0};
+        D3D12_DESCRIPTOR_HEAP_DESC rtvDesc = {D3D12_DESCRIPTOR_HEAP_TYPE_RTV, MAX_BUFFERS, D3D12_DESCRIPTOR_HEAP_FLAG_NONE, 0};
         hr = g_device->CreateDescriptorHeap(&rtvDesc, IID_PPV_ARGS(&g_rtvHeap));
         if (FAILED(hr)) { fail("CreateDescriptorHeap (RTV)", hr); break; }
         g_rtvSize = g_device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
@@ -357,6 +428,7 @@ CG_API int cg_present_create(HWND hwnd, const LUID* luid, int flags) {
             hr = g_device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&g_allocators[i]));
             if (FAILED(hr)) break;
             g_allocatorValue[i] = 0;
+            g_timedValue[i] = 0;
         }
         if (FAILED(hr)) { fail("CreateCommandAllocator", hr); break; }
         hr = g_device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, g_allocators[0], g_pipeline, IID_PPV_ARGS(&g_list));
@@ -479,6 +551,7 @@ CG_API long long cg_present_draw(int slot, unsigned long long glValue) {
         g_doneFence->SetEventOnCompletion(g_allocatorValue[f], g_event);
         WaitForSingleObject(g_event, INFINITE);
     }
+    collectTiming(f);
     HRESULT hr = g_allocators[f]->Reset();
     if (SUCCEEDED(hr)) {
         hr = g_list->Reset(g_allocators[f], g_pipeline);
@@ -486,6 +559,10 @@ CG_API long long cg_present_draw(int slot, unsigned long long glValue) {
     if (FAILED(hr)) {
         fail("command list Reset", hr);
         return -1;
+    }
+    bool timed = g_timing && g_queryHeap;
+    if (timed) {
+        g_list->EndQuery(g_queryHeap, D3D12_QUERY_TYPE_TIMESTAMP, (UINT) f * 2);
     }
     UINT index = g_swapChain->GetCurrentBackBufferIndex();
     ID3D12Resource* back = g_backBuffers[index];
@@ -530,6 +607,10 @@ CG_API long long cg_present_draw(int slot, unsigned long long glValue) {
         barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;
         g_list->ResourceBarrier(1, &barrier);
     }
+    if (timed) {
+        g_list->EndQuery(g_queryHeap, D3D12_QUERY_TYPE_TIMESTAMP, (UINT) f * 2 + 1);
+        g_list->ResolveQueryData(g_queryHeap, D3D12_QUERY_TYPE_TIMESTAMP, (UINT) f * 2, 2, g_queryReadback, (UINT64) f * 16);
+    }
     hr = g_list->Close();
     if (FAILED(hr)) {
         fail("command list Close", hr);
@@ -541,6 +622,7 @@ CG_API long long cg_present_draw(int slot, unsigned long long glValue) {
     g_queue->ExecuteCommandLists(1, lists);
     g_queue->Signal(g_doneFence, ++g_doneValue);
     g_allocatorValue[f] = g_doneValue;
+    g_timedValue[f] = timed ? glValue : 0;
     g_frame++;
     if (capture) {
         g_captureRequested = false;
@@ -562,15 +644,118 @@ CG_API int cg_present_present(int syncInterval) {
 
 /** Resizes the swap chain's buffers (0 x 0: the window's size). Returns the HRESULT. */
 CG_API int cg_present_resize(int width, int height) {
-    waitIdle();
-    releaseBackBuffers();
-    release(g_readback);
-    HRESULT hr = g_swapChain->ResizeBuffers(0, (UINT) width, (UINT) height, DXGI_FORMAT_UNKNOWN, g_swapFlags);
-    if (FAILED(hr)) {
-        fail("ResizeBuffers", hr);
-        return (int) hr;
+    return (int) resizeSwapChain(0, (UINT) width, (UINT) height);
+}
+
+/** Testing: the swap chain with {@code count} buffers (2 or 3) from now on, at its current size. Returns the HRESULT. */
+CG_API int cg_present_set_buffers(int count) {
+    if (count < 2 || count > (int) MAX_BUFFERS) {
+        failText("cg_present_set_buffers: 2 or 3 buffers");
+        return E_INVALIDARG;
     }
-    return getBackBuffers() ? 0 : E_FAIL;
+    return count == (int) g_bufferCount ? S_OK : (int) resizeSwapChain((UINT) count, g_backWidth, g_backHeight);
+}
+
+/** Testing: the swap chain's maximum frame latency (1 by default; the waitable object follows it). Returns the HRESULT. */
+CG_API int cg_present_set_frame_latency(int frames) {
+    HRESULT hr = g_swapChain->SetMaximumFrameLatency((UINT) frames);
+    if (FAILED(hr)) {
+        fail("SetMaximumFrameLatency", hr);
+    }
+    return (int) hr;
+}
+
+/** The "D3D12 done" value the GPU has reached: OpenGL needn't wait for a draw at or below it. */
+CG_API unsigned long long cg_present_completed() {
+    return g_doneFence ? g_doneFence->GetCompletedValue() : 0;
+}
+
+/** The performance counter now, in nanoseconds (the clock cg_present_timings uses). */
+CG_API long long cg_present_now_ns() {
+    LARGE_INTEGER now;
+    QueryPerformanceCounter(&now);
+    return qpcNanos(now.QuadPart);
+}
+
+/** Testing: matches the queue's GPU clock to the performance counter again (they drift apart slowly). 1 on success. */
+CG_API int cg_present_calibrate() {
+    UINT64 gpu = 0;
+    UINT64 cpu = 0;
+    HRESULT hr = g_queue->GetClockCalibration(&gpu, &cpu);
+    if (FAILED(hr)) {
+        return fail("GetClockCalibration", hr);
+    }
+    g_calibrationGpu = gpu;
+    g_calibrationNs = qpcNanos((LONGLONG) cpu);
+    return 1;
+}
+
+/**
+ * Testing: {@code on} 1 has each draw take GPU timestamps at its start (after the queue's wait for OpenGL) and end, for
+ * cg_present_timings; 0 stops. 1 on success.
+ */
+CG_API int cg_present_timing(int on) {
+    g_timing = false;
+    if (!on) {
+        return 1;
+    }
+    if (!g_queryHeap) {
+        D3D12_QUERY_HEAP_DESC heapDesc = {D3D12_QUERY_HEAP_TYPE_TIMESTAMP, FRAMES * 2, 0};
+        HRESULT hr = g_device->CreateQueryHeap(&heapDesc, IID_PPV_ARGS(&g_queryHeap));
+        if (FAILED(hr)) {
+            return fail("CreateQueryHeap", hr);
+        }
+        D3D12_HEAP_PROPERTIES heap = {};
+        heap.Type = D3D12_HEAP_TYPE_READBACK;
+        D3D12_RESOURCE_DESC buffer = {};
+        buffer.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
+        buffer.Width = FRAMES * 16;
+        buffer.Height = 1;
+        buffer.DepthOrArraySize = 1;
+        buffer.MipLevels = 1;
+        buffer.SampleDesc.Count = 1;
+        buffer.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
+        hr = g_device->CreateCommittedResource(&heap, D3D12_HEAP_FLAG_NONE, &buffer, D3D12_RESOURCE_STATE_COPY_DEST, nullptr,
+                IID_PPV_ARGS(&g_queryReadback));
+        if (FAILED(hr)) {
+            release(g_queryHeap);
+            return fail("CreateCommittedResource (timestamps)", hr);
+        }
+        UINT64 frequency = 0;
+        hr = g_queue->GetTimestampFrequency(&frequency);
+        if (FAILED(hr) || frequency == 0) {
+            release(g_queryReadback);
+            release(g_queryHeap);
+            return fail("GetTimestampFrequency", FAILED(hr) ? hr : E_FAIL);
+        }
+        g_nsPerTick = 1e9 / (double) frequency;
+    }
+    if (!cg_present_calibrate()) {
+        return 0;
+    }
+    g_timing = true;
+    return 1;
+}
+
+/**
+ * Testing: up to {@code max} timed draws whose GPU work is done, oldest first, as three numbers each: the OpenGL value
+ * the draw waited for, its start and its end on the GPU (performance counter nanoseconds). Returns how many; the rest
+ * wait for the next call (at most 64 are kept).
+ */
+CG_API int cg_present_timings(long long* out, int max) {
+    int count = g_recordCount < max ? g_recordCount : max;
+    for (int i = 0; i < count; i++) {
+        out[i * 3] = g_records[i][0];
+        out[i * 3 + 1] = g_records[i][1];
+        out[i * 3 + 2] = g_records[i][2];
+    }
+    for (int i = count; i < g_recordCount; i++) {
+        g_records[i - count][0] = g_records[i][0];
+        g_records[i - count][1] = g_records[i][1];
+        g_records[i - count][2] = g_records[i][2];
+    }
+    g_recordCount -= count;
+    return count;
 }
 
 /** Testing: the next cg_present_draw also copies the back buffer it draws for cg_present_capture_read. */
@@ -643,6 +828,10 @@ CG_API void cg_present_destroy() {
     release(g_readback);
     g_captureRequested = false;
     g_readbackValue = 0;
+    g_timing = false;
+    g_recordCount = 0;
+    release(g_queryReadback);
+    release(g_queryHeap);
     release(g_list);
     for (int i = 0; i < FRAMES; i++) {
         release(g_allocators[i]);
