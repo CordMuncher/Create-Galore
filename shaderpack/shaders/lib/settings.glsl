@@ -22,6 +22,10 @@ const float upscaling_render_scale = RENDER_SCALE;
 #define SHADOW_SOFTNESS 1.0 // [0.0 0.5 1.0 1.5 2.0 3.0]
 #define EXPOSURE 0.0     // [-2.0 -1.5 -1.0 -0.5 0.0 0.5 1.0 1.5 2.0]
 #define NIGHT_LIGHT 1.0  // [0.25 0.5 1.0 1.5 2.0 3.0]
+// How fast the sky's light fades as a place sees less of the sky (into rooms, caves, forests): its sky light level's
+// brightness to this power. 1: as Minecraft's sky light, which lights a room with a window almost as well as the
+// shade outside; higher leaves more of a room to the light bouncing in through its window.
+#define SKY_FALLOFF 1.0  // [1.0 1.5 2.0 3.0]
 
 // What casts a shadow besides the world's blocks: mobs, block entities (chests, signs), you, and Create's machines
 // and contraptions. shaders.properties and colorwheel.properties hand these to Iris and Colorwheel (Iris only lists

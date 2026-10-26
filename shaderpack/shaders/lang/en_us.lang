@@ -16,6 +16,8 @@ option.EXPOSURE=Exposure
 option.EXPOSURE.comment=Brighter or darker than the automatic exposure, in stops.
 option.NIGHT_LIGHT=Night Light
 option.NIGHT_LIGHT.comment=How bright the moon and the stars light the night, times. A real moon is too dark to play by, so 1 is already twelve times brighter.
+option.SKY_FALLOFF=Sky Light Falloff
+option.SKY_FALLOFF.comment=How fast the sky's light fades into rooms, caves and forests. 1: as Minecraft's, where a room with a window gets almost as much sky as the shade outside. Higher: darker rooms, lit more by the sunlight bouncing in.
 option.sunPathRotation=Sun Path Tilt
 option.sunPathRotation.comment=How far the sun's path leans towards the south, in degrees. 0 is Minecraft's own, straight overhead.
 

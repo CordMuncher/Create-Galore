@@ -34,6 +34,11 @@ float light_curve(float level) {
     return level / (4.0 - 3.0 * level);
 }
 
+// The sky's light for a sky light level (0..1): Minecraft's curve, to the power SKY_FALLOFF.
+float sky_light_curve(float level) {
+    return pow(light_curve(level), SKY_FALLOFF);
+}
+
 // The sky's light falling on a surface facing n: exact for a block's six faces (see frame_globals.csh), blended
 // between them for any other direction.
 vec3 sky_irradiance(vec3 n) {
@@ -82,7 +87,7 @@ vec3 light_surface(vec3 albedo, vec3 normal, vec2 light, vec3 scene_pos, bool pl
     if (n_dot_l > 0.0) {
         direct = g_light_color.rgb * n_dot_l * direct_visibility(scene_pos, plant ? g_light_dir.xyz : normal, light.y, shadowed);
     }
-    vec3 sky = sky_irradiance(n) * light_curve(light.y);
+    vec3 sky = sky_irradiance(n) * sky_light_curve(light.y);
     vec3 irradiance = direct + sky + block_irradiance(light.x, block_light_color(scene_pos, n));
 #ifdef LIT_GI
     irradiance += g_light_color.rgb * bounce_light(scene_pos, n, light.y);
