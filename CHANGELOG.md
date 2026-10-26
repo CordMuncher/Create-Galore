@@ -5,6 +5,15 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.5.14
+
+### Fixed
+- **The game could stop while loading mods, with Hybrid Aquatic named in the error.** Now and then a start ended in "Mod loading issue for: hybrid_aquatic" with an `ArrayIndexOutOfBoundsException` in `Object2IntOpenHashMap.rehash`, and the next start loaded fine. Every kind of entity numbers its synced data (health, variant, size and so on) in one list the whole game shares, and NeoForge builds several mods at once while it loads them. Hybrid Aquatic sets up all its fish and sharks while it is built, so when another mod set up its own entities at the same moment, two threads wrote to the list together and broke it as it grew. The same thing can also leave the list so tangled that loading hangs forever with the processor busy, or quietly give two entities' data the same number. Entities now take turns on that list. On a test server with the whole pack, 16 threads filling one list together 300 times broke it in 41 rounds (the same error as the crash) and lost entries in 2 more, and a second try hung for good; with the fix, two runs of 300 rounds came through clean, and Hybrid Aquatic's sharks and orcas spawn as before.
+- **A start that failed to load its mods wiped the resource pack list and every mod key binding from options.txt.** On a failed start the game still saved its options, while the mods' key bindings and resource packs had never been added, so the next good start came up without Fresh Animations, the pack's menu art or any changed mod keys. A failed start now leaves options.txt as it was. Checked on a test client with a mod that fails on purpose: before the fix the error screen alone emptied the resource pack list and dropped all 24 of the pack's mod key bindings; with it the file stayed byte for byte the same.
+
+### Added
+- Create Galore Bridge 1.123.0.
+
 ## 0.5.13
 
 ### Added
