@@ -5,7 +5,8 @@
 // The world's blocks (shadow_solid, shadow_cutout, shadow_water: PROGRAM_SHADOW_TERRAIN) also mark what each block
 // around you is for the coloured light and the bounce light (see light_volume.glsl): lights, solid cubes, tinting
 // glass and leaves; and hand their colour and facing on for the bounce light (shadow.fsh). And for the ripples (see
-// water.glsl, shadow.fsh) the water's surface, and everything else what reaches into it.
+// water.glsl, shadow.fsh) the water's surface, and everything else what reaches into it. Water draws its depth too,
+// for how deep under it the light goes (see shadow_water_depth).
 
 #define PROGRAM_SHADOW
 #include "/lib/settings.glsl"
@@ -18,8 +19,11 @@ out float v_alpha;
 uniform mat4 shadowModelViewInverse;
 uniform vec3 cameraPositionFract;
 #endif
-#if defined PROGRAM_SHADOW_TERRAIN && (defined LIT_VOXELS || defined LIT_WATER_RIPPLES)
+#ifdef PROGRAM_SHADOW_TERRAIN
 in vec4 mc_Entity; // the block's number in block.properties
+#endif
+#ifdef PROGRAM_SHADOW_WATER
+flat out int v_water; // 1 for water (not glass, ice, slime or honey)
 #endif
 #if defined PROGRAM_SHADOW_TERRAIN && defined LIT_GI && !defined PROGRAM_SHADOW_WATER
 out vec3 v_tint;   // the vertex colour without Minecraft's face shading (the biome's grass and leaf colours)
@@ -151,6 +155,9 @@ void main() {
 #if defined PROGRAM_SHADOW_TERRAIN && defined LIT_GI && !defined PROGRAM_SHADOW_WATER
     v_normal = normalize(mat3(shadowModelViewInverse) * (gl_NormalMatrix * gl_Normal));
     v_tint = is_plant_normal(v_normal) ? gl_Color.rgb : gl_Color.rgb / face_shade(v_normal);
+#endif
+#ifdef PROGRAM_SHADOW_WATER
+    v_water = int(mc_Entity.x + 0.5) == BLOCK_WATER ? 1 : 0;
 #endif
 #ifdef LIT_WATER_RIPPLES
     v_scene_pos = scene_pos;

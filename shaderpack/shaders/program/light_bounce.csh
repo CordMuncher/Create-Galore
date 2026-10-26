@@ -28,7 +28,7 @@ const ivec3 workGroups = ivec3(25, 25, 1);
 #endif
 
 layout(r32ui) uniform uimage3D cg_voxel_img;
-uniform sampler2D shadowtex0;   // depth (no hardware compares on this one, see settings.glsl)
+uniform sampler2D shadowtex1;   // what is opaque, depth (no hardware compares on this one, see settings.glsl)
 uniform sampler2D shadowcolor0; // the lit surface's colour (shadow.fsh)
 uniform sampler2D shadowcolor1; // and its facing
 uniform mat4 shadowModelView;
@@ -51,7 +51,7 @@ void main() {
     if (any(lessThan(texel, ivec2(0))) || any(greaterThanEqual(texel, ivec2(shadowMapResolution)))) {
         return;
     }
-    float depth = texelFetch(shadowtex0, texel, 0).r;
+    float depth = texelFetch(shadowtex1, texel, 0).r;
     vec4 color = texelFetch(shadowcolor0, texel, 0);
     // Nothing there, or something that isn't a block (a mob, a ship, a contraption: shadow.fsh leaves those black).
     if (depth >= 1.0 || color.a < 0.5 || max(color.r, max(color.g, color.b)) < 1.0 / 255.0) {

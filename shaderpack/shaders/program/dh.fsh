@@ -1,4 +1,4 @@
-// Distant Horizons' terrain and water. Its depth goes to dhDepthTex0, which the composite pass reads for its motion
+// Distant Horizons' terrain and water. Its depth goes to dhDepthTex0, which the composite1 pass reads for its motion
 // vectors and DLSS depth wherever Minecraft drew nothing.
 //
 // Distant Horizons draws against a depth buffer of its own: its terrain before Minecraft's chunks, which then cover

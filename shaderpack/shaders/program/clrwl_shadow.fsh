@@ -1,6 +1,6 @@
 // Flywheel's material code cuts out what its textures leave open; the rest casts a shadow, and with ripples on marks
 // how low and how high it reaches in each cell of their grid (water wheels, contraptions on the water; see shadow.fsh).
-// With bounce light on, it leaves black in the shadow map's colour: it bounces nothing.
+// It leaves black in the shadow map's colour (it bounces nothing, see light_bounce.csh) and no water.
 
 #define PROGRAM_SHADOW
 #include "/lib/settings.glsl"
@@ -16,11 +16,9 @@ layout(r32ui) uniform uimage2D cg_water_marks_img;
 in vec3 v_scene_pos;
 #endif
 
-#ifdef LIT_GI
 /* RENDERTARGETS: 0,1 */
 layout(location = 0) out vec4 shadow_color;
 layout(location = 1) out vec4 shadow_facing;
-#endif
 
 void main() {
     vec4 color;
@@ -37,8 +35,6 @@ void main() {
         imageAtomicMax(cg_water_marks_img, cell + ivec2(0, 2 * water_sim_size), height);
     }
 #endif
-#ifdef LIT_GI
     shadow_color = vec4(0.0, 0.0, 0.0, 1.0);
     shadow_facing = vec4(0.5, 0.5, 0.0, 1.0);
-#endif
 }

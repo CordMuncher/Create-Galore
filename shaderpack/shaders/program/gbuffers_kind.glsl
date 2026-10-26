@@ -1,8 +1,8 @@
 // What each world program draws and how Minecraft 1.21.1 shades that, from the PROGRAM_ define its gbuffers_*
 // file sets. Shared by gbuffers.vsh, gbuffers.fsh and the Colorwheel and Distant Horizons programs.
 //
-// Motion vectors go to colortex7 (see composite.fsh): rg the motion in render pixels towards last frame, b what
-// drew the pixel (MOTION_WORLD, MOTION_HAND, or MOTION_NONE where the composite pass works it out from the depth),
+// Motion vectors go to colortex7 (see composite1.fsh): rg the motion in render pixels towards last frame, b what
+// drew the pixel (MOTION_WORLD, MOTION_HAND, or MOTION_NONE where the composite1 pass works it out from the depth),
 // a whether the fragment takes the pixel over. Translucent programs blend colortex7 like colour, so a fragment that
 // writes alpha 0 leaves what is behind it, and one that writes alpha 1 replaces it.
 
@@ -34,7 +34,7 @@
 #define TEXTURED
 #endif
 
-// Things that move by themselves work out their own motion; the rest only claim the pixel (so the composite pass
+// Things that move by themselves work out their own motion; the rest only claim the pixel (so the composite1 pass
 // reprojects their depth) or, where they add light on top of what is there, leave it alone.
 #if defined PROGRAM_TERRAIN || defined PROGRAM_WATER || (defined ENTITY_FORMAT && !defined PROGRAM_SPIDEREYES) || defined COLORWHEEL
 #define OWN_MOTION

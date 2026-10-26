@@ -1,6 +1,6 @@
 // The overworld's exposure, metered after DLSS (or FSR) for the next frame: the frame's average brightness (a
 // log average over a grid, the middle counting most), brought towards a key that is bright by day and lets night
-// and caves stay darker, as eyes do. It brightens slowly and darkens fast (see globals.glsl).
+// and caves stay darker, as eyes do. It brightens a little slower than it darkens (see globals.glsl).
 
 #define GLOBALS_WRITE
 #include "/lib/settings.glsl"
@@ -63,7 +63,8 @@ void main() {
     float key = mix(-0.25, 0.75, smoothstep(-10.0, -2.0, metered));
     float target = clamp(key - metered, ev_min, ev_max);
     float ev = exposure_ready(previous) ? previous.y : target;
-    float rate = target > ev ? 1.2 : 3.0;
+    // About a second to see in a dark room after the sun, half that back out (eyes take longer, games less).
+    float rate = target > ev ? 2.5 : 4.5;
     ev += (target - ev) * (1.0 - exp(-max(frameTime, 0.0) * rate));
     set_global(G_EXPOSURE, vec4(exp2(ev), ev, metered, 0.0));
 }

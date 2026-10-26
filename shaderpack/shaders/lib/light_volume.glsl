@@ -175,9 +175,19 @@ vec3 light_volume_sample(vec3 at, int section) {
 #endif
 
 #ifdef LIT_COLORED_LIGHT
+// The block light's colour for the volume's light (rgb, any brightness): as bright as torchlight in all (red, green
+// and blue summed), so a light level means what it means elsewhere; with LIGHT_STYLE, brought towards torchlight's
+// brightness to the eye (blue the most, as it looks dimmest).
+vec3 block_light_tint(vec3 light) {
+    const vec3 torch = torch_color;
+    vec3 colored = light * ((torch.r + torch.g + torch.b) / max(light.r + light.g + light.b, 1e-6));
+    const vec3 luma = vec3(0.2126, 0.7152, 0.0722);
+    return colored * pow(dot(torch, luma) / max(dot(colored, luma), 0.05), 0.6 * LIGHT_STYLE);
+}
+
 // The colour of the block light on a surface at scene_pos facing normal: the volume's light in the block in front
-// of the surface, as far as the volume has any light there (and COLORED_LIGHT_SATURATION says), else torchlight; as
-// bright as torchlight in all (red, green and blue summed), so a light level means what it means elsewhere.
+// of the surface, as far as the volume has any light there (and COLORED_LIGHT_SATURATION says, deeper with
+// LIGHT_STYLE), else torchlight (see block_light_tint).
 vec3 block_light_color(vec3 scene_pos, vec3 normal) {
     const vec3 torch = torch_color;
     vec3 at;
@@ -190,9 +200,8 @@ vec3 block_light_color(vec3 scene_pos, vec3 normal) {
     if (peak <= 1e-4) {
         return torch;
     }
-    float weight = smoothstep(0.0, 2.0 / 15.0, peak) * fade * COLORED_LIGHT_SATURATION;
-    vec3 colored = light * ((torch.r + torch.g + torch.b) / (light.r + light.g + light.b));
-    return max(mix(torch, colored, weight), 0.0);
+    float weight = smoothstep(0.0, 2.0 / 15.0, peak) * fade * COLORED_LIGHT_SATURATION * (1.0 + 0.4 * LIGHT_STYLE);
+    return max(mix(torch, block_light_tint(light), weight), 0.0);
 }
 #else
 vec3 block_light_color(vec3 scene_pos, vec3 normal) {

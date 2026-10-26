@@ -21,11 +21,12 @@ in vec3 v_scene_pos;
 #endif
 
 #if defined LIT_WORLD && defined LIT_GBUFFER
-/* RENDERTARGETS: 0,7,1,2 */
+/* RENDERTARGETS: 0,7,1,2,9 */
 layout(location = 0) out vec4 out_color;
 layout(location = 1) out vec4 out_motion;
 layout(location = 2) out vec4 out_albedo;
 layout(location = 3) out vec4 out_surface;
+layout(location = 4) out vec4 out_occlusion;
 #else
 /* RENDERTARGETS: 0,7 */
 layout(location = 0) out vec4 out_color;
@@ -51,6 +52,7 @@ void main() {
     out_color = vec4(0.5); // the cracks multiply the surface's colour (see gbuffers.fsh)
     out_albedo = color;
     out_surface = vec4(0.0);
+    out_occlusion = vec4(1.0, 0.0, 0.0, 1.0);
     out_motion = vec4(0.0);
 #elif defined LIT_GLOW
     out_color = vec4(glow(color.rgb) * fog_fade(v_fog_dist), color.a);
@@ -69,6 +71,7 @@ void main() {
     out_color = vec4(0.0, 0.0, 0.0, color.a);
     out_albedo = color;
     out_surface = encode_surface(normal, level, MATERIAL_LIT, 1.0);
+    out_occlusion = vec4(1.0, 0.0, 0.0, 1.0);
 #endif
     out_motion = vec4(motion_vector(v_clip_now, v_clip_prev), MOTION_WORLD, color.a > 0.1 ? 1.0 : 0.0);
 #endif

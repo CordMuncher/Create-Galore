@@ -19,13 +19,30 @@ const float upscaling_render_scale = RENDER_SCALE;
 // until they get skies of their own).
 #define LIGHTING
 #define SHADOWS          // the sun's and the moon's shadows (a shadow map)
+// How soft shadows grow away from what casts them (0: as the sun's own, sharp but for the shadow map's texels), and
+// how many points of the shadow map each one takes (smoother soft edges).
 #define SHADOW_SOFTNESS 1.0 // [0.0 0.5 1.0 1.5 2.0 3.0]
+#define SHADOW_QUALITY 3    // [1 2 3 4]
 #define EXPOSURE 0.0     // [-2.0 -1.5 -1.0 -0.5 0.0 0.5 1.0 1.5 2.0]
 #define NIGHT_LIGHT 1.0  // [0.25 0.5 1.0 1.5 2.0 3.0]
 // How fast the sky's light fades as a place sees less of the sky (into rooms, caves, forests): its sky light level's
 // brightness to this power. 1: as Minecraft's sky light, which lights a room with a window almost as well as the
 // shade outside; higher leaves more of a room to the light bouncing in through its window.
 #define SKY_FALLOFF 1.0  // [1.0 1.5 2.0 3.0]
+
+// Blocks that give light glow where their texture is bright (a torch's flame, a lantern's light, lava): how bright.
+#define EMISSION 1.0     // [0.0 0.5 1.0 1.5 2.0 3.0 4.0]
+// How much the blocks' light shows by day: 0 as bright as it is (a torch is lost in daylight, as in life), higher
+// lets a lantern light the shade under a roof by day as it lights a room at night.
+#define BLOCK_LIGHT_DAY 1.0 // [0.0 0.5 1.0 1.5 2.0 3.0]
+
+// The glow around what is much brighter than what surrounds it (bloom): how much of it.
+#define BLOOM 1.0        // [0.0 0.5 1.0 1.5 2.0 3.0]
+
+// Ambient occlusion: the light all around (the sky's, the bounce light, the blocks') is less in creases, in corners
+// and under things, as the screen's depth shows them (GTAO), on top of Minecraft's smooth lighting corners. More
+// directions and steps for a steadier result. 0: Minecraft's corners only.
+#define AO_QUALITY 2     // [0 1 2 3]
 
 // What casts a shadow besides the world's blocks: mobs, block entities (chests, signs), you, and Create's machines
 // and contraptions. shaders.properties and colorwheel.properties hand these to Iris and Colorwheel (Iris only lists
@@ -49,6 +66,9 @@ const float upscaling_render_scale = RENDER_SCALE;
 // (0 every light is torchlight).
 #define COLORED_LIGHT
 #define COLORED_LIGHT_SATURATION 1.0 // [0.0 0.25 0.5 0.75 1.0 1.25 1.5]
+// How the colours look: 0 as lights of those colours would (a blue light looks dim next to a warm one as strong, as
+// the eye sees blue), 1 stylized: every colour about as bright to the eye as torchlight, and deeper.
+#define LIGHT_STYLE 0.75 // [0.0 0.25 0.5 0.75 1.0]
 // How many blocks across (and half as high) the volume around you is that the coloured light and the bounce light
 // spread through; past it lights are torchlight and nothing bounces.
 #define LIGHT_RANGE 128 // [64 128 192 256]
@@ -66,8 +86,8 @@ const float upscaling_render_scale = RENDER_SCALE;
 #endif
 
 // For tuning, not in the settings screens (set it in the pack's .txt): 1 shows only the bounce light, as it falls on
-// a white surface.
-#define DEBUG_VIEW 0 // [0 1]
+// a white surface; 2 only the ambient occlusion (white open, black shut).
+#define DEBUG_VIEW 0 // [0 1 2]
 
 // Water, in the lit overworld: small wind waves on every water surface (Waves: how high, 0 none), and ripples where
 // you, mobs, boats, ships and Create's water wheels move through it, with wakes behind them (with shadows on: the
@@ -147,12 +167,12 @@ const float shadowDistance = 128.0; // [64.0 96.0 128.0 160.0 192.0 256.0]
 // The shadow camera follows you in steps of two blocks, so the shadows hold still as you move (no warping either:
 // every texel covers the same ground everywhere).
 const float shadowIntervalSize = 2.0;
-// Hardware depth compares on shadowtex1 (the shadows, see shadow.glsl); shadowtex0 stays plain depth, for the bounce
-// light's source to read (light_bounce.csh). Nothing translucent draws into the shadow map, so the two are the same.
+// Hardware depth compares on shadowtex1 (what is opaque) as shadowtex1HW, for the shadows (see shadow.glsl); shadowtex1
+// itself stays plain depth for their search and the bounce light's source (light_bounce.csh), and shadowtex0 has the
+// water in it too.
 const bool shadowHardwareFiltering1 = true;
-#ifdef GI
-// The colour (sRGB-ish: the square root of linear) and the facing (octahedral) of what the light falls on, for the
-// bounce light (see shadow.fsh); cleared to nothing every frame.
+// The colour (sRGB-ish: the square root of linear) and the facing (octahedral, rg) of what the light falls on, for the
+// bounce light (see shadow.fsh), and in shadowcolor1's b where water lies over it; cleared to nothing every frame.
 /*
 const int shadowcolor0Format = RGBA8;
 const int shadowcolor1Format = RGBA8;
@@ -161,7 +181,6 @@ const vec4 shadowcolor0ClearColor = vec4(0.0, 0.0, 0.0, 0.0);
 const bool shadowcolor1Clear = true;
 const vec4 shadowcolor1ClearColor = vec4(0.0, 0.0, 0.0, 0.0);
 */
-#endif
 #endif
 #endif
 

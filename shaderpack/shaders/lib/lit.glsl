@@ -28,8 +28,20 @@ float luminance(vec3 c) {
     return dot(c, vec3(0.2126, 0.7152, 0.0722));
 }
 
+// What a block that gives light gives off by itself (kcd/m², not exposed), for its light level (0..1): the bright
+// parts of its texture glow (a torch's flame, not its stick; a lantern's light, not its frame), as bright as a lamp's
+// face at level 15, so they stand out by day and glow at night.
+const float emission_luminance = 16.0 * EMISSION;
+
+vec3 block_emission(vec3 srgb, float level) {
+    vec3 c = srgb_to_linear(srgb);
+    float peak = max(c.r, max(c.g, c.b));
+    return c * smoothstep(0.2, 0.8, peak) * level * level * emission_luminance;
+}
+
 // What the fog fades into, looking along dir (world space), in kcd/m² (not exposed): the sky just over the horizon
-// in the open air, else Minecraft's own fog colour (water, lava, powder snow) lit by the light where you are.
+// in the open air, else Minecraft's own fog colour (lava, powder snow) lit by the light where you are. (Water is the
+// composite pass's, see water_body.fsh.)
 vec3 fog_color_lit(vec3 dir) {
     if (isEyeInWater == 0) {
         vec3 horizon = normalize(vec3(dir.x, max(dir.y, 0.02), dir.z));
@@ -61,8 +73,12 @@ float weather_haze(float dist) {
 }
 
 // Fog over something lit to color (frame units) at a fog distance dist, seen along dir, in a fog range (see
-// fog_range), and the haze of the weather. Light that glows by itself fades out instead (fog_fade).
+// fog_range), and the haze of the weather. Light that glows by itself fades out instead (fog_fade). Under water the
+// composite pass draws the water between you and everything (see water_body.fsh) instead.
 vec3 apply_fog_lit(vec3 color, float dist, vec3 dir, vec2 range) {
+    if (isEyeInWater == 1) {
+        return color;
+    }
     float amount = 1.0 - (1.0 - fog_amount(dist, range.x, range.y)) * (1.0 - weather_haze(dist));
     return amount > 0.0 ? mix(color, fog_color_lit(dir) * exposure(), amount) : color;
 }

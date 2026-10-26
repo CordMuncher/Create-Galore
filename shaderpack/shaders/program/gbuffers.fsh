@@ -33,15 +33,34 @@ in vec3 v_normal;
 in vec2 v_level;
 in vec3 v_scene_pos;
 flat in int v_material;
-#if !defined PROGRAM_TERRAIN
+#if defined PROGRAM_TERRAIN
+flat in float v_emission; // the light the block gives, 0..1
+flat in int v_foliage;    // 1 for leaves
+in float v_ao;
+#else
 uniform ivec4 blendFunc; // the draw's blending (all 0 when off)
 #endif
 
-/* RENDERTARGETS: 0,7,1,2 */
+/* RENDERTARGETS: 0,7,1,2,9 */
 layout(location = 0) out vec4 out_color;
 layout(location = 1) out vec4 out_motion;
 layout(location = 2) out vec4 out_albedo;
 layout(location = 3) out vec4 out_surface;
+layout(location = 4) out vec4 out_occlusion;
+#elif defined LIT_WORLD && defined PROGRAM_WATER
+in vec3 v_normal;
+in vec2 v_level;
+in vec3 v_scene_pos;
+flat in int v_material;
+
+// Water leaves its surface for the composite pass, which draws it (see gbuffer.glsl); the other translucent blocks
+// (glass, ice) draw themselves.
+/* RENDERTARGETS: 0,7,4,5,6 */
+layout(location = 0) out vec4 out_color;
+layout(location = 1) out vec4 out_motion;
+layout(location = 2) out vec4 out_water;
+layout(location = 3) out vec4 out_water_dist;
+layout(location = 4) out vec4 out_glass_dist;
 #else
 #ifdef LIT_WORLD
 in vec3 v_normal;
@@ -83,18 +102,24 @@ void lit_output(vec4 color, int flags) {
     // only a little of its texture's blue (lit, the full blue reads as blue paint).
     vec3 rgb = forward_lit(mix(vec3(luminance(color.rgb)), color.rgb, 0.3), vec3(0.0, 1.0, 0.0), v_level, v_scene_pos, true);
 #elif defined PROGRAM_WATER
-    // The top of water bends the light with its waves and ripples (see water.glsl).
-    vec3 normal = v_material == MATERIAL_WATER && v_normal.y > 0.9 ? water_normal(v_scene_pos) : v_normal;
+    float dist = length(v_scene_pos - gbufferModelViewInverse[3].xyz);
+    if (v_material == MATERIAL_WATER) {
+        // The top of water (either side of it) with its waves and ripples (see water.glsl); the composite pass draws
+        // the rest.
+        vec3 normal = abs(v_normal.y) > 0.9 ? water_normal(v_scene_pos) : v_normal;
+        out_color = vec4(0.0);
+        out_water = vec4(encode_normal(normal), v_level.y, 1.0);
+        out_water_dist = vec4(dist, 0.0, 0.0, 1.0);
+        out_glass_dist = vec4(0.0);
+        return;
+    }
+    out_water = vec4(0.0);
+    out_water_dist = vec4(0.0);
+    out_glass_dist = vec4(dist, 0.0, 0.0, 1.0);
+    vec3 normal = v_normal;
     vec3 rgb = forward_lit(color.rgb, normal, v_level, v_scene_pos, v_material == MATERIAL_PLANT);
 #else
     vec3 rgb = forward_lit(color.rgb, v_normal, v_level, v_scene_pos, v_material == MATERIAL_PLANT);
-#endif
-#ifdef PROGRAM_WATER
-    if (v_material == MATERIAL_WATER) {
-        // Water sends little light back out of its depth: its own colour is dim, and what it reflects (below) and
-        // lets through is most of what you see.
-        rgb *= 0.15;
-    }
 #endif
     rgb = apply_fog_lit(rgb, v_fog_dist, dir, fog_range());
     out_color = vec4(rgb, color.a);
@@ -124,6 +149,7 @@ void lit_output(vec4 color, int flags) {
     out_color = vec4(0.5);
     out_albedo = color;
     out_surface = vec4(0.0);
+    out_occlusion = vec4(0.0);
 #elif defined LIT_SELF
     vec3 dir = normalize(v_scene_pos - gbufferModelViewInverse[3].xyz);
     vec3 rgb;
@@ -135,7 +161,9 @@ void lit_output(vec4 color, int flags) {
     out_color = vec4(rgb, color.a);
     out_albedo = vec4(0.0, 0.0, 0.0, color.a);
     out_surface = encode_surface(vec3(0.0, 1.0, 0.0), v_level, MATERIAL_SELF, weight);
+    out_occlusion = vec4(1.0, 0.0, 0.0, weight);
 #else
+    out_occlusion = vec4(1.0, 0.0, 0.0, weight);
     if ((flags & KEY_LIGHTMAP) == 0) {
         // What Minecraft draws without its lightmap glows by itself: the beacon's beam, glowing eyes and layers.
         out_color = vec4(glow(color.rgb) * fog_fade(v_fog_dist), color.a);
@@ -143,7 +171,17 @@ void lit_output(vec4 color, int flags) {
         out_surface = encode_surface(v_normal, v_level, MATERIAL_SELF, weight);
     } else {
         out_color = vec4(0.0, 0.0, 0.0, color.a);
+#ifdef PROGRAM_TERRAIN
+        // A block that gives light glows where its texture is bright (see block_emission), fading in the fog.
+        if (v_emission > 0.0) {
+            out_color.rgb = block_emission(color.rgb, v_emission) * exposure() * fog_fade(v_fog_dist);
+        }
+#endif
         out_albedo = color;
+#ifdef PROGRAM_TERRAIN
+        // Leaves let light through them (see light_surface).
+        out_occlusion = vec4(v_ao, float(v_foliage), 0.0, 1.0);
+#endif
         out_surface = encode_surface(v_normal, v_level, v_material, weight);
     }
 #endif

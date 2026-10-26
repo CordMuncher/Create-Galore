@@ -4,13 +4,22 @@
 // colortex0: light the surface gives off by itself or that its program already worked out (glowing eyes, the
 //            enchantment glint, the beacon's beam, particles), in the frame's units; the deferred pass adds its
 //            lighting to it. Cleared to black.
-// colortex1: the surface's colour (RGBA8, sRGB-encoded): its texture times its tint, with Minecraft's smooth lighting
-//            corners (ambient occlusion) in it. Blended the way the draw blends, so block cracks and mob shadows
-//            darken what is under them, and a surface whose program lit it itself leaves black here.
+// colortex1: the surface's colour (RGBA8, sRGB-encoded): its texture times its tint. Blended the way the draw blends,
+//            so block cracks and mob shadows darken what is under them, and a surface whose program lit it itself
+//            leaves black here.
 // colortex2: the surface (RGBA16): rg the world-space normal (octahedral), b the material in the top two bits and
 //            block and sky light below (7 bits each), a how much of it the draw writes. The programs blend it by that
 //            alpha (see shaders.properties), always 0 or 1, so a draw over a surface (a mob's shadow, a charged
 //            creeper's swirl) leaves the surface under it as it was. Cleared to 0: nothing drawn.
+// colortex9: the surface's occlusion (RG8): r Minecraft's smooth lighting corners (1 in the open, less in a corner or
+//            a crease, see separateAo in shaders.properties), g 1 for leaves. Blended by alpha as colortex2 is.
+//            Cleared to 1 and 0: what draws nothing here (Distant Horizons' terrain) has no corners.
+//
+// And what the translucent water program leaves for the composite pass, which draws the water (see water_body.fsh):
+// colortex4: the water's surface (RGBA16F): rg its normal (octahedral, its upper side's), b its sky light, a 1 where
+//            there is water. The nearest drawn wins: water writes alpha 1, the other translucent blocks 0.
+// colortex5: how far that surface is from the eye (blocks, R32F), likewise.
+// colortex6: how far the nearest other translucent block (glass, ice) is from the eye, where there is one.
 
 #if !defined LIB_GBUFFER
 #define LIB_GBUFFER
@@ -26,6 +35,18 @@ const bool colortex1Clear = true;
 const vec4 colortex1ClearColor = vec4(0.0, 0.0, 0.0, 0.0);
 const bool colortex2Clear = true;
 const vec4 colortex2ClearColor = vec4(0.0, 0.0, 0.0, 0.0);
+const int colortex9Format = RG8;
+const bool colortex9Clear = true;
+const vec4 colortex9ClearColor = vec4(1.0, 0.0, 0.0, 0.0);
+const int colortex4Format = RGBA16F;
+const bool colortex4Clear = true;
+const vec4 colortex4ClearColor = vec4(0.0, 0.0, 0.0, 0.0);
+const int colortex5Format = R32F;
+const bool colortex5Clear = true;
+const vec4 colortex5ClearColor = vec4(0.0, 0.0, 0.0, 0.0);
+const int colortex6Format = R32F;
+const bool colortex6Clear = true;
+const vec4 colortex6ClearColor = vec4(0.0, 0.0, 0.0, 0.0);
 */
 #endif
 

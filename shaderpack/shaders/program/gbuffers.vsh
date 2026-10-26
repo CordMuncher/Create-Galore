@@ -6,7 +6,7 @@
 #include "/lib/motion.glsl"
 #include "/lib/vanilla.glsl"
 #ifdef LIT_WORLD
-#include "/lib/lit.glsl"
+#include "/lib/gbuffer.glsl"
 #endif
 
 out vec2 v_uv;
@@ -22,8 +22,14 @@ out vec3 v_scene_pos;
 flat out int v_material;
 #endif
 
-#if defined LIT_WORLD && defined PROGRAM_WATER
+#if defined LIT_WORLD && (defined PROGRAM_WATER || defined PROGRAM_TERRAIN)
 in vec4 mc_Entity; // the block's number in block.properties
+#endif
+#if defined LIT_WORLD && defined PROGRAM_TERRAIN
+in vec4 at_midBlock;     // w the light the block gives (0..15)
+flat out float v_emission; // that, 0..1
+flat out int v_foliage;  // 1 for leaves
+out float v_ao;          // Minecraft's smooth lighting corners: 1 in the open, less in a corner
 #endif
 
 #ifdef ENTITY_FORMAT
@@ -89,6 +95,17 @@ void main() {
     int flags = key_flags();
     v_color = gl_Color;
     v_light = vec3(1.0);
+#if (defined PROGRAM_TERRAIN || defined PROGRAM_WATER) && defined LIGHTING
+    // With the lighting on, Sodium hands the smooth lighting's corners over in the alpha (separateAo, see
+    // shaders.properties): the lit overworld keeps them for the light all around (see light_surface), and every
+    // other dimension puts them back into the colour, as vanilla has them.
+    v_color.a = 1.0;
+#if defined LIT_WORLD && defined PROGRAM_TERRAIN
+    v_ao = gl_Color.a;
+#elif !defined LIT_WORLD
+    v_color.rgb *= gl_Color.a;
+#endif
+#endif
 #ifdef LIT_WORLD
     vec3 normal = gl_NormalMatrix * gl_Normal;
     normal = dot(normal, normal) > 1e-8 ? normalize(mat3(gbufferModelViewInverse) * normal) : vec3(0.0, 1.0, 0.0);
@@ -108,6 +125,10 @@ void main() {
     if (int(mc_Entity.x + 0.5) == BLOCK_WATER) {
         v_material = MATERIAL_WATER;
     }
+#endif
+#ifdef PROGRAM_TERRAIN
+    v_emission = clamp(at_midBlock.w / 15.0, 0.0, 1.0);
+    v_foliage = int(mc_Entity.x + 0.5) == BLOCK_LEAVES ? 1 : 0;
 #endif
 #else
     if ((flags & KEY_MOB_SHADING) != 0) {

@@ -5,7 +5,7 @@
 #include "/lib/motion.glsl"
 #include "/lib/vanilla.glsl"
 #ifdef LIT_WORLD
-#include "/lib/lit.glsl"
+#include "/lib/gbuffer.glsl"
 #endif
 
 out vec4 v_color;
