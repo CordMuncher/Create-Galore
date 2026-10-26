@@ -324,6 +324,51 @@ void main() {
         lit = g_light_color.rgb * bounce_light(scene_pos, normal, light.y) / PI * exposure();
 #elif DEBUG_VIEW == 2
         lit = vec3(ao * 10.0);
+#elif DEBUG_VIEW == 3 && defined SHADOW_MAP
+        // Under water (the water pass leaves it as it is): red how deep under it the point is (a quarter per block),
+        // green the caustics' brightening (a third per 1), blue 1. Along the bottom left, a grey ramp from 0 to 2
+        // (at x 512) to read them by.
+        {
+            float under = shadow_water_depth(scene_pos);
+            if (under > 0.0) {
+                lit = vec3(under / 4.0, water_caustics(scene_pos, under, length(scene_pos)).g / 3.0, 1.0);
+            }
+            if (gl_FragCoord.y < 24.0 && gl_FragCoord.x < 512.0) {
+                lit = vec3(gl_FragCoord.x / 256.0);
+            }
+        }
+#elif DEBUG_VIEW == 4 && defined SHADOW_MAP
+        // Why the shadow map does or doesn't find water over a point, where it has any sign of water there: yellow it
+        // finds it (how deep, see shadow_water_depth); magenta the water's mark but no water depth in shadowtex0;
+        // cyan water depth but no mark; green both, but the point lies in front of the water's depth; blue the point
+        // is outside the shadow map.
+        {
+            vec3 sc = shadow_coord(scene_pos);
+            ivec2 st = ivec2(clamp(sc.xy, 0.0, 1.0) * float(shadowMapResolution - 1));
+            float all_depth = texelFetch(shadowtex0, st, 0).r;
+            float opaque_depth = texelFetch(shadowtex1, st, 0).r;
+            bool mark = texelFetch(shadowcolor1, st, 0).b >= 0.5;
+            bool water_depth = all_depth < opaque_depth;
+            if (any(lessThan(sc, vec3(0.0))) || any(greaterThan(sc, vec3(1.0)))) {
+                lit = vec3(0.0, 0.0, 2.0);
+            } else if (shadow_water_depth(scene_pos) > 0.0) {
+                lit = vec3(2.0, 2.0, 0.0);
+            } else if (mark && !water_depth) {
+                lit = vec3(2.0, 0.0, 2.0);
+            } else if (!mark && water_depth) {
+                lit = vec3(0.0, 2.0, 2.0);
+            } else if (mark && water_depth) {
+                lit = vec3(0.0, 2.0, 0.0);
+            }
+        }
+#elif DEBUG_VIEW == 5 && defined LIT_VOXELS
+        // On leaves, the way out of their crown (see canopy_shape) as a colour: red towards east, green up, blue
+        // south (grey halfway, where it points along the other two), darker the less of a crown there is.
+        if (foliage && !lod) {
+            vec4 crown = canopy_shape(scene_pos);
+            float shaped = smoothstep(0.05, 0.25, length(crown.xyz));
+            lit = (crown.xyz / max(length(crown.xyz), 1e-6) * 0.5 + 0.5) * shaped * 2.0;
+        }
 #endif
         if (wet > 0.0) {
             lit = with_wet_film(lit, normal, dir, wet * 0.5 * (1.0 - puddle.x));
@@ -369,5 +414,52 @@ void main() {
         }
 #endif
     }
+#if DEBUG_VIEW == 4 && defined SHADOW_MAP
+    // Along the bottom left, the shadow map within 48 blocks of you as the light sees it: grey what is opaque
+    // (lighter nearer the light), red where something translucent lies over it, blue water's mark; right of it, the
+    // ripples' grid within 48 blocks (from above, north up): green the tops of water the shadow pass marked, red
+    // anything else that reaches into water.
+    {
+        float side = floor(0.45 * float(textureSize(depthtex0, 0).y));
+        vec2 p = gl_FragCoord.xy - 4.0;
+        if (p.y >= 0.0 && p.y < side && p.x >= 0.0 && p.x < side) {
+            vec2 centre = shadow_coord(vec3(0.0)).xy;
+            vec2 uv = centre + (p / side - 0.5) * (96.0 / (2.0 * shadowDistance));
+            ivec2 st = ivec2(uv * float(shadowMapResolution));
+            bool translucent = false;
+            bool mark = false;
+            for (int y = 0; y < 4; y++) {
+                for (int x = 0; x < 4; x++) {
+                    ivec2 t = clamp(st + ivec2(x, y), ivec2(0), ivec2(shadowMapResolution - 1));
+                    translucent = translucent || texelFetch(shadowtex0, t, 0).r < texelFetch(shadowtex1, t, 0).r - 1e-6;
+                    mark = mark || texelFetch(shadowcolor1, t, 0).b >= 0.5;
+                }
+            }
+            color = vec3(1.0 - texelFetch(shadowtex1, st, 0).r) * 0.5;
+            if (translucent) {
+                color.r = 2.0;
+            }
+            if (mark) {
+                color.b = 2.0;
+            }
+        }
+#ifdef LIT_WATER_RIPPLES
+        p.x -= side + 4.0;
+        if (p.y >= 0.0 && p.y < side && p.x >= 0.0 && p.x < side) {
+            ivec2 cell = ivec2(vec2(p.x, side - p.y) / side * 384.0) + water_sim_size / 2 - 192;
+            bool top = false;
+            bool reach = false;
+            for (int y = 0; y < 2; y++) {
+                for (int x = 0; x < 2; x++) {
+                    ivec2 c = cell + ivec2(x, y);
+                    top = top || texelFetch(cg_water_marks_tex, c, 0).r != 0u;
+                    reach = reach || texelFetch(cg_water_marks_tex, c + ivec2(0, 2 * water_sim_size), 0).r != 0u;
+                }
+            }
+            color = vec3(reach ? 2.0 : 0.05, top ? 2.0 : 0.05, 0.05);
+        }
+#endif
+    }
+#endif
     out_color = vec4(color, 1.0);
 }

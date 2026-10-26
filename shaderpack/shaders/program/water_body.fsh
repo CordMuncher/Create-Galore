@@ -225,6 +225,9 @@ void main() {
     if (any(isnan(color))) {
         color = scene;
     }
+#if DEBUG_VIEW == 3 || DEBUG_VIEW == 4
+    color = scene; // what lies under the water as the deferred pass left it (see deferred.fsh)
+#endif
     out_color = vec4(color, 1.0);
     out_previous = out_color;
 }

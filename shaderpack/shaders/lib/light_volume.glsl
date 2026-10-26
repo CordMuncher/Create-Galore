@@ -45,16 +45,18 @@ const int section_lights = 1;
 const int section_bounce_added = 2;
 const float bounce_scale = 2048.0;
 // The light image: the coloured light; then (with bounce light) the bounce light's colour (from every facing, for its
-// colour only), and each facing's (luminance), three to a texel.
+// colour only), and each facing's (luminance), three to a texel; last the trees' crowns (see canopy_shape).
 const int section_color = 0;
 const int section_bounce = 1;
 const int section_bounce_facing = 2;
 #ifdef LIT_GI
 const int marks_sections = 7;
-const int light_sections = 4;
+const int light_sections = 5;
+const int section_canopy = 4;
 #else
 const int marks_sections = 2;
-const int light_sections = 1;
+const int light_sections = 2;
+const int section_canopy = 1;
 #endif
 
 ivec3 marks_texel(ivec3 block, int section) {
@@ -171,6 +173,27 @@ float light_volume_at(vec3 scene_pos, vec3 normal, float offset, out vec3 at) {
 vec3 light_volume_sample(vec3 at, int section) {
     vec3 p = at + vec3(0.0, float(section * light_volume_size.y), float((frameCounter & 1) * light_volume_size.z));
     return texture(cg_light_tex, p / vec3(light_volume_size * ivec3(1, light_sections, 2))).rgb;
+}
+
+// The shape of the tree crown a leaf is part of, the way stylised trees are shaded from a smooth shape around their
+// leaves rather than from each leaf's own: from how many leaves there are around each block (light_flood.csh),
+// smoothed over about one block (r) and about two (g). xyz: the way out of the crown (not normalised; about 0.5 long
+// at the crown's edge, 0 deep inside it or where there is no crown), w: how deep in it the point is (0 out in the
+// open, 0.5 at the crown's edge, 1 deep inside).
+vec4 canopy_shape(vec3 scene_pos) {
+    vec3 at;
+    float fade = light_volume_at(scene_pos, vec3(0.0), 0.0, at);
+    if (fade <= 0.0) {
+        return vec4(0.0);
+    }
+    vec2 x = light_volume_sample(at + vec3(1.0, 0.0, 0.0), section_canopy).rg
+            - light_volume_sample(at - vec3(1.0, 0.0, 0.0), section_canopy).rg;
+    vec2 y = light_volume_sample(at + vec3(0.0, 1.0, 0.0), section_canopy).rg
+            - light_volume_sample(at - vec3(0.0, 1.0, 0.0), section_canopy).rg;
+    vec2 z = light_volume_sample(at + vec3(0.0, 0.0, 1.0), section_canopy).rg
+            - light_volume_sample(at - vec3(0.0, 0.0, 1.0), section_canopy).rg;
+    vec3 out_of = -(vec3(x.g, y.g, z.g) + 0.5 * vec3(x.r, y.r, z.r));
+    return vec4(out_of, light_volume_sample(at, section_canopy).g) * fade;
 }
 #endif
 

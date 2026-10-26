@@ -101,9 +101,12 @@ Water, rain and reflections (alpha 3, the Reflections and Noise Pattern options)
   their deepest spots over about four minutes after. Rain streaks are pale and clear, and the air glows softly
   around lights in the rain.
 - Metal blocks reflect the sky in their own colour, and polished stone and quartz mirror the world faintly.
-- Trees: less light through the crown, so its inside lies in shade under the sunlit top, ambient occlusion from
-  the screen on the leaves, and the light all around them leaning more on which way they face (after Ghost of
-  Tsushima's stylized lighting), so a crown reads as round.
+- Trees: leaves are shaded by the shape of their whole crown, the way stylised games shade foliage from a smooth
+  shape around it rather than from each leaf card: the pack counts the leaves around every block near you (with
+  Coloured Light or Bounce Light on) and lights each leaf the way the crown's outside faces there, so a tree reads
+  as one round mass with clumps in it, sunlit on one side and shaded on the other, and darker deep inside. Less
+  light gets through the crown, the screen's ambient occlusion reaches the leaves, and the light all around them
+  leans more on which way they face (after Ghost of Tsushima's stylised lighting).
 - Noise Pattern: the noise that soft shadows, ambient occlusion and reflections take their few samples by, either
   a smooth pattern made for TAA or white noise (what NVIDIA asks Ray Reconstruction to be given), for comparing
   which one DLSS resolves more calmly.
@@ -117,7 +120,10 @@ From milestone 1, in every preset:
 - Distant Horizons: its terrain gets the same lighting and fog, and the fog moves out to its edge.
 
 DLSS and FSR come from the Create Galore Bridge mod, which reads `shaders/create_galore_dlss.properties` to find
-where they go. Without the Bridge the pack still runs, with no anti-aliasing.
+where they go. Without the Bridge the pack still runs, with no anti-aliasing. The Bridge in Create Galore 0.5.12 and
+later also keeps water and stained glass in the shadow map while Aeronautics' levitite is in view (before it, the
+levitite's shader left Iris drawing the next terrain as tessellation patches, which the driver refused), so the
+caustics, the ripples and the light's depth under water need that version near ships.
 
 ## Layout
 

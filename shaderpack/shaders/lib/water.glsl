@@ -167,6 +167,20 @@ vec2 ripple_slope(vec3 scene_pos) {
     float fade = smoothstep(2.0, 48.0, min(edge.x, edge.y));
     return vec2(dx, dz) * (water_cells_per_block * 0.5) * fade * WATER_RIPPLES_STRENGTH;
 }
+
+uniform usampler2D cg_water_marks_tex; // cg_water_marks_img, for programs without image access
+
+// How far straight down from the top of the water a point (scene space) lies (blocks): from the tops of water this
+// frame's shadow pass marked in the grid around you (see shadow.fsh), the highest in the point's column. 0 where no
+// water lies over it, -1 outside the grid.
+float water_depth_marked(vec3 scene_pos) {
+    ivec2 cell = water_cell(scene_pos, cameraPositionFract);
+    if (any(lessThan(cell, ivec2(0))) || any(greaterThanEqual(cell, ivec2(water_sim_size)))) {
+        return -1.0;
+    }
+    uint top = texelFetch(cg_water_marks_tex, cell, 0).r;
+    return top == 0u ? 0.0 : max(water_height_from_mark(top) - scene_pos.y, 0.0);
+}
 #endif
 
 // How the waves gather the sun's (or the moon's) light on what lies under them, depth blocks down towards the light,

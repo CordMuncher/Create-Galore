@@ -142,6 +142,21 @@ vec3 ao_bounced(float ao, vec3 albedo) {
     return max(vec3(ao), ((ao * a + b) * ao + c) * ao);
 }
 
+#ifdef SHADOW_MAP
+// How far the sun's (or the moon's) light comes through water to reach a point (scene space; blocks along the light,
+// 0 where no water lies over it): from the tops of water the shadow pass marks around you, straight above the point
+// (see water.glsl); farther out, from the shadow map (see shadow_water_depth).
+float water_over(vec3 scene_pos) {
+#ifdef LIT_WATER_RIPPLES
+    float marked = water_depth_marked(scene_pos);
+    if (marked >= 0.0) {
+        return marked / max(g_light_dir.y, 0.2);
+    }
+#endif
+    return shadow_water_depth(scene_pos);
+}
+#endif
+
 // The light a surface reflects towards the eye (kcd/m², not yet exposed): albedo linear, normal world space, light
 // the block and sky light levels (0..1). plant: grass, flowers and crops (see MATERIAL_PLANT); foliage: leaves.
 // contact: how much of the light the screen says gets past what is right next to the surface (see deferred.fsh), 1
@@ -155,16 +170,31 @@ vec3 light_surface(vec3 albedo, vec3 normal, vec2 light, vec3 scene_pos, bool pl
     vec3 water_direct = vec3(1.0);
     vec3 water_sky = vec3(1.0);
 #ifdef SHADOW_MAP
-    float water_depth = shadowed ? shadow_water_depth(scene_pos) : 0.0;
+    float water_depth = shadowed ? water_over(scene_pos) : 0.0;
     if (water_depth > 0.0) {
-        float below = water_depth * max(g_light_dir.y, 0.1);
+        float below = water_depth * max(g_light_dir.y, 0.2);
         water_direct = water_transmittance(water_depth) * water_caustics(scene_pos, water_depth, length(scene_pos));
         water_sky = water_transmittance(1.5 * below);
-        light.y = min(light.y + below / 15.0, 1.0);
+        // (Not where Minecraft's sky light doesn't reach at all: a cave under the sea is not the sea floor.)
+        light.y = min(light.y + below / 15.0 * smoothstep(0.0, 2.0 / 15.0, light.y), 1.0);
+    }
+#endif
+    // A tree's leaves are shaded by the shape of their crown more than by their own faces (see canopy_shape), the way
+    // stylised trees are: lit and seeing the sky the way the crown's outside faces there, so a tree reads as one
+    // round mass with clumps in it rather than as a heap of cubes; and the deeper inside it, the less sky they see.
+    vec3 leaf_normal = normal;
+    float crown_sky = 1.0;
+#ifdef LIT_VOXELS
+    if (foliage && shadowed) {
+        vec4 crown = canopy_shape(scene_pos);
+        float shaped = smoothstep(0.05, 0.25, length(crown.xyz));
+        vec3 m = mix(normal, crown.xyz / max(length(crown.xyz), 1e-6), 0.75 * shaped);
+        leaf_normal = dot(m, m) > 1e-4 ? normalize(m) : normal;
+        crown_sky = 1.0 - 0.5 * smoothstep(0.4, 0.9, crown.w);
     }
 #endif
     // A plant is lit through from whichever side the light is on, as if it faced it (a little less when it's low).
-    vec3 n = plant ? vec3(0.0, 1.0, 0.0) : normal;
+    vec3 n = plant ? vec3(0.0, 1.0, 0.0) : leaf_normal;
     float n_dot_l = plant ? 0.4 + 0.6 * max(g_light_dir.y, 0.0) : max(dot(normal, g_light_dir.xyz), 0.0);
     vec3 direct = vec3(0.0);
     if (foliage || plant) {
@@ -173,14 +203,14 @@ vec3 light_surface(vec3 albedo, vec3 normal, vec2 light, vec3 scene_pos, bool pl
         // A tree's leaves let through less than a blade of grass does: the inside of a tree glows a little, a
         // depth of shade under its sunlit top rather than lit up as brightly. A plant is lit as if it faced the
         // light (a little less when it's low).
-        float n_l = dot(normal, g_light_dir.xyz);
+        float n_l = dot(n, g_light_dir.xyz);
         float facing = plant ? n_dot_l : 0.25 + 0.75 * max(n_l, 0.0);
         float vis = direct_visibility(scene_pos, g_light_dir.xyz, light.y, shadowed);
         float through = 0.0;
 #ifdef SHADOW_MAP
         if (shadowed) {
             through = shadow_through(scene_pos, plant ? 0.75 : 1.0) * smoothstep(1.0 / 15.0, 4.0 / 15.0, light.y)
-                    * (plant ? 1.0 : 0.45);
+                    * (plant ? 1.0 : 0.3);
         }
 #endif
         float glow = clamp(through - vis, 0.0, 1.0) + (plant ? 0.0 : max(-n_l, 0.0) * 0.5);
@@ -192,6 +222,13 @@ vec3 light_surface(vec3 albedo, vec3 normal, vec2 light, vec3 scene_pos, bool pl
     // Under a roof the sky a surface facing up sees is the low sky around it, not the deep blue overhead: as much
     // light, in the colour of the sky's sides.
     vec3 sky = sky_irradiance(n);
+    if (foliage) {
+        // A tree's leaves get the light all around them more by which way they face: a quarter of the difference
+        // between the sky one way and the other more (Ghost of Tsushima turns up which way all its light all around
+        // comes from by a quarter). The top of a crown is brighter and its sides and underside darker, so it reads
+        // as round from every side, not as evenly lit.
+        sky = max(sky + 0.25 * (sky - sky_irradiance(-n)), vec3(0.0));
+    }
     float covered = (1.0 - smoothstep(13.0 / 15.0, 1.0, light.y)) * max(n.y, 0.0);
     if (covered > 0.0) {
         vec3 side = 0.25 * (global(G_SKY_CUBE).rgb + global(G_SKY_CUBE + 1).rgb + global(G_SKY_CUBE + 4).rgb
@@ -199,7 +236,7 @@ vec3 light_surface(vec3 albedo, vec3 normal, vec2 light, vec3 scene_pos, bool pl
         const vec3 luma = vec3(0.2126, 0.7152, 0.0722);
         sky = mix(sky, side * (dot(sky, luma) / max(dot(side, luma), 1e-8)), covered);
     }
-    vec3 around = sky * sky_light_curve(light.y) * water_sky
+    vec3 around = sky * sky_light_curve(light.y) * water_sky * crown_sky
             + block_irradiance(light.x, block_light_color(scene_pos, n));
 #ifdef LIT_GI
     around += g_light_color.rgb * bounce_light(scene_pos, n, light.y);

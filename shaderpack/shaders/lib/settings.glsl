@@ -28,8 +28,10 @@ const float upscaling_render_scale = RENDER_SCALE;
 #define SHADOW_SOFTNESS 1.0 // [0.0 0.5 1.0 1.5 2.0 3.0]
 #define SHADOW_QUALITY 3    // [1 2 3 4]
 // Contact shadows: what is too small for the shadow map (grass, feet, a fence's rails) still shadows what lies right
-// behind it, from the screen's depth.
+// behind it, from the screen's depth. (Iris only lists an on/off option that some #ifdef names.)
 #define CONTACT_SHADOWS
+#ifdef CONTACT_SHADOWS
+#endif
 #define EXPOSURE 0.0     // [-2.0 -1.5 -1.0 -0.5 0.0 0.5 1.0 1.5 2.0]
 #define NIGHT_LIGHT 1.0  // [0.25 0.5 1.0 1.5 2.0 3.0]
 // How fast the sky's light fades as a place sees less of the sky (into rooms, caves, forests): its sky light level's
@@ -96,8 +98,10 @@ const float upscaling_render_scale = RENDER_SCALE;
 #endif
 
 // For tuning, not in the settings screens (set it in the pack's .txt): 1 shows only the bounce light, as it falls on
-// a white surface; 2 only the ambient occlusion (white open, black shut).
-#define DEBUG_VIEW 0 // [0 1 2]
+// a white surface; 2 only the ambient occlusion (white open, black shut); 3 how deep under water each point is and
+// the caustics there; 4 why the shadow map does or doesn't find water over a point; 5 the leaves' crown shape (see
+// deferred.fsh).
+#define DEBUG_VIEW 0 // [0 1 2 3 4 5]
 
 // Water, in the lit overworld: small wind waves on every water surface (Waves: how high, 0 none), and ripples where
 // you, mobs, boats, ships and Create's water wheels move through it, with wakes behind them (with shadows on: the

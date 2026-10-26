@@ -39,9 +39,8 @@ void water_light_at(vec3 p, out vec3 direct, out vec3 around) {
     vec3 coord = shadow_coord(p);
     if (all(greaterThan(coord, vec3(0.0))) && all(lessThan(coord, vec3(1.0)))) {
         lit = texture(shadowtex1HW, vec3(coord.xy, coord.z - 0.00002));
-        // How far up towards the light the water (or whatever covers it) begins.
-        above = max(coord.z - texelFetch(shadowtex0, ivec2(coord.xy * float(shadowMapResolution)), 0).r, 0.0)
-                * shadow_depth_blocks();
+        // How far up towards the light the water begins.
+        above = water_over(p);
     }
 #endif
     above = min(above, water_ray_limit);
