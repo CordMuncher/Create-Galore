@@ -145,7 +145,10 @@ final class GuideText {
             up (Wooden Propellers at 256 RPM, or a Propeller Bearing with a fan of sails at 128 RPM driven by two \
             Portable Engines on one shaft, which pushes more for the same engines) and size the envelope to the load, \
             since every envelope block drags. A balloon at walking pace is not a finished design: keep changing it \
-            until it reaches a useful speed. When a player asks for a vehicle that hauls, or something to live from \
+            until it reaches a useful speed. Nor is any design with a PROBLEM left in its check: fixing what the checks find \
+            is your work, never the player's, so don't hand over a plan with a list of faults for them to sort out. Change \
+            the model and draft it again until it passes (simplify a part that keeps failing, such as a squarer envelope \
+            or one engine per drive line, rather than give up on it), then build it into the answer. When a player asks for a vehicle that hauls, or something to live from \
             (a sky base, a camper, a home on the move), give it the rooms that make it one: a bed, a place to cook (a \
             smoker or Farmer's Delight stove), a crafting table and real storage, a wall of barrels or chests rather \
             than two (a container weighs the same full or empty, so storage costs little lift). Labels and captions name only \
