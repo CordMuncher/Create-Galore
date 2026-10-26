@@ -8,6 +8,12 @@ and the test kit from Presenter 2 (nothing to update).
 - DLAA at full resolution (`dlaa=dlss`, preset K), at 2560x1440.
 - No crash. This is a test, not a fix: no code was changed.
 
+> **Update, 14:13–14:35, approved by Emre (see the Appendix at the end).** The slower DirectX 11 came from a test kit
+> scene left standing in the test world since the end of Presenter 1, not from the build. It was removed with the kit's
+> own commands. In the cleaned world, on 1.114.0, DirectX 11 is back at Presenter 1's numbers (166 / 154 fps at
+> `lat-base`, 175 / 156 at `lat-reflex`), and **DirectX 12 is within 0–3% of it** (167 / 153 and 170 / 153),
+> with 0.5–1.0 ms less latency. The sections below up to the Appendix describe the launches with the scene still there.
+
 ## Summary
 
 - **Is DirectX 11 back at about 170 / 155 fps? No.** Without any capture tool it ran `lat-base` at 157–162 / 140–141
@@ -26,7 +32,8 @@ and the test kit from Presenter 2 (nothing to update).
 - **Reflex's report says `G-SYNC fullscreen` on both presenters**, in all five launches.
 - **No `Perfect Presentation`, `Latency:` or `Reflex:` WARN or ERROR lines**, apart from the usual one-off
   `swap chain wait timed out` while the world loads.
-- **Still open: why DirectX 11 runs 6–9% below its numbers up to Presenter 1** (170–171 / 154–156 fps at `lat-base`).
+- **Open when this was first written (answered in the Appendix): why DirectX 11 runs 6–9% below its numbers up to
+  Presenter 1** (170–171 / 154–156 fps at `lat-base`).
   This session rules out the capture tools, the live wallpaper and the PC's restart (Presenter 2 ran before it,
   Presenter 3 after, with the same result). Between Presenter 1 (11:48) and Presenter 2 (13:07) the build changed:
   Bridge 1.113.0 → 1.114.0 and the new test kit. Emre also played the test world on DirectX 12 for five minutes at the
@@ -142,7 +149,8 @@ From `latency.py` (input to GPU end). The plays are in run order, so the first v
   - back at about 170 / 155: 1.114.0 or the new kit slowed DirectX 11, and against 1.113.0's DirectX 11 the gap is
     still about 10%;
   - still at about 160 / 141: the world or the PC changed, and today's 2–4% is the real gap.
-- That isn't in the runbook, so it wasn't run.
+- That isn't in the runbook, so it wasn't run at first. Emre approved it after the report was first pushed: see the
+  Appendix (the build wasn't it; a scene left in the world was).
 
 ## Method
 
@@ -206,3 +214,134 @@ No crash, and no new crash log. The only `hs_err` file in the instance is the ol
   `20261026-140256-P2` and `20261026-140704-P2`.
 - In `$T\presenter3\`: the game logs `L1-latest.log` to `L5-latest.log`, `latency.md` (all five runs), `tables.md`, this
   session's notes, the settings copies, the display settings file as 1.114.0 left it and the kit config it wrote.
+
+## Appendix: added after the first push (14:13–14:35), approved by Emre
+
+Emre approved these launches in chat after reading the first version of this report:
+- "Sure test it, and append the findings saying I approved it": one DirectX 11 launch on Bridge 1.113.0.
+- Then, after the leftover scene turned up: "fix that then and rerun one dx11 and one dx12 run on the most recent
+  version and add that to the report too".
+
+None of this is in the runbook. Before each launch: no capture tool, no codex service, no other Java, total CPU 1.5–3.1%,
+nothing else using the GPU. All settings are back afterwards (checked byte for byte), and the instance has
+`create-galore-bridge-1.114.0.jar` and the current test kit again (SHA-1 checked).
+
+### 1. DirectX 11 on Bridge 1.113.0
+
+- **Launch 6**, 14:15–14:19: `create-galore-bridge-1.113.0.jar` and the test kit jar (55,328 B), both taken from the git
+  history at `31bbd040` (blob hashes checked), in place of 1.114.0 and the current kit. `presenter=dx11` and the same
+  settings as above. `runs=P1`: the old kit has no P2, and P1 is Presenter 1's own run. Run `20261026-141648-P1`.
+- Against Presenter 1's DirectX 11 launch (11:48, the same build, run and settings), and this session's DirectX 11 on
+  1.114.0 (launches 1, 3 and 5). fps is the median of both plays (plays in brackets), latency the median:
+
+| mode | viewpoint | Presenter 1, 1.113.0, 11:48 | launch 6, 1.113.0, 14:16 | launches 1, 3, 5, 1.114.0 |
+| --- | --- | --- | --- | --- |
+| `lat-base` | shore | 170 (165, 175), 12.1 ms | 163.5 (160, 167), 12.8 ms | 157–162, 12.6–12.8 ms |
+| `lat-base` | canopy | 155 (154, 156), 14.6 ms | 141.5 (140, 143), 15.5 ms | 140–141, 15.1–15.5 ms |
+| `lat-reflex` | shore | 173 (172, 174), 10.6 ms | 166 (165, 167), 11.2 ms | 162–165, 11.2 ms |
+| `lat-reflex` | canopy | 155.5 (155, 156), 12.0 ms | 142.5 (142, 143), 13.1 ms | 140–142.5, 13.2 ms |
+| `lat-pacing-on` | shore / canopy | 173 / 156 | 165.5 / 142.5 | – |
+| `lat-pacer` | shore / canopy | 159.5 / 144 | 151 / 132.5 | – |
+| `lat-cap-default` | shore / canopy | 60, 9.1 / 8.8 ms | 60, 8.9 / 9.4 ms | 60, 9.0–9.2 / 9.5–9.9 ms |
+
+- **The build isn't it.** On Presenter 1's own build and run, DirectX 11 was 4% / 8–9% slower than at 11:48, the same
+  as 1.114.0 today. Its log: `DXGI swap chain ready on DirectX 11`, Reflex on its DirectX 11 device with `G-SYNC
+  fullscreen`, and only the usual swap chain timeout as a WARN.
+
+### 2. What changed in the world: a test scene left behind
+
+- **Presenter 1's third launch** (Emre's free play, 12:05–12:10:56) ran with `viewpoints=moving` and `byEye=lat-base`.
+  Its log has `DLAA test: built the moving scene` (12:06:27 and 12:06:45) and `the moving scene is over the lake (stand
+  on the ship to ride it); /dlaatest scene remove takes it away`. It was never removed: the kit removes the scene only
+  when a run ends, and in by-eye mode the game stays open after the run until the player quits.
+- **It was still in the world** before the cleanup. Chunk (64, 9), x 1024–1039 and z 144–159, had two creative motors,
+  a mechanical bearing with its contraption, an encased fan, a large cogwheel and a bell. The entities file had the
+  villager and the armor stand there and the red panda in chunk (64, 10), all with the kit's `cgtest` tag.
+- **Where it stands:** x 1023–1036, z 143–157, just behind the shore viewpoint (x 1029.5, z 160.5, looking south) and in
+  front of the canopy viewpoint (x 1024.5, y 88, z 205.5, looking north and down), about 50 blocks away. Both
+  presenters' measurements in Presenter 1 ran before 12:06. Everything since (Presenter 2, and this session's launches
+  1–6) ran with the scene there.
+- **A loose end:** Reflex 1's by-feel session (2026-10-25, 21:49–21:58) left the same scene the same way, and Pacer 1,
+  Pacer 2 and Presenter 1 still ran DirectX 11 at 170–171 / 154–156 afterwards. Why that copy didn't cost frames isn't
+  known. It had ticked for about nine minutes in by-eye mode (the ship turning and swaying), so it may not have been in
+  the same state as the freshly built one from 12:06. Not verified.
+- **Checked as well, nothing found:**
+  - no config or shader file changed between 12:04 and 13:06;
+  - no driver or Windows update (only a Defender signature update at 11:51);
+  - the world's weather is clear and its time 3000 (the kit locks both);
+  - Distant Horizons' log at world load reads the same as in Presenter 1, and its database hasn't grown since 14:00.
+  Emre doesn't remember changing anything on the PC.
+
+### 3. Cleaning the world
+
+- **The cleanup launch**, 14:24:50–14:26:41, used only the kit's own commands: a short run at the moving viewpoint
+  (`modes=lat-base`, `viewpoints=moving`, `paths=still`, run `20261026-142620`).
+  - The scene's build first removes any ship in the area, clears the area and kills the kit's tagged entities, then
+    builds the scene again.
+  - The run's end removes everything: ships, tagged entities, the bearing's contraption and glue, and the area twice.
+  - Then the game quit and saved.
+- **Afterwards**, chunks (64, 9) and (64, 10) have no motors, bearing, fan, large cogwheel or bell. There are no
+  `cgtest` entities and no contraption left. The Create shafts, cogwheels and bells elsewhere in that region file belong
+  to the world's own buildings, away from the viewpoints.
+- The test world now stands as it was made. A later by-eye session (`byEye`) would leave the scene again unless it's
+  removed before quitting (`/dlaatest scene remove` in the same session).
+
+### 4. DirectX 11 and DirectX 12 on 1.114.0 in the cleaned world
+
+Launch 7 (`dx11`, run `20261026-142840-P2`, 14:28:40–14:30:34) and launch 8 (`dx12`, run `20261026-143222-P2`,
+14:32:22–14:34:16), `runs=P2`, the same settings, no capture tools:
+
+| mode | viewpoint | launch | fps: median (plays) | latency ms: median (plays) | GPU queue ms (plays) |
+| --- | --- | --- | --- | --- | --- |
+| `lat-base` | shore | 7, DX11 | 166.0 (157, 175) | 11.8 (11.0, 12.5) | 4.3, 4.8 |
+| `lat-base` | shore | 8, DX12 | 167.0 (162, 172) | 11.1 (10.3, 11.8) | 3.4, 3.7 |
+| `lat-base` | canopy | 7, DX11 | 153.8 (152, 156) | 14.2 (13.6, 14.9) | 5.5, 5.6 |
+| `lat-base` | canopy | 8, DX12 | 152.7 (152, 153) | 13.7 (13.2, 14.2) | 4.4, 4.5 |
+| `lat-reflex` | shore | 7, DX11 | 175.0 (173, 177) | 10.5 (10.5, 10.5) | 4.8, 4.9 |
+| `lat-reflex` | shore | 8, DX12 | 170.3 (169, 171) | 9.5 (9.5, 9.5) | 3.7, 3.7 |
+| `lat-reflex` | canopy | 7, DX11 | 155.7 (156, 155) | 12.0 (12.0, 12.0) | 5.6, 5.6 |
+| `lat-reflex` | canopy | 8, DX12 | 152.8 (152, 153) | 11.0 (11.0, 11.0) | 4.5, 4.5 |
+| `lat-cap-default` | shore | 7, DX11 | 60 | 9.4 (9.6, 9.1) | −7.6, −7.7 |
+| `lat-cap-default` | shore | 8, DX12 | 60 | 9.2 (9.5, 8.9) | −7.7, −7.9 |
+| `lat-cap-default` | canopy | 7, DX11 | 60 | 9.3 (9.6, 9.1) | −7.6, −7.8 |
+| `lat-cap-default` | canopy | 8, DX12 | 60 | 9.1 (9.3, 8.9) | −8.0, −8.1 |
+
+**The gap in the cleaned world** (one launch each):
+
+| mode | viewpoint | DirectX 11 fps | DirectX 12 fps | fps | ms per frame, DX11 → DX12 | latency ms, DX11 → DX12 |
+| --- | --- | --- | --- | --- | --- | --- |
+| `lat-base` | shore | 166.0 | 167.0 | +0.6% | 6.02 → 5.99 (−0.04) | 11.8 → 11.1 (−0.7) |
+| `lat-base` | canopy | 153.8 | 152.7 | −0.7% | 6.50 → 6.55 (+0.05) | 14.2 → 13.7 (−0.5) |
+| `lat-reflex` | shore | 175.0 | 170.3 | −2.7% | 5.71 → 5.87 (+0.16) | 10.5 → 9.5 (−1.0) |
+| `lat-reflex` | canopy | 155.7 | 152.8 | −1.9% | 6.42 → 6.55 (+0.12) | 12.0 → 11.0 (−1.0) |
+
+**With the scene and without** (kit fps, shore / canopy):
+
+| | DirectX 11 `lat-base` | DirectX 11 `lat-reflex` | DirectX 12 `lat-base` | DirectX 12 `lat-reflex` |
+| --- | --- | --- | --- | --- |
+| Presenter 1 (1.113.0, before the scene) | 170 / 155 | 173 / 156 | 151 / 138 | 155 / 139 |
+| Presenter 3 with the scene (1.114.0, launches 1–4) | 159.8 / 141.2 | 163.1 / 141.2 | 155.0 / 137.6 | 157.5 / 138.8 |
+| Presenter 3, cleaned world (1.114.0, launches 7–8) | 166 / 153.8 | 175 / 155.7 | 167 / 152.7 | 170.3 / 152.8 |
+
+- **DirectX 11 is back at Presenter 1's numbers** (166 / 154 and 175 / 156, against 170 / 155 and 173 / 156).
+- **The scene cost both presenters**: DirectX 11 4% / 9% at `lat-base` and 7% / 10% at `lat-reflex`, DirectX 12 8% /
+  11% and 8% / 10%. The canopy, which looks at it, lost more.
+- **In the cleaned world DirectX 12 is within 0–3% of DirectX 11**: +0.6% / −0.7% at `lat-base`, −2.7% / −1.9% at
+  `lat-reflex`. That's one launch each, and run-to-run spread here is about 2–3% (the three DirectX 11 launches with the
+  scene spread 157–162 fps at `lat-base` shore). The latency is 0.5–1.0 ms lower on DirectX 12, and its frames wait
+  about 1 ms less in the GPU queue.
+- **Against Presenter 1, the 11% is gone.**
+  - DirectX 12 on 1.114.0 in the cleaned world runs about 10% faster than DirectX 12 on 1.113.0 in Presenter 1 (167 /
+    153 and 170 / 153, against 151 / 138 and 155 / 139). DirectX 11 ran as fast there as in the cleaned world now.
+  - Caveat: DirectX 12 on 1.113.0 wasn't run in the cleaned world. Presenter 2 found `p-wait-always` (1.113.0's
+    hand-off) as fast as the new default, so the gain comes from something else in 1.114.0, or Presenter 1's world
+    wasn't the same for DirectX 12. One DirectX 12 launch on 1.113.0 in the cleaned world would confirm it.
+- **For the test kit:** a by-eye session leaves the moving scene in the world when the player quits. It's removed only
+  at the end of a run, and a later session's `/dlaatest scene remove` doesn't know about it. So the absolute fps of
+  everything since the end of Presenter 1 (Presenter 2, and launches 1–6 here) is 4–11% low. Their comparisons within
+  the same world (DirectX 12 against DirectX 11, the switches against `lat-base`) still stand.
+
+**Raw data, on the PC only:** run folders `20261026-141648-P1`, `20261026-142620`, `20261026-142840-P2` and
+`20261026-143222-P2`; in `$T\presenter3\`: `L6-1113-latest.log`, `L7-clean-latest.log`, `L8-clean-latest.log`,
+`latency-1113.md`, `latency-clean.md`, `tables-clean.md`, the 1.113.0 jars taken from git (`jars-1.113.0\`), and the
+display settings file as 1.113.0 left it.
