@@ -1637,9 +1637,10 @@ What comes of it: if frame generation runs and looks right, the next step is its
 generation on the same inputs; if the pacer gets in Reflex's way with frame generation on, it is switched off while
 frame generation runs.
 
-## DLSS-G 2: frame generation re-check, with the player setting, the on/off switch and FSR
+## Frame generation 2: DLSS re-check and FSR, side by side on the 4080 Super
 
-Start only when Emre says so. About 30 minutes with Emre at the keyboard; no unattended part.
+Start only when Emre says so. About 30 minutes with Emre at the keyboard (steps 1 to 4), then about 25 minutes that
+need no one, only a quiet PC (step 5). Frame times count only in step 5.
 
 **What it checks.** Bridge 1.122.0 (this branch, pack 0.5.14) has the fixes for what DLSS-G 1 found, frame
 generation's own setting (Display tab, **Frame generation: Off / DLSS / FSR**, experimental; DLSS only offered on RTX
@@ -1651,7 +1652,8 @@ generation's own setting (Display tab, **Frame generation: Off / DLSS / FSR**, e
 - **nvngx_dlssg.dll is only our copy** in `create-galore-dlss`; the game no longer reads NVIDIA's folder at start.
   **Find on this PC** (Upscaling tab) copies the newest of both DLSS files, and the tab shows the dlssg version.
 - **FSR**: AMD FSR 3.1 frame generation (FidelityFX SDK 2.0.0, AMD-signed DLLs shipped in the Bridge) runs on any card
-  DirectX 12 runs on, the 4080 SUPER included. It ran in the cloud only on a software Vulkan driver.
+  DirectX 12 runs on, the 4080 SUPER included. It ran in the cloud only on a software Vulkan driver. The 4080 SUPER runs
+  both, so step 5 measures what each costs on the same card, same spots, same settings.
 
 and DLSS-G 1's findings:
 - after a shader reload, frame generation waits for the first frames of the new pipeline (DLSS-G 1's 5 `CAMERA
@@ -1663,13 +1665,17 @@ and DLSS-G 1's findings:
 - minimising turns frame generation off at once, and it stays off while Windows says the window can't be seen
   (DLSS-G 1's flood of `RSYNC: Flip queue is empty!!!`).
 
+The frame counter counts the frames the game renders, not the generated ones: with frame generation on it shows the
+rendered rate (lower than with it off, as generating costs GPU time). Whether frames are generated shows in the log
+(`Frame generation: running, 2 frames shown per rendered one`) and, in step 5, in PresentMon.
+
 ### Update and settings
 
 The Update block of DLSS-G 1 (fetch, checkout, copy the Bridge and the test kit). The instance's mods must have
 `create-galore-bridge-1.122.0.jar`. In `config\create_galore_bridge-display.properties` note the old values, then set
-`dlaa=dlss`, `perfectPresentation=false`, `presenter=dx11`, `reflex=off`, `fpsCounter=detailed`, `frameGen=off`, remove
-any `frameGenType` line, and add `frameGenCheck=true`. Move the instance's dlssg model aside (DLSS-G 1's start copied
-it there), so step 1 can check Find on this PC:
+`dlaa=dlss`, `perfectPresentation=false`, `presenter=dx11`, `reflex=off`, `gpuPacing=off`, `fpsCounter=detailed`,
+`frameGen=off`, remove any `frameGenType` line, and add `frameGenCheck=true`. Move the instance's dlssg model aside
+(DLSS-G 1's start copied it there), so step 1 can check Find on this PC:
 
 ```powershell
 Move-Item $T\instance\create-galore-dlss\nvngx_dlssg.dll $T\tools\nvngx_dlssg-dlssg1.dll -Force
@@ -1712,71 +1718,92 @@ Open `dlaa-test`, `/gamemode creative`. The log has `Frame generation: NVIDIA DL
   `on` after it's back. Count the `Flip queue is empty` lines in the game log and in the newest Streamline log, and
   compare with DLSS-G 1 (357 and 16,658).
 - **Off and on without a restart, three times.** Open the Display tab, pick **Off**: the status says `Turns off when
-  you close this screen.`; no toast on Done. The log has `Frame generation: turned off` and the frame counter's rate
-  halves. Play a few seconds, then
-  pick **DLSS** again: `Turns on when you close this screen.`, Done, `Frame generation: turned on`, the rate doubles.
-  Each time the picture must stay right (no black frame longer than a blink, no frozen or stretched picture, the HUD
-  sharp). Count `ERROR`/`WARN` lines in the newest Streamline log written during the toggles.
+  you close this screen.`; no toast on Done. The log has `Frame generation: turned off`. Play a few seconds, then pick
+  **DLSS** again: `Turns on when you close this screen.`, Done, `Frame generation: turned on`, then `Frame generation:
+  running, 2 frames shown per rendered one`. Each time the picture must stay right (no black frame longer than a blink,
+  no frozen or stretched picture, the HUD sharp) and motion must look smoother with it on. Count `ERROR`/`WARN` lines in
+  the newest Streamline log written during the toggles.
 - Then just play for a few minutes and say whether anything looks worse than in DLSS-G 1.
 
 ### 3. Starting with it off, about 3 minutes
 
 Pick **Off**, Done, close the game. The settings file has `frameGen=off` and `frameGenType=dlss`. Launch again: the
 log must have `... nvngx_dlssg.dll VERSION ..., off until turned on` and `Frame generation: ready in the DirectX 12
-presenter on NVIDIA GeForce RTX 4080 SUPER, off; Reflex goes through Streamline`. In the world, Reflex runs as set (On) with no
-`Reflex: on, though set to` line. Pick **DLSS**: `Frame generation: turned on`, the rate doubles, the
-checks stay `copy ok`. This is the case where Streamline starts with DLSS-G unloaded.
+presenter on NVIDIA GeForce RTX 4080 SUPER, off; Reflex goes through Streamline`. In the world, Reflex runs as set (On)
+with no `Reflex: on, though set to` line. Pick **DLSS**: `Frame generation: turned on`, then `running, 2 frames shown
+per rendered one`, and the checks stay `copy ok`. This is the case where Streamline starts with DLSS-G unloaded.
 
 ### 4. FSR on this card, about 8 minutes
 
 Pick **FSR**: the status says `Experimental. Switches after a restart.` and Done shows the toast `Frame generation
 switches to FSR after a restart.` Close the game, launch again. The log must have `Frame generation: AMD FSR 3.1 frame
 generation (FidelityFX SDK 2.0.0) from ..., on`, then `Frame generation: ready in the DirectX 12 presenter on NVIDIA
-GeForce RTX 4080 SUPER, on` (no Streamline), and `Reflex: started on Perfect Presentation's DirectX 12 device (NVIDIA NVAPI)`: Reflex On, as set.
-In `dlaa-test`:
-- the frame counter shows about twice the rate it shows with **Off** (look both ways once, with the live switch);
+GeForce RTX 4080 SUPER, on` (no Streamline), and `Reflex: started on Perfect Presentation's DirectX 12 device (NVIDIA
+NVAPI)`: Reflex On, as set. In `dlaa-test`:
+- `Frame generation: running, 2 frames shown per rendered one`; turn it off and on once with the live switch, as in
+  step 2 (`turned off`, `turned on`, `running` again);
 - F8 once while turning, the chat and the command suggestions (does the list look better than with DLSS?), one resize,
   one minimise: the same log lines as in step 2, and no `Frame generation:` WARN or ERROR;
-- Emre plays a minute and says how it looks and feels against DLSS (FSR is known to pace less evenly than DLSS: say
-  if it is bad, not whether it is perfect).
+- Emre plays a minute and says how it looks and feels against DLSS. FSR is known to pace less evenly than DLSS ("double
+  tap": a generated frame shown briefly, the real one held long); say if it is bad, not whether it is perfect. Step 5
+  measures it.
 
-Set **Frame generation** back to **Off**. Close the game.
+Close the game.
 
-### Results
+### 5. Cost: DLSS against FSR against none (no one needed)
 
-Write `$T\repo\tools\dlss-testkit\results\dlssg2\REPORT.md`: the status texts and the DLL line seen in step 1, what Find
-on this PC said, and the screenshot; every `Frame generation` log line that isn't a plain check (the `(native)` ones
-too) and every check line that isn't `copy ok`; the counts asked for above; what Emre said about the command
-suggestions (DLSS both ways, and FSR), about the toggles and about the picture with each. Any Streamline warning or
-error line (those lines only). Put the settings back (and remove `frameGenCheck`), then commit and push on the DLAA
-branch.
+A quiet PC, nothing else running, the window in front with focus. Remove `frameGenCheck` from the settings file
+(checks stall a frame every 5 s); `reflex=on`, `gpuPacing=off` as step 1 left them. Three launches, each the launch
+from step 4 with `--jvm-arg=-Dcreate_galore_dlss_testkit.autorun=dlaa-test` and
+`--jvm-arg=-Dcreate_galore_dlss_testkit.runs=G1` (DLSS-G 1's run: `lat-reflex`, `lat-reflex-pacing-on` and
+`lat-pacing-on`, each twice at `shore` and `canopy`, about 7 minutes):
 
-What comes of it: if everything above holds, frame generation stops being called experimental in a later release,
-and FSR goes to the laptop (FSR-G 1 below).
+| Launch | settings file |
+| --- | --- |
+| 1 | `frameGen=dlss`, `frameGenType=dlss` |
+| 2 | `frameGen=fsr`, `frameGenType=fsr` |
+| 3 | `frameGen=off`, `frameGenType=fsr` |
 
-## FSR-G 1: FSR frame generation on the laptop
+**PresentMon** on each launch (the console build in `$T\tools`, as in Presenter 2), attached to the game's own
+`java.exe` once it has started, elevated with `Start-Process -Verb RunAs` (Emre clicks the prompt before he leaves, or
+the launches wait for him): `--process_id <pid> --output_file $T\fg2\L<n>.csv --qpc_time_ms --timed 900
+--terminate_after_timed --terminate_on_proc_exit --stop_existing_session --no_console_stats`. Check the CSV grows.
+It records every frame the screen shows, generated ones included, which is what tells even pacing from FSR's double
+tap.
 
-Start only when Emre says so, after DLSS-G 2, on the laptop (RTX 3070 Laptop GPU) in a test folder Emre names there,
-set up like steps 1 to 3 of this runbook with `$T` pointing at it. About 15 minutes, Emre at the keyboard. The laptop
-keeps DLSS for anti-aliasing (its own nvngx_dlss.dll, Find on this PC); frame generation is FSR.
+- Launches 1 and 2's logs must have `Frame generation: running, 2 frames shown per rendered one`, launch 3's `Frame
+  generation: ready ..., off` and no `running`.
+- Launch 1: `Reflex: started through Streamline ...`; launches 2 and 3: `Reflex: started on Perfect Presentation's
+  DirectX 12 device (NVIDIA NVAPI)`. All three: `Latency: GPU pacer on, ...` in the pacing modes. Copy any `Frame
+  generation`, `Perfect Presentation`, `Latency:` or `Reflex:` WARN or ERROR line.
 
-### Settings
-
-In `config\create_galore_bridge-display.properties`: `dlaa=dlss`, `fpsCounter=detailed`, `frameGenCheck=true`. In the
-game, Upscaling & Display, tab Display: **Frame generation: FSR** (it turns Perfect Presentation on and DirectX to 12),
-Reflex as Emre likes it. DLSS is not in the list (no RTX 40 or 50). Restart once. Render resolution: whatever holds
-about 60 fps with frame generation **Off** at the laptop's screen size.
-
-### Play
-
-- The log has `Frame generation: AMD FSR 3.1 frame generation ... on` and `ready in the DirectX 12 presenter on NVIDIA
-  GeForce RTX 3070 Laptop GPU, on`; the status says `Experimental: running.`
-- The frame counter with **Off** and with **FSR** (the live switch, no restart), standing still and walking, at the
-  same spot: write both rates down.
-- F8 once, the chat with command suggestions, a minimise: as in DLSS-G 2 step 4.
-- Emre (or the laptop's player) plays a few minutes: smoothness, input feel, HUD sharpness, anything odd.
+If a launch crashes, copy `hs_err_pid*.log`, the log's last 100 lines and the newest Streamline log, and report.
 
 ### Results
 
-`$T\repo\tools\dlss-testkit\results\fsrg1\REPORT.md`: the rates, the `Frame generation` lines that aren't plain
-checks, what the player said. Settings back, commit and push on the DLAA branch.
+```powershell
+$py = "$T\tools\uv\uv.exe"
+& $py run --python 3.13 $T\repo\tools\dlss-testkit\latency.py <launch 1 run folder> <launch 2 run folder> <launch 3 run folder>
+& $py run --python 3.13 $T\repo\tools\dlss-testkit\frametimes.py <launch 1 run folder> $T\fg2\L1.csv <launch 2 run folder> $T\fg2\L2.csv <launch 3 run folder> $T\fg2\L3.csv
+```
+
+Write `$T\repo\tools\dlss-testkit\results\fg2\REPORT.md`:
+- steps 1 to 4: the status texts and the DLL line seen in step 1, what Find on this PC said, and the screenshot; every
+  `Frame generation` log line that isn't a plain check (the `(native)` ones too) and every check line that isn't `copy
+  ok`; the counts asked for above; what Emre said about the command suggestions (DLSS both ways, and FSR), about the
+  toggles, and about the picture and feel with each; any Streamline warning or error line (those lines only);
+- step 5, per launch, mode and viewpoint: rendered fps and input to GPU end (median and 90th percentile) from
+  latency.py; from frametimes.py the shown-frame interval (median, p10, p90) and the pair ratio (median, p90: about 1
+  is even pacing, 2 or more is the double tap). Then in one line each:
+  - **what each costs:** `lat-reflex` rendered fps and latency, DLSS and FSR each against none;
+  - **what the screen gets:** shown frames per second with DLSS, with FSR, without;
+  - **pacing:** DLSS against FSR pair ratios; does FSR double tap here?
+  - **the pacer:** does `lat-reflex-pacing-on` still keep the frame rate and lower the latency with each?
+
+Keep the PresentMon CSVs in `$T\fg2` (they stay on the PC). Put the settings back (remove `frameGenCheck`; `frameGen`
+and `frameGenType` as Emre wants them), then commit and push on the DLAA branch. Don't commit hs_err files or
+Streamline logs whole (they name his user folder).
+
+What comes of it (Emre's plan, 2026-10-26): if it all holds, the PR merges; then DLSS frame generation stops being
+experimental, FSR frame generation stays experimental until some play sessions show it behaving, DirectX 12 becomes
+the default, and the pack goes to 0.6.
