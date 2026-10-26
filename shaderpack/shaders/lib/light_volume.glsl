@@ -13,9 +13,12 @@
 //
 // The bounce light: the shadow map also keeps the colour and the facing of every surface the sun (or the moon) lights
 // (shadow.fsh), and light_bounce.csh adds the light each one reflects into the blocks in front of it. The flood
-// spreads it through the volume as well, each block passing on most of what it takes from its neighbours, so it fades
-// within a few blocks, stops at solid blocks, dims through leaves, and lights a room from its sunlit floor in the
-// floor's colour. Nothing in either is random, so the upscaler sees the same light every frame.
+// spreads it through the volume as well, so it stops at solid blocks, dims through leaves, and lights a room from its
+// sunlit floor in the floor's colour. It keeps apart the light by which way the surface it last left faces (up, down
+// and the four sides): a surface takes the light of every facing but its own, since no surface can light another
+// that faces the same way (a sunlit floor doesn't light itself or the floor beside it). Each solid block next to it
+// sends back what reaches it as light of its own facing. Nothing in either is random, so the upscaler sees the same
+// light every frame.
 
 #if !defined LIB_LIGHT_VOLUME
 #define LIB_LIGHT_VOLUME
@@ -30,24 +33,37 @@ const vec3 torch_color = vec3(1.453, 0.916, 0.494);
 
 // The volume's size in blocks (x and z across, y up): LIGHT_RANGE across, half of it up.
 const ivec3 light_volume_size = ivec3(LIGHT_RANGE, LIGHT_RANGE / 2, LIGHT_RANGE);
-// Both images hold several volumes one after another along z (sections), each light_volume_depth deep.
-const int light_volume_depth = LIGHT_RANGE;
 
-// The marks image: what each block is, the light it gives, and (with bounce light) the sunlight its neighbours'
-// surfaces reflect into it, red, green and blue in three sections, in fixed point (bounce_scale is 1).
+// Both images hold several volumes (sections) one above another along y. The light image holds two of each along z,
+// taking turns: one written each frame while the other, last frame's, is read.
+//
+// The marks image: what each block is, the light it gives, and (with bounce light) what the sunlit surfaces around it
+// reflect into it, summed in fixed point (bounce_scale is 1), two sums to a texel: the light's red, green and blue,
+// then how much of it each facing sent (luminance), in the order of facing_dir.
 const int section_marks = 0;
 const int section_lights = 1;
 const int section_bounce_added = 2;
-const float bounce_scale = 4096.0;
-// The light image: the coloured light twice, then (with bounce light) the bounce light twice, each taking turns (one
-// written each frame while the other is read).
+const float bounce_scale = 2048.0;
+// The light image: the coloured light; then (with bounce light) the bounce light's colour (from every facing, for its
+// colour only), and each facing's (luminance), three to a texel.
 const int section_color = 0;
-const int section_bounce = 2;
+const int section_bounce = 1;
+const int section_bounce_facing = 2;
 #ifdef LIT_GI
+const int marks_sections = 7;
 const int light_sections = 4;
 #else
-const int light_sections = 2;
+const int marks_sections = 2;
+const int light_sections = 1;
 #endif
+
+ivec3 marks_texel(ivec3 block, int section) {
+    return block + ivec3(0, section * light_volume_size.y, 0);
+}
+
+ivec3 light_texel(ivec3 block, int section, int turn) {
+    return block + ivec3(0, section * light_volume_size.y, turn * light_volume_size.z);
+}
 
 // What a block is, in the marks' first section (each bit set by any of its vertices, see shadow.vsh).
 const uint mark_solid = 1u;      // a vertex of a solid block at one of the block's corners
@@ -55,18 +71,45 @@ const uint mark_partial = 2u;    // a vertex of a solid block inside the block's
 const uint mark_tinted = 4u;     // see-through, tinting what passes; bits 8.. the tint (7 bits each, red first)
 const uint mark_foliage = 8u;    // leaves, which the bounce light only partly gets through
 
-// Of the bounce light a block takes from its neighbours, how much it passes on (the rest is lost, as light is to the
-// surfaces around it that aren't in the volume): in the open it falls to a third about 2.5 blocks from where it
-// bounced. Through leaves, half of that.
-const float bounce_pass = 0.97;
+// The bounce light's facings: +x, -x, +y, -y, +z, -z (each one's opposite is facing ^ 1).
+vec3 facing_dir(int facing) {
+    vec3 d = vec3(0.0);
+    d[facing >> 1] = (facing & 1) == 0 ? 1.0 : -1.0;
+    return d;
+}
+
+// The facing nearest a normal's.
+int facing_of(vec3 n) {
+    vec3 a = abs(n);
+    int axis = a.x > a.y && a.x > a.z ? 0 : (a.y > a.z ? 1 : 2);
+    return axis * 2 + (n[axis] < 0.0 ? 1 : 0);
+}
+
+const vec3 bounce_luma = vec3(0.2126, 0.7152, 0.0722);
+// The marks' bounce sums: 0 to 2 the red, green and blue, 3 + facing that facing's (see section_bounce_added).
+ivec3 bounce_added_texel(ivec3 block, int sum) {
+    return marks_texel(block, section_bounce_added + sum / 2);
+}
+uint bounce_added_bits(int sum, float amount) {
+    return uint(amount * bounce_scale + 0.5) << (16u * uint(sum & 1));
+}
+float bounce_added_value(uint texel, int sum) {
+    return float((texel >> (16u * uint(sum & 1))) & 0xFFFFu) / bounce_scale;
+}
+
+// The light spreading through the open: each block passes on all it takes from its neighbours (it only fades as it
+// spreads out); through leaves, half. What a solid block next to it sends back of what reaches it (a middling surface,
+// between dark stone and white concrete, as the flood carries it): the bounces after the first, which fill a room from
+// its sunlit patch.
+const float bounce_pass = 1.0;
 const float bounce_foliage_pass = 0.5;
-// What a solid block next to it sends back of a block's bounce light (a middling surface, between dark stone and
-// white concrete): the bounces after the first, which fill a room from its sunlit patch.
-const float bounce_wall_reflect = 0.5;
-// A sunlit floor reflecting some light into the block over it leaves about 6 times that there, once the flood has
-// settled (5.98 for bounce_pass 0.97 and bounce_wall_reflect 0.5); a surface right over the floor sees nothing but
-// floor and gets all of it once.
-const float bounce_peak = 6.0;
+const float bounce_wall_reflect = 0.85;
+// The surfaces put their light 1.5 blocks in front of them (half a block where there's no room), and a surface reads
+// it 1 block in front: as near as the flood's light comes to what the surfaces really send each other (checked
+// against radiosity in rooms lit by a patch of floor or a wall), to within about 2 times. Its scale to irradiance:
+const float bounce_add_offset = 1.5;
+const float bounce_read_offset = 1.0;
+const float bounce_peak = 2.7;
 
 // The volume's block at a position relative to the camera (scene space): blocks counted from the volume's corner.
 ivec3 light_volume_block(vec3 scene_pos, vec3 camera_fract) {
@@ -114,20 +157,20 @@ vec3 tint_from_mark(uint mark) {
 
 uniform sampler3D cg_light_tex;
 
-// Where the light on a surface at scene_pos facing normal is in the volume: the block in front of the surface (at,
+// Where the light on a surface at scene_pos facing normal is in the volume: offset blocks in front of the surface (at,
 // in blocks from the volume's corner); and how much of it to take, fading out towards the volume's edges so the
 // change past them isn't seen as a line (0 past them).
-float light_volume_at(vec3 scene_pos, vec3 normal, out vec3 at) {
-    at = scene_pos + normal * 0.5 + cameraPositionFract + vec3(light_volume_size / 2);
+float light_volume_at(vec3 scene_pos, vec3 normal, float offset, out vec3 at) {
+    at = scene_pos + normal * offset + cameraPositionFract + vec3(light_volume_size / 2);
     vec3 edge = min(at, vec3(light_volume_size) - at);
     return smoothstep(1.0, 8.0, min(edge.x, min(edge.y, edge.z)));
 }
 
-// This frame's light (the flood wrote it after the shadow pass) of one of the volume's sections (section_color,
-// section_bounce) at a point inside the volume, between its blocks' centres.
+// This frame's light (the flood wrote it after the shadow pass) of one of the light image's sections at a point inside
+// the volume, between its blocks' centres.
 vec3 light_volume_sample(vec3 at, int section) {
-    float z = at.z + float((section + (frameCounter & 1)) * light_volume_depth);
-    return texture(cg_light_tex, vec3(at.xy, z) / vec3(light_volume_size.xy, light_sections * light_volume_depth)).rgb;
+    vec3 p = at + vec3(0.0, float(section * light_volume_size.y), float((frameCounter & 1) * light_volume_size.z));
+    return texture(cg_light_tex, p / vec3(light_volume_size * ivec3(1, light_sections, 2))).rgb;
 }
 #endif
 
@@ -138,7 +181,7 @@ vec3 light_volume_sample(vec3 at, int section) {
 vec3 block_light_color(vec3 scene_pos, vec3 normal) {
     const vec3 torch = torch_color;
     vec3 at;
-    float fade = light_volume_at(scene_pos, normal, at);
+    float fade = light_volume_at(scene_pos, normal, 0.5, at);
     if (fade <= 0.0) {
         return torch;
     }
@@ -159,17 +202,27 @@ vec3 block_light_color(vec3 scene_pos, vec3 normal) {
 
 #ifdef LIT_GI
 // The sunlight (or moonlight) bouncing off the world onto a surface at scene_pos facing normal, as a share of the
-// light's own (times g_light_color it is irradiance): the volume's bounce light in the block in front of it. sky: the
-// surface's sky light (0..1). Where a surface sees the open sky, the sky's light already holds the ground's bounce
-// (see frame_globals.csh), so this adds little there.
+// light's own (times g_light_color it is irradiance): the volume's bounce light in front of it, of every facing but
+// the surface's own (one facing a little aslant takes a little of its nearest facings'). sky: the surface's sky light
+// (0..1). Where a surface sees the open sky, the sky's light already holds the ground's bounce (see
+// frame_globals.csh), so this adds little there.
 vec3 bounce_light(vec3 scene_pos, vec3 normal, float sky) {
     vec3 at;
-    float fade = light_volume_at(scene_pos, normal, at);
+    float fade = light_volume_at(scene_pos, normal, bounce_read_offset, at);
     if (fade <= 0.0) {
         return vec3(0.0);
     }
+    vec3 color = light_volume_sample(at, section_bounce);
+    vec3 facing_a = light_volume_sample(at, section_bounce_facing);
+    vec3 facing_b = light_volume_sample(at, section_bounce_facing + 1);
+    float received = dot(facing_a, 1.0 - max(vec3(normal.x, -normal.x, normal.y), 0.0))
+            + dot(facing_b, 1.0 - max(vec3(-normal.y, normal.z, -normal.z), 0.0));
+    float luma = dot(color, bounce_luma);
+    if (received <= 0.0 || luma <= 0.0) {
+        return vec3(0.0);
+    }
     float open_sky = smoothstep(11.0 / 15.0, 1.0, sky);
-    return light_volume_sample(at, section_bounce) * (fade * (1.0 - 0.9 * open_sky) * GI_STRENGTH / bounce_peak);
+    return color * (received / luma * fade * (1.0 - 0.9 * open_sky) * GI_STRENGTH / bounce_peak);
 }
 #endif
 

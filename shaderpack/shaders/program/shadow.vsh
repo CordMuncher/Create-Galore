@@ -114,7 +114,7 @@ void mark_block(vec3 scene_pos, vec2 uv) {
     if (level > 0.5 && (gl_VertexID & 3) == 0) {
         vec3 c = id >= BLOCK_LIGHT_RED && id <= BLOCK_LIGHT_LAST
                 ? listed_light_color(id) : light_color(face_light_color(uv, mc_midTexCoord));
-        imageAtomicMax(cg_voxel_img, block + ivec3(0, 0, section_lights * light_volume_depth), light_mark(level, c));
+        imageAtomicMax(cg_voxel_img, marks_texel(block, section_lights), light_mark(level, c));
     }
 #endif
 #if defined PROGRAM_SHADOW_SOLID

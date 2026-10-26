@@ -1,9 +1,9 @@
 // The overworld's bounce light's source, after the shadow pass (see light_volume.glsl). Every few texels of the shadow
 // map (about half a block apart), the surface the sun (or the moon) lights there reflects its own colour of what a
-// beam that wide brings it (whichever way the surface faces, the beam all lands on it) into the blocks in front of
-// it: shared between the eight block centres around that point by how near each is, so it moves smoothly as the
-// samples move across the blocks, never into a solid one. What the clouds' shadow takes is left out of it; the
-// light's own colour is left for the lit surfaces to multiply in.
+// beam that wide brings it (whichever way the surface faces, the beam all lands on it) into the volume 1.5 blocks in
+// front of it, as light of its facing: shared between the eight block centres around that point by how near each is,
+// so it moves smoothly as the samples move across the blocks, never into a solid one. What the clouds' shadow takes is
+// left out of it; the light's own colour is left for the lit surfaces to multiply in.
 
 #define PROGRAM_LIGHT_BOUNCE
 #include "/lib/light_volume.glsl"
@@ -69,35 +69,43 @@ void main() {
 #endif
 
     // The point in front of the surface, counted in blocks from the volume's corner, from the first of the eight block
-    // centres around it.
-    vec3 at = scene_pos + normal * 0.5 + cameraPositionFract + vec3(light_volume_size / 2) - 0.5;
-    ivec3 base = ivec3(floor(at));
-    vec3 f = at - vec3(base);
+    // centres around it; half a block in front where there's no room further out.
+    ivec3 base;
     float weights[8];
     float total = 0.0;
-    for (int i = 0; i < 8; i++) {
-        ivec3 corner = ivec3(i & 1, (i >> 1) & 1, i >> 2);
-        ivec3 block = base + corner;
-        vec3 w = mix(1.0 - f, f, vec3(corner));
-        weights[i] = w.x * w.y * w.z;
-        if (!in_light_volume(block) || marks_solid(imageLoad(cg_voxel_img, block).r)) {
-            weights[i] = 0.0;
+    for (int attempt = 0; attempt < 2 && total < 1e-3; attempt++) {
+        float offset = attempt == 0 ? bounce_add_offset : 0.5;
+        vec3 at = scene_pos + normal * offset + cameraPositionFract + vec3(light_volume_size / 2) - 0.5;
+        base = ivec3(floor(at));
+        vec3 f = at - vec3(base);
+        total = 0.0;
+        for (int i = 0; i < 8; i++) {
+            ivec3 corner = ivec3(i & 1, (i >> 1) & 1, i >> 2);
+            ivec3 block = base + corner;
+            vec3 w = mix(1.0 - f, f, vec3(corner));
+            weights[i] = w.x * w.y * w.z;
+            if (!in_light_volume(block) || marks_solid(imageLoad(cg_voxel_img, marks_texel(block, section_marks)).r)) {
+                weights[i] = 0.0;
+            }
+            total += weights[i];
         }
-        total += weights[i];
     }
     if (total < 1e-3) {
         return;
     }
-    vec3 scaled = flux * (bounce_scale / total);
+    // Its colour (sums 0 to 2), and as light of its facing (sum 3 + facing).
+    vec4 sums = vec4(flux, dot(flux, bounce_luma)) / total;
+    int facing_sum = 3 + facing_of(normal);
     for (int i = 0; i < 8; i++) {
         if (weights[i] <= 0.0) {
             continue;
         }
         ivec3 block = base + ivec3(i & 1, (i >> 1) & 1, i >> 2);
-        uvec3 add = uvec3(scaled * weights[i] + 0.5);
-        for (int c = 0; c < 3; c++) {
-            if (add[c] != 0u) {
-                imageAtomicAdd(cg_voxel_img, block + ivec3(0, 0, (section_bounce_added + c) * light_volume_depth), add[c]);
+        for (int c = 0; c < 4; c++) {
+            int sum = c < 3 ? c : facing_sum;
+            uint bits = bounce_added_bits(sum, sums[c] * weights[i]);
+            if (bits != 0u) {
+                imageAtomicAdd(cg_voxel_img, bounce_added_texel(block, sum), bits);
             }
         }
     }

@@ -48,9 +48,11 @@ Light and water (milestone 4, the Coloured Light, Bounce Light and Water Ripples
   stays Minecraft's light level, so it never reaches further or leaks where Minecraft's light doesn't.
 - Bounce light: sunlight bounces off the world in the colour of what it falls on. The shadow map keeps the colour
   and facing of every surface the sun lights, each one sends its reflected light into the blocks in front of it,
-  and it spreads through the same volume, fading within a few blocks, stopped by solid blocks and dimmed by leaves:
-  a room lights up from its sunlit floor, a red carpet tints the walls around it. Nothing in it is random, so there
-  is no noise for DLSS or FSR to smear.
+  and it spreads through the same volume, stopped by solid blocks (which send some of it back) and dimmed by leaves:
+  a room lights up from its sunlit floor, a red carpet tints the walls around it. The light is kept apart by which
+  way the surface it left faces, and a surface takes none from surfaces facing its own way, so a sunlit floor never
+  lights itself. Checked against a radiosity solution of a few rooms, it lands within about 2 times of it. Nothing
+  in it is random, so there is no noise for DLSS or FSR to smear.
 - Water: small wind waves on every water surface, and ripples where you, mobs, boats, Sable ships and Create's
   water wheels move through it, with wakes behind them. The ripples are a wave simulation on a grid around you,
   stepped 60 times a second whatever the frame rate; the shadow pass finds what reaches into the water. Both only
