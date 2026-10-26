@@ -116,6 +116,12 @@ final class EffectsScene {
         Capture.server(CLEAR);
     }
 
+    /** Takes the scene away even if this game didn't build it: an earlier game may have left it standing. */
+    static void clear() {
+        built = true;
+        remove();
+    }
+
     // Rain on or off at full strength at once, on the server and on the client (which would otherwise wait for the
     // server's next tick, and the server only changes its rain level a hundredth per tick).
     private static void rain(boolean on) {

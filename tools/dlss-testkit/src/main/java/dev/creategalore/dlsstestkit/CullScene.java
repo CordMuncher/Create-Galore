@@ -44,4 +44,10 @@ final class CullScene {
             Capture.server(CLEAR);
         }
     }
+
+    /** Takes the scene away even if this game didn't build it: an earlier game may have left it standing. */
+    static void clear() {
+        built = true;
+        remove();
+    }
 }

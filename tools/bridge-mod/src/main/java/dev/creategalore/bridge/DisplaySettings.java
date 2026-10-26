@@ -56,6 +56,12 @@ public final class DisplaySettings {
     public static final String PACER_TARGET_US = "pacerTargetUs";
     /** Testing only, not written to the file: false leaves the Max Framerate cap to the game's limiter, after the frame, instead of the frame's start (see FrameLatency). */
     public static final String FRAME_CAP_AT_START = "frameCapAtStart";
+    /** dx11 (the default) or dx12 (experimental): the DirectX version Perfect Presentation shows the game with (needs a restart). */
+    public static final String PRESENTER = "presenter";
+    /** Testing only, not written to the file: true has the DirectX 12 presenter compare two shown frames with the game's, pixel by pixel, in the log. */
+    public static final String PRESENT_CHECK = "presentCheck";
+    /** Testing only, not written to the file: true logs GPU timestamps around the DirectX 12 hand-off (see PresentTiming). */
+    public static final String PRESENT_TIMING = "presentTiming";
     /** The frame counter: off, basic or detailed (see FpsOverlay). */
     public static final String FPS_COUNTER = "fpsCounter";
     /** The frame counter's corner: top-left, top-right, bottom-left or bottom-right. */
@@ -63,9 +69,9 @@ public final class DisplaySettings {
     /** true: the frame counter see-through and moving a pixel now and then, for OLED screens. */
     public static final String FPS_COUNTER_DIM = "fpsCounterDim";
 
-    private static final String COMMENT = "Create Galore Bridge display settings, also on the settings screen (Mods, Create Galore Bridge,\n"
-            + " Config, or the DLAA button in the shader pack menu). perfectPresentation and tenBitWindow need a restart;\n"
-            + " dlaa and dlaaPreset apply when shaders reload (Iris's reload key, F8 in this pack).\n"
+    private static final String COMMENT = "Create Galore Bridge display settings, also on the Upscaling & Display screen (Mods, Create\n"
+            + " Galore Bridge, Config, or its button in the shader pack menu). perfectPresentation, presenter and tenBitWindow\n"
+            + " need a restart; dlaa and dlaaPreset apply when shaders reload (Iris's reload key, F8 in this pack).\n"
             + " dlaa: optional. Only with a shader pack made for DLAA (one with shaders/create_galore_dlss.properties), such as\n"
             + " Photon v1.3a + DLAA, a copy of Photon the Bridge makes in shaderpacks/ at startup (pick it in the shader menu):\n"
             + " it replaces the pack's own anti-aliasing with NVIDIA DLSS or AMD FSR 3.1. auto: DLSS on an NVIDIA RTX card\n"
@@ -92,6 +98,10 @@ public final class DisplaySettings {
             + " Needs an NVIDIA or AMD driver with WGL_NV_DX_interop2. Turns off NeoForge's early loading window.\n"
             + " On NVIDIA also set Power management mode to Prefer maximum performance for javaw.exe, or the\n"
             + " driver keeps the GPU clocks low.\n"
+            + " presenter: dx11 or dx12, the DirectX version Perfect Presentation shows the game with. dx12 is EXPERIMENTAL\n"
+            + " and not recommended as the default yet: marginally lower input delay than dx11 in tests, same frame rate.\n"
+            + " Needs an OpenGL driver that shares textures with DirectX 12 (NVIDIA's does, Intel's doesn't); where it\n"
+            + " can't start, the game uses dx11.\n"
             + " tenBitWindow: EXPERIMENTAL. true asks for a 10-bit game window, meant to keep a 10-bit monitor at 10-bit\n"
             + " in fullscreen. It did not stop the 8-bit switch on an RTX 4080 Super. Turns off NeoForge's early\n"
             + " loading window (config/fml.toml).";
@@ -172,6 +182,7 @@ public final class DisplaySettings {
             missing |= props.putIfAbsent(PERFECT_PRESENTATION, "false") == null;
             missing |= props.putIfAbsent(DLAA, "auto") == null;
             missing |= props.putIfAbsent(DLAA_PRESET, "default") == null;
+            missing |= props.putIfAbsent(PRESENTER, "dx11") == null;
             missing |= props.putIfAbsent(REFLEX, "off") == null;
             missing |= props.putIfAbsent(GPU_PACING, "off") == null;
             missing |= props.putIfAbsent(FPS_COUNTER, "off") == null;

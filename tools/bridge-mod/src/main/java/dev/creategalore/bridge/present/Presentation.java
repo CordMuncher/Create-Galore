@@ -5,10 +5,12 @@ import static org.lwjgl.glfw.GLFW.*;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.function.LongSupplier;
 
 import dev.creategalore.bridge.DisplaySettings;
 import net.neoforged.fml.loading.FMLConfig;
+import net.neoforged.fml.loading.FMLPaths;
 import org.lwjgl.glfw.GLFWNativeWin32;
 import org.lwjgl.system.MemoryStack;
 import org.slf4j.Logger;
@@ -16,7 +18,9 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Perfect Presentation for NeoForge: the game window gets no OpenGL context; the game renders on a hidden OpenGL
- * context and each frame is shown through a DXGI flip-model swap chain (see {@link InteropContext}). Borderless
+ * context and each frame is shown through a DXGI flip-model swap chain, on Direct3D 11 ({@link InteropContext}) or,
+ * with presenter=dx12 (experimental, a choice on the settings screen), Direct3D 12 ({@link D3D12Presenter}, falling
+ * back to 11). Borderless
  * fullscreen then runs like exclusive fullscreen, Alt-Tab never changes the display mode (no 10-bit to 8-bit flash on
  * NVIDIA), and NVIDIA's "Prefer layered on DXGI Swapchain" present method is not needed (it held the GPU at ~55%).
  *
@@ -33,12 +37,16 @@ public final class Presentation {
     private static final Logger LOG = LoggerFactory.getLogger("create_galore_bridge");
     /** Applies the mixins without turning the feature on, to check they still fit the game's code. */
     private static final String FORCE_MIXINS = "create_galore_bridge.presentation.forceMixins";
+    /** Where cg_present.dll is unpacked: the game folder's DLSS folder, beside cg_ngx.dll. */
+    private static final String NATIVES_FOLDER = "create-galore-dlss";
 
     private static boolean requested;
     private static boolean failed;
+    /** DirectX 12 was asked for at launch but could not start, so Direct3D 11 runs. */
+    private static boolean dx12FellBack;
     private static final WglContext.ContextFlags FLAGS = new WglContext.ContextFlags();
     private static final List<int[]> SWALLOWED_HINTS = new ArrayList<>();
-    private static InteropContext interop;
+    private static Presenter presenter;
     private static long window;
 
     private Presentation() {}
@@ -129,16 +137,21 @@ public final class Presentation {
         glfwWindowHint(GLFW_AUTO_ICONIFY, GLFW_FALSE);
         glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
         long handle = create.apply(() -> 0L);
+        WglContext openglContext = null;
         try {
-            interop = new InteropContext(GLFWNativeWin32.glfwGetWin32Window(handle), FLAGS);
+            openglContext = new WglContext(FLAGS);
+            presenter = startPresenter(GLFWNativeWin32.glfwGetWin32Window(handle), openglContext);
             window = handle;
             hideFromGlVersionCheck();
-            LOG.info("Perfect Presentation: DXGI swap chain ready (OpenGL on a hidden context)");
+            LOG.info("Perfect Presentation: DXGI swap chain ready on {} (OpenGL on a hidden context)", presenter.api());
             return handle;
         } catch (Throwable t) {
             LOG.error("Perfect Presentation: could not set up the DXGI swap chain, falling back to a normal OpenGL window", t);
             failed = true;
-            interop = null;
+            presenter = null;
+            if (openglContext != null) {
+                openglContext.close();
+            }
             glfwDestroyWindow(handle);
             glfwWindowHint(GLFW_AUTO_ICONIFY, GLFW_TRUE);
             for (int[] hint : SWALLOWED_HINTS) {
@@ -146,6 +159,33 @@ public final class Presentation {
             }
             return create.apply(monitor);
         }
+    }
+
+    /** Direct3D 12 when presenter=dx12 and it starts, else Direct3D 11. */
+    private static Presenter startPresenter(long hwnd, WglContext openglContext) {
+        String api = DisplaySettings.getString(DisplaySettings.PRESENTER, "dx11").toLowerCase(Locale.ROOT);
+        if (api.equals("dx12")) {
+            try {
+                return new D3D12Presenter(hwnd, openglContext, FMLPaths.GAMEDIR.get().resolve(NATIVES_FOLDER),
+                        DisplaySettings.get(DisplaySettings.PRESENT_CHECK));
+            } catch (Throwable t) {
+                LOG.warn("Perfect Presentation: DirectX 12 could not start, using DirectX 11", t);
+                dx12FellBack = true;
+            }
+        } else if (!api.equals("dx11")) {
+            LOG.warn("Unknown {}={} in {}, using dx11 (choose dx11 or dx12)", DisplaySettings.PRESENTER, api, DisplaySettings.FILE);
+        }
+        return new InteropContext(hwnd, openglContext);
+    }
+
+    /** "DirectX 11" or "DirectX 12" while Perfect Presentation runs, else null. */
+    public static String api() {
+        return active() && presenter != null ? presenter.api() : null;
+    }
+
+    /** True if presenter=dx12 at launch but DirectX 12 could not start, so Perfect Presentation runs on DirectX 11. */
+    public static boolean dx12FellBack() {
+        return active() && dx12FellBack;
     }
 
     /**
@@ -169,7 +209,7 @@ public final class Presentation {
         if (!active()) {
             return false;
         }
-        interop.makeCurrent();
+        presenter.makeCurrent();
         return true;
     }
 
@@ -179,19 +219,19 @@ public final class Presentation {
         if (!active()) {
             return false;
         }
-        interop.setSyncInterval(interval);
+        presenter.setSyncInterval(interval);
         return true;
     }
 
-    /** The Direct3D 11 device showing the game (an ID3D11Device*), 0 while Perfect Presentation is off. */
+    /** The DirectX device showing the game (ID3D11Device* or ID3D12Device*), 0 while Perfect Presentation is off. */
     public static long d3dDevice() {
-        return active() && interop != null ? interop.device() : 0L;
+        return active() && presenter != null ? presenter.device() : 0L;
     }
 
     public static void close() {
-        if (active() && interop != null) {
-            interop.close();
-            interop = null;
+        if (active() && presenter != null) {
+            presenter.close();
+            presenter = null;
         }
     }
 
@@ -202,7 +242,7 @@ public final class Presentation {
             return false;
         }
         dev.creategalore.bridge.latency.FrameLatency.presentStart();
-        interop.present();
+        presenter.present();
         dev.creategalore.bridge.latency.FrameLatency.presentEnd();
         return true;
     }
@@ -211,7 +251,7 @@ public final class Presentation {
 
     public static void waitForSwapChain() {
         if (active()) {
-            interop.waitForSwapChainSignal();
+            presenter.waitForSwapChainSignal();
         }
     }
 
@@ -219,7 +259,7 @@ public final class Presentation {
         if (!active()) {
             return false;
         }
-        interop.blitToSwapChain(colorTexture);
+        presenter.blitToSwapChain(colorTexture);
         return true;
     }
 
@@ -231,7 +271,7 @@ public final class Presentation {
             var w = stack.mallocInt(1);
             var h = stack.mallocInt(1);
             glfwGetFramebufferSize(window, w, h);
-            interop.resizeSwapChain(w.get(0), h.get(0));
+            presenter.resizeSwapChain(w.get(0), h.get(0));
         }
     }
 }
