@@ -121,10 +121,25 @@ builds, and closes), then delete that jar from `$I\mods\` again.
 
 The launch command from step 4 with `--jvm-arg=-Dcreate_galore_shader_compare.autorun=dlaa-test` added. The game
 opens the world, photographs every scene with every pack (pass 1, each pack's defaults, then pass 2, each pack's
-highest preset; 13 packs, 22 scenes), puts Iris back as it was and closes. It takes about two and a half hours; the
-chat (hidden in the shots) and the log say `Shader compare: now <pack>-<pass>` at each pack. Keep the window visible;
-it doesn't need focus. Don't use the PC for games meanwhile (the frame rate doesn't matter, but another full-screen
-program can cover the window).
+highest preset; 13 packs, 22 scenes), puts Iris back as it was and closes. It takes about three and a half hours (the
+rain scene waits three minutes in the rain before each shot); the log says `Shader compare: now <pack>-<pass>` at
+each pack. Keep the window visible; it doesn't need focus. Don't use the PC for games meanwhile (the frame rate
+doesn't matter, but another full-screen program can cover the window).
+
+What the kit does that a run before 2026-10-27 18:30 didn't:
+
+- **Survey first.** Before the first pack it visits each overworld scene once (8 s each) and, for scenes that may
+  turn (`maxTurn` in the JSON), turns the camera away from floating islands and airships (real blocks high in the air
+  with nothing below them, and the mods' flying creatures). Every pack then gets the same view. What it found is in
+  `manifest.json` (`clearance`, `views`) and the log (`Shader compare: survey <scene>`). Airships that are Sable ships
+  rather than blocks in the world can't be seen by it. `-Dcreate_galore_shader_compare.nosurvey=true` leaves it out.
+- **Arrival frames.** At each arrival, frames are saved 0.1, 0.5, 1 and 2 seconds in
+  (`<pack>-<pass>/arrive/<scene>-<ms>ms.png`, `path: "arrive"` in the manifest, frame = milliseconds), then the
+  settled shot as before. They show the jitter when a scene first appears. `-Dcreate_galore_shader_compare.noarrival=true`
+  leaves them out (a full run's arrival frames take about 6 GB).
+- **Stop.** Press **End** while it runs (any time the game window has focus), or make an empty file named
+  `shader-compare.stop` in `$I` (works without focus: `New-Item $I\shader-compare.stop`). It puts Iris and every
+  pack's options back as they were, writes the manifest with `outcome: "stopped by key"` and closes the game.
 
 If it stops part way, run again with `--jvm-arg=-Dcreate_galore_shader_compare.packs=a+b` (the pack names in the
 JSON) for the packs left; each run gets its own folder.
@@ -143,10 +158,21 @@ Write `$R\tools\shader-compare\results\compare-1\REPORT.md`:
 - Every pack and pass with `"loaded": false` and its `error`, and for each the Iris lines from `latest.log` that say
   why (compile errors: the first few lines of each).
 - The spot the Nether scene found (`found` in the manifest).
-- Look at every sheet: any scene that is broken for every pack (the camera inside a block, black, or nothing of what
+- Look at every sheet, and the `survey` lines and `clearance` in the manifest (did a scene turn away from something
+floating; is anything floating still in view): any scene that is broken for every pack (the camera inside a block, black, or nothing of what
   its `about` in the JSON says) and any pack that is broken in a scene (a black or white frame, the sky only, no
   shaders). Don't fix scenes or packs here; say what you saw.
 
-Commit the report and the sheets on `claude/project-thread-mturba`, push, and give the owner the commit. Never commit
-the full screenshots or logs. The full screenshots are looked at with `$R\tools\dlss-testkit\compare.html` (pick the
+Full-size shots of our pack (the settled shots of both its passes, and the arrival frames of its defaults pass at 960 px)
+as JPEGs, to commit next to the sheets:
+
+```powershell
+& $T\tools\uv\uv.exe run --python 3.13 --with pillow $R\tools\shader-compare\commit_shots.py $R\tools\shader-compare\results\compare-1\ours <run folder> [<more run folders>]
+```
+
+(`--pack ours+photon` for other packs too.) The sheets also include `arrive-<scene>.jpg`: one row per pack and pass, the
+four arrival frames and the settled shot.
+
+Commit the report, the sheets and those full-size shots of our pack on `claude/project-thread-mturba`, push, and give the
+owner the commit. Never commit the other packs' full screenshots, the arrival PNGs or logs. The full screenshots are looked at with `$R\tools\dlss-testkit\compare.html` (pick the
 run folder; each pack and pass is one of its "modes").

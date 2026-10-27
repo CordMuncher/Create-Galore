@@ -28,9 +28,19 @@ import net.minecraft.Util;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Screenshot;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.server.IntegratedServer;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.client.event.RenderFrameEvent;
@@ -62,6 +72,10 @@ final class Runner {
         int dimensionSeconds = 6;
         int settleSeconds = 10;
         int settleFrames = 90;
+        /** Seconds after arriving at a scene when a frame is saved, before the picture has settled (the jitter). */
+        List<Double> arrivalShots = List.of(0.1, 0.5, 1.0, 2.0);
+        /** Seconds the survey stays at each scene before it looks for floating things in the view. */
+        int surveySeconds = 8;
         List<Pack> packs = List.of();
         List<Scene> scenes = List.of();
     }
@@ -75,13 +89,17 @@ final class Runner {
 
     /**
      * time: the time of day (null: 6000); weather: clear, rain or thunder (null: clear); build: commands that put the
-     * scene up; find: a command that puts the player somewhere safe on the first visit, a spot kept for later visits.
+     * scene up; find: a command that puts the player somewhere safe on the first visit, a spot kept for later visits;
+     * weatherLeadSeconds: how long its weather has been going before the shot (the camera waits there); maxTurn: how
+     * far (degrees) the survey may turn the camera away from floating islands and airships (null: 180, 0: never).
      */
     record Scene(String name, String dimension, double x, double y, double z, float yaw, float pitch, Long time, String weather,
-                 Integer settleSeconds, List<String> build, String find, String about) {}
+                 Integer settleSeconds, List<String> build, String find, String about, Integer weatherLeadSeconds,
+                 Integer maxTurn) {}
 
     /** What one stretch of the run does: on starting, then held for at least seconds and frames. */
-    private record Step(String label, int job, Scene scene, Runnable onStart, double seconds, int frames, boolean shot) {}
+    private record Step(String label, int job, Scene scene, Runnable onStart, double seconds, int frames, boolean shot,
+                        double[] captures) {}
 
     private record Job(Pack pack, String pass, String mode, Map<String, String> options) {}
 
@@ -95,6 +113,15 @@ final class Runner {
     private static long stepStartNanos;
     private static int stepFrames;
     private static boolean pendingShot;
+    /** The arrival frame to save at this frame's end (the index of its time in the step's captures), or -1. */
+    private static int pendingArrival = -1;
+    private static int arrivalNext;
+    /** Where the survey turned each camera to (yaw, pitch), and what it found in each view: kept for every pack. */
+    private static final Map<String, float[]> views = new HashMap<>();
+    private static final JsonObject clearance = new JsonObject();
+    /** A file with this name in the game folder stops the run too (the key needs the window to have focus). */
+    static final String STOP_FILE = "shader-compare.stop";
+    private static final int SKY_RANGE = 160;
     /** Move on at the next frame (the shot is taken, or the pack didn't load). */
     private static boolean advance;
     private static Path runDir;
@@ -205,25 +232,47 @@ final class Runner {
 
         // The plan.
         List<Step> steps = new ArrayList<>();
-        steps.add(new Step("prepare", -1, null, () -> prepare(scenes), settings.prepareSeconds, 20, false));
-        steps.add(new Step("build", -1, null, () -> scenes.forEach(Runner::build), 2, 20, false));
+        steps.add(new Step("prepare", -1, null, () -> prepare(scenes), settings.prepareSeconds, 20, false, null));
+        steps.add(new Step("build", -1, null, () -> scenes.forEach(Runner::build), 2, 20, false, null));
+        // The survey: once, before any pack, so that every pack is photographed from the same view.
+        views.clear();
+        while (!clearance.keySet().isEmpty()) {
+            clearance.remove(clearance.keySet().iterator().next());
+        }
+        if (!Boolean.getBoolean(ShaderCompare.MOD_ID + ".nosurvey")) {
+            for (Scene scene : scenes) {
+                if (scene.find() == null && "minecraft:overworld".equals(dimensionOf(scene))) {
+                    steps.add(new Step("survey " + scene.name(), -1, scene, () -> enter(scene, true),
+                            settings.surveySeconds, 20, false, null));
+                }
+            }
+        }
+        double[] arrival = Boolean.getBoolean(ShaderCompare.MOD_ID + ".noarrival") || settings.arrivalShots == null
+                ? null : settings.arrivalShots.stream().mapToDouble(Double::doubleValue).sorted().toArray();
+        double arrivalEnd = arrival == null || arrival.length == 0 ? 0 : arrival[arrival.length - 1] + 0.5;
         for (int j = 0; j < jobs.size(); j++) {
             int job = j;
-            steps.add(new Step(jobs.get(j).mode() + " load", j, null, () -> loadPack(job), settings.reloadSeconds, 30, false));
+            steps.add(new Step(jobs.get(j).mode() + " load", j, null, () -> loadPack(job), settings.reloadSeconds, 30, false, null));
             String dimension = null;
             for (Scene scene : scenes) {
                 boolean travels = dimension == null || !dimension.equals(dimensionOf(scene)) || scene.find() != null;
                 dimension = dimensionOf(scene);
-                steps.add(new Step(jobs.get(j).mode() + " " + scene.name() + " arrive", j, scene, () -> enter(scene),
-                        travels ? settings.dimensionSeconds : settings.loadSeconds, 20, false));
+                double wait = travels ? settings.dimensionSeconds : settings.loadSeconds;
+                if (scene.weatherLeadSeconds() != null) {
+                    wait = Math.max(wait, scene.weatherLeadSeconds());
+                }
+                steps.add(new Step(jobs.get(j).mode() + " " + scene.name() + " arrive", j, scene, () -> enter(scene, false),
+                        Math.max(wait, arrivalEnd), 20, false, arrival));
                 int settle = scene.settleSeconds() != null ? scene.settleSeconds() : settings.settleSeconds;
-                steps.add(new Step(jobs.get(j).mode() + " " + scene.name(), j, scene, null, settle, settings.settleFrames, true));
+                steps.add(new Step(jobs.get(j).mode() + " " + scene.name(), j, scene, null, settle, settings.settleFrames, true, null));
             }
         }
         plan = steps;
         index = -1;
         stepFrames = 0;
         pendingShot = false;
+        pendingArrival = -1;
+        arrivalNext = 0;
         advance = false;
         while (!shots.isEmpty()) {
             shots.remove(0);
@@ -253,7 +302,8 @@ final class Runner {
         mc.options.setCameraType(CameraType.FIRST_PERSON);
         running = true;
         log("run " + runId + ": " + jobs.size() + " packs and passes, " + scenes.size() + " scenes, about "
-                + Math.round(plan.stream().mapToDouble(Step::seconds).sum() / 60) + " minutes");
+                + Math.round(plan.stream().mapToDouble(Step::seconds).sum() / 60) + " minutes; stop with "
+                + ShaderCompare.STOP.getTranslatedKeyMessage().getString() + " or by making " + STOP_FILE + " in the game folder");
         return null;
     }
 
@@ -297,17 +347,140 @@ final class Runner {
         }
     }
 
-    private static void enter(Scene scene) {
+    /** survey: the survey's visit, in clear weather (the scene's own weather is for the shots). */
+    private static void enter(Scene scene, boolean survey) {
         server("time set " + (scene.time() != null ? scene.time() : 6000L));
-        server("weather " + (scene.weather() != null ? scene.weather() : "clear"));
+        server("weather " + (!survey && scene.weather() != null ? scene.weather() : "clear"));
         build(scene);
         Vec3 spot = spot(scene);
         if (spot == null) {
             inDimension(scene, scene.find());
         } else {
             inDimension(scene, String.format(Locale.ROOT, "tp @a %.3f %.3f %.3f %.1f %.1f", spot.x, spot.y, spot.z,
-                    scene.yaw(), scene.pitch()));
+                    yaw(scene), pitch(scene)));
         }
+    }
+
+    private static float yaw(Scene scene) {
+        float[] view = views.get(scene.name());
+        return view != null ? view[0] : scene.yaw();
+    }
+
+    private static float pitch(Scene scene) {
+        float[] view = views.get(scene.name());
+        return view != null ? view[1] : scene.pitch();
+    }
+
+    // The survey: how much of the view from the camera ends on things floating in the air that the scene didn't put
+    // there (the mods' floating islands and airships are real blocks high above the ground; the flying creatures are
+    // entities of the mods). Rays across the view find the first solid block; one with air for eight blocks below it
+    // is floating. The scene's own blocks (a platform in the sky, a room) and tree tops don't count.
+    private static int floating(Minecraft mc, Scene scene, Vec3 eye, float yaw, float pitch) {
+        ClientLevel level = mc.level;
+        int[] own = ownBox(scene);
+        int count = 0;
+        for (int row = -2; row <= 2; row++) {
+            for (int col = -4; col <= 4; col++) {
+                float y = yaw + col * 12.5f, p = Mth.clamp(pitch + row * 14f, -89f, 89f);
+                double cp = Math.cos(Math.toRadians(p));
+                Vec3 dir = new Vec3(-Math.sin(Math.toRadians(y)) * cp, -Math.sin(Math.toRadians(p)), Math.cos(Math.toRadians(y)) * cp);
+                BlockHitResult hit = level.clip(new ClipContext(eye, eye.add(dir.scale(SKY_RANGE)),
+                        ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, mc.player));
+                if (hit.getType() != HitResult.Type.BLOCK) {
+                    continue;
+                }
+                BlockPos pos = hit.getBlockPos();
+                BlockState state = level.getBlockState(pos);
+                if (state.is(BlockTags.LEAVES) || state.is(BlockTags.LOGS) || insideBox(pos, own)) {
+                    continue;
+                }
+                boolean air = true;
+                for (int d = 1; d <= 8 && air; d++) {
+                    air = level.getBlockState(pos.below(d)).isAir();
+                }
+                if (air) {
+                    count++;
+                }
+            }
+        }
+        for (Entity entity : level.entitiesForRendering()) {
+            if (entity == mc.player || "minecraft".equals(BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType()).getNamespace())) {
+                continue;
+            }
+            Vec3 d = entity.position().subtract(eye);
+            double flat = Math.sqrt(d.x * d.x + d.z * d.z);
+            if (d.length() > SKY_RANGE || d.length() < 1) {
+                continue;
+            }
+            double toYaw = Math.toDegrees(Math.atan2(-d.x, d.z));
+            double toPitch = Math.toDegrees(-Math.atan2(d.y, flat));
+            if (Math.abs(Mth.wrapDegrees(toYaw - yaw)) < 60 && Math.abs(toPitch - pitch) < 40) {
+                count += 3;
+            }
+        }
+        return count;
+    }
+
+    /** The box (minX, minY, minZ, maxX, maxY, maxZ) of everything the scene's build commands place. */
+    private static int[] ownBox(Scene scene) {
+        int[] box = {Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE};
+        if (scene.build() == null) {
+            return box;
+        }
+        for (String command : scene.build()) {
+            String[] t = command.trim().split("\\s+");
+            int n = t[0].equals("fill") ? 2 : t[0].equals("setblock") ? 1 : 0;
+            for (int i = 0; i < n; i++) {
+                try {
+                    int x = Integer.parseInt(t[1 + i * 3]), y = Integer.parseInt(t[2 + i * 3]), z = Integer.parseInt(t[3 + i * 3]);
+                    box[0] = Math.min(box[0], x - 1);
+                    box[1] = Math.min(box[1], y - 1);
+                    box[2] = Math.min(box[2], z - 1);
+                    box[3] = Math.max(box[3], x + 1);
+                    box[4] = Math.max(box[4], y + 1);
+                    box[5] = Math.max(box[5], z + 1);
+                } catch (RuntimeException ignored) {
+                    // a command that isn't coordinates: not part of the box
+                }
+            }
+        }
+        return box;
+    }
+
+    private static boolean insideBox(BlockPos p, int[] b) {
+        return p.getX() >= b[0] && p.getX() <= b[3] && p.getY() >= b[1] && p.getY() <= b[4] && p.getZ() >= b[2] && p.getZ() <= b[5];
+    }
+
+    // At the end of a scene's survey visit: the first view, turning away from the scene's own by 0, 20, -20, 40 ...
+    // degrees up to its maxTurn, with nothing floating in it (else the one with the fewest). Kept for every pack.
+    private static void chooseView(Scene scene) {
+        Minecraft mc = Minecraft.getInstance();
+        Vec3 spot = spot(scene);
+        if (mc.level == null || mc.player == null || spot == null) {
+            return;
+        }
+        Vec3 eye = spot.add(0, 1.62, 0);
+        int maxTurn = scene.maxTurn() != null ? scene.maxTurn() : 180;
+        int atStart = floating(mc, scene, eye, scene.yaw(), scene.pitch());
+        int best = atStart, bestTurn = 0;
+        for (int turn = 20; best > 0 && turn <= maxTurn; turn += 20) {
+            for (int sign : new int[] {1, -1}) {
+                int n = floating(mc, scene, eye, scene.yaw() + sign * turn, scene.pitch());
+                if (n < best) {
+                    best = n;
+                    bestTurn = sign * turn;
+                }
+            }
+        }
+        if (bestTurn != 0) {
+            views.put(scene.name(), new float[] {Mth.wrapDegrees(scene.yaw() + bestTurn), scene.pitch()});
+        }
+        JsonObject info = new JsonObject();
+        info.addProperty("floatingRaysAtStart", atStart);
+        info.addProperty("turnedDegrees", bestTurn);
+        info.addProperty("floatingRaysNow", best);
+        clearance.add(scene.name(), info);
+        log("survey " + scene.name() + ": " + atStart + " floating rays" + (bestTurn != 0 ? ", turned " + bestTurn + " degrees to " + best : ""));
     }
 
     /** Where the camera stands at a scene (null: not found yet). */
@@ -388,6 +561,10 @@ final class Runner {
             stop("left the world");
             return;
         }
+        if (stopRequested(mc)) {
+            stop("stopped by key");
+            return;
+        }
         if (mc.screen != null) {
             mc.setScreen(null); // a menu would pause the world and hide the frame
         }
@@ -403,6 +580,9 @@ final class Runner {
             if (step != null && step.label().endsWith(" load") && !failed[step.job()]) {
                 checkPack(step.job());
             }
+            if (step != null && step.label().startsWith("survey ")) {
+                chooseView(step.scene());
+            }
             do {
                 index++;
             } while (index < plan.size() && plan.get(index).job() >= 0 && failed[plan.get(index).job()]
@@ -414,6 +594,7 @@ final class Runner {
             step = plan.get(index);
             stepStartNanos = now;
             stepFrames = 0;
+            arrivalNext = 0;
             advance = false;
             if (step.onStart() != null) {
                 step.onStart().run();
@@ -426,8 +607,33 @@ final class Runner {
         if (step.scene() != null) {
             hold(mc.player, step.scene());
         }
+        // The arrival frames: the first frame at or after each of the step's times.
+        pendingArrival = -1;
+        if (step.captures() != null && arrivalNext < step.captures().length
+                && (now - stepStartNanos) / 1e9 >= step.captures()[arrivalNext]) {
+            pendingArrival = arrivalNext++;
+        }
         // The shot at the end of a settling step, in this frame's afterFrame.
         pendingShot = step.shot() && stepFrames >= step.frames() && (now - stepStartNanos) / 1e9 >= step.seconds();
+    }
+
+    /** The stop key was pressed, or the stop file is there (it is taken away). */
+    private static boolean stopRequested(Minecraft mc) {
+        boolean pressed = false;
+        while (ShaderCompare.STOP.consumeClick()) {
+            pressed = true;
+        }
+        pressed |= ShaderCompare.STOP.isDown();
+        Path file = mc.gameDirectory.toPath().resolve(STOP_FILE);
+        if (Files.exists(file)) {
+            pressed = true;
+            try {
+                Files.deleteIfExists(file);
+            } catch (IOException e) {
+                LOG.warn("Shader compare: could not remove {}", file, e);
+            }
+        }
+        return pressed;
     }
 
     // The camera stands at the scene's spot (once the player is in its dimension), looking its way, flying so it doesn't
@@ -442,25 +648,18 @@ final class Runner {
             player.yo = player.yOld = spot.y;
             player.zo = player.zOld = spot.z;
         }
-        player.setYRot(scene.yaw());
-        player.yRotO = scene.yaw();
-        player.setXRot(scene.pitch());
-        player.xRotO = scene.pitch();
-        player.setYHeadRot(scene.yaw());
-        player.yHeadRotO = scene.yaw();
-        player.yBodyRot = scene.yaw();
-        player.yBodyRotO = scene.yaw();
+        float yaw = yaw(scene), pitch = pitch(scene);
+        player.setYRot(yaw);
+        player.yRotO = yaw;
+        player.setXRot(pitch);
+        player.xRotO = pitch;
+        player.setYHeadRot(yaw);
+        player.yHeadRotO = yaw;
+        player.yBodyRot = yaw;
+        player.yBodyRotO = yaw;
     }
 
-    static void afterFrame(RenderFrameEvent.Post event) {
-        if (!running || !pendingShot) {
-            return;
-        }
-        pendingShot = false;
-        Step step = plan.get(index);
-        Job job = jobs.get(step.job());
-        String file = job.mode() + "/" + step.scene().name() + ".png";
-        Path target = runDir.resolve(file);
+    private static void save(Path target) {
         NativeImage image = Screenshot.takeScreenshot(Minecraft.getInstance().getMainRenderTarget());
         Util.ioPool().execute(() -> {
             try {
@@ -472,6 +671,36 @@ final class Runner {
                 image.close();
             }
         });
+    }
+
+    static void afterFrame(RenderFrameEvent.Post event) {
+        if (!running) {
+            return;
+        }
+        if (pendingArrival >= 0) {
+            // A frame soon after arriving: the picture before it has settled, named by the milliseconds since.
+            Step arrive = plan.get(index);
+            Job job = jobs.get(arrive.job());
+            int ms = (int) Math.round(arrive.captures()[pendingArrival] * 1000);
+            pendingArrival = -1;
+            String file = job.mode() + "/arrive/" + arrive.scene().name() + "-" + String.format(Locale.ROOT, "%04d", ms) + "ms.png";
+            save(runDir.resolve(file));
+            JsonObject shot = new JsonObject();
+            shot.addProperty("mode", job.mode());
+            shot.addProperty("viewpoint", arrive.scene().name());
+            shot.addProperty("path", "arrive");
+            shot.addProperty("frame", ms);
+            shot.addProperty("file", file);
+            shots.add(shot);
+        }
+        if (!pendingShot) {
+            return;
+        }
+        pendingShot = false;
+        Step step = plan.get(index);
+        Job job = jobs.get(step.job());
+        String file = job.mode() + "/" + step.scene().name() + ".png";
+        save(runDir.resolve(file));
         JsonObject shot = new JsonObject();
         shot.addProperty("mode", job.mode());
         shot.addProperty("viewpoint", step.scene().name());
@@ -565,8 +794,17 @@ final class Runner {
         JsonArray still = new JsonArray();
         still.add(0);
         paths.add("still", still);
+        if (settings.arrivalShots != null) {
+            JsonArray arrive = new JsonArray();
+            settings.arrivalShots.forEach(t -> arrive.add(Math.round(t * 1000)));
+            paths.add("arrive", arrive);
+        }
         manifest.add("paths", paths);
         manifest.add("viewpoints", GSON.toJsonTree(settings.scenes));
+        JsonObject turned = new JsonObject();
+        views.forEach((name, view) -> turned.add(name, GSON.toJsonTree(view)));
+        manifest.add("views", turned);
+        manifest.add("clearance", clearance);
         JsonObject spots = new JsonObject();
         found.forEach((name, spot) -> spots.add(name, GSON.toJsonTree(new double[] {spot.x, spot.y, spot.z})));
         manifest.add("found", spots);

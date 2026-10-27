@@ -10,6 +10,13 @@
   "dimensionSeconds": 6,
   "settleSeconds": 10,
   "settleFrames": 90,
+  "arrivalShots": [
+    0.1,
+    0.5,
+    1.0,
+    2.0
+  ],
+  "surveySeconds": 8,
   "resourcePack": {
     "file": "SPBR-16_2.zip",
     "url": "https://cdn.modrinth.com/data/aNcOVoD7/versions/jtNbhldU/SPBR-16_2.zip",
@@ -432,23 +439,46 @@
       "name": "trees-sunrise",
       "dimension": "minecraft:overworld",
       "x": 1024.5,
-      "y": 88,
+      "y": 216,
       "z": 205.5,
       "yaw": -90,
-      "pitch": 6,
+      "pitch": -9,
       "time": 800,
-      "about": "towards the low sun through the trees: light in the air"
+      "maxTurn": 0,
+      "about": "towards the low sun through a grove of oaks on a grass platform high in the open: light in the air",
+      "build": [
+        "fill 1020 215 195 1050 215 217 minecraft:grass_block",
+        "fill 1020 216 195 1050 230 217 minecraft:air",
+        "fill 1030 216 202 1030 221 202 minecraft:oak_log",
+        "fill 1028 220 200 1032 221 204 minecraft:oak_leaves[persistent=true]",
+        "fill 1029 222 201 1031 222 203 minecraft:oak_leaves[persistent=true]",
+        "fill 1034 216 209 1034 222 209 minecraft:oak_log",
+        "fill 1032 221 207 1036 222 211 minecraft:oak_leaves[persistent=true]",
+        "fill 1033 223 208 1035 223 210 minecraft:oak_leaves[persistent=true]",
+        "fill 1039 216 203 1039 220 203 minecraft:oak_log",
+        "fill 1037 219 201 1041 220 205 minecraft:oak_leaves[persistent=true]",
+        "fill 1038 221 202 1040 221 204 minecraft:oak_leaves[persistent=true]",
+        "fill 1043 216 208 1043 221 208 minecraft:oak_log",
+        "fill 1041 220 206 1045 221 210 minecraft:oak_leaves[persistent=true]",
+        "fill 1042 222 207 1044 222 209 minecraft:oak_leaves[persistent=true]",
+        "fill 1046 216 202 1046 220 202 minecraft:oak_log",
+        "fill 1044 219 200 1048 220 204 minecraft:oak_leaves[persistent=true]",
+        "setblock 1027 216 207 minecraft:short_grass",
+        "setblock 1031 216 206 minecraft:fern",
+        "setblock 1036 216 205 minecraft:short_grass",
+        "setblock 1041 216 211 minecraft:poppy"
+      ]
     },
     {
       "name": "distant-terrain",
       "dimension": "minecraft:overworld",
-      "x": 960.5,
+      "x": 1029.5,
       "y": 190,
       "z": 160.5,
-      "yaw": 90,
+      "yaw": 45,
       "pitch": 8,
       "time": 11500,
-      "about": "high over the land towards the late sun: the haze over far terrain"
+      "about": "high over the land to the south-west, the late sun at the edge of the picture: the haze over far terrain"
     },
     {
       "name": "distant-water",
@@ -469,6 +499,7 @@
       "z": 146.5,
       "yaw": 180,
       "pitch": 38,
+      "maxTurn": 45,
       "time": 6000,
       "about": "a shallow pond two blocks deep on sand in the open, a quartz pillar in it",
       "build": [
@@ -492,6 +523,7 @@
       "z": 139.5,
       "yaw": 180,
       "pitch": 4,
+      "maxTurn": 45,
       "time": 6000,
       "about": "the same pond from just above its surface: reflections",
       "build": [
@@ -515,6 +547,7 @@
       "z": 138.5,
       "yaw": 90,
       "pitch": 8,
+      "maxTurn": 0,
       "time": 6000,
       "about": "inside a glass tank of water in the open, seagrass on sand, half of it under planks",
       "build": [
@@ -537,12 +570,13 @@
     {
       "name": "materials",
       "dimension": "minecraft:overworld",
-      "x": 1251.5,
-      "y": 178.5,
-      "z": 121.5,
+      "x": 1248.5,
+      "y": 177.2,
+      "z": 112,
       "yaw": 180,
       "pitch": 18,
       "time": 2300,
+      "maxTurn": 40,
       "about": "SPBR on common blocks in the low morning sun: stone bricks, cobblestone and bricks walls, metal blocks",
       "build": [
         "fill 1240 175 100 1262 175 124 minecraft:stone_bricks",
@@ -573,6 +607,7 @@
       "z": 106.8,
       "yaw": 145,
       "pitch": 12,
+      "maxTurn": 30,
       "time": 2300,
       "about": "along the stone brick wall with the sun grazing it: relief and its shadows",
       "build": [
@@ -604,6 +639,7 @@
       "z": 221.5,
       "yaw": -55,
       "pitch": -8,
+      "maxTurn": 0,
       "time": 1500,
       "about": "a dark stone room with a window towards the morning sun: the beam through the air",
       "build": [
@@ -614,17 +650,18 @@
     {
       "name": "bounce-light",
       "dimension": "minecraft:overworld",
-      "x": 1076.5,
-      "y": 111,
+      "x": 1084.5,
+      "y": 112,
       "z": 160.5,
-      "yaw": -90,
-      "pitch": 12,
-      "time": 2000,
-      "about": "a white room lit through a window, a red carpet of wool on the floor: light bouncing off walls",
+      "yaw": 90,
+      "pitch": 24,
+      "time": 1800,
+      "maxTurn": 0,
+      "about": "a white room with a wide window towards the morning sun behind the camera, its beam across a red wool carpet: light bouncing off the carpet and walls",
       "build": [
         "fill 1074 110 154 1086 117 166 minecraft:white_concrete hollow",
-        "fill 1086 112 159 1086 114 161 minecraft:air",
-        "fill 1079 110 158 1083 110 162 minecraft:red_wool"
+        "fill 1086 112 158 1086 115 162 minecraft:air",
+        "fill 1077 110 157 1083 110 163 minecraft:red_wool"
       ]
     },
     {
@@ -635,6 +672,7 @@
       "z": 221.5,
       "yaw": 0,
       "pitch": 8,
+      "maxTurn": 40,
       "time": 6000,
       "about": "lanterns, a torch, a sea lantern and a redstone torch under a stone roof by day",
       "build": [
@@ -660,6 +698,7 @@
       "z": 197.5,
       "yaw": -45,
       "pitch": 4,
+      "maxTurn": 0,
       "time": 6000,
       "about": "a chamber cut into the rock deep underground, lit by torches and a lava pool",
       "build": [
@@ -679,6 +718,7 @@
       "z": 241.5,
       "yaw": -45,
       "pitch": -10,
+      "maxTurn": 0,
       "time": 18000,
       "about": "a closed stone brick room at night with one lantern on the floor",
       "build": [
@@ -690,20 +730,21 @@
       "name": "coloured-lights",
       "dimension": "minecraft:overworld",
       "x": 1060.5,
-      "y": 120,
-      "z": 160.5,
+      "y": 119,
+      "z": 156.5,
       "yaw": 0,
-      "pitch": 50,
+      "pitch": 14,
       "time": 18000,
-      "about": "a closed stone room at night: soul lantern, redstone torch, sea lantern, torch, amethyst, glowstone",
+      "maxTurn": 0,
+      "about": "a closed stone room at night, six lights in a row along the far wall, all in the picture: soul lantern, redstone torch, sea lantern, torch, amethyst, glowstone",
       "build": [
         "fill 1054 116 154 1066 124 166 minecraft:stone hollow",
-        "setblock 1056 117 156 minecraft:soul_lantern",
-        "setblock 1064 117 156 minecraft:redstone_torch",
-        "setblock 1056 117 164 minecraft:sea_lantern",
-        "setblock 1064 117 164 minecraft:torch",
-        "setblock 1060 117 156 minecraft:amethyst_cluster",
-        "setblock 1060 117 164 minecraft:glowstone"
+        "setblock 1055 117 164 minecraft:soul_lantern",
+        "setblock 1057 117 164 minecraft:redstone_torch",
+        "setblock 1059 117 164 minecraft:sea_lantern",
+        "setblock 1061 117 164 minecraft:torch",
+        "setblock 1063 117 164 minecraft:amethyst_cluster",
+        "setblock 1065 117 164 minecraft:glowstone"
       ]
     },
     {
@@ -769,7 +810,9 @@
       "pitch": 5,
       "time": 6000,
       "weather": "rain",
-      "settleSeconds": 20
+      "weatherLeadSeconds": 180,
+      "settleSeconds": 20,
+      "about": "rain that has been falling for three minutes: wet ground, puddles and ripples"
     }
   ]
 }
