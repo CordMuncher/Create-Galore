@@ -13,11 +13,20 @@ const bool colortex8Clear = false;
 */
 
 const int bloom_levels = 7;
+// How much the air around scatters the light, as rain and snow do (0 clear, 1 as much as heavy rain): the Nether's
+// thick air much of that, so the lava and the lamps glow wide through it; the End's haze a little.
+#if defined WORLD_NETHER && defined LIGHTING
+#define bloom_air 0.6
+#elif defined WORLD_END && defined LIGHTING
+#define bloom_air 0.25
+#else
+#define bloom_air 0.0
+#endif
 // How much each level takes of the blur of the level below it (the rest its own): more spreads the glow wider. Rain
 // and snow scatter the light more, so lamps glow wider and more through them.
-#define bloom_spread (0.7 + 0.12 * weather_around())
+#define bloom_spread (0.7 + 0.12 * max(weather_around(), bloom_air))
 // How much of the frame the glow takes (and leaves it): a little, so only what is much brighter shows.
-#define bloom_amount (0.08 * BLOOM * (1.0 + 1.5 * weather_around()))
+#define bloom_amount (0.08 * BLOOM * (1.0 + 1.5 * max(weather_around(), bloom_air)))
 
 // A level's size (texels): level 1 half the window's, each one after half the one before.
 ivec2 bloom_size(int level) {

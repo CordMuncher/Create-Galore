@@ -251,9 +251,15 @@ void main() {
     vec3 view = unproject(gbufferProjectionInverse, point / render_size() * 2.0 - 1.0, depth);
     vec3 normal = decode_normal(surface.rg);
 #ifdef LIT_SKY_GRID
-    // Where Minecraft's sky light is less than full (see deferred.fsh); a plant's from above.
+    // Where Minecraft's sky light is less than full (see deferred.fsh), and everywhere in the Nether and the End,
+    // which have none (see world_openness); a plant's from above.
     vec3 scene_pos = view_to_scene(view);
-    if (decode_light(surface).y < 0.999 && max(abs(scene_pos.x), abs(scene_pos.z)) < sky_grid_reach) {
+#ifdef NO_SKY_LIGHT
+    bool trace = true;
+#else
+    bool trace = decode_light(surface).y < 0.999;
+#endif
+    if (trace && max(abs(scene_pos.x), abs(scene_pos.z)) < sky_grid_reach) {
         out_sky.r = sky_seen(scene_pos, material == MATERIAL_PLANT ? vec3(0.0, 1.0, 0.0) : normal, pixel_noise(2u));
     }
 #endif

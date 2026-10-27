@@ -32,7 +32,7 @@ void main() {
     v_color.rgb /= face_shade(v_normal);
 #endif
     // Iris gives Distant Horizons' light at the lightmap's texel centres (level / 16 + 1 / 32).
-    v_level = clamp((gl_MultiTexCoord1.xy - 1.0 / 32.0) * (16.0 / 15.0), 0.0, 1.0);
+    v_level = world_light_level(clamp((gl_MultiTexCoord1.xy - 1.0 / 32.0) * (16.0 / 15.0), 0.0, 1.0));
 #else
     // Iris gives Distant Horizons' light at the lightmap's texel centres; Minecraft samples terrain between them.
     v_color.rgb *= lightmap_smooth(gl_MultiTexCoord1.xy - 1.0 / 32.0);

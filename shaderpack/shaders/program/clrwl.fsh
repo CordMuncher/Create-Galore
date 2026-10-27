@@ -47,7 +47,7 @@ void main() {
     clrwl_computeFragment(texture(gtexture, v_uv, cg_mip_bias), color, light, ao, overlay);
 #ifdef LIT_WORLD
     // Colorwheel hands the light over at the lightmap's texel centres (level / 16 + 1 / 32).
-    vec2 level = clamp((light - 1.0 / 32.0) * (16.0 / 15.0), 0.0, 1.0);
+    vec2 level = world_light_level(clamp((light - 1.0 / 32.0) * (16.0 / 15.0), 0.0, 1.0));
     vec3 normal = normalize(v_normal);
 #if defined PROGRAM_CLRWL_DAMAGEDBLOCK
     out_color = vec4(0.5); // the cracks multiply the surface's colour (see gbuffers.fsh)
