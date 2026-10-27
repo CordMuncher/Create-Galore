@@ -25,7 +25,7 @@ packs = []
 for m in manifest["modes"]:
     if m["pack"] not in packs:
         packs.append(m["pack"])
-passes = ["defaults", "highest"]
+passes = [p for p in ("defaults", "highest") if any(m["pass"] == p for m in manifest["modes"])]  # a run of one pass: one column
 width, height = manifest.get("resolution", [1920, 1080])
 tile_h = round(tile_w * height / width)
 label_h = 20
@@ -46,7 +46,7 @@ for scene in scenes:
             if mode is None:
                 text = pack + " (no presets)" if pass_ == "highest" else pack + " (not run)"
             else:
-                text = "%s %s · %s" % (mode.get("title") or pack, mode.get("version") or "", pass_)
+                text = " ".join(filter(None, (mode.get("title") or pack, mode.get("version")))) + " · " + pass_
                 if pass_ == "highest" and mode.get("profile"):
                     text += " (" + mode["profile"] + ")"
                 if mode.get("loaded") is False:

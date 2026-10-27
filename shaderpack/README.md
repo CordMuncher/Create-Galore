@@ -186,11 +186,13 @@ Exposure and colour (alpha 4, the Light screen's Local Exposure and Night Vision
   equally bright (white snow, black basalt) instead of the meter darkening the snow to grey. The sky, water and
   what glows count as they are. Of what it meters, the darkest and brightest tenth are left out (Unreal's
   histogram), so a lamp or a patch of sky in a dark room doesn't drag the rest down.
-- Night vision: below a few cd/m² the eye's rods take over from its cones (the Purkinje shift), so moonlit land
-  loses its colour and turns a cool blue-grey, red goes darker than green and blue, and a lamp's light keeps its
-  colour while the dark around it doesn't. Each pixel goes over by its own brightness, by the CIE's mesopic
-  photometry (CIE 191:2010), with the rods' weights worked out from CIE 1951's scotopic curve
-  (`tools/rod_weights.py`).
+- Night vision: in dim light the eye's rods take over from its cones (the Purkinje shift), so moonlit land loses
+  its colour and turns a cool blue-grey, red goes darker than green and blue, and a lamp's light keeps its colour
+  while the dark around it doesn't. Each pixel goes over by its own brightness, by Hunt's rod sensitivity as
+  Krawczyk, Myszkowski and Seidel's tone mapping uses it (2005: half at 0.04 cd/m², a tenth at 0.36), with the
+  rods' weights worked out from CIE 1951's scotopic curve (`tools/rod_weights.py`). The moon and the stars are
+  drawn brighter than real ones so nights can be seen by; the part of a pixel's light they give (by its light
+  levels: the sky's against the blocks') counts at its real brightness.
 - Local exposure: a bright window or cave mouth in a darker room is drawn in towards the room's brightness, its
   detail kept, so it doesn't burn out to white while the room stays as dark as it is (Ghost of Tsushima's
   bilateral grid, after Chen, Paris and Durand). Only what is brighter than the frame's average is drawn in; night
