@@ -12,6 +12,15 @@ describe the fix (the build fails on a name it knows).
 - Field Guide (Pressure and Sealed Casings): cased doors and trapdoors, and a cased door into a sealed smelter.
 - Create Galore Bridge 1.128.0.
 
+## 0.6.4
+
+### Fixed
+- **Ask the Book no longer says back-to-back fans can't finish their items.** A player's bulk smoking and blasting line, with two fans side by side over each belt, has always worked, but the book told them it didn't: it timed each fan's air on its own (about 6 seconds over one segment at 4 RPM, against the 7.6 seconds smoking takes). An item on a belt keeps its progress from one fan's air into the next fan's air of the same kind, across a gap and onto the next belt as well, and only a different kind of air starts it over. The book now follows each belt line the way items ride it and adds up the time in each kind of air, so two smoking fans over a 4 RPM belt give 12.1 seconds and come out done. It also says when two kinds of air hit one segment (they start each other over, so nothing is processed there) and how far along an item in the air is right now.
+
+### Added
+- Field Guide, Encased Fans: an On a Belt page with how long an item needs in the air (7.5 seconds, longer for bigger stacks), how long each belt segment gives at a given speed, and how fans of one kind along a belt add up.
+- Create Galore Bridge 1.127.0.
+
 ## 0.6.3
 
 ### Added
