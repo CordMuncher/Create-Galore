@@ -5,6 +5,15 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.6.1
+
+### Added
+- **NVIDIA's Streamline decides where DLSS frame generation can be picked.** At every start on DirectX 12 the game asks Streamline, NVIDIA's own frame generation runtime, whether DLSS Frame Generation runs on this card, also when FSR is the one that loads. Where it says yes, the Display tab offers DLSS. Where it says no, the setting's status gives Streamline's reason (hover it), and FSR loads in its place, so FSR turns on without another restart.
+- Create Galore Bridge 1.125.0.
+
+### Removed
+- **The graphics card name check for DLSS frame generation.** The Display tab offered DLSS frame generation only when the card's name read RTX 40 or 50 (or RTX Ada or Blackwell), so every new card generation would have needed a Bridge update. Streamline reads what the card supports itself.
+
 ## 0.6.0
 
 **DLSS Frame Generation is ready, so the pack moves to 0.6.** On an NVIDIA RTX 40 or 50 card, the Display tab's **Frame generation: DLSS** is no longer experimental: it shows a frame of its own between every two the game renders, so the screen gets about 43% more frames (234 a second against 164 without it on an RTX 4080 SUPER at 1440p, the game rendering 117), for about 3 ms more input delay. Going in and out of full screen, resizing, minimising and turning it on and off all hold with it. AMD's FSR frame generation, for other cards, stays experimental. A fresh install on Windows now starts with Perfect Presentation on DirectX 12, which frame generation runs in.

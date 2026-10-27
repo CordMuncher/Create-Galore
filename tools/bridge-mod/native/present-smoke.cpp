@@ -15,7 +15,10 @@
 // backend that can't start must leave a presenter without it (cg_fg_error says why), and Streamline and FidelityFX
 // without their DLLs must refuse to prepare. "present-smoke.exe --streamline <folder>" instead tries NVIDIA's real
 // Streamline DLLs from that folder (under Wine there is no NVIDIA card: the presenter must go on without them), and
-// "present-smoke.exe --ffx <folder> [--unsigned]" AMD's FidelityFX frame generation DLLs.
+// "present-smoke.exe --ffx <folder> [--unsigned]" AMD's FidelityFX frame generation DLLs, and "present-smoke.exe --probe
+// <streamline folder> <fidelityfx folder> [--unsigned]" asks Streamline before anything is made, drops it and runs
+// FidelityFX in its place, as the mod does on a card Streamline says no to. The stand-in must also be asked before
+// anything is made (cg_fg_supports) and be dropped for another (cg_fg_unprepare).
 #define CG_PRESENT_UNSHARED
 #include "cg_present.cpp"
 
@@ -518,6 +521,21 @@ int main(int argc, char** argv) {
     if ((argc == 3 || (argc == 4 && lstrcmpA(argv[3], "--unsigned") == 0)) && lstrcmpA(argv[1], "--ffx") == 0) {
         return realBackend(hwnd, width, height, argv[2], true, argc == 4);
     }
+    if ((argc == 4 || (argc == 5 && lstrcmpA(argv[4], "--unsigned") == 0)) && lstrcmpA(argv[1], "--probe") == 0) {
+        // As the mod starts: Streamline asked first, then dropped for FidelityFX when it says no.
+        wchar_t path[MAX_PATH];
+        MultiByteToWideChar(CP_UTF8, 0, argv[2], -1, path, MAX_PATH);
+        int prepared = cg_fg_prepare(FG_BACKEND_DLSSG, path, path, path, FG_SL_VERBOSE);
+        printf("STREAMLINE prepare: %d %s\n", prepared, prepared ? "" : cg_present_error());
+        int says = prepared ? cg_fg_supports(nullptr) : 0;
+        printf("STREAMLINE says %s %s\n", says ? "yes" : "no", says ? "" : cg_present_error());
+        cg_fg_unprepare();
+        if (g_fg) {
+            printf("PROBE FAIL: Streamline still prepared\n");
+            return 1;
+        }
+        return realBackend(hwnd, width, height, argv[3], true, argc == 5);
+    }
 
     if (!cg_present_create(hwnd, nullptr, 0)) {
         printf("create failed: %s\n", cg_present_error());
@@ -609,6 +627,30 @@ int main(int argc, char** argv) {
     }
     cg_present_destroy();
 
+    // Asked before anything is made (cg_fg_supports, here on the first adapter), as the mod asks Streamline: a no keeps
+    // it prepared, dropped (cg_fg_unprepare) it is shut down, and another backend runs in its place.
+    g_fake = {};
+    bool unasked = !cg_fg_supports(nullptr);  // nothing prepared
+    g_fg = new FakeBackend(false);
+    bool saidNo = cg_fg_supports(nullptr) == 0 && g_fake.supports == 1 && g_fg && lstrlenA(cg_present_error()) > 0;
+    printf("asked before anything is made: no, \"%s\"\n", cg_present_error());
+    cg_fg_unprepare();
+    bool dropped = !g_fg && g_fake.shutdowns == 1;
+    g_fake = {};
+    g_frameIndex = 0;
+    g_fg = new FakeBackend(true);
+    bool instead = cg_fg_supports(nullptr) == 1 && cg_present_create(hwnd, nullptr, 0) && cg_fg_active()
+            && g_fake.supports == 2;
+    if (instead) {
+        makeTestQueue();
+        glValue = 0;
+        instead = runFrames(width, height, glValue, true) == 0;
+        releaseTestQueue();
+    }
+    cg_present_destroy();
+    bool asked = unasked && saidNo && dropped && instead && g_fake.shutdowns == 1;
+    printf("asked before anything is made, then another in its place: %s\n", asked ? "ok" : "FAILED");
+
     // A backend that composes the HUD itself: the waitable object stays, and on its frames the HUD goes apart. Turned
     // off and on again while the presenter runs: off, the swap chain is a plain one with the presenter's waitable
     // object and the backend is asked nothing; on again, frames generate as before.
@@ -665,7 +707,7 @@ int main(int argc, char** argv) {
             && !g_fg;
     printf("FidelityFX without its DLLs: \"%s\": %s\n", cg_present_error(), noFfx ? "ok" : "FAILED");
 
-    pass = pass && fgPass && fallback && composePass && startOff && noStreamline && noFfx;
+    pass = pass && fgPass && fallback && asked && composePass && startOff && noStreamline && noFfx;
     printf(pass ? "SMOKE PASS\n" : "SMOKE FAIL\n");
     return pass ? 0 : 1;
 }

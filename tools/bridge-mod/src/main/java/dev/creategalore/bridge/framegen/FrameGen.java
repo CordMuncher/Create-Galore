@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Frame generation (Display tab, "Frame generation"), in Perfect Presentation's DirectX 12 presenter (cg_present.dll's
- * cg_fg_* calls): NVIDIA DLSS Frame Generation through Streamline on RTX 40 and 50 cards
+ * cg_fg_* calls): NVIDIA DLSS Frame Generation through Streamline on the cards Streamline says it runs on
  * (tools/bridge-mod/native/cg_streamline.cpp), or AMD FSR 3.1 frame generation, EXPERIMENTAL, through AMD's FidelityFX
  * SDK on any card (cg_ffx.cpp). Each frame, once DLSS or FSR ran and the HUD is drawn, the presenter has {@link FgCapture} write the
  * frame's inputs (the world without the HUD, the HUD's coverage, depth and motion vectors) into textures shared with
@@ -67,7 +67,10 @@ import org.slf4j.LoggerFactory;
  * a folder of Streamline's development DLLs instead of the shipped ones; frameGenVerbose=true a verbose Streamline log
  * (create-galore-dlss/streamline-logs), or AMD's debug checks and every message of theirs in the game log. frameGenView=hudless, alpha, depth or motion shows that input instead of the
  * game, and frameGenCheck=true checks the inputs and the camera every 5 seconds ({@link FgCheck}); both work without the
- * presenter, on any graphics card.
+ * presenter, on any graphics card. frameGenStreamlineSays=no takes Streamline's yes as a no (AMD's loads in its place).
+ *
+ * Which cards run DLSS Frame Generation is Streamline's call (slIsFeatureSupported, at every start on DirectX 12), as
+ * NVIDIA's guides do it: the card reports what it supports, so new card generations need no Bridge update.
  */
 public final class FrameGen {
     private static final Logger LOG = LoggerFactory.getLogger("create_galore_bridge");
@@ -140,12 +143,11 @@ public final class FrameGen {
     private static final Frame FRAME = new Frame();
     private static final FgCamera camera = new FgCamera();
 
-    /** The cards DLSS Frame Generation runs on (OpenGL's renderer string): GeForce RTX 40 and 50, RTX Ada and Blackwell. */
-    private static final java.util.regex.Pattern SUPPORTED_CARD = java.util.regex.Pattern.compile(
-            "RTX\\s+[45]0[5-9]0|RTX.*\\b(?:Ada|Blackwell)\\b");
-
     // The session.
     private static boolean requested;
+    /** Streamline's answer at this game's start, whether DLSS Frame Generation runs here; null before it was asked. */
+    private static Boolean streamlineSays;
+    private static String streamlineWhy;
     /** The backend the presenter loaded (BACKEND_DLSSG or BACKEND_FSR), 0 before. */
     private static int backend;
     private static String unavailable;
@@ -218,38 +220,16 @@ public final class FrameGen {
     }
 
     /**
-     * At the presenter's start on DirectX 12, before its swap chain: the backend it loads, on if frameGen asks for it,
-     * else off until it does. frameGen's (dlss or fsr), else frameGenType's, else DLSS Frame Generation on an RTX 40 or
-     * 50 card with nvngx_dlssg.dll in the DLSS folder, else AMD's; DLSS only on those cards. Unpacks Streamline or
-     * FidelityFX. {@code renderer} is OpenGL's name for the card. Null if it can't load (logged).
+     * At the presenter's start on DirectX 12, before its swap chain: Streamline, NVIDIA DLSS Frame Generation's backend,
+     * whichever frame generation the settings ask for. The presenter prepares it, asks it whether DLSS Frame Generation
+     * runs on this card (cg_fg_supports) and hands the answer to {@link #answered}, which keeps it or names AMD's to
+     * load in its place. Streamline's answer goes. Null if nothing can load.
      */
-    public static Start start(String renderer) {
-        String mode = setting();
-        String picked = !mode.equals("off") ? mode
-                : DisplaySettings.getString(DisplaySettings.FRAME_GEN_TYPE, "").toLowerCase(Locale.ROOT);
-        boolean dlssCard = supportedCard(renderer);
-        String model = Dlss.readyFrameGenerationDll();
-        String type;
-        if (picked.equals("fsr") || picked.equals("dlss") && dlssCard) {
-            type = picked;
-        } else if (picked.equals("dlss")) {
-            LOG.info("Frame generation: NVIDIA's needs an RTX 40 or 50 card ({}); AMD's loads instead", renderer);
-            type = "fsr";
-        } else {
-            type = dlssCard && model != null ? "dlss" : "fsr";
-        }
-        boolean on = mode.equals(type);
+    public static Start start() {
         requested = true;
         try {
             Path root = FMLPaths.GAMEDIR.get().resolve(Dlss.FOLDER);
             boolean verbose = DisplaySettings.get(DisplaySettings.FRAME_GEN_VERBOSE);
-            if (type.equals("fsr")) {
-                Path folder = unpack(root.resolve("fidelityfx-" + FIDELITYFX_VERSION), FIDELITYFX_RESOURCES, FIDELITYFX_FILES);
-                LOG.info("Frame generation: AMD FSR 3.1 frame generation (FidelityFX SDK {}) from {}, {}", FIDELITYFX_VERSION, folder,
-                        on ? "on" : "off until turned on");
-                backend = BACKEND_FSR;
-                return new Start(BACKEND_FSR, folder, folder, folder, verbose ? FFX_VERBOSE : 0, on);
-            }
             String development = DisplaySettings.getString(DisplaySettings.FRAME_GEN_STREAMLINE, "");
             Path plugins;
             int flags = verbose ? SL_VERBOSE : 0;
@@ -260,22 +240,73 @@ public final class FrameGen {
             } else {
                 plugins = unpack(root.resolve("streamline-" + STREAMLINE_VERSION), STREAMLINE_RESOURCES, STREAMLINE_FILES);
             }
-            if (model == null) {
-                unavailable("no nvngx_dlssg.dll, NVIDIA's frame generation model, in " + Dlss.dllFolder() + " (the Upscaling"
-                        + " tab's Find on this PC copies it from NVIDIA's software, or put your own there with Open DLSS folder)");
-                return null;
-            }
             Path logs = root.resolve("streamline-logs");
             Files.createDirectories(logs);
-            LOG.info("Frame generation: NVIDIA DLSS Frame Generation through Streamline {} from {}; nvngx_dlssg.dll {} (tested with"
-                    + " {}) from {}, {}", STREAMLINE_VERSION, plugins, model, Dlss.testedFrameGenerationDllVersion(), Dlss.dllFolder(),
-                    on ? "on" : "off until turned on");
             backend = BACKEND_DLSSG;
-            return new Start(BACKEND_DLSSG, plugins, Dlss.dllFolder(), logs, flags, on);
+            return new Start(BACKEND_DLSSG, plugins, Dlss.dllFolder(), logs, flags, setting().equals("dlss"));
         } catch (IOException | RuntimeException e) {
-            unavailable((type.equals("fsr") ? "FidelityFX" : "Streamline") + " could not be readied: " + e);
+            return answered(null, false, "Streamline could not be readied: " + e);
+        }
+    }
+
+    /**
+     * Streamline's answer ({@code yes}, else {@code why} not): the start to go on with, {@code streamline} itself to keep
+     * it (DLSS Frame Generation asked for, or none asked for and nvngx_dlssg.dll there), else AMD's, or null if that
+     * can't be readied either. Testing: frameGenStreamlineSays=no takes a yes as no.
+     */
+    public static Start answered(Start streamline, boolean yes, String why) {
+        if (yes && DisplaySettings.getString(DisplaySettings.FRAME_GEN_STREAMLINE_SAYS, "").equalsIgnoreCase("no")) {
+            yes = false;
+            why = "frameGenStreamlineSays=no in the settings file (testing)";
+        }
+        streamlineSays = yes;
+        streamlineWhy = yes ? null : why;
+        if (yes) {
+            LOG.info("Frame generation: Streamline says NVIDIA DLSS Frame Generation runs on this card");
+        } else {
+            LOG.info("Frame generation: Streamline says NVIDIA DLSS Frame Generation can't run here: {}", why);
+        }
+        String mode = setting();
+        String picked = !mode.equals("off") ? mode
+                : DisplaySettings.getString(DisplaySettings.FRAME_GEN_TYPE, "").toLowerCase(Locale.ROOT);
+        String model = Dlss.readyFrameGenerationDll();
+        if (yes && streamline != null && model != null && !picked.equals("fsr")) {
+            LOG.info("Frame generation: NVIDIA DLSS Frame Generation through Streamline {} from {}; nvngx_dlssg.dll {} (tested"
+                    + " with {}) from {}, {}", STREAMLINE_VERSION, streamline.pluginFolder(), model,
+                    Dlss.testedFrameGenerationDllVersion(), Dlss.dllFolder(), streamline.on() ? "on" : "off until turned on");
+            backend = BACKEND_DLSSG;
+            return streamline;
+        }
+        if (picked.equals("dlss")) {
+            LOG.info("Frame generation: NVIDIA's can't run ({}); AMD's loads instead, off", !yes ? "Streamline says no"
+                    : "no nvngx_dlssg.dll, NVIDIA's frame generation model, in " + Dlss.dllFolder());
+        }
+        boolean on = mode.equals("fsr");
+        try {
+            Path root = FMLPaths.GAMEDIR.get().resolve(Dlss.FOLDER);
+            boolean verbose = DisplaySettings.get(DisplaySettings.FRAME_GEN_VERBOSE);
+            Path folder = unpack(root.resolve("fidelityfx-" + FIDELITYFX_VERSION), FIDELITYFX_RESOURCES, FIDELITYFX_FILES);
+            LOG.info("Frame generation: AMD FSR 3.1 frame generation (FidelityFX SDK {}) from {}, {}", FIDELITYFX_VERSION, folder,
+                    on ? "on" : "off until turned on");
+            backend = BACKEND_FSR;
+            return new Start(BACKEND_FSR, folder, folder, folder, verbose ? FFX_VERBOSE : 0, on);
+        } catch (IOException | RuntimeException e) {
+            unavailable("FidelityFX could not be readied: " + e);
             return null;
         }
+    }
+
+    /**
+     * False once Streamline said this game run that DLSS Frame Generation can't run here ({@link #streamlineWhy()} says
+     * why); true if it said it can, or wasn't asked (the presenter didn't start on DirectX 12): it is asked then.
+     */
+    public static boolean streamlineAllows() {
+        return streamlineSays == null || streamlineSays;
+    }
+
+    /** Why Streamline said no, null if it didn't. */
+    public static String streamlineWhy() {
+        return streamlineWhy;
     }
 
     /** Writes the shipped {@code files} from {@code resources} into {@code folder} unless the same ones are there. */
@@ -348,10 +379,6 @@ public final class FrameGen {
         return broken != null ? broken : running ? null : unavailable;
     }
 
-    /** True for a card DLSS Frame Generation runs on, by OpenGL's renderer string (NVIDIA: RTX 40 and 50 series). */
-    public static boolean supportedCard(String renderer) {
-        return renderer != null && renderer.contains("NVIDIA") && SUPPORTED_CARD.matcher(renderer).find();
-    }
 
     // --- the frame ---
 
