@@ -79,6 +79,13 @@ Bugs and lighting (alpha 2):
   ground-truth ambient occlusion from the screen's depth on top (more directions and steps the higher the preset).
   Under a roof, a floor gets the sky's light in the colour of the low sky around it rather than the deep blue
   overhead.
+- How much of the sky a point sees: Minecraft's sky light only knows how far a point is from open sky, not how high
+  what covers it is, so under a floating island or a tall roof it goes as dark as a cave. Within 128 blocks of you,
+  the shadow pass marks every solid block and leaf in a grid, and a few rays from each covered point go out through
+  it towards the sky, a block at a time close by and in coarser copies of the grid further out, as Unreal traces
+  its sky occlusion through a copy of the world around the camera. Further out, and on Distant Horizons' terrain,
+  the screen shows how high the open air above a point reaches. A point never gets less of the sky's light than
+  Minecraft's sky light gives it, so closed rooms and caves stay dark.
 - Light Style: coloured lights brought towards torchlight's brightness to the eye (blue and purple the most, as
   they look dimmest) and deepened.
 - The eyes adapt faster: about a second into a dark room.

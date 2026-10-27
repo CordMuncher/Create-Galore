@@ -15,6 +15,18 @@
 
 #ifdef PROGRAM_DH_WATER
 uniform sampler2D depthtex0;
+#ifdef LIT_WORLD
+// For how much of the sky the water sees (see sky_probe.glsl): what is opaque in front of the points over it.
+uniform sampler2D depthtex1;
+uniform sampler2D dhDepthTex1;
+uniform mat4 gbufferModelView;
+uniform mat4 gbufferProjection;
+uniform mat4 gbufferProjectionInverse;
+uniform mat4 dhProjectionInverse;
+#define SKY_PROBE_DEPTH depthtex1
+#define SKY_PROBE_DH_DEPTH dhDepthTex1
+#include "/lib/sky_probe.glsl"
+#endif
 #endif
 
 in vec4 v_color;
@@ -62,10 +74,21 @@ void main() {
     out_albedo = v_color;
     out_surface = encode_surface(v_normal, v_level, MATERIAL_LIT, 1.0);
 #elif defined PROGRAM_DH_WATER
-    // Lit here: the light past the shadow map's reach goes by the sky light (see lighting.glsl).
-    vec3 rgb = light_surface(srgb_to_linear(v_color.rgb), v_normal, v_level, v_fog_pos, false, false) * exposure();
+    // Lit here: the light past the shadow map's reach goes by the sky light (see lighting.glsl), or by the sky the
+    // water sees where it lies under something high, which Minecraft's sky light makes as dark as a cave
+    // (see sky_probe.glsl).
+    vec2 level = v_level;
+    float seen = -1.0;
+    if (level.y < 0.999) {
+        seen = sky_seen_around(v_fog_pos, vec3(0.0, 1.0, 0.0), level.y, 0.5, true);
+        level.y = max(level.y, sky_seen_level(seen));
+    }
+    vec3 rgb = light_surface(srgb_to_linear(v_color.rgb), v_normal, level, v_fog_pos, false, false) * exposure();
     rgb = apply_fog_lit(rgb, fog_distance(v_fog_pos), dir, fog_range());
-    out_color = with_sky_reflection(vec4(rgb, v_color.a), v_normal, dir, v_level.y);
+    out_color = with_sky_reflection(vec4(rgb, v_color.a), v_normal, dir, level.y);
+#if DEBUG_VIEW == 6
+    out_color = vec4(vec3(sky_light_curve(v_level.y), max(seen, 0.0), seen < 0.0 ? 0.5 : 0.0) * 2.0, 1.0);
+#endif
 #else
     // Its other objects, lit here: its clouds, the beacons' beams past the render distance, and any a mod adds.
     // It gives its clouds and beams full block and sky light, so that its own shaders draw them as bright as

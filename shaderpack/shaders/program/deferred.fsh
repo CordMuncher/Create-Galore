@@ -24,6 +24,9 @@ uniform mat4 dhProjectionInverse;
 #endif
 
 #include "/lib/reflection.glsl"
+#define SKY_PROBE_DEPTH depthtex0
+#define SKY_PROBE_DH_DEPTH dhDepthTex0
+#include "/lib/sky_probe.glsl"
 
 #ifdef LIT_CLOUDS
 #include "/lib/clouds.glsl"
@@ -311,6 +314,16 @@ void main() {
             puddle = puddle_at(scene_pos, normal, light.y, kind);
         }
         albedo = soaked(albedo, max(wetness.y, puddle.y), porosity_of(kind)) * (1.0 - 0.25 * puddle.x);
+        // Under something high (a floating island, a tall roof, a bridge) more of the sky's light gets in from around
+        // it than Minecraft's sky light gives (see sky_grid.glsl and sky_probe.glsl). The rain doesn't: the wet look
+        // keeps Minecraft's.
+        float sky_light_mc = light.y;
+        float seen = -1.0;
+        if (depth >= hand_depth_limit && light.y < 0.999) {
+            seen = sky_seen_around(scene_pos, material == MATERIAL_PLANT ? vec3(0.0, 1.0, 0.0) : normal, light.y,
+                    pixel_noise(2u), lod);
+            light.y = max(light.y, sky_seen_level(seen));
+        }
         float contact = 1.0;
 #if defined SHADOW_MAP && defined CONTACT_SHADOWS
         // Not on plants: in a meadow every blade would find another in front of it and the grass would go dark.
@@ -361,6 +374,10 @@ void main() {
                 lit = vec3(0.0, 2.0, 0.0);
             }
         }
+#elif DEBUG_VIEW == 6
+        // How much of the sky a surface sees (see sky_grid.glsl, sky_probe.glsl): red Minecraft's sky light (through
+        // its curve), green the share the pack works out, blue where it works out none (Minecraft's sky light alone).
+        lit = vec3(sky_light_curve(sky_light_mc), max(seen, 0.0), seen < 0.0 ? 0.5 : 0.0) * 2.0;
 #elif DEBUG_VIEW == 5 && defined LIT_VOXELS
         // On leaves, the way out of their crown (see canopy_shape) as a colour: red towards east, green up, blue
         // south (grey halfway, where it points along the other two), darker the less of a crown there is.

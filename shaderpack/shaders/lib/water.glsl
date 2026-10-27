@@ -168,7 +168,10 @@ vec2 ripple_slope(vec3 scene_pos) {
     return vec2(dx, dz) * (water_cells_per_block * 0.5) * fade * WATER_RIPPLES_STRENGTH;
 }
 
+#ifndef CG_WATER_MARKS_TEX
+#define CG_WATER_MARKS_TEX
 uniform usampler2D cg_water_marks_tex; // cg_water_marks_img, for programs without image access
+#endif
 
 // How far straight down from the top of the water a point (scene space) lies (blocks): from the tops of water this
 // frame's shadow pass marked in the grid around you (see shadow.fsh), the highest in the point's column. 0 where no

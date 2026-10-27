@@ -22,8 +22,15 @@ uniform sampler2D depthtex1;
 uniform mat4 gbufferModelView;
 uniform mat4 gbufferProjection;
 uniform mat4 gbufferProjectionInverse;
+#ifdef DISTANT_HORIZONS
+uniform sampler2D dhDepthTex0;
+uniform mat4 dhProjectionInverse;
+#endif
 
 #include "/lib/reflection.glsl"
+#define SKY_PROBE_DEPTH depthtex1
+#define SKY_PROBE_DH_DEPTH dhDepthTex0
+#include "/lib/sky_probe.glsl"
 
 in vec2 v_uv;
 
@@ -139,6 +146,14 @@ void main() {
         n = dot(n, dir) > 0.0 ? -n : n;
         vec3 p = eye + dir * dist_water;
         vec3 p_view = mat3(gbufferModelView) * p + gbufferModelView[3].xyz;
+        // How much of the sky the surface sees: more than Minecraft's sky light says under something high (see
+        // sky_grid.glsl and sky_probe.glsl).
+        float sky_light_mc = water.b;
+        float seen = -1.0;
+        if (water.b < 0.999) {
+            seen = sky_seen_around(p, vec3(0.0, 1.0, 0.0), water.b, noise, false);
+            water.b = max(water.b, sky_seen_level(seen));
+        }
         vec2 jitter = vec2(cg_dlss_jitter_x, cg_dlss_jitter_y);
 
         // What lies under it, along the ray the surface bends: about where that ray meets the bottom, if the screen
@@ -221,6 +236,9 @@ void main() {
         }
         // Minecraft's fog in front of it, as the deferred pass fogs what is opaque.
         color = apply_fog_lit(color, max(length(p.xz), abs(p.y)), dir, fog_range_shaped(1));
+#if DEBUG_VIEW == 6
+        color = vec3(sky_light_curve(sky_light_mc), max(seen, 0.0), seen < 0.0 ? 0.5 : 0.0) * 2.0;
+#endif
     }
     if (any(isnan(color))) {
         color = scene;

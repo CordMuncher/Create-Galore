@@ -99,9 +99,9 @@ const float upscaling_render_scale = RENDER_SCALE;
 
 // For tuning, not in the settings screens (set it in the pack's .txt): 1 shows only the bounce light, as it falls on
 // a white surface; 2 only the ambient occlusion (white open, black shut); 3 how deep under water each point is and
-// the caustics there; 4 why the shadow map does or doesn't find water over a point; 5 the leaves' crown shape (see
-// deferred.fsh).
-#define DEBUG_VIEW 0 // [0 1 2 3 4 5]
+// the caustics there; 4 why the shadow map does or doesn't find water over a point; 5 the leaves' crown shape; 6 how
+// much of the sky each surface sees (see deferred.fsh).
+#define DEBUG_VIEW 0 // [0 1 2 3 4 5 6]
 
 // Water, in the lit overworld: small wind waves on every water surface (Waves: how high, 0 none), and ripples where
 // you, mobs, boats, ships and Create's water wheels move through it, with wakes behind them (with shadows on: the
@@ -173,6 +173,21 @@ const float upscaling_render_scale = RENDER_SCALE;
 // The volume of blocks around you that the coloured light and the bounce light spread through.
 #if defined LIT_COLORED_LIGHT || defined LIT_GI
 #define LIT_VOXELS
+#endif
+
+// How much of the sky each point sees past the blocks around it (see sky_grid.glsl), from more rays the higher the
+// ambient occlusion's quality.
+#if defined LIT_WORLD && defined SHADOWS
+#define LIT_SKY_GRID
+#if AO_QUALITY >= 3
+#define SKY_RAYS 8
+#elif AO_QUALITY == 2
+#define SKY_RAYS 6
+#elif AO_QUALITY == 1
+#define SKY_RAYS 4
+#else
+#define SKY_RAYS 3
+#endif
 #endif
 
 #ifdef LIT_WORLD

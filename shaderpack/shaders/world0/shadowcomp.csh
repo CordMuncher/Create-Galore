@@ -1,8 +1,8 @@
 #version 430 compatibility
 #define WORLD_OVERWORLD
 // The overworld's first shadowcomp pass does nothing but let Iris put a memory barrier after it (it puts one after
-// every compute pass), so the passes after it (the bounce light's source, the light flood, the ripples) read every
-// block and cell the shadow pass marked.
+// every compute pass), so the passes after it (the bounce light's source, the light flood, the ripples, the sky
+// grid's copies) read every block and cell the shadow pass marked.
 
 layout(local_size_x = 1) in;
 const ivec3 workGroups = ivec3(1, 1, 1);

@@ -15,10 +15,10 @@
 out vec2 v_uv;
 out float v_alpha;
 
-#if defined LIT_VOXELS || defined LIT_WATER_RIPPLES || defined PROGRAM_SHADOW_TERRAIN
+#if defined LIT_VOXELS || defined LIT_WATER_RIPPLES || defined LIT_SKY_GRID || defined PROGRAM_SHADOW_TERRAIN
 uniform mat4 shadowModelViewInverse;
 #endif
-#if defined LIT_VOXELS || defined LIT_WATER_RIPPLES
+#if defined LIT_VOXELS || defined LIT_WATER_RIPPLES || defined LIT_SKY_GRID
 uniform vec3 cameraPositionFract;
 #endif
 #ifdef PROGRAM_SHADOW_TERRAIN
@@ -144,6 +144,32 @@ void mark_block(vec3 scene_pos, vec2 uv) {
 }
 #endif
 
+#if defined PROGRAM_SHADOW_TERRAIN && defined LIT_SKY_GRID && !defined PROGRAM_SHADOW_WATER
+#include "/lib/sky_grid.glsl"
+
+#ifndef LIT_VOXELS
+in vec4 at_midBlock; // xyz from the vertex to its block's centre (1/64 blocks)
+#endif
+layout(r32ui) uniform uimage2D cg_water_marks_img;
+
+// Marks the block a face belongs to in the sky grid (see sky_grid.glsl), from one vertex of the face: every solid
+// block (slabs and stairs too) and leaves.
+void mark_sky(vec3 scene_pos) {
+#ifdef PROGRAM_SHADOW_CUTOUT
+    if (int(mc_Entity.x + 0.5) != BLOCK_LEAVES) {
+        return;
+    }
+#endif
+    if ((gl_VertexID & 3) != 0) {
+        return;
+    }
+    ivec3 block = ivec3(floor(sky_grid_pos(scene_pos + at_midBlock.xyz / 64.0, cameraPositionFract)));
+    if (all(greaterThanEqual(block, ivec3(0))) && all(lessThan(block, ivec3(sky_grid_size, sky_grid_height, sky_grid_size)))) {
+        imageAtomicOr(cg_water_marks_img, sky_grid_texel(block.xz, block.y >> 5, 0), 1u << uint(block.y & 31));
+    }
+}
+#endif
+
 void main() {
     gl_Position = gl_ProjectionMatrix * (gl_ModelViewMatrix * gl_Vertex);
     vec2 uv = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
@@ -153,11 +179,14 @@ void main() {
 #else
     v_alpha = gl_Color.a;
 #endif
-#if defined LIT_VOXELS || defined LIT_WATER_RIPPLES
+#if defined LIT_VOXELS || defined LIT_WATER_RIPPLES || defined LIT_SKY_GRID
     vec3 scene_pos = (shadowModelViewInverse * (gl_ModelViewMatrix * gl_Vertex)).xyz;
 #endif
 #if defined PROGRAM_SHADOW_TERRAIN && defined LIT_VOXELS
     mark_block(scene_pos, uv);
+#endif
+#if defined PROGRAM_SHADOW_TERRAIN && defined LIT_SKY_GRID && !defined PROGRAM_SHADOW_WATER
+    mark_sky(scene_pos);
 #endif
 #if defined PROGRAM_SHADOW_TERRAIN && defined LIT_GI && !defined PROGRAM_SHADOW_WATER
     v_normal = normalize(mat3(shadowModelViewInverse) * (gl_NormalMatrix * gl_Normal));
