@@ -1,0 +1,19 @@
+{
+  "title": "A sequenced assembly recipe lookup shows its steps and loops",
+  "from": "step 4: the stand-in book had to name the precision mechanism's steps from memory",
+  "roots": [
+    "R1"
+  ],
+  "kind": "tool",
+  "tool": "lookup_recipes",
+  "input": {
+    "item": "create:precision_mechanism",
+    "direction": "made_from"
+  },
+  "expect": {
+    "has": [
+      "then in order",
+      "5 times"
+    ]
+  }
+}

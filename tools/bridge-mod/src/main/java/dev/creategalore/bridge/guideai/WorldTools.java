@@ -611,6 +611,13 @@ final class WorldTools {
         Recipe<?> recipe = holder.value();
         ResourceLocation type = BuiltInRegistries.RECIPE_TYPE.getKey(recipe.getType());
         StringBuilder out = new StringBuilder("- ").append(type == null ? "?" : type).append(" (").append(holder.id()).append("): ");
+        if (recipe instanceof com.simibubi.create.content.processing.sequenced.SequencedAssemblyRecipe assembly) {
+            try {
+                return out.append(Assembly.describe(assembly)).toString();
+            } catch (RuntimeException | LinkageError ignored) {
+                // Fall back to the plain listing below.
+            }
+        }
         List<String> inputs = new ArrayList<>();
         for (Ingredient ingredient : recipe.getIngredients()) if (!ingredient.isEmpty()) inputs.add(ingredient(ingredient));
         if (recipe instanceof ProcessingRecipe<?, ?> processing) {

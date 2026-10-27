@@ -73,7 +73,19 @@ final class Reach {
     }
 
     /** Every recipe on the server, by the item it makes. */
+    /** The last recipe index built, and the recipe manager it was built from (a reload makes a new one). */
+    private static Object makersFor;
+    private static Map<Item, List<RecipeHolder<?>>> makersCache;
+
     static Map<Item, List<RecipeHolder<?>>> makers(MinecraftServer server) {
+        var recipes = server.getRecipeManager();
+        if (makersFor == recipes && makersCache != null) return makersCache;
+        makersCache = index(server);
+        makersFor = recipes;
+        return makersCache;
+    }
+
+    private static Map<Item, List<RecipeHolder<?>>> index(MinecraftServer server) {
         var registries = server.registryAccess();
         Map<Item, List<RecipeHolder<?>>> makers = new HashMap<>();
         for (RecipeHolder<?> holder : server.getRecipeManager().getRecipes()) {
