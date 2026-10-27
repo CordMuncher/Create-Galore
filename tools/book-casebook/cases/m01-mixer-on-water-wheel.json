@@ -53,6 +53,9 @@
     "built": false,
     "has": [
       "needs at least 30 RPM"
+    ],
+    "lacks": [
+      "Design brief"
     ]
   }
 }

@@ -11,5 +11,107 @@
     "Shows a plane model with no PROBLEM: it lifts, is stable (Gyroscope) and is fast enough",
     "Never says a plane can't be built at this stage",
     "The pilot's controls sit together in a cockpit"
-  ]
+  ],
+  "world": [
+    "fill ~-12 ~-1 ~-12 ~12 ~-1 ~12 minecraft:grass_block",
+    "time set 6000"
+  ],
+  "box": [
+    -12,
+    -1,
+    -12,
+    12,
+    0,
+    12
+  ],
+  "built": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "stand": [
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "inventory": [
+    {
+      "id": "simulated:red_portable_engine",
+      "count": 4
+    },
+    {
+      "id": "create:andesite_alloy",
+      "count": 96
+    },
+    {
+      "id": "create:sail_frame",
+      "count": 40
+    },
+    {
+      "id": "create:white_sail",
+      "count": 24
+    },
+    {
+      "id": "create:shaft",
+      "count": 32
+    },
+    {
+      "id": "create:cogwheel",
+      "count": 16
+    },
+    {
+      "id": "create:large_cogwheel",
+      "count": 8
+    },
+    {
+      "id": "minecraft:spruce_planks",
+      "count": 256
+    },
+    {
+      "id": "minecraft:spruce_slab",
+      "count": 64
+    },
+    {
+      "id": "minecraft:iron_ingot",
+      "count": 48
+    },
+    {
+      "id": "minecraft:coal",
+      "count": 64
+    }
+  ],
+  "advancements": [
+    "minecraft:story/root",
+    "minecraft:story/mine_stone",
+    "minecraft:story/upgrade_tools",
+    "minecraft:story/smelt_iron",
+    "minecraft:husbandry/root",
+    "create:root",
+    "create:andesite_alloy",
+    "create:water_wheel",
+    "create:shifting_gears",
+    "create:mechanical_press",
+    "create:andesite_casing",
+    "create:belt",
+    "create:encased_fan",
+    "create:fan_processing",
+    "create:mechanical_mixer",
+    "create:compacting",
+    "create:millstone",
+    "create:crushing_wheel"
+  ],
+  "crafted": {
+    "simulated:red_portable_engine": 4,
+    "create:andesite_alloy": 200,
+    "create:sail_frame": 40
+  },
+  "placed": {
+    "create:shaft": 60,
+    "create:cogwheel": 30
+  }
 }

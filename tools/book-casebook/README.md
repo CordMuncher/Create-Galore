@@ -47,8 +47,27 @@ One JSON file per case in `cases/`, named `<kind letter><number>-<what>.json`.
   check runs on every block in `box` (`[x1,y1,z1,x2,y2,z2]` relative to the spot), or `tool` runs there instead. The
   box is cleared afterwards.
 - **tool**: `tool` and `input` are one tool call, made as a stand-in player holding `inventory`.
-- **question**: `question`, `player` (the situation) and `rubric` (what a good answer does). The answer eval uses
-  these with a model.
+- **question**: `question`, `player` (the situation in words) and `rubric` (what a good answer does). The answer eval
+  uses these with a model. To set the asking player up for real, `world` is a list of commands run at a spot of its own
+  (as `setup`, with `{x}` and the like), `box` what they build (cleared before the next question), `built` the part of
+  the box that counts as the player's own build (default: all of it; leave trees and ground out), `stand`
+  (`[dx, dy, dz, yaw, pitch]`) where the player stands and looks, `inventory` what they hold, `advancements` the
+  advancements they have (ids, or `"create:*"` for all of a mod's) and `crafted` and `placed` (`{item id: count}`) their
+  statistics.
+
+## The answer eval
+
+`standin.sh` turns a test server into the asking player, so a model (or a person) can play the book against it with
+the book's real prompt and tools, and the answers can be graded against each case's rubric:
+
+```
+tools/book-casebook/standin.sh start /path/to/test-server   # writes the prompt to standin/ (persona, reference, tools)
+tools/book-casebook/standin.sh as cases/q05-fan-line-works.json standin/q05.txt   # the question, as the book gets it
+tools/book-casebook/standin.sh call trace_build in.json out.txt                   # one tool call
+tools/book-casebook/standin.sh stop
+```
+
+`as ... plain` asks the way the book did before the player snapshot and design briefs, for comparing.
 
 ## Fixing the book
 

@@ -188,55 +188,24 @@ public final class Models {
                 + "engine room, a rudder, a burner and its balloon) rather than the whole of it: the vehicle check's numbers "
                 + "come back but don't stop it being built. Leave it false for a whole boat, submarine, airship or car."));
         return WorldTools.tool("build_model", "Builds a 3D model out of real blocks, up to " + MAX_SIZE + " a side, which "
-                + "the book shows as a hologram the player can turn around and zoom into. Two uses. To explain (how machines "
-                + "connect in space, which way blocks face): keep it to the blocks that matter. To show a build (a boat, a "
-                + "house, a bridge, a tower) the player can copy or take ideas from: build it as a skilled Minecraft builder "
-                + "would, at a size that gives it shape (a small sailing boat is about 12 to 20 blocks long), with stairs, "
-                + "slabs, trapdoors, fences, walls and buttons for curves and detail, two or three materials that go "
-                + "together and that the player holds where a block they hold would look as good (building_materials "
-                + "counts them; the result lists what the model takes against what they hold), depth and trim instead of flat walls, and no plain boxes. Fences, walls, panes and bars join their "
-                + "neighbours (fences also diagonally, to a fence at a free corner) and stairs turn corners by themselves, as when placed. Write such builds as layers. Try a "
-                + "build first with draft true and look at the pictures: fix whatever looks blocky, lopsided or wrong, "
-                + "then call again with draft false. Revise a model with from_draft and write only the changes (move slides "
-                + "a part over), never the whole model again. Before a model is shown the server tries its Create machines with "
-                + "Create's own rules (which faces take a shaft, cogs, belts, sources, water on wheels) and refuses one "
-                + "with faults, saying what is wrong, so fix it and call again. Each block's facing decides which faces "
-                + "take rotation (a saw, press or drill takes its shaft at its back, the face opposite its facing): get it "
-                + "right rather than guessing (lookup_recipes or read_guide help). Every block keeps the facing or axis you write "
-                + "and takes its default when you leave it out, often the wrong way (a Windcatcher panel's default lies flat), "
-                + "so write it on every block that has one. Sail rigs are checked the same way, with Winds & Weather's rules: "
-                + "Masts stack straight up, Yards run sideways out from a Mast along their axis, Sail Kit cloth hangs straight "
-                + "below a run of Yards facing across it, and Windcatcher panels stand upright with a sideways facing. Vehicles (a "
-                + "boat, submarine, airship, plane or Offroad car) are worked out from their blocks, "
-                + "with every engine at its usual speed: mass against buoyancy or lift, whether it floats upright or "
-                + "capsizes, how it sits at rest (bow or stern down, leaning to a side) or hangs in the air, with how much "
-                + "weight to move to level it, its centre of mass against its lift, thrust, top speed, turn rate, climb and ceiling, and "
-                + "problems when it would sink, capsize, not lift, not move or turn, or be too slow or clumsy to be of use. Every "
-                + "block of a vehicle must share a face with the rest, since Super Glue refuses blocks that touch only "
-                + "diagonally; where a vehicle's blocks meet only along an edge or at a corner the step is filled for you, "
-                + "and the result says where. "
-                + "Whoever drives stands on the vehicle: a Boat Engine's helmsman stands two blocks out from the side it faces, "
-                + "so it goes at the stern facing into the boat with deck under that spot, and every Steering Wheel, Throttle "
-                + "Lever or lever needs a spot on board within reach to stand at. The crew is checked as players move: "
-                + "walking, jumping 1.25, dropping, climbing ladders and opening doors, reaching 4.5 blocks with nothing in "
-                + "the way. Every engine that burns fuel needs a spot within reach the crew walks to from the helm and back; "
-                + "the Physics Assembler must be open to a floor a player stands on; anything that lands must let a player "
-                + "climb aboard from the ground under its lowest blocks (steps or a ladder to a high door); and on anything "
-                + "that climbs past y 128 the helm needs a closed cabin, by Cold Sweat's own shelter test (above y 192 the "
-                + "open air freezes a player in under a minute). On every model, fence and wall posts must stand on full "
-                + "blocks or top slabs and end under full blocks or bottom slabs, or a gap shows. "
-                + "Fix those before recommending it, and give the player its numbers. Parts that move as Create contraptions "
-                + "(a windmill, a turning door or drawbridge, a turntable, a piston wall, a lift, a gantry crane) go in "
-                + "moving, with the Super Glue the player puts on: the server finds what comes along by Create's rules, plays "
-                + "the motion on the model and says what it runs into, how fast it goes and the stress, so give the bearing, "
-                + "piston or pulley room to move and glue every block that has to come along. Write pistons retracted, with "
-                + "their extension poles behind them. Water and lava can be shown flowing: a "
-                + "source is level=0, flowing water level=1 to 7 (higher = further from the source), falling water "
-                + "level=8. To improve or fix something the player built, copy it in with from_world (find its bounds with "
-                + "trace_build or read_area first) and write only what changes; the player then sees their own build "
-                + "with the changes outlined, and you get the changes in world coordinates to name in your answer. "
-                + "It returns the model's number; write [diagram N] on a line of its own where it should appear, "
-                + "or put it inside a drawing with a shape of kind model.", props);
+                + "the book shows as a hologram the player can turn around and zoom into, and works out how it behaves. "
+                + "Write a detailed build as layers; fences, walls, panes and bars join their neighbours (fences also "
+                + "diagonally) and stairs turn corners by themselves, as when placed. Every block keeps the facing or axis "
+                + "you write and takes its default when you leave it out, often the wrong way, so write it on every block "
+                + "that has one. Try a design with draft true first: you get pictures of it and its check, and nothing goes "
+                + "in the answer. Revise with from_draft and write only the changes (move slides a part over). Before a "
+                + "model is shown the server runs it by the mods' own rules: rotation (which faces take a shaft, cogs, "
+                + "belts, sources, speeds, water on wheels), where machines send their output, sail rigs, posts, moving "
+                + "parts, and for a vehicle (boat, submarine, airship, plane or Offroad car) its mass, lift or buoyancy, "
+                + "trim, speed, turning, ceiling and how its crew walks, reaches, boards and keeps warm. A model with a "
+                + "PROBLEM is refused with what to change. Every block of a vehicle must share a face with the rest (Super "
+                + "Glue refuses edge and corner contact); edge and corner steps are filled for you and the result says "
+                + "where. Parts that move as Create contraptions go in moving, with the Super Glue the player puts on; "
+                + "write pistons retracted, poles behind them. Water and lava: a source is level=0, flowing 1 to 7, "
+                + "falling 8. To change a build of the player's, copy it in with from_world (bounds from trace_build or "
+                + "read_area) and write only what changes; you get the changes back in world coordinates. It returns the "
+                + "model's number: write [diagram N] on a line of its own where it should appear, or put it inside a "
+                + "drawing with a shape of kind model.", props);
     }
 
     private static JsonArray required(JsonObject properties) {
@@ -256,6 +225,15 @@ public final class Models {
     /** Builds the model; with {@code drafts}, from_draft can start from one of them and the new one is added to them. */
     static Result build(JsonObject input, ServerLevel level, Copier copier, net.minecraft.server.level.ServerPlayer player,
                         List<Draft> drafts) {
+        return build(input, level, copier, player, drafts, null);
+    }
+
+    /**
+     * Builds the model; {@code briefs} holds the kinds of build whose design brief this answer already got, and the
+     * first model of a new kind (a build to copy, a vehicle, an airship...) comes back with that kind's brief.
+     */
+    static Result build(JsonObject input, ServerLevel level, Copier copier, net.minecraft.server.level.ServerPlayer player,
+                        List<Draft> drafts, java.util.Set<String> briefs) {
         List<String> problems = new ArrayList<>();
         int sx = Diagrams.intOr(input, "size_x", 0), sy = Diagrams.intOr(input, "size_y", 0), sz = Diagrams.intOr(input, "size_z", 0);
         Map<BlockPos, BlockState> cells = new HashMap<>();
@@ -475,6 +453,12 @@ public final class Models {
             drafts.add(new Draft(new HashMap<>(cells), sx, sy, sz, labels, movingIn, title, caption));
             saved = "\nThis is model " + drafts.size() + ": start its next version with from_draft " + drafts.size()
                     + " and write only what changes.";
+        }
+        // The design briefs for kinds of build this answer hasn't had yet; a model only explaining a point gets none.
+        if (briefs != null && !showsFault && base == null) {
+            List<String> brief = DesignBriefs.forModel(cells, briefs);
+            if (!brief.isEmpty()) saved += "\n\nDesign brief for this kind of build (for you; follow it in this version and every "
+                    + "later one):\n" + String.join("\n", brief);
         }
         if (check != null && !check.faults().isEmpty() && !showsFault && !draft) {
             return Result.problem("Not built: blocks in it wouldn't work as placed. Fix the model and call again (or "
