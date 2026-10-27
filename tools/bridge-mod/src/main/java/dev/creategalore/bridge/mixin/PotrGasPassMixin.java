@@ -12,8 +12,9 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
- * Smog slips through any block without a full face in its way, belts included. A belt with casing on it is sealed
- * (items ride through a wall, smog stays in), and filtered exhaust is not air smog can pass through.
+ * Smog slips through any block without a full face in its way, belts and trapdoors included. A belt with casing on it
+ * is sealed (items ride through a wall, smog stays in), so is a cased door or trapdoor while it is shut, and filtered
+ * exhaust is not air smog can pass through.
  */
 @Mixin(value = AbstractGas.class, remap = false)
 public abstract class PotrGasPassMixin {
@@ -21,6 +22,6 @@ public abstract class PotrGasPassMixin {
     private void create_galore_bridge$sealedBelts(LevelReader level, BlockPos pos, Direction input, Direction output,
             CallbackInfoReturnable<Boolean> cir) {
         BlockState state = level.getBlockState(pos);
-        if (Exhaust.isSealedBelt(state) || Exhaust.isExhaust(state)) cir.setReturnValue(false);
+        if (Exhaust.isSealed(state) || Exhaust.isExhaust(state)) cir.setReturnValue(false);
     }
 }

@@ -83,5 +83,12 @@
   "create_galore_bridge.wear.claim_hover": "Puts them in your inventory",
   "create_galore_bridge.wear.claimed": "You got your %s accessories back.",
   "create_galore_bridge.wear.claimed_some": "You got %s accessories back. Your inventory filled up, %s are still kept for you.",
-  "create_galore_bridge.wear.claim_none": "There are no accessories waiting for you."
+  "create_galore_bridge.wear.claim_none": "There are no accessories waiting for you.",
+  "block.create_galore_bridge.andesite_encased_door": "Andesite Encased Door",
+  "block.create_galore_bridge.andesite_encased_trapdoor": "Andesite Encased Trapdoor",
+  "block.create_galore_bridge.brass_encased_door": "Brass Encased Door",
+  "block.create_galore_bridge.brass_encased_trapdoor": "Brass Encased Trapdoor",
+  "block.create_galore_bridge.copper_encased_door": "Copper Encased Door",
+  "block.create_galore_bridge.copper_encased_trapdoor": "Copper Encased Trapdoor",
+  "create_galore_bridge.encased_door.redstone": "Encased: only redstone opens it. A wrench takes the casing off."
 }
