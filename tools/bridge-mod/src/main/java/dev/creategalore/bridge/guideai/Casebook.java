@@ -324,6 +324,7 @@ final class Casebook {
             switch (kind) {
                 case "model" -> judge(run, c, model(run, c));
                 case "tool" -> judge(run, c, tool(run, c));
+                case "answer" -> judge(run, c, answer(run, c));
                 case "question" -> run.results.add(new Outcome(GuideText.string(c, "id"), GuideText.string(c, "title"),
                         open(c), "SKIPPED", "answer eval case (needs a model)"));
                 case "world" -> {
@@ -347,6 +348,14 @@ final class Casebook {
         Models.Result r = Models.build(c.getAsJsonObject("model"), level, null, player, new ArrayList<>(), new java.util.HashSet<>());
         boolean built = r.problem() == null;
         return new Result(built, built ? r.check() : r.problem());
+    }
+
+    /** The answer audit on a written answer, with {@code diagrams} the diagrams its answer made (as JSON). */
+    private static Result answer(Run run, JsonObject c) {
+        List<String> made = new ArrayList<>();
+        for (JsonElement e : array(c, "diagrams")) made.add(e.toString());
+        List<String> issues = AnswerAudit.check(GuideText.string(c, "answer"), made, run.server);
+        return new Result(null, issues.isEmpty() ? "(nothing to fix)" : String.join("\n", issues));
     }
 
     private static Result tool(Run run, JsonObject c) {
