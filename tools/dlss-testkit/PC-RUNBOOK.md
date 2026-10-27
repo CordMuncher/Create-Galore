@@ -2075,7 +2075,7 @@ Emre says, for each, which looks better. F2 screenshots of anything worth showin
 
 ### 3. With frame generation: RR Performance against DLSS Quality, about 5 minutes
 
-Display tab, **Frame generation: DLSS**, Done, restart. In `dlaa-test` at the lakeshore, standing still: read the
+Display tab, **Frame generation: DLSS**, Done (it turns on at once). In `dlaa-test` at the lakeshore, standing still: read the
 game's frame counter (rendered) and the NVIDIA overlay (Alt+R, shown) for **RR at Performance**, then **Ray
 Reconstruction off at Quality**, then **RR at Balanced**, about 10 seconds each. Emre's theory: RR copes with a lower
 render resolution, so RR Performance with frame generation can match or beat DLSS Quality in smoothness and look.
