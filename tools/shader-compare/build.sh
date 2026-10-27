@@ -26,6 +26,7 @@ CP=$( { echo "$NFCLIENT"; ls "$CLIENT"/libraries/net/minecraft/client/*/client-*
         ls "$CACHE"/lwjgl*-3.3.3.jar; echo "$IRIS"; } | tr '\n' ':')
 
 mkdir -p "$WORK/classes" "$(dirname "$OUT")"
+OUT="$(cd "$(dirname "$OUT")" && pwd)/$(basename "$OUT")" # the jar is made from inside the work folder
 javac --release 21 -nowarn -proc:none -cp "$CP" -d "$WORK/classes" $(find "$HERE/src/main/java" -name '*.java')
 cp -r "$HERE/src/main/resources/." "$WORK/classes/"
 (cd "$WORK/classes" && jar --create --date=2026-01-01T00:00:00Z --file "$OUT" .)
