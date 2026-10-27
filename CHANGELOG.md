@@ -5,6 +5,11 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.6.2
+
+### Fixed
+- **The updater, the server kit and the Server Setup app use the repository's new address.** The repository moved to github.com/CordMuncher/Create-Galore. The old address still forwards for now, but forwarding stops working if anyone later takes the old account name, so the client updater (pack.toml), the server's update check at start, install-server.sh/.bat and the Server Setup app now read releases and the pack from the new address directly. README and docs links point there too. An instance or server set up before this keeps its updater and keeps working through the forward; to move it to the new address, put the three jars from this release's **Create-Galore-Updater.zip** in the instance's `minecraft` folder, or run this release's Server Setup app (or install-server) on the server folder.
+
 ## 0.6.1
 
 ### Added
@@ -955,5 +960,5 @@ The vehicle bug pass: airships, boats, submarines, trains, coasters and cars dri
 
 ### Added
 - **Ask the Book.** The Field Guide can now answer questions in its own words. Press **Ask the Book** at the top right of the guide (or type `/askbook`) and ask anything about the pack. It looks at what you're holding, your inventory, what's around you, your advancements and the pack's recipes, so "what should I do next?" gets advice for where you actually are. Answers stream in with a typewriter, a quill sound you can turn off, and Minecraft-themed thinking lines. When a picture helps, it draws pixel-art diagrams on the page in the book's colours with real item icons. Each player keeps their own pages on the server.
-- Works only on a home server whose owner saved their own Anthropic API key. The server asks for it at start (press K to change it, or type OFF). The key stays on the server machine, outside the server folder, and is never sent to players, written to logs, backups or the world. Setup: [docs/server-setup.md](https://github.com/emresahin0906-code/Create-Galore/blob/main-6fi2ef/docs/server-setup.md#the-field-guides-voice-your-own-api-key).
+- Works only on a home server whose owner saved their own Anthropic API key. The server asks for it at start (press K to change it, or type OFF). The key stays on the server machine, outside the server folder, and is never sent to players, written to logs, backups or the world. Setup: [docs/server-setup.md](https://github.com/CordMuncher/Create-Galore/blob/main-6fi2ef/docs/server-setup.md#the-field-guides-voice-your-own-api-key).
 - Create Galore Bridge 1.19.0 (adds Ask the Book on top of 0.2.18's Tide fixes).

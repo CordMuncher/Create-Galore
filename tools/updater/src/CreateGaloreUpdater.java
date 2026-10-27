@@ -22,7 +22,7 @@ import java.util.List;
  * first, so the pack's files and the mods' defaults come back; if the update fails they are put back. Mods, Minecraft, NeoForge and the worlds themselves are never deleted.
  */
 public final class CreateGaloreUpdater {
-    static final String PACK_URL = "https://raw.githubusercontent.com/emresahin0906-code/Create-Galore/main-6fi2ef/pack/pack.toml";
+    static final String PACK_URL = "https://raw.githubusercontent.com/CordMuncher/Create-Galore/main-6fi2ef/pack/pack.toml";
 
     public static void main(String[] args) throws Exception {
         if (args.length > 0 && args[0].equals("--server-start")) { ServerUpdateCheck.main(args); return; }

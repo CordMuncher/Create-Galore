@@ -24,7 +24,7 @@ A big, long-term Minecraft modpack built around the Create mod. Think "Minecraft
 
 ## Install (players)
 
-1. Download `Create-Galore-0.5.9.mrpack` from the [latest release](https://github.com/emresahin0906-code/Create-Galore/releases/latest). The older `.mrpack` files in the repo's top folder are past versions; don't import those.
+1. Download `Create-Galore-0.5.9.mrpack` from the [latest release](https://github.com/CordMuncher/Create-Galore/releases/latest). The older `.mrpack` files in the repo's top folder are past versions; don't import those.
 2. Import it:
    - **Prism Launcher:** Add Instance → Import → pick the `.mrpack`.
    - **Modrinth App:** drag the `.mrpack` onto the window (or File → Import).
@@ -40,7 +40,7 @@ Don't let the launcher update NeoForge past 21.1.262.
 
 ## Install (server)
 
-**On Windows, use the Server Setup app.** Download `Create-Galore-Server-Setup-<version>.exe` from the [latest release](https://github.com/emresahin0906-code/Create-Galore/releases/latest) and run it. Pick a folder and the memory, drop in the Twilight Forest jar (it shows a green check when it's the right version), tick the EULA and press Install. It installs NeoForge, downloads the server-side mods (or copies them from a mods folder you drop in, skipping client-only ones), applies the pack's configs, memory and whitelist, and writes a `start-server.bat`, which checks for pack updates each start and asks before applying them. If your PC has no Java 21 it downloads one into the server folder. Run a newer version of the app on the same folder to update the server (see [Updating](#updating)).
+**On Windows, use the Server Setup app.** Download `Create-Galore-Server-Setup-<version>.exe` from the [latest release](https://github.com/CordMuncher/Create-Galore/releases/latest) and run it. Pick a folder and the memory, drop in the Twilight Forest jar (it shows a green check when it's the right version), tick the EULA and press Install. It installs NeoForge, downloads the server-side mods (or copies them from a mods folder you drop in, skipping client-only ones), applies the pack's configs, memory and whitelist, and writes a `start-server.bat`, which checks for pack updates each start and asks before applying them. If your PC has no Java 21 it downloads one into the server folder. Run a newer version of the app on the same folder to update the server (see [Updating](#updating)).
 
 **Or use the script** (any OS). A dedicated server takes one script plus two manual steps (add Twilight Forest, accept the EULA). The full guide, including hosting on your own PC vs Exaroton, memory, whitelisting and moving the world between the two, is in **[docs/server-setup.md](docs/server-setup.md)**.
 
@@ -69,7 +69,7 @@ Neither mode deletes or re-downloads mods that didn't change, and neither touche
 
 **Game (Prism Launcher), one-time setup.** The pack ships a small updater built on [packwiz-installer](https://packwiz.infra.link/tutorials/installing/packwiz-installer/) that updates the instance from the pack on GitHub each time you press Play.
 
-1. If the instance's `minecraft` folder (Prism: right-click the instance → Folder) has no `create-galore-updater.jar`, download `Create-Galore-Updater.zip` from the [latest release](https://github.com/emresahin0906-code/Create-Galore/releases/latest) and unzip its three jars there. Instances imported from a release that already has the updater have them.
+1. If the instance's `minecraft` folder (Prism: right-click the instance → Folder) has no `create-galore-updater.jar`, download `Create-Galore-Updater.zip` from the [latest release](https://github.com/CordMuncher/Create-Galore/releases/latest) and unzip its three jars there. Instances imported from a release that already has the updater have them.
 2. Edit the instance → Settings → Custom commands, tick the box and paste this as the **pre-launch command** (add ` --clean` at the end for the clean mode):
    ```
    "$INST_JAVA" -jar create-galore-updater.jar
@@ -417,7 +417,7 @@ All tests ran headless in a cloud machine (4 cores, 16 GB RAM, no GPU), so speed
 
 ## Repo layout
 
-- `Create-Galore-0.1.*.mrpack`: old versions kept for reference. The current `.mrpack` is only on the [latest release](https://github.com/emresahin0906-code/Create-Galore/releases/latest), built from `pack/` by the release workflow
+- `Create-Galore-0.1.*.mrpack`: old versions kept for reference. The current `.mrpack` is only on the [latest release](https://github.com/CordMuncher/Create-Galore/releases/latest), built from `pack/` by the release workflow
 - `pack/`: [packwiz](https://packwiz.infra.link/) source, one `.pw.toml` per mod or shader, plus configs (`pack/config/`), the datapacks (`pack/config/paxi/datapacks/create-galore-tweaks`, always on, `create-galore-no-elytra`, and the opt-in `config/paxi/optional/create-galore-with-elytra`) the Field Guide (a Modonomicon book inside `create-galore-tweaks`) and its resource pack `pack/config/paxi/resourcepacks/create-galore-guide` (icon font and diagram pictures, always on), and `pack/config/paxi/resourcepacks/create-galore-fixes` (model and texture fixes for other mods, always on)
 - `MODS.md`: full mod list with versions and sides
 - `server/`: server install scripts, memory settings and a starting `server.properties`

@@ -46,7 +46,7 @@ fi
 # The start script and its update check (asks no / yes / back up first when the pack on GitHub is newer).
 cp "$HERE/start-server.sh" start-server.sh && chmod +x start-server.sh
 if [ -f "$HERE/create-galore-updater.jar" ]; then cp "$HERE/create-galore-updater.jar" .
-else curl -fsSL -o create-galore-updater.jar https://github.com/emresahin0906-code/Create-Galore/releases/latest/download/create-galore-updater.jar \
+else curl -fsSL -o create-galore-updater.jar https://github.com/CordMuncher/Create-Galore/releases/latest/download/create-galore-updater.jar \
   || echo "Couldn't download create-galore-updater.jar, so start-server.sh won't check for updates"
 fi
 VERSION="$(sed -n 's/^version *= *"\(.*\)"/\1/p' "$PACK")"
