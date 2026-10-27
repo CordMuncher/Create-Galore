@@ -19,14 +19,14 @@
 
 uniform float cg_nether_haze; // how much thicker the biome's air is than the wastes' (see shaders.properties)
 
-// The light all around from the air, on a surface open to it (klux): about a tenth of what a torch gives a block
+// The light all around from the air, on a surface open to it (klux): about a sixth of what a torch gives a block
 // next to it, as Minecraft's Nether has it (its ambient light).
-const float nether_ambient_lux = 0.0025;
+const float nether_ambient_lux = 0.004;
 // How much of the light in it the air sends on (the rest it takes in).
-const float nether_haze_albedo = 0.6;
-// How thick the air is (per block, at Haze 1 in the Nether Wastes): about a fifth of the light gets through 96 blocks,
-// Minecraft's own fog distance in the Nether.
-const float nether_haze_density = 0.018;
+const float nether_haze_albedo = 0.25;
+// How thick the air is (per block, at Haze 1 in the Nether Wastes): about a fifth of the light gets through 130 blocks,
+// so what is near stands clear and what is far fades into the air.
+const float nether_haze_density = 0.012;
 // The lava's light, luminance 1 (its colour in the light volume, see block.properties).
 const vec3 nether_lava_color = vec3(1.0, 0.4, 0.1) / 0.5056;
 // The top of the lava seas, and how bright the air is just over them (kcd/m², times the lava's colour), fading to a
@@ -67,7 +67,7 @@ vec3 nether_air_radiance() {
 vec3 nether_ambient(int face) {
     vec4 air = nether_air_color();
     const float facing[6] = float[6](1.0, 1.0, 0.85, 1.25, 1.0, 1.0);
-    return mix(vec3(1.0), air.rgb, 0.6) * air.a * nether_ambient_lux * facing[face];
+    return mix(vec3(1.0), air.rgb, 0.3) * air.a * nether_ambient_lux * facing[face];
 }
 
 // The lava seas' glow in the air over them at a height (world y, kcd/m²), lighting it from below.

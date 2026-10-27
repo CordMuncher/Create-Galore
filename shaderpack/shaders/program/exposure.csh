@@ -1,4 +1,4 @@
-// The overworld's exposure, metered after DLSS (or FSR) for the next frame. It meters the light falling on what the
+// The exposure, metered after DLSS (or FSR) for the next frame. It meters the light falling on what the
 // frame shows rather than the light it gives back, as Ghost of Tsushima does (Patry 2021): a surface counts as an 18%
 // grey would look in its place (its brightness over its colour's), so a dark floor doesn't brighten the frame and
 // snow doesn't darken it; the sky, water, what lights itself and what the G-buffer has no colour for count as they
@@ -12,6 +12,7 @@
 #include "/lib/globals.glsl"
 #include "/lib/gbuffer.glsl"
 #include "/lib/color.glsl"
+#include "/lib/light_levels.glsl"
 
 layout(local_size_x = 16, local_size_y = 16) in;
 const ivec3 workGroups = ivec3(1, 1, 1);
@@ -26,7 +27,15 @@ uniform float thunderStrength;
 uniform ivec2 eyeBrightnessSmooth;
 
 const float ev_min = -7.0;
+#ifdef WORLD_NETHER
+// The Nether is lit only by its lava, its lamps and its glowing air, far dimmer than a day but no night to the eye:
+// it adapts further and keeps it a little brighter (see the key below).
+const float ev_max = 14.0;
+const float key_dark = 0.25;
+#else
 const float ev_max = 12.0;
+const float key_dark = -1.25;
+#endif
 
 // The histogram: log2 of kcd/m² from starlight to the sun's disc, 256 bins of about a fifth of a stop.
 const int bins = 256;
@@ -53,6 +62,12 @@ float metered_at(vec3 c, float current, ivec2 surface_texel) {
             luminance *= 0.18 / albedo;
         }
     }
+#ifdef WORLD_NETHER
+    // Nothing in the Nether lights a grey card brighter than its lava and its lamps do close by: what glows brighter
+    // (a lava sea filling the view) meters as that, so the eye doesn't shut down to the lava and leave the rocks
+    // around it black.
+    luminance = min(luminance, 0.18 * light_block_lux / 3.14159265);
+#endif
     return log2(max(luminance, 1e-12));
 }
 
@@ -144,7 +159,7 @@ void main() {
     // The frame's average lands here (log2 of the frame's units): by day about where the tone curve puts a lit grey
     // a little under the middle of the screen's range; two stops lower in the dark (a lamp-lit room, a cave, the
     // night), so dark places look dark and a lamp's pool of light stands out in them.
-    float key = mix(-1.25, 0.75, smoothstep(-11.0, -2.0, metered));
+    float key = mix(key_dark, 0.75, smoothstep(-11.0, -2.0, metered));
     // Out under heavy rain, half a stop lower (most of a stop in a thunderstorm): a rainy day reads as the dim, grey
     // day it is rather than brought back up to a sunny one's brightness.
     float out_in_rain = cg_rain_here * smoothstep(0.4, 0.9, float(eyeBrightnessSmooth.y) / 240.0);

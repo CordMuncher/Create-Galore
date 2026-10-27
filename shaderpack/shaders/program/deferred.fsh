@@ -327,7 +327,7 @@ float sky_rays_settled(ivec2 texel, vec2 prev, bool seen) {
 // blocks away (see sky_ray_open), so a fortress's halls and a tunnel are darker than a cavern, and an End city's
 // rooms than the open island. Never quite none (the air's light finds its way in), and open past the grid.
 #ifdef WORLD_NETHER
-const float world_open_floor = 0.2;
+const float world_open_floor = 0.4;
 #else
 const float world_open_floor = 0.12;
 #endif
