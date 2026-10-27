@@ -2032,8 +2032,8 @@ Copy-Item $T\rr1\nvngx_dlssd-dev.dll $T\instance\create-galore-dlss\nvngx_dlssd.
 
 Launch, shader pack menu, **Upscaling & Display...**, tab **Upscaling**:
 - Under the render resolution, the new row: **Ray Reconstruction: OFF** and **RR preset: F (RR 4.5)**. Hover both:
-  the texts must read right to Emre. Turn it **ON**: the DLL line gains `Ray Reconstruction's nvngx_dlssd.dll:
-  310.9.16 (tested with 310.9.16).` Render resolution **Performance**. Done.
+  the texts must read right to Emre. Turn it **ON**: the DLL line gains `RR's nvngx_dlssd.dll: 310.9.16.` Render
+  resolution **Performance**. Done.
 - Open `dlaa-test`, `/gamemode creative`, `/time set 6000`. The log must have `DLAA: DLSS Ray Reconstruction can run,
   nvngx_dlssd.dll 310.9.16 (made with 310.9.16)` and `DLAA: DLSS Ray Reconstruction running at ..., preset F, exposed
   colour`. The tab's status line must begin `On: NVIDIA DLSS Ray Reconstruction (dev build)`. If it says `can't run:`

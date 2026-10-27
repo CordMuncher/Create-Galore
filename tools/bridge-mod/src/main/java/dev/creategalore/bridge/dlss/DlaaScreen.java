@@ -760,8 +760,8 @@ public final class DlaaScreen extends Screen {
         }
         if (rayReconstruction) {
             String rr = Dlss.rayReconstructionDllVersion();
-            dllLine += " Ray Reconstruction's nvngx_dlssd.dll: " + (rr == null ? "not found (find it on this PC)."
-                    : rr + " (tested with " + Dlss.TESTED_RR_DLL_VERSION + ").");
+            // Short, so the line still fits under the extra row.
+            dllLine += " RR's nvngx_dlssd.dll: " + (rr == null ? "not found." : rr + ".");
         }
     }
 
