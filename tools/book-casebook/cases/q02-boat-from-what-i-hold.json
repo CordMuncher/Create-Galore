@@ -10,5 +10,69 @@
     "Hull and deck in birch, no spruce or dark oak",
     "The model it shows is built (no PROBLEM left) and floats upright",
     "Says what else they need and about how many"
+  ],
+  "world": [
+    "fill ~-12 ~-1 ~-12 ~12 ~-1 ~12 minecraft:grass_block",
+    "fillbiome ~-16 ~-8 ~-16 ~16 ~8 ~16 minecraft:birch_forest",
+    "place feature minecraft:birch ~6 ~ ~6",
+    "place feature minecraft:birch ~-7 ~ ~5",
+    "place feature minecraft:birch ~5 ~ ~-8",
+    "place feature minecraft:birch ~-6 ~ ~-6",
+    "time set 6000"
+  ],
+  "box": [
+    -12,
+    -1,
+    -12,
+    12,
+    10,
+    12
+  ],
+  "built": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "stand": [
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "inventory": [
+    {
+      "id": "minecraft:birch_planks",
+      "count": 300
+    },
+    {
+      "id": "minecraft:birch_log",
+      "count": 64
+    },
+    {
+      "id": "minecraft:cobblestone",
+      "count": 40
+    },
+    {
+      "id": "minecraft:glass",
+      "count": 20
+    },
+    {
+      "id": "minecraft:iron_axe",
+      "count": 1
+    }
+  ],
+  "advancements": [
+    "minecraft:story/root",
+    "minecraft:story/mine_stone",
+    "minecraft:story/upgrade_tools",
+    "minecraft:story/smelt_iron",
+    "minecraft:husbandry/root",
+    "create:root",
+    "create:andesite_alloy",
+    "create:water_wheel"
   ]
 }

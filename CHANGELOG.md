@@ -5,6 +5,16 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.6.10
+
+### Fixed
+- **Ask the Book starts from what it can see of you.** Every question now comes with a short snapshot of the player who asks: where they are and what it is like there, what they are looking at, how far along they are in each mod, what they hold, what they have crafted and placed, and the builds around them. The book no longer has to decide whether to look before answering, so it gets fewer things wrong about where you are or what you have, and it answers simple questions with fewer steps.
+- **Shorter, clearer instructions for the book.** Its standing instructions went from about 15,400 characters to 5,500. They now cover four steps: look, design every suggestion as a model and check it, fix every problem the check finds, then answer. The detailed advice on designing builds, vehicles, planes, airships and boats now comes with the first model of that kind in an answer, as a design brief, instead of being sent with every question. A broad question ("what should I do next?") gets the one or two things that matter, and a model only when you ask how to build something.
+
+### Added
+- An answer eval for the book's developers: `tools/book-casebook/standin.sh` turns a test server into the asking player of a question case (their inventory, progress, world and where they look), so the book's answers can be tried and graded against each case before a change ships.
+- Create Galore Bridge 1.133.0.
+
 ## 0.6.9
 
 ### Fixed

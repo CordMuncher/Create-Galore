@@ -148,6 +148,19 @@ public final class GuideAi {
         return views.get(player);
     }
 
+    /** The second system block: the guide's notes and the mod list. */
+    static String reference(GuideText.Guide guide) {
+        return "The Create Galore Field Guide follows as compact notes: every fact of the guide, "
+                + "written once, one block per entry headed '## <entry id> | <entry name>' (a section that is sent in full "
+                + "instead uses '--- <entry name> (entry <entry id>) ---'). Then every mod on this server.\n\n"
+                + guide.notes() + "\n\n=== Mods on this server (mod id: name version) ===\n" + GuideText.mods();
+    }
+
+    /** Takes in what a player sees now, as a question does (the casebook's stand-in player asks without a client). */
+    static void see(ServerPlayer player) {
+        views.put(player.getUUID(), Vision.capture(player, 70, 16 / 9f, placed));
+    }
+
     private static void onStarted(ServerStartedEvent event) {
         MinecraftServer server = event.getServer();
         if (!FMLEnvironment.dist.isDedicatedServer()) {
@@ -174,10 +187,7 @@ public final class GuideAi {
         }
         JsonArray system = new JsonArray();
         system.add(textBlock(GuideText.PERSONA));
-        JsonObject reference = textBlock("The Create Galore Field Guide follows as compact notes: every fact of the guide, "
-                + "written once, one block per entry headed '## <entry id> | <entry name>' (a section that is sent in full "
-                + "instead uses '--- <entry name> (entry <entry id>) ---'). Then every mod on this server.\n\n"
-                + guide.notes() + "\n\n=== Mods on this server (mod id: name version) ===\n" + GuideText.mods());
+        JsonObject reference = textBlock(reference(guide));
         // One cache entry for persona, tools and guide, kept for an hour so both players' questions reuse it.
         JsonObject cache = new JsonObject();
         cache.addProperty("type", "ephemeral");
@@ -362,7 +372,16 @@ public final class GuideAi {
         unbindThinking(messages);
         JsonObject user = new JsonObject();
         user.addProperty("role", "user");
-        user.addProperty("content", player.getGameProfile().getName() + " asks: " + question);
+        // What the book can tell about them now goes with the question, so it starts from their situation.
+        String snapshot;
+        try {
+            snapshot = PlayerSnapshot.of(player, l.server);
+        } catch (RuntimeException | LinkageError e) {
+            snapshot = "";
+            LOG.warn("Field Guide voice: couldn't sum up {} for the book ({})", player.getGameProfile().getName(), e.toString());
+        }
+        user.addProperty("content", player.getGameProfile().getName() + " asks: " + question
+                + (snapshot.isEmpty() ? "" : "\n\n" + snapshot));
         messages.add(user);
         String playerName = player.getGameProfile().getName();
         ThreadStore.Page target = page;
@@ -614,6 +633,8 @@ public final class GuideAi {
         List<String> diagrams = new ArrayList<>();
         // Every model built for this answer, so the next version can start from one (build_model's from_draft).
         List<Models.Draft> drafts = new ArrayList<>();
+        // The kinds of build whose design brief this answer already got (build_model hands each over once).
+        Set<String> briefs = new HashSet<>();
         Streamer streamer = new Streamer(l, playerId, pageId);
         boolean rescued = false;
         int limit = MAX_ROUNDS;
@@ -644,7 +665,7 @@ public final class GuideAi {
                             // Its tool calls have no results, which the API refuses on the page's next question.
                             return finishText(messages, diagrams, note, false);
                         }
-                        JsonObject results = toolResults(l, playerId, content, diagrams, drafts, streamer);
+                        JsonObject results = toolResults(l, playerId, content, diagrams, drafts, briefs, streamer);
                         messages.add(results);
                         if (limit < DESIGN_ROUNDS && calls(content, "build_model")) limit = DESIGN_ROUNDS;
                         int left = limit - round - 1;
@@ -919,7 +940,7 @@ public final class GuideAi {
 
     /** Runs the book's tool calls on the server thread, for the player who asked, and returns them as one user turn. */
     private static JsonObject toolResults(Live l, UUID playerId, JsonArray content, List<String> diagrams,
-            List<Models.Draft> drafts, Streamer streamer)
+            List<Models.Draft> drafts, Set<String> briefs, Streamer streamer)
             throws InterruptedException {
         JsonArray results = new JsonArray();
         for (JsonElement e : content) {
@@ -953,7 +974,7 @@ public final class GuideAi {
                         PlacedBlocks placedBlocks = placed;
                         Models.Copier copier = player == null || placedBlocks == null ? null
                                 : (a, b, max) -> Builds.copy(player, placedBlocks, views.get(playerId), a, b, max);
-                        return Models.build(input, player != null ? player.serverLevel() : l.server.overworld(), copier, player, drafts);
+                        return Models.build(input, player != null ? player.serverLevel() : l.server.overworld(), copier, player, drafts, briefs);
                     }).get(10, TimeUnit.SECONDS);
                     LOG.info("Field Guide voice: build_model {}", buildSummary(built));
                     if (built.problem() != null) {

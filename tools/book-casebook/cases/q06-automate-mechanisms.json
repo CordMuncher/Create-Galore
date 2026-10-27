@@ -12,5 +12,102 @@
     "The line carries the item (belt or depots) through every step in order, with the right number of loops",
     "Uses nothing that needs a precision mechanism to craft (no Mechanical Arm), or says that part comes later",
     "Shows the recipe with [recipe ...]"
-  ]
+  ],
+  "world": [
+    "fill ~-12 ~-1 ~-12 ~12 ~-1 ~12 minecraft:grass_block",
+    "time set 6000"
+  ],
+  "box": [
+    -12,
+    -1,
+    -12,
+    12,
+    0,
+    12
+  ],
+  "built": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "stand": [
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "inventory": [
+    {
+      "id": "create:brass_ingot",
+      "count": 48
+    },
+    {
+      "id": "create:andesite_alloy",
+      "count": 128
+    },
+    {
+      "id": "create:golden_sheet",
+      "count": 16
+    },
+    {
+      "id": "create:cogwheel",
+      "count": 24
+    },
+    {
+      "id": "create:large_cogwheel",
+      "count": 8
+    },
+    {
+      "id": "create:shaft",
+      "count": 32
+    },
+    {
+      "id": "create:belt_connector",
+      "count": 16
+    },
+    {
+      "id": "create:mechanical_press",
+      "count": 1
+    },
+    {
+      "id": "create:deployer",
+      "count": 2
+    },
+    {
+      "id": "create:depot",
+      "count": 4
+    }
+  ],
+  "advancements": [
+    "minecraft:story/root",
+    "minecraft:story/mine_stone",
+    "minecraft:story/upgrade_tools",
+    "minecraft:story/smelt_iron",
+    "minecraft:husbandry/root",
+    "create:root",
+    "create:andesite_alloy",
+    "create:water_wheel",
+    "create:shifting_gears",
+    "create:mechanical_press",
+    "create:andesite_casing",
+    "create:belt",
+    "create:encased_fan",
+    "create:fan_processing",
+    "create:mechanical_mixer",
+    "create:compacting",
+    "create:millstone",
+    "create:crushing_wheel",
+    "create:brass",
+    "create:brass_casing",
+    "create:deployer"
+  ],
+  "crafted": {
+    "create:brass_ingot": 48,
+    "create:golden_sheet": 16,
+    "create:mechanical_press": 2
+  }
 }

@@ -10,5 +10,67 @@
   "rubric": [
     "Looks at the build before answering",
     "Says raw beef comes out cooked; does not tell them to change it"
+  ],
+  "world": [
+    "fill ~ ~-1 ~-1 ~4 ~-1 ~1 minecraft:glass",
+    "setblock ~0 ~ ~ create:belt[facing=east,slope=horizontal,part=start,casing=false]{Controller:[I;{x},{y},{z}],Index:0,Length:5,IsController:1b}",
+    "setblock ~1 ~ ~ create:belt[facing=east,slope=horizontal,part=middle,casing=false]{Controller:[I;{x},{y},{z}],Index:1,Length:5}",
+    "setblock ~2 ~ ~ create:belt[facing=east,slope=horizontal,part=middle,casing=false]{Controller:[I;{x},{y},{z}],Index:2,Length:5}",
+    "setblock ~3 ~ ~ create:belt[facing=east,slope=horizontal,part=middle,casing=false]{Controller:[I;{x},{y},{z}],Index:3,Length:5}",
+    "setblock ~4 ~ ~ create:belt[facing=east,slope=horizontal,part=end,casing=false]{Controller:[I;{x},{y},{z}],Index:4,Length:5}",
+    "setblock ~ ~ ~1 create:creative_motor[facing=north]{ScrollValue:4}",
+    "setblock ~1 ~3 ~ create:encased_fan[facing=down]",
+    "setblock ~1 ~2 ~ minecraft:campfire[lit=true]",
+    "setblock ~1 ~4 ~ create:creative_motor[facing=down]{ScrollValue:64}",
+    "setblock ~2 ~3 ~ create:encased_fan[facing=down]",
+    "setblock ~2 ~2 ~ minecraft:campfire[lit=true]",
+    "setblock ~2 ~4 ~ create:creative_motor[facing=down]{ScrollValue:64}",
+    "time set 6000"
+  ],
+  "box": [
+    -1,
+    -1,
+    -1,
+    5,
+    4,
+    1
+  ],
+  "stand": [
+    2,
+    1,
+    4,
+    180,
+    28
+  ],
+  "ticks": 60,
+  "inventory": [
+    {
+      "id": "minecraft:beef",
+      "count": 40
+    },
+    {
+      "id": "create:wrench",
+      "count": 1
+    }
+  ],
+  "advancements": [
+    "minecraft:story/root",
+    "minecraft:story/mine_stone",
+    "minecraft:story/upgrade_tools",
+    "minecraft:story/smelt_iron",
+    "minecraft:husbandry/root",
+    "create:root",
+    "create:andesite_alloy",
+    "create:water_wheel",
+    "create:shifting_gears",
+    "create:mechanical_press",
+    "create:andesite_casing",
+    "create:belt",
+    "create:encased_fan",
+    "create:fan_processing",
+    "create:mechanical_mixer",
+    "create:compacting",
+    "create:millstone",
+    "create:crushing_wheel"
   ]
 }
