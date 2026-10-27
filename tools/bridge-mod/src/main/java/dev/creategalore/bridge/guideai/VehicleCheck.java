@@ -137,6 +137,7 @@ final class VehicleCheck {
         if (model) ballast(blocks, getter, faults);
         boatEngines(blocks, getter, faults);
         controls(blocks, getter, faults);
+        PlayerCheck.vehicle(blocks, body.ceiling, air || land || (props && !water && !sub), faults, notes);
         boolean redstone = blocks.values().stream().anyMatch(s -> s.isSignalSource() || id(s).contains("throttle_lever"));
         if (redstone) {
             boolean wire = blocks.values().stream().anyMatch(s -> s.is(net.minecraft.world.level.block.Blocks.REDSTONE_WIRE)
@@ -440,6 +441,8 @@ final class VehicleCheck {
         final Map<BlockPos, BlockState> blocks;
         /** The long horizontal axis: a hull's keel line. */
         final Direction.Axis keel;
+        /** The highest it climbs, once the flight sums have worked it out (NaN for what doesn't fly). */
+        double ceiling = Double.NaN;
 
         Body(List<Part> parts, double m, double cx, double cy, double cz, Map<BlockPos, BlockState> blocks, Direction.Axis drive) {
             this.parts = parts;
@@ -1296,6 +1299,7 @@ final class VehicleCheck {
             // Ceiling: where the balloon's lift falls to the weight (air thins as exp(-0.004·(y-63))).
             double need = (G * b.m - levLift) / (16.5 * filled);
             double ceiling = Math.min(280, 63 - Math.log(need) / 0.004 - balloonY);
+            b.ceiling = ceiling;
             out.append(String.format(Locale.ROOT, "- Ceiling about y %.0f (the air thins as it climbs).\n", ceiling));
             if (ceiling < CEILING_BAD) faults.add(String.format(Locale.ROOT, "its ceiling is only about y %.0f: it barely clears "
                     + "the ground and hits hills; it needs more balloon for its weight", ceiling));
@@ -1303,6 +1307,7 @@ final class VehicleCheck {
             // Wings and upward thrust both weaken as the air thins; the speed holds (the drag thins too).
             double need = G * b.m / ((wings.up * v + up) * pressure(63));
             double ceiling = Math.min(280, 63 - Math.log(need) / 0.004);
+            b.ceiling = ceiling;
             out.append(String.format(Locale.ROOT, "- Ceiling about y %.0f at full speed (the air thins as it climbs).\n", ceiling));
             if (ceiling < CEILING_BAD) faults.add(String.format(Locale.ROOT, "its ceiling is only about y %.0f: it barely clears "
                     + "the ground and hits hills; it needs more wings or more speed for its weight", ceiling));
@@ -2331,7 +2336,7 @@ final class VehicleCheck {
     }
 
     /** Controls a player has to stand at and use by hand, from the vehicle itself. */
-    private static boolean isControl(String id) {
+    static boolean isControl(String id) {
         return id.equals("simulated:steering_wheel") || id.equals("simulated:throttle_lever") || id.equals("simulated:linked_typewriter")
                 || id.equals("minecraft:lever") || id.equals("create_submarine:pump_controller");
     }
@@ -2341,7 +2346,7 @@ final class VehicleCheck {
      * middle of their footprint, from half a block below to the 0.3 the helm's room test leaves free, or null when
      * nothing of the vehicle is there to stand on.
      */
-    private static Double footing(Map<BlockPos, BlockState> blocks, BlockGetter getter, Vec3 feet) {
+    static Double footing(Map<BlockPos, BlockState> blocks, BlockGetter getter, Vec3 feet) {
         AABB under = new AABB(feet.x - 0.15, feet.y - 0.5, feet.z - 0.15, feet.x + 0.15, feet.y + 0.3, feet.z + 0.15);
         Double top = null;
         for (BlockPos q : BlockPos.betweenClosed(BlockPos.containing(under.minX, under.minY, under.minZ),

@@ -5,6 +5,18 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.6.3
+
+### Added
+- **Ask the Book designs vehicles for the crew, not only for the physics.** A player's airship from the book passed every check and still couldn't be used: its fence rigging stood on half slabs and joined nothing, the door sat two blocks above the ground once it landed, the Portable Engines out in the side pods couldn't be reached to refuel, and the Physics Assembler was sealed inside the keel. The book's vehicle check now moves through a design the way a player does (walking, a 1.25-block jump, drops, ladders, opening doors, a 4.5-block reach with nothing in the way) and refuses a design until:
+  - every engine that burns fuel (Portable Engine, Boat Engine, Blaze Burner, Solid Burner, Solid Fuel Thruster) can be reached from a spot the crew walks to from the helm and back, or is fed by a funnel, chute or hopper;
+  - the Physics Assembler is open to a floor a player stands on;
+  - a ship that lands can be boarded from the ground under its lowest blocks (steps or a ladder up to a high door);
+  - on anything that climbs above y 192, the helm is in a closed cabin. This uses Cold Sweat Altitude's own shelter test, because the open air up there freezes a player in under a minute. Between y 128 and 192 it gets a note instead, and so does refuelling out in the open at height.
+- On every model the book builds, a fence or wall post that stands on a bottom slab, a trapdoor's edge or anything else without a full face under its middle (or ends under one) is a fault: it floats half a block off and joins nothing.
+- The book is told how to build for this: engines in an engine room turning the propellers through shafts, or pods reached along a railed catwalk or ladder; steps or a ladder to the door; a closed cabin round the helm; posts on full blocks or top slabs. A test airship built that way passes every check.
+- Create Galore Bridge 1.126.0.
+
 ## 0.6.2
 
 ### Fixed

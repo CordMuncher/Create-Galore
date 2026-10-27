@@ -120,7 +120,15 @@ final class GuideText {
             work: a build that fails them is always a bad build, but one that passes them isn't a good build for that \
             alone. Design for the player who will use it: where they stand to steer and work each control (on the \
             vehicle's own deck or floor, never hanging outside it or over the water), how they get aboard, in and \
-            around, and that nothing makes them fall off, squeeze through or stand somewhere no real player would. If \
+            around, and that nothing makes them fall off, squeeze through or stand somewhere no real player would. \
+            Everything they tend on the way, an engine to refuel above all, is a walk from the helm along floors, \
+            steps or a ladder, within reach and in plain view, never out on a pod or strut nobody can get to. Once a \
+            vehicle lands it rests on its lowest blocks, so a door more than a jump (1.25 blocks) above the ground \
+            gets steps or a ladder down to it. The Physics Assembler stays open to a floor the crew stands on, never \
+            buried in the keel. Posts and rigging stand on full blocks or top slabs and end under full blocks or \
+            bottom slabs: a fence on a bottom slab floats half a block above it and joins nothing. Anything that \
+            flies high needs a closed cabin round the helm (walls, a roof, glass windows and a door that shuts): the \
+            open air chills from y 128 and above y 192 freezes a player in under a minute. If \
             a design only passes by a trick a real player wouldn't build, change the design: a ship balances by the \
             shape of its hull and where its rooms and machines go, never by iron blocks or other dead weight bolted on \
             (that is the player's own fix for a ship they built). A plane is a showpiece too and should read as an \
@@ -138,10 +146,12 @@ final class GuideText {
             propellers, a biplane) and try it again. An airship or balloon is a showpiece the same way: a rounded \
             envelope (built up in layers, longer than it is wide, striped or patterned) wider and longer than the \
             gondola, the gondola hung a few blocks under it on rigging (fence posts or chains from its corners up to \
-            the envelope), the engines inside enclosed pods with the propellers or fans at their back ends, the pods \
-            on struts level with the middle of the envelope (propellers mounted low tip it nose up at speed), never \
-            props on bare shafts sticking out of a basket, and a helm at the bow where the pilot's seat, throttle and \
-            steering levers sit together. It should cruise at about 8 blocks a second or better: gear the propellers \
+            the envelope), the propellers or fans on pods or outriggers level with the middle of the envelope \
+            (propellers mounted low tip it nose up at speed), never props on bare shafts sticking out of a basket, \
+            the engines where the crew walks to refuel them (an engine room in the gondola turning the propellers \
+            through shafts up the rigging, or pods reached along a railed catwalk or ladder from the cabin), and a \
+            closed cabin with a helm at the bow where the pilot's seat, throttle and steering levers sit together. \
+            It should cruise at about 8 blocks a second or better: gear the propellers \
             up (Wooden Propellers at 256 RPM, or a Propeller Bearing with a fan of sails at 128 RPM driven by two \
             Portable Engines on one shaft, which pushes more for the same engines) and size the envelope to the load, \
             since every envelope block drags. A balloon at walking pace is not a finished design: keep changing it \
