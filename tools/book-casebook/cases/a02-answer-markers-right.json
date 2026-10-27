@@ -1,0 +1,19 @@
+{
+  "title": "A correct answer passes the audit untouched",
+  "from": "step 5 (answer audit)",
+  "roots": [
+    "R1"
+  ],
+  "kind": "answer",
+  "answer": "- {create:mechanical_mixer} over a basin.\n\n[recipe create:mixing/brass_ingot]\n\n[diagram 1]",
+  "diagrams": [
+    {
+      "type": "model"
+    }
+  ],
+  "expect": {
+    "has": [
+      "nothing to fix"
+    ]
+  }
+}
