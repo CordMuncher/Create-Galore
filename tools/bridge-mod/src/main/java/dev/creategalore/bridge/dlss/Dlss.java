@@ -44,7 +44,7 @@ import org.slf4j.LoggerFactory;
  * auto (DLSS where it can run, else AMD FSR 3.1 at full resolution), dlss, fsr3 or off; dlaaPreset picks the DLSS
  * preset. Both are read again when shaders reload. DLSS runs on a DirectX 11 device of its own (see {@link DlssDevice}),
  * also with Perfect Presentation on; with Ray Reconstruction asked for, on a DirectX 12 device of its own instead
- * ({@link DlssDevice12}), since NVIDIA's Ray Reconstruction crashes on DirectX 11. Anything missing (not Windows, no NVIDIA RTX card, no nvngx_dlss.dll, an
+ * ({@link DlssDevice12}), since NVIDIA's Ray Reconstruction crashes on DirectX 11. Anything missing (not Windows, NVIDIA's NGX saying no, no nvngx_dlss.dll, an
  * unpatched pack, a pack option that the patch does not cover) leaves the pack's own anti-aliasing in place, says why
  * in the log and once in a notice, and the settings screen shows it. An engine that took the game down while it
  * started stays off until the player tries it again ({@link StartGuard}).
@@ -174,6 +174,13 @@ public final class Dlss {
     private static String rrUnavailable;
     /** It cannot only because nvngx_dlssd.dll is missing: looked for again when shaders reload. */
     private static boolean rrUnavailableNoDll;
+    /**
+     * What NVIDIA's own runtime (NGX) answered when asked whether Ray Reconstruction runs here, if it said no: it didn't
+     * start on this graphics card, or says DLSS or Ray Reconstruction doesn't run on it or needs a newer driver. Null if
+     * it said yes or wasn't asked (DLSS hasn't started: no nvngx_dlss.dll, FSR picked). The pack asks no card names of
+     * its own: what NGX says goes, asked again whenever DLSS starts.
+     */
+    private static String rrRefused;
 
     // For the frame.
     /** The window's size and the render size in it (the same without upscaling). */
@@ -753,8 +760,8 @@ public final class Dlss {
                 if (!fsr3) {
                     fsr3 = true;
                     LOG.info("DLAA: Auto uses AMD FSR 3.1, DLSS can't run here: {}", unavailable);
-                    // No notice where DLSS was never possible (no NVIDIA card): FSR 3 is what Auto is for there.
-                    if (unavailableNoDll || vendorIsNvidia()) {
+                    // No notice on other graphics cards (not NVIDIA's): FSR 3 is what Auto is for there.
+                    if (vendorIsNvidia()) {
                         notice("auto:" + unavailable, "DLAA: AMD FSR 3.1 in place of DLSS", noticeText(unavailable));
                     }
                 }
@@ -843,6 +850,21 @@ public final class Dlss {
         return vendor != null && vendor.toLowerCase(Locale.ROOT).contains("nvidia");
     }
 
+    /** For a reason DLSS can't run, where the game runs on another graphics card than NVIDIA's: which one. */
+    private static String onOtherCard() {
+        return vendorIsNvidia() ? "" : "; the game runs on " + glGetString(GL_VENDOR) + " " + glGetString(GL_RENDERER)
+                + ", and NVIDIA DLSS is made for NVIDIA RTX cards";
+    }
+
+    /**
+     * Why NVIDIA's NGX said Ray Reconstruction can't run here, null if it said it can or hasn't been asked yet (it is
+     * asked whenever DLSS starts). The Upscaling tab greys Ray Reconstruction out on its answer, as frame generation
+     * goes by NVIDIA's Streamline.
+     */
+    public static String rayReconstructionRefused() {
+        return rrRefused;
+    }
+
     /** A notice in the corner, once per reason and session: the log has the details. */
     private static void notice(String key, String title, String text) {
         if (!noticesShown.add(key)) {
@@ -857,7 +879,7 @@ public final class Dlss {
             new net.minecraft.client.gui.components.toasts.SystemToast.SystemToastId(10000L);
 
     private static String noticeText(String reason) {
-        return unavailableNoDll
+        return unavailableNoDll && vendorIsNvidia()
                 ? "nvngx_dlss.dll is missing: put it in the DLSS folder (Mods, Create Galore Bridge, Config, Open DLSS folder) and reload shaders (F8)."
                 : reason;
     }
@@ -877,17 +899,14 @@ public final class Dlss {
         if (!System.getProperty("os.name", "").startsWith("Windows")) {
             throw new IllegalStateException("DLSS needs Windows");
         }
-        String vendor = glGetString(GL_VENDOR);
-        if (vendor == null || !vendor.toLowerCase(Locale.ROOT).contains("nvidia")) {
-            throw new IllegalStateException("the game runs on " + vendor + ", DLSS needs an NVIDIA RTX graphics card");
-        }
+        // No card or vendor check of the pack's own: NVIDIA's NGX says whether DLSS and Ray Reconstruction run here.
         Path folder = FMLPaths.GAMEDIR.get().resolve(FOLDER);
         Path dllFolder = dllFolder();
         Path dll = dllFolder.resolve(DLL);
         unavailableNoDll = !Files.isRegularFile(dll);
         if (unavailableNoDll) {
             throw new IllegalStateException("there is no " + dll + " (not part of the pack: bring your own, DLSS "
-                    + TESTED_DLL_VERSION + " or newer, see the Upscaling & Display screen)");
+                    + TESTED_DLL_VERSION + " or newer, see the Upscaling & Display screen)" + onOtherCard());
         }
         Files.createDirectories(folder.resolve("ngx"));
         ngx = NgxLibrary.load(folder);
@@ -895,17 +914,17 @@ public final class Dlss {
         int result = ngx.init(PROJECT_ID, ENGINE_VERSION, folder.resolve("ngx"), dllFolder, device, NgxLibrary.LOG_ON);
         ngx.drainLog();
         if (NgxLibrary.failed(result)) {
-            throw new IllegalStateException("NVIDIA NGX did not start: " + NgxLibrary.describe(result));
+            rrRefused = "NVIDIA NGX did not start: " + NgxLibrary.describe(result) + onOtherCard();
+            throw new IllegalStateException(rrRefused);
         }
         int[] support = ngx.query();
         if (support == null) {
             throw new IllegalStateException("NGX could not say whether DLSS runs here");
         }
         if (support[0] == 0) {
-            if (support[1] != 0) {
-                throw new IllegalStateException("DLSS needs NVIDIA driver " + support[2] + "." + support[3] + " or newer");
-            }
-            throw new IllegalStateException("DLSS does not run on this graphics card (" + NgxLibrary.describe(support[4]) + ")");
+            rrRefused = support[1] != 0 ? "DLSS needs NVIDIA driver " + support[2] + "." + support[3] + " or newer"
+                    : "DLSS does not run on this graphics card (" + NgxLibrary.describe(support[4]) + ")";
+            throw new IllegalStateException(rrRefused);
         }
         checkRayReconstruction(dllFolder);
         pass = new DlssPass(device);
@@ -928,8 +947,10 @@ public final class Dlss {
             } else if (support[0] == 0) {
                 rrUnavailable = support[1] != 0 ? "it needs NVIDIA driver " + support[2] + "." + support[3] + " or newer"
                         : "NGX says it does not run here (" + NgxLibrary.describe(support[4]) + ")";
+                rrRefused = rrUnavailable;
             } else {
                 rrUnavailable = null;
+                rrRefused = null;
             }
         }
         LOG.info("DLAA: DLSS Ray Reconstruction {}{}", rrUnavailable == null ? "can run, nvngx_dlssd.dll " + DllVersion.read(dll)

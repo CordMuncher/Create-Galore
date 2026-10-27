@@ -218,19 +218,26 @@ public final class DlaaScreen extends Screen {
         slider = new ScaleSlider(left + half + 4, 108, half);
         slider.visible = scale.equals("custom");
         add(slider);
-        // Experimental: DLSS Ray Reconstruction in place of DLSS.
-        add(CycleButton.onOffBuilder(rayReconstruction)
-                .withTooltip(value -> net.minecraft.client.gui.components.Tooltip.create(Component.literal(
-                        "Experimental: NVIDIA DLSS Ray Reconstruction in place of DLSS, with " + PhotonPatcher.PATCHED_NAME
-                                + ". It cleans up Photon's reflections and soft shadows, which Photon then leaves noisy for it."
-                                + " Turning it on sets Photon to Ultra the first time, and to your own changes after that; turning"
-                                + " it off brings back the Photon settings you had. Any RTX card, NVIDIA driver 580 or newer, and"
-                                + " nvngx_dlssd.dll in the DLSS folder (Find on this PC copies it).")))
+        // Experimental: DLSS Ray Reconstruction in place of DLSS, where NVIDIA's NGX didn't say no (as frame generation
+        // goes by Streamline); where it is already on, it can still be turned off.
+        String rrRefused = Dlss.rayReconstructionRefused();
+        String rrTooltip = rrRefused != null
+                ? "NVIDIA's NGX, which runs Ray Reconstruction, says it can't run here: " + rrRefused + ". It is asked again"
+                        + " whenever DLSS starts."
+                : "Experimental: NVIDIA DLSS Ray Reconstruction in place of DLSS, with " + PhotonPatcher.PATCHED_NAME
+                        + ". It cleans up Photon's reflections and soft shadows, which Photon then leaves noisy for it."
+                        + " Turning it on sets Photon to Ultra the first time, and to your own changes after that; turning"
+                        + " it off brings back the Photon settings you had. Where NVIDIA's NGX says the card runs it (RTX"
+                        + " cards, NVIDIA driver 580 or newer), with nvngx_dlssd.dll in the DLSS folder (Find on this PC"
+                        + " copies it).";
+        CycleButton<Boolean> rrButton = add(CycleButton.onOffBuilder(rayReconstruction)
+                .withTooltip(value -> net.minecraft.client.gui.components.Tooltip.create(Component.literal(rrTooltip)))
                 .create(left, RR_ROW, half, 20, Component.literal("Ray Reconstruction"), (button, value) -> {
                     rayReconstruction = value;
                     lockForRayReconstruction();
                     refreshDll();
                 }));
+        rrButton.active = rayReconstruction || Util.getPlatform() == Util.OS.WINDOWS && rrRefused == null;
         choice("RR preset", RR_PRESETS, rrPreset, DlaaScreen::rrPresetLabel, DlaaScreen::rrPresetTooltip, left + half + 4, RR_ROW, half,
                 value -> rrPreset = value);
         lockForRayReconstruction();
