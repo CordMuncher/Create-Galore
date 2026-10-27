@@ -349,6 +349,9 @@ What else changes for Ray Reconstruction:
   colour-science).
 - `tools/bounce_check.py`: runs the bounce light's flood on a few small rooms and compares it with radiosity, to
   check a change to its settings before trying it in game (needs numpy).
+- `tools/compile_check.py`: compiles every program in every option variant that changes its code with
+  glslangValidator, the way Iris puts it together; `--samplers` also counts each program's samplers, as Iris
+  refuses the whole pack when one program wants more texture units than the GPU has (run it after adding one).
 
 ## Build
 
