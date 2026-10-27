@@ -173,15 +173,34 @@ vec3 atm_skyview_dir(vec2 uv) {
 // ---- Using the tables (the passes after the begin passes that make them).
 
 uniform sampler2D cg_trans_lut;
-uniform sampler2D cg_msctr_lut;
 
 vec3 atm_trans(float height, float cos_zenith) {
     return texture(cg_trans_lut, atm_trans_uv(height, cos_zenith)).rgb;
 }
 
+#ifdef READ_IMAGES
+// (Read as an image, its four nearest texels blended the way the sampler would, edges clamped: see marks.glsl.)
+layout(rgba16f) readonly uniform image2D cg_msctr_img;
+
+vec3 atm_msctr(float height, float cos_zenith) {
+    ivec2 size = imageSize(cg_msctr_img);
+    vec2 p = atm_msctr_uv(height, cos_zenith) * vec2(size) - 0.5;
+    ivec2 i = ivec2(floor(p));
+    vec2 f = p - vec2(i);
+    ivec2 hi = size - 1;
+    vec3 a = imageLoad(cg_msctr_img, clamp(i, ivec2(0), hi)).rgb;
+    vec3 b = imageLoad(cg_msctr_img, clamp(i + ivec2(1, 0), ivec2(0), hi)).rgb;
+    vec3 c = imageLoad(cg_msctr_img, clamp(i + ivec2(0, 1), ivec2(0), hi)).rgb;
+    vec3 d = imageLoad(cg_msctr_img, clamp(i + ivec2(1, 1), ivec2(0), hi)).rgb;
+    return mix(mix(a, b, f.x), mix(c, d, f.x), f.y) / atm_msctr_scale;
+}
+#else
+uniform sampler2D cg_msctr_lut;
+
 vec3 atm_msctr(float height, float cos_zenith) {
     return texture(cg_msctr_lut, atm_msctr_uv(height, cos_zenith)).rgb / atm_msctr_scale;
 }
+#endif
 
 // Light scattered within a step of extinction e and transmittance t (Frostbite's energy-conserving integration).
 vec3 atm_step_integral(vec3 in_scatter, vec3 e, vec3 t) {

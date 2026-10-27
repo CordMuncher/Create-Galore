@@ -61,10 +61,7 @@ vec3 sky_grid_pos(vec3 scene_pos, vec3 camera_fract) {
 
 #if !defined PROGRAM_SHADOW && !defined PROGRAM_SKY_GRID
 
-#ifndef CG_WATER_MARKS_TEX
-#define CG_WATER_MARKS_TEX
-uniform usampler2D cg_water_marks_tex; // cg_water_marks_img, for programs without image access
-#endif
+#include "/lib/marks.glsl"
 
 // Whether a copy's column cell has a block anywhere from height y0 to y1 (y0 <= y1, grid blocks).
 bool sky_grid_marked(ivec2 cell, int level, int y0, int y1) {
@@ -74,7 +71,7 @@ bool sky_grid_marked(ivec2 cell, int level, int y0, int y1) {
         int lo = max(y0 - word * 32, 0);
         int hi = min(y1 - word * 32, 31);
         uint mask = (hi == 31 ? 0xffffffffu : (1u << uint(hi + 1)) - 1u) & ~((1u << uint(lo)) - 1u);
-        if ((texelFetch(cg_water_marks_tex, sky_grid_texel(cell, word, level), 0).r & mask) != 0u) {
+        if ((water_marks(sky_grid_texel(cell, word, level)) & mask) != 0u) {
             return true;
         }
     }

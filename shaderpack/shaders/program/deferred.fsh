@@ -4,6 +4,12 @@
 // the clouds the passes before worked out (see clouds.glsl), all seen through the light in the air in front of them
 // (air.glsl). The translucent programs then draw over the lit scene, lighting themselves the same way.
 
+#if __VERSION__ >= 430
+// (This pass needs nearly every texture unit there is, so it reads the pack's marks and the air's multiple
+// scattering table as images: see marks.glsl.)
+#define READ_IMAGES
+#endif
+
 #include "/lib/settings.glsl"
 #include "/lib/motion.glsl"
 #include "/lib/lit.glsl"
@@ -459,11 +465,18 @@ void main() {
             // whole room a level less a block, but a room sees the sky only through its openings. Where the grid's
             // rays traced here find little sky (a room, the shade under a roof), they stand in for it, the more so
             // the less they find; out in the open, and where only the screen's probe can tell, never darker.
+            // (Not under water: the grid marks the water's top, which stops the rays, but the sky's light comes down
+            // through it, see light_surface.)
             float indoors = 0.0;
 #ifdef LIT_SKY_GRID
             if (!lod && rays >= 0.0) {
                 indoors = (1.0 - smoothstep(0.15, 0.5, seen))
                         * (1.0 - smoothstep(sky_grid_reach - 28.0, sky_grid_reach, max(abs(scene_pos.x), abs(scene_pos.z))));
+#ifdef SHADOW_MAP
+                if (indoors > 0.0 && water_over(scene_pos) > 0.0) {
+                    indoors = 0.0;
+                }
+#endif
             }
 #endif
             light.y = level >= light.y ? level : mix(light.y, level, indoors);
@@ -633,8 +646,8 @@ void main() {
             for (int y = 0; y < 2; y++) {
                 for (int x = 0; x < 2; x++) {
                     ivec2 c = cell + ivec2(x, y);
-                    top = top || texelFetch(cg_water_marks_tex, c, 0).r != 0u;
-                    reach = reach || texelFetch(cg_water_marks_tex, c + ivec2(0, 2 * water_sim_size), 0).r != 0u;
+                    top = top || water_marks(c) != 0u;
+                    reach = reach || water_marks(c + ivec2(0, 2 * water_sim_size)) != 0u;
                 }
             }
             color = vec3(reach ? 2.0 : 0.05, top ? 2.0 : 0.05, 0.05);

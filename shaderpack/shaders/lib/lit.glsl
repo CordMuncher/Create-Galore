@@ -93,13 +93,13 @@ vec3 apply_fog_lit(vec3 color, float dist, vec3 dir, vec2 range) {
 }
 
 // The sky's own air from start to dist blocks out along dir (scene space, from the eye): rgb the light it scatters
-// towards the eye (frame units), a how much of what lies behind gets through. Worked out along the ray in a few steps
-// with the same light as the sky's table (atmosphere.glsl, air.csh), so far land and water fade into the haze the way
+// towards the eye (frame units), a how much of what lies behind gets through. Worked out along the ray in four steps
+// (the air changes little over a few kilometres) with the same light as the sky's table (atmosphere.glsl, air.csh), so far land and water fade into the haze the way
 // the horizon over them does, smoothly from pixel to pixel.
 vec4 air_far_between(vec3 dir, float start, float dist) {
     vec3 origin = vec3(0.0, atm_height(cameraPosition.y + gbufferModelViewInverse[3].y), 0.0) + dir * (start * 0.001);
     vec3 through;
-    vec3 light = atm_segment(origin, dir, (dist - start) * 0.001, 6, sun_dir_world(), sun_illuminance, moon_dir_world(),
+    vec3 light = atm_segment(origin, dir, (dist - start) * 0.001, 4, sun_dir_world(), sun_illuminance, moon_dir_world(),
             moon_illuminance(), through);
     return vec4(weather(light) * exposure(), dot(through, vec3(0.2126, 0.7152, 0.0722)));
 }

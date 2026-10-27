@@ -63,10 +63,7 @@ vec2 shore_unpack(uint word) {
 #if !defined PROGRAM_SHADOW && !defined PROGRAM_SHORE
 #include "/lib/motion.glsl"
 
-#ifndef CG_WATER_MARKS_TEX
-#define CG_WATER_MARKS_TEX
-uniform usampler2D cg_water_marks_tex; // cg_water_marks_img, for programs without image access
-#endif
+#include "/lib/marks.glsl"
 
 // The shore around a point on the water (scene space): x how much of the ground within a block or two isn't open
 // water (0 out on open water, about a half at a straight wall, more in a corner), y how much of it within about ten
@@ -78,10 +75,10 @@ vec2 shore_around(vec3 scene_pos) {
         return vec2(0.0, 1.0);
     }
     vec2 f = g - vec2(c);
-    vec2 a = shore_unpack(texelFetch(cg_water_marks_tex, shore_field_texel(c), 0).r);
-    vec2 b = shore_unpack(texelFetch(cg_water_marks_tex, shore_field_texel(c + ivec2(1, 0)), 0).r);
-    vec2 d = shore_unpack(texelFetch(cg_water_marks_tex, shore_field_texel(c + ivec2(0, 1)), 0).r);
-    vec2 e = shore_unpack(texelFetch(cg_water_marks_tex, shore_field_texel(c + ivec2(1, 1)), 0).r);
+    vec2 a = shore_unpack(water_marks(shore_field_texel(c)));
+    vec2 b = shore_unpack(water_marks(shore_field_texel(c + ivec2(1, 0))));
+    vec2 d = shore_unpack(water_marks(shore_field_texel(c + ivec2(0, 1))));
+    vec2 e = shore_unpack(water_marks(shore_field_texel(c + ivec2(1, 1))));
     vec2 v = mix(mix(a, b, f.x), mix(d, e, f.x), f.y);
     vec2 edge = min(g, vec2(shore_size - 1) - g);
     float fade = smoothstep(4.0, 28.0, min(edge.x, edge.y));
@@ -94,7 +91,7 @@ float shore_water_top(vec3 scene_pos) {
     if (any(lessThan(c, ivec2(0))) || any(greaterThanEqual(c, ivec2(shore_size)))) {
         return -1e4;
     }
-    uint top = texelFetch(cg_water_marks_tex, shore_top_texel(c), 0).r;
+    uint top = water_marks(shore_top_texel(c));
     return top == 0u ? -1e4 : shore_height_from_mark(top);
 }
 
@@ -125,7 +122,7 @@ float shore_wet(vec3 scene_pos, vec3 normal, float swell) {
     if (above < -1.0 || above > 1.0) {
         return 0.0;
     }
-    vec2 world = vec2(cameraPositionInt.xz % 4096) + cameraPositionFract.xz + scene_pos.xz;
+    vec2 world = vec2(cameraPositionInt.xz & 4095) + cameraPositionFract.xz + scene_pos.xz;
     float reach = (0.1 + 0.15 * swell) * (0.6 + 0.8 * shore_lap(world));
     return 1.0 - smoothstep(0.4 * reach, reach + 0.05, above);
 }

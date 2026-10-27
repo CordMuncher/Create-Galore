@@ -160,7 +160,9 @@ float water_over(vec3 scene_pos) {
 vec3 leaf_albedo(vec3 albedo, vec3 scene_pos) {
     ivec3 block = ivec3(floor(scene_pos + cameraPositionFract)) + cameraPositionInt;
     float each = hash_to_float(hash_pcg3d(uvec3(block)).xy).x;
-    float tree = clamp(gradient_noise_2d(vec2(block.xz & 4095) / 11.0) * 1.4, -1.0, 1.0);
+    // (From the block's own place, not wrapped, so the pattern has no seam; a float holds it to a fraction of a block
+    // out to a million blocks.)
+    float tree = clamp(gradient_noise_2d((vec2(block.xz) + 0.5) / 11.0) * 1.4, -1.0, 1.0);
     vec3 c = mix(vec3(dot(albedo, vec3(0.2126, 0.7152, 0.0722))), albedo, 0.9);
     c *= 0.9 + 0.18 * each;
     return c * mix(vec3(1.0), tree > 0.0 ? vec3(1.08, 1.02, 0.8) : vec3(0.9, 0.98, 1.1), 0.5 * abs(tree));

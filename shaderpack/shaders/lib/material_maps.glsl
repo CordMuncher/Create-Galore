@@ -225,10 +225,24 @@ Maps read_maps(vec3 scene_pos, vec2 uv, vec3 n, vec3 view_dir, vec4 region, vec3
     if (!side && max(footprint.x, footprint.y) > 1.0) {
         vec2 fine_dx = 0.25 * duv_dx;
         vec2 fine_dy = 0.25 * duv_dy;
-        vec2 a = textureGrad(normals, m.uv + 0.25 * (duv_dx + duv_dy), fine_dx, fine_dy).rg * 2.0 - 1.0;
-        vec2 c = textureGrad(normals, m.uv + 0.25 * (duv_dx - duv_dy), fine_dx, fine_dy).rg * 2.0 - 1.0;
-        vec2 d = textureGrad(normals, m.uv - 0.25 * (duv_dx + duv_dy), fine_dx, fine_dy).rg * 2.0 - 1.0;
-        vec2 e = textureGrad(normals, m.uv - 0.25 * (duv_dx - duv_dy), fine_dx, fine_dy).rg * 2.0 - 1.0;
+        // (Kept inside the texture's own part of the atlas, so its neighbours there don't count.)
+        vec2 lo = region.xy + 0.5 / maps_size;
+        vec2 hi = max(region.xy + region.zw - 0.5 / maps_size, lo);
+        bool bounded = region.z > 0.0 && region.w > 0.0;
+        vec2 ua = m.uv + 0.25 * (duv_dx + duv_dy);
+        vec2 uc = m.uv + 0.25 * (duv_dx - duv_dy);
+        vec2 ud = m.uv - 0.25 * (duv_dx + duv_dy);
+        vec2 ue = m.uv - 0.25 * (duv_dx - duv_dy);
+        if (bounded) {
+            ua = clamp(ua, lo, hi);
+            uc = clamp(uc, lo, hi);
+            ud = clamp(ud, lo, hi);
+            ue = clamp(ue, lo, hi);
+        }
+        vec2 a = textureGrad(normals, ua, fine_dx, fine_dy).rg * 2.0 - 1.0;
+        vec2 c = textureGrad(normals, uc, fine_dx, fine_dy).rg * 2.0 - 1.0;
+        vec2 d = textureGrad(normals, ud, fine_dx, fine_dy).rg * 2.0 - 1.0;
+        vec2 e = textureGrad(normals, ue, fine_dx, fine_dy).rg * 2.0 - 1.0;
         vec2 mean = 0.25 * (a + c + d + e);
         vec2 coarse = nmap.rg * 2.0 - 1.0;
         m.variance = 0.25 * (dot(a - mean, a - mean) + dot(c - mean, c - mean) + dot(d - mean, d - mean)

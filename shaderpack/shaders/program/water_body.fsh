@@ -288,7 +288,11 @@ void main() {
         // as going down into it.
         vec2 shore = vec2(0.0, 1.0);
 #ifdef LIT_SHORE
-        shore = shore_around(p);
+        // (Distant Horizons' water, which isn't in Minecraft's depth, isn't in the shadow pass either, so the map
+        // doesn't know it: open water.)
+        if (depth_all < 1.0) {
+            shore = shore_around(p);
+        }
 #endif
         float hidden = 0.35 * smoothstep(0.06, 0.5, shore.x);
 
@@ -329,7 +333,7 @@ void main() {
         float churn = 0.0;
         float rough = 1.0;
 #ifdef LIT_SHORE
-        vec2 world = vec2(cameraPositionInt.xz % 4096) + cameraPositionFract.xz + p.xz;
+        vec2 world = vec2(cameraPositionInt.xz & 4095) + cameraPositionFract.xz + p.xz;
         rough = mix(0.5, 1.0, max(cg_swell * smoothstep(0.2, 0.8, shore.y), cg_rain_here));
         churn = smoothstep(0.04, 0.45, shore.x * (0.7 + 0.6 * shore_lap(world))) * rough;
 #else
