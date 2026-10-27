@@ -5,6 +5,17 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.6.11
+
+### Fixed
+- **Ask the Book proves a machine line makes what it is for.** A model of a machine line now says what it makes, and the book checks it holds the machines of a recipe for that item. A sequenced assembly line, such as one for Precision Mechanisms, needs something to carry the item from step to step, and the book won't show one without it. A line that holds none of the machines for its product is refused, and one whose product isn't made by a machine is never claimed to make it.
+- **Ask the Book no longer designs a line that needs its own product to build.** A part that can only be made from the very thing the line makes, such as a Mechanical Arm on a line meant to make the first Precision Mechanism, now stops the model, whatever the player holds, unless they already have that part.
+- **A block of redstone powering a burner or bearing on a vehicle is no longer called dead weight.**
+- The book's model results are now grouped into whether the build works, whether a player can use it, and whether this player can build it now.
+
+### Added
+- Create Galore Bridge 1.134.0.
+
 ## 0.6.10
 
 ### Fixed

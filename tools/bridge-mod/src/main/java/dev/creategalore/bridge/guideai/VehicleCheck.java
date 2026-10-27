@@ -2325,7 +2325,8 @@ final class VehicleCheck {
     private static void ballast(Map<BlockPos, BlockState> blocks, BlockGetter getter, List<String> faults) {
         Map<String, Integer> found = new java.util.TreeMap<>();
         blocks.forEach((p, s) -> {
-            if (s.is(STORAGE_BLOCKS) && mass(getter, p, s) >= 2) found.merge(s.getBlock().getName().getString(), 1, Integer::sum);
+            if (s.is(STORAGE_BLOCKS) && mass(getter, p, s) >= 2 && !powers(blocks, p, s))
+                found.merge(s.getBlock().getName().getString(), 1, Integer::sum);
         });
         if (found.isEmpty()) return;
         List<String> what = new ArrayList<>();
@@ -2333,6 +2334,16 @@ final class VehicleCheck {
         faults.add("it carries " + String.join(", ", what) + " as dead weight: a designed ship sits level and upright by the "
                 + "shape of its hull and where its rooms and machines go, not by ballast (that is the player's own fix for a "
                 + "ship they built). Take the ballast out and shape or lay out the hull so it balances");
+    }
+
+    /** A block of redstone that touches something else of the vehicle is powering it (a burner, a bearing), not ballast. */
+    private static boolean powers(Map<BlockPos, BlockState> blocks, BlockPos p, BlockState s) {
+        if (!s.isSignalSource()) return false;
+        for (Direction d : Direction.values()) {
+            BlockState next = blocks.get(p.relative(d));
+            if (next != null && !next.isAir() && !next.is(STORAGE_BLOCKS)) return true;
+        }
+        return false;
     }
 
     /** Controls a player has to stand at and use by hand, from the vehicle itself. */
