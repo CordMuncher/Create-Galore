@@ -1,0 +1,41 @@
+{
+  "category": "start_here",
+  "name": "The Field Guide Pendant",
+  "description": "The Field Guide made small and worn on a chain: a key opens the book or Ask the Book with nothing in your hands.",
+  "icon": {
+    "item": "create_galore_bridge:field_guide_pendant"
+  },
+  "x": -3,
+  "y": 2,
+  "sort_number": 7,
+  "parents": [
+    {
+      "entry": "start_here/welcome",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "The Field Guide Pendant",
+      "text": "The **Field Guide Pendant** is this book made small and hung on a brass chain. Wear it in one of your three necklace slots in the [#](7A3C9A)[Accessories](entry://glossary/curios)[#]() screen (**G**) and the book is always with you:\n\n- **I** opens the Field Guide.\n- **Shift + I** opens [#](2E5AAC)[Ask the Book](entry://start_here/welcome)[#]()."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Nothing has to be in your hands, and the keys work anywhere in the world. Change them under Options > Controls > Field Guide.\\\n\\\nThe keys only work while the pendant is worn. Holding it, right-click opens the Field Guide, the same as the book."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**When the book answers**\\\nA worn pendant has no slot to glow green in, so the notice that slides in when an answer lands shows the pendant and the key: **[Shift+I]** in front of the page's title. Press it to open your pages; the answered page still glows under All pages until you read it."
+    },
+    {
+      "type": "modonomicon:crafting_recipe",
+      "recipe_id_1": "create_galore:field_guide_pendant",
+      "text": "A Field Guide, two Brass Sheets, a Chain and a [#](2E5AAC)[Precision Mechanism](entry://create_basics/brass_and_assembly)[#](): a Brass Age piece."
+    }
+  ]
+}

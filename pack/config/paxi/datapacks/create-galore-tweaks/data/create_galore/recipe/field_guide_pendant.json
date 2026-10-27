@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " C ",
+    "SGS",
+    " P "
+  ],
+  "key": {
+    "C": {"item": "minecraft:chain"},
+    "S": {"tag": "c:plates/brass"},
+    "G": {
+      "type": "neoforge:components",
+      "items": "modonomicon:modonomicon",
+      "components": {"modonomicon:book_id": "create_galore:field_guide"}
+    },
+    "P": {"item": "create:precision_mechanism"}
+  },
+  "result": {
+    "id": "create_galore_bridge:field_guide_pendant",
+    "count": 1
+  }
+}
