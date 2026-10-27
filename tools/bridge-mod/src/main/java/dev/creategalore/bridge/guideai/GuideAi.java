@@ -636,7 +636,8 @@ public final class GuideAi {
         // The kinds of build whose design brief this answer already got (build_model hands each over once).
         Set<String> briefs = new HashSet<>();
         Streamer streamer = new Streamer(l, playerId, pageId);
-        boolean rescued = false;
+        boolean rescued = false, audited = false;
+        int[] lastProblems = {0};
         int limit = MAX_ROUNDS;
         try {
             for (int round = 1; ; round++) {
@@ -665,15 +666,12 @@ public final class GuideAi {
                             // Its tool calls have no results, which the API refuses on the page's next question.
                             return finishText(messages, diagrams, note, false);
                         }
-                        JsonObject results = toolResults(l, playerId, content, diagrams, drafts, briefs, streamer);
+                        JsonObject results = toolResults(l, playerId, content, diagrams, drafts, briefs, lastProblems, streamer);
                         messages.add(results);
                         if (limit < DESIGN_ROUNDS && calls(content, "build_model")) limit = DESIGN_ROUNDS;
                         int left = limit - round - 1;
                         if (left == 0) addText(results, WRAP_UP);
-                        else if (left <= 3) addText(results, "(" + left + (left == 1 ? " more round" : " more rounds")
-                                + " of tool calls for this question; after that the tools close and you must write the answer "
-                                + "from what you have. If a design you are making still has a PROBLEM, spend them fixing it, "
-                                + "simplifying the design if that is what it takes to make it pass, not on looking more up.)");
+                        else if (!drafts.isEmpty() || left <= 3) addText(results, state(drafts.size(), lastProblems[0], diagrams.size(), left));
                     }
                     case "pause_turn" -> {
                         // A long web search paused the turn; sending the conversation back lets it carry on.
@@ -700,6 +698,28 @@ public final class GuideAi {
                             round = Math.max(round, limit - 1);
                             continue;
                         }
+                        // The answer's own words, checked once: a wrong id, recipe or diagram goes back to be rewritten.
+                        if (!audited) {
+                            audited = true;
+                            String written = text(content);
+                            List<String> issues;
+                            try {
+                                issues = l.server.submit(() -> AnswerAudit.check(written, List.copyOf(diagrams), l.server))
+                                        .get(10, TimeUnit.SECONDS);
+                            } catch (TimeoutException | java.util.concurrent.ExecutionException ex) {
+                                issues = List.of();
+                            }
+                            if (!issues.isEmpty()) {
+                                LOG.info("Field Guide voice: answer audit sent back {} issue(s): {}", issues.size(), issues);
+                                JsonObject fix = new JsonObject();
+                                fix.addProperty("role", "user");
+                                fix.addProperty("content", "(Before this answer reaches the player: " + String.join("; ", issues)
+                                        + ". Write the whole answer again with those fixed; everything else stays as it was.)");
+                                messages.add(fix);
+                                round = Math.max(round, limit - 1);
+                                continue;
+                            }
+                        }
                         usage.log(playerId, round, stop);
                         return finishText(messages, diagrams, note, true);
                     }
@@ -709,6 +729,17 @@ public final class GuideAi {
             LOG.warn("Field Guide voice: the API refused a request ({} {})", e.status, e.type);
             return Outcome.failed(e.getMessage());
         }
+    }
+
+    /** Where the answer stands after a round of tools: facts to steer by, in place of reminders. */
+    private static String state(int models, int problems, int shown, int left) {
+        StringBuilder out = new StringBuilder("(Where this answer stands: ");
+        if (models > 0) out.append(models).append(models == 1 ? " model" : " models").append(" tried, the latest ")
+                .append(problems == 0 ? "with no PROBLEM" : "with " + problems + (problems == 1 ? " PROBLEM" : " PROBLEMs") + " left")
+                .append("; ");
+        out.append(shown == 0 ? "nothing placed in the answer yet" : shown + " placed as [diagram 1" + (shown > 1 ? "] to [diagram " + shown : "") + "]")
+                .append("; ").append(left).append(left == 1 ? " round" : " rounds").append(" of tools left.)");
+        return out.toString();
     }
 
     /** Sent with the last round's tool results, when the tools close. */
@@ -940,7 +971,7 @@ public final class GuideAi {
 
     /** Runs the book's tool calls on the server thread, for the player who asked, and returns them as one user turn. */
     private static JsonObject toolResults(Live l, UUID playerId, JsonArray content, List<String> diagrams,
-            List<Models.Draft> drafts, Set<String> briefs, Streamer streamer)
+            List<Models.Draft> drafts, Set<String> briefs, int[] lastProblems, Streamer streamer)
             throws InterruptedException {
         JsonArray results = new JsonArray();
         for (JsonElement e : content) {
@@ -977,6 +1008,8 @@ public final class GuideAi {
                         return Models.build(input, player != null ? player.serverLevel() : l.server.overworld(), copier, player, drafts, briefs);
                     }).get(10, TimeUnit.SECONDS);
                     LOG.info("Field Guide voice: build_model {}", buildSummary(built));
+                    String said = built.problem() != null ? built.problem() : built.check();
+                    lastProblems[0] = said == null ? 0 : said.split("- PROBLEM", -1).length - 1;
                     if (built.problem() != null) {
                         result = built.problem();
                     } else if (built.draft()) {
