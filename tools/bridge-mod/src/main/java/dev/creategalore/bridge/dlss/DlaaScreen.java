@@ -39,8 +39,8 @@ import net.neoforged.neoforge.common.NeoForge;
  * render resolution, the bring-your-own nvngx_dlss.dll and nvngx_dlssg.dll (or ones found on this PC, see
  * {@link DlssFinder}). Display: the window switches and Perfect Presentation's DirectX version (picking 12 turns
  * Perfect Presentation on; a fresh install on Windows starts with both, see DisplaySettings), NVIDIA Reflex (which turns Perfect Presentation on with it, see
- * {@link FrameLatency}), GPU pacing, frame generation (NVIDIA's where its Streamline says the card runs it, AMD's,
- * experimental, on any; picking one turns Perfect Presentation on DirectX 12 on, and NVIDIA's Reflex too, see
+ * {@link FrameLatency}), GPU pacing, frame generation (NVIDIA's where its Streamline says the card runs it, AMD's on
+ * any; picking one turns Perfect Presentation on DirectX 12 on, and NVIDIA's Reflex too, see
  * {@link FrameGen}) and the frame
  * counter ({@link FpsOverlay}). Opens from the mod list (Create Galore Bridge, Config) and from an Upscaling & Display
  * button in Iris's shader pack menu. Saved to config/create_galore_bridge-display.properties when it closes, the render
@@ -90,6 +90,8 @@ public final class DlaaScreen extends Screen {
     private String frameGen;
     /** dlss or fsr, the last one picked (the one DirectX 12 loads at its start), or empty for the best for the card. */
     private String frameGenType;
+    /** Frames shown for each rendered one with DLSS frame generation: 2, or 3 and 4 where Streamline allows them. */
+    private int frameGenMultiplier;
     /** Whether DLSS Frame Generation is offered: Windows, and Streamline didn't say no (FrameGen.streamlineAllows). */
     private final boolean dlssFrameGenOffered;
     private String scale;
@@ -149,6 +151,7 @@ public final class DlaaScreen extends Screen {
         frameGen = FrameGen.setting();
         String typeValue = DisplaySettings.getString(DisplaySettings.FRAME_GEN_TYPE, "").toLowerCase(Locale.ROOT);
         frameGenType = typeValue.equals("dlss") || typeValue.equals("fsr") ? typeValue : "";
+        frameGenMultiplier = FrameGen.multiplierSetting();
         dlssFrameGenOffered = Util.getPlatform() == Util.OS.WINDOWS && FrameGen.streamlineAllows();
         String fpsValue = DisplaySettings.getString(DisplaySettings.FPS_COUNTER, FpsOverlay.OFF).toLowerCase(Locale.ROOT);
         fpsCounter = FPS_MODES.contains(fpsValue) ? fpsValue : FpsOverlay.OFF;
@@ -323,11 +326,26 @@ public final class DlaaScreen extends Screen {
         pacingChoice = choice("GPU pacing", PACING_MODES, gpuPacing, DlaaScreen::pacingLabel, DlaaScreen::pacingTooltip, left, y, half,
                 value -> gpuPacing = value);
         y += step;
-        // DLSS unless Streamline said no, both only on Windows; where one is already on, it can still be turned off.
-        List<String> frameGenModes = dlssFrameGenOffered || frameGen.equals("dlss") ? FRAME_GEN_MODES : List.of("off", "fsr");
-        frameGenChoice = choice("Frame generation", frameGenModes, frameGen, DlaaScreen::frameGenLabel, DlaaScreen::frameGenTooltip,
-                left, y, half, value -> {
+        // DLSS unless Streamline said no, both only on Windows; where one is already on, it can still be turned off. DLSS
+        // at 3x and 4x where Streamline says the card generates that many (or where it is already set).
+        List<String> frameGenModes = new java.util.ArrayList<>(List.of("off"));
+        if (dlssFrameGenOffered || frameGen.equals("dlss")) {
+            frameGenModes.add("dlss");
+            for (int m = 3; m <= 4; m++) {
+                if (FrameGen.maxGenerated() >= m - 1 || frameGen.equals("dlss") && frameGenMultiplier == m) {
+                    frameGenModes.add("dlss-" + m + "x");
+                }
+            }
+        }
+        frameGenModes.add("fsr");
+        String shown = frameGen.equals("dlss") && frameGenMultiplier > 2 ? "dlss-" + frameGenMultiplier + "x" : frameGen;
+        frameGenChoice = choice("Frame generation", frameGenModes, frameGenModes.contains(shown) ? shown : frameGen,
+                DlaaScreen::frameGenLabel, DlaaScreen::frameGenTooltip, left, y, half, picked -> {
+                    String value = picked.startsWith("dlss") ? "dlss" : picked;
                     frameGen = value;
+                    if (value.equals("dlss")) {
+                        frameGenMultiplier = picked.equals("dlss") ? 2 : picked.charAt(5) - '0';
+                    }
                     if (!value.equals("off")) {
                         frameGenType = value; // the one DirectX 12 loads from now on
                         // It runs in Perfect Presentation's DirectX 12 presenter.
@@ -580,6 +598,7 @@ public final class DlaaScreen extends Screen {
         values.put(DisplaySettings.GPU_PACING, gpuPacing);
         values.put(DisplaySettings.FRAME_GEN, frameGen);
         values.put(DisplaySettings.FRAME_GEN_TYPE, frameGenType);
+        values.put(DisplaySettings.FRAME_GEN_MULTIPLIER, Integer.toString(frameGenMultiplier));
         values.put(DisplaySettings.DLAA_CUSTOM_SCALE, Boolean.toString(scale.equals("custom")));
         values.put(DisplaySettings.DLAA_RAY_RECONSTRUCTION, Boolean.toString(rayReconstruction));
         values.put(DisplaySettings.DLAA_RR_PRESET, rrPreset);
@@ -699,16 +718,14 @@ public final class DlaaScreen extends Screen {
                     + " downloads, or put your own in the DLSS folder (Open DLSS folder).", true);
         }
         String detail = dlss ? DLSS_FRAME_GEN_DETAIL : FSR_FRAME_GEN_DETAIL;
-        // AMD's is still experimental; NVIDIA's isn't.
-        String experimental = dlss ? "" : "Experimental. ";
         boolean running = FrameGen.running();
         if (running && !FrameGen.settingOf(FrameGen.backend()).equals(frameGen)) {
-            return new FrameLatency.Status(experimental + "Switches after a restart.", "The game loads one kind of frame generation"
+            return new FrameLatency.Status("Switches after a restart.", "The game loads one kind of frame generation"
                     + " when DirectX 12 starts, " + frameGenName(FrameGen.settingOf(FrameGen.backend())) + " this time: "
                     + frameGenName(frameGen) + " after a restart. From then on it turns on and off at once. " + detail, false);
         }
         if (!FrameGen.requested() || !"DirectX 12".equals(Presentation.api())) {
-            return new FrameLatency.Status(experimental + "Starts after a restart.", detail, false);
+            return new FrameLatency.Status("Starts after a restart.", detail, false);
         }
         String problem = FrameGen.problem();
         if (problem != null) {
@@ -721,7 +738,14 @@ public final class DlaaScreen extends Screen {
                     + " DirectX 12 presenter, which could not start this time; the game log says why (lines starting with"
                     + " Perfect Presentation:).", true);
         }
-        return FrameGen.on() ? new FrameLatency.Status(dlss ? "Running." : "Experimental: running.", detail, false)
+        int generated = FrameGen.framesGenerated();
+        if (FrameGen.on() && dlss && frameGenMultiplier > 2 && generated > 0 && generated + 1 < frameGenMultiplier) {
+            return new FrameLatency.Status("Running at " + (generated + 1) + "x: hover for why.", "NVIDIA's Streamline says this card"
+                    + " generates at most " + generated + (generated == 1 ? " frame" : " frames") + " per rendered one, so it runs at "
+                    + (generated + 1) + "x. " + detail, false);
+        }
+        return FrameGen.on() ? new FrameLatency.Status(dlss ? (frameGenMultiplier > 2 ? "Running at " + frameGenMultiplier + "x." : "Running.")
+                : "Experimental: running.", detail, false)
                 : new FrameLatency.Status("Turns on when you close this screen.", detail, false);
     }
 
@@ -729,7 +753,7 @@ public final class DlaaScreen extends Screen {
             + " FSR anti-aliasing.";
     private static final String DLSS_FRAME_GEN_DETAIL = FRAME_GEN_DETAIL + " Needs Windows with Hardware-accelerated GPU"
             + " scheduling on and Vertical sync in the NVIDIA Control Panel at \"Use the 3D application setting\".";
-    private static final String FSR_FRAME_GEN_DETAIL = "Experimental. " + FRAME_GEN_DETAIL + " Works best from about 60 frames a"
+    private static final String FSR_FRAME_GEN_DETAIL = FRAME_GEN_DETAIL + " Works best from about 60 frames a"
             + " second without it.";
 
     private static String frameGenName(String value) {
@@ -737,6 +761,10 @@ public final class DlaaScreen extends Screen {
     }
 
     private static Component frameGenLabel(String value) {
+        if (value.startsWith("dlss-")) {
+            // Not yet tried on a card that runs it (see the tooltip).
+            return Component.literal("DLSS " + value.substring(5) + " ").append(Component.literal("*").withStyle(ChatFormatting.RED));
+        }
         return Component.literal(value.equals("off") ? "Off" : frameGenName(value));
     }
 
@@ -747,7 +775,16 @@ public final class DlaaScreen extends Screen {
                     + " smoothly, for a little more input delay. Needs Perfect Presentation on DirectX 12 and NVIDIA Reflex,"
                     + " which this turns on, DLSS or FSR anti-aliasing (Upscaling tab), and nvngx_dlssg.dll in the DLSS folder"
                     + " (Find on this PC). Turns on and off at once; switching from FSR needs a restart.";
-            case "fsr" -> "Experimental, any graphics card DirectX 12 runs on here (NVIDIA cards do): AMD FSR 3.1 frame generation"
+            case "dlss-3x", "dlss-4x" -> {
+                int shown = value.charAt(5) - '0';
+                yield "NVIDIA DLSS Multi Frame Generation, offered because NVIDIA's Streamline says this card runs it (RTX 50):"
+                        + " shows " + (shown - 1) + " frames of its own for every one the game renders, so the picture moves"
+                        + " about " + (shown == 3 ? "three" : "four") + " times as smoothly, for a little more input delay than"
+                        + " 2x. A Max Framerate cap counts the frames on screen. * Not yet tried on an RTX 50 card: it runs the"
+                        + " same way as 2x, which was tested, so it should work, but it may show problems 2x doesn't; DLSS (2x)"
+                        + " is the tested choice. Needs the same as DLSS above.";
+            }
+            case "fsr" -> "Any graphics card DirectX 12 runs on here (NVIDIA cards do): AMD FSR 3.1 frame generation"
                     + " shows a frame of its own between every two the game renders, so the picture moves about twice as"
                     + " smoothly, for a little more input delay. Best from about 60 frames a second without it. Needs Perfect"
                     + " Presentation on DirectX 12, which this turns on, and DLSS or FSR anti-aliasing (Upscaling tab). Turns on"

@@ -279,6 +279,7 @@ public final class Dlss {
         rrNoHitDistance = test.contains("no-hit-distance");
         rrOwnParameters = ownParameters;
         rrHitDistanceBands = test.contains("hit-distance-bands");
+        HandWatch.configure(DisplaySettings.getString(DisplaySettings.DLAA_HAND_WATCH, ""));
         if (rrUnavailableNoDll && Files.isRegularFile(dllFolder().resolve(DlssFinder.RR_DLL))) {
             rrUnavailable = null; // tried again when it starts
             rrUnavailableNoDll = false;
@@ -286,6 +287,7 @@ public final class Dlss {
         jitterSign = parseJitterSign(DisplaySettings.getString(DisplaySettings.DLAA_JITTER_SIGN, System.getProperty(JITTER_SIGN_PROPERTY, "1,1")));
         objectMotion = !DisplaySettings.getString(DisplaySettings.DLAA_OBJECT_MOTION, System.getProperty(OBJECT_MOTION_PROPERTY, "true"))
                 .trim().equalsIgnoreCase("false");
+        EntityMotion.cubes(!DisplaySettings.getString(DisplaySettings.DLAA_CUBE_MOTION, "true").trim().equalsIgnoreCase("false"));
         reactiveMask = !DisplaySettings.getString(DisplaySettings.DLAA_REACTIVE_MASK, System.getProperty(REACTIVE_MASK_PROPERTY, "true"))
                 .trim().equalsIgnoreCase("false");
         failed = false;
@@ -596,6 +598,7 @@ public final class Dlss {
             FrameGen.upscaled(in.motionTexture(), in.depthTexture(), in.width(), in.height(), in.renderWidth(), in.renderHeight(),
                     jitterX * jitterSign[0], jitterY * jitterSign[1], resetNow, frameTimeMs);
             dumpIfAsked(pass, true);
+            HandWatch.measure(pass, "dlss", false, resetNow, jitterX, jitterY, frameTimeMs);
             // (Exposed only in the frame Ray Reconstruction failed to start in: the pack had already multiplied it.)
             boolean unexpose = rrRunning && rrExposed;
             Markers.around("Create Galore DLAA: write back", () -> pass.writeBack(profile, DlssPass.View.RESULT, unexpose));
@@ -663,6 +666,7 @@ public final class Dlss {
         FrameGen.upscaled(in.motionTexture(), in.depthTexture(), in.width(), in.height(), in.renderWidth(), in.renderHeight(),
                 jitterX * jitterSign[0], jitterY * jitterSign[1], resetNow, frameTimeMs);
         dumpIfAsked(pass, true);
+        HandWatch.measure(pass, "rr", rrExposed, resetNow, jitterX, jitterY, frameTimeMs);
         Markers.around("Create Galore DLAA: write back", () -> pass.writeBack(profile, DlssPass.View.RESULT, rrExposed));
         return true;
     }
@@ -706,6 +710,7 @@ public final class Dlss {
         FrameGen.upscaled(in.motionTexture(), in.depthTexture(), in.width(), in.height(), in.renderWidth(), in.renderHeight(),
                 jitterX * jitterSign[0], jitterY * jitterSign[1], resetNow, frameTimeMs);
         dumpIfAsked(fsrPass, true);
+        HandWatch.measure(fsrPass, "fsr3", false, resetNow, jitterX, jitterY, frameTimeMs);
         Markers.around("Create Galore DLAA: write back", () -> fsrPass.writeBack(profile, DlssPass.View.RESULT));
     }
 
@@ -781,6 +786,7 @@ public final class Dlss {
         if (guards() && dlssGuard.crashed()) {
             unavailable = "the game closed while DLSS was starting last time, so it stays off until you pick Try again on the Upscaling & Display screen";
             unavailableNoDll = false;
+            LOG.warn("DLAA: DLSS not started: {}", unavailable);
             return false;
         }
         try {
@@ -804,6 +810,7 @@ public final class Dlss {
         }
         if (fsr3Unavailable == null && guards() && fsrGuard.crashed()) {
             fsr3Unavailable = "the game closed while FSR 3 was starting last time, so it stays off until you pick Try again on the Upscaling & Display screen";
+            LOG.warn("DLAA: FSR 3 not started: {}", fsr3Unavailable);
         }
         if (fsr3Unavailable != null) {
             notice("fsr3:" + fsr3Unavailable, "DLAA is off: FSR 3 can't run", fsr3Unavailable);

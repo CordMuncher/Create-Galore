@@ -16,7 +16,7 @@ public abstract class HandRenderMotionMixin {
     @Inject(method = "renderHandsWithItems", at = @At("HEAD"))
     private void create_galore_bridge$handMotion(float partialTick, PoseStack poseStack, MultiBufferSource.BufferSource buffers,
             LocalPlayer player, int light, CallbackInfo ci) {
-        EntityMotion.beginHand();
+        EntityMotion.beginHand(light);
     }
 
     @Inject(method = "renderHandsWithItems", at = @At("RETURN"))

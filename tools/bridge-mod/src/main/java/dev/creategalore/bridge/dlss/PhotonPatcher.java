@@ -71,7 +71,7 @@ import org.slf4j.LoggerFactory;
 public final class PhotonPatcher {
     private static final Logger LOG = LoggerFactory.getLogger("create_galore_bridge");
     /** Bumped when the patch changes, so existing copies are made again. */
-    private static final int PATCH_VERSION = 14;
+    private static final int PATCH_VERSION = 15;
     private static final String BASE_ZIP = "photon_v1.3a.zip";
     /** Colorwheel Patcher's copy of {@link #BASE_ZIP}; an outdated one gets a prefix and no longer matches. */
     private static final Pattern COLORWHEEL_ZIP = Pattern.compile("photon_v1\\.3a \\+ Clrwl_(\\d+)\\.(\\d+)\\.(\\d+)\\.zip");
@@ -673,11 +673,14 @@ public final class PhotonPatcher {
         b.append(i).append("cg_clip_prev = gbufferPreviousProjection\n");
         b.append(i).append("    * vec4(transform(gbufferPreviousModelView, cg_scene_prev + cameraPosition - previousCameraPosition), 1.0);\n");
         if (!flywheel) {
-            b.append("#ifdef CG_VERTEX_PREV\n");
+            b.append("#if defined CG_VERTEX_PREV && defined PROGRAM_GBUFFERS_HAND\n");
             b.append(i).append("// The hand moves with the camera: only its own motion on the screen, through this frame's matrices.\n");
-            b.append(i).append("if (cg_drawn_moving && cg_prev_pos.w == 3.0) {\n");
-            b.append(i).append("    cg_clip_prev = project(gl_ProjectionMatrix, transform(gl_ModelViewMatrix, cg_prev_pos.xyz));\n");
-            b.append(i).append("}\n");
+            b.append(i).append("// Every vertex of it, also one that kept its place to the last bit or isn't known (no motion of its\n");
+            b.append(i).append("// own): through the world's matrices, at the player's field of view instead of the hand's, such a\n");
+            b.append(i).append("// vertex gave a triangle it shares with a moving one a motion of hundreds of pixels.\n");
+            b.append(i).append("cg_moving = 1.0;\n");
+            b.append(i).append("cg_clip_prev = project(gl_ProjectionMatrix,\n");
+            b.append(i).append("    transform(gl_ModelViewMatrix, cg_prev_pos.w == 3.0 ? cg_prev_pos.xyz : gl_Vertex.xyz));\n");
             b.append("#endif\n");
         }
         b.append("#endif\n");
