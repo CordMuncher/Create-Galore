@@ -14,8 +14,9 @@ import hashlib, json, pathlib, re, sys, urllib.request, zipfile
 HERE = pathlib.Path(__file__).resolve().parent
 REPO = HERE.parent.parent
 
-# The ten most downloaded shader packs on Modrinth (2026-10-27), Insanity (the 11th, as Rethinking Voxels is already in
-# the ten), Alpha Piscium and ours. Each pinned to its newest file for Minecraft 1.21.1 and Iris.
+# Five packs that span the range, picked by the owner (2026-10-27): Complementary (Reimagined, the one the modpack
+# ships; Unbound is the same pack underneath), BSL, Bliss, Photon and Rethinking Voxels; and ours. Each pinned to its
+# newest file for Minecraft 1.21.1 and Iris. compare-1 (results/) had thirteen.
 # pbr: the options that make the pack read a LabPBR resource pack's maps (SPBR's), with parallax on where the pack
 # has its own switch for it. None where the pack can't read them.
 PACKS = [
@@ -24,10 +25,6 @@ PACKS = [
     {"name": "complementary-reimagined", "title": "Complementary Reimagined", "version": "r5.9.3",
      "url": "https://cdn.modrinth.com/data/HVnmMxH1/versions/Bqen1mJX/ComplementaryReimagined_r5.9.3.zip",
      "sha512": "45304b1d7862afdb2177b7e6226fc9c6737911d17a4ad46cc9c519ca4deb935f05072cd337cd8b19a15bb8062b57b54eceec7bdee4cd572d94858e2946d37d85",
-     "pbr": {"RP_MODE": "3"}},
-    {"name": "complementary-unbound", "title": "Complementary Unbound", "version": "r5.9.3",
-     "url": "https://cdn.modrinth.com/data/R6NEzAwj/versions/B1kyfoUZ/ComplementaryUnbound_r5.9.3.zip",
-     "sha512": "a085d1d8cda67cd17a2b414eeba48bbd809da069f269bab46246235ec8fe714a275013c70d0504527b0987d810deddddba4564332414ab3b3bd7435932ff808c",
      "pbr": {"RP_MODE": "3"}},
     {"name": "bsl", "title": "BSL", "version": "10.1.8",
      "url": "https://cdn.modrinth.com/data/Q1vvjJYV/versions/Y68yiql9/BSL_v10.1.8.zip",
@@ -38,40 +35,15 @@ PACKS = [
      "sha512": "2dec87084dccf91a72a06235ecbfb3627f066699b5f70583f06077cba61433aedbfa6af28eb68bf1cdc726149cc3d9a587517cfab59e6a24e9d6a40b6874d655",
      "pbr": {"NORMAL_MAPPING": "true", "SPECULAR_MAPPING": "true", "TEXTURE_FORMAT": "TEXTURE_FORMAT_LAB", "POM": "true"},
      "note": "the newest Photon, not the v1.3a the pack's DLAA copy is made from"},
-    {"name": "solas", "title": "Solas", "version": "3.8",
-     "url": "https://cdn.modrinth.com/data/EpQFjzrQ/versions/XE9yh7pS/Solas%20Shader%20V3.8.zip",
-     "sha512": "7ba384962859ec6a65659aeefd31c2f0e741b8f2983bc3636529a957bbee9d16eebe9201c88029e651fd26c1e59f0028e7b28e25995f0ebbcff66d728791c399",
-     "pbr": {"ADVANCED_MATERIALS": "true", "MATERIAL_FORMAT": "1", "PARALLAX": "true"}},
     {"name": "bliss", "title": "Bliss", "version": "2.1.2",
      "url": "https://cdn.modrinth.com/data/ZvMtQlho/versions/kC2Y8q1P/Bliss_v2.1.2_%28Chocapic13_Shaders_edit%29.zip",
      "sha512": "dafc60be4980ec40f40edc0f2625cb0976f3c9ce5ed86383146a120480826bb1de70ef5e38b7f1437294ed4d38c6ef3c82ebef0ae4e00b8cee165788c9c18280",
      "pbr": {"Specular_Reflections": "true", "POM": "true", "MATERIAL_AO": "true"},
      "presets": False, "note": "its profiles pick a tone curve, not a quality level"},
-    {"name": "makeup", "title": "MakeUp - Ultra Fast", "version": "9.6",
-     "url": "https://cdn.modrinth.com/data/izsIPI7a/versions/t4YRxQug/MakeUp-UltraFast-9.6.zip",
-     "sha512": "fa7af14ac14bd77bc1c5d8abf5243e9f3dae08777272790de62b9f388db2f5383f8b00c61da358a356a43635afb7cab80ea7196ffd3a97e22d3184b76e9f3fd3",
-     "pbr": None, "note": "doesn't read resource pack maps"},
     {"name": "rethinking-voxels", "title": "Rethinking Voxels", "version": "r0.1-beta9",
      "url": "https://cdn.modrinth.com/data/kmwfVOoi/versions/cpD4esk9/rethinking-voxels_r0.1-beta9.zip",
      "sha512": "1e32f41e67e527c3c60149677a05b61c6d305e440812e29abba745b8ed304954780ca48d58b834c49835790bc3c4d38f37c893c5cbdfea9edc07b72e1dabd296",
      "pbr": {"RP_MODE": "3"}},
-    {"name": "super-duper-vanilla", "title": "Super Duper Vanilla", "version": "1.3.8",
-     "url": "https://cdn.modrinth.com/data/LMIZZNxZ/versions/KB0sOLSc/superDuperVanilla.zip",
-     "sha512": "231b47716d5dab68fd1409c65750589c234d4d63312b3f8634342477686ae6db88edb9ecc3c5662fca245e71b16f16e2933e50751d13d5b06e7d3e26f8d9ebaf",
-     "pbr": {"PBR_MODE": "2", "PARALLAX_OCCLUSION": "true"}},
-    {"name": "mellow", "title": "Mellow", "version": "3.4.1a",
-     "url": "https://cdn.modrinth.com/data/BUxf36AP/versions/jIbGxrnZ/Mellow%20v3.4.1a.zip",
-     "sha512": "d9ded566950e9f67de1084c5df748e2bd37bcc15234f4f9b6f026faf9ee2eef7f84c09fc9de1ac25107d900051d555490a4c3d6888b82afbc4888d53610e8387",
-     "pbr": {"PBR_NORMAL": "true", "PBR_SPECULAR": "true", "PBR_POM": "true"}},
-    {"name": "insanity", "title": "Insanity", "version": "1.650",
-     "url": "https://cdn.modrinth.com/data/EQWX2WiO/versions/TK0ZSsk0/Insanity-Shader-Universal-v1.650.zip",
-     "sha512": "853c610480d50b799c95c43299ac32c0146ed4dd5f833d7a7229ec1f670aac6cc84b672b72d3d572b4fc822ff772d3270cbaa5d476eed9c53b85ee73fd748310",
-     "pbr": {"ADVANCED_MATERIALS": "true", "MATERIAL_FORMAT": "1", "PARALLAX": "true"}},
-    {"name": "alpha-piscium", "title": "Alpha Piscium", "version": "1.10.0",
-     "url": "https://cdn.modrinth.com/data/bvDpxd8c/versions/tB8N3ghY/Alpha%20Piscium%20v1.10.0.zip",
-     "sha512": "5cdaeccf12b5e422873c018fc0a8ced24f01ca8fb396925a21046befb2359838858f245aa9fcad5e46e733087c5a0b7f437ee4e407bfb10cf20a8c5a95aba156",
-     "pbr": {"SETTING_PBR_MATERIAL": "1", "SETTING_PARALLAX_MODE": "1"},
-     "note": "parallax set to Steep (its default is off; 2 to 4 are its smooth kinds)"},
 ]
 
 # SPBR 16.2, the resource pack every pack is shown with.

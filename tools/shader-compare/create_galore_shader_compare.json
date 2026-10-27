@@ -82,34 +82,6 @@
       }
     },
     {
-      "name": "complementary-unbound",
-      "title": "Complementary Unbound",
-      "version": "r5.9.3",
-      "url": "https://cdn.modrinth.com/data/R6NEzAwj/versions/B1kyfoUZ/ComplementaryUnbound_r5.9.3.zip",
-      "sha512": "a085d1d8cda67cd17a2b414eeba48bbd809da069f269bab46246235ec8fe714a275013c70d0504527b0987d810deddddba4564332414ab3b3bd7435932ff808c",
-      "pbr": {
-        "RP_MODE": "3"
-      },
-      "file": "ComplementaryUnbound_r5.9.3.zip",
-      "highestProfile": "COMPLEMENTARY",
-      "highest": {
-        "SHADOW_QUALITY": "3",
-        "shadowDistance": "256.0",
-        "WATER_REFLECT_QUALITY": "2",
-        "BLOCK_REFLECT_QUALITY": "3",
-        "LIGHTSHAFT_QUALI_DEFINE": "3",
-        "SSAO_QUALI_DEFINE": "2",
-        "FXAA_DEFINE": "1",
-        "DETAIL_QUALITY": "3",
-        "CLOUD_QUALITY": "3",
-        "ANISOTROPIC_FILTER": "8",
-        "COLORED_LIGHTING": "512",
-        "WORLD_SPACE_REFLECTIONS": "1",
-        "ENTITY_SHADOW": "1",
-        "RAIN_PUDDLES": "2"
-      }
-    },
-    {
       "name": "bsl",
       "title": "BSL",
       "version": "10.1.8",
@@ -167,40 +139,6 @@
       }
     },
     {
-      "name": "solas",
-      "title": "Solas",
-      "version": "3.8",
-      "url": "https://cdn.modrinth.com/data/EpQFjzrQ/versions/XE9yh7pS/Solas%20Shader%20V3.8.zip",
-      "sha512": "7ba384962859ec6a65659aeefd31c2f0e741b8f2983bc3636529a957bbee9d16eebe9201c88029e651fd26c1e59f0028e7b28e25995f0ebbcff66d728791c399",
-      "pbr": {
-        "ADVANCED_MATERIALS": "true",
-        "MATERIAL_FORMAT": "1",
-        "PARALLAX": "true"
-      },
-      "file": "Solas Shader V3.8.zip",
-      "highestProfile": "ULTRA",
-      "highest": {
-        "LPV_FOG": "true",
-        "REFRACTION": "true",
-        "BLOOM": "true",
-        "VOLUMETRIC_CLOUDS": "true",
-        "VL": "true",
-        "AURORA": "true",
-        "GENERATED_NORMALS": "true",
-        "GENERATED_SPECULAR": "true",
-        "NETHER_SMOKE": "true",
-        "END_DISK": "true",
-        "SHADOW_COLOR": "true",
-        "WATER_NORMALS": "3",
-        "shadowMapResolution": "4096",
-        "shadowDistance": "512.0",
-        "VOXEL_VOLUME_SIZE": "256",
-        "VL_SAMPLES": "12",
-        "LPV_CLOUDY_FOG": "true",
-        "SHADOW_ENTITIES": "true"
-      }
-    },
-    {
       "name": "bliss",
       "title": "Bliss",
       "version": "2.1.2",
@@ -215,48 +153,6 @@
       "file": "Bliss_v2.1.2_(Chocapic13_Shaders_edit).zip",
       "highestProfile": null,
       "highest": null
-    },
-    {
-      "name": "makeup",
-      "title": "MakeUp - Ultra Fast",
-      "version": "9.6",
-      "url": "https://cdn.modrinth.com/data/izsIPI7a/versions/t4YRxQug/MakeUp-UltraFast-9.6.zip",
-      "sha512": "fa7af14ac14bd77bc1c5d8abf5243e9f3dae08777272790de62b9f388db2f5383f8b00c61da358a356a43635afb7cab80ea7196ffd3a97e22d3184b76e9f3fd3",
-      "pbr": null,
-      "note": "doesn't read resource pack maps",
-      "file": "MakeUp-UltraFast-9.6.zip",
-      "highestProfile": "extremeplus",
-      "highest": {
-        "SHADOW_CASTING": "true",
-        "SHADOW_QTY_SLIDER": "3",
-        "SHADOW_DISTANCE_SLIDER": "2",
-        "REFLECTION_SLIDER": "2",
-        "DOF": "true",
-        "DOF_STRENGTH": "0.09",
-        "AO": "1",
-        "AOSTEPS": "5",
-        "AO_STRENGTH": "0.70",
-        "AA_TYPE": "2",
-        "MOTION_BLUR": "false",
-        "REFRACTION": "1",
-        "SUN_REFLECTION": "1",
-        "WAVING": "1",
-        "V_CLOUDS": "1",
-        "CLOUD_STEPS_AVG": "10",
-        "CLOUD_VOL_STYLE": "0",
-        "BLOOM_SAMPLES": "3.0",
-        "BLOOM": "true",
-        "CHROMA_ABER": "0",
-        "VOL_LIGHT": "1",
-        "CLOUD_REFLECTION": "true",
-        "WATER_ABSORPTION": "0.10",
-        "COLOR_SCHEME": "1",
-        "VANILLA_WATER": "false",
-        "WATER_COLOR_SOURCE": "0",
-        "COLORED_SHADOW": "true",
-        "MOTION_BLUR_SAMPLES": "4",
-        "MATERIAL_GLOSS": "true"
-      }
     },
     {
       "name": "rethinking-voxels",
@@ -291,126 +187,6 @@
         "BLOCKLIGHT_RESOLUTION": "1",
         "TRANSLUCENT_LIGHT_TINT": "true",
         "INTERACTIVE_WATER": "true"
-      }
-    },
-    {
-      "name": "super-duper-vanilla",
-      "title": "Super Duper Vanilla",
-      "version": "1.3.8",
-      "url": "https://cdn.modrinth.com/data/LMIZZNxZ/versions/KB0sOLSc/superDuperVanilla.zip",
-      "sha512": "231b47716d5dab68fd1409c65750589c234d4d63312b3f8634342477686ae6db88edb9ecc3c5662fca245e71b16f16e2933e50751d13d5b06e7d3e26f8d9ebaf",
-      "pbr": {
-        "PBR_MODE": "2",
-        "PARALLAX_OCCLUSION": "true"
-      },
-      "file": "superDuperVanilla.zip",
-      "highestProfile": "ULTRA",
-      "highest": {
-        "VOLUMETRIC_LIGHTING": "true",
-        "CLOUD_TYPE": "2",
-        "SHADOW_MAPPING": "true",
-        "SHADOW_COLOR": "true",
-        "SHADOW_FILTER": "true",
-        "SSAO": "true",
-        "ROUGH_REFLECTIONS": "true",
-        "PREVIOUS_FRAME": "true",
-        "SSR": "true",
-        "BLOOM": "true",
-        "SHARPEN_FILTER": "true",
-        "ANTI_ALIASING": "2",
-        "RAYTRACER_STEPS": "28",
-        "RAYTRACER_BISTEPS": "2",
-        "shadowMapResolution": "4096",
-        "UNDERWATER_CAUSTICS": "2"
-      }
-    },
-    {
-      "name": "mellow",
-      "title": "Mellow",
-      "version": "3.4.1a",
-      "url": "https://cdn.modrinth.com/data/BUxf36AP/versions/jIbGxrnZ/Mellow%20v3.4.1a.zip",
-      "sha512": "d9ded566950e9f67de1084c5df748e2bd37bcc15234f4f9b6f026faf9ee2eef7f84c09fc9de1ac25107d900051d555490a4c3d6888b82afbc4888d53610e8387",
-      "pbr": {
-        "PBR_NORMAL": "true",
-        "PBR_SPECULAR": "true",
-        "PBR_POM": "true"
-      },
-      "file": "Mellow v3.4.1a.zip",
-      "highestProfile": "FABULOUS",
-      "highest": {
-        "BLOOM": "true",
-        "CLOUD_STYLE": "1",
-        "WATER_NORMALS": "true",
-        "TAA_MODE": "1",
-        "SMAA": "true",
-        "REFLECTIONS": "2",
-        "GODRAYS": "true",
-        "SSAO": "true",
-        "USE_LQ_DEPTH": "true",
-        "IMAGE_SHARPENING": "true"
-      }
-    },
-    {
-      "name": "insanity",
-      "title": "Insanity",
-      "version": "1.650",
-      "url": "https://cdn.modrinth.com/data/EQWX2WiO/versions/TK0ZSsk0/Insanity-Shader-Universal-v1.650.zip",
-      "sha512": "853c610480d50b799c95c43299ac32c0146ed4dd5f833d7a7229ec1f670aac6cc84b672b72d3d572b4fc822ff772d3270cbaa5d476eed9c53b85ee73fd748310",
-      "pbr": {
-        "ADVANCED_MATERIALS": "true",
-        "MATERIAL_FORMAT": "1",
-        "PARALLAX": "true"
-      },
-      "file": "Insanity-Shader-Universal-v1.650.zip",
-      "highestProfile": "ULTRA",
-      "highest": {
-        "SELF_SHADOW": "true",
-        "TAA": "true",
-        "AO": "true",
-        "LIGHT_SHAFT": "true",
-        "SHADOW_COLOR": "true",
-        "SHADOW_FILTER": "true",
-        "shadowMapResolution": "4096",
-        "REFLECTION": "2",
-        "shadowDistance": "512.0",
-        "ADVANCED_MATERIALS": "true",
-        "CLOUD_AMOUNT": "8.0"
-      }
-    },
-    {
-      "name": "alpha-piscium",
-      "title": "Alpha Piscium",
-      "version": "1.10.0",
-      "url": "https://cdn.modrinth.com/data/bvDpxd8c/versions/tB8N3ghY/Alpha%20Piscium%20v1.10.0.zip",
-      "sha512": "5cdaeccf12b5e422873c018fc0a8ced24f01ca8fb396925a21046befb2359838858f245aa9fcad5e46e733087c5a0b7f437ee4e407bfb10cf20a8c5a95aba156",
-      "pbr": {
-        "SETTING_PBR_MATERIAL": "1",
-        "SETTING_PARALLAX_MODE": "1"
-      },
-      "note": "parallax set to Steep (its default is off; 2 to 4 are its smooth kinds)",
-      "file": "Alpha Piscium v1.10.0.zip",
-      "highestProfile": "Insane",
-      "highest": {
-        "TITLE_VERSION": "5",
-        "SETTING_PARALLAX_MAX_ITERATIONS": "192",
-        "SETTING_SSS_SAMPLE_COUNT": "12",
-        "SETTING_SHADOW_MAP_RESOLUTION": "4096",
-        "shadowDistance": "512.0",
-        "SETTING_PCSS_BLOCKER_SEARCH_COUNT": "8",
-        "SETTING_PCSS_SAMPLE_COUNT": "32",
-        "SETTING_GI_INITIAL_SST_STEPS": "256",
-        "SETTING_GI_VALIDATE_SST_STEPS": "128",
-        "SETTING_GI_SPATIAL_REUSE_COUNT": "14",
-        "SETTING_DENOISER_SPATIAL_SAMPLES": "8",
-        "SETTING_DENOISER_SPATIAL_SAMPLES_POST": "8",
-        "SETTING_EPIPOLAR_SLICES": "2048",
-        "SETTING_SLICE_SAMPLES": "1024",
-        "SETTING_CLOUDS_LOW_UPSCALE_FACTOR": "0",
-        "SETTING_CLOUDS_LOW_MAX_ACCUM": "8",
-        "SETTING_CLOUDS_LOW_STEP_MIN": "128",
-        "SETTING_CLOUDS_LOW_STEP_MAX": "256",
-        "SETTING_TAA_CURR_FILTER": "2",
-        "SETTING_TAA_HISTORY_FILTER": "4"
       }
     }
   ],

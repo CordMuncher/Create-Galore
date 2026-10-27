@@ -116,13 +116,16 @@ into `$I\mods\`, launch once more with `--jvm-arg=-Dcreate_galore_dlss_testkit.a
 `--jvm-arg=-Dcreate_galore_dlss_testkit.hold=1200` (it stands at the lake shore for 20 minutes while the far terrain
 builds, and closes), then delete that jar from `$I\mods\` again.
 
-## Shader compare 1
+## Shader compare 2
+
+The first run is in `results\compare-1` (thirteen packs). This one has six: ours, Complementary Reimagined,
+BSL, Bliss, Photon and Rethinking Voxels.
 
 ### Run
 
 The launch command from step 4 with `--jvm-arg=-Dcreate_galore_shader_compare.autorun=dlaa-test` added. The game
 opens the world, photographs every scene with every pack (pass 1, each pack's defaults, then pass 2, each pack's
-highest preset; 13 packs, 22 scenes), puts Iris back as it was and closes. It takes about three and a half hours (the
+highest preset; 6 packs, 22 scenes), puts Iris back as it was and closes. It takes about an hour and a half (the
 rain scene waits three minutes in the rain before each shot); the log says `Shader compare: now <pack>-<pass>` at
 each pack. Keep the window visible; it doesn't need focus. Don't use the PC for games meanwhile (the frame rate
 doesn't matter, but another full-screen program can cover the window).
@@ -137,7 +140,7 @@ What the kit does that a run before 2026-10-27 18:30 didn't:
 - **Arrival frames.** At each arrival, frames are saved 0.1, 0.5, 1 and 2 seconds in
   (`<pack>-<pass>/arrive/<scene>-<ms>ms.png`, `path: "arrive"` in the manifest, frame = milliseconds), then the
   settled shot as before. They show the jitter when a scene first appears. `-Dcreate_galore_shader_compare.noarrival=true`
-  leaves them out (a full run's arrival frames take about 6 GB).
+  leaves them out (a full run's arrival frames take about 3 GB).
 - **Stop.** Press **End** while it runs (any time the game window has focus), or make an empty file named
   `shader-compare.stop` in `$I` (works without focus: `New-Item $I\shader-compare.stop`). It puts Iris and every
   pack's options back as they were, writes the manifest with `outcome: "stopped by key"` and closes the game.
@@ -150,10 +153,10 @@ JSON) for the packs left; each run gets its own folder.
 The run folder is `$I\screenshots\shader-compare\<run>\`. Contact sheets, one per scene (a few hundred KB each):
 
 ```powershell
-& $T\tools\uv\uv.exe run --python 3.13 --with pillow $R\tools\shader-compare\sheet.py $R\tools\shader-compare\results\compare-1\sheets <run folder> [<more run folders>]
+& $T\tools\uv\uv.exe run --python 3.13 --with pillow $R\tools\shader-compare\sheet.py $R\tools\shader-compare\results\compare-2\sheets <run folder> [<more run folders>]
 ```
 
-Write `$R\tools\shader-compare\results\compare-1\REPORT.md`:
+Write `$R\tools\shader-compare\results\compare-2\REPORT.md`:
 
 - The run's `outcome` from `manifest.json`, how long it took, the GPU (`renderer`) and Iris version.
 - Every pack and pass with `"loaded": false` and its `error`, and for each the Iris lines from `latest.log` that say
@@ -168,7 +171,7 @@ Full-size shots of our pack (the settled shots of both its passes, and the arriv
 as JPEGs, to commit next to the sheets:
 
 ```powershell
-& $T\tools\uv\uv.exe run --python 3.13 --with pillow $R\tools\shader-compare\commit_shots.py $R\tools\shader-compare\results\compare-1\ours <run folder> [<more run folders>]
+& $T\tools\uv\uv.exe run --python 3.13 --with pillow $R\tools\shader-compare\commit_shots.py $R\tools\shader-compare\results\compare-2\ours <run folder> [<more run folders>]
 ```
 
 (`--pack ours+photon` for other packs too.) The sheets also include `arrive-<scene>.jpg`: one row per pack and pass, the

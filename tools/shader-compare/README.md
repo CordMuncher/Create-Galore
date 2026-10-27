@@ -22,24 +22,18 @@ packs.
 
 ## Packs
 
-The ten most downloaded shader packs on Modrinth (October 2026), Insanity (the eleventh, as Rethinking Voxels, asked
-for by name, is already among the ten), Alpha Piscium and ours. Iteration RP is never included.
+Five packs that span the range, picked by the owner, and ours. Complementary goes in once, as Reimagined (the one the
+modpack ships; Unbound is the same pack underneath). The first run (`results/compare-1`) had thirteen: the ten most
+downloaded on Modrinth in October 2026, Insanity, Alpha Piscium and ours. Iteration RP is never included.
 
 | Pack | Version | Materials switches (`pbr`) | Highest preset |
 | --- | --- | --- | --- |
 | Create Galore Shaders | this branch | on by default | ULTRA |
 | Complementary Reimagined | r5.9.3 | `RP_MODE=3` (labPBR) | COMPLEMENTARY |
-| Complementary Unbound | r5.9.3 | `RP_MODE=3` | COMPLEMENTARY |
 | BSL | 10.1.8 | `ADVANCED_MATERIALS`, `MATERIAL_FORMAT=1`, `PARALLAX` | ULTRA |
 | Photon | v1.4 | `NORMAL_MAPPING`, `SPECULAR_MAPPING`, `TEXTURE_FORMAT_LAB`, `POM` | ultra |
-| Solas | 3.8 | `ADVANCED_MATERIALS`, `MATERIAL_FORMAT=1`, `PARALLAX` | ULTRA |
 | Bliss | 2.1.2 | `Specular_Reflections`, `POM`, `MATERIAL_AO` | none (its profiles pick a tone curve) |
-| MakeUp - Ultra Fast | 9.6 | none (it doesn't read resource pack maps) | extremeplus |
 | Rethinking Voxels | r0.1-beta9 | `RP_MODE=3` | ULTRA |
-| Super Duper Vanilla | 1.3.8 | `PBR_MODE=2`, `PARALLAX_OCCLUSION` | ULTRA |
-| Mellow | 3.4.1a | `PBR_NORMAL`, `PBR_SPECULAR`, `PBR_POM` | FABULOUS |
-| Insanity | 1.650 | `ADVANCED_MATERIALS`, `MATERIAL_FORMAT=1`, `PARALLAX` | ULTRA |
-| Alpha Piscium | 1.10.0 | `SETTING_PBR_MATERIAL=1`, `SETTING_PARALLAX_MODE=1` (Steep) | Insane |
 
 Photon is its newest release, not the v1.3a the modpack's DLAA copy is made from. A pack with no quality presets has
 no second pass. Ours runs at full resolution with DLSS as its anti-aliasing (DLAA), the others with their own.
