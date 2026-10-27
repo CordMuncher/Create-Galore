@@ -4,8 +4,6 @@
   "roots": [
     "R4"
   ],
-  "open": true,
-  "fixed_by": "step 3 (Makeable lens: parts that need the build's own product)",
   "kind": "model",
   "inventory": [
     {

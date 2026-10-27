@@ -176,9 +176,9 @@ public final class Models {
         labels.add("items", label);
         props.add("labels", labels);
         props.add("caption", WorldTools.prop("string", "One short sentence under the model, or an empty string."));
-        props.add("draft", WorldTools.prop("boolean", "True to try the model first: you get pictures of it (two corner "
-                + "views, front and side) and the machine check, and nothing is added to the answer. Look, fix what looks "
-                + "wrong, then call again with draft false to put it in the answer."));
+        props.add("draft", WorldTools.prop("boolean", "True for a try that isn't shown."));
+        props.add("goal", WorldTools.prop("string", "What it makes, if it makes an item: that item's id first, then from "
+                + "what (create:brass_ingot from copper and zinc). Its check proves the model makes it."));
         props.add("shows_a_fault", WorldTools.prop("boolean", "True only when the model is meant to show a build that "
                 + "doesn't work (such as the player's own broken build); then it is built even when the rotation check finds faults."));
         props.add("for_later", WorldTools.prop("boolean", "True only when the player asked for a build to make later on; "
@@ -428,21 +428,27 @@ public final class Models {
             fixed = new HashMap<>(cells);
             motion.riding().forEach(fixed::remove);
         }
-        BuildCheck.Report check = join(level == null ? null : BuildCheck.check(fixed, level), RigCheck.check(cells));
-        if (level != null) check = join(check, OutputCheck.check(fixed, level));
-        check = join(check, PlayerCheck.posts(cells));
+        // One pipeline, three lenses: does it do its job, can a player use it, can this player build it now.
+        BuildCheck.Report works = join(level == null ? null : BuildCheck.check(fixed, level), RigCheck.check(cells));
+        if (level != null) works = join(works, OutputCheck.check(fixed, level));
+        net.minecraft.world.item.Item goal = GoalCheck.goal(input);
+        if (goal != null && level != null) works = join(works, GoalCheck.check(cells, goal, level.getServer()));
+        if (motion != null) works = join(works, motion.report());
+        works = join(works, vehicle(cells, level, input.has("part_of_vehicle") && input.get("part_of_vehicle").isJsonPrimitive()
+                && input.get("part_of_vehicle").getAsBoolean()));
+        BuildCheck.Report usable = PlayerCheck.posts(cells);
+        BuildCheck.Report makeable = null;
         boolean forLater = input.has("for_later") && input.get("for_later").isJsonPrimitive() && input.get("for_later").getAsBoolean();
-        if (player != null && level != null && !forLater) {
+        if (level != null && !forLater) {
             // Parts the player would place: on their own build, only what the model adds.
             java.util.Set<net.minecraft.world.level.block.Block> built = new java.util.HashSet<>();
             if (base != null) base.values().forEach(st -> built.add(st.getBlock()));
             List<BlockState> added = new ArrayList<>();
             for (BlockState st : cells.values()) if (!built.contains(st.getBlock())) added.add(st);
-            check = join(check, Reach.parts(player, level.getServer(), added));
+            if (player != null) makeable = Reach.parts(player, level.getServer(), added, goal);
+            if (goal != null) makeable = join(makeable, Reach.selfMade(player, level.getServer(), added, goal));
         }
-        if (motion != null) check = join(check, motion.report());
-        check = join(check, vehicle(cells, level, input.has("part_of_vehicle") && input.get("part_of_vehicle").isJsonPrimitive()
-                && input.get("part_of_vehicle").getAsBoolean()));
+        BuildCheck.Report check = lenses(works, usable, makeable);
         boolean draft = input.has("draft") && input.get("draft").isJsonPrimitive() && input.get("draft").getAsBoolean();
         String title = GuideText.string(input, "title"), caption = GuideText.string(input, "caption");
         if (draft0 != null && title.isEmpty()) title = draft0.title();
@@ -664,6 +670,22 @@ public final class Models {
                 + "at a corner, so the whole vehicle shares faces and Super Glue takes it as one (they are in this model, and "
                 + "from_draft keeps them; count them in the materials): " + String.join("; ", where)
                 + (steps.size() > 24 ? "; and more" : "") + ".";
+    }
+
+    /** The three lenses' reports as one, each under its heading; null when none has anything to say. */
+    private static BuildCheck.Report lenses(BuildCheck.Report works, BuildCheck.Report usable, BuildCheck.Report makeable) {
+        String[] headings = {"WORKS (does it do its job)", "USABLE (can a player reach, use and get around it)",
+                "MAKEABLE (can this player build it now)"};
+        BuildCheck.Report[] reports = {works, usable, makeable};
+        StringBuilder text = new StringBuilder();
+        List<String> faults = new ArrayList<>();
+        for (int i = 0; i < 3; i++) {
+            if (reports[i] == null) continue;
+            if (!text.isEmpty()) text.append('\n');
+            text.append("== ").append(headings[i]).append(" ==\n").append(reports[i].text());
+            faults.addAll(reports[i].faults());
+        }
+        return text.isEmpty() ? null : new BuildCheck.Report(text.toString(), faults);
     }
 
     /** Both checks' reports as one; either may be null (nothing of its kind in the model). */
