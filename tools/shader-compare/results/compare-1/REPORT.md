@@ -4,12 +4,12 @@ PC session on 2026-10-27, 18:04–18:30, by a Claude Code session in `C:\Users\c
 (`$T`). It followed sections 1 to 4 and "Shader compare 1" of `tools/shader-compare/PC-RUNBOOK.md` at `cc1ca29`, with
 the shader pack from that commit (alpha 4 work), pack 0.6.1 (Bridge 1.125.0) and the compare kit from `dist/`.
 
-**Stopped early at Emre's call.** Emre watched the run and saw problems in our pack's scenes as the camera went into
-them, mostly a lot of jitter. Emre said the other packs weren't worth the remaining two hours. So the run stopped after
+**Stopped early at the owner's call.** The owner watched the run and saw problems in our pack's scenes as the camera went into
+them, mostly a lot of jitter. The owner said the other packs weren't worth the remaining two hours. So the run stopped after
 our pack's defaults pass, and this report has those 22 frames only.
 
 **Alpha 4 needs some tweaks before it's ready.**
-- The main problem Emre saw is jitter when the camera arrives at a scene. The stills can't show it: the kit saves one
+- The main problem the owner saw is jitter when the camera arrives at a scene. The stills can't show it: the kit saves one
   frame per scene, after the picture has settled (10 s and 90 frames). The frames from the moment of arrival are never
   saved, so none are here.
 - The stills show other problems: room lighting that ignores how dark the room should be, a window with no beam
@@ -63,7 +63,7 @@ The full screenshots stay on the PC in `$T\compare\screenshots\shader-compare\20
 
 ## Departures from the runbook
 
-- **Stopped after our pack, at Emre's request** (see the top).
+- **Stopped after our pack, at the owner's request** (see the top).
   - The kit's clean stop is `/shadercompare stop`, but the chat can't be opened during a run (the kit closes every
     screen). So I closed the game window normally after the last `ours-defaults` shot, while Complementary Reimagined
     was loading.

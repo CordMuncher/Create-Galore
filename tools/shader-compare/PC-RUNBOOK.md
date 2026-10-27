@@ -10,6 +10,7 @@ says so. Rules that come before anything here:
   owner before any tool or step that is not in it.
 - The game logs in offline as `CGTester`; never use the owner's accounts.
 - Results go to the shader pack branch only (`claude/project-thread-mturba`); nothing is merged or released.
+- The repository is public: reports and commit messages never name the owner or anyone else; write "the owner".
 - It only photographs the packs. Nothing is taken from them.
 
 PowerShell, in the test folder:
