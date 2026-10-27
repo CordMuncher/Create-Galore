@@ -105,6 +105,12 @@ static ID3D12Fence* g_fences[2];
 static HANDLE g_fenceHandles[2];
 static UINT64 g_dxValue;
 static HANDLE g_event;
+// The device NGX was started on, kept until the game ends. Direct3D 12 gives every user of an adapter the same device,
+// so with the DirectX 12 presenter Streamline (frame generation) runs NGX on this very device, and
+// NVSDK_NGX_D3D12_Shutdown1 would end NGX for both: Ray Reconstruction 2b lost DLSS-G's feature on every frame when Ray
+// Reconstruction went off, then hung. So NGX stays started on it; closing releases only this helper's features and
+// parameters, and this reference keeps the device alive under NGX's state.
+static ID3D12Device* g_ngxDevice12;
 static char g_error12[512];
 static char g_adapterName[256];
 
@@ -331,7 +337,8 @@ CG_API int cg_ngx12_wait_idle(int timeoutMs) {
     return waitFor(g_dxValue, (DWORD) timeoutMs) ? 1 : 0;
 }
 
-// Closes the device (after cg_ngx_shutdown and every texture's release).
+// Closes the queue and lets go of the device (after cg_ngx_shutdown and every texture's release). NGX's own reference
+// (g_ngxDevice12) keeps the device, so cg_ngx12_open gets the same one back.
 CG_API void cg_ngx12_close() {
     if (g_queue && g_fences[1] && g_event) {
         cg_ngx12_wait_idle(2000);
@@ -432,20 +439,27 @@ CG_API int cg_ngx_init12(const char* projectId, const char* engineVersion, const
     commonInfo(info, featureDir, logLevel);
     NVSDK_NGX_Result result = NVSDK_NGX_D3D12_Init_with_ProjectID(projectId, NVSDK_NGX_ENGINE_TYPE_CUSTOM, engineVersion,
                                                                   appDataPath, g_device12, &info, NVSDK_NGX_Version_API);
-    if (NVSDK_NGX_FAILED(result)) {
-        return result;
+    if (g_ngxDevice12 != g_device12) {
+        if (NVSDK_NGX_FAILED(result)) {
+            return result;
+        }
+        // (A device of an earlier adapter keeps its reference: NGX's state for it stays too.)
+        g_device12->AddRef();
+        g_ngxDevice12 = g_device12;
     }
+    // On the kept device a failed start may only mean NGX runs there still; its parameters tell.
     g_initialized = true;
     g_api = 12;
 
-    result = NVSDK_NGX_D3D12_GetCapabilityParameters(&g_params);
-    if (NVSDK_NGX_FAILED(result)) {
-        NVSDK_NGX_D3D12_Shutdown1(g_device12);
+    NVSDK_NGX_Result params = NVSDK_NGX_D3D12_GetCapabilityParameters(&g_params);
+    if (NVSDK_NGX_FAILED(params)) {
+        // No Shutdown1 (see g_ngxDevice12).
         g_initialized = false;
         g_api = 0;
         g_params = nullptr;
+        return NVSDK_NGX_FAILED(result) ? result : params;
     }
-    return result;
+    return NVSDK_NGX_Result_Success;
 }
 
 // Whether DLSS super sampling can run here. out[0] available (0/1), out[1] needs a newer driver (0/1),
@@ -766,7 +780,8 @@ CG_API int cg_ngx_shutdown() {
         destroyParameters(g_params);
         g_params = nullptr;
     }
-    NVSDK_NGX_Result result = g_api == 12 ? NVSDK_NGX_D3D12_Shutdown1(g_device12) : NVSDK_NGX_D3D11_Shutdown1(g_device);
+    // On Direct3D 12 NGX stays started (see g_ngxDevice12).
+    NVSDK_NGX_Result result = g_api == 12 ? NVSDK_NGX_Result_Success : NVSDK_NGX_D3D11_Shutdown1(g_device);
     g_initialized = false;
     g_api = 0;
     g_device = nullptr;

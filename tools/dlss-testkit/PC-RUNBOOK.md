@@ -2493,3 +2493,149 @@ Write `$T\repo\tools\dlss-testkit\results\rr2b\REPORT.md`:
 
 Put back every file from `$T\rr2b\*.before` and check each with `cmp`. Remove `nvngx_dlssd.dll` from the instance,
 then commit and push on this branch.
+
+## Ray Reconstruction 2c: RR off beside frame generation, Photon's settings, then the runs skipped in 2b
+
+Start only when the player at the keyboard says so. About 5 minutes that need no one (part 1), about 25 at the keyboard
+(part 2), then about 15 that need no one (part 3). If part 2 passes, this build is the release candidate: Ray
+Reconstruction goes into pack 0.6.3 as an experimental setting.
+
+**What it checks.** Bridge 1.126.0 (pack 0.6.3, the release candidate) on this branch:
+- **The fix for 2b's bug.** In Ray Reconstruction 2b (`results/rr2b/REPORT.md`), turning RR off while DLSS frame
+  generation ran made Streamline's DLSS-G calls fail on every frame (`NGX evaluate feature failed 0xbad00004`, then
+  `NGX create feature failed 0xbad0000b`), and the second time the game hung and closed. The cause: Direct3D 12 gives
+  every user of a GPU the same device, so RR's device is also Streamline's, and turning RR off shut NGX down on that
+  device, taking DLSS-G's feature with it. Now turning RR off releases only RR's own feature and leaves NGX started on
+  the device until the game closes. The log says `DLAA: closed its DirectX 12 queue; NGX stays started on the device,
+  which frame generation may share`.
+- **A probe for it outside the game.** `rr-probe`'s new `dll-d3d12-beside` starts NGX on the device a second time
+  itself, standing in for Streamline, runs plain DLSS there, then has `cg_ngx.dll` open RR, close it and open it again
+  3 times. After each close its own DLSS must run on and be made again. With 2b's DLL it should fail the way the game
+  did.
+- **Photon's settings for RR.** Turning RR on in the Upscaling tab sets Photon to its **Ultra** profile the first time
+  (a toast: `Photon: Ultra for Ray Reconstruction`), and to the player's own changes under RR after that (`Photon:
+  your Ray Reconstruction settings`). Turning it off brings back the Photon settings from before (`Photon: your settings
+  are back`). The render resolution stays as set. Both sets are kept in `config\create_galore_bridge-photon-own.txt`
+  and `config\create_galore_bridge-photon-rr.txt`; the second only while it differs from Ultra. Only the Upscaling tab
+  switches them: the settings file and the test kit turn RR on and off without touching Photon's options. The cloud
+  ran that whole round in the game (on, a change, off, on again, back to Ultra, the toasts and the two files); RR itself
+  can't run there.
+- RR is called experimental now (no "dev build" in the screen or the log). Photon's copy is made again (patch 14) at the
+  first start.
+
+### Update and settings
+
+```powershell
+git -C $T\repo fetch origin
+git -C $T\repo checkout -B claude/project-thread-u2wmhh origin/claude/project-thread-u2wmhh
+Remove-Item $T\instance\mods\create-galore-bridge-*.jar
+Copy-Item $T\repo\pack\mods\create-galore-bridge-*.jar $T\instance\mods\
+Copy-Item $T\repo\tools\dlss-testkit\dist\create-galore-dlss-testkit-1.0.0.jar $T\instance\mods\ -Force
+Get-ChildItem $T\instance\mods\create-galore-bridge-*.jar | Select-Object Name
+```
+
+Only `create-galore-bridge-1.126.0.jar`. Back up the same files as Ray Reconstruction 2, to `$T\rr2c\*.before`. Also
+note whether `config\create_galore_bridge-photon-own.txt` and `config\create_galore_bridge-photon-rr.txt` exist (they
+shouldn't); at the end, delete any that weren't there before.
+
+### 1. The probe (no one needed, about 5 minutes)
+
+The new `cg_ngx.dll`, and 2b's from git for comparison (`cmd /c` keeps the bytes as they are):
+
+```powershell
+New-Item -ItemType Directory $T\rr2c\new, $T\rr2c\old -Force
+foreach ($kind in "new", "old") {
+    Copy-Item $T\rr1\nvngx_dlssd-rel.dll $T\rr2c\$kind\nvngx_dlssd.dll
+    Copy-Item $T\instance\create-galore-dlss\nvngx_dlss.dll $T\rr2c\$kind\
+}
+Copy-Item $T\repo\tools\bridge-mod\src\main\resources\natives\windows-x64\cg_ngx.dll $T\rr2c\new\
+cmd /c "git -C $T\repo cat-file blob d79d2cf5:tools/bridge-mod/src/main/resources/natives/windows-x64/cg_ngx.dll > $T\rr2c\old\cg_ngx.dll"
+(Get-Item $T\rr2c\old\cg_ngx.dll).Length   # 2b's DLL, about 238 KB
+& $T\repo\tools\dlss-testkit\dist\rr-probe.exe $T\rr2c\new $T\rr2c\probe-new
+& $T\repo\tools\dlss-testkit\dist\rr-probe.exe $T\rr2c\old $T\rr2c\probe-old
+```
+
+Expected:
+- **new:** as in Ray Reconstruction 2 (the six `d3d11-` RR variants crash, the rest `OK`), plus `dll-d3d12-beside OK`.
+  Its own lines (`probe-new\dll-d3d12-beside.txt`) end each round with `the other NGX user's DLSS ran on after cg_ngx.dll
+  closed, and was made again`.
+- **old:** `dll-d3d12-beside` fails at `the other NGX user's evaluate after cg_ngx.dll closed` or `... create after
+  cg_ngx.dll closed`, with an NGX code such as `0xBAD00004`. That is 2b's bug, outside the game.
+- If **old** passes too, the probe doesn't catch it: note that and go on; part 2 decides. If **new** fails, stop and
+  report.
+
+### 2. Frame generation and Photon's settings (at the keyboard, about 25 minutes)
+
+The release DLL in the instance:
+`Copy-Item $T\rr1\nvngx_dlssd-rel.dll $T\instance\create-galore-dlss\nvngx_dlssd.dll -Force`.
+
+Settings file:
+- `dlaa=dlss`, `dlaaPreset=default`, `dlaaRayReconstruction=false`, `perfectPresentation=true`, `presenter=dx12`,
+  `reflex=on`, `gpuPacing=off`, `frameGen=dlss`, `frameGenType=dlss`, `fpsCounter=detailed`;
+- no `dlaaRrPreset`, `dlaaRrTest`, `dlaaRrRaw`, `dlaaRrExposure` or `dlaaDebugView` line.
+
+`options.txt`: `fullscreen:false`, `maxFps:260`, `enableVsync:false`. Shader pack: Photon v1.3a + DLAA, render
+resolution **Performance**. Launch from Frame generation 3 (2560x1440), without `autorun`. Open `dlaa-test`, `/gamemode
+creative`, `/time set 6000`, `/tp @s 1029.5 64 160.5 0 8` (the lakeshore).
+
+Turn RR on and off only in the **Upscaling** tab (Shader Packs, **Upscaling & Display...**, **Ray Reconstruction**,
+**Done**). After every step, copy each `DLAA:`, `Frame generation` and `Reflex:` line with its time, and count the
+`[sl.dlss_g]` lines and any WARN or ERROR from `create_galore_bridge` since the last step. Copy
+`shaderpacks\Photon v1.3a + DLAA.txt` and the two `config\create_galore_bridge-photon-*.txt` files (or "none") into
+the notes after b, c, d, e and g. Photon's profile shows at the top of its own settings (Shader Packs, Photon v1.3a +
+DLAA, the settings button).
+
+- **a. Start, RR off.** `Frame generation: running, 2 frames shown per rendered one` and DLSS on DirectX 11 (`DLAA: DLSS
+  running at ...`). Note Photon's profile.
+- **b. RR on.** The toast `Photon: Ultra for Ray Reconstruction`. The log: `DLAA: Ray Reconstruction on: Photon's
+  settings switched (...)`, `DLAA: DLSS starts again on DirectX 12, for Ray Reconstruction`, `DLAA: DLSS Ray
+  Reconstruction running at ...`; frame generation running; no `[sl.dlss_g]` errors. Photon's profile reads Ultra.
+  Play a minute.
+- **c. A change under RR.** In Photon's own settings change one thing you can see (Water Caustics off, say), apply,
+  back in the world.
+- **d. RR off: 2b's bug.** The toast `Photon: your settings are back`. The log: `DLAA: closed its DirectX 12 queue; NGX
+  stays started on the device, which frame generation may share`, `DLAA: DLSS starts again on DirectX 11`, `DLAA: DLSS
+  running at ... preset K`. Frame generation must keep running with **no** `[sl.dlss_g] NGX evaluate feature failed` or
+  `NGX create feature failed` line, and the NVIDIA overlay must keep doubling. Photon's profile reads what a showed.
+  Play 2 minutes; press F11 twice (full screen and back); open the pause menu, wait 10 seconds, back to the game (2b
+  hung right there).
+- **e. RR on again.** The toast `Photon: your Ray Reconstruction settings`; Photon's profile reads Custom, with c's
+  change. No `[sl.dlss_g]` errors.
+- **f. Switching.** RR off and on 4 more times, about 20 seconds apart, frame generation on all the while; once open
+  the pause menu right after turning RR off. Each switch takes about 1.5 s; no `[sl.dlss_g]` errors, no freeze.
+- **g. Back to Ultra.** With RR on, pick the Ultra profile in Photon's settings (c's change goes). RR off:
+  `config\create_galore_bridge-photon-rr.txt` must be gone (an untouched set follows Ultra). RR on: the toast says
+  `Photon: Ultra for Ray Reconstruction` again. RR off.
+
+If d or f shows a `[sl.dlss_g]` error, a freeze or a crash: stop, copy the log lines and Streamline's log (`sl.log`)
+into `$T\rr2c\crash`, and report.
+
+**Then Ray Reconstruction 1's step 3** (RR Performance against DLSS Quality with frame generation, about 5 minutes),
+as written there, switching in the Upscaling tab. The RR readings now run Photon at Ultra and the DLSS one at the
+player's own settings, so this compares what a player gets either way; part 3's T2 has the like-for-like numbers.
+Note Photon's profile for each reading, and which you would play.
+
+### 3. Timed runs with frame generation (no one needed, about 15 minutes)
+
+Ray Reconstruction 1's step 4, launch 2 only (`frameGen=dlss`, `frameGenType=dlss`, runs `RR1`), with PresentMon to
+`$T\rr2c\T2.csv` as in 2b. The test kit switches RR on and off between modes without the Upscaling tab, so Photon's
+settings stay as part 2 left them (the player's own, as in 2b's T1), and every switch from an RR mode to a DLSS mode is
+2b's bug case again: the log must have no `[sl.dlss_g]` error. The release DLL stays in.
+
+### Results
+
+```powershell
+$py = "$T\tools\uv\uv.exe"
+& $py run --python 3.13 $T\repo\tools\dlss-testkit\frametimes.py <2b's T1 run folder> $T\rr2b\T1.csv <the T2 run folder> $T\rr2c\T2.csv
+```
+
+Write `$T\repo\tools\dlss-testkit\results\rr2c\REPORT.md`:
+- part 1: both `summary.txt` files, and `dll-d3d12-beside.txt` from each.
+- part 2: per step a to g, the log lines, the `[sl.dlss_g]` count, the toasts, Photon's profile and the three files'
+  contents; then step 3's numbers (rendered and shown fps, Photon's profile for each) and the pick.
+- part 3: per mode and viewpoint, T1 (from 2b) against T2: rendered fps, shown fps and the shown-frame interval (median,
+  p10, p90); what frame generation adds with RR and with DLSS; whether RR Performance with frame generation reaches DLSS
+  Quality with frame generation; the `[sl.dlss_g]` count.
+
+Put back every file from `$T\rr2c\*.before` and check each with `cmp`; delete any `config\create_galore_bridge-photon-*.txt`
+that wasn't there before. Remove `nvngx_dlssd.dll` from the instance, then commit and push on this branch.

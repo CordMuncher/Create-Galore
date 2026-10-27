@@ -1,9 +1,10 @@
 # DLSS Ray Reconstruction: what a shader pack hands over
 
 The Bridge runs NVIDIA DLSS Ray Reconstruction (RR) in DLSS's place when a pack hands over RR's guides and the player
-turns it on (dev builds: Upscaling tab, **Ray Reconstruction**; settings key `dlaaRayReconstruction=true`). The first
-pack to do it is the Photon pilot ("Photon v1.3a + DLAA", patch 13, see `PhotonPatcher`), a test bed only. This is the
-contract our own shader pack fills later. It adds to the DLSS contract in `shaders/create_galore_dlss.properties` (see
+turns it on (experimental: Upscaling tab, **Ray Reconstruction**; settings key `dlaaRayReconstruction=true`). The
+first pack to do it is Photon ("Photon v1.3a + DLAA", patch 14, see `PhotonPatcher`); turning RR on in the Upscaling tab
+also swaps Photon's settings (Ultra, or the player's own changes under RR) and back (`PhotonRrSettings`). This is the
+contract another pack fills to get RR. It adds to the DLSS contract in `shaders/create_galore_dlss.properties` (see
 `PackProfile`): everything DLSS needs (colour, motion vectors, depth, exposure, the jitter) stays as it is.
 
 Source: NVIDIA's DLSS-RR Integration Guide in the DLSS SDK (v310.9.16, the tag the Bridge is built with), sections
@@ -82,7 +83,9 @@ With all of them 0 the pack must look exactly as it does without RR: write nothi
 ## Cost and cards
 
 RR replaces DLSS's upscaling; NVIDIA's numbers at 1440p Performance: about 1.7 ms on an RTX 4080, about 6 ms on an
-RTX 3070 (laptop players stay on DLSS). Any RTX card with NVIDIA driver 580 or newer; `nvngx_dlssd.dll` is the
+RTX 3070 (laptop players stay on DLSS). Measured on the RTX 4080 SUPER with Photon at 2544x1401
+(`tools/dlss-testkit/results/rr2b/REPORT.md`): +0.8 ms over DLSS at Performance, +1.7 ms at Quality, +4.1 ms at full
+resolution. Any RTX card with NVIDIA driver 580 or newer; `nvngx_dlssd.dll` is the
 player's own, like `nvngx_dlss.dll` (**Find on this PC** copies it). Preset F (RR 4.5) is the one we use.
 
 ## The device it runs on
@@ -91,3 +94,9 @@ RR runs on a Direct3D 12 device of the Bridge's own (`DlssDevice12`, `cg_ngx12_*
 DLSS's Direct3D 11 one: NVIDIA's RR crashes on its first frame on Direct3D 11 with any inputs, and the same inputs run
 on Direct3D 12 (`tools/dlss-testkit/results/rr1b/REPORT.md`). OpenGL imports that device's textures and two of its
 fences, as the DX12 presenter does. Nothing changes for the pack: the guides, uniforms and values above stay the same.
+
+Direct3D 12 gives every user of a GPU the same device, so beside the DX12 presenter this is also Streamline's device,
+and NGX's state on it is shared with DLSS Frame Generation. Turning RR off therefore releases only RR's own feature
+and leaves NGX started on the device until the game ends: shutting NGX down there took frame generation's feature with
+it (`results/rr2b`: "feature not found" on every frame, then a hang). `rr-probe`'s `dll-d3d12-beside` checks it
+outside the game.

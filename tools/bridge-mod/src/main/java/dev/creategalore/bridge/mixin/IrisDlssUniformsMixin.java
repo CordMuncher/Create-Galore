@@ -18,7 +18,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  * cg_dlss_object_motion (0 while testing without the motion of things that move by themselves),
  * cg_dlss_residual_albedo (1 in the residual test view), taau_render_scale (the render size over the window's, per
  * axis, when the pack upscales) and cg_mip_bias (the textures' mip bias) for every program and for the pack's custom
- * uniforms (see {@link Dlss}). For DLSS Ray Reconstruction (dev builds): cg_rr_active (1 while the pack writes its
+ * uniforms (see {@link Dlss}). For DLSS Ray Reconstruction (experimental): cg_rr_active (1 while the pack writes its
  * guides), cg_rr_exposed (1 while it hands over its colour times its exposure), cg_rr_raw_reflections and
  * cg_rr_raw_shadows (1 while it leaves those noisy for Ray Reconstruction). Packs that do not use them never see them.
  */

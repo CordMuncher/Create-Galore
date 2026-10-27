@@ -60,7 +60,7 @@ import org.slf4j.LoggerFactory;
  * dlaaAutoExposure=true has DLSS meter the exposure itself with presets J and K too (L and M always do);
  * create_galore_bridge.dlss.markers=true names the DLAA work for GPU profilers ({@link Markers}).
  *
- * DLSS Ray Reconstruction (dev builds, dlaaRayReconstruction=true): one pass that denoises, anti-aliases and upscales,
+ * DLSS Ray Reconstruction (experimental, dlaaRayReconstruction=true): one pass that denoises, anti-aliases and upscales,
  * run in DLSS's place with a pack that hands over guide images (PackProfile's rrGuideImages: what each pixel's surface
  * is made of). While it runs the pack gets cg_rr_active 1: it writes the guides, leaves the effects named in dlaaRrRaw
  * noisy (cg_rr_raw_reflections, cg_rr_raw_shadows) for Ray Reconstruction to clean, and with cg_rr_exposed 1 hands over
@@ -122,7 +122,7 @@ public final class Dlss {
     private static volatile String[] dumpRequest;
     /** FSR 3 runs, not DLSS: picked, or Auto's choice where DLSS cannot run. */
     private static boolean fsr3;
-    /** Ray Reconstruction is asked for (dev builds). */
+    /** Ray Reconstruction is asked for (experimental). */
     private static boolean rayReconstructionWanted;
     private static int rrPreset = NgxLibrary.RR_PRESET_F;
     /** The pack hands Ray Reconstruction its colour times its exposure (else as it has it; for comparing). */
@@ -309,7 +309,7 @@ public final class Dlss {
                     renderScaleSetting < 1.0f ? "upscaling from " + Math.round(snappedScale() * 100.0f) + "% of the window" : "full resolution", jitter);
         } else {
             if (rayReconstructionWanted) {
-                LOG.info("DLAA: DLSS Ray Reconstruction asked for (dev build): preset {}, {} colour, left noisy for it: {}{}",
+                LOG.info("DLAA: DLSS Ray Reconstruction asked for (experimental): preset {}, {} colour, left noisy for it: {}{}",
                         rrPresetName(rrPreset), rrExposed ? "exposed" : "raw", rrRawReflections || rrRawShadows
                                 ? (rrRawReflections ? "rough reflections" : "") + (rrRawReflections && rrRawShadows ? ", " : "") + (rrRawShadows ? "soft shadows" : "")
                                 : "nothing", profile != null && !profile.hasRayReconstructionGuides() ? " (this pack hands over no guides: DLSS runs)" : "");
@@ -1166,7 +1166,7 @@ public final class Dlss {
                 ? "upscaling " + renderWidth + "x" + renderHeight + " to " + displayWidth + "x" + displayHeight
                 : "at full resolution";
         if (active && !fsr3 && rrRunning && featureIsRr) {
-            return "On: NVIDIA DLSS Ray Reconstruction (dev build, DirectX 12) " + size + " on " + adapterName + ", preset " + rrPresetName(rrPreset) + ".";
+            return "On: NVIDIA DLSS Ray Reconstruction (experimental, DirectX 12) " + size + " on " + adapterName + ", preset " + rrPresetName(rrPreset) + ".";
         }
         String rr = rayReconstructionWanted && rrUnavailable != null ? " Ray Reconstruction can't run: " + rrUnavailable + "."
                 : rayReconstructionWanted && profile != null && !profile.hasRayReconstructionGuides() ? " Ray Reconstruction: this pack hands over no guides." : "";

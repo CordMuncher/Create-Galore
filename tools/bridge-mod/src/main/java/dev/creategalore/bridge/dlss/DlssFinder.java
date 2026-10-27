@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
  * nvngx_dlss.dll.new and takes over at the next start ({@link #applyPending()}).
  *
  * The same press copies DLSS Frame Generation's nvngx_dlssg.dll from the dlssg folder beside it the same way, and
- * DLSS Ray Reconstruction's nvngx_dlssd.dll from the dlssd folder (dev builds use it). The game
+ * DLSS Ray Reconstruction's nvngx_dlssd.dll from the dlssd folder (for Ray Reconstruction, experimental). The game
  * never reads NVIDIA's folder by itself: NVIDIA updates those files often, and the copies here change only when the
  * player asks (or puts their own in the DLSS folder).
  */

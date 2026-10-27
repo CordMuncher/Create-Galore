@@ -46,6 +46,7 @@ struct Variant {
     bool evenSize;        // 1280x720 to 2560x1440 in place of the game's odd 1272x701 to 2544x1401
     bool level111;        // a DirectX 11 device at feature level 11_1 (the game's is 11_0)
     bool viaDll;          // through cg_ngx.dll's Direct3D 12 path, as the game runs it
+    bool beside;          // with another NGX user on the same device (frame generation's Streamline in the game)
 };
 
 static const Variant VARIANTS[] = {
@@ -60,6 +61,7 @@ static const Variant VARIANTS[] = {
     {"d3d12-game", "Ray Reconstruction on DirectX 12 with the game's inputs", true, false, true, false, false, false, false},
     {"dll-d3d12-dlss", "DLSS through cg_ngx.dll on DirectX 12, as the game runs it", true, true, false, false, false, false, false, true},
     {"dll-d3d12-game", "Ray Reconstruction through cg_ngx.dll on DirectX 12, as the game runs it", true, false, true, false, false, false, false, true},
+    {"dll-d3d12-beside", "the same, closed and opened again 3 times beside another NGX user's DLSS on the same device", true, false, true, false, false, false, false, true, true},
 };
 
 // ---------------------------------------------------------------------------------------------------------------
@@ -780,7 +782,25 @@ static int runViaDll(const Variant& v, const wchar_t* dllFolder, const wchar_t* 
         return fail("making the stand-in queue", 0);
     }
     run.event = CreateEventW(nullptr, FALSE, FALSE, nullptr);
-    ID3D12Fence* openglDone = ngx12_fence(0);
+
+    // beside: this program also stands in for Streamline, NGX's other user in the game. It starts NGX on the same device
+    // through its own copy of NVIDIA's SDK library, which finds the same NGX core in the driver, as Streamline's does,
+    // and runs plain DLSS there (DLSS Frame Generation in the game). That feature must keep running while cg_ngx.dll's
+    // closes and opens again.
+    NVSDK_NGX_Parameter* otherParams = nullptr;
+    if (v.beside) {
+        device->AddRef(); // the other user's own reference, as the presenter holds one
+        step("the other NGX user: init");
+        const wchar_t* paths[] = {dllFolder};
+        NVSDK_NGX_FeatureCommonInfo info;
+        ngxInfo(info, paths);
+        NVSDK_NGX_Result other = NVSDK_NGX_D3D12_Init_with_ProjectID(PROJECT_ID, NVSDK_NGX_ENGINE_TYPE_CUSTOM, ENGINE_VERSION,
+                                                                     outFolder, device, &info, NVSDK_NGX_Version_API);
+        if (NVSDK_NGX_FAILED(other)) return fail("the other NGX user's NVSDK_NGX_D3D12_Init_with_ProjectID", other);
+        other = NVSDK_NGX_D3D12_GetCapabilityParameters(&otherParams);
+        if (NVSDK_NGX_FAILED(other)) return fail("the other NGX user's NVSDK_NGX_D3D12_GetCapabilityParameters", other);
+        if (!available(otherParams, true)) return fail("DLSS isn't available to the other NGX user", 0);
+    }
 
     step("NGX init");
     int result = ngx_init12(PROJECT_ID, ENGINE_VERSION, outFolder, dllFolder, 1);
@@ -833,86 +853,164 @@ static int runViaDll(const Variant& v, const wchar_t* dllFolder, const wchar_t* 
     }
     if (!run.submit()) return fail("filling the textures", 0);
 
-    const int flags = NVSDK_NGX_DLSS_Feature_Flags_IsHDR | NVSDK_NGX_DLSS_Feature_Flags_MVLowRes
-                      | NVSDK_NGX_DLSS_Feature_Flags_DepthInverted;
-    if (v.superResolution) {
-        step("create DLSS, preset K");
-        result = ngx_create(nullptr, in.renderWidth, in.renderHeight, in.outWidth, in.outHeight,
-                            NVSDK_NGX_PerfQuality_Value_MaxPerf, flags, 11);
-    } else {
-        step("create Ray Reconstruction, preset F");
-        result = ngx_create_rr(nullptr, in.renderWidth, in.renderHeight, in.outWidth, in.outHeight,
-                               NVSDK_NGX_PerfQuality_Value_MaxPerf, flags, (int) PRESET_F, 1, 0);
-    }
-    dllLog();
-    if (NVSDK_NGX_FAILED(result)) {
-        printf("info: %s\n", ngx12_error());
-        return fail("creating the feature", result);
+    // The other user's DLSS, on this program's queue, from the same textures (COMMON between runs, as everywhere here).
+    NVSDK_NGX_Handle* otherFeature = nullptr;
+    auto otherCreate = [&]() -> NVSDK_NGX_Result {
+        NVSDK_NGX_DLSS_Create_Params create = srCreateParams(in);
+        NVSDK_NGX_Result r = NGX_D3D12_CREATE_DLSS_EXT(run.list, 1, 1, &otherFeature, otherParams, &create);
+        return run.submit() || NVSDK_NGX_FAILED(r) ? r : NVSDK_NGX_Result_Fail;
+    };
+    auto otherEvaluate = [&](bool reset) -> NVSDK_NGX_Result {
+        const D3D12_RESOURCE_STATES read = D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE | D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
+        ID3D12Resource* inputs[] = {textures[0], textures[2], textures[3]};
+        for (ID3D12Resource* t : inputs) barrier(run.list, t, D3D12_RESOURCE_STATE_COMMON, read);
+        barrier(run.list, textures[1], D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
+        NVSDK_NGX_D3D12_DLSS_Eval_Params eval = {};
+        eval.Feature.pInColor = textures[0];
+        eval.Feature.pInOutput = textures[1];
+        eval.pInDepth = textures[2];
+        eval.pInMotionVectors = textures[3];
+        eval.InMVScaleX = 1.0f;
+        eval.InMVScaleY = 1.0f;
+        eval.InReset = reset;
+        eval.InRenderSubrectDimensions.Width = (unsigned int) in.renderWidth;
+        eval.InRenderSubrectDimensions.Height = (unsigned int) in.renderHeight;
+        eval.InFrameTimeDeltaInMsec = 16.6f;
+        NVSDK_NGX_Result r = NGX_D3D12_EVALUATE_DLSS_EXT(run.list, otherFeature, otherParams, &eval);
+        for (ID3D12Resource* t : inputs) barrier(run.list, t, read, D3D12_RESOURCE_STATE_COMMON);
+        barrier(run.list, textures[1], D3D12_RESOURCE_STATE_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_COMMON);
+        return run.submit() || NVSDK_NGX_FAILED(r) ? r : NVSDK_NGX_Result_Fail;
+    };
+    if (v.beside) {
+        step("the other NGX user: create DLSS and evaluate");
+        NVSDK_NGX_Result other = otherCreate();
+        if (NVSDK_NGX_FAILED(other)) return fail("the other NGX user's create", other);
+        other = otherEvaluate(true);
+        if (NVSDK_NGX_FAILED(other)) return fail("the other NGX user's evaluate", other);
     }
 
-    for (int frame = 0; frame < 3; frame++) {
-        step("evaluate frame %d", frame + 1);
-        // OpenGL's copies are done: "OpenGL done" reaches this frame's value (on the GPU, after the fill).
-        UINT64 glValue = (UINT64) frame + 1;
-        run.queue->Signal(openglDone, glValue);
-        float floats[37] = {};
-        floats[0] = 0.25f * (frame % 2 ? 1 : -1);
-        floats[1] = 0.25f * (frame / 2 ? 1 : -1);
-        floats[2] = 1.0f;
-        floats[3] = 1.0f;
-        floats[4] = 16.6f;
-        UINT64 dxValue = 0;
+    const int flags = NVSDK_NGX_DLSS_Feature_Flags_IsHDR | NVSDK_NGX_DLSS_Feature_Flags_MVLowRes
+                      | NVSDK_NGX_DLSS_Feature_Flags_DepthInverted;
+    const int rounds = v.beside ? 3 : 1;
+    for (int round = 1; round <= rounds; round++) {
+        if (round > 1) {
+            step("round %d: cg_ngx.dll opens again", round);
+            if (ngx12_open(nullptr) != device) return fail("cg_ngx12_open gave another device", 0);
+            result = ngx_init12(PROJECT_ID, ENGINE_VERSION, outFolder, dllFolder, 1);
+            dllLog();
+            if (NVSDK_NGX_FAILED(result)) return fail("cg_ngx_init12 again", result);
+        }
+        ID3D12Fence* openglDone = ngx12_fence(0);
         if (v.superResolution) {
-            floats[5] = 1.0f; // pre-exposure
-            ID3D12Resource* srResources[] = {textures[0], textures[1], textures[2], textures[3], textures[8]};
-            result = ngx12_evaluate(srResources, floats, frame == 0, in.renderWidth, in.renderHeight, glValue, &dxValue);
+            step("create DLSS, preset K");
+            result = ngx_create(nullptr, in.renderWidth, in.renderHeight, in.outWidth, in.outHeight,
+                                NVSDK_NGX_PerfQuality_Value_MaxPerf, flags, 11);
         } else {
-            memcpy(floats + 5, in.worldToView, sizeof(in.worldToView));
-            memcpy(floats + 21, in.viewToClip, sizeof(in.viewToClip));
-            result = ngx12_evaluate_rr(textures, floats, frame == 0, in.renderWidth, in.renderHeight, glValue, &dxValue);
+            step("create Ray Reconstruction, preset F");
+            result = ngx_create_rr(nullptr, in.renderWidth, in.renderHeight, in.outWidth, in.outHeight,
+                                   NVSDK_NGX_PerfQuality_Value_MaxPerf, flags, (int) PRESET_F, 1, 0);
         }
         dllLog();
         if (NVSDK_NGX_FAILED(result)) {
             printf("info: %s\n", ngx12_error());
-            return fail("evaluating", result);
+            return fail("creating the feature", result);
         }
-        if (!dxValue) return fail("the evaluate queued nothing", 0);
-        // OpenGL waits for "DirectX done" before it reads the output.
-        run.queue->Wait(ngx12_fence(1), dxValue);
-    }
-    if (!ngx12_wait_idle(20000)) return fail("waiting for the DLL's queue", 0);
 
-    step("read back");
-    D3D12_RESOURCE_DESC desc = textures[1]->GetDesc();
-    D3D12_PLACED_SUBRESOURCE_FOOTPRINT footprint;
-    UINT64 total = 0;
-    device->GetCopyableFootprints(&desc, 0, 1, 0, &footprint, nullptr, nullptr, &total);
-    ID3D12Resource* readback = buffer(device, total, D3D12_HEAP_TYPE_READBACK);
-    if (!readback) return fail("making the read-back buffer", 0);
-    barrier(run.list, textures[1], D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_COPY_SOURCE);
-    D3D12_TEXTURE_COPY_LOCATION dst = {readback, D3D12_TEXTURE_COPY_TYPE_PLACED_FOOTPRINT};
-    dst.PlacedFootprint = footprint;
-    D3D12_TEXTURE_COPY_LOCATION src = {textures[1], D3D12_TEXTURE_COPY_TYPE_SUBRESOURCE_INDEX};
-    src.SubresourceIndex = 0;
-    run.list->CopyTextureRegion(&dst, 0, 0, 0, &src, nullptr);
-    barrier(run.list, textures[1], D3D12_RESOURCE_STATE_COPY_SOURCE, D3D12_RESOURCE_STATE_COMMON);
-    if (!run.submit()) return fail("copying the output back", 0);
-    unsigned char* mapped = nullptr;
-    D3D12_RANGE range = {0, (SIZE_T) total};
-    if (FAILED(readback->Map(0, &range, (void**) &mapped))) return fail("reading the output back", 0);
-    describeOutput(mapped + footprint.Offset, in.outWidth, in.outHeight, footprint.Footprint.RowPitch);
-    readback->Unmap(0, nullptr);
+        for (int frame = 0; frame < 3; frame++) {
+            step("evaluate frame %d", frame + 1);
+            // OpenGL's copies are done: "OpenGL done" reaches this frame's value (on the GPU, after the fill).
+            UINT64 glValue = (UINT64) frame + 1;
+            run.queue->Signal(openglDone, glValue);
+            float floats[37] = {};
+            floats[0] = 0.25f * (frame % 2 ? 1 : -1);
+            floats[1] = 0.25f * (frame / 2 ? 1 : -1);
+            floats[2] = 1.0f;
+            floats[3] = 1.0f;
+            floats[4] = 16.6f;
+            UINT64 dxValue = 0;
+            if (v.superResolution) {
+                floats[5] = 1.0f; // pre-exposure
+                ID3D12Resource* srResources[] = {textures[0], textures[1], textures[2], textures[3], textures[8]};
+                result = ngx12_evaluate(srResources, floats, frame == 0, in.renderWidth, in.renderHeight, glValue, &dxValue);
+            } else {
+                memcpy(floats + 5, in.worldToView, sizeof(in.worldToView));
+                memcpy(floats + 21, in.viewToClip, sizeof(in.viewToClip));
+                result = ngx12_evaluate_rr(textures, floats, frame == 0, in.renderWidth, in.renderHeight, glValue, &dxValue);
+            }
+            dllLog();
+            if (NVSDK_NGX_FAILED(result)) {
+                printf("info: %s\n", ngx12_error());
+                return fail("evaluating", result);
+            }
+            if (!dxValue) return fail("the evaluate queued nothing", 0);
+            // OpenGL waits for "DirectX done" before it reads the output.
+            run.queue->Wait(ngx12_fence(1), dxValue);
+        }
+        if (!ngx12_wait_idle(20000)) return fail("waiting for the DLL's queue", 0);
+
+        step("read back");
+        D3D12_RESOURCE_DESC desc = textures[1]->GetDesc();
+        D3D12_PLACED_SUBRESOURCE_FOOTPRINT footprint;
+        UINT64 total = 0;
+        device->GetCopyableFootprints(&desc, 0, 1, 0, &footprint, nullptr, nullptr, &total);
+        ID3D12Resource* readback = buffer(device, total, D3D12_HEAP_TYPE_READBACK);
+        if (!readback) return fail("making the read-back buffer", 0);
+        barrier(run.list, textures[1], D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_COPY_SOURCE);
+        D3D12_TEXTURE_COPY_LOCATION dst = {readback, D3D12_TEXTURE_COPY_TYPE_PLACED_FOOTPRINT};
+        dst.PlacedFootprint = footprint;
+        D3D12_TEXTURE_COPY_LOCATION src = {textures[1], D3D12_TEXTURE_COPY_TYPE_SUBRESOURCE_INDEX};
+        src.SubresourceIndex = 0;
+        run.list->CopyTextureRegion(&dst, 0, 0, 0, &src, nullptr);
+        barrier(run.list, textures[1], D3D12_RESOURCE_STATE_COPY_SOURCE, D3D12_RESOURCE_STATE_COMMON);
+        if (!run.submit()) return fail("copying the output back", 0);
+        unsigned char* mapped = nullptr;
+        D3D12_RANGE range = {0, (SIZE_T) total};
+        if (FAILED(readback->Map(0, &range, (void**) &mapped))) return fail("reading the output back", 0);
+        describeOutput(mapped + footprint.Offset, in.outWidth, in.outHeight, footprint.Footprint.RowPitch);
+        readback->Unmap(0, nullptr);
+        readback->Release();
+
+        if (v.beside) {
+            // Ray Reconstruction off in the game: the Bridge releases, shuts down and closes; the other user goes on.
+            step("round %d: cg_ngx.dll closes", round);
+            ngx_release();
+            ngx_shutdown();
+            dllLog();
+            ngx12_close();
+            step("round %d: the other NGX user evaluates its DLSS", round);
+            NVSDK_NGX_Result other = otherEvaluate(false);
+            if (NVSDK_NGX_FAILED(other)) return fail("the other NGX user's evaluate after cg_ngx.dll closed", other);
+            step("round %d: the other NGX user makes its DLSS again", round);
+            NVSDK_NGX_D3D12_ReleaseFeature(otherFeature);
+            otherFeature = nullptr;
+            other = otherCreate();
+            if (NVSDK_NGX_FAILED(other)) return fail("the other NGX user's create after cg_ngx.dll closed", other);
+            other = otherEvaluate(true);
+            if (NVSDK_NGX_FAILED(other)) return fail("the other NGX user's evaluate of its new DLSS", other);
+            printf("info: round %d: the other NGX user's DLSS ran on after cg_ngx.dll closed, and was made again\n", round);
+        }
+    }
 
     step("release");
-    ngx_release();
-    ngx_shutdown();
-    dllLog();
+    if (v.beside) {
+        // The other user ends last, as Streamline does when the game closes.
+        NVSDK_NGX_D3D12_ReleaseFeature(otherFeature);
+        NVSDK_NGX_D3D12_Shutdown1(device);
+    } else {
+        ngx_release();
+        ngx_shutdown();
+        dllLog();
+    }
     for (int i = 0; i < 9; i++) ngx12_release_texture(textures[i], handles[i]);
     run.list->Release();
     run.allocator->Release();
     run.queue->Release();
     run.fence->Release();
-    ngx12_close();
+    if (v.beside) {
+        device->Release();
+    } else {
+        ngx12_close();
+    }
     return 0;
 }
 

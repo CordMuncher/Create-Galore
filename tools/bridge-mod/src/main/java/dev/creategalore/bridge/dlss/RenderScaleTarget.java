@@ -36,6 +36,12 @@ public record RenderScaleTarget(String pack, boolean inUse, String upscaling, St
         } catch (IOException | RuntimeException e) {
             // the Photon copy's, below
         }
+        return photon();
+    }
+
+    /** The DLAA Photon copy's, whether it is the pack in use or not. */
+    public static RenderScaleTarget photon() {
+        String name = Iris.getCurrentPackName();
         boolean photonInUse = PhotonPatcher.PATCHED_NAME.equals(name);
         try {
             PackProfile photon = PackProfile.of(PhotonPatcher.PATCHED_NAME);

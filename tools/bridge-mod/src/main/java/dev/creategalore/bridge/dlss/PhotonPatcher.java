@@ -57,7 +57,7 @@ import org.slf4j.LoggerFactory;
  *   axis, offered down to 0.25) so the render size is exact, and the textures' mip bias with it (cg_mip_bias).
  *   Photon's own TAAU renders the same size, so it can be compared at the same internal resolution.
  *
- * For DLSS Ray Reconstruction (dev builds, see {@link Dlss}), while cg_rr_active is 1 the patched pack also:
+ * For DLSS Ray Reconstruction (experimental, see {@link Dlss}), while cg_rr_active is 1 the patched pack also:
  * - writes Ray Reconstruction's guides ({@link #RR_INCLUDE}): deferred4 for the solid surfaces and the sky, the water
  *   program for translucent blocks in front of them (their normal, roughness, reflectance and reflection distance; the
  *   diffuse colour stays the one seen through them);
@@ -71,7 +71,7 @@ import org.slf4j.LoggerFactory;
 public final class PhotonPatcher {
     private static final Logger LOG = LoggerFactory.getLogger("create_galore_bridge");
     /** Bumped when the patch changes, so existing copies are made again. */
-    private static final int PATCH_VERSION = 13;
+    private static final int PATCH_VERSION = 14;
     private static final String BASE_ZIP = "photon_v1.3a.zip";
     /** Colorwheel Patcher's copy of {@link #BASE_ZIP}; an outdated one gets a prefix and no longer matches. */
     private static final Pattern COLORWHEEL_ZIP = Pattern.compile("photon_v1\\.3a \\+ Clrwl_(\\d+)\\.(\\d+)\\.(\\d+)\\.zip");
@@ -218,7 +218,7 @@ public final class PhotonPatcher {
                                 + "# hands them over (see cg_reactive.glsl)\n"
                                 + "image.cg_reactive_img = none red_integer r32ui unsigned_int true true 1.0 1.0\n"
                                 + "image.cg_mask_img = none rg rg16f half_float false true 1.0 1.0\n"
-                                + "# Create Galore Ray Reconstruction (dev builds): its guides, written by deferred4 and the water program (see cg_rr.glsl)\n"
+                                + "# Create Galore Ray Reconstruction (experimental): its guides, written by deferred4 and the water program (see cg_rr.glsl)\n"
                                 + "image.cg_rr_albedo_img = none rgba rgba8 unsigned_byte false true 1.0 1.0\n"
                                 + "image.cg_rr_specular_img = none rgba rgba8 unsigned_byte false true 1.0 1.0\n"
                                 + "image.cg_rr_normal_img = none rgba rgba16f half_float false true 1.0 1.0\n"
@@ -789,7 +789,7 @@ public final class PhotonPatcher {
      */
     private static final String RR_GLOBAL = """
 
-            // Create Galore Ray Reconstruction (dev builds, see PhotonPatcher in the Bridge): 1 while the pack writes its
+            // Create Galore Ray Reconstruction (experimental, see PhotonPatcher in the Bridge): 1 while the pack writes its
             // guides, and while it leaves rough reflections and soft shadows noisy for it to clean up.
             uniform float cg_rr_active;
             uniform float cg_rr_raw_reflections;

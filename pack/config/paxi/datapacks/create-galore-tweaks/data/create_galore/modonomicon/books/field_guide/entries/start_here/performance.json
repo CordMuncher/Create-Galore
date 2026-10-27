@@ -88,6 +88,21 @@
     {
       "type": "modonomicon:text",
       "title": "",
+      "text": "**Ray Reconstruction** (experimental, RTX cards) is on the Upscaling tab too. NVIDIA's DLSS Ray Reconstruction takes DLSS's place and also cleans up Photon's lighting: water reflects like glass, shadows stay sharp and still, and torchlight on metal stays crisp."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "It costs frames: on an RTX 4080 SUPER, Ray Reconstruction at Performance runs nearly as fast as DLSS at Quality. It needs NVIDIA's nvngx\\_dlssd.dll (**Find on this PC** copies it) and an NVIDIA driver 580 or newer."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Turning it on sets Photon to **Ultra** the first time; after that you get the changes you made in Photon's menu while it was on. Turning it off brings back your own Photon settings. A message says so each time."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
       "text": "Shaders are optional and can cut frame rate a lot on weaker machines. First world creation is also slow because of how many mods add world generation. This settles after the first load.\\\n\\\nName tags are drawn after the shader, so they stay readable with every pack.\\\n\\\n**Fullscreen** is F11. Screenshot key: F2."
     },
     {

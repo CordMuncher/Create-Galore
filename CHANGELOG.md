@@ -5,6 +5,15 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.6.3
+
+### Added
+- **NVIDIA DLSS Ray Reconstruction with Photon (experimental).** On any NVIDIA RTX card, the Upscaling tab's new **Ray Reconstruction** setting runs NVIDIA's DLSS Ray Reconstruction in DLSS's place with **Photon v1.3a + DLAA**. It denoises, anti-aliases and upscales in one pass, so it also cleans up Photon's reflections and soft shadows: water reflects like glass instead of grainy dots, shadows stay sharp and still, and a torch's reflection on metal stays crisp. Distant blocks and leaves are marginally softer than with DLSS. On an RTX 4080 SUPER at 1440p it costs 0.8 ms a frame over DLSS at Performance and 1.7 ms at Quality, so Ray Reconstruction at Performance runs at about 93% of DLSS Quality's frame rate. It runs beside DLSS frame generation too. **RR preset** picks its model: F (Ray Reconstruction 4.5) unless you pick another to compare.
+- **Photon's own settings for Ray Reconstruction.** Turning Ray Reconstruction on sets Photon to its Ultra profile the first time, and to the changes you made in Photon's menu under it after that. Turning it off brings back your own Photon settings. A message says so each time; the render resolution stays as you set it.
+- **Find on this PC copies nvngx_dlssd.dll too**, the NVIDIA DLL Ray Reconstruction needs, from where the NVIDIA app keeps it. It also needs NVIDIA driver 580 or newer.
+- Field Guide (Performance and Shaders): Ray Reconstruction.
+- Create Galore Bridge 1.126.0.
+
 ## 0.6.1
 
 ### Added

@@ -54,7 +54,7 @@ public final class DlaaScreen extends Screen {
     private static final List<String> ENGINES = List.of("auto", "dlss", "fsr3", "off");
     /** The presets offered by name; "other" takes a typed letter. */
     private static final List<String> PRESETS = List.of("default", "K", "J", "L", "M", "other");
-    /** Ray Reconstruction's presets (dev builds): F (RR 4.5) is the one to use, the others for comparing. */
+    /** Ray Reconstruction's presets (experimental): F (RR 4.5) is the one to use, the others for comparing. */
     private static final List<String> RR_PRESETS = List.of("F", "E", "D", "default");
     /** The standard render resolutions (the pack's render scale option for each), then custom (the slider). */
     private static final List<String> SCALES = List.of("native", "quality", "balanced", "performance", "ultra", "custom");
@@ -66,7 +66,7 @@ public final class DlaaScreen extends Screen {
     private static final List<String> FPS_MODES = List.of(FpsOverlay.OFF, FpsOverlay.BASIC, FpsOverlay.DETAILED);
     private static final List<String> CORNERS = List.of(FpsOverlay.TOP_LEFT, FpsOverlay.TOP_RIGHT, FpsOverlay.BOTTOM_LEFT, FpsOverlay.BOTTOM_RIGHT);
     private static final int WIDTH = 300;
-    /** The Ray Reconstruction row (dev builds), under the render resolution. */
+    /** The Ray Reconstruction row (experimental), under the render resolution. */
     private static final int RR_ROW = 132;
     private static final net.minecraft.client.gui.components.toasts.SystemToast.SystemToastId RESTART =
             new net.minecraft.client.gui.components.toasts.SystemToast.SystemToastId(10000L);
@@ -218,12 +218,14 @@ public final class DlaaScreen extends Screen {
         slider = new ScaleSlider(left + half + 4, 108, half);
         slider.visible = scale.equals("custom");
         add(slider);
-        // Dev builds: DLSS Ray Reconstruction in place of DLSS.
+        // Experimental: DLSS Ray Reconstruction in place of DLSS.
         add(CycleButton.onOffBuilder(rayReconstruction)
                 .withTooltip(value -> net.minecraft.client.gui.components.Tooltip.create(Component.literal(
-                        "Dev build, for testing: NVIDIA DLSS Ray Reconstruction in place of DLSS, with " + PhotonPatcher.PATCHED_NAME
-                                + ", which then leaves its rough reflections and soft shadows noisy for it to clean up. Any RTX"
-                                + " card, NVIDIA driver 580 or newer, and nvngx_dlssd.dll in the DLSS folder.")))
+                        "Experimental: NVIDIA DLSS Ray Reconstruction in place of DLSS, with " + PhotonPatcher.PATCHED_NAME
+                                + ". It cleans up Photon's reflections and soft shadows, which Photon then leaves noisy for it."
+                                + " Turning it on sets Photon to Ultra the first time, and to your own changes after that; turning"
+                                + " it off brings back the Photon settings you had. Any RTX card, NVIDIA driver 580 or newer, and"
+                                + " nvngx_dlssd.dll in the DLSS folder (Find on this PC copies it).")))
                 .create(left, RR_ROW, half, 20, Component.literal("Ray Reconstruction"), (button, value) -> {
                     rayReconstruction = value;
                     lockForRayReconstruction();
@@ -522,6 +524,9 @@ public final class DlaaScreen extends Screen {
         Map<String, String> values = values();
         Map<String, String> pack = packOptions();
         boolean packChanged = !pack.equals(initialPackOptions);
+        if (!values.get(DisplaySettings.DLAA_RAY_RECONSTRUCTION).equals(initial.get(DisplaySettings.DLAA_RAY_RECONSTRUCTION))) {
+            PhotonRrSettings.switched(rayReconstruction); // before the render resolution goes into Photon's options
+        }
         if (packChanged) {
             target.write(pack);
         }

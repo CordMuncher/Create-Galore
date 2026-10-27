@@ -55,6 +55,10 @@ import org.slf4j.LoggerFactory;
  * semaphores (EXT_semaphore_win32), as the DX12 presenter does. {@link #unlock} signals "OpenGL done" after OpenGL's
  * copies, cg_ngx's queue waits for it on the GPU, runs NGX and signals "DirectX done" ({@link #queued}), and {@link #lock}
  * has OpenGL wait for that on the GPU before it reads the output or writes the inputs again.
+ *
+ * <p>Direct3D 12 gives every user of a GPU the same device, so with the DX12 presenter this is Streamline's device too,
+ * and NGX's state on it is shared with DLSS Frame Generation. Closing therefore leaves NGX started on the device until
+ * the game ends (cg_ngx keeps it): shutting NGX down took frame generation's feature with it (Ray Reconstruction 2b).
  */
 final class DlssDevice12 implements NgxDevice {
     private static final Logger LOG = LoggerFactory.getLogger("create_galore_bridge");
@@ -281,6 +285,6 @@ final class DlssDevice12 implements NgxDevice {
         glDeleteSemaphoresEXT(openglDone);
         glDeleteSemaphoresEXT(directxDone);
         Ffi.call(":V", ngx.close12);
-        LOG.info("DLAA: closed its DirectX 12 device");
+        LOG.info("DLAA: closed its DirectX 12 queue; NGX stays started on the device, which frame generation may share");
     }
 }
