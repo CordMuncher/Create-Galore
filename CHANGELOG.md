@@ -5,6 +5,14 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.6.9
+
+### Fixed
+- **Half-built Create items are no longer food.** Delightful Creators let you eat anything in the middle of a sequenced assembly, so an Incomplete Precision Mechanism, a half-laid track, a half-made circuit, shell or rocket part, even an iron ingot or a Cataclysm weapon partway through an upgrade showed hunger and saturation in its tooltip and could be eaten (238 assemblies in the pack). Now a half-built item is food only when the assembly ends in food: half-made sandwiches, pies, cookies and the like can still be snacked on, at 3 hunger as before.
+
+### Added
+- Create Galore Bridge 1.132.0.
+
 ## 0.6.8
 
 ### Added
