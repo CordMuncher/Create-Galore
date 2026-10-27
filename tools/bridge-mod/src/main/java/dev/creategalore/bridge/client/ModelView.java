@@ -895,8 +895,12 @@ final class ModelView {
                     for (int x = 0; x < sx; x++) {
                         int i = (y * sz + z) * sx + x;
                         BlockState s = cells[i];
-                        // Entity-drawn blocks (chests and the like) already draw through their item renderer.
-                        if (s == null || s.getRenderShape() != RenderShape.MODEL || !(s.getBlock() instanceof EntityBlock eb)) continue;
+                        // Entity-drawn blocks (chests and the like) already draw through their item renderer, where their
+                        // item is drawn by it too. A belt's item is the Belt Connector, an ordinary item, and the belt has no
+                        // block model, so only its block entity renderer draws it.
+                        if (s == null || !(s.getBlock() instanceof EntityBlock eb) || s.getRenderShape() != RenderShape.MODEL
+                                && !(s.getRenderShape() == RenderShape.ENTITYBLOCK_ANIMATED && !itemDrawsIt(mc, s)))
+                            continue;
                         try {
                             BlockEntity be = eb.newBlockEntity(new BlockPos(x, y, z), s);
                             if (be == null || mc.getBlockEntityRenderDispatcher().getRenderer(be) == null) continue;
@@ -909,6 +913,12 @@ final class ModelView {
                         }
                     }
             return new Made(world, any ? out : null);
+        }
+
+        /** Whether the block's item is drawn by the entity renderer, which then draws the block for the view as well. */
+        private static boolean itemDrawsIt(Minecraft mc, BlockState s) {
+            ItemStack item = new ItemStack(s.getBlock());
+            return !item.isEmpty() && mc.getItemRenderer().getModel(item, null, null, 0).isCustomRenderer();
         }
     }
 
