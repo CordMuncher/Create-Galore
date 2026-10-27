@@ -43,7 +43,7 @@ import org.slf4j.LoggerFactory;
  * inside wglDXUnregisterObjectNV (RTX 4080 Super, driver 621.01), which dozens of restarts on a device of DLAA's own
  * never did.
  */
-final class DlssDevice implements AutoCloseable {
+final class DlssDevice implements NgxDevice {
     private static final Logger LOG = LoggerFactory.getLogger("create_galore_bridge");
 
     // dxgi.h, d3d11.h, d3dcommon.h
@@ -168,8 +168,29 @@ final class DlssDevice implements AutoCloseable {
         }
     }
 
+    @Override
+    public Shared texture(int width, int height, int glFormat, int dxgiFormat, boolean output) {
+        return output ? new SharedTexture(width, height, dxgiFormat, D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS, ACCESS_READ_ONLY)
+                : new SharedTexture(width, height, dxgiFormat, D3D11_BIND_SHADER_RESOURCE, ACCESS_WRITE_DISCARD);
+    }
+
+    @Override
+    public String adapterName() {
+        return adapterName;
+    }
+
+    @Override
+    public long device() {
+        return device;
+    }
+
+    @Override
+    public long context() {
+        return context;
+    }
+
     /** A texture both APIs see. OpenGL owns it while locked (see {@link #lock}), D3D11 while unlocked. */
-    final class SharedTexture implements AutoCloseable {
+    final class SharedTexture implements Shared {
         final int glTexture;
         final long d3dTexture;
         final int width;
@@ -207,6 +228,16 @@ final class DlssDevice implements AutoCloseable {
         }
 
         @Override
+        public int glTexture() {
+            return glTexture;
+        }
+
+        @Override
+        public long resource() {
+            return d3dTexture;
+        }
+
+        @Override
         public void close() {
             wglDXUnregisterObjectNV(interopDevice, handle);
             Com.release(d3dTexture);
@@ -215,7 +246,8 @@ final class DlssDevice implements AutoCloseable {
     }
 
     /** Hands the textures to OpenGL, all at once. */
-    void lock(List<SharedTexture> textures) {
+    @Override
+    public void lock(List<Shared> textures) {
         try (MemoryStack stack = stackPush()) {
             if (!wglDXLockObjectsNV(interopDevice, handles(stack, textures))) {
                 WindowsUtil.windowsThrowException("wglDXLockObjectsNV failed");
@@ -224,7 +256,8 @@ final class DlssDevice implements AutoCloseable {
     }
 
     /** Hands the textures to D3D11, all at once; OpenGL's writes to them are finished first. */
-    void unlock(List<SharedTexture> textures) {
+    @Override
+    public void unlock(List<Shared> textures) {
         try (MemoryStack stack = stackPush()) {
             if (!wglDXUnlockObjectsNV(interopDevice, handles(stack, textures))) {
                 WindowsUtil.windowsThrowException("wglDXUnlockObjectsNV failed");
@@ -232,10 +265,10 @@ final class DlssDevice implements AutoCloseable {
         }
     }
 
-    private static PointerBuffer handles(MemoryStack stack, List<SharedTexture> textures) {
+    private static PointerBuffer handles(MemoryStack stack, List<Shared> textures) {
         PointerBuffer handles = stack.mallocPointer(textures.size());
         for (int i = 0; i < textures.size(); i++) {
-            handles.put(i, textures.get(i).handle);
+            handles.put(i, ((SharedTexture) textures.get(i)).handle);
         }
         return handles;
     }
@@ -244,7 +277,8 @@ final class DlssDevice implements AutoCloseable {
      * Waits (at most {@link #IDLE_TIMEOUT_NANOS}) until the GPU has finished what this device was given so far, so a
      * texture that DLSS read or wrote is no longer in use when it is freed.
      */
-    void waitIdle() {
+    @Override
+    public void waitIdle() {
         try (MemoryStack stack = stackPush()) {
             long desc = memAddress(stack.calloc(8, 8)); // D3D11_QUERY_DESC: D3D11_QUERY_EVENT (0), no flags
             long out = stack.nmalloc(8, 8);

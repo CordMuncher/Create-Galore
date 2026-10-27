@@ -2,14 +2,16 @@
 // Bridge's Ray Reconstruction pilot (Ray Reconstruction 1: a null read inside NVIDIA's code on the first evaluate,
 // with the dev and the release nvngx_dlssd.dll alike, nothing in NGX's log before it).
 //
-// Usage: rr-probe.exe <folder with nvngx_dlssd.dll and nvngx_dlss.dll> <output folder>
+// Usage: rr-probe.exe <folder with nvngx_dlssd.dll and nvngx_dlss.dll (and cg_ngx.dll)> <output folder>
 // It runs every variant below in a process of its own (a crash ends only that one), each the same way: a device on
 // the NVIDIA card with the most memory, NGX started with the game's project id, the inputs the game hands over (in its
 // formats and sizes: 1272x701 to 2544x1401, Performance), the feature made with preset F, three frames evaluated, the
 // output read back. Each variant's own lines (and NGX's log) go to <output>\<variant>.txt; the summary is printed and
 // written to <output>\summary.txt. One variant changes one thing against d3d11-game, so the first one that stops
 // crashing names the cause; d3d12-game tells whether Ray Reconstruction runs on DirectX 12, where the game's own
-// presenter already has a device.
+// presenter already has a device. The dll- variants run the Bridge's own cg_ngx.dll (from the same folder) on Direct3D
+// 12 the way the game does, with this program in OpenGL's place: the textures and fences the game shares, the queue
+// waiting for "OpenGL done" and signalling "DirectX done".
 //
 // Built by build-rr-probe.sh against the DLSS SDK, like cg_ngx.dll. Only for the PC test; never part of the pack.
 
@@ -43,6 +45,7 @@ struct Variant {
     bool ownParameters;   // NGX parameters allocated for the feature, not the capability parameters DLSS shares
     bool evenSize;        // 1280x720 to 2560x1440 in place of the game's odd 1272x701 to 2544x1401
     bool level111;        // a DirectX 11 device at feature level 11_1 (the game's is 11_0)
+    bool viaDll;          // through cg_ngx.dll's Direct3D 12 path, as the game runs it
 };
 
 static const Variant VARIANTS[] = {
@@ -55,6 +58,8 @@ static const Variant VARIANTS[] = {
     {"d3d11-level-11-1", "the same on a feature level 11_1 device", false, false, true, false, false, false, true},
     {"d3d12-dlss", "DLSS without Ray Reconstruction on DirectX 12", true, true, false, false, false, false, false},
     {"d3d12-game", "Ray Reconstruction on DirectX 12 with the game's inputs", true, false, true, false, false, false, false},
+    {"dll-d3d12-dlss", "DLSS through cg_ngx.dll on DirectX 12, as the game runs it", true, true, false, false, false, false, false, true},
+    {"dll-d3d12-game", "Ray Reconstruction through cg_ngx.dll on DirectX 12, as the game runs it", true, false, true, false, false, false, false, true},
 };
 
 // ---------------------------------------------------------------------------------------------------------------
@@ -695,12 +700,228 @@ static int runD3D12(const Variant& v, const wchar_t* dllFolder, const wchar_t* o
     return 0;
 }
 
+// cg_ngx.dll's Direct3D 12 path, called as the Bridge calls it, with this program standing in for OpenGL: it fills the
+// shared textures on a queue of its own and signals "OpenGL done" (the game's semaphore), then reads the output back
+// once the DLL's queue has signalled "DirectX done".
+typedef ID3D12Device* (*Open12)(const LUID*);
+typedef const char* (*Text12)();
+typedef ID3D12Fence* (*Fence12)(int);
+typedef ID3D12Resource* (*CreateTexture12)(int, int, int, int, HANDLE*, UINT64*);
+typedef void (*ReleaseTexture12)(ID3D12Resource*, HANDLE);
+typedef int (*WaitIdle12)(int);
+typedef void (*Close12)();
+typedef int (*Init12)(const char*, const char*, const wchar_t*, const wchar_t*, int);
+typedef int (*Query)(int*);
+typedef int (*Create)(void*, int, int, int, int, int, int, int);
+typedef int (*CreateRr)(void*, int, int, int, int, int, int, int, int, int);
+typedef int (*Evaluate12)(ID3D12Resource**, const float*, int, int, int, UINT64, UINT64*);
+typedef int (*Plain)();
+typedef int (*LogNext)(char*, int);
+typedef int (*Abi)();
+
+static LogNext g_dllLog;
+
+static void dllLog() {
+    char line[1024];
+    while (g_dllLog && g_dllLog(line, sizeof(line)) >= 0) {
+        printf("ngx: %s\n", line);
+    }
+    fflush(stdout);
+}
+
+static int runViaDll(const Variant& v, const wchar_t* dllFolder, const wchar_t* outFolder) {
+    Inputs in = makeInputs(v);
+    step("load cg_ngx.dll");
+    wchar_t path[MAX_PATH];
+    swprintf(path, MAX_PATH, L"%ls\\cg_ngx.dll", dllFolder);
+    HMODULE dll = LoadLibraryW(path);
+    if (!dll) return fail("loading cg_ngx.dll from the DLL folder", GetLastError());
+#define SYMBOL(type, name) type name = (type) (void*) GetProcAddress(dll, "cg_" #name); if (!name) return fail("finding cg_" #name, 0)
+    SYMBOL(Abi, ngx_abi);
+    SYMBOL(Open12, ngx12_open);
+    SYMBOL(Text12, ngx12_error);
+    SYMBOL(Text12, ngx12_adapter_name);
+    SYMBOL(Fence12, ngx12_fence);
+    SYMBOL(CreateTexture12, ngx12_create_texture);
+    SYMBOL(ReleaseTexture12, ngx12_release_texture);
+    SYMBOL(WaitIdle12, ngx12_wait_idle);
+    SYMBOL(Close12, ngx12_close);
+    SYMBOL(Init12, ngx_init12);
+    SYMBOL(Query, ngx_query);
+    SYMBOL(Query, ngx_query_rr);
+    SYMBOL(Create, ngx_create);
+    SYMBOL(CreateRr, ngx_create_rr);
+    SYMBOL(Evaluate12, ngx12_evaluate);
+    SYMBOL(Evaluate12, ngx12_evaluate_rr);
+    SYMBOL(Plain, ngx_release);
+    SYMBOL(Plain, ngx_shutdown);
+    SYMBOL(LogNext, ngx_log_next);
+#undef SYMBOL
+    g_dllLog = ngx_log_next;
+    printf("info: cg_ngx.dll ABI %d\n", ngx_abi());
+
+    step("device");
+    ID3D12Device* device = ngx12_open(nullptr);
+    if (!device) {
+        printf("info: %s\n", ngx12_error());
+        return fail("cg_ngx12_open", 0);
+    }
+    printf("info: adapter %s\n", ngx12_adapter_name());
+    // "OpenGL's" own queue on the same device (Direct3D 12 gives one device per adapter and process).
+    D3D12Run run;
+    run.device = device;
+    D3D12_COMMAND_QUEUE_DESC queueDesc = {D3D12_COMMAND_LIST_TYPE_DIRECT};
+    if (FAILED(device->CreateCommandQueue(&queueDesc, __uuidof(ID3D12CommandQueue), (void**) &run.queue))
+        || FAILED(device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, __uuidof(ID3D12CommandAllocator),
+                                                 (void**) &run.allocator))
+        || FAILED(device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, run.allocator, nullptr,
+                                            __uuidof(ID3D12GraphicsCommandList), (void**) &run.list))
+        || FAILED(device->CreateFence(0, D3D12_FENCE_FLAG_NONE, __uuidof(ID3D12Fence), (void**) &run.fence))) {
+        return fail("making the stand-in queue", 0);
+    }
+    run.event = CreateEventW(nullptr, FALSE, FALSE, nullptr);
+    ID3D12Fence* openglDone = ngx12_fence(0);
+
+    step("NGX init");
+    int result = ngx_init12(PROJECT_ID, ENGINE_VERSION, outFolder, dllFolder, 1);
+    dllLog();
+    if (NVSDK_NGX_FAILED(result)) return fail("cg_ngx_init12", result);
+    int support[5] = {};
+    (v.superResolution ? ngx_query : ngx_query_rr)(support);
+    printf("info: %s available %d, init result 0x%08X, needs a newer driver %d (minimum %d.%d)\n",
+           v.superResolution ? "DLSS" : "Ray Reconstruction", support[0], (unsigned) support[4], support[1], support[2], support[3]);
+    if (!support[0]) return fail("the feature isn't available", 0);
+
+    step("shared textures");
+    Image outImage = image("output", DXGI_FORMAT_R16G16B16A16_FLOAT, in.outWidth, in.outHeight, 8);
+    Image exposure = image("exposure", DXGI_FORMAT_R32_FLOAT, 1, 1, 4);
+    fillFloat(exposure, 1.0f);
+    // In the order cg_ngx12_evaluate_rr takes them; the exposure only for DLSS (cg_ngx12_evaluate's fifth).
+    const Image* images[] = {&in.color, &outImage, &in.depth, &in.motion, &in.diffuse, &in.specular, &in.normals,
+                             &in.hitDistance, &exposure};
+    ID3D12Resource* textures[9] = {};
+    HANDLE handles[9] = {};
+    for (int i = 0; i < 9; i++) {
+        UINT64 size = 0;
+        textures[i] = ngx12_create_texture(images[i]->width, images[i]->height, images[i]->format, i == 1, &handles[i], &size);
+        if (!textures[i]) {
+            printf("info: %s: %s\n", images[i]->name, ngx12_error());
+            return fail("cg_ngx12_create_texture", 0);
+        }
+        if (i == 1) continue;
+        D3D12_RESOURCE_DESC desc = textures[i]->GetDesc();
+        D3D12_PLACED_SUBRESOURCE_FOOTPRINT footprint;
+        UINT64 total = 0;
+        device->GetCopyableFootprints(&desc, 0, 1, 0, &footprint, nullptr, nullptr, &total);
+        ID3D12Resource* upload = buffer(device, total, D3D12_HEAP_TYPE_UPLOAD);
+        if (!upload) return fail("making an upload buffer", 0);
+        unsigned char* mapped = nullptr;
+        upload->Map(0, nullptr, (void**) &mapped);
+        for (int y = 0; y < images[i]->height; y++) {
+            memcpy(mapped + footprint.Offset + (size_t) footprint.Footprint.RowPitch * y,
+                   images[i]->data + (size_t) images[i]->width * images[i]->pixelBytes * y,
+                   (size_t) images[i]->width * images[i]->pixelBytes);
+        }
+        upload->Unmap(0, nullptr);
+        barrier(run.list, textures[i], D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_COPY_DEST);
+        D3D12_TEXTURE_COPY_LOCATION dst = {textures[i], D3D12_TEXTURE_COPY_TYPE_SUBRESOURCE_INDEX};
+        dst.SubresourceIndex = 0;
+        D3D12_TEXTURE_COPY_LOCATION src = {upload, D3D12_TEXTURE_COPY_TYPE_PLACED_FOOTPRINT};
+        src.PlacedFootprint = footprint;
+        run.list->CopyTextureRegion(&dst, 0, 0, 0, &src, nullptr);
+        barrier(run.list, textures[i], D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_COMMON);
+    }
+    if (!run.submit()) return fail("filling the textures", 0);
+
+    const int flags = NVSDK_NGX_DLSS_Feature_Flags_IsHDR | NVSDK_NGX_DLSS_Feature_Flags_MVLowRes
+                      | NVSDK_NGX_DLSS_Feature_Flags_DepthInverted;
+    if (v.superResolution) {
+        step("create DLSS, preset K");
+        result = ngx_create(nullptr, in.renderWidth, in.renderHeight, in.outWidth, in.outHeight,
+                            NVSDK_NGX_PerfQuality_Value_MaxPerf, flags, 11);
+    } else {
+        step("create Ray Reconstruction, preset F");
+        result = ngx_create_rr(nullptr, in.renderWidth, in.renderHeight, in.outWidth, in.outHeight,
+                               NVSDK_NGX_PerfQuality_Value_MaxPerf, flags, (int) PRESET_F, 1, 0);
+    }
+    dllLog();
+    if (NVSDK_NGX_FAILED(result)) {
+        printf("info: %s\n", ngx12_error());
+        return fail("creating the feature", result);
+    }
+
+    for (int frame = 0; frame < 3; frame++) {
+        step("evaluate frame %d", frame + 1);
+        // OpenGL's copies are done: "OpenGL done" reaches this frame's value (on the GPU, after the fill).
+        UINT64 glValue = (UINT64) frame + 1;
+        run.queue->Signal(openglDone, glValue);
+        float floats[37] = {};
+        floats[0] = 0.25f * (frame % 2 ? 1 : -1);
+        floats[1] = 0.25f * (frame / 2 ? 1 : -1);
+        floats[2] = 1.0f;
+        floats[3] = 1.0f;
+        floats[4] = 16.6f;
+        UINT64 dxValue = 0;
+        if (v.superResolution) {
+            floats[5] = 1.0f; // pre-exposure
+            ID3D12Resource* srResources[] = {textures[0], textures[1], textures[2], textures[3], textures[8]};
+            result = ngx12_evaluate(srResources, floats, frame == 0, in.renderWidth, in.renderHeight, glValue, &dxValue);
+        } else {
+            memcpy(floats + 5, in.worldToView, sizeof(in.worldToView));
+            memcpy(floats + 21, in.viewToClip, sizeof(in.viewToClip));
+            result = ngx12_evaluate_rr(textures, floats, frame == 0, in.renderWidth, in.renderHeight, glValue, &dxValue);
+        }
+        dllLog();
+        if (NVSDK_NGX_FAILED(result)) {
+            printf("info: %s\n", ngx12_error());
+            return fail("evaluating", result);
+        }
+        if (!dxValue) return fail("the evaluate queued nothing", 0);
+        // OpenGL waits for "DirectX done" before it reads the output.
+        run.queue->Wait(ngx12_fence(1), dxValue);
+    }
+    if (!ngx12_wait_idle(20000)) return fail("waiting for the DLL's queue", 0);
+
+    step("read back");
+    D3D12_RESOURCE_DESC desc = textures[1]->GetDesc();
+    D3D12_PLACED_SUBRESOURCE_FOOTPRINT footprint;
+    UINT64 total = 0;
+    device->GetCopyableFootprints(&desc, 0, 1, 0, &footprint, nullptr, nullptr, &total);
+    ID3D12Resource* readback = buffer(device, total, D3D12_HEAP_TYPE_READBACK);
+    if (!readback) return fail("making the read-back buffer", 0);
+    barrier(run.list, textures[1], D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_COPY_SOURCE);
+    D3D12_TEXTURE_COPY_LOCATION dst = {readback, D3D12_TEXTURE_COPY_TYPE_PLACED_FOOTPRINT};
+    dst.PlacedFootprint = footprint;
+    D3D12_TEXTURE_COPY_LOCATION src = {textures[1], D3D12_TEXTURE_COPY_TYPE_SUBRESOURCE_INDEX};
+    src.SubresourceIndex = 0;
+    run.list->CopyTextureRegion(&dst, 0, 0, 0, &src, nullptr);
+    barrier(run.list, textures[1], D3D12_RESOURCE_STATE_COPY_SOURCE, D3D12_RESOURCE_STATE_COMMON);
+    if (!run.submit()) return fail("copying the output back", 0);
+    unsigned char* mapped = nullptr;
+    D3D12_RANGE range = {0, (SIZE_T) total};
+    if (FAILED(readback->Map(0, &range, (void**) &mapped))) return fail("reading the output back", 0);
+    describeOutput(mapped + footprint.Offset, in.outWidth, in.outHeight, footprint.Footprint.RowPitch);
+    readback->Unmap(0, nullptr);
+
+    step("release");
+    ngx_release();
+    ngx_shutdown();
+    dllLog();
+    for (int i = 0; i < 9; i++) ngx12_release_texture(textures[i], handles[i]);
+    run.list->Release();
+    run.allocator->Release();
+    run.queue->Release();
+    run.fence->Release();
+    ngx12_close();
+    return 0;
+}
+
 static int runVariant(const Variant& v, const wchar_t* dllFolder, const wchar_t* outFolder) {
     SetErrorMode(SEM_FAILCRITICALERRORS | SEM_NOGPFAULTERRORBOX | SEM_NOOPENFILEERRORBOX);
     SetUnhandledExceptionFilter(crashed);
     printf("variant: %s (%s)\n", v.name, v.what);
     fflush(stdout);
-    return v.d3d12 ? runD3D12(v, dllFolder, outFolder) : runD3D11(v, dllFolder, outFolder);
+    return v.viaDll ? runViaDll(v, dllFolder, outFolder) : v.d3d12 ? runD3D12(v, dllFolder, outFolder) : runD3D11(v, dllFolder, outFolder);
 }
 
 // ---------------------------------------------------------------------------------------------------------------
@@ -811,7 +1032,7 @@ int wmain(int argc, wchar_t** argv) {
         return 2;
     }
     if (argc != 3) {
-        printf("Usage: rr-probe.exe <folder with nvngx_dlssd.dll and nvngx_dlss.dll> <output folder>\n");
+        printf("Usage: rr-probe.exe <folder with nvngx_dlssd.dll and nvngx_dlss.dll (and cg_ngx.dll)> <output folder>\n");
         return 2;
     }
     wchar_t exe[MAX_PATH];

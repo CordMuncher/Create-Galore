@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
  */
 final class NgxLibrary {
     private static final Logger LOG = LoggerFactory.getLogger("create_galore_bridge");
-    private static final int ABI = 3;
+    private static final int ABI = 4;
 
     // NVSDK_NGX_Result
     static final int RESULT_SUCCESS = 0x1;
@@ -56,6 +56,18 @@ final class NgxLibrary {
     private final long release;
     private final long shutdown;
     private final long logNext;
+    // Direct3D 12 (DlssDevice12)
+    final long init12;
+    final long open12;
+    final long error12;
+    final long adapterName12;
+    final long fenceHandle12;
+    final long createTexture12;
+    final long releaseTexture12;
+    final long waitIdle12;
+    final long close12;
+    private final long evaluate12;
+    private final long evaluateRr12;
 
     private NgxLibrary(NativeHelper dll) {
         dll.checkAbi(ABI);
@@ -69,6 +81,17 @@ final class NgxLibrary {
         release = dll.symbol("cg_ngx_release");
         shutdown = dll.symbol("cg_ngx_shutdown");
         logNext = dll.symbol("cg_ngx_log_next");
+        init12 = dll.symbol("cg_ngx_init12");
+        open12 = dll.symbol("cg_ngx12_open");
+        error12 = dll.symbol("cg_ngx12_error");
+        adapterName12 = dll.symbol("cg_ngx12_adapter_name");
+        fenceHandle12 = dll.symbol("cg_ngx12_fence_handle");
+        createTexture12 = dll.symbol("cg_ngx12_create_texture");
+        releaseTexture12 = dll.symbol("cg_ngx12_release_texture");
+        waitIdle12 = dll.symbol("cg_ngx12_wait_idle");
+        close12 = dll.symbol("cg_ngx12_close");
+        evaluate12 = dll.symbol("cg_ngx12_evaluate");
+        evaluateRr12 = dll.symbol("cg_ngx12_evaluate_rr");
     }
 
     /** Unpacks the helper into {@code folder} (if that exact build is not there yet) and loads it. */
@@ -109,12 +132,16 @@ final class NgxLibrary {
         return String.format("%s (0x%08X)", name, result);
     }
 
-    int init(String projectId, String engineVersion, Path appData, Path featureFolder, long device, int logLevel) {
+    /** Starts NGX on {@code device}: Direct3D 11's, or Direct3D 12's (cg_ngx12_open made it). */
+    int init(String projectId, String engineVersion, Path appData, Path featureFolder, NgxDevice device, int logLevel) {
         try (MemoryStack stack = stackPush()) {
-            return (int) Ffi.call("PPPPPI:I", init,
-                    memAddress(stack.ASCII(projectId)), memAddress(stack.ASCII(engineVersion)),
-                    memAddress(stack.UTF16(appData.toString())), memAddress(stack.UTF16(featureFolder.toString())),
-                    device, logLevel);
+            long project = memAddress(stack.ASCII(projectId));
+            long engine = memAddress(stack.ASCII(engineVersion));
+            long data = memAddress(stack.UTF16(appData.toString()));
+            long features = memAddress(stack.UTF16(featureFolder.toString()));
+            return device instanceof DlssDevice12
+                    ? (int) Ffi.call("PPPPI:I", init12, project, engine, data, features, logLevel)
+                    : (int) Ffi.call("PPPPPI:I", init, project, engine, data, features, device.device(), logLevel);
         }
     }
 
@@ -143,9 +170,20 @@ final class NgxLibrary {
         return (int) Ffi.call("PIIIIIII:I", create, context, renderWidth, renderHeight, outWidth, outHeight, perfQuality, flags, preset);
     }
 
-    int evaluate(long context, long color, long output, long depth, long motion, long exposure, float jitterX, float jitterY,
+    int evaluate(NgxDevice device, long color, long output, long depth, long motion, long exposure, float jitterX, float jitterY,
                  float mvScaleX, float mvScaleY, boolean reset, int renderWidth, int renderHeight, float frameTimeMs) {
-        return (int) Ffi.call("PPPPPPFFFFIIIFF:I", evaluate, context, color, output, depth, motion, exposure,
+        if (device instanceof DlssDevice12 d3d12) {
+            try (MemoryStack stack = stackPush()) {
+                java.nio.LongBuffer pointers = stack.longs(color, output, depth, motion, exposure);
+                java.nio.FloatBuffer floats = stack.floats(jitterX, jitterY, mvScaleX, mvScaleY, frameTimeMs, 1.0f);
+                java.nio.LongBuffer done = stack.callocLong(1);
+                int result = (int) Ffi.call("PPIIIPP:I", evaluate12, memAddress(pointers), memAddress(floats), reset ? 1 : 0,
+                        renderWidth, renderHeight, d3d12.openglValue(), memAddress(done));
+                d3d12.queued(done.get(0));
+                return result;
+            }
+        }
+        return (int) Ffi.call("PPPPPPFFFFIIIFF:I", evaluate, device.context(), color, output, depth, motion, exposure,
                 Ffi.floatArg(jitterX), Ffi.floatArg(jitterY), Ffi.floatArg(mvScaleX), Ffi.floatArg(mvScaleY),
                 reset ? 1 : 0, renderWidth, renderHeight, Ffi.floatArg(frameTimeMs), Ffi.floatArg(1.0f));
     }
@@ -166,7 +204,7 @@ final class NgxLibrary {
      * albedo, normals with roughness, specular hit distance (0 if none). The matrices are OpenGL's column-major layout
      * (which NGX reads as row major for a row vector).
      */
-    int evaluateRayReconstruction(long context, long[] resources, float jitterX, float jitterY, float mvScaleX, float mvScaleY,
+    int evaluateRayReconstruction(NgxDevice device, long[] resources, float jitterX, float jitterY, float mvScaleX, float mvScaleY,
                                   float frameTimeMs, float[] worldToView, float[] viewToClip, boolean reset, int renderWidth,
                                   int renderHeight) {
         try (MemoryStack stack = stackPush()) {
@@ -177,7 +215,14 @@ final class NgxLibrary {
             java.nio.FloatBuffer floats = stack.mallocFloat(37);
             floats.put(0, jitterX).put(1, jitterY).put(2, mvScaleX).put(3, mvScaleY).put(4, frameTimeMs);
             floats.put(5, worldToView).put(21, viewToClip);
-            return (int) Ffi.call("PPPIII:I", evaluateRr, context, memAddress(pointers), memAddress(floats), reset ? 1 : 0,
+            if (device instanceof DlssDevice12 d3d12) {
+                java.nio.LongBuffer done = stack.callocLong(1);
+                int result = (int) Ffi.call("PPIIIPP:I", evaluateRr12, memAddress(pointers), memAddress(floats), reset ? 1 : 0,
+                        renderWidth, renderHeight, d3d12.openglValue(), memAddress(done));
+                d3d12.queued(done.get(0));
+                return result;
+            }
+            return (int) Ffi.call("PPPIII:I", evaluateRr, device.context(), memAddress(pointers), memAddress(floats), reset ? 1 : 0,
                     renderWidth, renderHeight);
         }
     }

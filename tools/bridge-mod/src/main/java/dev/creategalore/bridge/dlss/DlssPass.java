@@ -88,7 +88,8 @@ import org.lwjgl.system.MemoryStack;
 
 /**
  * The OpenGL side of one DLSS run, right after the pack's TAA pass while its framebuffer is still bound: copy the
- * pass's colour, motion vectors, depth and exposure into the textures shared with D3D11, let DLSS run, then draw its
+ * pass's colour, motion vectors, depth and exposure into the textures shared with DirectX ({@link NgxDevice}: Direct3D
+ * 11 for DLSS, Direct3D 12 for Ray Reconstruction), let DLSS run, then draw its
  * result into the pass's outputs. When upscaling, the inputs are the render-sized lower left corner of the pack's
  * window-sized buffers, and the result is window-sized. Everything it changes in OpenGL's state is put back as it was, so Iris and
  * Minecraft's cached state stay right.
@@ -144,7 +145,7 @@ final class DlssPass implements AutoCloseable {
      */
     record Guides(int diffuseAlbedo, int specularAlbedo, int normalRoughness, int hitDistance) {}
 
-    private final DlssDevice device;
+    private final NgxDevice device;
     private Texture color;
     private Texture motion;
     private Texture depth;
@@ -160,14 +161,14 @@ final class DlssPass implements AutoCloseable {
     private Texture hitDistance;
     private boolean hasHitDistance;
     private List<Texture> all = List.of();
-    private List<DlssDevice.SharedTexture> shared = List.of();
+    private List<NgxDevice.Shared> shared = List.of();
     private int program;
     private int programOutputs = -1;
     private View programView;
     private int vao;
 
     /** {@code device} is null for FSR 3 and the debug views. */
-    DlssPass(DlssDevice device) {
+    DlssPass(NgxDevice device) {
         this.device = device;
     }
 
@@ -237,35 +238,25 @@ final class DlssPass implements AutoCloseable {
             return false;
         }
         closeTextures();
-        color = new Texture(width, height, GL_RGBA16F, DlssDevice.DXGI_FORMAT_R16G16B16A16_FLOAT,
-                DlssDevice.D3D11_BIND_SHADER_RESOURCE, DlssDevice.ACCESS_WRITE_DISCARD);
-        motion = new Texture(width, height, GL_RG16F, DlssDevice.DXGI_FORMAT_R16G16_FLOAT,
-                DlssDevice.D3D11_BIND_SHADER_RESOURCE, DlssDevice.ACCESS_WRITE_DISCARD);
-        depth = new Texture(width, height, GL_R32F, DlssDevice.DXGI_FORMAT_R32_FLOAT,
-                DlssDevice.D3D11_BIND_SHADER_RESOURCE, DlssDevice.ACCESS_WRITE_DISCARD);
-        exposure = new Texture(1, 1, GL_R32F, DlssDevice.DXGI_FORMAT_R32_FLOAT,
-                DlssDevice.D3D11_BIND_SHADER_RESOURCE, DlssDevice.ACCESS_WRITE_DISCARD);
-        output = new Texture(outputWidth, outputHeight, GL_RGBA16F, DlssDevice.DXGI_FORMAT_R16G16B16A16_FLOAT,
-                DlssDevice.D3D11_BIND_SHADER_RESOURCE | DlssDevice.D3D11_BIND_UNORDERED_ACCESS, DlssDevice.ACCESS_READ_ONLY);
-        mask = device == null ? new Texture(width, height, GL_RG16F, DlssDevice.DXGI_FORMAT_R16G16_FLOAT,
-                DlssDevice.D3D11_BIND_SHADER_RESOURCE, DlssDevice.ACCESS_WRITE_DISCARD) : null;
+        color = new Texture(width, height, GL_RGBA16F, DlssDevice.DXGI_FORMAT_R16G16B16A16_FLOAT, false);
+        motion = new Texture(width, height, GL_RG16F, DlssDevice.DXGI_FORMAT_R16G16_FLOAT, false);
+        depth = new Texture(width, height, GL_R32F, DlssDevice.DXGI_FORMAT_R32_FLOAT, false);
+        exposure = new Texture(1, 1, GL_R32F, DlssDevice.DXGI_FORMAT_R32_FLOAT, false);
+        output = new Texture(outputWidth, outputHeight, GL_RGBA16F, DlssDevice.DXGI_FORMAT_R16G16B16A16_FLOAT, true);
+        mask = device == null ? new Texture(width, height, GL_RG16F, DlssDevice.DXGI_FORMAT_R16G16_FLOAT, false) : null;
         List<Texture> made = new ArrayList<>(List.of(color, motion, depth, exposure, output));
         if (mask != null) {
             made.add(mask);
         }
         if (guides) {
-            albedo = new Texture(width, height, GL_RGBA8, DlssDevice.DXGI_FORMAT_R8G8B8A8_UNORM,
-                    DlssDevice.D3D11_BIND_SHADER_RESOURCE, DlssDevice.ACCESS_WRITE_DISCARD);
-            specular = new Texture(width, height, GL_RGBA8, DlssDevice.DXGI_FORMAT_R8G8B8A8_UNORM,
-                    DlssDevice.D3D11_BIND_SHADER_RESOURCE, DlssDevice.ACCESS_WRITE_DISCARD);
-            normal = new Texture(width, height, GL_RGBA16F, DlssDevice.DXGI_FORMAT_R16G16B16A16_FLOAT,
-                    DlssDevice.D3D11_BIND_SHADER_RESOURCE, DlssDevice.ACCESS_WRITE_DISCARD);
-            hitDistance = new Texture(width, height, GL_R32F, DlssDevice.DXGI_FORMAT_R32_FLOAT,
-                    DlssDevice.D3D11_BIND_SHADER_RESOURCE, DlssDevice.ACCESS_WRITE_DISCARD);
+            albedo = new Texture(width, height, GL_RGBA8, DlssDevice.DXGI_FORMAT_R8G8B8A8_UNORM, false);
+            specular = new Texture(width, height, GL_RGBA8, DlssDevice.DXGI_FORMAT_R8G8B8A8_UNORM, false);
+            normal = new Texture(width, height, GL_RGBA16F, DlssDevice.DXGI_FORMAT_R16G16B16A16_FLOAT, false);
+            hitDistance = new Texture(width, height, GL_R32F, DlssDevice.DXGI_FORMAT_R32_FLOAT, false);
             made.addAll(List.of(albedo, specular, normal, hitDistance));
         }
         all = List.copyOf(made);
-        List<DlssDevice.SharedTexture> list = new ArrayList<>();
+        List<NgxDevice.Shared> list = new ArrayList<>();
         for (Texture texture : all) {
             if (texture.shared != null) {
                 list.add(texture.shared);
@@ -278,7 +269,7 @@ final class DlssPass implements AutoCloseable {
         return true;
     }
 
-    /** Copies the inputs, hands the textures to D3D11 for {@code evaluate} (if there is a device), then takes them back. */
+    /** Copies the inputs, hands the textures to DirectX for {@code evaluate} (if there is a device), then takes them back. */
     void copyAndEvaluate(Inputs in, Runnable evaluate) {
         Markers.around("Create Galore DLAA: copy inputs", () -> {
             // The pack wrote the motion, depth and exposure images with image stores in the pass that just ran.
@@ -702,21 +693,22 @@ final class DlssPass implements AutoCloseable {
         }
     }
 
-    /** A texture shared with D3D11, or without a device a plain OpenGL one of the same format. */
+    /** A texture shared with DirectX, or without a device a plain OpenGL one of the same format. */
     private final class Texture implements AutoCloseable {
         final int gl;
         final long d3d;
         final int width;
         final int height;
-        final DlssDevice.SharedTexture shared;
+        final NgxDevice.Shared shared;
 
-        Texture(int width, int height, int glFormat, int dxgiFormat, int bindFlags, int access) {
+        /** {@code output}: DLSS writes it. */
+        Texture(int width, int height, int glFormat, int dxgiFormat, boolean output) {
             this.width = width;
             this.height = height;
             if (device != null) {
-                shared = device.new SharedTexture(width, height, dxgiFormat, bindFlags, access);
-                gl = shared.glTexture;
-                d3d = shared.d3dTexture;
+                shared = device.texture(width, height, glFormat, dxgiFormat, output);
+                gl = shared.glTexture();
+                d3d = shared.resource();
             } else {
                 shared = null;
                 d3d = 0L;

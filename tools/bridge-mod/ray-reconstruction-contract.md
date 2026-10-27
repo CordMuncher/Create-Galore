@@ -84,3 +84,10 @@ With all of them 0 the pack must look exactly as it does without RR: write nothi
 RR replaces DLSS's upscaling; NVIDIA's numbers at 1440p Performance: about 1.7 ms on an RTX 4080, about 6 ms on an
 RTX 3070 (laptop players stay on DLSS). Any RTX card with NVIDIA driver 580 or newer; `nvngx_dlssd.dll` is the
 player's own, like `nvngx_dlss.dll` (**Find on this PC** copies it). Preset F (RR 4.5) is the one we use.
+
+## The device it runs on
+
+RR runs on a Direct3D 12 device of the Bridge's own (`DlssDevice12`, `cg_ngx12_*` in `native/cg_ngx.cpp`), not on
+DLSS's Direct3D 11 one: NVIDIA's RR crashes on its first frame on Direct3D 11 with any inputs, and the same inputs run
+on Direct3D 12 (`tools/dlss-testkit/results/rr1b/REPORT.md`). OpenGL imports that device's textures and two of its
+fences, as the DX12 presenter does. Nothing changes for the pack: the guides, uniforms and values above stay the same.

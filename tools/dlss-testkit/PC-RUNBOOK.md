@@ -2227,7 +2227,8 @@ launch from Frame generation 3 (2560x1440) without `autorun`.
 New-Item -ItemType Directory $T\rr1b\rel, $T\rr1b\dev -Force
 Copy-Item $T\rr1\nvngx_dlssd-rel.dll $T\rr1b\rel\nvngx_dlssd.dll
 Copy-Item $T\rr1\nvngx_dlssd-dev.dll $T\rr1b\dev\nvngx_dlssd.dll
-Copy-Item $T\instance\create-galore-dlss\nvngx_dlss.dll $T\rr1b\rel\, $T\rr1b\dev\
+Copy-Item $T\instance\create-galore-dlss\nvngx_dlss.dll $T\rr1b\rel\
+Copy-Item $T\instance\create-galore-dlss\nvngx_dlss.dll $T\rr1b\dev\
 & $T\repo\tools\dlss-testkit\dist\rr-probe.exe $T\rr1b\rel $T\rr1b\probe-rel
 & $T\repo\tools\dlss-testkit\dist\rr-probe.exe $T\rr1b\dev $T\rr1b\probe-dev
 ```
@@ -2267,3 +2268,131 @@ then commit and push on this branch.
 
 What comes of it: if only `d3d12-game` runs, RR needs our DLSS on DirectX 12 (a bigger job, planned after this). If a
 DirectX 11 variant runs, that change goes into the pilot and Ray Reconstruction 1's steps carry on from there.
+
+## Ray Reconstruction 2: Ray Reconstruction on DirectX 12
+
+Start only when Emre says so. About 3 minutes that need no one (part 1), about 25 with Emre at the keyboard (part 2),
+then about 35 that need no one, only a quiet PC (part 3). Frame times count only in part 3.
+
+**What it checks.** Ray Reconstruction 1b (`results/rr1b/REPORT.md`) found that NVIDIA's RR crashes on DirectX 11 with
+any inputs and runs on DirectX 12. This build (Bridge 1.125.0-rr.2, pack 0.6.1-rr.2, still a dev build) runs RR on a
+DirectX 12 device of its own:
+- **The device.** `cg_ngx.dll` opens a DirectX 12 device on the GPU OpenGL renders with. OpenGL imports its textures
+  and two of its fences, as the DX12 presenter does: OpenGL signals one after copying the inputs, the device's queue
+  waits for it, runs NGX, and signals the other, which OpenGL waits for before it reads the result.
+- **Which device when.** With **Ray Reconstruction** on in the Upscaling tab, DLSS starts on DirectX 12. If RR can't
+  start, plain DLSS runs on that DirectX 12 device too. With RR off it is DLSS on DirectX 11 as before. Switching RR
+  closes one device and opens the other (`DLAA: DLSS starts again on DirectX 12, for Ray Reconstruction`).
+- **The probe** (`rr-probe.exe`) has two more variants. `dll-d3d12-dlss` and `dll-d3d12-game` run the Bridge's own
+  `cg_ngx.dll` the way the game does, with the probe standing in for OpenGL. So part 1 checks the new path before the
+  game does.
+
+The cloud has no NVIDIA GPU. It built and compiled all of it, but none of the new path has run anywhere yet. Emre chose
+to skip the Wine checks: the PC is faster. This run is the first time it runs.
+
+### Update and settings
+
+```powershell
+git -C $T\repo fetch origin
+git -C $T\repo checkout -B claude/project-thread-u2wmhh origin/claude/project-thread-u2wmhh
+Remove-Item $T\instance\mods\create-galore-bridge-*.jar
+Copy-Item $T\repo\pack\mods\create-galore-bridge-*.jar $T\instance\mods\
+Copy-Item $T\repo\tools\dlss-testkit\dist\create-galore-dlss-testkit-1.0.0.jar $T\instance\mods\ -Force
+Get-ChildItem $T\instance\mods\create-galore-bridge-*.jar | Select-Object Name
+```
+
+Only `create-galore-bridge-1.125.0-rr.2.jar`. Before changing anything, copy these to `$T\rr2\*.before`, to put back at
+the end:
+- `config\create_galore_bridge-display.properties`
+- `options.txt`
+- `config\DistantHorizons.toml`, `config\iris.properties`, `config\fml.toml`, `config\sodium-options.json`
+- `shaderpacks\Photon v1.3a + DLAA.txt`, the shader pack's options file. It holds the render scale (`TAAU`,
+  `TAAU_RENDER_SCALE`), which Ray Reconstruction 1's backups missed.
+
+### 1. The probe (no one needed, about 3 minutes)
+
+```powershell
+New-Item -ItemType Directory $T\rr2\rel, $T\rr2\dev -Force
+$ngx = "$T\repo\tools\bridge-mod\src\main\resources\natives\windows-x64\cg_ngx.dll"
+foreach ($kind in "rel", "dev") {
+    Copy-Item $T\rr1\nvngx_dlssd-$kind.dll $T\rr2\$kind\nvngx_dlssd.dll
+    Copy-Item $T\instance\create-galore-dlss\nvngx_dlss.dll $T\rr2\$kind\
+    Copy-Item $ngx $T\rr2\$kind\
+}
+& $T\repo\tools\dlss-testkit\dist\rr-probe.exe $T\rr2\rel $T\rr2\probe-rel
+& $T\repo\tools\dlss-testkit\dist\rr-probe.exe $T\rr2\dev $T\rr2\probe-dev
+```
+
+Expected: the six `d3d11-` RR variants crash as in Ray Reconstruction 1b, and the other five lines read `OK` with an
+output mean of about 0.5:
+- `d3d11-dlss`, `d3d12-dlss`, `d3d12-game`;
+- `dll-d3d12-dlss`: DLSS through `cg_ngx.dll`;
+- `dll-d3d12-game`: Ray Reconstruction through `cg_ngx.dll`.
+
+If `dll-d3d12-game` isn't `OK`, part 2's RR steps would fail the same way. Then do only part 2's step a with Ray
+Reconstruction off (plain DLSS still on DirectX 11), skip the rest, and report.
+
+### 2. In the game (Emre at the keyboard, about 25 minutes)
+
+Settings file, for all of part 2:
+- `dlaa=dlss`, `dlaaPreset=default`, `dlaaRayReconstruction=true`, `reflex=on`, `gpuPacing=off`,
+  `fpsCounter=detailed`;
+- no `dlaaRrPreset` (F), `dlaaRrTest`, `dlaaRrRaw` or `dlaaRrExposure` line.
+
+`options.txt`: `fullscreen:false` for a and b, `maxFps:260`, `enableVsync:false`. Shader pack: Photon v1.3a + DLAA.
+The launch from Frame generation 3 (2560x1440), without `autorun`. For every step, copy each `DLAA:`, `Frame
+generation` and `Reflex:` line, and each WARN or ERROR line from `create_galore_bridge`, with its time.
+
+- **a. RR on its own (dev DLL), about 10 minutes.** Set `perfectPresentation=false`, so no other DirectX 12 device
+  runs in the game, and `frameGen=off`. Then
+  `Copy-Item $T\rr1\nvngx_dlssd-dev.dll $T\instance\create-galore-dlss\nvngx_dlssd.dll -Force`.
+  - Launch. In the Upscaling tab, set the render resolution to **Performance**, then Done.
+  - Open `dlaa-test`, `/gamemode creative`, `/time set 6000`. The log must have:
+    - `DLAA: NGX ready on ... (its own DirectX 12 device, for Ray Reconstruction; ...)`;
+    - `DLAA: DLSS Ray Reconstruction can run, nvngx_dlssd.dll 310.9.16 ...`;
+    - `DLAA: DLSS Ray Reconstruction running at 1272x701 to 2544x1401 (Performance, 50%), preset F, exposed colour`.
+  - The tab's status must begin `On: NVIDIA DLSS Ray Reconstruction (dev build, DirectX 12)`.
+  - Then Ray Reconstruction 1's step 1 from its third bullet: NVIDIA's overlay, its ten layers at the lakeshore, an F2
+    screenshot of each, and Emre's word on each.
+  - If the game crashes or the picture is black or frozen, note what happened and when (the log's last lines). Move
+    `create-galore-dlss\dlss-starting.txt` and any `hs_err_pid*.log` to `$T\rr2\crash<n>`. Skip to part 2's step b
+    with RR **off**.
+- **b. Switching, about 2 minutes.** In the world, Upscaling tab:
+  - Turn **Ray Reconstruction** off, Done. The log must have `DLAA: DLSS starts again on DirectX 11`, `NGX ready on
+    ... (its own DirectX 11 device; ...)` and `DLAA: DLSS running at ...`. The picture is plain DLSS.
+  - Turn it on again, Done. The log has `starts again on DirectX 12, for Ray Reconstruction` and the `Ray
+    Reconstruction running at` line again.
+  - Emre says whether the picture came back right each time, and whether either switch hitched for long.
+- **c. With Perfect Presentation and frame generation (release DLL), about 15 minutes.** Close the game. Run
+  `Copy-Item $T\rr1\nvngx_dlssd-rel.dll $T\instance\create-galore-dlss\nvngx_dlssd.dll -Force`. Set
+  `perfectPresentation=true`, `presenter=dx12`, `frameGen=dlss`, `frameGenType=dlss`.
+  - Launch, open `dlaa-test`. The log must have the Streamline lines as in Frame generation 3 and the `Ray
+    Reconstruction running at` line.
+  - `Frame generation: running, 2 frames shown per rendered one` must appear. The game now has two DirectX 12 users
+    (Streamline's presenter and RR), which nothing has tested yet.
+  - If it runs: Ray Reconstruction 1's step 2 (by eye, RR against DLSS) and step 3 (RR Performance against DLSS Quality
+    with frame generation), as written there.
+  - If it crashes here but a ran, say so: then the clash is RR beside Streamline. Move the crash files as in a.
+
+### 3. Timed runs and pictures (no one needed, about 35 minutes)
+
+Only if part 2 ran RR. Ray Reconstruction 1's steps 4 and 5, as written there, with PresentMon's files in `$T\rr2`
+in place of `$T\rr1`. The release DLL stays in. Each mode switch between an RR mode and a plain DLSS mode also
+switches DirectX devices; each RR mode's start must log `DLAA: DLSS Ray Reconstruction running at ...`.
+
+### Results
+
+Write `$T\repo\tools\dlss-testkit\results\rr2\REPORT.md`:
+- part 1: both summaries whole. For any `dll-` or `d3d12-` variant that isn't `OK`, its own lines whole.
+- part 2: per step, the log lines and what matched or didn't; a's ten layers with Emre's word on each (screenshots
+  beside it, about 512 px crops); b's two switches; c's start, then step 2's verdicts in Emre's words and step 3's
+  numbers, as Ray Reconstruction 1's Results describe.
+- part 3: as Ray Reconstruction 1's Results describe (the tables, RR's cost over DLSS, the crops with `metrics.py`).
+- Any crash: what happened and when. The `hs_err` files and NGX logs stay on the PC (they name the user folder).
+
+Put back every file from `$T\rr2\*.before`, check each with `cmp`, and remove `nvngx_dlssd.dll` from the instance. Then
+commit and push on this branch. NVIDIA's DLLs stay in `$T\rr1`, never in the repo.
+
+What comes of it: if RR runs and looks right, the pilot is finally where Ray Reconstruction 1 meant to start, and its
+verdicts decide what carries over to our own shader pack. If only c fails, the next step is RR on the presenter's
+own DirectX 12 device.

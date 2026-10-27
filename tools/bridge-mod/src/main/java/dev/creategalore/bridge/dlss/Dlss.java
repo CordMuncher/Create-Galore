@@ -43,7 +43,8 @@ import org.slf4j.LoggerFactory;
  * config/create_galore_bridge-display.properties (or the settings screen, {@link DlaaScreen}): dlaa picks the engine,
  * auto (DLSS where it can run, else AMD FSR 3.1 at full resolution), dlss, fsr3 or off; dlaaPreset picks the DLSS
  * preset. Both are read again when shaders reload. DLSS runs on a DirectX 11 device of its own (see {@link DlssDevice}),
- * also with Perfect Presentation on. Anything missing (not Windows, no NVIDIA RTX card, no nvngx_dlss.dll, an
+ * also with Perfect Presentation on; with Ray Reconstruction asked for, on a DirectX 12 device of its own instead
+ * ({@link DlssDevice12}), since NVIDIA's Ray Reconstruction crashes on DirectX 11. Anything missing (not Windows, no NVIDIA RTX card, no nvngx_dlss.dll, an
  * unpatched pack, a pack option that the patch does not cover) leaves the pack's own anti-aliasing in place, says why
  * in the log and once in a notice, and the settings screen shows it. An engine that took the game down while it
  * started stays off until the player tries it again ({@link StartGuard}).
@@ -153,7 +154,9 @@ public final class Dlss {
     private static StartGuard fsrGuard;
     private static final java.util.Set<String> noticesShown = new java.util.HashSet<>();
     private static NgxLibrary ngx;
-    private static DlssDevice device;
+    private static NgxDevice device;
+    /** DLSS starts (or started) on DirectX 12, for Ray Reconstruction; else on DirectX 11. */
+    private static boolean onDirectX12;
     private static DlssPass pass;
     /** The debug views' pass: plain OpenGL textures, no DLSS. */
     private static DlssPass debugPass;
@@ -244,6 +247,17 @@ public final class Dlss {
             unavailable = null; // looks for nvngx_dlss.dll again
         }
         rayReconstructionWanted = DisplaySettings.get(DisplaySettings.DLAA_RAY_RECONSTRUCTION);
+        if (rayReconstructionWanted != onDirectX12) {
+            // Ray Reconstruction runs on a DirectX 12 device of its own, DLSS alone on DirectX 11: the other one now.
+            onDirectX12 = rayReconstructionWanted;
+            if (pass != null) {
+                LOG.info("DLAA: DLSS starts again on DirectX {}", onDirectX12 ? "12, for Ray Reconstruction" : "11");
+                closeDlss();
+            }
+            if (unavailable != null && !unavailable.startsWith("the game closed")) {
+                unavailable = null; // tried again on the other device
+            }
+        }
         rrPreset = parseRrPreset(DisplaySettings.getString(DisplaySettings.DLAA_RR_PRESET, "F"));
         rrExposed = !DisplaySettings.getString(DisplaySettings.DLAA_RR_EXPOSURE, "exposed").equalsIgnoreCase("raw");
         String raw = DisplaySettings.getString(DisplaySettings.DLAA_RR_RAW, "reflections,shadows").toLowerCase(Locale.ROOT);
@@ -534,7 +548,7 @@ public final class Dlss {
                 // DLSS lets go of the textures it ran on before they are freed for a new size.
                 ngx.release();
                 pass.ensureSize(in.renderWidth(), in.renderHeight(), in.width(), in.height(), false);
-                int result = ngx.create(device.context, in.renderWidth(), in.renderHeight(), in.width(), in.height(),
+                int result = ngx.create(device.context(), in.renderWidth(), in.renderHeight(), in.width(), in.height(),
                         mode, flags, usePreset);
                 ngx.drainLog();
                 if (NgxLibrary.failed(result) && usePreset != PRESET_DEFAULT) {
@@ -544,7 +558,7 @@ public final class Dlss {
                     autoExposure = autoExposureTest;
                     flags = NgxLibrary.FLAG_IS_HDR | NgxLibrary.FLAG_MV_LOW_RES | NgxLibrary.FLAG_DEPTH_INVERTED
                             | (autoExposure ? NgxLibrary.FLAG_AUTO_EXPOSURE : 0);
-                    result = ngx.create(device.context, in.renderWidth(), in.renderHeight(), in.width(), in.height(),
+                    result = ngx.create(device.context(), in.renderWidth(), in.renderHeight(), in.width(), in.height(),
                             mode, flags, usePreset);
                     ngx.drainLog();
                 }
@@ -560,7 +574,7 @@ public final class Dlss {
             boolean resetNow = reset;
             long exposure = (featureFlags & NgxLibrary.FLAG_AUTO_EXPOSURE) != 0 ? 0L : pass.exposureResource();
             int[] result = new int[1];
-            pass.copyAndEvaluate(in, () -> result[0] = ngx.evaluate(device.context, pass.colorResource(), pass.outputResource(),
+            pass.copyAndEvaluate(in, () -> result[0] = ngx.evaluate(device, pass.colorResource(), pass.outputResource(),
                     pass.depthResource(), pass.motionResource(), exposure,
                     jitterX * jitterSign[0], jitterY * jitterSign[1], 1.0f, 1.0f, resetNow, in.renderWidth(), in.renderHeight(), frameTimeMs));
             ngx.drainLog();
@@ -597,7 +611,7 @@ public final class Dlss {
             ngx.release();
             pass.ensureSize(in.renderWidth(), in.renderHeight(), in.width(), in.height(), true);
             // Depth: the pack's DLSS depth, reversed and infinite, which is a hardware depth for viewToClip below.
-            int result = ngx.createRayReconstruction(device.context, in.renderWidth(), in.renderHeight(), in.width(), in.height(),
+            int result = ngx.createRayReconstruction(device.context(), in.renderWidth(), in.renderHeight(), in.width(), in.height(),
                     perfQuality(in.renderWidth(), in.width()), flags, rrPreset, NgxLibrary.DEPTH_HARDWARE, rrOwnParameters);
             ngx.drainLog();
             if (NgxLibrary.failed(result)) {
@@ -624,7 +638,7 @@ public final class Dlss {
         if (rrNoHitDistance) {
             resources[7] = 0L;
         }
-        pass.copyAndEvaluate(in, () -> result[0] = ngx.evaluateRayReconstruction(device.context, resources,
+        pass.copyAndEvaluate(in, () -> result[0] = ngx.evaluateRayReconstruction(device, resources,
                 jitterX * jitterSign[0], jitterY * jitterSign[1], 1.0f, 1.0f, frameTimeMs, worldToView, viewToClip, resetNow,
                 in.renderWidth(), in.renderHeight()));
         ngx.drainLog();
@@ -871,8 +885,8 @@ public final class Dlss {
         }
         Files.createDirectories(folder.resolve("ngx"));
         ngx = NgxLibrary.load(folder);
-        device = DlssDevice.open();
-        int result = ngx.init(PROJECT_ID, ENGINE_VERSION, folder.resolve("ngx"), dllFolder, device.device, NgxLibrary.LOG_ON);
+        device = onDirectX12 ? DlssDevice12.open(ngx) : DlssDevice.open();
+        int result = ngx.init(PROJECT_ID, ENGINE_VERSION, folder.resolve("ngx"), dllFolder, device, NgxLibrary.LOG_ON);
         ngx.drainLog();
         if (NgxLibrary.failed(result)) {
             throw new IllegalStateException("NVIDIA NGX did not start: " + NgxLibrary.describe(result));
@@ -889,9 +903,9 @@ public final class Dlss {
         }
         checkRayReconstruction(dllFolder);
         pass = new DlssPass(device);
-        adapterName = device.adapterName;
-        LOG.info("DLAA: NGX ready on {} (its own DirectX device; OpenGL on {}), nvngx_dlss.dll {} from {} (tested with {})",
-                device.adapterName, glGetString(GL_RENDERER),
+        adapterName = device.adapterName();
+        LOG.info("DLAA: NGX ready on {} (its own DirectX {} device{}; OpenGL on {}), nvngx_dlss.dll {} from {} (tested with {})",
+                adapterName, onDirectX12 ? "12" : "11", onDirectX12 ? ", for Ray Reconstruction" : "", glGetString(GL_RENDERER),
                 DllVersion.read(dll), dllFolder, TESTED_DLL_VERSION);
     }
 
@@ -1146,7 +1160,7 @@ public final class Dlss {
                 ? "upscaling " + renderWidth + "x" + renderHeight + " to " + displayWidth + "x" + displayHeight
                 : "at full resolution";
         if (active && !fsr3 && rrRunning && featureIsRr) {
-            return "On: NVIDIA DLSS Ray Reconstruction (dev build) " + size + " on " + adapterName + ", preset " + rrPresetName(rrPreset) + ".";
+            return "On: NVIDIA DLSS Ray Reconstruction (dev build, DirectX 12) " + size + " on " + adapterName + ", preset " + rrPresetName(rrPreset) + ".";
         }
         String rr = rayReconstructionWanted && rrUnavailable != null ? " Ray Reconstruction can't run: " + rrUnavailable + "."
                 : rayReconstructionWanted && profile != null && !profile.hasRayReconstructionGuides() ? " Ray Reconstruction: this pack hands over no guides." : "";
