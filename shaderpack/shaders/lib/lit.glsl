@@ -30,19 +30,23 @@ float luminance(vec3 c) {
     return dot(c, vec3(0.2126, 0.7152, 0.0722));
 }
 
-// What a block that gives light gives off by itself (in the frame's units, exposed), for its light level (0..1): the
-// bright parts of its texture glow (a torch's flame, not its stick; a lantern's light, not its frame). By day as
-// bright as a lamp's face, so they stand out; in the dark no more than a few times what the eyes have adapted to, so
-// they glow in their own colours with their texture showing, rather than burning out white as a camera would see
-// them.
-const float emission_luminance = 16.0;  // kcd/m² at level 15
-const float emission_frame_max = 10.0;  // frame units at level 15
+// What a block that gives light gives off by itself (in the frame's units, exposed), for its light level (0..1) and
+// kind (GLOW_): the bright parts of its texture glow (a torch's flame, not its stick; a lantern's light, not its
+// frame). By day as bright as a lamp's face, so they stand out; in the dark no more than a few times what the eyes
+// have adapted to, so they glow in their own colours with their texture showing, rather than burning out white as a
+// camera would see them. A whole glowing face (glowstone, a sea lantern, lava) fills much more of the view than a
+// flame, so it is held lower still, and keeps its colour. Lava glows by its texture: the hot, bright streaks fully,
+// the darker crust a little, so a lava fall shows its flow instead of one flat colour.
+const float emission_luminance = 16.0;      // kcd/m² at level 15
+const float emission_frame_max = 10.0;      // frame units at level 15
+const float emission_frame_max_large = 4.0; // a whole face's
 
-vec3 block_emission(vec3 srgb, float level) {
+vec3 block_emission(vec3 srgb, float level, int kind) {
     vec3 c = srgb_to_linear(srgb);
     float peak = max(c.r, max(c.g, c.b));
-    return c * smoothstep(0.2, 0.8, peak) * level * level * min(emission_luminance * exposure(), emission_frame_max)
-            * EMISSION;
+    float glows = kind == GLOW_LAVA ? 0.12 + 0.88 * smoothstep(0.18, 0.7, luminance(c)) : smoothstep(0.2, 0.8, peak);
+    float cap = kind == GLOW_SMALL ? emission_frame_max : emission_frame_max_large;
+    return c * glows * level * level * min(emission_luminance * exposure(), cap) * EMISSION;
 }
 
 // What the fog fades into, looking along dir (world space), in kcd/m² (not exposed): the sky just over the horizon

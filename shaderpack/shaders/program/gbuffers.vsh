@@ -28,6 +28,7 @@ in vec4 mc_Entity; // the block's number in block.properties
 #if defined LIT_WORLD && defined PROGRAM_TERRAIN
 in vec4 at_midBlock;     // w the light the block gives (0..15)
 flat out float v_emission; // that, 0..1
+flat out int v_glow;       // what kind of light it is (GLOW_, see block_emission)
 flat out int v_surface;  // what it is made of (SURFACE_)
 out float v_ao;          // Minecraft's smooth lighting corners: 1 in the open, less in a corner
 #endif
@@ -138,6 +139,10 @@ void main() {
 #ifdef PROGRAM_TERRAIN
     v_emission = clamp(at_midBlock.w / 15.0, 0.0, 1.0);
     int block = int(mc_Entity.x + 0.5);
+    // A face whose corners are the block's (glowstone, a sea lantern, a froglight) glows over a large surface; a
+    // torch's or a lantern's lies inside its block.
+    v_glow = block == BLOCK_LAVA ? GLOW_LAVA
+            : all(greaterThan(abs(at_midBlock.xyz), vec3(31.5))) ? GLOW_LARGE : GLOW_SMALL;
     v_surface = block == BLOCK_LEAVES ? SURFACE_LEAVES : block == BLOCK_METAL ? SURFACE_METAL
             : block == BLOCK_POLISHED ? SURFACE_POLISHED : block == BLOCK_SOIL ? SURFACE_SOIL
             : block == BLOCK_SAND ? SURFACE_SAND : SURFACE_PLAIN;

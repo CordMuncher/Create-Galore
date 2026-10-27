@@ -431,6 +431,12 @@ void main() {
         vec2 puddle = vec2(0.0);
         if (material == MATERIAL_LIT && !lod && depth >= hand_depth_limit) {
             puddle = puddle_at(scene_pos, normal, light.y, kind);
+#ifdef LIT_SHORE
+            // And the band the water wets on a wall or the bank where it meets them, as high as it laps.
+            float shore = shore_wet(scene_pos, normal, cg_swell);
+            wet = max(wet, 0.6 * shore);
+            wetness.y = max(wetness.y, shore);
+#endif
         }
         albedo = soaked(albedo, max(wetness.y, puddle.y), mat.porosity) * (1.0 - 0.25 * puddle.x);
         // Under something high (a floating island, a tall roof, a bridge) more of the sky's light gets in from around
@@ -448,7 +454,19 @@ void main() {
             }
 #endif
             seen = sky_seen_blend(scene_pos, light.y, rays, lod, false);
-            light.y = max(light.y, sky_seen_level(seen));
+            float level = sky_seen_level(seen);
+            // Indoors it can be darker too: Minecraft's sky light comes in through a window and spreads through the
+            // whole room a level less a block, but a room sees the sky only through its openings. Where the grid's
+            // rays traced here find little sky (a room, the shade under a roof), they stand in for it, the more so
+            // the less they find; out in the open, and where only the screen's probe can tell, never darker.
+            float indoors = 0.0;
+#ifdef LIT_SKY_GRID
+            if (!lod && rays >= 0.0) {
+                indoors = (1.0 - smoothstep(0.15, 0.5, seen))
+                        * (1.0 - smoothstep(sky_grid_reach - 28.0, sky_grid_reach, max(abs(scene_pos.x), abs(scene_pos.z))));
+            }
+#endif
+            light.y = level >= light.y ? level : mix(light.y, level, indoors);
         }
         float contact = 1.0;
 #if defined SHADOW_MAP && defined CONTACT_SHADOWS

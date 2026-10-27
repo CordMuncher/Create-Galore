@@ -28,6 +28,8 @@ uniform mat4 gbufferModelView;
 uniform mat4 gbufferProjection;
 uniform mat4 cg_object_motion; // see gbuffers.vsh
 in vec4 v_region;
+#elif defined PROGRAM_WATER
+uniform mat4 gbufferProjection; // a pixel's size, for the waves (water_surface)
 #endif
 
 in vec2 v_uv;
@@ -44,6 +46,7 @@ in vec3 v_scene_pos;
 flat in int v_material;
 #if defined PROGRAM_TERRAIN
 flat in float v_emission; // the light the block gives, 0..1
+flat in int v_glow;       // what kind of light it is (GLOW_, see block_emission)
 flat in int v_surface;    // what it is made of (SURFACE_)
 in float v_ao;
 #else
@@ -126,14 +129,18 @@ void lit_output(vec4 color, int flags) {
         // The top of water (either side of it) with its waves and ripples (see water.glsl); the composite pass draws
         // the rest.
         vec3 normal = v_normal;
+        float roughness = 0.0;
         if (abs(v_normal.y) > 0.9) {
             vec3 view_dir = (v_scene_pos - gbufferModelViewInverse[3].xyz) / max(dist, 1e-4);
             vec3 at = v_normal.y > 0.0 ? wave_parallax(v_scene_pos, view_dir, dist) : v_scene_pos;
-            normal = water_normal(at, dist, v_level.y);
+            float pixel_angle = 2.0 / (gbufferProjection[1][1] * render_size().y);
+            vec4 surface = water_surface(at, dist, view_dir, v_level.y, pixel_angle);
+            normal = surface.xyz;
+            roughness = surface.w;
         }
         out_color = vec4(0.0);
         out_water = vec4(encode_normal(normal), v_level.y, 1.0);
-        out_water_dist = vec4(dist, 0.0, 0.0, 1.0);
+        out_water_dist = vec4(dist, roughness, 0.0, 1.0);
         out_glass_dist = vec4(0.0);
         return;
     }
@@ -237,7 +244,7 @@ void lit_output(vec4 color, int flags) {
         // A block that gives light glows where its texture is bright (see block_emission), fading in the fog; where
         // the maps say what glows, they do.
         if (v_emission > 0.0 && !mapped) {
-            out_color.rgb = block_emission(color.rgb, v_emission) * fog_fade(v_fog_dist);
+            out_color.rgb = block_emission(color.rgb, v_emission, v_glow) * fog_fade(v_fog_dist);
         }
 #endif
         out_albedo = color;

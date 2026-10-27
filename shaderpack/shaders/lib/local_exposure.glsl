@@ -22,9 +22,11 @@ const float lex_range = 16.0;
 const int lex_grid_row = 1;
 const int lex_means_row = lex_grid_row + 32;
 const int lex_wide_row = lex_means_row + 1;
-// How much of the large-scale brightness above the average is kept (1 all of it), and how much of the grid against
-// the wide blur.
-const float lex_highlights = 1.0 - 0.3 * LOCAL_EXPOSURE;
+// How many stops of the large-scale brightness above the average are taken off for each stop it is above, and how
+// many more past two stops above (a window seen from a dark room, many stops brighter than the room, keeps its
+// detail); and how much of the grid against the wide blur.
+const float lex_highlights = 0.3 * LOCAL_EXPOSURE;
+const float lex_far_highlights = 0.25 * LOCAL_EXPOSURE;
 const float lex_grid_share = 0.4;
 
 // The frame's average (log2 of its values) the exposure brings it to: the middle of the grid's steps.
@@ -83,7 +85,7 @@ vec3 local_exposure(vec3 color, vec2 window_pixel) {
     float wide = lex_wide_at(tile);
     float base = grid < 1e8 ? mix(wide, grid, lex_grid_share) : wide;
     float above = max(base - middle, 0.0);
-    return color * exp2((lex_highlights - 1.0) * above);
+    return color * exp2(-lex_highlights * above - lex_far_highlights * max(above - 2.0, 0.0));
 }
 #endif
 

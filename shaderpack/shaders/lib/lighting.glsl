@@ -114,6 +114,26 @@ vec3 ao_bounced(float ao, vec3 albedo) {
     return max(vec3(ao), ((ao * a + b) * ao + c) * ao);
 }
 
+// How a lamp's light falls on a surface at scene_pos facing normal, as a share of what Minecraft's light level for it
+// gives (LAMP_SHAPE): a real lamp's falls off with the square of the distance, about 25 times from 1 block to 5, and
+// lights most what faces it; Minecraft's level drops about 3.5 times over those blocks and lights every face alike.
+// Close to the lamp (where the volume knows which one it is, see block_light_source) a share falls off as a lamp
+// of about a block and a half across does and lights what faces it; the rest, the light the room bounces about,
+// lights every face, as Minecraft's does. About 2.5 times Minecraft's a block from a lamp on what faces it, the same
+// 5 blocks off, and 0.55 of it on what faces away; past 10 blocks the levels' own falloff takes over.
+float lamp_shape(vec3 scene_pos, vec3 normal) {
+#ifdef LIT_COLORED_LIGHT
+    vec4 lamp = block_light_source(scene_pos, normal);
+    if (lamp.w > 0.0) {
+        float d2 = dot(lamp.xyz, lamp.xyz);
+        float facing = max(dot(normal, lamp.xyz) * inversesqrt(max(d2, 1e-4)), 0.0);
+        float shape = 0.55 + (2.46 / (1.0 + d2 / 2.25) + 0.25) * facing;
+        return mix(1.0, shape, lamp.w * LAMP_SHAPE);
+    }
+#endif
+    return 1.0;
+}
+
 #ifdef SHADOW_MAP
 // How far the sun's (or the moon's) light comes through water to reach a point (scene space; blocks along the light,
 // 0 where no water lies over it): from the tops of water the shadow pass marks around you, straight above the point
@@ -215,7 +235,7 @@ vec3 light_surface(vec3 albedo, vec3 normal, vec2 light, vec3 scene_pos, bool pl
         const vec3 luma = vec3(0.2126, 0.7152, 0.0722);
         sky = mix(sky, side * (dot(sky, luma) / max(dot(side, luma), 1e-8)), covered);
     }
-    nearby = block_irradiance(light.x, block_light_color(scene_pos, n));
+    nearby = block_irradiance(light.x, block_light_color(scene_pos, n) * lamp_shape(scene_pos, n));
 #ifdef LIT_GI
     nearby += g_light_color.rgb * bounce_light(scene_pos, n, light.y);
 #endif

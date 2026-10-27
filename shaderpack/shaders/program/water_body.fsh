@@ -23,13 +23,16 @@ uniform mat4 gbufferModelView;
 uniform mat4 gbufferProjection;
 uniform mat4 gbufferProjectionInverse;
 #ifdef DISTANT_HORIZONS
-uniform sampler2D dhDepthTex0;
+// What Distant Horizons drew that is opaque (its water is drawn here too, see dh.fsh).
+uniform sampler2D dhDepthTex1;
+uniform mat4 dhProjection;
 uniform mat4 dhProjectionInverse;
+#define REFLECTION_DH_DEPTH dhDepthTex1
 #endif
 
 #include "/lib/reflection.glsl"
 #define SKY_PROBE_DEPTH depthtex1
-#define SKY_PROBE_DH_DEPTH dhDepthTex0
+#define SKY_PROBE_DH_DEPTH dhDepthTex1
 #include "/lib/sky_probe.glsl"
 
 in vec2 v_uv;
@@ -53,10 +56,47 @@ float fresnel_water(float cos_theta) {
     return fresnel_schlick(cos_theta, vec3(0.02)).x;
 }
 
-// The sun's (or the moon's) glint on the water (view_dir from the eye), a little rougher far off so it doesn't
-// sparkle from pixel to pixel.
-vec3 water_glint(vec3 n, vec3 view_dir, float dist, float lit) {
-    return sun_glint(n, view_dir, 0.03 + 0.0015 * dist, vec3(0.02), lit);
+// The sun's (or the moon's) glint on the water (view_dir from the eye), spread by the roughness of the waves too
+// small for the pixel (their mean square slope m, see water_surface in water.glsl): a sharp glint on each wave up
+// close, a broad glitter far off. (For small slopes GGX's alpha squared is the mean square slope, as Beckmann's is.)
+vec3 water_glint(vec3 n, vec3 view_dir, float m, float lit) {
+    return sun_glint(n, view_dir, sqrt(0.0009 + m), vec3(0.02), lit);
+}
+
+// The sky the water mirrors (rgb, its radiance) and how much of it (a, Fresnel), averaged over the slopes of the
+// waves too small for the pixel (mean square slope m around its normal n), as Bruneton, Neyret and Holzschuch
+// filter the sky over that spread: facets drawn from it (the slopes of many small waves together make a Gaussian),
+// each counted by how much of it faces you. At a glancing view the facets tipped towards you mirror the sky higher
+// up, and mirror less of it, so the far sea keeps its own colour as a real one does instead of turning into a pale
+// mirror of the horizon. noise turns the facets from pixel to pixel.
+vec4 water_sky_mirror(vec3 n, vec3 dir, float m, float noise) {
+    const int taps = 8;
+    float spread = sqrt(0.5 * m); // per axis
+    vec3 sky = vec3(0.0);
+    float f_sum = 0.0;
+    float w_sum = 0.0;
+    for (int i = 0; i < taps; i++) {
+        float u = (float(i) + 0.5) / float(taps);
+        float r = sqrt(-2.0 * log(1.0 - u)) * spread; // a Gaussian's radius (Box and Muller)
+        float a = float(i) * 2.399963 + noise * 6.283185;
+        vec3 facet = normalize(n + vec3(r * cos(a), 0.0, r * sin(a)));
+        float facing = dot(-dir, facet);
+        if (facing <= 0.0) {
+            continue; // turned away: you can't see it
+        }
+        float w = facing / max(facet.y, 0.05); // how much of the surface it takes up as you see it
+        vec3 refl = reflect(dir, facet);
+        refl = normalize(vec3(refl.x, max(refl.y, 0.02), refl.z)); // a wave can't mirror the water under it
+        float f = fresnel_water(facing);
+        sky += w * f * sky_radiance(refl);
+        f_sum += w * f;
+        w_sum += w;
+    }
+    if (w_sum <= 0.0) {
+        vec3 refl = reflect(dir, n);
+        return vec4(sky_radiance(normalize(vec3(refl.x, max(refl.y, 0.02), refl.z))), fresnel_water(dot(-dir, n)));
+    }
+    return vec4(sky / max(f_sum, 1e-8), f_sum / w_sum);
 }
 
 #ifdef LIT_AIR
@@ -69,7 +109,7 @@ vec3 air_taken_off(vec3 seen, vec2 point) {
     if (d >= 1.0) {
         z = air_sky_start * -normalize(unproject(gbufferProjectionInverse, ndc, 1.0)).z;
 #ifdef DISTANT_HORIZONS
-        float dh = texelFetch(dhDepthTex0, ivec2(point), 0).r;
+        float dh = texelFetch(dhDepthTex1, ivec2(point), 0).r;
         if (dh < 1.0) {
             z = -unproject(dhProjectionInverse, ndc, dh).z;
         }
@@ -79,6 +119,22 @@ vec3 air_taken_off(vec3 seen, vec2 point) {
     return (seen - air.rgb) / max(air.a, 1e-3);
 }
 #endif
+
+// How far the opaque surface a pixel shows is (blocks), along the ray through ndc: Minecraft's, else Distant
+// Horizons' terrain past it; -1 where there is only the sky.
+float opaque_distance(ivec2 pixel, vec2 ndc) {
+    float d = texelFetch(depthtex1, pixel, 0).r;
+    if (d < 1.0) {
+        return length(unproject(gbufferProjectionInverse, ndc, d));
+    }
+#ifdef DISTANT_HORIZONS
+    float dh = texelFetch(dhDepthTex1, pixel, 0).r;
+    if (dh < 1.0) {
+        return length(unproject(dhProjectionInverse, ndc, dh));
+    }
+#endif
+    return -1.0;
+}
 
 void main() {
     ivec2 texel = ivec2(gl_FragCoord.xy);
@@ -103,10 +159,13 @@ void main() {
     vec2 ndc = (vec2(texel) + 0.5) / size * 2.0 - 1.0;
     vec3 dir = normalize(mat3(gbufferModelViewInverse) * unproject(gbufferProjectionInverse, ndc, 1.0));
     vec3 eye = gbufferModelViewInverse[3].xyz;
-    float depth_opaque = texelFetch(depthtex1, texel, 0).r;
-    bool sky_behind = depth_opaque >= 1.0;
-    float dist_opaque = sky_behind ? 1e4 : length(unproject(gbufferProjectionInverse, ndc, depth_opaque));
-    float dist_water = surface ? texelFetch(colortex5, texel, 0).r : 0.0;
+    float found = opaque_distance(texel, ndc);
+    bool sky_behind = found < 0.0;
+    float dist_opaque = sky_behind ? 1e4 : found;
+    // The water's surface: how far it is, and how rough the waves too small for this pixel make it.
+    vec2 water_far = surface ? texelFetch(colortex5, texel, 0).rg : vec2(0.0);
+    float dist_water = water_far.r;
+    float roughness = water_far.g;
     float dist_glass = texelFetch(colortex6, texel, 0).r;
     float noise = pixel_noise();
 
@@ -204,12 +263,13 @@ void main() {
             vec3 at = reflection_pixel(mat3(gbufferModelView) * q + gbufferModelView[3].xyz);
             if (at.z > 0.0 && all(greaterThanEqual(at.xy, vec2(0.0))) && all(lessThan(at.xy, size))) {
                 ivec2 bent = ivec2(at.xy);
-                float d = texelFetch(depthtex1, bent, 0).r;
-                if (texelFetch(colortex4, bent, 0).a > 0.5 && d < 1.0 && d >= hand_depth_limit) {
-                    vec3 o = mat3(gbufferModelViewInverse)
-                            * unproject(gbufferProjectionInverse, (vec2(bent) + 0.5 - jitter) / size * 2.0 - 1.0, d)
-                            + gbufferModelViewInverse[3].xyz;
-                    if (length(o - eye) > texelFetch(colortex5, bent, 0).r) {
+                vec2 bent_ndc = (vec2(bent) + 0.5 - jitter) / size * 2.0 - 1.0;
+                bool hand = texelFetch(depthtex1, bent, 0).r < hand_depth_limit;
+                float bent_dist = hand ? -1.0 : opaque_distance(bent, bent_ndc);
+                if (texelFetch(colortex4, bent, 0).a > 0.5 && bent_dist > 0.0) {
+                    vec3 o = eye + bent_dist
+                            * normalize(mat3(gbufferModelViewInverse) * unproject(gbufferProjectionInverse, bent_ndc, 1.0));
+                    if (bent_dist > texelFetch(colortex5, bent, 0).r) {
                         under = texelFetch(colortex0, bent, 0).rgb;
 #ifdef LIT_AIR
                         under = air_taken_off(under, vec2(bent) + 0.5 - jitter);
@@ -222,15 +282,26 @@ void main() {
                 }
             }
         }
+        // The shore around (see shore.glsl): a wall or the bank beside the water hides part of the sky from it, so
+        // the water against it is a little darker (the light it scatters and the sky it mirrors) and the wall reads
+        // as going down into it.
+        vec2 shore = vec2(0.0, 1.0);
+#ifdef LIT_SHORE
+        shore = shore_around(p);
+#endif
+        float hidden = 0.35 * smoothstep(0.06, 0.5, shore.x);
+
         vec3 light, through;
         water_ray(under_from, under_dir, under_a, under_b, 10, noise, light, through);
-        vec3 body = under * through + light * exposure();
+        vec3 body = under * through + light * exposure() * (1.0 - hidden);
 
-        float f = fresnel_water(dot(-dir, n));
+        // The sky it mirrors and how much, over the spread of the waves too small to see.
+        vec4 mirror = water_sky_mirror(n, dir, roughness, noise);
+        float f = mirror.a;
         vec3 r = reflect(dir, n);
         r = normalize(vec3(r.x, max(r.y, 0.02), r.z)); // a wave can't turn the reflection down into the water
         float open_sky = smoothstep(12.0 / 15.0, 14.5 / 15.0, water.b);
-        vec3 reflection = sky_radiance(r) * open_sky * exposure();
+        vec3 reflection = mirror.rgb * open_sky * exposure() * (1.0 - hidden);
 #if REFLECTION_QUALITY > 0
         vec3 hit = reflection_trace(depthtex1, p_view, mat3(gbufferModelView) * r, noise, hand_depth_limit);
         if (hit.z > 0.0) {
@@ -246,25 +317,39 @@ void main() {
             lit = open_sky * texture(shadowtex1HW, vec3(coord.xy, coord.z - 0.00002));
         }
 #endif
-        color = body * (1.0 - f) + reflection * f + water_glint(n, dir, dist_water, lit) * exposure();
-
-        // Foam: a band where the water meets the shore or a wall, and where something churns it (a wake).
+        // Foam: where the ground closes in round the water (see shore.glsl), so it gathers in corners and round a
+        // pillar and thins out along a straight wall, lapping in and out every few seconds; more of it the rougher
+        // the water (its swell, the rain); and where something churns it (a wake). It drifts with the waves, is lit
+        // by their slope, lets the water show through where it's thin, and goes on under the surface as bubbles.
         float churn = 0.0;
+        float rough = 1.0;
+#ifdef LIT_SHORE
+        vec2 world = vec2(cameraPositionInt.xz % 4096) + cameraPositionFract.xz + p.xz;
+        rough = mix(0.5, 1.0, max(cg_swell * smoothstep(0.2, 0.8, shore.y), cg_rain_here));
+        churn = smoothstep(0.04, 0.45, shore.x * (0.7 + 0.6 * shore_lap(world))) * rough;
+#else
         if (!sky_behind) {
             churn = 1.0 - smoothstep(0.05, 0.4, p.y - (eye.y + dir.y * dist_opaque));
         }
+#endif
 #ifdef LIT_WATER_RIPPLES
         churn = max(churn, smoothstep(0.4, 1.2, length(ripple_slope(p))));
 #endif
         if (churn > 0.0) {
             vec3 w = wave_coord(p);
+            w.xz -= n.xz * 0.004; // carried a little by the waves' slope
             vec2 drift = frameTimeCounter * vec2(0.031, -0.022);
             float bubbles = 0.5 * (wave_noise(w.xz * 9.0 + drift) + wave_noise(golden_turn * w.xz * 13.0 - drift));
-            float foam = smoothstep(1.0 - churn, 1.15 - churn, bubbles);
-            if (foam > 0.0) {
-                vec3 white = light_surface(srgb_to_linear(vec3(0.85)), vec3(0.0, 1.0, 0.0), vec2(0.0, water.b), p, false,
-                        false, true, 1.0, 1.0, sky_light_mc) * exposure();
-                color = mix(color, white, foam * 0.85);
+            float clumps = wave_noise(golden_turn * w.xz * 2.7 - drift * 0.4);
+            float foam = smoothstep(1.0 - churn, 1.2 - churn, bubbles * mix(0.88, 1.12, clumps));
+            float under_foam = churn * smoothstep(0.35, 0.7, bubbles) * (1.0 - foam);
+            if (foam > 0.0 || under_foam > 0.0) {
+                vec3 white = light_surface(srgb_to_linear(vec3(0.8)), n, vec2(0.0, water.b), p, false, false, true, 1.0,
+                        1.0, sky_light_mc) * exposure();
+                // Bubbles just under the surface, through the water above them.
+                color += white * (1.0 - f) * 0.12 * under_foam;
+                // Thick foam a little shaded by its own bumps; thin foam lets the water through.
+                color = mix(color, white * mix(0.85, 1.0, foam), foam * mix(0.55, 0.92, foam));
             }
         }
         // The light in the air and Minecraft's fog in front of it, as the deferred pass has them in front of what is

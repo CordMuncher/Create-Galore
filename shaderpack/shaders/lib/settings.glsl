@@ -98,6 +98,9 @@ const float upscaling_render_scale = RENDER_SCALE;
 // How fast the blocks' light fades away from a light: its block light level's brightness to this power. 1: as
 // Minecraft's, where one torch lights a room almost evenly; higher gathers the light into pools around each light.
 #define BLOCK_FALLOFF 1.5 // [1.0 1.5 2.0 2.5 3.0]
+// How much a lamp's light takes the shape a real lamp's does (with Coloured Light): falling off steeply close to it,
+// so each lamp lights a pool around it, and lighting most what faces it. 0: as Minecraft's, the same on every face.
+#define LAMP_SHAPE 1.0   // [0.0 0.5 1.0]
 
 // Blocks that give light glow where their texture is bright (a torch's flame, a lantern's light, lava): how bright.
 #define EMISSION 1.0     // [0.0 0.5 1.0 1.5 2.0 3.0 4.0]
@@ -277,6 +280,7 @@ const float upscaling_render_scale = RENDER_SCALE;
 // ambient occlusion's quality.
 #if defined LIT_WORLD && defined SHADOWS
 #define LIT_SKY_GRID
+#define LIT_SHORE // the shore around the water near you (see shore.glsl)
 #if AO_QUALITY >= 3
 #define SKY_RAYS 8
 #elif AO_QUALITY == 2

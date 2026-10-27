@@ -7,6 +7,8 @@
 //
 // The moon and the stars are made brighter than real ones so nights can be seen by (see moon_boost); the part of a
 // pixel's light they give counts at its real brightness, so the night still looks the way a real one does to the eye.
+// Only that part takes night's cool tint: the rest (a lamp's dim glow in the haze, a far torch) the rods see grey,
+// not as moonlight.
 //
 // The rods' weights of linear Rec.709's red, green and blue come from CIE 1951's scotopic luminous efficiency, D65 and
 // Smits' spectra for the primaries, as Ghost of Tsushima builds its matrix to the eye's receptors (Patry 2021); see
@@ -28,7 +30,7 @@ vec3 night_vision(vec3 light, float moonlit, float boost) {
     float luminance = dot(light, vec3(0.2126, 0.7152, 0.0722)) * 1000.0; // cd/m²
     float seen = luminance * (1.0 - moonlit + moonlit / boost);
     float rods_share = 0.04 / (0.04 + seen);
-    vec3 rods = night_tint * dot(light, rod_weights);
+    vec3 rods = mix(vec3(1.0), night_tint, moonlit) * dot(light, rod_weights);
     return mix(light, rods, rods_share * NIGHT_VISION);
 }
 

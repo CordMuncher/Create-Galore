@@ -13,9 +13,10 @@ const bool colortex8Clear = false;
 */
 
 const int bloom_levels = 7;
-// How much each level takes of the blur of the level below it (the rest its own): more spreads the glow wider. Rain
-// and snow scatter the light more, so lamps glow wider and more through them.
-#define bloom_spread (0.7 + 0.12 * weather_around())
+// How much each level takes of the blur of the level below it (the rest its own): more spreads the glow wider. A
+// little over half: a lamp gets a soft glow close round it rather than a haze over half the frame. Rain and snow
+// scatter the light more, so lamps glow wider and more through them.
+#define bloom_spread (0.58 + 0.2 * weather_around())
 // How much of the frame the glow takes (and leaves it): a little, so only what is much brighter shows.
 #define bloom_amount (0.08 * BLOOM * (1.0 + 1.5 * weather_around()))
 

@@ -172,6 +172,23 @@ void mark_sky(vec3 scene_pos) {
         imageAtomicOr(cg_water_marks_img, sky_grid_texel(block.xz, block.y >> 5, 0), 1u << uint(block.y & 31));
     }
 }
+
+#if defined PROGRAM_SHADOW_WATER && defined LIT_SHORE
+#include "/lib/shore.glsl"
+
+// Marks the top of the water in its column (see shore.glsl), from every corner of the water's top faces (a flowing
+// block's corners differ: the highest counts).
+void mark_shore(vec3 scene_pos) {
+    vec3 normal = mat3(shadowModelViewInverse) * (gl_NormalMatrix * gl_Normal);
+    if (int(mc_Entity.x + 0.5) != BLOCK_WATER || normal.y < 0.5) {
+        return;
+    }
+    ivec2 column = ivec2(floor(shore_pos(scene_pos + at_midBlock.xyz / 64.0, cameraPositionFract)));
+    if (all(greaterThanEqual(column, ivec2(0))) && all(lessThan(column, ivec2(shore_size)))) {
+        imageAtomicMax(cg_water_marks_img, shore_top_texel(column), shore_height_mark(scene_pos.y));
+    }
+}
+#endif
 #endif
 
 void main() {
@@ -193,6 +210,9 @@ void main() {
 #endif
 #if defined PROGRAM_SHADOW_TERRAIN && defined LIT_SKY_GRID
     mark_sky(scene_pos);
+#endif
+#if defined PROGRAM_SHADOW_WATER && defined LIT_SHORE
+    mark_shore(scene_pos);
 #endif
 #if defined PROGRAM_SHADOW_TERRAIN && defined LIT_GI && !defined PROGRAM_SHADOW_WATER
     v_normal = normalize(mat3(shadowModelViewInverse) * (gl_NormalMatrix * gl_Normal));

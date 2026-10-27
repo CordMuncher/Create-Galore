@@ -22,11 +22,29 @@ const int reflection_steps = 18;
 const int reflection_refine = 4;
 #endif
 
-// (The program that includes this declares gbufferProjection.)
+// (The program that includes this declares gbufferProjection; one that defines REFLECTION_DH_DEPTH as Distant
+// Horizons' opaque depth also declares that and dhProjection, and its rays find Distant Horizons' terrain past
+// Minecraft's, so far land shows in the water.)
 
 // A view-space distance (negative z) from a depth buffer's value, by the projection.
 float reflection_view_z(float depth) {
     return -gbufferProjection[3][2] / (depth * 2.0 - 1.0 + gbufferProjection[2][2]);
+}
+
+// The view-space z of what the screen shows at a pixel (Minecraft's world, else Distant Horizons' past it), or
+// -1e9 where it shows only the sky or the hand (which hides nothing).
+float reflection_surface_z(sampler2D depth_tex, ivec2 pixel, float hand_limit) {
+    float depth = texelFetch(depth_tex, pixel, 0).r;
+    if (depth < 1.0) {
+        return depth >= hand_limit ? reflection_view_z(depth) : -1e9;
+    }
+#ifdef REFLECTION_DH_DEPTH
+    float dh = texelFetch(REFLECTION_DH_DEPTH, pixel, 0).r;
+    if (dh < 1.0) {
+        return -dhProjection[3][2] / (dh * 2.0 - 1.0 + dhProjection[2][2]);
+    }
+#endif
+    return -1e9;
 }
 
 // Where a view-space point is on the screen, in render pixels (jittered as the frame is), with its clip w.
@@ -51,9 +69,9 @@ vec3 reflection_trace(sampler2D depth_tex, vec3 origin, vec3 dir, float noise, f
         if (at.z <= 0.0 || any(lessThan(at.xy, vec2(0.0))) || any(greaterThanEqual(at.xy, size))) {
             break; // behind the eye or off the screen
         }
-        float depth = texelFetch(depth_tex, ivec2(at.xy), 0).r;
-        if (depth >= hand_limit && depth < 1.0) {
-            float behind = reflection_view_z(depth) - p.z; // how far the ray is behind what the screen shows there
+        float z = reflection_surface_z(depth_tex, ivec2(at.xy), hand_limit);
+        if (z > -1e8) {
+            float behind = z - p.z; // how far the ray is behind what the screen shows there
             // A thin wall the ray stepped across counts; passing well behind something (a tree seen past its edge)
             // doesn't.
             float thickness = max(1.5 * step_len, 0.25 + 0.02 * -p.z);
@@ -63,8 +81,8 @@ vec3 reflection_trace(sampler2D depth_tex, vec3 origin, vec3 dir, float noise, f
                 for (int j = 0; j < reflection_refine; j++) {
                     vec3 mid = 0.5 * (a + b);
                     vec3 m = reflection_pixel(mid);
-                    float d = texelFetch(depth_tex, ivec2(clamp(m.xy, vec2(0.0), size - 1.0)), 0).r;
-                    if (reflection_view_z(d) - mid.z > 0.0) {
+                    float mz = reflection_surface_z(depth_tex, ivec2(clamp(m.xy, vec2(0.0), size - 1.0)), hand_limit);
+                    if (mz - mid.z > 0.0) {
                         b = mid;
                     } else {
                         a = mid;

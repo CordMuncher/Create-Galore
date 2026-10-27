@@ -24,7 +24,8 @@
 // And what the translucent water program leaves for the composite pass, which draws the water (see water_body.fsh):
 // colortex4: the water's surface (RGBA16F): rg its normal (octahedral, its upper side's), b its sky light, a 1 where
 //            there is water. The nearest drawn wins: water writes alpha 1, the other translucent blocks 0.
-// colortex5: how far that surface is from the eye (blocks, R32F), likewise.
+// colortex5: how far that surface is from the eye (blocks, r) and the mean square slope of the waves too small for
+//            the pixel to show (g, see water_surface in water.glsl) (RG32F), likewise.
 // colortex6: how far the nearest other translucent block (glass, ice) is from the eye, where there is one.
 //
 // colortex3: the frame as the water pass leaves it (R11F_G11F_B10F, kept from frame to frame), for the next frame's
@@ -59,7 +60,7 @@ const vec4 colortex12ClearColor = vec4(0.0, 0.0, 0.0, 0.0);
 const int colortex4Format = RGBA16F;
 const bool colortex4Clear = true;
 const vec4 colortex4ClearColor = vec4(0.0, 0.0, 0.0, 0.0);
-const int colortex5Format = R32F;
+const int colortex5Format = RG32F;
 const bool colortex5Clear = true;
 const vec4 colortex5ClearColor = vec4(0.0, 0.0, 0.0, 0.0);
 const int colortex6Format = R32F;
@@ -91,6 +92,11 @@ const bool colortex15Clear = false;
 #define SURFACE_SOIL 4     // takes most rain in: puddles only in its deepest dips
 #define SURFACE_SAND 5     // takes all rain in: damp, never a puddle (sand, gravel, snow)
 
+// What kind of light a block that gives light is, for how it glows (see block_emission).
+#define GLOW_SMALL 0 // a flame or a lamp inside its block
+#define GLOW_LARGE 1 // a whole face of its block
+#define GLOW_LAVA 2  // lava and magma
+
 int decode_surface_kind(float g) {
     return int(g * 7.0 + 0.5);
 }
@@ -102,6 +108,7 @@ int decode_surface_kind(float g) {
 #define BLOCK_POLISHED 10004
 #define BLOCK_SOIL 10005
 #define BLOCK_SAND 10006
+#define BLOCK_LAVA 10107 // lava and magma (also a light the coloured light gives a set colour, see shadow.vsh)
 #define BLOCK_LIGHT_RED 10101 // 10101..10109: lights with colours of their own (see shadow.vsh)
 #define BLOCK_LIGHT_LAST 10109
 

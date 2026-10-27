@@ -4,8 +4,10 @@
 // The shadow pass marks what each block is (shadow.vsh): a light, with its light level and a colour read from its
 // own texture (so every modded light has one without any list of blocks); a solid cube, which stops the light; or
 // see-through (stained glass, ice), which tints it. Iris clears those marks every frame. The light flood
-// (light_flood.csh) then spreads each light one block a frame out of last frame's volume, losing a light level per
-// block as Minecraft's light does and keeping its colour, so lights side by side mix their colours where they meet.
+// (light_flood.csh) then spreads each light two blocks a frame out of last frame's volume, losing a light level per
+// block as Minecraft's light does and keeping its colour, so lights side by side mix their colours where they meet;
+// and with it the way back to the light it came from, for how a lamp's light falls off near it and which faces it
+// lights most (see lamp_shape in lighting.glsl).
 //
 // The volume only gives the light's colour; how bright it is stays Minecraft's light level, so the light never
 // reaches further than Minecraft's does and never leaks where Minecraft's doesn't. Past the volume, or where a light's
@@ -45,19 +47,25 @@ const int section_lights = 1;
 const int section_bounce_added = 2;
 const float bounce_scale = 2048.0;
 // The light image: the coloured light; then (with bounce light) the bounce light's colour (from every facing, for its
-// colour only), and each facing's (luminance), three to a texel; last the trees' crowns (see canopy_shape).
+// colour only), and each facing's (luminance), three to a texel; then the trees' crowns (see canopy_shape); last where
+// each block's coloured light comes from (see block_light_source).
 const int section_color = 0;
 const int section_bounce = 1;
 const int section_bounce_facing = 2;
 #ifdef LIT_GI
 const int marks_sections = 7;
-const int light_sections = 5;
+const int light_sections = 6;
 const int section_canopy = 4;
+const int section_source = 5;
 #else
 const int marks_sections = 2;
-const int light_sections = 2;
+const int light_sections = 3;
 const int section_canopy = 1;
+const int section_source = 2;
 #endif
+// A block's source: the way from it to the light its light comes from (blocks, whole), plus source_offset in each
+// axis so it is never below 0 (a light reaches 15 blocks at most); 0 where it has no light.
+const float source_offset = 16.0;
 
 ivec3 marks_texel(ivec3 block, int section) {
     return block + ivec3(0, section * light_volume_size.y, 0);
@@ -198,6 +206,24 @@ vec4 canopy_shape(vec3 scene_pos) {
 #endif
 
 #ifdef LIT_COLORED_LIGHT
+// Where the lamp whose light reaches a surface at scene_pos facing normal is (the brightest of those around, as the
+// flood keeps it for the block in front of the surface): xyz the way from the point to the lamp's middle (blocks), w
+// how much to go by it (fading out towards the volume's edges; 0 where the volume doesn't know).
+vec4 block_light_source(vec3 scene_pos, vec3 normal) {
+    vec3 at;
+    float fade = light_volume_at(scene_pos, normal, 0.5, at);
+    if (fade <= 0.0) {
+        return vec4(0.0);
+    }
+    ivec3 block = ivec3(floor(at));
+    vec3 source = texelFetch(cg_light_tex, light_texel(block, section_source, frameCounter & 1), 0).rgb;
+    if (source.x < 0.5) {
+        return vec4(0.0);
+    }
+    vec3 lamp = vec3(block) + 0.5 + (source - source_offset);
+    return vec4(lamp - (at - normal * 0.5), fade);
+}
+
 // The block light's colour for the volume's light (rgb, any brightness): as bright as torchlight in all (red, green
 // and blue summed), so a light level means what it means elsewhere; with LIGHT_STYLE, brought towards torchlight's
 // brightness to the eye (blue the most, as it looks dimmest).

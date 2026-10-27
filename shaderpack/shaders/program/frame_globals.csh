@@ -13,6 +13,10 @@ const ivec3 workGroups = ivec3(1, 1, 1);
 uniform vec3 shadowLightPosition;
 uniform ivec3 cameraPositionInt;
 uniform vec3 cameraPositionFract;
+uniform ivec3 previousCameraPositionInt;
+uniform vec3 previousCameraPositionFract;
+uniform mat4 gbufferModelView;
+uniform mat4 gbufferPreviousModelView;
 uniform int worldDay;
 #include "/lib/frame.glsl"
 uniform vec4 lightningBoltPosition; // a lightning bolt this frame: xyz where it is from the camera, w 1
@@ -143,6 +147,16 @@ void main() {
     set_global(G_WATER, vec4(steps, mod(water.y + water.x, 2.0), frameTimeCounter, 0.0));
     set_global(G_WATER_ORIGIN, vec4(next_corner, grid.xy));
 #endif
+
+    // A camera cut: the camera moved more than 8 blocks or turned more than 40° since last frame (a teleport, a
+    // respawn, a command, a spectator's jump), or the pack has just loaded (entering a world or a dimension). The
+    // exposure goes straight to the new place's, and the light in the air drops what it held (DLSS starts over on a
+    // move like that too, in the Bridge).
+    vec3 moved = vec3(cameraPositionInt - previousCameraPositionInt) + cameraPositionFract - previousCameraPositionFract;
+    vec3 ahead = vec3(gbufferModelView[0][2], gbufferModelView[1][2], gbufferModelView[2][2]);
+    vec3 ahead_before = vec3(gbufferPreviousModelView[0][2], gbufferPreviousModelView[1][2], gbufferPreviousModelView[2][2]);
+    bool cut = dot(moved, moved) > 64.0 || dot(ahead, ahead_before) < 0.766 || !exposure_ready(g_exposure_data);
+    set_global(G_CUT, vec4(cut ? 1.0 : 0.0, cut ? 0.0 : min(global(G_CUT).y + 1.0, 1e4), 0.0, 0.0));
 
     // The first frame (the image starts at zero): an exposure for what the sky lights the world with, until the
     // metering pass (exposure.csh, after DLSS) takes over.

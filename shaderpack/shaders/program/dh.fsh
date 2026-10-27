@@ -5,6 +5,10 @@
 // it, and its water after them, which nothing covers. So it only draws past the chunks Minecraft has (else its coarse
 // copy shows through cave mouths and dug holes, and its water over the near shore), and its water only where
 // Minecraft drew nothing.
+//
+// In the lit overworld its water is Minecraft's water further off: it leaves its surface (with the same waves, see
+// water.glsl) for the composite pass, which draws all water the same way (see water_body.fsh), so the sea looks the
+// same either side of where Distant Horizons takes over.
 
 #include "/lib/settings.glsl"
 #include "/lib/frame.glsl"
@@ -16,16 +20,8 @@
 #ifdef PROGRAM_DH_WATER
 uniform sampler2D depthtex0;
 #ifdef LIT_WORLD
-// For how much of the sky the water sees (see sky_probe.glsl): what is opaque in front of the points over it.
-uniform sampler2D depthtex1;
-uniform sampler2D dhDepthTex1;
-uniform mat4 gbufferModelView;
 uniform mat4 gbufferProjection;
-uniform mat4 gbufferProjectionInverse;
-uniform mat4 dhProjectionInverse;
-#define SKY_PROBE_DEPTH depthtex1
-#define SKY_PROBE_DH_DEPTH dhDepthTex1
-#include "/lib/sky_probe.glsl"
+#include "/lib/water.glsl"
 #endif
 #endif
 
@@ -46,6 +42,13 @@ flat in int v_dh_material;
 layout(location = 0) out vec4 out_color;
 layout(location = 1) out vec4 out_albedo;
 layout(location = 2) out vec4 out_surface;
+#elif defined LIT_WORLD
+// Its water's surface, as Minecraft's water leaves it (see gbuffer.glsl).
+/* RENDERTARGETS: 0,4,5,6 */
+layout(location = 0) out vec4 out_color;
+layout(location = 1) out vec4 out_water;
+layout(location = 2) out vec4 out_water_dist;
+layout(location = 3) out vec4 out_glass_dist;
 #else
 /* RENDERTARGETS: 0 */
 layout(location = 0) out vec4 out_color;
@@ -74,23 +77,20 @@ void main() {
     out_albedo = v_color;
     out_surface = encode_surface(v_normal, v_level, MATERIAL_LIT, 1.0);
 #elif defined PROGRAM_DH_WATER
-    // Lit here: past the shadow map's reach the sun goes by the sky light (see direct_visibility), and the sky's own
-    // light by how much of the sky the water sees where it lies under something high, which Minecraft's sky light
-    // makes as dark as a cave (see sky_probe.glsl).
-    vec2 level = v_level;
-    float seen = -1.0;
-    if (level.y < 0.999) {
-        seen = sky_seen_around(v_fog_pos, vec3(0.0, 1.0, 0.0), level.y, 0.5, true, true);
-        level.y = max(level.y, sky_seen_level(seen));
+    // Its surface for the composite pass, with the waves a pixel this far off sees (and their roughness).
+    float dist = length(v_fog_pos - gbufferModelViewInverse[3].xyz);
+    vec3 normal = v_normal;
+    float roughness = 0.0;
+    if (v_normal.y > 0.9) {
+        float pixel_angle = 2.0 / (gbufferProjection[1][1] * render_size().y);
+        vec4 surface = water_surface(v_fog_pos, dist, dir, v_level.y, pixel_angle);
+        normal = surface.xyz;
+        roughness = surface.w;
     }
-    vec3 rgb = light_surface(srgb_to_linear(v_color.rgb), v_normal, level, v_fog_pos, false, false, false, 1.0, 1.0,
-            v_level.y) * exposure();
-    out_color = with_sky_reflection(vec4(rgb, v_color.a), v_normal, dir, level.y);
-    out_color.rgb = apply_fog_lit(through_air(out_color.rgb, air_seen_at(v_fog_pos, gl_FragCoord.xy)),
-            fog_distance(v_fog_pos), dir, fog_range());
-#if DEBUG_VIEW == 6
-    out_color = vec4(vec3(sky_light_curve(v_level.y), max(seen, 0.0), seen < 0.0 ? 0.5 : 0.0) * 2.0, 1.0);
-#endif
+    out_color = vec4(0.0);
+    out_water = vec4(encode_normal(normal), v_level.y, 1.0);
+    out_water_dist = vec4(dist, roughness, 0.0, 1.0);
+    out_glass_dist = vec4(0.0);
 #else
     // Its other objects, lit here: its clouds, the beacons' beams past the render distance, and any a mod adds.
     // It gives its clouds and beams full block and sky light, so that its own shaders draw them as bright as

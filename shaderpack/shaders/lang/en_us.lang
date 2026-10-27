@@ -34,6 +34,8 @@ option.SKY_FALLOFF=Sky Light Falloff
 option.SKY_FALLOFF.comment=How fast the sky's light fades into rooms, caves and forests. 1: as Minecraft's, where a room with a window gets almost as much sky as the shade outside. Higher: darker rooms, lit more by the sunlight bouncing in.
 option.BLOCK_FALLOFF=Block Light Falloff
 option.BLOCK_FALLOFF.comment=How fast the light of torches, lanterns and every other light fades away from them. 1: as Minecraft's, where one torch lights a room almost evenly. Higher: pools of light around each one, darker between them.
+option.LAMP_SHAPE=Lamp Light Shape
+option.LAMP_SHAPE.comment=How much a lamp's light takes the shape a real lamp's does (needs Coloured Light): bright close to it and falling off steeply, so each lamp lights a pool around it, and brightest on what faces it. 0: as Minecraft's, the same on every face.
 option.sunPathRotation=Sun Path Tilt
 option.sunPathRotation.comment=How far the sun's path leans towards the south, in degrees. 0 is Minecraft's own, straight overhead.
 

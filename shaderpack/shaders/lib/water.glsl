@@ -4,7 +4,10 @@
 // The waves: Alpha Piscium's (GPL-3.0), layers of a smooth cellular noise (textures/wave_noise.bin), each turned by
 // the golden angle from the last, stretched and drifting at its own speed, all warped by a slow curl field
 // (wave_curl.bin), so no pattern lines up or repeats, from a boat or from the air. The sea gets the full swell, lakes,
-// rivers and swamps less of it (by the biome you are in, see cg_swell in shaders.properties).
+// rivers and swamps less of it (by the biome you are in, see cg_swell in shaders.properties), and a pool or a pond
+// small waves whatever the biome (by how open the water around it is, see shore.glsl). Each pixel sees the waves at
+// the detail it can hold, and the ones too small for it become the water's roughness (see wave_height_seen), so the
+// water keeps its look out to the horizon, Distant Horizons' water too.
 //
 // The ripples: the wave equation on a grid of 512 by 512 cells around you, a quarter of a block each (128 blocks
 // across), stepped 60 times a second whatever the frame rate (water_sim.csh, after the shadow pass). The shadow pass
@@ -52,6 +55,7 @@ ivec2 water_wrap_delta(ivec2 d) {
 #include "/lib/motion.glsl"
 #include "/lib/globals.glsl"
 #include "/lib/wet.glsl"
+#include "/lib/shore.glsl"
 
 uniform sampler2D cg_wave_tex;      // R16, 1024 by 1024, repeating
 uniform sampler2D cg_wave_curl_tex; // RG16 signed, 128 by 128, repeating
@@ -124,15 +128,142 @@ float wave_height(vec3 p, float swell, float detail) {
     return wave_height_at(p, swell, detail, frameTimeCounter);
 }
 
-// The waves' slope (dh/dx, dh/dz) at a point (scene space), over a span of at least span blocks (wider far off, so
-// a pixel shows the waves it covers on average rather than whichever one its centre falls on).
-vec2 wave_slope(vec3 scene_pos, float swell, float detail, float span) {
-    vec3 p = wave_coord(scene_pos);
-    float e = max(span, 0.1);
-    float h = wave_height(p, swell, detail);
-    float hx = wave_height(p + vec3(e * wave_scale, 0.0, 0.0), swell, detail);
-    float hz = wave_height(p + vec3(0.0, 0.0, e * wave_scale), swell, detail);
-    return vec2(hx - h, hz - h) / e * WATER_WAVES;
+// The waves as a pixel sees them, at any distance (Bruneton, Neyret and Holzschuch 2010, "Real-time Realistic Ocean
+// Lighting using Seamless Transitions from Geometry to BRDF"): each layer of the noise is read at the level of detail
+// the pixel's footprint on the water calls for, so a far pixel shows the average of the waves it covers rather than
+// whichever one its centre falls on, and the slopes it can no longer show become the water's roughness, which the
+// water pass spreads the sun's glitter and the sky's reflection by. So the sea keeps its look out to the horizon:
+// sharp waves near, a glittering, rougher sheen far off, never a flat mirror.
+//
+// On top of the five layers of wave_height_at, a sixth of ripples a third of a block across: the fine roughness the
+// wind gives water, which the waves' heights leave out. Cox and Munk (1954) measured the sea's mean square slope at
+// 0.003 + 0.00508 per m/s of wind; the five layers have about 0.0035 of it, so a light breeze's is mostly ripples.
+// Close up they glint one by one; further off they turn into roughness like the rest.
+
+uniform sampler2D cg_wave_tex1; // the noise at half the size, box-filtered (tools/wave_slopes.py)
+uniform sampler2D cg_wave_tex2; // a quarter
+uniform sampler2D cg_wave_tex3; // an eighth
+uniform sampler2D cg_wave_tex4; // a sixteenth
+
+// The noise's texels per block in the waves' coordinates, before a layer stretches them.
+const float wave_texels = 1024.0 * 0.175 * wave_scale;
+
+// Per layer, longest first (the sixth is the ripples): how far it stretches the noise along its steeper axis, and
+// its mean square slope (dh/dx² + dh/dz², per unit of its height), from the noise's own (1.47e-4 and 1.07e-4 per
+// texel² along its two axes, tools/wave_slopes.py) and the layer's stretch along each axis.
+const float wave_stretch[6] = float[6](0.8, 1.8955, 1.0677, 3.8474, 6.2562, 13.138);
+const float wave_layer_slope2[6] = float[6](3.038e-3, 1.940e-2, 4.152e-3, 8.859e-2, 0.1947, 1.103);
+
+// The share of a layer's mean square slope a pixel still shows when it covers t texels of the layer's noise, read
+// as wave_noise_seen reads it (fitted to tools/wave_slopes.py's measurements).
+float wave_kept(float t) {
+    return 1.0 / (1.0 + pow(t / 5.3, 1.95));
+}
+
+float wave_noise_level(vec2 uv, int level) {
+    if (level <= 0) {
+        return textureLod(cg_wave_tex, uv, 0.0).r;
+    } else if (level == 1) {
+        return textureLod(cg_wave_tex1, uv, 0.0).r;
+    } else if (level == 2) {
+        return textureLod(cg_wave_tex2, uv, 0.0).r;
+    } else if (level == 3) {
+        return textureLod(cg_wave_tex3, uv, 0.0).r;
+    }
+    return textureLod(cg_wave_tex4, uv, 0.0).r;
+}
+
+// The noise as a pixel covering texels of it sees it: read at the level that size calls for, blended between the
+// two nearest, as mipmaps and trilinear filtering would give it.
+float wave_noise_seen(vec2 coord, float texels) {
+    vec2 uv = coord * 0.175;
+    float lod = clamp(log2(max(texels, 1.0)), 0.0, 4.0);
+    int level = int(lod);
+    float f = lod - float(level);
+    float a = wave_noise_level(uv, level);
+    return f > 0.001 ? mix(a, wave_noise_level(uv, level + 1), f) : a;
+}
+
+// The heights of the six layers' amplitudes (blocks): wave_height_at's five at full detail, and the ripples'. open:
+// how open the water is (see water_openness): in a pool or a pond the long waves die away and the rest are lower,
+// down to the ripples, which stay.
+float[6] wave_amplitudes(float swell, float ripples, float open) {
+    float s = swell * open;
+    return float[6](0.4 * s, 0.16 * mix(0.45, 1.0, open), 0.59 * mix(0.6, 1.0, s) * mix(0.35, 1.0, open),
+                    0.07 * mix(0.7, 1.0, open), 0.05, ripples);
+}
+
+// wave_height_at at full detail plus the ripples, each layer as a pixel with a footprint of that many blocks sees it.
+float wave_height_seen(vec3 p, float swell, float ripples, float open, float t, float footprint) {
+    const vec2 drift_dir = vec2(0.777, -0.555);
+    const vec2 sway_dir = vec2(-0.21, 0.15);
+    vec2 drift = t * drift_dir * 0.1;
+    float[6] amp = wave_amplitudes(swell, ripples, open);
+    float texels = footprint * wave_texels;
+
+    vec2 origin = p.xz + p.y * 0.07;
+    vec2 origin_curl = origin;
+    vec2 curl = wave_curl(origin_curl * 0.11 + wave_sway(t * 4.5 + 6.9) * sway_dir * 0.0018 + drift * 0.11) * 0.061;
+    vec2 coord = golden_turn * (origin - drift * 0.025);
+
+    float depth = amp[0] * wave_noise_seen((coord + curl + drift * 0.29) * vec2(0.5, 0.8), texels * wave_stretch[0]);
+
+    coord = golden_turn * (coord * 2.23);
+    curl = golden_turn * (curl * 1.85);
+    origin_curl = golden_turn * origin_curl;
+    curl += wave_curl(origin_curl * 0.45 - drift * 0.78 - (golden_turn * drift) * 1.57) * 0.026;
+    depth -= amp[1] * wave_noise_seen((coord + curl - drift * 0.96) * vec2(-0.85, 0.52), texels * wave_stretch[1]);
+
+    coord = golden_turn * (coord * 1.33 - drift * 1.87);
+    curl = golden_turn * (curl * 1.35);
+    depth -= amp[2] * wave_noise_seen((coord + curl) * vec2(-0.13, -0.36), texels * wave_stretch[2]);
+
+    coord = golden_turn * (coord * 1.88 - drift * 1.58);
+    curl = golden_turn * (curl * 1.35);
+    origin_curl = golden_turn * origin_curl;
+    curl += wave_curl(origin_curl * 0.98 + sin(t * 6.1 + 2.1) * 0.042 * sway_dir - drift * 2.17
+            - (golden_turn * drift) * 1.63) * 0.068;
+    depth -= amp[3] * wave_noise_seen((coord + curl) * vec2(-0.57, -0.69) + drift * vec2(3.2, -5.1),
+            texels * wave_stretch[3]);
+
+    coord = golden_turn * (coord * 1.87 - drift * 1.68);
+    curl = golden_turn * (curl * 1.73);
+    depth -= amp[4] * wave_noise_seen((coord + curl) * vec2(0.4, 0.6) - drift * vec2(1.1, 1.1),
+            texels * wave_stretch[4]);
+
+    // The ripples: finer still, and quicker.
+    coord = golden_turn * (coord * 2.1 - drift * 2.31);
+    curl = golden_turn * (curl * 1.6);
+    depth -= amp[5] * wave_noise_seen((coord + curl) * vec2(-0.6, 0.5) + drift * vec2(-4.3, 2.9),
+            texels * wave_stretch[5]);
+    return -depth;
+}
+
+// The mean square slope of the waves too small for a pixel with that footprint (blocks) to show.
+float wave_roughness(float swell, float ripples, float open, float footprint) {
+    float[6] amp = wave_amplitudes(swell, ripples, open);
+    float m = 0.0;
+    for (int i = 0; i < 6; i++) {
+        m += amp[i] * amp[i] * wave_layer_slope2[i] * (1.0 - wave_kept(footprint * wave_texels * wave_stretch[i]));
+    }
+    return m * WATER_WAVES * WATER_WAVES;
+}
+
+// How high the ripples are (blocks) for a mean square slope (see above): the wind's (a light breeze at sea, less on
+// lakes and rivers, by the biome, see cg_swell) and the rain's.
+float wave_ripples(float rain) {
+    float slope2 = mix(0.006, 0.016, cg_swell) + 0.01 * rain;
+    return sqrt(slope2 / wave_layer_slope2[5]);
+}
+
+// How open the water is at a point on it (scene space), for how big its waves get: 1 on open water (or where the
+// shore around isn't known: far off, and Distant Horizons' water), 0 in a pool or a small pond (see shore.glsl).
+float water_openness(vec3 scene_pos) {
+#if defined LIT_SHORE && !defined PROGRAM_DH_WATER
+    return smoothstep(0.2, 0.8, shore_around(scene_pos).y);
+#else
+    return 1.0;
+#endif
 }
 
 #ifdef LIT_WATER_RIPPLES
@@ -205,16 +336,20 @@ vec3 water_caustics(vec3 scene_pos, float depth, float dist) {
     vec3 p = wave_coord(scene_pos + g_light_dir.xyz * depth) * finer;
     const float de = e * finer * wave_scale;
     float t = frameTimeCounter * 1.5;
-    float h = wave_height_at(p, cg_swell, 1.0, t);
-    float hx0 = wave_height_at(p - vec3(de, 0.0, 0.0), cg_swell, 1.0, t);
-    float hx1 = wave_height_at(p + vec3(de, 0.0, 0.0), cg_swell, 1.0, t);
-    float hz0 = wave_height_at(p - vec3(0.0, 0.0, de), cg_swell, 1.0, t);
-    float hz1 = wave_height_at(p + vec3(0.0, 0.0, de), cg_swell, 1.0, t);
-    float hxz = wave_height_at(p + vec3(de, 0.0, de), cg_swell, 1.0, t);
+    // In a pool the waves are lower (see wave_amplitudes), and so focus less.
+    float open = water_openness(scene_pos);
+    float swell = cg_swell * open;
+    float lower = mix(0.5, 1.0, open);
+    float h = wave_height_at(p, swell, 1.0, t);
+    float hx0 = wave_height_at(p - vec3(de, 0.0, 0.0), swell, 1.0, t);
+    float hx1 = wave_height_at(p + vec3(de, 0.0, 0.0), swell, 1.0, t);
+    float hz0 = wave_height_at(p - vec3(0.0, 0.0, de), swell, 1.0, t);
+    float hz1 = wave_height_at(p + vec3(0.0, 0.0, de), swell, 1.0, t);
+    float hxz = wave_height_at(p + vec3(de, 0.0, de), swell, 1.0, t);
     // The curvature of the ripples (their heights a share of the waves', as their size is).
-    float hxx = (hx1 - 2.0 * h + hx0) / (e * e * finer);
-    float hzz = (hz1 - 2.0 * h + hz0) / (e * e * finer);
-    float hxz2 = (hxz - hx1 - hz1 + h) / (e * e * finer);
+    float hxx = (hx1 - 2.0 * h + hx0) / (e * e * finer) * lower;
+    float hzz = (hz1 - 2.0 * h + hz0) / (e * e * finer) * lower;
+    float hxz2 = (hxz - hx1 - hz1 + h) / (e * e * finer) * lower;
     // Past two blocks the light from many places on the surface crosses: the lines stay as they are, fainter deeper.
     float k = min(depth, 2.0) * WATER_WAVES;
     vec3 kc = k * vec3(0.97, 1.0, 1.03);
@@ -269,18 +404,30 @@ vec3 wave_parallax(vec3 scene_pos, vec3 view_dir, float dist) {
     return scene_pos + vec3(across.x, 0.0, across.y);
 }
 
-// The normal of a water surface facing up at a point (scene space), seen from dist blocks away, with sky light sky
-// (0..1): the waves', the ripples' where they are, and the rings of raindrops while it rains on it.
-vec3 water_normal(vec3 scene_pos, float dist, float sky) {
-    float detail = 1.0 - smoothstep(24.0, 96.0, dist);
-    // Over about a pixel's width at that distance (at 1440p and a 70° view, a thousandth of it).
-    vec2 slope = wave_slope(scene_pos, cg_swell, detail, dist * 0.001);
-#ifdef LIT_WATER_RIPPLES
+// A water surface facing up at a point (scene space), seen dist blocks away along view_dir (from the eye), with sky
+// light sky (0..1), by a pixel pixel_angle across (radians): its normal (xyz) as that pixel sees it (the waves', the
+// ripples' where something stirs the water, and the rings of raindrops while it rains on it), and the mean square
+// slope of the waves too small for the pixel (w), which the water pass turns into roughness.
+vec4 water_surface(vec3 scene_pos, float dist, vec3 view_dir, float sky, float pixel_angle) {
+    // The pixel's footprint on the water (blocks): its size at that distance, drawn out along the view at a slant;
+    // the mean of the two axes, as filtering that is anisotropic up to a point would take it.
+    float footprint = dist * pixel_angle / sqrt(max(abs(view_dir.y), 0.03));
+    float rain = cg_rain_here * smoothstep(14.0 / 15.0, 14.8 / 15.0, sky);
+    float ripples = wave_ripples(rain);
+    float open = water_openness(scene_pos);
+    vec3 p = wave_coord(scene_pos);
+    float e = max(footprint, 0.01);
+    float t = frameTimeCounter;
+    float h = wave_height_seen(p, cg_swell, ripples, open, t, footprint);
+    float hx = wave_height_seen(p + vec3(e * wave_scale, 0.0, 0.0), cg_swell, ripples, open, t, footprint);
+    float hz = wave_height_seen(p + vec3(0.0, 0.0, e * wave_scale), cg_swell, ripples, open, t, footprint);
+    vec2 slope = vec2(hx - h, hz - h) / e * WATER_WAVES;
+#if defined LIT_WATER_RIPPLES && !defined PROGRAM_DH_WATER
     slope += ripple_slope(scene_pos);
 #endif
-    slope += rain_ripple_slope(scene_pos, cg_rain_here * smoothstep(14.0 / 15.0, 14.8 / 15.0, sky)
-            * (1.0 - smoothstep(12.0, 32.0, dist)));
-    return normalize(vec3(-slope.x, 1.0, -slope.y));
+    // The rings near you; further off the rain's roughness is in the ripples' (see wave_ripples).
+    slope += rain_ripple_slope(scene_pos, rain * (1.0 - smoothstep(12.0, 32.0, dist)));
+    return vec4(normalize(vec3(-slope.x, 1.0, -slope.y)), wave_roughness(cg_swell, ripples, open, footprint));
 }
 #endif
 

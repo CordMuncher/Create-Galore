@@ -25,6 +25,7 @@
 #define G_WATER 16       // the ripples (see water.glsl): x steps this frame, y steps before it (modulo 2), z the clock
 #define G_WATER_ORIGIN 17 // xy the ripples' grid corner after this frame's steps (cells, modulo 2^20), zw before them
 #define G_FOCUS 18       // the depth of field's focus (see dof.csh): x its inverse distance (1/m), y 1 once worked out
+#define G_CUT 19         // x 1 on a camera cut (see frame_globals.csh), y frames since the last one
 
 #ifdef GLOBALS_WRITE
 // The passes that work them out (frame_globals.csh, exposure.csh).
@@ -53,6 +54,12 @@ float exposure() {
 // Whether the exposure has been worked out yet (the image starts empty when the pack loads).
 bool exposure_ready(vec4 data) {
     return data.x > 0.0 && data.y >= -8.0 && data.y <= 13.0;
+}
+
+// Frames since the camera last cut to somewhere else (0 on the cut itself): what builds up over frames starts afresh
+// then rather than blending in what the last place looked like.
+float frames_since_cut() {
+    return global(G_CUT).y;
 }
 
 #endif

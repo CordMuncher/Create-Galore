@@ -17,8 +17,8 @@ vec3 agx_contrast(vec3 x) {
     return 2.0 * x * pow(1.0 + scale * pow(abs(x), power0), power1) + 0.5;
 }
 
-// Linear sRGB scene light (exposed) to sRGB-encoded display values.
-vec3 tone_map(vec3 color) {
+// AgX on its own: linear sRGB scene light (exposed) to sRGB-encoded display values.
+vec3 agx_display(vec3 color) {
     const mat3 agx_in = mat3(
         0.842479062253094, 0.0423282422610123, 0.0423756549057051,
         0.0784335999999992, 0.878468636469772, 0.0784336,
@@ -39,6 +39,25 @@ vec3 tone_map(vec3 color) {
     color = luma + 1.3 * (color - luma);
 
     return clamp(agx_out * color, 0.0, 1.0);
+}
+
+// Linear sRGB scene light (exposed) to sRGB-encoded display values: AgX, which takes every channel through its curve
+// and so turns a bright colour towards white well before it reaches the screen's top; for bright, deep colours (lava,
+// a lamp's flame, the sun low in the sky) blended towards the same colour with its channels kept in proportion and its
+// brightest one through the curve, so they keep their hue and much of their depth until the screen can't show more.
+vec3 tone_map(vec3 color) {
+    vec3 agx = agx_display(color);
+    vec3 c = max(color, 0.0);
+    float peak = max(c.r, max(c.g, c.b));
+    if (!(peak > 1e-6)) {
+        return agx;
+    }
+    float low = min(c.r, min(c.g, c.b));
+    float depth = 1.0 - low / peak; // 0 grey, 1 a pure colour
+    float top = agx_display(vec3(peak)).g;
+    vec3 kept = pow(c / peak, vec3(1.0 / 2.2)) * top;
+    float k = 0.5 * smoothstep(0.55, 0.95, top) * smoothstep(0.3, 0.8, depth);
+    return mix(agx, kept, k);
 }
 
 #endif

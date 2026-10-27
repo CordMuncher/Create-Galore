@@ -235,11 +235,11 @@ void main() {
     vec4 cell = vec4(scattered * exposure(), extinction * 1000.0);
 
     // Last frame's cell where this cell's middle was then, in last frame's exposure; none where it was off the screen
-    // or beyond the volume.
+    // or beyond the volume, or on a camera cut (see frame_globals.csh).
     vec3 middle = view_to_scene(view_ray((vec2(c) + 0.5) * float(air_tile)) * air_depth_of(float(k) + 0.5));
     vec4 clip = previous_clip(middle, gbufferPreviousProjection);
     float before = texelFetch(colortex11, air_exposure_texel(), 0).r;
-    if (clip.w > 0.0 && before > 0.0 && !isnan(before) && !isinf(before)) {
+    if (clip.w > 0.0 && before > 0.0 && !isnan(before) && !isinf(before) && frames_since_cut() >= 1.0) {
         vec2 prev_c = (clip.xy / clip.w * 0.5 + 0.5) * render_size() / float(air_tile) - 0.5;
         float prev_s = air_slice_of(clip.w) - 0.5;
         if (all(greaterThanEqual(prev_c, vec2(-0.5))) && all(lessThanEqual(prev_c, vec2(air_cells()) - 0.5))

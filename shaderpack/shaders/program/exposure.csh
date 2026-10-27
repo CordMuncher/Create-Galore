@@ -139,10 +139,12 @@ void main() {
     // Nothing between the two ends (the whole frame within a bin): where they meet.
     float metered = shared_weight[0] > 1e-6 ? shared_sum[0] / shared_weight[0] : 0.5 * (range.x + range.y);
     // The frame's average lands here (log2 of the frame's units): by day about where the tone curve puts a lit grey
-    // a little under the middle of the screen's range, in the dark lower, so a night looks like night.
-    float key = mix(-0.25, 0.75, smoothstep(-10.0, -2.0, metered));
+    // a little under the middle of the screen's range; two stops lower in the dark (a lamp-lit room, a cave, the
+    // night), so dark places look dark and a lamp's pool of light stands out in them.
+    float key = mix(-1.25, 0.75, smoothstep(-11.0, -2.0, metered));
     float target = clamp(key - metered, ev_min, ev_max);
-    float ev = exposure_ready(previous) ? previous.y : target;
+    // Straight there the first frames after a camera cut (see frame_globals.csh), as eyes would have had time to.
+    float ev = exposure_ready(previous) && global(G_CUT).y >= 3.0 ? previous.y : target;
     // About a second to see in a dark room after the sun, half that back out (eyes take longer, games less).
     float rate = target > ev ? 2.5 : 4.5;
     ev += (target - ev) * (1.0 - exp(-max(frameTime, 0.0) * rate));
