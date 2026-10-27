@@ -18,7 +18,7 @@ PowerShell, in the test folder: `$T = "C:\Users\coolm\Documents\Claude\MC-CREATE
 
 ```powershell
 New-Item -ItemType Directory $T\tools, $T\mc, $T\instance -Force
-git clone --branch claude/project-thread-u2wmhh --single-branch https://github.com/emresahin0906-code/Create-Galore.git $T\repo
+git clone --branch claude/project-thread-u2wmhh --single-branch https://github.com/CordMuncher/Create-Galore.git $T\repo
 # Java 21 (Temurin JDK zip) -> $T\tools\jdk21
 Invoke-WebRequest "https://api.adoptium.net/v3/binary/latest/21/ga/windows/x64/jdk/hotspot/normal/eclipse" -OutFile $T\tools\jdk21.zip
 Expand-Archive $T\tools\jdk21.zip $T\tools\jdk21-unpacked; Move-Item (Get-ChildItem $T\tools\jdk21-unpacked)[0].FullName $T\tools\jdk21
@@ -39,7 +39,7 @@ $java = "$T\tools\jdk21\bin\java.exe"
 # The pack from the DLAA branch, client side, into $T\instance.
 Invoke-WebRequest "https://github.com/packwiz/packwiz-installer-bootstrap/releases/latest/download/packwiz-installer-bootstrap.jar" -OutFile $T\instance\packwiz-installer-bootstrap.jar
 Push-Location $T\instance
-& $java -jar packwiz-installer-bootstrap.jar -g -s client "https://raw.githubusercontent.com/emresahin0906-code/Create-Galore/claude/project-thread-u2wmhh/pack/pack.toml"
+& $java -jar packwiz-installer-bootstrap.jar -g -s client "https://raw.githubusercontent.com/CordMuncher/Create-Galore/claude/project-thread-u2wmhh/pack/pack.toml"
 Pop-Location
 ```
 
@@ -734,7 +734,7 @@ Write each argument as `--jvm-arg=-D...=...` (`...` = `create_galore_dlss_testki
 1. **The old Bridge, Perfect Presentation on, `...runs=C1`.** This shows the crash happens in the kit at all.
    ```powershell
    Remove-Item $T\instance\mods\create-galore-bridge-*.jar
-   Invoke-WebRequest -Uri https://raw.githubusercontent.com/emresahin0906-code/Create-Galore/553b0ba7c02526bba2f02e06abae9626de0384a7/pack/mods/create-galore-bridge-1.97.0.jar -OutFile $T\instance\mods\create-galore-bridge-1.97.0.jar
+   Invoke-WebRequest -Uri https://raw.githubusercontent.com/CordMuncher/Create-Galore/553b0ba7c02526bba2f02e06abae9626de0384a7/pack/mods/create-galore-bridge-1.97.0.jar -OutFile $T\instance\mods\create-galore-bridge-1.97.0.jar
    ```
    1.97.0 is 0.4.83's Bridge, which has the same DLSS code as 0.4.82's. A crash is expected. When it comes, copy
    `$T\instance\hs_err_pid*.log` to `$T\crash1\` and note the time and how many `DLAA: DLSS running at` lines the log
