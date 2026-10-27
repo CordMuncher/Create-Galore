@@ -1983,8 +1983,10 @@ public 0.6.0 plus RR, all of it client side: a dev client joins a server on the 
   the colour as Photon has it.
 
 The cloud has no NVIDIA GPU. It checked that the patch applies to both Photon zips, that every shader compiles, and
-the guides by eye (debug views `albedo`, `specular`, `normal`, `roughness`, `hit_distance`), and that nothing changes
-with Ray Reconstruction off. This is the first time RR itself runs.
+the guides by eye (debug views `albedo`, `specular`, `normal`, `roughness`, `hit_distance`; the specular albedo read
+back as the formula gives: 0.25 on gem blocks, the albedo on metal blocks), the noisy reflections and shadows in the
+colour, and that the dev client joins and plays on a server running the public 0.6.0. With Ray Reconstruction off the
+patched shaders take Photon's own paths (by construction; it looked as before). This is the first time RR itself runs.
 
 ### Update and settings
 
