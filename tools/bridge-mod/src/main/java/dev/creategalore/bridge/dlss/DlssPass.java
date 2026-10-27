@@ -187,9 +187,17 @@ final class DlssPass implements AutoCloseable {
         }
     }
 
-    /** True if the textures were (re)made for new sizes, which needs a new DLSS feature too. */
+    /** True if the textures don't have these sizes (yet): {@link #ensureSize} will make new ones. */
+    boolean needsSize(int width, int height, int outputWidth, int outputHeight) {
+        return color == null || color.width != width || color.height != height || output.width != outputWidth || output.height != outputHeight;
+    }
+
+    /**
+     * True if the textures were (re)made for new sizes, which needs a new DLSS feature too. The old DLSS feature must
+     * be released before (see {@link Dlss}): it ran on the textures this frees.
+     */
     boolean ensureSize(int width, int height, int outputWidth, int outputHeight) {
-        if (color != null && color.width == width && color.height == height && output.width == outputWidth && output.height == outputHeight) {
+        if (!needsSize(width, height, outputWidth, outputHeight)) {
             return false;
         }
         closeTextures();
@@ -540,7 +548,9 @@ final class DlssPass implements AutoCloseable {
 
     private void closeTextures() {
         if (!shared.isEmpty()) {
+            // OpenGL hands them over with its work on them done; then the GPU finishes DLSS's last run on them.
             device.unlock(shared);
+            device.waitIdle();
         }
         for (Texture texture : all) {
             texture.close();

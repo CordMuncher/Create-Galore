@@ -1,0 +1,51 @@
+
+== 20261025-212948-L1 (run finished), NVIDIA GeForce RTX 4080 SUPER/PCIe/SSE2, Perfect Presentation on, 2560x1440
+mode             viewpoint input>GPU    p90 behind    fps  drv in>GPU drv p90 drv sim>GPU  GPU busy/frame  unit  reflex
+lat-base         shore          11.1   12.3    5.1    165           -       -           -               -     -  off
+lat-base         shore          12.7   13.1    7.1    176           -       -           -               -     -  off
+                 shore     median 11.9 ms, +0.0 ms against the first mode, repeats 11.1-12.7
+lat-base         canopy         13.6   14.7    7.2    153           -       -           -               -     -  off
+lat-base         canopy         15.0   15.4    8.7    155           -       -           -               -     -  off
+                 canopy    median 14.3 ms, +0.0 ms against the first mode, repeats 13.6-15.0
+lat-late         shore          10.5   10.6    6.1    172           -       -           -               -     -  off
+lat-late         shore          10.5   10.6    7.2    177           -       -           -               -     -  off
+                 shore     median 10.5 ms, -1.4 ms against the first mode, repeats 10.5-10.5
+lat-late         canopy         12.1   12.1    8.2    154           -       -           -               -     -  off
+lat-late         canopy         12.0   12.1    8.7    155           -       -           -               -     -  off
+                 canopy    median 12.0 ms, -2.3 ms against the first mode, repeats 12.0-12.1
+lat-markers      shore          12.2   12.7    6.6    175        11.1    11.2        12.4         0.0/5.7  1.00  markers (driver low latency off, last sleep 0 us, game Sleep used, G-SYNC fullscreen)
+lat-markers      shore          12.7   13.1    7.1    171        11.1    11.2        13.4         0.0/5.7  1.00  markers (driver low latency off, last sleep 0 us, game Sleep used, G-SYNC fullscreen)
+                 shore     median 12.5 ms, +0.6 ms against the first mode, repeats 12.2-12.7
+lat-markers      canopy         14.6   15.2    8.2    155        12.6    12.7        15.0         0.0/6.4  1.00  markers (driver low latency off, last sleep 0 us, game Sleep used, G-SYNC fullscreen)
+lat-markers      canopy         15.1   15.5    8.7    155        12.7    12.7        15.7         0.0/6.4  1.00  markers (driver low latency off, last sleep 0 us, game Sleep used, G-SYNC fullscreen)
+                 canopy    median 14.8 ms, +0.5 ms against the first mode, repeats 14.6-15.1
+lat-reflex       shore          10.5   10.6    6.6    176        11.1    11.1        12.9         0.0/5.7  1.00  on (driver low latency on, last sleep 800 us, game Sleep used, G-SYNC fullscreen)
+lat-reflex       shore          10.6   10.6    7.2    176        11.2    11.2        13.4         0.0/5.7  1.00  on (driver low latency on, last sleep 1319 us, game Sleep used, G-SYNC fullscreen)
+                 shore     median 10.5 ms, -1.3 ms against the first mode, repeats 10.5-10.6
+lat-reflex       canopy         12.0   12.1    8.4    155        12.6    12.7        15.5         0.0/6.4  1.00  on (driver low latency on, last sleep 2063 us, game Sleep used, G-SYNC fullscreen)
+lat-reflex       canopy         12.1   12.1    8.8    155        12.7    12.7        15.8         0.0/6.4  1.00  on (driver low latency on, last sleep 3153 us, game Sleep used, G-SYNC fullscreen)
+                 canopy    median 12.1 ms, -2.3 ms against the first mode, repeats 12.0-12.1
+lat-boost        shore          10.5   10.5    7.0    170        11.1    11.1        13.4         0.0/5.7  1.00  boost (driver low latency on, last sleep 3058 us, game Sleep used, G-SYNC fullscreen)
+lat-boost        shore          10.6   10.6    7.2    176        11.1    11.2        13.4         0.0/5.7  1.00  boost (driver low latency on, last sleep 3084 us, game Sleep used, G-SYNC fullscreen)
+                 shore     median 10.5 ms, -1.4 ms against the first mode, repeats 10.5-10.6
+lat-boost        canopy         12.0   12.1    8.6    149        12.6    12.7        15.7         0.0/6.4  1.00  boost (driver low latency on, last sleep 3175 us, game Sleep used, G-SYNC fullscreen)
+lat-boost        canopy         12.1   12.1    8.7    155        12.7    12.7        15.7         0.0/6.4  1.00  boost (driver low latency on, last sleep 3156 us, game Sleep used, G-SYNC fullscreen)
+                 canopy    median 12.0 ms, -2.3 ms against the first mode, repeats 12.0-12.1
+lat-cap          shore          29.1   30.0   12.5     60           -       -           -               -     -  off
+lat-cap          shore          29.2   30.1   12.5     60           -       -           -               -     -  off
+                 shore     median 29.2 ms, +17.3 ms against the first mode, repeats 29.1-29.2
+lat-cap          canopy         29.3   30.1   12.7     60           -       -           -               -     -  off
+lat-cap          canopy         29.3   30.2   12.6     60           -       -           -               -     -  off
+                 canopy    median 29.3 ms, +15.0 ms against the first mode, repeats 29.3-29.3
+lat-cap-late     shore          16.7   16.9   12.6     60           -       -           -               -     -  off
+lat-cap-late     shore          16.7   17.0   12.6     60           -       -           -               -     -  off
+                 shore     median 16.7 ms, +4.8 ms against the first mode, repeats 16.7-16.7
+lat-cap-late     canopy         16.7   16.9   12.3     59           -       -           -               -     -  off
+lat-cap-late     canopy         16.7   16.9   12.8     60           -       -           -               -     -  off
+                 canopy    median 16.7 ms, +2.4 ms against the first mode, repeats 16.7-16.7
+lat-cap-reflex   shore           8.8    9.8    4.8     60         8.9     9.5         9.1        0.0/16.1  1.00  on (driver low latency on, last sleep 16666 us, game Sleep used, G-SYNC fullscreen)
+lat-cap-reflex   shore           8.8    9.8    4.8     60         9.2    10.1         9.6        0.0/16.3  1.00  on (driver low latency on, last sleep 16666 us, game Sleep used, G-SYNC fullscreen)
+                 shore     median 8.8 ms, -3.1 ms against the first mode, repeats 8.8-8.8
+lat-cap-reflex   canopy          8.7    9.5    4.8     60         8.8     9.5         8.9        0.0/16.5  1.00  on (driver low latency on, last sleep 16666 us, game Sleep used, G-SYNC fullscreen)
+lat-cap-reflex   canopy          8.7    9.6    4.8     60         9.0    10.1         9.2        0.0/16.7  1.00  on (driver low latency on, last sleep 16666 us, game Sleep used, G-SYNC fullscreen)
+                 canopy    median 8.7 ms, -5.6 ms against the first mode, repeats 8.7-8.7

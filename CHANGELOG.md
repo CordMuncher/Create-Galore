@@ -5,6 +5,222 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.6.2
+
+### Fixed
+- **The updater, the server kit and the Server Setup app use the repository's new address.** The repository moved to github.com/CordMuncher/Create-Galore. The old address still forwards for now, but forwarding stops working if anyone later takes the old account name, so the client updater (pack.toml), the server's update check at start, install-server.sh/.bat and the Server Setup app now read releases and the pack from the new address directly. README and docs links point there too. An instance or server set up before this keeps its updater and keeps working through the forward; to move it to the new address, put the three jars from this release's **Create-Galore-Updater.zip** in the instance's `minecraft` folder, or run this release's Server Setup app (or install-server) on the server folder.
+
+## 0.6.1
+
+### Added
+- **NVIDIA's Streamline decides where DLSS frame generation can be picked.** At every start on DirectX 12 the game asks Streamline, NVIDIA's own frame generation runtime, whether DLSS Frame Generation runs on this card, also when FSR is the one that loads. Where it says yes, the Display tab offers DLSS. Where it says no, the setting's status gives Streamline's reason (hover it), and FSR loads in its place, so FSR turns on without another restart.
+- Create Galore Bridge 1.125.0.
+
+### Removed
+- **The graphics card name check for DLSS frame generation.** The Display tab offered DLSS frame generation only when the card's name read RTX 40 or 50 (or RTX Ada or Blackwell), so every new card generation would have needed a Bridge update. Streamline reads what the card supports itself.
+
+## 0.6.0
+
+**DLSS Frame Generation is ready, so the pack moves to 0.6.** On an NVIDIA RTX 40 or 50 card, the Display tab's **Frame generation: DLSS** is no longer experimental: it shows a frame of its own between every two the game renders, so the screen gets about 43% more frames (234 a second against 164 without it on an RTX 4080 SUPER at 1440p, the game rendering 117), for about 3 ms more input delay. Going in and out of full screen, resizing, minimising and turning it on and off all hold with it. AMD's FSR frame generation, for other cards, stays experimental. A fresh install on Windows now starts with Perfect Presentation on DirectX 12, which frame generation runs in.
+
+### Added
+- **DLSS frame generation is no longer experimental.** The setting, its status line and the Field Guide stop calling it that; FSR frame generation still says experimental.
+- **The NVIDIA app's frame generation model works here.** NVIDIA app, Graphics, Global Settings, **DLSS Override - Model Presets**, Frame Generation changes the model DLSS frame generation uses, even though NVIDIA's overlay reads "FG OVR N/A". On an RTX 4080 SUPER, Preset C drew about 6% more frames with a little less input delay, and Preset B ran like NVIDIA's own pick. The Field Guide says how.
+- **FSR frame generation (experimental).** The Display tab's **Frame generation** setting has **Off**, **DLSS** and **FSR**. FSR is AMD FSR 3.1 frame generation: like DLSS Frame Generation it shows a frame of its own between every two the game renders, so motion looks about twice as smooth, for a little more input delay, and it is built from the same inputs (the world without the HUD, the HUD on its own, depth and motion), so the hotbar, chat and crosshair stay sharp. It runs on any graphics card Perfect Presentation's DirectX 12 runs on, NVIDIA RTX 20 and 30 series included, and works best from about 60 fps without it. It runs beside DLSS or FSR anti-aliasing, either one. Picking it turns on Perfect Presentation and DirectX 12; Reflex stays as set. The Bridge ships AMD's FidelityFX SDK 2.0.0 frame generation DLLs for it, and the game checks AMD's signature on them before loading them.
+- **Frame generation turns on and off at once.** Whenever DirectX 12 starts, the game loads the frame generation picked last (before any is picked: DLSS on an RTX 40 or 50 card that has nvngx_dlssg.dll, else FSR), so turning it off, or on again, takes effect as the settings screen closes, without a restart. Switching between DLSS and FSR still needs one; the screen says so beside the setting.
+- **Find on this PC copies nvngx_dlssg.dll too.** The Upscaling tab's button copies the newest nvngx_dlss.dll and the newest nvngx_dlssg.dll (DLSS Frame Generation's model) from where the NVIDIA app keeps them into the DLSS folder, once, when pressed. You can also put your own in with **Open DLSS folder**. On an RTX 40 or 50 card the tab shows its version beside the one it was tested with (310.9.16).
+- **A fresh install on Windows starts with Perfect Presentation on, on DirectX 12.** Borderless fullscreen at exclusive fullscreen speed and instant Alt-Tab without touching a setting, and frame generation is one setting away. It starts from the second launch: the first one turns off NeoForge's early loading screen, which Perfect Presentation can't run with. An install from before keeps its settings, whatever they are. Neither is called experimental any more; where DirectX 12 can't start (an Intel card's OpenGL driver can't share textures with it), the game runs on DirectX 11, and where Perfect Presentation can't start, on a normal window, and the screen says so.
+- Field Guide (Performance and Shaders): FSR frame generation and turning it on and off; Perfect Presentation and DirectX 12.
+- Create Galore Bridge 1.124.0.
+
+### Fixed
+- **F11 out of full screen could look as if nothing happened.** With Perfect Presentation, a game that started in full screen with a window size as big as the screen (a launcher's window size set to the screen's resolution) came back from full screen as a window exactly the screen's size, its title bar above the top of the screen, so it still looked like full screen. A window that doesn't fit the screen now comes back fitted to the screen's work area, title bar showing. Changing the full screen resolution while in full screen no longer replaces the window's own size with the screen's either.
+- **Distant Horizons' far terrain could stay drawn over the world, upside down, after going in or out of full screen or resizing the window with a shader pack on** (a shader reload cleared it). On a resize Iris gave Distant Horizons' terrain the world's new depth buffer, so the far terrain was drawn into the world's depth; it now gets its own back on the next frame, as the Window Resize Fix mod does.
+- **With FSR frame generation, Max Framerate counted rendered frames**, so a 120 fps cap showed about 200 frames a second on screen, more than a 120 Hz screen shows. It now counts the frames on screen, as with DLSS: a 120 cap renders 60 and shows 120.
+- **Frame generation was still on when the window changed size going in or out of full screen.** Minecraft shows one more frame while it changes the window, and that frame went out with a generated one, against NVIDIA's advice to have frame generation off around window changes. That frame now goes out on its own.
+- **The Upscaling tab's status line was cut off after "preset"** once Find on this PC had been pressed. It now keeps its whole text where the screen has room.
+- **Find on this PC's message was hard to follow.** It now says what happened to each file in a sentence, such as "DLSS 310.9.16: already up to date. Frame generation 310.9.16: copied from NVIDIA's folder."
+
+### Removed
+- **The game no longer copies nvngx_dlssg.dll from NVIDIA's folder at every start.** DLSS Frame Generation uses only the copy in the DLSS folder, like DLSS uses nvngx_dlss.dll, so an NVIDIA app update can't swap the model under it.
+
+## 0.5.14
+
+### Fixed
+- **The game could stop while loading mods, with Hybrid Aquatic named in the error.** Now and then a start ended in "Mod loading issue for: hybrid_aquatic" with an `ArrayIndexOutOfBoundsException` in `Object2IntOpenHashMap.rehash`, and the next start loaded fine. Every kind of entity numbers its synced data (health, variant, size and so on) in one list the whole game shares, and NeoForge builds several mods at once while it loads them. Hybrid Aquatic sets up all its fish and sharks while it is built, so when another mod set up its own entities at the same moment, two threads wrote to the list together and broke it as it grew. The same thing can also leave the list so tangled that loading hangs forever with the processor busy, or quietly give two entities' data the same number. Entities now take turns on that list. On a test server with the whole pack, 16 threads filling one list together 300 times broke it in 41 rounds (the same error as the crash) and lost entries in 2 more, and a second try hung for good; with the fix, two runs of 300 rounds came through clean, and Hybrid Aquatic's sharks and orcas spawn as before.
+- **A start that failed to load its mods wiped the resource pack list and every mod key binding from options.txt.** On a failed start the game still saved its options, while the mods' key bindings and resource packs had never been added, so the next good start came up without Fresh Animations, the pack's menu art or any changed mod keys. A failed start now leaves options.txt as it was. Checked on a test client with a mod that fails on purpose: before the fix the error screen alone emptied the resource pack list and dropped all 24 of the pack's mod key bindings; with it the file stayed byte for byte the same.
+
+### Added
+- Create Galore Bridge 1.123.0.
+
+## 0.5.13
+
+### Added
+- **Ask the Book revises its designs instead of redrawing them.** Every change to a model used to mean writing the whole build out again, layer by layer, so fixing a blimp meant rewriting hundreds of rows for each one-block fix, and a long design ran out of room before its faults were fixed. The book can now start a model from any it built earlier for the same answer and write only what changes; slide a whole part (the balloon a block back, the gondola toward the bow) in one step; draw an envelope, dome or rounded hull as one rounded shell, or a hollow box, in a single entry; and repaint the blocks already in a box (a stripe round an envelope). Checked on a test server: a hauling blimp was written in one go with its rounded envelope, and moving its second engines took a 700-byte change that fixed both faults, where the same model written out in full is about ten times that.
+- Trim and list fixes name the way in the model's own axes too ("slide the balloon toward the stern (-z)"), so the book can make the change without guessing which end is which.
+- Create Galore Bridge 1.121.0.
+
+## 0.5.12
+
+### Fixed
+- **Water and stained glass vanished from shader shadows whenever a ship was in view.** With any Sable ship on screen, shader packs got no water or stained glass in their shadow map: no light caustics under water, no coloured light through stained glass, and the water's depth for light was missing. Aeronautics' levitite is drawn with tessellation in the shadow pass right before the translucent terrain, and that left Iris drawing Sodium's water and glass as tessellation patches, which the graphics driver refuses. Each terrain draw now starts without that setting, and on a test machine water and glass landed in the shadow map with a ship in view.
+
+### Added
+- Create Galore Bridge 1.120.0.
+
+## 0.5.11
+
+### Fixed
+- **Ask the Book gave up on bigger vehicle designs and left the player its faults to fix.** Asked for a brass age blimp that can haul, the book handed over a plan in words with "two faults I didn't get fixed" (a second Portable Engine in each pod facing into the back of the first and doing nothing, and a rounded envelope Super Glue wouldn't take) plus a stern-down trim it never levelled, and no 3D model. It had run out of rounds: a question got 8 rounds of looking things up and drafting, and a vehicle takes a draft and a fix per round, several times over. Once the book starts building a model it now gets up to 20 rounds, it is told that fixing what its checks find is its own work and never the player's, and with rounds running short it spends them fixing the design, simplifying it if need be, rather than looking more up.
+- **The book's checks now name those faults and their fixes exactly.** An engine whose front meets nothing that takes rotation is a fault, with the facing that would connect it or how to move it. Each propeller drive line is weighed against the engines really on it (a Portable Engine gives 2048 stress units at any gearing), so a line that would stall says how many engines it is short. Two Portable Engines on one line that would turn it opposite ways (as two engines facing each other do as placed, which breaks the line) get the instruction to flip one's Rotation Direction setting, and then their stress adds up. Checked on a test server: two engines facing each other on one shaft popped one off; with one set to the other direction the line held 4096 stress units.
+- **Corner steps in the book's vehicles are filled so Super Glue takes them.** Where blocks of a vehicle model meet only along an edge or at a corner (a rounded envelope, cogwheels meshing across a gap), the book fills the step on the inner side of the curve with the block around it, so the outline stays and the whole vehicle glues as one piece. Steps above a burner are left open.
+- **An airship that hangs nose or stern down is told how far to slide its balloon** (or the gondola under it) to level it, and the same for a list to one side.
+- **A vehicle's bow is the way its propellers push**, so an airship with wide engine pods or a plane wider than it is long gets its trim, turning and roll worked out along the right line.
+
+### Added
+- Create Galore Bridge 1.119.0.
+
+## 0.5.10
+
+### Added
+- **Frame generation (experimental, NVIDIA RTX 40 and 50 series only).** The display settings' Display tab has a **Frame generation** setting: **Off** or **DLSS**. NVIDIA DLSS Frame Generation shows a frame of its own between every two the game renders, so motion looks about twice as smooth, for a little more input delay. It is built from the world without the HUD, the HUD on its own, depth and motion, so the hotbar, chat and crosshair stay sharp. On an RTX 4080 Super at 1440p with DLSS at full resolution and Reflex, uncapped, the game rendered 118 fps where it renders 165 without it (making the extra frames costs the card time) and the screen showed twice that, about 43% more frames than without; from input to the rendered frame being done took 12.4 ms against 9.6 ms (median). It needs Windows 10 2004 or newer with Hardware-accelerated GPU scheduling on, Vertical sync in the NVIDIA Control Panel at "Use the 3D application setting", and DLSS or FSR anti-aliasing running (Upscaling tab, with a shader pack made for it). Picking it turns on Perfect Presentation, DirectX 12 and NVIDIA Reflex, which NVIDIA requires with it; restart once. It pauses in menus, while the game is paused, for a moment after a shader reload or a resize, and while the window is minimised or hidden. The screen says beside the setting whether it runs, and why not when it can't. On other graphics cards the setting is greyed out. Known: the chat's command suggestion list can smear for a frame as it appears.
+- The Bridge ships NVIDIA Streamline 2.14.16 for it. NVIDIA's frame generation model, nvngx_dlssg.dll, isn't in the pack: the game copies the newest one from the folder where NVIDIA's software keeps it (C:\ProgramData\NVIDIA\NGX\models\dlssg) into create-galore-dlss at every start.
+- Field Guide (Performance and Shaders): frame generation.
+- Create Galore Bridge 1.118.0.
+
+### Fixed
+- **GPU pacing On waited too little on DirectX 12.** Frames queue about 1 ms less on DirectX 12 than on 11, so On's target was longer than the queue and it rarely waited. On DirectX 12, On now lets a frame queue half a frame, at least 3 ms: on an RTX 4080 Super at 1440p, 8.9 ms from input to the frame being done instead of 9.6 ms, at the same frame rate. It still helps with frame generation on (11.9 ms against Reflex's 12.4 ms).
+
+## 0.5.9
+
+### Added
+- **DirectX 12 for Perfect Presentation (experimental).** The display settings' Display tab has a **DirectX** setting: **11** (the default) or **12 (experimental)**, which Perfect Presentation shows the game through. DirectX 12 is not recommended as the default yet: on an RTX 4080 Super at 1440p it ran at the same frame rate as DirectX 11 (within 0-3%) with marginally lower input delay (0.5 to 1.0 ms), the picture identical pixel for pixel, and Reflex, GPU pacing and G-SYNC working on both. Picking 12 turns Perfect Presentation on; restart once. Where DirectX 12 can't start (it needs an OpenGL driver that can share textures with DirectX 12: NVIDIA's can, Intel's can't, AMD's is untested), the game runs on DirectX 11 and the screen says so beside the setting.
+- Field Guide (Performance and Shaders): the DirectX setting.
+- Create Galore Bridge 1.115.0.
+
+### Fixed
+- **The DLAA... button is now Upscaling & Display...**, with the tabs Upscaling and Display: besides DLAA it holds AMD FSR 3.1, the render resolution, Perfect Presentation, DirectX, NVIDIA Reflex, GPU pacing and the frame counter, which the old name hid.
+
+## 0.5.8
+
+### Added
+- **GPU pacing: shorter input delay when playing uncapped, on any graphics card.** In the display settings (the **DLAA...** button, Display tab): Off, On or Lowest. Without a frame cap the processor gets ahead of the graphics card and each frame waits in a queue on the card while the mouse input in it ages; NVIDIA Reflex's driver can't see that queue, as the game draws with OpenGL. The game now waits just before drawing each frame, so the frame reaches the card about when the card is ready, and reads the mouse again right before it draws. **On** keeps a short queue that costs no frames; **Lowest** keeps it as short as the frames' timing allows, for about 6% fewer frames. Measured on an RTX 4080 at 1440p with DLAA, from the game reading input to the card finishing the frame (median): with Perfect Presentation 11.9 ms off, 9.8 ms On, 8.4 ms Lowest (Reflex alone 10.5 ms); without it 14.4 ms off, 10.5 ms On, 8.2 ms Lowest, at the same frame rate with On.
+- **A frame counter.** Display tab: Off, Basic (the frame rate, small, in a corner) or Detailed (also the frame time, the 1% and 0.1% lows of the last 10 seconds and a graph of the last frames, yellow and red for long frames). Pick the corner; in the top right it moves under the status effect icons. **Dim for OLED** makes it see-through and moves it a pixel every two minutes so it can't burn in. It stays the same size at any GUI scale, and F3 and F1 hide it.
+- **The display settings have two tabs**, Anti-aliasing and Display, so everything fits on screen at 1440p with the automatic GUI scale.
+- Field Guide (Performance and Shaders): GPU pacing, the frame counter and Max Framerate's input delay.
+- Create Galore Bridge 1.112.0.
+
+### Fixed
+- **Max Framerate added input delay.** The game's own limiter waited after each frame, so the input read for the next frame had already aged by that wait. The cap now waits at the start of the frame, before the game reads the mouse, on any graphics card, as Reflex's own cap does: at a 60 fps cap on an RTX 4080 with Perfect Presentation, 8.8 ms from input to the card finishing the frame (Reflex's cap 8.9 ms), where the game's limiter took 29 ms.
+
+## 0.5.7
+
+### Added
+- **Groundwork for possible future shaders.** Some behind-the-scenes improvements to how the Bridge works with shader packs. Nothing changes in game with the shader packs the pack ships with.
+- Create Galore Bridge 1.111.0.
+
+## 0.5.6
+
+### Fixed
+- **Taking off the Charm of Shrinking could leave a player small.** A player on a server took the charm off in the wear screen and stayed half size. Artifacts puts a wearable's effects (size, speed, health, attack and so on) on the player and takes them off only when the accessory mods tell it the item left its slot; when that news goes missing, the effect stays for good, even through a restart. The pack now checks every player once a second and at login, and takes off any Artifacts effect whose item they no longer wear anywhere (accessory slots, armor or hands), and the server log says when it does, so the missing step can be traced. A player who is stuck small now goes back to full size as soon as they join. Checked on a test server: an effect left behind with nothing worn was gone within a second, and the charm, Power Glove, Feral Claws, Bunny Hoppers, Crystal Heart and Novelty Drinking Hat kept all their effects while worn, in the wear screen's Curios slots and when put on with a right-click. Every normal way of taking the charm off in the wear screen (drag, shift-click, number keys, Q, after a relog, after a restart, hidden or shown) already worked there, also as seen by a second player.
+
+### Added
+- Create Galore Bridge 1.110.0.
+
+## 0.5.5
+
+### Fixed
+- **Ask the Book's starter brass mixer never filled its output chest.** A player built the book's "Starter brass mixer, chest to chest": the brass out chest sat beside the Blaze Burner, one block down from the basin's side, and stayed empty while the brass piled up in the basin. A basin only pushes its results into the spot one block down beside it when that spot takes items the way a belt does (a depot, belt or chute, or a funnel facing up and set to insert, on top of a chest) and the block beside the basin itself is open; a chest, barrel or hopper there gets nothing. The book now works out where every basin and millstone in its builds sends its results, by Create's own rule, and won't show a build whose output can't work: a chest a basin can't reach, a funnel set to pull instead of insert, a solid block closing the side, or a millstone next to chests with no hopper, chute or funnel pulling from it (a millstone never pushes). It also tells a player whose own build has the problem what to change and how many finished items are waiting in the machine. Checked on a test server with the same layout: the brass stayed in the basin; with the chest one block lower and a funnel on it (placed while sneaking) the brass went into the chest, and with a depot in that spot onto the depot.
+- **Mixers too slow to work.** A Mechanical Mixer needs at least 30 RPM and stands still below that (a test mixer at 16 RPM never started; at 64 RPM it made brass). The book now sees the speed each machine in a model gets and won't show a mixer driven straight off a water wheel (8 RPM) without gearing it up; with a motor it says to set the motor faster.
+- Field Guide (Processing): the basin output page now says exactly which blocks take a basin's results and where they go, and that a chest needs a funnel on top.
+
+### Added
+- Create Galore Bridge 1.109.0.
+
+## 0.5.4
+
+### Fixed
+- **Ask the Book's balloons crawled.** Asked for a balloon that can fly anywhere, hang and haul, it geared its propellers only to 64 RPM, gave it an envelope more than twice as big as its load needed, flew it at 1.2 blocks a second and said it couldn't make a faster one. Every envelope block drags, so a too-big envelope costs speed, and propellers push only up to their airflow, so slow ones never get going. The book's checks now say how much push an airship needs to cruise at a useful 8 blocks a second, how many geared-up Wooden Propellers or Propeller Bearing fans give it, and when the envelope is bigger than the load needs, and the book keeps redesigning until it gets there.
+- **Airships that tip nose up at speed.** Propellers mounted below the envelope push the bottom on while the air holds the top back, so a balloon with low propellers flew pitched about 30° nose up. The check now works out that tilt and says to mount the propellers level with the middle of the envelope.
+- **Sails on a Propeller Bearing counted as wings** in Ask the Book's checks, so a fan of sails was judged as if it lifted the ship and made it slide sideways. They now count only as the bearing's propeller.
+- **Better-looking airships, and a real base when asked.** Ask the Book now builds a rounded envelope wider and longer than the gondola, hangs the gondola under it on rigging, puts the engines in enclosed pods level with the envelope's middle with the fans at their back ends (never propellers on bare shafts), and sets the seat, throttle and steering levers together at a helm. Asked for something that hauls or to live from, it gives the gondola a bed, a place to cook, a crafting table and a wall of storage rather than two chests (a container weighs the same full or empty).
+- Field Guide (Propellers): a new page on big fans: a Propeller Bearing with 13 sails at 128 RPM pushes more than four Wooden Propellers at 256 RPM, and two Portable Engines on one shaft turn one. Field Guide (Balloons and Lift): new pages on speed and drag, and a worked example of a sky base that flies (tested: about 9 blocks a second, up to about y 210).
+- Create Galore Bridge 1.108.0.
+
+## 0.5.3
+
+### Added
+- **The game now writes down what it was stuck on when it hangs.** A player's game stopped responding for good while entering the Nether, and the log just stopped, with nothing that named the cause (the server was fine). When the game stops drawing for 10 s, the Create Galore Bridge now writes what every part of the game is doing to `logs/create-galore-client-freeze.log` in the instance folder, again at 20, 40 and 80 s, and notes when the game moves again. It also names any two parts of the game that are waiting on each other. It writes only while the game is hung and costs nothing otherwise. Checked on a test client with a staged 25 s hang: the file names the hang and the code it was stuck in. If the game hangs, send that file.
+- Create Galore Bridge 1.107.0.
+
+## 0.5.2
+
+### Added
+- **NVIDIA Reflex (experimental).** The DLAA... screen has a new setting, NVIDIA Reflex: Off, On or On + Boost. With it on, the NVIDIA driver starts each frame as late as it can while keeping the graphics card busy, and the game reads the mouse again just before it draws, to shorten the time from moving the mouse to seeing it. Boost also keeps the card's clocks up, for a little less delay where the processor holds the frame rate back. With a Max Framerate set, Reflex keeps that cap instead of the game's own limiter, and that is where it helps most, so give it a cap the card can hold. Reflex has no OpenGL version, so it runs on Perfect Presentation's DirectX device: picking it turns Perfect Presentation on, a notice says to restart the game, and one restart is enough (the screen also turns off NeoForge's early loading screen, which Perfect Presentation needs; before, turning it on took two restarts). Beside the setting the screen says what Reflex is doing: running with the driver confirming low latency mode, waiting for the restart, or why it can't run (it needs Windows and an NVIDIA card, GTX 900 or newer). Turning Perfect Presentation off turns Reflex off with it, and if the game ever closes while Reflex starts, Reflex stays off until Try again on the same screen. Measured on an RTX 4080 at 1440p with DLAA (from the game reading input to the graphics card finishing the frame): at a 60 fps cap 8.7 ms with Reflex against 29 ms with the game's own limiter; uncapped 1.3 to 2.3 ms less, all from the later mouse read (the driver can't see the OpenGL rendering, so its own wait only paces a capped frame rate). Perfect Presentation alone already lowers it (14.3 ms instead of 18.8 at the same spot). In play the camera feels clearly more direct with it on. Also checked in a test game without an NVIDIA card: the setting saves and loads, picking On switches Perfect Presentation on, and Reflex says why it can't run instead of starting.
+- Field Guide (Performance and Shaders): a page on NVIDIA Reflex; Perfect Presentation now takes one restart.
+- Create Galore Bridge 1.106.0.
+
+## 0.5.1
+
+### Fixed
+- **DLSS and FSR settings only worked with Photon.** The DLAA... screen, its status line and the render resolution assumed the shader pack was Photon v1.3a + DLAA. They now work with any shader pack made for DLAA (one that carries `shaders/create_galore_dlss.properties`): the screen and its messages speak of "the shader pack" instead of Photon, the status line says when the pack in use isn't made for DLAA, changing a setting reloads any such pack, and the render resolution sets that pack's own upscaling options (Photon's are still TAAU and TAAU Render Scale). This readies the Bridge for a shader pack of the pack's own. Checked in a test game with Photon v1.3a + DLAA and with a second pack made for DLAA: picking Performance turned on Photon's TAAU at 50%, picking Quality turned on the other pack's upscaling at 67%, and the screen read both back. The comment at the top of `config/create_galore_bridge-display.properties` no longer calls DLAA experimental, as the settings screen hasn't since 0.5.0.
+
+### Added
+- Create Galore Bridge 1.104.0.
+
+## 0.5.0
+
+**DLSS and FSR for Photon are ready, so the pack moves to 0.5.** Pick the shader pack **Photon v1.3a + DLAA** (the pack makes it from Photon + Clrwl at startup) and open the **DLAA...** button beside the shader list. NVIDIA DLSS (DLAA at full resolution, or Quality, Balanced, Performance, Ultra Performance or a custom 25 to 100% render resolution, presets K, L and M) or AMD FSR 3.1 takes over from Photon's own anti-aliasing. Everything that moves by itself hands it motion vectors (waving plants and leaves, ships, Create's machines and contraptions, mobs, dropped items and the item in your hand), so moving things stay sharp instead of smearing, and leaves, fences and distant mobs stop shimmering. It came together over 0.4.80 to 0.4.84 and has since been played on an RTX 4080 desktop and an RTX 3070 laptop; FSR 3.1 has only been tried on NVIDIA cards so far. The settings screen, the README and the Field Guide no longer call it experimental. This release fixes the two problems that play turned up.
+
+### Fixed
+- **Create's shafts and cogwheels vanishing at some angles below full render resolution.** With DLSS, FSR or Photon's own upscaling at less than 100%, machines in plain view could disappear depending on where you looked. Colorwheel (which draws Create's machines under shaders) skips a machine that a depth check says nearer blocks hide, and that check read the depth picture as if it covered the whole screen, while Photon draws the smaller frame into one corner of it; so each machine was checked against whatever showed further up and to the right, often a nearer block or tree. The check now reads the corner Photon draws into. Checked in a test scene, a row of shafts and cogwheels under a stone overhang just ahead: at 50% render resolution the upper row (five shafts and two cogwheels) was gone; with the fix every one of them shows at 50% and 33%, as at full resolution.
+- **The item in your hand flickering while you stand on a sailing boat (with a shader pack).** Sable gives each ship a daylight level and lights the held item and everything aboard by it. It measured that level at the middle of the ship, which on many boats sits at the waterline, where the top block of water is one step darker than open sky, so as the boat bobbed the level flipped back and forth and the item in your hand dimmed and brightened. The level now also counts the daylight just over the ship and only follows a one- or two-step change once it has held for a second; sailing into a cave or diving still darkens it at once. Checked on a test boat heaving 0.8 blocks: the level flipped 6 times in 420 frames before and stayed at full daylight after.
+
+### Added
+- Create Galore Bridge 1.103.0.
+
+## 0.4.88
+
+### Fixed
+- **Ask the Book gave up on early propeller planes.** Asked for an early plane, it worked out that a Portable Engine's 32 RPM gives Wooden Propellers too little airflow (2.4 blocks a second) and said a propeller plane couldn't be built yet. It can: geared up to 256 RPM the same propellers blow 25.6 blocks a second. The book's checks now say how to get there (three cog steps up from 32 RPM, one engine turning two propellers) and how much sail wing a plane wants for its weight, and the book keeps redesigning until a plane flies instead of settling for less.
+- **Better-looking planes from Ask the Book.** It now designs planes that read as aircraft: a body narrowing to a tail with a flat stabiliser and an upright fin, long slim wings (or stacked biplane wings on struts), the engine in the nose or on the wings, landing gear, and a cockpit with the seat and every lever grouped in reach like a dashboard, never scattered over the wings. Wings and tail are Create sails, a quarter of the weight of Wing blocks.
+- **Propellers turning against each other.** Through a gearbox, a propeller beside the input turns the other way from one straight through it, so half of a plane's propellers can push backwards. Ask the Book's models worked out those turns wrong and now get them right, and its check names the propellers that push against the others and says to reverse them with a wrench.
+- **Planes that rolled over and spiraled down.** A plane with no Gyroscope has nothing holding its wings level, and one that passed the book's check rolled into a spiral on a test flight. The check now asks for a Gyroscope, which a Portable Engine's own 32 RPM can turn for a small plane.
+- **Fences on ships weighed as much as full blocks.** A fence placed by its item (which can join diagonally) weighed 1 on a ship instead of a fence's 0.25, so fence-railed decks and plane bodies were four times too heavy there. It now weighs what a fence does.
+- Field Guide (Propellers): new pages on spinning propellers fast enough to fly, gearing up, propellers turning against each other through gearboxes, sail wings, and a worked example of a biplane that flies (tested: takes off at about 15 blocks a second, cruises near 16). Field Guide (Propulsion): Keeping it level now says a Portable Engine's speed holds a small plane.
+- Create Galore Bridge 1.102.0.
+
+## 0.4.87
+
+### Fixed
+- **Sea showing inside a ship when you stand in a cabin or hold.** Looking out of a cabin through a doorway, the sea's surface could show on the deck or the floor of the next room, only from some angles, with or without shader packs. 0.4.63 fixed this for a player standing outside the hull; from inside, the pack still left it to Sable, whose check gives up where a line of sight leaves the hull through a doorway (doors and walls well above the waterline aren't part of the shape it checks) and comes back in. The pack's check now covers a player inside the hull too. A player inside a submerged submarine keeps Sable's check, since Create Deep Seas' underwater fog in there depends on it.
+- **Rain splashing on hidden water above a ship's deck.** On a deck that sits below the waterline (a laden boat), rain splashed on the sea's surface the hull keeps out, a little above the deck, so the drops showed where the hidden water was even from angles where the water itself didn't. Elsewhere on ships the splashes could float up to a block over the deck or sink into a roof. Rain now splashes on the ship's own deck and roof, unless the world has something over the ship there or open sea really covers it.
+
+### Added
+- Create Galore Bridge 1.101.0.
+
+## 0.4.86
+
+### Fixed
+- **Ask the Book now sees what is in barrels and chests aboard ships.** The book counts the storage a player has opened within 50 blocks as theirs, but storage on an assembled ship (or any other Sable vehicle) never counted: the ship keeps its blocks in a space of its own far out in the world, and the book measured the 50 blocks to there. It now measures to where the ship is right now, so a barrel on deck counts while the ship sails or turns, and the book says it's aboard a ship and in which direction. Storage opened before the ship was assembled stays counted once it's aboard, and again when the ship is taken apart. Checked on a test server: a barrel of diamonds opened on a platform, then assembled into a ship, and a barrel of emeralds opened on the ship both showed up, and kept showing up after the ship was moved 30 blocks and turned; the old version found neither once they were aboard. Barrels that went aboard before this update need opening once more.
+- Create Galore Bridge 1.100.0.
+
+## 0.4.85
+
+### Fixed
+- **Another exploring freeze: lava hardening along a seam.** Deep underground, world generation leaves water and lava side by side. When water flows onto such a seam, the first lava block turns to stone or obsidian, that wakes the next lava block along the seam, and so on, all in the same moment. A long seam carried this past the edge of the loaded world into chunks that were still being generated, and the server waited for each of them (a 3.9 s freeze while exploring new land). Lava next to a chunk that isn't loaded yet now waits for its next tick (a second and a half) and hardens then, the way it would have, and the seam carries on once that chunk is ready. Checked on a test server: a 192-block lava seam running out of the loaded area made the server load 7 chunks on the spot before; now it loads none, stops at the edge, and finishes hardening by itself once those chunks load.
+- Create Galore Bridge 1.99.0.
+
+## 0.4.84
+
+### Fixed
+- **Crash when changing the DLSS preset or render resolution with Perfect Presentation on.** A player switched the preset from K to L and the render resolution at the same moment, and the game closed: NVIDIA's DirectX driver crashed while DLSS's textures from the old size were freed. With Perfect Presentation on, DLSS shared Perfect Presentation's DirectX device, and every earlier test of a new render size had run with Perfect Presentation off. DLSS now always runs on a DirectX device of its own, lets go of its textures before they are freed, and waits for the graphics card to finish with them. Should the game still close while DLSS restarts, DLSS stays off until **Try again** on the settings screen, as it already did for a crash while starting. The crash didn't happen every time, so a crash log is welcome if it ever comes back.
+
+### Added
+- **Dropdowns on the DLAA settings screen.** Anti-aliasing, DLSS preset and Render resolution each open a list of every option, so one click picks any of them (they used to step through the options one click at a time). Hovering an option says what it does.
+- Field Guide (Performance): presets L and M also keep Photon's underwater light shafts and the specks in the water clean, where K and FSR smear them a little.
+- Create Galore Bridge 1.98.0.
+
 ## 0.4.83
 
 ### Added
@@ -744,5 +960,5 @@ The vehicle bug pass: airships, boats, submarines, trains, coasters and cars dri
 
 ### Added
 - **Ask the Book.** The Field Guide can now answer questions in its own words. Press **Ask the Book** at the top right of the guide (or type `/askbook`) and ask anything about the pack. It looks at what you're holding, your inventory, what's around you, your advancements and the pack's recipes, so "what should I do next?" gets advice for where you actually are. Answers stream in with a typewriter, a quill sound you can turn off, and Minecraft-themed thinking lines. When a picture helps, it draws pixel-art diagrams on the page in the book's colours with real item icons. Each player keeps their own pages on the server.
-- Works only on a home server whose owner saved their own Anthropic API key. The server asks for it at start (press K to change it, or type OFF). The key stays on the server machine, outside the server folder, and is never sent to players, written to logs, backups or the world. Setup: [docs/server-setup.md](https://github.com/emresahin0906-code/Create-Galore/blob/main-6fi2ef/docs/server-setup.md#the-field-guides-voice-your-own-api-key).
+- Works only on a home server whose owner saved their own Anthropic API key. The server asks for it at start (press K to change it, or type OFF). The key stays on the server machine, outside the server folder, and is never sent to players, written to logs, backups or the world. Setup: [docs/server-setup.md](https://github.com/CordMuncher/Create-Galore/blob/main-6fi2ef/docs/server-setup.md#the-field-guides-voice-your-own-api-key).
 - Create Galore Bridge 1.19.0 (adds Ask the Book on top of 0.2.18's Tide fixes).

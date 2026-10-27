@@ -49,6 +49,17 @@ final class Paths {
         PATHS.put("pan", new Path(150, new int[] {50, 100, 149}, f -> new Pose(0.3f * f, 0, 0, 0)));
         // A sideways walk: near things pass far things, so edges uncover the background (ghosting trails).
         PATHS.put("strafe", new Path(150, new int[] {50, 100, 149}, f -> new Pose(0, 0, 0.04 * f, 0)));
+        // A fast climb, 0.15 blocks a frame (15 blocks a second at 100 fps, like a boat at speed or creative flight),
+        // with the view held: the last 32 frames in a row show whatever on screen changes only because the player
+        // moved, such as the light on a held item.
+        PATHS.put("rise", new Path(140, captureRun(108, 32), f -> new Pose(0, 0, 0, 0.15 * f)));
+        // Standing on the ride scene's sailing ship, the view held (the ship carries the player): the last 48 frames
+        // in a row show whatever on screen changes only because the player rides along, such as the light on a held
+        // item.
+        PATHS.put("ride", new Path(160, captureRun(112, 48), f -> HOLD));
+        // Input latency: 600 frames held still, nothing saved; the Bridge's latency numbers are taken over them
+        // (-Dcreate_galore_dlss_testkit.latencyFrames sets fewer, for a plumbing check on a slow machine).
+        PATHS.put("latency", new Path(Integer.getInteger(TestKit.MOD_ID + ".latencyFrames", 600), new int[0], f -> HOLD));
     }
 
     static final List<String> NAMES = List.copyOf(PATHS.keySet());
@@ -57,6 +68,14 @@ final class Paths {
 
     static Path get(String name) {
         return PATHS.get(name);
+    }
+
+    private static int[] captureRun(int first, int count) {
+        int[] frames = new int[count];
+        for (int i = 0; i < count; i++) {
+            frames[i] = first + i;
+        }
+        return frames;
     }
 
     private static float ease(float t) {

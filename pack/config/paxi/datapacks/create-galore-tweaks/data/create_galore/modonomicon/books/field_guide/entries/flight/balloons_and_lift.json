@@ -57,6 +57,16 @@
       "text": "Lift weakens as altitude rises, so a ship settles where lift and weight balance. Changing lift changes altitude. The Altitude Sensor outputs a redstone signal for height and, with [#](2E5AAC)[goggles](entry://create_basics/tools_wrench)[#](), shows air pressure. Other worlds have very different air: see [#](2E5AAC)[Planets](entry://space/planets)[#]()."
     },
     {
+      "type": "modonomicon:text",
+      "title": "Speed and drag",
+      "text": "Every envelope block drags as the ship moves, about as much as three blocks' worth of its weight, so an envelope bigger than the load needs makes it slower. Size it to the weight with room to climb: each m3 of hot air holds up about 1.5 mass low down, less higher up.\\\n\\\nMount the propellers about level with the middle of the envelope: low ones tip the nose up at speed."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "A sky base that flies",
+      "text": "[#](FFFFFF)\ue103[#]() **In depth.** A balloon with a 7 by 11 gondola (bed, smoker, crafting table, eight barrels and chests) under a 290 m3 envelope, and two pods beside the envelope, each with two Portable Engines geared to 128 RPM on a 13-sail Propeller Bearing, cruises at about 9 blocks a second and climbs to about y 210.\\\n\\\nA lever at the helm for each pod's clutch, through Redstone Links, steers it."
+    },
+    {
       "type": "modonomicon:spotlight",
       "item": {
         "item": "aeronautics:levitite_blend_bucket"

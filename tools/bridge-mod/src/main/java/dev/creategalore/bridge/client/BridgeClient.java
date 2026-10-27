@@ -19,16 +19,22 @@ public final class BridgeClient {
     public static void init(IEventBus modBus, net.neoforged.fml.ModContainer container) {
         // Mods are built before Minecraft reads options.txt, so the file can still be fixed here.
         KeyRebindMigration.run();
+        FrameFreezeWatch.init();
         modBus.addListener(BridgeClient::setup);
         modBus.addListener(ShipWaterCutaway::registerShaders);
+        modBus.addListener(FpsOverlay::registerLayer);
         GuideAiClient.init(modBus);
         WearClient.init(modBus);
+        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener(net.neoforged.bus.api.EventPriority.HIGHEST, false,
+                net.neoforged.neoforge.client.event.RenderGuiLayerEvent.Pre.class, dev.creategalore.bridge.hud.HudSplit::beforeLayer);
         net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener(ShipGlueView::tick);
         net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener(SchematicTrace::tick);
         net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener(SchematicTrace::render);
         PinnedSchematicView.init();
         dev.creategalore.bridge.dlss.Dlss.init(modBus);
         dev.creategalore.bridge.dlss.DlaaScreen.register(modBus, container);
+        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener(
+                (net.neoforged.neoforge.event.GameShuttingDownEvent e) -> dev.creategalore.bridge.latency.FrameLatency.shutdown());
         net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener(
                 (net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent.LoggingOut e) -> ShipAnimatedSprites.clear());
     }

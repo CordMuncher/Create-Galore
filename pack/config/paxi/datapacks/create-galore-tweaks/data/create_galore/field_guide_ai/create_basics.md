@@ -1,4 +1,4 @@
-<!-- sources sha256:5fe6b1194f34a94fbdefcc7e80e8221c0a260512825ec1b6ec65bb43176f95e3 -->
+<!-- sources sha256:e0119957947f860a5f4747bfe94cbd3ee570e75065893020677a2d4f6837dd5a -->
 # Create: The Basics (create_basics)
 
 ## create_basics/rotation | Rotation
@@ -80,7 +80,7 @@
 - Basin [create:basin]: holds items and fluids for mixer/press above. No output until you give one.
 - Brass (see create_basics/brass_and_assembly): classic mixer job: copper + zinc ingots in basin with heated (see create_basics/heat) burner under it. Exact mix in JEI (see start_here/tools) (see glossary/mixing).
 - Tip: if two recipes fit the same contents, put an item in the machine's filter slot (see glossary/filter_slot) to pick one.
-- Basin output: belt, funnel, depot or chute below and to the side -> basin shows a faucet and pushes finished items out. No output block = keeps results inside (useful when they're ingredients for next step).
+- Basin output: only into the spot one block down beside the basin: depot, belt, chute, or a funnel facing up on a chest (sneak-placed so it inserts). Block beside the basin at its own height must stay open (air). A chest/barrel/hopper in that spot gets NOTHING; chest goes one lower with the funnel on top in the spot. Then basin shows a faucet and pushes results out. No output = keeps results inside (useful when they're ingredients for next step).
 - If you pull from a basin, use a filter (see create_basics/item_logistics) so unprocessed items stay.
 - Related: (see create_basics/heat), (see create_basics/fans), (see create_basics/crushing), (see create_basics/brass_and_assembly)
 

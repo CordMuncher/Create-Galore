@@ -42,6 +42,11 @@ public final class GuideAi {
     private static final Logger LOG = LogUtils.getLogger();
     /** Model rounds per question: tool calls, then one last round that must answer. */
     private static final int MAX_ROUNDS = 8;
+    /**
+     * Rounds once the book is building a model: a vehicle or machine takes a draft, the checks' faults and a fix per
+     * round, often several times over, and a design handed over with its faults unfixed is no answer.
+     */
+    private static final int DESIGN_ROUNDS = 20;
     /** Drawings and models in one answer. */
     private static final int MAX_DRAWINGS = 4;
     /** Pages one player can have the book writing on at once. */
@@ -605,12 +610,15 @@ public final class GuideAi {
         Usage usage = new Usage();
         StringBuilder note = new StringBuilder();
         List<String> diagrams = new ArrayList<>();
+        // Every model built for this answer, so the next version can start from one (build_model's from_draft).
+        List<Models.Draft> drafts = new ArrayList<>();
         Streamer streamer = new Streamer(l, playerId, pageId);
         boolean rescued = false;
+        int limit = MAX_ROUNDS;
         try {
             for (int round = 1; ; round++) {
                 // Past the limit only for the one extra round that asks an empty answer to be written.
-                boolean last = round >= MAX_ROUNDS;
+                boolean last = round >= limit;
                 if (round > 1) streamer.newRound();
                 JsonObject response = call(l, messages, last, streamer);
                 logDropped(response);
@@ -634,13 +642,15 @@ public final class GuideAi {
                             // Its tool calls have no results, which the API refuses on the page's next question.
                             return finishText(messages, diagrams, note, false);
                         }
-                        JsonObject results = toolResults(l, playerId, content, diagrams, streamer);
+                        JsonObject results = toolResults(l, playerId, content, diagrams, drafts, streamer);
                         messages.add(results);
-                        int left = MAX_ROUNDS - round - 1;
+                        if (limit < DESIGN_ROUNDS && calls(content, "build_model")) limit = DESIGN_ROUNDS;
+                        int left = limit - round - 1;
                         if (left == 0) addText(results, WRAP_UP);
-                        else if (left <= 2) addText(results, "(" + left + (left == 1 ? " more round" : " more rounds")
+                        else if (left <= 3) addText(results, "(" + left + (left == 1 ? " more round" : " more rounds")
                                 + " of tool calls for this question; after that the tools close and you must write the answer "
-                                + "from what you have.)");
+                                + "from what you have. If a design you are making still has a PROBLEM, spend them fixing it, "
+                                + "simplifying the design if that is what it takes to make it pass, not on looking more up.)");
                     }
                     case "pause_turn" -> {
                         // A long web search paused the turn; sending the conversation back lets it carry on.
@@ -664,7 +674,7 @@ public final class GuideAi {
                             messages.remove(messages.size() - 1);
                             addText(messages.get(messages.size() - 1).getAsJsonObject(), WRAP_UP_EMPTY);
                             rescued = true;
-                            round = Math.max(round, MAX_ROUNDS - 1);
+                            round = Math.max(round, limit - 1);
                             continue;
                         }
                         usage.log(playerId, round, stop);
@@ -705,6 +715,14 @@ public final class GuideAi {
         block.addProperty("type", "text");
         block.addProperty("text", text);
         blocks.add(block);
+    }
+
+    /** Whether this turn called the named tool. */
+    private static boolean calls(JsonArray content, String tool) {
+        for (JsonElement e : content)
+            if (e.isJsonObject() && GuideText.string(e.getAsJsonObject(), "type").equals("tool_use")
+                    && GuideText.string(e.getAsJsonObject(), "name").equals(tool)) return true;
+        return false;
     }
 
     private static String blockTypes(JsonArray content) {
@@ -898,7 +916,8 @@ public final class GuideAi {
     }
 
     /** Runs the book's tool calls on the server thread, for the player who asked, and returns them as one user turn. */
-    private static JsonObject toolResults(Live l, UUID playerId, JsonArray content, List<String> diagrams, Streamer streamer)
+    private static JsonObject toolResults(Live l, UUID playerId, JsonArray content, List<String> diagrams,
+            List<Models.Draft> drafts, Streamer streamer)
             throws InterruptedException {
         JsonArray results = new JsonArray();
         for (JsonElement e : content) {
@@ -932,7 +951,7 @@ public final class GuideAi {
                         PlacedBlocks placedBlocks = placed;
                         Models.Copier copier = player == null || placedBlocks == null ? null
                                 : (a, b, max) -> Builds.copy(player, placedBlocks, views.get(playerId), a, b, max);
-                        return Models.build(input, player != null ? player.serverLevel() : l.server.overworld(), copier, player);
+                        return Models.build(input, player != null ? player.serverLevel() : l.server.overworld(), copier, player, drafts);
                     }).get(10, TimeUnit.SECONDS);
                     LOG.info("Field Guide voice: build_model {}", buildSummary(built));
                     if (built.problem() != null) {

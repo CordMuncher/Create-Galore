@@ -44,8 +44,14 @@ import org.lwjgl.opengl.GL32C;
  * front face. Then the water to drop lies between that face and the first back face past the surface. Faces are kept
  * or dropped by which side of the surface they are on (ship_water_side), and the last front and back faces before it
  * are drawn into two depth buffers, then turned into Sable's close buffer (ship_water_close). Sable's far buffer gets
- * the first back face past the surface. With the camera inside a hull Sable's own pass stays (Deep Seas also reads its
- * far buffer for the underwater fog then).
+ * the first back face past the surface.
+ * <p>
+ * From a camera inside a hull (a cabin, a hold above the water) the same notches broke Sable's own pass: it starts
+ * every line of sight inside and hides water only up to the first back face, so a line of sight out through a doorway
+ * (doors and the walls well above the water are left out of the cells too) and back in over the deck or into the next
+ * room showed the sea there, from some angles only. There the line of sight starts inside, as if behind a front face
+ * at the camera, and the same question is asked at the water. Only a camera inside a submerged hold keeps Sable's own
+ * pass, since Create Deep Seas' underwater fog in there reads Sable's far buffer as the hull around the camera.
  */
 public final class ShipWaterCutaway {
     private static final ResourceLocation SIDE_ID = ResourceLocation.fromNamespaceAndPath("create_galore_bridge", "ship_water_side");
@@ -74,9 +80,9 @@ public final class ShipWaterCutaway {
         return side != null && close != null;
     }
 
-    /** Fills Sable's close and far buffers (already sized to the screen) for a camera outside every hull. */
+    /** Fills Sable's close and far buffers (already sized to the screen), for a camera outside every hull or inside one. */
     public static void render(Collection<SimpleCulledRenderRegion> regions, AdvancedFbo closeBuffer, AdvancedFbo farBuffer,
-                              Matrix4f modelView, Matrix4f projection) {
+                              Matrix4f modelView, Matrix4f projection, boolean cameraInside) {
         Minecraft mc = Minecraft.getInstance();
         Level level = mc.level;
         Vec3 camera = mc.gameRenderer.getMainCamera().getPosition();
@@ -103,13 +109,16 @@ public final class ShipWaterCutaway {
         RenderSystem.depthFunc(GL11C.GL_LESS);
         draw(farBuffer, 1.0F, GL11C.GL_FRONT, regions, planes, -1.0F, modelView, projection);
 
-        // Inside the hull at the surface: the close depth is that last front face. Outside: nothing to hide.
+        // Inside the hull at the surface: the close depth is that last front face (or the camera). Outside: nothing to hide.
         closeBuffer.bind(true);
         closeBuffer.clear(0.0F, 0.0F, 0.0F, 0.0F, 1.0F, closeBuffer.getClearMask());
         RenderSystem.depthFunc(GL11C.GL_ALWAYS);
         RenderSystem.disableCull();
         close.setSampler("FrontDepth", lastFront.getDepthTextureAttachment().getId());
         close.setSampler("BackDepth", lastBack.getDepthTextureAttachment().getId());
+        // Every back face drawn before the surface also wrote its color, so the mark tells a face at the camera from none.
+        close.setSampler("BackMark", lastBack.getColorTextureAttachment(0).getId());
+        close.safeGetUniform("CameraInside").set(cameraInside ? 1.0F : 0.0F);
         RenderSystem.setShader(() -> close);
         BufferBuilder quad = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION);
         quad.addVertex(-1.0F, -1.0F, 0.0F);

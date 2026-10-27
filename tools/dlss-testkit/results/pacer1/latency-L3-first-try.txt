@@ -1,0 +1,63 @@
+
+== 20261025-234304-L3 (run finished), NVIDIA GeForce RTX 4080 SUPER/PCIe/SSE2, Perfect Presentation on, 2560x1440
+mode             viewpoint input>GPU    p90 behind    fps  queue   gap gap90  wait  late   tgt  drv in>GPU drv p90 drv sim>GPU  GPU busy/frame  unit  reflex
+lat-base         shore          12.8   13.8    3.9    109   -0.1   0.0   0.0     -     -     -           -       -           -               -     -  off
+lat-base         shore          12.1   12.7    4.2    126   -0.1   0.0   0.0     -     -     -           -       -           -               -     -  off
+                 shore     median 12.5 ms, +0.0 ms against the first mode, repeats 12.1-12.8
+lat-base         canopy         13.9   15.0    4.6    105   -0.1   0.0   0.0     -     -     -           -       -           -               -     -  off
+lat-base         canopy         13.2   13.9    4.9    118   -0.1   0.0   0.0     -     -     -           -       -           -               -     -  off
+                 canopy    median 13.6 ms, +0.0 ms against the first mode, repeats 13.2-13.9
+lat-late         shore          12.2   13.0    4.0    117   -0.1   0.0   0.0     -     -     -           -       -           -               -     -  off
+lat-late         shore          11.9   12.3    4.2    127   -0.1   0.0   0.0     -     -     -           -       -           -               -     -  off
+                 shore     median 12.1 ms, -0.4 ms against the first mode, repeats 11.9-12.2
+lat-late         canopy         13.3   13.9    4.7    112   -0.1   0.0   0.0     -     -     -           -       -           -               -     -  off
+lat-late         canopy         13.1   13.5    4.8    118   -0.1   0.0   0.0     -     -     -           -       -           -               -     -  off
+                 canopy    median 13.2 ms, -0.3 ms against the first mode, repeats 13.1-13.3
+lat-reflex       shore          12.2   12.9    4.0    117   -0.1   0.0   0.0     -     -     -         8.7     9.8        12.7         0.0/8.7  1.00  on (driver low latency on, last sleep 800 us, game Sleep used)
+lat-reflex       shore          12.0   12.4    4.2    125   -0.1   0.0   0.0     -     -     -         7.8     8.6        12.2         0.0/7.8  1.00  on (driver low latency on, last sleep 800 us, game Sleep used)
+                 shore     median 12.1 ms, -0.4 ms against the first mode, repeats 12.0-12.2
+lat-reflex       canopy         13.3   14.1    4.7    110   -0.1   0.0   0.0     -     -     -         9.1    10.2        13.4         0.0/9.3  1.00  on (driver low latency on, last sleep 800 us, game Sleep used)
+lat-reflex       canopy         13.1   13.5    4.9    118   -0.1   0.0   0.0     -     -     -         8.4     8.8        13.3         0.0/8.4  1.00  on (driver low latency on, last sleep 800 us, game Sleep used)
+                 canopy    median 13.2 ms, -0.3 ms against the first mode, repeats 13.1-13.3
+lat-cap-late     shore          16.7   16.8   12.0     60   -0.1   0.0   1.7     -     -     -           -       -           -               -     -  off
+lat-cap-late     shore          16.7   16.8   12.7     60   -0.1   0.0   1.3     -     -     -           -       -           -               -     -  off
+                 shore     median 16.7 ms, +4.2 ms against the first mode, repeats 16.7-16.7
+lat-cap-late     canopy         16.7   16.9   12.4     60   -0.2   0.0   1.7     -     -     -           -       -           -               -     -  off
+lat-cap-late     canopy         16.7   17.0   12.8     60   -0.1   0.0   1.3     -     -     -           -       -           -               -     -  off
+                 canopy    median 16.7 ms, +3.1 ms against the first mode, repeats 16.7-16.7
+lat-cap-reflex   shore           9.0    9.7    4.6     60   -0.1   7.7   9.4     -     -     -         8.9     9.2         9.3        0.0/16.6  1.00  on (driver low latency on, last sleep 16666 us, game Sleep used)
+lat-cap-reflex   shore           8.8    9.5    4.7     60   -0.1   7.8   9.1     -     -     -         8.7     9.0         9.2        0.0/16.8  1.00  on (driver low latency on, last sleep 16666 us, game Sleep used)
+                 shore     median 8.9 ms, -3.6 ms against the first mode, repeats 8.8-9.0
+lat-cap-reflex   canopy          8.8    9.7    4.8     60   -0.1   7.7   9.9     -     -     -         8.8     9.5         9.3        0.0/16.0  1.00  on (driver low latency on, last sleep 16666 us, game Sleep used)
+lat-cap-reflex   canopy          9.1   10.2    4.8     60   -0.1   7.5   9.4     -     -     -         9.1    10.1         9.8        0.0/16.7  1.00  on (driver low latency on, last sleep 16666 us, game Sleep used)
+                 canopy    median 8.9 ms, -4.6 ms against the first mode, repeats 8.8-9.1
+lat-pacer        shore          11.9   12.5    4.1    122   -0.1   0.0   0.0   0.0     0   250           -       -           -               -     -  off
+lat-pacer        shore          12.0   12.7    4.0    121   -0.1   0.0   0.0   0.0     0   250           -       -           -               -     -  off
+                 shore     median 12.0 ms, -0.5 ms against the first mode, repeats 11.9-12.0
+lat-pacer        canopy         13.1   13.5    4.8    117   -0.1   0.0   0.0   0.0     0   250           -       -           -               -     -  off
+lat-pacer        canopy         13.3   13.8    4.8    113   -0.1   0.0   0.0   0.0     0   250           -       -           -               -     -  off
+                 canopy    median 13.2 ms, -0.4 ms against the first mode, repeats 13.1-13.3
+lat-pacer-500    shore          11.9   12.4    4.1    124   -0.1   0.0   0.0   0.0     0   500           -       -           -               -     -  off
+lat-pacer-500    shore          12.2   12.8    4.0    119   -0.1   0.0   0.0   0.0     0   500           -       -           -               -     -  off
+                 shore     median 12.1 ms, -0.4 ms against the first mode, repeats 11.9-12.2
+lat-pacer-500    canopy         13.0   13.4    4.8    119   -0.1   0.0   0.0   0.0     0   500           -       -           -               -     -  off
+lat-pacer-500    canopy         13.1   13.5    4.9    118   -0.1   0.0   0.0   0.0     0   500           -       -           -               -     -  off
+                 canopy    median 13.1 ms, -0.5 ms against the first mode, repeats 13.0-13.1
+lat-pacer-2000   shore          11.9   12.4    4.2    126   -0.1   0.0   0.0   0.0     0  2000           -       -           -               -     -  off
+lat-pacer-2000   shore          11.9   12.6    4.2    124   -0.1   0.0   0.0   0.0     0  2000           -       -           -               -     -  off
+                 shore     median 11.9 ms, -0.6 ms against the first mode, repeats 11.9-11.9
+lat-pacer-2000   canopy         13.1   13.5    4.9    118   -0.1   0.0   0.0   0.0     0  2000           -       -           -               -     -  off
+lat-pacer-2000   canopy         13.1   13.5    4.8    118   -0.1   0.0   0.0   0.0     0  2000           -       -           -               -     -  off
+                 canopy    median 13.1 ms, -0.5 ms against the first mode, repeats 13.1-13.1
+lat-reflex-pacer shore          11.9   12.4    4.2    126   -0.1   0.0   0.0   0.0     0   250         7.8     8.3        12.2         0.0/7.8  1.00  on (driver low latency on, last sleep 800 us, game Sleep used)
+lat-reflex-pacer shore          12.0   13.3    4.1    117   -0.1   0.0   0.0   0.0     0   250         8.1     8.6        12.3         0.0/8.0  1.00  on (driver low latency on, last sleep 800 us, game Sleep used)
+                 shore     median 12.0 ms, -0.5 ms against the first mode, repeats 11.9-12.0
+lat-reflex-pacer canopy         13.1   13.5    4.8    117   -0.1   0.0   0.0   0.0     0   250         8.4     8.7        13.3         0.0/8.3  1.00  on (driver low latency on, last sleep 800 us, game Sleep used)
+lat-reflex-pacer canopy         13.1   13.7    4.8    117   -0.1   0.0   0.0   0.0     0   250         8.5     9.2        13.3         0.0/8.4  1.00  on (driver low latency on, last sleep 800 us, game Sleep used)
+                 canopy    median 13.1 ms, -0.4 ms against the first mode, repeats 13.1-13.1
+lat-cap-start    shore           8.9    9.6    4.7     60   -0.1   7.8   9.3     -     -     -           -       -           -               -     -  off
+lat-cap-start    shore           8.9    9.9    4.8     60   -0.1   8.1   9.4     -     -     -           -       -           -               -     -  off
+                 shore     median 8.9 ms, -3.6 ms against the first mode, repeats 8.9-8.9
+lat-cap-start    canopy          8.8    9.5    4.8     60   -0.1   7.9   9.9     -     -     -           -       -           -               -     -  off
+lat-cap-start    canopy          9.4   10.5    4.7     60   -0.1   7.3   9.2     -     -     -           -       -           -               -     -  off
+                 canopy    median 9.1 ms, -4.5 ms against the first mode, repeats 8.8-9.4

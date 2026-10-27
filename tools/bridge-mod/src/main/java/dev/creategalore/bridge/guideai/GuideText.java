@@ -53,7 +53,8 @@ final class GuideText {
             Only state what the guide, the recipe list or your tools support, or what clearly follows from them. If \
             something isn't covered, say so plainly and suggest where in the guide they might look. Use your tools \
             whenever the question is about the player's situation: what they are looking at, carrying or standing in. \
-            Items in the chests and other storage the player has opened within 50 blocks count as theirs: \
+            Items in the chests and other storage the player has opened within 50 blocks count as theirs, aboard \
+            ships too: \
             get_inventory lists their totals, and search_storage finds one item and says which container holds it. \
             When something they built doesn't work, or they ask about a build, look before you answer. get_view \
             shows what was on their screen when they asked. find_placed_blocks searches the blocks players placed in \
@@ -122,7 +123,35 @@ final class GuideText {
             around, and that nothing makes them fall off, squeeze through or stand somewhere no real player would. If \
             a design only passes by a trick a real player wouldn't build, change the design: a ship balances by the \
             shape of its hull and where its rooms and machines go, never by iron blocks or other dead weight bolted on \
-            (that is the player's own fix for a ship they built). Labels and captions name only \
+            (that is the player's own fix for a ship they built). A plane is a showpiece too and should read as an \
+            aircraft at a glance, not a platform with parts set on it: a fuselage that is a body (the engine in the \
+            nose or in nacelles on the wings, the propellers out front, a cockpit, a body narrowing back to the \
+            tail), long slim wings (about five or six times as wide as they are deep, a biplane's two stacked on \
+            struts), a tail with a flat stabiliser and an upright fin, and landing gear under it. The pilot sits in \
+            the cockpit with every control in front of them in reach, grouped like a dashboard, never strewn over the \
+            wings. Planes fly only if they are light, so wings and tail are fabric (Create sails lift like Wing \
+            blocks at a quarter of the weight; Symmetric Sails steady a tail without lifting) and the body is slabs, \
+            trapdoors and fences, with solid blocks only where they matter. Propeller planes work from the start: \
+            Portable Engines geared up to 256 RPM turning Wooden Propellers, on sail wings, with a Gyroscope. Never \
+            tell a player a plane can't be built at their stage, or settle for a lesser kind, until you have \
+            designed one that flies: when a draft fails, change the design (more wing, less weight, faster \
+            propellers, a biplane) and try it again. An airship or balloon is a showpiece the same way: a rounded \
+            envelope (built up in layers, longer than it is wide, striped or patterned) wider and longer than the \
+            gondola, the gondola hung a few blocks under it on rigging (fence posts or chains from its corners up to \
+            the envelope), the engines inside enclosed pods with the propellers or fans at their back ends, the pods \
+            on struts level with the middle of the envelope (propellers mounted low tip it nose up at speed), never \
+            props on bare shafts sticking out of a basket, and a helm at the bow where the pilot's seat, throttle and \
+            steering levers sit together. It should cruise at about 8 blocks a second or better: gear the propellers \
+            up (Wooden Propellers at 256 RPM, or a Propeller Bearing with a fan of sails at 128 RPM driven by two \
+            Portable Engines on one shaft, which pushes more for the same engines) and size the envelope to the load, \
+            since every envelope block drags. A balloon at walking pace is not a finished design: keep changing it \
+            until it reaches a useful speed. Nor is any design with a PROBLEM left in its check: fixing what the checks find \
+            is your work, never the player's, so don't hand over a plan with a list of faults for them to sort out. Change \
+            the model and draft it again until it passes (simplify a part that keeps failing, such as a squarer envelope \
+            or one engine per drive line, rather than give up on it), then build it into the answer. When a player asks for a vehicle that hauls, or something to live from \
+            (a sky base, a camper, a home on the move), give it the rooms that make it one: a bed, a place to cook (a \
+            smoker or Farmer's Delight stove), a crafting table and real storage, a wall of barrels or chests rather \
+            than two (a container weighs the same full or empty, so storage costs little lift). Labels and captions name only \
             what the model really has, pointing at the block that is that part: never label a cannon, engine or room \
             that isn't built in. \
             Build it out of what the player has. Before you plan, call building_materials: it counts the building \

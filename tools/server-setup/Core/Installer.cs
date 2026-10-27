@@ -54,7 +54,7 @@ namespace CreateGalore.ServerSetup
         {
             this.pack = pack; o = options; this.log = log; this.progress = progress; this.ct = ct;
             http = new HttpClient { Timeout = TimeSpan.FromMinutes(10) };
-            http.DefaultRequestHeaders.UserAgent.ParseAdd("CreateGalore-ServerSetup/" + pack.PackVersion + " (github.com/emresahin0906-code/Create-Galore)");
+            http.DefaultRequestHeaders.UserAgent.ParseAdd("CreateGalore-ServerSetup/" + pack.PackVersion + " (github.com/CordMuncher/Create-Galore)");
         }
 
         public async Task RunAsync()

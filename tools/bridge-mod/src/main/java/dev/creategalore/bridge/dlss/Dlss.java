@@ -13,6 +13,7 @@ import java.util.function.ToIntFunction;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import dev.creategalore.bridge.DisplaySettings;
+import dev.creategalore.bridge.framegen.FrameGen;
 import dev.creategalore.bridge.mixin.LevelRendererTicksAccessor;
 import net.irisshaders.iris.Iris;
 import net.irisshaders.iris.uniforms.CapturedRenderingState;
@@ -41,8 +42,8 @@ import org.slf4j.LoggerFactory;
  *
  * config/create_galore_bridge-display.properties (or the settings screen, {@link DlaaScreen}): dlaa picks the engine,
  * auto (DLSS where it can run, else AMD FSR 3.1 at full resolution), dlss, fsr3 or off; dlaaPreset picks the DLSS
- * preset. Both are read again when shaders reload. DLSS runs on Perfect Presentation's DirectX device when that is on,
- * else on its own (see {@link DlssDevice}). Anything missing (not Windows, no NVIDIA RTX card, no nvngx_dlss.dll, an
+ * preset. Both are read again when shaders reload. DLSS runs on a DirectX 11 device of its own (see {@link DlssDevice}),
+ * also with Perfect Presentation on. Anything missing (not Windows, no NVIDIA RTX card, no nvngx_dlss.dll, an
  * unpatched pack, a pack option that the patch does not cover) leaves the pack's own anti-aliasing in place, says why
  * in the log and once in a notice, and the settings screen shows it. An engine that took the game down while it
  * started stays off until the player tries it again ({@link StartGuard}).
@@ -64,9 +65,11 @@ public final class Dlss {
     private static final String PROJECT_ID = "0f4d213d-b46a-4c91-9f2f-baac70721d6b";
     private static final String ENGINE_VERSION = "1.21.1";
     /** In the game folder: nvngx_dlss.dll (the player's own), the helper DLL, NGX's logs and the start marks. */
-    static final String FOLDER = "create-galore-dlss";
+    public static final String FOLDER = "create-galore-dlss";
     /** The nvngx_dlss.dll this was tested with (NVIDIA's DLSS SDK on GitHub). */
     static final String TESTED_DLL_VERSION = "310.9.16";
+    /** The nvngx_dlssg.dll (DLSS Frame Generation's model) frame generation was tested with. */
+    static final String TESTED_FG_DLL_VERSION = "310.9.16";
     static final String DLL = "nvngx_dlss.dll";
     private static final String DLL_DIR_PROPERTY = "create_galore_bridge.dlss.dllDir";
     private static final String DEBUG_VIEW_PROPERTY = "create_galore_bridge.dlss.debugView";
@@ -111,6 +114,8 @@ public final class Dlss {
     private static boolean fsr3Debug;
     private static PackProfile profile;
     private static String packProblem;
+    /** {@link #packProblem} for a shader pack that is not made for DLAA. */
+    private static final String NO_PROFILE = "it is not made for DLAA (it has no " + PackProfile.FILE + ")";
     /** A run failed: the pack's own anti-aliasing is back until shaders reload. */
     private static boolean failed;
     /** The game is quitting: its last frames must not start DLSS again after it was closed. */
@@ -188,6 +193,7 @@ public final class Dlss {
     /** A shader pack pipeline was made (shaders loaded or reloaded): reads the settings and the pack's profile again. */
     public static void onPipelineCreated() {
         ObjectMotion.reset();
+        FrameGen.pipelineCreated();
         DisplaySettings.reload();
         engine = DisplaySettings.dlaaEngine();
         wanted = !engine.equals("off");
@@ -220,7 +226,7 @@ public final class Dlss {
         try {
             // (Also with DLAA off: the pack's own upscaling renders at the Bridge's render size.)
             profile = PackProfile.current();
-            packProblem = profile == null ? "it is not patched for DLAA (" + PhotonPatcher.PATCHED_NAME + " is)" : profile.optionProblem();
+            packProblem = profile == null ? NO_PROFILE : profile.optionProblem();
             renderScaleSetting = profile == null ? 1.0f : profile.renderScale();
         } catch (IOException | RuntimeException e) {
             packProblem = "its " + PackProfile.FILE + " could not be read: " + e;
@@ -233,9 +239,10 @@ public final class Dlss {
         if (profile == null && packProblem != null) {
             LOG.info("DLAA: not used with the shader pack {}, {}", Iris.getCurrentPackName(), packProblem);
         } else if (packProblem != null) {
-            LOG.info("DLAA: off with these {} options, {}", PhotonPatcher.PATCHED_NAME, packProblem);
+            LOG.info("DLAA: off with these {} options, {}", Iris.getCurrentPackName(), packProblem);
         } else if (debugView != null) {
-            LOG.info("DLAA: on for this shader pack, debug view {} (DLSS itself not used){}", debugView.name().toLowerCase(Locale.ROOT), jitter);
+            LOG.info("DLAA: on for this shader pack, debug view {} (DLSS itself not used), {}{}", debugView.name().toLowerCase(Locale.ROOT),
+                    renderScaleSetting < 1.0f ? "upscaling from " + Math.round(snappedScale() * 100.0f) + "% of the window" : "full resolution", jitter);
         } else {
             LOG.info("DLAA: on for this shader pack, engine {}, DLSS preset {}{}, {}{}{}{}", engine, presetName(preset),
                     presetName.equalsIgnoreCase(presetName(preset)) || presetName.isEmpty() ? "" : " (set to " + presetName + ")",
@@ -273,7 +280,7 @@ public final class Dlss {
 
         boolean wasActive = active;
         if (wanted && profile != null && packProblem != null) {
-            notice("pack:" + packProblem, "DLAA is off with these Photon options", packProblem);
+            notice("pack:" + packProblem, "DLAA is off with these shader pack options", packProblem);
         }
         active = wanted && profile != null && packProblem == null && !failed && !shuttingDown && ensureReady();
         EntityMotion.beginFrame(active, Minecraft.getInstance().gameRenderer.getMainCamera().getPosition());
@@ -327,6 +334,12 @@ public final class Dlss {
     /** True while the pack should hand its frame to DLSS (cg_dlss_active). */
     public static boolean shaderActive() {
         return active;
+    }
+
+    /** For the test kit: the pack the render resolution goes into, its upscaling switch and its render scale option. */
+    public static String[] renderScaleOptions() {
+        RenderScaleTarget target = RenderScaleTarget.current();
+        return new String[] {target.pack(), target.upscaling(), target.scale()};
     }
 
     /** This frame's jitter in pixels, -0.5..0.5 (cg_dlss_jitter_x). */
@@ -420,7 +433,7 @@ public final class Dlss {
                 runFsr3(in);
                 return;
             }
-            boolean resized = pass.ensureSize(in.renderWidth(), in.renderHeight(), in.width(), in.height());
+            boolean newSize = pass.needsSize(in.renderWidth(), in.renderHeight(), in.width(), in.height());
             int usePreset = presetFellBack ? PRESET_DEFAULT : preset;
             int mode = perfQuality(in.renderWidth(), in.width());
             // NVIDIA: DLSS takes the game's exposure with J and K only, L and M always meter it themselves (asked to
@@ -428,9 +441,12 @@ public final class Dlss {
             boolean autoExposure = usePreset == PRESET_L || usePreset == PRESET_M || autoExposureTest;
             int flags = NgxLibrary.FLAG_IS_HDR | NgxLibrary.FLAG_MV_LOW_RES | NgxLibrary.FLAG_DEPTH_INVERTED
                     | (autoExposure ? NgxLibrary.FLAG_AUTO_EXPOSURE : 0);
-            if (resized || flags != featureFlags || usePreset != featurePreset) {
+            if (newSize || flags != featureFlags || usePreset != featurePreset) {
                 featureFlags = -1;
                 dlssGuard.starting();
+                // DLSS lets go of the textures it ran on before they are freed for a new size.
+                ngx.release();
+                pass.ensureSize(in.renderWidth(), in.renderHeight(), in.width(), in.height());
                 int result = ngx.create(device.context, in.renderWidth(), in.renderHeight(), in.width(), in.height(),
                         mode, flags, usePreset);
                 ngx.drainLog();
@@ -466,13 +482,15 @@ public final class Dlss {
             }
             reset = false;
             dlssGuard.ran();
+            FrameGen.upscaled(in.motionTexture(), in.depthTexture(), in.width(), in.height(), in.renderWidth(), in.renderHeight(),
+                    jitterX * jitterSign[0], jitterY * jitterSign[1], resetNow, frameTimeMs);
             dumpIfAsked(pass, true);
             Markers.around("Create Galore DLAA: write back", () -> pass.writeBack(profile, DlssPass.View.RESULT));
         } catch (Throwable t) {
             failed = true;
             guard().stopped();
             LOG.error("DLAA: stopped, the pack's own anti-aliasing is back from the next frame (reloading shaders tries DLAA again)", t);
-            notice("failed:" + t, "DLAA stopped after an error", "Photon's own anti-aliasing is back. Reloading shaders (F8) tries again; the log says what went wrong.");
+            notice("failed:" + t, "DLAA stopped after an error", "The shader pack's own anti-aliasing is back. Reloading shaders (F8) tries again; the log says what went wrong.");
         }
     }
 
@@ -492,6 +510,8 @@ public final class Dlss {
                 frameTimeMs, projection, fsr3Debug));
         reset = false;
         fsrGuard.ran();
+        FrameGen.upscaled(in.motionTexture(), in.depthTexture(), in.width(), in.height(), in.renderWidth(), in.renderHeight(),
+                jitterX * jitterSign[0], jitterY * jitterSign[1], resetNow, frameTimeMs);
         dumpIfAsked(fsrPass, true);
         Markers.around("Create Galore DLAA: write back", () -> fsrPass.writeBack(profile, DlssPass.View.RESULT));
     }
@@ -566,7 +586,7 @@ public final class Dlss {
             return false;
         }
         if (guards() && dlssGuard.crashed()) {
-            unavailable = "the game closed while DLSS was starting last time, so it stays off until you pick Try again on the DLAA settings screen";
+            unavailable = "the game closed while DLSS was starting last time, so it stays off until you pick Try again on the Upscaling & Display screen";
             unavailableNoDll = false;
             return false;
         }
@@ -590,7 +610,7 @@ public final class Dlss {
             return true;
         }
         if (fsr3Unavailable == null && guards() && fsrGuard.crashed()) {
-            fsr3Unavailable = "the game closed while FSR 3 was starting last time, so it stays off until you pick Try again on the DLAA settings screen";
+            fsr3Unavailable = "the game closed while FSR 3 was starting last time, so it stays off until you pick Try again on the Upscaling & Display screen";
         }
         if (fsr3Unavailable != null) {
             notice("fsr3:" + fsr3Unavailable, "DLAA is off: FSR 3 can't run", fsr3Unavailable);
@@ -681,7 +701,7 @@ public final class Dlss {
         unavailableNoDll = !Files.isRegularFile(dll);
         if (unavailableNoDll) {
             throw new IllegalStateException("there is no " + dll + " (not part of the pack: bring your own, DLSS "
-                    + TESTED_DLL_VERSION + " or newer, see the DLAA settings screen)");
+                    + TESTED_DLL_VERSION + " or newer, see the Upscaling & Display screen)");
         }
         Files.createDirectories(folder.resolve("ngx"));
         ngx = NgxLibrary.load(folder);
@@ -703,8 +723,8 @@ public final class Dlss {
         }
         pass = new DlssPass(device);
         adapterName = device.adapterName;
-        LOG.info("DLAA: NGX ready on {} ({}; OpenGL on {}), nvngx_dlss.dll {} from {} (tested with {})", device.adapterName,
-                device.shared ? "Perfect Presentation's DirectX device" : "its own DirectX device", glGetString(GL_RENDERER),
+        LOG.info("DLAA: NGX ready on {} (its own DirectX device; OpenGL on {}), nvngx_dlss.dll {} from {} (tested with {})",
+                device.adapterName, glGetString(GL_RENDERER),
                 DllVersion.read(dll), dllFolder, TESTED_DLL_VERSION);
     }
 
@@ -738,12 +758,13 @@ public final class Dlss {
 
     private static void closeDlss() {
         try {
-            if (pass != null) {
-                pass.close();
-            }
+            // NGX first: its DLSS feature ran on the pass's textures.
             if (ngx != null) {
                 ngx.shutdown();
                 ngx.drainLog();
+            }
+            if (pass != null) {
+                pass.close();
             }
             if (device != null) {
                 device.close();
@@ -799,10 +820,38 @@ public final class Dlss {
 
     // For the settings screen (DlaaScreen).
 
-    /** Where DLSS reads nvngx_dlss.dll from: create-galore-dlss in the game folder (or the dllDir test property). */
-    static Path dllFolder() {
+    /**
+     * Where DLSS reads nvngx_dlss.dll from (and frame generation nvngx_dlssg.dll): create-galore-dlss in the game folder
+     * (or the dllDir test property).
+     */
+    public static Path dllFolder() {
         String dllDir = System.getProperty(DLL_DIR_PROPERTY);
         return dllDir != null && !dllDir.isBlank() ? Path.of(dllDir) : FMLPaths.GAMEDIR.get().resolve(FOLDER);
+    }
+
+    /**
+     * DLSS Frame Generation is starting (see FrameGen): puts a nvngx_dlssg.dll that waited for the old one in place.
+     * The version of the one in the DLSS folder ({@link #frameGenerationDllVersion()}); NVIDIA's folder is read only
+     * by the settings screen's Find on this PC.
+     */
+    public static String readyFrameGenerationDll() {
+        DlssFinder.applyPending();
+        return frameGenerationDllVersion();
+    }
+
+    /** The version of the nvngx_dlssg.dll in the DLSS folder, "unknown" if it has none, or null if there is none. */
+    public static String frameGenerationDllVersion() {
+        Path dll = dllFolder().resolve(DlssFinder.FG_DLL);
+        if (!Files.isRegularFile(dll)) {
+            return null;
+        }
+        String version = DllVersion.read(dll);
+        return version != null ? version : "unknown";
+    }
+
+    /** The nvngx_dlssg.dll version frame generation was tested with. */
+    public static String testedFrameGenerationDllVersion() {
+        return TESTED_FG_DLL_VERSION;
     }
 
     /** The version of the nvngx_dlss.dll there, "unknown" if it has none, or null if there is none. */
@@ -834,11 +883,11 @@ public final class Dlss {
         }
     }
 
-    /** The settings were saved: makes the Photon copy if it is now needed, and reloads shaders if it is in use. */
+    /** The settings were saved: makes the Photon copy if it is now needed, and reloads shaders if a DLAA pack is in use. */
     static void settingsChanged() {
         DisplaySettings.reload();
         PhotonPatcher.refresh();
-        if (PhotonPatcher.PATCHED_NAME.equals(Iris.getCurrentPackName()) && Iris.getIrisConfig().areShadersEnabled()) {
+        if (Iris.getIrisConfig().areShadersEnabled() && (PhotonPatcher.PATCHED_NAME.equals(Iris.getCurrentPackName()) || hasProfile())) {
             try {
                 Iris.reload();
             } catch (IOException | RuntimeException e) {
@@ -847,19 +896,30 @@ public final class Dlss {
         }
     }
 
+    private static boolean hasProfile() {
+        try {
+            return PackProfile.current() != null;
+        } catch (IOException | RuntimeException e) {
+            return false;
+        }
+    }
+
     /** What DLAA does right now, in a line for the settings screen. */
     static String status() {
         if (!wanted) {
-            return "Off: Photon keeps its own anti-aliasing (TAA).";
+            return "Off: the shader pack keeps its own anti-aliasing.";
         }
-        if (!Iris.getIrisConfig().areShadersEnabled() || !PhotonPatcher.PATCHED_NAME.equals(Iris.getCurrentPackName())) {
-            return "Waiting: pick the shader pack \"" + PhotonPatcher.PATCHED_NAME + "\" in Iris's shader menu.";
+        if (!Iris.getIrisConfig().areShadersEnabled() || Iris.getCurrentPack().isEmpty() || NO_PROFILE.equals(packProblem)) {
+            return "Waiting: pick a shader pack made for DLAA, such as \"" + PhotonPatcher.PATCHED_NAME + "\", in Iris's shader menu.";
+        }
+        if (profile == null && packProblem != null) {
+            return "Off: the shader pack's " + PackProfile.FILE + " could not be read (the log says why).";
         }
         if (packProblem != null) {
-            return "Off with these Photon options: " + packProblem + ".";
+            return "Off with these shader pack options: " + packProblem + ".";
         }
         if (failed) {
-            return "Stopped after an error (the log says which). Photon's TAA is back; reloading shaders tries again.";
+            return "Stopped after an error (the log says which). The pack's own anti-aliasing is back; reloading shaders tries again.";
         }
         if (debugView != null) {
             return "Debug view " + debugView.name().toLowerCase(Locale.ROOT) + " (testing).";
