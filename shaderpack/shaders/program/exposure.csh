@@ -1,4 +1,4 @@
-// The overworld's exposure, metered after DLSS (or FSR) for the next frame. It meters the light falling on what the
+// The exposure, metered after DLSS (or FSR) for the next frame. It meters the light falling on what the
 // frame shows rather than the light it gives back, as Ghost of Tsushima does (Patry 2021): a surface counts as an 18%
 // grey would look in its place (its brightness over its colour's), so a dark floor doesn't brighten the frame and
 // snow doesn't darken it; the sky, water, what lights itself and what the G-buffer has no colour for count as they
@@ -23,7 +23,15 @@ uniform sampler2D colortex4;
 uniform float frameTime;
 
 const float ev_min = -7.0;
+#ifdef WORLD_NETHER
+// The Nether is lit only by its lava, its lamps and its glowing air, far dimmer than a day but no night to the eye:
+// it adapts further and keeps it a little brighter (see the key below).
+const float ev_max = 14.0;
+const float key_dark = 0.25;
+#else
 const float ev_max = 12.0;
+const float key_dark = -0.25;
+#endif
 
 // The histogram: log2 of kcd/m² from starlight to the sun's disc, 256 bins of about a fifth of a stop.
 const int bins = 256;
@@ -140,7 +148,7 @@ void main() {
     float metered = shared_weight[0] > 1e-6 ? shared_sum[0] / shared_weight[0] : 0.5 * (range.x + range.y);
     // The frame's average lands here (log2 of the frame's units): by day about where the tone curve puts a lit grey
     // a little under the middle of the screen's range, in the dark lower, so a night looks like night.
-    float key = mix(-0.25, 0.75, smoothstep(-10.0, -2.0, metered));
+    float key = mix(key_dark, 0.75, smoothstep(-10.0, -2.0, metered));
     float target = clamp(key - metered, ev_min, ev_max);
     float ev = exposure_ready(previous) ? previous.y : target;
     // About a second to see in a dark room after the sun, half that back out (eyes take longer, games less).

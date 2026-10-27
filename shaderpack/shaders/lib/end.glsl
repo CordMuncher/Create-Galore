@@ -25,13 +25,13 @@ const vec3 end_void_color = vec3(1.19, 0.82, 2.17);
 const float end_void_up = 0.004;
 const float end_void_side = 0.005;
 const float end_void_down = 0.008;
-// The haze: how thick (per block) between the islands, and in the mist over the void at its thickest (from y 40 down
-// to y -24, where the islands' undersides end); how much of the light in it it sends on, and how much of that onwards
+// The haze: how thick (per block) between the islands, and in the mist over the void at its thickest. Both lie in
+// layers, so looking up or far down you see past them into the void, the nebula and the stars (end_sky.glsl): the
+// haze from y -100 (full from -64) to y 180 (thinning from 100), the mist from y -80 to 40, thickest at -16 (where
+// the islands' undersides end). How much of the light in it the haze sends on, and how much of that onwards
 // (Henyey-Greenstein g), so it glows around the light when you look up towards it.
-const float end_haze_density = 0.0012;
+const float end_haze_density = 0.0008;
 const float end_mist_density = 0.012;
-const float end_mist_top = 40.0;
-const float end_mist_bottom = -24.0;
 const float end_haze_albedo = 0.85;
 const float end_haze_g = 0.55;
 // How far the haze reaches from you (blocks): it is the End's air, not a planet's; past this, the void.
@@ -59,26 +59,46 @@ float end_hg(float cos_theta) {
     return (1.0 - g * g) / (4.0 * PI * pow(1.0 + g * g - 2.0 * g * cos_theta, 1.5));
 }
 
-// How thick the haze is at a height (world y, per block).
-float end_haze(float y) {
-    return END_HAZE * (end_haze_density + end_mist_density * smoothstep(end_mist_top, end_mist_bottom, y));
+// The layers' shapes, as the places their thickness (0..1 with height) bends and by how much its slope changes there,
+// so each is a sum of ramps (and its sum along y one of half squares).
+const vec4 end_haze_bends = vec4(-100.0, -64.0, 100.0, 180.0);
+const vec4 end_haze_slopes = vec4(1.0 / 36.0, -1.0 / 36.0, -1.0 / 80.0, 1.0 / 80.0);
+const vec3 end_mist_bends = vec3(-80.0, -16.0, 40.0);
+const vec3 end_mist_slopes = vec3(1.0 / 64.0, -1.0 / 64.0 - 1.0 / 56.0, 1.0 / 56.0);
+
+float end_haze_layer(float y) {
+    return dot(end_haze_slopes, max(y - end_haze_bends, 0.0));
 }
 
-// The mist below a height down to the void's, summed (blocks of full mist): the integral of the mist's smoothstep from
-// y up to its top.
-float end_mist_below(float y) {
-    float u = clamp((end_mist_top - y) / (end_mist_top - end_mist_bottom), 0.0, 1.0);
-    return (end_mist_top - end_mist_bottom) * (u * u * u - 0.5 * u * u * u * u) + max(end_mist_bottom - y, 0.0);
+float end_mist_layer(float y) {
+    return dot(end_mist_slopes, max(y - end_mist_bends, 0.0));
+}
+
+// How thick the haze is at a height (world y, per block).
+float end_haze(float y) {
+    return END_HAZE * (end_haze_density * end_haze_layer(y) + end_mist_density * end_mist_layer(y));
+}
+
+// The haze summed from below up to a height (blocks of it at full density, weighted by density).
+float end_haze_below(float y) {
+    vec4 h = max(y - end_haze_bends, 0.0);
+    vec3 m = max(y - end_mist_bends, 0.0);
+    return 0.5 * (end_haze_density * dot(end_haze_slopes, h * h) + end_mist_density * dot(end_mist_slopes, m * m));
 }
 
 // How much haze lies along dir (world space) from from_t to end_haze_reach blocks out from you: its optical depth.
 float end_haze_depth(vec3 dir, float from_t) {
+    float length_t = max(end_haze_reach - from_t, 0.0);
     float y0 = cameraPosition.y + dir.y * from_t;
     float y1 = cameraPosition.y + dir.y * end_haze_reach;
-    float length_t = max(end_haze_reach - from_t, 0.0);
-    float mist = abs(dir.y) > 1e-3 ? abs(end_mist_below(y0) - end_mist_below(y1)) / abs(dir.y)
-            : smoothstep(end_mist_top, end_mist_bottom, y0) * length_t;
-    return END_HAZE * (end_haze_density * length_t + end_mist_density * mist);
+    float depth;
+    if (abs(dir.y) > 0.002) {
+        depth = abs(end_haze_below(y1) - end_haze_below(y0)) / abs(dir.y);
+    } else {
+        // Near level, the layers barely change along the ray: their thickness halfway, times its length.
+        depth = end_haze(0.5 * (y0 + y1)) / END_HAZE * length_t;
+    }
+    return END_HAZE * depth;
 }
 
 // The light the haze sends towards you from along dir (kcd/m² per unit of its optical depth): the void's glow and
