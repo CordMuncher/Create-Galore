@@ -61,10 +61,18 @@ float sky_seen_probe(vec3 scene_pos, float sky) {
     return open_to * open_to / (open_to * open_to + across * across);
 }
 
+// The top of the sea in the overworld (the top of its water blocks).
+const float sea_level = 63.0;
+
 // The share of the sky a surface at scene_pos facing n with sky light sky sees: from the sky grid near you, and from
 // the screen past it (and on Distant Horizons' terrain, lod), the one fading into the other over the grid's last
-// 28 blocks. noise: 0..1, a different one each pixel and frame.
-float sky_seen_around(vec3 scene_pos, vec3 n, float sky, float noise, bool lod) {
+// 28 blocks. noise: 0..1, a different one each pixel and frame. water: the surface is water's own.
+//
+// The screen can't tell water from air: what is opaque is lit before the water is drawn, and the depth the probe
+// looks past at the sea floor is the sea's. So past the grid (which knows where water is) a surface below the top of
+// the sea is taken to be under it, and sees no more of the sky than its sky light says: Minecraft's sky light dims a
+// level for each block of water, much as the water dims the sky's light.
+float sky_seen_around(vec3 scene_pos, vec3 n, float sky, float noise, bool lod, bool water) {
     float grid = 0.0;
     float seen = 0.0;
 #ifdef LIT_SKY_GRID
@@ -79,7 +87,8 @@ float sky_seen_around(vec3 scene_pos, vec3 n, float sky, float noise, bool lod) 
     }
 #endif
     if (grid < 1.0) {
-        seen = mix(sky_seen_probe(scene_pos, sky), seen, grid);
+        bool under_sea = !water && scene_pos.y + cameraPosition.y < sea_level - 0.5;
+        seen = mix(under_sea ? 0.0 : sky_seen_probe(scene_pos, sky), seen, grid);
     }
     return seen;
 }

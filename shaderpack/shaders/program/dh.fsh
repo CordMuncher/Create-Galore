@@ -74,16 +74,17 @@ void main() {
     out_albedo = v_color;
     out_surface = encode_surface(v_normal, v_level, MATERIAL_LIT, 1.0);
 #elif defined PROGRAM_DH_WATER
-    // Lit here: the light past the shadow map's reach goes by the sky light (see lighting.glsl), or by the sky the
-    // water sees where it lies under something high, which Minecraft's sky light makes as dark as a cave
-    // (see sky_probe.glsl).
+    // Lit here: past the shadow map's reach the sun goes by the sky light (see direct_visibility), and the sky's own
+    // light by how much of the sky the water sees where it lies under something high, which Minecraft's sky light
+    // makes as dark as a cave (see sky_probe.glsl).
     vec2 level = v_level;
     float seen = -1.0;
     if (level.y < 0.999) {
-        seen = sky_seen_around(v_fog_pos, vec3(0.0, 1.0, 0.0), level.y, 0.5, true);
+        seen = sky_seen_around(v_fog_pos, vec3(0.0, 1.0, 0.0), level.y, 0.5, true, true);
         level.y = max(level.y, sky_seen_level(seen));
     }
-    vec3 rgb = light_surface(srgb_to_linear(v_color.rgb), v_normal, level, v_fog_pos, false, false) * exposure();
+    vec3 rgb = light_surface(srgb_to_linear(v_color.rgb), v_normal, level, v_fog_pos, false, false, false, 1.0, 1.0,
+            v_level.y) * exposure();
     rgb = apply_fog_lit(rgb, fog_distance(v_fog_pos), dir, fog_range());
     out_color = with_sky_reflection(vec4(rgb, v_color.a), v_normal, dir, level.y);
 #if DEBUG_VIEW == 6

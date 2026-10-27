@@ -85,7 +85,8 @@ Bugs and lighting (alpha 2):
   it towards the sky, a block at a time close by and in coarser copies of the grid further out, as Unreal traces
   its sky occlusion through a copy of the world around the camera. Further out, and on Distant Horizons' terrain,
   the screen shows how high the open air above a point reaches. A point never gets less of the sky's light than
-  Minecraft's sky light gives it, so closed rooms and caves stay dark.
+  Minecraft's sky light gives it, so closed rooms and caves stay dark. Past the shadows' reach the sun still goes by
+  Minecraft's sky light, so a floating island far off keeps its shadow, lit by the sky around it instead of black.
 - Light Style: coloured lights brought towards torchlight's brightness to the eye (blue and purple the most, as
   they look dimmest) and deepened.
 - The eyes adapt faster: about a second into a dark room.

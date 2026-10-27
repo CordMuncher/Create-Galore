@@ -321,7 +321,7 @@ void main() {
         float seen = -1.0;
         if (depth >= hand_depth_limit && light.y < 0.999) {
             seen = sky_seen_around(scene_pos, material == MATERIAL_PLANT ? vec3(0.0, 1.0, 0.0) : normal, light.y,
-                    pixel_noise(2u), lod);
+                    pixel_noise(2u), lod, false);
             light.y = max(light.y, sky_seen_level(seen));
         }
         float contact = 1.0;
@@ -331,8 +331,8 @@ void main() {
             contact = contact_shadow(view, pixel_noise());
         }
 #endif
-        vec3 lit = light_surface(albedo, normal, light, scene_pos, material == MATERIAL_PLANT, foliage, !lod, contact, ao)
-                * exposure();
+        vec3 lit = light_surface(albedo, normal, light, scene_pos, material == MATERIAL_PLANT, foliage, !lod, contact,
+                ao, sky_light_mc) * exposure();
 #if DEBUG_VIEW == 1 && defined LIT_GI
         lit = g_light_color.rgb * bounce_light(scene_pos, normal, light.y) / PI * exposure();
 #elif DEBUG_VIEW == 2
@@ -396,9 +396,9 @@ void main() {
             vec2 rings = rain_ripple_slope(scene_pos, cg_rain_here * (1.0 - smoothstep(8.0, 24.0, length(scene_pos))));
             vec3 n = normalize(vec3(-rings.x, 1.0, -rings.y));
             float f = fresnel_schlick(dot(-dir, n), vec3(0.02)).x * puddle.x;
+            float glint = glint_visibility(scene_pos, normal, light.y, sky_light_mc);
             lit = mix(lit, mirrored(view, reflect(dir, n), 1.0, pixel_noise()), f)
-                    + sun_glint(n, dir, 0.03, vec3(0.02), glint_visibility(scene_pos, normal, light.y)) * exposure()
-                    * puddle.x;
+                    + sun_glint(n, dir, 0.03, vec3(0.02), glint) * exposure() * puddle.x;
         } else if ((kind == SURFACE_METAL || kind == SURFACE_POLISHED) && !lod) {
             // Metal reflects in its own colour, blurred (its surface is rough); polished stone a little, sharper,
             // mostly at a glancing angle.
@@ -414,7 +414,7 @@ void main() {
             } else {
                 around = mirrored(view, r, open_sky, pixel_noise());
             }
-            float glint = glint_visibility(scene_pos, normal, light.y);
+            float glint = glint_visibility(scene_pos, normal, light.y, sky_light_mc);
             lit = lit * (metal ? 0.6 : 1.0 - f.g) + around * f * (metal ? 0.6 : 0.8)
                     + sun_glint(normal, dir, metal ? 0.3 : 0.12, f0, glint) * exposure();
         }

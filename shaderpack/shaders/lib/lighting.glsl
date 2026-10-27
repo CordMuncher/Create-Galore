@@ -94,17 +94,19 @@ vec3 block_irradiance(float block, vec3 color) {
     return light + floor_light;
 }
 
-// How much of the sun's (or the moon's) light a surface at scene_pos gets: the shadow map where it reaches, else its
-// sky light (a surface that sees little of the sky is under something), and what the clouds let through. shadowed: false where the shadow map doesn't
-// reach (Distant Horizons' terrain).
-float direct_visibility(vec3 scene_pos, vec3 normal, float sky, bool shadowed) {
+// How much of the sun's (or the moon's) light a surface at scene_pos gets: the shadow map where it reaches, and what
+// the clouds let through. Past the shadow map (and on Distant Horizons' terrain, shadowed false) Minecraft's own sky
+// light sky_mc stands in for it: a surface it says sees little of the sky is under something, which keeps the sun off
+// it (the shadow of a floating island falls straight down, though, not away from the sun). sky: the sky light the
+// rest of the light goes by, which is more under something high (see sky_grid.glsl); deep in a cave the sun can't
+// reach, whatever the shadow map says at its edges.
+float direct_visibility(vec3 scene_pos, vec3 normal, float sky, float sky_mc, bool shadowed) {
 #ifdef LIT_CLOUDS
     float clouds = cloud_shadow(scene_pos, g_light_dir.xyz);
 #else
     float clouds = 1.0;
 #endif
-    // Under a roof or deep in a cave the light can't reach, whatever the shadow map says at its edges.
-    float by_sky = smoothstep(12.0 / 15.0, 14.5 / 15.0, sky);
+    float by_sky = smoothstep(12.0 / 15.0, 14.5 / 15.0, sky_mc);
 #ifdef SHADOW_MAP
     if (shadowed) {
         return shadow_visibility(scene_pos, normal, g_light_dir.xyz, by_sky, pixel_noise()) * smoothstep(1.0 / 15.0, 4.0 / 15.0, sky)
@@ -116,17 +118,18 @@ float direct_visibility(vec3 scene_pos, vec3 normal, float sky, bool shadowed) {
 
 // The same, from one sharp look at the shadow map: for the sun's glint on water and polished things, where a soft
 // shadow edge would only blur the glint.
-float glint_visibility(vec3 scene_pos, vec3 normal, float sky) {
+float glint_visibility(vec3 scene_pos, vec3 normal, float sky, float sky_mc) {
 #ifdef LIT_CLOUDS
     float clouds = cloud_shadow(scene_pos, g_light_dir.xyz);
 #else
     float clouds = 1.0;
 #endif
-    float lit = smoothstep(12.0 / 15.0, 14.5 / 15.0, sky) * clouds;
+    float lit = smoothstep(12.0 / 15.0, 14.5 / 15.0, sky_mc) * clouds;
 #ifdef SHADOW_MAP
     vec3 coord = shadow_coord(scene_pos + normal * 0.05);
-    if (lit > 0.0 && all(greaterThan(coord, vec3(0.0))) && all(lessThan(coord, vec3(1.0)))) {
-        lit *= texture(shadowtex1HW, vec3(coord.xy, coord.z - 0.00002));
+    if (all(greaterThan(coord, vec3(0.0))) && all(lessThan(coord, vec3(1.0)))) {
+        lit = smoothstep(12.0 / 15.0, 14.5 / 15.0, sky) * clouds;
+        lit *= lit > 0.0 ? texture(shadowtex1HW, vec3(coord.xy, coord.z - 0.00002)) : 0.0;
     }
 #endif
     return lit;
@@ -161,9 +164,10 @@ float water_over(vec3 scene_pos) {
 // the block and sky light levels (0..1). plant: grass, flowers and crops (see MATERIAL_PLANT); foliage: leaves.
 // contact: how much of the light the screen says gets past what is right next to the surface (see deferred.fsh), 1
 // where only the shadow map says. ao: how open the surface is to the light all around, 0..1 (see deferred.fsh); the
-// sun's (or the moon's) isn't touched by it, the shadows see to that.
+// sun's (or the moon's) isn't touched by it, the shadows see to that. sky_mc: Minecraft's own sky light, where light.y
+// is more under something high (see direct_visibility).
 vec3 light_surface(vec3 albedo, vec3 normal, vec2 light, vec3 scene_pos, bool plant, bool foliage, bool shadowed,
-        float contact, float ao) {
+        float contact, float ao, float sky_mc) {
     // Under water the light has come down through it: the sun's (or the moon's) from the surface the shadow map has
     // above, the sky's from all over the sky, on a longer way down. Minecraft's sky light drops a level for every
     // block of water, which the water's own dimming takes over from.
@@ -177,6 +181,7 @@ vec3 light_surface(vec3 albedo, vec3 normal, vec2 light, vec3 scene_pos, bool pl
         water_sky = water_transmittance(1.5 * below);
         // (Not where Minecraft's sky light doesn't reach at all: a cave under the sea is not the sea floor.)
         light.y = min(light.y + below / 15.0 * smoothstep(0.0, 2.0 / 15.0, light.y), 1.0);
+        sky_mc = min(sky_mc + below / 15.0 * smoothstep(0.0, 2.0 / 15.0, sky_mc), 1.0);
     }
 #endif
     // A tree's leaves are shaded by the shape of their crown more than by their own faces (see canopy_shape), the way
@@ -205,7 +210,7 @@ vec3 light_surface(vec3 albedo, vec3 normal, vec2 light, vec3 scene_pos, bool pl
         // light (a little less when it's low).
         float n_l = dot(n, g_light_dir.xyz);
         float facing = plant ? n_dot_l : 0.25 + 0.75 * max(n_l, 0.0);
-        float vis = direct_visibility(scene_pos, g_light_dir.xyz, light.y, shadowed);
+        float vis = direct_visibility(scene_pos, g_light_dir.xyz, light.y, sky_mc, shadowed);
         float through = 0.0;
 #ifdef SHADOW_MAP
         if (shadowed) {
@@ -217,7 +222,8 @@ vec3 light_surface(vec3 albedo, vec3 normal, vec2 light, vec3 scene_pos, bool pl
         vec3 tint = mix(vec3(1.0), clamp(albedo * 2.5, 0.0, 1.0), 0.6 * min(glow, 1.0));
         direct = g_light_color.rgb * water_direct * contact * facing * max(vis, through) * tint;
     } else if (n_dot_l > 0.0 && contact > 0.0) {
-        direct = g_light_color.rgb * water_direct * n_dot_l * contact * direct_visibility(scene_pos, normal, light.y, shadowed);
+        direct = g_light_color.rgb * water_direct * n_dot_l * contact
+                * direct_visibility(scene_pos, normal, light.y, sky_mc, shadowed);
     }
     // Under a roof the sky a surface facing up sees is the low sky around it, not the deep blue overhead: as much
     // light, in the colour of the sky's sides.
@@ -246,7 +252,7 @@ vec3 light_surface(vec3 albedo, vec3 normal, vec2 light, vec3 scene_pos, bool pl
 }
 
 vec3 light_surface(vec3 albedo, vec3 normal, vec2 light, vec3 scene_pos, bool plant, bool shadowed) {
-    return light_surface(albedo, normal, light, scene_pos, plant, false, shadowed, 1.0, 1.0);
+    return light_surface(albedo, normal, light, scene_pos, plant, false, shadowed, 1.0, 1.0, light.y);
 }
 
 #endif

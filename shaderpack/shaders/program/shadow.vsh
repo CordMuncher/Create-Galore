@@ -144,7 +144,7 @@ void mark_block(vec3 scene_pos, vec2 uv) {
 }
 #endif
 
-#if defined PROGRAM_SHADOW_TERRAIN && defined LIT_SKY_GRID && !defined PROGRAM_SHADOW_WATER
+#if defined PROGRAM_SHADOW_TERRAIN && defined LIT_SKY_GRID
 #include "/lib/sky_grid.glsl"
 
 #ifndef LIT_VOXELS
@@ -153,10 +153,14 @@ in vec4 at_midBlock; // xyz from the vertex to its block's centre (1/64 blocks)
 layout(r32ui) uniform uimage2D cg_water_marks_img;
 
 // Marks the block a face belongs to in the sky grid (see sky_grid.glsl), from one vertex of the face: every solid
-// block (slabs and stairs too) and leaves.
+// block (slabs and stairs too), leaves and water.
 void mark_sky(vec3 scene_pos) {
-#ifdef PROGRAM_SHADOW_CUTOUT
+#if defined PROGRAM_SHADOW_CUTOUT
     if (int(mc_Entity.x + 0.5) != BLOCK_LEAVES) {
+        return;
+    }
+#elif defined PROGRAM_SHADOW_WATER
+    if (int(mc_Entity.x + 0.5) != BLOCK_WATER) {
         return;
     }
 #endif
@@ -185,7 +189,7 @@ void main() {
 #if defined PROGRAM_SHADOW_TERRAIN && defined LIT_VOXELS
     mark_block(scene_pos, uv);
 #endif
-#if defined PROGRAM_SHADOW_TERRAIN && defined LIT_SKY_GRID && !defined PROGRAM_SHADOW_WATER
+#if defined PROGRAM_SHADOW_TERRAIN && defined LIT_SKY_GRID
     mark_sky(scene_pos);
 #endif
 #if defined PROGRAM_SHADOW_TERRAIN && defined LIT_GI && !defined PROGRAM_SHADOW_WATER

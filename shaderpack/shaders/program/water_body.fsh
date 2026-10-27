@@ -151,7 +151,7 @@ void main() {
         float sky_light_mc = water.b;
         float seen = -1.0;
         if (water.b < 0.999) {
-            seen = sky_seen_around(p, vec3(0.0, 1.0, 0.0), water.b, noise, false);
+            seen = sky_seen_around(p, vec3(0.0, 1.0, 0.0), water.b, noise, false, true);
             water.b = max(water.b, sky_seen_level(seen));
         }
         vec2 jitter = vec2(cg_dlss_jitter_x, cg_dlss_jitter_y);
@@ -206,14 +206,15 @@ void main() {
             reflection = mix(reflection, texelFetch(colortex0, ivec2(hit.xy), 0).rgb, hit.z);
         }
 #endif
-        float lit = 1.0;
+        // The sun's glint where the shadow map says it gets there; past it, where Minecraft's own sky light does (see
+        // direct_visibility).
+        float lit = smoothstep(12.0 / 15.0, 14.5 / 15.0, sky_light_mc);
 #ifdef SHADOW_MAP
         vec3 coord = shadow_coord(p);
         if (all(greaterThan(coord, vec3(0.0))) && all(lessThan(coord, vec3(1.0)))) {
-            lit = texture(shadowtex1HW, vec3(coord.xy, coord.z - 0.00002));
+            lit = open_sky * texture(shadowtex1HW, vec3(coord.xy, coord.z - 0.00002));
         }
 #endif
-        lit *= open_sky;
         color = body * (1.0 - f) + reflection * f + water_glint(n, dir, dist_water, lit) * exposure();
 
         // Foam: a band where the water meets the shore or a wall, and where something churns it (a wake).
@@ -230,7 +231,8 @@ void main() {
             float bubbles = 0.5 * (wave_noise(w.xz * 9.0 + drift) + wave_noise(golden_turn * w.xz * 13.0 - drift));
             float foam = smoothstep(1.0 - churn, 1.15 - churn, bubbles);
             if (foam > 0.0) {
-                vec3 white = forward_lit(vec3(0.85), vec3(0.0, 1.0, 0.0), vec2(0.0, water.b), p, false);
+                vec3 white = light_surface(srgb_to_linear(vec3(0.85)), vec3(0.0, 1.0, 0.0), vec2(0.0, water.b), p, false,
+                        false, true, 1.0, 1.0, sky_light_mc) * exposure();
                 color = mix(color, white, foam * 0.85);
             }
         }

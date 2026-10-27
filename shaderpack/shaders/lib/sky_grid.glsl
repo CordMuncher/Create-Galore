@@ -4,12 +4,15 @@
 // them from all around. Unreal lights its sky the same way this does: rays (its cones) from each pixel through a copy
 // of the world around the camera (its distance fields), finer near the pixel and coarser further out.
 //
-// The shadow pass marks every solid block and every leaf block within 128 blocks of you across, from 64 below you to
-// 191 above (shadow.vsh): a bit for each block of its column, 32 to a word, in the rows of cg_water_marks_img below
-// the ripples' marks. Glass, water, plants and things that aren't blocks let the sky through. The pass after it
-// (sky_grid.csh) makes six coarser copies, each column of one marking what any of 2 by 2 of the one before has, for a
-// ray's longer steps further out. A ray towards the sky is open if it leaves the grid without passing a marked block:
-// every block in a column cell between the heights a step goes through counts, so a step never jumps a roof.
+// The shadow pass marks every solid block, every leaf block and the water within 128 blocks of you across, from 64
+// below you to 191 above (shadow.vsh): a bit for each block of its column, 32 to a word, in the rows of
+// cg_water_marks_img below the ripples' marks. Under water a surface keeps Minecraft's sky light, which dims a level
+// for each block of water above it as the water dims the sky's light (the lighting dims it its own way where it knows
+// how deep the water is, see light_surface). Glass, plants and things that aren't blocks let the sky through. The pass
+// after it (sky_grid.csh) makes six coarser copies, each column of one marking what any of 2 by 2 of the one before
+// has, for a ray's longer steps further out. A ray towards the sky is open if it leaves the grid without passing a
+// marked block: every block in a column cell between the heights a step goes through counts, so a step never jumps a
+// roof.
 //
 // The lighting takes the more of Minecraft's sky light and of the sky this sees (see sky_seen_level), so a point is
 // never darker than Minecraft's light makes it, and a closed room stays dark: its walls and roof stop every ray.
