@@ -53,6 +53,16 @@
     },
     {
       "type": "modonomicon:text",
+      "title": "On a Belt",
+      "text": "An item is done after **7.5 seconds** in the air (twice that for a stack of 17 to 32, three times up to 48, four times up to 64). On a depot it simply waits.\\\n\\\nOn a belt, each segment in the air gives 24 seconds divided by the belt's RPM: 6 seconds at 4 RPM."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "On a belt the item keeps its progress from one fan's air into the next fan's air of the same kind, across gaps and onto the next belt, so fans side by side add up: two fans over a 4 RPM belt give 12 seconds.\\\n\\\nAir of a different kind starts it over."
+    },
+    {
+      "type": "modonomicon:text",
       "title": "",
       "text": "[#](FFFFFF)\ue103[#]() **In depth.** **Added by other mods**:\n\n- [#](2E5AAC)[Dragons Plus](entry://industry/dragons_plus)[#](): ending (dragon breath), freezing (powder snow), sanding (quicksand), coloring (liquid dye), enchanting (Golden Aercloud)\n\n- Create Nuclear: enriching\n\n- [#](2E5AAC)[Enchantment Industry](entry://industry/enchanting)[#](): salvaging"
     },

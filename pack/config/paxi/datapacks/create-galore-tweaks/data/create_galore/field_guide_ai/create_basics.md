@@ -1,4 +1,4 @@
-<!-- sources sha256:e0119957947f860a5f4747bfe94cbd3ee570e75065893020677a2d4f6837dd5a -->
+<!-- sources sha256:788aa2c99e3de8fd114573b7da61b5bd175c62ebce4fcf71067e116bb99cf3d2 -->
 # Create: The Basics (create_basics)
 
 ## create_basics/rotation | Rotation
@@ -104,6 +104,7 @@
 - Blaze Burner also works as blasting and smoking source; Lit Blaze Burner variant for haunting (see create_basics/heat).
 - Bars, fences, leaves let air through; solid blocks stop it.
 - Watch out: blasting works like a furnace and would burn food: smoke it instead.
+- On a Belt: item done after 7.5 seconds in the air (x2 for stack 17-32, x3 up to 48, x4 up to 64); on a depot it waits. Each belt segment in the air gives 24 s / belt RPM (6 s at 4 RPM). Progress carries from one fan's air into the next of the same kind, across gaps and onto the next belt, so fans side by side add up (two fans over a 4 RPM belt = 12 s); a different kind of air starts it over.
 - Added by other mods (in depth): Dragons Plus (see industry/dragons_plus): ending (dragon breath), freezing (powder snow), sanding (quicksand), coloring (liquid dye), enchanting (Golden Aercloud). Create Nuclear: enriching. Enchantment Industry (see industry/enchanting): salvaging.
 - Enriching Campfire [createnuclear:enriching_campfire]: Create Nuclear's fan catalyst (see glossary/fan_catalyst) for bulk enriching. Enriched fire from Enriched Soul Soil (see industry/nuclear).
 - Related: (see create_basics/processing), (see create_basics/crushing), (see create_basics/heat)
