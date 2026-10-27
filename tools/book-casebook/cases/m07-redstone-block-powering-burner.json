@@ -201,7 +201,5 @@
     "lacks": [
       "Block of Redstone as dead weight"
     ]
-  },
-  "open": true,
-  "fixed_by": "step 3 (lenses know what a block is for)"
+  }
 }

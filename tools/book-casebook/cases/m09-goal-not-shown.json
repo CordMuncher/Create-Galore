@@ -1,0 +1,35 @@
+{
+  "title": "A goal no machine recipe matches is not shown as working, and not refused",
+  "from": "step 3 (goal test: unknown means unproven)",
+  "roots": [
+    "R3"
+  ],
+  "kind": "model",
+  "model": {
+    "title": "Kitchen corner",
+    "goal": "minecraft:bread",
+    "size_x": 2,
+    "size_y": 1,
+    "size_z": 1,
+    "blocks": [
+      {
+        "block": "minecraft:crafting_table",
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      {
+        "block": "minecraft:chest",
+        "x": 1,
+        "y": 0,
+        "z": 0
+      }
+    ]
+  },
+  "expect": {
+    "built": true,
+    "has": [
+      "Not shown"
+    ]
+  }
+}

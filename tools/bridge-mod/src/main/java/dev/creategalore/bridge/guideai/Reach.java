@@ -73,7 +73,7 @@ final class Reach {
     }
 
     /** Every recipe on the server, by the item it makes. */
-    private static Map<Item, List<RecipeHolder<?>>> makers(MinecraftServer server) {
+    static Map<Item, List<RecipeHolder<?>>> makers(MinecraftServer server) {
         var registries = server.registryAccess();
         Map<Item, List<RecipeHolder<?>>> makers = new HashMap<>();
         for (RecipeHolder<?> holder : server.getRecipeManager().getRecipes()) {
@@ -94,10 +94,10 @@ final class Reach {
     /**
      * The parts of a model the player can't make yet: a part they have never had whose recipe tree, followed as
      * recipe_tree follows it, needs an item that only a sequenced assembly line makes and that they have never had
-     * either (a Mechanical Arm before their first Precision Mechanism). A line that makes that very item can't hold the
-     * part, since the part needs the line's own product. Null when every part is within reach.
+     * either (a Mechanical Arm before their first Precision Mechanism). A part that needs the model's own {@code goal}
+     * is left to {@link #selfMade}. Null when every part is within reach.
      */
-    static BuildCheck.Report parts(ServerPlayer player, MinecraftServer server, java.util.Collection<BlockState> states) {
+    static BuildCheck.Report parts(ServerPlayer player, MinecraftServer server, java.util.Collection<BlockState> states, Item goal) {
         try {
             Map<Item, List<RecipeHolder<?>>> makers = makers(server);
             Map<Item, Integer> have = owned(player);
@@ -107,8 +107,9 @@ final class Reach {
             for (BlockState s : states) {
                 Item part = item(s, player);
                 if (part == Items.AIR || !seen.add(part) || had(player, part, have)) continue;
-                Item gate = gate(player, part, 0, new LinkedHashSet<>(), makers, have, known);
-                if (gate != null) blocked.put(part, gate);
+                Item gate = gate(player, null, part, 0, new LinkedHashSet<>(), makers, have, known);
+                // A part that needs the model's own product is selfMade's to report.
+                if (gate != null && gate != goal) blocked.put(part, gate);
             }
             if (blocked.isEmpty()) return null;
             List<String> faults = new ArrayList<>();
@@ -125,10 +126,43 @@ final class Reach {
         }
     }
 
+    /**
+     * Parts of a model that every way of making needs the model's own product (a Mechanical Arm on a line that makes the
+     * first Precision Mechanism): such a line can't be built to make its first one. A part the player already has or
+     * has had is fine. Null when none.
+     */
+    static BuildCheck.Report selfMade(ServerPlayer player, MinecraftServer server, java.util.Collection<BlockState> states, Item goal) {
+        try {
+            Map<Item, List<RecipeHolder<?>>> makers = makers(server);
+            Map<Item, Integer> have = player == null ? Map.of() : owned(player);
+            if (player != null && had(player, goal, have)) return null;
+            Set<Item> seen = new java.util.HashSet<>();
+            List<String> faults = new ArrayList<>();
+            for (BlockState s : states) {
+                Item part = item(s, player);
+                if (part == Items.AIR || part == goal || !seen.add(part) || player != null && had(player, part, have)) continue;
+                if (gate(player, goal, part, 0, new LinkedHashSet<>(), makers, have, new HashMap<>()) != null)
+                    faults.add(part.getDescription().getString() + " needs " + article(goal) + " to make");
+            }
+            if (faults.isEmpty()) return null;
+            String text = "Whether its parts can be made before it runs" + BuildCheck.FOR_YOU + ":\n- PROBLEM: "
+                    + String.join("; ", faults) + ", the very thing this model makes, so it can't be built to make the first "
+                    + "one. Do that step another way (by hand, or with belts and depots alone).";
+            return new BuildCheck.Report(text, faults);
+        } catch (RuntimeException | LinkageError e) {
+            return new BuildCheck.Report("(The parts check couldn't run on this model: " + e.getClass().getSimpleName() + ".)", List.of());
+        }
+    }
+
+    private static String article(Item item) {
+        String name = item.getDescription().getString();
+        return ("AEIOUaeiou".indexOf(name.isEmpty() ? 'x' : name.charAt(0)) >= 0 ? "an " : "a ") + name;
+    }
+
     /** The item a block is placed from: its own, or the one picking it gives (a belt comes from a Belt Connector). */
     private static Item item(BlockState s, ServerPlayer player) {
         Item own = s.getBlock().asItem();
-        if (own != Items.AIR) return own;
+        if (own != Items.AIR || player == null) return own;
         try {
             ItemStack pick = s.getBlock().getCloneItemStack(s, null, player.serverLevel(), player.blockPosition(), player);
             return pick == null ? Items.AIR : pick.getItem();
@@ -145,17 +179,20 @@ final class Reach {
 
     /**
      * The item made only on a sequenced assembly line, never had by the player, that every way of making {@code item}
-     * needs (each recipe, and each choice an ingredient allows); null when some way gets round it. Answers are kept in
+     * needs (each recipe, and each choice an ingredient allows); null when some way gets round it. With a
+     * {@code target}, the gate is that item instead (and with no player, nothing counts as had). Answers are kept in
      * {@code known}, with {@link Items#AIR} for none.
      */
-    private static Item gate(ServerPlayer player, Item item, int depth, Set<Item> path, Map<Item, List<RecipeHolder<?>>> makers,
+    private static Item gate(ServerPlayer player, Item target, Item item, int depth, Set<Item> path, Map<Item, List<RecipeHolder<?>>> makers,
             Map<Item, Integer> have, Map<Item, Item> known) {
-        if (depth > MAX_DEPTH || natural(item) || depth > 0 && had(player, item, have)) return null;
+        if (depth > MAX_DEPTH || natural(item)) return null;
+        if (target != null && item == target) return item;
+        if (depth > 0 && player != null && had(player, item, have)) return null;
         Item memo = known.get(item);
         if (memo != null) return memo == Items.AIR ? null : memo;
         List<RecipeHolder<?>> options = makers.getOrDefault(item, List.of());
         if (options.isEmpty()) return null;
-        boolean onlyAssembly = true;
+        boolean onlyAssembly = target == null;
         for (RecipeHolder<?> holder : options) {
             ResourceLocation type = BuiltInRegistries.RECIPE_TYPE.getKey(holder.value().getType());
             if (type == null || !type.toString().equals(ASSEMBLY)) onlyAssembly = false;
@@ -177,7 +214,7 @@ final class Reach {
                     boolean free = false;
                     for (ItemStack choice : ingredient.getItems()) {
                         if (path.contains(choice.getItem())) continue;
-                        Item g = gate(player, choice.getItem(), depth + 1, path, makers, have, known);
+                        Item g = gate(player, target, choice.getItem(), depth + 1, path, makers, have, known);
                         if (g == null) {
                             free = true;
                             break;
