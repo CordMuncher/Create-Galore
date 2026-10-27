@@ -103,6 +103,16 @@
     {
       "type": "modonomicon:text",
       "title": "",
+      "text": "Photon's menu stays yours to change while Ray Reconstruction runs, but whatever you set, soft shadows and reflections are left grainy for it to clean up, and rough blocks like metal get blurry reflections they don't have with it off. So Photon at High looks different with it than without it."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Ray Reconstruction shows its worth most at Photon's highest settings, with every lighting effect on. At lower settings there is little for it to clean up."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
       "text": "Shaders are optional and can cut frame rate a lot on weaker machines. First world creation is also slow because of how many mods add world generation. This settles after the first load.\\\n\\\nName tags are drawn after the shader, so they stay readable with every pack.\\\n\\\n**Fullscreen** is F11. Screenshot key: F2."
     },
     {
