@@ -1962,8 +1962,9 @@ Presentation on for new installs, pack 0.6).
 
 ## Ray Reconstruction 1: the Photon pilot on the 4080 Super
 
-Start only when Emre says so. About 25 minutes with Emre at the keyboard (steps 1 to 3), then about 30 minutes that
-need no one, only a quiet PC (steps 4 and 5). Frame times count only in step 4.
+Start only when Emre says so. About 35 minutes with Emre at the keyboard (steps 0 to 3), then about 30 minutes that
+need no one, only a quiet PC (steps 4 and 5). Frame times count only in step 4. Step 0 checks the public 0.6.1 change
+(its own branch), not the pilot.
 
 **What it checks.** A dev build, never a release: Bridge 1.124.0-rr.1 (this branch, pack 0.6.0-rr.1) runs NVIDIA DLSS
 Ray Reconstruction (RR) in DLSS's place with "Photon v1.3a + DLAA", as a pilot for our own shader pack. It is the
@@ -1987,6 +1988,51 @@ the guides by eye (debug views `albedo`, `specular`, `normal`, `roughness`, `hit
 back as the formula gives: 0.25 on gem blocks, the albedo on metal blocks), the noisy reflections and shadows in the
 colour, and that the dev client joins and plays on a server running the public 0.6.0. With Ray Reconstruction off the
 patched shaders take Photon's own paths (by construction; it looked as before). This is the first time RR itself runs.
+
+### 0. Streamline decides (pack 0.6.1, before the pilot), about 10 minutes
+
+Pack 0.6.1 (Bridge 1.125.0, PR #204, branch `claude/fg-streamline-decides`) drops the graphics card name check for
+DLSS frame generation. At every start on DirectX 12 the game prepares Streamline and asks it whether DLSS Frame
+Generation runs on this card, also when FSR is picked: where it says yes the Display tab offers DLSS, where it says no
+Streamline is shut down and FSR loads in its place. The cloud ran that hand-over under Wine (no NVIDIA card there, so
+Streamline always said no); this checks the yes, Reflex after the hand-over, and the forced no on the 4080 Super.
+
+```powershell
+git -C $T\repo fetch origin
+git -C $T\repo checkout -B claude/fg-streamline-decides origin/claude/fg-streamline-decides
+Remove-Item $T\instance\mods\create-galore-bridge-*.jar
+Copy-Item $T\repo\pack\mods\create-galore-bridge-*.jar $T\instance\mods\
+Get-ChildItem $T\instance\mods\create-galore-bridge-*.jar | Select-Object Name
+```
+
+Only `create-galore-bridge-1.125.0.jar`. In `config\create_galore_bridge-display.properties` note the old values (the
+ones to put back at the end of this run), then set `dlaa=dlss`, `perfectPresentation=true`, `presenter=dx12`,
+`reflex=on`, `gpuPacing=off`, `fpsCounter=detailed`, `frameGen=fsr`, and remove any `frameGenType`, `frameGenCheck`
+and `frameGenStreamlineSays` line. `options.txt` as noted below for steps 1 to 3. Shader pack: Photon v1.3a + DLAA.
+The launch from step 4 (2560x1440) without `autorun`. Copy every `Frame generation`, `Reflex:` and
+`Perfect Presentation:` line from each start, with its time, and each WARN or ERROR line from `create_galore_bridge`.
+
+- **a. FSR picked.** Launch. The log must have `Frame generation: Streamline says NVIDIA DLSS Frame Generation runs on
+  this card`, then `Frame generation: AMD FSR 3.1 frame generation ... on`, and `Reflex: started on Perfect
+  Presentation's DirectX 12 device (NVIDIA NVAPI)`. Open `dlaa-test`: FSR frame generation runs (frame counter,
+  `Frame generation: running, 2 frames shown per rendered one`). Display tab: **Frame generation** offers Off, DLSS and
+  FSR. Pick **DLSS**: the status says `Switches after a restart.` Done.
+- **b. DLSS after the restart.** Close the game, launch again (the settings file now has `frameGen=dlss`). The log must
+  have the Streamline yes, `Frame generation: NVIDIA DLSS Frame Generation through Streamline ... on`, `Reflex: started
+  through Streamline, as DLSS Frame Generation needs`. In `dlaa-test` the Display tab's status says `Running.` and the
+  frame counter shows it. Play a minute.
+- **c. Streamline says no (forced).** Close the game, add `frameGenStreamlineSays=no` to the settings file (it keeps
+  `frameGen=dlss`), launch. The log must have `Frame generation: Streamline says NVIDIA DLSS Frame Generation can't run
+  here: frameGenStreamlineSays=no in the settings file (testing)` and `Frame generation: NVIDIA's can't run (Streamline
+  says no); AMD's loads instead, off`, then the FSR line ending `off until turned on`, and the NVAPI Reflex line. In the
+  world, Display tab: the status reads `Streamline says no: hover for why.`; hover it, the text must read right to
+  Emre; the list still has DLSS only because it is the saved pick. Pick **FSR**, Done: frame generation turns on at
+  once, without a restart. Open the tab again: the list offers Off and FSR only.
+- **d.** Close the game and remove the `frameGenStreamlineSays` line.
+
+Also note, from each start's log times, how long it takes from the first `Frame generation` line to `Frame generation:
+ready in the DirectX 12 presenter` (under Wine asking Streamline and handing over to FSR took about 0.6 s). Anything that doesn't match: copy the lines, say
+which part, and go on with the pilot all the same. Then the Update block below switches back to the pilot's branch.
 
 ### Update and settings
 
@@ -2015,7 +2061,7 @@ If a hash differs (GitHub served a pointer file, a few hundred bytes), try
 `https://github.com/NVIDIA/DLSS/raw/v310.9.16/lib/Windows_x86_64/rel/nvngx_dlssd.dll` and the same for dev, and say
 which worked. Check the NVIDIA driver is 580 or newer (`nvidia-smi`), RR 4.5's minimum.
 
-In `config\create_galore_bridge-display.properties` note the old values, then set `dlaa=dlss`, `dlaaPreset=default`,
+In `config\create_galore_bridge-display.properties` note the old values (step 0 noted them if it ran), then set `dlaa=dlss`, `dlaaPreset=default`,
 `perfectPresentation=true`, `presenter=dx12`, `reflex=on`, `gpuPacing=off`, `fpsCounter=detailed`, `frameGen=off`,
 and remove any `frameGenCheck`, `dlaaRayReconstruction`, `dlaaRrPreset`, `dlaaRrRaw` and `dlaaRrExposure` line.
 `options.txt`: `fullscreen:false` for steps 1 to 3 (CTRL+ALT+F11 below must not fight Minecraft's F11), `maxFps:260`,
@@ -2111,7 +2157,8 @@ $py = "$T\tools\uv\uv.exe"
 & $py run --python 3.13 --with pillow --with numpy $T\repo\tools\dlss-testkit\metrics.py <step 5 run folder>
 ```
 
-Write `$T\repo\tools\dlss-testkit\results\rr1\REPORT.md`: step 1's log lines and, per overlay layer, what Emre said
+Write `$T\repo\tools\dlss-testkit\results\rr1\REPORT.md`: step 0's log lines and times, per part a to d what
+matched and what didn't (Emre's word on the hover text); step 1's log lines and, per overlay layer, what Emre said
 (screenshots beside it); step 2, per item, which looked better to Emre and why, in his words where he gave them; step
 3's numbers (rendered and shown fps per setting) and Emre's pick; per mode and viewpoint in step 4, rendered fps and
 the shown-frame interval (median, p10, p90), with and without frame generation, then one line each on what RR costs
