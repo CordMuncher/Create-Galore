@@ -34,6 +34,10 @@ layout(rgba32f) uniform image2D cg_globals_img;
 void set_global(int i, vec4 value) {
     imageStore(cg_globals_img, ivec2(i, 0), value);
 }
+#elif defined READ_IMAGES
+// (Read as an image where a pass is short of texture units, see marks.glsl.)
+layout(rgba32f) readonly uniform image2D cg_globals_img;
+#define global(i) imageLoad(cg_globals_img, ivec2(i, 0))
 #else
 uniform sampler2D cg_globals_tex;
 #define global(i) texelFetch(cg_globals_tex, ivec2(i, 0), 0)

@@ -5,8 +5,12 @@ The root programs and the Nether's, the overworld's and the End's (world-1/, wor
 option variants that change the code. It doesn't catch a variable used before it is set.
 
 With --samplers it also counts each fragment and compute program's active samplers, as Iris gives each one a
-texture unit and refuses the whole pack when a program wants more than the GPU has ("No more available texture
-units"): alpha 4's deferred pass ran with 30, alpha 5's first try failed with 32, so more than 30 fails here.
+texture unit and refuses the whole pack when a program wants more than it has ("No more available texture units"):
+GL_MAX_TEXTURE_IMAGE_UNITS (32 on NVIDIA and on Mesa) less the units Iris keeps for Minecraft's own textures, 2 in
+the deferred and composite passes and 3 in the gbuffers ones. (glslang's count matches the driver's here.)
+
+Iris runs the preprocessor itself before the driver sees the code, without __VERSION__, so a program's #if on it
+always takes the false side in game; this check fails on any.
 
   python3 shaderpack/tools/compile_check.py shaderpack/shaders [--samplers] [part of a program's path]"""
 import concurrent.futures, os, pathlib, re, subprocess, sys, tempfile
@@ -14,7 +18,9 @@ TMP = tempfile.mkdtemp(prefix="compile_check_")
 
 args = [a for a in sys.argv[1:] if not a.startswith("--")]
 count_samplers = "--samplers" in sys.argv
-SAMPLER_LIMIT = 30
+def sampler_limit(rel):
+    name = pathlib.PurePath(rel).name
+    return 29 if name.startswith(("gbuffers", "dh_", "clrwl", "shadow")) else 30
 root = pathlib.Path(args[0])
 only = args[1] if len(args) > 1 else None
 IRIS = """#define MC_VERSION 12101
@@ -114,6 +120,7 @@ for d, variants in ((root, ROOT_VARIANTS), (root / "world0", WORLD_VARIANTS), (r
         progs += [(p, variants) for p in sorted(d.glob("*." + ext))]
 
 jobs = []
+version_fails = []
 for prog, variants in progs:
     rel = prog.relative_to(root)
     if only and only not in str(rel):
@@ -139,6 +146,9 @@ for prog, variants in progs:
         if lit_only and prog.name in ("shadowcomp3.csh", "shadowcomp4.csh", "shadowcomp5.csh") and not ripples:
             continue
         src = expand(prog, edits)
+        if re.search(r"#\s*(el)?if.*__VERSION__", src):
+            print(f"== {rel} [{vname}]\nan #if on __VERSION__, which Iris's preprocessor doesn't define")
+            version_fails.append(rel)
         lines = src.split("\n")
         assert lines[0].startswith("#version"), prog
         extra = IRIS + "".join(f"#define {d}\n" for d in defines)
@@ -177,7 +187,7 @@ def run(job):
     return rel, vname, r, active
 
 
-fails = 0
+fails = len(version_fails)
 most = []
 with concurrent.futures.ThreadPoolExecutor(os.cpu_count() or 4) as pool:
     for rel, vname, r, active in pool.map(run, jobs):
@@ -192,8 +202,8 @@ if count_samplers:
     most.sort(reverse=True)
     for n, rel, vname in most[:5]:
         print(f"{n} samplers: {rel} [{vname}]")
-    over = [m for m in most if m[0] > SAMPLER_LIMIT]
-    if over:
-        print(f"{len(over)} program variants have more than {SAMPLER_LIMIT} samplers")
-        fails += len(over)
+    over = [m for m in most if m[0] > sampler_limit(m[1])]
+    for n, rel, vname in over[:10]:
+        print(f"over the {sampler_limit(rel)} texture units Iris has for it: {rel} [{vname}] with {n}")
+    fails += len(over)
 sys.exit(1 if fails else 0)

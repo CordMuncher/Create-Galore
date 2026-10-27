@@ -4,11 +4,10 @@
 // the clouds the passes before worked out (see clouds.glsl), all seen through the light in the air in front of them
 // (air.glsl). The translucent programs then draw over the lit scene, lighting themselves the same way.
 
-#if __VERSION__ >= 430
-// (This pass needs nearly every texture unit there is, so it reads the pack's marks and the air's multiple
-// scattering table as images: see marks.glsl.)
+// This pass needs nearly every texture unit there is, so it reads the pack's marks, the frame's globals and the air's
+// multiple scattering table as images (see marks.glsl). Its programs are all GLSL 4.3 (world*/deferred3.fsh). (Not by __VERSION__: Iris
+// runs the preprocessor itself first, without it.)
 #define READ_IMAGES
-#endif
 
 #include "/lib/settings.glsl"
 #include "/lib/motion.glsl"
