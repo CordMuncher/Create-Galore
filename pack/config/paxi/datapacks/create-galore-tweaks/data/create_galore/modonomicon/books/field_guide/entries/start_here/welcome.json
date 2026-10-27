@@ -86,6 +86,11 @@
       "text": "**Several questions at once**\\\nYou can have it answering on up to three pages at once. When an answer lands on a page you aren't reading, or with the book closed, a notice slides in and the page glows green under All pages until you open it. Until then the Field Guide itself glows green in your hotbar and inventory, and so does the Ask the Book ribbon."
     },
     {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Always on you**\\\nWear the [#](2E5AAC)[Field Guide Pendant](entry://start_here/field_guide_pendant)[#]() (Brass Age) and a key opens this book or Ask the Book with nothing in your hands. Its answer notice shows the key, since a worn pendant has no slot to glow in."
+    },
+    {
       "type": "modonomicon:spotlight",
       "item": {
         "item": "minecraft:writable_book"

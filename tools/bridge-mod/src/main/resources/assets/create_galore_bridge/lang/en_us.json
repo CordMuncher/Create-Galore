@@ -90,5 +90,12 @@
   "block.create_galore_bridge.brass_encased_trapdoor": "Brass Encased Trapdoor",
   "block.create_galore_bridge.copper_encased_door": "Copper Encased Door",
   "block.create_galore_bridge.copper_encased_trapdoor": "Copper Encased Trapdoor",
-  "create_galore_bridge.encased_door.redstone": "Encased: only redstone opens it. A wrench takes the casing off."
+  "create_galore_bridge.encased_door.redstone": "Encased: only redstone opens it. A wrench takes the casing off.",
+  "item.create_galore_bridge.field_guide_pendant": "Field Guide Pendant",
+  "item.create_galore_bridge.field_guide_pendant.tooltip": "Wear it in a necklace slot: %s opens the Field Guide and %s asks the book, with nothing in your hands.",
+  "key.categories.create_galore_bridge.field_guide": "Field Guide",
+  "key.create_galore_bridge.pendant_guide": "Open the Field Guide (pendant)",
+  "key.create_galore_bridge.pendant_ask": "Ask the Book (pendant)",
+  "create_galore_bridge.pendant.not_worn": "Wear the Field Guide Pendant in a necklace slot to open the book with this key.",
+  "create_galore_bridge.pendant.no_guide": "The Field Guide isn't loaded on this server."
 }

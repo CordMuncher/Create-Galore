@@ -5,6 +5,13 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.6.7
+
+### Added
+- **The Field Guide Pendant: the Field Guide worn as a necklace.** The book made small on a brass chain, worn in one of the three necklace slots of the Accessories screen. While it is worn, **I** opens the Field Guide and **Shift + I** opens Ask the Book, anywhere in the world with nothing in your hands (change them under Options > Controls > Field Guide). A worn pendant has no slot to glow green in when the book answers, so the notice that slides in shows the pendant and the key in front of the page's title instead. It hangs on the chest, over armor too, and right-click with it in hand opens the guide like the book. Crafted in the Brass Age: a Field Guide, two Brass Sheets, a Chain and a Precision Mechanism.
+- Field Guide, Start Here: a Field Guide Pendant entry (keys, the answer notice, the recipe), and Welcome and Accessories point to it.
+- Create Galore Bridge 1.130.0.
+
 ## 0.6.6
 
 ### Fixed

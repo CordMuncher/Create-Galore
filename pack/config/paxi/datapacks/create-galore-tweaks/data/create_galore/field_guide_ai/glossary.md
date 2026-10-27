@@ -1,4 +1,4 @@
-<!-- sources sha256:f8d0a333bbee8f68763bdd48a7fd1f9ee234f94fc20d647060a296243e3992cc -->
+<!-- sources sha256:4806c1905b2edb9256d3666ac5322709084920b8fa00db136d860a210b33598d -->
 # Words to Know (glossary)
 Short definitions of jargon the book uses unexplained, mostly Create and survival. Purple words in the book link to these entries; each lists where the word matters.
 
@@ -61,7 +61,7 @@ Short definitions of jargon the book uses unexplained, mostly Create and surviva
 - How many: hat, eyes (goggles), face mask 1 each; necklaces 3; cape, back, body 1 each; hands 2 (one per hand); shield 1; rings 10; belt, quiver, book (spell book), shoes 1 each; charms 3; gadgets 3.
 - A pair of gloves (Aether gloves, Sticky Gloves, Blazing Grips) takes both hands; a single claw or glove one. No two of the same item in a group, except rings and hands (up to 2 of the same). Limits hold however an item is put on, right-click included. Empty slots say what goes there and how many are worn.
 - Tip: hover a worn item, click the small eye in its corner to hide it on your character; it still works; eye stays crossed out until shown again. Shift-click an accessory in the inventory to put it on.
-- Matters: Gear and Accessories (see exploration/gear); Iron's Spellbooks (see exploration/irons_spellbooks); Diving Gear (see ocean/diving); Fishing Gadgets (see fishing/gadgets).
+- Matters: Gear and Accessories (see exploration/gear); Iron's Spellbooks (see exploration/irons_spellbooks); Diving Gear (see ocean/diving); Fishing Gadgets (see fishing/gadgets); Field Guide Pendant (see start_here/field_guide_pendant).
 
 ## glossary/datapack | Datapack
 - Datapack: bundle of data, not code (recipes, loot, world generation); loads with the world.
