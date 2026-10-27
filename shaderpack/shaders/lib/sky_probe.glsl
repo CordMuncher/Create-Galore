@@ -64,26 +64,22 @@ float sky_seen_probe(vec3 scene_pos, float sky) {
 // The top of the sea in the overworld (the top of its water blocks).
 const float sea_level = 63.0;
 
-// The share of the sky a surface at scene_pos facing n with sky light sky sees: from the sky grid near you, and from
-// the screen past it (and on Distant Horizons' terrain, lod), the one fading into the other over the grid's last
-// 28 blocks. noise: 0..1, a different one each pixel and frame. water: the surface is water's own.
+// The share of the sky a surface at scene_pos with sky light sky sees: from the sky grid near you (rays: what its
+// rays see, see sky_seen; -1 where they see nothing, past the grid's top or bottom, or facing down), and from the
+// screen past it (and on Distant Horizons' terrain, lod), the one fading into the other over the grid's last 28
+// blocks. water: the surface is water's own.
 //
 // The screen can't tell water from air: what is opaque is lit before the water is drawn, and the depth the probe
 // looks past at the sea floor is the sea's. So past the grid (which knows where water is) a surface below the top of
 // the sea is taken to be under it, and sees no more of the sky than its sky light says: Minecraft's sky light dims a
 // level for each block of water, much as the water dims the sky's light.
-float sky_seen_around(vec3 scene_pos, vec3 n, float sky, float noise, bool lod, bool water) {
+float sky_seen_blend(vec3 scene_pos, float sky, float rays, bool lod, bool water) {
     float grid = 0.0;
     float seen = 0.0;
 #ifdef LIT_SKY_GRID
-    if (!lod) {
-        grid = 1.0 - smoothstep(96.0, 124.0, max(abs(scene_pos.x), abs(scene_pos.z)));
-        if (grid > 0.0) {
-            seen = sky_seen(scene_pos, n, noise);
-            if (seen < 0.0) {
-                grid = 0.0; // past the grid's top or bottom, or facing down
-            }
-        }
+    if (!lod && rays >= 0.0) {
+        grid = 1.0 - smoothstep(sky_grid_reach - 28.0, sky_grid_reach, max(abs(scene_pos.x), abs(scene_pos.z)));
+        seen = rays;
     }
 #endif
     if (grid < 1.0) {
@@ -91,6 +87,18 @@ float sky_seen_around(vec3 scene_pos, vec3 n, float sky, float noise, bool lod, 
         seen = mix(under_sea ? 0.0 : sky_seen_probe(scene_pos, sky), seen, grid);
     }
     return seen;
+}
+
+// The same for a surface facing n, with the grid's rays traced here, turned by noise (0..1, a different one each
+// pixel and frame).
+float sky_seen_around(vec3 scene_pos, vec3 n, float sky, float noise, bool lod, bool water) {
+    float rays = -1.0;
+#ifdef LIT_SKY_GRID
+    if (!lod && max(abs(scene_pos.x), abs(scene_pos.z)) < sky_grid_reach) {
+        rays = sky_seen(scene_pos, n, noise);
+    }
+#endif
+    return sky_seen_blend(scene_pos, sky, rays, lod, water);
 }
 
 #endif

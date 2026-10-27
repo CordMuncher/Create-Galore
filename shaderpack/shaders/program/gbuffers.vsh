@@ -31,6 +31,10 @@ flat out float v_emission; // that, 0..1
 flat out int v_surface;  // what it is made of (SURFACE_)
 out float v_ao;          // Minecraft's smooth lighting corners: 1 in the open, less in a corner
 #endif
+#ifdef LIT_RELIEF
+in vec2 mc_midTexCoord;  // the middle of the quad's texture coordinates (Iris's)
+out vec4 v_region;       // the quad's part of the atlas, for the relief: xy where it starts, zw its size
+#endif
 
 #ifdef ENTITY_FORMAT
 // Where the Create Galore Bridge had this vertex last frame, in Iris's entity format: w 2 in the vertex's own space,
@@ -90,6 +94,11 @@ void main() {
     v_uv = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
 #else
     v_uv = vec2(0.0);
+#endif
+#ifdef LIT_RELIEF
+    // Each corner of a quad lies as far from its middle as the others: the same part of the atlas at every corner.
+    vec2 half_size = abs(v_uv - mc_midTexCoord);
+    v_region = vec4(mc_midTexCoord - half_size, 2.0 * half_size);
 #endif
 
     int flags = key_flags();

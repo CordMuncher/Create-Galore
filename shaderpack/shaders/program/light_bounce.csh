@@ -10,6 +10,7 @@
 #include "/lib/gbuffer.glsl"
 #include "/lib/globals.glsl"
 #include "/lib/motion.glsl"
+#include "/lib/shadow_grid.glsl"
 #ifdef LIT_CLOUDS
 #include "/lib/clouds.glsl"
 #endif
@@ -42,9 +43,10 @@ const int bounce_stride = max(int(0.5 / bounce_texel + 0.5), 1);
 const float bounce_sample_area = (float(bounce_stride) * bounce_texel) * (float(bounce_stride) * bounce_texel);
 
 void main() {
-    // The samples sit every bounce_stride texels from the shadow map's corner, so between its steps as you move (when
-    // it holds still on the world) they land on the same places.
-    vec4 origin = shadowProjection * (shadowModelView * vec4(0.0, 0.0, 0.0, 1.0));
+    // The samples sit every bounce_stride texels from the shadow map's corner, so as you move (the map holds still on
+    // the world, see shadow_grid.glsl) they land on the same places.
+    vec2 shift = shadow_grid_shift(shadowModelView);
+    vec4 origin = shadowProjection * (shadowModelView * vec4(0.0, 0.0, 0.0, 1.0) - vec4(shift, 0.0, 0.0));
     ivec2 centre = ivec2(floor((origin.xy * 0.5 + 0.5) * float(shadowMapResolution))) / bounce_stride;
     ivec2 samples = ivec2(gl_NumWorkGroups.xy * gl_WorkGroupSize.xy);
     ivec2 texel = (centre - samples / 2 + ivec2(gl_GlobalInvocationID.xy)) * bounce_stride + bounce_stride / 2;
@@ -61,7 +63,7 @@ void main() {
     vec3 normal = decode_normal(texelFetch(shadowcolor1, texel, 0).xy);
     vec3 ndc = vec3((vec2(texel) + 0.5) / float(shadowMapResolution), depth) * 2.0 - 1.0;
     vec4 view = shadowProjectionInverse * vec4(ndc, 1.0);
-    vec3 scene_pos = (shadowModelViewInverse * vec4(view.xyz / view.w, 1.0)).xyz;
+    vec3 scene_pos = (shadowModelViewInverse * vec4(view.xyz / view.w + vec3(shift, 0.0), 1.0)).xyz;
 
     vec3 flux = albedo * bounce_sample_area;
 #ifdef LIT_CLOUDS

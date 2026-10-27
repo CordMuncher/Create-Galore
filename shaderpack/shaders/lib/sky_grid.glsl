@@ -30,6 +30,9 @@ const int sky_grid_height = 256; // blocks up
 const int sky_grid_words = 8;   // words of 32 blocks to a column
 const int sky_grid_levels = 7;  // the grid and its coarser copies (2, 4, ... 64 blocks to a column)
 const int sky_grid_width = 512; // cg_water_marks_img's width
+// How far across from you (blocks, along x or z) the grid's rays are traced, short of its edge: they fade into the
+// screen's probe over the last 28 (see sky_probe.glsl).
+const float sky_grid_reach = 124.0;
 
 // Where each copy's rows begin in the image: its 8 words side by side, as many to a row as fit.
 int sky_grid_level_row(int level) {

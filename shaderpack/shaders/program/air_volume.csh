@@ -59,15 +59,17 @@ const vec2 workGroupsRender = vec2(1.37, 2.06);
 
 uniform sampler2D colortex11; // last frame's cells
 
-// Under a roof, in a cave or in a wood, the air holds dust (per block) that a sunbeam through a window or a gap in the
-// leaves shows up, and that glows around lamps; out under the sky the haze is the sky's own.
+// Indoors and in caves (under a roof, between walls), the air holds dust (per block) that a sunbeam through a window
+// or a gap shows up, and that glows around lamps; out under the sky the haze is the sky's own, under an overhang, a
+// bridge or a floating island too (with only a roof over it, the air would light up as a pale box under it).
 const float air_dust = 0.002 * AIR_DUST;
 // How much of the lamps' light the air scatters around them (per block): enough for a soft glow in their colour
 // close around them.
 const float air_glow = 0.03 * LAMP_GLOW;
 // How far up a cell looks for a roof over it (blocks).
 const int air_roof_reach = 24;
-// Of last frame's cell, how much each frame keeps.
+// Of last frame's cell, how much each frame keeps. OWN DENOISER, kept under Ray Reconstruction: the volume is a few
+// cells per hundred pixels, read smoothly, never per-pixel noise (see the README).
 const float air_history = 0.9;
 
 // Henyey-Greenstein's phase function, for the dust: mostly onwards, some all around.
@@ -111,10 +113,12 @@ bool air_in_water(vec3 p) {
 }
 
 // The light the sky's light gets to a point from one direction over the sky (rays turn with seed): 1 if the ray
-// leaves the blocks around you, 0 if a block stops it. roofed: whether a block is over the point within
-// air_roof_reach blocks. Past the blocks the grid has (see sky_grid.glsl), open and no roof.
-float air_sky_open(vec3 p, uint seed, out bool roofed) {
-    roofed = false;
+// leaves the blocks around you, 0 if a block stops it. walled: under a roof (a block over the point within
+// air_roof_reach blocks), 1 if a ray out low over the horizon meets a block too, else 0, so that over frames it
+// comes to how closed in the point is around it (a room's walls, a cave's; not an overhang's open sides). Past the
+// blocks the grid has (see sky_grid.glsl), open and no roof.
+float air_sky_open(vec3 p, uint seed, out float walled) {
+    walled = 0.0;
 #ifdef LIT_SKY_GRID
     vec3 o = sky_grid_pos(p, cameraPositionFract);
     if (any(lessThan(o, vec3(0.0))) || any(greaterThanEqual(o, vec3(float(sky_grid_size), float(sky_grid_height),
@@ -122,7 +126,13 @@ float air_sky_open(vec3 p, uint seed, out bool roofed) {
         return 1.0;
     }
     int y = int(floor(o.y));
-    roofed = sky_grid_marked(ivec2(floor(o.xz)), 0, y + 1, y + air_roof_reach);
+    if (sky_grid_marked(ivec2(floor(o.xz)), 0, y + 1, y + air_roof_reach)) {
+        vec2 w = r2_seq2(seed + 3u);
+        float low = 0.02 + 0.33 * w.x;
+        float rw = sqrt(1.0 - low * low);
+        float pw = 6.2831853 * w.y;
+        walled = sky_ray_open(o, vec3(rw * cos(pw), low, rw * sin(pw))) ? 0.0 : 1.0;
+    }
     // Spread evenly over the sky above the horizon (by solid angle: the air takes the light from every way alike).
     vec2 u = r2_seq2(seed);
     float up = 0.05 + 0.95 * u.x;
@@ -190,8 +200,8 @@ void main() {
 #ifdef LIT_CLOUDS
         lit *= cloud_shadow(p, g_light_dir.xyz);
 #endif
-        bool roofed;
-        float open = air_sky_open(p, frame * 7u + seed, roofed);
+        float walled;
+        float open = air_sky_open(p, frame * 7u + seed, walled);
         float cos_sun = dot(dir, sun_dir);
         float cos_moon = dot(dir, moon_dir);
         scattered += (rayleigh * atm_phase_rayleigh(cos_sun) + mie * atm_phase_mie(cos_sun)) * sun * lit
@@ -200,12 +210,12 @@ void main() {
         scattered += (atm_msctr(h, sun_dir.y) * sun_illuminance + atm_msctr(h, moon_dir.y) * moon_illuminance())
                 * (rayleigh + mie) * open * (1.0 - 0.75 * rainStrength);
 
-        // Dust under a roof: lit by the sun and the moon where they get in, and by the sky through the openings (a
-        // diffuse light from above lights it with about 0.57 of its radiance from all around).
-        if (roofed) {
-            scattered += air_dust * ((sun * dust_phase(cos_sun) + moon * dust_phase(cos_moon)) * lit
+        // Dust indoors: lit by the sun and the moon where they get in, and by the sky through the openings (a diffuse
+        // light from above lights it with about 0.57 of its radiance from all around).
+        if (walled > 0.0) {
+            scattered += air_dust * walled * ((sun * dust_phase(cos_sun) + moon * dust_phase(cos_moon)) * lit
                     + sky_irradiance(vec3(0.0, 1.0, 0.0)) * (0.57 / PI) * open);
-            extinction += air_dust;
+            extinction += air_dust * walled;
         }
 
 #ifdef LIT_COLORED_LIGHT

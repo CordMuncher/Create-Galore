@@ -106,6 +106,19 @@ int key_flags() {
 #define LIT_SELF
 #endif
 #endif
+
+// The draws that take the resource pack's material maps (see material_maps.glsl): what the deferred pass lights from
+// textures (blocks, mobs, block entities, the hand) and glass; the blocks with their relief.
+#if defined LIT_MATERIALS && defined TEXTURED && defined LIT_GBUFFER && !defined LIT_SELF && !defined COLORWHEEL
+#if !defined PROGRAM_DAMAGEDBLOCK && !defined PROGRAM_BEACONBEAM
+#define LIT_MAPS
+#endif
+#elif defined LIT_MATERIALS && defined PROGRAM_WATER
+#define LIT_MAPS
+#endif
+#if defined LIT_MAPS && defined LIT_PARALLAX && defined PROGRAM_TERRAIN
+#define LIT_RELIEF
+#endif
 #endif
 
 #endif

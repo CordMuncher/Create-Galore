@@ -11,10 +11,15 @@
 //            block and sky light below (7 bits each), a how much of it the draw writes. The programs blend it by that
 //            alpha (see shaders.properties), always 0 or 1, so a draw over a surface (a mob's shadow, a charged
 //            creeper's swirl) leaves the surface under it as it was. Cleared to 0: nothing drawn.
-// colortex9: the surface's occlusion and kind (RG8): r Minecraft's smooth lighting corners (1 in the open, less in a
-//            corner or a crease, see separateAo in shaders.properties), g what it is made of (SURFACE_, over 7).
-//            Blended by alpha as colortex2 is.
-//            Cleared to 1 and 0: what draws nothing here (Distant Horizons' terrain) has no corners.
+// colortex9: the surface's occlusion and kind (RGBA8): r how open it is to the light all around, Minecraft's smooth
+//            lighting corners (1 in the open, less in a corner or a crease, see separateAo in shaders.properties)
+//            times its texture's own crevices (see material.glsl), g what it is made of (SURFACE_, over 7), b how much
+//            of the sun's (or the moon's) light the texture's own relief lets reach it (1 all of it). Blended by alpha
+//            as colortex2 is.
+//            Cleared to 1, 0 and 1: what draws nothing here (Distant Horizons' terrain) has no corners.
+// colortex12: the surface's material from the resource pack (RGBA8, see material.glsl): r how smooth, g what it
+//            reflects (LabPBR's), b how porous (LabPBR's), all 0 where the pack has no maps for it (the pack's own
+//            materials by its kind then). Blended by alpha as colortex2 is. Cleared to 0.
 //
 // And what the translucent water program leaves for the composite pass, which draws the water (see water_body.fsh):
 // colortex4: the water's surface (RGBA16F): rg its normal (octahedral, its upper side's), b its sky light, a 1 where
@@ -23,7 +28,13 @@
 // colortex6: how far the nearest other translucent block (glass, ice) is from the eye, where there is one.
 //
 // colortex3: the frame as the water pass leaves it (R11F_G11F_B10F, kept from frame to frame), for the next frame's
-//            reflections on puddles and polished floors, which are lit before this frame's picture exists.
+//            reflections and the light surfaces bounce onto what is next to them, which are worked out before this
+//            frame's picture exists.
+//
+// And what the screen shows around each surface (see screen_light.fsh): colortex13 this frame's (RGBA16F), colortex14
+// the same blended over frames (RGBA16F, kept from frame to frame, see deferred.fsh). colortex15 (RG16F, kept from
+// frame to frame): r the share of the sky the sky grid's rays from each surface see this frame, g the same blended
+// over frames (see sky_rays_settled in deferred.fsh); -1 where they see none.
 
 #if !defined LIB_GBUFFER
 #define LIB_GBUFFER
@@ -39,9 +50,12 @@ const bool colortex1Clear = true;
 const vec4 colortex1ClearColor = vec4(0.0, 0.0, 0.0, 0.0);
 const bool colortex2Clear = true;
 const vec4 colortex2ClearColor = vec4(0.0, 0.0, 0.0, 0.0);
-const int colortex9Format = RG8;
+const int colortex9Format = RGBA8;
 const bool colortex9Clear = true;
-const vec4 colortex9ClearColor = vec4(1.0, 0.0, 0.0, 0.0);
+const vec4 colortex9ClearColor = vec4(1.0, 0.0, 1.0, 0.0);
+const int colortex12Format = RGBA8;
+const bool colortex12Clear = true;
+const vec4 colortex12ClearColor = vec4(0.0, 0.0, 0.0, 0.0);
 const int colortex4Format = RGBA16F;
 const bool colortex4Clear = true;
 const vec4 colortex4ClearColor = vec4(0.0, 0.0, 0.0, 0.0);
@@ -53,6 +67,12 @@ const bool colortex6Clear = true;
 const vec4 colortex6ClearColor = vec4(0.0, 0.0, 0.0, 0.0);
 const int colortex3Format = R11F_G11F_B10F;
 const bool colortex3Clear = false;
+const int colortex13Format = RGBA16F;
+const bool colortex13Clear = false;
+const int colortex14Format = RGBA16F;
+const bool colortex14Clear = false;
+const int colortex15Format = RG16F;
+const bool colortex15Clear = false;
 */
 #endif
 

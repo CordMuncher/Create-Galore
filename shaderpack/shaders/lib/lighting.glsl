@@ -134,9 +134,13 @@ float water_over(vec3 scene_pos) {
 // contact: how much of the light the screen says gets past what is right next to the surface (see deferred.fsh), 1
 // where only the shadow map says. ao: how open the surface is to the light all around, 0..1 (see deferred.fsh); the
 // sun's (or the moon's) isn't touched by it, the shadows see to that. sky_mc: Minecraft's own sky light, where light.y
-// is more under something high (see direct_visibility).
+// is more under something high (see direct_visibility). screen_lit: ao is the screen's (see screen_light.fsh), and
+// screen_bounce (kcd/m², as a share of the light all around) the light the surfaces it found bounce onto it, in place
+// of the light ao takes away; else what those surfaces would bounce is guessed from the surface's own colour (Jimenez
+// et al.'s multi-bounce fit). nearby: the light all around from the blocks and the bounce light (irradiance, kcd/m²
+// times π), for the surface's sheen (see deferred.fsh).
 vec3 light_surface(vec3 albedo, vec3 normal, vec2 light, vec3 scene_pos, bool plant, bool foliage, bool shadowed,
-        float contact, float ao, float sky_mc) {
+        float contact, float ao, float sky_mc, vec3 screen_bounce, bool screen_lit, out vec3 nearby) {
     // Under water the light has come down through it: the sun's (or the moon's) from the surface the shadow map has
     // above, the sky's from all over the sky, on a longer way down. Minecraft's sky light drops a level for every
     // block of water, which the water's own dimming takes over from.
@@ -211,13 +215,22 @@ vec3 light_surface(vec3 albedo, vec3 normal, vec2 light, vec3 scene_pos, bool pl
         const vec3 luma = vec3(0.2126, 0.7152, 0.0722);
         sky = mix(sky, side * (dot(sky, luma) / max(dot(side, luma), 1e-8)), covered);
     }
-    vec3 around = sky * sky_light_curve(light.y) * water_sky * crown_sky
-            + block_irradiance(light.x, block_light_color(scene_pos, n));
+    nearby = block_irradiance(light.x, block_light_color(scene_pos, n));
 #ifdef LIT_GI
-    around += g_light_color.rgb * bounce_light(scene_pos, n, light.y);
+    nearby += g_light_color.rgb * bounce_light(scene_pos, n, light.y);
 #endif
-    vec3 irradiance = direct + around * ao_bounced(ao, albedo);
-    return albedo / PI * irradiance * (1.0 - 0.9 * darknessLightFactor);
+    vec3 around = sky * sky_light_curve(light.y) * water_sky * crown_sky + nearby;
+    vec3 irradiance = direct + (screen_lit ? around * ao + PI * screen_bounce : around * ao_bounced(ao, albedo));
+    float dark = 1.0 - 0.9 * darknessLightFactor;
+    nearby *= dark;
+    return albedo / PI * irradiance * dark;
+}
+
+vec3 light_surface(vec3 albedo, vec3 normal, vec2 light, vec3 scene_pos, bool plant, bool foliage, bool shadowed,
+        float contact, float ao, float sky_mc) {
+    vec3 nearby;
+    return light_surface(albedo, normal, light, scene_pos, plant, foliage, shadowed, contact, ao, sky_mc, vec3(0.0),
+            false, nearby);
 }
 
 vec3 light_surface(vec3 albedo, vec3 normal, vec2 light, vec3 scene_pos, bool plant, bool shadowed) {

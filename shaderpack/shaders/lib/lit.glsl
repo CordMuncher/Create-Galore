@@ -10,6 +10,7 @@
 #include "/lib/vanilla.glsl"
 #include "/lib/color.glsl"
 #include "/lib/gbuffer.glsl"
+#include "/lib/material.glsl"
 
 uniform int isEyeInWater;       // 1 water, 2 lava, 3 powder snow
 uniform float blindness;
@@ -120,6 +121,13 @@ vec3 fresnel_schlick(float cos_theta, vec3 f0) {
     return f0 + (1.0 - f0) * pow(1.0 - clamp(cos_theta, 0.0, 1.0), 5.0);
 }
 
+// The same for the light all around reflected off a rough surface (GGX alpha): less of a rise at a glancing angle,
+// as much of a rough surface's reflection there comes from directions it reflects less of (Fdez-Agüera's fit of the
+// split sum, as Lagarde's).
+vec3 fresnel_rough(float cos_theta, vec3 f0, float alpha) {
+    return f0 + (max(vec3(1.0 - sqrt(alpha)), f0) - f0) * pow(1.0 - clamp(cos_theta, 0.0, 1.0), 5.0);
+}
+
 // The sun's (or the moon's) light mirrored towards the eye by a surface facing n (view_dir from the eye), rough as
 // GGX alpha, reflecting f0 head on, where lit (0..1) of the light reaches it: kcd/m², not exposed.
 vec3 sun_glint(vec3 n, vec3 view_dir, float alpha, vec3 f0, float lit) {
@@ -170,12 +178,6 @@ vec3 soaked(vec3 albedo, float damp, float porosity) {
     return mix(albedo, albedo * albedo, 0.85 * soak) * (1.0 - 0.2 * soak);
 }
 
-// How much water a surface of a kind (SURFACE_) takes in: sand and soil the most, leaves, metal and polished stone
-// hardly (the water stays on them as a film).
-float porosity_of(int kind) {
-    return kind == SURFACE_SAND ? 1.0 : kind == SURFACE_SOIL ? 0.9 : kind == SURFACE_LEAVES ? 0.25
-            : kind == SURFACE_METAL ? 0.05 : kind == SURFACE_POLISHED ? 0.15 : 0.6;
-}
 
 // The film of water on a wet surface (wet 0..1): it reflects the sky (Schlick's Fresnel for water, the sky half
 // blurred, as the surface under it is rough) over the surface's own light (frame units).

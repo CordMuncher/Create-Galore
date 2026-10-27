@@ -1,6 +1,7 @@
-// What the overworld's programs share each frame (a 32 by 1 image, see shaders.properties): the sun's and the
-// moon's light where you are and the sky's light all around, worked out by the begin passes before anything is
-// drawn, and the exposure, which the metering pass (exposure.csh, after DLSS) moves for the next frame. An image
+// What the overworld's programs share each frame (row 0 of a 4096 by 35 image, see shaders.properties; the rows
+// above hold the local exposure's grid, see local_exposure.glsl): the sun's and the moon's light where you are and
+// the sky's light all around, worked out by the begin passes before anything is drawn, and the exposure, which the
+// metering pass (exposure.csh, after DLSS) moves for the next frame. An image
 // rather than a storage buffer: Iris turns the whole pack off if the video memory it is told is free (none, at
 // times, when it is full or on some drivers) is less than a storage buffer asks for.
 //
@@ -23,6 +24,7 @@
 #define G_FLASH 15       // rgb the radiance a lightning bolt lights the sky with this frame (kcd/m²)
 #define G_WATER 16       // the ripples (see water.glsl): x steps this frame, y steps before it (modulo 2), z the clock
 #define G_WATER_ORIGIN 17 // xy the ripples' grid corner after this frame's steps (cells, modulo 2^20), zw before them
+#define G_FOCUS 18       // the depth of field's focus (see dof.csh): x its inverse distance (1/m), y 1 once worked out
 
 #ifdef GLOBALS_WRITE
 // The passes that work them out (frame_globals.csh, exposure.csh).

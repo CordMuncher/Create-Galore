@@ -4,6 +4,8 @@
 // range this frame's rays show around the pixel (Marty McFly's ellipsoid clipping), so moving clouds don't trail;
 // up to 16 frames blended. The history alternates between two halves of its images (side by side, each the window's
 // size), one written each frame while the other is read; the lighting pass reads the one written (see deferred2.fsh).
+//
+// OWN DENOISER: off under Ray Reconstruction, whose guide rules out rays on only some pixels (see the README).
 
 #include "/lib/clouds.glsl"
 #include "/lib/motion.glsl"

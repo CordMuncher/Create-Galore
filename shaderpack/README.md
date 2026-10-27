@@ -20,12 +20,12 @@ Sky and light (milestone 2, the Lighting option):
 - The world lit in real units by the sun or the moon (their colour and strength from the air they shine through),
   the sky all around, and the blocks' light levels. Torches and every modded light light the world through
   Minecraft's light levels, so they work without any list of blocks.
-- Shadows from a steady shadow map: not warped, and snapped to whole steps as you move. Options say what casts them
-  (mobs, block entities, you, Create's machines and contraptions) and how far they reach.
+- Shadows from a steady shadow map: not warped, and held on a grid fixed in the world as you move. Options say what
+  casts them (mobs, block entities, you, Create's machines and contraptions) and how far they reach.
 - Glass reflects the sky; Distant Horizons' terrain is lit the same way past the shadows' reach, and its clouds and
   beacon beams are lit as clouds and glow.
 - Exposure metered after DLSS, adapting like eyes (fast to darken, slower to brighten), and AgX tone mapping with
-  Alpha Piscium's look after DLSS, at the window's size.
+  Alpha Piscium's look after DLSS, at the window's size (see Exposure and colour below for what alpha 4 adds).
 
 Clouds, weather and the End (milestone 3, the Clouds and End Sky options):
 
@@ -123,13 +123,81 @@ Light in the air (alpha 4, the Light in the Air option; the shafts need Shadows)
 
 - The air between you and everything you see catches the light: shafts of sunlight through leaves, windows, cave
   mouths and the gaps between clouds, haze that turns far terrain bluer and paler with distance (thicker at
-  sunrise and in the rain), dust a sunbeam shows up in under a roof, and a glow in each lamp's own colour around
+  sunrise and in the rain), dust a sunbeam shows up in rooms and caves, and a glow in each lamp's own colour around
   it, from the coloured light's volume. It is the sky's own air, so the land fades into the horizon the way the
   sky does, and the shafts carry on against the sky out to the shadow map's reach.
 - A volume of cells fixed to the camera, as Unreal's, Frostbite's and Assassin's Creed IV's volumetric fog is:
   each cell works out its light at a point that moves inside it every frame and blends it with what that place in
   the world held last frame, so the volume settles into a still, noise-free image for DLSS and FSR. Every surface,
   the clouds, the water and what lies under it then take the sum of the air in front of them at their own depth.
+
+Materials (alpha 4, the Resource Pack Materials and Parallax options):
+
+- PBR resource packs in LabPBR's format (SPBR, and most others): every pixel of a texture gets its own facing,
+  crevices, smoothness and reflectance, the eight measured metals and metals in their own colour, porosity for the
+  rain, and emission. Blocks the resource pack has no maps for (Create's, for now) keep the pack's own materials.
+  The texture's frame on a surface comes from how its texture coordinates change across the screen (Schüler), so
+  any block or mob takes the maps without a list.
+- Every surface reflects: a faint, broad sheen at a glancing angle on most things, sharp on polished stone and what
+  the maps make smooth, with the sun's glint, less in crevices and corners. A normal map's fine bumps are folded
+  into the roughness where they change faster than a pixel (Tokuyoshi and Kaplanyan's specular antialiasing), so
+  they don't sparkle under DLSS.
+- The texture's own crevices darken the light all around, and shade it from the sun the way Call of Duty WWII's
+  micro-shadowing does.
+- Parallax: blocks get the relief the height maps hold, followed a texture pixel at a time as if every pixel were a
+  column of its own height, so a 16x texture's pixels stand out as sharp-edged steps (with their sides lit and
+  shaded as faces of their own) and the sun casts their shadows across them. The motion vectors follow the point
+  the relief shows, not the face it's drawn on.
+
+Light from the screen (alpha 4, the Ambient Occlusion and Screen Bounce Light options):
+
+- The ambient occlusion gives everything the screen shows a thickness (Therrien, Levesque and Gilet's visibility
+  bitmask over GTAO's slices), so the light all around passes behind a fence post or a lamp post instead of a dark
+  halo spreading behind it, and what blocks that light bounces its own onto the surface instead, from last frame's
+  picture: a red floor tints the white walls around it, sunlit ground lights the underside of a ledge, at the
+  screen's resolution on top of the bounce light's blocks. A lamp's own glow isn't counted again (the block light
+  already brings it).
+- Every surface's sheen reflects the light all around as it sees it, the way Unreal's Lumen does for rough
+  surfaces: the sky where it's open, the blocks' light and the bounce light, and the surfaces close around it where
+  they block those. Smooth surfaces (polished stone, quartz, what a resource pack makes smooth) also mirror what the
+  screen shows, blurred as wide as their roughness spreads the reflection over the way there, so it stays sharp
+  where something meets the floor and blurs further off. Metal has no colour under its sheen: all its light is what
+  it reflects, in its own colour.
+- The screen's light is blended over about eight frames before DLSS or FSR see it, held within what this frame
+  shows around each pixel so it doesn't trail.
+
+Sharper shadows (alpha 4, the Contact Shadows option and the High preset):
+
+- The shadow map's texels stay put on the world as you walk. Iris moves the sun's camera with you in two-block
+  steps along the world's axes, which seen from the sun are no whole number of texels, so every shadow's edge was
+  drawn a fraction of a texel over at each step and crawled; the pack shifts the sun's view by that fraction, the
+  way games snap their shadow cascades to the light's texel grid.
+- Contact shadows are now screen-space shadows as Bend Studio built them for Days Gone (Graham Aldridge, SIGGRAPH
+  2023): each pixel follows the screen's depth a pixel at a time towards the sun, up to 60 pixels on Ultra, sharp
+  for the first few and averaged further out, with no noise for DLSS or FSR to clean up. Grass, a fence's rails and
+  a block's edge up close shadow what lies behind them as sharply as the screen shows them. The code is the pack's
+  own; the technique is theirs.
+- The High preset's shadow map is 4096 texels across (as Ultra's), twice as sharp as before.
+
+Exposure and colour (alpha 4, the Light screen's Local Exposure and Night Vision options, and the Colour screen):
+
+- The exposure meters the light falling on things rather than what they reflect, as Ghost of Tsushima's does: every
+  lit surface counts as if it were an 18% grey card, so a snowfield and a basalt cave under the same sun come out
+  equally bright (white snow, black basalt) instead of the meter darkening the snow to grey. The sky, water and
+  what glows count as they are. Of what it meters, the darkest and brightest tenth are left out (Unreal's
+  histogram), so a lamp or a patch of sky in a dark room doesn't drag the rest down.
+- Night vision: below a few cd/m² the eye's rods take over from its cones (the Purkinje shift), so moonlit land
+  loses its colour and turns a cool blue-grey, red goes darker than green and blue, and a lamp's light keeps its
+  colour while the dark around it doesn't. Each pixel goes over by its own brightness, by the CIE's mesopic
+  photometry (CIE 191:2010), with the rods' weights worked out from CIE 1951's scotopic curve
+  (`tools/rod_weights.py`).
+- Local exposure: a bright window or cave mouth in a darker room is drawn in towards the room's brightness, its
+  detail kept, so it doesn't burn out to white while the room stays as dark as it is (Ghost of Tsushima's
+  bilateral grid, after Chen, Paris and Durand). Only what is brighter than the frame's average is drawn in; night
+  stays night.
+- Colour: white balance by colour temperature and tint (the chosen light shown as white, adapted in Bradford's cone
+  space), each primary's hue and saturation (as Alpha Piscium has them), and a mixer of hue, saturation and
+  lightness for eight bands of hue, as photo editors have. All of them change nothing at their defaults.
 
 From milestone 1, in every preset:
 
@@ -145,21 +213,50 @@ later also keeps water and stained glass in the shadow map while Aeronautics' le
 levitite's shader left Iris drawing the next terrain as tessellation patches, which the driver refused), so the
 caustics, the ripples and the light's depth under water need that version near ships.
 
+## Own denoisers and Ray Reconstruction
+
+DLSS and FSR upscale; they don't denoise (NVIDIA's DLSS guide), so the effects that take a few noisy samples per
+pixel smooth them first where the upscaler alone would leave them grainy. DLSS Ray Reconstruction is a denoiser
+itself and wants the raw samples, so a Ray Reconstruction mode turns these off. Each one is marked `OWN DENOISER`
+in its code, so `grep -rn "OWN DENOISER" shaders` lists them all:
+
+- The clouds (`program/clouds_gather.csh`): one ray per few pixels each frame, built up over up to 16 frames with
+  Lanczos filters. Ray Reconstruction's guide rules out rays on only some pixels each frame (checkerboarding), so
+  the clouds would either trace every pixel in that mode or stay out of it (drawn as the sky behind the world).
+- The light in the air (`program/air_volume.csh`): each cell of the volume blends 90% of last frame's. It stays in
+  every mode: the volume is a few cells per hundred pixels, read smoothly, which Ray Reconstruction never sees as
+  per-pixel noise.
+- The light from the screen (`program/deferred.fsh`, `screen_light_settled`): the ambient occlusion and the screen's
+  bounce light (`program/screen_light.fsh`), blended over about eight frames, held within the pixels around.
+- The sky each surface sees (`program/deferred.fsh`, `sky_rays_settled`): the sky grid's three to eight rays per
+  pixel (traced in `program/screen_light.fsh`), blended the same way. The water's surface still traces its own each
+  frame (`program/water_body.fsh`) and leaves them to the upscaler.
+
+What else changes for Ray Reconstruction:
+
+- Noise Pattern must be white noise (1): its guide rules out screen-space dither patterns.
+- The reflections and anything else that reads last frame's picture would read a noisy one: the guide asks for
+  that to be denoised first (Ray Reconstruction's own output, or a light TAA pass).
+
 ## Layout
 
 - `shaders/program/`: the shared programs. `gbuffers_kind.glsl` says what each world program draws and how vanilla
   shades it; `gbuffers.vsh/fsh` draw the world, `clrwl.*` Colorwheel's, `dh.*` Distant Horizons'. The lit overworld
-  adds `air.csh` (the sky's tables), `air_volume.csh` (the light in the air), `frame_globals.csh` (the frame's light), `cloud_ambient.csh`,
-  `clouds_march.csh` and `clouds_gather.csh` (the cumulus), `deferred.fsh` (the lighting), `exposure.csh`,
-  `shadow.*`, `light_bounce.csh` and `light_flood.csh` (the coloured and bounce light), `water_sim.csh` (the
-  ripples), `water_body.fsh` (the water, after the translucent things) and `bloom.csh`; the End adds `end_sky.fsh`.
+  adds `air.csh` (the sky's tables), `air_volume.csh` (the light in the air), `frame_globals.csh` (the frame's light),
+  `cloud_ambient.csh`, `clouds_march.csh` and `clouds_gather.csh` (the cumulus), `screen_light.fsh` (the ambient
+  occlusion, the screen's bounce light and the sky grid's rays), `deferred.fsh` (the lighting), `exposure.csh`,
+  `local_exposure.csh`, `shadow.*`, `light_bounce.csh` and `light_flood.csh` (the coloured and bounce light),
+  `water_sim.csh` (the ripples), `water_body.fsh` (the water, after the translucent things) and `bloom.csh`; the End
+  adds `end_sky.fsh`.
 - `shaders/lib/`: render size and jitter (`frame.glsl`), motion vectors (`motion.glsl`), vanilla's lighting and fog
-  (`vanilla.glsl`), colour encodings and the options; for the lit overworld the air (`atmosphere.glsl`, and the light in it, `air.glsl`), the sky
-  (`sky.glsl`, `celestial.glsl`, `stars.glsl`), the clouds (`clouds.glsl`, `noise.glsl`), the G-buffer
-  (`gbuffer.glsl`), the lighting (`lighting.glsl`, `light_levels.glsl`, `lit.glsl`, `shadow.glsl`, `light_volume.glsl`), the water
-  (`water.glsl`, `water_body.glsl`, `medium.glsl`), reflections (`reflection.glsl`), the weather and what rain does
-  (`weather.glsl`, `wet.glsl`), the bloom (`bloom.glsl`), the values its passes share
-  (`globals.glsl`) and the tone mapping (`tonemap.glsl`); for the End its sky (`end_sky.glsl`).
+  (`vanilla.glsl`), colour encodings and the options; for the lit overworld the air (`atmosphere.glsl`, and the light
+  in it, `air.glsl`), the sky (`sky.glsl`, `celestial.glsl`, `stars.glsl`), the clouds (`clouds.glsl`, `noise.glsl`),
+  the G-buffer (`gbuffer.glsl`), the materials (`material.glsl`, `material_maps.glsl`), the lighting (`lighting.glsl`,
+  `light_levels.glsl`, `lit.glsl`, `shadow.glsl`, `light_volume.glsl`), the water (`water.glsl`, `water_body.glsl`,
+  `medium.glsl`), reflections (`reflection.glsl`), the weather and what rain does (`weather.glsl`, `wet.glsl`), the
+  bloom (`bloom.glsl`), the values its passes share (`globals.glsl`), night vision (`night_vision.glsl`), the local
+  exposure (`local_exposure.glsl`), the tone mapping (`tonemap.glsl`) and the colour controls (`grade.glsl`); for the
+  End its sky (`end_sky.glsl`).
 - `shaders/textures/`: the clouds' noise textures and phase functions, and the water's wave textures.
 - `shaders/composite1.fsh`: the DLSS point, which hands the frame over. `shaders/final.fsh`: the screen.
 - The `gbuffers_*`, `clrwl_*` and `dh_*` files in `shaders/` only pick a program and include it.
@@ -167,6 +264,8 @@ caustics, the ripples and the light's depth under water need that version near s
   that `dimensions.sh` writes (run it after adding or removing a program); each dimension's own passes live only
   there. Dimensions without a folder use the programs in `shaders/`.
 - `tools/wave_textures.py`: makes the wave textures from Alpha Piscium's (see License).
+- `tools/rod_weights.py`: works out how the eye's rods weigh red, green and blue, for the night vision (needs
+  colour-science).
 - `tools/bounce_check.py`: runs the bounce light's flood on a few small rooms and compares it with radiosity, to
   check a change to its settings before trying it in game (needs numpy).
 
@@ -191,7 +290,8 @@ water's waves with their textures (`lib/water.glsl`; `shaders/textures/wave_nois
 from Alpha Piscium's `noise_5.bin` and `water_hf_curl.bin` by `tools/wave_textures.py`).
 
 The ambient occlusion follows Jimenez et al.'s ground-truth ambient occlusion as Intel's XeGTAO lays it out (MIT,
-https://github.com/GameTechDev/XeGTAO); its license is in `THIRD-PARTY-NOTICES.md` too.
+https://github.com/GameTechDev/XeGTAO), with Therrien, Levesque and Gilet's visibility bitmask (2023) over its
+slices; XeGTAO's license is in `THIRD-PARTY-NOTICES.md` too.
 
 The clouds' isotropic multiple scattering is from **HanPi Volume Cloud** by AshenOneArt (MIT, with attribution):
 https://github.com/AshenOneArt/HPVolumeCloud. Its license is in `THIRD-PARTY-NOTICES.md`, which ships in the zip.

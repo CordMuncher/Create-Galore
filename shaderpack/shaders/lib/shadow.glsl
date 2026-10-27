@@ -1,5 +1,6 @@
 // The sun's and the moon's shadows in the overworld: Iris's shadow map, drawn from the light without any warping (see
-// shadow.vsh), so every texel covers the same ground and the shadows hold still as you move. Soft the way the sun's
+// shadow.vsh), so every texel covers the same ground, and held on a grid fixed in the world (see shadow_grid.glsl), so
+// the shadows hold still as you move. Soft the way the sun's
 // are: sharp where a thing meets its shadow and softer the farther the light falls past it (the penumbra grows with
 // the distance from what casts it, found by a search of the shadow map around the point first). Past the shadow
 // distance it fades into the light Minecraft's sky light levels give.
@@ -14,6 +15,8 @@
 
 #if defined LIT_WORLD && defined SHADOWS
 #define SHADOW_MAP
+
+#include "/lib/shadow_grid.glsl"
 
 uniform sampler2DShadow shadowtex1HW; // what is opaque, with hardware depth compares (filtered between texels)
 uniform sampler2D shadowtex1;         // the same as plain depth, for the search
@@ -52,6 +55,7 @@ float shadow_depth_blocks() {
 // A point (scene space) in the shadow map: xy where (0..1), z its depth.
 vec3 shadow_coord(vec3 scene_pos) {
     vec4 shadow_view = shadowModelView * vec4(scene_pos, 1.0);
+    shadow_view.xy -= shadow_grid_shift(shadowModelView);
     return (shadowProjection * shadow_view).xyz * 0.5 + 0.5;
 }
 

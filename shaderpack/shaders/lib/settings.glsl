@@ -27,13 +27,70 @@ const float upscaling_render_scale = RENDER_SCALE;
 // how many points of the shadow map each one takes (smoother soft edges).
 #define SHADOW_SOFTNESS 1.0 // [0.0 0.5 1.0 1.5 2.0 3.0]
 #define SHADOW_QUALITY 3    // [1 2 3 4]
-// Contact shadows: what is too small for the shadow map (grass, feet, a fence's rails) still shadows what lies right
-// behind it, from the screen's depth. (Iris only lists an on/off option that some #ifdef names.)
+// Screen-space sun shadows: what the shadow map is too coarse for (grass, feet, a fence's rails, a block's edge up
+// close) still shadows what lies behind it, followed through the screen's depth a pixel at a time towards the sun
+// (see screen_shadow in deferred.fsh). (Iris only lists an on/off option that some #ifdef names.)
 #define CONTACT_SHADOWS
 #ifdef CONTACT_SHADOWS
 #endif
 #define EXPOSURE 0.0     // [-2.0 -1.5 -1.0 -0.5 0.0 0.5 1.0 1.5 2.0]
 #define NIGHT_LIGHT 1.0  // [0.25 0.5 1.0 1.5 2.0 3.0]
+// How far colours go over to the rods' cool, colourless view in the dark, as eyes do (see night_vision.glsl): 0 not
+// at all, 1 as the eye's own.
+#define NIGHT_VISION 1.0 // [0.0 0.25 0.5 0.75 1.0]
+// How much a bright part of the frame (a window from inside a room, the sky over dark land) is drawn in towards the
+// rest, keeping its detail (see local_exposure.glsl): 0 not at all.
+#define LOCAL_EXPOSURE 1.0 // [0.0 0.25 0.5 0.75 1.0]
+// Colour (see grade.glsl), nothing changed at the defaults. The white balance: the colour temperature (K) of a light
+// shown as white (higher is warmer), and a tint (green to magenta, 0 none).
+#define WB_TEMPERATURE 6500 // [3000 3500 4000 4500 5000 5500 6000 6500 7000 7500 8000 9000 10000]
+#define WB_TINT 0 // [-50 -45 -40 -35 -30 -25 -20 -15 -10 -5 0 5 10 15 20 25 30 35 40 45 50]
+// Each primary's hue (turned up to 25 degrees about the white) and saturation (percent more or less).
+#define PRIMARY_RED_HUE 0 // [-100 -90 -80 -70 -60 -50 -40 -30 -20 -10 0 10 20 30 40 50 60 70 80 90 100]
+#define PRIMARY_RED_SAT 0 // [-100 -90 -80 -70 -60 -50 -40 -30 -20 -10 0 10 20 30 40 50 60 70 80 90 100]
+#define PRIMARY_GREEN_HUE 0 // [-100 -90 -80 -70 -60 -50 -40 -30 -20 -10 0 10 20 30 40 50 60 70 80 90 100]
+#define PRIMARY_GREEN_SAT 0 // [-100 -90 -80 -70 -60 -50 -40 -30 -20 -10 0 10 20 30 40 50 60 70 80 90 100]
+#define PRIMARY_BLUE_HUE 0 // [-100 -90 -80 -70 -60 -50 -40 -30 -20 -10 0 10 20 30 40 50 60 70 80 90 100]
+#define PRIMARY_BLUE_SAT 0 // [-100 -90 -80 -70 -60 -50 -40 -30 -20 -10 0 10 20 30 40 50 60 70 80 90 100]
+// The mixer: hue, saturation and lightness by eight bands of hue (off until switched on).
+//#define COLOR_MIXER
+#ifdef COLOR_MIXER
+#endif
+#define MIX_RED_HUE 0 // [-100 -90 -80 -70 -60 -50 -40 -30 -20 -10 0 10 20 30 40 50 60 70 80 90 100]
+#define MIX_RED_SAT 0 // [-100 -90 -80 -70 -60 -50 -40 -30 -20 -10 0 10 20 30 40 50 60 70 80 90 100]
+#define MIX_RED_LUM 0 // [-100 -90 -80 -70 -60 -50 -40 -30 -20 -10 0 10 20 30 40 50 60 70 80 90 100]
+#define MIX_ORANGE_HUE 0 // [-100 -90 -80 -70 -60 -50 -40 -30 -20 -10 0 10 20 30 40 50 60 70 80 90 100]
+#define MIX_ORANGE_SAT 0 // [-100 -90 -80 -70 -60 -50 -40 -30 -20 -10 0 10 20 30 40 50 60 70 80 90 100]
+#define MIX_ORANGE_LUM 0 // [-100 -90 -80 -70 -60 -50 -40 -30 -20 -10 0 10 20 30 40 50 60 70 80 90 100]
+#define MIX_YELLOW_HUE 0 // [-100 -90 -80 -70 -60 -50 -40 -30 -20 -10 0 10 20 30 40 50 60 70 80 90 100]
+#define MIX_YELLOW_SAT 0 // [-100 -90 -80 -70 -60 -50 -40 -30 -20 -10 0 10 20 30 40 50 60 70 80 90 100]
+#define MIX_YELLOW_LUM 0 // [-100 -90 -80 -70 -60 -50 -40 -30 -20 -10 0 10 20 30 40 50 60 70 80 90 100]
+#define MIX_GREEN_HUE 0 // [-100 -90 -80 -70 -60 -50 -40 -30 -20 -10 0 10 20 30 40 50 60 70 80 90 100]
+#define MIX_GREEN_SAT 0 // [-100 -90 -80 -70 -60 -50 -40 -30 -20 -10 0 10 20 30 40 50 60 70 80 90 100]
+#define MIX_GREEN_LUM 0 // [-100 -90 -80 -70 -60 -50 -40 -30 -20 -10 0 10 20 30 40 50 60 70 80 90 100]
+#define MIX_AQUA_HUE 0 // [-100 -90 -80 -70 -60 -50 -40 -30 -20 -10 0 10 20 30 40 50 60 70 80 90 100]
+#define MIX_AQUA_SAT 0 // [-100 -90 -80 -70 -60 -50 -40 -30 -20 -10 0 10 20 30 40 50 60 70 80 90 100]
+#define MIX_AQUA_LUM 0 // [-100 -90 -80 -70 -60 -50 -40 -30 -20 -10 0 10 20 30 40 50 60 70 80 90 100]
+#define MIX_BLUE_HUE 0 // [-100 -90 -80 -70 -60 -50 -40 -30 -20 -10 0 10 20 30 40 50 60 70 80 90 100]
+#define MIX_BLUE_SAT 0 // [-100 -90 -80 -70 -60 -50 -40 -30 -20 -10 0 10 20 30 40 50 60 70 80 90 100]
+#define MIX_BLUE_LUM 0 // [-100 -90 -80 -70 -60 -50 -40 -30 -20 -10 0 10 20 30 40 50 60 70 80 90 100]
+#define MIX_PURPLE_HUE 0 // [-100 -90 -80 -70 -60 -50 -40 -30 -20 -10 0 10 20 30 40 50 60 70 80 90 100]
+#define MIX_PURPLE_SAT 0 // [-100 -90 -80 -70 -60 -50 -40 -30 -20 -10 0 10 20 30 40 50 60 70 80 90 100]
+#define MIX_PURPLE_LUM 0 // [-100 -90 -80 -70 -60 -50 -40 -30 -20 -10 0 10 20 30 40 50 60 70 80 90 100]
+#define MIX_MAGENTA_HUE 0 // [-100 -90 -80 -70 -60 -50 -40 -30 -20 -10 0 10 20 30 40 50 60 70 80 90 100]
+#define MIX_MAGENTA_SAT 0 // [-100 -90 -80 -70 -60 -50 -40 -30 -20 -10 0 10 20 30 40 50 60 70 80 90 100]
+#define MIX_MAGENTA_LUM 0 // [-100 -90 -80 -70 -60 -50 -40 -30 -20 -10 0 10 20 30 40 50 60 70 80 90 100]
+// Depth of field, as a camera's lens has it (see dof.glsl; off until switched on): what lies nearer or further than
+// the focus blurs, the more the wider the lens's aperture (its focal length (mm) over its f-number). The focus is
+// what the middle of the view shows (0), or a distance (blocks).
+//#define DEPTH_OF_FIELD
+#ifdef DEPTH_OF_FIELD
+#endif
+#define DOF_FOCUS 0 // [0 1 2 3 4 5 6 8 10 12 16 20 24 32 48 64 96 128]
+#define DOF_FOCAL_LENGTH 50 // [24 35 50 85 135]
+#define DOF_F_STOP 1.4 // [1.0 1.4 2.0 2.8 4.0 5.6 8.0 11.0 16.0]
+// How many points each pixel's blur takes: 1 fewer (faster), 3 more (smoother, larger blurs).
+#define DOF_QUALITY 2 // [1 2 3]
 // How fast the sky's light fades as a place sees less of the sky (into rooms, caves, forests): its sky light level's
 // brightness to this power. 1: as Minecraft's sky light, which lights a room with a window almost as well as the
 // shade outside; higher leaves more of a room to the light bouncing in through its window.
@@ -52,9 +109,16 @@ const float upscaling_render_scale = RENDER_SCALE;
 #define BLOOM 1.0        // [0.0 0.5 1.0 1.5 2.0 3.0]
 
 // Ambient occlusion: the light all around (the sky's, the bounce light, the blocks') is less in creases, in corners
-// and under things, as the screen's depth shows them (GTAO), on top of Minecraft's smooth lighting corners. More
-// directions and steps for a steadier result. 0: Minecraft's corners only.
+// and under things, as the screen's depth shows them (a visibility bitmask over GTAO's slices, see screen_light.fsh),
+// on top of Minecraft's smooth lighting corners. More directions and steps for a steadier result. 0: Minecraft's
+// corners only.
 #define AO_QUALITY 2     // [0 1 2 3]
+// Screen Bounce Light: what blocks the light all around a surface (in the ambient occlusion's reach) bounces its own
+// light onto it instead, from last frame's picture: colour from the surfaces right next to it, finer than the bounce
+// light's blocks. Needs Ambient Occlusion.
+#define SCREEN_BOUNCE
+#ifdef SCREEN_BOUNCE
+#endif
 
 // What casts a shadow besides the world's blocks: mobs, block entities (chests, signs), you, and Create's machines
 // and contraptions. shaders.properties and colorwheel.properties hand these to Iris and Colorwheel (Iris only lists
@@ -97,11 +161,26 @@ const float upscaling_render_scale = RENDER_SCALE;
 #ifdef GI
 #endif
 
+// Materials from the resource pack, in the lit overworld: a PBR resource pack's maps (LabPBR, as SPBR and most PBR
+// packs make them, see material.glsl) give each pixel of a texture its own facing, how smooth it is and what it
+// reflects (metals in their own colour), what glows, and its own crevices. Blocks without maps keep the pack's own
+// materials (see block.properties). Parallax: the height in the normal maps gives the surface depth, a texture pixel
+// at a time, with the sun's shadows inside it, out to Parallax Distance blocks; Parallax Depth: times how deep.
+#define MATERIALS
+#define PARALLAX
+#define PARALLAX_DEPTH 1.0   // [0.25 0.5 0.75 1.0 1.25 1.5 2.0]
+#define PARALLAX_DISTANCE 32 // [16 24 32 48 64]
+#ifdef MATERIALS
+#endif
+#ifdef PARALLAX
+#endif
+
 // For tuning, not in the settings screens (set it in the pack's .txt): 1 shows only the bounce light, as it falls on
 // a white surface; 2 only the ambient occlusion (white open, black shut); 3 how deep under water each point is and
 // the caustics there; 4 why the shadow map does or doesn't find water over a point; 5 the leaves' crown shape; 6 how
-// much of the sky each surface sees (see deferred.fsh).
-#define DEBUG_VIEW 0 // [0 1 2 3 4 5 6]
+// much of the sky each surface sees; 7 only the light the screen bounces, as it falls on a white surface (see
+// deferred.fsh).
+#define DEBUG_VIEW 0 // [0 1 2 3 4 5 6 7]
 
 // Water, in the lit overworld: small wind waves on every water surface (Waves: how high, 0 none), and ripples where
 // you, mobs, boats, ships and Create's water wheels move through it, with wakes behind them (with shadows on: the
@@ -136,10 +215,9 @@ const float upscaling_render_scale = RENDER_SCALE;
 #endif
 
 // Light in the air, in the lit overworld (see air.glsl): the haze the sun lights into shafts through the leaves and
-// past the clouds' edges, dust under a roof that a sunbeam shows up, and a glow around lamps in their own colours; far
+// past the clouds' edges, dust indoors that a sunbeam shows up, and a glow around lamps in their own colours; far
 // terrain fades into the same air as the sky. Quality: how fine the volume it's worked out in is (0: Minecraft's
-// fog alone). Dust: how much the air under a roof, in a cave or in a wood holds. Lamp Glow: how much the air around
-// lamps glows.
+// fog alone). Dust: how much the air in a room or a cave holds. Lamp Glow: how much the air around lamps glows.
 #define AIR_QUALITY 3 // [0 1 2 3 4]
 #define AIR_DUST 1.0  // [0.0 0.5 1.0 1.5 2.0 3.0]
 #define LAMP_GLOW 1.0 // [0.0 0.5 1.0 1.5 2.0 3.0]
@@ -183,6 +261,13 @@ const float upscaling_render_scale = RENDER_SCALE;
 #define LIT_AIR
 #endif
 
+#if defined LIT_WORLD && defined MATERIALS
+#define LIT_MATERIALS
+#ifdef PARALLAX
+#define LIT_PARALLAX
+#endif
+#endif
+
 // The volume of blocks around you that the coloured light and the bounce light spread through.
 #if defined LIT_COLORED_LIGHT || defined LIT_GI
 #define LIT_VOXELS
@@ -209,8 +294,9 @@ const float sunPathRotation = -20.0; // [-40.0 -30.0 -20.0 -10.0 0.0 10.0 20.0 3
 #ifdef SHADOWS
 const int shadowMapResolution = 2048; // [1024 2048 3072 4096 6144 8192]
 const float shadowDistance = 128.0; // [64.0 96.0 128.0 160.0 192.0 256.0]
-// The shadow camera follows you in steps of two blocks, so the shadows hold still as you move (no warping either:
-// every texel covers the same ground everywhere).
+// The shadow camera follows you in steps of two blocks, and the map's texels stay on a grid fixed in the world between
+// them (see shadow_grid.glsl), so the shadows hold still as you move (no warping either: every texel covers the same
+// ground everywhere).
 const float shadowIntervalSize = 2.0;
 // Hardware depth compares on shadowtex1 (what is opaque) as shadowtex1HW, for the shadows (see shadow.glsl); shadowtex1
 // itself stays plain depth for their search and the bounce light's source (light_bounce.csh), and shadowtex0 has the

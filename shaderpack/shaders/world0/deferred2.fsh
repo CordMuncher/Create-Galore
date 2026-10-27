@@ -1,3 +1,3 @@
-#version 330 compatibility
+#version 430 compatibility
 #define WORLD_OVERWORLD
-#include "/program/deferred.fsh"
+#include "/program/screen_light.fsh"

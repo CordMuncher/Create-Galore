@@ -1,4 +1,4 @@
-// The overworld's deferred pass (its last part, deferred2), after everything opaque is drawn and before the
+// The overworld's deferred pass (its last part, deferred3), after everything opaque is drawn and before the
 // translucent things: lights each surface the G-buffer holds (see gbuffer.glsl) by the sun or the moon, the sky and
 // the blocks (lighting.glsl), adds what glows or lit itself (colortex0), and draws the sky where nothing is, with
 // the clouds the passes before worked out (see clouds.glsl), all seen through the light in the air in front of them
@@ -13,6 +13,23 @@ uniform sampler2D colortex1;
 uniform sampler2D colortex2;
 uniform sampler2D colortex3;
 uniform sampler2D colortex9;
+#ifdef LIT_MATERIALS
+uniform sampler2D colortex12;
+#endif
+#if AO_QUALITY > 0 || defined LIT_SKY_GRID
+uniform sampler2D colortex7;
+#endif
+#if AO_QUALITY > 0
+uniform sampler2D colortex13;
+uniform sampler2D colortex14;
+#endif
+#ifdef LIT_SKY_GRID
+uniform sampler2D colortex15;
+#endif
+#if REFLECTION_QUALITY > 0
+// Smaller copies of last frame's picture, for reflections blurred by a surface's roughness (see mirrored).
+const bool colortex3MipmapEnabled = true;
+#endif
 uniform sampler2D depthtex0;
 uniform mat4 gbufferModelView;
 uniform mat4 gbufferProjection;
@@ -56,8 +73,23 @@ vec3 sky_with_clouds(vec3 dir, float pixel_angle, vec2 point, ivec2 texel) {
 
 in vec2 v_uv;
 
+#if AO_QUALITY > 0 && defined LIT_SKY_GRID
+/* RENDERTARGETS: 0,14,15 */
+layout(location = 0) out vec4 out_color;
+layout(location = 1) out vec4 out_screen_history; // see screen_light_settled
+layout(location = 2) out vec4 out_sky;            // see sky_rays_settled
+#elif AO_QUALITY > 0
+/* RENDERTARGETS: 0,14 */
+layout(location = 0) out vec4 out_color;
+layout(location = 1) out vec4 out_screen_history;
+#elif defined LIT_SKY_GRID
+/* RENDERTARGETS: 0,15 */
+layout(location = 0) out vec4 out_color;
+layout(location = 1) out vec4 out_sky;
+#else
 /* RENDERTARGETS: 0 */
 layout(location = 0) out vec4 out_color;
+#endif
 
 // The hand's depth is squeezed into the middle of the range (Iris draws it at MC_HAND_DEPTH of its own).
 const float hand_depth_limit = 0.5 + 0.5 * MC_HAND_DEPTH;
@@ -68,13 +100,15 @@ vec3 unproject(mat4 projection_inverse, vec2 ndc, float depth) {
 }
 
 // What last frame's picture showed where this frame's render pixel is (rgb, a 1), or a 0 where it was off the screen:
-// the reflections on puddles and polished floors come from it, as this frame's isn't drawn yet.
-vec4 previous_frame_at(vec2 pixel) {
+// the reflections come from it, as this frame's isn't drawn yet. Blurred over spread blocks for every block from
+// (view space) to what the pixel shows, from a smaller copy of the picture (0: sharp).
+vec4 previous_frame_at(vec2 pixel, vec3 from, float spread) {
     vec2 size = render_size();
     ivec2 p = ivec2(pixel);
     float d = texelFetch(depthtex0, p, 0).r;
     vec2 ndc = (vec2(p) + 0.5 - vec2(cg_dlss_jitter_x, cg_dlss_jitter_y)) / size * 2.0 - 1.0;
-    vec4 clip = previous_clip(view_to_scene(unproject(gbufferProjectionInverse, ndc, d)), gbufferPreviousProjection);
+    vec3 seen = unproject(gbufferProjectionInverse, ndc, d);
+    vec4 clip = previous_clip(view_to_scene(seen), gbufferPreviousProjection);
     if (clip.w <= 0.0) {
         return vec4(0.0);
     }
@@ -82,156 +116,215 @@ vec4 previous_frame_at(vec2 pixel) {
     if (any(lessThan(prev, vec2(0.5))) || any(greaterThan(prev, size - 0.5))) {
         return vec4(0.0);
     }
-    return vec4(texture(colortex3, prev / window_size()).rgb, 1.0);
+    float lod = 0.0;
+    if (spread > 0.0) {
+        float pixels = spread * length(seen - from) * gbufferProjection[1][1] * 0.5 * size.y / max(-seen.z, 0.05);
+        lod = clamp(log2(2.0 * pixels), 0.0, 5.0);
+    }
+    return vec4(textureLod(colortex3, prev / window_size(), lod).rgb, 1.0);
 }
 
-// The world mirrored in a smooth surface at view (view space) along r (world space), in the frame's units: what the
-// screen showed there, else the sky, as much of it as the surface sees (open_sky).
-vec3 mirrored(vec3 view, vec3 r, float open_sky, float noise) {
-    vec3 reflection = sky_radiance(normalize(vec3(r.x, max(r.y, 0.02), r.z))) * open_sky * exposure();
+// The world mirrored in a surface at view (view space) along r (world space), rough as GGX alpha, in the frame's
+// units: what the screen showed where the ray meets something, else fallback. A rough surface's reflection spreads
+// as it goes, so what the ray meets is blurred as wide as that is where it lands (cone tracing, as Uludag's Hi-Z
+// reflections do): GGX's lobe at half its peak, about 1.3 alpha either side of the mirror direction, so contact
+// stays sharp and what lies further off blurs.
+vec3 mirrored(vec3 view, vec3 r, vec3 fallback, float alpha, float noise) {
 #if REFLECTION_QUALITY > 0
     vec3 hit = reflection_trace(depthtex0, view, mat3(gbufferModelView) * r, noise, hand_depth_limit);
     if (hit.z > 0.0) {
-        vec4 seen = previous_frame_at(hit.xy);
-        reflection = mix(reflection, seen.rgb, hit.z * seen.a);
+        vec4 seen = previous_frame_at(hit.xy, view, 1.3 * alpha);
+        return mix(fallback, seen.rgb, hit.z * seen.a);
     }
 #endif
-    return reflection;
+    return fallback;
 }
 
 #if defined SHADOW_MAP && defined CONTACT_SHADOWS
-// Contact shadows: what the shadow map is too coarse for (a blade of grass, your feet on the ground, a flower's
-// stem) still shades what lies right behind it from the light. The screen's depth is followed a short way towards
-// the light from the surface (a little further far off, where a pixel covers more); anything in front of the path by
-// less than a thin thing's thickness shadows it. 1 lit, 0 in shadow.
-float contact_shadow(vec3 view, float noise) {
-    float dist = -view.z;
-    if (dist > 64.0) {
-        return 1.0;
-    }
-    const int steps = 12;
-    vec3 light_view = mat3(gbufferModelView) * g_light_dir.xyz;
-    float len = 0.3 + 0.01 * dist;
-    float thickness = 0.25 + 0.01 * dist;
-    float bias = 0.01 + 0.002 * dist;
+// Screen-space shadows, as Bend Studio's for Days Gone (Aldridge, SIGGRAPH 2023): what the shadow map is too coarse
+// for (a blade of grass, a fence post, your feet on the ground, a machine's detail) still shades what lies behind it
+// from the light, sharp to the pixel. Seen from the eye, the ray from a surface towards the sun (or the moon) runs
+// straight across the screen, towards where the sun stands on it (or away from there, with the sun behind you), its
+// depth changing evenly along the way in the screen's own depth. It's followed a pixel at a time; the screen's depth
+// is read between the two pixels it passes between (unless they lie far apart, at an edge), and anything in front of
+// it by less than a thin thing's thickness (a little more far off) shadows it: fully in the first few pixels, where a
+// thing meets its shadow, and further on by the share of each four pixels that do, fading out over the last ones.
+// No noise: the same pixels give the same shadow every frame, which the upscaler takes as it is. 1 lit, 0 in shadow.
+#if SHADOW_QUALITY >= 4
+const int screen_shadow_steps = 60;
+#elif SHADOW_QUALITY == 3
+const int screen_shadow_steps = 40;
+#elif SHADOW_QUALITY == 2
+const int screen_shadow_steps = 28;
+#else
+const int screen_shadow_steps = 16;
+#endif
+const int screen_shadow_hard = 4; // the first steps, which shadow fully
+const int screen_shadow_fade = 8; // the last steps, which fade out
+
+// How far in front of the eye (blocks) what lies at a depth of depthtex0's is.
+float eye_distance(float depth) {
+    return gbufferProjection[3][2] / (depth * 2.0 - 1.0 + gbufferProjection[2][2]);
+}
+
+float screen_shadow(ivec2 texel, vec3 view, float depth) {
+    // The surface and the light's direction in clip space, and how the ray's place on the screen (pixels) and its
+    // depth (depthtex0's) change as it leaves the surface.
+    vec4 surface = gbufferProjection * vec4(view, 1.0);
+    vec4 light = gbufferProjection * vec4(mat3(gbufferModelView) * g_light_dir.xyz, 0.0);
     vec2 size = render_size();
-    vec2 jitter = vec2(cg_dlss_jitter_x, cg_dlss_jitter_y);
-    vec3 start = view + light_view * (0.02 + 0.002 * dist);
-    for (int i = 0; i < steps; i++) {
-        vec3 p = start + light_view * ((float(i) + noise) / float(steps) * len);
-        vec4 clip = gbufferProjection * vec4(p, 1.0);
-        if (clip.w <= 0.0) {
+    vec2 across = (light.xy * surface.w - surface.xy * light.w) * 0.5 * size;
+    float deeper = (light.z * surface.w - surface.z * light.w) * 0.5;
+    float pixels = length(across);
+    if (pixels < 1e-6 * abs(surface.w * surface.w)) {
+        return 1.0; // the light straight along the view: its ray stays on the pixel
+    }
+    vec2 step_px = across / pixels;          // a pixel along the ray
+    float step_depth = deeper / pixels;      // and how much deeper the ray is there
+    bool x_major = abs(step_px.x) > abs(step_px.y);
+
+    float dist = -view.z;
+    float thickness = 0.25 + 0.015 * dist;
+    float bias = 0.01 + 0.002 * dist;
+    float lit = 1.0;
+    float group = 0.0;
+    vec2 at = vec2(texel) + 0.5;
+    ivec2 last = ivec2(size) - 1;
+    for (int k = 1; k <= screen_shadow_steps; k++) {
+        vec2 p = at + step_px * float(k);
+        float ray_depth = depth + step_depth * float(k);
+        if (any(lessThan(p, vec2(0.0))) || any(greaterThanEqual(p, size)) || ray_depth >= 1.0 || ray_depth <= 0.0) {
+            break; // off the screen, or past the far or the near plane
+        }
+        // The depth between the two pixels the ray passes between, across its way.
+        ivec2 near = ivec2(p);
+        float minor = (x_major ? p.y : p.x) - floor(x_major ? p.y : p.x) - 0.5;
+        ivec2 other = clamp(near + (x_major ? ivec2(0, minor > 0.0 ? 1 : -1) : ivec2(minor > 0.0 ? 1 : -1, 0)),
+                ivec2(0), last);
+        float d0 = texelFetch(depthtex0, near, 0).r;
+        float d1 = texelFetch(depthtex0, other, 0).r;
+        float occluded = 0.0;
+        if (d0 >= hand_depth_limit && d0 < 1.0) {
+            float in_front = eye_distance(d0);
+            if (d1 >= hand_depth_limit && d1 < 1.0) {
+                float beside = eye_distance(d1);
+                if (abs(beside - in_front) < 0.1 * in_front) {
+                    in_front = mix(in_front, beside, abs(minor));
+                }
+            }
+            float behind = eye_distance(ray_depth) - in_front;
+            occluded = smoothstep(bias, 2.0 * bias, behind) * (1.0 - smoothstep(thickness, 1.5 * thickness, behind));
+        }
+        if (k <= screen_shadow_hard) {
+            lit = min(lit, 1.0 - occluded);
+        } else {
+            group += occluded;
+            if ((k - screen_shadow_hard) % 4 == 0) {
+                float fade = clamp(float(screen_shadow_steps - k + 4) / float(screen_shadow_fade), 0.0, 1.0);
+                lit = min(lit, 1.0 - 0.25 * group * fade);
+                group = 0.0;
+            }
+        }
+        if (lit <= 0.0) {
             break;
-        }
-        vec2 pixel = (clip.xy / clip.w * 0.5 + 0.5) * size + jitter;
-        if (any(lessThan(pixel, vec2(0.0))) || any(greaterThanEqual(pixel, size))) {
-            break;
-        }
-        float d = texelFetch(depthtex0, ivec2(pixel), 0).r;
-        if (d < hand_depth_limit || d >= 1.0) {
-            continue;
-        }
-        float scene_dist = -unproject(gbufferProjectionInverse, (pixel - jitter) / size * 2.0 - 1.0, d).z;
-        float behind = -p.z - scene_dist;
-        if (behind > bias && behind < thickness) {
-            return 0.0;
         }
     }
-    return 1.0;
+    return lit;
 }
 #endif
 
-#if AO_QUALITY > 0
-#if AO_QUALITY >= 3
-const int ao_directions = 4;
-const int ao_steps = 8;
-#elif AO_QUALITY == 2
-const int ao_directions = 2;
-const int ao_steps = 6;
-#else
-const int ao_directions = 1;
-const int ao_steps = 5;
-#endif
-// How far around a surface its occlusion looks (blocks): what lies further off counts less from 40% of it out.
-const float ao_radius = 1.5;
-
-// Ambient occlusion from the screen's depth (GTAO: Jimenez et al. 2016, as Intel's XeGTAO lays it out). Along a few
-// directions across the screen through the pixel, the highest the depth around it rises on either side (its two
-// horizons); between them and the surface's normal, the share of the light all around (by its cosine) that comes in.
-// view: the surface's view-space position (unjittered), normal: view space. noise_dir, noise_step: 0..1, different
-// for each pixel and frame, which turn the directions and move the steps (the upscaler evens them out). 1: open.
-float screen_ao(ivec2 texel, vec3 view, vec3 normal, float noise_dir, float noise_step) {
-    vec2 size = render_size();
-    // The radius in pixels, at most a quarter of the screen (very close up).
-    float pixels = min(ao_radius * gbufferProjection[1][1] * 0.5 * size.y / -view.z, 0.25 * size.y);
-    if (pixels < 2.0) {
-        return 1.0;
+#if AO_QUALITY > 0 || defined LIT_SKY_GRID
+// Where the surface a pixel shows was last frame (render pixels, prev), by its own motion where its program worked
+// one out (see gbuffers_kind.glsl), else by the camera's; false where it was off the screen. texel and point: the
+// pixel (point unjittered).
+bool previous_point(ivec2 texel, vec2 point, vec3 scene_pos, out vec2 prev) {
+    vec4 motion = texelFetch(colortex7, texel, 0);
+    if (motion.b == MOTION_WORLD || motion.b == MOTION_HAND) {
+        prev = point + motion.rg;
+    } else {
+        vec4 clip = previous_clip(scene_pos, gbufferPreviousProjection);
+        prev = clip.w > 0.0 ? (clip.xy / clip.w * 0.5 + 0.5) * render_size() : vec2(-1.0);
     }
-    vec2 jitter = vec2(cg_dlss_jitter_x, cg_dlss_jitter_y);
-    vec3 v = normalize(-view);
-    const float falloff_range = 0.6 * ao_radius;
-    const float falloff_mul = -1.0 / falloff_range;
-    const float falloff_add = (ao_radius - falloff_range) / falloff_range + 1.0;
-    float visibility = 0.0;
-    for (int d = 0; d < ao_directions; d++) {
-        float phi = (float(d) + noise_dir) * PI / float(ao_directions);
-        vec2 omega = vec2(cos(phi), sin(phi));
-        // The plane through the eye along this direction, and the normal's shadow on it: its length weighs the slice,
-        // its angle from the eye is n.
-        vec3 direction = vec3(omega, 0.0);
-        vec3 ortho = direction - dot(direction, v) * v;
-        vec3 axis = normalize(cross(ortho, v));
-        vec3 projected = normal - axis * dot(normal, axis);
-        float projected_length = length(projected);
-        if (projected_length < 1e-4) {
-            continue;
+    return all(greaterThanEqual(prev, vec2(0.5))) && all(lessThanEqual(prev, render_size() - 0.5));
+}
+
+// How much of what the own denoisers below held last frame they keep (eight frames or so).
+const float screen_history = 0.88;
+#endif
+
+#if AO_QUALITY > 0
+// OWN DENOISER (off under Ray Reconstruction, see the README): what the screen shows around a surface (colortex13,
+// see screen_light.fsh) blended with what it held where the surface was last frame (colortex14, kept from frame to
+// frame), as TAA blends: last frame's held within what this frame's shows in the pixels around (so it doesn't trail
+// behind what moves or opens up), most of it kept. prev: where the surface was last frame (see previous_point), if
+// seen.
+vec4 screen_light_settled(ivec2 texel, vec2 prev, bool seen) {
+    vec4 now = texelFetch(colortex13, texel, 0);
+    vec4 lo = now;
+    vec4 hi = now;
+    ivec2 last = ivec2(render_size()) - 1;
+    for (int y = -1; y <= 1; y++) {
+        for (int x = -1; x <= 1; x++) {
+            vec4 around = texelFetch(colortex13, clamp(texel + ivec2(x, y), ivec2(0), last), 0);
+            lo = min(lo, around);
+            hi = max(hi, around);
         }
-        float cos_n = clamp(dot(projected, v) / projected_length, 0.0, 1.0);
-        float n = (dot(ortho, projected) >= 0.0 ? 1.0 : -1.0) * acos(cos_n);
-        // The horizons start at the surface's own plane on either side.
-        float low_cos0 = cos(n + 0.5 * PI);
-        float low_cos1 = cos(n - 0.5 * PI);
-        float horizon_cos0 = low_cos0;
-        float horizon_cos1 = low_cos1;
-        for (int i = 0; i < ao_steps; i++) {
-            float t = (float(i) + noise_step) / float(ao_steps);
-            // More of the steps close in, the first at least a pixel and a bit away.
-            vec2 offset = omega * (t * t * pixels + 1.3);
-            for (int side = 0; side < 2; side++) {
-                ivec2 at = texel + ivec2(round(side == 0 ? offset : -offset));
-                if (any(lessThan(at, ivec2(0))) || any(greaterThanEqual(vec2(at), size))) {
-                    continue;
-                }
-                float depth = texelFetch(depthtex0, at, 0).r;
-                if (depth < hand_depth_limit || depth >= 1.0) {
-                    continue; // the hand and the sky hide nothing
-                }
-                vec3 delta = unproject(gbufferProjectionInverse, (vec2(at) + 0.5 - jitter) / size * 2.0 - 1.0, depth) - view;
-                float len = length(delta);
-                float weight = clamp(len * falloff_mul + falloff_add, 0.0, 1.0);
-                float c = dot(delta, v) / max(len, 1e-4);
-                if (side == 0) {
-                    horizon_cos0 = max(horizon_cos0, mix(low_cos0, c, weight));
-                } else {
-                    horizon_cos1 = max(horizon_cos1, mix(low_cos1, c, weight));
-                }
+    }
+    if (!seen) {
+        return now;
+    }
+    vec4 history = textureLod(colortex14, prev / window_size(), 0.0);
+    if (any(isnan(history)) || any(isinf(history))) {
+        return now;
+    }
+    return mix(now, clamp(history, lo, hi), screen_history);
+}
+#endif
+
+#ifdef LIT_SKY_GRID
+// OWN DENOISER (off under Ray Reconstruction, see the README): the share of the sky the sky grid's few rays from a
+// surface see this frame (colortex15's r, see screen_light.fsh), blended over frames as the screen's light is, in
+// colortex15's g; -1 where they see none. A room lit through a window would sparkle otherwise, a ray here and there
+// finding the window.
+float sky_rays_settled(ivec2 texel, vec2 prev, bool seen) {
+    float now = texelFetch(colortex15, texel, 0).r;
+    if (now < 0.0) {
+        return now;
+    }
+    float lo = now;
+    float hi = now;
+    ivec2 last = ivec2(render_size()) - 1;
+    for (int y = -1; y <= 1; y++) {
+        for (int x = -1; x <= 1; x++) {
+            float around = texelFetch(colortex15, clamp(texel + ivec2(x, y), ivec2(0), last), 0).r;
+            if (around >= 0.0) {
+                lo = min(lo, around);
+                hi = max(hi, around);
             }
         }
-        float h0 = -acos(clamp(horizon_cos1, -1.0, 1.0));
-        float h1 = acos(clamp(horizon_cos0, -1.0, 1.0));
-        h0 = n + clamp(h0 - n, -0.5 * PI, 0.5 * PI);
-        h1 = n + clamp(h1 - n, -0.5 * PI, 0.5 * PI);
-        float arc0 = (cos_n + 2.0 * h0 * sin(n) - cos(2.0 * h0 - n)) * 0.25;
-        float arc1 = (cos_n + 2.0 * h1 * sin(n) - cos(2.0 * h1 - n)) * 0.25;
-        visibility += projected_length * (arc0 + arc1);
     }
-    return clamp(visibility / float(ao_directions), 0.0, 1.0);
+    if (!seen) {
+        return now;
+    }
+    // (Where the pixels around held none last frame, the blend of them comes out low; the clamp keeps it to this
+    // frame's.)
+    float history = textureLod(colortex15, prev / window_size(), 0.0).g;
+    if (!(history >= 0.0) || isinf(history)) {
+        return now;
+    }
+    return mix(now, clamp(history, lo, hi), screen_history);
 }
 #endif
 
 void main() {
     ivec2 texel = ivec2(gl_FragCoord.xy);
     vec2 size = render_size();
+#if AO_QUALITY > 0
+    out_screen_history = vec4(0.0, 0.0, 0.0, 1.0);
+#endif
+#ifdef LIT_SKY_GRID
+    out_sky = vec4(0.0, -1.0, 0.0, 0.0);
+#endif
     if (any(greaterThanEqual(vec2(texel) + 0.5, size))) {
         out_color = vec4(0.0); // outside the frame while upscaling
         return;
@@ -294,18 +387,39 @@ void main() {
     } else {
         vec3 scene_pos = view_to_scene(view);
         vec3 albedo = srgb_to_linear(texelFetch(colortex1, texel, 0).rgb);
-        vec2 occlusion = texelFetch(colortex9, texel, 0).rg;
+        vec4 occlusion = texelFetch(colortex9, texel, 0);
         int kind = material == MATERIAL_LIT ? decode_surface_kind(occlusion.g) : SURFACE_PLAIN;
         bool foliage = kind == SURFACE_LEAVES;
         vec3 normal = decode_normal(surface.rg);
+        // What it reflects and how (see material.glsl): by the resource pack's maps where it has them, else by kind.
+        Material mat = material_of_kind(kind, albedo);
+#ifdef LIT_MATERIALS
+        vec3 maps = texelFetch(colortex12, texel, 0).rgb;
+        if (material != MATERIAL_SELF && has_maps(maps)) {
+            mat = material_from_maps(maps, kind, albedo);
+        }
+#endif
         // Minecraft's corners, and what the screen shows around a surface (plants have only theirs: every blade
-        // would shade the next). In a tree the leaves seen through the gaps of the outer ones lie deeper in, so
-        // they get less of the light all around: the tree has depth, without its outside going dark.
+        // would shade the next): how open it is, and the light the surfaces close around it bounce onto it (see
+        // screen_light.fsh). In a tree the leaves seen through the gaps of the outer ones lie deeper in, so they get
+        // less of the light all around: the tree has depth, without its outside going dark.
         float ao = occlusion.r;
+        vec4 screen = vec4(0.0, 0.0, 0.0, 1.0);
+        bool screen_lit = false;
+#if AO_QUALITY > 0 || defined LIT_SKY_GRID
+        // Where the surface was last frame, for what the passes before worked out a little of each frame.
+        vec2 prev = vec2(0.0);
+        bool was_seen = !lod && depth >= hand_depth_limit && previous_point(texel, point, scene_pos, prev);
+#endif
 #if AO_QUALITY > 0
         if (!lod && depth >= hand_depth_limit && material == MATERIAL_LIT) {
-            float screen = screen_ao(texel, view, mat3(gbufferModelView) * normal, pixel_noise(), pixel_noise(1u));
-            ao = min(ao, foliage ? mix(1.0, screen, 0.75) : screen);
+            screen = screen_light_settled(texel, prev, was_seen);
+            out_screen_history = screen;
+            if (foliage) {
+                screen = vec4(screen.rgb * 0.75, mix(1.0, screen.a, 0.75));
+            }
+            ao = min(ao, screen.a);
+            screen_lit = true;
         }
 #endif
         vec2 light = decode_light(surface);
@@ -318,30 +432,42 @@ void main() {
         if (material == MATERIAL_LIT && !lod && depth >= hand_depth_limit) {
             puddle = puddle_at(scene_pos, normal, light.y, kind);
         }
-        albedo = soaked(albedo, max(wetness.y, puddle.y), porosity_of(kind)) * (1.0 - 0.25 * puddle.x);
+        albedo = soaked(albedo, max(wetness.y, puddle.y), mat.porosity) * (1.0 - 0.25 * puddle.x);
         // Under something high (a floating island, a tall roof, a bridge) more of the sky's light gets in from around
         // it than Minecraft's sky light gives (see sky_grid.glsl and sky_probe.glsl). The rain doesn't: the wet look
         // keeps Minecraft's.
         float sky_light_mc = light.y;
         float seen = -1.0;
         if (depth >= hand_depth_limit && light.y < 0.999) {
-            seen = sky_seen_around(scene_pos, material == MATERIAL_PLANT ? vec3(0.0, 1.0, 0.0) : normal, light.y,
-                    pixel_noise(2u), lod, false);
+            // The sky grid's rays from here, traced a few each frame (see screen_light.fsh).
+            float rays = -1.0;
+#ifdef LIT_SKY_GRID
+            if (!lod) {
+                rays = sky_rays_settled(texel, prev, was_seen);
+                out_sky.g = rays;
+            }
+#endif
+            seen = sky_seen_blend(scene_pos, light.y, rays, lod, false);
             light.y = max(light.y, sky_seen_level(seen));
         }
         float contact = 1.0;
 #if defined SHADOW_MAP && defined CONTACT_SHADOWS
         // Not on plants: in a meadow every blade would find another in front of it and the grass would go dark.
         if (!lod && depth >= hand_depth_limit && material == MATERIAL_LIT && (foliage || dot(normal, g_light_dir.xyz) > 0.0)) {
-            contact = contact_shadow(view, pixel_noise());
+            contact = screen_shadow(texel, view, depth);
         }
 #endif
+        // The texture's own relief and crevices shade it from the sun too (see material_maps.glsl).
+        contact *= occlusion.b;
+        vec3 nearby;
         vec3 lit = light_surface(albedo, normal, light, scene_pos, material == MATERIAL_PLANT, foliage, !lod, contact,
-                ao, sky_light_mc) * exposure();
+                ao, sky_light_mc, screen.rgb, screen_lit, nearby) * exposure();
 #if DEBUG_VIEW == 1 && defined LIT_GI
         lit = g_light_color.rgb * bounce_light(scene_pos, normal, light.y) / PI * exposure();
 #elif DEBUG_VIEW == 2
         lit = vec3(ao * 10.0);
+#elif DEBUG_VIEW == 7
+        lit = screen.rgb * exposure();
 #elif DEBUG_VIEW == 3 && defined SHADOW_MAP
         // Under water (the water pass leaves it as it is): red how deep under it the point is (a quarter per block),
         // green the caustics' brightening (a third per 1), blue 1. Along the bottom left, a grey ramp from 0 to 2
@@ -402,26 +528,39 @@ void main() {
             vec3 n = normalize(vec3(-rings.x, 1.0, -rings.y));
             float f = fresnel_schlick(dot(-dir, n), vec3(0.02)).x * puddle.x;
             float glint = glint_visibility(scene_pos, normal, light.y, sky_light_mc);
-            lit = mix(lit, mirrored(view, reflect(dir, n), 1.0, pixel_noise()), f)
+            vec3 r = reflect(dir, n);
+            vec3 sky_seen = sky_radiance(normalize(vec3(r.x, max(r.y, 0.02), r.z))) * exposure();
+            lit = mix(lit, mirrored(view, r, sky_seen, 0.0, pixel_noise()), f)
                     + sun_glint(n, dir, 0.03, vec3(0.02), glint) * exposure() * puddle.x;
-        } else if ((kind == SURFACE_METAL || kind == SURFACE_POLISHED) && !lod) {
-            // Metal reflects in its own colour, blurred (its surface is rough); polished stone a little, sharper,
-            // mostly at a glancing angle.
-            bool metal = kind == SURFACE_METAL;
-            vec3 f0 = metal ? albedo : vec3(0.04);
-            vec3 f = fresnel_schlick(dot(-dir, normal), f0);
+        } else if (material == MATERIAL_LIT && !foliage) {
+            // Every surface reflects (see material.glsl): a clear sheen over its colour, faint and broad on most
+            // things (4% head on, more at a glancing angle, less of that the rougher it is), sharp on polished stone
+            // and what the resource pack makes smooth; metal in its own colour, with nothing under its sheen. What it
+            // reflects is the light all around as the sheen sees it, as Unreal's Lumen does for rough surfaces: the
+            // sky where it's open (blurred by its roughness), the blocks' light and the bounce light, and where the
+            // surfaces close around it block those (Lagarde and de Rousiers' specular occlusion), their own light from
+            // the screen. Smooth surfaces mirror what the screen shows too, blurred as their roughness spreads it.
+            // (Not leaves: a sheen on each face of their cubes would undo their crown's round shading. Distant
+            // Horizons' terrain takes the light all around only, so it meets the world's without a seam.)
+            float n_dot_v = clamp(dot(-dir, normal), 0.0, 1.0);
+            vec3 f = fresnel_rough(n_dot_v, mat.f0, mat.alpha);
             float open_sky = smoothstep(12.0 / 15.0, 14.5 / 15.0, light.y);
             vec3 r = reflect(dir, normal);
-            vec3 around;
-            if (metal) {
-                around = mix(sky_irradiance(r) / PI, sky_radiance(normalize(vec3(r.x, max(r.y, 0.02), r.z))), 0.35)
-                        * open_sky * exposure();
-            } else {
-                around = mirrored(view, r, open_sky, pixel_noise());
+            float spec_vis = clamp(pow(n_dot_v + ao, exp2(-16.0 * mat.alpha - 1.0)) - 1.0 + ao, 0.0, 1.0);
+            float sharp = clamp(1.0 - 2.2 * mat.alpha, 0.0, 1.0);
+            vec3 sky_seen = mix(sky_irradiance(r) / PI, sky_radiance(normalize(vec3(r.x, max(r.y, 0.02), r.z))), sharp)
+                    * open_sky;
+            vec3 around = (sky_seen + nearby / PI) * spec_vis;
+            if (screen_lit) {
+                around += screen.rgb / max(1.0 - screen.a, 0.1) * (1.0 - spec_vis);
             }
-            float glint = glint_visibility(scene_pos, normal, light.y, sky_light_mc);
-            lit = lit * (metal ? 0.6 : 1.0 - f.g) + around * f * (metal ? 0.6 : 0.8)
-                    + sun_glint(normal, dir, metal ? 0.3 : 0.12, f0, glint) * exposure();
+            around *= exposure();
+            if (mat.alpha < 0.2 && !lod) {
+                around = mix(mirrored(view, r, around, mat.alpha, pixel_noise()), around, smoothstep(0.12, 0.2, mat.alpha));
+            }
+            float glint = glint_visibility(scene_pos, normal, light.y, sky_light_mc) * occlusion.b;
+            lit = lit * (1.0 - f) * (1.0 - mat.metal) + around * f
+                    + sun_glint(normal, dir, max(mat.alpha, 0.03), mat.f0, glint) * exposure();
         }
         // Minecraft's fog: a cylinder around you in the open air, round in water and the like (Iris gives this pass
         // no fog shape).

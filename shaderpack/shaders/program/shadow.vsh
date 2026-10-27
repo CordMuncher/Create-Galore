@@ -1,6 +1,6 @@
 // The overworld's shadow map: everything that casts a shadow, drawn from the sun (or the moon) straight, without
-// warping, so every texel covers the same ground and the shadows hold still (see shadow.glsl). Iris sets the
-// shadow camera's matrices as gl_ModelViewMatrix and gl_ProjectionMatrix, and snaps it to whole steps as you move.
+// warping, so every texel covers the same ground, on a grid held still on the world (see shadow_grid.glsl). Iris
+// sets the shadow camera's matrices as gl_ModelViewMatrix and gl_ProjectionMatrix, and moves it in steps with you.
 //
 // The world's blocks (shadow_solid, shadow_cutout, shadow_water: PROGRAM_SHADOW_TERRAIN) also mark what each block
 // around you is for the coloured light and the bounce light (see light_volume.glsl): lights, solid cubes, tinting
@@ -11,15 +11,15 @@
 #define PROGRAM_SHADOW
 #include "/lib/settings.glsl"
 #include "/lib/gbuffer.glsl"
+#include "/lib/shadow_grid.glsl"
+
+uniform mat4 shadowModelView;
 
 out vec2 v_uv;
 out float v_alpha;
 
 #if defined LIT_VOXELS || defined LIT_WATER_RIPPLES || defined LIT_SKY_GRID || defined PROGRAM_SHADOW_TERRAIN
 uniform mat4 shadowModelViewInverse;
-#endif
-#if defined LIT_VOXELS || defined LIT_WATER_RIPPLES || defined LIT_SKY_GRID
-uniform vec3 cameraPositionFract;
 #endif
 #ifdef PROGRAM_SHADOW_TERRAIN
 in vec4 mc_Entity; // the block's number in block.properties
@@ -175,7 +175,9 @@ void mark_sky(vec3 scene_pos) {
 #endif
 
 void main() {
-    gl_Position = gl_ProjectionMatrix * (gl_ModelViewMatrix * gl_Vertex);
+    vec4 shadow_view = gl_ModelViewMatrix * gl_Vertex;
+    shadow_view.xy -= shadow_grid_shift(shadowModelView);
+    gl_Position = gl_ProjectionMatrix * shadow_view;
     vec2 uv = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
     v_uv = uv;
 #if defined PROGRAM_SHADOW_TERRAIN && defined LIGHTING

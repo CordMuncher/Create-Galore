@@ -10,6 +10,9 @@
 #ifdef PROGRAM_WATER
 #include "/lib/water.glsl"
 #endif
+#ifdef LIT_MAPS
+#include "/lib/material_maps.glsl"
+#endif
 #endif
 
 uniform sampler2D gtexture;
@@ -19,6 +22,12 @@ uniform int renderStage;
 #endif
 #ifdef MOB_LIGHTING
 uniform vec4 entityColor; // the hurt and creeper flash: rgb its colour, a how much of it
+#endif
+#ifdef LIT_RELIEF
+uniform mat4 gbufferModelView;
+uniform mat4 gbufferProjection;
+uniform mat4 cg_object_motion; // see gbuffers.vsh
+in vec4 v_region;
 #endif
 
 in vec2 v_uv;
@@ -41,12 +50,13 @@ in float v_ao;
 uniform ivec4 blendFunc; // the draw's blending (all 0 when off)
 #endif
 
-/* RENDERTARGETS: 0,7,1,2,9 */
+/* RENDERTARGETS: 0,7,1,2,9,12 */
 layout(location = 0) out vec4 out_color;
 layout(location = 1) out vec4 out_motion;
 layout(location = 2) out vec4 out_albedo;
 layout(location = 3) out vec4 out_surface;
 layout(location = 4) out vec4 out_occlusion;
+layout(location = 5) out vec4 out_material;
 #elif defined LIT_WORLD && defined PROGRAM_WATER
 in vec3 v_normal;
 in vec2 v_level;
@@ -72,6 +82,11 @@ flat in int v_material;
 /* RENDERTARGETS: 0,7 */
 layout(location = 0) out vec4 out_color;
 layout(location = 1) out vec4 out_motion;
+#endif
+
+#ifdef LIT_MAPS
+// The resource pack's maps where the draw is (see material_maps.glsl), read first thing in main().
+Maps maps = Maps(vec2(0.0), vec3(0.0, 0.0, 1.0), 1.0, 1.0, vec4(0.0), 0.0);
 #endif
 
 #ifdef LIT_WORLD
@@ -125,7 +140,11 @@ void lit_output(vec4 color, int flags) {
     out_water = vec4(0.0);
     out_water_dist = vec4(0.0);
     out_glass_dist = vec4(dist, 0.0, 0.0, 1.0);
+#ifdef LIT_MAPS
+    vec3 normal = maps.normal;
+#else
     vec3 normal = v_normal;
+#endif
     vec3 rgb = forward_lit(color.rgb, normal, v_level, v_scene_pos, v_material == MATERIAL_PLANT);
 #else
     vec3 rgb = forward_lit(color.rgb, v_normal, v_level, v_scene_pos, v_material == MATERIAL_PLANT);
@@ -161,6 +180,7 @@ void lit_output(vec4 color, int flags) {
     out_albedo = color;
     out_surface = vec4(0.0);
     out_occlusion = vec4(0.0);
+    out_material = vec4(0.0);
 #elif defined LIT_SELF
     vec3 dir = normalize(v_scene_pos - gbufferModelViewInverse[3].xyz);
     vec4 air = air_seen_at(v_scene_pos, gl_FragCoord.xy);
@@ -174,9 +194,11 @@ void lit_output(vec4 color, int flags) {
     out_color = vec4(rgb, color.a);
     out_albedo = vec4(0.0, 0.0, 0.0, color.a);
     out_surface = encode_surface(vec3(0.0, 1.0, 0.0), v_level, MATERIAL_SELF, weight);
-    out_occlusion = vec4(1.0, 0.0, 0.0, weight);
+    out_occlusion = vec4(1.0, 0.0, 1.0, weight);
+    out_material = vec4(0.0, 0.0, 0.0, weight);
 #else
-    out_occlusion = vec4(1.0, 0.0, 0.0, weight);
+    out_occlusion = vec4(1.0, 0.0, 1.0, weight);
+    out_material = vec4(0.0, 0.0, 0.0, weight);
     if ((flags & KEY_LIGHTMAP) == 0) {
         // What Minecraft draws without its lightmap glows by itself: the beacon's beam, glowing eyes and layers.
         out_color = vec4(glow(color.rgb) * fog_fade(v_fog_dist) * air_seen_at(v_scene_pos, gl_FragCoord.xy).a, color.a);
@@ -184,18 +206,46 @@ void lit_output(vec4 color, int flags) {
         out_surface = encode_surface(v_normal, v_level, MATERIAL_SELF, weight);
     } else {
         out_color = vec4(0.0, 0.0, 0.0, color.a);
+        vec3 normal = v_normal;
+#ifdef LIT_MAPS
+        // The resource pack's maps: the texture's own facing (not on plants, lit as if they faced the light), its
+        // crevices, how much of the sun its relief lets in, and its material. Where it has none, the pack's own.
+        bool mapped = maps.spec != vec4(0.0);
+        float smoothness = filtered_smoothness(maps.spec.r, maps.normal);
+        if (v_material != MATERIAL_PLANT) {
+            normal = maps.normal;
 #ifdef PROGRAM_TERRAIN
-        // A block that gives light glows where its texture is bright (see block_emission), fading in the fog.
-        if (v_emission > 0.0) {
+            // (Not leaves: they let the light through from either side.)
+            if (v_surface != SURFACE_LEAVES) {
+                out_occlusion.b = maps.sun * micro_shadow(max(dot(normal, g_light_dir.xyz), 0.0), maps.ao);
+            }
+#else
+            out_occlusion.b = maps.sun * micro_shadow(max(dot(normal, g_light_dir.xyz), 0.0), maps.ao);
+#endif
+        }
+        out_occlusion.r = maps.ao;
+        out_material = mapped ? vec4(max(smoothness, 0.0), maps.spec.g, maps.spec.b, weight) : vec4(0.0, 0.0, 0.0, weight);
+        // What glows by the maps: their emission, in the texture's own colour, as bright as a light block's at full.
+        if (mapped && maps.spec.a < 1.0) {
+            out_color.rgb = srgb_to_linear(color.rgb) * (maps.spec.a * 255.0 / 254.0)
+                    * min(emission_luminance * exposure(), emission_frame_max) * EMISSION * fog_fade(v_fog_dist);
+        }
+#else
+        const bool mapped = false;
+#endif
+#ifdef PROGRAM_TERRAIN
+        // A block that gives light glows where its texture is bright (see block_emission), fading in the fog; where
+        // the maps say what glows, they do.
+        if (v_emission > 0.0 && !mapped) {
             out_color.rgb = block_emission(color.rgb, v_emission) * fog_fade(v_fog_dist);
         }
 #endif
         out_albedo = color;
 #ifdef PROGRAM_TERRAIN
         // Leaves let light through them, metal shines, rain soaks into sand (see deferred.fsh).
-        out_occlusion = vec4(v_ao, float(v_surface) / 7.0, 0.0, 1.0);
+        out_occlusion = vec4(v_ao * out_occlusion.r, float(v_surface) / 7.0, out_occlusion.b, 1.0);
 #endif
-        out_surface = encode_surface(v_normal, v_level, v_material, weight);
+        out_surface = encode_surface(normal, v_level, v_material, weight);
     }
 #endif
 #endif
@@ -209,11 +259,25 @@ void main() {
 
     int flags = key_flags();
     vec4 color = v_color;
+#ifdef LIT_MAPS
+#ifdef LIT_RELIEF
+    vec4 region = v_region;
+#else
+    vec4 region = vec4(0.0);
+#endif
+    maps = read_maps(v_scene_pos, v_uv, normalize(v_normal), normalize(v_scene_pos - gbufferModelViewInverse[3].xyz),
+            region, g_light_dir.xyz);
+#endif
     // Vanilla's mob shaders test their texture's alpha alone; the rest test the colour as drawn.
     bool test_texture = false;
 #ifdef TEXTURED
     if ((flags & KEY_UNTEXTURED) == 0) {
+#ifdef LIT_RELIEF
+        // Where the relief took the view (across the texture's pixels, with the mip level of the surface itself).
+        vec4 albedo = textureGrad(gtexture, maps.uv, dFdx(v_uv) * exp2(cg_mip_bias), dFdy(v_uv) * exp2(cg_mip_bias));
+#else
         vec4 albedo = texture(gtexture, v_uv, cg_mip_bias);
+#endif
         test_texture = (flags & KEY_MOB_SHADING) != 0;
         if (test_texture && albedo.a < alphaTestRef) {
             discard;
@@ -263,6 +327,12 @@ void main() {
 #if defined OWN_MOTION
 #ifdef HAND
     out_motion = vec4(motion_vector(v_clip_now, v_clip_prev), MOTION_HAND, claim);
+#elif defined LIT_RELIEF
+    // The point the relief shows moves as itself, deeper than the face it's drawn on.
+    vec3 seen = v_scene_pos + normalize(v_scene_pos - gbufferModelViewInverse[3].xyz) * maps.depth;
+    vec3 seen_prev = cg_object_motion[3][3] != 0.0 ? (cg_object_motion * vec4(seen, 1.0)).xyz : seen;
+    out_motion = vec4(motion_vector(gbufferProjection * (gbufferModelView * vec4(seen, 1.0)),
+            previous_clip(seen_prev, gbufferPreviousProjection)), MOTION_WORLD, claim);
 #else
     out_motion = vec4(motion_vector(v_clip_now, v_clip_prev), MOTION_WORLD, claim);
 #endif

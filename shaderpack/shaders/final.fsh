@@ -2,8 +2,9 @@
 // The screen. With DLSS (or FSR) running, the Create Galore Bridge has already written its full-size result over
 // colortex0. Without it, a frame the pack rendered smaller (upscaling on, the Bridge's DLSS off) is brought up to
 // the window's size here with a Catmull-Rom filter. Either way the linear light goes back to sRGB for the screen:
-// in the lit overworld with the bloom's glow (see bloom.csh) and through the tone curve (see tonemap.glsl), else as
-// it is.
+// in the lit overworld with the depth of field (see dof.glsl), the bloom's glow (see bloom.csh), as the eye sees it in
+// the dark (see night_vision.glsl), with the local exposure (see local_exposure.glsl), white balanced, through the
+// tone curve (see tonemap.glsl) and with the colour controls (see grade.glsl), else as it is.
 
 #include "/lib/settings.glsl"
 #include "/lib/frame.glsl"
@@ -11,6 +12,13 @@
 #ifdef LIT_WORLD
 #include "/lib/tonemap.glsl"
 #include "/lib/bloom.glsl"
+#include "/lib/globals.glsl"
+#include "/lib/night_vision.glsl"
+#include "/lib/local_exposure.glsl"
+#include "/lib/grade.glsl"
+#ifdef DEPTH_OF_FIELD
+#include "/lib/dof.glsl"
+#endif
 #endif
 
 uniform sampler2D colortex0;
@@ -65,8 +73,16 @@ void main() {
         color = upscale(gl_FragCoord.xy);
     }
 #ifdef LIT_WORLD
+#ifdef DEPTH_OF_FIELD
+    color = depth_of_field(color, gl_FragCoord.xy);
+#endif
     color = mix(color, bloom_at(gl_FragCoord.xy), bloom_amount);
-    out_color = vec4(tone_map(color * exp2(EXPOSURE)), 1.0);
+    // In the dark, as the rods see it, from the light in real units (the frame holds it times the exposure).
+    float frame_exposure = exposure();
+    color = night_vision(color / frame_exposure) * frame_exposure;
+    color = local_exposure(color, gl_FragCoord.xy);
+    color = white_balance(color);
+    out_color = vec4(grade_screen(tone_map(color * exp2(EXPOSURE))), 1.0);
 #else
     out_color = vec4(linear_to_srgb(color), 1.0);
 #endif
