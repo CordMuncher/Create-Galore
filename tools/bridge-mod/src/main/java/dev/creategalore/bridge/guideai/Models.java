@@ -215,7 +215,14 @@ public final class Models {
                 + "and the result says where. "
                 + "Whoever drives stands on the vehicle: a Boat Engine's helmsman stands two blocks out from the side it faces, "
                 + "so it goes at the stern facing into the boat with deck under that spot, and every Steering Wheel, Throttle "
-                + "Lever or lever needs a spot on board within reach to stand at. "
+                + "Lever or lever needs a spot on board within reach to stand at. The crew is checked as players move: "
+                + "walking, jumping 1.25, dropping, climbing ladders and opening doors, reaching 4.5 blocks with nothing in "
+                + "the way. Every engine that burns fuel needs a spot within reach the crew walks to from the helm and back; "
+                + "the Physics Assembler must be open to a floor a player stands on; anything that lands must let a player "
+                + "climb aboard from the ground under its lowest blocks (steps or a ladder to a high door); and on anything "
+                + "that climbs past y 128 the helm needs a closed cabin, by Cold Sweat's own shelter test (above y 192 the "
+                + "open air freezes a player in under a minute). On every model, fence and wall posts must stand on full "
+                + "blocks or top slabs and end under full blocks or bottom slabs, or a gap shows. "
                 + "Fix those before recommending it, and give the player its numbers. Parts that move as Create contraptions "
                 + "(a windmill, a turning door or drawbridge, a turntable, a piston wall, a lift, a gantry crane) go in "
                 + "moving, with the Super Glue the player puts on: the server finds what comes along by Create's rules, plays "
@@ -440,6 +447,7 @@ public final class Models {
         }
         BuildCheck.Report check = join(level == null ? null : BuildCheck.check(fixed, level), RigCheck.check(cells));
         if (level != null) check = join(check, OutputCheck.check(fixed, level));
+        check = join(check, PlayerCheck.posts(cells));
         if (motion != null) check = join(check, motion.report());
         check = join(check, vehicle(cells, level, input.has("part_of_vehicle") && input.get("part_of_vehicle").isJsonPrimitive()
                 && input.get("part_of_vehicle").getAsBoolean()));
