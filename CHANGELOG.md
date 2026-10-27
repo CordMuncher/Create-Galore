@@ -5,6 +5,15 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.6.14
+
+### Fixed
+- **Ask the Book checks its answer before you read it.** Before a page is done, the server reads what the answer points to: every item it names, every recipe it shows and every model it places. An item that doesn't exist, a recipe that isn't there or a model number it never made goes back to the book once, with what is wrong, and it writes the page again with those fixed. A model it drew but never placed on the page is caught the same way.
+- **Ask the Book keeps track of where its answer stands.** In place of a count of rounds left, the book is told how many models it has tried, how many faults the latest still has, which ones are placed on the page and how many rounds of tools are left, so it finishes the model it is working on rather than handing over one with faults.
+
+### Added
+- Create Galore Bridge 1.137.0.
+
 ## 0.6.13
 
 ### Added
