@@ -1997,11 +1997,14 @@ Generation runs on this card, also when FSR is picked: where it says yes the Dis
 Streamline is shut down and FSR loads in its place. The cloud ran that hand-over under Wine (no NVIDIA card there, so
 Streamline always said no); this checks the yes, Reflex after the hand-over, and the forced no on the 4080 Super.
 
+The repo stays on this branch (it has this runbook); the 0.6.1 Bridge comes from a second checkout beside it:
+
 ```powershell
 git -C $T\repo fetch origin
-git -C $T\repo checkout -B claude/fg-streamline-decides origin/claude/fg-streamline-decides
+git -C $T\repo checkout -B claude/project-thread-u2wmhh origin/claude/project-thread-u2wmhh
+git -C $T\repo worktree add --force --detach $T\fg061 origin/claude/fg-streamline-decides
 Remove-Item $T\instance\mods\create-galore-bridge-*.jar
-Copy-Item $T\repo\pack\mods\create-galore-bridge-*.jar $T\instance\mods\
+Copy-Item $T\fg061\pack\mods\create-galore-bridge-1.125.0.jar $T\instance\mods\
 Get-ChildItem $T\instance\mods\create-galore-bridge-*.jar | Select-Object Name
 ```
 
@@ -2032,7 +2035,8 @@ The launch from step 4 (2560x1440) without `autorun`. Copy every `Frame generati
 
 Also note, from each start's log times, how long it takes from the first `Frame generation` line to `Frame generation:
 ready in the DirectX 12 presenter` (under Wine asking Streamline and handing over to FSR took about 0.6 s). Anything that doesn't match: copy the lines, say
-which part, and go on with the pilot all the same. Then the Update block below switches back to the pilot's branch.
+which part, and go on with the pilot all the same. Then `git -C $T\repo worktree remove --force $T\fg061`, and the
+Update block below puts the pilot's Bridge back.
 
 ### Update and settings
 
