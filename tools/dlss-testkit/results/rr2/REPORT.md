@@ -1,21 +1,21 @@
 # Ray Reconstruction 2: Ray Reconstruction runs on DirectX 12, beside frame generation too
 
-A PC session on 2026-10-27, 17:33–18:01, run by a Claude Code session in `C:\Users\coolm\Documents\Claude\MC-CREATE`
+A PC session on 2026-10-27, 17:33–18:01, run by a Claude Code session in `C:\Users\<user>\Documents\Claude\MC-CREATE`
 (`$T`).
 - **What it followed:** "Ray Reconstruction 2" in `tools/dlss-testkit/PC-RUNBOOK.md` at `f3c69b58`, with the dev
   build Bridge 1.125.0-rr.2 (pack 0.6.1-rr.2) and that commit's `rr-probe.exe` and `cg_ngx.dll`.
-- **Part 1** (the probe) ran on its own; **part 2** with Emre at the keyboard.
+- **Part 1** (the probe) ran on its own; **part 2** with the player at the keyboard.
 - **Not run:**
   - **part 3** (timed runs and pictures);
   - **step c's by-eye and by-feel comparisons.**
-  - Both were skipped at Emre's call, until the two black guide views below are fixed or shown to be right.
+  - Both were skipped at the player's call, until the two black guide views below are fixed or shown to be right.
 - NVIDIA's DLLs are the ones Ray Reconstruction 1 fetched. The NVIDIA app had no overrides on.
 
 ## Summary
 
 - **Ray Reconstruction runs in the game.** On its own DirectX 12 device, RR got past the first frame that crashed
   every DirectX 11 attempt, and kept running: `DLAA: DLSS Ray Reconstruction running at 1280x720 to 2560x1440
-  (Performance, 50%), preset F, exposed colour`. Emre: "Yep, the image looks sane, definitely."
+  (Performance, 50%), preset F, exposed colour`. The player: "Yep, the image looks sane, definitely."
 - **Part 1, the probe:** exactly as the runbook expects. RR and DLSS through the Bridge's own `cg_ngx.dll` run
   (`dll-d3d12-game` OK, output mean 0.4964 release / 0.4961 dev; `dll-d3d12-dlss` OK, 0.4982). The DirectX 11 RR
   variants crash as in Ray Reconstruction 1b.
@@ -25,17 +25,17 @@ A PC session on 2026-10-27, 17:33–18:01, run by a Claude Code session in `C:\U
   - **The likely specular hit distance:** black everywhere, the sky included, with only faint blue lines along some
     block edges. The runbook expects it bright far away and white on the sky.
   - **The likely specular motion vectors:** pure black. We don't hand those over, so that is as expected.
-  - **Emre's call:** test performance and feel only once these are fixed or shown to be right, "because we're not
+  - **The player's call:** test performance and feel only once these are fixed or shown to be right, "because we're not
     seeing ray reconstruction at its best."
 - **NVIDIA's notice text is drawn upside down.** "DLSSD SDK - DO NOT DISTRIBUTE - CONTACT NVIDIA TO OBTAIN DLL FOR
   YOUR TITLE" appears flipped top to bottom at the top right. So NGX sees the picture's rows in the opposite order from
   the screen. The views themselves look the right way up.
 - **Switching RR off and on works,** in about 2 s each way. Off moves DLSS to DirectX 11 and closes the DirectX 12
-  device; on goes back. Emre: "They both came back right, and neither hitch was unreasonably long."
+  device; on goes back. The player: "They both came back right, and neither hitch was unreasonably long."
 - **RR beside Perfect Presentation and DLSS frame generation works:** two DirectX 12 users at once (Streamline's
   presenter and RR's own device).
   - The log: `Frame generation: running, 2 frames shown per rendered one` with `Ray Reconstruction running at ...`.
-  - Emre: "frame generation is definitely running. I noticed nothing odd. The game looks stable. Visually it looks
+  - The player: "frame generation is definitely running. I noticed nothing odd. The game looks stable. Visually it looks
     good." The NVIDIA overlay showed double the game's counter.
 
 ## Set-up
@@ -43,7 +43,7 @@ A PC session on 2026-10-27, 17:33–18:01, run by a Claude Code session in `C:\U
 - **Jars:** `create-galore-bridge-1.125.0-rr.2.jar` (3,288,271 bytes) and the test kit (56,850 bytes, unchanged).
 - **Backups:** everything the runbook lists, copied to `$T\rr2\*.before`. That now includes the shader pack's options
   file `shaderpacks\Photon v1.3a + DLAA.txt`, which held the original full-resolution setting (TAAU off).
-- **PresentMon helper for part 3:** started elevated at 17:35 (Emre clicked the prompt), and stopped unused with its
+- **PresentMon helper for part 3:** started elevated at 17:35 (the player clicked the prompt), and stopped unused with its
   stop file at 17:59.
 
 ## Part 1: the probe
@@ -106,7 +106,7 @@ windowed.
   - `DLAA: DLSS Ray Reconstruction running at 1280x720 to 2560x1440 (Performance, 50%), preset F, exposed colour`
     (17:38:00.662). This window was 2560x1440, against Ray Reconstruction 1's 2544x1401.
   - **No crash.** The start guard's marker was cleared once RR had run.
-  - Emre on the picture: "Yep, the image looks sane, definitely."
+  - The player on the picture: "Yep, the image looks sane, definitely."
   - The tab's status line wasn't read out word for word.
 - **NVIDIA's debug overlay** (CTRL+ALT+F12, full screen with CTRL+ALT+F11), at the lakeshore, with F2 screenshots.
   - F2 does capture the views. The HUD always sits on top, because the game draws it after RR.
@@ -114,17 +114,17 @@ windowed.
 
 | # | view | what it shows | right? |
 | --- | --- | --- | --- |
-| 1 | colour (RR's input) | the lit scene; live, "the world is just jittering aggressively" (Emre), which is the input's per-frame jitter | yes |
+| 1 | colour (RR's input) | the lit scene; live, "the world is just jittering aggressively" (the player), which is the input's per-frame jitter | yes |
 | 2 | motion vectors, as colours | all black standing still; turning, smooth sweeps of colour over the whole picture, the held item and hand dark (no screen motion) | yes |
-| 3 | motion vectors, as arrows | white dots with short lines along the turn over the picture, dots without lines on the held item. Emre: "It doesn't appear to be depth. Instead, I'm seeing a whole bunch of dots across the screen." | yes |
+| 3 | motion vectors, as arrows | white dots with short lines along the turn over the picture, dots without lines on the held item. The player: "It doesn't appear to be depth. Instead, I'm seeing a whole bunch of dots across the screen." | yes |
 | 4 | depth | hand black, near ground and wall blue, then purple to pink further back, white specks of sky | yes, the right way up |
-| 5 | diffuse albedo | textures without light or shadow (darker than the game's picture, probably raw linear values), glass and water edges bright, torches in their own colours. Emre: "the sky is gray as expected." | yes |
+| 5 | diffuse albedo | textures without light or shadow (darker than the game's picture, probably raw linear values), glass and water edges bright, torches in their own colours. The player: "the sky is gray as expected." | yes |
 | 6 | specular albedo | almost black, brighter on the iron bars and chain and on the water at a grazing angle | yes |
 | 7 | normals | one flat colour per face: everything facing up green (the whole floor one colour), sides red or blue, faces pointing the other way black | yes |
 | 8 | roughness | water and glass black (smooth), stone, dirt, wood and leaves light grey to white (rough). The sky wasn't in view | yes |
-| 9 | most likely the **specular hit distance** | black everywhere, sky and near water too ("it's just pitch black", Emre), with faint blue lines along some block edges (under 0.1% of pixels) | **no**: expected bright far away and a white sky |
+| 9 | most likely the **specular hit distance** | black everywhere, sky and near water too ("it's just pitch black", the player), with faint blue lines along some block edges (under 0.1% of pixels) | **no**: expected bright far away and a white sky |
 | 10 | most likely the **specular motion vectors** | pure black | as expected (not handed over) |
-| 11 | jitter | a cloud of white points in the middle rectangle, one green (this frame), none yellow. Looking straight up the points glow ("They light up a lot when I look directly up", Emre), because Photon's exposure and bloom run after RR on the overlay too | yes |
+| 11 | jitter | a cloud of white points in the middle rectangle, one green (this frame), none yellow. Looking straight up the points glow ("They light up a lot when I look directly up", the player), because Photon's exposure and bloom run after RR on the overlay too | yes |
 
 One more press turned the overlay off.
 
@@ -157,7 +157,7 @@ One more press turned the overlay off.
 | RR off | `DLAA: DLSS starts again on DirectX 11` (17:55:48.208); `DLAA: closed its DirectX 12 device` (.325); `NGX ready on ... (its own DirectX 11 device; ...)` (17:55:49.901); `DLAA: DLSS running at 1280x720 to 2560x1440 (Performance, 50%), preset K, the pack's exposure` (17:55:50.435) | 2.2 s |
 | RR on | `DLAA: DLSS starts again on DirectX 12, for Ray Reconstruction` (17:56:11.951); `DLAA: closed its DirectX device` (12.063); `NGX ready on ... (its own DirectX 12 device, for Ray Reconstruction; ...)` (13.726); `DLAA: DLSS Ray Reconstruction running at 1280x720 to 2560x1440 (Performance, 50%), preset F, exposed colour` (13.947) | 2.0 s |
 
-Emre: "Yep. They both came back right, and neither hitch was unreasonably long."
+The player: "Yep. They both came back right, and neither hitch was unreasonably long."
 
 ### c. With Perfect Presentation and frame generation (release DLL): runs
 
@@ -179,14 +179,14 @@ Emre: "Yep. They both came back right, and neither hitch was unreasonably long."
     (17:59:04.516).
 - **Stable.** No crash. The only WARN lines were Streamline's usual start-up ones (`Frame rate over 100.00ms,
   reseting frame timer`, `unsupported alignment`).
-- Emre: "Yep, frame generation is definitely running. I noticed nothing odd. The game looks stable. Visually it looks
+- The player: "Yep, frame generation is definitely running. I noticed nothing odd. The game looks stable. Visually it looks
   good." The NVIDIA overlay read double the game's counter.
 - **Ray Reconstruction 1's steps 2 and 3** (by eye and by feel, and the frame generation numbers) were skipped, at
-  Emre's call (below).
+  the player's call (below).
 
 ## Part 3: not run
 
-Emre: "I don't want to do the performance profiling because it takes a while before ... the two black ones. Either
+The player: "I don't want to do the performance profiling because it takes a while before ... the two black ones. Either
 they're proven to look like that, or they're fixed, because they might affect the performance and the by-feel test,
 because we're not seeing ray reconstruction at its best. So once our checks are done here, I think we can skip the
 performance tests and just send the report back for the fix."

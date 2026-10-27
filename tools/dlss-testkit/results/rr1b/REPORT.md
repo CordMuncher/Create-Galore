@@ -1,10 +1,10 @@
 # Ray Reconstruction 1b: Ray Reconstruction crashes on DirectX 11 and runs on DirectX 12
 
-A PC session on 2026-10-27, 17:00–17:08, run by a Claude Code session in `C:\Users\coolm\Documents\Claude\MC-CREATE`
+A PC session on 2026-10-27, 17:00–17:08, run by a Claude Code session in `C:\Users\<user>\Documents\Claude\MC-CREATE`
 (`$T`).
 - **What it followed:** "Ray Reconstruction 1b" in `tools/dlss-testkit/PC-RUNBOOK.md` at `e07e695c`, with the dev
   build Bridge 1.125.0-rr.1 (pack 0.6.1-rr.1), the branch's test kit and `rr-probe.exe` from the same commit.
-- **Part 1** (the probe) ran on its own; **part 2** (in the game) with Emre at the keyboard.
+- **Part 1** (the probe) ran on its own; **part 2** (in the game) with the player at the keyboard.
 - NVIDIA's two RR DLLs are the ones Ray Reconstruction 1 fetched (310.9.16, hashes as there). The NVIDIA app had no
   overrides on.
 
@@ -25,7 +25,7 @@ A PC session on 2026-10-27, 17:00–17:08, run by a Claude Code session in `C:\U
   `own-parameters`) match variants that crash too, so part 2b was skipped.
 - **DLSS without RR runs on the pilot build** (part 2a, which Ray Reconstruction 1 never reached).
   - `DLAA: DLSS running at 2544x1401 (full resolution), preset K, the pack's exposure`.
-  - Emre: "the image looks like I would expect. I don't see any regressions."
+  - The player: "the image looks like I would expect. I don't see any regressions."
 - **A runbook fix.** Part 1's `Copy-Item $T\instance\create-galore-dlss\nvngx_dlss.dll $T\rr1b\rel\, $T\rr1b\dev\`
   fails in PowerShell: `Copy-Item`'s `-Destination` takes one path. Without `nvngx_dlss.dll` the two plain-DLSS
   variants fail (`the feature isn't available`). I copied it into each folder on its own and ran both probes again.
@@ -121,10 +121,10 @@ cubin line more.
   - **The render scale was still Ray Reconstruction 1's Performance.** It lives in the shader pack's options file
     `shaderpacks\Photon v1.3a + DLAA.txt` (`TAAU=true`, `TAAU_RENDER_SCALE=0.50`), which Ray Reconstruction 1's
     backups didn't cover.
-  - **At full resolution, as in Frame generation 3:** Emre set Native in the Upscaling tab: `DLAA: on for this shader
+  - **At full resolution, as in Frame generation 3:** The player set Native in the Upscaling tab: `DLAA: on for this shader
     pack, engine dlss, DLSS preset K (set to default), full resolution`, then `DLAA: DLSS running at 2544x1401 (full
     resolution), preset K, the pack's exposure` (17:05:52.421).
-  - Emre: "Yep, the image looks like I would expect. I don't see any regressions."
+  - The player: "Yep, the image looks like I would expect. I don't see any regressions."
   - **WARN:** only `Frame generation (native): 184 log lines dropped` and the usual `irons_lib:steve` texture line.
     No crash.
 - **b. Skipped,** as the runbook says. No DirectX 11 variant ran, so `dlaaRrTest` would crash again.

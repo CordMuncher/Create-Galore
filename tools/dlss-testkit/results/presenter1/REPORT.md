@@ -1,11 +1,11 @@
 # Presenter 1 on the RTX 4080 SUPER: Perfect Presentation on DirectX 12
 
-PC session on 2026-10-26, 11:35–12:20, by a Claude Code session in `C:\Users\coolm\Documents\Claude\MC-CREATE`
+PC session on 2026-10-26, 11:35–12:20, by a Claude Code session in `C:\Users\<user>\Documents\Claude\MC-CREATE`
 (`$T`). It followed "Presenter 1" in `tools/dlss-testkit/PC-RUNBOOK.md` at `31bbd040`, with Bridge 1.113.0 (test build)
 and the test kit from that commit.
 - Two launches with `runs=P1`: Perfect Presentation on, `presenter=dx11` and then `presenter=dx12` with
   `presentCheck=true`.
-- Then, at Emre's request, a short third launch on DirectX 12 for him to play, look and Alt-Tab.
+- Then, at the player's request, a short third launch on DirectX 12 for him to play, look and Alt-Tab.
 - DLAA at full resolution (`dlaa=dlss`, preset K), at 2560x1440.
 - No crash. This is a test, not a fix: no code was changed.
 
@@ -30,7 +30,7 @@ and the test kit from that commit.
   - On DirectX 12 its clean first play cost none either (154 / 140 against the baseline's 147 / 138).
   - Its second play was disturbed by my blocked Alt-Tab attempt (see Method) and doesn't count.
 - **Anything different on screen?**
-  - Emre played the third launch: "I alt-tabbed around and everything worked." No flicker, and the colours are right.
+  - The player played the third launch: "I alt-tabbed around and everything worked." No flicker, and the colours are right.
   - But "I could tell that my frame rate was lower and my GPU utilization was also lower ... there is definitely a
     regression in performance that is not noise. It's very noticeable." He didn't notice more stuttering.
   - My one screenshot during launch 2, of the loading screen, is upright with the right colours:
@@ -64,7 +64,7 @@ and about 1 ms of latency against DirectX 11. Its Reflex report also no longer m
 - **The fps loss is the same in every uncapped mode (−10% to −12%)**, with Reflex, with the pacer and without either.
   So it's the DirectX 12 path itself, not one of the modes.
 - **The GPU queue is the same on both** (about 4.8 / 5.8 ms at the baseline). So the GPU is fed alike, but it finishes
-  fewer frames per second. Emre saw lower GPU utilization too.
+  fewer frames per second. The player saw lower GPU utilization too.
   - This looks like time lost at the handover each frame (OpenGL to Direct3D 12 through the imported textures and
     fences), during which the GPU waits. That's a reading, not measured here.
 - **The pacing targets:**
@@ -162,11 +162,11 @@ the session. `presenter` and `presentCheck` are gone again.
 | --- | --- | --- | --- | --- |
 | 1 | `dx11` | `runs=P1` | `20261026-114844-P1`: 10 plays (5 modes twice), 17,460 frames | 11:48:44–11:51:25 |
 | 2 | `dx12`, `presentCheck=true` | `runs=P1` | `20261026-115354-P1`: 10 plays, 17,460 frames | 11:53:54–11:56:50 |
-| 3 (extra, Emre) | `dx12`, `presentCheck=true` | `modes=lat-base`, `viewpoints=moving`, `paths=still`, `byEye=lat-base` | one short run, then free play | 12:05–12:10:56 |
+| 3 (extra, the player) | `dx12`, `presentCheck=true` | `modes=lat-base`, `viewpoints=moving`, `paths=still`, `byEye=lat-base` | one short run, then free play | 12:05–12:10:56 |
 
 - P1 plays the modes in the order `lat-base`, `lat-reflex`, `lat-pacer`, `lat-cap-default`, `lat-pacing-on`, not in
   the runbook table's order.
-- The third launch uses Emre's own `options.txt` (vsync on, 120 fps cap), with Reflex and pacing off.
+- The third launch uses the player's own `options.txt` (vsync on, 120 fps cap), with Reflex and pacing off.
 
 **What was open.**
 - No game server, and no other game or launcher.
@@ -176,7 +176,7 @@ the session. `presenter` and `presentCheck` are gone again.
 
 **What didn't go to plan:**
 1. **The Alt-Tab in launch 2 didn't happen.**
-   - Emre asked me to keep computer use out of the run apart from short moments: one screenshot early, and the
+   - The player asked me to keep computer use out of the run apart from short moments: one screenshot early, and the
      Alt-Tab at the end. I took one screenshot while the game loaded.
    - For the Alt-Tab I aimed at the last mode's unmeasured warm-up. I took that to be `lat-cap-default`, from the
      runbook table, but the run actually ends with `lat-pacing-on`.
@@ -189,7 +189,7 @@ the session. `presenter` and `presentCheck` are gone again.
      5.4 / 6.0 ms.
    - So both second plays are marked and left out of the comparison. Launch 1, without any computer use, has steady
      repeats in both modes.
-2. **The visual check and the Alt-Tab were done in the extra third launch instead.** Emre played on DirectX 12 there,
+2. **The visual check and the Alt-Tab were done in the extra third launch instead.** The player played on DirectX 12 there,
    Alt-Tabbed around, looked, and closed the game himself. His words are in the summary.
 
 No crash, and no new crash log. The only `hs_err` file in the instance is the old one from Upscaling 1.

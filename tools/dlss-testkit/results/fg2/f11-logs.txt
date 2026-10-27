@@ -10,7 +10,7 @@ How the windows were picked:
   Each is an F11 press that snapped back to full screen or an Alt-Tab (both were done then; the log can't tell them
   apart), and gets the same window. The flips at 22:43:27, 22:44:03 and 22:44:31 are frame generation turning on
   (the swap chain rebuild), so they don't count. Step 4 is FSR (no Streamline), so it has no such signal and only its
-  resize lines count; Emre reported F11 failing there at about 22:57:14.
+  resize lines count; the player reported F11 failing there at about 22:57:14.
 - overlapping windows are merged. Continuation lines (stack traces) take the time of the line above them.
 Then every line of either log containing fullscreen, Couldn't toggle, GLFW, Exception or iconif (any case), and every
 line of sl-step2.log containing 'ullscreen', 'ResizeTarget', 'WindowAssociation' or 'window'. Each line keeps its line

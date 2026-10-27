@@ -1,14 +1,14 @@
 # Ray Reconstruction 1 on the RTX 4080 SUPER: step 0 passes, Ray Reconstruction crashes on its first frame
 
-A PC session on 2026-10-27, 16:10–16:37, run by a Claude Code session in `C:\Users\coolm\Documents\Claude\MC-CREATE`
-(`$T`), with Emre at the keyboard.
+A PC session on 2026-10-27, 16:10–16:37, run by a Claude Code session in `C:\Users\<user>\Documents\Claude\MC-CREATE`
+(`$T`), with the player at the keyboard.
 - **What it followed:** "Ray Reconstruction 1" in `tools/dlss-testkit/PC-RUNBOOK.md` at `6e830c96`.
   - **Step 0** ran with Bridge 1.125.0 (pack 0.6.1) from `claude/fg-streamline-decides` (`88880966`), checked out
     beside the repo.
   - **Then the pilot:** Bridge 1.124.0-rr.1 (pack 0.6.0-rr.1) with the branch's test kit.
 - **Setup:** Photon v1.3a + DLAA, 2560x1440 windowed (`fullscreen:false`), Max Framerate Unlimited, vsync off,
   Perfect Presentation on DirectX 12, Reflex on.
-- **It stopped in step 1 at Emre's call.** Ray Reconstruction crashed the game on its first frame, with NVIDIA's dev
+- **It stopped in step 1 at the player's call.** Ray Reconstruction crashed the game on its first frame, with NVIDIA's dev
   DLL and again with the release one. Steps 1 (the overlay layers) to 5 did not run.
 
 ## Summary
@@ -18,7 +18,7 @@ A PC session on 2026-10-27, 16:10–16:37, run by a Claude Code session in `C:\U
     and DLSS `Switches after a restart.`
   - **After the restart:** DLSS frame generation through Streamline, Reflex through Streamline, the tab says
     `Running.`
-  - **With `frameGenStreamlineSays=no`:** the forced no hands over to FSR, the hover text "reads correctly" to Emre,
+  - **With `frameGenStreamlineSays=no`:** the forced no hands over to FSR, the hover text "reads correctly" to the player,
     FSR turns on at once without a restart, and DLSS then drops out of the list.
   - **Asking Streamline and handing over takes 0.2–0.3 s** from the game's first `Frame generation` line to `ready`
     (1.9 s when DLSS frame generation itself loads).
@@ -37,7 +37,7 @@ A PC session on 2026-10-27, 16:10–16:37, run by a Claude Code session in `C:\U
     choosing the preset.
   - **The Bridge's start guard worked:** the next start logged `the game closed while DLSS was starting last time,
     so DLSS stays off (settings screen: Try again)`.
-- **Emre's feedback on the Upscaling tab:** with Ray Reconstruction on, the anti-aliasing engine and the DLSS preset
+- **The player's feedback on the Upscaling tab:** with Ray Reconstruction on, the anti-aliasing engine and the DLSS preset
   can still be clicked. They should be greyed out, with a hover saying no other upscaler can run while Ray
   Reconstruction is active.
 
@@ -54,10 +54,10 @@ A PC session on 2026-10-27, 16:10–16:37, run by a Claude Code session in `C:\U
 - **`options.txt`:** `maxFps:260`, `enableVsync:false`.
 
 **NVIDIA's driver override in part a.** Part a started with NVIDIA's global Frame Generation override still on
-Preset B (Emre's own setting since Frame generation 3).
+Preset B (the player's own setting since Frame generation 3).
 - So Streamline read `SL_DLSS_OVERRIDE DRS key (global profile): 1` and loaded NVIDIA's copies of its plugins
   (same version, 2.14.16) in place of ours. That shows as five `Ignoring plugin` WARN lines.
-- Emre then set every override to "Use 3D app setting". Parts b and c ran with the override off (`... : 0`) and our
+- The player then set every override to "Use 3D app setting". Parts b and c ran with the override off (`... : 0`) and our
   own plugins. He chose to keep part a as it was.
 
 | part | start | lines (time) | first `Frame generation` line → `ready` |
@@ -74,12 +74,12 @@ took about 0.6 s.
   - In `dlaa-test` FSR frame generation ran: `running, 2 frames shown per rendered one (most it can generate: 1,
     smallest size 0)`.
   - Picking DLSS logged `Frame generation: off, turned off` and `turned off`.
-  - Emre: "Yep, it allowed me to pick off DLSS or FSR, and it said switches after a restart."
+  - The player: "Yep, it allowed me to pick off DLSS or FSR, and it said switches after a restart."
 - **b. DLSS after the restart: matches.**
   - `running, 2 frames shown per rendered one (most it can generate: 1, smallest size 100)` in the world.
-  - Emre: "Yep, it says running." (His screenshot is below.)
+  - The player: "Yep, it says running." (His screenshot is below.)
 - **c. Streamline says no: matches.**
-  - Emre: "DLSS stays, but when I hover, it says that it cannot start. Everything reads correctly. Then when I switch
+  - The player: "DLSS stays, but when I hover, it says that it cannot start. Everything reads correctly. Then when I switch
     to FSR, it applies immediately and the option for DLSS is no longer in the dropdown."
   - He picked FSR from the main menu, before the world: `Frame generation (native): FSR frame generation 3.1.5 at
     2544x1401`, `Frame generation: turned on`, `off, no world`.
@@ -112,7 +112,7 @@ took about 0.6 s.
 
 - **Dev DLL (16:24 launch).**
   - DLSS frame generation was loaded and off (`ready ..., off; Reflex goes through Streamline`).
-  - In the Upscaling tab Emre turned Ray Reconstruction on, at Performance: `DLAA: DLSS Ray Reconstruction asked for
+  - In the Upscaling tab the player turned Ray Reconstruction on, at Performance: `DLAA: DLSS Ray Reconstruction asked for
     (dev build): preset F, exposed colour, left noisy for it: rough reflections, soft shadows` (16:27:54), and `DLAA:
     on for this shader pack, engine dlss, DLSS preset K (set to default), upscaling from 50% of the window`.
   - Opening `dlaa-test`:
@@ -136,11 +136,11 @@ took about 0.6 s.
     `CompositeRenderer.renderAll` < `IrisRenderingPipeline.finalizeLevelRendering` < `LevelRenderer.renderLevel`.
   - **NGX's RR log** (`nvngx_dlssd_310_9_16.log`) ends with the preset lines. NGX logged no error or warning.
   - The Bridge's start guard left `dlss-starting.txt` ("DLSS started at ... and had not run 120 frames yet").
-- **With the release DLL (16:31 launch), at Emre's OK** (not in the runbook; step 1's overlay can't be done without
+- **With the release DLL (16:31 launch), at the player's OK** (not in the runbook; step 1's overlay can't be done without
   RR running anyway).
   - The start logged `DLAA: the game closed while DLSS was starting last time, so DLSS stays off (settings screen: Try
     again)`.
-  - Emre pressed Try again, with RR on at Performance. The same lines followed (16:34:23): `can run`, then `running
+  - The player pressed Try again, with RR on at Performance. The same lines followed (16:34:23): `can run`, then `running
     at 1272x701 to 2544x1401 (Performance, 50%), preset F, exposed colour`.
   - **The same crash** (`hs_err_pid32792.log`, in `$T\rr1\crash2`): `reading address 0x0000000000000034`, the same
     registers (`RAX=1`, `RBX=0`, `RSI=0`, `RDI=0`), the same Java frames.
@@ -149,7 +149,7 @@ took about 0.6 s.
   - Whether plain DLSS K (Ray Reconstruction off) runs on the pilot build. On both launches the first frame in the
     world was RR's.
   - The overlay layers, steps 2–5, the Upscaling tab's hover texts for the new row, and the status line.
-- **Emre on the Upscaling tab** (a UX point, regardless of the crash): "when you turn Ray Reconstruction on, you're
+- **The player on the Upscaling tab** (a UX point, regardless of the crash): "when you turn Ray Reconstruction on, you're
   still able to click the anti-aliasing settings, like FSR, DLSS, Super Resolution, Preset ... Those should get
   grayed out. Ray Reconstruction takes over the upscaling stack as well in a single model ... when Ray Reconstruction
   is on, the other modes ... get grayed out, and if you hover them, it says that while Ray Reconstruction is active,
@@ -164,10 +164,10 @@ took about 0.6 s.
   part c had left on `fsr`. `dlss` makes DLSS frame generation the loaded one, so step 3's "turns on at once" would
   hold.
 - **Part a ran with NVIDIA's Frame Generation override on** (see step 0); parts b and c without.
-- **The release DLL was tried in step 1** after the dev DLL crashed, at Emre's OK.
+- **The release DLL was tried in step 1** after the dev DLL crashed, at the player's OK.
 - **The PresentMon helper for step 4.**
   - `$T\profiling\scripts\rr1-pm.ps1` (Frame generation 3's helper for T1 and T2) was started elevated at 16:11
-    (Emre clicked the prompt).
+    (the player clicked the prompt).
   - It wasn't needed and was stopped with its stop file at 16:36.
 
 ## Afterwards
@@ -182,12 +182,12 @@ took about 0.6 s.
   - NVIDIA's `nvngx_dlssd.dll`. NVIDIA's DLLs stay in `$T\rr1`, never in the repo.
 - **The instance keeps the pilot Bridge 1.124.0-rr.1 and its test kit.** Ray Reconstruction is off in the restored
   settings.
-- **NVIDIA app:** all overrides on "Use 3D app setting" (Emre, during step 0).
+- **NVIDIA app:** all overrides on "Use 3D app setting" (the player, during step 0).
 - **What stays on the PC, in `$T\rr1`:**
   - both crash files (`crash1\`, `crash2\`), each with its game log, the log's last 100 lines and NGX's logs. They
     name the user folder, so they aren't committed;
   - the game logs of step 0 and the Streamline logs;
-  - Emre's screenshot, and the session notes.
+  - The player's screenshot, and the session notes.
 
 What comes of it: the pilot doesn't run yet. The crash is on the Bridge side's first `evaluateRayReconstruction`, a
 null read inside NGX's RR. A likely place to look is an input the RR evaluate needs that came through as null (one of

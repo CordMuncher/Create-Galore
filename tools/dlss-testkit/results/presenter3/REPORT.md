@@ -1,14 +1,14 @@
 # Presenter 3 on the RTX 4080 SUPER: DirectX 11 against DirectX 12 without capture tools
 
-PC session on 2026-10-26, 13:47–14:15, by a Claude Code session in `C:\Users\coolm\Documents\Claude\MC-CREATE`
+PC session on 2026-10-26, 13:47–14:15, by a Claude Code session in `C:\Users\<user>\Documents\Claude\MC-CREATE`
 (`$T`). It followed "Presenter 3" in `tools/dlss-testkit/PC-RUNBOOK.md` at `7a2868fd`, with Bridge 1.114.0 (test build)
 and the test kit from Presenter 2 (nothing to update).
 - Four launches with `runs=P2`, alternating `presenter=dx11` and `presenter=dx12`, with no PresentMon and no nvidia-smi.
-  Then, at Emre's suggestion, a fifth launch on DirectX 11 (see Method: Wallpaper Engine).
+  Then, at the player's suggestion, a fifth launch on DirectX 11 (see Method: Wallpaper Engine).
 - DLAA at full resolution (`dlaa=dlss`, preset K), at 2560x1440.
 - No crash. This is a test, not a fix: no code was changed.
 
-> **Update, 14:13–14:35, approved by Emre (see the Appendix at the end).** The slower DirectX 11 came from a test kit
+> **Update, 14:13–14:35, approved by the player (see the Appendix at the end).** The slower DirectX 11 came from a test kit
 > scene left standing in the test world since the end of Presenter 1, not from the build. It was removed with the kit's
 > own commands. In the cleaned world, on 1.114.0, DirectX 11 is back at Presenter 1's numbers (166 / 154 fps at
 > `lat-base`, 175 / 156 at `lat-reflex`), and **DirectX 12 is within 0–3% of it** (167 / 153 and 170 / 153),
@@ -36,7 +36,7 @@ and the test kit from Presenter 2 (nothing to update).
   Presenter 1** (170–171 / 154–156 fps at `lat-base`).
   This session rules out the capture tools, the live wallpaper and the PC's restart (Presenter 2 ran before it,
   Presenter 3 after, with the same result). Between Presenter 1 (11:48) and Presenter 2 (13:07) the build changed:
-  Bridge 1.113.0 → 1.114.0 and the new test kit. Emre also played the test world on DirectX 12 for five minutes at the
+  Bridge 1.113.0 → 1.114.0 and the new test kit. The player also played the test world on DirectX 12 for five minutes at the
   end of Presenter 1. See "Next step".
 
 **In one line:** without any capture tool, DirectX 12 is 2–4% behind DirectX 11 today, with 0.8 ms less latency. But
@@ -115,7 +115,7 @@ From `latency.py` (input to GPU end). The plays are in run order, so the first v
   the run's first stretch, as in every earlier session. Both presenters have it.
 - **Launch 2's `lat-cap-default` had 4–5 ms more latency** (13.6 / 14.6 ms, the GPU queue −3.7 / −2.5 ms instead of
   about −8) in both plays, 13:55:19–13:55:49 and 13:56:16–13:56:45. Launch 4, the same settings, was normal (9.0 /
-  9.3 ms), as was every DirectX 12 capped play in Presenter 2. It came right after Emre paused Wallpaper Engine
+  9.3 ms), as was every DirectX 12 capped play in Presenter 2. It came right after the player paused Wallpaper Engine
   (about 13:54). Its cause is unknown and it didn't come back, so it's a one-off here. No capture tool was running to
   say more.
 
@@ -142,14 +142,14 @@ From `latency.py` (input to GPU end). The plays are in run order, so the first v
 - What changed between Presenter 1 and Presenter 2:
   - the build: Bridge 1.113.0 → 1.114.0, and the test kit (55,328 → 56,152 B). 1.114.0's commit doesn't touch the
     DirectX 11 presenter, but it does change the display settings and the code around DirectX 12;
-  - the test world: Emre played it on DirectX 12 for about five minutes at the end of Presenter 1, and two region files
+  - the test world: the player played it on DirectX 12 for about five minutes at the end of Presenter 1, and two region files
     (`r.1.1.mca`, `r.2.1.mca`) were last written then, at 12:10. No new region file was made.
 - One DirectX 11 launch with the 1.113.0 jar and the old test kit (both in the git history at `31bbd040`), on this
   same world, would tell them apart:
   - back at about 170 / 155: 1.114.0 or the new kit slowed DirectX 11, and against 1.113.0's DirectX 11 the gap is
     still about 10%;
   - still at about 160 / 141: the world or the PC changed, and today's 2–4% is the real gap.
-- That isn't in the runbook, so it wasn't run at first. Emre approved it after the report was first pushed: see the
+- That isn't in the runbook, so it wasn't run at first. The player approved it after the report was first pushed: see the
   Appendix (the build wasn't it; a scene left in the world was).
 
 ## Method
@@ -177,7 +177,7 @@ the first launch.
 | 2 | `dx12` | paused from about the run's start | `20261026-135446-P2` | 13:54:46–13:56:45 |
 | 3 | `dx11` | paused | `20261026-135855-P2` | 13:58:55–14:00:52 |
 | 4 | `dx12` | paused | `20261026-140256-P2` | 14:02:56–14:04:54 |
-| 5 (extra, Emre) | `dx11` | paused | `20261026-140704-P2` | 14:07:04–14:09:01 |
+| 5 (extra, the player) | `dx11` | paused | `20261026-140704-P2` | 14:07:04–14:09:01 |
 
 P2 plays `lat-base`, `lat-reflex` and `lat-cap-default`, each at shore and then canopy, and the whole list twice.
 
@@ -195,13 +195,13 @@ P2 plays `lat-base`, `lat-reflex` and `lat-cap-default`, each at shore and then 
 1. **The PC had restarted** between Presenter 2 and this session (shut down 13:41:51, up again 13:44:50). Two programs
    came back with it:
    - **The ChatGPT/Codex sandbox service** (`codex-windows-sandbox-service`, 13 MB), which wasn't in Presenter 2's
-     list. I saw it before launch 1. Emre said it shouldn't be on and force-closed it during launch 1's loading, before
+     list. I saw it before launch 1. The player said it shouldn't be on and force-closed it during launch 1's loading, before
      its run (gone by 13:49:42). Its Windows service is still set to start automatically.
    - **Wallpaper Engine** (`wallpaper64`, five `webwallpaper64`, `wallpaperservice32`). My process check in Presenter
-     2 and before launch 1 didn't catch it. Emre said its live wallpaper had not been paused "in these last tests"
+     2 and before launch 1 didn't catch it. The player said its live wallpaper had not been paused "in these last tests"
      (Presenter 2 and launch 1 here), and paused it at about 13:54. Its processes kept running, but used no
      measurable GPU at any check from then on.
-2. **So a fifth launch was added**: DirectX 11 with the wallpaper paused, at Emre's suggestion, to have two DirectX 11
+2. **So a fifth launch was added**: DirectX 11 with the wallpaper paused, at the player's suggestion, to have two DirectX 11
    launches without it. DirectX 11 ran the same with and without the wallpaper (launch 1 against 3 and 5), so the
    runbook's four launches stand as they are, and the gap is shown both ways above.
 3. **Launch 2's capped mode** had 4–5 ms more latency than launch 4's (see above), right after the wallpaper was paused.
@@ -215,9 +215,9 @@ No crash, and no new crash log. The only `hs_err` file in the instance is the ol
 - In `$T\presenter3\`: the game logs `L1-latest.log` to `L5-latest.log`, `latency.md` (all five runs), `tables.md`, this
   session's notes, the settings copies, the display settings file as 1.114.0 left it and the kit config it wrote.
 
-## Appendix: added after the first push (14:13–14:35), approved by Emre
+## Appendix: added after the first push (14:13–14:35), approved by the player
 
-Emre approved these launches in chat after reading the first version of this report:
+The player approved these launches in chat after reading the first version of this report:
 - "Sure test it, and append the findings saying I approved it": one DirectX 11 launch on Bridge 1.113.0.
 - Then, after the leftover scene turned up: "fix that then and rerun one dx11 and one dx12 run on the most recent
   version and add that to the report too".
@@ -250,7 +250,7 @@ nothing else using the GPU. All settings are back afterwards (checked byte for b
 
 ### 2. What changed in the world: a test scene left behind
 
-- **Presenter 1's third launch** (Emre's free play, 12:05–12:10:56) ran with `viewpoints=moving` and `byEye=lat-base`.
+- **Presenter 1's third launch** (the player's free play, 12:05–12:10:56) ran with `viewpoints=moving` and `byEye=lat-base`.
   Its log has `DLAA test: built the moving scene` (12:06:27 and 12:06:45) and `the moving scene is over the lake (stand
   on the ship to ride it); /dlaatest scene remove takes it away`. It was never removed: the kit removes the scene only
   when a run ends, and in by-eye mode the game stays open after the run until the player quits.
@@ -270,7 +270,7 @@ nothing else using the GPU. All settings are back afterwards (checked byte for b
   - no driver or Windows update (only a Defender signature update at 11:51);
   - the world's weather is clear and its time 3000 (the kit locks both);
   - Distant Horizons' log at world load reads the same as in Presenter 1, and its database hasn't grown since 14:00.
-  Emre doesn't remember changing anything on the PC.
+  The player doesn't remember changing anything on the PC.
 
 ### 3. Cleaning the world
 

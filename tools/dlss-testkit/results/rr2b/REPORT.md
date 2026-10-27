@@ -1,13 +1,13 @@
 # Ray Reconstruction 2b: the hit distance guide arrives, RR looks much better, and RR off breaks frame generation
 
-A PC session on 2026-10-27, 18:31–19:30, run by a Claude Code session in `C:\Users\coolm\Documents\Claude\MC-CREATE`
+A PC session on 2026-10-27, 18:31–19:30, run by a Claude Code session in `C:\Users\<user>\Documents\Claude\MC-CREATE`
 (`$T`).
 - **What it followed:** "Ray Reconstruction 2b" in `tools/dlss-testkit/PC-RUNBOOK.md` at `d79d2cf5`, with the dev
   build Bridge 1.125.0-rr.3 (pack 0.6.1-rr.3).
-- **Parts 1 and 2** ran with Emre at the keyboard; **part 3** on its own.
+- **Parts 1 and 2** ran with the player at the keyboard; **part 3** on its own.
 - **Not run, both because of the frame generation bug below:**
   - Ray Reconstruction 1's **step 3** (RR Performance against DLSS Quality with frame generation);
-  - part 3's **second timed launch** (T2, with frame generation). Emre chose to skip it.
+  - part 3's **second timed launch** (T2, with frame generation). The player chose to skip it.
 - NVIDIA's DLLs are the ones Ray Reconstruction 1 fetched. The NVIDIA app had no overrides on.
 
 ## Summary
@@ -18,7 +18,7 @@ A PC session on 2026-10-27, 18:31–19:30, run by a Claude Code session in `C:\U
   - black from 2 blocks on, and black for 65504 ("no hit").
   - So Ray Reconstruction 2's all-black view was the overlay's scale, not a missing guide. By the runbook's reading,
     go on to part 2.
-- **By eye, Emre rates RR far ahead of DLSS on lighting and reflections**, at the cost of slightly softer distant
+- **By eye, the player rates RR far ahead of DLSS on lighting and reflections**, at the cost of slightly softer distant
   geometry he doesn't notice in play:
   - "Lighting is just beautifully crisp." The player's shadow is "crystal sharp", with "no jitter in it".
   - Water reflections go from a "dotty mess" to "like a glass", and an island's reflection far out is now "actually
@@ -55,7 +55,7 @@ A PC session on 2026-10-27, 18:31–19:30, run by a Claude Code session in `C:\U
   All matched Ray Reconstruction 2's backups (the originals).
 - **PresentMon helper for part 3:**
   - `$T\profiling\scripts\rr2b-pm.ps1`, a copy of Ray Reconstruction 2's helper writing to `$T\rr2b`;
-  - started elevated at 18:32 (Emre clicked the prompt).
+  - started elevated at 18:32 (the player clicked the prompt).
 
 ## Part 1: the hit distance
 
@@ -79,7 +79,7 @@ A PC session on 2026-10-27, 18:31–19:30, run by a Claude Code session in `C:\U
 - **As the runbook expects:** most of the picture black (no hit). The water is white to light grey, noisier toward the
   bottom.
 - **The glass and iron bars in the build** are speckled white.
-- Emre: "Taken, I see white on water".
+- The player: "Taken, I see white on water".
 
 ### b. NVIDIA's view of the same guide
 
@@ -89,7 +89,7 @@ A PC session on 2026-10-27, 18:31–19:30, run by a Claude Code session in `C:\U
   - one is black with a few faint edge lines;
   - the other is pure black (only the crosshair).
 - **Still black although a. shows white on the water.**
-- Emre: "I took a screenshot of the last 2 screens that were fully black".
+- The player: "I took a screenshot of the last 2 screens that were fully black".
 
 ![b: NVIDIA's hit distance view of the pack's guide](part1-b-nvidia-view.jpg)
 
@@ -110,7 +110,7 @@ A PC session on 2026-10-27, 18:31–19:30, run by a Claude Code session in `C:\U
 | looks | white | a shade, 63 at its left edge fading to 0 | black | black | black | black | black | black |
 
 - **The other dark view** (18:40:08) is 0 everywhere.
-- I read the bands out to Emre. He: "It matches what u say".
+- I read the bands out to the player. He: "It matches what u say".
 
 **Reading:** the 8th band (65504) is black like b, and the first two show shades. That is the runbook's first case:
 the overlay draws "no hit" as black, and the guide is right. NVIDIA's view only shows distances under about a block,
@@ -130,7 +130,7 @@ which is why b looks black: the water's reflections hit things further away than
     (18:44:20.766);
   - **`Frame generation: running, 2 frames shown per rendered one (most it can generate: 1, smallest size 100)`**
     (18:44:27.435).
-- Emre played step 2 for about 4 minutes, until he turned RR off.
+- The player played step 2 for about 4 minutes, until he turned RR off.
 
 ### The bug: RR off breaks frame generation
 
@@ -142,14 +142,14 @@ which is why b looks black: the water's reflections hit things further away than
 | 18:48:07.739 | `DLAA: DLSS running at 1280x720 to 2560x1440 (Performance, 50%), preset K` |
 | 18:48:08.624 | Frame generation on (the menu closed) |
 | 18:48:08.641 on | every frame: `[sl.dlss_g] NGX evaluate feature failed 0xbad00004` (FeatureNotFound), 1,132 lines in all |
-| 18:48:17.630, 18:48:18.094 | Emre pressed F11 twice (`Frame generation: off, the window is resizing`): `release feature failed 0xbad00004` once |
+| 18:48:17.630, 18:48:18.094 | the player pressed F11 twice (`Frame generation: off, the window is resizing`): `release feature failed 0xbad00004` once |
 | 18:48:17.679 on | every frame: `NGX create feature failed 0xbad0000b` (UnableToInitializeFeature), 3,459 lines in all |
-| 18:48:38.176 | a screen opened (Emre went to turn RR back on); the errors stop |
+| 18:48:38.176 | a screen opened (the player went to turn RR back on); the errors stop |
 | 18:48:46.410 | RR running again on DirectX 12; frame generation on at 18:48:47.996, no errors |
 
-- **Emre:** "it happended once when you first saw the flood, pressing f11 twice fixed it". The log shows F11 changed
+- **The player:** "it happended once when you first saw the flood, pressing f11 twice fixed it". The log shows F11 changed
   the error, but frame generation's NGX calls kept failing on every frame until RR was back.
-- **The NVIDIA overlay kept showing frame generation doubling.** Emre: "also the overlay shows fg working as expected".
+- **The NVIDIA overlay kept showing frame generation doubling.** The player: "also the overlay shows fg working as expected".
   So the screen still got twice the frames, but Streamline couldn't create DLSS-G's own NGX feature. What it showed
   in its place isn't known.
 
@@ -167,7 +167,7 @@ which is why b looks black: the water's reflections hit things further away than
 
 - **No NGX error lines this time.**
 - **No crash files:** no `hs_err` file, no Minecraft crash report, and no start guard file (`dlss-starting.txt`).
-- Emre: "um the game crashed after turning rr off".
+- The player: "um the game crashed after turning rr off".
 - The game log, its last 100 lines without the error flood, the debug log's end and Streamline's log are in
   `$T\rr2b\crash1`. They name the user folder, so they aren't committed.
 
@@ -180,14 +180,14 @@ Turning RR on (DirectX 11 to 12) with frame generation on caused no errors. The 
 
 ### The by-eye test, finished without frame generation
 
-- **Emre's call:** "I wanna finish the by eye, it was going good outside of this". I restarted the game at 18:52:29
+- **The player's call:** "I wanna finish the by eye, it was going good outside of this". I restarted the game at 18:52:29
   with `frameGen=off` and nothing else changed.
-- **Emre switched RR 8 times** in 4 minutes, at Quality (67%) and Performance (50%). Each switch took about 1.5 s
+- **The player switched RR 8 times** in 4 minutes, at Quality (67%) and Performance (50%). Each switch took about 1.5 s
   from the menu to running, with no errors:
   - RR on at 18:54:43 (Performance), 18:55:49 (Quality), 18:56:32 (Performance) and 18:57:52 (Performance, then
     Quality);
   - RR off at 18:55:31, 18:55:58, 18:57:34 and 18:58:22.
-- **Ray Reconstruction 1's step 2, by eye.** Emre's verdict in his own words (lightly trimmed):
+- **Ray Reconstruction 1's step 2, by eye.** The player's verdict in his own words (lightly trimmed):
 
   > I did a bunch of stuff. I, you know, moved all around. I used quality. I used performance. I looked at both
   > ends. I did not expect it to look like this. Photon was just a correctness test, and so I was never expecting it
@@ -248,7 +248,7 @@ Turning RR on (DirectX 11 to 12) with frame generation on caused no errors. The 
 | night, the hand and the HUD | not singled out | "same with basically everything else" |
 | Performance against Quality (RR) | Quality | Performance: "some flicker sometimes in distant geometry"; Quality: "set it and forget it" |
 
-**Emre's screenshots** (F2). These are crops at full size, DLSS on the left or top, RR on the right or bottom. Each
+**The player's screenshots** (F2). These are crops at full size, DLSS on the left or top, RR on the right or bottom. Each
 pair is a few seconds apart, from the same spot.
 
 Iron blocks with a torch, Performance (DLSS 18:54:34, RR 18:54:45):
@@ -257,7 +257,7 @@ Iron blocks with a torch, Performance (DLSS 18:54:34, RR 18:54:45):
 
 - **With RR, the torch's reflection** in the left block is a sharp bright shape. With DLSS it's an orange smear.
 - **In these two frames, DLSS shows the flame's pixels and two embers.** With RR the torch's head is a bright
-  white-yellow square, with no embers in the frame. Emre saw embers with RR in motion; one frame can't settle it.
+  white-yellow square, with no embers in the frame. The player saw embers with RR in motion; one frame can't settle it.
 
 The pool by the effects scene, Quality (RR 18:55:52, DLSS 18:56:02; the view moved slightly):
 
@@ -270,7 +270,7 @@ The lake and the island, Performance (DLSS 18:56:23, RR 18:56:35):
 
 ![the island and its reflection: DLSS K top, RR bottom, both Performance](part2-island-pair.jpg)
 
-The difference is small at this size; the ripples look a little calmer with RR. Emre's point about the island's
+The difference is small at this size; the ripples look a little calmer with RR. The player's point about the island's
 reflection is about motion: the "spray paint" pixels he describes don't show in a single frame.
 
 ### Step 3 (with frame generation): not run
@@ -292,7 +292,7 @@ which is the bug above. Recorded as skipped.
 - **Start lines:** all 10 RR plays logged `DLAA: DLSS Ray Reconstruction running at ...`, and all 6 DLSS plays
   `DLAA: DLSS running at ...`. No crash, and no errors.
   - The only Bridge warning was `Perfect Presentation: swap chain wait timed out`, once, while the world loaded.
-- **T2 (frame generation on): not run**, at Emre's choice (see the bug above).
+- **T2 (frame generation on): not run**, at the player's choice (see the bug above).
 
 `frametimes.py` over the camera paths. Frame ms is the median (fps = 1000 / median). GPU busy is PresentMon's
 median. "Until shown" is the median time from Present to the screen.
@@ -363,7 +363,7 @@ All 4 viewpoints, with each mode's frame ms, are in `P-metrics.txt` on the PC.
   - shimmers the same or a little less (0.11% against 0.16% of pixels at `shore`);
   - leaves less residue after a flick at `shore`, `glass` and `canopy` (`glass` 1.33 / 1.11 against 1.91 / 1.48);
   - is about level at `moving`.
-  - Its lower edge contrast (4.14 against 4.41 at `shore`) fits Emre's "marginally" softer geometry.
+  - Its lower edge contrast (4.14 against 4.41 at `shore`) fits the player's "marginally" softer geometry.
 - **RR Performance against DLSS Quality:**
   - about the same shimmer;
   - less residue at `glass` and `canopy`, mixed at `shore` (2.69 / 2.70 against 2.56 / 2.90).
@@ -385,7 +385,7 @@ This is the clearest difference:
 - RR F (plain, calm and raw colour) draws it smooth;
 - RR E sits between, still grainy.
 
-It's the still-frame form of the "dotty mess" Emre describes.
+It's the still-frame form of the "dotty mess" the player describes.
 
 A shadow edge at `shore` (sun and shade on the stone floor and the dirt):
 
@@ -411,20 +411,20 @@ mid-air.
 
 - **Render resolution set in the pack's options file** in part 1 (`TAAU=true`, `TAAU_RENDER_SCALE=0.50`) instead of
   in the Upscaling tab. These are the same values the tab wrote in Ray Reconstruction 2.
-- **Frame generation off for the rest of the by-eye test** after the crash, with Emre's agreement. Step 2's
+- **Frame generation off for the rest of the by-eye test** after the crash, with the player's agreement. Step 2's
   verdicts therefore compare RR and DLSS without frame generation, except for the first 4 minutes.
 - **Step 3 skipped**, because its RR-off switch with frame generation on is the bug.
-- **Part 3 without T2** (frame generation on), at Emre's choice: its run switches between RR and DLSS modes many
+- **Part 3 without T2** (frame generation on), at the player's choice: its run switches between RR and DLSS modes many
   times, and would most likely freeze or crash at the first RR-to-DLSS switch.
-- **Part 3 windowed** (`fullscreen:false`, as part 1 sets it). Emre had pressed F11 for full screen during part 2.
+- **Part 3 windowed** (`fullscreen:false`, as part 1 sets it). The player had pressed F11 for full screen during part 2.
   The game drew 2544x1401 in the window.
 - **A failed first T1 launch** (19:07:27): I passed the JVM arguments with a `--jvm-arg=` prefix the launch script
   adds itself. Java refused to start, so nothing ran and PresentMon didn't attach. Relaunched at 19:07:58.
 - **Step 5's "metal row"** is the `glass` build's lantern and iron bars, since the test kit's scenes have no row of
   metal blocks. The crop spots are my picks: one each for metal, a shadow edge, leaves and water.
-- **Emre's screenshots from part 2** are compared in pairs I matched by time to the log's mode lines. They aren't
+- **The player's screenshots from part 2** are compared in pairs I matched by time to the log's mode lines. They aren't
   frames the test kit lined up.
-- **Closing the game** between launches was a normal window close (`CloseMainWindow`), as Emre allowed in earlier
+- **Closing the game** between launches was a normal window close (`CloseMainWindow`), as the player allowed in earlier
   rounds.
 
 ## Afterwards
@@ -446,7 +446,7 @@ mid-air.
   - NVIDIA's DLLs stay in `$T\rr1`.
 
 **What comes of it:**
-- **The guide is right**, and RR's look is what Emre hoped for. He would use it, "if it turns out that it's not
+- **The guide is right**, and RR's look is what the player hoped for. He would use it, "if it turns out that it's not
   ridiculously expensive for the GPU". The cost is +0.8 ms at Performance and +1.7 ms at Quality on this card, so
   RR Performance runs at about 93% of DLSS Quality's rate.
 - **One bug to fix before RR goes further:** turning RR off while DLSS frame generation runs must not take

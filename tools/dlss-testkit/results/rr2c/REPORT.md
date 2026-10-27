@@ -1,10 +1,10 @@
 # Ray Reconstruction 2c: RR off no longer breaks frame generation, and Photon's settings switch right
 
-A PC session on 2026-10-27, 22:45–23:30, run by a Claude Code session in `C:\Users\coolm\Documents\Claude\MC-CREATE`
+A PC session on 2026-10-27, 22:45–23:30, run by a Claude Code session in `C:\Users\<user>\Documents\Claude\MC-CREATE`
 (`$T`).
 - **What it followed:** "Ray Reconstruction 2c" in `tools/dlss-testkit/PC-RUNBOOK.md` at `40a8daaf`, with Bridge
   1.126.0 (pack 0.6.3, the release candidate).
-- **Part 1** (the probe) ran on its own, **part 2** with Emre at the keyboard, and **part 3** (T2) on its own.
+- **Part 1** (the probe) ran on its own, **part 2** with the player at the keyboard, and **part 3** (T2) on its own.
 - NVIDIA's DLLs are the ones Ray Reconstruction 1 fetched. The NVIDIA app had no overrides on.
 
 ## Summary
@@ -16,7 +16,7 @@ A PC session on 2026-10-27, 22:45–23:30, run by a Claude Code session in `C:\U
     - 88 s of play with RR off, F11 twice and the pause menu (the spot where 2b hung);
     - a pause 120 ms after frame generation came back.
   - There was **not one `[sl.dlss_g]` line** in the whole session, and no freeze or crash.
-  - Emre: "done no crash at any point".
+  - The player: "done no crash at any point".
 - **The probe catches the bug outside the game.**
   - The new `dll-d3d12-beside` passes all 3 rounds.
   - With 2b's `cg_ngx.dll`, it crashes in round 1, when the other NGX user runs its DLSS after `cg_ngx.dll` closed.
@@ -27,8 +27,8 @@ A PC session on 2026-10-27, 22:45–23:30, run by a Claude Code session in `C:\U
   - the player's own changes under RR after that;
   - the player's settings back with RR off;
   - the RR file gone once it matches Ultra.
-  - Emre: "Everything worked as expected. All my settings were maintained and whatnot."
-- **Step 3, with frame generation, all at Photon Ultra** (Emre's choice: "that's how I would actually play"):
+  - The player: "Everything worked as expected. All my settings were maintained and whatnot."
+- **Step 3, with frame generation, all at Photon Ultra** (the player's choice: "that's how I would actually play"):
 
   | setting | rendered fps | shown fps |
   | --- | --- | --- |
@@ -53,7 +53,7 @@ A PC session on 2026-10-27, 22:45–23:30, run by a Claude Code session in `C:\U
   `config\create_galore_bridge-photon-rr.txt` existed before.
 - **PresentMon helper for part 3:**
   - `$T\profiling\scripts\rr2c-pm.ps1` (2b's, writing to `$T\rr2c`, for T2 only);
-  - elevated at 22:48 (Emre clicked the prompt).
+  - elevated at 22:48 (the player clicked the prompt).
 
 ## Part 1: the probe
 
@@ -175,7 +175,7 @@ crash: code 0xC0000005 at 00007FF8970AAB58, reading address 0000023C5558E714 (C:
   - the release DLL in the instance.
 - **Render resolution** set to Performance in the pack's options file (`TAAU=true`, `TAAU_RENDER_SCALE=0.50`), as in
   2b. Game launched at 22:49.
-- **Photon's profile** is from Iris's own log line (`Profile: ...`) at every switch, and from what Emre saw in the
+- **Photon's profile** is from Iris's own log line (`Profile: ...`) at every switch, and from what the player saw in the
   menu.
 - **Photon's options file and the two settings files** were copied at each step. Below, each shows its options
   (without the date line); "empty" means the file held only its date line.
@@ -216,7 +216,7 @@ crash: code 0xC0000005 at 00007FF8970AAB58, reading address 0000023C5558E714 (C:
 
 ### c. A change under RR
 
-- **Emre turned Water Caustics off** in Photon's settings. The shaders reloaded at 22:53:36.
+- **The player turned Water Caustics off** in Photon's settings. The shaders reloaded at 22:53:36.
 - **Photon:** `Profile: Custom (+6 options changed by user)`.
 - **`[sl.dlss_g]`:** 0.
 - **Files:**
@@ -247,7 +247,7 @@ crash: code 0xC0000005 at 00007FF8970AAB58, reading address 0000023C5558E714 (C:
   - **the pause menu** at 23:00:25.718, with the world saving (`Saving and pausing game...`). That's where 2b hung.
     The game stayed up.
   - **`[sl.dlss_g]`:** 0.
-- Emre: "I did step D and nothing odd happened. And for the frame generation numbers, I do see the expected double."
+- The player: "I did step D and nothing odd happened. And for the frame generation numbers, I do see the expected double."
 
 ### e. RR on again: your RR settings
 
@@ -264,7 +264,7 @@ crash: code 0xC0000005 at 00007FF8970AAB58, reading address 0000023C5558E714 (C:
 
 ### f. Switching
 
-Emre switched RR much more than the 4 times asked:
+The player switched RR much more than the 4 times asked:
 - **In the Upscaling tab without leaving it,** 10 times, about every 4 s (22:54:42–22:55:13).
   - Each switch was running again in about 1.5 s.
   - The toast and Photon's profile followed every time: Custom (+6) with RR, high (+2) without.
@@ -283,16 +283,16 @@ Emre switched RR much more than the 4 times asked:
   | off (d's long play) | 22:58:54.539 | 22:58:56.872 | 22:58:57.615 for 88 s |
   | off (pause case) | 23:06:53.669 | 23:06:57.121 | 23:06:57.783, pause at 23:06:57.903 |
 
-- **The pause right after RR off:** frame generation came on and, 120 ms later, Emre was in the pause menu with the
+- **The pause right after RR off:** frame generation came on and, 120 ms later, the player was in the pause menu with the
   world saving. The game stayed up. Frame generation ran again after it (23:07:39–23:07:59).
-  - Emre: "I turned it off and then I flicked the pause menu up as fast as possible."
+  - The player: "I turned it off and then I flicked the pause menu up as fast as possible."
 - **F11 with RR on:** 4 times (22:56:25–22:56:31). RR started again at each window size, and frame generation was
   back within 35 ms.
 - **`[sl.dlss_g]`:** 0. No freeze.
 
 ### g. Back to Ultra
 
-- **Emre picked Ultra** in Photon's settings with RR on: `Profile: ultra (+2 options changed by user)`
+- **The player picked Ultra** in Photon's settings with RR on: `Profile: ultra (+2 options changed by user)`
   (22:55:25.528).
 - **RR off** (22:55:35.399): `photon-rr.txt` was gone.
 - **RR on** (22:55:40.348): the toast `Photon: Ultra for Ray Reconstruction` again.
@@ -308,14 +308,14 @@ Emre switched RR much more than the 4 times asked:
   - 8 × `FC feedback: 1` (window resizes);
   - one each of `Invalid backbuffer resource extent` and `unsupported alignment` at the start.
 - **Streamline's log:** 991 lines, with no `[error]`.
-- Emre: "So far, I noticed nothing off in anything I did. Everything worked as expected. All my settings were
+- The player: "So far, I noticed nothing off in anything I did. Everything worked as expected. All my settings were
   maintained and whatnot." At the end: "done no crash at any point".
 
 ### Ray Reconstruction 1's step 3: with frame generation
 
 - **Set-up:** at the lakeshore, standing still, switching in the Upscaling tab. The game's counter gives rendered
   fps; the NVIDIA overlay gives shown fps.
-- **Photon at Ultra for all three.** Emre set his own Photon settings to Ultra too (with RR off, 23:02:15). The
+- **Photon at Ultra for all three.** The player set his own Photon settings to Ultra too (with RR off, 23:02:15). The
   Bridge kept them as his own, as it should.
   - His reason: "ever since frame generation became part of the stable build, there's no reason on a 4080 Super to
     not push Photon as high as it goes, because frame generation will make it smooth anyway. So I'm putting both on
@@ -328,7 +328,7 @@ Emre switched RR much more than the 4 times asked:
 | RR off, DLSS Quality | `DLSS running at 1707x960 to 2560x1440 (Quality, 67%), preset K` (23:02:13.258) | 112 | ~224 ("2x that") | Ultra |
 | RR Balanced | `RR running at 1485x835 to 2560x1440 (Balanced, 58%)` (23:02:55.328) | 99 | ~197 | Ultra |
 
-- **Emre's theory from Ray Reconstruction 1** was that RR Performance with frame generation can match DLSS Quality.
+- **The player's theory from Ray Reconstruction 1** was that RR Performance with frame generation can match DLSS Quality.
   It comes close: 106 against 112 rendered, about 5% short. At Ultra the GPU does more besides RR, so the gap is
   smaller than T1's 7% at High.
 - **His pick:** "Out of the 3 I would play rr balanced but in my own world probably rr quality since the 4080 super has
@@ -344,7 +344,7 @@ r2c\T2.csv` from a second elevated helper.
 - **Run:** `20261027-231737-RR1`, 23:17:37–23:22:20.
   - 8 modes at `shore`, then at `canopy`.
   - PresentMon caught 53,813 frames inside the run: two presents per rendered frame.
-- **The first attempt was thrown away.** Emre's monitor went to sleep during the `canopy` pass. He: "the monitor went
+- **The first attempt was thrown away.** The player's monitor went to sleep during the `canopy` pass. He: "the monitor went
   to sleep in the dlss performance second pass, and the screen is no longer full screen ... The tests from then on
   need to rerun".
   - I closed that game at 23:15:04 and ran the whole of T2 again.
@@ -412,18 +412,18 @@ r2c\T2.csv` from a second elevated helper.
 
 - **Render resolution set in the pack's options file** for part 2 (`TAAU=true`, `TAAU_RENDER_SCALE=0.50`), as in
   2b, instead of in the Upscaling tab.
-- **Step d's long play came after e, f and g.** Emre ran through b–g quickly first, mostly inside the menu. I then
+- **Step d's long play came after e, f and g.** The player ran through b–g quickly first, mostly inside the menu. I then
   asked for d's 2 minutes, F11 and pause, and for f's pause case, with frame generation on. Both are above with their
   times.
-- **Step 3 at Photon Ultra for all three readings**, by Emre's choice (above).
-- **T2 at Photon's defaults (High),** like 2b's T1, at Emre's choice.
+- **Step 3 at Photon Ultra for all three readings**, by the player's choice (above).
+- **T2 at Photon's defaults (High),** like 2b's T1, at the player's choice.
   - I put the pack's options file back to `TAAU=true`, `TAAU_RENDER_SCALE=0.50`.
-  - I removed `photon-own.txt` (Emre's Ultra; it wasn't there before the session) before T2, instead of leaving
+  - I removed `photon-own.txt` (the player's Ultra; it wasn't there before the session) before T2, instead of leaving
     "Photon's settings as part 2 left them".
-  - It was set windowed again (`fullscreen:false`), as T1 ran; Emre's F11 presses had left it full screen.
-- **T2 was run twice.** The first attempt was closed at 23:15:04, after Emre's monitor went to sleep during it, and
-  run again whole from 23:16, at Emre's word ("You can kill and restart from there").
-  - The new run needed a second elevated PresentMon helper; Emre clicked the prompt.
+  - It was set windowed again (`fullscreen:false`), as T1 ran; the player's F11 presses had left it full screen.
+- **T2 was run twice.** The first attempt was closed at 23:15:04, after the player's monitor went to sleep during it, and
+  run again whole from 23:16, at the player's word ("You can kill and restart from there").
+  - The new run needed a second elevated PresentMon helper; the player clicked the prompt.
   - Closing the first one mid-run left the test kit's settings for its current mode in the Bridge's settings file.
     I put back T2's settings (checked with `cmp`) before the rerun.
 - **T2's table** uses the test kit's own frame count for rendered fps, and PresentMon's display changes for shown

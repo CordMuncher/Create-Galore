@@ -1,9 +1,9 @@
 # Reflex 1 on the RTX 4080 SUPER: input latency with Reflex, a late input read and Sodium's render-ahead limit
 
-PC session on 2026-10-25, 21:20–22:00, by a Claude Code session in `C:\Users\coolm\Documents\Claude\MC-CREATE`
+PC session on 2026-10-25, 21:20–22:00, by a Claude Code session in `C:\Users\<user>\Documents\Claude\MC-CREATE`
 (`$T`). It followed "Reflex 1" in `tools/dlss-testkit/PC-RUNBOOK.md` at `5016ab2`, with Bridge 1.105.0 (the test
 build) and the test kit from that commit.
-- Two launches: L1 with Perfect Presentation on, L2 with it off. Then a by-feel part with Emre.
+- Two launches: L1 with Perfect Presentation on, L2 with it off. Then a by-feel part with the player.
 - DLAA at full resolution (`dlaa=dlss`, preset K) throughout, at 2560x1440.
 - Both runs finished, with no crash. This is a test, not a fix: no code was changed.
 
@@ -37,7 +37,7 @@ mode. So the modes compare with each other, but this isn't click-to-photon.
     the order is the same.
 - **Perfect Presentation on its own lowers the latency.** The baseline at the canopy is 14.3 ms with it and 18.8 ms
   without, and the GPU trails the CPU by 7–9 ms instead of 14–16 ms.
-- **By feel (Emre):**
+- **By feel (the player):**
   - The late read is "very close to placebo", like a game's raw input option: quick corrections after overshooting
     respond faster.
   - Reflex is "kind of crazy". It feels exactly like Reflex in games that build it in, more responsive than Minecraft
@@ -176,7 +176,7 @@ intended.
 
 **Program settings:**
 - **There's no profile for `java.exe`, which the test game runs.** So the global settings apply.
-- A `javaw.exe` profile exists (for the Java runtime of Emre's own launcher). It sets only power management to Normal,
+- A `javaw.exe` profile exists (for the Java runtime of the player's own launcher). It sets only power management to Normal,
   and everything else to "Use global setting".
 
 **Set up G-SYNC:** G-SYNC / G-SYNC Compatible **enabled, for full screen mode** (not windowed). The driver reported
@@ -186,7 +186,7 @@ intended.
 
 So no control panel frame cap and no Ultra Low Latency Mode change what the modes mean.
 
-## Emre's notes (by feel)
+## the player's notes (by feel)
 
 At the moving scene with Perfect Presentation on, 21:49–21:58. His words, tidied and grouped:
 
@@ -246,7 +246,7 @@ the session.
 | by feel | on | `modes=lat-base`, `viewpoints=moving`, `paths=still`, `byEye=lat-base` | `20261025-214908`: one short run, then by eye | 21:49:08–21:58:26 |
 
 **What was open.**
-- No game server, and no other game (Emre: quiet).
+- No game server, and no other game (the player: quiet).
 - Still running in the background: the Claude app, FanControl, the NVIDIA overlay, the PresentMon service, Razer's
   elevation service, a Settings window, and **Steam (idle)**.
 - The game window stayed in front during the runs.
@@ -256,15 +256,15 @@ the session.
    `...autorun=dlaa-test` and `...byEye=lat-base` instead of `...runs=`.
    - Without a run list, the kit's autorun plays its default run, and `byEye` only starts after a run ends. The run
      `20261025-214427` had 56 modes, 5 viewpoints and 210,140 frames.
-   - The chat couldn't be opened while it ran, neither by Emre nor by me, so `/dlaatest stop` couldn't be typed.
+   - The chat couldn't be opened while it ran, neither by the player nor by me, so `/dlaatest stop` couldn't be typed.
    - The game was closed by ending its process (21:47). That run's folder is partial and unused.
    - The game was then relaunched with one short run first (`modes=lat-base`, `viewpoints=moving`, `paths=still`),
      after which `byEye` started as intended.
    - The killed run had left `dlaa=true`, `dlaaPreset=K` in the display settings. They were put back from the copy
      before the relaunch.
-2. **Emre typed `/dlaatest mode lat-reflex` and `/dlaatest mode lat-base` himself.** At those points the game wouldn't
+2. **The player typed `/dlaatest mode lat-reflex` and `/dlaatest mode lat-base` himself.** At those points the game wouldn't
    take keyboard focus from the Claude window. I typed `lat-late`.
-3. **The by-feel part runs with Emre's own `options.txt`: vsync on and a 120 fps cap**, as the runbook says (only
+3. **The by-feel part runs with the player's own `options.txt`: vsync on and a 120 fps cap**, as the runbook says (only
    Reflex and the late read switch). In `lat-reflex`, Reflex's limiter took over the 120 fps cap
    (`frame cap 120 fps (Reflex's)`).
 4. **A crash log from the previous session**, `instance\hs_err_pid2480.log`, was found while checking for crash

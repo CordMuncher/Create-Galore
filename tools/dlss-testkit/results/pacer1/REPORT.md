@@ -1,11 +1,11 @@
 # Pacer 1 on the RTX 4080 SUPER: the GPU pacer for uncapped play, and a frame cap that waits before input
 
-PC session on 2026-10-25/26, 22:50–00:15, by a Claude Code session in `C:\Users\coolm\Documents\Claude\MC-CREATE`
+PC session on 2026-10-25/26, 22:50–00:15, by a Claude Code session in `C:\Users\<user>\Documents\Claude\MC-CREATE`
 (`$T`). It followed "Pacer 1" in `tools/dlss-testkit/PC-RUNBOOK.md` at `dfdfd28`, with Bridge 1.107.0 (the test
 build with the pacer) and the test kit from that commit.
 - Launch 1 (L3) has Perfect Presentation on; it ran twice, see Method. Launch 2 (L4) has it off.
 - DLAA at full resolution (`dlaa=dlss`, preset K) throughout, at 2560x1440.
-- **The by-feel part was skipped**, at Emre's call: "until it's all working".
+- **The by-feel part was skipped**, at the player's call: "until it's all working".
 - No crash. This is a test, not a fix: no code was changed.
 
 **What is measured:** the Bridge's latency meter, as in Reflex 1, from the game last reading input to the GPU finishing
@@ -247,14 +247,14 @@ the session.
 **What didn't go to plan:**
 1. **Launch 1 ran twice.**
    - After the first L3, the frame rate looked too low and the pacer had waited 0 everywhere. I took a screenshot of
-     the plain wallpaper for the lock screen; it was Emre's desktop with the taskbar hidden.
-   - So the run was repeated with Emre at the PC and the game window clicked into.
+     the plain wallpaper for the lock screen; it was the player's desktop with the taskbar hidden.
+   - So the run was repeated with the player at the PC and the game window clicked into.
    - The repeat matched the first run within 0.5 ms and a few fps in every mode, so the low frame rate and the idle
      pacer are real, not from focus or a lock screen.
    - The used numbers are the repeat's. The first try's are in [latency-L3-first-try.txt](latency-L3-first-try.txt).
 2. **The game's log rolled over at midnight in the middle of the L3 repeat.** The full log was put back together from
    the archived part for the line counts above.
-3. **The by-feel part didn't run.** Emre: "let's skip the by eye for now until it's all working".
+3. **The by-feel part didn't run.** The player: "let's skip the by eye for now until it's all working".
 
 ## Raw data, on the PC only
 

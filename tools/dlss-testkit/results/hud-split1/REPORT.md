@@ -1,7 +1,7 @@
 # HUD split 1 on the RTX 4080 SUPER: the world without the HUD, and the HUD's coverage
 
-PC session on 2026-10-26, 16:13–16:42, by a Claude Code session in `C:\Users\coolm\Documents\Claude\MC-CREATE`
-(`$T`), with Emre at the keyboard. It followed "HUD split 1" in `tools/dlss-testkit/PC-RUNBOOK.md` at `93149df9`, with
+PC session on 2026-10-26, 16:13–16:42, by a Claude Code session in `C:\Users\<user>\Documents\Claude\MC-CREATE`
+(`$T`), with the player at the keyboard. It followed "HUD split 1" in `tools/dlss-testkit/PC-RUNBOOK.md` at `93149df9`, with
 Bridge 1.116.0 (test build), in one session with Pacer 3 (that one second, reported in `results/pacer3/`).
 - One launch without `autorun`, Perfect Presentation on DirectX 12, Photon v1.3a + DLAA with DLSS at full resolution
   (preset K), 2560x1440.
@@ -16,12 +16,12 @@ Bridge 1.116.0 (test build), in one session with Pacer 3 (that one second, repor
   the four views in step 3.
 - **71 marks pictures were saved**, each time the scene changed. None has a single magenta, yellow or cyan pixel. I
   counted the exact colours the check paints, in every picture.
-- **By eye (Emre, step 2):** "Looks good to me. Nothing unusual apart from the expected dips" (the checks' one-frame
+- **By eye (the player, step 2):** "Looks good to me. Nothing unusual apart from the expected dips" (the checks' one-frame
   stalls every 5 s).
 - **The four views show what they should:** `ui` only the HUD over a grey checkerboard, `marks` the world dimmed with no
   colour marks, `hudless` the world without any HUD, `alpha` white under the HUD and black elsewhere.
 - **The cost of the split** (no checks), standing still and uncapped: **161 fps / 6.2 ms with it, 164 fps / 6.1 ms
-  without**. That's about 2% or 0.1 ms per frame, from one reading each, so close to noise. With Emre's own 120 fps cap
+  without**. That's about 2% or 0.1 ms per frame, from one reading each, so close to noise. With the player's own 120 fps cap
   both sat at the cap (118 and 116 fps).
 - **No `HUD split` WARN line, and no `Perfect Presentation` or `DLAA:` WARN or ERROR line.** Even the usual one-off
   `swap chain wait timed out` didn't come this time.
@@ -84,26 +84,26 @@ leaks / under / over. The whole list of 189 checks is at the end.
 | Options screen | 99–100 | OptionsScreen | 100% | 100% | 0 / 0 / 0 |
 | F1 | 102–104 | none | 0 px | 0 px | 0 / 0 / 0 |
 
-- The chat checks in between (Emre typing the commands) also all read 0 / 0 / 0. ChatScreen came up 32 times in all.
+- The chat checks in between (the player typing the commands) also all read 0 / 0 / 0. ChatScreen came up 32 times in all.
 - The nausea wobble is in the world copy (it's drawn before the HUD), so the HUD's share didn't change under it.
 - The pumpkin and the spyglass are HUD layers in this game: they cover nearly the whole screen, partly see-through.
 - None of the 71 marks pictures is coloured, so none is copied here.
 
 ## Step 2: by eye
 
-Emre played normally for about 5 minutes (checks 106–145, all 0 / 0 / 0): "Looks good to me. Nothing unusual apart from
+The player played normally for about 5 minutes (checks 106–145, all 0 / 0 / 0): "Looks good to me. Nothing unusual apart from
 the expected dips." No flicker, no wrong colour, and the HUD and the menu blur looked as usual.
 
 ## Step 3: the views
 
-`hudSplitView` added to the settings file and F8 each time; the log confirmed each view. Emre's F2 screenshots:
+`hudSplitView` added to the settings file and F8 each time; the log confirmed each view. The player's F2 screenshots:
 
 | View | What it should show | What it showed | Screenshot |
 | --- | --- | --- | --- |
 | `ui` | only the HUD, over a grey checkerboard; no world | the minimap, the block tooltip, the frame counter, the crosshair, the chat line, the hotbar over the checkerboard; no world | [view-ui.png](view-ui.png) |
-| `marks` | the world dimmed, no magenta, yellow or cyan | the world dimmed with the HUD on top; Emre: "I see no magenta yellow or cyan" | [view-marks.jpg](view-marks.jpg) |
+| `marks` | the world dimmed, no magenta, yellow or cyan | the world dimmed with the HUD on top; the player: "I see no magenta yellow or cyan" | [view-marks.jpg](view-marks.jpg) |
 | `hudless` | the world with no HUD at all | the world only: no hotbar, crosshair, chat, minimap or frame counter (the first-person hand and shield are the world's) | [view-hudless.jpg](view-hudless.jpg) |
-| `alpha` | white where the HUD is, black elsewhere | white under the minimap, crosshair, hotbar and counter, grey under the chat's see-through background, black elsewhere; Emre: "Very trippy looking but yeah it works" | [view-alpha.png](view-alpha.png) |
+| `alpha` | white where the HUD is, black elsewhere | white under the minimap, crosshair, hotbar and counter, grey under the chat's see-through background, black elsewhere; the player: "Very trippy looking but yeah it works" | [view-alpha.png](view-alpha.png) |
 
 `marks` and `hudless` are saved here as JPEG to keep the repository small (the PNGs are on the PC). The checks during
 the views (146–189) were all 0 / 0 / 0 too.
@@ -111,14 +111,14 @@ the views (146–189) were all 0 / 0 / 0 too.
 ## Step 4: the cost
 
 Standing still at one spot looking at the lake. The frame counter's readings (fps and frame time over its window, and
-the 1% and 0.1% lows of the last 10 seconds), from Emre's F2 screenshots:
+the 1% and 0.1% lows of the last 10 seconds), from the player's F2 screenshots:
 
 | | Split on (`hudSplit=true`, no checks) | Split off |
 | --- | --- | --- |
-| As the runbook says (Emre's own settings: VSync on, Max Framerate 120) | 118 fps, 8.5 ms (still); 116 fps, 8.7 ms (moving) | 116 fps, 8.6 ms |
+| As the runbook says (the player's own settings: VSync on, Max Framerate 120) | 118 fps, 8.5 ms (still); 116 fps, 8.7 ms (moving) | 116 fps, 8.6 ms |
 | Uncapped (Max Framerate Unlimited, VSync off), about 30 s still | **161 fps, 6.2 ms** (1% low 87, 0.1% low 54) | **164 fps, 6.1 ms** (1% low 87, 0.1% low 70) |
 
-- With the cap both sit at it, so the runbook's comparison can't show a cost. Emre then uncapped the frame rate and
+- With the cap both sit at it, so the runbook's comparison can't show a cost. The player then uncapped the frame rate and
   turned VSync off himself and ran both again (his call, not in the runbook). His settings were put back afterwards.
 - Uncapped, the split costs about 3 fps (2%), 0.1 ms per frame. That's one reading each, at the edge of the noise.
 - The capped split-off reading's lows (6 and 1) include the F8 reload's hitch, which was still in the counter's
@@ -139,20 +139,20 @@ the 1% and 0.1% lows of the last 10 seconds), from Emre's F2 screenshots:
   - then `hudSplitView=...` in step 3, and `hudSplit=true` or nothing in step 4.
   - The file was put back as it was, so none of these is left.
 - Shader pack: Photon v1.3a + DLAA was already selected.
-- Nothing else changed, as the runbook says. Distant Horizons kept its 32 threads, and `options.txt` kept Emre's
+- Nothing else changed, as the runbook says. Distant Horizons kept its 32 threads, and `options.txt` kept the player's
   settings (VSync on, 120 fps) until he changed them for the uncapped readings. `options.txt` was put back afterwards.
 
 **The launch.**
-- The usual launch without `autorun`, 16:16:18. Emre opened `dlaa-test` and used `/gamemode creative`.
+- The usual launch without `autorun`, 16:16:18. The player opened `dlaa-test` and used `/gamemode creative`.
 - The world's backup mod made its usual backup at load (16:18:26–16:18:29).
-- Emre did every step at the keyboard while I read the log after each one. I took no screenshots of the screen: the
+- The player did every step at the keyboard while I read the log after each one. I took no screenshots of the screen: the
   pictures here are his F2 screenshots and the check pictures.
-- Emre quit the game himself at 16:41:53.
+- The player quit the game himself at 16:41:53.
 
 **What was running.**
 - The PC had restarted at 16:04, so the ChatGPT/Codex sandbox service and Wallpaper Engine were running again.
-- Emre stopped the Codex service. Its startup type is still Automatic, which he can change in Windows Services.
-- Emre paused the wallpaper. During step 4, only the game used the GPU.
+- The player stopped the Codex service. Its startup type is still Automatic, which he can change in Windows Services.
+- The player paused the wallpaper. During step 4, only the game used the GPU.
 - No PresentMon, no nvidia-smi, no game server.
 
 No crash, and no new crash log.
@@ -163,8 +163,8 @@ No crash, and no new crash log.
   `-marks`).
 - In `$T\hud-split1\`:
   - the game log `latest.log` and `checks-table.md`;
-  - all of Emre's F2 screenshots as PNG (`shots\`);
-  - the settings copies, the display settings file as 1.116.0 left it, and `options.txt` as Emre left it uncapped;
+  - all of the player's F2 screenshots as PNG (`shots\`);
+  - the settings copies, the display settings file as 1.116.0 left it, and `options.txt` as the player left it uncapped;
   - this session's notes.
 
 <details>

@@ -1,18 +1,18 @@
 # DLAA rounds 1 and 2 on the PC: runbook
 
-For the Claude Code session on Emre's PC (a local session he opens in the test folder, or Remote Control). Emre
+For the Claude Code session on the player's PC (a local session he opens in the test folder, or Remote Control). The player
 approved the plan in the "DLAA round 1: PC test plan" doc and the tools in this runbook on 2026-10-24; this file is
 the how. Rules that come before anything here:
 
-- Work only inside `C:\Users\coolm\Documents\Claude\MC-CREATE` (the test folder). Never open, read or change his
+- Work only inside `C:\Users\<user>\Documents\Claude\MC-CREATE` (the test folder). Never open, read or change his
   Prism instance, pack install, worlds, server files or anything else outside that folder. Nothing installed
   system-wide, no PATH or registry changes.
-- No need to ask before each download, install or launch in this runbook. Ask Emre before any tool or step that is
+- No need to ask before each download, install or launch in this runbook. Ask the player before any tool or step that is
   not in it.
 - The game logs in offline as `CGTester`; never use his accounts.
 - Nothing is merged or released; results go to the DLAA branch only (`claude/project-thread-u2wmhh`).
 
-PowerShell, in the test folder: `$T = "C:\Users\coolm\Documents\Claude\MC-CREATE"`.
+PowerShell, in the test folder: `$T = "C:\Users\<user>\Documents\Claude\MC-CREATE"`.
 
 ## 1. Tools
 
@@ -65,7 +65,7 @@ Expand-Archive $T\repo\tools\dlss-testkit\world\dlaa-test.zip $T\instance\saves 
 If `$T\instance\saves\dlaa-test` is already there from an earlier round, keep it: it has the far terrain (Distant
 Horizons' database, about 230 MB for radius 64), so the hold in step 4 can be skipped.
 
-Ask Emre to check that the NVIDIA App's DLSS override is off (Graphics, Global settings, DLSS Override - Model
+Ask the player to check that the NVIDIA App's DLSS override is off (Graphics, Global settings, DLSS Override - Model
 Presets). It is his setting, outside the test folder, so he changes it, not the session. With it on, NGX uses the
 driver's own DLSS and its forced preset for every mode, and the developer DLL in run E is never loaded. Check after
 the first launch: `$T\instance\create-galore-dlss\nvsdk_ngx.log` has no `Feature dlss override enabled`.
@@ -84,11 +84,11 @@ Before the first launch (create a file if it isn't there; the game adds the keys
   started again. It also lets the window keep the full `--resolution` (with the early window, it is fitted to the
   screen, 2560x1421 in round 1), so every run has the same picture size.
 - `$T\instance\config\DistantHorizons.toml` (the pack installs it): `lodChunkRenderDistanceRadius = 64` in place of
-  the pack's 256 (Emre's call, 2026-10-24: far terrain still in every shot, built in minutes instead of hours; the
+  the pack's 256 (the player's call, 2026-10-24: far terrain still in every shot, built in minutes instead of hours; the
   setting is the player's choice in game anyway). Every run and mode uses the same 64. Also `numberOfThreads = 32`
   under `[common.multiThreading]` in place of the pack's 2, so the far terrain builds on all of the 9950X3D's
   threads (test folder only; it changes how fast it builds, not what it shows).
-- Window: Emre's monitor size if smaller than 2560x1440, else `--resolution 2560x1440`. Ask him or read it with
+- Window: the player's monitor size if smaller than 2560x1440, else `--resolution 2560x1440`. Ask him or read it with
   `Get-CimInstance Win32_VideoController | Select CurrentHorizontalResolution, CurrentVerticalResolution`.
 
 ## 4. First launch (checks only)
@@ -149,12 +149,12 @@ Write `$T\repo\tools\dlss-testkit\results\REPORT.md`: the metrics tables, each r
 `"dlaaActive": false` from `manifest.json`, every `DLAA:` log line, any NGX warnings, and anything that looked wrong.
 Add a few crops (about 512x512, PNG) of leaves, glass and fence edges, same spot in every mode, under
 `results\<run>\`: a few MB in all, never whole screenshots. Commit them on the DLAA branch and push. If pushing
-isn't possible from this PC, tell Emre, so he can paste `REPORT.md` into the DLAA thread. Emre looks at the full
+isn't possible from this PC, tell the player, so he can paste `REPORT.md` into the DLAA thread. The player looks at the full
 screenshots with `$T\repo\tools\dlss-testkit\compare.html`.
 
 ## Round 2: FSR 3 next to DLAA
 
-Same PC, same test folder, same tools as round 1, nothing new to install. Start it only when Emre says so. The
+Same PC, same test folder, same tools as round 1, nothing new to install. Start it only when the player says so. The
 Bridge can run AMD FSR 3.1 (OpenGL compute, any GPU) in DLSS's place, as a test engine; round 2 measures it on the
 4080 next to DLAA and Photon's TAA. It is only a test of how good FSR 3 looks here: never assume it matches DLSS, and
 report what the numbers and crops show.
@@ -208,13 +208,13 @@ of a run, no new `ready` line before `Stopping!`.
 (metrics tables, `DLAA:` lines, the frame time of `fsr3` against `dlaa-default` and `photon-taa`, anything that
 looked wrong) and crops of the same spots as round 1 (`shore-fence-glass`, `glass-panes`, `canopy-leaves`, about
 512x512, from the settled still frame) for `photon-taa`, `dlaa-default` and `fsr3` under `results\round2\F\`, a
-few MB in all. Commit and push on the DLAA branch. Emre judges the look himself in `compare.html`.
+few MB in all. Commit and push on the DLAA branch. The player judges the look himself in `compare.html`.
 
 
 ## Milestone 2, PC session: things that move
 
-One session in place of the two runs planned before (Emre, 2026-10-24). Same PC, test folder and tools as rounds 1
-and 2, nothing new to install. Start it only when Emre says so. Photon's copy now gives DLSS the motion of things
+One session in place of the two runs planned before (the player, 2026-10-24). Same PC, test folder and tools as rounds 1
+and 2, nothing new to install. Start it only when the player says so. Photon's copy now gives DLSS the motion of things
 that move by themselves:
 
 - waving leaves and grass;
@@ -231,10 +231,10 @@ frame over FSR's history (particles, rain, the portal). The green one marks wher
 motion vectors (fire and lava).
 
 The cloud checked that the motion vectors are exact, and that the masks cut FSR's smear on fire, lava and the
-portal. This session checks all of it on the 4080 with NVIDIA's shader compiler and real DLSS, and Emre judges the
+portal. This session checks all of it on the 4080 with NVIDIA's shader compiler and real DLSS, and the player judges the
 look by eye. Is DLSS without masks as clean as FSR with them?
 
-**Frame times don't count in this session.** Emre may host his game server meanwhile, pinned to the CCD without the 3D
+**Frame times don't count in this session.** The player may host his game server meanwhile, pinned to the CCD without the 3D
 V-Cache, with the test game on the X3D CCD. That's fine for pictures, but frame times get noisy. CPU costs, such as
 what working out the entities' motion costs, are measured later in a profiling pass on a quiet PC. Note in the
 report whether the server ran.
@@ -322,7 +322,7 @@ The config edits go into `config\create_galore_dlss_testkit.json`, which run J w
 
 After N, delete the config file again.
 
-### By eye, with Emre (about 25 minutes)
+### By eye, with the player (about 25 minutes)
 
 Launch without the `autorun` argument and open the `dlaa-test` world. Switch anti-aliasing with these commands (the
 shaders reload, which takes a few seconds):
@@ -335,7 +335,7 @@ shaders reload, which takes a few seconds):
 
 1. Moving things, about 15 minutes. `/dlaatest scene build` puts the moving scene up over the lake at the game's
    normal speed.
-   - Emre looks at the cogs, the fan, the bearing's cross, the ship, the walkers, the panda, the spinning sword, the
+   - The player looks at the cogs, the fan, the bearing's cross, the ship, the walkers, the panda, the spinning sword, the
      chest and the bell. He watches from the shore, close up and riding the ship (stand on it), in `dlaa-default`,
      `dlaa-camera`, `photon-taa` and `fsr3`.
    - If he wants, he builds a short train in creative and rides it.
@@ -345,7 +345,7 @@ shaders reload, which takes a few seconds):
    - `/dlaatest scene remove` when done.
 2. Rain, fire and the portal, about 10 minutes. `/dlaatest scene build effects` puts up the effects scene and starts
    the rain.
-   - Emre looks at the portal, the fire, the campfire's smoke, the lava fall and pool, the water fall and the rain.
+   - The player looks at the portal, the fire, the campfire's smoke, the lava fall and pool, the water fall and the rain.
      He stands still and turns the camera, in `dlaa-default`, `fsr3`, `fsr3-nomask` and `photon-taa`.
    - `/dlaatest scene remove` takes the scene away and stops the rain.
 
@@ -385,7 +385,7 @@ Write `$T\repo\tools\dlss-testkit\results\m2\REPORT.md` with:
 - the script outputs, without conclusions from J's frame times;
 - the `DLAA:` log lines, and any Colorwheel or shader lines;
 - whether the game server ran meanwhile;
-- Emre's notes from the session.
+- The player's notes from the session.
 
 Add crops of about 512x512 from the still frames, for each mode:
 
@@ -397,25 +397,25 @@ folders.
 
 ## Profiling 1: where the time goes
 
-A brief for the PC session, not a fixed recipe. Emre asked on 2026-10-24 that the PC session runs this on its own:
+A brief for the PC session, not a fixed recipe. The player asked on 2026-10-24 that the PC session runs this on its own:
 - it sets up the profiling tools;
 - it takes the captures below, plus any others the data calls for (say why);
 - it analyzes them and writes the report.
 
 It **does not fix anything** and changes no code. The report says where the time goes and what causes it, with the
-data to back it up. What to do about it is decided in the DLAA thread. Start only when Emre says so.
+data to back it up. What to do about it is decided in the DLAA thread. Start only when the player says so.
 
 ### Rules
 
 - **As at the top of this file:**
   - work in the test folder only;
-  - leave Emre's own install, worlds and server untouched;
-  - ask Emre before anything not covered here.
-- **Installs:** the profilers below may be installed normally, system-wide where they come as installers (Emre's
-  OK, 2026-10-24). Prefer portable builds. Administrator prompts are Emre's to click.
+  - leave the player's own install, worlds and server untouched;
+  - ask the player before anything not covered here.
+- **Installs:** the profilers below may be installed normally, system-wide where they come as installers (the player's
+  OK, 2026-10-24). Prefer portable builds. Administrator prompts are the player's to click.
 - **A quiet PC:** no game server and no other game or launcher. Close what can be closed, and note what stayed open.
-- **The NVIDIA Control Panel:** its power setting stays as Emre has it ("Prefer maximum performance" off, the
-  baseline). If Perfect Presentation shows the GPU clocking down, report it. Ask Emre before measuring with that
+- **The NVIDIA Control Panel:** its power setting stays as the player has it ("Prefer maximum performance" off, the
+  baseline). If Perfect Presentation shows the GPU clocking down, report it. Ask the player before measuring with that
   setting changed for the test `java.exe`, as it is his setting.
 - **Raw captures stay on the PC** in `$T\profiling`: Nsight reports, JFR recordings and PresentMon CSVs. They hold
   paths with the user name. The repo gets the report, small tables and cropped screenshots of timelines.
@@ -466,7 +466,7 @@ data to back it up. What to do about it is decided in the DLAA thread. Start onl
   - `jfr view hot-methods` and `cpuprofile.py` read it. In the recording the render thread is called `main` (its
     name before Minecraft renames it); `cpuprofile.py` knows.
   - spark is in the pack too, if an in-game view helps.
-- If NVIDIA's downloads need a developer account login, ask Emre.
+- If NVIDIA's downloads need a developer account login, ask the player.
 
 ### Setup
 
@@ -552,11 +552,11 @@ Write `$T\repo\tools\dlss-testkit\results\profiling-1\REPORT.md`, then commit an
 
 ## Upscaling 1: DLSS and FSR from a lower render resolution
 
-Start only when Emre says so. Same PC, test folder and tools as before. The Bridge now upscales through Photon's own
+Start only when the player says so. Same PC, test folder and tools as before. The Bridge now upscales through Photon's own
 TAAU path: with Photon's TAAU on, the frame renders at a lower size and DLSS or FSR 3.1 make the window-sized picture
 from it. The Bridge rounds the render size to whole pixels, and Photon's own TAAU renders the same size, so every
 mode at one scale gets the same internal resolution. **Compare each upscaler with Photon's TAAU at the same scale, not
-with native TAA** (Emre, 2026-10-25). Nothing of this is merged until Emre has tested it.
+with native TAA** (the player, 2026-10-25). Nothing of this is merged until the player has tested it.
 
 ### Update
 
@@ -583,7 +583,7 @@ settings below are set once, before that launch, and put back after it.
 - The kit's config (`config\create_galore_dlss_testkit.json`): no `"screenshots": false` (each run sets it itself), and
   `sceneTickRate` 20 as in the milestone 2 session. The runs F1 to U7 are built into the kit and get added to an
   existing config.
-- A quiet PC for the first part, F1 and F2, as in profiling 1: Emre closes everything else; note what stayed open.
+- A quiet PC for the first part, F1 and F2, as in profiling 1: the player closes everything else; note what stayed open.
 
 ### The launch
 
@@ -604,7 +604,7 @@ Write each argument as `--jvm-arg=-D...=...` (`...` = `create_galore_dlss_testki
 | U7 | what DLSS gets | `perf-debug-color+perf-debug-motion` | quick |
 
 - Each run gets its own folder, `screenshots\dlaa-test\<time>-<run>`, and the chat says `run ... (N more after it)`.
-  After U7 the game stays open for "By eye, with Emre" below (that's `...byEye`; without it the game closes).
+  After U7 the game stays open for "By eye, with the player" below (that's `...byEye`; without it the game closes).
 - PresentMon, for F1 and F2: as in profiling 1 (the same build in `$T\tools`), attached to the game's own `java.exe`,
   elevated: `--process_id <pid> --output_file $T\profiling\F.csv --qpc_time_ms --timed 1800 --terminate_after_timed
   --stop_existing_session --no_console_stats`. Its capture only needs to cover F1 and F2; it can stop during the U
@@ -653,17 +653,17 @@ Frame rate only, cheaply: PresentMon, no Nsight, no Java Flight Recorder.
 - U7: what DLSS gets, the render-sized frame stretched over the window: the whole view, no black or doubled edges,
   motion vectors as in milestone 2.
 
-### By eye, with Emre (Performance, about 30 minutes)
+### By eye, with the player (Performance, about 30 minutes)
 
-Emre asked for this (2026-10-25): numbers alone don't show how much the upscaling changes the look. It works like
-milestone 2's "By eye, with Emre": while Emre plays and watches, the session types the `/dlaatest` commands into the
+The player asked for this (2026-10-25): numbers alone don't show how much the upscaling changes the look. It works like
+milestone 2's "By eye, with the player": while the player plays and watches, the session types the `/dlaatest` commands into the
 game's chat (computer use). Only the moving scene; no rain or effects scene.
 
-When U7 ends, the game stays open: the moving scene goes up over the lake at the game's normal speed, Emre stands at
+When U7 ends, the game stays open: the moving scene goes up over the lake at the game's normal speed, the player stands at
 its viewpoint (flying, so he doesn't drop into the lake), and a moment later the shaders switch to `perf-dlss-K`. The
-chat says `now perf-dlss-K (the shaders reloaded); by eye now`. Tell Emre it's his turn.
+chat says `now perf-dlss-K (the shaders reloaded); by eye now`. Tell the player it's his turn.
 
-1. **`perf-dlss-K`** (DLSS preset K at Performance, 50%): already on. Emre walks, flies and rides the ship (stand on
+1. **`perf-dlss-K`** (DLSS preset K at Performance, 50%): already on. The player walks, flies and rides the ship (stand on
    it). He looks at the cogs, the fan, the bearing's cross, the ship, the walkers, the panda, the spinning sword, the
    chest and the bell, from the shore, close up and riding; he swings his own sword and holds things. If he wants, he
    builds a short train and rides it, or spawns a few animals (`/kill @e[type=!player,distance=..64]` afterwards).
@@ -679,7 +679,7 @@ chat says `now perf-dlss-K (the shaders reloaded); by eye now`. Tell Emre it's h
 5. When he's done: `/dlaatest scene remove`, then `/dlaatest mode dlaa-default` (Photon's TAAU goes off again), and
    close the game. Then put back the settings from Setup.
 
-At every mode, write down what Emre says with the mode's name, as close to his words as you can, especially:
+At every mode, write down what the player says with the mode's name, as close to his words as you can, especially:
 - how much sharper or softer each looks than the others, and than DLAA at full resolution if he asks for it;
 - anything that smears, trails, ghosts or flickers: the ship's glass block, the entities, the hand, leaves;
 - shimmer on fences, leaves and far terrain while standing still;
@@ -692,17 +692,17 @@ at one scale at a time.
 
 `metrics.py` for each run folder. Write `$T\repo\tools\dlss-testkit\results\upscale1\REPORT.md`: the metrics tables
 per scale, the frame rate tables of F1 and F2 (median and p90 frame time, fps, GPU-bound share, per scale against
-`X-taau` and the three native modes), the `DLAA:` lines, anything that looked wrong, and Emre's by-eye notes per mode
-("Emre's notes", as in milestone 2's report); crops of the same spots
+`X-taau` and the three native modes), the `DLAA:` lines, anything that looked wrong, and the player's by-eye notes per mode
+("The player's notes", as in milestone 2's report); crops of the same spots
 as round 1 (about 512x512, from the settled still frame) for each mode of U1 under `results\upscale1\U1\`, a few MB
 in all. Commit and push on the DLAA branch.
 
 ## Crash 1: DLSS restarting at a new render size with Perfect Presentation on
 
-Start only when Emre says so. Same PC, test folder and tools as before; about 40 minutes, three launches, no by-eye
+Start only when the player says so. Same PC, test folder and tools as before; about 40 minutes, three launches, no by-eye
 part, no PresentMon. Frame times don't count here (his server may run).
 
-**What happened.** In Emre's own game on 0.4.82 (2026-10-25 15:41), switching the preset from K to L and the render
+**What happened.** In the player's own game on 0.4.82 (2026-10-25 15:41), switching the preset from K to L and the render
 resolution from Native to Performance at once crashed the game: `EXCEPTION_ACCESS_VIOLATION` in `nvwgf2umx.dll`
 (NVIDIA's DirectX 11 driver), under `wglDXUnregisterObjectNV`, from `DlssPass.closeTextures`. That's DLSS's old textures
 being freed for the new render size, on the first frame after the shaders reloaded. Perfect Presentation was on, so DLSS
@@ -762,10 +762,10 @@ else that looked wrong. Don't commit the hs_err files: they name his user folder
 
 ## Reflex 1: input latency with Reflex, a late input read and Sodium's render-ahead limit
 
-Start only when Emre says so. Same PC, test folder and tools as before; about 45 minutes, two launches and an
+Start only when the player says so. Same PC, test folder and tools as before; about 45 minutes, two launches and an
 optional by-feel part. **Frame times count here** (latency follows the GPU's load): a quiet PC as in profiling 1, no
 game server. Reflex ships in pack 0.5.2 (Bridge 1.106.0) as an experimental NVIDIA Reflex setting without waiting for
-this run (Emre, 2026-10-25 20:29); this run measures what it does and decides what changes next.
+this run (the player, 2026-10-25 20:29); this run measures what it does and decides what changes next.
 **Done 2026-10-25 with Bridge 1.105.0** (L1, L2 and by feel): [results/reflex1/REPORT.md](results/reflex1/REPORT.md).
 Step 4 (the settings screen) is for a later session with 1.106.0 or newer.
 
@@ -805,7 +805,7 @@ otherwise); the kit's latency modes set those themselves. In 1.106.0 the log lin
 
 ### Settings (note the old values, put them back afterwards)
 
-- `config\create_galore_bridge-display.properties`: `dlaa=dlss` (DLAA at full resolution, as Emre plays),
+- `config\create_galore_bridge-display.properties`: `dlaa=dlss` (DLAA at full resolution, as the player plays),
   `perfectPresentation=true` for launch 1, `false` for launch 2. `nvngx_dlss.dll` 310.9.16 still in
   `$T\instance\create-galore-dlss`.
 - `config\fml.toml`: `earlyWindowControl = false` (Perfect Presentation needs it).
@@ -844,11 +844,11 @@ the background; F11 if it opened windowed is fine).
    error`, copy that line and go on (the other modes still count). Also check for `Perfect Presentation: DXGI swap chain ready`.
 2. **Perfect Presentation off, `...runs=L2`** (about 10 minutes): `lat-base`, `lat-late`, `lat-ra1` and `lat-ra0`
    (Sodium's render-ahead limit 1 and 0), `lat-ra1-late`, `lat-cap`, `lat-cap-late`.
-3. **By feel, optional (about 10 minutes, with Emre).** Launch 1's settings (Perfect Presentation on) with
+3. **By feel, optional (about 10 minutes, with the player).** Launch 1's settings (Perfect Presentation on) with
    `...autorun=dlaa-test`, one short run first (`...modes=lat-base`, `...viewpoints=moving`, `...paths=still`; without
    a run list autorun plays the whole default test, and the chat can't be opened during it) and `...byEye=lat-base`:
    after that run the game stays open at
-   the moving scene. Emre flicks the camera around and builds a little. The session switches with
+   the moving scene. The player flicks the camera around and builds a little. The session switches with
    `/dlaatest mode lat-late`, `/dlaatest mode lat-reflex` and back to `/dlaatest mode lat-base` when he says next
    (this only switches Reflex and the late read; the frame cap and Sodium stay as `options.txt` and Sodium have
    them). Write down what he says per mode, especially whether the camera feels more direct, and whether he can tell
@@ -873,18 +873,18 @@ If a launch crashes, copy `hs_err_pid*.log` and the log's last 100 lines, and re
 - the control panel settings and refresh rate from Settings, what stayed open on the PC;
 - for the Reflex modes: whether the driver says low latency is on and uses the game's sleep, the driver's numbers
   next to the Bridge's, and the unit check (about 1 expected);
-- Emre's by-feel notes, if that part ran;
+- The player's by-feel notes, if that part ran;
 - the settings screen check (step 4): what each step showed.
 
 Commit and push on the DLAA branch. Don't commit hs_err files (they name his user folder).
 
 ## Pacer 1: the GPU pacer for uncapped play, and a frame cap that waits before input
 
-Start only when Emre says so. Same PC, test folder, tools and settings as Reflex 1; about 40 minutes, two launches
+Start only when the player says so. Same PC, test folder, tools and settings as Reflex 1; about 40 minutes, two launches
 and an optional by-feel part. **Frame times count here**: a quiet PC as in profiling 1, no game server.
 
 **What it tests.** Reflex 1 found that uncapped, Reflex's sleep adds nothing beyond the late input read: the driver
-sees no OpenGL work, so it can't keep the GPU's queue short. Emre plays uncapped with G-SYNC. Two things, both on
+sees no OpenGL work, so it can't keep the GPU's queue short. The player plays uncapped with G-SYNC. Two things, both on
 any GPU, that don't need the driver:
 - **GPU pacer** (`gpuPacer`, `pacerTargetUs`): the Bridge flushes a GPU timestamp where each frame's rendering starts
   and reads how long that start waited on the GPU behind earlier frames (the queue). It then waits just before
@@ -950,7 +950,7 @@ below, the window in front with focus.
 2. **Perfect Presentation off, `...runs=L4`** (about 12 minutes): `lat-base`, `lat-late`, `lat-ra1-late` (Sodium's
    render-ahead 1, Reflex 1's best without Perfect Presentation), `lat-pacer`, `lat-ra1-pacer` (render-ahead 1 +
    pacer), `lat-pacer-500`, `lat-cap-late`, `lat-cap-start`.
-3. **By feel, optional (about 10 minutes, with Emre).** Launch 1's settings, uncapped as Emre plays: before the
+3. **By feel, optional (about 10 minutes, with the player).** Launch 1's settings, uncapped as the player plays: before the
    launch set `maxFps:260` (Unlimited) and `enableVsync:false` in the test instance's `options.txt` (note the old
    values, put them back afterwards). One short run first (`...modes=lat-base`, `...viewpoints=moving`,
    `...paths=still`) and `...byEye=lat-base`. Switch with `/dlaatest mode lat-reflex` (0.5.2's Reflex), then
@@ -970,13 +970,13 @@ If a launch crashes, copy `hs_err_pid*.log` and the log's last 100 lines, and re
 - in one line each: does the pacer bring the uncapped latency near 8.7 ms, at what fps cost; which target is best;
   is the automatic one as good as the best fixed one; does Reflex add anything on top of the pacer; does `lat-cap-start` match `lat-cap-reflex` or `lat-cap-late`;
 - the `Latency:` and `Reflex:` lines, the control panel settings and refresh rate;
-- Emre's by-feel notes, if that part ran.
+- The player's by-feel notes, if that part ran.
 
 Commit and push on the DLAA branch. Don't commit hs_err files (they name his user folder).
 
 ## Pacer 2: the pacer again, with the queue read without a flush
 
-Start only when Emre says so. Same PC, test folder, tools and settings as Pacer 1; about 25 minutes, two launches, no
+Start only when the player says so. Same PC, test folder, tools and settings as Pacer 1; about 25 minutes, two launches, no
 by-feel part. **Frame times count here**: a quiet PC, no game server.
 
 **What it tests.** Pacer 1 (`results/pacer1/REPORT.md`) found two things:
@@ -1056,7 +1056,7 @@ Commit and push on the DLAA branch. Don't commit hs_err files (they name his use
 
 ## Presenter 1: Perfect Presentation on DirectX 12
 
-Start only when Emre says so. Same PC, test folder, tools and settings as Pacer 2; about 25 minutes, two launches, no
+Start only when the player says so. Same PC, test folder, tools and settings as Pacer 2; about 25 minutes, two launches, no
 by-feel part. **Frame times count here**: a quiet PC, no game server.
 
 **What it tests.** Bridge 1.113.0 can show the game through a Direct3D 12 swap chain (`presenter=dx12`, testing only): the same swap chain, frame
@@ -1130,9 +1130,9 @@ Commit and push on the DLAA branch. Don't commit hs_err files (they name his use
 *Done (`results\presenter2\REPORT.md`). Bridge 1.115.0 dropped the switches below (none helped) and the kit dropped
 `P2X` and the `p-` modes; `P2` stays. Kept as the record of the run.*
 
-Start only when Emre says so. Same PC, test folder, tools and settings as Presenter 1; about 35 minutes, three
+Start only when the player says so. Same PC, test folder, tools and settings as Presenter 1; about 35 minutes, three
 launches, no by-feel part. **Frame times count here**: a quiet PC, no game server. PresentMon needs administrator
-rights, so each launch shows Emre one Windows prompt (UAC) to click; tell him before each one.
+rights, so each launch shows the player one Windows prompt (UAC) to click; tell him before each one.
 
 **What it tests.** Presenter 1 (`results\presenter1\REPORT.md`): DirectX 12 showed the game pixel-exact, but about 11%
 fewer frames in every uncapped mode, 0.3–1.5 ms more input latency and lower GPU use, and Reflex's report lost
@@ -1194,7 +1194,7 @@ For each launch `<n>`:
    ```
 2. **PresentMon** (the console build in `$T\tools`, as in profiling 1), attached to the game's own `java.exe` once it
    has started (a few seconds after launch; portablemc's first `java.exe` is short-lived), elevated with
-   `Start-Process -Verb RunAs` (Emre clicks the prompt): `--process_id <pid> --output_file $T\presenter2\L<n>.csv
+   `Start-Process -Verb RunAs` (the player clicks the prompt): `--process_id <pid> --output_file $T\presenter2\L<n>.csv
    --qpc_time_ms --timed 900 --terminate_after_timed --terminate_on_proc_exit --stop_existing_session
    --no_console_stats`. Check the CSV grows.
 3. The log must have `Perfect Presentation: DXGI swap chain ready on DirectX 11` (launch 1) or `... on DirectX 12`
@@ -1241,7 +1241,7 @@ branch. Don't commit hs_err files (they name his user folder).
 
 ## Presenter 3: DirectX 11 against DirectX 12 without capture tools
 
-Start only when Emre says so. Same PC, test folder, tools and settings as Presenter 2, but **no PresentMon and no
+Start only when the player says so. Same PC, test folder, tools and settings as Presenter 2, but **no PresentMon and no
 nvidia-smi**: no administrator prompts. About 20 minutes, four launches, no by-feel part. **Frame times count here**: a
 quiet PC, no game server, nothing else started.
 
@@ -1277,7 +1277,7 @@ The launch from step 4 (2560x1440), `--jvm-arg=-Dcreate_galore_dlss_testkit.auto
 
 - Check that nothing else is running that wasn't in Presenter 2's list (PresentMon and nvidia-smi must not be: look for
   `PresentMon*` and `nvidia-smi` processes, and a leftover `PresentMon` ETW session with `logman query -ets`; if one is
-  left, say so, and stop it only with Emre's OK).
+  left, say so, and stop it only with the player's OK).
 - The log must have `DXGI swap chain ready on DirectX 11` or `... on DirectX 12` to match the launch.
 - **Only if** the DirectX 11 launches come out at least 5% faster than Presenter 2's DirectX 11 (160 / 140 fps at
   `lat-base`, 165 / 142 at `lat-reflex`): a fifth launch, `dx11` with only nvidia-smi running (as in Presenter 2's step
@@ -1300,7 +1300,7 @@ Commit and push on the DLAA branch. Don't commit hs_err files (they name his use
 
 ## Pacer 3: GPU pacing on DirectX 12
 
-Start only when Emre says so. It isn't urgent: it's for the day DirectX 12 becomes Perfect Presentation's default.
+Start only when the player says so. It isn't urgent: it's for the day DirectX 12 becomes Perfect Presentation's default.
 It can share a session with HUD split 1 (below; that one first).
 Same PC, test folder and settings as Presenter 3, **no PresentMon and no nvidia-smi** (no administrator prompts).
 About 55 minutes, four launches, no by-feel part. **Frame times count here**: a quiet PC, no game server, nothing else
@@ -1400,10 +1400,10 @@ Commit and push on the DLAA branch. Don't commit hs_err files (they name his use
 
 ## HUD split 1: the world without the HUD, and the HUD's coverage
 
-Start only when Emre says so. About 20 minutes, one launch, by eye with Emre (he plays; the log and the saved pictures
+Start only when the player says so. About 20 minutes, one launch, by eye with the player (he plays; the log and the saved pictures
 do the checking). Frame times don't count, except the short comparison in step 4.
 
-**With Pacer 3 in one session (about 75 minutes).** Do this section first, while Emre is at the keyboard, then Pacer 3,
+**With Pacer 3 in one session (about 75 minutes).** Do this section first, while the player is at the keyboard, then Pacer 3,
 which needs no one, only a quiet PC. Use Pacer 3's Update (it also copies the test kit); it covers both. Between the
 two: remove `hudSplitCheck`, `hudSplit` and `hudSplitView` from the settings file (without them the split is off) and
 put `presenter` and `fpsCounter` back to their old values, so Pacer 3 starts from its own settings.
@@ -1456,7 +1456,7 @@ the vignette` and `HUD split: N HUD layers; drawn before the camera overlays ...
    - a spyglass in hand, held to the eye (right mouse);
    - `/effect give @s nausea 20`;
    - the inventory (E), the pause menu (Esc), the options screen; F1.
-2. **By eye, about 5 minutes.** Play normally for a while. Emre tells whether anything looks different from usual:
+2. **By eye, about 5 minutes.** Play normally for a while. The player tells whether anything looks different from usual:
    flicker, a wrong colour, the HUD or the menu blur looking off.
 3. **The views, about 5 minutes.** Add `hudSplitView=ui` to the settings file and press F8 (the shaders reload; the log
    says `HUD split: on, view ui, ...`). Then change it to `marks`, `hudless` and `alpha`, F8 each time. What each
@@ -1476,7 +1476,7 @@ Write `$T\repo\tools\dlss-testkit\results\hud-split1\REPORT.md`:
 - every `HUD split` log line that isn't a check, and every check line whose leaks, under or over isn't 0, with its
   `-frame.png` and `-marks.png` copied next to the report;
 - per scene in step 1: the check lines (copy them), and the marks pictures if any are coloured;
-- what Emre saw in step 2, and the four view screenshots from step 3 (copied next to the report);
+- what the player saw in step 2, and the four view screenshots from step 3 (copied next to the report);
 - the frame rate with and without the split (step 4);
 - any `HUD split` WARN line, and any `Perfect Presentation` or `DLAA:` WARN or ERROR line.
 
@@ -1485,7 +1485,7 @@ push on the DLAA branch. Don't commit hs_err files (they name his user folder).
 
 ## DLSS-G 1: DLSS Frame Generation, first run
 
-Start only when Emre says so. About 50 minutes: part A by eye with Emre (about 25 minutes, he plays), then part B, two
+Start only when the player says so. About 50 minutes: part A by eye with the player (about 25 minutes, he plays), then part B, two
 latency launches that need no one, only a quiet PC (about 20 minutes). Frame times count only in part B.
 
 **What it tests.** Bridge 1.117.0 (a test build on this branch) adds NVIDIA DLSS Frame Generation to Perfect
@@ -1512,7 +1512,7 @@ and vertical sync in the NVIDIA Control Panel at "Use the 3D application setting
 [Environment]::OSVersion.Version                                                                                      # build 19041 or newer
 ```
 
-If `HwSchMode` isn't 2, stop and tell Emre: turning it on is his call (a Windows setting, then a restart). Ask him
+If `HwSchMode` isn't 2, stop and tell the player: turning it on is his call (a Windows setting, then a restart). Ask him
 to look at the NVIDIA Control Panel's Vertical sync (Manage 3D settings) and say what it is set to.
 
 ### Update
@@ -1549,7 +1549,7 @@ Note the old values and put them back afterwards. In `config\create_galore_bridg
 `frameGen=dlss` and `frameGenCheck=true`. No `hudSplit` keys (frame generation turns the split on by itself). Shader
 pack: Photon v1.3a + DLAA. `earlyWindowControl = false` as before.
 
-### Part A: does it run, and does it look right (Emre plays)
+### Part A: does it run, and does it look right (the player plays)
 
 The launch from step 4 (2560x1440) without the `autorun` argument; open the `dlaa-test` world, then
 `/gamemode creative`. The log must have, in this order:
@@ -1564,7 +1564,7 @@ The launch from step 4 (2560x1440) without the `autorun` argument; open the `dla
 If frame generation doesn't start, copy every `Frame generation` line (with the `(native)` ones) and the newest file
 in `$T\instance\create-galore-dlss\streamline-logs\`, and report; don't go on to part B.
 
-1. **By eye, about 15 minutes.** Emre plays normally: walking, turning fast, flying, near Create machines, in water,
+1. **By eye, about 15 minutes.** The player plays normally: walking, turning fast, flying, near Create machines, in water,
    with the inventory, chat and F3 open now and then, and F1. He tells what he sees against frame generation off (he
    knows the game without it): smoothness, any doubled or torn edges when turning, the HUD and text staying sharp and
    still (no wobble or ghost copies of the hotbar, chat or crosshair), anything strange around the hand, water,
@@ -1582,7 +1582,7 @@ in `$T\instance\create-galore-dlss\streamline-logs\`, and report; don't go on to
      looking up, blue-ish.
    Take an F2 screenshot of each while turning. Remove `frameGenView` and F8.
 4. **Frame rate, about 2 minutes.** Stand still at one spot looking at the lake: note the frame counter's average for
-   20 seconds. (The counter counts the frames the game renders; ask Emre whether the NVIDIA app's overlay, if he
+   20 seconds. (The counter counts the frames the game renders; ask the player whether the NVIDIA app's overlay, if he
    uses it, shows about twice as many.)
 
 Close the game.
@@ -1620,7 +1620,7 @@ If a launch crashes, copy `hs_err_pid*.log`, the log's last 100 lines and the ne
 - the requirement check (HwSchMode, Windows build, the control panel's vertical sync), and which nvngx_dlssg.dll
   version was used and where from;
 - part A: every `Frame generation` log line that isn't a check (the `(native)` ones too), the check lines that aren't
-  `copy ok` and every camera line; what Emre saw in step 1 and whether anything looked worse than without frame
+  `copy ok` and every camera line; what the player saw in step 1 and whether anything looked worse than without frame
   generation; the four view screenshots (copied next to the report); the frame rate in step 4;
 - part B, per mode, viewpoint and launch: fps (rendered), latency (median and 90th percentile), the queue (median and
   `q10`), the driver's report (frame start to GPU end) and the pacer's target and wait; then in one line each:
@@ -1639,7 +1639,7 @@ frame generation runs.
 
 ## Frame generation 2: DLSS re-check and FSR, side by side on the 4080 Super
 
-Start only when Emre says so. About 30 minutes with Emre at the keyboard (steps 1 to 4), then about 25 minutes that
+Start only when the player says so. About 30 minutes with the player at the keyboard (steps 1 to 4), then about 25 minutes that
 need no one, only a quiet PC (step 5). Frame times count only in step 5.
 
 **What it checks.** Bridge 1.122.0 (this branch, pack 0.5.14) has the fixes for what DLSS-G 1 found, frame
@@ -1690,7 +1690,7 @@ In the shader pack menu, **Upscaling & Display...**:
   Press **Find on this PC**: the line says what it copied for DLSS and for frame generation, and after it the DLL line
   shows the dlssg version `(tested with 310.9.16)`. Check `$T\instance\create-galore-dlss\nvngx_dlssg.dll` is there.
   If NVIDIA's folder has none, put back the one moved aside above and say so.
-- Tab **Display**: **Frame generation** offers Off, DLSS and FSR. Emre picks **DLSS**. It must turn **Perfect
+- Tab **Display**: **Frame generation** offers Off, DLSS and FSR. The player picks **DLSS**. It must turn **Perfect
   Presentation** on, **DirectX** to 12 and **NVIDIA Reflex** to On; the status beside the row says `Experimental.
   Starts after a restart.` Hover the row, each choice in its list and the status: the texts must read right to him.
   Done: a toast asks for a restart. Check the settings file has `frameGen=dlss`, `frameGenType=dlss`,
@@ -1708,7 +1708,7 @@ Open `dlaa-test`, `/gamemode creative`. The log has `Frame generation: NVIDIA DL
 - **Open the chat** (T), type a few letters, close it; then `/` and a few letters, so the command suggestions appear.
   No `eErrorDuplicatedConstants` anywhere in the log. If the log has `Frame generation: a frame was presented twice in
   one game frame ... From: ...`, copy that line whole.
-- **The command suggestions, two ways.** With the list showing, Emre types and deletes letters so it appears, moves and
+- **The command suggestions, two ways.** With the list showing, the player types and deletes letters so it appears, moves and
   changes, and says how it looks. Then add `frameGenUi=false` to the settings file, press F8, and do the same: is the
   list better, worse or the same? (With `false` NVIDIA gets the HUD as part of the picture instead of apart.) Is the
   rest of the HUD (hotbar, chat, crosshair) still clean with `false`? Remove the line and F8.
@@ -1744,7 +1744,7 @@ NVAPI)`: Reflex On, as set. In `dlaa-test`:
   step 2 (`turned off`, `turned on`, `running` again);
 - F8 once while turning, the chat and the command suggestions (does the list look better than with DLSS?), one resize,
   one minimise: the same log lines as in step 2, and no `Frame generation:` WARN or ERROR;
-- Emre plays a minute and says how it looks and feels against DLSS. FSR is known to pace less evenly than DLSS ("double
+- The player plays a minute and says how it looks and feels against DLSS. FSR is known to pace less evenly than DLSS ("double
   tap": a generated frame shown briefly, the real one held long); say if it is bad, not whether it is perfect. Step 5
   measures it.
 
@@ -1765,7 +1765,7 @@ from step 4 with `--jvm-arg=-Dcreate_galore_dlss_testkit.autorun=dlaa-test` and
 | 3 | `frameGen=off`, `frameGenType=fsr` |
 
 **PresentMon** on each launch (the console build in `$T\tools`, as in Presenter 2), attached to the game's own
-`java.exe` once it has started, elevated with `Start-Process -Verb RunAs` (Emre clicks the prompt before he leaves, or
+`java.exe` once it has started, elevated with `Start-Process -Verb RunAs` (the player clicks the prompt before he leaves, or
 the launches wait for him): `--process_id <pid> --output_file $T\fg2\L<n>.csv --qpc_time_ms --timed 900
 --terminate_after_timed --terminate_on_proc_exit --stop_existing_session --no_console_stats`. Check the CSV grows.
 It records every frame the screen shows, generated ones included, which is what tells even pacing from FSR's double
@@ -1790,7 +1790,7 @@ $py = "$T\tools\uv\uv.exe"
 Write `$T\repo\tools\dlss-testkit\results\fg2\REPORT.md`:
 - steps 1 to 4: the status texts and the DLL line seen in step 1, what Find on this PC said, and the screenshot; every
   `Frame generation` log line that isn't a plain check (the `(native)` ones too) and every check line that isn't `copy
-  ok`; the counts asked for above; what Emre said about the command suggestions (DLSS both ways, and FSR), about the
+  ok`; the counts asked for above; what the player said about the command suggestions (DLSS both ways, and FSR), about the
   toggles, and about the picture and feel with each; any Streamline warning or error line (those lines only);
 - step 5, per launch, mode and viewpoint: rendered fps and input to GPU end (median and 90th percentile) from
   latency.py; from frametimes.py the shown-frame interval (median, p10, p90) and the pair ratio (median, p90: about 1
@@ -1801,18 +1801,18 @@ Write `$T\repo\tools\dlss-testkit\results\fg2\REPORT.md`:
   - **the pacer:** does `lat-reflex-pacing-on` still keep the frame rate and lower the latency with each?
 
 Keep the PresentMon CSVs in `$T\fg2` (they stay on the PC). Put the settings back (remove `frameGenCheck`; `frameGen`
-and `frameGenType` as Emre wants them), then commit and push on the DLAA branch. Don't commit hs_err files or
+and `frameGenType` as the player wants them), then commit and push on the DLAA branch. Don't commit hs_err files or
 Streamline logs whole (they name his user folder).
 
-What comes of it (Emre's plan, 2026-10-26): if it all holds, the PR merges; then DLSS frame generation stops being
+What comes of it (the player's plan, 2026-10-26): if it all holds, the PR merges; then DLSS frame generation stops being
 experimental, FSR frame generation stays experimental until some play sessions show it behaving, DirectX 12 becomes
 the default, and the pack goes to 0.6.
 
 ## Frame generation 3: leaving full screen, the far terrain overlay and the FSR cap
 
-Start only when Emre says so. About 25 minutes with Emre at the keyboard (steps 1 to 4), a timed run that
-needs no one (step 5), then Emre flips NVIDIA's frame generation model override (step 6) and, if it takes, the timed
-run again with it. Steps 1 to 4 are pass or fail, plus what Emre sees.
+Start only when the player says so. About 25 minutes with the player at the keyboard (steps 1 to 4), a timed run that
+needs no one (step 5), then the player flips NVIDIA's frame generation model override (step 6) and, if it takes, the timed
+run again with it. Steps 1 to 4 are pass or fail, plus what the player sees.
 
 **What it checks.** Bridge 1.124.0 (this branch, pack 0.5.15; it also has main's lock against the random "Mod loading
 issue for: hybrid_aquatic" crash) fixes what Frame generation 2 found:
@@ -1862,7 +1862,7 @@ Horizons' part, past the normal chunks).
 - **F11 out.** Expected: a window with its title bar and the taskbar below it, a little smaller than the screen. The log
   has `Perfect Presentation: the window to come back after full screen, 2560x1440, is bigger than the screen's work
   area; it comes back as WxH at (x, y)`, then `Perfect Presentation: a window, WxH at (x, y); from: ...`, then `the
-  window is now WxH, the game has it as a window, DXGI windowed`. Emre says whether it looks like a normal window.
+  window is now WxH, the game has it as a window, DXGI windowed`. The player says whether it looks like a normal window.
 - **F11 in.** Full screen again: `Perfect Presentation: borderless full screen, 2560x1440 at (0, 0); from: ...` and
   `the window is now 2560x1440, the game has it in full screen, DXGI windowed`.
 - **Five more times out and in**, a few seconds apart, turning the camera between. Every one must work.
@@ -1915,29 +1915,29 @@ lines: main's lock should have stopped it.
 
 The baseline for step 6. Settings file: `presenter=dx12`, `frameGen=dlss`, `frameGenType=dlss`, `reflex=on`,
 `gpuPacing=off`, no `frameGenCheck`; `options.txt`: `fullscreen:true`, `maxFps:260`, `enableVsync:false`. The NVIDIA
-app's DLSS overrides as Emre has them now (all off, N/A in the overlay). A quiet PC, the window in front with focus.
+app's DLSS overrides as the player has them now (all off, N/A in the overlay). A quiet PC, the window in front with focus.
 `New-Item -ItemType Directory $T\fg3 -Force`. Launch as in Frame generation 2 step 5 (`autorun=dlaa-test`,
 `runs=G1`), with PresentMon attached as there, elevated, to `$T\fg3\B0.csv`, adding `--set_circular_buffer_size 4096` (Frame generation 2's first launch lost 0.14% of its
 frames without it). The log must have `Frame generation: running, 2 frames shown per rendered one`.
 
-### 6. NVIDIA's Frame Generation Preset B (Emre flips it, about 8 minutes)
+### 6. NVIDIA's Frame Generation Preset B (the player flips it, about 8 minutes)
 
 Games can't pick NVIDIA's frame generation model; the NVIDIA app can override it. When everything above is done, stop
-and hand over to Emre:
-- Emre sets the override **globally** in the NVIDIA app (Graphics, Global Settings, the DLSS override for the Frame
+and hand over to the player:
+- The player sets the override **globally** in the NVIDIA app (Graphics, Global Settings, the DLSS override for the Frame
   Generation model: **Preset B**). A per-program override on the kit's `java.exe` may not reach a game that shows
   through its own DirectX 12 swap chain, so the global one is the test.
 - Launch the game again (no `autorun`), open `dlaa-test`. In the NVIDIA overlay (Alt+R), the DLSS override lines: does
-  it say an override is **active** for frame generation, and which **preset**? Emre reads them out; a phone photo of
+  it say an override is **active** for frame generation, and which **preset**? The player reads them out; a phone photo of
   the overlay goes in the results. Also copy any line naming a preset or a model from the game log and the newest
   Streamline log.
 - **If it sticks** (the overlay says Preset B, active): open the chat, `/` and a few letters so the command suggestions
   show, type and delete letters. Is the smear on the suggestions (Frame generation 2: "garbles them one frame") gone,
-  less, or the same? Emre plays a minute and says whether the picture or the feel differs. Then close the game and do
+  less, or the same? The player plays a minute and says whether the picture or the feel differs. Then close the game and do
   step 5's timed launch again, PresentMon to `$T\fg3\B1.csv`, with the override still on.
 - **If it doesn't stick** (N/A, or not active): note what the overlay says and skip the timed launch.
 
-Afterwards Emre sets the NVIDIA app back as he wants it (say what it was: all overrides off).
+Afterwards the player sets the NVIDIA app back as he wants it (say what it was: all overrides off).
 
 ### Results
 
@@ -1947,22 +1947,22 @@ $py = "$T\tools\uv\uv.exe"
 & $py run --python 3.13 $T\repo\tools\dlss-testkit\frametimes.py <step 5 run folder> $T\fg3\B0.csv <step 6 run folder> $T\fg3\B1.csv
 ```
 
-Write `$T\repo\tools\dlss-testkit\results\fg3\REPORT.md`: per step, what Emre saw (window or not, the far terrain, the
+Write `$T\repo\tools\dlss-testkit\results\fg3\REPORT.md`: per step, what the player saw (window or not, the far terrain, the
 picture after minimise), the copied log lines, the Find line word for word, the cap numbers (overlay and counter) with
-DLSS and with FSR. For step 6: what the overlay said (active or not, which preset), the suggestions and what Emre saw,
+DLSS and with FSR. For step 6: what the overlay said (active or not, which preset), the suggestions and what the player saw,
 and if it stuck, per mode and viewpoint, NVIDIA's own model against Preset B: rendered fps, input to GPU end (median
 and 90th percentile), shown-frame interval (median, p10, p90) and pair ratio (median, p90); then one line on whether
 Preset B costs or gains frames or latency. Phone photos go in the same folder. Put the
-settings and `options.txt` back as noted (or as Emre wants them), then commit and push on the DLAA branch. Don't
+settings and `options.txt` back as noted (or as the player wants them), then commit and push on the DLAA branch. Don't
 commit hs_err files or Streamline logs whole (they name his user folder).
 
-What comes of it: if every step passes, the PR can merge once Emre says so (Emre's plan, 2026-10-26: DLSS frame
+What comes of it: if every step passes, the PR can merge once the player says so (the player's plan, 2026-10-26: DLSS frame
 generation no longer experimental, FSR frame generation still experimental, DirectX 12 the default, Perfect
 Presentation on for new installs, pack 0.6).
 
 ## Ray Reconstruction 1: the Photon pilot on the 4080 Super
 
-Start only when Emre says so. About 35 minutes with Emre at the keyboard (steps 0 to 3), then about 30 minutes that
+Start only when the player says so. About 35 minutes with the player at the keyboard (steps 0 to 3), then about 30 minutes that
 need no one, only a quiet PC (steps 4 and 5). Frame times count only in step 4. Step 0 checks the public 0.6.1 change
 (its own branch), not the pilot.
 
@@ -2029,7 +2029,7 @@ The launch from step 4 (2560x1440) without `autorun`. Copy every `Frame generati
   here: frameGenStreamlineSays=no in the settings file (testing)` and `Frame generation: NVIDIA's can't run (Streamline
   says no); AMD's loads instead, off`, then the FSR line ending `off until turned on`, and the NVAPI Reflex line. In the
   world, Display tab: the status reads `Streamline says no: hover for why.`; hover it, the text must read right to
-  Emre; the list still has DLSS only because it is the saved pick. Pick **FSR**, Done: frame generation turns on at
+  the player; the list still has DLSS only because it is the saved pick. Pick **FSR**, Done: frame generation turns on at
   once, without a restart. Open the tab again: the list offers Off and FSR only.
 - **d.** Close the game and remove the `frameGenStreamlineSays` line.
 
@@ -2082,7 +2082,7 @@ Copy-Item $T\rr1\nvngx_dlssd-dev.dll $T\instance\create-galore-dlss\nvngx_dlssd.
 
 Launch, shader pack menu, **Upscaling & Display...**, tab **Upscaling**:
 - Under the render resolution, the new row: **Ray Reconstruction: OFF** and **RR preset: F (RR 4.5)**. Hover both:
-  the texts must read right to Emre. Turn it **ON**: the DLL line gains `RR's nvngx_dlssd.dll: 310.9.16.` Render
+  the texts must read right to the player. Turn it **ON**: the DLL line gains `RR's nvngx_dlssd.dll: 310.9.16.` Render
   resolution **Performance**. Done.
 - Open `dlaa-test`, `/gamemode creative`, `/time set 6000`. The log must have `DLAA: DLSS Ray Reconstruction can run,
   nvngx_dlssd.dll 310.9.16 (made with 310.9.16)` and `DLAA: DLSS Ray Reconstruction running at ..., preset F, exposed
@@ -2090,7 +2090,7 @@ Launch, shader pack menu, **Upscaling & Display...**, tab **Upscaling**:
   or the log has `DLSS runs instead`, copy the reason and stop here.
 - The dev DLL draws NVIDIA's own notice on screen. **CTRL+ALT+F12** turns on its debug overlay (top right) and steps
   through its layers; **CTRL+ALT+F11** switches the overlay between that corner and the whole screen. Step through
-  every layer at the lakeshore (`/tp @s 1029.5 64 160.5 0 8`), take an F2 screenshot of each in full screen, and Emre
+  every layer at the lakeshore (`/tp @s 1029.5 64 160.5 0 8`), take an F2 screenshot of each in full screen, and the player
   says for each whether it looks right:
   1. colour: the lit scene, no HUD;
   2. motion vectors: still when standing still, moving things show;
@@ -2104,13 +2104,13 @@ Launch, shader pack menu, **Upscaling & Display...**, tab **Upscaling**:
   10. specular motion vectors: empty (we don't hand them over).
   Anything upside down, shifted, or a layer black when it shouldn't be: say which, with the screenshot.
 
-### 2. By eye: Ray Reconstruction against DLSS, about 10 minutes (Emre plays)
+### 2. By eye: Ray Reconstruction against DLSS, about 10 minutes (the player plays)
 
 ```powershell
 Copy-Item $T\rr1\nvngx_dlssd-rel.dll $T\instance\create-galore-dlss\nvngx_dlssd.dll -Force
 ```
 
-Launch again (the release DLL has no notice or overlay). Emre plays with RR at **Performance** and switches **Ray
+Launch again (the release DLL has no notice or overlay). The player plays with RR at **Performance** and switches **Ray
 Reconstruction** off (DLSS K) and on in the Upscaling tab, at **Quality** for DLSS. Things to look at, each with RR and
 with DLSS:
 - a row of metal blocks (iron, gold, copper) and polished stone in sunlight, from close and from a few blocks away:
@@ -2121,15 +2121,15 @@ with DLSS:
 - turning fast and strafing past leaves and fences (RR's known weak spot: smearing fine detail);
 - night (`/time set 18000`): stars, the moon, torches; the Nether once if he wants;
 - the hand and the HUD: unchanged.
-Emre says, for each, which looks better. F2 screenshots of anything worth showing, named for what they show.
+The player says, for each, which looks better. F2 screenshots of anything worth showing, named for what they show.
 
 ### 3. With frame generation: RR Performance against DLSS Quality, about 5 minutes
 
 Display tab, **Frame generation: DLSS**, Done (it turns on at once). In `dlaa-test` at the lakeshore, standing still: read the
 game's frame counter (rendered) and the NVIDIA overlay (Alt+R, shown) for **RR at Performance**, then **Ray
-Reconstruction off at Quality**, then **RR at Balanced**, about 10 seconds each. Emre's theory: RR copes with a lower
+Reconstruction off at Quality**, then **RR at Balanced**, about 10 seconds each. The player's theory: RR copes with a lower
 render resolution, so RR Performance with frame generation can match or beat DLSS Quality in smoothness and look.
-Emre says which he would play.
+The player says which he would play.
 
 ### 4. Timed runs (no one needed, about 25 minutes)
 
@@ -2162,22 +2162,22 @@ $py = "$T\tools\uv\uv.exe"
 ```
 
 Write `$T\repo\tools\dlss-testkit\results\rr1\REPORT.md`: step 0's log lines and times, per part a to d what
-matched and what didn't (Emre's word on the hover text); step 1's log lines and, per overlay layer, what Emre said
-(screenshots beside it); step 2, per item, which looked better to Emre and why, in his words where he gave them; step
-3's numbers (rendered and shown fps per setting) and Emre's pick; per mode and viewpoint in step 4, rendered fps and
+matched and what didn't (the player's word on the hover text); step 1's log lines and, per overlay layer, what the player said
+(screenshots beside it); step 2, per item, which looked better to the player and why, in his words where he gave them; step
+3's numbers (rendered and shown fps per setting) and the player's pick; per mode and viewpoint in step 4, rendered fps and
 the shown-frame interval (median, p10, p90), with and without frame generation, then one line each on what RR costs
 over DLSS at the same scale and whether RR Performance reaches DLSS Quality's rate; step 5's crops of the metal row,
 a shadow edge, leaves and water for `q-dlss-K`, `perf-dlss-K`, `perf-rr-F`, `perf-rr-E`, `perf-rr-F-calm` and
 `perf-rr-F-rawexp`, with `metrics.py`'s shimmer and residue for each. Put the settings and `options.txt` back as noted
-(or as Emre wants them), then commit and push on this branch. NVIDIA's DLLs stay in `$T\rr1`, never in the repo.
+(or as the player wants them), then commit and push on this branch. NVIDIA's DLLs stay in `$T\rr1`, never in the repo.
 
 What comes of it: the pilot is a dev build and stays one. If RR looks clearly better at a lower render resolution, the
 same plumbing and the buffer contract (`tools/bridge-mod/ray-reconstruction-contract.md`) carry over to our own shader pack; an
-option in the shipped Photon patch only if Emre decides it works extremely well.
+option in the shipped Photon patch only if the player decides it works extremely well.
 
 ## Ray Reconstruction 1b: why Ray Reconstruction crashes
 
-Start only when Emre says so. About 3 minutes that need no one (part 1), then about 5 with Emre at the keyboard
+Start only when the player says so. About 3 minutes that need no one (part 1), then about 5 with the player at the keyboard
 (part 2). The PC already has NVIDIA's two RR DLLs in `$T\rr1` from Ray Reconstruction 1.
 
 **What it checks.** In Ray Reconstruction 1 (`results/rr1/REPORT.md`) RR started, then crashed the game on its first
@@ -2196,7 +2196,7 @@ game's odd sizes (1272x701 to 2544x1401).
 - **This build** (Bridge 1.125.0-rr.1, pack 0.6.1-rr.1: the public 0.6.1 plus the pilot) adds two test switches in the
   game for the same causes: `dlaaRrTest=no-hit-distance` and `dlaaRrTest=own-parameters` (both:
   `no-hit-distance,own-parameters`). The log's `running at ...` line names them.
-- **Emre's point from Ray Reconstruction 1:** with Ray Reconstruction on, the Upscaling tab now greys out
+- **The player's point from Ray Reconstruction 1:** with Ray Reconstruction on, the Upscaling tab now greys out
   **Anti-aliasing** (set to DLSS) and **DLSS preset**. Hovering them says why. Not part of this run (checked in the
   cloud).
 
@@ -2238,7 +2238,7 @@ Each run prints its summary (also in `summary.txt` in its folder): one line per 
 line, or `HUNG`. Each variant's own lines and NGX's log are in `<variant>.txt` beside it. The dev DLL may also show
 NVIDIA's notice in a window; that is expected. If Windows asks about the program, allow it and say so.
 
-### 2. In the game (Emre at the keyboard, about 5 minutes)
+### 2. In the game (the player at the keyboard, about 5 minutes)
 
 Release DLL in the instance: `Copy-Item $T\rr1\nvngx_dlssd-rel.dll $T\instance\create-galore-dlss\nvngx_dlssd.dll -Force`.
 
@@ -2246,7 +2246,7 @@ Release DLL in the instance: `Copy-Item $T\rr1\nvngx_dlssd-rel.dll $T\instance\c
   picture looks as in Frame generation 3. Ray Reconstruction 1 never got to check this.
 - **b. RR with a switch, only if the probe found one.** If any `d3d11-` variant other than `d3d11-game` came back `OK`
   and it is `d3d11-no-hit-distance` or `d3d11-own-parameters`, put the matching `dlaaRrTest=` line in the settings file,
-  turn Ray Reconstruction on (Performance), open `dlaa-test`. If it runs, Emre looks at it for a minute at the
+  turn Ray Reconstruction on (Performance), open `dlaa-test`. If it runs, the player looks at it for a minute at the
   lakeshore (`/tp @s 1029.5 64 160.5 0 8`) and the effects scene (`/tp @s 1006.5 68 158.5 180 14`) and says what he
   sees. Ray Reconstruction 1's steps 2 and 3 can follow with the same line, if he wants. If no D3D11 variant ran, or
   only one this build has no switch for, skip b: RR would crash again.
@@ -2260,7 +2260,7 @@ For every part copy each `DLAA:` line and each WARN or ERROR line from `create_g
 Write `$T\repo\tools\dlss-testkit\results\rr1b\REPORT.md`:
 - part 1: both summaries whole. For each `CRASHED` or `FAILED` variant, its crash or result line and the last ten
   `ngx:` lines before it. For each `OK` one, its result line.
-- part 2: a's log line, and b if it ran (the `dlaaRrTest` value, the `running at` line, what Emre saw).
+- part 2: a's log line, and b if it ran (the `dlaaRrTest` value, the `running at` line, what the player saw).
 - The `hs_err` files and NGX logs stay on the PC (they name the user folder).
 
 Put the settings and `options.txt` back as noted, take `dlaaRrTest` out, remove `nvngx_dlssd.dll` from the instance,
@@ -2271,7 +2271,7 @@ DirectX 11 variant runs, that change goes into the pilot and Ray Reconstruction 
 
 ## Ray Reconstruction 2: Ray Reconstruction on DirectX 12
 
-Start only when Emre says so. About 3 minutes that need no one (part 1), about 25 with Emre at the keyboard (part 2),
+Start only when the player says so. About 3 minutes that need no one (part 1), about 25 with the player at the keyboard (part 2),
 then about 35 that need no one, only a quiet PC (part 3). Frame times count only in part 3.
 
 **What it checks.** Ray Reconstruction 1b (`results/rr1b/REPORT.md`) found that NVIDIA's RR crashes on DirectX 11 with
@@ -2287,7 +2287,7 @@ DirectX 12 device of its own:
   `cg_ngx.dll` the way the game does, with the probe standing in for OpenGL. So part 1 checks the new path before the
   game does.
 
-The cloud has no NVIDIA GPU. It built and compiled all of it, but none of the new path has run anywhere yet. Emre chose
+The cloud has no NVIDIA GPU. It built and compiled all of it, but none of the new path has run anywhere yet. The player chose
 to skip the Wine checks: the PC is faster. This run is the first time it runs.
 
 ### Update and settings
@@ -2332,7 +2332,7 @@ output mean of about 0.5:
 If `dll-d3d12-game` isn't `OK`, part 2's RR steps would fail the same way. Then do only part 2's step a with Ray
 Reconstruction off (plain DLSS still on DirectX 11), skip the rest, and report.
 
-### 2. In the game (Emre at the keyboard, about 25 minutes)
+### 2. In the game (the player at the keyboard, about 25 minutes)
 
 Settings file, for all of part 2:
 - `dlaa=dlss`, `dlaaPreset=default`, `dlaaRayReconstruction=true`, `reflex=on`, `gpuPacing=off`,
@@ -2353,7 +2353,7 @@ generation` and `Reflex:` line, and each WARN or ERROR line from `create_galore_
     - `DLAA: DLSS Ray Reconstruction running at 1272x701 to 2544x1401 (Performance, 50%), preset F, exposed colour`.
   - The tab's status must begin `On: NVIDIA DLSS Ray Reconstruction (dev build, DirectX 12)`.
   - Then Ray Reconstruction 1's step 1 from its third bullet: NVIDIA's overlay, its ten layers at the lakeshore, an F2
-    screenshot of each, and Emre's word on each.
+    screenshot of each, and the player's word on each.
   - If the game crashes or the picture is black or frozen, note what happened and when (the log's last lines). Move
     `create-galore-dlss\dlss-starting.txt` and any `hs_err_pid*.log` to `$T\rr2\crash<n>`. Skip to part 2's step b
     with RR **off**.
@@ -2362,7 +2362,7 @@ generation` and `Reflex:` line, and each WARN or ERROR line from `create_galore_
     ... (its own DirectX 11 device; ...)` and `DLAA: DLSS running at ...`. The picture is plain DLSS.
   - Turn it on again, Done. The log has `starts again on DirectX 12, for Ray Reconstruction` and the `Ray
     Reconstruction running at` line again.
-  - Emre says whether the picture came back right each time, and whether either switch hitched for long.
+  - The player says whether the picture came back right each time, and whether either switch hitched for long.
 - **c. With Perfect Presentation and frame generation (release DLL), about 15 minutes.** Close the game. Run
   `Copy-Item $T\rr1\nvngx_dlssd-rel.dll $T\instance\create-galore-dlss\nvngx_dlssd.dll -Force`. Set
   `perfectPresentation=true`, `presenter=dx12`, `frameGen=dlss`, `frameGenType=dlss`.
@@ -2384,8 +2384,8 @@ switches DirectX devices; each RR mode's start must log `DLAA: DLSS Ray Reconstr
 
 Write `$T\repo\tools\dlss-testkit\results\rr2\REPORT.md`:
 - part 1: both summaries whole. For any `dll-` or `d3d12-` variant that isn't `OK`, its own lines whole.
-- part 2: per step, the log lines and what matched or didn't; a's ten layers with Emre's word on each (screenshots
-  beside it, about 512 px crops); b's two switches; c's start, then step 2's verdicts in Emre's words and step 3's
+- part 2: per step, the log lines and what matched or didn't; a's ten layers with the player's word on each (screenshots
+  beside it, about 512 px crops); b's two switches; c's start, then step 2's verdicts in the player's words and step 3's
   numbers, as Ray Reconstruction 1's Results describe.
 - part 3: as Ray Reconstruction 1's Results describe (the tables, RR's cost over DLSS, the crops with `metrics.py`).
 - Any crash: what happened and when. The `hs_err` files and NGX logs stay on the PC (they name the user folder).
@@ -2399,7 +2399,7 @@ own DirectX 12 device.
 
 ## Ray Reconstruction 2b: the hit distance guide, then the look and the cost
 
-Start only when Emre says so. About 10 minutes with Emre at the keyboard for the hit distance (part 1). If that proves
+Start only when the player says so. About 10 minutes with the player at the keyboard for the hit distance (part 1). If that proves
 the guide right, about 15 more for the look and feel (part 2), then about 35 that need no one (part 3).
 
 **What it checks.** In Ray Reconstruction 2 (`results/rr2/REPORT.md`), RR ran, but NVIDIA's view of the specular hit
@@ -2432,7 +2432,7 @@ Get-ChildItem $T\instance\mods\create-galore-bridge-*.jar | Select-Object Name
 Only `create-galore-bridge-1.125.0-rr.3.jar`. Back up the same files as Ray Reconstruction 2, to `$T\rr2b\*.before`
 this time.
 
-### 1. The hit distance (Emre at the keyboard, about 10 minutes)
+### 1. The hit distance (the player at the keyboard, about 10 minutes)
 
 The dev DLL in the instance:
 `Copy-Item $T\rr1\nvngx_dlssd-dev.dll $T\instance\create-galore-dlss\nvngx_dlssd.dll -Force`.
@@ -2459,7 +2459,7 @@ Take an F2 screenshot at each point, standing still in the same spot.
   screen. Screenshot. Is it still all black, or does it now show the grey places from a?
 - **c. NVIDIA's view of known distances.** Add `dlaaRrTest=hit-distance-bands`, F8. The `running at` line ends `test: hit
   distance bands 0, 0.5, 2, 8, 32, 128, 1024, 65504 blocks from left to right`. The same view, full screen. Screenshot.
-  Emre says for each of the 8 bands, left to right, how it looks (black, a shade, a colour, white). Then back to the
+  The player says for each of the 8 bands, left to right, how it looks (black, a shade, a colour, white). Then back to the
   overlay's off state, and remove the `dlaaRrTest` line, F8.
 
 **Reading c:**
@@ -2468,7 +2468,7 @@ Take an F2 screenshot at each point, standing still in the same spot.
 - **All 8 bands black:** NGX doesn't see our hit distance at all. Stop here and report.
 - **The 65504 band is bright but b is black:** the pack's guide doesn't arrive as a. shows it. Stop here and report.
 
-### 2. By eye and by feel (Emre at the keyboard, about 15 minutes)
+### 2. By eye and by feel (the player at the keyboard, about 15 minutes)
 
 Close the game and put in the release DLL:
 `Copy-Item $T\rr1\nvngx_dlssd-rel.dll $T\instance\create-galore-dlss\nvngx_dlssd.dll -Force`.
@@ -2485,9 +2485,9 @@ Ray Reconstruction 1's steps 4 and 5, as written there, with PresentMon's files 
 ### Results
 
 Write `$T\repo\tools\dlss-testkit\results\rr2b\REPORT.md`:
-- part 1: a, b and c's screenshots (about 512 px crops), Emre's word on each band, and the reading. If it stopped, say
+- part 1: a, b and c's screenshots (about 512 px crops), the player's word on each band, and the reading. If it stopped, say
   why.
-- part 2: the start's log lines, step 2's verdicts in Emre's words, step 3's numbers and his pick, as Ray
+- part 2: the start's log lines, step 2's verdicts in the player's words, step 3's numbers and his pick, as Ray
   Reconstruction 1's Results describe.
 - part 3: as Ray Reconstruction 1's Results describe.
 
