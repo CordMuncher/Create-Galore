@@ -5,14 +5,89 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
-## 0.6.3
+## 0.6.11
 
 ### Added
 - **NVIDIA DLSS Ray Reconstruction with Photon (experimental).** On any NVIDIA RTX card, the Upscaling tab's new **Ray Reconstruction** setting runs NVIDIA's DLSS Ray Reconstruction in DLSS's place with **Photon v1.3a + DLAA**. It denoises, anti-aliases and upscales in one pass, so it also cleans up Photon's reflections and soft shadows: water reflects like glass instead of grainy dots, shadows stay sharp and still, and a torch's reflection on metal stays crisp. Distant blocks and leaves are marginally softer than with DLSS. On an RTX 4080 SUPER at 1440p it costs 0.8 ms a frame over DLSS at Performance and 1.7 ms at Quality, so Ray Reconstruction at Performance runs at about 93% of DLSS Quality's frame rate. It runs beside DLSS frame generation too. **RR preset** picks its model: F (Ray Reconstruction 4.5) unless you pick another to compare.
 - **Photon's own settings for Ray Reconstruction.** Turning Ray Reconstruction on sets Photon to its Ultra profile the first time, and to the changes you made in Photon's menu under it after that. Turning it off brings back your own Photon settings. A message says so each time; the render resolution stays as you set it.
 - **Find on this PC copies nvngx_dlssd.dll too**, the NVIDIA DLL Ray Reconstruction needs, from where the NVIDIA app keeps it. It also needs NVIDIA driver 580 or newer.
 - Field Guide (Performance and Shaders): Ray Reconstruction.
+- Create Galore Bridge 1.134.0.
+
+## 0.6.10
+
+### Fixed
+- **Ask the Book starts from what it can see of you.** Every question now comes with a short snapshot of the player who asks: where they are and what it is like there, what they are looking at, how far along they are in each mod, what they hold, what they have crafted and placed, and the builds around them. The book no longer has to decide whether to look before answering, so it gets fewer things wrong about where you are or what you have, and it answers simple questions with fewer steps.
+- **Shorter, clearer instructions for the book.** Its standing instructions went from about 15,400 characters to 5,500. They now cover four steps: look, design every suggestion as a model and check it, fix every problem the check finds, then answer. The detailed advice on designing builds, vehicles, planes, airships and boats now comes with the first model of that kind in an answer, as a design brief, instead of being sent with every question. A broad question ("what should I do next?") gets the one or two things that matter, and a model only when you ask how to build something.
+
+### Added
+- An answer eval for the book's developers: `tools/book-casebook/standin.sh` turns a test server into the asking player of a question case (their inventory, progress, world and where they look), so the book's answers can be tried and graded against each case before a change ships.
+- Create Galore Bridge 1.133.0.
+
+## 0.6.9
+
+### Fixed
+- **Half-built Create items are no longer food.** Delightful Creators let you eat anything in the middle of a sequenced assembly, so an Incomplete Precision Mechanism, a half-laid track, a half-made circuit, shell or rocket part, even an iron ingot or a Cataclysm weapon partway through an upgrade showed hunger and saturation in its tooltip and could be eaten (238 assemblies in the pack). Now a half-built item is food only when the assembly ends in food: half-made sandwiches, pies, cookies and the like can still be snacked on, at 3 hunger as before.
+
+### Added
+- Create Galore Bridge 1.132.0.
+
+## 0.6.8
+
+### Added
+- **A casebook for Ask the Book.** Every way the book has gone wrong so far is now kept as a case with the verdict its checks should give: machines that never turn, output that goes nowhere, a blimp nobody aboard can fly, fans that do finish their items, creatures that are real. `tools/book-casebook/run.sh` replays them all on a test server (no API key needed), so a change to the book is checked against every past failure before it ships, and a fix that breaks an older one shows up as a failure. Three known faults are kept as open cases until the work that fixes them lands, and ten question cases describe what a good answer does, for grading answers later.
+- A size budget for the instructions the book sends with every question, checked on every build. They had grown about sixfold in a week as each wrong answer got one more sentence; from now on a fix goes into a check, what the book knows about the player or a design brief instead.
+- Create Galore Bridge 1.131.0.
+
+## 0.6.7
+
+### Added
+- **The Field Guide Pendant: the Field Guide worn as a necklace.** The book made small on a brass chain, worn in one of the three necklace slots of the Accessories screen. While it is worn, **I** opens the Field Guide and **Shift + I** opens Ask the Book, anywhere in the world with nothing in your hands (change them under Options > Controls > Field Guide). A worn pendant has no slot to glow green in when the book answers, so the notice that slides in shows the pendant and the key in front of the page's title instead. It hangs on the chest, over armor too, and right-click with it in hand opens the guide like the book. Crafted in the Brass Age: a Field Guide, two Brass Sheets, a Chain and a Precision Mechanism.
+- Field Guide, Start Here: a Field Guide Pendant entry (keys, the answer notice, the recipe), and Welcome and Accessories point to it.
+- Create Galore Bridge 1.130.0.
+
+## 0.6.6
+
+### Fixed
+- **Ask the Book's 3D models show their belts.** A player asked for a compact precision mechanism line and got a model whose text talked about a five-block belt that wasn't there. The book's model view never drew belts: a belt has no block model and no item of its own (it is laid with a Belt Connector), so only Create's belt renderer draws it, and the view skipped it. Every belt in every book model was invisible until now. The view now draws belts with Create's own renderer, pulleys included.
+- **Ask the Book no longer designs a machine out of the thing it makes.** The same line used a Mechanical Arm to carry pieces back to the start, but an arm takes a Precision Mechanism to craft, so the player could never build it to make their first mechanism. The book's models now go through each part's recipes against what the player has: a part they have never had that, by every recipe, needs something only a sequenced assembly line makes (such as a Precision Mechanism) that they have never had either, stops the model, and the book builds a version without it (by hand, or with belts alone) and shows the way to the first one. A build the player asks for to make later on is still allowed.
+- A model's caption and labels can no longer name a belt, deployer, funnel, arm, depot, basin, mixer, spout, fan, saw or drill the model doesn't have.
+
+### Added
+- Create Galore Bridge 1.129.0.
+
+## 0.6.5
+
+### Added
+- **Cased doors and trapdoors.** Right-click any door or trapdoor (every wood, iron, copper, Create's and other mods') with Andesite, Brass or Copper Casing to case it, as with a shaft or a belt. Shut, a cased door or trapdoor stops smog like a wall; open, smog gets through as usual (every plain trapdoor lets smog through even shut, and doors leak too). A cased one only opens with redstone (a button, lever, pressure plate or circuit), not by hand, and villagers and mobs can't open or break through it. A wrench takes the casing off and gives the same door back; sneaking with the wrench picks it all up, and breaking it drops the casing and the door. Each casing has its own look: Create's casing frame with a riveted porthole you can see through. Sneaking with casing in hand still places the casing block.
+- Field Guide (Pressure and Sealed Casings): cased doors and trapdoors, and a cased door into a sealed smelter.
+- Create Galore Bridge 1.128.0.
+
+## 0.6.4
+
+### Fixed
+- **Ask the Book no longer says back-to-back fans can't finish their items.** A player's bulk smoking and blasting line, with two fans side by side over each belt, has always worked, but the book told them it didn't: it timed each fan's air on its own (about 6 seconds over one segment at 4 RPM, against the 7.6 seconds smoking takes). An item on a belt keeps its progress from one fan's air into the next fan's air of the same kind, across a gap and onto the next belt as well, and only a different kind of air starts it over. The book now follows each belt line the way items ride it and adds up the time in each kind of air, so two smoking fans over a 4 RPM belt give 12.1 seconds and come out done. It also says when two kinds of air hit one segment (they start each other over, so nothing is processed there) and how far along an item in the air is right now.
+
+### Added
+- Field Guide, Encased Fans: an On a Belt page with how long an item needs in the air (7.5 seconds, longer for bigger stacks), how long each belt segment gives at a given speed, and how fans of one kind along a belt add up.
+- Create Galore Bridge 1.127.0.
+
+## 0.6.3
+
+### Added
+- **Ask the Book designs vehicles for the crew, not only for the physics.** A player's airship from the book passed every check and still couldn't be used: its fence rigging stood on half slabs and joined nothing, the door sat two blocks above the ground once it landed, the Portable Engines out in the side pods couldn't be reached to refuel, and the Physics Assembler was sealed inside the keel. The book's vehicle check now moves through a design the way a player does (walking, a 1.25-block jump, drops, ladders, opening doors, a 4.5-block reach with nothing in the way) and refuses a design until:
+  - every engine that burns fuel (Portable Engine, Boat Engine, Blaze Burner, Solid Burner, Solid Fuel Thruster) can be reached from a spot the crew walks to from the helm and back, or is fed by a funnel, chute or hopper;
+  - the Physics Assembler is open to a floor a player stands on;
+  - a ship that lands can be boarded from the ground under its lowest blocks (steps or a ladder up to a high door);
+  - on anything that climbs above y 192, the helm is in a closed cabin. This uses Cold Sweat Altitude's own shelter test, because the open air up there freezes a player in under a minute. Between y 128 and 192 it gets a note instead, and so does refuelling out in the open at height.
+- On every model the book builds, a fence or wall post that stands on a bottom slab, a trapdoor's edge or anything else without a full face under its middle (or ends under one) is a fault: it floats half a block off and joins nothing.
+- The book is told how to build for this: engines in an engine room turning the propellers through shafts, or pods reached along a railed catwalk or ladder; steps or a ladder to the door; a closed cabin round the helm; posts on full blocks or top slabs. A test airship built that way passes every check.
 - Create Galore Bridge 1.126.0.
+
+## 0.6.2
+
+### Fixed
+- **The updater, the server kit and the Server Setup app use the repository's new address.** The repository moved to github.com/CordMuncher/Create-Galore. The old address still forwards for now, but forwarding stops working if anyone later takes the old account name, so the client updater (pack.toml), the server's update check at start, install-server.sh/.bat and the Server Setup app now read releases and the pack from the new address directly. README and docs links point there too. An instance or server set up before this keeps its updater and keeps working through the forward; to move it to the new address, put the three jars from this release's **Create-Galore-Updater.zip** in the instance's `minecraft` folder, or run this release's Server Setup app (or install-server) on the server folder.
 
 ## 0.6.1
 
@@ -964,5 +1039,5 @@ The vehicle bug pass: airships, boats, submarines, trains, coasters and cars dri
 
 ### Added
 - **Ask the Book.** The Field Guide can now answer questions in its own words. Press **Ask the Book** at the top right of the guide (or type `/askbook`) and ask anything about the pack. It looks at what you're holding, your inventory, what's around you, your advancements and the pack's recipes, so "what should I do next?" gets advice for where you actually are. Answers stream in with a typewriter, a quill sound you can turn off, and Minecraft-themed thinking lines. When a picture helps, it draws pixel-art diagrams on the page in the book's colours with real item icons. Each player keeps their own pages on the server.
-- Works only on a home server whose owner saved their own Anthropic API key. The server asks for it at start (press K to change it, or type OFF). The key stays on the server machine, outside the server folder, and is never sent to players, written to logs, backups or the world. Setup: [docs/server-setup.md](https://github.com/emresahin0906-code/Create-Galore/blob/main-6fi2ef/docs/server-setup.md#the-field-guides-voice-your-own-api-key).
+- Works only on a home server whose owner saved their own Anthropic API key. The server asks for it at start (press K to change it, or type OFF). The key stays on the server machine, outside the server folder, and is never sent to players, written to logs, backups or the world. Setup: [docs/server-setup.md](https://github.com/CordMuncher/Create-Galore/blob/main-6fi2ef/docs/server-setup.md#the-field-guides-voice-your-own-api-key).
 - Create Galore Bridge 1.19.0 (adds Ask the Book on top of 0.2.18's Tide fixes).

@@ -1,6 +1,7 @@
 package dev.creategalore.bridge;
 
 import dev.creategalore.bridge.client.BridgeClient;
+import dev.creategalore.bridge.encased.EncasedDoors;
 import dev.creategalore.bridge.guideai.GuideAi;
 import dev.creategalore.bridge.wear.Wear;
 import java.util.List;
@@ -53,6 +54,10 @@ public final class CreateGaloreBridge {
     public static final List<DeferredItem<BossCompassItem>> BOSS_COMPASSES =
             List.of(NAGA_COMPASS, LICH_COMPASS, MINOSHROOM_COMPASS, HYDRA_COMPASS);
 
+    /** The Field Guide worn as a necklace: its keys open the guide and Ask the Book. Recipe lives in the pack datapack. */
+    public static final DeferredItem<FieldGuidePendantItem> FIELD_GUIDE_PENDANT = ITEMS.register("field_guide_pendant",
+            () -> new FieldGuidePendantItem(new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON)));
+
     private static DeferredItem<BossCompassItem> bossCompass(String name, String structure) {
         return ITEMS.register(name, () -> new BossCompassItem(new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON), structure, TWILIGHT));
     }
@@ -79,6 +84,7 @@ public final class CreateGaloreBridge {
         AnimalCare.register();
         AnimalTroughs.register();
         Wear.register(modBus);
+        EncasedDoors.register(modBus);
         if (FMLEnvironment.dist.isClient()) {
             BridgeClient.init(modBus, container);
         }
@@ -92,6 +98,7 @@ public final class CreateGaloreBridge {
             event.accept(STELLAR_CORE);
         } else if (event.getTabKey().location().equals(TOOLS_TAB)) {
             BOSS_COMPASSES.forEach(event::accept);
+            event.accept(FIELD_GUIDE_PENDANT);
         }
     }
 }

@@ -1,0 +1,92 @@
+{
+  "title": "Next steps fit the player's stage",
+  "roots": [
+    "R2"
+  ],
+  "kind": "question",
+  "question": "What should I do next?",
+  "player": "Has made a water wheel, a press and a few andesite machines; no brass.",
+  "rubric": [
+    "Reads their progress and inventory before answering",
+    "Gives one or two concrete next steps that fit (brass), not a list of everything"
+  ],
+  "world": [
+    "fill ~-12 ~-1 ~-12 ~12 ~-1 ~12 minecraft:grass_block",
+    "time set 6000"
+  ],
+  "box": [
+    -12,
+    -1,
+    -12,
+    12,
+    0,
+    12
+  ],
+  "built": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "stand": [
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "inventory": [
+    {
+      "id": "create:andesite_alloy",
+      "count": 40
+    },
+    {
+      "id": "create:shaft",
+      "count": 16
+    },
+    {
+      "id": "create:cogwheel",
+      "count": 8
+    },
+    {
+      "id": "minecraft:iron_ingot",
+      "count": 30
+    },
+    {
+      "id": "minecraft:copper_ingot",
+      "count": 40
+    },
+    {
+      "id": "create:zinc_ingot",
+      "count": 12
+    },
+    {
+      "id": "minecraft:oak_planks",
+      "count": 128
+    }
+  ],
+  "advancements": [
+    "minecraft:story/root",
+    "minecraft:story/mine_stone",
+    "minecraft:story/upgrade_tools",
+    "minecraft:story/smelt_iron",
+    "minecraft:husbandry/root",
+    "create:root",
+    "create:andesite_alloy",
+    "create:water_wheel",
+    "create:mechanical_press",
+    "create:andesite_casing"
+  ],
+  "crafted": {
+    "create:water_wheel": 1,
+    "create:mechanical_press": 1,
+    "create:andesite_alloy": 60
+  },
+  "placed": {
+    "create:water_wheel": 1,
+    "create:mechanical_press": 1,
+    "create:shaft": 12
+  }
+}

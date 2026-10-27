@@ -23,7 +23,7 @@ Versions that must match on the server and on every player's PC: Minecraft **1.2
 
 ### Easiest: the Server Setup app (Windows)
 
-Download `Create-Galore-Server-Setup-<version>.exe` from the [latest release](https://github.com/emresahin0906-code/Create-Galore/releases/latest) and run it. Windows SmartScreen may warn because the app isn't signed: **More info → Run anyway**.
+Download `Create-Galore-Server-Setup-<version>.exe` from the [latest release](https://github.com/CordMuncher/Create-Galore/releases/latest) and run it. Windows SmartScreen may warn because the app isn't signed: **More info → Run anyway**.
 
 1. **Where the server goes:** for example `C:\CreateGaloreServer`. Pointing it at an existing server updates it.
 2. **Memory:** the app suggests 10 GB on a PC with 32 GB or more, 8 GB otherwise. 6 to 10 GB all tested fine; more than 12 GB doesn't help.

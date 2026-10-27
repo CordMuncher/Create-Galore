@@ -29,7 +29,7 @@ import java.util.zip.ZipOutputStream;
  * Exit code 0: start the server. Anything else: don't (the update failed or needs a restart of the script).
  */
 final class ServerUpdateCheck {
-    static final String REPO = "https://github.com/emresahin0906-code/Create-Galore";
+    static final String REPO = "https://github.com/CordMuncher/Create-Galore";
     static final String RELEASE_INFO = REPO + "/releases/latest/download/Create-Galore-pack-info.txt";
     static final String STATE = ".galore-pack.txt";
     static final int ANSWER_SECONDS = 120;

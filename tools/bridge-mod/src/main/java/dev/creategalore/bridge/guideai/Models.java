@@ -181,53 +181,31 @@ public final class Models {
                 + "wrong, then call again with draft false to put it in the answer."));
         props.add("shows_a_fault", WorldTools.prop("boolean", "True only when the model is meant to show a build that "
                 + "doesn't work (such as the player's own broken build); then it is built even when the rotation check finds faults."));
+        props.add("for_later", WorldTools.prop("boolean", "True only when the player asked for a build to make later on; "
+                + "then parts they can't make yet don't stop it being built."));
         props.add("moving", MotionCheck.definition());
         props.add("part_of_vehicle", WorldTools.prop("boolean", "True only when the model shows one part of a vehicle (an "
                 + "engine room, a rudder, a burner and its balloon) rather than the whole of it: the vehicle check's numbers "
                 + "come back but don't stop it being built. Leave it false for a whole boat, submarine, airship or car."));
         return WorldTools.tool("build_model", "Builds a 3D model out of real blocks, up to " + MAX_SIZE + " a side, which "
-                + "the book shows as a hologram the player can turn around and zoom into. Two uses. To explain (how machines "
-                + "connect in space, which way blocks face): keep it to the blocks that matter. To show a build (a boat, a "
-                + "house, a bridge, a tower) the player can copy or take ideas from: build it as a skilled Minecraft builder "
-                + "would, at a size that gives it shape (a small sailing boat is about 12 to 20 blocks long), with stairs, "
-                + "slabs, trapdoors, fences, walls and buttons for curves and detail, two or three materials that go "
-                + "together and that the player holds where a block they hold would look as good (building_materials "
-                + "counts them; the result lists what the model takes against what they hold), depth and trim instead of flat walls, and no plain boxes. Fences, walls, panes and bars join their "
-                + "neighbours (fences also diagonally, to a fence at a free corner) and stairs turn corners by themselves, as when placed. Write such builds as layers. Try a "
-                + "build first with draft true and look at the pictures: fix whatever looks blocky, lopsided or wrong, "
-                + "then call again with draft false. Revise a model with from_draft and write only the changes (move slides "
-                + "a part over), never the whole model again. Before a model is shown the server tries its Create machines with "
-                + "Create's own rules (which faces take a shaft, cogs, belts, sources, water on wheels) and refuses one "
-                + "with faults, saying what is wrong, so fix it and call again. Each block's facing decides which faces "
-                + "take rotation (a saw, press or drill takes its shaft at its back, the face opposite its facing): get it "
-                + "right rather than guessing (lookup_recipes or read_guide help). Every block keeps the facing or axis you write "
-                + "and takes its default when you leave it out, often the wrong way (a Windcatcher panel's default lies flat), "
-                + "so write it on every block that has one. Sail rigs are checked the same way, with Winds & Weather's rules: "
-                + "Masts stack straight up, Yards run sideways out from a Mast along their axis, Sail Kit cloth hangs straight "
-                + "below a run of Yards facing across it, and Windcatcher panels stand upright with a sideways facing. Vehicles (a "
-                + "boat, submarine, airship, plane or Offroad car) are worked out from their blocks, "
-                + "with every engine at its usual speed: mass against buoyancy or lift, whether it floats upright or "
-                + "capsizes, how it sits at rest (bow or stern down, leaning to a side) or hangs in the air, with how much "
-                + "weight to move to level it, its centre of mass against its lift, thrust, top speed, turn rate, climb and ceiling, and "
-                + "problems when it would sink, capsize, not lift, not move or turn, or be too slow or clumsy to be of use. Every "
-                + "block of a vehicle must share a face with the rest, since Super Glue refuses blocks that touch only "
-                + "diagonally; where a vehicle's blocks meet only along an edge or at a corner the step is filled for you, "
-                + "and the result says where. "
-                + "Whoever drives stands on the vehicle: a Boat Engine's helmsman stands two blocks out from the side it faces, "
-                + "so it goes at the stern facing into the boat with deck under that spot, and every Steering Wheel, Throttle "
-                + "Lever or lever needs a spot on board within reach to stand at. "
-                + "Fix those before recommending it, and give the player its numbers. Parts that move as Create contraptions "
-                + "(a windmill, a turning door or drawbridge, a turntable, a piston wall, a lift, a gantry crane) go in "
-                + "moving, with the Super Glue the player puts on: the server finds what comes along by Create's rules, plays "
-                + "the motion on the model and says what it runs into, how fast it goes and the stress, so give the bearing, "
-                + "piston or pulley room to move and glue every block that has to come along. Write pistons retracted, with "
-                + "their extension poles behind them. Water and lava can be shown flowing: a "
-                + "source is level=0, flowing water level=1 to 7 (higher = further from the source), falling water "
-                + "level=8. To improve or fix something the player built, copy it in with from_world (find its bounds with "
-                + "trace_build or read_area first) and write only what changes; the player then sees their own build "
-                + "with the changes outlined, and you get the changes in world coordinates to name in your answer. "
-                + "It returns the model's number; write [diagram N] on a line of its own where it should appear, "
-                + "or put it inside a drawing with a shape of kind model.", props);
+                + "the book shows as a hologram the player can turn around and zoom into, and works out how it behaves. "
+                + "Write a detailed build as layers; fences, walls, panes and bars join their neighbours (fences also "
+                + "diagonally) and stairs turn corners by themselves, as when placed. Every block keeps the facing or axis "
+                + "you write and takes its default when you leave it out, often the wrong way, so write it on every block "
+                + "that has one. Try a design with draft true first: you get pictures of it and its check, and nothing goes "
+                + "in the answer. Revise with from_draft and write only the changes (move slides a part over). Before a "
+                + "model is shown the server runs it by the mods' own rules: rotation (which faces take a shaft, cogs, "
+                + "belts, sources, speeds, water on wheels), where machines send their output, sail rigs, posts, moving "
+                + "parts, and for a vehicle (boat, submarine, airship, plane or Offroad car) its mass, lift or buoyancy, "
+                + "trim, speed, turning, ceiling and how its crew walks, reaches, boards and keeps warm. A model with a "
+                + "PROBLEM is refused with what to change. Every block of a vehicle must share a face with the rest (Super "
+                + "Glue refuses edge and corner contact); edge and corner steps are filled for you and the result says "
+                + "where. Parts that move as Create contraptions go in moving, with the Super Glue the player puts on; "
+                + "write pistons retracted, poles behind them. Water and lava: a source is level=0, flowing 1 to 7, "
+                + "falling 8. To change a build of the player's, copy it in with from_world (bounds from trace_build or "
+                + "read_area) and write only what changes; you get the changes back in world coordinates. It returns the "
+                + "model's number: write [diagram N] on a line of its own where it should appear, or put it inside a "
+                + "drawing with a shape of kind model.", props);
     }
 
     private static JsonArray required(JsonObject properties) {
@@ -247,6 +225,15 @@ public final class Models {
     /** Builds the model; with {@code drafts}, from_draft can start from one of them and the new one is added to them. */
     static Result build(JsonObject input, ServerLevel level, Copier copier, net.minecraft.server.level.ServerPlayer player,
                         List<Draft> drafts) {
+        return build(input, level, copier, player, drafts, null);
+    }
+
+    /**
+     * Builds the model; {@code briefs} holds the kinds of build whose design brief this answer already got, and the
+     * first model of a new kind (a build to copy, a vehicle, an airship...) comes back with that kind's brief.
+     */
+    static Result build(JsonObject input, ServerLevel level, Copier copier, net.minecraft.server.level.ServerPlayer player,
+                        List<Draft> drafts, java.util.Set<String> briefs) {
         List<String> problems = new ArrayList<>();
         int sx = Diagrams.intOr(input, "size_x", 0), sy = Diagrams.intOr(input, "size_y", 0), sz = Diagrams.intOr(input, "size_z", 0);
         Map<BlockPos, BlockState> cells = new HashMap<>();
@@ -413,6 +400,9 @@ public final class Models {
         }
         if (GuideText.string(input, "title").length() > 60) problems.add("title longer than 60 characters");
         if (GuideText.string(input, "caption").length() > 240) problems.add("caption longer than 240 characters");
+        String unbuilt = missingPart(GuideText.string(input, "caption"), cells, null);
+        if (unbuilt != null) problems.add("the caption names " + unbuilt + ", but the model has none: build the part in, or "
+                + "leave it out of the caption; the caption only names what the model really has");
         if (!problems.isEmpty()) return Result.problem("Not built. Fix these and call again: " + String.join("; ", problems) + ".");
         // What the model changes on the copied build, before blocks join up (a fence that now meets a new post isn't a change).
         Map<BlockPos, Boolean> changes = new HashMap<>();
@@ -440,6 +430,16 @@ public final class Models {
         }
         BuildCheck.Report check = join(level == null ? null : BuildCheck.check(fixed, level), RigCheck.check(cells));
         if (level != null) check = join(check, OutputCheck.check(fixed, level));
+        check = join(check, PlayerCheck.posts(cells));
+        boolean forLater = input.has("for_later") && input.get("for_later").isJsonPrimitive() && input.get("for_later").getAsBoolean();
+        if (player != null && level != null && !forLater) {
+            // Parts the player would place: on their own build, only what the model adds.
+            java.util.Set<net.minecraft.world.level.block.Block> built = new java.util.HashSet<>();
+            if (base != null) base.values().forEach(st -> built.add(st.getBlock()));
+            List<BlockState> added = new ArrayList<>();
+            for (BlockState st : cells.values()) if (!built.contains(st.getBlock())) added.add(st);
+            check = join(check, Reach.parts(player, level.getServer(), added));
+        }
         if (motion != null) check = join(check, motion.report());
         check = join(check, vehicle(cells, level, input.has("part_of_vehicle") && input.get("part_of_vehicle").isJsonPrimitive()
                 && input.get("part_of_vehicle").getAsBoolean()));
@@ -453,6 +453,12 @@ public final class Models {
             drafts.add(new Draft(new HashMap<>(cells), sx, sy, sz, labels, movingIn, title, caption));
             saved = "\nThis is model " + drafts.size() + ": start its next version with from_draft " + drafts.size()
                     + " and write only what changes.";
+        }
+        // The design briefs for kinds of build this answer hasn't had yet; a model only explaining a point gets none.
+        if (briefs != null && !showsFault && base == null) {
+            List<String> brief = DesignBriefs.forModel(cells, briefs);
+            if (!brief.isEmpty()) saved += "\n\nDesign brief for this kind of build (for you; follow it in this version and every "
+                    + "later one):\n" + String.join("\n", brief);
         }
         if (check != null && !check.faults().isEmpty() && !showsFault && !draft) {
             return Result.problem("Not built: blocks in it wouldn't work as placed. Fix the model and call again (or "
@@ -545,14 +551,26 @@ public final class Models {
         PARTS.put("barrel", storage);
         PARTS.put("furnace", id -> id.contains("furnace") || id.contains("smoker"));
         PARTS.put("lever", id -> id.contains("lever"));
+        PARTS.put("belt", id -> id.contains("belt"));
+        PARTS.put("deployer", id -> id.contains("deployer"));
+        PARTS.put("funnel", id -> id.contains("funnel"));
+        PARTS.put("arm", id -> id.endsWith("_arm"));
+        PARTS.put("depot", id -> id.contains("depot"));
+        PARTS.put("basin", id -> id.contains("basin"));
+        PARTS.put("mixer", id -> id.contains("mixer"));
+        PARTS.put("spout", id -> id.contains("spout"));
+        PARTS.put("fan", id -> id.contains("fan"));
+        PARTS.put("saw", id -> id.contains("saw"));
+        PARTS.put("drill", id -> id.contains("drill"));
     }
 
     /**
      * The part a label's words name when no block near its cell is that part, else null. Near is within two blocks, or
      * anywhere straight above or below the cell and its neighbours: a label on a roof or deck honestly names the barrels
-     * or engine under it, though the label can only point at the outside.
+     * or engine under it, though the label can only point at the outside. With no cell (a caption), anywhere in the model.
      */
     private static String missingPart(String text, Map<BlockPos, BlockState> cells, BlockPos at) {
+        if (text == null || text.isEmpty()) return null;
         for (String w : text.toLowerCase(java.util.Locale.ROOT).split("[^a-z]+")) {
             String word = w.endsWith("s") && PARTS.containsKey(w.substring(0, w.length() - 1)) ? w.substring(0, w.length() - 1) : w;
             java.util.function.Predicate<String> is = PARTS.get(word);
@@ -560,7 +578,9 @@ public final class Models {
             boolean found = false;
             for (Map.Entry<BlockPos, BlockState> e : cells.entrySet()) {
                 BlockPos q = e.getKey();
-                int dx = Math.abs(q.getX() - at.getX()), dy = Math.abs(q.getY() - at.getY()), dz = Math.abs(q.getZ() - at.getZ());
+                // With no cell (a caption), anywhere in the model counts.
+                int dx = at == null ? 0 : Math.abs(q.getX() - at.getX()), dy = at == null ? 0 : Math.abs(q.getY() - at.getY()),
+                        dz = at == null ? 0 : Math.abs(q.getZ() - at.getZ());
                 if ((dx <= 1 && dz <= 1 || dx <= 2 && dy <= 2 && dz <= 2)
                         && is.test(net.minecraft.core.registries.BuiltInRegistries.BLOCK.getKey(e.getValue().getBlock()).toString())) {
                     found = true;

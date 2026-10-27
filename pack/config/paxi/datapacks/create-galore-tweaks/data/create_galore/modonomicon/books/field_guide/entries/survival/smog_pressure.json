@@ -20,7 +20,7 @@
     {
       "type": "modonomicon:text",
       "title": "Pressure and Sealed Casings",
-      "text": "[#](FFFFFF)[#]() **Key points**\n\n- Smog shut in a sealed space is forced up through the **Filter Frames in its roof**, no pump needed\n- The fuller the space, the faster\n- A belt, shaft or pipe with **casing** on it seals a wall, a bare one leaks\n- [#](FFFFFF)[#]() Full with nowhere to go, it blows up"
+      "text": "[#](FFFFFF)[#]() **Key points**\n\n- Smog shut in a sealed space is forced up through the **Filter Frames in its roof**, no pump needed\n- The fuller the space, the faster\n- **Casing** on a belt, shaft, pipe, door or trapdoor seals a wall (a door only while shut)\n- [#](FFFFFF)[#]() Full with nowhere to go, it blows up"
     },
     {
       "type": "modonomicon:text",
@@ -44,8 +44,18 @@
     },
     {
       "type": "modonomicon:text",
+      "title": "Doors and trapdoors",
+      "text": "Every door and trapdoor leaks. Right-click any one with Andesite, Brass or Copper Casing to case it.\\\n\\\nShut, a cased door or trapdoor seals like stone. Open, smog gets through as usual."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Opening a cased door",
+      "text": "Only redstone opens it: a button, lever, pressure plate or circuit. Hands can't, and villagers and mobs can't get through.\\\n\\\nA wrench takes the casing off and gives the door back; sneak with the wrench to pick it all up. Breaking it drops both."
+    },
+    {
+      "type": "modonomicon:text",
       "title": "A sealed smelter",
-      "text": "1. Fan, lava (or a Blaze Burner) and belt inside a box of full blocks\n2. Casing on the belt where it goes in and out, and on any shaft or pipe through the wall\n3. A Filter Frame in the roof\n4. Open sky or a chimney above the frame\n\nEach item smelted sends smog up through the filter."
+      "text": "1. Fan, lava (or a Blaze Burner) and belt inside a box of full blocks\n2. Casing on the belt, shafts, pipes and door through the wall\n3. A Filter Frame in the roof\n4. Open sky or a chimney above the frame\n\nEach item smelted sends smog up through the filter."
     },
     {
       "type": "modonomicon:text",
