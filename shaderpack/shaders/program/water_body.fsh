@@ -59,6 +59,27 @@ vec3 water_glint(vec3 n, vec3 view_dir, float dist, float lit) {
     return sun_glint(n, view_dir, 0.03 + 0.0015 * dist, vec3(0.02), lit);
 }
 
+#ifdef LIT_AIR
+// What the deferred pass drew at a pixel (point: its unjittered centre) before it put the light in the air in front
+// of it: the air up to the opaque surface there (or Distant Horizons' terrain, or the sky's start), as it worked it out.
+vec3 air_taken_off(vec3 seen, vec2 point) {
+    vec2 ndc = point / render_size() * 2.0 - 1.0;
+    float d = texelFetch(depthtex1, ivec2(point), 0).r;
+    float z = -unproject(gbufferProjectionInverse, ndc, d).z;
+    if (d >= 1.0) {
+        z = air_sky_start * -normalize(unproject(gbufferProjectionInverse, ndc, 1.0)).z;
+#ifdef DISTANT_HORIZONS
+        float dh = texelFetch(dhDepthTex0, ivec2(point), 0).r;
+        if (dh < 1.0) {
+            z = -unproject(dhProjectionInverse, ndc, dh).z;
+        }
+#endif
+    }
+    vec4 air = air_seen(point, z);
+    return (seen - air.rgb) / max(air.a, 1e-3);
+}
+#endif
+
 void main() {
     ivec2 texel = ivec2(gl_FragCoord.xy);
     vec2 size = render_size();
@@ -160,7 +181,14 @@ void main() {
         // shows water over something there (not the shore in front of it). Where it doesn't (that point is off the
         // screen or behind the hand), what the pixel itself shows under the surface, through as much water as the
         // bent ray would go through down to the same depth, so the two don't differ in how deep they look.
+        // The deferred pass put the light in the air in front of what is under the water (see air.glsl), all the way
+        // to it; the water's own light takes over at the surface, so take that air off again (the air in front of the
+        // surface goes on at the end).
         vec3 under = scene;
+#ifdef LIT_AIR
+        vec2 unjittered = vec2(texel) + 0.5 - vec2(cg_dlss_jitter_x, cg_dlss_jitter_y);
+        under = air_taken_off(scene, unjittered);
+#endif
         vec3 under_from = eye;
         vec3 under_dir = dir;
         float under_a = dist_water;
@@ -183,6 +211,9 @@ void main() {
                             + gbufferModelViewInverse[3].xyz;
                     if (length(o - eye) > texelFetch(colortex5, bent, 0).r) {
                         under = texelFetch(colortex0, bent, 0).rgb;
+#ifdef LIT_AIR
+                        under = air_taken_off(under, vec2(bent) + 0.5 - jitter);
+#endif
                         under_from = p;
                         under_dir = normalize(o - p);
                         under_a = 0.0;
@@ -236,7 +267,9 @@ void main() {
                 color = mix(color, white, foam * 0.85);
             }
         }
-        // Minecraft's fog in front of it, as the deferred pass fogs what is opaque.
+        // The light in the air and Minecraft's fog in front of it, as the deferred pass has them in front of what is
+        // opaque.
+        color = through_air(color, air_seen(vec2(texel) + 0.5 - jitter, -p_view.z));
         color = apply_fog_lit(color, max(length(p.xz), abs(p.y)), dir, fog_range_shaped(1));
 #if DEBUG_VIEW == 6
         color = vec3(sky_light_curve(sky_light_mc), max(seen, 0.0), seen < 0.0 ? 0.5 : 0.0) * 2.0;

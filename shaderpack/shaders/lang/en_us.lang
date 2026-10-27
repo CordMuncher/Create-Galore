@@ -115,6 +115,20 @@ option.CIRRUS.comment=Thin, wispy ice clouds nine kilometres up, over the cumulu
 option.CIRRUS_COVERAGE=Cirrus Cover
 option.CIRRUS_COVERAGE.comment=How much of the sky the cirrus cover.
 
+option.AIR_QUALITY=Light in the Air
+option.AIR_QUALITY.comment=The air catches the light: shafts of sunlight through leaves, windows and the edges of the clouds, haze that turns far hills blue and pale, dust a sunbeam shows up in rooms and caves, and a glow in each lamp's own colour around it. Higher is sharper shafts, for more time and video memory. Off: far terrain fades into the sky's colour.
+value.AIR_QUALITY.0=Off
+value.AIR_QUALITY.1=Low
+value.AIR_QUALITY.2=Medium
+value.AIR_QUALITY.3=High
+value.AIR_QUALITY.4=Ultra
+screen.AIR=Light in the Air Settings
+screen.AIR.comment=How much dust hangs indoors and how strongly the air glows around lamps.
+option.AIR_DUST=Dust
+option.AIR_DUST.comment=How much dust hangs in the air under a roof (rooms, caves, under trees), times: what makes a sunbeam through a window show. 0: the air indoors is as clear as outside.
+option.LAMP_GLOW=Lamp Glow
+option.LAMP_GLOW.comment=How strongly the air around torches, lanterns and every other light glows in their colour, times. 0: no glow.
+
 option.END_SKY=End Sky
 option.END_SKY.comment=The End under a sky of its own: a nebula across a void full of stars, fading into each biome's fog at the horizon. Off: Minecraft's (or BetterEnd's) End sky. The End keeps Minecraft's own light either way.
 screen.END=End Sky Settings

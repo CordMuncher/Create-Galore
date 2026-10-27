@@ -15,6 +15,7 @@ uniform int isEyeInWater;       // 1 water, 2 lava, 3 powder snow
 uniform float blindness;
 uniform float darknessFactor;
 #include "/lib/weather.glsl"
+#include "/lib/air.glsl"
 
 // What glows by itself (glowing eyes, the beacon's beam, the enchantment glint, a charged creeper's swirl) looks on
 // the screen as it does in Minecraft, whatever the exposure: a colour of 1 is this much in the frame.
@@ -84,6 +85,29 @@ vec3 apply_fog_lit(vec3 color, float dist, vec3 dir, vec2 range) {
     }
     float amount = 1.0 - (1.0 - fog_amount(dist, range.x, range.y)) * (1.0 - weather_haze(dist));
     return amount > 0.0 ? mix(color, fog_color_lit(dir) * exposure(), amount) : color;
+}
+
+// The light in the air between the eye and what lies at view depth z (blocks), seen at point (unjittered render
+// pixels): rgb the light it scatters towards the eye (frame units), a how much of what lies behind gets through (see
+// air.glsl). None under water, in lava or in powder snow, which have their own.
+vec4 air_seen(vec2 point, float z) {
+#ifdef LIT_AIR
+    if (isEyeInWater == 0) {
+        return air_between(point, z);
+    }
+#endif
+    return vec4(0.0, 0.0, 0.0, 1.0);
+}
+
+// The same for a fragment at scene_pos, frag_coord its gl_FragCoord.xy.
+vec4 air_seen_at(vec3 scene_pos, vec2 frag_coord) {
+    float z = -dot(mat3(gbufferModelViewInverse)[2], scene_pos - gbufferModelViewInverse[3].xyz);
+    return air_seen(frag_coord - vec2(cg_dlss_jitter_x, cg_dlss_jitter_y), z);
+}
+
+// What lies behind seen through that air.
+vec3 through_air(vec3 color, vec4 air) {
+    return color * air.a + air.rgb;
 }
 
 // A surface its own program lights (translucent ones, particles, rain, clouds), in the frame's units.

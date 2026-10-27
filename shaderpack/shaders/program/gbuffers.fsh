@@ -80,11 +80,12 @@ void lit_output(vec4 color, int flags) {
 #if defined LIT_SKY
     discard;
 #elif defined LIT_GLOW
-    // Glowing eyes, the glint, lightning: light added to what is there, fading out in the fog.
+    // Glowing eyes, the glint, lightning: light added to what is there, fading out in the fog and the air.
+    float fade = fog_fade(v_fog_dist) * air_seen_at(v_scene_pos, gl_FragCoord.xy).a;
 #ifdef PROGRAM_ARMOR_GLINT
-    out_color = vec4(glow(color.rgb) * fog_fade(v_fog_dist) * v_color.a, color.a);
+    out_color = vec4(glow(color.rgb) * fade * v_color.a, color.a);
 #else
-    out_color = vec4(glow(color.rgb) * fog_fade(v_fog_dist), color.a);
+    out_color = vec4(glow(color.rgb) * fade, color.a);
 #endif
 #elif defined LIT_FORWARD
     vec3 dir = normalize(v_scene_pos - gbufferModelViewInverse[3].xyz);
@@ -129,13 +130,15 @@ void lit_output(vec4 color, int flags) {
 #else
     vec3 rgb = forward_lit(color.rgb, v_normal, v_level, v_scene_pos, v_material == MATERIAL_PLANT);
 #endif
-    rgb = apply_fog_lit(rgb, v_fog_dist, dir, fog_range());
     out_color = vec4(rgb, color.a);
 #if defined PROGRAM_WATER
     out_color = with_sky_reflection(out_color, normal, dir, v_level.y);
 #elif defined PROGRAM_CLRWL_TRANSLUCENT
     out_color = with_sky_reflection(out_color, v_normal, dir, v_level.y);
 #endif
+    // The light in the air in front of it and the fog, blended over what is behind as it is (which has its own).
+    out_color.rgb = apply_fog_lit(through_air(out_color.rgb, air_seen_at(v_scene_pos, gl_FragCoord.xy)), v_fog_dist,
+            dir, fog_range());
 #else // LIT_GBUFFER
     // Light added on top (a charged creeper's swirl, the warden's glow) or blended over another surface (a mob's
     // shadow, smoke) leaves that surface's own description in the G-buffer: only its colour (colortex1) and its
@@ -160,11 +163,13 @@ void lit_output(vec4 color, int flags) {
     out_occlusion = vec4(0.0);
 #elif defined LIT_SELF
     vec3 dir = normalize(v_scene_pos - gbufferModelViewInverse[3].xyz);
+    vec4 air = air_seen_at(v_scene_pos, gl_FragCoord.xy);
     vec3 rgb;
     if ((flags & KEY_LIGHTMAP) == 0) {
-        rgb = glow(color.rgb) * fog_fade(v_fog_dist); // the block outline, unlit lines
+        rgb = glow(color.rgb) * fog_fade(v_fog_dist) * air.a; // the block outline, unlit lines
     } else {
-        rgb = apply_fog_lit(forward_lit(color.rgb, v_normal, v_level, v_scene_pos, true), v_fog_dist, dir, fog_range());
+        rgb = apply_fog_lit(through_air(forward_lit(color.rgb, v_normal, v_level, v_scene_pos, true), air), v_fog_dist,
+                dir, fog_range());
     }
     out_color = vec4(rgb, color.a);
     out_albedo = vec4(0.0, 0.0, 0.0, color.a);
@@ -174,7 +179,7 @@ void lit_output(vec4 color, int flags) {
     out_occlusion = vec4(1.0, 0.0, 0.0, weight);
     if ((flags & KEY_LIGHTMAP) == 0) {
         // What Minecraft draws without its lightmap glows by itself: the beacon's beam, glowing eyes and layers.
-        out_color = vec4(glow(color.rgb) * fog_fade(v_fog_dist), color.a);
+        out_color = vec4(glow(color.rgb) * fog_fade(v_fog_dist) * air_seen_at(v_scene_pos, gl_FragCoord.xy).a, color.a);
         out_albedo = vec4(0.0, 0.0, 0.0, color.a);
         out_surface = encode_surface(v_normal, v_level, MATERIAL_SELF, weight);
     } else {

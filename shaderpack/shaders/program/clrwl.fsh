@@ -55,7 +55,7 @@ void main() {
     out_occlusion = vec4(1.0, 0.0, 0.0, 1.0);
     out_motion = vec4(0.0);
 #elif defined LIT_GLOW
-    out_color = vec4(glow(color.rgb) * fog_fade(v_fog_dist), color.a);
+    out_color = vec4(glow(color.rgb) * fog_fade(v_fog_dist) * air_seen_at(v_scene_pos, gl_FragCoord.xy).a, color.a);
     out_motion = vec4(0.0);
 #else
     color.rgb = mix(color.rgb, overlay.rgb, overlay.a);
@@ -65,8 +65,10 @@ void main() {
 #endif
 #ifdef LIT_FORWARD
     vec3 dir = normalize(v_scene_pos - gbufferModelViewInverse[3].xyz);
-    vec3 rgb = apply_fog_lit(forward_lit(color.rgb, normal, level, v_scene_pos, false), v_fog_dist, dir, fog_range());
-    out_color = with_sky_reflection(vec4(rgb, color.a), normal, dir, level.y);
+    out_color = with_sky_reflection(vec4(forward_lit(color.rgb, normal, level, v_scene_pos, false), color.a), normal, dir,
+            level.y);
+    out_color.rgb = apply_fog_lit(through_air(out_color.rgb, air_seen_at(v_scene_pos, gl_FragCoord.xy)), v_fog_dist, dir,
+            fog_range());
 #else
     out_color = vec4(0.0, 0.0, 0.0, color.a);
     out_albedo = color;

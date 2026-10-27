@@ -1,8 +1,8 @@
 // The overworld's deferred pass (its last part, deferred2), after everything opaque is drawn and before the
 // translucent things: lights each surface the G-buffer holds (see gbuffer.glsl) by the sun or the moon, the sky and
 // the blocks (lighting.glsl), adds what glows or lit itself (colortex0), and draws the sky where nothing is, with
-// the clouds the passes before worked out (see clouds.glsl). The translucent programs then draw over the lit scene,
-// lighting themselves the same way.
+// the clouds the passes before worked out (see clouds.glsl), all seen through the light in the air in front of them
+// (air.glsl). The translucent programs then draw over the lit scene, lighting themselves the same way.
 
 #include "/lib/settings.glsl"
 #include "/lib/motion.glsl"
@@ -283,7 +283,12 @@ void main() {
         }
         sky += global(G_FLASH).rgb; // lightning
         float covered = texelFetch(colortex1, texel, 0).a;
-        color = emissive + sky * exposure() * (1.0 - covered);
+        vec3 behind = sky * exposure();
+#ifdef LIT_AIR
+        // The air nearest you, with its shafts, in front of the sky (whose table begins past it, see air.glsl).
+        behind = through_air(behind, air_seen(point, air_sky_start * -normalize(unproject(gbufferProjectionInverse, ndc, 1.0)).z));
+#endif
+        color = emissive + behind * (1.0 - covered);
     } else if (material == MATERIAL_SELF) {
         color = emissive;
     } else {
@@ -422,7 +427,9 @@ void main() {
         // no fog shape).
         bool open_air = isEyeInWater == 0 && blindness == 0.0 && darknessFactor == 0.0;
         float dist = open_air ? max(length(scene_pos.xz), abs(scene_pos.y)) : length(scene_pos);
-        color = emissive + apply_fog_lit(lit, dist, dir, fog_range_shaped(open_air ? 1 : 0));
+        // The light in the air between you and it (see air.glsl), which dims what glows too.
+        vec4 air = depth >= hand_depth_limit ? air_seen(point, -view.z) : vec4(0.0, 0.0, 0.0, 1.0);
+        color = emissive * air.a + apply_fog_lit(through_air(lit, air), dist, dir, fog_range_shaped(open_air ? 1 : 0));
 #ifdef LIT_CLOUDS
         // From above the cumulus, they hide what lies under them.
         if (atm_height(cameraPosition.y) > cumulus_bottom && atm_height(scene_pos.y + cameraPosition.y) < cumulus_bottom) {

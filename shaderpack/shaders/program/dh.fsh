@@ -85,8 +85,9 @@ void main() {
     }
     vec3 rgb = light_surface(srgb_to_linear(v_color.rgb), v_normal, level, v_fog_pos, false, false, false, 1.0, 1.0,
             v_level.y) * exposure();
-    rgb = apply_fog_lit(rgb, fog_distance(v_fog_pos), dir, fog_range());
     out_color = with_sky_reflection(vec4(rgb, v_color.a), v_normal, dir, level.y);
+    out_color.rgb = apply_fog_lit(through_air(out_color.rgb, air_seen_at(v_fog_pos, gl_FragCoord.xy)),
+            fog_distance(v_fog_pos), dir, fog_range());
 #if DEBUG_VIEW == 6
     out_color = vec4(vec3(sky_light_curve(v_level.y), max(seen, 0.0), seen < 0.0 ? 0.5 : 0.0) * 2.0, 1.0);
 #endif
@@ -95,9 +96,10 @@ void main() {
     // It gives its clouds and beams full block and sky light, so that its own shaders draw them as bright as
     // their colour.
     float dist = fog_distance(v_fog_pos);
+    vec4 air = air_seen_at(v_fog_pos, gl_FragCoord.xy);
     vec3 rgb;
     if (v_dh_material == DH_BLOCK_ILLUMINATED) {
-        rgb = glow(v_color.rgb) * fog_fade(dist);
+        rgb = glow(v_color.rgb) * fog_fade(dist) * air.a;
     } else if (v_dh_material == DH_BLOCK_UNKNOWN) {
 #ifdef LIT_CLOUDS
         discard; // the pack draws its own clouds (see clouds.glsl)
@@ -105,10 +107,10 @@ void main() {
         // Its clouds come in Minecraft's cloud colour, which darkens them by night and in the rain as the sun and
         // the sky do here: white like Minecraft's own clouds (see gbuffers.fsh), under the open sky.
         rgb = light_surface(srgb_to_linear(vec3(0.9)), v_normal, vec2(0.0, 1.0), v_fog_pos, false, false) * exposure();
-        rgb = apply_fog_lit(rgb, dist, dir, fog_range());
+        rgb = apply_fog_lit(through_air(rgb, air), dist, dir, fog_range());
     } else {
         rgb = light_surface(srgb_to_linear(v_color.rgb), v_normal, v_level, v_fog_pos, false, false) * exposure();
-        rgb = apply_fog_lit(rgb, dist, dir, fog_range());
+        rgb = apply_fog_lit(through_air(rgb, air), dist, dir, fog_range());
     }
     out_color = vec4(rgb, v_color.a);
     out_albedo = vec4(0.0, 0.0, 0.0, v_color.a);

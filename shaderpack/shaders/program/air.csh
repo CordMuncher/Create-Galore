@@ -132,6 +132,8 @@ void main() {
 #elif defined AIR_SKYVIEW
 
 #include "/lib/celestial.glsl"
+#define AIR_WRITE
+#include "/lib/air.glsl"
 
 layout(local_size_x = 16, local_size_y = 16) in;
 const ivec3 workGroups = ivec3(16, 16, 1);
@@ -147,9 +149,15 @@ void main() {
     vec3 radiance = vec3(0.0);
     float len;
     if (ray_through_air(origin, dir, atm_bottom - atm_below_ground, len)) {
+        // With the light in the air on, the air nearest you is the volume's, with the shafts in it (see air.glsl): the
+        // sky begins past it.
+        float start = 0.0;
+#ifdef LIT_AIR
+        start = min(air_sky_start * 0.001, len);
+#endif
         vec3 transmittance;
-        radiance = atm_segment(origin, dir, len, 32, sun_dir_world(), sun_illuminance, moon_dir_world(), moon_illuminance(),
-                transmittance);
+        radiance = atm_segment(origin + dir * start, dir, len - start, 32, sun_dir_world(), sun_illuminance,
+                moon_dir_world(), moon_illuminance(), transmittance);
     }
     imageStore(cg_skyview_img, texel, vec4(radiance, 1.0));
 }

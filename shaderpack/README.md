@@ -119,6 +119,18 @@ Water, rain and reflections (alpha 3, the Reflections and Noise Pattern options)
   a smooth pattern made for TAA or white noise (what NVIDIA asks Ray Reconstruction to be given), for comparing
   which one DLSS resolves more calmly.
 
+Light in the air (alpha 4, the Light in the Air option; the shafts need Shadows):
+
+- The air between you and everything you see catches the light: shafts of sunlight through leaves, windows, cave
+  mouths and the gaps between clouds, haze that turns far terrain bluer and paler with distance (thicker at
+  sunrise and in the rain), dust a sunbeam shows up in under a roof, and a glow in each lamp's own colour around
+  it, from the coloured light's volume. It is the sky's own air, so the land fades into the horizon the way the
+  sky does, and the shafts carry on against the sky out to the shadow map's reach.
+- A volume of cells fixed to the camera, as Unreal's, Frostbite's and Assassin's Creed IV's volumetric fog is:
+  each cell works out its light at a point that moves inside it every frame and blends it with what that place in
+  the world held last frame, so the volume settles into a still, noise-free image for DLSS and FSR. Every surface,
+  the clouds, the water and what lies under it then take the sum of the air in front of them at their own depth.
+
 From milestone 1, in every preset:
 
 - Motion vectors for everything that moves: the camera, mobs and block entities, the hand, Sable ships, Create's
@@ -137,14 +149,14 @@ caustics, the ripples and the light's depth under water need that version near s
 
 - `shaders/program/`: the shared programs. `gbuffers_kind.glsl` says what each world program draws and how vanilla
   shades it; `gbuffers.vsh/fsh` draw the world, `clrwl.*` Colorwheel's, `dh.*` Distant Horizons'. The lit overworld
-  adds `air.csh` (the sky's tables), `frame_globals.csh` (the frame's light), `cloud_ambient.csh`,
+  adds `air.csh` (the sky's tables), `air_volume.csh` (the light in the air), `frame_globals.csh` (the frame's light), `cloud_ambient.csh`,
   `clouds_march.csh` and `clouds_gather.csh` (the cumulus), `deferred.fsh` (the lighting), `exposure.csh`,
   `shadow.*`, `light_bounce.csh` and `light_flood.csh` (the coloured and bounce light), `water_sim.csh` (the
   ripples), `water_body.fsh` (the water, after the translucent things) and `bloom.csh`; the End adds `end_sky.fsh`.
 - `shaders/lib/`: render size and jitter (`frame.glsl`), motion vectors (`motion.glsl`), vanilla's lighting and fog
-  (`vanilla.glsl`), colour encodings and the options; for the lit overworld the air (`atmosphere.glsl`), the sky
+  (`vanilla.glsl`), colour encodings and the options; for the lit overworld the air (`atmosphere.glsl`, and the light in it, `air.glsl`), the sky
   (`sky.glsl`, `celestial.glsl`, `stars.glsl`), the clouds (`clouds.glsl`, `noise.glsl`), the G-buffer
-  (`gbuffer.glsl`), the lighting (`lighting.glsl`, `lit.glsl`, `shadow.glsl`, `light_volume.glsl`), the water
+  (`gbuffer.glsl`), the lighting (`lighting.glsl`, `light_levels.glsl`, `lit.glsl`, `shadow.glsl`, `light_volume.glsl`), the water
   (`water.glsl`, `water_body.glsl`, `medium.glsl`), reflections (`reflection.glsl`), the weather and what rain does
   (`weather.glsl`, `wet.glsl`), the bloom (`bloom.glsl`), the values its passes share
   (`globals.glsl`) and the tone mapping (`tonemap.glsl`); for the End its sky (`end_sky.glsl`).

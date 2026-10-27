@@ -10,6 +10,7 @@
 #include "/lib/settings.glsl"
 #include "/lib/frame.glsl"
 #include "/lib/globals.glsl"
+#include "/lib/light_levels.glsl"
 #include "/lib/noise.glsl"
 #include "/lib/shadow.glsl"
 #ifdef SHADOW_MAP
@@ -48,46 +49,14 @@ float pixel_noise() {
     return pixel_noise(0u);
 }
 
-// A light level 15 surface gets light_block_lux of torchlight (torch_color, see light_volume.glsl): a little more than
-// a real torch gives up close, so a room lit by its lamps reads as lit, not as a dim night.
-const float light_block_lux = 0.024;
 // What a surface gets with no light at all, so caves aren't pure black (Minecraft mixes its lightmap a little towards
 // grey); the Brightness setting raises it as it raises Minecraft's.
 const float light_floor_lux = 0.00008;
 
-// Minecraft's brightness for a light level (0..1 for 0..15): its lightmap's curve.
-float light_curve(float level) {
-    return level / (4.0 - 3.0 * level);
-}
-
-// The sky's light for a sky light level (0..1): Minecraft's curve, to the power SKY_FALLOFF.
-float sky_light_curve(float level) {
-    return pow(light_curve(level), SKY_FALLOFF);
-}
-
-// The blocks' light for a block light level (0..1): Minecraft's curve, to the power BLOCK_FALLOFF.
-float block_light_curve(float level) {
-    return pow(light_curve(level), BLOCK_FALLOFF);
-}
-
-// The sky's light falling on a surface facing n: exact for a block's six faces (see frame_globals.csh), blended
-// between them for any other direction.
-vec3 sky_irradiance(vec3 n) {
-    vec3 w = n * n / max(dot(n, n), 1e-8);
-    return w.x * global(G_SKY_CUBE + (n.x >= 0.0 ? 0 : 1)).rgb
-            + w.y * global(G_SKY_CUBE + (n.y >= 0.0 ? 2 : 3)).rgb
-            + w.z * global(G_SKY_CUBE + (n.z >= 0.0 ? 4 : 5)).rgb;
-}
-
-// By day the blocks' light is at least this much in the frame (frame units, times BLOCK_LIGHT_DAY): a few times what
-// lights the shade by day at the exposure's key, so a lantern visibly lights the shade around it.
-const float light_block_day_frame = 16.0;
-
 // The light from the blocks (their colour, luminance 1, see light_volume.glsl) and the floor, for a block light
 // level (0..1).
 vec3 block_irradiance(float block, vec3 color) {
-    float lux = max(light_block_lux, light_block_day_frame * BLOCK_LIGHT_DAY / exposure());
-    vec3 light = color * lux * block_light_curve(block);
+    vec3 light = color * block_light_lux() * block_light_curve(block);
     vec3 floor_light = vec3(light_floor_lux * (1.0 + 7.0 * screenBrightness));
     // Night vision lights everything up, as Minecraft's does.
     floor_light += vec3(light_floor_lux * 400.0 * nightVision);

@@ -135,6 +135,15 @@ const float upscaling_render_scale = RENDER_SCALE;
 #ifdef CLOUD_SHADOWS
 #endif
 
+// Light in the air, in the lit overworld (see air.glsl): the haze the sun lights into shafts through the leaves and
+// past the clouds' edges, dust under a roof that a sunbeam shows up, and a glow around lamps in their own colours; far
+// terrain fades into the same air as the sky. Quality: how fine the volume it's worked out in is (0: Minecraft's
+// fog alone). Dust: how much the air under a roof, in a cave or in a wood holds. Lamp Glow: how much the air around
+// lamps glows.
+#define AIR_QUALITY 3 // [0 1 2 3 4]
+#define AIR_DUST 1.0  // [0.0 0.5 1.0 1.5 2.0 3.0]
+#define LAMP_GLOW 1.0 // [0.0 0.5 1.0 1.5 2.0 3.0]
+
 // The End's own sky (its programs are in world1/): a nebula across a starry void, in place of Minecraft's (and
 // BetterEnd's) sky, fading into the End's fog at the horizon. The End keeps Minecraft's own light for now. Off: its
 // own sky too.
@@ -168,6 +177,10 @@ const float upscaling_render_scale = RENDER_SCALE;
 
 #if defined LIT_WORLD && defined SHADOWS && defined GI
 #define LIT_GI
+#endif
+
+#if defined LIT_WORLD && AIR_QUALITY > 0
+#define LIT_AIR
 #endif
 
 // The volume of blocks around you that the coloured light and the bounce light spread through.
