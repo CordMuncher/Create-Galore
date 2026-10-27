@@ -1,0 +1,74 @@
+{
+  "title": "A straight line fed back by hand is allowed and says so",
+  "from": "step 4 (item lines)",
+  "roots": [
+    "R3"
+  ],
+  "kind": "model",
+  "model": {
+    "title": "Straight mechanism line",
+    "goal": "create:precision_mechanism, fed back by hand",
+    "size_x": 7,
+    "size_y": 4,
+    "size_z": 2,
+    "blocks": [
+      {
+        "block": "create:belt[facing=east,part=start,slope=horizontal]",
+        "x": 0,
+        "y": 1,
+        "z": 0
+      },
+      {
+        "block": "create:belt[facing=east,part=middle,slope=horizontal]",
+        "x": 1,
+        "y": 1,
+        "z": 0,
+        "x2": 5,
+        "y2": 1,
+        "z2": 0
+      },
+      {
+        "block": "create:belt[facing=east,part=end,slope=horizontal]",
+        "x": 6,
+        "y": 1,
+        "z": 0
+      },
+      {
+        "block": "create:creative_motor[facing=north]",
+        "x": 0,
+        "y": 1,
+        "z": 1
+      },
+      {
+        "block": "create:creative_motor[facing=east]",
+        "x": 1,
+        "y": 3,
+        "z": 0
+      },
+      {
+        "block": "create:deployer[facing=down,axis_along_first=true]",
+        "x": 2,
+        "y": 3,
+        "z": 0,
+        "x2": 4,
+        "y2": 3,
+        "z2": 0
+      },
+      {
+        "block": "minecraft:stone",
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "x2": 6,
+        "y2": 0,
+        "z2": 1
+      }
+    ]
+  },
+  "expect": {
+    "built": true,
+    "has": [
+      "back at the start each time by hand"
+    ]
+  }
+}
