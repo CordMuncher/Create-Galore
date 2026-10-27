@@ -133,7 +133,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**Frame generation** (same tab) shows a frame of its own between every two the game draws, so motion looks about twice as smooth, for a little more input delay. **DLSS** runs on NVIDIA RTX 40 and 50 cards; **FSR** (experimental) runs on other cards too and is best from about 60 fps. Both need DLSS or FSR anti-aliasing."
+      "text": "**Frame generation** (same tab) shows a frame of its own between every two the game draws, so motion looks about twice as smooth, for a little more input delay. **DLSS** runs where NVIDIA's own check says the card can (RTX 40 and 50); if not, the setting says why. **FSR** (experimental) runs on other cards too and is best from about 60 fps. Both need DLSS or FSR anti-aliasing."
     },
     {
       "type": "modonomicon:text",
