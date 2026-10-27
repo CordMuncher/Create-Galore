@@ -40,10 +40,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Frame generation, EXPERIMENTAL (Display tab, "Frame generation"), in Perfect Presentation's DirectX 12 presenter
- * (cg_present.dll's cg_fg_* calls): NVIDIA DLSS Frame Generation through Streamline on RTX 40 and 50 cards
- * (tools/bridge-mod/native/cg_streamline.cpp), or AMD FSR 3.1 frame generation through AMD's FidelityFX SDK on any card
- * (cg_ffx.cpp). Each frame, once DLSS or FSR ran and the HUD is drawn, the presenter has {@link FgCapture} write the
+ * Frame generation (Display tab, "Frame generation"), in Perfect Presentation's DirectX 12 presenter (cg_present.dll's
+ * cg_fg_* calls): NVIDIA DLSS Frame Generation through Streamline on RTX 40 and 50 cards
+ * (tools/bridge-mod/native/cg_streamline.cpp), or AMD FSR 3.1 frame generation, EXPERIMENTAL, through AMD's FidelityFX
+ * SDK on any card (cg_ffx.cpp). Each frame, once DLSS or FSR ran and the HUD is drawn, the presenter has {@link FgCapture} write the
  * frame's inputs (the world without the HUD, the HUD's coverage, depth and motion vectors) into textures shared with
  * DirectX 12, hands over the camera ({@link FgCamera}), and the backend shows generated frames between the rendered
  * ones from Present on. The inputs come from whichever upscaler ran ({@link #upscaled}) in one form for either backend,

@@ -71,7 +71,7 @@ public final class DisplaySettings {
     public static final String HUD_SPLIT_VIEW = "hudSplitView";
     /** Testing only, not written to the file: true checks the HUD split every 5 seconds (log, screenshots/hud-split). */
     public static final String HUD_SPLIT_CHECK = "hudSplitCheck";
-    /** off, dlss or fsr: frame generation in the DirectX 12 presenter, experimental (see FrameGen); on and off at once, dlss and fsr swap at a restart. */
+    /** off, dlss or fsr: frame generation in the DirectX 12 presenter, fsr experimental (see FrameGen); on and off at once, dlss and fsr swap at a restart. */
     public static final String FRAME_GEN = "frameGen";
     /** dlss or fsr: the frame generation the DirectX 12 presenter loads at its start while frameGen is off (the last one picked; none: the best for the card). */
     public static final String FRAME_GEN_TYPE = "frameGenType";
@@ -114,14 +114,14 @@ public final class DisplaySettings {
             + " gpuPacing: off, on or lowest, any graphics card. The game waits just before drawing each frame so it reaches\n"
             + " the graphics card about when the card is ready, instead of queueing behind earlier frames: shorter input\n"
             + " delay without a frame cap. on keeps the frame rate; lowest is a little quicker still, for about 6% fewer frames.\n"
-            + " frameGen: off, dlss or fsr, EXPERIMENTAL. Frame generation: the graphics card shows a frame of its own between\n"
-            + " every two the game renders. dlss: NVIDIA DLSS Frame Generation, NVIDIA RTX 40 or 50 cards, with Windows'\n"
+            + " frameGen: off, dlss or fsr. Frame generation: the graphics card shows a frame of its own between every two\n"
+            + " the game renders. dlss: NVIDIA DLSS Frame Generation, NVIDIA RTX 40 or 50 cards, with Windows'\n"
             + " Hardware-accelerated GPU scheduling on and nvngx_dlssg.dll in create-galore-dlss/ (not part of the pack, like\n"
-            + " nvngx_dlss.dll); Reflex stays on while it runs. fsr: AMD FSR 3.1 frame generation, any card DirectX 12 runs\n"
-            + " on. Both need perfectPresentation=true with presenter=dx12 (the settings screen sets both with it) and dlaa\n"
-            + " running (DLSS or FSR 3.1). The one in frameGenType (dlss or fsr; empty: DLSS on an RTX 40 or 50 card with\n"
-            + " nvngx_dlssg.dll, else FSR) loads whenever DirectX 12 starts, so it turns on and off without a restart; picking\n"
-            + " the other one needs a restart.\n"
+            + " nvngx_dlss.dll); Reflex stays on while it runs. fsr, EXPERIMENTAL: AMD FSR 3.1 frame generation, any card\n"
+            + " DirectX 12 runs on. Both need perfectPresentation=true with presenter=dx12 (the settings screen sets both with\n"
+            + " it) and dlaa running (DLSS or FSR 3.1). The one in frameGenType (dlss or fsr; empty: DLSS on an RTX 40 or 50\n"
+            + " card with nvngx_dlssg.dll, else FSR) loads whenever DirectX 12 starts, so it turns on and off without a\n"
+            + " restart; picking the other one needs a restart.\n"
             + " fpsCounter: off, basic (the frame rate, small, in a corner) or detailed (also the frame time, the 1% and 0.1%\n"
             + " lows of the last 10 seconds and a frame time graph). fpsCounterCorner: top-left, top-right, bottom-left or\n"
             + " bottom-right. fpsCounterDim: true for OLED screens: see-through, and it moves a pixel every two minutes.\n"

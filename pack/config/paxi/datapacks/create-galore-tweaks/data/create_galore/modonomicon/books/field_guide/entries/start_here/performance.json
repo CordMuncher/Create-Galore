@@ -133,7 +133,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**Frame generation** (same tab, experimental) shows a frame of its own between every two the game draws, so motion looks about twice as smooth, for a little more input delay. **DLSS** runs on NVIDIA RTX 40 and 50 cards; **FSR** runs on other cards too and is best from about 60 fps. Both need DLSS or FSR anti-aliasing."
+      "text": "**Frame generation** (same tab) shows a frame of its own between every two the game draws, so motion looks about twice as smooth, for a little more input delay. **DLSS** runs on NVIDIA RTX 40 and 50 cards; **FSR** (experimental) runs on other cards too and is best from about 60 fps. Both need DLSS or FSR anti-aliasing."
     },
     {
       "type": "modonomicon:text",
@@ -144,6 +144,11 @@
       "type": "modonomicon:text",
       "title": "",
       "text": "With frame generation on, **Max Framerate** counts the frames on screen, with DLSS and with FSR: a cap of 120 shows 120 frames a second, 60 drawn by the game and 60 made between them."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "The **NVIDIA app** can change the model DLSS frame generation uses: Graphics, Global Settings, **DLSS Override - Model Presets**, Frame Generation. It works here, though NVIDIA's overlay reads \"FG OVR N/A\". On an RTX 4080 SUPER, **Preset C** drew about 6%% more frames with a little less input delay; **Preset B** ran like NVIDIA's own pick."
     },
     {
       "type": "modonomicon:text",

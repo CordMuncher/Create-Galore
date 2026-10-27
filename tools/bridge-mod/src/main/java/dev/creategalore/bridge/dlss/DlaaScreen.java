@@ -39,7 +39,7 @@ import net.neoforged.neoforge.common.NeoForge;
  * render resolution, the bring-your-own nvngx_dlss.dll and nvngx_dlssg.dll (or ones found on this PC, see
  * {@link DlssFinder}). Display: the window switches and Perfect Presentation's DirectX version (picking 12 turns
  * Perfect Presentation on; a fresh install on Windows starts with both, see DisplaySettings), NVIDIA Reflex (which turns Perfect Presentation on with it, see
- * {@link FrameLatency}), GPU pacing, frame generation (experimental: NVIDIA's on RTX 40 and 50 cards, AMD's on any;
+ * {@link FrameLatency}), GPU pacing, frame generation (NVIDIA's on RTX 40 and 50 cards, AMD's, experimental, on any;
  * picking one turns Perfect Presentation on DirectX 12 on, and NVIDIA's Reflex too, see {@link FrameGen}) and the frame
  * counter ({@link FpsOverlay}). Opens from the mod list (Create Galore Bridge, Config) and from an Upscaling & Display
  * button in Iris's shader pack menu. Saved to config/create_galore_bridge-display.properties when it closes, the render
@@ -406,9 +406,9 @@ public final class DlaaScreen extends Screen {
             y = lines(graphics, "L and M are made for RTX 40 and 50 cards and cost more on RTX 20 and 30 (no FP8): if frames drop,"
                     + " use K.", left, y, 0xFFAA44, buttonsTop < 176 ? 1 : 2);
         }
-        // What "Find on this PC" did takes the DLL line's place (it names the version), and room from the status.
-        // The status keeps a line however short the screen; the DLL line takes what fits above the buttons.
-        y = lines(graphics, Dlss.status(), left, y, 0xAAAAAA, Math.min(findLine != null ? 1 : 3, Math.max(1, (buttonsTop - 12 - y) / 10)));
+        // What "Find on this PC" did takes the DLL line's place (it names the version) and keeps its two lines; the status
+        // keeps a line however short the screen, and the rest of it where it fits.
+        y = lines(graphics, Dlss.status(), left, y, 0xAAAAAA, Math.min(3, Math.max(1, (buttonsTop - (findLine != null ? 22 : 12) - y) / 10)));
         lines(graphics, findLine != null ? findLine : dllLine, left, y + 2, findLine != null ? 0x88DD88 : 0xFFFFFF, (buttonsTop - y) / 10);
     }
 
@@ -663,14 +663,16 @@ public final class DlaaScreen extends Screen {
                     + " downloads, or put your own in the DLSS folder (Open DLSS folder).", true);
         }
         String detail = dlss ? DLSS_FRAME_GEN_DETAIL : FSR_FRAME_GEN_DETAIL;
+        // AMD's is still experimental; NVIDIA's isn't.
+        String experimental = dlss ? "" : "Experimental. ";
         boolean running = FrameGen.running();
         if (running && !FrameGen.settingOf(FrameGen.backend()).equals(frameGen)) {
-            return new FrameLatency.Status("Experimental. Switches after a restart.", "The game loads one kind of frame generation"
+            return new FrameLatency.Status(experimental + "Switches after a restart.", "The game loads one kind of frame generation"
                     + " when DirectX 12 starts, " + frameGenName(FrameGen.settingOf(FrameGen.backend())) + " this time: "
                     + frameGenName(frameGen) + " after a restart. From then on it turns on and off at once. " + detail, false);
         }
         if (!FrameGen.requested() || !"DirectX 12".equals(Presentation.api())) {
-            return new FrameLatency.Status("Experimental. Starts after a restart.", detail, false);
+            return new FrameLatency.Status(experimental + "Starts after a restart.", detail, false);
         }
         String problem = FrameGen.problem();
         if (problem != null) {
@@ -683,15 +685,16 @@ public final class DlaaScreen extends Screen {
                     + " DirectX 12 presenter, which could not start this time; the game log says why (lines starting with"
                     + " Perfect Presentation:).", true);
         }
-        return FrameGen.on() ? new FrameLatency.Status("Experimental: running.", detail, false)
+        return FrameGen.on() ? new FrameLatency.Status(dlss ? "Running." : "Experimental: running.", detail, false)
                 : new FrameLatency.Status("Turns on when you close this screen.", detail, false);
     }
 
-    private static final String FRAME_GEN_DETAIL = "Experimental. Pauses in menus and while the game is paused, and runs"
-            + " only with DLSS or FSR anti-aliasing.";
+    private static final String FRAME_GEN_DETAIL = "Pauses in menus and while the game is paused, and runs only with DLSS or"
+            + " FSR anti-aliasing.";
     private static final String DLSS_FRAME_GEN_DETAIL = FRAME_GEN_DETAIL + " Needs Windows with Hardware-accelerated GPU"
             + " scheduling on and Vertical sync in the NVIDIA Control Panel at \"Use the 3D application setting\".";
-    private static final String FSR_FRAME_GEN_DETAIL = FRAME_GEN_DETAIL + " Works best from about 60 frames a second without it.";
+    private static final String FSR_FRAME_GEN_DETAIL = "Experimental. " + FRAME_GEN_DETAIL + " Works best from about 60 frames a"
+            + " second without it.";
 
     private static String frameGenName(String value) {
         return value.equals("dlss") ? "DLSS" : value.equals("fsr") ? "FSR" : "none";
@@ -703,7 +706,7 @@ public final class DlaaScreen extends Screen {
 
     private static String frameGenTooltip(String value) {
         return switch (value) {
-            case "dlss" -> "Experimental, NVIDIA RTX 40 and 50 cards only: NVIDIA DLSS Frame Generation shows a frame of its own"
+            case "dlss" -> "NVIDIA RTX 40 and 50 cards only: NVIDIA DLSS Frame Generation shows a frame of its own"
                     + " between every two the game renders, so the picture moves about twice as smoothly, for a little more"
                     + " input delay. Needs Perfect Presentation on DirectX 12 and NVIDIA Reflex, which this turns on, DLSS or FSR"
                     + " anti-aliasing (Upscaling tab), and nvngx_dlssg.dll in the DLSS folder (Find on this PC). Turns on and off"
