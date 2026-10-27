@@ -2396,3 +2396,100 @@ commit and push on this branch. NVIDIA's DLLs stay in `$T\rr1`, never in the rep
 What comes of it: if RR runs and looks right, the pilot is finally where Ray Reconstruction 1 meant to start, and its
 verdicts decide what carries over to our own shader pack. If only c fails, the next step is RR on the presenter's
 own DirectX 12 device.
+
+## Ray Reconstruction 2b: the hit distance guide, then the look and the cost
+
+Start only when Emre says so. About 10 minutes with Emre at the keyboard for the hit distance (part 1). If that proves
+the guide right, about 15 more for the look and feel (part 2), then about 35 that need no one (part 3).
+
+**What it checks.** In Ray Reconstruction 2 (`results/rr2/REPORT.md`), RR ran, but NVIDIA's view of the specular hit
+distance (the 9th in the overlay) was black everywhere, sky included. Two things to settle:
+- **NVIDIA doesn't document how that view draws distances.** The pack's guide holds 65504 (NVIDIA's value for the sky,
+  "no hit") on every surface where Photon traces no reflection, which is most of a scene. It holds the reflection ray's
+  length in blocks where one hit something: water, glass, metal, and while RR runs the rough blocks Photon traces too.
+  This build (Bridge 1.125.0-rr.3, pack 0.6.1-rr.3) has a test switch, `dlaaRrTest=hit-distance-bands`. It replaces the
+  guide with 8 vertical bands of known distances, from left to right 0, 0.5, 2, 8, 32, 128, 1024 and 65504 blocks. The
+  overlay then shows how it draws each.
+- **One real bug, now fixed.** The frame RR started on got no hit distance: the inputs were listed before that frame's
+  copy. Every later frame had it, so this alone can't explain a black view.
+
+The upside-down NVIDIA notice is expected. DLSS gets OpenGL's row order (bottom row first) and a projection flipped to
+match, so to NGX it is one consistent, mirrored frame, and NGX draws its text in DirectX's order on top. The black
+specular motion vectors are expected too: we don't hand them over, and RR works reflection motion out from the hit
+distance.
+
+### Update and settings
+
+```powershell
+git -C $T\repo fetch origin
+git -C $T\repo checkout -B claude/project-thread-u2wmhh origin/claude/project-thread-u2wmhh
+Remove-Item $T\instance\mods\create-galore-bridge-*.jar
+Copy-Item $T\repo\pack\mods\create-galore-bridge-*.jar $T\instance\mods\
+Copy-Item $T\repo\tools\dlss-testkit\dist\create-galore-dlss-testkit-1.0.0.jar $T\instance\mods\ -Force
+Get-ChildItem $T\instance\mods\create-galore-bridge-*.jar | Select-Object Name
+```
+
+Only `create-galore-bridge-1.125.0-rr.3.jar`. Back up the same files as Ray Reconstruction 2, to `$T\rr2b\*.before`
+this time.
+
+### 1. The hit distance (Emre at the keyboard, about 10 minutes)
+
+The dev DLL in the instance:
+`Copy-Item $T\rr1\nvngx_dlssd-dev.dll $T\instance\create-galore-dlss\nvngx_dlssd.dll -Force`.
+
+Settings file:
+- `dlaa=dlss`, `dlaaPreset=default`, `dlaaRayReconstruction=true`, `perfectPresentation=false`, `frameGen=off`,
+  `fpsCounter=detailed`;
+- no `dlaaRrPreset`, `dlaaRrTest`, `dlaaRrRaw`, `dlaaRrExposure` or `dlaaDebugView` line.
+
+`options.txt`: `fullscreen:false`, `maxFps:260`, `enableVsync:false`. Shader pack: Photon v1.3a + DLAA, render
+resolution **Performance** (Upscaling tab). Launch from Frame generation 3 (2560x1440), without `autorun`. Open
+`dlaa-test`, `/gamemode creative`, `/time set 6000`, `/tp @s 1029.5 64 160.5 0 8` (the lakeshore, as in Ray
+Reconstruction 2).
+
+Each change below is a line in the settings file, then F8: the shaders reload and the Bridge reads the file again.
+Take an F2 screenshot at each point, standing still in the same spot.
+- **a. The pack's own guide, through the Bridge.** Add `dlaaDebugView=hit_distance`, F8. RR doesn't run in a debug view;
+  the Bridge draws the guide itself:
+  - white for a hit right at the surface, half grey at 16 blocks, darker further;
+  - black for 65504 (no hit, or the sky).
+  - Expect most of the picture black, with grey where water, glass or the iron bars reflect something.
+- **b. NVIDIA's view of the same guide.** Remove the `dlaaDebugView` line, F8. The log has `DLAA: DLSS Ray
+  Reconstruction running at ...`. CTRL+ALT+F12 to the hit distance view (9th, after roughness), CTRL+ALT+F11 for full
+  screen. Screenshot. Is it still all black, or does it now show the grey places from a?
+- **c. NVIDIA's view of known distances.** Add `dlaaRrTest=hit-distance-bands`, F8. The `running at` line ends `test: hit
+  distance bands 0, 0.5, 2, 8, 32, 128, 1024, 65504 blocks from left to right`. The same view, full screen. Screenshot.
+  Emre says for each of the 8 bands, left to right, how it looks (black, a shade, a colour, white). Then back to the
+  overlay's off state, and remove the `dlaaRrTest` line, F8.
+
+**Reading c:**
+- **The 8th band (65504) looks like b's black, and other bands show shades:** the overlay draws "no hit" as black, so the
+  guide is right. Go on to part 2 in the same session.
+- **All 8 bands black:** NGX doesn't see our hit distance at all. Stop here and report.
+- **The 65504 band is bright but b is black:** the pack's guide doesn't arrive as a. shows it. Stop here and report.
+
+### 2. By eye and by feel (Emre at the keyboard, about 15 minutes)
+
+Close the game and put in the release DLL:
+`Copy-Item $T\rr1\nvngx_dlssd-rel.dll $T\instance\create-galore-dlss\nvngx_dlssd.dll -Force`.
+
+Set `perfectPresentation=true`, `presenter=dx12`, `reflex=on`, `gpuPacing=off`, `frameGen=dlss`, `frameGenType=dlss`.
+Launch, open `dlaa-test`. The log has the `Ray Reconstruction running at` line and `Frame generation: running, 2 frames
+shown per rendered one`, as in Ray Reconstruction 2's step c. Then Ray Reconstruction 1's step 2 (by eye, RR against
+DLSS) and step 3 (RR Performance against DLSS Quality with frame generation), as written there.
+
+### 3. Timed runs and pictures (no one needed, about 35 minutes)
+
+Ray Reconstruction 1's steps 4 and 5, as written there, with PresentMon's files in `$T\rr2b`. The release DLL stays in.
+
+### Results
+
+Write `$T\repo\tools\dlss-testkit\results\rr2b\REPORT.md`:
+- part 1: a, b and c's screenshots (about 512 px crops), Emre's word on each band, and the reading. If it stopped, say
+  why.
+- part 2: the start's log lines, step 2's verdicts in Emre's words, step 3's numbers and his pick, as Ray
+  Reconstruction 1's Results describe.
+- part 3: as Ray Reconstruction 1's Results describe.
+
+Put back every file from `$T\rr2b\*.before` and check each with `cmp`. Remove `nvngx_dlssd.dll` from the instance,
+then commit and push on this branch.

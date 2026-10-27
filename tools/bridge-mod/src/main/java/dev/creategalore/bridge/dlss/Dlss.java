@@ -127,9 +127,10 @@ public final class Dlss {
     private static int rrPreset = NgxLibrary.RR_PRESET_F;
     /** The pack hands Ray Reconstruction its colour times its exposure (else as it has it; for comparing). */
     private static boolean rrExposed = true;
-    // Testing (dlaaRrTest): no hit distance or matrices; NGX parameters of its own.
+    // Testing (dlaaRrTest): no hit distance or matrices; NGX parameters of its own; bands of known hit distances.
     private static boolean rrNoHitDistance;
     private static boolean rrOwnParameters;
+    private static boolean rrHitDistanceBands;
     private static boolean rrRawReflections = true;
     private static boolean rrRawShadows = true;
     /** FSR 3 draws its own debug view. */
@@ -270,6 +271,7 @@ public final class Dlss {
         }
         rrNoHitDistance = test.contains("no-hit-distance");
         rrOwnParameters = ownParameters;
+        rrHitDistanceBands = test.contains("hit-distance-bands");
         if (rrUnavailableNoDll && Files.isRegularFile(dllFolder().resolve(DlssFinder.RR_DLL))) {
             rrUnavailable = null; // tried again when it starts
             rrUnavailableNoDll = false;
@@ -519,6 +521,7 @@ public final class Dlss {
                     image(imageIds, profile.exposureImage()),
                     profile.maskImage() != null && reactiveMask ? image(imageIds, profile.maskImage()) : 0,
                     guides, Dlss::renderSize);
+            DlssPass.hitDistanceBands = rrHitDistanceBands;
             if (debugView != null) {
                 debugPass.ensureSize(in.renderWidth(), in.renderHeight(), in.width(), in.height(), guides != null);
                 debugPass.copyAndEvaluate(in, () -> {});
@@ -625,22 +628,25 @@ public final class Dlss {
             featurePreset = rrPreset;
             featureIsRr = true;
             reset = true;
-            LOG.info("DLAA: DLSS Ray Reconstruction running at {}, preset {}, {} colour{}{}", sizes(in), rrPresetName(rrPreset),
+            LOG.info("DLAA: DLSS Ray Reconstruction running at {}, preset {}, {} colour{}{}{}", sizes(in), rrPresetName(rrPreset),
                     rrExposed ? "exposed" : "raw", rrNoHitDistance ? ", test: no hit distance" : "",
-                    rrOwnParameters ? ", test: own NGX parameters" : "");
+                    rrOwnParameters ? ", test: own NGX parameters" : "",
+                    rrHitDistanceBands ? ", test: hit distance bands " + DlssPass.HIT_DISTANCE_BANDS_TEXT : "");
         }
         boolean resetNow = reset;
         float[] worldToView = new float[16];
         CapturedRenderingState.INSTANCE.getGbufferModelView().get(worldToView);
         float[] viewToClip = viewToClip(CapturedRenderingState.INSTANCE.getGbufferProjection());
         int[] result = new int[1];
-        long[] resources = pass.rayReconstructionResources();
-        if (rrNoHitDistance) {
-            resources[7] = 0L;
-        }
-        pass.copyAndEvaluate(in, () -> result[0] = ngx.evaluateRayReconstruction(device, resources,
-                jitterX * jitterSign[0], jitterY * jitterSign[1], 1.0f, 1.0f, frameTimeMs, worldToView, viewToClip, resetNow,
-                in.renderWidth(), in.renderHeight()));
+        pass.copyAndEvaluate(in, () -> {
+            // After the copy, which tells whether this frame has a hit distance.
+            long[] resources = pass.rayReconstructionResources();
+            if (rrNoHitDistance) {
+                resources[7] = 0L;
+            }
+            result[0] = ngx.evaluateRayReconstruction(device, resources, jitterX * jitterSign[0], jitterY * jitterSign[1], 1.0f, 1.0f,
+                    frameTimeMs, worldToView, viewToClip, resetNow, in.renderWidth(), in.renderHeight());
+        });
         ngx.drainLog();
         if (NgxLibrary.failed(result[0])) {
             throw new IllegalStateException("DLSS Ray Reconstruction failed: " + NgxLibrary.describe(result[0]));

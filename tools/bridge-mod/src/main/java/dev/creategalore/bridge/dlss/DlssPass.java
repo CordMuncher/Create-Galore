@@ -1,6 +1,8 @@
 package dev.creategalore.bridge.dlss;
 
 import static org.lwjgl.opengl.GL11C.GL_BLEND;
+import static org.lwjgl.opengl.GL11C.GL_FLOAT;
+import static org.lwjgl.opengl.GL11C.GL_RED;
 import static org.lwjgl.opengl.GL11C.GL_COLOR_WRITEMASK;
 import static org.lwjgl.opengl.GL11C.GL_CULL_FACE;
 import static org.lwjgl.opengl.GL11C.GL_DEPTH_TEST;
@@ -74,6 +76,7 @@ import static org.lwjgl.opengl.GL41C.glProgramUniform2f;
 import static org.lwjgl.opengl.GL42C.GL_ALL_BARRIER_BITS;
 import static org.lwjgl.opengl.GL42C.glMemoryBarrier;
 import static org.lwjgl.opengl.GL43C.glCopyImageSubData;
+import static org.lwjgl.opengl.GL44C.glClearTexSubImage;
 import static org.lwjgl.opengl.GL45C.glCreateTextures;
 import static org.lwjgl.opengl.GL45C.glGetTextureLevelParameteri;
 import static org.lwjgl.opengl.GL45C.glTextureParameteri;
@@ -161,6 +164,13 @@ final class DlssPass implements AutoCloseable {
     private Texture hitDistance;
     private boolean hasHitDistance;
     private List<Texture> all = List.of();
+    /**
+     * Testing (dlaaRrTest=hit-distance-bands): the hit distance guide holds {@link #HIT_DISTANCE_BANDS}, one vertical band
+     * each from left to right, in place of the pack's, so NVIDIA's debug overlay shows how it draws known distances.
+     */
+    static boolean hitDistanceBands;
+    static final float[] HIT_DISTANCE_BANDS = {0.0f, 0.5f, 2.0f, 8.0f, 32.0f, 128.0f, 1024.0f, 65504.0f};
+    static final String HIT_DISTANCE_BANDS_TEXT = "0, 0.5, 2, 8, 32, 128, 1024, 65504 blocks from left to right";
     private List<NgxDevice.Shared> shared = List.of();
     private int program;
     private int programOutputs = -1;
@@ -293,6 +303,15 @@ final class DlssPass implements AutoCloseable {
                 hasHitDistance = guides.hitDistance() != 0;
                 if (hasHitDistance) {
                     glCopyImageSubData(guides.hitDistance(), GL_TEXTURE_2D, 0, 0, 0, 0, hitDistance.gl, GL_TEXTURE_2D, 0, 0, 0, 0, w, h, 1);
+                }
+                if (hitDistanceBands) {
+                    int bands = HIT_DISTANCE_BANDS.length;
+                    for (int i = 0; i < bands; i++) {
+                        int x0 = w * i / bands;
+                        glClearTexSubImage(hitDistance.gl, 0, x0, 0, 0, w * (i + 1) / bands - x0, h, 1, GL_RED, GL_FLOAT,
+                                new float[] {HIT_DISTANCE_BANDS[i]});
+                    }
+                    hasHitDistance = true;
                 }
             }
         });
