@@ -1959,3 +1959,165 @@ commit hs_err files or Streamline logs whole (they name his user folder).
 What comes of it: if every step passes, the PR can merge once Emre says so (Emre's plan, 2026-10-26: DLSS frame
 generation no longer experimental, FSR frame generation still experimental, DirectX 12 the default, Perfect
 Presentation on for new installs, pack 0.6).
+
+## Ray Reconstruction 1: the Photon pilot on the 4080 Super
+
+Start only when Emre says so. About 25 minutes with Emre at the keyboard (steps 1 to 3), then about 30 minutes that
+need no one, only a quiet PC (steps 4 and 5). Frame times count only in step 4.
+
+**What it checks.** A dev build, never a release: Bridge 1.124.0-rr.1 (this branch, pack 0.6.0-rr.1) runs NVIDIA DLSS
+Ray Reconstruction (RR) in DLSS's place with "Photon v1.3a + DLAA", as a pilot for our own shader pack. It is the
+public 0.6.0 plus RR, all of it client side: a dev client joins a server on the public 0.6.0 (checked in the cloud).
+- **The feature.** NGX's DLSSD feature through `cg_ngx.dll` (ABI 2), from NVIDIA's `nvngx_dlssd.dll`, which isn't
+  shipped (like `nvngx_dlss.dll`): **Find on this PC** now copies it too. RR's preset is pinned to **F** (RR 4.5) for
+  every mode; the Upscaling tab's new row has **Ray Reconstruction** on or off and **RR preset** (F, E, D or NVIDIA's
+  pick, for comparing). The render resolution is the same setting as for DLSS.
+- **The guides.** The patched Photon (patch 13) writes what RR needs at render size: diffuse albedo, specular albedo
+  (the formula in NVIDIA's RR guide, appendix), world-space normals with linear roughness, and the specular hit
+  distance of its reflections. Water writes its own. The colour goes in times Photon's exposure and is divided back
+  after, since RR takes no exposure.
+- **What it cleans up.** While RR runs, Photon traces rough reflections on its own rough materials (metal blocks,
+  polished stone and the like; normally they only fade) with one ray a pixel, and its soft shadow edges (PCSS and the
+  screen-space shadows) use white noise in place of its blue noise dither: RR is made for that noise, not for patterns.
+  Test switches in the settings file: `dlaaRrRaw=none` keeps Photon's own smoothing, `dlaaRrExposure=raw` hands over
+  the colour as Photon has it.
+
+The cloud has no NVIDIA GPU. It checked that the patch applies to both Photon zips, that every shader compiles, and
+the guides by eye (debug views `albedo`, `specular`, `normal`, `roughness`, `hit_distance`), and that nothing changes
+with Ray Reconstruction off. This is the first time RR itself runs.
+
+### Update and settings
+
+```powershell
+git -C $T\repo fetch origin
+git -C $T\repo checkout -B claude/project-thread-u2wmhh origin/claude/project-thread-u2wmhh
+Remove-Item $T\instance\mods\create-galore-bridge-*.jar
+Copy-Item $T\repo\pack\mods\create-galore-bridge-*.jar $T\instance\mods\
+Copy-Item $T\repo\tools\dlss-testkit\dist\create-galore-dlss-testkit-1.0.0.jar $T\instance\mods\ -Force
+Get-ChildItem $T\instance\mods\create-galore-bridge-*.jar | Select-Object Name
+```
+
+Only `create-galore-bridge-1.124.0-rr.1.jar`. Fetch NVIDIA's two RR DLLs from the DLSS SDK at the tag the Bridge is
+built with: the release one for steps 2 to 5, the dev one (with NVIDIA's on-screen overlay) for step 1.
+
+```powershell
+New-Item -ItemType Directory $T\rr1 -Force
+$base = "https://media.githubusercontent.com/media/NVIDIA/DLSS/v310.9.16/lib/Windows_x86_64"
+Invoke-WebRequest "$base/rel/nvngx_dlssd.dll" -OutFile $T\rr1\nvngx_dlssd-rel.dll
+Invoke-WebRequest "$base/dev/nvngx_dlssd.dll" -OutFile $T\rr1\nvngx_dlssd-dev.dll
+(Get-FileHash $T\rr1\nvngx_dlssd-rel.dll).Hash   # B49435AE346F227FEAFE7BBE937D88277EA0EE7323975EC06488F377FDB46CEE
+(Get-FileHash $T\rr1\nvngx_dlssd-dev.dll).Hash   # C81BBF920C5CC710CA07B304BA1994AB5F8B003892C8F1D07E411850480F2120
+```
+
+If a hash differs (GitHub served a pointer file, a few hundred bytes), try
+`https://github.com/NVIDIA/DLSS/raw/v310.9.16/lib/Windows_x86_64/rel/nvngx_dlssd.dll` and the same for dev, and say
+which worked. Check the NVIDIA driver is 580 or newer (`nvidia-smi`), RR 4.5's minimum.
+
+In `config\create_galore_bridge-display.properties` note the old values, then set `dlaa=dlss`, `dlaaPreset=default`,
+`perfectPresentation=true`, `presenter=dx12`, `reflex=on`, `gpuPacing=off`, `fpsCounter=detailed`, `frameGen=off`,
+and remove any `frameGenCheck`, `dlaaRayReconstruction`, `dlaaRrPreset`, `dlaaRrRaw` and `dlaaRrExposure` line.
+`options.txt`: `fullscreen:false` for steps 1 to 3 (CTRL+ALT+F11 below must not fight Minecraft's F11), `maxFps:260`,
+`enableVsync:false`. Shader pack: Photon v1.3a + DLAA. The launch from step 4 (2560x1440) without `autorun`.
+
+For every step copy each `DLAA:` line that names Ray Reconstruction, and each WARN or ERROR line from
+`create_galore_bridge`, with its time.
+
+### 1. Does it start, and are the guides right (dev DLL), about 8 minutes
+
+```powershell
+Copy-Item $T\rr1\nvngx_dlssd-dev.dll $T\instance\create-galore-dlss\nvngx_dlssd.dll -Force
+```
+
+Launch, shader pack menu, **Upscaling & Display...**, tab **Upscaling**:
+- Under the render resolution, the new row: **Ray Reconstruction: OFF** and **RR preset: F (RR 4.5)**. Hover both:
+  the texts must read right to Emre. Turn it **ON**: the DLL line gains `Ray Reconstruction's nvngx_dlssd.dll:
+  310.9.16 (tested with 310.9.16).` Render resolution **Performance**. Done.
+- Open `dlaa-test`, `/gamemode creative`, `/time set 6000`. The log must have `DLAA: DLSS Ray Reconstruction can run,
+  nvngx_dlssd.dll 310.9.16 (made with 310.9.16)` and `DLAA: DLSS Ray Reconstruction running at ..., preset F, exposed
+  colour`. The tab's status line must begin `On: NVIDIA DLSS Ray Reconstruction (dev build)`. If it says `can't run:`
+  or the log has `DLSS runs instead`, copy the reason and stop here.
+- The dev DLL draws NVIDIA's own notice on screen. **CTRL+ALT+F12** turns on its debug overlay (top right) and steps
+  through its layers; **CTRL+ALT+F11** switches the overlay between that corner and the whole screen. Step through
+  every layer at the lakeshore (`/tp @s 1029.5 64 160.5 0 8`), take an F2 screenshot of each in full screen, and Emre
+  says for each whether it looks right:
+  1. colour: the lit scene, no HUD;
+  2. motion vectors: still when standing still, moving things show;
+  3. depth: black near, through blue, purple and pink to white far;
+  4. jitter: a cloud of points in the middle square, none yellow after a few seconds;
+  5. normals: smooth colours per face, the same face colour everywhere for one direction (the floor all one colour);
+  6. specular hit distance: dark near mirrors (water close by), bright far away, the sky white;
+  7. roughness: water and metal blocks dark, stone and dirt light, the sky black;
+  8. diffuse albedo: the textures without light or shadow, the sky mid grey;
+  9. specular albedo: almost black, brighter on metal blocks and at grazing angles (water far away);
+  10. specular motion vectors: empty (we don't hand them over).
+  Anything upside down, shifted, or a layer black when it shouldn't be: say which, with the screenshot.
+
+### 2. By eye: Ray Reconstruction against DLSS, about 10 minutes (Emre plays)
+
+```powershell
+Copy-Item $T\rr1\nvngx_dlssd-rel.dll $T\instance\create-galore-dlss\nvngx_dlssd.dll -Force
+```
+
+Launch again (the release DLL has no notice or overlay). Emre plays with RR at **Performance** and switches **Ray
+Reconstruction** off (DLSS K) and on in the Upscaling tab, at **Quality** for DLSS. Things to look at, each with RR and
+with DLSS:
+- a row of metal blocks (iron, gold, copper) and polished stone in sunlight, from close and from a few blocks away:
+  rough reflections now show; are they stable or crawling, blurred right, too dark or too bright?
+- tree and building shadow edges in the sun, close up: soft and steady, or noisy, or smeared when walking?
+- water from above and at a low angle; then the effects scene (`/tp @s 1006.5 68 158.5 180 14`): particles, fire, lava,
+  the portal and rain. RR knows nothing of these (no transparency guide yet): note any ghost or smear;
+- turning fast and strafing past leaves and fences (RR's known weak spot: smearing fine detail);
+- night (`/time set 18000`): stars, the moon, torches; the Nether once if he wants;
+- the hand and the HUD: unchanged.
+Emre says, for each, which looks better. F2 screenshots of anything worth showing, named for what they show.
+
+### 3. With frame generation: RR Performance against DLSS Quality, about 5 minutes
+
+Display tab, **Frame generation: DLSS**, Done, restart. In `dlaa-test` at the lakeshore, standing still: read the
+game's frame counter (rendered) and the NVIDIA overlay (Alt+R, shown) for **RR at Performance**, then **Ray
+Reconstruction off at Quality**, then **RR at Balanced**, about 10 seconds each. Emre's theory: RR copes with a lower
+render resolution, so RR Performance with frame generation can match or beat DLSS Quality in smoothness and look.
+Emre says which he would play.
+
+### 4. Timed runs (no one needed, about 25 minutes)
+
+A quiet PC, the window in front with focus. Two launches, each the launch from step 4 with
+`--jvm-arg=-Dcreate_galore_dlss_testkit.autorun=dlaa-test` and `--jvm-arg=-Dcreate_galore_dlss_testkit.runs=RR1`
+(`dlaa-default`, `dlaa-rr-F`, `q-dlss-K`, `q-rr-F`, `bal-rr-F`, `perf-dlss-K`, `perf-rr-F` and `ultra-rr-F`, each twice
+at `shore` and `canopy`, no screenshots):
+
+| Launch | settings file |
+| --- | --- |
+| 1 | `frameGen=off` |
+| 2 | `frameGen=dlss`, `frameGenType=dlss` |
+
+PresentMon on each, as in Frame generation 2 step 5, to `$T\rr1\T<n>.csv`, adding `--set_circular_buffer_size 4096`.
+Each RR mode's start must log `DLAA: DLSS Ray Reconstruction running at ...`; launch 2's log `Frame generation: running,
+2 frames shown per rendered one`.
+
+### 5. Pictures (no one needed, about 10 minutes)
+
+One launch with `frameGen=off`, `runs=RR2` (`photon-taa`, `dlaa-default`, `dlaa-rr-F`, `q-dlss-K`, `perf-dlss-K`,
+`perf-rr-F`, `perf-rr-E`, `perf-rr-F-rawexp`, `perf-rr-F-calm` and `ultra-rr-F` at `shore`, `glass`, `canopy` and
+`moving`, with screenshots).
+
+### Results
+
+```powershell
+$py = "$T\tools\uv\uv.exe"
+& $py run --python 3.13 $T\repo\tools\dlss-testkit\frametimes.py <launch 1 run folder> $T\rr1\T1.csv <launch 2 run folder> $T\rr1\T2.csv
+& $py run --python 3.13 --with pillow --with numpy $T\repo\tools\dlss-testkit\metrics.py <step 5 run folder>
+```
+
+Write `$T\repo\tools\dlss-testkit\results\rr1\REPORT.md`: step 1's log lines and, per overlay layer, what Emre said
+(screenshots beside it); step 2, per item, which looked better to Emre and why, in his words where he gave them; step
+3's numbers (rendered and shown fps per setting) and Emre's pick; per mode and viewpoint in step 4, rendered fps and
+the shown-frame interval (median, p10, p90), with and without frame generation, then one line each on what RR costs
+over DLSS at the same scale and whether RR Performance reaches DLSS Quality's rate; step 5's crops of the metal row,
+a shadow edge, leaves and water for `q-dlss-K`, `perf-dlss-K`, `perf-rr-F`, `perf-rr-E`, `perf-rr-F-calm` and
+`perf-rr-F-rawexp`, with `metrics.py`'s shimmer and residue for each. Put the settings and `options.txt` back as noted
+(or as Emre wants them), then commit and push on this branch. NVIDIA's DLLs stay in `$T\rr1`, never in the repo.
+
+What comes of it: the pilot is a dev build and stays one. If RR looks clearly better at a lower render resolution, the
+same plumbing and the buffer contract (`tools/bridge-mod/ray-reconstruction-contract.md`) carry over to our own shader pack; an
+option in the shipped Photon patch only if Emre decides it works extremely well.

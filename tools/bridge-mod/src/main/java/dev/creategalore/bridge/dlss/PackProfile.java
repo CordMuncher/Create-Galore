@@ -27,10 +27,13 @@ import net.irisshaders.iris.shaderpack.option.values.OptionValues;
  * (optional): the pack's upscaling switch and its render scale option; with the switch on, the pack renders at that
  * scale into the lower left corner of its buffers and DLSS upscales it, at the size the Bridge rounds it to
  * (taau_render_scale).
+ * rrGuideImages (optional): the pack's guide images for DLSS Ray Reconstruction, written while cg_rr_active is 1:
+ * diffuse albedo, specular albedo (both RGBA8), the normal in world space with the roughness in alpha (RGBA16F), and
+ * optionally the specular hit distance (R32F); see {@link DlssPass.Guides}. A pack without them gets DLSS.
  */
 record PackProfile(String pass, int colorAttachment, int[] outputAttachments, int[] keepAlpha, String motionImage,
                    String depthImage, String exposureImage, String maskImage, List<String> requireOn, List<String> requireOff,
-                   List<String> renderScaleOptions) {
+                   List<String> renderScaleOptions, List<String> rrGuideImages) {
     /** The lowest render scale the Bridge takes (a quarter of the window's width and height). */
     static final float MIN_RENDER_SCALE = 0.25f;
 
@@ -75,7 +78,12 @@ record PackProfile(String pass, int colorAttachment, int[] outputAttachments, in
                 required(props, "motionImage"), required(props, "depthImage"), required(props, "exposureImage"),
                 props.getProperty("maskImage", "").isBlank() ? null : props.getProperty("maskImage").trim(),
                 names(props.getProperty("requireOn", "")), names(props.getProperty("requireOff", "")),
-                names(props.getProperty("renderScaleOptions", "")));
+                names(props.getProperty("renderScaleOptions", "")), names(props.getProperty("rrGuideImages", "")));
+    }
+
+    /** True if the pack writes Ray Reconstruction's guides (at least diffuse and specular albedo and the normals). */
+    boolean hasRayReconstructionGuides() {
+        return rrGuideImages.size() >= 3;
     }
 
     /**

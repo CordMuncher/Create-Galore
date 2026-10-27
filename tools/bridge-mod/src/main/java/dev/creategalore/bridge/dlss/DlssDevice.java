@@ -53,6 +53,7 @@ final class DlssDevice implements AutoCloseable {
     private static final int DXGI_ADAPTER_FLAG_SOFTWARE = 2;
     private static final int NVIDIA_VENDOR_ID = 0x10DE;
     static final int DXGI_FORMAT_R16G16B16A16_FLOAT = 10;
+    static final int DXGI_FORMAT_R8G8B8A8_UNORM = 28;
     static final int DXGI_FORMAT_R16G16_FLOAT = 34;
     static final int DXGI_FORMAT_R32_FLOAT = 41;
     private static final int D3D11_USAGE_DEFAULT = 0;

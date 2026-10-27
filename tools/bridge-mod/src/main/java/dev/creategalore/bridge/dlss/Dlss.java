@@ -58,6 +58,15 @@ import org.slf4j.LoggerFactory;
  * dlaaReactiveMask=false leave out the motion of things that move by themselves and FSR's masks, for comparing;
  * dlaaAutoExposure=true has DLSS meter the exposure itself with presets J and K too (L and M always do);
  * create_galore_bridge.dlss.markers=true names the DLAA work for GPU profilers ({@link Markers}).
+ *
+ * DLSS Ray Reconstruction (dev builds, dlaaRayReconstruction=true): one pass that denoises, anti-aliases and upscales,
+ * run in DLSS's place with a pack that hands over guide images (PackProfile's rrGuideImages: what each pixel's surface
+ * is made of). While it runs the pack gets cg_rr_active 1: it writes the guides, leaves the effects named in dlaaRrRaw
+ * noisy (cg_rr_raw_reflections, cg_rr_raw_shadows) for Ray Reconstruction to clean, and with cg_rr_exposed 1 hands over
+ * its colour times its exposure (Ray Reconstruction takes no exposure), which the write-back divides out again. The
+ * preset is F (DLSS 4.5's model) for every mode unless dlaaRrPreset says otherwise. It needs nvngx_dlssd.dll beside
+ * nvngx_dlss.dll and NVIDIA driver 580 or newer; where it can't run, DLSS runs and the settings screen says why. The
+ * debug views albedo, specular, normal, roughness and hit_distance show the guides (with dlaaRayReconstruction=true).
  */
 public final class Dlss {
     private static final Logger LOG = LoggerFactory.getLogger("create_galore_bridge");
@@ -71,6 +80,8 @@ public final class Dlss {
     /** The nvngx_dlssg.dll (DLSS Frame Generation's model) frame generation was tested with. */
     static final String TESTED_FG_DLL_VERSION = "310.9.16";
     static final String DLL = "nvngx_dlss.dll";
+    /** The nvngx_dlssd.dll (DLSS Ray Reconstruction) the pilot was made with (NVIDIA's DLSS SDK on GitHub). */
+    static final String TESTED_RR_DLL_VERSION = "310.9.16";
     private static final String DLL_DIR_PROPERTY = "create_galore_bridge.dlss.dllDir";
     private static final String DEBUG_VIEW_PROPERTY = "create_galore_bridge.dlss.debugView";
     private static final String JITTER_SIGN_PROPERTY = "create_galore_bridge.dlss.jitterSign";
@@ -110,6 +121,13 @@ public final class Dlss {
     private static volatile String[] dumpRequest;
     /** FSR 3 runs, not DLSS: picked, or Auto's choice where DLSS cannot run. */
     private static boolean fsr3;
+    /** Ray Reconstruction is asked for (dev builds). */
+    private static boolean rayReconstructionWanted;
+    private static int rrPreset = NgxLibrary.RR_PRESET_F;
+    /** The pack hands Ray Reconstruction its colour times its exposure (else as it has it; for comparing). */
+    private static boolean rrExposed = true;
+    private static boolean rrRawReflections = true;
+    private static boolean rrRawShadows = true;
     /** FSR 3 draws its own debug view. */
     private static boolean fsr3Debug;
     private static PackProfile profile;
@@ -143,6 +161,12 @@ public final class Dlss {
     private static DlssPass fsrPass;
     private static int featureFlags = -1;
     private static int featurePreset = -1;
+    /** The DLSS feature is Ray Reconstruction. */
+    private static boolean featureIsRr;
+    /** Why Ray Reconstruction cannot run on this computer, once DLSS started (null: it can, as far as NGX knows). */
+    private static String rrUnavailable;
+    /** It cannot only because nvngx_dlssd.dll is missing: looked for again when shaders reload. */
+    private static boolean rrUnavailableNoDll;
 
     // For the frame.
     /** The window's size and the render size in it (the same without upscaling). */
@@ -151,6 +175,10 @@ public final class Dlss {
     private static int renderWidth = 1;
     private static int renderHeight = 1;
     private static boolean active;
+    /** The pack writes Ray Reconstruction's guides and leaves its effects raw: it runs, or a debug view shows them. */
+    private static boolean rrMode;
+    /** Ray Reconstruction runs in DLSS's place this frame. */
+    private static boolean rrRunning;
     private static boolean ran;
     private static int missedFrames;
     private static float jitterX;
@@ -212,6 +240,16 @@ public final class Dlss {
         if (unavailableNoDll) {
             unavailable = null; // looks for nvngx_dlss.dll again
         }
+        rayReconstructionWanted = DisplaySettings.get(DisplaySettings.DLAA_RAY_RECONSTRUCTION);
+        rrPreset = parseRrPreset(DisplaySettings.getString(DisplaySettings.DLAA_RR_PRESET, "F"));
+        rrExposed = !DisplaySettings.getString(DisplaySettings.DLAA_RR_EXPOSURE, "exposed").equalsIgnoreCase("raw");
+        String raw = DisplaySettings.getString(DisplaySettings.DLAA_RR_RAW, "reflections,shadows").toLowerCase(Locale.ROOT);
+        rrRawReflections = raw.contains("reflections");
+        rrRawShadows = raw.contains("shadows");
+        if (rrUnavailableNoDll && Files.isRegularFile(dllFolder().resolve(DlssFinder.RR_DLL))) {
+            rrUnavailable = null; // tried again when it starts
+            rrUnavailableNoDll = false;
+        }
         jitterSign = parseJitterSign(DisplaySettings.getString(DisplaySettings.DLAA_JITTER_SIGN, System.getProperty(JITTER_SIGN_PROPERTY, "1,1")));
         objectMotion = !DisplaySettings.getString(DisplaySettings.DLAA_OBJECT_MOTION, System.getProperty(OBJECT_MOTION_PROPERTY, "true"))
                 .trim().equalsIgnoreCase("false");
@@ -244,6 +282,12 @@ public final class Dlss {
             LOG.info("DLAA: on for this shader pack, debug view {} (DLSS itself not used), {}{}", debugView.name().toLowerCase(Locale.ROOT),
                     renderScaleSetting < 1.0f ? "upscaling from " + Math.round(snappedScale() * 100.0f) + "% of the window" : "full resolution", jitter);
         } else {
+            if (rayReconstructionWanted) {
+                LOG.info("DLAA: DLSS Ray Reconstruction asked for (dev build): preset {}, {} colour, left noisy for it: {}{}",
+                        rrPresetName(rrPreset), rrExposed ? "exposed" : "raw", rrRawReflections || rrRawShadows
+                                ? (rrRawReflections ? "rough reflections" : "") + (rrRawReflections && rrRawShadows ? ", " : "") + (rrRawShadows ? "soft shadows" : "")
+                                : "nothing", profile != null && !profile.hasRayReconstructionGuides() ? " (this pack hands over no guides: DLSS runs)" : "");
+            }
             LOG.info("DLAA: on for this shader pack, engine {}, DLSS preset {}{}, {}{}{}{}", engine, presetName(preset),
                     presetName.equalsIgnoreCase(presetName(preset)) || presetName.isEmpty() ? "" : " (set to " + presetName + ")",
                     renderScaleSetting < 1.0f ? "upscaling from " + Math.round(snappedScale() * 100.0f) + "% of the window" : "full resolution",
@@ -283,6 +327,9 @@ public final class Dlss {
             notice("pack:" + packProblem, "DLAA is off with these shader pack options", packProblem);
         }
         active = wanted && profile != null && packProblem == null && !failed && !shuttingDown && ensureReady();
+        boolean rrPossible = active && rayReconstructionWanted && profile.hasRayReconstructionGuides();
+        rrRunning = rrPossible && debugView == null && !fsr3 && rrUnavailable == null;
+        rrMode = rrPossible && (rrRunning || debugView != null);
         EntityMotion.beginFrame(active, Minecraft.getInstance().gameRenderer.getMainCamera().getPosition());
         if (!active) {
             return;
@@ -334,6 +381,26 @@ public final class Dlss {
     /** True while the pack should hand its frame to DLSS (cg_dlss_active). */
     public static boolean shaderActive() {
         return active;
+    }
+
+    /** True while the pack should write Ray Reconstruction's guides (cg_rr_active). */
+    public static boolean rayReconstructionGuides() {
+        return active && rrMode;
+    }
+
+    /** True while the pack should hand over its colour times its exposure (cg_rr_exposed). */
+    public static boolean rayReconstructionExposed() {
+        return active && rrRunning && rrExposed;
+    }
+
+    /** True while the pack leaves its rough reflections noisy for Ray Reconstruction (cg_rr_raw_reflections). */
+    public static boolean rayReconstructionRawReflections() {
+        return active && rrMode && rrRawReflections;
+    }
+
+    /** True while the pack leaves its soft shadows noisy for Ray Reconstruction (cg_rr_raw_shadows). */
+    public static boolean rayReconstructionRawShadows() {
+        return active && rrMode && rrRawShadows;
     }
 
     /** For the test kit: the pack the render resolution goes into, its upscaling switch and its render scale option. */
@@ -417,13 +484,19 @@ public final class Dlss {
         }
         ran = true;
         try {
+            DlssPass.Guides guides = null;
+            if (rrMode) {
+                java.util.List<String> names = profile.rrGuideImages();
+                guides = new DlssPass.Guides(image(imageIds, names.get(0)), image(imageIds, names.get(1)), image(imageIds, names.get(2)),
+                        names.size() > 3 ? image(imageIds, names.get(3)) : 0);
+            }
             DlssPass.Inputs in = DlssPass.inputs(DlssPass.boundColorTexture(profile.colorAttachment()),
                     image(imageIds, profile.motionImage()), image(imageIds, profile.depthImage()),
                     image(imageIds, profile.exposureImage()),
                     profile.maskImage() != null && reactiveMask ? image(imageIds, profile.maskImage()) : 0,
-                    Dlss::renderSize);
+                    guides, Dlss::renderSize);
             if (debugView != null) {
-                debugPass.ensureSize(in.renderWidth(), in.renderHeight(), in.width(), in.height());
+                debugPass.ensureSize(in.renderWidth(), in.renderHeight(), in.width(), in.height(), guides != null);
                 debugPass.copyAndEvaluate(in, () -> {});
                 dumpIfAsked(debugPass, false);
                 debugPass.writeBack(profile, debugView);
@@ -433,7 +506,10 @@ public final class Dlss {
                 runFsr3(in);
                 return;
             }
-            boolean newSize = pass.needsSize(in.renderWidth(), in.renderHeight(), in.width(), in.height());
+            if (rrRunning && runRayReconstruction(in)) {
+                return;
+            }
+            boolean newSize = pass.needsSize(in.renderWidth(), in.renderHeight(), in.width(), in.height(), false);
             int usePreset = presetFellBack ? PRESET_DEFAULT : preset;
             int mode = perfQuality(in.renderWidth(), in.width());
             // NVIDIA: DLSS takes the game's exposure with J and K only, L and M always meter it themselves (asked to
@@ -441,12 +517,13 @@ public final class Dlss {
             boolean autoExposure = usePreset == PRESET_L || usePreset == PRESET_M || autoExposureTest;
             int flags = NgxLibrary.FLAG_IS_HDR | NgxLibrary.FLAG_MV_LOW_RES | NgxLibrary.FLAG_DEPTH_INVERTED
                     | (autoExposure ? NgxLibrary.FLAG_AUTO_EXPOSURE : 0);
-            if (newSize || flags != featureFlags || usePreset != featurePreset) {
+            if (newSize || flags != featureFlags || usePreset != featurePreset || featureIsRr) {
                 featureFlags = -1;
+                featureIsRr = false;
                 dlssGuard.starting();
                 // DLSS lets go of the textures it ran on before they are freed for a new size.
                 ngx.release();
-                pass.ensureSize(in.renderWidth(), in.renderHeight(), in.width(), in.height());
+                pass.ensureSize(in.renderWidth(), in.renderHeight(), in.width(), in.height(), false);
                 int result = ngx.create(device.context, in.renderWidth(), in.renderHeight(), in.width(), in.height(),
                         mode, flags, usePreset);
                 ngx.drainLog();
@@ -485,7 +562,9 @@ public final class Dlss {
             FrameGen.upscaled(in.motionTexture(), in.depthTexture(), in.width(), in.height(), in.renderWidth(), in.renderHeight(),
                     jitterX * jitterSign[0], jitterY * jitterSign[1], resetNow, frameTimeMs);
             dumpIfAsked(pass, true);
-            Markers.around("Create Galore DLAA: write back", () -> pass.writeBack(profile, DlssPass.View.RESULT));
+            // (Exposed only in the frame Ray Reconstruction failed to start in: the pack had already multiplied it.)
+            boolean unexpose = rrRunning && rrExposed;
+            Markers.around("Create Galore DLAA: write back", () -> pass.writeBack(profile, DlssPass.View.RESULT, unexpose));
         } catch (Throwable t) {
             failed = true;
             guard().stopped();
@@ -494,8 +573,80 @@ public final class Dlss {
         }
     }
 
+    /**
+     * Runs DLSS Ray Reconstruction in DLSS's place. False if it could not start: it stays off for the session (the
+     * settings screen says why) and DLSS takes this frame.
+     */
+    private static boolean runRayReconstruction(DlssPass.Inputs in) {
+        int flags = NgxLibrary.FLAG_IS_HDR | NgxLibrary.FLAG_MV_LOW_RES | NgxLibrary.FLAG_DEPTH_INVERTED;
+        boolean newSize = pass.needsSize(in.renderWidth(), in.renderHeight(), in.width(), in.height(), true);
+        if (newSize || !featureIsRr || rrPreset != featurePreset) {
+            featureFlags = -1;
+            featureIsRr = false;
+            dlssGuard.starting();
+            ngx.release();
+            pass.ensureSize(in.renderWidth(), in.renderHeight(), in.width(), in.height(), true);
+            // Depth: the pack's DLSS depth, reversed and infinite, which is a hardware depth for viewToClip below.
+            int result = ngx.createRayReconstruction(device.context, in.renderWidth(), in.renderHeight(), in.width(), in.height(),
+                    perfQuality(in.renderWidth(), in.width()), flags, rrPreset, NgxLibrary.DEPTH_HARDWARE);
+            ngx.drainLog();
+            if (NgxLibrary.failed(result)) {
+                rrUnavailable = "it did not start at " + sizes(in) + ": " + NgxLibrary.describe(result);
+                LOG.warn("DLAA: DLSS Ray Reconstruction {}; DLSS runs instead", rrUnavailable);
+                notice("rr:" + rrUnavailable, "Ray Reconstruction can't run", rrUnavailable + ". DLSS runs instead.");
+                reset = true;
+                return false;
+            }
+            featureFlags = flags;
+            featurePreset = rrPreset;
+            featureIsRr = true;
+            reset = true;
+            LOG.info("DLAA: DLSS Ray Reconstruction running at {}, preset {}, {} colour", sizes(in), rrPresetName(rrPreset),
+                    rrExposed ? "exposed" : "raw");
+        }
+        boolean resetNow = reset;
+        float[] worldToView = new float[16];
+        CapturedRenderingState.INSTANCE.getGbufferModelView().get(worldToView);
+        float[] viewToClip = viewToClip(CapturedRenderingState.INSTANCE.getGbufferProjection());
+        int[] result = new int[1];
+        pass.copyAndEvaluate(in, () -> result[0] = ngx.evaluateRayReconstruction(device.context, pass.rayReconstructionResources(),
+                jitterX * jitterSign[0], jitterY * jitterSign[1], 1.0f, 1.0f, frameTimeMs, worldToView, viewToClip, resetNow,
+                in.renderWidth(), in.renderHeight()));
+        ngx.drainLog();
+        if (NgxLibrary.failed(result[0])) {
+            throw new IllegalStateException("DLSS Ray Reconstruction failed: " + NgxLibrary.describe(result[0]));
+        }
+        reset = false;
+        dlssGuard.ran();
+        FrameGen.upscaled(in.motionTexture(), in.depthTexture(), in.width(), in.height(), in.renderWidth(), in.renderHeight(),
+                jitterX * jitterSign[0], jitterY * jitterSign[1], resetNow, frameTimeMs);
+        dumpIfAsked(pass, true);
+        Markers.around("Create Galore DLAA: write back", () -> pass.writeBack(profile, DlssPass.View.RESULT, rrExposed));
+        return true;
+    }
+
+    /** Minecraft's near plane, which the pack's DLSS depth (near over clip w) is made with. */
+    private static final float NEAR = 0.05f;
+
+    /**
+     * The view-to-clip matrix Ray Reconstruction gets, in OpenGL's column-major layout (NGX reads it as row major for a
+     * row vector). x and w as the game projects (view bobbing included), y flipped because the shared textures keep
+     * OpenGL's row order (row 0 at the bottom, which DirectX takes as the top), and z the constant near plane, so z over
+     * w is the pack's DLSS depth exactly.
+     */
+    static float[] viewToClip(Matrix4fc projection) {
+        float[] m = new float[16];
+        for (int column = 0; column < 4; column++) {
+            m[column * 4] = projection.get(column, 0);
+            m[column * 4 + 1] = -projection.get(column, 1);
+            m[column * 4 + 2] = column == 3 ? NEAR : 0.0f;
+            m[column * 4 + 3] = projection.get(column, 3);
+        }
+        return m;
+    }
+
     private static void runFsr3(DlssPass.Inputs in) {
-        boolean resized = fsrPass.ensureSize(in.renderWidth(), in.renderHeight(), in.width(), in.height());
+        boolean resized = fsrPass.ensureSize(in.renderWidth(), in.renderHeight(), in.width(), in.height(), false);
         if (resized) {
             fsrGuard.starting();
         }
@@ -721,11 +872,34 @@ public final class Dlss {
             }
             throw new IllegalStateException("DLSS does not run on this graphics card (" + NgxLibrary.describe(support[4]) + ")");
         }
+        checkRayReconstruction(dllFolder);
         pass = new DlssPass(device);
         adapterName = device.adapterName;
         LOG.info("DLAA: NGX ready on {} (its own DirectX device; OpenGL on {}), nvngx_dlss.dll {} from {} (tested with {})",
                 device.adapterName, glGetString(GL_RENDERER),
                 DllVersion.read(dll), dllFolder, TESTED_DLL_VERSION);
+    }
+
+    /** Whether Ray Reconstruction can run here ({@link #rrUnavailable} null), once NGX has started. */
+    private static void checkRayReconstruction(Path dllFolder) {
+        Path dll = dllFolder.resolve(DlssFinder.RR_DLL);
+        rrUnavailableNoDll = !Files.isRegularFile(dll);
+        if (rrUnavailableNoDll) {
+            rrUnavailable = "there is no " + dll + " (bring your own like nvngx_dlss.dll, or press Find on this PC)";
+        } else {
+            int[] support = ngx.queryRayReconstruction();
+            if (support == null) {
+                rrUnavailable = "NGX could not say whether it runs here";
+            } else if (support[0] == 0) {
+                rrUnavailable = support[1] != 0 ? "it needs NVIDIA driver " + support[2] + "." + support[3] + " or newer"
+                        : "NGX says it does not run here (" + NgxLibrary.describe(support[4]) + ")";
+            } else {
+                rrUnavailable = null;
+            }
+        }
+        LOG.info("DLAA: DLSS Ray Reconstruction {}{}", rrUnavailable == null ? "can run, nvngx_dlssd.dll " + DllVersion.read(dll)
+                + " (made with " + TESTED_RR_DLL_VERSION + ")" : "can't run: " + rrUnavailable,
+                rayReconstructionWanted ? "" : " (not asked for)");
     }
 
     private static void shutdown(GameShuttingDownEvent event) {
@@ -777,6 +951,7 @@ public final class Dlss {
             device = null;
             featureFlags = -1;
             featurePreset = -1;
+            featureIsRr = false;
         }
     }
 
@@ -807,6 +982,24 @@ public final class Dlss {
         }
         LOG.warn("DLAA: unknown dlaaPreset {}, using default, K (choose default or a letter: J, K, L, M, ...)", name);
         return PRESET_K;
+    }
+
+    /** F (the default), E, D, or default for NVIDIA's own pick. */
+    private static int parseRrPreset(String name) {
+        return switch (name.trim().toUpperCase(Locale.ROOT)) {
+            case "D" -> NgxLibrary.RR_PRESET_D;
+            case "E" -> NgxLibrary.RR_PRESET_E;
+            case "DEFAULT" -> 0;
+            case "F", "" -> NgxLibrary.RR_PRESET_F;
+            default -> {
+                LOG.warn("DLAA: unknown dlaaRrPreset {}, using F (choose F, E, D or default)", name);
+                yield NgxLibrary.RR_PRESET_F;
+            }
+        };
+    }
+
+    private static String rrPresetName(int preset) {
+        return preset == 0 ? "default" : String.valueOf((char) ('A' + preset - 1));
     }
 
     private static String presetName(int preset) {
@@ -852,6 +1045,16 @@ public final class Dlss {
     /** The nvngx_dlssg.dll version frame generation was tested with. */
     public static String testedFrameGenerationDllVersion() {
         return TESTED_FG_DLL_VERSION;
+    }
+
+    /** The version of the nvngx_dlssd.dll there (Ray Reconstruction), "unknown" if it has none, or null if there is none. */
+    static String rayReconstructionDllVersion() {
+        Path dll = dllFolder().resolve(DlssFinder.RR_DLL);
+        if (!Files.isRegularFile(dll)) {
+            return null;
+        }
+        String version = DllVersion.read(dll);
+        return version != null ? version : "unknown";
     }
 
     /** The version of the nvngx_dlss.dll there, "unknown" if it has none, or null if there is none. */
@@ -927,10 +1130,15 @@ public final class Dlss {
         String size = renderWidth < displayWidth || renderHeight < displayHeight
                 ? "upscaling " + renderWidth + "x" + renderHeight + " to " + displayWidth + "x" + displayHeight
                 : "at full resolution";
+        if (active && !fsr3 && rrRunning && featureIsRr) {
+            return "On: NVIDIA DLSS Ray Reconstruction (dev build) " + size + " on " + adapterName + ", preset " + rrPresetName(rrPreset) + ".";
+        }
+        String rr = rayReconstructionWanted && rrUnavailable != null ? " Ray Reconstruction can't run: " + rrUnavailable + "."
+                : rayReconstructionWanted && profile != null && !profile.hasRayReconstructionGuides() ? " Ray Reconstruction: this pack hands over no guides." : "";
         if (active && !fsr3) {
             return "On: NVIDIA " + (size.startsWith("at") ? "DLAA" : "DLSS " + size) + " on " + adapterName + ", preset "
                     + presetName(presetFellBack ? PRESET_DEFAULT : preset)
-                    + (presetFellBack ? " (DLSS refused " + presetName(preset) + ")" : "") + ".";
+                    + (presetFellBack ? " (DLSS refused " + presetName(preset) + ")" : "") + "." + rr;
         }
         if (active) {
             return "On: AMD FSR 3.1 " + size + " on " + fsrRenderer
@@ -954,7 +1162,7 @@ public final class Dlss {
             DlssPass.View view = DlssPass.View.valueOf(value);
             return view == DlssPass.View.RESULT ? null : view;
         } catch (IllegalArgumentException e) {
-            LOG.warn("DLAA: unknown debug view {}, use color, motion, depth, residual or mask", name);
+            LOG.warn("DLAA: unknown debug view {}, use color, motion, depth, residual, mask, albedo, specular, normal, roughness or hit_distance", name);
             return null;
         }
     }

@@ -1,4 +1,4 @@
-// cg_ngx.dll: the Bridge mod's small native helper for DLSS (NVIDIA NGX) on Direct3D 11.
+// cg_ngx.dll: the Bridge mod's small native helper for DLSS and DLSS Ray Reconstruction (NVIDIA NGX) on Direct3D 11.
 //
 // NGX is only reachable through NVIDIA's SDK library (nvsdk_ngx_s.lib), which finds the driver's NGX core, fills in
 // internal data and talks to its C++ parameter objects. The Bridge calls native code through libffi with plain
@@ -13,11 +13,12 @@
 
 #include "nvsdk_ngx.h"
 #include "nvsdk_ngx_helpers.h"
+#include "nvsdk_ngx_helpers_dlssd_d3d.h"
 
 #define CG_API extern "C" __declspec(dllexport)
 
 // Bumped whenever a function below changes; the Java side refuses a helper with another version.
-static const int CG_NGX_ABI = 1;
+static const int CG_NGX_ABI = 2;
 
 // NGX log lines wait here until the Java side reads them. A fixed ring keeps this file free of the C++ library.
 #define LOG_LINES 256
@@ -61,6 +62,18 @@ static const char* presetHintFor(int perfQuality) {
         case NVSDK_NGX_PerfQuality_Value_MaxPerf: return NVSDK_NGX_Parameter_DLSS_Hint_Render_Preset_Performance;
         case NVSDK_NGX_PerfQuality_Value_UltraPerformance: return NVSDK_NGX_Parameter_DLSS_Hint_Render_Preset_UltraPerformance;
         case NVSDK_NGX_PerfQuality_Value_UltraQuality: return NVSDK_NGX_Parameter_DLSS_Hint_Render_Preset_UltraQuality;
+        default: return nullptr;
+    }
+}
+
+static const char* rayReconstructionPresetHintFor(int perfQuality) {
+    switch (perfQuality) {
+        case NVSDK_NGX_PerfQuality_Value_DLAA: return NVSDK_NGX_Parameter_RayReconstruction_Hint_Render_Preset_DLAA;
+        case NVSDK_NGX_PerfQuality_Value_MaxQuality: return NVSDK_NGX_Parameter_RayReconstruction_Hint_Render_Preset_Quality;
+        case NVSDK_NGX_PerfQuality_Value_Balanced: return NVSDK_NGX_Parameter_RayReconstruction_Hint_Render_Preset_Balanced;
+        case NVSDK_NGX_PerfQuality_Value_MaxPerf: return NVSDK_NGX_Parameter_RayReconstruction_Hint_Render_Preset_Performance;
+        case NVSDK_NGX_PerfQuality_Value_UltraPerformance: return NVSDK_NGX_Parameter_RayReconstruction_Hint_Render_Preset_UltraPerformance;
+        case NVSDK_NGX_PerfQuality_Value_UltraQuality: return NVSDK_NGX_Parameter_RayReconstruction_Hint_Render_Preset_UltraQuality;
         default: return nullptr;
     }
 }
@@ -131,6 +144,29 @@ CG_API int cg_ngx_query(int* out) {
     return NVSDK_NGX_Result_Success;
 }
 
+// Whether DLSS Ray Reconstruction (nvngx_dlssd.dll) can run here, in the same layout as cg_ngx_query.
+CG_API int cg_ngx_query_rr(int* out) {
+    if (!g_params) {
+        return NVSDK_NGX_Result_FAIL_NotInitialized;
+    }
+    int available = 0;
+    unsigned int needsDriver = 0;
+    unsigned int major = 0;
+    unsigned int minor = 0;
+    int initResult = 0;
+    NVSDK_NGX_Parameter_GetI(g_params, NVSDK_NGX_Parameter_SuperSamplingDenoising_Available, &available);
+    NVSDK_NGX_Parameter_GetUI(g_params, NVSDK_NGX_Parameter_SuperSamplingDenoising_NeedsUpdatedDriver, &needsDriver);
+    NVSDK_NGX_Parameter_GetUI(g_params, NVSDK_NGX_Parameter_SuperSamplingDenoising_MinDriverVersionMajor, &major);
+    NVSDK_NGX_Parameter_GetUI(g_params, NVSDK_NGX_Parameter_SuperSamplingDenoising_MinDriverVersionMinor, &minor);
+    NVSDK_NGX_Parameter_GetI(g_params, NVSDK_NGX_Parameter_SuperSamplingDenoising_FeatureInitResult, &initResult);
+    out[0] = available;
+    out[1] = (int) needsDriver;
+    out[2] = (int) major;
+    out[3] = (int) minor;
+    out[4] = initResult;
+    return NVSDK_NGX_Result_Success;
+}
+
 // The render sizes DLSS allows for an output size and quality mode. out: optimal width, height, then the
 // dynamic maximum width, height, then the minimum width, height.
 CG_API int cg_ngx_optimal(int outWidth, int outHeight, int perfQuality, int* out) {
@@ -178,6 +214,70 @@ CG_API int cg_ngx_create(ID3D11DeviceContext* context, int renderWidth, int rend
     create.InFeatureCreateFlags = flags;
     create.InEnableOutputSubrects = false;
     return NGX_D3D11_CREATE_DLSS_EXT(context, &g_feature, g_params, &create);
+}
+
+// (Re)creates the feature as DLSS Ray Reconstruction (one pass that denoises, anti-aliases and upscales) in place of
+// DLSS. preset is a Ray Reconstruction render preset (0 = its default, 4 = D, 5 = E, 6 = F), set for every quality
+// mode so a newer model NVIDIA sends never swaps it. Roughness comes in the normals' alpha; depthType 1 is a
+// hardware depth buffer (with NVSDK_NGX_DLSS_Feature_Flags_DepthInverted in flags when it is reversed), 0 view depth.
+CG_API int cg_ngx_create_rr(ID3D11DeviceContext* context, int renderWidth, int renderHeight, int outWidth, int outHeight,
+                            int perfQuality, int flags, int preset, int depthType) {
+    if (!g_params) {
+        return NVSDK_NGX_Result_FAIL_NotInitialized;
+    }
+    cg_ngx_release();
+    for (int mode = NVSDK_NGX_PerfQuality_Value_MaxPerf; mode <= NVSDK_NGX_PerfQuality_Value_DLAA; mode++) {
+        NVSDK_NGX_Parameter_SetUI(g_params, rayReconstructionPresetHintFor(mode), (unsigned int) preset);
+    }
+    NVSDK_NGX_DLSSD_Create_Params create = {};
+    create.InDenoiseMode = NVSDK_NGX_DLSS_Denoise_Mode_DLUnified;
+    create.InRoughnessMode = NVSDK_NGX_DLSS_Roughness_Mode_Packed;
+    create.InUseHWDepth = depthType ? NVSDK_NGX_DLSS_Depth_Type_HW : NVSDK_NGX_DLSS_Depth_Type_Linear;
+    create.InWidth = (unsigned int) renderWidth;
+    create.InHeight = (unsigned int) renderHeight;
+    create.InTargetWidth = (unsigned int) outWidth;
+    create.InTargetHeight = (unsigned int) outHeight;
+    create.InPerfQualityValue = (NVSDK_NGX_PerfQuality_Value) perfQuality;
+    create.InFeatureCreateFlags = flags;
+    create.InEnableOutputSubrects = false;
+    return NGX_D3D11_CREATE_DLSSD_EXT(context, &g_feature, g_params, &create);
+}
+
+// Runs Ray Reconstruction once. resources: colour, output, depth, motion vectors, diffuse albedo, specular albedo,
+// normals with roughness in alpha, specular hit distance (may be null). floats: jitter x, y (render pixels), motion
+// vector scale x, y, the frame time in ms, then the world-to-view and view-to-clip matrices, 16 floats each, row
+// major for a row vector on the left (which is OpenGL's column-major layout of a matrix for a column vector).
+CG_API int cg_ngx_evaluate_rr(ID3D11DeviceContext* context, ID3D11Resource** resources, const float* floats, int reset,
+                              int renderWidth, int renderHeight) {
+    if (!g_feature) {
+        return NVSDK_NGX_Result_FAIL_FeatureNotFound;
+    }
+    static float worldToView[16];
+    static float viewToClip[16];
+    for (int i = 0; i < 16; i++) {
+        worldToView[i] = floats[5 + i];
+        viewToClip[i] = floats[21 + i];
+    }
+    NVSDK_NGX_D3D11_DLSSD_Eval_Params eval = {};
+    eval.pInColor = resources[0];
+    eval.pInOutput = resources[1];
+    eval.pInDepth = resources[2];
+    eval.pInMotionVectors = resources[3];
+    eval.pInDiffuseAlbedo = resources[4];
+    eval.pInSpecularAlbedo = resources[5];
+    eval.pInNormals = resources[6];
+    eval.pInSpecularHitDistance = resources[7];
+    eval.InJitterOffsetX = floats[0];
+    eval.InJitterOffsetY = floats[1];
+    eval.InMVScaleX = floats[2];
+    eval.InMVScaleY = floats[3];
+    eval.InFrameTimeDeltaInMsec = floats[4];
+    eval.pInWorldToViewMatrix = worldToView;
+    eval.pInViewToClipMatrix = viewToClip;
+    eval.InReset = reset;
+    eval.InRenderSubrectDimensions.Width = (unsigned int) renderWidth;
+    eval.InRenderSubrectDimensions.Height = (unsigned int) renderHeight;
+    return NGX_D3D11_EVALUATE_DLSSD_EXT(context, g_feature, g_params, &eval);
 }
 
 // Runs DLSS once. Jitter is in render pixels; motion vectors are multiplied by mvScale to get render pixels.

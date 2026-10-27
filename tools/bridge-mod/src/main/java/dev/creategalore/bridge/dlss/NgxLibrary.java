@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
  */
 final class NgxLibrary {
     private static final Logger LOG = LoggerFactory.getLogger("create_galore_bridge");
-    private static final int ABI = 1;
+    private static final int ABI = 2;
 
     // NVSDK_NGX_Result
     static final int RESULT_SUCCESS = 0x1;
@@ -39,11 +39,20 @@ final class NgxLibrary {
     static final int FLAG_AUTO_EXPOSURE = 1 << 6;
     // NVSDK_NGX_Logging_Level
     static final int LOG_ON = 1;
+    // NVSDK_NGX_RayReconstruction_Hint_Render_Preset: F is DLSS 4.5's Ray Reconstruction model
+    static final int RR_PRESET_D = 4;
+    static final int RR_PRESET_E = 5;
+    static final int RR_PRESET_F = 6;
+    // NVSDK_NGX_DLSS_Depth_Type
+    static final int DEPTH_HARDWARE = 1;
 
     private final long init;
     private final long query;
     private final long create;
     private final long evaluate;
+    private final long queryRr;
+    private final long createRr;
+    private final long evaluateRr;
     private final long release;
     private final long shutdown;
     private final long logNext;
@@ -54,6 +63,9 @@ final class NgxLibrary {
         query = dll.symbol("cg_ngx_query");
         create = dll.symbol("cg_ngx_create");
         evaluate = dll.symbol("cg_ngx_evaluate");
+        queryRr = dll.symbol("cg_ngx_query_rr");
+        createRr = dll.symbol("cg_ngx_create_rr");
+        evaluateRr = dll.symbol("cg_ngx_evaluate_rr");
         release = dll.symbol("cg_ngx_release");
         shutdown = dll.symbol("cg_ngx_shutdown");
         logNext = dll.symbol("cg_ngx_log_next");
@@ -108,9 +120,18 @@ final class NgxLibrary {
 
     /** {available, needs a newer driver, minimum driver major, minor, the feature's init result}, or null. */
     int[] query() {
+        return query(query);
+    }
+
+    /** {@link #query()} for DLSS Ray Reconstruction (nvngx_dlssd.dll). */
+    int[] queryRayReconstruction() {
+        return query(queryRr);
+    }
+
+    private static int[] query(long function) {
         try (MemoryStack stack = stackPush()) {
             IntBuffer out = stack.callocInt(5);
-            int result = (int) Ffi.call("P:I", query, memAddress(out));
+            int result = (int) Ffi.call("P:I", function, memAddress(out));
             if (failed(result)) {
                 return null;
             }
@@ -127,6 +148,37 @@ final class NgxLibrary {
         return (int) Ffi.call("PPPPPPFFFFIIIFF:I", evaluate, context, color, output, depth, motion, exposure,
                 Ffi.floatArg(jitterX), Ffi.floatArg(jitterY), Ffi.floatArg(mvScaleX), Ffi.floatArg(mvScaleY),
                 reset ? 1 : 0, renderWidth, renderHeight, Ffi.floatArg(frameTimeMs), Ffi.floatArg(1.0f));
+    }
+
+    /**
+     * Makes the feature DLSS Ray Reconstruction instead (roughness in the normals' alpha). {@code preset} is set for
+     * every quality mode; {@code depthType} {@link #DEPTH_HARDWARE} or 0 for view depth.
+     */
+    int createRayReconstruction(long context, int renderWidth, int renderHeight, int outWidth, int outHeight, int perfQuality,
+                                int flags, int preset, int depthType) {
+        return (int) Ffi.call("PIIIIIIII:I", createRr, context, renderWidth, renderHeight, outWidth, outHeight, perfQuality,
+                flags, preset, depthType);
+    }
+
+    /**
+     * Runs Ray Reconstruction once. {@code resources}: colour, output, depth, motion vectors, diffuse albedo, specular
+     * albedo, normals with roughness, specular hit distance (0 if none). The matrices are OpenGL's column-major layout
+     * (which NGX reads as row major for a row vector).
+     */
+    int evaluateRayReconstruction(long context, long[] resources, float jitterX, float jitterY, float mvScaleX, float mvScaleY,
+                                  float frameTimeMs, float[] worldToView, float[] viewToClip, boolean reset, int renderWidth,
+                                  int renderHeight) {
+        try (MemoryStack stack = stackPush()) {
+            java.nio.LongBuffer pointers = stack.mallocLong(8);
+            for (int i = 0; i < 8; i++) {
+                pointers.put(i, i < resources.length ? resources[i] : 0L);
+            }
+            java.nio.FloatBuffer floats = stack.mallocFloat(37);
+            floats.put(0, jitterX).put(1, jitterY).put(2, mvScaleX).put(3, mvScaleY).put(4, frameTimeMs);
+            floats.put(5, worldToView).put(21, viewToClip);
+            return (int) Ffi.call("PPPIII:I", evaluateRr, context, memAddress(pointers), memAddress(floats), reset ? 1 : 0,
+                    renderWidth, renderHeight);
+        }
     }
 
     int release() {

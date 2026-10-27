@@ -53,6 +53,8 @@ public final class DlaaScreen extends Screen {
     private static final List<String> ENGINES = List.of("auto", "dlss", "fsr3", "off");
     /** The presets offered by name; "other" takes a typed letter. */
     private static final List<String> PRESETS = List.of("default", "K", "J", "L", "M", "other");
+    /** Ray Reconstruction's presets (dev builds): F (RR 4.5) is the one to use, the others for comparing. */
+    private static final List<String> RR_PRESETS = List.of("F", "E", "D", "default");
     /** The standard render resolutions (the pack's render scale option for each), then custom (the slider). */
     private static final List<String> SCALES = List.of("native", "quality", "balanced", "performance", "ultra", "custom");
     private static final Map<String, String> SCALE_VALUES = Map.of("quality", "0.67", "balanced", "0.58", "performance", "0.50", "ultra", "0.33");
@@ -63,6 +65,8 @@ public final class DlaaScreen extends Screen {
     private static final List<String> FPS_MODES = List.of(FpsOverlay.OFF, FpsOverlay.BASIC, FpsOverlay.DETAILED);
     private static final List<String> CORNERS = List.of(FpsOverlay.TOP_LEFT, FpsOverlay.TOP_RIGHT, FpsOverlay.BOTTOM_LEFT, FpsOverlay.BOTTOM_RIGHT);
     private static final int WIDTH = 300;
+    /** The Ray Reconstruction row (dev builds), under the render resolution. */
+    private static final int RR_ROW = 132;
     private static final net.minecraft.client.gui.components.toasts.SystemToast.SystemToastId RESTART =
             new net.minecraft.client.gui.components.toasts.SystemToast.SystemToastId(10000L);
 
@@ -92,6 +96,8 @@ public final class DlaaScreen extends Screen {
     private String fpsCounter;
     private String fpsCorner;
     private boolean fpsDim;
+    private boolean rayReconstruction;
+    private String rrPreset;
     /** The custom render scale, 25 to 100 (%). */
     private int customPercent;
     private Map<String, String> initialPackOptions;
@@ -110,7 +116,7 @@ public final class DlaaScreen extends Screen {
     /** The tab whose widgets init is making. */
     private List<AbstractWidget> building;
     /** The top of the buttons under the status lines: higher on a short screen, so Done still fits. */
-    private int buttonsTop = 176;
+    private int buttonsTop = 200;
     private final List<Choice<?>> choices = new java.util.ArrayList<>();
     /** The setting whose list of values is open, if one is. */
     private Choice<?> open;
@@ -154,6 +160,10 @@ public final class DlaaScreen extends Screen {
         String cornerValue = DisplaySettings.getString(DisplaySettings.FPS_COUNTER_CORNER, FpsOverlay.TOP_RIGHT).toLowerCase(Locale.ROOT);
         fpsCorner = CORNERS.contains(cornerValue) ? cornerValue : FpsOverlay.TOP_RIGHT;
         fpsDim = DisplaySettings.get(DisplaySettings.FPS_COUNTER_DIM);
+        rayReconstruction = DisplaySettings.get(DisplaySettings.DLAA_RAY_RECONSTRUCTION);
+        String rrValue = DisplaySettings.getString(DisplaySettings.DLAA_RR_PRESET, "F");
+        rrPreset = rrValue.equalsIgnoreCase("default") ? "default"
+                : RR_PRESETS.contains(rrValue.toUpperCase(Locale.ROOT)) ? rrValue.toUpperCase(Locale.ROOT) : "F";
         readRenderScale();
         initial.putAll(values());
         initialPackOptions = packOptions();
@@ -212,11 +222,23 @@ public final class DlaaScreen extends Screen {
         slider = new ScaleSlider(left + half + 4, 108, half);
         slider.visible = scale.equals("custom");
         add(slider);
+        // Dev builds: DLSS Ray Reconstruction in place of DLSS.
+        add(CycleButton.onOffBuilder(rayReconstruction)
+                .withTooltip(value -> net.minecraft.client.gui.components.Tooltip.create(Component.literal(
+                        "Dev build, for testing: NVIDIA DLSS Ray Reconstruction in place of DLSS, with " + PhotonPatcher.PATCHED_NAME
+                                + ", which then leaves its rough reflections and soft shadows noisy for it to clean up. Any RTX"
+                                + " card, NVIDIA driver 580 or newer, and nvngx_dlssd.dll in the DLSS folder.")))
+                .create(left, RR_ROW, half, 20, Component.literal("Ray Reconstruction"), (button, value) -> {
+                    rayReconstruction = value;
+                    refreshDll();
+                }));
+        choice("RR preset", RR_PRESETS, rrPreset, DlaaScreen::rrPresetLabel, DlaaScreen::rrPresetTooltip, left + half + 4, RR_ROW, half,
+                value -> rrPreset = value);
 
         // The DLL buttons and Try again, then Done 28 lower; the status lines get one line more where it fits, and on
         // a short screen (a big GUI scale) one less.
         int below = (Dlss.crashed() ? 24 : 0) + 48;
-        buttonsTop = 186 + below <= height ? 186 : 176 + below <= height ? 176 : 152;
+        buttonsTop = 210 + below <= height ? 210 : 200 + below <= height ? 200 : 176;
         int y = buttonsTop;
         int third = (WIDTH - 8) / 3;
         add(Button.builder(Component.literal("Find on this PC"), button -> {
@@ -226,9 +248,10 @@ public final class DlaaScreen extends Screen {
                     refreshDll();
                 })
                 .tooltip(net.minecraft.client.gui.components.Tooltip.create(Component.literal(
-                        "Looks for nvngx_dlss.dll, and nvngx_dlssg.dll for DLSS Frame Generation, where the NVIDIA app keeps"
-                                + " the DLSS versions it downloaded (ProgramData\\NVIDIA\\NGX), and copies the newest of each into"
-                                + " the DLSS folder. Nowhere else, and only when you press this.")))
+                        "Looks for nvngx_dlss.dll, nvngx_dlssg.dll for DLSS Frame Generation and nvngx_dlssd.dll for Ray"
+                                + " Reconstruction, where the NVIDIA app keeps the DLSS versions it downloaded"
+                                + " (ProgramData\\NVIDIA\\NGX), and copies the newest of each into the DLSS folder. Nowhere else,"
+                                + " and only when you press this.")))
                 .bounds(left, y, third, 20).build());
         add(Button.builder(Component.literal("Open DLSS folder"), button -> openDllFolder())
                 .bounds(left + third + 4, y, third, 20).build());
@@ -398,13 +421,13 @@ public final class DlaaScreen extends Screen {
     private void renderAntiAliasing(GuiGraphics graphics, int left) {
         lines(graphics, "Optional. Only with a shader pack made for DLAA, such as \""
                 + PhotonPatcher.PATCHED_NAME + "\": pick it in the shader menu.", left, 28, 0xFFDD66, 3);
-        int y = 132;
+        int y = RR_ROW + 24;
         String picked = preset.equals("other") ? letter : preset;
         if (picked.equals("L") || picked.equals("M")) {
             // NVIDIA (DLSS 4.5): RTX 20 and 30 cards have no native FP8, so L and M cost more there. Nothing is checked or locked.
             // Two lines at most, so the DLL line keeps its room.
             y = lines(graphics, "L and M are made for RTX 40 and 50 cards and cost more on RTX 20 and 30 (no FP8): if frames drop,"
-                    + " use K.", left, y, 0xFFAA44, buttonsTop < 176 ? 1 : 2);
+                    + " use K.", left, y, 0xFFAA44, buttonsTop < 200 ? 1 : 2);
         }
         // What "Find on this PC" did takes the DLL line's place (it names the version) and keeps its two lines; the status
         // keeps a line however short the screen, and the rest of it where it fits.
@@ -528,7 +551,9 @@ public final class DlaaScreen extends Screen {
                             : "The 10-bit window setting applies after a restart.")));
         }
         if (packChanged || dllAdded || !values.get(DisplaySettings.DLAA).equals(initial.get(DisplaySettings.DLAA))
-                || !values.get(DisplaySettings.DLAA_PRESET).equals(initial.get(DisplaySettings.DLAA_PRESET))) {
+                || !values.get(DisplaySettings.DLAA_PRESET).equals(initial.get(DisplaySettings.DLAA_PRESET))
+                || !values.get(DisplaySettings.DLAA_RAY_RECONSTRUCTION).equals(initial.get(DisplaySettings.DLAA_RAY_RECONSTRUCTION))
+                || !values.get(DisplaySettings.DLAA_RR_PRESET).equals(initial.get(DisplaySettings.DLAA_RR_PRESET))) {
             Dlss.settingsChanged();
         }
         minecraft.setScreen(parent);
@@ -546,6 +571,8 @@ public final class DlaaScreen extends Screen {
         values.put(DisplaySettings.FRAME_GEN, frameGen);
         values.put(DisplaySettings.FRAME_GEN_TYPE, frameGenType);
         values.put(DisplaySettings.DLAA_CUSTOM_SCALE, Boolean.toString(scale.equals("custom")));
+        values.put(DisplaySettings.DLAA_RAY_RECONSTRUCTION, Boolean.toString(rayReconstruction));
+        values.put(DisplaySettings.DLAA_RR_PRESET, rrPreset);
         values.put(DisplaySettings.FPS_COUNTER, fpsCounter);
         values.put(DisplaySettings.FPS_COUNTER_CORNER, fpsCorner);
         values.put(DisplaySettings.FPS_COUNTER_DIM, Boolean.toString(fpsDim));
@@ -731,6 +758,11 @@ public final class DlaaScreen extends Screen {
             dllLine += " Frame generation's nvngx_dlssg.dll: " + (model == null ? "not found (find it on this PC)."
                     : model + " (tested with " + Dlss.TESTED_FG_DLL_VERSION + ").");
         }
+        if (rayReconstruction) {
+            String rr = Dlss.rayReconstructionDllVersion();
+            dllLine += " Ray Reconstruction's nvngx_dlssd.dll: " + (rr == null ? "not found (find it on this PC)."
+                    : rr + " (tested with " + Dlss.TESTED_RR_DLL_VERSION + ").");
+        }
     }
 
     private void openDllFolder() {
@@ -866,6 +898,18 @@ public final class DlaaScreen extends Screen {
             case FpsOverlay.BOTTOM_RIGHT -> "Bottom right";
             default -> "Top right";
         });
+    }
+
+    private static Component rrPresetLabel(String value) {
+        return Component.literal(value.equals("default") ? "NVIDIA's pick" : value.equals("F") ? "F (RR 4.5)" : value);
+    }
+
+    private static String rrPresetTooltip(String value) {
+        return switch (value) {
+            case "F" -> "Ray Reconstruction 4.5, NVIDIA's newest and best model: the one to use.";
+            case "default" -> "The model NVIDIA's DLL picks itself, for comparing.";
+            default -> "An older Ray Reconstruction model (" + value + "), for comparing with F.";
+        };
     }
 
     private static Component presetLabel(String value) {

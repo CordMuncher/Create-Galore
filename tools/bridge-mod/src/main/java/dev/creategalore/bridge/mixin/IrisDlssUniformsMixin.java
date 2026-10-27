@@ -18,7 +18,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  * cg_dlss_object_motion (0 while testing without the motion of things that move by themselves),
  * cg_dlss_residual_albedo (1 in the residual test view), taau_render_scale (the render size over the window's, per
  * axis, when the pack upscales) and cg_mip_bias (the textures' mip bias) for every program and for the pack's custom
- * uniforms (see {@link Dlss}). Packs that do not use them never see them.
+ * uniforms (see {@link Dlss}). For DLSS Ray Reconstruction (dev builds): cg_rr_active (1 while the pack writes its
+ * guides), cg_rr_exposed (1 while it hands over its colour times its exposure), cg_rr_raw_reflections and
+ * cg_rr_raw_shadows (1 while it leaves those noisy for Ray Reconstruction). Packs that do not use them never see them.
  */
 @Pseudo
 @Mixin(targets = "net.irisshaders.iris.uniforms.CommonUniforms", remap = false)
@@ -32,6 +34,11 @@ public abstract class IrisDlssUniformsMixin {
                 .uniform1f(UniformUpdateFrequency.PER_FRAME, "cg_dlss_object_motion", (FloatSupplier) () -> Dlss.objectMotion() ? 1.0f : 0.0f)
                 .uniform1f(UniformUpdateFrequency.PER_FRAME, "cg_dlss_residual_albedo", (FloatSupplier) () -> Dlss.residualAlbedo() ? 1.0f : 0.0f)
                 .uniform2f(UniformUpdateFrequency.PER_FRAME, "taau_render_scale", Dlss::renderScale)
-                .uniform1f(UniformUpdateFrequency.PER_FRAME, "cg_mip_bias", (FloatSupplier) Dlss::mipBias);
+                .uniform1f(UniformUpdateFrequency.PER_FRAME, "cg_mip_bias", (FloatSupplier) Dlss::mipBias)
+                .uniform1f(UniformUpdateFrequency.PER_FRAME, "cg_rr_active", (FloatSupplier) () -> Dlss.rayReconstructionGuides() ? 1.0f : 0.0f)
+                .uniform1f(UniformUpdateFrequency.PER_FRAME, "cg_rr_exposed", (FloatSupplier) () -> Dlss.rayReconstructionExposed() ? 1.0f : 0.0f)
+                .uniform1f(UniformUpdateFrequency.PER_FRAME, "cg_rr_raw_reflections",
+                        (FloatSupplier) () -> Dlss.rayReconstructionRawReflections() ? 1.0f : 0.0f)
+                .uniform1f(UniformUpdateFrequency.PER_FRAME, "cg_rr_raw_shadows", (FloatSupplier) () -> Dlss.rayReconstructionRawShadows() ? 1.0f : 0.0f);
     }
 }

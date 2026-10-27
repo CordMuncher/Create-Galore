@@ -21,13 +21,15 @@ import org.slf4j.LoggerFactory;
  * changes nothing here. A DLL the game has loaded can't be replaced: the copy then waits beside it as
  * nvngx_dlss.dll.new and takes over at the next start ({@link #applyPending()}).
  *
- * The same press copies DLSS Frame Generation's nvngx_dlssg.dll from the dlssg folder beside it the same way. The game
+ * The same press copies DLSS Frame Generation's nvngx_dlssg.dll from the dlssg folder beside it the same way, and
+ * DLSS Ray Reconstruction's nvngx_dlssd.dll from the dlssd folder (dev builds use it). The game
  * never reads NVIDIA's folder by itself: NVIDIA updates those files often, and the copies here change only when the
  * player asks (or puts their own in the DLSS folder).
  */
 final class DlssFinder {
     private static final Logger LOG = LoggerFactory.getLogger("create_galore_bridge");
     static final String FG_DLL = "nvngx_dlssg.dll";
+    static final String RR_DLL = "nvngx_dlssd.dll";
 
     private DlssFinder() {}
 
@@ -70,11 +72,14 @@ final class DlssFinder {
         // An NVIDIA DLL from DLSS 2 on, and Frame Generation from 3 on (NGX checks NVIDIA's signature when it loads them).
         Copy dlss = copyNewest("dlss", Dlss.DLL, 2);
         Copy dlssg = copyNewest("dlssg", FG_DLL, 3);
-        if (dlss.version() == null && dlssg.version() == null) {
+        // Ray Reconstruction from 3.5 on.
+        Copy dlssd = copyNewest("dlssd", RR_DLL, 3);
+        if (dlss.version() == null && dlssg.version() == null && dlssd.version() == null) {
             return new Result("Nothing found in NVIDIA's folder (" + nvidiaFolder().getParent() + "). The NVIDIA app puts DLSS there"
                     + " once it has updated DLSS for a game. Get it from NVIDIA instead.", false);
         }
-        return new Result(dlss.text("DLSS") + " " + dlssg.text("Frame generation"), dlss.copied() && !dlss.pending());
+        return new Result(dlss.text("DLSS") + " " + dlssg.text("Frame generation") + " " + dlssd.text("Ray Reconstruction"),
+                dlss.copied() && !dlss.pending());
     }
 
     /** The newest {@code name} of NVIDIA's {@code model} folder, from version {@code major} on, copied into the DLSS folder. */
@@ -121,7 +126,7 @@ final class DlssFinder {
     /** At mod construction, before DLSS loads: a copy that waited for the old DLL to be let go takes its place. */
     static void applyPending() {
         Path folder = Dlss.dllFolder();
-        for (String name : new String[] {Dlss.DLL, FG_DLL}) {
+        for (String name : new String[] {Dlss.DLL, FG_DLL, RR_DLL}) {
             Path pending = folder.resolve(name + ".new");
             if (Files.isRegularFile(pending)) {
                 try {
