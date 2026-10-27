@@ -39,8 +39,9 @@ import net.neoforged.neoforge.common.NeoForge;
  * render resolution, the bring-your-own nvngx_dlss.dll and nvngx_dlssg.dll (or ones found on this PC, see
  * {@link DlssFinder}). Display: the window switches and Perfect Presentation's DirectX version (picking 12 turns
  * Perfect Presentation on; a fresh install on Windows starts with both, see DisplaySettings), NVIDIA Reflex (which turns Perfect Presentation on with it, see
- * {@link FrameLatency}), GPU pacing, frame generation (NVIDIA's on RTX 40 and 50 cards, AMD's, experimental, on any;
- * picking one turns Perfect Presentation on DirectX 12 on, and NVIDIA's Reflex too, see {@link FrameGen}) and the frame
+ * {@link FrameLatency}), GPU pacing, frame generation (NVIDIA's where its Streamline says the card runs it, AMD's,
+ * experimental, on any; picking one turns Perfect Presentation on DirectX 12 on, and NVIDIA's Reflex too, see
+ * {@link FrameGen}) and the frame
  * counter ({@link FpsOverlay}). Opens from the mod list (Create Galore Bridge, Config) and from an Upscaling & Display
  * button in Iris's shader pack menu. Saved to config/create_galore_bridge-display.properties when it closes, the render
  * resolution into the DLAA pack's own options (Photon's TAAU and TAAU Render Scale, see {@link RenderScaleTarget});
@@ -89,9 +90,8 @@ public final class DlaaScreen extends Screen {
     private String frameGen;
     /** dlss or fsr, the last one picked (the one DirectX 12 loads at its start), or empty for the best for the card. */
     private String frameGenType;
-    /** OpenGL's name for the graphics card, and whether DLSS Frame Generation runs on it (Windows, RTX 40 or 50). */
-    private final String renderer;
-    private final boolean dlssFrameGenCard;
+    /** Whether DLSS Frame Generation is offered: Windows, and Streamline didn't say no (FrameGen.streamlineAllows). */
+    private final boolean dlssFrameGenOffered;
     private String scale;
     private String fpsCounter;
     private String fpsCorner;
@@ -147,14 +147,7 @@ public final class DlaaScreen extends Screen {
         frameGen = FrameGen.setting();
         String typeValue = DisplaySettings.getString(DisplaySettings.FRAME_GEN_TYPE, "").toLowerCase(Locale.ROOT);
         frameGenType = typeValue.equals("dlss") || typeValue.equals("fsr") ? typeValue : "";
-        String glRenderer;
-        try {
-            glRenderer = com.mojang.blaze3d.platform.GlUtil.getRenderer();
-        } catch (RuntimeException e) {
-            glRenderer = null;
-        }
-        renderer = glRenderer;
-        dlssFrameGenCard = Util.getPlatform() == Util.OS.WINDOWS && FrameGen.supportedCard(renderer);
+        dlssFrameGenOffered = Util.getPlatform() == Util.OS.WINDOWS && FrameGen.streamlineAllows();
         String fpsValue = DisplaySettings.getString(DisplaySettings.FPS_COUNTER, FpsOverlay.OFF).toLowerCase(Locale.ROOT);
         fpsCounter = FPS_MODES.contains(fpsValue) ? fpsValue : FpsOverlay.OFF;
         String cornerValue = DisplaySettings.getString(DisplaySettings.FPS_COUNTER_CORNER, FpsOverlay.TOP_RIGHT).toLowerCase(Locale.ROOT);
@@ -316,8 +309,8 @@ public final class DlaaScreen extends Screen {
         pacingChoice = choice("GPU pacing", PACING_MODES, gpuPacing, DlaaScreen::pacingLabel, DlaaScreen::pacingTooltip, left, y, half,
                 value -> gpuPacing = value);
         y += step;
-        // DLSS only on the cards it runs on, both only on Windows; where one is already on, it can still be turned off.
-        List<String> frameGenModes = dlssFrameGenCard || frameGen.equals("dlss") ? FRAME_GEN_MODES : List.of("off", "fsr");
+        // DLSS unless Streamline said no, both only on Windows; where one is already on, it can still be turned off.
+        List<String> frameGenModes = dlssFrameGenOffered || frameGen.equals("dlss") ? FRAME_GEN_MODES : List.of("off", "fsr");
         frameGenChoice = choice("Frame generation", frameGenModes, frameGen, DlaaScreen::frameGenLabel, DlaaScreen::frameGenTooltip,
                 left, y, half, value -> {
                     frameGen = value;
@@ -671,11 +664,10 @@ public final class DlaaScreen extends Screen {
             return new FrameLatency.Status("Needs Windows.", "Frame generation runs in Perfect Presentation's DirectX 12"
                     + " presenter, only on Windows.", !frameGen.equals("off"));
         }
-        if (dlss && !dlssFrameGenCard) {
-            return new FrameLatency.Status("Needs an NVIDIA RTX 40 or 50 card.", "NVIDIA DLSS Frame Generation runs only with a"
-                    + " GeForce RTX 40 or 50 series card (or an RTX Ada or Blackwell workstation card); FSR frame generation"
-                    + " runs on other cards too."
-                    + (renderer == null ? "" : " This graphics card: " + renderer + "."), true);
+        if (dlss && !dlssFrameGenOffered) {
+            return new FrameLatency.Status("Streamline says no: hover for why.", "NVIDIA's Streamline, which runs DLSS Frame"
+                    + " Generation, says it can't run here: " + FrameGen.streamlineWhy() + ". It is asked again at every"
+                    + " start. FSR frame generation runs on other cards too.", true);
         }
         if (frameGen.equals("off")) {
             return FrameGen.on() ? new FrameLatency.Status("Turns off when you close this screen.", null, false) : null;
@@ -733,11 +725,11 @@ public final class DlaaScreen extends Screen {
 
     private static String frameGenTooltip(String value) {
         return switch (value) {
-            case "dlss" -> "NVIDIA RTX 40 and 50 cards only: NVIDIA DLSS Frame Generation shows a frame of its own"
-                    + " between every two the game renders, so the picture moves about twice as smoothly, for a little more"
-                    + " input delay. Needs Perfect Presentation on DirectX 12 and NVIDIA Reflex, which this turns on, DLSS or FSR"
-                    + " anti-aliasing (Upscaling tab), and nvngx_dlssg.dll in the DLSS folder (Find on this PC). Turns on and off"
-                    + " at once; switching from FSR needs a restart.";
+            case "dlss" -> "Where NVIDIA's Streamline says the card runs it (RTX 40 and 50): NVIDIA DLSS Frame Generation"
+                    + " shows a frame of its own between every two the game renders, so the picture moves about twice as"
+                    + " smoothly, for a little more input delay. Needs Perfect Presentation on DirectX 12 and NVIDIA Reflex,"
+                    + " which this turns on, DLSS or FSR anti-aliasing (Upscaling tab), and nvngx_dlssg.dll in the DLSS folder"
+                    + " (Find on this PC). Turns on and off at once; switching from FSR needs a restart.";
             case "fsr" -> "Experimental, any graphics card DirectX 12 runs on here (NVIDIA cards do): AMD FSR 3.1 frame generation"
                     + " shows a frame of its own between every two the game renders, so the picture moves about twice as"
                     + " smoothly, for a little more input delay. Best from about 60 frames a second without it. Needs Perfect"
@@ -753,7 +745,7 @@ public final class DlaaScreen extends Screen {
                 ? "nvngx_dlss.dll: not found. DLSS needs your own (not in the pack): " + Dlss.TESTED_DLL_VERSION
                         + " or newer in the DLSS folder (find it on this PC or get it from NVIDIA), then reload shaders (F8)."
                 : "nvngx_dlss.dll: " + found + " (tested with " + Dlss.TESTED_DLL_VERSION + "). Close the game before replacing it.";
-        if (dlssFrameGenCard) {
+        if (dlssFrameGenOffered) {
             String model = Dlss.frameGenerationDllVersion();
             dllLine += " Frame generation's nvngx_dlssg.dll: " + (model == null ? "not found (find it on this PC)."
                     : model + " (tested with " + Dlss.TESTED_FG_DLL_VERSION + ").");

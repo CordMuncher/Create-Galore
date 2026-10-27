@@ -91,6 +91,8 @@ public final class DisplaySettings {
     public static final String FRAME_GEN_STREAMLINE = "frameGenStreamline";
     /** Testing only, not written to the file: true has Streamline log verbosely (create-galore-dlss/streamline-logs). */
     public static final String FRAME_GEN_VERBOSE = "frameGenVerbose";
+    /** Testing only, not written to the file: no takes Streamline's yes to DLSS Frame Generation on this card as a no. */
+    public static final String FRAME_GEN_STREAMLINE_SAYS = "frameGenStreamlineSays";
     /** Testing only, not written to the file: hudless, alpha, depth or motion shows that frame generation input instead of the game. */
     public static final String FRAME_GEN_VIEW = "frameGenView";
     /** Testing only, not written to the file: true checks frame generation's inputs and camera every 5 seconds (log). */
@@ -125,13 +127,14 @@ public final class DisplaySettings {
             + " the graphics card about when the card is ready, instead of queueing behind earlier frames: shorter input\n"
             + " delay without a frame cap. on keeps the frame rate; lowest is a little quicker still, for about 6% fewer frames.\n"
             + " frameGen: off, dlss or fsr. Frame generation: the graphics card shows a frame of its own between every two\n"
-            + " the game renders. dlss: NVIDIA DLSS Frame Generation, NVIDIA RTX 40 or 50 cards, with Windows'\n"
-            + " Hardware-accelerated GPU scheduling on and nvngx_dlssg.dll in create-galore-dlss/ (not part of the pack, like\n"
-            + " nvngx_dlss.dll); Reflex stays on while it runs. fsr, EXPERIMENTAL: AMD FSR 3.1 frame generation, any card\n"
-            + " DirectX 12 runs on. Both need perfectPresentation=true with presenter=dx12 (the settings screen sets both with\n"
-            + " it) and dlaa running (DLSS or FSR 3.1). The one in frameGenType (dlss or fsr; empty: DLSS on an RTX 40 or 50\n"
-            + " card with nvngx_dlssg.dll, else FSR) loads whenever DirectX 12 starts, so it turns on and off without a\n"
-            + " restart; picking the other one needs a restart.\n"
+            + " the game renders. dlss: NVIDIA DLSS Frame Generation, where NVIDIA's Streamline says the card runs it (RTX 40\n"
+            + " and 50), with Windows' Hardware-accelerated GPU scheduling on and nvngx_dlssg.dll in create-galore-dlss/ (not\n"
+            + " part of the pack, like nvngx_dlss.dll); Reflex stays on while it runs. fsr, EXPERIMENTAL: AMD FSR 3.1 frame\n"
+            + " generation, any card DirectX 12 runs on. Both need perfectPresentation=true with presenter=dx12 (the settings\n"
+            + " screen sets both with it) and dlaa running (DLSS or FSR 3.1). The one in frameGenType (dlss or fsr; empty: DLSS\n"
+            + " where Streamline says it runs and nvngx_dlssg.dll is there, else FSR) loads whenever DirectX 12 starts, so it\n"
+            + " turns on and off without a restart; picking the other one needs a restart. Streamline is asked at every\n"
+            + " DirectX 12 start.\n"
             + " fpsCounter: off, basic (the frame rate, small, in a corner) or detailed (also the frame time, the 1% and 0.1%\n"
             + " lows of the last 10 seconds and a frame time graph). fpsCounterCorner: top-left, top-right, bottom-left or\n"
             + " bottom-right. fpsCounterDim: true for OLED screens: see-through, and it moves a pixel every two minutes.\n"

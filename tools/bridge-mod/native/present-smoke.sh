@@ -4,7 +4,8 @@
 # Windows SDK, Streamline and FidelityFX header caches build-present.sh makes, wine64 and an X display (DISPLAY, e.g.
 # Xvfb). Then it runs it once more with the mod's Streamline DLLs, which have no NVIDIA card to run on under Wine (the
 # presenter must go on without them), and with the mod's FidelityFX DLLs (signed, then without the signature check, as
-# Wine may not verify AMD's signature); both reported, not part of the pass.
+# Wine may not verify AMD's signature), then Streamline asked first and dropped for FidelityFX, as the mod starts on a
+# card Streamline says no to; all reported, not part of the pass.
 # Usage: tools/bridge-mod/native/present-smoke.sh
 set -euo pipefail
 
@@ -55,4 +56,9 @@ if [ -s "$FFX_DLLS/amd_fidelityfx_loader_dx12.dll" ]; then
   "$WINE" "$WORK/present-smoke.exe" --ffx "Z:${FFX_DIR//\//\\}" \
     || "$WINE" "$WORK/present-smoke.exe" --ffx "Z:${FFX_DIR//\//\\}" --unsigned \
     || echo "(FidelityFX under Wine: exit $?, not part of the pass)"
+  if [ -n "${STREAMLINE_DIR:-}" ]; then
+    "$WINE" "$WORK/present-smoke.exe" --probe "Z:${STREAMLINE_DIR//\//\\}" "Z:${FFX_DIR//\//\\}" \
+      || "$WINE" "$WORK/present-smoke.exe" --probe "Z:${STREAMLINE_DIR//\//\\}" "Z:${FFX_DIR//\//\\}" --unsigned \
+      || echo "(Streamline asked, then FidelityFX, under Wine: exit $?, not part of the pass)"
+  fi
 fi

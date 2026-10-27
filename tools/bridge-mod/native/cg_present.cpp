@@ -29,6 +29,9 @@
 // alpha) into that texture (cg_fg_create_inputs makes it). And frame generation turns on and off while the game runs
 // (cg_fg_enable): the backend stays loaded, and the swap chain is made again, frame generation's or a plain one.
 //
+// ABI 6: a prepared backend can be asked whether it runs on the adapter before anything is made (cg_fg_supports), and
+// dropped for another (cg_fg_unprepare), so Streamline decides about DLSS Frame Generation even when AMD's loads.
+//
 // All functions must be called on one thread (the render thread). Built by build-present.sh with clang and lld-link
 // against the Windows SDK, and Streamline's headers for cg_streamline.cpp. Graphics DLLs are loaded at run time
 // (cg_present_create, cg_fg_prepare).
@@ -44,7 +47,7 @@
 #define CG_API extern "C" __declspec(dllexport)
 
 // Bumped whenever a function below changes; the Java side refuses a helper with another version.
-static const int CG_PRESENT_ABI = 5;
+static const int CG_PRESENT_ABI = 6;
 
 static const UINT MAX_BUFFERS = 3;  // swap chain buffers: 2 as on the Direct3D 11 path, 3 for testing
 static const int RING = 3;          // shared textures OpenGL copies into, as on the Direct3D 11 path
@@ -1075,10 +1078,10 @@ CG_API int cg_present_capture_read(unsigned char* out, long long capacity, int* 
     return 1;
 }
 
-// --- Frame generation (ABI 3; AMD's and cg_fg_enable in ABI 5) ---
+// --- Frame generation (ABI 3; AMD's and cg_fg_enable in ABI 5; cg_fg_supports and cg_fg_unprepare in ABI 6) ---
 
 /**
- * Before cg_present_create, once: the frame generation backend to start with it. {@code backend} FG_BACKEND_DLSSG:
+ * Before cg_present_create, once (again after cg_fg_unprepare): the frame generation backend to start with it. {@code backend} FG_BACKEND_DLSSG:
  * NVIDIA DLSS Frame Generation through Streamline from {@code pluginFolder}, nvngx_dlssg.dll from {@code dllFolder},
  * Streamline's logs in {@code logFolder}, {@code flags} FgStreamlineFlag; FG_BACKEND_FSR: AMD FSR frame generation from
  * the FidelityFX DLLs in {@code pluginFolder}, {@code flags} FgFfxFlag (the other folders unused). 1 when it is ready
@@ -1099,6 +1102,58 @@ CG_API int cg_fg_prepare(int backend, const wchar_t* pluginFolder, const wchar_t
         return failText("cg_fg_prepare: unknown backend");
     }
     return g_fg ? 1 : 0;
+}
+
+/**
+ * After cg_fg_prepare, before cg_present_create: whether the backend says it runs on the adapter {@code luid} (OpenGL's,
+ * 8 bytes; null: the first adapter, as cg_present_create takes then). For Streamline this is its own check
+ * (slIsFeatureSupported), made before any device exists. 1 yes; 0 no, with the reason in cg_present_error. The backend
+ * stays prepared either way; cg_present_create asks again.
+ */
+CG_API int cg_fg_supports(const LUID* luid) {
+    g_error[0] = 0;
+    if (!g_fg || g_device) {
+        return failText("cg_fg_supports: after cg_fg_prepare, before cg_present_create");
+    }
+    LUID adapter = {};
+    if (luid) {
+        adapter = *luid;
+    } else {
+        CreateDXGIFactory2Fn createFactory = (CreateDXGIFactory2Fn) symbol("dxgi.dll", "CreateDXGIFactory2");
+        if (!createFactory) {
+            return failText("No CreateDXGIFactory2 in dxgi.dll");
+        }
+        IDXGIFactory4* factory = nullptr;
+        IDXGIAdapter1* first = nullptr;
+        DXGI_ADAPTER_DESC1 desc = {};
+        HRESULT hr = createFactory(0, IID_PPV_ARGS(&factory));
+        if (SUCCEEDED(hr)) {
+            hr = factory->EnumAdapters1(0, &first);
+        }
+        if (SUCCEEDED(hr)) {
+            hr = first->GetDesc1(&desc);
+        }
+        release(first);
+        release(factory);
+        if (FAILED(hr)) {
+            return fail("Finding the first adapter", hr);
+        }
+        adapter = desc.AdapterLuid;
+    }
+    return g_fg->supports(adapter) ? 1 : 0;
+}
+
+/**
+ * Before cg_present_create: shuts down the backend cg_fg_prepare started and drops it, so that another can be prepared
+ * instead (Streamline still starts only once per game run).
+ */
+CG_API void cg_fg_unprepare() {
+    if (g_fg && !g_device) {
+        g_fg->shutdown();
+        delete g_fg;
+        g_fg = nullptr;
+    }
+    g_fgOn = true;
 }
 
 /** 1 while the presenter runs with frame generation's backend. */

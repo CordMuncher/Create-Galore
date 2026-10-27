@@ -22,7 +22,6 @@ import static org.lwjgl.opengl.EXTSemaphoreWin32.GL_LUID_SIZE_EXT;
 import static org.lwjgl.opengl.EXTSemaphoreWin32.glImportSemaphoreWin32HandleEXT;
 import static org.lwjgl.opengl.GL11C.GL_NO_ERROR;
 import static org.lwjgl.opengl.GL11C.GL_RGBA;
-import static org.lwjgl.opengl.GL11C.GL_RENDERER;
 import static org.lwjgl.opengl.GL11C.GL_RGBA8;
 import static org.lwjgl.opengl.GL11C.GL_TEXTURE_2D;
 import static org.lwjgl.opengl.GL11C.GL_TEXTURE_HEIGHT;
@@ -33,7 +32,6 @@ import static org.lwjgl.opengl.GL11C.glDeleteTextures;
 import static org.lwjgl.opengl.GL11C.glFinish;
 import static org.lwjgl.opengl.GL11C.glGetError;
 import static org.lwjgl.opengl.GL11C.glGetIntegerv;
-import static org.lwjgl.opengl.GL11C.glGetString;
 import static org.lwjgl.opengl.GL43C.glCopyImageSubData;
 import static org.lwjgl.opengl.GL45C.glCreateTextures;
 import static org.lwjgl.opengl.GL45C.glGetTextureImage;
@@ -88,7 +86,7 @@ import org.slf4j.LoggerFactory;
  */
 final class D3D12Presenter implements Presenter {
     private static final Logger LOG = LoggerFactory.getLogger("create_galore_bridge");
-    private static final int ABI = 5;
+    private static final int ABI = 6;
     /** Present's DXGI_STATUS_OCCLUDED: the window can't be seen (minimized). */
     private static final int DXGI_STATUS_OCCLUDED = 0x087A0001;
     private static final int RING_SIZE = 3;
@@ -138,6 +136,8 @@ final class D3D12Presenter implements Presenter {
     private boolean frameGeneration;
     /** Its backend, FrameGen.BACKEND_DLSSG or BACKEND_FSR. */
     private int fgBackend;
+    /** The backend prepared (Streamline's, or AMD's after Streamline made way). */
+    private FrameGen.Start fgStart;
     /** Frame generation is on: its backend owns the swap chain behind this presenter's. */
     private boolean fgOn;
     private long fgEnable;
@@ -192,8 +192,8 @@ final class D3D12Presenter implements Presenter {
         nowNs = dll.symbol("cg_present_now_ns");
         fullscreenState = dll.symbol("cg_present_fullscreen_state");
 
-        FrameGen.Start frameGen = FrameGen.start(glGetString(GL_RENDERER));
-        boolean prepared = frameGen != null && prepareFrameGeneration(frameGen);
+        FrameGen.Start frameGen = FrameGen.start();
+        boolean prepared;
 
         try (MemoryStack stack = stackPush()) {
             // The LUID of the adapter OpenGL runs on (EXT_external_objects_win32), so Direct3D 12 opens the same one.
@@ -208,6 +208,7 @@ final class D3D12Presenter implements Presenter {
             if (!known) {
                 LOG.warn("Perfect Presentation: OpenGL gave no adapter LUID, DirectX 12 takes the first adapter");
             }
+            prepared = frameGen != null && prepareFrameGeneration(frameGen, known ? memAddress(luid) : 0L);
             if ((int) Ffi.call("PPI:I", dll.symbol("cg_present_create"), hwnd, known ? memAddress(luid) : 0L, 0) == 0) {
                 if (prepared) {
                     drainFrameGenLog();
@@ -238,8 +239,8 @@ final class D3D12Presenter implements Presenter {
             frameGeneration = Ffi.call(":I", dll.symbol("cg_fg_active")) != 0;
             drainFrameGenLog();
             if (frameGeneration) {
-                fgBackend = frameGen.backend();
-                fgOn = frameGen.on();
+                fgBackend = fgStart.backend();
+                fgOn = fgStart.on();
                 fgFrame = dll.symbol("cg_fg_frame");
                 fgInputsDone = dll.symbol("cg_fg_inputs_done");
                 fgState = dll.symbol("cg_fg_state");
@@ -253,22 +254,59 @@ final class D3D12Presenter implements Presenter {
         }
     }
 
-    /** Starts frame generation's backend before the swap chain exists (cg_fg_prepare). False (logged) if it can't. */
-    private boolean prepareFrameGeneration(FrameGen.Start start) {
+    /**
+     * Starts frame generation's backend before the swap chain exists (cg_fg_prepare), on the adapter {@code luid}
+     * (OpenGL's, 0: the first). Streamline comes first: it says whether DLSS Frame Generation runs here
+     * (cg_fg_supports), then stays or makes way for AMD's (cg_fg_unprepare), as {@link FrameGen#answered} decides. False
+     * (logged) if none can start; else {@link #fgStart} is the one that did.
+     */
+    private boolean prepareFrameGeneration(FrameGen.Start start, long luid) {
         fgLogNext = dll.symbol("cg_fg_log_next");
+        if (start.backend() == FrameGen.BACKEND_DLSSG) {
+            FrameGen.Start next;
+            if (prepare(start)) {
+                boolean yes = Ffi.call("P:I", dll.symbol("cg_fg_supports"), luid) != 0;
+                next = FrameGen.answered(start, yes, yes ? null : memUTF8(Ffi.call(":P", error)));
+                drainFrameGenLog();
+                if (next != start) {
+                    Ffi.call(":V", dll.symbol("cg_fg_unprepare"));
+                    drainFrameGenLog();
+                }
+            } else {
+                next = FrameGen.answered(null, false, memUTF8(Ffi.call(":P", error)));
+            }
+            if (next == null) {
+                return false;
+            }
+            if (next == start) {
+                return enable(start);
+            }
+            start = next;
+        }
+        if (!prepare(start)) {
+            FrameGen.unavailable(memUTF8(Ffi.call(":P", error)));
+            return false;
+        }
+        return enable(start);
+    }
+
+    /** cg_fg_prepare for {@code start}: true when it is ready. */
+    private boolean prepare(FrameGen.Start start) {
         try (MemoryStack stack = stackPush()) {
             boolean ready = Ffi.call("IPPPI:I", dll.symbol("cg_fg_prepare"), start.backend(),
                     memAddress(stack.UTF16(start.pluginFolder().toString())), memAddress(stack.UTF16(start.dllFolder().toString())),
                     memAddress(stack.UTF16(start.logFolder().toString())), start.flags()) != 0;
             drainFrameGenLog();
-            if (!ready) {
-                FrameGen.unavailable(memUTF8(Ffi.call(":P", error)));
-                return false;
-            }
-            fgEnable = dll.symbol("cg_fg_enable");
-            Ffi.call("I:I", fgEnable, start.on() ? 1 : 0); // how it starts: before the swap chain, always fine
-            return true;
+            return ready;
         }
+    }
+
+    /** How the prepared backend starts, on or off (before the swap chain, always fine). */
+    private boolean enable(FrameGen.Start start) {
+        fgStart = start;
+        fgEnable = dll.symbol("cg_fg_enable");
+        Ffi.call("I:I", fgEnable, start.on() ? 1 : 0);
+        return true;
     }
 
     /** Hands frame generation's native log lines to the game's log. */
