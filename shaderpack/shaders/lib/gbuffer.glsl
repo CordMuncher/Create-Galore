@@ -11,12 +11,13 @@
 //            block and sky light below (7 bits each), a how much of it the draw writes. The programs blend it by that
 //            alpha (see shaders.properties), always 0 or 1, so a draw over a surface (a mob's shadow, a charged
 //            creeper's swirl) leaves the surface under it as it was. Cleared to 0: nothing drawn.
-// colortex9: the surface's occlusion and kind (RGBA8): r how open it is to the light all around, Minecraft's smooth
-//            lighting corners (1 in the open, less in a corner or a crease, see separateAo in shaders.properties)
-//            times its texture's own crevices (see material.glsl), g what it is made of (SURFACE_, over 7), b how much
+// colortex9: the surface's occlusion and kind (RGBA16): r how open it is to the light all around, by Minecraft's
+//            smooth lighting corners (1 in the open, less in a corner or a crease, see separateAo in
+//            shaders.properties), g what it is made of, how open its texture's own crevices and relief leave it (see
+//            material_maps.glsl) and how squarely the surface around them faces the sun (see encode_kind), b how much
 //            of the sun's (or the moon's) light the texture's own relief lets reach it (1 all of it). Blended by alpha
 //            as colortex2 is.
-//            Cleared to 1, 0 and 1: what draws nothing here (Distant Horizons' terrain) has no corners.
+//            Cleared to 1, 0 and 1: what draws nothing here (Distant Horizons' terrain) has no corners or crevices.
 // colortex12: the surface's material from the resource pack (RGBA8, see material.glsl): r how smooth, g what it
 //            reflects (LabPBR's), b how porous (LabPBR's), all 0 where the pack has no maps for it (the pack's own
 //            materials by its kind then). Blended by alpha as colortex2 is. Cleared to 0.
@@ -51,7 +52,7 @@ const bool colortex1Clear = true;
 const vec4 colortex1ClearColor = vec4(0.0, 0.0, 0.0, 0.0);
 const bool colortex2Clear = true;
 const vec4 colortex2ClearColor = vec4(0.0, 0.0, 0.0, 0.0);
-const int colortex9Format = RGBA8;
+const int colortex9Format = RGBA16;
 const bool colortex9Clear = true;
 const vec4 colortex9ClearColor = vec4(1.0, 0.0, 1.0, 0.0);
 const int colortex12Format = RGBA8;
@@ -84,7 +85,7 @@ const bool colortex15Clear = false;
 // Only between a translucent program's stages, never in the G-buffer:
 #define MATERIAL_WATER 4
 
-// What a surface is made of, as far as the light cares (colortex9's g, as SURFACE_ / 7).
+// What a surface is made of, as far as the light cares (in colortex9's g, see encode_kind).
 #define SURFACE_PLAIN 0
 #define SURFACE_LEAVES 1   // lets light through (see light_surface)
 #define SURFACE_METAL 2    // shines (iron, gold, copper, brass)
@@ -97,8 +98,25 @@ const bool colortex15Clear = false;
 #define GLOW_LARGE 1 // a whole face of its block
 #define GLOW_LAVA 2  // lava and magma
 
+// colortex9's g: what the surface is made of (SURFACE_, 3 bits), how open its texture's crevices leave it (1 none, 7
+// bits, kept as how closed) and how squarely the surface around them faces the sun or the moon (0..1, 6 bits), for
+// the light the crevices bounce about (see light_surface). Cleared to 0: plain, no crevices.
+float encode_kind(int kind, float crevices, float sun_facing) {
+    int closed = int(floor((1.0 - clamp(crevices, 0.0, 1.0)) * 127.0 + 0.5));
+    int facing = int(floor(clamp(sun_facing, 0.0, 1.0) * 63.0 + 0.5));
+    return float(kind | (closed << 3) | (facing << 10)) / 65535.0;
+}
+
 int decode_surface_kind(float g) {
-    return int(g * 7.0 + 0.5);
+    return int(floor(g * 65535.0 + 0.5)) & 7;
+}
+
+float decode_crevices(float g) {
+    return 1.0 - float((int(floor(g * 65535.0 + 0.5)) >> 3) & 127) / 127.0;
+}
+
+float decode_sun_facing(float g) {
+    return float(int(floor(g * 65535.0 + 0.5)) >> 10) / 63.0;
 }
 
 // The blocks block.properties numbers (mc_Entity.x).

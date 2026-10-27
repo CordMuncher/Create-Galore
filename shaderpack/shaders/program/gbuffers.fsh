@@ -127,8 +127,8 @@ void lit_output(vec4 color, int flags) {
         float along = texels.y / 20.0 + hash_to_float(hash_pcg3d(uvec3(column, 7u, 1u)).xy).x;
         float f = fract(along);
         float each = hash_to_float(hash_pcg3d(uvec3(column, uint(int(floor(along)) & 0xFFFF), 3u)).xy).x;
-        float dash = smoothstep(0.0, 0.08, f) * (1.0 - smoothstep(0.3, 0.45, f));
-        color = vec4(vec3(0.75), pow(color.a, 1.5) * 0.4 * dash * mix(0.35, 1.0, each));
+        float dash = smoothstep(0.0, 0.06, f) * (1.0 - smoothstep(0.45, 0.6, f));
+        color = vec4(vec3(0.75), pow(color.a, 1.5) * 0.7 * dash * mix(0.4, 1.0, each));
     }
     vec3 rgb = forward_lit(mix(vec3(luminance(color.rgb)), color.rgb, 0.3), vec3(0.0, 1.0, 0.0), v_level, v_scene_pos, true);
 #elif defined PROGRAM_WATER
@@ -200,25 +200,30 @@ void lit_output(vec4 color, int flags) {
     vec3 dir = normalize(v_scene_pos - gbufferModelViewInverse[3].xyz);
     vec4 air = air_seen_at(v_scene_pos, gl_FragCoord.xy);
     vec3 rgb;
+    // (What glows by itself is marked as in the blocks' full light and none of the sky's, so the night doesn't take
+    // its colour, see final.fsh; what is lit here keeps its light levels.)
+    vec2 level = v_level;
     if ((flags & KEY_LIGHTMAP) == 0) {
         rgb = glow(color.rgb) * fog_fade(v_fog_dist) * air.a; // the block outline, unlit lines
+        level = vec2(1.0, 0.0);
     } else {
         rgb = apply_fog_lit(through_air(forward_lit(color.rgb, v_normal, v_level, v_scene_pos, true), air), v_fog_dist,
                 dir, fog_range());
     }
     out_color = vec4(rgb, color.a);
     out_albedo = vec4(0.0, 0.0, 0.0, color.a);
-    out_surface = encode_surface(vec3(0.0, 1.0, 0.0), v_level, MATERIAL_SELF, weight);
+    out_surface = encode_surface(vec3(0.0, 1.0, 0.0), level, MATERIAL_SELF, weight);
     out_occlusion = vec4(1.0, 0.0, 1.0, weight);
     out_material = vec4(0.0, 0.0, 0.0, weight);
 #else
     out_occlusion = vec4(1.0, 0.0, 1.0, weight);
     out_material = vec4(0.0, 0.0, 0.0, weight);
+    float crevices = 1.0;
     if ((flags & KEY_LIGHTMAP) == 0) {
         // What Minecraft draws without its lightmap glows by itself: the beacon's beam, glowing eyes and layers.
         out_color = vec4(glow(color.rgb) * fog_fade(v_fog_dist) * air_seen_at(v_scene_pos, gl_FragCoord.xy).a, color.a);
         out_albedo = vec4(0.0, 0.0, 0.0, color.a);
-        out_surface = encode_surface(v_normal, v_level, MATERIAL_SELF, weight);
+        out_surface = encode_surface(v_normal, vec2(1.0, 0.0), MATERIAL_SELF, weight);
     } else {
         out_color = vec4(0.0, 0.0, 0.0, color.a);
         vec3 normal = v_normal;
@@ -238,7 +243,7 @@ void lit_output(vec4 color, int flags) {
             out_occlusion.b = maps.sun * micro_shadow(max(dot(normal, g_light_dir.xyz), 0.0), maps.ao);
 #endif
         }
-        out_occlusion.r = maps.ao;
+        crevices = maps.ao;
         out_material = mapped ? vec4(max(smoothness, 0.0), maps.spec.g, maps.spec.b, weight) : vec4(0.0, 0.0, 0.0, weight);
         // What glows by the maps: their emission, in the texture's own colour, as bright as a light block's at full.
         if (mapped && maps.spec.a < 1.0) {
@@ -256,9 +261,12 @@ void lit_output(vec4 color, int flags) {
         }
 #endif
         out_albedo = color;
+        float sun_facing = max(dot(v_normal, g_light_dir.xyz), 0.0);
 #ifdef PROGRAM_TERRAIN
         // Leaves let light through them, metal shines, rain soaks into sand (see deferred.fsh).
-        out_occlusion = vec4(v_ao * out_occlusion.r, float(v_surface) / 7.0, out_occlusion.b, 1.0);
+        out_occlusion = vec4(v_ao, encode_kind(v_surface, crevices, sun_facing), out_occlusion.b, 1.0);
+#else
+        out_occlusion.g = encode_kind(SURFACE_PLAIN, crevices, sun_facing);
 #endif
         out_surface = encode_surface(normal, v_level, v_material, weight);
     }

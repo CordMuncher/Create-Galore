@@ -78,8 +78,9 @@ vec3 upscale(vec2 window_pixel) {
 
 #ifdef LIT_WORLD
 // How much of what a window pixel shows the moon and the stars light (see night_vision.glsl): at night the sky, and on
-// a surface the share of its light the sky gives against the blocks' light, by its light levels; none by day. (The
-// End's light is its own, never brightened.)
+// a surface the share of its light the sky gives against the blocks' light, by its light levels; none by day. Smoke
+// and the other particles lit where they are go by their light levels too; what glows by itself carries the blocks'
+// full light and none of the sky's (see gbuffers.fsh). (The End's light is its own, never brightened.)
 float moonlit_share(vec2 window_pixel) {
 #ifdef WORLD_OVERWORLD
     float night = smoothstep(-0.02, -0.2, g_sun_dir.w); // the sun from just under the horizon to 11.5° under it
@@ -91,9 +92,6 @@ float moonlit_share(vec2 window_pixel) {
     int material = decode_material(surface);
     if (texelFetch(depthtex0, texel, 0).r >= 1.0 || material == MATERIAL_NONE) {
         return night; // the sky, and Distant Horizons' far land
-    }
-    if (material == MATERIAL_SELF) {
-        return 0.0; // what glows or is lit by itself
     }
     const vec3 luma = vec3(0.2126, 0.7152, 0.0722);
     vec2 level = decode_light(surface);

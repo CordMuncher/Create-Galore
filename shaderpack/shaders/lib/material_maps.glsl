@@ -133,16 +133,24 @@ float relief_shadow(vec2 at, ivec2 cell, float point_depth, vec2 dir, ivec4 regi
     return 1.0;
 }
 
-// How much of the light all around reaches a point down among the columns (0..1), from how deep it sits below the
-// columns beside it, in texture pixels (the height field's own occlusion, as horizon-based ambient occlusion
-// estimates it from the heights around): the floor of a groove a pixel wide and a pixel deep sees about half of the
-// sky. A column's side, point_depth down, faces across the groove, so the column across it hides half its sky even
-// at the top; deeper down, more. cell: the pixel whose top or side it is.
-float relief_occlusion(ivec2 cell, ivec4 region, float depth, float point_depth, bool side) {
+// How much of the light all around reaches a point down among the columns (0..1), from the columns around it, in
+// texture pixels (the height field's own occlusion, as horizon-based ambient occlusion estimates it from the heights
+// around). A groove's floor: from how far the columns beside it stand above it; one a pixel wide and a pixel deep sees
+// about half of the sky. A column's side faces across the pixel the ray came over, which lies lower: it sees the sky
+// above the tallest column across from it within a few pixels (out_dir: the way it faces), and below that the floor
+// and the columns, so a step's side sees half of the light all around (what its own facing takes in), a groove's side
+// less the deeper down it is. cell: the pixel whose top or side it is.
+float relief_occlusion(ivec2 cell, ivec4 region, float depth, float point_depth, ivec2 out_dir, bool side) {
     float texel = 1.0 / float(region.z); // blocks a pixel
     if (side) {
-        float down = max(point_depth - column_depth(cell, region, depth), 0.0) / texel;
-        return 0.5 / (1.0 + 0.7 * down);
+        // How steeply the columns across rise over the point (the tangent of the angle above the surface they hide).
+        float rise = 0.0;
+        for (int k = 2; k <= 4; k++) {
+            float above = (point_depth - column_depth(cell + k * out_dir, region, depth)) / texel;
+            rise = max(rise, above / float(k - 1));
+        }
+        // Over the side's half of the directions, weighted by how squarely they meet it: those above that angle.
+        return 0.5 * (1.0 - rise * inversesqrt(1.0 + rise * rise));
     }
     float below = max(point_depth - column_depth(cell + ivec2(1, 0), region, depth), 0.0)
             + max(point_depth - column_depth(cell - ivec2(1, 0), region, depth), 0.0)
@@ -199,7 +207,7 @@ Maps read_maps(vec3 scene_pos, vec2 uv, vec3 n, vec3 view_dir, vec4 region, vec3
             vec2 from = side ? at + facing.xy * 0.001 : inside;
             m.sun = relief_shadow(from, ivec2(floor(from)), met, to_light, r, depth);
         }
-        crevice = relief_occlusion(cell, r, depth, met, side);
+        crevice = relief_occlusion(cell, r, depth, met, ivec2(facing.xy), side);
     }
 #endif
     // A texel at a time, as the colour is read: Iris leaves the maps' atlases to OpenGL's own filtering up close, which
@@ -212,10 +220,12 @@ Maps read_maps(vec3 scene_pos, vec2 uv, vec3 n, vec3 view_dir, vec4 region, vec3
     // A groove's floor: the crevices the map holds and the ones the columns make, the latter half counted (a map's
     // own crevices often hold them already); a groove's side: the columns' alone.
     m.ao = side ? crevice : nmap.b * mix(1.0, crevice, 0.5);
-    // A column's side faces across the texture, but sees the sky through the groove's opening: the light all around
-    // comes to it from out of the surface more than from where it faces (its bent normal), so the side of a groove
-    // in a wall takes the light around the wall, not the deep blue overhead.
-    vec3 f = side ? normalize(facing + vec3(0.0, 0.0, 1.0)) : map_facing(nmap.rg);
+    // A column's side faces across the texture, but sees the sky only above the columns across from it: the light all
+    // around comes to it from halfway between that angle and straight out of the surface (its bent normal), so the
+    // side of a groove in a wall takes the light around the wall, not the deep blue overhead.
+    float above = 1.0 - 2.0 * crevice; // the sine of the angle the columns across hide (0 a step's side)
+    vec3 f = side ? normalize(facing * sqrt(max(1.0 - above * above, 0.0)) + vec3(0.0, 0.0, 1.0 + above))
+            : map_facing(nmap.rg);
     vec3 world = t * f.x + b * f.y + n * f.z;
     m.normal = dot(world, world) > 1e-8 ? normalize(world) : n;
     // Far off, where a pixel spans several texture pixels, the mipmap averages their facings flatter, and the bumps

@@ -20,9 +20,10 @@
 #include "/lib/settings.glsl"
 
 const vec3 rod_weights = vec3(0.01204, 0.64799, 0.33997);
-// What the rods' view looks like (luminance 1): a cool blue, a little towards the blue-green the rods' signal adds
-// to colours (Cao et al. 2008).
-const vec3 night_tint = vec3(0.86, 1.0, 1.14) / dot(vec3(0.86, 1.0, 1.14), vec3(0.2126, 0.7152, 0.0722));
+// What the rods' view looks like (luminance 1): the blue Jensen, Premoze, Shirley, Stark, Thompson and Ferwerda's
+// night rendering (2000) shifts it to, chromaticity (0.25, 0.25), where the bluest of the realist night paintings
+// they measured lie (linear Rec.709 at luminance 1). A moonlit sky stays a night blue, not a grey.
+const vec3 night_tint = vec3(0.706, 0.990, 1.966);
 
 // The light of a pixel (linear Rec.709, kcd/m²) as the eye sees it at that brightness. moonlit: the share of it the
 // moon and the stars give, boost how much brighter than real they are drawn.

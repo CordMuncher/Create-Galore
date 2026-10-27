@@ -68,8 +68,9 @@ vec3 block_irradiance(float block, vec3 color) {
 // the clouds let through. Past the shadow map (and on Distant Horizons' terrain, shadowed false) Minecraft's own sky
 // light sky_mc stands in for it: a surface it says sees little of the sky is under something, which keeps the sun off
 // it (the shadow of a floating island falls straight down, though, not away from the sun). sky: the sky light the
-// rest of the light goes by, which is more under something high (see sky_grid.glsl); deep in a cave the sun can't
-// reach, whatever the shadow map says at its edges.
+// rest of the light goes by, which is more under something high and less in a room (see deferred.fsh); deep in a cave,
+// where both are low, the sun can't reach, whatever the shadow map says at its edges. (By the higher of the two: a
+// room sees little of the sky, but the sun still comes in through its window.)
 float direct_visibility(vec3 scene_pos, vec3 normal, float sky, float sky_mc, bool shadowed) {
 #ifdef WORLD_NETHER
     return 0.0; // no light from above
@@ -82,8 +83,8 @@ float direct_visibility(vec3 scene_pos, vec3 normal, float sky, float sky_mc, bo
     float by_sky = smoothstep(12.0 / 15.0, 14.5 / 15.0, sky_mc);
 #ifdef SHADOW_MAP
     if (shadowed) {
-        return shadow_visibility(scene_pos, normal, g_light_dir.xyz, by_sky, pixel_noise()) * smoothstep(1.0 / 15.0, 4.0 / 15.0, sky)
-                * clouds;
+        return shadow_visibility(scene_pos, normal, g_light_dir.xyz, by_sky, pixel_noise())
+                * smoothstep(1.0 / 15.0, 4.0 / 15.0, max(sky, sky_mc)) * clouds;
     }
 #endif
     return by_sky * clouds;
@@ -104,7 +105,7 @@ float glint_visibility(vec3 scene_pos, vec3 normal, float sky, float sky_mc) {
 #ifdef SHADOW_MAP
     vec3 coord = shadow_coord(scene_pos + normal * 0.05);
     if (all(greaterThan(coord, vec3(0.0))) && all(lessThan(coord, vec3(1.0)))) {
-        lit = smoothstep(12.0 / 15.0, 14.5 / 15.0, sky) * clouds;
+        lit = smoothstep(12.0 / 15.0, 14.5 / 15.0, max(sky, sky_mc)) * clouds;
         lit *= lit > 0.0 ? texture(shadowtex1HW, vec3(coord.xy, coord.z - 0.00002)) : 0.0;
     }
 #endif
@@ -177,15 +178,18 @@ vec3 leaf_albedo(vec3 albedo, vec3 scene_pos) {
 // The light a surface reflects towards the eye (kcd/m², not yet exposed): albedo linear, normal world space, light
 // the block and sky light levels (0..1). plant: grass, flowers and crops (see MATERIAL_PLANT); foliage: leaves.
 // contact: how much of the light the screen says gets past what is right next to the surface (see deferred.fsh), 1
-// where only the shadow map says. ao: how open the surface is to the light all around, 0..1 (see deferred.fsh); the
-// sun's (or the moon's) isn't touched by it, the shadows see to that. sky_mc: Minecraft's own sky light, where light.y
+// where only the shadow map says. ao: how open the surface is to the light all around, 0..1, by the blocks around it
+// (see deferred.fsh); the sun's (or the moon's) isn't touched by it, the shadows see to that. crevices: the same by its
+// texture's own crevices and relief (see material_maps.glsl), and sun_facing how squarely the surface around them (its
+// block's face, not the relief) faces the sun (or the moon). sky_mc: Minecraft's own sky light, where light.y
 // is more under something high (see direct_visibility). screen_lit: ao is the screen's (see screen_light.fsh), and
 // screen_bounce (kcd/m², as a share of the light all around) the light the surfaces it found bounce onto it, in place
 // of the light ao takes away; else what those surfaces would bounce is guessed from the surface's own colour (Jimenez
 // et al.'s multi-bounce fit). nearby: the light all around from the blocks and the bounce light (irradiance, kcd/m²
 // times π), for the surface's sheen (see deferred.fsh).
 vec3 light_surface(vec3 albedo, vec3 normal, vec2 light, vec3 scene_pos, bool plant, bool foliage, bool shadowed,
-        float contact, float ao, float sky_mc, vec3 screen_bounce, bool screen_lit, out vec3 nearby) {
+        float contact, float ao, float crevices, float sun_facing, float sky_mc, vec3 screen_bounce, bool screen_lit,
+        out vec3 nearby) {
     // Under water the light has come down through it: the sun's (or the moon's) from the surface the shadow map has
     // above, the sky's from all over the sky, on a longer way down. Minecraft's sky light drops a level for every
     // block of water, which the water's own dimming takes over from.
@@ -224,6 +228,7 @@ vec3 light_surface(vec3 albedo, vec3 normal, vec2 light, vec3 scene_pos, bool pl
     vec3 n = plant ? vec3(0.0, 1.0, 0.0) : leaf_normal;
     float n_dot_l = plant ? 0.4 + 0.6 * max(g_light_dir.y, 0.0) : max(dot(normal, g_light_dir.xyz), 0.0);
     vec3 direct = vec3(0.0);
+    float sun_seen = -1.0; // how much of the sun's light the shadow map lets through here, once it's been looked up
     if (foliage || plant) {
         // Leaves and plants let the light through: a quarter of it reaches every side of a leaf, and what lies in
         // the shade of other leaves or blades gets what they let through (less the more of them), greener for it.
@@ -237,6 +242,7 @@ vec3 light_surface(vec3 albedo, vec3 normal, vec2 light, vec3 scene_pos, bool pl
         float back = foliage ? pow(max(dot(normalize(scene_pos), g_light_dir.xyz), 0.0), 4.0) * max(-n_l, 0.0) : 0.0;
         facing += back;
         float vis = direct_visibility(scene_pos, g_light_dir.xyz, light.y, sky_mc, shadowed);
+        sun_seen = vis;
         float through = 0.0;
 #ifdef SHADOW_MAP
         if (shadowed) {
@@ -248,8 +254,8 @@ vec3 light_surface(vec3 albedo, vec3 normal, vec2 light, vec3 scene_pos, bool pl
         vec3 tint = mix(vec3(1.0), clamp(albedo * 2.5, 0.0, 1.0), 0.6 * min(glow, 1.0));
         direct = g_light_color.rgb * water_direct * contact * facing * max(vis, through) * tint;
     } else if (n_dot_l > 0.0 && contact > 0.0) {
-        direct = g_light_color.rgb * water_direct * n_dot_l * contact
-                * direct_visibility(scene_pos, normal, light.y, sky_mc, shadowed);
+        sun_seen = direct_visibility(scene_pos, normal, light.y, sky_mc, shadowed);
+        direct = g_light_color.rgb * water_direct * n_dot_l * contact * sun_seen;
     }
     // Under a roof the sky a surface facing up sees is the low sky around it, not the deep blue overhead: as much
     // light, in the colour of the sky's sides.
@@ -273,7 +279,23 @@ vec3 light_surface(vec3 albedo, vec3 normal, vec2 light, vec3 scene_pos, bool pl
     nearby += g_light_color.rgb * bounce_light(scene_pos, n, light.y);
 #endif
     vec3 around = sky * sky_light_curve(light.y) * water_sky * crown_sky + nearby;
-    vec3 irradiance = direct + (screen_lit ? around * ao + PI * screen_bounce : around * ao_bounced(ao, albedo));
+    vec3 open = screen_lit ? around * ao + PI * screen_bounce : around * ao_bounced(ao, albedo);
+    vec3 irradiance = direct + open * crevices;
+    if (crevices < 1.0) {
+        // What the texture's crevices hide of the light all around, they see of the columns and the floor around them
+        // instead, lit as the surface around them is (by the sun too, where it falls on that), which bounce it on in
+        // their own colour (Jimenez et al.'s fit, for the bounces between them, with the light the open surface gets in
+        // place of the crevice's own). So a groove's sides and floor are darker the deeper they lie, and take the light
+        // around them, not only the sky's they see through the groove.
+        vec3 lit_around = open;
+        if (sun_facing > 0.0) {
+            if (sun_seen < 0.0) {
+                sun_seen = direct_visibility(scene_pos, normal, light.y, sky_mc, shadowed);
+            }
+            lit_around += g_light_color.rgb * water_direct * sun_facing * sun_seen;
+        }
+        irradiance += (ao_bounced(crevices, albedo) - crevices) * lit_around;
+    }
     float dark = 1.0 - 0.9 * darknessLightFactor;
     nearby *= dark;
     return albedo / PI * irradiance * dark;
@@ -282,8 +304,8 @@ vec3 light_surface(vec3 albedo, vec3 normal, vec2 light, vec3 scene_pos, bool pl
 vec3 light_surface(vec3 albedo, vec3 normal, vec2 light, vec3 scene_pos, bool plant, bool foliage, bool shadowed,
         float contact, float ao, float sky_mc) {
     vec3 nearby;
-    return light_surface(albedo, normal, light, scene_pos, plant, foliage, shadowed, contact, ao, sky_mc, vec3(0.0),
-            false, nearby);
+    return light_surface(albedo, normal, light, scene_pos, plant, foliage, shadowed, contact, ao, 1.0, 0.0, sky_mc,
+            vec3(0.0), false, nearby);
 }
 
 vec3 light_surface(vec3 albedo, vec3 normal, vec2 light, vec3 scene_pos, bool plant, bool shadowed) {

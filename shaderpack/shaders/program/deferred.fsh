@@ -432,6 +432,10 @@ void main() {
         // screen_light.fsh). In a tree the leaves seen through the gaps of the outer ones lie deeper in, so they get
         // less of the light all around: the tree has depth, without its outside going dark.
         float ao = occlusion.r;
+        // And how open its texture's own crevices leave it, and how squarely the surface around them faces the sun
+        // (see light_surface).
+        float crevices = decode_crevices(occlusion.g);
+        float sun_facing = decode_sun_facing(occlusion.g);
         vec4 screen = vec4(0.0, 0.0, 0.0, 1.0);
         bool screen_lit = false;
 #if AO_QUALITY > 0 || defined LIT_SKY_GRID
@@ -525,11 +529,11 @@ void main() {
         contact *= occlusion.b;
         vec3 nearby;
         vec3 lit = light_surface(albedo, normal, light, scene_pos, material == MATERIAL_PLANT, foliage, !lod, contact,
-                ao, sky_light_mc, screen.rgb, screen_lit, nearby) * exposure();
+                ao, crevices, sun_facing, sky_light_mc, screen.rgb, screen_lit, nearby) * exposure();
 #if DEBUG_VIEW == 1 && defined LIT_GI
         lit = g_light_color.rgb * bounce_light(scene_pos, normal, light.y) / PI * exposure();
 #elif DEBUG_VIEW == 2
-        lit = vec3(ao * 10.0);
+        lit = vec3(ao * crevices * 10.0);
 #elif DEBUG_VIEW == 7
         lit = screen.rgb * exposure();
 #elif DEBUG_VIEW == 3 && defined SHADOW_MAP
@@ -610,7 +614,8 @@ void main() {
             vec3 f = fresnel_rough(n_dot_v, mat.f0, mat.alpha);
             float open_sky = smoothstep(12.0 / 15.0, 14.5 / 15.0, light.y);
             vec3 r = reflect(dir, normal);
-            float spec_vis = clamp(pow(n_dot_v + ao, exp2(-16.0 * mat.alpha - 1.0)) - 1.0 + ao, 0.0, 1.0);
+            float open = ao * crevices;
+            float spec_vis = clamp(pow(n_dot_v + open, exp2(-16.0 * mat.alpha - 1.0)) - 1.0 + open, 0.0, 1.0);
             float sharp = clamp(1.0 - 2.2 * mat.alpha, 0.0, 1.0);
             vec3 sky_seen = mix(sky_irradiance(r) / PI, sky_radiance(normalize(vec3(r.x, max(r.y, 0.02), r.z))), sharp)
                     * open_sky;
