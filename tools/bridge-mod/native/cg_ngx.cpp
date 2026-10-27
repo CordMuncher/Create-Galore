@@ -18,7 +18,7 @@
 #define CG_API extern "C" __declspec(dllexport)
 
 // Bumped whenever a function below changes; the Java side refuses a helper with another version.
-static const int CG_NGX_ABI = 2;
+static const int CG_NGX_ABI = 3;
 
 // NGX log lines wait here until the Java side reads them. A fixed ring keeps this file free of the C++ library.
 #define LOG_LINES 256
@@ -32,6 +32,8 @@ static bool g_initialized;
 static ID3D11Device* g_device;
 static NVSDK_NGX_Parameter* g_params;
 static NVSDK_NGX_Handle* g_feature;
+// Testing: Ray Reconstruction's own NGX parameters (cg_ngx_create_rr's ownParameters), else null and g_params serves.
+static NVSDK_NGX_Parameter* g_rrParams;
 static wchar_t g_featureDir[32768];
 static const wchar_t* g_featureDirs[1];
 
@@ -186,11 +188,15 @@ CG_API int cg_ngx_optimal(int outWidth, int outHeight, int perfQuality, int* out
 }
 
 CG_API int cg_ngx_release() {
-    if (!g_feature) {
-        return NVSDK_NGX_Result_Success;
+    NVSDK_NGX_Result result = NVSDK_NGX_Result_Success;
+    if (g_feature) {
+        result = NVSDK_NGX_D3D11_ReleaseFeature(g_feature);
+        g_feature = nullptr;
     }
-    NVSDK_NGX_Result result = NVSDK_NGX_D3D11_ReleaseFeature(g_feature);
-    g_feature = nullptr;
+    if (g_rrParams) {
+        NVSDK_NGX_D3D11_DestroyParameters(g_rrParams);
+        g_rrParams = nullptr;
+    }
     return result;
 }
 
@@ -220,14 +226,23 @@ CG_API int cg_ngx_create(ID3D11DeviceContext* context, int renderWidth, int rend
 // DLSS. preset is a Ray Reconstruction render preset (0 = its default, 4 = D, 5 = E, 6 = F), set for every quality
 // mode so a newer model NVIDIA sends never swaps it. Roughness comes in the normals' alpha; depthType 1 is a
 // hardware depth buffer (with NVSDK_NGX_DLSS_Feature_Flags_DepthInverted in flags when it is reversed), 0 view depth.
+// ownParameters (testing): NGX parameters of its own for this feature instead of the capability parameters DLSS uses.
 CG_API int cg_ngx_create_rr(ID3D11DeviceContext* context, int renderWidth, int renderHeight, int outWidth, int outHeight,
-                            int perfQuality, int flags, int preset, int depthType) {
+                            int perfQuality, int flags, int preset, int depthType, int ownParameters) {
     if (!g_params) {
         return NVSDK_NGX_Result_FAIL_NotInitialized;
     }
     cg_ngx_release();
+    if (ownParameters) {
+        NVSDK_NGX_Result allocated = NVSDK_NGX_D3D11_AllocateParameters(&g_rrParams);
+        if (NVSDK_NGX_FAILED(allocated)) {
+            g_rrParams = nullptr;
+            return allocated;
+        }
+    }
+    NVSDK_NGX_Parameter* params = g_rrParams ? g_rrParams : g_params;
     for (int mode = NVSDK_NGX_PerfQuality_Value_MaxPerf; mode <= NVSDK_NGX_PerfQuality_Value_DLAA; mode++) {
-        NVSDK_NGX_Parameter_SetUI(g_params, rayReconstructionPresetHintFor(mode), (unsigned int) preset);
+        NVSDK_NGX_Parameter_SetUI(params, rayReconstructionPresetHintFor(mode), (unsigned int) preset);
     }
     NVSDK_NGX_DLSSD_Create_Params create = {};
     create.InDenoiseMode = NVSDK_NGX_DLSS_Denoise_Mode_DLUnified;
@@ -240,13 +255,14 @@ CG_API int cg_ngx_create_rr(ID3D11DeviceContext* context, int renderWidth, int r
     create.InPerfQualityValue = (NVSDK_NGX_PerfQuality_Value) perfQuality;
     create.InFeatureCreateFlags = flags;
     create.InEnableOutputSubrects = false;
-    return NGX_D3D11_CREATE_DLSSD_EXT(context, &g_feature, g_params, &create);
+    return NGX_D3D11_CREATE_DLSSD_EXT(context, &g_feature, params, &create);
 }
 
 // Runs Ray Reconstruction once. resources: colour, output, depth, motion vectors, diffuse albedo, specular albedo,
 // normals with roughness in alpha, specular hit distance (may be null). floats: jitter x, y (render pixels), motion
 // vector scale x, y, the frame time in ms, then the world-to-view and view-to-clip matrices, 16 floats each, row
-// major for a row vector on the left (which is OpenGL's column-major layout of a matrix for a column vector).
+// major for a row vector on the left (which is OpenGL's column-major layout of a matrix for a column vector); they go
+// with the hit distance (NVIDIA's guide), so without one they are left out too.
 CG_API int cg_ngx_evaluate_rr(ID3D11DeviceContext* context, ID3D11Resource** resources, const float* floats, int reset,
                               int renderWidth, int renderHeight) {
     if (!g_feature) {
@@ -272,12 +288,12 @@ CG_API int cg_ngx_evaluate_rr(ID3D11DeviceContext* context, ID3D11Resource** res
     eval.InMVScaleX = floats[2];
     eval.InMVScaleY = floats[3];
     eval.InFrameTimeDeltaInMsec = floats[4];
-    eval.pInWorldToViewMatrix = worldToView;
-    eval.pInViewToClipMatrix = viewToClip;
+    eval.pInWorldToViewMatrix = resources[7] ? worldToView : nullptr;
+    eval.pInViewToClipMatrix = resources[7] ? viewToClip : nullptr;
     eval.InReset = reset;
     eval.InRenderSubrectDimensions.Width = (unsigned int) renderWidth;
     eval.InRenderSubrectDimensions.Height = (unsigned int) renderHeight;
-    return NGX_D3D11_EVALUATE_DLSSD_EXT(context, g_feature, g_params, &eval);
+    return NGX_D3D11_EVALUATE_DLSSD_EXT(context, g_feature, g_rrParams ? g_rrParams : g_params, &eval);
 }
 
 // Runs DLSS once. Jitter is in render pixels; motion vectors are multiplied by mvScale to get render pixels.

@@ -102,6 +102,8 @@ public final class DlaaScreen extends Screen {
     private int customPercent;
     private Map<String, String> initialPackOptions;
     private EditBox letterBox;
+    private Choice<String> engineChoice;
+    private Choice<String> presetChoice;
     private ScaleSlider slider;
     private CycleButton<Boolean> presentationButton;
     private Choice<String> apiChoice;
@@ -191,8 +193,9 @@ public final class DlaaScreen extends Screen {
         displayPage.widgets.clear();
 
         building = antiAliasingPage.widgets;
-        choice("Anti-aliasing", ENGINES, engine, DlaaScreen::engineLabel, DlaaScreen::engineTooltip, left, 60, WIDTH, value -> engine = value);
-        choice("DLSS preset", PRESETS, preset, DlaaScreen::presetLabel, DlaaScreen::presetTooltip, left, 84, WIDTH - 64, value -> {
+        engineChoice = choice("Anti-aliasing", ENGINES, engine, DlaaScreen::engineLabel, DlaaScreen::engineTooltip, left, 60, WIDTH,
+                value -> engine = value);
+        presetChoice = choice("DLSS preset", PRESETS, preset, DlaaScreen::presetLabel, DlaaScreen::presetTooltip, left, 84, WIDTH - 64, value -> {
             preset = value;
             letterBox.visible = value.equals("other");
         });
@@ -223,10 +226,12 @@ public final class DlaaScreen extends Screen {
                                 + " card, NVIDIA driver 580 or newer, and nvngx_dlssd.dll in the DLSS folder.")))
                 .create(left, RR_ROW, half, 20, Component.literal("Ray Reconstruction"), (button, value) -> {
                     rayReconstruction = value;
+                    lockForRayReconstruction();
                     refreshDll();
                 }));
         choice("RR preset", RR_PRESETS, rrPreset, DlaaScreen::rrPresetLabel, DlaaScreen::rrPresetTooltip, left + half + 4, RR_ROW, half,
                 value -> rrPreset = value);
+        lockForRayReconstruction();
 
         // The DLL buttons and Try again, then Done 28 lower; the status lines get one line more where it fits, and on
         // a short screen (a big GUI scale) one less.
@@ -910,6 +915,31 @@ public final class DlaaScreen extends Screen {
             case "other" -> "Other letter:";
             default -> value;
         });
+    }
+
+    /**
+     * Ray Reconstruction is an upscaler of its own (it denoises, anti-aliases and upscales in DLSS's place), so while it
+     * is on the anti-aliasing engine is DLSS and it and the DLSS preset can't be picked.
+     */
+    private void lockForRayReconstruction() {
+        if (rayReconstruction && !engine.equals("dlss")) {
+            engine = "dlss";
+            engineChoice.value = engine;
+        }
+        engineChoice.button.active = !rayReconstruction;
+        presetChoice.button.active = !rayReconstruction;
+        letterBox.setEditable(!rayReconstruction);
+        engineChoice.update();
+        presetChoice.update();
+        if (rayReconstruction) {
+            String why = "While Ray Reconstruction is on, no other upscaler can run: it denoises, anti-aliases and upscales in"
+                    + " one pass in DLSS's place, with its own preset (RR preset). Turn it off to pick these again.";
+            engineChoice.button.setTooltip(net.minecraft.client.gui.components.Tooltip.create(Component.literal(why)));
+            presetChoice.button.setTooltip(net.minecraft.client.gui.components.Tooltip.create(Component.literal(why)));
+            if (open == engineChoice || open == presetChoice) {
+                open = null;
+            }
+        }
     }
 
     private <T> Choice<T> choice(String name, List<T> values, T value, java.util.function.Function<T, Component> label,

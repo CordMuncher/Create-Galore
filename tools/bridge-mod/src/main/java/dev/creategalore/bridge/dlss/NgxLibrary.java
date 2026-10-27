@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
  */
 final class NgxLibrary {
     private static final Logger LOG = LoggerFactory.getLogger("create_galore_bridge");
-    private static final int ABI = 2;
+    private static final int ABI = 3;
 
     // NVSDK_NGX_Result
     static final int RESULT_SUCCESS = 0x1;
@@ -152,12 +152,13 @@ final class NgxLibrary {
 
     /**
      * Makes the feature DLSS Ray Reconstruction instead (roughness in the normals' alpha). {@code preset} is set for
-     * every quality mode; {@code depthType} {@link #DEPTH_HARDWARE} or 0 for view depth.
+     * every quality mode; {@code depthType} {@link #DEPTH_HARDWARE} or 0 for view depth. {@code ownParameters} (testing)
+     * gives it NGX parameters of its own in place of the ones DLSS shares.
      */
     int createRayReconstruction(long context, int renderWidth, int renderHeight, int outWidth, int outHeight, int perfQuality,
-                                int flags, int preset, int depthType) {
-        return (int) Ffi.call("PIIIIIIII:I", createRr, context, renderWidth, renderHeight, outWidth, outHeight, perfQuality,
-                flags, preset, depthType);
+                                int flags, int preset, int depthType, boolean ownParameters) {
+        return (int) Ffi.call("PIIIIIIIII:I", createRr, context, renderWidth, renderHeight, outWidth, outHeight, perfQuality,
+                flags, preset, depthType, ownParameters ? 1 : 0);
     }
 
     /**

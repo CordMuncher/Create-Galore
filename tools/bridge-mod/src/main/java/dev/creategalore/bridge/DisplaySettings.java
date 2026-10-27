@@ -53,6 +53,11 @@ public final class DisplaySettings {
     public static final String DLAA_RR_EXPOSURE = "dlaaRrExposure";
     /** Testing only, not written to the file: the pack's effects left noisy for Ray Reconstruction, reflections,shadows (the default) or none. */
     public static final String DLAA_RR_RAW = "dlaaRrRaw";
+    /**
+     * Testing only, not written to the file: changes to how Ray Reconstruction is called, to find what makes it crash,
+     * any of no-hit-distance (no hit distance or matrices) and own-parameters (NGX parameters not shared with DLSS).
+     */
+    public static final String DLAA_RR_TEST = "dlaaRrTest";
     /** NVIDIA Reflex on Perfect Presentation's DirectX device: off, on or boost (markers for testing; see FrameLatency). */
     public static final String REFLEX = "reflex";
     /** Testing only, not written to the file: true or false reads input again just before each frame renders, or not (unset: with Reflex on). */

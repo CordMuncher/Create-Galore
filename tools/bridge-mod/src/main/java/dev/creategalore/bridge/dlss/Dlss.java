@@ -126,6 +126,9 @@ public final class Dlss {
     private static int rrPreset = NgxLibrary.RR_PRESET_F;
     /** The pack hands Ray Reconstruction its colour times its exposure (else as it has it; for comparing). */
     private static boolean rrExposed = true;
+    // Testing (dlaaRrTest): no hit distance or matrices; NGX parameters of its own.
+    private static boolean rrNoHitDistance;
+    private static boolean rrOwnParameters;
     private static boolean rrRawReflections = true;
     private static boolean rrRawShadows = true;
     /** FSR 3 draws its own debug view. */
@@ -246,6 +249,13 @@ public final class Dlss {
         String raw = DisplaySettings.getString(DisplaySettings.DLAA_RR_RAW, "reflections,shadows").toLowerCase(Locale.ROOT);
         rrRawReflections = raw.contains("reflections");
         rrRawShadows = raw.contains("shadows");
+        String test = DisplaySettings.getString(DisplaySettings.DLAA_RR_TEST, "").toLowerCase(Locale.ROOT);
+        boolean ownParameters = test.contains("own-parameters");
+        if (ownParameters != rrOwnParameters) {
+            featureIsRr = false; // made again with the other parameters
+        }
+        rrNoHitDistance = test.contains("no-hit-distance");
+        rrOwnParameters = ownParameters;
         if (rrUnavailableNoDll && Files.isRegularFile(dllFolder().resolve(DlssFinder.RR_DLL))) {
             rrUnavailable = null; // tried again when it starts
             rrUnavailableNoDll = false;
@@ -588,7 +598,7 @@ public final class Dlss {
             pass.ensureSize(in.renderWidth(), in.renderHeight(), in.width(), in.height(), true);
             // Depth: the pack's DLSS depth, reversed and infinite, which is a hardware depth for viewToClip below.
             int result = ngx.createRayReconstruction(device.context, in.renderWidth(), in.renderHeight(), in.width(), in.height(),
-                    perfQuality(in.renderWidth(), in.width()), flags, rrPreset, NgxLibrary.DEPTH_HARDWARE);
+                    perfQuality(in.renderWidth(), in.width()), flags, rrPreset, NgxLibrary.DEPTH_HARDWARE, rrOwnParameters);
             ngx.drainLog();
             if (NgxLibrary.failed(result)) {
                 rrUnavailable = "it did not start at " + sizes(in) + ": " + NgxLibrary.describe(result);
@@ -601,15 +611,20 @@ public final class Dlss {
             featurePreset = rrPreset;
             featureIsRr = true;
             reset = true;
-            LOG.info("DLAA: DLSS Ray Reconstruction running at {}, preset {}, {} colour", sizes(in), rrPresetName(rrPreset),
-                    rrExposed ? "exposed" : "raw");
+            LOG.info("DLAA: DLSS Ray Reconstruction running at {}, preset {}, {} colour{}{}", sizes(in), rrPresetName(rrPreset),
+                    rrExposed ? "exposed" : "raw", rrNoHitDistance ? ", test: no hit distance" : "",
+                    rrOwnParameters ? ", test: own NGX parameters" : "");
         }
         boolean resetNow = reset;
         float[] worldToView = new float[16];
         CapturedRenderingState.INSTANCE.getGbufferModelView().get(worldToView);
         float[] viewToClip = viewToClip(CapturedRenderingState.INSTANCE.getGbufferProjection());
         int[] result = new int[1];
-        pass.copyAndEvaluate(in, () -> result[0] = ngx.evaluateRayReconstruction(device.context, pass.rayReconstructionResources(),
+        long[] resources = pass.rayReconstructionResources();
+        if (rrNoHitDistance) {
+            resources[7] = 0L;
+        }
+        pass.copyAndEvaluate(in, () -> result[0] = ngx.evaluateRayReconstruction(device.context, resources,
                 jitterX * jitterSign[0], jitterY * jitterSign[1], 1.0f, 1.0f, frameTimeMs, worldToView, viewToClip, resetNow,
                 in.renderWidth(), in.renderHeight()));
         ngx.drainLog();

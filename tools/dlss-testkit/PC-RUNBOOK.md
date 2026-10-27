@@ -2049,12 +2049,12 @@ Copy-Item $T\repo\tools\dlss-testkit\dist\create-galore-dlss-testkit-1.0.0.jar $
 Get-ChildItem $T\instance\mods\create-galore-bridge-*.jar | Select-Object Name
 ```
 
-Only `create-galore-bridge-1.124.0-rr.1.jar`. Fetch NVIDIA's two RR DLLs from the DLSS SDK at the tag the Bridge is
+Only the pilot's Bridge (`create-galore-bridge-1.124.0-rr.1.jar`; `1.125.0-rr.1` since Ray Reconstruction 1b). Fetch NVIDIA's two RR DLLs from the DLSS SDK at the tag the Bridge is
 built with: the release one for steps 2 to 5, the dev one (with NVIDIA's on-screen overlay) for step 1.
 
 ```powershell
 New-Item -ItemType Directory $T\rr1 -Force
-$base = "https://media.githubusercontent.com/media/NVIDIA/DLSS/v310.9.16/lib/Windows_x86_64"
+$base = "https://github.com/NVIDIA/DLSS/raw/v310.9.16/lib/Windows_x86_64"
 Invoke-WebRequest "$base/rel/nvngx_dlssd.dll" -OutFile $T\rr1\nvngx_dlssd-rel.dll
 Invoke-WebRequest "$base/dev/nvngx_dlssd.dll" -OutFile $T\rr1\nvngx_dlssd-dev.dll
 (Get-FileHash $T\rr1\nvngx_dlssd-rel.dll).Hash   # B49435AE346F227FEAFE7BBE937D88277EA0EE7323975EC06488F377FDB46CEE
@@ -2062,8 +2062,8 @@ Invoke-WebRequest "$base/dev/nvngx_dlssd.dll" -OutFile $T\rr1\nvngx_dlssd-dev.dl
 ```
 
 If a hash differs (GitHub served a pointer file, a few hundred bytes), try
-`https://github.com/NVIDIA/DLSS/raw/v310.9.16/lib/Windows_x86_64/rel/nvngx_dlssd.dll` and the same for dev, and say
-which worked. Check the NVIDIA driver is 580 or newer (`nvidia-smi`), RR 4.5's minimum.
+`https://media.githubusercontent.com/media/NVIDIA/DLSS/v310.9.16/lib/Windows_x86_64/rel/nvngx_dlssd.dll` and the same
+for dev (it gave 404 in Ray Reconstruction 1), and say which worked. Check the NVIDIA driver is 580 or newer (`nvidia-smi`), RR 4.5's minimum.
 
 In `config\create_galore_bridge-display.properties` note the old values (step 0 noted them if it ran), then set `dlaa=dlss`, `dlaaPreset=default`,
 `perfectPresentation=true`, `presenter=dx12`, `reflex=on`, `gpuPacing=off`, `fpsCounter=detailed`, `frameGen=off`,
@@ -2174,3 +2174,99 @@ a shadow edge, leaves and water for `q-dlss-K`, `perf-dlss-K`, `perf-rr-F`, `per
 What comes of it: the pilot is a dev build and stays one. If RR looks clearly better at a lower render resolution, the
 same plumbing and the buffer contract (`tools/bridge-mod/ray-reconstruction-contract.md`) carry over to our own shader pack; an
 option in the shipped Photon patch only if Emre decides it works extremely well.
+
+## Ray Reconstruction 1b: why Ray Reconstruction crashes
+
+Start only when Emre says so. About 3 minutes that need no one (part 1), then about 10 with Emre at the keyboard
+(part 2). The PC already has NVIDIA's two RR DLLs in `$T\rr1` from Ray Reconstruction 1.
+
+**What it checks.** In Ray Reconstruction 1 (`results/rr1/REPORT.md`) RR started, then crashed the game on its first
+frame: a null read (address 0x34) inside NVIDIA's RR code, with the dev and the release `nvngx_dlssd.dll` alike, and
+nothing in NGX's log before it. Our call is the same as NVIDIA's own helper's, so the cause is one of: RR on DirectX 11
+(our DLSS runs on a DirectX 11 device; every game with RR uses DirectX 12 or Vulkan), an input it can't take there (the
+hit distance with its two matrices, roughness packed in the normals), the NGX parameters RR shares with DLSS, or the
+game's odd sizes (1272x701 to 2544x1401).
+- **`rr-probe.exe`** (`tools/dlss-testkit/dist/`, built from `tools/bridge-mod/native/rr-probe.cpp`) runs RR on its
+  own, without the game, in nine variants, each in a process of its own so a crash ends only that one.
+  - `d3d11-dlss` and `d3d12-dlss` are plain DLSS, for comparison.
+  - `d3d11-game` is RR as the game calls it. Each other `d3d11-` variant changes one thing: no hit distance and
+    matrices, roughness in an image of its own, NGX parameters of its own, even sizes, a feature level 11_1 device.
+  - `d3d12-game` is RR as the game calls it, on DirectX 12.
+  - The first variant that stops crashing names the cause.
+- **This build** (Bridge 1.125.0-rr.1, pack 0.6.1-rr.1: the public 0.6.1 plus the pilot) adds two test switches in the
+  game for the same causes: `dlaaRrTest=no-hit-distance` and `dlaaRrTest=own-parameters` (both:
+  `no-hit-distance,own-parameters`). The log's `running at ...` line names them.
+- **Emre's point from Ray Reconstruction 1:** with Ray Reconstruction on, the Upscaling tab now greys out
+  **Anti-aliasing** (set to DLSS) and **DLSS preset**. Hovering them says why.
+
+The cloud has no NVIDIA GPU: it built the probe and ran it under Wine, where NGX can't start, so every variant stops at
+`NGX init` there. It also checked what a crash looks like in a variant's lines (`crash: code 0xC0000005 ... reading
+address 0000000000000034`).
+
+### Update and settings
+
+```powershell
+git -C $T\repo fetch origin
+git -C $T\repo checkout -B claude/project-thread-u2wmhh origin/claude/project-thread-u2wmhh
+Remove-Item $T\instance\mods\create-galore-bridge-*.jar
+Copy-Item $T\repo\pack\mods\create-galore-bridge-*.jar $T\instance\mods\
+Copy-Item $T\repo\tools\dlss-testkit\dist\create-galore-dlss-testkit-1.0.0.jar $T\instance\mods\ -Force
+Get-ChildItem $T\instance\mods\create-galore-bridge-*.jar | Select-Object Name
+```
+
+Only `create-galore-bridge-1.125.0-rr.1.jar`. Settings for part 2 as in Ray Reconstruction 1 (note the old values
+first): `dlaa=dlss`, `dlaaPreset=default`, `perfectPresentation=true`, `presenter=dx12`, `reflex=on`, `gpuPacing=off`,
+`fpsCounter=detailed`, `frameGen=off`, `frameGenType=dlss`, no `dlaaRayReconstruction`, `dlaaRrTest` or `dlaaRrRaw`
+line; `options.txt` `fullscreen:false`, `maxFps:260`, `enableVsync:false`. Shader pack: Photon v1.3a + DLAA. The
+launch from Frame generation 3 (2560x1440) without `autorun`.
+
+### 1. The probe (no one needed, about 3 minutes)
+
+```powershell
+New-Item -ItemType Directory $T\rr1b\rel, $T\rr1b\dev -Force
+Copy-Item $T\rr1\nvngx_dlssd-rel.dll $T\rr1b\rel\nvngx_dlssd.dll
+Copy-Item $T\rr1\nvngx_dlssd-dev.dll $T\rr1b\dev\nvngx_dlssd.dll
+Copy-Item $T\instance\create-galore-dlss\nvngx_dlss.dll $T\rr1b\rel\, $T\rr1b\dev\
+& $T\repo\tools\dlss-testkit\dist\rr-probe.exe $T\rr1b\rel $T\rr1b\probe-rel
+& $T\repo\tools\dlss-testkit\dist\rr-probe.exe $T\rr1b\dev $T\rr1b\probe-dev
+```
+
+Each run prints its summary (also in `summary.txt` in its folder): one line per variant, `OK` with the output's mean
+(about 0.5 means RR made a picture of the flat grey input), `FAILED at` a step, `CRASHED at` a step with the crash
+line, or `HUNG`. Each variant's own lines and NGX's log are in `<variant>.txt` beside it. The dev DLL may also show
+NVIDIA's notice in a window; that is expected. If Windows asks about the program, allow it and say so.
+
+### 2. In the game (Emre at the keyboard, about 10 minutes)
+
+Release DLL in the instance: `Copy-Item $T\rr1\nvngx_dlssd-rel.dll $T\instance\create-galore-dlss\nvngx_dlssd.dll -Force`.
+
+- **a. DLSS without RR on this build.** Launch, open `dlaa-test`: the log has `DLAA: DLSS running at ...` and the
+  picture looks as in Frame generation 3. Ray Reconstruction 1 never got to check this.
+- **b. The Upscaling tab, from the main menu** (RR only runs in a world, so this can't crash). Turn **Ray
+  Reconstruction** on: **Anti-aliasing** shows DLSS and greys out, **DLSS preset** greys out, and hovering either says
+  why. Emre says whether it reads right. Turn it off again: both can be clicked again. Leave it off for now. Done.
+- **c. RR with a switch, only if the probe found one.** If any `d3d11-` variant other than `d3d11-game` came back `OK`
+  and it is `d3d11-no-hit-distance` or `d3d11-own-parameters`, put the matching `dlaaRrTest=` line in the settings file,
+  turn Ray Reconstruction on (Performance), open `dlaa-test`. If it runs, Emre looks at it for a minute at the
+  lakeshore (`/tp @s 1029.5 64 160.5 0 8`) and the effects scene (`/tp @s 1006.5 68 158.5 180 14`) and says what he
+  sees. Ray Reconstruction 1's steps 2 and 3 can follow with the same line, if he wants. If no D3D11 variant ran, or
+  only one this build has no switch for, skip c: RR would crash again.
+- **If the game crashes**, the next start keeps DLSS off; move `create-galore-dlss\dlss-starting.txt` and the
+  `hs_err_pid*.log` to `$T\rr1b\crash<n>` before the next launch.
+
+For every part copy each `DLAA:` line and each WARN or ERROR line from `create_galore_bridge`, with its time.
+
+### Results
+
+Write `$T\repo\tools\dlss-testkit\results\rr1b\REPORT.md`:
+- part 1: both summaries whole. For each `CRASHED` or `FAILED` variant, its crash or result line and the last ten
+  `ngx:` lines before it. For each `OK` one, its result line.
+- part 2: a's log line, b in Emre's words, and c if it ran (the `dlaaRrTest` value, the `running at` line, what Emre
+  saw).
+- The `hs_err` files and NGX logs stay on the PC (they name the user folder).
+
+Put the settings and `options.txt` back as noted, take `dlaaRrTest` out, remove `nvngx_dlssd.dll` from the instance,
+then commit and push on this branch.
+
+What comes of it: if only `d3d12-game` runs, RR needs our DLSS on DirectX 12 (a bigger job, planned after this). If a
+DirectX 11 variant runs, that change goes into the pilot and Ray Reconstruction 1's steps carry on from there.
