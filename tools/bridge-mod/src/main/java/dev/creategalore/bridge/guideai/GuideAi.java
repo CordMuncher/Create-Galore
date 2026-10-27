@@ -115,6 +115,8 @@ public final class GuideAi {
         });
         NeoForge.EVENT_BUS.addListener(BuildClaims::onCommands);
         NeoForge.EVENT_BUS.addListener(BuildClaims::onTick);
+        NeoForge.EVENT_BUS.addListener(Casebook::onCommands);
+        NeoForge.EVENT_BUS.addListener(Casebook::onTick);
         NeoForge.EVENT_BUS.addListener((net.neoforged.neoforge.event.level.LevelEvent.Save e) -> {
             if (!(e.getLevel() instanceof net.minecraft.server.level.ServerLevel level)
                     || level.dimension() != net.minecraft.world.level.Level.OVERWORLD) return;

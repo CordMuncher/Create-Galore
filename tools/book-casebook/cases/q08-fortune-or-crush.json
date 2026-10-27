@@ -1,0 +1,13 @@
+{
+  "title": "Ore facts come from the loot table",
+  "roots": [
+    "R1"
+  ],
+  "kind": "question",
+  "question": "Is Fortune or crushing better for iron ore?",
+  "player": "Has a Fortune III pickaxe and a crusher setup.",
+  "rubric": [
+    "Uses block_drops / recipe numbers (Fortune III about 2.2 raw iron per ore)",
+    "Compares with Silk Touch plus crushing with real numbers"
+  ]
+}

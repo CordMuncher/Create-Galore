@@ -1,0 +1,13 @@
+{
+  "title": "Next steps fit the player's stage",
+  "roots": [
+    "R2"
+  ],
+  "kind": "question",
+  "question": "What should I do next?",
+  "player": "Has made a water wheel, a press and a few andesite machines; no brass.",
+  "rubric": [
+    "Reads their progress and inventory before answering",
+    "Gives one or two concrete next steps that fit (brass), not a list of everything"
+  ]
+}

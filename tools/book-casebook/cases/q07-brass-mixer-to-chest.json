@@ -1,0 +1,13 @@
+{
+  "title": "Mixer output reaches a chest",
+  "roots": [
+    "R3"
+  ],
+  "kind": "question",
+  "question": "How do I set up a brass mixer that puts the brass into a chest?",
+  "player": "Has a water wheel, a basin, a mixer, a chest and a funnel.",
+  "rubric": [
+    "Mixer turns at 30 RPM or more (gears up a water wheel)",
+    "Output goes onto a depot or belt, or into a sneak-placed funnel on top of the chest beside and one down from the basin"
+  ]
+}

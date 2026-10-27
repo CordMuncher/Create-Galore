@@ -37,6 +37,8 @@ on:
       - 'tools/server-setup/**'
       - 'tools/build_server_bundle.py'
       - 'tools/updater/**'
+      - 'tools/bridge-mod/**'
+      - 'tools/book_prompt_size.py'
       - '.github/workflows/release.yml'
   workflow_dispatch:
 
@@ -69,6 +71,9 @@ jobs:
 
       - name: Check the Field Guide's AI notes match the guide
         run: python3 tools/guide_digest.py --check
+
+      - name: Check Ask the Book's instructions stay inside their budget
+        run: python3 tools/book_prompt_size.py --check
 
       - name: Build the app's server data (fails if pack/index.toml is stale)
         id: bundle

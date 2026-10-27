@@ -1,0 +1,16 @@
+{
+  "title": "An airship to live on is usable by the crew",
+  "roots": [
+    "R3",
+    "R4"
+  ],
+  "kind": "question",
+  "question": "Build me an airship I can live on.",
+  "player": "Mid game: brass, Portable Engines, plenty of wood.",
+  "rubric": [
+    "Cruises at about 8 blocks/s or better",
+    "Engines are a walk from the helm; assembler open to a floor; boarding from the ground; closed warm cabin if it climbs high",
+    "Has a bed, a place to cook, a crafting table and real storage",
+    "No fences on bottom slabs, no ballast"
+  ]
+}

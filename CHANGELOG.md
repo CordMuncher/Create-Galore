@@ -5,6 +5,13 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.6.8
+
+### Added
+- **A casebook for Ask the Book.** Every way the book has gone wrong so far is now kept as a case with the verdict its checks should give: machines that never turn, output that goes nowhere, a blimp nobody aboard can fly, fans that do finish their items, creatures that are real. `tools/book-casebook/run.sh` replays them all on a test server (no API key needed), so a change to the book is checked against every past failure before it ships, and a fix that breaks an older one shows up as a failure. Three known faults are kept as open cases until the work that fixes them lands, and ten question cases describe what a good answer does, for grading answers later.
+- A size budget for the instructions the book sends with every question, checked on every build. They had grown about sixfold in a week as each wrong answer got one more sentence; from now on a fix goes into a check, what the book knows about the player or a design brief instead.
+- Create Galore Bridge 1.131.0.
+
 ## 0.6.7
 
 ### Added

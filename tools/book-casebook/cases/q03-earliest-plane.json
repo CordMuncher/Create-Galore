@@ -1,0 +1,15 @@
+{
+  "title": "Designs a plane that flies at the player's stage",
+  "roots": [
+    "R3",
+    "R5"
+  ],
+  "kind": "question",
+  "question": "What's the earliest Create plane I can build?",
+  "player": "Has Portable Engines, andesite alloy and sails; no brass yet.",
+  "rubric": [
+    "Shows a plane model with no PROBLEM: it lifts, is stable (Gyroscope) and is fast enough",
+    "Never says a plane can't be built at this stage",
+    "The pilot's controls sit together in a cockpit"
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "title": "Builds from what the player holds",
+  "roots": [
+    "R2"
+  ],
+  "kind": "question",
+  "question": "Design me a small sailing boat I can build right now.",
+  "player": "Holds 300 birch planks, 64 birch logs, 40 cobblestone, 20 glass; birch forest around.",
+  "rubric": [
+    "Hull and deck in birch, no spruce or dark oak",
+    "The model it shows is built (no PROBLEM left) and floats upright",
+    "Says what else they need and about how many"
+  ]
+}
