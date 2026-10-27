@@ -23,6 +23,12 @@
 // finished with the frame's inputs (cg_fg_inputs_done). With a backend the swap chain has no frame latency waitable
 // object (the backend paces through Reflex), and its buffer count and frame latency stay as they are.
 //
+// ABI 5 adds AMD FidelityFX frame generation (cg_ffx.cpp): its swap chain keeps the waitable object, and it draws the
+// HUD over every frame it presents from a texture of its own, so on frames it generates around the presenter cuts the
+// frame in two in one pass: the hudless input into the back buffer, and the HUD (frame - hudless * (1 - alpha), with
+// alpha) into that texture (cg_fg_create_inputs makes it). And frame generation turns on and off while the game runs
+// (cg_fg_enable): the backend stays loaded, and the swap chain is made again, frame generation's or a plain one.
+//
 // All functions must be called on one thread (the render thread). Built by build-present.sh with clang and lld-link
 // against the Windows SDK, and Streamline's headers for cg_streamline.cpp. Graphics DLLs are loaded at run time
 // (cg_present_create, cg_fg_prepare).
@@ -38,7 +44,7 @@
 #define CG_API extern "C" __declspec(dllexport)
 
 // Bumped whenever a function below changes; the Java side refuses a helper with another version.
-static const int CG_PRESENT_ABI = 4;
+static const int CG_PRESENT_ABI = 5;
 
 static const UINT MAX_BUFFERS = 3;  // swap chain buffers: 2 as on the Direct3D 11 path, 3 for testing
 static const int RING = 3;          // shared textures OpenGL copies into, as on the Direct3D 11 path
@@ -52,10 +58,20 @@ static const int FLAG_HIGH_PRIORITY = 2;   // the queue at D3D12_COMMAND_QUEUE_P
 
 // cg_fg_prepare backends
 static const int FG_BACKEND_DLSSG = 1;
+static const int FG_BACKEND_FSR = 2;
 
 // The frame generation inputs' formats (FgInput order), as cg_framegen.h describes them.
 static const DXGI_FORMAT FG_FORMATS[FG_INPUTS] = {DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8_UNORM, DXGI_FORMAT_R32_FLOAT,
     DXGI_FORMAT_R16G16_FLOAT};
+// The HUD texture of a backend that composesUi (FgFrame::ui), and its state between frames.
+static const DXGI_FORMAT FG_UI_FORMAT = DXGI_FORMAT_R8G8B8A8_UNORM;
+static const D3D12_RESOURCE_STATES FG_UI_STATE = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE
+        | D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE;
+// Descriptors: the ring's SRVs (one per slot), then the split pass's three per slot (frame, hudless, UI alpha).
+static const UINT SPLIT_VIEWS = RING;
+static const UINT SRV_COUNT = RING + RING * 3;
+// RTVs: the back buffers, then the HUD texture.
+static const UINT UI_RTV = MAX_BUFFERS;
 
 static char g_error[1024];
 
@@ -70,7 +86,9 @@ static IDXGIAdapter1* g_adapter;
 static ID3D12Device* g_device;
 static ID3D12CommandQueue* g_queue;
 static IDXGISwapChain3* g_swapChain;
+static HWND g_hwnd;
 static HANDLE g_waitable;
+static bool g_waitableOwned;         // closed here, not by the frame generation backend that made the swap chain
 static UINT g_swapFlags;
 static bool g_tearing;
 static UINT g_bufferCount = 2;
@@ -83,6 +101,8 @@ static ID3D12DescriptorHeap* g_srvHeap;
 static UINT g_srvSize;
 static ID3D12RootSignature* g_rootSignature;
 static ID3D12PipelineState* g_pipeline;
+static ID3D12RootSignature* g_splitRootSignature;  // the split pass, for a backend that composesUi
+static ID3D12PipelineState* g_splitPipeline;
 static ID3D12CommandAllocator* g_allocators[FRAMES];
 static UINT64 g_allocatorValue[FRAMES];
 static int g_frame;
@@ -95,16 +115,20 @@ static UINT64 g_doneValue;
 static HANDLE g_event;
 static ID3D12Resource* g_ring[RING];
 static HANDLE g_ringHandles[RING];
+static UINT g_ringWidth;
+static UINT g_ringHeight;
 static int g_lastSlot = -1;          // the slot cg_present_draw last drew
 
 // Frame generation: the backend (cg_fg_prepare), why it was dropped, its inputs ring.
 static FgBackend* g_fg;
+static bool g_fgOn = true;           // the swap chain is frame generation's and it is asked each frame (cg_fg_enable)
 static char g_fgError[1024];
 static ID3D12Resource* g_fgInputs[RING][FG_INPUTS];
 static HANDLE g_fgHandles[RING][FG_INPUTS];
 static UINT64 g_fgDone[RING];        // the "D3D12 done" value after the backend let go of each slot's inputs
 static UINT g_fgWidth;               // the inputs' size
 static UINT g_fgHeight;
+static ID3D12Resource* g_fgUi;       // the HUD texture (FgFrame::ui), with the inputs
 
 // Frame generation's log lines (cg_fg_log_next), from any thread.
 static const int LOG_LINES = 128;
@@ -143,7 +167,26 @@ static const char BLIT_SHADER[] =
     "}\n"
     "Texture2D srcTex : register(t0);\n"
     "SamplerState samp : register(s0);\n"
-    "float4 PsMain(VSOut i) : SV_Target { return srcTex.Sample(samp, i.uv); }\n";
+    "float4 PsMain(VSOut i) : SV_Target { return srcTex.Sample(samp, i.uv); }\n"
+    // The split pass, pixel for pixel at one size: the frame (bottom row first, as OpenGL's) and the hudless input and
+    // the HUD's coverage (top row first) give the back buffer the hudless frame and the HUD texture the HUD,
+    // premultiplied: frame = HUD + (1 - alpha) * hudless. The inputs are read before GetDimensions: Wine's HLSL compiler
+    // (vkd3d-shader, the smoke test's) loses p.y after it the other way round.
+    "Texture2D<float4> hudlessTex : register(t1);\n"
+    "Texture2D<float> alphaTex : register(t2);\n"
+    "struct SplitOut { float4 back : SV_Target0; float4 ui : SV_Target1; };\n"
+    "SplitOut PsSplit(VSOut i) {\n"
+    "    int2 p = int2(i.pos.xy);\n"
+    "    float3 hudless = hudlessTex.Load(int3(p, 0)).rgb;\n"
+    "    float alpha = alphaTex.Load(int3(p, 0));\n"
+    "    uint width, height;\n"
+    "    srcTex.GetDimensions(width, height);\n"
+    "    float3 frame = srcTex.Load(int3(p.x, (int) height - 1 - p.y, 0)).rgb;\n"
+    "    SplitOut o;\n"
+    "    o.back = float4(hudless, 1);\n"
+    "    o.ui = float4(max(frame - hudless * (1 - alpha), 0), alpha);\n"
+    "    return o;\n"
+    "}\n";
 
 template <typename T> static void release(T*& object) {
     if (object) {
@@ -214,6 +257,10 @@ static void waitIdle() {
     }
 }
 
+void fgWaitIdle() {
+    waitIdle();
+}
+
 static D3D12_CPU_DESCRIPTOR_HANDLE rtv(UINT index) {
     D3D12_CPU_DESCRIPTOR_HANDLE handle = g_rtvHeap->GetCPUDescriptorHandleForHeapStart();
     handle.ptr += (SIZE_T) index * g_rtvSize;
@@ -256,6 +303,70 @@ static HRESULT resizeSwapChain(UINT count, UINT width, UINT height) {
     return getBackBuffers() ? S_OK : E_FAIL;
 }
 
+/** The backend while frame generation is on (cg_fg_enable), else null: the presenter then asks nothing of it. */
+static FgBackend* fgOn() {
+    return g_fgOn ? g_fg : nullptr;
+}
+
+/**
+ * The swap chain on the window (through the backend if there is one: frame generation's while it is on, else a plain
+ * one), {@code width} x {@code height} (0: the window's size), with its frame latency waitable object at latency 1,
+ * without its back buffers (getBackBuffers). False on failure.
+ */
+static bool createSwapChain(UINT width, UINT height) {
+    // With DLSS Frame Generation on, the backend paces the frames (Reflex) without a frame latency waitable object;
+    // AMD's swap chain keeps one (its own, closed by the backend), which the presenter waits on as without it.
+    bool waitable = !g_fg || g_fg->waitable();
+    g_swapFlags = (waitable ? DXGI_SWAP_CHAIN_FLAG_FRAME_LATENCY_WAITABLE_OBJECT : 0)
+            | (g_tearing ? DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING : 0);
+    DXGI_SWAP_CHAIN_DESC1 desc = {};
+    desc.Width = width;
+    desc.Height = height;
+    desc.Format = SWAP_FORMAT;
+    desc.SampleDesc.Count = 1;
+    desc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+    desc.BufferCount = g_bufferCount;
+    desc.Scaling = DXGI_SCALING_NONE;
+    desc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
+    desc.AlphaMode = DXGI_ALPHA_MODE_UNSPECIFIED;
+    desc.Flags = g_swapFlags;
+    IDXGISwapChain1* swapChain1 = nullptr;
+    HRESULT hr = g_fg ? g_fg->createSwapChain(g_factory, g_queue, g_hwnd, desc, &swapChain1)
+            : g_factory->CreateSwapChainForHwnd(g_queue, g_hwnd, &desc, nullptr, nullptr, &swapChain1);
+    if (FAILED(hr)) {
+        return g_fg ? false : fail("CreateSwapChainForHwnd", hr);  // a backend says why itself
+    }
+    hr = swapChain1->QueryInterface(IID_PPV_ARGS(&g_swapChain));
+    release(swapChain1);
+    if (FAILED(hr)) {
+        return fail("QueryInterface(IDXGISwapChain3)", hr);
+    }
+    if (waitable) {
+        hr = g_swapChain->SetMaximumFrameLatency(1);
+        if (FAILED(hr)) {
+            return fail("SetMaximumFrameLatency", hr);
+        }
+        g_waitable = g_swapChain->GetFrameLatencyWaitableObject();
+        g_waitableOwned = !g_fg || !g_fg->ownsWaitable();
+    }
+    return true;
+}
+
+/** Lets go of the swap chain, its back buffers and waitable object (the GPU idle), and tells the backend. */
+static void releaseSwapChain() {
+    releaseBackBuffers();
+    release(g_readback);
+    if (g_waitableOwned) {
+        closeHandle(g_waitable);
+    }
+    g_waitable = nullptr;  // else the backend's: closed after its swap chain goes
+    g_waitableOwned = false;
+    release(g_swapChain);
+    if (g_fg) {
+        g_fg->swapChainReleased();  // also after a createSwapChain that failed half way
+    }
+}
+
 /** Performance counter ticks in nanoseconds: the clock of System.nanoTime on Windows. */
 static long long qpcNanos(LONGLONG ticks) {
     static LONGLONG frequency;
@@ -293,7 +404,12 @@ static void collectTiming(int f) {
     g_timedValue[f] = 0;
 }
 
-static bool createPipeline() {
+/**
+ * A pipeline drawing the fullscreen triangle with BLIT_SHADER's {@code pixelEntry}: its root signature has one table of
+ * {@code textures} SRVs (t0...) and the point sampler; it draws into {@code targets} render targets of {@code formats}.
+ */
+static bool createPipeline(const char* pixelEntry, UINT textures, UINT targets, const DXGI_FORMAT* formats,
+        ID3D12RootSignature** rootSignature, ID3D12PipelineState** pipeline) {
     D3D12SerializeRootSignatureFn serialize = (D3D12SerializeRootSignatureFn) symbol("d3d12.dll", "D3D12SerializeRootSignature");
     D3DCompileFn compile = (D3DCompileFn) symbol("d3dcompiler_47.dll", "D3DCompile");
     if (!serialize || !compile) {
@@ -302,7 +418,7 @@ static bool createPipeline() {
 
     D3D12_DESCRIPTOR_RANGE range = {};
     range.RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
-    range.NumDescriptors = 1;
+    range.NumDescriptors = textures;
     range.OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
     D3D12_ROOT_PARAMETER parameter = {};
     parameter.ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
@@ -330,7 +446,7 @@ static bool createPipeline() {
     if (FAILED(hr)) {
         return fail("D3D12SerializeRootSignature", hr);
     }
-    hr = g_device->CreateRootSignature(0, blob->GetBufferPointer(), blob->GetBufferSize(), IID_PPV_ARGS(&g_rootSignature));
+    hr = g_device->CreateRootSignature(0, blob->GetBufferPointer(), blob->GetBufferSize(), IID_PPV_ARGS(rootSignature));
     release(blob);
     if (FAILED(hr)) {
         return fail("CreateRootSignature", hr);
@@ -341,7 +457,7 @@ static bool createPipeline() {
     hr = compile(BLIT_SHADER, sizeof BLIT_SHADER - 1, "blit", nullptr, nullptr, "VsMain", "vs_5_0", 0, 0, &vertex, &errors);
     if (SUCCEEDED(hr)) {
         release(errors);
-        hr = compile(BLIT_SHADER, sizeof BLIT_SHADER - 1, "blit", nullptr, nullptr, "PsMain", "ps_5_0", 0, 0, &pixel, &errors);
+        hr = compile(BLIT_SHADER, sizeof BLIT_SHADER - 1, "blit", nullptr, nullptr, pixelEntry, "ps_5_0", 0, 0, &pixel, &errors);
     }
     if (FAILED(hr)) {
         wsprintfA(g_error, "D3DCompile failed: HRESULT 0x%08X ", (unsigned) hr);
@@ -355,15 +471,19 @@ static bool createPipeline() {
     }
 
     D3D12_GRAPHICS_PIPELINE_STATE_DESC pso = {};
-    pso.pRootSignature = g_rootSignature;
+    pso.pRootSignature = *rootSignature;
     pso.VS = {vertex->GetBufferPointer(), vertex->GetBufferSize()};
     pso.PS = {pixel->GetBufferPointer(), pixel->GetBufferSize()};
-    D3D12_RENDER_TARGET_BLEND_DESC& blend = pso.BlendState.RenderTarget[0];
-    blend.SrcBlend = blend.SrcBlendAlpha = D3D12_BLEND_ONE;
-    blend.DestBlend = blend.DestBlendAlpha = D3D12_BLEND_ZERO;
-    blend.BlendOp = blend.BlendOpAlpha = D3D12_BLEND_OP_ADD;
-    blend.LogicOp = D3D12_LOGIC_OP_NOOP;
-    blend.RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
+    for (UINT t = 0; t < targets; t++) {
+        D3D12_RENDER_TARGET_BLEND_DESC& blend = pso.BlendState.RenderTarget[t];
+        blend.SrcBlend = blend.SrcBlendAlpha = D3D12_BLEND_ONE;
+        blend.DestBlend = blend.DestBlendAlpha = D3D12_BLEND_ZERO;
+        blend.BlendOp = blend.BlendOpAlpha = D3D12_BLEND_OP_ADD;
+        blend.LogicOp = D3D12_LOGIC_OP_NOOP;
+        blend.RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
+        pso.RTVFormats[t] = formats[t];
+    }
+    pso.BlendState.IndependentBlendEnable = FALSE;
     pso.SampleMask = UINT_MAX;
     // As the Direct3D 11 path's zeroed rasterizer state: no depth clip, since the triangle sits at z = -1.
     pso.RasterizerState.FillMode = D3D12_FILL_MODE_SOLID;
@@ -373,10 +493,9 @@ static bool createPipeline() {
     pso.DepthStencilState.FrontFace = {D3D12_STENCIL_OP_KEEP, D3D12_STENCIL_OP_KEEP, D3D12_STENCIL_OP_KEEP, D3D12_COMPARISON_FUNC_ALWAYS};
     pso.DepthStencilState.BackFace = pso.DepthStencilState.FrontFace;
     pso.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
-    pso.NumRenderTargets = 1;
-    pso.RTVFormats[0] = SWAP_FORMAT;
+    pso.NumRenderTargets = targets;
     pso.SampleDesc.Count = 1;
-    hr = g_device->CreateGraphicsPipelineState(&pso, IID_PPV_ARGS(&g_pipeline));
+    hr = g_device->CreateGraphicsPipelineState(&pso, IID_PPV_ARGS(pipeline));
     release(vertex);
     release(pixel);
     return SUCCEEDED(hr) || fail("CreateGraphicsPipelineState", hr);
@@ -456,42 +575,23 @@ static bool createPresenter(HWND hwnd, const LUID* luid, int flags) {
             g_tearing = SUCCEEDED(factory5->CheckFeatureSupport(DXGI_FEATURE_PRESENT_ALLOW_TEARING, &allow, sizeof allow)) && allow;
             release(factory5);
         }
-        // With frame generation the backend owns the frame latency waitable object (Reflex paces the frames).
-        g_swapFlags = (g_fg ? 0 : DXGI_SWAP_CHAIN_FLAG_FRAME_LATENCY_WAITABLE_OBJECT)
-                | (g_tearing ? DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING : 0);
-
-        DXGI_SWAP_CHAIN_DESC1 desc = {};
-        desc.Format = SWAP_FORMAT;
-        desc.SampleDesc.Count = 1;
-        desc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+        g_hwnd = hwnd;
         g_bufferCount = 2;
-        desc.BufferCount = g_bufferCount;
-        desc.Scaling = DXGI_SCALING_NONE;
-        desc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
-        desc.AlphaMode = DXGI_ALPHA_MODE_UNSPECIFIED;
-        desc.Flags = g_swapFlags;
-        IDXGISwapChain1* swapChain1 = nullptr;
-        hr = g_fg ? g_fg->createSwapChain(g_factory, g_queue, hwnd, desc, &swapChain1)
-                : g_factory->CreateSwapChainForHwnd(g_queue, hwnd, &desc, nullptr, nullptr, &swapChain1);
-        if (FAILED(hr)) { if (!g_fg) fail("CreateSwapChainForHwnd", hr); break; }
-        hr = swapChain1->QueryInterface(IID_PPV_ARGS(&g_swapChain));
-        release(swapChain1);
-        if (FAILED(hr)) { fail("QueryInterface(IDXGISwapChain3)", hr); break; }
-        if (!g_fg) {
-            hr = g_swapChain->SetMaximumFrameLatency(1);
-            if (FAILED(hr)) { fail("SetMaximumFrameLatency", hr); break; }
-            g_waitable = g_swapChain->GetFrameLatencyWaitableObject();
-        }
+        if (g_fg && !g_fg->setOn(g_fgOn)) break;
+        if (!createSwapChain(0, 0)) break;
 
-        D3D12_DESCRIPTOR_HEAP_DESC rtvDesc = {D3D12_DESCRIPTOR_HEAP_TYPE_RTV, MAX_BUFFERS, D3D12_DESCRIPTOR_HEAP_FLAG_NONE, 0};
+        D3D12_DESCRIPTOR_HEAP_DESC rtvDesc = {D3D12_DESCRIPTOR_HEAP_TYPE_RTV, MAX_BUFFERS + 1, D3D12_DESCRIPTOR_HEAP_FLAG_NONE, 0};
         hr = g_device->CreateDescriptorHeap(&rtvDesc, IID_PPV_ARGS(&g_rtvHeap));
         if (FAILED(hr)) { fail("CreateDescriptorHeap (RTV)", hr); break; }
         g_rtvSize = g_device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
-        D3D12_DESCRIPTOR_HEAP_DESC srvDesc = {D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, RING, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE, 0};
+        D3D12_DESCRIPTOR_HEAP_DESC srvDesc = {D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, SRV_COUNT, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE, 0};
         hr = g_device->CreateDescriptorHeap(&srvDesc, IID_PPV_ARGS(&g_srvHeap));
         if (FAILED(hr)) { fail("CreateDescriptorHeap (SRV)", hr); break; }
         g_srvSize = g_device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-        if (!getBackBuffers() || !createPipeline()) break;
+        if (!getBackBuffers() || !createPipeline("PsMain", 1, 1, &SWAP_FORMAT, &g_rootSignature, &g_pipeline)) break;
+        const DXGI_FORMAT splitFormats[] = {SWAP_FORMAT, FG_UI_FORMAT};
+        if (g_fg && g_fg->composesUi()
+                && !createPipeline("PsSplit", 3, 2, splitFormats, &g_splitRootSignature, &g_splitPipeline)) break;
 
         for (int i = 0; i < FRAMES; i++) {
             hr = g_device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&g_allocators[i]));
@@ -566,6 +666,15 @@ CG_API int cg_present_tearing() {
     return g_tearing ? 1 : 0;
 }
 
+/**
+ * Whether DXGI holds the swap chain in exclusive full screen (GetFullscreenState): 1 yes, 0 no, -1 it can't say. The
+ * presenter never asks for exclusive full screen; for the log when the window changes.
+ */
+CG_API int cg_present_fullscreen_state() {
+    BOOL fullscreen = FALSE;
+    return g_swapChain && SUCCEEDED(g_swapChain->GetFullscreenState(&fullscreen, nullptr)) ? (fullscreen ? 1 : 0) : -1;
+}
+
 /** NT handle of a shared fence for OpenGL to import (GL_HANDLE_TYPE_D3D12_FENCE_EXT): 0 OpenGL done, 1 D3D12 done. */
 CG_API HANDLE cg_present_fence_handle(int which) {
     return which == 0 ? g_glFenceHandle : g_doneFenceHandle;
@@ -578,6 +687,8 @@ CG_API void cg_present_release_textures() {
         release(g_ring[i]);
         closeHandle(g_ringHandles[i]);
     }
+    g_ringWidth = 0;
+    g_ringHeight = 0;
 }
 
 /**
@@ -615,15 +726,20 @@ CG_API int cg_present_create_textures(int width, int height, HANDLE* handles, UI
         }
         g_device->CreateShaderResourceView(g_ring[i], nullptr, view);
         view.ptr += g_srvSize;
+        D3D12_CPU_DESCRIPTOR_HANDLE splitView = g_srvHeap->GetCPUDescriptorHandleForHeapStart();
+        splitView.ptr += (SIZE_T) (SPLIT_VIEWS + i * 3) * g_srvSize;
+        g_device->CreateShaderResourceView(g_ring[i], nullptr, splitView);
         handles[i] = g_ringHandles[i];
         sizes[i] = size;
     }
+    g_ringWidth = (UINT) width;
+    g_ringHeight = (UINT) height;
     return 1;
 }
 
 /**
  * Waits for the swap chain's frame latency object (frame latency 1). Returns WaitForSingleObject's result; at once
- * WAIT_OBJECT_0 with frame generation, whose backend owns the object.
+ * WAIT_OBJECT_0 with DLSS Frame Generation, which paces the frames itself.
  */
 CG_API int cg_present_wait(int timeoutMs) {
     return g_waitable ? (int) WaitForSingleObject(g_waitable, (DWORD) timeoutMs) : (int) WAIT_OBJECT_0;
@@ -632,7 +748,8 @@ CG_API int cg_present_wait(int timeoutMs) {
 /**
  * Draws shared texture {@code slot} into the current back buffer once OpenGL has signalled {@code glValue} on the
  * "OpenGL done" fence. Returns the "D3D12 done" value signalled after the draw (OpenGL waits for it before writing
- * {@code slot} again), or -1 on failure.
+ * {@code slot} again), or -1 on failure. When the frame generation backend keeps the HUD apart this frame (uiApart),
+ * the back buffer gets the slot's hudless input instead, and the HUD texture the HUD (a capture then has no HUD).
  */
 CG_API long long cg_present_draw(int slot, unsigned long long glValue) {
     if (slot < 0 || slot >= RING || !g_ring[slot]) {
@@ -653,9 +770,11 @@ CG_API long long cg_present_draw(int slot, unsigned long long glValue) {
         fail("command list Reset", hr);
         return -1;
     }
-    if (g_fg) {
-        g_fg->record(g_list);
+    FgBackend* fg = fgOn();
+    if (fg) {
+        fg->record(g_list);
     }
+    bool split = fg && fg->uiApart() && g_splitPipeline && g_fgUi && g_fgInputs[slot][FG_HUDLESS];
     bool timed = g_timing && g_queryHeap;
     if (timed) {
         g_list->EndQuery(g_queryHeap, D3D12_QUERY_TYPE_TIMESTAMP, (UINT) f * 2);
@@ -670,20 +789,33 @@ CG_API long long cg_present_draw(int slot, unsigned long long glValue) {
     barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_PRESENT;
     barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;
     g_list->ResourceBarrier(1, &barrier);
+    D3D12_RESOURCE_BARRIER uiBarrier = barrier;
+    uiBarrier.Transition.pResource = g_fgUi;
+    if (split) {
+        uiBarrier.Transition.StateBefore = FG_UI_STATE;
+        uiBarrier.Transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;
+        g_list->ResourceBarrier(1, &uiBarrier);
+    }
 
-    g_list->SetGraphicsRootSignature(g_rootSignature);
+    g_list->SetGraphicsRootSignature(split ? g_splitRootSignature : g_rootSignature);
+    g_list->SetPipelineState(split ? g_splitPipeline : g_pipeline);  // the backend's work may have set its own
     g_list->SetDescriptorHeaps(1, &g_srvHeap);
     D3D12_GPU_DESCRIPTOR_HANDLE texture = g_srvHeap->GetGPUDescriptorHandleForHeapStart();
-    texture.ptr += (UINT64) slot * g_srvSize;
+    texture.ptr += (UINT64) (split ? SPLIT_VIEWS + slot * 3 : slot) * g_srvSize;
     g_list->SetGraphicsRootDescriptorTable(0, texture);
     D3D12_VIEWPORT viewport = {0.0f, 0.0f, (float) g_backWidth, (float) g_backHeight, 0.0f, 1.0f};
     D3D12_RECT scissor = {0, 0, (LONG) g_backWidth, (LONG) g_backHeight};
     g_list->RSSetViewports(1, &viewport);
     g_list->RSSetScissorRects(1, &scissor);
-    D3D12_CPU_DESCRIPTOR_HANDLE target = rtv(index);
-    g_list->OMSetRenderTargets(1, &target, FALSE, nullptr);
+    D3D12_CPU_DESCRIPTOR_HANDLE targets[] = {rtv(index), rtv(UI_RTV)};
+    g_list->OMSetRenderTargets(split ? 2 : 1, targets, FALSE, nullptr);
     g_list->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     g_list->DrawInstanced(3, 1, 0, 0);
+    if (split) {
+        uiBarrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
+        uiBarrier.Transition.StateAfter = FG_UI_STATE;
+        g_list->ResourceBarrier(1, &uiBarrier);
+    }
 
     bool capture = g_captureRequested && g_readback;
     barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
@@ -740,8 +872,8 @@ CG_API int cg_present_present(int syncInterval) {
         HRESULT reason = hr == DXGI_ERROR_DEVICE_REMOVED ? g_device->GetDeviceRemovedReason() : hr;
         wsprintfA(g_error, "Present failed: HRESULT 0x%08X (reason 0x%08X)", (unsigned) hr, (unsigned) reason);
     }
-    if (g_fg) {
-        g_fg->presented(g_queue);
+    if (FgBackend* fg = fgOn()) {
+        fg->presented(g_queue);
         g_queue->Signal(g_doneFence, ++g_doneValue);
         if (g_lastSlot >= 0) {
             g_fgDone[g_lastSlot] = g_doneValue;
@@ -755,8 +887,8 @@ CG_API int cg_present_present(int syncInterval) {
  * presented before must have had it off (DLSS-G's guide: Present may deadlock otherwise).
  */
 CG_API int cg_present_resize(int width, int height) {
-    if (g_fg) {
-        g_fg->beforeResize();
+    if (FgBackend* fg = fgOn()) {
+        fg->beforeResize();
     }
     return (int) resizeSwapChain(0, (UINT) width, (UINT) height);
 }
@@ -943,13 +1075,14 @@ CG_API int cg_present_capture_read(unsigned char* out, long long capacity, int* 
     return 1;
 }
 
-// --- Frame generation (ABI 3) ---
+// --- Frame generation (ABI 3; AMD's and cg_fg_enable in ABI 5) ---
 
 /**
  * Before cg_present_create, once: the frame generation backend to start with it. {@code backend} FG_BACKEND_DLSSG:
  * NVIDIA DLSS Frame Generation through Streamline from {@code pluginFolder}, nvngx_dlssg.dll from {@code dllFolder},
- * Streamline's logs in {@code logFolder}, {@code flags} FgStreamlineFlag. 1 when it is ready for cg_present_create,
- * 0 with the reason in cg_present_error.
+ * Streamline's logs in {@code logFolder}, {@code flags} FgStreamlineFlag; FG_BACKEND_FSR: AMD FSR frame generation from
+ * the FidelityFX DLLs in {@code pluginFolder}, {@code flags} FgFfxFlag (the other folders unused). 1 when it is ready
+ * for cg_present_create, 0 with the reason in cg_present_error.
  */
 CG_API int cg_fg_prepare(int backend, const wchar_t* pluginFolder, const wchar_t* dllFolder, const wchar_t* logFolder,
         int flags) {
@@ -958,16 +1091,58 @@ CG_API int cg_fg_prepare(int backend, const wchar_t* pluginFolder, const wchar_t
     if (g_fg || g_device) {
         return failText("cg_fg_prepare: once, before cg_present_create");
     }
-    if (backend != FG_BACKEND_DLSSG) {
+    if (backend == FG_BACKEND_DLSSG) {
+        g_fg = createStreamlineBackend(pluginFolder, dllFolder, logFolder, flags);
+    } else if (backend == FG_BACKEND_FSR) {
+        g_fg = createFfxBackend(pluginFolder, flags);
+    } else {
         return failText("cg_fg_prepare: unknown backend");
     }
-    g_fg = createStreamlineBackend(pluginFolder, dllFolder, logFolder, flags);
     return g_fg ? 1 : 0;
 }
 
 /** 1 while the presenter runs with frame generation's backend. */
 CG_API int cg_fg_active() {
     return g_fg && g_swapChain ? 1 : 0;
+}
+
+/**
+ * Frame generation on or off, with a backend from cg_fg_prepare. Before cg_present_create: how it starts (on by
+ * default). After: at once, between frames, by making the swap chain again, as NVIDIA's DLSS-G guide asks (section 18:
+ * frame generation's swap chain costs a copy and a second queue even while it doesn't generate). The frame before
+ * must have gone out without generated frames, as before a resize. The inputs stay; the caller releases them while it
+ * is off. 1 on success; 0 if it couldn't change (cg_present_error says why, the presenter goes on as it was); -1 if
+ * no swap chain could be made again.
+ */
+CG_API int cg_fg_enable(int on) {
+    if (!g_fg) {
+        return failText("cg_fg_enable: no frame generation backend");
+    }
+    bool want = on != 0;
+    if (!g_swapChain) {
+        g_fgOn = want;
+        return 1;
+    }
+    if (want == g_fgOn) {
+        return 1;
+    }
+    waitIdle();
+    if (g_fgOn) {
+        g_fg->stop();  // off: the backend lets go of the HUD texture and its context (AMD), turns itself off (Streamline)
+    }
+    UINT width = g_backWidth;  // the same size as before (the window's, unless a resize is on its way)
+    UINT height = g_backHeight;
+    releaseSwapChain();
+    if (g_fg->setOn(want) && createSwapChain(width, height) && getBackBuffers()) {
+        g_fgOn = want;
+        return 1;
+    }
+    char reason[sizeof g_error];
+    lstrcpynA(reason, g_error, sizeof reason);
+    releaseSwapChain();
+    bool back = g_fg->setOn(g_fgOn) && createSwapChain(width, height) && getBackBuffers();
+    lstrcpynA(g_error, reason, sizeof g_error);
+    return back ? 0 : -1;
 }
 
 /** Why cg_present_create went on without frame generation, "" if it didn't. */
@@ -982,11 +1157,11 @@ static void releaseFgInputs() {
             any |= g_fgInputs[i][j] != nullptr;
         }
     }
-    if (!any) {
+    if (!any && !g_fgUi) {
         return;
     }
     if (g_fg) {
-        g_fg->stop();  // off, and Streamline lets go of the inputs (null tags)
+        g_fg->stop();  // off, and the backend lets go of the inputs (Streamline: null tags; AMD: no HUD texture)
     }
     waitIdle();
     for (int i = 0; i < RING; i++) {
@@ -996,6 +1171,7 @@ static void releaseFgInputs() {
         }
         g_fgDone[i] = 0;
     }
+    release(g_fgUi);
     g_fgWidth = 0;
     g_fgHeight = 0;
 }
@@ -1007,8 +1183,9 @@ CG_API void cg_fg_release_inputs() {
 
 /**
  * Makes frame generation's inputs: three slots of four textures (FgInput order and formats, cg_framegen.h),
- * {@code width} x {@code height} (the back buffer's size). Fills {@code handles} and {@code sizes} (twelve each, slot
- * by slot) as cg_present_create_textures does. 1 on success.
+ * {@code width} x {@code height} (the back buffer's size), and for a backend that composesUi the HUD texture (Direct3D
+ * 12's own). Fills {@code handles} and {@code sizes} (twelve each, slot by slot) as cg_present_create_textures does.
+ * 1 on success.
  */
 CG_API int cg_fg_create_inputs(int width, int height, HANDLE* handles, UINT64* sizes) {
     releaseFgInputs();
@@ -1040,7 +1217,22 @@ CG_API int cg_fg_create_inputs(int width, int height, HANDLE* handles, UINT64* s
             }
             handles[i * FG_INPUTS + j] = g_fgHandles[i][j];
             sizes[i * FG_INPUTS + j] = size;
+            if (j == FG_HUDLESS || j == FG_UI_ALPHA) {
+                D3D12_CPU_DESCRIPTOR_HANDLE view = g_srvHeap->GetCPUDescriptorHandleForHeapStart();
+                view.ptr += (SIZE_T) (SPLIT_VIEWS + i * 3 + (j == FG_HUDLESS ? 1 : 2)) * g_srvSize;
+                g_device->CreateShaderResourceView(g_fgInputs[i][j], nullptr, view);
+            }
         }
+    }
+    if (g_fg && g_fg->composesUi()) {
+        desc.Format = FG_UI_FORMAT;
+        HRESULT hr = g_device->CreateCommittedResource(&heap, D3D12_HEAP_FLAG_NONE, &desc, FG_UI_STATE, nullptr,
+                IID_PPV_ARGS(&g_fgUi));
+        if (FAILED(hr)) {
+            releaseFgInputs();
+            return fail("CreateCommittedResource (HUD texture)", hr);
+        }
+        g_device->CreateRenderTargetView(g_fgUi, nullptr, rtv(UI_RTV));
     }
     g_fgWidth = (UINT) width;
     g_fgHeight = (UINT) height;
@@ -1055,8 +1247,9 @@ CG_API int cg_fg_create_inputs(int width, int height, HANDLE* handles, UINT64* s
  */
 CG_API int cg_fg_frame(int slot, unsigned frameIndex, int flags, int renderWidth, int renderHeight, int framesToGenerate,
         const float* camera) {
-    if (!g_fg || !g_swapChain) {
-        return failText("cg_fg_frame: no frame generation");
+    FgBackend* fg = fgOn();
+    if (!fg || !g_swapChain) {
+        return failText(g_fg ? "cg_fg_frame: frame generation is off" : "cg_fg_frame: no frame generation");
     }
     if (slot < 0 || slot >= RING) {
         return failText("cg_fg_frame: no such slot");
@@ -1067,8 +1260,8 @@ CG_API int cg_fg_frame(int slot, unsigned frameIndex, int flags, int renderWidth
     }
     frame.frameIndex = frameIndex;
     frame.flags = flags;
-    if (g_fgWidth != g_backWidth || g_fgHeight != g_backHeight) {
-        frame.flags &= ~FG_FRAME_GENERATE;  // inputs made for another size: the window is resizing
+    if (g_fgWidth != g_backWidth || g_fgHeight != g_backHeight || g_ringWidth != g_backWidth || g_ringHeight != g_backHeight) {
+        frame.flags &= ~FG_FRAME_GENERATE;  // inputs or frames made for another size: the window is resizing
     }
     frame.renderWidth = (UINT) renderWidth;
     frame.renderHeight = (UINT) renderHeight;
@@ -1076,7 +1269,8 @@ CG_API int cg_fg_frame(int slot, unsigned frameIndex, int flags, int renderWidth
     frame.backHeight = g_backHeight;
     frame.framesToGenerate = framesToGenerate;
     frame.camera = (flags & FG_FRAME_CAMERA) ? camera : nullptr;
-    return g_fg->frame(frame) ? 1 : 0;
+    frame.ui = g_fgUi;
+    return fg->frame(frame) ? 1 : 0;
 }
 
 /** The "D3D12 done" value after which OpenGL may write {@code slot}'s inputs again (0: any time). */
@@ -1086,8 +1280,8 @@ CG_API unsigned long long cg_fg_inputs_done(int slot) {
 
 /** Frame generation off from the next Present on, without waiting for the next frame (the window was minimized). */
 CG_API void cg_fg_off() {
-    if (g_fg) {
-        g_fg->off();
+    if (FgBackend* fg = fgOn()) {
+        fg->off();
     }
 }
 
@@ -1150,16 +1344,18 @@ CG_API void cg_present_destroy() {
     }
     release(g_pipeline);
     release(g_rootSignature);
-    releaseBackBuffers();
+    release(g_splitPipeline);
+    release(g_splitRootSignature);
+    releaseSwapChain();
     release(g_srvHeap);
     release(g_rtvHeap);
-    closeHandle(g_waitable);
-    release(g_swapChain);
     if (g_fg) {
         g_fg->shutdown();  // after the swap chain, before the device
         delete g_fg;
         g_fg = nullptr;
     }
+    g_fgOn = true;
+    g_hwnd = nullptr;
     g_lastSlot = -1;
     release(g_glFence);
     closeHandle(g_glFenceHandle);

@@ -5,6 +5,31 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.6.0
+
+**DLSS Frame Generation is ready, so the pack moves to 0.6.** On an NVIDIA RTX 40 or 50 card, the Display tab's **Frame generation: DLSS** is no longer experimental: it shows a frame of its own between every two the game renders, so the screen gets about 43% more frames (234 a second against 164 without it on an RTX 4080 SUPER at 1440p, the game rendering 117), for about 3 ms more input delay. Going in and out of full screen, resizing, minimising and turning it on and off all hold with it. AMD's FSR frame generation, for other cards, stays experimental. A fresh install on Windows now starts with Perfect Presentation on DirectX 12, which frame generation runs in.
+
+### Added
+- **DLSS frame generation is no longer experimental.** The setting, its status line and the Field Guide stop calling it that; FSR frame generation still says experimental.
+- **The NVIDIA app's frame generation model works here.** NVIDIA app, Graphics, Global Settings, **DLSS Override - Model Presets**, Frame Generation changes the model DLSS frame generation uses, even though NVIDIA's overlay reads "FG OVR N/A". On an RTX 4080 SUPER, Preset C drew about 6% more frames with a little less input delay, and Preset B ran like NVIDIA's own pick. The Field Guide says how.
+- **FSR frame generation (experimental).** The Display tab's **Frame generation** setting has **Off**, **DLSS** and **FSR**. FSR is AMD FSR 3.1 frame generation: like DLSS Frame Generation it shows a frame of its own between every two the game renders, so motion looks about twice as smooth, for a little more input delay, and it is built from the same inputs (the world without the HUD, the HUD on its own, depth and motion), so the hotbar, chat and crosshair stay sharp. It runs on any graphics card Perfect Presentation's DirectX 12 runs on, NVIDIA RTX 20 and 30 series included, and works best from about 60 fps without it. It runs beside DLSS or FSR anti-aliasing, either one. Picking it turns on Perfect Presentation and DirectX 12; Reflex stays as set. The Bridge ships AMD's FidelityFX SDK 2.0.0 frame generation DLLs for it, and the game checks AMD's signature on them before loading them.
+- **Frame generation turns on and off at once.** Whenever DirectX 12 starts, the game loads the frame generation picked last (before any is picked: DLSS on an RTX 40 or 50 card that has nvngx_dlssg.dll, else FSR), so turning it off, or on again, takes effect as the settings screen closes, without a restart. Switching between DLSS and FSR still needs one; the screen says so beside the setting.
+- **Find on this PC copies nvngx_dlssg.dll too.** The Upscaling tab's button copies the newest nvngx_dlss.dll and the newest nvngx_dlssg.dll (DLSS Frame Generation's model) from where the NVIDIA app keeps them into the DLSS folder, once, when pressed. You can also put your own in with **Open DLSS folder**. On an RTX 40 or 50 card the tab shows its version beside the one it was tested with (310.9.16).
+- **A fresh install on Windows starts with Perfect Presentation on, on DirectX 12.** Borderless fullscreen at exclusive fullscreen speed and instant Alt-Tab without touching a setting, and frame generation is one setting away. It starts from the second launch: the first one turns off NeoForge's early loading screen, which Perfect Presentation can't run with. An install from before keeps its settings, whatever they are. Neither is called experimental any more; where DirectX 12 can't start (an Intel card's OpenGL driver can't share textures with it), the game runs on DirectX 11, and where Perfect Presentation can't start, on a normal window, and the screen says so.
+- Field Guide (Performance and Shaders): FSR frame generation and turning it on and off; Perfect Presentation and DirectX 12.
+- Create Galore Bridge 1.124.0.
+
+### Fixed
+- **F11 out of full screen could look as if nothing happened.** With Perfect Presentation, a game that started in full screen with a window size as big as the screen (a launcher's window size set to the screen's resolution) came back from full screen as a window exactly the screen's size, its title bar above the top of the screen, so it still looked like full screen. A window that doesn't fit the screen now comes back fitted to the screen's work area, title bar showing. Changing the full screen resolution while in full screen no longer replaces the window's own size with the screen's either.
+- **Distant Horizons' far terrain could stay drawn over the world, upside down, after going in or out of full screen or resizing the window with a shader pack on** (a shader reload cleared it). On a resize Iris gave Distant Horizons' terrain the world's new depth buffer, so the far terrain was drawn into the world's depth; it now gets its own back on the next frame, as the Window Resize Fix mod does.
+- **With FSR frame generation, Max Framerate counted rendered frames**, so a 120 fps cap showed about 200 frames a second on screen, more than a 120 Hz screen shows. It now counts the frames on screen, as with DLSS: a 120 cap renders 60 and shows 120.
+- **Frame generation was still on when the window changed size going in or out of full screen.** Minecraft shows one more frame while it changes the window, and that frame went out with a generated one, against NVIDIA's advice to have frame generation off around window changes. That frame now goes out on its own.
+- **The Upscaling tab's status line was cut off after "preset"** once Find on this PC had been pressed. It now keeps its whole text where the screen has room.
+- **Find on this PC's message was hard to follow.** It now says what happened to each file in a sentence, such as "DLSS 310.9.16: already up to date. Frame generation 310.9.16: copied from NVIDIA's folder."
+
+### Removed
+- **The game no longer copies nvngx_dlssg.dll from NVIDIA's folder at every start.** DLSS Frame Generation uses only the copy in the DLSS folder, like DLSS uses nvngx_dlss.dll, so an NVIDIA app update can't swap the model under it.
+
 ## 0.5.14
 
 ### Fixed

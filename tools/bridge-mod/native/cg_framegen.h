@@ -3,9 +3,10 @@
 // Frame generation sits between the presenter and DXGI: it may wrap the device and queue, owns the real swap chain
 // behind the one the presenter presents through, and reads each frame's inputs when the frame is presented. The
 // presenter knows nothing of the backend's API; a backend implements this class. NVIDIA DLSS Frame Generation through
-// Streamline is the first (cg_streamline.cpp); AMD FidelityFX frame generation is meant to fit the same calls: its
-// swap chain replaces the one made here (createSwapChain), its prepare pass goes into the presenter's command list
-// (record), and it takes the same inputs and camera.
+// Streamline (cg_streamline.cpp) tags the inputs and recomposes the HUD itself; AMD FidelityFX frame generation
+// (cg_ffx.cpp) swaps in its own swap chain (createSwapChain), records its prepare pass into the presenter's command
+// list (record), and draws a separate HUD texture over every frame it presents (composesUi), which the presenter cuts
+// out of the frame (uiApart).
 //
 // The inputs are the same for every backend and every upscaler: OpenGL writes them, after DLSS or FSR ran, into a ring
 // of textures shared with Direct3D 12 (cg_fg_create_inputs), top row first like the back buffer:
@@ -63,6 +64,10 @@ struct FgFrame {
     UINT backHeight;
     int framesToGenerate;         // 1: one generated frame per rendered one (2x)
     const float* camera;          // FG_CAMERA_FLOATS, or null without FG_FRAME_CAMERA
+    // For a backend that composesUi: the HUD texture, R8G8B8A8_UNORM, the back buffer's size, premultiplied (UI from
+    // frame = UI + (1 - alpha) * hudless, alpha in a), between frames in PIXEL_SHADER_RESOURCE | NON_PIXEL_SHADER_RESOURCE.
+    // When the backend says uiApart, the presenter draws the HUD into it and the hudless frame into the back buffer.
+    ID3D12Resource* ui;
 };
 
 /** cg_fg_state: what the backend last reported. */
@@ -85,17 +90,38 @@ public:
     virtual bool supports(const LUID& adapter) = 0;
     /** The device was made (before the queue and the swap chain). */
     virtual bool deviceCreated(ID3D12Device* device) = 0;
+    /**
+     * Frame generation on or off from the next swap chain on (cg_fg_enable), called while there is none: after
+     * deviceCreated, or once the presenter released the swap chain (swapChainReleased). Off, createSwapChain makes a
+     * swap chain without frame generation and the presenter calls nothing per frame (frame, uiApart, record, presented,
+     * beforeResize, off), so it costs nothing (NVIDIA's DLSS-G guide, section 18). False on failure (cg_present_error).
+     */
+    virtual bool setOn(bool on) = 0;
     /** Makes the presenting queue; returns the native queue, which the presenter uses for everything. */
     virtual HRESULT createQueue(ID3D12Device* device, const D3D12_COMMAND_QUEUE_DESC& desc, ID3D12CommandQueue** queue) {
         return device->CreateCommandQueue(&desc, IID_PPV_ARGS(queue));
     }
-    /** Makes the swap chain the presenter presents through, for the queue createQueue made. */
+    /**
+     * Makes the swap chain the presenter presents through, for the queue createQueue made. {@code desc} has the frame
+     * latency waitable flag when waitable() says so.
+     */
     virtual HRESULT createSwapChain(IDXGIFactory4* factory, ID3D12CommandQueue* queue, HWND hwnd,
             const DXGI_SWAP_CHAIN_DESC1& desc, IDXGISwapChain1** swapChain) {
         return factory->CreateSwapChainForHwnd(queue, hwnd, &desc, nullptr, nullptr, swapChain);
     }
+    /**
+     * Whether the swap chain has a frame latency waitable object, which the presenter then waits on at frame latency 1
+     * as without frame generation. Otherwise the backend paces (Reflex).
+     */
+    virtual bool waitable() const { return false; }
+    /** Whether that object is the backend's (closed with its swap chain) rather than the presenter's. */
+    virtual bool ownsWaitable() const { return false; }
+    /** Whether the backend draws FgFrame::ui over every frame it presents (cg_fg_create_inputs makes the texture). */
+    virtual bool composesUi() const { return false; }
     /** A frame is about to be drawn and presented. False on failure (cg_present_error). */
     virtual bool frame(const FgFrame& frame) = 0;
+    /** After frame(): this frame goes into the back buffer without its HUD, and the HUD into FgFrame::ui. */
+    virtual bool uiApart() const { return false; }
     /** Records the backend's own work for the frame into the presenter's command list, before the frame is drawn. */
     virtual void record(ID3D12GraphicsCommandList* list) { (void) list; }
     /** Present returned: makes {@code queue} wait until the backend is done with the frame's inputs. */
@@ -107,6 +133,8 @@ public:
     virtual void state(FgState& state) = 0;
     /** The presenter is about to release the swap chain and the inputs: let go of them. */
     virtual void stop() = 0;
+    /** The presenter released the swap chain createSwapChain made (the GPU idle): let go of what came with it. */
+    virtual void swapChainReleased() {}
     /** After the swap chain is released, before the device is: shuts the backend down. */
     virtual void shutdown() = 0;
 };
@@ -117,6 +145,12 @@ enum FgStreamlineFlag {
     FG_SL_VERBOSE = 2,            // verbose Streamline log
 };
 
+// createFfxBackend flags
+enum FgFfxFlag {
+    FG_FFX_DEVELOPMENT = 1,       // testing: no signature check of AMD's DLLs
+    FG_FFX_VERBOSE = 2,           // AMD's debug checks and every message of theirs in the log
+};
+
 /**
  * The Streamline backend (cg_streamline.cpp): sl.interposer.dll and its plugins from {@code pluginFolder}, NGX's
  * nvngx_dlssg.dll from {@code dllFolder} (or the driver's), Streamline's log files in {@code logFolder}. Null with the
@@ -125,8 +159,16 @@ enum FgStreamlineFlag {
 FgBackend* createStreamlineBackend(const wchar_t* pluginFolder, const wchar_t* dllFolder, const wchar_t* logFolder,
         int flags);
 
+/**
+ * The AMD FidelityFX backend (cg_ffx.cpp): amd_fidelityfx_loader_dx12.dll and amd_fidelityfx_framegeneration_dx12.dll
+ * from {@code folder}. Null with the reason in cg_present_error if it can't start.
+ */
+FgBackend* createFfxBackend(const wchar_t* folder, int flags);
+
 // cg_present.cpp, for backends:
 /** Sets cg_present_error (wsprintf format) and returns false. */
 bool fgFail(const char* format, ...);
 /** Queues a line for cg_fg_log_next, level 'E', 'W' or 'I'. Any thread. */
 void fgLog(char level, const char* message);
+/** Blocks until the presenting queue has finished everything submitted so far. */
+void fgWaitIdle();

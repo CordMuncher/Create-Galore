@@ -11,7 +11,9 @@ import java.util.function.LongSupplier;
 import dev.creategalore.bridge.DisplaySettings;
 import net.neoforged.fml.loading.FMLConfig;
 import net.neoforged.fml.loading.FMLPaths;
+import org.lwjgl.PointerBuffer;
 import org.lwjgl.glfw.GLFWNativeWin32;
+import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.glfw.GLFWWindowIconifyCallback;
 import org.lwjgl.system.MemoryStack;
 import org.slf4j.Logger;
@@ -20,8 +22,8 @@ import org.slf4j.LoggerFactory;
 /**
  * Perfect Presentation for NeoForge: the game window gets no OpenGL context; the game renders on a hidden OpenGL
  * context and each frame is shown through a DXGI flip-model swap chain, on Direct3D 11 ({@link InteropContext}) or,
- * with presenter=dx12 (experimental, a choice on the settings screen), Direct3D 12 ({@link D3D12Presenter}, falling
- * back to 11). Borderless
+ * with presenter=dx12 (a choice on the settings screen, and a fresh install's), Direct3D 12 ({@link D3D12Presenter},
+ * falling back to 11). Borderless
  * fullscreen then runs like exclusive fullscreen, Alt-Tab never changes the display mode (no 10-bit to 8-bit flash on
  * NVIDIA), and NVIDIA's "Prefer layered on DXGI Swapchain" present method is not needed (it held the GPU at ~55%).
  *
@@ -30,8 +32,8 @@ import org.slf4j.LoggerFactory;
  * OpenGL version check is pointed away from the context-less window (see hideFromGlVersionCheck), and the main
  * target is copied to D3D11 instead of shared (see {@link InteropContext}).
  *
- * EXPERIMENTAL, OFF BY DEFAULT, Windows only: config/create_galore_bridge-display.properties, perfectPresentation=true.
- * The mixins are only applied when it is on ({@link PresentationMixinPlugin}). If the DirectX side cannot start (no
+ * Windows only, on in a fresh install (see DisplaySettings): config/create_galore_bridge-display.properties,
+ * perfectPresentation=true. The mixins are only applied when it is on ({@link PresentationMixinPlugin}). If the DirectX side cannot start (no
  * WGL_NV_DX_interop2, no D3D11), the game logs the error and falls back to a normal OpenGL window.
  */
 public final class Presentation {
@@ -204,11 +206,11 @@ public final class Presentation {
     }
 
     /**
-     * True while frame generation runs in the DirectX 12 presenter (testing, see FrameGen): Streamline is loaded, so
-     * Reflex goes through it.
+     * True while the DirectX 12 presenter runs with Streamline loaded (DLSS Frame Generation's backend, on or off, see
+     * FrameGen), so Reflex goes through it.
      */
-    public static boolean frameGeneration() {
-        return active() && presenter instanceof D3D12Presenter d3d12 && d3d12.frameGeneration();
+    public static boolean streamline() {
+        return active() && presenter instanceof D3D12Presenter d3d12 && d3d12.streamline();
     }
 
     /** An export of the DirectX 12 presenter's cg_present.dll; throws while it doesn't run. */
@@ -297,6 +299,128 @@ public final class Presentation {
         }
         presenter.blitToSwapChain(colorTexture);
         return true;
+    }
+
+    // --- Window.setMode / onResize: what changes the window, for the log ---
+
+    /** How long after a mode change the window's resizes are logged. */
+    private static final long WATCH_NS = 3_000_000_000L;
+    private static final int WATCHED_RESIZES = 6;
+    private static final int SCREEN_SIZED_LINES = 10;
+    private static long watchUntil;
+    private static int watchedResizes;
+    private static int screenSizedLines;
+
+    /** The monitor the window covers in borderless full screen, 0 while it is a window. */
+    private static long borderlessMonitor;
+
+    /**
+     * The monitor the window covers in borderless full screen, else 0. Window.setMode keeps the window's place and size
+     * for leaving full screen only while the window is on no monitor, and the borderless window never is: asked again
+     * while in full screen (a new full screen resolution), it kept the screen's size as the window's.
+     */
+    public static long borderlessMonitor() {
+        return active() ? borderlessMonitor : 0L;
+    }
+
+    /** The window just turned into borderless full screen or back into a window (Window.setMode), and who asked. */
+    public static void modeChanged(long handle, long monitor, boolean fullscreen, int x, int y, int width, int height) {
+        borderlessMonitor = fullscreen ? monitor : 0L;
+        LOG.info("Perfect Presentation: {} {}x{} at ({}, {}){}; from: {}", fullscreen ? "borderless full screen," : "a window,",
+                width, height, x, y, glfwGetWindowAttrib(handle, GLFW_MAXIMIZED) != 0 ? ", maximized" : "", caller());
+        watchUntil = System.nanoTime() + WATCH_NS;
+        watchedResizes = 0;
+    }
+
+    /**
+     * The window Window.setMode brings back after full screen ({x, y, width, height}, the picture's size), made to fit
+     * the work area of the screen it was on, with its title bar. A window as big as the screen (the game started in
+     * full screen at the screen's resolution) came back with its title bar above the screen and its picture over all
+     * of it, so leaving full screen looked like nothing happened. Call with the window decorated again.
+     */
+    public static int[] fitWindow(long handle, int x, int y, int width, int height) {
+        long monitor = borderlessMonitor != 0L ? borderlessMonitor : glfwGetPrimaryMonitor();
+        if (monitor == 0L) {
+            return new int[] {x, y, width, height};
+        }
+        try (MemoryStack stack = MemoryStack.stackPush()) {
+            var area = stack.mallocInt(4);
+            glfwGetMonitorWorkarea(monitor, area.slice(0, 1), area.slice(1, 1), area.slice(2, 1), area.slice(3, 1));
+            var frame = stack.mallocInt(4);
+            glfwGetWindowFrameSize(handle, frame.slice(0, 1), frame.slice(1, 1), frame.slice(2, 1), frame.slice(3, 1));
+            int left = frame.get(0), top = frame.get(1), right = frame.get(2), bottom = frame.get(3);
+            int maxWidth = area.get(2) - left - right;
+            int maxHeight = area.get(3) - top - bottom;
+            if (maxWidth <= 0 || maxHeight <= 0 || width <= maxWidth && height <= maxHeight) {
+                return new int[] {x, y, width, height};
+            }
+            int fitWidth = Math.min(width, maxWidth);
+            int fitHeight = Math.min(height, maxHeight);
+            int fitX = Math.max(area.get(0) + left, Math.min(x, area.get(0) + area.get(2) - right - fitWidth));
+            int fitY = Math.max(area.get(1) + top, Math.min(y, area.get(1) + area.get(3) - bottom - fitHeight));
+            LOG.info("Perfect Presentation: the window to come back after full screen, {}x{}, is bigger than the screen's"
+                    + " work area; it comes back as {}x{} at ({}, {})", width, height, fitWidth, fitHeight, fitX, fitY);
+            return new int[] {fitX, fitY, fitWidth, fitHeight};
+        }
+    }
+
+    /**
+     * The window's size changed (Window.onResize, GLFW's size callback). Logged for a few seconds after a mode change,
+     * and whenever a window the game has as a window covers a whole screen: where it came from, and whether DXGI holds
+     * the swap chain in exclusive full screen.
+     */
+    public static void windowResized(long handle, boolean fullscreen, int width, int height) {
+        if (!active() || width <= 0 || height <= 0) {
+            return;
+        }
+        boolean watched = System.nanoTime() < watchUntil && watchedResizes < WATCHED_RESIZES;
+        boolean screenSized = !fullscreen && coversScreen(width, height) && screenSizedLines < SCREEN_SIZED_LINES;
+        if (!watched && !screenSized) {
+            return;
+        }
+        if (watched) {
+            watchedResizes++;
+        }
+        int exclusive = presenter instanceof D3D12Presenter d3d12 ? d3d12.exclusiveFullscreen() : -1;
+        String state = String.format("the game has it %s%s%s", fullscreen ? "in full screen" : "as a window",
+                glfwGetWindowAttrib(handle, GLFW_MAXIMIZED) != 0 ? ", maximized" : "",
+                exclusive == 1 ? ", DXGI in exclusive full screen" : exclusive == 0 ? ", DXGI windowed" : "");
+        if (screenSized) {
+            screenSizedLines++;
+            LOG.info("Perfect Presentation: the window became {}x{}, a whole screen, though {}; from: {}", width, height, state, caller());
+        } else {
+            LOG.info("Perfect Presentation: the window is now {}x{}, {}; from: {}", width, height, state, caller());
+        }
+    }
+
+    /** True if {@code width} x {@code height} is the size of one of the screens' current modes. */
+    private static boolean coversScreen(int width, int height) {
+        PointerBuffer monitors = glfwGetMonitors();
+        for (int i = 0; monitors != null && i < monitors.limit(); i++) {
+            GLFWVidMode mode = glfwGetVideoMode(monitors.get(i));
+            if (mode != null && mode.width() == width && mode.height() == height) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /** The callers above the Bridge's own frames (GLFW's included: glfwPollEvents is Windows, glfwSetWindowMonitor the game). */
+    private static String caller() {
+        StringBuilder text = new StringBuilder();
+        int shown = 0;
+        for (StackTraceElement element : Thread.currentThread().getStackTrace()) {
+            String type = element.getClassName();
+            if (type.startsWith("java.") || type.startsWith("jdk.") || type.startsWith("org.lwjgl.system")
+                    || type.equals(Presentation.class.getName())) {
+                continue;
+            }
+            text.append(shown == 0 ? "" : " < ").append(type.substring(type.lastIndexOf('.') + 1)).append('.').append(element.getMethodName());
+            if (++shown == 12) {
+                break;
+            }
+        }
+        return text.toString();
     }
 
     public static void resize() {

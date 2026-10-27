@@ -5,6 +5,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import dev.creategalore.bridge.DisplaySettings;
+import dev.creategalore.bridge.framegen.FrameGen;
 import dev.creategalore.bridge.dlss.Dlss;
 import dev.creategalore.bridge.dlss.StartGuard;
 import dev.creategalore.bridge.present.Presentation;
@@ -22,9 +23,10 @@ import org.slf4j.LoggerFactory;
  * and then reads input, so the driver can start it as late as still keeps the GPU busy; markers tell the driver where
  * each frame's game work, rendering and present are (markers alone: its latency report without changing anything). On
  * and boost also take over a frame rate cap from the game's own limiter, which waits after the frame instead of before
- * input. A start that took the game down keeps Reflex off until Try again ({@link StartGuard}). While DLSS Frame
- * Generation runs (testing, see FrameGen) Reflex goes through Streamline ({@link StreamlineReflex}) and is at least on,
- * as NVIDIA's frame generation needs; the GPU pacer stays as set beside it.
+ * input. A start that took the game down keeps Reflex off until Try again ({@link StartGuard}). While Streamline runs
+ * for DLSS Frame Generation (see FrameGen) Reflex goes through it ({@link StreamlineReflex}), and is at least on while
+ * frame generation is, as NVIDIA's needs; the GPU pacer stays as set beside it. AMD's frame generation leaves Reflex
+ * as set.
  *
  * latePoll: read input again just before the mouse turns the camera, after any wait for the GPU or the swap chain
  * (Sodium's render-ahead limit at the start of the frame, Perfect Presentation's swap chain, the game's frame cap).
@@ -73,6 +75,8 @@ public final class FrameLatency {
     private static boolean reflexSleeping;
     /** What the driver was last told: low latency, boost, frame interval (us); null: nothing yet. */
     private static int[] reflexApplied;
+    /** The settings (low latency, boost, the player's cap) and frames shown per rendered one of the last logged Reflex mode. */
+    private static int[] reflexLogged;
 
     private static boolean pacing;
     /** How long a frame may queue (ns), below 0 automatic; with pacerKeepsRate the player's On instead. */
@@ -120,9 +124,12 @@ public final class FrameLatency {
         }
     }
 
-    /** Waits for the frame cap's next frame, then reads input (what the game's limiter does after the frame instead). */
+    /**
+     * Waits for the frame cap's next frame, then reads input (what the game's limiter does after the frame instead).
+     * The cap counts frames on screen: with AMD's frame generation, fewer are rendered.
+     */
     private static void capWait() {
-        long interval = 1_000_000_000L / startCap;
+        long interval = 1_000_000_000L * FrameGen.capShownPerRendered() / startCap;
         long now = System.nanoTime();
         if (now - nextFrame > interval || nextFrame - now > interval) {
             nextFrame = now; // more than a frame behind, or the cap changed: the cadence starts over
@@ -400,7 +407,7 @@ public final class FrameLatency {
             case "boost" -> ReflexMode.BOOST;
             default -> ReflexMode.OFF;
         };
-        if (Presentation.frameGeneration() && wanted.compareTo(ReflexMode.ON) < 0) {
+        if (Presentation.streamline() && FrameGen.on() && wanted.compareTo(ReflexMode.ON) < 0) {
             if (reflexMode != ReflexMode.ON) {
                 LOG.info("Reflex: on, though set to {}: frame generation needs it", wanted.name().toLowerCase(Locale.ROOT));
             }
@@ -410,6 +417,7 @@ public final class FrameLatency {
             try {
                 reflex.setMode(false, false, 0);
                 reflexApplied = null;
+                reflexLogged = null;
                 guard().stopped();
             } catch (RuntimeException e) {
                 reflexFailed(e);
@@ -480,9 +488,9 @@ public final class FrameLatency {
         }
         guard().starting();
         try {
-            if (Presentation.frameGeneration()) {
+            if (Presentation.streamline()) {
                 reflex = StreamlineReflex.start();
-                LOG.info("Reflex: started through Streamline, as frame generation needs ({})", reflex.status());
+                LOG.info("Reflex: started through Streamline, as DLSS Frame Generation needs ({})", reflex.status());
             } else {
                 reflex = NvapiReflex.start(Presentation.d3dDevice());
                 LOG.info("Reflex: started on Perfect Presentation's {} device (NVIDIA NVAPI)", Presentation.api());
@@ -506,17 +514,30 @@ public final class FrameLatency {
         return guard;
     }
 
+    /**
+     * Reflex's mode and frame cap, when they change. The cap counts frames on screen: with AMD's frame generation Reflex
+     * (NVAPI's) gets a rendered rate that gives the cap on screen, while through Streamline it counts DLSS's generated
+     * frames itself. Logged when the player's settings change, and once more when frame generation first changes what a
+     * cap renders, not each time it goes off and on.
+     */
     private static void applyReflexMode() {
         boolean lowLatency = reflexMode.compareTo(ReflexMode.ON) >= 0;
         boolean boost = reflexMode == ReflexMode.BOOST;
         int limit = lowLatency ? frameLimit() : 0;
-        int interval = limit > 0 ? 1_000_000 / limit : 0;
+        int shownPerRendered = FrameGen.capShownPerRendered();
+        int interval = limit > 0 ? 1_000_000 * shownPerRendered / limit : 0;
         int[] wanted = {lowLatency ? 1 : 0, boost ? 1 : 0, interval};
         if (reflexApplied == null || !java.util.Arrays.equals(reflexApplied, wanted)) {
             reflex.setMode(lowLatency, boost, interval);
             reflexApplied = wanted;
-            LOG.info("Reflex: low latency {}, boost {}, frame cap {}; {}", lowLatency ? "on" : "off", boost ? "on" : "off",
-                    limit > 0 ? limit + " fps (Reflex's)" : "none", reflex.status());
+            int[] settings = {wanted[0], wanted[1], limit};
+            boolean changed = reflexLogged == null || !java.util.Arrays.equals(java.util.Arrays.copyOf(reflexLogged, 3), settings);
+            if (changed || shownPerRendered > reflexLogged[3]) {
+                reflexLogged = new int[] {settings[0], settings[1], settings[2], shownPerRendered};
+                LOG.info("Reflex: low latency {}, boost {}, frame cap {}; {}", lowLatency ? "on" : "off", boost ? "on" : "off",
+                        limit == 0 ? "none" : shownPerRendered > 1 ? limit + " fps on screen, " + limit / shownPerRendered
+                                + " rendered (Reflex's)" : limit + " fps (Reflex's)", reflex.status());
+            }
         }
     }
 
