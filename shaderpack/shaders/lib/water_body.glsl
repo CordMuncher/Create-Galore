@@ -45,6 +45,19 @@ void water_light_at(vec3 p, out vec3 direct, out vec3 around) {
 #endif
     above = min(above, water_ray_limit);
     direct = g_light_color.rgb * lit * water_transmittance(above);
+    // Shafts of light under the waves: where the waves overhead gather the light (see water_caustics) it comes down
+    // as bright lines, the same all the way down along the light, so the water between shows them as shafts moving
+    // with the waves; they blur out deeper down. From where the point's light crosses the surface, a ridged pattern
+    // for the lines the light gathers into (a cheap stand-in for the caustics, about as bright on average).
+    float shaft_fade = WATER_WAVES * smoothstep(0.5, 2.0, above) * (1.0 - smoothstep(8.0, 30.0, above));
+    if (shaft_fade > 0.0) {
+        vec3 top = p + g_light_dir.xyz * above;
+        vec2 world = top.xz + cameraPositionFract.xz + vec2(cameraPositionInt.xz & 1023);
+        float t = frameTimeCounter;
+        float r1 = 1.0 - abs(gradient_noise_2d(world * 0.45 + vec2(0.31, 0.17) * t));
+        float r2 = 1.0 - abs(gradient_noise_2d(world * 0.8 - vec2(0.12, 0.27) * t + 7.0));
+        direct *= mix(1.0, 0.5 + 3.9 * pow(r1 * r2, 10.0), shaft_fade); // 1 on average
+    }
     // The sky's light comes down through the water from all over the sky: a longer way than straight down, and less
     // of it under a roof or a boat.
     float below = above * max(g_light_dir.y, 0.2);

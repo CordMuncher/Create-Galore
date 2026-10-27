@@ -72,11 +72,11 @@ vec3 fog_color_lit(vec3 dir) {
 // Rain and snow where you are (cg_rain_here, cg_snow_here: see wet.glsl).
 #include "/lib/wet.glsl"
 
-// The haze of falling rain or snow over dist blocks in the open air: they let you see about a kilometre in rain,
-// 400 blocks in a thunderstorm and 600 in snow. Indoors and underground (where little sky reaches you) there is
-// none between you and what you see.
+// The haze of falling rain or snow over dist blocks in the open air: they let you see about 700 blocks in rain,
+// 300 in a thunderstorm and 600 in snow. Indoors and underground (where little sky reaches you) there is none
+// between you and what you see.
 float weather_haze(float dist) {
-    float density = cg_rain_here * mix(1.0 / 1000.0, 1.0 / 400.0, thunderStrength) + cg_snow_here / 600.0;
+    float density = cg_rain_here * mix(1.0 / 700.0, 1.0 / 300.0, thunderStrength) + cg_snow_here / 600.0;
     float open_sky = smoothstep(0.4, 0.9, float(eyeBrightnessSmooth.y) / 240.0);
     return (1.0 - exp(-dist * density)) * open_sky * (1.0 - float(isEyeInWater != 0));
 }
@@ -92,13 +92,34 @@ vec3 apply_fog_lit(vec3 color, float dist, vec3 dir, vec2 range) {
     return amount > 0.0 ? mix(color, fog_color_lit(dir) * exposure(), amount) : color;
 }
 
+// The sky's own air from start to dist blocks out along dir (scene space, from the eye): rgb the light it scatters
+// towards the eye (frame units), a how much of what lies behind gets through. Worked out along the ray in a few steps
+// with the same light as the sky's table (atmosphere.glsl, air.csh), so far land and water fade into the haze the way
+// the horizon over them does, smoothly from pixel to pixel.
+vec4 air_far_between(vec3 dir, float start, float dist) {
+    vec3 origin = vec3(0.0, atm_height(cameraPosition.y + gbufferModelViewInverse[3].y), 0.0) + dir * (start * 0.001);
+    vec3 through;
+    vec3 light = atm_segment(origin, dir, (dist - start) * 0.001, 6, sun_dir_world(), sun_illuminance, moon_dir_world(),
+            moon_illuminance(), through);
+    return vec4(weather(light) * exposure(), dot(through, vec3(0.2126, 0.7152, 0.0722)));
+}
+
 // The light in the air between the eye and what lies at view depth z (blocks), seen at point (unjittered render
-// pixels): rgb the light it scatters towards the eye (frame units), a how much of what lies behind gets through (see
-// air.glsl). None under water, in lava or in powder snow, which have their own.
-vec4 air_seen(vec2 point, float z) {
+// pixels) along dir (scene space, from the eye): rgb the light it scatters towards the eye (frame units), a how much
+// of what lies behind gets through. The volume's (air.glsl) up to air_sky_start blocks out, with its shafts, dust and
+// lamp glow; past that the sky's own air (air_far_between). None under water, in lava or in powder snow, which have
+// their own.
+vec4 air_seen(vec2 point, float z, vec3 dir) {
 #ifdef LIT_AIR
     if (isEyeInWater == 0) {
-        return air_between(point, z);
+        float along = max(dot(dir, -gbufferModelViewInverse[2].xyz), 1e-3); // view depth per block along dir
+        float dist = z / along;
+        if (dist <= air_sky_start) {
+            return air_between(point, z);
+        }
+        vec4 near = air_between(point, air_sky_start * along);
+        vec4 far = air_far_between(dir, air_sky_start, dist);
+        return vec4(near.rgb + far.rgb * near.a, near.a * far.a);
     }
 #endif
     return vec4(0.0, 0.0, 0.0, 1.0);
@@ -106,8 +127,9 @@ vec4 air_seen(vec2 point, float z) {
 
 // The same for a fragment at scene_pos, frag_coord its gl_FragCoord.xy.
 vec4 air_seen_at(vec3 scene_pos, vec2 frag_coord) {
-    float z = -dot(mat3(gbufferModelViewInverse)[2], scene_pos - gbufferModelViewInverse[3].xyz);
-    return air_seen(frag_coord - vec2(cg_dlss_jitter_x, cg_dlss_jitter_y), z);
+    vec3 eye = scene_pos - gbufferModelViewInverse[3].xyz;
+    float z = -dot(mat3(gbufferModelViewInverse)[2], eye);
+    return air_seen(frag_coord - vec2(cg_dlss_jitter_x, cg_dlss_jitter_y), z, normalize(eye));
 }
 
 // What lies behind seen through that air.

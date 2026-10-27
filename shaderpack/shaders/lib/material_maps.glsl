@@ -30,6 +30,7 @@ struct Maps {
     float sun;        // how much of the sun's (or the moon's) light its relief lets reach it
     vec4 spec;        // the specular map as it is (all 0: none)
     float depth;      // how far along the view the relief took the point in (blocks)
+    float variance;   // how much the facing varies within the pixel that the mipmap averaged away
 };
 
 // How fast u and v grow per block along a surface (world space) facing n at pos: their gradients across it.
@@ -131,6 +132,24 @@ float relief_shadow(vec2 at, ivec2 cell, float point_depth, vec2 dir, ivec4 regi
     }
     return 1.0;
 }
+
+// How much of the light all around reaches a point down among the columns (0..1), from how deep it sits below the
+// columns beside it, in texture pixels (the height field's own occlusion, as horizon-based ambient occlusion
+// estimates it from the heights around): the floor of a groove a pixel wide and a pixel deep sees about half of the
+// sky. A column's side, point_depth down, faces across the groove, so the column across it hides half its sky even
+// at the top; deeper down, more. cell: the pixel whose top or side it is.
+float relief_occlusion(ivec2 cell, ivec4 region, float depth, float point_depth, bool side) {
+    float texel = 1.0 / float(region.z); // blocks a pixel
+    if (side) {
+        float down = max(point_depth - column_depth(cell, region, depth), 0.0) / texel;
+        return 0.5 / (1.0 + 0.7 * down);
+    }
+    float below = max(point_depth - column_depth(cell + ivec2(1, 0), region, depth), 0.0)
+            + max(point_depth - column_depth(cell - ivec2(1, 0), region, depth), 0.0)
+            + max(point_depth - column_depth(cell + ivec2(0, 1), region, depth), 0.0)
+            + max(point_depth - column_depth(cell - ivec2(0, 1), region, depth), 0.0);
+    return 1.0 / (1.0 + 0.25 * below / texel);
+}
 #endif
 
 // The maps for a surface drawn at scene_pos (scene space) with texture coordinates uv, facing n (world space), seen
@@ -146,6 +165,8 @@ Maps read_maps(vec3 scene_pos, vec2 uv, vec3 n, vec3 view_dir, vec4 region, vec3
     m.uv = uv;
     m.depth = 0.0;
     m.sun = 1.0;
+    m.variance = 0.0;
+    float crevice = 1.0;
     vec3 t = dot(grad_u, grad_u) > 0.0 ? normalize(grad_u) : vec3(0.0);
     vec3 b = dot(grad_v, grad_v) > 0.0 ? normalize(grad_v) : vec3(0.0);
     vec3 facing = vec3(0.0, 0.0, 1.0);
@@ -178,6 +199,7 @@ Maps read_maps(vec3 scene_pos, vec2 uv, vec3 n, vec3 view_dir, vec4 region, vec3
             vec2 from = side ? at + facing.xy * 0.001 : inside;
             m.sun = relief_shadow(from, ivec2(floor(from)), met, to_light, r, depth);
         }
+        crevice = relief_occlusion(cell, r, depth, met, side);
     }
 #endif
     // A texel at a time, as the colour is read: Iris leaves the maps' atlases to OpenGL's own filtering up close, which
@@ -187,21 +209,43 @@ Maps read_maps(vec3 scene_pos, vec2 uv, vec3 n, vec3 view_dir, vec4 region, vec3
     vec2 texel_uv = (floor(m.uv * maps_size) + 0.5) / maps_size;
     vec4 nmap = textureGrad(normals, texel_uv, duv_dx, duv_dy);
     m.spec = textureGrad(specular, texel_uv, duv_dx, duv_dy);
-    m.ao = side ? 1.0 : nmap.b;
-    // A column's side faces across the texture; a top the way its normal map says.
-    vec3 f = side ? facing : map_facing(nmap.rg);
+    // A groove's floor: the crevices the map holds and the ones the columns make, the latter half counted (a map's
+    // own crevices often hold them already); a groove's side: the columns' alone.
+    m.ao = side ? crevice : nmap.b * mix(1.0, crevice, 0.5);
+    // A column's side faces across the texture, but sees the sky through the groove's opening: the light all around
+    // comes to it from out of the surface more than from where it faces (its bent normal), so the side of a groove
+    // in a wall takes the light around the wall, not the deep blue overhead.
+    vec3 f = side ? normalize(facing + vec3(0.0, 0.0, 1.0)) : map_facing(nmap.rg);
     vec3 world = t * f.x + b * f.y + n * f.z;
     m.normal = dot(world, world) > 1e-8 ? normalize(world) : n;
+    // Far off, where a pixel spans several texture pixels, the mipmap averages their facings flatter, and the bumps
+    // and their sheen would fade: what it averages away (how the facing varies over the pixel's footprint, read two
+    // mip levels finer) goes into the roughness instead, as Toksvig's and LEAN mapping's do.
+    vec2 footprint = vec2(length(duv_dx * maps_size), length(duv_dy * maps_size));
+    if (!side && max(footprint.x, footprint.y) > 1.0) {
+        vec2 fine_dx = 0.25 * duv_dx;
+        vec2 fine_dy = 0.25 * duv_dy;
+        vec2 a = textureGrad(normals, m.uv + 0.25 * (duv_dx + duv_dy), fine_dx, fine_dy).rg * 2.0 - 1.0;
+        vec2 c = textureGrad(normals, m.uv + 0.25 * (duv_dx - duv_dy), fine_dx, fine_dy).rg * 2.0 - 1.0;
+        vec2 d = textureGrad(normals, m.uv - 0.25 * (duv_dx + duv_dy), fine_dx, fine_dy).rg * 2.0 - 1.0;
+        vec2 e = textureGrad(normals, m.uv - 0.25 * (duv_dx - duv_dy), fine_dx, fine_dy).rg * 2.0 - 1.0;
+        vec2 mean = 0.25 * (a + c + d + e);
+        vec2 coarse = nmap.rg * 2.0 - 1.0;
+        m.variance = 0.25 * (dot(a - mean, a - mean) + dot(c - mean, c - mean) + dot(d - mean, d - mean)
+                + dot(e - mean, e - mean)) + dot(mean - coarse, mean - coarse);
+        m.variance *= smoothstep(1.0, 2.0, max(footprint.x, footprint.y));
+    }
     return m;
 }
 
 // How smooth a surface reads (perceptually, 0..1) once the facing's changes across a pixel are folded into its
 // roughness, so a normal map's fine bumps don't sparkle from frame to frame (Tokuyoshi and Kaplanyan 2021, the
-// isotropic form for a G-buffer: GGX's alpha² grows by the facing's variance over the pixel, up to 0.18).
-float filtered_smoothness(float smoothness, vec3 normal) {
+// isotropic form for a G-buffer: GGX's alpha² grows by the facing's variance over the pixel, up to 0.18). within:
+// the variance inside the pixel the mipmap averaged away (Maps.variance).
+float filtered_smoothness(float smoothness, vec3 normal, float within) {
     vec3 dx = dFdx(normal);
     vec3 dy = dFdy(normal);
-    float variance = (dot(dx, dx) + dot(dy, dy)) / (2.0 * 3.14159265358979);
+    float variance = (dot(dx, dx) + dot(dy, dy)) / (2.0 * 3.14159265358979) + within;
     float alpha = (1.0 - smoothness) * (1.0 - smoothness);
     float filtered = sqrt(alpha * alpha + min(variance, 0.18));
     return 1.0 - sqrt(filtered);

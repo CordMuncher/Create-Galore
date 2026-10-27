@@ -72,7 +72,7 @@ void main() {
 
     // The point in front of the surface, counted in blocks from the volume's corner, from the first of the eight block
     // centres around it; half a block in front where there's no room further out.
-    ivec3 base;
+    ivec3 base = ivec3(0);
     float weights[8];
     float total = 0.0;
     for (int attempt = 0; attempt < 2 && total < 1e-3; attempt++) {

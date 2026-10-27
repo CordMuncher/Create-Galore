@@ -325,9 +325,10 @@ float water_depth_marked(vec3 scene_pos) {
 // its caustics by. The waves seen on the surface are too gentle to focus in a block or two of water, so the light
 // here goes through ripples half their size (their steepness kept) and bends four times as far as water would bend
 // it: a pool's net of bright lines in a block or two of water, broad and faint further down. Red bends a little less
-// than blue, so the lines have coloured edges.
+// than blue, so the lines have coloured edges. They fade out by 48 blocks off, where a pixel spans several lines and
+// they would only sparkle on what is down there (seagrass, kelp).
 vec3 water_caustics(vec3 scene_pos, float depth, float dist) {
-    float fade = smoothstep(0.2, 1.0, depth) * (1.0 - smoothstep(32.0, 80.0, dist));
+    float fade = smoothstep(0.2, 1.0, depth) * (1.0 - smoothstep(16.0, 48.0, dist));
     if (fade <= 0.0) {
         return vec3(1.0);
     }
@@ -355,7 +356,7 @@ vec3 water_caustics(vec3 scene_pos, float depth, float dist) {
     vec3 kc = k * vec3(0.97, 1.0, 1.03);
     vec3 det = (1.0 + kc * hxx) * (1.0 + kc * hzz) - kc * kc * hxz2 * hxz2;
     // Softened where it would focus to a point, and more so far off, where a pixel spans several lines.
-    float soft = 0.03 + 0.3 * smoothstep(12.0, 48.0, dist);
+    float soft = 0.03 + 0.3 * smoothstep(8.0, 32.0, dist);
     vec3 density = clamp(inversesqrt(det * det + soft), 0.15, 3.0) / (1.0 + 0.1 * k * k);
     return mix(vec3(1.0), density, fade * (1.0 - 0.6 * smoothstep(6.0, 24.0, depth)));
 }

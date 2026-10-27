@@ -5,8 +5,8 @@
 //
 // A volume of cells fixed to the camera, as Unreal's, Frostbite's (Hillaire 2015) and Assassin's Creed IV's (Wronski
 // 2014) volumetric fog is: air_tile by air_tile render pixels across, and air_slices deep, closer together near you
-// (each a little deeper than the one before) out to the end of the terrain. Two passes before the world is drawn
-// (air_volume.csh):
+// (each a little deeper than the one before) out to as far as the shadow map reaches. Two passes before the world is
+// drawn (air_volume.csh):
 // - the cells: each one works out the light its air scatters towards the eye (the sun and the moon where the shadow
 //   map and the clouds let them through, the sky's light where the sky reaches it, the lamps' light from the light
 //   volume) and how much light it takes out, at a point somewhere inside it that moves from frame to frame, and
@@ -14,8 +14,10 @@
 //   hold the average over all of it, and the volume holds still with no noise on the screen for the upscaler to see;
 // - the sum: down each column of cells from the eye, the light all the air up to the end of each cell scatters
 //   towards the eye, and how much of what lies beyond gets through it (Frostbite's energy-conserving integration).
-// Every surface then takes the sum at its own depth, between the cells around it (air_between). The sky takes the
-// air up to the shadow map's reach from it, and the sky view table the rest (atmosphere.glsl, air.csh).
+// Every surface then takes the sum at its own depth, between the cells around it (air_between). Past the volume, the
+// air is the sky's own, without shafts or dust: the sky takes the sky view table's (atmosphere.glsl, air.csh), and
+// far land and water the same air worked out along their own ray (lit.glsl's air_far_between), so they fade into the
+// haze the way the horizon does, smoothly, with no cells showing.
 //
 // Both passes keep their cells in colortex10 and colortex11, as a page of slices side by side, air_columns to a row:
 // the cells pass writes this frame's into colortex10 from last frame's in colortex11; the sum copies them into
@@ -87,13 +89,10 @@ ivec2 air_exposure_texel() {
     return ivec2(air_columns * air_block().x, 0);
 }
 
-// How deep (view depth, blocks) the volume reaches: a little past the end of the terrain, Distant Horizons' too.
+// How deep (view depth, blocks) the volume reaches: as far as the sky's table begins, past which the air is worked
+// out along each pixel's ray (lit.glsl's air_far_between), so all its slices go to the air near you.
 float air_far() {
-    float d = far;
-#ifdef DISTANT_HORIZONS
-    d = max(d, float(dhRenderDistance));
-#endif
-    return max(1.15 * d, 2.0 * air_sky_start);
+    return air_sky_start;
 }
 
 float air_log_scale() {

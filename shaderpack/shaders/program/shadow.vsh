@@ -56,7 +56,7 @@ vec3 listed_light_color(int id) {
     switch (id) {
         case 10101: return vec3(1.0, 0.12, 0.05);  // redstone
         case 10102: return vec3(0.15, 0.75, 1.0);  // soul fire
-        case 10103: return vec3(0.75, 0.9, 1.0);   // sea lantern, beacon, conduit, end rod
+        case 10103: return vec3(0.55, 0.85, 1.0);  // sea lantern, beacon, conduit, end rod
         case 10104: return vec3(0.6, 0.25, 1.0);   // crying obsidian, amethyst, nether portal
         case 10105: return vec3(0.55, 1.0, 0.45);  // verdant froglight
         case 10106: return vec3(1.0, 0.6, 0.9);    // pearlescent froglight
@@ -96,13 +96,14 @@ vec3 face_light_color(vec2 uv, vec2 mid) {
 }
 
 // A light's colour (brightest channel 1): torchlight for the warm ones (whose texture's colour is close to a torch
-// flame's), else its texture's colour, a little paler.
+// flame's), else its texture's colour, a little deeper (a lamp's texture is mostly near white, its colour in a few
+// texels, so taken as it is its light would come out paler than the lamp looks).
 vec3 light_color(vec3 texture_color) {
     // A torch's flame as face_light_color sees it, in chromaticity (its share of red, green and blue).
     const vec3 flame = vec3(0.602, 0.355, 0.043);
     vec3 chroma = texture_color / max(texture_color.r + texture_color.g + texture_color.b, 1e-4);
     float own = smoothstep(0.15, 0.35, distance(chroma, flame));
-    vec3 c = mix(vec3(1.0), texture_color / max(texture_color.r, max(texture_color.g, max(texture_color.b, 1e-4))), 0.8);
+    vec3 c = pow(texture_color / max(texture_color.r, max(texture_color.g, max(texture_color.b, 1e-4))), vec3(1.3));
     vec3 torch = torch_color / torch_color.r;
     return mix(torch, c, own);
 }

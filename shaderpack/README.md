@@ -42,7 +42,7 @@ Clouds, weather and the End (milestone 3, the Clouds and End Sky options):
 Light and water (milestone 4, the Coloured Light, Bounce Light and Water Ripples options; all three need Shadows):
 
 - Coloured light: every light lights the world in its own colour, soul lanterns blue, redstone red, sea lanterns
-  cool white, and every modded light the colour of its own texture, so they need no list of blocks. The shadow pass
+  cyan, and every modded light the colour of its own texture, so they need no list of blocks. The shadow pass
   marks the lights, solid blocks and stained glass in a volume of blocks around you, and the light spreads through
   it a block a frame, mixing where lights meet and tinted by glass. It only colours the light: how bright it is
   stays Minecraft's light level, so it never reaches further or leaks where Minecraft's light doesn't.
@@ -207,6 +207,54 @@ Exposure and colour (alpha 4, the Light screen's Local Exposure and Night Vision
   upscaler smooths noise away: at half the window's size, each pixel gathers what spreads over it along a fixed
   spiral, the far blur from behind the focus and the near blur from in front of it, which spreads out over what is
   sharp behind it (as Call of Duty: Advanced Warfare's, Jimenez 2014). The hand stays sharp.
+
+Water, light and sky from the first full comparison (alpha 5, and the Lamp Shape, Moon Size and Milky Way options):
+
+- Water to the horizon: the waves are read at the detail a pixel can hold, the way a texture's mipmaps are, and
+  what a pixel can no longer show becomes roughness (as Bruneton, Neyret and Holzschuch's ocean goes from waves to
+  normals to a rough surface), so the swell and the sun's glitter reach the horizon and a rough sea seen from above
+  shows a broad, broken glitter path instead of a mirror's disc. The sky the water mirrors is averaged over the
+  slopes too small to see. Distant Horizons' water takes the same waves, depth colour, Fresnel and glitter, with no
+  seam where it begins.
+- The shore: the shadow pass marks the top of every water column within 128 blocks, and two passes blur how much
+  of the ground around each one isn't open water, closely (for the foam) and widely (for how open the water is).
+  Foam gathers in corners and round the far side of a pillar and thins out along a straight wall, laps in and out
+  every few seconds, drifts with the waves, is lit by their slope and goes on under the surface as bubbles; a pool
+  or a pond gets small waves and open water the full swell; the water against a wall is a little darker, and the
+  wall above it is wet where the waves lap.
+- Under water: coastal-sea clarity, so a wall ten blocks off is clearly hazier than one close by, and bright shafts
+  under the waves moving with them beside the shadows' dark ones. The caustics fade out by 48 blocks off, where
+  they would only sparkle on the seagrass.
+- Lamps: the coloured light carries the way back to the lamp it came from, so close to a lamp its light falls off
+  as a real lamp's does and lights most what faces it (Lamp Shape), and a crate or a pillar between a lamp and a
+  wall casts a shadow on it (a march through the volume's blocks from each point to its lamp). Light colours read
+  from textures come out deeper, and sea lanterns cyan.
+- Rooms: where the sky grid's rays find that a point sees little of the sky (only through a window), its sky light
+  may now go darker than Minecraft's, which spreads a window's light through the whole room; out in the open the
+  rule that it never does still holds. The exposure aims two stops lower in the dark (rooms, caves, night), so dark
+  places look dark and a lamp's pool of light stands out, local exposure keeps more of a bright window's detail,
+  and the screen's ambient occlusion reaches further, so a room's corners are darker.
+- Bright light keeps its colour: a whole glowing face (glowstone, lava, a sea lantern) is held lower than a flame,
+  lava glows by its texture (the bright streaks fully, the crust a little), and bright, deep colours keep their hue
+  through the tone curve longer before going white. The bloom spreads less, more in rain and fog. The colour look
+  adds less saturation, so oak reads as wood and leaves as foliage.
+- The air: past the shadows' reach it is worked out along each pixel's own ray, with the same light as the sky's
+  table, so far land fades into the haze as the horizon over it does, smoothly, with no cells showing; the volume's
+  slices all go to the air near you, finer for it, and rooms and caves hold more dust, so a window's beam shows.
+  Night vision tints only the moon's and the stars' share of a pixel, so a lamp's dim glow in the air goes grey
+  rather than blue.
+- Trees: leaves vary a little in colour from tree to tree and block to block, inner and lower leaves see less of
+  the sky, and seen against the sun the side of a crown away from it glows with what comes through.
+- Materials: the sides and floors of the relief's grooves see only the sky through the groove's opening (the height
+  field's own occlusion, from how deep a point sits below the pixels around it), so mortar no longer lights up blue;
+  far off, the bumps the mipmaps average away become roughness, so the relief's sheen holds up.
+- The night sky: the moon is drawn three times its real size (its light stays the real size's), its face and phase
+  below white, as an eye adapted to it sees it, with a faint glow; about 15000 stars, twinkling near the horizon;
+  and the Milky Way, a faint band split by its dust lanes, which a full moon's sky drowns and a dark night shows.
+- Rain falls as short, faint dashes of varied brightness that take the light around them; under heavy rain the
+  exposure sits half a stop lower (most of a stop in a thunderstorm) and the distance hazes sooner.
+- Clean arrivals: a teleport, a respawn or a sharp turn counts as a camera cut, and the exposure goes straight to
+  its new level and the air's history starts afresh, instead of the picture settling over the next second.
 
 From milestone 1, in every preset:
 

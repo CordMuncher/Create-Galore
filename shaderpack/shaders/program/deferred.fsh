@@ -61,7 +61,7 @@ vec4 cumulus_at(vec2 point) {
 
 // The sky with the clouds: the cumulus over the air, and the cirrus between the air and what is beyond it.
 vec3 sky_with_clouds(vec3 dir, float pixel_angle, vec2 point, ivec2 texel) {
-    vec3 beyond = sky_space(dir, pixel_angle) * (1.0 - rainStrength);
+    vec3 beyond = sky_space(dir, pixel_angle, moon_shown(exposure())) * (1.0 - rainStrength);
 #ifdef CIRRUS
     vec4 ci = cirrus(dir, cloud_noise(texel, 7u));
     beyond = ci.rgb + ci.a * beyond;
@@ -367,7 +367,7 @@ void main() {
 #ifdef LIT_CLOUDS
         vec3 sky = sky_with_clouds(dir, pixel_angle, point, texel);
 #else
-        vec3 sky = sky_full(dir, pixel_angle);
+        vec3 sky = sky_full(dir, pixel_angle, moon_shown(exposure()));
 #endif
         // In lava or powder snow, and blind, the fog hides the sky (under water, the water does: see water_body.fsh).
         if (isEyeInWater >= 2 || blindness > 0.0 || darknessFactor > 0.0) {
@@ -379,7 +379,7 @@ void main() {
         vec3 behind = sky * exposure();
 #ifdef LIT_AIR
         // The air nearest you, with its shafts, in front of the sky (whose table begins past it, see air.glsl).
-        behind = through_air(behind, air_seen(point, air_sky_start * -normalize(unproject(gbufferProjectionInverse, ndc, 1.0)).z));
+        behind = through_air(behind, air_seen(point, air_sky_start * -normalize(unproject(gbufferProjectionInverse, ndc, 1.0)).z, dir));
 #endif
         color = emissive + behind * (1.0 - covered);
     } else if (material == MATERIAL_SELF) {
@@ -585,7 +585,7 @@ void main() {
         bool open_air = isEyeInWater == 0 && blindness == 0.0 && darknessFactor == 0.0;
         float dist = open_air ? max(length(scene_pos.xz), abs(scene_pos.y)) : length(scene_pos);
         // The light in the air between you and it (see air.glsl), which dims what glows too.
-        vec4 air = depth >= hand_depth_limit ? air_seen(point, -view.z) : vec4(0.0, 0.0, 0.0, 1.0);
+        vec4 air = depth >= hand_depth_limit ? air_seen(point, -view.z, dir) : vec4(0.0, 0.0, 0.0, 1.0);
         color = emissive * air.a + apply_fog_lit(through_air(lit, air), dist, dir, fog_range_shaped(open_air ? 1 : 0));
 #ifdef LIT_CLOUDS
         // From above the cumulus, they hide what lies under them.

@@ -54,14 +54,16 @@ vec3 sun_disc(vec3 dir, vec3 sun_dir, float pixel_angle) {
     return sun_illuminance / sun_solid_angle * darkening * coverage;
 }
 
-// The moon: Minecraft's own moon picture for tonight's phase, at the moon's real size, in Iris's celestial frame
-// as Minecraft draws it.
-vec3 moon_disc(vec3 dir, vec3 moon_dir, vec3 axis, float pixel_angle) {
+// The moon: Minecraft's own moon picture for tonight's phase, in Iris's celestial frame as Minecraft draws it, MOON_SIZE
+// times its real size (a real moon, under half a degree across, is too small on a screen to show its face and its
+// phase; its light on the world is the real size's whatever this is). shown: the share of its radiance it is drawn at
+// (moon_shown).
+vec3 moon_disc(vec3 dir, vec3 moon_dir, vec3 axis, float pixel_angle, float shown) {
     if (dot(dir, moon_dir) <= 0.0) {
         return vec3(0.0);
     }
     vec3 across = normalize(cross(axis, -moon_dir)); // the celestial frame's z, the sun's opposite side
-    vec2 q = vec2(dot(dir, axis), dot(dir, across)) / moon_angular_radius; // -1..1 over the picture
+    vec2 q = vec2(dot(dir, axis), dot(dir, across)) / (moon_angular_radius * MOON_SIZE); // -1..1 over the picture
     if (any(greaterThan(abs(q), vec2(1.0)))) {
         return vec3(0.0);
     }
@@ -71,24 +73,40 @@ vec3 moon_disc(vec3 dir, vec3 moon_dir, vec3 axis, float pixel_angle) {
     vec3 albedo = texture(cg_moon_tex, uv).rgb;
     // The picture's sRGB, its brightest grey as the full moon's albedo.
     albedo = pow(albedo, vec3(2.2)) * 1.6;
-    return moon_radiance() * albedo;
+    return moon_radiance() * albedo * shown;
 }
 
-// What is beyond the air in a direction: the sun, the moon and the stars, none where the planet is in the way.
-vec3 sky_space(vec3 dir, float pixel_angle) {
+// The share of the moon's radiance its disc is drawn at for eyes adapted to an exposure (frame values per kcd/m²):
+// at most moon_frame_max in the frame, so its face and its phase show below white, as an eye sees the moon (adapting
+// to it on its own) rather than as a camera exposed for the land would, which burns it out into a white dot with a
+// wide glow.
+const float moon_frame_max = 5.0;
+
+float moon_shown(float exposure_now) {
+    return min(1.0, moon_frame_max / max(exposure_now * dot(moon_radiance(), vec3(0.2126, 0.7152, 0.0722)), 1e-12));
+}
+
+// What is beyond the air in a direction: the sun, the moon (drawn at a share moon of its radiance, see moon_shown) and
+// the stars, none where the planet is in the way.
+vec3 sky_space(vec3 dir, float pixel_angle, float moon) {
     vec3 origin = vec3(0.0, atm_height(cameraPosition.y), 0.0);
     if (atm_ray_sphere(origin, dir, atm_bottom) >= 0.0) {
         return vec3(0.0);
     }
     vec3 sun_dir = sun_dir_world();
     vec3 axis = sun_path_axis();
-    return sun_disc(dir, sun_dir, pixel_angle) + moon_disc(dir, moon_dir_world(), axis, pixel_angle) + stars(dir, sun_dir, axis, pixel_angle);
+    vec3 beyond = sun_disc(dir, sun_dir, pixel_angle) + moon_disc(dir, moon_dir_world(), axis, pixel_angle, moon)
+            + night_stars(dir, sun_dir, axis, pixel_angle);
+#ifdef MILKY_WAY
+    beyond += milky_way(dir, sun_dir, axis);
+#endif
+    return beyond;
 }
 
 // Everything you see in a direction where nothing else is: the air, and through it what is beyond it (rain hides
 // that).
-vec3 sky_full(vec3 dir, float pixel_angle) {
-    return sky_radiance(dir) + sky_space(dir, pixel_angle) * sky_transmittance(dir) * (1.0 - rainStrength);
+vec3 sky_full(vec3 dir, float pixel_angle, float moon) {
+    return sky_radiance(dir) + sky_space(dir, pixel_angle, moon) * sky_transmittance(dir) * (1.0 - rainStrength);
 }
 
 #endif

@@ -62,7 +62,7 @@ uniform sampler2D colortex11; // last frame's cells
 // Indoors and in caves (under a roof, between walls), the air holds dust (per block) that a sunbeam through a window
 // or a gap shows up, and that glows around lamps; out under the sky the haze is the sky's own, under an overhang, a
 // bridge or a floating island too (with only a roof over it, the air would light up as a pale box under it).
-const float air_dust = 0.002 * AIR_DUST;
+const float air_dust = 0.006 * AIR_DUST;
 // How much of the lamps' light the air scatters around them (per block): enough for a soft glow in their colour
 // close around them.
 const float air_glow = 0.03 * LAMP_GLOW;

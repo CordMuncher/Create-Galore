@@ -224,6 +224,44 @@ vec4 block_light_source(vec3 scene_pos, vec3 normal) {
     return vec4(lamp - (at - normal * 0.5), fade);
 }
 
+uniform usampler3D cg_voxel_tex; // cg_voxel_img, this frame's marks
+
+// Whether a lamp's light comes straight to a point on a surface (scene space, facing normal), to_lamp the way from it
+// to the lamp's middle (blocks, see block_light_source): 1 if no solid cube stands in the way, 0 if one does, so a
+// crate or a pillar casts a shadow from a lantern (its light still gets round it, by Minecraft's levels). The ray is
+// followed through the volume's marks a block at a time (Amanatides and Woo), from the block the point is in to the
+// one before the lamp's.
+float lamp_visible(vec3 scene_pos, vec3 normal, vec3 to_lamp) {
+    vec3 from = scene_pos + normal * 0.02 + cameraPositionFract + vec3(light_volume_size / 2);
+    ivec3 cell = ivec3(floor(from));
+    ivec3 lamp = ivec3(floor(from + to_lamp));
+    vec3 dir = to_lamp;
+    vec3 step_dir = sign(dir);
+    vec3 inv = vec3(abs(dir.x) > 1e-6 ? 1.0 / abs(dir.x) : 1e6, abs(dir.y) > 1e-6 ? 1.0 / abs(dir.y) : 1e6,
+            abs(dir.z) > 1e-6 ? 1.0 / abs(dir.z) : 1e6);
+    // How far along the way (0..1) the ray leaves the cell across each axis, and how far a whole block is.
+    vec3 next = (step_dir * (vec3(cell) - from) + max(step_dir, 0.0)) * inv;
+    for (int i = 0; i < 24; i++) {
+        if (next.x < next.y && next.x < next.z) {
+            cell.x += int(step_dir.x);
+            next.x += inv.x;
+        } else if (next.y < next.z) {
+            cell.y += int(step_dir.y);
+            next.y += inv.y;
+        } else {
+            cell.z += int(step_dir.z);
+            next.z += inv.z;
+        }
+        if (cell == lamp || !in_light_volume(cell)) {
+            return 1.0;
+        }
+        if (marks_solid(texelFetch(cg_voxel_tex, marks_texel(cell, section_marks), 0).r)) {
+            return 0.0;
+        }
+    }
+    return 1.0;
+}
+
 // The block light's colour for the volume's light (rgb, any brightness): as bright as torchlight in all (red, green
 // and blue summed), so a light level means what it means elsewhere; with LIGHT_STYLE, brought towards torchlight's
 // brightness to the eye (blue the most, as it looks dimmest).

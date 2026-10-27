@@ -33,10 +33,11 @@ vec3 agx_display(vec3 color) {
     color = clamp(log2(max(color, 1e-10)), -0.5 * ev_range, 0.5 * ev_range);
     color = agx_contrast((color + 0.5 * ev_range) / ev_range);
 
-    // Alpha Piscium's look: a little more slope and contrast, and colour.
+    // Alpha Piscium's look: a little more slope and contrast, and colour (less of it than Alpha Piscium's 1.3, so oak
+    // planks read as wood and leaves as foliage rather than paint).
     color = pow(max(color * 1.05, 0.0), vec3(1.1));
     float luma = dot(color, vec3(0.2126, 0.7152, 0.0722));
-    color = luma + 1.3 * (color - luma);
+    color = luma + 1.15 * (color - luma);
 
     return clamp(agx_out * color, 0.0, 1.0);
 }

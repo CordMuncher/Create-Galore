@@ -115,7 +115,8 @@ vec3 air_taken_off(vec3 seen, vec2 point) {
         }
 #endif
     }
-    vec4 air = air_seen(point, z);
+    vec3 dir = normalize(mat3(gbufferModelViewInverse) * unproject(gbufferProjectionInverse, ndc, 1.0));
+    vec4 air = air_seen(point, z, dir);
     return (seen - air.rgb) / max(air.a, 1e-3);
 }
 #endif
@@ -302,10 +303,12 @@ void main() {
         r = normalize(vec3(r.x, max(r.y, 0.02), r.z)); // a wave can't turn the reflection down into the water
         float open_sky = smoothstep(12.0 / 15.0, 14.5 / 15.0, water.b);
         vec3 reflection = mirror.rgb * open_sky * exposure() * (1.0 - hidden);
+        float screen_hit = 0.0;
 #if REFLECTION_QUALITY > 0
         vec3 hit = reflection_trace(depthtex1, p_view, mat3(gbufferModelView) * r, noise, hand_depth_limit);
         if (hit.z > 0.0) {
             reflection = mix(reflection, texelFetch(colortex0, ivec2(hit.xy), 0).rgb, hit.z);
+            screen_hit = hit.z;
         }
 #endif
         // The sun's glint where the shadow map says it gets there; past it, where Minecraft's own sky light does (see
@@ -317,6 +320,8 @@ void main() {
             lit = open_sky * texture(shadowtex1HW, vec3(coord.xy, coord.z - 0.00002));
         }
 #endif
+        color = body * (1.0 - f) + reflection * f + water_glint(n, dir, roughness, lit) * exposure();
+
         // Foam: where the ground closes in round the water (see shore.glsl), so it gathers in corners and round a
         // pillar and thins out along a straight wall, lapping in and out every few seconds; more of it the rougher
         // the water (its swell, the rain); and where something churns it (a wake). It drifts with the waves, is lit
@@ -354,10 +359,12 @@ void main() {
         }
         // The light in the air and Minecraft's fog in front of it, as the deferred pass has them in front of what is
         // opaque.
-        color = through_air(color, air_seen(vec2(texel) + 0.5 - jitter, -p_view.z));
+        color = through_air(color, air_seen(vec2(texel) + 0.5 - jitter, -p_view.z, dir));
         color = apply_fog_lit(color, max(length(p.xz), abs(p.y)), dir, fog_range_shaped(1));
 #if DEBUG_VIEW == 6
         color = vec3(sky_light_curve(sky_light_mc), max(seen, 0.0), seen < 0.0 ? 0.5 : 0.0) * 2.0;
+#elif DEBUG_VIEW == 8
+        color = vec3(f * 2.0, screen_hit, 0.25) * 2.0;
 #endif
     }
     if (any(isnan(color))) {

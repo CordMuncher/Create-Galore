@@ -21,6 +21,9 @@ uniform sampler2D colortex1;
 uniform sampler2D colortex2;
 uniform sampler2D colortex4;
 uniform float frameTime;
+uniform float cg_rain_here;          // see shaders.properties
+uniform float thunderStrength;
+uniform ivec2 eyeBrightnessSmooth;
 
 const float ev_min = -7.0;
 const float ev_max = 12.0;
@@ -142,6 +145,10 @@ void main() {
     // a little under the middle of the screen's range; two stops lower in the dark (a lamp-lit room, a cave, the
     // night), so dark places look dark and a lamp's pool of light stands out in them.
     float key = mix(-1.25, 0.75, smoothstep(-11.0, -2.0, metered));
+    // Out under heavy rain, half a stop lower (most of a stop in a thunderstorm): a rainy day reads as the dim, grey
+    // day it is rather than brought back up to a sunny one's brightness.
+    float out_in_rain = cg_rain_here * smoothstep(0.4, 0.9, float(eyeBrightnessSmooth.y) / 240.0);
+    key -= out_in_rain * (0.5 + 0.4 * thunderStrength);
     float target = clamp(key - metered, ev_min, ev_max);
     // Straight there the first frames after a camera cut (see frame_globals.csh), as eyes would have had time to.
     float ev = exposure_ready(previous) && global(G_CUT).y >= 3.0 ? previous.y : target;

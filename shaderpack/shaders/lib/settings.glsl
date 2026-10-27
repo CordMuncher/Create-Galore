@@ -35,6 +35,11 @@ const float upscaling_render_scale = RENDER_SCALE;
 #endif
 #define EXPOSURE 0.0     // [-2.0 -1.5 -1.0 -0.5 0.0 0.5 1.0 1.5 2.0]
 #define NIGHT_LIGHT 1.0  // [0.25 0.5 1.0 1.5 2.0 3.0]
+// The moon as drawn, times its real size (see moon_disc in sky.glsl), and the Milky Way across the sky on dark nights.
+#define MOON_SIZE 3.0    // [1.0 2.0 3.0 4.0 5.0]
+#define MILKY_WAY
+#ifdef MILKY_WAY
+#endif
 // How far colours go over to the rods' cool, colourless view in the dark, as eyes do (see night_vision.glsl): 0 not
 // at all, 1 as the eye's own.
 #define NIGHT_VISION 1.0 // [0.0 0.25 0.5 0.75 1.0]
@@ -182,8 +187,9 @@ const float upscaling_render_scale = RENDER_SCALE;
 // a white surface; 2 only the ambient occlusion (white open, black shut); 3 how deep under water each point is and
 // the caustics there; 4 why the shadow map does or doesn't find water over a point; 5 the leaves' crown shape; 6 how
 // much of the sky each surface sees; 7 only the light the screen bounces, as it falls on a white surface (see
-// deferred.fsh).
-#define DEBUG_VIEW 0 // [0 1 2 3 4 5 6 7]
+// deferred.fsh); 8 on the water, how much it mirrors (red, twice its Fresnel) and where the screen gives what it
+// mirrors (green).
+#define DEBUG_VIEW 0 // [0 1 2 3 4 5 6 7 8]
 
 // Water, in the lit overworld: small wind waves on every water surface (Waves: how high, 0 none), and ripples where
 // you, mobs, boats, ships and Create's water wheels move through it, with wakes behind them (with shadows on: the

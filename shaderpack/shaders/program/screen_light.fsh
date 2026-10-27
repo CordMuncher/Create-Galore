@@ -56,8 +56,9 @@ const int screen_steps = 6;
 const int screen_directions = 1;
 const int screen_steps = 5;
 #endif
-// How far around a surface it looks (blocks): what lies further off counts less from 40% of it out.
-const float screen_radius = 1.5;
+// How far around a surface it looks (blocks): what lies further off counts less from 40% of it out. Far enough that
+// a room's corners and the floor under a ledge are clearly darker, and lamp light in them less.
+const float screen_radius = 2.25;
 // How thick whatever the screen shows is taken to be behind its front (blocks): a block's depth, a little more far
 // off, where a pixel covers more.
 const float screen_thickness = 0.75;

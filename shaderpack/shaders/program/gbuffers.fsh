@@ -89,7 +89,7 @@ layout(location = 1) out vec4 out_motion;
 
 #ifdef LIT_MAPS
 // The resource pack's maps where the draw is (see material_maps.glsl), read first thing in main().
-Maps maps = Maps(vec2(0.0), vec3(0.0, 0.0, 1.0), 1.0, 1.0, vec4(0.0), 0.0);
+Maps maps = Maps(vec2(0.0), vec3(0.0, 0.0, 1.0), 1.0, 1.0, vec4(0.0), 0.0, 0.0);
 #endif
 
 #ifdef LIT_WORLD
@@ -118,9 +118,17 @@ void lit_output(vec4 color, int flags) {
     vec3 rgb = forward_lit(vec3(0.9), normal, vec2(0.0, 1.0), v_scene_pos, false);
 #elif defined PROGRAM_WEATHER
     // Rain and snow: lit like plants, through, by the sky, the sun and the lights near them. Raindrops are clear
-    // water: pale grey streaks, fainter than Minecraft's blue lines (its rain texture is the blue one).
+    // water (Minecraft's rain texture is the blue one): each of its streaks is broken into short dashes falling with
+    // it, as the eye sees a drop fall only a little way, each dash a little brighter or fainter, thin and mostly
+    // see-through, so the rain reads as a fine grey veil that takes the light around it rather than as white bars.
     if (color.b > 1.2 * color.r) {
-        color = vec4(vec3(0.8), color.a * 0.5);
+        vec2 texels = v_uv * vec2(textureSize(gtexture, 0));
+        uint column = uint(int(floor(texels.x)) & 0xFFFF);
+        float along = texels.y / 20.0 + hash_to_float(hash_pcg3d(uvec3(column, 7u, 1u)).xy).x;
+        float f = fract(along);
+        float each = hash_to_float(hash_pcg3d(uvec3(column, uint(int(floor(along)) & 0xFFFF), 3u)).xy).x;
+        float dash = smoothstep(0.0, 0.08, f) * (1.0 - smoothstep(0.3, 0.45, f));
+        color = vec4(vec3(0.75), pow(color.a, 1.5) * 0.4 * dash * mix(0.35, 1.0, each));
     }
     vec3 rgb = forward_lit(mix(vec3(luminance(color.rgb)), color.rgb, 0.3), vec3(0.0, 1.0, 0.0), v_level, v_scene_pos, true);
 #elif defined PROGRAM_WATER
@@ -218,7 +226,7 @@ void lit_output(vec4 color, int flags) {
         // The resource pack's maps: the texture's own facing (not on plants, lit as if they faced the light), its
         // crevices, how much of the sun its relief lets in, and its material. Where it has none, the pack's own.
         bool mapped = maps.spec != vec4(0.0);
-        float smoothness = filtered_smoothness(maps.spec.r, maps.normal);
+        float smoothness = filtered_smoothness(maps.spec.r, maps.normal, maps.variance);
         if (v_material != MATERIAL_PLANT) {
             normal = maps.normal;
 #ifdef PROGRAM_TERRAIN
