@@ -12,6 +12,7 @@
 #include "/lib/globals.glsl"
 #include "/lib/gbuffer.glsl"
 #include "/lib/color.glsl"
+#include "/lib/light_levels.glsl"
 
 layout(local_size_x = 16, local_size_y = 16) in;
 const ivec3 workGroups = ivec3(1, 1, 1);
@@ -58,6 +59,12 @@ float metered_at(vec3 c, float current, ivec2 surface_texel) {
             luminance *= 0.18 / albedo;
         }
     }
+#ifdef WORLD_NETHER
+    // Nothing in the Nether lights a grey card brighter than its lava and its lamps do close by: what glows brighter
+    // (a lava sea filling the view) meters as that, so the eye doesn't shut down to the lava and leave the rocks
+    // around it black.
+    luminance = min(luminance, 0.18 * light_block_lux / 3.14159265);
+#endif
     return log2(max(luminance, 1e-12));
 }
 
