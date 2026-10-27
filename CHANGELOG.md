@@ -14,6 +14,16 @@ describe the fix (the build fails on a name it knows).
 - Field Guide (Performance and Shaders): Ray Reconstruction.
 - Create Galore Bridge 1.136.0.
 
+## 0.6.12
+
+### Fixed
+- **Ask the Book follows the item along a sequenced assembly line.** For a line that makes something step by step, such as Precision Mechanisms, the book now rides the item along the belts the way Create moves it: along each belt, and onto the next belt where one ends against another. It checks that the item passes under a machine for every step, in the recipe's order, and that the line brings it back round as many times as the recipe loops. A line that misses a step or lets the item fall off after one pass is not shown, unless the answer says the player puts it back by hand. It also tells the player which way the belts have to run and which item each deployer holds.
+- **Recipe lookups show a sequenced assembly's steps.** Asking the book how something like a Precision Mechanism is made now lists what it starts from, each step in order with what is added (a Cogwheel, then a Large Cogwheel, then an Iron Nugget), how many times round, and what comes out. Before, the book only saw the recipe's name and filled in the steps from memory.
+- The book's recipe checks no longer rebuild the list of every recipe for each model, so a big model no longer stalls the server for a few seconds.
+
+### Added
+- Create Galore Bridge 1.135.0.
+
 ## 0.6.11
 
 ### Fixed

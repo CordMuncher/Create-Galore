@@ -1,0 +1,554 @@
+{
+  "title": "A belt ring under three deployers makes precision mechanisms, every loop",
+  "from": "step 4 (item lines): the stand-in book's own design for 'how do I automate precision mechanisms'",
+  "roots": [
+    "R3"
+  ],
+  "kind": "model",
+  "model": {
+    "title": "Precision mechanism loop",
+    "size_x": 14,
+    "size_y": 6,
+    "size_z": 7,
+    "from_draft": 0,
+    "palette": [],
+    "layers": [],
+    "blocks": [
+      {
+        "block": "create:belt[facing=east,part=start,slope=horizontal]",
+        "x": 1,
+        "y": 1,
+        "z": 2,
+        "x2": 1,
+        "y2": 1,
+        "z2": 2,
+        "shape": "box"
+      },
+      {
+        "block": "create:belt[facing=east,part=middle,slope=horizontal]",
+        "x": 2,
+        "y": 1,
+        "z": 2,
+        "x2": 2,
+        "y2": 1,
+        "z2": 2,
+        "shape": "box"
+      },
+      {
+        "block": "create:belt[facing=east,part=middle,slope=horizontal]",
+        "x": 3,
+        "y": 1,
+        "z": 2,
+        "x2": 3,
+        "y2": 1,
+        "z2": 2,
+        "shape": "box"
+      },
+      {
+        "block": "create:belt[facing=east,part=middle,slope=horizontal]",
+        "x": 4,
+        "y": 1,
+        "z": 2,
+        "x2": 4,
+        "y2": 1,
+        "z2": 2,
+        "shape": "box"
+      },
+      {
+        "block": "create:belt[facing=east,part=middle,slope=horizontal]",
+        "x": 5,
+        "y": 1,
+        "z": 2,
+        "x2": 5,
+        "y2": 1,
+        "z2": 2,
+        "shape": "box"
+      },
+      {
+        "block": "create:belt[facing=east,part=middle,slope=horizontal]",
+        "x": 6,
+        "y": 1,
+        "z": 2,
+        "x2": 6,
+        "y2": 1,
+        "z2": 2,
+        "shape": "box"
+      },
+      {
+        "block": "create:belt[facing=east,part=middle,slope=horizontal]",
+        "x": 7,
+        "y": 1,
+        "z": 2,
+        "x2": 7,
+        "y2": 1,
+        "z2": 2,
+        "shape": "box"
+      },
+      {
+        "block": "create:belt[facing=east,part=end,slope=horizontal]",
+        "x": 8,
+        "y": 1,
+        "z": 2,
+        "x2": 8,
+        "y2": 1,
+        "z2": 2,
+        "shape": "box"
+      },
+      {
+        "block": "create:belt[facing=south,part=start,slope=horizontal]",
+        "x": 9,
+        "y": 1,
+        "z": 1,
+        "x2": 9,
+        "y2": 1,
+        "z2": 1,
+        "shape": "box"
+      },
+      {
+        "block": "create:belt[facing=south,part=middle,slope=horizontal]",
+        "x": 9,
+        "y": 1,
+        "z": 2,
+        "x2": 9,
+        "y2": 1,
+        "z2": 2,
+        "shape": "box"
+      },
+      {
+        "block": "create:belt[facing=south,part=end,slope=horizontal]",
+        "x": 9,
+        "y": 1,
+        "z": 3,
+        "x2": 9,
+        "y2": 1,
+        "z2": 3,
+        "shape": "box"
+      },
+      {
+        "block": "create:belt[facing=west,part=start,slope=horizontal]",
+        "x": 10,
+        "y": 1,
+        "z": 4,
+        "x2": 10,
+        "y2": 1,
+        "z2": 4,
+        "shape": "box"
+      },
+      {
+        "block": "create:belt[facing=west,part=middle,slope=horizontal]",
+        "x": 9,
+        "y": 1,
+        "z": 4,
+        "x2": 9,
+        "y2": 1,
+        "z2": 4,
+        "shape": "box"
+      },
+      {
+        "block": "create:belt[facing=west,part=middle,slope=horizontal]",
+        "x": 8,
+        "y": 1,
+        "z": 4,
+        "x2": 8,
+        "y2": 1,
+        "z2": 4,
+        "shape": "box"
+      },
+      {
+        "block": "create:belt[facing=west,part=middle,slope=horizontal]",
+        "x": 7,
+        "y": 1,
+        "z": 4,
+        "x2": 7,
+        "y2": 1,
+        "z2": 4,
+        "shape": "box"
+      },
+      {
+        "block": "create:belt[facing=west,part=middle,slope=horizontal]",
+        "x": 6,
+        "y": 1,
+        "z": 4,
+        "x2": 6,
+        "y2": 1,
+        "z2": 4,
+        "shape": "box"
+      },
+      {
+        "block": "create:belt[facing=west,part=middle,slope=horizontal]",
+        "x": 5,
+        "y": 1,
+        "z": 4,
+        "x2": 5,
+        "y2": 1,
+        "z2": 4,
+        "shape": "box"
+      },
+      {
+        "block": "create:belt[facing=west,part=middle,slope=horizontal]",
+        "x": 4,
+        "y": 1,
+        "z": 4,
+        "x2": 4,
+        "y2": 1,
+        "z2": 4,
+        "shape": "box"
+      },
+      {
+        "block": "create:belt[facing=west,part=end,slope=horizontal]",
+        "x": 3,
+        "y": 1,
+        "z": 4,
+        "x2": 3,
+        "y2": 1,
+        "z2": 4,
+        "shape": "box"
+      },
+      {
+        "block": "create:belt[facing=north,part=start,slope=horizontal]",
+        "x": 2,
+        "y": 1,
+        "z": 5,
+        "x2": 2,
+        "y2": 1,
+        "z2": 5,
+        "shape": "box"
+      },
+      {
+        "block": "create:belt[facing=north,part=middle,slope=horizontal]",
+        "x": 2,
+        "y": 1,
+        "z": 4,
+        "x2": 2,
+        "y2": 1,
+        "z2": 4,
+        "shape": "box"
+      },
+      {
+        "block": "create:belt[facing=north,part=end,slope=horizontal]",
+        "x": 2,
+        "y": 1,
+        "z": 3,
+        "x2": 2,
+        "y2": 1,
+        "z2": 3,
+        "shape": "box"
+      },
+      {
+        "block": "create:shaft[axis=x]",
+        "x": 2,
+        "y": 3,
+        "z": 2,
+        "x2": 9,
+        "y2": 3,
+        "z2": 2,
+        "shape": "box"
+      },
+      {
+        "block": "create:deployer[facing=down,axis_along_first=true]",
+        "x": 3,
+        "y": 3,
+        "z": 2,
+        "x2": 3,
+        "y2": 3,
+        "z2": 2,
+        "shape": "box"
+      },
+      {
+        "block": "create:deployer[facing=down,axis_along_first=true]",
+        "x": 5,
+        "y": 3,
+        "z": 2,
+        "x2": 5,
+        "y2": 3,
+        "z2": 2,
+        "shape": "box"
+      },
+      {
+        "block": "create:deployer[facing=down,axis_along_first=true]",
+        "x": 7,
+        "y": 3,
+        "z": 2,
+        "x2": 7,
+        "y2": 3,
+        "z2": 2,
+        "shape": "box"
+      },
+      {
+        "block": "create:cogwheel[axis=x]",
+        "x": 1,
+        "y": 3,
+        "z": 2,
+        "x2": 1,
+        "y2": 3,
+        "z2": 2,
+        "shape": "box"
+      },
+      {
+        "block": "create:cogwheel[axis=x]",
+        "x": 1,
+        "y": 3,
+        "z": 3,
+        "x2": 1,
+        "y2": 3,
+        "z2": 3,
+        "shape": "box"
+      },
+      {
+        "block": "create:cogwheel[axis=x]",
+        "x": 1,
+        "y": 3,
+        "z": 4,
+        "x2": 1,
+        "y2": 3,
+        "z2": 4,
+        "shape": "box"
+      },
+      {
+        "block": "create:cogwheel[axis=x]",
+        "x": 1,
+        "y": 2,
+        "z": 4,
+        "x2": 1,
+        "y2": 2,
+        "z2": 4,
+        "shape": "box"
+      },
+      {
+        "block": "create:cogwheel[axis=x]",
+        "x": 10,
+        "y": 3,
+        "z": 2,
+        "x2": 10,
+        "y2": 3,
+        "z2": 2,
+        "shape": "box"
+      },
+      {
+        "block": "create:cogwheel[axis=x]",
+        "x": 10,
+        "y": 3,
+        "z": 1,
+        "x2": 10,
+        "y2": 3,
+        "z2": 1,
+        "shape": "box"
+      },
+      {
+        "block": "create:cogwheel[axis=x]",
+        "x": 10,
+        "y": 2,
+        "z": 1,
+        "x2": 10,
+        "y2": 2,
+        "z2": 1,
+        "shape": "box"
+      },
+      {
+        "block": "create:cogwheel[axis=x]",
+        "x": 10,
+        "y": 1,
+        "z": 1,
+        "x2": 10,
+        "y2": 1,
+        "z2": 1,
+        "shape": "box"
+      },
+      {
+        "block": "create:cogwheel[axis=x]",
+        "x": 10,
+        "y": 0,
+        "z": 1,
+        "x2": 10,
+        "y2": 0,
+        "z2": 1,
+        "shape": "box"
+      },
+      {
+        "block": "create:cogwheel[axis=x]",
+        "x": 11,
+        "y": 3,
+        "z": 2,
+        "x2": 11,
+        "y2": 3,
+        "z2": 2,
+        "shape": "box"
+      },
+      {
+        "block": "create:cogwheel[axis=x]",
+        "x": 11,
+        "y": 3,
+        "z": 3,
+        "x2": 11,
+        "y2": 3,
+        "z2": 3,
+        "shape": "box"
+      },
+      {
+        "block": "create:cogwheel[axis=x]",
+        "x": 11,
+        "y": 3,
+        "z": 4,
+        "x2": 11,
+        "y2": 3,
+        "z2": 4,
+        "shape": "box"
+      },
+      {
+        "block": "create:cogwheel[axis=x]",
+        "x": 11,
+        "y": 3,
+        "z": 5,
+        "x2": 11,
+        "y2": 3,
+        "z2": 5,
+        "shape": "box"
+      },
+      {
+        "block": "create:cogwheel[axis=x]",
+        "x": 11,
+        "y": 2,
+        "z": 5,
+        "x2": 11,
+        "y2": 2,
+        "z2": 5,
+        "shape": "box"
+      },
+      {
+        "block": "create:cogwheel[axis=x]",
+        "x": 2,
+        "y": 0,
+        "z": 1,
+        "x2": 2,
+        "y2": 0,
+        "z2": 1,
+        "shape": "box"
+      },
+      {
+        "block": "create:shaft[axis=x]",
+        "x": 3,
+        "y": 0,
+        "z": 1,
+        "x2": 9,
+        "y2": 0,
+        "z2": 1,
+        "shape": "box"
+      },
+      {
+        "block": "create:large_cogwheel[axis=x]",
+        "x": 2,
+        "y": 1,
+        "z": 0,
+        "x2": 2,
+        "y2": 1,
+        "z2": 0,
+        "shape": "box"
+      },
+      {
+        "block": "create:large_cogwheel[axis=z]",
+        "x": 1,
+        "y": 1,
+        "z": 1,
+        "x2": 1,
+        "y2": 1,
+        "z2": 1,
+        "shape": "box"
+      },
+      {
+        "block": "create:large_cogwheel[axis=x]",
+        "x": 11,
+        "y": 1,
+        "z": 6,
+        "x2": 11,
+        "y2": 1,
+        "z2": 6,
+        "shape": "box"
+      },
+      {
+        "block": "create:large_cogwheel[axis=x]",
+        "x": 1,
+        "y": 1,
+        "z": 5,
+        "x2": 1,
+        "y2": 1,
+        "z2": 5,
+        "shape": "box"
+      },
+      {
+        "block": "create:large_cogwheel[axis=z]",
+        "x": 10,
+        "y": 1,
+        "z": 5,
+        "x2": 10,
+        "y2": 1,
+        "z2": 5,
+        "shape": "box"
+      },
+      {
+        "block": "create:water_wheel[facing=east]",
+        "x": 12,
+        "y": 3,
+        "z": 2,
+        "x2": 12,
+        "y2": 3,
+        "z2": 2,
+        "shape": "box"
+      },
+      {
+        "block": "minecraft:water[level=0]",
+        "x": 12,
+        "y": 4,
+        "z": 1,
+        "x2": 12,
+        "y2": 4,
+        "z2": 1,
+        "shape": "box"
+      },
+      {
+        "block": "minecraft:water[level=8]",
+        "x": 12,
+        "y": 1,
+        "z": 1,
+        "x2": 12,
+        "y2": 3,
+        "z2": 1,
+        "shape": "box"
+      },
+      {
+        "block": "create:brass_funnel[facing=south]",
+        "x": 6,
+        "y": 1,
+        "z": 5,
+        "x2": 6,
+        "y2": 1,
+        "z2": 5,
+        "shape": "box"
+      },
+      {
+        "block": "minecraft:chest[facing=north]",
+        "x": 6,
+        "y": 1,
+        "z": 6,
+        "x2": 6,
+        "y2": 1,
+        "z2": 6,
+        "shape": "box"
+      }
+    ],
+    "caption": "",
+    "draft": false,
+    "goal": "create:precision_mechanism from golden sheet",
+    "shows_a_fault": false,
+    "for_later": false,
+    "part_of_vehicle": false
+  },
+  "expect": {
+    "built": true,
+    "has": [
+      "every step in order"
+    ],
+    "lacks": [
+      "PROBLEM"
+    ]
+  }
+}

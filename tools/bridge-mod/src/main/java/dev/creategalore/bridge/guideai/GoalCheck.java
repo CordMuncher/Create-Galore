@@ -45,18 +45,19 @@ final class GoalCheck {
         return null;
     }
 
-    private record Way(String name, Set<Item> machines, boolean assembly) {
+    private record Way(String name, Set<Item> machines, SequencedAssemblyRecipe assembly) {
     }
 
-    static BuildCheck.Report check(Map<BlockPos, BlockState> cells, Item goal, MinecraftServer server) {
+    static BuildCheck.Report check(Map<BlockPos, BlockState> cells, Item goal, String goalText, net.minecraft.server.level.ServerLevel level) {
         try {
-            return run(cells, goal, server);
+            return run(cells, goal, goalText, level);
         } catch (RuntimeException | LinkageError e) {
             return new BuildCheck.Report("(The goal check couldn't run on this model: " + e.getClass().getSimpleName() + ".)", List.of());
         }
     }
 
-    private static BuildCheck.Report run(Map<BlockPos, BlockState> cells, Item goal, MinecraftServer server) {
+    private static BuildCheck.Report run(Map<BlockPos, BlockState> cells, Item goal, String goalText, net.minecraft.server.level.ServerLevel level) {
+        MinecraftServer server = level.getServer();
         String name = goal.getDescription().getString();
         String heading = "Whether it makes " + name + BuildCheck.FOR_YOU + ":\n";
         Set<Item> has = new HashSet<>();
@@ -81,14 +82,19 @@ final class GoalCheck {
             Set<Item> lack = new LinkedHashSet<>(w.machines());
             lack.removeAll(has);
             if (lack.isEmpty()) {
-                if (w.assembly() && !carrier) {
+                if (w.assembly() != null && !carrier) {
                     String fault = "nothing carries the item from one step of the " + w.name() + " to the next: every step "
                             + "works on an item lying under it on a belt or depot, and the item has to pass under each "
                             + "machine in order, once per loop";
                     return new BuildCheck.Report(heading + "- PROBLEM: " + fault + ".", List.of(fault));
                 }
-                return new BuildCheck.Report(heading + "- It holds what the " + w.name() + " that makes " + name + " needs: "
-                        + names(w.machines()) + ".", List.of());
+                BuildCheck.Report holds = new BuildCheck.Report(heading + "- It holds what the " + w.name() + " that makes " + name
+                        + " needs: " + names(w.machines()) + ".", List.of());
+                if (w.assembly() == null) return holds;
+                BuildCheck.Report line = ItemLines.check(cells, BuildCheck.rpm(cells, level, new ArrayList<>()), w.assembly(), goalText);
+                if (line == null) return holds;
+                List<String> faults = new ArrayList<>(line.faults());
+                return new BuildCheck.Report(holds.text() + "\n" + line.text(), faults);
             }
             missing.add("the " + w.name() + " needs " + names(lack));
         }
@@ -110,7 +116,7 @@ final class GoalCheck {
                 if (step.getRecipe() instanceof IAssemblyRecipe a) a.addRequiredMachines(machines);
             Set<Item> items = new LinkedHashSet<>();
             machines.forEach(m -> items.add(m.asItem()));
-            return new Way("sequenced assembly", items, true);
+            return new Way("sequenced assembly", items, assembly);
         }
         String[] blocks = switch (type.toString()) {
             case "create:pressing" -> new String[] {"create:mechanical_press"};
@@ -130,7 +136,12 @@ final class GoalCheck {
         for (String b : blocks) items.add(BuiltInRegistries.ITEM.get(ResourceLocation.parse(b)));
         items.remove(Items.AIR);
         String name = type.getPath().replace('_', ' ') + " recipe";
-        return new Way(name, items, false);
+        return new Way(name, items, null);
+    }
+
+    static String ingredient(net.minecraft.world.item.crafting.Ingredient ingredient) {
+        var items = ingredient.getItems();
+        return items.length == 0 ? "?" : items[0].getHoverName().getString() + (items.length > 1 ? " (or another of its kind)" : "");
     }
 
     private static String names(Set<Item> items) {

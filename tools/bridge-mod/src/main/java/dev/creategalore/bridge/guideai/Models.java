@@ -432,7 +432,7 @@ public final class Models {
         BuildCheck.Report works = join(level == null ? null : BuildCheck.check(fixed, level), RigCheck.check(cells));
         if (level != null) works = join(works, OutputCheck.check(fixed, level));
         net.minecraft.world.item.Item goal = GoalCheck.goal(input);
-        if (goal != null && level != null) works = join(works, GoalCheck.check(cells, goal, level.getServer()));
+        if (goal != null && level != null) works = join(works, GoalCheck.check(cells, goal, GuideText.string(input, "goal"), level));
         if (motion != null) works = join(works, motion.report());
         works = join(works, vehicle(cells, level, input.has("part_of_vehicle") && input.get("part_of_vehicle").isJsonPrimitive()
                 && input.get("part_of_vehicle").getAsBoolean()));
