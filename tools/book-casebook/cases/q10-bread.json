@@ -1,0 +1,13 @@
+{
+  "title": "A simple question gets a short answer",
+  "roots": [
+    "R5"
+  ],
+  "kind": "question",
+  "question": "How do I make bread?",
+  "player": "Start of the game.",
+  "rubric": [
+    "A few sentences, with the recipe shown",
+    "No build talk, no tools it doesn't need"
+  ]
+}

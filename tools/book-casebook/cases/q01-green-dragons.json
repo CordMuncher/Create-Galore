@@ -1,0 +1,15 @@
+{
+  "title": "What players saw is real",
+  "roots": [
+    "R1",
+    "R2"
+  ],
+  "kind": "question",
+  "question": "I keep seeing big green flying dragons spitting stuff near the stony beach. What are they?",
+  "player": "Overworld, Stony Shore, night.",
+  "rubric": [
+    "Names the Mowzie's Mobs Naga (or asks what else they noticed, with the Naga first)",
+    "Never says no such creature exists or that it must be something they didn't describe",
+    "Gives its health, where it spawns and its drops from find_creatures, not memory"
+  ]
+}

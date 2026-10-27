@@ -1,0 +1,28 @@
+{
+  "title": "Building materials count what the player holds (birch, not spruce)",
+  "from": "pack 0.4.46 (PR #145): builds in spruce with no spruce near",
+  "roots": [
+    "R2"
+  ],
+  "kind": "tool",
+  "tool": "building_materials",
+  "input": {},
+  "inventory": [
+    {
+      "id": "minecraft:birch_planks",
+      "count": 192
+    },
+    {
+      "id": "minecraft:cobblestone",
+      "count": 64
+    }
+  ],
+  "expect": {
+    "has": [
+      "birch"
+    ],
+    "lacks": [
+      "spruce planks"
+    ]
+  }
+}

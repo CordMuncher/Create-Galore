@@ -1,0 +1,16 @@
+{
+  "title": "A precision mechanism line the player can build now",
+  "roots": [
+    "R1",
+    "R3",
+    "R4"
+  ],
+  "kind": "question",
+  "question": "How do I automate precision mechanisms?",
+  "player": "Early brass: brass, andesite, golden sheets, no precision mechanism made yet.",
+  "rubric": [
+    "The line carries the item (belt or depots) through every step in order, with the right number of loops",
+    "Uses nothing that needs a precision mechanism to craft (no Mechanical Arm), or says that part comes later",
+    "Shows the recipe with [recipe ...]"
+  ]
+}

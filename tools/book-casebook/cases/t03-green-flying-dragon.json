@@ -1,0 +1,18 @@
+{
+  "title": "A big green flying dragon that spits is found as the Naga",
+  "from": "pack 0.4.77 (PR #174): the book denied the creature players saw",
+  "roots": [
+    "R1",
+    "R2"
+  ],
+  "kind": "tool",
+  "tool": "find_creatures",
+  "input": {
+    "query": "big green flying dragon"
+  },
+  "expect": {
+    "has": [
+      "mowziesmobs:naga"
+    ]
+  }
+}

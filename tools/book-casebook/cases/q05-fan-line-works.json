@@ -1,0 +1,14 @@
+{
+  "title": "Doesn't call a working line broken",
+  "roots": [
+    "R3",
+    "R6"
+  ],
+  "kind": "question",
+  "question": "Is my smoking line set up right? Two fans over a slow belt.",
+  "player": "World build w01 (two smoking fans over a 4 RPM belt) in front of them.",
+  "rubric": [
+    "Looks at the build before answering",
+    "Says raw beef comes out cooked; does not tell them to change it"
+  ]
+}

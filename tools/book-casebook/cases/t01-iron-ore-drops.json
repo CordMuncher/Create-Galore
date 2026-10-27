@@ -1,0 +1,19 @@
+{
+  "title": "Iron ore drops by tool and Fortune come from the real loot table",
+  "from": "pack 0.4.17 (PR #111): ore doubling advice was wrong",
+  "roots": [
+    "R1"
+  ],
+  "kind": "tool",
+  "tool": "block_drops",
+  "input": {
+    "block": "minecraft:iron_ore"
+  },
+  "expect": {
+    "has": [
+      "Raw Iron",
+      "Fortune III",
+      "Silk Touch"
+    ]
+  }
+}

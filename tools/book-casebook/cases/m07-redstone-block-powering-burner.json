@@ -1,0 +1,207 @@
+{
+  "title": "A redstone block that powers the burner is not ballast",
+  "from": "Found while writing m06: the vehicle check calls the Block of Redstone that powers a burner dead weight",
+  "roots": [
+    "R3"
+  ],
+  "kind": "model",
+  "model": {
+    "title": "Blimp",
+    "size_x": 12,
+    "size_y": 15,
+    "size_z": 15,
+    "blocks": [
+      {
+        "block": "minecraft:spruce_log[axis=z]",
+        "x": 4,
+        "y": 0,
+        "z": 3,
+        "x2": 4,
+        "y2": 0,
+        "z2": 11
+      },
+      {
+        "block": "minecraft:spruce_planks",
+        "x": 2,
+        "y": 1,
+        "z": 3,
+        "x2": 6,
+        "y2": 1,
+        "z2": 11
+      },
+      {
+        "block": "simulated:physics_assembler",
+        "x": 4,
+        "y": 0,
+        "z": 7
+      },
+      {
+        "block": "minecraft:spruce_planks",
+        "x": 3,
+        "y": 0,
+        "z": 7
+      },
+      {
+        "block": "minecraft:spruce_planks",
+        "x": 5,
+        "y": 0,
+        "z": 7
+      },
+      {
+        "block": "minecraft:spruce_planks",
+        "x": 4,
+        "y": 0,
+        "z": 6
+      },
+      {
+        "block": "minecraft:spruce_planks",
+        "x": 4,
+        "y": 0,
+        "z": 8
+      },
+      {
+        "block": "minecraft:spruce_slab[type=bottom]",
+        "x": 2,
+        "y": 2,
+        "z": 3,
+        "x2": 2,
+        "y2": 2,
+        "z2": 11
+      },
+      {
+        "block": "minecraft:spruce_fence",
+        "x": 2,
+        "y": 3,
+        "z": 3,
+        "x2": 2,
+        "y2": 3,
+        "z2": 11
+      },
+      {
+        "block": "minecraft:spruce_slab[type=bottom]",
+        "x": 6,
+        "y": 2,
+        "z": 3,
+        "x2": 6,
+        "y2": 2,
+        "z2": 11
+      },
+      {
+        "block": "minecraft:spruce_fence",
+        "x": 6,
+        "y": 3,
+        "z": 3,
+        "x2": 6,
+        "y2": 3,
+        "z2": 11
+      },
+      {
+        "block": "simulated:steering_wheel[facing=north]",
+        "x": 4,
+        "y": 2,
+        "z": 4
+      },
+      {
+        "block": "simulated:throttle_lever[facing=north]",
+        "x": 3,
+        "y": 2,
+        "z": 4
+      },
+      {
+        "block": "minecraft:spruce_fence",
+        "x": 2,
+        "y": 4,
+        "z": 3,
+        "x2": 2,
+        "y2": 6,
+        "z2": 3
+      },
+      {
+        "block": "minecraft:spruce_fence",
+        "x": 6,
+        "y": 4,
+        "z": 3,
+        "x2": 6,
+        "y2": 6,
+        "z2": 3
+      },
+      {
+        "block": "minecraft:spruce_fence",
+        "x": 2,
+        "y": 4,
+        "z": 11,
+        "x2": 2,
+        "y2": 6,
+        "z2": 11
+      },
+      {
+        "block": "minecraft:spruce_fence",
+        "x": 6,
+        "y": 4,
+        "z": 11,
+        "x2": 6,
+        "y2": 6,
+        "z2": 11
+      },
+      {
+        "block": "aeronautics:adjustable_burner",
+        "x": 4,
+        "y": 2,
+        "z": 7
+      },
+      {
+        "block": "minecraft:redstone_block",
+        "x": 4,
+        "y": 2,
+        "z": 8
+      },
+      {
+        "block": "aeronautics:white_envelope",
+        "x": 0,
+        "y": 7,
+        "z": 0,
+        "x2": 8,
+        "y2": 13,
+        "z2": 14,
+        "shape": "ellipsoid_shell"
+      },
+      {
+        "block": "minecraft:air",
+        "x": 3,
+        "y": 7,
+        "z": 5,
+        "x2": 5,
+        "y2": 7,
+        "z2": 9
+      },
+      {
+        "block": "minecraft:spruce_planks",
+        "x": 9,
+        "y": 9,
+        "z": 7,
+        "x2": 10,
+        "y2": 9,
+        "z2": 7
+      },
+      {
+        "block": "simulated:red_portable_engine[facing=south]",
+        "x": 10,
+        "y": 10,
+        "z": 7
+      },
+      {
+        "block": "aeronautics:wooden_propeller[facing=south]",
+        "x": 10,
+        "y": 10,
+        "z": 8
+      }
+    ]
+  },
+  "expect": {
+    "lacks": [
+      "Block of Redstone as dead weight"
+    ]
+  },
+  "open": true,
+  "fixed_by": "step 3 (lenses know what a block is for)"
+}
