@@ -1,4 +1,4 @@
-<!-- sources sha256:ec284e7a51e8a066deaf5e7496cb1a17b8e2275f3f542b5f50d23fa085a749ef -->
+<!-- sources sha256:54ac2d635dfd5f04222bfa66fc1b10e4819bc94ba0a3643fc0f3d9f0cd6b5861 -->
 # Survival Layers (survival)
 Layers: Temperature (Cold Sweat), Thirst, Seasons (Serene Seasons), Pollution (Pollution of the Realms smog, exhaust systems), food/health, death/graves.
 
@@ -135,7 +135,9 @@ Layers: Temperature (Cold Sweat), Thirst, Seasons (Serene Seasons), Pollution (P
 - Rate: each roof frame takes smog as fast as it filters (iron 2 units a second, gold 4, diamond 8); nearly empty space only seeps; packed one hits the limit. Frame top needs a way to the sky (open air or chimney).
 - Belts and gaps: smog leaks through anything without a full face: bare belts, shafts and pipes, fences, carpets, trapdoors. Andesite or Brass Casing on a belt where it passes the wall seals it: items ride through, smog stays in.
 - Shafts and pipes: Andesite or Brass Casing on a shaft where it passes the wall (Encased Shaft), Copper Casing on a fluid pipe (Encased Fluid Pipe): power and fluid go through, smog stays in. Gearboxes, Encased Chain Drives, clutches, gearshifts, encased cogwheels and Encased Fans are whole blocks and seal like stone. A shaft through a Metal Girder still leaks.
-- Sealed smelter: 1. fan, lava (or Blaze Burner) and belt inside a box of full blocks; 2. casing on the belt where it goes in and out, and on any shaft or pipe through the wall; 3. Filter Frame in the roof; 4. open sky or chimney above the frame. Each item smelted sends smog up through the filter.
+- Doors and trapdoors: every door and trapdoor leaks. Right-click any door or trapdoor (any wood, iron, copper, Create or other mod's) with Andesite, Brass or Copper Casing (not sneaking) to case it (Andesite/Brass/Copper Encased Door or Trapdoor, one casing used). Shut, it seals like stone; open, smog gets through as usual.
+- Opening a cased door: only redstone opens it (button, lever, pressure plate, circuit). Hands can't; villagers and mobs can't open or break through it. Wrench takes the casing off (casing back to the player, same door back); sneak-wrench picks it all up. Breaking it drops the casing and the door. Sneaking with casing in hand places the casing block instead.
+- Sealed smelter: 1. fan, lava (or Blaze Burner) and belt inside a box of full blocks; 2. casing on the belt, shafts, pipes and door through the wall; 3. Filter Frame in the roof; 4. open sky or chimney above the frame. Each item smelted sends smog up through the filter.
 - Watch out, overpressure: a sealed space that fills up has no room for more smoke. Furnace or other machine in it blows up after a few tries and breaks. Fan smelting into it blows the casing open (as hard as a Creeper) after 4 batches that find no room.
 - Related: (see survival/pollution_control), (see survival/pollution), (see create_basics/fans), (see create_basics/item_logistics)
 

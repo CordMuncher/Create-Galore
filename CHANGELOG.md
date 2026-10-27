@@ -5,6 +5,13 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.6.5
+
+### Added
+- **Cased doors and trapdoors.** Right-click any door or trapdoor (every wood, iron, copper, Create's and other mods') with Andesite, Brass or Copper Casing to case it, as with a shaft or a belt. Shut, a cased door or trapdoor stops smog like a wall; open, smog gets through as usual (every plain trapdoor lets smog through even shut, and doors leak too). A cased one only opens with redstone (a button, lever, pressure plate or circuit), not by hand, and villagers and mobs can't open or break through it. A wrench takes the casing off and gives the same door back; sneaking with the wrench picks it all up, and breaking it drops the casing and the door. Each casing has its own look: Create's casing frame with a riveted porthole you can see through. Sneaking with casing in hand still places the casing block.
+- Field Guide (Pressure and Sealed Casings): cased doors and trapdoors, and a cased door into a sealed smelter.
+- Create Galore Bridge 1.128.0.
+
 ## 0.6.4
 
 ### Fixed
