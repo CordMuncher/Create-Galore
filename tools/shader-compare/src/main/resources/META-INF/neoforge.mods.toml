@@ -1,0 +1,25 @@
+modLoader = "javafml"
+loaderVersion = "[4,)"
+license = "MIT"
+
+[[mods]]
+modId = "create_galore_shader_compare"
+version = "1.0.0"
+displayName = "Create Galore Shader Compare"
+authors = "Create Galore"
+description = '''Test tool, never part of the pack: photographs the same vanilla-block scenes with each shader pack in config/create_galore_shader_compare.json, at its defaults and at its highest preset, for comparing their looks side by side (tools/dlss-testkit/compare.html).'''
+displayTest = "IGNORE_ALL_VERSION"
+
+[[dependencies.create_galore_shader_compare]]
+modId = "neoforge"
+type = "required"
+versionRange = "[21.1,)"
+ordering = "NONE"
+side = "CLIENT"
+
+[[dependencies.create_galore_shader_compare]]
+modId = "iris"
+type = "required"
+versionRange = "[1.8,)"
+ordering = "AFTER"
+side = "CLIENT"

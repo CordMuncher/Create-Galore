@@ -198,6 +198,13 @@ Exposure and colour (alpha 4, the Light screen's Local Exposure and Night Vision
 - Colour: white balance by colour temperature and tint (the chosen light shown as white, adapted in Bradford's cone
   space), each primary's hue and saturation (as Alpha Piscium has them), and a mixer of hue, saturation and
   lightness for eight bands of hue, as photo editors have. All of them change nothing at their defaults.
+- Depth of field (off until switched on, its own screen): what lies nearer or further than the focus blurs as through
+  a camera's lens of the chosen focal length and f-number, focused on what the middle of the view shows (moving
+  there in about a third of a second, as eyes refocus) or at a set distance. It runs after DLSS or FSR, as NVIDIA's
+  DLSS guide places it, and gives the same picture from frame to frame where nothing moves, as nothing after the
+  upscaler smooths noise away: at half the window's size, each pixel gathers what spreads over it along a fixed
+  spiral, the far blur from behind the focus and the near blur from in front of it, which spreads out over what is
+  sharp behind it (as Call of Duty: Advanced Warfare's, Jimenez 2014). The hand stays sharp.
 
 From milestone 1, in every preset:
 
@@ -245,9 +252,9 @@ What else changes for Ray Reconstruction:
   adds `air.csh` (the sky's tables), `air_volume.csh` (the light in the air), `frame_globals.csh` (the frame's light),
   `cloud_ambient.csh`, `clouds_march.csh` and `clouds_gather.csh` (the cumulus), `screen_light.fsh` (the ambient
   occlusion, the screen's bounce light and the sky grid's rays), `deferred.fsh` (the lighting), `exposure.csh`,
-  `local_exposure.csh`, `shadow.*`, `light_bounce.csh` and `light_flood.csh` (the coloured and bounce light),
-  `water_sim.csh` (the ripples), `water_body.fsh` (the water, after the translucent things) and `bloom.csh`; the End
-  adds `end_sky.fsh`.
+  `local_exposure.csh`, `dof.csh` (the depth of field), `shadow.*`, `light_bounce.csh` and `light_flood.csh` (the
+  coloured and bounce light), `water_sim.csh` (the ripples), `water_body.fsh` (the water, after the translucent
+  things) and `bloom.csh`; the End adds `end_sky.fsh`.
 - `shaders/lib/`: render size and jitter (`frame.glsl`), motion vectors (`motion.glsl`), vanilla's lighting and fog
   (`vanilla.glsl`), colour encodings and the options; for the lit overworld the air (`atmosphere.glsl`, and the light
   in it, `air.glsl`), the sky (`sky.glsl`, `celestial.glsl`, `stars.glsl`), the clouds (`clouds.glsl`, `noise.glsl`),
@@ -255,8 +262,8 @@ What else changes for Ray Reconstruction:
   `light_levels.glsl`, `lit.glsl`, `shadow.glsl`, `light_volume.glsl`), the water (`water.glsl`, `water_body.glsl`,
   `medium.glsl`), reflections (`reflection.glsl`), the weather and what rain does (`weather.glsl`, `wet.glsl`), the
   bloom (`bloom.glsl`), the values its passes share (`globals.glsl`), night vision (`night_vision.glsl`), the local
-  exposure (`local_exposure.glsl`), the tone mapping (`tonemap.glsl`) and the colour controls (`grade.glsl`); for the
-  End its sky (`end_sky.glsl`).
+  exposure (`local_exposure.glsl`), the tone mapping (`tonemap.glsl`), the colour controls (`grade.glsl`) and the
+  depth of field (`dof.glsl`); for the End its sky (`end_sky.glsl`).
 - `shaders/textures/`: the clouds' noise textures and phase functions, and the water's wave textures.
 - `shaders/composite1.fsh`: the DLSS point, which hands the frame over. `shaders/final.fsh`: the screen.
 - The `gbuffers_*`, `clrwl_*` and `dh_*` files in `shaders/` only pick a program and include it.
