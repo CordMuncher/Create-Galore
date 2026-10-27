@@ -48,6 +48,6 @@ mkdir -p "$(dirname "$OUT")"
 lld-link /nologo /dll /machine:x64 /Brepro /opt:ref /opt:icf /out:"$WORK/cg_ngx.dll" \
   /libpath:"$WINSDK/crt/lib/x86_64" /libpath:"$WINSDK/sdk/lib/um/x86_64" /libpath:"$WINSDK/sdk/lib/ucrt/x86_64" \
   "$WORK/cg_ngx.obj" "$SDK/lib/Windows_x86_64/x64/nvsdk_ngx_s.lib" \
-  d3d11.lib dxgi.lib advapi32.lib user32.lib gdi32.lib shell32.lib ole32.lib version.lib
+  d3d11.lib d3d12.lib dxgi.lib advapi32.lib user32.lib gdi32.lib shell32.lib ole32.lib version.lib
 cp "$WORK/cg_ngx.dll" "$OUT"
 echo "Built $OUT ($(sha256sum "$OUT" | cut -d' ' -f1))"

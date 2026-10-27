@@ -1,6 +1,6 @@
 # DLAA round 2: FSR 3 next to DLAA (RTX 4080 SUPER)
 
-Run on Emre's PC on 2026-10-24, 16:22–16:33, by a Claude Code session in `C:\Users\coolm\Documents\Claude\MC-CREATE`
+Run on the player's PC on 2026-10-24, 16:22–16:33, by a Claude Code session in `C:\Users\<user>\Documents\Claude\MC-CREATE`
 (`$T`), following the round 2 section of `tools/dlss-testkit/PC-RUNBOOK.md` with the Bridge from `3dadca5`. Runs F, G,
 H and I all finished. Two earlier attempts stopped at run F; see [Earlier attempts](#earlier-attempts).
 
@@ -26,7 +26,7 @@ H and I all finished. Two earlier attempts stopped at run F; see [Earlier attemp
 
   To the eye, in the crops and at 3× zoom: FSR and DLAA are both clean, without the grain Photon's TAA has. FSR's texel
   edges (iron bars, leaf outlines) are a touch crisper. I saw no FSR artifacts in the still frames or in the first frame
-  after the flick (f070), where both look alike. This is a few frames, not a verdict; Emre judges the look in
+  after the flick (f070), where both look alike. This is a few frames, not a verdict; the player judges the look in
   `compare.html`.
 - **Frame time:** FSR 8.76–8.83 ms, DLAA 8.75–8.93 ms, Photon's TAA 8.86–9.10 ms (run F). That's within noise of each
   other. The game runs at about 110 fps and seems limited by something other than the GPU, so these frame times don't
@@ -176,7 +176,7 @@ loaded and the preset, identical in all four launches:
 16:22:47 Perfect Presentation: off (config/create_galore_bridge-display.properties)
 16:23:34.098 DLAA: on for this shader pack, preset default
 16:23:46.962 DLAA: on for this shader pack, preset default
-16:23:56.737 DLAA: NGX ready on NVIDIA GeForce RTX 4080 SUPER (its own DirectX device), nvngx_dlss.dll from C:\Users\coolm\Documents\Claude\MC-CREATE\instance\create-galore-dlss
+16:23:56.737 DLAA: NGX ready on NVIDIA GeForce RTX 4080 SUPER (its own DirectX device), nvngx_dlss.dll from C:\Users\<user>\Documents\Claude\MC-CREATE\instance\create-galore-dlss
 16:23:58.634 DLAA: DLSS running at 2560x1440, preset default
 16:24:12.472 DLAA test: mode photon-taa
 16:24:42.079 DLAA: on for this shader pack, preset default
@@ -185,7 +185,7 @@ loaded and the preset, identical in all four launches:
 16:25:03.813 DLAA test: mode fsr3
 16:25:05.116 DLAA: FSR 3.1 ready on NVIDIA GeForce RTX 4080 SUPER/PCIe/SSE2
 16:25:05.255 DLAA: FSR 3.1 running at 2560x1440
-16:25:25.617 DLAA test: run finished; screenshots in C:\Users\coolm\Documents\Claude\MC-CREATE\instance\screenshots\dlaa-test\20261024-162410
+16:25:25.617 DLAA test: run finished; screenshots in C:\Users\<user>\Documents\Claude\MC-CREATE\instance\screenshots\dlaa-test\20261024-162410
 16:25:28.723 DLAA: closed its DirectX device
 16:25:28.733 Stopping!
 ```
@@ -198,7 +198,7 @@ loaded and the preset, identical in all four launches:
 16:25:57 Perfect Presentation: off (config/create_galore_bridge-display.properties)
 16:26:44.254 DLAA: on for this shader pack, preset default
 16:26:57.190 DLAA: on for this shader pack, preset default
-16:27:07.260 DLAA: NGX ready on NVIDIA GeForce RTX 4080 SUPER (its own DirectX device), nvngx_dlss.dll from C:\Users\coolm\Documents\Claude\MC-CREATE\instance\create-galore-dlss
+16:27:07.260 DLAA: NGX ready on NVIDIA GeForce RTX 4080 SUPER (its own DirectX device), nvngx_dlss.dll from C:\Users\<user>\Documents\Claude\MC-CREATE\instance\create-galore-dlss
 16:27:08.964 DLAA: DLSS running at 2560x1440, preset default
 16:27:24.992 DLAA: on for this shader pack, AMD FSR 3.1 in place of DLSS (testing)
 16:27:25.016 DLAA test: mode fsr3
@@ -207,7 +207,7 @@ loaded and the preset, identical in all four launches:
 16:27:39.732 DLAA: on for this shader pack, AMD FSR 3.1 in place of DLSS (testing), jitter sign -1,1
 16:27:46.815 DLAA: on for this shader pack, AMD FSR 3.1 in place of DLSS (testing), jitter sign 1,-1
 16:27:53.918 DLAA: on for this shader pack, AMD FSR 3.1 in place of DLSS (testing), jitter sign -1,-1
-16:27:59.677 DLAA test: run finished; screenshots in C:\Users\coolm\Documents\Claude\MC-CREATE\instance\screenshots\dlaa-test\20261024-162723
+16:27:59.677 DLAA test: run finished; screenshots in C:\Users\<user>\Documents\Claude\MC-CREATE\instance\screenshots\dlaa-test\20261024-162723
 16:28:02.806 DLAA: closed its DirectX device
 16:28:02.826 Stopping!
 ```
@@ -220,13 +220,13 @@ loaded and the preset, identical in all four launches:
 16:28:34 Perfect Presentation: off (config/create_galore_bridge-display.properties)
 16:29:20.318 DLAA: on for this shader pack, preset default
 16:29:33.241 DLAA: on for this shader pack, preset default
-16:29:43.566 DLAA: NGX ready on NVIDIA GeForce RTX 4080 SUPER (its own DirectX device), nvngx_dlss.dll from C:\Users\coolm\Documents\Claude\MC-CREATE\instance\create-galore-dlss
+16:29:43.566 DLAA: NGX ready on NVIDIA GeForce RTX 4080 SUPER (its own DirectX device), nvngx_dlss.dll from C:\Users\<user>\Documents\Claude\MC-CREATE\instance\create-galore-dlss
 16:29:45.605 DLAA: DLSS running at 2560x1440, preset default
 16:29:58.699 DLAA: on for this shader pack, AMD FSR 3.1 in place of DLSS (testing) (FSR's debug view)
 16:29:58.727 DLAA test: mode fsr3-debug
 16:29:58.766 DLAA: FSR 3.1 ready on NVIDIA GeForce RTX 4080 SUPER/PCIe/SSE2
 16:29:58.954 DLAA: FSR 3.1 running at 2560x1440
-16:30:11.329 DLAA test: run finished; screenshots in C:\Users\coolm\Documents\Claude\MC-CREATE\instance\screenshots\dlaa-test\20261024-162957
+16:30:11.329 DLAA test: run finished; screenshots in C:\Users\<user>\Documents\Claude\MC-CREATE\instance\screenshots\dlaa-test\20261024-162957
 16:30:14.435 DLAA: closed its DirectX device
 16:30:14.445 Stopping!
 ```
@@ -242,7 +242,7 @@ loaded and the preset, identical in all four launches:
 16:31:38.601 DLAA: on for this shader pack, preset default
 16:31:39.619 Perfect Presentation: swap chain wait timed out
 16:31:52.348 DLAA: on for this shader pack, preset default
-16:32:01.985 DLAA: NGX ready on NVIDIA GeForce RTX 4080 SUPER (Perfect Presentation's DirectX device), nvngx_dlss.dll from C:\Users\coolm\Documents\Claude\MC-CREATE\instance\create-galore-dlss
+16:32:01.985 DLAA: NGX ready on NVIDIA GeForce RTX 4080 SUPER (Perfect Presentation's DirectX device), nvngx_dlss.dll from C:\Users\<user>\Documents\Claude\MC-CREATE\instance\create-galore-dlss
 16:32:04.042 DLAA: DLSS running at 2560x1440, preset default
 16:32:16.851 DLAA: on for this shader pack, preset default
 16:32:16.883 DLAA test: mode dlaa-default
@@ -250,7 +250,7 @@ loaded and the preset, identical in all four launches:
 16:32:46.470 DLAA test: mode fsr3
 16:32:46.523 DLAA: FSR 3.1 ready on NVIDIA GeForce RTX 4080 SUPER/PCIe/SSE2
 16:32:47.010 DLAA: FSR 3.1 running at 2560x1440
-16:33:07.911 DLAA test: run finished; screenshots in C:\Users\coolm\Documents\Claude\MC-CREATE\instance\screenshots\dlaa-test\20261024-163215
+16:33:07.911 DLAA test: run finished; screenshots in C:\Users\<user>\Documents\Claude\MC-CREATE\instance\screenshots\dlaa-test\20261024-163215
 16:33:10.966 Stopping!
 ```
 </details>

@@ -1,13 +1,13 @@
 # Frame generation 2 on the RTX 4080 SUPER: DLSS against FSR
 
-A PC session on 2026-10-26, 22:24–23:28, run by a Claude Code session in `C:\Users\coolm\Documents\Claude\MC-CREATE`
+A PC session on 2026-10-26, 22:24–23:28, run by a Claude Code session in `C:\Users\<user>\Documents\Claude\MC-CREATE`
 (`$T`).
 - **What it followed:** "Frame generation 2" in `tools/dlss-testkit/PC-RUNBOOK.md` at `fd8bd190`, with Bridge 1.122.0
   (pack 0.5.14) and the test kit from that commit.
-- **Steps 1–4** were run with Emre at the keyboard.
+- **Steps 1–4** were run with the player at the keyboard.
 - **Step 5** ran on its own. Its launch 3 had to be run three times (see "Step 5's launch 3").
 - **Setup:** Photon v1.3a + DLAA, DLSS at full resolution (preset K), 2560x1440 full screen, Perfect Presentation on
-  DirectX 12, on Emre's ASUS XG27AQDMES (240 Hz, G-SYNC).
+  DirectX 12, on the player's ASUS XG27AQDMES (240 Hz, G-SYNC).
 
 ## Summary
 
@@ -32,20 +32,20 @@ A PC session on 2026-10-26, 22:24–23:28, run by a Claude Code session in `C:\U
       Streamline's (16,658).
     - The measured DLSS launch in step 5 had none.
 - **New problem: the game can't leave full screen any more.** F11 shows a flicker of a small window and goes back to
-  full screen, with DLSS and with FSR. That also stopped Emre minimising at first. In DLSS-G 1 it worked.
+  full screen, with DLSS and with FSR. That also stopped the player minimising at first. In DLSS-G 1 it worked.
 - **Not new: Distant Horizons left over the world.** A full-screen toggle can leave Distant Horizons' terrain drawn
-  upside down over the world until a shader reload. Emre has seen it since the first frame generation build, and it
+  upside down over the world until a shader reload. The player has seen it since the first frame generation build, and it
   happens with FSR too.
 - **The command suggestions: FSR clean, DLSS not.**
   - With DLSS the chat's command suggestions still garble for one frame when they appear. `frameGenUi=false` (the HUD
     in the picture) makes no difference.
   - With FSR they are clean: "The chat command suggestions here look perfect. The fix for FSR clearly works."
-- **Emre on the picture.**
+- **The player on the picture.**
   - DLSS against DLSS-G 1: no visual regression other than full screen; "Smoothness feels the same".
   - FSR against DLSS, both at 60 rendered → 120 shown: "The quality is basically identical". DLSS garbles a bit more
     on very fast motion, FSR doubles images a bit more. On pacing "DLSS wins": FSR has "little hiccups sometimes" and
     a jitter on steady pans.
-- **The frame cap counts different frames.** Reflex through Streamline (DLSS) caps the frames shown, so Emre's 120 cap
+- **The frame cap counts different frames.** Reflex through Streamline (DLSS) caps the frames shown, so the player's 120 cap
   gave 60 rendered → 120 shown. Reflex on NVAPI (FSR) caps the frames rendered, so the same cap gave about 100 rendered
   → 200 shown. Worth deciding which one a cap should mean with FSR.
 - **Step 5, the cost (uncapped, `lat-reflex`, shore / canopy).**
@@ -65,7 +65,7 @@ A PC session on 2026-10-26, 22:24–23:28, run by a Claude Code session in `C:\U
   - **Over a few frames, FSR is less even.** Take the time 8 shown frames take, p90 over p10: DLSS 1.11–1.13, FSR
     1.17–1.19, none 1.05–1.14.
   - **What that means:** DLSS's unevenness sits inside each real-and-generated pair and evens out within two frames.
-    FSR's lasts longer, which fits the jitter Emre felt on steady pans.
+    FSR's lasts longer, which fits the jitter the player felt on steady pans.
 - **The pacer** (`lat-reflex-pacing-on` against `lat-reflex`):
   - **with DLSS** it keeps the frame rate (+1.6% / +0.1%) and lowers latency a little (−0.4 / −0.6 ms);
   - **without frame generation** it keeps the frame rate (+1.6% / −0.1%) and lowers latency by 0.7 / 1.1 ms, as in
@@ -75,7 +75,7 @@ A PC session on 2026-10-26, 22:24–23:28, run by a Claude Code session in `C:\U
 - **Step 5's launch 3 crashed once, at mod loading:** Hybrid Aquatic hit an `ArrayIndexOutOfBoundsException` during
   NeoForge's parallel mod construction. It isn't the Bridge's; see the crash section.
 
-## Steps 1 to 4, with Emre
+## Steps 1 to 4, with the player
 
 ### Update and settings
 
@@ -100,7 +100,7 @@ A PC session on 2026-10-26, 22:24–23:28, run by a Claude Code session in `C:\U
     $T\instance\create-galore-dlss`, and the file is there.
   - **What the line under the buttons said afterwards:** `NVIDIA's folder: DLSS 310.9.16, yours (310.9.16) is as new;
     frame generation 310.9.16 copied.`
-  - Emre on that line: "this sentence is hard to follow, tho the tool worked, everything else looks ok".
+  - The player on that line: "this sentence is hard to follow, tho the tool worked, everything else looks ok".
   - Every later start logs `nvngx_dlssg.dll 310.9.16 (tested with 310.9.16) from ...\create-galore-dlss`, the
     instance's own copy, as the runbook asks.
 - **Display tab.**
@@ -150,10 +150,10 @@ A PC session on 2026-10-26, 22:24–23:28, run by a Claude Code session in `C:\U
     frame generation now skips that frame. Four more resizes later in the step rebuilt the pipeline and behaved the same
     (frame 1 disagrees and is skipped; frames 2 and 3 `camera ok` or too little motion).
 - **The chat and the command suggestions.**
-  - **DLSS, `frameGenUi` as shipped (HUD apart).** Emre: "It still looks garbled. There's no issue with the actual
+  - **DLSS, `frameGenUi` as shipped (HUD apart).** The player: "It still looks garbled. There's no issue with the actual
     written text, but as commands pop up, they garble for a single frame."
   - **With `frameGenUi=false` (the HUD in the picture),** the log shows `on, 1 generated per rendered frame, the HUD in
-    the picture`. Emre: "I can't really tell a difference from my perspective. The HUD outside of the chat looks about
+    the picture`. The player: "I can't really tell a difference from my perspective. The HUD outside of the chat looks about
     the same, and the chat still has that garbling on the first frame a new command is suggested." So it is the same
     both ways, and the rest of the HUD stays clean with `false`. The line was removed again.
   - **Later:** "It's not a blocker. It's totally functional. It's just a lack of polish while all the other HUD
@@ -170,12 +170,12 @@ A PC session on 2026-10-26, 22:24–23:28, run by a Claude Code session in `C:\U
       generation.
 - **F11: new in this build.** From full screen, F11 shows a flicker of a smaller window and then goes back to full
   screen, so the game can't be made windowed (and Win+D or minimising snapped back too, at first).
-  - Emre: "the moment I press F10, it kicked me back into full screen. I see a flicker of a smaller window and then
+  - The player: "the moment I press F10, it kicked me back into full screen. I see a flicker of a smaller window and then
     back into full screen." (He meant F11.)
   - In DLSS-G 1 he could leave full screen.
 - **Distant Horizons left as an overlay: not new.** Toggling full screen can leave the picture with Distant Horizons'
   terrain drawn upside down over the world, until a shader reload (photo below).
-  - Emre: "It looks like Distant Horizons just kind of stays and becomes an overlay. ... It's always fixed by a shader
+  - The player: "It looks like Distant Horizons just kind of stays and becomes an overlay. ... It's always fixed by a shader
     reload though."
   - He has seen it before: "that weird distant horizons thing actually happened to me while I was playing with ... the
     first version of DLSS frame generation ... It's been there with frame generation from the first patch."
@@ -193,8 +193,8 @@ A PC session on 2026-10-26, 22:24–23:28, run by a Claude Code session in `C:\U
     rendered one (most it can generate: 1, smallest size 100)`.
   - **Streamline's log during the toggles:** 3 WARN `Repeated slDLSSGSetOptions() call for the frame N. A redundant
     call or a race condition with Present().` (one at each turn-off) and 3 WARN `FC feedback: 1`. No ERROR.
-  - Emre saw nothing wrong in the picture ("Everything else looks just as good").
-- **Playing a few minutes, against DLSS-G 1.** Emre: "I see no regressions visually other than the inability to
+  - The player saw nothing wrong in the picture ("Everything else looks just as good").
+- **Playing a few minutes, against DLSS-G 1.** The player: "I see no regressions visually other than the inability to
   minimize. Smoothness feels the same". The command suggestions are the one thing left.
 
 ![Distant Horizons left over the world after a full-screen toggle (DLSS)](photo-dh-overlay-dlss.jpg)
@@ -213,7 +213,7 @@ A PC session on 2026-10-26, 22:24–23:28, run by a Claude Code session in `C:\U
 
 ### 4. FSR on this card
 
-- **Status and toast** as the runbook says (Emre: "Yep, all the lines came as expected, and the toast also came as
+- **Status and toast** as the runbook says (the player: "Yep, all the lines came as expected, and the toast also came as
   expected.").
 - **Start.**
   - `Frame generation: AMD FSR 3.1 frame generation (FidelityFX SDK 2.0.0) from ...\create-galore-dlss\fidelityfx-2.0.0,
@@ -232,23 +232,23 @@ A PC session on 2026-10-26, 22:24–23:28, run by a Claude Code session in `C:\U
 - **Minimise:** `off, the window is minimized` at once.
 - **Resizes:** 2, and **one `Frame generation was on when the swap chain resized` WARN**, as with DLSS. So the runbook's
   "no `Frame generation:` WARN" doesn't hold for FSR either.
-- **F11:** the same as with DLSS. Emre: "F11 to minimize still doesn't work and also brings up this weird artifact."
+- **F11:** the same as with DLSS. The player: "F11 to minimize still doesn't work and also brings up this weird artifact."
   It brings the same Distant Horizons overlay (photo below).
-- **The command suggestions with FSR.** Emre: "The chat command suggestions here look perfect. The fix for FSR clearly
+- **The command suggestions with FSR.** The player: "The chat command suggestions here look perfect. The fix for FSR clearly
   works. There's literally no issue with them. ... DLSS is known to sometimes not fully respect, I think, the UI masks."
-- **The frame cap: FSR doesn't hold Emre's 120 the way DLSS does.**
+- **The frame cap: FSR doesn't hold the player's 120 the way DLSS does.**
   - With his 120 fps cap the counter showed about 100 rendered and the NVIDIA overlay about 200 shown. With DLSS the
     same cap gave 60 rendered and 120 shown.
   - **Why:** Reflex through Streamline (DLSS) caps the frames shown; Reflex on NVAPI (FSR, or frame generation off)
     caps the frames rendered.
   - The log agrees: `Reflex: low latency on, boost off, frame cap 120 fps (Reflex's); driver low latency off, last sleep
     0 us, game Sleep not used` at the start.
-  - To compare feel fairly, Emre set the game's cap to 60 himself (`frame cap 60 fps (Reflex's); driver low latency on,
+  - To compare feel fairly, the player set the game's cap to 60 himself (`frame cap 60 fps (Reflex's); driver low latency on,
     last sleep 8333 us, game Sleep used, G-SYNC fullscreen`), so both ran 60 rendered and 120 shown. His options were
     put back before step 5.
   - **Worth deciding on the Bridge side:** should a cap mean shown frames with FSR too, so a 120 Hz screen gets 120,
     not 200?
-- **Emre's verdict, both at 60 rendered → 120 shown:**
+- **The player's verdict, both at 60 rendered → 120 shown:**
   - **Quality:** "The gap between FSR frame generation and DLSS frame generation is significantly closer than DLSS super
     resolution and FSR super resolution. The quality is basically identical."
   - **The difference:** "DLSS has a bit more artifact, as in like garbling things when you move really fast. Meanwhile,
@@ -283,7 +283,7 @@ Streamline running, and step 4 is FSR.
 
 Each launch was the runbook's, with `autorun=dlaa-test` and `runs=G1` (DLSS-G 1's run: `lat-reflex`, `lat-pacing-on`,
 `lat-reflex-pacing-on`, each twice at `shore` and `canopy`).
-- **Settings:** `reflex=on`, `gpuPacing=off`, no `frameGenCheck`, Emre's own `options.txt` (the kit turns the cap off
+- **Settings:** `reflex=on`, `gpuPacing=off`, no `frameGenCheck`, the player's own `options.txt` (the kit turns the cap off
   while it measures: `frame cap none`).
 - **The PC:** quiet, with the window in front and covering the screen.
 - **PresentMon** was attached by pid with the runbook's options; every CSV grew.
@@ -379,9 +379,9 @@ Other numbers from the same runs:
   - **FSR doesn't double tap here.** DLSS has more short-long pairs. Neighbouring DLSS frames alternate: the correlation
     from one shown frame to the next is −0.2 to −0.35 (in 5 of its 6 rows; the sixth is skewed by the boundary frame
     noted below), against 0 to −0.1 with FSR.
-  - **But over 2 to 8 frames FSR is the less even one** (table above). That fits Emre's "little hiccups" and jitter on
+  - **But over 2 to 8 frames FSR is the less even one** (table above). That fits the player's "little hiccups" and jitter on
     steady pans with FSR, and his "pacing wise, I think DLSS wins".
-  - These runs are uncapped, near the panel's ceiling. Emre felt them at 60 → 120.
+  - These runs are uncapped, near the panel's ceiling. The player felt them at 60 → 120.
 - **The pacer** (`lat-reflex-pacing-on` against `lat-reflex`):
   - **DLSS:** fps +1.6% / +0.1%, latency −0.4 / −0.6 ms (target 4.1 / 4.5 ms, wait 0.1–0.3 ms). It keeps the frame
     rate and lowers latency a little.
@@ -423,7 +423,7 @@ Other numbers from the same runs:
     logged.
   - **The runbook's crash files:** there is no `hs_err` (the JVM didn't crash). The newest Streamline log is launch 1's
     (launch 3 runs FSR, off). The crash report, the log and its last 100 lines are kept in `$T\fg2\L3-crash`.
-- **The second try (23:16, Emre allowed a new PresentMon prompt) ran,** but without two resource packs.
+- **The second try (23:16, the player allowed a new PresentMon prompt) ran,** but without two resource packs.
   - On the failure, the game had re-saved `options.txt` with `resourcePacks:[]` and without the mods' key bindings
     (13,945 → 3,600 bytes). So the run had no FreshAnimations and no Create Galore menu pack.
   - Its numbers came out the same as the clean run below: 159.5 / 152.0 fps, 9.7 / 11.0 ms. They aren't in the table.
@@ -433,20 +433,20 @@ Other numbers from the same runs:
 ## Choices that aren't in the runbook
 
 - **One elevated PresentMon helper instead of a prompt per launch.**
-  - `$T\profiling\scripts\fg2-pm.ps1` ran elevated after one administrator prompt (Emre clicked it at 23:04, before
+  - `$T\profiling\scripts\fg2-pm.ps1` ran elevated after one administrator prompt (the player clicked it at 23:04, before
     he left). For each launch it waited for the game's pid, written by the launch script, and attached PresentMon with
     the runbook's options.
   - Once the game had ended it stopped the session, because attached by pid PresentMon ignores
     `--terminate_on_proc_exit`.
-  - For launch 3's second and third tries Emre clicked two more prompts ("you can ask for presentmon again").
-- **The launch script.** `$T\profiling\scripts\fg2-run.ps1` is Pacer 3's `pacer3-run.ps1` (approved by Emre then)
+  - For launch 3's second and third tries the player clicked two more prompts ("you can ask for presentmon again").
+- **The launch script.** `$T\profiling\scripts\fg2-run.ps1` is Pacer 3's `pacer3-run.ps1` (approved by the player then)
   plus the pid hand-off. Each launch's window came up at (0, 0) with its title bar on screen. The script moved it so
   the picture covered the screen before the run: "client at (0, 0) size 2560x1440, foreground True" in all four
   runs.
 - **Distant Horizons on 2 threads in step 5,** as in every latency run since Reflex 1. It was 32 in steps 1–4.
 - **The frame cap.**
-  - Steps 1–4 ran Emre's own `options.txt` (120 fps cap, vsync).
-  - In step 4 Emre set the game's cap to 60 himself, to compare FSR's feel with DLSS's at 60 → 120. His
+  - Steps 1–4 ran the player's own `options.txt` (120 fps cap, vsync).
+  - In step 4 the player set the game's cap to 60 himself, to compare FSR's feel with DLSS's at 60 → 120. His
     `options.txt` went back to the backup before step 5.
 - **Launch 3, run three times** (see above). The table uses the third try.
 - **The analysis.**
@@ -462,7 +462,7 @@ Other numbers from the same runs:
     `fml.toml` and `sodium-options.json` were copied back from `$T\fg2\*.before`, and each was checked with `cmp`.
   - That leaves `dlaa=true` and `perfectPresentation=false`, as before the session, with no `frameGen`,
     `frameGenType` or `frameGenCheck` lines. The test kit's json was deleted.
-  - If Emre wants frame generation left on (DLSS or FSR) for playing, it's one line each in the display file, or the
+  - If the player wants frame generation left on (DLSS or FSR) for playing, it's one line each in the display file, or the
     Display tab.
 - **The DLL files.** The instance keeps `create-galore-dlss\nvngx_dlssg.dll` 310.9.16 (Find on this PC's copy). The
   copy moved aside, from DLSS-G 1, stays in `$T\tools\nvngx_dlssg-dlssg1.dll`.

@@ -1,6 +1,6 @@
 # Pacer 3 on the RTX 4080 SUPER: GPU pacing on DirectX 12
 
-PC session on 2026-10-26, 16:47–17:10, by a Claude Code session in `C:\Users\coolm\Documents\Claude\MC-CREATE`
+PC session on 2026-10-26, 16:47–17:10, by a Claude Code session in `C:\Users\<user>\Documents\Claude\MC-CREATE`
 (`$T`). It followed "Pacer 3" in `tools/dlss-testkit/PC-RUNBOOK.md` at `93149df9`, with Bridge 1.116.0 (test build,
 the HUD split off) and the test kit from that commit, right after HUD split 1 (`results/hud-split1/`).
 - Four launches with `runs=L7`, alternating `presenter=dx11` and `presenter=dx12`, with no PresentMon and no
@@ -207,13 +207,13 @@ Read before launch 1, the same as in Presenter 3:
 
 **What didn't go to plan:**
 1. **The game window didn't cover the screen.**
-   - In launch 1's first try, Emre saw the window's title bar and buttons, which he'd never seen in a test before. The
+   - In launch 1's first try, the player saw the window's title bar and buttons, which he'd never seen in a test before. The
      window stood at (0, 0), so the 2560x1440 picture was shifted 8 px right and 31 px down, past the screen's edge. In
      all the earlier sessions it sat at (−8, −31), covering the screen exactly (Presenter 1's DirectX 12 loading-screen
      screenshot shows no title bar).
    - `options.txt` is the same file as before (`fullscreen:false`), and the Bridge's changes since Presenter 3 don't
      touch the window. Why Windows placed it so on some launches today isn't known. The PC had restarted at 16:04.
-   - With G-SYNC set to full screen only, that wouldn't have been comparable, so Emre said: "Yeah, you can kill it and
+   - With G-SYNC set to full screen only, that wouldn't have been comparable, so the player said: "Yeah, you can kill it and
      fix it ... G-sync won't hold because it's not full screen."
    - I closed the game normally at 16:51:36 and started each launch through a small script
      (`$T\profiling\scripts\pacer3-run.ps1`). It launches the game as before, and while the game loads it moves the

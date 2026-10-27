@@ -132,6 +132,15 @@ public final class Capture {
                 modes.add(new Mode(scale[0] + "-dlss-L", true, "L", null, null, null, null, null, s));
                 modes.add(new Mode(scale[0] + "-fsr3", true, "default", null, null, "fsr3", null, null, s));
             }
+            // DLSS Ray Reconstruction (dev builds) with preset F (RR 4.5) at full resolution and each render scale, an older
+            // preset, and F with the pack's colour as it is (not pre-exposed) and with its own smoothing kept.
+            modes.add(Mode.rr("dlaa-rr-F", "F", null));
+            for (String[] scale : scales) {
+                modes.add(Mode.rr(scale[0] + "-rr-F", "F", Float.parseFloat(scale[1])));
+            }
+            modes.add(Mode.rr("perf-rr-E", "E", 0.5f));
+            modes.add(Mode.rr("perf-rr-F-rawexp", "F,exposure=raw", 0.5f));
+            modes.add(Mode.rr("perf-rr-F-calm", "F,raw=none", 0.5f));
             // NVIDIA's full mip bias (one more mip level of detail) against the render scale's own.
             modes.add(new Mode("perf-dlss-K-bias", true, "K", null, null, null, null, null, 0.5f, -1.0f));
             modes.add(new Mode("perf-fsr3-bias", true, "default", null, null, "fsr3", null, null, 0.5f, -1.0f));
@@ -191,7 +200,8 @@ public final class Capture {
          * Presentation on (Reflex needs it), L2 with it off (Sodium's render-ahead limit), each mode twice. Pacer 1: L3
          * with Perfect Presentation on, L4 with it off. Presenter 1: P1 once with each presenter (dx11, dx12).
          * Presenter 2 and 3: P2 with dx11 and with dx12. Pacer 3: L7, GPU pacing's targets, once with each presenter.
-         * DLSS-G 1: G1, Reflex alone against Reflex with GPU pacing On, with frame generation on and off.
+         * DLSS-G 1: G1, Reflex alone against Reflex with GPU pacing On, with frame generation on and off. Ray Reconstruction
+         * 1: RR1 measures frame rates (DLSS against Ray Reconstruction at each scale, no screenshots), RR2 saves the pictures.
          */
         List<Run> runs = new ArrayList<>(List.of(
                 new Run("F1", "photon-taa+dlaa-default+fsr3+perf-taau+perf-dlss-K+perf-dlss-M+perf-dlss-L+perf-fsr3"
@@ -226,7 +236,11 @@ public final class Capture {
                 new Run("P2", "lat-base+lat-reflex+lat-cap-default", "shore+canopy", "latency", null, false, null, 2),
                 new Run("L7", "lat-base+lat-pacing-on+lat-pacer+lat-pacer-3000+lat-pacer-5000+lat-reflex", "shore+canopy",
                         "latency", null, false, null, 2),
-                new Run("G1", "lat-reflex+lat-reflex-pacing-on+lat-pacing-on", "shore+canopy", "latency", null, false, null, 2)));
+                new Run("G1", "lat-reflex+lat-reflex-pacing-on+lat-pacing-on", "shore+canopy", "latency", null, false, null, 2),
+                new Run("RR1", "dlaa-default+dlaa-rr-F+q-dlss-K+q-rr-F+bal-rr-F+perf-dlss-K+perf-rr-F+ultra-rr-F", "shore+canopy", null,
+                        null, false, null, 2),
+                new Run("RR2", "photon-taa+dlaa-default+dlaa-rr-F+q-dlss-K+perf-dlss-K+perf-rr-F+perf-rr-E+perf-rr-F-rawexp"
+                        + "+perf-rr-F-calm+ultra-rr-F", "shore+glass+canopy+moving", null, null, null, null)));
     }
 
     /**
@@ -249,11 +263,19 @@ public final class Capture {
      * upscaling (Photon's TAAU) at that render scale, so DLSS or FSR upscale (or with dlaa false the pack itself); mipBias (null: 0) is added to the
      * textures' mip bias while DLSS or FSR runs (NVIDIA's guide asks for -1 more than the render scale's own); reflex,
      * latePoll, renderAhead, fpsCap, pacerUs and capAtStart (null: as they are) are the input latency switches (see
-     * {@link #latency}).
+     * {@link #latency}); rayReconstruction (null: off) runs DLSS Ray Reconstruction in DLSS's place (dev builds), see
+     * {@link #rr}.
      */
     record Mode(String name, boolean dlaa, String preset, String debugView, String jitterSign, String engine, Boolean objectMotion,
                 Boolean reactiveMask, Float renderScale, Float mipBias, String reflex, Boolean latePoll, Integer renderAhead,
-                Integer fpsCap, Integer pacerUs, Boolean capAtStart) {
+                Integer fpsCap, Integer pacerUs, Boolean capAtStart, String rayReconstruction) {
+        Mode(String name, boolean dlaa, String preset, String debugView, String jitterSign, String engine, Boolean objectMotion,
+             Boolean reactiveMask, Float renderScale, Float mipBias, String reflex, Boolean latePoll, Integer renderAhead,
+             Integer fpsCap, Integer pacerUs, Boolean capAtStart) {
+            this(name, dlaa, preset, debugView, jitterSign, engine, objectMotion, reactiveMask, renderScale, mipBias, reflex, latePoll,
+                    renderAhead, fpsCap, pacerUs, capAtStart, null);
+        }
+
         Mode(String name, boolean dlaa, String preset, String debugView, String jitterSign, String engine, Boolean objectMotion,
              Boolean reactiveMask, Float renderScale, Float mipBias, String reflex, Boolean latePoll, Integer renderAhead,
              Integer fpsCap) {
@@ -294,6 +316,15 @@ public final class Capture {
         Mode(String name, boolean dlaa, String preset, String debugView, String jitterSign, String engine, Boolean objectMotion,
              Boolean reactiveMask, Float renderScale) {
             this(name, dlaa, preset, debugView, jitterSign, engine, objectMotion, reactiveMask, renderScale, null);
+        }
+
+        /**
+         * A Ray Reconstruction mode (dev builds) at a render scale (null: full resolution). {@code rr} is its preset (F, E,
+         * D or default), then optionally {@code ,exposure=raw} (the colour as the pack has it, not times its exposure) and
+         * {@code ,raw=none} (the pack's own smoothing kept: rough reflections and soft shadows not left noisy).
+         */
+        static Mode rr(String name, String rr, Float renderScale) {
+            return new Mode(name, true, "default", null, null, null, null, null, renderScale, null, null, null, null, null, null, null, rr);
         }
     }
 
@@ -1001,6 +1032,23 @@ public final class Capture {
                 props.setProperty("frameCapAtStart", Boolean.toString(mode.capAtStart()));
             } else {
                 props.remove("frameCapAtStart");
+            }
+            props.remove("dlaaRrExposure");
+            props.remove("dlaaRrRaw");
+            if (mode.rayReconstruction() != null && !mode.rayReconstruction().isBlank()) {
+                String[] rr = mode.rayReconstruction().split(",");
+                props.setProperty("dlaaRayReconstruction", "true");
+                props.setProperty("dlaaRrPreset", rr[0].trim());
+                for (int i = 1; i < rr.length; i++) {
+                    String[] kv = rr[i].split("=", 2);
+                    if (kv.length == 2 && kv[0].trim().equals("exposure")) {
+                        props.setProperty("dlaaRrExposure", kv[1].trim());
+                    } else if (kv.length == 2 && kv[0].trim().equals("raw")) {
+                        props.setProperty("dlaaRrRaw", kv[1].trim());
+                    }
+                }
+            } else {
+                props.setProperty("dlaaRayReconstruction", "false");
             }
             try (Writer w = Files.newBufferedWriter(file)) {
                 props.store(w, "Create Galore Bridge display settings (last written by the DLAA test kit, mode " + mode.name() + ")");

@@ -1,6 +1,6 @@
 # Presenter 2 on the RTX 4080 SUPER: where DirectX 12 loses its 11%
 
-PC session on 2026-10-26, 13:04–13:40, by a Claude Code session in `C:\Users\coolm\Documents\Claude\MC-CREATE`
+PC session on 2026-10-26, 13:04–13:40, by a Claude Code session in `C:\Users\<user>\Documents\Claude\MC-CREATE`
 (`$T`). It followed "Presenter 2" in `tools/dlss-testkit/PC-RUNBOOK.md` at `6b4bfa86`, with Bridge 1.114.0 (test build)
 and the test kit from that commit.
 - Three launches, each with nvidia-smi and PresentMon running beside the game:
@@ -138,7 +138,7 @@ columns aren't comparable for `p-nvx`. nvidia-smi's 69–72% is the real picture
 - **The GPU waits about nothing per frame in any uncapped mode** (0.01 ms), on both presenters. A hand-off that stalled
   the GPU would show here; none does.
 - **nvidia-smi sees the GPU equally busy on both presenters** (97–99% at 2745 MHz in every uncapped mode). The lower
-  GPU use Emre saw in Presenter 1 doesn't show today.
+  GPU use the player saw in Presenter 1 doesn't show today.
 - **Time until displayed is 0.3–0.5 ms longer on DirectX 12** in the clean first plays (`lat-base`: 6.84 / 8.67 in
   launch 2 and 6.74 / 8.66 in launch 3, against 6.46 / 8.34 ms). The frames reach the GPU about 0.8 ms sooner but
   take a bit longer to reach the screen.
@@ -312,7 +312,7 @@ the session.
 - **The capture tools**, per launch, as in the runbook's steps 1 and 2, done by a small wrapper script
   (`$T\profiling\scripts\presenter-run.ps1`): nvidia-smi started just before the launch (250 ms samples) and stopped
   after the game closed; PresentMon 2.6.0 (console build in `$T\tools`) attached to the game's own `java.exe`,
-  elevated, with the runbook's options. Emre clicked 4 administrator prompts (launches 1, 2, 3's first try, 3). Every
+  elevated, with the runbook's options. The player clicked 4 administrator prompts (launches 1, 2, 3's first try, 3). Every
   CSV grew during its run.
 - **Results** with `latency.py` (all three runs), `frametimes.py` (one launch at a time) and `gpustats.py`, as in the
   runbook. Two small scripts of my own (on the PC, not committed) split PresentMon's numbers per play and grouped the

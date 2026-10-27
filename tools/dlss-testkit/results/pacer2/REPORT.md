@@ -1,6 +1,6 @@
 # Pacer 2 on the RTX 4080 SUPER: the pacer again, with the queue read without a flush
 
-PC session on 2026-10-26, 09:20–09:55, by a Claude Code session in `C:\Users\coolm\Documents\Claude\MC-CREATE`
+PC session on 2026-10-26, 09:20–09:55, by a Claude Code session in `C:\Users\<user>\Documents\Claude\MC-CREATE`
 (`$T`). It followed "Pacer 2" in `tools/dlss-testkit/PC-RUNBOOK.md` at `d3247d0`, with Bridge 1.110.0 (test build)
 and the test kit from that commit.
 - Two launches: L5 with Perfect Presentation on, L6 with it off. No by-feel part.

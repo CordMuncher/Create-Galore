@@ -1,6 +1,6 @@
 # Profiling 1 on the RTX 4080 SUPER: where the time goes
 
-PC session on 2026-10-25, 09:20–11:45, by a Claude Code session in `C:\Users\coolm\Documents\Claude\MC-CREATE`
+PC session on 2026-10-25, 09:20–11:45, by a Claude Code session in `C:\Users\<user>\Documents\Claude\MC-CREATE`
 (`$T`). It followed "Profiling 1: where the time goes" in `tools/dlss-testkit/PC-RUNBOOK.md` at `11365d5`, with
 Bridge 1.91.0 and the test kit from that commit. Captures:
 
@@ -356,7 +356,7 @@ both use the tools and captures of this session. Times are estimates.
 **Commands:**
 - **PresentMon (P1–P3, P5):** after the game's own `java.exe` had run for 8 s:
   `PresentMon-2.6.0-x64.exe --process_id <pid> --output_file $T\profiling\<P>.csv --qpc_time_ms --timed 240 --terminate_after_timed --stop_existing_session --no_console_stats`.
-  It ran elevated (Emre clicked the prompt). P5 used `--timed 170`. Analysis:
+  It ran elevated (the player clicked the prompt). P5 used `--timed 170`. Analysis:
   `frametimes.py <run> <P>.ft.csv ...` (see below for the `.ft.csv`).
 - **JFR:**
   - P4 ran with `$env:JDK_JAVA_OPTIONS = "-XX:StartFlightRecording=filename=$T\profiling\P4.jfr,settings=profile"`.
@@ -402,7 +402,7 @@ both use the tools and captures of this session. Times are estimates.
 **The PC:**
 - RTX 4080 SUPER, driver 32.0.16.2101 (621.01); Ryzen 9 9950X3D; Windows 11 Home 10.0.26200.
 - Power plan Balanced (`381b4222-f694-41f0-9685-ff5bb260df2e`).
-- NVIDIA Control Panel power management "Normal" (Emre's setting, left as it was).
+- NVIDIA Control Panel power management "Normal" (the player's setting, left as it was).
 - During the Nsight captures the GPU clock was 2,720 MHz while the GPU was busy, and 2,713 MHz with Perfect
   Presentation on (N2). The one lower average, 1,967 MHz in photon-taa's moving view in N1, came where the GPU was
   idle 60% of the time under Nsight.
@@ -412,8 +412,8 @@ both use the tools and captures of this session. Times are estimates.
 - Still running in the background: NZXT CAM, FanControl, OneDrive, Razer's app engine, PowerToys, the NVIDIA overlay,
   a Settings window and the Claude app.
 - Windows Update installed the Malicious Software Removal Tool (KB890830) just before the captures. They started after
-  Emre said it had finished.
-- Emre allows this session computer use (since round 1), to look at the screen. Administrator prompts were his to
+  the player said it had finished.
+- The player allows this session computer use (since round 1), to look at the screen. Administrator prompts were his to
   click.
 
 **Every `DLAA:` line.** In every launch, the Bridge's own lines were these (the folder is shortened to `$T`):
@@ -435,7 +435,7 @@ both use the tools and captures of this session. Times are estimates.
 **What didn't go to plan:**
 1. **Installing Nsight Systems.**
    - The portable unpack (`msiexec /a` into the test folder) failed on Windows' 260-character path limit (error 1304).
-   - My session wasn't allowed to start the system installer (the safety check stopped it), so Emre ran the MSI
+   - My session wasn't allowed to start the system installer (the safety check stopped it), so the player ran the MSI
      himself.
 2. **PresentMon as the brief has it** (`--process_name java.exe --terminate_on_proc_exit`) stopped before the game
    started.

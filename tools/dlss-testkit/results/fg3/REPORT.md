@@ -1,14 +1,14 @@
 # Frame generation 3 on the RTX 4080 SUPER: leaving full screen, the far terrain, the FSR cap and NVIDIA's presets
 
-A PC session on 2026-10-27, 09:24–10:24, run by a Claude Code session in `C:\Users\coolm\Documents\Claude\MC-CREATE`
+A PC session on 2026-10-27, 09:24–10:24, run by a Claude Code session in `C:\Users\<user>\Documents\Claude\MC-CREATE`
 (`$T`).
 - **What it followed:** "Frame generation 3" in `tools/dlss-testkit/PC-RUNBOOK.md` at `7449ffbf`, with Bridge 1.124.0
   (pack 0.5.15). The test kit is unchanged since Frame generation 2.
-- **Steps 1–4** were run with Emre at the keyboard.
+- **Steps 1–4** were run with the player at the keyboard.
 - **Step 5** ran on its own.
-- **Step 6** was with Emre: the NVIDIA app's global Frame Generation override set to Preset B. At Emre's request it also
+- **Step 6** was with the player: the NVIDIA app's global Frame Generation override set to Preset B. At the player's request it also
   had a third timed run with **Preset C**, which isn't in the runbook.
-- **Setup:** Photon v1.3a + DLAA, DLSS at full resolution (preset K), 2560x1440, Perfect Presentation on, on Emre's
+- **Setup:** Photon v1.3a + DLAA, DLSS at full resolution (preset K), 2560x1440, Perfect Presentation on, on the player's
   ASUS XG27AQDMES (240 Hz, G-SYNC). Max Framerate Unlimited (260) and vsync off, as the runbook sets them.
 
 ## Summary
@@ -17,13 +17,13 @@ A PC session on 2026-10-27, 09:24–10:24, run by a Claude Code session in `C:\U
 - **F11 works.** The game left and re-entered full screen 22 times, with DLSS, FSR, frame generation off and DirectX
   11. Each time out it came back as a normal window, with its title bar and the taskbar showing: 2544x1401 at (8, 31),
   fitted to the work area.
-  - Emre: "I did a whole lot of F11s, and I see no issues, no distant terrain and no weirdness, and it works."
+  - The player: "I did a whole lot of F11s, and I see no issues, no distant terrain and no weirdness, and it works."
   - **A dragged window comes back** at its size and place: 1473x810 at (363, 311) with DLSS, 1307x659 at (592, 455)
     with FSR, 1680x891 at (58, 129) with frame generation off, and 1404x639 at (84, 70) on DirectX 11.
   - **After maximise it comes back `maximized`.**
 - **The far terrain stayed where it belongs, every time.** Distant Horizons' depth buffer was handed back after each
   resize: `Distant Horizons: its own depth buffer goes back on its framebuffers (Iris gave them the world's new one at
-  the resize)`, 49 times. Emre saw no overlay at any point.
+  the resize)`, 49 times. The player saw no overlay at any point.
 - **No `Frame generation was on when the swap chain resized`** in any step. Frame generation 2 had 12 with DLSS and 1
   with FSR. Every mode change turned frame generation off, then back `on`.
 - **No `RSYNC: Flip queue is empty`** anywhere (Frame generation 2: 256 in the game log).
@@ -83,7 +83,7 @@ at its 12th entry); the count is over steps 1–4:
     screen, 2560x1440, is bigger than the screen's work area; it comes back as 2544x1401 at (8, 31)`.
   - Then `Perfect Presentation: borderless full screen, 2560x1440 at (0, 0)`: the game started in full screen.
   - `Reflex: low latency on, boost off, frame cap none` (Unlimited).
-  - At about 108 rendered fps uncapped, Emre asked whether a cap was on; it wasn't (`frame cap none`). The NVIDIA
+  - At about 108 rendered fps uncapped, the player asked whether a cap was on; it wasn't (`frame cap none`). The NVIDIA
     overlay showed twice that.
 - **F11 out and in, six times, then three more with the tests below: 9 out, 9 in, all as expected.**
   - Each out: `Perfect Presentation: a window, 2544x1401 at (8, 31)`.
@@ -94,9 +94,9 @@ at its 12th entry); the count is over steps 1–4:
   - **`the window is now` lines didn't come on the first out and in;** from the second they did.
   - **On every F11 in the size flips twice within about 45 ms:** `the window is now 2560x1440, the game has it in full
     screen` (`glfwSetWindowAttrib`), then `2544x1401` (`glfwSetWindowAttrib`), then `2560x1440` (`glfwSetWindowMonitor`).
-    Frame generation only turned off once each time, and Emre saw nothing, so it is harmless. It's one size change more
+    Frame generation only turned off once each time, and the player saw nothing, so it is harmless. It's one size change more
     than needed, which the Bridge side may want to know about.
-  - Emre: "Yeah, I did a whole lot of F11s, and I see no issues, no distant terrain and no weirdness, and it works."
+  - The player: "Yeah, I did a whole lot of F11s, and I see no issues, no distant terrain and no weirdness, and it works."
 - **Drag (09:34:30–09:34:56).**
   - Out, drag to about half size with the pause menu open, in, out: `a window, 1473x810 at (363, 311)`, with no `bigger
     than the screen's work area` line.
@@ -104,12 +104,12 @@ at its 12th entry); the count is over steps 1–4:
   - Maximised with the title bar button, then in: `borderless full screen, 2560x1440 at (0, 0), maximized`.
   - Then out: `the window to come back after full screen, 2560x1417, is bigger than the screen's work area; it comes
     back as 2544x1401 at (8, 31)` and `a window, 2544x1401 at (8, 31), maximized`.
-  - So it comes back maximised. Emre "didn't notice anything weird".
+  - So it comes back maximised. The player "didn't notice anything weird".
 - **Minimise from full screen** (Win+D, 09:35:12): `Frame generation: off, the window is minimized` at once. Back 7 s
   later: `off, the window is resizing`, then `on`.
   - From a window, the title bar's minimise was done with the pause menu open: frame generation was already off, so it
     logged no line.
-  - Emre: "I did all the steps and in all of them nothing weird happened, all as expected".
+  - The player: "I did all the steps and in all of them nothing weird happened, all as expected".
 - **Streamline (`Frame generation (native)`) WARN lines, steps 1–2:**
   - 23x `flipMetering.cpp:182[setFlipConfig] FC feedback: 1` (one per mode change);
   - 7x `dlfgPresent.cpp:1323[presentCommon] Frame rate over 100.00ms, reseting frame timer`;
@@ -120,14 +120,14 @@ at its 12th entry); the count is over steps 1–4:
 
 ## 2. The cap and the Find text with DLSS (09:37–09:39): pass
 
-- **Find on this PC.** Emre's screenshot shows, word for word: **"DLSS 310.9.16: already up to date. Frame generation
+- **Find on this PC.** The player's screenshot shows, word for word: **"DLSS 310.9.16: already up to date. Frame generation
   310.9.16: already up to date."** Nothing was copied, so nothing was logged.
   - The status line above it reads `On: NVIDIA DLAA on NVIDIA GeForce RTX 4080 SUPER, preset` and stops after `preset`.
     The rest seems cut off or hidden.
 - **The cap.**
   - Max Framerate 120 (09:38:23): `Reflex: low latency on, boost off, frame cap 120 fps (Reflex's); Streamline, low
     latency available, latency report available`.
-  - Counter 60, overlay 120. Emre: "the in-game counter showed 60 with a 120fps limit but the displayed fps (nvidia
+  - Counter 60, overlay 120. The player: "the in-game counter showed 60 with a 120fps limit but the displayed fps (nvidia
     overlay) showed 120 after fg".
   - Back to Unlimited (09:38:53): `frame cap none`.
 
@@ -146,16 +146,16 @@ at its 12th entry); the count is over steps 1–4:
   - Each resize re-created FSR at the new size (`Frame generation (native): FSR frame generation 3.1.5 at 2544x1401`,
     `... at 2560x1440`, `... at 1307x659`).
   - The dragged window came back as `a window, 1307x659 at (592, 455)`.
-  - Emre: "I did steps 1 and 2 and noticed no weird far terrain, and everything worked as you would expect with a
+  - The player: "I did steps 1 and 2 and noticed no weird far terrain, and everything worked as you would expect with a
     window. I even did the dragging and stuff."
 - **The cap.**
   - Max Framerate 120. While the menu was open, with frame generation off: `Reflex: low latency on, boost off, frame
     cap 120 fps (Reflex's); driver low latency on, last sleep 800 us, game Sleep used, G-SYNC fullscreen`.
   - Once it turned on: **`Reflex: low latency on, boost off, frame cap 120 fps on screen, 60 rendered (Reflex's);
     driver low latency on, last sleep 8333 us, game Sleep used, G-SYNC fullscreen`**.
-  - Emre: "At 120 FPS cap, the in-game counter reads 60 and the NVIDIA overlay reads 120 as expected."
+  - The player: "At 120 FPS cap, the in-game counter reads 60 and the NVIDIA overlay reads 120 as expected."
   - Back to Unlimited: `frame cap none`.
-- **Win+D (09:48:26):** `off, the window is minimized`, then back after 14 s. Emre: "nothing odd happened and it all
+- **Win+D (09:48:26):** `off, the window is minimized`, then back after 14 s. The player: "nothing odd happened and it all
   appears to work."
 - **No Bridge WARN** in this launch.
 
@@ -172,7 +172,7 @@ at its 12th entry); the count is over steps 1–4:
   - Then 4 out and 4 in, and a drag to `a window, 1404x639 at (84, 70)` that came back right.
   - **Without `DXGI windowed`:** `the window is now ...` lines read `the game has it in full screen` / `as a window`
     with nothing after, as the runbook allows.
-  - Emre: "at every point it behaved normally with no weird terrain bugs or anything."
+  - The player: "at every point it behaved normally with no weird terrain bugs or anything."
   - No `Mod loading issue` in any start: main's lock held through 7 starts.
 - **WARN in steps 3–4:** only `Create Galore: something registered texture irons_lib:steve off the render thread`
   (every launch, harmless). There was one `Perfect Presentation: swap chain wait timed out` at 09:43:13, while the game
@@ -198,7 +198,7 @@ at its 12th entry); the count is over steps 1–4:
 
 ## 6. NVIDIA's Frame Generation presets
 
-- **The override (10:01).** Emre set it in the NVIDIA app: Graphics, Global Settings, `DLSS Override - Model Presets`,
+- **The override (10:01).** The player set it in the NVIDIA app: Graphics, Global Settings, `DLSS Override - Model Presets`,
   Custom: Frame Generation **Preset B**, Super Resolution and Ray Reconstruction `Use 3D app setting (Default)`.
 - **The look (10:02).** The game launched without autorun.
   - **NVIDIA's overlay: `FG OVR N/A | SR OVR N/A, N/A`.** SR N/A is expected, since no SR override was set.
@@ -213,22 +213,22 @@ at its 12th entry); the count is over steps 1–4:
       version: 310.9.16`.
   - **No line in either log names a preset.** The four frame generation driver keys Streamline reads (`271614616`,
     `273507943`, `274083087`, `282018085`) read `0x0` with and without the override.
-  - **Emre on the overlay:** "we can't fully verify that because we don't know how Minecraft sees the game once frame
+  - **The player on the overlay:** "we can't fully verify that because we don't know how Minecraft sees the game once frame
     generation is on ... It could be hooking over OpenGL, in which case there is no frame generation to override in the
     first place."
   - **The suggestions, picture and feel with Preset B:** "I can't visually tell the difference. Honestly, preset B is
     very close to preset A ... Preset B in all of my use though ... always is just marginally better, but not in a
     clear way."
-- **B1 (Preset B), run anyway.** The runbook skips the timed launch when the overlay says N/A. Emre chose to run it:
+- **B1 (Preset B), run anyway.** The runbook skips the timed launch when the overlay says N/A. The player chose to run it:
   "If we can notice a statistical difference in performance or frame pacing, then a different model is likely
   running. If not ... having a override is probably just harmless."
   - Run `20261027-101125-G1`. Its log has the same override lines.
-- **B2 (Preset C), at Emre's request** (not in the runbook): "C is specifically designed to look a little bit worse
+- **B2 (Preset C), at the player's request** (not in the runbook): "C is specifically designed to look a little bit worse
   than B, but perform better ... If we see a clear uptick in performance here, then we know that the model overrides
   are taking hold."
   - Run `20261027-101839-G1`, the override set to Preset C, everything else the same. Its log has the same override
     lines.
-- Afterwards Emre set the NVIDIA app back to all overrides off ("alr I set the app back").
+- Afterwards the player set the NVIDIA app back to all overrides off ("alr I set the app back").
 
 ![NVIDIA's overlay with the Preset B override on](photo-overlay-preset-b.jpg)
 
@@ -296,20 +296,20 @@ The two plays inside each launch differ by at most 2.8% (B1, shore) and 1.8% (B2
 - **One elevated PresentMon helper for the timed launches.**
   - `$T\profiling\scripts\fg3-pm.ps1` is Frame generation 2's `fg2-pm.ps1` with the runbook's
     `--set_circular_buffer_size 4096`, the fg3 folder, and a stop file to end it early.
-  - One administrator prompt (Emre, 09:28) covered B0 and B1; a second one (10:16) covered B2.
+  - One administrator prompt (the player, 09:28) covered B0 and B1; a second one (10:16) covered B2.
 - **The launch script for the timed launches:** `fg2-run.ps1` (Pacer 3's window fix plus the pid hand-off). In each it
   moved the window once during start-up, before the game went full screen. Each run then started with `client at (0,
   0) size 2560x1440, foreground True`.
 - **Distant Horizons on 2 threads in the timed launches** (B0, B1, B2 and the step 6 look), as in every latency run
   since Reflex 1. It was 32 in steps 1–4.
-- **B1 ran although the overlay said N/A,** on Emre's call.
-- **B2 (Preset C)** is Emre's addition.
+- **B1 ran although the overlay said N/A,** on the player's call.
+- **B2 (Preset C)** is the player's addition.
 - **The analysis.**
   - frametimes.py ran once per launch (it pools runs with the same mode names).
   - Shown per s, pairs at 2x or more, evenness over 2 and 8 frames, and the launch-to-launch comparison are my own
     measures, from the same PresentMon frames with frametimes.py's segment logic.
   - Frame generation 2's DLSS launch is the noise reference.
-- **Emre's NVIDIA app screenshot** is not committed, because it shows his account. The dialog is cropped out of it.
+- **The player's NVIDIA app screenshot** is not committed, because it shows his account. The dialog is cropped out of it.
   His overlay photo is cropped to the overlay line.
 
 ## Afterwards
@@ -319,7 +319,7 @@ The two plays inside each launch differ by at most 2.8% (B1, shore) and 1.8% (B2
     `sodium-options.json` were copied back from `$T\fg3\*.before`, and each was checked with `cmp`.
   - That leaves frame generation off, Perfect Presentation off, windowed, 120 fps cap with vsync, and Distant Horizons
     on 32 threads. The test kit's json was deleted.
-- **The NVIDIA app** is back to all overrides off (Emre).
+- **The NVIDIA app** is back to all overrides off (the player).
 - **What stays on the PC, in `$T\fg3`:**
   - the PresentMon CSVs (`B0.csv`, `B1.csv`, `B2.csv`);
   - the game logs of each step;
@@ -327,4 +327,4 @@ The two plays inside each launch differ by at most 2.8% (B1, shore) and 1.8% (B2
   - the unedited photos and screenshots, and the session notes.
   - The timed runs' game logs are in `$T\profiling\scripts\proflogs\FG3-B0`, `-B1` and `-B2`.
 
-What comes of it: every step passed, so by the runbook the PR can merge once Emre says so.
+What comes of it: every step passed, so by the runbook the PR can merge once the player says so.

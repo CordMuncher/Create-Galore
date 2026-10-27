@@ -1,12 +1,12 @@
 # DLSS-G 1 on the RTX 4080 SUPER: DLSS Frame Generation, first run
 
-PC session on 2026-10-26, 18:28–19:20, by a Claude Code session in `C:\Users\coolm\Documents\Claude\MC-CREATE`
-(`$T`), with Emre at the keyboard for part A. It followed "DLSS-G 1" in `tools/dlss-testkit/PC-RUNBOOK.md` at
+PC session on 2026-10-26, 18:28–19:20, by a Claude Code session in `C:\Users\<user>\Documents\Claude\MC-CREATE`
+(`$T`), with the player at the keyboard for part A. It followed "DLSS-G 1" in `tools/dlss-testkit/PC-RUNBOOK.md` at
 `55b9b8b5`, with Bridge 1.117.0 (test build) and the test kit from that commit.
 - **Part A:** one launch without `autorun`, Perfect Presentation on DirectX 12, Photon v1.3a + DLAA with DLSS at full
   resolution (preset K), 2560x1440, `frameGen=dlss`, `frameGenCheck=true`.
 - **Part B:** two launches with `runs=G1`, `frameGen=dlss` then `frameGen=off`.
-- **The test kit crashed** in part B's first launch, on a NaN from frame generation's latency report. With Emre's
+- **The test kit crashed** in part B's first launch, on a NaN from frame generation's latency report. With the player's
   authorization I fixed it on the test side, rebuilt the kit and ran part B again (see "The test kit fix"). The Bridge
   and the game code weren't changed.
 
@@ -14,13 +14,13 @@ PC session on 2026-10-26, 18:28–19:20, by a Claude Code session in `C:\Users\c
 
 - **Frame generation runs.** Streamline 2.14.16, NVIDIA's `nvngx_dlssg.dll` 310.9.16 (taken from NVIDIA's own
   folder), the DirectX 12 presenter and Reflex through Streamline all came up in the order the runbook asks for. It
-  showed **2 frames per rendered one**. The NVIDIA overlay showed 120 fps where the game rendered 60 (with Emre's 120
+  showed **2 frames per rendered one**. The NVIDIA overlay showed 120 fps where the game rendered 60 (with the player's 120
   fps cap), and **212–226 fps uncapped**, where the game rendered 109–112.
-- **It looks right.** In Emre's words: "It's looking really nice. I've moved stuff around and no HUD is ghosting or
+- **It looks right.** In the player's words: "It's looking really nice. I've moved stuff around and no HUD is ghosting or
   doubling." The artifacts are "no more than what I would expect in a AAA game like Cyberpunk". Foliage garbles a
   little when flicking fast, "extremely minor".
   - **One HUD miss:** the chat's command suggestions (the autocomplete list above the chat) aren't marked as HUD, so
-    frame generation interpolates them as if they moved when they appear. Emre: not a blocker. He suggests fixing it
+    frame generation interpolates them as if they moved when they appear. The player: not a blocker. He suggests fixing it
     together with FSR's frame generation.
   - **Smoothness, uncapped and without the checks:** "pretty absurd". Frame generation evens out Minecraft's jittery CPU
     frame times, so the pacing feels better than the number alone. He noticed no input delay at over 100 rendered fps.
@@ -32,17 +32,17 @@ PC session on 2026-10-26, 18:28–19:20, by a Claude Code session in `C:\Users\c
   - Of the camera verdicts: 51 `camera ok` (median error 0.01–0.03 px), 212 `too little motion to judge`, and **5
     `CAMERA DISAGREES`**. Each of those 5 was the first check right after a shader reload (F8 for the views, and once
     after a resize), with motion vectors of about 70,000–75,000 px where the camera said 0. So **for a moment after a
-    reload the motion target holds garbage**. Frame generation may build one wrong frame from it; Emre didn't notice
+    reload the motion target holds garbage**. Frame generation may build one wrong frame from it; the player didn't notice
     one. Worth a look on the Bridge side.
 - **Resizing, maximising, minimising, Alt-Tab, a Chrome tab dragged over the game: it kept working.** Frame generation
-  went off for each resize and on again about 0.1 s later. Emre saw about half a second of the picture resolving after a
+  went off for each resize and on again about 0.1 s later. The player saw about half a second of the picture resolving after a
   resize, which looks like DLSS rebuilding its history.
   - Streamline logged errors meanwhile: 357 `RSYNC: Flip queue is empty!!!` in the game log around the minimise, and
     16,658 in Streamline's own log.
   - The Bridge warned 4 times `Frame generation was on when the swap chain resized: it is turned off one frame before
     a resize`.
   - Frame generation didn't log an "off" while the game was minimised.
-- **The four views show what they should**, upright and filling the window. One note on `alpha`: while moving, Emre saw
+- **The four views show what they should**, upright and filling the window. One note on `alpha`: while moving, the player saw
   "the world's ghost briefly reappear". The generated in-between frames come from the real frame, not from the view,
   so that's a property of the debug view, not of normal play.
 - **Part B: the GPU pacer beside Reflex keeps the frame rate and shortens the latency, with frame generation and
@@ -67,7 +67,7 @@ PC session on 2026-10-26, 18:28–19:20, by a Claude Code session in `C:\Users\c
     reseting frame timer` (23× in part A, 8× in part B, at loading and at each mode switch's shader reload).
 
 **In one line:** DLSS Frame Generation works on the RTX 4080, looks right apart from the chat's command suggestions,
-roughly doubles the frames shown, and Emre would release it. The GPU pacer helps beside Reflex with it on. Left for
+roughly doubles the frames shown, and the player would release it. The GPU pacer helps beside Reflex with it on. Left for
 the developer: the motion vectors right after a shader reload, the duplicated constants, and the flip-queue errors
 around a minimise.
 
@@ -75,10 +75,10 @@ around a minimise.
 
 - **Hardware-accelerated GPU scheduling: On.**
   - The registry value the runbook reads (`HwSchMode`) doesn't exist on this PC, which means Windows' default.
-  - Following the runbook, I stopped and asked Emre. His screenshot of Settings → System → Display → Graphics shows
+  - Following the runbook, I stopped and asked the player. His screenshot of Settings → System → Display → Graphics shows
     "Hardware-accelerated GPU scheduling: On" (and Variable refresh rate On, Optimizations for windowed games On).
 - **Windows:** 10.0.26200 (build 26200, newer than 19041).
-- **NVIDIA Control Panel, Vertical sync:** "Use the 3D application setting". I read it at 16:47 and Emre confirmed it
+- **NVIDIA Control Panel, Vertical sync:** "Use the 3D application setting". I read it at 16:47 and the player confirmed it
   unchanged.
 - **The card:** RTX 4080 SUPER, driver 32.0.16.2101 (NVIDIA 621.1 in Streamline's log).
 - **nvngx_dlssg.dll 310.9.16**, which the Bridge copied at start from NVIDIA's folder:
@@ -102,12 +102,12 @@ Frame generation: off, a screen is open                                   (10×:
 Frame generation: off, the window is resizing                             (4×)
 Frame generation: DirectX 12: slSetConstants: eErrorDuplicatedConstants   (WARN, 1×, when the chat first opened)
 Frame generation: view hudless / alpha / depth / motion, checks every 5 s (step 3)
-Frame generation: view off, checks off                                    (step 4, at Emre's request)
+Frame generation: view off, checks off                                    (step 4, at the player's request)
 ```
 
 - **Reflex**, as the runbook expects: `Reflex: on, though set to off: frame generation needs it`, then `Reflex: started
   through Streamline, as frame generation needs (Streamline, low latency available, latency report available)`.
-- With Emre's own 120 fps cap: `Reflex: low latency on, boost off, frame cap 120 fps (Reflex's); Streamline, ...`.
+- With the player's own 120 fps cap: `Reflex: low latency on, boost off, frame cap 120 fps (Reflex's); Streamline, ...`.
   Uncapped: `frame cap none`.
 - **The `(native)` lines:** Streamline's own log, passed through.
   - Most are `[info]`, and many were dropped by the Bridge's limit (1,694 `log lines dropped` notices, mostly at the
@@ -140,13 +140,13 @@ Each is the first check after a shader reload, which also resets the check timer
 afterwards. The motion vectors there are huge while the camera stood still. It looks like the motion target isn't
 written yet on the first frame of a new pipeline. Every later check was fine again.
 
-### Step 1: by eye (Emre played for about 15 minutes)
+### Step 1: by eye (the player played for about 15 minutes)
 
 - **The picture:** no ghosting or doubling of the HUD, hotbar, chat or crosshair. It "can only see that frame
   generation is on" if you're sensitive to artifacts, and the artifacts are "no more than ... Cyberpunk". Foliage, when
   flicking fast and staring at it, "can garble occasionally, but it's extremely minor".
 - **The chat's command suggestions:** "they're the only things that get garbled as they move ... as they appear. Frame
-  generation thinks they moved up and generates fake in between frames." They aren't marked as HUD. Emre doesn't count
+  generation thinks they moved up and generates fake in between frames." They aren't marked as HUD. The player doesn't count
   it as a blocker for a first release.
 - **The frame rate:** with his 120 fps cap the counter showed 60 and the NVIDIA overlay 120. "it feels like 120 FPS
   visually, and I can't really notice input delay at 60 FPS".
@@ -157,7 +157,7 @@ written yet on the first frame of a new pipeline. Every later check was fine aga
 
 ### Step 2: resize
 
-- Emre left full screen, dragged the window to random sizes, went back to full screen, then minimised it, opened the
+- The player left full screen, dragged the window to random sizes, went back to full screen, then minimised it, opened the
   taskbar and Windows search, dragged a Chrome tab over the game, clicked back and maximised again. "It worked
   perfectly ... it kept working."
 - About half a second of the picture resolving after a resize, "more DLSS building up its history than anything
@@ -169,33 +169,33 @@ written yet on the first frame of a new pipeline. Every later check was fine aga
 
 ### Step 3: the views
 
-`frameGenView` added to the settings file and F8 each time; the log confirmed each view. Emre's F2 screenshots, taken
+`frameGenView` added to the settings file and F8 each time; the log confirmed each view. The player's F2 screenshots, taken
 while turning (F2 saves the rendered frame, not the generated ones):
 
 | View | What it should show | What it showed | Screenshot |
 | --- | --- | --- | --- |
 | `hudless` | the world with no HUD | the world, upright and filling the window, no HUD (the hand and shield are the world's), while flicking and while panning | [view-hudless.jpg](view-hudless.jpg) |
-| `alpha` | white under the HUD, black elsewhere | exactly that, pure greyscale. Emre: "While I'm moving, it's like the world's ghost briefly reappears, but when stationary, it's back to just black and white" (the generated frames carry the real world) | [view-alpha.png](view-alpha.png) |
+| `alpha` | white under the HUD, black elsewhere | exactly that, pure greyscale. The player: "While I'm moving, it's like the world's ghost briefly reappears, but when stationary, it's back to just black and white" (the generated frames carry the real world) | [view-alpha.png](view-alpha.png) |
 | `depth` | near bright, far dark, sky black | the hand and shield nearly white, trees and grass grey, far terrain darker, the sky black | [view-depth.jpg](view-depth.jpg) |
 | `motion` | black when still; right red, left blue, down green, up blue-ish | turning right: red (yellow and magenta toward the corners), the hand black; moving down: green (average RGB 7/218/131); moving up: blue (54/0/219); black when still; waving leaves show as coloured blobs | [turning right](view-motion-turning-right.jpg), [moving down](view-motion-looking-down.jpg), [moving up](view-motion-looking-up.jpg) |
 
 ### Step 4: the frame rate
 
-Standing still looking at the lake. Emre's readings, from the frame counter (rendered frames) and the NVIDIA app's
+Standing still looking at the lake. The player's readings, from the frame counter (rendered frames) and the NVIDIA app's
 overlay (frames shown):
 
 | Settings | Counter (rendered) | NVIDIA overlay (shown) |
 | --- | --- | --- |
-| Emre's own: Max Framerate 120, VSync on (checks on) | 60 fps | 120 fps |
+| the player's own: Max Framerate 120, VSync on (checks on) | 60 fps | 120 fps |
 | Uncapped, VSync on, checks off | 109 fps, 9.2 ms; 1% low 69, 0.1% low 52 (about 70 / 56 after settling) | 212–217 fps |
 | Uncapped, VSync off, checks off | 111–112 fps, GPU almost fully used | about 220–226 fps |
 
 - Frame generation doubles what the screen gets. VSync made only a marginal difference.
-- Emre: "the smoothness is pretty absurd". The power draw was the highest of these runs but within the card's limit.
+- The player: "the smoothness is pretty absurd". The power draw was the highest of these runs but within the card's limit.
   "I've never seen Minecraft shaders run at this high level of an FPS, at this visual quality."
 - **On his server**, where he's CPU-limited at about 100 fps with the GPU half idle, he expects it to be close to a free
   win.
-- Turning the checks off and uncapping were Emre's choices, outside the runbook, to judge smoothness without the
+- Turning the checks off and uncapping were the player's choices, outside the runbook, to judge smoothness without the
   checks' hitch.
 
 ## Part B: Reflex alone against Reflex with the GPU pacer, frame generation on and off
@@ -268,7 +268,7 @@ thread ids left out (the file names his user folder, so it stays on the PC):
 | `[warn] defines.h:323[set] Repeated slDLSSGSetOptions() call for the frame N. A redundant call or a race condition with Present().` | 1 | 1 |
 | `[warn] d3d12.cpp:2533[cloneResource] One or more tagged resources use an unsupported alignment that is being overridden to 0 (e.g. resource 'nv.sl.dlss_g.clone.dlfg-outpu...` | 1 | 1 |
 
-## The test kit fix (authorized by Emre)
+## The test kit fix (authorized by the player)
 
 - **What crashed:** part B's first launch (run `20261026-190645-G1`), 19 s in, when the first `lat-reflex` stretch
   ended. Minecraft's crash report:
@@ -280,7 +280,7 @@ thread ids left out (the file names his user folder, so it stays on the PC):
     during disconnection` in `Capture.beforeFrame`.
   - There's no `hs_err` file, since the JVM itself didn't crash. The crash report, the log's last 100 lines and the
     Streamline log are on the PC.
-- **Emre's words:** "Since this is an obvious test side fix, I authorize you to just fix it and rerun the test that
+- **The player's words:** "Since this is an obvious test side fix, I authorize you to just fix it and rerun the test that
   crashed and the other tests that are waiting and just mention that in your report."
 - **The fix:** `Capture.recordLatency` now leaves a number out of the manifest when it isn't finite, and logs which
   one (`DLAA test: lat-reflex at shore: driverInputToGpuMs has no value (NaN), left out`). It's committed with this
@@ -311,7 +311,7 @@ thread ids left out (the file names his user folder, so it stays on the PC):
   - for part B, no `frameGenCheck` or `frameGenView`, and `frameGen=off` in launch 2.
   - The file was put back as it was, so none of these is left.
 - Shader pack: Photon v1.3a + DLAA was selected. `earlyWindowControl = false` was already so.
-- `options.txt`: Emre's own (120 fps cap, VSync on) in part A, until he uncapped it in step 4. It was put back before
+- `options.txt`: the player's own (120 fps cap, VSync on) in part A, until he uncapped it in step 4. It was put back before
   part B, and the kit sets its own cap and VSync in its runs.
 - **Distant Horizons:** 32 threads in part A, as the runbook doesn't change it. 2 threads in part B, my choice, to match
   Pacer 3 and Presenter 3, the latency runs part B is compared with.
@@ -320,14 +320,14 @@ thread ids left out (the file names his user folder, so it stays on the PC):
 
 | Launch | Settings | Run | Time |
 | --- | --- | --- | --- |
-| A | `frameGen=dlss`, `frameGenCheck=true` | free play, Emre | 18:32:40–19:04:17 |
+| A | `frameGen=dlss`, `frameGenCheck=true` | free play, the player | 18:32:40–19:04:17 |
 | B1, first try | `frameGen=dlss` | `20261026-190645-G1`, crashed | 19:05:08–19:07:04 |
 | B1 | `frameGen=dlss` | `20261026-191303-G1`: 12 plays, 10,780 frames | 19:13:03–19:14:48 |
 | B2 | `frameGen=off` | `20261026-191649-G1`: 12 plays | 19:16:49–19:18:09 |
 
 - G1 plays `lat-reflex`, `lat-pacing-on` and `lat-reflex-pacing-on` (in that order, not the runbook table's), each at
   shore and then canopy, and the list twice.
-- **The window:** part B's launches went through the window script from Pacer 3 (approved by Emre then). The game
+- **The window:** part B's launches went through the window script from Pacer 3 (approved by the player then). The game
   window landed at (0, 0) with its title bar on screen, 2560x1421, in all three part B launches. The script moved it to
   (−8, −31) before the run. Each run started with the picture at (0, 0), 2560x1440, and the game in front. In part A it
   came up right without help.
@@ -342,7 +342,7 @@ thread ids left out (the file names his user folder, so it stays on the PC):
   - the game logs (`partA-latest.log`, `partB-L1-latest.log`, `partB-L2-latest.log`) and the window logs;
   - the crash report and the log's last 100 lines before it;
   - the Streamline logs (`sl-partA.log`, `sl-partB-L1.log`, `sl-partB-L1-rerun.log`);
-  - all of Emre's F2 screenshots as PNG (`shots\`);
+  - all of the player's F2 screenshots as PNG (`shots\`);
   - `latency.md` and `tables.md`;
   - the settings copies, and the branch's kit jar beside the fixed one;
   - this session's notes.

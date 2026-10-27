@@ -5,6 +5,15 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.6.13
+
+### Added
+- **NVIDIA DLSS Ray Reconstruction with Photon (experimental).** Where NVIDIA's own runtime says the card runs it (RTX cards; elsewhere it is greyed out with NVIDIA's reason), the Upscaling tab's new **Ray Reconstruction** setting runs NVIDIA's DLSS Ray Reconstruction in DLSS's place with **Photon v1.3a + DLAA**. It denoises, anti-aliases and upscales in one pass, so it also cleans up Photon's reflections and soft shadows: water reflects like glass instead of grainy dots, shadows stay sharp and still, and a torch's reflection on metal stays crisp. Distant blocks and leaves are marginally softer than with DLSS. On an RTX 4080 SUPER at 1440p it costs 0.8 ms a frame over DLSS at Performance and 1.7 ms at Quality, so Ray Reconstruction at Performance runs at about 93% of DLSS Quality's frame rate. It runs beside DLSS frame generation too. **RR preset** picks its model: F (Ray Reconstruction 4.5) unless you pick another to compare. It shows its worth most at Photon's highest settings, with every lighting effect on.
+- **Photon's own settings for Ray Reconstruction.** Turning Ray Reconstruction on sets Photon to its Ultra profile the first time, and to the changes you made in Photon's menu under it after that. Turning it off brings back your own Photon settings. A message says so each time; the render resolution stays as you set it. Photon's menu stays yours to change under it, but whatever you set, soft shadows and reflections are left grainy for Ray Reconstruction to clean up and rough blocks such as metals get blurry reflections they don't have with it off, so Photon at a given profile looks different with it than without.
+- **Find on this PC copies nvngx_dlssd.dll too**, the NVIDIA DLL Ray Reconstruction needs, from where the NVIDIA app keeps it. It also needs NVIDIA driver 580 or newer.
+- Field Guide (Performance and Shaders): Ray Reconstruction.
+- Create Galore Bridge 1.136.0.
+
 ## 0.6.12
 
 ### Fixed

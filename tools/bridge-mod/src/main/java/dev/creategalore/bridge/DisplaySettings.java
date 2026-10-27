@@ -45,6 +45,20 @@ public final class DisplaySettings {
     public static final String DLAA_MIP_BIAS = "dlaaMipBias";
     /** true: the settings screen sets the render resolution with a slider instead of the standard modes. */
     public static final String DLAA_CUSTOM_SCALE = "dlaaCustomScale";
+    /** Experimental: true runs DLSS Ray Reconstruction in place of DLSS with a pack that hands over its guides (see Dlss). */
+    public static final String DLAA_RAY_RECONSTRUCTION = "dlaaRayReconstruction";
+    /** Ray Reconstruction's preset, F (the default), E, D or default (NVIDIA's pick); the settings screen writes it. */
+    public static final String DLAA_RR_PRESET = "dlaaRrPreset";
+    /** Testing only, not written to the file: exposed (the default) hands Ray Reconstruction the colour times the pack's exposure, raw as the pack has it. */
+    public static final String DLAA_RR_EXPOSURE = "dlaaRrExposure";
+    /** Testing only, not written to the file: the pack's effects left noisy for Ray Reconstruction, reflections,shadows (the default) or none. */
+    public static final String DLAA_RR_RAW = "dlaaRrRaw";
+    /**
+     * Testing only, not written to the file: changes to how Ray Reconstruction is called, any of no-hit-distance (no hit
+     * distance or matrices), own-parameters (NGX parameters not shared with DLSS) and hit-distance-bands (known hit
+     * distances in bands, for NVIDIA's debug overlay).
+     */
+    public static final String DLAA_RR_TEST = "dlaaRrTest";
     /** NVIDIA Reflex on Perfect Presentation's DirectX device: off, on or boost (markers for testing; see FrameLatency). */
     public static final String REFLEX = "reflex";
     /** Testing only, not written to the file: true or false reads input again just before each frame renders, or not (unset: with Reflex on). */
@@ -110,6 +124,10 @@ public final class DisplaySettings {
             + " Upscaling: the render resolution is the shader pack's own upscaling options (in Photon TAAU and TAAU Render\n"
             + " Scale; Render resolution on the settings screen); DLSS or FSR 3.1 upscale from it to the window.\n"
             + " dlaaCustomScale: true shows a 25-100% slider on the settings screen instead of the standard modes.\n"
+            + " dlaaRayReconstruction: experimental. true runs NVIDIA DLSS Ray Reconstruction (preset F) in place of DLSS\n"
+            + " with a pack that hands over its guides (Photon v1.3a + DLAA), with nvngx_dlssd.dll in create-galore-dlss/.\n"
+            + " Turned on or off on the settings screen it also swaps Photon's settings (Ultra, or your changes under it);\n"
+            + " here it does not.\n"
             + " reflex: off, on or boost. NVIDIA Reflex low latency (boost also keeps the GPU clocks up), applied at once.\n"
             + " Needs an NVIDIA card (GTX 900 or newer) and perfectPresentation=true; the settings screen turns that on\n"
             + " with it. With Max Framerate set, Reflex keeps that cap (where it helps most: use one the card can hold).\n"
