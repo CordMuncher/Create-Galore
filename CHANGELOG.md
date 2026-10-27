@@ -5,6 +5,16 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.6.6
+
+### Fixed
+- **Ask the Book's 3D models show their belts.** A player asked for a compact precision mechanism line and got a model whose text talked about a five-block belt that wasn't there. The book's model view never drew belts: a belt has no block model and no item of its own (it is laid with a Belt Connector), so only Create's belt renderer draws it, and the view skipped it. Every belt in every book model was invisible until now. The view now draws belts with Create's own renderer, pulleys included.
+- **Ask the Book no longer designs a machine out of the thing it makes.** The same line used a Mechanical Arm to carry pieces back to the start, but an arm takes a Precision Mechanism to craft, so the player could never build it to make their first mechanism. The book's models now go through each part's recipes against what the player has: a part they have never had that, by every recipe, needs something only a sequenced assembly line makes (such as a Precision Mechanism) that they have never had either, stops the model, and the book builds a version without it (by hand, or with belts alone) and shows the way to the first one. A build the player asks for to make later on is still allowed.
+- A model's caption and labels can no longer name a belt, deployer, funnel, arm, depot, basin, mixer, spout, fan, saw or drill the model doesn't have.
+
+### Added
+- Create Galore Bridge 1.129.0.
+
 ## 0.6.5
 
 ### Added

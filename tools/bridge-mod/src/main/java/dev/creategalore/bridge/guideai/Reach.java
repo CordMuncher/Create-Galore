@@ -52,16 +52,7 @@ final class Reach {
     static String tree(ServerPlayer player, MinecraftServer server, String itemQuery, int amount) {
         Item item = WorldTools.resolveItem(itemQuery);
         if (item == null) return "No item called '" + itemQuery + "'. Try find_items first.";
-        var registries = server.registryAccess();
-        Map<Item, List<RecipeHolder<?>>> makers = new HashMap<>();
-        for (RecipeHolder<?> holder : server.getRecipeManager().getRecipes()) {
-            try {
-                for (ItemStack out : WorldTools.outputs(holder.value(), registries))
-                    if (!out.isEmpty()) makers.computeIfAbsent(out.getItem(), k -> new ArrayList<>()).add(holder);
-            } catch (RuntimeException ignored) {
-                // A recipe that can't say what it makes can't be part of a path.
-            }
-        }
+        Map<Item, List<RecipeHolder<?>>> makers = makers(server);
         Map<Item, Integer> have = owned(player);
         List<String> lines = new ArrayList<>();
         Map<Item, String> gather = new LinkedHashMap<>();
@@ -79,6 +70,138 @@ final class Reach {
         if (!stations.isEmpty()) out.append("Stations and machines along the way: ").append(String.join("; ", stations)).append(".\n");
         out.append("Dimensions they have been to: ").append(String.join(", ", visited(player, server))).append('.');
         return out.toString();
+    }
+
+    /** Every recipe on the server, by the item it makes. */
+    private static Map<Item, List<RecipeHolder<?>>> makers(MinecraftServer server) {
+        var registries = server.registryAccess();
+        Map<Item, List<RecipeHolder<?>>> makers = new HashMap<>();
+        for (RecipeHolder<?> holder : server.getRecipeManager().getRecipes()) {
+            try {
+                for (ItemStack out : WorldTools.outputs(holder.value(), registries))
+                    if (!out.isEmpty()) makers.computeIfAbsent(out.getItem(), k -> new ArrayList<>()).add(holder);
+            } catch (RuntimeException ignored) {
+                // A recipe that can't say what it makes can't be part of a path.
+            }
+        }
+        return makers;
+    }
+
+    // ---------- the parts a model needs ----------
+
+    private static final String ASSEMBLY = "create:sequenced_assembly";
+
+    /**
+     * The parts of a model the player can't make yet: a part they have never had whose recipe tree, followed as
+     * recipe_tree follows it, needs an item that only a sequenced assembly line makes and that they have never had
+     * either (a Mechanical Arm before their first Precision Mechanism). A line that makes that very item can't hold the
+     * part, since the part needs the line's own product. Null when every part is within reach.
+     */
+    static BuildCheck.Report parts(ServerPlayer player, MinecraftServer server, java.util.Collection<BlockState> states) {
+        try {
+            Map<Item, List<RecipeHolder<?>>> makers = makers(server);
+            Map<Item, Integer> have = owned(player);
+            Map<Item, Item> blocked = new LinkedHashMap<>();
+            Set<Item> seen = new java.util.HashSet<>();
+            Map<Item, Item> known = new HashMap<>();
+            for (BlockState s : states) {
+                Item part = item(s, player);
+                if (part == Items.AIR || !seen.add(part) || had(player, part, have)) continue;
+                Item gate = gate(player, part, 0, new LinkedHashSet<>(), makers, have, known);
+                if (gate != null) blocked.put(part, gate);
+            }
+            if (blocked.isEmpty()) return null;
+            List<String> faults = new ArrayList<>();
+            blocked.forEach((part, gate) -> faults.add(part.getDescription().getString() + (part == gate ? " is" : " needs "
+                    + gate.getDescription().getString() + ", which is") + " made only on a sequenced assembly line, and the "
+                    + "player has never had " + (part == gate ? "one" : "a " + gate.getDescription().getString())));
+            String text = "What the player can make of it" + BuildCheck.FOR_YOU + ":\n- PROBLEM: they can't make every part yet: "
+                    + String.join("; ", faults) + ". A line that makes that item can't use a part that needs it: build it "
+                    + "without that part (by hand, or with belts alone), and show the way to their first one. Set for_later "
+                    + "only when they asked for a build for later on.";
+            return new BuildCheck.Report(text, faults);
+        } catch (RuntimeException | LinkageError e) {
+            return new BuildCheck.Report("(The parts check couldn't run on this model: " + e.getClass().getSimpleName() + ".)", List.of());
+        }
+    }
+
+    /** The item a block is placed from: its own, or the one picking it gives (a belt comes from a Belt Connector). */
+    private static Item item(BlockState s, ServerPlayer player) {
+        Item own = s.getBlock().asItem();
+        if (own != Items.AIR) return own;
+        try {
+            ItemStack pick = s.getBlock().getCloneItemStack(s, null, player.serverLevel(), player.blockPosition(), player);
+            return pick == null ? Items.AIR : pick.getItem();
+        } catch (RuntimeException | LinkageError e) {
+            return Items.AIR;
+        }
+    }
+
+    /** Whether the player has one now, or ever picked one up, crafted, mined or placed one. */
+    private static boolean had(ServerPlayer player, Item item, Map<Item, Integer> have) {
+        return have.getOrDefault(item, 0) > 0 || history(player, item).startsWith(", ever")
+                || player.getStats().getValue(Stats.ITEM_USED.get(item)) > 0;
+    }
+
+    /**
+     * The item made only on a sequenced assembly line, never had by the player, that every way of making {@code item}
+     * needs (each recipe, and each choice an ingredient allows); null when some way gets round it. Answers are kept in
+     * {@code known}, with {@link Items#AIR} for none.
+     */
+    private static Item gate(ServerPlayer player, Item item, int depth, Set<Item> path, Map<Item, List<RecipeHolder<?>>> makers,
+            Map<Item, Integer> have, Map<Item, Item> known) {
+        if (depth > MAX_DEPTH || natural(item) || depth > 0 && had(player, item, have)) return null;
+        Item memo = known.get(item);
+        if (memo != null) return memo == Items.AIR ? null : memo;
+        List<RecipeHolder<?>> options = makers.getOrDefault(item, List.of());
+        if (options.isEmpty()) return null;
+        boolean onlyAssembly = true;
+        for (RecipeHolder<?> holder : options) {
+            ResourceLocation type = BuiltInRegistries.RECIPE_TYPE.getKey(holder.value().getType());
+            if (type == null || !type.toString().equals(ASSEMBLY)) onlyAssembly = false;
+        }
+        if (onlyAssembly) {
+            known.put(item, item);
+            return item;
+        }
+        Item found = null;
+        path.add(item);
+        try {
+            for (RecipeHolder<?> holder : options) {
+                Map<Ingredient, Integer> parts = grouped(holder.value());
+                if (parts.isEmpty()) return null;
+                Item needs = null;
+                boolean circular = false;
+                for (Ingredient ingredient : parts.keySet()) {
+                    Item any = null;
+                    boolean free = false;
+                    for (ItemStack choice : ingredient.getItems()) {
+                        if (path.contains(choice.getItem())) continue;
+                        Item g = gate(player, choice.getItem(), depth + 1, path, makers, have, known);
+                        if (g == null) {
+                            free = true;
+                            break;
+                        }
+                        any = g;
+                    }
+                    if (free) continue;
+                    if (any == null) circular = true;
+                    else needs = any;
+                    break;
+                }
+                // A recipe that only goes round in a circle says nothing either way.
+                if (circular) continue;
+                if (needs == null) {
+                    known.put(item, Items.AIR);
+                    return null;
+                }
+                found = needs;
+            }
+        } finally {
+            path.remove(item);
+        }
+        if (depth == 0 || found == null) known.put(item, found == null ? Items.AIR : found);
+        return found;
     }
 
     private static void walk(ServerPlayer player, MinecraftServer server, Need need, int depth, Set<Item> path,

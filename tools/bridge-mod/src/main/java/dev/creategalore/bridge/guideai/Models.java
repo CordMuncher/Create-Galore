@@ -181,6 +181,8 @@ public final class Models {
                 + "wrong, then call again with draft false to put it in the answer."));
         props.add("shows_a_fault", WorldTools.prop("boolean", "True only when the model is meant to show a build that "
                 + "doesn't work (such as the player's own broken build); then it is built even when the rotation check finds faults."));
+        props.add("for_later", WorldTools.prop("boolean", "True only when the player asked for a build to make later on; "
+                + "then parts they can't make yet don't stop it being built."));
         props.add("moving", MotionCheck.definition());
         props.add("part_of_vehicle", WorldTools.prop("boolean", "True only when the model shows one part of a vehicle (an "
                 + "engine room, a rudder, a burner and its balloon) rather than the whole of it: the vehicle check's numbers "
@@ -420,6 +422,9 @@ public final class Models {
         }
         if (GuideText.string(input, "title").length() > 60) problems.add("title longer than 60 characters");
         if (GuideText.string(input, "caption").length() > 240) problems.add("caption longer than 240 characters");
+        String unbuilt = missingPart(GuideText.string(input, "caption"), cells, null);
+        if (unbuilt != null) problems.add("the caption names " + unbuilt + ", but the model has none: build the part in, or "
+                + "leave it out of the caption; the caption only names what the model really has");
         if (!problems.isEmpty()) return Result.problem("Not built. Fix these and call again: " + String.join("; ", problems) + ".");
         // What the model changes on the copied build, before blocks join up (a fence that now meets a new post isn't a change).
         Map<BlockPos, Boolean> changes = new HashMap<>();
@@ -448,6 +453,15 @@ public final class Models {
         BuildCheck.Report check = join(level == null ? null : BuildCheck.check(fixed, level), RigCheck.check(cells));
         if (level != null) check = join(check, OutputCheck.check(fixed, level));
         check = join(check, PlayerCheck.posts(cells));
+        boolean forLater = input.has("for_later") && input.get("for_later").isJsonPrimitive() && input.get("for_later").getAsBoolean();
+        if (player != null && level != null && !forLater) {
+            // Parts the player would place: on their own build, only what the model adds.
+            java.util.Set<net.minecraft.world.level.block.Block> built = new java.util.HashSet<>();
+            if (base != null) base.values().forEach(st -> built.add(st.getBlock()));
+            List<BlockState> added = new ArrayList<>();
+            for (BlockState st : cells.values()) if (!built.contains(st.getBlock())) added.add(st);
+            check = join(check, Reach.parts(player, level.getServer(), added));
+        }
         if (motion != null) check = join(check, motion.report());
         check = join(check, vehicle(cells, level, input.has("part_of_vehicle") && input.get("part_of_vehicle").isJsonPrimitive()
                 && input.get("part_of_vehicle").getAsBoolean()));
@@ -553,14 +567,26 @@ public final class Models {
         PARTS.put("barrel", storage);
         PARTS.put("furnace", id -> id.contains("furnace") || id.contains("smoker"));
         PARTS.put("lever", id -> id.contains("lever"));
+        PARTS.put("belt", id -> id.contains("belt"));
+        PARTS.put("deployer", id -> id.contains("deployer"));
+        PARTS.put("funnel", id -> id.contains("funnel"));
+        PARTS.put("arm", id -> id.endsWith("_arm"));
+        PARTS.put("depot", id -> id.contains("depot"));
+        PARTS.put("basin", id -> id.contains("basin"));
+        PARTS.put("mixer", id -> id.contains("mixer"));
+        PARTS.put("spout", id -> id.contains("spout"));
+        PARTS.put("fan", id -> id.contains("fan"));
+        PARTS.put("saw", id -> id.contains("saw"));
+        PARTS.put("drill", id -> id.contains("drill"));
     }
 
     /**
      * The part a label's words name when no block near its cell is that part, else null. Near is within two blocks, or
      * anywhere straight above or below the cell and its neighbours: a label on a roof or deck honestly names the barrels
-     * or engine under it, though the label can only point at the outside.
+     * or engine under it, though the label can only point at the outside. With no cell (a caption), anywhere in the model.
      */
     private static String missingPart(String text, Map<BlockPos, BlockState> cells, BlockPos at) {
+        if (text == null || text.isEmpty()) return null;
         for (String w : text.toLowerCase(java.util.Locale.ROOT).split("[^a-z]+")) {
             String word = w.endsWith("s") && PARTS.containsKey(w.substring(0, w.length() - 1)) ? w.substring(0, w.length() - 1) : w;
             java.util.function.Predicate<String> is = PARTS.get(word);
@@ -568,7 +594,9 @@ public final class Models {
             boolean found = false;
             for (Map.Entry<BlockPos, BlockState> e : cells.entrySet()) {
                 BlockPos q = e.getKey();
-                int dx = Math.abs(q.getX() - at.getX()), dy = Math.abs(q.getY() - at.getY()), dz = Math.abs(q.getZ() - at.getZ());
+                // With no cell (a caption), anywhere in the model counts.
+                int dx = at == null ? 0 : Math.abs(q.getX() - at.getX()), dy = at == null ? 0 : Math.abs(q.getY() - at.getY()),
+                        dz = at == null ? 0 : Math.abs(q.getZ() - at.getZ());
                 if ((dx <= 1 && dz <= 1 || dx <= 2 && dy <= 2 && dz <= 2)
                         && is.test(net.minecraft.core.registries.BuiltInRegistries.BLOCK.getKey(e.getValue().getBlock()).toString())) {
                     found = true;
