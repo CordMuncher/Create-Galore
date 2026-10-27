@@ -29,8 +29,8 @@ Java 21 and uv are in `$T\tools` from the DLAA rounds. If `$java` or `$T\tools\u
 section 1 of `tools\dlss-testkit\PC-RUNBOOK.md` does (that file is in this branch too).
 
 ```powershell
-if (Test-Path $R) { git -C $R pull } else {
-  git clone --branch claude/project-thread-mturba --single-branch https://github.com/emresahin0906-code/Create-Galore.git $R }
+if (Test-Path $R) { git -C $R remote set-url origin https://github.com/CordMuncher/Create-Galore.git; git -C $R pull } else {
+  git clone --branch claude/project-thread-mturba --single-branch https://github.com/CordMuncher/Create-Galore.git $R }
 ```
 
 ## 2. Game and pack
@@ -43,7 +43,7 @@ New-Item -ItemType Directory $I -Force | Out-Null
 & $T\tools\uv\uv.exe tool run --python 3.13 portablemc@5.0.6 --main-dir $T\mc start --dry --jvm $java --mc-dir $I neoforge::21.1.262
 Invoke-WebRequest "https://github.com/packwiz/packwiz-installer-bootstrap/releases/latest/download/packwiz-installer-bootstrap.jar" -OutFile $I\packwiz-installer-bootstrap.jar
 Push-Location $I
-& $java -jar packwiz-installer-bootstrap.jar -g -s client "https://raw.githubusercontent.com/emresahin0906-code/Create-Galore/main-6fi2ef/pack/pack.toml"
+& $java -jar packwiz-installer-bootstrap.jar -g -s client "https://raw.githubusercontent.com/CordMuncher/Create-Galore/main-6fi2ef/pack/pack.toml"
 Pop-Location
 ```
 
