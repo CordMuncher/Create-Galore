@@ -89,10 +89,19 @@ ivec2 air_exposure_texel() {
     return ivec2(air_columns * air_block().x, 0);
 }
 
-// How deep (view depth, blocks) the volume reaches: as far as the sky's table begins, past which the air is worked
-// out along each pixel's ray (lit.glsl's air_far_between), so all its slices go to the air near you.
+// How deep (view depth, blocks) the volume reaches: in the overworld as far as the sky's table begins, past which the
+// air is worked out along each pixel's ray (lit.glsl's air_far_between), so all its slices go to the air near you; in
+// the Nether and the End, whose air has no table, a little past the end of the terrain, Distant Horizons' too.
 float air_far() {
+#ifdef NO_SKY_LIGHT
+    float d = far;
+#ifdef DISTANT_HORIZONS
+    d = max(d, float(dhRenderDistance));
+#endif
+    return max(1.15 * d, 2.0 * air_sky_start);
+#else
     return air_sky_start;
+#endif
 }
 
 float air_log_scale() {

@@ -322,6 +322,29 @@ float sky_rays_settled(ivec2 texel, vec2 prev, bool seen) {
 }
 #endif
 
+#ifdef NO_SKY_LIGHT
+// How open a surface in the Nether or the End is to the light all around (0..1): the share of the sky grid's rays
+// (rays, -1 where it traced none: facing down, or the hand) that get away from it, in the Nether those that get 32
+// blocks away (see sky_ray_open), so a fortress's halls and a tunnel are darker than a cavern, and an End city's
+// rooms than the open island. Never quite none (the air's light finds its way in), and open past the grid.
+#ifdef WORLD_NETHER
+const float world_open_floor = 0.2;
+#else
+const float world_open_floor = 0.12;
+#endif
+
+float world_openness(vec3 scene_pos, float rays, bool lod) {
+    float open = 1.0;
+#ifdef LIT_SKY_GRID
+    if (!lod && rays >= 0.0) {
+        float grid = 1.0 - smoothstep(sky_grid_reach - 28.0, sky_grid_reach, max(abs(scene_pos.x), abs(scene_pos.z)));
+        open = mix(1.0, rays, grid);
+    }
+#endif
+    return mix(world_open_floor, 1.0, open);
+}
+#endif
+
 void main() {
     ivec2 texel = ivec2(gl_FragCoord.xy);
     vec2 size = render_size();
@@ -450,7 +473,13 @@ void main() {
         // keeps Minecraft's.
         float sky_light_mc = light.y;
         float seen = -1.0;
+#ifdef NO_SKY_LIGHT
+        // The Nether and the End have no sky light (see settings.glsl): how open the surface is to the light all
+        // around, from the same rays.
+        if (depth >= hand_depth_limit) {
+#else
         if (depth >= hand_depth_limit && light.y < 0.999) {
+#endif
             // The sky grid's rays from here, traced a few each frame (see screen_light.fsh).
             float rays = -1.0;
 #ifdef LIT_SKY_GRID
@@ -459,6 +488,10 @@ void main() {
                 out_sky.g = rays;
             }
 #endif
+#ifdef NO_SKY_LIGHT
+            seen = world_openness(scene_pos, rays, lod);
+            light.y = sky_seen_level(seen);
+#else
             seen = sky_seen_blend(scene_pos, light.y, rays, lod, false);
             float level = sky_seen_level(seen);
             // Indoors it can be darker too: Minecraft's sky light comes in through a window and spreads through the
@@ -480,9 +513,10 @@ void main() {
             }
 #endif
             light.y = level >= light.y ? level : mix(light.y, level, indoors);
+#endif
         }
         float contact = 1.0;
-#if defined SHADOW_MAP && defined CONTACT_SHADOWS
+#if defined SHADOW_MAP && defined CONTACT_SHADOWS && !defined WORLD_NETHER
         // Not on plants: in a meadow every blade would find another in front of it and the grass would go dark.
         if (!lod && depth >= hand_depth_limit && material == MATERIAL_LIT && (foliage || dot(normal, g_light_dir.xyz) > 0.0)) {
             contact = screen_shadow(texel, view, depth);

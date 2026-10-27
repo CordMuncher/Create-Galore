@@ -1,6 +1,7 @@
 // The begin pass that works out the frame's shared light (see globals.glsl), after the air's tables are remade:
 // the sun's and the moon's light where you are, which of them casts the shadows, and the sky's light on a block's
-// six faces, from 512 directions of the sky view table and the ground under the horizon.
+// six faces, from 512 directions of the sky view table and the ground under the horizon. In the Nether and the End,
+// their own light (see world_light).
 
 #define GLOBALS_WRITE
 #include "/lib/globals.glsl"
@@ -27,8 +28,53 @@ shared vec3 shared_cube[64 * 6];
 const float ground_albedo = 0.15;
 const int sky_samples = 512; // over the upper half, 8 an invocation
 
+#ifdef NO_SKY_LIGHT
+// The Nether and the End: no sun or moon to follow, and the light all around is the world's own (see nether.glsl and
+// end.glsl), the same every frame.
+void world_light() {
+    vec3 light_dir = normalize(mat3(gbufferModelViewInverse) * shadowLightPosition);
+    set_global(G_SUN_DIR, vec4(light_dir, light_dir.y));
+    set_global(G_MOON_DIR, vec4(-light_dir, -light_dir.y));
+    set_global(G_SUN_LIGHT, vec4(0.0, 0.0, 0.0, 1.0));
+    set_global(G_MOON_LIGHT, vec4(0.0, 0.0, 0.0, 1.0));
+    set_global(G_LIGHT_DIR, vec4(light_dir, 0.0));
+    set_global(G_FLASH, vec4(0.0));
+    vec3 up = vec3(0.0);
+    for (int j = 0; j < 6; j++) {
+#ifdef WORLD_NETHER
+        vec3 face = nether_ambient(j);
+#else
+        vec3 face = end_ambient(j);
+#endif
+        set_global(G_SKY_CUBE + j, vec4(face, 0.0));
+        up += j == 2 ? face : vec3(0.0);
+    }
+#ifdef WORLD_NETHER
+    vec3 light = vec3(0.0); // (no light from above: the shadow map is only for the blocks' marks)
+#else
+    vec3 light = end_light();
+#endif
+    set_global(G_LIGHT_COLOR, vec4(light, 1.0));
+
+    // The first frame: an exposure for what the world's light lights it with (see below).
+    if (!exposure_ready(g_exposure_data)) {
+        float lit = dot((light * max(light_dir.y, 0.0) + up) * (ground_albedo / PI), vec3(0.2126, 0.7152, 0.0722));
+        float ev = clamp(log2(2.0 / max(lit, 1e-8)), -7.0, 12.0);
+        set_global(G_EXPOSURE, vec4(exp2(ev), ev, log2(max(lit, 1e-8)), 0.0));
+    }
+}
+#endif
+
 void main() {
     uint index = gl_LocalInvocationIndex;
+    // Whether the pack has just loaded, read before the first frame's exposure is set below (see the camera cut).
+    bool fresh = !exposure_ready(g_exposure_data);
+#ifdef NO_SKY_LIGHT
+    if (index != 0u) {
+        return;
+    }
+    world_light();
+#else
     vec3 sun_dir = sun_dir_world();
     vec3 moon_dir = moon_dir_world();
     float height = atm_height(cameraPosition.y);
@@ -107,6 +153,15 @@ void main() {
         set_global(G_SKY_CUBE + j, vec4(shared_cube[j] + ground * ground_view[j] + flash * sky_view[j], 0.0));
     }
 
+    // The first frame (the image starts at zero): an exposure for what the sky lights the world with, until the
+    // metering pass (exposure.csh, after DLSS) takes over.
+    if (!exposure_ready(g_exposure_data)) {
+        float lit = dot(ground, vec3(0.2126, 0.7152, 0.0722));
+        float ev = clamp(log2(2.0 / max(lit, 1e-8)), -7.0, 12.0);
+        set_global(G_EXPOSURE, vec4(exp2(ev), ev, log2(max(lit, 1e-8)), 0.0));
+    }
+#endif
+
 #ifdef CLOUDS
     // The wind carries the clouds along with the game's clock (a day lasts 1200 s), so every player sees the same
     // ones; the cirrus, higher up, twice as fast. Whole metres a day, so the drift stays exact on any day: modulo
@@ -155,14 +210,6 @@ void main() {
     vec3 moved = vec3(cameraPositionInt - previousCameraPositionInt) + cameraPositionFract - previousCameraPositionFract;
     vec3 ahead = vec3(gbufferModelView[0][2], gbufferModelView[1][2], gbufferModelView[2][2]);
     vec3 ahead_before = vec3(gbufferPreviousModelView[0][2], gbufferPreviousModelView[1][2], gbufferPreviousModelView[2][2]);
-    bool cut = dot(moved, moved) > 64.0 || dot(ahead, ahead_before) < 0.766 || !exposure_ready(g_exposure_data);
+    bool cut = dot(moved, moved) > 64.0 || dot(ahead, ahead_before) < 0.766 || fresh;
     set_global(G_CUT, vec4(cut ? 1.0 : 0.0, cut ? 0.0 : min(global(G_CUT).y + 1.0, 1e4), 0.0, 0.0));
-
-    // The first frame (the image starts at zero): an exposure for what the sky lights the world with, until the
-    // metering pass (exposure.csh, after DLSS) takes over.
-    if (!exposure_ready(g_exposure_data)) {
-        float lit = dot(ground, vec3(0.2126, 0.7152, 0.0722));
-        float ev = clamp(log2(2.0 / max(lit, 1e-8)), -7.0, 12.0);
-        set_global(G_EXPOSURE, vec4(exp2(ev), ev, log2(max(lit, 1e-8)), 0.0));
-    }
 }

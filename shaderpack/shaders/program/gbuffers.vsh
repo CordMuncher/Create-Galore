@@ -122,8 +122,9 @@ void main() {
     v_normal = normal;
     v_scene_pos = scene_pos;
     v_material = MATERIAL_LIT;
-    // Block and sky light as Minecraft packs them (0..240).
-    v_level = clamp(gl_MultiTexCoord1.xy / 240.0, 0.0, 1.0);
+    // Block and sky light as Minecraft packs them (0..240); in the Nether and the End, which have no sky light, open
+    // to the light all around (see settings.glsl).
+    v_level = world_light_level(clamp(gl_MultiTexCoord1.xy / 240.0, 0.0, 1.0));
 #if defined PROGRAM_TERRAIN || defined PROGRAM_WATER
     if (is_plant_normal(normal)) {
         v_material = MATERIAL_PLANT;

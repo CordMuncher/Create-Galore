@@ -5,6 +5,8 @@
 #if !defined LIB_VANILLA
 #define LIB_VANILLA
 
+#include "/lib/settings.glsl"
+
 uniform sampler2D lightmap;
 
 uniform float fogStart;
@@ -61,6 +63,18 @@ float fog_amount(float dist, float start, float end) {
 // lava, powder snow, blindness and foggy biomes ends well before the render distance and stays as it is. shape:
 // the fog's shape (fogShape), for passes Iris gives none.
 vec2 fog_range_shaped(int shape) {
+#if defined WORLD_NETHER && defined LIT_AIR
+    // In the lit Nether its thick air is the light in the air's (see nether.glsl), and Minecraft's own fog (half the
+    // render distance) only hides the end of the world, as it does elsewhere. Its short fog in lava or powder snow
+    // and while blind stays.
+    if (fogEnd >= 0.4 * min(far, 192.0)) {
+        float end = far;
+#ifdef DISTANT_HORIZONS
+        end = max(end, float(dhRenderDistance));
+#endif
+        return vec2(end - clamp(end / 10.0, 4.0, 64.0), end);
+    }
+#endif
 #ifdef DISTANT_HORIZONS
     if (dhRenderDistance > 0 && shape == 1 && fogEnd >= 0.95 * far) {
         float end = float(dhRenderDistance);

@@ -83,7 +83,11 @@ float sky_seen_blend(vec3 scene_pos, float sky, float rays, bool lod, bool water
     }
 #endif
     if (grid < 1.0) {
+#ifdef NO_SKY_LIGHT
+        const bool under_sea = false;
+#else
         bool under_sea = !water && scene_pos.y + cameraPosition.y < sea_level - 0.5;
+#endif
         seen = mix(under_sea ? 0.0 : sky_seen_probe(scene_pos, sky), seen, grid);
     }
     return seen;

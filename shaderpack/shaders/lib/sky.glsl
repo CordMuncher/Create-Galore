@@ -1,6 +1,7 @@
 // The overworld's sky in any direction: the air's light from the sky view table (see atmosphere.glsl), and the sun,
 // the moon and the stars (stars.glsl) behind it, in real units (see globals.glsl). Rain greys it over, under the
-// clouds (clouds.glsl) it brings.
+// clouds (clouds.glsl) it brings. The Nether's and the End's are their own (nether.glsl, end.glsl), with the same
+// functions: what the air sends towards you, what gets through it, and what lies beyond it.
 
 #if !defined LIB_SKY
 #define LIB_SKY
@@ -21,6 +22,11 @@ vec3 weather(vec3 radiance) {
     return mix(radiance, grey, 0.9 * rainStrength);
 }
 
+#if defined WORLD_NETHER
+#include "/lib/nether.glsl"
+#elif defined WORLD_END
+#include "/lib/end.glsl"
+#else
 // The air's light towards the eye, from a direction (world space).
 vec3 sky_radiance(vec3 dir) {
     return weather(texture(cg_skyview_lut, atm_skyview_uv(dir)).rgb);
@@ -30,6 +36,8 @@ vec3 sky_radiance(vec3 dir) {
 vec3 sky_transmittance(vec3 dir) {
     return atm_trans(atm_height(cameraPosition.y), dir.y);
 }
+
+#endif
 
 // The sun's path turns about this axis (Iris's celestial frame: its y towards the sun, x this axis).
 vec3 sun_path_axis() {
@@ -86,6 +94,7 @@ float moon_shown(float exposure_now) {
     return min(1.0, moon_frame_max / max(exposure_now * dot(moon_radiance(), vec3(0.2126, 0.7152, 0.0722)), 1e-12));
 }
 
+#if !defined WORLD_NETHER && !defined WORLD_END
 // What is beyond the air in a direction: the sun, the moon (drawn at a share moon of its radiance, see moon_shown) and
 // the stars, none where the planet is in the way.
 vec3 sky_space(vec3 dir, float pixel_angle, float moon) {
@@ -108,5 +117,6 @@ vec3 sky_space(vec3 dir, float pixel_angle, float moon) {
 vec3 sky_full(vec3 dir, float pixel_angle, float moon) {
     return sky_radiance(dir) + sky_space(dir, pixel_angle, moon) * sky_transmittance(dir) * (1.0 - rainStrength);
 }
+#endif
 
 #endif

@@ -63,7 +63,7 @@ vec3 fog_color_lit(vec3 dir) {
     }
     // The fog's hue, with the brightness of what the water (or the snow) scatters of the light around you.
     medium *= (isEyeInWater == 3 ? 0.6 : 0.12) / max(luminance(medium), 1e-4);
-    vec2 eye = clamp(vec2(eyeBrightnessSmooth) / 240.0, 0.0, 1.0);
+    vec2 eye = world_light_level(clamp(vec2(eyeBrightnessSmooth) / 240.0, 0.0, 1.0));
     vec3 ambient = (sky_irradiance(vec3(0.0, 1.0, 0.0)) + g_light_color.rgb * max(g_light_dir.y, 0.0)) * sky_light_curve(eye.y)
             + block_irradiance(eye.x, block_light_color(vec3(0.0), vec3(0.0)));
     return medium / PI * ambient * (1.0 - max(blindness, darknessFactor));
@@ -92,10 +92,11 @@ vec3 apply_fog_lit(vec3 color, float dist, vec3 dir, vec2 range) {
     return amount > 0.0 ? mix(color, fog_color_lit(dir) * exposure(), amount) : color;
 }
 
+#ifndef NO_SKY_LIGHT
 // The sky's own air from start to dist blocks out along dir (scene space, from the eye): rgb the light it scatters
 // towards the eye (frame units), a how much of what lies behind gets through. Worked out along the ray in four steps
-// (the air changes little over a few kilometres) with the same light as the sky's table (atmosphere.glsl, air.csh), so far land and water fade into the haze the way
-// the horizon over them does, smoothly from pixel to pixel.
+// (the air changes little over a few kilometres) with the same light as the sky's table (atmosphere.glsl, air.csh),
+// so far land and water fade into the haze the way the horizon over them does, smoothly from pixel to pixel.
 vec4 air_far_between(vec3 dir, float start, float dist) {
     vec3 origin = vec3(0.0, atm_height(cameraPosition.y + gbufferModelViewInverse[3].y), 0.0) + dir * (start * 0.001);
     vec3 through;
@@ -103,15 +104,20 @@ vec4 air_far_between(vec3 dir, float start, float dist) {
             moon_illuminance(), through);
     return vec4(weather(light) * exposure(), dot(through, vec3(0.2126, 0.7152, 0.0722)));
 }
+#endif
 
 // The light in the air between the eye and what lies at view depth z (blocks), seen at point (unjittered render
 // pixels) along dir (scene space, from the eye): rgb the light it scatters towards the eye (frame units), a how much
 // of what lies behind gets through. The volume's (air.glsl) up to air_sky_start blocks out, with its shafts, dust and
-// lamp glow; past that the sky's own air (air_far_between). None under water, in lava or in powder snow, which have
-// their own.
+// lamp glow; past that the sky's own air (air_far_between). The Nether's and the End's air is the volume's all the
+// way (it reaches past the end of the terrain there, see air_far). None under water, in lava or in powder snow, which
+// have their own.
 vec4 air_seen(vec2 point, float z, vec3 dir) {
 #ifdef LIT_AIR
     if (isEyeInWater == 0) {
+#ifdef NO_SKY_LIGHT
+        return air_between(point, z);
+#else
         float along = max(dot(dir, -gbufferModelViewInverse[2].xyz), 1e-3); // view depth per block along dir
         float dist = z / along;
         if (dist <= air_sky_start) {
@@ -120,6 +126,7 @@ vec4 air_seen(vec2 point, float z, vec3 dir) {
         vec4 near = air_between(point, air_sky_start * along);
         vec4 far = air_far_between(dir, air_sky_start, dist);
         return vec4(near.rgb + far.rgb * near.a, near.a * far.a);
+#endif
     }
 #endif
     return vec4(0.0, 0.0, 0.0, 1.0);

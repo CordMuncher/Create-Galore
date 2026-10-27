@@ -19,8 +19,8 @@ const float upscaling_render_scale = RENDER_SCALE;
 
 // Sky and light, in the overworld: a physically based sky with the sun, the moon and the stars, the world lit by
 // them in real units (and by torches and every other light through Minecraft's light levels), tone mapped after
-// DLSS. Off: Minecraft's own look, as in every other dimension (the End, the Nether and modded dimensions keep it
-// until they get skies of their own).
+// DLSS; the Nether and the End by their own light (see nether.glsl and end.glsl). Off: Minecraft's own look, as
+// modded dimensions keep it.
 #define LIGHTING
 #define SHADOWS          // the sun's and the moon's shadows (a shadow map)
 // How soft shadows grow away from what casts them (0: as the sun's own, sharp but for the shadow map's texels), and
@@ -231,9 +231,9 @@ const float upscaling_render_scale = RENDER_SCALE;
 #define AIR_DUST 1.0  // [0.0 0.5 1.0 1.5 2.0 3.0]
 #define LAMP_GLOW 1.0 // [0.0 0.5 1.0 1.5 2.0 3.0]
 
-// The End's own sky (its programs are in world1/): a nebula across a starry void, in place of Minecraft's (and
-// BetterEnd's) sky, fading into the End's fog at the horizon. The End keeps Minecraft's own light for now. Off: its
-// own sky too.
+// The End's own sky (see end_sky.glsl): a nebula across a starry void, in place of Minecraft's (and BetterEnd's)
+// sky, fading into the End's haze at the horizon. With the lighting on the End always has it; this switch is for
+// Minecraft's own look (the pure anti-aliasing preset), where off leaves Minecraft's sky.
 #define END_SKY
 #define END_NEBULA 1.0 // [0.0 0.25 0.5 0.75 1.0 1.5 2.0]
 #define END_STARS 1.0  // [0.0 0.5 1.0 1.5 2.0 3.0]
@@ -242,15 +242,38 @@ const float upscaling_render_scale = RENDER_SCALE;
 #if defined WORLD_END && defined END_SKY
 #define END_OWN_SKY
 #endif
+// The End with the lighting on (see end.glsl): a still, pale light from high above that every island and pillar
+// casts its shadow from, shafts of it through the haze between the islands, a dim violet glow from the void all
+// around, and a mist over the void below. Light: how bright the light from above is. Haze: how much haze and mist.
+#define END_LIGHT 1.0 // [0.5 0.75 1.0 1.25 1.5 2.0]
+#define END_HAZE 1.0  // [0.0 0.5 1.0 1.5 2.0 3.0]
 
-// This program draws the overworld with the pack's own sky and light (its copy in world0/, see dimensions.sh).
-#ifdef WORLD_OVERWORLD
+// The Nether with the lighting on (see nether.glsl): no sun, the lava and every lamp lighting it in their own
+// colours, thick air in each biome's own colour that glows over the lava seas, and the air shimmering over lava.
+// Haze: how thick the air is (with Light in the Air; without it, Minecraft's fog). Heat Shimmer: how much the hot
+// air bends what is seen through it (0: not at all).
+#define NETHER_HAZE 1.0  // [0.5 0.75 1.0 1.25 1.5 2.0]
+#define HEAT_SHIMMER 1.0 // [0.0 0.5 1.0 1.5 2.0]
+
+// This program draws its world with the pack's own sky and light: the overworld (its copies in world0/), the Nether
+// (world-1/) and the End (world1/), see dimensions.sh.
+#if defined WORLD_OVERWORLD || defined WORLD_NETHER || defined WORLD_END
 #ifdef LIGHTING
 #define LIT_WORLD
 #endif
 #endif
 
-#if defined LIT_WORLD && defined CLOUDS
+// The Nether and the End have no sky light: Minecraft's sky light level is 0 everywhere in them. Their programs take
+// every surface as open to the light all around (the Nether's air, the End's void, see light_surface), and the
+// lighting works out how open it is itself from the blocks around it (see world_openness in deferred.fsh).
+#if defined LIT_WORLD && (defined WORLD_NETHER || defined WORLD_END)
+#define NO_SKY_LIGHT
+#define world_light_level(level) vec2((level).x, 1.0)
+#else
+#define world_light_level(level) (level)
+#endif
+
+#if defined LIT_WORLD && defined CLOUDS && !defined NO_SKY_LIGHT
 #define LIT_CLOUDS
 #endif
 
@@ -262,7 +285,8 @@ const float upscaling_render_scale = RENDER_SCALE;
 #define LIT_WATER_RIPPLES
 #endif
 
-#if defined LIT_WORLD && defined SHADOWS && defined GI
+// (Not in the Nether: no sun or moon lights it for its blocks to bounce.)
+#if defined LIT_WORLD && defined SHADOWS && defined GI && !defined WORLD_NETHER
 #define LIT_GI
 #endif
 

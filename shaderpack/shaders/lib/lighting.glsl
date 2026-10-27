@@ -71,6 +71,9 @@ vec3 block_irradiance(float block, vec3 color) {
 // rest of the light goes by, which is more under something high (see sky_grid.glsl); deep in a cave the sun can't
 // reach, whatever the shadow map says at its edges.
 float direct_visibility(vec3 scene_pos, vec3 normal, float sky, float sky_mc, bool shadowed) {
+#ifdef WORLD_NETHER
+    return 0.0; // no light from above
+#endif
 #ifdef LIT_CLOUDS
     float clouds = cloud_shadow(scene_pos, g_light_dir.xyz);
 #else
@@ -89,6 +92,9 @@ float direct_visibility(vec3 scene_pos, vec3 normal, float sky, float sky_mc, bo
 // The same, from one sharp look at the shadow map: for the sun's glint on water and polished things, where a soft
 // shadow edge would only blur the glint.
 float glint_visibility(vec3 scene_pos, vec3 normal, float sky, float sky_mc) {
+#ifdef WORLD_NETHER
+    return 0.0;
+#endif
 #ifdef LIT_CLOUDS
     float clouds = cloud_shadow(scene_pos, g_light_dir.xyz);
 #else

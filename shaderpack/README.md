@@ -9,9 +9,9 @@ without patching anything. Effects are added one at a time, each built to be ups
 ## What it does now
 
 Five presets: **Pure AA** is Minecraft's own look with only DLSS or FSR on top; **Low**, **Medium**, **High** (the
-default) and **Ultra** light the overworld itself, with more of the effects the higher they go, and give the End a
-sky of its own. The Nether and modded dimensions keep Minecraft's own look in all of them; no dimension but the
-overworld ever gets the overworld's sky.
+default) and **Ultra** light the overworld itself, with more of the effects the higher they go, and light the Nether
+and the End by their own light (see The Nether and the End below). Modded dimensions keep Minecraft's own look in all
+of them; no dimension but the overworld ever gets the overworld's sky.
 
 Sky and light (milestone 2, the Lighting option):
 
@@ -37,7 +37,7 @@ Clouds, weather and the End (milestone 3, the Clouds and End Sky options):
 - Weather: rain and thunder close the cloud cover and grey the sky, rain and snow haze the distance where they
   fall, wet ground darkens and reflects the sky, and lightning lights the sky and the clouds.
 - The End: a nebula across a starry void, in place of Minecraft's (and BetterEnd's) sky, fading into the End's own
-  fog at the horizon. The End keeps Minecraft's own light for now.
+  fog at the horizon (alpha 5 lights the End too, see below).
 
 Light and water (milestone 4, the Coloured Light, Bounce Light and Water Ripples options; all three need Shadows):
 
@@ -270,6 +270,28 @@ later also keeps water and stained glass in the shadow map while Aeronautics' le
 levitite's shader left Iris drawing the next terrain as tessellation patches, which the driver refused), so the
 caustics, the ripples and the light's depth under water need that version near ships.
 
+## The Nether and the End
+
+From alpha 5 the Nether and the End go through the same passes as the overworld (their programs in `world-1/` and
+`world1/`), with everything that comes from the sun, the moon and the sky swapped for their own light
+(`lib/nether.glsl`, `lib/end.glsl`): the coloured light, the light in the air, the ambient occlusion and the screen's
+bounce light, reflections, the bloom, exposure and tone mapping all work there as they do in the overworld. Neither
+has sky light (Minecraft's is 0 everywhere in them), so a surface's light all around goes by how open it is, from the
+sky grid's rays: in the Nether those that get 32 blocks away, so a fortress's halls and a tunnel are darker than a
+cavern; in the End those that get out from under the islands, so an End city's rooms are dim inside.
+
+- The Nether has no sun or moon. The lava and every lamp light it in their own colours through the light volume. Its
+  air is thick (Haze), in the colour of each biome's own fog (dark red in the wastes, teal in the soul sand valley,
+  grey ash in the basalt deltas, thicker there and in the forests), glowing faintly by itself and orange over the
+  lava seas, and the lamps and the lava glow in it. Far terrain fades into that air instead of Minecraft's short fog,
+  which only hides the end of the world. The bloom spreads wider in the thick air. The air over lava shimmers (Heat
+  Shimmer), drawn in the water pass before the frame goes to DLSS, so frame generation finds nothing moved after it.
+- The End has one still, pale light high above (where Minecraft's fixed noon puts the sun), so every island, pillar
+  and tower casts a shadow, and the light bounces off the islands. The void glows a dim violet all around, more from
+  below, lighting the islands' undersides. Haze lies between the islands, lit into shafts where the light passes the
+  pillars and the islands, and thickens into a mist over the void below; the nebula and the stars lie beyond it.
+  Options: Light from Above and Haze.
+
 ## Own denoisers and Ray Reconstruction
 
 DLSS and FSR upscale; they don't denoise (NVIDIA's DLSS guide), so the effects that take a few noisy samples per
@@ -304,7 +326,7 @@ What else changes for Ray Reconstruction:
   occlusion, the screen's bounce light and the sky grid's rays), `deferred.fsh` (the lighting), `exposure.csh`,
   `local_exposure.csh`, `dof.csh` (the depth of field), `shadow.*`, `light_bounce.csh` and `light_flood.csh` (the
   coloured and bounce light), `water_sim.csh` (the ripples), `water_body.fsh` (the water, after the translucent
-  things) and `bloom.csh`; the End adds `end_sky.fsh`.
+  things) and `bloom.csh`; the End adds `end_sky.fsh` (its sky in Minecraft's own look).
 - `shaders/lib/`: render size and jitter (`frame.glsl`), motion vectors (`motion.glsl`), vanilla's lighting and fog
   (`vanilla.glsl`), colour encodings and the options; for the lit overworld the air (`atmosphere.glsl`, and the light
   in it, `air.glsl`), the sky (`sky.glsl`, `celestial.glsl`, `stars.glsl`), the clouds (`clouds.glsl`, `noise.glsl`),
@@ -313,13 +335,15 @@ What else changes for Ray Reconstruction:
   `medium.glsl`), reflections (`reflection.glsl`), the weather and what rain does (`weather.glsl`, `wet.glsl`), the
   bloom (`bloom.glsl`), the values its passes share (`globals.glsl`), night vision (`night_vision.glsl`), the local
   exposure (`local_exposure.glsl`), the tone mapping (`tonemap.glsl`), the colour controls (`grade.glsl`) and the
-  depth of field (`dof.glsl`); for the End its sky (`end_sky.glsl`).
+  depth of field (`dof.glsl`); the Nether's light and air and the heat shimmer (`nether.glsl`, `heat.glsl`), the
+  End's (`end.glsl`) and its sky (`end_sky.glsl`).
 - `shaders/textures/`: the clouds' noise textures and phase functions, and the water's wave textures.
 - `shaders/composite1.fsh`: the DLSS point, which hands the frame over. `shaders/final.fsh`: the screen.
 - The `gbuffers_*`, `clrwl_*` and `dh_*` files in `shaders/` only pick a program and include it.
-- `shaders/world0/` (the overworld) and `shaders/world1/` (the End): each dimension's programs. Most are copies
-  that `dimensions.sh` writes (run it after adding or removing a program); each dimension's own passes live only
-  there. Dimensions without a folder use the programs in `shaders/`.
+- `shaders/world0/` (the overworld), `shaders/world-1/` (the Nether) and `shaders/world1/` (the End): each
+  dimension's programs. Most are copies that `dimensions.sh` writes (run it after adding or removing a program); the
+  overworld's own passes live in `world0/`, and the Nether and the End get copies of them too. Dimensions without a
+  folder use the programs in `shaders/`.
 - `tools/wave_textures.py`: makes the wave textures from Alpha Piscium's (see License).
 - `tools/rod_weights.py`: works out how the eye's rods weigh red, green and blue, for the night vision (needs
   colour-science).

@@ -1,6 +1,7 @@
 // The End's own sky (see settings.glsl): a void full of stars with a nebula across it, violet and teal, brightest
-// along a band and crossed by dark dust, fading into the End's fog (each biome's own) at the horizon. In Minecraft's
-// colours, as the End's other programs draw with Minecraft's own light, and still, as the End has no days.
+// along a band and crossed by dark dust, still, as the End has no days. In Minecraft's own look it fades into the
+// End's fog (each biome's own) at the horizon, in Minecraft's colours; with the lighting on, the End's haze lies in
+// front of it instead (see end.glsl).
 //
 // The nebula's shapes come from the clouds' noise textures (Alpha Piscium's, see clouds.glsl); the stars are the
 // overworld's (stars.glsl), in a frame of their own.
@@ -17,8 +18,9 @@ uniform sampler3D cg_cumulus_detail1_tex;
 uniform sampler3D cg_cumulus_detail2_tex;
 uniform sampler3D cg_cumulus_curl_tex;
 
-// The End's sky along dir (world space), sRGB-encoded. pixel_angle: a render pixel's size in radians, for the stars.
-vec3 end_sky(vec3 dir, float pixel_angle) {
+// What lies beyond the End's air along dir (world space): the void, the nebula and the stars, linear, white 1.
+// pixel_angle: a render pixel's size in radians, for the stars.
+vec3 end_space(vec3 dir, float pixel_angle) {
     // The void itself, a little violet.
     vec3 sky = vec3(0.0015, 0.0006, 0.003);
 
@@ -42,9 +44,13 @@ vec3 end_sky(vec3 dir, float pixel_angle) {
     // The stars, behind the dust (their brightness as the overworld's on a clear night, in this light).
     vec3 star_light = stars(dir, vec3(0.0, 1.0, 0.0), vec3(1.0, 0.0, 0.0), pixel_angle) * (2400.0 / moon_boost);
     sky += star_light * (1.0 - 0.9 * dust) * END_STARS;
+    return sky;
+}
 
-    // The End's fog at the horizon, where its islands fade into it.
-    sky = mix(sky, srgb_to_linear(fogColor), exp(-abs(dir.y) * 5.0) * 0.85);
+// The End's sky along dir as Minecraft's own look has it, sRGB-encoded: fading into the End's fog at the horizon,
+// where its islands fade into it.
+vec3 end_sky(vec3 dir, float pixel_angle) {
+    vec3 sky = mix(end_space(dir, pixel_angle), srgb_to_linear(fogColor), exp(-abs(dir.y) * 5.0) * 0.85);
     return linear_to_srgb(sky);
 }
 

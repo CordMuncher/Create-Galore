@@ -5,7 +5,8 @@
 // screen shows it (see reflection.glsl) and the sky and the sun elsewhere, and foam where the water meets the shore
 // or something churns it. From under water: the water between you and everything you see, lit where it is, so the
 // far water stays as bright as the light there wherever you are; and the surface from below, which shows the sky
-// through a round window above you (light bends into the water) and mirrors the water all around it.
+// through a round window above you (light bends into the water) and mirrors the water all around it. In the Nether,
+// first the shimmer of the hot air over the lava (see heat.glsl).
 
 #include "/lib/settings.glsl"
 #include "/lib/motion.glsl"
@@ -31,6 +32,10 @@ uniform mat4 dhProjectionInverse;
 #endif
 
 #include "/lib/reflection.glsl"
+#ifdef WORLD_NETHER
+#define HEAT_DEPTH depthtex0
+#include "/lib/heat.glsl"
+#endif
 #define SKY_PROBE_DEPTH depthtex1
 #define SKY_PROBE_DH_DEPTH dhDepthTex1
 #include "/lib/sky_probe.glsl"
@@ -145,7 +150,13 @@ void main() {
         out_previous = out_color;
         return;
     }
+#ifdef WORLD_NETHER
+    // The air shimmering over the lava (see heat.glsl).
+    vec2 shimmer = heat_shimmer(texel, vec2(texel) + 0.5 - vec2(cg_dlss_jitter_x, cg_dlss_jitter_y));
+    vec3 scene = textureLod(colortex0, shimmer / window_size(), 0.0).rgb;
+#else
     vec3 scene = texelFetch(colortex0, texel, 0).rgb;
+#endif
     vec4 water = texelFetch(colortex4, texel, 0);
     bool surface = water.a > 0.5;
     bool inside = isEyeInWater == 1;

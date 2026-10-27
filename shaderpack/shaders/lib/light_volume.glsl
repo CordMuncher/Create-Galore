@@ -318,7 +318,11 @@ vec3 bounce_light(vec3 scene_pos, vec3 normal, float sky) {
     if (received <= 0.0 || luma <= 0.0) {
         return vec3(0.0);
     }
+#ifdef NO_SKY_LIGHT
+    float open_sky = 0.0; // the End's void glow holds no light bounced off the ground
+#else
     float open_sky = smoothstep(11.0 / 15.0, 1.0, sky);
+#endif
     return color * (received / luma * fade * (1.0 - 0.9 * open_sky) * GI_STRENGTH / bounce_peak);
 }
 #endif

@@ -109,7 +109,11 @@ bool air_in_water(vec3 p) {
         return shadow_water_depth(p) > 0.0;
     }
 #endif
+#ifdef NO_SKY_LIGHT
+    return false; // no sea
+#else
     return p.y + cameraPosition.y < 62.5;
+#endif
 }
 
 // The light the sky's light gets to a point from one direction over the sky (rays turn with seed): 1 if the ray
@@ -179,6 +183,32 @@ void main() {
 
     vec3 scattered = vec3(0.0); // per block, kcd/m²
     float extinction = 0.0;     // per block
+#ifdef WORLD_NETHER
+    // The Nether's thick air (see nether.glsl): its own light in it, and over the frames as much of it as the air
+    // around sees (in a cavern all of it, in a tunnel or a fortress's hall a little: rays that get 32 blocks away, see
+    // sky_ray_open); brighter over the lava seas where it is open to them; and the lamps' and the lava's light in their
+    // colours where the light volume has it, which the thick air carries further than the overworld's dust does.
+    bool open_air = !air_in_water(p);
+    if (open_air) {
+        float haze = nether_haze();
+        float walled;
+        float open = air_sky_open(p, frame * 7u + seed, walled);
+        scattered += haze * (nether_air_radiance() * mix(0.3, 1.0, open)
+                + nether_lava_sea_light(p.y + cameraPosition.y) * open);
+        extinction += haze;
+    }
+    const float glow_per_haze = 0.5;
+#elif defined WORLD_END
+    // The End's haze and the mist over the void (see end.glsl), lit by the void's glow all around and by the light
+    // from above where the shadow map lets it through: shafts past the islands, the pillars and the towers.
+    bool open_air = !air_in_water(p);
+    if (open_air) {
+        float haze = end_haze(p.y + cameraPosition.y);
+        scattered += haze * end_haze_light(dir, air_shadow(p, width));
+        extinction += haze;
+    }
+    const float glow_per_haze = 0.25;
+#else
     if (!air_in_water(p)) {
         // The sky's air and haze here.
         float h = atm_height(p.y + cameraPosition.y);
@@ -232,6 +262,22 @@ void main() {
         }
 #endif
     }
+#endif
+#if defined NO_SKY_LIGHT && defined LIT_COLORED_LIGHT
+    // The lamps' and the lava's light in the air around them.
+    if (open_air) {
+        vec3 at;
+        float fade = light_volume_at(p, vec3(0.0), 0.0, at);
+        if (fade > 0.0) {
+            vec3 light = light_volume_sample(at, section_color);
+            float peak = max(light.r, max(light.g, light.b));
+            if (peak > 1e-3) {
+                scattered += (air_glow + glow_per_haze * extinction) * block_light_tint(light) * block_light_lux()
+                        * block_light_curve(peak) * fade / (4.0 * PI);
+            }
+        }
+    }
+#endif
     vec4 cell = vec4(scattered * exposure(), extinction * 1000.0);
 
     // Last frame's cell where this cell's middle was then, in last frame's exposure; none where it was off the screen
