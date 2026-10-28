@@ -62,7 +62,7 @@ uniform sampler2D colortex11; // last frame's cells
 // Indoors and in caves (under a roof, between walls), the air holds dust (per block) that a sunbeam through a window
 // or a gap shows up, and that glows around lamps; out under the sky the haze is the sky's own, under an overhang, a
 // bridge or a floating island too (with only a roof over it, the air would light up as a pale box under it).
-const float air_dust = 0.006 * AIR_DUST;
+const float air_dust = 0.004 * AIR_DUST;
 // How much of the lamps' light the air scatters around them (per block): enough for a soft glow in their colour
 // close around them.
 const float air_glow = 0.03 * LAMP_GLOW;
@@ -72,9 +72,11 @@ const int air_roof_reach = 24;
 // cells per hundred pixels, read smoothly, never per-pixel noise (see the README).
 const float air_history = 0.9;
 
-// Henyey-Greenstein's phase function, for the dust: mostly onwards, some all around.
+// Henyey-Greenstein's phase function, for the dust: mostly onwards, as dust's grains (a few micrometres, far bigger
+// than light's wavelength) scatter it, so a beam shows looking towards the window and hardly at all with the sun at
+// your back.
 float dust_phase(float cos_theta) {
-    const float g = 0.5;
+    const float g = 0.7;
     return (1.0 - g * g) / (4.0 * PI * pow(1.0 + g * g - 2.0 * g * cos_theta, 1.5));
 }
 
