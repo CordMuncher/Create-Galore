@@ -5,6 +5,15 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.6.24
+
+### Added
+- Create Galore Bridge 1.147.0.
+
+### Fixed
+- **A pinned schematic shows as one clean see-through copy of the build.** It used to draw every face of every block at once, so the walls, floor and furniture stacked into a jumble of layers, and its bottom flickered against the ground it stood on. Now only the faces nearest to you show, like a pane of glass shaped as the build, and nothing fights the ground. A spot holding the wrong block is only tinted red (the faint copy inside it flickered against it). With a shader pack the copy is drawn a little stronger so the blocks still read.
+- **Schematics look right with a shader pack on.** The preview of a held Schematic (and the off-hand trace) drew as a flat white or glowing shape, as if every block were a lamp. They now come through the shader pack like any other block, lit by daylight or moonlight like the ground around them. Without a shader pack nothing changes.
+
 ## 0.6.23
 
 ### Added
