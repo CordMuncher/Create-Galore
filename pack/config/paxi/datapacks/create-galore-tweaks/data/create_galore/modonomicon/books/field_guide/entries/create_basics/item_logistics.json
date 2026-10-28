@@ -75,7 +75,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**Filters** go in funnel, tunnel or smart chute filter slots.\n\n- [List Filter](item://create:filter): matches chosen items.\n- [Attribute Filter](item://create:attribute_filter): matches by property (food, enchanted, and so on)."
+      "text": "**Filters** go in funnel, tunnel or smart chute filter slots.\n\n- [List Filter](item://create:filter): matches chosen items.\n- [Attribute Filter](item://create:attribute_filter): matches by property (food, enchanted, and so on).\n\nAn Attribute Filter set to **Allow-List (Any)** passes an item with any one of its attributes, **Allow-List (All)** only one with all of them. For \"smeltable but not smokable\" use All, or raw meat passes as smeltable."
     },
     {
       "type": "modonomicon:spotlight",
