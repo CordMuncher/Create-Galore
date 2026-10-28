@@ -2792,3 +2792,127 @@ and push on `claude/project-thread-u2wmhh-rr`. The screenshots and the full clip
 What comes of it: the cloud session reads the report and writes the research report (what RR cleans up raw, what still
 needs Photon's help, what each costs, which effects RR likes most). The findings go to our own shader pack's planning.
 Photon's released RR stays as it is unless the player decides one of these is clearly better.
+
+## PBR check 1: does SPBR load in Photon and in our DLAA copy?
+
+Start only when the player says so. About 5 minutes of setup, then about 20 minutes with the player at the keyboard.
+
+**The question.** The player tried the SPBR resource pack with every Photon material option on, and it looked wrong with
+nothing visibly working. Is that a setup problem, or do the PBR textures really not load? Known beforehand, so don't
+report it as new: our DLAA copy keeps its motion vectors for moving things (machines, mobs, plants) in `colortex2`,
+which Photon needs for normal maps, specular maps and parallax. With any of those on, the copy steps aside: Photon's
+effects should still draw, but DLSS and RR get only the camera's motion, so moving things may smear. Also known: turning
+Ray Reconstruction on in the Upscaling tab switches the DLAA copy to its own Photon settings (Ultra the first time),
+which don't have the material options; turning it off brings the earlier ones back (a toast says so each time).
+
+**The setup SPBR expects** (its Modrinth page: LabPBR and parallax on, hardcoded emission, light sources and SSS off), as
+Photon v1.3a's options. Material page: `NORMAL_MAPPING=true`, `SPECULAR_MAPPING=true`, `POM=true`,
+`HARDCODED_SPECULAR=false`, `HARDCODED_EMISSION=false`, `HARDCODED_SSS=false`. Resource pack settings page:
+`TEXTURE_FORMAT=TEXTURE_FORMAT_LAB` (labPBR), `POM_SHADOW=true` (parallax self-shadowing), `POM_SLOPE_NORMALS=true`
+(normals from the parallax steps' sides). `SSR_ROUGHNESS_SUPPORT` stays on (Photon's default). With the hardcoded
+materials off, whatever shines or glows comes from SPBR's own maps, so if SPBR doesn't load, metal looks matte and
+glowstone doesn't glow.
+
+### Update and settings
+
+```powershell
+git -C $T\repo fetch origin
+git -C $T\repo checkout -B claude/project-thread-u2wmhh-rr origin/claude/project-thread-u2wmhh-rr
+New-Item -ItemType Directory -Force $T\spbr1 | Out-Null
+Invoke-WebRequest https://cdn.modrinth.com/data/aNcOVoD7/versions/jtNbhldU/SPBR-16_2.zip -OutFile $T\spbr1\SPBR-16_2.zip
+(Get-FileHash $T\spbr1\SPBR-16_2.zip -Algorithm SHA512).Hash.ToLower()
+Invoke-WebRequest https://raw.githubusercontent.com/CordMuncher/Create-Galore/main-6fi2ef/pack/mods/create-galore-bridge-1.141.0.jar -OutFile $T\spbr1\create-galore-bridge-1.141.0.jar
+(Get-FileHash $T\spbr1\create-galore-bridge-1.141.0.jar -Algorithm SHA256).Hash.ToLower()
+```
+
+- SPBR 16.2 is the newest release on Modrinth for 1.21.1 (pack formats 15 to 70; 1.21.1 is 34). Its SHA-512 must be
+  `c96d7026679ac6843b460267bf3e7300d7e0e48bdff438979579fab323fc9cff40f9912cbea6091d713c3bdc756db500665d9d8cfe892215c304933dd89ae44b`.
+  Modrinth also lists "Legacy.261025", an alpha from today; not that one.
+- The Bridge is the released 1.141.0 (pack 0.6.18), so this checks the shipped Photon patch, not the research build.
+  SHA-256 `08f57c521542fd660e27ec5f1e5278ec06f01fb1f9e8b3eba27aba52e68e2703`, 3,450,819 bytes.
+
+Before changing anything, copy these to `$T\spbr1\*.before` (note any that don't exist):
+- `config\create_galore_bridge-display.properties`, `options.txt`, `config\iris.properties`;
+- `shaderpacks\photon_v1.3a + Clrwl_1.0.5.zip.txt` and `shaderpacks\Photon v1.3a + DLAA.txt` (the two Photons' options);
+- `config\create_galore_bridge-photon-own.txt` and `config\create_galore_bridge-photon-rr.txt` (step e writes them).
+
+Then:
+- **Mods:** move `create-galore-bridge-1.139.0-rrx.1.jar` and `create-galore-dlss-testkit-1.0.0.jar` out of
+  `$T\instance\mods` into `$T\spbr1` (the research kit needs the research Bridge), and copy the 1.141.0 jar in. One
+  Bridge jar, no kit.
+- **SPBR:** copy `SPBR-16_2.zip` into `$T\instance\resourcepacks`. In `options.txt`, add `"file/SPBR-16_2.zip"` as the last
+  entry of `resourcePacks` (last is on top) and make sure it isn't in `incompatibleResourcePacks`.
+- **Photon's options:** in both options files above (make one if missing), set the eleven options listed under "The
+  setup SPBR expects" (`NORMAL_MAPPING` to `POM_SLOPE_NORMALS`, `SSR_ROUGHNESS_SUPPORT` removed if it says `false`).
+  Keep every other line, `TAAU` and `TAAU_RENDER_SCALE` included.
+- **Iris:** `config\iris.properties`: `enableShaders=true`, `shaderPack=photon_v1.3a + Clrwl_1.0.5.zip` (if that file
+  isn't in `shaderpacks`, `photon_v1.3a.zip`, and use `photon_v1.3a.zip.txt` above).
+- **Settings file:** `dlaa=dlss`, `dlaaRayReconstruction=false`, `frameGen=off`; the rest as it is.
+
+### By eye (the player at the keyboard, about 20 minutes)
+
+Launch as in Ray Reconstruction research 1, part 2 (no `autorun`). In the log, the line `Reloading ResourceManager:`
+must list `file/SPBR-16_2.zip` last. Open `dlaa-test`, `/gamemode creative`, `/time set 1500` (a low sun from the east
+lights the wall from the side, so parallax casts shadows), `/weather clear`. Build a test wall in the air over the sea,
+away from everything:
+
+```
+/fill 1069 119 111 1083 125 125 air
+/fill 1069 119 111 1083 119 125 smooth_stone
+/fill 1070 120 113 1070 122 113 stone_bricks
+/fill 1071 120 113 1071 122 113 cobblestone
+/fill 1072 120 113 1072 122 113 bricks
+/fill 1073 120 113 1073 122 113 deepslate_tiles
+/fill 1074 120 113 1074 122 113 oak_planks
+/fill 1075 120 113 1075 122 113 polished_andesite
+/fill 1076 120 113 1076 122 113 iron_block
+/fill 1077 120 113 1077 122 113 gold_block
+/fill 1078 120 113 1078 122 113 copper_block
+/fill 1079 120 113 1079 122 113 glowstone
+/fill 1080 120 113 1080 122 113 glass
+/fill 1070 119 115 1072 119 119 cobblestone
+/fill 1073 119 115 1075 119 119 stone_bricks
+/fill 1076 119 115 1078 119 119 oak_planks
+/fill 1079 119 115 1081 119 119 bricks
+/setblock 1081 120 117 lantern
+```
+
+Two viewpoints: **wall** `/tp @s 1075.5 120 122.5 180 8`, **floor** `/tp @s 1075.5 120 124.5 180 18` (the floor patches at
+a low angle, where parallax shows most). At each step, F2 at both, and the player says what they see. What SPBR
+working looks like: the cobblestone, bricks and stone bricks are bumpy and their mortar is sunken and casts small
+shadows; the planks' grain is deep; iron, gold and copper are glossy and reflect the sky; glowstone glows; the glass
+and the lantern look different from vanilla (SPBR has its own).
+
+- **a. No shaders** (Iris's toggle, K by default). Resource Packs screen: SPBR on top, not marked incompatible. The glass
+  and the lantern should already look like SPBR's. If not, SPBR isn't loading at all, and the rest can stop there.
+- **b. Plain Photon** (`photon_v1.3a + Clrwl_1.0.5.zip`, shaders on). Photon's menu, Materials page: Normal Mapping,
+  Specular Mapping and Parallax Occlusion Mapping on, the three Hardcoded options off. Does SPBR show, as above?
+- **c. Our DLAA copy with DLSS.** Shader Packs: Photon v1.3a + DLAA, Apply. Upscaling & Display, Upscaling tab: the
+  status says DLSS is on. Same views. Does it look like b? Turn around a bit: moving the camera should be fine; only
+  moving things may smear (known).
+- **d. Our DLAA copy without DLSS.** Upscaling tab: Anti-aliasing Off (the copy then renders as Photon does). Same views.
+  Then back to DLSS.
+- **e. Ray Reconstruction.** Copy `$T\rr1\nvngx_dlssd-rel.dll` to `$T\instance\create-galore-dlss\nvngx_dlssd.dll`. Turn
+  Ray Reconstruction on: the toast says Photon switched settings, and the material options are off now (expected).
+  Turn them on again in Photon's menu, as in b, and look. Then Ray Reconstruction off (the toast says the settings came
+  back; the material options should still be on). Remove `nvngx_dlssd.dll` from the instance again.
+- **f. Only if something looks flat in b to e.** Photon's menu, Misc, Developer Options: Debug View `Sampler`, Debug Sampler
+  `colortex2`.
+  F2. With the material options on, `colortex2` holds the normal and specular maps, so it should show block texture
+  detail; a flat colour means no maps arrive. Then Debug View back to `OFF`.
+
+Checks in the log after each step: no `Failed to create shader rendering pipeline` and no shader error from Iris (copy
+any whole, with the step). Note any `DLAA:` warning.
+
+### Results
+
+Write `$T\repo\tools\dlss-testkit\results\spbr1\REPORT.md`:
+- the hashes, the `Reloading ResourceManager` line, the options files as set (both Photons, before and after e);
+- per step a to f, what the player saw, in their own words, and the log checks;
+- the screenshots as JPG (wall and floor per step, about 1280 px wide), in `results\spbr1\`.
+
+Afterwards: `/fill 1069 119 111 1083 125 125 air` removes the wall. Put back every file from `$T\spbr1\*.before`
+and check each with `cmp`; delete the ones that didn't exist before. Remove `SPBR-16_2.zip` from
+`instance\resourcepacks` (the zip stays in `$T\spbr1`). The released 1.141.0 Bridge stays in the instance; the research
+Bridge and the kit stay in `$T\spbr1` (the research section's own update copies them back if it's run again). Commit
+and push on `claude/project-thread-u2wmhh-rr`.
