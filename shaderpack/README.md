@@ -276,6 +276,8 @@ and cuts Default to a lean core, the Sky Visibility, Tree Crowns, Shore Foam, Ca
   24 fixed rays over the sky from the middle of each block through the sky grid, a sixteenth of the blocks each
   frame, read smoothly between blocks for each surface's facing, as Unity's probe volumes keep the sky's visibility.
   It replaces the three to eight rays per pixel each frame, so it no longer flickers in rooms and costs far less.
+- Dim lamp light keeps its colour: the eyes' night view (Night Vision) takes only the moon's and the stars' share of
+  the light, so a cave lit by torches no longer fades to a grey-blue as it gets darker.
 - A switch for every effect: Sky Visibility, Tree Crowns, Shore Foam, Caustics and Rain Wetness are new options, and
   Bloom or Local Exposure at 0 skips their passes.
 

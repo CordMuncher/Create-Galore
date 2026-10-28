@@ -286,7 +286,8 @@ vec2 sky_visibility(vec3 scene_pos, vec3 normal) {
 // Whether the sun's (or the moon's) light can get to a point in the air (scene space) past the blocks around it, from
 // the blocks' middles towards it through the sky grid (see sky_visibility.csh): 0 in a closed room or a cave whatever
 // the shadow map says there, 1 where any open block within a block of the point's own gets it (so a sunbeam through a
-// window keeps the edges the shadow map gives it), and 1 where the volume can't tell.
+// window keeps the edges the shadow map gives it), and 1 where the volume can't tell. A solid block counts as one the
+// light doesn't get to, so the air in a cave's nooks, where every block around is rock, stays dark too.
 float light_reaches(vec3 scene_pos) {
     vec3 at;
     float fade = light_volume_at(scene_pos, vec3(0.0), 0.0, at);
@@ -301,9 +302,9 @@ float light_reaches(vec3 scene_pos) {
         ivec3 block = here + ivec3(i % 3, (i / 3) % 3, i / 9) - 1;
         if (in_light_volume(block)) {
             float b = texelFetch(cg_light_tex, light_texel(block, section_sky + 1, turn), 0).b;
-            if (b >= 1.5) {
+            if (b >= 0.5) {
                 known = true;
-                most = max(most, b - 2.0);
+                most = max(most, b >= 1.5 ? b - 2.0 : 0.0);
             }
         }
     }

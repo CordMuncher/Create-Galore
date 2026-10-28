@@ -16,8 +16,9 @@
 // - and in the second texel's b, 2 plus whether the sun's (or the moon's) light gets to the block's middle past the
 //   blocks around it (a block at a time for 32 blocks, so it finds a window across a room), for the light in the air
 //   (see light_reaches); under 1.5 where the block isn't worked out yet.
-// A solid block keeps none (all 0): the lighting reads between the open blocks around a point only, as probe volumes
-// leave out the probes inside walls, since a wall's block is the room's on one side and the outside's on the other.
+// A solid block keeps no sky (0, and a b of 1 to tell it from a block not worked out yet): the lighting reads between
+// the open blocks around a point only, as probe volumes leave out the probes inside walls, since a wall's block is the
+// room's on one side and the outside's on the other. For the light in the air it is a block the sun doesn't get to.
 
 #define PROGRAM_SKY_VISIBILITY
 #define READ_IMAGES
@@ -86,7 +87,7 @@ void main() {
         return;
     }
     if (block_solid(block)) {
-        store_sky(block, vec3(0.0), vec3(0.0));
+        store_sky(block, vec3(0.0), vec3(0.0, 0.0, 1.0));
         return;
     }
     // Where this block was in last frame's volume, and which sixteenth of the world's blocks it is in.
