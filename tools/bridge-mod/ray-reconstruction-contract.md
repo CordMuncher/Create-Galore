@@ -49,6 +49,20 @@ pixels. A pack with fewer than three guide images gets DLSS.
 
 With all of them 0 the pack must look exactly as it does without RR: write nothing, change nothing.
 
+The two `cg_rr_raw_` switches above are on by default (`dlaaRrRaw=reflections,shadows`). Dev builds of the Photon RR
+research add more, each 1 while RR runs and that switch is raw (the Bridge's `RrResearch`; the test kit flips them
+in game with no reload). A pack only declares the ones it has:
+
+| Uniform (switch) | 1 when |
+| --- | --- |
+| `cg_rr_reflection_rays` (`reflection-rays`) | raw rough reflections trace the pack's own ray count, each ray from its own white noise, instead of one |
+| `cg_rr_raw_shadow_rays` (`shadow-rays`) | screen-space contact shadow rays turn by white noise each frame, not by a fixed per-pixel hash |
+| `cg_rr_raw_ao_history` (`ao-history`) | ambient occlusion from this frame only, no accumulation |
+| `cg_rr_raw_ao_noise` (`ao-noise`) | ambient occlusion from white noise |
+| `cg_rr_raw_fog` (`fog`) | volumetric fog and light shafts from white noise |
+| `cg_rr_raw_clouds` (`clouds`) | clouds from white noise, no history |
+| `cg_rr_dof_after` (`dof-after`) | depth of field after RR (on the upscaled picture), not before it |
+
 ## Values, as NVIDIA asks
 
 - **Sky** (nothing there): diffuse albedo 0.5 grey, specular albedo 0, normal 0 and roughness 0, hit distance 65504.

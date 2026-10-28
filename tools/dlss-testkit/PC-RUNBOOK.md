@@ -2639,3 +2639,156 @@ Write `$T\repo\tools\dlss-testkit\results\rr2c\REPORT.md`:
 
 Put back every file from `$T\rr2c\*.before` and check each with `cmp`; delete any `config\create_galore_bridge-photon-*.txt`
 that wasn't there before. Remove `nvngx_dlssd.dll` from the instance, then commit and push on this branch.
+
+## Ray Reconstruction research 1: how much RR transforms Photon, effect by effect
+
+Start only when the player says so. About 5 minutes of setup, about 45 minutes of runs that need no one (only a quiet
+PC), then about 25 minutes with the player at the keyboard.
+
+**What it is.** A dev build for the Photon RR research: Bridge 1.139.0-rrx.1, pack 0.6.16-rrx.1, on its own branch,
+`claude/project-thread-u2wmhh-rr`. Nothing from it is merged or released. It also carries 0.6.16's DLSS Dynamic frame
+generation, which stays off here (`frameGen=off`). The question: how much Ray Reconstruction transforms Photon, and
+which of Photon's effects it likes most left raw. Photon hides the noise of its effects in several ways (a history
+over frames, blue noise that steps each frame, half resolution, checkerboarding). NVIDIA's guide wants RR's input raw:
+white noise, independent from pixel to pixel and frame to frame, and nothing accumulated. Each switch takes one of
+Photon's ways away while RR runs. The first two are raw in the released RR; the rest are new:
+
+| Switch | Raw | Photon's own |
+| --- | --- | --- |
+| `reflections` | rough reflections, one ray from white noise, on Photon's own rough materials too | none without a resource pack's specular maps |
+| `reflection-rays` | raw rough reflections trace Photon's Ray Count (4), each from white noise | one ray |
+| `shadows` | soft shadows from white noise each frame | blue noise stepped each frame |
+| `shadow-rays` | the screen-space contact shadow rays turn by white noise each frame | a turn per pixel that never changes |
+| `ao-history` | ambient occlusion from this frame only | Photon blends 10 frames |
+| `ao-noise` | ambient occlusion from white noise | blue noise stepped each frame |
+| `fog` | volumetric fog, light shafts and coloured light in the air from white noise | blue noise stepped each frame |
+| `clouds` | clouds from white noise, no history (fully raw only with Temporal Upscaling 1x) | blended over frames, checkerboarded |
+| `dof-after` | Photon's depth of field after RR, as NVIDIA's guide places it (needs Depth of Field on) | before RR |
+
+One more is a Photon option, since it changes buffer sizes: `CG_RR_FULL_RES_AMBIENT`, ambient occlusion and
+volumetric fog at the window's resolution. Photon has them at half the window's size, so at full resolution four
+pixels share each sample, at Quality about 1.8, and at Performance each pixel already has its own.
+
+**How they flip.** Each switch is a uniform the Bridge sets every frame, so it changes on the next frame with no shader
+reload. They apply only while RR runs (or a debug view shows its inputs). In game, with the test kit:
+- Ctrl+`[` and Ctrl+`]` pick a switch, Ctrl+`\` flips it, Shift+`\` flips every effect at once (`reflection-rays` and
+  `dof-after` stay as they are). The action bar says what is picked or flipped and what it means. (With Ctrl: `]` and
+  `\` alone open Xaero's settings and Create Railways Navigator's.)
+- `/dlaatest rr` lists every switch and its state. `/dlaatest rr ao-history raw`, `/dlaatest rr ao-history photon`, or
+  `/dlaatest rr ao-history` to flip. `/dlaatest rr use shipped` puts back the released RR's set, `/dlaatest rr use
+  none` keeps all of Photon's own.
+
+The kit's research modes (`rrx-*`) set the switches and write Photon's options afresh for each mode: its Ultra profile,
+the research options at Photon's defaults, then the mode's own. So one mode's options never carry into the next. The
+Quality modes:
+- `rrx-taa` (Photon's own TAA at full resolution) and `rrx-dlss-K` (DLSS, no RR) as the references;
+- `rrx-photon` (RR, everything Photon's own), `rrx-shipped` (RR as released), and `rrx-all` (every effect raw, clouds
+  at 1x, AO and fog at full resolution);
+- one mode per switch, each `rrx-shipped` plus or minus one: `rrx-reflections-photon`, `rrx-reflection-rays`,
+  `rrx-shadows-photon`, `rrx-shadow-rays`, `rrx-ao-history`, `rrx-ao-raw` (history and noise), `rrx-ao-full` (that at full
+  resolution), `rrx-fog`, `rrx-clouds-1x` (Photon's clouds at 1x, history kept), `rrx-clouds`, `rrx-dof` (depth of
+  field before RR), `rrx-dof-after`.
+
+At full resolution (`rrx-dlaa-shipped`, `-ao-raw`, `-ao-full`, `-all`) and Performance (`rrx-perf-shipped`, `-all`),
+the resolution questions. The viewpoints: `moving` (the gears' notches show AO best), `dark` (new: a closed room lit by
+one lantern on a chain, where nothing bright covers the noise), `shore` (water) and `canopy` (leaves).
+
+### Update and settings
+
+```powershell
+git -C $T\repo fetch origin
+git -C $T\repo checkout -B claude/project-thread-u2wmhh-rr origin/claude/project-thread-u2wmhh-rr
+Remove-Item $T\instance\mods\create-galore-bridge-*.jar
+Copy-Item $T\repo\pack\mods\create-galore-bridge-*.jar $T\instance\mods\
+Copy-Item $T\repo\tools\dlss-testkit\dist\create-galore-dlss-testkit-1.0.0.jar $T\instance\mods\ -Force
+Copy-Item $T\rr1\nvngx_dlssd-rel.dll $T\instance\create-galore-dlss\nvngx_dlssd.dll -Force
+Get-ChildItem $T\instance\mods\create-galore-bridge-*.jar | Select-Object Name
+```
+
+Only `create-galore-bridge-1.139.0-rrx.1.jar`. Back up the same files as Ray Reconstruction 2 to `$T\rrx1\*.before`,
+and `config\create_galore_dlss_testkit.json` too.
+
+Settings file:
+- `dlaa=dlss`, `dlaaPreset=default`, `dlaaRayReconstruction=false` (the kit turns RR on per mode),
+  `perfectPresentation=true`, `presenter=dx12`, `reflex=on`, `gpuPacing=off`, `frameGen=off`, `fpsCounter=off`;
+- no `dlaaRrPreset`, `dlaaRrTest`, `dlaaRrRaw`, `dlaaRrExposure` or `dlaaDebugView` line.
+
+`options.txt`: `fullscreen:false`, `maxFps:260`, `enableVsync:false`. Shader pack: Photon v1.3a + DLAA (the kit sets
+its options). The first start makes Photon's copy again (patch 17).
+
+### 1. Runs (no one needed, about 45 minutes)
+
+Two launches, each Frame generation 3's 2560x1440 launch with `--jvm-arg=-Dcreate_galore_dlss_testkit.autorun=dlaa-test`:
+
+| Launch | runs | what | about |
+| --- | --- | --- | --- |
+| 1 | `--jvm-arg=-Dcreate_galore_dlss_testkit.runs=RRX3` | every research mode's frame time, twice, no screenshots | 15 min |
+| 2 | `--jvm-arg=-Dcreate_galore_dlss_testkit.runs=RRX1+RRX2+RRX4` | the pictures (still and flick paths), then 64-frame clips at `moving` and `dark` | 30 min |
+
+Launch 2 saves about 2,700 screenshots, about 10 GB. They stay on the PC.
+
+Checks in each launch's log:
+- `DLAA: made shaderpacks/Photon v1.3a + DLAA from ...` (launch 1);
+- for every `rrx-` mode but `rrx-taa` and `rrx-dlss-K`: `DLAA: DLSS Ray Reconstruction running at ...`, and `DLAA: Ray
+  Reconstruction research: raw: ...` naming the mode's switches;
+- no `Failed to create shader rendering pipeline` and no shader errors from Iris, above all after the modes that change
+  Photon's options (`rrx-ao-full`, `rrx-clouds*`, `rrx-all`, `rrx-dof*`, `rrx-dlaa-*`, `rrx-perf-all`). If one shows,
+  copy it whole and the mode it followed, and report.
+
+### 2. By eye with the hotkeys (the player at the keyboard, about 25 minutes)
+
+Launch without `autorun`. Open `dlaa-test`, `/gamemode creative`, `/time set 3000`. `/dlaatest scene build` puts up the
+moving scene; stand at it with `/tp @s 1029.5 66 162.5 180 14`. `/dlaatest mode rrx-shipped` (Quality, Photon Ultra, RR
+as released; the shaders reload once). Then, the player looking, the session typing the commands:
+- **a. Each switch at the moving scene.** Ctrl+`]` picks the next switch, Ctrl+`\` flips it raw and back, a few seconds
+  each way. For each, the player says: better, worse or the same with RR, and what changes (noise, crawling, smearing on
+  the turning gears, the villager and the panda, sharpness). AO and the shadow switches show best on the gears' notches
+  and under the fan.
+- **b. Everything at once.** Shift+`\` flips every effect raw, again back to Photon's own (`/dlaatest rr use none`),
+  then `/dlaatest rr use shipped`. Which of the three looks best, and by how much?
+- **c. The dark room.** `/dlaatest scene build dark`, `/tp @s 1060.5 64 121.5 180 6`. As a, above all `ao-history`,
+  `ao-noise`, `fog` (the lantern's coloured light in the air), `shadow-rays`, and `reflections` on the floor and the
+  metal blocks.
+- **d. Water, leaves and sky.** `/tp @s 1029.5 64 160.5 0 8` (shore), then `/tp @s 1024.5 88 205.5 180 22` (canopy):
+  `reflections`, `reflection-rays`, `shadows`, `shadow-rays`, `fog`. Then `/time set 12500` and look at the sky and the
+  light shafts: `/dlaatest mode rrx-clouds-1x`, flip `clouds`; then `/dlaatest mode rrx-shipped` for Photon's 4x
+  clouds. `/time set 3000` after.
+- **e. Resolution.** At the moving scene and in the dark room: `/dlaatest mode rrx-dlaa-ao-raw` then
+  `rrx-dlaa-ao-full` (full resolution), then `rrx-ao-raw` and `rrx-ao-full` (Quality). Does AO at full resolution look
+  cleaner under RR, and is it worth what launch 1 says it costs?
+- **f. Depth of field.** `/dlaatest mode rrx-dof` at the moving scene, then flip `dof-after` (pick it with Ctrl+`]`).
+  Which is cleaner, and does either smear when turning?
+- **g. The player's pick.** Which switches they would want left raw if this were a setting, and anything that surprised them.
+
+F2 screenshots of anything worth showing, named for what they show. `/dlaatest mode` leaves its settings in place; the
+backups put them back.
+
+### Results
+
+```powershell
+$py = "$T\tools\uv\uv.exe"
+$rrx = "$T\repo\tools\dlss-testkit\rrx.py"
+& $py run --python 3.13 --with pillow --with numpy $rrx table <the RRX1 run folder> <the RRX3 run folder>
+& $py run --python 3.13 --with pillow --with numpy $rrx table <the RRX2 run folder> <the RRX3 run folder>
+& $py run --python 3.13 --with pillow --with numpy --with imageio --with imageio-ffmpeg $rrx clips <the RRX4 run folder> $T\rrx1\clips
+```
+
+For the crops, open `compare.html` on the RRX1 folder, find a box (in pixels from the top left) on each of: the gears'
+notches and the fan's shadow (`moving`), the room's back corner and the lantern (`dark`), the water near the shore
+(`shore`), leaves against the sky (`canopy`). Then, for example,
+`& $py run --python 3.13 --with pillow --with numpy $rrx crops <the RRX1 run folder> $T\rrx1\crops moving=1100,700,1500,1000 dark=...`.
+
+Write `$T\repo\tools\dlss-testkit\results\rrx1\REPORT.md`:
+- launch 1 and 2's log checks;
+- both `rrx.py table` outputs whole;
+- the crop sheets (JPG, `results\rrx1\`), at most 12;
+- the clips: the two side-by-side MP4s (`moving-side-by-side.mp4`, `dark-side-by-side.mp4`), each under 15 MB (if bigger,
+  run `clips` again with `--box` on the busiest half);
+- part 2, per step a to g, the player's verdicts in their own words, with their screenshots as about 512 px crops.
+
+Put back every file from `$T\rrx1\*.before` and check each with `cmp`. Remove `nvngx_dlssd.dll` from the instance. Commit
+and push on `claude/project-thread-u2wmhh-rr`. The screenshots and the full clips stay on the PC.
+
+What comes of it: the cloud session reads the report and writes the research report (what RR cleans up raw, what still
+needs Photon's help, what each costs, which effects RR likes most). The findings go to our own shader pack's planning.
+Photon's released RR stays as it is unless the player decides one of these is clearly better.

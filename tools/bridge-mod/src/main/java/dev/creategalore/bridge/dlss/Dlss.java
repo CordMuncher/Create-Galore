@@ -131,8 +131,6 @@ public final class Dlss {
     private static boolean rrNoHitDistance;
     private static boolean rrOwnParameters;
     private static boolean rrHitDistanceBands;
-    private static boolean rrRawReflections = true;
-    private static boolean rrRawShadows = true;
     /** FSR 3 draws its own debug view. */
     private static boolean fsr3Debug;
     private static PackProfile profile;
@@ -268,9 +266,8 @@ public final class Dlss {
         }
         rrPreset = parseRrPreset(DisplaySettings.getString(DisplaySettings.DLAA_RR_PRESET, "F"));
         rrExposed = !DisplaySettings.getString(DisplaySettings.DLAA_RR_EXPOSURE, "exposed").equalsIgnoreCase("raw");
-        String raw = DisplaySettings.getString(DisplaySettings.DLAA_RR_RAW, "reflections,shadows").toLowerCase(Locale.ROOT);
-        rrRawReflections = raw.contains("reflections");
-        rrRawShadows = raw.contains("shadows");
+        // What the pack leaves raw for it: kept as switched in game since, unless the setting changed (RrResearch).
+        RrResearch.load(DisplaySettings.getString(DisplaySettings.DLAA_RR_RAW, RrResearch.DEFAULT));
         String test = DisplaySettings.getString(DisplaySettings.DLAA_RR_TEST, "").toLowerCase(Locale.ROOT);
         boolean ownParameters = test.contains("own-parameters");
         if (ownParameters != rrOwnParameters) {
@@ -319,9 +316,8 @@ public final class Dlss {
         } else {
             if (rayReconstructionWanted) {
                 LOG.info("DLAA: DLSS Ray Reconstruction asked for (experimental): preset {}, {} colour, left noisy for it: {}{}",
-                        rrPresetName(rrPreset), rrExposed ? "exposed" : "raw", rrRawReflections || rrRawShadows
-                                ? (rrRawReflections ? "rough reflections" : "") + (rrRawReflections && rrRawShadows ? ", " : "") + (rrRawShadows ? "soft shadows" : "")
-                                : "nothing", profile != null && !profile.hasRayReconstructionGuides() ? " (this pack hands over no guides: DLSS runs)" : "");
+                        rrPresetName(rrPreset), rrExposed ? "exposed" : "raw", RrResearch.setting().replace(",", ", "),
+                        profile != null && !profile.hasRayReconstructionGuides() ? " (this pack hands over no guides: DLSS runs)" : "");
             }
             LOG.info("DLAA: on for this shader pack, engine {}, DLSS preset {}{}, {}{}{}{}", engine, presetName(preset),
                     presetName.equalsIgnoreCase(presetName(preset)) || presetName.isEmpty() ? "" : " (set to " + presetName + ")",
@@ -428,14 +424,9 @@ public final class Dlss {
         return active && rrRunning && rrExposed;
     }
 
-    /** True while the pack leaves its rough reflections noisy for Ray Reconstruction (cg_rr_raw_reflections). */
-    public static boolean rayReconstructionRawReflections() {
-        return active && rrMode && rrRawReflections;
-    }
-
-    /** True while the pack leaves its soft shadows noisy for Ray Reconstruction (cg_rr_raw_shadows). */
-    public static boolean rayReconstructionRawShadows() {
-        return active && rrMode && rrRawShadows;
+    /** True while the pack leaves that effect raw for Ray Reconstruction (its uniform, see {@link RrResearch}). */
+    public static boolean rayReconstructionRaw(RrResearch.Switch which) {
+        return active && rrMode && RrResearch.raw(which);
     }
 
     /** For the test kit: the pack the render resolution goes into, its upscaling switch and its render scale option. */

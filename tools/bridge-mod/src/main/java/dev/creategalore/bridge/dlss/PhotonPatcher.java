@@ -67,11 +67,20 @@ import org.slf4j.LoggerFactory;
  * - with cg_rr_raw_shadows 1, turns the soft shadows' sample patterns with white noise instead of Photon's blue noise
  *   that steps each frame (NVIDIA: no screen-space dithering, no patterns shared between pixels);
  * - with cg_rr_exposed 1, hands DLSS its colour times its exposure (Ray Reconstruction takes no exposure).
+ *
+ * For the Photon RR research (dev builds), more switches of that kind, each a uniform the Bridge sets per frame
+ * ({@link RrResearch}), so each of Photon's own ways of hiding noise can be taken away while Ray Reconstruction runs:
+ * raw rough reflections with Photon's Ray Count (cg_rr_reflection_rays), contact shadow rays turned by white noise
+ * each frame (cg_rr_raw_shadow_rays), ambient occlusion without its 10-frame history (cg_rr_raw_ao_history) and from
+ * white noise (cg_rr_raw_ao_noise), volumetric fog from white noise (cg_rr_raw_fog), clouds from white noise without
+ * their history (cg_rr_raw_clouds), and depth of field in composite14, after Ray Reconstruction (cg_rr_dof_after).
+ * One more is an option, as it changes buffer sizes: CG_RR_FULL_RES_AMBIENT, ambient occlusion and volumetric fog at
+ * the window's resolution instead of half.
  */
 public final class PhotonPatcher {
     private static final Logger LOG = LoggerFactory.getLogger("create_galore_bridge");
     /** Bumped when the patch changes, so existing copies are made again. */
-    private static final int PATCH_VERSION = 15;
+    private static final int PATCH_VERSION = 17;
     private static final String BASE_ZIP = "photon_v1.3a.zip";
     /** Colorwheel Patcher's copy of {@link #BASE_ZIP}; an outdated one gets a prefix and no longer matches. */
     private static final Pattern COLORWHEEL_ZIP = Pattern.compile("photon_v1\\.3a \\+ Clrwl_(\\d+)\\.(\\d+)\\.(\\d+)\\.zip");
@@ -223,6 +232,14 @@ public final class PhotonPatcher {
                                 + "image.cg_rr_specular_img = none rgba rgba8 unsigned_byte false true 1.0 1.0\n"
                                 + "image.cg_rr_normal_img = none rgba rgba16f half_float false true 1.0 1.0\n"
                                 + "image.cg_rr_hitdist_img = none red r32f float false true 1.0 1.0"},
+                // RR research (CG_RR_FULL_RES_AMBIENT, see settings.glsl below): ambient occlusion and volumetric fog in
+                // buffers the window's size instead of half.
+                {"size.buffer.colortex6 = 0.5 0.5\nsize.buffer.colortex7 = 0.5 0.5\nsize.buffer.colortex14 = 0.5 0.5\n",
+                        "#ifdef CG_RR_FULL_RES_AMBIENT\n"
+                                + "size.buffer.colortex6 = 1.0 1.0\nsize.buffer.colortex7 = 1.0 1.0\nsize.buffer.colortex14 = 1.0 1.0\n"
+                                + "#else\n"
+                                + "size.buffer.colortex6 = 0.5 0.5\nsize.buffer.colortex7 = 0.5 0.5\nsize.buffer.colortex14 = 0.5 0.5\n"
+                                + "#endif\n"},
         });
 
         // Upscaling (TAAU): the render scale comes from the Bridge, per axis and in whole render pixels, so DLSS
@@ -248,6 +265,12 @@ public final class PhotonPatcher {
         }
         edits.put("shaders/settings.glsl", new String[][] {
                 {"#define TAAU_RENDER_SCALE 0.75 // [0.50 ", "#define TAAU_RENDER_SCALE 0.75 // [" + lowScales + "0.50 "},
+                // RR research: an option (off; the test kit turns it on) for ambient occlusion and volumetric fog at the
+                // window's resolution. Photon has them at half, so at full resolution four pixels share each sample.
+                {"  #define SHADER_AO SHADER_AO_GTAO // [SHADER_AO_NONE SHADER_AO_SSAO SHADER_AO_GTAO]\n",
+                        "  #define SHADER_AO SHADER_AO_GTAO // [SHADER_AO_NONE SHADER_AO_SSAO SHADER_AO_GTAO]\n"
+                                + "  // Create Galore RR research: ambient occlusion and volumetric fog at the window's resolution\n"
+                                + "//#define CG_RR_FULL_RES_AMBIENT\n"},
         });
         edits.put("shaders/include/lighting/specular_lighting.glsl", new String[][] {
                 {"vec3 get_sky_reflection(vec3 ray_dir, float skylight, vec3 hit_pos) {",
@@ -275,12 +298,13 @@ public final class PhotonPatcher {
                                 + "    if (false) {\n"
                                 + "#endif\n"},
                 {"        for (int i = 0; i < SSR_RAY_COUNT; ++i) {\n",
-                        "        // Create Galore Ray Reconstruction: one ray, its direction from white noise.\n"
-                                + "        int cg_ray_count = cg_raw ? 1 : SSR_RAY_COUNT;\n"
+                        "        // Create Galore Ray Reconstruction: one ray, its direction from white noise (RR research: Photon's\n"
+                                + "        // ray count, each from its own white noise, with cg_rr_reflection_rays).\n"
+                                + "        int cg_ray_count = cg_raw && cg_rr_reflection_rays < 0.5 ? 1 : SSR_RAY_COUNT;\n"
                                 + "        for (int i = 0; i < cg_ray_count; ++i) {\n"},
                 {"                frameCounter * SSR_RAY_COUNT + i\n            );\n\n",
                         "                frameCounter * SSR_RAY_COUNT + i\n            );\n"
-                                + "            if (cg_raw) hash = cg_noise.xy;\n\n"},
+                                + "            if (cg_raw) hash = i == 0 ? cg_noise.xy : cg_white_noise(ivec2(gl_FragCoord.xy), frameCounter, 16u + uint(i)).xy;\n\n"},
                 {"        reflection *= albedo_tint * rcp(float(SSR_RAY_COUNT));\n",
                         "        reflection *= albedo_tint * rcp(float(cg_ray_count));\n"},
                 {"#else\n    // Fade reflection when rough reflections are disabled\n",
@@ -292,7 +316,64 @@ public final class PhotonPatcher {
                 "    dither = r1(frameCounter, dither);\n"
                         + "    if (cg_rr_raw_shadows > 0.5) dither = cg_white_noise(ivec2(gl_FragCoord.xy), frameCounter, 2u).x; // Create Galore RR\n"}};
         edits.put("shaders/include/lighting/shadows/pcss.glsl", shadowNoise);
-        edits.put("shaders/include/lighting/shadows/ssrt.glsl", shadowNoise);
+        edits.put("shaders/include/lighting/shadows/ssrt.glsl", new String[][] {shadowNoise[0],
+                // RR research: the contact shadow ray's slight turn (for soft edges) from white noise each frame; Photon's
+                // is a hash of the pixel that never changes.
+                {"    vec2 hash = hash2(gl_FragCoord.xy);\n",
+                        "    vec2 hash = hash2(gl_FragCoord.xy);\n"
+                                + "    if (cg_rr_raw_shadow_rays > 0.5) hash = cg_white_noise(ivec2(gl_FragCoord.xy), frameCounter, 6u).xy; // Create Galore RR research\n"}});
+        // RR research: ambient occlusion from this frame alone (no 10-frame history), from white noise, and at the window's
+        // resolution (CG_RR_FULL_RES_AMBIENT).
+        edits.put("shaders/program/d3_ao.fsh", new String[][] {
+                {"const float ao_render_scale = 0.5;\n",
+                        "#ifdef CG_RR_FULL_RES_AMBIENT\n"
+                                + "const float ao_render_scale = 1.0; // Create Galore RR research: at the window's resolution\n"
+                                + "#else\n"
+                                + "const float ao_render_scale = 0.5;\n"
+                                + "#endif\n"},
+                {"    dither = r2(frameCounter, dither);\n",
+                        "    dither = r2(frameCounter, dither);\n"
+                                + "    if (cg_rr_raw_ao_noise > 0.5) dither = cg_white_noise(texel, frameCounter, 3u).xy; // Create Galore RR research\n"},
+                {"        float history_weight = pixel_age / (pixel_age + 1.0);\n",
+                        "        float history_weight = pixel_age / (pixel_age + 1.0);\n"
+                                + "        if (cg_rr_raw_ao_history > 0.5) history_weight = 0.0; // Create Galore RR research: this frame only\n"},
+        });
+        // RR research: volumetric fog from white noise, and at the window's resolution (CG_RR_FULL_RES_AMBIENT).
+        edits.put("shaders/program/c0_vl.fsh", new String[][] {
+                {"    ivec2 view_texel =\n        ivec2(gl_FragCoord.xy * taau_render_scale * rcp(VL_RENDER_SCALE));\n",
+                        "#ifdef CG_RR_FULL_RES_AMBIENT\n"
+                                + "    ivec2 view_texel = ivec2(gl_FragCoord.xy * taau_render_scale); // Create Galore RR research: the window's resolution\n"
+                                + "#else\n"
+                                + "    ivec2 view_texel =\n        ivec2(gl_FragCoord.xy * taau_render_scale * rcp(VL_RENDER_SCALE));\n"
+                                + "#endif\n"},
+                {"    float dither = texelFetch(noisetex, fog_texel & 511, 0).b;\n    dither = r1(frameCounter, dither);\n",
+                        "    float dither = texelFetch(noisetex, fog_texel & 511, 0).b;\n    dither = r1(frameCounter, dither);\n"
+                                + "    if (cg_rr_raw_fog > 0.5) dither = cg_white_noise(fog_texel, frameCounter, 4u).x; // Create Galore RR research\n"},
+        });
+        // RR research: the clouds from white noise and this frame's samples only (with Temporal Upscaling above 1x, the
+        // pixels not traced this frame keep their last sample).
+        edits.put("shaders/program/d2_clouds_upscaling.fsh", new String[][] {
+                {"    float history_weight = 1.0 - rcp(max(pixel_age - checkerboard_area, 1.0));\n",
+                        "    float history_weight = 1.0 - rcp(max(pixel_age - checkerboard_area, 1.0));\n"
+                                + "    if (cg_rr_raw_clouds > 0.5) history_weight = 0.0; // Create Galore RR research\n"},
+        });
+        // RR research: depth of field after Ray Reconstruction (composite14, see DOF_AFTER) instead of before it.
+        edits.put("shaders/program/c2_dof.fsh", new String[][] {
+                {"void main() {\n    ivec2 texel = ivec2(gl_FragCoord.xy);\n",
+                        "void main() {\n    ivec2 texel = ivec2(gl_FragCoord.xy);\n\n"
+                                + "    if (cg_rr_dof_after > 0.5) { // Create Galore RR research: composite14 does it, after Ray Reconstruction\n"
+                                + "        scene_color = texelFetch(colortex0, texel, 0).rgb;\n"
+                                + "        return;\n"
+                                + "    }\n"},
+        });
+        edits.put("shaders/program/c14_color_grading.fsh", new String[][] {
+                {"\n// Bloom\n", DOF_AFTER + "\n// Bloom\n"},
+                {"    scene_color = texelFetch(colortex5, texel, 0).rgb;\n",
+                        "    scene_color = texelFetch(colortex5, texel, 0).rgb;\n"
+                                + "#ifdef DOF\n"
+                                + "    if (cg_rr_dof_after > 0.5) scene_color = cg_dof_after(texel); // Create Galore RR research\n"
+                                + "#endif\n"},
+        });
         // Ray Reconstruction's guides: deferred4 for the solid surfaces and the sky.
         String[][] rrGuides = {{"#version 400 compatibility\n",
                 "#version 400 compatibility\n#extension GL_ARB_shader_image_load_store : enable\n#define CG_RR_GUIDES\n"}};
@@ -300,6 +381,12 @@ public final class PhotonPatcher {
             edits.put("shaders/" + world + "/deferred4.fsh", rrGuides);
         }
         edits.put("shaders/program/d4_deferred_shading.fsh", new String[][] {
+                {"        vec2 half_res_pos = gl_FragCoord.xy * (0.5 / taau_render_scale) - 0.5;\n",
+                        "#ifdef CG_RR_FULL_RES_AMBIENT\n"
+                                + "        vec2 half_res_pos = gl_FragCoord.xy * (1.0 / taau_render_scale) - 0.5; // Create Galore RR research\n"
+                                + "#else\n"
+                                + "        vec2 half_res_pos = gl_FragCoord.xy * (0.5 / taau_render_scale) - 0.5;\n"
+                                + "#endif\n"},
                 {"#include \"/include/utility/space_conversion.glsl\"\n",
                         "#include \"/include/utility/space_conversion.glsl\"\n#include \"/include/cg_rr.glsl\"\n"},
                 {"    if (depth == 1.0) { // Sky\n",
@@ -328,6 +415,10 @@ public final class PhotonPatcher {
                 {"rcp(float(taau_render_scale));", "rcp(vec2(taau_render_scale));"},
                 {"depth_max_4x4(depthtex1, taau_render_scale);", "depth_max_4x4(depthtex1, vec2(taau_render_scale));"},
                 {"depth_max_4x4(lod_depth_tex, lod_depth_tex_scale);", "depth_max_4x4(lod_depth_tex, vec2(lod_depth_tex_scale));"},
+                // RR research: the clouds' ray offsets from white noise (see d2_clouds_upscaling below).
+                {"    float dither = texelFetch(noisetex, ivec2(checkerboard_pos & 511), 0).b;\n    dither = r1(frameCounter / checkerboard_area, dither);\n",
+                        "    float dither = texelFetch(noisetex, ivec2(checkerboard_pos & 511), 0).b;\n    dither = r1(frameCounter / checkerboard_area, dither);\n"
+                                + "    if (cg_rr_raw_clouds > 0.5) dither = cg_white_noise(checkerboard_pos, frameCounter, 5u).x; // Create Galore RR research\n"},
         });
         // TAAU's colour limits for its own resolve go into colortex1 and colortex2; while DLSS runs this pass hands
         // on what is there instead (the gbuffer data and the motion of things that move by themselves).
@@ -797,6 +888,16 @@ public final class PhotonPatcher {
             uniform float cg_rr_active;
             uniform float cg_rr_raw_reflections;
             uniform float cg_rr_raw_shadows;
+            // The RR research's switches (dev builds; 1: raw, see RrResearch in the Bridge): raw rough reflections with
+            // Photon's ray count, contact shadow rays, ambient occlusion's history and noise, volumetric fog, clouds, and
+            // depth of field after Ray Reconstruction.
+            uniform float cg_rr_reflection_rays;
+            uniform float cg_rr_raw_shadow_rays;
+            uniform float cg_rr_raw_ao_history;
+            uniform float cg_rr_raw_ao_noise;
+            uniform float cg_rr_raw_fog;
+            uniform float cg_rr_raw_clouds;
+            uniform float cg_rr_dof_after;
 
             uvec4 cg_pcg4d(uvec4 v) {
                 v = v * 1664525u + 1013904223u;
@@ -872,6 +973,42 @@ public final class PhotonPatcher {
             }
             #endif
 
+            #endif
+            """;
+
+    /**
+     * RR research, in composite14 (colour grading) with Photon's Depth of Field on: composite2's gather after Ray
+     * Reconstruction, at the window's resolution, as NVIDIA's guide places depth of field. Its disc turns with blue noise
+     * that stays put, since nothing after this pass would smooth a disc that turns each frame.
+     */
+    private static final String DOF_AFTER = """
+
+            #ifdef DOF
+            // Create Galore RR research: Photon's depth of field after Ray Reconstruction (see PhotonPatcher in the Bridge).
+            uniform sampler2D noisetex;
+            uniform sampler2D depthtex0;
+            uniform mat4 gbufferProjection;
+            uniform float centerDepthSmooth;
+
+            vec3 cg_dof_after(ivec2 texel) {
+                float depth = texelFetch(depthtex0, ivec2(vec2(texel) * taau_render_scale), 0).x;
+                if (depth < hand_depth) return texelFetch(colortex5, texel, 0).rgb;
+                float theta = texelFetch(noisetex, texel & 511, 0).b * tau;
+                float focus = centerDepthSmooth;
+                if (DOF_FOCUS >= 0.0) {
+                    vec2 zw = -(DOF_FOCUS) * gbufferProjection[2].zw + gbufferProjection[3].zw; // (DOF_FOCUS is -1.0 when off: not --1.0)
+                    focus = zw.x / zw.y * 0.5 + 0.5;
+                }
+                vec2 CoC = min(abs(depth - focus), 0.1) * (DOF_INTENSITY * 0.2 / 1.37) * vec2(1.0, aspectRatio) * gbufferProjection[1][1];
+                vec2 uv = (vec2(texel) + 0.5) * view_pixel_size;
+                vec3 color = vec3(0.0);
+                for (int i = 0; i < DOF_SAMPLES; ++i) {
+                    float r = sqrt(float(i) + 0.5) / sqrt(float(DOF_SAMPLES));
+                    float a = float(i) * 2.4 + theta; // Photon's vogel disc
+                    color += textureLod(colortex5, clamp(uv + r * vec2(cos(a), sin(a)) * CoC, vec2(0.0), 1.0 - view_pixel_size), 0).rgb;
+                }
+                return color * rcp(float(DOF_SAMPLES));
+            }
             #endif
             """;
 

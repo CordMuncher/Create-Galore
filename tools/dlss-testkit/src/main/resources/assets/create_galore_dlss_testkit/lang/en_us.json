@@ -1,0 +1,7 @@
+{
+  "key.categories.create_galore_dlss_testkit": "DLAA test kit",
+  "key.create_galore_dlss_testkit.rr_previous": "RR research: previous switch",
+  "key.create_galore_dlss_testkit.rr_next": "RR research: next switch",
+  "key.create_galore_dlss_testkit.rr_flip": "RR research: flip the switch",
+  "key.create_galore_dlss_testkit.rr_all": "RR research: flip every effect"
+}

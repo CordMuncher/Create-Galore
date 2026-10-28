@@ -141,6 +141,39 @@ public final class Capture {
             modes.add(Mode.rr("perf-rr-E", "E", 0.5f));
             modes.add(Mode.rr("perf-rr-F-rawexp", "F,exposure=raw", 0.5f));
             modes.add(Mode.rr("perf-rr-F-calm", "F,raw=none", 0.5f));
+            // Photon RR research 1 (PC-RUNBOOK.md): Photon at Ultra, Ray Reconstruction at Quality with one of Photon's ways
+            // of hiding its noise taken away at a time (the Bridge's RrResearch switches), against Photon's own TAA and
+            // DLSS at the same settings. "shipped" is Ray Reconstruction as released (rough reflections and soft shadows
+            // raw), "photon" keeps all of Photon's own smoothing, "all" takes all of it away.
+            String shipped = "reflections+shadows";
+            String all = "reflections+shadows+shadow-rays+ao-history+ao-noise+fog+clouds";
+            modes.add(new Mode("rrx-taa", false, "default", null, null, null, null, null, null, null, null, null, null, null, null, null,
+                    null, "ultra"));
+            modes.add(new Mode("rrx-dlss-K", true, "K", null, null, null, null, null, 0.67f, null, null, null, null, null, null, null,
+                    null, "ultra"));
+            modes.add(Mode.rrx("rrx-photon", "none", "", 0.67f));
+            modes.add(Mode.rrx("rrx-shipped", shipped, "", 0.67f));
+            modes.add(Mode.rrx("rrx-reflections-photon", "shadows", "", 0.67f));
+            modes.add(Mode.rrx("rrx-reflection-rays", shipped + "+reflection-rays", "", 0.67f));
+            modes.add(Mode.rrx("rrx-shadows-photon", "reflections", "", 0.67f));
+            modes.add(Mode.rrx("rrx-shadow-rays", shipped + "+shadow-rays", "", 0.67f));
+            modes.add(Mode.rrx("rrx-ao-history", shipped + "+ao-history", "", 0.67f));
+            modes.add(Mode.rrx("rrx-ao-raw", shipped + "+ao-history+ao-noise", "", 0.67f));
+            modes.add(Mode.rrx("rrx-ao-full", shipped + "+ao-history+ao-noise", "CG_RR_FULL_RES_AMBIENT=true", 0.67f));
+            modes.add(Mode.rrx("rrx-fog", shipped + "+fog", "", 0.67f));
+            modes.add(Mode.rrx("rrx-clouds-1x", shipped, "CLOUDS_TEMPORAL_UPSCALING=1", 0.67f));
+            modes.add(Mode.rrx("rrx-clouds", shipped + "+clouds", "CLOUDS_TEMPORAL_UPSCALING=1", 0.67f));
+            modes.add(Mode.rrx("rrx-all", all, "CLOUDS_TEMPORAL_UPSCALING=1,CG_RR_FULL_RES_AMBIENT=true", 0.67f));
+            modes.add(Mode.rrx("rrx-dof", shipped, "DOF=true", 0.67f));
+            modes.add(Mode.rrx("rrx-dof-after", shipped + "+dof-after", "DOF=true", 0.67f));
+            // At full resolution Photon's half resolution ambient occlusion and fog cover 2x2 pixels each; at Performance
+            // (half the window) one pixel each already, so there the full resolution option is left off.
+            modes.add(Mode.rrx("rrx-dlaa-shipped", shipped, "", null));
+            modes.add(Mode.rrx("rrx-dlaa-ao-raw", shipped + "+ao-history+ao-noise", "", null));
+            modes.add(Mode.rrx("rrx-dlaa-ao-full", shipped + "+ao-history+ao-noise", "CG_RR_FULL_RES_AMBIENT=true", null));
+            modes.add(Mode.rrx("rrx-dlaa-all", all, "CLOUDS_TEMPORAL_UPSCALING=1,CG_RR_FULL_RES_AMBIENT=true", null));
+            modes.add(Mode.rrx("rrx-perf-shipped", shipped, "", 0.5f));
+            modes.add(Mode.rrx("rrx-perf-all", all, "CLOUDS_TEMPORAL_UPSCALING=1", 0.5f));
             // NVIDIA's full mip bias (one more mip level of detail) against the render scale's own.
             modes.add(new Mode("perf-dlss-K-bias", true, "K", null, null, null, null, null, 0.5f, -1.0f));
             modes.add(new Mode("perf-fsr3-bias", true, "default", null, null, "fsr3", null, null, 0.5f, -1.0f));
@@ -202,6 +235,9 @@ public final class Capture {
          * Presenter 2 and 3: P2 with dx11 and with dx12. Pacer 3: L7, GPU pacing's targets, once with each presenter.
          * DLSS-G 1: G1, Reflex alone against Reflex with GPU pacing On, with frame generation on and off. Ray Reconstruction
          * 1: RR1 measures frame rates (DLSS against Ray Reconstruction at each scale, no screenshots), RR2 saves the pictures.
+         * Ray Reconstruction research 1: RRX1 saves the pictures of each switch at Quality (moving scene, dark room, shore,
+         * canopy), RRX2 those at full resolution and Performance, RRX3 measures every research mode's frame time twice (no
+         * screenshots), RRX4 saves short clips (64 frames in a row) of the main ones.
          */
         List<Run> runs = new ArrayList<>(List.of(
                 new Run("F1", "photon-taa+dlaa-default+fsr3+perf-taau+perf-dlss-K+perf-dlss-M+perf-dlss-L+perf-fsr3"
@@ -240,7 +276,13 @@ public final class Capture {
                 new Run("RR1", "dlaa-default+dlaa-rr-F+q-dlss-K+q-rr-F+bal-rr-F+perf-dlss-K+perf-rr-F+ultra-rr-F", "shore+canopy", null,
                         null, false, null, 2),
                 new Run("RR2", "photon-taa+dlaa-default+dlaa-rr-F+q-dlss-K+perf-dlss-K+perf-rr-F+perf-rr-E+perf-rr-F-rawexp"
-                        + "+perf-rr-F-calm+ultra-rr-F", "shore+glass+canopy+moving", null, null, null, null)));
+                        + "+perf-rr-F-calm+ultra-rr-F", "shore+glass+canopy+moving", null, null, null, null),
+                new Run("RRX1", RRX_QUALITY, RRX_VIEWPOINTS, "still+flick", null, true, null),
+                new Run("RRX2", "rrx-dlaa-shipped+rrx-dlaa-ao-raw+rrx-dlaa-ao-full+rrx-dlaa-all+rrx-perf-shipped+rrx-perf-all",
+                        RRX_VIEWPOINTS, "still+flick", null, true, null),
+                new Run("RRX3", RRX_QUALITY + "+rrx-dlaa-shipped+rrx-dlaa-ao-raw+rrx-dlaa-ao-full+rrx-dlaa-all+rrx-perf-shipped"
+                        + "+rrx-perf-all", RRX_VIEWPOINTS, "still", null, false, null, 2),
+                new Run("RRX4", "rrx-taa+rrx-dlss-K+rrx-photon+rrx-shipped+rrx-ao-raw+rrx-all", "moving+dark", "clip", null, true, null)));
     }
 
     /**
@@ -264,11 +306,19 @@ public final class Capture {
      * textures' mip bias while DLSS or FSR runs (NVIDIA's guide asks for -1 more than the render scale's own); reflex,
      * latePoll, renderAhead, fpsCap, pacerUs and capAtStart (null: as they are) are the input latency switches (see
      * {@link #latency}); rayReconstruction (null: off) runs DLSS Ray Reconstruction in DLSS's place (dev builds), see
-     * {@link #rr}.
+     * {@link #rr}; photon (null: Photon's options as they are) sets the DLAA Photon copy's options for the mode, see
+     * {@link #rrx}.
      */
     record Mode(String name, boolean dlaa, String preset, String debugView, String jitterSign, String engine, Boolean objectMotion,
                 Boolean reactiveMask, Float renderScale, Float mipBias, String reflex, Boolean latePoll, Integer renderAhead,
-                Integer fpsCap, Integer pacerUs, Boolean capAtStart, String rayReconstruction) {
+                Integer fpsCap, Integer pacerUs, Boolean capAtStart, String rayReconstruction, String photon) {
+        Mode(String name, boolean dlaa, String preset, String debugView, String jitterSign, String engine, Boolean objectMotion,
+             Boolean reactiveMask, Float renderScale, Float mipBias, String reflex, Boolean latePoll, Integer renderAhead,
+             Integer fpsCap, Integer pacerUs, Boolean capAtStart, String rayReconstruction) {
+            this(name, dlaa, preset, debugView, jitterSign, engine, objectMotion, reactiveMask, renderScale, mipBias, reflex, latePoll,
+                    renderAhead, fpsCap, pacerUs, capAtStart, rayReconstruction, null);
+        }
+
         Mode(String name, boolean dlaa, String preset, String debugView, String jitterSign, String engine, Boolean objectMotion,
              Boolean reactiveMask, Float renderScale, Float mipBias, String reflex, Boolean latePoll, Integer renderAhead,
              Integer fpsCap, Integer pacerUs, Boolean capAtStart) {
@@ -321,12 +371,36 @@ public final class Capture {
         /**
          * A Ray Reconstruction mode (dev builds) at a render scale (null: full resolution). {@code rr} is its preset (F, E,
          * D or default), then optionally {@code ,exposure=raw} (the colour as the pack has it, not times its exposure) and
-         * {@code ,raw=none} (the pack's own smoothing kept: rough reflections and soft shadows not left noisy).
+         * {@code ,raw=a+b} (what the pack leaves raw for it, the Bridge's RrResearch switches: none, or e.g.
+         * reflections+shadows, the default; none keeps the pack's own smoothing everywhere).
          */
         static Mode rr(String name, String rr, Float renderScale) {
             return new Mode(name, true, "default", null, null, null, null, null, renderScale, null, null, null, null, null, null, null, rr);
         }
+
+        /**
+         * A mode of the Photon RR research: Ray Reconstruction preset F with these switches raw ({@code raw}, as in
+         * {@link #rr}) and Photon at its Ultra profile plus {@code options} (NAME=VALUE, comma separated; empty for
+         * none). photon "ultra[,NAME=VALUE...]" writes the DLAA Photon copy's options afresh for the mode: Ultra, the
+         * research's own options at Photon's defaults ({@link #RESEARCH_DEFAULTS}), then these.
+         */
+        static Mode rrx(String name, String raw, String options, Float renderScale) {
+            return new Mode(name, true, "default", null, null, null, null, null, renderScale, null, null, null, null, null, null, null,
+                    "F,raw=" + raw, options.isEmpty() ? "ultra" : "ultra," + options);
+        }
     }
+
+    /** Photon RR research 1's modes at Quality, in RRX1's order, and its viewpoints. */
+    private static final String RRX_QUALITY = "rrx-taa+rrx-dlss-K+rrx-photon+rrx-shipped+rrx-reflections-photon+rrx-reflection-rays"
+            + "+rrx-shadows-photon+rrx-shadow-rays+rrx-ao-history+rrx-ao-raw+rrx-ao-full+rrx-fog+rrx-clouds-1x+rrx-clouds+rrx-all"
+            + "+rrx-dof+rrx-dof-after";
+    private static final String RRX_VIEWPOINTS = "moving+dark+shore+canopy";
+    /**
+     * The research's own Photon options at Photon's defaults: every "ultra" mode starts from these, so one mode's
+     * changes never carry over into the next.
+     */
+    static final Map<String, String> RESEARCH_DEFAULTS = Map.of("CLOUDS_TEMPORAL_UPSCALING", "4", "CG_RR_FULL_RES_AMBIENT", "false",
+            "DOF", "false", "SSR_RAY_COUNT", "4");
 
     /** scene: built there at run time (MovingScene.NAME), else null. */
     record Viewpoint(String name, double x, double y, double z, float yaw, float pitch, String scene) {}
@@ -340,7 +414,9 @@ public final class Capture {
             new Viewpoint("ride", RideScene.DECK_X, RideScene.DECK_Y, RideScene.DECK_Z, 90.0f, -10.0f, RideScene.NAME),
             new Viewpoint("ride-east", RideScene.DECK_X, RideScene.DECK_Y, RideScene.DECK_Z, -90.0f, -10.0f, RideScene.NAME),
             // Create's machines under a near lintel (see CullScene): all in plain view, at any render scale.
-            new Viewpoint("cull", CullScene.X, CullScene.Y, CullScene.Z, 180.0f, 0.0f, CullScene.NAME));
+            new Viewpoint("cull", CullScene.X, CullScene.Y, CullScene.Z, 180.0f, 0.0f, CullScene.NAME),
+            // A dark room lit by one lantern (see DarkScene), for the Photon RR research.
+            new Viewpoint("dark", DarkScene.X, DarkScene.Y, DarkScene.Z, 180.0f, 6.0f, DarkScene.NAME));
 
     /** One stretch of frames: the camera at each local frame, and the frames to save. */
     private record Segment(String label, Viewpoint viewpoint, String path, int length, int[] captures, Runnable onStart, Mode mode) {}
@@ -582,7 +658,7 @@ public final class Capture {
         return null;
     }
 
-    /** /dlaatest scene build [moving|effects] | remove: a test scene outside a run (remove takes both away). */
+    /** /dlaatest scene build [moving|effects|dark] | remove: a test scene outside a run (remove takes them all away). */
     static String scene(boolean build, String which) {
         Minecraft mc = Minecraft.getInstance();
         if (mc.getSingleplayerServer() == null) {
@@ -594,6 +670,11 @@ public final class Capture {
         if (!build) {
             clearScenes();
             return "removed the test scenes";
+        }
+        if (DarkScene.NAME.equals(which)) {
+            DarkScene.build();
+            return "the dark room is over the sea south of the cull scene; /tp @s 1060.5 64 121.5 180 6 stands inside;"
+                    + " /dlaatest scene remove takes it away";
         }
         if (EffectsScene.NAME.equals(which)) {
             EffectsScene.show();
@@ -650,6 +731,7 @@ public final class Capture {
             EffectsScene.remove();
             RideScene.remove();
             CullScene.remove();
+            DarkScene.remove();
         }
         if (settings != null && settings.freezeTicks) {
             server("tick unfreeze");
@@ -838,6 +920,7 @@ public final class Capture {
         EffectsScene.clear();
         RideScene.clear();
         CullScene.clear();
+        DarkScene.clear();
         log("cleared the test scenes");
     }
 
@@ -850,6 +933,8 @@ public final class Capture {
             RideScene.build(settings);
         } else if (CullScene.NAME.equals(scene)) {
             CullScene.build();
+        } else if (DarkScene.NAME.equals(scene)) {
+            DarkScene.build();
         }
     }
 
@@ -947,6 +1032,13 @@ public final class Capture {
         info.addProperty("reactiveMask", !Boolean.FALSE.equals(mode.reactiveMask()));
         info.addProperty("renderScale", mode.renderScale() != null ? mode.renderScale() : 1.0f);
         info.addProperty("mipBias", mode.mipBias() != null ? mode.mipBias() : 0.0f);
+        if (mode.rayReconstruction() != null) {
+            info.addProperty("rayReconstruction", mode.rayReconstruction());
+            info.addProperty("rrSwitches", bridgeRr("describe", new Class<?>[0]) instanceof String d ? d : "?");
+        }
+        if (mode.photon() != null) {
+            info.addProperty("photon", mode.photon());
+        }
         if (mode.reflex() != null || mode.latePoll() != null || mode.renderAhead() != null || mode.fpsCap() != null) {
             info.addProperty("reflex", mode.reflex() != null ? mode.reflex() : "off");
             info.addProperty("latePoll", Boolean.TRUE.equals(mode.latePoll()));
@@ -1044,7 +1136,7 @@ public final class Capture {
                     if (kv.length == 2 && kv[0].trim().equals("exposure")) {
                         props.setProperty("dlaaRrExposure", kv[1].trim());
                     } else if (kv.length == 2 && kv[0].trim().equals("raw")) {
-                        props.setProperty("dlaaRrRaw", kv[1].trim());
+                        props.setProperty("dlaaRrRaw", kv[1].trim().replace('+', ','));
                     }
                 }
             } else {
@@ -1052,6 +1144,11 @@ public final class Capture {
             }
             try (Writer w = Files.newBufferedWriter(file)) {
                 props.store(w, "Create Galore Bridge display settings (last written by the DLAA test kit, mode " + mode.name() + ")");
+            }
+            // The switches are the Bridge's live state: set now (a reload alone keeps ones flipped in game since).
+            bridgeRr("use", new Class<?>[] {String.class}, props.getProperty("dlaaRrRaw"));
+            if (mode.photon() != null) {
+                writePhotonOptions(mode.photon());
             }
             // The render scale is the pack's own option: Iris applies queued options on the reload and saves them.
             Float scale = mode.renderScale();
@@ -1065,6 +1162,41 @@ public final class Capture {
         } catch (IOException | RuntimeException e) {
             LOG.warn("DLAA test: could not switch to mode {}: {}", mode.name(), e.toString());
             return false;
+        }
+    }
+
+    /**
+     * A research mode's Photon options ("ultra[,NAME=VALUE...]"): written afresh into the DLAA Photon copy's options
+     * file, which Iris reads on the reload: Photon's Ultra profile (from the Bridge), the research's own options at their
+     * defaults, then the mode's. The render scale options are queued after, as for every mode.
+     */
+    @SuppressWarnings("unchecked")
+    private static void writePhotonOptions(String spec) throws IOException {
+        Properties options = new Properties();
+        for (String part : spec.split(",")) {
+            String p = part.trim();
+            if (p.equals("ultra")) {
+                if (bridgeRr("photonUltra", new Class<?>[0]) instanceof Map<?, ?> ultra) {
+                    ((Map<String, String>) ultra).forEach(options::setProperty);
+                }
+                RESEARCH_DEFAULTS.forEach(options::setProperty);
+            } else if (p.contains("=")) {
+                String[] kv = p.split("=", 2);
+                options.setProperty(kv[0].trim(), kv[1].trim());
+            }
+        }
+        Path packFile = Iris.getShaderpacksDirectory().resolve(scaleOptions[0] + ".txt");
+        try (Writer w = Files.newBufferedWriter(packFile)) {
+            options.store(w, null);
+        }
+    }
+
+    /** Calls the Bridge's RrResearch (the Photon RR research's switches); null if this Bridge has none. */
+    private static Object bridgeRr(String method, Class<?>[] types, Object... args) {
+        try {
+            return Class.forName("dev.creategalore.bridge.dlss.RrResearch").getMethod(method, types).invoke(null, args);
+        } catch (ReflectiveOperationException | RuntimeException e) {
+            return null;
         }
     }
 

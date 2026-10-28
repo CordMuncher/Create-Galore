@@ -57,6 +57,9 @@ final class Paths {
         // in a row show whatever on screen changes only because the player rides along, such as the light on a held
         // item.
         PATHS.put("ride", new Path(160, captureRun(112, 48), f -> HOLD));
+        // A short clip for the Photon RR research: 40 frames still, then a slow turn right (0.25 degrees a frame) with
+        // its 64 frames saved in a row, to play back as a video (the pack's noise crawling, smears, things that move).
+        PATHS.put("clip", new Path(104, captureRun(40, 64), f -> new Pose(0.25f * Math.max(0, f - 40), 0, 0, 0)));
         // Input latency: 600 frames held still, nothing saved; the Bridge's latency numbers are taken over them
         // (-Dcreate_galore_dlss_testkit.latencyFrames sets fewer, for a plumbing check on a slow machine).
         PATHS.put("latency", new Path(Integer.getInteger(TestKit.MOD_ID + ".latencyFrames", 600), new int[0], f -> HOLD));
