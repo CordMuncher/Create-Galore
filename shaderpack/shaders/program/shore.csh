@@ -1,5 +1,5 @@
-// The overworld's shadowcomp passes 8 and 9: the shore around the water near you (see shore.glsl), from the water's
-// tops the shadow pass marked. Pass 8 blurs across x, pass 9 across z (SHORE_PASS: which of them this is): closely,
+// The overworld's shadowcomp passes 9 and 10: the shore around the water near you (see shore.glsl), from the water's
+// tops the shadow pass marked. Pass 9 blurs across x, pass 10 across z (SHORE_PASS: which of them this is): closely,
 // how much of the ground isn't open water (past the grid's edge counted as water, so no foam gathers there); widely,
 // how much of it is (only what lies in the grid counted).
 

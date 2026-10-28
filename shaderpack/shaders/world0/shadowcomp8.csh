@@ -1,4 +1,4 @@
 #version 430 compatibility
 #define WORLD_OVERWORLD
-#define SHORE_PASS 0
-#include "/program/shore.csh"
+#define SKY_GRID_PASS 1
+#include "/program/sky_grid.csh"

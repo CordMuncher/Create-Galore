@@ -173,9 +173,10 @@ float air_dust_sky(vec3 p, vec3 dir, uint seed) {
 #endif
 }
 
-// Whether a point lies inside a block the sky grid marks (a solid block, leaves, water). A cell reaches into the wall
-// behind what you see (its point moves through it from frame to frame); in there no light gets to the dust, and a
-// ray from inside that left through the wall's far side would light the room's air with the sky outside it.
+// Whether a point lies inside a block the sky grid marks (a solid block, leaves, water, the inside of the ground, see
+// sky_fill.csh). A cell reaches into the wall behind what you see (its point moves through it from frame to frame);
+// in there no light gets to the dust, and a ray from inside that left through the wall's far side would light the
+// room's air with the sky outside it.
 bool air_in_block(vec3 p) {
 #ifdef LIT_SKY_GRID
     ivec3 b = ivec3(floor(sky_grid_pos(p, cameraPositionFract)));

@@ -1,4 +1,4 @@
-// The sky visibility (shadowcomp10, after the sky grid's coarser copies, see sky_grid.glsl): how much of the sky each
+// The sky visibility (shadowcomp11, after the sky grid's coarser copies, see sky_grid.glsl): how much of the sky each
 // block of the light volume sees past the blocks around it, for the lighting to read smoothly between blocks (see
 // sky_visibility in light_volume.glsl). In place of rays from every pixel each frame, which a room lit through a window
 // would sparkle with, rays from the middle of each block along the same fixed directions over the sky every time, so

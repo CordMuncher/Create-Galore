@@ -1,7 +1,7 @@
-// The overworld's shadowcomp passes 6 and 7: the sky grid's coarser copies (see sky_grid.glsl), each column of a copy
-// marking every block any of the 2 by 2 columns under it in the one before has. Pass 6 makes the 2, 4 and 8 block
-// copies from the grid, pass 7 the 16, 32 and 64 block ones from the 8 block one (SKY_GRID_PASS: which of them this
-// is), so no column reads more than 64 others.
+// The overworld's shadowcomp passes 7 and 8: the sky grid's coarser copies (see sky_grid.glsl), each column of a copy
+// marking every block any of the 2 by 2 columns under it in the one before has. Pass 7 makes the 2, 4 and 8 block
+// copies from the grid (its inside of the ground filled in, see sky_fill.csh), pass 8 the 16, 32 and 64 block ones
+// from the 8 block one (SKY_GRID_PASS: which of them this is), so no column reads more than 64 others.
 
 #define PROGRAM_SKY_GRID
 #include "/lib/sky_grid.glsl"

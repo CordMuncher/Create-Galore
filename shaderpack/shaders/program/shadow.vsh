@@ -159,7 +159,8 @@ in vec4 at_midBlock; // xyz from the vertex to its block's centre (1/64 blocks)
 layout(r32ui) uniform uimage2D cg_water_marks_img;
 
 // Marks the block a face belongs to in the sky grid (see sky_grid.glsl), from one vertex of the face: every solid
-// block (slabs and stairs too), leaves, closed doors and trapdoors, and water.
+// block (slabs and stairs too), leaves, closed doors and trapdoors, and water; and whether the face points up or down,
+// for filling in the inside of the ground (see sky_fill.csh).
 void mark_sky(vec3 scene_pos) {
 #if defined PROGRAM_SHADOW_CUTOUT
     int id = int(mc_Entity.x + 0.5);
@@ -176,7 +177,12 @@ void mark_sky(vec3 scene_pos) {
     }
     ivec3 block = ivec3(floor(sky_grid_pos(scene_pos + at_midBlock.xyz / 64.0, cameraPositionFract)));
     if (all(greaterThanEqual(block, ivec3(0))) && all(lessThan(block, ivec3(sky_grid_size, sky_grid_height, sky_grid_size)))) {
-        imageAtomicOr(cg_water_marks_img, sky_grid_texel(block.xz, block.y >> 5, 0), 1u << uint(block.y & 31));
+        uint bit = 1u << uint(block.y & 31);
+        imageAtomicOr(cg_water_marks_img, sky_grid_texel(block.xz, block.y >> 5, 0), bit);
+        float up = (mat3(shadowModelViewInverse) * (gl_NormalMatrix * gl_Normal)).y;
+        if (abs(up) > 0.5) {
+            imageAtomicOr(cg_water_marks_img, sky_grid_face_texel(block.xz, block.y >> 5, up > 0.0), bit);
+        }
     }
 }
 

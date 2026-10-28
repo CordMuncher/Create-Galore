@@ -1,3 +1,4 @@
 #version 430 compatibility
 #define WORLD_OVERWORLD
-#include "/program/sky_visibility.csh"
+#define SHORE_PASS 1
+#include "/program/shore.csh"

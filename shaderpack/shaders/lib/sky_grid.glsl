@@ -8,9 +8,12 @@
 //
 // The shadow pass marks every solid block, every leaf block and the water within 128 blocks of you across, from 64
 // below you to 191 above (shadow.vsh): a bit for each block of its column, 32 to a word, in the rows of
-// cg_water_marks_img below the ripples' marks. Glass, plants and things that aren't blocks let the sky through. The
-// pass after it (sky_grid.csh) makes six coarser copies, each column of one marking what any of 2 by 2 of the one
-// before has, for a ray's longer steps further out. A ray towards the sky is open if it leaves the grid without
+// cg_water_marks_img below the ripples' marks. Glass, plants and things that aren't blocks let the sky through. It
+// sees a block only by its faces, and Minecraft draws none between two solid blocks, so it also marks which of them
+// have a face up and which a face down, and the pass after it fills in the inside of the ground from those
+// (sky_fill.csh): rock all the way through, not a shell a block thick around each cave. The passes after that
+// (sky_grid.csh) make six coarser copies, each column of one marking what any of 2 by 2 of the one before has, for a
+// ray's longer steps further out. A ray towards the sky is open if it leaves the grid without
 // passing a marked block: every block in a column cell between the heights a step goes through counts, so a step never
 // jumps a roof.
 
@@ -48,6 +51,11 @@ ivec2 sky_grid_texel(ivec2 column, int word, int level) {
     int size = sky_grid_size >> level;
     int per_row = sky_grid_width / size;
     return ivec2((word % per_row) * size + column.x, sky_grid_level_row(level) + (word / per_row) * size + column.y);
+}
+
+// The texel holding one word of one column of the blocks with a face up (up) or a face down, laid out as the grid.
+ivec2 sky_grid_face_texel(ivec2 column, int word, bool up) {
+    return sky_grid_texel(column, word, 0) + ivec2(0, (up ? 3452 : 4476) - sky_grid_level_row(0));
 }
 
 // A point's place in the grid (blocks from its lowest corner), from where it is in scene space.

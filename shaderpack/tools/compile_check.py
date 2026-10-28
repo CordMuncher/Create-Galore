@@ -153,7 +153,7 @@ for prog, variants in progs:
             continue
         if lit_only and prog.name in ("shadowcomp3.csh", "shadowcomp4.csh", "shadowcomp5.csh") and not ripples:
             continue
-        if lit_only and prog.name == "shadowcomp10.csh" and (not (gi or color) or "nosky" in vname):
+        if lit_only and prog.name == "shadowcomp11.csh" and (not (gi or color) or "nosky" in vname):
             continue
         src = expand(prog, edits)
         if re.search(r"#\s*(el)?if.*__VERSION__", src):
