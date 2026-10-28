@@ -70,6 +70,11 @@ public class ReelDriveBlockEntity extends KineticBlockEntity implements DriveMou
     }
 
     @Override
+    public DriveSlots.Settings settings() {
+        return settings;
+    }
+
+    @Override
     public ReelDrive drive() {
         return drive;
     }

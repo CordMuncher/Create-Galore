@@ -3,6 +3,7 @@ package dev.creategalore.fishing.client;
 import com.mojang.blaze3d.platform.InputConstants;
 import dev.creategalore.fishing.cast.CastHook;
 import dev.creategalore.fishing.cast.RodLift;
+import dev.creategalore.fishing.machine.MountedRod;
 import dev.creategalore.fishing.net.DragAdjust;
 import dev.creategalore.fishing.net.LiftInput;
 import dev.creategalore.fishing.tackle.RodItem;
@@ -45,6 +46,7 @@ public final class FishingInput {
         });
         NeoForge.EVENT_BUS.addListener(FishingInput::onScroll);
         NeoForge.EVENT_BUS.addListener(FishingInput::onAttack);
+        NeoForge.EVENT_BUS.addListener(FishingInput::onUse);
         NeoForge.EVENT_BUS.addListener((ClientTickEvent.Post event) -> onTick());
     }
 
@@ -64,6 +66,20 @@ public final class FishingInput {
         if (!event.isAttack() || mc.player == null || !lineOut(mc.player)) return;
         event.setCanceled(true);
         event.setSwingHand(false);
+    }
+
+    /**
+     * After a rod goes into a machine or comes out of one, the use button does nothing more until it is let go: held
+     * on, the rod would come straight back out, or (taken out with its line, bite or fight) start reeling at once.
+     */
+    private static void onUse(InputEvent.InteractionKeyMappingTriggered event) {
+        if (!event.isUseItem() || !MountedRod.heldUseAfterRodSwap) return;
+        if (Minecraft.getInstance().options.keyUse.isDown()) {
+            event.setCanceled(true);
+            event.setSwingHand(false);
+        } else {
+            MountedRod.heldUseAfterRodSwap = false;
+        }
     }
 
     /** What we last told the server about lifting. */
@@ -91,6 +107,7 @@ public final class FishingInput {
 
     private static void onTick() {
         Minecraft mc = Minecraft.getInstance();
+        if (!mc.options.keyUse.isDown()) MountedRod.heldUseAfterRodSwap = false;
         lift(mc);
         if (mc.player == null || !holdingRod(mc.player)) {
             while (DRAG_UP.consumeClick()) { }

@@ -29,8 +29,9 @@ import net.neoforged.neoforge.items.wrapper.CombinedInvWrapper;
  * The Fuel Reel Drive: a geared drive with its own engine and no shafts, made for boats. The engine winds against
  * up to {@link #RATING} kgf in gear 1.0 (four times that in the lowest gear) and bogs and stalls beyond it. It burns
  * furnace fuel from its fuel slot or a liquid fuel (see {@link LiquidFuels}) from its tank, by load: a tenth while the
- * line waits, all of it while it winds against the most it can. It only runs while a rod is set in and has a line out
- * or one to cast.
+ * line waits, all of it while it winds against the most it can. It only runs while it is switched on and a rod is
+ * set in with a line out or one to cast. Its window (sneak and use with an empty hand) holds the fuel and bait slots
+ * and the on and autocast switches.
  *
  * <p>Hoppers and funnels reach two slots (bait, fuel); pipes fill the tank.
  */
@@ -85,6 +86,11 @@ public class FuelReelDriveBlockEntity extends SmartBlockEntity implements DriveM
     }
 
     @Override
+    public DriveSlots.Settings settings() {
+        return settings;
+    }
+
+    @Override
     public ReelDrive drive() {
         return drive;
     }
@@ -112,6 +118,15 @@ public class FuelReelDriveBlockEntity extends SmartBlockEntity implements DriveM
         return tank;
     }
 
+    /** Fuel left in ticks at full load, as last synced. */
+    public int fuelTicks() {
+        return fuelTicks;
+    }
+
+    public int tankMb() {
+        return tank.getFluidAmount();
+    }
+
     public boolean running() {
         return running;
     }
@@ -130,7 +145,7 @@ public class FuelReelDriveBlockEntity extends SmartBlockEntity implements DriveM
         settings.applyTo(drive);
         rod.tick();
         drive.tick();
-        boolean nowRunning = !rod.rod().isEmpty() && (rod.hook() != null || drive.wantsToCast()) && hasFuel();
+        boolean nowRunning = drive.on() && !rod.rod().isEmpty() && (rod.hook() != null || drive.willCast()) && hasFuel();
         if (nowRunning) burnLeft -= IDLE_BURN + (1 - IDLE_BURN) * load;
         int nowFuel = (int) Math.max(0, burnLeft) + storedTicks();
         boolean changed = drive.takeDirty() || nowRunning != running;

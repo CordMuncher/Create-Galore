@@ -25,6 +25,8 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix3f;
+import org.joml.Matrix4f;
+import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
 /**
@@ -69,13 +71,18 @@ class MountRenderer<T extends BlockEntity & RodMount> implements BlockEntityRend
         RodModel.Build build = new RodModel.Build(blank.get(), TackleManager.of(parts.reel(), TacklePart.Reel.class),
                 TackleManager.of(parts.line(), TacklePart.Line.class).map(l -> RodModel.color(l.color())));
         CastHook hook = MachineInfo.clientHook(be.getBlockPos());
-        Vector3f origin = pose.last().pose().getTranslation(new Vector3f());
+        // From the space the tip comes back in to the block's own: on a Sable ship that space is turned with the ship,
+        // so taking away the block's position alone would leave a hanging fish off to the side of the tip.
+        Matrix4f toBlock = new Matrix4f(pose.last().pose()).invert();
 
         pose.pushPose();
         Vec3 base = be.rodBase();
         pose.translate(base.x, base.y, base.z);
         pose.mulPose(Axis.YP.rotationDegrees(-be.rodFacing().toYRot()));
         pose.mulPose(Axis.XP.rotationDegrees(45));
+        // Turned over on its own axis so the underside faces the ground: a spinning reel hangs under the rod and a
+        // trolling reel sits on top, as in a real rod holder (tilting alone left the rod upside down).
+        pose.mulPose(Axis.YP.rotationDegrees(180));
         pose.scale(1 / 16f, 1 / 16f, 1 / 16f);
         RodModel.Pose state = bend(be.getBlockPos(), build, hook, pose, partialTick);
         RodModel.Result result = new RodModel(buffers, light).draw(pose, build, state);
@@ -90,8 +97,10 @@ class MountRenderer<T extends BlockEntity & RodMount> implements BlockEntityRend
 
         ItemStack fish = mounted.dangling();
         if (!fish.isEmpty()) {
-            // Hung from the tip by a short piece of line, head up, swinging a little.
-            Vector3f local = new Vector3f(tip).sub(origin);
+            // Hung from the tip by a short piece of line, head up, swinging a little. Down is the world's down, so on
+            // a ship that rolls the fish still hangs plumb.
+            Vector3f local = toBlock.transformPosition(new Vector3f(tip));
+            Vector3f down = toBlock.transformDirection(new Vector3f(0, -1, 0)).normalize();
             float clock = be.getLevel().getGameTime() + partialTick;
             double cm = FishItemRenderer.lengthCm(fish);
             float length = Mth.clamp((float) cm / 100, 0.15f, 1.6f);
@@ -99,10 +108,12 @@ class MountRenderer<T extends BlockEntity & RodMount> implements BlockEntityRend
             int color = build.lineColor().orElse(RodModel.NO_LINE);
             VertexConsumer lines = buffers.getBuffer(RenderType.lines());
             PoseStack.Pose p = pose.last();
-            lines.addVertex(p, local.x, local.y, local.z).setColor(color).setNormal(p, 0, -1, 0);
-            lines.addVertex(p, local.x, local.y - drop, local.z).setColor(color).setNormal(p, 0, -1, 0);
+            Vector3f knot = new Vector3f(down).mul(drop).add(local);
+            lines.addVertex(p, local.x, local.y, local.z).setColor(color).setNormal(p, down.x, down.y, down.z);
+            lines.addVertex(p, knot.x, knot.y, knot.z).setColor(color).setNormal(p, down.x, down.y, down.z);
             pose.pushPose();
-            pose.translate(local.x, local.y - drop - length / 2, local.z);
+            pose.translate(knot.x + down.x * length / 2, knot.y + down.y * length / 2, knot.z + down.z * length / 2);
+            pose.mulPose(new Quaternionf().rotationTo(0, 1, 0, -down.x, -down.y, -down.z));
             pose.mulPose(Axis.YP.rotation(Mth.sin(clock * 0.07f) * 0.6f));
             pose.mulPose(Axis.ZP.rotationDegrees(90 + Mth.sin(clock * 0.31f) * 12));
             FishView.draw(fish, length * 100, FishItemRenderer.drawnKg(fish, cm, length * 100), pose, buffers, light, clock * 0.4f);

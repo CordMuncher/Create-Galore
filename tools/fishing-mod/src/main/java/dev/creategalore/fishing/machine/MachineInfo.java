@@ -6,6 +6,7 @@ import dev.creategalore.fishing.sim.Gearbox;
 import dev.creategalore.fishing.tackle.RodItem;
 import dev.creategalore.fishing.tackle.RodParts;
 import dev.creategalore.fishing.tackle.RodStats;
+import dev.creategalore.fishing.tackle.TacklePart;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -30,10 +31,10 @@ public final class MachineInfo {
     /**
      * What a drive adds to the readout (null for a plain holder): its gear (geared drives), the pull it can still
      * wind against or that it stalled, the bait it has in store, and for the fuel drive the fuel left (in ticks at
-     * full load) and its tank.
+     * full load) and its tank, and whether it is switched off or has its autocast off.
      */
     public record Drive(boolean geared, int gear, double headroomKg, boolean stalled, ItemStack spareBait,
-                        boolean fuelled, int fuelTicks, int tankMb) {
+                        boolean fuelled, int fuelTicks, int tankMb, boolean on, boolean autocast) {
     }
 
     /** Client side: each machine's hook, by the machine's position (kept up by the hooks as they tick). */
@@ -81,8 +82,14 @@ public final class MachineInfo {
             }
             RodParts parts = RodItem.parts(stack);
             ItemStack bait = parts.bait();
-            tooltip.add(line(bait.isEmpty() ? Component.translatable(P + "no_bait").withStyle(ChatFormatting.DARK_GRAY)
-                    : Component.translatable(P + "bait", bait.getHoverName(), bait.getCount()).withStyle(ChatFormatting.GRAY), 1));
+            boolean lure = stats != null && stats.terminal().map(t -> t.kind() == TacklePart.Kind.LURE).orElse(false);
+            if (bait.isEmpty() && lure) {
+                // A lure needs no bait: name it instead.
+                tooltip.add(line(Component.translatable(P + "lure", parts.terminal().getHoverName()).withStyle(ChatFormatting.GRAY), 1));
+            } else {
+                tooltip.add(line(bait.isEmpty() ? Component.translatable(P + "no_bait").withStyle(ChatFormatting.DARK_GRAY)
+                        : Component.translatable(P + "bait", bait.getHoverName(), bait.getCount()).withStyle(ChatFormatting.GRAY), 1));
+            }
             ItemStack reel = parts.reel();
             if (!reel.isEmpty() && reel.isDamageableItem()) {
                 tooltip.add(line(Component.translatable(P + "reel_wear", percent(reel.getDamageValue() / (float) reel.getMaxDamage()))
@@ -90,6 +97,10 @@ public final class MachineInfo {
             }
         }
         if (drive != null) {
+            if (drive.geared() && !drive.on()) tooltip.add(line(Component.translatable(P + "off").withStyle(ChatFormatting.GOLD), 1));
+            if (drive.geared() && !drive.autocast()) {
+                tooltip.add(line(Component.translatable(P + "autocast_off").withStyle(ChatFormatting.GRAY), 1));
+            }
             if (drive.geared()) {
                 tooltip.add(line(Component.translatable(P + "gear", String.format(Locale.ROOT, "%.2f", Gearbox.GEARS[drive.gear()]))
                         .withStyle(ChatFormatting.GRAY), 1));

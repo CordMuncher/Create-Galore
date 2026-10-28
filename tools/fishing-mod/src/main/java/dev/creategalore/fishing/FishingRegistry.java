@@ -8,6 +8,7 @@ import dev.creategalore.fishing.bait.LiveBaitBucketItem;
 import dev.creategalore.fishing.bait.ThrownChum;
 import dev.creategalore.fishing.cast.CastHook;
 import dev.creategalore.fishing.fish.CatchInfo;
+import dev.creategalore.fishing.machine.DriveMenu;
 import dev.creategalore.fishing.machine.FuelReelDriveBlock;
 import dev.creategalore.fishing.machine.FuelReelDriveBlockEntity;
 import dev.creategalore.fishing.machine.ReelDriveBlock;
@@ -43,6 +44,7 @@ import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.inventory.MenuType;
+import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.CreativeModeTab;
@@ -338,6 +340,8 @@ public final class FishingRegistry {
 
     public static final DeferredHolder<MenuType<?>, MenuType<TackleBenchMenu>> TACKLE_BENCH_MENU =
             MENUS.register("tackle_bench", () -> new MenuType<>(TackleBenchMenu::new, FeatureFlags.DEFAULT_FLAGS));
+    public static final DeferredHolder<MenuType<?>, MenuType<DriveMenu>> DRIVE_MENU =
+            MENUS.register("reel_drive", () -> IMenuTypeExtension.create(DriveMenu::new));
 
     // ---- Creative tab ----
 
