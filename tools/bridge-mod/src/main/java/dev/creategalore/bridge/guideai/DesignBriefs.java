@@ -47,7 +47,9 @@ final class DesignBriefs {
     static final String VEHICLE = """
             Design a vehicle for the crew who will use it: where they stand to steer and work each control (on the \
             vehicle's own deck or floor), how they get aboard from the ground, and how they walk to everything they tend \
-            on the way, an engine to refuel above all, along floors, steps or a ladder, in plain view. A vehicle \
+            on the way, an engine to refuel above all, along floors, steps or a ladder, in plain view. The pilot looks \
+            out ahead from the helm: the controls go on a dashboard below the window sill or on the wall beside the \
+            windows, never on or in front of the glass. A vehicle \
             balances by the shape of its hull and where its rooms and machines go, never by iron blocks or other dead \
             weight. When a player asks for a vehicle that hauls, or one to live from (a sky base, a camper, a home on \
             the move), give it the rooms that make it one: a bed, a place to cook (a smoker or Farmer's Delight stove), \
