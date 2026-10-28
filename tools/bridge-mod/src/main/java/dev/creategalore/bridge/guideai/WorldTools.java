@@ -171,6 +171,10 @@ final class WorldTools {
 
     /** Runs one tool call; call it on the server thread (the world and the recipe list are not thread-safe). */
     static String run(String name, JsonObject input, ServerPlayer player, MinecraftServer server) {
+        return Drives.asking(player, () -> runAs(name, input, player, server));
+    }
+
+    private static String runAs(String name, JsonObject input, ServerPlayer player, MinecraftServer server) {
         try {
             return switch (name) {
                 case "look_at" -> lookAt(player);

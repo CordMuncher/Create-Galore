@@ -32,6 +32,7 @@ final class PlayerSnapshot {
         section(out, "How far along", () -> progress(player, server));
         section(out, "Holding (inventory and the storage they opened nearby, most first)", () -> held(player));
         section(out, "Made and placed so far (from their statistics, most first)", () -> made(player));
+        section(out, "Drive parts", () -> Drives.snapshot(player));
         section(out, "Builds around them", () -> builds(player));
         return out.toString().strip();
     }

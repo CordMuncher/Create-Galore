@@ -1,0 +1,64 @@
+{
+  "title": "Switching part of a line off uses the part made for it, not taking the line apart",
+  "from": "2026-10-28 report: the book doesn't take advantage of Create's drive blocks",
+  "roots": [
+    "R4"
+  ],
+  "kind": "question",
+  "question": "How can I stop my press from running when I don't need it, without breaking the shaft every time?",
+  "player": "Andesite Age: andesite casings, redstone, a press on a water wheel; no brass yet.",
+  "rubric": [
+    "Uses a Clutch (or a Gearshift where reversing is the point) driven by a lever or redstone",
+    "Doesn't suggest brass parts (Sequenced Gearshift, Rotation Speed Controller) the player can't make yet",
+    "Short: one part and where it goes"
+  ],
+  "inventory": [
+    {
+      "id": "create:andesite_alloy",
+      "count": 48
+    },
+    {
+      "id": "create:andesite_casing",
+      "count": 8
+    },
+    {
+      "id": "minecraft:redstone",
+      "count": 16
+    },
+    {
+      "id": "create:mechanical_press",
+      "count": 1
+    },
+    {
+      "id": "create:water_wheel",
+      "count": 2
+    }
+  ],
+  "world": [
+    "fill ~-12 ~-1 ~-12 ~12 ~-1 ~12 minecraft:grass_block",
+    "time set 6000"
+  ],
+  "box": [
+    -12,
+    -1,
+    -12,
+    12,
+    0,
+    12
+  ],
+  "built": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "stand": [
+    0,
+    0,
+    0,
+    0,
+    0
+  ]
+}
