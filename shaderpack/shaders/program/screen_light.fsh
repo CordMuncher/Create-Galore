@@ -11,15 +11,10 @@
 // colortex13 (RGBA16F): rgb the bounced light (kcd/m², as a share of the light all around: a surface's own colour
 // times it is the light it sends on), a how open the surface is (1 all of it); 0, 0, 0 and 1 where none is worked
 // out (the sky, plants, the hand, Distant Horizons' terrain).
-//
-// And the share of the sky the sky grid's rays from each surface see (see sky_seen), a few rays each pixel and frame,
-// which the lighting pass blends over frames too: colortex15's r (-1 where it traces none: Minecraft's sky light is
-// full there, or the grid doesn't reach), its g last frame's blended share, passed on for the lighting pass.
 
 #include "/lib/settings.glsl"
 #include "/lib/motion.glsl"
 #include "/lib/lit.glsl"
-#include "/lib/sky_grid.glsl"
 
 uniform sampler2D colortex0;
 uniform sampler2D colortex2;
@@ -28,20 +23,11 @@ uniform sampler2D depthtex0;
 uniform mat4 gbufferModelView;
 uniform mat4 gbufferProjection;
 uniform mat4 gbufferProjectionInverse;
-#ifdef LIT_SKY_GRID
-uniform sampler2D colortex15;
-#endif
 
 in vec2 v_uv;
 
-#ifdef LIT_SKY_GRID
-/* RENDERTARGETS: 13,15 */
-layout(location = 0) out vec4 out_screen;
-layout(location = 1) out vec4 out_sky;
-#else
 /* RENDERTARGETS: 13 */
 layout(location = 0) out vec4 out_screen;
-#endif
 
 // The hand's depth is squeezed into the middle of the range (Iris draws it at MC_HAND_DEPTH of its own).
 const float hand_depth_limit = 0.5 + 0.5 * MC_HAND_DEPTH;
@@ -236,9 +222,6 @@ vec4 screen_light(ivec2 texel, vec3 view, vec3 normal, float noise_dir, float no
 void main() {
     ivec2 texel = ivec2(gl_FragCoord.xy);
     out_screen = vec4(0.0, 0.0, 0.0, 1.0);
-#ifdef LIT_SKY_GRID
-    out_sky = vec4(-1.0, texelFetch(colortex15, texel, 0).g, 0.0, 0.0);
-#endif
     if (any(greaterThanEqual(vec2(texel) + 0.5, render_size()))) {
         return; // outside the frame while upscaling
     }
@@ -251,19 +234,6 @@ void main() {
     vec2 point = vec2(texel) + 0.5 - vec2(cg_dlss_jitter_x, cg_dlss_jitter_y);
     vec3 view = unproject(gbufferProjectionInverse, point / render_size() * 2.0 - 1.0, depth);
     vec3 normal = decode_normal(surface.rg);
-#ifdef LIT_SKY_GRID
-    // Where Minecraft's sky light is less than full (see deferred.fsh), and everywhere in the Nether and the End,
-    // which have none (see world_openness); a plant's from above.
-    vec3 scene_pos = view_to_scene(view);
-#ifdef NO_SKY_LIGHT
-    bool trace = true;
-#else
-    bool trace = decode_light(surface).y < 0.999;
-#endif
-    if (trace && max(abs(scene_pos.x), abs(scene_pos.z)) < sky_grid_reach) {
-        out_sky.r = sky_seen(scene_pos, material == MATERIAL_PLANT ? vec3(0.0, 1.0, 0.0) : normal, pixel_noise(2u));
-    }
-#endif
 #if AO_QUALITY > 0
     if (material == MATERIAL_LIT) {
         out_screen = screen_light(texel, view, mat3(gbufferModelView) * normal, pixel_noise(), pixel_noise(1u));

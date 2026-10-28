@@ -21,6 +21,12 @@
 // that faces the same way (a sunlit floor doesn't light itself or the floor beside it). Each solid block next to it
 // sends back what reaches it as light of its own facing. Nothing in either is random, so the upscaler sees the same
 // light every frame.
+//
+// The sky: how much of the sky each block sees past the blocks around it, from each of five ways a surface can face
+// (all but down), traced through the sky grid (sky_grid.glsl) from the block's middle along fixed directions over the
+// sky (sky_visibility.csh), a sixteenth of the blocks each frame. The lighting reads it for a surface from the block in
+// front of it, smoothly between blocks, as games keep the sky's visibility in their light probes (Unity's probe
+// volumes, for one) and light it by the sky of the moment: steady, no noise, and the same however the camera moves.
 
 #if !defined LIB_LIGHT_VOLUME
 #define LIB_LIGHT_VOLUME
@@ -47,21 +53,25 @@ const int section_lights = 1;
 const int section_bounce_added = 2;
 const float bounce_scale = 2048.0;
 // The light image: the coloured light; then (with bounce light) the bounce light's colour (from every facing, for its
-// colour only), and each facing's (luminance), three to a texel; then the trees' crowns (see canopy_shape); last where
-// each block's coloured light comes from (see block_light_source).
+// colour only), and each facing's (luminance), three to a texel; then the trees' crowns (see canopy_shape); where
+// each block's coloured light comes from (see block_light_source); last how much of the sky the block sees (see
+// sky_visibility), two texels. The sections go by the Bounce Light option, not by whether this dimension has bounce
+// light (the Nether hasn't), so they always match the image shaders.properties makes.
 const int section_color = 0;
 const int section_bounce = 1;
 const int section_bounce_facing = 2;
-#ifdef LIT_GI
+#ifdef GI
 const int marks_sections = 7;
-const int light_sections = 6;
+const int light_sections = 8;
 const int section_canopy = 4;
 const int section_source = 5;
+const int section_sky = 6;
 #else
 const int marks_sections = 2;
-const int light_sections = 3;
+const int light_sections = 5;
 const int section_canopy = 1;
 const int section_source = 2;
+const int section_sky = 3;
 #endif
 // A block's source: the way from it to the light its light comes from (blocks, whole), plus source_offset in each
 // axis so it is never below 0 (a light reaches 15 blocks at most); 0 where it has no light.
@@ -76,10 +86,12 @@ ivec3 light_texel(ivec3 block, int section, int turn) {
 }
 
 // What a block is, in the marks' first section (each bit set by any of its vertices, see shadow.vsh).
-const uint mark_solid = 1u;      // a vertex of a solid block at one of the block's corners
+const uint mark_solid = 1u;      // a vertex of a solid block at one of the block's corners (a cube, a slab, a stair)
 const uint mark_partial = 2u;    // a vertex of a solid block inside the block's bounds (a slab, a stair, a fence)
 const uint mark_tinted = 4u;     // see-through, tinting what passes; bits 8.. the tint (7 bits each, red first)
 const uint mark_foliage = 8u;    // leaves, which the bounce light only partly gets through
+const uint mark_deep = 16u;      // with mark_partial: that vertex lies more than a quarter of a block inside
+const uint mark_shut = 32u;      // a closed door or trapdoor (see block.properties)
 
 // The bounce light's facings: +x, -x, +y, -y, +z, -z (each one's opposite is facing ^ 1).
 vec3 facing_dir(int facing) {
@@ -130,9 +142,14 @@ bool in_light_volume(ivec3 block) {
     return all(greaterThanEqual(block, ivec3(0))) && all(lessThan(block, light_volume_size));
 }
 
-// Whether a block's marks make it stop the light: a solid cube, not a slab or a stair.
+// Whether a block's marks make it stop the light: a solid block with a corner on the block's own and either nothing
+// inside it (a cube) or something at least a quarter of a block in (a slab, a stair: a roof of stairs is a roof). Not
+// one that stands inside the block (a fence, a wall, iron bars), which the light gets round, nor one that only lines
+// a face of it (a carpet, a pressure plate, a thin layer of snow), which it gets over. A closed door or trapdoor is thin
+// too, but shuts its doorway or hatch.
 bool marks_solid(uint marks) {
-    return (marks & (mark_solid | mark_partial)) == mark_solid;
+    return (marks & mark_shut) != 0u
+            || ((marks & mark_solid) != 0u && (marks & (mark_partial | mark_deep)) != mark_partial);
 }
 
 // A light's mark: its level in the top bits, so that of the marks its vertices leave the brightest wins (the order
@@ -160,7 +177,7 @@ vec3 tint_from_mark(uint mark) {
 
 #endif
 
-#if !defined PROGRAM_SHADOW && !defined PROGRAM_LIGHT_FLOOD && !defined PROGRAM_LIGHT_BOUNCE
+#if !defined PROGRAM_SHADOW && !defined PROGRAM_LIGHT_FLOOD && !defined PROGRAM_LIGHT_BOUNCE && !defined PROGRAM_SKY_VISIBILITY
 
 #ifdef LIT_VOXELS
 #include "/lib/motion.glsl"
@@ -202,6 +219,62 @@ vec4 canopy_shape(vec3 scene_pos) {
             - light_volume_sample(at - vec3(0.0, 0.0, 1.0), section_canopy).rg;
     vec3 out_of = -(vec3(x.g, y.g, z.g) + 0.5 * vec3(x.r, y.r, z.r));
     return vec4(out_of, light_volume_sample(at, section_canopy).g) * fade;
+}
+#endif
+
+#ifdef LIT_SKY_VISIBILITY
+// How much of the sky a surface at scene_pos facing normal sees past the blocks around it (the sky above the horizon
+// on its side, weighted as the light from it falls on the surface, see sky_visibility.csh), from the block in front of
+// it: x the share (0..1), y how much to go by it (fading out towards the volume's edges); x -1 where the volume can't
+// tell (outside it, not worked out yet, or a surface facing down, which sees no sky).
+vec2 sky_visibility(vec3 scene_pos, vec3 normal) {
+    vec3 at;
+    float fade = light_volume_at(scene_pos, normal, 0.5, at);
+    if (fade <= 0.0) {
+        return vec2(-1.0, 0.0);
+    }
+    vec3 a = light_volume_sample(at, section_sky);     // +x, -x, +y
+    vec3 b = light_volume_sample(at, section_sky + 1); // +z, -z, and whether it's worked out (see sky_visibility.csh)
+    if (b.b < 1.5) {
+        return vec2(-1.0, 0.0);
+    }
+    // Each facing by the square of how much the surface faces that way (Valve's ambient cube); down sees no sky.
+    vec3 n2 = normal * normal;
+    float px = normal.x > 0.0 ? n2.x : 0.0;
+    float nx = normal.x < 0.0 ? n2.x : 0.0;
+    float py = normal.y > 0.0 ? n2.y : 0.0;
+    float pz = normal.z > 0.0 ? n2.z : 0.0;
+    float nz = normal.z < 0.0 ? n2.z : 0.0;
+    float known = px + nx + py + pz + nz;
+    if (known < 0.25) {
+        return vec2(-1.0, 0.0);
+    }
+    float seen = (a.r * px + a.g * nx + a.b * py + b.r * pz + b.g * nz) / known;
+    return vec2(clamp(seen, 0.0, 1.0), fade * smoothstep(0.25, 0.5, known));
+}
+
+// Whether the sun's (or the moon's) light can get to a point in the air (scene space) past the blocks around it, from
+// the blocks' middles towards it through the sky grid (see sky_visibility.csh): 0 in a closed room or a cave whatever
+// the shadow map says there, 1 where any block within about a block of the point gets it (so a sunbeam through a
+// window keeps the edges the shadow map gives it), and 1 where the volume can't tell.
+float light_reaches(vec3 scene_pos) {
+    vec3 at;
+    float fade = light_volume_at(scene_pos, vec3(0.0), 0.0, at);
+    if (fade <= 0.0) {
+        return 1.0;
+    }
+    // Half a block off each way: between them, the 27 blocks around the point.
+    float most = 0.0;
+    for (int i = 0; i < 8; i++) {
+        vec3 offset = vec3(float(i & 1), float((i >> 1) & 1), float(i >> 2)) - 0.5;
+        float worked = light_volume_sample(at + offset, section_sky + 1).b;
+        if (worked < 1.5) {
+            return 1.0;
+        }
+        most = max(most, worked - 2.0);
+    }
+    // One block of the eight a sample is between is an eighth of it.
+    return mix(1.0, clamp(most * 8.0, 0.0, 1.0), fade);
 }
 #endif
 

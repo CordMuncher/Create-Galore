@@ -63,35 +63,42 @@ WORLD_VARIANTS = ROOT_VARIANTS + [
     ("nocolor-noripples-cl192", [], [("#define COLORED_LIGHT\n", "//#define COLORED_LIGHT\n"), ("#define WATER_RIPPLES\n", "//#define WATER_RIPPLES\n"), ("#define LIGHT_RANGE 128 ", "#define LIGHT_RANGE 192 ")]),
     ("debug-gi", [], [("#define DEBUG_VIEW 0 ", "#define DEBUG_VIEW 1 ")]),
     ("noall", [], [("#define GI\n", "//#define GI\n"), ("#define COLORED_LIGHT\n", "//#define COLORED_LIGHT\n"), ("#define WATER_RIPPLES\n", "//#define WATER_RIPPLES\n")]),
-    ("sq1-ao0", [], [("#define SHADOW_QUALITY 3 ", "#define SHADOW_QUALITY 1 "), ("#define AO_QUALITY 2 ", "#define AO_QUALITY 0 ")]),
-    ("sq4-ao3", [], [("#define SHADOW_QUALITY 3 ", "#define SHADOW_QUALITY 4 "), ("#define AO_QUALITY 2 ", "#define AO_QUALITY 3 ")]),
-    ("sq2-ao1-dh", ["DISTANT_HORIZONS"], [("#define SHADOW_QUALITY 3 ", "#define SHADOW_QUALITY 2 "), ("#define AO_QUALITY 2 ", "#define AO_QUALITY 1 ")]),
+    ("sq1-ao0", [], [("#define SHADOW_QUALITY 2 ", "#define SHADOW_QUALITY 1 "), ("#define AO_QUALITY 1 ", "#define AO_QUALITY 0 ")]),
+    ("sq4-ao3", [], [("#define SHADOW_QUALITY 2 ", "#define SHADOW_QUALITY 4 "), ("#define AO_QUALITY 1 ", "#define AO_QUALITY 3 ")]),
+    ("sq3-ao2-dh", ["DISTANT_HORIZONS"], [("#define SHADOW_QUALITY 2 ", "#define SHADOW_QUALITY 3 "), ("#define AO_QUALITY 1 ", "#define AO_QUALITY 2 ")]),
     ("debug-ao", [], [("#define DEBUG_VIEW 0 ", "#define DEBUG_VIEW 2 ")]),
     ("debug-water", [], [("#define DEBUG_VIEW 0 ", "#define DEBUG_VIEW 3 ")]),
     ("debug-water-why", [], [("#define DEBUG_VIEW 0 ", "#define DEBUG_VIEW 4 ")]),
     ("debug-crown", [], [("#define DEBUG_VIEW 0 ", "#define DEBUG_VIEW 5 ")]),
     ("debug-6", [], [("#define DEBUG_VIEW 0 ", "#define DEBUG_VIEW 6 ")]),
     ("debug-6-dh", ["DISTANT_HORIZONS"], [("#define DEBUG_VIEW 0 ", "#define DEBUG_VIEW 6 ")]),
-    ("nocontact-ao0", [], [("#define CONTACT_SHADOWS\n", "//#define CONTACT_SHADOWS\n"), ("#define AO_QUALITY 2 ", "#define AO_QUALITY 0 ")]),
-    ("air0", [], [("#define AIR_QUALITY 3 ", "#define AIR_QUALITY 0 ")]),
-    ("air0-dh", ["DISTANT_HORIZONS"], [("#define AIR_QUALITY 3 ", "#define AIR_QUALITY 0 ")]),
-    ("air1-up", ["UPSCALING"], [("#define AIR_QUALITY 3 ", "#define AIR_QUALITY 1 ")]),
-    ("air2-dh", ["DISTANT_HORIZONS"], [("#define AIR_QUALITY 3 ", "#define AIR_QUALITY 2 ")]),
-    ("air4-dh-up", ["DISTANT_HORIZONS", "UPSCALING"], [("#define AIR_QUALITY 3 ", "#define AIR_QUALITY 4 ")]),
+    ("nocontact-ao0", [], [("#define CONTACT_SHADOWS\n", "//#define CONTACT_SHADOWS\n"), ("#define AO_QUALITY 1 ", "#define AO_QUALITY 0 ")]),
+    ("air0", [], [("#define AIR_QUALITY 2 ", "#define AIR_QUALITY 0 ")]),
+    ("air0-dh", ["DISTANT_HORIZONS"], [("#define AIR_QUALITY 2 ", "#define AIR_QUALITY 0 ")]),
+    ("air1-up", ["UPSCALING"], [("#define AIR_QUALITY 2 ", "#define AIR_QUALITY 1 ")]),
+    ("air3-dh", ["DISTANT_HORIZONS"], [("#define AIR_QUALITY 2 ", "#define AIR_QUALITY 3 ")]),
+    ("air4-dh-up", ["DISTANT_HORIZONS", "UPSCALING"], [("#define AIR_QUALITY 2 ", "#define AIR_QUALITY 4 ")]),
     ("air-noshadow-nocolor", [], [("#define SHADOWS ", "//#define SHADOWS "), ("#define COLORED_LIGHT\n", "//#define COLORED_LIGHT\n")]),
     ("nomat", [], [("#define MATERIALS\n", "//#define MATERIALS\n")]),
     ("nomat-dh-up", ["DISTANT_HORIZONS", "UPSCALING"], [("#define MATERIALS\n", "//#define MATERIALS\n")]),
-    ("noparallax", [], [("#define PARALLAX\n", "//#define PARALLAX\n")]),
-    ("noparallax-noshadow-dh", ["DISTANT_HORIZONS"], [("#define PARALLAX\n", "//#define PARALLAX\n"), ("#define SHADOWS ", "//#define SHADOWS ")]),
+    ("parallax", [], [("//#define PARALLAX\n", "#define PARALLAX\n")]),
+    ("parallax-noshadow-dh", ["DISTANT_HORIZONS"], [("//#define PARALLAX\n", "#define PARALLAX\n"), ("#define SHADOWS ", "//#define SHADOWS ")]),
     ("debug-7", [], [("#define DEBUG_VIEW 0 ", "#define DEBUG_VIEW 7 ")]),
     ("debug-9", [], [("#define DEBUG_VIEW 0 ", "#define DEBUG_VIEW 9 ")]),
-    ("nobounce", [], [("#define SCREEN_BOUNCE\n", "//#define SCREEN_BOUNCE\n")]),
+    ("bounce-ao2", [], [("//#define SCREEN_BOUNCE\n", "#define SCREEN_BOUNCE\n"), ("#define AO_QUALITY 1 ", "#define AO_QUALITY 2 ")]),
     ("grade", [], [("#define WB_TEMPERATURE 6500 ", "#define WB_TEMPERATURE 5000 "), ("#define WB_TINT 0 ", "#define WB_TINT 10 "), ("#define PRIMARY_RED_HUE 0 ", "#define PRIMARY_RED_HUE 20 "), ("//#define COLOR_MIXER", "#define COLOR_MIXER"), ("#define MIX_RED_HUE 0 ", "#define MIX_RED_HUE 30 ")]),
     ("dof", [], [("//#define DEPTH_OF_FIELD", "#define DEPTH_OF_FIELD")]),
     ("dof-dh-up-q3-fixed", ["DISTANT_HORIZONS", "UPSCALING"], [("//#define DEPTH_OF_FIELD", "#define DEPTH_OF_FIELD"), ("#define DOF_QUALITY 2 ", "#define DOF_QUALITY 3 "), ("#define DOF_FOCUS 0 ", "#define DOF_FOCUS 8 ")]),
-    ("nobounce-ao3-dh", ["DISTANT_HORIZONS"], [("#define SCREEN_BOUNCE\n", "//#define SCREEN_BOUNCE\n"), ("#define AO_QUALITY 2 ", "#define AO_QUALITY 3 ")]),
-    ("refl0-ao1", [], [("#define REFLECTION_QUALITY 2 ", "#define REFLECTION_QUALITY 0 "), ("#define AO_QUALITY 2 ", "#define AO_QUALITY 1 ")]),
-    ("refl3-ao0-up", ["UPSCALING"], [("#define REFLECTION_QUALITY 2 ", "#define REFLECTION_QUALITY 3 "), ("#define AO_QUALITY 2 ", "#define AO_QUALITY 0 ")]),
+    ("bounce-ao3-dh", ["DISTANT_HORIZONS"], [("//#define SCREEN_BOUNCE\n", "#define SCREEN_BOUNCE\n"), ("#define AO_QUALITY 1 ", "#define AO_QUALITY 3 ")]),
+    ("refl0-ao2", [], [("#define REFLECTION_QUALITY 1 ", "#define REFLECTION_QUALITY 0 "), ("#define AO_QUALITY 1 ", "#define AO_QUALITY 2 ")]),
+    ("refl3-ao0-up", ["UPSCALING"], [("#define REFLECTION_QUALITY 1 ", "#define REFLECTION_QUALITY 3 "), ("#define AO_QUALITY 1 ", "#define AO_QUALITY 0 ")]),
+    ("refl2-dh", ["DISTANT_HORIZONS"], [("#define REFLECTION_QUALITY 1 ", "#define REFLECTION_QUALITY 2 ")]),
+    ("nosky", [], [("#define SKY_VISIBILITY\n", "//#define SKY_VISIBILITY\n")]),
+    ("nosky-nogi-dh", ["DISTANT_HORIZONS"], [("#define SKY_VISIBILITY\n", "//#define SKY_VISIBILITY\n"), ("#define GI\n", "//#define GI\n")]),
+    ("nocrowns", [], [("#define TREE_CROWNS\n", "//#define TREE_CROWNS\n")]),
+    ("nocrowns-debug-crown", [], [("#define TREE_CROWNS\n", "//#define TREE_CROWNS\n"), ("#define DEBUG_VIEW 0 ", "#define DEBUG_VIEW 5 ")]),
+    ("noshore-nocaustics-nowet", [], [("#define WATER_SHORE\n", "//#define WATER_SHORE\n"), ("#define WATER_CAUSTICS\n", "//#define WATER_CAUSTICS\n"), ("#define RAIN_WETNESS\n", "//#define RAIN_WETNESS\n")]),
+    ("noshore-noripples-dh", ["DISTANT_HORIZONS"], [("#define WATER_SHORE\n", "//#define WATER_SHORE\n"), ("#define WATER_RIPPLES\n", "//#define WATER_RIPPLES\n")]),
     ("air-noclouds-noall-dh", ["DISTANT_HORIZONS"], [("#define CLOUDS\n", "//#define CLOUDS\n"), ("#define GI\n", "//#define GI\n"), ("#define COLORED_LIGHT\n", "//#define COLORED_LIGHT\n"), ("#define WATER_RIPPLES\n", "//#define WATER_RIPPLES\n")]),
 ]
 
@@ -114,7 +121,7 @@ progs = []
 END_VARIANTS = ROOT_VARIANTS + [("noendsky", [], [("#define END_SKY\n", "//#define END_SKY\n")])]
 # The Nether and the End are lit through copies of the overworld's passes: a few variants each.
 LIT_OTHER = [v for v in WORLD_VARIANTS if v[0] in ("", "dh", "up", "dh-up", "noshadow", "unlit", "unlit-dh", "nocolor", "nogi", "noall",
-             "air0", "air4-dh-up", "sq1-ao0", "nomat", "noparallax-noshadow-dh", "dof", "debug-6")]
+             "air0", "air4-dh-up", "sq1-ao0", "nomat", "parallax-noshadow-dh", "dof", "debug-6", "nosky", "nocrowns")]
 for d, variants in ((root, ROOT_VARIANTS), (root / "world0", WORLD_VARIANTS), (root / "world-1", LIT_OTHER),
                     (root / "world1", LIT_OTHER + [("noendsky", [], [("#define END_SKY\n", "//#define END_SKY\n")])])):
     for ext in ("vsh", "fsh", "csh"):
@@ -145,6 +152,8 @@ for prog, variants in progs:
         if lit_only and prog.name == "shadowcomp2.csh" and not (gi or color):
             continue
         if lit_only and prog.name in ("shadowcomp3.csh", "shadowcomp4.csh", "shadowcomp5.csh") and not ripples:
+            continue
+        if lit_only and prog.name == "shadowcomp10.csh" and (not (gi or color) or "nosky" in vname):
             continue
         src = expand(prog, edits)
         if re.search(r"#\s*(el)?if.*__VERSION__", src):

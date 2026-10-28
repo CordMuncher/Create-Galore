@@ -21,6 +21,9 @@ shared uint shared_sum[lex_steps];   // the log luminance above the step's start
 shared uint shared_count[lex_steps];
 
 void main() {
+    if (LOCAL_EXPOSURE <= 0.0) {
+        return; // Local Exposure off: final.fsh doesn't read the grid
+    }
     uint index = gl_LocalInvocationIndex;
     if (index < uint(lex_steps)) {
         shared_sum[index] = 0u;
@@ -78,6 +81,9 @@ layout(local_size_x = 64, local_size_y = 1) in;
 const ivec3 workGroups = ivec3(64, 32, 1);
 
 void main() {
+    if (LOCAL_EXPOSURE <= 0.0) {
+        return;
+    }
     ivec2 tile = ivec2(gl_WorkGroupID.xy);
     int s = int(gl_LocalInvocationID.x);
     ivec2 texel = ivec2(tile.x * lex_steps + s, lex_grid_row + tile.y);

@@ -114,11 +114,15 @@ void main() {
 #ifdef DEPTH_OF_FIELD
     color = depth_of_field(color, gl_FragCoord.xy);
 #endif
-    color = mix(color, bloom_at(gl_FragCoord.xy), bloom_amount);
+    if (BLOOM > 0.0) {
+        color = mix(color, bloom_at(gl_FragCoord.xy), bloom_amount);
+    }
     // In the dark, as the rods see it, from the light in real units (the frame holds it times the exposure).
     float frame_exposure = exposure();
     color = night_vision(color / frame_exposure, moonlit_share(gl_FragCoord.xy), moon_boost) * frame_exposure;
-    color = local_exposure(color, gl_FragCoord.xy);
+    if (LOCAL_EXPOSURE > 0.0) {
+        color = local_exposure(color, gl_FragCoord.xy);
+    }
     color = white_balance(color);
     out_color = vec4(grade_screen(tone_map(color * exp2(EXPOSURE))), 1.0);
 #else

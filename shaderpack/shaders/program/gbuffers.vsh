@@ -144,7 +144,7 @@ void main() {
     // torch's or a lantern's lies inside its block.
     v_glow = block == BLOCK_LAVA ? GLOW_LAVA
             : all(greaterThan(abs(at_midBlock.xyz), vec3(31.5))) ? GLOW_LARGE : GLOW_SMALL;
-    v_surface = block == BLOCK_LEAVES ? SURFACE_LEAVES : block == BLOCK_METAL ? SURFACE_METAL
+    v_surface = block == BLOCK_LEAVES ? SURFACE_LEAVES : block == BLOCK_METAL || block == BLOCK_METAL_SHUT ? SURFACE_METAL
             : block == BLOCK_POLISHED ? SURFACE_POLISHED : block == BLOCK_SOIL ? SURFACE_SOIL
             : block == BLOCK_SAND ? SURFACE_SAND : SURFACE_PLAIN;
 #endif

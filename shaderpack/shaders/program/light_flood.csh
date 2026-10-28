@@ -58,7 +58,9 @@ vec3 previous_bounce(ivec3 block, out float facing[6]) {
 #endif
 
 // The leaves among the group's blocks and two blocks around them, for the crowns.
+#ifdef TREE_CROWNS
 shared uint group_leaves[12 * 12 * 12];
+#endif
 // How much a leaf counts by how far it is along each axis (0, 1, 2 blocks), for the narrow count and the wide one, and
 // all of them together.
 const float near_weight[3] = float[3](1.0, 0.46, 0.0);
@@ -68,16 +70,19 @@ const float far_sum = (1.0 + 2.0 * 0.8 + 2.0 * 0.41) * (1.0 + 2.0 * 0.8 + 2.0 * 
 
 void main() {
     ivec3 block = ivec3(gl_GlobalInvocationID);
+#ifdef TREE_CROWNS
     ivec3 group_corner = ivec3(gl_WorkGroupID) * 8 - 2;
     for (uint i = gl_LocalInvocationIndex; i < 1728u; i += 512u) {
         ivec3 b = group_corner + ivec3(i % 12u, (i / 12u) % 12u, i / 144u);
         group_leaves[i] = in_light_volume(b) ? imageLoad(cg_voxel_img, marks_texel(b, section_marks)).r & mark_foliage : 0u;
     }
     barrier();
+#endif
     if (!in_light_volume(block)) {
         return;
     }
 
+#ifdef TREE_CROWNS
     ivec3 local = ivec3(gl_LocalInvocationID) + 2;
     vec2 leaves = vec2(0.0);
     for (int z = -2; z <= 2; z++) {
@@ -92,6 +97,7 @@ void main() {
         }
     }
     store_light(block, section_canopy, vec3(leaves / vec2(near_sum, far_sum), 0.0));
+#endif
     ivec3 prev = block + cameraPositionInt - previousCameraPositionInt;
     uint marks = imageLoad(cg_voxel_img, marks_texel(block, section_marks)).r;
     bool solid = marks_solid(marks);

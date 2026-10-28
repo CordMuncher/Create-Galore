@@ -8,9 +8,9 @@ without patching anything. Effects are added one at a time, each built to be ups
 
 ## What it does now
 
-Five presets: **Pure AA** is Minecraft's own look with only DLSS or FSR on top; **Low**, **Medium**, **High** (the
-default) and **Ultra** light the overworld itself, with more of the effects the higher they go, and light the Nether
-and the End by their own light (see The Nether and the End below). Modded dimensions keep Minecraft's own look in all
+Five presets: **Pure AA** is Minecraft's own look with only DLSS or FSR on top; **Low**, **Default** (what a fresh
+install starts on), **High** and **Ultra** light the overworld itself, with more detail on the same lean core the
+higher they go, and light the Nether and the End by their own light (see The Nether and the End below). Modded dimensions keep Minecraft's own look in all
 of them; no dimension but the overworld ever gets the overworld's sky.
 
 Sky and light (milestone 2, the Lighting option):
@@ -256,6 +256,29 @@ Water, light and sky from the first full comparison (alpha 5, and the Lamp Shape
 - Clean arrivals: a teleport, a respawn or a sharp turn counts as a camera cut, and the exposure goes straight to
   its new level and the air's history starts afresh, instead of the picture settling over the next second.
 
+The rebuild, build 1 (alpha 5 grew one effect on top of another; the rebuild sets each preset a frame-time budget
+and cuts Default to a lean core, the Sky Visibility, Tree Crowns, Shore Foam, Caustics and Rain Wetness options):
+
+- Budgets at 2560 by 1440 with DLAA on an RTX 4080 SUPER, without frame generation: Low 180 fps, Default 110, High
+  85, Ultra 65, with the 1% lows above half the average. The Create Galore Bridge's cost meter shows each pass's GPU
+  time against them.
+- Default drops the screen's bounce light (High and Ultra keep it), the relief (until it stops wrapping), and three
+  quarters of the light in the air's cells (about 0.9 million at 1440p; Unreal's volumetric fog has half a million
+  at 1080p at its High setting). Reflections, the shadow filter and the ambient occlusion take a step down; High and
+  Ultra keep alpha 5's.
+- The sky never lights what Minecraft says it can't: where Minecraft's sky light is 0 (a closed room, a cave) no sun,
+  sky light, bounced sunlight or sunlit air gets in, whatever the shadow map's seams let through. The sky a point
+  sees may still lift Minecraft's sky light under something high, but only where that is above 0.
+- Slabs, stairs and closed doors and trapdoors stop the bounce light and the coloured light as a wall does, so a
+  roof of stairs is a roof; fences, panes and iron bars still let them past, and carpets and pressure plates lie
+  under them.
+- How much of the sky a point sees is worked out a block at a time in the light volume (`program/sky_visibility.csh`):
+  24 fixed rays over the sky from the middle of each block through the sky grid, a sixteenth of the blocks each
+  frame, read smoothly between blocks for each surface's facing, as Unity's probe volumes keep the sky's visibility.
+  It replaces the three to eight rays per pixel each frame, so it no longer flickers in rooms and costs far less.
+- A switch for every effect: Sky Visibility, Tree Crowns, Shore Foam, Caustics and Rain Wetness are new options, and
+  Bloom or Local Exposure at 0 skips their passes.
+
 From milestone 1, in every preset:
 
 - Motion vectors for everything that moves: the camera, mobs and block entities, the hand, Sable ships, Create's
@@ -277,7 +300,7 @@ From alpha 5 the Nether and the End go through the same passes as the overworld 
 (`lib/nether.glsl`, `lib/end.glsl`): the coloured light, the light in the air, the ambient occlusion and the screen's
 bounce light, reflections, the bloom, exposure and tone mapping all work there as they do in the overworld. Neither
 has sky light (Minecraft's is 0 everywhere in them), so a surface's light all around goes by how open it is, from the
-sky grid's rays: in the Nether those that get 32 blocks away, so a fortress's halls and a tunnel are darker than a
+sky visibility's rays: in the Nether those that get 32 blocks away, so a fortress's halls and a tunnel are darker than a
 cavern; in the End those that get out from under the islands, so an End city's rooms are dim inside.
 
 - The Nether has no sun or moon. The lava and every lamp light it in their own colours through the light volume. Its
@@ -307,9 +330,6 @@ in its code, so `grep -rn "OWN DENOISER" shaders` lists them all:
   per-pixel noise.
 - The light from the screen (`program/deferred.fsh`, `screen_light_settled`): the ambient occlusion and the screen's
   bounce light (`program/screen_light.fsh`), blended over about eight frames, held within the pixels around.
-- The sky each surface sees (`program/deferred.fsh`, `sky_rays_settled`): the sky grid's three to eight rays per
-  pixel (traced in `program/screen_light.fsh`), blended the same way. The water's surface still traces its own each
-  frame (`program/water_body.fsh`) and leaves them to the upscaler.
 
 What else changes for Ray Reconstruction:
 
@@ -323,7 +343,8 @@ What else changes for Ray Reconstruction:
   shades it; `gbuffers.vsh/fsh` draw the world, `clrwl.*` Colorwheel's, `dh.*` Distant Horizons'. The lit overworld
   adds `air.csh` (the sky's tables), `air_volume.csh` (the light in the air), `frame_globals.csh` (the frame's light),
   `cloud_ambient.csh`, `clouds_march.csh` and `clouds_gather.csh` (the cumulus), `screen_light.fsh` (the ambient
-  occlusion, the screen's bounce light and the sky grid's rays), `deferred.fsh` (the lighting), `exposure.csh`,
+  occlusion and the screen's bounce light), `sky_visibility.csh` (the sky each block sees), `deferred.fsh` (the
+  lighting), `exposure.csh`,
   `local_exposure.csh`, `dof.csh` (the depth of field), `shadow.*`, `light_bounce.csh` and `light_flood.csh` (the
   coloured and bounce light), `water_sim.csh` (the ripples), `water_body.fsh` (the water, after the translucent
   things) and `bloom.csh`; the End adds `end_sky.fsh` (its sky in Minecraft's own look).

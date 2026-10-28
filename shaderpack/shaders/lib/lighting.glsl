@@ -67,13 +67,20 @@ vec3 block_irradiance(float block, vec3 color) {
     return light + floor_light;
 }
 
+// Whether the sky's light can get to where Minecraft's own sky light is sky_mc (0..1) at all: not where it is 0 (a
+// closed room, a cave), whatever the shadow map, the voxel volume or the sky's visibility say. Nothing the sun, the
+// moon or the sky lights reaches there, so it can't leak in through the shadow map's seams or round a block the
+// volume misses.
+float sky_reaches(float sky_mc) {
+    return smoothstep(0.0, 1.5 / 15.0, sky_mc);
+}
+
 // How much of the sun's (or the moon's) light a surface at scene_pos gets: the shadow map where it reaches, and what
 // the clouds let through. Past the shadow map (and on Distant Horizons' terrain, shadowed false) Minecraft's own sky
 // light sky_mc stands in for it: a surface it says sees little of the sky is under something, which keeps the sun off
-// it (the shadow of a floating island falls straight down, though, not away from the sun). sky: the sky light the
-// rest of the light goes by, which is more under something high and less in a room (see deferred.fsh); deep in a cave,
-// where both are low, the sun can't reach, whatever the shadow map says at its edges. (By the higher of the two: a
-// room sees little of the sky, but the sun still comes in through its window.)
+// it (the shadow of a floating island falls straight down, though, not away from the sun). Inside the shadow map,
+// none where Minecraft's sky light is 0 (see sky_reaches); the sun still comes in through a window to the back of a
+// room. sky: the sky light the rest of the light goes by (see deferred.fsh).
 float direct_visibility(vec3 scene_pos, vec3 normal, float sky, float sky_mc, bool shadowed) {
 #ifdef WORLD_NETHER
     return 0.0; // no light from above
@@ -86,8 +93,8 @@ float direct_visibility(vec3 scene_pos, vec3 normal, float sky, float sky_mc, bo
     float by_sky = smoothstep(12.0 / 15.0, 14.5 / 15.0, sky_mc);
 #ifdef SHADOW_MAP
     if (shadowed) {
-        return shadow_visibility(scene_pos, normal, g_light_dir.xyz, by_sky, pixel_noise())
-                * smoothstep(1.0 / 15.0, 4.0 / 15.0, max(sky, sky_mc)) * clouds;
+        return shadow_visibility(scene_pos, normal, g_light_dir.xyz, by_sky, pixel_noise()) * sky_reaches(sky_mc)
+                * clouds;
     }
 #endif
     return by_sky * clouds;
@@ -108,7 +115,7 @@ float glint_visibility(vec3 scene_pos, vec3 normal, float sky, float sky_mc) {
 #ifdef SHADOW_MAP
     vec3 coord = shadow_coord(scene_pos + normal * 0.05);
     if (all(greaterThan(coord, vec3(0.0))) && all(lessThan(coord, vec3(1.0)))) {
-        lit = smoothstep(12.0 / 15.0, 14.5 / 15.0, max(sky, sky_mc)) * clouds;
+        lit = smoothstep(12.0 / 15.0, 14.5 / 15.0, max(sky, sky_mc)) * sky_reaches(sky_mc) * clouds;
         lit *= lit > 0.0 ? texture(shadowtex1HW, vec3(coord.xy, coord.z - 0.00002)) : 0.0;
     }
 #endif
@@ -215,7 +222,7 @@ vec3 light_surface(vec3 albedo, vec3 normal, vec2 light, vec3 scene_pos, bool pl
     // The leaves inside a crown and under it see less of the sky than its top does: the outer leaves hide it.
     vec3 leaf_normal = normal;
     float crown_sky = 1.0;
-#ifdef LIT_VOXELS
+#if defined LIT_VOXELS && defined TREE_CROWNS
     if (foliage && shadowed) {
         vec4 crown = canopy_shape(scene_pos);
         float shaped = smoothstep(0.05, 0.25, length(crown.xyz));
@@ -283,7 +290,9 @@ vec3 light_surface(vec3 albedo, vec3 normal, vec2 light, vec3 scene_pos, bool pl
 #endif
     nearby = block_irradiance(light.x, block_light_color(scene_pos, n) * lamp_shape(scene_pos, n));
 #ifdef LIT_GI
-    nearby += g_light_color.rgb * bounce_light(scene_pos, n, light.y);
+    // The sun's light bounced: none where the sun's can't get (fading in over Minecraft's lowest sky light levels, so a
+    // cave's bounce light ends a few blocks before its sky light does).
+    nearby += g_light_color.rgb * bounce_light(scene_pos, n, light.y) * smoothstep(0.0, 3.0 / 15.0, sky_mc);
 #endif
     vec3 around = sky * sky_light_curve(light.y) * water_sky * crown_sky + nearby;
     vec3 open = screen_lit ? around * ao + PI * screen_bounce : around * ao_bounced(ao, albedo);

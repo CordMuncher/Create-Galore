@@ -21,15 +21,12 @@ uniform sampler2D colortex9;
 #ifdef LIT_MATERIALS
 uniform sampler2D colortex12;
 #endif
-#if AO_QUALITY > 0 || defined LIT_SKY_GRID
+#if AO_QUALITY > 0
 uniform sampler2D colortex7;
 #endif
 #if AO_QUALITY > 0
 uniform sampler2D colortex13;
 uniform sampler2D colortex14;
-#endif
-#ifdef LIT_SKY_GRID
-uniform sampler2D colortex15;
 #endif
 #if REFLECTION_QUALITY > 0
 // Smaller copies of last frame's picture, for reflections blurred by a surface's roughness (see mirrored).
@@ -46,9 +43,7 @@ uniform mat4 dhProjectionInverse;
 #endif
 
 #include "/lib/reflection.glsl"
-#define SKY_PROBE_DEPTH depthtex0
-#define SKY_PROBE_DH_DEPTH dhDepthTex0
-#include "/lib/sky_probe.glsl"
+#include "/lib/sky_grid.glsl"
 
 #ifdef LIT_CLOUDS
 #include "/lib/clouds.glsl"
@@ -78,19 +73,10 @@ vec3 sky_with_clouds(vec3 dir, float pixel_angle, vec2 point, ivec2 texel) {
 
 in vec2 v_uv;
 
-#if AO_QUALITY > 0 && defined LIT_SKY_GRID
-/* RENDERTARGETS: 0,14,15 */
-layout(location = 0) out vec4 out_color;
-layout(location = 1) out vec4 out_screen_history; // see screen_light_settled
-layout(location = 2) out vec4 out_sky;            // see sky_rays_settled
-#elif AO_QUALITY > 0
+#if AO_QUALITY > 0
 /* RENDERTARGETS: 0,14 */
 layout(location = 0) out vec4 out_color;
-layout(location = 1) out vec4 out_screen_history;
-#elif defined LIT_SKY_GRID
-/* RENDERTARGETS: 0,15 */
-layout(location = 0) out vec4 out_color;
-layout(location = 1) out vec4 out_sky;
+layout(location = 1) out vec4 out_screen_history; // see screen_light_settled
 #else
 /* RENDERTARGETS: 0 */
 layout(location = 0) out vec4 out_color;
@@ -238,7 +224,7 @@ float screen_shadow(ivec2 texel, vec3 view, float depth) {
 }
 #endif
 
-#if AO_QUALITY > 0 || defined LIT_SKY_GRID
+#if AO_QUALITY > 0
 // Where the surface a pixel shows was last frame (render pixels, prev), by its own motion where its program worked
 // one out (see gbuffers_kind.glsl), else by the camera's; false where it was off the screen. texel and point: the
 // pixel (point unjittered).
@@ -286,58 +272,25 @@ vec4 screen_light_settled(ivec2 texel, vec2 prev, bool seen) {
 }
 #endif
 
-#ifdef LIT_SKY_GRID
-// OWN DENOISER (off under Ray Reconstruction, see the README): the share of the sky the sky grid's few rays from a
-// surface see this frame (colortex15's r, see screen_light.fsh), blended over frames as the screen's light is, in
-// colortex15's g; -1 where they see none. A room lit through a window would sparkle otherwise, a ray here and there
-// finding the window.
-float sky_rays_settled(ivec2 texel, vec2 prev, bool seen) {
-    float now = texelFetch(colortex15, texel, 0).r;
-    if (now < 0.0) {
-        return now;
-    }
-    float lo = now;
-    float hi = now;
-    ivec2 last = ivec2(render_size()) - 1;
-    for (int y = -1; y <= 1; y++) {
-        for (int x = -1; x <= 1; x++) {
-            float around = texelFetch(colortex15, clamp(texel + ivec2(x, y), ivec2(0), last), 0).r;
-            if (around >= 0.0) {
-                lo = min(lo, around);
-                hi = max(hi, around);
-            }
-        }
-    }
-    if (!seen) {
-        return now;
-    }
-    // (Where the pixels around held none last frame, the blend of them comes out low; the clamp keeps it to this
-    // frame's.)
-    float history = textureLod(colortex15, prev / window_size(), 0.0).g;
-    if (!(history >= 0.0) || isinf(history)) {
-        return now;
-    }
-    return mix(now, clamp(history, lo, hi), screen_history);
-}
-#endif
-
 #ifdef NO_SKY_LIGHT
-// How open a surface in the Nether or the End is to the light all around (0..1): the share of the sky grid's rays
-// (rays, -1 where it traced none: facing down, or the hand) that get away from it, in the Nether those that get 32
-// blocks away (see sky_ray_open), so a fortress's halls and a tunnel are darker than a cavern, and an End city's
-// rooms than the open island. Never quite none (the air's light finds its way in), and open past the grid.
+// How open a surface in the Nether or the End is to the light all around (0..1): the share of the sky visibility's
+// rays (see sky_visibility.csh) that get away from it, in the Nether those that get 32 blocks away (see
+// sky_ray_open), so a fortress's halls and a tunnel are darker than a cavern, and an End city's rooms than the open
+// island. Never quite none (the air's light finds its way in), and open past the volume.
 #ifdef WORLD_NETHER
 const float world_open_floor = 0.4;
 #else
 const float world_open_floor = 0.12;
 #endif
 
-float world_openness(vec3 scene_pos, float rays, bool lod) {
+float world_openness(vec3 scene_pos, vec3 normal, bool lod) {
     float open = 1.0;
-#ifdef LIT_SKY_GRID
-    if (!lod && rays >= 0.0) {
-        float grid = 1.0 - smoothstep(sky_grid_reach - 28.0, sky_grid_reach, max(abs(scene_pos.x), abs(scene_pos.z)));
-        open = mix(1.0, rays, grid);
+#ifdef LIT_SKY_VISIBILITY
+    if (!lod) {
+        vec2 vis = sky_visibility(scene_pos, normal);
+        if (vis.x >= 0.0) {
+            open = mix(1.0, vis.x, vis.y);
+        }
     }
 #endif
     return mix(world_open_floor, 1.0, open);
@@ -349,9 +302,6 @@ void main() {
     vec2 size = render_size();
 #if AO_QUALITY > 0
     out_screen_history = vec4(0.0, 0.0, 0.0, 1.0);
-#endif
-#ifdef LIT_SKY_GRID
-    out_sky = vec4(0.0, -1.0, 0.0, 0.0);
 #endif
     if (any(greaterThanEqual(vec2(texel) + 0.5, size))) {
         out_color = vec4(0.0); // outside the frame while upscaling
@@ -438,7 +388,7 @@ void main() {
         float sun_facing = decode_sun_facing(occlusion.g);
         vec4 screen = vec4(0.0, 0.0, 0.0, 1.0);
         bool screen_lit = false;
-#if AO_QUALITY > 0 || defined LIT_SKY_GRID
+#if AO_QUALITY > 0
         // Where the surface was last frame, for what the passes before worked out a little of each frame.
         vec2 prev = vec2(0.0);
         bool was_seen = !lod && depth >= hand_depth_limit && previous_point(texel, point, scene_pos, prev);
@@ -463,7 +413,7 @@ void main() {
         vec2 puddle = vec2(0.0);
         if (material == MATERIAL_LIT && !lod && depth >= hand_depth_limit) {
             puddle = puddle_at(scene_pos, normal, light.y, kind);
-#ifdef LIT_SHORE
+#if defined LIT_SHORE && defined WATER_SHORE
             // And the band the water wets on a wall or the bank where it meets them, as high as it laps.
             float shore = shore_wet(scene_pos, normal, cg_swell);
             wet = max(wet, 0.6 * shore);
@@ -471,53 +421,49 @@ void main() {
 #endif
         }
         albedo = soaked(albedo, max(wetness.y, puddle.y), mat.porosity) * (1.0 - 0.25 * puddle.x);
-        // Under something high (a floating island, a tall roof, a bridge) more of the sky's light gets in from around
-        // it than Minecraft's sky light gives (see sky_grid.glsl and sky_probe.glsl). The rain doesn't: the wet look
-        // keeps Minecraft's.
+        // How much of the sky the surface sees past the blocks around it (see sky_visibility in light_volume.glsl).
+        // The rain's wet look keeps Minecraft's sky light.
         float sky_light_mc = light.y;
         float seen = -1.0;
+        // A plant takes the sky from above, as it takes the light (see light_surface).
+        vec3 sky_normal = material == MATERIAL_PLANT ? vec3(0.0, 1.0, 0.0) : normal;
 #ifdef NO_SKY_LIGHT
         // The Nether and the End have no sky light (see settings.glsl): how open the surface is to the light all
-        // around, from the same rays.
+        // around.
         if (depth >= hand_depth_limit) {
-#else
-        if (depth >= hand_depth_limit && light.y < 0.999) {
-#endif
-            // The sky grid's rays from here, traced a few each frame (see screen_light.fsh).
-            float rays = -1.0;
-#ifdef LIT_SKY_GRID
-            if (!lod) {
-                rays = sky_rays_settled(texel, prev, was_seen);
-                out_sky.g = rays;
-            }
-#endif
-#ifdef NO_SKY_LIGHT
-            seen = world_openness(scene_pos, rays, lod);
+            seen = world_openness(scene_pos, sky_normal, lod);
             light.y = sky_seen_level(seen);
-#else
-            seen = sky_seen_blend(scene_pos, light.y, rays, lod, false);
-            float level = sky_seen_level(seen);
-            // Indoors it can be darker too: Minecraft's sky light comes in through a window and spreads through the
-            // whole room a level less a block, but a room sees the sky only through its openings. Where the grid's
-            // rays traced here find little sky (a room, the shade under a roof), they stand in for it, the more so
-            // the less they find; out in the open, and where only the screen's probe can tell, never darker.
-            // (Not under water: the grid marks the water's top, which stops the rays, but the sky's light comes down
-            // through it, see light_surface.)
-            float indoors = 0.0;
-#ifdef LIT_SKY_GRID
-            if (!lod && rays >= 0.0) {
-                indoors = (1.0 - smoothstep(0.15, 0.5, seen))
-                        * (1.0 - smoothstep(sky_grid_reach - 28.0, sky_grid_reach, max(abs(scene_pos.x), abs(scene_pos.z))));
-#ifdef SHADOW_MAP
-                if (indoors > 0.0 && water_over(scene_pos) > 0.0) {
-                    indoors = 0.0;
-                }
-#endif
-            }
-#endif
-            light.y = level >= light.y ? level : mix(light.y, level, indoors);
-#endif
         }
+#elif defined LIT_SKY_VISIBILITY
+        if (depth >= hand_depth_limit && !lod && light.y < 0.999) {
+            vec2 vis = sky_visibility(scene_pos, sky_normal);
+            if (vis.x >= 0.0) {
+                seen = vis.x;
+                float level = sky_seen_level(seen);
+                // Under something high (a floating island, a tall roof, a bridge) more of the sky's light gets in
+                // from around it than Minecraft's sky light gives: lifted towards what the surface sees, but only
+                // where Minecraft's sky light reaches at all, so nothing in a closed room or a cave sees any sky.
+                // Indoors it can be darker too: Minecraft's sky light comes in through a window and spreads through
+                // the whole room a level less a block, but a room sees the sky only through its openings, so where
+                // the surface sees little sky that stands in for it, the more so the less it sees. (Not under water:
+                // the grid marks the water's top, which stops the rays, but the sky's light comes down through it,
+                // see light_surface.)
+                float target = light.y;
+                if (level >= light.y) {
+                    target = mix(light.y, level, smoothstep(0.0, 1.0 / 15.0, light.y));
+                } else {
+                    float indoors = 1.0 - smoothstep(0.15, 0.5, seen);
+#ifdef SHADOW_MAP
+                    if (indoors > 0.0 && water_over(scene_pos) > 0.0) {
+                        indoors = 0.0;
+                    }
+#endif
+                    target = mix(light.y, level, indoors);
+                }
+                light.y = mix(light.y, target, vis.y);
+            }
+        }
+#endif
         float contact = 1.0;
 #if defined SHADOW_MAP && defined CONTACT_SHADOWS && !defined WORLD_NETHER
         // Not on plants: in a meadow every blade would find another in front of it and the grass would go dark.
@@ -586,10 +532,11 @@ void main() {
             }
         }
 #elif DEBUG_VIEW == 6
-        // How much of the sky a surface sees (see sky_grid.glsl, sky_probe.glsl): red Minecraft's sky light (through
-        // its curve), green the share the pack works out, blue where it works out none (Minecraft's sky light alone).
+        // How much of the sky a surface sees (see sky_visibility in light_volume.glsl): red Minecraft's sky light
+        // (through its curve), green the share the volume works out, blue where it works out none (Minecraft's sky
+        // light alone).
         lit = vec3(sky_light_curve(sky_light_mc), max(seen, 0.0), seen < 0.0 ? 0.5 : 0.0) * 2.0;
-#elif DEBUG_VIEW == 5 && defined LIT_VOXELS
+#elif DEBUG_VIEW == 5 && defined LIT_VOXELS && defined TREE_CROWNS
         // On leaves, the way out of their crown (see canopy_shape) as a colour: red towards east, green up, blue
         // south (grey halfway, where it points along the other two), darker the less of a crown there is.
         if (foliage && !lod) {

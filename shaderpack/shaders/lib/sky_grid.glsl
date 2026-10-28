@@ -1,21 +1,18 @@
-// How much of the sky a point sees past the blocks around it, in the lit overworld with shadows. Minecraft's sky light
-// only says how far a point is from a column of air open to the sky, not how high what covers it is: under a floating
-// island, a high bridge or a tall hall's roof it goes as dark as in a cave, though the sky's light comes in under
-// them from all around. Unreal lights its sky the same way this does: rays (its cones) from each pixel through a copy
-// of the world around the camera (its distance fields), finer near the pixel and coarser further out.
+// The blocks around you that the sky's light can't get through, in the lit overworld with shadows, for rays towards
+// the sky: the sky visibility's from each block of the light volume (sky_visibility.csh) and the light in the air's
+// (air_volume.csh). Minecraft's sky light only says how far a point is from a column of air open to the sky, not how
+// high what covers it is: under a floating island, a high bridge or a tall hall's roof it goes as dark as in a cave,
+// though the sky's light comes in under them from all around. Unreal lights its sky the same way: rays (its cones)
+// through a copy of the world around the camera (its distance fields), finer near where they start and coarser
+// further out.
 //
 // The shadow pass marks every solid block, every leaf block and the water within 128 blocks of you across, from 64
 // below you to 191 above (shadow.vsh): a bit for each block of its column, 32 to a word, in the rows of
-// cg_water_marks_img below the ripples' marks. Under water a surface keeps Minecraft's sky light, which dims a level
-// for each block of water above it as the water dims the sky's light (the lighting dims it its own way where it knows
-// how deep the water is, see light_surface). Glass, plants and things that aren't blocks let the sky through. The pass
-// after it (sky_grid.csh) makes six coarser copies, each column of one marking what any of 2 by 2 of the one before
-// has, for a ray's longer steps further out. A ray towards the sky is open if it leaves the grid without passing a
-// marked block: every block in a column cell between the heights a step goes through counts, so a step never jumps a
-// roof.
-//
-// The lighting takes the more of Minecraft's sky light and of the sky this sees (see sky_seen_level), so a point is
-// never darker than Minecraft's light makes it, and a closed room stays dark: its walls and roof stop every ray.
+// cg_water_marks_img below the ripples' marks. Glass, plants and things that aren't blocks let the sky through. The
+// pass after it (sky_grid.csh) makes six coarser copies, each column of one marking what any of 2 by 2 of the one
+// before has, for a ray's longer steps further out. A ray towards the sky is open if it leaves the grid without
+// passing a marked block: every block in a column cell between the heights a step goes through counts, so a step never
+// jumps a roof.
 
 #if !defined LIB_SKY_GRID
 #define LIB_SKY_GRID
@@ -30,8 +27,7 @@ const int sky_grid_height = 256; // blocks up
 const int sky_grid_words = 8;   // words of 32 blocks to a column
 const int sky_grid_levels = 7;  // the grid and its coarser copies (2, 4, ... 64 blocks to a column)
 const int sky_grid_width = 512; // cg_water_marks_img's width
-// How far across from you (blocks, along x or z) the grid's rays are traced, short of its edge: they fade into the
-// screen's probe over the last 28 (see sky_probe.glsl).
+// How far across from you (blocks, along x or z) the grid's rays are traced, short of its edge.
 const float sky_grid_reach = 124.0;
 
 // Where each copy's rows begin in the image: its 8 words side by side, as many to a row as fit.
@@ -114,34 +110,6 @@ bool sky_ray_open(vec3 o, vec3 d) {
         a = b;
     }
     return true;
-}
-
-// The share of the sky a surface at scene_pos facing n sees past the blocks around it (the sky above the horizon,
-// weighted as the light from it falls on the surface), from rays turned by noise (0..1, different each pixel and
-// frame: the upscaler evens it out). -1 where the grid doesn't reach, or the surface faces too far down to see sky.
-float sky_seen(vec3 scene_pos, vec3 n, float noise) {
-    vec3 o = sky_grid_pos(scene_pos + n * 0.55, cameraPositionFract);
-    if (any(lessThan(o, vec3(0.0))) || any(greaterThanEqual(o, vec3(float(sky_grid_size), float(sky_grid_height),
-            float(sky_grid_size))))) {
-        return -1.0;
-    }
-    vec3 t = normalize(abs(n.y) < 0.99 ? cross(n, vec3(0.0, 1.0, 0.0)) : cross(n, vec3(1.0, 0.0, 0.0)));
-    vec3 b = cross(n, t);
-    float open = 0.0;
-    float rays = 0.0;
-    for (int i = 0; i < SKY_RAYS; i++) {
-        // Spread evenly over the hemisphere as its light falls (more near the normal), turned by the noise.
-        float u = (float(i) + 0.5) / float(SKY_RAYS);
-        float r = sqrt(u);
-        float phi = 6.2831853 * (float(i) * 0.618034 + noise);
-        vec3 d = t * (r * cos(phi)) + b * (r * sin(phi)) + n * sqrt(1.0 - u);
-        if (d.y < 0.05) {
-            continue; // below the horizon: the ground's light, not the sky's
-        }
-        rays += 1.0;
-        open += sky_ray_open(o, d) ? 1.0 : 0.0;
-    }
-    return rays > 0.0 ? open / rays : -1.0;
 }
 
 #endif

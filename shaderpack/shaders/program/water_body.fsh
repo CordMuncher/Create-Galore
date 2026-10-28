@@ -36,9 +36,7 @@ uniform mat4 dhProjectionInverse;
 #define HEAT_DEPTH depthtex0
 #include "/lib/heat.glsl"
 #endif
-#define SKY_PROBE_DEPTH depthtex1
-#define SKY_PROBE_DH_DEPTH dhDepthTex1
-#include "/lib/sky_probe.glsl"
+#include "/lib/sky_grid.glsl"
 
 in vec2 v_uv;
 
@@ -239,13 +237,19 @@ void main() {
         vec3 p = eye + dir * dist_water;
         vec3 p_view = mat3(gbufferModelView) * p + gbufferModelView[3].xyz;
         // How much of the sky the surface sees: more than Minecraft's sky light says under something high (see
-        // sky_grid.glsl and sky_probe.glsl).
+        // sky_visibility in light_volume.glsl), but never where Minecraft's says none.
         float sky_light_mc = water.b;
         float seen = -1.0;
+#ifdef LIT_SKY_VISIBILITY
         if (water.b < 0.999) {
-            seen = sky_seen_around(p, vec3(0.0, 1.0, 0.0), water.b, noise, false, true);
-            water.b = max(water.b, sky_seen_level(seen));
+            vec2 vis = sky_visibility(p, vec3(0.0, 1.0, 0.0));
+            if (vis.x >= 0.0) {
+                seen = vis.x;
+                float lift = max(sky_seen_level(seen) - water.b, 0.0) * smoothstep(0.0, 1.0 / 15.0, water.b);
+                water.b += lift * vis.y;
+            }
         }
+#endif
         vec2 jitter = vec2(cg_dlss_jitter_x, cg_dlss_jitter_y);
 
         // What lies under it, along the ray the surface bends: about where that ray meets the bottom, if the screen
@@ -343,7 +347,9 @@ void main() {
         // by their slope, lets the water show through where it's thin, and goes on under the surface as bubbles.
         float churn = 0.0;
         float rough = 1.0;
-#ifdef LIT_SHORE
+#ifndef WATER_SHORE
+        // (Foam off.)
+#elif defined LIT_SHORE
         vec2 world = vec2(cameraPositionInt.xz & 4095) + cameraPositionFract.xz + p.xz;
         rough = mix(0.5, 1.0, max(cg_swell * smoothstep(0.2, 0.8, shore.y), cg_rain_here));
         churn = smoothstep(0.04, 0.45, shore.x * (0.7 + 0.6 * shore_lap(world))) * rough;
@@ -352,7 +358,7 @@ void main() {
             churn = 1.0 - smoothstep(0.05, 0.4, p.y - (eye.y + dir.y * dist_opaque));
         }
 #endif
-#ifdef LIT_WATER_RIPPLES
+#if defined LIT_WATER_RIPPLES && defined WATER_SHORE
         churn = max(churn, smoothstep(0.4, 1.2, length(ripple_slope(p))));
 #endif
         if (churn > 0.0) {

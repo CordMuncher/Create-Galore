@@ -38,13 +38,13 @@ vec3 view_ray(vec2 point) {
 
 // Enough invocations for the page (see shaders.properties' sizes for colortex10 and colortex11).
 #if AIR_QUALITY == 1
-const vec2 workGroupsRender = vec2(0.53, 0.53);
+const vec2 workGroupsRender = vec2(0.43, 0.33);
 #elif AIR_QUALITY == 2
-const vec2 workGroupsRender = vec2(0.69, 1.06);
+const vec2 workGroupsRender = vec2(0.53, 0.53);
 #elif AIR_QUALITY == 3
-const vec2 workGroupsRender = vec2(1.03, 1.56);
+const vec2 workGroupsRender = vec2(0.69, 0.87);
 #else
-const vec2 workGroupsRender = vec2(1.37, 2.06);
+const vec2 workGroupsRender = vec2(0.83, 1.25);
 #endif
 
 #include "/lib/sky.glsl"
@@ -270,6 +270,10 @@ void main() {
 #ifdef LIT_CLOUDS
         lit *= cloud_shadow(p, g_light_dir.xyz);
 #endif
+#ifdef LIT_SKY_VISIBILITY
+        // None in a closed room or a cave, where the shadow map can still let a little through at its seams.
+        lit *= light_reaches(p);
+#endif
         float walled;
         float open = air_sky_open(p, frame * 7u + seed, walled);
         float cos_sun = dot(dir, sun_dir);
@@ -344,13 +348,13 @@ void main() {
 
 // One invocation for each column of cells.
 #if AIR_QUALITY == 1
-const vec2 workGroupsRender = vec2(0.07, 0.07);
+const vec2 workGroupsRender = vec2(0.06, 0.06);
 #elif AIR_QUALITY == 2
-const vec2 workGroupsRender = vec2(0.09, 0.09);
+const vec2 workGroupsRender = vec2(0.07, 0.07);
 #elif AIR_QUALITY == 3
-const vec2 workGroupsRender = vec2(0.13, 0.13);
+const vec2 workGroupsRender = vec2(0.09, 0.09);
 #else
-const vec2 workGroupsRender = vec2(0.17, 0.17);
+const vec2 workGroupsRender = vec2(0.11, 0.11);
 #endif
 
 layout(rgba16f) uniform image2D colorimg11;

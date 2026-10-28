@@ -26,7 +26,7 @@ const float upscaling_render_scale = RENDER_SCALE;
 // How soft shadows grow away from what casts them (0: as the sun's own, sharp but for the shadow map's texels), and
 // how many points of the shadow map each one takes (smoother soft edges).
 #define SHADOW_SOFTNESS 1.0 // [0.0 0.5 1.0 1.5 2.0 3.0]
-#define SHADOW_QUALITY 3    // [1 2 3 4]
+#define SHADOW_QUALITY 2    // [1 2 3 4]
 // Screen-space sun shadows: what the shadow map is too coarse for (grass, feet, a fence's rails, a block's edge up
 // close) still shadows what lies behind it, followed through the screen's depth a pixel at a time towards the sun
 // (see screen_shadow in deferred.fsh). (Iris only lists an on/off option that some #ifdef names.)
@@ -44,7 +44,7 @@ const float upscaling_render_scale = RENDER_SCALE;
 // at all, 1 as the eye's own.
 #define NIGHT_VISION 1.0 // [0.0 0.25 0.5 0.75 1.0]
 // How much a bright part of the frame (a window from inside a room, the sky over dark land) is drawn in towards the
-// rest, keeping its detail (see local_exposure.glsl): 0 not at all.
+// rest, keeping its detail (see local_exposure.glsl): 0 not at all (its passes then do nothing).
 #define LOCAL_EXPOSURE 1.0 // [0.0 0.25 0.5 0.75 1.0]
 // Colour (see grade.glsl), nothing changed at the defaults. The white balance: the colour temperature (K) of a light
 // shown as white (higher is warmer), and a tint (green to magenta, 0 none).
@@ -113,18 +113,20 @@ const float upscaling_render_scale = RENDER_SCALE;
 // lets a lantern light the shade under a roof by day as it lights a room at night.
 #define BLOCK_LIGHT_DAY 1.0 // [0.0 0.5 1.0 1.5 2.0 3.0]
 
-// The glow around what is much brighter than what surrounds it (bloom): how much of it.
+// The glow around what is much brighter than what surrounds it (bloom): how much of it (0: none, and its passes do
+// nothing).
 #define BLOOM 1.0        // [0.0 0.5 1.0 1.5 2.0 3.0]
 
 // Ambient occlusion: the light all around (the sky's, the bounce light, the blocks') is less in creases, in corners
 // and under things, as the screen's depth shows them (a visibility bitmask over GTAO's slices, see screen_light.fsh),
 // on top of Minecraft's smooth lighting corners. More directions and steps for a steadier result. 0: Minecraft's
 // corners only.
-#define AO_QUALITY 2     // [0 1 2 3]
+#define AO_QUALITY 1     // [0 1 2 3]
 // Screen Bounce Light: what blocks the light all around a surface (in the ambient occlusion's reach) bounces its own
 // light onto it instead, from last frame's picture: colour from the surfaces right next to it, finer than the bounce
-// light's blocks. Needs Ambient Occlusion.
-#define SCREEN_BOUNCE
+// light's blocks. Needs Ambient Occlusion. Off by default: Bounce Light already lights a surface from what is around
+// it, so this only adds detail (High and Ultra have it).
+//#define SCREEN_BOUNCE
 #ifdef SCREEN_BOUNCE
 #endif
 
@@ -169,13 +171,28 @@ const float upscaling_render_scale = RENDER_SCALE;
 #ifdef GI
 #endif
 
+// Sky Visibility, in the lit overworld with shadows and Coloured Light or Bounce Light: how much of the sky each place
+// sees past the blocks around it, worked out a block at a time around you (see sky_visibility.csh), so a room sees the
+// sky only through its windows and the shade under a high roof or a floating island gets the sky's light from all
+// around. It only ever darkens Minecraft's own sky light, but where that is above 0 (under something high) it may
+// lift it; where Minecraft's sky light is 0 the sky never lights anything. Off: Minecraft's sky light alone.
+#define SKY_VISIBILITY
+#ifdef SKY_VISIBILITY
+#endif
+
+// The trees' crowns (with Coloured Light or Bounce Light): a tree's leaves lit and shaded by the round shape of their
+// crown rather than each leaf block's own faces (see canopy_shape). Off: each leaf block by its own faces.
+#define TREE_CROWNS
+#ifdef TREE_CROWNS
+#endif
+
 // Materials from the resource pack, in the lit overworld: a PBR resource pack's maps (LabPBR, as SPBR and most PBR
 // packs make them, see material.glsl) give each pixel of a texture its own facing, how smooth it is and what it
 // reflects (metals in their own colour), what glows, and its own crevices. Blocks without maps keep the pack's own
 // materials (see block.properties). Parallax: the height in the normal maps gives the surface depth, a texture pixel
 // at a time, with the sun's shadows inside it, out to Parallax Distance blocks; Parallax Depth: times how deep.
 #define MATERIALS
-#define PARALLAX
+//#define PARALLAX
 #define PARALLAX_DEPTH 1.0   // [0.25 0.5 0.75 1.0 1.25 1.5 2.0]
 #define PARALLAX_DISTANCE 32 // [16 24 32 48 64]
 #ifdef MATERIALS
@@ -199,10 +216,25 @@ const float upscaling_render_scale = RENDER_SCALE;
 #define WATER_WAVES 1.0             // [0.0 0.5 1.0 1.5 2.0]
 // Reflections of the world on water (and puddles), from what the screen shows (see reflection.glsl): how far and how
 // finely a reflected ray looks. 0: the sky only.
-#define REFLECTION_QUALITY 2        // [0 1 2 3]
+#define REFLECTION_QUALITY 1        // [0 1 2 3]
 #define WATER_RIPPLES
 #define WATER_RIPPLES_STRENGTH 1.0  // [0.5 1.0 1.5 2.0 3.0]
 #ifdef WATER_RIPPLES
+#endif
+// The shore (with shadows): foam where the water meets the ground and where something churns it, and the wet band it
+// leaves on the walls and banks it laps (see shore.glsl). Caustics: the net of light the waves focus on what lies a
+// block or two under water.
+#define WATER_SHORE
+#define WATER_CAUSTICS
+#ifdef WATER_SHORE
+#endif
+#ifdef WATER_CAUSTICS
+#endif
+
+// Rain, in the lit overworld: the film of water it leaves on everything, how it darkens what soaks it up, and puddles
+// with rings where the drops fall. Off: rain leaves things as they were.
+#define RAIN_WETNESS
+#ifdef RAIN_WETNESS
 #endif
 
 // Clouds, in the lit overworld: cumulus as a lit volume a kilometre and more up, and cirrus high above them, drifting
@@ -228,7 +260,7 @@ const float upscaling_render_scale = RENDER_SCALE;
 // past the clouds' edges, dust indoors that a sunbeam shows up, and a glow around lamps in their own colours; far
 // terrain fades into the same air as the sky. Quality: how fine the volume it's worked out in is (0: Minecraft's
 // fog alone). Dust: how much the air in a room or a cave holds. Lamp Glow: how much the air around lamps glows.
-#define AIR_QUALITY 3 // [0 1 2 3 4]
+#define AIR_QUALITY 2 // [0 1 2 3 4]
 #define AIR_DUST 1.0  // [0.0 0.5 1.0 1.5 2.0 3.0]
 #define LAMP_GLOW 1.0 // [0.0 0.5 1.0 1.5 2.0 3.0]
 
@@ -307,20 +339,16 @@ const float upscaling_render_scale = RENDER_SCALE;
 #define LIT_VOXELS
 #endif
 
-// How much of the sky each point sees past the blocks around it (see sky_grid.glsl), from more rays the higher the
-// ambient occlusion's quality.
+// The blocks around you that the sky's light can't get through (see sky_grid.glsl), which the sky visibility and the
+// light in the air trace their rays through.
 #if defined LIT_WORLD && defined SHADOWS
 #define LIT_SKY_GRID
 #define LIT_SHORE // the shore around the water near you (see shore.glsl)
-#if AO_QUALITY >= 3
-#define SKY_RAYS 8
-#elif AO_QUALITY == 2
-#define SKY_RAYS 6
-#elif AO_QUALITY == 1
-#define SKY_RAYS 4
-#else
-#define SKY_RAYS 3
 #endif
+
+// How much of the sky each place sees, worked out a block at a time in the light volume (see sky_visibility.csh).
+#if defined LIT_VOXELS && defined LIT_SKY_GRID && defined SKY_VISIBILITY
+#define LIT_SKY_VISIBILITY
 #endif
 
 #ifdef LIT_WORLD

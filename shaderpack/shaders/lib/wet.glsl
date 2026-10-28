@@ -26,6 +26,9 @@ float puddle_pattern(vec2 p) {
 // How much water stands on a surface (x: 0 dry, 1 a puddle) and how damp it is (y), for a surface facing normal
 // (world space) at scene_pos, with sky light sky (0..1) and its kind (SURFACE_...).
 vec2 puddle_at(vec3 scene_pos, vec3 normal, float sky, int surface) {
+#ifndef RAIN_WETNESS
+    return vec2(0.0); // Rain Wetness off
+#endif
     float fade = smoothstep(0.03, 0.1, cg_puddle) * smoothstep(14.0 / 15.0, 14.8 / 15.0, sky);
     if (fade <= 0.0 || normal.y < 0.9 || surface == SURFACE_LEAVES) {
         return vec2(0.0);

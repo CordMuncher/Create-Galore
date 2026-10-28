@@ -125,11 +125,16 @@ void mark_block(vec3 scene_pos, vec2 uv) {
         imageAtomicMax(cg_voxel_img, marks_texel(block, section_lights), light_mark(level, c));
     }
 #endif
+    if (id == BLOCK_SHUT || id == BLOCK_METAL_SHUT) {
+        imageAtomicOr(cg_voxel_img, block, mark_shut);
+    }
 #if defined PROGRAM_SHADOW_SOLID
-    // A solid block stops the light if all its vertices sit on its corners (a full cube; a slab or a stair has some
-    // inside the block).
-    bool corner = all(greaterThan(abs(at_midBlock.xyz), vec3(31.5)));
-    imageAtomicOr(cg_voxel_img, block, corner ? mark_solid : mark_partial);
+    // Which of the block's vertices this is: on one of its corners, or inside it, and if inside, how far in (see
+    // marks_solid: a slab's or a stair's middle lies half a block in, a carpet's top a sixteenth).
+    vec3 off = abs(at_midBlock.xyz);
+    bool corner = all(greaterThan(off, vec3(31.5)));
+    bool deep = min(off.x, min(off.y, off.z)) < 15.5;
+    imageAtomicOr(cg_voxel_img, block, corner ? mark_solid : (deep ? mark_partial | mark_deep : mark_partial));
 #elif defined PROGRAM_SHADOW_WATER
     // Stained glass, ice, slime and honey tint the light through them; water lets it through as it is.
     if (id != BLOCK_WATER && (gl_VertexID & 3) == 0) {
@@ -154,10 +159,11 @@ in vec4 at_midBlock; // xyz from the vertex to its block's centre (1/64 blocks)
 layout(r32ui) uniform uimage2D cg_water_marks_img;
 
 // Marks the block a face belongs to in the sky grid (see sky_grid.glsl), from one vertex of the face: every solid
-// block (slabs and stairs too), leaves and water.
+// block (slabs and stairs too), leaves, closed doors and trapdoors, and water.
 void mark_sky(vec3 scene_pos) {
 #if defined PROGRAM_SHADOW_CUTOUT
-    if (int(mc_Entity.x + 0.5) != BLOCK_LEAVES) {
+    int id = int(mc_Entity.x + 0.5);
+    if (id != BLOCK_LEAVES && id != BLOCK_SHUT && id != BLOCK_METAL_SHUT) {
         return;
     }
 #elif defined PROGRAM_SHADOW_WATER

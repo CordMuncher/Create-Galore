@@ -34,9 +34,7 @@
 //            frame's picture exists.
 //
 // And what the screen shows around each surface (see screen_light.fsh): colortex13 this frame's (RGBA16F), colortex14
-// the same blended over frames (RGBA16F, kept from frame to frame, see deferred.fsh). colortex15 (RG16F, kept from
-// frame to frame): r the share of the sky the sky grid's rays from each surface see this frame, g the same blended
-// over frames (see sky_rays_settled in deferred.fsh); -1 where they see none.
+// the same blended over frames (RGBA16F, kept from frame to frame, see deferred.fsh).
 
 #if !defined LIB_GBUFFER
 #define LIB_GBUFFER
@@ -73,8 +71,6 @@ const int colortex13Format = RGBA16F;
 const bool colortex13Clear = false;
 const int colortex14Format = RGBA16F;
 const bool colortex14Clear = false;
-const int colortex15Format = RG16F;
-const bool colortex15Clear = false;
 */
 #endif
 
@@ -126,6 +122,8 @@ float decode_sun_facing(float g) {
 #define BLOCK_POLISHED 10004
 #define BLOCK_SOIL 10005
 #define BLOCK_SAND 10006
+#define BLOCK_SHUT 10007       // a closed door or trapdoor
+#define BLOCK_METAL_SHUT 10008 // a closed iron door or trapdoor
 #define BLOCK_LAVA 10107 // lava and magma (also a light the coloured light gives a set colour, see shadow.vsh)
 #define BLOCK_LIGHT_RED 10101 // 10101..10109: lights with colours of their own (see shadow.vsh)
 #define BLOCK_LIGHT_LAST 10109

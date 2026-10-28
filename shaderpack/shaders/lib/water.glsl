@@ -325,6 +325,9 @@ float water_depth_marked(vec3 scene_pos) {
 // than blue, so the lines have coloured edges. They fade out by 48 blocks off, where a pixel spans several lines and
 // they would only sparkle on what is down there (seagrass, kelp).
 vec3 water_caustics(vec3 scene_pos, float depth, float dist) {
+#ifndef WATER_CAUSTICS
+    return vec3(1.0);
+#endif
     float fade = smoothstep(0.2, 1.0, depth) * (1.0 - smoothstep(16.0, 48.0, dist));
     if (fade <= 0.0) {
         return vec3(1.0);

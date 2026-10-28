@@ -200,6 +200,9 @@ vec4 with_sky_reflection(vec4 color, vec3 normal, vec3 view_dir, float sky) {
 // (0..1) facing normal is, the tops most: the film of water on it (x) and how damp it is under that (y), which dries
 // more slowly.
 vec2 wetness_at(vec3 normal, float sky) {
+#ifndef RAIN_WETNESS
+    return vec2(0.0); // Rain Wetness off
+#endif
     return vec2(cg_wet, cg_damp) * smoothstep(13.5 / 15.0, 14.5 / 15.0, sky) * mix(0.35, 1.0, max(normal.y, 0.0));
 }
 

@@ -26,6 +26,9 @@ vec3 level_texel(int level, ivec2 p) {
 }
 
 void main() {
+    if (BLOOM <= 0.0) {
+        return; // Bloom off: final.fsh doesn't read the pyramid
+    }
     ivec2 p = ivec2(gl_GlobalInvocationID.xy);
 #if defined BLOOM_DOWN
     ivec4 rect = bloom_rect(BLOOM_DOWN);

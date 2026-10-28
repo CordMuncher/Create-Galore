@@ -42,18 +42,20 @@ const bool colortex11Clear = false;
 
 // The cells' size in render pixels and how many slices deep the volume is, by Light in the Air's quality. The page's
 // size in shaders.properties follows from them: air_columns times the window over air_tile across, the rows times it
-// up, and a little more.
+// up, and a little more. At 2560 by 1440: about 0.45 million cells (Low), 0.9 million (Default), 2 million (High) and
+// 3.5 million (Ultra). Unreal's volumetric fog takes 16 by 16 pixel cells and 64 slices at High (half a million at
+// 1080p, about a millisecond on a PS4) and 8 by 8 by 128 at Epic, eight times as many.
 #if AIR_QUALITY == 1
+const int air_tile = 20;
+const int air_slices = 48;
+#elif AIR_QUALITY == 2
 const int air_tile = 16;
 const int air_slices = 64;
-#elif AIR_QUALITY == 2
-const int air_tile = 12;
-const int air_slices = 96;
 #elif AIR_QUALITY == 3
-const int air_tile = 8;
-const int air_slices = 96;
+const int air_tile = 12;
+const int air_slices = 80;
 #else
-const int air_tile = 6;
+const int air_tile = 10;
 const int air_slices = 96;
 #endif
 const int air_columns = 8;
