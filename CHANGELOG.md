@@ -5,6 +5,17 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.6.27
+
+### Added
+- Create Galore Bridge 1.150.0.
+
+### Fixed
+- **Enchanted items no longer strobe with Photon + DLAA.** The enchantment glint on a held, worn or dropped enchanted item flickered on and off, in bands and patches, with DLAA or DLSS on and Normal Mapping off. The glint is drawn only where its depth matches the item's to the last bit, and the motion vector code the pack adds to Photon made the graphics driver round the item's position a hair differently from the glint's. Every program that draws or takes an overlay now computes its position the same way, so the glint sits exactly on the item again and moving machines keep their motion vectors. The block breaking cracks follow the same rule.
+
+### Removed
+- Nothing.
+
 ## 0.6.26
 
 ### Added
