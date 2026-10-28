@@ -5,6 +5,15 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.6.18
+
+### Added
+- **Field Guide: what to do when a graphics setting won't run**, on the Performance and Shaders page: the DLSS files, DirectX 12 on other drivers, what DLSS frame generation needs from Windows and the NVIDIA Control Panel, and which lines of the game log to look at.
+- Create Galore Bridge 1.141.0.
+
+### Fixed
+- **The Upscaling & Display tooltips are short now**, like a game's graphics menu: what a setting does and what it trades, in a line or two. Options marked with a red * say they haven't been tested on that hardware yet but should work. The status beside a setting that can't run still says why when you hover it. No setting works differently.
+
 ## 0.6.17
 
 ### Added

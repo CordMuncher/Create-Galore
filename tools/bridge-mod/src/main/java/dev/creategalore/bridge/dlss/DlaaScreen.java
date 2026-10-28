@@ -178,9 +178,7 @@ public final class DlaaScreen extends Screen {
                 event.addListener(Button.builder(label, button -> screen.getMinecraft().setScreen(new DlaaScreen(screen)))
                         .bounds(screen.width - buttonWidth - 6, 6, buttonWidth, 20)
                         .tooltip(net.minecraft.client.gui.components.Tooltip.create(Component.literal(
-                                "NVIDIA DLSS or AMD FSR 3.1 in place of the shader pack's own anti-aliasing, at full resolution or upscaling"
-                                        + " (shader packs made for DLAA, such as " + PhotonPatcher.PATCHED_NAME + "), and the display"
-                                        + " settings: Perfect Presentation, NVIDIA Reflex, GPU pacing and the frame counter.")))
+                                "DLSS and FSR upscaling, frame generation, NVIDIA Reflex and the frame counter.")))
                         .build());
             }
         });
@@ -225,14 +223,9 @@ public final class DlaaScreen extends Screen {
         // goes by Streamline); where it is already on, it can still be turned off.
         String rrRefused = Dlss.rayReconstructionRefused();
         String rrTooltip = rrRefused != null
-                ? "NVIDIA's NGX, which runs Ray Reconstruction, says it can't run here: " + rrRefused + ". It is asked again"
-                        + " whenever DLSS starts."
-                : "Experimental: NVIDIA DLSS Ray Reconstruction in place of DLSS, with " + PhotonPatcher.PATCHED_NAME
-                        + ". It cleans up Photon's reflections and soft shadows, which Photon then leaves noisy for it."
-                        + " Turning it on sets Photon to Ultra the first time, and to your own changes after that; turning"
-                        + " it off brings back the Photon settings you had. Where NVIDIA's NGX says the card runs it (RTX"
-                        + " cards, NVIDIA driver 580 or newer), with nvngx_dlssd.dll in the DLSS folder (Find on this PC"
-                        + " copies it).";
+                ? "Not supported on this PC: " + rrRefused + "."
+                : "Experimental. NVIDIA DLSS Ray Reconstruction replaces DLSS and cleans up Photon's lighting: clearer"
+                        + " reflections, steadier shadows. Costs some frames.";
         CycleButton<Boolean> rrButton = add(CycleButton.onOffBuilder(rayReconstruction)
                 .withTooltip(value -> net.minecraft.client.gui.components.Tooltip.create(Component.literal(rrTooltip)))
                 .create(left, RR_ROW, half, 20, Component.literal("Ray Reconstruction"), (button, value) -> {
@@ -258,16 +251,13 @@ public final class DlaaScreen extends Screen {
                     refreshDll();
                 })
                 .tooltip(net.minecraft.client.gui.components.Tooltip.create(Component.literal(
-                        "Looks for nvngx_dlss.dll, nvngx_dlssg.dll for DLSS Frame Generation and nvngx_dlssd.dll for Ray"
-                                + " Reconstruction, where the NVIDIA app keeps the DLSS versions it downloaded"
-                                + " (ProgramData\\NVIDIA\\NGX), and copies the newest of each into the DLSS folder. Nowhere else,"
-                                + " and only when you press this.")))
+                        "Copies the newest DLSS files the NVIDIA app downloaded into the DLSS folder.")))
                 .bounds(left, y, third, 20).build());
         add(Button.builder(Component.literal("Open DLSS folder"), button -> openDllFolder())
                 .bounds(left + third + 4, y, third, 20).build());
         add(Button.builder(Component.literal("Get from NVIDIA"), ConfirmLinkScreen.confirmLink(this, DLL_PAGE))
                 .tooltip(net.minecraft.client.gui.components.Tooltip.create(Component.literal(
-                        "NVIDIA's DLSS SDK on GitHub: download nvngx_dlss.dll and put it in the DLSS folder.")))
+                        "Download nvngx_dlss.dll from NVIDIA and put it in the DLSS folder.")))
                 .bounds(left + 2 * (third + 4), y, WIDTH - 2 * (third + 4), 20).build());
         if (Dlss.crashed()) {
             y += 24;
@@ -280,9 +270,8 @@ public final class DlaaScreen extends Screen {
         int step = height < 268 ? 22 : 24; // seven rows and Done fit a 240 high screen
         presentationButton = add(CycleButton.onOffBuilder(perfectPresentation)
                 .withTooltip(value -> net.minecraft.client.gui.components.Tooltip.create(Component.literal(
-                        "Windows only, needs a restart: shows the game through a DirectX swap chain, so borderless fullscreen"
-                                + " runs at exclusive fullscreen speed and Alt-Tab never changes the display mode. NVIDIA Reflex"
-                                + " and frame generation need it.")))
+                        "Windows. Faster borderless fullscreen and instant Alt-Tab. Needed for NVIDIA Reflex and frame"
+                                + " generation. Requires a restart.")))
                 .create(left, y, half, 20, Component.literal("Perfect Presentation"), (button, value) -> {
                     perfectPresentation = value;
                     if (!value && !reflex.equals("off")) {
@@ -301,7 +290,7 @@ public final class DlaaScreen extends Screen {
                 }));
         add(CycleButton.onOffBuilder(tenBitWindow)
                 .withTooltip(value -> net.minecraft.client.gui.components.Tooltip.create(Component.literal(
-                        "Experimental, needs a restart: asks for a 10-bit game window.")))
+                        "Experimental. A 10-bit game window, for less colour banding. Requires a restart.")))
                 .create(left + half + 4, y, half, 20, Component.literal("10-bit window"), (button, value) -> tenBitWindow = value));
         y += step;
         apiChoice = choice("DirectX", APIS, api, DlaaScreen::apiLabel, DlaaScreen::apiTooltip, left, y, half, value -> {
@@ -372,12 +361,11 @@ public final class DlaaScreen extends Screen {
         choice("Frame counter", FPS_MODES, fpsCounter, DlaaScreen::fpsLabel, DlaaScreen::fpsTooltip, left, y, half, value -> fpsCounter = value);
         add(CycleButton.onOffBuilder(fpsDim)
                 .withTooltip(value -> net.minecraft.client.gui.components.Tooltip.create(Component.literal(
-                        "For OLED screens: the frame counter is see-through, without its dark backing, and moves by a pixel"
-                                + " every two minutes, so it doesn't burn in.")))
+                        "See-through frame counter that shifts slightly over time, so it can't burn into an OLED screen.")))
                 .create(left + half + 4, y, half, 20, Component.literal("Dim for OLED"), (button, value) -> fpsDim = value));
         y += step;
-        choice("Corner", CORNERS, fpsCorner, DlaaScreen::cornerLabel, value -> "Where the frame counter sits. In the top right"
-                + " it moves down under the status effect icons.", left, y, half, value -> fpsCorner = value);
+        choice("Corner", CORNERS, fpsCorner, DlaaScreen::cornerLabel, value -> "Where the frame counter sits.", left, y, half,
+                value -> fpsCorner = value);
         if (FrameLatency.crashed()) {
             y += step;
             tryAgain(left, y);
@@ -419,11 +407,13 @@ public final class DlaaScreen extends Screen {
     }
 
     private void tryAgain(int left, int y) {
-        add(Button.builder(Component.literal("Try again (turned off after the game closed while starting)"), button -> {
+        add(Button.builder(Component.literal("Try again"), button -> {
                     Dlss.tryAgain();
                     FrameLatency.tryAgain();
                     button.active = false;
                 })
+                .tooltip(net.minecraft.client.gui.components.Tooltip.create(Component.literal(
+                        "Turned off because the game closed while starting it.")))
                 .bounds(left, y, WIDTH, 20).build());
     }
 
@@ -450,15 +440,14 @@ public final class DlaaScreen extends Screen {
     }
 
     private void renderAntiAliasing(GuiGraphics graphics, int left) {
-        lines(graphics, "Optional. Only with a shader pack made for DLAA, such as \""
-                + PhotonPatcher.PATCHED_NAME + "\": pick it in the shader menu.", left, 28, 0xFFDD66, 3);
+        lines(graphics, "Works with the shader pack \"" + PhotonPatcher.PATCHED_NAME + "\".", left, 28, 0xFFDD66, 3);
         int y = RR_ROW + 24;
         String picked = preset.equals("other") ? letter : preset;
         if (picked.equals("L") || picked.equals("M")) {
             // NVIDIA (DLSS 4.5): RTX 20 and 30 cards have no native FP8, so L and M cost more there. Nothing is checked or locked.
             // Two lines at most, so the DLL line keeps its room.
-            y = lines(graphics, "L and M are made for RTX 40 and 50 cards and cost more on RTX 20 and 30 (no FP8): if frames drop,"
-                    + " use K.", left, y, 0xFFAA44, buttonsTop < 200 ? 1 : 2);
+            y = lines(graphics, "L and M run best on RTX 40 and 50 cards: on older cards, use K if frames drop.", left, y, 0xFFAA44,
+                    buttonsTop < 200 ? 1 : 2);
         }
         // What "Find on this PC" did takes the DLL line's place (it names the version) and keeps its two lines; the status
         // keeps a line however short the screen, and the rest of it where it fits.
@@ -467,8 +456,7 @@ public final class DlaaScreen extends Screen {
     }
 
     private void renderDisplay(GuiGraphics graphics, int left, int mouseX, int mouseY) {
-        lines(graphics, "Perfect Presentation, the 10-bit window and DirectX need a restart; frame generation turns on and off"
-                + " at once.", left, 28, 0xAAAAAA, 2);
+        lines(graphics, "Perfect Presentation, 10-bit window and DirectX apply after a restart.", left, 28, 0xAAAAAA, 2);
         FrameLatency.Status apiStatus = apiStatus();
         if (apiStatus != null) {
             int half = (WIDTH - 4) / 2;
@@ -645,26 +633,21 @@ public final class DlaaScreen extends Screen {
     private FrameLatency.Status apiStatus() {
         String running = Presentation.api();
         boolean dx12 = api.equals("dx12");
-        String detail = "In tests DirectX 12 ran at the same frame rate as DirectX 11 with marginally lower input delay, and"
-                + " frame generation needs it. If anything looks or feels wrong, try 11.";
         if (dx12 && Util.getPlatform() != Util.OS.WINDOWS) {
-            return new FrameLatency.Status("Needs Windows.", "Perfect Presentation, and with it DirectX, runs only on Windows.", true);
+            return new FrameLatency.Status("Needs Windows.", null, true);
         }
         if (dx12 && Presentation.requested() && !Presentation.active()) {
-            return new FrameLatency.Status("Can't run: Perfect Presentation failed.", "Perfect Presentation, which shows the"
-                    + " game through DirectX, could not start this time; the game log says why (lines starting with Perfect"
-                    + " Presentation:).", true);
+            return new FrameLatency.Status("Can't run: Perfect Presentation failed.", "Check the game log for lines starting with \"Perfect Presentation:\".", true);
         }
         if (dx12 && Presentation.dx12FellBack()) {
-            return new FrameLatency.Status("Couldn't start: on DirectX 11.", "DirectX 12 could not start this time, so the game"
-                    + " runs on DirectX 11; the game log says why (lines starting with Perfect Presentation:). It needs an OpenGL"
-                    + " driver that shares textures with DirectX 12: NVIDIA's does, Intel's doesn't.", true);
+            return new FrameLatency.Status("Couldn't start: on DirectX 11.", "This graphics driver can't run DirectX 12 here. "
+                    + "Check the game log for lines starting with \"Perfect Presentation:\".", true);
         }
         if (dx12 && !"DirectX 12".equals(running)) {
-            return new FrameLatency.Status("Starts after a restart.", detail, false);
+            return new FrameLatency.Status("Starts after a restart.", null, false);
         }
         if (dx12) {
-            return new FrameLatency.Status("Running: marginally lower delay.", detail, false);
+            return new FrameLatency.Status("Running.", null, false);
         }
         return perfectPresentation && "DirectX 12".equals(running)
                 ? new FrameLatency.Status("Back to 11 after a restart.", null, false) : null;
@@ -673,22 +656,18 @@ public final class DlaaScreen extends Screen {
     /** What Reflex does or will do, beside its setting; null while it is off. */
     private FrameLatency.Status reflexStatus() {
         if (reflex.equals("off") && frameGen.equals("dlss") && perfectPresentation && api.equals("dx12")) {
-            return new FrameLatency.Status("Stays on: frame generation needs it.", "NVIDIA requires Reflex with frame generation:"
-                    + " while frame generation runs, Reflex is on whatever this says.", false);
+            return new FrameLatency.Status("Stays on: frame generation needs it.", null, false);
         }
         if (reflex.equals("off")) {
             return null;
         }
         if (Util.getPlatform() != Util.OS.WINDOWS) {
-            return new FrameLatency.Status("Needs Windows and an NVIDIA card.", "NVIDIA Reflex runs only on Windows, with an NVIDIA"
-                    + " graphics card (GTX 900 or newer).", true);
+            return new FrameLatency.Status("Needs Windows and an NVIDIA card.", null, true);
         }
         if (!Presentation.active()) {
             return Presentation.requested()
-                    ? new FrameLatency.Status("Can't run: Perfect Presentation failed.", "Perfect Presentation, which Reflex runs on,"
-                            + " could not start this time; the game log says why (lines starting with Perfect Presentation:).", true)
-                    : new FrameLatency.Status("Runs after you restart the game.", "Reflex runs on Perfect Presentation's DirectX"
-                            + " device, and Perfect Presentation starts with the game: restart it once.", true);
+                    ? new FrameLatency.Status("Can't run: Perfect Presentation failed.", "Check the game log for lines starting with \"Perfect Presentation:\".", true)
+                    : new FrameLatency.Status("Runs after you restart the game.", null, true);
         }
         FrameLatency.Status running = FrameLatency.status();
         return running == null || !reflex.equals(initial.get(DisplaySettings.REFLEX))
@@ -704,71 +683,52 @@ public final class DlaaScreen extends Screen {
     private FrameLatency.Status frameGenStatus() {
         boolean dlss = frameGen.equals("dlss");
         if (Util.getPlatform() != Util.OS.WINDOWS) {
-            return new FrameLatency.Status("Needs Windows.", "Frame generation runs in Perfect Presentation's DirectX 12"
-                    + " presenter, only on Windows.", !frameGen.equals("off"));
+            return new FrameLatency.Status("Needs Windows.", null, !frameGen.equals("off"));
         }
         if (dlss && !dlssFrameGenOffered) {
-            return new FrameLatency.Status("Streamline says no: hover for why.", "NVIDIA's Streamline, which runs DLSS Frame"
-                    + " Generation, says it can't run here: " + FrameGen.streamlineWhy() + ". It is asked again at every"
-                    + " start. FSR frame generation runs on other cards too.", true);
+            return new FrameLatency.Status("Not supported: hover for why.", "Not supported on this PC: " + FrameGen.streamlineWhy()
+                    + ". FSR frame generation works on any graphics card.", true);
         }
         if (frameGen.equals("off")) {
             return FrameGen.on() ? new FrameLatency.Status("Turns off when you close this screen.", null, false) : null;
         }
         if (engine.equals("off")) {
-            return new FrameLatency.Status("Needs DLSS or FSR (Upscaling tab).", "Frame generation is made from what NVIDIA DLSS"
-                    + " or AMD FSR 3.1 use: pick one of them as Anti-aliasing, with a shader pack made for it.", true);
+            return new FrameLatency.Status("Needs DLSS or FSR (Upscaling tab).", null, true);
         }
         if (dlss && Dlss.frameGenerationDllVersion() == null) {
-            return new FrameLatency.Status("Needs nvngx_dlssg.dll (Upscaling tab).", "NVIDIA's frame generation model is not part"
-                    + " of the pack, like nvngx_dlss.dll: the Upscaling tab's Find on this PC copies it from the NVIDIA app's"
-                    + " downloads, or put your own in the DLSS folder (Open DLSS folder).", true);
+            return new FrameLatency.Status("Needs nvngx_dlssg.dll (Upscaling tab).", "Use Find on this PC on the Upscaling tab.", true);
         }
-        String detail = dlss ? DLSS_FRAME_GEN_DETAIL : FSR_FRAME_GEN_DETAIL;
         boolean running = FrameGen.running();
         if (running && !FrameGen.settingOf(FrameGen.backend()).equals(frameGen)) {
-            return new FrameLatency.Status("Switches after a restart.", "The game loads one kind of frame generation"
-                    + " when DirectX 12 starts, " + frameGenName(FrameGen.settingOf(FrameGen.backend())) + " this time: "
-                    + frameGenName(frameGen) + " after a restart. From then on it turns on and off at once. " + detail, false);
+            return new FrameLatency.Status("Switches after a restart.", null, false);
         }
         if (!FrameGen.requested() || !"DirectX 12".equals(Presentation.api())) {
-            return new FrameLatency.Status("Starts after a restart.", detail, false);
+            return new FrameLatency.Status("Starts after a restart.", null, false);
         }
         String problem = FrameGen.problem();
         if (problem != null) {
             return new FrameLatency.Status(running ? "Stopped: hover for why." : "Couldn't start: hover for why.",
-                    "Frame generation " + (running ? "stopped for this game: " : "could not start: ") + problem
-                            + ". The game log has more (lines starting with Frame generation:).", true);
+                    problem + ". Check the game log for lines starting with \"Frame generation:\".", true);
         }
         if (!running) {
-            return new FrameLatency.Status("Can't run: DirectX 12 didn't start.", "Frame generation runs in Perfect Presentation's"
-                    + " DirectX 12 presenter, which could not start this time; the game log says why (lines starting with"
-                    + " Perfect Presentation:).", true);
+            return new FrameLatency.Status("Can't run: DirectX 12 didn't start.", "Check the game log for lines starting with \"Perfect Presentation:\".", true);
         }
         int generated = FrameGen.framesGenerated();
         if (FrameGen.on() && dlss && frameGenMultiplier == FrameGen.DYNAMIC) {
             if (!FrameGen.dynamicSupported()) {
-                return new FrameLatency.Status("Running at 2x: hover for why.", "NVIDIA's Streamline says Dynamic Multi Frame"
-                        + " Generation doesn't run on this card or driver, so it runs at 2x. " + detail, false);
+                return new FrameLatency.Status("Running at 2x: hover for why.", "Dynamic isn't supported on this graphics card or"
+                        + " driver.", false);
             }
-            return new FrameLatency.Status("Running, Dynamic.", detail, false);
+            return new FrameLatency.Status("Running, Dynamic.", null, false);
         }
         if (FrameGen.on() && dlss && frameGenMultiplier > 2 && generated > 0 && generated + 1 < frameGenMultiplier) {
-            return new FrameLatency.Status("Running at " + (generated + 1) + "x: hover for why.", "NVIDIA's Streamline says this card"
-                    + " generates at most " + generated + (generated == 1 ? " frame" : " frames") + " per rendered one, so it runs at "
-                    + (generated + 1) + "x. " + detail, false);
+            return new FrameLatency.Status("Running at " + (generated + 1) + "x: hover for why.", "This graphics card supports up to "
+                    + (generated + 1) + "x.", false);
         }
         return FrameGen.on() ? new FrameLatency.Status(dlss ? (frameGenMultiplier > 2 ? "Running at " + frameGenMultiplier + "x." : "Running.")
-                : "Running.", detail, false)
-                : new FrameLatency.Status("Turns on when you close this screen.", detail, false);
+                : "Running.", null, false)
+                : new FrameLatency.Status("Turns on when you close this screen.", null, false);
     }
-
-    private static final String FRAME_GEN_DETAIL = "Pauses in menus and while the game is paused, and runs only with DLSS or"
-            + " FSR anti-aliasing.";
-    private static final String DLSS_FRAME_GEN_DETAIL = FRAME_GEN_DETAIL + " Needs Windows with Hardware-accelerated GPU"
-            + " scheduling on and Vertical sync in the NVIDIA Control Panel at \"Use the 3D application setting\".";
-    private static final String FSR_FRAME_GEN_DETAIL = FRAME_GEN_DETAIL + " Works best from about 60 frames a"
-            + " second without it.";
 
     private static String frameGenName(String value) {
         return value.equals("dlss") ? "DLSS" : value.equals("fsr") ? "FSR" : "none";
@@ -785,51 +745,32 @@ public final class DlaaScreen extends Screen {
 
     private static String frameGenTooltip(String value) {
         return switch (value) {
-            case "dlss" -> "Where NVIDIA's Streamline says the card runs it (RTX 40 and 50): NVIDIA DLSS Frame Generation"
-                    + " shows a frame of its own between every two the game renders, so the picture moves about twice as"
-                    + " smoothly, for a little more input delay. Needs Perfect Presentation on DirectX 12 and NVIDIA Reflex,"
-                    + " which this turns on, DLSS or FSR anti-aliasing (Upscaling tab), and nvngx_dlssg.dll in the DLSS folder"
-                    + " (Find on this PC). Turns on and off at once; switching from FSR needs a restart.";
-            case "dlss-3x", "dlss-4x" -> {
-                int shown = value.charAt(5) - '0';
-                yield "NVIDIA DLSS Multi Frame Generation, offered because NVIDIA's Streamline says this card runs it (RTX 50):"
-                        + " shows " + (shown - 1) + " frames of its own for every one the game renders, so the picture moves"
-                        + " about " + (shown == 3 ? "three" : "four") + " times as smoothly, for a little more input delay than"
-                        + " 2x. A Max Framerate cap counts the frames on screen. * Not yet tried on an RTX 50 card: it runs the"
-                        + " same way as 2x, which was tested, so it should work, but it may show problems 2x doesn't; DLSS (2x)"
-                        + " is the tested choice. Needs the same as DLSS above.";
-            }
-            case "dlss-dynamic" -> "NVIDIA DLSS Dynamic Multi Frame Generation, offered because NVIDIA's Streamline says"
-                    + " this card and driver run it (RTX 50, driver 595.41 or newer): it keeps the game's own frame rate and"
-                    + " changes how many frames of its own it shows per rendered one, scene by scene, to fill your monitor's"
-                    + " refresh rate (with V-Sync on, the rate it shows without tearing). 2x, 3x and 4x keep the"
-                    + " multiplier fixed and steady instead; Dynamic keeps input delay lower when the game runs fast, but you"
-                    + " may notice it switching. A Max Framerate cap counts the frames on screen. * Not yet tried on an"
-                    + " RTX 50 card. Needs the same as DLSS above.";
-            case "fsr" -> "Any graphics card DirectX 12 runs on here (NVIDIA cards do): AMD FSR 3.1 frame generation"
-                    + " shows a frame of its own between every two the game renders, so the picture moves about twice as"
-                    + " smoothly, for a little more input delay. Best from about 60 frames a second without it. Needs Perfect"
-                    + " Presentation on DirectX 12, which this turns on, and DLSS or FSR anti-aliasing (Upscaling tab). Turns on"
-                    + " and off at once; switching from DLSS needs a restart.";
-            default -> "The game shows the frames it renders.";
+            case "dlss" -> "NVIDIA DLSS Frame Generation: about twice as smooth, with slightly more input delay.";
+            case "dlss-3x", "dlss-4x" -> "NVIDIA DLSS Multi Frame Generation: about " + (value.charAt(5) == '3' ? "three" : "four")
+                    + " times as smooth, with slightly more input delay than 2x." + UNTESTED;
+            case "dlss-dynamic" -> "NVIDIA DLSS Multi Frame Generation that adapts to fill your monitor's refresh rate. Lower input"
+                    + " delay than 2x to 4x, but less steady." + UNTESTED;
+            case "fsr" -> "AMD FSR frame generation: about twice as smooth, with slightly more input delay. Any graphics card;"
+                    + " best above 60 fps.";
+            default -> "Adds frames between the ones the game renders, for smoother motion.";
         };
     }
+
+    /** After a red *: not yet tried on hardware that runs it. */
+    private static final String UNTESTED = " * Not yet tested on this hardware, but it should work.";
 
     private void refreshDll() {
         String found = Dlss.foundDllVersion();
         dllLine = found == null
-                ? "nvngx_dlss.dll: not found. DLSS needs your own (not in the pack): " + Dlss.TESTED_DLL_VERSION
-                        + " or newer in the DLSS folder (find it on this PC or get it from NVIDIA), then reload shaders (F8)."
-                : "nvngx_dlss.dll: " + found + " (tested with " + Dlss.TESTED_DLL_VERSION + "). Close the game before replacing it.";
+                ? "DLSS needs nvngx_dlss.dll: use Find on this PC or Get from NVIDIA, then press F8."
+                : "DLSS " + found + ".";
         if (dlssFrameGenOffered) {
             String model = Dlss.frameGenerationDllVersion();
-            dllLine += " Frame generation's nvngx_dlssg.dll: " + (model == null ? "not found (find it on this PC)."
-                    : model + " (tested with " + Dlss.TESTED_FG_DLL_VERSION + ").");
+            dllLine += " Frame generation " + (model == null ? "not found: use Find on this PC." : model + ".");
         }
         if (rayReconstruction) {
             String rr = Dlss.rayReconstructionDllVersion();
-            // Short, so the line still fits under the extra row.
-            dllLine += " RR's nvngx_dlssd.dll: " + (rr == null ? "not found." : rr + ".");
+            dllLine += " Ray Reconstruction " + (rr == null ? "not found." : rr + ".");
         }
     }
 
@@ -854,10 +795,10 @@ public final class DlaaScreen extends Screen {
 
     private static String engineTooltip(String value) {
         return switch (value) {
-            case "dlss" -> "Only NVIDIA DLSS (DLAA at full resolution): Windows, an NVIDIA RTX card and your own nvngx_dlss.dll.";
-            case "fsr3" -> "Only AMD FSR 3.1: any graphics card with OpenGL 4.5, nothing to download.";
-            case "off" -> "The shader pack's own anti-aliasing (in Photon: TAA, or TAAU when upscaling).";
-            default -> "NVIDIA DLSS where it can run (Windows, an NVIDIA RTX card, your own nvngx_dlss.dll), else AMD FSR 3.1.";
+            case "dlss" -> "NVIDIA DLSS. NVIDIA RTX graphics cards.";
+            case "fsr3" -> "AMD FSR 3.1. Any graphics card.";
+            case "off" -> "The shader pack's own anti-aliasing.";
+            default -> "NVIDIA DLSS on RTX graphics cards, AMD FSR 3.1 on others.";
         };
     }
 
@@ -874,16 +815,14 @@ public final class DlaaScreen extends Screen {
 
     private static String scaleTooltip(String value) {
         return switch (value) {
-            case "native" -> "Renders at the window's size: DLSS (as DLAA) or FSR only smooth the edges.";
-            case "custom" -> "Any render resolution from 25% to 100% of the window's width and height, with the slider."
-                    + " For trying things out: the standard modes are the tested ones.";
+            case "native" -> "Full resolution: the sharpest picture.";
+            case "custom" -> "Any render resolution from 25% to 100%.";
             default -> "Renders at " + switch (value) {
-                        case "quality" -> "2/3";
+                        case "quality" -> "67%";
                         case "balanced" -> "58%";
-                        case "performance" -> "half";
-                        default -> "1/3";
-                    } + " of the window's width and height and upscales: faster, a little softer. With anti-aliasing Off,"
-                    + " the shader pack's own upscaling (Photon's TAAU) does it.";
+                        case "performance" -> "50%";
+                        default -> "33%";
+                    } + " resolution and upscales: more frames, a little softer.";
         };
     }
 
@@ -893,12 +832,8 @@ public final class DlaaScreen extends Screen {
 
     private static String apiTooltip(String value) {
         return value.equals("dx12")
-                ? "Perfect Presentation shows the game through DirectX 12, where a fresh install starts. Marginally lower"
-                        + " input delay than DirectX 11 in tests, at the same frame rate, and frame generation needs it. Needs"
-                        + " Perfect Presentation, which this turns on, and a restart. Where DirectX 12 can't start, the game"
-                        + " uses 11."
-                : "Perfect Presentation shows the game through DirectX 11: for a graphics card whose OpenGL driver can't share"
-                        + " textures with DirectX 12. Needs a restart.";
+                ? "Slightly lower input delay, and needed for frame generation. Requires a restart."
+                : "For graphics cards that can't run DirectX 12 here. Requires a restart.";
     }
 
     private static Component reflexLabel(String value) {
@@ -911,13 +846,9 @@ public final class DlaaScreen extends Screen {
 
     private static String reflexTooltip(String value) {
         return switch (value) {
-            case "on" -> "Experimental, Windows and NVIDIA (GTX 900 or newer): the driver starts each frame as late as it can"
-                    + " while keeping the graphics card busy, and the game reads the mouse just before it draws, to shorten the"
-                    + " time from moving the mouse to seeing it. Needs Perfect Presentation, which this turns on (after a"
-                    + " restart). Works best with a Max Framerate the card can hold, which Reflex then keeps.";
-            case "boost" -> "Like On, and the graphics card keeps its clocks up even when it waits on the processor: a little"
-                    + " less delay where the processor holds the frame rate back, for more power.";
-            default -> "The game reads input and paces its frames as it always does.";
+            case "on" -> "Experimental. Lowers input delay. NVIDIA graphics cards.";
+            case "boost" -> "Like On, and keeps the graphics card's clocks up for a little less delay, using more power.";
+            default -> "NVIDIA Reflex lowers input delay. NVIDIA graphics cards.";
         };
     }
 
@@ -931,13 +862,9 @@ public final class DlaaScreen extends Screen {
 
     private static String pacingTooltip(String value) {
         return switch (value) {
-            case "on" -> "Any graphics card: the game waits just before drawing each frame, so the frame reaches the graphics"
-                    + " card about when the card is ready for it instead of waiting in a queue behind earlier frames, while the"
-                    + " mouse input in it ages. A short queue stays, so no frames are lost. For playing without a frame cap:"
-                    + " a Max Framerate the card can hold already keeps the queue empty.";
-            case "lowest" -> "Like On, with the queue as short as the frames' timing allows: a little less delay still, for"
-                    + " about 6% fewer frames.";
-            default -> "Frames queue on the graphics card as they always have.";
+            case "on" -> "Lowers input delay without a frame rate cap. Any graphics card.";
+            case "lowest" -> "The lowest input delay, for about 6% fewer frames.";
+            default -> "Lowers input delay when the frame rate isn't capped.";
         };
     }
 
@@ -951,11 +878,9 @@ public final class DlaaScreen extends Screen {
 
     private static String fpsTooltip(String value) {
         return switch (value) {
-            case FpsOverlay.BASIC -> "The frame rate, small, in a corner of the screen.";
-            case FpsOverlay.DETAILED -> "The frame rate and frame time, the 1% and 0.1% lows of the last 10 seconds (how fast"
-                    + " the slowest frames ran) and a graph of the last seconds' frame times: green, yellow for longer frames,"
-                    + " red for stutters.";
-            default -> "No frame counter (F3 still shows the frame rate).";
+            case FpsOverlay.BASIC -> "The frame rate.";
+            case FpsOverlay.DETAILED -> "Frame rate, frame time, 1% and 0.1% lows, and a frame time graph.";
+            default -> "No frame counter.";
         };
     }
 
@@ -974,9 +899,9 @@ public final class DlaaScreen extends Screen {
 
     private static String rrPresetTooltip(String value) {
         return switch (value) {
-            case "F" -> "Ray Reconstruction 4.5, NVIDIA's newest and best model: the one to use.";
-            case "default" -> "The model NVIDIA's DLL picks itself, for comparing.";
-            default -> "An older Ray Reconstruction model (" + value + "), for comparing with F.";
+            case "F" -> "Ray Reconstruction 4.5, the newest model. Recommended.";
+            case "default" -> "Lets NVIDIA pick the model.";
+            default -> "An older model, for comparison.";
         };
     }
 
@@ -1003,8 +928,7 @@ public final class DlaaScreen extends Screen {
         engineChoice.update();
         presetChoice.update();
         if (rayReconstruction) {
-            String why = "While Ray Reconstruction is on, no other upscaler can run: it denoises, anti-aliases and upscales in"
-                    + " one pass in DLSS's place, with its own preset (RR preset). Turn it off to pick these again.";
+            String why = "Ray Reconstruction replaces DLSS while it's on.";
             engineChoice.button.setTooltip(net.minecraft.client.gui.components.Tooltip.create(Component.literal(why)));
             presetChoice.button.setTooltip(net.minecraft.client.gui.components.Tooltip.create(Component.literal(why)));
             if (open == engineChoice || open == presetChoice) {
@@ -1153,15 +1077,12 @@ public final class DlaaScreen extends Screen {
 
     private static String presetTooltip(String value) {
         return switch (value) {
-            case "default" -> "K at every render resolution.";
-            case "K" -> "NVIDIA's pick for the best image at full resolution and Quality (transformer model).";
-            case "J" -> "Like K, a little less ghosting, a little more flicker.";
-            case "L" -> "Made for Ultra Performance upscaling, worth trying from Balanced down; meters the exposure itself."
-                    + " For RTX 40 and 50 cards: RTX 20 and 30 cards lack FP8 and lose much of what upscaling saves.";
-            case "M" -> "Made for Performance upscaling, worth trying from Balanced down; meters the exposure itself."
-                    + " For RTX 40 and 50 cards: RTX 20 and 30 cards lack FP8 and lose much of what upscaling saves.";
-            default -> "Any letter goes to DLSS: a newer nvngx_dlss.dll may have more presets. A letter DLSS has no"
-                    + " preset for runs as default (DLSS 310 has E, F and J to M).";
+            case "default" -> "Preset K.";
+            case "K" -> "The best picture at Native and Quality.";
+            case "J" -> "Like K, with a little less ghosting and a little more flicker.";
+            case "L" -> "The sharpest at Performance and Ultra Performance. Best on RTX 40 and 50 cards.";
+            case "M" -> "Made for Performance. Best on RTX 40 and 50 cards.";
+            default -> "Type a preset letter, for newer DLSS versions.";
         };
     }
 }

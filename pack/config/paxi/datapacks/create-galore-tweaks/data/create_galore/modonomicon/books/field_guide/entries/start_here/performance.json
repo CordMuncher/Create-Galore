@@ -202,6 +202,16 @@
     },
     {
       "type": "modonomicon:text",
+      "title": "",
+      "text": "**If a graphics setting won't run**, the line beside it on the settings screen says why; hover it for more.\\\n\\\n- No DLSS: get nvngx\\_dlss.dll with **Find on this PC** or **Get from NVIDIA**, then press F8.\n- DirectX 12 can't start on some graphics drivers (Intel's): the game runs on 11 instead."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**DLSS frame generation** also needs Windows' Hardware-accelerated GPU scheduling, Vertical sync at **Use the 3D application setting** in the NVIDIA Control Panel, and nvngx\\_dlssg.dll. Frame generation pauses in menus and while the game is paused.\\\n\\\nThe game log says more: look for lines starting with DLAA:, Perfect Presentation: or Frame generation:."
+    },
+    {
+      "type": "modonomicon:text",
       "title": "More",
       "text": "- [#](2E5AAC)[Welcome to Create Galore](entry://start_here/welcome)[#]()\n- [#](2E5AAC)[Tools of the Trade](entry://start_here/tools)[#]()"
     }

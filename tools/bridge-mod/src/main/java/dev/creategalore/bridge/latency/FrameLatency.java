@@ -284,12 +284,11 @@ public final class FrameLatency {
         try {
             String driver = reflex.status();
             return reflex.lowLatency()
-                    ? new Status("Running: the driver confirms it.", "The NVIDIA driver runs low latency mode"
-                            + (reflexMode == ReflexMode.BOOST ? " with boost" : "") + " (" + driver + ").", false)
-                    : new Status("Running, but the driver says off.", "The NVIDIA driver reports low latency mode off (" + driver
-                            + "). The NVIDIA Control Panel's Low Latency Mode or a driver update may help.", true);
+                    ? new Status("Running.", null, false)
+                    : new Status("Running, but the driver says off.", "The NVIDIA driver reports Reflex off (" + driver
+                            + "). A driver update may help.", true);
         } catch (RuntimeException e) {
-            return new Status("Running.", "The driver's status is unavailable: " + e.getMessage(), false);
+            return new Status("Running.", null, false);
         }
     }
 
@@ -482,7 +481,7 @@ public final class FrameLatency {
             return;
         }
         if (guard().crashed()) {
-            reflexState = "the game closed while it was starting last time, so it stays off until you pick Try again";
+            reflexState = "the game closed while it started last time; press Try again";
             reflexShort = "Off after a crash: Try again.";
             return;
         }
@@ -501,7 +500,7 @@ public final class FrameLatency {
             String reason = String.valueOf(e.getMessage());
             boolean noNvapi = reason.startsWith("Could not load nvapi64.dll");
             reflexState = noNvapi ? "it needs an NVIDIA graphics card and driver (no nvapi64.dll)" : reason;
-            reflexShort = noNvapi ? "Can't run: needs an NVIDIA card." : "Can't run (point here for why).";
+            reflexShort = noNvapi ? "Can't run: needs an NVIDIA card." : "Can't run: hover for why.";
             LOG.warn("Reflex: can't run, {}", reason);
         }
     }
