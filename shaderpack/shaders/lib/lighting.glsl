@@ -22,6 +22,9 @@
 #ifdef LIT_CLOUDS
 #include "/lib/clouds.glsl"
 #endif
+#ifdef WORLD_NETHER
+#include "/lib/nether.glsl"
+#endif
 
 #ifndef PI
 #define PI 3.14159265358979
@@ -274,6 +277,10 @@ vec3 light_surface(vec3 albedo, vec3 normal, vec2 light, vec3 scene_pos, bool pl
         const vec3 luma = vec3(0.2126, 0.7152, 0.0722);
         sky = mix(sky, side * (dot(sky, luma) / max(dot(side, luma), 1e-8)), covered);
     }
+#ifdef WORLD_NETHER
+    // Over the lava seas, the glowing air's light too, as open as the surface is to the air all around (light.y).
+    sky += nether_lava_sea_irradiance(scene_pos.y + cameraPositionFract.y + float(cameraPositionInt.y), n);
+#endif
     nearby = block_irradiance(light.x, block_light_color(scene_pos, n) * lamp_shape(scene_pos, n));
 #ifdef LIT_GI
     nearby += g_light_color.rgb * bounce_light(scene_pos, n, light.y);

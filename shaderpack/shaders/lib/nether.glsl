@@ -76,6 +76,13 @@ vec3 nether_lava_sea_light(float y) {
     return nether_lava_color * nether_lava_glow * exp(-over / nether_lava_glow_height);
 }
 
+// The lava seas' light on a surface at a height (world y) facing n (klux): the glowing air over them all around it,
+// in the lava's colour, as it lights the air (pi times the air's radiance there on a surface facing down, towards the
+// sea, half that on one facing up), so what stands in the glow is lit by it and doesn't go dark against it.
+vec3 nether_lava_sea_irradiance(float y, vec3 n) {
+    return PI * nether_lava_sea_light(y) * (0.75 - 0.25 * n.y);
+}
+
 // What the Nether shows where nothing is drawn (past the end of the world, or where the air is all there is), and
 // what reflects there: its air.
 vec3 sky_radiance(vec3 dir) {

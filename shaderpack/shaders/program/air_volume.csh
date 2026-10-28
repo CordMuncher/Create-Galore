@@ -75,9 +75,9 @@ const float air_history = 0.9;
 // Henyey-Greenstein's phase function, for the dust: mostly onwards, as dust's grains (a few micrometres, far bigger
 // than light's wavelength) scatter it, so a beam shows looking towards the window and hardly at all with the sun at
 // your back.
+const float dust_g = 0.7;
 float dust_phase(float cos_theta) {
-    const float g = 0.7;
-    return (1.0 - g * g) / (4.0 * PI * pow(1.0 + g * g - 2.0 * g * cos_theta, 1.5));
+    return (1.0 - dust_g * dust_g) / (4.0 * PI * pow(1.0 + dust_g * dust_g - 2.0 * dust_g * cos_theta, 1.5));
 }
 
 // How much of the sun's (or the moon's) light the shadow map lets through to a point in the air (scene space), from
@@ -147,6 +147,29 @@ float air_sky_open(vec3 p, uint seed, out float walled) {
     return sky_ray_open(o, vec3(r * cos(phi), up, r * sin(phi))) ? 1.0 : 0.0;
 #else
     return 1.0;
+#endif
+}
+
+// The sky's light the dust at a point scatters towards you along dir, as a share of the sky's radiance (rays turn with
+// seed): 1 if a direction drawn from the dust's phase function about dir (Henyey-Greenstein's, sampled exactly, so
+// that it weighs each way as the dust does) leaves the blocks around you above the horizon, else 0. Over frames it
+// comes to the sky the point sees, weighted as the dust scatters its light towards you: the sky through a window in
+// front of you glows in the dust about it, the sky through one at your back hardly shows, as with the sun's light.
+float air_dust_sky(vec3 p, vec3 dir, uint seed) {
+#ifdef LIT_SKY_GRID
+    vec2 u = r2_seq2(seed);
+    float s = (1.0 - dust_g * dust_g) / (1.0 - dust_g + 2.0 * dust_g * u.x);
+    float cos_t = clamp((1.0 + dust_g * dust_g - s * s) / (2.0 * dust_g), -1.0, 1.0);
+    float sin_t = sqrt(1.0 - cos_t * cos_t);
+    float phi = 6.2831853 * u.y;
+    vec3 t = normalize(cross(abs(dir.y) < 0.99 ? vec3(0.0, 1.0, 0.0) : vec3(1.0, 0.0, 0.0), dir));
+    vec3 w = cos_t * dir + sin_t * (cos(phi) * t + sin(phi) * cross(dir, t));
+    if (w.y <= 0.02) {
+        return 0.0;
+    }
+    return sky_ray_open(sky_grid_pos(p, cameraPositionFract), w) ? 1.0 : 0.0;
+#else
+    return 0.5;
 #endif
 }
 
@@ -242,11 +265,11 @@ void main() {
         scattered += (atm_msctr(h, sun_dir.y) * sun_illuminance + atm_msctr(h, moon_dir.y) * moon_illuminance())
                 * (rayleigh + mie) * open * (1.0 - 0.75 * rainStrength);
 
-        // Dust indoors: lit by the sun and the moon where they get in, and by the sky through the openings (a diffuse
-        // light from above lights it with about 0.57 of its radiance from all around).
+        // Dust indoors: lit by the sun and the moon where they get in, and by the sky through the openings, each as
+        // the dust's phase function weighs the way its light comes (the sky's radiance about its irradiance over pi).
         if (walled > 0.0) {
             scattered += air_dust * walled * ((sun * dust_phase(cos_sun) + moon * dust_phase(cos_moon)) * lit
-                    + sky_irradiance(vec3(0.0, 1.0, 0.0)) * (0.57 / PI) * open);
+                    + sky_irradiance(vec3(0.0, 1.0, 0.0)) * (1.0 / PI) * air_dust_sky(p, dir, frame * 7u + seed + 5u));
             extinction += air_dust * walled;
         }
 
