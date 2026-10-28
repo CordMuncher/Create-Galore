@@ -5,6 +5,14 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.6.23
+
+### Added
+- Create Galore Bridge 1.146.0.
+
+### Fixed
+- **Distant Horizons' far terrain tilts with the camera when you get hurt.** Without a shader pack, the hit's tilt together with view bobbing kept Separate Sable Render Distance from passing the frame's view on to Distant Horizons, so for the half second of a hit the far terrain was drawn with the held item's view instead: no tilt, no bobbing and a field of view of 70. It hung still over the rest of the world like an overlay, and at any other field of view it looked zoomed in too. It now always gets the view the world renders with.
+
 ## 0.6.22
 
 ### Added
