@@ -22,9 +22,10 @@ import org.slf4j.LoggerFactory;
 /**
  * Photon's options while DLSS Ray Reconstruction runs, kept apart from the player's own. Ray Reconstruction shows
  * Photon's lighting and reflections at their best with its effects on, so turning it on in the Upscaling & Display
- * screen moves the DLAA Photon copy ({@link PhotonPatcher#PATCHED_NAME}) to Photon's own Ultra profile the first time,
- * and to the settings the player made under Ray Reconstruction after that; turning it off puts back the settings
- * Photon had before. A toast says so each time. Both sets live in the config folder:
+ * screen moves the DLAA Photon copy ({@link PhotonPatcher#PATCHED_NAME}) to Photon's own Ultra profile (with the clouds
+ * at the render size, see {@link #ULTRA}) the first time, and to the settings the player made under Ray Reconstruction
+ * after that; turning it off puts back the settings Photon had before. A toast says so each time. Both sets live in
+ * the config folder:
  * - create_galore_bridge-photon-own.txt: Photon's settings from before Ray Reconstruction went on (written then);
  * - create_galore_bridge-photon-rr.txt: the settings made under Ray Reconstruction (written when it goes off), only
  *   while they differ from Ultra, so an untouched set follows the pack's default.
@@ -35,7 +36,11 @@ import org.slf4j.LoggerFactory;
 final class PhotonRrSettings {
     private static final Logger LOG = LoggerFactory.getLogger("create_galore_bridge");
     private static final SystemToast.SystemToastId TOAST = new SystemToast.SystemToastId(8000L);
-    /** Photon v1.3a's Ultra profile (profile.ultra in its shaders.properties): every effect it has on. */
+    /**
+     * Photon v1.3a's Ultra profile (profile.ultra in its shaders.properties): every effect it has on. The clouds' Temporal
+     * Upscaling is off (1) on top: Photon traces them at a 16th of the render size by default and fills the rest in over
+     * frames, which Ray Reconstruction shows grainy; at 1 every render pixel gets its own, as the other effects do.
+     */
     static final Map<String, String> ULTRA = Map.ofEntries(
             Map.entry("INFO", "3"),
             Map.entry("shadowMapResolution", "2048"),
@@ -51,7 +56,8 @@ final class PhotonRrSettings {
             Map.entry("WATER_CAUSTICS", "true"),
             Map.entry("WATER_PARALLAX", "true"),
             Map.entry("COLORED_LIGHTS", "true"),
-            Map.entry("SHADOW_SSRT", "true"));
+            Map.entry("SHADOW_SSRT", "true"),
+            Map.entry("CLOUDS_TEMPORAL_UPSCALING", "1"));
 
     private PhotonRrSettings() {}
 

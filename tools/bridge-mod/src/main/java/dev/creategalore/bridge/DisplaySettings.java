@@ -57,8 +57,9 @@ public final class DisplaySettings {
     public static final String DLAA_RR_RAW = "dlaaRrRaw";
     /**
      * Testing only, not written to the file: changes to how Ray Reconstruction is called, any of no-hit-distance (no hit
-     * distance or matrices), own-parameters (NGX parameters not shared with DLSS) and hit-distance-bands (known hit
-     * distances in bands, for NVIDIA's debug overlay).
+     * distance or matrices), own-parameters (NGX parameters not shared with DLSS), hit-distance-bands (known hit
+     * distances in bands, for NVIDIA's debug overlay), photon-sizes (ambient occlusion and fog at Photon's own half the
+     * window under Ray Reconstruction, for comparing) and render-sizes (at the render size even without it).
      */
     public static final String DLAA_RR_TEST = "dlaaRrTest";
     /** Testing only, not written to the file: logs this many frames of the first-person hand (see HandWatch). */

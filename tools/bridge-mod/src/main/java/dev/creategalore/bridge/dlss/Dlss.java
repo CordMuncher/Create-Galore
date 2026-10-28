@@ -128,10 +128,13 @@ public final class Dlss {
     private static int rrPreset = NgxLibrary.RR_PRESET_F;
     /** The pack hands Ray Reconstruction its colour times its exposure (else as it has it; for comparing). */
     private static boolean rrExposed = true;
-    // Testing (dlaaRrTest): no hit distance or matrices; NGX parameters of its own; bands of known hit distances.
+    // Testing (dlaaRrTest): no hit distance or matrices; NGX parameters of its own; bands of known hit distances;
+    // ambient occlusion and fog at Photon's own size under Ray Reconstruction, or at the render size without it.
     private static boolean rrNoHitDistance;
     private static boolean rrOwnParameters;
     private static boolean rrHitDistanceBands;
+    private static boolean rrPhotonSizes;
+    private static boolean renderSizesTest;
     private static boolean rrRawReflections = true;
     private static boolean rrRawShadows = true;
     /** FSR 3 draws its own debug view. */
@@ -280,6 +283,8 @@ public final class Dlss {
         rrNoHitDistance = test.contains("no-hit-distance");
         rrOwnParameters = ownParameters;
         rrHitDistanceBands = test.contains("hit-distance-bands");
+        rrPhotonSizes = test.contains("photon-sizes");
+        renderSizesTest = test.contains("render-sizes");
         HandWatch.configure(DisplaySettings.getString(DisplaySettings.DLAA_HAND_WATCH, ""));
         if (rrUnavailableNoDll && Files.isRegularFile(dllFolder().resolve(DlssFinder.RR_DLL))) {
             rrUnavailable = null; // tried again when it starts
@@ -422,6 +427,14 @@ public final class Dlss {
     /** True while the pack should write Ray Reconstruction's guides (cg_rr_active). */
     public static boolean rayReconstructionGuides() {
         return active && rrMode;
+    }
+
+    /**
+     * True while the pack should draw ambient occlusion and the volumetric fog at the render size, one sample per render
+     * pixel (cg_fx_render_res): while Ray Reconstruction runs, as NVIDIA's guide asks. Else Photon's own half the window.
+     */
+    public static boolean renderSizeEffects() {
+        return renderSizesTest || (active && rrMode && !rrPhotonSizes);
     }
 
     /** True while the pack should hand over its colour times its exposure (cg_rr_exposed). */

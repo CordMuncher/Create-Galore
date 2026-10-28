@@ -66,12 +66,14 @@ import org.slf4j.LoggerFactory;
  *   and leaves their noise to Ray Reconstruction; the reflection's ray length goes into the hit distance guide;
  * - with cg_rr_raw_shadows 1, turns the soft shadows' sample patterns with white noise instead of Photon's blue noise
  *   that steps each frame (NVIDIA: no screen-space dithering, no patterns shared between pixels);
- * - with cg_rr_exposed 1, hands DLSS its colour times its exposure (Ray Reconstruction takes no exposure).
+ * - with cg_rr_exposed 1, hands DLSS its colour times its exposure (Ray Reconstruction takes no exposure);
+ * - with cg_fx_render_res 1 (while Ray Reconstruction runs), draws ambient occlusion and the volumetric fog at the render
+ *   size instead of half the window's, one sample per render pixel ({@link #FX_GLOBAL}).
  */
 public final class PhotonPatcher {
     private static final Logger LOG = LoggerFactory.getLogger("create_galore_bridge");
     /** Bumped when the patch changes, so existing copies are made again. */
-    private static final int PATCH_VERSION = 15;
+    private static final int PATCH_VERSION = 18; // 16 and 17 were the research builds' own
     private static final String BASE_ZIP = "photon_v1.3a.zip";
     /** Colorwheel Patcher's copy of {@link #BASE_ZIP}; an outdated one gets a prefix and no longer matches. */
     private static final Pattern COLORWHEEL_ZIP = Pattern.compile("photon_v1\\.3a \\+ Clrwl_(\\d+)\\.(\\d+)\\.(\\d+)\\.zip");
@@ -223,6 +225,12 @@ public final class PhotonPatcher {
                                 + "image.cg_rr_specular_img = none rgba rgba8 unsigned_byte false true 1.0 1.0\n"
                                 + "image.cg_rr_normal_img = none rgba rgba16f half_float false true 1.0 1.0\n"
                                 + "image.cg_rr_hitdist_img = none red r32f float false true 1.0 1.0"},
+                // Ambient occlusion and volumetric fog: buffers the window's size, of which only the part in use is
+                // drawn (half the window per axis as Photon has it, or the render size, see cg_fx_scale).
+                {"size.buffer.colortex6 = 0.5 0.5\nsize.buffer.colortex7 = 0.5 0.5\nsize.buffer.colortex14 = 0.5 0.5\n",
+                        "# Create Galore Ray Reconstruction: the window's size, of which the pack draws only the part in use: half the\n"
+                                + "# window per axis as Photon has it, or the render size while Ray Reconstruction runs (cg_fx_scale)\n"
+                                + "size.buffer.colortex6 = 1.0 1.0\nsize.buffer.colortex7 = 1.0 1.0\nsize.buffer.colortex14 = 1.0 1.0\n"},
         });
 
         // Upscaling (TAAU): the render scale comes from the Bridge, per axis and in whole render pixels, so DLSS
@@ -241,6 +249,7 @@ public final class PhotonPatcher {
                                 + "uniform float cg_mip_bias;\n"
                                 + "\n// Helper functions\n"},
                 {"\n// Helper functions\n", RR_GLOBAL + "\n// Helper functions\n"},
+                {"\n// Helper functions\n", FX_GLOBAL + "\n// Helper functions\n"},
         });
         StringBuilder lowScales = new StringBuilder();
         for (int percent = 25; percent < 50; percent++) {
@@ -286,6 +295,8 @@ public final class PhotonPatcher {
                 {"#else\n    // Fade reflection when rough reflections are disabled\n",
                         "#if !(defined SSR_ROUGHNESS_SUPPORT && defined SPECULAR_MAPPING)\n"
                                 + "    // Fade reflection when rough reflections are disabled\n"},
+                {"        vec3 fog_scattering_previous = texture(colortex7, hit_uv_prev).rgb;\n",
+                        "        vec3 fog_scattering_previous = texture(colortex7, cg_fx_uv(hit_uv_prev)).rgb; // Create Galore RR: cg_fx_scale\n"},
         });
         // Soft shadows: white noise for each pixel and frame while Ray Reconstruction cleans them up.
         String[][] shadowNoise = {{"    dither = r1(frameCounter, dither);\n",
@@ -299,7 +310,55 @@ public final class PhotonPatcher {
         for (String world : new String[] {"world0", "world-1", "world1"}) {
             edits.put("shaders/" + world + "/deferred4.fsh", rrGuides);
         }
+        // Ambient occlusion (deferred3) and volumetric fog (composite0) draw only the part of their buffers in use
+        // (cg_fx_scale), and everything that reads them reads that part.
+        String[][] fxQuad = {{"    gl_Position = vec4(gl_Vertex.xy * 2.0 - 1.0, 0.0, 1.0);\n",
+                "    gl_Position = vec4(gl_Vertex.xy * cg_fx_scale * 2.0 - 1.0, 0.0, 1.0); // Create Galore RR: cg_fx_scale\n"}};
+        edits.put("shaders/program/d3_ao.vsh", fxQuad);
+        edits.put("shaders/program/c17_copy_ao.vsh", new String[][] {
+                {"void main() { gl_Position = vec4(gl_Vertex.xy * 2.0 - 1.0, 0.0, 1.0); }",
+                        "void main() { gl_Position = vec4(gl_Vertex.xy * cg_fx_scale * 2.0 - 1.0, 0.0, 1.0); } // Create Galore RR: cg_fx_scale"},
+        });
+        edits.put("shaders/program/d3_ao.fsh", new String[][] {
+                {"const float ao_render_scale = 0.5;\n",
+                        "#define ao_render_scale cg_fx_scale // Create Galore RR: half the window, or the render size (global.glsl)\n"},
+                {"        max0(catmull_rom_filter_fast(colortex6, previous_screen_pos.xy, 0.65));\n"
+                        + "    vec2 history_data = max0(texture(colortex14, previous_screen_pos.xy).xy);\n",
+                        "        max0(catmull_rom_filter_fast(colortex6, cg_fx_uv(previous_screen_pos.xy), 0.65));\n"
+                                + "    vec2 history_data = max0(texture(colortex14, cg_fx_uv(previous_screen_pos.xy)).xy);\n"},
+        });
+        edits.put("shaders/program/c0_vl.vsh", new String[][] {
+                {"    vec2 vertex_pos = gl_Vertex.xy;\n",
+                        "    vec2 vertex_pos = gl_Vertex.xy * cg_fx_scale; // Create Galore RR: cg_fx_scale\n"},
+        });
+        edits.put("shaders/program/c0_vl.fsh", new String[][] {
+                {"        ivec2(gl_FragCoord.xy * taau_render_scale * rcp(VL_RENDER_SCALE));\n",
+                        "        ivec2(gl_FragCoord.xy * taau_render_scale * rcp(cg_fx_scale)); // Create Galore RR: cg_fx_scale\n"},
+        });
+        edits.put("shaders/program/c1_blend_layers.fsh", new String[][] {
+                {"    vec3 fog_transmittance = smooth_filter(colortex6, uv).rgb;\n"
+                        + "    vec3 fog_scattering = smooth_filter(colortex7, uv).rgb;\n",
+                        "    vec3 fog_transmittance = smooth_filter(colortex6, cg_fx_uv(uv)).rgb; // Create Galore RR: cg_fx_scale\n"
+                                + "    vec3 fog_scattering = smooth_filter(colortex7, cg_fx_uv(uv)).rgb;\n"},
+        });
+        edits.put("shaders/program/d2_clouds_upscaling.fsh", new String[][] {
+                {"        1.0 - max_of(textureGather(colortex14, previous_uv_clamped, 0));\n",
+                        "        1.0 - max_of(textureGather(colortex14, cg_fx_uv(previous_uv_clamped), 0)); // Create Galore RR: cg_fx_scale\n"},
+        });
         edits.put("shaders/program/d4_deferred_shading.fsh", new String[][] {
+                {"        vec2 half_res_pos = gl_FragCoord.xy * (0.5 / taau_render_scale) - 0.5;\n\n"
+                        + "        ivec2 i = ivec2(half_res_pos);\n"
+                        + "        vec2 f = fract(half_res_pos);\n\n"
+                        + "        ivec2 p10 = i + ivec2(1, 0);\n"
+                        + "        ivec2 p01 = i + ivec2(0, 1);\n"
+                        + "        ivec2 p11 = i + ivec2(1, 1);\n",
+                        "        // Create Galore RR: half the window, or the render size and so one sample per pixel (cg_fx_scale)\n"
+                                + "        vec2 half_res_pos = gl_FragCoord.xy * (cg_fx_scale / taau_render_scale) - 0.5;\n\n"
+                                + "        ivec2 i = ivec2(half_res_pos);\n"
+                                + "        vec2 f = fract(half_res_pos);\n\n"
+                                + "        ivec2 p10 = min(i + ivec2(1, 0), cg_fx_max_texel);\n"
+                                + "        ivec2 p01 = min(i + ivec2(0, 1), cg_fx_max_texel);\n"
+                                + "        ivec2 p11 = min(i + ivec2(1, 1), cg_fx_max_texel);\n"},
                 {"#include \"/include/utility/space_conversion.glsl\"\n",
                         "#include \"/include/utility/space_conversion.glsl\"\n#include \"/include/cg_rr.glsl\"\n"},
                 {"    if (depth == 1.0) { // Sky\n",
@@ -810,6 +869,26 @@ public final class PhotonPatcher {
             vec4 cg_white_noise(ivec2 texel, int frame, uint salt) {
                 return vec4(cg_pcg4d(uvec4(uvec2(texel), uint(frame), salt)) >> 8u) * (1.0 / 16777216.0);
             }
+            """;
+
+    /**
+     * In global.glsl: the part of the ambient occlusion and volumetric fog buffers in use (cg_fx_scale, over the window's
+     * size, per axis). Photon draws both at half the window's size whatever the render size, so at Quality and native
+     * several pixels shared each sample and Ray Reconstruction saw blurred noise, while at Performance it already had
+     * one per pixel. While cg_fx_render_res is 1 (Ray Reconstruction runs) they follow the render size instead: one
+     * sample per render pixel at every scale, as NVIDIA's guide asks. The buffers are the window's size in the copy for
+     * that, and the passes draw only that part. The macros that read it at a screen position need view_res.
+     */
+    private static final String FX_GLOBAL = """
+
+            // Create Galore Ray Reconstruction: the part of the ambient occlusion and volumetric fog buffers in use, over
+            // the window's size, per axis. Half the window as Photon has it, or the render size (one sample per pixel)
+            // while cg_fx_render_res is 1.
+            uniform float cg_fx_render_res;
+            #define cg_fx_scale (cg_fx_render_res > 0.5 ? vec2(taau_render_scale) : vec2(0.5))
+            // Its last texel, and a screen position (0 to 1) read inside it.
+            #define cg_fx_max_texel (ivec2(ceil(view_res * cg_fx_scale - 0.5)) - 1)
+            #define cg_fx_uv(screen_uv) min((screen_uv) * cg_fx_scale, (vec2(cg_fx_max_texel) - 0.5) / view_res)
             """;
 
     private static final String RR_INCLUDE_FILE = "shaders/include/cg_rr.glsl";

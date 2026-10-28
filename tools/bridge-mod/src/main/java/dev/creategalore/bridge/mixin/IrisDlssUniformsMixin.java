@@ -20,7 +20,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  * axis, when the pack upscales) and cg_mip_bias (the textures' mip bias) for every program and for the pack's custom
  * uniforms (see {@link Dlss}). For DLSS Ray Reconstruction (experimental): cg_rr_active (1 while the pack writes its
  * guides), cg_rr_exposed (1 while it hands over its colour times its exposure), cg_rr_raw_reflections and
- * cg_rr_raw_shadows (1 while it leaves those noisy for Ray Reconstruction). Packs that do not use them never see them.
+ * cg_rr_raw_shadows (1 while it leaves those noisy for Ray Reconstruction), cg_fx_render_res (1 while it draws ambient
+ * occlusion and fog at the render size). Packs that do not use them never see them.
  */
 @Pseudo
 @Mixin(targets = "net.irisshaders.iris.uniforms.CommonUniforms", remap = false)
@@ -39,6 +40,7 @@ public abstract class IrisDlssUniformsMixin {
                 .uniform1f(UniformUpdateFrequency.PER_FRAME, "cg_rr_exposed", (FloatSupplier) () -> Dlss.rayReconstructionExposed() ? 1.0f : 0.0f)
                 .uniform1f(UniformUpdateFrequency.PER_FRAME, "cg_rr_raw_reflections",
                         (FloatSupplier) () -> Dlss.rayReconstructionRawReflections() ? 1.0f : 0.0f)
-                .uniform1f(UniformUpdateFrequency.PER_FRAME, "cg_rr_raw_shadows", (FloatSupplier) () -> Dlss.rayReconstructionRawShadows() ? 1.0f : 0.0f);
+                .uniform1f(UniformUpdateFrequency.PER_FRAME, "cg_rr_raw_shadows", (FloatSupplier) () -> Dlss.rayReconstructionRawShadows() ? 1.0f : 0.0f)
+                .uniform1f(UniformUpdateFrequency.PER_FRAME, "cg_fx_render_res", (FloatSupplier) () -> Dlss.renderSizeEffects() ? 1.0f : 0.0f);
     }
 }
