@@ -52,7 +52,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Traits come from genes:\n\n- A **Glutton** grows fast.\n- A **Truffle Snout** finds more truffles.\n- A **Heavyweight** drops double meat and leather.\n\nLook at an animal in the ledger to see what it has."
+      "text": "Traits come from genes:\n\n- A **Glutton** grows fast and eats two items a meal.\n- A **Truffle Snout** finds more truffles.\n- A **Heavyweight** drops double meat and leather.\n\nLook at an animal in the ledger to see what it has."
     },
     {
       "type": "modonomicon:spotlight",
@@ -75,17 +75,17 @@
     {
       "type": "modonomicon:text",
       "title": "Taming and breeding",
-      "text": "Cows, pigs, sheep, goats and chickens don't breed from wheat or carrots. The first food you hand a wild one tames it. After that, food only fills it, once a day.\\\n\\\nTamed pairs breed by themselves when both are healthy, happy (80 or more) and male and female, within 8 blocks."
+      "text": "Cows, pigs, sheep, goats and chickens don't breed from wheat or carrots. The first food you hand a wild one tames it. After that, food only fills it when hungry, and a meal lasts two and a half days.\\\n\\\nTamed pairs breed by themselves when both are healthy, happy (80 or more) and male and female, within 8 blocks."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Happiness starts at 30. A day with sky or light 8+ adds 5, a brushing adds 10 (once a day), grooming in the last 3 days adds 3. Fed and brushed daily, a pair is ready in about three days. Once both are at 80, they usually mate within a day."
+      "text": "Happiness starts at 30. A day with sky or light 8+ adds 5, a brushing adds 10 (once a day), grooming in the last 3 days adds 3. Kept fed and brushed daily, a pair is ready in about three days. Once both are at 80, they usually mate within a day."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Unfed for more than a day takes 10 a day. A crowd takes the most: with 6 or more animals of any kind within 4 blocks, each loses about 40 a day, more than care gives, so a packed pen never mates. Fences don't stop it, so neighbouring pens count too. Give small groups room."
+      "text": "Going hungry for more than a day takes 10 a day. A crowd takes the most: with 6 or more animals of any kind within 4 blocks, each loses about 40 a day, more than care gives, so a packed pen never mates. Fences don't stop it, so neighbouring pens count too. Give small groups room."
     },
     {
       "type": "modonomicon:text",
@@ -105,7 +105,12 @@
     {
       "type": "modonomicon:text",
       "title": "Feeding Troughs",
-      "text": "A trough holds feed or water, not both. A hungry tamed animal walks to the nearest one it can reach within 20 blocks that has its food: **wheat** for cows, sheep and goats, **carrots** or **potatoes** for pigs, **seeds** for chickens, once a day.\\\n\\\nA farm you leave behind keeps eating from its troughs while you're away."
+      "text": "A trough holds feed or water, not both. A hungry tamed animal walks to the nearest one it can reach within 20 blocks that has its food: **wheat** for cows, sheep and goats, **carrots** or **potatoes** for pigs, **seeds** for chickens.\\\n\\\nA farm you leave behind keeps eating from its troughs while you're away."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "A meal keeps an animal fed for two and a half days, and a drink keeps it watered as long. Each animal eats 2 items and drinks 2 of a trough's 16 water levels every 5 days (a Glutton eats 4 items).\\\n\\\nOne water bucket fills a trough, so it waters 8 animals for 5 days."
     },
     {
       "type": "modonomicon:text",

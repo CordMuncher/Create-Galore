@@ -1004,7 +1004,7 @@ hash = "91398c04ea38c94cfeeb72b05b38c3368219fb0508b78d91076ee66fcd57ff98"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/food.md"
-hash = "575667b1a633a6a239cd59daff4fb5fe10d6d8919964f967cd250d96eea79630"
+hash = "74fe422db86afd455db55c432974d829b072256d4d6c0b608af8f9b2ede2e084"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/glossary.md"
@@ -1452,7 +1452,7 @@ hash = "740e2ea09902e534f6dd06b5f7a976558e5efb669e8493422c10b73fbef116a4"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/food/animals.json"
-hash = "04ad70364cc9c41a5383e6fec5d638e691fa88b48b68f0d2f834bfecb021d3ee"
+hash = "d13f5c4ddb97864720289f0eba8e9be0faca634548f7f02bd49f7e50f58535ec"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/food/bees.json"
@@ -4998,8 +4998,8 @@ hash = "db683b65dc15a03dd6de2d34d5dc6ad0e3490744ced513a8cc584784ee9d3d8b"
 metafile = true
 
 [[files]]
-file = "mods/create-galore-bridge-1.151.0.jar"
-hash = "7c9279423b03e20de646e0813af31ee398901a6713d04578c3f7c3dae34b2550"
+file = "mods/create-galore-bridge-1.152.0.jar"
+hash = "15bfa09722591c90357089118613dd0a8abc2483d54cc96e939f68b19d70f69a"
 
 [[files]]
 file = "mods/create-galore-fishing-0.3.17.jar"

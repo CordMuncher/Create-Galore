@@ -5,6 +5,18 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.6.30
+
+### Added
+- Create Galore Bridge 1.152.0.
+- **The Farm Magnifying Glass shows when an animal next eats and drinks** (for example "Food: next meal in 3 days", "Water: Thirsty").
+
+### Fixed
+- **Farm animals eat and drink less.** A meal (one item from a trough or the hand, two for a Glutton) now keeps a tamed cow, pig, sheep, goat or chicken fed for two and a half days, and a drink (one of a trough's 16 water levels) keeps it watered as long. Each animal eats 2 items and drinks 2 water levels every 5 days, so one trough of water lasts 8 animals 5 days. Hunger for happiness and sickness counts from when that meal runs out. A farm left behind while the player is away eats at the same pace.
+
+### Removed
+- Nothing.
+
 ## 0.6.29
 
 ### Added

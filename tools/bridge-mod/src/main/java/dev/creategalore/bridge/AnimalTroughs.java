@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringJoiner;
 import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.level.ServerLevel;
@@ -29,9 +30,11 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.pathfinder.Path;
+import net.neoforged.bus.api.EventPriority;
 import net.neoforged.fml.ModList;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import org.athisworkshop.animalhusbandry.ai.MoveToTroughGoal;
 import org.athisworkshop.animalhusbandry.block.FeedingTroughBlockEntity;
@@ -47,8 +50,8 @@ import org.athisworkshop.animalhusbandry.registry.ModAttachments;
  * (a trip, another dimension, the far end of a big base) froze, and the first moment it ran again the animal counted
  * every missed day at once: days unfed, happiness down 10 for each, and the sickness roll for starving, all before it
  * could take a step to the trough beside it. Its troughs were still full. Now an animal that comes back after two
- * days or more first eats one meal for each missed day except today from the troughs it can walk to (two for a
- * Glutton, nearest trough first), and is just hungry for today, so it still walks over to eat. When the troughs run
+ * days or more first covers each missed day except today from the troughs it can walk to (nearest trough first, a
+ * meal lasting as long as below), and is just hungry for today, so it still walks over to eat. When the troughs run
  * out partway, the days it went without still count.
  *
  * The trough goal itself looked through a 33x33 square, one block up and down, and took the first trough in that
@@ -57,6 +60,12 @@ import org.athisworkshop.animalhusbandry.registry.ModAttachments;
  * nearest trough with its food that it can reach, within 20 blocks and 4 up or down, with paths up to 24 blocks long.
  * A trough it can't get to is left alone for 30 s while it tries the next one, and it gives up a walk that takes
  * longer than 30 s, so a jostling crowd at one trough sends it to another instead of keeping it stuck.
+ *
+ * A meal (one item, two for a Glutton, from a trough or from the hand) keeps an animal fed for two and a half days,
+ * and a drink (one of a trough's 16 water levels) keeps it watered as long: Animal Husbandry makes it hungry and
+ * thirsty again every day, and a day it still has food or water in it is taken off again on the same tick. A herd
+ * eats and drinks two times in five days. The days unfed that count for happiness and sickness are the days after
+ * that runs out.
  */
 public final class AnimalTroughs {
     public static final int REACH = 20;
@@ -70,6 +79,11 @@ public final class AnimalTroughs {
     private static final double SPEED = 1.2;
     private static final long DAY = 24000L;
     /** What each kind may find in a trough; the trough only takes some of these. */
+    /** How long a meal or a drink lasts, in tenths of a day. */
+    public static final int MEAL_TENTHS = 25;
+    private static final int DAY_TENTHS = 10;
+    private static final String FOOD_LEFT = "create_galore_bridge:food_left";
+    private static final String WATER_LEFT = "create_galore_bridge:water_left";
     private static final List<ItemStack> FOODS = List.of(new ItemStack(Items.WHEAT), new ItemStack(Items.CARROT),
         new ItemStack(Items.POTATO), new ItemStack(Items.WHEAT_SEEDS));
 
@@ -80,6 +94,8 @@ public final class AnimalTroughs {
         if (!ModList.get().isLoaded("animalhusbandry")) return;
         NeoForge.EVENT_BUS.addListener(AnimalTroughs::onJoin);
         NeoForge.EVENT_BUS.addListener(AnimalTroughs::onTick);
+        NeoForge.EVENT_BUS.addListener(AnimalTroughs::afterTick);
+        NeoForge.EVENT_BUS.addListener(EventPriority.LOWEST, AnimalTroughs::onHandFeed);
     }
 
     /** The animals Animal Husbandry looks after (the same list as its own). */
@@ -113,28 +129,92 @@ public final class AnimalTroughs {
         if (care == null || !care.isDomesticated) return;
         long days = (level.getDayTime() - care.lastTickTime) / DAY;
         if (days < 2) return;
-        int meals = eatMissedMeals(animal, (int) days - 1);
-        if (meals == 0) return;
-        // Animal Husbandry adds the elapsed days next; this leaves it the days since the last of these meals.
-        care.daysSinceFed = -meals;
+        int fedDays = eatMissedMeals(animal, (int) days - 1);
+        if (fedDays == 0) return;
+        // Animal Husbandry adds the elapsed days next; this leaves it the days since the food of these meals ran out.
+        care.daysSinceFed = -fedDays;
         ModAttachments.setCareData(animal, care);
     }
 
+    /**
+     * Runs just after Animal Husbandry counted the days: a day the animal still has food or water in it from its last
+     * meal or drink doesn't count as hungry or thirsty.
+     */
+    private static void afterTick(EntityTickEvent.Post event) {
+        if (!(event.getEntity() instanceof Animal animal) || animal.level().isClientSide) return;
+        if (animal.level().getGameTime() % 100L != 0L || !managed(animal)) return;
+        AnimalCareData care = ModAttachments.getCareData(animal);
+        if (care == null || !care.isDomesticated) return;
+        CompoundTag data = animal.getPersistentData();
+        int food = data.getInt(FOOD_LEFT), water = data.getInt(WATER_LEFT);
+        boolean changed = false;
+        while (care.daysSinceFed > 0 && food >= DAY_TENTHS) {
+            care.daysSinceFed--;
+            food -= DAY_TENTHS;
+            changed = true;
+        }
+        while (care.daysDehydrated > 0 && water >= DAY_TENTHS) {
+            care.daysDehydrated--;
+            water -= DAY_TENTHS;
+            changed = true;
+        }
+        if (!changed) return;
+        data.putInt(FOOD_LEFT, food);
+        data.putInt(WATER_LEFT, water);
+        ModAttachments.setCareData(animal, care);
+    }
+
+    /** Animal Husbandry fills a hungry tamed animal from the hand; that meal lasts as long as one from a trough. */
+    private static void onHandFeed(PlayerInteractEvent.EntityInteract event) {
+        if (event.isCanceled() || event.getLevel().isClientSide() || !(event.getTarget() instanceof Animal animal) || !managed(animal)) return;
+        AnimalCareData care = ModAttachments.getCareData(animal);
+        if (care == null || !care.isDomesticated || care.daysSinceFed <= 0 || !animal.isFood(event.getItemStack())) return;
+        ate(animal);
+    }
+
+    /** A meal: today is fed, and the rest of the meal is kept for the days after. */
+    private static void ate(Animal animal) {
+        CompoundTag data = animal.getPersistentData();
+        data.putInt(FOOD_LEFT, data.getInt(FOOD_LEFT) % DAY_TENTHS + MEAL_TENTHS - DAY_TENTHS);
+    }
+
+    private static void drank(Animal animal) {
+        CompoundTag data = animal.getPersistentData();
+        data.putInt(WATER_LEFT, data.getInt(WATER_LEFT) % DAY_TENTHS + MEAL_TENTHS - DAY_TENTHS);
+    }
+
+    /** Whole days the animal's last meal (food) or drink still lasts after today. */
+    public static int daysLeft(Animal animal, boolean food) {
+        return animal.getPersistentData().getInt(food ? FOOD_LEFT : WATER_LEFT) / DAY_TENTHS;
+    }
+
+    /** Covers missed days, first with what the animal still has in it, then with meals from the troughs it can walk to. */
     private static int eatMissedMeals(Animal animal, int wanted) {
+        CompoundTag data = animal.getPersistentData();
+        int left = data.getInt(FOOD_LEFT);
         int bite = bite(animal);
-        int meals = 0;
+        int days = 0;
+        while (days < wanted && left >= DAY_TENTHS) {
+            left -= DAY_TENTHS;
+            days++;
+        }
         int paths = 0;
         for (FeedingTroughBlockEntity trough : troughs(animal, true, false)) {
-            if (meals >= wanted || paths >= PATHS_PER_SEARCH) break;
+            if (days >= wanted || paths >= PATHS_PER_SEARCH) break;
             paths++;
             Path path = pathTo(animal, trough.getBlockPos());
             if (path == null || !path.canReach()) continue;
-            while (meals < wanted && hasFood(animal, trough)) {
+            while (days < wanted && hasFood(animal, trough)) {
                 trough.removeItem(0, Math.min(bite, trough.getItem(0).getCount()));
-                meals++;
+                left += MEAL_TENTHS;
+                while (days < wanted && left >= DAY_TENTHS) {
+                    left -= DAY_TENTHS;
+                    days++;
+                }
             }
         }
-        return meals;
+        data.putInt(FOOD_LEFT, left);
+        return days;
     }
 
     /** True when the animal can walk to a trough holding its food. */
@@ -311,10 +391,12 @@ public final class AnimalTroughs {
             if (forFood && care.daysSinceFed > 0 && hasFood(animal, trough)) {
                 trough.removeItem(0, Math.min(bite(animal), trough.getItem(0).getCount()));
                 care.daysSinceFed = 0;
+                ate(animal);
                 animal.playSound(SoundEvents.GENERIC_EAT, 1.0f, 1.0f);
             } else if (!forFood && care.daysDehydrated > 0 && trough.waterLevel > 0) {
                 trough.waterLevel--;
                 care.daysDehydrated = 0;
+                drank(animal);
                 animal.playSound(SoundEvents.GENERIC_DRINK, 1.0f, 1.0f);
             } else {
                 return;
