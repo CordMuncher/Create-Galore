@@ -158,7 +158,7 @@ public final class SchematicTrace {
         if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_PARTICLES || renderer == null || anchor == null) return;
         Vec3 camera = event.getCamera().getPosition();
         PoseStack ms = event.getPoseStack();
-        SuperRenderTypeBuffer buffer = DefaultSuperRenderTypeBuffer.getInstance();
+        SuperRenderTypeBuffer buffer = SchematicLayers.forShaders(DefaultSuperRenderTypeBuffer.getInstance());
         ms.pushPose();
         ms.translate(anchor.getX() - camera.x, anchor.getY() - camera.y, anchor.getZ() - camera.z);
         try {
