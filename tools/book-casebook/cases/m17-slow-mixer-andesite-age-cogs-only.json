@@ -1,0 +1,78 @@
+{
+  "title": "A too-slow mixer's fix names only cogs before the player can make a speed controller",
+  "from": "2026-10-28 report: the book never uses a speed controller in the Brass Age, only chains of cogs",
+  "roots": [
+    "R4"
+  ],
+  "kind": "model",
+  "inventory": [
+    {
+      "id": "create:andesite_alloy",
+      "count": 32
+    },
+    {
+      "id": "create:andesite_casing",
+      "count": 4
+    },
+    {
+      "id": "minecraft:iron_ingot",
+      "count": 16
+    }
+  ],
+  "model": {
+    "title": "Mixer on a water wheel",
+    "size_x": 4,
+    "size_y": 4,
+    "size_z": 3,
+    "blocks": [
+      {
+        "block": "create:water_wheel[facing=east]",
+        "x": 0,
+        "y": 1,
+        "z": 1
+      },
+      {
+        "block": "minecraft:water[level=0]",
+        "x": 0,
+        "y": 2,
+        "z": 1
+      },
+      {
+        "block": "create:gearbox[axis=z]",
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      {
+        "block": "create:cogwheel[axis=y]",
+        "x": 1,
+        "y": 2,
+        "z": 1
+      },
+      {
+        "block": "create:mechanical_mixer",
+        "x": 2,
+        "y": 2,
+        "z": 1
+      },
+      {
+        "block": "create:basin",
+        "x": 2,
+        "y": 0,
+        "z": 1
+      }
+    ]
+  },
+  "expect": {
+    "built": false,
+    "has": [
+      "needs at least 30 RPM",
+      "cog steps"
+    ],
+    "lacks": [
+      "Rotation Speed Controller",
+      "Adjustable Chain Gearshift",
+      "Design brief"
+    ]
+  }
+}

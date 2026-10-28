@@ -89,7 +89,12 @@ final class MachineCheck {
         if (!turning && !rpm.isEmpty()) {
             // Engines off (or a ship not yet started): judge it at the speeds its engines give once running.
             List<String> assumed = new ArrayList<>();
-            rpm = BuildCheck.rpm(blocks, level, assumed);
+            // A speed controller in the world keeps the speed set on its panel.
+            Map<BlockPos, Float> set = new LinkedHashMap<>();
+            for (BlockPos p : blocks.keySet())
+                if (level.getBlockEntity(p) instanceof com.simibubi.create.content.kinetics.speedController.SpeedControllerBlockEntity c)
+                    set.put(p, (float) c.targetSpeed.getValue());
+            rpm = BuildCheck.rpm(blocks, level, assumed, set);
             if (!assumed.isEmpty()) still = "- Nothing turns right now, so speeds are worked out with " + String.join(", ", assumed) + ".\n";
         }
         BuildCheck.Report r = VehicleCheck.check(blocks, level, rpm, false);
