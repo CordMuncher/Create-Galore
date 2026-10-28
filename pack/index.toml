@@ -988,7 +988,7 @@ hash = "0f0cac64c6e4389f289df0f0203a9b165e614b06431d957232f9c63dcedbded8"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/create_basics.md"
-hash = "d3f8e4e5c075d6a3aad8c3f5663c36fbd7127b584c721be60ecc86b232f59e06"
+hash = "0875f4aee9405b46874c53cbe7c39a2fe891cb16f443be1c7c354a712ab9ac0d"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/exploration.md"
@@ -1192,7 +1192,7 @@ hash = "76d96f3adc40618c3cde08d50bb16c017387d63c1135321c7b54e8c3b9380157"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/create_basics/item_logistics.json"
-hash = "31d7a4f0df8eb4562f9abf0db1391495af8b8ff54a6b5f76a0b3be7cf75f4c9b"
+hash = "d34ff3484aeedd22e82e4d3e1180db35587db0b462e13565cbaf9017f90711cd"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/create_basics/materials.json"

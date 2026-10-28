@@ -5,6 +5,17 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.6.29
+
+### Added
+- **The Field Guide explains the Attribute Filter's modes.** The Moving Items entry and Ask the Book now say that Allow-List (Any) passes an item with any one of the filter's attributes, and Allow-List (All) only one with all of them. A filter for "smeltable but not smokable" needs Allow-List (All). In Any mode raw meat passes as smeltable, so a Mechanical Arm sorting onto a bulk smelting belt sent it to be burnt.
+
+### Fixed
+- Nothing.
+
+### Removed
+- Nothing.
+
 ## 0.6.28
 
 ### Added
