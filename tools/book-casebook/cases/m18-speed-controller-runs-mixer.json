@@ -1,0 +1,120 @@
+{
+  "title": "A Rotation Speed Controller set to 64 RPM turns a mixer on a slow water wheel",
+  "from": "2026-10-28 report: speed controllers in the book's rotation check",
+  "roots": [
+    "R3"
+  ],
+  "kind": "model",
+  "inventory": [
+    {
+      "id": "create:precision_mechanism",
+      "count": 2
+    },
+    {
+      "id": "create:brass_casing",
+      "count": 4
+    },
+    {
+      "id": "create:brass_ingot",
+      "count": 16
+    },
+    {
+      "id": "create:andesite_alloy",
+      "count": 32
+    }
+  ],
+  "model": {
+    "title": "Mixer on a speed controller",
+    "size_x": 4,
+    "size_y": 5,
+    "size_z": 4,
+    "blocks": [
+      {
+        "block": "create:water_wheel[facing=east]",
+        "x": 0,
+        "y": 1,
+        "z": 1
+      },
+      {
+        "block": "minecraft:water[level=0]",
+        "x": 0,
+        "y": 2,
+        "z": 1
+      },
+      {
+        "block": "create:shaft[axis=x]",
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      {
+        "block": "create:rotation_speed_controller[axis=x]",
+        "x": 2,
+        "y": 1,
+        "z": 1
+      },
+      {
+        "block": "create:large_cogwheel[axis=z]",
+        "x": 2,
+        "y": 2,
+        "z": 1
+      },
+      {
+        "block": "create:shaft[axis=z]",
+        "x": 2,
+        "y": 2,
+        "z": 2
+      },
+      {
+        "block": "create:gearbox[axis=x]",
+        "x": 2,
+        "y": 2,
+        "z": 3
+      },
+      {
+        "block": "create:shaft[axis=y]",
+        "x": 2,
+        "y": 3,
+        "z": 3
+      },
+      {
+        "block": "create:cogwheel[axis=y]",
+        "x": 2,
+        "y": 4,
+        "z": 3
+      },
+      {
+        "block": "create:mechanical_mixer",
+        "x": 3,
+        "y": 4,
+        "z": 3
+      },
+      {
+        "block": "create:basin",
+        "x": 3,
+        "y": 3,
+        "z": 3
+      }
+    ],
+    "speeds": [
+      {
+        "x": 2,
+        "y": 1,
+        "z": 1,
+        "rpm": 64
+      }
+    ]
+  },
+  "expect": {
+    "built": true,
+    "has": [
+      "turns at the speed set on create:rotation_speed_controller",
+      "64 RPM",
+      "create:mechanical_mixer at 3,4,3 ("
+    ],
+    "lacks": [
+      "PROBLEM",
+      "is reached at two different speeds"
+    ]
+  }
+}

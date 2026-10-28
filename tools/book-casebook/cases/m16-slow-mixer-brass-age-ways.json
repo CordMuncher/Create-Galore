@@ -1,0 +1,82 @@
+{
+  "title": "A too-slow mixer's fix names a Rotation Speed Controller once the player can make one",
+  "from": "2026-10-28 report: the book never uses a speed controller in the Brass Age, only chains of cogs",
+  "roots": [
+    "R4"
+  ],
+  "kind": "model",
+  "inventory": [
+    {
+      "id": "create:precision_mechanism",
+      "count": 2
+    },
+    {
+      "id": "create:brass_casing",
+      "count": 4
+    },
+    {
+      "id": "create:brass_ingot",
+      "count": 16
+    },
+    {
+      "id": "create:andesite_alloy",
+      "count": 32
+    }
+  ],
+  "model": {
+    "title": "Mixer on a water wheel",
+    "size_x": 4,
+    "size_y": 4,
+    "size_z": 3,
+    "blocks": [
+      {
+        "block": "create:water_wheel[facing=east]",
+        "x": 0,
+        "y": 1,
+        "z": 1
+      },
+      {
+        "block": "minecraft:water[level=0]",
+        "x": 0,
+        "y": 2,
+        "z": 1
+      },
+      {
+        "block": "create:gearbox[axis=z]",
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      {
+        "block": "create:cogwheel[axis=y]",
+        "x": 1,
+        "y": 2,
+        "z": 1
+      },
+      {
+        "block": "create:mechanical_mixer",
+        "x": 2,
+        "y": 2,
+        "z": 1
+      },
+      {
+        "block": "create:basin",
+        "x": 2,
+        "y": 0,
+        "z": 1
+      }
+    ]
+  },
+  "expect": {
+    "built": false,
+    "has": [
+      "needs at least 30 RPM",
+      "cog steps",
+      "Rotation Speed Controller set to 30 RPM",
+      "use whichever suits the build"
+    ],
+    "lacks": [
+      "Design brief"
+    ]
+  }
+}

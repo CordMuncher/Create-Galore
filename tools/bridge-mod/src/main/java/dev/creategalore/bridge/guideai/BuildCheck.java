@@ -3,7 +3,9 @@ package dev.creategalore.bridge.guideai;
 import com.simibubi.create.content.kinetics.base.GeneratingKineticBlockEntity;
 import com.simibubi.create.content.kinetics.base.IRotate;
 import com.simibubi.create.content.kinetics.belt.BeltBlock;
+import com.simibubi.create.content.kinetics.base.HorizontalAxisKineticBlock;
 import com.simibubi.create.content.kinetics.chainDrive.ChainDriveBlock;
+import com.simibubi.create.content.kinetics.chainDrive.ChainGearshiftBlock;
 import com.simibubi.create.content.kinetics.simpleRelays.ICogWheel;
 import com.simibubi.create.content.kinetics.waterwheel.LargeWaterWheelBlock;
 import com.simibubi.create.content.kinetics.waterwheel.WaterWheelBlock;
@@ -25,7 +27,7 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 /**
  * Tries a model's machines before the book shows them: places the blocks in a scratch copy of the world (Create's
  * own schematic level, as the schematicannon uses) and follows rotation the way Create does, through shaft ends, cogs,
- * chain drives and belts. It reports what turns with which source, at what speed and direction, and the faults a
+ * chain drives, chain gearshifts, speed controllers and belts. It reports what turns with which source, at what speed and direction, and the faults a
  * player would hit: a shaft that ends against the side of a machine that doesn't take rotation there, a machine the
  * rotation never reaches, two sources fighting over one network, a water wheel with no water on it.
  */
@@ -48,14 +50,19 @@ final class BuildCheck {
 
     /** Null when the model has no Create machines in it. */
     static Report check(Map<BlockPos, BlockState> blocks, ServerLevel level) {
+        return check(blocks, level, Drives.set());
+    }
+
+    /** {@code set} holds the speed each Rotation Speed Controller is set to; one not in it is at 16 RPM, as placed. */
+    static Report check(Map<BlockPos, BlockState> blocks, ServerLevel level, Map<BlockPos, Float> set) {
         try {
-            return run(blocks, level);
+            return run(blocks, level, set);
         } catch (RuntimeException | LinkageError e) {
             return new Report("(The rotation check couldn't run on this model: " + e.getClass().getSimpleName() + ".)", List.of());
         }
     }
 
-    private static Report run(Map<BlockPos, BlockState> blocks, ServerLevel level) {
+    private static Report run(Map<BlockPos, BlockState> blocks, ServerLevel level, Map<BlockPos, Float> set) {
         SchematicLevel world = new SchematicLevel(level);
         blocks.forEach((pos, state) -> world.setBlock(pos, state, 0));
         Map<BlockPos, Cell> kinetic = new LinkedHashMap<>();
@@ -79,9 +86,12 @@ final class BuildCheck {
             }
         }
 
-        // Follow rotation out from every source, the way Create spreads it: relative speed 1 at the source.
+        // Follow rotation out from every source, the way Create spreads it: relative speed 1 at the source. Past a speed
+        // controller the speed is the one it is set to, so that side counts from 1 again, from the block behind it (its root).
         Map<BlockPos, Float> speed = new LinkedHashMap<>();
-        Map<BlockPos, BlockPos> sourceOf = new LinkedHashMap<>();
+        Map<BlockPos, BlockPos> sourceOf = new LinkedHashMap<>(), rootOf = new LinkedHashMap<>();
+        Map<BlockPos, Cell> controlled = new LinkedHashMap<>();
+        Map<BlockPos, Integer> steps = new java.util.HashMap<>();
         Map<BlockPos, Direction> fed = new java.util.HashMap<>();
         List<Cell> sources = new ArrayList<>();
         java.util.Set<BlockPos> conflicts = new java.util.LinkedHashSet<>();
@@ -106,20 +116,30 @@ final class BuildCheck {
             }
             speed.put(src.pos, 1f);
             sourceOf.put(src.pos, src.pos);
+            rootOf.put(src.pos, src.pos);
+            steps.put(src.pos, 0);
             ArrayDeque<Cell> todo = new ArrayDeque<>(List.of(src));
             while (!todo.isEmpty()) {
                 Cell c = todo.poll();
                 for (Cell n : neighbours(kinetic, c)) {
                     float m = modifier(world, c, n, fed);
                     if (m == 0) continue;
-                    float s = speed.get(c.pos) * m;
+                    Cell ctrl = controller(c, n);
+                    BlockPos root = ctrl != null ? n.pos : rootOf.get(c.pos);
+                    float s = ctrl != null ? 1 : speed.get(c.pos) * m;
                     Float had = speed.get(n.pos);
+                    // Back across a controller: it sets the far side's speed, so the two sides never disagree.
+                    if (ctrl != null && had != null) continue;
                     if (had == null) {
                         speed.put(n.pos, s);
                         sourceOf.put(n.pos, src.pos);
+                        rootOf.put(n.pos, root);
+                        if (ctrl != null) controlled.put(n.pos, ctrl);
+                        steps.put(n.pos, ctrl != null ? 0 : steps.get(c.pos)
+                                + (Math.abs(Math.abs(m) - 1) > 1e-3 && (ICogWheel.isLargeCog(c.state) || ICogWheel.isLargeCog(n.state)) ? 1 : 0));
                         feed(fed, n, c);
                         todo.add(n);
-                    } else if (Math.abs(had - s) > 1e-3) {
+                    } else if (Math.abs(had - s) > 1e-3 || !rootOf.get(n.pos).equals(root)) {
                         conflicts.add(n.pos);
                     }
                 }
@@ -148,20 +168,40 @@ final class BuildCheck {
 
         // Machines that stand still below their minimum speed (a mixer needs medium speed): a water wheel's speed is
         // fixed, so that is a fault; other sources can be set faster, so it is a note on the speed the model assumes.
-        Map<BlockPos, Float> rpm = rpm(blocks, level, new ArrayList<>());
+        Map<BlockPos, Float> rpm = rpm(blocks, level, new ArrayList<>(), set);
         for (Cell c : kinetic.values()) {
             IRotate.SpeedLevel min = ((IRotate) c.state.getBlock()).getMinimumRequiredSpeedLevel();
             Float r = rpm.get(c.pos);
             if (min == IRotate.SpeedLevel.NONE || r == null || Math.abs(r) >= min.getSpeedValue() || !sourceOf.containsKey(c.pos)) continue;
             Cell src = kinetic.get(sourceOf.get(c.pos));
+            Cell ctrl = controlled.get(rootOf.get(c.pos));
             String slow = name(c) + " turns at " + trim(Math.abs(r)) + " RPM, but needs at least " + trim(min.getSpeedValue())
                     + " RPM to work, and below that it stands still";
-            if (src.state.getBlock() instanceof WaterWheelBlock || src.state.getBlock() instanceof LargeWaterWheelBlock)
+            if (ctrl != null)
+                faults.add(slow + ": set " + name(ctrl) + " to at least " + trim((float) Math.ceil(min.getSpeedValue() / Math.abs(r)
+                        * Math.abs(rpm.getOrDefault(rootOf.get(c.pos), r)))) + " RPM (give it in speeds, and tell the player)");
+            else if (src.state.getBlock() instanceof WaterWheelBlock || src.state.getBlock() instanceof LargeWaterWheelBlock)
                 faults.add(slow + " (" + name(src) + " always turns at " + trim(nominalRpm(src.state)) + " RPM; speed it up with "
-                        + "gears: a large cogwheel driving a small one doubles the speed)");
+                        + Drives.change(Math.abs(r), min.getSpeedValue()) + ")");
             else notes.add(slow + " with " + name(src) + " at its usual " + trim(nominalRpm(src.state)) + " RPM; set the source "
-                    + "faster or gear it up (a large cogwheel driving a small one doubles the speed)");
+                    + "faster or speed it up with " + Drives.change(Math.abs(r), min.getSpeedValue()));
         }
+
+        // A machine geared through several cog steps: say what else the player could do it with, and leave the choice.
+        Cell geared = null;
+        for (Cell c : kinetic.values())
+            if (steps.getOrDefault(c.pos, 0) >= 2 && !relay(c) && (geared == null || steps.get(c.pos) > steps.get(geared.pos))) geared = c;
+        if (geared != null) {
+            Float to = rpm.get(geared.pos), from = rpm.get(rootOf.get(geared.pos));
+            String others = Drives.besidesCogs(from == null ? 0 : from, to == null ? 0 : to);
+            if (!others.isEmpty()) notes.add(name(geared) + " gets its speed through " + steps.get(geared.pos) + " cog steps"
+                    + (to != null && from != null ? " (" + trim(Math.abs(from)) + " to " + trim(Math.abs(to)) + " RPM)" : "")
+                    + ", which works; it could also be " + others);
+        }
+        for (Cell c : kinetic.values())
+            if (c.state.getBlock() instanceof ChainGearshiftBlock && c.state.getValue(ChainGearshiftBlock.POWERED))
+                notes.add(name(c) + " is powered, taken as signal 15 (twice the speed out to the chain drives it drives); a "
+                        + "weaker signal gives less, 1 + (signal + 1) / 16 times");
 
         StringBuilder out = new StringBuilder("How these blocks turn and connect" + BuildCheck.FOR_YOU + ":\n");
         if (sources.isEmpty()) {
@@ -170,13 +210,15 @@ final class BuildCheck {
         }
         for (Cell src : sources) {
             out.append("- ").append(name(src)).append(" is a source. Turning with it:");
-            int n = 0;
-            for (Map.Entry<BlockPos, BlockPos> e : sourceOf.entrySet()) {
-                if (!e.getValue().equals(src.pos) || e.getKey().equals(src.pos)) continue;
-                if (n++ > 0) out.append(';');
-                out.append(' ').append(name(kinetic.get(e.getKey()))).append(' ').append(relative(speed.get(e.getKey())));
+            list(out, kinetic, src.pos, rootOf, speed);
+            for (Map.Entry<BlockPos, Cell> e : controlled.entrySet()) {
+                if (!sourceOf.get(e.getKey()).equals(src.pos)) continue;
+                Float at = set.get(e.getValue().pos);
+                out.append("- ").append(name(kinetic.get(e.getKey()))).append(" turns at the speed set on ").append(name(e.getValue()))
+                        .append(at != null ? ", " + trim(Math.abs(at)) + " RPM (tell the player to set it on its panel)"
+                                : ": not given in speeds, so 16 RPM as placed").append(". Turning with it:");
+                list(out, kinetic, e.getKey(), rootOf, speed);
             }
-            out.append(n == 0 ? " nothing.\n" : ".\n");
         }
         if (!sources.isEmpty()) {
             List<String> idle = new ArrayList<>();
@@ -193,12 +235,52 @@ final class BuildCheck {
         return new Report(out.toString().trim(), faults);
     }
 
+    private static void list(StringBuilder out, Map<BlockPos, Cell> kinetic, BlockPos root, Map<BlockPos, BlockPos> rootOf,
+            Map<BlockPos, Float> speed) {
+        int n = 0;
+        for (Map.Entry<BlockPos, BlockPos> e : rootOf.entrySet()) {
+            if (!e.getValue().equals(root) || e.getKey().equals(root)) continue;
+            if (n++ > 0) out.append(';');
+            out.append(' ').append(name(kinetic.get(e.getKey()))).append(' ').append(relative(speed.get(e.getKey())));
+        }
+        out.append(n == 0 ? " nothing.\n" : ".\n");
+    }
+
+    /** Parts that only pass rotation on (shafts, cogs, gearboxes, chain drives, belts), as against machines it drives. */
+    private static boolean relay(Cell c) {
+        String id = BuiltInRegistries.BLOCK.getKey(c.state.getBlock()).toString();
+        return id.contains("cogwheel") || c.state.getBlock() instanceof ChainDriveBlock
+                || c.state.getBlock() instanceof BeltBlock || id.endsWith("shaft") || id.endsWith("gearbox") || id.endsWith("clutch")
+                || id.endsWith("gearshift") || id.endsWith("speed_controller");
+    }
+
+    /**
+     * The Rotation Speed Controller when {@code a} and {@code b} are one and the large cogwheel on top of it (axis level
+     * and across the controller's own shaft), as Create joins them; null otherwise.
+     */
+    private static Cell controller(Cell a, Cell b) {
+        for (Cell[] pair : new Cell[][] {{a, b}, {b, a}}) {
+            Cell ctrl = pair[0], cog = pair[1];
+            if (!BuiltInRegistries.BLOCK.getKey(ctrl.state.getBlock()).toString().equals("create:rotation_speed_controller")) continue;
+            if (!ICogWheel.isLargeCog(cog.state) || !cog.pos.equals(ctrl.pos.above())) continue;
+            Direction.Axis axis = cog.state.getValue(BlockStateProperties.AXIS);
+            if (axis.isVertical() || ctrl.state.getValue(HorizontalAxisKineticBlock.HORIZONTAL_AXIS) == axis) continue;
+            return ctrl;
+        }
+        return null;
+    }
+
     /**
      * Each kinetic block's speed in RPM when every source in a model turns at its usual speed (a model holds no
-     * settings): engines and motors at their usual output, water wheels at their usual flow. {@code assumed} gets one
-     * line per source saying the speed used.
+     * settings but its speed controllers'): engines and motors at their usual output, water wheels at their usual flow.
+     * {@code assumed} gets one line per source saying the speed used.
      */
     static Map<BlockPos, Float> rpm(Map<BlockPos, BlockState> blocks, ServerLevel level, List<String> assumed) {
+        return rpm(blocks, level, assumed, Drives.set());
+    }
+
+    /** As above, with each speed controller at the speed in {@code set}, or at 16 RPM as placed. */
+    static Map<BlockPos, Float> rpm(Map<BlockPos, BlockState> blocks, ServerLevel level, List<String> assumed, Map<BlockPos, Float> set) {
         Map<BlockPos, Float> out = new LinkedHashMap<>();
         Map<BlockPos, Direction> fed = new java.util.HashMap<>();
         try {
@@ -220,7 +302,9 @@ final class BuildCheck {
                     for (Cell n : neighbours(kinetic, c)) {
                         float m = modifier(world, c, n, fed);
                         if (m == 0 || out.containsKey(n.pos)) continue;
-                        out.put(n.pos, out.get(c.pos) * m);
+                        Cell ctrl = controller(c, n);
+                        out.put(n.pos, ctrl == null ? out.get(c.pos) * m
+                                : Math.signum(out.get(c.pos)) * Math.abs(set.getOrDefault(ctrl.pos, 16f)));
                         feed(fed, n, c);
                         todo.add(n);
                     }
@@ -317,7 +401,8 @@ final class BuildCheck {
             return axisModifier(sf, dir, fed.get(from.pos)) * (back == 0 ? 0 : 1 / back);
         }
         if (aligned && sf.getBlock() instanceof ChainDriveBlock && st.getBlock() instanceof ChainDriveBlock)
-            return ChainDriveBlock.areBlocksConnected(sf, st, dir) ? 1 : 0;
+            return ChainDriveBlock.areBlocksConnected(sf, st, dir) ? chainModifier(sf) / chainModifier(st) : 0;
+        if (controller(from, to) != null) return 1;
         if (ICogWheel.isLargeCog(sf) && ICogWheel.isLargeCog(st)) {
             Direction.Axis a = sf.getValue(BlockStateProperties.AXIS), b = st.getValue(BlockStateProperties.AXIS);
             if (a == b) return 0;
@@ -351,6 +436,11 @@ final class BuildCheck {
         if (id.equals("create:gearshift")) return -1;
         if (id.equals("create:clutch")) return 0;
         return 1;
+    }
+
+    /** Create's ChainGearshiftBlockEntity.getModifier for a model: a powered Adjustable Chain Gearshift taken at signal 15. */
+    private static float chainModifier(BlockState state) {
+        return state.getBlock() instanceof ChainGearshiftBlock && state.getValue(ChainGearshiftBlock.POWERED) ? 2 : 1;
     }
 
     private static boolean largeToSmall(BlockState large, BlockState small, IRotate smallDef, BlockPos diff) {

@@ -1347,8 +1347,8 @@ final class VehicleCheck {
             for (Thrust t : side) if (t.airflow < Double.MAX_VALUE) fastest = Math.max(fastest, t.airflow);
             if (fastest > 0 && fastest < AIR_SLOW * 1.5 && v < AIR_SLOW)
                 notes.add(String.format(Locale.ROOT, "at these speeds its propellers push air at only %.1f blocks/s, so they can "
-                        + "never move it faster than that: gear them up (a large cogwheel driving a small one doubles the RPM; "
-                        + "a Portable Engine gives 32 RPM) or use bigger propellers", fastest));
+                        + "never move it faster than that: speed them up toward 256 RPM (from a Portable Engine's 32 RPM: "
+                        + Drives.change(32, 256) + ") or use bigger propellers", fastest));
             // Turning: uneven thrust, vectoring thrusters or tilting propellers, against Sable's damping and the envelope.
             double q = 0;
             String how = null;
@@ -1901,10 +1901,10 @@ final class VehicleCheck {
         int bearings = (int) Math.ceil(want / (1200 * p0 * (1 - u / 23.1)));
         StringBuilder text = new StringBuilder(String.format(Locale.ROOT, "at %.1f blocks/s it is too slow to travel on (an "
                 + "airship wants about %.0f): at that speed its drag is about %.0f, so it needs that much push there. Spin "
-                + "propellers fast, since each pushes only up to its airflow: %d Wooden Propeller%s at 256 RPM (geared up three "
-                + "cog steps from a Portable Engine's 32 RPM; one engine turns two), or %d Propeller Bearing%s with 13 sails at "
-                + "128 RPM (two cog steps; two Portable Engines on the same shaft turn one, as engines at the same speed add up "
-                + "their stress). A bearing's big fan pushes more for the same engines", v, u, want, wooden, wooden == 1 ? "" : "s",
+                + "propellers fast, since each pushes only up to its airflow: %d Wooden Propeller%s at 256 RPM (from a Portable "
+                + "Engine's 32 RPM: " + Drives.change(32, 256) + "; one engine turns two), or %d Propeller Bearing%s with 13 "
+                + "sails at 128 RPM (" + Drives.change(32, 128) + "; two Portable Engines on the same shaft turn one, as "
+                + "engines at the same speed add up their stress). A bearing's big fan pushes more for the same engines", v, u, want, wooden, wooden == 1 ? "" : "s",
                 bearings, bearings == 1 ? "" : "s"));
         double need = G * b.m / (16.5 * pressure(200 + balloonY));
         if (filled > need * 1.3)
@@ -1944,9 +1944,8 @@ final class VehicleCheck {
         }
         if (fastest > 0 && !thrusters && needSpeed > 0.75 * fastest) {
             String spin = slowest < 256 ? String.format(Locale.ROOT, "spin them at 256 RPM, the most a shaft turns (they turn %.0f "
-                    + "now; each large cogwheel driving a small one doubles the speed, so a Portable Engine's 32 takes three "
-                    + "such steps, and at 256 a Wooden Propeller pushes air at 25.6 blocks/s and draws 1024 stress units, so one "
-                    + "Portable Engine turns two), and ", slowest) : "";
+                    + "now; from a Portable Engine's 32: " + Drives.change(32, 256) + "; at 256 a Wooden Propeller pushes "
+                    + "air at 25.6 blocks/s and draws 1024 stress units, so one Portable Engine turns two), and ", slowest) : "";
             faults.add(String.format(Locale.ROOT, "its propellers push air at only %.1f blocks/s and their push falls to nothing as "
                     + "it nears that, short of the %.1f blocks/s it needs to take off: %slower the take-off speed with more wing "
                     + "for its weight (a propeller plane wants about three sails facing up per mass of everything else, and a "

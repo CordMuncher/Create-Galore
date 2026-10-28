@@ -42,7 +42,9 @@ import org.slf4j.LoggerFactory;
  * - gives things that move by themselves their own motion vectors (waving plants and leaves, Sable's ships, Create's
  *   machines and contraptions through Colorwheel, entities, block entities and the hand through {@link EntityMotion}):
  *   the solid gbuffers programs write them into colortex2, which Photon itself only uses with normal or specular
- *   mapping, POM or TAAU, and composite4 takes them over the reprojection (see {@link #MOTION_INCLUDE});
+ *   mapping, POM or TAAU, and composite4 takes them over the reprojection (see {@link #MOTION_INCLUDE}). The
+ *   programs whose overlays must meet them to the bit (the enchantment glint, the block breaking cracks) and the
+ *   ones they cover compute gl_Position as invariant, so the motion code can't round the solid ones differently;
  * - marks for FSR 3 where it should take this frame over its history ({@link #REACTIVE_INCLUDE}): particles, rain and
  *   the nether portal (the translucent programs), lava and fire (their materials); DLSS's current models take no
  *   such mask;
@@ -73,7 +75,7 @@ import org.slf4j.LoggerFactory;
 public final class PhotonPatcher {
     private static final Logger LOG = LoggerFactory.getLogger("create_galore_bridge");
     /** Bumped when the patch changes, so existing copies are made again. */
-    private static final int PATCH_VERSION = 18; // 16 and 17 were the research builds' own
+    private static final int PATCH_VERSION = 20; // 16 to 19 were test builds' own
     private static final String BASE_ZIP = "photon_v1.3a.zip";
     /** Colorwheel Patcher's copy of {@link #BASE_ZIP}; an outdated one gets a prefix and no longer matches. */
     private static final Pattern COLORWHEEL_ZIP = Pattern.compile("photon_v1\\.3a \\+ Clrwl_(\\d+)\\.(\\d+)\\.(\\d+)\\.zip");
@@ -613,18 +615,33 @@ public final class PhotonPatcher {
         String[] mipBias = {"const float lod_bias = log2(taau_render_scale);\n", "#define lod_bias cg_mip_bias\n"};
         for (String program : new String[] {"gbuffers_all_solid", "gbuffers_all_translucent", "gbuffers_armor_glint",
                 "gbuffers_damagedblock", "clrwl_solid", "clrwl_translucent", "clrwl_glint", "clrwl_damagedblock"}) {
-            edits.merge("shaders/program/" + program + ".fsh", new String[][] {mipBias}, (a, b) -> {
-                String[][] both = java.util.Arrays.copyOf(a, a.length + b.length);
-                System.arraycopy(b, 0, both, a.length, b.length);
-                return both;
-            });
+            edits.merge("shaders/program/" + program + ".fsh", new String[][] {mipBias}, PhotonPatcher::concat);
+        }
+        // The enchantment glint and the block breaking cracks are drawn only where their depth equals, to the last bit,
+        // that of what they cover (vanilla's EQUAL depth test), so their programs must place each vertex exactly where
+        // the solid programs did. With the motion code around the solid programs' position sum, the driver's compiler
+        // (seen on NVIDIA) rounded it differently from the glint's, so on many frames the two missed by a bit and the
+        // glint strobed on held and worn items. invariant has every one of these programs compute gl_Position the
+        // same way, whatever else it does.
+        String[] invariantPosition = {"#include \"/include/global.glsl\"\n",
+                "#include \"/include/global.glsl\"\n\ninvariant gl_Position; // Create Galore DLAA: overlays match to the bit (see PhotonPatcher)\n"};
+        for (String program : new String[] {"gbuffers_all_solid", "gbuffers_all_translucent", "gbuffers_armor_glint",
+                "gbuffers_damagedblock", "clrwl_solid", "clrwl_translucent", "clrwl_glint", "clrwl_damagedblock"}) {
+            edits.merge("shaders/program/" + program + ".vsh", new String[][] {invariantPosition}, PhotonPatcher::concat);
         }
         return edits;
     }
 
+    private static String[][] concat(String[][] a, String[][] b) {
+        String[][] both = java.util.Arrays.copyOf(a, a.length + b.length);
+        System.arraycopy(b, 0, both, a.length, b.length);
+        return both;
+    }
+
     /** Files Colorwheel Patcher adds: patched when there, skipped in a copy made from the plain Photon zip. */
     private static final java.util.Set<String> OPTIONAL = java.util.Set.of("shaders/program/clrwl_solid.vsh", "shaders/program/clrwl_solid.fsh",
-            "shaders/program/clrwl_translucent.fsh", "shaders/program/clrwl_glint.fsh", "shaders/program/clrwl_damagedblock.fsh");
+            "shaders/program/clrwl_translucent.vsh", "shaders/program/clrwl_translucent.fsh", "shaders/program/clrwl_glint.vsh",
+            "shaders/program/clrwl_glint.fsh", "shaders/program/clrwl_damagedblock.vsh", "shaders/program/clrwl_damagedblock.fsh");
 
     private static final String VERTEX_MOTION_INPUTS = """
             #include "/include/cg_motion.glsl"

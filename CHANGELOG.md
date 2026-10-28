@@ -5,6 +5,30 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.6.28
+
+### Added
+- Create Galore Bridge 1.151.0.
+
+### Fixed
+- **Enchanted items no longer strobe with Photon + DLAA.** The enchantment glint on a held, worn or dropped enchanted item flickered on and off, in bands and patches, with DLAA or DLSS on and Normal Mapping off. The glint is drawn only where its depth matches the item's to the last bit, and the motion vector code the pack adds to Photon made the graphics driver round the item's position a hair differently from the glint's. Every program that draws or takes an overlay now computes its position the same way, so the glint sits exactly on the item again and moving machines keep their motion vectors. The block breaking cracks follow the same rule.
+
+### Removed
+- Nothing.
+
+## 0.6.27
+
+### Added
+- Create Galore Bridge 1.150.0.
+- **Ask the Book weighs all of Create's drive parts the player can make.** With every question the book now learns which drive parts the player can make right now, beyond shafts and cogwheels: Gearbox, Encased Chain Drive, Clutch, Gearshift, Adjustable Chain Gearshift, Rotation Speed Controller and Sequenced Gearshift, each with what it is for. It also learns which ones they can't make yet. When a design needs a different speed, its build check lists every way the player has to get there: cog steps, a Rotation Speed Controller set to the speed needed, or a chain gearshift for up to twice the speed. A design that already works on a few cog steps keeps them, and the check only points out that a controller would also do the job. Parts a player can't make yet are never offered (a Rotation Speed Controller needs a Precision Mechanism, brass parts need brass from a heated basin).
+- Ask the Book's 3D models can set a Rotation Speed Controller's speed, so the book works the build out at the speed it tells the player to set.
+
+### Fixed
+- **Ask the Book understands the Rotation Speed Controller and the Adjustable Chain Gearshift.** Its rotation check followed only cogs, shafts, belts and chain drives, so a speed controller's cogwheel ran at the incoming speed and a powered chain gearshift changed nothing. Every tip for a too-slow machine also said only "a large cogwheel driving a small one doubles the speed". That is why the book kept chaining cogs even in the Brass Age. Now the cogwheel on a controller turns at the set speed (16 RPM as placed), a powered chain gearshift doubles the speed down its row, and a machine behind a controller set too low gets the speed to set it to. On a placed build, the check reads the speed set on each controller's panel.
+
+### Removed
+- Nothing.
+
 ## 0.6.26
 
 ### Added
