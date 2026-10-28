@@ -86,7 +86,7 @@ import org.slf4j.LoggerFactory;
  */
 final class D3D12Presenter implements Presenter {
     private static final Logger LOG = LoggerFactory.getLogger("create_galore_bridge");
-    private static final int ABI = 6;
+    private static final int ABI = 7;
     /** Present's DXGI_STATUS_OCCLUDED: the window can't be seen (minimized). */
     private static final int DXGI_STATUS_OCCLUDED = 0x087A0001;
     private static final int RING_SIZE = 3;
@@ -714,9 +714,9 @@ final class D3D12Presenter implements Presenter {
             presentGenerates = false;
             FrameGen.hidden(hr == DXGI_STATUS_OCCLUDED);
             try (MemoryStack stack = stackPush()) {
-                long state = stack.nmalloc(8, 7 * 8);
+                long state = stack.nmalloc(8, 8 * 8);
                 Ffi.call("P:V", fgState, state);
-                long[] numbers = new long[7];
+                long[] numbers = new long[8];
                 for (int i = 0; i < numbers.length; i++) {
                     numbers[i] = memGetLong(state + i * 8L);
                 }

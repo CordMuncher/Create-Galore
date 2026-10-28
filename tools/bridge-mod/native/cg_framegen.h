@@ -49,6 +49,9 @@ enum FgFrameFlag {
     FG_FRAME_RESET = 2,           // nothing connects this frame with the one before (a cut, a teleport, FG just on)
     FG_FRAME_CAMERA = 4,          // the camera floats are valid (a world is drawn), even if not generating
     FG_FRAME_UI = 8,              // generate the HUD apart from the world (from hudless and UI alpha), not as one image
+    FG_FRAME_DYNAMIC = 16,        // let the backend pick how many frames to generate, frame by frame, to fill the display's
+                                  // refresh rate (NVIDIA's Dynamic Multi Frame Generation), where FgState's dynamicSupported
+                                  // says it can; elsewhere framesToGenerate as usual
 };
 
 enum FgInput { FG_HUDLESS, FG_UI_ALPHA, FG_DEPTH, FG_MOTION, FG_INPUTS };
@@ -62,7 +65,7 @@ struct FgFrame {
     UINT renderHeight;
     UINT backWidth;
     UINT backHeight;
-    int framesToGenerate;         // 1: one generated frame per rendered one (2x)
+    int framesToGenerate;         // 1: one generated frame per rendered one (2x); unused while FG_FRAME_DYNAMIC applies
     const float* camera;          // FG_CAMERA_FLOATS, or null without FG_FRAME_CAMERA
     // For a backend that composesUi: the HUD texture, R8G8B8A8_UNORM, the back buffer's size, premultiplied (UI from
     // frame = UI + (1 - alpha) * hudless, alpha in a), between frames in PIXEL_SHADER_RESOURCE | NON_PIXEL_SHADER_RESOURCE.
@@ -79,6 +82,7 @@ struct FgState {
     long long maxGenerated;       // the most frames it can generate per rendered one
     long long vsyncSupported;     // 1 if it can run with vsync on
     long long errors;             // calls into the backend that failed so far
+    long long dynamicSupported;   // 1 if it can pick the number of generated frames itself (FG_FRAME_DYNAMIC)
 };
 
 class FgBackend {

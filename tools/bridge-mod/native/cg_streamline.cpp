@@ -356,8 +356,13 @@ public:
             return false;
         }
 
+        // Dynamic Multi Frame Generation only where Streamline says it runs: asking for it elsewhere is an error (NVIDIA's
+        // DLSS-G guide, 14.2). It targets the display's refresh rate (dynamicTargetFrameRate 0), or with vsync the rate
+        // that presents without tearing, and ignores numFramesToGenerate.
+        bool dynamic = generate && (frame.flags & FG_FRAME_DYNAMIC) && dynamicSupported();
         sl::DLSSGOptions options{};
-        options.mode = generate ? sl::DLSSGMode::eOn : sl::DLSSGMode::eOff;
+        options.mode = !generate ? sl::DLSSGMode::eOff : dynamic ? sl::DLSSGMode::eDynamic : sl::DLSSGMode::eOn;
+        options.dynamicTargetFrameRate = 0.0f;
         UINT frames = frame.framesToGenerate < 1 ? 1 : (UINT) frame.framesToGenerate;
         options.numFramesToGenerate = m_maxGenerated > 0 && frames > m_maxGenerated ? m_maxGenerated : frames;
         options.flags = sl::DLSSGFlags::eRetainResourcesWhenOff;
@@ -382,12 +387,10 @@ public:
             m_errors++;
             return;
         }
-        m_generating = m_optionsSet && m_options.mode == sl::DLSSGMode::eOn;
+        m_generating = m_optionsSet && m_options.mode != sl::DLSSGMode::eOff;
         m_status = (long long) state.status;
         m_framesPresented = state.numFramesActuallyPresented;
-        m_minSize = state.minWidthOrHeight;
-        m_maxGenerated = state.numFramesToGenerateMax;
-        m_vsyncSupported = state.bIsVsyncSupportAvailable == sl::Boolean::eTrue;
+        took(state);
         ID3D12Fence* fence = (ID3D12Fence*) state.inputsProcessingCompletionFence;
         if (fence && state.lastPresentInputsProcessingCompletionFenceValue > 0) {
             queue->Wait(fence, state.lastPresentInputsProcessingCompletionFenceValue);
@@ -423,6 +426,7 @@ public:
         state.maxGenerated = m_maxGenerated;
         state.vsyncSupported = m_vsyncSupported ? 1 : 0;
         state.errors = m_errors;
+        state.dynamicSupported = m_dynamicSupported ? 1 : 0;
     }
 
     void stop() override {
@@ -532,7 +536,36 @@ private:
     UINT m_minSize = 0;
     UINT m_maxGenerated = 0;
     bool m_vsyncSupported = false;
+    bool m_dynamicSupported = false;
+    bool m_stateRead = false;
+    bool m_dynamicRefusedLogged = false;
     long long m_errors = 0;
+
+    /** What the card can do, from a DLSSGState: the most frames it generates, vsync, Dynamic Multi Frame Generation. */
+    void took(const sl::DLSSGState& state) {
+        m_minSize = state.minWidthOrHeight;
+        m_maxGenerated = state.numFramesToGenerateMax;
+        m_vsyncSupported = state.bIsVsyncSupportAvailable == sl::Boolean::eTrue;
+        m_dynamicSupported = state.bIsDynamicMFGSupported == sl::Boolean::eTrue;
+        m_stateRead = true;
+    }
+
+    /** Whether Streamline runs Dynamic Multi Frame Generation here, asked before the first Present if need be. */
+    bool dynamicSupported() {
+        if (!m_stateRead) {
+            sl::DLSSGState state{};
+            if (m_api.dlssgGetState(sl::ViewportHandle(0), state, nullptr) != sl::Result::eOk) {
+                return false;
+            }
+            took(state);
+        }
+        if (!m_dynamicSupported && !m_dynamicRefusedLogged) {
+            m_dynamicRefusedLogged = true;
+            fgLog('W', "Dynamic Multi Frame Generation was asked for, but Streamline says it doesn't run here: a fixed"
+                    " number of generated frames instead");
+        }
+        return m_dynamicSupported;
+    }
 
     bool failed(const char* what, sl::Result result) {
         m_errors++;
