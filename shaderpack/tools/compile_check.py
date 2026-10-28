@@ -84,6 +84,7 @@ WORLD_VARIANTS = ROOT_VARIANTS + [
     ("noparallax", [], [("#define PARALLAX\n", "//#define PARALLAX\n")]),
     ("noparallax-noshadow-dh", ["DISTANT_HORIZONS"], [("#define PARALLAX\n", "//#define PARALLAX\n"), ("#define SHADOWS ", "//#define SHADOWS ")]),
     ("debug-7", [], [("#define DEBUG_VIEW 0 ", "#define DEBUG_VIEW 7 ")]),
+    ("debug-9", [], [("#define DEBUG_VIEW 0 ", "#define DEBUG_VIEW 9 ")]),
     ("nobounce", [], [("#define SCREEN_BOUNCE\n", "//#define SCREEN_BOUNCE\n")]),
     ("grade", [], [("#define WB_TEMPERATURE 6500 ", "#define WB_TEMPERATURE 5000 "), ("#define WB_TINT 0 ", "#define WB_TINT 10 "), ("#define PRIMARY_RED_HUE 0 ", "#define PRIMARY_RED_HUE 20 "), ("//#define COLOR_MIXER", "#define COLOR_MIXER"), ("#define MIX_RED_HUE 0 ", "#define MIX_RED_HUE 30 ")]),
     ("dof", [], [("//#define DEPTH_OF_FIELD", "#define DEPTH_OF_FIELD")]),

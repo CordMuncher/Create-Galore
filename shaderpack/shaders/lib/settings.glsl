@@ -188,8 +188,9 @@ const float upscaling_render_scale = RENDER_SCALE;
 // the caustics there; 4 why the shadow map does or doesn't find water over a point; 5 the leaves' crown shape; 6 how
 // much of the sky each surface sees; 7 only the light the screen bounces, as it falls on a white surface (see
 // deferred.fsh); 8 on the water, how much it mirrors (red, twice its Fresnel) and where the screen gives what it
-// mirrors (green).
-#define DEBUG_VIEW 0 // [0 1 2 3 4 5 6 7 8]
+// mirrors (green); 9 the shadow map alone, without the sky light that keeps the sun out of closed rooms (white lit,
+// black shadowed, blue outside it).
+#define DEBUG_VIEW 0 // [0 1 2 3 4 5 6 7 8 9]
 
 // Water, in the lit overworld: small wind waves on every water surface (Waves: how high, 0 none), and ripples where
 // you, mobs, boats, ships and Create's water wheels move through it, with wakes behind them (with shadows on: the

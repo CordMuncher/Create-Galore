@@ -573,6 +573,18 @@ void main() {
                 lit = vec3(0.0, 2.0, 0.0);
             }
         }
+#elif DEBUG_VIEW == 9 && defined SHADOW_MAP
+        // The shadow map alone, without the sky light that keeps the sun out of closed rooms and caves (see
+        // direct_visibility): white where it lets the sun's (or the moon's) light through, black where it shadows,
+        // blue outside it. (The light in the air goes by the shadow map alone.)
+        {
+            vec3 sc = shadow_coord(scene_pos);
+            if (any(lessThan(sc, vec3(0.0))) || any(greaterThan(sc, vec3(1.0)))) {
+                lit = vec3(0.0, 0.0, 2.0);
+            } else {
+                lit = vec3(2.0 * shadow_visibility(scene_pos, normal, g_light_dir.xyz, 1.0, 0.5));
+            }
+        }
 #elif DEBUG_VIEW == 6
         // How much of the sky a surface sees (see sky_grid.glsl, sky_probe.glsl): red Minecraft's sky light (through
         // its curve), green the share the pack works out, blue where it works out none (Minecraft's sky light alone).

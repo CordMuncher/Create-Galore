@@ -173,6 +173,21 @@ float air_dust_sky(vec3 p, vec3 dir, uint seed) {
 #endif
 }
 
+// Whether a point lies inside a block the sky grid marks (a solid block, leaves, water). A cell reaches into the wall
+// behind what you see (its point moves through it from frame to frame); in there no light gets to the dust, and a
+// ray from inside that left through the wall's far side would light the room's air with the sky outside it.
+bool air_in_block(vec3 p) {
+#ifdef LIT_SKY_GRID
+    ivec3 b = ivec3(floor(sky_grid_pos(p, cameraPositionFract)));
+    if (any(lessThan(b, ivec3(0))) || any(greaterThanEqual(b, ivec3(sky_grid_size, sky_grid_height, sky_grid_size)))) {
+        return false;
+    }
+    return sky_grid_marked(b.xz, 0, b.y, b.y);
+#else
+    return false;
+#endif
+}
+
 // Last frame's cells at a place in the volume (cells across, slices deep, between their centres): from colortex11.
 vec4 air_history_at(vec2 c, float s) {
     vec2 size = vec2(textureSize(colortex11, 0));
@@ -267,7 +282,7 @@ void main() {
 
         // Dust indoors: lit by the sun and the moon where they get in, and by the sky through the openings, each as
         // the dust's phase function weighs the way its light comes (the sky's radiance about its irradiance over pi).
-        if (walled > 0.0) {
+        if (walled > 0.0 && !air_in_block(p)) {
             scattered += air_dust * walled * ((sun * dust_phase(cos_sun) + moon * dust_phase(cos_moon)) * lit
                     + sky_irradiance(vec3(0.0, 1.0, 0.0)) * (1.0 / PI) * air_dust_sky(p, dir, frame * 7u + seed + 5u));
             extinction += air_dust * walled;
