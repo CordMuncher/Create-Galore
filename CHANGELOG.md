@@ -5,6 +5,14 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.6.21
+
+### Added
+- Create Galore Bridge 1.144.0.
+
+### Fixed
+- **Hostile Skies airships no longer get stuck in the sky after a restart.** When the server starts, Hostile Skies gave each airship raid one minute to find its ship. A ship nobody was near in that minute (away from spawn, or the player joined later) was dropped: it stayed in the world with its crew aboard, but nothing steered it any more, so it drifted until its engine ran dry and then hung in place for good, never patrolling or leaving. Now the raid waits for its ship to load, however long that takes, and carries on with its patrol and departure as usual. A ship already stranded this way stays as it is: its helm is no longer chained, so it can be boarded and flown.
+
 ## 0.6.20
 
 ### Added
