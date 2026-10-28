@@ -1,0 +1,39 @@
+{
+  "title": "An answer cut off mid-sentence by the output limit still reaches the player, with the note to ask it to go on",
+  "from": "guards the old behaviour beside l01-l03",
+  "roots": [
+    "R6"
+  ],
+  "kind": "loop",
+  "question": "how do I automate andesite?",
+  "turns": [
+    {
+      "stop_reason": "max_tokens",
+      "content": [
+        {
+          "type": "thinking",
+          "thinking": "(a long working-out of the build)",
+          "signature": "casebook"
+        },
+        {
+          "type": "text",
+          "text": "Yes. Put a Mechanical Drill on a cobblestone generator, then"
+        }
+      ],
+      "usage": {
+        "output_tokens": 32000
+      }
+    }
+  ],
+  "expect": {
+    "has": [
+      "ANSWER: Yes. Put a Mechanical Drill",
+      "ran out of page",
+      "KEPT: true",
+      "CALLS: 1 tools open, effort medium"
+    ],
+    "lacks": [
+      "2 tools"
+    ]
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "title": "A turn that spends its whole output thinking is asked again, thinking less, and its answer reaches the player",
+  "from": "0.6.18: the andesite build follow-up showed \"found nothing to say\" and \"ran out of page\"",
+  "roots": [
+    "R5",
+    "R6"
+  ],
+  "kind": "loop",
+  "question": "can you show me a 3d design of a self contained build that generates the cobble, then makes gravel and then splits the flint off as needed to make andasite",
+  "turns": [
+    {
+      "stop_reason": "max_tokens",
+      "content": [
+        {
+          "type": "thinking",
+          "thinking": "(a long working-out of the build)",
+          "signature": "casebook"
+        }
+      ],
+      "usage": {
+        "output_tokens": 32000
+      }
+    },
+    {
+      "stop_reason": "end_turn",
+      "content": [
+        {
+          "type": "thinking",
+          "thinking": "(a long working-out of the build)",
+          "signature": "casebook"
+        },
+        {
+          "type": "text",
+          "text": "Here is the andesite line, station by station."
+        }
+      ],
+      "usage": {
+        "output_tokens": 900
+      }
+    }
+  ],
+  "expect": {
+    "has": [
+      "ANSWER: Here is the andesite line",
+      "KEPT: true",
+      "1 tools open, effort medium",
+      "2 tools open, effort low"
+    ],
+    "lacks": [
+      "found nothing to say",
+      "ran out of page",
+      "ANSWER: (none)"
+    ]
+  }
+}

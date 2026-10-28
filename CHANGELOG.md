@@ -5,6 +5,72 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.6.25
+
+### Added
+- Create Galore Bridge 1.148.0.
+
+### Fixed
+- **A Mechanical Arm sorts by the funnels on the belts it drops onto.** When one of an arm's outputs is a belt block with a Brass Belt Funnel on it, the arm only drops items that funnel's filter passes there. Only that one belt block counts, not the rest of the belt, and a tunnel next to the funnel changes nothing. Before it picks an item up, the arm checks every output and leaves items that no output takes where they are. So an arm can take from one belt and send each item to the belt whose funnel is set to it. Before, the arm dropped anything on any belt and ignored the funnel. A belt block with no funnel still takes anything. The Field Guide's Moving Items entry has a new page on sorting with an arm.
+
+### Removed
+- Nothing.
+
+## 0.6.24
+
+### Added
+- Create Galore Bridge 1.147.0.
+
+### Fixed
+- **A pinned schematic shows as one clean see-through copy of the build.** It used to draw every face of every block at once, so the walls, floor and furniture stacked into a jumble of layers, and its bottom flickered against the ground it stood on. Now only the faces nearest to you show, like a pane of glass shaped as the build, and nothing fights the ground. A spot holding the wrong block is only tinted red (the faint copy inside it flickered against it). With a shader pack the copy is drawn a little stronger so the blocks still read.
+- **Schematics look right with a shader pack on.** The preview of a held Schematic (and the off-hand trace) drew as a flat white or glowing shape, as if every block were a lamp. They now come through the shader pack like any other block, lit by daylight or moonlight like the ground around them. Without a shader pack nothing changes.
+
+## 0.6.23
+
+### Added
+- Create Galore Bridge 1.146.0.
+
+### Fixed
+- **Distant Horizons' far terrain tilts with the camera when you get hurt.** Without a shader pack, the hit's tilt together with view bobbing kept Separate Sable Render Distance from passing the frame's view on to Distant Horizons, so for the half second of a hit the far terrain was drawn with the held item's view instead: no tilt, no bobbing and a field of view of 70. It hung still over the rest of the world like an overlay, and at any other field of view it looked zoomed in too. It now always gets the view the world renders with.
+
+## 0.6.22
+
+### Added
+- Create Galore Bridge 1.145.0.
+- Create Galore Lag Watch 1.2.0: when the server crashes but its window stays open, it says `SERVER CRASHED` in the console and `logs/lagwatch.log` and closes the process after 30 s (`closeAfterCrashSeconds` under `[freeze]`, 0 leaves it open).
+
+### Fixed
+- **The server no longer crashes when a ship is removed while Create Deep Seas wakes it up.** A ship that is broken up, emptied or flies out of the world is marked removed during a tick and taken out at the next one. Create Deep Seas wakes every ship with sails or a rudder every 5 s, and when it reached one in that moment, Sable threw "Body has been removed" and the server crashed. The save on the way down hit the same ship and failed as well, so nothing since the last autosave was saved and the window stayed open, looking frozen. Now nudging, waking, teleporting or reading the speed of a ship that is being removed does nothing (it reads as standing still), for every mod that does it, and the ship saves normally.
+
+### Removed
+- Nothing.
+
+## 0.6.21
+
+### Added
+- Create Galore Bridge 1.144.0.
+
+### Fixed
+- **Hostile Skies airships no longer get stuck in the sky after a restart.** When the server starts, Hostile Skies gave each airship raid one minute to find its ship. A ship nobody was near in that minute (away from spawn, or the player joined later) was dropped: it stayed in the world with its crew aboard, but nothing steered it any more, so it drifted until its engine ran dry and then hung in place for good, never patrolling or leaving. Now the raid waits for its ship to load, however long that takes, and carries on with its patrol and departure as usual. A ship already stranded this way stays as it is: its helm is no longer chained, so it can be boarded and flown.
+
+## 0.6.20
+
+### Added
+- Create Galore Bridge 1.143.0.
+
+### Fixed
+- **Ask the Book no longer designs vehicles you can't see out of.** Its usability check now looks from the helm the way the pilot does: lines of sight fan out ahead through the cabin's windows, once through the whole build and once through its walls, glass, stairs, slabs and other shell blocks alone. When controls, Redstone Links, levers, machines or fittings take more than a quarter of the view out ahead, or the helm has no window or opening ahead at all, the design fails the check, and the book is told to put the controls on a dashboard below the window sill or on the wall beside it. Its vehicle design notes say the same from the start.
+
+## 0.6.19
+
+### Added
+- Create Galore Bridge 1.142.0.
+- Ask the Book's casebook replays how an answer ends (`loop` cases, no model needed) and has the andesite build question for the answer eval.
+
+### Fixed
+- **Ask the Book no longer answers a big build question with nothing.** When the book spent its whole page working out a design before writing a word, the player got "found nothing to say" and "ran out of page". Now it takes that turn back and tries again, thinking less and building in parts, and the next time with its tools closed, so it writes the answer in words. If every try still comes up empty, it says to ask for one part of the build at a time. A blank answer, or a half-written "let me build that" line, can't reach the page any more.
+- **Ask the Book knows crafting-table recipes can be automated.** Its recipe lookups now say which Create machines also run a crafting recipe on this server: a Mechanical Mixer for shapeless recipes (Diorite + Cobblestone into Andesite, for one), a Mechanical Press for a square of one item, and Mechanical Crafters. It had said Diorite + Cobblestone only works at a crafting table. The build checks count those machines too.
+
 ## 0.6.18
 
 ### Added

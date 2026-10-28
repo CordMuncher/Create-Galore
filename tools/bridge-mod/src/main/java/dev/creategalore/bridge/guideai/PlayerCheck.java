@@ -15,12 +15,18 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.DoorBlock;
+import net.minecraft.world.level.block.FenceBlock;
 import net.minecraft.world.level.block.FenceGateBlock;
+import net.minecraft.world.level.block.HalfTransparentBlock;
+import net.minecraft.world.level.block.IronBarsBlock;
 import net.minecraft.world.level.block.SlabBlock;
+import net.minecraft.world.level.block.StairBlock;
 import net.minecraft.world.level.block.SupportType;
 import net.minecraft.world.level.block.TrapDoorBlock;
+import net.minecraft.world.level.block.WallBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.SlabType;
@@ -28,11 +34,12 @@ import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import net.neoforged.neoforge.common.Tags;
 
 /**
  * Whether a build works for the player using it, not only for its machines: posts that rest on something, and on a
- * vehicle a crew that can walk from the helm to everything they have to tend, climb aboard once it has landed, and
- * stay warm at the heights it climbs to.
+ * vehicle a crew that can walk from the helm to everything they have to tend, climb aboard once it has landed, see
+ * out ahead from the helm, and stay warm at the heights it climbs to.
  *
  * <p>Players are modelled the way Minecraft moves them: 0.6 wide and 1.8 tall, eyes 1.62 up, a jump of 1.25 (a full
  * block and a slab's step), a 4.5 block reach that needs a clear line to the block. Doors, trapdoors and fence gates
@@ -45,6 +52,8 @@ final class PlayerCheck {
     private static final double REACH = 4.5, EYE = 1.62, HEIGHT = 1.8, JUMP = 1.25, DROP = 3.5;
     private static final int COLD = 128, FREEZING = 192, SHELTER_RADIUS = 4;
     private static final double SHELTERED = 0.9;
+    /** A seated player's eyes above the seat block's bottom, and how far a line of sight is followed. */
+    private static final double SEATED_EYE = 1.3, SIGHT = 24;
 
     private PlayerCheck() {
     }
@@ -228,6 +237,8 @@ final class PlayerCheck {
 
             if (lands) boarding(blocks, getter, landed, crew, groundY, faults);
 
+            view(blocks, getter, helm, controls, seats, faults);
+
             if (ceiling >= COLD) {
                 double best = 0;
                 for (Node n : helm) best = Math.max(best, enclosure(getter, n.head()));
@@ -409,6 +420,121 @@ final class PlayerCheck {
             if (id.contains("funnel") || id.contains("chute") || id.endsWith(":hopper")) return true;
         }
         return false;
+    }
+
+    // ---------- the view ahead ----------
+
+    /** Where the pilot's eyes are and how that place reads in a report. */
+    private record Eye(Vec3 at, String where) {
+    }
+
+    /** What one place at the helm sees ahead: lines out in the build and through its shell alone, and what stops the rest. */
+    private record Sight(Eye eye, int open, int shell, Map<BlockPos, Integer> blockers) {
+    }
+
+    /**
+     * Whether whoever steers can see where they are going. From each place at the helm, and each seat beside it (eyes
+     * about 1.3 above the seat block), lines of sight fan out ahead toward the controls they work (the Steering Wheel when
+     * there is one): 35 degrees either side, 15 down to 10 up. Glass, panes and ice let sight through; anything else stops
+     * it. The same lines are cast again through the vehicle's shell alone (full blocks, glass, stairs, slabs, fences,
+     * walls, doors and trapdoors) for the view its windows and openings give, and whatever stops a line the shell leaves
+     * open (a control, link, machine or fitting) is blocking the view. The pilot takes the best place at the helm: from
+     * there, more than a quarter of the view out lost, or no view out ahead at all, is a fault.
+     */
+    private static void view(Map<BlockPos, BlockState> blocks, BlockGetter getter, Set<Node> helm, List<BlockPos> controls,
+                             List<BlockPos> seats, List<String> faults) {
+        if (controls.isEmpty()) return;
+        List<Eye> eyes = new ArrayList<>();
+        for (Node n : helm) eyes.add(new Eye(n.eye(), "standing at " + xyz(n.cell)));
+        for (BlockPos s : seats)
+            if (helm.stream().anyMatch(n -> n.cell.distManhattan(s) <= 2))
+                eyes.add(new Eye(new Vec3(s.getX() + 0.5, s.getY() + SEATED_EYE, s.getZ() + 0.5), "sitting on the " + name(blocks.get(s))
+                        + " at " + xyz(s)));
+        Sight best = null;
+        for (Eye eye : eyes) {
+            Vec3 ahead = ahead(blocks, getter, eye.at, controls);
+            if (ahead == null) continue;
+            Sight s = sight(blocks, getter, eye, ahead);
+            if (best == null || s.open > best.open || s.open == best.open && s.shell > best.shell) best = s;
+        }
+        if (best == null) return;
+        if (best.shell == 0) {
+            faults.add("whoever steers can't see where it goes: " + best.eye.where + " (the best place at the helm), every line of "
+                    + "sight ahead ends at the vehicle's own walls, roof or floor. Put windows (glass or panes) or an opening in "
+                    + "the wall ahead of the helm, at the pilot's eye height (about 1.6 above the floor they stand on)");
+            return;
+        }
+        int lost = best.shell - best.open;
+        if (lost * 4 <= best.shell) return;
+        List<String> what = best.blockers.entrySet().stream().sorted((a, b) -> b.getValue() - a.getValue()).limit(5)
+                .map(e -> name(blocks.get(e.getKey())) + " at " + xyz(e.getKey())).toList();
+        int more = best.blockers.size() - what.size();
+        faults.add(String.format(Locale.ROOT, "the pilot can't see out ahead: %s (the best place at the helm), %d%% of the view out "
+                + "through the windows and openings ahead is blocked by %s%s. Set controls, links, levers and anything else at "
+                + "the window on a dashboard below the window sill (under the pilot's eye height) or on the wall beside the "
+                + "window, and keep the glass in front of the pilot clear", best.eye.where, Math.round(100.0 * lost / best.shell),
+                String.join(", ", what), more > 0 ? " and " + more + " more" : ""));
+    }
+
+    /** Level, from the eye toward what the pilot steers with: the nearest Steering Wheel in reach, else the controls in reach. */
+    private static Vec3 ahead(Map<BlockPos, BlockState> blocks, BlockGetter getter, Vec3 eye, List<BlockPos> controls) {
+        List<BlockPos> mine = controls.stream().filter(c -> reaches(blocks, getter, eye, c, null)).toList();
+        if (mine.isEmpty()) return null;
+        Vec3 to = mine.stream().filter(c -> id(blocks.get(c)).equals("simulated:steering_wheel")).map(Vec3::atCenterOf)
+                .min(java.util.Comparator.comparingDouble(c -> c.distanceToSqr(eye))).orElse(null);
+        if (to == null) {
+            double x = 0, z = 0;
+            for (BlockPos c : mine) {
+                x += c.getX() + 0.5;
+                z += c.getZ() + 0.5;
+            }
+            to = new Vec3(x / mine.size(), eye.y, z / mine.size());
+        }
+        Vec3 f = new Vec3(to.x - eye.x, 0, to.z - eye.z);
+        return f.length() < 0.3 ? null : f.normalize();
+    }
+
+    private static Sight sight(Map<BlockPos, BlockState> blocks, BlockGetter getter, Eye eye, Vec3 ahead) {
+        int open = 0, shell = 0;
+        Map<BlockPos, Integer> blockers = new HashMap<>();
+        for (int yaw = -35; yaw <= 35; yaw += 5)
+            for (int pitch = -15; pitch <= 10; pitch += 5) {
+                double y = Math.toRadians(yaw), p = Math.toRadians(pitch);
+                double x = ahead.x * Math.cos(y) - ahead.z * Math.sin(y), z = ahead.x * Math.sin(y) + ahead.z * Math.cos(y);
+                Vec3 to = eye.at.add(new Vec3(x * Math.cos(p), Math.sin(p), z * Math.cos(p)).scale(SIGHT));
+                BlockPos all = sightStop(blocks, getter, eye.at, to, false);
+                if (all == null) open++;
+                if (sightStop(blocks, getter, eye.at, to, true) != null) continue;
+                shell++;
+                if (all != null) blockers.merge(all, 1, Integer::sum);
+            }
+        return new Sight(eye, open, shell, blockers);
+    }
+
+    /** The first block that stops sight from {@code from} to {@code to}, or null; {@code shell} looks past all but the shell. */
+    private static BlockPos sightStop(Map<BlockPos, BlockState> blocks, BlockGetter getter, Vec3 from, Vec3 to, boolean shell) {
+        return BlockGetter.traverseBlocks(from, to, null, (ctx, pos) -> {
+            BlockState s = blocks.get(pos);
+            if (s == null || seeThrough(s) || shell && !shell(getter, pos, s)) return null;
+            VoxelShape shape = s.getShape(getter, pos);
+            if (shape.isEmpty() || shape.move(pos.getX(), pos.getY(), pos.getZ()).toAabbs().stream().anyMatch(b -> b.contains(from)))
+                return null;
+            return shape.clip(from, to, pos) != null ? pos.immutable() : null;
+        }, ctx -> null);
+    }
+
+    private static boolean seeThrough(BlockState s) {
+        return s.getBlock() instanceof HalfTransparentBlock || s.getBlock() instanceof IronBarsBlock
+                || s.is(Tags.Blocks.GLASS_BLOCKS) || s.is(Tags.Blocks.GLASS_PANES);
+    }
+
+    /** What a vehicle is built of, as against what is fitted into it: controls, links, machines, lamps and the like. */
+    private static boolean shell(BlockGetter getter, BlockPos p, BlockState s) {
+        if (s.hasBlockEntity() || VehicleCheck.isControl(id(s))) return false;
+        Block b = s.getBlock();
+        return seeThrough(s) || s.isCollisionShapeFullBlock(getter, p) || b instanceof StairBlock || b instanceof SlabBlock
+                || b instanceof WallBlock || b instanceof FenceBlock || b instanceof FenceGateBlock || b instanceof DoorBlock
+                || b instanceof TrapDoorBlock;
     }
 
     // ---------- warmth ----------

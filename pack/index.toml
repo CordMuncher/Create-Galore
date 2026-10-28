@@ -103,7 +103,7 @@ hash = "29208d8a0cf996ced5690dbd767ede4d3975cbe5f6d5025ab3f6f1c5e5fd5402"
 
 [[files]]
 file = "config/create_galore_lagwatch-common.toml"
-hash = "1a2365fa503a0ab36820485fa9f108eb629dc1a359e9929769da3ba8822270c6"
+hash = "fe0f684d53a5e68c1a549159dd16a026acd6738d706a45775003a7c350a84984"
 
 [[files]]
 file = "config/create_structures_arise-server.toml"
@@ -988,7 +988,7 @@ hash = "0f0cac64c6e4389f289df0f0203a9b165e614b06431d957232f9c63dcedbded8"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/create_basics.md"
-hash = "086082f6884129624effdcff9ef1b3ac7622c76ba21f46ad91ef9d8bfc7306cc"
+hash = "d3f8e4e5c075d6a3aad8c3f5663c36fbd7127b584c721be60ecc86b232f59e06"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/exploration.md"
@@ -1192,7 +1192,7 @@ hash = "76d96f3adc40618c3cde08d50bb16c017387d63c1135321c7b54e8c3b9380157"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/create_basics/item_logistics.json"
-hash = "5593d1039e957a9739eb74b57cc1c3d7075d23dc89ce0e42048375fe8392b159"
+hash = "31d7a4f0df8eb4562f9abf0db1391495af8b8ff54a6b5f76a0b3be7cf75f4c9b"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/create_basics/materials.json"
@@ -4998,16 +4998,16 @@ hash = "db683b65dc15a03dd6de2d34d5dc6ad0e3490744ced513a8cc584784ee9d3d8b"
 metafile = true
 
 [[files]]
-file = "mods/create-galore-bridge-1.141.0.jar"
-hash = "08f57c521542fd660e27ec5f1e5278ec06f01fb1f9e8b3eba27aba52e68e2703"
+file = "mods/create-galore-bridge-1.148.0.jar"
+hash = "9f324360575e2cc355c74e18d657fff257a6bf96ed4c8169775284ab27e38083"
 
 [[files]]
 file = "mods/create-galore-fishing-0.3.17.jar"
 hash = "486c2a89d8cb49fd178a545a2af804f4ecc9bb69df4aabb17b8accfb1fb3ce32"
 
 [[files]]
-file = "mods/create-galore-lagwatch-1.1.0.jar"
-hash = "d0671a121f4b47db6549d4b9f15aab61c1907f7a2e4350bde1c8d935cea8d815"
+file = "mods/create-galore-lagwatch-1.2.0.jar"
+hash = "d1a65e797345279bbb5df58ebe300a9c85919fedbe85963926930b00bc352471"
 
 [[files]]
 file = "mods/create-garnished.pw.toml"
