@@ -5,6 +5,14 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.6.20
+
+### Added
+- Create Galore Bridge 1.143.0.
+
+### Fixed
+- **Ask the Book no longer designs vehicles you can't see out of.** Its usability check now looks from the helm the way the pilot does: lines of sight fan out ahead through the cabin's windows, once through the whole build and once through its walls, glass, stairs, slabs and other shell blocks alone. When controls, Redstone Links, levers, machines or fittings take more than a quarter of the view out ahead, or the helm has no window or opening ahead at all, the design fails the check, and the book is told to put the controls on a dashboard below the window sill or on the wall beside it. Its vehicle design notes say the same from the start.
+
 ## 0.6.19
 
 ### Added
