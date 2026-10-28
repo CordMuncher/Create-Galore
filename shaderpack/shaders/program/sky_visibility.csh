@@ -14,9 +14,10 @@
 //   its side, each direction weighted as its light falls on the surface (by the cosine), as lighting.glsl's sky light
 //   does. Down sees no sky.
 // - and in the second texel's b, 2 plus whether the sun's (or the moon's) light gets to the block's middle past the
-//   blocks around it, for the light in the air (see light_reaches); under 1.5 where the block isn't worked out yet.
-// A solid block takes the mean of its open neighbours', so a surface next to a wall doesn't read the wall's darkness
-// between blocks.
+//   blocks around it (a block at a time for 32 blocks, so it finds a window across a room), for the light in the air
+//   (see light_reaches); under 1.5 where the block isn't worked out yet.
+// A solid block keeps none (all 0): the lighting reads between the open blocks around a point only, as probe volumes
+// leave out the probes inside walls, since a wall's block is the room's on one side and the outside's on the other.
 
 #define PROGRAM_SKY_VISIBILITY
 #define READ_IMAGES
@@ -84,6 +85,10 @@ void main() {
     if (!in_light_volume(block)) {
         return;
     }
+    if (block_solid(block)) {
+        store_sky(block, vec3(0.0), vec3(0.0));
+        return;
+    }
     // Where this block was in last frame's volume, and which sixteenth of the world's blocks it is in.
     ivec3 prev = block + cameraPositionInt - previousCameraPositionInt;
     ivec3 world = block - light_volume_size / 2 + cameraPositionInt;
@@ -93,32 +98,6 @@ void main() {
     previous_sky(prev, a, b);
     if (slot != (frameCounter & 15) && b.b >= 1.5) {
         store_sky(block, a, b);
-        return;
-    }
-
-    if (block_solid(block)) {
-        // The mean of its open neighbours' (last frame's), so reading between blocks next to a wall reads the room.
-        vec3 sum_a = vec3(0.0);
-        vec3 sum_b = vec3(0.0);
-        float count = 0.0;
-        for (int i = 0; i < 6; i++) {
-            ivec3 d = ivec3(facing_dir(i));
-            if (in_light_volume(block + d) && !block_solid(block + d)) {
-                vec3 na;
-                vec3 nb;
-                previous_sky(prev + d, na, nb);
-                if (nb.b >= 1.5) {
-                    sum_a += na;
-                    sum_b += nb;
-                    count += 1.0;
-                }
-            }
-        }
-        if (count > 0.0) {
-            store_sky(block, sum_a / count, sum_b / count);
-        } else {
-            store_sky(block, vec3(0.0), vec3(0.0, 0.0, 2.0)); // deep in the rock: no sky, no sun
-        }
         return;
     }
 
@@ -144,7 +123,7 @@ void main() {
     }
     // And the sun's (or the moon's) light, while it is above the horizon.
     vec3 l = g_light_dir.xyz;
-    float light = l.y > 0.0 && sky_ray_open(o, normalize(l)) ? 1.0 : 0.0;
+    float light = l.y > 0.0 && sky_ray_open(o, normalize(l), 32) ? 1.0 : 0.0;
     store_sky(block, vec3(open_px / sum_px, open_nx / sum_nx, open_py / sum_py),
             vec3(open_pz / sum_pz, open_nz / sum_nz, 2.0 + light));
 }

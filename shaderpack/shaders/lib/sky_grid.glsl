@@ -74,16 +74,18 @@ bool sky_grid_marked(ivec2 cell, int level, int y0, int y1) {
     return false;
 }
 
-// Whether a ray from o (grid space) along d (pointing up) gets out to the sky: a block at a time for the first 4 blocks,
-// then twice as far each time in cells as wide as the step (2 blocks to 4 blocks out, 4 to 8, ... 64 to 192).
-// In the Nether, whose roof is everywhere, open means it gets nether_open_reach blocks away.
+// Whether a ray from o (grid space) along d (pointing up) gets out to the sky: a block at a time for the first fine
+// blocks, then twice as far each time in cells as wide as the step (two steps of 2 blocks, two of 4, ... two of 64).
+// A coarse cell counts every block in it, so past the fine steps a ray only gets through an opening as wide as the
+// cell: more fine steps for a ray that has to find a window across a room. In the Nether, whose roof is everywhere,
+// open means it gets nether_open_reach blocks away.
 const float nether_open_reach = 32.0;
 
-bool sky_ray_open(vec3 o, vec3 d) {
+bool sky_ray_open(vec3 o, vec3 d, int fine) {
     vec3 a = o;
     float t = 0.0;
-    for (int i = 0; i < 16; i++) {
-        int level = i < 4 ? 0 : min((i - 2) >> 1, sky_grid_levels - 1);
+    for (int i = 0; i < fine + 12; i++) {
+        int level = i < fine ? 0 : min((i - fine + 2) >> 1, sky_grid_levels - 1);
 #ifdef WORLD_NETHER
         if (t >= nether_open_reach) {
             return true;
@@ -110,6 +112,10 @@ bool sky_ray_open(vec3 o, vec3 d) {
         a = b;
     }
     return true;
+}
+
+bool sky_ray_open(vec3 o, vec3 d) {
+    return sky_ray_open(o, d, 4);
 }
 
 #endif

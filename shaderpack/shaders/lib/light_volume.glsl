@@ -223,6 +223,20 @@ vec4 canopy_shape(vec3 scene_pos) {
 #endif
 
 #ifdef LIT_SKY_VISIBILITY
+// One block's two sky texels (this frame's, see sky_visibility.csh), and whether it has them: an open block in the
+// volume that has been worked out, not a solid one (which keeps none) or one outside the volume.
+bool sky_texels(ivec3 block, out vec3 a, out vec3 b) {
+    a = vec3(0.0);
+    b = vec3(0.0);
+    if (!in_light_volume(block)) {
+        return false;
+    }
+    int turn = frameCounter & 1;
+    a = texelFetch(cg_light_tex, light_texel(block, section_sky, turn), 0).rgb;
+    b = texelFetch(cg_light_tex, light_texel(block, section_sky + 1, turn), 0).rgb;
+    return b.b >= 1.5;
+}
+
 // How much of the sky a surface at scene_pos facing normal sees past the blocks around it (the sky above the horizon
 // on its side, weighted as the light from it falls on the surface, see sky_visibility.csh), from the block in front of
 // it: x the share (0..1), y how much to go by it (fading out towards the volume's edges); x -1 where the volume can't
@@ -231,11 +245,6 @@ vec2 sky_visibility(vec3 scene_pos, vec3 normal) {
     vec3 at;
     float fade = light_volume_at(scene_pos, normal, 0.5, at);
     if (fade <= 0.0) {
-        return vec2(-1.0, 0.0);
-    }
-    vec3 a = light_volume_sample(at, section_sky);     // +x, -x, +y
-    vec3 b = light_volume_sample(at, section_sky + 1); // +z, -z, and whether it's worked out (see sky_visibility.csh)
-    if (b.b < 1.5) {
         return vec2(-1.0, 0.0);
     }
     // Each facing by the square of how much the surface faces that way (Valve's ambient cube); down sees no sky.
@@ -249,13 +258,34 @@ vec2 sky_visibility(vec3 scene_pos, vec3 normal) {
     if (known < 0.25) {
         return vec2(-1.0, 0.0);
     }
-    float seen = (a.r * px + a.g * nx + a.b * py + b.r * pz + b.g * nz) / known;
-    return vec2(clamp(seen, 0.0, 1.0), fade * smoothstep(0.25, 0.5, known));
+    // Between the eight blocks around the point as a texture would blend them, but only the open ones: a solid block
+    // between a room and the outside would bring the outside's sky into the room along every wall and edge.
+    vec3 p = at - 0.5;
+    ivec3 base = ivec3(floor(p));
+    vec3 f = p - vec3(base);
+    float seen = 0.0;
+    float weight = 0.0;
+    for (int i = 0; i < 8; i++) {
+        ivec3 o = ivec3(i & 1, (i >> 1) & 1, i >> 2);
+        vec3 a;
+        vec3 b;
+        if (sky_texels(base + o, a, b)) {
+            vec3 w3 = mix(1.0 - f, f, vec3(o));
+            float w = w3.x * w3.y * w3.z;
+            seen += w * (a.r * px + a.g * nx + a.b * py + b.r * pz + b.g * nz);
+            weight += w;
+        }
+    }
+    if (weight < 1e-3) {
+        return vec2(-1.0, 0.0);
+    }
+    return vec2(clamp(seen / (weight * known), 0.0, 1.0),
+            fade * smoothstep(0.25, 0.5, known) * smoothstep(0.0, 0.2, weight));
 }
 
 // Whether the sun's (or the moon's) light can get to a point in the air (scene space) past the blocks around it, from
 // the blocks' middles towards it through the sky grid (see sky_visibility.csh): 0 in a closed room or a cave whatever
-// the shadow map says there, 1 where any block within about a block of the point gets it (so a sunbeam through a
+// the shadow map says there, 1 where any open block within a block of the point's own gets it (so a sunbeam through a
 // window keeps the edges the shadow map gives it), and 1 where the volume can't tell.
 float light_reaches(vec3 scene_pos) {
     vec3 at;
@@ -263,18 +293,21 @@ float light_reaches(vec3 scene_pos) {
     if (fade <= 0.0) {
         return 1.0;
     }
-    // Half a block off each way: between them, the 27 blocks around the point.
+    ivec3 here = ivec3(floor(at));
+    int turn = frameCounter & 1;
+    bool known = false;
     float most = 0.0;
-    for (int i = 0; i < 8; i++) {
-        vec3 offset = vec3(float(i & 1), float((i >> 1) & 1), float(i >> 2)) - 0.5;
-        float worked = light_volume_sample(at + offset, section_sky + 1).b;
-        if (worked < 1.5) {
-            return 1.0;
+    for (int i = 0; i < 27; i++) {
+        ivec3 block = here + ivec3(i % 3, (i / 3) % 3, i / 9) - 1;
+        if (in_light_volume(block)) {
+            float b = texelFetch(cg_light_tex, light_texel(block, section_sky + 1, turn), 0).b;
+            if (b >= 1.5) {
+                known = true;
+                most = max(most, b - 2.0);
+            }
         }
-        most = max(most, worked - 2.0);
     }
-    // One block of the eight a sample is between is an eighth of it.
-    return mix(1.0, clamp(most * 8.0, 0.0, 1.0), fade);
+    return known ? mix(1.0, clamp(most, 0.0, 1.0), fade) : 1.0;
 }
 #endif
 
