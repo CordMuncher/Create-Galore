@@ -5,6 +5,34 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.6.25
+
+### Added
+- Create Galore Bridge 1.148.0.
+
+### Fixed
+- **A Mechanical Arm sorts by the funnels on the belts it drops onto.** When one of an arm's outputs is a belt block with a Brass Belt Funnel on it, the arm only drops items that funnel's filter passes there. Only that one belt block counts, not the rest of the belt, and a tunnel next to the funnel changes nothing. Before it picks an item up, the arm checks every output and leaves items that no output takes where they are. So an arm can take from one belt and send each item to the belt whose funnel is set to it. Before, the arm dropped anything on any belt and ignored the funnel. A belt block with no funnel still takes anything. The Field Guide's Moving Items entry has a new page on sorting with an arm.
+
+### Removed
+- Nothing.
+
+## 0.6.24
+
+### Added
+- Create Galore Bridge 1.147.0.
+
+### Fixed
+- **A pinned schematic shows as one clean see-through copy of the build.** It used to draw every face of every block at once, so the walls, floor and furniture stacked into a jumble of layers, and its bottom flickered against the ground it stood on. Now only the faces nearest to you show, like a pane of glass shaped as the build, and nothing fights the ground. A spot holding the wrong block is only tinted red (the faint copy inside it flickered against it). With a shader pack the copy is drawn a little stronger so the blocks still read.
+- **Schematics look right with a shader pack on.** The preview of a held Schematic (and the off-hand trace) drew as a flat white or glowing shape, as if every block were a lamp. They now come through the shader pack like any other block, lit by daylight or moonlight like the ground around them. Without a shader pack nothing changes.
+
+## 0.6.23
+
+### Added
+- Create Galore Bridge 1.146.0.
+
+### Fixed
+- **Distant Horizons' far terrain tilts with the camera when you get hurt.** Without a shader pack, the hit's tilt together with view bobbing kept Separate Sable Render Distance from passing the frame's view on to Distant Horizons, so for the half second of a hit the far terrain was drawn with the held item's view instead: no tilt, no bobbing and a field of view of 70. It hung still over the rest of the world like an overlay, and at any other field of view it looked zoomed in too. It now always gets the view the world renders with.
+
 ## 0.6.22
 
 ### Added

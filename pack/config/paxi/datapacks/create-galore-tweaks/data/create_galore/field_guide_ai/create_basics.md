@@ -1,4 +1,4 @@
-<!-- sources sha256:788aa2c99e3de8fd114573b7da61b5bd175c62ebce4fcf71067e116bb99cf3d2 -->
+<!-- sources sha256:70a79ff6a6a8ed59ff636d0acc80c05e266bc02bbb3228170be05548aaaa7ffe -->
 # Create: The Basics (create_basics)
 
 ## create_basics/rotation | Rotation
@@ -128,6 +128,7 @@
 - Brass Funnel [create:brass_funnel]: pulls from/pushes into an inventory. Place normally to pull, sneaking to push. Has filter slot (see glossary/filter_slot). Andesite Funnel moves items unfiltered.
 - Chute [create:chute]: drops items down; needs no power. Smart Chute adds filter slot and extraction size.
 - Mechanical Arm [create:mechanical_arm]: assign input/output blocks by right-clicking them while holding the arm, then place it. Moves items between any inputs and outputs in range.
+- Arm sorting: the arm has no filter of its own. An output that is a belt block with a Brass Belt Funnel on it takes only items that funnel's filter passes (only that one belt block counts, not the rest of the belt; a tunnel on the next block changes nothing). Select the belt block under the funnel as the output, not the funnel. Before picking an item up the arm checks every output and leaves items no output takes where they are (they can block the input). A belt block with no funnel takes anything.
 - Filters go in funnel, tunnel or smart chute filter slots: List Filter [create:filter] matches chosen items; Attribute Filter [create:attribute_filter] matches by property (food, enchanted, etc.).
 - Brass Tunnel [create:brass_tunnel]: covers a belt, splits items to sides or sorts by filter. Andesite Tunnels split one item at a time, no filters. (Brass funnels/tunnels can filter; andesite can't.)
 - Storage: Item Vault = big multi-block (see glossary/multiblock) chest connecting to belts and funnels. Threshold Switch (see create_basics/redstone_and_control) reads container fullness -> redstone.
