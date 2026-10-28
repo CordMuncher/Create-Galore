@@ -784,7 +784,7 @@ public final class Dlss {
             return false;
         }
         if (guards() && dlssGuard.crashed()) {
-            unavailable = "the game closed while DLSS was starting last time, so it stays off until you pick Try again on the Upscaling & Display screen";
+            unavailable = "the game closed while it started last time; press Try again";
             unavailableNoDll = false;
             LOG.warn("DLAA: DLSS not started: {}", unavailable);
             return false;
@@ -809,7 +809,7 @@ public final class Dlss {
             return true;
         }
         if (fsr3Unavailable == null && guards() && fsrGuard.crashed()) {
-            fsr3Unavailable = "the game closed while FSR 3 was starting last time, so it stays off until you pick Try again on the Upscaling & Display screen";
+            fsr3Unavailable = "the game closed while it started last time; press Try again";
             LOG.warn("DLAA: FSR 3 not started: {}", fsr3Unavailable);
         }
         if (fsr3Unavailable != null) {
@@ -912,8 +912,7 @@ public final class Dlss {
         Path dll = dllFolder.resolve(DLL);
         unavailableNoDll = !Files.isRegularFile(dll);
         if (unavailableNoDll) {
-            throw new IllegalStateException("there is no " + dll + " (not part of the pack: bring your own, DLSS "
-                    + TESTED_DLL_VERSION + " or newer, see the Upscaling & Display screen)" + onOtherCard());
+            throw new IllegalStateException(DLL + " is missing (Find on this PC)" + onOtherCard());
         }
         Files.createDirectories(folder.resolve("ngx"));
         ngx = NgxLibrary.load(folder);
@@ -946,7 +945,7 @@ public final class Dlss {
         Path dll = dllFolder.resolve(DlssFinder.RR_DLL);
         rrUnavailableNoDll = !Files.isRegularFile(dll);
         if (rrUnavailableNoDll) {
-            rrUnavailable = "there is no " + dll + " (bring your own like nvngx_dlss.dll, or press Find on this PC)";
+            rrUnavailable = DlssFinder.RR_DLL + " is missing (Find on this PC)";
         } else {
             int[] support = ngx.queryRayReconstruction();
             if (support == null) {
@@ -1176,7 +1175,7 @@ public final class Dlss {
             return "Off: the shader pack keeps its own anti-aliasing.";
         }
         if (!Iris.getIrisConfig().areShadersEnabled() || Iris.getCurrentPack().isEmpty() || NO_PROFILE.equals(packProblem)) {
-            return "Waiting: pick a shader pack made for DLAA, such as \"" + PhotonPatcher.PATCHED_NAME + "\", in Iris's shader menu.";
+            return "Waiting: pick \"" + PhotonPatcher.PATCHED_NAME + "\" in Shader Packs.";
         }
         if (profile == null && packProblem != null) {
             return "Off: the shader pack's " + PackProfile.FILE + " could not be read (the log says why).";
@@ -1185,7 +1184,7 @@ public final class Dlss {
             return "Off with these shader pack options: " + packProblem + ".";
         }
         if (failed) {
-            return "Stopped after an error (the log says which). The pack's own anti-aliasing is back; reloading shaders tries again.";
+            return "Stopped after an error: press F8 to try again.";
         }
         if (debugView != null) {
             return "Debug view " + debugView.name().toLowerCase(Locale.ROOT) + " (testing).";
@@ -1194,7 +1193,7 @@ public final class Dlss {
                 ? "upscaling " + renderWidth + "x" + renderHeight + " to " + displayWidth + "x" + displayHeight
                 : "at full resolution";
         if (active && !fsr3 && rrRunning && featureIsRr) {
-            return "On: NVIDIA DLSS Ray Reconstruction (experimental, DirectX 12) " + size + " on " + adapterName + ", preset " + rrPresetName(rrPreset) + ".";
+            return "On: NVIDIA DLSS Ray Reconstruction " + size + " on " + adapterName + ", preset " + rrPresetName(rrPreset) + ".";
         }
         String rr = rayReconstructionWanted && rrUnavailable != null ? " Ray Reconstruction can't run: " + rrUnavailable + "."
                 : rayReconstructionWanted && profile != null && !profile.hasRayReconstructionGuides() ? " Ray Reconstruction: this pack hands over no guides." : "";
