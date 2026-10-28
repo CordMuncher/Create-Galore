@@ -23,6 +23,7 @@ public final class BridgeClient {
         modBus.addListener(BridgeClient::setup);
         modBus.addListener(ShipWaterCutaway::registerShaders);
         modBus.addListener(FpsOverlay::registerLayer);
+        CostMeter.init(modBus);
         GuideAiClient.init(modBus);
         WearClient.init(modBus);
         PendantClient.init(modBus);

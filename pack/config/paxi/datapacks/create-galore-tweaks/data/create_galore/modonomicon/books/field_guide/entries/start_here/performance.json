@@ -198,6 +198,11 @@
     {
       "type": "modonomicon:text",
       "title": "",
+      "text": "**GPU cost meter**: **F10** turns it on and off. It lists what each part of a frame costs the graphics card in ms, largest first (every shader pass, the shadow map, terrain, entities, DLSS or FSR), with the frame rate, 1%% low, CPU and GPU time and how busy the card is. logs/create-galore-cost.log keeps the numbers and every stutter."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
       "text": "**If a graphics setting won't run**, the line beside it on the settings screen says why; hover it for more.\\\n\\\n- No DLSS: get nvngx\\_dlss.dll with **Find on this PC** or **Get from NVIDIA**, then press F8.\n- DirectX 12 can't start on some graphics drivers (Intel's): the game runs on 11 instead."
     },
     {
