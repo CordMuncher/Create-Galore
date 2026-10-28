@@ -4,6 +4,7 @@ import com.simibubi.create.content.processing.recipe.ProcessingOutput;
 import com.simibubi.create.content.processing.recipe.ProcessingRecipe;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -163,6 +164,63 @@ final class Reach {
             return new BuildCheck.Report(text, faults);
         } catch (RuntimeException | LinkageError e) {
             return new BuildCheck.Report("(The parts check couldn't run on this model: " + e.getClass().getSimpleName() + ".)", List.of());
+        }
+    }
+
+    /**
+     * Whether the player can make one now: they have or had one, or one of its recipes takes only things they have had,
+     * gather from the world, or can make that way in turn, three steps down at most. A sequenced assembly's product counts
+     * only once they have had one, and a heated basin recipe only once they have had a Blaze Burner. Rougher than
+     * recipe_tree, and meant for choosing among parts: what this says no to is a later stage, not a missing ingot.
+     */
+    static boolean canMake(ServerPlayer player, MinecraftServer server, Item item) {
+        try {
+            return canMake(player, makers(server), owned(player), item, 0, new HashSet<>(), new HashSet<>(), new HashMap<>());
+        } catch (RuntimeException | LinkageError e) {
+            return false;
+        }
+    }
+
+    private static final Item BLAZE_BURNER = BuiltInRegistries.ITEM.get(ResourceLocation.parse("create:blaze_burner"));
+
+    /** {@code yes} holds items found makeable, {@code no} the shallowest depth each was found not to be. */
+    private static boolean canMake(ServerPlayer player, Map<Item, List<RecipeHolder<?>>> makers, Map<Item, Integer> have, Item item,
+            int depth, Set<Item> path, Set<Item> yes, Map<Item, Integer> no) {
+        if (yes.contains(item) || had(player, item, have) || natural(item)) return true;
+        if (depth >= 3 || no.getOrDefault(item, Integer.MAX_VALUE) <= depth || !path.add(item)) return false;
+        boolean found = false;
+        try {
+            for (RecipeHolder<?> holder : makers.getOrDefault(item, List.of())) {
+                ResourceLocation type = BuiltInRegistries.RECIPE_TYPE.getKey(holder.value().getType());
+                if (type != null && type.toString().equals(ASSEMBLY)) continue;
+                if (holder.value() instanceof ProcessingRecipe<?, ?> processing
+                        && processing.getRequiredHeat() != com.simibubi.create.content.processing.recipe.HeatCondition.NONE
+                        && !had(player, BLAZE_BURNER, have)) continue;
+                Map<Ingredient, Integer> parts = grouped(holder.value());
+                if (parts.isEmpty()) continue;
+                boolean all = true;
+                for (Ingredient ingredient : parts.keySet()) {
+                    boolean any = false;
+                    for (ItemStack choice : ingredient.getItems())
+                        if (canMake(player, makers, have, choice.getItem(), depth + 1, path, yes, no)) {
+                            any = true;
+                            break;
+                        }
+                    if (!any) {
+                        all = false;
+                        break;
+                    }
+                }
+                if (all) {
+                    found = true;
+                    break;
+                }
+            }
+            return found;
+        } finally {
+            path.remove(item);
+            if (found) yes.add(item);
+            else no.merge(item, depth, Math::min);
         }
     }
 

@@ -30,7 +30,7 @@ public final class Models {
 
     /** A model built for the answer being written, kept so the next version can start from it (from_draft). */
     record Draft(Map<BlockPos, BlockState> cells, int sx, int sy, int sz, JsonArray labels, JsonArray moving, String title,
-                 String caption) {
+                 String caption, JsonArray speeds) {
     }
 
     private Models() {
@@ -184,6 +184,21 @@ public final class Models {
         props.add("for_later", WorldTools.prop("boolean", "True only when the player asked for a build to make later on; "
                 + "then parts they can't make yet don't stop it being built."));
         props.add("moving", MotionCheck.definition());
+        JsonObject speed = new JsonObject();
+        speed.addProperty("type", "object");
+        JsonObject vp = new JsonObject();
+        vp.add("x", WorldTools.prop("integer", "Its cell."));
+        vp.add("y", WorldTools.prop("integer", "See x."));
+        vp.add("z", WorldTools.prop("integer", "See x."));
+        vp.add("rpm", WorldTools.prop("integer", "-256 to 256."));
+        speed.add("properties", vp);
+        speed.add("required", required(vp));
+        speed.addProperty("additionalProperties", false);
+        JsonObject speeds = new JsonObject();
+        speeds.addProperty("type", "array");
+        speeds.addProperty("description", "Each Rotation Speed Controller's set speed; one left out is at 16 RPM.");
+        speeds.add("items", speed);
+        props.add("speeds", speeds);
         props.add("part_of_vehicle", WorldTools.prop("boolean", "True only when the model shows one part of a vehicle (an "
                 + "engine room, a rudder, a burner and its balloon) rather than the whole of it: the vehicle check's numbers "
                 + "come back but don't stop it being built. Leave it false for a whole boat, submarine, airship or car."));
@@ -234,6 +249,12 @@ public final class Models {
      */
     static Result build(JsonObject input, ServerLevel level, Copier copier, net.minecraft.server.level.ServerPlayer player,
                         List<Draft> drafts, java.util.Set<String> briefs) {
+        // The checks name only drive parts this player can make, and read the model's speed controller settings.
+        return Drives.asking(player, Map.of(), () -> buildAs(input, level, copier, player, drafts, briefs));
+    }
+
+    private static Result buildAs(JsonObject input, ServerLevel level, Copier copier, net.minecraft.server.level.ServerPlayer player,
+                                  List<Draft> drafts, java.util.Set<String> briefs) {
         List<String> problems = new ArrayList<>();
         int sx = Diagrams.intOr(input, "size_x", 0), sy = Diagrams.intOr(input, "size_y", 0), sz = Diagrams.intOr(input, "size_z", 0);
         Map<BlockPos, BlockState> cells = new HashMap<>();
@@ -280,6 +301,16 @@ public final class Models {
         }
         if (sx < 1 || sx > MAX_SIZE || sy < 1 || sy > MAX_SIZE || sz < 1 || sz > MAX_SIZE)
             return Result.problem("Not built: size_x, size_y and size_z must each be 1 to " + MAX_SIZE + ".");
+        JsonArray speedsIn = array(input, "speeds");
+        if (speedsIn.isEmpty() && draft0 != null && draft0.speeds() != null) speedsIn = draft0.speeds();
+        Map<BlockPos, Float> set = new HashMap<>();
+        for (JsonElement e : speedsIn) {
+            if (!e.isJsonObject()) continue;
+            JsonObject o = e.getAsJsonObject();
+            set.put(new BlockPos(Diagrams.intOr(o, "x", 0), Diagrams.intOr(o, "y", 0), Diagrams.intOr(o, "z", 0)),
+                    (float) Math.max(-256, Math.min(256, Diagrams.intOr(o, "rpm", 16))));
+        }
+        Drives.setModel(set);
         JsonArray moves = array(input, "move");
         for (int i = 0; i < moves.size() && problems.size() < 10; i++) {
             if (!moves.get(i).isJsonObject()) continue;
@@ -411,6 +442,12 @@ public final class Models {
                 if (!e.getValue().equals(base.get(e.getKey()))) changes.put(e.getKey(), false);
             for (BlockPos p : base.keySet()) if (!cells.containsKey(p)) changes.put(p, true);
         }
+        for (BlockPos p : set.keySet()) {
+            BlockState at = cells.get(p);
+            if (at == null || !BuiltInRegistries.BLOCK.getKey(at.getBlock()).toString().equals("create:rotation_speed_controller"))
+                return Result.problem("Not built: speeds names cell " + p.getX() + "," + p.getY() + "," + p.getZ()
+                        + ", which holds no Rotation Speed Controller.");
+        }
         boolean showsFault = input.has("shows_a_fault") && input.get("shows_a_fault").isJsonPrimitive()
                 && input.get("shows_a_fault").getAsBoolean();
         // A vehicle's corner steps are filled so it glues as one piece; the book is told where, so it builds them in.
@@ -456,7 +493,7 @@ public final class Models {
         // Kept for the next version, refused or not: fixing a fault is a few changes on top of it.
         String saved = "";
         if (drafts != null) {
-            drafts.add(new Draft(new HashMap<>(cells), sx, sy, sz, labels, movingIn, title, caption));
+            drafts.add(new Draft(new HashMap<>(cells), sx, sy, sz, labels, movingIn, title, caption, speedsIn));
             saved = "\nThis is model " + drafts.size() + ": start its next version with from_draft " + drafts.size()
                     + " and write only what changes.";
         }
