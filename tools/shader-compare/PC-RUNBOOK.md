@@ -125,7 +125,7 @@ BSL, Bliss, Photon and Rethinking Voxels.
 
 The launch command from step 4 with `--jvm-arg=-Dcreate_galore_shader_compare.autorun=dlaa-test` added. The game
 opens the world, photographs every scene with every pack (pass 1, each pack's defaults, then pass 2, each pack's
-highest preset; 6 packs, 22 scenes), puts Iris back as it was and closes. It takes about an hour and a half (the
+highest preset; 6 packs, 25 scenes), puts Iris back as it was and closes. It takes about an hour and three quarters (the
 rain scene waits three minutes in the rain before each shot); the log says `Shader compare: now <pack>-<pass>` at
 each pack. Keep the window visible; it doesn't need focus. Don't use the PC for games meanwhile (the frame rate
 doesn't matter, but another full-screen program can cover the window).

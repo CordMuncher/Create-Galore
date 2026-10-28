@@ -44,7 +44,8 @@ In the DLAA test world (`tools/dlss-testkit/world/dlaa-test.zip`), vanilla block
 noon, trees in the morning sun and towards the rising sun, far terrain in haze, the lake from above, a shallow pond
 from above and from just over its surface, under water in a glass tank, SPBR's materials on walls and metal blocks
 (and close along a wall), a window's beam in a dark room, light bouncing in a white room, lamps in the shade by day, a
-cave lit by torches and lava, one lantern in a closed room at night, coloured lights, sunset, the land and the sky at
+cave lit by torches and lava, one lantern in a closed room at night, coloured lights, lanterns on chains with chains
+and iron bars in front of lights, sunlight through stained glass, three coloured torches' shadows, sunset, the land and the sky at
 night, the End, the Nether (a safe spot near 0 0, found on the first visit and kept), and rain last (the packs' wet
 look lingers; it falls for three minutes before its shot). Trees at sunrise stand on a grass platform high in the open
 so the low sun is in view; the coloured lights sit in a row along one wall so all six are in the picture. Each scene's `about` in the JSON says what it is for.
