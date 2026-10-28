@@ -5,6 +5,19 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.6.26
+
+### Added
+- Create Galore Bridge 1.149.0.
+
+### Fixed
+- **No more thin streak pinned on screen near lit hot air burners with Photon at Ultra.** A lit Aeronautics burner draws its flame with its own shader. With a shader pack's block entity shadows on (Photon's Block Entity Shadows, part of its Ultra preset), the flame was also drawn for the sun's shadow map, but under Iris it landed in the screen's own depth instead, at the place where the sun sees it. That left a thin, dashed streak of one fixed colour that stayed put as the camera turned, moved as the player walked and drifted slowly with the sun, over sky and ground alike. A flame casts no shadow, so the shadow map now skips it. The flame looks the same as before and block entity shadows stay on.
+- A heated balloon's heat shimmer was also drawn while the shadow map was made, into the screen instead, and could leave the rest of the shadow map drawn at the wrong size. The shadow map skips it now; the shimmer on screen is unchanged.
+- Create Flight Control's Attitude Display hologram and HUD Projector are drawn only where the block itself is seen. With block entity shadows on, the shadow map pass also set where they go, so a display out of view could put its small ship copy or HUD at a fixed spot on screen.
+
+### Removed
+- Nothing.
+
 ## 0.6.25
 
 ### Added
