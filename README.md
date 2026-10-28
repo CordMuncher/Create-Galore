@@ -357,6 +357,7 @@ None of these stop the game.
   - Keep VSync on and set Max Framerate in Video Settings to your monitor's refresh rate or lower.
   - Keep Max Framerate at Unlimited, VSync off, and cap FPS with an external limiter such as RivaTuner Statistics Server. Minecraft's own limiter can stutter and may not reach its cap, so this gives the smoothest frame times.
 - **The game can hang when entering the Nether.** A player's game sometimes stopped responding for good while stepping through a Nether portal, with nothing in the log (other times the same portal works). The cause isn't known yet. Since 0.5.3, when the game stops drawing for 10 s it writes what every part of it is doing to `logs/create-galore-client-freeze.log` in the instance folder; please send that file after a hang.
+- **Stutters and choppy play.** Since 0.6.31 the game writes every frame of 100 ms or more, and every stretch of many short hitches in a row, to `logs/create-galore-stutters.log` in the instance folder, with what it was doing at the time, plus a line a minute with the frame rate and 1% low (`create-galore-native-memory.log` beside it tracks memory held outside Java). It costs next to nothing. A really bad one (a 2 s freeze, or 5 s under 15 fps) also puts one grey line in chat, at most once every 10 minutes; please send that log when reporting stutter.
 - **First world creation is slow** (about 45 s for the spawn area on the test machine) because of all the world-gen mods. Normal after that.
 
 ## What was tested

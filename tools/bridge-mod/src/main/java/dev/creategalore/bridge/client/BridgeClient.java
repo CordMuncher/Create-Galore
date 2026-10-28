@@ -20,6 +20,8 @@ public final class BridgeClient {
         // Mods are built before Minecraft reads options.txt, so the file can still be fixed here.
         KeyRebindMigration.run();
         FrameFreezeWatch.init();
+        FrameHitchWatch.init();
+        NativeMemoryLog.init();
         modBus.addListener(BridgeClient::setup);
         modBus.addListener(ShipWaterCutaway::registerShaders);
         modBus.addListener(FpsOverlay::registerLayer);

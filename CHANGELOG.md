@@ -5,6 +5,19 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.6.31
+
+### Added
+- Create Galore Bridge 1.153.0.
+- **A stutter log for tracking down stutter on any PC.** `logs/create-galore-stutters.log` in the instance folder gets an entry for every frame of 100 ms or more, and for every choppy stretch where many short hitches come back to back (5 or more in a second, or a third of a second lost to them) even when no single frame is that long. Each entry says what the game was doing during it (a call tree of the render thread), whether it was working or waiting, garbage collection, the busiest threads, memory and CPU load, and on Windows whether it ran on a fast or efficiency core, the CPU clocks and page faults. A line a minute gives the frame rate, 1% low and worst frame, so a bad stretch can be compared to normal play. `logs/create-galore-native-memory.log` gets a line a minute of how much memory the game holds outside Java. Both cost next to nothing.
+- **A chat line for a really bad stutter.** A freeze of 2 seconds or more, or 5 seconds or more of choppy play under 15 frames per second, puts one grey line in chat (only on that player's screen) that says to send the stutter log. It stays quiet for the first minute in a world, while the window is in the background, and says it at most once every 10 minutes. The Field Guide's Performance and Shaders entry explains both.
+
+### Fixed
+- Nothing.
+
+### Removed
+- Nothing.
+
 ## 0.6.30
 
 ### Added

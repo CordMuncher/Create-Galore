@@ -212,6 +212,16 @@
     },
     {
       "type": "modonomicon:text",
+      "title": "",
+      "text": "**If the game stutters**, logs/create-galore-stutters.log in the instance folder says why. Every frame of 100 ms or more and every choppy stretch (many short hitches in a row) gets an entry with what the game was doing, its memory and the CPU, plus a line a minute with the frame rate and 1%% low. The last session's file is kept as create-galore-stutters.prev.log."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Only a really bad one also gets a grey line in chat: the game froze for 2 seconds or more, or ran under 15 frames per second for 5 seconds or more. It stays quiet for the first minute in a world and says it at most once every 10 minutes.\\\n\\\nIf you see that line, send the stutter log with your report."
+    },
+    {
+      "type": "modonomicon:text",
       "title": "More",
       "text": "- [#](2E5AAC)[Welcome to Create Galore](entry://start_here/welcome)[#]()\n- [#](2E5AAC)[Tools of the Trade](entry://start_here/tools)[#]()"
     }
