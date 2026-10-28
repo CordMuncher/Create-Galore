@@ -5,6 +5,12 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.6.17
+
+### Added
+- **GPU cost meter.** **F10** (Controls, Miscellaneous: GPU cost meter) shows what each part of a frame costs the graphics card, with any shader pack: the average frame rate, the 1% low of the last 10 seconds, the CPU and GPU time of a frame and how busy the GPU is, then the milliseconds of every shader pass (each composite and shadow composite pass by its program name, the shadow map, the gbuffer phases, the final pass and DLSS or FSR), largest first, twice a second. A shader pack can group its programs into named effects with `shaders/cost_meter.properties`. While it is on, `logs/create-galore-cost.log` gets the same numbers every second, plus a line for every frame that took over 2.5 times as long as usual or over 50 ms, with that frame's CPU and GPU time and its three biggest passes. It reads the GPU's timers a few frames late, so it never makes the game wait, and costs nothing while it is off.
+- Create Galore Bridge 1.140.0.
+
 ## 0.6.16
 
 ### Added

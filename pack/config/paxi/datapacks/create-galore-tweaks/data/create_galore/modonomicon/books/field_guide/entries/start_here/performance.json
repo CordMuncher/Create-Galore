@@ -197,6 +197,11 @@
     },
     {
       "type": "modonomicon:text",
+      "title": "",
+      "text": "**GPU cost meter**: **F10** turns it on and off. It lists what each part of a frame costs the graphics card in ms, largest first (every shader pass, the shadow map, terrain, entities, DLSS or FSR), with the frame rate, 1%% low, CPU and GPU time and how busy the card is. logs/create-galore-cost.log keeps the numbers and every stutter."
+    },
+    {
+      "type": "modonomicon:text",
       "title": "More",
       "text": "- [#](2E5AAC)[Welcome to Create Galore](entry://start_here/welcome)[#]()\n- [#](2E5AAC)[Tools of the Trade](entry://start_here/tools)[#]()"
     }

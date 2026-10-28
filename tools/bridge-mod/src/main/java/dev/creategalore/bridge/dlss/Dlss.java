@@ -13,6 +13,7 @@ import java.util.function.ToIntFunction;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import dev.creategalore.bridge.DisplaySettings;
+import dev.creategalore.bridge.client.CostMeter;
 import dev.creategalore.bridge.framegen.FrameGen;
 import dev.creategalore.bridge.mixin.LevelRendererTicksAccessor;
 import net.irisshaders.iris.Iris;
@@ -518,6 +519,7 @@ public final class Dlss {
             return;
         }
         ran = true;
+        CostMeter.push(fsr3 ? CostMeter.FSR : CostMeter.DLSS);
         try {
             DlssPass.Guides guides = null;
             if (rrMode) {
@@ -607,6 +609,8 @@ public final class Dlss {
             guard().stopped();
             LOG.error("DLAA: stopped, the pack's own anti-aliasing is back from the next frame (reloading shaders tries DLAA again)", t);
             notice("failed:" + t, "DLAA stopped after an error", "The shader pack's own anti-aliasing is back. Reloading shaders (F8) tries again; the log says what went wrong.");
+        } finally {
+            CostMeter.pop();
         }
     }
 
