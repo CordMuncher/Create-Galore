@@ -290,7 +290,7 @@ final class Reach {
             return;
         }
         Recipe<?> recipe = chosen.value();
-        String station = station(recipe);
+        String station = station(recipe) + AutoCrafting.phrase(chosen);
         stations.add(station + stationHistory(player, recipe));
         int makes = 1;
         for (ItemStack out : WorldTools.outputs(recipe, server.registryAccess())) if (out.is(item)) makes = Math.max(1, out.getCount());

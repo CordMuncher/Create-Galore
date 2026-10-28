@@ -26,6 +26,11 @@ import java.util.TreeMap;
  * address. Errors are reported by status and error type, never with request headers.
  */
 final class AnthropicClient {
+    /** One streamed Messages API call; the casebook stands in a scripted one to replay how the book's loop ends. */
+    interface Api {
+        JsonObject stream(JsonObject body, Listener listener) throws ApiException, InterruptedException;
+    }
+
     static final String VERSION = "2023-06-01";
     /** Lets a refused request retry on the model Anthropic recommends for that refusal category. */
     // Thinking binding controls let a request drop a thinking block whose conversation no longer matches instead of
@@ -156,7 +161,7 @@ final class AnthropicClient {
                         int index = event.get("index").getAsInt();
                         StringBuilder input = inputs.remove(index);
                         if (input != null && blocks.containsKey(index))
-                            blocks.get(index).add("input", input.isEmpty() ? new JsonObject() : JsonParser.parseString(input.toString()));
+                            blocks.get(index).add("input", input(input.toString()));
                     }
                     case "message_delta" -> {
                         if (message == null) break;
@@ -187,6 +192,19 @@ final class AnthropicClient {
             return message;
         } catch (IOException | RuntimeException e) {
             throw new ApiException(0, "stream " + e.getClass().getSimpleName(), "The book lost its connection mid-sentence. Try again.");
+        }
+    }
+
+    /**
+     * A tool call's input as streamed. A call cut off by the output limit ends in half-written JSON; it comes back as
+     * an empty input so the stop reason (max_tokens) reaches the book's loop instead of a lost connection.
+     */
+    private static JsonElement input(String json) {
+        if (json.isEmpty()) return new JsonObject();
+        try {
+            return JsonParser.parseString(json);
+        } catch (RuntimeException e) {
+            return new JsonObject();
         }
     }
 

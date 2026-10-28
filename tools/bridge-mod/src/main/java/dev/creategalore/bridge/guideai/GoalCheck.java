@@ -70,8 +70,18 @@ final class GoalCheck {
         boolean unknown = false;
         for (RecipeHolder<?> holder : Reach.makers(server).getOrDefault(goal, List.of())) {
             Way w = way(holder);
-            if (w == null) unknown = true;
-            else ways.add(w);
+            if (w != null) {
+                ways.add(w);
+                continue;
+            }
+            // A crafting-table recipe some Create machine also runs (a mixer's shapeless crafting and the like).
+            List<AutoCrafting.Machine> machines = AutoCrafting.machines(holder);
+            if (machines.isEmpty()) unknown = true;
+            for (AutoCrafting.Machine m : machines) {
+                Set<Item> items = new LinkedHashSet<>();
+                for (String b : m.blocks()) items.add(BuiltInRegistries.ITEM.get(ResourceLocation.parse(b)));
+                ways.add(new Way("crafting recipe on the " + m.name().replaceAll(" \\(.*", ""), items, null));
+            }
         }
         if (ways.isEmpty()) {
             return new BuildCheck.Report(heading + "- Not shown: no machine recipe for " + name + " could be matched against "

@@ -5,6 +5,16 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.6.19
+
+### Added
+- Create Galore Bridge 1.142.0.
+- Ask the Book's casebook replays how an answer ends (`loop` cases, no model needed) and has the andesite build question for the answer eval.
+
+### Fixed
+- **Ask the Book no longer answers a big build question with nothing.** When the book spent its whole page working out a design before writing a word, the player got "found nothing to say" and "ran out of page". Now it takes that turn back and tries again, thinking less and building in parts, and the next time with its tools closed, so it writes the answer in words. If every try still comes up empty, it says to ask for one part of the build at a time. A blank answer, or a half-written "let me build that" line, can't reach the page any more.
+- **Ask the Book knows crafting-table recipes can be automated.** Its recipe lookups now say which Create machines also run a crafting recipe on this server: a Mechanical Mixer for shapeless recipes (Diorite + Cobblestone into Andesite, for one), a Mechanical Press for a square of one item, and Mechanical Crafters. It had said Diorite + Cobblestone only works at a crafting table. The build checks count those machines too.
+
 ## 0.6.18
 
 ### Added

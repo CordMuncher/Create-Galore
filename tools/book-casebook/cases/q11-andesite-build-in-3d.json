@@ -1,0 +1,104 @@
+{
+  "title": "A self-contained cobblestone-to-andesite build, shown in 3D, that reaches the player",
+  "from": "0.6.18: the follow-up to \"how to automate andesite collection?\" showed \"found nothing to say\" and \"ran out of page\"",
+  "roots": [
+    "R1",
+    "R3",
+    "R5"
+  ],
+  "kind": "question",
+  "question": "can you show me a 3d design of a self contained build that generates the cobble, then makes gravel and then splits the flint off as needed to make andasite",
+  "player": "Early Create: water wheels, millstone, press and mixer made; asked how to automate andesite on the same page first and got the drill, millstone, millstone, compacting chain.",
+  "rubric": [
+    "An answer reaches the player: a model or, if a whole build can't be finished, the layout in words and an offer to model one part at a time",
+    "Cobblestone from a Mechanical Drill on a lava-and-water generator; gravel and flint from millstones (1 flint per gravel), not crushing wheels or washing",
+    "Compacting: 2 flint + 1 gravel + 100 mB lava in a basin under a press, no heat; a lava source (Hose Pulley in a big lake) for the basin",
+    "The split sends 2 of every 3 gravel to the second millstone and 1 to the basin (or a filter keeps the basin stocked), and the basin's output leaves on a belt or into a depot",
+    "If the model has a goal, the goal check passes for Andesite",
+    "Doesn't say diorite plus cobblestone can't be automated: a Mechanical Mixer runs that shapeless recipe"
+  ],
+  "world": [
+    "fill ~-12 ~-1 ~-12 ~12 ~-1 ~12 minecraft:grass_block",
+    "time set 6000"
+  ],
+  "box": [
+    -12,
+    -1,
+    -12,
+    12,
+    0,
+    12
+  ],
+  "built": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "stand": [
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "inventory": [
+    {
+      "id": "create:andesite_alloy",
+      "count": 64
+    },
+    {
+      "id": "create:cogwheel",
+      "count": 16
+    },
+    {
+      "id": "create:shaft",
+      "count": 32
+    },
+    {
+      "id": "create:millstone",
+      "count": 2
+    },
+    {
+      "id": "create:mechanical_press",
+      "count": 1
+    },
+    {
+      "id": "create:basin",
+      "count": 2
+    },
+    {
+      "id": "create:mechanical_drill",
+      "count": 1
+    },
+    {
+      "id": "create:belt_connector",
+      "count": 8
+    },
+    {
+      "id": "create:water_wheel",
+      "count": 2
+    }
+  ],
+  "advancements": [
+    "minecraft:story/root",
+    "minecraft:story/mine_stone",
+    "minecraft:story/upgrade_tools",
+    "minecraft:story/smelt_iron",
+    "create:root",
+    "create:andesite_alloy",
+    "create:water_wheel",
+    "create:mechanical_press",
+    "create:belt",
+    "create:millstone",
+    "create:mechanical_mixer",
+    "create:compacting"
+  ],
+  "crafted": {
+    "create:millstone": 2,
+    "create:mechanical_press": 1,
+    "create:basin": 2
+  }
+}

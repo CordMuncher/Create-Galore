@@ -37,7 +37,7 @@ One JSON file per case in `cases/`, named `<kind letter><number>-<what>.json`.
 | `from` | Where the failure came from (pack version and PR, or the report). |
 | `roots` | Root causes from the rethink: R1 words never checked, R2 looking is optional, R3 checks hunt faults instead of proving the goal, R4 the player is missing from the checks, R5 the loop runs on reminders, R6 fixes leave no tests. |
 | `open`, `fixed_by` | A known failure and the work that should fix it. |
-| `kind` | `model`, `world`, `tool`, `answer` or `question` (see below). |
+| `kind` | `model`, `world`, `tool`, `answer`, `loop` or `question` (see below). |
 | `expect` | `built` (models: built or refused), `has` (text the result must hold) and `lacks` (text it must not hold). Text matching ignores case. |
 
 - **model**: `model` is a build_model input exactly as the book would send it. `inventory` (optional) gives the
@@ -49,6 +49,10 @@ One JSON file per case in `cases/`, named `<kind letter><number>-<what>.json`.
 - **tool**: `tool` and `input` are one tool call, made as a stand-in player holding `inventory`.
 - **answer**: `answer` is a finished answer as the book wrote it and `diagrams` the drawings and models it made; the
   answer audit checks its item ids, recipes and diagrams as it does before a real answer reaches the player.
+- **loop**: `question` and `turns`, the API's replies in order (`stop_reason`, `content`, `usage`), as a model would
+  send them. The book's own loop runs against them with no model, so the case shows how an answer ends for the player:
+  `ANSWER:` what they read, `NOTE:` the line under it, `KEPT:` whether the turn joins the page and `CALLS:` how each
+  call went out (tools open or closed, effort). The loop never lets an empty answer through.
 - **question**: `question`, `player` (the situation in words) and `rubric` (what a good answer does). The answer eval
   uses these with a model. To set the asking player up for real, `world` is a list of commands run at a spot of its own
   (as `setup`, with `{x}` and the like), `box` what they build (cleared before the next question), `built` the part of
