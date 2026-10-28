@@ -647,6 +647,7 @@ final class WorldTools {
             if (!r.isEmpty()) results.add(r.getCount() + "x " + r.getHoverName().getString());
         }
         out.append(results.isEmpty() ? "(special result)" : String.join(", ", results));
+        out.append(AutoCrafting.phrase(holder));
         return out.toString();
     }
 

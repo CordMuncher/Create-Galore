@@ -325,6 +325,7 @@ final class Casebook {
                 case "model" -> judge(run, c, model(run, c));
                 case "tool" -> judge(run, c, tool(run, c));
                 case "answer" -> judge(run, c, answer(run, c));
+                case "loop" -> judge(run, c, loop(run, c));
                 case "question" -> run.results.add(new Outcome(GuideText.string(c, "id"), GuideText.string(c, "title"),
                         open(c), "SKIPPED", "answer eval case (needs a model)"));
                 case "world" -> {
@@ -356,6 +357,18 @@ final class Casebook {
         for (JsonElement e : array(c, "diagrams")) made.add(e.toString());
         List<String> issues = AnswerAudit.check(GuideText.string(c, "answer"), made, run.server);
         return new Result(null, issues.isEmpty() ? "(nothing to fix)" : String.join("\n", issues));
+    }
+
+    /** The book's loop replayed against the case's scripted API {@code turns}: how the answer ends for the player. */
+    private static Result loop(Run run, JsonObject c) {
+        List<JsonObject> turns = new ArrayList<>();
+        for (JsonElement e : array(c, "turns")) turns.add(e.getAsJsonObject());
+        try {
+            return new Result(null, GuideAi.replay(run.server, GuideText.string(c, "question"), turns));
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            return new Result(null, "(interrupted)");
+        }
     }
 
     private static Result tool(Run run, JsonObject c) {

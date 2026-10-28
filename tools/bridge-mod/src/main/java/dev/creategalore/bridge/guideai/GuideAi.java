@@ -60,7 +60,7 @@ public final class GuideAi {
     }
 
     /** Everything the voice needs while the server runs; null while it is off. */
-    private record Live(MinecraftServer server, GuideAiSettings settings, AnthropicClient client, JsonArray system,
+    private record Live(MinecraftServer server, GuideAiSettings settings, AnthropicClient.Api client, JsonArray system,
                         JsonArray customTools, JsonArray webTools, ThreadStore store, ExecutorService workers) {
     }
 
@@ -200,7 +200,7 @@ public final class GuideAi {
             t.setDaemon(true);
             return t;
         });
-        live = new Live(server, settings, new AnthropicClient(settings.apiUrl, settings.key()), system, WorldTools.definitions(),
+        live = new Live(server, settings, new AnthropicClient(settings.apiUrl, settings.key())::stream, system, WorldTools.definitions(),
                 settings.webSearch ? webTools() : new JsonArray(), new ThreadStore(server.getWorldPath(LevelResource.ROOT)
                 .resolve("create_galore_field_guide_ai")), workers);
         Creatures.warmUp(server);
@@ -636,15 +636,19 @@ public final class GuideAi {
         // The kinds of build whose design brief this answer already got (build_model hands each over once).
         Set<String> briefs = new HashSet<>();
         Streamer streamer = new Streamer(l, playerId, pageId);
-        boolean rescued = false, audited = false;
+        boolean audited = false;
+        // Turns that ended with nothing for the player, each taken back and asked again (see unanswered).
+        int retakes = 0;
+        // After a turn spent its whole output before answering: think less for the rest of this answer.
+        boolean tight = false;
         int[] lastProblems = {0};
         int limit = MAX_ROUNDS;
         try {
             for (int round = 1; ; round++) {
-                // Past the limit only for the one extra round that asks an empty answer to be written.
+                // Past the limit only for the extra rounds that ask an empty answer to be written.
                 boolean last = round >= limit;
                 if (round > 1) streamer.newRound();
-                JsonObject response = call(l, messages, last, streamer);
+                JsonObject response = call(l, messages, last, tight, streamer);
                 logDropped(response);
                 streamer.flush("");
                 usage.add(response);
@@ -677,8 +681,24 @@ public final class GuideAi {
                         // A long web search paused the turn; sending the conversation back lets it carry on.
                     }
                     case "max_tokens" -> {
+                        if (unanswered(content) && retakes < MAX_RETAKES) {
+                            // The whole output went on thinking or on a tool call too big to finish, before a word of
+                            // answer: the player would get nothing. Take the turn back and ask again, thinking less; the
+                            // second time with the tools closed.
+                            LOG.warn("Field Guide voice: round {} used its whole output ({} tokens) before answering (blocks: {}); "
+                                    + "asking again", round, outputTokens(response), blockTypes(content));
+                            retake(messages, retakes == 0 && limit - round > 2 ? OUT_OF_ROOM : OUT_OF_ROOM_CLOSED);
+                            if (retakes++ > 0 || limit - round <= 2) round = Math.max(round, limit - 1);
+                            tight = true;
+                            continue;
+                        }
                         note.append("The book ran out of page here; ask it to go on, or ask something narrower. ");
                         usage.log(playerId, round, stop);
+                        if (unanswered(content)) {
+                            // Nothing in it is an answer, and a cut-off tool call would make the page's next question fail.
+                            messages.remove(messages.size() - 1);
+                            return finishText(messages, diagrams, note, false);
+                        }
                         return finishText(messages, diagrams, note, true);
                     }
                     case "model_context_window_exceeded" -> {
@@ -687,14 +707,13 @@ public final class GuideAi {
                         return finishText(messages, diagrams, note, false);
                     }
                     default -> {
-                        if (text(content).isEmpty() && !rescued) {
+                        if (text(content).isEmpty() && retakes < MAX_RETAKES) {
                             // It stopped without writing anything (seen after a long run of drafts on the last, tool-less
-                            // round). Take that turn back and ask once more, plainly, for the answer.
+                            // round). Take that turn back and ask, plainly, for the answer.
                             LOG.warn("Field Guide voice: round {} ended ({}) with no text (blocks: {}); asking for the answer",
                                     round, stop, blockTypes(content));
-                            messages.remove(messages.size() - 1);
-                            addText(messages.get(messages.size() - 1).getAsJsonObject(), WRAP_UP_EMPTY);
-                            rescued = true;
+                            retake(messages, WRAP_UP_EMPTY);
+                            retakes++;
                             round = Math.max(round, limit - 1);
                             continue;
                         }
@@ -731,6 +750,63 @@ public final class GuideAi {
         }
     }
 
+    /** Turns that left the player nothing which are taken back and asked again, before the book gives up on the answer. */
+    private static final int MAX_RETAKES = 2;
+
+    /**
+     * Whether a turn has left the player nothing to read: no text, or only a line before a tool call it never finished
+     * (cut off by the output limit, so its call can't run and the line is no answer).
+     */
+    static boolean unanswered(JsonArray content) {
+        if (text(content).isEmpty()) return true;
+        for (int i = content.size() - 1; i >= 0; i--) {
+            String type = content.get(i).isJsonObject() ? GuideText.string(content.get(i).getAsJsonObject(), "type") : "";
+            if (type.equals("thinking") || type.equals("redacted_thinking")) continue;
+            return !type.equals("text");
+        }
+        return true;
+    }
+
+    /** Takes the book's last turn back and adds why to the turn before it, so the next call writes it again. */
+    private static void retake(JsonArray messages, String why) {
+        messages.remove(messages.size() - 1);
+        addText(messages.get(messages.size() - 1).getAsJsonObject(), why);
+    }
+
+    private static long outputTokens(JsonObject response) {
+        try {
+            return response.getAsJsonObject("usage").get("output_tokens").getAsLong();
+        } catch (RuntimeException e) {
+            return -1;
+        }
+    }
+
+    /**
+     * The casebook's replay of how an answer ends: the book's loop run against scripted API turns, with no model. Gives
+     * what the player would read, the note under it, and how each call was asked (tools open or closed, effort).
+     */
+    static String replay(MinecraftServer server, String question, List<JsonObject> turns) throws InterruptedException {
+        List<String> asked = new ArrayList<>();
+        java.util.Iterator<JsonObject> next = turns.iterator();
+        AnthropicClient.Api scripted = (body, listener) -> {
+            asked.add((asked.size() + 1) + " tools " + (body.has("tool_choice") ? "closed" : "open") + ", effort "
+                    + GuideText.string(body.getAsJsonObject("output_config"), "effort"));
+            if (!next.hasNext()) throw new AnthropicClient.ApiException(0, "casebook", "(the case has no more turns)");
+            return next.next().deepCopy();
+        };
+        Live l = new Live(server, GuideAiSettings.defaults(), scripted, new JsonArray(), WorldTools.definitions(), new JsonArray(),
+                null, null);
+        JsonArray messages = new JsonArray();
+        JsonObject user = new JsonObject();
+        user.addProperty("role", "user");
+        user.addProperty("content", "Casebook asks: " + question);
+        messages.add(user);
+        Outcome o = converse(l, UUID.nameUUIDFromBytes("create_galore:casebook".getBytes(java.nio.charset.StandardCharsets.UTF_8)),
+                "casebook", messages);
+        return "ANSWER: " + (o.answer() == null || o.answer().isBlank() ? "(none)" : o.answer()) + "\nNOTE: "
+                + (o.note() == null ? "(none)" : o.note()) + "\nKEPT: " + o.keep() + "\nCALLS: " + String.join("; ", asked);
+    }
+
     /** Where the answer stands after a round of tools: facts to steer by, in place of reminders. */
     private static String state(int models, int problems, int shown, int left) {
         StringBuilder out = new StringBuilder("(Where this answer stands: ");
@@ -751,6 +827,17 @@ public final class GuideAi {
     private static final String WRAP_UP_EMPTY = "(Your last turn had no text, so the player saw no answer. Write the answer "
             + "to their question now, in words, from what you have found. If you couldn't make something work, say what "
             + "you tried, what stopped it, and what the player can do instead.)";
+
+    /** Sent when a turn used its whole output before writing any answer, with rounds of tools still to come. */
+    private static final String OUT_OF_ROOM = "(Your last turn used up the whole page, the output limit, before any answer "
+            + "was written, so the player saw nothing. Think less and work in smaller steps: a big build goes in parts, "
+            + "one model or from_draft change at a time. Then write the answer.)";
+    /** The same, when the tools close with it. */
+    private static final String OUT_OF_ROOM_CLOSED = "(Your last turn used up the whole page, the output limit, before any "
+            + "answer was written, so the player saw nothing. The tools are closed now. Write the answer in words from what "
+            + "you have found, shorter than you planned. Models and drawings already made can still go in with [diagram N]. "
+            + "If a build was too big to finish, give its layout in words, station by station, and say the book can model "
+            + "one part of it at a time.)";
 
     /** Adds a line of text to a user turn, after any tool results (a plain string turn becomes a list of blocks). */
     private static void addText(JsonObject user, String text) {
@@ -885,14 +972,21 @@ public final class GuideAi {
             if (!GuideText.string(m, "role").equals("assistant")) break;
             answer = text(m.getAsJsonArray("content"));
         }
-        if (answer.isEmpty() && diagrams.isEmpty()) {
-            answer = "The book turned a few pages but found nothing to say. Try asking another way.";
+        if (answer.isEmpty()) {
+            answer = diagrams.isEmpty() ? NOTHING_WRITTEN : ONLY_DRAWN;
             // An empty turn in the page's history would make the API refuse the next question there.
             keep = false;
         }
         String n = note.toString().strip();
         return new Outcome(answer, List.copyOf(diagrams), n.isEmpty() ? null : n, keep);
     }
+
+    /** What the player reads when every try left the answer empty; never a blank answer. */
+    static final String NOTHING_WRITTEN = "The book worked on this but couldn't get an answer onto the page. Ask for one part "
+            + "of it at a time (one machine or one step of the line), and it can show each part.";
+
+    /** The same, when it had made drawings or models for the answer: they show under it. */
+    static final String ONLY_DRAWN = "The book ran out of words before it could write this up, but here is what it made for it.";
 
     private static String text(JsonArray content) {
         StringBuilder out = new StringBuilder();
@@ -903,10 +997,12 @@ public final class GuideAi {
         return out.toString().strip();
     }
 
-    private static JsonObject call(Live l, JsonArray messages, boolean last, Streamer streamer)
+    private static JsonObject call(Live l, JsonArray messages, boolean last, boolean tight, Streamer streamer)
             throws AnthropicClient.ApiException, InterruptedException {
         try {
-            return l.client.stream(body(l, messages, last), streamer);
+            JsonObject body = body(l, messages, last);
+            if (tight) body.getAsJsonObject("output_config").addProperty("effort", "low");
+            return l.client.stream(body, streamer);
         } catch (AnthropicClient.ApiException e) {
             String t = e.type.toLowerCase(Locale.ROOT);
             if (e.status != 400) throw e;
@@ -930,7 +1026,7 @@ public final class GuideAi {
             } else {
                 throw e;
             }
-            return call(l, messages, last, streamer);
+            return call(l, messages, last, tight, streamer);
         }
     }
 

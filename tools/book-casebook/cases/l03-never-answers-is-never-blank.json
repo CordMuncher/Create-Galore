@@ -1,0 +1,73 @@
+{
+  "title": "When every try spends its whole output, the player reads what to ask instead, never a blank answer or the turn's \"let me\" line",
+  "from": "0.6.18: the andesite build follow-up",
+  "roots": [
+    "R5",
+    "R6"
+  ],
+  "kind": "loop",
+  "question": "can you show me a 3d design of a self contained build that generates the cobble, then makes gravel and then splits the flint off as needed to make andasite",
+  "turns": [
+    {
+      "stop_reason": "max_tokens",
+      "content": [
+        {
+          "type": "thinking",
+          "thinking": "(a long working-out of the build)",
+          "signature": "casebook"
+        }
+      ],
+      "usage": {
+        "output_tokens": 32000
+      }
+    },
+    {
+      "stop_reason": "max_tokens",
+      "content": [
+        {
+          "type": "thinking",
+          "thinking": "(a long working-out of the build)",
+          "signature": "casebook"
+        }
+      ],
+      "usage": {
+        "output_tokens": 32000
+      }
+    },
+    {
+      "stop_reason": "max_tokens",
+      "content": [
+        {
+          "type": "thinking",
+          "thinking": "(a long working-out of the build)",
+          "signature": "casebook"
+        },
+        {
+          "type": "text",
+          "text": "Let me model it."
+        },
+        {
+          "type": "tool_use",
+          "id": "toolu_cut",
+          "name": "build_model",
+          "input": {}
+        }
+      ],
+      "usage": {
+        "output_tokens": 32000
+      }
+    }
+  ],
+  "expect": {
+    "has": [
+      "ANSWER: The book worked on this",
+      "one part of it at a time",
+      "KEPT: false"
+    ],
+    "lacks": [
+      "Let me model it",
+      "found nothing to say",
+      "ANSWER: (none)"
+    ]
+  }
+}
