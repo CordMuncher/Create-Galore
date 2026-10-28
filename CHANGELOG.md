@@ -5,6 +5,18 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.6.22
+
+### Added
+- Create Galore Bridge 1.145.0.
+- Create Galore Lag Watch 1.2.0: when the server crashes but its window stays open, it says `SERVER CRASHED` in the console and `logs/lagwatch.log` and closes the process after 30 s (`closeAfterCrashSeconds` under `[freeze]`, 0 leaves it open).
+
+### Fixed
+- **The server no longer crashes when a ship is removed while Create Deep Seas wakes it up.** A ship that is broken up, emptied or flies out of the world is marked removed during a tick and taken out at the next one. Create Deep Seas wakes every ship with sails or a rudder every 5 s, and when it reached one in that moment, Sable threw "Body has been removed" and the server crashed. The save on the way down hit the same ship and failed as well, so nothing since the last autosave was saved and the window stayed open, looking frozen. Now nudging, waking, teleporting or reading the speed of a ship that is being removed does nothing (it reads as standing still), for every mod that does it, and the ship saves normally.
+
+### Removed
+- Nothing.
+
 ## 0.6.21
 
 ### Added

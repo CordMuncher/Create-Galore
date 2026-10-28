@@ -229,6 +229,8 @@ Mod code on the server thread, innermost first: dev.ryanhcode.sable.physics, me.
 
 which names the mods involved (innermost is closest to what was actually slow), followed by the full stack for a bug report. `ServerChunkCache.getChunk` near the top of the stack means the server was generating or loading a chunk and waiting for it; the first mod below it is the one that asked.
 
+**Crashes that look like freezes.** If the server crashes and the save on the way down fails too, the server thread is gone but the window stays open: it looks frozen, and nothing can tick or save any more. Lag Watch notices that the server thread has ended, writes `SERVER CRASHED` to the console and `logs/lagwatch.log`, and closes the process after 30 seconds so it doesn't sit there. The reason is in `crash-reports/`. If `latest.log` also shows `Exception stopping the server`, the shutdown save failed and the world is as it was at the last autosave (every 5 minutes). Lag Watch never saves the world itself: during a crash or a hang, the game's state can be half-updated, and writing it from another thread could damage the world.
+
 **Commands** (operators only):
 - `/lagwatch` shows the current TPS and milliseconds per tick, and whether a lag spell is going on.
 - `/lagwatch test` fires a test alert right now and records a profile, so you can see that it all works. A test doesn't count toward the 10-minute limit.
@@ -246,7 +248,7 @@ which names the mods involved (innermost is closest to what was actually slow), 
 
 The spark commands still work by hand too: `/spark tps` and `/spark health` for a quick look, `/spark profiler open` to see the last few minutes from spark's always-on background profiler.
 
-**Changing it.** Edit `config/create_galore_lagwatch-common.toml` in the server folder and restart: the TPS that counts as lag (`alertTps`), how long it has to last (`alertAfterSeconds`), whether everyone or only operators see the alert (`tellEveryone`), the profile length, the 10-minute limit and how many profiles to keep. Under `[freeze]`: `seconds` (how long a tick must take before it counts as a freeze, 2 by default), `looks` (how many times one freeze is written down) and `enabled` for the freeze catcher alone. `enabled = false` at the top turns all of Lag Watch off.
+**Changing it.** Edit `config/create_galore_lagwatch-common.toml` in the server folder and restart: the TPS that counts as lag (`alertTps`), how long it has to last (`alertAfterSeconds`), whether everyone or only operators see the alert (`tellEveryone`), the profile length, the 10-minute limit and how many profiles to keep. Under `[freeze]`: `seconds` (how long a tick must take before it counts as a freeze, 2 by default), `looks` (how many times one freeze is written down) `enabled` for the freeze catcher alone, and `closeAfterCrashSeconds` (30 by default, 0 leaves a crashed server's window open). `enabled = false` at the top turns all of Lag Watch off.
 
 ## Structure cache
 

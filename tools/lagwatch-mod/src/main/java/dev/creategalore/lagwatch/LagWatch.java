@@ -32,6 +32,7 @@ public final class LagWatch {
     static final ModConfigSpec.BooleanValue FREEZE;
     static final ModConfigSpec.IntValue FREEZE_SECONDS;
     static final ModConfigSpec.IntValue FREEZE_DUMPS;
+    static final ModConfigSpec.IntValue CRASH_CLOSE_SECONDS;
 
     static {
         ModConfigSpec.Builder b = new ModConfigSpec.Builder();
@@ -64,6 +65,9 @@ public final class LagWatch {
         FREEZE_SECONDS = b.comment("A tick that takes this long counts as a freeze. The server thread is looked at again at 2x, 4x, 8x... this while it lasts.")
                 .defineInRange("seconds", 2, 1, 60);
         FREEZE_DUMPS = b.comment("At most this many looks per freeze (5 looks at 2 s reach 32 s).").defineInRange("looks", 5, 1, 50);
+        CRASH_CLOSE_SECONDS = b.comment("When the server crashes but the process stays up (the window looks frozen, nothing ticks or saves),",
+                        "say so in the log and close the process after this many seconds. 0 leaves it open.")
+                .defineInRange("closeAfterCrashSeconds", 30, 0, 3600);
         b.pop();
         SPEC = b.build();
     }

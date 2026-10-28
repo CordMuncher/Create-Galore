@@ -103,7 +103,7 @@ hash = "29208d8a0cf996ced5690dbd767ede4d3975cbe5f6d5025ab3f6f1c5e5fd5402"
 
 [[files]]
 file = "config/create_galore_lagwatch-common.toml"
-hash = "1a2365fa503a0ab36820485fa9f108eb629dc1a359e9929769da3ba8822270c6"
+hash = "fe0f684d53a5e68c1a549159dd16a026acd6738d706a45775003a7c350a84984"
 
 [[files]]
 file = "config/create_structures_arise-server.toml"
@@ -4998,16 +4998,16 @@ hash = "db683b65dc15a03dd6de2d34d5dc6ad0e3490744ced513a8cc584784ee9d3d8b"
 metafile = true
 
 [[files]]
-file = "mods/create-galore-bridge-1.144.0.jar"
-hash = "791fd39a9027ce588d705b30d35819b9d8bc46b66a568c801694be9361b5f57c"
+file = "mods/create-galore-bridge-1.145.0.jar"
+hash = "431cd8c318f868ebc13a8196a0e73228348cf812ba2a10630896b53a6f4a6251"
 
 [[files]]
 file = "mods/create-galore-fishing-0.3.17.jar"
 hash = "486c2a89d8cb49fd178a545a2af804f4ecc9bb69df4aabb17b8accfb1fb3ce32"
 
 [[files]]
-file = "mods/create-galore-lagwatch-1.1.0.jar"
-hash = "d0671a121f4b47db6549d4b9f15aab61c1907f7a2e4350bde1c8d935cea8d815"
+file = "mods/create-galore-lagwatch-1.2.0.jar"
+hash = "d1a65e797345279bbb5df58ebe300a9c85919fedbe85963926930b00bc352471"
 
 [[files]]
 file = "mods/create-garnished.pw.toml"

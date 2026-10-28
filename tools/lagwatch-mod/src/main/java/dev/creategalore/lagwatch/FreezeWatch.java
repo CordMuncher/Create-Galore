@@ -76,7 +76,12 @@ final class FreezeWatch {
                 return;
             }
             MinecraftServer s = server;
-            if (s == null || !s.isRunning()) return;
+            if (s == null) return;
+            if (!s.getRunningThread().isAlive()) {        // checked first: a crash leaves isRunning() true
+                serverThreadEnded();
+                return;
+            }
+            if (!s.isRunning()) return;
             if (stopping || !LagWatch.ENABLED.get() || !LagWatch.FREEZE.get()) continue;
             long every = LagWatch.FREEZE_SECONDS.get() * 1_000_000_000L;
             long stuck;
@@ -97,6 +102,40 @@ final class FreezeWatch {
             }
             dump(s, stuck, look);
         }
+    }
+
+    /**
+     * The server thread is gone (it crashed, and here the shutdown save threw too), yet the process stays up: the
+     * window looks frozen and no tick or save can ever run again. Say so plainly, then close the process so it
+     * doesn't sit there looking like a hang. Nothing is lost by closing: with the server thread dead, nothing could
+     * save the world any more, and saving from this thread while game state is half-updated would risk corrupting it.
+     */
+    private void serverThreadEnded() {
+        int wait = LagWatch.CRASH_CLOSE_SECONDS.get();
+        String text = String.format(Locale.ROOT, "%s  SERVER CRASHED: the server thread has ended, so it can't tick or save any more.%n"
+                        + "  The reason is in crash-reports/ and in latest.log above (\"Encountered an unexpected exception\").%n"
+                        + "  If latest.log also shows \"Exception stopping the server\", the save on the way down failed: the world is as of the last autosave.%n"
+                        + "  %s", LocalDateTime.now().format(STAMP),
+                wait > 0 ? "Closing the server process in " + wait + " s." : "The process stays open (freeze.closeAfterCrashSeconds = 0); close the window yourself.");
+        LOG.error("[Lag Watch] {}", text);
+        Watcher.logFile(text);
+        if (wait <= 0) return;
+        try {
+            Thread.sleep(wait * 1000L);
+        } catch (InterruptedException e) {
+            return;
+        }
+        Thread last = new Thread(() -> {                 // if a shutdown hook hangs, stop anyway
+            try {
+                Thread.sleep(15_000);
+            } catch (InterruptedException ignored) {
+                // exiting anyway
+            }
+            Runtime.getRuntime().halt(1);
+        }, "Lag Watch crash exit");
+        last.setDaemon(true);
+        last.start();
+        System.exit(1);
     }
 
     private void dump(MinecraftServer s, long stuck, int look) {
