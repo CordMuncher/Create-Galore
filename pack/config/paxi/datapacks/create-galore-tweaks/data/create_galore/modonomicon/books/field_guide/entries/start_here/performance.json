@@ -158,7 +158,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**Frame generation** (same tab) shows a frame of its own between every two the game draws, so motion looks about twice as smooth, for a little more input delay. **DLSS** runs where NVIDIA's own check says the card can (RTX 40 and 50); if not, the setting says why. **FSR** (experimental) runs on other cards too and is best from about 60 fps. Both need DLSS or FSR anti-aliasing."
+      "text": "**Frame generation** (same tab) shows a frame of its own between every two the game draws, so motion looks about twice as smooth, for a little more input delay. **DLSS** runs where NVIDIA's own check says the card can (RTX 40 and 50); if not, the setting says why. **FSR** runs on other cards too and is best from about 60 fps. Both need DLSS or FSR anti-aliasing."
     },
     {
       "type": "modonomicon:text",
@@ -169,6 +169,11 @@
       "type": "modonomicon:text",
       "title": "",
       "text": "With frame generation on, **Max Framerate** counts the frames on screen, with DLSS and with FSR: a cap of 120 shows 120 frames a second, 60 drawn by the game and 60 made between them."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "On cards where NVIDIA's own check says DLSS can make more than one frame between two (RTX 50), the list also has **DLSS 3x** and **DLSS 4x**: two or three frames of its own for each one the game draws. They work like DLSS (2x), which was tested, but haven't been tried on an RTX 50 card yet, hence the red **\\***. At 4x a cap of 120 shows 120 frames, 30 drawn by the game."
     },
     {
       "type": "modonomicon:text",

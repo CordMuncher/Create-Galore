@@ -37,6 +37,8 @@ public final class DisplaySettings {
     public static final String DLAA_ENGINE = "dlaaEngine";
     /** Testing only, not written to the file: false leaves out the motion vectors of things that move by themselves. */
     public static final String DLAA_OBJECT_MOTION = "dlaaObjectMotion";
+    /** Testing only, not written to the file: false matches a model's vertices to last frame's all together, not cube by cube. */
+    public static final String DLAA_CUBE_MOTION = "dlaaCubeMotion";
     /** Testing only, not written to the file: false leaves out FSR 3's reactive and composition masks. */
     public static final String DLAA_REACTIVE_MASK = "dlaaReactiveMask";
     /** Testing only, not written to the file: true has DLSS meter the exposure itself with presets J and K too. */
@@ -59,6 +61,8 @@ public final class DisplaySettings {
      * distances in bands, for NVIDIA's debug overlay).
      */
     public static final String DLAA_RR_TEST = "dlaaRrTest";
+    /** Testing only, not written to the file: logs this many frames of the first-person hand (see HandWatch). */
+    public static final String DLAA_HAND_WATCH = "dlaaHandWatch";
     /** NVIDIA Reflex on Perfect Presentation's DirectX device: off, on or boost (markers for testing; see FrameLatency). */
     public static final String REFLEX = "reflex";
     /** Testing only, not written to the file: true or false reads input again just before each frame renders, or not (unset: with Reflex on). */
@@ -85,11 +89,16 @@ public final class DisplaySettings {
     public static final String HUD_SPLIT_VIEW = "hudSplitView";
     /** Testing only, not written to the file: true checks the HUD split every 5 seconds (log, screenshots/hud-split). */
     public static final String HUD_SPLIT_CHECK = "hudSplitCheck";
-    /** off, dlss or fsr: frame generation in the DirectX 12 presenter, fsr experimental (see FrameGen); on and off at once, dlss and fsr swap at a restart. */
+    /** off, dlss or fsr: frame generation in the DirectX 12 presenter (see FrameGen); on and off at once, dlss and fsr swap at a restart. */
     public static final String FRAME_GEN = "frameGen";
     /** dlss or fsr: the frame generation the DirectX 12 presenter loads at its start while frameGen is off (the last one picked; none: the best for the card). */
     public static final String FRAME_GEN_TYPE = "frameGenType";
-    /** Testing only, not written to the file: frames generated per rendered one (1, the default: twice the frame rate). */
+    /**
+     * 2 (the default), 3 or 4: frames shown for each rendered one with DLSS Frame Generation. 3 and 4 run where NVIDIA's
+     * Streamline says the card generates that many (RTX 50), else it runs at the most the card does.
+     */
+    public static final String FRAME_GEN_MULTIPLIER = "frameGenMultiplier";
+    /** Testing only, not written to the file: frames generated per rendered one, overriding frameGenMultiplier (also for FSR). */
     public static final String FRAME_GEN_FRAMES = "frameGenFrames";
     /** Testing only, not written to the file: false has frame generation take the HUD as part of the picture instead of apart. */
     public static final String FRAME_GEN_UI = "frameGenUi";
@@ -137,12 +146,13 @@ public final class DisplaySettings {
             + " frameGen: off, dlss or fsr. Frame generation: the graphics card shows a frame of its own between every two\n"
             + " the game renders. dlss: NVIDIA DLSS Frame Generation, where NVIDIA's Streamline says the card runs it (RTX 40\n"
             + " and 50), with Windows' Hardware-accelerated GPU scheduling on and nvngx_dlssg.dll in create-galore-dlss/ (not\n"
-            + " part of the pack, like nvngx_dlss.dll); Reflex stays on while it runs. fsr, EXPERIMENTAL: AMD FSR 3.1 frame\n"
+            + " part of the pack, like nvngx_dlss.dll); Reflex stays on while it runs. fsr: AMD FSR 3.1 frame\n"
             + " generation, any card DirectX 12 runs on. Both need perfectPresentation=true with presenter=dx12 (the settings\n"
             + " screen sets both with it) and dlaa running (DLSS or FSR 3.1). The one in frameGenType (dlss or fsr; empty: DLSS\n"
             + " where Streamline says it runs and nvngx_dlssg.dll is there, else FSR) loads whenever DirectX 12 starts, so it\n"
             + " turns on and off without a restart; picking the other one needs a restart. Streamline is asked at every\n"
-            + " DirectX 12 start.\n"
+            + " DirectX 12 start. frameGenMultiplier: 2, 3 or 4, the frames shown for each rendered one with dlss; 3 and 4\n"
+            + " only where Streamline says the card makes that many (RTX 50 cards; not yet tried on one).\n"
             + " fpsCounter: off, basic (the frame rate, small, in a corner) or detailed (also the frame time, the 1% and 0.1%\n"
             + " lows of the last 10 seconds and a frame time graph). fpsCounterCorner: top-left, top-right, bottom-left or\n"
             + " bottom-right. fpsCounterDim: true for OLED screens: see-through, and it moves a pixel every two minutes.\n"

@@ -351,6 +351,23 @@ final class DlssPass implements AutoCloseable {
         return output.gl;
     }
 
+    // The sizes the textures were made for (render size in, window size out), for the hand watch.
+    int inputWidth() {
+        return color.width;
+    }
+
+    int inputHeight() {
+        return color.height;
+    }
+
+    int outputWidth() {
+        return output.width;
+    }
+
+    int outputHeight() {
+        return output.height;
+    }
+
     /** The pack's masks for FSR 3 this frame, 0 if it handed over none. */
     int maskTexture() {
         return hasMask ? mask.gl : 0;

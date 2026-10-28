@@ -5,6 +5,20 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.6.15
+
+### Added
+- **DLSS frame generation 3x and 4x.** On cards where NVIDIA's Streamline says DLSS Frame Generation can make more than one frame between two the game draws (RTX 50), the Display tab's **Frame generation** also offers **DLSS 3x** and **DLSS 4x**: two or three frames of its own for each one the game draws. They work like DLSS (2x), which was tested, but haven't been tried on an RTX 50 card yet, so they carry a red *. Where Streamline allows only one, the list stays as it was.
+- Create Galore Bridge 1.138.0.
+
+### Fixed
+- **The held item no longer flashes with DLSS or FSR a couple of seconds after you stop walking**, at a field of view above 70. As view bobbing settled, part of the hand's motion was worked out at the world's field of view and part at the hand's own, which threw a frame's motion off by hundreds of pixels. Photon v1.3a + DLAA is made again (patch 15) with every point of the hand moving in the hand's own view.
+- **Mobs with Fresh Animations no longer twitch when they blink** or look around with DLSS or FSR. Their eyes are model parts that hide and show, and every part after them was matched to the wrong place in the frame before. Motion is now matched part by part.
+- The log now says when DLSS or FSR 3 was held back because the game closed while starting it.
+
+### Removed
+- **AMD FSR frame generation is no longer experimental.** The motion glitches fixed above were what it handled worst.
+
 ## 0.6.14
 
 ### Fixed

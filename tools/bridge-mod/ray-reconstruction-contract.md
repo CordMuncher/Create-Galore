@@ -2,7 +2,7 @@
 
 The Bridge runs NVIDIA DLSS Ray Reconstruction (RR) in DLSS's place when a pack hands over RR's guides and the player
 turns it on (experimental: Upscaling tab, **Ray Reconstruction**; settings key `dlaaRayReconstruction=true`). The
-first pack to do it is Photon ("Photon v1.3a + DLAA", patch 14, see `PhotonPatcher`); turning RR on in the Upscaling tab
+first pack to do it is Photon ("Photon v1.3a + DLAA", patch 15, see `PhotonPatcher`); turning RR on in the Upscaling tab
 also swaps Photon's settings (Ultra, or the player's own changes under RR) and back (`PhotonRrSettings`). This is the
 contract another pack fills to get RR. It adds to the DLSS contract in `shaders/create_galore_dlss.properties` (see
 `PackProfile`): everything DLSS needs (colour, motion vectors, depth, exposure, the jitter) stays as it is.

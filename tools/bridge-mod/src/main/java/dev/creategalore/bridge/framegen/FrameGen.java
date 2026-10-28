@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Frame generation (Display tab, "Frame generation"), in Perfect Presentation's DirectX 12 presenter (cg_present.dll's
  * cg_fg_* calls): NVIDIA DLSS Frame Generation through Streamline on the cards Streamline says it runs on
- * (tools/bridge-mod/native/cg_streamline.cpp), or AMD FSR 3.1 frame generation, EXPERIMENTAL, through AMD's FidelityFX
+ * (tools/bridge-mod/native/cg_streamline.cpp), or AMD FSR 3.1 frame generation through AMD's FidelityFX
  * SDK on any card (cg_ffx.cpp). Each frame, once DLSS or FSR ran and the HUD is drawn, the presenter has {@link FgCapture} write the
  * frame's inputs (the world without the HUD, the HUD's coverage, depth and motion vectors) into textures shared with
  * DirectX 12, hands over the camera ({@link FgCamera}), and the backend shows generated frames between the rendered
@@ -62,8 +62,10 @@ import org.slf4j.LoggerFactory;
  * Keys (config/create_galore_bridge-display.properties): frameGen=dlss or fsr turns it on (with perfectPresentation=true
  * and presenter=dx12, which the settings screen sets with it; DLSS needs nvngx_dlssg.dll beside nvngx_dlss.dll, the
  * player's own or copied from NVIDIA's folder by the screen's Find on this PC); frameGenType, the backend loaded while
- * it is off (the screen writes the last one picked). For testing, not written there: frameGenFrames
- * frames generated per rendered one (1); frameGenUi=false hands the HUD over as part of the picture; frameGenStreamline
+ * it is off (the screen writes the last one picked); frameGenMultiplier, frames shown per rendered one with DLSS: 2,
+ * or 3 and 4 (DLSS Multi Frame Generation), which the screen offers where Streamline says the card generates that many
+ * (numFramesToGenerateMax, known once the backend has run) and which run at the most the card makes. For testing, not
+ * written there: frameGenFrames frames generated per rendered one on either backend; frameGenUi=false hands the HUD over as part of the picture; frameGenStreamline
  * a folder of Streamline's development DLLs instead of the shipped ones; frameGenVerbose=true a verbose Streamline log
  * (create-galore-dlss/streamline-logs), or AMD's debug checks and every message of theirs in the game log. frameGenView=hudless, alpha, depth or motion shows that input instead of the
  * game, and frameGenCheck=true checks the inputs and the camera every 5 seconds ({@link FgCheck}); both work without the
@@ -157,7 +159,11 @@ public final class FrameGen {
 
     // Settings, read again when the display settings change.
     private static int generation = -1;
-    private static int framesWanted = 1;
+    /** frameGenFrames (testing), 0 when not set. */
+    private static int framesTest;
+    /** frameGenMultiplier: frames shown per rendered one with DLSS, 2 to 4. */
+    private static int multiplier = 2;
+    private static boolean clampLogged;
     private static boolean ui = true;
     private static int view;
     private static boolean check;
@@ -387,7 +393,10 @@ public final class FrameGen {
             return;
         }
         generation = DisplaySettings.generation();
-        framesWanted = Math.max(1, parseInt(DisplaySettings.getString(DisplaySettings.FRAME_GEN_FRAMES, "1"), 1));
+        String test = DisplaySettings.getString(DisplaySettings.FRAME_GEN_FRAMES, "").trim();
+        framesTest = test.isEmpty() ? 0 : Math.max(1, parseInt(test, 1));
+        multiplier = multiplierSetting();
+        clampLogged = false;
         ui = !DisplaySettings.getString(DisplaySettings.FRAME_GEN_UI, "true").equalsIgnoreCase("false");
         String viewName = DisplaySettings.getString(DisplaySettings.FRAME_GEN_VIEW, "off").toLowerCase(Locale.ROOT);
         int newView = Math.max(0, Arrays.asList(FgView.NAMES).indexOf(viewName));
@@ -496,7 +505,7 @@ public final class FrameGen {
         frame.camera = inputs ? camera.address() : 0L;
         frame.renderWidth = inputs ? renderWidth : width;
         frame.renderHeight = inputs ? renderHeight : height;
-        frame.framesToGenerate = Math.max(1, maxGenerated > 0 ? Math.min(framesWanted, (int) maxGenerated) : framesWanted);
+        frame.framesToGenerate = framesToGenerate();
         frame.hudless = hudless;
         frame.noHud = noHud;
         frame.depth = depthTexture;
@@ -622,6 +631,42 @@ public final class FrameGen {
      */
     public static void presentedAlone() {
         generating = false;
+    }
+
+    /**
+     * Frames generated per rendered one this frame: frameGenMultiplier - 1 with DLSS (FSR makes one), at most what the
+     * backend says it can make; 1 while that is not known yet. frameGenFrames (testing) asks for its own number on
+     * either backend, as many as asked while the most is not known.
+     */
+    private static int framesToGenerate() {
+        if (framesTest > 0) {
+            return Math.max(1, maxGenerated > 0 ? Math.min(framesTest, (int) maxGenerated) : framesTest);
+        }
+        int wanted = backend() == BACKEND_DLSSG ? multiplier - 1 : 1;
+        if (wanted > 1 && maxGenerated > 0 && maxGenerated < wanted && !clampLogged) {
+            clampLogged = true;
+            LOG.info("Frame generation: {}x asked for; Streamline says this card generates at most {} per rendered frame, so {}x",
+                    multiplier, maxGenerated, maxGenerated + 1);
+        }
+        return maxGenerated > 0 ? Math.max(1, Math.min(wanted, (int) maxGenerated)) : 1;
+    }
+
+    /** The frameGenMultiplier setting: 2 (the default), 3 or 4. */
+    public static int multiplierSetting() {
+        return Math.min(4, Math.max(2, parseInt(DisplaySettings.getString(DisplaySettings.FRAME_GEN_MULTIPLIER, "2"), 2)));
+    }
+
+    /**
+     * The most frames DLSS Frame Generation can generate per rendered one on this card (Streamline's
+     * numFramesToGenerateMax: 1 on RTX 40, 3 on RTX 50), once its backend has run this game; 0 before, or with FSR.
+     */
+    public static int maxGenerated() {
+        return backend() == BACKEND_DLSSG ? (int) maxGenerated : 0;
+    }
+
+    /** Frames generated per rendered one while it generates (1 is 2x), 0 while it doesn't. */
+    public static int framesGenerated() {
+        return generating ? FRAME.framesToGenerate : 0;
     }
 
     /**
