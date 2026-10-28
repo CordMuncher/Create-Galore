@@ -178,6 +178,16 @@
     {
       "type": "modonomicon:text",
       "title": "",
+      "text": "Where NVIDIA's check says the card and driver run it, there is also **DLSS Dynamic**, untried on RTX 50 as well. It leaves the game's own frame rate alone and changes how many frames it adds, scene by scene, to fill your monitor's refresh rate."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "With 2x, 3x or 4x the multiplier stays put and the game is held to a steady share of the refresh rate, which feels steadier. **Dynamic** keeps input delay lower while the game runs fast, but you may notice it switching."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
       "text": "The **NVIDIA app** can change the model DLSS frame generation uses: Graphics, Global Settings, **DLSS Override - Model Presets**, Frame Generation. It works here, though NVIDIA's overlay reads \"FG OVR N/A\". On an RTX 4080 SUPER, **Preset C** drew about 6%% more frames with a little less input delay; **Preset B** ran like NVIDIA's own pick."
     },
     {

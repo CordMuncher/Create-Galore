@@ -5,6 +5,15 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.6.16
+
+### Added
+- **DLSS Dynamic frame generation.** Where NVIDIA's Streamline says the card and driver run NVIDIA's Dynamic Multi Frame Generation (RTX 50 with driver 595.41 or newer), the Display tab's **Frame generation** also offers **DLSS Dynamic**. It leaves the game's own frame rate alone and changes how many frames it adds, scene by scene, to fill the monitor's refresh rate. DLSS 2x, 3x and 4x keep a fixed multiplier and feel steadier; Dynamic keeps input delay lower while the game runs fast. It hasn't been tried on an RTX 50 card yet, so it carries a red *.
+- Create Galore Bridge 1.139.0.
+
+### Fixed
+- The frame generation status no longer calls FSR frame generation experimental while it runs.
+
 ## 0.6.15
 
 ### Added

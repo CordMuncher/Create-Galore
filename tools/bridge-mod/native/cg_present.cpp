@@ -32,6 +32,9 @@
 // ABI 6: a prepared backend can be asked whether it runs on the adapter before anything is made (cg_fg_supports), and
 // dropped for another (cg_fg_unprepare), so Streamline decides about DLSS Frame Generation even when AMD's loads.
 //
+// ABI 7: a frame may let the backend pick how many frames it generates (FG_FRAME_DYNAMIC, NVIDIA's Dynamic Multi Frame
+// Generation), and cg_fg_state reports an eighth number, whether the backend can (FgState::dynamicSupported).
+//
 // All functions must be called on one thread (the render thread). Built by build-present.sh with clang and lld-link
 // against the Windows SDK, and Streamline's headers for cg_streamline.cpp. Graphics DLLs are loaded at run time
 // (cg_present_create, cg_fg_prepare).
@@ -47,7 +50,7 @@
 #define CG_API extern "C" __declspec(dllexport)
 
 // Bumped whenever a function below changes; the Java side refuses a helper with another version.
-static const int CG_PRESENT_ABI = 6;
+static const int CG_PRESENT_ABI = 7;
 
 static const UINT MAX_BUFFERS = 3;  // swap chain buffers: 2 as on the Direct3D 11 path, 3 for testing
 static const int RING = 3;          // shared textures OpenGL copies into, as on the Direct3D 11 path
@@ -1340,7 +1343,7 @@ CG_API void cg_fg_off() {
     }
 }
 
-/** FgState's seven numbers, in its order, into {@code out} (zeros without frame generation). */
+/** FgState's eight numbers, in its order, into {@code out} (zeros without frame generation). */
 CG_API void cg_fg_state(long long* out) {
     FgState state = {};
     if (g_fg) {
@@ -1353,6 +1356,7 @@ CG_API void cg_fg_state(long long* out) {
     out[4] = state.maxGenerated;
     out[5] = state.vsyncSupported;
     out[6] = state.errors;
+    out[7] = state.dynamicSupported;
 }
 
 /** The oldest of frame generation's log lines into {@code out}, its level letter (E, W, I) first. 1 if there was one. */

@@ -486,7 +486,7 @@ static int realBackend(HWND hwnd, int width, int height, const char* folder, boo
             printf("on: %d %s, waitable %s\n", on, on == 1 ? "" : cg_present_error(), g_waitable ? "yes" : "no");
             result = on == 1 && runFrames(800, 600, glValue, true, ffx) == 0 ? 0 : 1;
         }
-        long long state[7];
+        long long state[8];
         cg_fg_state(state);
         printf("state: generating %lld, status 0x%llx, %lld frames shown per rendered one, %lld failed calls\n", state[0],
                 state[1], state[2], state[6]);
@@ -600,7 +600,7 @@ int main(int argc, char** argv) {
     int fgFirst = runFrames(width, height, glValue, true);
     int fgResized = cg_present_resize(800, 600);
     int fgSecond = fgFirst < 0 || fgResized < 0 ? -1 : runFrames(800, 600, glValue, true);
-    long long state[7];
+    long long state[8];
     cg_fg_state(state);
     releaseTestQueue();
     cg_present_destroy();

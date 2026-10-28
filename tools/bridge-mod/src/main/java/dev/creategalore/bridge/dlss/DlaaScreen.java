@@ -327,7 +327,8 @@ public final class DlaaScreen extends Screen {
                 value -> gpuPacing = value);
         y += step;
         // DLSS unless Streamline said no, both only on Windows; where one is already on, it can still be turned off. DLSS
-        // at 3x and 4x where Streamline says the card generates that many (or where it is already set).
+        // at 3x and 4x where Streamline says the card generates that many, and Dynamic where it says the card runs Dynamic
+        // Multi Frame Generation (or where one is already set).
         List<String> frameGenModes = new java.util.ArrayList<>(List.of("off"));
         if (dlssFrameGenOffered || frameGen.equals("dlss")) {
             frameGenModes.add("dlss");
@@ -336,15 +337,20 @@ public final class DlaaScreen extends Screen {
                     frameGenModes.add("dlss-" + m + "x");
                 }
             }
+            if (FrameGen.dynamicSupported() || frameGen.equals("dlss") && frameGenMultiplier == FrameGen.DYNAMIC) {
+                frameGenModes.add("dlss-dynamic");
+            }
         }
         frameGenModes.add("fsr");
-        String shown = frameGen.equals("dlss") && frameGenMultiplier > 2 ? "dlss-" + frameGenMultiplier + "x" : frameGen;
+        String shown = !frameGen.equals("dlss") ? frameGen : frameGenMultiplier == FrameGen.DYNAMIC ? "dlss-dynamic"
+                : frameGenMultiplier > 2 ? "dlss-" + frameGenMultiplier + "x" : frameGen;
         frameGenChoice = choice("Frame generation", frameGenModes, frameGenModes.contains(shown) ? shown : frameGen,
                 DlaaScreen::frameGenLabel, DlaaScreen::frameGenTooltip, left, y, half, picked -> {
                     String value = picked.startsWith("dlss") ? "dlss" : picked;
                     frameGen = value;
                     if (value.equals("dlss")) {
-                        frameGenMultiplier = picked.equals("dlss") ? 2 : picked.charAt(5) - '0';
+                        frameGenMultiplier = picked.equals("dlss") ? 2 : picked.equals("dlss-dynamic") ? FrameGen.DYNAMIC
+                                : picked.charAt(5) - '0';
                     }
                     if (!value.equals("off")) {
                         frameGenType = value; // the one DirectX 12 loads from now on
@@ -598,7 +604,8 @@ public final class DlaaScreen extends Screen {
         values.put(DisplaySettings.GPU_PACING, gpuPacing);
         values.put(DisplaySettings.FRAME_GEN, frameGen);
         values.put(DisplaySettings.FRAME_GEN_TYPE, frameGenType);
-        values.put(DisplaySettings.FRAME_GEN_MULTIPLIER, Integer.toString(frameGenMultiplier));
+        values.put(DisplaySettings.FRAME_GEN_MULTIPLIER, frameGenMultiplier == FrameGen.DYNAMIC ? "dynamic"
+                : Integer.toString(frameGenMultiplier));
         values.put(DisplaySettings.DLAA_CUSTOM_SCALE, Boolean.toString(scale.equals("custom")));
         values.put(DisplaySettings.DLAA_RAY_RECONSTRUCTION, Boolean.toString(rayReconstruction));
         values.put(DisplaySettings.DLAA_RR_PRESET, rrPreset);
@@ -739,13 +746,20 @@ public final class DlaaScreen extends Screen {
                     + " Perfect Presentation:).", true);
         }
         int generated = FrameGen.framesGenerated();
+        if (FrameGen.on() && dlss && frameGenMultiplier == FrameGen.DYNAMIC) {
+            if (!FrameGen.dynamicSupported()) {
+                return new FrameLatency.Status("Running at 2x: hover for why.", "NVIDIA's Streamline says Dynamic Multi Frame"
+                        + " Generation doesn't run on this card or driver, so it runs at 2x. " + detail, false);
+            }
+            return new FrameLatency.Status("Running, Dynamic.", detail, false);
+        }
         if (FrameGen.on() && dlss && frameGenMultiplier > 2 && generated > 0 && generated + 1 < frameGenMultiplier) {
             return new FrameLatency.Status("Running at " + (generated + 1) + "x: hover for why.", "NVIDIA's Streamline says this card"
                     + " generates at most " + generated + (generated == 1 ? " frame" : " frames") + " per rendered one, so it runs at "
                     + (generated + 1) + "x. " + detail, false);
         }
         return FrameGen.on() ? new FrameLatency.Status(dlss ? (frameGenMultiplier > 2 ? "Running at " + frameGenMultiplier + "x." : "Running.")
-                : "Experimental: running.", detail, false)
+                : "Running.", detail, false)
                 : new FrameLatency.Status("Turns on when you close this screen.", detail, false);
     }
 
@@ -763,7 +777,8 @@ public final class DlaaScreen extends Screen {
     private static Component frameGenLabel(String value) {
         if (value.startsWith("dlss-")) {
             // Not yet tried on a card that runs it (see the tooltip).
-            return Component.literal("DLSS " + value.substring(5) + " ").append(Component.literal("*").withStyle(ChatFormatting.RED));
+            String name = value.equals("dlss-dynamic") ? "Dynamic" : value.substring(5);
+            return Component.literal("DLSS " + name + " ").append(Component.literal("*").withStyle(ChatFormatting.RED));
         }
         return Component.literal(value.equals("off") ? "Off" : frameGenName(value));
     }
@@ -784,6 +799,13 @@ public final class DlaaScreen extends Screen {
                         + " same way as 2x, which was tested, so it should work, but it may show problems 2x doesn't; DLSS (2x)"
                         + " is the tested choice. Needs the same as DLSS above.";
             }
+            case "dlss-dynamic" -> "NVIDIA DLSS Dynamic Multi Frame Generation, offered because NVIDIA's Streamline says"
+                    + " this card and driver run it (RTX 50, driver 595.41 or newer): it keeps the game's own frame rate and"
+                    + " changes how many frames of its own it shows per rendered one, scene by scene, to fill your monitor's"
+                    + " refresh rate (with V-Sync on, the rate it shows without tearing). 2x, 3x and 4x keep the"
+                    + " multiplier fixed and steady instead; Dynamic keeps input delay lower when the game runs fast, but you"
+                    + " may notice it switching. A Max Framerate cap counts the frames on screen. * Not yet tried on an"
+                    + " RTX 50 card. Needs the same as DLSS above.";
             case "fsr" -> "Any graphics card DirectX 12 runs on here (NVIDIA cards do): AMD FSR 3.1 frame generation"
                     + " shows a frame of its own between every two the game renders, so the picture moves about twice as"
                     + " smoothly, for a little more input delay. Best from about 60 frames a second without it. Needs Perfect"

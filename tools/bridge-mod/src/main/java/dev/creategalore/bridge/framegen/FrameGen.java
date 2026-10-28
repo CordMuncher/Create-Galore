@@ -64,7 +64,9 @@ import org.slf4j.LoggerFactory;
  * player's own or copied from NVIDIA's folder by the screen's Find on this PC); frameGenType, the backend loaded while
  * it is off (the screen writes the last one picked); frameGenMultiplier, frames shown per rendered one with DLSS: 2,
  * or 3 and 4 (DLSS Multi Frame Generation), which the screen offers where Streamline says the card generates that many
- * (numFramesToGenerateMax, known once the backend has run) and which run at the most the card makes. For testing, not
+ * (numFramesToGenerateMax, known once the backend has run) and which run at the most the card makes, or dynamic
+ * (Dynamic Multi Frame Generation: Streamline picks the number frame by frame to fill the display's refresh rate),
+ * offered where Streamline says it runs (bIsDynamicMFGSupported) and 2x elsewhere. For testing, not
  * written there: frameGenFrames frames generated per rendered one on either backend; frameGenUi=false hands the HUD over as part of the picture; frameGenStreamline
  * a folder of Streamline's development DLLs instead of the shipped ones; frameGenVerbose=true a verbose Streamline log
  * (create-galore-dlss/streamline-logs), or AMD's debug checks and every message of theirs in the game log. frameGenView=hudless, alpha, depth or motion shows that input instead of the
@@ -111,6 +113,10 @@ public final class FrameGen {
     public static final int FRAME_RESET = 2;
     public static final int FRAME_CAMERA = 4;
     public static final int FRAME_UI = 8;
+    /** Streamline picks how many frames to generate, frame by frame (Dynamic Multi Frame Generation). */
+    public static final int FRAME_DYNAMIC = 16;
+    /** The frameGenMultiplier setting "dynamic": NVIDIA's Dynamic Multi Frame Generation. */
+    public static final int DYNAMIC = 0;
     /** The inputs' OpenGL formats, in FgInput order: hudless, UI alpha, depth, motion. */
     public static final int[] INPUT_FORMATS = {GL_RGBA8, GL_R8, GL_R32F, GL_RG16F};
     public static final int INPUTS = INPUT_FORMATS.length;
@@ -161,7 +167,7 @@ public final class FrameGen {
     private static int generation = -1;
     /** frameGenFrames (testing), 0 when not set. */
     private static int framesTest;
-    /** frameGenMultiplier: frames shown per rendered one with DLSS, 2 to 4. */
+    /** frameGenMultiplier: frames shown per rendered one with DLSS, 2 to 4, or DYNAMIC. */
     private static int multiplier = 2;
     private static boolean clampLogged;
     private static boolean ui = true;
@@ -189,6 +195,8 @@ public final class FrameGen {
     private static long lastStatus;
     private static long minSize;
     private static long maxGenerated;
+    /** Whether Streamline runs Dynamic Multi Frame Generation here, once its backend has run. */
+    private static boolean dynamicSupported;
     private static boolean confirmed;
     private static boolean vsyncWarned;
     private static int failures;
@@ -506,6 +514,7 @@ public final class FrameGen {
         frame.renderWidth = inputs ? renderWidth : width;
         frame.renderHeight = inputs ? renderHeight : height;
         frame.framesToGenerate = framesToGenerate();
+        boolean dynamic = dynamic();
         frame.hudless = hudless;
         frame.noHud = noHud;
         frame.depth = depthTexture;
@@ -513,13 +522,14 @@ public final class FrameGen {
         String off = repeated ? "a second present in one game frame" : offReason(minecraft, inputs, hudless != 0 || noHud, width,
                 height, resizing);
         if (off == null) {
-            frame.flags |= FRAME_GENERATE | (ui ? FRAME_UI : 0);
+            frame.flags |= FRAME_GENERATE | (ui ? FRAME_UI : 0) | (dynamic ? FRAME_DYNAMIC : 0);
             if (!generating || upscalerReset || !camera.continuous()) {
                 frame.flags |= FRAME_RESET;
             }
             if (!generating) {
-                LOG.info("Frame generation: on, {} generated per rendered frame, the HUD {}", frame.framesToGenerate,
-                        ui ? "apart" : "in the picture");
+                LOG.info("Frame generation: on, {} per rendered frame, the HUD {}", dynamic
+                        ? "Dynamic Multi Frame Generation picking how many are generated (where Streamline runs it, else 1)"
+                        : frame.framesToGenerate + " generated", ui ? "apart" : "in the picture");
             }
         } else if (generating || !off.equals(lastOff)) {
             LOG.info("Frame generation: off, {}", off);
@@ -642,7 +652,8 @@ public final class FrameGen {
         if (framesTest > 0) {
             return Math.max(1, maxGenerated > 0 ? Math.min(framesTest, (int) maxGenerated) : framesTest);
         }
-        int wanted = backend() == BACKEND_DLSSG ? multiplier - 1 : 1;
+        // Dynamic where Streamline doesn't run it: 2x, the tested multiplier.
+        int wanted = backend() == BACKEND_DLSSG && multiplier != DYNAMIC ? multiplier - 1 : 1;
         if (wanted > 1 && maxGenerated > 0 && maxGenerated < wanted && !clampLogged) {
             clampLogged = true;
             LOG.info("Frame generation: {}x asked for; Streamline says this card generates at most {} per rendered frame, so {}x",
@@ -651,9 +662,26 @@ public final class FrameGen {
         return maxGenerated > 0 ? Math.max(1, Math.min(wanted, (int) maxGenerated)) : 1;
     }
 
-    /** The frameGenMultiplier setting: 2 (the default), 3 or 4. */
+    /** The frameGenMultiplier setting: 2 (the default), 3, 4 or DYNAMIC ("dynamic"). */
     public static int multiplierSetting() {
-        return Math.min(4, Math.max(2, parseInt(DisplaySettings.getString(DisplaySettings.FRAME_GEN_MULTIPLIER, "2"), 2)));
+        String value = DisplaySettings.getString(DisplaySettings.FRAME_GEN_MULTIPLIER, "2").trim();
+        return value.equalsIgnoreCase("dynamic") ? DYNAMIC : Math.min(4, Math.max(2, parseInt(value, 2)));
+    }
+
+    /**
+     * Whether this frame asks Streamline to pick how many frames to generate (frameGenFrames, for testing, says a number).
+     * The backend checks that the card runs it, also before the first Present, and generates one otherwise.
+     */
+    private static boolean dynamic() {
+        return multiplier == DYNAMIC && framesTest == 0 && backend() == BACKEND_DLSSG;
+    }
+
+    /**
+     * Whether DLSS Frame Generation can pick how many frames to generate on this card (Streamline's
+     * bIsDynamicMFGSupported: RTX 50 with NVIDIA driver 595.41 or newer), once its backend has run this game.
+     */
+    public static boolean dynamicSupported() {
+        return backend() == BACKEND_DLSSG && dynamicSupported;
     }
 
     /**
@@ -684,12 +712,14 @@ public final class FrameGen {
 
     /**
      * The presenter, after each Present: cg_fg_state's numbers (generating, status, frames presented, minimum size,
-     * most frames generated, vsync supported, errors) and the sync interval it presented with.
+     * most frames generated, vsync supported, errors, Dynamic Multi Frame Generation supported) and the sync interval it
+     * presented with.
      */
     public static void presented(long[] state, int syncInterval) {
         status = state[1];
         minSize = state[3];
         maxGenerated = state[4];
+        dynamicSupported = state[7] != 0;
         if (!generating) {
             return;
         }
