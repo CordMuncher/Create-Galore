@@ -2,7 +2,7 @@
 // its coarser copies are made. The shadow pass sees a block only by its faces, and Minecraft draws no face between two
 // solid blocks, so the grid had the rock around a cave and under the ground only a block thick: a ray that started
 // behind it (the light in the air reaches into the walls, see air_in_block in air_volume.csh) or got into it went
-// through the rock to the open sky, and a cave's air glowed with the sky's light 60 blocks down.
+// through the rock to the open sky.
 //
 // Each column is read from the top down by which way its blocks' faces point: under a block with a face up the ground
 // begins, and it goes down to a block with a face down (a cave's roof, an overhang's underside) or to the grid's

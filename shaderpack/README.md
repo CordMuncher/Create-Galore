@@ -270,8 +270,8 @@ and cuts Default to a lean core, the Sky Visibility, Tree Crowns, Shore Foam, Ca
   sky light, bounced sunlight or sunlit air gets in, whatever the shadow map's seams let through. The sky a point
   sees may still lift Minecraft's sky light under something high, but only where that is above 0.
 - The sky's rays no longer pass through solid ground. The shadow pass sees a block only by its faces, and Minecraft
-  draws none between two solid blocks, so the sky grid had the rock around a cave a block thick, and the light in a
-  cave's air could find the open sky through it. A pass now fills in the ground from which way the blocks' faces
+  draws none between two solid blocks, so the sky grid had the rock around a cave a block thick, and a ray that got
+  into it could pass through the inside of a hill. A pass now fills in the ground from which way the blocks' faces
   point (`program/sky_fill.csh`): under a face up it goes down to a face down (a cave's roof) or the grid's bottom.
 - Slabs, stairs and closed doors and trapdoors stop the bounce light and the coloured light as a wall does, so a
   roof of stairs is a roof; fences, panes and iron bars still let them past, and carpets and pressure plates lie
