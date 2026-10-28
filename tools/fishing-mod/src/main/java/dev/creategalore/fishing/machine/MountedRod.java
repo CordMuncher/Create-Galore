@@ -69,6 +69,13 @@ public final class MountedRod {
     private MachineAngler angler;
     private boolean dirty;
 
+    /**
+     * Client side: the player just put a rod in or took one out with the use button, and hasn't let go of it yet
+     * (see {@code FishingInput}). Held on, vanilla repeats the use every few ticks: the rod just set in came straight
+     * back out, and a rod just taken out reeled its line in.
+     */
+    public static boolean heldUseAfterRodSwap;
+
     public MountedRod(BlockEntity be, RodMount mount) {
         this.be = be;
         this.mount = mount;
@@ -84,6 +91,11 @@ public final class MountedRod {
 
     public int bankedXp() {
         return bankedXp;
+    }
+
+    /** The player who set the rod in, if they are online (server side). */
+    public ServerPlayer ownerOnline() {
+        return owner != null && be.getLevel() instanceof ServerLevel level ? level.getServer().getPlayerList().getPlayer(owner) : null;
     }
 
     public String ownerName() {
@@ -142,6 +154,7 @@ public final class MountedRod {
             return true;
         }
         if (rod.isEmpty() && held.getItem() instanceof RodItem) {
+            if (level.isClientSide) heldUseAfterRodSwap = true;
             if (!level.isClientSide) {
                 rod = held;
                 player.setItemInHand(hand, ItemStack.EMPTY);
@@ -157,6 +170,7 @@ public final class MountedRod {
             return true;
         }
         if (!rod.isEmpty() && held.isEmpty() && hand == InteractionHand.MAIN_HAND) {
+            if (level.isClientSide) heldUseAfterRodSwap = true;
             if (!level.isClientSide) {
                 ItemStack out = rod;
                 CastHook hook = hook();

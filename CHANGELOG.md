@@ -5,6 +5,25 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.6.32
+
+### Added
+- Create Galore Fishing 0.3.18.
+- **Rod Holder drives have a window.** Sneak and use a Reel Drive with an empty hand to open it. Bait (and the Fuel Reel Drive's fuel) can be put in or taken out at any time. The window also has everything the value boxes on the back do (mode, cast distance with steps of 1, or 5 with Shift, and top gear), so a funnel or anything else covering them blocks nothing.
+- **An On/Off switch.** A drive switched off doesn't cast, reel or burn fuel, even with fuel in.
+- **Autocast can be turned off.** With autocast off, a geared drive reels in and then waits; the window's Cast button casts it once.
+- **Lost-fish reports.** A Reports switch in the window (off by default, so a bank of machines stays quiet) puts a chat line to the rod's owner when a machine loses a fish, with the machine, its position, what broke and why.
+- **The Engineer's Goggles name a mounted lure** instead of reading "No bait", and show when a drive is switched off or has autocast off.
+
+### Fixed
+- **The value box glyphs and readouts on the back of a Reel Drive no longer flicker or vanish**, with or without shaders. They sat a fraction of a pixel from the drive's face and fought it for depth.
+- **A Rod Holder holds the rod the right way round.** It was turned backwards in the holder.
+- **The line on a hanging fish starts at the rod tip**, also on a ship, instead of a point in the air beside it.
+- **Taking a rod out of a holder while it reels hands control to the player.** The rod no longer keeps reeling in the hand while the use button is still held; let go and press again to reel. Holding the button on a holder also no longer puts the rod in and takes it straight back out.
+
+### Removed
+- **Sneak-use with an empty hand no longer empties a drive's bait and fuel into the inventory.** It opens the window, where they can be taken out.
+
 ## 0.6.31
 
 ### Added

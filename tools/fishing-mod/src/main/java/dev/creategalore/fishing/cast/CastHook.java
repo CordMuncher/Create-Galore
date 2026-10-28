@@ -1040,7 +1040,7 @@ public class CastHook extends FishingHook {
     }
 
     /** What broke or gave and why, for a lost fight; null if the fight didn't say. */
-    private Component lossReason() {
+    public Component lossReason() {
         Loss loss = fight.loss();
         if (loss == null) return null;
         String test = RodStats.kgHolds(fight.tackle().breakingLoad());

@@ -25,7 +25,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Right-click any machine with a rod to set it in; a cast line stays out. An empty hand takes the rod back, with its line, bite or fight.\\\n\\\nCatches count as yours, the one who set the rod in: journal and personal bests. The machine keeps the rod's own drag; it never changes it."
+      "text": "Right-click any machine with a rod to set it in; a cast line stays out. An empty hand takes the rod back, with its line, bite or fight; it reels only once you let go of the button and press it again.\\\n\\\nCatches count as yours, the one who set the rod in: journal and personal bests. The machine keeps the rod's own drag; it never changes it."
     },
     {
       "type": "modonomicon:crafting_recipe",
@@ -63,6 +63,14 @@
       "text": "**Modes:**\n\n- **Cast and wait** (the default): casts once and holds, for float, bottom and trolling rigs.\n- **Cast and retrieve**: winds a lure back slowly and casts again.\n\nA **bait slot** (by hand, hopper or funnel; a Live-Bait Bucket works) re-baits the rod before each cast."
     },
     {
+      "type": "modonomicon:text",
+      "text": "**The window.** Sneak and right-click a reel drive with an empty hand, anywhere but its value panels. Put bait (and the Fuel drive's fuel) in or take it out at any time. It also sets the mode, cast distance and top gear, for when something covers the back.\n\n- **On / Off**: off, it doesn't cast, strike or wind; the Fuel drive burns nothing, fuel or not."
+    },
+    {
+      "type": "modonomicon:text",
+      "text": "- **Autocast off**: it casts once when you switch it on or press **Cast**, and leaves the line in when it comes back.\n- **Reports** (off by default): when a fish gets away, whoever set the rod in is told in chat what broke and why. Handy to find a rig's weak link; a bank of drives stays quiet with it off.\n\nThe Basic drive's window has only On / Off and Reports."
+    },
+    {
       "type": "modonomicon:crafting_recipe",
       "recipe_id_1": "create_galore_fishing:crafting/fuel_reel_drive",
       "text": "**Fuel Reel Drive**: a Geared Reel Drive, two copper casings, a fluid tank and a furnace. Geared behaviour with its own engine and no shafts: made for boats."
@@ -70,7 +78,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "[#](FFFFFF)\ue108[#]() It burns furnace fuel from a slot, or lava, Fish Oil and other [#](2E5AAC)[liquid fuels](entry://industry/liquid_fuel)[#]() from a 4-bucket tank. It burns a tenth as much while it waits, the full rate under full load, and only with a rod in.\\\n\\\nIts engine winds against 12 kg in normal gear, four times that in its lowest."
+      "text": "[#](FFFFFF)\ue108[#]() It burns furnace fuel from a slot, or lava, Fish Oil and other [#](2E5AAC)[liquid fuels](entry://industry/liquid_fuel)[#]() from a 4-bucket tank. It burns a tenth as much while it waits, the full rate under full load, and only while it is on with a rod in.\\\n\\\nIts engine winds against 12 kg in normal gear, four times that in its lowest."
     },
     {
       "type": "modonomicon:text",

@@ -557,3 +557,31 @@ every turn of the head moved it; towing was also measured from the tip, so looki
 - Self-test `tow` also looks round and strafes and checks the line shown never moves (12 checks). Client check:
   21.0 m through looking round, strafing, stepping in and jumping; a crankbait trolled 110 m held 25.2 m; 2 s of
   winding took it to 22.7 m.
+
+## 0.3.18: drive window, on/off, autocast, reports (pack 0.6.32)
+
+Emre (28 Oct): the Reel Drive's value box glyphs flickered and vanished with shaders, the holder held the rod
+backwards, and the line on a hanging fish started beside the rod tip. He also asked for the drives to work like the
+boat engine (a window for fuel, an on/off switch, autocast off), for the window to offer everything the glyphs do,
+for lures to show on the goggles, and for a quiet-by-default chat report of lost fish.
+
+- **Value boxes sit a whole pixel out** (`DriveSlots.Slot.getSouthLocation`, z 16 instead of 15.5). Create draws the
+  box contents 5 font units (about 0.08 px) in front of the anchor, so half a pixel left the glyph within depth
+  precision of the face: it z-fought with shaders and hid behind the face without. Checked with no shaders and
+  Complementary; Photon fails to compile on the cloud's software GPU, but the fix is plain geometry.
+- **The rod is turned 180 degrees about its own axis** in `MountRenderer`. The hanging fish and its line are now
+  worked out in block space through the inverted pose, so on a rotated Sable ship the line starts at the tip.
+- **`DriveMenu` / `DriveScreen`**: sneak-use with an empty hand opens it for every drive. Bait slot for geared drives,
+  fuel slot for the Fuel drive, On/Off and Reports for all, Autocast, Cast, mode, distance (1, or 5 with Shift) and
+  top gear for geared ones. The old sneak-use that emptied the slots into the inventory is gone.
+- **`ReelDrive.on`**: off means no torque, no reeling and no casting, and a Fuel drive burns nothing.
+  **`autocast`** off arms a single cast (`castArmed`) from the Cast button or switching on. Both save in NBT and
+  default to true for old drives.
+- **`reportLosses`** (default off): `DriveMount.lost` messages the rod's owner, if online, with the machine, its
+  world position, the outcome and `CastHook.lossReason()`.
+- **Taking a rod out while the use button is held** no longer keeps reeling: `MountedRod.heldUseAfterRodSwap` makes
+  `FishingInput` cancel the held use until it is released. Set on insert too, so holding use doesn't put the rod in
+  and take it straight back out.
+- Goggles: "Switched off", "Autocast off" and the lure's name in place of "No bait".
+- Tested in a client: window open, fuel in by shift-click, every button, Off stops a cast, autocast off casts once
+  and not again in over 60 s, rod out mid-reel stops, a forced loss reported in chat. Machine self-tests 36 PASS.

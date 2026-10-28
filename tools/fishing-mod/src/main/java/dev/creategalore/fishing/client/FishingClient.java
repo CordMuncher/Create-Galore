@@ -40,8 +40,10 @@ public final class FishingClient {
     }
 
     public static void init(IEventBus modBus) {
-        modBus.addListener((RegisterMenuScreensEvent event) ->
-                event.register(FishingRegistry.TACKLE_BENCH_MENU.get(), TackleBenchScreen::new));
+        modBus.addListener((RegisterMenuScreensEvent event) -> {
+            event.register(FishingRegistry.TACKLE_BENCH_MENU.get(), TackleBenchScreen::new);
+            event.register(FishingRegistry.DRIVE_MENU.get(), DriveScreen::new);
+        });
         modBus.addListener((EntityRenderersEvent.RegisterRenderers event) -> {
             event.registerEntityRenderer(FishingRegistry.CAST_HOOK.get(), CastHookRenderer::new);
             event.registerEntityRenderer(FishingRegistry.THROWN_CHUM.get(), ThrownItemRenderer::new);
