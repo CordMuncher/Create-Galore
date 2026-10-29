@@ -147,6 +147,8 @@ public final class MachineSelfTest {
 
         level.removeBlock(at.below(), false);
         rod.output(new ArrayList<>(List.of(new ItemStack(Items.COD), new ItemStack(Items.SALMON))));
+        rod.step(level.getGameTime());
+        rod.step(level.getGameTime() + 1);
         r.check(rod.dangling().is(Items.COD), "with nowhere to go, the fish hangs at the tip");
         r.check(!level.getEntitiesOfClass(ItemEntity.class, new AABB(at).inflate(2), e -> e.getItem().is(Items.SALMON)).isEmpty(),
                 "and a second one is dropped");
@@ -217,6 +219,10 @@ public final class MachineSelfTest {
         r.check(be.drive().describe().contains("winds against 12.0"), "with fuel it has its engine's rating: " + be.drive().describe());
         r.check(be.tank().getFluidInTank(0).getAmount() < 1000 && be.fuelSlot().getStackInSlot(0).getCount() == 4,
                 "it burns the tank first and leaves the coal for later");
+        double light = FuelReelDriveBlockEntity.burn(3.6, true), heavy = FuelReelDriveBlockEntity.burn(9.8, true);
+        r.check(light > FuelReelDriveBlockEntity.burn(0, true) && heavy > 1.5 * light && heavy <= 1,
+                String.format(Locale.ROOT, "a fight against a 3.6 kg drag burns %.2f of full, one near 10 kg %.2f, winding in an empty line %.2f, waiting %.2f",
+                        light, heavy, FuelReelDriveBlockEntity.burn(0, true), FuelReelDriveBlockEntity.burn(0, false)));
     }
 
     /** An alive fish dropped into water goes back; a dead one loses its marker and stays. */

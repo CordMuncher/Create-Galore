@@ -207,6 +207,14 @@ public final class ReelDrive {
         return on ? power.torqueAtOne() : 0;
     }
 
+    /**
+     * How fast the rod turns to drop a catch: the top gear it is set to (a drive limited to low gears turns slowly),
+     * 1 for the Basic drive.
+     */
+    public double turnSpeed() {
+        return kind.geared() ? Gearbox.GEARS[topGear] : 1;
+    }
+
     public double gearRatio() {
         return kind.geared() ? gearbox.ratio() : 1;
     }
@@ -329,11 +337,11 @@ public final class ReelDrive {
     }
 
     /**
-     * True if a geared drive with its line in would cast: a rod with a reel is set in, no fish hangs at the tip, and
+     * True if a geared drive with its line in would cast: a rod with a reel is set in, no catch hangs from it or is on its way, and
      * there is a lure on, or bait on the rod or in store.
      */
     public boolean wantsToCast() {
-        if (!kind.geared() || rod.rod().isEmpty() || !rod.dangling().isEmpty()) return false;
+        if (!kind.geared() || rod.rod().isEmpty() || rod.busy()) return false;
         RodStats stats = rod.stats();
         if (stats == null || stats.isPole()) return false;
         return lure(stats) || !RodItem.parts(rod.rod()).bait().isEmpty() || !bait.getStackInSlot(0).isEmpty();

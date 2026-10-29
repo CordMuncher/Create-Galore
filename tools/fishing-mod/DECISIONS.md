@@ -633,3 +633,46 @@ like a pendulum, ending up behind the angler in seconds, so a boat could never f
   30 s of fight each, then the angler strafing 8 m at 10 m/s. Round the angler stays under what the fish can swim
   (largest seen 5.3 of 6.5 m/s, a record sailfish); the strafe moves a big fish 0 m and a small one about 1-2 m (towed).
   Four runs plus `selftest all` pass.
+
+## 0.3.21: the rod swings catches over, fish in attribute filters, fuel by pull (pack 0.6.35)
+
+Asked for (29 Oct): belts stay as they are, but the rod should visibly turn, the fish hanging from it, and drop it
+where it goes; drops into storage touching the drive, and from a few blocks up into belts, upward funnels and lid-up
+barrels (which open), only in the column right beside the drive; the swing as fast as the top gear allows; the same
+on a tilted ship; fish usable in Create's Attribute Filter (too big to cook whole, weight "or more" / "or less"); the
+Fuel drive's fuel tied to how hard it pulls, in a tight range.
+
+- **Straight down stays instant.** A chest, hopper, funnel or belt under the machine takes the catch at once, as
+  before: there is nothing to swing over. Every other place goes through the rod.
+- **Where it drops (`CatchDrop`):** the four sides in order N, S, E, W; in each, the column touching that side, from
+  the machine's height down `REACH_DOWN` 5 blocks. At the machine's height any block that takes items counts (from
+  that face, as before). Lower down the first thing a fish would fall onto decides: a belt, an inserting upward funnel
+  that isn't powered (Create's own `tryInsert`, so its filter has a say), a barrel with `FACING=up`, or a hopper.
+  Anything else with a collision shape, or a fluid, closes that column. The plan is checked again when the fish is
+  let go (it re-plans if the target filled up or changed), and a last-moment refusal bounces it onto the target.
+- **Hoppers added** beside the asked-for three: a hopper's open top takes a falling item in vanilla too.
+- **Timing (`RodTurn`):** the turn is a shared record (from/to yaw and rise, start tick, ticks) the server sets and
+  the client draws, so they agree without per-tick packets. 9 degrees of yaw per tick at gear 1.0, times the drive's
+  top gear (`ReelDrive.turnSpeed`: 2.0 makes a half turn 10 ticks, 0.25 makes it 80); Basic drive and Rod Holder
+  1.0. The rod rises so its tip sits over the middle of the next block (acos of 1 over its drawn length). It holds
+  `HOLD_TICKS` 5, then the fish falls `sqrt(2h/0.05)` ticks. A drive doesn't cast while the rod is busy.
+- **Barrels:** the machine sets `OPEN` and plays the barrel sound when it lets go, and closes it
+  `BARREL_OPEN_AFTER` 8 ticks after landing unless a player has it open.
+- **Ships:** the turn is applied inside the machine's own pose, so it turns and tilts with the hull; the fish hangs
+  plumb (world down) as before, and falls along the machine's own down so it lands in the target. Tested on a sub-level
+  resting at about 29 degrees of roll.
+- **Saved:** the carried fish, waiting catches, target, turn and barrel state are saved; game time carries over, so
+  a drop in progress finishes after a reload. Taking the rod out hands carried and waiting catches to the player.
+- **Attribute Filter (`FishAttributes`, registered under Create's `item_attribute_type`):** `whole_fish` (small
+  enough / too big, the same rule as the furnace recipes), `fish_weight` (grams plus at-least / at-most, offered only
+  by a fish that shows its weight; a stacked small fish is matched by its class's usual weight, always under 3 kg),
+  and `fish_size` (size class, an extra for trophy lines).
+- **Fuel (`FuelReelDriveBlockEntity.burn`):** was 0.1 + 0.9 x (pull x gear / 12 kgf), so the gearbox shifting down
+  made a heavy fish cheap. Now: waiting 0.1, winding an empty line 0.25, fighting 0.4 + 0.6 x min(1, pull / 10 kgf),
+  gear ignored. A 3.6 kg drag at the limit burns 0.62, near 10 kg 0.99: about 1.6 times per second, and bigger fights
+  last longer on top of that. Coal is 1,600 full-rate ticks, so a minute of hard fighting is about three quarters of a
+  coal.
+- **Self-test `drops`:** funnel 3 down, lid-up barrel 4 down opening and closing, sideways barrel / 6 down / behind a
+  block / two blocks out all refused, touching chest, straight down without a turn, a save mid-turn, turn speed by
+  gear, and the attributes. `machines` gained the fuel check. `selftest all` passes. In a client: the rod turns, the
+  fish hangs and falls into the barrel and through the funnel, and on the tilted ship the rod turns with the deck.

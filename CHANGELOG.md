@@ -5,6 +5,21 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.6.35
+
+### Added
+- Create Galore Fishing 0.3.21.
+- **Reel drives swing their catch over.** A catch still drops straight into a chest, hopper, funnel or belt under the machine. Anything else, the rod now turns with the fish hanging from it, holds it over where it goes, lets it drop and turns back. On a ship it turns with the deck.
+- **Drops from higher up.** In the column of blocks right beside the machine (touching a side, no gap), the rod drops into any block at its height that takes items, or up to 5 blocks lower into a belt, an upward funnel on any storage, a hopper, or a barrel with its lid facing up, which opens to catch the fish.
+- **The swing follows the top gear.** A Geared or Fuel drive set to its highest top gear swings a half turn in half a second; set to its lowest, eight times slower.
+- **Fish in Attribute Filters.** A fish as the reference offers "too big to cook whole" or "small enough to cook whole", its weight as "or more" and "or less" (a 6 kg fish gives 6.00 kg or more, 6.00 kg or less) and its size class, so funnels and arms can sort a fish line.
+
+### Fixed
+- **Fuel Reel Drive fuel follows how hard it pulls.** In a fight it burns from 40% of the full rate against a fish that barely pulls to the full rate at 10 kg on the line, whatever gear it is in (the gearbox shifting down used to make big fish cheap). Waiting burns a tenth, winding in an empty line a quarter.
+
+### Removed
+- Nothing.
+
 ## 0.6.34
 
 ### Added

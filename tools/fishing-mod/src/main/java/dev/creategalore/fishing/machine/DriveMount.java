@@ -52,6 +52,11 @@ public interface DriveMount extends RodMount {
     }
 
     @Override
+    default double turnSpeed() {
+        return drive().turnSpeed();
+    }
+
+    @Override
     default boolean reeling(CastHook hook) {
         return drive().reeling(hook);
     }

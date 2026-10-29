@@ -16,6 +16,7 @@ import dev.creategalore.fishing.compat.TideAliases;
 import dev.creategalore.fishing.compat.TideSelfTest;
 import dev.creategalore.fishing.fish.SpeciesManager;
 import dev.creategalore.fishing.fish.SpeciesSelfTest;
+import dev.creategalore.fishing.machine.DropSelfTest;
 import dev.creategalore.fishing.machine.MachineSelfTest;
 import dev.creategalore.fishing.machine.ReelDriveBlockEntity;
 import dev.creategalore.fishing.process.FishCleanerBlockEntity;
@@ -71,6 +72,7 @@ public final class CreateGaloreFishing {
         ProcessingSelfTest.register();
         AquariumSelfTest.register();
         MachineSelfTest.register();
+        DropSelfTest.register();
         TowSelfTest.register();
         SideSelfTest.register();
         modBus.addListener((FMLCommonSetupEvent event) -> event.enqueueWork(() -> {
