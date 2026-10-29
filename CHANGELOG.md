@@ -5,6 +5,15 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.6.37
+
+### Added
+- Create Galore Fishing 0.3.22.
+- **Sea creatures in Aquarium Tanks.** Right-click a tank with a full Creature Net to let what it holds in: starfish, crabs, shrimp, sea urchins, Hybrid Aquatic's fish, axolotls and any other water fish. They live in the tank as themselves, with their own colours and size: starfish, crabs and urchins keep to the sand floor (crabs scuttle, starfish creep), the rest swim. An empty net takes one back out.
+
+### Fixed
+- **The Creature Net catches every water fish.** It used to skip the fishing mod's own fish (bass, trout, anchovies and the rest), pufferfish, Aquaculture's fish, koi and a few others. Lava fish stay out, since a net can only let its catch go in water.
+- **Starfish into the aquarium.** The net did catch starfish, but the tank only took fish buckets and fresh catches, so a netted starfish (or crab) had no way in.
 ## 0.6.36
 
 ### Added

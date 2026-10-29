@@ -4,6 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import dev.creategalore.fishing.aquarium.AquariumBlockEntity;
+import dev.creategalore.fishing.aquarium.AquariumCreatures;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BiomeColors;
 import net.minecraft.client.renderer.LevelRenderer;
@@ -20,7 +21,8 @@ import net.minecraft.world.phys.AABB;
 
 /**
  * Draws a tank (from its controller): the water up to its level, as tinted water inside the glass, and every fish
- * swimming in it as its own 3D model ({@link FishView}) at its true length, moving as {@link AquariumSwim} says.
+ * swimming in it as its own 3D model ({@link FishView}) at its true length, moving as {@link AquariumSwim} says;
+ * a netted creature as the very mob that was netted ({@link CreatureView}).
  */
 final class AquariumRenderer implements BlockEntityRenderer<AquariumBlockEntity> {
     /** The water sits just inside the glass, so the two don't flicker against each other. */
@@ -46,6 +48,15 @@ final class AquariumRenderer implements BlockEntityRenderer<AquariumBlockEntity>
             float yaw = (float) Math.atan2(f.vz, f.vx);
             float pitch = (float) Mth.clamp(Math.atan2(f.vy, horizontal + 1e-4), -0.5, 0.5);
             int here = LevelRenderer.getLightColor(tank.getLevel(), origin.offset(Mth.floor(x), Mth.floor(y), Mth.floor(z)));
+            if (AquariumCreatures.isCreature(f.stack)) {
+                if (f.creature == null) continue;
+                pose.pushPose();
+                // Crawlers stand on the sand; swimmers are centred on their spot.
+                pose.translate(x, f.crawler ? y : y - f.creature.getBbHeight() / 2, z);
+                if (!CreatureView.draw(f.creature, pose, buffers, here, partialTick)) f.creature = null;
+                pose.popPose();
+                continue;
+            }
             pose.pushPose();
             pose.translate(x, y, z);
             pose.mulPose(Axis.YP.rotation(-yaw));

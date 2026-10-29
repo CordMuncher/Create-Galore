@@ -219,6 +219,11 @@ All new ids are `create_galore_fishing:` unless they say `tide:`.
   be farmed automatically.
 - Breaking a wall of a tank spills its fish; breaking off a whole end keeps them in what's left. An empty hand on
   a tank shows its size, water, fish and food.
+- **Sea creatures (0.3.22)**: a full Hybrid Aquatic Creature Net lets its mob in: starfish, crabs, urchins, Hybrid
+  Aquatic's fish, axolotls, any water fish. A fishing fish without a pattern of its own goes in as its fish item; the
+  rest live in the tank as the net itself (the whole mob kept), drawn as that very mob, crawlers on the sand. An empty
+  net takes one back out. The fishing mod adds its own water fish (not lava fish) and other mods' fish to
+  `hapi:net_catchable`.
 
 ## Compatibility
 

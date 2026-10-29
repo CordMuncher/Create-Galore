@@ -1,0 +1,232 @@
+{
+  "replace": false,
+  "values": [
+    "tide:slimy_salmon",
+    "tide:devils_hole_pupfish",
+    "tide:white_crappie",
+    "tide:marstilus",
+    "tide:blossom_bass",
+    "tide:angelfish",
+    "tide:dripstone_darter",
+    "tide:aquathorn",
+    "tide:deep_blue",
+    "tide:pike",
+    "tide:guppy",
+    "tide:frostbite_flounder",
+    "tide:alpha_fish",
+    "tide:mantyvern",
+    "tide:bedrock_bug",
+    "tide:vengeance",
+    "tide:dutchman_sock",
+    "tide:endergazer",
+    "tide:blue_neonfish",
+    "tide:mooneye",
+    "tide:spore_stalker",
+    "tide:amber_rockfish",
+    "tide:ender_glider",
+    "tide:largemouth_bass",
+    "tide:gilded_minnow",
+    "tide:sturgeon",
+    "tide:pale_clubfish",
+    "tide:enderfin",
+    "tide:brook_trout",
+    "tide:cave_eel",
+    "tide:sand_tiger_shark",
+    "tide:anchovy",
+    "tide:great_white_shark",
+    "tide:sailfish",
+    "tide:dragon_fish",
+    "tide:ocean_perch",
+    "tide:glowfish",
+    "tide:cave_crawler",
+    "tide:shadow_shark",
+    "tide:bedrock_tetra",
+    "tide:iron_tetra",
+    "tide:deep_grouper",
+    "tide:sun_emblem",
+    "tide:shadow_snapper",
+    "tide:chasm_eel",
+    "tide:elytrout",
+    "tide:sleepy_carp",
+    "tide:pentapus",
+    "tide:walleye",
+    "tide:windbass",
+    "tide:bull_shark",
+    "tide:yellow_perch",
+    "tide:swordfish",
+    "tide:red_snapper",
+    "tide:lapis_lanternfish",
+    "tide:luminescent_jellyfish",
+    "tide:red_40",
+    "tide:neptune_koi",
+    "tide:crystal_shrimp",
+    "tide:violet_carp",
+    "tide:echo_snapper",
+    "tide:nephrosilu",
+    "tide:black_crappie",
+    "tide:shooting_starfish",
+    "tide:snatcher_squid",
+    "tide:crystalline_carp",
+    "tide:saturn_cuttlefish",
+    "tide:midas_fish",
+    "tide:snook",
+    "tide:chorus_cod",
+    "tide:judgment_fish",
+    "tide:darkness_eater",
+    "tide:flounder",
+    "tide:manta_ray",
+    "tide:abyss_angler",
+    "tide:uranias_pisces",
+    "tide:pluto_snail",
+    "tide:mirage_catfish",
+    "tide:incandescent_larva",
+    {
+      "id": "minecraft:pufferfish",
+      "required": false
+    },
+    {
+      "id": "aquaculture:atlantic_cod",
+      "required": false
+    },
+    {
+      "id": "aquaculture:blackfish",
+      "required": false
+    },
+    {
+      "id": "aquaculture:pacific_halibut",
+      "required": false
+    },
+    {
+      "id": "aquaculture:atlantic_halibut",
+      "required": false
+    },
+    {
+      "id": "aquaculture:atlantic_herring",
+      "required": false
+    },
+    {
+      "id": "aquaculture:pink_salmon",
+      "required": false
+    },
+    {
+      "id": "aquaculture:pollock",
+      "required": false
+    },
+    {
+      "id": "aquaculture:rainbow_trout",
+      "required": false
+    },
+    {
+      "id": "aquaculture:bayad",
+      "required": false
+    },
+    {
+      "id": "aquaculture:boulti",
+      "required": false
+    },
+    {
+      "id": "aquaculture:capitaine",
+      "required": false
+    },
+    {
+      "id": "aquaculture:synodontis",
+      "required": false
+    },
+    {
+      "id": "aquaculture:smallmouth_bass",
+      "required": false
+    },
+    {
+      "id": "aquaculture:bluegill",
+      "required": false
+    },
+    {
+      "id": "aquaculture:brown_trout",
+      "required": false
+    },
+    {
+      "id": "aquaculture:carp",
+      "required": false
+    },
+    {
+      "id": "aquaculture:catfish",
+      "required": false
+    },
+    {
+      "id": "aquaculture:gar",
+      "required": false
+    },
+    {
+      "id": "aquaculture:minnow",
+      "required": false
+    },
+    {
+      "id": "aquaculture:muskellunge",
+      "required": false
+    },
+    {
+      "id": "aquaculture:perch",
+      "required": false
+    },
+    {
+      "id": "aquaculture:arapaima",
+      "required": false
+    },
+    {
+      "id": "aquaculture:piranha",
+      "required": false
+    },
+    {
+      "id": "aquaculture:tambaqui",
+      "required": false
+    },
+    {
+      "id": "aquaculture:brown_shrooma",
+      "required": false
+    },
+    {
+      "id": "aquaculture:red_shrooma",
+      "required": false
+    },
+    {
+      "id": "aquaculture:jellyfish",
+      "required": false
+    },
+    {
+      "id": "aquaculture:red_grouper",
+      "required": false
+    },
+    {
+      "id": "aquaculture:tuna",
+      "required": false
+    },
+    {
+      "id": "crittersandcompanions:koi_fish",
+      "required": false
+    },
+    {
+      "id": "crittersandcompanions:dumbo_octopus",
+      "required": false
+    },
+    {
+      "id": "alexscaves:trilocaris",
+      "required": false
+    },
+    {
+      "id": "alexscaves:radgill",
+      "required": false
+    },
+    {
+      "id": "alexscaves:sweetish_fish",
+      "required": false
+    },
+    {
+      "id": "betterend:end_fish",
+      "required": false
+    },
+    {
+      "id": "betterend:cubozoa",
+      "required": false
+    }
+  ]
+}

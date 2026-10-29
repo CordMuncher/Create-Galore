@@ -291,6 +291,8 @@
   "message.create_galore_fishing.aquarium.scooped": "Scooped %s baitfish into the bucket",
   "message.create_galore_fishing.aquarium.released": "Let %s baitfish into the tank",
   "message.create_galore_fishing.aquarium.fed": "Fed %s fish meal (%s waiting)",
+  "message.create_galore_fishing.aquarium.not_aquatic": "%s can't live in a tank",
+  "message.create_galore_fishing.aquarium.nothing_to_net": "Nothing in the tank for the net to take",
   "message.create_galore_fishing.aquarium.no_spare": "No spare baitfish: the tank keeps two of each kind to breed",
   "block.create_galore_fishing.rod_holder": "Rod Holder",
   "block.create_galore_fishing.reel_drive": "Basic Reel Drive",

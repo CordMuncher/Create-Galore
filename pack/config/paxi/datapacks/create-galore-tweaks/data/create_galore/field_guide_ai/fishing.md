@@ -1,4 +1,4 @@
-<!-- sources sha256:6b5ca488eea5d198f3e509e4f7b59cf5109963898b6367fcad0315f09a6a2755 -->
+<!-- sources sha256:c33616253e20a340a489ecd9385f9a9e5200b0aa29e50dd813962f1d103bb32c -->
 # Fishing (fishing)
 
 ## fishing/overview | Fishing
@@ -111,6 +111,7 @@
 ## fishing/aquarium | Aquarium Tanks
 - Tank blocks filling a **box** up to 8 on a side join into one tank (open top, sand floor; long shallow tanks work). Aquarium Tank (shows recipe create_galore_fishing:crafting/aquarium_tank): four iron sheets + four glass -> 4
 - Water by bucket or pipe. At least half full: fish go in from any mod's fish bucket, or a fish just caught and held up (counts as kept). Empty bucket scoops a fish back into its bucket. Fish swim inside at real size
+- **Creature Net** [hapi:creature_net] (Hybrid Aquatic): right-click a starfish, crab, shrimp, sea urchin or any water fish (river, sea, cave, void; lava fish no) to catch it; right-click the tank with the full net to let it in. Starfish, crabs, urchins, sea cucumbers and sea slugs keep to the sand floor (crabs scuttle, starfish creep); the rest swim. A fish with a pattern or kind (tropical fish, clownfish) keeps it. An empty net takes a creature (or a fish) back out. Otters, seals, turtles and birds can't live in a tank: they stay in the net. Breaking a wall spills creatures still in their nets
 - A fish needs room by its size and a tank longer than itself. Empty hand shows size, water, fish, food. Breaking a wall spills the fish; breaking off a whole end keeps them in what is left
 - Breeding: two or more of one baitfish species, fed Fish Meal (hand, funnel, hopper), raise a young one every two minutes. Live-Bait Bucket scoops spares (tank keeps two of each kind); sneak with it to let its fish in
 - Automatic live bait: hoppers and funnels feed meal in and take spare baitfish out; a funnel into a Geared Reel Drive's bait slot keeps it baited from the tank (see create_basics/item_logistics)

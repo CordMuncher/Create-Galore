@@ -34,6 +34,8 @@ import net.minecraft.world.item.component.CustomData;
  * <li>any mod's fish bucket lets its fish in, with its water;</li>
  * <li>the Live-Bait Bucket scoops out spare baitfish (the tank keeps two of each kind to breed), or with sneak lets
  * its own into the tank;</li>
+ * <li>a Creature Net lets the creature it holds in (a starfish, a crab, any fish), an empty one takes one out
+ * ({@link AquariumCreatures});</li>
  * <li>fish meal feeds the tank; an empty hand shows how the tank is doing.</li>
  * </ul>
  * The client answers "handled" for the same items, so it doesn't also use them on the world (pour the water).
@@ -47,7 +49,7 @@ final class AquariumUse {
     static ItemInteractionResult useItem(AquariumBlockEntity be, ItemStack stack, Player player, InteractionHand hand) {
         boolean ours = holdsFish(player) || stack.is(Items.WATER_BUCKET) || stack.is(Items.BUCKET)
                 || FishData.fromBucket(stack).isPresent() || stack.getItem() instanceof LiveBaitBucketItem
-                || stack.is(FishingRegistry.FISH_MEAL.get());
+                || stack.is(FishingRegistry.FISH_MEAL.get()) || AquariumCreatures.isNet(stack);
         if (!ours) return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         if (!(player instanceof ServerPlayer server)) return ItemInteractionResult.SUCCESS;
         AquariumBlockEntity tank = be.tank();
@@ -68,6 +70,9 @@ final class AquariumUse {
         } else if (stack.getItem() instanceof LiveBaitBucketItem) {
             if (player.isShiftKeyDown()) releaseBait(tank, player, stack);
             else scoopBait(tank, player, stack);
+        } else if (AquariumCreatures.isNet(stack)) {
+            if (AquariumCreatures.isCreature(stack)) netIn(tank, player, hand, stack);
+            else netOut(tank, player, hand, stack);
         } else if (stack.is(FishingRegistry.FISH_MEAL.get())) {
             int fed = tank.feed(stack.getCount());
             if (fed > 0) {
@@ -123,6 +128,33 @@ final class AquariumUse {
         }
         swap(player, hand, bucket, new ItemStack(Items.BUCKET), SoundEvents.BUCKET_EMPTY_FISH);
         tell(player, Component.translatable(P + "in", fish.get().getHoverName()));
+    }
+
+    private static void netIn(AquariumBlockEntity tank, Player player, InteractionHand hand, ItemStack net) {
+        ItemStack entry = AquariumCreatures.tankEntry(net);
+        Component name = AquariumCreatures.type(net).map(t -> t.getDescription()).orElse(net.getHoverName());
+        if (entry.isEmpty()) {
+            tell(player, Component.translatable(P + "not_aquatic", name));
+            return;
+        }
+        if (!tank.addFish(entry)) {
+            tell(player, whyNot(tank, entry));
+            return;
+        }
+        swap(player, hand, net, AquariumCreatures.emptied(net), SoundEvents.BUCKET_EMPTY_FISH);
+        tell(player, Component.translatable(P + "in", name));
+    }
+
+    /** An empty net takes out the first creature, or else the first fish that has a mob of its own. */
+    private static void netOut(AquariumBlockEntity tank, Player player, InteractionHand hand, ItemStack net) {
+        ItemStack out = tank.takeFish(AquariumCreatures::isCreature);
+        if (out.isEmpty()) out = tank.takeFish(f -> AquariumCreatures.mobOf(f).isPresent());
+        if (out.isEmpty()) {
+            tell(player, Component.translatable(P + "nothing_to_net"));
+            return;
+        }
+        CompoundTag mob = AquariumCreatures.mobOf(out).orElseThrow();
+        swap(player, hand, net, AquariumCreatures.holding(net, mob), SoundEvents.BUCKET_FILL_FISH);
     }
 
     /** The fish item for a fish bucket, with the length the bucketed mob had (Tide's fish keep one). */
