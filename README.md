@@ -9,7 +9,7 @@ A big, long-term Minecraft modpack built around the Create mod. Think "Minecraft
 | **Version** | 0.5.7 |
 | **Minecraft** | 1.21.1 |
 | **Loader** | NeoForge **21.1.262** (pinned, don't update it, see [Known issues](#known-issues)) |
-| **Mods** | 232 from Modrinth + the pack's own Create Galore Bridge (1.162.0), Create Galore Fishing (0.3.25) and Lag Watch (1.2.0) + Twilight Forest added by hand, plus 4 shader packs and the Fresh Animations resource pack |
+| **Mods** | 232 from Modrinth + the pack's own Create Galore Bridge (1.163.0), Create Galore Fishing (0.3.25) and Lag Watch (1.2.0) + Twilight Forest added by hand, plus 4 shader packs and the Fresh Animations resource pack |
 | **Full mod list** | [MODS.md](MODS.md) |
 | **In-game help** | The Create Galore Field Guide, a searchable book every player gets on first join |
 
@@ -358,7 +358,7 @@ None of these stop the game.
   - Turn VSync off and keep Max Framerate at Unlimited.
   - Keep VSync on and set Max Framerate in Video Settings to your monitor's refresh rate or lower.
   - Keep Max Framerate at Unlimited, VSync off, and cap FPS with an external limiter such as RivaTuner Statistics Server. Minecraft's own limiter can stutter and may not reach its cap, so this gives the smoothest frame times.
-- **The game can hang when entering the Nether.** A player's game sometimes stopped responding for good while stepping through a Nether portal, with nothing in the log (other times the same portal works). The cause isn't known yet. Since 0.5.3, when the game stops drawing for 10 s it writes what every part of it is doing to `logs/create-galore-client-freeze.log` in the instance folder; please send that file after a hang.
+- **A game that stops responding: send the freeze log.** Since 0.5.3, when the game stops drawing for 10 s it writes what every part of it is doing to `logs/create-galore-client-freeze.log` in the instance folder; please send that file after a hang. (The hang some players had stepping through a portal was Sound Physics locking up with itself and is fixed in 0.6.49.)
 - **Stutters and choppy play.** Since 0.6.31 the game writes every frame of 100 ms or more, and every stretch of many short hitches in a row, to `logs/create-galore-stutters.log` in the instance folder, with what it was doing at the time, plus a line a minute with the frame rate and 1% low (`create-galore-native-memory.log` beside it tracks memory held outside Java). It costs next to nothing. A really bad one (a 2 s freeze, or 5 s under 15 fps) also puts one grey line in chat, at most once every 10 minutes; please send that log when reporting stutter.
 - **First world creation is slow** (about 45 s for the spawn area on the test machine) because of all the world-gen mods. Normal after that.
 

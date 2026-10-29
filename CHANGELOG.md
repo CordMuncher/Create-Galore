@@ -5,6 +5,17 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.6.49
+
+### Added
+- Create Galore Bridge 1.163.0.
+
+### Fixed
+- **Going through a portal no longer freezes the game for good.** Sometimes, stepping into the Nether (or any other dimension) left the game hanging on the old world until it had to be closed. Sound Physics clears every playing sound when you leave a world, and its sound thread keeps updating sounds at the same time. Before it frees a sound, it checks every other sound while still holding the first one, so the two threads could each hold one sound and wait forever for the other's. A thread that already holds a sound now reads the others without waiting for them. The freeze catcher's log caught it.
+
+### Removed
+- Nothing.
+
 ## 0.6.48
 
 ### Added
