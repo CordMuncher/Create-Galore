@@ -5,6 +5,17 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.6.48
+
+### Added
+- Create Galore Bridge 1.162.0.
+
+### Fixed
+- **The Upscaling & Display screen no longer offers a shader pack's own TAA when it has none.** A pack now says whether it has anti-aliasing of its own. Without it, its own choice shows as Off and TAA is greyed out. Photon's copy is made again at startup to say it has TAA.
+
+### Removed
+- Nothing.
+
 ## 0.6.47
 
 ### Added

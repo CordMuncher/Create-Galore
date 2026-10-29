@@ -35,12 +35,14 @@ import net.irisshaders.iris.shaderpack.option.values.OptionValues;
  *
  * supports (optional): what the pack supports, comma-separated, any of dlss, fsr (DLSS and FSR upscale its frame),
  * frameGeneration, rayReconstruction (with rrGuideImages), renderResolution (the screen sets the render resolution,
- * through renderScaleOptions or renderScale=bridge), taau (its own upscaling: its upscaling switch on, or with
- * renderScale=bridge and renderResolution, taau_render_scale below 1 while cg_dlss_active is 0) and off (no
- * anti-aliasing: taaOption off). Its own anti-aliasing (TAA) is always there, as it runs whenever nothing else does.
- * Without the key: dlss, fsr, frameGeneration, rayReconstruction, renderResolution, and taau with renderScaleOptions,
- * as far as the rest of the profile allows (what packs got before the key). The settings screen greys out the rest,
- * and the Bridge doesn't run it for the pack (a frame generation setting left on then shows only rendered frames).
+ * through renderScaleOptions or renderScale=bridge), taa (it has anti-aliasing of its own), taau (its own upscaling:
+ * its upscaling switch on, or with renderScale=bridge and renderResolution, taau_render_scale below 1 while
+ * cg_dlss_active is 0) and off (no anti-aliasing: taaOption off). What runs when nothing else does is its TAA, or for
+ * a pack without one, no anti-aliasing (offered as off, with no taaOption needed).
+ * Without the key: dlss, fsr, frameGeneration, rayReconstruction, renderResolution, taa, and taau with
+ * renderScaleOptions, as far as the rest of the profile allows (what packs got before the key). The settings screen
+ * greys out the rest, and the Bridge doesn't run it for the pack (a frame generation setting left on then shows only
+ * rendered frames).
  * pass, colorAttachment, outputAttachments and the three images are needed only with dlss or fsr.
  * taaOption (optional): the pack's boolean option for its anti-aliasing: off for off, on for everything else.
  * rrGuideImages (optional): the pack's guide images for DLSS Ray Reconstruction, written while cg_rr_active is 1:
@@ -61,6 +63,7 @@ record PackProfile(String pass, int colorAttachment, int[] outputAttachments, in
     static final String FRAME_GENERATION = "framegeneration";
     static final String RAY_RECONSTRUCTION = "rayreconstruction";
     static final String RENDER_RESOLUTION = "renderresolution";
+    static final String TAA = "taa";
     static final String TAAU = "taau";
     static final String OFF = "off";
 
@@ -103,7 +106,7 @@ record PackProfile(String pass, int colorAttachment, int[] outputAttachments, in
         if (props.getProperty("supports") != null) {
             names(props.getProperty("supports")).forEach(feature -> supports.add(feature.toLowerCase(Locale.ROOT)));
         } else {
-            supports.addAll(List.of(DLSS, FSR, FRAME_GENERATION, RAY_RECONSTRUCTION, RENDER_RESOLUTION));
+            supports.addAll(List.of(DLSS, FSR, FRAME_GENERATION, RAY_RECONSTRUCTION, RENDER_RESOLUTION, TAA));
             if (!bridge) {
                 supports.add(TAAU); // its upscaling switch (a pack leaving the resolution to the Bridge had no TAAU then)
             }
@@ -156,14 +159,19 @@ record PackProfile(String pass, int colorAttachment, int[] outputAttachments, in
         return supports.contains(TAAU) && (bridgeScale ? supportsRenderResolution() : renderScaleOptions.size() == 2);
     }
 
-    /** True if the screen can turn the pack's anti-aliasing off (its taaOption). */
+    /** True if the pack has anti-aliasing of its own (TAA), which runs whenever nothing else does. */
+    boolean supportsTaa() {
+        return supports.contains(TAA);
+    }
+
+    /** True if the screen can turn the pack's own anti-aliasing off (its taaOption). */
     boolean supportsOff() {
-        return supports.contains(OFF) && taaOption != null;
+        return supports.contains(OFF) && taaOption != null && supportsTaa();
     }
 
     /**
      * True if the pack supports the anti-aliasing setting {@code engine} ({@link dev.creategalore.bridge.DisplaySettings#dlaaEngine}):
-     * auto (DLSS or FSR), dlss, fsr3, off (its own, always), taau or none.
+     * auto (DLSS or FSR), dlss, fsr3, off (its own TAA), taau or none (its TAA switched off, or a pack without one).
      */
     boolean supportsEngine(String engine) {
         return switch (engine) {
@@ -171,8 +179,8 @@ record PackProfile(String pass, int colorAttachment, int[] outputAttachments, in
             case "dlss" -> supportsDlss();
             case "fsr3" -> supportsFsr();
             case "taau" -> supportsTaau();
-            case "none" -> supportsOff();
-            default -> true;
+            case "none" -> supportsOff() || !supportsTaa();
+            default -> supportsTaa();
         };
     }
 
