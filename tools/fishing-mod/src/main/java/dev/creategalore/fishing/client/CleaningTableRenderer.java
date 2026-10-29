@@ -17,7 +17,6 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
-import org.joml.Matrix4f;
 
 /**
  * Draws the fish on a Cleaning Table as its own 3D model, lying on its side at its size (a long fish overhangs the
@@ -77,13 +76,7 @@ final class CleaningTableRenderer implements BlockEntityRenderer<CleaningTableBl
         pose.translate(0.5, 1.35 + 0.14 * lines.size(), 0.5);
         pose.mulPose(entities.cameraOrientation());
         pose.scale(0.0125f, -0.0125f, 0.0125f);
-        Matrix4f matrix = pose.last().pose();
-        int background = (int) (Minecraft.getInstance().options.getBackgroundOpacity(0.25f) * 255) << 24;
-        for (int i = 0; i < lines.size(); i++) {
-            Component line = lines.get(i);
-            font.drawInBatch(line, -font.width(line) / 2f, i * 11, 0xffffffff, false, matrix, buffers,
-                    Font.DisplayMode.NORMAL, background, light);
-        }
+        FloatingLabel.draw(font, lines, pose.last().pose(), buffers, light);
         pose.popPose();
     }
 }

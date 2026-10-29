@@ -732,3 +732,11 @@ Reported: fish from a Reel Drive in a barrel read "Common size" with no weight, 
   by command) shows the class alone; a 3.46 kg fish still shows its own weight and length. `selftest all`: only the
   two Aquaculture treasure tables fail, on the minimal test server without the pack's data pack.
 
+## Floating labels under shader packs (0.3.24)
+
+- The Cleaning Table's and the fish mount's labels used Font's own backing in one normal pass. That backing sits 0.01
+  font pixels behind the letters; under Iris (Complementary, Photon) letters dropped out or the backing covered them
+  all, leaving dark bars. Tried on Complementary: a separate `text_background` quad 1.5 pixels back (even flushed
+  first) hid every letter; polygon-offset letters still dropped out. What holds: `FloatingLabel` draws like a mob's
+  name tag, backing plus faint letters `SEE_THROUGH`, then the letters `NORMAL` with no backing. The backing shows
+  through blocks like a name tag's, but a label only shows while the crosshair is on its block.
