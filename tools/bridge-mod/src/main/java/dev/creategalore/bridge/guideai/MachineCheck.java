@@ -54,6 +54,11 @@ final class MachineCheck {
 
     /** Empty when the build has no machine these checks cover. */
     static String check(ServerLevel level, List<BlockPos> build) {
+        return check(level, build, build);
+    }
+
+    /** As above, with the vehicle check run on {@code whole}: all of a ship whose listing was cut short. */
+    static String check(ServerLevel level, List<BlockPos> build, List<BlockPos> whole) {
         StringBuilder out = new StringBuilder();
         Map<BlockPos, Map<Integer, List<Hit>>> air = new LinkedHashMap<>(); // belt controller -> segment -> fans' air on it
         int fans = 0;
@@ -67,7 +72,7 @@ final class MachineCheck {
         }
         lines(out, level, air);
         String machines = out.isEmpty() ? "" : "How these machines work as they are now" + BuildCheck.FOR_YOU + ":\n" + out;
-        return machines + OutputCheck.live(level, build) + vehicle(level, build);
+        return machines + OutputCheck.live(level, build) + vehicle(level, whole);
     }
 
     /** The vehicle check on the build's blocks as they stand, with each part turning as fast as it does now. */

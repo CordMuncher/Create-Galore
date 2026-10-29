@@ -59,7 +59,8 @@ One JSON file per case in `cases/`, named `<kind letter><number>-<what>.json`.
   the box that counts as the player's own build (default: all of it; leave trees and ground out), `stand`
   (`[dx, dy, dz, yaw, pitch]`) where the player stands and looks, `inventory` what they hold, `advancements` the
   advancements they have (ids, or `"create:*"` for all of a mod's) and `crafted` and `placed` (`{item id: count}`) their
-  statistics.
+  statistics. `assemble` (a box like `built`) turns that part into an assembled Sable ship once it is marked as the
+  player's, as a Physics Assembler does, for questions about a vehicle they already built; the ship goes with the case.
 
 ## The answer eval
 

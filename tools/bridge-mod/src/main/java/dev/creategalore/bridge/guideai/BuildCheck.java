@@ -336,6 +336,49 @@ final class BuildCheck {
         return out;
     }
 
+    /**
+     * The part of start's line on the cogwheel side of any Simulated Analog Transmission: what start reaches without
+     * passing along a transmission's shaft (its cogwheel is the side a redstone signal slows), and whether an engine or
+     * other source is in it. A propeller whose part holds a transmission and no source is throttled by that transmission.
+     */
+    record Throttled(java.util.Set<BlockPos> part, boolean source) {
+    }
+
+    static Throttled cogSide(Map<BlockPos, BlockState> blocks, ServerLevel level, BlockPos start) {
+        java.util.Set<BlockPos> out = new java.util.LinkedHashSet<>();
+        boolean source = false;
+        SchematicLevel world = new SchematicLevel(level);
+        blocks.forEach((pos, state) -> world.setBlock(pos, state, 0));
+        Map<BlockPos, Cell> kinetic = new LinkedHashMap<>();
+        blocks.forEach((pos, state) -> {
+            if (state.getBlock() instanceof IRotate) kinetic.put(pos, new Cell(pos, state));
+        });
+        Cell first = kinetic.get(start);
+        if (first == null) return new Throttled(out, false);
+        out.add(start);
+        ArrayDeque<Cell> todo = new ArrayDeque<>(List.of(first));
+        while (!todo.isEmpty()) {
+            Cell c = todo.poll();
+            source |= isSource(c) && !name(c).contains("steering_wheel");
+            for (Cell n : neighbours(kinetic, c)) {
+                if (alongShaft(c, n) || modifier(world, c, n) == 0 || !out.add(n.pos)) continue;
+                todo.add(n);
+            }
+        }
+        return new Throttled(out, source);
+    }
+
+    /** Whether a and b touch along an Analog Transmission's shaft (one of them being the transmission). */
+    private static boolean alongShaft(Cell a, Cell b) {
+        BlockPos d = b.pos.subtract(a.pos);
+        if (d.distManhattan(BlockPos.ZERO) != 1) return false;
+        Direction.Axis axis = Direction.getNearest(d.getX(), d.getY(), d.getZ()).getAxis();
+        for (Cell c : List.of(a, b))
+            if (BuiltInRegistries.BLOCK.getKey(c.state.getBlock()).toString().equals("simulated:analog_transmission")
+                    && c.state.getValue(BlockStateProperties.AXIS) == axis) return true;
+        return false;
+    }
+
     /** The speed a source turns at when nobody has set it: what a player gets on placing it and starting it. */
     private static float nominalRpm(BlockState state) {
         String id = net.minecraft.core.registries.BuiltInRegistries.BLOCK.getKey(state.getBlock()).toString();
@@ -412,11 +455,19 @@ final class BuildCheck {
             }
             return (a.choose(diff.getX(), diff.getY(), diff.getZ()) > 0) ^ (b.choose(diff.getX(), diff.getY(), diff.getZ()) > 0) ? -1 : 1;
         }
-        if (ICogWheel.isLargeCog(sf) && ICogWheel.isSmallCog(st) && largeToSmall(sf, st, dt, diff)) return -2;
-        if (ICogWheel.isLargeCog(st) && ICogWheel.isSmallCog(sf) && largeToSmall(st, sf, df, diff)) return -0.5f;
-        if (ICogWheel.isSmallCog(sf) && ICogWheel.isSmallCog(st) && aligned && !ICogWheel.isLargeCog(st)
+        if (ICogWheel.isLargeCog(sf) && smallCog(st) && largeToSmall(sf, st, dt, diff)) return -2;
+        if (ICogWheel.isLargeCog(st) && smallCog(sf) && largeToSmall(st, sf, df, diff)) return -0.5f;
+        if (smallCog(sf) && smallCog(st) && aligned && !ICogWheel.isLargeCog(st)
                 && dir.getAxis() != df.getRotationAxis(sf) && df.getRotationAxis(sf) == dt.getRotationAxis(st)) return -1;
         return 0;
+    }
+
+    /**
+     * A small cogwheel, or Simulated's Analog Transmission, whose cogwheel meshes like one. Unpowered its cogwheel turns
+     * with its shaft; a redstone signal slows the cogwheel (taken as full throttle here, the speed it gives at signal 0).
+     */
+    private static boolean smallCog(BlockState state) {
+        return ICogWheel.isSmallCog(state) || BuiltInRegistries.BLOCK.getKey(state.getBlock()).toString().equals("simulated:analog_transmission");
     }
 
     /** Notes the face {@code to} took its rotation in through, when it came straight along a shaft from {@code from}. */

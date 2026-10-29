@@ -118,6 +118,7 @@ final class VehicleCheck {
         cy /= m;
         cz /= m;
         Body body = new Body(parts, m, cx, cy, cz, blocks, driveAxis(parts));
+        if (getter instanceof net.minecraft.server.level.ServerLevel level) body.level = level;
 
         List<String> faults = new ArrayList<>(), notes = new ArrayList<>();
         StringBuilder out = new StringBuilder("How this vehicle floats, flies and handles, worked out from its blocks (estimates)"
@@ -443,6 +444,8 @@ final class VehicleCheck {
         final Direction.Axis keel;
         /** The highest it climbs, once the flight sums have worked it out (NaN for what doesn't fly). */
         double ceiling = Double.NaN;
+        /** The world the blocks stand in (or a model's), for following drive lines; null when there is none. */
+        net.minecraft.server.level.ServerLevel level;
 
         Body(List<Part> parts, double m, double cx, double cy, double cz, Map<BlockPos, BlockState> blocks, Direction.Axis drive) {
             this.parts = parts;
@@ -1396,6 +1399,7 @@ final class VehicleCheck {
             if (lev > 0 && q > 0) damp = levititeBrake(b, q, damp);
             turn(q, damp, how, faults, notes, out, "aircraft");
             if (how != null) steering(b, swivel != null && how.equals(swivel.how()) ? swivel : null, faults, notes, out);
+            throttle(b, side, faults, notes, out);
             if (gyros > 0) notes.add("its Gyroscope keeps it level but also brakes turning");
         }
         if (stress > 0) notes.add(String.format(Locale.ROOT, "its propellers draw about %.0f stress units at these speeds; the "
@@ -2206,7 +2210,7 @@ final class VehicleCheck {
             if (f == null || !f.getAxis().isHorizontal()) continue;
             if (reads(b, w, f.getClockWise()) && reads(b, w, f.getCounterClockWise())) {
                 out.append("- Steered with one Steering Wheel: the comparator at each side of it lights only while the wheel is turned "
-                        + "one way, and cuts the propellers on one side.\n");
+                        + "one way, and slows or cuts the propellers on one side.\n");
                 return;
             }
         }
@@ -2214,7 +2218,10 @@ final class VehicleCheck {
                 && Drives.canMake(new Drives.Part("minecraft:comparator", "reads the wheel"));
         String fix = "steer it with one Steering Wheel at the helm instead: a comparator against each side of the wheel (its back to "
                 + "the wheel) lights only while the wheel is turned one way (the other side's for the other way), so wire or Redstone "
-                + "Link each one to a Clutch in the propeller line on one side; cutting one side's push swings the nose toward it (if it steers backwards, swap "
+                + "Link each one to " + (transmission() ? "that side's Analog Transmission (stronger the further the wheel turns, so a "
+                + "small turn slows that side a little and a full turn stops it; a transmission takes the stronger of its throttle's "
+                + "and the wheel's signals) or a Clutch (which cuts it outright)" : "a Clutch in the propeller line on one side")
+                + "; slowing one side's push swings the nose toward it (if it steers backwards, swap "
                 + "the two). Or let the wheel's cog turn a Swivel Bearing under a stern propeller";
         if (!wheels.isEmpty()) {
             faults.add("its Steering Wheel at " + xyz(wheels.get(0)) + " steers nothing: a wheel only turns what its shaft or cog drives "
@@ -2223,9 +2230,86 @@ final class VehicleCheck {
             faults.add("it turns only by running one side's propellers harder than the other's, and nothing at the helm does that with "
                     + "one control, so the pilot would juggle a lever for each side: " + fix);
         } else {
-            notes.add("it steers by running one side's propellers harder, from a lever for each side; once the player can make a "
-                    + "Steering Wheel (andesite casing, a large cogwheel and a shaft) and comparators, " + fix);
+            notes.add("it steers by running one side's propellers harder, from a lever for each side, because the player can't make a "
+                    + "Steering Wheel and comparators yet; tell them so in the answer, and that once they can make a "
+                    + "Steering Wheel (andesite casing, a large cogwheel and a shaft) and comparators they should " + fix);
         }
+    }
+
+    private static final Drives.Part TRANSMISSION = new Drives.Part("simulated:analog_transmission", "slows its cogwheel by redstone");
+    private static final Drives.Part THROTTLE_LEVER = new Drives.Part("simulated:throttle_lever", "sets a redstone strength");
+
+    private static boolean transmission() {
+        return Drives.canMake(TRANSMISSION) && Drives.canMake(THROTTLE_LEVER);
+    }
+
+    /**
+     * Whether the pilot can set how fast it goes, not just flat out or stopped. A propeller is throttled when it turns on
+     * the cogwheel side of an Analog Transmission that a graded signal reaches (a Throttle Lever, an Analog Lever, a
+     * Redstone Link, wire): the transmission's cogwheel turns at (15 - signal)/16 of its shaft and stops at 15 (measured;
+     * its shaft runs through at full speed). Thrusters take the signal strength themselves. A lever or clutch alone only
+     * turns the push on or off.
+     */
+    private static void throttle(Body b, List<Thrust> side, List<String> faults, List<String> notes, StringBuilder out) {
+        if (side.isEmpty() || b.level == null) return;
+        List<String> free = new ArrayList<>();
+        int props = 0, throttled = 0, thrusters = 0, graded = 0;
+        for (Thrust t : side) {
+            if (t.airflow == Double.MAX_VALUE) {
+                thrusters++;
+                if (gradedNear(b, t.at)) graded++;
+                continue;
+            }
+            props++;
+            BuildCheck.Throttled part = BuildCheck.cogSide(b.blocks, b.level, t.at);
+            boolean ok = !part.source() && part.part().stream().anyMatch(p -> id(b.blocks.get(p)).equals("simulated:analog_transmission")
+                    && gradedNear(b, p));
+            if (ok) throttled++;
+            else free.add(t.what + " at " + xyz(t.at));
+        }
+        if (props > 0 && throttled == props && graded == thrusters) {
+            out.append("- Throttle: an Analog Transmission in each propeller line, set from the helm, picks any speed from stopped "
+                    + "to full in 16 steps (the speeds above are at full throttle).\n");
+            return;
+        }
+        if (props == 0 && graded == thrusters) {
+            out.append("- Throttle: the signal strength reaching its thrusters sets how hard they push.\n");
+            return;
+        }
+        String how = "an Analog Transmission in each propeller line (or one before the line splits), its shaft taking the engine's "
+                + "turn and its cogwheel passing it on toward the propeller (only the cogwheel slows; the shaft runs through at full "
+                + "speed), and one Throttle Lever at the helm wired or Redstone Linked to every transmission (links carry the "
+                + "strength). A transmission slows its cogwheel to (15 - signal)/16 and stops it at 15, so wrench the Throttle Lever "
+                + "once to invert it: pulled back the propellers stop, pushed fully forward they run flat out";
+        if (throttled > 0) {
+            faults.add("some propellers are behind the throttle and some aren't (" + String.join(", ", free) + "), so it slews "
+                    + "round as the throttle moves: put every propeller line behind the throttle, with " + how);
+            return;
+        }
+        if (props == 0) {
+            String thr = "its thrusters only get full signal or none (a lever or repeater), so they push flat out or not at all: "
+                    + "drive them from a Throttle Lever (its strength sets their push), wired or Redstone Linked";
+            if (Drives.canMake(THROTTLE_LEVER)) faults.add(thr);
+            else notes.add(thr + " once the player can make one (brass casing and a stick); tell them so in the answer");
+            return;
+        }
+        String none = "its propellers have no throttle: they run at full speed or stop (a lever or clutch only turns them on or "
+                + "off), so the pilot lurches between flat out and nothing and can't ease up to a dock or a mooring";
+        if (transmission()) faults.add(none + ". Give it " + how);
+        else notes.add(none + ", because the player can't make an Analog Transmission and a Throttle Lever yet (brass casing, "
+                + "an electron tube); tell them so in the answer, and that once they can, the upgrade is " + how);
+    }
+
+    /** Whether a graded redstone signal reaches pos: a Throttle Lever, Analog Lever, Redstone Link or wire beside it. */
+    private static boolean gradedNear(Body b, BlockPos pos) {
+        for (Direction d : Direction.values()) {
+            BlockState s = b.blocks.get(pos.relative(d));
+            if (s == null) continue;
+            String id = id(s);
+            if (id.equals("simulated:throttle_lever") || id.equals("create:analog_lever") || id.equals("create:redstone_link")
+                    || id.equals("simulated:modulating_linked_receiver") || s.is(net.minecraft.world.level.block.Blocks.REDSTONE_WIRE)) return true;
+        }
+        return false;
     }
 
     /** Whether a comparator beside the wheel, on its {@code side}, reads it (its back against the wheel). */
