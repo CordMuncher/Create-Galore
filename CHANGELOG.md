@@ -5,6 +5,17 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.6.39
+
+### Added
+- Create Galore Fishing 0.3.24.
+
+### Fixed
+- **Fish labels under shader packs.** The label over a fish on a Cleaning Table, and over a mounted trophy fish, showed as dark empty bars under shader packs such as Photon and Complementary: the dark backing was drawn over the letters. Both labels are now drawn the way a mob's name tag is, so the fish's name and the cleaning progress (or the trophy's size, weight and length) read the same with or without shaders.
+
+### Removed
+- Nothing.
+
 ## 0.6.38
 
 ### Added
