@@ -868,17 +868,21 @@ public final class DlaaScreen extends Screen {
         };
     }
 
-    /** The anti-aliasing the pack in use runs: the one picked, or its own TAA when it doesn't support that one. */
+    /**
+     * The anti-aliasing the pack in use runs: the one picked, or when it doesn't support that one, its own TAA (none for
+     * a pack without one).
+     */
     private String shownEngine() {
-        return engineWhy(engine) == null ? engine : "taa";
+        return engineWhy(engine) == null ? engine : profile == null || profile.supportsTaa() ? "taa" : "none";
     }
 
     /** Null if the shader pack in use supports the anti-aliasing {@code value}, else why not. */
     private String engineWhy(String value) {
-        if (value.equals("taa") || profile != null && profile.supportsEngine(value)) {
+        if (profile == null ? value.equals("taa") : profile.supportsEngine(value.equals("taa") ? "off" : value)) {
             return null;
         }
         return unsupported(switch (value) {
+            case "taa" -> "TAA";
             case "dlss" -> "DLSS";
             case "fsr3" -> "FSR";
             case "taau" -> "TAAU";

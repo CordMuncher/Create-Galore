@@ -108,6 +108,8 @@ public final class Dlss {
     private static boolean wanted;
     /** The anti-aliasing picked, when the pack in use doesn't support it (its own then runs), else null. */
     private static String engineUnsupported;
+    /** The pack in use has anti-aliasing of its own (a pack not made for this is taken to). */
+    private static boolean packHasTaa = true;
     private static float[] jitterSign = {1.0f, 1.0f};
     private static int preset = PRESET_DEFAULT;
     /** DLSS refused the preset typed in, so it runs default. */
@@ -244,6 +246,7 @@ public final class Dlss {
         engine = DisplaySettings.dlaaEngine();
         wanted = engine.equals("auto") || engine.equals("dlss") || engine.equals("fsr3");
         engineUnsupported = null;
+        packHasTaa = true;
         String presetName = DisplaySettings.getString(DisplaySettings.DLAA_PRESET, "default");
         preset = parsePreset(presetName);
         presetFellBack = false;
@@ -310,10 +313,12 @@ public final class Dlss {
             packProblem = "its " + PackProfile.FILE + " could not be read: " + e;
         }
         // (A pack not made for it supports only its own anti-aliasing; DLSS and FSR wait for one that is.)
+        packHasTaa = profile == null || profile.supportsTaa();
         if (profile != null ? !profile.supportsEngine(engine) : engine.equals("taau") || engine.equals("none")) {
             engineUnsupported = engine;
             if (profile != null) {
-                LOG.info("DLAA: the shader pack {} doesn't support {}, so its own anti-aliasing runs", Iris.getCurrentPackName(), engineName(engine));
+                LOG.info("DLAA: the shader pack {} doesn't support {}, so {}", Iris.getCurrentPackName(), engineName(engine),
+                        packHasTaa ? "its own anti-aliasing runs" : "it runs without anti-aliasing");
             }
             wanted = false;
         }
@@ -1123,6 +1128,7 @@ public final class Dlss {
         return switch (engine) {
             case "dlss" -> "DLSS";
             case "fsr3" -> "FSR";
+            case "off" -> "TAA";
             case "taau" -> "TAAU";
             case "none" -> "turning anti-aliasing off";
             default -> "DLSS or FSR";
@@ -1263,10 +1269,11 @@ public final class Dlss {
     /** What DLAA does right now, in a line for the settings screen. */
     static String status() {
         if (engineUnsupported != null) {
-            return "Off: the shader pack doesn't support " + engineName(engineUnsupported) + ", so it keeps its own anti-aliasing.";
+            return "Off: the shader pack doesn't support " + engineName(engineUnsupported)
+                    + (packHasTaa ? ", so it keeps its own anti-aliasing." : ", so it runs without anti-aliasing.");
         }
         if (!wanted) {
-            return engine.equals("none") ? "Off: no anti-aliasing."
+            return engine.equals("none") || !packHasTaa ? "Off: no anti-aliasing."
                     : renderScaleSetting < 1.0f ? "Off: the shader pack's own TAAU upscales."
                     : "Off: the shader pack keeps its own anti-aliasing.";
         }
