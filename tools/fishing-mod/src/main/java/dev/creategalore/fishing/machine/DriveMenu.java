@@ -19,7 +19,7 @@ import net.neoforged.neoforge.items.SlotItemHandler;
  * and the drive's switches. Items go in and out at any time; the drive works on what is there.
  *
  * <p>Menu buttons (sent with vanilla's container button packet): 0 switches the drive on or off, 1 turns autocast on
- * or off, 2 casts once (autocast off), 3 picks the next mode, 4/5 the cast distance down/up a block, 6/7 down/up five,
+ * or off, 2 casts once now (with autocast off, the only cast it makes), 3 picks the next mode, 4/5 the cast distance down/up a block, 6/7 down/up five,
  * 8/9 the top gear down/up: the same settings as the value boxes on the back, for when something covers them; 10
  * turns chat reports of lost fish on or off. The Basic drive's window has only the on/off switch and the reports.
  */
@@ -38,7 +38,7 @@ public class DriveMenu extends AbstractContainerMenu {
 
     /**
      * Synced values: switched on, autocast, fuel left (seconds), tank (mB), line out, mode, cast distance, top gear,
-     * lost fish reported.
+     * lost fish reported, something to cast (a rod with a reel, and a lure or bait).
      */
     public static final int DATA_ON = 0;
     public static final int DATA_AUTOCAST = 1;
@@ -49,7 +49,8 @@ public class DriveMenu extends AbstractContainerMenu {
     public static final int DATA_DISTANCE = 6;
     public static final int DATA_TOP_GEAR = 7;
     public static final int DATA_REPORT = 8;
-    private static final int DATA_SIZE = 9;
+    public static final int DATA_CAN_CAST = 9;
+    private static final int DATA_SIZE = 10;
 
     private final DriveMount drive;
     private final ReelDrive.Kind kind;
@@ -73,16 +74,22 @@ public class DriveMenu extends AbstractContainerMenu {
         this.drive = drive;
         this.kind = kind;
         this.data = data;
-        if (kind.geared()) addSlot(new SlotItemHandler(bait, 0, 12, 50));
+        if (kind.geared()) addSlot(new SlotItemHandler(bait, 0, 16, 26));
         if (kind == ReelDrive.Kind.FUEL) {
-            addSlot(new SlotItemHandler(fuelSlot, 0, 12, 80));
+            addSlot(new SlotItemHandler(fuelSlot, 0, 16, 73));
         }
         driveSlots = slots.size();
+        int top = inventoryY(kind);
         for (int row = 0; row < 3; row++) {
-            for (int col = 0; col < 9; col++) addSlot(new Slot(inventory, col + row * 9 + 9, 8 + col * 18, 124 + row * 18));
+            for (int col = 0; col < 9; col++) addSlot(new Slot(inventory, col + row * 9 + 9, 8 + col * 18, top + row * 18));
         }
-        for (int col = 0; col < 9; col++) addSlot(new Slot(inventory, col, 8 + col * 18, 182));
+        for (int col = 0; col < 9; col++) addSlot(new Slot(inventory, col, 8 + col * 18, top + 58));
         addDataSlots(data);
+    }
+
+    /** Where the player's inventory starts: below the full control deck, or the Basic drive's one row. */
+    public static int inventoryY(ReelDrive.Kind kind) {
+        return kind.geared() ? 124 : 62;
     }
 
     public ReelDrive.Kind kind() {
@@ -111,7 +118,7 @@ public class DriveMenu extends AbstractContainerMenu {
         switch (id) {
             case BUTTON_AUTOCAST -> reel.setAutocast(!reel.autocast());
             case BUTTON_CAST -> {
-                if (reel.autocast() || drive.mounted().hook() != null) return false;
+                if (!reel.on() || drive.mounted().hook() != null) return false;
                 reel.castOnce();
             }
             case BUTTON_MODE -> settings.nextMode();
@@ -160,6 +167,7 @@ public class DriveMenu extends AbstractContainerMenu {
                 case DATA_DISTANCE -> drive.settings() == null ? 0 : drive.settings().distance().getValue();
                 case DATA_TOP_GEAR -> drive.settings() == null ? 0 : drive.settings().topGear().getValue();
                 case DATA_REPORT -> reel.reportLosses() ? 1 : 0;
+                case DATA_CAN_CAST -> reel.wantsToCast() ? 1 : 0;
                 default -> 0;
             };
         }

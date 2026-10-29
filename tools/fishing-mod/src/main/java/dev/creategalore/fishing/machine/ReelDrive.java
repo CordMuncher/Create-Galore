@@ -162,10 +162,11 @@ public final class ReelDrive {
         return autocast;
     }
 
-    /** Switches the drive on or off; switching it on with autocast off lets it cast once. */
+    /** Switches the drive on or off. With autocast off, switching it on doesn't cast: only the Cast button does. */
     public void setOn(boolean on) {
-        if (on && !this.on) castArmed = true;
         this.on = on;
+        // A cast asked for but not made yet (no bait, no power) is called off with the drive.
+        if (!on) castArmed = false;
         changed();
     }
 
@@ -185,7 +186,11 @@ public final class ReelDrive {
         changed();
     }
 
-    /** The window's Cast button (autocast off): cast once, now, if the line is in. */
+    /**
+     * The window's Cast button: one cast, now, if the line is in. With autocast off that cast is all it does: in Cast
+     * and wait it waits for a bite and lands the fish, in Cast and retrieve it winds the rig back once, fish or not,
+     * then the drive stops with its line in. With autocast on it just casts without waiting out the pause.
+     */
     public void castOnce() {
         castArmed = true;
         recastIn = 0;

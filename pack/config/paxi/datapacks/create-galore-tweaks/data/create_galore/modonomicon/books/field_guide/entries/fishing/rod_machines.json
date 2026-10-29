@@ -20,7 +20,7 @@
     {
       "type": "modonomicon:text",
       "title": "Rod Holder and Reel Drives",
-      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- A **Rod Holder** sounds an alarm and pulses redstone on a bite.\n- [#](FFFFFF)\ue104[#]() **Reel drives** fight fish with rotation, or with an engine.\n- [#](FFFFFF)\ue105[#]() Winding costs **stress**: pick a drag your network can turn.\n- Catches go into a chest, funnel or belt."
+      "text": "[#](FFFFFF)[#]() **Key points**\n\n- A **Rod Holder** sounds an alarm and pulses redstone on a bite.\n- [#](FFFFFF)[#]() **Reel drives** fight fish with rotation, or with an engine.\n- [#](FFFFFF)[#]() Winding costs **stress**: pick a drag your network can turn.\n- Catches go into a chest, funnel or belt."
     },
     {
       "type": "modonomicon:text",
@@ -45,7 +45,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "The Basic drive only winds. Hook the fish by hand, set the rod in, and it fights at a speed from the shaft (the reel's own speed at 32 [#](7A3C9A)[RPM](entry://glossary/rpm)[#]()). A row of drives along a jetty runs off one shaft, a water wheel's included.\\\n\\\n[#](FFFFFF)\ue101[#]() **Watch out:** it keeps winding while the drag slips, so the reel wears fast."
+      "text": "The Basic drive only winds. Hook the fish by hand, set the rod in, and it fights at a speed from the shaft (the reel's own speed at 32 [#](7A3C9A)[RPM](entry://glossary/rpm)[#]()). A row of drives along a jetty runs off one shaft, a water wheel's included.\\\n\\\n[#](FFFFFF)[#]() **Watch out:** it keeps winding while the drag slips, so the reel wears fast."
     },
     {
       "type": "modonomicon:crafting_recipe",
@@ -64,11 +64,15 @@
     },
     {
       "type": "modonomicon:text",
-      "text": "**The window.** Sneak and right-click a reel drive with an empty hand, anywhere but its value panels. Put bait (and the Fuel drive's fuel) in or take it out at any time. It also sets the mode, cast distance and top gear, for when something covers the back.\n\n- **On / Off**: off, it doesn't cast, strike or wind; the Fuel drive burns nothing, fuel or not."
+      "text": "**The window.** Sneak and right-click a reel drive with an empty hand, anywhere but its value panels. Bait (and the Fuel drive's fuel) goes in or out at any time. Its buttons also set the mode, cast distance and top gear, for when something covers the back. Hover a button for its name."
     },
     {
       "type": "modonomicon:text",
-      "text": "- **Autocast off**: it casts once when you switch it on or press **Cast**, and leaves the line in when it comes back.\n- **Reports** (off by default): when a fish gets away, whoever set the rod in is told in chat what broke and why. Handy to find a rig's weak link; a bank of drives stays quiet with it off.\n\nThe Basic drive's window has only On / Off and Reports."
+      "text": "- **Power**: pressed in when on. Off, it doesn't cast, strike or wind, and burns no fuel.\n- **Autocast** (circling arrows): off, it casts only on **Cast now** (play button).\n\nOne cast is one go. Cast and wait (float) lands one bite, then stops. Cast and retrieve (two arrows) throws out and winds back once, fish or not, then stops."
+    },
+    {
+      "type": "modonomicon:text",
+      "text": "- **Reports** (note, off by default): when a fish gets away, whoever set the rod in is told in chat what broke and why. A bank of drives stays quiet with it off.\n- **Status**: Off, Line out, No bait, Ready (waiting for Cast now) or Casting.\n\nThe Basic drive's window has only Power and Reports."
     },
     {
       "type": "modonomicon:crafting_recipe",
@@ -78,12 +82,12 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "[#](FFFFFF)\ue108[#]() It burns furnace fuel from a slot, or lava, Fish Oil and other [#](2E5AAC)[liquid fuels](entry://industry/liquid_fuel)[#]() from a 4-bucket tank. It burns a tenth as much while it waits, the full rate under full load, and only while it is on with a rod in.\\\n\\\nIts engine winds against 12 kg in normal gear, four times that in its lowest."
+      "text": "[#](FFFFFF)[#]() It burns furnace fuel from a slot, or lava, Fish Oil and other [#](2E5AAC)[liquid fuels](entry://industry/liquid_fuel)[#]() from a 4-bucket tank. It burns a tenth as much while it waits, the full rate under full load, and only while it is on with a rod in.\\\n\\\nIts engine winds against 12 kg in normal gear, four times that in its lowest."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "[#](FFFFFF)\ue105[#]() **Drag against rotation.** Winding against a fish costs [#](7A3C9A)[stress](entry://glossary/su)[#](), more the harder it pulls: 1 SU per RPM idle, plus 4 SU per RPM for each kg of pull in normal gear.\\\n\\\nA fish leaning on a drag heavier than the network can turn [#](7A3C9A)[overstresses](entry://glossary/overstressed)[#]() it until the fish eases off."
+      "text": "[#](FFFFFF)[#]() **Drag against rotation.** Winding against a fish costs [#](7A3C9A)[stress](entry://glossary/su)[#](), more the harder it pulls: 1 SU per RPM idle, plus 4 SU per RPM for each kg of pull in normal gear.\\\n\\\nA fish leaning on a drag heavier than the network can turn [#](7A3C9A)[overstresses](entry://glossary/overstressed)[#]() it until the fish eases off."
     },
     {
       "type": "modonomicon:text",
@@ -98,7 +102,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**Experience.** A machine earns half what you would for each catch, with no release bonus. It banks it and pays it out whenever a rod goes in or out.\\\n\\\n[#](FFFFFF)\ue104[#]() [#](7A3C9A)[Goggles](entry://glossary/goggles)[#]() show the rod, a bite or fish on and its tension, line out, drag, bait and bait in store, reel wear, gear, what it can still wind against, fuel and banked experience."
+      "text": "**Experience.** A machine earns half what you would for each catch, with no release bonus. It banks it and pays it out whenever a rod goes in or out.\\\n\\\n[#](FFFFFF)[#]() [#](7A3C9A)[Goggles](entry://glossary/goggles)[#]() show the rod, a bite or fish on and its tension, line out, drag, bait and bait in store, reel wear, gear, what it can still wind against, fuel and banked experience."
     },
     {
       "type": "modonomicon:text",
@@ -107,7 +111,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "[#](FFFFFF)\ue103[#]() **In depth.** A Geared drive on one water wheel (8 RPM) can take several minutes to wind in a big tuna in its lowest gear. A Basic drive grinding a strong fish through a slipping drag wears its reel fast and can wear it through in one fight, which loses the fish.\\\n\\\nCreate Integrated Farming's [#](2E5AAC)[Fishing Nets](entry://food/integrated_farming)[#]() catch the same fish, small ones most."
+      "text": "[#](FFFFFF)[#]() **In depth.** A Geared drive on one water wheel (8 RPM) can take several minutes to wind in a big tuna in its lowest gear. A Basic drive grinding a strong fish through a slipping drag wears its reel fast and can wear it through in one fight, which loses the fish.\\\n\\\nCreate Integrated Farming's [#](2E5AAC)[Fishing Nets](entry://food/integrated_farming)[#]() catch the same fish, small ones most."
     },
     {
       "type": "modonomicon:text",

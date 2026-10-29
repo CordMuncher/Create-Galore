@@ -585,3 +585,25 @@ for lures to show on the goggles, and for a quiet-by-default chat report of lost
 - Goggles: "Switched off", "Autocast off" and the lure's name in place of "No bait".
 - Tested in a client: window open, fuel in by shift-click, every button, Off stops a cast, autocast off casts once
   and not again in over 60 s, rod out mid-reel stops, a forced loss reported in chat. Machine self-tests 36 PASS.
+
+## 0.3.19: the drive window gets its own look, Cast now is one go (pack 0.6.33)
+
+Emre (29 Oct, on 0.3.18): the window worked but was plain Minecraft buttons; it should look like the boat engine's
+(etched glyphs, its own button shapes), and there should be a button to cast now that does exactly one cast in either
+mode.
+
+- **Sprites from `art/make_gui.py`** in `textures/gui/sprites/drive/` (the GUI atlas): a tiled slate deck, stone
+  buttons in four states (up, hover, pressed in, pressed in and hovered) plus a flat disabled one, a sunk readout
+  window, a raised slot plate and 12 glyphs, each cut as a dark groove with a light lip so they read as engraved.
+  Glyphs come twice: `glyph_*` for stone, `etch_*` for the deck. Our own drawings in the style of Create's screens
+  and the boat engine's (High Seas) on/off buttons; nothing copied.
+- **`DriveScreen`** is drawn from them: power, autocast, cast now and reports as 18 px buttons, the mode as a two-way
+  switch (the mode in use stays pressed in), distance and gear as readout windows with 12 px - and + (glyphs are 10 px
+  so they centre on even sizes). Toggles show pressed in when on. Tooltips name every button and etched label.
+  A status window under the bait reads Off / Line out / No bait / Ready / Casting (new `DATA_CAN_CAST` =
+  `wantsToCast`). The Basic drive's window is shorter (inventory at y 62) with only power and reports.
+- **Cast now**: shown always, enabled when on with the line in, also with autocast on (casts without the pause).
+  The one-cast rules were already right (`castArmed` cleared on the cast, no recast after); switching on no longer
+  arms a cast, and switching off cancels one that was waiting for bait or power.
+- Tested in a client: autocast off kept the line in 70 s; Cast now in Cast and retrieve threw to 16 m, wound back
+  and stayed in 90 s; in Cast and wait it landed a forced bite and stayed in 100 s; power off and on didn't cast.

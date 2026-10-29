@@ -5,6 +5,20 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.6.33
+
+### Added
+- Create Galore Fishing 0.3.19.
+- **The Reel Drive window has its own look.** The controls sit on a dark deck, like Create's machine screens, as stone push buttons with etched symbols: power, autocast, cast now and reports along the top, a two-way switch for the mode (a float for Cast and wait, two arrows for Cast and retrieve), and the cast distance and top gear in readout windows with - and + either side. A switch that is on stays pressed in, and every button names itself when hovered. The bait and fuel slots sit in raised plates, with the fuel left under the fuel.
+- **A status readout in the window**: Off, Line out, No bait, Ready or Casting.
+
+### Fixed
+- **Cast now is always in the window**, and does exactly one cast. In Cast and wait it waits for a bite, lands the fish and stops; in Cast and retrieve it throws out and winds back once, fish or not, and stops. With autocast on it casts straight away instead of waiting out the pause.
+- **Switching a drive on no longer casts by itself** with autocast off. Only Cast now does.
+
+### Removed
+- Nothing.
+
 ## 0.6.32
 
 ### Added
