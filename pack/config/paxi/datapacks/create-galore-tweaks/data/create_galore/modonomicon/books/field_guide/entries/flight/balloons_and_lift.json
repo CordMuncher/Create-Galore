@@ -41,7 +41,7 @@
         "item": "aeronautics:adjustable_burner"
       },
       "title": "Hot Air Burner",
-      "text": "Redstone fills the balloon above from the top down. Set the maximum output in its [#](7A3C9A)[panel](entry://glossary/value_panel)[#](). Several burners can feed one balloon."
+      "text": "Redstone fills the balloon above from the top down. Set the maximum output in its [#](7A3C9A)[panel](entry://glossary/value_panel)[#](). Several burners can feed one balloon. It burns no fuel: redstone alone runs it."
     },
     {
       "type": "modonomicon:spotlight",

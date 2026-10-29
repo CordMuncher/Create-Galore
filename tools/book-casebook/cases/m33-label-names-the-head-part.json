@@ -1,0 +1,58 @@
+{
+  "title": "A label names the last part word of its phrase: 'propeller throttle' is a throttle",
+  "from": "2026-10-29 answer eval: the label check refused 'propeller throttle' on a Throttle Lever because no propeller was near",
+  "roots": [
+    "R1"
+  ],
+  "kind": "model",
+  "model": {
+    "title": "Helm",
+    "size_x": 4,
+    "size_y": 2,
+    "size_z": 2,
+    "blocks": [
+      {
+        "block": "minecraft:spruce_planks",
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "x2": 3,
+        "y2": 0,
+        "z2": 1
+      },
+      {
+        "block": "simulated:throttle_lever[facing=north]",
+        "x": 1,
+        "y": 1,
+        "z": 0
+      },
+      {
+        "block": "simulated:steering_wheel[facing=north]",
+        "x": 2,
+        "y": 1,
+        "z": 0
+      }
+    ],
+    "labels": [
+      {
+        "text": "propeller throttle",
+        "x": 1,
+        "y": 1,
+        "z": 0
+      },
+      {
+        "text": "helm",
+        "x": 2,
+        "y": 1,
+        "z": 0
+      }
+    ],
+    "part_of_vehicle": true
+  },
+  "expect": {
+    "built": true,
+    "lacks": [
+      "names a propeller"
+    ]
+  }
+}

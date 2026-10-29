@@ -1,4 +1,4 @@
-<!-- sources sha256:66890e942fba6e79bb8f5baf3d8ae7fb61d99e25b6daca936fdf3d10a1d7394b -->
+<!-- sources sha256:5b872115ef7d9a66a88e3c6fd1e5c147f4c751d7626ccfddbfff80f03c81378d -->
 # Create: The Basics (create_basics)
 
 ## create_basics/rotation | Rotation
@@ -45,7 +45,7 @@
 - Encased variants: brass or andesite casing (see glossary/encased) hides shafts, cogwheels, belts. Components placed after encasing do not connect unless you toggle the connection with a wrench (see create_basics/tools_wrench).
 - Clutch [create:clutch]: passes rotation in a line; redstone-powered it breaks the connection.
 - Gearshift [create:gearshift]: passes rotation in a line; redstone-powered it reverses it.
-- Rotation Speed Controller [create:rotation_speed_controller]: sits below a large cogwheel, relays rotation to it at speed set on its value panel (see glossary/value_panel).
+- Rotation Speed Controller [create:rotation_speed_controller]: sits below a large cogwheel, relays rotation to it at speed set on its value panel (see glossary/value_panel); the large cogwheel lies across the controller's shaft, not along it; a small cogwheel it drives turns twice as fast.
 - Sequenced Gearshift (in depth): runs a timed list of speed/direction instructions on each redstone pulse; configure by right-click; good for pistons, gantries, anything moving in steps.
 - Chain drives pass rotation along a row with all shafts spinning same way. Ponder (see start_here/tools) for each part.
 

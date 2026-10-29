@@ -33,7 +33,7 @@
         "item": "simulated:steering_wheel"
       },
       "title": "Steering Wheel",
-      "text": "Hold right-click and move the mouse to turn. It stays at the angle you leave it. Sneak snaps to 45 degrees, and its panel sets the most it turns either way. A comparator at its back reads whether it is held; one against each side lights only while it is turned one way."
+      "text": "Hold right-click and move the mouse to turn; it stays where you leave it. Sneak snaps to 45 degrees; its panel sets the most it turns. A comparator at its back reads whether it is held; one against each side, its back to the wheel, lights only while it turns that way."
     },
     {
       "type": "modonomicon:text",

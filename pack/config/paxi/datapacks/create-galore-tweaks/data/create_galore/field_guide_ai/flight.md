@@ -1,4 +1,4 @@
-<!-- sources sha256:e4da4f843ac7996174a7b7dc881922a9bfb113e0b28ce92b9ef9ebb2e7e6db8a -->
+<!-- sources sha256:54954ff4ce0d2dacfb0a6f3ab8f7153cef79c44ad115e40dc1176a7373a3cb0e -->
 # Flight (flight)
 Create Aeronautics ships, lift, thrust, steering, wind, dangers and sky destinations.
 
@@ -35,7 +35,7 @@ Create Aeronautics ships, lift, thrust, steering, wind, dangers and sky destinat
 ## flight/balloons_and_lift | Balloons and Lift
 - Hot air or steam in sealed envelopes lifts ship; more sealed volume = more lift for burners to work with. Envelopes must be airtight
 - Hot Air Envelope [aeronautics:white_envelope]: airtight; blocks inside shrink volume; dyeable; shafts can be encased (see glossary/encased) in envelope blocks to stay sealed
-- Hot Air Burner [aeronautics:adjustable_burner]: redstone fills balloon above from top down; max output set in its panel (see glossary/value_panel); several burners can feed one balloon
+- Hot Air Burner [aeronautics:adjustable_burner]: redstone fills balloon above from top down; max output set in its panel (see glossary/value_panel); several burners can feed one balloon; burns no fuel, redstone alone runs it
 - Steam Vent [aeronautics:steam_vent]: steam lift; like Steam Engine needs heat, water, boiler (see glossary/boiler) space; (see create_basics/heat)
 - Altitude: lift weakens with altitude; ship settles where lift = weight; changing lift changes altitude. Altitude Sensor outputs redstone signal for height and, with goggles (see create_basics/tools_wrench), shows air pressure. Other worlds have very different air (see space/planets)
 - Speed and drag: every envelope block drags as the ship moves (about as much as three blocks' worth of its weight), so an envelope bigger than the load needs makes it slower; size it to the weight with room to climb (each m3 of hot air holds up about 1.5 mass low down, less higher up). Mount propellers about level with the middle of the envelope: low ones tip the nose up at speed
@@ -63,7 +63,7 @@ Create Aeronautics ships, lift, thrust, steering, wind, dangers and sky destinat
 
 ## flight/controls | Steering and Controls
 - Steering turns redstone and rotation into thrust and angles. Simulated supplies wheels, levers, sensors; Aeroworks adds control consoles and servos
-- Steering Wheel [simulated:steering_wheel]: hold right-click and move mouse; stays at the angle left; sneak snaps to 45 degrees; its panel sets the most it turns either way; comparator at its back reads whether it is held, one against each side lights only while it is turned one way
+- Steering Wheel [simulated:steering_wheel]: hold right-click and move mouse; stays at the angle left; sneak snaps to 45 degrees; its panel sets the most it turns either way; comparator at its back reads whether it is held, one against each side (its back to the wheel) lights only while it is turned one way
 - One wheel steers, not a lever per side: its cog turns a Swivel Bearing (see flight/ship_building) under a stern propeller, or a comparator at each side of it slows one side's propeller line through an Analog Transmission (Redstone Links reach pods). Levers are for settings
 - Throttle Lever [simulated:throttle_lever]: compact analog redstone source; right-click and drag; wrench (see create_basics/tools_wrench) inverts signal
 - Analog Transmission [simulated:analog_transmission]: unpowered its cogwheel turns with its shaft; a redstone signal slows the cogwheel to (15 - signal)/16 of the shaft's speed, 15 stops it; the shaft runs through at full speed

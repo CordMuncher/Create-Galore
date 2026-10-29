@@ -209,7 +209,10 @@ final class BuildCheck {
                     + "by what they connect to.\n");
         }
         for (Cell src : sources) {
-            out.append("- ").append(name(src)).append(" is a source. Turning with it:");
+            out.append("- ").append(name(src)).append(name(src).contains("steering_wheel")
+                    ? " is the helm: it turns what its shaft or cog drives only while the pilot steers, and comparators at its sides "
+                    + "read it without anything turning (\"nothing\" below is right for a wheel that steers by comparators). Turning with it:"
+                    : " is a source. Turning with it:");
             list(out, kinetic, src.pos, rootOf, speed);
             for (Map.Entry<BlockPos, Cell> e : controlled.entrySet()) {
                 if (!sourceOf.get(e.getKey()).equals(src.pos)) continue;

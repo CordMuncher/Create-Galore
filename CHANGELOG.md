@@ -5,6 +5,22 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.6.46
+
+### Added
+- Create Galore Bridge 1.160.0.
+- **Ask the Book tells where things are on a ship by its parts.** A ship's blocks sit at coordinates far from where it floats, so the book now names spots by the ship's parts and ends, and gives the world position of a block when that helps.
+- Two new Ask the Book casebook cases: a materials list with envelopes, a chest and shafts, and a label that names more than one part.
+
+### Fixed
+- **Ask the Book counts materials right.** Envelopes cost half a white wool each (2 wool and 2 sticks make 4), not two; a chest takes any planks rather than oak; shafts held as shafts count as shafts, not as Andesite Floor to cut.
+- **Ask the Book's recipe paths start from real raw materials.** They start from raw ore and plain Minecraft or Create ingredients the player holds, rather than an odd modded ore, and a station the player has already used (its advancement done) counts as run.
+- **Ask the Book's airship checks read clearer.** The bow is the end the Steering Wheel stands toward; a tilted balloon says to move the lift over the weight; drag is given as the push needed at that speed; propellers that don't turn are flagged before steering is judged; a wheel that steers by comparators no longer reads as driving nothing; a label like "propeller throttle" is checked against the part it names last.
+- **Field Guide details.** The Hot Air Burner burns no fuel, redstone alone runs it. The Steering Wheel page says which way its side comparators face. The Rotation Speed Controller page says its large cogwheel lies across its shaft. The Ask the Book notes match.
+
+### Removed
+- Nothing.
+
 ## 0.6.45
 
 ### Added
