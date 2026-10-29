@@ -5,6 +5,9 @@
 // linger, and counts as one sample against them: a short memory of a few frames, quick to follow a torch placed or
 // taken away. Results in cg_plh_img: the diffuse light (a 1 where there is one), the highlights, and each pixel's
 // facing and depth, one above the other, each in two halves that take turns (this frame's and last frame's).
+//
+// OWN DENOISER (temporal and spatial): comes off when Ray Reconstruction denoises the lamp light instead (see the
+// README's "Own denoisers and Ray Reconstruction").
 
 #include "/lib/settings.glsl"
 #include "/lib/gbuffer_read.glsl"

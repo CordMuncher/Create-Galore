@@ -36,7 +36,8 @@ vec3 forward_light(vec3 n, vec3 scene_pos, vec2 light, float ao, float sun_shado
 #endif
     if (facing > 0.0 && sky_gate > 0.0) {
         vec3 reach = sun_shadow_radius > 0.0
-                ? shadow_light(shadow_offset_point(scene_pos, n, g_light_dir.xyz), sun_shadow_radius)
+                ? shadow_light(shadow_offset_point(scene_pos, n, g_light_dir.xyz), sun_shadow_radius, 0.0,
+                               sun_beyond_map(light.y))
                 : vec3(1.0);
         sun = g_light_color.rgb * facing * reach * sky_gate;
     }

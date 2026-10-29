@@ -21,7 +21,7 @@
 #define HAND
 #endif
 
-#if !defined PROGRAM_BASIC && !defined PROGRAM_SKYBASIC && !defined PROGRAM_LIGHTNING
+#if !defined PROGRAM_BASIC && !defined PROGRAM_LINE && !defined PROGRAM_SKYBASIC && !defined PROGRAM_LIGHTNING
 #define TEXTURED
 #endif
 
@@ -32,6 +32,8 @@
 #elif defined PROGRAM_SKYBASIC || defined PROGRAM_SKYTEXTURED || defined PROGRAM_WEATHER || defined PROGRAM_SPIDEREYES
 #define NO_MOTION_CLAIM
 #elif defined PROGRAM_LIGHTNING || defined PROGRAM_ARMOR_GLINT || defined PROGRAM_DAMAGEDBLOCK
+#define NO_MOTION_CLAIM
+#elif defined PROGRAM_BASIC || defined PROGRAM_LINE
 #define NO_MOTION_CLAIM
 #endif
 
@@ -56,7 +58,7 @@ int key_flags() {
     return KEY_MOB_SHADING | KEY_LIGHTMAP;
 #elif defined PROGRAM_TERRAIN || defined PROGRAM_WATER
     return KEY_LIGHTMAP | KEY_LIGHTMAP_SMOOTH;
-#elif defined PROGRAM_PARTICLES || defined PROGRAM_WEATHER || defined PROGRAM_BASIC || defined PROGRAM_TEXTURED_LIT
+#elif defined PROGRAM_PARTICLES || defined PROGRAM_WEATHER || defined PROGRAM_BASIC || defined PROGRAM_LINE || defined PROGRAM_TEXTURED_LIT
     return KEY_LIGHTMAP;
 #elif defined PROGRAM_CLOUDS
     return KEY_UNTEXTURED;
@@ -69,14 +71,19 @@ int key_flags() {
 // - LIT_GBUFFER: they leave their surface in the G-buffer for the deferred pass (terrain, mobs, block entities, the
 //   hand, Create's machines).
 // - LIT_FORWARD: drawn after the deferred pass, over the lit scene, and lit by their own program (water and glass,
-//   particles, rain, clouds, lines, Create's translucent parts).
+//   particles, rain, clouds, Create's translucent parts).
 // - LIT_GLOW: they only add light (glowing eyes, the enchantment glint, lightning, beacon beams).
 // - LIT_SKY: Minecraft's sky, which the deferred pass draws instead (only the moon stays).
+// - LIT_LINES: thin untextured things (the block outline, leads, debug lines), which Minecraft draws before the
+//   deferred pass (the outline, leads) or after it: laid over the surface's colour in the G-buffer, where the
+//   deferred pass lights them, and over the lit scene as they are; whichever comes too early is drawn over.
 #if defined PROGRAM_SKYBASIC || defined PROGRAM_SKYTEXTURED
 #define LIT_SKY
+#elif defined PROGRAM_BASIC || defined PROGRAM_LINE
+#define LIT_LINES
 #elif defined PROGRAM_WATER || defined PROGRAM_HAND_WATER || defined PROGRAM_WEATHER || defined PROGRAM_CLOUDS
 #define LIT_FORWARD
-#elif defined PROGRAM_PARTICLES || defined PROGRAM_TEXTURED || defined PROGRAM_TEXTURED_LIT || defined PROGRAM_BASIC
+#elif defined PROGRAM_PARTICLES || defined PROGRAM_TEXTURED || defined PROGRAM_TEXTURED_LIT
 #define LIT_FORWARD
 #elif defined PROGRAM_CLRWL_TRANSLUCENT
 #define LIT_FORWARD

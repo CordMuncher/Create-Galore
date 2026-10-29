@@ -14,6 +14,9 @@
 // over a second or two and holds several bounces (each hit reads the bounce light already there). More than
 // far_tiles blocks from you, half the tiles trace each frame (a checkerboard): the light there settles a little
 // slower, where nobody looks closely, and most of the box is that far.
+//
+// OWN DENOISER (a world-space store that gathers rays over frames): a light cache rather than a screen filter, so it
+// can likely stay under Ray Reconstruction (see the README's "Own denoisers and Ray Reconstruction").
 
 #include "/lib/settings.glsl"
 #include "/lib/trace.glsl"

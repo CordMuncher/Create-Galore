@@ -3,7 +3,8 @@
 // - LIT_FORWARD: lit here, over the lit scene (water, glass, particles, rain, clouds);
 // - LIT_GLOW: added light (glowing eyes, the enchantment glint, lightning, beacon beams);
 // - LIT_SKY: Minecraft's sky, which the deferred pass draws itself; only the moon is kept (colortex5);
-// - LIT_CRACKS: the block breaking cracks, laid over the surface's colour in the G-buffer.
+// - LIT_CRACKS: the block breaking cracks, laid over the surface's colour in the G-buffer;
+// - LIT_LINES: the block outline, leads and debug lines, over the surface's colour and over the lit scene.
 
 #include "/program/gbuffers_kind.glsl"
 #include "/lib/motion.glsl"
@@ -299,10 +300,6 @@ void main() {
     }
 #endif
 
-#if defined PROGRAM_BASIC
-    // Lines (the block outline): as they are.
-    out_color = vec4(albedo * color.a, color.a);
-#else
     vec3 n = normalize(v_normal);
 #if defined PROGRAM_PARTICLES || defined PROGRAM_WEATHER || defined PROGRAM_TEXTURED || defined PROGRAM_TEXTURED_LIT
     n = vec3(0.0, 1.0, 0.0); // flat sprites: lit as from above
@@ -324,8 +321,25 @@ void main() {
     light = g_light_color.rgb * 0.35 + g_sky_up.rgb * 1.2;
 #endif
     out_color = vec4(albedo * light * color.a, color.a);
-#endif
     out_motion = motion_out();
+}
+
+#elif defined LIT_LINES
+
+/* RENDERTARGETS: 0,1 */
+layout(location = 0) out vec4 out_color;  // over the lit scene, premultiplied (see shaders.properties)
+layout(location = 1) out vec4 out_albedo; // over the G-buffer's colour, premultiplied; its alpha (the material) stays
+
+void main() {
+    if (outside_render_area(gl_FragCoord.xy)) {
+        discard;
+    }
+    vec4 color = base_color();
+    if (color.a < 0.004) {
+        discard;
+    }
+    out_color = vec4(srgb_to_linear(color.rgb) * color.a, color.a);
+    out_albedo = vec4(color.rgb * color.a, color.a);
 }
 
 #elif defined LIT_GLOW

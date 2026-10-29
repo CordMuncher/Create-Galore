@@ -43,6 +43,18 @@ pack (`shaderpack/`) stays as a research build; the two share only the DLSS hand
 Reflections; foam and calmer, more varied water; sun shafts; clouds; material maps; Create contraptions in the voxel
 copy (now they only cast sun shadows).
 
+## Own denoisers and Ray Reconstruction
+
+The pack doesn't use Ray Reconstruction yet. Where it smooths its own noisy light over frames or pixels, the code says
+`OWN DENOISER` (`grep -rn "OWN DENOISER" shaderpack2/shaders`), so a Ray Reconstruction mode knows what to take
+off:
+
+- `program/pixel_light_filter.csh`: the lamp light traced per pixel, brought back up to every pixel over frames and
+  from nearby samples. Off under Ray Reconstruction, which wants the raw samples; it also wants every pixel traced
+  each frame (RR doesn't take one pixel in a square at a time).
+- `program/gi.csh`: the bounce light, gathered per block over frames. A light store in the world rather than a
+  filter on the screen, so it can likely stay.
+
 ## Building
 
     python3 shaderpack2/programs.py          # writes the program files Iris looks for (after adding or removing one)

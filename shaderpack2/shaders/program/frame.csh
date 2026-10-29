@@ -10,9 +10,9 @@
 //   at the horizon, mixed by the square root of its height's sine), so mid-afternoon is golden and evenings glow;
 //   about 1.9, 1.1, 0.55 at noon and 2.7, 0.5, 0.05 a few degrees up;
 // - the moon's: faint and only a little cool (about 0.006, 0.0055, 0.008 at its height, full);
-// - the sky's: the air's own, pulled towards grey (sky_saturation), brighter and warmer as the sun sinks (the air
-//   alone dims too fast for the look) and on its own scale at night: about 0.22, 0.38, 0.71 facing up at noon,
-//   0.023, 0.04, 0.075 under a full moon;
+// - the sky's: the air's own, pulled towards grey (sky_saturation, more by day, with a touch of warmth), brighter
+//   and warmer as the sun sinks (the air alone dims too fast for the look) and on its own scale at night: about
+//   0.28, 0.38, 0.53 facing up at noon, 0.023, 0.04, 0.075 under a full moon;
 // - in rain the sun is mostly gone and the sky goes grey.
 // So sunlit and shaded parts differ in colour as well as in brightness: warm in the sun, blue in the shade (see
 // lib/lighting.glsl for how they mix).
@@ -44,6 +44,9 @@ const float sky_low = 3.8;
 const float sky_night = 1.8;
 const vec3 sky_low_tint = vec3(1.5, 0.85, 0.55);
 const float sky_saturation = 0.7;
+// The shade by day: further towards grey and a touch warm, halfway between our old blue and the look's warmer one.
+const float shade_saturation_day = 0.5;
+const vec3 shade_warmth = vec3(1.08, 1.0, 0.9);
 
 // A colour's distance from grey scaled by a power of it (under 1 pulls it towards grey), keeping its brightness.
 vec3 push_from_grey(vec3 c, float by) {
@@ -146,10 +149,12 @@ void main() {
     float day = smoothstep(-0.06, 0.0, sun.y);
     vec3 sky_tint = mix(vec3(1.0), mix(sky_low_tint, vec3(1.0), noon), day)
             * mix(sky_night, mix(sky_low, sky_high, noon), day);
+    float saturation = mix(sky_saturation, shade_saturation_day, day);
+    sky_tint *= mix(vec3(1.0), shade_warmth / luminance(shade_warmth), day);
     vec3 overcast = vec3(0.9, 0.95, 1.1);
-    vec3 up_lit = push_from_grey(up, sky_saturation) * sky_tint;
+    vec3 up_lit = push_from_grey(up, saturation) * sky_tint;
     up_lit = mix(up_lit, luminance(up_lit) * overcast, 0.7 * rain) * mix(1.0, 0.5, rain);
-    vec3 side_lit = push_from_grey(side_sky / 64.0, sky_saturation) * sky_tint;
+    vec3 side_lit = push_from_grey(side_sky / 64.0, saturation) * sky_tint;
     side_lit = mix(side_lit, luminance(side_lit) * overcast, 0.7 * rain) * mix(1.0, 0.5, rain);
 
     // The ground under the horizon: lit by the sun and the sky, a dull grey-green.

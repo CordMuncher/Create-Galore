@@ -190,12 +190,14 @@ void main() {
     float sky_gate = 1.0; // the End has no sky light: its light reaches wherever the shadow map lets it
 #endif
     if (facing > 0.0 && sky_gate > 0.0 && !lod) {
-        // What you hold gets a soft shadow: a sharp one (leaves' patterns) swims over it as you turn.
+        // What you hold gets a soft shadow: a sharp one (leaves' patterns) swims over it as you turn. Leaves let the
+        // light through the outside of their clump, and grass doesn't shade itself.
         float radius = (s.material == MAT_HAND ? 6.0 : thin ? 2.0 : 1.2) * SHADOW_SOFTNESS;
-        sun_reach = shadow_light(shadow_offset_point(scene, s.face, l), radius) * sky_gate;
+        float ignore = s.material == MAT_LEAVES ? 1.0 : s.material == MAT_PLANT ? 0.5 : 0.0;
+        sun_reach = shadow_light(shadow_offset_point(scene, s.face, l), radius, ignore, sun_beyond_map(s.sky)) * sky_gate;
         sun = g_light_color.rgb * facing * sun_reach;
     } else if (lod) {
-        sun = g_light_color.rgb * facing * vanilla_sky_share(s.sky);
+        sun = g_light_color.rgb * facing * sun_beyond_map(s.sky);
     }
 #endif
     parts.sun = sun;

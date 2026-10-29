@@ -36,8 +36,13 @@ vec3 frame_at(vec2 uv) {
 
 vec3 tone_curve(vec3 x) {
     x = max(x, 0.0);
-    // The shoulder: x / sqrt(1 + x^2) per channel, so the brightest colours ease towards white.
-    vec3 y = x * inversesqrt(1.0 + x * x);
+    // The shoulder: x / sqrt(1 + x^2), half per channel (the brightest colours ease towards white) and half on the
+    // brightness alone (they keep their hue), so sand in the noon sun stays sand-coloured.
+    vec3 per_channel = x * inversesqrt(1.0 + x * x);
+    float l = luminance(x);
+    vec3 same_hue = x * (inversesqrt(1.0 + l * l));
+    same_hue /= max(1.0, max3(same_hue));
+    vec3 y = mix(per_channel, same_hue, 0.5);
     // Contrast: a power over 1, more in the mid-tones and highlights than in the shadows.
     y = pow(y, vec3(1.1) + 0.2 * sqrt(y));
     return y;

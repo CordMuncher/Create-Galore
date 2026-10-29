@@ -291,10 +291,12 @@ void main() {
             s_pos[index] = l.pos;
             s_color[index] = l.color;
             s_reach[index] = l.reach;
-            // Half a block, less where the light sits in a tight spot (its shadows are then sharper).
-            EmptyCube c = empty_cube(l.pos);
-            vec3 room = min(l.pos - c.lo, c.hi - l.pos);
-            float space = c.level < 0 ? 1.0 : max(min(room.x, min(room.y, room.z)), 0.01);
+            // Half a block, less where the light's block sits in a tight spot (its shadows are then sharper). Measured
+            // from the block's middle, not the light's place in it: a portal's or a fire's place moves with its
+            // texture, and the width of every shadow it casts mustn't jump with it.
+            vec3 middle = floor(l.pos) + 0.5;
+            int middle_level = vox_level(middle);
+            float space = middle_level < 0 ? 1.0 : max(free_space(middle, middle_level), 0.05);
             s_radius[index] = 0.5 * min(1.0, space) * 0.6;
             s_contribution[index] = 0u;
             atomicMax(s_list_count, index + 1u);

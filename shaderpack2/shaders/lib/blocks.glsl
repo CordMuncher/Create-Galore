@@ -114,11 +114,15 @@ float light_reach(float level) {
     return BLOCK_LIGHT_REACH * level / 31.0;
 }
 
-// How much of a light arrives at a distance: falling with the square of the distance (softened right at the light),
-// eased to nothing at its reach, so each pool of light has a clear edge.
+// How much of a light arrives at a distance: falling with the square of the distance (softened right at the light,
+// over light_soft_core blocks), eased to nothing at its reach, so each pool of light has a clear edge. The core keeps
+// a lamp as bright at its foot as before and sends about twice as much a few blocks out, so light carries further
+// and softer (halfway to the look we follow, which sends about five times as much).
+const float light_soft_core = 2.2;
+
 float light_falloff(float distance, float reach) {
     float edge = clamp(1.0 - sqr(sqr(distance / reach)), 0.0, 1.0);
-    return edge * edge / (distance * distance + 1.0);
+    return edge * edge * light_soft_core / (distance * distance + light_soft_core);
 }
 
 // Log compression on the light's length: one lantern is bright, ten of them add up softly instead of blowing out.
