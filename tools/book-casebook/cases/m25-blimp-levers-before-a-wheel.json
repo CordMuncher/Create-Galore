@@ -141,7 +141,7 @@
   },
   "expect": {
     "has": [
-      "once the player can make a Steering Wheel"
+      "can't make a Steering Wheel and comparators yet"
     ],
     "lacks": [
       "juggle a lever"

@@ -1,0 +1,247 @@
+{
+  "title": "Blimp with one wheel and a Throttle Lever linked to an Analog Transmission in each pod",
+  "from": "2026-10-29 report: book aircraft ran their propellers flat out or off, with no throttle",
+  "roots": [
+    "R3",
+    "R4"
+  ],
+  "kind": "model",
+  "model": {
+    "title": "Blimp",
+    "size_x": 13,
+    "size_y": 17,
+    "size_z": 18,
+    "blocks": [
+      {
+        "block": "minecraft:spruce_planks",
+        "x": 4,
+        "y": 3,
+        "z": 4,
+        "x2": 8,
+        "y2": 3,
+        "z2": 13
+      },
+      {
+        "block": "minecraft:spruce_fence",
+        "x": 4,
+        "y": 4,
+        "z": 4,
+        "x2": 4,
+        "y2": 8,
+        "z2": 4
+      },
+      {
+        "block": "minecraft:spruce_fence",
+        "x": 4,
+        "y": 4,
+        "z": 13,
+        "x2": 4,
+        "y2": 8,
+        "z2": 13
+      },
+      {
+        "block": "minecraft:spruce_fence",
+        "x": 8,
+        "y": 4,
+        "z": 4,
+        "x2": 8,
+        "y2": 8,
+        "z2": 4
+      },
+      {
+        "block": "minecraft:spruce_fence",
+        "x": 8,
+        "y": 4,
+        "z": 13,
+        "x2": 8,
+        "y2": 8,
+        "z2": 13
+      },
+      {
+        "block": "aeronautics:white_envelope",
+        "x": 1,
+        "y": 9,
+        "z": 0,
+        "x2": 11,
+        "y2": 15,
+        "z2": 17,
+        "shape": "ellipsoid_shell"
+      },
+      {
+        "block": "minecraft:air",
+        "x": 5,
+        "y": 9,
+        "z": 6,
+        "x2": 7,
+        "y2": 9,
+        "z2": 10
+      },
+      {
+        "block": "aeronautics:adjustable_burner",
+        "x": 6,
+        "y": 4,
+        "z": 8
+      },
+      {
+        "block": "simulated:throttle_lever[facing=north]",
+        "x": 6,
+        "y": 4,
+        "z": 9
+      },
+      {
+        "block": "simulated:steering_wheel[facing=north]",
+        "x": 6,
+        "y": 4,
+        "z": 5
+      },
+      {
+        "block": "minecraft:comparator[facing=east]",
+        "x": 5,
+        "y": 4,
+        "z": 5
+      },
+      {
+        "block": "minecraft:comparator[facing=west]",
+        "x": 7,
+        "y": 4,
+        "z": 5
+      },
+      {
+        "block": "simulated:throttle_lever[facing=north,inverted=true]",
+        "x": 5,
+        "y": 4,
+        "z": 6
+      },
+      {
+        "block": "create:redstone_link[facing=up,receiver=false]",
+        "x": 4,
+        "y": 4,
+        "z": 6
+      },
+      {
+        "block": "minecraft:spruce_planks",
+        "x": 0,
+        "y": 12,
+        "z": 8,
+        "x2": 0,
+        "y2": 12,
+        "z2": 10
+      },
+      {
+        "block": "simulated:red_portable_engine[facing=south]",
+        "x": 0,
+        "y": 13,
+        "z": 8
+      },
+      {
+        "block": "simulated:analog_transmission[axis=z]",
+        "x": 0,
+        "y": 13,
+        "z": 9
+      },
+      {
+        "block": "create:cogwheel[axis=z]",
+        "x": 0,
+        "y": 14,
+        "z": 9
+      },
+      {
+        "block": "aeronautics:wooden_propeller[facing=south]",
+        "x": 0,
+        "y": 14,
+        "z": 10
+      },
+      {
+        "block": "create:redstone_link[facing=south,receiver=true]",
+        "x": 0,
+        "y": 13,
+        "z": 10
+      },
+      {
+        "block": "minecraft:spruce_planks",
+        "x": 12,
+        "y": 12,
+        "z": 8,
+        "x2": 12,
+        "y2": 12,
+        "z2": 10
+      },
+      {
+        "block": "simulated:red_portable_engine[facing=south]",
+        "x": 12,
+        "y": 13,
+        "z": 8
+      },
+      {
+        "block": "simulated:analog_transmission[axis=z]",
+        "x": 12,
+        "y": 13,
+        "z": 9
+      },
+      {
+        "block": "create:cogwheel[axis=z]",
+        "x": 12,
+        "y": 14,
+        "z": 9
+      },
+      {
+        "block": "aeronautics:wooden_propeller[facing=south]",
+        "x": 12,
+        "y": 14,
+        "z": 10
+      },
+      {
+        "block": "create:redstone_link[facing=south,receiver=true]",
+        "x": 12,
+        "y": 13,
+        "z": 10
+      }
+    ],
+    "part_of_vehicle": false
+  },
+  "inventory": [
+    {
+      "id": "create:andesite_casing",
+      "count": 4
+    },
+    {
+      "id": "create:large_cogwheel",
+      "count": 4
+    },
+    {
+      "id": "create:shaft",
+      "count": 4
+    },
+    {
+      "id": "minecraft:comparator",
+      "count": 4
+    },
+    {
+      "id": "create:brass_casing",
+      "count": 4
+    },
+    {
+      "id": "create:electron_tube",
+      "count": 4
+    },
+    {
+      "id": "minecraft:stick",
+      "count": 4
+    },
+    {
+      "id": "create:cogwheel",
+      "count": 4
+    }
+  ],
+  "expect": {
+    "has": [
+      "Throttle: an Analog Transmission in each propeller line",
+      "Steered with one Steering Wheel"
+    ],
+    "lacks": [
+      "no throttle",
+      "behind the throttle and some",
+      "steers nothing"
+    ]
+  }
+}

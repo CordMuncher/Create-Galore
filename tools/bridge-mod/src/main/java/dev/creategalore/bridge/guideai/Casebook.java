@@ -122,6 +122,8 @@ final class Casebook {
         BlockPos at;
         int[] box;
         BlockPos floor;
+        /** The ships the case's "assemble" made, taken away with the case. */
+        java.util.Set<java.util.UUID> ships = java.util.Set.of();
         /** The book as it was before the player snapshot and design briefs, for comparing against. */
         boolean plain;
         final List<Models.Draft> drafts = new ArrayList<>();
@@ -160,6 +162,8 @@ final class Casebook {
         try {
             JsonObject c = JsonParser.parseString(Files.readString(caseFile, StandardCharsets.UTF_8)).getAsJsonObject();
             clearStandin(level);
+            // Ships a stand-in assembled before a restart are still parked at the spot; take them away too.
+            Ships.remove(level, Ships.near(level, ORIGIN.south(SPACING * 4), 64), GuideAi.placed());
             Standin s = new Standin();
             s.question = c;
             s.plain = plain;
@@ -186,6 +190,19 @@ final class Casebook {
             int[] built = c.has("built") ? box(c, "built") : s.box;
             if (placed != null) for (BlockPos p : BlockPos.betweenClosed(s.at.offset(built[0], built[1], built[2]), s.at.offset(built[3], built[4], built[5])))
                 if (!level.getBlockState(p).isAir()) placed.add(level, p.immutable(), level.getBlockState(p));
+            if (c.has("assemble")) {
+                // An assembled ship or vehicle, as a player gets from a Physics Assembler: Sable moves the blocks into a
+                // plot of its own, carrying their placed marks.
+                int[] a = box(c, "assemble");
+                BlockPos from = s.at.offset(a[0], a[1], a[2]), to = s.at.offset(a[3], a[4], a[5]);
+                java.util.Set<java.util.UUID> before = Ships.ids(level);
+                server.getCommands().performPrefixedCommand(server.createCommandSourceStack().withLevel(level).withPermission(4)
+                        .withSuppressedOutput(), String.format(java.util.Locale.ROOT, "sable assemble area %d %d %d %d %d %d",
+                        from.getX(), from.getY(), from.getZ(), to.getX(), to.getY(), to.getZ()));
+                java.util.Set<java.util.UUID> made = new java.util.HashSet<>(Ships.ids(level));
+                made.removeAll(before);
+                s.ships = made;
+            }
             JsonArray stand = array(c, "stand");
             BlockPos feet = stand.size() >= 3 ? s.at.offset(stand.get(0).getAsInt(), stand.get(1).getAsInt(), stand.get(2).getAsInt()) : s.at;
             if (level.getBlockState(feet.below()).isAir()) {
@@ -214,6 +231,7 @@ final class Casebook {
         standin = null;
         if (s == null) return;
         PlacedBlocks placed = GuideAi.placed();
+        Ships.remove(level, s.ships, placed);
         for (BlockPos p : BlockPos.betweenClosed(s.at.offset(s.box[0], s.box[1] - 1, s.box[2]), s.at.offset(s.box[3], s.box[4], s.box[5]))) {
             if (placed != null) placed.remove(level, p);
             level.setBlock(p, Blocks.AIR.defaultBlockState(), 2 | 16);

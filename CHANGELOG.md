@@ -5,6 +5,21 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.6.45
+
+### Added
+- Create Galore Bridge 1.159.0.
+- **Ask the Book gives its aircraft a real throttle.** Its blimps and planes ran their propellers flat out or not at all, from a lever or clutch, so they lurched between full speed and nothing. It now designs one Throttle Lever at the helm that sets an Analog Transmission in each propeller line, anywhere from stopped to flat out in 16 steps (measured in game: a transmission turns its cogwheel at (15 - signal)/16 of its shaft's speed and stops it at 15, and Redstone Links carry the signal strength). The wheel's comparators can feed the same transmissions, so a small turn slows one side a little instead of cutting it. Its vehicle check names the throttle, and treats propellers with none, or only some behind it, as a fault when the player can make an Analog Transmission and a Throttle Lever.
+- **Ask the Book says when it falls back to levers.** For a player who can't make a Steering Wheel or the throttle parts yet, it may still steer by a lever per side or run the engines on and off, but it now says so in the answer and names the upgrade for later.
+- **Ask the Book judges an assembled ship as a whole.** It already read ships and balloons parked or flying as Sable vehicles. Now its vehicle check covers every block of the ship even when a trace or a box reads only part of it, so a big balloon read in part no longer looks like it leaks. Asked how to upgrade a parked lever-steered balloon, it reads the ship and lays out the wheel and throttle refit.
+- Seven new Ask the Book casebook cases for the throttle and for upgrading an assembled balloon. A question case can now assemble its build into a ship.
+
+### Fixed
+- **The Field Guide's flying examples have a throttle.** Steering and Controls has a page on the Analog Transmission and one on flying with one throttle, and the sky base and the biplane set their speed with a Throttle Lever. Their wheels now slow one side through the transmissions instead of cutting a clutch. The Ask the Book notes match.
+
+### Removed
+- Nothing.
+
 ## 0.6.44
 
 ### Added

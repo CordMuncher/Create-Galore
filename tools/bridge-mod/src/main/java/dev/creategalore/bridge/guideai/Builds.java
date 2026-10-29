@@ -37,7 +37,7 @@ import net.minecraft.world.level.material.FluidState;
  * but far from this one are out of reach. This is meant for cooperative play: any player's blocks count.
  */
 final class Builds {
-    private static final int MAX_SCAN = 200_000, MAX_MATCHES = 60, MAX_BUILDS = 15, MAX_TRACE = 450, MAX_TOUCHING = 220,
+    private static final int MAX_SCAN = 200_000, MAX_MATCHES = 60, MAX_BUILDS = 15, MAX_TRACE = 450, MAX_WHOLE = 20_000, MAX_TOUCHING = 220,
             MAX_GOGGLES = 30, MAX_AREA_SIDE = 24, GAP = 2,
             FLUID_MARGIN = 16, MAX_FLUID = 600, MAX_FLUID_LINES = 160;
 
@@ -257,8 +257,10 @@ final class Builds {
         queue.add(seed);
         int beyond = 0;
         BlockPos continueAt = null;
+        List<BlockPos> whole = new ArrayList<>();
         while (!queue.isEmpty()) {
             BlockPos p = queue.poll();
+            whole.add(p);
             if (build.size() >= MAX_TRACE) {
                 beyond++;
                 if (continueAt == null) continueAt = p;
@@ -275,7 +277,9 @@ final class Builds {
         }
         StringBuilder out = new StringBuilder("Build traced from " + Vision.xyz(seed) + (seed.equals(start) ? "" : " (the placed block next to "
                 + Vision.xyz(start) + ")") + ": ");
-        out.append(describe(level, placed, build, null));
+        // A ship or vehicle is judged whole, even when the listing is cut short: a balloon read in part leaks.
+        if (ship != null) whole = placed.inChunks(level, ship::holds, MAX_WHOLE);
+        out.append(describe(level, placed, build, null, whole));
         if (beyond > 0) out.append("\nThe build goes on: at least ").append(beyond).append(" more connected placed blocks were left out. "
                 + "Continue with trace_build from ").append(Vision.xyz(continueAt)).append(", or read_area for one part.");
         return out.toString();
@@ -299,7 +303,10 @@ final class Builds {
         StringBuilder out = new StringBuilder("Box x " + min.getX() + ".." + max.getX() + ", y " + min.getY() + ".." + max.getY()
                 + ", z " + min.getZ() + ".." + max.getZ() + ": ");
         if (inside.isEmpty() && seen.isEmpty()) return out.append("no placed blocks, and nothing in it was on the player's screen.").toString();
-        out.append(describe(level, placed, inside, net.minecraft.world.level.levelgen.structure.BoundingBox.fromCorners(min, max)));
+        // A box on a ship judges the whole ship as a vehicle, not the slice read.
+        Ships.Ship ship = Ships.holding(player, radius, min);
+        out.append(describe(level, placed, inside, net.minecraft.world.level.levelgen.structure.BoundingBox.fromCorners(min, max),
+                ship != null ? placed.inChunks(level, ship::holds, MAX_WHOLE) : inside));
         if (!seen.isEmpty()) {
             out.append("\nOther blocks in the box the player had on screen:\n");
             appendRuns(out, level, seen, MAX_TOUCHING, Map.of());
@@ -347,7 +354,9 @@ final class Builds {
     }
 
     /** The placed blocks in full, their networks, goggle readouts, and the fluids and blocks touching them. */
-    private static String describe(ServerLevel level, PlacedBlocks placed, List<BlockPos> build, net.minecraft.world.level.levelgen.structure.BoundingBox box) {
+    /** {@code whole} is what the machine and vehicle checks run on: the build, or all of it when the listing is cut short. */
+    private static String describe(ServerLevel level, PlacedBlocks placed, List<BlockPos> build, net.minecraft.world.level.levelgen.structure.BoundingBox box,
+                                   List<BlockPos> whole) {
         StringBuilder out = new StringBuilder();
         if (build.isEmpty()) return "no placed blocks.";
         int minX = Integer.MAX_VALUE, minY = Integer.MAX_VALUE, minZ = Integer.MAX_VALUE, maxX = Integer.MIN_VALUE,
@@ -411,7 +420,7 @@ final class Builds {
                     .append(": ").append(String.join("; ", lines)).append('\n');
         }
         if (!goggleText.isEmpty()) out.append("Engineer's Goggles show:\n").append(goggleText);
-        out.append(MachineCheck.check(level, build));
+        out.append(MachineCheck.check(level, build, whole));
 
         // Everything solid touching the build that isn't part of it: the ground, a wall it sits in.
         LongOpenHashSet touching = new LongOpenHashSet();
