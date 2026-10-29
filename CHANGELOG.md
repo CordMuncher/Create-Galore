@@ -5,6 +5,18 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.6.34
+
+### Added
+- Create Galore Fishing 0.3.20.
+
+### Fixed
+- **A hooked fish no longer whips round you sideways.** Going round the angler was free: the further out the fish, the faster it went, so a long line made it circle like a pendulum at tens of metres a second and end up behind you in seconds. Now sideways is swimming like any other way: a fish never goes faster than it can swim, all directions together, and what it spends taking line it can't spend going sideways. Its speed comes from its kind and its size (a bigger fish of a kind is a bit faster), more on a run and less as it tires. It still turns and sweeps off to the side on a run, just at a real pace.
+- **A boat can follow a hooked fish.** Moving sideways in a boat (or on foot) swings the line instead of dragging the fish along with you.
+
+### Removed
+- Nothing.
+
 ## 0.6.33
 
 ### Added
