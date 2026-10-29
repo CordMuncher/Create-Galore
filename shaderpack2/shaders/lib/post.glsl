@@ -2,8 +2,8 @@
 //
 // The exposure is fixed (no eye adaptation: the image never brightens in a cave or dims in the sun by itself; the
 // light levels carry day, night and caves), shifted by the EXPOSURE option. The curve is a Reinhard-like shoulder
-// with a firm knee, then a little more contrast in the highlights than in the shadows. The grade is plain: the
-// colour comes from the lights, not a filter.
+// with a firm knee, then more contrast in the highlights than in the shadows. The grade is plain: the colour comes
+// from the lights, not a filter.
 
 #if !defined LIB_POST
 #define LIB_POST
@@ -14,7 +14,7 @@
 
 uniform sampler2D colortex0;
 
-const float base_exposure = 0.8;
+const float base_exposure = 1.4;
 
 float exposure_scale() {
     return exp2(EXPOSURE) * base_exposure;
@@ -38,8 +38,8 @@ vec3 tone_curve(vec3 x) {
     x = max(x, 0.0);
     // The shoulder: x / sqrt(1 + x^2) per channel, so the brightest colours ease towards white.
     vec3 y = x * inversesqrt(1.0 + x * x);
-    // Contrast: a power a little over 1, more in the highlights.
-    y = pow(y, vec3(1.05) + 0.15 * y);
+    // Contrast: a power over 1, more in the mid-tones and highlights than in the shadows.
+    y = pow(y, vec3(1.1) + 0.2 * sqrt(y));
     return y;
 }
 

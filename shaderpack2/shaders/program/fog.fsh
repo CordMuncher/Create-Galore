@@ -3,9 +3,9 @@
 //   from every side, so this is the light in the air itself), gathered along the view ray in 8-block steps up to
 //   the first surface or half the voxel box; bright spots count much more than dim ones, the average's fourth root
 //   makes even faint light show, and it fades in from nothing at your feet to full 32 blocks out (your own torch
-//   doesn't fog your view). It darkens what is behind it a little, then adds itself: haze, not a glow on top. In
-//   the Overworld it is faint by day out in the open and full at night and underground;
-// - haze far off, thickest at sea level, in the sky's colour at the horizon;
+//   doesn't fog your view). It darkens what is behind it a little, then adds itself (in display space): haze, not a
+//   glow on top. In the Overworld it is faint by day out in the open and full at night and underground;
+// - haze far off, thickest at sea level, in the sky's colour at the horizon, starting slowly;
 // - water around you (when the camera is under water) and lava.
 
 #include "/lib/settings.glsl"
@@ -98,7 +98,7 @@ void main() {
     if (isEyeInWater == 1) {
         float d = min(dist, 96.0);
         vec3 through = exp(-water_extinction * d);
-        vec3 lit = (g_light_color.rgb * 0.5 + g_sky_up.rgb) * vanilla_sky_share(float(eyeBrightnessSmooth.y) / 240.0);
+        vec3 lit = (g_light_color.rgb * 0.25 + g_sky_up.rgb) * vanilla_sky_share(float(eyeBrightnessSmooth.y) / 240.0);
         lit += vec3(0.02, 0.04, 0.05) * CAVE_BRIGHTNESS * 0.2;
         vec3 scattered = lit * water_scattering / water_extinction * (1.0 - through) * vec3(0.55, 0.9, 1.0);
         color = color * through + scattered;
@@ -111,15 +111,21 @@ void main() {
     // Haze far off.
     if (isEyeInWater == 0) {
         float height = scene.y + cameraPosition.y;
-        float density = 0.0035 * exp(-max(height - 63.0, 0.0) / 60.0);
-        float haze = 1.0 - exp(-min(dist, far_end) * density);
+        // Starts slowly (squared), so the land around you stays clear: about 0.05 at 64 blocks, 0.15 at 128, 0.35
+        // at 256.
+        float density = 0.005 * exp(-max(height - 63.0, 0.0) / 60.0);
+        float haze = sqr(1.0 - exp(-min(dist, far_end) * density));
         float border = smoothstep(far_end * 0.8, far_end, dist);
         haze = max(haze * 0.7, border);
-        color = mix(color, g_horizon.rgb, haze * solid);
+        // Mixed in display space, like the light on surfaces: in linear light even a little of the bright horizon
+        // lifts dark land a lot, so the distance greys out.
+        const vec3 to_display = vec3(1.0 / 2.2);
+        vec3 shown = mix(pow(max(color, 0.0), to_display), pow(g_horizon.rgb, to_display), haze * solid);
+        color = pow(shown, vec3(2.2));
     }
 #elif defined WORLD_NETHER
     float haze = 1.0 - exp(-dist * 0.012);
-    color = mix(color, srgb_to_linear(fogColor) * 0.4, haze);
+    color = mix(color, srgb_to_linear(fogColor) * 0.23, haze);
 #endif
 
     // The coloured light in the air.
@@ -138,7 +144,10 @@ void main() {
         if (isEyeInWater == 1) {
             fog *= vec3(0.4, 0.8, 1.0);
         }
-        color = color * (1.0 - clamp(max3(fog) * 0.5, 0.0, 0.5)) + fog * 0.65;
+        // Mixed in display space, like the light on surfaces (see lib/lighting.glsl): faint haze stays faint.
+        vec3 shown = pow(max(color, 0.0), vec3(1.0 / 2.2));
+        shown = shown * (1.0 - clamp(max3(fog) * 0.5, 0.0, 0.5)) + fog * 0.65;
+        color = pow(shown, vec3(2.2));
     }
 
     out_color = vec4(color, 1.0);

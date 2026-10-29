@@ -1,13 +1,15 @@
-# Create Galore Shaders 2
+# Vector
 
 A shader pack for Iris lit by traced coloured light, written from the ground up for Create Galore. It hands DLSS and
-FSR (through the Create Galore Bridge) everything they need, so they anti-alias or upscale it without patching.
+FSR (through the Create Galore Bridge) everything they need, so they anti-alias or upscale it without patching. The
+name is for its motion vectors: not only the camera's, but how each moving thing moved (Create's machines and
+contraptions, ships, mobs, the hand), which is what lets DLSS and FSR keep them sharp.
 
-**Work in progress: milestone 1.** It lives on its own branch and is not in the modpack yet. The first Create Galore
+**Work in progress: build 2.** It lives on its own branch and is not in the modpack yet. The first Create Galore
 pack (`shaderpack/`) stays as a research build; the two share only the DLSS hand-off and the mods' plumbing
 (Colorwheel, Distant Horizons), not their lighting.
 
-## What milestone 1 does
+## What it does
 
 - **A voxel copy of the world around you**, made every frame during the shadow pass: six levels of detail (the finest
   near you), with see-through cells for glass and water, each block's average colour, and a distance field that lets
@@ -15,8 +17,14 @@ pack (`shaderpack/`) stays as a research build; the two share only the DLSS hand
 - **Coloured block light, traced.** Every light (a table of vanilla's lights with their colours and strengths, or any
   block Minecraft says gives light, coloured from its texture) is traced through the voxel copy, so light stops at
   walls and takes the colour of the glass it passes through. Per block for everything, and per pixel near you for
-  sharp shadows from lamps, sampled at a fraction of the pixels and filtered over frames.
-- **Bounce light.** Sunlight, skylight and block light bounce off the blocks around you and take on their colour.
+  sharp shadows from lamps, sampled at a fraction of the pixels and filtered over frames. Partial blocks (paths,
+  slabs, fences, Create's parts) start their rays outside their own shape, so they light like full blocks.
+- **Bounce light.** Sunlight, skylight and block light bounce off the blocks around you and take on their colour
+  (far off, every other frame).
+- **Light that mixes like display colours**: the sun, the sky and the lamps add up the way the look we follow does,
+  so sunlit and shaded parts, and a lamp's pool and the dark around it, stand well apart. Warm sun and blue shade,
+  golden afternoons and evenings, nights lit faintly and only a little blue; rain takes the sun away and greys the sky.
+- **Ambient occlusion** on screen for nooks and corners, from nearby walls only, over everything but mobs and the hand.
 - **Hot texels glow**: a torch's flame, not its stick; lava, glowstone and froglights all over.
 - **The sun and the moon** cast steady shadows from a shadow map (no noise, so nothing flickers), coloured through
   glass and through water with its caustics.
@@ -24,8 +32,9 @@ pack (`shaderpack/`) stays as a research build; the two share only the DLSS hand
 - **Water**: its own colour, deeper the deeper it is, and waves crossing from three directions, longer ones faster.
 - **Light in the air**: a coloured haze around lamps (strongest at night, underground and in the Nether), haze far
   off, water and lava around you.
-- **Bloom**, with a bloom fog that softens far lights at night and in murky air.
-- **A fixed exposure**: day, night and caves look as dark as they are; the tone curve eases highlights to white.
+- **Bloom**, with a bloom fog that softens far lights at dusk and night, in rain and underground.
+- **A fixed exposure**: day, night and caves look as dark as they are; the tone curve eases highlights to white and
+  deepens the mid-tones a little.
 - **Create's machines and contraptions** (Colorwheel) and **Distant Horizons** are lit like the rest of the world.
 - The Nether and the End have their own light and haze.
 

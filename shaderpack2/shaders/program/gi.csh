@@ -11,7 +11,9 @@
 //   through the real shadow map) times that block's colour; and some sky, the more the further it got. A ray that
 //   gets away brings the sky. The sky is scaled by the sky light the cell's neighbours saw.
 // The new rays join the old ones, which fade (by about 1% per frame at 60 frames a second), so the light settles
-// over a second or two and holds several bounces (each hit reads the bounce light already there).
+// over a second or two and holds several bounces (each hit reads the bounce light already there). More than
+// far_tiles blocks from you, half the tiles trace each frame (a checkerboard): the light there settles a little
+// slower, where nobody looks closely, and most of the box is that far.
 
 #include "/lib/settings.glsl"
 #include "/lib/trace.glsl"
@@ -38,6 +40,7 @@ shared uint s_trace[512];
 
 const float gi_reach = 30.0;
 const float gi_memory = 700.0; // rays a cell holds at most
+const float far_tiles = 24.0;
 
 bool in_view(vec3 centre, float radius, float margin) {
     vec3 view = (gbufferModelView * vec4(centre - cameraPositionFract, 1.0)).xyz;
@@ -179,7 +182,7 @@ void main() {
         if (sum.a > 0.0) {
             imageStore(cg_gi_img, slot, vec4(sum.rgb / sum.a, 1.0));
         }
-    } else {
+    } else if (length(vec3(tile_min) + 4.0) < far_tiles || (tile.x + tile.y + tile.z + frameCounter) % 2 == 0) {
         s_trace[atomicAdd(s_trace_count, 1u)] = index;
     }
     barrier();

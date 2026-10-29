@@ -2,9 +2,11 @@
 // up (BLOOM_UP 5..1), each adding the smaller one, softly spread, to its own. All in one image (cg_bloom_img, the way
 // down in its left half, the way up in its right), level k stacked above level k - 1 (see lib/bloom.glsl).
 //
-// The first copy also takes in the bloom fog: far things count more in it the darker and murkier it is (night,
-// caves, under water, rain), so far lights and far surfaces turn into a soft glow while the frame itself stays as it
-// was. Bright pixels are weighed down in the first copy, so a single sparkling pixel doesn't flicker into a blob.
+// The first copy also takes in the bloom fog: far things count more in it the darker and murkier it is (none by
+// day out in the open; dusk, night, caves, under water, rain), so far lights and far surfaces turn into a soft glow
+// while the frame itself stays as it was. It starts slowly (a twentieth at 32 blocks, a quarter at 64, three
+// quarters at 128), so what is near stays clear. Bright pixels are weighed down in the first copy, so a single
+// sparkling pixel doesn't flicker into a blob.
 
 #include "/lib/settings.glsl"
 #include "/lib/bloom.glsl"
@@ -57,14 +59,24 @@ float distance_at(vec2 uv) {
     return 2.0 * near * far / (far + near - (2.0 * d - 1.0) * (far - near));
 }
 
+// How strong the bloom fog is: 0 by day in the open, 1.5 as the sun sets rising to 3 at night, more in rain and
+// caves, most under water.
 float murk() {
-    float night = 1.0 - smoothstep(-0.1, 0.2, g_sun_dir.w);
-    float cave = 1.0 - float(eyeBrightnessSmooth.y) / 240.0;
+    float open = float(eyeBrightnessSmooth.y) / 240.0;
+    float night = 1.5 * (1.0 - smoothstep(0.0, 0.04, g_sun_dir.w)) + 1.5 * (1.0 - smoothstep(-0.37, 0.0, g_sun_dir.w));
 #if defined NO_SKY_LIGHT
-    night = 1.0;
+    night = 3.0;
+    open = 1.0;
 #endif
-    float m = max(night, cave) + 0.6 * rainStrength + (isEyeInWater == 1 ? 1.5 : 0.0);
-    return 0.15 + m;
+    if (isEyeInWater == 1) {
+        return 8.0;
+    }
+    return (night + 4.0 * rainStrength * rainStrength) * open + 6.0 * (1.0 - open);
+}
+
+// How much of the bloom fog a point that far off takes (0..1).
+float fog_share(float d) {
+    return sqr(sqr(1.0 - exp(-d / 50.0)));
 }
 #endif
 
@@ -89,7 +101,7 @@ void main() {
         vec2 at = uv + o * step_uv;
 #if BLOOM_DOWN == 1
         vec3 c = frame_at(at);
-        float boost = 1.0 + 3.0 * fogginess * (1.0 - exp(-distance_at(at) / 96.0));
+        float boost = 1.0 + fogginess * fog_share(distance_at(at));
         c *= boost;
         float w = 1.0 / (1.0 + luminance(c) * 0.25);
 #else

@@ -124,6 +124,24 @@ Hit trace_ray(vec3 p, vec3 dir, float max_t, int max_steps) {
     return h;
 }
 
+// Where a ray leaving a surface at p (facing face) starts. A fence post, a path or a slab doesn't fill its block,
+// but at the coarser levels its cell counts as solid (at all of them, for the top of a path), so a ray from a point on
+// it would stop before it got out, and which level is read depends on how far off the camera is: black patches that
+// move as you walk. So when the cell p is in is solid at the level read there, the start moves out of it along
+// the face. One cell only: a solid cell beyond it is something else in the way (a wall the face looks at).
+vec3 trace_start(vec3 p, vec3 face) {
+    int level = vox_level(p);
+    if (level < 0) {
+        return p;
+    }
+    ivec3 cell = vox_cell(p, level);
+    if (sdf_at(cell, level) != 0u) {
+        return p;
+    }
+    float s = exp2(float(-level));
+    return p + face * (box_exit(p, safe_inverse(face), vec3(cell) * s, vec3(cell + 1) * s) + s * 0.01);
+}
+
 // How much of a light at distance dist along dir gets to p (0..1): the narrowest the empty space around the ray
 // gets, against the cone's radius there, which runs from width_start at p to width_end at the light (the lamp's
 // size). The empty space is the distance field's, from the middle of the cell the ray is in (a cell next to a solid

@@ -269,7 +269,7 @@ void main() {
 #endif
     vec3 light = forward_light(n, v_scene_pos, light_levels(), 1.0, shadow_radius);
 #if defined PROGRAM_CLOUDS
-    light = g_light_color.rgb * 0.6 + g_sky_up.rgb * 1.4;
+    light = g_light_color.rgb * 0.35 + g_sky_up.rgb * 1.2;
 #endif
     out_color = vec4(albedo * light * color.a, color.a);
 #endif

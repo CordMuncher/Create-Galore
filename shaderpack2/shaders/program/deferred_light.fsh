@@ -36,8 +36,11 @@ in vec2 v_uv;
 /* RENDERTARGETS: 0 */
 layout(location = 0) out vec4 out_color;
 
-// Screen-space ambient occlusion: eight looks into the half sphere over the surface, in view space, half a block
-// out; a surface is shaded by how many land behind something in front of them.
+// Screen-space ambient occlusion: eight looks into the half sphere over the surface, in view space, up to 0.6 of a
+// block out; a surface is shaded by how many land just behind something. Only something near counts: a look that
+// lands behind a surface far in front of it (the rim of a hole, seen from the side) says nothing about this point,
+// and counting it made a hole's floor darken or not with the angle you looked from. Returns what multiplies the
+// whole lit colour (linear): the open share to the power 0.88.
 float ssao(vec3 view, vec3 view_normal, ivec2 texel) {
 #ifdef SSAO
     float noise = fract(ign(vec2(texel)) + float(frameCounter % 64) * GOLDEN);
@@ -65,10 +68,10 @@ float ssao(vec3 view, vec3 view_normal, ivec2 texel) {
         float surface_z = pixel_to_view(at, d).z;
         float in_front = surface_z - sp.z;
         if (in_front > 0.02) {
-            occluded += smoothstep(0.0, 1.0, radius / max(in_front, radius));
+            occluded += 1.0 - smoothstep(radius, radius * 1.5, in_front);
         }
     }
-    return 1.0 - occluded / 8.0 * 0.9;
+    return pow(1.0 - occluded / 8.0, 0.88);
 #else
     return 1.0;
 #endif
@@ -76,9 +79,9 @@ float ssao(vec3 view, vec3 view_normal, ivec2 texel) {
 
 vec3 sky_color(vec3 dir, ivec2 texel) {
 #if defined WORLD_NETHER
-    return srgb_to_linear(fogColor) * 0.4;
+    return srgb_to_linear(fogColor) * 0.23;
 #elif defined WORLD_END
-    return vec3(0.012, 0.008, 0.016);
+    return vec3(0.007, 0.0046, 0.009);
 #else
     return sky(dir, true) + texelFetch(colortex5, texel, 0).rgb * moon_illuminance();
 #endif
@@ -90,6 +93,14 @@ void main() {
         out_color = vec4(0.0);
         return;
     }
+#if DEBUG_VIEW == 13
+    // The frame's light, at half its value, in four bands from the top: the sun's (or moon's), the sky's on a
+    // surface facing up, facing the horizon and facing down.
+    int band = clamp(int(4.0 - 4.0 * gl_FragCoord.y / render_size().y), 0, 3);
+    vec4 frame_light = band == 0 ? g_light_color : band == 1 ? g_sky_up : band == 2 ? g_sky_side : g_sky_down;
+    out_color = vec4(frame_light.rgb * 0.5, 1.0);
+    return;
+#endif
     float depth = texelFetch(depthtex0, texel, 0).r;
     vec3 view;
     bool lod = false;
@@ -146,7 +157,10 @@ void main() {
     vec4 gi = fade > 0.0 ? sample_block_table(cg_gi_tex, in_front) : vec4(0.0);
     vec3 open_sky = sky_light_on(n) * vanilla_sky_share(s.sky);
 #ifdef GI
-    parts.sky = mix(open_sky, max(gi.rgb * GI_STRENGTH, 0.5 * open_sky), fade * gi.a);
+    // Bounce light, never below half the open sky's (a mob's never below all of it: it isn't in the voxel copy, so
+    // the nook it stands in shouldn't turn it into a silhouette).
+    float gi_floor = s.material == MAT_ENTITY ? 1.0 : 0.5;
+    parts.sky = mix(open_sky, max(gi.rgb * GI_STRENGTH, gi_floor * open_sky), fade * gi.a);
 #else
     parts.sky = open_sky;
 #endif
@@ -161,6 +175,8 @@ void main() {
     float facing = sun_facing(n, l);
     if (thin) {
         facing = mix(facing, 1.0, 0.45);
+    } else if (s.material == MAT_ENTITY) {
+        facing = 0.25 + 0.75 * max(dot(n, l), 0.0); // mobs: the light wraps further, so they never turn flat black
     }
     float sky_gate = smoothstep(0.05, 0.3, s.sky);
     if (facing > 0.0 && sky_gate > 0.0 && !lod) {
@@ -175,17 +191,24 @@ void main() {
 #endif
     parts.sun = sun;
 
-    // Shade: the corners' shading, the ambient occlusion and the face's turn.
+    // Shade: the corners' shading and the face's turn, inside the mix. The screen's ambient occlusion darkens the
+    // whole lit colour afterwards (not mobs or the hand, which it would outline).
     float ao = mix(1.0, s.ao, AO_STRENGTH);
-    vec3 view_normal = mat3(gbufferModelView) * s.face;
-    if (s.material != MAT_HAND && !lod) {
-        ao *= mix(1.0, ssao(view, view_normal, texel), AO_STRENGTH);
+    float screen_ao = 1.0;
+    if (s.material != MAT_HAND && s.material != MAT_ENTITY && !lod) {
+        screen_ao = mix(1.0, ssao(view, mat3(gbufferModelView) * s.face, texel), AO_STRENGTH);
     }
     parts.shade = ao * side_shade(n);
     parts.glow = s.emission * 4.0;
 
     vec3 light = mix_light(parts);
     vec3 diffuse_color = s.albedo * (1.0 - 0.7 * s.metal);
+    // Hot texels burn in a deeper version of their own colour: a torch's pale yellow flame orange, a soul flame cyan.
+    if (s.emission > 0.0) {
+        float top = max(max3(diffuse_color), 1e-4);
+        vec3 deeper = pow(diffuse_color / top, vec3(1.6)) * top;
+        diffuse_color = mix(diffuse_color, deeper, smoothstep(0.0, 0.5, s.emission));
+    }
     vec3 color = diffuse_color * light;
 
     // Highlights: every nearby light's, and the sun's.
@@ -196,6 +219,7 @@ void main() {
         color += g_light_color.rgb * sun_reach * tint * ggx_specular(n, v, l, s.smoothness, mix(0.04, 0.6, s.metal));
     }
 #endif
+    color *= screen_ao;
 
 #if DEBUG_VIEW == 1
     color = s.albedo;
@@ -215,7 +239,7 @@ void main() {
 #elif DEBUG_VIEW == 8
     color = vec3(float(sdf_at(ivec3(floor(in_front)), 0)) / 16.0);
 #elif DEBUG_VIEW == 9
-    color = vec3(ao);
+    color = vec3(ao * screen_ao);
 #elif DEBUG_VIEW == 10
     // The surface's own block in the voxel copy: red solid, green see-through, blue a light; dim when no colour
     // was gathered for it.

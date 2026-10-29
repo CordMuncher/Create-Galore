@@ -2,6 +2,19 @@
 // the sun and the moon are, the light the one that lights the world gives, and the sky's light on surfaces facing
 // up, sideways and down, from the sky view table (see program/sky.csh). The Nether has no sun and no sky: its
 // light comes from its fog's colour. The End has a still light from above.
+//
+// The light on surfaces is set apart from the sky as you see it, and tuned to the look we follow (numbers are linear
+// light, at the fixed exposure in lib/post.glsl):
+// - the sun's: what gets through the air, times a warm colour that grows as the sun sinks (sun_high at noon, sun_low
+//   at the horizon, mixed by the square root of its height's sine), so mid-afternoon is golden and evenings glow;
+//   about 1.9, 1.1, 0.55 at noon and 2.7, 0.5, 0.05 a few degrees up;
+// - the moon's: faint and only a little cool (about 0.006, 0.0055, 0.008 at its height, full);
+// - the sky's: the air's own, pulled towards grey (sky_saturation), brighter and warmer as the sun sinks (the air
+//   alone dims too fast for the look) and on its own scale at night: about 0.22, 0.38, 0.71 facing up at noon,
+//   0.023, 0.04, 0.075 under a full moon;
+// - in rain the sun is mostly gone and the sky goes grey.
+// So sunlit and shaded parts differ in colour as well as in brightness: warm in the sun, blue in the shade (see
+// lib/lighting.glsl for how they mix).
 
 #define WRITE_GLOBALS
 #include "/lib/settings.glsl"
@@ -19,7 +32,23 @@ uniform vec3 sunPosition;
 uniform vec3 shadowLightPosition;
 uniform int moonPhase;
 uniform vec3 fogColor;
+uniform float rainStrength;
 layout(rgba32f) writeonly uniform image2D cg_globals_img;
+
+const vec3 sun_high = vec3(2.0, 1.25, 0.72);
+const vec3 sun_low = vec3(6.0, 2.45, 1.0);
+const vec3 moon_light = vec3(0.0064, 0.0063, 0.0104);
+const float sky_high = 1.26;
+const float sky_low = 3.8;
+const float sky_night = 1.8;
+const vec3 sky_low_tint = vec3(1.5, 0.85, 0.55);
+const float sky_saturation = 0.7;
+
+// A colour's distance from grey scaled by a power of it (under 1 pulls it towards grey), keeping its brightness.
+vec3 push_from_grey(vec3 c, float by) {
+    vec3 pushed = pow(max(c, 1e-6), vec3(by));
+    return pushed * (luminance(c) / max(luminance(pushed), 1e-6));
+}
 
 shared vec3 s_up[64];
 shared vec3 s_side[64];
@@ -66,17 +95,17 @@ void main() {
     vec3 haze = srgb_to_linear(fogColor);
     g_light_dir = vec4(0.0, 1.0, 0.0, 0.0);
     g_light_color = vec4(0.0);
-    g_sky_up = vec4(haze * 0.10, 0.0);
-    g_sky_side = vec4(haze * 0.10, 0.0);
-    g_sky_down = vec4(haze * 0.10, 0.0);
-    g_horizon = vec4(haze * 0.4, 0.0);
+    g_sky_up = vec4(haze * 0.057, 0.0);
+    g_sky_side = vec4(haze * 0.057, 0.0);
+    g_sky_down = vec4(haze * 0.057, 0.0);
+    g_horizon = vec4(haze * 0.23, 0.0);
 #elif defined WORLD_END
     g_light_dir = vec4(normalize(vec3(0.25, 1.0, 0.4)), 0.0);
-    g_light_color = vec4(vec3(0.42, 0.34, 0.52) * 0.6, 0.0);
-    g_sky_up = vec4(vec3(0.20, 0.14, 0.26) * 0.25, 0.0);
-    g_sky_side = vec4(vec3(0.20, 0.14, 0.26) * 0.2, 0.0);
-    g_sky_down = vec4(vec3(0.20, 0.14, 0.26) * 0.1, 0.0);
-    g_horizon = vec4(vec3(0.05, 0.035, 0.07), 0.0);
+    g_light_color = vec4(vec3(0.42, 0.34, 0.52) * 0.34, 0.0);
+    g_sky_up = vec4(vec3(0.20, 0.14, 0.26) * 0.14, 0.0);
+    g_sky_side = vec4(vec3(0.20, 0.14, 0.26) * 0.11, 0.0);
+    g_sky_down = vec4(vec3(0.20, 0.14, 0.26) * 0.057, 0.0);
+    g_horizon = vec4(vec3(0.029, 0.02, 0.04), 0.0);
 #else
     vec3 up = vec3(0.0);
     vec3 side_sky = vec3(0.0);
@@ -98,14 +127,29 @@ void main() {
     float cam_r = camera_radius(cameraPosition.y);
     vec3 through = air_transmittance(cam_r, max(light.y, 0.0));
     float rise = smoothstep(0.0, 0.08, light.y);
-    vec3 light_color = by_sun ? through * sun_illuminance / PI : through * moon_illuminance() / PI * vec3(0.86, 0.93, 1.0);
+    float noon = sqrt(max(sun.y, 0.0));
+    vec3 moon_now = moon_light * NIGHT_BRIGHTNESS * (0.35 + 0.65 * g_moon_dir.w); // a new moon gives a third
+    vec3 light_color = through * (by_sun ? mix(sun_low, sun_high, noon) : moon_now);
+    float rain = rainStrength;
+    light_color = mix(light_color, vec3(luminance(light_color)), 0.6 * rain) * mix(1.0, 0.08, rain);
     g_light_dir = vec4(light, by_sun ? 1.0 : 0.0);
     g_light_color = vec4(light_color * rise, 0.0);
 
+    // The sky: day and night swap over while the sun is just under the horizon (the air's own twilight fades out on
+    // its own).
+    float day = smoothstep(-0.06, 0.0, sun.y);
+    vec3 sky_tint = mix(vec3(1.0), mix(sky_low_tint, vec3(1.0), noon), day)
+            * mix(sky_night, mix(sky_low, sky_high, noon), day);
+    vec3 overcast = vec3(0.9, 0.95, 1.1);
+    vec3 up_lit = push_from_grey(up, sky_saturation) * sky_tint;
+    up_lit = mix(up_lit, luminance(up_lit) * overcast, 0.7 * rain) * mix(1.0, 0.5, rain);
+    vec3 side_lit = push_from_grey(side_sky / 64.0, sky_saturation) * sky_tint;
+    side_lit = mix(side_lit, luminance(side_lit) * overcast, 0.7 * rain) * mix(1.0, 0.5, rain);
+
     // The ground under the horizon: lit by the sun and the sky, a dull grey-green.
-    vec3 ground = vec3(0.12, 0.13, 0.10) * (up + g_light_color.rgb * max(light.y, 0.0));
-    g_sky_up = vec4(up, 0.0);
-    g_sky_side = vec4((side_sky + ground * side_ground) / 64.0, 0.0);
+    vec3 ground = vec3(0.12, 0.13, 0.10) * (up_lit + g_light_color.rgb * max(light.y, 0.0));
+    g_sky_up = vec4(up_lit, 0.0);
+    g_sky_side = vec4(side_lit + ground * side_ground / 64.0, 0.0);
     g_sky_down = vec4(ground, 0.0);
     vec3 away = normalize(vec3(-sun.x, 0.0, -sun.z) + vec3(1e-4, 0.0, 0.0));
     g_horizon = vec4(sky_air(normalize(away + vec3(0.0, 0.05, 0.0))), 0.0);

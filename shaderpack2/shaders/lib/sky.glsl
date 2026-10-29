@@ -11,15 +11,14 @@
 
 uniform sampler2D cg_sky_tex; // the air's tables (see lib/atmosphere.glsl)
 
-// The sun's light above the air, in the pack's units: a white surface facing it at noon reads about 1.2, with the
-// sky's about 0.4 on top, so a sunlit block sits near a lamp-lit one at the same exposure (the fixed exposure that
-// suits lamp light by night suits the day too).
-const float sun_illuminance = 4.0;
+// The sun's light above the air, for the sky as you see it (its air and its disc). The light the sun and the sky
+// give surfaces is set apart from this, in program/frame.csh.
+const float sun_illuminance = 2.3;
 const float sun_radius = 0.06; // radians: about Minecraft's own sun
 
-// The full moon's light above the air (the new moon's is a third of it).
+// The full moon's light above the air, for the night sky as you see it (the new moon's is a third of it).
 float moon_illuminance() {
-    return 0.3 * NIGHT_BRIGHTNESS * (0.35 + 0.65 * g_moon_dir.w);
+    return 0.17 * NIGHT_BRIGHTNESS * (0.35 + 0.65 * g_moon_dir.w);
 }
 
 vec3 air_transmittance(float r, float mu) {
@@ -85,7 +84,7 @@ vec3 sun_disc(vec3 dir) {
     }
     float r = angle / sun_radius;
     float limb = 1.0 - 0.6 * (1.0 - sqrt(max(0.0, 1.0 - r * r)));
-    float edge = smoothstep(1.0, 0.92, r);
+    float edge = 1.0 - smoothstep(0.92, 1.0, r);
     float cam_r = camera_radius(cameraPosition.y);
     vec3 through = air_transmittance(cam_r, dir.y);
     // Bright enough to bloom, not the real sun's thousands.
@@ -95,7 +94,7 @@ vec3 sun_disc(vec3 dir) {
 // The whole sky in a direction, without the moon.
 vec3 sky(vec3 dir, bool with_sun) {
     vec3 c = sky_air(dir);
-    float night = smoothstep(0.05, -0.15, g_sun_dir.w);
+    float night = 1.0 - smoothstep(-0.15, 0.05, g_sun_dir.w);
     float cam_r = camera_radius(cameraPosition.y);
     if (dir.y > -0.02) {
         c += stars(dir) * night * air_transmittance(cam_r, max(dir.y, 0.0)) * 0.5;

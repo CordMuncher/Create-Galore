@@ -1,12 +1,15 @@
 // How a surface's light comes together (every lit program: the deferred pass for the G-buffer, the forward programs
 // for water, glass and particles).
 //
-// The light is mixed in a square-root space: sqrt(shade^2 * (block + (sun + sky)^2 + minimum) + glow^2). Sun and sky
-// light come out about as they went in; block light goes in unsquared, so it comes out square-rooted: dim block
-// light is lifted a lot and strong block light is squeezed. With the log compression it already has (see
-// compress_light), that is what makes the coloured light read strong: dim, far light still shows its colour, and
-// many lights never blow out. Inside the voxel box Minecraft's own block light is replaced by the traced one, not
-// added to, so unlit corners stay dark; outside it, and for Distant Horizons, Minecraft's levels stand in.
+// The light is mixed the way the look we follow was tuned: in display space (as if light were sRGB-encoded, about
+// linear to the power 1/2.2), as sqrt(shade^2 * (block + (sun + sky)^2 + minimum) + glow^2), and the result goes
+// back to linear light by the power 2.2. Sun and sky light arrive linear and go to display space first, so on their
+// own they come out as they went in, but together they add as display values do. Block light, the minimum and the
+// glow are display-space values already (block light log-compressed, see compress_light, and times 4); block light
+// goes in unsquared, so it comes out about to the power 1.1: dim light falls away fast and a lamp's pool has an
+// edge, while strong light still never blows out. Shade darkens by its power 2.2. Inside the voxel box Minecraft's
+// own block light is replaced by the traced one, not added to, so unlit corners stay dark; outside it, and for
+// Distant Horizons, Minecraft's levels stand in.
 
 #if !defined LIB_LIGHTING
 #define LIB_LIGHTING
@@ -16,9 +19,9 @@
 #include "/lib/globals.glsl"
 #include "/lib/blocks.glsl"
 
-// The faint cool light where no sky light reaches (deep caves), so they never go fully black.
+// The faint cool light where no sky light reaches (deep caves), so they never go fully black (display space).
 vec3 minimum_light(float sky) {
-    return vec3(0.010, 0.012, 0.015) * CAVE_BRIGHTNESS * (1.0 - sky);
+    return vec3(0.012, 0.013, 0.016) * CAVE_BRIGHTNESS * (1.0 - sky);
 }
 
 // Minecraft's own block light (0..1) as the traced light would give it from a torch: for the edge of the voxel box,
@@ -48,18 +51,20 @@ float side_shade(vec3 n) {
 }
 
 struct LightParts {
-    vec3 sun;     // the sun's (or moon's) light that reaches the surface, facing included
-    vec3 sky;     // the sky and bounce light
-    vec3 block;   // block light, compressed (see compress_light), times 4
-    vec3 minimum;
+    vec3 sun;     // the sun's (or moon's) light that reaches the surface, facing included (linear)
+    vec3 sky;     // the sky and bounce light (linear)
+    vec3 block;   // block light, compressed (see compress_light), times 4 (display space)
+    vec3 minimum; // (display space)
     float shade;  // ambient occlusion and side shading
-    float glow;   // the surface's own light (hot texels)
+    float glow;   // the surface's own light, hot texels (display space)
 };
 
-// The mix. Returns the light on the surface: times its colour for what leaves it.
+// The mix. Returns the light on the surface (linear): times its colour for what leaves it.
 vec3 mix_light(LightParts p) {
-    vec3 sun_sky = p.sun + p.sky;
-    return sqrt(max(sqr(p.shade) * (p.block + sun_sky * sun_sky + p.minimum), 0.0) + sqr(p.glow));
+    const vec3 to_display = vec3(1.0 / 2.2);
+    vec3 sun_sky = pow(max(p.sun, 0.0), to_display) + pow(max(p.sky, 0.0), to_display);
+    vec3 l = max(sqr(p.shade) * (p.block + sun_sky * sun_sky + p.minimum), 0.0) + sqr(p.glow);
+    return pow(l, vec3(1.1)); // the square root, then back to linear by the power 2.2
 }
 
 // How the sun lights a face: a little past side-on still catches some (the light wraps), so block sides don't go

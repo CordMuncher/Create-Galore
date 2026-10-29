@@ -68,7 +68,7 @@ VARIANTS = [
     ("box2-scale6-levels4", ["DISTANT_HORIZONS"], [value("VOXEL_BOX", 1, 2), value("PIXEL_LIGHT_SCALE", 3, 6),
                                                     value("VOXEL_LEVELS", 6, 4)]),
     ("noall", [], [flip("PIXEL_LIGHT", False), flip("GI", False), flip("SSAO", False), flip("HAND_LIGHT", False)]),
-] + [(f"debug-{n}", [], [value("DEBUG_VIEW", 0, n)]) for n in range(1, 13)]
+] + [(f"debug-{n}", [], [value("DEBUG_VIEW", 0, n)]) for n in range(1, 14)]
 
 
 def expand(path, edits):

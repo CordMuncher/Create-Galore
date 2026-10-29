@@ -124,9 +124,9 @@ void sort_candidates(uint index) {
 }
 
 // The light that one point gets from a light at to, of colour (at a block) and reach, through a cone of radius at
-// the light; adds its highlight to spec.
-vec3 light_from(vec3 p, vec3 n, vec3 v, float smoothness, bool thin, vec3 to, vec3 color, float reach, float radius,
-                inout vec3 spec, inout int traces, vec3 jitter) {
+// the light, traced from start (see trace_start); adds its highlight to spec.
+vec3 light_from(vec3 p, vec3 start, vec3 n, vec3 v, float smoothness, bool thin, vec3 to, vec3 color, float reach,
+                float radius, inout vec3 spec, inout int traces, vec3 jitter) {
     vec3 to_light = to - p;
     float d = length(to_light);
     if (d >= reach || d < 1e-3) {
@@ -145,7 +145,9 @@ vec3 light_from(vec3 p, vec3 n, vec3 v, float smoothness, bool thin, vec3 to, ve
         return vec3(0.0);
     }
     traces++;
-    float visible = cone_visibility(p, dir, d, 0.0, radius, 0.5, 64);
+    vec3 from_start = to - start;
+    float start_d = length(from_start);
+    float visible = cone_visibility(start, from_start / max(start_d, 1e-3), start_d, 0.0, radius, 0.5, 64);
     if (visible <= 0.0) {
         return vec3(0.0);
     }
@@ -189,6 +191,7 @@ void main() {
 
     Surface s;
     vec3 p = vec3(0.0);
+    vec3 start = vec3(0.0);
     vec3 v = vec3(0.0, 1.0, 0.0);
     if (has_surface) {
         s = read_surface(pixel);
@@ -197,6 +200,7 @@ void main() {
         v = normalize(-scene);
         bool hand = s.material == MAT_HAND;
         p = vox_pos(scene) + s.face * (hand ? 0.15 : 0.04);
+        start = trace_start(p, s.face);
         atomicMin(s_lo[0], float_order(p.x));
         atomicMin(s_lo[1], float_order(p.y));
         atomicMin(s_lo[2], float_order(p.z));
@@ -249,6 +253,21 @@ void main() {
     }
     barrier();
 
+    // No light near this tile (most of the screen by day, out in the open): nothing to weigh, sort or trace.
+    bool held_light = false;
+#ifdef HAND_LIGHT
+    held_light = max(heldBlockLightValue, heldBlockLightValue2) > 0;
+#endif
+    if (s_count == 0u && !held_light) {
+        if (index == 0u && list_fits(own_base)) {
+            data_store(own_base, 0u);
+        }
+        float sampled = has_surface ? 1.0 : 0.0;
+        imageStore(cg_pl_img, sample_texel, vec4(0.0, 0.0, 0.0, (float(turn) + 1.0) * sampled));
+        imageStore(cg_pl_img, sample_texel + ivec2(imageSize(cg_pl_img).x / 2, 0), vec4(0.0, 0.0, 0.0, sampled));
+        return;
+    }
+
     // Weighed and sorted.
     uint candidates = min(s_count, uint(candidates_max));
     float score = -1.0;
@@ -291,14 +310,14 @@ void main() {
             vec3 hand_scene = mat3(gbufferModelViewInverse) * vec3(0.25, -0.25, -0.35) + gbufferModelViewInverse[3].xyz;
             float level = max(10.0, 31.0 * held / 20.0);
             vec4 torch = light_kind(0);
-            diffuse += light_from(p, s.normal, v, s.smoothness, thin, vox_pos(hand_scene), torch.rgb * light_brightness(level),
-                                  light_reach(level), 0.12, spec, traces, jitter);
+            diffuse += light_from(p, start, s.normal, v, s.smoothness, thin, vox_pos(hand_scene),
+                                  torch.rgb * light_brightness(level), light_reach(level), 0.12, spec, traces, jitter);
         }
 #endif
         uint lights = s_list_count;
         for (uint j = 0u; j < lights && traces < PIXEL_LIGHT_TRACES; j++) {
-            vec3 c = light_from(p, s.normal, v, s.smoothness, thin, s_pos[j], s_color[j], s_reach[j], s_radius[j],
-                                spec, traces, jitter);
+            vec3 c = light_from(p, start, s.normal, v, s.smoothness, thin, s_pos[j], s_color[j], s_reach[j],
+                                s_radius[j], spec, traces, jitter);
             if (max3(c) > 0.0) {
                 diffuse += c;
                 atomicMax(s_contribution[j], floatBitsToUint(max3(c)));
