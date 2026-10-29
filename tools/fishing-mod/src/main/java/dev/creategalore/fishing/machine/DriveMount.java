@@ -30,6 +30,17 @@ public interface DriveMount extends RodMount {
 
     BlockEntity blockEntity();
 
+    /** A geared drive keeps the rod's bait in its own slot while the rod is in (see {@link ReelDrive#stowBait}). */
+    @Override
+    default void rodSetIn() {
+        drive().rodSetIn();
+    }
+
+    @Override
+    default void rodTakingOut() {
+        drive().refitBait();
+    }
+
     @Override
     default BlockPos mountPos() {
         return blockEntity().getBlockPos();

@@ -740,3 +740,23 @@ Reported: fish from a Reel Drive in a barrel read "Common size" with no weight, 
   first) hid every letter; polygon-offset letters still dropped out. What holds: `FloatingLabel` draws like a mob's
   name tag, backing plus faint letters `SEE_THROUGH`, then the letters `NORMAL` with no backing. The backing shows
   through blocks like a name tag's, but a label only shows while the crosshair is on its block.
+
+## 0.3.25: a set-in rod's bait lives in the drive's slot; the goggles keep the fish a surprise (pack 0.6.40)
+
+Emre (29 Oct): a rod set in with bait already on it showed an empty bait slot, and that bait couldn't be seen, added
+to or taken out. And "Fish on: <species>, <grams>" on the goggles took away the anticipation: you should only know
+what it is when you see it in the water.
+
+- **`ReelDrive.stowBait`** (geared drives, line in): the rod's fitted bait goes into the bait slot (`insertItem`, so
+  only bait of the slot's kind, up to a stack; live bait into a Live-Bait Bucket in the slot via `putBack`); what
+  doesn't fit stays on the rod. Run once after the rod is set in (`RodMount.rodSetIn`, new) and once each time the
+  line comes back in (a transient `stowed` flag, also run on the first tick after loading, so rods set in before this
+  version get stowed). The cast's `rebait` still loads up to `RodItem.BAIT_CAPACITY` (16) onto the hook, so what the
+  fish didn't eat returns to the slot with the line.
+- **`ReelDrive.refitBait`** on take-out (`RodMount.rodTakingOut`, new; line in only): `rebait`, so the rod leaves
+  with up to 16 of the slot's bait and the rest stays. The Rod Holder and Basic drive have no slot and are unchanged.
+- **Goggles**: `fish_on` is just "Fish on!" (no species, no weight). The fish is still drawn in the water once it
+  surfaces, which is the intended tell.
+- Tested in a client: 5 fish scraps on a rod moved to the slot on set-in, shown in the window; 20 more added by
+  shift-click (25); rod out carried 16, 9 stayed. On a Fuel drive, Cast now took 16 onto the hook, a forced bite ate
+  one, 15 came back into the slot. Goggles during the fight read "Fish on!".

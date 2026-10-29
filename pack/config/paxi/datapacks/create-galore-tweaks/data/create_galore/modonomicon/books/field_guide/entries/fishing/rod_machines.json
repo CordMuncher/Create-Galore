@@ -60,7 +60,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**Modes:**\n\n- **Cast and wait** (the default): casts once and holds, for float, bottom and trolling rigs.\n- **Cast and retrieve**: winds a lure back slowly and casts again.\n\nA **bait slot** (by hand, hopper or funnel; a Live-Bait Bucket works) re-baits the rod before each cast."
+      "text": "**Modes:**\n\n- **Cast and wait** (the default): casts once and holds, for float, bottom and trolling rigs.\n- **Cast and retrieve**: winds a lure back slowly and casts again.\n\nA **bait slot** (by hand, hopper or funnel; a Live-Bait Bucket works) re-baits the rod before each cast. A rod's own bait moves into it while the rod is in."
     },
     {
       "type": "modonomicon:text",
@@ -122,7 +122,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**Experience.** A machine earns half what you would for each catch, with no release bonus. It banks it and pays it out whenever a rod goes in or out.\\\n\\\n[#](FFFFFF)[#]() [#](7A3C9A)[Goggles](entry://glossary/goggles)[#]() show the rod, a bite or fish on and its tension, line out, drag, bait and bait in store, reel wear, gear, what it can still wind against, fuel and banked experience."
+      "text": "**Experience.** A machine earns half what you would for each catch, with no release bonus. It banks it and pays it out whenever a rod goes in or out.\\\n\\\n[#](FFFFFF)[#]() [#](7A3C9A)[Goggles](entry://glossary/goggles)[#]() show the rod, a bite or fish on (not which fish) and its tension, line out, drag, bait and bait in store, reel wear, gear, what it can still wind against, fuel and banked experience."
     },
     {
       "type": "modonomicon:text",

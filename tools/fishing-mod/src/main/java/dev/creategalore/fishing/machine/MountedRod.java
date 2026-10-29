@@ -227,6 +227,7 @@ public final class MountedRod {
                 MachineAngler machine = angler();
                 // The line stays out: a cast rod goes in with its hook, bite or fish.
                 if (player.fishing instanceof CastHook hook && !hook.isRemoved() && hook.hand() == hand) hook.handTo(machine);
+                mount.rodSetIn();
                 payXp(player);
                 level.playSound(null, be.getBlockPos(), SoundEvents.ARMOR_EQUIP_CHAIN.value(), SoundSource.BLOCKS, 0.7f, 1.2f);
                 changed();
@@ -236,6 +237,7 @@ public final class MountedRod {
         if (!rod.isEmpty() && held.isEmpty() && hand == InteractionHand.MAIN_HAND) {
             if (level.isClientSide) heldUseAfterRodSwap = true;
             if (!level.isClientSide) {
+                mount.rodTakingOut();
                 ItemStack out = rod;
                 CastHook hook = hook();
                 rod = ItemStack.EMPTY;
