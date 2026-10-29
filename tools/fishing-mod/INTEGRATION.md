@@ -219,6 +219,9 @@ All new ids are `create_galore_fishing:` unless they say `tide:`.
   be farmed automatically.
 - Breaking a wall of a tank spills its fish; breaking off a whole end keeps them in what's left. An empty hand on
   a tank shows its size, water, fish and food.
+- **Weight span on small fish (0.3.23)**: a fish under 3 kg keeps only its size class (so it stacks); its tooltip
+  gives the weights that class spans for the species (`SizeModel.lengthBandCm`, capped at 3 kg). The client gets
+  each fish item's sizes in a `SizeSync` payload with the fish data (network version 4).
 - **Sea creatures (0.3.22)**: a full Hybrid Aquatic Creature Net lets its mob in: starfish, crabs, urchins, Hybrid
   Aquatic's fish, axolotls, any water fish. A fishing fish without a pattern of its own goes in as its fish item; the
   rest live in the tank as the net itself (the whole mob kept), drawn as that very mob, crawlers on the sand. An empty

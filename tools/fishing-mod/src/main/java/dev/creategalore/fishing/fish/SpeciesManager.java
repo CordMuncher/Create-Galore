@@ -8,6 +8,7 @@ import com.mojang.serialization.JsonOps;
 import dev.creategalore.fishing.CreateGaloreFishing;
 import dev.creategalore.fishing.bait.BaitKind;
 import dev.creategalore.fishing.net.FishDataSync;
+import dev.creategalore.fishing.net.SizeSync;
 import dev.creategalore.fishing.sim.Curve;
 import dev.creategalore.fishing.sim.FishFight;
 import dev.creategalore.fishing.sim.SizeModel;
@@ -69,7 +70,8 @@ public final class SpeciesManager extends SimplePreparableReloadListener<Species
         NeoForge.EVENT_BUS.addListener((AddReloadListenerEvent event) -> event.addListener(new SpeciesManager()));
         NeoForge.EVENT_BUS.addListener((OnDatapackSyncEvent event) -> {
             FishDataSync payload = FishDataSync.of(published);
-            event.getRelevantPlayers().forEach(player -> PacketDistributor.sendToPlayer(player, payload));
+            SizeSync sizes = SizeSync.of(byItem);
+            event.getRelevantPlayers().forEach(player -> PacketDistributor.sendToPlayer(player, payload, sizes));
         });
     }
 

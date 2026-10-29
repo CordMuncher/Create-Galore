@@ -204,6 +204,7 @@
   "tooltip.create_galore_fishing.size_class.trophy": "Trophy",
   "tooltip.create_galore_fishing.size_class.unique": "Unique",
   "tooltip.create_galore_fishing.catch": "%s, %s, %s cm",
+  "tooltip.create_galore_fishing.size_range": "%s, %s to %s",
   "tooltip.create_galore_fishing.caught_by": "Caught by %s on day %s",
   "screen.create_galore_fishing.catch.title": "Your catch",
   "screen.create_galore_fishing.catch.keep": "Keep (+%s XP)",
