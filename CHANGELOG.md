@@ -5,6 +5,18 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.6.43
+
+### Added
+- Create Galore Bridge 1.157.0.
+- **Pre-glue on the Schematicannon.** A new switch at the end of the cannon's placement settings (the Super Glue button) glues every block the cannon prints to the printed blocks it touches, so a printed ship, train car or piston build moves as one piece without gluing it by hand. The cannon takes Super Glue from its input chests like any other material: one use for each glue box it makes. A box grows over the build as the blocks land, up to 16 blocks a side, so a 40 by 14 hull with a deck took 15 uses. Without glue the cannon waits on Super Glue as on a missing block, even with Skip Missing on, since a half-glued build would come apart. The ground under the build and any block that isn't in the schematic (a tree, a stray block, the cannon) stay out of the glue. Blocks touching only at a corner, or floating free, aren't glued, as by hand. While Pre-glue is on, glue boxes saved in the schematic itself aren't printed (or paid for). New Field Guide page *Printing it glued* under *Building a Ship*.
+
+### Fixed
+- **A Schematicannon waiting on a missing block resumes after a restart.** One that was waiting for a block when its chunk unloaded or the server stopped never printed again, even once the block was brought and Play pressed: it stayed on "Searching". It now picks the print up again.
+
+### Removed
+- Nothing.
+
 ## 0.6.42
 
 ### Added
