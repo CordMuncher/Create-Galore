@@ -5,6 +5,17 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.6.42
+
+### Added
+- Create Galore Bridge 1.156.0.
+
+### Fixed
+- **Hot air burner flame under shader packs.** Under Photon a lit Hot Air Burner showed no flame above it, only a see-through, flame-shaped hole off to the side that let far-away Distant Horizons terrain show through. Aeronautics drew the flame past the shader pack, so Photon painted over its colour but kept its depth, and with Photon's render scale below 100% the hole also landed at the wrong place and size. With a shader pack on, the flame is now drawn through the pack as fire, with the same shape, colours and flicker as without shaders, so it sits on the burner, is solid, and glows in packs that light up fire.
+
+### Removed
+- Nothing.
+
 ## 0.6.41
 
 ### Added

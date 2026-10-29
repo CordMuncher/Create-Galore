@@ -80,6 +80,18 @@ public final class NameTagDefer {
         }
     }
 
+    /** True while a shader pack draws the level as seen from the player (not its shadow map, not a menu or ponder scene). */
+    public static boolean inPackLevelPass() {
+        if (PACK_IN_USE == null) {
+            return false;
+        }
+        try {
+            return (boolean) PACK_IN_USE.invoke(IRIS_API) && (boolean) RENDERING_LEVEL.invoke() && !(boolean) SHADOW_PASS.invoke(IRIS_API);
+        } catch (Throwable t) {
+            return false;
+        }
+    }
+
     /** The buffers a name tag should draw into: ours during a shader pack's level pass, otherwise the ones it was given. */
     public static MultiBufferSource redirect(MultiBufferSource given) {
         if (PACK_IN_USE == null) {
