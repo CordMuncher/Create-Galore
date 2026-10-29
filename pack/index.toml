@@ -1040,7 +1040,7 @@ hash = "e84b11dd7453e6ea26ac21aa9b66b55b8b8672379d674450f0470cb9d710b856"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/survival.md"
-hash = "bd48a0e038ce8991236235ce3580d29b67178ef8d9b73b3efd92aaeb480879fc"
+hash = "3adb96143935d0e2d6cb78eca346afd7d5b31d660e65d52771b783e9b27c0708"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/transport.md"
@@ -1948,7 +1948,7 @@ hash = "68908ef7c7064c05e3371d59d44ea2b91579c7fa134c5d74d13dc31b5c8f2a79"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/survival/pollution.json"
-hash = "ecd92dc03958c537fd2173761d7dbc41134282c47ec67ab67d71e1d1ab6422c3"
+hash = "8a24f0803c5db07c79d9c2276ca3ce0e17cf9ddf95c942f66e5cb07006de4251"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/survival/pollution_control.json"
@@ -1981,6 +1981,10 @@ hash = "c4964b42b17257a95619e0e048edf9b9b0a9ed13f1bd71548cd1c991d193d699"
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/survival/thirst.json"
 hash = "5168d83eb9517fe64c982bfbfed5a5141a93e9654c786c1efec213165d2cd154"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/survival/water_pumps.json"
+hash = "d61334768172b7ec5a2c385b45fdcbcba5b89b97c8229cc9957fb8e076f6e00c"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/transport/coasters.json"
@@ -2177,6 +2181,18 @@ hash = "bd520d5097e793340a76ed57cf165cc5f6ae9f3a18fe8beef92f7ac5f443d11d"
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/recipe/unify/tfmg__raw_lead_to_createnuclear__raw_lead.json"
 hash = "b5e82e62f7615510dba5e3227c41fa9aa4d10ca0456124ea2a4dcd272d6df2c3"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/recipe/water_pump/diamond_water_pump.json"
+hash = "3108fad6e5e34d647dcf29c181e48536a975687c36ddfa4927e12153399b0daf"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/recipe/water_pump/gold_water_pump.json"
+hash = "bed44bfc8f8d7c3c1756df0c7454f625f0c338b6dc3d4bc7600c709b553e6e1b"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/recipe/water_pump/iron_water_pump.json"
+hash = "7ee242214a0429c6a8006a756e2d7dd8235fe4a9175f1c70b19eb6d79ae2f984"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/worldgen/structure_set/aeronautics_sky.json"
@@ -4998,8 +5014,8 @@ hash = "db683b65dc15a03dd6de2d34d5dc6ad0e3490744ced513a8cc584784ee9d3d8b"
 metafile = true
 
 [[files]]
-file = "mods/create-galore-bridge-1.154.0.jar"
-hash = "371d126dccbd5baf4964f2c1db6f28a36a97daa6b49d59c34d6e91faa0bf9ec2"
+file = "mods/create-galore-bridge-1.155.0.jar"
+hash = "cbc39a72299ee81b45e7d1a6dcb4f4194a0913c32454aa4e1fd0575767aa9b35"
 
 [[files]]
 file = "mods/create-galore-fishing-0.3.24.jar"

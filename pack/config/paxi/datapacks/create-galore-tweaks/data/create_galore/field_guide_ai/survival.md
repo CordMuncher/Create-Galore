@@ -1,4 +1,4 @@
-<!-- sources sha256:54ac2d635dfd5f04222bfa66fc1b10e4819bc94ba0a3643fc0f3d9f0cd6b5861 -->
+<!-- sources sha256:cbe899e839a0719bb51a8755f2df74f36749d1b8560ab79c49b3d9fe8e0e1b3c -->
 # Survival Layers (survival)
 Layers: Temperature (Cold Sweat), Thirst, Seasons (Serene Seasons), Pollution (Pollution of the Realms smog, exhaust systems), food/health, death/graves.
 
@@ -112,7 +112,7 @@ Layers: Temperature (Cold Sweat), Thirst, Seasons (Serene Seasons), Pollution (P
 - Wind pushes smog sideways a few blocks at a time; small base smoke drifts off. Smog never fades on its own: factory cloud keeps growing until exhaust is filtered.
 - Aerometer [adpother:aerometer]: needle shows smog around you, beeps near gas; item frame = alarm.
 - Watch out, explosions: machine whose smoke has nowhere to go (sealed room full of gas) blows up after a few tries and breaks (see survival/smog_pressure). Fire, torches, lava never set smog off.
-- Related: (see survival/pollution_control), (see survival/smog_pressure), (see industry/liquid_fuel), (see industry/tfmg_oil), (see create_basics/heat)
+- Related: (see survival/pollution_control), (see survival/smog_pressure), (see survival/water_pumps), (see industry/liquid_fuel), (see industry/tfmg_oil), (see create_basics/heat)
 
 ## survival/pollution_control | Exhaust Systems
 - Key: Vents pull smog into Ducts, a Pump pushes it up and out; pump runs from an Encased Fan under it; Filter Frames on the way out catch every kind of smog and let out harmless exhaust, nothing to refill; filtered exhaust must reach the open sky. Parts: Advanced Chimneys chimneys, vents, ducts, pumps + Filter Frames.
@@ -140,6 +140,17 @@ Layers: Temperature (Cold Sweat), Thirst, Seasons (Serene Seasons), Pollution (P
 - Sealed smelter: 1. fan, lava (or Blaze Burner) and belt inside a box of full blocks; 2. casing on the belt, shafts, pipes and door through the wall; 3. Filter Frame in the roof; 4. open sky or chimney above the frame. Each item smelted sends smog up through the filter.
 - Watch out, overpressure: a sealed space that fills up has no room for more smoke. Furnace or other machine in it blows up after a few tries and breaks. Fan smelting into it blows the casing open (as hard as a Creeper) after 4 batches that find no room.
 - Related: (see survival/pollution_control), (see survival/pollution), (see create_basics/fans), (see create_basics/item_logistics)
+
+## survival/water_pumps | Cleaning Polluted Water
+- Key: sulfur smog touching a water surface turns that top water block into Polluted Water [adpother:polluted_water]; a Water Pump with a Filter Frame on top pulls it in and cleans it; pump metal = reach, frame metal = pull speed.
+- Polluted water: from sulfur smog or acid rain on surface water. Wind pushes patches across the water. Seeps into ground beside it: crops, saplings, flowers, ferns, grass, leaves, bamboo, cactus die; farmland, grass, dirt path -> podzol; dirt, rooted dirt -> coarse dirt; coral under it dies.
+- Setup: 1. Water Pump with water beside or below it; 2. Filter Frame (any metal, see survival/pollution_control) on top, never needs material; 3. any redstone signal (lever, redstone block, circuit). Right-click the pump: shows reach and what it is pulling, or what is missing (frame, water, signal).
+- How it works: finds polluted water within reach, pulls each patch across the surface toward itself one block at a time (visible), patch reaching the pump comes out clean with bubbles. Patches travel through water only; one cut off by land or a wall stays put.
+- Iron Water Pump [create_galore_bridge:iron_water_pump]: reach 25 blocks every way from the pump (51 x 51 area), 4 patches at a time. Recipe (create_galore:water_pump/iron_water_pump): Fluid Pipe, 4 Iron Sheets, Mechanical Pump, Copper Casing.
+- Gold Water Pump [create_galore_bridge:gold_water_pump]: reach 50, 8 at a time. Recipe (create_galore:water_pump/gold_water_pump): Iron Water Pump + 4 Golden Sheets + Electron Tube.
+- Diamond Water Pump [create_galore_bridge:diamond_water_pump]: reach 100, 16 at a time. Recipe (create_galore:water_pump/diamond_water_pump): Gold Water Pump + 4 Diamonds + Precision Mechanism.
+- Speed by the frame on top (it filters all water it draws): Iron Filter Frame 1 block a second, gold 2, diamond 4. Any pump with any frame.
+- Related: (see survival/pollution), (see survival/pollution_control), (see survival/seasons_crops)
 
 ## survival/food_and_health | Food and Health
 - AppleSkin shows what food does: food tooltips list hunger and saturation (see glossary/saturation); hunger bar shows how much a held item would restore; saturation appears as overlay. Useful with Farmer's Delight's larger food list (see food/farmers_delight).
