@@ -117,8 +117,9 @@ const float eyeBrightnessHalflife = 5.0;
 // --- Debug -----------------------------------------------------------------------------------------------------------
 
 // 0 off. 1 albedo, 2 normals, 3 sun shadow, 4 block light (per block), 5 block light (per pixel), 6 bounce light,
-// 7 the voxel copy (what a ray from the camera hits first), 8 its distance field, 9 ambient occlusion.
-#define DEBUG_VIEW 0 // [0 1 2 3 4 5 6 7 8 9 10 11 12 13]
+// 7 the voxel copy (what a ray from the camera hits first), 8 its distance field, 9 ambient occlusion, 14 the light
+// layers side by side (see deferred_light.fsh).
+#define DEBUG_VIEW 0 // [0 1 2 3 4 5 6 7 8 9 10 11 12 13 14]
 
 // --- What follows ----------------------------------------------------------------------------------------------------
 

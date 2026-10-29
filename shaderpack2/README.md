@@ -15,7 +15,8 @@ pack (`shaderpack/`) stays as a research build; the two share only the DLSS hand
 - **A voxel copy of the world around you**, made every frame during the shadow pass: six levels of detail (the finest
   under and around you), each moving a cell at a time as you do, with see-through cells for glass and water, each
   block's average colour, and a distance field that lets rays skip empty space and is read blended, so light changes
-  smoothly from one level of detail to the next.
+  smoothly from one level of detail to the next. A ray that grazes a surface reads coarser levels as it creeps, so it
+  reaches whatever is in its way instead of running out of steps (a ray that still does counts as blocked).
 - **Coloured block light, traced.** Every light (a table of vanilla's lights with their colours and strengths, or any
   block Minecraft says gives light, coloured from its texture) is traced through the voxel copy, so light stops at
   walls and takes the colour of the glass it passes through. Per block for everything, and per pixel near you for

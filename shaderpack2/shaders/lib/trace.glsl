@@ -89,8 +89,8 @@ float vox_sky(uint word) {
     return g == 0u ? 0.0 : g == 1u ? 1.0 / 3.0 : g == 3u ? 2.0 / 3.0 : 1.0;
 }
 
-// The empty cube around a point (vox_pos space): its corners, and the level it was read at. Empty when the cell
-// itself is solid (lo > hi). Level -1 outside every box.
+// The empty cube around a point (vox_pos space), read at no finer level than finest (see ray_finest): its corners,
+// and the level it was read at. Empty when the cell itself is solid (lo > hi). Level -1 outside every box.
 struct EmptyCube {
     vec3 lo;
     vec3 hi;
@@ -98,9 +98,9 @@ struct EmptyCube {
     bool solid;
 };
 
-EmptyCube empty_cube(vec3 p) {
+EmptyCube empty_cube(vec3 p, int finest) {
     EmptyCube c;
-    c.level = vox_level(p);
+    c.level = min(vox_level(p), finest);
     c.solid = false;
     c.lo = p;
     c.hi = p;
@@ -133,17 +133,32 @@ struct Hit {
     int level;
 };
 
+// A ray that grazes a surface creeps along it a cell at a time, and could use up its steps before it gets to what
+// is in its way. So from its ninth step on, a step shorter than its share of the way left (the distance left over
+// the steps left) has it read one level coarser from then on: bigger cells, so bigger steps, and a coarse cell is
+// solid wherever a finer one is, so nothing gets skipped. Returns the finest level the ray may read next.
+const int ray_grace_steps = 8;
+
+int ray_finest(int finest, int level, int i, int max_steps, float stepped, float left) {
+    int steps_left = max_steps - i - 1;
+    if (i >= ray_grace_steps && steps_left > 0 && stepped * float(steps_left) < left) {
+        return max(level - 1, 0);
+    }
+    return finest;
+}
+
 // To the first solid cell along a ray from p (vox_pos space), up to max_t blocks. A miss leaves the box (or runs
-// out of steps) with hit false and t where it stopped.
+// out of steps, which ray_finest makes rare) with hit false and t where it stopped.
 Hit trace_ray(vec3 p, vec3 dir, float max_t, int max_steps) {
     Hit h;
     h.hit = false;
     h.level = -1;
     vec3 inv_dir = safe_inverse(dir);
     float t = 0.0;
+    int finest = VOXEL_LEVELS - 1;
     for (int i = 0; i < max_steps; i++) {
         vec3 q = p + dir * t;
-        EmptyCube c = empty_cube(q);
+        EmptyCube c = empty_cube(q, finest);
         if (c.level < 0) {
             break;
         }
@@ -152,11 +167,13 @@ Hit trace_ray(vec3 p, vec3 dir, float max_t, int max_steps) {
             h.level = c.level;
             break;
         }
-        t += box_exit(q, inv_dir, c.lo, c.hi) + exp2(float(-c.level)) * 0.01;
+        float stepped = box_exit(q, inv_dir, c.lo, c.hi) + exp2(float(-c.level)) * 0.01;
+        t += stepped;
         if (t >= max_t) {
             t = max_t;
             break;
         }
+        finest = ray_finest(finest, c.level, i, max_steps, stepped, max_t - t);
     }
     h.t = t;
     h.pos = p + dir * t;
@@ -190,17 +207,23 @@ bool start_inside(vec3 p) {
 
 // How much of a light at distance dist along dir gets to p (0..1): the narrowest the empty space around the ray
 // gets (free_space, where the ray is at each step), against the cone's radius there, which runs from width_start at
-// p to width_end at the light (the lamp's size). The last stop_short blocks before the light are its own.
+// p to width_end at the light (the lamp's size). The last stop_short blocks before the light are its own. A ray that
+// leaves the voxel box counts as getting there; one that runs out of steps first doesn't (it used to, and a lamp
+// behind a ridge lit a thin line along the foot of a wall: rays from there crept along the floor until their steps
+// ran out; ray_finest now lets such rays reach the ridge).
 float cone_visibility(vec3 p, vec3 dir, float dist, float width_start, float width_end, float stop_short,
                       int max_steps) {
     vec3 inv_dir = safe_inverse(dir);
     float visible = 1.0;
     float t = 0.0;
     float end = dist - stop_short;
+    int finest = VOXEL_LEVELS - 1;
+    bool left_box = false;
     for (int i = 0; i < max_steps && t < end; i++) {
         vec3 q = p + dir * t;
-        int level = vox_level(q);
+        int level = min(vox_level(q), finest);
         if (level < 0) {
+            left_box = true;
             break;
         }
         ivec3 cell = vox_cell(q, level);
@@ -213,7 +236,12 @@ float cone_visibility(vec3 p, vec3 dir, float dist, float width_start, float wid
         visible = min(visible, free_space(q, level) / (width + 0.02));
         vec3 lo = vec3(cell - d + 1) * s;
         vec3 hi = vec3(cell + d) * s;
-        t += box_exit(q, inv_dir, lo, hi) + s * 0.01;
+        float stepped = box_exit(q, inv_dir, lo, hi) + s * 0.01;
+        t += stepped;
+        finest = ray_finest(finest, level, i, max_steps, stepped, end - t);
+    }
+    if (t < end && !left_box) {
+        return 0.0;
     }
     return smoothstep(0.0, 1.0, clamp(visible, 0.0, 1.0));
 }

@@ -11,7 +11,7 @@
 #if defined SUNLIGHT
 #include "/lib/sky.glsl"
 #endif
-#if DEBUG_VIEW == 7 || DEBUG_VIEW == 8 || DEBUG_VIEW == 10 || DEBUG_VIEW == 11
+#if DEBUG_VIEW == 7 || DEBUG_VIEW == 8 || DEBUG_VIEW == 10 || DEBUG_VIEW == 11 || DEBUG_VIEW == 14
 #include "/lib/trace.glsl"
 #endif
 #if DEBUG_VIEW == 12
@@ -272,6 +272,34 @@ void main() {
             valid += light_from_key(data_load(base + 1u + i)).valid ? 1.0 : 0.0;
         }
         color.rg = vec2(float(count) / 16.0, valid / 8.0);
+    }
+#elif DEBUG_VIEW == 14
+    {
+        // In strips from the left: the lit picture (a fifth), then the block light used, the per-block table, the
+        // traced per-pixel light (blue where there is none), the bounce light, and flags (red: traced light there;
+        // green: the trace starts inside something; blue: the level read there, brighter finer).
+        float sx = gl_FragCoord.x / render_size().x;
+        if (sx < 0.2) {
+        } else if (sx < 0.35) {
+            color = block * 4.0;
+        } else if (sx < 0.5) {
+            color = per_block.rgb * 4.0 * fade;
+        } else if (sx < 0.65) {
+#ifdef PIXEL_LIGHT
+            color = traced.a > 0.5 ? traced.rgb * 4.0 : vec3(0.0, 0.0, 1.0);
+#endif
+        } else if (sx < 0.8) {
+            color = gi.rgb * fade;
+        } else {
+            vec3 dp = vox_pos(scene) + s.face * 0.04;
+            vec3 ds = trace_start(dp, s.face);
+#ifdef PIXEL_LIGHT
+            float valid = traced.a > 0.5 ? 1.0 : 0.0;
+#else
+            float valid = 0.0;
+#endif
+            color = vec3(valid * 0.5, start_inside(ds) ? 1.0 : 0.0, float(vox_level(dp) + 1) / 6.0);
+        }
     }
 #endif
     out_color = vec4(color + texelFetch(colortex0, texel, 0).rgb, 1.0);
