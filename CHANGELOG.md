@@ -5,6 +5,15 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.6.38
+
+### Added
+- Create Galore Fishing 0.3.23.
+- **Small fish say how heavy their size class is.** Fish under 3 kg keep only their size class so they stack, which left a barrel of fish from a Reel Drive or Rod Holder (or from the rod) reading just "Common size". Their tooltip now gives the weights that class spans for that species, for example *Red Snapper: Common size, 432 g to 3.00 kg* or *Young, 72 g to 432 g*. They still stack. Fish of 3 kg or more, and every trophy, show their own weight and length as before.
+
+### Fixed
+- **The Field Guide's catch pages say what a stacked fish shows.** The landing page and the Ask the Book notes describe the weight span on small fish.
+
 ## 0.6.37
 
 ### Added

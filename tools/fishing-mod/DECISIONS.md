@@ -713,3 +713,22 @@ Asked: the Creature Net "doesn't take starfish" into the aquarium, and fish in g
   crab and clownfish go in as themselves, the bass as its fish item with its length; the otter is refused; breaking
   the tank spills the creatures in their nets.
 
+## 0.3.23: small fish show their size class's weight span (pack 0.6.38)
+
+Reported: fish from a Reel Drive in a barrel read "Common size" with no weight, unlike a fish caught by hand.
+
+- **Not a drive bug:** drives and the rod make the item in the same place (`Catches.fishItem`). Any fish under
+  `CatchInfo.EXACT_FROM_KG` (3 kg) that isn't a trophy keeps only its size class, so a stack of small fish stays one
+  stack; the hand catch's weight is on the Keep / Release screen and in chat, not on the item. Kept as it is (asked).
+- **Added on request:** the tooltip of such a fish gives the weights its size class spans for its species ("Common
+  size, 432 g to 3.00 kg"; Young from 0.55 of the usual low length, the shortest draw). The top is capped at 3 kg,
+  since anything heavier carries its own numbers. Nothing new is stored on the item, so old stacks and new catches
+  still stack together.
+- **Client data:** the client never had the length-weight curve (it comes from our species files, not Tide's fish
+  data), so `SizeSync` sends each fish item's lengths and curve on join and after `/reload`, beside `FishDataSync`;
+  network version 3 -> 4.
+- **Tests:** `species` self-test checks every class's length band classifies as that class. In a client: Common,
+  Young and cod stacks show their spans; a stack whose whole span is 3 kg or more (a Large red snapper, only possible
+  by command) shows the class alone; a 3.46 kg fish still shows its own weight and length. `selftest all`: only the
+  two Aquaculture treasure tables fail, on the minimal test server without the pack's data pack.
+

@@ -51,6 +51,21 @@ public record SizeModel(double typicalLow, double typicalHigh, double record, do
         };
     }
 
+    /**
+     * The lengths a fish of size class {@code size} can have, {lowest, highest} in cm: the class's band in
+     * {@link #classify}, a young fish from the shortest {@link #sampleLength} draws.
+     */
+    public double[] lengthBandCm(SizeClass size) {
+        double over = record - typicalHigh;
+        return switch (size) {
+            case YOUNG -> new double[] {typicalLow * 0.55, typicalLow};
+            case COMMON -> new double[] {typicalLow, typicalHigh};
+            case LARGE -> new double[] {typicalHigh, typicalHigh + over * 0.5};
+            case TROPHY -> new double[] {typicalHigh + over * 0.5, typicalHigh + over * 0.85};
+            case UNIQUE -> new double[] {typicalHigh + over * 0.85, record};
+        };
+    }
+
     /** The weight of a middle-of-the-range fish, for "how big was it" comparisons. */
     public double typicalWeightKg() {
         return weightKg((typicalLow + typicalHigh) / 2);
