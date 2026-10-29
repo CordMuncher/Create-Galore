@@ -5,6 +5,19 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.6.36
+
+### Added
+- Create Galore Bridge 1.154.0.
+
+### Fixed
+- **A Schematic handed to another player shows and places its build.** Create kept a Schematic's build only as a file: the server read it from the uploads of the player who made it, but every other player's game looked for a file of that name in their own schematics folder. Without one, the Schematic placed and showed nothing for them (or their own, different build of the same name). Now the server keeps a copy of the build the moment the Schematic is written, at a Schematic Table or with a Schematic and Quill, and sends it to whoever holds the Schematic, so it shows, places, prints and pins the same for every player.
+- **A Schematic keeps its build.** Saving another schematic under the same name, or Create clearing old uploads, used to change or empty every Schematic already made from that file, Schematicannon prints and pins included. Each Schematic now keeps the build it was written with. Schematics made before this update keep theirs from the first time someone holds and places one.
+- The Field Guide's Welcome entry (Building from a model) says a Schematic carries its build.
+
+### Removed
+- Nothing.
+
 ## 0.6.35
 
 ### Added

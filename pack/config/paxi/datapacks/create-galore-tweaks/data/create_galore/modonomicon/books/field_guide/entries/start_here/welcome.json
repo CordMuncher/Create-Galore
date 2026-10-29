@@ -68,7 +68,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**Building from a model**\\\nHover a 3D model and press **Save as schematic**: it goes into your own schematics folder as a Create schematic. Put an [](item://create:empty_schematic) in a [](item://create:schematic_table), pick the file and you get a [](item://create:schematic) of it, the same as any schematic."
+      "text": "**Building from a model**\\\nHover a 3D model and press **Save as schematic**: it goes into your own schematics folder as a Create schematic. Put an [](item://create:empty_schematic) in a [](item://create:schematic_table), pick the file and you get a [](item://create:schematic) of it, the same as any schematic. A Schematic carries its build: hand it to another player and it shows, places and prints the same for them, and saving another file under that name later leaves it as it is."
     },
     {
       "type": "modonomicon:text",
