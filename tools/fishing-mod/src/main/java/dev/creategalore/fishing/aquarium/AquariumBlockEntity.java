@@ -41,6 +41,7 @@ import net.neoforged.neoforge.items.IItemHandler;
  * client draws them swimming ({@code client/AquariumRenderer}). A fish takes room by its size
  * ({@link #space}) and must be shorter than the tank's longest side. Two or more of one baitfish species
  * ({@code #create_galore_fishing:baitfish}) with fish meal to eat raise a young one every {@link #BREED_TICKS}.
+ * Other sea creatures live here too, kept as the Creature Net that holds them ({@link AquariumCreatures}).
  */
 public class AquariumBlockEntity extends BlockEntity {
     /** A tank of this many fish is full however big it is: what the renderer draws stays bounded. */
@@ -175,8 +176,9 @@ public class AquariumBlockEntity extends BlockEntity {
         return left;
     }
 
-    /** A fish's length in cm: its catch's, its Tide length, else the usual for its size class. */
+    /** A fish's length in cm: its catch's, its Tide length, else the usual for its size class (a creature's: its mob's). */
     public static double cm(ItemStack fish) {
+        if (AquariumCreatures.isCreature(fish)) return AquariumCreatures.cm(fish);
         CatchInfo info = fish.get(FishingRegistry.CATCH.get());
         if (info != null && info.cm().isPresent()) return info.cm().get();
         Double tide = fish.get(TideDataComponents.FISH_LENGTH);
@@ -210,7 +212,7 @@ public class AquariumBlockEntity extends BlockEntity {
     public boolean addFish(ItemStack f) {
         if (!fits(f)) return false;
         ItemStack in = f.copyWithCount(1);
-        if (in.get(TideDataComponents.FISH_LENGTH) == null) in.set(TideDataComponents.FISH_LENGTH, cm(in));
+        if (!AquariumCreatures.isCreature(in) && in.get(TideDataComponents.FISH_LENGTH) == null) in.set(TideDataComponents.FISH_LENGTH, cm(in));
         fish.add(in);
         changed();
         return true;

@@ -676,3 +676,40 @@ Fuel drive's fuel tied to how hard it pulls, in a tight range.
   block / two blocks out all refused, touching chest, straight down without a turn, a save mid-turn, turn speed by
   gear, and the attributes. `machines` gained the fuel check. `selftest all` passes. In a client: the rod turns, the
   fish hangs and falls into the barrel and through the funnel, and on the tilted ship the rod turns with the deck.
+
+## 0.3.22: sea creatures in the aquarium, the net catches every water fish (pack 0.6.36)
+
+Asked: the Creature Net "doesn't take starfish" into the aquarium, and fish in general.
+
+- **What was wrong (server probe, FakePlayer with a net):** the net did catch Hybrid Aquatic's starfish, crabs and
+  clownfish, vanilla cod and tropical fish, axolotls. It didn't catch the fishing mod's own fish (`tide:*`, not in
+  `hapi:net_catchable`), and the tank had no use for a net at all: it took fish buckets and held catches only, and
+  Hybrid Aquatic's creatures have no buckets. So a starfish had no way in.
+- **Net tag:** `data/hapi/tags/entity_type/net_catchable.json` adds the fishing mod's water and void fish (79; the 11
+  lava fish are left out, since the net only lets its catch go into water), pufferfish, Aquaculture's 28 fish mobs,
+  C&C koi and dumbo octopus, Alex's Caves trilocaris, radgill and sweetish fish, BetterEnd end fish and cubozoa (all
+  optional). Left out on purpose: Hullbreaker (a boss), Aquamirae's spinefish and abyssal scyphoid (hostile), the
+  Naturalist and C&C mobs the pack switches off. The `net` self-test lists every water mob still uncatchable.
+- **How a creature lives in a tank (`AquariumCreatures`):** the tank's list stays a list of item stacks. A creature
+  is kept as the full net (`hapi:creature_net` with `storedEntity`), so merging, splitting, saving, syncing and
+  spilling a tank needed no change, the whole mob (variant, colours, size) survives, and a broken tank drops the
+  creatures in their nets rather than killing them. Its length for room and tank size is its mob type's width.
+- **Fish item or creature:** a netted mob whose id is a fishing fish (has fish data) goes in as that fish item with
+  its `FishLength`, so it can breed if it is a baitfish and is drawn at its real length like any other tank fish;
+  except a mob with a `Variant` or `Type` (tropical fish, clownfish), which a fish item would draw as the plain kind,
+  so it goes in as itself.
+- **Who may live in a tank:** `#create_galore_fishing:lives_in_aquarium` (Hybrid Aquatic fish, critters,
+  crustaceans, cephalopods, jellyfish, sharks; vanilla fish, axolotl, tadpole, squid; the other mods' fish above).
+  Otters, seals, turtles, birds stay in the net with a message. Sharks are allowed; the room and length rules decide.
+- **Drawing (`CreatureView`):** one client-only copy of the netted mob per swimmer (loaded from the net's data, told
+  it is in water, never ticked); the tank sets its yaw from its heading and its walk speed from its speed, which
+  drives vanilla and GeckoLib walk animations. `#aquarium_crawlers` (crustaceans, starfish, urchins, sea cucumbers,
+  sea slugs, scalyfoot snails) keep to the sand floor at 0.004 blocks a tick, `#aquarium_quick_crawlers`
+  (crustaceans) at 0.02; the rest swim like the fish.
+- **Taking out:** an empty net takes the first creature, else the first fish that has a mob of its own (written as
+  that mob with its length). Buckets still take fish that have buckets.
+- **Self-test `net`:** the net catches a starfish, a fiddler crab, a largemouth bass, a clownfish and an otter; the
+  starfish goes in as itself and the net comes back empty, survives saving, comes back out with the same colour; the
+  crab and clownfish go in as themselves, the bass as its fish item with its length; the otter is refused; breaking
+  the tank spills the creatures in their nets.
+

@@ -2,6 +2,7 @@ package dev.creategalore.fishing;
 
 import com.simibubi.create.api.stress.BlockStressValues;
 import dev.creategalore.fishing.aquarium.AquariumSelfTest;
+import dev.creategalore.fishing.aquarium.NetSelfTest;
 import dev.creategalore.fishing.bait.BaitSources;
 import dev.creategalore.fishing.bait.Chum;
 import dev.creategalore.fishing.cast.AliveFish;
@@ -71,6 +72,7 @@ public final class CreateGaloreFishing {
         BaitSources.register();
         ProcessingSelfTest.register();
         AquariumSelfTest.register();
+        NetSelfTest.register();
         MachineSelfTest.register();
         DropSelfTest.register();
         TowSelfTest.register();
