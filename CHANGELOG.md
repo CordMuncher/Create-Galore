@@ -5,6 +5,19 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.6.47
+
+### Added
+- Create Galore Bridge 1.161.0.
+- **Groundwork for future shader packs.** The Upscaling & Display screen works with any shader pack made for DLSS and FSR, not only Photon v1.3a + DLAA, and names the pack in use. Each pack says what it supports (DLSS, FSR, frame generation, Ray Reconstruction, the render resolution, its own TAAU, turning anti-aliasing off): whatever the pack in use doesn't support is greyed out, and hovering it says so. Your setting is kept, so it comes back with a pack that supports it. A pack can also leave its render resolution to the screen instead of having an option of its own. A pack that supports Ray Reconstruction keeps its own settings for it, as Photon does.
+- **Anti-aliasing: TAA, TAAU and Off.** The shader pack's own anti-aliasing is now two choices, its TAA at full resolution and its TAAU from the render resolution, plus Off for no anti-aliasing. Photon has all three.
+
+### Fixed
+- Nothing.
+
+### Removed
+- Nothing.
+
 ## 0.6.46
 
 ### Added

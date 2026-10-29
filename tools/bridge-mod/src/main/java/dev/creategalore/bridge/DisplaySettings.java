@@ -26,7 +26,10 @@ public final class DisplaySettings {
     public static final String FILE = "create_galore_bridge-display.properties";
     public static final String TEN_BIT_WINDOW = "tenBitWindow";
     public static final String PERFECT_PRESENTATION = "perfectPresentation";
-    /** auto (the default), dlss, fsr3 or off; true and false from the test builds still mean dlss and off. */
+    /**
+     * auto (the default), dlss, fsr3, off (the shader pack's own), taau (its own upscaling) or none (no anti-aliasing);
+     * true and false from the test builds still mean dlss and off.
+     */
     public static final String DLAA = "dlaa";
     public static final String DLAA_PRESET = "dlaaPreset";
     /** Testing only, not written to the file: color, motion, depth, residual or mask shows that DLSS input (or check) instead of DLSS. */
@@ -47,6 +50,11 @@ public final class DisplaySettings {
     public static final String DLAA_MIP_BIAS = "dlaaMipBias";
     /** true: the settings screen sets the render resolution with a slider instead of the standard modes. */
     public static final String DLAA_CUSTOM_SCALE = "dlaaCustomScale";
+    /**
+     * The render resolution, 0.25 to 1, for a shader pack that leaves it to the settings screen (renderScale=bridge in
+     * its profile); a pack with its own resolution option (Photon's TAAU) keeps it there.
+     */
+    public static final String DLAA_RENDER_SCALE = "dlaaRenderScale";
     /** Experimental: true runs DLSS Ray Reconstruction in place of DLSS with a pack that hands over its guides (see Dlss). */
     public static final String DLAA_RAY_RECONSTRUCTION = "dlaaRayReconstruction";
     /** Ray Reconstruction's preset, F (the default), E, D or default (NVIDIA's pick); the settings screen writes it. */
@@ -126,17 +134,21 @@ public final class DisplaySettings {
             + " Photon v1.3a + DLAA, a copy of Photon the Bridge makes in shaderpacks/ at startup (pick it in the shader menu):\n"
             + " it replaces the pack's own anti-aliasing with NVIDIA DLSS or AMD FSR 3.1. auto: DLSS on an NVIDIA RTX card\n"
             + " with nvngx_dlss.dll in create-galore-dlss/ (not part of the pack: bring your own), else FSR 3.1;\n"
-            + " dlss, fsr3: only that one; off: the pack's own anti-aliasing (and no Photon copy). Works with or without\n"
-            + " perfectPresentation.\n"
+            + " dlss, fsr3: only that one; off: the pack's own anti-aliasing (and no Photon copy); taau: the pack's own\n"
+            + " upscaling at the render resolution; none: no anti-aliasing. Each shader pack says which of these it supports\n"
+            + " (supports in its create_galore_dlss.properties); one it doesn't gets its own anti-aliasing. Works with or\n"
+            + " without perfectPresentation.\n"
             + " dlaaPreset: default (K), J, K, L, M or any other letter (DLSS render presets; L and M are made for low render\n"
             + " resolutions; a letter DLSS has no preset for runs as DLSS's own default).\n"
             + " Upscaling: the render resolution is the shader pack's own upscaling options (in Photon TAAU and TAAU Render\n"
             + " Scale; Render resolution on the settings screen); DLSS or FSR 3.1 upscale from it to the window.\n"
             + " dlaaCustomScale: true shows a 25-100% slider on the settings screen instead of the standard modes.\n"
+            + " dlaaRenderScale: 0.25 to 1, the render resolution for a shader pack that leaves it to the settings screen\n"
+            + " (renderScale=bridge in its create_galore_dlss.properties); packs with their own option keep that.\n"
             + " dlaaRayReconstruction: experimental. true runs NVIDIA DLSS Ray Reconstruction (preset F) in place of DLSS\n"
-            + " with a pack that hands over its guides (Photon v1.3a + DLAA), with nvngx_dlssd.dll in create-galore-dlss/.\n"
-            + " Turned on or off on the settings screen it also swaps Photon's settings (Ultra, or your changes under it);\n"
-            + " here it does not.\n"
+            + " with a pack that supports it (Photon v1.3a + DLAA), with nvngx_dlssd.dll in create-galore-dlss/.\n"
+            + " Turned on or off on the settings screen it also swaps the pack's settings (for Photon Ultra the first time,\n"
+            + " then your changes under it); here it does not.\n"
             + " reflex: off, on or boost. NVIDIA Reflex low latency (boost also keeps the GPU clocks up), applied at once.\n"
             + " Needs an NVIDIA card (GTX 900 or newer) and perfectPresentation=true; the settings screen turns that on\n"
             + " with it. With Max Framerate set, Reflex keeps that cap (where it helps most: use one the card can hold).\n"
@@ -190,18 +202,23 @@ public final class DisplaySettings {
         return cached.getProperty(key, fallback).trim();
     }
 
-    /** The dlaa setting: auto, dlss, fsr3 or off (true from the test builds is dlss, or dlaaEngine's pick). */
+    /**
+     * The dlaa setting: auto, dlss, fsr3, off (the shader pack's own anti-aliasing, its TAA), taau (its own upscaling)
+     * or none (no anti-aliasing). true from the test builds is dlss, or dlaaEngine's pick.
+     */
     public static synchronized String dlaaEngine() {
         String value = getString(DLAA, "auto").toLowerCase(java.util.Locale.ROOT);
         return switch (value) {
             case "auto", "" -> "auto";
             case "dlss" -> "dlss";
             case "fsr3", "fsr" -> "fsr3";
-            case "off", "false" -> "off";
+            case "off", "false", "taa" -> "off";
+            case "taau" -> "taau";
+            case "none" -> "none";
             case "true" -> getString(DLAA_ENGINE, System.getProperty("create_galore_bridge.dlss.engine", "dlss"))
                     .toLowerCase(java.util.Locale.ROOT).startsWith("fsr") ? "fsr3" : "dlss";
             default -> {
-                LOG.warn("Unknown {}={} in {}, using auto (choose auto, dlss, fsr3 or off)", DLAA, value, FILE);
+                LOG.warn("Unknown {}={} in {}, using auto (choose auto, dlss, fsr3, off, taau or none)", DLAA, value, FILE);
                 yield "auto";
             }
         };

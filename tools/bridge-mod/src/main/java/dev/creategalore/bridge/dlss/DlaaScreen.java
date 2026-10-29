@@ -44,14 +44,17 @@ import net.neoforged.neoforge.common.NeoForge;
  * {@link FrameGen}) and the frame
  * counter ({@link FpsOverlay}). Opens from the mod list (Create Galore Bridge, Config) and from an Upscaling & Display
  * button in Iris's shader pack menu. Saved to config/create_galore_bridge-display.properties when it closes, the render
- * resolution into the DLAA pack's own options (Photon's TAAU and TAAU Render Scale, see {@link RenderScaleTarget});
- * DLAA changes reload the shaders.
+ * resolution into the DLAA pack's own options (Photon's TAAU and TAAU Render Scale), or into the display settings for a
+ * pack that leaves it to this screen (see {@link RenderScaleTarget});
+ * DLAA changes reload the shaders. What the shader pack in use doesn't support ({@link PackProfile}, supports) is greyed
+ * out and says so; the setting itself is kept, for a pack that supports it.
  */
 public final class DlaaScreen extends Screen {
     /** Where NVIDIA publishes nvngx_dlss.dll, in its DLSS SDK. */
     private static final String DLL_PAGE = "https://github.com/NVIDIA/DLSS/tree/main/lib/Windows_x86_64/rel";
     private static final String IRIS_PACK_SCREEN = "net.irisshaders.iris.gui.screen.ShaderPackScreen";
-    private static final List<String> ENGINES = List.of("auto", "dlss", "fsr3", "off");
+    /** The anti-aliasing: DLSS or FSR, or the shader pack's own TAA (off in the settings file), TAAU, or none. */
+    private static final List<String> ENGINES = List.of("auto", "dlss", "fsr3", "taa", "taau", "none");
     /** The presets offered by name; "other" takes a typed letter. */
     private static final List<String> PRESETS = List.of("default", "K", "J", "L", "M", "other");
     /** Ray Reconstruction's presets (experimental): F (RR 4.5) is the one to use, the others for comparing. */
@@ -68,13 +71,23 @@ public final class DlaaScreen extends Screen {
     private static final int WIDTH = 300;
     /** The Ray Reconstruction row (experimental), under the render resolution. */
     private static final int RR_ROW = 132;
+    private static final String RR_LOCK = "Ray Reconstruction replaces DLSS while it's on.";
     private static final net.minecraft.client.gui.components.toasts.SystemToast.SystemToastId RESTART =
             new net.minecraft.client.gui.components.toasts.SystemToast.SystemToastId(10000L);
 
     private final Screen parent;
+    /** The shader pack in use's profile (what it supports), or null: no shader pack, or one not made for this screen. */
+    private final PackProfile profile = Dlss.currentProfile();
+    /** A shader pack is in use, made for this screen or not (for what greyed-out settings say). */
+    private final boolean packInUse = Dlss.shaderPackInUse();
+    private final boolean rrPack = profile != null && profile.supportsRayReconstruction();
+    private final boolean frameGenPack = profile != null && profile.supportsFrameGeneration();
     /** The pack whose options hold the render resolution. */
     private final RenderScaleTarget target = RenderScaleTarget.current();
+    /** The shader pack the Upscaling tab works with: the one in use when it is made for it, else where to get one. */
+    private final String packLine = packLine();
     private final Map<String, String> initial = new HashMap<>();
+    /** The anti-aliasing picked (one of ENGINES), kept when the pack in use doesn't support it (see shownEngine). */
     private String engine;
     private String preset;
     private String letter;
@@ -106,6 +119,7 @@ public final class DlaaScreen extends Screen {
     private EditBox letterBox;
     private Choice<String> engineChoice;
     private Choice<String> presetChoice;
+    private Choice<String> resolutionChoice;
     private ScaleSlider slider;
     private CycleButton<Boolean> presentationButton;
     private Choice<String> apiChoice;
@@ -135,7 +149,8 @@ public final class DlaaScreen extends Screen {
         super(Component.literal("Upscaling & Display"));
         this.parent = parent;
         DisplaySettings.reload();
-        engine = DisplaySettings.dlaaEngine();
+        String engineValue = DisplaySettings.dlaaEngine();
+        engine = engineValue.equals("off") ? "taa" : engineValue;
         String presetValue = DisplaySettings.getString(DisplaySettings.DLAA_PRESET, "default");
         letter = presetValue.length() == 1 ? presetValue.toUpperCase(Locale.ROOT) : "";
         preset = presetValue.equalsIgnoreCase("default") || presetValue.isEmpty() ? "default"
@@ -163,8 +178,16 @@ public final class DlaaScreen extends Screen {
         rrPreset = rrValue.equalsIgnoreCase("default") ? "default"
                 : RR_PRESETS.contains(rrValue.toUpperCase(Locale.ROOT)) ? rrValue.toUpperCase(Locale.ROOT) : "F";
         readRenderScale();
+        if (engine.equals("taa") && !scale.equals("native") && profile != null && profile.supportsTaau() && !target.bridge()) {
+            engine = "taau"; // (before TAAU could be picked here: off, with the pack's upscaling switch on)
+        }
         initial.putAll(values());
         initialPackOptions = packOptions();
+        Boolean taaOn = profile != null && profile.supportsOff() ? target.taaOn() : null;
+        if (taaOn != null) {
+            // As the pack has it now: one turned off for Off while another pack was picked is put right when this closes.
+            initialPackOptions.put(target.taaOption(), Boolean.toString(taaOn));
+        }
     }
 
     /** At mod construction (client): the mod list's Config button and the shader pack menu's Upscaling & Display button. */
@@ -194,8 +217,15 @@ public final class DlaaScreen extends Screen {
         displayPage.widgets.clear();
 
         building = antiAliasingPage.widgets;
-        engineChoice = choice("Anti-aliasing", ENGINES, engine, DlaaScreen::engineLabel, DlaaScreen::engineTooltip, left, 60, WIDTH,
-                value -> engine = value);
+        engineChoice = choice("Anti-aliasing", ENGINES, shownEngine(), DlaaScreen::engineLabel, DlaaScreen::engineTooltip, left, 60, WIDTH,
+                value -> {
+                    if (!value.equals(shownEngine())) {
+                        engine = value; // (picking what is shown keeps a setting this pack doesn't support, for one that does)
+                    }
+                    refreshPreset();
+                    refreshResolution();
+                });
+        engineChoice.unpickable = this::engineWhy;
         presetChoice = choice("DLSS preset", PRESETS, preset, DlaaScreen::presetLabel, DlaaScreen::presetTooltip, left, 84, WIDTH - 64, value -> {
             preset = value;
             letterBox.visible = value.equals("other");
@@ -209,33 +239,36 @@ public final class DlaaScreen extends Screen {
         letterBox.visible = preset.equals("other");
         add(letterBox);
         // Custom shares its row with the slider.
-        Choice<String> resolution = choice("Render resolution", SCALES, scale, DlaaScreen::scaleLabel, DlaaScreen::scaleTooltip, left, 108,
-                scale.equals("custom") ? half : WIDTH, null);
-        resolution.onPick = value -> {
-            scale = value;
-            resolution.button.setWidth(value.equals("custom") ? half : WIDTH);
-            slider.visible = value.equals("custom");
-        };
+        resolutionChoice = choice("Render resolution", SCALES, scale, DlaaScreen::scaleLabel, DlaaScreen::scaleTooltip, left, 108,
+                WIDTH, value -> {
+                    scale = value;
+                    refreshResolution();
+                });
         slider = new ScaleSlider(left + half + 4, 108, half);
-        slider.visible = scale.equals("custom");
         add(slider);
-        // Experimental: DLSS Ray Reconstruction in place of DLSS, where NVIDIA's NGX didn't say no (as frame generation
-        // goes by Streamline); where it is already on, it can still be turned off.
+        refreshResolution();
+        // Experimental: DLSS Ray Reconstruction in place of DLSS, where the pack supports it and NVIDIA's NGX didn't say
+        // no (as frame generation goes by Streamline); where it is already on, it can still be turned off. With a pack
+        // that doesn't support it, it shows off and keeps its setting for one that does.
         String rrRefused = Dlss.rayReconstructionRefused();
-        String rrTooltip = rrRefused != null
+        String rrTooltip = !rrPack
+                ? unsupported("Ray Reconstruction")
+                : rrRefused != null
                 ? "Not supported on this PC: " + rrRefused + "."
-                : "Experimental. NVIDIA DLSS Ray Reconstruction replaces DLSS and cleans up Photon's lighting: clearer"
+                : "Experimental. NVIDIA DLSS Ray Reconstruction replaces DLSS and cleans up the shader pack's lighting: clearer"
                         + " reflections, steadier shadows. Costs some frames.";
-        CycleButton<Boolean> rrButton = add(CycleButton.onOffBuilder(rayReconstruction)
+        CycleButton<Boolean> rrButton = add(CycleButton.onOffBuilder(rayReconstruction && rrPack)
                 .withTooltip(value -> net.minecraft.client.gui.components.Tooltip.create(Component.literal(rrTooltip)))
                 .create(left, RR_ROW, half, 20, Component.literal("Ray Reconstruction"), (button, value) -> {
                     rayReconstruction = value;
                     lockForRayReconstruction();
                     refreshDll();
                 }));
-        rrButton.active = rayReconstruction || Util.getPlatform() == Util.OS.WINDOWS && rrRefused == null;
-        choice("RR preset", RR_PRESETS, rrPreset, DlaaScreen::rrPresetLabel, DlaaScreen::rrPresetTooltip, left + half + 4, RR_ROW, half,
-                value -> rrPreset = value);
+        rrButton.active = rrPack && (rayReconstruction || Util.getPlatform() == Util.OS.WINDOWS && rrRefused == null);
+        Choice<String> rrPresetChoice = choice("RR preset", RR_PRESETS, rrPreset, DlaaScreen::rrPresetLabel, DlaaScreen::rrPresetTooltip,
+                left + half + 4, RR_ROW, half, value -> rrPreset = value);
+        rrPresetChoice.why = rrPack ? null : unsupported("Ray Reconstruction");
+        rrPresetChoice.update();
         lockForRayReconstruction();
 
         // The DLL buttons and Try again, then Done 28 lower; the status lines get one line more where it fits, and on
@@ -333,7 +366,8 @@ public final class DlaaScreen extends Screen {
         frameGenModes.add("fsr");
         String shown = !frameGen.equals("dlss") ? frameGen : frameGenMultiplier == FrameGen.DYNAMIC ? "dlss-dynamic"
                 : frameGenMultiplier > 2 ? "dlss-" + frameGenMultiplier + "x" : frameGen;
-        frameGenChoice = choice("Frame generation", frameGenModes, frameGenModes.contains(shown) ? shown : frameGen,
+        // With a pack that doesn't support it, it shows off and keeps its setting for one that does.
+        frameGenChoice = choice("Frame generation", frameGenModes, !frameGenPack ? "off" : frameGenModes.contains(shown) ? shown : frameGen,
                 DlaaScreen::frameGenLabel, DlaaScreen::frameGenTooltip, left, y, half, picked -> {
                     String value = picked.startsWith("dlss") ? "dlss" : picked;
                     frameGen = value;
@@ -356,7 +390,9 @@ public final class DlaaScreen extends Screen {
                         reflexChoice.update();
                     }
                 });
-        frameGenChoice.button.active = Util.getPlatform() == Util.OS.WINDOWS || !frameGen.equals("off");
+        frameGenChoice.why = !frameGenPack ? unsupported("frame generation")
+                : Util.getPlatform() != Util.OS.WINDOWS && frameGen.equals("off") ? "Needs Windows." : null;
+        frameGenChoice.update();
         y += step;
         choice("Frame counter", FPS_MODES, fpsCounter, DlaaScreen::fpsLabel, DlaaScreen::fpsTooltip, left, y, half, value -> fpsCounter = value);
         add(CycleButton.onOffBuilder(fpsDim)
@@ -440,7 +476,7 @@ public final class DlaaScreen extends Screen {
     }
 
     private void renderAntiAliasing(GuiGraphics graphics, int left) {
-        lines(graphics, "Works with the shader pack \"" + PhotonPatcher.PATCHED_NAME + "\".", left, 28, 0xFFDD66, 3);
+        lines(graphics, packLine, left, 28, 0xFFDD66, 3);
         int y = RR_ROW + 24;
         String picked = preset.equals("other") ? letter : preset;
         if (picked.equals("L") || picked.equals("M")) {
@@ -543,8 +579,8 @@ public final class DlaaScreen extends Screen {
         Map<String, String> values = values();
         Map<String, String> pack = packOptions();
         boolean packChanged = !pack.equals(initialPackOptions);
-        if (!values.get(DisplaySettings.DLAA_RAY_RECONSTRUCTION).equals(initial.get(DisplaySettings.DLAA_RAY_RECONSTRUCTION))) {
-            PhotonRrSettings.switched(rayReconstruction); // before the render resolution goes into Photon's options
+        if (rrPack && !values.get(DisplaySettings.DLAA_RAY_RECONSTRUCTION).equals(initial.get(DisplaySettings.DLAA_RAY_RECONSTRUCTION))) {
+            PackRrSettings.switched(target, rayReconstruction); // before the render resolution goes into the pack's options
         }
         if (packChanged) {
             target.write(pack);
@@ -583,7 +619,7 @@ public final class DlaaScreen extends Screen {
 
     private Map<String, String> values() {
         Map<String, String> values = new HashMap<>();
-        values.put(DisplaySettings.DLAA, engine);
+        values.put(DisplaySettings.DLAA, engine.equals("taa") ? "off" : engine);
         values.put(DisplaySettings.DLAA_PRESET, preset.equals("other") ? (letter.isEmpty() ? "default" : letter) : preset);
         values.put(DisplaySettings.PERFECT_PRESENTATION, Boolean.toString(perfectPresentation));
         values.put(DisplaySettings.TEN_BIT_WINDOW, Boolean.toString(tenBitWindow));
@@ -603,13 +639,36 @@ public final class DlaaScreen extends Screen {
         return values;
     }
 
-    /** The pack's options for the render resolution picked: upscaling off at native, else on at the scale. */
+    /**
+     * The pack's options for what is picked, as far as it supports them: for the render resolution, its upscaling off at
+     * native, TAA and Off, else on at the scale (for a pack that leaves the resolution to the Bridge, its one setting,
+     * kept for DLSS, FSR and TAAU); for a pack that sets its own, its upscaling switch for TAAU, TAA and Off; its
+     * anti-aliasing option off for Off, on for the rest. Nothing for a pack not made for this screen.
+     */
     private Map<String, String> packOptions() {
         Map<String, String> options = new HashMap<>();
-        options.put(target.upscaling(), Boolean.toString(!scale.equals("native")));
-        if (!scale.equals("native")) {
-            options.put(target.scale(), scale.equals("custom")
-                    ? String.format(Locale.ROOT, "%.2f", customPercent / 100.0) : SCALE_VALUES.get(scale));
+        if (profile == null) {
+            return options;
+        }
+        String shown = shownEngine();
+        boolean pack = shown.equals("taa") || shown.equals("none");
+        String value = scale.equals("native") ? "1.00" : scale.equals("custom")
+                ? String.format(Locale.ROOT, "%.2f", customPercent / 100.0) : SCALE_VALUES.get(scale);
+        if (profile.supportsRenderResolution() && target.bridge()) {
+            if (!pack) {
+                options.put(DisplaySettings.DLAA_RENDER_SCALE, value);
+            }
+        } else if (profile.supportsRenderResolution()) {
+            boolean on = !pack && !scale.equals("native");
+            options.put(target.upscaling(), Boolean.toString(on));
+            if (on) {
+                options.put(target.scale(), value);
+            }
+        } else if (!target.upscaling().isEmpty() && (pack || shown.equals("taau"))) {
+            options.put(target.upscaling(), Boolean.toString(shown.equals("taau")));
+        }
+        if (profile.supportsOff()) {
+            options.put(target.taaOption(), Boolean.toString(!shown.equals("none")));
         }
         return options;
     }
@@ -679,8 +738,11 @@ public final class DlaaScreen extends Screen {
         return FrameGen.running() && FrameGen.problem() == null && FrameGen.settingOf(FrameGen.backend()).equals(frameGen);
     }
 
-    /** What frame generation does or will do, beside its setting; null while it is off. */
+    /** What frame generation does or will do, beside its setting; null while it is off, or greyed out for the pack. */
     private FrameLatency.Status frameGenStatus() {
+        if (!frameGenPack) {
+            return null;
+        }
         boolean dlss = frameGen.equals("dlss");
         if (Util.getPlatform() != Util.OS.WINDOWS) {
             return new FrameLatency.Status("Needs Windows.", null, !frameGen.equals("off"));
@@ -692,7 +754,7 @@ public final class DlaaScreen extends Screen {
         if (frameGen.equals("off")) {
             return FrameGen.on() ? new FrameLatency.Status("Turns off when you close this screen.", null, false) : null;
         }
-        if (engine.equals("off")) {
+        if (!List.of("auto", "dlss", "fsr3").contains(shownEngine())) {
             return new FrameLatency.Status("Needs DLSS or FSR (Upscaling tab).", null, true);
         }
         if (dlss && Dlss.frameGenerationDllVersion() == null) {
@@ -768,7 +830,7 @@ public final class DlaaScreen extends Screen {
             String model = Dlss.frameGenerationDllVersion();
             dllLine += " Frame generation " + (model == null ? "not found: use Find on this PC." : model + ".");
         }
-        if (rayReconstruction) {
+        if (rayReconstruction && rrPack) {
             String rr = Dlss.rayReconstructionDllVersion();
             dllLine += " Ray Reconstruction " + (rr == null ? "not found." : rr + ".");
         }
@@ -788,7 +850,9 @@ public final class DlaaScreen extends Screen {
         return Component.literal(switch (value) {
             case "dlss" -> "NVIDIA DLSS";
             case "fsr3" -> "AMD FSR 3.1";
-            case "off" -> "Off (the pack's own)";
+            case "taa" -> "TAA (the pack's own)";
+            case "taau" -> "TAAU (the pack's own)";
+            case "none" -> "Off";
             default -> "Auto";
         });
     }
@@ -797,9 +861,73 @@ public final class DlaaScreen extends Screen {
         return switch (value) {
             case "dlss" -> "NVIDIA DLSS. NVIDIA RTX graphics cards.";
             case "fsr3" -> "AMD FSR 3.1. Any graphics card.";
-            case "off" -> "The shader pack's own anti-aliasing.";
+            case "taa" -> "The shader pack's own anti-aliasing, at full resolution.";
+            case "taau" -> "The shader pack's own upscaling, from a lower render resolution.";
+            case "none" -> "No anti-aliasing: sharp, with jagged and shimmering edges.";
             default -> "NVIDIA DLSS on RTX graphics cards, AMD FSR 3.1 on others.";
         };
+    }
+
+    /** The anti-aliasing the pack in use runs: the one picked, or its own TAA when it doesn't support that one. */
+    private String shownEngine() {
+        return engineWhy(engine) == null ? engine : "taa";
+    }
+
+    /** Null if the shader pack in use supports the anti-aliasing {@code value}, else why not. */
+    private String engineWhy(String value) {
+        if (value.equals("taa") || profile != null && profile.supportsEngine(value)) {
+            return null;
+        }
+        return unsupported(switch (value) {
+            case "dlss" -> "DLSS";
+            case "fsr3" -> "FSR";
+            case "taau" -> "TAAU";
+            case "none" -> "turning anti-aliasing off";
+            default -> "DLSS or FSR";
+        });
+    }
+
+    /** What a setting the shader pack in use doesn't support says. */
+    private String unsupported(String what) {
+        return packInUse ? "The selected shader pack doesn't support " + what + "." : "Needs a shader pack that supports " + what + ".";
+    }
+
+    /** The DLSS preset: locked while Ray Reconstruction runs in DLSS's place, greyed out with a pack DLSS doesn't support. */
+    private void refreshPreset() {
+        presetChoice.why = rayReconstruction && rrPack ? RR_LOCK : profile == null || !profile.supportsDlss() ? unsupported("DLSS") : null;
+        presetChoice.update();
+        letterBox.setEditable(presetChoice.why == null);
+    }
+
+    /**
+     * The render resolution: greyed out with a pack that doesn't let this screen set it (showing the pack's, or Native),
+     * and at full resolution with the pack's TAA or none; the slider beside Custom.
+     */
+    private void refreshResolution() {
+        String shown = shownEngine();
+        boolean pack = shown.equals("taa") || shown.equals("none");
+        if (profile == null || !profile.supportsRenderResolution()) {
+            resolutionChoice.why = unsupported("changing the render resolution");
+            resolutionChoice.whyValue = !pack && profile != null && !target.upscaling().isEmpty()
+                    ? Component.literal("set by the pack") : scaleLabel("native");
+        } else {
+            resolutionChoice.why = pack ? "Full resolution with this anti-aliasing." : null;
+            resolutionChoice.whyValue = scaleLabel("native");
+        }
+        boolean custom = resolutionChoice.why == null && scale.equals("custom");
+        resolutionChoice.button.setWidth(custom ? (WIDTH - 4) / 2 : WIDTH);
+        slider.visible = custom;
+        resolutionChoice.update();
+    }
+
+    /** The line at the top of the Upscaling tab: the pack in use when it is made for this screen, else where to get one. */
+    private String packLine() {
+        String name = Dlss.profilePack();
+        if (profile == null || name == null) {
+            return "Works with \"" + PhotonPatcher.PATCHED_NAME + "\" and other shader packs made for DLSS and FSR.";
+        }
+        return "Shader pack \"" + name + "\": " + (profile.supportsDlss() && profile.supportsFsr() ? "made for DLSS and FSR."
+                : profile.supportsDlss() ? "made for DLSS." : profile.supportsFsr() ? "made for FSR." : "uses its own anti-aliasing.");
     }
 
     private static Component scaleLabel(String value) {
@@ -915,26 +1043,18 @@ public final class DlaaScreen extends Screen {
 
     /**
      * Ray Reconstruction is an upscaler of its own (it denoises, anti-aliases and upscales in DLSS's place), so while it
-     * is on the anti-aliasing engine is DLSS and it and the DLSS preset can't be picked.
+     * runs (it is on and the pack supports it) the anti-aliasing engine is DLSS and it and the DLSS preset can't be picked.
      */
     private void lockForRayReconstruction() {
-        if (rayReconstruction && !engine.equals("dlss")) {
+        boolean locked = rayReconstruction && rrPack;
+        if (locked && !engine.equals("dlss")) {
             engine = "dlss";
-            engineChoice.value = engine;
         }
-        engineChoice.button.active = !rayReconstruction;
-        presetChoice.button.active = !rayReconstruction;
-        letterBox.setEditable(!rayReconstruction);
+        engineChoice.value = shownEngine();
+        engineChoice.why = locked ? RR_LOCK : null;
         engineChoice.update();
-        presetChoice.update();
-        if (rayReconstruction) {
-            String why = "Ray Reconstruction replaces DLSS while it's on.";
-            engineChoice.button.setTooltip(net.minecraft.client.gui.components.Tooltip.create(Component.literal(why)));
-            presetChoice.button.setTooltip(net.minecraft.client.gui.components.Tooltip.create(Component.literal(why)));
-            if (open == engineChoice || open == presetChoice) {
-                open = null;
-            }
-        }
+        refreshPreset();
+        refreshResolution();
     }
 
     private <T> Choice<T> choice(String name, List<T> values, T value, java.util.function.Function<T, Component> label,
@@ -983,6 +1103,12 @@ public final class DlaaScreen extends Screen {
         final java.util.function.Function<T, Component> label;
         final java.util.function.Function<T, String> tooltip;
         java.util.function.Consumer<T> onPick;
+        /** Why a value can't be picked (it is greyed out in the list and this is its tooltip), or null if it can. */
+        java.util.function.Function<T, String> unpickable = v -> null;
+        /** Why the setting can't be changed now (greyed out, and this is its tooltip), or null. */
+        String why;
+        /** What a setting that can't be changed shows in place of its value, or null for its value. */
+        Component whyValue;
         T value;
         Button button;
 
@@ -997,8 +1123,13 @@ public final class DlaaScreen extends Screen {
         }
 
         void update() {
-            button.setMessage(Component.literal(name + ": ").append(label.apply(value)).append(" \u25BE"));
-            button.setTooltip(net.minecraft.client.gui.components.Tooltip.create(Component.literal(tooltip.apply(value))));
+            Component shown = why != null && whyValue != null ? whyValue : label.apply(value);
+            button.setMessage(Component.literal(name + ": ").append(shown).append(" \u25BE"));
+            button.setTooltip(net.minecraft.client.gui.components.Tooltip.create(Component.literal(why != null ? why : tooltip.apply(value))));
+            button.active = why == null;
+            if (why != null && open == this) {
+                open = null;
+            }
         }
 
         private int listWidth() {
@@ -1026,7 +1157,7 @@ public final class DlaaScreen extends Screen {
 
         void click(double mouseX, double mouseY) {
             int row = at(mouseX, mouseY);
-            if (row >= 0) {
+            if (row >= 0 && unpickable.apply(values.get(row)) == null) {
                 value = values.get(row);
                 update();
                 onPick.accept(value);
@@ -1048,11 +1179,13 @@ public final class DlaaScreen extends Screen {
                     graphics.fill(x + 1, rowTop, x + w - 1, rowTop + ROW, 0xFF404040);
                 }
                 boolean picked = values.get(i).equals(value);
-                graphics.drawString(font, label.apply(values.get(i)), x + 8, rowTop + (ROW - 8) / 2, picked ? 0xFFFFDD66 : 0xFFFFFFFF);
+                int color = unpickable.apply(values.get(i)) != null ? 0xFF707070 : picked ? 0xFFFFDD66 : 0xFFFFFFFF;
+                graphics.drawString(font, label.apply(values.get(i)), x + 8, rowTop + (ROW - 8) / 2, color);
             }
             graphics.pose().popPose();
             if (hovered >= 0) {
-                setTooltipForNextRenderPass(font.split(Component.literal(tooltip.apply(values.get(hovered))), 220));
+                String why = unpickable.apply(values.get(hovered));
+                setTooltipForNextRenderPass(font.split(Component.literal(why != null ? why : tooltip.apply(values.get(hovered))), 220));
             }
         }
     }

@@ -102,9 +102,12 @@ public final class Dlss {
     private static final int PRESET_M = 13;
 
     // Read when shaders (re)load.
-    /** auto, dlss, fsr3 or off. */
+    /** auto, dlss, fsr3, off (the pack's own), taau (its own upscaling) or none (no anti-aliasing). */
     private static String engine = "auto";
+    /** DLSS or FSR is picked, and the pack in use supports it (as far as it was read). */
     private static boolean wanted;
+    /** The anti-aliasing picked, when the pack in use doesn't support it (its own then runs), else null. */
+    private static String engineUnsupported;
     private static float[] jitterSign = {1.0f, 1.0f};
     private static int preset = PRESET_DEFAULT;
     /** DLSS refused the preset typed in, so it runs default. */
@@ -239,7 +242,8 @@ public final class Dlss {
         FrameGen.pipelineCreated();
         DisplaySettings.reload();
         engine = DisplaySettings.dlaaEngine();
-        wanted = !engine.equals("off");
+        wanted = engine.equals("auto") || engine.equals("dlss") || engine.equals("fsr3");
+        engineUnsupported = null;
         String presetName = DisplaySettings.getString(DisplaySettings.DLAA_PRESET, "default");
         preset = parsePreset(presetName);
         presetFellBack = false;
@@ -305,6 +309,19 @@ public final class Dlss {
         } catch (IOException | RuntimeException e) {
             packProblem = "its " + PackProfile.FILE + " could not be read: " + e;
         }
+        // (A pack not made for it supports only its own anti-aliasing; DLSS and FSR wait for one that is.)
+        if (profile != null ? !profile.supportsEngine(engine) : engine.equals("taau") || engine.equals("none")) {
+            engineUnsupported = engine;
+            if (profile != null) {
+                LOG.info("DLAA: the shader pack {} doesn't support {}, so its own anti-aliasing runs", Iris.getCurrentPackName(), engineName(engine));
+            }
+            wanted = false;
+        }
+        // A pack that leaves the resolution to the Bridge renders at full size unless DLSS, FSR or its own TAAU upscales.
+        if (profile != null && profile.bridgeScale() && (!wanted || packProblem != null)
+                && !(engine.equals("taau") && engineUnsupported == null)) {
+            renderScaleSetting = 1.0f;
+        }
         if (!wanted) {
             profile = null;
             return;
@@ -322,7 +339,7 @@ public final class Dlss {
                 LOG.info("DLAA: DLSS Ray Reconstruction asked for (experimental): preset {}, {} colour, left noisy for it: {}{}",
                         rrPresetName(rrPreset), rrExposed ? "exposed" : "raw", rrRawReflections || rrRawShadows
                                 ? (rrRawReflections ? "rough reflections" : "") + (rrRawReflections && rrRawShadows ? ", " : "") + (rrRawShadows ? "soft shadows" : "")
-                                : "nothing", profile != null && !profile.hasRayReconstructionGuides() ? " (this pack hands over no guides: DLSS runs)" : "");
+                                : "nothing", profile != null && !profile.supportsRayReconstruction() ? " (this pack doesn't support it: DLSS runs)" : "");
             }
             LOG.info("DLAA: on for this shader pack, engine {}, DLSS preset {}{}, {}{}{}{}", engine, presetName(preset),
                     presetName.equalsIgnoreCase(presetName(preset)) || presetName.isEmpty() ? "" : " (set to " + presetName + ")",
@@ -363,7 +380,7 @@ public final class Dlss {
             notice("pack:" + packProblem, "DLAA is off with these shader pack options", packProblem);
         }
         active = wanted && profile != null && packProblem == null && !failed && !shuttingDown && ensureReady();
-        boolean rrPossible = active && rayReconstructionWanted && profile.hasRayReconstructionGuides();
+        boolean rrPossible = active && rayReconstructionWanted && profile.supportsRayReconstruction();
         rrRunning = rrPossible && debugView == null && !fsr3 && rrUnavailable == null;
         rrMode = rrPossible && (rrRunning || debugView != null);
         EntityMotion.beginFrame(active, Minecraft.getInstance().gameRenderer.getMainCamera().getPosition());
@@ -439,7 +456,10 @@ public final class Dlss {
         return active && rrMode && rrRawShadows;
     }
 
-    /** For the test kit: the pack the render resolution goes into, its upscaling switch and its render scale option. */
+    /**
+     * For the test kit: the pack the render resolution goes into, its upscaling switch and its render scale option (both
+     * empty when the pack leaves the resolution to the Bridge: dlaaRenderScale in the display settings sets it).
+     */
     public static String[] renderScaleOptions() {
         RenderScaleTarget target = RenderScaleTarget.current();
         return new String[] {target.pack(), target.upscaling(), target.scale()};
@@ -454,14 +474,40 @@ public final class Dlss {
         return active ? jitterY : 0.0f;
     }
 
-    /** The render size over the window's, per axis (taau_render_scale): the pack's render scale in whole pixels. */
+    /**
+     * The render size over the window's, per axis (taau_render_scale): the pack's render scale in whole pixels. 1 while
+     * DLSS and FSR don't run for a pack that leaves the resolution to the Bridge, as nothing would upscale its picture.
+     */
     public static org.joml.Vector2f renderScale() {
+        if (fullSizeNow()) {
+            return new org.joml.Vector2f(1.0f, 1.0f);
+        }
         return new org.joml.Vector2f((float) renderWidth / displayWidth, (float) renderHeight / displayHeight);
     }
 
     /** The textures' mip bias (cg_mip_bias): log2 of the render scale as the pack has it, plus dlaaMipBias while DLSS or FSR runs. */
     public static float mipBias() {
+        if (fullSizeNow()) {
+            return 0.0f;
+        }
         return (float) (Math.log((double) renderWidth / displayWidth) / Math.log(2.0)) + (active && debugView == null ? extraMipBias : 0.0f);
+    }
+
+    /** Hands the frame DLSS or FSR just made to frame generation, unless the pack in use doesn't take it. */
+    private static void toFrameGen(DlssPass.Inputs in, boolean resetNow) {
+        if (profile != null && !profile.supportsFrameGeneration()) {
+            return;
+        }
+        FrameGen.upscaled(in.motionTexture(), in.depthTexture(), in.width(), in.height(), in.renderWidth(), in.renderHeight(),
+                jitterX * jitterSign[0], jitterY * jitterSign[1], resetNow, frameTimeMs);
+    }
+
+    /**
+     * True while a pack that leaves the resolution to the Bridge must draw at full size: DLSS or FSR isn't running, and
+     * the pack has no TAAU of its own to upscale in their place.
+     */
+    private static boolean fullSizeNow() {
+        return !active && profile != null && profile.bridgeScale() && !profile.supportsTaau();
     }
 
     /** The render size for a window size: the pack's render scale in whole pixels (2/3 for 0.67 and 1/3 for 0.33). */
@@ -597,8 +643,7 @@ public final class Dlss {
             }
             reset = false;
             dlssGuard.ran();
-            FrameGen.upscaled(in.motionTexture(), in.depthTexture(), in.width(), in.height(), in.renderWidth(), in.renderHeight(),
-                    jitterX * jitterSign[0], jitterY * jitterSign[1], resetNow, frameTimeMs);
+            toFrameGen(in, resetNow);
             dumpIfAsked(pass, true);
             HandWatch.measure(pass, "dlss", false, resetNow, jitterX, jitterY, frameTimeMs);
             // (Exposed only in the frame Ray Reconstruction failed to start in: the pack had already multiplied it.)
@@ -667,8 +712,7 @@ public final class Dlss {
         }
         reset = false;
         dlssGuard.ran();
-        FrameGen.upscaled(in.motionTexture(), in.depthTexture(), in.width(), in.height(), in.renderWidth(), in.renderHeight(),
-                jitterX * jitterSign[0], jitterY * jitterSign[1], resetNow, frameTimeMs);
+        toFrameGen(in, resetNow);
         dumpIfAsked(pass, true);
         HandWatch.measure(pass, "rr", rrExposed, resetNow, jitterX, jitterY, frameTimeMs);
         Markers.around("Create Galore DLAA: write back", () -> pass.writeBack(profile, DlssPass.View.RESULT, rrExposed));
@@ -711,8 +755,7 @@ public final class Dlss {
                 frameTimeMs, projection, fsr3Debug));
         reset = false;
         fsrGuard.ran();
-        FrameGen.upscaled(in.motionTexture(), in.depthTexture(), in.width(), in.height(), in.renderWidth(), in.renderHeight(),
-                jitterX * jitterSign[0], jitterY * jitterSign[1], resetNow, frameTimeMs);
+        toFrameGen(in, resetNow);
         dumpIfAsked(fsrPass, true);
         HandWatch.measure(fsrPass, "fsr3", false, resetNow, jitterX, jitterY, frameTimeMs);
         Markers.around("Create Galore DLAA: write back", () -> fsrPass.writeBack(profile, DlssPass.View.RESULT));
@@ -762,16 +805,23 @@ public final class Dlss {
                 return false;
             }
             default -> {
-                if (ensureDlss()) {
+                // Auto: DLSS where it can run, else FSR 3, of the ones the pack supports.
+                if (profile.supportsDlss() && ensureDlss()) {
                     fsr3 = false;
                     return true;
                 }
+                if (!profile.supportsFsr()) {
+                    notice("dlss:" + unavailable, "DLAA is off: DLSS can't run", noticeText(unavailable));
+                    return false;
+                }
                 if (!fsr3) {
                     fsr3 = true;
-                    LOG.info("DLAA: Auto uses AMD FSR 3.1, DLSS can't run here: {}", unavailable);
-                    // No notice on other graphics cards (not NVIDIA's): FSR 3 is what Auto is for there.
-                    if (vendorIsNvidia()) {
-                        notice("auto:" + unavailable, "DLAA: AMD FSR 3.1 in place of DLSS", noticeText(unavailable));
+                    if (profile.supportsDlss()) {
+                        LOG.info("DLAA: Auto uses AMD FSR 3.1, DLSS can't run here: {}", unavailable);
+                        // No notice on other graphics cards (not NVIDIA's): FSR 3 is what Auto is for there.
+                        if (vendorIsNvidia()) {
+                            notice("auto:" + unavailable, "DLAA: AMD FSR 3.1 in place of DLSS", noticeText(unavailable));
+                        }
                     }
                 }
                 return ensureFsr3();
@@ -1068,6 +1118,17 @@ public final class Dlss {
         return preset == 0 ? "default" : String.valueOf((char) ('A' + preset - 1));
     }
 
+    /** The anti-aliasing setting {@code engine}, as messages name it. */
+    private static String engineName(String engine) {
+        return switch (engine) {
+            case "dlss" -> "DLSS";
+            case "fsr3" -> "FSR";
+            case "taau" -> "TAAU";
+            case "none" -> "turning anti-aliasing off";
+            default -> "DLSS or FSR";
+        };
+    }
+
     private static String presetName(int preset) {
         return preset >= 1 && preset <= 26 ? String.valueOf((char) ('A' + preset - 1)) : "default";
     }
@@ -1166,20 +1227,51 @@ public final class Dlss {
     }
 
     private static boolean hasProfile() {
+        return profilePack() != null;
+    }
+
+    /**
+     * For the settings screen: the profile of the shader pack in use (what it supports), or null without shaders, with a
+     * pack not made for it or one whose profile can't be read.
+     */
+    static PackProfile currentProfile() {
         try {
-            return PackProfile.current() != null;
+            return Iris.getIrisConfig().areShadersEnabled() ? PackProfile.current() : null;
         } catch (IOException | RuntimeException e) {
+            return null;
+        }
+    }
+
+    /** For the settings screen: true while a shader pack is in use (made for it or not). */
+    static boolean shaderPackInUse() {
+        try {
+            return Iris.getIrisConfig().areShadersEnabled() && Iris.getCurrentPackName() != null && Iris.getCurrentPack().isPresent();
+        } catch (RuntimeException e) {
             return false;
+        }
+    }
+
+    /** The shader pack in use when it is made for DLSS and FSR (it has a {@link PackProfile}), else null. */
+    static String profilePack() {
+        try {
+            return Iris.getIrisConfig().areShadersEnabled() && PackProfile.current() != null ? Iris.getCurrentPackName() : null;
+        } catch (IOException | RuntimeException e) {
+            return null;
         }
     }
 
     /** What DLAA does right now, in a line for the settings screen. */
     static String status() {
+        if (engineUnsupported != null) {
+            return "Off: the shader pack doesn't support " + engineName(engineUnsupported) + ", so it keeps its own anti-aliasing.";
+        }
         if (!wanted) {
-            return "Off: the shader pack keeps its own anti-aliasing.";
+            return engine.equals("none") ? "Off: no anti-aliasing."
+                    : renderScaleSetting < 1.0f ? "Off: the shader pack's own TAAU upscales."
+                    : "Off: the shader pack keeps its own anti-aliasing.";
         }
         if (!Iris.getIrisConfig().areShadersEnabled() || Iris.getCurrentPack().isEmpty() || NO_PROFILE.equals(packProblem)) {
-            return "Waiting: pick \"" + PhotonPatcher.PATCHED_NAME + "\" in Shader Packs.";
+            return "Waiting: pick \"" + PhotonPatcher.PATCHED_NAME + "\" or another shader pack made for it in Shader Packs.";
         }
         if (profile == null && packProblem != null) {
             return "Off: the shader pack's " + PackProfile.FILE + " could not be read (the log says why).";
@@ -1200,7 +1292,7 @@ public final class Dlss {
             return "On: NVIDIA DLSS Ray Reconstruction " + size + " on " + adapterName + ", preset " + rrPresetName(rrPreset) + ".";
         }
         String rr = rayReconstructionWanted && rrUnavailable != null ? " Ray Reconstruction can't run: " + rrUnavailable + "."
-                : rayReconstructionWanted && profile != null && !profile.hasRayReconstructionGuides() ? " Ray Reconstruction: this pack hands over no guides." : "";
+                : rayReconstructionWanted && profile != null && !profile.supportsRayReconstruction() ? " Ray Reconstruction: this pack doesn't support it." : "";
         if (active && !fsr3) {
             return "On: NVIDIA " + (size.startsWith("at") ? "DLAA" : "DLSS " + size) + " on " + adapterName + ", preset "
                     + presetName(presetFellBack ? PRESET_DEFAULT : preset)

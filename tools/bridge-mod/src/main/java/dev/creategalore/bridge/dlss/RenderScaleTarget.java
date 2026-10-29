@@ -5,24 +5,30 @@ import java.io.Reader;
 import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import dev.creategalore.bridge.DisplaySettings;
 import net.irisshaders.iris.Iris;
 import net.irisshaders.iris.shaderpack.option.values.OptionValues;
 
 /**
- * Where the render resolution is set (the Upscaling & Display screen and the test kit): the shader pack in use when it is made for
- * DLAA and has an upscaling switch (renderScaleOptions in its profile, see {@link PackProfile}), else the Photon copy.
- * The resolution is the pack's own options, so the pack renders at that size whether DLSS, FSR or the pack's own
- * upscaling makes the window's picture from it.
+ * Where the render resolution is set (the Upscaling & Display screen and the test kit): the shader pack in use when it is
+ * made for DLAA (it has a profile, see {@link PackProfile}), else the Photon copy. With an upscaling switch
+ * (renderScaleOptions in its profile) the resolution is the pack's own options, so the pack renders at that size whether
+ * DLSS, FSR or the pack's own upscaling makes the window's picture from it. A pack whose profile says renderScale=bridge
+ * has no such option: the resolution is then the Bridge's own setting ({@link DisplaySettings#DLAA_RENDER_SCALE}),
+ * saved by the screen. The screen also turns the pack's anti-aliasing option (taaOption) off and on here.
  *
  * pack: its name in the shaderpacks folder. inUse: it is the pack Iris has picked (its options then go through Iris's
- * queue, else into the .txt Iris keeps beside it). upscaling, scale: its upscaling switch and render scale option.
- * requireOn: options that must be on for it to upscale (Photon only upscales with its TAA on).
+ * queue, else into the .txt Iris keeps beside it). upscaling, scale: its upscaling switch and render scale option
+ * (empty when it has none). requireOn: options that must be on for it to upscale (Photon only upscales with its TAA
+ * on). bridge: the resolution is the Bridge's setting. taaOption: its anti-aliasing option, or null.
  */
-public record RenderScaleTarget(String pack, boolean inUse, String upscaling, String scale, List<String> requireOn) {
+public record RenderScaleTarget(String pack, boolean inUse, String upscaling, String scale, List<String> requireOn, boolean bridge,
+                                String taaOption) {
     /** The upscaling switch's state and the scale option's value (null when the pack doesn't say). */
     public record Setting(boolean upscaling, String scale) {}
 
@@ -30,7 +36,7 @@ public record RenderScaleTarget(String pack, boolean inUse, String upscaling, St
         String name = Iris.getCurrentPackName();
         try {
             PackProfile profile = PackProfile.current();
-            if (profile != null && profile.renderScaleOptions().size() == 2) {
+            if (profile != null) {
                 return of(name, true, profile);
             }
         } catch (IOException | RuntimeException e) {
@@ -51,16 +57,34 @@ public record RenderScaleTarget(String pack, boolean inUse, String upscaling, St
         } catch (IOException | RuntimeException e) {
             // not made yet: the options PhotonPatcher gives it
         }
-        return new RenderScaleTarget(PhotonPatcher.PATCHED_NAME, photonInUse, "TAAU", "TAAU_RENDER_SCALE", List.of("TAA"));
+        return new RenderScaleTarget(PhotonPatcher.PATCHED_NAME, photonInUse, "TAAU", "TAAU_RENDER_SCALE", List.of("TAA"), false, "TAA");
+    }
+
+    /** The Bridge's own render scale setting, from {@link PackProfile#MIN_RENDER_SCALE} to 1 (1 when unset or unreadable). */
+    public static float bridgeScale() {
+        try {
+            float scale = Float.parseFloat(DisplaySettings.getString(DisplaySettings.DLAA_RENDER_SCALE, "1"));
+            return Float.isFinite(scale) ? Math.max(PackProfile.MIN_RENDER_SCALE, Math.min(1.0f, scale)) : 1.0f;
+        } catch (NumberFormatException e) {
+            return 1.0f;
+        }
     }
 
     private static RenderScaleTarget of(String name, boolean inUse, PackProfile profile) {
-        return new RenderScaleTarget(name, inUse, profile.renderScaleOptions().get(0), profile.renderScaleOptions().get(1),
-                profile.requireOn());
+        boolean options = profile.renderScaleOptions().size() == 2;
+        return new RenderScaleTarget(name, inUse, options ? profile.renderScaleOptions().get(0) : "",
+                options ? profile.renderScaleOptions().get(1) : "", profile.requireOn(), profile.bridgeScale(), profile.taaOption());
     }
 
     /** The pack's current setting: from Iris when it is the pack loaded (defaults included), else from its .txt. */
     public Setting read() {
+        if (bridge) {
+            float scale = bridgeScale();
+            return new Setting(scale < 1.0f, String.format(java.util.Locale.ROOT, "%.2f", scale));
+        }
+        if (upscaling.isEmpty()) {
+            return new Setting(false, null);
+        }
         OptionValues values = inUse ? Iris.getCurrentPack().map(p -> p.getShaderPackOptions().getOptionValues()).orElse(null) : null;
         if (values != null) {
             boolean on = values.getOptionSet().getBooleanOptions().containsKey(upscaling) && values.getBooleanValueOrDefault(upscaling);
@@ -83,13 +107,41 @@ public record RenderScaleTarget(String pack, boolean inUse, String upscaling, St
         return new Setting(on, value == null ? null : value.trim());
     }
 
+    /** Whether the pack's anti-aliasing option is on now (Iris's value when it is the pack loaded, else its .txt), or null. */
+    public Boolean taaOn() {
+        if (taaOption == null) {
+            return null;
+        }
+        OptionValues values = inUse ? Iris.getCurrentPack().map(p -> p.getShaderPackOptions().getOptionValues()).orElse(null) : null;
+        if (values != null) {
+            return values.getOptionSet().getBooleanOptions().containsKey(taaOption) ? values.getBooleanValueOrDefault(taaOption) : null;
+        }
+        Properties stored = new Properties();
+        try (Reader reader = Files.newBufferedReader(optionsFile())) {
+            stored.load(reader);
+        } catch (IOException | RuntimeException e) {
+            return null;
+        }
+        String value = stored.getProperty(taaOption);
+        return value == null ? null : !value.trim().equalsIgnoreCase("false");
+    }
+
     /**
      * Sets the pack's options: through Iris's queue when it is the pack in use (the reload after this applies and saves
-     * them), else into its .txt for when it is picked.
+     * them), else into its .txt for when it is picked. The render resolution of a pack that leaves it to the Bridge
+     * ({@link DisplaySettings#DLAA_RENDER_SCALE}) goes into the Bridge's display settings.
      */
     public void write(Map<String, String> options) {
+        Map<String, String> packOptions = new HashMap<>(options);
+        String bridgeScale = packOptions.remove(DisplaySettings.DLAA_RENDER_SCALE);
+        if (bridgeScale != null) {
+            DisplaySettings.save(Map.of(DisplaySettings.DLAA_RENDER_SCALE, bridgeScale));
+        }
+        if (packOptions.isEmpty()) {
+            return;
+        }
         if (inUse) {
-            Iris.getShaderPackOptionQueue().putAll(options);
+            Iris.getShaderPackOptionQueue().putAll(packOptions);
             return;
         }
         Path file = optionsFile();
@@ -100,7 +152,7 @@ public record RenderScaleTarget(String pack, boolean inUse, String upscaling, St
                     stored.load(reader);
                 }
             }
-            stored.putAll(options);
+            stored.putAll(packOptions);
             try (Writer writer = Files.newBufferedWriter(file)) {
                 stored.store(writer, null);
             }
