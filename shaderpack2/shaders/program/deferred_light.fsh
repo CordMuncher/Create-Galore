@@ -1,0 +1,243 @@
+// The lighting of everything in the G-buffer (and the sky behind it), into colortex0: the traced block light per
+// pixel (or per block where a pixel has none), the bounce light, the sun through the shadow map, the sky, ambient
+// occlusion, and the hot texels' own glow, mixed as lib/lighting.glsl says; then the highlights on top. Light that
+// the world's programs already added to colortex0 (glowing eyes, the enchantment glint) stays on top.
+
+#include "/lib/settings.glsl"
+#include "/lib/gbuffer_read.glsl"
+#include "/lib/lighting.glsl"
+#include "/lib/voxel_sample.glsl"
+#include "/lib/shadow.glsl"
+#if defined SUNLIGHT
+#include "/lib/sky.glsl"
+#endif
+#if DEBUG_VIEW == 7 || DEBUG_VIEW == 8 || DEBUG_VIEW == 10 || DEBUG_VIEW == 11
+#include "/lib/trace.glsl"
+#endif
+#if DEBUG_VIEW == 12
+#include "/lib/lights.glsl"
+#endif
+
+uniform sampler2D colortex0; // light added before this pass (see gbuffers.fsh, LIT_GLOW)
+uniform sampler2D colortex5; // the moon
+uniform vec3 fogColor;
+
+#ifdef DISTANT_HORIZONS
+uniform sampler2D dhDepthTex0;
+uniform mat4 dhProjectionInverse;
+#endif
+
+#ifdef PIXEL_LIGHT
+layout(rgba16f) readonly uniform image2D cg_plh_img; // see pixel_light_filter.csh
+#endif
+
+in vec2 v_uv;
+
+/* RENDERTARGETS: 0 */
+layout(location = 0) out vec4 out_color;
+
+// Screen-space ambient occlusion: eight looks into the half sphere over the surface, in view space, half a block
+// out; a surface is shaded by how many land behind something in front of them.
+float ssao(vec3 view, vec3 view_normal, ivec2 texel) {
+#ifdef SSAO
+    float noise = fract(ign(vec2(texel)) + float(frameCounter % 64) * GOLDEN);
+    vec3 t, b;
+    basis(view_normal, t, b);
+    float occluded = 0.0;
+    const float radius = 0.6;
+    for (int i = 0; i < 8; i++) {
+        float a = (float(i) + noise) * (TAU * GOLDEN * 2.0);
+        float r = sqrt((float(i) + 0.5) / 8.0);
+        float h = sqrt(1.0 - r * r);
+        vec3 dir = t * (cos(a) * r) + b * (sin(a) * r) + view_normal * h;
+        vec3 sp = view + dir * radius * mix(0.25, 1.0, fract(noise + float(i) * 0.37));
+        vec4 clip = gbufferProjection * vec4(sp, 1.0);
+        vec2 ndc = clip.xy / clip.w;
+        vec2 pixel = (ndc * 0.5 + 0.5) * render_size() + vec2(cg_dlss_jitter_x, cg_dlss_jitter_y);
+        if (any(lessThan(pixel, vec2(0.0))) || any(greaterThanEqual(pixel, render_size()))) {
+            continue;
+        }
+        ivec2 at = ivec2(pixel);
+        float d = texelFetch(depthtex0, at, 0).r;
+        if (is_hand_depth(d)) {
+            continue;
+        }
+        float surface_z = pixel_to_view(at, d).z;
+        float in_front = surface_z - sp.z;
+        if (in_front > 0.02) {
+            occluded += smoothstep(0.0, 1.0, radius / max(in_front, radius));
+        }
+    }
+    return 1.0 - occluded / 8.0 * 0.9;
+#else
+    return 1.0;
+#endif
+}
+
+vec3 sky_color(vec3 dir, ivec2 texel) {
+#if defined WORLD_NETHER
+    return srgb_to_linear(fogColor) * 0.4;
+#elif defined WORLD_END
+    return vec3(0.012, 0.008, 0.016);
+#else
+    return sky(dir, true) + texelFetch(colortex5, texel, 0).rgb * moon_illuminance();
+#endif
+}
+
+void main() {
+    ivec2 texel = ivec2(gl_FragCoord.xy);
+    if (outside_render_area(gl_FragCoord.xy)) {
+        out_color = vec4(0.0);
+        return;
+    }
+    float depth = texelFetch(depthtex0, texel, 0).r;
+    vec3 view;
+    bool lod = false;
+    if (depth >= 1.0) {
+#ifdef DISTANT_HORIZONS
+        float dh_depth = texelFetch(dhDepthTex0, texel, 0).r;
+        if (dh_depth < 1.0) {
+            vec2 ndc = (vec2(texel) + 0.5 - vec2(cg_dlss_jitter_x, cg_dlss_jitter_y)) / render_size() * 2.0 - 1.0;
+            vec4 v = dhProjectionInverse * vec4(ndc, dh_depth * 2.0 - 1.0, 1.0);
+            view = v.xyz / v.w;
+            lod = true;
+        }
+#endif
+        if (!lod) {
+            vec3 far_view = pixel_to_view(texel, 1.0);
+            vec3 dir = normalize(mat3(gbufferModelViewInverse) * far_view);
+            out_color = vec4(sky_color(dir, texel) + texelFetch(colortex0, texel, 0).rgb, 1.0);
+            return;
+        }
+    } else {
+        view = pixel_to_view(texel, depth);
+    }
+
+    Surface s = read_surface(texel);
+    vec3 scene = view_to_scene_pos(view);
+    vec3 v = normalize(-scene);
+    vec3 n = s.normal;
+    vec3 p = vox_pos(scene);
+    vec3 in_front = p + s.face * 0.5;
+    float fade = lod ? 0.0 : box_fade(in_front);
+
+    // Block light: the traced light of this pixel, or of its block.
+    vec4 per_block = fade > 0.0 ? sample_block_table(cg_blk_tex, in_front) : vec4(0.0);
+    vec3 block = per_block.rgb;
+    float confidence = per_block.a;
+    vec3 highlight = vec3(0.0);
+#ifdef PIXEL_LIGHT
+    ivec2 now = texel + ivec2((frameCounter & 1) * int(viewWidth), 0);
+    vec4 traced = imageLoad(cg_plh_img, now);
+    if (traced.a > 0.5 && !lod) {
+        block = traced.rgb;
+        confidence = 1.0;
+        highlight = imageLoad(cg_plh_img, now + ivec2(0, imageSize(cg_plh_img).y / 3)).rgb * 4.0;
+    }
+#endif
+    vec3 vanilla_block = vanilla_block_light(s.block);
+    LightParts parts;
+    parts.block = mix(vanilla_block, block * 4.0, fade * confidence);
+    if (s.emission > 0.0) {
+        parts.block = max(parts.block, vanilla_block); // a lamp is never darker than Minecraft says on its own face
+    }
+
+    // Sky and bounce light.
+    vec4 gi = fade > 0.0 ? sample_block_table(cg_gi_tex, in_front) : vec4(0.0);
+    vec3 open_sky = sky_light_on(n) * vanilla_sky_share(s.sky);
+#ifdef GI
+    parts.sky = mix(open_sky, max(gi.rgb * GI_STRENGTH, 0.5 * open_sky), fade * gi.a);
+#else
+    parts.sky = open_sky;
+#endif
+    parts.minimum = minimum_light(s.sky);
+
+    // The sun (or the moon).
+    bool thin = s.material == MAT_PLANT || s.material == MAT_LEAVES;
+    vec3 l = g_light_dir.xyz;
+    vec3 sun = vec3(0.0);
+    vec3 sun_reach = vec3(0.0);
+#if defined SUNLIGHT
+    float facing = sun_facing(n, l);
+    if (thin) {
+        facing = mix(facing, 1.0, 0.45);
+    }
+    float sky_gate = smoothstep(0.05, 0.3, s.sky);
+    if (facing > 0.0 && sky_gate > 0.0 && !lod) {
+        float radius = (thin ? 2.0 : 1.2) * SHADOW_SOFTNESS;
+        sun_reach = shadow_light(shadow_offset_point(scene, s.face, l), radius) * sky_gate;
+        sun = g_light_color.rgb * facing * sun_reach;
+    } else if (lod) {
+        sun = g_light_color.rgb * facing * vanilla_sky_share(s.sky);
+    }
+#elif defined WORLD_END
+    sun = g_light_color.rgb * sun_facing(n, l);
+#endif
+    parts.sun = sun;
+
+    // Shade: the corners' shading, the ambient occlusion and the face's turn.
+    float ao = mix(1.0, s.ao, AO_STRENGTH);
+    vec3 view_normal = mat3(gbufferModelView) * s.face;
+    if (s.material != MAT_HAND && !lod) {
+        ao *= mix(1.0, ssao(view, view_normal, texel), AO_STRENGTH);
+    }
+    parts.shade = ao * side_shade(n);
+    parts.glow = s.emission * 4.0;
+
+    vec3 light = mix_light(parts);
+    vec3 diffuse_color = s.albedo * (1.0 - 0.7 * s.metal);
+    vec3 color = diffuse_color * light;
+
+    // Highlights: every nearby light's, and the sun's.
+    vec3 tint = mix(vec3(1.0), s.albedo, s.metal);
+    color += highlight * tint * s.smoothness;
+#if defined SUNLIGHT
+    if (!lod && max3(sun_reach) > 0.0 && s.smoothness > 0.2) {
+        color += g_light_color.rgb * sun_reach * tint * ggx_specular(n, v, l, s.smoothness, mix(0.04, 0.6, s.metal));
+    }
+#endif
+
+#if DEBUG_VIEW == 1
+    color = s.albedo;
+#elif DEBUG_VIEW == 2
+    color = srgb_to_linear(n * 0.5 + 0.5);
+#elif DEBUG_VIEW == 3
+    color = sun_reach;
+#elif DEBUG_VIEW == 4
+    color = per_block.rgb * 4.0 * fade;
+#elif DEBUG_VIEW == 5
+    color = block * 4.0;
+#elif DEBUG_VIEW == 6
+    color = gi.rgb * fade;
+#elif DEBUG_VIEW == 7
+    Hit h = trace_ray(vox_pos(vec3(0.0)), -v, 128.0, 128);
+    color = h.hit ? vox_color(ivec3(floor(h.pos))).rgb * (0.6 + 0.4 * float(h.level) / float(VOXEL_LEVELS)) : vec3(0.0, 0.0, 0.2);
+#elif DEBUG_VIEW == 8
+    color = vec3(float(sdf_at(ivec3(floor(in_front)), 0)) / 16.0);
+#elif DEBUG_VIEW == 9
+    color = vec3(ao);
+#elif DEBUG_VIEW == 10
+    // The surface's own block in the voxel copy: red solid, green see-through, blue a light; dim when no colour
+    // was gathered for it.
+    uint word = vox_word(ivec3(floor(p - s.face * 0.5)));
+    color = vec3(float((word & vox_solid_bit(0)) != 0u), float((word & vox_see_bit(0)) != 0u), float((word & VOX_LIGHT) != 0u));
+    color *= (word >> VOX_COUNT_SHIFT) > 0u ? 1.0 : 0.3;
+#elif DEBUG_VIEW == 11
+    color = vox_color(ivec3(floor(p - s.face * 0.5))).rgb;
+#elif DEBUG_VIEW == 12
+    // The light list of the block tile in front of the surface: red its length (16 = full), green how many of its
+    // first eight lights are still there (8 = full), blue the per-block table's confidence.
+    ivec3 tile;
+    color = vec3(0.0, 0.0, per_block.a);
+    if (block_tile_of(in_front, tile)) {
+        uint base = block_tile_index(tile);
+        uint count = min(data_load(base), tile_list_max);
+        float valid = 0.0;
+        for (uint i = 0u; i < min(count, 8u); i++) {
+            valid += light_from_key(data_load(base + 1u + i)).valid ? 1.0 : 0.0;
+        }
+        color.rg = vec2(float(count) / 16.0, valid / 8.0);
+    }
+#endif
+    out_color = vec4(color + texelFetch(colortex0, texel, 0).rgb, 1.0);
+}
