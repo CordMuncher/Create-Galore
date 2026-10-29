@@ -5,7 +5,7 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
-## 0.6.40
+## 0.6.41
 
 ### Added
 - Create Galore Bridge 1.155.0.
@@ -13,6 +13,18 @@ describe the fix (the build fails on a name it knows).
 
 ### Fixed
 - Nothing.
+
+### Removed
+- Nothing.
+
+## 0.6.40
+
+### Added
+- Create Galore Fishing 0.3.25.
+
+### Fixed
+- **A rod set into a Geared or Fuel Reel Drive puts its bait in the drive's bait slot**, so the window shows it and it can be topped up or taken out. Each cast takes up to 16 onto the hook and what is left comes back with the line. Taking the rod out puts up to 16 back on it; the rest stays in the slot. Before, bait already on the rod was hidden and the slot read empty.
+- **The goggles no longer name the fish on a rod machine's line or give its weight.** They say "Fish on!"; what it is shows only when it comes up in the water.
 
 ### Removed
 - Nothing.

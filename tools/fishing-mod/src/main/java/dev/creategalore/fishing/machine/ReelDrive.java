@@ -94,6 +94,8 @@ public final class ReelDrive {
     private boolean reportLosses;
     /** Autocast off: a cast is waiting, from switching the drive on or the window's Cast button. */
     private boolean castArmed;
+    /** Whether a set-in rod's bait has been moved to the slot since the line last came in (not saved: checked again on load). */
+    private boolean stowed;
     private int castDistance = 12;
     private int topGear = Gearbox.GEARS.length - 1;
     private Gearbox gearbox = new Gearbox(0, topGear);
@@ -306,8 +308,15 @@ public final class ReelDrive {
         if (lineWasOut) {
             lineWasOut = false;
             recastIn = RECAST_DELAY;
+            stowed = false;
         }
-        if (kind.geared()) castWhenReady();
+        if (kind.geared()) {
+            if (!stowed) {
+                stowBait();
+                stowed = true;
+            }
+            castWhenReady();
+        }
     }
 
     /** True once if what clients see has changed (the block entity then sends an update). */
@@ -357,6 +366,42 @@ public final class ReelDrive {
     }
 
     /** Tops the rod's bait up from the bait slot: more of the same bait, or any bait if the rod has none. */
+    /** A rod was set in: its bait moves to the slot once the line is in (now, or when it comes back). */
+    public void rodSetIn() {
+        stowed = false;
+    }
+
+    /**
+     * A geared drive keeps the bait of a rod set in with its line in in its own bait slot, where the window shows it
+     * and it can be added to or taken out; each cast takes what it needs onto the hook, and what is left comes back
+     * when the line does. Bait that doesn't fit the slot (another kind is in there) stays on the rod.
+     */
+    public void stowBait() {
+        if (!kind.geared() || rod.rod().isEmpty() || rod.hook() != null) return;
+        ItemStack stack = rod.rod();
+        RodParts parts = RodItem.parts(stack);
+        ItemStack fitted = parts.bait();
+        if (fitted.isEmpty()) return;
+        ItemStack store = bait.getStackInSlot(0);
+        ItemStack rest;
+        if (store.getItem() instanceof LiveBaitBucketItem && LiveBait.isLive(fitted)) {
+            ItemStack bucket = store.copy();
+            ItemStack left = LiveBaitBucketItem.putBack(bucket, fitted.copy());
+            bait.setStackInSlot(0, bucket);
+            rest = left.isEmpty() ? ItemStack.EMPTY : LiveBait.alive(left);
+        } else {
+            rest = bait.insertItem(0, fitted.copy(), false);
+        }
+        if (rest.getCount() == fitted.getCount()) return;
+        RodItem.setParts(stack, parts.with(RodParts.Slot.BAIT, rest));
+        rod.changed();
+    }
+
+    /** The rod is coming out: with its line in, it takes its bait back from the slot (as much as a rod carries). */
+    public void refitBait() {
+        if (kind.geared() && !rod.rod().isEmpty() && rod.hook() == null) rebait();
+    }
+
     private void rebait() {
         ItemStack stack = rod.rod();
         RodParts parts = RodItem.parts(stack);

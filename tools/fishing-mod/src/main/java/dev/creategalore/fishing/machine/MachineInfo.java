@@ -1,7 +1,6 @@
 package dev.creategalore.fishing.machine;
 
 import dev.creategalore.fishing.cast.CastHook;
-import dev.creategalore.fishing.fish.CatchInfo;
 import dev.creategalore.fishing.sim.Gearbox;
 import dev.creategalore.fishing.tackle.RodItem;
 import dev.creategalore.fishing.tackle.RodParts;
@@ -13,7 +12,6 @@ import java.util.Locale;
 import java.util.Map;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.item.ItemStack;
@@ -66,10 +64,8 @@ public final class MachineInfo {
                 switch (hook.phase()) {
                     case BITE -> tooltip.add(line(Component.translatable(P + "bite").withStyle(ChatFormatting.YELLOW), 1));
                     case FIGHTING -> {
-                        Component fish = hook.fishId() == null ? Component.translatable(P + "something")
-                                : BuiltInRegistries.ITEM.get(hook.fishId()).getDescription();
-                        tooltip.add(line(Component.translatable(P + "fish_on", fish, CatchInfo.weightText(hook.fishKg()))
-                                .withStyle(ChatFormatting.AQUA), 1));
+                        // What is on, and how big, stays a surprise until it shows in the water.
+                        tooltip.add(line(Component.translatable(P + "fish_on").withStyle(ChatFormatting.AQUA), 1));
                         tooltip.add(line(Component.translatable(P + "tension", percent(hook.tension()))
                                 .withStyle(hook.tension() > 0.8f ? ChatFormatting.RED : ChatFormatting.GRAY), 1));
                     }
