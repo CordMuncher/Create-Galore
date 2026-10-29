@@ -79,6 +79,11 @@
       "text": "Before you assemble the ship, give the part the swivel should turn its own small glue box. It can sit inside the ship's glue. Without one, only the block on the swivel's face turns.\\\n\\\nPut the engine behind the bearing: rotation goes through it to the part. A Steering Wheel on a cogwheel next to the bearing turns it."
     },
     {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Turned 45 degrees by the wheel, a Wooden Propeller at the stern swings an 11 by 15 blimp round at about 11 degrees a second."
+    },
+    {
       "type": "modonomicon:spotlight",
       "item": {
         "item": "simulated:docking_connector"

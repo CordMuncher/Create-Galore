@@ -49,7 +49,12 @@ final class DesignBriefs {
             vehicle's own deck or floor), how they get aboard from the ground, and how they walk to everything they tend \
             on the way, an engine to refuel above all, along floors, steps or a ladder, in plain view. The pilot looks \
             out ahead from the helm: the controls go on a dashboard below the window sill or on the wall beside the \
-            windows, never on or in front of the glass. A vehicle \
+            windows, never on or in front of the glass. The pilot steers with one control turned left and right, as in a \
+            real cockpit: a Steering Wheel at the helm (a boat's Boat Engine tiller is one too). On an aircraft the wheel's \
+            cog turns a Swivel Bearing that swings a Wooden Propeller at the stern (it needs its own small glue box), or a comparator \
+            against each side of the wheel cuts the propeller line on one side through a Clutch (Redstone Links carry it \
+            to pods). Levers and Throttle Levers are for what stays set: burners, engines on or off, brakes. A lever per \
+            side to steer is only for a player who can't make a Steering Wheel yet. A vehicle \
             balances by the shape of its hull and where its rooms and machines go, never by iron blocks or other dead \
             weight. When a player asks for a vehicle that hauls, or one to live from (a sky base, a camper, a home on \
             the move), give it the rooms that make it one: a bed, a place to cook (a smoker or Farmer's Delight stove), \
@@ -62,7 +67,8 @@ final class DesignBriefs {
             body (the engine in the nose or in nacelles on the wings, the propellers out front, a cockpit, a body \
             narrowing back to the tail), long slim wings (about five or six times as wide as they are deep, a biplane's \
             two stacked on struts), a tail with a flat stabiliser and an upright fin, and landing gear under it. The \
-            pilot sits in the cockpit with every control in front of them, grouped like a dashboard. Planes fly only if \
+            pilot sits in the cockpit with every control in front of them, grouped like a dashboard, and steers with the \
+            Steering Wheel. Planes fly only if \
             they are light, so wings and tail are fabric (Create sails lift like Wing blocks at a quarter of the \
             weight; Symmetric Sails steady a tail without lifting) and the body is slabs, trapdoors and fences, with \
             solid blocks only where they matter. Propeller planes work from the start: Portable Engines geared up to \
@@ -76,8 +82,8 @@ final class DesignBriefs {
             level with the middle of the envelope (propellers mounted low tip it nose up at speed), never on bare \
             shafts sticking out of a basket. The engines sit where the crew walks to refuel them: an engine room in the \
             gondola turning the propellers through shafts up the rigging, or pods reached along a railed catwalk or \
-            ladder from the cabin. A closed cabin has the helm at the bow, with the pilot's seat, throttle and steering \
-            levers together. It should cruise at about 8 blocks a second or better: gear the propellers up (Wooden \
+            ladder from the cabin. A closed cabin has the helm at the bow, with the pilot's seat, the Steering Wheel and \
+            the burners' Throttle Lever together. It should cruise at about 8 blocks a second or better: gear the propellers up (Wooden \
             Propellers at 256 RPM, or a Propeller Bearing with a fan of sails at 128 RPM driven by two Portable Engines \
             on one shaft, which pushes more for the same engines) and size the envelope to the load, since every \
             envelope block drags. A balloon at walking pace is not a finished design.""";

@@ -1375,6 +1375,15 @@ final class VehicleCheck {
                     how = "tilting its " + t.what;
                 }
             }
+            // A propeller or fin on an upright Swivel Bearing swings round as a Steering Wheel turns the bearing's cog.
+            Swivel swivel = swivel(b, all, v, p0);
+            if (swivel != null && !swivel.wheel())
+                faults.add("nothing turns the Swivel Bearing at " + xyz(swivel.bearing()) + ", so what it carries only points straight: "
+                        + "put a Steering Wheel at the helm with a line of cogwheels from its shaft to the bearing's cog");
+            if (swivel != null && swivel.torque() > q) {
+                q = swivel.torque();
+                how = swivel.how();
+            }
             double iy = b.iYaw(), damp = DAMP * iy;
             for (Part p : b.parts) {
                 double r2 = sq(p.cx() - b.cx) + sq(p.cz() - b.cz);
@@ -1386,6 +1395,7 @@ final class VehicleCheck {
             if (gyros > 0) damp += iy;
             if (lev > 0 && q > 0) damp = levititeBrake(b, q, damp);
             turn(q, damp, how, faults, notes, out, "aircraft");
+            if (how != null) steering(b, swivel != null && how.equals(swivel.how()) ? swivel : null, faults, notes, out);
             if (gyros > 0) notes.add("its Gyroscope keeps it level but also brakes turning");
         }
         if (stress > 0) notes.add(String.format(Locale.ROOT, "its propellers draw about %.0f stress units at these speeds; the "
@@ -2109,6 +2119,121 @@ final class VehicleCheck {
         return count;
     }
 
+    /** A propeller or fin a Swivel Bearing swings round, its turning force at full lock and what turns the bearing. */
+    private record Swivel(double torque, String how, BlockPos bearing, boolean wheel) {
+    }
+
+    /** How far a Steering Wheel is taken to swing a swivelled part, either way: past this a propeller mostly pushes sideways. */
+    private static final double SWIVEL_LOCK = Math.toRadians(45);
+
+    /**
+     * Steering on a Swivel Bearing standing upright (facing up or down): the part glued to its face swings round its
+     * axis, so a propeller there pushes partly sideways and a fin of Symmetric Sails meets the air at an angle. Measured
+     * in-world: a Steering Wheel at 45° on a stern Wooden Propeller turned an 11 by 15 blimp about 11° a second. The part
+     * is taken as the blocks within 2 of the bearing's face, which is what a small glue box of its own would hold.
+     */
+    private static Swivel swivel(Body b, List<Thrust> all, double v, double p0) {
+        Swivel best = null;
+        boolean wheel = b.count("simulated:steering_wheel") > 0 || b.count("aeroworks:mechanical_servo") > 0
+                || b.count("aeroworks:stepper_servo") > 0;
+        for (Part p : b.parts) {
+            if (!p.id.equals("simulated:swivel_bearing")) continue;
+            Direction f = facing(p.state);
+            if (f == null || f.getAxis() != Direction.Axis.Y) continue;
+            BlockPos face = p.pos.relative(f);
+            if (!b.blocks.containsKey(face)) continue;
+            Set<BlockPos> part = new HashSet<>(List.of(face));
+            ArrayDeque<BlockPos> todo = new ArrayDeque<>(part);
+            while (!todo.isEmpty()) {
+                BlockPos q = todo.poll();
+                for (Direction d : Direction.values()) {
+                    BlockPos n = q.relative(d);
+                    BlockState ns = b.blocks.get(n);
+                    if (ns == null || ns.isAir() || n.equals(p.pos) || n.distManhattan(face) > 2 || !part.add(n)) continue;
+                    todo.add(n);
+                }
+            }
+            double arm = Math.abs(b.along(p.cx(), p.cz()));
+            if (arm < 1.5) continue;
+            double torque = 0;
+            String what = null;
+            for (Thrust t : all) {
+                // A Propeller Bearing's fan is a contraption of its own; riding a swivel is untried, so it isn't counted.
+                if (!part.contains(t.at) || !t.dir.getAxis().isHorizontal() || t.what.startsWith("Propeller Bearing")) continue;
+                double tq = (t.airflow < Double.MAX_VALUE ? t.force * p0 : t.force) * Math.sin(SWIVEL_LOCK) * arm;
+                if (tq > torque) {
+                    torque = tq;
+                    what = t.what;
+                }
+            }
+            // A fin: Symmetric Sail drag 1.75 x pressure x the speed across it, whose sideways share peaks at 45 degrees.
+            long fins = part.stream().filter(q -> id(b.blocks.get(q)).endsWith("_symmetric_sail")).count();
+            double fin = 1.75 * p0 * v * fins * Math.sin(SWIVEL_LOCK) * Math.cos(SWIVEL_LOCK) * arm;
+            if (fin > torque) {
+                torque = fin;
+                what = fins + "-sail fin";
+            }
+            if (what == null) continue;
+            String how = "swinging its " + what + " on the Swivel Bearing at " + xyz(p.pos)
+                    + (wheel ? " with the Steering Wheel (at 45°)" : "");
+            if (!wheel) torque = 0;
+            if (best == null || torque > best.torque()) best = new Swivel(torque, how, p.pos, wheel);
+        }
+        return best;
+    }
+
+    /**
+     * Who steers it, and with what. A pilot steers with one control turned left or right: a Steering Wheel turning a Swivel
+     * Bearing, a Steering Wheel whose comparators (one at each side, each lit only while the wheel is turned that way) cut
+     * that side's propellers, or an Aeroworks console's wheel sending Left and Right on two Redstone Link frequencies.
+     * Running each side's propellers from a lever of its own is the fallback for a player who can't make a wheel yet.
+     */
+    private static void steering(Body b, Swivel swivel, List<String> faults, List<String> notes, StringBuilder out) {
+        if (swivel != null) {
+            if (swivel.wheel()) out.append("- Steered with one Steering Wheel, which swings the Swivel Bearing at ").append(xyz(swivel.bearing()))
+                    .append(" (its own small glue box must hold the part it swings).\n");
+            return;
+        }
+        if (b.count("aeroworks:control_desk") + b.count("aeroworks:control_stand") > 0) {
+            out.append("- Steered from its Aeroworks console: a Wheel Module's Left and Right go out on two Redstone Link frequencies, "
+                    + "each to the links that cut or slow that side.\n");
+            return;
+        }
+        List<BlockPos> wheels = new ArrayList<>();
+        for (Part p : b.parts) if (p.id.equals("simulated:steering_wheel")) wheels.add(p.pos);
+        for (BlockPos w : wheels) {
+            Direction f = facing(b.blocks.get(w));
+            if (f == null || !f.getAxis().isHorizontal()) continue;
+            if (reads(b, w, f.getClockWise()) && reads(b, w, f.getCounterClockWise())) {
+                out.append("- Steered with one Steering Wheel: the comparator at each side of it lights only while the wheel is turned "
+                        + "one way, and cuts the propellers on one side.\n");
+                return;
+            }
+        }
+        boolean makeable = Drives.canMake(new Drives.Part("simulated:steering_wheel", "steers"))
+                && Drives.canMake(new Drives.Part("minecraft:comparator", "reads the wheel"));
+        String fix = "steer it with one Steering Wheel at the helm instead: a comparator against each side of the wheel (its back to "
+                + "the wheel) lights only while the wheel is turned one way (the other side's for the other way), so wire or Redstone "
+                + "Link each one to a Clutch in the propeller line on one side; cutting one side's push swings the nose toward it (if it steers backwards, swap "
+                + "the two). Or let the wheel's cog turn a Swivel Bearing under a stern propeller";
+        if (!wheels.isEmpty()) {
+            faults.add("its Steering Wheel at " + xyz(wheels.get(0)) + " steers nothing: a wheel only turns what its shaft or cog drives "
+                    + "and what comparators at its sides read. " + Character.toUpperCase(fix.charAt(0)) + fix.substring(1));
+        } else if (makeable) {
+            faults.add("it turns only by running one side's propellers harder than the other's, and nothing at the helm does that with "
+                    + "one control, so the pilot would juggle a lever for each side: " + fix);
+        } else {
+            notes.add("it steers by running one side's propellers harder, from a lever for each side; once the player can make a "
+                    + "Steering Wheel (andesite casing, a large cogwheel and a shaft) and comparators, " + fix);
+        }
+    }
+
+    /** Whether a comparator beside the wheel, on its {@code side}, reads it (its back against the wheel). */
+    private static boolean reads(Body b, BlockPos wheel, Direction side) {
+        BlockState s = b.blocks.get(wheel.relative(side));
+        return s != null && s.is(net.minecraft.world.level.block.Blocks.COMPARATOR) && facing(s) == side.getOpposite();
+    }
+
     private static double differentialAir(Body b, List<Thrust> side, Direction forward) {
         if (forward == null) return 0;
         double left = 0, right = 0;
@@ -2223,8 +2348,9 @@ final class VehicleCheck {
     private static void turn(double torque, double damping, String how, List<String> faults, List<String> notes, StringBuilder out, String what) {
         if (torque <= 0 || how == null) {
             faults.add("nothing turns it: it can only go straight. " + switch (what) {
-                case "aircraft" -> "Put propellers or thrusters on both sides (run one side harder to turn), or use Vector "
-                        + "Thrusters; rudders work only in water";
+                case "aircraft" -> "Steer it with one Steering Wheel at the helm: its cog turning a Swivel Bearing under a "
+                        + "propeller at the stern, or a propeller on each side with a comparator at each side of the wheel cutting "
+                        + "that side's line (a Clutch in it); rudders work only in water";
                 case "submarine" -> "Add a Winds & Weather Rudder at the stern, or propellers on both sides";
                 default -> "Steer with the Boat Engine's tiller, a Winds & Weather Rudder at the stern, or propellers on both sides";
             });

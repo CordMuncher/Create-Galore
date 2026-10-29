@@ -95,7 +95,12 @@
     {
       "type": "modonomicon:text",
       "title": "A plane that flies",
-      "text": "[#](FFFFFF)\ue103[#]() **In depth.** A 19-block biplane with about 130 sails, two Portable Engines at 256 RPM on four Wooden Propellers and a Gyroscope on a third engine takes off at about 15 blocks a second and cruises near 16.\\\n\\\nClutches levered from the seat cut either side to turn: flick them, since held it spins and sinks."
+      "text": "[#](FFFFFF)\ue103[#]() **In depth.** A 19-block biplane with about 130 sails, two Portable Engines at 256 RPM on four Wooden Propellers and a Gyroscope on a third engine takes off at about 15 blocks a second and cruises near 16."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "A Steering Wheel at the seat steers it: a comparator at each side of the wheel cuts one side's clutch while it is turned that way. Turn it briefly and back, since held over it spins and sinks."
     },
     {
       "type": "modonomicon:text",

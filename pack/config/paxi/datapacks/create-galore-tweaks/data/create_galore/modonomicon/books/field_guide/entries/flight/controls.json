@@ -33,7 +33,12 @@
         "item": "simulated:steering_wheel"
       },
       "title": "Steering Wheel",
-      "text": "Hold right-click and move the mouse to turn. Sneak snaps to 45 degrees. A comparator reads the angle."
+      "text": "Hold right-click and move the mouse to turn. It stays at the angle you leave it. Sneak snaps to 45 degrees, and its panel sets the most it turns either way. A comparator at its back reads whether it is held; one against each side lights only while it is turned one way."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "One wheel",
+      "text": "Steer with one wheel, not a lever per side:\n\n- Its cog turns a [#](2E5AAC)[Swivel Bearing](entry://flight/ship_building)[#]() under a stern propeller.\n- Or a comparator at each side of it cuts one side's propeller line through a Clutch; Redstone Links reach pods.\n\nLevers are for settings."
     },
     {
       "type": "modonomicon:spotlight",
