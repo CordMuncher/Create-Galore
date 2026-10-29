@@ -83,6 +83,7 @@ public final class CreateGaloreBridge {
         ShipGlueCheck.register(modBus);
         PinnedSchematics.register(modBus);
         SharedSchematics.register(modBus);
+        SchematicannonGlue.register(modBus);
         AnimalCare.register();
         AnimalTroughs.register();
         Wear.register(modBus);

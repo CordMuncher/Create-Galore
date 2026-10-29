@@ -1,4 +1,4 @@
-<!-- sources sha256:5959e6b209595796cd406f2e2e136023c0e199d516908f6b0b8e266ff4448969 -->
+<!-- sources sha256:f6d03823609f730eaec5caf9b9b4719da1e88687939ee966f54465999b0a6fce -->
 # Flight (flight)
 Create Aeronautics ships, lift, thrust, steering, wind, dangers and sky destinations.
 
@@ -21,6 +21,7 @@ Create Aeronautics ships, lift, thrust, steering, wind, dangers and sky destinat
   - ship stays fully usable: walk on it, open chests, run machines
 - Gluing a ship: one glue box around the whole ship is enough; glue boxes that overlap or touch (share a face) count as one. Starting from the block on the assembler's sticky face, every block touching an aboard block by a face or an edge inside that glue comes along (also blocks that stick or hang on their own, like slime). A block touching the rest only at a corner, or floating free, stays behind; so do a glue box standing apart from the ship (even by one block), air, plain water/lava, and unbreakable blocks
 - Checking the glue: hold Super Glue or Honey Glue near the assembler (or wear Goggles and look at it): blue outline = goes aboard, red checkered = inside the glue but stays behind; a line above the hotbar gives the counts. Ground or seabed inside the glue and touching the hull comes along too
+- Printing it glued: Pre-glue in a Schematicannon [create:schematicannon]'s placement settings (the glue button) glues each block it prints to the printed blocks it touches (by a face glue holds, or an edge), so a printed ship (or any contraption) is ready to assemble. It takes Super Glue [create:super_glue] from its input chests like any material: one use per glue box it makes, each box at most 16 blocks a side (a 40 by 14 hull with a deck took 15 uses of the glue's 99). Without glue it waits, even with Skip Missing on. Ground and blocks that aren't in the schematic stay out of the glue; blocks floating free or touching only at a corner aren't glued (as by hand). A schematic's own saved glue isn't printed while Pre-glue is on
 - Honey Glue [simulated:honey_glue]: click two corners, ctrl-scroll to resize, up to 48 blocks a side; hold ALT to place a corner in midair; only joins ships
 - Weight/splitting: blocks differ in weight (light, super heavy, slippery, fragile). Sections losing connection split off as separate ships; a Slime Ball merges any two
 - Swivel Bearing [simulated:swivel_bearing]: turns glued group in front into rotating sub-ship; rotation (see create_basics/rotation) passes through shaft; redstone unlocks it to spin freely

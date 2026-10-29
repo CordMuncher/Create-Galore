@@ -110,5 +110,7 @@
   "create_galore_bridge.water_pump.no_water": "Needs water beside or below it.",
   "create_galore_bridge.water_pump.no_signal": "Off: give it a redstone signal.",
   "create_galore_bridge.water_pump.clean": "No polluted water within %s blocks. Pulls %s blocks a second.",
-  "create_galore_bridge.water_pump.working": "%s polluted blocks within %s blocks, pulling %s at a time, %s blocks a second."
+  "create_galore_bridge.water_pump.working": "%s polluted blocks within %s blocks, pulling %s at a time, %s blocks a second.",
+  "create_galore_bridge.schematicannon.pre_glue": "Pre-glue",
+  "create_galore_bridge.schematicannon.pre_glue.description": "Every block the cannon prints is glued to the printed blocks it touches, so the build moves as one piece. Super Glue comes from the input chests like any material: one use for each glue box the cannon makes. Without glue the cannon waits, even when skipping missing blocks. The ground and other blocks that aren't part of the build are never glued."
 }

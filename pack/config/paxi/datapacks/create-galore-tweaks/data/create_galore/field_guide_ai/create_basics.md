@@ -1,4 +1,4 @@
-<!-- sources sha256:2bd59ef55a9eb25018fb82876360e035335a10e6c169fe3380042e694c482b42 -->
+<!-- sources sha256:66890e942fba6e79bb8f5baf3d8ae7fb61d99e25b6daca936fdf3d10a1d7394b -->
 # Create: The Basics (create_basics)
 
 ## create_basics/rotation | Rotation
@@ -164,7 +164,7 @@
 - Movers: Piston (pushes along a line); Rope Pulley (up/down); Gantry (slides on a shaft); Bearing (see glossary/bearing) (spins); Cart Assembler (rides a minecart).
 - Mechanical Bearing [create:mechanical_bearing]: rotates a structure: windmills (see create_basics/power_sources), rotating drills, turntables. Clockwork Bearing makes clock hands.
 - Builds that move: any build can have a moving part (sails that turn, door/drawbridge swinging on a bearing, turntable, wall a piston slides aside, lift on a rope pulley, gantry carrying a drill over a field). Most of a build stands still; make the part move that has a job moving.
-- What comes along: the block touching the mover's face; blocks side by side inside one Super Glue area; blocks that hang on others (torches, doors, ladders, carpets); blocks on a chassis's sticky faces; a piston also pushes the whole line in front of it. At most 2048 blocks.
+- What comes along: the block touching the mover's face; blocks side by side inside one Super Glue area; blocks that hang on others (torches, doors, ladders, carpets); blocks on a chassis's sticky faces; blocks a Schematicannon printed with Pre-glue on (see flight/ship_building); a piston also pushes the whole line in front of it. At most 2048 blocks.
 - Speed: Bearing 6 degrees/s per RPM (full turn 1.9 s at 32 RPM). Piston, pulley, gantry: RPM / 25.6 blocks/s, 9.8 at most. Bearings, pistons, pulleys take 4 SU per RPM.
 - Starting and steering: Bearing: right-click it with an empty hand to start it; it turns while its shaft turns. Piston, pulley, gantry start on their own and run until the end of their travel. A Gearshift with a lever, in the line that drives it, sends it back; a Clutch stops it.
 - Watch out: a turning part passes straight through blocks in its circle. A sliding part stops at the first solid block in its path; drills and saws break theirs as they go. A glue area takes every block in it that touches the part, so keep it off what stays put.

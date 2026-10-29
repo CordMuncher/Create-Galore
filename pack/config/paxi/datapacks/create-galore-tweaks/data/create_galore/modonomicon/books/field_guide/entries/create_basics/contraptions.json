@@ -70,7 +70,7 @@
     {
       "type": "modonomicon:text",
       "title": "What comes along",
-      "text": "- The block touching the mover's face.\n- Blocks side by side inside one Super Glue area.\n- Blocks that hang on others: torches, doors, ladders, carpets.\n- Blocks on a chassis's sticky faces.\n- A piston also pushes the whole line in front of it.\n\nAt most 2048 blocks."
+      "text": "- The block touching the mover's face.\n- Blocks side by side inside one Super Glue area.\n- Blocks that hang on others: torches, doors, ladders, carpets.\n- Blocks on a chassis's sticky faces.\n- Blocks a Schematicannon printed with Pre-glue on.\n- A piston also pushes the whole line in front of it.\n\nAt most 2048 blocks."
     },
     {
       "type": "modonomicon:text",
