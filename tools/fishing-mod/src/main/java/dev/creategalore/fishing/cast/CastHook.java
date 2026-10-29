@@ -835,6 +835,10 @@ public class CastHook extends FishingHook {
             hold = 1;
         }
         fight = new Fight(ff, stats.tackle(hold), kg, Math.max(3, tip.distanceTo(position())));
+        if (catchKind == CatchKind.FISH) {
+            SizeModel size = bite.species().size();
+            fight.setSizeRatio(bite.lengthCm() / ((size.typicalLow() + size.typicalHigh()) / 2));
+        }
         fight.setRodHeight(rodHeight);
         TackleWear.setLimits(fight, rod);
         lastAnchor = null;
@@ -943,19 +947,28 @@ public class CastHook extends FishingHook {
     /**
      * The hooked fish swims around the angler at the fight's distance, staying in its fluid: on a slow arc while it
      * holds, sweeping off to one side on a run, near the top while it shakes its head, deep while it runs or sulks.
+     * Its way round is measured from where it is now, so an angler or a boat moving sideways swings the line, not the
+     * fish, and it goes round at its swimming speed in metres per second: far out, a turn takes as long as the swim.
      */
     private void moveFish(Vec3 tip) {
-        heading += fight.turn() + random.nextGaussian() * 0.006;
+        if (Math.abs(getX() - tip.x) + Math.abs(getZ() - tip.z) > 0.25) heading = Math.atan2(getZ() - tip.z, getX() - tip.x);
         double distance = fight.distance();
+        double radius = Math.max(1, distance);
+        double step = fight.sideSpeed() * Fight.DT / radius;
+        // Swimming sideways into a shore or a pier, it turns back. Pushed out against one, it slides along the edge a
+        // little either way, never faster than it swims.
+        double h = heading + step;
+        if (!fishFits(tip, h, distance) && step != 0 && fishFits(tip, heading, distance)) {
+            fight.blockedSideways();
+            h = heading;
+        }
+        double nudge = Math.max(fight.topSpeed(), 0.5) * Fight.DT / radius * 0.25;
         Vec3 next = null;
         for (int attempt = 0; attempt < 9 && next == null; attempt++) {
-            double h = heading + (attempt == 0 ? 0 : (attempt % 2 == 0 ? 1 : -1) * 0.3 * ((attempt + 1) / 2));
-            double x = tip.x + Math.cos(h) * distance;
-            double z = tip.z + Math.sin(h) * distance;
-            BlockPos column = BlockPos.containing(x, getY(), z);
-            if (FishingWater.in(level(), column, medium) || FishingWater.in(level(), column.below(), medium)) {
-                heading = h;
-                next = new Vec3(x, getY(), z);
+            double a = h + (attempt == 0 ? 0 : (attempt % 2 == 0 ? 1 : -1) * nudge * ((attempt + 1) / 2));
+            if (fishFits(tip, a, distance)) {
+                heading = a;
+                next = new Vec3(tip.x + Math.cos(a) * distance, getY(), tip.z + Math.sin(a) * distance);
             }
         }
         if (next == null) return;
@@ -969,6 +982,12 @@ public class CastHook extends FishingHook {
         };
         fishDepth += (want - fishDepth) * 0.08;
         setPos(next.x, surface - (fight.jumped() ? -0.6 : fishDepth), next.z);
+    }
+
+    /** Whether the fish fits {@code distance} out from {@code tip} at {@code angle}: its column holds its fluid. */
+    private boolean fishFits(Vec3 tip, double angle, double distance) {
+        BlockPos column = BlockPos.containing(tip.x + Math.cos(angle) * distance, getY(), tip.z + Math.sin(angle) * distance);
+        return FishingWater.in(level(), column, medium) || FishingWater.in(level(), column.below(), medium);
     }
 
     /**

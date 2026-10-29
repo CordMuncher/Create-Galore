@@ -1,4 +1,4 @@
-<!-- sources sha256:429c2188d41c8fa5b201203cb0a085228d482371b8eaf0e6cb5fef6a70975b0d -->
+<!-- sources sha256:e3e8932592d6c96e75f971714b0d45d5b981db1760a969a8f910214785166e37 -->
 # Fishing (fishing)
 
 ## fishing/overview | Fishing
@@ -23,7 +23,7 @@
 
 ## fishing/the_fight | The Fight
 - **Drag** gives line when a fish pulls harder than it; set it below what the line holds. **Hold use** to reel (slower the harder it pulls); when it pulls more than the drag, the drag slips and line runs out at the fish's speed
-- What a hooked fish does: holds and pulls (swaying, drifting round the angler on a slow arc); **runs** (more pull and speed, sweeping off to one side); **head shakes** (the line throbs ~3 times a second); **swims at you** (line goes slack unless reeled in faster than it comes; HUD: Swimming at you! Reel in the slack); tired, it **sulks** a few seconds pulling less (HUD: It's sulking: gain line), the moment to gain line
+- What a hooked fish does: holds and pulls (swaying, drifting round the angler on a slow arc); **runs** (more pull and speed, sweeping off to one side); **head shakes** (the line throbs ~3 times a second); **swims at you** (line goes slack unless reeled in faster than it comes; HUD: Swimming at you! Reel in the slack); tired, it **sulks** a few seconds pulling less (HUD: It's sulking: gain line), the moment to gain line. Going round the angler is swimming like any other way: never faster than the fish swims (species speed, a bigger fish of a kind faster, more on a run, less tired), in m/s however far out it is, and an angler or boat moving sideways swings the line rather than dragging the fish round; a boat can follow it
 - Stretch: line stretch and rod bend make tension build and ease smoothly instead of jumping; string and mono give a lot (soften lunges), braid hardly gives (every lunge felt at once). Slack line hangs in a visible curve from the rod tip
 - **Lifting**: hold attack (left click) to lift the rod, let go and it comes back down; flicks up with a light fish, lifts slowly under a heavy one; a thin bar beside the Rod stress bar shows the height. A lift draws the fish back by most of the rod's length (0.9 m of line per metre of rod), against the drag but not against the reel's crank
 - **Pumping**: reel while the rod comes down and it comes down as fast as the reel takes up line, no load on the crank. Lift, wind down, lift again: brings in a fish too heavy to reel. Watch out: letting the rod down without reeling leaves slack; slack over a second can throw the hook

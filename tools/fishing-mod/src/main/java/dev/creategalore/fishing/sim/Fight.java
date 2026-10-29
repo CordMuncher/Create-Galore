@@ -86,8 +86,17 @@ public final class Fight {
     /** A tired fish sulking: bouts per second once its stamina is under 45%, and its pull meanwhile. */
     public static final double REST_RATE = 0.15;
     public static final double REST_PULL = 0.7;
-    /** Most a holding fish turns round the angler, radians per tick. */
-    public static final double HOLD_TURN = 0.012;
+    /**
+     * Swimming round the angler: a holding fish drifts sideways at up to this share of its top speed, a running one
+     * sweeps off at {@link #SIDE_RUN_LOW} to all of it. Sideways is swimming like any other: it never makes a fish
+     * faster than it can swim, however far out it is.
+     */
+    public static final double SIDE_HOLD = 0.3;
+    public static final double SIDE_RUN_LOW = 0.6;
+    /** How fast the fish's sideways speed follows what it is doing, seconds: it leans into a turn, it doesn't snap. */
+    public static final double SIDE_TAU = 0.6;
+    /** A fish swimming straight out (or in) at this share of its top speed or more still has this much left to turn. */
+    public static final double SIDE_FLOOR = 0.4;
 
     private final FishFight fish;
     private final Tackle tackle;
@@ -113,9 +122,15 @@ public final class Fight {
     private double moodLeft;
     private double moodTime;
     private double holdFor;
-    private double holdTurn;
-    /** Which way the fish is swimming round the angler, radians per tick (for the game to move it). */
-    private double turn;
+    private double holdSide;
+    /** Which way and how hard the fish wants to swim round the angler, a signed share of its top speed. */
+    private double side;
+    /** How fast it is swimming round the angler, m/s (signed): what the game moves it by. */
+    private double sideSpeed;
+    /** Its top swimming speed right now, m/s. */
+    private double topSpeed;
+    /** How its size compares with its species' usual size, as a speed factor (bigger fish swim faster). */
+    private double sizeSpeed = 1;
     private double shakeHz;
     /** How fast this charge comes in, a share of the fish's speed. */
     private double chargePace;
@@ -219,7 +234,8 @@ public final class Fight {
             swayPeriod2 = 1.3 + 0.9 * rng.nextDouble();
             swayPhase1 = 2 * Math.PI * rng.nextDouble();
             swayPhase2 = 2 * Math.PI * rng.nextDouble();
-            holdTurn = (rng.nextDouble() * 2 - 1) * HOLD_TURN;
+            holdSide = (rng.nextDouble() * 2 - 1) * SIDE_HOLD;
+            side = holdSide;
         }
 
         // Behaviour: what the fish is doing for the next second or few.
@@ -233,14 +249,14 @@ public final class Fight {
             setMood(Mood.CHARGE, 0.8 + 1.7 * rng.nextDouble());
             // Some come in lazily, some dash.
             chargePace = 0.3 + 0.5 * rng.nextDouble();
-            turn = 0;
+            side = 0;
         } else if (mood == Mood.HOLD && rng.nextDouble() < SHAKE_RATE * (0.4 + stamina) * intensity * DT) {
             setMood(Mood.SHAKE, 0.6 + 0.8 * rng.nextDouble());
             shakeHz = 2.5 + rng.nextDouble();
-            turn = 0;
+            side = 0;
         } else if (mood == Mood.HOLD && stamina < 0.45 && rng.nextDouble() < REST_RATE * DT) {
             setMood(Mood.REST, 1.5 + 1.5 * rng.nextDouble());
-            turn = 0.3 * holdTurn;
+            side = 0.3 * holdSide;
         }
         boolean charging = mood == Mood.CHARGE;
         double spike = 0;
@@ -337,6 +353,7 @@ public final class Fight {
                 stretch = tension * give;
             }
         }
+        double distanceBefore = distance();
         double wound = !reeling ? 0 : windingDown ? retrieve * DT : retrieve * Math.max(0, 1 - tension / crank) * DT;
         double lineBefore = lineOut;
         lineOut += out - wound - rodIn;
@@ -355,6 +372,16 @@ public final class Fight {
         // gears grind (Fishing Planet's "reel overload"). Once the fish starts taking line the angler has half a
         // second to stop cranking; after that it grinds with the square of the drag, so half the reel's drag grinds a
         // quarter as fast as full.
+        // Round the angler: the fish leans into its sideways swim over half a second or so, and never swims faster
+        // than it can, all directions together. What it spends going out (or being hauled in) it can't spend going
+        // sideways, though it always keeps enough to turn. Its top speed is its species' speed for its size, more
+        // on a run, less as it tires.
+        topSpeed = fish.speed() * sizeSpeed * (0.4 + 0.6 * intensity) * (mood == Mood.RUN ? 1.8 : 1) * (0.3 + 0.7 * stamina);
+        double radial = Math.min(Math.abs(distance() - distanceBefore) / DT, (1 - SIDE_FLOOR * SIDE_FLOOR) * topSpeed);
+        double sideRoom = Math.sqrt(Math.max(0, topSpeed * topSpeed - radial * radial));
+        sideSpeed += (side * topSpeed - sideSpeed) * Math.min(1, DT / SIDE_TAU);
+        sideSpeed = clamp(sideSpeed, -sideRoom, sideRoom);
+
         boolean overloaded = slipping || spooled && stalled;
         grindTicks = overloaded ? grindTicks + 1 : 0;
         grinding = overloaded && in.reeling && in.crankThroughSlip && grindTicks > GRIND_GRACE_TICKS;
@@ -497,14 +524,14 @@ public final class Fight {
     private void hold(RandomGenerator rng) {
         setMood(Mood.HOLD, 0);
         holdFor = 3 + 4 * rng.nextDouble();
-        holdTurn = (rng.nextDouble() * 2 - 1) * HOLD_TURN;
-        turn = holdTurn;
+        holdSide = (rng.nextDouble() * 2 - 1) * SIDE_HOLD;
+        side = holdSide;
     }
 
     private void startRun(double seconds, RandomGenerator rng) {
         setMood(Mood.RUN, seconds);
         runStarted = true;
-        turn = (rng.nextBoolean() ? 1 : -1) * (0.03 + 0.04 * rng.nextDouble());
+        side = (rng.nextBoolean() ? 1 : -1) * (SIDE_RUN_LOW + (1 - SIDE_RUN_LOW) * rng.nextDouble());
     }
 
     /** How much of the rod's shock-soaking works at this angle to the line: none straight down it, full at 30-100°. */
@@ -585,9 +612,29 @@ public final class Fight {
         return mood;
     }
 
-    /** Which way the fish swims round the angler, radians per tick. */
-    public double turn() {
-        return turn;
+    /** How fast the fish swims round the angler, m/s: positive one way, negative the other. */
+    public double sideSpeed() {
+        return sideSpeed;
+    }
+
+    /** How fast the fish can swim right now, m/s, all directions together. */
+    public double topSpeed() {
+        return topSpeed;
+    }
+
+    /** Something (a shore, the bottom) is in its way sideways: it turns back the other way, from a standstill. */
+    public void blockedSideways() {
+        side = -side;
+        holdSide = -holdSide;
+        sideSpeed = 0;
+    }
+
+    /**
+     * This fish's length over its species' usual length (the middle of the usual range). A bigger fish swims a bit
+     * faster round the angler, with the square root of its length, from 0.6 to 1.6 times its species' speed.
+     */
+    public void setSizeRatio(double lengthRatio) {
+        sizeSpeed = clamp(Math.sqrt(Math.max(0, lengthRatio)), 0.6, 1.6);
     }
 
     /** The fish is swimming at the angler and the line has gone slack: wind faster. */

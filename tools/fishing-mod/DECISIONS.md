@@ -607,3 +607,29 @@ mode.
   arms a cast, and switching off cancels one that was waiting for bait or power.
 - Tested in a client: autocast off kept the line in 70 s; Cast now in Cast and retrieve threw to 16 m, wound back
   and stayed in 90 s; in Cast and wait it landed a forced bite and stayed in 100 s; power off and on didn't cast.
+
+## 0.3.20: a hooked fish goes round the angler at its swimming speed (pack 0.6.34)
+
+Reported (29 Oct): pulling line in and out felt right, but sideways a hooked fish went round the angler "at Mach 10",
+like a pendulum, ending up behind the angler in seconds, so a boat could never follow it.
+
+- **Cause:** `Fight.turn` was an angle per tick (holding up to 0.012 rad, a run 0.03-0.07 rad), so the speed round
+  the angler grew with the line out. At 40 m a run was 24-56 m/s; a 200-fight check of the old code peaked at 60 m/s
+  and swung 303 degrees in 5 s. The moved-fish search also jumped 0.3 rad at a time when a spot was blocked (12 m at
+  40 m), and a gaussian 0.006 rad per tick of noise rode on top.
+- **Now:** `Fight` keeps a sideways speed in m/s (`sideSpeed`), eased over `SIDE_TAU` 0.6 s toward a signed share of
+  the fish's top speed (holding: up to `SIDE_HOLD` 0.3; a run: `SIDE_RUN_LOW` 0.6 to 1). Top speed is the species'
+  `speed` times a size factor (square root of length over the species' usual length, 0.6-1.6), by intensity, 1.8 on a
+  run, and by stamina, the same shape as the swim speed that takes line. All directions together never pass it: the
+  speed it goes out or in this tick is taken off first (`sqrt(top^2 - radial^2)`), keeping at least `SIDE_FLOOR` 0.4
+  of it so the fish can always turn.
+- **`CastHook.moveFish`** measures the fish's angle from where it is now (not a stored heading), so an angler or boat
+  moving sideways swings the line instead of carrying the fish along, and steps it by `sideSpeed * DT / distance`.
+  Blocked sideways by a shore it turns back from a standstill (`Fight.blockedSideways`); pushed out against one it
+  slides along within its own speed. The per-tick noise is gone.
+- **Balance unchanged:** nothing in the fight reads the sideways speed and the random draws are the same, so every
+  fight's outcome and length match 0.3.19 exactly (checked: 6,000 seeded fights over the presets, same hash).
+- **Self-test `side`:** a 81 x 81 glass pool, a boat rig, sailfish, tuna, carp and cod at usual and record length,
+  30 s of fight each, then the angler strafing 8 m at 10 m/s. Round the angler stays under what the fish can swim
+  (largest seen 5.3 of 6.5 m/s, a record sailfish); the strafe moves a big fish 0 m and a small one about 1-2 m (towed).
+  Four runs plus `selftest all` pass.
