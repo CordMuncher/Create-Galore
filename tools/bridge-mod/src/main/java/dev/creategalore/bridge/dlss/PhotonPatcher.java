@@ -73,7 +73,7 @@ import org.slf4j.LoggerFactory;
 public final class PhotonPatcher {
     private static final Logger LOG = LoggerFactory.getLogger("create_galore_bridge");
     /** Bumped when the patch changes, so existing copies are made again. */
-    private static final int PATCH_VERSION = 19; // 16 to 18 were test builds' own
+    private static final int PATCH_VERSION = 21; // 16 to 18 and 20 were test builds' own
     private static final String BASE_ZIP = "photon_v1.3a.zip";
     /** Colorwheel Patcher's copy of {@link #BASE_ZIP}; an outdated one gets a prefix and no longer matches. */
     private static final Pattern COLORWHEEL_ZIP = Pattern.compile("photon_v1\\.3a \\+ Clrwl_(\\d+)\\.(\\d+)\\.(\\d+)\\.zip");
@@ -1013,6 +1013,8 @@ public final class PhotonPatcher {
             maskImage=cg_mask_img
             requireOn=TAA
             renderScaleOptions=TAAU,TAAU_RENDER_SCALE
+            supports=dlss,fsr,frameGeneration,rayReconstruction,renderResolution,taau,off
+            taaOption=TAA
             rrGuideImages=cg_rr_albedo_img,cg_rr_specular_img,cg_rr_normal_img,cg_rr_hitdist_img
             """;
 

@@ -1,11 +1,14 @@
 # DLSS Ray Reconstruction: what a shader pack hands over
 
-The Bridge runs NVIDIA DLSS Ray Reconstruction (RR) in DLSS's place when a pack hands over RR's guides and the player
-turns it on (experimental: Upscaling tab, **Ray Reconstruction**; settings key `dlaaRayReconstruction=true`). The
-first pack to do it is Photon ("Photon v1.3a + DLAA", patch 15, see `PhotonPatcher`); turning RR on in the Upscaling tab
-also swaps Photon's settings (Ultra, or the player's own changes under RR) and back (`PhotonRrSettings`). This is the
-contract another pack fills to get RR. It adds to the DLSS contract in `shaders/create_galore_dlss.properties` (see
-`PackProfile`): everything DLSS needs (colour, motion vectors, depth, exposure, the jitter) stays as it is.
+The Bridge runs NVIDIA DLSS Ray Reconstruction (RR) in DLSS's place when a pack hands over RR's guides, supports it
+(`rayReconstruction` in its profile's `supports`, or no `supports` key at all) and the player turns it on
+(experimental: Upscaling tab, **Ray Reconstruction**; settings key `dlaaRayReconstruction=true`). With a pack that
+doesn't, the setting is greyed out and kept. The first pack to do it is Photon ("Photon v1.3a + DLAA", patch 15, see
+`PhotonPatcher`); turning RR on in the Upscaling tab also swaps the pack's settings and back (`PackRrSettings`: for
+Photon, Ultra or the player's own changes under RR; for another pack, its settings kept apart, the first time as they
+are). This is the contract another pack fills to get RR. It adds to the DLSS contract in
+`shaders/create_galore_dlss.properties` (see `PackProfile`): everything DLSS needs (colour, motion vectors, depth,
+exposure, the jitter) stays as it is.
 
 Source: NVIDIA's DLSS-RR Integration Guide in the DLSS SDK (v310.9.16, the tag the Bridge is built with), sections
 3.4 (inputs), 3.6 to 3.8 and the appendix (specular albedo).

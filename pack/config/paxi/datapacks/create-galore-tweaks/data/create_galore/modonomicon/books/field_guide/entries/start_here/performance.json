@@ -63,6 +63,11 @@
     {
       "type": "modonomicon:text",
       "title": "",
+      "text": "**Anti-aliasing** can also be the shader pack's own: **TAA** at full resolution, **TAAU** (its own upscaler, from the render resolution) or **Off**. A setting the pack in use doesn't support is greyed out; hover it to see why. Your pick is kept and comes back with a pack that supports it."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
       "text": "DLSS needs your own nvngx\\_dlss.dll, which isn't part of the pack. **Find on this PC** copies it from where the NVIDIA app keeps its DLSS downloads. If there's none, use **Get from NVIDIA** and **Open DLSS folder**. The screen shows the version it has."
     },
     {
@@ -73,7 +78,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**Render resolution** on that screen trades sharpness for frames. Native draws every pixel. Quality (67%%), Balanced (58%%), Performance (50%%) and Ultra Performance (33%%) draw the scene smaller and DLSS or FSR fill in the window. Custom has a slider from 25%% to 100%%.\\\n\\\nWith the anti-aliasing Off, Photon's own upscaler does the job, softer."
+      "text": "**Render resolution** on that screen trades sharpness for frames. Native draws every pixel. Quality (67%%), Balanced (58%%), Performance (50%%) and Ultra Performance (33%%) draw the scene smaller and DLSS or FSR fill in the window. Custom has a slider from 25%% to 100%%.\\\n\\\nWith **TAAU (the pack's own)**, Photon's own upscaler does the job, softer."
     },
     {
       "type": "modonomicon:text",
