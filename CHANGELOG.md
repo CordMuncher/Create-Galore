@@ -5,6 +5,19 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.6.44
+
+### Added
+- Create Galore Bridge 1.158.0.
+- **Ask the Book steers its airships with one wheel.** Its blimps, balloons and planes used to turn by running one side's propellers harder, worked from a lever for each side, which is awkward to fly. It now designs them with one Steering Wheel at the helm: the wheel's cog turns a Swivel Bearing under a Wooden Propeller at the stern, or a comparator against each side of the wheel cuts that side's propeller line through a Clutch (Redstone Links carry it out to pods). Its vehicle check names how a design is steered, treats a lever for each side as a fault when the player can already make a Steering Wheel and comparators, and only notes it for a player who can't yet. A Steering Wheel wired to nothing is a fault too. Measured in game: 45 degrees of wheel on a stern Wooden Propeller turns an 11 by 15 blimp about 11 degrees a second.
+- Six new Ask the Book casebook cases for steering.
+
+### Fixed
+- **The Field Guide's flying examples steer with a wheel.** The sky base and the biplane in Balloons and Lift and Propellers steered with levers; they now use a Steering Wheel with a comparator at each side. Steering and Controls says what a Steering Wheel's comparators read and has a page on steering with one wheel, and Building a Ship says how fast a swivelled stern propeller turns a blimp. The Ask the Book notes match.
+
+### Removed
+- Nothing.
+
 ## 0.6.43
 
 ### Added

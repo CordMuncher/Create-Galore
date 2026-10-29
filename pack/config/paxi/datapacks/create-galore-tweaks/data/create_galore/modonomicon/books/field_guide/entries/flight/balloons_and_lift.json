@@ -64,7 +64,12 @@
     {
       "type": "modonomicon:text",
       "title": "A sky base that flies",
-      "text": "[#](FFFFFF)\ue103[#]() **In depth.** A balloon with a 7 by 11 gondola (bed, smoker, crafting table, eight barrels and chests) under a 290 m3 envelope, and two pods beside the envelope, each with two Portable Engines geared to 128 RPM on a 13-sail Propeller Bearing, cruises at about 9 blocks a second and climbs to about y 210.\\\n\\\nA lever at the helm for each pod's clutch, through Redstone Links, steers it."
+      "text": "[#](FFFFFF)\ue103[#]() **In depth.** A balloon with a 7 by 11 gondola (bed, smoker, crafting table, eight barrels and chests) under a 290 m3 envelope, and two pods beside the envelope, each with two Portable Engines geared to 128 RPM on a 13-sail Propeller Bearing, cruises at about 9 blocks a second and climbs to about y 210."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "One Steering Wheel at the helm steers it: a comparator against each side of the wheel lights while it is turned one way, and Redstone Links carry each to the clutch in one pod's line."
     },
     {
       "type": "modonomicon:spotlight",

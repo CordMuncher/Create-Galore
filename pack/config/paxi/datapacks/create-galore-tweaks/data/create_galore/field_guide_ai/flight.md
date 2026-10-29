@@ -1,4 +1,4 @@
-<!-- sources sha256:f6d03823609f730eaec5caf9b9b4719da1e88687939ee966f54465999b0a6fce -->
+<!-- sources sha256:929c6ed6fb820b56a67b35e50aa6c9ed1f9436d5c7c4a502d3d10e66492116e7 -->
 # Flight (flight)
 Create Aeronautics ships, lift, thrust, steering, wind, dangers and sky destinations.
 
@@ -25,7 +25,7 @@ Create Aeronautics ships, lift, thrust, steering, wind, dangers and sky destinat
 - Honey Glue [simulated:honey_glue]: click two corners, ctrl-scroll to resize, up to 48 blocks a side; hold ALT to place a corner in midair; only joins ships
 - Weight/splitting: blocks differ in weight (light, super heavy, slippery, fragile). Sections losing connection split off as separate ships; a Slime Ball merges any two
 - Swivel Bearing [simulated:swivel_bearing]: turns glued group in front into rotating sub-ship; rotation (see create_basics/rotation) passes through shaft; redstone unlocks it to spin freely
-- Steering a propeller: before assembling the ship, give the part the swivel should turn its own small glue box (it can sit inside the ship's glue); without one only the block on the swivel's face turns. Engine behind the bearing: rotation goes through it to the part. A Steering Wheel on a cogwheel next to the bearing turns it
+- Steering a propeller: before assembling the ship, give the part the swivel should turn its own small glue box (it can sit inside the ship's glue); without one only the block on the swivel's face turns. Engine behind the bearing: rotation goes through it to the part. A Steering Wheel on a cogwheel next to the bearing turns it. Turned 45 degrees by the wheel, a Wooden Propeller at the stern swings an 11 by 15 blimp round at about 11 degrees a second
 - Docking Connector [simulated:docking_connector]: two connectors align and lock into rigid link; items and fluids pass both ways; retract either to undock
 - Passing items across: once docked, move items with Create chutes or funnels (one feeding into the connector on one ship, one taking out of the connector on the other); vanilla hoppers don't pass items through them
 - Rope Winch [simulated:rope_winch]: link ships with Rope Coupling between winch and connector; rotation reels rope in/out; shears cut it
@@ -39,7 +39,7 @@ Create Aeronautics ships, lift, thrust, steering, wind, dangers and sky destinat
 - Steam Vent [aeronautics:steam_vent]: steam lift; like Steam Engine needs heat, water, boiler (see glossary/boiler) space; (see create_basics/heat)
 - Altitude: lift weakens with altitude; ship settles where lift = weight; changing lift changes altitude. Altitude Sensor outputs redstone signal for height and, with goggles (see create_basics/tools_wrench), shows air pressure. Other worlds have very different air (see space/planets)
 - Speed and drag: every envelope block drags as the ship moves (about as much as three blocks' worth of its weight), so an envelope bigger than the load needs makes it slower; size it to the weight with room to climb (each m3 of hot air holds up about 1.5 mass low down, less higher up). Mount propellers about level with the middle of the envelope: low ones tip the nose up at speed
-- A sky base that flies (in depth): 7 by 11 gondola (bed, smoker, crafting table, eight barrels and chests) under a 290 m3 envelope, two pods beside the envelope each with two Portable Engines geared to 128 RPM on a 13-sail Propeller Bearing: cruises at about 9 blocks a second, climbs to about y 210; a lever at the helm for each pod's clutch, through Redstone Links, steers it
+- A sky base that flies (in depth): 7 by 11 gondola (bed, smoker, crafting table, eight barrels and chests) under a 290 m3 envelope, two pods beside the envelope each with two Portable Engines geared to 128 RPM on a 13-sail Propeller Bearing: cruises at about 9 blocks a second, climbs to about y 210; one Steering Wheel at the helm steers it: a comparator against each side of the wheel lights while it is turned one way, and Redstone Links carry each to the clutch in one pod's line
 - Levitite Blend [aeronautics:levitite_blend_bucket]: fluid from heated mixing (see glossary/mixing) of End Stone Powder, zinc nuggets, water; heat sets it into solid Levitite
 - Levitite [aeronautics:levitite]: keeps ship afloat but cannot gain height alone (needs other forces); resists slow motion strongly, less at speed. Each block holds up 10 kpg of ship, itself included (Jade shows block weights); a heavier ship sinks slowly. Keep it level with the weight: a heavy stack on top of a small Levitite row tips over and falls
 - Sources: End Stone Powder from crushing End Stone; sky whale bone dust can replace it; Pearlescent Levitite = pink variant of same crystal; certain blocks break when Levitite sets (useful for casting molds)
@@ -58,12 +58,13 @@ Create Aeronautics ships, lift, thrust, steering, wind, dangers and sky destinat
 - Watch out, through gearboxes: a gearbox turns its straight-through side the other way from its sideways sides, so propellers fed through different gearbox faces can push against each other; watch which way each blows, wrench the front of any pushing backward to reverse it
 - Sail wings: Create sails lift like Wing blocks at a quarter of the weight, so early planes fly on sail wings; two wings stacked on struts double the lift; allow about three sails facing up per full block's weight in the rest (plank half a block; slab, fence or trapdoor a quarter)
 - Symmetric Sail [simulated:white_symmetric_sail]: only drag, never lift; angle for turning/stabilising; on a windmill bearing gives 0 RPM here; windmills need Windcatchers
-- A plane that flies (in depth): 19-block biplane with about 130 sails, two Portable Engines at 256 RPM on four Wooden Propellers, a Gyroscope on a third engine: takes off at about 15 blocks a second, cruises near 16; clutches levered from the seat cut either side to turn (flick them; held, it spins and sinks)
+- A plane that flies (in depth): 19-block biplane with about 130 sails, two Portable Engines at 256 RPM on four Wooden Propellers, a Gyroscope on a third engine: takes off at about 15 blocks a second, cruises near 16; a Steering Wheel at the seat steers it: a comparator at each side of the wheel cuts one side's clutch while it is turned that way (turn it briefly and back; held over, it spins and sinks)
 - Related: Thrusters and Engines (see flight/propulsion), Steering and Controls (see flight/controls), Airships (see flight/airships)
 
 ## flight/controls | Steering and Controls
 - Steering turns redstone and rotation into thrust and angles. Simulated supplies wheels, levers, sensors; Aeroworks adds control consoles and servos
-- Steering Wheel [simulated:steering_wheel]: hold right-click and move mouse; sneak snaps to 45 degrees; comparator reads angle
+- Steering Wheel [simulated:steering_wheel]: hold right-click and move mouse; stays at the angle left; sneak snaps to 45 degrees; its panel sets the most it turns either way; comparator at its back reads whether it is held, one against each side lights only while it is turned one way
+- One wheel steers, not a lever per side: its cog turns a Swivel Bearing (see flight/ship_building) under a stern propeller, or a comparator at each side of it cuts one side's propeller line through a Clutch (Redstone Links reach pods). Levers are for settings
 - Throttle Lever [simulated:throttle_lever]: compact analog redstone source; right-click and drag; wrench (see create_basics/tools_wrench) inverts signal
 - Navigation Table [simulated:navigation_table]: outputs redstone toward a destination, weaker when not facing it; different Navigation Items give different targets
 - Sensors (redstone signals): Altitude, Velocity, Gimbal Sensors (height, speed, tilt); Laser Pointers, Laser Sensors, Optical Sensors (detect objects); Modulating and Directional Linked Receivers (distance/angle to Redstone Links (see create_basics/redstone_and_control))

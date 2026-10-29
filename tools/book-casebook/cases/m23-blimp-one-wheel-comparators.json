@@ -1,0 +1,175 @@
+{
+  "title": "Blimp steered by one Steering Wheel whose side comparators cut each pod",
+  "from": "2026-10-29 report: the book kept steering blimps with a lever for each side instead of one wheel",
+  "roots": [
+    "R3",
+    "R4"
+  ],
+  "kind": "model",
+  "model": {
+    "title": "Blimp",
+    "size_x": 13,
+    "size_y": 17,
+    "size_z": 18,
+    "blocks": [
+      {
+        "block": "minecraft:spruce_planks",
+        "x": 4,
+        "y": 3,
+        "z": 4,
+        "x2": 8,
+        "y2": 3,
+        "z2": 13
+      },
+      {
+        "block": "minecraft:spruce_fence",
+        "x": 4,
+        "y": 4,
+        "z": 4,
+        "x2": 4,
+        "y2": 8,
+        "z2": 4
+      },
+      {
+        "block": "minecraft:spruce_fence",
+        "x": 4,
+        "y": 4,
+        "z": 13,
+        "x2": 4,
+        "y2": 8,
+        "z2": 13
+      },
+      {
+        "block": "minecraft:spruce_fence",
+        "x": 8,
+        "y": 4,
+        "z": 4,
+        "x2": 8,
+        "y2": 8,
+        "z2": 4
+      },
+      {
+        "block": "minecraft:spruce_fence",
+        "x": 8,
+        "y": 4,
+        "z": 13,
+        "x2": 8,
+        "y2": 8,
+        "z2": 13
+      },
+      {
+        "block": "aeronautics:white_envelope",
+        "x": 1,
+        "y": 9,
+        "z": 0,
+        "x2": 11,
+        "y2": 15,
+        "z2": 17,
+        "shape": "ellipsoid_shell"
+      },
+      {
+        "block": "minecraft:air",
+        "x": 5,
+        "y": 9,
+        "z": 6,
+        "x2": 7,
+        "y2": 9,
+        "z2": 10
+      },
+      {
+        "block": "aeronautics:adjustable_burner",
+        "x": 6,
+        "y": 4,
+        "z": 8
+      },
+      {
+        "block": "simulated:throttle_lever[facing=north]",
+        "x": 6,
+        "y": 4,
+        "z": 9
+      },
+      {
+        "block": "minecraft:spruce_planks",
+        "x": 0,
+        "y": 12,
+        "z": 8
+      },
+      {
+        "block": "simulated:red_portable_engine[facing=south]",
+        "x": 0,
+        "y": 13,
+        "z": 8
+      },
+      {
+        "block": "aeronautics:wooden_propeller[facing=south]",
+        "x": 0,
+        "y": 13,
+        "z": 9
+      },
+      {
+        "block": "minecraft:spruce_planks",
+        "x": 12,
+        "y": 12,
+        "z": 8
+      },
+      {
+        "block": "simulated:red_portable_engine[facing=south]",
+        "x": 12,
+        "y": 13,
+        "z": 8
+      },
+      {
+        "block": "aeronautics:wooden_propeller[facing=south]",
+        "x": 12,
+        "y": 13,
+        "z": 9
+      },
+      {
+        "block": "simulated:steering_wheel[facing=north]",
+        "x": 6,
+        "y": 4,
+        "z": 5
+      },
+      {
+        "block": "minecraft:comparator[facing=east]",
+        "x": 5,
+        "y": 4,
+        "z": 5
+      },
+      {
+        "block": "minecraft:comparator[facing=west]",
+        "x": 7,
+        "y": 4,
+        "z": 5
+      }
+    ],
+    "part_of_vehicle": false
+  },
+  "inventory": [
+    {
+      "id": "create:andesite_casing",
+      "count": 4
+    },
+    {
+      "id": "create:large_cogwheel",
+      "count": 4
+    },
+    {
+      "id": "create:shaft",
+      "count": 4
+    },
+    {
+      "id": "minecraft:comparator",
+      "count": 4
+    }
+  ],
+  "expect": {
+    "has": [
+      "Steered with one Steering Wheel: the comparator at each side"
+    ],
+    "lacks": [
+      "juggle a lever",
+      "steers nothing"
+    ]
+  }
+}
