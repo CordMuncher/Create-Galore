@@ -26,14 +26,16 @@ import net.irisshaders.iris.shaderpack.option.values.OptionValues;
  * does not offer keeps the value the pack's source gives it, which the patcher checked). renderScaleOptions
  * (optional): the pack's upscaling switch and its render scale option; with the switch on, the pack renders at that
  * scale into the lower left corner of its buffers and DLSS upscales it, at the size the Bridge rounds it to
- * (taau_render_scale).
+ * (taau_render_scale). renderScale=bridge (optional, in place of renderScaleOptions): the pack has no resolution option
+ * of its own; the render resolution picked on the Upscaling & Display screen ({@link RenderScaleTarget}) is the size it
+ * draws at, read from taau_render_scale every frame, while DLSS or FSR runs (1 otherwise, as nothing upscales then).
  * rrGuideImages (optional): the pack's guide images for DLSS Ray Reconstruction, written while cg_rr_active is 1:
  * diffuse albedo, specular albedo (both RGBA8), the normal in world space with the roughness in alpha (RGBA16F), and
  * optionally the specular hit distance (R32F); see {@link DlssPass.Guides}. A pack without them gets DLSS.
  */
 record PackProfile(String pass, int colorAttachment, int[] outputAttachments, int[] keepAlpha, String motionImage,
                    String depthImage, String exposureImage, String maskImage, List<String> requireOn, List<String> requireOff,
-                   List<String> renderScaleOptions, List<String> rrGuideImages) {
+                   List<String> renderScaleOptions, boolean bridgeScale, List<String> rrGuideImages) {
     /** The lowest render scale the Bridge takes (a quarter of the window's width and height). */
     static final float MIN_RENDER_SCALE = 0.25f;
 
@@ -78,7 +80,8 @@ record PackProfile(String pass, int colorAttachment, int[] outputAttachments, in
                 required(props, "motionImage"), required(props, "depthImage"), required(props, "exposureImage"),
                 props.getProperty("maskImage", "").isBlank() ? null : props.getProperty("maskImage").trim(),
                 names(props.getProperty("requireOn", "")), names(props.getProperty("requireOff", "")),
-                names(props.getProperty("renderScaleOptions", "")), names(props.getProperty("rrGuideImages", "")));
+                names(props.getProperty("renderScaleOptions", "")),
+                props.getProperty("renderScale", "").trim().equalsIgnoreCase("bridge"), names(props.getProperty("rrGuideImages", "")));
     }
 
     /** True if the pack writes Ray Reconstruction's guides (at least diffuse and specular albedo and the normals). */
@@ -88,9 +91,13 @@ record PackProfile(String pass, int colorAttachment, int[] outputAttachments, in
 
     /**
      * The render scale the pack's current options ask for: 1 without upscaling (or a profile without it), else the
-     * scale option's value, from {@link #MIN_RENDER_SCALE} to 1.
+     * scale option's value, from {@link #MIN_RENDER_SCALE} to 1. With renderScale=bridge, the one picked on the
+     * Upscaling & Display screen.
      */
     float renderScale() {
+        if (bridgeScale) {
+            return RenderScaleTarget.bridgeScale();
+        }
         if (renderScaleOptions.size() != 2) {
             return 1.0f;
         }

@@ -1050,14 +1050,21 @@ public final class Capture {
             } else {
                 props.setProperty("dlaaRayReconstruction", "false");
             }
+            // The render scale: the Bridge's own setting for a pack that leaves it to the Bridge, else the pack's option.
+            Float scale = mode.renderScale();
+            boolean bridgeScale = scaleOptions[1].isEmpty();
+            if (bridgeScale) {
+                props.setProperty("dlaaRenderScale", String.format(Locale.ROOT, "%.2f", scale != null && scale < 1.0f ? scale : 1.0f));
+            }
             try (Writer w = Files.newBufferedWriter(file)) {
                 props.store(w, "Create Galore Bridge display settings (last written by the DLAA test kit, mode " + mode.name() + ")");
             }
-            // The render scale is the pack's own option: Iris applies queued options on the reload and saves them.
-            Float scale = mode.renderScale();
-            Iris.getShaderPackOptionQueue().put(scaleOptions[1], Boolean.toString(scale != null && scale < 1.0f));
-            if (scale != null && scale < 1.0f) {
-                Iris.getShaderPackOptionQueue().put(scaleOptions[2], String.format(Locale.ROOT, "%.2f", scale));
+            // The pack's own option: Iris applies queued options on the reload and saves them.
+            if (!bridgeScale) {
+                Iris.getShaderPackOptionQueue().put(scaleOptions[1], Boolean.toString(scale != null && scale < 1.0f));
+                if (scale != null && scale < 1.0f) {
+                    Iris.getShaderPackOptionQueue().put(scaleOptions[2], String.format(Locale.ROOT, "%.2f", scale));
+                }
             }
             bridgeSettingsReload(); // the Bridge reads them again on a shader reload, but with shaders off there is none
             Iris.reload();

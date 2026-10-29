@@ -44,7 +44,8 @@ import net.neoforged.neoforge.common.NeoForge;
  * {@link FrameGen}) and the frame
  * counter ({@link FpsOverlay}). Opens from the mod list (Create Galore Bridge, Config) and from an Upscaling & Display
  * button in Iris's shader pack menu. Saved to config/create_galore_bridge-display.properties when it closes, the render
- * resolution into the DLAA pack's own options (Photon's TAAU and TAAU Render Scale, see {@link RenderScaleTarget});
+ * resolution into the DLAA pack's own options (Photon's TAAU and TAAU Render Scale), or into the display settings for a
+ * pack that leaves it to this screen (see {@link RenderScaleTarget});
  * DLAA changes reload the shaders.
  */
 public final class DlaaScreen extends Screen {
@@ -74,6 +75,10 @@ public final class DlaaScreen extends Screen {
     private final Screen parent;
     /** The pack whose options hold the render resolution. */
     private final RenderScaleTarget target = RenderScaleTarget.current();
+    /** The shader pack the Upscaling tab works with: the one in use when it is made for DLSS and FSR, else where to get one. */
+    private final String packLine = Dlss.profilePack() != null
+            ? "Shader pack \"" + Dlss.profilePack() + "\": made for DLSS and FSR."
+            : "Works with \"" + PhotonPatcher.PATCHED_NAME + "\" and other shader packs made for DLSS and FSR.";
     private final Map<String, String> initial = new HashMap<>();
     private String engine;
     private String preset;
@@ -222,7 +227,10 @@ public final class DlaaScreen extends Screen {
         // Experimental: DLSS Ray Reconstruction in place of DLSS, where NVIDIA's NGX didn't say no (as frame generation
         // goes by Streamline); where it is already on, it can still be turned off.
         String rrRefused = Dlss.rayReconstructionRefused();
-        String rrTooltip = rrRefused != null
+        boolean rrPack = Dlss.packTakesRayReconstruction();
+        String rrTooltip = !rrPack
+                ? "This shader pack doesn't support Ray Reconstruction: DLSS runs."
+                : rrRefused != null
                 ? "Not supported on this PC: " + rrRefused + "."
                 : "Experimental. NVIDIA DLSS Ray Reconstruction replaces DLSS and cleans up Photon's lighting: clearer"
                         + " reflections, steadier shadows. Costs some frames.";
@@ -233,7 +241,7 @@ public final class DlaaScreen extends Screen {
                     lockForRayReconstruction();
                     refreshDll();
                 }));
-        rrButton.active = rayReconstruction || Util.getPlatform() == Util.OS.WINDOWS && rrRefused == null;
+        rrButton.active = rayReconstruction || rrPack && Util.getPlatform() == Util.OS.WINDOWS && rrRefused == null;
         choice("RR preset", RR_PRESETS, rrPreset, DlaaScreen::rrPresetLabel, DlaaScreen::rrPresetTooltip, left + half + 4, RR_ROW, half,
                 value -> rrPreset = value);
         lockForRayReconstruction();
@@ -440,7 +448,7 @@ public final class DlaaScreen extends Screen {
     }
 
     private void renderAntiAliasing(GuiGraphics graphics, int left) {
-        lines(graphics, "Works with the shader pack \"" + PhotonPatcher.PATCHED_NAME + "\".", left, 28, 0xFFDD66, 3);
+        lines(graphics, packLine, left, 28, 0xFFDD66, 3);
         int y = RR_ROW + 24;
         String picked = preset.equals("other") ? letter : preset;
         if (picked.equals("L") || picked.equals("M")) {
@@ -603,9 +611,17 @@ public final class DlaaScreen extends Screen {
         return values;
     }
 
-    /** The pack's options for the render resolution picked: upscaling off at native, else on at the scale. */
+    /**
+     * The pack's options for the render resolution picked: upscaling off at native, else on at the scale. For a pack that
+     * leaves the resolution to the Bridge, its one setting (1 at native).
+     */
     private Map<String, String> packOptions() {
         Map<String, String> options = new HashMap<>();
+        if (target.bridge()) {
+            options.put(DisplaySettings.DLAA_RENDER_SCALE, scale.equals("native") ? "1.00" : scale.equals("custom")
+                    ? String.format(Locale.ROOT, "%.2f", customPercent / 100.0) : SCALE_VALUES.get(scale));
+            return options;
+        }
         options.put(target.upscaling(), Boolean.toString(!scale.equals("native")));
         if (!scale.equals("native")) {
             options.put(target.scale(), scale.equals("custom")

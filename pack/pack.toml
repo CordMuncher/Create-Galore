@@ -1,12 +1,12 @@
 name = "Create Galore"
 author = "Emre"
-version = "0.6.46"
+version = "0.6.47"
 pack-format = "packwiz:1.1.0"
 
 [index]
 file = "index.toml"
 hash-format = "sha256"
-hash = "3255153e646619e40b96dea1cbae528830fbb6888aeee261572b6ce874ba15cf"
+hash = "6a942fabf5a39d74772524077944c9a0eac5fb5cc9f592eab2f8f72af50e2f7d"
 
 [versions]
 minecraft = "1.21.1"

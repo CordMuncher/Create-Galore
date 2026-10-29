@@ -305,6 +305,10 @@ public final class Dlss {
         } catch (IOException | RuntimeException e) {
             packProblem = "its " + PackProfile.FILE + " could not be read: " + e;
         }
+        // A pack that leaves the resolution to the Bridge has no upscaling of its own: full size unless DLSS or FSR runs.
+        if (profile != null && profile.bridgeScale() && (!wanted || packProblem != null)) {
+            renderScaleSetting = 1.0f;
+        }
         if (!wanted) {
             profile = null;
             return;
@@ -439,7 +443,10 @@ public final class Dlss {
         return active && rrMode && rrRawShadows;
     }
 
-    /** For the test kit: the pack the render resolution goes into, its upscaling switch and its render scale option. */
+    /**
+     * For the test kit: the pack the render resolution goes into, its upscaling switch and its render scale option (both
+     * empty when the pack leaves the resolution to the Bridge: dlaaRenderScale in the display settings sets it).
+     */
     public static String[] renderScaleOptions() {
         RenderScaleTarget target = RenderScaleTarget.current();
         return new String[] {target.pack(), target.upscaling(), target.scale()};
@@ -454,14 +461,28 @@ public final class Dlss {
         return active ? jitterY : 0.0f;
     }
 
-    /** The render size over the window's, per axis (taau_render_scale): the pack's render scale in whole pixels. */
+    /**
+     * The render size over the window's, per axis (taau_render_scale): the pack's render scale in whole pixels. 1 while
+     * DLSS and FSR don't run for a pack that leaves the resolution to the Bridge, as nothing would upscale its picture.
+     */
     public static org.joml.Vector2f renderScale() {
+        if (fullSizeNow()) {
+            return new org.joml.Vector2f(1.0f, 1.0f);
+        }
         return new org.joml.Vector2f((float) renderWidth / displayWidth, (float) renderHeight / displayHeight);
     }
 
     /** The textures' mip bias (cg_mip_bias): log2 of the render scale as the pack has it, plus dlaaMipBias while DLSS or FSR runs. */
     public static float mipBias() {
+        if (fullSizeNow()) {
+            return 0.0f;
+        }
         return (float) (Math.log((double) renderWidth / displayWidth) / Math.log(2.0)) + (active && debugView == null ? extraMipBias : 0.0f);
+    }
+
+    /** True while a pack that leaves the resolution to the Bridge must draw at full size: DLSS or FSR isn't running. */
+    private static boolean fullSizeNow() {
+        return !active && profile != null && profile.bridgeScale();
     }
 
     /** The render size for a window size: the pack's render scale in whole pixels (2/3 for 0.67 and 1/3 for 0.33). */
@@ -1166,10 +1187,28 @@ public final class Dlss {
     }
 
     private static boolean hasProfile() {
+        return profilePack() != null;
+    }
+
+    /**
+     * For the settings screen: false when the shader pack in use is made for DLSS and FSR but hands over no guides for
+     * Ray Reconstruction (DLSS runs in its place there).
+     */
+    static boolean packTakesRayReconstruction() {
         try {
-            return PackProfile.current() != null;
+            PackProfile current = Iris.getIrisConfig().areShadersEnabled() ? PackProfile.current() : null;
+            return current == null || current.hasRayReconstructionGuides();
         } catch (IOException | RuntimeException e) {
-            return false;
+            return true;
+        }
+    }
+
+    /** The shader pack in use when it is made for DLSS and FSR (it has a {@link PackProfile}), else null. */
+    static String profilePack() {
+        try {
+            return Iris.getIrisConfig().areShadersEnabled() && PackProfile.current() != null ? Iris.getCurrentPackName() : null;
+        } catch (IOException | RuntimeException e) {
+            return null;
         }
     }
 
@@ -1179,7 +1218,7 @@ public final class Dlss {
             return "Off: the shader pack keeps its own anti-aliasing.";
         }
         if (!Iris.getIrisConfig().areShadersEnabled() || Iris.getCurrentPack().isEmpty() || NO_PROFILE.equals(packProblem)) {
-            return "Waiting: pick \"" + PhotonPatcher.PATCHED_NAME + "\" in Shader Packs.";
+            return "Waiting: pick \"" + PhotonPatcher.PATCHED_NAME + "\" or another shader pack made for it in Shader Packs.";
         }
         if (profile == null && packProblem != null) {
             return "Off: the shader pack's " + PackProfile.FILE + " could not be read (the log says why).";

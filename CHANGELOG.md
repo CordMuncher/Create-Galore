@@ -5,6 +5,18 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.6.47
+
+### Added
+- Create Galore Bridge 1.161.0.
+- **Groundwork for future shader packs.** The Upscaling & Display screen works with any shader pack made for DLSS and FSR, not only Photon v1.3a + DLAA, and names the pack in use. A pack can also leave its render resolution to the screen instead of having an option of its own: it then draws at the size picked there while DLSS or FSR runs, and at full size when they don't. Ray Reconstruction is greyed out with a pack that doesn't support it, and DLSS runs instead.
+
+### Fixed
+- Nothing.
+
+### Removed
+- Nothing.
+
 ## 0.6.46
 
 ### Added

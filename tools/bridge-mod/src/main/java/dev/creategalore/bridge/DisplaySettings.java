@@ -47,6 +47,11 @@ public final class DisplaySettings {
     public static final String DLAA_MIP_BIAS = "dlaaMipBias";
     /** true: the settings screen sets the render resolution with a slider instead of the standard modes. */
     public static final String DLAA_CUSTOM_SCALE = "dlaaCustomScale";
+    /**
+     * The render resolution, 0.25 to 1, for a shader pack that leaves it to the settings screen (renderScale=bridge in
+     * its profile); a pack with its own resolution option (Photon's TAAU) keeps it there.
+     */
+    public static final String DLAA_RENDER_SCALE = "dlaaRenderScale";
     /** Experimental: true runs DLSS Ray Reconstruction in place of DLSS with a pack that hands over its guides (see Dlss). */
     public static final String DLAA_RAY_RECONSTRUCTION = "dlaaRayReconstruction";
     /** Ray Reconstruction's preset, F (the default), E, D or default (NVIDIA's pick); the settings screen writes it. */
@@ -133,6 +138,8 @@ public final class DisplaySettings {
             + " Upscaling: the render resolution is the shader pack's own upscaling options (in Photon TAAU and TAAU Render\n"
             + " Scale; Render resolution on the settings screen); DLSS or FSR 3.1 upscale from it to the window.\n"
             + " dlaaCustomScale: true shows a 25-100% slider on the settings screen instead of the standard modes.\n"
+            + " dlaaRenderScale: 0.25 to 1, the render resolution for a shader pack that leaves it to the settings screen\n"
+            + " (renderScale=bridge in its create_galore_dlss.properties); packs with their own option keep that.\n"
             + " dlaaRayReconstruction: experimental. true runs NVIDIA DLSS Ray Reconstruction (preset F) in place of DLSS\n"
             + " with a pack that hands over its guides (Photon v1.3a + DLAA), with nvngx_dlssd.dll in create-galore-dlss/.\n"
             + " Turned on or off on the settings screen it also swaps Photon's settings (Ultra, or your changes under it);\n"
