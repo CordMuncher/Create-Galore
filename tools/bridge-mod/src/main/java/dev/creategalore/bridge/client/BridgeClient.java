@@ -35,6 +35,7 @@ public final class BridgeClient {
         net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener(SchematicTrace::tick);
         net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener(SchematicTrace::render);
         PinnedSchematicView.init();
+        SharedSchematicCache.init();
         dev.creategalore.bridge.dlss.Dlss.init(modBus);
         dev.creategalore.bridge.dlss.DlaaScreen.register(modBus, container);
         net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener(
