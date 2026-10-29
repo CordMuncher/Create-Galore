@@ -3,17 +3,19 @@
 A shader pack for Iris lit by traced coloured light, written from the ground up for Create Galore. It hands DLSS and
 FSR (through the Create Galore Bridge) everything they need, so they anti-alias or upscale it without patching. The
 name is for its motion vectors: not only the camera's, but how each moving thing moved (Create's machines and
-contraptions, ships, mobs, the hand), which is what lets DLSS and FSR keep them sharp.
+contraptions, ships, mobs, the hand), which is what lets DLSS and FSR keep them sharp. The Bridge's Upscaling &
+Display screen picks the upscaler and the render resolution; the pack has no settings of its own for them.
 
-**Work in progress: build 2.** It lives on its own branch and is not in the modpack yet. The first Create Galore
+**Work in progress: build 3.** It lives on its own branch and is not in the modpack yet. The first Create Galore
 pack (`shaderpack/`) stays as a research build; the two share only the DLSS hand-off and the mods' plumbing
 (Colorwheel, Distant Horizons), not their lighting.
 
 ## What it does
 
 - **A voxel copy of the world around you**, made every frame during the shadow pass: six levels of detail (the finest
-  near you), with see-through cells for glass and water, each block's average colour, and a distance field that lets
-  rays skip empty space.
+  under and around you), each moving a cell at a time as you do, with see-through cells for glass and water, each
+  block's average colour, and a distance field that lets rays skip empty space and is read blended, so light changes
+  smoothly from one level of detail to the next.
 - **Coloured block light, traced.** Every light (a table of vanilla's lights with their colours and strengths, or any
   block Minecraft says gives light, coloured from its texture) is traced through the voxel copy, so light stops at
   walls and takes the colour of the glass it passes through. Per block for everything, and per pixel near you for
@@ -27,7 +29,9 @@ pack (`shaderpack/`) stays as a research build; the two share only the DLSS hand
 - **Ambient occlusion** on screen for nooks and corners, from nearby walls only, over everything but mobs and the hand.
 - **Hot texels glow**: a torch's flame, not its stick; lava, glowstone and froglights all over.
 - **The sun and the moon** cast steady shadows from a shadow map (no noise, so nothing flickers), coloured through
-  glass and through water with its caustics.
+  glass and through water with its caustics. They soften with the distance to what casts them (a canopy's shade is
+  dappled, a post's foot sharp), leaves let light through the outside of their clump, grass doesn't shade itself, and
+  near the map's edge they fade into what Minecraft's sky light says.
 - **The sky**: a physically based atmosphere with the sun, the moon and the stars.
 - **Water**: its own colour, deeper the deeper it is, and waves crossing from three directions, longer ones faster.
 - **Light in the air**: a coloured haze around lamps (strongest at night, underground and in the Nether), haze far
@@ -36,7 +40,11 @@ pack (`shaderpack/`) stays as a research build; the two share only the DLSS hand
 - **A fixed exposure**: day, night and caves look as dark as they are; the tone curve eases highlights to white and
   deepens the mid-tones a little.
 - **Create's machines and contraptions** (Colorwheel) and **Distant Horizons** are lit like the rest of the world.
-- The Nether and the End have their own light and haze.
+- The Nether and the End have their own light and haze; the End's light casts shadows.
+- **Held lights** light the world in their own colour, from the hand that holds them; what you hold takes the colour
+  of the lights around you. Glowing particles (flames, sparks, portal particles) glow, and the End portal shows its
+  starfield and gives light.
+- **The block outline and leads** are drawn into the scene before the lighting, so they show as in vanilla.
 
 ## Later milestones
 

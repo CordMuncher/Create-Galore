@@ -35,21 +35,26 @@ const bool shadowHardwareFiltering = true;
 
 // The sizes, and the work groups of 8 x 8 x 8 cells the passes over the box take, as plain numbers (Iris reads
 // workGroups without working anything out).
+// voxelDistance: how far around you Iris sends every chunk through the shadow pass (see shadow.culling in
+// shaders.properties), half the box's width.
 #if VOXEL_BOX == 0
 #define VOX_X 96
 #define VOX_Y 64
 #define VOX_GROUPS_X 12
 #define VOX_GROUPS_Y 8
+const float voxelDistance = 48.0;
 #elif VOXEL_BOX == 2
 #define VOX_X 256
 #define VOX_Y 128
 #define VOX_GROUPS_X 32
 #define VOX_GROUPS_Y 16
+const float voxelDistance = 128.0;
 #else
 #define VOX_X 128
 #define VOX_Y 96
 #define VOX_GROUPS_X 16
 #define VOX_GROUPS_Y 12
+const float voxelDistance = 64.0;
 #endif
 // The distance field's passes cover every level, stacked up y.
 #if VOXEL_BOX == 0 && VOXEL_LEVELS == 4

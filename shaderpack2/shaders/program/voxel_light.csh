@@ -8,8 +8,8 @@
 // walk to the first see-through block for its colour. A cell in the open has no surface, so it takes light from
 // every side (the light in the air). The sum is log-compressed (see compress_light).
 //
-// Tiles in view (and a little around it) update: near you every frame, further away less often, down to every 10th
-// frame. Tiles the box has just reached update at once.
+// Tiles in view (and a little around it) update: near you (or where you are heading) every frame, further away less
+// often, down to every 10th frame. Tiles the box has just reached update at once.
 
 #include "/lib/settings.glsl"
 #include "/lib/trace.glsl"
@@ -104,7 +104,7 @@ void main() {
     vec3 centre = lo + 4.0;
 
     if (index == 0u) {
-        float distance_away = length(centre);
+        float distance_away = vox_tile_distance(centre);
         int interval = clamp(int(distance_away / 8.0), 1, 10);
         uint offset = pcg3d(uvec3(tile)).x;
         bool due = (uint(frameCounter) + offset) % uint(interval) == 0u;

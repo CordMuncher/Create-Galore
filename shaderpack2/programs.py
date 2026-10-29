@@ -71,7 +71,7 @@ add("final", {"vsh": FULLSCREEN, "fsh": "final.fsh"})
 
 # The world's programs.
 WORLD = {"vsh": "gbuffers.vsh", "fsh": "gbuffers.fsh"}
-for program in ("basic", "line", "textured", "textured_lit", "skybasic", "skytextured", "clouds", "terrain", "damagedblock",
+for program in ("basic", "textured", "textured_lit", "skybasic", "skytextured", "clouds", "terrain", "damagedblock",
                 "block", "beaconbeam", "entities", "spidereyes", "armor_glint", "hand", "weather", "water",
                 "hand_water", "particles", "lightning"):
     add("gbuffers_" + program, WORLD, ["PROGRAM_" + program.upper()])

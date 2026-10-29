@@ -113,6 +113,19 @@ int vox_edge_distance(ivec3 cell, int level) {
     return min(d.x, min(d.y, d.z));
 }
 
+// How far a tile's middle (vox_pos space) is from the camera, or from where the camera will be in about a second at
+// its speed, whichever is nearer: the tiles you are heading for refresh as often as the ones around you, so the
+// light ahead is up to date when you get there.
+float vox_tile_distance(vec3 centre) {
+    vec3 moved = vec3(cameraPositionInt - previousCameraPositionInt) + (cameraPositionFract - previousCameraPositionFract);
+    vec3 ahead = moved * 60.0;
+    float far = length(ahead);
+    if (far > 32.0) {
+        ahead *= 32.0 / far; // a teleport, not a walk
+    }
+    return min(length(centre), length(centre - ahead));
+}
+
 // The finest level whose box holds a point, keeping a cell clear of the box's edge; -1 outside them all.
 int vox_level(vec3 p) {
     for (int level = VOXEL_LEVELS - 1; level >= 0; level--) {

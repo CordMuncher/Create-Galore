@@ -12,8 +12,8 @@
 //   gets away brings the sky. The sky is scaled by the sky light the cell's neighbours saw.
 // The new rays join the old ones, which fade (by about 1% per frame at 60 frames a second), so the light settles
 // over a second or two and holds several bounces (each hit reads the bounce light already there). More than
-// far_tiles blocks from you, half the tiles trace each frame (a checkerboard): the light there settles a little
-// slower, where nobody looks closely, and most of the box is that far.
+// far_tiles blocks from you (and from where you are heading), half the tiles trace each frame (a checkerboard): the
+// light there settles a little slower, where nobody looks closely, and most of the box is that far.
 //
 // OWN DENOISER (a world-space store that gathers rays over frames): a light cache rather than a screen filter, so it
 // can likely stay under Ray Reconstruction (see the README's "Own denoisers and Ray Reconstruction").
@@ -189,7 +189,7 @@ void main() {
         if (sum.a > 0.0) {
             imageStore(cg_gi_img, slot, vec4(sum.rgb / sum.a, 1.0));
         }
-    } else if (length(vec3(tile_min) + 4.0) < far_tiles || (tile.x + tile.y + tile.z + frameCounter) % 2 == 0) {
+    } else if (vox_tile_distance(vec3(tile_min) + 4.0) < far_tiles || (tile.x + tile.y + tile.z + frameCounter) % 2 == 0) {
         s_trace[atomicAdd(s_trace_count, 1u)] = index;
     }
     barrier();
