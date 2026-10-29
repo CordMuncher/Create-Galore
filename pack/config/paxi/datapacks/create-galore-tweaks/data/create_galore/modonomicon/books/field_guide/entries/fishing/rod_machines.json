@@ -20,7 +20,7 @@
     {
       "type": "modonomicon:text",
       "title": "Rod Holder and Reel Drives",
-      "text": "[#](FFFFFF)[#]() **Key points**\n\n- A **Rod Holder** sounds an alarm and pulses redstone on a bite.\n- [#](FFFFFF)[#]() **Reel drives** fight fish with rotation, or with an engine.\n- [#](FFFFFF)[#]() Winding costs **stress**: pick a drag your network can turn.\n- Catches go into a chest, funnel or belt."
+      "text": "[#](FFFFFF)[#]() **Key points**\n\n- A **Rod Holder** sounds an alarm and pulses redstone on a bite.\n- [#](FFFFFF)[#]() **Reel drives** fight fish with rotation, or with an engine.\n- [#](FFFFFF)[#]() Winding costs **stress**: pick a drag your network can turn.\n- The rod swings catches into storage, funnels, belts or lid-up barrels."
     },
     {
       "type": "modonomicon:text",
@@ -82,7 +82,12 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "[#](FFFFFF)[#]() It burns furnace fuel from a slot, or lava, Fish Oil and other [#](2E5AAC)[liquid fuels](entry://industry/liquid_fuel)[#]() from a 4-bucket tank. It burns a tenth as much while it waits, the full rate under full load, and only while it is on with a rod in.\\\n\\\nIts engine winds against 12 kg in normal gear, four times that in its lowest."
+      "text": "[#](FFFFFF)[#]() It burns furnace fuel from a slot, or lava, Fish Oil and other [#](2E5AAC)[liquid fuels](entry://industry/liquid_fuel)[#]() from a 4-bucket tank, only while it is on with a rod in.\\\n\\\nIts engine winds against 12 kg in normal gear, four times that in its lowest."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Fuel by load.** Waiting burns a tenth of the full rate, winding in an empty line or a lure a quarter. In a fight it burns 40%% against a fish that barely pulls, rising to the full rate at 10 kg of pull on the line. The gear doesn't change it.\\\n\\\nA small fish still costs fuel; a long fight on heavy tackle costs about twice as much a second."
     },
     {
       "type": "modonomicon:text",
@@ -97,7 +102,22 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**Catches** go into a chest, hopper, funnel or belt below or beside the machine, never into another rod machine. With nowhere to go, the fish hangs from the rod tip for 30 seconds; an empty hand takes it.\\\n\\\nA fish a machine puts on a belt is alive for two minutes: off the belt into water, it swims away."
+      "text": "**Catches** go straight into a chest, hopper, funnel or belt under the machine. Otherwise the rod turns, the fish hanging from it, drops it beside the machine and turns back. It never feeds another rod machine.\\\n\\\nA Geared or Fuel drive turns at the pace of its top gear: the lowest turns it eight times slower than the highest. The others turn at normal-gear pace."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Where it drops**: in the column of blocks touching a side, with no gap.\n\n- Any block at the machine's height that takes items.\n- Up to 5 blocks lower: a belt, an upward funnel on any storage, a hopper, or a lid-up barrel, which opens to catch it.\n\nA solid block or water in between closes that side."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "With nowhere to go, the fish hangs from the rod tip for 30 seconds; an empty hand takes it.\\\n\\\nA fish a machine puts on a belt is alive for two minutes: off the belt into water, it swims away.\\\n\\\nOn a ship the rod turns with the deck, as on land."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "[#](FFFFFF)[#]() **Sorting the catch.** A fish as the reference in an [Attribute Filter](item://create:attribute_filter) offers: **too big to cook whole** or **small enough to cook whole**, its weight (**6.00 kg or more**, **6.00 kg or less**) and its size class. Funnels and arms then sort a fish line.\\\n\\\nFish that stack show no weight: they count as under 3 kg."
     },
     {
       "type": "modonomicon:text",

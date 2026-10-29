@@ -65,4 +65,9 @@ public interface RodMount {
 
     /** Where the rod's butt sits, from the block's corner (blocks). */
     Vec3 rodBase();
+
+    /** How fast the rod turns on its mount to drop a catch, as a multiple of a drive in gear 1.0. */
+    default double turnSpeed() {
+        return 1;
+    }
 }

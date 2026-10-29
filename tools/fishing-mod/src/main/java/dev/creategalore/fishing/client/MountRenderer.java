@@ -7,6 +7,7 @@ import dev.creategalore.fishing.cast.CastHook;
 import dev.creategalore.fishing.machine.MachineInfo;
 import dev.creategalore.fishing.machine.MountedRod;
 import dev.creategalore.fishing.machine.RodMount;
+import dev.creategalore.fishing.machine.RodTurn;
 import dev.creategalore.fishing.tackle.RodItem;
 import dev.creategalore.fishing.tackle.RodParts;
 import dev.creategalore.fishing.tackle.TackleManager;
@@ -31,8 +32,9 @@ import org.joml.Vector3f;
 
 /**
  * Draws the rod a machine holds: the same 3D rod as in the hand, set in the machine at 45 degrees over the way it
- * faces, bending toward the line under load, its reel turning while it winds; and a landed fish left hanging at the
- * tip. It records where each tip was drawn so the line ({@link CastHookRenderer}) starts there.
+ * faces, bending toward the line under load, its reel turning while it winds; turning on its mount to carry a catch
+ * over where it goes ({@link RodTurn}), the fish hanging from the tip until it is let go and falls; and a landed
+ * fish left hanging at the tip. The turn is in the machine's own space, so on a ship it turns with the hull. It records where each tip was drawn so the line ({@link CastHookRenderer}) starts there.
  */
 class MountRenderer<T extends BlockEntity & RodMount> implements BlockEntityRenderer<T> {
     /** Where machines' rod tips were last drawn, in world space, and in which frame. */
@@ -75,11 +77,14 @@ class MountRenderer<T extends BlockEntity & RodMount> implements BlockEntityRend
         // so taking away the block's position alone would leave a hanging fish off to the side of the tip.
         Matrix4f toBlock = new Matrix4f(pose.last().pose()).invert();
 
+        float clock = be.getLevel().getGameTime() + partialTick;
+        RodTurn turn = mounted.turn();
         pose.pushPose();
         Vec3 base = be.rodBase();
         pose.translate(base.x, base.y, base.z);
-        pose.mulPose(Axis.YP.rotationDegrees(-be.rodFacing().toYRot()));
-        pose.mulPose(Axis.XP.rotationDegrees(45));
+        pose.mulPose(Axis.YP.rotationDegrees(-(be.rodFacing().toYRot() + turn.yaw(clock))));
+        // The model runs up +Y: tipped over from upright to the rod's rise.
+        pose.mulPose(Axis.XP.rotationDegrees(90 - turn.rise(clock)));
         // Turned over on its own axis so the underside faces the ground: a spinning reel hangs under the rod and a
         // trolling reel sits on top, as in a real rod holder (tilting alone left the rod upside down).
         pose.mulPose(Axis.YP.rotationDegrees(180));
@@ -95,24 +100,36 @@ class MountRenderer<T extends BlockEntity & RodMount> implements BlockEntityRend
             TIPS.put(be.getBlockPos().immutable(), new Tip(cam.add(tip.x, tip.y, tip.z), frame));
         }
 
-        ItemStack fish = mounted.dangling();
-        if (!fish.isEmpty()) {
+        boolean carried = !mounted.carried().isEmpty();
+        ItemStack fish = carried ? mounted.carried() : mounted.dangling();
+        float sinceRelease = carried ? clock - mounted.releaseAt() : -1;
+        // Landed: it is in the chest or on the belt now (the update saying so may be a tick behind).
+        if (!fish.isEmpty() && sinceRelease <= mounted.fallTicks()) {
             // Hung from the tip by a short piece of line, head up, swinging a little. Down is the world's down, so on
             // a ship that rolls the fish still hangs plumb.
             Vector3f local = toBlock.transformPosition(new Vector3f(tip));
             Vector3f down = toBlock.transformDirection(new Vector3f(0, -1, 0)).normalize();
-            float clock = be.getLevel().getGameTime() + partialTick;
             double cm = FishItemRenderer.lengthCm(fish);
             float length = Mth.clamp((float) cm / 100, 0.15f, 1.6f);
             float drop = 0.35f;
-            int color = build.lineColor().orElse(RodModel.NO_LINE);
-            VertexConsumer lines = buffers.getBuffer(RenderType.lines());
-            PoseStack.Pose p = pose.last();
             Vector3f knot = new Vector3f(down).mul(drop).add(local);
-            lines.addVertex(p, local.x, local.y, local.z).setColor(color).setNormal(p, down.x, down.y, down.z);
-            lines.addVertex(p, knot.x, knot.y, knot.z).setColor(color).setNormal(p, down.x, down.y, down.z);
+            Vector3f middle = new Vector3f(down).mul(length / 2).add(knot);
+            if (sinceRelease >= 0) {
+                // Let go: it falls straight down the machine's own up and down onto where it lands (on a ship that
+                // leans, it still lands in the barrel the rod turned over), at the pace the server lands it.
+                float height = middle.y - length / 2 - mounted.dropTop();
+                float t = Math.min(sinceRelease, mounted.fallTicks());
+                float ticks = Math.max(1, mounted.fallTicks());
+                if (height > 0) middle.y -= height * (t * t) / (ticks * ticks);
+            } else {
+                int color = build.lineColor().orElse(RodModel.NO_LINE);
+                VertexConsumer lines = buffers.getBuffer(RenderType.lines());
+                PoseStack.Pose p = pose.last();
+                lines.addVertex(p, local.x, local.y, local.z).setColor(color).setNormal(p, down.x, down.y, down.z);
+                lines.addVertex(p, knot.x, knot.y, knot.z).setColor(color).setNormal(p, down.x, down.y, down.z);
+            }
             pose.pushPose();
-            pose.translate(knot.x + down.x * length / 2, knot.y + down.y * length / 2, knot.z + down.z * length / 2);
+            pose.translate(middle.x, middle.y, middle.z);
             pose.mulPose(new Quaternionf().rotationTo(0, 1, 0, -down.x, -down.y, -down.z));
             pose.mulPose(Axis.YP.rotation(Mth.sin(clock * 0.07f) * 0.6f));
             pose.mulPose(Axis.ZP.rotationDegrees(90 + Mth.sin(clock * 0.31f) * 12));
@@ -178,6 +195,6 @@ class MountRenderer<T extends BlockEntity & RodMount> implements BlockEntityRend
 
     @Override
     public AABB getRenderBoundingBox(T be) {
-        return new AABB(be.getBlockPos()).inflate(3);
+        return new AABB(be.getBlockPos()).inflate(3).expandTowards(0, -3, 0);
     }
 }
