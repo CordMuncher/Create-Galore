@@ -5,6 +5,18 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.6.41
+
+### Added
+- Create Galore Bridge 1.155.0.
+- **Water Pumps clean polluted water.** Sulfur smog and acid rain turn the top of the water they touch into Polluted Water, which drifts with the wind and kills crops and plants beside it. Iron, Gold and Diamond Water Pumps set in water, with a Filter Frame on top and a redstone signal, find the polluted water around them and pull each patch across the surface toward themselves, one block at a time, until it reaches the pump and comes out clean with a burst of bubbles. The pump's metal sets its reach (25, 50 or 100 blocks every way, 4, 8 or 16 patches at once), the frame's metal how fast it pulls (1, 2 or 4 blocks a second). The frame never needs filter material. Right-click a pump to see what it reaches or what it is missing. Crafted from a Create Mechanical Pump, each tier from the one before; new Field Guide page *Cleaning Polluted Water*.
+
+### Fixed
+- Nothing.
+
+### Removed
+- Nothing.
+
 ## 0.6.40
 
 ### Added

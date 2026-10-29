@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "create_galore_bridge:block/iron_water_pump"
+    }
+  }
+}

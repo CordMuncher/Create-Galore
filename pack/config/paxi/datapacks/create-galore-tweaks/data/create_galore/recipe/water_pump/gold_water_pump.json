@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " G ",
+    "GPG",
+    " E "
+  ],
+  "key": {
+    "G": {
+      "tag": "c:plates/gold"
+    },
+    "P": {
+      "item": "create_galore_bridge:iron_water_pump"
+    },
+    "E": {
+      "item": "create:electron_tube"
+    }
+  },
+  "result": {
+    "id": "create_galore_bridge:gold_water_pump",
+    "count": 1
+  }
+}

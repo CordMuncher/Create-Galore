@@ -102,5 +102,13 @@
   "create_galore_bridge.pendant.not_worn": "Wear the Field Guide Pendant in a necklace slot to open the book with this key.",
   "create_galore_bridge.pendant.no_guide": "The Field Guide isn't loaded on this server.",
   "create_galore_bridge.stutters.stall": "The game froze for %s s. What it was doing is saved in logs/create-galore-stutters.log; send that file if you report it.",
-  "create_galore_bridge.stutters.choppy": "The game ran choppy for %s s (about %s FPS). What it was doing is saved in logs/create-galore-stutters.log; send that file if you report it."
+  "create_galore_bridge.stutters.choppy": "The game ran choppy for %s s (about %s FPS). What it was doing is saved in logs/create-galore-stutters.log; send that file if you report it.",
+  "block.create_galore_bridge.iron_water_pump": "Iron Water Pump",
+  "block.create_galore_bridge.gold_water_pump": "Gold Water Pump",
+  "block.create_galore_bridge.diamond_water_pump": "Diamond Water Pump",
+  "create_galore_bridge.water_pump.no_frame": "Needs a Filter Frame on top.",
+  "create_galore_bridge.water_pump.no_water": "Needs water beside or below it.",
+  "create_galore_bridge.water_pump.no_signal": "Off: give it a redstone signal.",
+  "create_galore_bridge.water_pump.clean": "No polluted water within %s blocks. Pulls %s blocks a second.",
+  "create_galore_bridge.water_pump.working": "%s polluted blocks within %s blocks, pulling %s at a time, %s blocks a second."
 }

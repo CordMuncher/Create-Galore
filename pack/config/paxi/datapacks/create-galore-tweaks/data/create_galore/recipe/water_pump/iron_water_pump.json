@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " F ",
+    "IMI",
+    "ICI"
+  ],
+  "key": {
+    "F": {
+      "item": "create:fluid_pipe"
+    },
+    "I": {
+      "tag": "c:plates/iron"
+    },
+    "M": {
+      "item": "create:mechanical_pump"
+    },
+    "C": {
+      "item": "create:copper_casing"
+    }
+  },
+  "result": {
+    "id": "create_galore_bridge:iron_water_pump",
+    "count": 1
+  }
+}

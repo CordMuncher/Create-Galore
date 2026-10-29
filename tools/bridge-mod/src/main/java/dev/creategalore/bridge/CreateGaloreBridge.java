@@ -3,6 +3,7 @@ package dev.creategalore.bridge;
 import dev.creategalore.bridge.client.BridgeClient;
 import dev.creategalore.bridge.encased.EncasedDoors;
 import dev.creategalore.bridge.guideai.GuideAi;
+import dev.creategalore.bridge.waterpump.WaterPumps;
 import dev.creategalore.bridge.wear.Wear;
 import java.util.List;
 import net.minecraft.resources.ResourceLocation;
@@ -86,6 +87,7 @@ public final class CreateGaloreBridge {
         AnimalTroughs.register();
         Wear.register(modBus);
         EncasedDoors.register(modBus);
+        WaterPumps.register(modBus);
         if (FMLEnvironment.dist.isClient()) {
             BridgeClient.init(modBus, container);
         }

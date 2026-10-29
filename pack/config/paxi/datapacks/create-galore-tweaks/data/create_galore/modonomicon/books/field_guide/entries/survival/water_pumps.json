@@ -1,0 +1,62 @@
+{
+  "category": "survival",
+  "name": "Cleaning Polluted Water",
+  "description": "Water Pumps that pull polluted water in and clean it.",
+  "icon": {
+    "item": "create_galore_bridge:iron_water_pump"
+  },
+  "x": 2,
+  "y": -3,
+  "sort_number": 13,
+  "parents": [
+    {
+      "entry": "survival/pollution",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Cleaning Polluted Water",
+      "text": "[#](FFFFFF)[#]() **Key points**\n\n- Sulfur smog on water makes **Polluted Water**, which kills plants nearby\n- A **Water Pump** with a **Filter Frame** on top pulls it in and cleans it\n- Pump metal sets the reach, frame metal the speed"
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Polluted water",
+      "text": "Sulfur in smog or acid rain turns the top layer of water it touches into Polluted Water. The wind pushes the patches across the water.\\\n\\\nIt seeps into the ground beside it: crops, saplings, flowers and leaves die, and farmland, grass and dirt turn to podzol or coarse dirt. Coral under it dies."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Setting up a pump",
+      "text": "1. Place a Water Pump with water beside or below it\n2. Put a Filter Frame on top; it never needs anything put in it\n3. Give it a redstone signal: a lever, redstone block or circuit\n\nRight-click the pump to see what it reaches, or what it is missing."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "How it works",
+      "text": "The pump finds the polluted water within its reach and pulls each patch across the surface toward itself, one block at a time; you can watch them come. A patch that reaches the pump comes out clean with a burst of bubbles.\\\n\\\nPatches travel through water only. One cut off by land or a wall stays where it is."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Reach and speed",
+      "text": "The pump's metal sets its reach, counted out from the pump every way:\n- Iron: 25 blocks, 4 patches at a time\n- Gold: 50 blocks, 8 at a time\n- Diamond: 100 blocks, 16 at a time\n\nThe frame filters all the water it draws, so its metal sets the speed: iron 1 block a second, gold 2, diamond 4."
+    },
+    {
+      "type": "modonomicon:crafting_recipe",
+      "recipe_id_1": "create_galore:water_pump/iron_water_pump",
+      "recipe_id_2": "create_galore:water_pump/gold_water_pump",
+      "text": ""
+    },
+    {
+      "type": "modonomicon:crafting_recipe",
+      "recipe_id_1": "create_galore:water_pump/diamond_water_pump",
+      "text": "Each pump is built from the one before it."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Related",
+      "text": "- [#](2E5AAC)[Pollution](entry://survival/pollution)[#]()\n- [#](2E5AAC)[Exhaust Systems](entry://survival/pollution_control)[#]()\n- [#](2E5AAC)[Seasonal Crops](entry://survival/seasons_crops)[#]()"
+    }
+  ]
+}
