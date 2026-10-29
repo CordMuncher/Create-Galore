@@ -183,6 +183,11 @@ public final class DlaaScreen extends Screen {
         }
         initial.putAll(values());
         initialPackOptions = packOptions();
+        Boolean taaOn = profile != null && profile.supportsOff() ? target.taaOn() : null;
+        if (taaOn != null) {
+            // As the pack has it now: one turned off for Off while another pack was picked is put right when this closes.
+            initialPackOptions.put(target.taaOption(), Boolean.toString(taaOn));
+        }
     }
 
     /** At mod construction (client): the mod list's Config button and the shader pack menu's Upscaling & Display button. */

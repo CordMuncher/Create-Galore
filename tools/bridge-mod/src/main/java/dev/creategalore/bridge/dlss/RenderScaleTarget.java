@@ -107,6 +107,25 @@ public record RenderScaleTarget(String pack, boolean inUse, String upscaling, St
         return new Setting(on, value == null ? null : value.trim());
     }
 
+    /** Whether the pack's anti-aliasing option is on now (Iris's value when it is the pack loaded, else its .txt), or null. */
+    public Boolean taaOn() {
+        if (taaOption == null) {
+            return null;
+        }
+        OptionValues values = inUse ? Iris.getCurrentPack().map(p -> p.getShaderPackOptions().getOptionValues()).orElse(null) : null;
+        if (values != null) {
+            return values.getOptionSet().getBooleanOptions().containsKey(taaOption) ? values.getBooleanValueOrDefault(taaOption) : null;
+        }
+        Properties stored = new Properties();
+        try (Reader reader = Files.newBufferedReader(optionsFile())) {
+            stored.load(reader);
+        } catch (IOException | RuntimeException e) {
+            return null;
+        }
+        String value = stored.getProperty(taaOption);
+        return value == null ? null : !value.trim().equalsIgnoreCase("false");
+    }
+
     /**
      * Sets the pack's options: through Iris's queue when it is the pack in use (the reload after this applies and saves
      * them), else into its .txt for when it is picked. The render resolution of a pack that leaves it to the Bridge
