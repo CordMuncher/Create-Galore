@@ -92,6 +92,38 @@ layout(location = 2) out vec4 out_light;
 layout(location = 3) out vec4 out_material;
 layout(location = 4) out vec4 out_motion;
 
+#if defined PROGRAM_BLOCK
+uniform int blockEntityId; // block.properties' number of the block entity being drawn
+
+// The end portal and gateway: a window onto deep space, five layers of stars at different depths drifting slowly
+// past each other (as Minecraft's own does), in the portal's pale teal and green. rgb its colour (sRGB, as albedo),
+// a how much of it glows. Looked at across the face, so it has depth as you move.
+vec4 end_portal_look(vec3 dir, vec3 n) {
+    vec3 t = normalize(abs(n.y) > 0.9 ? cross(n, vec3(1.0, 0.0, 0.0)) : cross(n, vec3(0.0, 1.0, 0.0)));
+    vec3 b = cross(n, t);
+    vec2 across = vec2(dot(dir, t), dot(dir, b)) / max(abs(dot(dir, n)), 0.15);
+    vec3 c = vec3(0.03, 0.07, 0.08);
+    float glow = 0.2;
+    for (int k = 0; k < 5; k++) {
+        float depth = 1.0 + float(k) * 0.8;
+        float a = float(k) * 1.7;
+        vec2 uv = mat2(cos(a), sin(a), -sin(a), cos(a)) * across * (3.0 * depth)
+                + vec2(0.0, frameTimeCounter * 0.03 * (1.0 + float(k)));
+        ivec2 cell = ivec2(floor(uv));
+        vec3 h = hash33(uvec3(uvec2(cell + 32768), uint(k) + 3u));
+        if (h.x > 0.82) {
+            vec2 f = fract(uv) - (0.2 + 0.6 * h.yz);
+            float star = smoothstep(0.16, 0.0, length(f)) / depth;
+            vec3 tint = h.y < 0.35 ? vec3(0.45, 1.0, 0.85) : h.y < 0.6 ? vec3(0.6, 1.0, 0.55)
+                      : h.y < 0.8 ? vec3(0.4, 0.65, 1.0) : vec3(0.9, 1.0, 1.0);
+            c += tint * star;
+            glow = max(glow, star);
+        }
+    }
+    return vec4(min(c, 1.0), glow);
+}
+#endif
+
 // How much of a light block's texel glows: the bright, hot ones (a torch's flame, not its stick; a furnace's fire,
 // not its stone). Lamps that glow all over (glowstone, lava, froglights) glow from their dimmer texels too.
 float glow_of(vec3 albedo, int id, float emission) {
@@ -113,6 +145,12 @@ void main() {
         discard;
     }
     vec4 color = base_color();
+#if defined PROGRAM_BLOCK
+    bool end_portal = blockEntityId == BLOCK_LIGHT + KIND_END_PORTAL;
+    if (end_portal) {
+        color.a = 1.0;
+    }
+#endif
     if (color.a < 0.1) {
         discard;
     }
@@ -149,6 +187,13 @@ void main() {
     }
     vec3 albedo = color.rgb;
     float glow = glow_of(srgb_to_linear(albedo), v_block, v_emission);
+#if defined PROGRAM_BLOCK
+    if (end_portal) {
+        vec4 space = end_portal_look(normalize(v_scene_pos), n);
+        albedo = space.rgb;
+        glow = space.a;
+    }
+#endif
 
     out_albedo = vec4(albedo, float(material) / 255.0);
     vec2 e = encode_normal(n);
@@ -268,6 +313,13 @@ void main() {
     float shadow_radius = 1.0;
 #endif
     vec3 light = forward_light(n, v_scene_pos, light_levels(), 1.0, shadow_radius);
+#if defined PROGRAM_PARTICLES
+    // Flames, lava drips, sparks, portal and glow particles come from Minecraft at full brightness: they glow (about
+    // as a hot texel does, so they bloom), instead of taking the dim light around them.
+    if (light_levels().x > 0.99) {
+        light = max(light, vec3(4.6));
+    }
+#endif
 #if defined PROGRAM_CLOUDS
     light = g_light_color.rgb * 0.35 + g_sky_up.rgb * 1.2;
 #endif

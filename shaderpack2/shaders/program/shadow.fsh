@@ -2,8 +2,8 @@
 // light passes through, or, for a voxel triangle, the cells of the voxel copy it covers.
 //
 // A voxel fragment marks the cell just behind its face (a half cell in, against the face's normal) at its detail
-// level and at every coarser one, so a cube becomes a shell one cell thick at each level; rays always meet the shell
-// first. Its alpha decides: the most opaque of its texel and the four next to it, above 0.1 a cell, below 0.9 a
+// level and at the coarser ones shadow.gsh asks for, so a cube becomes a shell one cell thick at each level; rays
+// always meet the shell first. Its alpha decides: the most opaque of its texel and the four next to it, above 0.1 a cell, below 0.9 a
 // see-through one (glass, water). The block's own cell (level 0) also gathers the average colour of what is drawn in
 // it, from a few fragments per face.
 
@@ -31,6 +31,11 @@ flat in vec3 fs_normal;
 flat in uint fs_vox_bits;
 #else
 // Mobs and block entities come without a geometry stage.
+#include "/lib/voxel.glsl"
+
+layout(r32ui) uniform uimage3D cg_vox_img;
+uniform int blockEntityId; // block.properties' number of the block entity being drawn
+
 in vec2 vs_uv;
 in vec4 vs_color;
 in vec3 vs_scene;
@@ -39,6 +44,33 @@ flat in int vs_block;
 #define fs_color vs_color
 #define fs_scene vs_scene
 #define fs_block vs_block
+
+// A block entity that gives light (the end portal and gateway, whose surfaces Minecraft draws as block entities, so
+// they never reach the geometry stage that puts lights into the light hash): every 64th of its fragments adds its
+// place to its block's entry, in the kind's colour, and marks the block as holding a light.
+void mark_block_entity_light(int kind) {
+    if (((int(gl_FragCoord.x) | int(gl_FragCoord.y)) & 7) != 0) {
+        return;
+    }
+    vec3 p = vox_pos(fs_scene);
+    ivec3 block = ivec3(floor(p));
+    if (!vox_in_box(block, 0)) {
+        return;
+    }
+    uint base = light_claim(light_key(cameraPositionInt + block));
+    if (base == light_none) {
+        return;
+    }
+    vec4 listed = light_kind(kind);
+    uvec3 q = uvec3(clamp(p - vec3(block), 0.03, 0.97) * 32.0 + 0.5);
+    uvec3 qc = uvec3(clamp(listed.rgb, 0.0, 1.0) * 32.0 + 0.5);
+    data_add(base + 1u, q.x | (q.y << 16u));
+    data_add(base + 2u, q.z | (1u << 16u));
+    data_add(base + 3u, qc.r | (qc.g << 16u));
+    data_add(base + 4u, qc.b);
+    data_max(base + 5u, (uint(listed.a + 0.5) << 8u) | uint(kind + 1));
+    imageAtomicOr(cg_vox_img, vox_slot(block, 0), VOX_LIGHT);
+}
 #endif
 
 /* RENDERTARGETS: 0 */
@@ -52,6 +84,7 @@ const uint color_samples_max = 250u;
 void mark_voxels() {
     int level = fs_voxel & 15;
     int axis = (fs_voxel >> 4) & 3;
+    int coarsest = (fs_voxel >> 8) & 15;
 
     float alpha = textureLod(gtexture, fs_uv, 0.0).a;
     alpha = max(alpha, textureLodOffset(gtexture, fs_uv, 0.0, ivec2(1, 0)).a);
@@ -64,17 +97,19 @@ void mark_voxels() {
     bool water = (fs_vox_bits & VOX_WATER) != 0u;
     bool see_through = alpha < 0.9 || water;
 
-    // This fragment's cell at its level, from the pixel (across the plane) and the depth (along it), in cells from
-    // the box's middle; then half a cell in behind the face.
+    // This fragment's cell at its level, from the pixel (across the plane, with the level's box in the map's corner)
+    // and the depth (along it); then half a cell in behind the face.
     vec2 half_plane = axis == 0 ? vec2(vox_half.z, vox_half.y) : axis == 1 ? vec2(vox_half.x, vox_half.z) : vec2(vox_half.xy);
-    vec2 across = floor(gl_FragCoord.xy) + 0.5 - half_plane;
+    ivec3 centre = vox_centre(level);
+    vec2 middle = vec2(axis == 0 ? centre.zy : axis == 1 ? centre.xz : centre.xy);
+    vec2 across = floor(gl_FragCoord.xy) + 0.5 - vox_map_margin - half_plane + middle;
     vec3 c = axis == 0 ? vec3(fs_depth, across.y, across.x) : axis == 1 ? vec3(across.x, fs_depth, across.y) : vec3(across, fs_depth);
     float s = exp2(float(level));
     vec3 inside = c / s - fs_normal * (0.5 / s);
 
-    for (int l = level; l >= 0; l--) {
+    for (int l = level; l >= coarsest; l--) {
         ivec3 cell = vox_cell(inside, l);
-        if (!vox_in_box(cell)) {
+        if (!vox_in_box(cell, l)) {
             continue;
         }
         uint bits = see_through ? vox_see_bit(l) : vox_solid_bit(l);
@@ -140,6 +175,10 @@ void main() {
     if (fs_voxel >= 0) {
         mark_voxels();
         discard;
+    }
+#else
+    if (blockEntityId == BLOCK_LIGHT + KIND_END_PORTAL) {
+        mark_block_entity_light(KIND_END_PORTAL);
     }
 #endif
 

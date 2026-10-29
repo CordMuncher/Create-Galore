@@ -2,9 +2,11 @@
 //
 // A box of VOX_X x VOX_Y x VOX_X cells, at VOXEL_LEVELS levels of detail: level 0 has a cell per block, each level
 // after it covers half the width at twice the detail (level 5: 32 cells per block, 2 blocks around you). All levels
-// share one 32-bit word per cell slot, a bit each; a slot holds a different place at each level. The box moves with
-// the camera a block at a time, and the slots wrap around (a place keeps its slot while it stays in the box), so the
-// tables kept from frame to frame (the distance field, the light) never have to be moved.
+// share one 32-bit word per cell slot, a bit each; a slot holds a different place at each level. Each level's box
+// stays centred on the cell the camera is in at that level (the finer ones a little lower, see vox_drop), so it moves
+// a cell at a time (a 32nd of a block at the finest, a block at the coarsest): a step never shifts which detail a
+// surface near you is read at by more than the step itself. The slots wrap around (a place keeps its slot while it stays in the box), so the tables kept from frame
+// to frame (the distance field, the light) never have to be moved.
 //
 // Each word: bits 0..7 solid at that level, 8..15 see-through (glass, water) at that level; at level 0 also bit 16
 // water, bit 17 a light, bits 18..19 the sky light the block's faces see (a Gray code: OR-ing two keeps a value
@@ -25,6 +27,9 @@
 #define VOX_COUNT_SHIFT 20u
 
 const ivec3 vox_half = vox_size / 2;
+// The voxel triangles' corner of the shadow map holds a level's box with this many cells to spare on each side, so a
+// triangle reaching out of the box (up to two blocks at the finest level) still marks the coarser levels there.
+const float vox_map_margin = 64.0;
 const ivec3 vox_rg_offset = ivec3(VOX_X, 0, 0);
 const ivec3 vox_ba_offset = ivec3(2 * VOX_X, 0, 0);
 
@@ -50,38 +55,68 @@ vec3 vox_pos(vec3 scene_pos) {
     return scene_pos + cameraPositionFract;
 }
 
-// The cell a point (from vox_pos) is in at a level, counted from the box's middle.
+// The cell a point (from vox_pos) is in at a level, counted from the corner of the camera's block.
 ivec3 vox_cell(vec3 p, int level) {
     return ivec3(floor(p * float(1 << level)));
 }
 
-bool vox_in_box(ivec3 cell) {
-    return all(greaterThanEqual(cell, -vox_half)) && all(lessThan(cell, vox_half));
+// The finer levels' boxes sit this many blocks below the eye, so the ground under your feet is in the finest one
+// (its box is only a block and a half high each way).
+const float vox_drop = 0.75;
+
+// The middle of a level's box: the cell at that level that the camera (less the drop) is in; 0 at level 0, whose box
+// moves a block at a time with the camera's block. This frame's, and last frame's from last frame's camera.
+ivec3 vox_centre_from(vec3 camera_fract, int level) {
+    if (level == 0) {
+        return ivec3(0);
+    }
+    return ivec3(floor((camera_fract - vec3(0.0, vox_drop, 0.0)) * float(1 << level)));
 }
 
-// The slot of a cell (counted from the box's middle) at a level, for this frame's camera.
+ivec3 vox_centre(int level) {
+    return vox_centre_from(cameraPositionFract, level);
+}
+
+ivec3 vox_previous_centre(int level) {
+    return vox_centre_from(previousCameraPositionFract, level);
+}
+
+bool vox_in_box(ivec3 cell, int level) {
+    ivec3 c = cell - vox_centre(level);
+    return all(greaterThanEqual(c, -vox_half)) && all(lessThan(c, vox_half));
+}
+
+// The slot of a cell at a level (the slots wrap around the world, so each place keeps its own).
 ivec3 vox_slot(ivec3 cell, int level) {
     ivec3 base = imod3(cameraPositionInt * (1 << level), vox_size);
     return (base + cell + vox_size) % vox_size;
 }
 
-// The world cell a slot holds this frame at a level, counted from the box's middle (the inverse of vox_slot).
+// The cell a slot holds this frame at a level (the inverse of vox_slot within the level's box).
 ivec3 vox_slot_cell(ivec3 slot, int level) {
     ivec3 base = imod3(cameraPositionInt * (1 << level), vox_size);
-    return (slot - base + vox_size + vox_half) % vox_size - vox_half;
+    ivec3 centre = vox_centre(level);
+    return (slot - base - centre + 2 * vox_size + vox_half) % vox_size - vox_half + centre;
 }
 
-// Whether a cell (counted from this frame's box middle) was in last frame's box too.
+// Whether a cell (of this frame) was in last frame's box at its level too.
 bool vox_was_in_box(ivec3 cell, int level) {
     ivec3 moved = (cameraPositionInt - previousCameraPositionInt) * (1 << level);
-    return vox_in_box(cell + moved);
+    ivec3 c = cell + moved - vox_previous_centre(level);
+    return all(greaterThanEqual(c, -vox_half)) && all(lessThan(c, vox_half));
+}
+
+// How far a cell is from its level's box edge, in cells (0 on the outermost cells).
+int vox_edge_distance(ivec3 cell, int level) {
+    ivec3 c = cell - vox_centre(level);
+    ivec3 d = min(c + vox_half, vox_half - 1 - c);
+    return min(d.x, min(d.y, d.z));
 }
 
 // The finest level whose box holds a point, keeping a cell clear of the box's edge; -1 outside them all.
 int vox_level(vec3 p) {
     for (int level = VOXEL_LEVELS - 1; level >= 0; level--) {
-        ivec3 cell = vox_cell(p, level);
-        if (all(greaterThanEqual(cell, -vox_half + 1)) && all(lessThan(cell, vox_half - 1))) {
+        if (vox_edge_distance(vox_cell(p, level), level) >= 1) {
             return level;
         }
     }

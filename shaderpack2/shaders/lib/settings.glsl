@@ -3,13 +3,8 @@
 #if !defined LIB_SETTINGS
 #define LIB_SETTINGS
 
-// --- Frame -----------------------------------------------------------------------------------------------------------
-
-//#define UPSCALING
-#define RENDER_SCALE 0.67 // [0.33 0.5 0.58 0.67 0.77 0.85 1.0]
-#ifdef UPSCALING
-// The Create Galore Bridge reads both (see create_galore_dlss.properties).
-#endif
+// The render resolution, DLSS, FSR and frame generation are set on the Create Galore Bridge's Upscaling & Display
+// screen, not here (see create_galore_dlss.properties): the pack sizes everything from taau_render_scale.
 
 // --- Sun shadows -----------------------------------------------------------------------------------------------------
 

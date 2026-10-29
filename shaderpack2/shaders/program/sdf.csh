@@ -5,9 +5,10 @@
 // tiles update each frame (a checkerboard), and tiles the moving box has just reached update every frame.
 //
 // The levels lean on each other. A fine cell far from any surface is at least as far as its coarser cell says
-// (which settles sooner). Near the edge of a fine level's box, a triangle that didn't fit inside it went to a
-// coarser level only, so there the coarser level's word counts: the cell is no further than it says. And cells the
-// box has just reached start from the coarser level's value.
+// (which settles sooner), and cells the box has just reached start from the coarser level's value. Every level's box
+// holds everything in it up to its edge (shadow.gsh), so near the edge a fine level needs no help: taking the coarser
+// level's word there (as it once did) put the ground a coarse cell closer than it is, and darkened the lamp light on
+// the floor around you in a square.
 
 #include "/lib/settings.glsl"
 #include "/lib/voxel.glsl"
@@ -18,7 +19,7 @@ const ivec3 workGroups = ivec3(VOX_GROUPS_X, SDF_GROUPS_Y, VOX_GROUPS_X);
 uniform int frameCounter;
 
 layout(r32ui) readonly uniform uimage3D cg_vox_img;
-layout(r8ui) uniform uimage3D cg_sdf_img;
+layout(r8) uniform image3D cg_sdf_img; // whole numbers 0..255, kept as 0..1 so it can be read blended
 
 shared uint s_d[1000]; // the tile and a cell around it, 10 x 10 x 10
 shared uint s_update;
@@ -30,27 +31,26 @@ ivec3 sdf_texel(ivec3 cell, int level) {
     return ivec3(slot.x, slot.y + level * vox_size.y, slot.z);
 }
 
+uint sdf_load(ivec3 cell, int level) {
+    return uint(imageLoad(cg_sdf_img, sdf_texel(cell, level)).r * 255.0 + 0.5);
+}
+
 // What the next coarser level says of a cell at this level: a lower bound on how far it is (in this level's
 // cells), or 0 when the coarser cell is solid. far_away outside the coarser box too.
 uint coarser_bound(ivec3 cell, int level) {
     ivec3 coarse = cell >> 1;
-    if (!vox_in_box(coarse)) {
+    if (!vox_in_box(coarse, level - 1)) {
         return far_away;
     }
-    uint d = imageLoad(cg_sdf_img, sdf_texel(coarse, level - 1)).r;
+    uint d = sdf_load(coarse, level - 1);
     return d == 0u ? 0u : min(2u * d - 1u, far_away);
-}
-
-bool in_edge_band(ivec3 cell, int level) {
-    int band = 1 << level; // a block
-    return any(lessThan(cell, -vox_half + band)) || any(greaterThanEqual(cell, vox_half - band));
 }
 
 void main() {
     int tiles_y = VOX_Y / 8;
     int level = int(gl_WorkGroupID.y) / tiles_y;
     ivec3 tile = ivec3(gl_WorkGroupID.x, int(gl_WorkGroupID.y) % tiles_y, gl_WorkGroupID.z);
-    ivec3 tile_min = tile * 8 - vox_half;
+    ivec3 tile_min = tile * 8 - vox_half + vox_centre(level);
     uint index = gl_LocalInvocationIndex;
 
     if (index == 0u) {
@@ -70,14 +70,14 @@ void main() {
     for (uint i = index; i < 1000u; i += 512u) {
         ivec3 at = tile_min + ivec3(int(i % 10u), int((i / 10u) % 10u), int(i / 100u)) - 1;
         uint d;
-        if (!vox_in_box(at)) {
+        if (!vox_in_box(at, level)) {
             d = level > 0 ? coarser_bound(at, level) : far_away;
         } else if ((imageLoad(cg_vox_img, vox_slot(at, level)).r & vox_solid_bit(level)) != 0u) {
             d = 0u;
         } else if (!vox_was_in_box(at, level)) {
             d = level > 0 ? max(coarser_bound(at, level), 1u) : 1u;
         } else {
-            d = imageLoad(cg_sdf_img, sdf_texel(at, level)).r;
+            d = sdf_load(at, level);
         }
         s_d[i] = d;
     }
@@ -87,7 +87,6 @@ void main() {
     uint own = uint(local.x + local.y * 10 + local.z * 100);
     bool solid = (imageLoad(cg_vox_img, vox_slot(cell, level)).r & vox_solid_bit(level)) != 0u;
     uint coarse = level > 0 ? coarser_bound(cell, level) : far_away;
-    bool band = level > 0 && in_edge_band(cell, level);
 
     uint d = s_d[own];
     for (int pass = 0; pass < 2; pass++) {
@@ -105,9 +104,7 @@ void main() {
                 }
             }
             d = min(m + 1u, far_away);
-            if (band) {
-                d = min(d, coarse);
-            } else if (level > 0 && coarse != far_away) {
+            if (coarse != far_away) {
                 d = max(d, coarse);
             }
         }
@@ -115,5 +112,5 @@ void main() {
         s_d[own] = d;
         barrier();
     }
-    imageStore(cg_sdf_img, sdf_texel(cell, level), uvec4(d));
+    imageStore(cg_sdf_img, sdf_texel(cell, level), vec4(float(d) / 255.0));
 }

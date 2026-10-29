@@ -146,6 +146,12 @@ void main() {
         highlight = imageLoad(cg_plh_img, now + ivec2(0, imageSize(cg_plh_img).y / 3)).rgb * 4.0;
     }
 #endif
+    if (s.material == MAT_HAND && fade > 0.0) {
+        // What you hold also takes the light all around you, from every side, so it picks up the colour of a portal
+        // or lava next to you even where its faces turn away.
+        block = max(block, per_block.rgb * 0.7);
+        confidence = max(confidence, per_block.a);
+    }
     vec3 vanilla_block = vanilla_block_light(s.block);
     LightParts parts;
     parts.block = mix(vanilla_block, block * 4.0, fade * confidence);
@@ -171,23 +177,26 @@ void main() {
     vec3 l = g_light_dir.xyz;
     vec3 sun = vec3(0.0);
     vec3 sun_reach = vec3(0.0);
-#if defined SUNLIGHT
+#if defined SUNLIGHT || defined WORLD_END
     float facing = sun_facing(n, l);
     if (thin) {
         facing = mix(facing, 1.0, 0.45);
     } else if (s.material == MAT_ENTITY) {
         facing = 0.25 + 0.75 * max(dot(n, l), 0.0); // mobs: the light wraps further, so they never turn flat black
     }
+#if defined SUNLIGHT
     float sky_gate = smoothstep(0.05, 0.3, s.sky);
+#else
+    float sky_gate = 1.0; // the End has no sky light: its light reaches wherever the shadow map lets it
+#endif
     if (facing > 0.0 && sky_gate > 0.0 && !lod) {
-        float radius = (thin ? 2.0 : 1.2) * SHADOW_SOFTNESS;
+        // What you hold gets a soft shadow: a sharp one (leaves' patterns) swims over it as you turn.
+        float radius = (s.material == MAT_HAND ? 6.0 : thin ? 2.0 : 1.2) * SHADOW_SOFTNESS;
         sun_reach = shadow_light(shadow_offset_point(scene, s.face, l), radius) * sky_gate;
         sun = g_light_color.rgb * facing * sun_reach;
     } else if (lod) {
         sun = g_light_color.rgb * facing * vanilla_sky_share(s.sky);
     }
-#elif defined WORLD_END
-    sun = g_light_color.rgb * sun_facing(n, l);
 #endif
     parts.sun = sun;
 
@@ -214,7 +223,7 @@ void main() {
     // Highlights: every nearby light's, and the sun's.
     vec3 tint = mix(vec3(1.0), s.albedo, s.metal);
     color += highlight * tint * s.smoothness;
-#if defined SUNLIGHT
+#if defined SUNLIGHT || defined WORLD_END
     if (!lod && max3(sun_reach) > 0.0 && s.smoothness > 0.2) {
         color += g_light_color.rgb * sun_reach * tint * ggx_specular(n, v, l, s.smoothness, mix(0.04, 0.6, s.metal));
     }

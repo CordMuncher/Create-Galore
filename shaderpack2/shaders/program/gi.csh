@@ -66,7 +66,7 @@ vec3 sky_from(vec3 dir) {
 
 // The sun (or moon) on a spot: one hardware look-up in the shadow map.
 float sun_reaches(vec3 vox_point, vec3 normal) {
-#ifdef SUNLIGHT
+#if defined SUNLIGHT || defined WORLD_END
     vec3 scene_pos = vox_point - cameraPositionFract + normal * 0.05;
     vec4 c = shadow_coord(scene_pos);
     if (any(lessThan(c.xy, vec2(0.0))) || any(greaterThan(c.xy, vec2(1.0)))) {
@@ -79,14 +79,14 @@ float sun_reaches(vec3 vox_point, vec3 normal) {
 }
 
 vec3 load_light(ivec3 cell) {
-    if (!vox_in_box(cell)) {
+    if (!vox_in_box(cell, 0)) {
         return vec3(0.0);
     }
     return expand_light(imageLoad(cg_blk_img, vox_slot(cell, 0)).rgb);
 }
 
 vec4 load_gi(ivec3 cell) {
-    if (!vox_in_box(cell)) {
+    if (!vox_in_box(cell, 0)) {
         return vec4(0.0);
     }
     return imageLoad(cg_gi_img, vox_slot(cell, 0));
@@ -101,12 +101,16 @@ vec3 trace_cell(ivec3 cell, ivec3 slot) {
     uint seen = 0u;
     for (int i = 0; i < 6; i++) {
         ivec3 o = ivec3(i == 0 ? 1 : i == 1 ? -1 : 0, i == 2 ? 1 : i == 3 ? -1 : 0, i == 4 ? 1 : i == 5 ? -1 : 0);
-        if (vox_in_box(cell + o)) {
+        if (vox_in_box(cell + o, 0)) {
             seen |= vox_word(cell + o);
         }
     }
+#if defined NO_SKY_LIGHT
+    float sky = 1.0; // the Nether's and the End's air light is everywhere; what the rays find shades it
+#else
     float sky = vox_sky(seen);
     sky = mix(sky, 1.0, 0.4 * float(eyeBrightnessSmooth.y) / 240.0);
+#endif
 
     vec3 sum = vec3(0.0);
     for (int r = 0; r < GI_RAYS; r++) {

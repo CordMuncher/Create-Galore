@@ -3,7 +3,10 @@
 // Each detail level has a distance field (cg_sdf_img, program/sdf.csh): per cell, how many cells away the nearest
 // solid one is, counted the way a cube grows (the largest cube of empty cells around it). A ray leaps across that
 // cube in one step, so empty space costs almost nothing, and a lookup uses the finest level that holds the point,
-// so detail falls off with distance by itself. Three ways through:
+// so detail falls off with distance by itself. How much room a ray has (for soft shadows) comes from the same field
+// read blended between cells, so it grows smoothly with the distance from a surface at every level, instead of in
+// steps of a cell (which showed each level's cells up close, and made the finest level, around you, darker than the
+// rest). Three ways through:
 // - trace_ray: to the first solid cell (bounce light, reflections);
 // - cone_visibility: how much of a light gets past, softly, from the narrowest gap the ray squeezes through
 //   against how wide the cone is there (one ray, no extra samples);
@@ -16,7 +19,8 @@
 #include "/lib/voxel.glsl"
 
 layout(r32ui) uniform uimage3D cg_vox_img;
-layout(r8ui) uniform uimage3D cg_sdf_img;
+layout(r8) uniform image3D cg_sdf_img;
+uniform sampler3D cg_sdf_tex; // the same, for blended reads
 
 // The distance field's texel for a slot at a level: the levels stack up the y axis.
 ivec3 sdf_texel(ivec3 slot, int level) {
@@ -28,7 +32,42 @@ uint vox_word(ivec3 cell) {
 }
 
 uint sdf_at(ivec3 cell, int level) {
-    return imageLoad(cg_sdf_img, sdf_texel(vox_slot(cell, level), level)).r;
+    return uint(imageLoad(cg_sdf_img, sdf_texel(vox_slot(cell, level), level)).r * 255.0 + 0.5);
+}
+
+// The distance field at a point (vox_pos space) at a level, blended between the eight cells around it, in cells.
+float sdf_blended(vec3 p, int level) {
+    vec3 x = p * exp2(float(level)) - 0.5;
+    ivec3 base = ivec3(floor(x));
+    vec3 f = x - vec3(base);
+    ivec3 slot = vox_slot(base, level);
+    if (all(lessThan(slot, vox_size - 1))) {
+        // The eight sit side by side: the hardware blends them.
+        vec3 texel = vec3(sdf_texel(slot, level)) + 0.5 + f;
+        return texture(cg_sdf_tex, texel / vec3(textureSize(cg_sdf_tex, 0))).r * 255.0;
+    }
+    // They wrap around the table's edge: one by one.
+    float d = 0.0;
+    for (int i = 0; i < 8; i++) {
+        ivec3 o = ivec3(i & 1, (i >> 1) & 1, (i >> 2) & 1);
+        vec3 w3 = mix(1.0 - f, f, vec3(o));
+        d += float(sdf_at(base + o, level)) * (w3.x * w3.y * w3.z);
+    }
+    return d;
+}
+
+// How much room there is around a point, in blocks: the blended field's distance to the nearest solid cell's face
+// (half a cell less than to its middle). Near the edge of a level's box it eases into the next coarser level's
+// answer, so a surface moving out of a level doesn't step.
+float free_space(vec3 p, int level) {
+    float room = max(sdf_blended(p, level) - 0.5, 0.0) * exp2(float(-level));
+    int edge = vox_edge_distance(vox_cell(p, level), level);
+    const int band = 12; // cells
+    if (level > 0 && edge < band + 1) {
+        float coarse = max(sdf_blended(p, level - 1) - 0.5, 0.0) * exp2(float(1 - level));
+        room = mix(coarse, room, clamp(float(edge - 1) / float(band), 0.0, 1.0));
+    }
+    return room;
 }
 
 // A block's average colour (linear) and opacity, from its cell (level 0); grey where nothing was drawn.
@@ -128,7 +167,8 @@ Hit trace_ray(vec3 p, vec3 dir, float max_t, int max_steps) {
 // but at the coarser levels its cell counts as solid (at all of them, for the top of a path), so a ray from a point on
 // it would stop before it got out, and which level is read depends on how far off the camera is: black patches that
 // move as you walk. So when the cell p is in is solid at the level read there, the start moves out of it along
-// the face. One cell only: a solid cell beyond it is something else in the way (a wall the face looks at).
+// the face, and a little further (so the ray has some room). One cell only: a solid cell beyond it is something else
+// in the way (a wall the face looks at); start_inside says so.
 vec3 trace_start(vec3 p, vec3 face) {
     int level = vox_level(p);
     if (level < 0) {
@@ -139,14 +179,18 @@ vec3 trace_start(vec3 p, vec3 face) {
         return p;
     }
     float s = exp2(float(-level));
-    return p + face * (box_exit(p, safe_inverse(face), vec3(cell) * s, vec3(cell + 1) * s) + s * 0.01);
+    return p + face * (box_exit(p, safe_inverse(face), vec3(cell) * s, vec3(cell + 1) * s) + 0.04);
+}
+
+// Whether a ray's start is still inside something solid at the detail read there.
+bool start_inside(vec3 p) {
+    int level = vox_level(p);
+    return level >= 0 && sdf_at(vox_cell(p, level), level) == 0u;
 }
 
 // How much of a light at distance dist along dir gets to p (0..1): the narrowest the empty space around the ray
-// gets, against the cone's radius there, which runs from width_start at p to width_end at the light (the lamp's
-// size). The empty space is the distance field's, from the middle of the cell the ray is in (a cell next to a solid
-// one has half a cell), not from where the ray happens to be in it: the ray always enters a cell at its wall, which
-// says nothing about how near the solid blocks are. The last stop_short blocks before the light are its own.
+// gets (free_space, where the ray is at each step), against the cone's radius there, which runs from width_start at
+// p to width_end at the light (the lamp's size). The last stop_short blocks before the light are its own.
 float cone_visibility(vec3 p, vec3 dir, float dist, float width_start, float width_end, float stop_short,
                       int max_steps) {
     vec3 inv_dir = safe_inverse(dir);
@@ -165,9 +209,8 @@ float cone_visibility(vec3 p, vec3 dir, float dist, float width_start, float wid
             return 0.0;
         }
         float s = exp2(float(-level));
-        float free_space = (float(d) - 0.5) * s;
         float width = mix(width_start, width_end, clamp(t / dist, 0.0, 1.0));
-        visible = min(visible, free_space / (width + 0.02));
+        visible = min(visible, free_space(q, level) / (width + 0.02));
         vec3 lo = vec3(cell - d + 1) * s;
         vec3 hi = vec3(cell + d) * s;
         t += box_exit(q, inv_dir, lo, hi) + s * 0.01;
@@ -199,7 +242,7 @@ vec3 see_through_tint(vec3 p, vec3 dir, float dist) {
             next.z += delta.z;
             cell.z += step_dir.z;
         }
-        if (t >= end || !vox_in_box(cell)) {
+        if (t >= end || !vox_in_box(cell, 0)) {
             break;
         }
         uint word = vox_word(cell);
@@ -236,7 +279,7 @@ bool discover_light(vec3 p, vec3 dir, float dist, out uint key) {
             next.z += delta.z;
             cell.z += step_dir.z;
         }
-        if (t >= dist || !vox_in_box(cell)) {
+        if (t >= dist || !vox_in_box(cell, 0)) {
             return false;
         }
         uint word = vox_word(cell);

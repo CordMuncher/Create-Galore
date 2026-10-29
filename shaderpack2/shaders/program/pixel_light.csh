@@ -17,6 +17,7 @@
 #include "/lib/lights.glsl"
 #include "/lib/gbuffer_read.glsl"
 #include "/lib/lighting.glsl"
+#include "/lib/voxel_sample.glsl"
 
 layout(local_size_x = 16, local_size_y = 16) in;
 // One thread per sample: the window's size over the scale (Iris divides by the work group's size itself).
@@ -34,6 +35,8 @@ const vec2 workGroupsRender = vec2(0.33334, 0.33334);
 
 uniform int heldBlockLightValue;
 uniform int heldBlockLightValue2;
+uniform int heldItemId;  // item.properties: a light's number, as in block.properties
+uniform int heldItemId2;
 
 // Diffuse (compressed; a: which pixel of the square + 1) in the left half, highlights (compressed) in the right.
 layout(rgba16f) writeonly uniform image2D cg_pl_img;
@@ -192,6 +195,7 @@ void main() {
     Surface s;
     vec3 p = vec3(0.0);
     vec3 start = vec3(0.0);
+    bool inside = false;
     vec3 v = vec3(0.0, 1.0, 0.0);
     if (has_surface) {
         s = read_surface(pixel);
@@ -201,6 +205,7 @@ void main() {
         bool hand = s.material == MAT_HAND;
         p = vox_pos(scene) + s.face * (hand ? 0.15 : 0.04);
         start = trace_start(p, s.face);
+        inside = start_inside(start);
         atomicMin(s_lo[0], float_order(p.x));
         atomicMin(s_lo[1], float_order(p.y));
         atomicMin(s_lo[2], float_order(p.z));
@@ -254,11 +259,11 @@ void main() {
     barrier();
 
     // No light near this tile (most of the screen by day, out in the open): nothing to weigh, sort or trace.
-    bool held_light = false;
+    bool holding_light = false;
 #ifdef HAND_LIGHT
-    held_light = max(heldBlockLightValue, heldBlockLightValue2) > 0;
+    holding_light = max(heldBlockLightValue, heldBlockLightValue2) > 0;
 #endif
-    if (s_count == 0u && !held_light) {
+    if (s_count == 0u && !holding_light) {
         if (index == 0u && list_fits(own_base)) {
             data_store(own_base, 0u);
         }
@@ -300,18 +305,28 @@ void main() {
     // This sample's light.
     vec3 diffuse = vec3(0.0);
     vec3 spec = vec3(0.0);
-    if (has_surface) {
+    if (has_surface && inside) {
+        // A start still inside something at the detail read here (a sliver of grass side above a path): no ray gets
+        // out, so the light of its block stands in.
+        vec3 block_light = sample_block_table(cg_blk_tex, p + s.face * 0.5).rgb;
+        imageStore(cg_pl_img, sample_texel, vec4(block_light, float(turn) + 1.0));
+        imageStore(cg_pl_img, sample_texel + ivec2(imageSize(cg_pl_img).x / 2, 0), vec4(0.0, 0.0, 0.0, 1.0));
+    } else if (has_surface) {
         bool thin = s.material == MAT_PLANT || s.material == MAT_LEAVES;
         int traces = 0;
         vec3 jitter = hash33(uvec3(uvec2(pixel), uint(frameCounter) * 3u + 2u)) * 2.0 - 1.0;
 #ifdef HAND_LIGHT
-        float held = float(max(heldBlockLightValue, heldBlockLightValue2));
-        if (held > 0.0) {
-            vec3 hand_scene = mat3(gbufferModelViewInverse) * vec3(0.25, -0.25, -0.35) + gbufferModelViewInverse[3].xyz;
-            float level = max(10.0, 31.0 * held / 20.0);
-            vec4 torch = light_kind(0);
+        // Each hand's light, in its own colour (item.properties), from where that hand holds it.
+        for (int h = 0; h < 2; h++) {
+            int held = h == 0 ? heldBlockLightValue : heldBlockLightValue2;
+            if (held <= 0) {
+                continue;
+            }
+            vec3 hand_view = vec3(h == 0 ? 0.25 : -0.25, -0.25, -0.35);
+            vec3 hand_scene = mat3(gbufferModelViewInverse) * hand_view + gbufferModelViewInverse[3].xyz;
+            vec4 kind = held_light(h == 0 ? heldItemId : heldItemId2, float(held));
             diffuse += light_from(p, start, s.normal, v, s.smoothness, thin, vox_pos(hand_scene),
-                                  torch.rgb * light_brightness(level), light_reach(level), 0.12, spec, traces, jitter);
+                                  kind.rgb * light_brightness(kind.a), light_reach(kind.a), 0.12, spec, traces, jitter);
         }
 #endif
         uint lights = s_list_count;

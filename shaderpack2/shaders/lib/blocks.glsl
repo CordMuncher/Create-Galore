@@ -21,6 +21,7 @@
 #define KIND_CAMPFIRE 18
 #define KIND_SOUL_CAMPFIRE 19
 #define KIND_MAGMA 23
+#define KIND_END_PORTAL 34
 
 // A kind of light's colour (rgb, 0..1, at full strength) and level (a, 0..31: how far it reaches and how bright it
 // is). The colours lean towards strong, clear hues: a torch is warm orange-white, a soul lantern cyan, redstone red.
@@ -72,6 +73,23 @@ vec4 light_kind(int kind) {
 // A light Minecraft knows but the list doesn't (a modded lamp): its level from Minecraft's (0..15).
 float unlisted_light_level(float vanilla_level) {
     return max(10.0, 31.0 * vanilla_level / 20.0);
+}
+
+// A held light's colour and level (as light_kind gives them), from the held item's number (item.properties) and
+// the light Minecraft says it gives; a torch's colour for one the list doesn't know.
+vec4 held_light(int item, float vanilla_level) {
+    int kind = item - BLOCK_LIGHT;
+    vec4 l = kind >= 0 && kind < LIGHT_KINDS ? light_kind(kind) : vec4(light_kind(0).rgb, 0.0);
+    if (l.r < 0.0) {
+        // Kinds that take their colour from their texture when placed.
+        l.rgb = kind == KIND_LAVA ? vec3(1.0, 0.42, 0.08)
+              : kind == KIND_SOUL_FIRE || kind == KIND_SOUL_CAMPFIRE ? vec3(0.15, 0.8, 0.95)
+              : vec3(1.0, 0.6, 0.3); // fire, campfires, candles
+    }
+    if (l.a <= 0.0) {
+        l.a = unlisted_light_level(vanilla_level);
+    }
+    return l;
 }
 
 // A texture's colour made into a light's: the brightest channel stays, the others move away from it, by up to the

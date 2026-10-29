@@ -14,11 +14,6 @@ screen.LOOK.comment=Exposure, bloom, the light in the air and colour.
 screen.VOXEL=Voxel Copy
 screen.VOXEL.comment=The copy of the world around you that block light and bounce light are traced through.
 
-option.UPSCALING=Upscaling
-option.UPSCALING.comment=Draw the world smaller and let DLSS or FSR (through the Create Galore Bridge) bring it up to the window's size. Off: DLSS or FSR only anti-alias it.
-option.RENDER_SCALE=Render Scale
-option.RENDER_SCALE.comment=How big the world is drawn while upscaling, of the window's size each way.
-option.RENDER_SCALE.suffix=×
 
 option.BLOCK_LIGHT_REACH=Light Reach
 option.BLOCK_LIGHT_REACH.comment=How far the brightest lights reach, in blocks. A torch reaches about two thirds as far.

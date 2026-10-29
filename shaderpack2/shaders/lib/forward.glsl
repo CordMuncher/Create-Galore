@@ -28,16 +28,18 @@ vec3 forward_light(vec3 n, vec3 scene_pos, vec2 light, float ao, float sun_shado
 
     float facing = sun_facing(n, g_light_dir.xyz);
     vec3 sun = vec3(0.0);
-#ifdef SUNLIGHT
+#if defined SUNLIGHT || defined WORLD_END
+#if defined SUNLIGHT
     float sky_gate = smoothstep(0.05, 0.3, light.y);
+#else
+    float sky_gate = 1.0;
+#endif
     if (facing > 0.0 && sky_gate > 0.0) {
         vec3 reach = sun_shadow_radius > 0.0
                 ? shadow_light(shadow_offset_point(scene_pos, n, g_light_dir.xyz), sun_shadow_radius)
                 : vec3(1.0);
         sun = g_light_color.rgb * facing * reach * sky_gate;
     }
-#elif defined WORLD_END
-    sun = g_light_color.rgb * facing;
 #endif
     parts.sun = sun;
     return mix_light(parts);

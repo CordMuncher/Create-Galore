@@ -1,7 +1,8 @@
 // The frame's own values, worked out once by one small work group for every later pass (see lib/globals.glsl): where
 // the sun and the moon are, the light the one that lights the world gives, and the sky's light on surfaces facing
 // up, sideways and down, from the sky view table (see program/sky.csh). The Nether has no sun and no sky: its
-// light comes from its fog's colour. The End has a still light from above.
+// light comes from its fog's colour. The End has a still light from above, from where Iris puts its shadow light (so
+// it casts shadows through the shadow map).
 //
 // The light on surfaces is set apart from the sky as you see it, and tuned to the look we follow (numbers are linear
 // light, at the fixed exposure in lib/post.glsl):
@@ -95,12 +96,17 @@ void main() {
     vec3 haze = srgb_to_linear(fogColor);
     g_light_dir = vec4(0.0, 1.0, 0.0, 0.0);
     g_light_color = vec4(0.0);
-    g_sky_up = vec4(haze * 0.057, 0.0);
-    g_sky_side = vec4(haze * 0.057, 0.0);
-    g_sky_down = vec4(haze * 0.057, 0.0);
+    // The light in the Nether's air, on every surface the bounce light finds open (see lib/lighting.glsl): its fog's
+    // hue a little towards grey, about as bright as a moonlit night, whatever the biome.
+    vec3 hue = mix(vec3(luminance(haze)), haze, 0.75) / max(luminance(haze), 1e-4);
+    vec3 nether_air = hue * 0.035 * NIGHT_BRIGHTNESS;
+    g_sky_up = vec4(nether_air, 0.0);
+    g_sky_side = vec4(nether_air, 0.0);
+    g_sky_down = vec4(nether_air * 0.8, 0.0);
     g_horizon = vec4(haze * 0.23, 0.0);
 #elif defined WORLD_END
-    g_light_dir = vec4(normalize(vec3(0.25, 1.0, 0.4)), 0.0);
+    vec3 end_light = normalize(mat3(gbufferModelViewInverse) * shadowLightPosition);
+    g_light_dir = vec4(end_light.y > 0.2 ? end_light : normalize(vec3(0.25, 1.0, 0.4)), 0.0);
     g_light_color = vec4(vec3(0.42, 0.34, 0.52) * 0.34, 0.0);
     g_sky_up = vec4(vec3(0.20, 0.14, 0.26) * 0.14, 0.0);
     g_sky_side = vec4(vec3(0.20, 0.14, 0.26) * 0.11, 0.0);

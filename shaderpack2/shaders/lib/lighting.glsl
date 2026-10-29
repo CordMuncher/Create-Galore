@@ -40,9 +40,14 @@ vec3 sky_light_on(vec3 n) {
     return n.y >= 0.0 ? mix(side, g_sky_up.rgb, n.y) : mix(side, g_sky_down.rgb, -n.y);
 }
 
-// Minecraft's sky light level (0..1) as a share of the open sky's light.
+// Minecraft's sky light level (0..1) as a share of the open sky's light. The Nether and the End have no sky light:
+// their air's light is everywhere, and the bounce light shades it (a cave gets less than a hall).
 float vanilla_sky_share(float sky) {
+#if defined NO_SKY_LIGHT
+    return 1.0;
+#else
     return smoothstep(0.0, 1.0, sky) * sky;
+#endif
 }
 
 // A little shading by which way a face turns, so block sides read apart in any light.
