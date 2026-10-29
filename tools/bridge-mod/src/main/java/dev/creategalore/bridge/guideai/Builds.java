@@ -279,6 +279,14 @@ final class Builds {
                 + Vision.xyz(start) + ")") + ": ");
         // A ship or vehicle is judged whole, even when the listing is cut short: a balloon read in part leaks.
         if (ship != null) whole = placed.inChunks(level, ship::holds, MAX_WHOLE);
+        if (ship != null) {
+            net.minecraft.world.phys.Vec3 w = Ships.toWorld(level, seed);
+            out.append("This is the ship or vehicle \"").append(ship.name()).append("\" as it is now: its blocks are in Sable's own "
+                    + "coordinates, which mean nothing to the player, so tell them where things are by its parts and ends (at the "
+                    + "helm, two blocks aft of the burner, the port pod)")
+                    .append(w == null ? "" : String.format(Locale.ROOT, "; the block at %s is at %.0f %.0f %.0f in the world right now",
+                            Vision.xyz(seed), w.x, w.y, w.z)).append(".\n");
+        }
         out.append(describe(level, placed, build, null, whole));
         if (beyond > 0) out.append("\nThe build goes on: at least ").append(beyond).append(" more connected placed blocks were left out. "
                 + "Continue with trace_build from ").append(Vision.xyz(continueAt)).append(", or read_area for one part.");

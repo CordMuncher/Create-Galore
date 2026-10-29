@@ -919,6 +919,17 @@ final class VehicleCheck {
         return torque - righting * sin;
     }
 
+    /** The end of the keel its Steering Wheel stands toward, at least 1.5 blocks from the middle; null without one. */
+    private static Direction helmEnd(Body b) {
+        for (Part p : b.parts) {
+            if (!p.id.equals("simulated:steering_wheel")) continue;
+            double along = b.keel == Direction.Axis.X ? p.cx() - b.cx : p.cz() - b.cz;
+            if (Math.abs(along) < 1.5) continue;
+            return b.keel == Direction.Axis.X ? along > 0 ? Direction.EAST : Direction.WEST : along > 0 ? Direction.SOUTH : Direction.NORTH;
+        }
+        return null;
+    }
+
     /** The way it goes ahead: its Boat Engine's facing, else its propellers' or thrusters'; null when nothing says. */
     private static Direction bow(Body b) {
         for (String id : new String[] {"create_high_seas:boat_engine", "create_submarine:submarine_propeller", "create_submarine:water_thruster"})
@@ -1397,7 +1408,11 @@ final class VehicleCheck {
             long gyros = b.count("aeroworks:gyroscope");
             if (gyros > 0) damp += iy;
             if (lev > 0 && q > 0) damp = levititeBrake(b, q, damp);
-            turn(q, damp, how, faults, notes, out, "aircraft");
+            long still = b.parts.stream().filter(p -> isPropeller(p.id) && Math.abs(rpm.getOrDefault(p.pos, 0f)) < 1e-3).count();
+            if (how == null && still > 0)
+                faults.add(still + " of its propellers don't turn (no engine reaches them), so they neither push nor steer: get "
+                        + "every propeller turning before judging the steering");
+            else turn(q, damp, how, faults, notes, out, "aircraft");
             if (how != null) steering(b, swivel != null && how.equals(swivel.how()) ? swivel : null, faults, notes, out);
             throttle(b, side, faults, notes, out);
             if (gyros > 0) notes.add("its Gyroscope keeps it level but also brakes turning");
@@ -1409,7 +1424,8 @@ final class VehicleCheck {
         // Pitch: a thrust line far above or below the centre of mass noses it up or down.
         double pitch = 0;
         for (Thrust t : side) pitch = Math.max(pitch, Math.abs(t.at.getY() + 0.5 - b.cy));
-        if (pitch >= 4 && b.count("aeroworks:gyroscope") == 0 && wingLift <= 0)
+        // Under a balloon the cruise pitch above weighs the thrust line against the balloon's pull; this is for the rest.
+        if (pitch >= 4 && b.count("aeroworks:gyroscope") == 0 && wingLift <= 0 && filled == 0)
             notes.add(String.format(Locale.ROOT, "its propellers push %.0f blocks off the height of its centre of mass, so it "
                     + "pitches when they run; a Gyroscope or lower propellers fix that", pitch));
     }
@@ -1828,10 +1844,12 @@ final class VehicleCheck {
                     Math.abs(v), v < 0 ? "below" : "level with"));
             return Double.NaN;
         }
-        Direction bow = null;
+        // The bow is where the helm is; only a ship without one is named by the way its propellers push, which flips
+        // when they are wrenched round.
+        Direction bow = helmEnd(b);
         double strongest = 0;
         for (Thrust t : all)
-            if (t.dir.getAxis() == b.keel && t.force > strongest) {
+            if (bow == null && t.dir.getAxis() == b.keel && t.force > strongest) {
                 strongest = t.force;
                 bow = t.dir;
             }
@@ -1855,8 +1873,8 @@ final class VehicleCheck {
         List<String> fix = new ArrayList<>();
         if (Math.abs(pd) >= 0.25) fix.add(String.format(Locale.ROOT, "%.0f mass x blocks toward the %s", Math.abs(a) * b.m, pd > 0 ? ahead : behind));
         if (Math.abs(ld) >= 0.25) fix.add(String.format(Locale.ROOT, "%.0f toward %s", Math.abs(l) * b.m, ld > 0 ? plusSide : minusSide));
-        if (!fix.isEmpty()) out.append("; its weight and lift are off by ").append(String.join(", ", fix))
-                .append(": move the balloon or the gondola's rooms and machines to level it");
+        if (!fix.isEmpty()) out.append("; its lift sits ").append(String.join(", ", fix))
+                .append(" of its weight: move the balloon or the gondola's rooms and machines to level it");
         out.append(").\n");
         // Sliding the balloon (or everything under it) by d moves lift and weight apart by d x the rest's share of the mass.
         double envelope = 0;
@@ -1914,11 +1932,12 @@ final class VehicleCheck {
         int wooden = (int) Math.ceil(want / (256 * p0 * (1 - u / 25.6)));
         int bearings = (int) Math.ceil(want / (1200 * p0 * (1 - u / 23.1)));
         StringBuilder text = new StringBuilder(String.format(Locale.ROOT, "at %.1f blocks/s it is too slow to travel on (an "
-                + "airship wants about %.0f): at that speed its drag is about %.0f, so it needs that much push there. Spin "
+                + "airship wants about %.0f): at %.0f blocks/s its drag would be about %.0f, so it needs that much push at that speed, "
+                + "and a propeller pushes less the nearer the ship gets to its airflow. Spin "
                 + "propellers fast, since each pushes only up to its airflow: %d Wooden Propeller%s at 256 RPM (from a Portable "
                 + "Engine's 32 RPM: " + Drives.change(32, 256) + "; one engine turns two), or %d Propeller Bearing%s with 13 "
                 + "sails at 128 RPM (" + Drives.change(32, 128) + "; two Portable Engines on the same shaft turn one, as "
-                + "engines at the same speed add up their stress). A bearing's big fan pushes more for the same engines", v, u, want, wooden, wooden == 1 ? "" : "s",
+                + "engines at the same speed add up their stress). A bearing's big fan pushes more for the same engines", v, u, u, want, wooden, wooden == 1 ? "" : "s",
                 bearings, bearings == 1 ? "" : "s"));
         double need = G * b.m / (16.5 * pressure(200 + balloonY));
         if (filled > need * 1.3)
@@ -2433,8 +2452,9 @@ final class VehicleCheck {
         if (torque <= 0 || how == null) {
             faults.add("nothing turns it: it can only go straight. " + switch (what) {
                 case "aircraft" -> "Steer it with one Steering Wheel at the helm: its cog turning a Swivel Bearing under a "
-                        + "propeller at the stern, or a propeller on each side with a comparator at each side of the wheel cutting "
-                        + "that side's line (a Clutch in it); rudders work only in water";
+                        + "propeller at the stern, or a propeller on each side with a comparator at each side of the wheel (its back "
+                        + "against the wheel, pointing away) slowing that side's line through an Analog Transmission, or cutting it "
+                        + "through a Clutch; rudders work only in water";
                 case "submarine" -> "Add a Winds & Weather Rudder at the stern, or propellers on both sides";
                 default -> "Steer with the Boat Engine's tiller, a Winds & Weather Rudder at the stern, or propellers on both sides";
             });

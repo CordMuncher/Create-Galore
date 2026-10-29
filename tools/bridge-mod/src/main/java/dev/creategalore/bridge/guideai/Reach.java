@@ -376,8 +376,12 @@ final class Reach {
         return TagKey.create(Registries.BLOCK, ResourceLocation.parse(id));
     }
 
-    /** A block the world generates as terrain, so it is gathered rather than made. */
+    /** Raw ore a pickaxe gives (Raw Copper), which is mined, not made from its storage block. */
+    private static final TagKey<Item> RAW = TagKey.create(Registries.ITEM, ResourceLocation.parse("c:raw_materials"));
+
+    /** A block the world generates as terrain, or raw ore mined from it, so it is gathered rather than made. */
     static boolean natural(Item item) {
+        if (item.builtInRegistryHolder().is(RAW)) return true;
         if (!(item instanceof BlockItem blockItem)) return false;
         BlockState state = blockItem.getBlock().defaultBlockState();
         for (TagKey<Block> tag : TERRAIN) if (state.is(tag)) return true;
@@ -401,7 +405,14 @@ final class Reach {
             if (circular) continue;
             ResourceLocation type = BuiltInRegistries.RECIPE_TYPE.getKey(holder.value().getType());
             String t = type == null ? "" : type.toString();
-            int score = (ready ? 0 : 100) + (t.startsWith("minecraft:") ? 0 : t.startsWith("create:") ? 10 : 20) + parts.size();
+            // Plain ingredients first too: Raw Copper before Create's Crushed Raw Copper, Oak Log before a mod's driftwood.
+            int plain = 0;
+            for (Ingredient i : parts.keySet()) {
+                Item pick = pick(i, have, player);
+                String ns = pick == null ? "" : BuiltInRegistries.ITEM.getKey(pick).getNamespace();
+                plain += have.getOrDefault(pick, 0) > 0 || ns.equals("minecraft") ? 0 : ns.equals("create") ? 2 : 4;
+            }
+            int score = (ready ? 0 : 100) + (t.startsWith("minecraft:") ? 0 : t.startsWith("create:") ? 10 : 20) + parts.size() + plain;
             if (score < bestScore) {
                 bestScore = score;
                 best = holder;
@@ -517,8 +528,11 @@ final class Reach {
         Item station = BuiltInRegistries.ITEM.get(ResourceLocation.parse(known.split("\\|")[1]));
         if (station == Items.AIR) return "";
         int placed = player.getStats().getValue(Stats.ITEM_USED.get(station)), crafted = player.getStats().getValue(Stats.ITEM_CRAFTED.get(station));
-        return " (" + station.getDescription().getString() + ": " + (placed + crafted == 0 ? "never made or placed one"
-                : "placed " + placed + ", crafted " + crafted) + ")";
+        // Create's advancement for using a machine (create:mechanical_press) shows they have run one, whatever the statistics say.
+        ResourceLocation id = BuiltInRegistries.ITEM.getKey(station);
+        boolean used = player.getServer() != null && done(player, player.getServer(), id.toString());
+        return " (" + station.getDescription().getString() + ": " + (placed + crafted > 0 ? "placed " + placed + ", crafted " + crafted
+                : used ? "they have its advancement, so they have run one" : "never made or placed one") + ")";
     }
 
     private static List<String> visited(ServerPlayer player, MinecraftServer server) {

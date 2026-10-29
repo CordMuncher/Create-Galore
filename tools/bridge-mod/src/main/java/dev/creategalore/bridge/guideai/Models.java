@@ -594,6 +594,8 @@ public final class Models {
         PARTS.put("barrel", storage);
         PARTS.put("furnace", id -> id.contains("furnace") || id.contains("smoker"));
         PARTS.put("lever", id -> id.contains("lever"));
+        PARTS.put("throttle", id -> id.contains("throttle_lever"));
+        PARTS.put("transmission", id -> id.contains("transmission"));
         PARTS.put("belt", id -> id.contains("belt"));
         PARTS.put("deployer", id -> id.contains("deployer"));
         PARTS.put("funnel", id -> id.contains("funnel"));
@@ -614,10 +616,19 @@ public final class Models {
      */
     private static String missingPart(String text, Map<BlockPos, BlockState> cells, BlockPos at) {
         if (text == null || text.isEmpty()) return null;
-        for (String w : text.toLowerCase(java.util.Locale.ROOT).split("[^a-z]+")) {
-            String word = w.endsWith("s") && PARTS.containsKey(w.substring(0, w.length() - 1)) ? w.substring(0, w.length() - 1) : w;
+        // Each thing a label names is the last part word of its phrase: "propeller throttle" is a throttle (for the
+        // propellers), "engine and propeller" names both.
+        List<String> named = new ArrayList<>();
+        for (String phrase : text.toLowerCase(java.util.Locale.ROOT).split(",|&|\\band\\b|\\bwith\\b|\\+|/")) {
+            String last = null;
+            for (String w : phrase.split("[^a-z]+")) {
+                String word = w.endsWith("s") && PARTS.containsKey(w.substring(0, w.length() - 1)) ? w.substring(0, w.length() - 1) : w;
+                if (PARTS.containsKey(word)) last = word;
+            }
+            if (last != null) named.add(last);
+        }
+        for (String word : named) {
             java.util.function.Predicate<String> is = PARTS.get(word);
-            if (is == null) continue;
             boolean found = false;
             for (Map.Entry<BlockPos, BlockState> e : cells.entrySet()) {
                 BlockPos q = e.getKey();

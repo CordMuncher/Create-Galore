@@ -81,6 +81,8 @@ final class Materials {
         Map<Item, Boolean> bestNatural = new IdentityHashMap<>();
         // Options of the same ingredient that are the same wood (Stripped Oak Log for Oak Log), worth one each.
         Map<Item, Item> alias = new IdentityHashMap<>();
+        // Blocks made from any planks or any wool, which belong to no one material whatever else also makes them.
+        Set<Item> anyOf = new HashSet<>();
         for (RecipeHolder<?> holder : recipes.getRecipes()) {
             Recipe<?> recipe = holder.value();
             if (recipe.getType() != RecipeType.CRAFTING && recipe.getType() != RecipeType.STONECUTTING) continue;
@@ -92,13 +94,12 @@ final class Materials {
             }
             if (out.isEmpty() || !(out.getItem() instanceof BlockItem)) continue;
             Ingredient only = null;
-            double count = 0;
+            double count = 0, stickCount = 0;
             boolean single = true;
             for (Ingredient i : recipe.getIngredients()) {
                 if (i.isEmpty() || i.getItems().length == 0) continue;
-                // Sticks are half a plank each, so fences, gates and signs stay with their wood.
                 if (sticks(i)) {
-                    count += 0.5;
+                    stickCount++;
                     continue;
                 }
                 if (only == null) only = i;
@@ -109,6 +110,20 @@ final class Materials {
             Item child = out.getItem();
             Item parent = representative(only, child);
             if (parent == null || parent == child) continue;
+            // Any planks or any wool (a chest, a crafting table) is no one wood's: it would count against the one
+            // named first, not the one the player has.
+            // (Two vanilla options of different woods or colours; a tag that adds a mod's own white wool is still white wool.)
+            List<String> parentStem = stem(parent);
+            boolean mixed = false;
+            for (ItemStack s : only.getItems())
+                if (s.getItem() != parent && id(s.getItem()).startsWith("minecraft:") && id(parent).startsWith("minecraft:")
+                        && !sameWood(s.getItem(), parentStem)) mixed = true;
+            if (mixed) {
+                anyOf.add(child);
+                continue;
+            }
+            // Sticks are half a plank each, so fences, gates and signs stay with their wood; they cost wool or stone nothing.
+            if (wood(parent)) count += 0.5 * stickCount;
             // Terrain is a material of its own (Cobblestone isn't Stone, whatever a stonecutter makes of it); only
             // wood blocks belong to their log.
             if (Reach.natural(child) && !(log(child) && log(parent))) continue;
@@ -127,6 +142,7 @@ final class Materials {
                 if (other != parent && other != child && other instanceof BlockItem && sameWood(other, stem)) alias.putIfAbsent(other, parent);
             }
         }
+        best.keySet().removeAll(anyOf);
         // Ingots and their block make each other; neither is the start of the other, so neither is followed.
         for (Item child : new ArrayList<>(best.keySet())) {
             Edge e = best.get(child);
@@ -157,6 +173,9 @@ final class Materials {
             Double was = unit.get(p.root);
             Item other = unitItem.get(p.root);
             boolean vanilla = id(item).startsWith("minecraft:"), wasVanilla = other != null && id(other).startsWith("minecraft:");
+            // From an item (String, an ingot) only a vanilla block is a unit a builder knows (White Wool); a mod's floor
+            // tile made from Andesite Alloy isn't, so shafts and the like are counted as themselves.
+            if (!(p.root instanceof BlockItem) && !vanilla) return;
             boolean better = was == null || vanilla && !wasVanilla || vanilla == wasVanilla && (p.factor < was - 1e-9
                     || Math.abs(p.factor - was) <= 1e-9 && plainer(item, other));
             if (better) {
@@ -236,6 +255,11 @@ final class Materials {
         if (stem.isEmpty()) return false;
         List<String> w = stem(other);
         return w.equals(stem);
+    }
+
+    /** A log or planks, which sticks are made from. */
+    private static boolean wood(Item item) {
+        return item instanceof BlockItem b && (b.getBlock().defaultBlockState().is(BlockTags.LOGS) || b.getBlock().defaultBlockState().is(BlockTags.PLANKS));
     }
 
     private static boolean log(Item item) {
