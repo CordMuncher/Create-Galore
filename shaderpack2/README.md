@@ -6,7 +6,7 @@ name is for its motion vectors: not only the camera's, but how each moving thing
 contraptions, ships, mobs, the hand), which is what lets DLSS and FSR keep them sharp. The Bridge's Upscaling &
 Display screen picks the upscaler and the render resolution; the pack has no settings of its own for them.
 
-**Work in progress: alpha 0.4.1.** It lives on its own branch and is not in the modpack yet. The first Create Galore
+**Work in progress: alpha 0.5.** It lives on its own branch and is not in the modpack yet. The first Create Galore
 pack (`shaderpack/`) stays as a research build; the two share only the DLSS hand-off and the mods' plumbing
 (Colorwheel, Distant Horizons), not their lighting.
 
@@ -38,16 +38,24 @@ pack (`shaderpack/`) stays as a research build; the two share only the DLSS hand
 - **The sun and the moon** cast steady shadows from a shadow map (no noise, so nothing flickers), coloured through
   glass and through water with its caustics, with a clean, slightly soft edge. Leaves let light through the outside of
   their clump, grass doesn't shade itself, and near the map's edge they fade into what Minecraft's sky light says.
-- **The sky**: a physically based atmosphere with the sun, the moon and the stars.
+- **The sky**: a physically based atmosphere, pushed to the look we follow: a deep blue by day, an orange glow round
+  the setting sun and a pink belt across from it, a deep blue night with stars in their own colours (a few twinkle
+  low down) and the Milky Way; the sun with its glow, Minecraft's moon with a soft halo, Minecraft's clouds lit
+  orange and pink at dusk and dawn. The far haze takes the sky's colour.
 - **Water**: its own colour, deeper the deeper it is, and waves crossing from three directions, longer ones faster.
 - **Light in the air**: a coloured haze around lamps (strongest at night, underground and in the Nether), haze far
   off, water and lava around you.
-- **Bloom**, with a bloom fog that softens far lights at dusk and night, in rain and underground.
+- **Bloom**, with a bloom fog that softens far lights at dusk and night, in rain and underground; big bright patches
+  (lava, fire, glowstone, the sun) bloom more, twice as much in the Nether.
 - **A fixed exposure**: day, night and caves look as dark as they are; the tone curve eases highlights to white and
   deepens the mid-tones a little.
 - **Create's machines and contraptions** (Colorwheel) and **Distant Horizons** are lit like the rest of the world.
-- The Nether and the End have their own light and haze; the Nether's light takes its biome's colour, and the End's
-  light casts shadows.
+- **The Nether**: its light and its haze take its biome's colour, the haze as thick as the biome's fog says (basalt
+  deltas' ash and the soul sand valley's the thickest, the warped forest the clearest), thicker under the ceiling
+  and lit orange from below where you look out over the lava sea.
+- **The End**: a violet sky with a slow drifting nebula of purple and pink clouds with green wisps, stars that
+  twinkle, and a small pink-white sun whose pink-lavender light casts the islands' shadows; the shade is violet,
+  and a violet haze lies low round the islands.
 - **Highlights** from every nearby lamp on polished blocks, metal and machines; rough blocks keep a faint sheen.
 - **DLSS and FSR** get the surface behind particles, so slow smoke doesn't turn into a shifted window onto the scene.
 - **The bad frame mark**: every pass that hands the frame on replaces an infinite or invalid value with nothing (one

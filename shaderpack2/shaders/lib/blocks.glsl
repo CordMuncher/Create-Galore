@@ -28,14 +28,15 @@
 #define KIND_END_PORTAL 34
 
 // A kind of light's colour (rgb, 0..1, at full strength) and level (a, 0..31: how far it reaches and how bright it
-// is). The colours lean towards strong, clear hues: a torch is warm orange-white, a soul lantern cyan, redstone red.
+// is). The colours lean towards strong, clear hues: a torch and a lantern a warm orange, a soul lantern a strong blue
+// (little green in it, so where it meets warm light the two add up to white, not green), redstone red.
 // A negative red means "take the colour from the texture" (flames, whose textures say it best).
 vec4 light_kind(int kind) {
     switch (kind) {
-        case 0: return vec4(1.0, 0.7, 0.45, 20.0);    // torch
-        case 1: return vec4(1.0, 0.7, 0.45, 22.0);    // lantern
-        case 2: return vec4(0.15, 0.85, 0.85, 20.0);  // soul torch
-        case 3: return vec4(0.15, 0.85, 0.85, 22.0);  // soul lantern
+        case 0: return vec4(1.0, 0.54, 0.24, 21.0);   // torch
+        case 1: return vec4(1.0, 0.5, 0.2, 23.0);     // lantern
+        case 2: return vec4(0.04, 0.72, 1.0, 21.0);   // soul torch
+        case 3: return vec4(0.04, 0.72, 1.0, 23.0);   // soul lantern
         case 4: return vec4(1.0, 0.75, 0.55, 22.0);   // glowstone
         case 5: return vec4(1.0, 0.7, 0.4, 22.0);     // redstone lamp
         case 6: return vec4(1.0, 0.5, 0.2, 22.0);     // shroomlight
@@ -86,7 +87,7 @@ vec4 held_light(int item, float vanilla_level) {
     vec4 l = kind >= 0 && kind < LIGHT_KINDS ? light_kind(kind) : vec4(light_kind(0).rgb, 0.0);
     if (l.r < 0.0) {
         // Kinds that take their colour from their texture when placed.
-        l.rgb = kind == KIND_SOUL_FIRE || kind == KIND_SOUL_CAMPFIRE ? vec3(0.15, 0.8, 0.95)
+        l.rgb = kind == KIND_SOUL_FIRE || kind == KIND_SOUL_CAMPFIRE ? vec3(0.04, 0.72, 1.0)
               : vec3(1.0, 0.6, 0.3); // fire, campfires, candles
     }
     if (l.a <= 0.0) {

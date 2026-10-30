@@ -256,7 +256,8 @@ bool start_inside(vec3 p) {
 // gets (near_room: how close it passes the blocks and part blocks' boxes beside it), against the cone's radius there
 // (always under half a block, so cells with nothing within a block are leapt over), which runs from
 // width_start at p to width_end at the light (the lamp's size); each block of leaves on the way lets leaf_pass of
-// it through. The last stop_short blocks before the light are its own. A ray that leaves the voxel box counts as
+// it through. The last stop_short blocks before the light are its own (none for a lamp in the world: its cone is never
+// wider than the room it has, program/voxel_light.csh). A ray that leaves the voxel box counts as
 // getting there; one that runs out of steps first doesn't.
 float cone_visibility(vec3 p, vec3 dir, float dist, float width_start, float width_end, float stop_short,
                       int max_steps) {

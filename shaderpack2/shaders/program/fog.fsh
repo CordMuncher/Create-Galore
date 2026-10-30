@@ -1,11 +1,14 @@
 // The air between you and what you see, over the whole lit scene (translucents included):
 // - the coloured light in the air: the per-block light (see program/voxel_light.csh; cells in the open take light
 //   from every side, so this is the light in the air itself), gathered along the view ray in 8-block steps up to
-//   the first surface or half the voxel box; bright spots count much more than dim ones, the average's fourth root
-//   makes even faint light show, and it fades in from nothing at your feet to full 32 blocks out (your own torch
-//   doesn't fog your view). It darkens what is behind it a little, then adds itself (in display space): haze, not a
-//   glow on top. In the Overworld it is faint by day out in the open and full at night and underground;
-// - haze far off, thickest at sea level, in the sky's colour at the horizon, starting slowly;
+//   the first surface or half the voxel box; bright spots count much more than dim ones, the fourth root of the
+//   average's strength makes even faint light show (in its own colour), and it fades in from nothing at your feet to
+//   full 32 blocks out (your own torch doesn't fog your view). It darkens what is behind it a little, then adds
+//   itself (in display space): haze, not a glow on top. In the Overworld it is faint by day out in the open and full
+//   at night and underground;
+// - haze far off, thickest at sea level, in the colour of the sky behind it, starting slowly;
+// - in the Nether, its biome's haze (colour and thickness, see lib/sky.glsl), thicker under the ceiling and lit
+//   orange from below by the lava sea; in the End, a violet haze low round the islands;
 // - water around you (when the camera is under water) and lava.
 
 #include "/lib/settings.glsl"
@@ -14,12 +17,13 @@
 #include "/lib/voxel_sample.glsl"
 #include "/lib/lighting.glsl"
 #include "/lib/water.glsl"
+#include "/lib/sky.glsl"
 
 uniform sampler2D colortex0;
+uniform sampler2D depthtex1; // without clouds, water, glass and particles
 uniform int isEyeInWater;
 uniform ivec2 eyeBrightnessSmooth;
 uniform float far;
-uniform vec3 fogColor;
 
 #ifdef DISTANT_HORIZONS
 uniform sampler2D dhDepthTex0;
@@ -59,7 +63,21 @@ vec3 light_in_air(vec3 dir, float reach, ivec2 texel) {
         return vec3(0.0);
     }
     vec3 avg = sum / count;
-    return sqrt(sqrt(avg)) * 0.25;
+    // The fourth root of its strength, so even faint light shows, in the light's own colour (a root per channel
+    // would wash a lava sea's orange out to beige).
+    float top = max3(avg);
+    return top > 0.0 ? avg / top * sqrt(sqrt(top)) * 0.25 : vec3(0.0);
+}
+
+// The average of e^((y - base) / scale) along a straight line from height y0 to y1: how much of the way a layer that
+// thickens (scale > 0) or thins (scale < 0) upwards takes up.
+float layer_average(float y0, float y1, float base, float scale) {
+    float a = (y0 - base) / scale;
+    float b = (y1 - base) / scale;
+    if (abs(b - a) < 1e-3) {
+        return exp(a);
+    }
+    return (exp(b) - exp(a)) / (b - a);
 }
 
 void main() {
@@ -93,6 +111,9 @@ void main() {
     float dist = sky_pixel ? 1e4 : length(scene);
     vec3 dir = normalize(scene);
     float solid = sky_pixel ? 0.0 : 1.0;
+    if (depth < 1.0 && texelFetch(depthtex1, texel, 0).r >= 1.0) {
+        solid = 0.0; // Minecraft's clouds, or glass or a particle with only sky behind it: no haze, like the sky
+    }
 
     // Water or lava around you.
     if (isEyeInWater == 1) {
@@ -117,15 +138,47 @@ void main() {
         float haze = sqr(1.0 - exp(-min(dist, far_end) * density));
         float border = smoothstep(far_end * 0.8, far_end, dist);
         haze = max(haze * 0.7, border);
+        // In the colour of the sky right behind what it hides (its horizon in that direction, or the sky itself
+        // above it), so a far hill against the sunset fades into the sunset and one across from it into the blue.
+        vec3 behind = normalize(vec3(dir.x, max(dir.y, 0.0) + 0.05, dir.z));
+        vec3 haze_color = sky_look(sky_air_seen(behind), behind);
         // Mixed in display space, like the light on surfaces: in linear light even a little of the bright horizon
         // lifts dark land a lot, so the distance greys out.
         const vec3 to_display = vec3(1.0 / 2.2);
-        vec3 shown = mix(pow(max(color, 0.0), to_display), pow(g_horizon.rgb, to_display), haze * solid);
+        vec3 shown = mix(pow(max(color, 0.0), to_display), pow(haze_color, to_display), haze * solid);
         color = pow(shown, vec3(2.2));
     }
 #elif defined WORLD_NETHER
-    float haze = 1.0 - exp(-dist * 0.012);
-    color = mix(color, srgb_to_linear(fogColor) * 0.23, haze);
+    // The haze: its biome's colour and thickness (lib/sky.glsl), thicker under the ceiling (from about 30 blocks
+    // below it), and lit from below by the lava sea, orange where the view runs low over it. At the edge of what's
+    // drawn it is all haze.
+    if (isEyeInWater == 0) {
+        float d = min(dist, far_end);
+        float y0 = cameraPosition.y;
+        float y1 = y0 + dir.y * d;
+        float under_ceiling = layer_average(clamp(y0, 0.0, 135.0), clamp(y1, 0.0, 135.0), 127.0, 12.0);
+        float over_lava = layer_average(max(y0, 31.0), max(y1, 31.0), 31.0, -18.0);
+        float haze = 1.0 - exp(-d * (nether_thickness() + 0.04 * under_ceiling));
+        haze = max(haze, smoothstep(far_end * 0.75, far_end, dist));
+        vec3 haze_color = nether_haze() + vec3(1.0, 0.32, 0.06) * 0.05 * over_lava * NIGHT_BRIGHTNESS;
+        const vec3 to_display = vec3(1.0 / 2.2);
+        vec3 shown = mix(pow(max(color, 0.0), to_display), pow(haze_color, to_display), haze);
+        color = pow(shown, vec3(2.2));
+    }
+#elif defined WORLD_END
+    // The End's haze: violet, a low sea of it round the islands (thick below about 55, thin by 85), a little
+    // everywhere far off, and the sky's colour at the edge of what's drawn.
+    if (isEyeInWater == 0) {
+        float d = min(dist, far_end);
+        float y0 = cameraPosition.y;
+        float y1 = y0 + dir.y * d;
+        float low = layer_average(clamp(y0, 0.0, 256.0), clamp(y1, 0.0, 256.0), 55.0, -12.0);
+        float haze = 1.0 - exp(-d * (0.0015 + 0.012 * min(low, 4.0)));
+        haze = max(haze, smoothstep(far_end * 0.75, far_end, dist)) * solid;
+        const vec3 to_display = vec3(1.0 / 2.2);
+        vec3 shown = mix(pow(max(color, 0.0), to_display), pow(g_horizon.rgb, to_display), haze);
+        color = pow(shown, vec3(2.2));
+    }
 #endif
 
     // The coloured light in the air.

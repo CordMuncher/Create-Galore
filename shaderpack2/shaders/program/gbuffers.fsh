@@ -327,7 +327,9 @@ void main() {
         light = max(light, vec3(4.6));
     }
 #endif
-#if defined PROGRAM_CLOUDS
+#if defined PROGRAM_CLOUDS && defined SUNLIGHT
+    light = cloud_light(normalize(v_scene_pos));
+#elif defined PROGRAM_CLOUDS
     light = g_light_color.rgb * 0.35 + g_sky_up.rgb * 1.2;
 #endif
     out_color = vec4(albedo * light * color.a, color.a);

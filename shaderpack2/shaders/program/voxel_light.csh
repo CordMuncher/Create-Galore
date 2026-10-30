@@ -184,8 +184,16 @@ void main() {
             // Its soft shadows' cone: half a block (three quarters for a patch of lava), less where the light's block
             // sits in a tight spot (its shadows are then sharper). Measured from the block's middle, not the light's
             // place in it, so a light that moves in its block (a portal's) keeps the width of every shadow it casts.
+            // And never wider than the room the light itself has (measured exactly at its place, part blocks
+            // included): a lantern on a wall post is as wide as the gap over the post's top, so the post, right
+            // under it, shades the ground round it softly, and the trace can go all the way to the light without
+            // the light's own neighbours dimming every ray it sends (see cone_visibility).
             float space = max(free_space(floor(l.pos) + 0.5, 0), 0.05);
-            s_radius[index] = (l.group > 1u ? 0.75 : 0.5) * min(1.0, space) * 0.6;
+            float radius = (l.group > 1u ? 0.75 : 0.5) * min(1.0, space) * 0.6;
+            if (l.kind != 25) { // a nether portal's light drifts about its block: its cone stays as it is
+                radius = min(radius, 0.9 * max(near_room(l.pos, 0.49), 0.02));
+            }
+            s_radius[index] = radius;
             s_contribution[index] = 0u;
             atomicMax(s_list_count, index + 1u);
         }
@@ -219,7 +227,7 @@ void main() {
                 continue;
             }
             traces++;
-            float visible = cone_visibility(p, dir, d, 0.1, 0.25, 0.5, 48);
+            float visible = cone_visibility(p, dir, d, 0.1, min(0.25, s_radius[j]), 0.0, 48);
             if (visible <= 0.0) {
                 continue;
             }

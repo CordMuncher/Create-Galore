@@ -40,9 +40,9 @@ uniform int heldItemId2;
 layout(rgba16f) writeonly uniform image2D cg_pl_img;
 
 // The light that one point gets from a light at to, of colour (at a block) and reach, through a cone of radius at
-// the light, traced from start; adds its highlight to spec.
+// the light, traced from start up to own blocks short of the light; adds its highlight to spec.
 vec3 light_from(vec3 p, vec3 start, vec3 n, vec3 v, float smoothness, bool thin, vec3 to, vec3 color, float reach,
-                float radius, inout vec3 spec, inout int traces, vec3 jitter) {
+                float radius, float own, inout vec3 spec, inout int traces, vec3 jitter) {
     vec3 to_light = to - p;
     float d = length(to_light);
     if (d >= reach || d < 1e-3) {
@@ -63,7 +63,7 @@ vec3 light_from(vec3 p, vec3 start, vec3 n, vec3 v, float smoothness, bool thin,
     traces++;
     vec3 from_start = to - start;
     float start_d = length(from_start);
-    float visible = cone_visibility(start, from_start / max(start_d, 1e-3), start_d, 0.0, radius, 0.5, 64);
+    float visible = cone_visibility(start, from_start / max(start_d, 1e-3), start_d, 0.0, radius, own, 64);
     if (visible <= 0.0) {
         return vec3(0.0);
     }
@@ -123,8 +123,10 @@ void main() {
         vec3 hand_view = vec3(h == 0 ? 0.25 : -0.25, -0.25, -0.35);
         vec3 hand_scene = mat3(gbufferModelViewInverse) * hand_view + gbufferModelViewInverse[3].xyz;
         vec4 kind = held_light(h == 0 ? heldItemId : heldItemId2, float(held));
+        // The last half block is the hand's own (it can sit inside a block beside you).
         diffuse += light_from(p, p, s.normal, v, s.smoothness, thin, vox_pos(hand_scene),
-                              kind.rgb * light_brightness(kind.a), light_reach(kind.a), 0.12, spec, traces, jitter);
+                              kind.rgb * light_brightness(kind.a), light_reach(kind.a), 0.12, 0.5, spec, traces,
+                              jitter);
     }
 #endif
     ivec3 tile;
@@ -134,8 +136,8 @@ void main() {
         for (uint j = 0u; j < count && traces < PIXEL_LIGHT_TRACES; j++) {
             float radius;
             Light l = load_record(records + 1u + 3u * j, radius);
-            diffuse += light_from(p, p, s.normal, v, s.smoothness, thin, l.pos, l.color, l.reach, radius, spec, traces,
-                                  jitter);
+            diffuse += light_from(p, p, s.normal, v, s.smoothness, thin, l.pos, l.color, l.reach, radius, 0.0, spec,
+                                  traces, jitter);
         }
     }
     imageStore(cg_pl_img, sample_texel, vec4(compress_light(diffuse), float(turn) + 1.0));

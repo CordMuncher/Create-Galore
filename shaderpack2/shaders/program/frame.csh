@@ -1,8 +1,8 @@
 // The frame's own values, worked out once by one small work group for every later pass (see lib/globals.glsl): where
 // the sun and the moon are, the light the one that lights the world gives, and the sky's light on surfaces facing
 // up, sideways and down, from the sky view table (see program/sky.csh). The Nether has no sun and no sky: its
-// light comes from its fog's colour. The End has a still light from above, from where Iris puts its shadow light (so
-// it casts shadows through the shadow map).
+// light comes from its fog's colour. The End has a still pink-lavender light from above, from where Iris puts its
+// shadow light (so it casts shadows through the shadow map), and a violet light from its sky everywhere else.
 //
 // The light on surfaces is set apart from the sky as you see it, and tuned to the look we follow (numbers are linear
 // light, at the fixed exposure in lib/post.glsl):
@@ -23,9 +23,7 @@
 #include "/lib/globals.glsl"
 #include "/lib/view.glsl"
 #include "/lib/bad_frame.glsl"
-#ifndef NO_SKY_LIGHT
 #include "/lib/sky.glsl"
-#endif
 
 layout(local_size_x = 64) in;
 const ivec3 workGroups = ivec3(1, 1, 1);
@@ -33,7 +31,6 @@ const ivec3 workGroups = ivec3(1, 1, 1);
 uniform vec3 sunPosition;
 uniform vec3 shadowLightPosition;
 uniform int moonPhase;
-uniform vec3 fogColor;
 uniform float rainStrength;
 layout(rgba32f) uniform image2D cg_globals_img;
 
@@ -48,12 +45,6 @@ const float sky_saturation = 0.7;
 // The shade by day: further towards grey and a touch warm, halfway between our old blue and the look's warmer one.
 const float shade_saturation_day = 0.5;
 const vec3 shade_warmth = vec3(1.08, 1.0, 0.9);
-
-// A colour's distance from grey scaled by a power of it (under 1 pulls it towards grey), keeping its brightness.
-vec3 push_from_grey(vec3 c, float by) {
-    vec3 pushed = pow(max(c, 1e-6), vec3(by));
-    return pushed * (luminance(c) / max(luminance(pushed), 1e-6));
-}
 
 shared vec3 s_up[64];
 shared vec3 s_side[64];
@@ -112,11 +103,14 @@ void main() {
 #elif defined WORLD_END
     vec3 end_light = normalize(mat3(gbufferModelViewInverse) * shadowLightPosition);
     g_light_dir = vec4(end_light.y > 0.2 ? end_light : normalize(vec3(0.25, 1.0, 0.4)), 0.0);
-    g_light_color = vec4(vec3(0.42, 0.34, 0.52) * 0.34, 0.0);
-    g_sky_up = vec4(vec3(0.20, 0.14, 0.26) * 0.14, 0.0);
-    g_sky_side = vec4(vec3(0.20, 0.14, 0.26) * 0.11, 0.0);
-    g_sky_down = vec4(vec3(0.20, 0.14, 0.26) * 0.057, 0.0);
-    g_horizon = vec4(vec3(0.029, 0.02, 0.04), 0.0);
+    // The End's sun: pink-lavender (about 0.66, 0.46, 0.62 in display values). Its sky: a deep violet on every
+    // surface that sees it, less on the sides and least facing down, so the islands' shade reads purple.
+    g_light_color = vec4(vec3(0.24, 0.109, 0.21), 0.0);
+    vec3 end_sky = vec3(0.049, 0.016, 0.11);
+    g_sky_up = vec4(end_sky, 0.0);
+    g_sky_side = vec4(end_sky * 0.8, 0.0);
+    g_sky_down = vec4(end_sky * 0.4, 0.0);
+    g_horizon = vec4(vec3(0.035, 0.018, 0.06), 0.0);
 #else
     vec3 up = vec3(0.0);
     vec3 side_sky = vec3(0.0);
@@ -164,8 +158,7 @@ void main() {
     g_sky_up = vec4(up_lit, 0.0);
     g_sky_side = vec4(side_lit + ground * side_ground / 64.0, 0.0);
     g_sky_down = vec4(ground, 0.0);
-    vec3 away = normalize(vec3(-sun.x, 0.0, -sun.z) + vec3(1e-4, 0.0, 0.0));
-    g_horizon = vec4(sky_air(normalize(away + vec3(0.0, 0.05, 0.0))), 0.0);
+    g_horizon = vec4(0.0); // the Overworld's haze takes the sky behind it (program/fog.fsh)
 #endif
 
     // A value that came out infinite or not a number keeps last frame's (lib/bad_frame.glsl); the bad frame record

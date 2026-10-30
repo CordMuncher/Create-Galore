@@ -6,7 +6,8 @@
 // day out in the open; dusk, night, caves, under water, rain), so far lights and far surfaces turn into a soft glow
 // while the frame itself stays as it was. It starts slowly (a twentieth at 32 blocks, a quarter at 64, three
 // quarters at 128), so what is near stays clear. Bright pixels are weighed down in the first copy, so a single
-// sparkling pixel doesn't flicker into a blob.
+// sparkling pixel doesn't flicker into a blob, while big bright patches (lava, fire, glowstone, the sun) bloom more,
+// twice as much again in the Nether, where lava and fire light the world.
 
 #include "/lib/settings.glsl"
 #include "/lib/bloom.glsl"
@@ -81,6 +82,14 @@ float murk() {
 float fog_share(float d) {
     return sqr(sqr(1.0 - exp(-d / 50.0)));
 }
+
+// How much more a bright patch blooms: measured on the 4 x 4 average, so a lone hot pixel hardly counts. Lava's
+// average is about 5, glowstone's 7, sunlit snow under 3 (none).
+#if defined WORLD_NETHER
+const float hot_bloom = 2.0;
+#else
+const float hot_bloom = 1.0;
+#endif
 #endif
 
 void main() {
@@ -118,7 +127,11 @@ void main() {
         sum += c * w;
         weight += w;
     }
-    imageStore(cg_bloom_img, bloom_texel(level, texel), vec4(sum / weight, 1.0));
+    vec3 average = sum / weight;
+#if BLOOM_DOWN == 1
+    average *= 1.0 + hot_bloom * smoothstep(2.5, 8.0, luminance(average));
+#endif
+    imageStore(cg_bloom_img, bloom_texel(level, texel), vec4(average, 1.0));
 #else
     // This level plus the smaller one, spread over a tent of 3 x 3 of its texels.
     vec2 step_uv = 1.0 / vec2(bloom_size(level + 1));

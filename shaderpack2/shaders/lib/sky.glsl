@@ -1,5 +1,14 @@
-// The sky as the camera sees it: the air's light from the sky view table (see atmosphere.glsl), the sun's disc and
-// the stars. The moon is Minecraft's own (gbuffers_skytextured), lit here.
+// The sky as the camera sees it, in our look: brighter colours than the air alone gives, the way the look we follow
+// paints the world. The light the sky gives surfaces is set apart from this (program/frame.csh).
+// - The Overworld: the air's light from the sky view table (see atmosphere.glsl), pushed away from grey (a deep blue
+//   by day, burning orange round the sun as it sets and pink on the far side, a deep blue night), the sun's disc and
+//   its glow, a glow round the moon (the moon itself is Minecraft's, gbuffers_skytextured, lit here), the stars in
+//   their colours and the Milky Way. All of it turns with the sky.
+// - The End: a violet sky brighter towards the horizon, a nebula of slow drifting purple and green clouds, coloured
+//   stars that twinkle, and the End's sun, pink-white, where its light comes from.
+// - The Nether has no sky: the fog's colour (program/fog.fsh).
+// Everything here is smooth from pixel to pixel or a point the size of a pixel that holds still, so the upscaler finds
+// the same sky in every frame.
 
 #if !defined LIB_SKY
 #define LIB_SKY
@@ -8,13 +17,119 @@
 #include "/lib/atmosphere.glsl"
 #include "/lib/globals.glsl"
 #include "/lib/view.glsl"
+#include "/lib/frame.glsl"
+
+// --- Shared ----------------------------------------------------------------------------------------------------------
+
+// A colour's distance from grey scaled by a power of it (under 1 pulls it towards grey), keeping its brightness.
+vec3 push_from_grey(vec3 c, float by) {
+    vec3 pushed = pow(max(c, 1e-6), vec3(by));
+    return pushed * (luminance(c) / max(luminance(pushed), 1e-6));
+}
+
+// Smooth noise over space (0..1): values at the corners of a unit grid, blended with a smooth curve.
+float value_noise(vec3 p) {
+    vec3 i = floor(p);
+    vec3 f = p - i;
+    f = f * f * (3.0 - 2.0 * f);
+    uvec3 c = uvec3(ivec3(i) + 32768);
+    float n000 = hash33(c).x;
+    float n100 = hash33(c + uvec3(1, 0, 0)).x;
+    float n010 = hash33(c + uvec3(0, 1, 0)).x;
+    float n110 = hash33(c + uvec3(1, 1, 0)).x;
+    float n001 = hash33(c + uvec3(0, 0, 1)).x;
+    float n101 = hash33(c + uvec3(1, 0, 1)).x;
+    float n011 = hash33(c + uvec3(0, 1, 1)).x;
+    float n111 = hash33(c + uvec3(1, 1, 1)).x;
+    return mix(mix(mix(n000, n100, f.x), mix(n010, n110, f.x), f.y), mix(mix(n001, n101, f.x), mix(n011, n111, f.x), f.y), f.z);
+}
+
+// Octaves of it, each twice as fine and half as strong (0..1).
+float fbm(vec3 p, int octaves) {
+    float sum = 0.0;
+    float weight = 0.5;
+    float total = 0.0;
+    for (int i = 0; i < octaves; i++) {
+        sum += value_noise(p) * weight;
+        total += weight;
+        weight *= 0.5;
+        p = p * 2.03 + vec3(17.1, 5.3, 11.7);
+    }
+    return sum / total;
+}
+
+// A render pixel's size in radians, at the middle of the view.
+float pixel_angle() {
+    return 2.0 / (gbufferProjection[1][1] * render_size().y);
+}
+
+// A star's colour from its temperature: Planck's law at three wavelengths for the sRGB primaries, luminance 1.
+vec3 star_color(float kelvin) {
+    const vec3 wavelength = vec3(610.0, 550.0, 465.0) * 1e-9;
+    vec3 planck = 1.0 / (pow(wavelength, vec3(5.0)) * (exp(0.014388 / (wavelength * kelvin)) - 1.0));
+    return planck / luminance(planck);
+}
+
+// The stars in a frame of their own: one at most in each cell of a cube's faces (256 x 256 a face), count of them over
+// the whole sky, as many faint ones for each bright one as the real sky has, their temperatures between cold and hot
+// (most of them white to pale blue, a few orange). Each is a point whose light spreads over about a pixel, so the
+// upscaler finds the same star in every frame. twinkle: how much they flicker (most low down, where their light
+// comes through the most air). At its brightest about 0.45.
+vec3 star_field(vec3 local, float count, vec2 kelvin, float twinkle) {
+    vec3 a = abs(local);
+    uint face;
+    vec2 uv;
+    if (a.x >= a.y && a.x >= a.z) {
+        face = local.x > 0.0 ? 0u : 1u;
+        uv = local.yz / a.x;
+    } else if (a.y >= a.z) {
+        face = local.y > 0.0 ? 2u : 3u;
+        uv = local.xz / a.y;
+    } else {
+        face = local.z > 0.0 ? 4u : 5u;
+        uv = local.xy / a.z;
+    }
+    const float cells = 256.0;
+    vec2 cell = min(floor((uv * 0.5 + 0.5) * cells), cells - 1.0);
+    uvec3 h = pcg3d(uvec3(uvec2(cell), face + 101u));
+    float present = count / (6.0 * cells * cells);
+    float pick = float(h.x & 0xffffu) / 65535.0;
+    if (pick >= present) {
+        return vec3(0.0);
+    }
+    // Where in its cell, kept off the edges so its light stays inside the cell.
+    vec2 offset = 0.3 + 0.4 * vec2(float(h.y & 0xffffu), float(h.y >> 16u)) / 65535.0;
+    vec2 star_uv = (cell + offset) / cells * 2.0 - 1.0;
+    float side = (face & 1u) == 0u ? 1.0 : -1.0;
+    vec3 star = face < 2u ? vec3(side, star_uv) : face < 4u ? vec3(star_uv.x, side, star_uv.y) : vec3(star_uv, side);
+    float s = length(cross(normalize(local), normalize(star)));
+
+    // Brightness: as many stars brighter than magnitude m as the sky has, about 10^(0.45 m + 0.9) of them.
+    float u = (pick / present) * 0.999 + 0.001;
+    float magnitude = (log2(u * count) / 3.321928 - 0.9) / 0.45;
+    float flux = exp2(-0.4 * 3.321928 * (magnitude - 1.0)); // 1 for a first-magnitude star
+    float k = mix(kelvin.x, kelvin.y, pow(float(h.z & 0xffffu) / 65535.0, 0.6));
+    if (twinkle > 0.0) {
+        float phase = float(h.z >> 16u) / 65535.0 * TAU;
+        float flicker = 0.6 * sin(frameTimeCounter * 3.1 + phase) + 0.4 * sin(frameTimeCounter * 5.3 + 2.3 * phase);
+        flux *= max(1.0 + twinkle * flicker, 0.0);
+    }
+    float sigma = 0.6 * pixel_angle();
+    // The peak scaled with the pixel's size, so a star sends the same light whatever the resolution.
+    const float reference = 0.0011; // a pixel's angle at 1080 lines and 70 degrees
+    return star_color(k) * (0.45 * min(flux, 4.0) * sqr(reference / sigma * 0.6)) * exp(-0.5 * s * s / (sigma * sigma));
+}
+
+#if !defined NO_SKY_LIGHT
+
+// --- The Overworld ---------------------------------------------------------------------------------------------------
 
 uniform sampler2D cg_sky_tex; // the air's tables (see lib/atmosphere.glsl)
 
 // The sun's light above the air, for the sky as you see it (its air and its disc). The light the sun and the sky
 // give surfaces is set apart from this, in program/frame.csh.
 const float sun_illuminance = 2.3;
-const float sun_radius = 0.06; // radians: about Minecraft's own sun
+const float sun_radius = 0.045; // radians: about Minecraft's own sun
 
 // The full moon's light above the air, for the night sky as you see it (the new moon's is a third of it).
 float moon_illuminance() {
@@ -25,14 +140,28 @@ vec3 air_transmittance(float r, float mu) {
     return texture(cg_sky_tex, sky_atlas_uv(trans_uv(r, mu), trans_size, trans_origin)).rgb;
 }
 
-// The air's own light from a direction, from the sun's sky and the moon's.
-vec3 sky_air(vec3 dir) {
+// The night sky as you see it is darker than the light it gives: the look we follow keeps it a deep blue overhead so
+// the stars and the Milky Way show, while surfaces keep the moonlit sky's light (program/frame.csh).
+const float night_sky_seen = 0.3;
+
+// The air's own light from a direction: the sun's sky, and the moon's times moon_share.
+vec3 sky_air_lit(vec3 dir, float moon_share) {
     vec2 uv_sun = skyview_uv(dir, g_sun_dir.xyz);
     vec2 uv_moon = skyview_uv(dir, g_moon_dir.xyz);
     ivec2 both = skyview_size * ivec2(1, 2);
     vec3 sun_sky = texture(cg_sky_tex, sky_atlas_uv(vec2(uv_sun.x, uv_sun.y * 0.5), both, skyview_origin)).rgb;
     vec3 moon_sky = texture(cg_sky_tex, sky_atlas_uv(vec2(uv_moon.x, uv_moon.y * 0.5 + 0.5), both, skyview_origin)).rgb;
-    return sun_sky * sun_illuminance + moon_sky * moon_illuminance();
+    return sun_sky * sun_illuminance + moon_sky * moon_illuminance() * moon_share;
+}
+
+// The light the air gives from a direction (for the light on surfaces).
+vec3 sky_air(vec3 dir) {
+    return sky_air_lit(dir, 1.0);
+}
+
+// The air's light from a direction as you see it.
+vec3 sky_air_seen(vec3 dir) {
+    return sky_air_lit(dir, night_sky_seen);
 }
 
 // A frame that turns with the sky, for the stars: the sun's direction, the axis it turns around, and the third.
@@ -44,65 +173,167 @@ mat3 celestial_frame() {
     return mat3(s, cross(axis, s), axis);
 }
 
-float stars(vec3 dir) {
-    vec3 c = transpose(celestial_frame()) * dir;
-    // A cube's face and the cell on it.
-    vec3 a = abs(c);
-    float m = max3(a);
-    vec2 face_uv;
-    float face;
-    if (a.x == m) {
-        face_uv = c.yz / a.x;
-        face = c.x > 0.0 ? 0.0 : 1.0;
-    } else if (a.y == m) {
-        face_uv = c.xz / a.y;
-        face = c.y > 0.0 ? 2.0 : 3.0;
-    } else {
-        face_uv = c.xy / a.z;
-        face = c.z > 0.0 ? 4.0 : 5.0;
-    }
-    const float cells = 220.0;
-    vec2 cell_pos = (face_uv * 0.5 + 0.5) * cells;
-    vec2 cell = floor(cell_pos);
-    vec3 h = hash33(uvec3(uvec2(cell), uint(face) + 17u));
-    if (h.x > 0.045) {
-        return 0.0;
-    }
-    vec2 centre = cell + 0.25 + 0.5 * h.yz;
-    float d = length(cell_pos - centre);
-    float size = 0.12 + 0.1 * h.y;
-    float brightness = pow(h.z, 3.0) * 0.6 + 0.04;
-    return brightness * smoothstep(size, 0.0, d);
+// How far into dusk or dawn the sun is: 1 with the sun on the horizon, 0 well up or well down.
+float twilight() {
+    return 1.0 - smoothstep(0.0, 0.25, abs(g_sun_dir.w + 0.02));
 }
 
-// The sun's disc, with its edge a little darker (limb darkening).
-vec3 sun_disc(vec3 dir) {
+// The air's light in our look: pushed away from grey, most at dusk and dawn; round the setting sun it burns orange,
+// on the far side a pink band sits over the horizon (the sky's evening belt), and at night it stays a deep blue.
+vec3 sky_look(vec3 c, vec3 dir) {
+    float dusk = twilight();
+    c = push_from_grey(c, mix(1.25, 1.55, dusk));
+    vec2 flat_dir = normalize(dir.xz + vec2(1e-5, 0.0));
+    vec2 flat_sun = normalize(g_sun_dir.xz + vec2(1e-5, 0.0));
+    float toward_sun = dot(flat_dir, flat_sun) * 0.5 + 0.5; // 1 under the sun, 0 away
+    float low = 1.0 - smoothstep(0.0, 0.45, max(dir.y, 0.0));
+    vec3 glow = mix(vec3(1.0), vec3(1.45, 0.95, 0.7), sqr(toward_sun) * low * dusk);
+    float belt = smoothstep(0.02, 0.1, dir.y) * (1.0 - smoothstep(0.12, 0.35, dir.y)) * sqr(1.0 - toward_sun);
+    glow = mix(glow, vec3(1.3, 0.95, 1.15), belt * dusk);
+    return c * glow;
+}
+
+// The sun's disc, its edge a little darker (limb darkening), and the glow round it.
+vec3 sun_disc(vec3 dir, vec3 through) {
     float cos_d = dot(dir, g_sun_dir.xyz);
     float angle = acos(clamp(cos_d, -1.0, 1.0));
-    if (angle > sun_radius) {
-        return vec3(0.0);
+    // The glow: a tight one the bloom spreads, and a wide faint one, warmer as the sun sinks.
+    float dusk = twilight();
+    vec3 glow_color = mix(vec3(1.0, 0.95, 0.85), vec3(1.0, 0.6, 0.3), dusk);
+    vec3 c = glow_color * (0.35 * exp(-angle / 0.03) + 0.06 * exp(-angle / 0.15)) * sun_illuminance;
+    if (angle < sun_radius) {
+        float r = angle / sun_radius;
+        float limb = 1.0 - 0.6 * (1.0 - sqrt(max(0.0, 1.0 - r * r)));
+        float edge = 1.0 - smoothstep(0.9, 1.0, r);
+        // Bright enough to bloom, not the real sun's thousands.
+        c += sun_illuminance * 6.0 * limb * edge;
     }
-    float r = angle / sun_radius;
-    float limb = 1.0 - 0.6 * (1.0 - sqrt(max(0.0, 1.0 - r * r)));
-    float edge = 1.0 - smoothstep(0.92, 1.0, r);
-    float cam_r = camera_radius(cameraPosition.y);
-    vec3 through = air_transmittance(cam_r, dir.y);
-    // Bright enough to bloom, not the real sun's thousands.
-    return through * sun_illuminance * 6.0 * limb * edge;
+    return c * through;
 }
 
-// The whole sky in a direction, without the moon.
+// The glow round the moon, cool and faint, with its phase.
+vec3 moon_glow(vec3 dir, vec3 through) {
+    float angle = acos(clamp(dot(dir, g_moon_dir.xyz), -1.0, 1.0));
+    return vec3(0.8, 0.9, 1.1) * moon_illuminance() * (0.25 * exp(-angle / 0.04) + 0.05 * exp(-angle / 0.25)) * through;
+}
+
+// The Milky Way: a soft band across the sky with darker lanes in it, warmer at its heart.
+vec3 milky_way(vec3 local) {
+    // The band's own frame: tilted against the sun's path, as the real one is.
+    const vec3 band_normal = normalize(vec3(0.35, 0.55, 0.76));
+    float across = dot(local, band_normal);
+    float band = exp(-across * across / 0.03);
+    if (band < 0.01) {
+        return vec3(0.0);
+    }
+    float clouds = fbm(local * 6.0, 4);
+    float lanes = smoothstep(0.35, 0.65, fbm(local * 11.0 + 3.0, 3));
+    float heart = exp(-sqr(dot(local, normalize(vec3(0.9, -0.35, 0.2))) - 1.0) * 4.0);
+    vec3 color = mix(vec3(0.75, 0.85, 1.1), vec3(1.15, 0.95, 0.75), heart);
+    return color * band * clouds * clouds * mix(1.0, 0.35, lanes * band) * 0.03;
+}
+
+// The whole sky in a direction, without the moon itself.
 vec3 sky(vec3 dir, bool with_sun) {
-    vec3 c = sky_air(dir);
+    vec3 c = sky_look(sky_air_seen(dir), dir);
     float night = 1.0 - smoothstep(-0.15, 0.05, g_sun_dir.w);
     float cam_r = camera_radius(cameraPosition.y);
-    if (dir.y > -0.02) {
-        c += stars(dir) * night * air_transmittance(cam_r, max(dir.y, 0.0)) * 0.5;
+    vec3 through = air_transmittance(cam_r, max(dir.y, 0.0));
+    if (dir.y > -0.02 && night > 0.0) {
+        vec3 local = transpose(celestial_frame()) * dir;
+        vec3 night_sky = star_field(local, 7000.0, vec2(3500.0, 11000.0), 0.35 * (1.0 - smoothstep(0.05, 0.4, dir.y)))
+                + milky_way(local) * NIGHT_BRIGHTNESS;
+        c += night_sky * night * through * smoothstep(-0.02, 0.0, dir.y);
     }
+    c += moon_glow(dir, through);
     if (with_sun) {
-        c += sun_disc(dir);
+        c += sun_disc(dir, through);
     }
     return c;
 }
+
+// The light on Minecraft's clouds: the sun's and the sky's from above, as on any surface, and through dusk and dawn
+// the glow of the low sky in their own direction and the low sun itself, reddened by its long way through the air
+// (high up, clouds keep it a little after the land has lost it), so clouds towards the setting sun burn orange and
+// those across the sky catch the pink belt. Minecraft greys and darkens the clouds' own colour towards night; the
+// light here comes on top of that.
+vec3 cloud_light(vec3 dir) {
+    vec3 c = g_light_color.rgb * 0.35 + g_sky_up.rgb * 1.2;
+    float dusk = twilight();
+    if (dusk > 0.0) {
+        vec3 low = normalize(normalize(vec3(dir.x, 0.0, dir.z) + vec3(1e-4, 0.0, 0.0)) + vec3(0.0, 0.08, 0.0));
+        vec2 flat_sun = normalize(g_sun_dir.xz + vec2(1e-5, 0.0));
+        float toward_sun = dot(normalize(low.xz), flat_sun) * 0.5 + 0.5;
+        c += sky_look(sky_air_seen(low), low) * dusk * mix(1.0, 3.0, sqr(toward_sun));
+        float sun_seen = smoothstep(-0.08, 0.0, g_sun_dir.y);
+        vec3 low_sun = air_transmittance(camera_radius(cameraPosition.y), max(g_sun_dir.y, 0.02)) * sun_illuminance;
+        c += low_sun * vec3(1.0, 0.85, 0.95) * dusk * sun_seen * mix(0.2, 0.9, sqr(toward_sun));
+    }
+    return c;
+}
+
+#elif defined WORLD_END
+
+// --- The End ---------------------------------------------------------------------------------------------------------
+
+// The End's sky: violet, brighter towards the horizon; the nebula over it, slow drifting clouds of purple light with
+// green in their thin parts, brightest low down; coloured stars that twinkle through it; and the End's sun, a small
+// pink-white disc with a wide magenta glow, where its light comes from (g_light_dir, see program/frame.csh).
+vec3 sky(vec3 dir, bool with_sun) {
+    float up = clamp(dir.y, -1.0, 1.0);
+    float low = 1.0 - abs(up);
+    vec3 c = mix(vec3(0.008, 0.005, 0.016), vec3(0.024, 0.013, 0.042), low * low);
+
+    // The nebula: two layers of noise turning slowly round the up axis in opposite ways (a turn an hour each, so
+    // the clock going back to 0 on the hour makes no jump), the clouds where they agree.
+    float turn = TAU * frameTimeCounter / 3600.0;
+    mat2 spin = mat2(cos(turn), sin(turn), -sin(turn), cos(turn));
+    vec3 a = vec3(spin * dir.xz, dir.y).xzy;
+    vec3 b = vec3(transpose(spin) * dir.xz, dir.y).xzy;
+    float body = fbm(a * 2.2, 5);
+    float wisps = fbm(b * 4.6 + 9.0, 4);
+    float cloud = smoothstep(0.42, 0.8, body * 0.75 + wisps * 0.35);
+    float green = smoothstep(0.55, 0.75, wisps) * (1.0 - smoothstep(0.5, 0.9, cloud));
+    vec3 nebula = mix(vec3(0.55, 0.22, 1.0), vec3(0.95, 0.35, 0.75), smoothstep(0.6, 1.0, cloud)) * cloud;
+    nebula += vec3(0.12, 0.5, 0.3) * green * 0.6;
+    c += nebula * 0.1 * (0.5 + 0.5 * low * low);
+
+    c += star_field(dir, 5000.0, vec2(4500.0, 9000.0), 0.6) * vec3(0.95, 0.85, 1.1) * 0.5;
+
+    if (with_sun) {
+        float angle = acos(clamp(dot(dir, g_light_dir.xyz), -1.0, 1.0));
+        vec3 glow = vec3(0.9, 0.4, 0.75) * (0.08 * exp(-angle / 0.05) + 0.02 * exp(-angle / 0.35));
+        float disc = 1.0 - smoothstep(0.025, 0.03, angle);
+        c += glow + vec3(1.0, 0.75, 0.9) * disc * 1.5;
+    }
+    return c;
+}
+
+#else
+
+// --- The Nether ------------------------------------------------------------------------------------------------------
+
+uniform vec3 fogColor; // Minecraft's fog colour for the biome you're in, blended as you cross from one to the next
+
+// The Nether's haze: its biome's fog colour (crimson red, warped violet, soul sand teal, basalt ash grey, the wastes'
+// red) at one brightness whatever the biome, a little towards grey. The lava sea's glow and the haze under the
+// ceiling are added along each view (program/fog.fsh).
+vec3 nether_haze() {
+    vec3 fog = srgb_to_linear(fogColor);
+    vec3 hue = mix(vec3(1.0), fog / max(luminance(fog), 1e-5), 0.8);
+    return hue * 0.022 * NIGHT_BRIGHTNESS;
+}
+
+// How thick it is (per block): from the fog colour's own brightness, so basalt deltas' ash and the soul sand valley's
+// blue haze are the thickest and the warped forest the clearest (about half gone at 25, 35, 70 and 85 blocks).
+float nether_thickness() {
+    return mix(0.008, 0.028, smoothstep(0.03, 0.4, luminance(fogColor)));
+}
+
+vec3 sky(vec3 dir, bool with_sun) {
+    return nether_haze();
+}
+
+#endif
 
 #endif

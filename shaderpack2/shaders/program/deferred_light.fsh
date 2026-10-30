@@ -8,9 +8,7 @@
 #include "/lib/lighting.glsl"
 #include "/lib/voxel_sample.glsl"
 #include "/lib/shadow.glsl"
-#if defined SUNLIGHT
 #include "/lib/sky.glsl"
-#endif
 #if DEBUG_VIEW == 7 || DEBUG_VIEW == 8 || DEBUG_VIEW == 10 || DEBUG_VIEW == 11 || DEBUG_VIEW == 14
 #include "/lib/trace.glsl"
 #endif
@@ -20,7 +18,6 @@
 
 uniform sampler2D colortex0; // light added before this pass (see gbuffers.fsh, LIT_GLOW)
 uniform sampler2D colortex5; // the moon
-uniform vec3 fogColor;
 
 #ifdef DISTANT_HORIZONS
 uniform sampler2D dhDepthTex0;
@@ -78,10 +75,8 @@ float ssao(vec3 view, vec3 view_normal, ivec2 texel) {
 }
 
 vec3 sky_color(vec3 dir, ivec2 texel) {
-#if defined WORLD_NETHER
-    return srgb_to_linear(fogColor) * 0.23;
-#elif defined WORLD_END
-    return vec3(0.007, 0.0046, 0.009);
+#if defined NO_SKY_LIGHT
+    return sky(dir, true);
 #else
     return sky(dir, true) + texelFetch(colortex5, texel, 0).rgb * moon_illuminance();
 #endif
