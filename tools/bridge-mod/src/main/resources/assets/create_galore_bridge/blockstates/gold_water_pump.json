@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "create_galore_bridge:block/gold_water_pump"
+    }
+  }
+}

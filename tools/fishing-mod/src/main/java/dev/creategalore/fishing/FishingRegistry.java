@@ -1,6 +1,8 @@
 package dev.creategalore.fishing;
 
 import com.mojang.serialization.Codec;
+import com.simibubi.create.api.registry.CreateRegistries;
+import com.simibubi.create.content.logistics.item.filter.attribute.ItemAttributeType;
 import dev.creategalore.fishing.aquarium.AquariumBlock;
 import dev.creategalore.fishing.aquarium.AquariumBlockEntity;
 import dev.creategalore.fishing.bait.ChumItem;
@@ -8,6 +10,7 @@ import dev.creategalore.fishing.bait.LiveBaitBucketItem;
 import dev.creategalore.fishing.bait.ThrownChum;
 import dev.creategalore.fishing.cast.CastHook;
 import dev.creategalore.fishing.fish.CatchInfo;
+import dev.creategalore.fishing.machine.DriveMenu;
 import dev.creategalore.fishing.machine.FuelReelDriveBlock;
 import dev.creategalore.fishing.machine.FuelReelDriveBlockEntity;
 import dev.creategalore.fishing.machine.ReelDriveBlock;
@@ -17,6 +20,7 @@ import dev.creategalore.fishing.machine.RodHolderBlockEntity;
 import dev.creategalore.fishing.process.CleaningTableBlock;
 import dev.creategalore.fishing.process.CleaningTableBlockEntity;
 import dev.creategalore.fishing.process.FishCleanerBlock;
+import dev.creategalore.fishing.process.FishAttributes;
 import dev.creategalore.fishing.process.FishCleanerBlockEntity;
 import dev.creategalore.fishing.process.WholeFishIngredient;
 import dev.creategalore.fishing.tackle.LineItem;
@@ -43,6 +47,7 @@ import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.inventory.MenuType;
+import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.CreativeModeTab;
@@ -91,6 +96,8 @@ public final class FishingRegistry {
     public static final DeferredRegister<Fluid> FLUIDS = DeferredRegister.create(Registries.FLUID, CreateGaloreFishing.ID);
     public static final DeferredRegister<IngredientType<?>> INGREDIENT_TYPES =
             DeferredRegister.create(NeoForgeRegistries.Keys.INGREDIENT_TYPES, CreateGaloreFishing.ID);
+    public static final DeferredRegister<ItemAttributeType> ITEM_ATTRIBUTES =
+            DeferredRegister.create(CreateRegistries.ITEM_ATTRIBUTE_TYPE, CreateGaloreFishing.ID);
 
     // ---- Data components ----
 
@@ -127,6 +134,14 @@ public final class FishingRegistry {
     /** A fish light enough to cook or press whole. */
     public static final DeferredHolder<IngredientType<?>, IngredientType<WholeFishIngredient>> WHOLE_FISH =
             INGREDIENT_TYPES.register("whole_fish", () -> WholeFishIngredient.TYPE);
+
+    // ---- Create's Attribute Filter ----
+
+    static {
+        ITEM_ATTRIBUTES.register("whole_fish", () -> FishAttributes.WHOLE);
+        ITEM_ATTRIBUTES.register("fish_weight", () -> FishAttributes.WEIGHT);
+        ITEM_ATTRIBUTES.register("fish_size", () -> FishAttributes.SIZE);
+    }
 
     // ---- Entities ----
 
@@ -338,6 +353,8 @@ public final class FishingRegistry {
 
     public static final DeferredHolder<MenuType<?>, MenuType<TackleBenchMenu>> TACKLE_BENCH_MENU =
             MENUS.register("tackle_bench", () -> new MenuType<>(TackleBenchMenu::new, FeatureFlags.DEFAULT_FLAGS));
+    public static final DeferredHolder<MenuType<?>, MenuType<DriveMenu>> DRIVE_MENU =
+            MENUS.register("reel_drive", () -> IMenuTypeExtension.create(DriveMenu::new));
 
     // ---- Creative tab ----
 
@@ -372,6 +389,7 @@ public final class FishingRegistry {
         FLUID_TYPES.register(modBus);
         FLUIDS.register(modBus);
         INGREDIENT_TYPES.register(modBus);
+        ITEM_ATTRIBUTES.register(modBus);
         modBus.addListener((RegisterCapabilitiesEvent event) -> {
             event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, CLEANING_TABLE_ENTITY.get(), (table, side) -> table.items());
             event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, FISH_CLEANER_ENTITY.get(), (cleaner, side) -> cleaner.items());

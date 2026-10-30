@@ -154,6 +154,12 @@ final class MovingScene {
         Capture.server("kill @e[type=item,x=1029,y=65,z=150,distance=..16]");
     }
 
+    /** Takes the scene away even if this game didn't build it: an earlier game may have left it standing. */
+    static void clear() {
+        built = true;
+        remove();
+    }
+
     /**
      * Each server tick while the scene is shown: the ship turns and sways along x (shipTurnDegreesPerTick,
      * shipSwayPerTick), the walkers take a step around their circles, the bell's power flips every 10 ticks (it rings

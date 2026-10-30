@@ -1,9 +1,9 @@
 # Upscaling 1 on the RTX 4080 SUPER: DLSS and FSR from a lower render resolution
 
-PC session on 2026-10-25, 13:20–14:30, by a Claude Code session in `C:\Users\coolm\Documents\Claude\MC-CREATE`
+PC session on 2026-10-25, 13:20–14:30, by a Claude Code session in `C:\Users\<user>\Documents\Claude\MC-CREATE`
 (`$T`). It followed "Upscaling 1" in `tools/dlss-testkit/PC-RUNBOOK.md` at `3711337`, with Bridge 1.96.0 and the test
 kit from that commit.
-- One game launch played all nine runs, F1 to U7, in 23 minutes. Then about 30 minutes by eye with Emre.
+- One game launch played all nine runs, F1 to U7, in 23 minutes. Then about 30 minutes by eye with the player.
 - Every run ended with `run finished`. There was no `DLAA: stopped`, `DLSS could not start` or
   `Failed to create shader rendering pipeline`.
 - This is a test, not a fix: no code was changed.
@@ -12,7 +12,7 @@ All captures ran at 2560x1440, with vsync off and the frame cap at 260. The PC w
 
 ## Summary
 
-- **DLSS at Quality is "the free FPS button" (Emre).**
+- **DLSS at Quality is "the free FPS button" (the player).**
   - DLSS K at Quality (1707x960) looked native to him, and as sharp as preset L at Performance.
   - It runs 15–20% faster than DLAA, and about as fast as Photon's native TAA (5.28 against 5.21 ms in the canopy
     view).
@@ -28,8 +28,8 @@ All captures ran at 2560x1440, with vsync off and the frame cap at 260. The PC w
   - At Ultra Performance (853x480) it stays sharp but "interpretive". It throws away some lighting, never fully resolves
     reflections, and garbles newly visible block faces for a moment. Interesting, but not recommended.
 - **FSR holds up at Quality.** Geometry is stable again, with only effects (glass transparency, fine particles) a
-  little unsteady. That's about where DLSS is at Performance. Emre would recommend it for cards without DLSS.
-- **The numbers miss what Emre saw.**
+  little unsteady. That's about where DLSS is at Performance. The player would recommend it for cards without DLSS.
+- **The numbers miss what the player saw.**
   - On the still views, `metrics.py` rates FSR as the steadiest at every scale, with the least smear. DLSS K is close;
     both are about 3× steadier than Photon's TAAU.
   - But shimmer and smear on still frames don't measure resolve or sharpness. That's where FSR at Performance fell
@@ -195,7 +195,7 @@ holds up frames.
 | `ultra-dlss-L` | 0.25 / 0.14 / 0.36 | 3.29 / 2.20 / 2.27 | 4.16 / 3.11 / 5.72 | 1.46 / 4.87 |
 | `ultra-fsr3` | 0.15 / 0.09 / 0.20 | 2.46 / 1.52 / 1.69 | 3.54 / 2.72 / 4.35 | 2.05 / 2.54 |
 
-What they show, and where they part from what Emre saw:
+What they show, and where they part from what the player saw:
 - **On the still views, the order is the same at every scale:**
   - FSR and DLSS K are the steadiest (shimmer 0.07–0.28), about 3× steadier than Photon's TAAU (0.30–0.65), and
     close to DLAA at full resolution (0.06–0.19).
@@ -204,11 +204,11 @@ What they show, and where they part from what Emre saw:
 - **The scale barely changes these numbers for DLSS and FSR.** K at 33% scores like K at 67%. What changes with the
   scale is resolve and sharpness, which these numbers don't measure.
 - **FSR has the lowest edge contrast at every scale** (3.5–4.3 at the shore, against about 4.3 for DLSS). By eye,
-  that's the softness and "unresolved" look Emre saw at Performance, though it reads as steadiness here. L's extra
+  that's the softness and "unresolved" look the player saw at Performance, though it reads as steadiness here. L's extra
   sharpness doesn't show in the numbers either.
 - **The moving and effects views are noisy.** The moving scene plays in real time, so each mode sees a different
   moment. In the effects view (rain, particles), DLSS K and L flicker the most (4.4–5.4) and Photon's TAAU the least
-  at the low scales (1.9 at 33%). Emre found the same on particles; part of TAAU's calm there looks like blur.
+  at the low scales (1.9 at 33%). The player found the same on particles; part of TAAU's calm there looks like blur.
 - **U5 (things that move, with the hand)** has no `metrics.py` table: it has only the brief path at the moving scene.
   - In its frames, the hand is sharp and doesn't trail in DLSS K or FSR.
   - Because the scene runs in real time, each mode caught the sword at a different point of its swing. TAAU and M
@@ -233,9 +233,9 @@ What they show, and where they part from what Emre saw:
   - `perf-debug-motion` is black on still frames. During the flick (f064, f068, f104, f108), it fills the window with a
     pattern centred on the window's middle. So the motion vectors line up with the stretched frame.
 
-## Emre's notes (by eye, moving scene)
+## the player's notes (by eye, moving scene)
 
-Emre's words, tidied and grouped as he asked, with everything he mentioned kept. The modes are in the order he looked
+The player's words, tidied and grouped as he asked, with everything he mentioned kept. The modes are in the order he looked
 at them, from 13:46 to 14:16.
 
 **`perf-dlss-K` (DLSS K, Performance, 1280x720)**
@@ -265,7 +265,7 @@ at them, from 13:46 to 14:16.
 - Very soft, moving entities are very smeary, and it's still jaggy and pixelated in the distance.
 - At such aggressive ratios: DLSS if you have it, otherwise FSR, even if it isn't up to DLSS. Not TAAU.
 
-**`perf-dlss-L` (DLSS L, Performance; Emre asked)**
+**`perf-dlss-L` (DLSS L, Performance; the player asked)**
 - "The weird underdog", much stronger than the numbers suggest.
 - Marginally more artifacts than K, but K was so clean that it's hard to notice. Up close, shadows flicker a bit more
   before they resolve.
@@ -274,7 +274,7 @@ at them, from 13:46 to 14:16.
 - Not flawless, with slightly more flicker. For pure sharpness at aggressive ratios he'd choose L, and might prefer it
   himself.
 
-**`q-fsr3` (FSR 3.1, Quality, 1707x960; Emre asked)**
+**`q-fsr3` (FSR 3.1, Quality, 1707x960; the player asked)**
 - FSR "definitely holds up at Quality". Blocks and textures look good, and the ghosting and crawling around trees is
   gone: geometry is stable again, which it wasn't at Performance.
 - Effects are still a little unstable: transparency around glass, fine particles.
@@ -285,7 +285,7 @@ at them, from 13:46 to 14:16.
 - He'd be fine recommending it: it doesn't look bad unless it's next to DLSS, and it still looks better than TAA,
   even native TAA.
 
-**`q-dlss-K` (DLSS K, Quality; Emre asked)**
+**`q-dlss-K` (DLSS K, Quality; the player asked)**
 - "Free performance." It looks native to him; he can no longer tell it's upscaled.
 - As sharp as L was at Performance, while keeping K's steadiness around effects.
 - What you set with an NVIDIA card if you just want free performance: "the free FPS button", with basically no
@@ -293,7 +293,7 @@ at them, from 13:46 to 14:16.
 - He didn't try L at Quality, which would probably be even sharper, but with diminishing returns. "At quality, I'm
   pretty sure you can't really go wrong with any DLSS preset at 1440p."
 
-**`ultra-dlss-L` (DLSS L, Ultra Performance, 853x480; Emre asked, NVIDIA recommends L for this scale)**
+**`ultra-dlss-L` (DLSS L, Ultra Performance, 853x480; the player asked, NVIDIA recommends L for this scale)**
 - "Hilarious", and unlike a traditional upscaler. Still more viable than FSR at Performance: "that's not me glazing
   NVIDIA, that's just what I'm seeing". It behaves as L does in the AAA games he tests, which is odd to see in
   Minecraft.
@@ -310,7 +310,7 @@ at them, from 13:46 to 14:16.
 - Not recommended: lower Photon's settings instead. Why keep high-resolution dynamic shadows when L eats them? A
   fascinating proof of concept, and not technically unviable, but he doesn't see the reason for it.
 
-**What Emre would recommend, from all of the above:**
+**What the player would recommend, from all of the above:**
 - Quality with any DLSS preset, K by default, as free fps.
 - At Performance, DLSS K, or L for sharpness.
 - On cards without DLSS, FSR at Quality.
@@ -319,21 +319,21 @@ at them, from 13:46 to 14:16.
 
 ## Side finding: seeing through the ground next to the moving ship
 
-**What Emre saw.**
+**What the player saw.**
 - Standing next to the moving ship and looking down at one very precise angle, he sees through the ground blocks.
 - "The window that I'm able to see through rotates with the ship. So it's clearly caused by the ship, and I can't get
   it to happen anywhere else."
 - He first saw it in `perf-dlss-L`. It shows the same with Photon's TAAU, and it was in a screenshot of mine right after
   switching to `q-fsr3` (below). So it isn't DLSS or FSR.
-- Emre: it "should be hotfixed", a side finding that "definitely should be looked into".
+- The player: it "should be hotfixed", a side finding that "definitely should be looked into".
 
 ![The see-through spot by the moving ship, in q-fsr3](ship-see-through.jpg)
 
-*Straight-edged holes in the shore blocks show the scene below, next to the ship. Emre's three photos of the monitor
+*Straight-edged holes in the shore blocks show the scene below, next to the ship. The player's three photos of the monitor
 stay on the PC (`$T\upscale1\emre-photo-ship-seethrough-*.jpg`).*
 
 **Where it might come from.** This is a reading, not tested.
-- Emre took it for the shader pack, since it shows without DLSS. But a window that rotates with the ship and has
+- The player took it for the shader pack, since it shows without DLSS. But a window that rotates with the ship and has
   straight edges also fits the Bridge's ship water cutaway.
 - `ShipWaterCutaway` asks, for each pixel, whether the line of sight crosses the water's surface inside a hull. If it
   does, it cuts the water away there, through Sable's water occlusion. A grazing look past the hull at the shore could
@@ -399,7 +399,7 @@ show up for every upscaling mode, with the right scale, render size and exposure
 **The launch.**
 - One launch, at 13:31, as in step 5, with `...autorun=dlaa-test`,
   `...runs=F1+F2+U1+U2+U3+U4+U5+U6+U7` and `...byEye=perf-dlss-K`.
-- PresentMon 2.6.0 was attached, elevated (Emre clicked the prompt), to the game's own `java.exe` at 13:31:20:
+- PresentMon 2.6.0 was attached, elevated (the player clicked the prompt), to the game's own `java.exe` at 13:31:20:
   `--process_id <pid> --output_file $T\profiling\F.csv --qpc_time_ms --timed 1800 --terminate_after_timed --stop_existing_session --no_console_stats`.
 
 | Run | Folder (`screenshots\dlaa-test\`) | Time | Frames |
@@ -416,22 +416,22 @@ show up for every upscaling mode, with the right scale, render size and exposure
 | by eye | (no folder) | 13:45:57–14:16:48 | – |
 
 **What was open.**
-- No game server, and no other game or launcher (Emre: quiet).
+- No game server, and no other game or launcher (the player: quiet).
 - Still running in the background: the Claude app, FanControl, the NVIDIA overlay, PowerToys, Razer's app engine and
   elevation service, a Settings window, and a Codex sandbox service. PresentMon's minimised command window was also
   open.
-- Emre allows this session computer use (since round 1) to type the `/dlaatest` commands into the game. Administrator
+- The player allows this session computer use (since round 1) to type the `/dlaatest` commands into the game. Administrator
   prompts were his to click.
 
 **What didn't go to plan, or went beyond the runbook:**
 1. **PresentMon was stopped early**, at 13:49:59, with an elevated `--terminate_existing_session`.
    - It locks its CSV while it records, so the frame rates couldn't be read until it stopped.
-   - Emre offered to stop it early, and clicked the prompt. Its capture covers F1 and F2 completely, which is all the
+   - The player offered to stop it early, and clicked the prompt. Its capture covers F1 and F2 completely, which is all the
      runbook needs from it.
    - The CSV holds 39 MB, 162,141 frames.
-2. **The by-eye part went beyond the runbook's three modes**, at Emre's request: `perf-dlss-L`, `perf-taau` again (to
+2. **The by-eye part went beyond the runbook's three modes**, at the player's request: `perf-dlss-L`, `perf-taau` again (to
    check the side finding), `q-fsr3`, `q-dlss-K` and `ultra-dlss-L`. Each was switched with `/dlaatest mode NAME`.
-3. **Emre typed the closing commands himself.** At the end the game wouldn't take keyboard focus from the Claude
+3. **The player typed the closing commands himself.** At the end the game wouldn't take keyboard focus from the Claude
    window, and clicking into it might have hit something in creative mode. So he typed `/dlaatest scene remove` and
    `/dlaatest mode dlaa-default` himself, and closed the game.
    - The log shows `removed the test scenes` (14:16:43) and `now dlaa-default (the shaders reloaded)` (14:16:48).
@@ -449,18 +449,18 @@ mode of U1. They are under `results/upscale1/U1/`, 5.6 MB in all: `shore-fence-g
 `canopy-leaves-*`, for each of `perf-taau`, `perf-dlss-K`, `perf-dlss-M`, `perf-dlss-L`, `perf-fsr3` and
 `dlaa-default`. [U1-sheet.jpg](U1-sheet.jpg) shows all 18 side by side at half size.
 
-On these still frames the modes look much closer than they did to Emre in motion:
+On these still frames the modes look much closer than they did to the player in motion:
 - TAAU is a little softer and grainier on the coloured glass.
 - K and FSR are clean.
 - L's bars and edges are a touch crisper.
 - A campfire's smoke particle crosses the glass in the L and FSR frames.
 
-The differences Emre described are mostly in motion and resolve, which still frames can't show. `compare.html` on the
+The differences the player described are mostly in motion and resolve, which still frames can't show. `compare.html` on the
 U1 to U4 folders lets you look at the full pictures, one scale at a time.
 
 ## Raw data, on the PC only
 
 - PresentMon: `$T\profiling\F.csv` (39 MB).
 - Screenshots: `$T\instance\screenshots\dlaa-test\20261025-13*-U*` and `-F*` (about 18 GB, mostly U1 to U4).
-- Game log, Emre's photos of the see-through spot, this session's notes, the settings backups and the kit's leftover
+- Game log, the player's photos of the see-through spot, this session's notes, the settings backups and the kit's leftover
   files: `$T\upscale1\`.

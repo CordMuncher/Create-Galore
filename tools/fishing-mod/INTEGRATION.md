@@ -182,14 +182,21 @@ All new ids are `create_galore_fishing:` unless they say `tide:`.
   before each cast.
 - **Fuel Reel Drive** (Geared Reel Drive, two copper casings, a fluid tank, a furnace): the geared drive with its own
   engine and no shafts, for boats. It burns furnace fuel from a slot, or lava, fish oil and any other Create: Liquid
-  Fuel fuel from a small tank, more the harder it works.
+  Fuel fuel from a small tank, by how hard it works: a tenth of the full rate waiting, a quarter winding in an empty
+  line, and in a fight from 40% against a fish that barely pulls to the full rate at 10 kg of pull (the gear doesn't
+  change it).
 - **Drag against rotation**: winding against a fish costs stress, more the harder it pulls. The drag set on the
   rod (the most a fish can pull before line slips) has to suit the rotation: too much for it, and a fish leaning on
   the drag overstresses the whole network until it tires (on one water wheel about 7.5 kg is the limit in normal
   gear; the Geared drive gears down and copes with about four times that). The Fuel drive's engine stalls the same
   way above its rating.
-- **Catches**: a drive or holder puts its catch into a chest, hopper, funnel or belt below or beside it; with nowhere
-  to go, the fish hangs from the rod tip for 30 seconds (an empty hand takes it). Machines earn half the XP a
+- **Catches**: a drive or holder puts its catch straight into a chest, hopper, funnel or belt under it. Otherwise
+  the rod turns with the fish hanging from it and drops it into the column of blocks touching one side: any block
+  that takes items at the machine's height, or up to 5 blocks lower a belt, an upward funnel, a hopper or a lid-up
+  barrel (which opens to catch it). A Geared or Fuel drive turns at its top gear's pace. With nowhere to go, the fish
+  hangs from the rod tip for 30 seconds (an empty hand takes it).
+- **Sorting**: a fish as the reference in Create's Attribute Filter offers "too big to cook whole" / "small enough
+  to cook whole", its weight as "or more" / "or less", and its size class. Machines earn half the XP a
   player would, banked and paid out whenever a rod goes in or out (the goggles show it). No release bonus.
 - **Alive fish**: a fish kept from the hold-up screen while still alive, or put on a belt by a machine, stays alive
   for the rest of its two minutes (its tooltip counts down). Dropped into water in that time (off a belt, out of a
@@ -212,6 +219,14 @@ All new ids are `create_galore_fishing:` unless they say `tide:`.
   be farmed automatically.
 - Breaking a wall of a tank spills its fish; breaking off a whole end keeps them in what's left. An empty hand on
   a tank shows its size, water, fish and food.
+- **Weight span on small fish (0.3.23)**: a fish under 3 kg keeps only its size class (so it stacks); its tooltip
+  gives the weights that class spans for the species (`SizeModel.lengthBandCm`, capped at 3 kg). The client gets
+  each fish item's sizes in a `SizeSync` payload with the fish data (network version 4).
+- **Sea creatures (0.3.22)**: a full Hybrid Aquatic Creature Net lets its mob in: starfish, crabs, urchins, Hybrid
+  Aquatic's fish, axolotls, any water fish. A fishing fish without a pattern of its own goes in as its fish item; the
+  rest live in the tank as the net itself (the whole mob kept), drawn as that very mob, crawlers on the sand. An empty
+  net takes one back out. The fishing mod adds its own water fish (not lava fish) and other mods' fish to
+  `hapi:net_catchable`.
 
 ## Compatibility
 

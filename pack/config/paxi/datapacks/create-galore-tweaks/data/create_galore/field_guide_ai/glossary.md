@@ -1,4 +1,4 @@
-<!-- sources sha256:f8d0a333bbee8f68763bdd48a7fd1f9ee234f94fc20d647060a296243e3992cc -->
+<!-- sources sha256:e80918648bbbbf77cf4cd28db0c77bdb38d4ee64469ab6f8f6c6d4943979f6c1 -->
 # Words to Know (glossary)
 Short definitions of jargon the book uses unexplained, mostly Create and survival. Purple words in the book link to these entries; each lists where the word matters.
 
@@ -61,7 +61,7 @@ Short definitions of jargon the book uses unexplained, mostly Create and surviva
 - How many: hat, eyes (goggles), face mask 1 each; necklaces 3; cape, back, body 1 each; hands 2 (one per hand); shield 1; rings 10; belt, quiver, book (spell book), shoes 1 each; charms 3; gadgets 3.
 - A pair of gloves (Aether gloves, Sticky Gloves, Blazing Grips) takes both hands; a single claw or glove one. No two of the same item in a group, except rings and hands (up to 2 of the same). Limits hold however an item is put on, right-click included. Empty slots say what goes there and how many are worn.
 - Tip: hover a worn item, click the small eye in its corner to hide it on your character; it still works; eye stays crossed out until shown again. Shift-click an accessory in the inventory to put it on.
-- Matters: Gear and Accessories (see exploration/gear); Iron's Spellbooks (see exploration/irons_spellbooks); Diving Gear (see ocean/diving); Fishing Gadgets (see fishing/gadgets).
+- Matters: Gear and Accessories (see exploration/gear); Iron's Spellbooks (see exploration/irons_spellbooks); Diving Gear (see ocean/diving); Fishing Gadgets (see fishing/gadgets); Field Guide Pendant (see start_here/field_guide_pendant).
 
 ## glossary/datapack | Datapack
 - Datapack: bundle of data, not code (recipes, loot, world generation); loads with the world.
@@ -175,7 +175,7 @@ Short definitions of jargon the book uses unexplained, mostly Create and surviva
 - Matters: Airships (see flight/airships); Building a Ship (see flight/ship_building); Ship Hardware (see flight/ship_hardware); Submarines (see ocean/submarines).
 
 ## glossary/super_glue | Super Glue
-- Super Glue: bonds blocks into one shape that moves together (see create_basics/contraptions); click two corners to glue an area; blocks that hang on others need none. For ships, Honey Glue does the same job, and one box around the whole ship is enough (see flight/ship_building).
+- Super Glue: bonds blocks into one shape that moves together (see create_basics/contraptions); click two corners to glue an area; blocks that hang on others need none. A Schematicannon with Pre-glue on glues what it prints (see flight/ship_building). For ships, Honey Glue does the same job, and one box around the whole ship is enough (see flight/ship_building).
 - Matters: Contraptions (see create_basics/contraptions); Trains (see transport/trains); Building a Ship (see flight/ship_building); Building a Rocket (see space/rocket_building).
 
 ## glossary/superheated | Superheated

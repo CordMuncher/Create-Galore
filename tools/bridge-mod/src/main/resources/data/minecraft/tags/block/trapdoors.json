@@ -1,0 +1,8 @@
+{
+  "replace": false,
+  "values": [
+    "create_galore_bridge:andesite_encased_trapdoor",
+    "create_galore_bridge:brass_encased_trapdoor",
+    "create_galore_bridge:copper_encased_trapdoor"
+  ]
+}

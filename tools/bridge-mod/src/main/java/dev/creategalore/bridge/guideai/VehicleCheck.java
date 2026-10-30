@@ -117,7 +117,8 @@ final class VehicleCheck {
         cx /= m;
         cy /= m;
         cz /= m;
-        Body body = new Body(parts, m, cx, cy, cz, blocks);
+        Body body = new Body(parts, m, cx, cy, cz, blocks, driveAxis(parts));
+        if (getter instanceof net.minecraft.server.level.ServerLevel level) body.level = level;
 
         List<String> faults = new ArrayList<>(), notes = new ArrayList<>();
         StringBuilder out = new StringBuilder("How this vehicle floats, flies and handles, worked out from its blocks (estimates)"
@@ -132,10 +133,12 @@ final class VehicleCheck {
             // Propellers or wings alone: a boat if one of them is a water propeller, else judged as an aircraft.
             air(body, rpm, out, faults, notes);
         }
+        if (getter instanceof net.minecraft.server.level.ServerLevel level) drive(body, rpm, level, faults);
         pieces(blocks, model, faults, notes);
         if (model) ballast(blocks, getter, faults);
         boatEngines(blocks, getter, faults);
         controls(blocks, getter, faults);
+        PlayerCheck.vehicle(blocks, body.ceiling, air || land || (props && !water && !sub), faults, notes);
         boolean redstone = blocks.values().stream().anyMatch(s -> s.isSignalSource() || id(s).contains("throttle_lever"));
         if (redstone) {
             boolean wire = blocks.values().stream().anyMatch(s -> s.is(net.minecraft.world.level.block.Blocks.REDSTONE_WIRE)
@@ -211,6 +214,225 @@ final class VehicleCheck {
         else notes.add(text.replace("it is in", "the marked build is in"));
     }
 
+    /** The horizontal axis most of its propellers, thrusters and Boat Engines push along; null when none push sideways. */
+    private static Direction.Axis driveAxis(List<Part> parts) {
+        int x = 0, z = 0;
+        for (Part p : parts) {
+            if (!isPropeller(p.id) && !isThruster(p.id) && !p.id.equals("create_high_seas:boat_engine")
+                    && !p.id.equals("create_submarine:submarine_propeller")) continue;
+            Direction f = facing(p.state);
+            if (f == null) continue;
+            if (f.getAxis() == Direction.Axis.X) x++;
+            else if (f.getAxis() == Direction.Axis.Z) z++;
+        }
+        return x == z ? null : x > z ? Direction.Axis.X : Direction.Axis.Z;
+    }
+
+    /**
+     * Each propeller drive line against the engines on it: Create stops a whole network when what it turns draws more stress
+     * than its sources give (a Portable Engine 2048 at its 32 RPM, whatever the gears do to the speed), so an engine that
+     * isn't on the line, or one too few, leaves the propellers standing still.
+     */
+    private static void drive(Body b, Map<BlockPos, Float> rpm, net.minecraft.server.level.ServerLevel level, List<String> faults) {
+        Map<BlockPos, Part> at = new java.util.HashMap<>();
+        for (Part p : b.parts) at.put(p.pos, p);
+        Set<BlockPos> done = new HashSet<>();
+        for (Part p : b.parts) {
+            if (!isPropeller(p.id) || done.contains(p.pos) || rpm.getOrDefault(p.pos, 0f) == 0) continue;
+            Set<BlockPos> line = BuildCheck.network(b.blocks, level, p.pos);
+            done.addAll(line);
+            double need = 0, give = 0;
+            List<String> props = new ArrayList<>();
+            int engines = 0;
+            for (BlockPos q : line) {
+                BlockState s = b.blocks.get(q);
+                if (s == null) continue;
+                float r = Math.abs(rpm.getOrDefault(q, 0f));
+                String id = id(s);
+                if (isPropeller(id) && at.containsKey(q)) {
+                    need += propellerStress(b, at.get(q), rpm);
+                    props.add(xyz(q));
+                } else {
+                    need += com.simibubi.create.api.stress.BlockStressValues.getImpact(s.getBlock()) * r;
+                }
+                double cap = com.simibubi.create.api.stress.BlockStressValues.getCapacity(s.getBlock());
+                if (cap <= 0 && id.endsWith("portable_engine")) cap = 64;
+                if (cap > 0 && r > 0) {
+                    give += cap * r;
+                    engines++;
+                }
+            }
+            if (need <= give + 1) continue;
+            int more = (int) Math.ceil((need - give) / 2048);
+            faults.add(String.format(Locale.ROOT, "the propeller%s at %s draw%s about %.0f stress units, but the %d engine%s on %s "
+                    + "drive line give%s %.0f, so Create stalls the whole line and nothing turns: put %d more Portable Engine%s on "
+                    + "that same line (each gives 2048 at any gearing; its front must meet a shaft end or a cogwheel's axle), or "
+                    + "draw less (fewer sails, or a lower gear)", props.size() == 1 ? "" : "s", String.join(", ", props),
+                    props.size() == 1 ? "s" : "", need, engines, engines == 1 ? "" : "s", props.size() == 1 ? "its" : "their",
+                    engines == 1 ? "s" : "", give, more, more == 1 ? "" : "s"));
+        }
+    }
+
+    /** " (+z)" and so on: a way named by the model's axis. */
+    private static String axis(Direction d) {
+        return " (" + (d.getAxisDirection() == Direction.AxisDirection.POSITIVE ? "+" : "-") + d.getAxis().getName() + ")";
+    }
+
+    /** Whether the vehicle check looks at these blocks at all: they hold something that floats, flies, drives or pushes. */
+    static boolean vehicle(Map<BlockPos, BlockState> blocks) {
+        for (BlockState s : blocks.values()) {
+            String id = id(s);
+            if (id.equals("create_submarine:oxygene_diffuser") || id.endsWith(":hull_controller") || id.equals("create_submarine:ballast_tank")
+                    || id.equals("create_high_seas:boat_engine") || id.equals("create_submarine:submarine_propeller")
+                    || id.equals("create_submarine:water_thruster") || id.equals("aeronauticswinds:keel") || id.equals("aeronauticswinds:rudder")
+                    || id.equals("create_high_seas:rudder") || s.is(HIGH_SEAS_SAILS) || id.equals("aeronautics:adjustable_burner")
+                    || id.equals("aeronautics:steam_vent") || s.is(LEVITITE) || id.equals("offroad:wheel_mount")
+                    || isPropeller(id) || isThruster(id) || liftScalar(s) > 0) return true;
+        }
+        return false;
+    }
+
+    /**
+     * Fills the corner steps of a vehicle model so every block shares a face with the rest, as Super Glue needs: where two
+     * pieces touch only along an edge, the empty cell between them on the inner side of the curve (the one with more blocks
+     * around it, so a rounded envelope keeps its outline) takes the block around it; a touch at a single corner first gets
+     * one cell to turn it into an edge. Gaps wider than that are left for the check to name. Returns the cells filled.
+     */
+    static List<BlockPos> closeSteps(Map<BlockPos, BlockState> cells, int sx, int sy, int sz) {
+        List<BlockPos> added = new ArrayList<>();
+        if (!vehicle(cells)) return added;
+        java.util.function.Predicate<BlockPos> inBox = q -> q.getX() >= 0 && q.getY() >= 0 && q.getZ() >= 0 && q.getX() < sx
+                && q.getY() < sy && q.getZ() < sz;
+        java.util.function.Predicate<BlockPos> open = q -> inBox.test(q) && !cells.containsKey(q);
+        for (int pass = 0; pass < 96; pass++) {
+            Map<BlockPos, Integer> label = labels(cells);
+            if (new HashSet<>(label.values()).size() < 2) break;
+            Set<Long> edges = edgePairs(label);
+            java.util.TreeSet<BlockPos> candidates = new java.util.TreeSet<>(java.util.Comparator.<BlockPos>comparingInt(q -> q.getY())
+                    .thenComparingInt(q -> q.getZ()).thenComparingInt(q -> q.getX()));
+            for (BlockPos p : label.keySet()) for (Direction d : Direction.values()) if (open.test(p.relative(d))) candidates.add(p.relative(d));
+            List<BlockPos> ranked = new ArrayList<>();
+            Map<BlockPos, Integer> score = new java.util.HashMap<>();
+            for (BlockPos c : candidates) {
+                if (overBurner(cells, c)) continue;
+                Set<Integer> faces = new HashSet<>();
+                for (Direction d : Direction.values()) {
+                    Integer l = label.get(c.relative(d));
+                    if (l != null) faces.add(l);
+                }
+                boolean joins = faces.size() >= 2;
+                // Or it turns a corner touch into an edge one: a block of another piece meets it along an edge.
+                boolean steps = false;
+                if (!joins && faces.size() == 1) {
+                    int own = faces.iterator().next();
+                    for (int dx = -1; dx <= 1 && !steps; dx++)
+                        for (int dy = -1; dy <= 1 && !steps; dy++)
+                            for (int dz = -1; dz <= 1 && !steps; dz++) {
+                                if (Math.abs(dx) + Math.abs(dy) + Math.abs(dz) != 2) continue;
+                                Integer l = label.get(c.offset(dx, dy, dz));
+                                if (l != null && l != own && !edges.contains(pair(own, l))) steps = true;
+                            }
+                }
+                if (!joins && !steps) continue;
+                int around = 0;
+                for (BlockPos q : BlockPos.betweenClosed(c.offset(-1, -1, -1), c.offset(1, 1, 1))) if (label.containsKey(q)) around++;
+                score.put(c, around + (joins ? 1000 : 0));
+                ranked.add(c);
+            }
+            // Highest score first; the candidates came in a fixed order, and the sort keeps it among equals.
+            ranked.sort((a, b) -> score.get(b) - score.get(a));
+            BlockPos best = null;
+            BlockState fill = null;
+            for (BlockPos c : ranked) {
+                fill = fillFor(cells, c);
+                if (fill != null) {
+                    best = c;
+                    break;
+                }
+            }
+            if (best == null || added.size() >= 48) break;
+            cells.put(best, fill);
+            added.add(best);
+        }
+        return added;
+    }
+
+    /** A cell in a burner's or steam vent's open column: a block there would become the balloon's roof over it. */
+    private static boolean overBurner(Map<BlockPos, BlockState> cells, BlockPos c) {
+        for (BlockPos q = c.below(); q.getY() >= 0; q = q.below()) {
+            BlockState s = cells.get(q);
+            if (s == null || s.isAir()) continue;
+            String id = id(s);
+            return id.equals("aeronautics:adjustable_burner") || id.equals("aeronautics:steam_vent");
+        }
+        return false;
+    }
+
+    /** Face-connected pieces of the solid blocks, by number. */
+    private static Map<BlockPos, Integer> labels(Map<BlockPos, BlockState> cells) {
+        Map<BlockPos, Integer> label = new java.util.HashMap<>();
+        int n = 0;
+        for (Map.Entry<BlockPos, BlockState> e : cells.entrySet()) {
+            BlockState s = e.getValue();
+            if (s.isAir() || s.getBlock() instanceof net.minecraft.world.level.block.LiquidBlock || label.containsKey(e.getKey())) continue;
+            ArrayDeque<BlockPos> todo = new ArrayDeque<>(List.of(e.getKey()));
+            label.put(e.getKey(), n);
+            while (!todo.isEmpty()) {
+                BlockPos p = todo.poll();
+                for (Direction d : Direction.values()) {
+                    BlockPos q = p.relative(d);
+                    BlockState qs = cells.get(q);
+                    if (qs == null || qs.isAir() || qs.getBlock() instanceof net.minecraft.world.level.block.LiquidBlock || label.containsKey(q)) continue;
+                    label.put(q, n);
+                    todo.add(q);
+                }
+            }
+            n++;
+        }
+        return label;
+    }
+
+    /** The pairs of pieces that already meet along an edge somewhere (one cell there joins them, no corner step needed). */
+    private static Set<Long> edgePairs(Map<BlockPos, Integer> label) {
+        Set<Long> out = new HashSet<>();
+        for (Map.Entry<BlockPos, Integer> e : label.entrySet()) {
+            BlockPos p = e.getKey();
+            for (int dx = -1; dx <= 1; dx++)
+                for (int dy = -1; dy <= 1; dy++)
+                    for (int dz = -1; dz <= 1; dz++) {
+                        if (Math.abs(dx) + Math.abs(dy) + Math.abs(dz) != 2) continue;
+                        Integer l = label.get(p.offset(dx, dy, dz));
+                        if (l != null && !l.equals(e.getValue())) out.add(pair(e.getValue(), l));
+                    }
+        }
+        return out;
+    }
+
+    private static long pair(int a, int b) {
+        return ((long) Math.min(a, b) << 32) | Math.max(a, b);
+    }
+
+    /**
+     * The block a filled step takes: the commonest plain full block beside it, else the commonest of the nearest ones (a
+     * step between two cogs takes the casing or hull around them); never a machine or container.
+     */
+    private static BlockState fillFor(Map<BlockPos, BlockState> cells, BlockPos at) {
+        for (int r = 1; r <= 64; r++) {
+            Map<BlockState, Integer> full = new java.util.TreeMap<>(java.util.Comparator.comparing(BlockState::toString));
+            for (Map.Entry<BlockPos, BlockState> e : cells.entrySet()) {
+                BlockPos p = e.getKey();
+                int d = Math.abs(p.getX() - at.getX()) + Math.abs(p.getY() - at.getY()) + Math.abs(p.getZ() - at.getZ());
+                if (d != r) continue;
+                BlockState s = e.getValue();
+                if (s.isAir() || s.getBlock() instanceof net.minecraft.world.level.block.EntityBlock
+                        || !s.isCollisionShapeFullBlock(EmptyBlockGetter.INSTANCE, p)) continue;
+                full.merge(s, 1, Integer::sum);
+            }
+            if (!full.isEmpty()) return java.util.Collections.max(full.entrySet(), Map.Entry.comparingByValue()).getKey();
+        }
+        return null;
+    }
+
     // ---------- the body: mass, inertia, shape ----------
 
     private static final class Body {
@@ -220,8 +442,12 @@ final class VehicleCheck {
         final Map<BlockPos, BlockState> blocks;
         /** The long horizontal axis: a hull's keel line. */
         final Direction.Axis keel;
+        /** The highest it climbs, once the flight sums have worked it out (NaN for what doesn't fly). */
+        double ceiling = Double.NaN;
+        /** The world the blocks stand in (or a model's), for following drive lines; null when there is none. */
+        net.minecraft.server.level.ServerLevel level;
 
-        Body(List<Part> parts, double m, double cx, double cy, double cz, Map<BlockPos, BlockState> blocks) {
+        Body(List<Part> parts, double m, double cx, double cy, double cz, Map<BlockPos, BlockState> blocks, Direction.Axis drive) {
             this.parts = parts;
             this.m = m;
             this.cx = cx;
@@ -246,7 +472,8 @@ final class VehicleCheck {
             lenX = x1 - x0 + 1;
             lenZ = z1 - z0 + 1;
             height = y1 - y0 + 1;
-            keel = lenX >= lenZ ? Direction.Axis.X : Direction.Axis.Z;
+            // What drives it along sets its keel line, even where pods or outriggers make it wider than it is long.
+            keel = drive != null ? drive : lenX >= lenZ ? Direction.Axis.X : Direction.Axis.Z;
         }
 
         /** Moment of inertia about the vertical axis through the centre of mass (each block a unit cube). */
@@ -589,6 +816,11 @@ final class VehicleCheck {
         double up = bow == null || bow == plus ? 1 : -1; // + when a positive pitch raises the end named first
         String plusSide = bow == null ? side.getName() + " side" : (bow.getClockWise() == side ? "starboard" : "port");
         String minusSide = bow == null ? side.getOpposite().getName() + " side" : plusSide.equals("starboard") ? "port" : "starboard";
+        // With the model's own axis, so a fix in blocks ("slide it toward the stern") says which way that is.
+        ahead += axis(bow == null ? plus : bow);
+        behind += axis(bow == null ? plus.getOpposite() : bow.getOpposite());
+        plusSide += axis(side);
+        minusSide += axis(side.getOpposite());
         if (Double.isNaN(pitch) || Math.abs(pitch) > Math.toRadians(40)) {
             faults.add(String.format(Locale.ROOT, "it doesn't float level fore and aft: its weight sits so far toward one end "
                     + "that it tips onto its %s and stands on end; move heavy blocks toward the middle, or give that end more hull",
@@ -685,6 +917,17 @@ final class VehicleCheck {
             torque += f.lift * under(tilted(b, f, a, p), h) * (r * cos - v * sin);
         }
         return torque - righting * sin;
+    }
+
+    /** The end of the keel its Steering Wheel stands toward, at least 1.5 blocks from the middle; null without one. */
+    private static Direction helmEnd(Body b) {
+        for (Part p : b.parts) {
+            if (!p.id.equals("simulated:steering_wheel")) continue;
+            double along = b.keel == Direction.Axis.X ? p.cx() - b.cx : p.cz() - b.cz;
+            if (Math.abs(along) < 1.5) continue;
+            return b.keel == Direction.Axis.X ? along > 0 ? Direction.EAST : Direction.WEST : along > 0 ? Direction.SOUTH : Direction.NORTH;
+        }
+        return null;
     }
 
     /** The way it goes ahead: its Boat Engine's facing, else its propellers' or thrusters'; null when nothing says. */
@@ -1070,6 +1313,7 @@ final class VehicleCheck {
             // Ceiling: where the balloon's lift falls to the weight (air thins as exp(-0.004·(y-63))).
             double need = (G * b.m - levLift) / (16.5 * filled);
             double ceiling = Math.min(280, 63 - Math.log(need) / 0.004 - balloonY);
+            b.ceiling = ceiling;
             out.append(String.format(Locale.ROOT, "- Ceiling about y %.0f (the air thins as it climbs).\n", ceiling));
             if (ceiling < CEILING_BAD) faults.add(String.format(Locale.ROOT, "its ceiling is only about y %.0f: it barely clears "
                     + "the ground and hits hills; it needs more balloon for its weight", ceiling));
@@ -1077,6 +1321,7 @@ final class VehicleCheck {
             // Wings and upward thrust both weaken as the air thins; the speed holds (the drag thins too).
             double need = G * b.m / ((wings.up * v + up) * pressure(63));
             double ceiling = Math.min(280, 63 - Math.log(need) / 0.004);
+            b.ceiling = ceiling;
             out.append(String.format(Locale.ROOT, "- Ceiling about y %.0f at full speed (the air thins as it climbs).\n", ceiling));
             if (ceiling < CEILING_BAD) faults.add(String.format(Locale.ROOT, "its ceiling is only about y %.0f: it barely clears "
                     + "the ground and hits hills; it needs more wings or more speed for its weight", ceiling));
@@ -1116,8 +1361,8 @@ final class VehicleCheck {
             for (Thrust t : side) if (t.airflow < Double.MAX_VALUE) fastest = Math.max(fastest, t.airflow);
             if (fastest > 0 && fastest < AIR_SLOW * 1.5 && v < AIR_SLOW)
                 notes.add(String.format(Locale.ROOT, "at these speeds its propellers push air at only %.1f blocks/s, so they can "
-                        + "never move it faster than that: gear them up (a large cogwheel driving a small one doubles the RPM; "
-                        + "a Portable Engine gives 32 RPM) or use bigger propellers", fastest));
+                        + "never move it faster than that: speed them up toward 256 RPM (from a Portable Engine's 32 RPM: "
+                        + Drives.change(32, 256) + ") or use bigger propellers", fastest));
             // Turning: uneven thrust, vectoring thrusters or tilting propellers, against Sable's damping and the envelope.
             double q = 0;
             String how = null;
@@ -1144,6 +1389,15 @@ final class VehicleCheck {
                     how = "tilting its " + t.what;
                 }
             }
+            // A propeller or fin on an upright Swivel Bearing swings round as a Steering Wheel turns the bearing's cog.
+            Swivel swivel = swivel(b, all, v, p0);
+            if (swivel != null && !swivel.wheel())
+                faults.add("nothing turns the Swivel Bearing at " + xyz(swivel.bearing()) + ", so what it carries only points straight: "
+                        + "put a Steering Wheel at the helm with a line of cogwheels from its shaft to the bearing's cog");
+            if (swivel != null && swivel.torque() > q) {
+                q = swivel.torque();
+                how = swivel.how();
+            }
             double iy = b.iYaw(), damp = DAMP * iy;
             for (Part p : b.parts) {
                 double r2 = sq(p.cx() - b.cx) + sq(p.cz() - b.cz);
@@ -1154,7 +1408,13 @@ final class VehicleCheck {
             long gyros = b.count("aeroworks:gyroscope");
             if (gyros > 0) damp += iy;
             if (lev > 0 && q > 0) damp = levititeBrake(b, q, damp);
-            turn(q, damp, how, faults, notes, out, "aircraft");
+            long still = b.parts.stream().filter(p -> isPropeller(p.id) && Math.abs(rpm.getOrDefault(p.pos, 0f)) < 1e-3).count();
+            if (how == null && still > 0)
+                faults.add(still + " of its propellers don't turn (no engine reaches them), so they neither push nor steer: get "
+                        + "every propeller turning before judging the steering");
+            else turn(q, damp, how, faults, notes, out, "aircraft");
+            if (how != null) steering(b, swivel != null && how.equals(swivel.how()) ? swivel : null, faults, notes, out);
+            throttle(b, side, faults, notes, out);
             if (gyros > 0) notes.add("its Gyroscope keeps it level but also brakes turning");
         }
         if (stress > 0) notes.add(String.format(Locale.ROOT, "its propellers draw about %.0f stress units at these speeds; the "
@@ -1164,7 +1424,8 @@ final class VehicleCheck {
         // Pitch: a thrust line far above or below the centre of mass noses it up or down.
         double pitch = 0;
         for (Thrust t : side) pitch = Math.max(pitch, Math.abs(t.at.getY() + 0.5 - b.cy));
-        if (pitch >= 4 && b.count("aeroworks:gyroscope") == 0 && wingLift <= 0)
+        // Under a balloon the cruise pitch above weighs the thrust line against the balloon's pull; this is for the rest.
+        if (pitch >= 4 && b.count("aeroworks:gyroscope") == 0 && wingLift <= 0 && filled == 0)
             notes.add(String.format(Locale.ROOT, "its propellers push %.0f blocks off the height of its centre of mass, so it "
                     + "pitches when they run; a Gyroscope or lower propellers fix that", pitch));
     }
@@ -1583,10 +1844,12 @@ final class VehicleCheck {
                     Math.abs(v), v < 0 ? "below" : "level with"));
             return Double.NaN;
         }
-        Direction bow = null;
+        // The bow is where the helm is; only a ship without one is named by the way its propellers push, which flips
+        // when they are wrenched round.
+        Direction bow = helmEnd(b);
         double strongest = 0;
         for (Thrust t : all)
-            if (t.dir.getAxis() == b.keel && t.force > strongest) {
+            if (bow == null && t.dir.getAxis() == b.keel && t.force > strongest) {
                 strongest = t.force;
                 bow = t.dir;
             }
@@ -1596,6 +1859,11 @@ final class VehicleCheck {
         double up = bow == null || bow == plus ? 1 : -1;
         String plusSide = bow == null ? side.getName() + " side" : bow.getClockWise() == side ? "starboard" : "port";
         String minusSide = bow == null ? side.getOpposite().getName() + " side" : plusSide.equals("starboard") ? "port" : "starboard";
+        // With the model's own axis, so a fix in blocks ("slide it toward the stern") says which way that is.
+        ahead += axis(bow == null ? plus : bow);
+        behind += axis(bow == null ? plus.getOpposite() : bow.getOpposite());
+        plusSide += axis(side);
+        minusSide += axis(side.getOpposite());
         // Swinging till the lift is over the centre of mass raises the end the lift sits toward.
         double pd = Math.toDegrees(Math.atan2(a, v)) * up, ld = Math.toDegrees(Math.atan2(l, v));
         String trimText = Math.abs(pd) < 0.25 ? "level fore and aft" : String.format(Locale.ROOT, "%s %.1f° down", pd > 0 ? behind : ahead, Math.abs(pd));
@@ -1605,16 +1873,24 @@ final class VehicleCheck {
         List<String> fix = new ArrayList<>();
         if (Math.abs(pd) >= 0.25) fix.add(String.format(Locale.ROOT, "%.0f mass x blocks toward the %s", Math.abs(a) * b.m, pd > 0 ? ahead : behind));
         if (Math.abs(ld) >= 0.25) fix.add(String.format(Locale.ROOT, "%.0f toward %s", Math.abs(l) * b.m, ld > 0 ? plusSide : minusSide));
-        if (!fix.isEmpty()) out.append("; its weight and lift are off by ").append(String.join(", ", fix))
-                .append(": move the balloon or the gondola's rooms and machines to level it");
+        if (!fix.isEmpty()) out.append("; its lift sits ").append(String.join(", ", fix))
+                .append(" of its weight: move the balloon or the gondola's rooms and machines to level it");
         out.append(").\n");
-        if (Math.abs(pd) >= TRIM_BAD) faults.add(String.format(Locale.ROOT, "it hangs %.1f° %s down: move weight toward the %s, "
-                + "or the balloon toward the %s, until it hangs level", Math.abs(pd), pd > 0 ? behind : ahead, pd > 0 ? ahead : behind,
-                pd > 0 ? behind : ahead));
+        // Sliding the balloon (or everything under it) by d moves lift and weight apart by d x the rest's share of the mass.
+        double envelope = 0;
+        for (Part p : b.parts) if (airtight(p.state)) envelope += p.mass;
+        double slide = Math.abs(a) * b.m / Math.max(b.m - envelope, 0.25 * b.m);
+        if (Math.abs(pd) >= TRIM_BAD) faults.add(String.format(Locale.ROOT, "it hangs %.1f° %s down: slide the balloon about %.0f "
+                + "block%s toward the %s, or the gondola with everything under the balloon that far toward the %s (or move its heavy "
+                + "rooms and machines that way), until it hangs level", Math.abs(pd), pd > 0 ? behind : ahead, Math.max(1, slide),
+                Math.round(Math.max(1, slide)) == 1 ? "" : "s", pd > 0 ? behind : ahead, pd > 0 ? ahead : behind));
         else if (Math.abs(pd) >= TRIM_NOTE) notes.add(String.format(Locale.ROOT, "it hangs %.1f° %s down, which shows",
                 Math.abs(pd), pd > 0 ? behind : ahead));
-        if (Math.abs(ld) >= TRIM_BAD) faults.add(String.format(Locale.ROOT, "it hangs %.1f° down to %s: balance its weight across "
-                + "it", Math.abs(ld), ld > 0 ? minusSide : plusSide));
+        double sideways = Math.abs(l) * b.m / Math.max(b.m - envelope, 0.25 * b.m);
+        if (Math.abs(ld) >= TRIM_BAD) faults.add(String.format(Locale.ROOT, "it hangs %.1f° down to %s: slide the balloon about %.0f "
+                + "block%s toward %s, or balance the weight under it across it (the same side to side)", Math.abs(ld),
+                ld > 0 ? minusSide : plusSide, Math.max(1, sideways), Math.round(Math.max(1, sideways)) == 1 ? "" : "s",
+                ld > 0 ? minusSide : plusSide));
         else if (Math.abs(ld) >= TRIM_NOTE) notes.add(String.format(Locale.ROOT, "it hangs %.1f° down to %s, which shows",
                 Math.abs(ld), ld > 0 ? minusSide : plusSide));
         return v;
@@ -1656,11 +1932,12 @@ final class VehicleCheck {
         int wooden = (int) Math.ceil(want / (256 * p0 * (1 - u / 25.6)));
         int bearings = (int) Math.ceil(want / (1200 * p0 * (1 - u / 23.1)));
         StringBuilder text = new StringBuilder(String.format(Locale.ROOT, "at %.1f blocks/s it is too slow to travel on (an "
-                + "airship wants about %.0f): at that speed its drag is about %.0f, so it needs that much push there. Spin "
-                + "propellers fast, since each pushes only up to its airflow: %d Wooden Propeller%s at 256 RPM (geared up three "
-                + "cog steps from a Portable Engine's 32 RPM; one engine turns two), or %d Propeller Bearing%s with 13 sails at "
-                + "128 RPM (two cog steps; two Portable Engines on the same shaft turn one, as engines at the same speed add up "
-                + "their stress). A bearing's big fan pushes more for the same engines", v, u, want, wooden, wooden == 1 ? "" : "s",
+                + "airship wants about %.0f): at %.0f blocks/s its drag would be about %.0f, so it needs that much push at that speed, "
+                + "and a propeller pushes less the nearer the ship gets to its airflow. Spin "
+                + "propellers fast, since each pushes only up to its airflow: %d Wooden Propeller%s at 256 RPM (from a Portable "
+                + "Engine's 32 RPM: " + Drives.change(32, 256) + "; one engine turns two), or %d Propeller Bearing%s with 13 "
+                + "sails at 128 RPM (" + Drives.change(32, 128) + "; two Portable Engines on the same shaft turn one, as "
+                + "engines at the same speed add up their stress). A bearing's big fan pushes more for the same engines", v, u, u, want, wooden, wooden == 1 ? "" : "s",
                 bearings, bearings == 1 ? "" : "s"));
         double need = G * b.m / (16.5 * pressure(200 + balloonY));
         if (filled > need * 1.3)
@@ -1700,9 +1977,8 @@ final class VehicleCheck {
         }
         if (fastest > 0 && !thrusters && needSpeed > 0.75 * fastest) {
             String spin = slowest < 256 ? String.format(Locale.ROOT, "spin them at 256 RPM, the most a shaft turns (they turn %.0f "
-                    + "now; each large cogwheel driving a small one doubles the speed, so a Portable Engine's 32 takes three "
-                    + "such steps, and at 256 a Wooden Propeller pushes air at 25.6 blocks/s and draws 1024 stress units, so one "
-                    + "Portable Engine turns two), and ", slowest) : "";
+                    + "now; from a Portable Engine's 32: " + Drives.change(32, 256) + "; at 256 a Wooden Propeller pushes "
+                    + "air at 25.6 blocks/s and draws 1024 stress units, so one Portable Engine turns two), and ", slowest) : "";
             faults.add(String.format(Locale.ROOT, "its propellers push air at only %.1f blocks/s and their push falls to nothing as "
                     + "it nears that, short of the %.1f blocks/s it needs to take off: %slower the take-off speed with more wing "
                     + "for its weight (a propeller plane wants about three sails facing up per mass of everything else, and a "
@@ -1866,6 +2142,201 @@ final class VehicleCheck {
         return count;
     }
 
+    /** A propeller or fin a Swivel Bearing swings round, its turning force at full lock and what turns the bearing. */
+    private record Swivel(double torque, String how, BlockPos bearing, boolean wheel) {
+    }
+
+    /** How far a Steering Wheel is taken to swing a swivelled part, either way: past this a propeller mostly pushes sideways. */
+    private static final double SWIVEL_LOCK = Math.toRadians(45);
+
+    /**
+     * Steering on a Swivel Bearing standing upright (facing up or down): the part glued to its face swings round its
+     * axis, so a propeller there pushes partly sideways and a fin of Symmetric Sails meets the air at an angle. Measured
+     * in-world: a Steering Wheel at 45° on a stern Wooden Propeller turned an 11 by 15 blimp about 11° a second. The part
+     * is taken as the blocks within 2 of the bearing's face, which is what a small glue box of its own would hold.
+     */
+    private static Swivel swivel(Body b, List<Thrust> all, double v, double p0) {
+        Swivel best = null;
+        boolean wheel = b.count("simulated:steering_wheel") > 0 || b.count("aeroworks:mechanical_servo") > 0
+                || b.count("aeroworks:stepper_servo") > 0;
+        for (Part p : b.parts) {
+            if (!p.id.equals("simulated:swivel_bearing")) continue;
+            Direction f = facing(p.state);
+            if (f == null || f.getAxis() != Direction.Axis.Y) continue;
+            BlockPos face = p.pos.relative(f);
+            if (!b.blocks.containsKey(face)) continue;
+            Set<BlockPos> part = new HashSet<>(List.of(face));
+            ArrayDeque<BlockPos> todo = new ArrayDeque<>(part);
+            while (!todo.isEmpty()) {
+                BlockPos q = todo.poll();
+                for (Direction d : Direction.values()) {
+                    BlockPos n = q.relative(d);
+                    BlockState ns = b.blocks.get(n);
+                    if (ns == null || ns.isAir() || n.equals(p.pos) || n.distManhattan(face) > 2 || !part.add(n)) continue;
+                    todo.add(n);
+                }
+            }
+            double arm = Math.abs(b.along(p.cx(), p.cz()));
+            if (arm < 1.5) continue;
+            double torque = 0;
+            String what = null;
+            for (Thrust t : all) {
+                // A Propeller Bearing's fan is a contraption of its own; riding a swivel is untried, so it isn't counted.
+                if (!part.contains(t.at) || !t.dir.getAxis().isHorizontal() || t.what.startsWith("Propeller Bearing")) continue;
+                double tq = (t.airflow < Double.MAX_VALUE ? t.force * p0 : t.force) * Math.sin(SWIVEL_LOCK) * arm;
+                if (tq > torque) {
+                    torque = tq;
+                    what = t.what;
+                }
+            }
+            // A fin: Symmetric Sail drag 1.75 x pressure x the speed across it, whose sideways share peaks at 45 degrees.
+            long fins = part.stream().filter(q -> id(b.blocks.get(q)).endsWith("_symmetric_sail")).count();
+            double fin = 1.75 * p0 * v * fins * Math.sin(SWIVEL_LOCK) * Math.cos(SWIVEL_LOCK) * arm;
+            if (fin > torque) {
+                torque = fin;
+                what = fins + "-sail fin";
+            }
+            if (what == null) continue;
+            String how = "swinging its " + what + " on the Swivel Bearing at " + xyz(p.pos)
+                    + (wheel ? " with the Steering Wheel (at 45°)" : "");
+            if (!wheel) torque = 0;
+            if (best == null || torque > best.torque()) best = new Swivel(torque, how, p.pos, wheel);
+        }
+        return best;
+    }
+
+    /**
+     * Who steers it, and with what. A pilot steers with one control turned left or right: a Steering Wheel turning a Swivel
+     * Bearing, a Steering Wheel whose comparators (one at each side, each lit only while the wheel is turned that way) cut
+     * that side's propellers, or an Aeroworks console's wheel sending Left and Right on two Redstone Link frequencies.
+     * Running each side's propellers from a lever of its own is the fallback for a player who can't make a wheel yet.
+     */
+    private static void steering(Body b, Swivel swivel, List<String> faults, List<String> notes, StringBuilder out) {
+        if (swivel != null) {
+            if (swivel.wheel()) out.append("- Steered with one Steering Wheel, which swings the Swivel Bearing at ").append(xyz(swivel.bearing()))
+                    .append(" (its own small glue box must hold the part it swings).\n");
+            return;
+        }
+        if (b.count("aeroworks:control_desk") + b.count("aeroworks:control_stand") > 0) {
+            out.append("- Steered from its Aeroworks console: a Wheel Module's Left and Right go out on two Redstone Link frequencies, "
+                    + "each to the links that cut or slow that side.\n");
+            return;
+        }
+        List<BlockPos> wheels = new ArrayList<>();
+        for (Part p : b.parts) if (p.id.equals("simulated:steering_wheel")) wheels.add(p.pos);
+        for (BlockPos w : wheels) {
+            Direction f = facing(b.blocks.get(w));
+            if (f == null || !f.getAxis().isHorizontal()) continue;
+            if (reads(b, w, f.getClockWise()) && reads(b, w, f.getCounterClockWise())) {
+                out.append("- Steered with one Steering Wheel: the comparator at each side of it lights only while the wheel is turned "
+                        + "one way, and slows or cuts the propellers on one side.\n");
+                return;
+            }
+        }
+        boolean makeable = Drives.canMake(new Drives.Part("simulated:steering_wheel", "steers"))
+                && Drives.canMake(new Drives.Part("minecraft:comparator", "reads the wheel"));
+        String fix = "steer it with one Steering Wheel at the helm instead: a comparator against each side of the wheel (its back to "
+                + "the wheel) lights only while the wheel is turned one way (the other side's for the other way), so wire or Redstone "
+                + "Link each one to " + (transmission() ? "that side's Analog Transmission (stronger the further the wheel turns, so a "
+                + "small turn slows that side a little and a full turn stops it; a transmission takes the stronger of its throttle's "
+                + "and the wheel's signals) or a Clutch (which cuts it outright)" : "a Clutch in the propeller line on one side")
+                + "; slowing one side's push swings the nose toward it (if it steers backwards, swap "
+                + "the two). Or let the wheel's cog turn a Swivel Bearing under a stern propeller";
+        if (!wheels.isEmpty()) {
+            faults.add("its Steering Wheel at " + xyz(wheels.get(0)) + " steers nothing: a wheel only turns what its shaft or cog drives "
+                    + "and what comparators at its sides read. " + Character.toUpperCase(fix.charAt(0)) + fix.substring(1));
+        } else if (makeable) {
+            faults.add("it turns only by running one side's propellers harder than the other's, and nothing at the helm does that with "
+                    + "one control, so the pilot would juggle a lever for each side: " + fix);
+        } else {
+            notes.add("it steers by running one side's propellers harder, from a lever for each side, because the player can't make a "
+                    + "Steering Wheel and comparators yet; tell them so in the answer, and that once they can make a "
+                    + "Steering Wheel (andesite casing, a large cogwheel and a shaft) and comparators they should " + fix);
+        }
+    }
+
+    private static final Drives.Part TRANSMISSION = new Drives.Part("simulated:analog_transmission", "slows its cogwheel by redstone");
+    private static final Drives.Part THROTTLE_LEVER = new Drives.Part("simulated:throttle_lever", "sets a redstone strength");
+
+    private static boolean transmission() {
+        return Drives.canMake(TRANSMISSION) && Drives.canMake(THROTTLE_LEVER);
+    }
+
+    /**
+     * Whether the pilot can set how fast it goes, not just flat out or stopped. A propeller is throttled when it turns on
+     * the cogwheel side of an Analog Transmission that a graded signal reaches (a Throttle Lever, an Analog Lever, a
+     * Redstone Link, wire): the transmission's cogwheel turns at (15 - signal)/16 of its shaft and stops at 15 (measured;
+     * its shaft runs through at full speed). Thrusters take the signal strength themselves. A lever or clutch alone only
+     * turns the push on or off.
+     */
+    private static void throttle(Body b, List<Thrust> side, List<String> faults, List<String> notes, StringBuilder out) {
+        if (side.isEmpty() || b.level == null) return;
+        List<String> free = new ArrayList<>();
+        int props = 0, throttled = 0, thrusters = 0, graded = 0;
+        for (Thrust t : side) {
+            if (t.airflow == Double.MAX_VALUE) {
+                thrusters++;
+                if (gradedNear(b, t.at)) graded++;
+                continue;
+            }
+            props++;
+            BuildCheck.Throttled part = BuildCheck.cogSide(b.blocks, b.level, t.at);
+            boolean ok = !part.source() && part.part().stream().anyMatch(p -> id(b.blocks.get(p)).equals("simulated:analog_transmission")
+                    && gradedNear(b, p));
+            if (ok) throttled++;
+            else free.add(t.what + " at " + xyz(t.at));
+        }
+        if (props > 0 && throttled == props && graded == thrusters) {
+            out.append("- Throttle: an Analog Transmission in each propeller line, set from the helm, picks any speed from stopped "
+                    + "to full in 16 steps (the speeds above are at full throttle).\n");
+            return;
+        }
+        if (props == 0 && graded == thrusters) {
+            out.append("- Throttle: the signal strength reaching its thrusters sets how hard they push.\n");
+            return;
+        }
+        String how = "an Analog Transmission in each propeller line (or one before the line splits), its shaft taking the engine's "
+                + "turn and its cogwheel passing it on toward the propeller (only the cogwheel slows; the shaft runs through at full "
+                + "speed), and one Throttle Lever at the helm wired or Redstone Linked to every transmission (links carry the "
+                + "strength). A transmission slows its cogwheel to (15 - signal)/16 and stops it at 15, so wrench the Throttle Lever "
+                + "once to invert it: pulled back the propellers stop, pushed fully forward they run flat out";
+        if (throttled > 0) {
+            faults.add("some propellers are behind the throttle and some aren't (" + String.join(", ", free) + "), so it slews "
+                    + "round as the throttle moves: put every propeller line behind the throttle, with " + how);
+            return;
+        }
+        if (props == 0) {
+            String thr = "its thrusters only get full signal or none (a lever or repeater), so they push flat out or not at all: "
+                    + "drive them from a Throttle Lever (its strength sets their push), wired or Redstone Linked";
+            if (Drives.canMake(THROTTLE_LEVER)) faults.add(thr);
+            else notes.add(thr + " once the player can make one (brass casing and a stick); tell them so in the answer");
+            return;
+        }
+        String none = "its propellers have no throttle: they run at full speed or stop (a lever or clutch only turns them on or "
+                + "off), so the pilot lurches between flat out and nothing and can't ease up to a dock or a mooring";
+        if (transmission()) faults.add(none + ". Give it " + how);
+        else notes.add(none + ", because the player can't make an Analog Transmission and a Throttle Lever yet (brass casing, "
+                + "an electron tube); tell them so in the answer, and that once they can, the upgrade is " + how);
+    }
+
+    /** Whether a graded redstone signal reaches pos: a Throttle Lever, Analog Lever, Redstone Link or wire beside it. */
+    private static boolean gradedNear(Body b, BlockPos pos) {
+        for (Direction d : Direction.values()) {
+            BlockState s = b.blocks.get(pos.relative(d));
+            if (s == null) continue;
+            String id = id(s);
+            if (id.equals("simulated:throttle_lever") || id.equals("create:analog_lever") || id.equals("create:redstone_link")
+                    || id.equals("simulated:modulating_linked_receiver") || s.is(net.minecraft.world.level.block.Blocks.REDSTONE_WIRE)) return true;
+        }
+        return false;
+    }
+
+    /** Whether a comparator beside the wheel, on its {@code side}, reads it (its back against the wheel). */
+    private static boolean reads(Body b, BlockPos wheel, Direction side) {
+        BlockState s = b.blocks.get(wheel.relative(side));
+        return s != null && s.is(net.minecraft.world.level.block.Blocks.COMPARATOR) && facing(s) == side.getOpposite();
+    }
+
     private static double differentialAir(Body b, List<Thrust> side, Direction forward) {
         if (forward == null) return 0;
         double left = 0, right = 0;
@@ -1980,8 +2451,10 @@ final class VehicleCheck {
     private static void turn(double torque, double damping, String how, List<String> faults, List<String> notes, StringBuilder out, String what) {
         if (torque <= 0 || how == null) {
             faults.add("nothing turns it: it can only go straight. " + switch (what) {
-                case "aircraft" -> "Put propellers or thrusters on both sides (run one side harder to turn), or use Vector "
-                        + "Thrusters; rudders work only in water";
+                case "aircraft" -> "Steer it with one Steering Wheel at the helm: its cog turning a Swivel Bearing under a "
+                        + "propeller at the stern, or a propeller on each side with a comparator at each side of the wheel (its back "
+                        + "against the wheel, pointing away) slowing that side's line through an Analog Transmission, or cutting it "
+                        + "through a Clutch; rudders work only in water";
                 case "submarine" -> "Add a Winds & Weather Rudder at the stern, or propellers on both sides";
                 default -> "Steer with the Boat Engine's tiller, a Winds & Weather Rudder at the stern, or propellers on both sides";
             });
@@ -2081,7 +2554,8 @@ final class VehicleCheck {
     private static void ballast(Map<BlockPos, BlockState> blocks, BlockGetter getter, List<String> faults) {
         Map<String, Integer> found = new java.util.TreeMap<>();
         blocks.forEach((p, s) -> {
-            if (s.is(STORAGE_BLOCKS) && mass(getter, p, s) >= 2) found.merge(s.getBlock().getName().getString(), 1, Integer::sum);
+            if (s.is(STORAGE_BLOCKS) && mass(getter, p, s) >= 2 && !powers(blocks, p, s))
+                found.merge(s.getBlock().getName().getString(), 1, Integer::sum);
         });
         if (found.isEmpty()) return;
         List<String> what = new ArrayList<>();
@@ -2091,8 +2565,18 @@ final class VehicleCheck {
                 + "ship they built). Take the ballast out and shape or lay out the hull so it balances");
     }
 
+    /** A block of redstone that touches something else of the vehicle is powering it (a burner, a bearing), not ballast. */
+    private static boolean powers(Map<BlockPos, BlockState> blocks, BlockPos p, BlockState s) {
+        if (!s.isSignalSource()) return false;
+        for (Direction d : Direction.values()) {
+            BlockState next = blocks.get(p.relative(d));
+            if (next != null && !next.isAir() && !next.is(STORAGE_BLOCKS)) return true;
+        }
+        return false;
+    }
+
     /** Controls a player has to stand at and use by hand, from the vehicle itself. */
-    private static boolean isControl(String id) {
+    static boolean isControl(String id) {
         return id.equals("simulated:steering_wheel") || id.equals("simulated:throttle_lever") || id.equals("simulated:linked_typewriter")
                 || id.equals("minecraft:lever") || id.equals("create_submarine:pump_controller");
     }
@@ -2102,7 +2586,7 @@ final class VehicleCheck {
      * middle of their footprint, from half a block below to the 0.3 the helm's room test leaves free, or null when
      * nothing of the vehicle is there to stand on.
      */
-    private static Double footing(Map<BlockPos, BlockState> blocks, BlockGetter getter, Vec3 feet) {
+    static Double footing(Map<BlockPos, BlockState> blocks, BlockGetter getter, Vec3 feet) {
         AABB under = new AABB(feet.x - 0.15, feet.y - 0.5, feet.z - 0.15, feet.x + 0.15, feet.y + 0.3, feet.z + 0.15);
         Double top = null;
         for (BlockPos q : BlockPos.betweenClosed(BlockPos.containing(under.minX, under.minY, under.minZ),

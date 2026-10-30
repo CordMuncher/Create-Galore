@@ -557,3 +557,206 @@ every turn of the head moved it; towing was also measured from the tip, so looki
 - Self-test `tow` also looks round and strafes and checks the line shown never moves (12 checks). Client check:
   21.0 m through looking round, strafing, stepping in and jumping; a crankbait trolled 110 m held 25.2 m; 2 s of
   winding took it to 22.7 m.
+
+## 0.3.18: drive window, on/off, autocast, reports (pack 0.6.32)
+
+Emre (28 Oct): the Reel Drive's value box glyphs flickered and vanished with shaders, the holder held the rod
+backwards, and the line on a hanging fish started beside the rod tip. He also asked for the drives to work like the
+boat engine (a window for fuel, an on/off switch, autocast off), for the window to offer everything the glyphs do,
+for lures to show on the goggles, and for a quiet-by-default chat report of lost fish.
+
+- **Value boxes sit a whole pixel out** (`DriveSlots.Slot.getSouthLocation`, z 16 instead of 15.5). Create draws the
+  box contents 5 font units (about 0.08 px) in front of the anchor, so half a pixel left the glyph within depth
+  precision of the face: it z-fought with shaders and hid behind the face without. Checked with no shaders and
+  Complementary; Photon fails to compile on the cloud's software GPU, but the fix is plain geometry.
+- **The rod is turned 180 degrees about its own axis** in `MountRenderer`. The hanging fish and its line are now
+  worked out in block space through the inverted pose, so on a rotated Sable ship the line starts at the tip.
+- **`DriveMenu` / `DriveScreen`**: sneak-use with an empty hand opens it for every drive. Bait slot for geared drives,
+  fuel slot for the Fuel drive, On/Off and Reports for all, Autocast, Cast, mode, distance (1, or 5 with Shift) and
+  top gear for geared ones. The old sneak-use that emptied the slots into the inventory is gone.
+- **`ReelDrive.on`**: off means no torque, no reeling and no casting, and a Fuel drive burns nothing.
+  **`autocast`** off arms a single cast (`castArmed`) from the Cast button or switching on. Both save in NBT and
+  default to true for old drives.
+- **`reportLosses`** (default off): `DriveMount.lost` messages the rod's owner, if online, with the machine, its
+  world position, the outcome and `CastHook.lossReason()`.
+- **Taking a rod out while the use button is held** no longer keeps reeling: `MountedRod.heldUseAfterRodSwap` makes
+  `FishingInput` cancel the held use until it is released. Set on insert too, so holding use doesn't put the rod in
+  and take it straight back out.
+- Goggles: "Switched off", "Autocast off" and the lure's name in place of "No bait".
+- Tested in a client: window open, fuel in by shift-click, every button, Off stops a cast, autocast off casts once
+  and not again in over 60 s, rod out mid-reel stops, a forced loss reported in chat. Machine self-tests 36 PASS.
+
+## 0.3.19: the drive window gets its own look, Cast now is one go (pack 0.6.33)
+
+Emre (29 Oct, on 0.3.18): the window worked but was plain Minecraft buttons; it should look like the boat engine's
+(etched glyphs, its own button shapes), and there should be a button to cast now that does exactly one cast in either
+mode.
+
+- **Sprites from `art/make_gui.py`** in `textures/gui/sprites/drive/` (the GUI atlas): a tiled slate deck, stone
+  buttons in four states (up, hover, pressed in, pressed in and hovered) plus a flat disabled one, a sunk readout
+  window, a raised slot plate and 12 glyphs, each cut as a dark groove with a light lip so they read as engraved.
+  Glyphs come twice: `glyph_*` for stone, `etch_*` for the deck. Our own drawings in the style of Create's screens
+  and the boat engine's (High Seas) on/off buttons; nothing copied.
+- **`DriveScreen`** is drawn from them: power, autocast, cast now and reports as 18 px buttons, the mode as a two-way
+  switch (the mode in use stays pressed in), distance and gear as readout windows with 12 px - and + (glyphs are 10 px
+  so they centre on even sizes). Toggles show pressed in when on. Tooltips name every button and etched label.
+  A status window under the bait reads Off / Line out / No bait / Ready / Casting (new `DATA_CAN_CAST` =
+  `wantsToCast`). The Basic drive's window is shorter (inventory at y 62) with only power and reports.
+- **Cast now**: shown always, enabled when on with the line in, also with autocast on (casts without the pause).
+  The one-cast rules were already right (`castArmed` cleared on the cast, no recast after); switching on no longer
+  arms a cast, and switching off cancels one that was waiting for bait or power.
+- Tested in a client: autocast off kept the line in 70 s; Cast now in Cast and retrieve threw to 16 m, wound back
+  and stayed in 90 s; in Cast and wait it landed a forced bite and stayed in 100 s; power off and on didn't cast.
+
+## 0.3.20: a hooked fish goes round the angler at its swimming speed (pack 0.6.34)
+
+Reported (29 Oct): pulling line in and out felt right, but sideways a hooked fish went round the angler "at Mach 10",
+like a pendulum, ending up behind the angler in seconds, so a boat could never follow it.
+
+- **Cause:** `Fight.turn` was an angle per tick (holding up to 0.012 rad, a run 0.03-0.07 rad), so the speed round
+  the angler grew with the line out. At 40 m a run was 24-56 m/s; a 200-fight check of the old code peaked at 60 m/s
+  and swung 303 degrees in 5 s. The moved-fish search also jumped 0.3 rad at a time when a spot was blocked (12 m at
+  40 m), and a gaussian 0.006 rad per tick of noise rode on top.
+- **Now:** `Fight` keeps a sideways speed in m/s (`sideSpeed`), eased over `SIDE_TAU` 0.6 s toward a signed share of
+  the fish's top speed (holding: up to `SIDE_HOLD` 0.3; a run: `SIDE_RUN_LOW` 0.6 to 1). Top speed is the species'
+  `speed` times a size factor (square root of length over the species' usual length, 0.6-1.6), by intensity, 1.8 on a
+  run, and by stamina, the same shape as the swim speed that takes line. All directions together never pass it: the
+  speed it goes out or in this tick is taken off first (`sqrt(top^2 - radial^2)`), keeping at least `SIDE_FLOOR` 0.4
+  of it so the fish can always turn.
+- **`CastHook.moveFish`** measures the fish's angle from where it is now (not a stored heading), so an angler or boat
+  moving sideways swings the line instead of carrying the fish along, and steps it by `sideSpeed * DT / distance`.
+  Blocked sideways by a shore it turns back from a standstill (`Fight.blockedSideways`); pushed out against one it
+  slides along within its own speed. The per-tick noise is gone.
+- **Balance unchanged:** nothing in the fight reads the sideways speed and the random draws are the same, so every
+  fight's outcome and length match 0.3.19 exactly (checked: 6,000 seeded fights over the presets, same hash).
+- **Self-test `side`:** a 81 x 81 glass pool, a boat rig, sailfish, tuna, carp and cod at usual and record length,
+  30 s of fight each, then the angler strafing 8 m at 10 m/s. Round the angler stays under what the fish can swim
+  (largest seen 5.3 of 6.5 m/s, a record sailfish); the strafe moves a big fish 0 m and a small one about 1-2 m (towed).
+  Four runs plus `selftest all` pass.
+
+## 0.3.21: the rod swings catches over, fish in attribute filters, fuel by pull (pack 0.6.35)
+
+Asked for (29 Oct): belts stay as they are, but the rod should visibly turn, the fish hanging from it, and drop it
+where it goes; drops into storage touching the drive, and from a few blocks up into belts, upward funnels and lid-up
+barrels (which open), only in the column right beside the drive; the swing as fast as the top gear allows; the same
+on a tilted ship; fish usable in Create's Attribute Filter (too big to cook whole, weight "or more" / "or less"); the
+Fuel drive's fuel tied to how hard it pulls, in a tight range.
+
+- **Straight down stays instant.** A chest, hopper, funnel or belt under the machine takes the catch at once, as
+  before: there is nothing to swing over. Every other place goes through the rod.
+- **Where it drops (`CatchDrop`):** the four sides in order N, S, E, W; in each, the column touching that side, from
+  the machine's height down `REACH_DOWN` 5 blocks. At the machine's height any block that takes items counts (from
+  that face, as before). Lower down the first thing a fish would fall onto decides: a belt, an inserting upward funnel
+  that isn't powered (Create's own `tryInsert`, so its filter has a say), a barrel with `FACING=up`, or a hopper.
+  Anything else with a collision shape, or a fluid, closes that column. The plan is checked again when the fish is
+  let go (it re-plans if the target filled up or changed), and a last-moment refusal bounces it onto the target.
+- **Hoppers added** beside the asked-for three: a hopper's open top takes a falling item in vanilla too.
+- **Timing (`RodTurn`):** the turn is a shared record (from/to yaw and rise, start tick, ticks) the server sets and
+  the client draws, so they agree without per-tick packets. 9 degrees of yaw per tick at gear 1.0, times the drive's
+  top gear (`ReelDrive.turnSpeed`: 2.0 makes a half turn 10 ticks, 0.25 makes it 80); Basic drive and Rod Holder
+  1.0. The rod rises so its tip sits over the middle of the next block (acos of 1 over its drawn length). It holds
+  `HOLD_TICKS` 5, then the fish falls `sqrt(2h/0.05)` ticks. A drive doesn't cast while the rod is busy.
+- **Barrels:** the machine sets `OPEN` and plays the barrel sound when it lets go, and closes it
+  `BARREL_OPEN_AFTER` 8 ticks after landing unless a player has it open.
+- **Ships:** the turn is applied inside the machine's own pose, so it turns and tilts with the hull; the fish hangs
+  plumb (world down) as before, and falls along the machine's own down so it lands in the target. Tested on a sub-level
+  resting at about 29 degrees of roll.
+- **Saved:** the carried fish, waiting catches, target, turn and barrel state are saved; game time carries over, so
+  a drop in progress finishes after a reload. Taking the rod out hands carried and waiting catches to the player.
+- **Attribute Filter (`FishAttributes`, registered under Create's `item_attribute_type`):** `whole_fish` (small
+  enough / too big, the same rule as the furnace recipes), `fish_weight` (grams plus at-least / at-most, offered only
+  by a fish that shows its weight; a stacked small fish is matched by its class's usual weight, always under 3 kg),
+  and `fish_size` (size class, an extra for trophy lines).
+- **Fuel (`FuelReelDriveBlockEntity.burn`):** was 0.1 + 0.9 x (pull x gear / 12 kgf), so the gearbox shifting down
+  made a heavy fish cheap. Now: waiting 0.1, winding an empty line 0.25, fighting 0.4 + 0.6 x min(1, pull / 10 kgf),
+  gear ignored. A 3.6 kg drag at the limit burns 0.62, near 10 kg 0.99: about 1.6 times per second, and bigger fights
+  last longer on top of that. Coal is 1,600 full-rate ticks, so a minute of hard fighting is about three quarters of a
+  coal.
+- **Self-test `drops`:** funnel 3 down, lid-up barrel 4 down opening and closing, sideways barrel / 6 down / behind a
+  block / two blocks out all refused, touching chest, straight down without a turn, a save mid-turn, turn speed by
+  gear, and the attributes. `machines` gained the fuel check. `selftest all` passes. In a client: the rod turns, the
+  fish hangs and falls into the barrel and through the funnel, and on the tilted ship the rod turns with the deck.
+
+## 0.3.22: sea creatures in the aquarium, the net catches every water fish (pack 0.6.36)
+
+Asked: the Creature Net "doesn't take starfish" into the aquarium, and fish in general.
+
+- **What was wrong (server probe, FakePlayer with a net):** the net did catch Hybrid Aquatic's starfish, crabs and
+  clownfish, vanilla cod and tropical fish, axolotls. It didn't catch the fishing mod's own fish (`tide:*`, not in
+  `hapi:net_catchable`), and the tank had no use for a net at all: it took fish buckets and held catches only, and
+  Hybrid Aquatic's creatures have no buckets. So a starfish had no way in.
+- **Net tag:** `data/hapi/tags/entity_type/net_catchable.json` adds the fishing mod's water and void fish (79; the 11
+  lava fish are left out, since the net only lets its catch go into water), pufferfish, Aquaculture's 28 fish mobs,
+  C&C koi and dumbo octopus, Alex's Caves trilocaris, radgill and sweetish fish, BetterEnd end fish and cubozoa (all
+  optional). Left out on purpose: Hullbreaker (a boss), Aquamirae's spinefish and abyssal scyphoid (hostile), the
+  Naturalist and C&C mobs the pack switches off. The `net` self-test lists every water mob still uncatchable.
+- **How a creature lives in a tank (`AquariumCreatures`):** the tank's list stays a list of item stacks. A creature
+  is kept as the full net (`hapi:creature_net` with `storedEntity`), so merging, splitting, saving, syncing and
+  spilling a tank needed no change, the whole mob (variant, colours, size) survives, and a broken tank drops the
+  creatures in their nets rather than killing them. Its length for room and tank size is its mob type's width.
+- **Fish item or creature:** a netted mob whose id is a fishing fish (has fish data) goes in as that fish item with
+  its `FishLength`, so it can breed if it is a baitfish and is drawn at its real length like any other tank fish;
+  except a mob with a `Variant` or `Type` (tropical fish, clownfish), which a fish item would draw as the plain kind,
+  so it goes in as itself.
+- **Who may live in a tank:** `#create_galore_fishing:lives_in_aquarium` (Hybrid Aquatic fish, critters,
+  crustaceans, cephalopods, jellyfish, sharks; vanilla fish, axolotl, tadpole, squid; the other mods' fish above).
+  Otters, seals, turtles, birds stay in the net with a message. Sharks are allowed; the room and length rules decide.
+- **Drawing (`CreatureView`):** one client-only copy of the netted mob per swimmer (loaded from the net's data, told
+  it is in water, never ticked); the tank sets its yaw from its heading and its walk speed from its speed, which
+  drives vanilla and GeckoLib walk animations. `#aquarium_crawlers` (crustaceans, starfish, urchins, sea cucumbers,
+  sea slugs, scalyfoot snails) keep to the sand floor at 0.004 blocks a tick, `#aquarium_quick_crawlers`
+  (crustaceans) at 0.02; the rest swim like the fish.
+- **Taking out:** an empty net takes the first creature, else the first fish that has a mob of its own (written as
+  that mob with its length). Buckets still take fish that have buckets.
+- **Self-test `net`:** the net catches a starfish, a fiddler crab, a largemouth bass, a clownfish and an otter; the
+  starfish goes in as itself and the net comes back empty, survives saving, comes back out with the same colour; the
+  crab and clownfish go in as themselves, the bass as its fish item with its length; the otter is refused; breaking
+  the tank spills the creatures in their nets.
+
+## 0.3.23: small fish show their size class's weight span (pack 0.6.38)
+
+Reported: fish from a Reel Drive in a barrel read "Common size" with no weight, unlike a fish caught by hand.
+
+- **Not a drive bug:** drives and the rod make the item in the same place (`Catches.fishItem`). Any fish under
+  `CatchInfo.EXACT_FROM_KG` (3 kg) that isn't a trophy keeps only its size class, so a stack of small fish stays one
+  stack; the hand catch's weight is on the Keep / Release screen and in chat, not on the item. Kept as it is (asked).
+- **Added on request:** the tooltip of such a fish gives the weights its size class spans for its species ("Common
+  size, 432 g to 3.00 kg"; Young from 0.55 of the usual low length, the shortest draw). The top is capped at 3 kg,
+  since anything heavier carries its own numbers. Nothing new is stored on the item, so old stacks and new catches
+  still stack together.
+- **Client data:** the client never had the length-weight curve (it comes from our species files, not Tide's fish
+  data), so `SizeSync` sends each fish item's lengths and curve on join and after `/reload`, beside `FishDataSync`;
+  network version 3 -> 4.
+- **Tests:** `species` self-test checks every class's length band classifies as that class. In a client: Common,
+  Young and cod stacks show their spans; a stack whose whole span is 3 kg or more (a Large red snapper, only possible
+  by command) shows the class alone; a 3.46 kg fish still shows its own weight and length. `selftest all`: only the
+  two Aquaculture treasure tables fail, on the minimal test server without the pack's data pack.
+
+## Floating labels under shader packs (0.3.24)
+
+- The Cleaning Table's and the fish mount's labels used Font's own backing in one normal pass. That backing sits 0.01
+  font pixels behind the letters; under Iris (Complementary, Photon) letters dropped out or the backing covered them
+  all, leaving dark bars. Tried on Complementary: a separate `text_background` quad 1.5 pixels back (even flushed
+  first) hid every letter; polygon-offset letters still dropped out. What holds: `FloatingLabel` draws like a mob's
+  name tag, backing plus faint letters `SEE_THROUGH`, then the letters `NORMAL` with no backing. The backing shows
+  through blocks like a name tag's, but a label only shows while the crosshair is on its block.
+
+## 0.3.25: a set-in rod's bait lives in the drive's slot; the goggles keep the fish a surprise (pack 0.6.40)
+
+Emre (29 Oct): a rod set in with bait already on it showed an empty bait slot, and that bait couldn't be seen, added
+to or taken out. And "Fish on: <species>, <grams>" on the goggles took away the anticipation: you should only know
+what it is when you see it in the water.
+
+- **`ReelDrive.stowBait`** (geared drives, line in): the rod's fitted bait goes into the bait slot (`insertItem`, so
+  only bait of the slot's kind, up to a stack; live bait into a Live-Bait Bucket in the slot via `putBack`); what
+  doesn't fit stays on the rod. Run once after the rod is set in (`RodMount.rodSetIn`, new) and once each time the
+  line comes back in (a transient `stowed` flag, also run on the first tick after loading, so rods set in before this
+  version get stowed). The cast's `rebait` still loads up to `RodItem.BAIT_CAPACITY` (16) onto the hook, so what the
+  fish didn't eat returns to the slot with the line.
+- **`ReelDrive.refitBait`** on take-out (`RodMount.rodTakingOut`, new; line in only): `rebait`, so the rod leaves
+  with up to 16 of the slot's bait and the rest stays. The Rod Holder and Basic drive have no slot and are unchanged.
+- **Goggles**: `fish_on` is just "Fish on!" (no species, no weight). The fish is still drawn in the water once it
+  surfaces, which is the intended tell.
+- Tested in a client: 5 fish scraps on a rod moved to the slot on set-in, shown in the window; 20 more added by
+  shift-click (25); rod out carried 16, 9 stayed. On a Fuel drive, Cast now took 16 onto the hook, a forced bite ate
+  one, 15 came back into the slot. Goggles during the fight read "Fish on!".

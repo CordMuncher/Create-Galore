@@ -1,0 +1,63 @@
+{
+  "title": "Precision mechanism line with deployers and a press but nothing to carry the item",
+  "from": "Goal test for step 4. The 2026-10-27 report looked like a line with no belt; the belt was there but the hologram didn't draw it (fixed in Bridge 1.129.0). A line that really has nothing carrying the item must still be caught.",
+  "roots": [
+    "R1",
+    "R3"
+  ],
+  "kind": "model",
+  "model": {
+    "title": "Precision mechanism line",
+    "goal": "create:precision_mechanism from golden sheets",
+    "size_x": 6,
+    "size_y": 3,
+    "size_z": 2,
+    "blocks": [
+      {
+        "block": "create:creative_motor[facing=east]",
+        "x": 0,
+        "y": 2,
+        "z": 0
+      },
+      {
+        "block": "create:shaft[axis=x]",
+        "x": 1,
+        "y": 2,
+        "z": 0
+      },
+      {
+        "block": "create:deployer[facing=down,axis_along_first=true]",
+        "x": 2,
+        "y": 2,
+        "z": 0
+      },
+      {
+        "block": "create:deployer[facing=down,axis_along_first=true]",
+        "x": 3,
+        "y": 2,
+        "z": 0
+      },
+      {
+        "block": "create:mechanical_press[facing=east]",
+        "x": 4,
+        "y": 2,
+        "z": 0
+      },
+      {
+        "block": "minecraft:stone",
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "x2": 5,
+        "y2": 0,
+        "z2": 1
+      }
+    ]
+  },
+  "expect": {
+    "built": false,
+    "has": [
+      "nothing carries"
+    ]
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "title": "A dyed Portable Engine is found by its recipe (only red has a crafting recipe)",
+  "from": "pack 0.4.20 (PR #120): lookup_recipes missed dyed items",
+  "roots": [
+    "R1"
+  ],
+  "kind": "tool",
+  "tool": "lookup_recipes",
+  "input": {
+    "item": "simulated:white_portable_engine",
+    "direction": "made_from"
+  },
+  "expect": {
+    "has": [
+      "portable_engine_dyeing",
+      "Red Portable Engine"
+    ]
+  }
+}

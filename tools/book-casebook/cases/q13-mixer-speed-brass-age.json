@@ -1,0 +1,81 @@
+{
+  "title": "Weighs every drive part the player can make for a speed change, not only cogs",
+  "from": "2026-10-28 report: the book never uses a speed controller in the Brass Age",
+  "roots": [
+    "R4"
+  ],
+  "kind": "question",
+  "question": "My mixer on a water wheel barely turns and never mixes. How do I get it fast enough?",
+  "player": "Brass Age: has made precision mechanisms, holds brass casings, electron tubes and andesite parts.",
+  "rubric": [
+    "Says the mixer needs at least 30 RPM and the water wheel gives 8",
+    "Weighs a Rotation Speed Controller against cog steps and picks what suits the build, saying what to set it to if it uses one",
+    "Doesn't overbuild: no extra parts the job doesn't need",
+    "Uses only parts the player can make"
+  ],
+  "inventory": [
+    {
+      "id": "create:precision_mechanism",
+      "count": 2
+    },
+    {
+      "id": "create:brass_casing",
+      "count": 6
+    },
+    {
+      "id": "create:brass_ingot",
+      "count": 24
+    },
+    {
+      "id": "create:andesite_alloy",
+      "count": 48
+    },
+    {
+      "id": "create:andesite_casing",
+      "count": 8
+    },
+    {
+      "id": "create:electron_tube",
+      "count": 4
+    },
+    {
+      "id": "create:water_wheel",
+      "count": 2
+    },
+    {
+      "id": "create:mechanical_mixer",
+      "count": 1
+    },
+    {
+      "id": "create:basin",
+      "count": 1
+    }
+  ],
+  "world": [
+    "fill ~-12 ~-1 ~-12 ~12 ~-1 ~12 minecraft:grass_block",
+    "time set 6000"
+  ],
+  "box": [
+    -12,
+    -1,
+    -12,
+    12,
+    0,
+    12
+  ],
+  "built": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "stand": [
+    0,
+    0,
+    0,
+    0,
+    0
+  ]
+}

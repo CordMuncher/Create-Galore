@@ -1,0 +1,111 @@
+{
+  "title": "A speed controller left at its 16 RPM leaves the mixer standing, and the book is told what to set it to",
+  "from": "2026-10-28 report: speed controllers in the book's rotation check",
+  "roots": [
+    "R3"
+  ],
+  "kind": "model",
+  "inventory": [
+    {
+      "id": "create:precision_mechanism",
+      "count": 2
+    },
+    {
+      "id": "create:brass_casing",
+      "count": 4
+    },
+    {
+      "id": "create:brass_ingot",
+      "count": 16
+    },
+    {
+      "id": "create:andesite_alloy",
+      "count": 32
+    }
+  ],
+  "model": {
+    "title": "Speed controller left as placed",
+    "size_x": 4,
+    "size_y": 5,
+    "size_z": 4,
+    "blocks": [
+      {
+        "block": "create:water_wheel[facing=east]",
+        "x": 0,
+        "y": 1,
+        "z": 1
+      },
+      {
+        "block": "minecraft:water[level=0]",
+        "x": 0,
+        "y": 2,
+        "z": 1
+      },
+      {
+        "block": "create:shaft[axis=x]",
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      {
+        "block": "create:rotation_speed_controller[axis=x]",
+        "x": 2,
+        "y": 1,
+        "z": 1
+      },
+      {
+        "block": "create:large_cogwheel[axis=z]",
+        "x": 2,
+        "y": 2,
+        "z": 1
+      },
+      {
+        "block": "create:shaft[axis=z]",
+        "x": 2,
+        "y": 2,
+        "z": 2
+      },
+      {
+        "block": "create:gearbox[axis=x]",
+        "x": 2,
+        "y": 2,
+        "z": 3
+      },
+      {
+        "block": "create:shaft[axis=y]",
+        "x": 2,
+        "y": 3,
+        "z": 3
+      },
+      {
+        "block": "create:cogwheel[axis=y]",
+        "x": 2,
+        "y": 4,
+        "z": 3
+      },
+      {
+        "block": "create:mechanical_mixer",
+        "x": 3,
+        "y": 4,
+        "z": 3
+      },
+      {
+        "block": "create:basin",
+        "x": 3,
+        "y": 3,
+        "z": 3
+      }
+    ],
+    "speeds": []
+  },
+  "expect": {
+    "built": false,
+    "has": [
+      "not given in speeds, so 16 RPM as placed",
+      "set create:rotation_speed_controller at 2,1,1 to at least 30 RPM"
+    ],
+    "lacks": [
+      "Design brief"
+    ]
+  }
+}

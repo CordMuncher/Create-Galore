@@ -15,7 +15,8 @@ import net.minecraft.world.phys.Vec3;
 
 /**
  * The geared drives' three value boxes, all on the back face (the rod points out over the front): the mode on top,
- * the cast distance bottom left, the top gear bottom right.
+ * the cast distance bottom left, the top gear bottom right. The drive's window ({@link DriveMenu}) sets the same
+ * three, for when something covers the back face.
  */
 final class DriveSlots {
     private DriveSlots() {
@@ -27,6 +28,19 @@ final class DriveSlots {
             list.add(mode);
             list.add(distance);
             list.add(topGear);
+        }
+
+        /** The window's buttons: the next mode, the cast distance or top gear stepped by {@code by}. */
+        void nextMode() {
+            mode.setValue((mode.getValue() + 1) % DriveMode.values().length);
+        }
+
+        void stepDistance(int by) {
+            distance.setValue(distance.getValue() + by);
+        }
+
+        void stepTopGear(int by) {
+            topGear.setValue(topGear.getValue() + by);
         }
 
         void applyTo(ReelDrive drive) {
@@ -50,7 +64,13 @@ final class DriveSlots {
         return new Settings(mode, distance, top);
     }
 
-    /** A small box at ({@code x}, {@code y}) pixels on the back face. */
+    /**
+     * A small box at ({@code x}, {@code y}) pixels on the back face. Create draws a box's number and icon
+     * 5 font units in front of its anchor: 0.625 px at its usual scale of 0.5, but exactly 0.5 px at our 0.4.
+     * Anchored half a pixel inside the face as Create's own boxes are, ours landed exactly on the casing and
+     * z-fought with it (flickering, or hidden behind it under shaders), so the anchor sits on the face instead and
+     * the readouts sit 0.5 px and the hover outline 0.4 px proud of it.
+     */
     static final class Slot extends ValueBoxTransform.Sided {
         private final double x;
         private final double y;
@@ -63,7 +83,7 @@ final class DriveSlots {
 
         @Override
         protected Vec3 getSouthLocation() {
-            return VecHelper.voxelSpace(x, y, 15.5);
+            return VecHelper.voxelSpace(x, y, 16);
         }
 
         @Override

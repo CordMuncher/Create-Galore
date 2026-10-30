@@ -1,4 +1,4 @@
-<!-- sources sha256:e0119957947f860a5f4747bfe94cbd3ee570e75065893020677a2d4f6837dd5a -->
+<!-- sources sha256:5b872115ef7d9a66a88e3c6fd1e5c147f4c751d7626ccfddbfff80f03c81378d -->
 # Create: The Basics (create_basics)
 
 ## create_basics/rotation | Rotation
@@ -45,7 +45,7 @@
 - Encased variants: brass or andesite casing (see glossary/encased) hides shafts, cogwheels, belts. Components placed after encasing do not connect unless you toggle the connection with a wrench (see create_basics/tools_wrench).
 - Clutch [create:clutch]: passes rotation in a line; redstone-powered it breaks the connection.
 - Gearshift [create:gearshift]: passes rotation in a line; redstone-powered it reverses it.
-- Rotation Speed Controller [create:rotation_speed_controller]: sits below a large cogwheel, relays rotation to it at speed set on its value panel (see glossary/value_panel).
+- Rotation Speed Controller [create:rotation_speed_controller]: sits below a large cogwheel, relays rotation to it at speed set on its value panel (see glossary/value_panel); the large cogwheel lies across the controller's shaft, not along it; a small cogwheel it drives turns twice as fast.
 - Sequenced Gearshift (in depth): runs a timed list of speed/direction instructions on each redstone pulse; configure by right-click; good for pistons, gantries, anything moving in steps.
 - Chain drives pass rotation along a row with all shafts spinning same way. Ponder (see start_here/tools) for each part.
 
@@ -104,6 +104,7 @@
 - Blaze Burner also works as blasting and smoking source; Lit Blaze Burner variant for haunting (see create_basics/heat).
 - Bars, fences, leaves let air through; solid blocks stop it.
 - Watch out: blasting works like a furnace and would burn food: smoke it instead.
+- On a Belt: item done after 7.5 seconds in the air (x2 for stack 17-32, x3 up to 48, x4 up to 64); on a depot it waits. Each belt segment in the air gives 24 s / belt RPM (6 s at 4 RPM). Progress carries from one fan's air into the next of the same kind, across gaps and onto the next belt, so fans side by side add up (two fans over a 4 RPM belt = 12 s); a different kind of air starts it over.
 - Added by other mods (in depth): Dragons Plus (see industry/dragons_plus): ending (dragon breath), freezing (powder snow), sanding (quicksand), coloring (liquid dye), enchanting (Golden Aercloud). Create Nuclear: enriching. Enchantment Industry (see industry/enchanting): salvaging.
 - Enriching Campfire [createnuclear:enriching_campfire]: Create Nuclear's fan catalyst (see glossary/fan_catalyst) for bulk enriching. Enriched fire from Enriched Soul Soil (see industry/nuclear).
 - Related: (see create_basics/processing), (see create_basics/crushing), (see create_basics/heat)
@@ -127,7 +128,8 @@
 - Brass Funnel [create:brass_funnel]: pulls from/pushes into an inventory. Place normally to pull, sneaking to push. Has filter slot (see glossary/filter_slot). Andesite Funnel moves items unfiltered.
 - Chute [create:chute]: drops items down; needs no power. Smart Chute adds filter slot and extraction size.
 - Mechanical Arm [create:mechanical_arm]: assign input/output blocks by right-clicking them while holding the arm, then place it. Moves items between any inputs and outputs in range.
-- Filters go in funnel, tunnel or smart chute filter slots: List Filter [create:filter] matches chosen items; Attribute Filter [create:attribute_filter] matches by property (food, enchanted, etc.).
+- Arm sorting: the arm has no filter of its own. An output that is a belt block with a Brass Belt Funnel on it takes only items that funnel's filter passes (only that one belt block counts, not the rest of the belt; a tunnel on the next block changes nothing). Select the belt block under the funnel as the output, not the funnel. Before picking an item up the arm checks every output and leaves items no output takes where they are (they can block the input). A belt block with no funnel takes anything.
+- Filters go in funnel, tunnel or smart chute filter slots: List Filter [create:filter] matches chosen items; Attribute Filter [create:attribute_filter] matches by property (food, enchanted, etc.). Its mode: Allow-List (Any) passes an item with any one listed attribute, Allow-List (All) only one with all of them, Deny-List one with none. A rule like "smeltable but not smokable" needs Allow-List (All); in Any mode raw meat passes as smeltable.
 - Brass Tunnel [create:brass_tunnel]: covers a belt, splits items to sides or sorts by filter. Andesite Tunnels split one item at a time, no filters. (Brass funnels/tunnels can filter; andesite can't.)
 - Storage: Item Vault = big multi-block (see glossary/multiblock) chest connecting to belts and funnels. Threshold Switch (see create_basics/redstone_and_control) reads container fullness -> redstone.
 - Package delivery networks: (see create_basics/packages).
@@ -162,7 +164,7 @@
 - Movers: Piston (pushes along a line); Rope Pulley (up/down); Gantry (slides on a shaft); Bearing (see glossary/bearing) (spins); Cart Assembler (rides a minecart).
 - Mechanical Bearing [create:mechanical_bearing]: rotates a structure: windmills (see create_basics/power_sources), rotating drills, turntables. Clockwork Bearing makes clock hands.
 - Builds that move: any build can have a moving part (sails that turn, door/drawbridge swinging on a bearing, turntable, wall a piston slides aside, lift on a rope pulley, gantry carrying a drill over a field). Most of a build stands still; make the part move that has a job moving.
-- What comes along: the block touching the mover's face; blocks side by side inside one Super Glue area; blocks that hang on others (torches, doors, ladders, carpets); blocks on a chassis's sticky faces; a piston also pushes the whole line in front of it. At most 2048 blocks.
+- What comes along: the block touching the mover's face; blocks side by side inside one Super Glue area; blocks that hang on others (torches, doors, ladders, carpets); blocks on a chassis's sticky faces; blocks a Schematicannon printed with Pre-glue on (see flight/ship_building); a piston also pushes the whole line in front of it. At most 2048 blocks.
 - Speed: Bearing 6 degrees/s per RPM (full turn 1.9 s at 32 RPM). Piston, pulley, gantry: RPM / 25.6 blocks/s, 9.8 at most. Bearings, pistons, pulleys take 4 SU per RPM.
 - Starting and steering: Bearing: right-click it with an empty hand to start it; it turns while its shaft turns. Piston, pulley, gantry start on their own and run until the end of their travel. A Gearshift with a lever, in the line that drives it, sends it back; a Clutch stops it.
 - Watch out: a turning part passes straight through blocks in its circle. A sliding part stops at the first solid block in its path; drills and saws break theirs as they go. A glue area takes every block in it that touches the part, so keep it off what stays put.

@@ -1,0 +1,117 @@
+{
+  "title": "Cogs that gear a mixer up still work, and the check names the other ways the player could do it",
+  "from": "2026-10-28 report: the book is fixated on cog chains",
+  "roots": [
+    "R4"
+  ],
+  "kind": "model",
+  "inventory": [
+    {
+      "id": "create:precision_mechanism",
+      "count": 2
+    },
+    {
+      "id": "create:brass_casing",
+      "count": 4
+    },
+    {
+      "id": "create:brass_ingot",
+      "count": 16
+    },
+    {
+      "id": "create:andesite_alloy",
+      "count": 32
+    }
+  ],
+  "model": {
+    "title": "Mixer geared up by cogs",
+    "size_x": 6,
+    "size_y": 6,
+    "size_z": 4,
+    "blocks": [
+      {
+        "block": "create:water_wheel[facing=east]",
+        "x": 0,
+        "y": 1,
+        "z": 1
+      },
+      {
+        "block": "minecraft:water[level=0]",
+        "x": 0,
+        "y": 2,
+        "z": 1
+      },
+      {
+        "block": "create:large_cogwheel[axis=x]",
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      {
+        "block": "create:cogwheel[axis=x]",
+        "x": 1,
+        "y": 2,
+        "z": 2
+      },
+      {
+        "block": "create:large_cogwheel[axis=x]",
+        "x": 2,
+        "y": 2,
+        "z": 2
+      },
+      {
+        "block": "create:cogwheel[axis=x]",
+        "x": 2,
+        "y": 3,
+        "z": 3
+      },
+      {
+        "block": "create:shaft[axis=x]",
+        "x": 3,
+        "y": 3,
+        "z": 3
+      },
+      {
+        "block": "create:gearbox[axis=z]",
+        "x": 4,
+        "y": 3,
+        "z": 3
+      },
+      {
+        "block": "create:shaft[axis=y]",
+        "x": 4,
+        "y": 4,
+        "z": 3
+      },
+      {
+        "block": "create:cogwheel[axis=y]",
+        "x": 4,
+        "y": 5,
+        "z": 3
+      },
+      {
+        "block": "create:mechanical_mixer",
+        "x": 5,
+        "y": 5,
+        "z": 3
+      },
+      {
+        "block": "create:basin",
+        "x": 5,
+        "y": 4,
+        "z": 3
+      }
+    ],
+    "speeds": []
+  },
+  "expect": {
+    "built": true,
+    "has": [
+      "gets its speed through 2 cog steps (8 to 32 RPM), which works",
+      "Rotation Speed Controller set to 32 RPM"
+    ],
+    "lacks": [
+      "PROBLEM"
+    ]
+  }
+}

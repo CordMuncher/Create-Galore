@@ -5,6 +5,628 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.6.49
+
+### Added
+- Create Galore Bridge 1.163.0.
+
+### Fixed
+- **Going through a portal no longer freezes the game for good.** Sometimes, stepping into the Nether (or any other dimension) left the game hanging on the old world until it had to be closed. Sound Physics clears every playing sound when you leave a world, and its sound thread keeps updating sounds at the same time. Before it frees a sound, it checks every other sound while still holding the first one, so the two threads could each hold one sound and wait forever for the other's. A thread that already holds a sound now reads the others without waiting for them. The freeze catcher's log caught it.
+
+### Removed
+- Nothing.
+
+## 0.6.48
+
+### Added
+- Create Galore Bridge 1.162.0.
+
+### Fixed
+- **The Upscaling & Display screen no longer offers a shader pack's own TAA when it has none.** A pack now says whether it has anti-aliasing of its own. Without it, its own choice shows as Off and TAA is greyed out. Photon's copy is made again at startup to say it has TAA.
+
+### Removed
+- Nothing.
+
+## 0.6.47
+
+### Added
+- Create Galore Bridge 1.161.0.
+- **Groundwork for future shader packs.** The Upscaling & Display screen works with any shader pack made for DLSS and FSR, not only Photon v1.3a + DLAA, and names the pack in use. Each pack says what it supports (DLSS, FSR, frame generation, Ray Reconstruction, the render resolution, its own TAAU, turning anti-aliasing off): whatever the pack in use doesn't support is greyed out, and hovering it says so. Your setting is kept, so it comes back with a pack that supports it. A pack can also leave its render resolution to the screen instead of having an option of its own. A pack that supports Ray Reconstruction keeps its own settings for it, as Photon does.
+- **Anti-aliasing: TAA, TAAU and Off.** The shader pack's own anti-aliasing is now two choices, its TAA at full resolution and its TAAU from the render resolution, plus Off for no anti-aliasing. Photon has all three.
+
+### Fixed
+- Nothing.
+
+### Removed
+- Nothing.
+
+## 0.6.46
+
+### Added
+- Create Galore Bridge 1.160.0.
+- **Ask the Book tells where things are on a ship by its parts.** A ship's blocks sit at coordinates far from where it floats, so the book now names spots by the ship's parts and ends, and gives the world position of a block when that helps.
+- Two new Ask the Book casebook cases: a materials list with envelopes, a chest and shafts, and a label that names more than one part.
+
+### Fixed
+- **Ask the Book counts materials right.** Envelopes cost half a white wool each (2 wool and 2 sticks make 4), not two; a chest takes any planks rather than oak; shafts held as shafts count as shafts, not as Andesite Floor to cut.
+- **Ask the Book's recipe paths start from real raw materials.** They start from raw ore and plain Minecraft or Create ingredients the player holds, rather than an odd modded ore, and a station the player has already used (its advancement done) counts as run.
+- **Ask the Book's airship checks read clearer.** The bow is the end the Steering Wheel stands toward; a tilted balloon says to move the lift over the weight; drag is given as the push needed at that speed; propellers that don't turn are flagged before steering is judged; a wheel that steers by comparators no longer reads as driving nothing; a label like "propeller throttle" is checked against the part it names last.
+- **Field Guide details.** The Hot Air Burner burns no fuel, redstone alone runs it. The Steering Wheel page says which way its side comparators face. The Rotation Speed Controller page says its large cogwheel lies across its shaft. The Ask the Book notes match.
+
+### Removed
+- Nothing.
+
+## 0.6.45
+
+### Added
+- Create Galore Bridge 1.159.0.
+- **Ask the Book gives its aircraft a real throttle.** Its blimps and planes ran their propellers flat out or not at all, from a lever or clutch, so they lurched between full speed and nothing. It now designs one Throttle Lever at the helm that sets an Analog Transmission in each propeller line, anywhere from stopped to flat out in 16 steps (measured in game: a transmission turns its cogwheel at (15 - signal)/16 of its shaft's speed and stops it at 15, and Redstone Links carry the signal strength). The wheel's comparators can feed the same transmissions, so a small turn slows one side a little instead of cutting it. Its vehicle check names the throttle, and treats propellers with none, or only some behind it, as a fault when the player can make an Analog Transmission and a Throttle Lever.
+- **Ask the Book says when it falls back to levers.** For a player who can't make a Steering Wheel or the throttle parts yet, it may still steer by a lever per side or run the engines on and off, but it now says so in the answer and names the upgrade for later.
+- **Ask the Book judges an assembled ship as a whole.** It already read ships and balloons parked or flying as Sable vehicles. Now its vehicle check covers every block of the ship even when a trace or a box reads only part of it, so a big balloon read in part no longer looks like it leaks. Asked how to upgrade a parked lever-steered balloon, it reads the ship and lays out the wheel and throttle refit.
+- Seven new Ask the Book casebook cases for the throttle and for upgrading an assembled balloon. A question case can now assemble its build into a ship.
+
+### Fixed
+- **The Field Guide's flying examples have a throttle.** Steering and Controls has a page on the Analog Transmission and one on flying with one throttle, and the sky base and the biplane set their speed with a Throttle Lever. Their wheels now slow one side through the transmissions instead of cutting a clutch. The Ask the Book notes match.
+
+### Removed
+- Nothing.
+
+## 0.6.44
+
+### Added
+- Create Galore Bridge 1.158.0.
+- **Ask the Book steers its airships with one wheel.** Its blimps, balloons and planes used to turn by running one side's propellers harder, worked from a lever for each side, which is awkward to fly. It now designs them with one Steering Wheel at the helm: the wheel's cog turns a Swivel Bearing under a Wooden Propeller at the stern, or a comparator against each side of the wheel cuts that side's propeller line through a Clutch (Redstone Links carry it out to pods). Its vehicle check names how a design is steered, treats a lever for each side as a fault when the player can already make a Steering Wheel and comparators, and only notes it for a player who can't yet. A Steering Wheel wired to nothing is a fault too. Measured in game: 45 degrees of wheel on a stern Wooden Propeller turns an 11 by 15 blimp about 11 degrees a second.
+- Six new Ask the Book casebook cases for steering.
+
+### Fixed
+- **The Field Guide's flying examples steer with a wheel.** The sky base and the biplane in Balloons and Lift and Propellers steered with levers; they now use a Steering Wheel with a comparator at each side. Steering and Controls says what a Steering Wheel's comparators read and has a page on steering with one wheel, and Building a Ship says how fast a swivelled stern propeller turns a blimp. The Ask the Book notes match.
+
+### Removed
+- Nothing.
+
+## 0.6.43
+
+### Added
+- Create Galore Bridge 1.157.0.
+- **Pre-glue on the Schematicannon.** A new switch at the end of the cannon's placement settings (the Super Glue button) glues every block the cannon prints to the printed blocks it touches, so a printed ship, train car or piston build moves as one piece without gluing it by hand. The cannon takes Super Glue from its input chests like any other material: one use for each glue box it makes. A box grows over the build as the blocks land, up to 16 blocks a side, so a 40 by 14 hull with a deck took 15 uses. Without glue the cannon waits on Super Glue as on a missing block, even with Skip Missing on, since a half-glued build would come apart. The ground under the build and any block that isn't in the schematic (a tree, a stray block, the cannon) stay out of the glue. Blocks touching only at a corner, or floating free, aren't glued, as by hand. While Pre-glue is on, glue boxes saved in the schematic itself aren't printed (or paid for). New Field Guide page *Printing it glued* under *Building a Ship*.
+
+### Fixed
+- **A Schematicannon waiting on a missing block resumes after a restart.** One that was waiting for a block when its chunk unloaded or the server stopped never printed again, even once the block was brought and Play pressed: it stayed on "Searching". It now picks the print up again.
+
+### Removed
+- Nothing.
+
+## 0.6.42
+
+### Added
+- Create Galore Bridge 1.156.0.
+
+### Fixed
+- **Hot air burner flame under shader packs.** Under Photon a lit Hot Air Burner showed no flame above it, only a see-through, flame-shaped hole off to the side that let far-away Distant Horizons terrain show through. Aeronautics drew the flame past the shader pack, so Photon painted over its colour but kept its depth, and with Photon's render scale below 100% the hole also landed at the wrong place and size. With a shader pack on, the flame is now drawn through the pack as fire, with the same shape, colours and flicker as without shaders, so it sits on the burner, is solid, and glows in packs that light up fire.
+
+### Removed
+- Nothing.
+
+## 0.6.41
+
+### Added
+- Create Galore Bridge 1.155.0.
+- **Water Pumps clean polluted water.** Sulfur smog and acid rain turn the top of the water they touch into Polluted Water, which drifts with the wind and kills crops and plants beside it. Iron, Gold and Diamond Water Pumps set in water, with a Filter Frame on top and a redstone signal, find the polluted water around them and pull each patch across the surface toward themselves, one block at a time, until it reaches the pump and comes out clean with a burst of bubbles. The pump's metal sets its reach (25, 50 or 100 blocks every way, 4, 8 or 16 patches at once), the frame's metal how fast it pulls (1, 2 or 4 blocks a second). The frame never needs filter material. Right-click a pump to see what it reaches or what it is missing. Crafted from a Create Mechanical Pump, each tier from the one before; new Field Guide page *Cleaning Polluted Water*.
+
+### Fixed
+- Nothing.
+
+### Removed
+- Nothing.
+
+## 0.6.40
+
+### Added
+- Create Galore Fishing 0.3.25.
+
+### Fixed
+- **A rod set into a Geared or Fuel Reel Drive puts its bait in the drive's bait slot**, so the window shows it and it can be topped up or taken out. Each cast takes up to 16 onto the hook and what is left comes back with the line. Taking the rod out puts up to 16 back on it; the rest stays in the slot. Before, bait already on the rod was hidden and the slot read empty.
+- **The goggles no longer name the fish on a rod machine's line or give its weight.** They say "Fish on!"; what it is shows only when it comes up in the water.
+
+### Removed
+- Nothing.
+
+## 0.6.39
+
+### Added
+- Create Galore Fishing 0.3.24.
+
+### Fixed
+- **Fish labels under shader packs.** The label over a fish on a Cleaning Table, and over a mounted trophy fish, showed as dark empty bars under shader packs such as Photon and Complementary: the dark backing was drawn over the letters. Both labels are now drawn the way a mob's name tag is, so the fish's name and the cleaning progress (or the trophy's size, weight and length) read the same with or without shaders.
+
+### Removed
+- Nothing.
+
+## 0.6.38
+
+### Added
+- Create Galore Fishing 0.3.23.
+- **Small fish say how heavy their size class is.** Fish under 3 kg keep only their size class so they stack, which left a barrel of fish from a Reel Drive or Rod Holder (or from the rod) reading just "Common size". Their tooltip now gives the weights that class spans for that species, for example *Red Snapper: Common size, 432 g to 3.00 kg* or *Young, 72 g to 432 g*. They still stack. Fish of 3 kg or more, and every trophy, show their own weight and length as before.
+
+### Fixed
+- **The Field Guide's catch pages say what a stacked fish shows.** The landing page and the Ask the Book notes describe the weight span on small fish.
+
+## 0.6.37
+
+### Added
+- Create Galore Fishing 0.3.22.
+- **Sea creatures in Aquarium Tanks.** Right-click a tank with a full Creature Net to let what it holds in: starfish, crabs, shrimp, sea urchins, Hybrid Aquatic's fish, axolotls and any other water fish. They live in the tank as themselves, with their own colours and size: starfish, crabs and urchins keep to the sand floor (crabs scuttle, starfish creep), the rest swim. An empty net takes one back out.
+
+### Fixed
+- **The Creature Net catches every water fish.** It used to skip the fishing mod's own fish (bass, trout, anchovies and the rest), pufferfish, Aquaculture's fish, koi and a few others. Lava fish stay out, since a net can only let its catch go in water.
+- **Starfish into the aquarium.** The net did catch starfish, but the tank only took fish buckets and fresh catches, so a netted starfish (or crab) had no way in.
+## 0.6.36
+
+### Added
+- Create Galore Bridge 1.154.0.
+
+### Fixed
+- **A Schematic handed to another player shows and places its build.** Create kept a Schematic's build only as a file: the server read it from the uploads of the player who made it, but every other player's game looked for a file of that name in their own schematics folder. Without one, the Schematic placed and showed nothing for them (or their own, different build of the same name). Now the server keeps a copy of the build the moment the Schematic is written, at a Schematic Table or with a Schematic and Quill, and sends it to whoever holds the Schematic, so it shows, places, prints and pins the same for every player.
+- **A Schematic keeps its build.** Saving another schematic under the same name, or Create clearing old uploads, used to change or empty every Schematic already made from that file, Schematicannon prints and pins included. Each Schematic now keeps the build it was written with. Schematics made before this update keep theirs from the first time someone holds and places one.
+- The Field Guide's Welcome entry (Building from a model) says a Schematic carries its build.
+
+### Removed
+- Nothing.
+
+## 0.6.35
+
+### Added
+- Create Galore Fishing 0.3.21.
+- **Reel drives swing their catch over.** A catch still drops straight into a chest, hopper, funnel or belt under the machine. Anything else, the rod now turns with the fish hanging from it, holds it over where it goes, lets it drop and turns back. On a ship it turns with the deck.
+- **Drops from higher up.** In the column of blocks right beside the machine (touching a side, no gap), the rod drops into any block at its height that takes items, or up to 5 blocks lower into a belt, an upward funnel on any storage, a hopper, or a barrel with its lid facing up, which opens to catch the fish.
+- **The swing follows the top gear.** A Geared or Fuel drive set to its highest top gear swings a half turn in half a second; set to its lowest, eight times slower.
+- **Fish in Attribute Filters.** A fish as the reference offers "too big to cook whole" or "small enough to cook whole", its weight as "or more" and "or less" (a 6 kg fish gives 6.00 kg or more, 6.00 kg or less) and its size class, so funnels and arms can sort a fish line.
+
+### Fixed
+- **Fuel Reel Drive fuel follows how hard it pulls.** In a fight it burns from 40% of the full rate against a fish that barely pulls to the full rate at 10 kg on the line, whatever gear it is in (the gearbox shifting down used to make big fish cheap). Waiting burns a tenth, winding in an empty line a quarter.
+
+### Removed
+- Nothing.
+
+## 0.6.34
+
+### Added
+- Create Galore Fishing 0.3.20.
+
+### Fixed
+- **A hooked fish no longer whips round you sideways.** Going round the angler was free: the further out the fish, the faster it went, so a long line made it circle like a pendulum at tens of metres a second and end up behind you in seconds. Now sideways is swimming like any other way: a fish never goes faster than it can swim, all directions together, and what it spends taking line it can't spend going sideways. Its speed comes from its kind and its size (a bigger fish of a kind is a bit faster), more on a run and less as it tires. It still turns and sweeps off to the side on a run, just at a real pace.
+- **A boat can follow a hooked fish.** Moving sideways in a boat (or on foot) swings the line instead of dragging the fish along with you.
+
+### Removed
+- Nothing.
+
+## 0.6.33
+
+### Added
+- Create Galore Fishing 0.3.19.
+- **The Reel Drive window has its own look.** The controls sit on a dark deck, like Create's machine screens, as stone push buttons with etched symbols: power, autocast, cast now and reports along the top, a two-way switch for the mode (a float for Cast and wait, two arrows for Cast and retrieve), and the cast distance and top gear in readout windows with - and + either side. A switch that is on stays pressed in, and every button names itself when hovered. The bait and fuel slots sit in raised plates, with the fuel left under the fuel.
+- **A status readout in the window**: Off, Line out, No bait, Ready or Casting.
+
+### Fixed
+- **Cast now is always in the window**, and does exactly one cast. In Cast and wait it waits for a bite, lands the fish and stops; in Cast and retrieve it throws out and winds back once, fish or not, and stops. With autocast on it casts straight away instead of waiting out the pause.
+- **Switching a drive on no longer casts by itself** with autocast off. Only Cast now does.
+
+### Removed
+- Nothing.
+
+## 0.6.32
+
+### Added
+- Create Galore Fishing 0.3.18.
+- **Rod Holder drives have a window.** Sneak and use a Reel Drive with an empty hand to open it. Bait (and the Fuel Reel Drive's fuel) can be put in or taken out at any time. The window also has everything the value boxes on the back do (mode, cast distance with steps of 1, or 5 with Shift, and top gear), so a funnel or anything else covering them blocks nothing.
+- **An On/Off switch.** A drive switched off doesn't cast, reel or burn fuel, even with fuel in.
+- **Autocast can be turned off.** With autocast off, a geared drive reels in and then waits; the window's Cast button casts it once.
+- **Lost-fish reports.** A Reports switch in the window (off by default, so a bank of machines stays quiet) puts a chat line to the rod's owner when a machine loses a fish, with the machine, its position, what broke and why.
+- **The Engineer's Goggles name a mounted lure** instead of reading "No bait", and show when a drive is switched off or has autocast off.
+
+### Fixed
+- **The value box glyphs and readouts on the back of a Reel Drive no longer flicker or vanish**, with or without shaders. They sat a fraction of a pixel from the drive's face and fought it for depth.
+- **A Rod Holder holds the rod the right way round.** It was turned backwards in the holder.
+- **The line on a hanging fish starts at the rod tip**, also on a ship, instead of a point in the air beside it.
+- **Taking a rod out of a holder while it reels hands control to the player.** The rod no longer keeps reeling in the hand while the use button is still held; let go and press again to reel. Holding the button on a holder also no longer puts the rod in and takes it straight back out.
+
+### Removed
+- **Sneak-use with an empty hand no longer empties a drive's bait and fuel into the inventory.** It opens the window, where they can be taken out.
+
+## 0.6.31
+
+### Added
+- Create Galore Bridge 1.153.0.
+- **A stutter log for tracking down stutter on any PC.** `logs/create-galore-stutters.log` in the instance folder gets an entry for every frame of 100 ms or more, and for every choppy stretch where many short hitches come back to back (5 or more in a second, or a third of a second lost to them) even when no single frame is that long. Each entry says what the game was doing during it (a call tree of the render thread), whether it was working or waiting, garbage collection, the busiest threads, memory and CPU load, and on Windows whether it ran on a fast or efficiency core, the CPU clocks and page faults. A line a minute gives the frame rate, 1% low and worst frame, so a bad stretch can be compared to normal play. `logs/create-galore-native-memory.log` gets a line a minute of how much memory the game holds outside Java. Both cost next to nothing.
+- **A chat line for a really bad stutter.** A freeze of 2 seconds or more, or 5 seconds or more of choppy play under 15 frames per second, puts one grey line in chat (only on that player's screen) that says to send the stutter log. It stays quiet for the first minute in a world, while the window is in the background, and says it at most once every 10 minutes. The Field Guide's Performance and Shaders entry explains both.
+
+### Fixed
+- Nothing.
+
+### Removed
+- Nothing.
+
+## 0.6.30
+
+### Added
+- Create Galore Bridge 1.152.0.
+- **The Farm Magnifying Glass shows when an animal next eats and drinks** (for example "Food: next meal in 3 days", "Water: Thirsty").
+
+### Fixed
+- **Farm animals eat and drink less.** A meal (one item from a trough or the hand, two for a Glutton) now keeps a tamed cow, pig, sheep, goat or chicken fed for two and a half days, and a drink (one of a trough's 16 water levels) keeps it watered as long. Each animal eats 2 items and drinks 2 water levels every 5 days, so one trough of water lasts 8 animals 5 days. Hunger for happiness and sickness counts from when that meal runs out. A farm left behind while the player is away eats at the same pace.
+
+### Removed
+- Nothing.
+
+## 0.6.29
+
+### Added
+- **The Field Guide explains the Attribute Filter's modes.** The Moving Items entry and Ask the Book now say that Allow-List (Any) passes an item with any one of the filter's attributes, and Allow-List (All) only one with all of them. A filter for "smeltable but not smokable" needs Allow-List (All). In Any mode raw meat passes as smeltable, so a Mechanical Arm sorting onto a bulk smelting belt sent it to be burnt.
+
+### Fixed
+- Nothing.
+
+### Removed
+- Nothing.
+
+## 0.6.28
+
+### Added
+- Create Galore Bridge 1.151.0.
+
+### Fixed
+- **Enchanted items no longer strobe with Photon + DLAA.** The enchantment glint on a held, worn or dropped enchanted item flickered on and off, in bands and patches, with DLAA or DLSS on and Normal Mapping off. The glint is drawn only where its depth matches the item's to the last bit, and the motion vector code the pack adds to Photon made the graphics driver round the item's position a hair differently from the glint's. Every program that draws or takes an overlay now computes its position the same way, so the glint sits exactly on the item again and moving machines keep their motion vectors. The block breaking cracks follow the same rule.
+
+### Removed
+- Nothing.
+
+## 0.6.27
+
+### Added
+- Create Galore Bridge 1.150.0.
+- **Ask the Book weighs all of Create's drive parts the player can make.** With every question the book now learns which drive parts the player can make right now, beyond shafts and cogwheels: Gearbox, Encased Chain Drive, Clutch, Gearshift, Adjustable Chain Gearshift, Rotation Speed Controller and Sequenced Gearshift, each with what it is for. It also learns which ones they can't make yet. When a design needs a different speed, its build check lists every way the player has to get there: cog steps, a Rotation Speed Controller set to the speed needed, or a chain gearshift for up to twice the speed. A design that already works on a few cog steps keeps them, and the check only points out that a controller would also do the job. Parts a player can't make yet are never offered (a Rotation Speed Controller needs a Precision Mechanism, brass parts need brass from a heated basin).
+- Ask the Book's 3D models can set a Rotation Speed Controller's speed, so the book works the build out at the speed it tells the player to set.
+
+### Fixed
+- **Ask the Book understands the Rotation Speed Controller and the Adjustable Chain Gearshift.** Its rotation check followed only cogs, shafts, belts and chain drives, so a speed controller's cogwheel ran at the incoming speed and a powered chain gearshift changed nothing. Every tip for a too-slow machine also said only "a large cogwheel driving a small one doubles the speed". That is why the book kept chaining cogs even in the Brass Age. Now the cogwheel on a controller turns at the set speed (16 RPM as placed), a powered chain gearshift doubles the speed down its row, and a machine behind a controller set too low gets the speed to set it to. On a placed build, the check reads the speed set on each controller's panel.
+
+### Removed
+- Nothing.
+
+## 0.6.26
+
+### Added
+- Create Galore Bridge 1.149.0.
+
+### Fixed
+- **No more thin streak pinned on screen near lit hot air burners with Photon at Ultra.** A lit Aeronautics burner draws its flame with its own shader. With a shader pack's block entity shadows on (Photon's Block Entity Shadows, part of its Ultra preset), the flame was also drawn for the sun's shadow map, but under Iris it landed in the screen's own depth instead, at the place where the sun sees it. That left a thin, dashed streak of one fixed colour that stayed put as the camera turned, moved as the player walked and drifted slowly with the sun, over sky and ground alike. A flame casts no shadow, so the shadow map now skips it. The flame looks the same as before and block entity shadows stay on.
+- A heated balloon's heat shimmer was also drawn while the shadow map was made, into the screen instead, and could leave the rest of the shadow map drawn at the wrong size. The shadow map skips it now; the shimmer on screen is unchanged.
+- Create Flight Control's Attitude Display hologram and HUD Projector are drawn only where the block itself is seen. With block entity shadows on, the shadow map pass also set where they go, so a display out of view could put its small ship copy or HUD at a fixed spot on screen.
+
+### Removed
+- Nothing.
+
+## 0.6.25
+
+### Added
+- Create Galore Bridge 1.148.0.
+
+### Fixed
+- **A Mechanical Arm sorts by the funnels on the belts it drops onto.** When one of an arm's outputs is a belt block with a Brass Belt Funnel on it, the arm only drops items that funnel's filter passes there. Only that one belt block counts, not the rest of the belt, and a tunnel next to the funnel changes nothing. Before it picks an item up, the arm checks every output and leaves items that no output takes where they are. So an arm can take from one belt and send each item to the belt whose funnel is set to it. Before, the arm dropped anything on any belt and ignored the funnel. A belt block with no funnel still takes anything. The Field Guide's Moving Items entry has a new page on sorting with an arm.
+
+### Removed
+- Nothing.
+
+## 0.6.24
+
+### Added
+- Create Galore Bridge 1.147.0.
+
+### Fixed
+- **A pinned schematic shows as one clean see-through copy of the build.** It used to draw every face of every block at once, so the walls, floor and furniture stacked into a jumble of layers, and its bottom flickered against the ground it stood on. Now only the faces nearest to you show, like a pane of glass shaped as the build, and nothing fights the ground. A spot holding the wrong block is only tinted red (the faint copy inside it flickered against it). With a shader pack the copy is drawn a little stronger so the blocks still read.
+- **Schematics look right with a shader pack on.** The preview of a held Schematic (and the off-hand trace) drew as a flat white or glowing shape, as if every block were a lamp. They now come through the shader pack like any other block, lit by daylight or moonlight like the ground around them. Without a shader pack nothing changes.
+
+## 0.6.23
+
+### Added
+- Create Galore Bridge 1.146.0.
+
+### Fixed
+- **Distant Horizons' far terrain tilts with the camera when you get hurt.** Without a shader pack, the hit's tilt together with view bobbing kept Separate Sable Render Distance from passing the frame's view on to Distant Horizons, so for the half second of a hit the far terrain was drawn with the held item's view instead: no tilt, no bobbing and a field of view of 70. It hung still over the rest of the world like an overlay, and at any other field of view it looked zoomed in too. It now always gets the view the world renders with.
+
+## 0.6.22
+
+### Added
+- Create Galore Bridge 1.145.0.
+- Create Galore Lag Watch 1.2.0: when the server crashes but its window stays open, it says `SERVER CRASHED` in the console and `logs/lagwatch.log` and closes the process after 30 s (`closeAfterCrashSeconds` under `[freeze]`, 0 leaves it open).
+
+### Fixed
+- **The server no longer crashes when a ship is removed while Create Deep Seas wakes it up.** A ship that is broken up, emptied or flies out of the world is marked removed during a tick and taken out at the next one. Create Deep Seas wakes every ship with sails or a rudder every 5 s, and when it reached one in that moment, Sable threw "Body has been removed" and the server crashed. The save on the way down hit the same ship and failed as well, so nothing since the last autosave was saved and the window stayed open, looking frozen. Now nudging, waking, teleporting or reading the speed of a ship that is being removed does nothing (it reads as standing still), for every mod that does it, and the ship saves normally.
+
+### Removed
+- Nothing.
+
+## 0.6.21
+
+### Added
+- Create Galore Bridge 1.144.0.
+
+### Fixed
+- **Hostile Skies airships no longer get stuck in the sky after a restart.** When the server starts, Hostile Skies gave each airship raid one minute to find its ship. A ship nobody was near in that minute (away from spawn, or the player joined later) was dropped: it stayed in the world with its crew aboard, but nothing steered it any more, so it drifted until its engine ran dry and then hung in place for good, never patrolling or leaving. Now the raid waits for its ship to load, however long that takes, and carries on with its patrol and departure as usual. A ship already stranded this way stays as it is: its helm is no longer chained, so it can be boarded and flown.
+
+## 0.6.20
+
+### Added
+- Create Galore Bridge 1.143.0.
+
+### Fixed
+- **Ask the Book no longer designs vehicles you can't see out of.** Its usability check now looks from the helm the way the pilot does: lines of sight fan out ahead through the cabin's windows, once through the whole build and once through its walls, glass, stairs, slabs and other shell blocks alone. When controls, Redstone Links, levers, machines or fittings take more than a quarter of the view out ahead, or the helm has no window or opening ahead at all, the design fails the check, and the book is told to put the controls on a dashboard below the window sill or on the wall beside it. Its vehicle design notes say the same from the start.
+
+## 0.6.19
+
+### Added
+- Create Galore Bridge 1.142.0.
+- Ask the Book's casebook replays how an answer ends (`loop` cases, no model needed) and has the andesite build question for the answer eval.
+
+### Fixed
+- **Ask the Book no longer answers a big build question with nothing.** When the book spent its whole page working out a design before writing a word, the player got "found nothing to say" and "ran out of page". Now it takes that turn back and tries again, thinking less and building in parts, and the next time with its tools closed, so it writes the answer in words. If every try still comes up empty, it says to ask for one part of the build at a time. A blank answer, or a half-written "let me build that" line, can't reach the page any more.
+- **Ask the Book knows crafting-table recipes can be automated.** Its recipe lookups now say which Create machines also run a crafting recipe on this server: a Mechanical Mixer for shapeless recipes (Diorite + Cobblestone into Andesite, for one), a Mechanical Press for a square of one item, and Mechanical Crafters. It had said Diorite + Cobblestone only works at a crafting table. The build checks count those machines too.
+
+## 0.6.18
+
+### Added
+- **Field Guide: what to do when a graphics setting won't run**, on the Performance and Shaders page: the DLSS files, DirectX 12 on other drivers, what DLSS frame generation needs from Windows and the NVIDIA Control Panel, and which lines of the game log to look at.
+- Create Galore Bridge 1.141.0.
+
+### Fixed
+- **The Upscaling & Display tooltips are short now**, like a game's graphics menu: what a setting does and what it trades, in a line or two. Options marked with a red * say they haven't been tested on that hardware yet but should work. The status beside a setting that can't run still says why when you hover it. No setting works differently.
+
+## 0.6.17
+
+### Added
+- **GPU cost meter.** **F10** (Controls, Miscellaneous: GPU cost meter) shows what each part of a frame costs the graphics card, with any shader pack: the average frame rate, the 1% low of the last 10 seconds, the CPU and GPU time of a frame and how busy the GPU is, then the milliseconds of every shader pass (each composite and shadow composite pass by its program name, the shadow map, the gbuffer phases, the final pass and DLSS or FSR), largest first, twice a second. A shader pack can group its programs into named effects with `shaders/cost_meter.properties`. While it is on, `logs/create-galore-cost.log` gets the same numbers every second, plus a line for every frame that took over 2.5 times as long as usual or over 50 ms, with that frame's CPU and GPU time and its three biggest passes. It reads the GPU's timers a few frames late, so it never makes the game wait, and costs nothing while it is off.
+- Create Galore Bridge 1.140.0.
+
+## 0.6.16
+
+### Added
+- **DLSS Dynamic frame generation.** Where NVIDIA's Streamline says the card and driver run NVIDIA's Dynamic Multi Frame Generation (RTX 50 with driver 595.41 or newer), the Display tab's **Frame generation** also offers **DLSS Dynamic**. It leaves the game's own frame rate alone and changes how many frames it adds, scene by scene, to fill the monitor's refresh rate. DLSS 2x, 3x and 4x keep a fixed multiplier and feel steadier; Dynamic keeps input delay lower while the game runs fast. It hasn't been tried on an RTX 50 card yet, so it carries a red *.
+- Create Galore Bridge 1.139.0.
+
+### Fixed
+- The frame generation status no longer calls FSR frame generation experimental while it runs.
+
+## 0.6.15
+
+### Added
+- **DLSS frame generation 3x and 4x.** On cards where NVIDIA's Streamline says DLSS Frame Generation can make more than one frame between two the game draws (RTX 50), the Display tab's **Frame generation** also offers **DLSS 3x** and **DLSS 4x**: two or three frames of its own for each one the game draws. They work like DLSS (2x), which was tested, but haven't been tried on an RTX 50 card yet, so they carry a red *. Where Streamline allows only one, the list stays as it was.
+- Create Galore Bridge 1.138.0.
+
+### Fixed
+- **The held item no longer flashes with DLSS or FSR a couple of seconds after you stop walking**, at a field of view above 70. As view bobbing settled, part of the hand's motion was worked out at the world's field of view and part at the hand's own, which threw a frame's motion off by hundreds of pixels. Photon v1.3a + DLAA is made again (patch 15) with every point of the hand moving in the hand's own view.
+- **Mobs with Fresh Animations no longer twitch when they blink** or look around with DLSS or FSR. Their eyes are model parts that hide and show, and every part after them was matched to the wrong place in the frame before. Motion is now matched part by part.
+- The log now says when DLSS or FSR 3 was held back because the game closed while starting it.
+
+### Removed
+- **AMD FSR frame generation is no longer experimental.** The motion glitches fixed above were what it handled worst.
+
+## 0.6.14
+
+### Fixed
+- **Ask the Book checks its answer before you read it.** Before a page is done, the server reads what the answer points to: every item it names, every recipe it shows and every model it places. An item that doesn't exist, a recipe that isn't there or a model number it never made goes back to the book once, with what is wrong, and it writes the page again with those fixed. A model it drew but never placed on the page is caught the same way.
+- **Ask the Book keeps track of where its answer stands.** In place of a count of rounds left, the book is told how many models it has tried, how many faults the latest still has, which ones are placed on the page and how many rounds of tools are left, so it finishes the model it is working on rather than handing over one with faults.
+
+### Added
+- Create Galore Bridge 1.137.0.
+
+## 0.6.13
+
+### Added
+- **NVIDIA DLSS Ray Reconstruction with Photon (experimental).** Where NVIDIA's own runtime says the card runs it (RTX cards; elsewhere it is greyed out with NVIDIA's reason), the Upscaling tab's new **Ray Reconstruction** setting runs NVIDIA's DLSS Ray Reconstruction in DLSS's place with **Photon v1.3a + DLAA**. It denoises, anti-aliases and upscales in one pass, so it also cleans up Photon's reflections and soft shadows: water reflects like glass instead of grainy dots, shadows stay sharp and still, and a torch's reflection on metal stays crisp. Distant blocks and leaves are marginally softer than with DLSS. On an RTX 4080 SUPER at 1440p it costs 0.8 ms a frame over DLSS at Performance and 1.7 ms at Quality, so Ray Reconstruction at Performance runs at about 93% of DLSS Quality's frame rate. It runs beside DLSS frame generation too. **RR preset** picks its model: F (Ray Reconstruction 4.5) unless you pick another to compare. It shows its worth most at Photon's highest settings, with every lighting effect on.
+- **Photon's own settings for Ray Reconstruction.** Turning Ray Reconstruction on sets Photon to its Ultra profile the first time, and to the changes you made in Photon's menu under it after that. Turning it off brings back your own Photon settings. A message says so each time; the render resolution stays as you set it. Photon's menu stays yours to change under it, but whatever you set, soft shadows and reflections are left grainy for Ray Reconstruction to clean up and rough blocks such as metals get blurry reflections they don't have with it off, so Photon at a given profile looks different with it than without.
+- **Find on this PC copies nvngx_dlssd.dll too**, the NVIDIA DLL Ray Reconstruction needs, from where the NVIDIA app keeps it. It also needs NVIDIA driver 580 or newer.
+- Field Guide (Performance and Shaders): Ray Reconstruction.
+- Create Galore Bridge 1.136.0.
+
+## 0.6.12
+
+### Fixed
+- **Ask the Book follows the item along a sequenced assembly line.** For a line that makes something step by step, such as Precision Mechanisms, the book now rides the item along the belts the way Create moves it: along each belt, and onto the next belt where one ends against another. It checks that the item passes under a machine for every step, in the recipe's order, and that the line brings it back round as many times as the recipe loops. A line that misses a step or lets the item fall off after one pass is not shown, unless the answer says the player puts it back by hand. It also tells the player which way the belts have to run and which item each deployer holds.
+- **Recipe lookups show a sequenced assembly's steps.** Asking the book how something like a Precision Mechanism is made now lists what it starts from, each step in order with what is added (a Cogwheel, then a Large Cogwheel, then an Iron Nugget), how many times round, and what comes out. Before, the book only saw the recipe's name and filled in the steps from memory.
+- The book's recipe checks no longer rebuild the list of every recipe for each model, so a big model no longer stalls the server for a few seconds.
+
+### Added
+- Create Galore Bridge 1.135.0.
+
+## 0.6.11
+
+### Fixed
+- **Ask the Book proves a machine line makes what it is for.** A model of a machine line now says what it makes, and the book checks it holds the machines of a recipe for that item. A sequenced assembly line, such as one for Precision Mechanisms, needs something to carry the item from step to step, and the book won't show one without it. A line that holds none of the machines for its product is refused, and one whose product isn't made by a machine is never claimed to make it.
+- **Ask the Book no longer designs a line that needs its own product to build.** A part that can only be made from the very thing the line makes, such as a Mechanical Arm on a line meant to make the first Precision Mechanism, now stops the model, whatever the player holds, unless they already have that part.
+- **A block of redstone powering a burner or bearing on a vehicle is no longer called dead weight.**
+- The book's model results are now grouped into whether the build works, whether a player can use it, and whether this player can build it now.
+
+### Added
+- Create Galore Bridge 1.134.0.
+
+## 0.6.10
+
+### Fixed
+- **Ask the Book starts from what it can see of you.** Every question now comes with a short snapshot of the player who asks: where they are and what it is like there, what they are looking at, how far along they are in each mod, what they hold, what they have crafted and placed, and the builds around them. The book no longer has to decide whether to look before answering, so it gets fewer things wrong about where you are or what you have, and it answers simple questions with fewer steps.
+- **Shorter, clearer instructions for the book.** Its standing instructions went from about 15,400 characters to 5,500. They now cover four steps: look, design every suggestion as a model and check it, fix every problem the check finds, then answer. The detailed advice on designing builds, vehicles, planes, airships and boats now comes with the first model of that kind in an answer, as a design brief, instead of being sent with every question. A broad question ("what should I do next?") gets the one or two things that matter, and a model only when you ask how to build something.
+
+### Added
+- An answer eval for the book's developers: `tools/book-casebook/standin.sh` turns a test server into the asking player of a question case (their inventory, progress, world and where they look), so the book's answers can be tried and graded against each case before a change ships.
+- Create Galore Bridge 1.133.0.
+
+## 0.6.9
+
+### Fixed
+- **Half-built Create items are no longer food.** Delightful Creators let you eat anything in the middle of a sequenced assembly, so an Incomplete Precision Mechanism, a half-laid track, a half-made circuit, shell or rocket part, even an iron ingot or a Cataclysm weapon partway through an upgrade showed hunger and saturation in its tooltip and could be eaten (238 assemblies in the pack). Now a half-built item is food only when the assembly ends in food: half-made sandwiches, pies, cookies and the like can still be snacked on, at 3 hunger as before.
+
+### Added
+- Create Galore Bridge 1.132.0.
+
+## 0.6.8
+
+### Added
+- **A casebook for Ask the Book.** Every way the book has gone wrong so far is now kept as a case with the verdict its checks should give: machines that never turn, output that goes nowhere, a blimp nobody aboard can fly, fans that do finish their items, creatures that are real. `tools/book-casebook/run.sh` replays them all on a test server (no API key needed), so a change to the book is checked against every past failure before it ships, and a fix that breaks an older one shows up as a failure. Three known faults are kept as open cases until the work that fixes them lands, and ten question cases describe what a good answer does, for grading answers later.
+- A size budget for the instructions the book sends with every question, checked on every build. They had grown about sixfold in a week as each wrong answer got one more sentence; from now on a fix goes into a check, what the book knows about the player or a design brief instead.
+- Create Galore Bridge 1.131.0.
+
+## 0.6.7
+
+### Added
+- **The Field Guide Pendant: the Field Guide worn as a necklace.** The book made small on a brass chain, worn in one of the three necklace slots of the Accessories screen. While it is worn, **I** opens the Field Guide and **Shift + I** opens Ask the Book, anywhere in the world with nothing in your hands (change them under Options > Controls > Field Guide). A worn pendant has no slot to glow green in when the book answers, so the notice that slides in shows the pendant and the key in front of the page's title instead. It hangs on the chest, over armor too, and right-click with it in hand opens the guide like the book. Crafted in the Brass Age: a Field Guide, two Brass Sheets, a Chain and a Precision Mechanism.
+- Field Guide, Start Here: a Field Guide Pendant entry (keys, the answer notice, the recipe), and Welcome and Accessories point to it.
+- Create Galore Bridge 1.130.0.
+
+## 0.6.6
+
+### Fixed
+- **Ask the Book's 3D models show their belts.** A player asked for a compact precision mechanism line and got a model whose text talked about a five-block belt that wasn't there. The book's model view never drew belts: a belt has no block model and no item of its own (it is laid with a Belt Connector), so only Create's belt renderer draws it, and the view skipped it. Every belt in every book model was invisible until now. The view now draws belts with Create's own renderer, pulleys included.
+- **Ask the Book no longer designs a machine out of the thing it makes.** The same line used a Mechanical Arm to carry pieces back to the start, but an arm takes a Precision Mechanism to craft, so the player could never build it to make their first mechanism. The book's models now go through each part's recipes against what the player has: a part they have never had that, by every recipe, needs something only a sequenced assembly line makes (such as a Precision Mechanism) that they have never had either, stops the model, and the book builds a version without it (by hand, or with belts alone) and shows the way to the first one. A build the player asks for to make later on is still allowed.
+- A model's caption and labels can no longer name a belt, deployer, funnel, arm, depot, basin, mixer, spout, fan, saw or drill the model doesn't have.
+
+### Added
+- Create Galore Bridge 1.129.0.
+
+## 0.6.5
+
+### Added
+- **Cased doors and trapdoors.** Right-click any door or trapdoor (every wood, iron, copper, Create's and other mods') with Andesite, Brass or Copper Casing to case it, as with a shaft or a belt. Shut, a cased door or trapdoor stops smog like a wall; open, smog gets through as usual (every plain trapdoor lets smog through even shut, and doors leak too). A cased one only opens with redstone (a button, lever, pressure plate or circuit), not by hand, and villagers and mobs can't open or break through it. A wrench takes the casing off and gives the same door back; sneaking with the wrench picks it all up, and breaking it drops the casing and the door. Each casing has its own look: Create's casing frame with a riveted porthole you can see through. Sneaking with casing in hand still places the casing block.
+- Field Guide (Pressure and Sealed Casings): cased doors and trapdoors, and a cased door into a sealed smelter.
+- Create Galore Bridge 1.128.0.
+
+## 0.6.4
+
+### Fixed
+- **Ask the Book no longer says back-to-back fans can't finish their items.** A player's bulk smoking and blasting line, with two fans side by side over each belt, has always worked, but the book told them it didn't: it timed each fan's air on its own (about 6 seconds over one segment at 4 RPM, against the 7.6 seconds smoking takes). An item on a belt keeps its progress from one fan's air into the next fan's air of the same kind, across a gap and onto the next belt as well, and only a different kind of air starts it over. The book now follows each belt line the way items ride it and adds up the time in each kind of air, so two smoking fans over a 4 RPM belt give 12.1 seconds and come out done. It also says when two kinds of air hit one segment (they start each other over, so nothing is processed there) and how far along an item in the air is right now.
+
+### Added
+- Field Guide, Encased Fans: an On a Belt page with how long an item needs in the air (7.5 seconds, longer for bigger stacks), how long each belt segment gives at a given speed, and how fans of one kind along a belt add up.
+- Create Galore Bridge 1.127.0.
+
+## 0.6.3
+
+### Added
+- **Ask the Book designs vehicles for the crew, not only for the physics.** A player's airship from the book passed every check and still couldn't be used: its fence rigging stood on half slabs and joined nothing, the door sat two blocks above the ground once it landed, the Portable Engines out in the side pods couldn't be reached to refuel, and the Physics Assembler was sealed inside the keel. The book's vehicle check now moves through a design the way a player does (walking, a 1.25-block jump, drops, ladders, opening doors, a 4.5-block reach with nothing in the way) and refuses a design until:
+  - every engine that burns fuel (Portable Engine, Boat Engine, Blaze Burner, Solid Burner, Solid Fuel Thruster) can be reached from a spot the crew walks to from the helm and back, or is fed by a funnel, chute or hopper;
+  - the Physics Assembler is open to a floor a player stands on;
+  - a ship that lands can be boarded from the ground under its lowest blocks (steps or a ladder up to a high door);
+  - on anything that climbs above y 192, the helm is in a closed cabin. This uses Cold Sweat Altitude's own shelter test, because the open air up there freezes a player in under a minute. Between y 128 and 192 it gets a note instead, and so does refuelling out in the open at height.
+- On every model the book builds, a fence or wall post that stands on a bottom slab, a trapdoor's edge or anything else without a full face under its middle (or ends under one) is a fault: it floats half a block off and joins nothing.
+- The book is told how to build for this: engines in an engine room turning the propellers through shafts, or pods reached along a railed catwalk or ladder; steps or a ladder to the door; a closed cabin round the helm; posts on full blocks or top slabs. A test airship built that way passes every check.
+- Create Galore Bridge 1.126.0.
+
+## 0.6.2
+
+### Fixed
+- **The updater, the server kit and the Server Setup app use the repository's new address.** The repository moved to github.com/CordMuncher/Create-Galore. The old address still forwards for now, but forwarding stops working if anyone later takes the old account name, so the client updater (pack.toml), the server's update check at start, install-server.sh/.bat and the Server Setup app now read releases and the pack from the new address directly. README and docs links point there too. An instance or server set up before this keeps its updater and keeps working through the forward; to move it to the new address, put the three jars from this release's **Create-Galore-Updater.zip** in the instance's `minecraft` folder, or run this release's Server Setup app (or install-server) on the server folder.
+
+## 0.6.1
+
+### Added
+- **NVIDIA's Streamline decides where DLSS frame generation can be picked.** At every start on DirectX 12 the game asks Streamline, NVIDIA's own frame generation runtime, whether DLSS Frame Generation runs on this card, also when FSR is the one that loads. Where it says yes, the Display tab offers DLSS. Where it says no, the setting's status gives Streamline's reason (hover it), and FSR loads in its place, so FSR turns on without another restart.
+- Create Galore Bridge 1.125.0.
+
+### Removed
+- **The graphics card name check for DLSS frame generation.** The Display tab offered DLSS frame generation only when the card's name read RTX 40 or 50 (or RTX Ada or Blackwell), so every new card generation would have needed a Bridge update. Streamline reads what the card supports itself.
+
+## 0.6.0
+
+**DLSS Frame Generation is ready, so the pack moves to 0.6.** On an NVIDIA RTX 40 or 50 card, the Display tab's **Frame generation: DLSS** is no longer experimental: it shows a frame of its own between every two the game renders, so the screen gets about 43% more frames (234 a second against 164 without it on an RTX 4080 SUPER at 1440p, the game rendering 117), for about 3 ms more input delay. Going in and out of full screen, resizing, minimising and turning it on and off all hold with it. AMD's FSR frame generation, for other cards, stays experimental. A fresh install on Windows now starts with Perfect Presentation on DirectX 12, which frame generation runs in.
+
+### Added
+- **DLSS frame generation is no longer experimental.** The setting, its status line and the Field Guide stop calling it that; FSR frame generation still says experimental.
+- **The NVIDIA app's frame generation model works here.** NVIDIA app, Graphics, Global Settings, **DLSS Override - Model Presets**, Frame Generation changes the model DLSS frame generation uses, even though NVIDIA's overlay reads "FG OVR N/A". On an RTX 4080 SUPER, Preset C drew about 6% more frames with a little less input delay, and Preset B ran like NVIDIA's own pick. The Field Guide says how.
+- **FSR frame generation (experimental).** The Display tab's **Frame generation** setting has **Off**, **DLSS** and **FSR**. FSR is AMD FSR 3.1 frame generation: like DLSS Frame Generation it shows a frame of its own between every two the game renders, so motion looks about twice as smooth, for a little more input delay, and it is built from the same inputs (the world without the HUD, the HUD on its own, depth and motion), so the hotbar, chat and crosshair stay sharp. It runs on any graphics card Perfect Presentation's DirectX 12 runs on, NVIDIA RTX 20 and 30 series included, and works best from about 60 fps without it. It runs beside DLSS or FSR anti-aliasing, either one. Picking it turns on Perfect Presentation and DirectX 12; Reflex stays as set. The Bridge ships AMD's FidelityFX SDK 2.0.0 frame generation DLLs for it, and the game checks AMD's signature on them before loading them.
+- **Frame generation turns on and off at once.** Whenever DirectX 12 starts, the game loads the frame generation picked last (before any is picked: DLSS on an RTX 40 or 50 card that has nvngx_dlssg.dll, else FSR), so turning it off, or on again, takes effect as the settings screen closes, without a restart. Switching between DLSS and FSR still needs one; the screen says so beside the setting.
+- **Find on this PC copies nvngx_dlssg.dll too.** The Upscaling tab's button copies the newest nvngx_dlss.dll and the newest nvngx_dlssg.dll (DLSS Frame Generation's model) from where the NVIDIA app keeps them into the DLSS folder, once, when pressed. You can also put your own in with **Open DLSS folder**. On an RTX 40 or 50 card the tab shows its version beside the one it was tested with (310.9.16).
+- **A fresh install on Windows starts with Perfect Presentation on, on DirectX 12.** Borderless fullscreen at exclusive fullscreen speed and instant Alt-Tab without touching a setting, and frame generation is one setting away. It starts from the second launch: the first one turns off NeoForge's early loading screen, which Perfect Presentation can't run with. An install from before keeps its settings, whatever they are. Neither is called experimental any more; where DirectX 12 can't start (an Intel card's OpenGL driver can't share textures with it), the game runs on DirectX 11, and where Perfect Presentation can't start, on a normal window, and the screen says so.
+- Field Guide (Performance and Shaders): FSR frame generation and turning it on and off; Perfect Presentation and DirectX 12.
+- Create Galore Bridge 1.124.0.
+
+### Fixed
+- **F11 out of full screen could look as if nothing happened.** With Perfect Presentation, a game that started in full screen with a window size as big as the screen (a launcher's window size set to the screen's resolution) came back from full screen as a window exactly the screen's size, its title bar above the top of the screen, so it still looked like full screen. A window that doesn't fit the screen now comes back fitted to the screen's work area, title bar showing. Changing the full screen resolution while in full screen no longer replaces the window's own size with the screen's either.
+- **Distant Horizons' far terrain could stay drawn over the world, upside down, after going in or out of full screen or resizing the window with a shader pack on** (a shader reload cleared it). On a resize Iris gave Distant Horizons' terrain the world's new depth buffer, so the far terrain was drawn into the world's depth; it now gets its own back on the next frame, as the Window Resize Fix mod does.
+- **With FSR frame generation, Max Framerate counted rendered frames**, so a 120 fps cap showed about 200 frames a second on screen, more than a 120 Hz screen shows. It now counts the frames on screen, as with DLSS: a 120 cap renders 60 and shows 120.
+- **Frame generation was still on when the window changed size going in or out of full screen.** Minecraft shows one more frame while it changes the window, and that frame went out with a generated one, against NVIDIA's advice to have frame generation off around window changes. That frame now goes out on its own.
+- **The Upscaling tab's status line was cut off after "preset"** once Find on this PC had been pressed. It now keeps its whole text where the screen has room.
+- **Find on this PC's message was hard to follow.** It now says what happened to each file in a sentence, such as "DLSS 310.9.16: already up to date. Frame generation 310.9.16: copied from NVIDIA's folder."
+
+### Removed
+- **The game no longer copies nvngx_dlssg.dll from NVIDIA's folder at every start.** DLSS Frame Generation uses only the copy in the DLSS folder, like DLSS uses nvngx_dlss.dll, so an NVIDIA app update can't swap the model under it.
+
+## 0.5.14
+
+### Fixed
+- **The game could stop while loading mods, with Hybrid Aquatic named in the error.** Now and then a start ended in "Mod loading issue for: hybrid_aquatic" with an `ArrayIndexOutOfBoundsException` in `Object2IntOpenHashMap.rehash`, and the next start loaded fine. Every kind of entity numbers its synced data (health, variant, size and so on) in one list the whole game shares, and NeoForge builds several mods at once while it loads them. Hybrid Aquatic sets up all its fish and sharks while it is built, so when another mod set up its own entities at the same moment, two threads wrote to the list together and broke it as it grew. The same thing can also leave the list so tangled that loading hangs forever with the processor busy, or quietly give two entities' data the same number. Entities now take turns on that list. On a test server with the whole pack, 16 threads filling one list together 300 times broke it in 41 rounds (the same error as the crash) and lost entries in 2 more, and a second try hung for good; with the fix, two runs of 300 rounds came through clean, and Hybrid Aquatic's sharks and orcas spawn as before.
+- **A start that failed to load its mods wiped the resource pack list and every mod key binding from options.txt.** On a failed start the game still saved its options, while the mods' key bindings and resource packs had never been added, so the next good start came up without Fresh Animations, the pack's menu art or any changed mod keys. A failed start now leaves options.txt as it was. Checked on a test client with a mod that fails on purpose: before the fix the error screen alone emptied the resource pack list and dropped all 24 of the pack's mod key bindings; with it the file stayed byte for byte the same.
+
+### Added
+- Create Galore Bridge 1.123.0.
+
+## 0.5.13
+
+### Added
+- **Ask the Book revises its designs instead of redrawing them.** Every change to a model used to mean writing the whole build out again, layer by layer, so fixing a blimp meant rewriting hundreds of rows for each one-block fix, and a long design ran out of room before its faults were fixed. The book can now start a model from any it built earlier for the same answer and write only what changes; slide a whole part (the balloon a block back, the gondola toward the bow) in one step; draw an envelope, dome or rounded hull as one rounded shell, or a hollow box, in a single entry; and repaint the blocks already in a box (a stripe round an envelope). Checked on a test server: a hauling blimp was written in one go with its rounded envelope, and moving its second engines took a 700-byte change that fixed both faults, where the same model written out in full is about ten times that.
+- Trim and list fixes name the way in the model's own axes too ("slide the balloon toward the stern (-z)"), so the book can make the change without guessing which end is which.
+- Create Galore Bridge 1.121.0.
+
+## 0.5.12
+
+### Fixed
+- **Water and stained glass vanished from shader shadows whenever a ship was in view.** With any Sable ship on screen, shader packs got no water or stained glass in their shadow map: no light caustics under water, no coloured light through stained glass, and the water's depth for light was missing. Aeronautics' levitite is drawn with tessellation in the shadow pass right before the translucent terrain, and that left Iris drawing Sodium's water and glass as tessellation patches, which the graphics driver refuses. Each terrain draw now starts without that setting, and on a test machine water and glass landed in the shadow map with a ship in view.
+
+### Added
+- Create Galore Bridge 1.120.0.
+
+## 0.5.11
+
+### Fixed
+- **Ask the Book gave up on bigger vehicle designs and left the player its faults to fix.** Asked for a brass age blimp that can haul, the book handed over a plan in words with "two faults I didn't get fixed" (a second Portable Engine in each pod facing into the back of the first and doing nothing, and a rounded envelope Super Glue wouldn't take) plus a stern-down trim it never levelled, and no 3D model. It had run out of rounds: a question got 8 rounds of looking things up and drafting, and a vehicle takes a draft and a fix per round, several times over. Once the book starts building a model it now gets up to 20 rounds, it is told that fixing what its checks find is its own work and never the player's, and with rounds running short it spends them fixing the design, simplifying it if need be, rather than looking more up.
+- **The book's checks now name those faults and their fixes exactly.** An engine whose front meets nothing that takes rotation is a fault, with the facing that would connect it or how to move it. Each propeller drive line is weighed against the engines really on it (a Portable Engine gives 2048 stress units at any gearing), so a line that would stall says how many engines it is short. Two Portable Engines on one line that would turn it opposite ways (as two engines facing each other do as placed, which breaks the line) get the instruction to flip one's Rotation Direction setting, and then their stress adds up. Checked on a test server: two engines facing each other on one shaft popped one off; with one set to the other direction the line held 4096 stress units.
+- **Corner steps in the book's vehicles are filled so Super Glue takes them.** Where blocks of a vehicle model meet only along an edge or at a corner (a rounded envelope, cogwheels meshing across a gap), the book fills the step on the inner side of the curve with the block around it, so the outline stays and the whole vehicle glues as one piece. Steps above a burner are left open.
+- **An airship that hangs nose or stern down is told how far to slide its balloon** (or the gondola under it) to level it, and the same for a list to one side.
+- **A vehicle's bow is the way its propellers push**, so an airship with wide engine pods or a plane wider than it is long gets its trim, turning and roll worked out along the right line.
+
+### Added
+- Create Galore Bridge 1.119.0.
+
+## 0.5.10
+
+### Added
+- **Frame generation (experimental, NVIDIA RTX 40 and 50 series only).** The display settings' Display tab has a **Frame generation** setting: **Off** or **DLSS**. NVIDIA DLSS Frame Generation shows a frame of its own between every two the game renders, so motion looks about twice as smooth, for a little more input delay. It is built from the world without the HUD, the HUD on its own, depth and motion, so the hotbar, chat and crosshair stay sharp. On an RTX 4080 Super at 1440p with DLSS at full resolution and Reflex, uncapped, the game rendered 118 fps where it renders 165 without it (making the extra frames costs the card time) and the screen showed twice that, about 43% more frames than without; from input to the rendered frame being done took 12.4 ms against 9.6 ms (median). It needs Windows 10 2004 or newer with Hardware-accelerated GPU scheduling on, Vertical sync in the NVIDIA Control Panel at "Use the 3D application setting", and DLSS or FSR anti-aliasing running (Upscaling tab, with a shader pack made for it). Picking it turns on Perfect Presentation, DirectX 12 and NVIDIA Reflex, which NVIDIA requires with it; restart once. It pauses in menus, while the game is paused, for a moment after a shader reload or a resize, and while the window is minimised or hidden. The screen says beside the setting whether it runs, and why not when it can't. On other graphics cards the setting is greyed out. Known: the chat's command suggestion list can smear for a frame as it appears.
+- The Bridge ships NVIDIA Streamline 2.14.16 for it. NVIDIA's frame generation model, nvngx_dlssg.dll, isn't in the pack: the game copies the newest one from the folder where NVIDIA's software keeps it (C:\ProgramData\NVIDIA\NGX\models\dlssg) into create-galore-dlss at every start.
+- Field Guide (Performance and Shaders): frame generation.
+- Create Galore Bridge 1.118.0.
+
+### Fixed
+- **GPU pacing On waited too little on DirectX 12.** Frames queue about 1 ms less on DirectX 12 than on 11, so On's target was longer than the queue and it rarely waited. On DirectX 12, On now lets a frame queue half a frame, at least 3 ms: on an RTX 4080 Super at 1440p, 8.9 ms from input to the frame being done instead of 9.6 ms, at the same frame rate. It still helps with frame generation on (11.9 ms against Reflex's 12.4 ms).
+
+## 0.5.9
+
+### Added
+- **DirectX 12 for Perfect Presentation (experimental).** The display settings' Display tab has a **DirectX** setting: **11** (the default) or **12 (experimental)**, which Perfect Presentation shows the game through. DirectX 12 is not recommended as the default yet: on an RTX 4080 Super at 1440p it ran at the same frame rate as DirectX 11 (within 0-3%) with marginally lower input delay (0.5 to 1.0 ms), the picture identical pixel for pixel, and Reflex, GPU pacing and G-SYNC working on both. Picking 12 turns Perfect Presentation on; restart once. Where DirectX 12 can't start (it needs an OpenGL driver that can share textures with DirectX 12: NVIDIA's can, Intel's can't, AMD's is untested), the game runs on DirectX 11 and the screen says so beside the setting.
+- Field Guide (Performance and Shaders): the DirectX setting.
+- Create Galore Bridge 1.115.0.
+
+### Fixed
+- **The DLAA... button is now Upscaling & Display...**, with the tabs Upscaling and Display: besides DLAA it holds AMD FSR 3.1, the render resolution, Perfect Presentation, DirectX, NVIDIA Reflex, GPU pacing and the frame counter, which the old name hid.
+
+## 0.5.8
+
+### Added
+- **GPU pacing: shorter input delay when playing uncapped, on any graphics card.** In the display settings (the **DLAA...** button, Display tab): Off, On or Lowest. Without a frame cap the processor gets ahead of the graphics card and each frame waits in a queue on the card while the mouse input in it ages; NVIDIA Reflex's driver can't see that queue, as the game draws with OpenGL. The game now waits just before drawing each frame, so the frame reaches the card about when the card is ready, and reads the mouse again right before it draws. **On** keeps a short queue that costs no frames; **Lowest** keeps it as short as the frames' timing allows, for about 6% fewer frames. Measured on an RTX 4080 at 1440p with DLAA, from the game reading input to the card finishing the frame (median): with Perfect Presentation 11.9 ms off, 9.8 ms On, 8.4 ms Lowest (Reflex alone 10.5 ms); without it 14.4 ms off, 10.5 ms On, 8.2 ms Lowest, at the same frame rate with On.
+- **A frame counter.** Display tab: Off, Basic (the frame rate, small, in a corner) or Detailed (also the frame time, the 1% and 0.1% lows of the last 10 seconds and a graph of the last frames, yellow and red for long frames). Pick the corner; in the top right it moves under the status effect icons. **Dim for OLED** makes it see-through and moves it a pixel every two minutes so it can't burn in. It stays the same size at any GUI scale, and F3 and F1 hide it.
+- **The display settings have two tabs**, Anti-aliasing and Display, so everything fits on screen at 1440p with the automatic GUI scale.
+- Field Guide (Performance and Shaders): GPU pacing, the frame counter and Max Framerate's input delay.
+- Create Galore Bridge 1.112.0.
+
+### Fixed
+- **Max Framerate added input delay.** The game's own limiter waited after each frame, so the input read for the next frame had already aged by that wait. The cap now waits at the start of the frame, before the game reads the mouse, on any graphics card, as Reflex's own cap does: at a 60 fps cap on an RTX 4080 with Perfect Presentation, 8.8 ms from input to the card finishing the frame (Reflex's cap 8.9 ms), where the game's limiter took 29 ms.
+
 ## 0.5.7
 
 ### Added
@@ -852,5 +1474,5 @@ The vehicle bug pass: airships, boats, submarines, trains, coasters and cars dri
 
 ### Added
 - **Ask the Book.** The Field Guide can now answer questions in its own words. Press **Ask the Book** at the top right of the guide (or type `/askbook`) and ask anything about the pack. It looks at what you're holding, your inventory, what's around you, your advancements and the pack's recipes, so "what should I do next?" gets advice for where you actually are. Answers stream in with a typewriter, a quill sound you can turn off, and Minecraft-themed thinking lines. When a picture helps, it draws pixel-art diagrams on the page in the book's colours with real item icons. Each player keeps their own pages on the server.
-- Works only on a home server whose owner saved their own Anthropic API key. The server asks for it at start (press K to change it, or type OFF). The key stays on the server machine, outside the server folder, and is never sent to players, written to logs, backups or the world. Setup: [docs/server-setup.md](https://github.com/emresahin0906-code/Create-Galore/blob/main-6fi2ef/docs/server-setup.md#the-field-guides-voice-your-own-api-key).
+- Works only on a home server whose owner saved their own Anthropic API key. The server asks for it at start (press K to change it, or type OFF). The key stays on the server machine, outside the server folder, and is never sent to players, written to logs, backups or the world. Setup: [docs/server-setup.md](https://github.com/CordMuncher/Create-Galore/blob/main-6fi2ef/docs/server-setup.md#the-field-guides-voice-your-own-api-key).
 - Create Galore Bridge 1.19.0 (adds Ask the Book on top of 0.2.18's Tide fixes).

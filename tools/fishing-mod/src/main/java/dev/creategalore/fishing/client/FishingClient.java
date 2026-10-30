@@ -4,7 +4,10 @@ import dev.creategalore.fishing.FishingRegistry;
 import dev.creategalore.fishing.aquarium.AquariumBlock;
 import dev.creategalore.fishing.cast.AliveFish;
 import dev.creategalore.fishing.fish.CatchInfo;
+import dev.creategalore.fishing.net.SizeSync;
 import dev.creategalore.fishing.process.WholeFishIngredient;
+import dev.creategalore.fishing.sim.SizeClass;
+import dev.creategalore.fishing.sim.SizeModel;
 import dev.creategalore.fishing.tide.loaders.neoforge.NeoforgeClientEntrypoint;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,8 +43,10 @@ public final class FishingClient {
     }
 
     public static void init(IEventBus modBus) {
-        modBus.addListener((RegisterMenuScreensEvent event) ->
-                event.register(FishingRegistry.TACKLE_BENCH_MENU.get(), TackleBenchScreen::new));
+        modBus.addListener((RegisterMenuScreensEvent event) -> {
+            event.register(FishingRegistry.TACKLE_BENCH_MENU.get(), TackleBenchScreen::new);
+            event.register(FishingRegistry.DRIVE_MENU.get(), DriveScreen::new);
+        });
         modBus.addListener((EntityRenderersEvent.RegisterRenderers event) -> {
             event.registerEntityRenderer(FishingRegistry.CAST_HOOK.get(), CastHookRenderer::new);
             event.registerEntityRenderer(FishingRegistry.THROWN_CHUM.get(), ThrownItemRenderer::new);
@@ -139,7 +144,7 @@ public final class FishingClient {
         if (info == null) return List.of();
         Component size = Component.translatable("tooltip.create_galore_fishing.size_class." + info.size().key())
                 .withStyle(info.size().isTrophy() ? ChatFormatting.GOLD : ChatFormatting.GRAY);
-        if (!info.exact()) return List.of(size);
+        if (!info.exact()) return List.of(SizeSync.sizes(stack.getItem()).map(s -> sizeRange(size, s, info.size())).orElse(size));
         List<Component> lines = new ArrayList<>();
         lines.add(Component.translatable("tooltip.create_galore_fishing.catch", size,
                 CatchInfo.weightText(info.kg().orElse(0.0)), String.format(Locale.ROOT, "%.0f", info.cm().orElse(0.0)))
@@ -147,5 +152,19 @@ public final class FishingClient {
         info.angler().ifPresent(angler -> lines.add(Component.translatable(
                 "tooltip.create_galore_fishing.caught_by", angler, info.day().orElse(0L)).withStyle(ChatFormatting.DARK_GRAY)));
         return lines;
+    }
+
+    /**
+     * A small fish's size class with the weights that class spans for its species ("Common size, 870 g to
+     * 2.10 kg"): the item only keeps the class, so fish of one class stack. A fish at {@link CatchInfo#EXACT_FROM_KG}
+     * or more keeps its own weight, so the range stops there.
+     */
+    private static Component sizeRange(Component size, SizeModel sizes, SizeClass klass) {
+        double[] band = sizes.lengthBandCm(klass);
+        double low = sizes.weightKg(band[0]);
+        double high = Math.min(sizes.weightKg(band[1]), CatchInfo.EXACT_FROM_KG);
+        if (!(low < high)) return size;
+        return Component.translatable("tooltip.create_galore_fishing.size_range", size, CatchInfo.weightText(low),
+                CatchInfo.weightText(high)).withStyle(ChatFormatting.GRAY);
     }
 }

@@ -51,3 +51,8 @@ tellEveryone = true
 	# Default: 5
 	# Range: 1 ~ 50
 	looks = 5
+	#When the server crashes but the process stays up (the window looks frozen, nothing ticks or saves),
+	#say so in the log and close the process after this many seconds. 0 leaves it open.
+	# Default: 30
+	# Range: 0 ~ 3600
+	closeAfterCrashSeconds = 30

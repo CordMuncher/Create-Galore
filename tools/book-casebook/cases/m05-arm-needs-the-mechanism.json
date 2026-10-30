@@ -1,0 +1,73 @@
+{
+  "title": "A Mechanical Arm feeding a precision mechanism line needs a precision mechanism to craft",
+  "from": "2026-10-27 report: the book's line used an arm the player can't make yet",
+  "roots": [
+    "R4"
+  ],
+  "kind": "model",
+  "inventory": [
+    {
+      "id": "create:andesite_alloy",
+      "count": 64
+    },
+    {
+      "id": "minecraft:gold_ingot",
+      "count": 32
+    },
+    {
+      "id": "create:brass_ingot",
+      "count": 16
+    }
+  ],
+  "model": {
+    "title": "Arm-fed depot",
+    "goal": "create:precision_mechanism",
+    "size_x": 4,
+    "size_y": 2,
+    "size_z": 1,
+    "blocks": [
+      {
+        "block": "create:mechanical_arm",
+        "x": 0,
+        "y": 1,
+        "z": 0
+      },
+      {
+        "block": "create:cogwheel[axis=y]",
+        "x": 1,
+        "y": 1,
+        "z": 0
+      },
+      {
+        "block": "create:creative_motor[facing=up]",
+        "x": 1,
+        "y": 0,
+        "z": 0
+      },
+      {
+        "block": "create:depot",
+        "x": 3,
+        "y": 1,
+        "z": 0
+      },
+      {
+        "block": "minecraft:stone",
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      {
+        "block": "minecraft:stone",
+        "x": 3,
+        "y": 0,
+        "z": 0
+      }
+    ]
+  },
+  "expect": {
+    "built": false,
+    "has": [
+      "needs a precision mechanism"
+    ]
+  }
+}

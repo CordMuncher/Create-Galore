@@ -52,7 +52,70 @@ final class Ships {
         }
     }
 
+    /** The ids of every ship in the level; the casebook compares them to find the ships an assembly made. */
+    static java.util.Set<java.util.UUID> ids(net.minecraft.server.level.ServerLevel level) {
+        if (!ModList.get().isLoaded("sable")) return java.util.Set.of();
+        try {
+            return Sable.ids(level);
+        } catch (RuntimeException | LinkageError e) {
+            return java.util.Set.of();
+        }
+    }
+
+    /** Takes the ships with these ids out of the level, blocks and all, forgetting the placed marks in their plots (casebook). */
+    static void remove(net.minecraft.server.level.ServerLevel level, java.util.Set<java.util.UUID> ids, PlacedBlocks placed) {
+        if (ids.isEmpty() || !ModList.get().isLoaded("sable")) return;
+        try {
+            Sable.remove(level, ids, placed);
+        } catch (RuntimeException | LinkageError e) {
+            // Nothing to clear up then.
+        }
+    }
+
+    /** The ids of the ships whose middle is within {@code radius} blocks (horizontally) of {@code at} (casebook). */
+    static java.util.Set<java.util.UUID> near(net.minecraft.server.level.ServerLevel level, BlockPos at, int radius) {
+        if (!ModList.get().isLoaded("sable")) return java.util.Set.of();
+        try {
+            return Sable.near(level, at, radius);
+        } catch (RuntimeException | LinkageError e) {
+            return java.util.Set.of();
+        }
+    }
+
     private static final class Sable {
+        static java.util.Set<java.util.UUID> near(net.minecraft.server.level.ServerLevel level, BlockPos at, int radius) {
+            java.util.Set<java.util.UUID> out = new java.util.HashSet<>();
+            var container = dev.ryanhcode.sable.api.sublevel.SubLevelContainer.getContainer(level);
+            if (container == null) return out;
+            for (var sub : container.getAllSubLevels()) {
+                var p = sub.logicalPose().position();
+                if (!sub.isRemoved() && Math.abs(p.x() - at.getX()) <= radius && Math.abs(p.z() - at.getZ()) <= radius) out.add(sub.getUniqueId());
+            }
+            return out;
+        }
+
+        static java.util.Set<java.util.UUID> ids(net.minecraft.server.level.ServerLevel level) {
+            java.util.Set<java.util.UUID> out = new java.util.HashSet<>();
+            var container = dev.ryanhcode.sable.api.sublevel.SubLevelContainer.getContainer(level);
+            if (container != null) for (var sub : container.getAllSubLevels()) if (!sub.isRemoved()) out.add(sub.getUniqueId());
+            return out;
+        }
+
+        static void remove(net.minecraft.server.level.ServerLevel level, java.util.Set<java.util.UUID> ids, PlacedBlocks placed) {
+            var container = dev.ryanhcode.sable.api.sublevel.SubLevelContainer.getContainer(level);
+            if (container == null) return;
+            for (var sub : container.getAllSubLevels()) {
+                if (sub.isRemoved() || !ids.contains(sub.getUniqueId())) continue;
+                var plot = sub.getPlot();
+                ChunkPos min = plot.getChunkMin(), max = plot.getChunkMax();
+                if (placed != null)
+                    for (BlockPos p : placed.inChunks(level, c -> c.x >= min.x && c.x <= max.x && c.z >= min.z && c.z <= max.z, Integer.MAX_VALUE))
+                        placed.remove(level, p);
+                if (sub instanceof dev.ryanhcode.sable.sublevel.ServerSubLevel server) server.getPlot().destroyAllBlocks();
+                sub.markRemoved();
+            }
+        }
+
         static Vec3 toWorld(net.minecraft.server.level.ServerLevel level, BlockPos pos) {
             var container = dev.ryanhcode.sable.api.sublevel.SubLevelContainer.getContainer(level);
             if (container == null) return null;

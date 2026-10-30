@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
  * short idle gaps that left made NVIDIA clock the GPU down ("GPU idle" on an RTX 4080 Super, 170 W instead of 300 W).
  * A ring of shared copies means OpenGL only takes a texture back long after D3D11 is done with it.
  */
-final class InteropContext implements AutoCloseable {
+final class InteropContext implements Presenter {
     private static final Logger LOG = LoggerFactory.getLogger("create_galore_bridge");
 
     // d3dcommon.h, d3d11.h, dxgi.h, dxgi1_2.h, dxgi1_3.h, dxgi1_5.h
@@ -130,8 +130,9 @@ final class InteropContext implements AutoCloseable {
     private int ringHeight;
     private int syncInterval = 1;
 
-    InteropContext(long hwnd, WglContext.ContextFlags flags) {
-        openglContext = new WglContext(flags);
+    /** Shows the game on {@code hwnd}; {@code openglContext} is the game's hidden context, closed with this. */
+    InteropContext(long hwnd, WglContext openglContext) {
+        this.openglContext = openglContext;
         try (MemoryStack stack = stackPush()) {
             long out = stack.nmalloc(8, 8);
             long out2 = stack.nmalloc(8, 8);
@@ -237,20 +238,29 @@ final class InteropContext implements AutoCloseable {
         return memGetAddress(code);
     }
 
-    long device() {
+    @Override
+    public long device() {
         return device;
     }
 
-    void makeCurrent() {
+    @Override
+    public String api() {
+        return "DirectX 11";
+    }
+
+    @Override
+    public void makeCurrent() {
         openglContext.makeCurrent();
     }
 
-    void setSyncInterval(int interval) {
+    @Override
+    public void setSyncInterval(int interval) {
         // Sodium Extra's adaptive sync asks for -1; a swap chain has no adaptive mode, so that means no vsync.
         this.syncInterval = Math.max(0, interval);
     }
 
-    void waitForSwapChainSignal() {
+    @Override
+    public void waitForSwapChainSignal() {
         int result = (int) Ffi.call("PI:I", waitForSingleObject, waitHandle, 1000);
         switch (result) {
             case 0 -> { }
@@ -261,18 +271,21 @@ final class InteropContext implements AutoCloseable {
         }
     }
 
-    void present() {
+    @Override
+    public void present() {
         Com.check("Present", swapChain, SWAP_CHAIN_PRESENT, "II", syncInterval, syncInterval == 0 ? DXGI_PRESENT_ALLOW_TEARING : 0);
     }
 
-    void resizeSwapChain(int width, int height) {
+    @Override
+    public void resizeSwapChain(int width, int height) {
         Com.release(renderTargetView);
         renderTargetView = 0L;
         Com.check("ResizeBuffers", swapChain, SWAP_CHAIN_RESIZE_BUFFERS, "IIIII", 0, width, height, DXGI_FORMAT_UNKNOWN, SWAP_CHAIN_FLAGS);
     }
 
     /** Copies the game's colour texture into the next shared texture and draws that to the swap chain. */
-    void blitToSwapChain(int glTexture) {
+    @Override
+    public void blitToSwapChain(int glTexture) {
         int width = glGetTextureLevelParameteri(glTexture, 0, GL_TEXTURE_WIDTH);
         int height = glGetTextureLevelParameteri(glTexture, 0, GL_TEXTURE_HEIGHT);
         if (width != ringWidth || height != ringHeight) {

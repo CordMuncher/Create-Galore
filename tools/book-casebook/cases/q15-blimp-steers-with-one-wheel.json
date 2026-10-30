@@ -1,0 +1,128 @@
+{
+  "title": "A blimp is steered with one wheel, not a lever for each side",
+  "from": "2026-10-29 report: book blimps steered left and right with levers, awkward to fly",
+  "roots": [
+    "R3",
+    "R4"
+  ],
+  "kind": "question",
+  "question": "Can you design me a small blimp to fly around my base?",
+  "player": "Brass age: Portable Engines, andesite casings, cogwheels, plenty of wood and wool, no blimp yet.",
+  "rubric": [
+    "Steered with one Steering Wheel at the helm (a wheel turning a Swivel Bearing under a propeller, or comparators at the wheel's sides cutting each side's propellers), not a lever for each side",
+    "Levers or a Throttle Lever only for settings such as the burners",
+    "Every control in reach from the helm, the pilot can see ahead",
+    "Cruises at a useful speed and turns"
+  ],
+  "world": [
+    "fill ~-12 ~-1 ~-12 ~12 ~-1 ~12 minecraft:grass_block",
+    "time set 6000"
+  ],
+  "box": [
+    -12,
+    -1,
+    -12,
+    12,
+    0,
+    12
+  ],
+  "built": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "stand": [
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "inventory": [
+    {
+      "id": "simulated:red_portable_engine",
+      "count": 4
+    },
+    {
+      "id": "create:andesite_alloy",
+      "count": 64
+    },
+    {
+      "id": "create:andesite_casing",
+      "count": 16
+    },
+    {
+      "id": "create:cogwheel",
+      "count": 32
+    },
+    {
+      "id": "create:large_cogwheel",
+      "count": 16
+    },
+    {
+      "id": "create:shaft",
+      "count": 32
+    },
+    {
+      "id": "minecraft:iron_ingot",
+      "count": 32
+    },
+    {
+      "id": "minecraft:spruce_planks",
+      "count": 384
+    },
+    {
+      "id": "minecraft:spruce_log",
+      "count": 64
+    },
+    {
+      "id": "minecraft:white_wool",
+      "count": 96
+    },
+    {
+      "id": "minecraft:redstone",
+      "count": 32
+    },
+    {
+      "id": "minecraft:coal",
+      "count": 64
+    },
+    {
+      "id": "minecraft:quartz",
+      "count": 8
+    }
+  ],
+  "advancements": [
+    "minecraft:story/root",
+    "minecraft:story/mine_stone",
+    "minecraft:story/upgrade_tools",
+    "minecraft:story/smelt_iron",
+    "minecraft:husbandry/root",
+    "create:root",
+    "create:andesite_alloy",
+    "create:water_wheel",
+    "create:shifting_gears",
+    "create:mechanical_press",
+    "create:andesite_casing",
+    "create:belt",
+    "create:encased_fan",
+    "create:fan_processing",
+    "create:mechanical_mixer",
+    "create:compacting",
+    "create:millstone",
+    "create:crushing_wheel",
+    "create:brass",
+    "create:brass_casing",
+    "create:precision_mechanism",
+    "create:mechanical_arm",
+    "create:super_glue"
+  ],
+  "crafted": {
+    "create:brass_ingot": 200,
+    "simulated:red_portable_engine": 6,
+    "create:precision_mechanism": 4
+  }
+}

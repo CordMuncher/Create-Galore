@@ -6,6 +6,7 @@ import dev.creategalore.fishing.sim.Curve;
 import dev.creategalore.fishing.sim.FightRules;
 import dev.creategalore.fishing.sim.MonteCarlo;
 import dev.creategalore.fishing.sim.Outcome;
+import dev.creategalore.fishing.sim.SizeClass;
 import dev.creategalore.fishing.sim.TacklePresets;
 import java.util.List;
 import java.util.Locale;
@@ -46,6 +47,18 @@ public final class SpeciesSelfTest {
                 }
             }
             r.check(bad == 0, "every species has positive, finite fight and size numbers");
+            // A small fish's tooltip gives its class's weights from these bands, so each band must hold its class.
+            int wrongBand = 0;
+            for (Species s : all) {
+                for (SizeClass c : SizeClass.values()) {
+                    double[] band = s.size().lengthBandCm(c);
+                    if (s.size().classify((band[0] + band[1]) / 2) != c || band[0] > band[1]) {
+                        wrongBand++;
+                        r.fail("species " + s.id() + ": the " + c.key() + " band " + band[0] + "-" + band[1] + " cm isn't that class");
+                    }
+                }
+            }
+            r.check(wrongBand == 0, "every size class's length band classifies as that class");
             for (Species s : all) {
                 r.info(String.format(Locale.ROOT, "%-40s %-10s %-12s %6.1f-%6.1f cm  %8.2f-%8.2f kg (record %9.1f kg)  per_kg %.2f",
                         s.id(), s.medium(), s.feeding().getSerializedName(), s.size().typicalLow(), s.size().typicalHigh(),

@@ -39,6 +39,7 @@ import org.athisworkshop.animalhusbandry.registry.neoforge.ModAttachmentsImpl;
  * animal had been, for good (it is saved with the world). Every glass hologram now takes itself down after 5 s, or as
  * soon as it isn't riding a living animal, and the ones already left floating go away when their chunk loads.
  * A sick cow gives no milk and a bull none at all, so the glass no longer counts milk for them.
+ * The glass also says when the animal next eats and drinks (a meal or a drink lasts two and a half days).
  */
 public final class AnimalCare {
     private static final int MATE_HAPPINESS = 80;
@@ -109,7 +110,12 @@ public final class AnimalCare {
         }
         if (care.daysSinceFed > 1) {
             text.append(Component.literal("§cHungry: " + care.daysSinceFed + " days §7(happiness falls)\n"));
+        } else {
+            text.append(Component.literal("§fFood: " + (care.daysSinceFed > 0 ? "§eHungry"
+                : "§a✔ next meal in " + days(AnimalTroughs.daysLeft(animal, true) + 1)) + "\n"));
         }
+        text.append(Component.literal("§fWater: " + (care.daysDehydrated > 0 ? "§eThirsty"
+            : "§a✔ next drink in " + days(AnimalTroughs.daysLeft(animal, false) + 1)) + "\n"));
         if (care.daysSinceFed > 0 && !AnimalTroughs.foodInReach(animal)) {
             text.append(Component.literal("§cNo trough it can reach has its food §7(eats " + AnimalTroughs.foodNames(animal)
                 + ", within " + AnimalTroughs.REACH + " blocks)\n"));
@@ -145,6 +151,10 @@ public final class AnimalCare {
         hologram.addTag(HOLOGRAM);
         animal.level().addFreshEntity(hologram);
         hologram.startRiding(animal, true);
+    }
+
+    private static String days(int days) {
+        return days == 1 ? "1 day" : days + " days";
     }
 
     /** The same checks Animal Husbandry makes before two tamed animals fall in love, first one that fails. */

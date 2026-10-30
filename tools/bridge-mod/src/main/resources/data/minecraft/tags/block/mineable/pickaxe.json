@@ -1,0 +1,14 @@
+{
+  "replace": false,
+  "values": [
+    "create_galore_bridge:andesite_encased_door",
+    "create_galore_bridge:brass_encased_door",
+    "create_galore_bridge:copper_encased_door",
+    "create_galore_bridge:andesite_encased_trapdoor",
+    "create_galore_bridge:brass_encased_trapdoor",
+    "create_galore_bridge:copper_encased_trapdoor",
+    "create_galore_bridge:iron_water_pump",
+    "create_galore_bridge:gold_water_pump",
+    "create_galore_bridge:diamond_water_pump"
+  ]
+}

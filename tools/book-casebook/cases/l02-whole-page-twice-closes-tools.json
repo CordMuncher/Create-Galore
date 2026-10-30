@@ -1,0 +1,72 @@
+{
+  "title": "The second turn in a row that spends its whole output closes the tools and still gets an answer in words",
+  "from": "0.6.18: the andesite build follow-up",
+  "roots": [
+    "R5",
+    "R6"
+  ],
+  "kind": "loop",
+  "question": "can you show me a 3d design of a self contained build that generates the cobble, then makes gravel and then splits the flint off as needed to make andasite",
+  "turns": [
+    {
+      "stop_reason": "max_tokens",
+      "content": [
+        {
+          "type": "thinking",
+          "thinking": "(a long working-out of the build)",
+          "signature": "casebook"
+        }
+      ],
+      "usage": {
+        "output_tokens": 32000
+      }
+    },
+    {
+      "stop_reason": "max_tokens",
+      "content": [
+        {
+          "type": "thinking",
+          "thinking": "(a long working-out of the build)",
+          "signature": "casebook"
+        },
+        {
+          "type": "text",
+          "text": "Let me model it."
+        },
+        {
+          "type": "tool_use",
+          "id": "toolu_cut",
+          "name": "build_model",
+          "input": {}
+        }
+      ],
+      "usage": {
+        "output_tokens": 32000
+      }
+    },
+    {
+      "stop_reason": "end_turn",
+      "content": [
+        {
+          "type": "text",
+          "text": "The build in words: a drill on a cobblestone generator feeds two millstones."
+        }
+      ],
+      "usage": {
+        "output_tokens": 700
+      }
+    }
+  ],
+  "expect": {
+    "has": [
+      "ANSWER: The build in words",
+      "2 tools open, effort low",
+      "3 tools closed, effort low"
+    ],
+    "lacks": [
+      "Let me model it",
+      "found nothing to say",
+      "ANSWER: (none)"
+    ]
+  }
+}

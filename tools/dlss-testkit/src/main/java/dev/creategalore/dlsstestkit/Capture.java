@@ -132,6 +132,15 @@ public final class Capture {
                 modes.add(new Mode(scale[0] + "-dlss-L", true, "L", null, null, null, null, null, s));
                 modes.add(new Mode(scale[0] + "-fsr3", true, "default", null, null, "fsr3", null, null, s));
             }
+            // DLSS Ray Reconstruction (dev builds) with preset F (RR 4.5) at full resolution and each render scale, an older
+            // preset, and F with the pack's colour as it is (not pre-exposed) and with its own smoothing kept.
+            modes.add(Mode.rr("dlaa-rr-F", "F", null));
+            for (String[] scale : scales) {
+                modes.add(Mode.rr(scale[0] + "-rr-F", "F", Float.parseFloat(scale[1])));
+            }
+            modes.add(Mode.rr("perf-rr-E", "E", 0.5f));
+            modes.add(Mode.rr("perf-rr-F-rawexp", "F,exposure=raw", 0.5f));
+            modes.add(Mode.rr("perf-rr-F-calm", "F,raw=none", 0.5f));
             // NVIDIA's full mip bias (one more mip level of detail) against the render scale's own.
             modes.add(new Mode("perf-dlss-K-bias", true, "K", null, null, null, null, null, 0.5f, -1.0f));
             modes.add(new Mode("perf-fsr3-bias", true, "default", null, null, "fsr3", null, null, 0.5f, -1.0f));
@@ -152,6 +161,25 @@ public final class Capture {
             modes.add(Mode.latency("lat-ra1", "off", false, 1, 260));
             modes.add(Mode.latency("lat-ra0", "off", false, 0, 260));
             modes.add(Mode.latency("lat-ra1-late", "off", true, 1, 260));
+            // GPU pacer (Pacer 1): waits just before rendering so the frame doesn't queue on the GPU, with how long it
+            // may still queue (us; 0: automatic, from how much the frames vary); with Reflex on top, and with Sodium's
+            // render-ahead 1. Then the 60 fps cap waiting at the frame's start, before input, instead of in the game's
+            // limiter after the frame (any GPU).
+            modes.add(Mode.latency("lat-pacer", "off", true, 3, 260, 0, false));
+            modes.add(Mode.latency("lat-pacer-500", "off", true, 3, 260, 500, false));
+            modes.add(Mode.latency("lat-pacer-2000", "off", true, 3, 260, 2000, false));
+            modes.add(Mode.latency("lat-reflex-pacer", "on", true, 3, 260, 0, false));
+            modes.add(Mode.latency("lat-ra1-pacer", "off", true, 1, 260, 0, false));
+            modes.add(Mode.latency("lat-cap-start", "off", true, 3, 60, null, true));
+            // Pacer 2: the queue read without a flush, longer targets, and the frame cap as the Bridge now has it by default.
+            modes.add(Mode.latency("lat-pacer-3000", "off", true, 3, 260, 3000, false));
+            modes.add(Mode.latency("lat-pacer-4000", "off", true, 3, 260, 4000, false));
+            modes.add(Mode.latency("lat-pacer-5000", "off", true, 3, 260, 5000, false));
+            modes.add(Mode.latency("lat-cap-default", "off", false, 3, 60, null, null));
+            // The player's GPU pacing On (a share of the frame time, at least 4 or 5 ms).
+            modes.add(Mode.latency("lat-pacing-on", "off", true, 3, 260, -1, null));
+            // DLSS-G 1: Reflex with GPU pacing On beside it (frame generation needs Reflex, the pacer stays as set).
+            modes.add(Mode.latency("lat-reflex-pacing-on", "on", true, 3, 260, -1, null));
         }
         // The DLAA test world (seed 20261024, scene built on the lakeshore at x 1023..1040, z 160..176).
         List<Viewpoint> viewpoints = new ArrayList<>(List.of(
@@ -169,7 +197,11 @@ public final class Capture {
          * (PC-RUNBOOK.md): F1 and F2 measure frame rates (no screenshots), U1 to U7 save the pictures. Crash 1: C1
          * restarts DLSS 60 times, each time at another render size and mostly another preset (no pictures). S1: Create's
          * machines under a near lintel at full size and two render scales (all should show). Reflex 1: L1 with Perfect
-         * Presentation on (Reflex needs it), L2 with it off (Sodium's render-ahead limit), each mode twice.
+         * Presentation on (Reflex needs it), L2 with it off (Sodium's render-ahead limit), each mode twice. Pacer 1: L3
+         * with Perfect Presentation on, L4 with it off. Presenter 1: P1 once with each presenter (dx11, dx12).
+         * Presenter 2 and 3: P2 with dx11 and with dx12. Pacer 3: L7, GPU pacing's targets, once with each presenter.
+         * DLSS-G 1: G1, Reflex alone against Reflex with GPU pacing On, with frame generation on and off. Ray Reconstruction
+         * 1: RR1 measures frame rates (DLSS against Ray Reconstruction at each scale, no screenshots), RR2 saves the pictures.
          */
         List<Run> runs = new ArrayList<>(List.of(
                 new Run("F1", "photon-taa+dlaa-default+fsr3+perf-taau+perf-dlss-K+perf-dlss-M+perf-dlss-L+perf-fsr3"
@@ -190,7 +222,25 @@ public final class Capture {
                 new Run("L1", "lat-base+lat-late+lat-markers+lat-reflex+lat-boost+lat-cap+lat-cap-late+lat-cap-reflex",
                         "shore+canopy", "latency", null, false, null, 2),
                 new Run("L2", "lat-base+lat-late+lat-ra1+lat-ra0+lat-ra1-late+lat-cap+lat-cap-late", "shore+canopy", "latency", null,
-                        false, null, 2)));
+                        false, null, 2),
+                new Run("L3", "lat-base+lat-late+lat-pacer+lat-pacer-500+lat-pacer-2000+lat-reflex+lat-reflex-pacer+lat-cap-late"
+                        + "+lat-cap-start+lat-cap-reflex", "shore+canopy", "latency", null, false, null, 2),
+                new Run("L4", "lat-base+lat-late+lat-ra1-late+lat-pacer+lat-ra1-pacer+lat-pacer-500+lat-cap-late+lat-cap-start",
+                        "shore+canopy", "latency", null, false, null, 2),
+                new Run("L5", "lat-base+lat-late+lat-reflex+lat-pacer+lat-pacer-2000+lat-pacer-4000+lat-reflex-pacer+lat-cap-default",
+                        "shore+canopy", "latency", null, false, null, 2),
+                new Run("L6", "lat-base+lat-ra1-late+lat-pacer+lat-pacer-3000+lat-pacer-5000+lat-ra1-pacer",
+                        "shore+canopy", "latency", null, false, null, 2),
+                new Run("P1", "lat-base+lat-pacing-on+lat-pacer+lat-reflex+lat-cap-default", "shore+canopy", "latency", null,
+                        false, null, 2),
+                new Run("P2", "lat-base+lat-reflex+lat-cap-default", "shore+canopy", "latency", null, false, null, 2),
+                new Run("L7", "lat-base+lat-pacing-on+lat-pacer+lat-pacer-3000+lat-pacer-5000+lat-reflex", "shore+canopy",
+                        "latency", null, false, null, 2),
+                new Run("G1", "lat-reflex+lat-reflex-pacing-on+lat-pacing-on", "shore+canopy", "latency", null, false, null, 2),
+                new Run("RR1", "dlaa-default+dlaa-rr-F+q-dlss-K+q-rr-F+bal-rr-F+perf-dlss-K+perf-rr-F+ultra-rr-F", "shore+canopy", null,
+                        null, false, null, 2),
+                new Run("RR2", "photon-taa+dlaa-default+dlaa-rr-F+q-dlss-K+perf-dlss-K+perf-rr-F+perf-rr-E+perf-rr-F-rawexp"
+                        + "+perf-rr-F-calm+ultra-rr-F", "shore+glass+canopy+moving", null, null, null, null)));
     }
 
     /**
@@ -212,11 +262,27 @@ public final class Capture {
      * no masks (null: on; DLSS never gets them); renderScale (null: full resolution) turns on the DLAA pack's own
      * upscaling (Photon's TAAU) at that render scale, so DLSS or FSR upscale (or with dlaa false the pack itself); mipBias (null: 0) is added to the
      * textures' mip bias while DLSS or FSR runs (NVIDIA's guide asks for -1 more than the render scale's own); reflex,
-     * latePoll, renderAhead and fpsCap (null: as they are) are the input latency switches (see {@link #latency}).
+     * latePoll, renderAhead, fpsCap, pacerUs and capAtStart (null: as they are) are the input latency switches (see
+     * {@link #latency}); rayReconstruction (null: off) runs DLSS Ray Reconstruction in DLSS's place (dev builds), see
+     * {@link #rr}.
      */
     record Mode(String name, boolean dlaa, String preset, String debugView, String jitterSign, String engine, Boolean objectMotion,
                 Boolean reactiveMask, Float renderScale, Float mipBias, String reflex, Boolean latePoll, Integer renderAhead,
-                Integer fpsCap) {
+                Integer fpsCap, Integer pacerUs, Boolean capAtStart, String rayReconstruction) {
+        Mode(String name, boolean dlaa, String preset, String debugView, String jitterSign, String engine, Boolean objectMotion,
+             Boolean reactiveMask, Float renderScale, Float mipBias, String reflex, Boolean latePoll, Integer renderAhead,
+             Integer fpsCap, Integer pacerUs, Boolean capAtStart) {
+            this(name, dlaa, preset, debugView, jitterSign, engine, objectMotion, reactiveMask, renderScale, mipBias, reflex, latePoll,
+                    renderAhead, fpsCap, pacerUs, capAtStart, null);
+        }
+
+        Mode(String name, boolean dlaa, String preset, String debugView, String jitterSign, String engine, Boolean objectMotion,
+             Boolean reactiveMask, Float renderScale, Float mipBias, String reflex, Boolean latePoll, Integer renderAhead,
+             Integer fpsCap) {
+            this(name, dlaa, preset, debugView, jitterSign, engine, objectMotion, reactiveMask, renderScale, mipBias, reflex, latePoll,
+                    renderAhead, fpsCap, null, null);
+        }
+
         Mode(String name, boolean dlaa, String preset, String debugView, String jitterSign, String engine, Boolean objectMotion,
              Boolean reactiveMask) {
             this(name, dlaa, preset, debugView, jitterSign, engine, objectMotion, reactiveMask, null, null);
@@ -229,15 +295,36 @@ public final class Capture {
 
         /**
          * An input latency mode: DLAA as played, reflex (off, markers, on, boost; needs Perfect Presentation), input read
-         * again just before rendering (latePoll), Sodium's CPU render-ahead limit and the frame cap (260: none; vsync off).
+         * again just before rendering (latePoll), Sodium's CPU render-ahead limit and the frame cap (260: none; vsync off),
+         * kept by the game's limiter.
          */
         static Mode latency(String name, String reflex, boolean latePoll, int renderAhead, int fpsCap) {
-            return new Mode(name, true, "default", null, null, null, null, null, null, null, reflex, latePoll, renderAhead, fpsCap);
+            return latency(name, reflex, latePoll, renderAhead, fpsCap, null, false);
+        }
+
+        /**
+         * The same with the GPU pacer (pacerUs: how long a frame may still queue on the GPU, in microseconds, 0 for the
+         * automatic target, -1 for the player's setting On (gpuPacing=on); null: off) and the frame cap waiting at the frame's start, before input (capAtStart true),
+         * in the game's limiter (false) or as the Bridge has it by default (null; at the frame's start from 1.108.0).
+         */
+        static Mode latency(String name, String reflex, boolean latePoll, int renderAhead, int fpsCap, Integer pacerUs,
+                            Boolean capAtStart) {
+            return new Mode(name, true, "default", null, null, null, null, null, null, null, reflex, latePoll, renderAhead, fpsCap,
+                    pacerUs, capAtStart);
         }
 
         Mode(String name, boolean dlaa, String preset, String debugView, String jitterSign, String engine, Boolean objectMotion,
              Boolean reactiveMask, Float renderScale) {
             this(name, dlaa, preset, debugView, jitterSign, engine, objectMotion, reactiveMask, renderScale, null);
+        }
+
+        /**
+         * A Ray Reconstruction mode (dev builds) at a render scale (null: full resolution). {@code rr} is its preset (F, E,
+         * D or default), then optionally {@code ,exposure=raw} (the colour as the pack has it, not times its exposure) and
+         * {@code ,raw=none} (the pack's own smoothing kept: rough reflections and soft shadows not left noisy).
+         */
+        static Mode rr(String name, String rr, Float renderScale) {
+            return new Mode(name, true, "default", null, null, null, null, null, renderScale, null, null, null, null, null, null, null, rr);
         }
     }
 
@@ -259,6 +346,8 @@ public final class Capture {
     private record Segment(String label, Viewpoint viewpoint, String path, int length, int[] captures, Runnable onStart, Mode mode) {}
 
     private static boolean running;
+    /** This game's first run has taken away the scenes an earlier game may have left standing. */
+    private static boolean leftoversCleared;
     private static boolean autorun;
     private static int frame;
     private static List<Segment> plan = List.of();
@@ -402,6 +491,13 @@ public final class Capture {
         // sees them whole from its first frame (a scene built just after the switch once lost a section's update in
         // the rebuild, and the first mode showed lake where its platform was).
         List<String> scenes = viewpoints.stream().map(Viewpoint::scene).filter(java.util.Objects::nonNull).distinct().toList();
+        if (!leftoversCleared) {
+            // A scene an earlier game left standing (the by-eye scene stays when the player quits) would sit beside
+            // viewpoints that don't expect it and cost every mode frames: the game's first run takes them all away.
+            leftoversCleared = true;
+            segments.add(new Segment("clear old scenes", viewpoints.get(0), null, SCENE_BUILD_FRAMES, new int[0],
+                    Capture::clearScenes, modes.get(0)));
+        }
         if (!scenes.isEmpty()) {
             segments.add(new Segment("build scenes", viewpoints.get(0), null, SCENE_BUILD_FRAMES, new int[0],
                     () -> scenes.forEach(Capture::buildScene), modes.get(0)));
@@ -496,10 +592,7 @@ public final class Capture {
             return "a run is going";
         }
         if (!build) {
-            MovingScene.remove();
-            EffectsScene.remove();
-            RideScene.remove();
-            CullScene.remove();
+            clearScenes();
             return "removed the test scenes";
         }
         if (EffectsScene.NAME.equals(which)) {
@@ -739,6 +832,15 @@ public final class Capture {
         shots.add(shot);
     }
 
+    /** Takes every test scene away, built in this game or left standing by an earlier one. */
+    private static void clearScenes() {
+        MovingScene.clear();
+        EffectsScene.clear();
+        RideScene.clear();
+        CullScene.clear();
+        log("cleared the test scenes");
+    }
+
     private static void buildScene(String scene) {
         if (MovingScene.NAME.equals(scene)) {
             MovingScene.build();
@@ -850,6 +952,8 @@ public final class Capture {
             info.addProperty("latePoll", Boolean.TRUE.equals(mode.latePoll()));
             info.addProperty("renderAhead", mode.renderAhead());
             info.addProperty("fpsCap", mode.fpsCap());
+            info.addProperty("pacerUs", mode.pacerUs());
+            info.addProperty("capAtStart", mode.capAtStart());
             if (!info.has("latency")) {
                 info.add("latency", new JsonObject());
             }
@@ -913,20 +1017,70 @@ public final class Capture {
             } else {
                 props.remove("latePoll");
             }
+            if (mode.pacerUs() != null && mode.pacerUs() < 0) {
+                props.setProperty("gpuPacing", "on");
+                props.remove("gpuPacer");
+                props.remove("pacerTargetUs");
+            } else if (mode.pacerUs() != null) {
+                props.setProperty("gpuPacer", "true");
+                props.setProperty("pacerTargetUs", mode.pacerUs() > 0 ? Integer.toString(mode.pacerUs()) : "auto");
+            } else {
+                props.setProperty("gpuPacer", "false"); // whatever the player's gpuPacing says
+                props.remove("pacerTargetUs");
+            }
+            if (mode.capAtStart() != null) {
+                props.setProperty("frameCapAtStart", Boolean.toString(mode.capAtStart()));
+            } else {
+                props.remove("frameCapAtStart");
+            }
+            props.remove("dlaaRrExposure");
+            props.remove("dlaaRrRaw");
+            if (mode.rayReconstruction() != null && !mode.rayReconstruction().isBlank()) {
+                String[] rr = mode.rayReconstruction().split(",");
+                props.setProperty("dlaaRayReconstruction", "true");
+                props.setProperty("dlaaRrPreset", rr[0].trim());
+                for (int i = 1; i < rr.length; i++) {
+                    String[] kv = rr[i].split("=", 2);
+                    if (kv.length == 2 && kv[0].trim().equals("exposure")) {
+                        props.setProperty("dlaaRrExposure", kv[1].trim());
+                    } else if (kv.length == 2 && kv[0].trim().equals("raw")) {
+                        props.setProperty("dlaaRrRaw", kv[1].trim());
+                    }
+                }
+            } else {
+                props.setProperty("dlaaRayReconstruction", "false");
+            }
+            // The render scale: the Bridge's own setting for a pack that leaves it to the Bridge, else the pack's option.
+            Float scale = mode.renderScale();
+            boolean bridgeScale = scaleOptions[1].isEmpty();
+            if (bridgeScale) {
+                props.setProperty("dlaaRenderScale", String.format(Locale.ROOT, "%.2f", scale != null && scale < 1.0f ? scale : 1.0f));
+            }
             try (Writer w = Files.newBufferedWriter(file)) {
                 props.store(w, "Create Galore Bridge display settings (last written by the DLAA test kit, mode " + mode.name() + ")");
             }
-            // The render scale is the pack's own option: Iris applies queued options on the reload and saves them.
-            Float scale = mode.renderScale();
-            Iris.getShaderPackOptionQueue().put(scaleOptions[1], Boolean.toString(scale != null && scale < 1.0f));
-            if (scale != null && scale < 1.0f) {
-                Iris.getShaderPackOptionQueue().put(scaleOptions[2], String.format(Locale.ROOT, "%.2f", scale));
+            // The pack's own option: Iris applies queued options on the reload and saves them.
+            if (!bridgeScale) {
+                Iris.getShaderPackOptionQueue().put(scaleOptions[1], Boolean.toString(scale != null && scale < 1.0f));
+                if (scale != null && scale < 1.0f) {
+                    Iris.getShaderPackOptionQueue().put(scaleOptions[2], String.format(Locale.ROOT, "%.2f", scale));
+                }
             }
+            bridgeSettingsReload(); // the Bridge reads them again on a shader reload, but with shaders off there is none
             Iris.reload();
             return true;
         } catch (IOException | RuntimeException e) {
             LOG.warn("DLAA test: could not switch to mode {}: {}", mode.name(), e.toString());
             return false;
+        }
+    }
+
+    /** Has the Bridge read its display settings again (DisplaySettings.reload); nothing if this Bridge has none. */
+    private static void bridgeSettingsReload() {
+        try {
+            Class.forName("dev.creategalore.bridge.DisplaySettings").getMethod("reload").invoke(null);
+        } catch (ReflectiveOperationException | RuntimeException e) {
+            LOG.warn("DLAA test: could not have the Bridge read its display settings again: {}", e.toString());
         }
     }
 
@@ -960,7 +1114,17 @@ public final class Capture {
         if (!latency.has(segment.viewpoint().name())) {
             latency.add(segment.viewpoint().name(), new JsonArray());
         }
-        latency.getAsJsonArray(segment.viewpoint().name()).add(GSON.toJsonTree(window)); // one per time the mode played
+        // A number the Bridge couldn't measure in this window (NaN, as with frame generation on) is left out: JSON has
+        // no NaN, and the manifest would fail to write.
+        Map<String, Object> measured = new LinkedHashMap<>();
+        window.forEach((key, value) -> {
+            if (value instanceof Number n && !Double.isFinite(n.doubleValue())) {
+                LOG.warn("DLAA test: {} at {}: {} has no value ({}), left out", segment.mode().name(), segment.viewpoint().name(), key, value);
+            } else {
+                measured.put(key, value);
+            }
+        });
+        latency.getAsJsonArray(segment.viewpoint().name()).add(GSON.toJsonTree(measured)); // one per time the mode played
     }
 
     /** The Bridge's latency window (FrameLatency.window, which also starts a new one); null without it. */
@@ -1029,6 +1193,24 @@ public final class Capture {
             return (boolean) Class.forName("dev.creategalore.bridge.present.Presentation").getMethod("active").invoke(null);
         } catch (ReflectiveOperationException | RuntimeException e) {
             return false;
+        }
+    }
+
+    /** "DirectX 11" or "DirectX 12" while Perfect Presentation runs, else null (or a Bridge before 1.113.0). */
+    private static String bridgePresenter() {
+        try {
+            return (String) Class.forName("dev.creategalore.bridge.present.Presentation").getMethod("api").invoke(null);
+        } catch (ReflectiveOperationException | RuntimeException e) {
+            return null;
+        }
+    }
+
+    /** The Bridge's frame generation at the run's end: off, generating, or off with why (null: no such Bridge). */
+    private static String bridgeFrameGeneration() {
+        try {
+            return (String) Class.forName("dev.creategalore.bridge.framegen.FrameGen").getMethod("state").invoke(null);
+        } catch (ReflectiveOperationException | RuntimeException e) {
+            return null;
         }
     }
 
@@ -1111,6 +1293,7 @@ public final class Capture {
                 player.setDeltaMovement(Vec3.ZERO);
             }));
         }
+        clearScenes();
         log("holding at " + first.name() + " for " + seconds + " s, then closing");
         autorun = false;
         Util.ioPool().execute(() -> {
@@ -1204,6 +1387,8 @@ public final class Capture {
         manifest.addProperty("renderer", RenderSystem.isOnRenderThread() ? com.mojang.blaze3d.platform.GlUtil.getRenderer() : "?");
         manifest.addProperty("shaderPack", Iris.getCurrentPackName());
         manifest.addProperty("perfectPresentation", bridgePresentationActive());
+        manifest.addProperty("presenter", bridgePresenter());
+        manifest.addProperty("frameGeneration", bridgeFrameGeneration());
         JsonArray size = new JsonArray();
         size.add(mc.getWindow().getWidth());
         size.add(mc.getWindow().getHeight());

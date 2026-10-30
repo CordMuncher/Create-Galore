@@ -48,6 +48,11 @@
       "text": "Hold Super Glue or Honey Glue near the assembler: **blue** outlines what goes aboard, **red** what stays behind. Goggles do the same while you look at the assembler.\\\n\\\nGround or seabed inside the glue and touching the hull comes along too."
     },
     {
+      "type": "modonomicon:text",
+      "title": "Printing it glued",
+      "text": "Turn on **Pre-glue** in a [](item://create:schematicannon)'s placement settings (the glue button): it glues each block it prints to the printed blocks it touches.\\\n\\\nIt takes [](item://create:super_glue) from its input chests, one use per glue box (at most 16 blocks a side); a 40 by 14 hull took 15. Without glue it waits. Ground and blocks not in the schematic stay out."
+    },
+    {
       "type": "modonomicon:spotlight",
       "item": {
         "item": "simulated:honey_glue"
@@ -72,6 +77,11 @@
       "type": "modonomicon:text",
       "title": "Steering a propeller",
       "text": "Before you assemble the ship, give the part the swivel should turn its own small glue box. It can sit inside the ship's glue. Without one, only the block on the swivel's face turns.\\\n\\\nPut the engine behind the bearing: rotation goes through it to the part. A Steering Wheel on a cogwheel next to the bearing turns it."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Turned 45 degrees by the wheel, a Wooden Propeller at the stern swings an 11 by 15 blimp round at about 11 degrees a second."
     },
     {
       "type": "modonomicon:spotlight",

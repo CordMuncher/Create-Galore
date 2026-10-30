@@ -1,27 +1,39 @@
 package dev.creategalore.fishing.client;
 import dev.creategalore.fishing.aquarium.AquariumBlockEntity;
+import dev.creategalore.fishing.aquarium.AquariumCreatures;
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 
 /**
  * Where each fish in a tank is swimming, worked out on the client only (the server just keeps the list of fish):
  * every fish wanders toward a random spot in the water, turning gently, slower the bigger it is, and picks a new
- * spot when it gets there or after a while. Kept on the tank's block entity ({@code clientView}).
+ * spot when it gets there or after a while. Creatures that crawl (starfish, crabs) keep to the sand floor and go
+ * slowly. Kept on the tank's block entity ({@code clientView}).
  */
 final class AquariumSwim {
     static final class Fish {
         final ItemStack stack;
         final float pace;
         final float phase;
+        /** The mob drawn for a creature (a netted one, {@link CreatureView}); null for a fish item. */
+        Entity creature;
+        /** Keeps to the floor; creeps unless it's {@code quick}. */
+        final boolean crawler, quick;
         double x, y, z, px, py, pz, vx, vy, vz, tx, ty, tz;
         int retarget;
 
-        Fish(ItemStack stack, RandomSource rng) {
+        Fish(ItemStack stack, RandomSource rng, Level level) {
             this.stack = stack;
+            EntityType<?> type = AquariumCreatures.type(stack).orElse(null);
+            if (type != null) creature = CreatureView.create(stack, level).orElse(null);
+            crawler = type != null && type.is(AquariumCreatures.CRAWLERS);
+            quick = type != null && type.is(AquariumCreatures.QUICK_CRAWLERS);
             this.pace = 0.7f + rng.nextFloat() * 0.6f;
             this.phase = rng.nextFloat() * 100;
         }
@@ -42,6 +54,9 @@ final class AquariumSwim {
         float longest = Math.max(tank.sizeX(), tank.sizeZ());
         return Mth.clamp((float) AquariumBlockEntity.cm(stack) / 100, 0.06f, longest - 0.15f);
     }
+
+    /** The top of the sand floor, where crawlers walk. */
+    static final float FLOOR = 1 / 16f;
 
     /** Height of the water surface above the tank's floor block bottom, in blocks. */
     static float waterLevel(AquariumBlockEntity tank) {
@@ -70,7 +85,7 @@ final class AquariumSwim {
                     break;
                 }
             }
-            Fish f = new Fish(stack, rng);
+            Fish f = new Fish(stack, rng, tank.getLevel());
             if (kept != null) {
                 old.remove(kept);
                 f.x = f.px = kept.x;
@@ -78,6 +93,7 @@ final class AquariumSwim {
                 f.z = f.pz = kept.z;
                 f.vx = kept.vx;
                 f.vz = kept.vz;
+                if (kept.creature != null) f.creature = kept.creature;
             } else {
                 retarget(tank, f);
                 f.x = f.px = f.tx;
@@ -99,8 +115,9 @@ final class AquariumSwim {
             return;
         }
         float len = length(tank, f.stack);
-        // About two body lengths a second for small fish, less for big ones.
-        double speed = Math.min(0.06, 0.012 + 0.05 * len) * f.pace / (1 + len);
+        // About two body lengths a second for small fish, less for big ones; crabs scuttle, starfish creep.
+        double speed = f.crawler ? (f.quick ? 0.02 : 0.004) * f.pace
+                : Math.min(0.06, 0.012 + 0.05 * len) * f.pace / (1 + len);
         double k = 0.06;
         f.vx += (dx / dist * speed - f.vx) * k;
         f.vy += (dy / dist * speed * 0.5 - f.vy) * k;
@@ -109,6 +126,7 @@ final class AquariumSwim {
         f.y += f.vy;
         f.z += f.vz;
         clamp(tank, f);
+        if (f.creature != null) CreatureView.step(f.creature, f.vx, f.vz, Math.sqrt(f.vx * f.vx + f.vz * f.vz));
     }
 
     private void retarget(AquariumBlockEntity tank, Fish f) {
@@ -117,13 +135,13 @@ final class AquariumSwim {
         float top = Math.max(0.2f, waterLevel(tank) - 0.15f);
         f.tx = mx + rng.nextFloat() * Math.max(0, tank.sizeX() - 2 * mx);
         f.tz = mz + rng.nextFloat() * Math.max(0, tank.sizeZ() - 2 * mz);
-        f.ty = 0.2f + rng.nextFloat() * Math.max(0, top - 0.2f);
+        f.ty = f.crawler ? FLOOR : 0.2f + rng.nextFloat() * Math.max(0, top - 0.2f);
         f.retarget = 60 + rng.nextInt(160);
     }
 
     private static void clamp(AquariumBlockEntity tank, Fish f) {
         f.x = Mth.clamp(f.x, 0.05, tank.sizeX() - 0.05);
         f.z = Mth.clamp(f.z, 0.05, tank.sizeZ() - 0.05);
-        f.y = Mth.clamp(f.y, 0.15, Math.max(0.15, waterLevel(tank) - 0.08));
+        f.y = f.crawler ? FLOOR : Mth.clamp(f.y, 0.15, Math.max(0.15, waterLevel(tank) - 0.08));
     }
 }

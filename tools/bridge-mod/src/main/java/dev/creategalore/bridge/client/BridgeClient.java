@@ -20,14 +20,22 @@ public final class BridgeClient {
         // Mods are built before Minecraft reads options.txt, so the file can still be fixed here.
         KeyRebindMigration.run();
         FrameFreezeWatch.init();
+        FrameHitchWatch.init();
+        NativeMemoryLog.init();
         modBus.addListener(BridgeClient::setup);
         modBus.addListener(ShipWaterCutaway::registerShaders);
+        modBus.addListener(FpsOverlay::registerLayer);
+        CostMeter.init(modBus);
         GuideAiClient.init(modBus);
         WearClient.init(modBus);
+        PendantClient.init(modBus);
+        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener(net.neoforged.bus.api.EventPriority.HIGHEST, false,
+                net.neoforged.neoforge.client.event.RenderGuiLayerEvent.Pre.class, dev.creategalore.bridge.hud.HudSplit::beforeLayer);
         net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener(ShipGlueView::tick);
         net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener(SchematicTrace::tick);
         net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener(SchematicTrace::render);
         PinnedSchematicView.init();
+        SharedSchematicCache.init();
         dev.creategalore.bridge.dlss.Dlss.init(modBus);
         dev.creategalore.bridge.dlss.DlaaScreen.register(modBus, container);
         net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener(

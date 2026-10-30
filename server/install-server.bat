@@ -51,7 +51,7 @@ copy /y "%HERE%start-server.bat" start-server.bat >nul
 if exist "%HERE%create-galore-updater.jar" (
   copy /y "%HERE%create-galore-updater.jar" create-galore-updater.jar >nul
 ) else (
-  curl -fsSL -o create-galore-updater.jar https://github.com/emresahin0906-code/Create-Galore/releases/latest/download/create-galore-updater.jar || echo Couldn't download create-galore-updater.jar, so start-server.bat won't check for updates
+  curl -fsSL -o create-galore-updater.jar https://github.com/CordMuncher/Create-Galore/releases/latest/download/create-galore-updater.jar || echo Couldn't download create-galore-updater.jar, so start-server.bat won't check for updates
 )
 set VERSION=
 for /f "tokens=2 delims==" %%V in ('findstr /b /c:"version" "%PACK%"') do for %%A in (%%V) do set "VERSION=%%~A"
