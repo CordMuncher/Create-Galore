@@ -2,7 +2,8 @@
 // the Create Galore Bridge runs it right after this pass, writing its result over this pass's output:
 // - the scene in linear light, before exposure and tone (colortex0), jittered and not anti-aliased;
 // - motion vectors in render pixels towards last frame, unjittered (cg_motion_img): a surface's own where it moves
-//   by itself (colortex7), else where the camera's motion takes its depth, Distant Horizons' included;
+//   by itself (colortex7), else where the camera's motion takes its depth, Distant Horizons' included; over cloudy
+//   sky, the clouds' own (lib/clouds.glsl);
 // - DLSS depth, 1 at the near plane falling towards 0 far away, 0 for the sky (cg_depth_img);
 // - over a particle, the depth and motion of the surface behind it. Particles have no motion of their own to give,
 //   and taken at their own depth DLSS fetched last frame's picture from the wrong place round a slow, dim one (torch
@@ -23,6 +24,12 @@ uniform sampler2D depthtex0;
 uniform sampler2D depthtex1; // without particles and see-through things
 uniform float near;
 uniform float cg_dlss_object_motion; // 0 while the Bridge tests without the motion of things that move by themselves
+
+#ifdef VOLUME_CLOUDS
+uniform float frameTime;
+layout(rgba16f) readonly uniform image2D cg_cloud_img; // see clouds.csh
+#include "/lib/clouds.glsl"
+#endif
 
 #ifdef DISTANT_HORIZONS
 uniform sampler2D dhDepthTex0;
@@ -108,6 +115,18 @@ void main() {
             vec4 clip_prev = gbufferPreviousProjection * vec4(mat3(gbufferPreviousModelView) * direction, 0.0);
             depth_out = 0.0;
             motion = motion_to(clip_prev, ndc, size);
+#ifdef VOLUME_CLOUDS
+            // Where clouds cover it, theirs: where most of the cloud is along the look, carried by the wind.
+            if (clouds_here()) {
+                CloudSample c = clouds_at(texel, cloud_far_sky);
+                float cover = smoothstep(0.1, 0.5, 1.0 - c.light.a);
+                if (cover > 0.0 && c.mid < cloud_far_sky) {
+                    vec3 was = normalize(direction) * c.mid - cloud_wind() * frameTime;
+                    vec2 cloud_motion = motion_to(previous_clip(was, gbufferPreviousProjection), ndc, size);
+                    motion = mix(motion, cloud_motion, cover);
+                }
+            }
+#endif
         }
     }
 

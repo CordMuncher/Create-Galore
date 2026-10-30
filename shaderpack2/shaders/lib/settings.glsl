@@ -84,6 +84,16 @@ const ivec3 vox_tiles = vox_size / 8;
 #define SATURATION 1.0 // [0.8 0.9 1.0 1.1 1.2 1.3]
 #define NIGHT_BRIGHTNESS 1.0 // [0.5 0.75 1.0 1.5 2.0]
 #define CAVE_BRIGHTNESS 1.0 // [0.0 0.5 1.0 1.5 2.0 3.0]
+// --- Sky -------------------------------------------------------------------------------------------------------------
+
+// Heaped clouds drawn as a volume, lit by the sun and the sky (lib/clouds.glsl). Off: Minecraft's own clouds, lit by
+// the pack (the game's Clouds setting turns those off).
+#define REAL_CLOUDS
+// How much of the sky they cover on a fair day (rain closes it up).
+#define CLOUD_AMOUNT 1.0 // [0.5 0.75 1.0 1.25 1.5]
+// The most looks into the clouds along each ray: more keeps the far clouds' detail finer.
+#define CLOUD_STEPS 24 // [16 24 32 48]
+
 // How fast Minecraft's smoothed sky light at the camera (eyeBrightnessSmooth: under a roof or out in the open)
 // follows you, in seconds to halfway.
 const float eyeBrightnessHalflife = 5.0;
@@ -108,6 +118,12 @@ const float eyeBrightnessHalflife = 5.0;
 #endif
 #if !defined NO_SKY_LIGHT
 #define SUNLIGHT
+#endif
+// Iris takes a bare #define as an on/off option only where some file tests it with #ifdef or #ifndef.
+#ifdef REAL_CLOUDS
+#if defined SUNLIGHT
+#define VOLUME_CLOUDS
+#endif
 #endif
 
 #endif

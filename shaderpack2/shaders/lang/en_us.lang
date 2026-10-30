@@ -11,6 +11,8 @@ screen.SHADOW=Shadows
 screen.SHADOW.comment=The sun's and the moon's shadows.
 screen.LOOK=Look
 screen.LOOK.comment=Exposure, bloom, the light in the air and colour.
+screen.SKY=Sky
+screen.SKY.comment=The clouds.
 screen.VOXEL=Voxel Copy
 screen.VOXEL.comment=The copy of the world around you that block light and bounce light are traced through.
 
@@ -61,6 +63,13 @@ option.NIGHT_BRIGHTNESS=Night Brightness
 option.NIGHT_BRIGHTNESS.comment=How bright the moon is.
 option.CAVE_BRIGHTNESS=Cave Brightness
 option.CAVE_BRIGHTNESS.comment=The faint light where no sky reaches, so caves are never fully black.
+
+option.REAL_CLOUDS=Realistic Clouds
+option.REAL_CLOUDS.comment=Heaped clouds drawn as a volume, lit by the sun and the sky, drifting with the wind. Off: Minecraft's own clouds (the game's Clouds setting turns those off).
+option.CLOUD_AMOUNT=Cloud Amount
+option.CLOUD_AMOUNT.comment=How much of the sky the clouds cover on a fair day. Rain closes the sky up.
+option.CLOUD_STEPS=Cloud Quality
+option.CLOUD_STEPS.comment=How many looks into the clouds each ray takes: more keeps the far clouds' detail finer, at some cost.
 
 option.VOXEL_BOX=Voxel Box
 option.VOXEL_BOX.comment=The box of blocks around you that block light and bounce light are traced through, one cell per block. The Create Galore Bridge keeps it with each block's real shape.

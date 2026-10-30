@@ -30,7 +30,6 @@ const ivec3 workGroups = ivec3(1, 1, 1);
 
 uniform vec3 sunPosition;
 uniform vec3 shadowLightPosition;
-uniform int moonPhase;
 uniform float rainStrength;
 layout(rgba32f) uniform image2D cg_globals_img;
 
@@ -86,6 +85,7 @@ void main() {
     if (i != 0u) {
         return;
     }
+    g_cloud_light = vec4(0.0); // only the Overworld has clouds
 
 #if defined WORLD_NETHER
     vec3 haze = srgb_to_linear(fogColor);
@@ -139,6 +139,20 @@ void main() {
     light_color = mix(light_color, vec3(luminance(light_color)), 0.6 * rain) * mix(1.0, 0.08, rain);
     g_light_dir = vec4(light, by_sun ? 1.0 : 0.0);
     g_light_color = vec4(light_color * rise, 0.0);
+
+    // The light up at the clouds (lib/clouds.glsl): the sun's through the air from there, still on them for a little
+    // while after it has set for the land (so they glow on after sunset), then the moon's. The high sun's warm tint
+    // (sun_high, for the land) is half taken off them so they stay white by day, and comes back as it sinks, so they
+    // still turn gold and pink at dusk.
+    bool cloud_by_sun = sun.y > -0.03;
+    float cloud_y = clamp(cameraPosition.y, 192.0, 320.0);
+    vec3 cloud_through = air_transmittance(camera_radius(cloud_y), max(cloud_by_sun ? sun.y : moon.y, 0.004));
+    vec3 cloud_sun = cloud_through * (cloud_by_sun ? mix(sun_low, sun_high, noon) : moon_now);
+    float cloud_white = cloud_by_sun ? 0.5 * smoothstep(0.05, 0.4, sun.y) : 0.0;
+    cloud_sun = mix(cloud_sun, vec3(luminance(cloud_sun)), cloud_white);
+    cloud_sun = mix(cloud_sun, vec3(luminance(cloud_sun)), 0.6 * rain) * mix(1.0, 0.08, rain);
+    float cloud_rise = cloud_by_sun ? smoothstep(-0.03, 0.01, sun.y) : smoothstep(-0.03, 0.05, moon.y);
+    g_cloud_light = vec4(cloud_sun * cloud_rise, cloud_by_sun ? 1.0 : 0.0);
 
     // The sky: day and night swap over while the sun is just under the horizon (the air's own twilight fades out on
     // its own).

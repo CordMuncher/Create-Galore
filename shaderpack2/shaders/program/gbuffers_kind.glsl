@@ -73,7 +73,7 @@ int key_flags() {
 // - LIT_FORWARD: drawn after the deferred pass, over the lit scene, and lit by their own program (water and glass,
 //   particles, rain, clouds, Create's translucent parts).
 // - LIT_GLOW: they only add light (glowing eyes, the enchantment glint, lightning, beacon beams).
-// - LIT_SKY: Minecraft's sky, which the deferred pass draws instead (only the moon stays).
+// - LIT_SKY: Minecraft's sky, sun, moon and stars, which the deferred pass draws instead.
 // - LIT_LINES: thin untextured things (the block outline, leads, debug lines), which Minecraft draws before the
 //   deferred pass (the outline, leads) or after it: laid over the surface's colour in the G-buffer, where the
 //   deferred pass lights them, and over the lit scene as they are; whichever comes too early is drawn over. (Lines

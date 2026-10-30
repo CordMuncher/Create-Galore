@@ -5,7 +5,6 @@
 // colortex2  its normals: the texture's in xy, the face's in zw (octahedral)
 // colortex3  Minecraft's block light (x) and sky light (y), the corner shading (z), how much it glows (w)
 // colortex4  how smooth (x) and how metallic (y) it is, how much light goes through it (z)
-// colortex5  the moon, as Minecraft draws it (the deferred pass lights it)
 // colortex7  motion vectors for DLSS: rg render pixels towards last frame, b what drew it, a whether it takes over
 /*
 const int colortex0Format = RGBA16F;
@@ -13,18 +12,15 @@ const int colortex1Format = RGBA8;
 const int colortex2Format = RGBA16;
 const int colortex3Format = RGBA8;
 const int colortex4Format = RGBA8;
-const int colortex5Format = RGBA16F;
 const int colortex7Format = RGBA16F;
 const bool colortex0Clear = true;
 const bool colortex1Clear = true;
 const bool colortex2Clear = true;
 const bool colortex3Clear = true;
 const bool colortex4Clear = true;
-const bool colortex5Clear = true;
 const bool colortex7Clear = true;
 const vec4 colortex0ClearColor = vec4(0.0, 0.0, 0.0, 0.0);
 const vec4 colortex1ClearColor = vec4(0.0, 0.0, 0.0, 0.0);
-const vec4 colortex5ClearColor = vec4(0.0, 0.0, 0.0, 0.0);
 const vec4 colortex7ClearColor = vec4(0.0, 0.0, 0.0, 0.0);
 const int shadowcolor0Format = RGBA8;
 const bool shadowcolor0Clear = true;

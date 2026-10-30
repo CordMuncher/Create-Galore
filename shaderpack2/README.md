@@ -6,7 +6,7 @@ name is for its motion vectors: not only the camera's, but how each moving thing
 contraptions, ships, mobs, the hand), which is what lets DLSS and FSR keep them sharp. The Bridge's Upscaling &
 Display screen picks the upscaler and the render resolution; the pack has no settings of its own for them.
 
-**Work in progress: alpha 0.5.** It lives on its own branch and is not in the modpack yet. The first Create Galore
+**Work in progress: alpha 0.5.1.** It lives on its own branch and is not in the modpack yet. The first Create Galore
 pack (`shaderpack/`) stays as a research build; the two share only the DLSS hand-off and the mods' plumbing
 (Colorwheel, Distant Horizons), not their lighting.
 
@@ -40,8 +40,17 @@ pack (`shaderpack/`) stays as a research build; the two share only the DLSS hand
   their clump, grass doesn't shade itself, and near the map's edge they fade into what Minecraft's sky light says.
 - **The sky**: a physically based atmosphere, pushed to the look we follow: a deep blue by day, an orange glow round
   the setting sun and a pink belt across from it, a deep blue night with stars in their own colours (a few twinkle
-  low down) and the Milky Way; the sun with its glow, Minecraft's moon with a soft halo, Minecraft's clouds lit
-  orange and pink at dusk and dawn. The far haze takes the sky's colour.
+  low down) and the Milky Way; the sun, round, with its glow; the moon, round, lit from the side its phase says, with
+  darker seas, the Earth's faint light on its dark part and a soft halo. The far haze takes the sky's colour.
+- **Clouds**: one layer of heaped cumulus round Minecraft's cloud height, 48 blocks deep, drawn as a volume: flat
+  underneath, rounded on top, worn into wisps below and crisp billows above; more of them in some places than
+  others, never repeating in rows, closing up into a grey deck in rain. Lit by the sun through the cloud between
+  (white tops, shade in the crevices, grey bellies, silver edges round the sun, which burns through thin parts) and
+  by the sky from above (grey-blue undersides), gold and pink at dusk and dawn, moonlit at night; they fade into the
+  sky's colour far off and reach 5000 blocks. The wind drifts them north and the billows on them a little slower and
+  slowly rising, so their edges churn as they go. Worked out at half the render size each way and smoothed over
+  frames; DLSS gets their own motion. Option Realistic Clouds off gives Minecraft's clouds, lit orange and pink at
+  dusk and dawn.
 - **Water**: its own colour, deeper the deeper it is, and waves crossing from three directions, longer ones faster.
 - **Light in the air**: a coloured haze around lamps (strongest at night, underground and in the Nether), haze far
   off, water and lava around you.
@@ -70,7 +79,7 @@ pack (`shaderpack/`) stays as a research build; the two share only the DLSS hand
 
 ## Later milestones
 
-Reflections; foam and calmer, more varied water; sun shafts; clouds; material maps; soft sun shadows traced through
+Reflections; foam and calmer, more varied water; sun shafts; clouds' shadows; material maps; soft sun shadows traced through
 the copy; moving Create contraptions and ships in the copy, and mobs and the player shading lamp light (now they only
 cast sun shadows).
 
@@ -85,12 +94,15 @@ off:
   each frame (RR doesn't take one pixel in a square at a time).
 - `program/gi.csh`: the bounce light, gathered per block over frames. A light store in the world rather than a
   filter on the screen, so it can likely stay.
+- `program/clouds.csh`: the clouds, kept over frames to smooth away where each look into them starts. Off under Ray
+  Reconstruction, which wants the raw looks.
 
 ## Building
 
     python3 shaderpack2/programs.py          # writes the program files Iris looks for (after adding or removing one)
     python3 shaderpack2/tools/compile_check.py  # compiles every program and option variant with glslangValidator
     shaderpack2/build.sh                     # zips the pack into shaderpack2/dist/
+    python3 shaderpack2/tools/cloud_noise.py # remakes the clouds' noise (shaders/textures/cloud_noise.dat)
 
 ## How it is laid out
 
@@ -101,11 +113,11 @@ off:
 - The passes, in order: the air's tables (`setup`, `begin`), the frame's light (`begin2`), the voxel copy from the
   Bridge's block grid (`begin3`); the sun's shadow map (`shadow_*`); the distance field, the light per block and the
   bounce light (`shadowcomp1` to `3`); the world into the G-buffer; the light per pixel and its filter (`deferred`,
-  `deferred1`); the lighting (`deferred2`); water, glass and particles lit as they are drawn; the light in the air
+  `deferred1`); the clouds (`deferred2`, the Overworld only); the lighting (`deferred3`); water, glass and particles lit as they are drawn; the light in the air
   (`composite`); the DLSS point (`composite1`); the bloom (`composite2` to `12`); the final pass.
 - The pack keeps all its data in images, no storage buffers: Iris takes those only at bindings 0 to 8, and Flywheel
   (Create's machines through Colorwheel) binds its own at 0 to 9 every frame. Iris allows 16 custom images; the pack
-  uses 15 (two of them the Bridge's block grid and palette), several of them holding more than one table side by side
+  uses all 16 (two of them the Bridge's block grid and palette), several of them holding more than one table side by side
   (see `shaders.properties`).
 - `tools/compile_check.py` also checks what Iris refuses when it loads the pack: storage buffers, more than 16 images,
   compute dispatch sizes that aren't plain numbers, and images or samplers no `image.` line makes.

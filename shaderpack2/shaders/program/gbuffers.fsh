@@ -2,7 +2,7 @@
 // - LIT_GBUFFER: the surface into the G-buffer for the deferred pass (see lib/buffers.glsl);
 // - LIT_FORWARD: lit here, over the lit scene (water, glass, particles, rain, clouds);
 // - LIT_GLOW: added light (glowing eyes, the enchantment glint, lightning, beacon beams);
-// - LIT_SKY: Minecraft's sky, which the deferred pass draws itself; only the moon is kept (colortex5);
+// - LIT_SKY: Minecraft's sky, which the deferred pass draws itself, the moon too (lib/sky.glsl);
 // - LIT_CRACKS: the block breaking cracks, laid over the surface's colour in the G-buffer;
 // - LIT_LINES: the block outline, leads and debug lines, over the surface's colour and over the lit scene.
 
@@ -375,19 +375,11 @@ void main() {
 
 #elif defined LIT_SKY
 
-/* RENDERTARGETS: 5 */
+/* RENDERTARGETS: 0 */
 layout(location = 0) out vec4 out_color;
 
 void main() {
-#ifdef PROGRAM_SKYTEXTURED
-    if (renderStage != MC_RENDER_STAGE_MOON || outside_render_area(gl_FragCoord.xy)) {
-        discard;
-    }
-    vec4 color = base_color();
-    out_color = vec4(srgb_to_linear(color.rgb) * color.a * 1.6, color.a);
-#else
     discard;
-#endif
 }
 
 #elif defined LIT_CRACKS

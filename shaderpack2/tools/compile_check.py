@@ -12,10 +12,11 @@ give a program 8 image units.
 Iris runs the preprocessor itself before the driver sees the code, without __VERSION__, so a program's #if on it
 always takes the false side in game; this check fails on any.
 
-And it checks what Iris refuses when it loads the pack: storage buffers (Iris takes them only at bindings 0 to 8,
+And it checks what Iris refuses or misreads when it loads the pack: an on/off option no file tests with #ifdef or
+#ifndef (Iris then doesn't take it as an option at all), storage buffers (Iris takes them only at bindings 0 to 8,
 which Flywheel binds its own over every frame), more than 16 custom images, a compute program's workGroups or
 workGroupsRender that is not plain numbers once the preprocessor has run, and an image or a cg_ sampler a program
-uses that shaders.properties doesn't make.
+uses that shaders.properties doesn't make (an image. or customTexture. line).
 
   python3 shaderpack2/tools/compile_check.py [part of a program's path]"""
 import concurrent.futures, os, pathlib, re, subprocess, sys, tempfile
@@ -67,6 +68,7 @@ VARIANTS = [
     ("box0-scale1", [], [value("VOXEL_BOX", 1, 0), value("PIXEL_LIGHT_SCALE", 3, 1)]),
     ("box2-scale6", ["DISTANT_HORIZONS"], [value("VOXEL_BOX", 1, 2), value("PIXEL_LIGHT_SCALE", 3, 6)]),
     ("noall", [], [flip("PIXEL_LIGHT", False), flip("GI", False), flip("SSAO", False), flip("HAND_LIGHT", False)]),
+    ("noclouds", [], [flip("REAL_CLOUDS", False)]),
 ] + [(f"debug-{n}", [], [value("DEBUG_VIEW", 0, n)]) for n in range(1, 15)]
 
 
@@ -110,11 +112,25 @@ for m in re.finditer(r"^image\.(\w+)\s*=\s*(\w+)", properties, re.M):
     made_images.add(m.group(1))
     if m.group(2) != "none":
         made_samplers.add(m.group(2))
+for m in re.finditer(r"^customTexture\.(\w+)\s*=", properties, re.M):
+    made_samplers.add(m.group(1))
 if len(made_images) > CUSTOM_IMAGES:
     print(f"{len(made_images)} custom images, over the {CUSTOM_IMAGES} Iris allows: {sorted(made_images)}")
     fails += 1
 if re.search(r"^\s*bufferObject\.", properties, re.M):
     print("a storage buffer in shaders.properties: Iris takes them only at bindings 0 to 8, which Flywheel binds over")
+    fails += 1
+# Iris takes a bare #define on a menu screen as an on/off option only when some file tests it with #ifdef or #ifndef
+# (#if defined doesn't count); otherwise it isn't an option at all, and #ifdef on it in shaders.properties is false.
+on_screens = set(re.findall(r"\b[A-Z][A-Z0-9_]+\b", " ".join(re.findall(r"^screen\.?\w*\s*=(.*)$", properties, re.M))))
+settings = (root / "lib" / "settings.glsl").read_text()
+switches = set(re.findall(r"^\s*(?://\s*)?#define\s+([A-Z][A-Z0-9_]*)\s*(?://.*)?$", settings, re.M)) & on_screens
+tested = set()
+for path in root.rglob("*"):
+    if path.suffix in (".glsl", ".vsh", ".gsh", ".fsh", ".csh"):
+        tested.update(re.findall(r"^\s*#\s*if(?:n)?def\s+(\w+)", path.read_text(errors="ignore"), re.M))
+for name in sorted(switches - tested):
+    print(f"the option {name} is never tested with #ifdef or #ifndef, so Iris doesn't take it as an option")
     fails += 1
 # The Nether's and the End's programs differ from the overworld's by their dimension only: a few variants each.
 OTHER_WORLD_VARIANTS = ("", "dh-up", "nopixel", "noall", "debug-7")

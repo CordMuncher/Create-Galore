@@ -55,10 +55,11 @@ add("shadowcomp1", {"csh": "sdf.csh"})
 add("shadowcomp2", {"csh": "voxel_light.csh"})
 add("shadowcomp3", {"csh": "gi.csh"})
 
-# The light per pixel and its filter, then the lighting.
+# The light per pixel and its filter, the clouds (the Overworld's sky only), then the lighting.
 add("deferred", {"csh": "pixel_light.csh"})
 add("deferred1", {"csh": "pixel_light_filter.csh"})
-add("deferred2", {"vsh": FULLSCREEN, "fsh": "deferred_light.fsh"})
+add("deferred2", {"csh": "clouds.csh"}, sky_only=True)
+add("deferred3", {"vsh": FULLSCREEN, "fsh": "deferred_light.fsh"})
 
 # The air, the DLSS point, the bloom, the final pass.
 add("composite", {"vsh": FULLSCREEN, "fsh": "fog.fsh"})

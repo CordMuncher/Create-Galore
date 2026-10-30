@@ -1,7 +1,8 @@
 // The lighting of everything in the G-buffer (and the sky behind it), into colortex0: the traced block light per
 // pixel (or per block where a pixel has none), the bounce light, the sun through the shadow map, the sky, ambient
 // occlusion, and the hot texels' own glow, mixed as lib/lighting.glsl says; then the highlights on top. Light that
-// the world's programs already added to colortex0 (glowing eyes, the enchantment glint) stays on top.
+// the world's programs already added to colortex0 (glowing eyes, the enchantment glint) stays on top. The clouds
+// (program/clouds.csh) go over the sky, and over the terrain where they start before it.
 
 #include "/lib/settings.glsl"
 #include "/lib/gbuffer_read.glsl"
@@ -17,7 +18,11 @@
 #endif
 
 uniform sampler2D colortex0; // light added before this pass (see gbuffers.fsh, LIT_GLOW)
-uniform sampler2D colortex5; // the moon
+
+#ifdef VOLUME_CLOUDS
+layout(rgba16f) readonly uniform image2D cg_cloud_img; // see clouds.csh
+#include "/lib/clouds.glsl"
+#endif
 
 #ifdef DISTANT_HORIZONS
 uniform sampler2D dhDepthTex0;
@@ -74,11 +79,19 @@ float ssao(vec3 view, vec3 view_normal, ivec2 texel) {
 #endif
 }
 
-vec3 sky_color(vec3 dir, ivec2 texel) {
-#if defined NO_SKY_LIGHT
-    return sky(dir, true);
+// The clouds over what a render pixel shows, `dist` blocks away (cloud_far_sky for the sky). A surface below the
+// clouds seen from below them (or above them from above) has none in front of it.
+vec3 with_clouds(vec3 color, ivec2 texel, float dist, float surface_y) {
+#ifdef VOLUME_CLOUDS
+    float bottom = cloud_bottom();
+    float y0 = cameraPosition.y;
+    if (!clouds_here() || (y0 < bottom && surface_y < bottom) || (y0 > bottom + cloud_depth && surface_y > bottom + cloud_depth)) {
+        return color;
+    }
+    vec4 c = clouds_at(texel, dist).light;
+    return color * c.a + c.rgb;
 #else
-    return sky(dir, true) + texelFetch(colortex5, texel, 0).rgb * moon_illuminance();
+    return color;
 #endif
 }
 
@@ -112,7 +125,11 @@ void main() {
         if (!lod) {
             vec3 far_view = pixel_to_view(texel, 1.0);
             vec3 dir = normalize(mat3(gbufferModelViewInverse) * far_view);
-            out_color = vec4(sky_color(dir, texel) + texelFetch(colortex0, texel, 0).rgb, 1.0);
+            vec3 c = sky(dir, true);
+#ifdef VOLUME_CLOUDS
+            c = with_clouds(c, texel, cloud_far_sky, dir.y > 0.0 ? 1e6 : -1e6);
+#endif
+            out_color = vec4(c + texelFetch(colortex0, texel, 0).rgb, 1.0);
             return;
         }
     } else {
@@ -302,5 +319,11 @@ void main() {
         }
     }
 #endif
-    out_color = vec4(color + texelFetch(colortex0, texel, 0).rgb, 1.0);
+    color += texelFetch(colortex0, texel, 0).rgb;
+#if DEBUG_VIEW == 0
+    if (s.material != MAT_HAND) {
+        color = with_clouds(color, texel, length(view), cameraPosition.y + scene.y);
+    }
+#endif
+    out_color = vec4(color, 1.0);
 }

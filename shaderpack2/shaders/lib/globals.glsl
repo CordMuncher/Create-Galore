@@ -5,7 +5,7 @@
 #if !defined LIB_GLOBALS
 #define LIB_GLOBALS
 
-#define GLOBALS_COUNT 8
+#define GLOBALS_COUNT 9
 
 #if defined WRITE_GLOBALS
 shared vec4 g_globals[GLOBALS_COUNT];
@@ -23,5 +23,6 @@ uniform sampler2D cg_globals_tex;
 #define g_horizon GLOBAL(5)     // rgb the Nether's and the End's haze (the Overworld's is the sky behind it)
 #define g_sun_dir GLOBAL(6)     // xyz towards the sun itself (world space), w how far above the horizon (sin)
 #define g_moon_dir GLOBAL(7)    // xyz towards the moon, w the moon's phase brightness (0 new .. 1 full)
+#define g_cloud_light GLOBAL(8) // rgb the sun's (or moon's) light up at the clouds, w 1 the sun's, 0 the moon's
 
 #endif

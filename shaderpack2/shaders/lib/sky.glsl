@@ -2,8 +2,8 @@
 // paints the world. The light the sky gives surfaces is set apart from this (program/frame.csh).
 // - The Overworld: the air's light from the sky view table (see atmosphere.glsl), pushed away from grey (a deep blue
 //   by day, burning orange round the sun as it sets and pink on the far side, a deep blue night), the sun's disc and
-//   its glow, a glow round the moon (the moon itself is Minecraft's, gbuffers_skytextured, lit here), the stars in
-//   their colours and the Milky Way. All of it turns with the sky.
+//   its glow, the moon's disc with its phase and its glow, the stars in their colours and the Milky Way. All of it
+//   turns with the sky. The clouds go over it (lib/clouds.glsl).
 // - The End: a violet sky brighter towards the horizon, a nebula of slow drifting purple and green clouds, coloured
 //   stars that twinkle, and the End's sun, pink-white, where its light comes from.
 // - The Nether has no sky: the fog's colour (program/fog.fsh).
@@ -20,6 +20,8 @@
 #include "/lib/frame.glsl"
 
 // --- Shared ----------------------------------------------------------------------------------------------------------
+
+uniform int moonPhase; // 0 full .. 4 new .. 7
 
 // A colour's distance from grey scaled by a power of it (under 1 pulls it towards grey), keeping its brightness.
 vec3 push_from_grey(vec3 c, float by) {
@@ -211,6 +213,40 @@ vec3 sun_disc(vec3 dir, vec3 through) {
     return c * through;
 }
 
+// The moon: a round disc the sun's size, lit like a ball from the side its phase says (full at phase 0, new at 4;
+// waxing lit on the side it travels towards, waning on the other), its darker seas from noise fixed to its face, and
+// the dark part faintly lit by the Earth. Its face turns with the sky.
+const float moon_radius = 0.042;
+
+vec3 moon_disc(vec3 dir, vec3 through) {
+    vec3 m = g_moon_dir.xyz;
+    float cos_d = dot(dir, m);
+    if (cos_d < cos(moon_radius * 1.2)) {
+        return vec3(0.0);
+    }
+    float tilt = radians(sunPathRotation);
+    vec3 axis = vec3(0.0, -sin(tilt), cos(tilt));
+    vec3 across = normalize(cross(axis, m)); // the way it travels
+    vec3 up = cross(m, across);
+    vec2 uv = vec2(dot(dir, across), dot(dir, up)) / moon_radius;
+    float r = length(uv);
+    float edge = 1.0 - smoothstep(1.0 - 1.5 * pixel_angle() / moon_radius, 1.0, r);
+    if (edge <= 0.0) {
+        return vec3(0.0);
+    }
+    vec3 n = vec3(uv, sqrt(max(1.0 - r * r, 0.0)));
+    float angle = float(moonPhase) * (PI / 4.0);
+    vec3 sun_side = vec3(-sin(angle), 0.0, cos(angle));
+    float lit = smoothstep(-0.04, 0.08, dot(n, sun_side));
+    // The seas: big dark patches and smaller ones, with a few bright speckles.
+    float seas = smoothstep(0.45, 0.75, fbm(vec3(uv * 1.3, 7.0), 3)) * 0.38
+            + smoothstep(0.55, 0.8, fbm(vec3(uv * 3.7, 2.0), 2)) * 0.12;
+    float face = (1.0 - seas) * (0.88 + 0.12 * n.z);
+    float bright = 0.17 * NIGHT_BRIGHTNESS * 1.7;
+    vec3 color = vec3(0.92, 0.95, 1.0) * face * (lit + 0.015) * bright;
+    return color * edge * through;
+}
+
 // The glow round the moon, cool and faint, with its phase.
 vec3 moon_glow(vec3 dir, vec3 through) {
     float angle = acos(clamp(dot(dir, g_moon_dir.xyz), -1.0, 1.0));
@@ -233,7 +269,7 @@ vec3 milky_way(vec3 local) {
     return color * band * clouds * clouds * mix(1.0, 0.35, lanes * band) * 0.03;
 }
 
-// The whole sky in a direction, without the moon itself.
+// The whole sky in a direction (without the clouds).
 vec3 sky(vec3 dir, bool with_sun) {
     vec3 c = sky_look(sky_air_seen(dir), dir);
     float night = 1.0 - smoothstep(-0.15, 0.05, g_sun_dir.w);
@@ -245,7 +281,7 @@ vec3 sky(vec3 dir, bool with_sun) {
                 + milky_way(local) * NIGHT_BRIGHTNESS;
         c += night_sky * night * through * smoothstep(-0.02, 0.0, dir.y);
     }
-    c += moon_glow(dir, through);
+    c += moon_glow(dir, through) + moon_disc(dir, through);
     if (with_sun) {
         c += sun_disc(dir, through);
     }
