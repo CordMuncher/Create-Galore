@@ -5,6 +5,17 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.6.52
+
+### Added
+- Create Galore Bridge 1.166.0.
+
+### Fixed
+- **Groundwork for future shader packs: particles drawn where the pack asks.** A shader pack can say in its settings whether the world's particles are drawn before its lighting, after it, or split by kind. Iris on NeoForge read that setting but never acted on it, so flames, lava drips and sparks were always drawn with the solid world, before the lighting and before your hand. A pack that lights particles after its lighting pass then showed fire over your hand. The pack's own choice is now followed. Shader packs that don't name an order (Photon) or name the split one (Complementary, Solas, Rethinking Voxels, Bliss) are not affected.
+
+### Removed
+- Nothing.
+
 ## 0.6.51
 
 ### Added
