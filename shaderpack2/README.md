@@ -63,7 +63,9 @@ pack (`shaderpack/`) stays as a research build; the two share only the DLSS hand
   it was caught (option Bad Frame Mark).
 - **Held lights** light the world in their own colour, from the hand that holds them; what you hold takes the colour
   of the lights around you, and your own body casts no shadow on your hands or what they hold. Glowing particles
-  (flames, sparks, portal particles) glow, and the End portal shows its starfield and gives light.
+  (flames, sparks, portal particles) glow, and the End portal shows its starfield and gives light. All particles are
+  drawn after the lighting (`particles.ordering = AFTER`), behind your hand. Iris on NeoForge ignores that setting,
+  and the Bridge (1.166.0 and later) carries it out. With an older Bridge, flames show over your hand.
 - **The block outline and leads** are drawn into the scene before the lighting, so they show as in vanilla.
 
 ## Later milestones
