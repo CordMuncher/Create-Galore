@@ -5,7 +5,9 @@ import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import net.irisshaders.iris.shaderpack.materialmap.WorldRenderingSettings;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.BakedQuad;
@@ -16,6 +18,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.EmptyBlockGetter;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FluidState;
@@ -25,7 +28,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 
 /**
  * What a shader pack needs to know about each block state, once per state, for the block grid ({@link WorldGrid}):
- * its shape as up to eight boxes in 16ths of a block, its colour, where it glows and in what colour, its light level,
+ * its shape as up to twelve boxes in 16ths of a block, its colour, where it glows and in what colour, its light level,
  * the pack's own number for it (block.properties), and a few facts the pack decides from (water, drawn see-through,
  * mostly clear like glass, nothing to walk into like a flower or a torch). The pack decides itself what blocks light
  * and what gives light.
@@ -36,9 +39,13 @@ import net.minecraft.world.phys.shapes.VoxelShape;
  * <li>its average colour as drawn (sRGB, red in the low byte, alpha the share of its texels that show);</li>
  * <li>its glow colour: its texels weighed by their brightness (sRGB);</li>
  * <li>where it glows in its block, x, y and z in 32nds (6 bits each), and its box count (bits 24..27);</li>
- * <li>up to eight boxes, each its low corner x, y, z and high corner x, y, z in 16ths (5 bits each).</li>
+ * <li>up to twelve boxes, each its low corner x, y, z and high corner x, y, z in 16ths (5 bits each).</li>
  * </ol>
- * Entry 0 is air.
+ * Entry 0 is air (its word 15 carries {@link WorldGrid}'s marker).
+ *
+ * <p>The shape is the one its model draws (see {@link #drawnBoxes}): a fence's two rails, not the full-height slab its
+ * outline makes of each arm; a closed gate's bars, not a solid panel. A block whose model gives none (drawn by a block
+ * entity, or only as flat or tilted faces) keeps its outline shape, and so does a full block.
  */
 final class BlockPalette {
     static final int WORDS = 16;
@@ -54,7 +61,7 @@ final class BlockPalette {
     static final int FLAG_LAVA = 1 << 26;
     static final int FLAG_FLUID = 1 << 27;
 
-    private static final int MAX_BOXES = 8;
+    private static final int MAX_BOXES = 12;
 
     private final Reference2IntOpenHashMap<BlockState> ids = new Reference2IntOpenHashMap<>();
     private final int[] words = new int[ENTRIES * WORDS];
@@ -136,11 +143,15 @@ final class BlockPalette {
         if (state.getCollisionShape(EmptyBlockGetter.INSTANCE, BlockPos.ZERO).isEmpty()) {
             flags |= FLAG_NO_COLLISION;
         }
+        Look look = look(state);
         VoxelShape shape = state.isAir() ? Shapes.empty() : state.getShape(EmptyBlockGetter.INSTANCE, BlockPos.ZERO);
         if (state.getRenderShape() == RenderShape.INVISIBLE && fluid.isEmpty()) {
             shape = Shapes.empty(); // a barrier, a light block, moving pistons' leftovers
         }
         List<AABB> boxes = new ArrayList<>(shape.isEmpty() ? List.of() : shape.toAabbs());
+        if (!boxes.isEmpty() && !look.drawn.isEmpty() && !Block.isShapeFullBlock(shape)) {
+            boxes = look.drawn; // a full block stays one box, however its model splits its faces
+        }
         if (!fluid.isEmpty() && boxes.isEmpty()) {
             boxes.add(new AABB(0, 0, 0, 1, fluid.getHeight(EmptyBlockGetter.INSTANCE, BlockPos.ZERO), 1));
         }
@@ -164,7 +175,6 @@ final class BlockPalette {
             flags |= FLAG_FULL_CUBE;
         }
 
-        Look look = look(state);
         if (look.translucent) {
             flags |= FLAG_TRANSLUCENT;
         }
@@ -204,6 +214,7 @@ final class BlockPalette {
         float[] glow = {1.0f, 1.0f, 1.0f};
         float[] glowAt = {0.5f, 0.5f, 0.5f};
         boolean translucent;
+        List<AABB> drawn = List.of();
     }
 
     private static Look look(BlockState state) {
@@ -240,6 +251,7 @@ final class BlockPalette {
         if (quads.isEmpty()) {
             return look;
         }
+        look.drawn = drawnBoxes(quads);
         double[] sum = new double[3];
         double shownSum = 0, all = 0;
         double[] glowSum = new double[3];
@@ -316,6 +328,80 @@ final class BlockPalette {
             look.glowAt = new float[] {(float) (at[0] / glowWeight), (float) (at[1] / glowWeight), (float) (at[2] / glowWeight)};
         }
         return look;
+    }
+
+    /**
+     * The boxes a model draws (its elements), from its faces: each face square to the block, paired with the nearest
+     * face across from it that faces the other way with the same outline (in 16ths). An element's two sides make its
+     * box; two elements side by side whose shared sides are left out make one box across both. Tilted faces (a
+     * torch on a wall, a flower's cross) and faces with nothing across from them (a vine, a ladder) give none.
+     */
+    private static List<AABB> drawnBoxes(List<BakedQuad> quads) {
+        List<List<int[]>> low = new ArrayList<>();  // per axis: faces facing down it (an element's low side)
+        List<List<int[]>> high = new ArrayList<>(); // and up it
+        for (int axis = 0; axis < 3; axis++) {
+            low.add(new ArrayList<>());
+            high.add(new ArrayList<>());
+        }
+        for (BakedQuad quad : quads) {
+            Direction d = quad.getDirection();
+            int axis = d.getAxis().ordinal();
+            int[] v = quad.getVertices();
+            int stride = v.length / 4;
+            float[] lo = {Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE};
+            float[] hi = {-Float.MAX_VALUE, -Float.MAX_VALUE, -Float.MAX_VALUE};
+            for (int i = 0; i < 4; i++) {
+                for (int k = 0; k < 3; k++) {
+                    float c = Float.intBitsToFloat(v[i * stride + k]);
+                    lo[k] = Math.min(lo[k], c);
+                    hi[k] = Math.max(hi[k], c);
+                }
+            }
+            if (hi[axis] - lo[axis] > 1e-3f) {
+                continue; // tilted
+            }
+            int a = (axis + 1) % 3;
+            int b = (axis + 2) % 3;
+            int[] face = {sixteenth(lo[axis]), sixteenth(lo[a]), sixteenth(hi[a]), sixteenth(lo[b]), sixteenth(hi[b])};
+            if (face[2] <= face[1] || face[4] <= face[3]) {
+                continue;
+            }
+            (d.getAxisDirection() == Direction.AxisDirection.POSITIVE ? high : low).get(axis).add(face);
+        }
+        List<AABB> boxes = new ArrayList<>();
+        Set<Long> seen = new HashSet<>();
+        for (int axis = 0; axis < 3; axis++) {
+            for (int[] from : low.get(axis)) {
+                int[] to = null;
+                for (int[] f : high.get(axis)) {
+                    if (f[0] > from[0] && f[1] == from[1] && f[2] == from[2] && f[3] == from[3] && f[4] == from[4]
+                            && (to == null || f[0] < to[0])) {
+                        to = f;
+                    }
+                }
+                if (to == null) {
+                    continue;
+                }
+                int[] min = new int[3];
+                int[] max = new int[3];
+                min[axis] = from[0];
+                max[axis] = to[0];
+                min[(axis + 1) % 3] = from[1];
+                max[(axis + 1) % 3] = from[2];
+                min[(axis + 2) % 3] = from[3];
+                max[(axis + 2) % 3] = from[4];
+                long key = 0;
+                for (int k = 0; k < 3; k++) {
+                    key = key * 32 + min[k];
+                    key = key * 32 + max[k];
+                }
+                if (seen.add(key)) {
+                    boxes.add(new AABB(min[0] / 16.0, min[1] / 16.0, min[2] / 16.0, max[0] / 16.0, max[1] / 16.0,
+                            max[2] / 16.0));
+                }
+            }
+        }
+        return boxes;
     }
 
     /** A sprite's texel at a point of the atlas (u, v), ABGR as NativeImage keeps it; 0x7fffffff when unreadable. */
