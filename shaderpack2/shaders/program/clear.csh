@@ -1,4 +1,4 @@
-// Empties the light hash at the start of each frame, before the shadow pass fills it again (see lib/voxel.glsl).
+// Empties the light hash at the start of each frame, before program/world.csh fills it again (see lib/voxel.glsl).
 
 #include "/lib/settings.glsl"
 #include "/lib/voxel.glsl"

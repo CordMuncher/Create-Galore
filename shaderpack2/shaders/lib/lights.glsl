@@ -57,7 +57,7 @@ bool block_tile_of(vec3 p, out ivec3 tile) {
     return all(greaterThanEqual(cell, ivec3(0))) && all(lessThan(cell, vox_size));
 }
 
-// The light whose key this is, as this frame's shadow pass found it; valid false when it is gone. Its place is in
+// The light whose key this is, as this frame's program/world.csh found it; valid false when it is gone. Its place is in
 // vox_pos space (blocks from the corner of the camera's block).
 Light light_from_key(uint key) {
     Light l;

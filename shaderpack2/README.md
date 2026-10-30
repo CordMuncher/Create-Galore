@@ -87,13 +87,14 @@ off:
   written by `programs.py`.
 - `shaders/lib/` holds what the programs share.
 - The passes, in order: the air's tables (`setup`, `begin`), the frame's light (`begin2`), the voxel copy from the
-  Bridge's block grid (`begin3`); the sun's shadow map (`shadow_*`); the distance field, the light per block and the bounce
-  light (`shadowcomp1` to `3`); the world into the G-buffer; the light per pixel and its filter (`deferred`,
+  Bridge's block grid (`begin3`); the sun's shadow map (`shadow_*`); the distance field, the light per block and the
+  bounce light (`shadowcomp1` to `3`); the world into the G-buffer; the light per pixel and its filter (`deferred`,
   `deferred1`); the lighting (`deferred2`); water, glass and particles lit as they are drawn; the light in the air
   (`composite`); the DLSS point (`composite1`); the bloom (`composite2` to `12`); the final pass.
 - The pack keeps all its data in images, no storage buffers: Iris takes those only at bindings 0 to 8, and Flywheel
   (Create's machines through Colorwheel) binds its own at 0 to 9 every frame. Iris allows 16 custom images; the pack
-  uses 15 (two of them the Bridge's block grid and palette), several of them holding more than one table side by side (see `shaders.properties`).
+  uses 15 (two of them the Bridge's block grid and palette), several of them holding more than one table side by side
+  (see `shaders.properties`).
 - `tools/compile_check.py` also checks what Iris refuses when it loads the pack: storage buffers, more than 16 images,
   compute dispatch sizes that aren't plain numbers, and images or samplers no `image.` line makes.
 

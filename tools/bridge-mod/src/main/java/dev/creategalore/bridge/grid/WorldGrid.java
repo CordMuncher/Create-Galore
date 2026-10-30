@@ -117,6 +117,9 @@ public final class WorldGrid {
             if (world != worldTex || pal != paletteTex || mc.level != level || owner.get() != pipeline) {
                 start(world, pal, mc.level);
                 owner = new java.lang.ref.WeakReference<>(pipeline);
+                if (worldTex == 0) {
+                    return; // sizes it doesn't take (start warned once)
+                }
             }
             Camera camera = mc.gameRenderer.getMainCamera();
             BlockPos at = camera.getBlockPosition();
