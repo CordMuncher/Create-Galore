@@ -89,10 +89,18 @@ public final class SchematicTrace {
         compare(mc);
     }
 
+    /** The build of a paper arrived from the server: show it if that paper is the one in the off hand. */
+    static void reload(String key) {
+        LocalPlayer player = Minecraft.getInstance().player;
+        if (player != null && key.equals(dev.creategalore.bridge.SharedSchematics.key(player.getOffhandItem()))) shownKey = null;
+    }
+
     private static void load(Minecraft mc, ItemStack stack) {
         StructureTemplate t = SchematicItem.loadSchematic(mc.level, stack);
         if (t.getSize().equals(Vec3i.ZERO)) {
-            say(mc, "This Schematic's file isn't in your schematics folder, so it can't be shown from the off hand");
+            // Its build is on its way from the server; it loads again when it comes (reload).
+            if (!SharedSchematicCache.waiting(stack))
+                say(mc, "This Schematic's build couldn't be loaded, so it can't be shown from the off hand");
             return;
         }
         template = t;
@@ -158,7 +166,7 @@ public final class SchematicTrace {
         if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_PARTICLES || renderer == null || anchor == null) return;
         Vec3 camera = event.getCamera().getPosition();
         PoseStack ms = event.getPoseStack();
-        SuperRenderTypeBuffer buffer = DefaultSuperRenderTypeBuffer.getInstance();
+        SuperRenderTypeBuffer buffer = SchematicLayers.forShaders(DefaultSuperRenderTypeBuffer.getInstance());
         ms.pushPose();
         ms.translate(anchor.getX() - camera.x, anchor.getY() - camera.y, anchor.getZ() - camera.z);
         try {

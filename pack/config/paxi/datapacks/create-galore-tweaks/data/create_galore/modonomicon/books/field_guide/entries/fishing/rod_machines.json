@@ -20,12 +20,12 @@
     {
       "type": "modonomicon:text",
       "title": "Rod Holder and Reel Drives",
-      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- A **Rod Holder** sounds an alarm and pulses redstone on a bite.\n- [#](FFFFFF)\ue104[#]() **Reel drives** fight fish with rotation, or with an engine.\n- [#](FFFFFF)\ue105[#]() Winding costs **stress**: pick a drag your network can turn.\n- Catches go into a chest, funnel or belt."
+      "text": "[#](FFFFFF)[#]() **Key points**\n\n- A **Rod Holder** sounds an alarm and pulses redstone on a bite.\n- [#](FFFFFF)[#]() **Reel drives** fight fish with rotation, or with an engine.\n- [#](FFFFFF)[#]() Winding costs **stress**: pick a drag your network can turn.\n- The rod swings catches into storage, funnels, belts or lid-up barrels."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Right-click any machine with a rod to set it in; a cast line stays out. An empty hand takes the rod back, with its line, bite or fight.\\\n\\\nCatches count as yours, the one who set the rod in: journal and personal bests. The machine keeps the rod's own drag; it never changes it."
+      "text": "Right-click any machine with a rod to set it in; a cast line stays out. An empty hand takes the rod back, with its line, bite or fight; it reels only once you let go of the button and press it again.\\\n\\\nCatches count as yours, the one who set the rod in: journal and personal bests. The machine keeps the rod's own drag; it never changes it."
     },
     {
       "type": "modonomicon:crafting_recipe",
@@ -45,7 +45,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "The Basic drive only winds. Hook the fish by hand, set the rod in, and it fights at a speed from the shaft (the reel's own speed at 32 [#](7A3C9A)[RPM](entry://glossary/rpm)[#]()). A row of drives along a jetty runs off one shaft, a water wheel's included.\\\n\\\n[#](FFFFFF)\ue101[#]() **Watch out:** it keeps winding while the drag slips, so the reel wears fast."
+      "text": "The Basic drive only winds. Hook the fish by hand, set the rod in, and it fights at a speed from the shaft (the reel's own speed at 32 [#](7A3C9A)[RPM](entry://glossary/rpm)[#]()). A row of drives along a jetty runs off one shaft, a water wheel's included.\\\n\\\n[#](FFFFFF)[#]() **Watch out:** it keeps winding while the drag slips, so the reel wears fast."
     },
     {
       "type": "modonomicon:crafting_recipe",
@@ -60,7 +60,19 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**Modes:**\n\n- **Cast and wait** (the default): casts once and holds, for float, bottom and trolling rigs.\n- **Cast and retrieve**: winds a lure back slowly and casts again.\n\nA **bait slot** (by hand, hopper or funnel; a Live-Bait Bucket works) re-baits the rod before each cast."
+      "text": "**Modes:**\n\n- **Cast and wait** (the default): casts once and holds, for float, bottom and trolling rigs.\n- **Cast and retrieve**: winds a lure back slowly and casts again.\n\nA **bait slot** (by hand, hopper or funnel; a Live-Bait Bucket works) re-baits the rod before each cast. A rod's own bait moves into it while the rod is in."
+    },
+    {
+      "type": "modonomicon:text",
+      "text": "**The window.** Sneak and right-click a reel drive with an empty hand, anywhere but its value panels. Bait (and the Fuel drive's fuel) goes in or out at any time. Its buttons also set the mode, cast distance and top gear, for when something covers the back. Hover a button for its name."
+    },
+    {
+      "type": "modonomicon:text",
+      "text": "- **Power**: pressed in when on. Off, it doesn't cast, strike or wind, and burns no fuel.\n- **Autocast** (circling arrows): off, it casts only on **Cast now** (play button).\n\nOne cast is one go. Cast and wait (float) lands one bite, then stops. Cast and retrieve (two arrows) throws out and winds back once, fish or not, then stops."
+    },
+    {
+      "type": "modonomicon:text",
+      "text": "- **Reports** (note, off by default): when a fish gets away, whoever set the rod in is told in chat what broke and why. A bank of drives stays quiet with it off.\n- **Status**: Off, Line out, No bait, Ready (waiting for Cast now) or Casting.\n\nThe Basic drive's window has only Power and Reports."
     },
     {
       "type": "modonomicon:crafting_recipe",
@@ -70,12 +82,17 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "[#](FFFFFF)\ue108[#]() It burns furnace fuel from a slot, or lava, Fish Oil and other [#](2E5AAC)[liquid fuels](entry://industry/liquid_fuel)[#]() from a 4-bucket tank. It burns a tenth as much while it waits, the full rate under full load, and only with a rod in.\\\n\\\nIts engine winds against 12 kg in normal gear, four times that in its lowest."
+      "text": "[#](FFFFFF)[#]() It burns furnace fuel from a slot, or lava, Fish Oil and other [#](2E5AAC)[liquid fuels](entry://industry/liquid_fuel)[#]() from a 4-bucket tank, only while it is on with a rod in.\\\n\\\nIts engine winds against 12 kg in normal gear, four times that in its lowest."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "[#](FFFFFF)\ue105[#]() **Drag against rotation.** Winding against a fish costs [#](7A3C9A)[stress](entry://glossary/su)[#](), more the harder it pulls: 1 SU per RPM idle, plus 4 SU per RPM for each kg of pull in normal gear.\\\n\\\nA fish leaning on a drag heavier than the network can turn [#](7A3C9A)[overstresses](entry://glossary/overstressed)[#]() it until the fish eases off."
+      "text": "**Fuel by load.** Waiting burns a tenth of the full rate, winding in an empty line or a lure a quarter. In a fight it burns 40%% against a fish that barely pulls, rising to the full rate at 10 kg of pull on the line. The gear doesn't change it.\\\n\\\nA small fish still costs fuel; a long fight on heavy tackle costs about twice as much a second."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "[#](FFFFFF)[#]() **Drag against rotation.** Winding against a fish costs [#](7A3C9A)[stress](entry://glossary/su)[#](), more the harder it pulls: 1 SU per RPM idle, plus 4 SU per RPM for each kg of pull in normal gear.\\\n\\\nA fish leaning on a drag heavier than the network can turn [#](7A3C9A)[overstresses](entry://glossary/overstressed)[#]() it until the fish eases off."
     },
     {
       "type": "modonomicon:text",
@@ -85,12 +102,27 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**Catches** go into a chest, hopper, funnel or belt below or beside the machine, never into another rod machine. With nowhere to go, the fish hangs from the rod tip for 30 seconds; an empty hand takes it.\\\n\\\nA fish a machine puts on a belt is alive for two minutes: off the belt into water, it swims away."
+      "text": "**Catches** go straight into a chest, hopper, funnel or belt under the machine. Otherwise the rod turns, the fish hanging from it, drops it beside the machine and turns back. It never feeds another rod machine.\\\n\\\nA Geared or Fuel drive turns at the pace of its top gear: the lowest turns it eight times slower than the highest. The others turn at normal-gear pace."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**Experience.** A machine earns half what you would for each catch, with no release bonus. It banks it and pays it out whenever a rod goes in or out.\\\n\\\n[#](FFFFFF)\ue104[#]() [#](7A3C9A)[Goggles](entry://glossary/goggles)[#]() show the rod, a bite or fish on and its tension, line out, drag, bait and bait in store, reel wear, gear, what it can still wind against, fuel and banked experience."
+      "text": "**Where it drops**: in the column of blocks touching a side, with no gap.\n\n- Any block at the machine's height that takes items.\n- Up to 5 blocks lower: a belt, an upward funnel on any storage, a hopper, or a lid-up barrel, which opens to catch it.\n\nA solid block or water in between closes that side."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "With nowhere to go, the fish hangs from the rod tip for 30 seconds; an empty hand takes it.\\\n\\\nA fish a machine puts on a belt is alive for two minutes: off the belt into water, it swims away.\\\n\\\nOn a ship the rod turns with the deck, as on land."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "[#](FFFFFF)[#]() **Sorting the catch.** A fish as the reference in an [Attribute Filter](item://create:attribute_filter) offers: **too big to cook whole** or **small enough to cook whole**, its weight (**6.00 kg or more**, **6.00 kg or less**) and its size class. Funnels and arms then sort a fish line.\\\n\\\nFish that stack show no weight: they count as under 3 kg."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Experience.** A machine earns half what you would for each catch, with no release bonus. It banks it and pays it out whenever a rod goes in or out.\\\n\\\n[#](FFFFFF)[#]() [#](7A3C9A)[Goggles](entry://glossary/goggles)[#]() show the rod, a bite or fish on (not which fish) and its tension, line out, drag, bait and bait in store, reel wear, gear, what it can still wind against, fuel and banked experience."
     },
     {
       "type": "modonomicon:text",
@@ -99,7 +131,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "[#](FFFFFF)\ue103[#]() **In depth.** A Geared drive on one water wheel (8 RPM) can take several minutes to wind in a big tuna in its lowest gear. A Basic drive grinding a strong fish through a slipping drag wears its reel fast and can wear it through in one fight, which loses the fish.\\\n\\\nCreate Integrated Farming's [#](2E5AAC)[Fishing Nets](entry://food/integrated_farming)[#]() catch the same fish, small ones most."
+      "text": "[#](FFFFFF)[#]() **In depth.** A Geared drive on one water wheel (8 RPM) can take several minutes to wind in a big tuna in its lowest gear. A Basic drive grinding a strong fish through a slipping drag wears its reel fast and can wear it through in one fight, which loses the fish.\\\n\\\nCreate Integrated Farming's [#](2E5AAC)[Fishing Nets](entry://food/integrated_farming)[#]() catch the same fish, small ones most."
     },
     {
       "type": "modonomicon:text",

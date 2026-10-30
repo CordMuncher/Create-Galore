@@ -1,18 +1,17 @@
 package dev.creategalore.fishing.machine;
 
 import dev.creategalore.fishing.cast.CastHook;
-import dev.creategalore.fishing.fish.CatchInfo;
 import dev.creategalore.fishing.sim.Gearbox;
 import dev.creategalore.fishing.tackle.RodItem;
 import dev.creategalore.fishing.tackle.RodParts;
 import dev.creategalore.fishing.tackle.RodStats;
+import dev.creategalore.fishing.tackle.TacklePart;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.item.ItemStack;
@@ -30,10 +29,10 @@ public final class MachineInfo {
     /**
      * What a drive adds to the readout (null for a plain holder): its gear (geared drives), the pull it can still
      * wind against or that it stalled, the bait it has in store, and for the fuel drive the fuel left (in ticks at
-     * full load) and its tank.
+     * full load) and its tank, and whether it is switched off or has its autocast off.
      */
     public record Drive(boolean geared, int gear, double headroomKg, boolean stalled, ItemStack spareBait,
-                        boolean fuelled, int fuelTicks, int tankMb) {
+                        boolean fuelled, int fuelTicks, int tankMb, boolean on, boolean autocast) {
     }
 
     /** Client side: each machine's hook, by the machine's position (kept up by the hooks as they tick). */
@@ -65,10 +64,8 @@ public final class MachineInfo {
                 switch (hook.phase()) {
                     case BITE -> tooltip.add(line(Component.translatable(P + "bite").withStyle(ChatFormatting.YELLOW), 1));
                     case FIGHTING -> {
-                        Component fish = hook.fishId() == null ? Component.translatable(P + "something")
-                                : BuiltInRegistries.ITEM.get(hook.fishId()).getDescription();
-                        tooltip.add(line(Component.translatable(P + "fish_on", fish, CatchInfo.weightText(hook.fishKg()))
-                                .withStyle(ChatFormatting.AQUA), 1));
+                        // What is on, and how big, stays a surprise until it shows in the water.
+                        tooltip.add(line(Component.translatable(P + "fish_on").withStyle(ChatFormatting.AQUA), 1));
                         tooltip.add(line(Component.translatable(P + "tension", percent(hook.tension()))
                                 .withStyle(hook.tension() > 0.8f ? ChatFormatting.RED : ChatFormatting.GRAY), 1));
                     }
@@ -81,8 +78,14 @@ public final class MachineInfo {
             }
             RodParts parts = RodItem.parts(stack);
             ItemStack bait = parts.bait();
-            tooltip.add(line(bait.isEmpty() ? Component.translatable(P + "no_bait").withStyle(ChatFormatting.DARK_GRAY)
-                    : Component.translatable(P + "bait", bait.getHoverName(), bait.getCount()).withStyle(ChatFormatting.GRAY), 1));
+            boolean lure = stats != null && stats.terminal().map(t -> t.kind() == TacklePart.Kind.LURE).orElse(false);
+            if (bait.isEmpty() && lure) {
+                // A lure needs no bait: name it instead.
+                tooltip.add(line(Component.translatable(P + "lure", parts.terminal().getHoverName()).withStyle(ChatFormatting.GRAY), 1));
+            } else {
+                tooltip.add(line(bait.isEmpty() ? Component.translatable(P + "no_bait").withStyle(ChatFormatting.DARK_GRAY)
+                        : Component.translatable(P + "bait", bait.getHoverName(), bait.getCount()).withStyle(ChatFormatting.GRAY), 1));
+            }
             ItemStack reel = parts.reel();
             if (!reel.isEmpty() && reel.isDamageableItem()) {
                 tooltip.add(line(Component.translatable(P + "reel_wear", percent(reel.getDamageValue() / (float) reel.getMaxDamage()))
@@ -90,6 +93,10 @@ public final class MachineInfo {
             }
         }
         if (drive != null) {
+            if (drive.geared() && !drive.on()) tooltip.add(line(Component.translatable(P + "off").withStyle(ChatFormatting.GOLD), 1));
+            if (drive.geared() && !drive.autocast()) {
+                tooltip.add(line(Component.translatable(P + "autocast_off").withStyle(ChatFormatting.GRAY), 1));
+            }
             if (drive.geared()) {
                 tooltip.add(line(Component.translatable(P + "gear", String.format(Locale.ROOT, "%.2f", Gearbox.GEARS[drive.gear()]))
                         .withStyle(ChatFormatting.GRAY), 1));

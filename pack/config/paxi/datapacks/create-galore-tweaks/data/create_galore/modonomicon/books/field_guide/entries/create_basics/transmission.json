@@ -94,7 +94,7 @@
         "item": "create:rotation_speed_controller"
       },
       "title": "Rotation Speed Controller",
-      "text": "Sits below a large cogwheel and relays rotation to it at a speed you set on its [#](7A3C9A)[value panel](entry://glossary/value_panel)[#]()."
+      "text": "Sits below a large cogwheel and relays rotation to it at a speed you set on its [#](7A3C9A)[value panel](entry://glossary/value_panel)[#](). The large cogwheel lies across the controller's shaft, not along it; a small cogwheel it drives turns twice as fast."
     },
     {
       "type": "modonomicon:text",

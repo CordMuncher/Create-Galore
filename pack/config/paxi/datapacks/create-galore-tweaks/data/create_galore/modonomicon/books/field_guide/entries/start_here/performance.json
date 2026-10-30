@@ -53,12 +53,17 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**DLAA** (optional) works only with the shader pack **Photon v1.3a + DLAA**, a copy of Photon + Clrwl the pack makes at startup: pick it under Shader Packs. It replaces Photon's own anti-aliasing with NVIDIA DLSS or AMD FSR 3.1: a sharper picture with far less shimmer on leaves, fences and water."
+      "text": "**DLAA** (optional) works with the shader pack **Photon v1.3a + DLAA**, a copy of Photon + Clrwl the pack makes at startup (and with other shader packs made for it): pick it under Shader Packs. It replaces Photon's own anti-aliasing with NVIDIA DLSS or AMD FSR 3.1: a sharper picture with far less shimmer on leaves, fences and water."
     },
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Its settings are behind the **DLAA...** button at the top of the shader pack menu (also Mods > Create Galore Bridge > Config). **Auto** uses NVIDIA DLAA on an RTX card and FSR 3.1 on any other card."
+      "text": "Its settings are on the **Upscaling** tab behind the **Upscaling & Display...** button at the top of the shader pack menu (also Mods > Create Galore Bridge > Config). **Auto** uses NVIDIA DLAA on an RTX card and FSR 3.1 on any other card."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Anti-aliasing** can also be the shader pack's own: **TAA** at full resolution, **TAAU** (its own upscaler, from the render resolution) or **Off**. A setting the pack in use doesn't support is greyed out; hover it to see why. Your pick is kept and comes back with a pack that supports it."
     },
     {
       "type": "modonomicon:text",
@@ -73,7 +78,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**Render resolution** on that screen trades sharpness for frames. Native draws every pixel. Quality (67%%), Balanced (58%%), Performance (50%%) and Ultra Performance (33%%) draw the scene smaller and DLSS or FSR fill in the window. Custom has a slider from 25%% to 100%%.\\\n\\\nWith the anti-aliasing Off, Photon's own upscaler does the job, softer."
+      "text": "**Render resolution** on that screen trades sharpness for frames. Native draws every pixel. Quality (67%%), Balanced (58%%), Performance (50%%) and Ultra Performance (33%%) draw the scene smaller and DLSS or FSR fill in the window. Custom has a slider from 25%% to 100%%.\\\n\\\nWith **TAAU (the pack's own)**, Photon's own upscaler does the job, softer."
     },
     {
       "type": "modonomicon:text",
@@ -84,6 +89,31 @@
       "type": "modonomicon:text",
       "title": "",
       "text": "L and M also keep underwater light shafts and the specks in the water clean, where K and FSR smear them a little.\\\n\\\nThey are made for RTX 40 and 50 cards; on RTX 20 and 30 cards they cost more frames, so stay on K there if the frame rate drops."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Ray Reconstruction** (experimental, RTX cards) is on the Upscaling tab too. NVIDIA's DLSS Ray Reconstruction takes DLSS's place and also cleans up Photon's lighting: water reflects like glass, shadows stay sharp and still, and torchlight on metal stays crisp."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "It costs frames: on an RTX 4080 SUPER, Ray Reconstruction at Performance runs nearly as fast as DLSS at Quality. It needs NVIDIA's nvngx\\_dlssd.dll (**Find on this PC** copies it) and an NVIDIA driver 580 or newer."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Turning it on sets Photon to **Ultra** the first time; after that you get the changes you made in Photon's menu while it was on. Turning it off brings back your own Photon settings. A message says so each time."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Photon's menu stays yours to change while Ray Reconstruction runs, but whatever you set, soft shadows and reflections are left grainy for it to clean up, and rough blocks like metal get blurry reflections they don't have with it off. So Photon at High looks different with it than without it."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Ray Reconstruction shows its worth most at Photon's highest settings, with every lighting effect on. At lower settings there is little for it to clean up."
     },
     {
       "type": "modonomicon:text",
@@ -113,7 +143,87 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**Perfect Presentation** (Windows, experimental) shows the game through DirectX: fullscreen is a fast borderless window, Alt-Tab is instant and a 10-bit monitor stays 10-bit. Turn it on in the display settings (the **DLAA...** button in the shader pack menu) and restart twice. On NVIDIA, set Power management mode to Prefer maximum performance for javaw.exe."
+      "text": "**Perfect Presentation** (Windows) shows the game through DirectX: fullscreen is a fast borderless window, Alt-Tab is instant and a 10-bit monitor stays 10-bit. It is switched on or off in the display settings (the **Upscaling & Display...** button in the shader pack menu, **Display** tab); restart after. On NVIDIA, set Power management mode to Prefer maximum performance for javaw.exe."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**DirectX** (same tab) picks what Perfect Presentation runs on: **12** or **11**. In tests 12 gave marginally lower input delay at the same frame rate, and frame generation needs it. Picking 12 turns Perfect Presentation on; restart once. Where 12 can't start, the game runs on 11 and the screen says so."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**NVIDIA Reflex** (Windows, NVIDIA GTX 900 or newer, experimental) is on the same tab. The driver starts each frame as late as it can, and the game reads the mouse just before it draws, so the view follows the mouse sooner. It works best with a Max Framerate the card can hold. Picking it turns on Perfect Presentation, which it needs: restart once."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**GPU pacing** (any card, same tab) is for playing uncapped. The game waits just before drawing each frame, so the frame doesn't queue on the card and the view follows the mouse sooner. **On** keeps the frame rate; **Lowest** cuts a little more delay for about 6%% fewer frames.\\\n\\\nA **Max Framerate** the card can hold gives the shortest delay of all, on any card."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Frame generation** (same tab) shows a frame of its own between every two the game draws, so motion looks about twice as smooth, for a little more input delay. **DLSS** runs where NVIDIA's own check says the card can (RTX 40 and 50); if not, the setting says why. **FSR** runs on other cards too and is best from about 60 fps. Both need DLSS or FSR anti-aliasing."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Picking one turns on Perfect Presentation and DirectX 12 (DLSS also turns on Reflex): restart once. After that it turns on and off at once; switching between DLSS and FSR needs a restart. DLSS also needs Windows' Hardware-accelerated GPU scheduling and NVIDIA's nvngx\\_dlssg.dll: **Find on this PC** on the Upscaling tab copies it."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "With frame generation on, **Max Framerate** counts the frames on screen, with DLSS and with FSR: a cap of 120 shows 120 frames a second, 60 drawn by the game and 60 made between them."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "On cards where NVIDIA's own check says DLSS can make more than one frame between two (RTX 50), the list also has **DLSS 3x** and **DLSS 4x**: two or three frames of its own for each one the game draws. They work like DLSS (2x), which was tested, but haven't been tried on an RTX 50 card yet, hence the red **\\***. At 4x a cap of 120 shows 120 frames, 30 drawn by the game."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Where NVIDIA's check says the card and driver run it, there is also **DLSS Dynamic**, untried on RTX 50 as well. It leaves the game's own frame rate alone and changes how many frames it adds, scene by scene, to fill your monitor's refresh rate."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "With 2x, 3x or 4x the multiplier stays put and the game is held to a steady share of the refresh rate, which feels steadier. **Dynamic** keeps input delay lower while the game runs fast, but you may notice it switching."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "The **NVIDIA app** can change the model DLSS frame generation uses: Graphics, Global Settings, **DLSS Override - Model Presets**, Frame Generation. It works here, though NVIDIA's overlay reads \"FG OVR N/A\". On an RTX 4080 SUPER, **Preset C** drew about 6%% more frames with a little less input delay; **Preset B** ran like NVIDIA's own pick."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Frame counter** on the same tab: **Basic** shows the frame rate in a corner; **Detailed** adds the frame time, the 1%% and 0.1%% lows and a graph of the last few seconds. Pick the **Corner**. **Dim for OLED** keeps it faint and moves it a pixel now and then so it can't burn in. F3 and F1 hide it."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**GPU cost meter**: **F10** turns it on and off. It lists what each part of a frame costs the graphics card in ms, largest first (every shader pass, the shadow map, terrain, entities, DLSS or FSR), with the frame rate, 1%% low, CPU and GPU time and how busy the card is. logs/create-galore-cost.log keeps the numbers and every stutter."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**If a graphics setting won't run**, the line beside it on the settings screen says why; hover it for more.\\\n\\\n- No DLSS: get nvngx\\_dlss.dll with **Find on this PC** or **Get from NVIDIA**, then press F8.\n- DirectX 12 can't start on some graphics drivers (Intel's): the game runs on 11 instead."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**DLSS frame generation** also needs Windows' Hardware-accelerated GPU scheduling, Vertical sync at **Use the 3D application setting** in the NVIDIA Control Panel, and nvngx\\_dlssg.dll. Frame generation pauses in menus and while the game is paused.\\\n\\\nThe game log says more: look for lines starting with DLAA:, Perfect Presentation: or Frame generation:."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**If the game stutters**, logs/create-galore-stutters.log in the instance folder says why. Every frame of 100 ms or more and every choppy stretch (many short hitches in a row) gets an entry with what the game was doing, its memory and the CPU, plus a line a minute with the frame rate and 1%% low. The last session's file is kept as create-galore-stutters.prev.log."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Only a really bad one also gets a grey line in chat: the game froze for 2 seconds or more, or ran under 15 frames per second for 5 seconds or more. It stays quiet for the first minute in a world and says it at most once every 10 minutes.\\\n\\\nIf you see that line, send the stutter log with your report."
     },
     {
       "type": "modonomicon:text",

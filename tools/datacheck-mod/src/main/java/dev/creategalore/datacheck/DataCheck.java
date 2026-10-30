@@ -10,6 +10,7 @@ import java.util.*;
 
 import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.server.level.ServerLevel;
@@ -25,6 +26,8 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.world.food.FoodProperties;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -32,15 +35,19 @@ import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.storage.loot.BuiltInLootTables;
 import net.minecraft.world.level.storage.loot.LootTable;
+import com.simibubi.create.AllDataComponents;
+import com.simibubi.create.content.processing.sequenced.SequencedAssemblyRecipe;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.common.crafting.SizedIngredient;
+import net.neoforged.neoforge.common.extensions.IItemStackExtension;
+import net.neoforged.neoforge.common.util.FakePlayerFactory;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
 import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
 
-/** /datacheck: lists recipes nobody can make (an ingredient matches nothing) and blocks that drop nothing with any tool. */
+/** /datacheck: lists recipes nobody can make (an ingredient matches nothing), blocks that drop nothing with any tool, and edible items. */
 @Mod("create_galore_datacheck")
 @EventBusSubscriber(modid = "create_galore_datacheck")
 public class DataCheck {
@@ -91,7 +98,31 @@ public class DataCheck {
                 lines.add("DROPERR\t" + BuiltInRegistries.BLOCK.getKey(b) + "\t" + drops.substring(1));
             }
         }
-        lines.add(0, "# recipes " + recipes + ", unmakeable " + broken + "; blocks with an item " + blocks + ", drop nothing with any tool " + noLoot);
+        // Food: a half-built sequenced item is only edible when what it becomes is food. FOOD lists every edible item to look over.
+        int halfEdible = 0, foods = 0;
+        for (RecipeHolder<?> h : server.getRecipeManager().getRecipes()) {
+            if (!(h.value() instanceof SequencedAssemblyRecipe r)) continue;
+            ItemStack half = r.getTransitionalItem().copy();
+            half.set(AllDataComponents.SEQUENCED_ASSEMBLY, new SequencedAssemblyRecipe.SequencedAssembly(h.id(), 0, 0f));
+            ItemStack result = r.getResultItem(server.registryAccess());
+            // Asked with an eater (tooltips, eating) and without one (machines) the answer should be the same.
+            if ((food(half) != null) != (food(half, FakePlayerFactory.getMinecraft(server.overworld())) != null))
+                lines.add("HALFEATER\t" + h.id() + "\t" + BuiltInRegistries.ITEM.getKey(half.getItem()) + "\tedible with an eater: " + (food(half) == null));
+            if (food(half) != null && food(result) == null) {
+                halfEdible++;
+                lines.add("HALFEDIBLE\t" + h.id() + "\t" + BuiltInRegistries.ITEM.getKey(half.getItem()) + "\tbecomes " + BuiltInRegistries.ITEM.getKey(result.getItem()) + ", not food");
+            } else if (food(result) != null && !half.has(DataComponents.FOOD)) {
+                lines.add("HALFNOFOOD\t" + h.id() + "\t" + BuiltInRegistries.ITEM.getKey(half.getItem()) + "\tbecomes food " + BuiltInRegistries.ITEM.getKey(result.getItem()) + ", has no food of its own, edible half-made: " + (food(half) != null));
+            }
+        }
+        for (Item item : BuiltInRegistries.ITEM) {
+            FoodProperties f = food(new ItemStack(item));
+            if (f == null) continue;
+            foods++;
+            lines.add("FOOD\t" + BuiltInRegistries.ITEM.getKey(item) + "\t" + f.nutrition() + "/" + f.saturation());
+        }
+        lines.add(0, "# recipes " + recipes + ", unmakeable " + broken + "; blocks with an item " + blocks + ", drop nothing with any tool " + noLoot
+                + "; edible items " + foods + ", half-built items edible but not food " + halfEdible);
         Path out = server.getServerDirectory().resolve("datacheck/report.txt");
         try {
             Files.createDirectories(out.getParent());
@@ -100,6 +131,15 @@ public class DataCheck {
             throw new RuntimeException(ex);
         }
         return out;
+    }
+
+    // What eating would give (NeoForge's ItemStack method: the item's own food, or what a mod puts there instead).
+    static FoodProperties food(ItemStack stack) {
+        return food(stack, null);
+    }
+
+    static FoodProperties food(ItemStack stack, net.minecraft.world.entity.LivingEntity eater) {
+        return ((IItemStackExtension) (Object) stack).getFoodProperties(eater);
     }
 
     static List<ItemStack> tools;

@@ -45,7 +45,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "Every fish has a real **length and weight**. Fish under 3 kg stack by species and size class. Heavier fish, trophies and uniques are single items that carry their weight, length, who caught them and on which day. Trophies show their name in aqua, uniques in purple.\\\n\\\nEach catch goes into the [#](2E5AAC)[Fishing Journal](entry://fishing/journal)[#]()."
+      "text": "Every fish has a real **length and weight**. Fish under 3 kg stack by species and size class and show the weights that class spans. Heavier fish, trophies and uniques are single items that carry their weight, length, who caught them and on which day. Trophies show their name in aqua, uniques in purple.\\\n\\\nEach catch goes into the [#](2E5AAC)[Fishing Journal](entry://fishing/journal)[#]()."
     },
     {
       "type": "modonomicon:text",

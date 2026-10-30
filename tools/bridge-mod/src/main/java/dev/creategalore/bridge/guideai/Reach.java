@@ -4,6 +4,7 @@ import com.simibubi.create.content.processing.recipe.ProcessingOutput;
 import com.simibubi.create.content.processing.recipe.ProcessingRecipe;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -52,16 +53,7 @@ final class Reach {
     static String tree(ServerPlayer player, MinecraftServer server, String itemQuery, int amount) {
         Item item = WorldTools.resolveItem(itemQuery);
         if (item == null) return "No item called '" + itemQuery + "'. Try find_items first.";
-        var registries = server.registryAccess();
-        Map<Item, List<RecipeHolder<?>>> makers = new HashMap<>();
-        for (RecipeHolder<?> holder : server.getRecipeManager().getRecipes()) {
-            try {
-                for (ItemStack out : WorldTools.outputs(holder.value(), registries))
-                    if (!out.isEmpty()) makers.computeIfAbsent(out.getItem(), k -> new ArrayList<>()).add(holder);
-            } catch (RuntimeException ignored) {
-                // A recipe that can't say what it makes can't be part of a path.
-            }
-        }
+        Map<Item, List<RecipeHolder<?>>> makers = makers(server);
         Map<Item, Integer> have = owned(player);
         List<String> lines = new ArrayList<>();
         Map<Item, String> gather = new LinkedHashMap<>();
@@ -79,6 +71,244 @@ final class Reach {
         if (!stations.isEmpty()) out.append("Stations and machines along the way: ").append(String.join("; ", stations)).append(".\n");
         out.append("Dimensions they have been to: ").append(String.join(", ", visited(player, server))).append('.');
         return out.toString();
+    }
+
+    /** Every recipe on the server, by the item it makes. */
+    /** The last recipe index built, and the recipe manager it was built from (a reload makes a new one). */
+    private static Object makersFor;
+    private static Map<Item, List<RecipeHolder<?>>> makersCache;
+
+    static Map<Item, List<RecipeHolder<?>>> makers(MinecraftServer server) {
+        var recipes = server.getRecipeManager();
+        if (makersFor == recipes && makersCache != null) return makersCache;
+        makersCache = index(server);
+        makersFor = recipes;
+        return makersCache;
+    }
+
+    private static Map<Item, List<RecipeHolder<?>>> index(MinecraftServer server) {
+        var registries = server.registryAccess();
+        Map<Item, List<RecipeHolder<?>>> makers = new HashMap<>();
+        for (RecipeHolder<?> holder : server.getRecipeManager().getRecipes()) {
+            try {
+                for (ItemStack out : WorldTools.outputs(holder.value(), registries))
+                    if (!out.isEmpty()) makers.computeIfAbsent(out.getItem(), k -> new ArrayList<>()).add(holder);
+            } catch (RuntimeException ignored) {
+                // A recipe that can't say what it makes can't be part of a path.
+            }
+        }
+        return makers;
+    }
+
+    // ---------- the parts a model needs ----------
+
+    private static final String ASSEMBLY = "create:sequenced_assembly";
+
+    /**
+     * The parts of a model the player can't make yet: a part they have never had whose recipe tree, followed as
+     * recipe_tree follows it, needs an item that only a sequenced assembly line makes and that they have never had
+     * either (a Mechanical Arm before their first Precision Mechanism). A part that needs the model's own {@code goal}
+     * is left to {@link #selfMade}. Null when every part is within reach.
+     */
+    static BuildCheck.Report parts(ServerPlayer player, MinecraftServer server, java.util.Collection<BlockState> states, Item goal) {
+        try {
+            Map<Item, List<RecipeHolder<?>>> makers = makers(server);
+            Map<Item, Integer> have = owned(player);
+            Map<Item, Item> blocked = new LinkedHashMap<>();
+            Set<Item> seen = new java.util.HashSet<>();
+            Map<Item, Item> known = new HashMap<>();
+            for (BlockState s : states) {
+                Item part = item(s, player);
+                if (part == Items.AIR || !seen.add(part) || had(player, part, have)) continue;
+                Item gate = gate(player, null, part, 0, new LinkedHashSet<>(), makers, have, known);
+                // A part that needs the model's own product is selfMade's to report.
+                if (gate != null && gate != goal) blocked.put(part, gate);
+            }
+            if (blocked.isEmpty()) return null;
+            List<String> faults = new ArrayList<>();
+            blocked.forEach((part, gate) -> faults.add(part.getDescription().getString() + (part == gate ? " is" : " needs "
+                    + gate.getDescription().getString() + ", which is") + " made only on a sequenced assembly line, and the "
+                    + "player has never had " + (part == gate ? "one" : "a " + gate.getDescription().getString())));
+            String text = "What the player can make of it" + BuildCheck.FOR_YOU + ":\n- PROBLEM: they can't make every part yet: "
+                    + String.join("; ", faults) + ". A line that makes that item can't use a part that needs it: build it "
+                    + "without that part (by hand, or with belts alone), and show the way to their first one. Set for_later "
+                    + "only when they asked for a build for later on.";
+            return new BuildCheck.Report(text, faults);
+        } catch (RuntimeException | LinkageError e) {
+            return new BuildCheck.Report("(The parts check couldn't run on this model: " + e.getClass().getSimpleName() + ".)", List.of());
+        }
+    }
+
+    /**
+     * Parts of a model that every way of making needs the model's own product (a Mechanical Arm on a line that makes the
+     * first Precision Mechanism): such a line can't be built to make its first one. A part the player already has or
+     * has had is fine. Null when none.
+     */
+    static BuildCheck.Report selfMade(ServerPlayer player, MinecraftServer server, java.util.Collection<BlockState> states, Item goal) {
+        try {
+            Map<Item, List<RecipeHolder<?>>> makers = makers(server);
+            Map<Item, Integer> have = player == null ? Map.of() : owned(player);
+            if (player != null && had(player, goal, have)) return null;
+            Set<Item> seen = new java.util.HashSet<>();
+            List<String> faults = new ArrayList<>();
+            for (BlockState s : states) {
+                Item part = item(s, player);
+                if (part == Items.AIR || part == goal || !seen.add(part) || player != null && had(player, part, have)) continue;
+                if (gate(player, goal, part, 0, new LinkedHashSet<>(), makers, have, new HashMap<>()) != null)
+                    faults.add(part.getDescription().getString() + " needs " + article(goal) + " to make");
+            }
+            if (faults.isEmpty()) return null;
+            String text = "Whether its parts can be made before it runs" + BuildCheck.FOR_YOU + ":\n- PROBLEM: "
+                    + String.join("; ", faults) + ", the very thing this model makes, so it can't be built to make the first "
+                    + "one. Do that step another way (by hand, or with belts and depots alone).";
+            return new BuildCheck.Report(text, faults);
+        } catch (RuntimeException | LinkageError e) {
+            return new BuildCheck.Report("(The parts check couldn't run on this model: " + e.getClass().getSimpleName() + ".)", List.of());
+        }
+    }
+
+    /**
+     * Whether the player can make one now: they have or had one, or one of its recipes takes only things they have had,
+     * gather from the world, or can make that way in turn, three steps down at most. A sequenced assembly's product counts
+     * only once they have had one, and a heated basin recipe only once they have had a Blaze Burner. Rougher than
+     * recipe_tree, and meant for choosing among parts: what this says no to is a later stage, not a missing ingot.
+     */
+    static boolean canMake(ServerPlayer player, MinecraftServer server, Item item) {
+        try {
+            return canMake(player, makers(server), owned(player), item, 0, new HashSet<>(), new HashSet<>(), new HashMap<>());
+        } catch (RuntimeException | LinkageError e) {
+            return false;
+        }
+    }
+
+    private static final Item BLAZE_BURNER = BuiltInRegistries.ITEM.get(ResourceLocation.parse("create:blaze_burner"));
+
+    /** {@code yes} holds items found makeable, {@code no} the shallowest depth each was found not to be. */
+    private static boolean canMake(ServerPlayer player, Map<Item, List<RecipeHolder<?>>> makers, Map<Item, Integer> have, Item item,
+            int depth, Set<Item> path, Set<Item> yes, Map<Item, Integer> no) {
+        if (yes.contains(item) || had(player, item, have) || natural(item)) return true;
+        if (depth >= 3 || no.getOrDefault(item, Integer.MAX_VALUE) <= depth || !path.add(item)) return false;
+        boolean found = false;
+        try {
+            for (RecipeHolder<?> holder : makers.getOrDefault(item, List.of())) {
+                ResourceLocation type = BuiltInRegistries.RECIPE_TYPE.getKey(holder.value().getType());
+                if (type != null && type.toString().equals(ASSEMBLY)) continue;
+                if (holder.value() instanceof ProcessingRecipe<?, ?> processing
+                        && processing.getRequiredHeat() != com.simibubi.create.content.processing.recipe.HeatCondition.NONE
+                        && !had(player, BLAZE_BURNER, have)) continue;
+                Map<Ingredient, Integer> parts = grouped(holder.value());
+                if (parts.isEmpty()) continue;
+                boolean all = true;
+                for (Ingredient ingredient : parts.keySet()) {
+                    boolean any = false;
+                    for (ItemStack choice : ingredient.getItems())
+                        if (canMake(player, makers, have, choice.getItem(), depth + 1, path, yes, no)) {
+                            any = true;
+                            break;
+                        }
+                    if (!any) {
+                        all = false;
+                        break;
+                    }
+                }
+                if (all) {
+                    found = true;
+                    break;
+                }
+            }
+            return found;
+        } finally {
+            path.remove(item);
+            if (found) yes.add(item);
+            else no.merge(item, depth, Math::min);
+        }
+    }
+
+    private static String article(Item item) {
+        String name = item.getDescription().getString();
+        return ("AEIOUaeiou".indexOf(name.isEmpty() ? 'x' : name.charAt(0)) >= 0 ? "an " : "a ") + name;
+    }
+
+    /** The item a block is placed from: its own, or the one picking it gives (a belt comes from a Belt Connector). */
+    private static Item item(BlockState s, ServerPlayer player) {
+        Item own = s.getBlock().asItem();
+        if (own != Items.AIR || player == null) return own;
+        try {
+            ItemStack pick = s.getBlock().getCloneItemStack(s, null, player.serverLevel(), player.blockPosition(), player);
+            return pick == null ? Items.AIR : pick.getItem();
+        } catch (RuntimeException | LinkageError e) {
+            return Items.AIR;
+        }
+    }
+
+    /** Whether the player has one now, or ever picked one up, crafted, mined or placed one. */
+    private static boolean had(ServerPlayer player, Item item, Map<Item, Integer> have) {
+        return have.getOrDefault(item, 0) > 0 || history(player, item).startsWith(", ever")
+                || player.getStats().getValue(Stats.ITEM_USED.get(item)) > 0;
+    }
+
+    /**
+     * The item made only on a sequenced assembly line, never had by the player, that every way of making {@code item}
+     * needs (each recipe, and each choice an ingredient allows); null when some way gets round it. With a
+     * {@code target}, the gate is that item instead (and with no player, nothing counts as had). Answers are kept in
+     * {@code known}, with {@link Items#AIR} for none.
+     */
+    private static Item gate(ServerPlayer player, Item target, Item item, int depth, Set<Item> path, Map<Item, List<RecipeHolder<?>>> makers,
+            Map<Item, Integer> have, Map<Item, Item> known) {
+        if (depth > MAX_DEPTH || natural(item)) return null;
+        if (target != null && item == target) return item;
+        if (depth > 0 && player != null && had(player, item, have)) return null;
+        Item memo = known.get(item);
+        if (memo != null) return memo == Items.AIR ? null : memo;
+        List<RecipeHolder<?>> options = makers.getOrDefault(item, List.of());
+        if (options.isEmpty()) return null;
+        boolean onlyAssembly = target == null;
+        for (RecipeHolder<?> holder : options) {
+            ResourceLocation type = BuiltInRegistries.RECIPE_TYPE.getKey(holder.value().getType());
+            if (type == null || !type.toString().equals(ASSEMBLY)) onlyAssembly = false;
+        }
+        if (onlyAssembly) {
+            known.put(item, item);
+            return item;
+        }
+        Item found = null;
+        path.add(item);
+        try {
+            for (RecipeHolder<?> holder : options) {
+                Map<Ingredient, Integer> parts = grouped(holder.value());
+                if (parts.isEmpty()) return null;
+                Item needs = null;
+                boolean circular = false;
+                for (Ingredient ingredient : parts.keySet()) {
+                    Item any = null;
+                    boolean free = false;
+                    for (ItemStack choice : ingredient.getItems()) {
+                        if (path.contains(choice.getItem())) continue;
+                        Item g = gate(player, target, choice.getItem(), depth + 1, path, makers, have, known);
+                        if (g == null) {
+                            free = true;
+                            break;
+                        }
+                        any = g;
+                    }
+                    if (free) continue;
+                    if (any == null) circular = true;
+                    else needs = any;
+                    break;
+                }
+                // A recipe that only goes round in a circle says nothing either way.
+                if (circular) continue;
+                if (needs == null) {
+                    known.put(item, Items.AIR);
+                    return null;
+                }
+                found = needs;
+            }
+        } finally {
+            path.remove(item);
+        }
+        if (depth == 0 || found == null) known.put(item, found == null ? Items.AIR : found);
+        return found;
     }
 
     private static void walk(ServerPlayer player, MinecraftServer server, Need need, int depth, Set<Item> path,
@@ -118,7 +348,7 @@ final class Reach {
             return;
         }
         Recipe<?> recipe = chosen.value();
-        String station = station(recipe);
+        String station = station(recipe) + AutoCrafting.phrase(chosen);
         stations.add(station + stationHistory(player, recipe));
         int makes = 1;
         for (ItemStack out : WorldTools.outputs(recipe, server.registryAccess())) if (out.is(item)) makes = Math.max(1, out.getCount());
@@ -146,8 +376,12 @@ final class Reach {
         return TagKey.create(Registries.BLOCK, ResourceLocation.parse(id));
     }
 
-    /** A block the world generates as terrain, so it is gathered rather than made. */
+    /** Raw ore a pickaxe gives (Raw Copper), which is mined, not made from its storage block. */
+    private static final TagKey<Item> RAW = TagKey.create(Registries.ITEM, ResourceLocation.parse("c:raw_materials"));
+
+    /** A block the world generates as terrain, or raw ore mined from it, so it is gathered rather than made. */
     static boolean natural(Item item) {
+        if (item.builtInRegistryHolder().is(RAW)) return true;
         if (!(item instanceof BlockItem blockItem)) return false;
         BlockState state = blockItem.getBlock().defaultBlockState();
         for (TagKey<Block> tag : TERRAIN) if (state.is(tag)) return true;
@@ -171,7 +405,14 @@ final class Reach {
             if (circular) continue;
             ResourceLocation type = BuiltInRegistries.RECIPE_TYPE.getKey(holder.value().getType());
             String t = type == null ? "" : type.toString();
-            int score = (ready ? 0 : 100) + (t.startsWith("minecraft:") ? 0 : t.startsWith("create:") ? 10 : 20) + parts.size();
+            // Plain ingredients first too: Raw Copper before Create's Crushed Raw Copper, Oak Log before a mod's driftwood.
+            int plain = 0;
+            for (Ingredient i : parts.keySet()) {
+                Item pick = pick(i, have, player);
+                String ns = pick == null ? "" : BuiltInRegistries.ITEM.getKey(pick).getNamespace();
+                plain += have.getOrDefault(pick, 0) > 0 || ns.equals("minecraft") ? 0 : ns.equals("create") ? 2 : 4;
+            }
+            int score = (ready ? 0 : 100) + (t.startsWith("minecraft:") ? 0 : t.startsWith("create:") ? 10 : 20) + parts.size() + plain;
             if (score < bestScore) {
                 bestScore = score;
                 best = holder;
@@ -287,8 +528,11 @@ final class Reach {
         Item station = BuiltInRegistries.ITEM.get(ResourceLocation.parse(known.split("\\|")[1]));
         if (station == Items.AIR) return "";
         int placed = player.getStats().getValue(Stats.ITEM_USED.get(station)), crafted = player.getStats().getValue(Stats.ITEM_CRAFTED.get(station));
-        return " (" + station.getDescription().getString() + ": " + (placed + crafted == 0 ? "never made or placed one"
-                : "placed " + placed + ", crafted " + crafted) + ")";
+        // Create's advancement for using a machine (create:mechanical_press) shows they have run one, whatever the statistics say.
+        ResourceLocation id = BuiltInRegistries.ITEM.getKey(station);
+        boolean used = player.getServer() != null && done(player, player.getServer(), id.toString());
+        return " (" + station.getDescription().getString() + ": " + (placed + crafted > 0 ? "placed " + placed + ", crafted " + crafted
+                : used ? "they have its advancement, so they have run one" : "never made or placed one") + ")";
     }
 
     private static List<String> visited(ServerPlayer player, MinecraftServer server) {

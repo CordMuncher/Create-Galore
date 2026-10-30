@@ -4,6 +4,7 @@ import com.endertech.minecraft.forge.blocks.ISmokeContainer;
 import com.endertech.minecraft.mods.adpother.blocks.AbstractGas;
 import com.endertech.minecraft.mods.adpother.pollution.IFilterFrame;
 import com.simibubi.create.content.kinetics.belt.BeltBlock;
+import dev.creategalore.bridge.encased.EncasedDoors;
 import it.unimi.dsi.fastutil.longs.LongArrayFIFOQueue;
 import it.unimi.dsi.fastutil.longs.LongArrayList;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
@@ -55,6 +56,11 @@ public final class Exhaust {
         return state.getBlock() instanceof BeltBlock && state.getValue(BeltBlock.CASING);
     }
 
+    /** A belt with casing, or a cased door or trapdoor that is shut. */
+    public static boolean isSealed(BlockState state) {
+        return isSealedBelt(state) || EncasedDoors.isSealed(state);
+    }
+
     /** Air, smog or exhaust: room that gas fills. */
     static boolean isVolume(BlockState state) {
         return state.isAir() || state.getBlock() instanceof AbstractGas || isExhaust(state);
@@ -63,7 +69,7 @@ public final class Exhaust {
     /** Whether gas moving in direction {@code dir} can get through this cell (the same rule smog uses). */
     static boolean passable(LevelReader level, BlockPos pos, BlockState state, Direction dir) {
         if (isVolume(state)) return true;
-        if (!state.getFluidState().isEmpty() || isSealedBelt(state) || isFlue(state)) return false;
+        if (!state.getFluidState().isEmpty() || isSealed(state) || isFlue(state)) return false;
         return !state.isFaceSturdy(level, pos, dir) && !state.isFaceSturdy(level, pos, dir.getOpposite());
     }
 

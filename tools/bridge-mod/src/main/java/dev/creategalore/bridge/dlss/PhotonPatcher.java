@@ -42,7 +42,9 @@ import org.slf4j.LoggerFactory;
  * - gives things that move by themselves their own motion vectors (waving plants and leaves, Sable's ships, Create's
  *   machines and contraptions through Colorwheel, entities, block entities and the hand through {@link EntityMotion}):
  *   the solid gbuffers programs write them into colortex2, which Photon itself only uses with normal or specular
- *   mapping, POM or TAAU, and composite4 takes them over the reprojection (see {@link #MOTION_INCLUDE});
+ *   mapping, POM or TAAU, and composite4 takes them over the reprojection (see {@link #MOTION_INCLUDE}). The
+ *   programs whose overlays must meet them to the bit (the enchantment glint, the block breaking cracks) and the
+ *   ones they cover compute gl_Position as invariant, so the motion code can't round the solid ones differently;
  * - marks for FSR 3 where it should take this frame over its history ({@link #REACTIVE_INCLUDE}): particles, rain and
  *   the nether portal (the translucent programs), lava and fire (their materials); DLSS's current models take no
  *   such mask;
@@ -56,11 +58,22 @@ import org.slf4j.LoggerFactory;
  *   instead. The render scale comes from the Bridge (taau_render_scale, TAAU_RENDER_SCALE rounded to whole pixels per
  *   axis, offered down to 0.25) so the render size is exact, and the textures' mip bias with it (cg_mip_bias).
  *   Photon's own TAAU renders the same size, so it can be compared at the same internal resolution.
+ *
+ * For DLSS Ray Reconstruction (experimental, see {@link Dlss}), while cg_rr_active is 1 the patched pack also:
+ * - writes Ray Reconstruction's guides ({@link #RR_INCLUDE}): deferred4 for the solid surfaces and the sky, the water
+ *   program for translucent blocks in front of them (their normal, roughness, reflectance and reflection distance; the
+ *   diffuse colour stays the one seen through them);
+ * - with cg_rr_raw_reflections 1, gives Photon's own rough materials (metals, polished blocks and the like) rough
+ *   reflections at one ray per pixel from white noise, which Photon otherwise has only with a LabPBR resource pack,
+ *   and leaves their noise to Ray Reconstruction; the reflection's ray length goes into the hit distance guide;
+ * - with cg_rr_raw_shadows 1, turns the soft shadows' sample patterns with white noise instead of Photon's blue noise
+ *   that steps each frame (NVIDIA: no screen-space dithering, no patterns shared between pixels);
+ * - with cg_rr_exposed 1, hands DLSS its colour times its exposure (Ray Reconstruction takes no exposure).
  */
 public final class PhotonPatcher {
     private static final Logger LOG = LoggerFactory.getLogger("create_galore_bridge");
     /** Bumped when the patch changes, so existing copies are made again. */
-    private static final int PATCH_VERSION = 11;
+    private static final int PATCH_VERSION = 22; // 16 to 18 and 20 were test builds' own
     private static final String BASE_ZIP = "photon_v1.3a.zip";
     /** Colorwheel Patcher's copy of {@link #BASE_ZIP}; an outdated one gets a prefix and no longer matches. */
     private static final Pattern COLORWHEEL_ZIP = Pattern.compile("photon_v1\\.3a \\+ Clrwl_(\\d+)\\.(\\d+)\\.(\\d+)\\.zip");
@@ -126,6 +139,7 @@ public final class PhotonPatcher {
                 }
                 Files.writeString(work.resolve(MOTION_INCLUDE_FILE), MOTION_INCLUDE, StandardCharsets.UTF_8);
                 Files.writeString(work.resolve(REACTIVE_INCLUDE_FILE), REACTIVE_INCLUDE, StandardCharsets.UTF_8);
+                Files.writeString(work.resolve(RR_INCLUDE_FILE), RR_INCLUDE, StandardCharsets.UTF_8);
                 Files.writeString(work.resolve(PackProfile.FILE), PROFILE, StandardCharsets.UTF_8);
                 Files.writeString(work.resolve(MARKER), stamp + "\n", StandardCharsets.UTF_8);
                 deleteTree(target);
@@ -205,7 +219,12 @@ public final class PhotonPatcher {
                                 + "# FSR 3's masks: what the translucent programs mark (cleared every frame), and both masks as composite4\n"
                                 + "# hands them over (see cg_reactive.glsl)\n"
                                 + "image.cg_reactive_img = none red_integer r32ui unsigned_int true true 1.0 1.0\n"
-                                + "image.cg_mask_img = none rg rg16f half_float false true 1.0 1.0"},
+                                + "image.cg_mask_img = none rg rg16f half_float false true 1.0 1.0\n"
+                                + "# Create Galore Ray Reconstruction (experimental): its guides, written by deferred4 and the water program (see cg_rr.glsl)\n"
+                                + "image.cg_rr_albedo_img = none rgba rgba8 unsigned_byte false true 1.0 1.0\n"
+                                + "image.cg_rr_specular_img = none rgba rgba8 unsigned_byte false true 1.0 1.0\n"
+                                + "image.cg_rr_normal_img = none rgba rgba16f half_float false true 1.0 1.0\n"
+                                + "image.cg_rr_hitdist_img = none red r32f float false true 1.0 1.0"},
         });
 
         // Upscaling (TAAU): the render scale comes from the Bridge, per axis and in whole render pixels, so DLSS
@@ -223,6 +242,7 @@ public final class PhotonPatcher {
                                 + "// dlaaMipBias while DLSS or FSR runs.\n"
                                 + "uniform float cg_mip_bias;\n"
                                 + "\n// Helper functions\n"},
+                {"\n// Helper functions\n", RR_GLOBAL + "\n// Helper functions\n"},
         });
         StringBuilder lowScales = new StringBuilder();
         for (int percent = 25; percent < 50; percent++) {
@@ -231,6 +251,79 @@ public final class PhotonPatcher {
         edits.put("shaders/settings.glsl", new String[][] {
                 {"#define TAAU_RENDER_SCALE 0.75 // [0.50 ", "#define TAAU_RENDER_SCALE 0.75 // [" + lowScales + "0.50 "},
         });
+        edits.put("shaders/include/lighting/specular_lighting.glsl", new String[][] {
+                {"vec3 get_sky_reflection(vec3 ray_dir, float skylight, vec3 hit_pos) {",
+                        "// Create Galore Ray Reconstruction: how far the last specular ray went before it hit something (65504: nothing,\n"
+                                + "// the sky), for its hit distance guide.\n"
+                                + "float cg_ssr_hit_distance = 65504.0;\n\n"
+                                + "vec3 get_sky_reflection(vec3 ray_dir, float skylight, vec3 hit_pos) {"},
+                {"        vec3 hit_pos_scene = view_to_scene_space(hit_pos_view);\n",
+                        "        vec3 hit_pos_scene = view_to_scene_space(hit_pos_view);\n"
+                                + "        cg_ssr_hit_distance = min(cg_ssr_hit_distance, distance(view_pos, hit_pos_view));\n"},
+                {"    float dither =\n        r1(frameCounter,\n           texelFetch(noisetex, ivec2(gl_FragCoord.xy) & 511, 0).b);\n",
+                        "    float dither =\n        r1(frameCounter,\n           texelFetch(noisetex, ivec2(gl_FragCoord.xy) & 511, 0).b);\n\n"
+                                + "    // Create Galore Ray Reconstruction: while it cleans them up, white noise for each pixel and frame instead.\n"
+                                + "    bool cg_raw = cg_rr_raw_reflections > 0.5;\n"
+                                + "    vec4 cg_noise = cg_white_noise(ivec2(gl_FragCoord.xy), frameCounter, 1u);\n"
+                                + "    if (cg_raw) dither = cg_noise.z;\n"
+                                + "    cg_ssr_hit_distance = 65504.0;\n"},
+                {"#if defined SSR_ROUGHNESS_SUPPORT && defined SPECULAR_MAPPING\n    if (!is_water) { // Rough reflection\n",
+                        "#if defined SSR_ROUGHNESS_SUPPORT && defined SPECULAR_MAPPING\n    if (!is_water) { // Rough reflection\n"
+                                + "#elif defined SSR_ROUGHNESS_SUPPORT\n"
+                                + "    // Create Galore Ray Reconstruction: rough reflections for Photon's own rough materials too, while it\n"
+                                + "    // cleans them up (Photon has them only with a resource pack's specular maps).\n"
+                                + "    if (!is_water && cg_raw && material.roughness > 0.05) {\n"
+                                + "#else\n"
+                                + "    if (false) {\n"
+                                + "#endif\n"},
+                {"        for (int i = 0; i < SSR_RAY_COUNT; ++i) {\n",
+                        "        // Create Galore Ray Reconstruction: one ray, its direction from white noise.\n"
+                                + "        int cg_ray_count = cg_raw ? 1 : SSR_RAY_COUNT;\n"
+                                + "        for (int i = 0; i < cg_ray_count; ++i) {\n"},
+                {"                frameCounter * SSR_RAY_COUNT + i\n            );\n\n",
+                        "                frameCounter * SSR_RAY_COUNT + i\n            );\n"
+                                + "            if (cg_raw) hash = cg_noise.xy;\n\n"},
+                {"        reflection *= albedo_tint * rcp(float(SSR_RAY_COUNT));\n",
+                        "        reflection *= albedo_tint * rcp(float(cg_ray_count));\n"},
+                {"#else\n    // Fade reflection when rough reflections are disabled\n",
+                        "#if !(defined SSR_ROUGHNESS_SUPPORT && defined SPECULAR_MAPPING)\n"
+                                + "    // Fade reflection when rough reflections are disabled\n"},
+        });
+        // Soft shadows: white noise for each pixel and frame while Ray Reconstruction cleans them up.
+        String[][] shadowNoise = {{"    dither = r1(frameCounter, dither);\n",
+                "    dither = r1(frameCounter, dither);\n"
+                        + "    if (cg_rr_raw_shadows > 0.5) dither = cg_white_noise(ivec2(gl_FragCoord.xy), frameCounter, 2u).x; // Create Galore RR\n"}};
+        edits.put("shaders/include/lighting/shadows/pcss.glsl", shadowNoise);
+        edits.put("shaders/include/lighting/shadows/ssrt.glsl", shadowNoise);
+        // Ray Reconstruction's guides: deferred4 for the solid surfaces and the sky.
+        String[][] rrGuides = {{"#version 400 compatibility\n",
+                "#version 400 compatibility\n#extension GL_ARB_shader_image_load_store : enable\n#define CG_RR_GUIDES\n"}};
+        for (String world : new String[] {"world0", "world-1", "world1"}) {
+            edits.put("shaders/" + world + "/deferred4.fsh", rrGuides);
+        }
+        edits.put("shaders/program/d4_deferred_shading.fsh", new String[][] {
+                {"#include \"/include/utility/space_conversion.glsl\"\n",
+                        "#include \"/include/utility/space_conversion.glsl\"\n#include \"/include/cg_rr.glsl\"\n"},
+                {"    if (depth == 1.0) { // Sky\n",
+                        "    if (depth == 1.0) { // Sky\n"
+                                + "#ifdef CG_RR_GUIDES\n"
+                                + "        if (cg_rr_active > 0.5) cg_rr_write_sky(texel); // Create Galore Ray Reconstruction (cg_rr.glsl)\n"
+                                + "#endif\n"},
+                {"        // Edge highlight\n",
+                        "#ifdef CG_RR_GUIDES\n"
+                                + "        // Create Galore Ray Reconstruction: what this surface is made of (cg_rr.glsl).\n"
+                                + "        if (cg_rr_active > 0.5) {\n"
+                                + "#if defined ENVIRONMENT_REFLECTIONS || defined SKY_REFLECTIONS\n"
+                                + "            float cg_hit = material.ssr_multiplier > eps ? cg_ssr_hit_distance : 65504.0;\n"
+                                + "#else\n"
+                                + "            float cg_hit = 65504.0;\n"
+                                + "#endif\n"
+                                + "            cg_rr_write_surface(texel, material, normal, NoV, cg_hit, true);\n"
+                                + "        }\n"
+                                + "#endif\n\n"
+                                + "        // Edge highlight\n"},
+        });
+
         // The clouds' depth helper took the scale as a float.
         edits.put("shaders/program/d1_clouds.fsh", new String[][] {
                 {"float depth_max_4x4(sampler2D depth_sampler, float scale) {", "float depth_max_4x4(sampler2D depth_sampler, vec2 scale) {"},
@@ -283,7 +376,10 @@ public final class PhotonPatcher {
                         String text = Files.readString(file, StandardCharsets.UTF_8);
                         if (text.contains("#include \"/program/gbuffers_all_translucent.fsh\"")
                                 || text.contains("#include \"/program/gbuffers_weather.fsh\"")) {
-                            edits.put("shaders/" + world + "/" + name, reactiveExtension);
+                            // (The water program, translucent blocks, also writes Ray Reconstruction's guides.)
+                            edits.put("shaders/" + world + "/" + name, text.contains("#define PROGRAM_GBUFFERS_WATER\n")
+                                    ? new String[][] {{reactiveExtension[0][0], reactiveExtension[0][1] + "#define CG_RR_GUIDES\n"}}
+                                    : reactiveExtension);
                         }
                     }
                 }
@@ -291,6 +387,25 @@ public final class PhotonPatcher {
         }
         edits.put("shaders/program/gbuffers_all_translucent.fsh", new String[][] {
                 {"#include \"/include/global.glsl\"\n", "#include \"/include/global.glsl\"\n#include \"/include/cg_reactive.glsl\"\n"},
+                {"#include \"/include/utility/space_conversion.glsl\"\n",
+                        "#include \"/include/utility/space_conversion.glsl\"\n#include \"/include/cg_rr.glsl\"\n"},
+                {"    // Refraction data\n", """
+                        #if defined CG_RR_GUIDES && defined PROGRAM_GBUFFERS_WATER
+                            // Create Galore Ray Reconstruction: a translucent block in front of the solid surface gives its own
+                            // normal, roughness, reflectance and reflection distance, as the depth and motion vectors are its own too;
+                            // the diffuse colour stays the one seen through it (cg_rr.glsl).
+                            if (cg_rr_active > 0.5 && depth0 <= depth1) {
+                        #if defined ENVIRONMENT_REFLECTIONS || defined SKY_REFLECTIONS
+                                float cg_hit = material.ssr_multiplier > eps ? cg_ssr_hit_distance : 65504.0;
+                        #else
+                                float cg_hit = 65504.0;
+                        #endif
+                                cg_rr_write_surface(ivec2(gl_FragCoord.xy), material, normal, NoV, cg_hit, false);
+                            }
+                        #endif
+
+                            // Refraction data
+                        """},
                 {"    // Refraction data\n", """
                         #ifdef CG_REACTIVE_MASK
                             // Create Galore DLAA: particles by their opacity, and the nether portal's swirl (cg_reactive.glsl).
@@ -441,18 +556,33 @@ public final class PhotonPatcher {
         String[] mipBias = {"const float lod_bias = log2(taau_render_scale);\n", "#define lod_bias cg_mip_bias\n"};
         for (String program : new String[] {"gbuffers_all_solid", "gbuffers_all_translucent", "gbuffers_armor_glint",
                 "gbuffers_damagedblock", "clrwl_solid", "clrwl_translucent", "clrwl_glint", "clrwl_damagedblock"}) {
-            edits.merge("shaders/program/" + program + ".fsh", new String[][] {mipBias}, (a, b) -> {
-                String[][] both = java.util.Arrays.copyOf(a, a.length + b.length);
-                System.arraycopy(b, 0, both, a.length, b.length);
-                return both;
-            });
+            edits.merge("shaders/program/" + program + ".fsh", new String[][] {mipBias}, PhotonPatcher::concat);
+        }
+        // The enchantment glint and the block breaking cracks are drawn only where their depth equals, to the last bit,
+        // that of what they cover (vanilla's EQUAL depth test), so their programs must place each vertex exactly where
+        // the solid programs did. With the motion code around the solid programs' position sum, the driver's compiler
+        // (seen on NVIDIA) rounded it differently from the glint's, so on many frames the two missed by a bit and the
+        // glint strobed on held and worn items. invariant has every one of these programs compute gl_Position the
+        // same way, whatever else it does.
+        String[] invariantPosition = {"#include \"/include/global.glsl\"\n",
+                "#include \"/include/global.glsl\"\n\ninvariant gl_Position; // Create Galore DLAA: overlays match to the bit (see PhotonPatcher)\n"};
+        for (String program : new String[] {"gbuffers_all_solid", "gbuffers_all_translucent", "gbuffers_armor_glint",
+                "gbuffers_damagedblock", "clrwl_solid", "clrwl_translucent", "clrwl_glint", "clrwl_damagedblock"}) {
+            edits.merge("shaders/program/" + program + ".vsh", new String[][] {invariantPosition}, PhotonPatcher::concat);
         }
         return edits;
     }
 
+    private static String[][] concat(String[][] a, String[][] b) {
+        String[][] both = java.util.Arrays.copyOf(a, a.length + b.length);
+        System.arraycopy(b, 0, both, a.length, b.length);
+        return both;
+    }
+
     /** Files Colorwheel Patcher adds: patched when there, skipped in a copy made from the plain Photon zip. */
     private static final java.util.Set<String> OPTIONAL = java.util.Set.of("shaders/program/clrwl_solid.vsh", "shaders/program/clrwl_solid.fsh",
-            "shaders/program/clrwl_translucent.fsh", "shaders/program/clrwl_glint.fsh", "shaders/program/clrwl_damagedblock.fsh");
+            "shaders/program/clrwl_translucent.vsh", "shaders/program/clrwl_translucent.fsh", "shaders/program/clrwl_glint.vsh",
+            "shaders/program/clrwl_glint.fsh", "shaders/program/clrwl_damagedblock.vsh", "shaders/program/clrwl_damagedblock.fsh");
 
     private static final String VERTEX_MOTION_INPUTS = """
             #include "/include/cg_motion.glsl"
@@ -560,11 +690,14 @@ public final class PhotonPatcher {
         b.append(i).append("cg_clip_prev = gbufferPreviousProjection\n");
         b.append(i).append("    * vec4(transform(gbufferPreviousModelView, cg_scene_prev + cameraPosition - previousCameraPosition), 1.0);\n");
         if (!flywheel) {
-            b.append("#ifdef CG_VERTEX_PREV\n");
+            b.append("#if defined CG_VERTEX_PREV && defined PROGRAM_GBUFFERS_HAND\n");
             b.append(i).append("// The hand moves with the camera: only its own motion on the screen, through this frame's matrices.\n");
-            b.append(i).append("if (cg_drawn_moving && cg_prev_pos.w == 3.0) {\n");
-            b.append(i).append("    cg_clip_prev = project(gl_ProjectionMatrix, transform(gl_ModelViewMatrix, cg_prev_pos.xyz));\n");
-            b.append(i).append("}\n");
+            b.append(i).append("// Every vertex of it, also one that kept its place to the last bit or isn't known (no motion of its\n");
+            b.append(i).append("// own): through the world's matrices, at the player's field of view instead of the hand's, such a\n");
+            b.append(i).append("// vertex gave a triangle it shares with a moving one a motion of hundreds of pixels.\n");
+            b.append(i).append("cg_moving = 1.0;\n");
+            b.append(i).append("cg_clip_prev = project(gl_ProjectionMatrix,\n");
+            b.append(i).append("    transform(gl_ModelViewMatrix, cg_prev_pos.w == 3.0 ? cg_prev_pos.xyz : gl_Vertex.xyz));\n");
             b.append("#endif\n");
         }
         b.append("#endif\n");
@@ -669,9 +802,100 @@ public final class PhotonPatcher {
             #endif
             """;
 
+    /**
+     * In global.glsl, for every program: the Ray Reconstruction switches the Bridge sets, and white noise. NVIDIA's
+     * guide asks for samples independent between pixels and frames, from a hash with few BigCrush failures (it points to
+     * Jarzynski and Olano, "Hash Functions for GPU Rendering", JCGT 2020); pcg4d is that paper's pick.
+     */
+    private static final String RR_GLOBAL = """
+
+            // Create Galore Ray Reconstruction (experimental, see PhotonPatcher in the Bridge): 1 while the pack writes its
+            // guides, and while it leaves rough reflections and soft shadows noisy for it to clean up.
+            uniform float cg_rr_active;
+            uniform float cg_rr_raw_reflections;
+            uniform float cg_rr_raw_shadows;
+
+            uvec4 cg_pcg4d(uvec4 v) {
+                v = v * 1664525u + 1013904223u;
+                v.x += v.y * v.w; v.y += v.z * v.x; v.z += v.x * v.y; v.w += v.y * v.z;
+                v ^= v >> 16u;
+                v.x += v.y * v.w; v.y += v.z * v.x; v.z += v.x * v.y; v.w += v.y * v.z;
+                return v;
+            }
+
+            // Four numbers in [0, 1) for this pixel, frame and use (salt), independent of every other pixel and frame.
+            vec4 cg_white_noise(ivec2 texel, int frame, uint salt) {
+                return vec4(cg_pcg4d(uvec4(uvec2(texel), uint(frame), salt)) >> 8u) * (1.0 / 16777216.0);
+            }
+            """;
+
+    private static final String RR_INCLUDE_FILE = "shaders/include/cg_rr.glsl";
+
+    /**
+     * shaders/include/cg_rr.glsl in the copy: DLSS Ray Reconstruction's guide images (see NVIDIA's DLSS-RR Integration
+     * Guide, section 3.4), for the programs that define CG_RR_GUIDES (deferred4 and the water program). Render pixels,
+     * like DLSS's other inputs. Diffuse albedo: the colour diffuse light takes (metals' small part included); specular
+     * albedo: NVIDIA's EnvBRDFApprox2 of the reflectance at normal incidence (the guide's appendix); the normal in world
+     * space with the linear roughness in alpha (Photon's roughness is GGX alpha, its square); the hit distance in
+     * blocks. The sky gets NVIDIA's defaults.
+     */
+    private static final String RR_INCLUDE = """
+            // Create Galore Ray Reconstruction: its guides (see PhotonPatcher in the Bridge).
+            #if !defined INCLUDE_CG_RR
+            #define INCLUDE_CG_RR
+
+            #ifdef CG_RR_GUIDES
+            layout(rgba8) writeonly uniform image2D cg_rr_albedo_img;
+            layout(rgba8) writeonly uniform image2D cg_rr_specular_img;
+            layout(rgba16f) writeonly uniform image2D cg_rr_normal_img;
+            layout(r32f) writeonly uniform image2D cg_rr_hitdist_img;
+
+            // NVIDIA's EnvBRDFApprox2 (Ray Tracing Gems, chapter 32). HLSL's float2x2(a, b, c, d) lists rows and GLSL's
+            // mat2 columns, so x * M here is mul(M, x) there.
+            vec3 cg_specular_albedo(vec3 specular_color, float alpha, float NoV) {
+                NoV = abs(NoV);
+                vec4 X = vec4(1.0, NoV, NoV * NoV, NoV * NoV * NoV);
+                vec4 Y = vec4(1.0, alpha, alpha * alpha, alpha * alpha * alpha);
+                mat2 M1 = mat2(0.99044, -1.28514, 1.29678, -0.755907);
+                mat3 M2 = mat3(1.0, 2.92338, 59.4188, 20.3225, -27.0302, 222.592, 121.563, 626.13, 316.627);
+                mat2 M3 = mat2(0.0365463, 3.32707, 9.0632, -9.04756);
+                mat3 M4 = mat3(1.0, 3.59685, -1.36772, 9.04401, -16.3174, 9.22949, 5.56589, 19.7886, -20.2123);
+                float bias = dot(X.xy * M1, Y.xy) / dot(X.xyw * M2, Y.xyw);
+                float scale = dot(X.xy * M3, Y.xy) / dot(X.xzw * M4, Y.xyw);
+                bias *= clamp(specular_color.g * 50.0, 0.0, 1.0); // (NVIDIA's: no specular reflectance gives none)
+                return specular_color * max(0.0, scale) + max(0.0, bias);
+            }
+
+            // A surface's guides; with_albedo false keeps the diffuse colour already there (seen through a translucent block).
+            void cg_rr_write_surface(ivec2 texel, Material material, vec3 normal, float NoV, float hit_distance, bool with_albedo) {
+                vec3 specular_color = material.is_hardcoded_metal ? material.f0 * material.albedo
+                    : material.is_metal ? material.albedo : vec3(material.f0.x);
+                if (with_albedo) {
+                    vec3 diffuse = material.albedo * (material.is_metal ? metal_diffuse_amount : 1.0);
+                    imageStore(cg_rr_albedo_img, texel, vec4(clamp(diffuse, 0.0, 1.0), 1.0));
+                }
+                vec3 specular_albedo = cg_specular_albedo(clamp(specular_color, 0.0, 1.0), material.roughness, NoV);
+                imageStore(cg_rr_specular_img, texel, vec4(clamp(specular_albedo, 0.0, 1.0), 1.0));
+                imageStore(cg_rr_normal_img, texel, vec4(normalize(normal), sqrt(clamp(material.roughness, 0.0, 1.0))));
+                imageStore(cg_rr_hitdist_img, texel, vec4(hit_distance));
+            }
+
+            // NVIDIA's defaults for the sky: grey albedo, no reflectance, no normal or roughness, the farthest hit.
+            void cg_rr_write_sky(ivec2 texel) {
+                imageStore(cg_rr_albedo_img, texel, vec4(0.5, 0.5, 0.5, 1.0));
+                imageStore(cg_rr_specular_img, texel, vec4(0.0));
+                imageStore(cg_rr_normal_img, texel, vec4(0.0));
+                imageStore(cg_rr_hitdist_img, texel, vec4(65504.0));
+            }
+            #endif
+
+            #endif
+            """;
+
     private static final String C4_INPUTS = """
             // Create Galore DLAA: while DLSS runs this pass only copies the scene and hands DLSS its inputs.
             uniform float cg_dlss_active;
+            uniform float cg_rr_exposed; // 1: Ray Reconstruction takes the colour times the exposure
             layout(rg16f) writeonly uniform image2D cg_motion_img;
             layout(r32f) writeonly uniform image2D cg_depth_img;
             layout(r32f) writeonly uniform image2D cg_exposure_img;
@@ -725,7 +949,9 @@ public final class PhotonPatcher {
                 }
             #endif
                 // DLSS depth, reversed and infinite like most engines: 1 at the near plane, towards 0 far away, 0 sky.
-                float dlss_depth = sky ? 0.0 : clamp(near / max(-view_pos.z, near), 0.0, 1.0);
+                // near over clip w, so it follows the projection with view bobbing in it as frame generation's camera does.
+                float clip_w = (gbufferProjection * vec4(view_pos, 1.0)).w;
+                float dlss_depth = sky ? 0.0 : clamp(near / max(clip_w, near), 0.0, 1.0);
 
                 float composition = 0.0;
                 if (!is_lod && texelFetch(depthtex1, texel, 0).x < 1.0) { // a solid surface drew here: its material
@@ -753,6 +979,8 @@ public final class PhotonPatcher {
                         // Photon's colour, unfiltered; the Bridge writes DLSS's result over it after this pass. Alpha 0
                         // restarts Photon's TAA history cleanly if DLSS stops; texel 0 keeps the exposure as usual.
                         result = vec4(texelFetch(colortex0, cg_texel, 0).rgb, 0.0);
+                        // Ray Reconstruction takes no exposure: it gets the colour exposed, and the Bridge divides it out.
+                        if (cg_rr_exposed > 0.5) result.rgb *= exposure;
             #ifdef CG_MOTION_GBUFFER
                         if (cg_dlss_residual_albedo > 0.5) {
                             // For the residual test view: surface colours have none of the lighting's frame-to-frame
@@ -785,6 +1013,9 @@ public final class PhotonPatcher {
             maskImage=cg_mask_img
             requireOn=TAA
             renderScaleOptions=TAAU,TAAU_RENDER_SCALE
+            supports=dlss,fsr,frameGeneration,rayReconstruction,renderResolution,taa,taau,off
+            taaOption=TAA
+            rrGuideImages=cg_rr_albedo_img,cg_rr_specular_img,cg_rr_normal_img,cg_rr_hitdist_img
             """;
 
     private static void copyTree(Path from, Path to) throws IOException {

@@ -1,0 +1,78 @@
+{
+  "title": "The materials tally counts envelopes by their real recipe, any planks for a chest, and held shafts as shafts",
+  "from": "2026-10-29 answer eval: 309 envelopes tallied as about 232 wool (the recipe makes 4 from 2), a chest charged to Oak Planks the player didn't have, held shafts shown as Andesite Floor",
+  "roots": [
+    "R4"
+  ],
+  "kind": "model",
+  "model": {
+    "title": "Store",
+    "size_x": 8,
+    "size_y": 3,
+    "size_z": 3,
+    "blocks": [
+      {
+        "block": "aeronautics:white_envelope",
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "x2": 7,
+        "y2": 0,
+        "z2": 0
+      },
+      {
+        "block": "minecraft:chest[facing=south]",
+        "x": 0,
+        "y": 1,
+        "z": 1
+      },
+      {
+        "block": "create:shaft[axis=x]",
+        "x": 1,
+        "y": 1,
+        "z": 1,
+        "x2": 4,
+        "y2": 1,
+        "z2": 1
+      },
+      {
+        "block": "minecraft:spruce_planks",
+        "x": 0,
+        "y": 0,
+        "z": 1,
+        "x2": 7,
+        "y2": 0,
+        "z2": 2
+      }
+    ],
+    "part_of_vehicle": false
+  },
+  "inventory": [
+    {
+      "id": "minecraft:white_wool",
+      "count": 4
+    },
+    {
+      "id": "minecraft:stick",
+      "count": 16
+    },
+    {
+      "id": "minecraft:spruce_planks",
+      "count": 64
+    },
+    {
+      "id": "create:shaft",
+      "count": 32
+    }
+  ],
+  "expect": {
+    "has": [
+      "8 aeronautics:white_envelope, about 4 full blocks",
+      "create:shaft (they hold 32, enough)"
+    ],
+    "lacks": [
+      "Oak Planks",
+      "Andesite Floor"
+    ]
+  }
+}

@@ -45,6 +45,11 @@ public final class GuideAiSettings {
         this.key = key;
     }
 
+    /** The settings a server without a properties file gets, with no key (the casebook's replay of the loop). */
+    static GuideAiSettings defaults() {
+        return new GuideAiSettings(new Properties(), "");
+    }
+
     String key() {
         return key;
     }

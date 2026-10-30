@@ -55,7 +55,9 @@ Several runs in one game: `-Dcreate_galore_dlss_testkit.runs=F1+F2+U1` plays the
 with its modes, viewpoints, paths, quick, and `screenshots` and `showHand` for that run) one after another without a
 restart, each into its own folder (`<time>-<run>`); the built-in ones are Upscaling 1's (`PC-RUNBOOK.md`).
 `-Dcreate_galore_dlss_testkit.byEye=perf-dlss-K` keeps the game open after the last run for looking by eye: the moving
-scene at normal speed, the player at its viewpoint, the shaders in that mode.
+scene at normal speed, the player at its viewpoint, the shaders in that mode. The scene stays in the world when the game
+closes; the next game's first run (or `hold`) takes every test scene away before it starts, so one left beside the
+shore and canopy viewpoints can't cost a run frames (it cost Presenter 3's first launches 4-11%).
 
 `metrics.py RUN_FOLDER` (Pillow and numpy) prints, per viewpoint and mode, the frame time, the shimmer between the
 still path's last 8 frames, the smear left two frames after the flick, and the edge contrast.
@@ -101,7 +103,7 @@ PC session (things that move, rain, fire and the portal).
 - Outside a run, `/dlaatest scene build` puts the moving scene up at the game's own tick rate to look at, walk around
   and ride the ship (`/dlaatest scene build effects` the effects scene, with rain), `/dlaatest mode NAME` switches the
   Bridge to one of the config's modes on the spot (`photon-taa`, `dlaa-default`, `dlaa-camera`, `fsr3`, ...), and
-  `/dlaatest scene remove` takes the scenes away again.
+  `/dlaatest scene remove` takes the scenes away again, also any an earlier game left standing.
 
 Each run folder has `manifest.json`: the modes (with the frame time on the still path and whether DLAA really ran),
 the viewpoints, the capture frames of each path, every screenshot, and the timeline (when each part of the run
@@ -117,3 +119,14 @@ started and ended).
   for the share of the Bridge's DLAA and motion vector code.
 
 `PC-RUNBOOK.md`'s "Profiling 1" is the brief for the PC session.
+
+### Input latency
+
+- The `lat-*` modes switch the Bridge's latency tests (testing only, in the display properties: `reflex` off, markers,
+  on or boost, which needs Perfect Presentation; `latePoll`, input read again just before rendering), Sodium's CPU
+  render-ahead limit and the frame cap (vsync off). The `latency` path holds still for 600 frames while the Bridge
+  measures from the game last reading input to the GPU finishing the frame; `manifest.json` gets those numbers per
+  mode and viewpoint, one entry each time the mode played (runs L1 and L2 play each mode twice).
+- `latency.py RUN_FOLDER ...` (standard library) prints them as tables, with each mode's change against the first.
+
+`PC-RUNBOOK.md`'s "Reflex 1" is the brief for the PC session.

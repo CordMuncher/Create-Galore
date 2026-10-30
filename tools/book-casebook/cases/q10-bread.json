@@ -1,0 +1,57 @@
+{
+  "title": "A simple question gets a short answer",
+  "roots": [
+    "R5"
+  ],
+  "kind": "question",
+  "question": "How do I make bread?",
+  "player": "Start of the game.",
+  "rubric": [
+    "A few sentences, with the recipe shown",
+    "No build talk, no tools it doesn't need"
+  ],
+  "world": [
+    "fill ~-12 ~-1 ~-12 ~12 ~-1 ~12 minecraft:grass_block",
+    "time set 6000"
+  ],
+  "box": [
+    -12,
+    -1,
+    -12,
+    12,
+    0,
+    12
+  ],
+  "built": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "stand": [
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "inventory": [
+    {
+      "id": "minecraft:wooden_pickaxe",
+      "count": 1
+    },
+    {
+      "id": "minecraft:oak_log",
+      "count": 8
+    },
+    {
+      "id": "minecraft:wheat_seeds",
+      "count": 6
+    }
+  ],
+  "advancements": [
+    "minecraft:story/root"
+  ]
+}

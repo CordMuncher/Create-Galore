@@ -1,0 +1,61 @@
+{
+  "title": "Mixer turned by a water wheel at 8 RPM never runs",
+  "from": "pack 0.5.5 (PR #193): the book's starter brass mixer",
+  "roots": [
+    "R3"
+  ],
+  "kind": "model",
+  "model": {
+    "title": "Mixer on a water wheel",
+    "size_x": 4,
+    "size_y": 4,
+    "size_z": 3,
+    "blocks": [
+      {
+        "block": "create:water_wheel[facing=east]",
+        "x": 0,
+        "y": 1,
+        "z": 1
+      },
+      {
+        "block": "minecraft:water[level=0]",
+        "x": 0,
+        "y": 2,
+        "z": 1
+      },
+      {
+        "block": "create:gearbox[axis=z]",
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      {
+        "block": "create:cogwheel[axis=y]",
+        "x": 1,
+        "y": 2,
+        "z": 1
+      },
+      {
+        "block": "create:mechanical_mixer",
+        "x": 2,
+        "y": 2,
+        "z": 1
+      },
+      {
+        "block": "create:basin",
+        "x": 2,
+        "y": 0,
+        "z": 1
+      }
+    ]
+  },
+  "expect": {
+    "built": false,
+    "has": [
+      "needs at least 30 RPM"
+    ],
+    "lacks": [
+      "Design brief"
+    ]
+  }
+}

@@ -18,15 +18,15 @@ import org.spongepowered.asm.mixin.Pseudo;
 import org.spongepowered.asm.mixin.injection.At;
 
 /**
- * Create Galore Shaders draws several of Iris's shader keys with one program (gbuffers_entities draws mobs, name tags
- * and their backgrounds; gbuffers_block draws chests and pistons' moving blocks), and Minecraft shades each of those
- * its own way. Iris doesn't tell a program which key it draws, so this writes it into the program's source before
- * Iris patches it: the pack's line "const int cg_key_flags = 0;" becomes that key's flags, in both stages. Any other
- * pack has no such line and is left alone.
+ * A shader pack draws several of Iris's shader keys with one program (gbuffers_entities draws mobs, name tags and
+ * their backgrounds; gbuffers_block draws chests and pistons' moving blocks), and Minecraft shades each of those its
+ * own way. Iris doesn't tell a program which key it draws, so this writes it into the program's source before Iris
+ * patches it: a pack's line "const int cg_key_flags = 0;" becomes that key's flags, in both stages. A pack without
+ * that line is left alone.
  *
- * The flags (the pack's gbuffers_kind.glsl): 1 known; 2 Minecraft's two lights on mobs and held items; 4 the lightmap;
- * 8 the lightmap filtered between levels (terrain's); 16 no texture (a name tag's background, a leash); 32 drawn over
- * something else (a charged creeper's swirl, a mob's shadow), which leaves the motion vectors under it alone.
+ * The flags: 1 known; 2 Minecraft's two lights on mobs and held items; 4 the lightmap; 8 the lightmap filtered between
+ * levels (terrain's); 16 no texture (a name tag's background, a leash); 32 drawn over something else (a charged
+ * creeper's swirl, a mob's shadow), which leaves the motion vectors under it alone.
  */
 @Pseudo
 @Mixin(targets = "net.irisshaders.iris.pipeline.programs.ShaderCreator", remap = false)

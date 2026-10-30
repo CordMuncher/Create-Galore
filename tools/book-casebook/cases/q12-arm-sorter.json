@@ -1,0 +1,101 @@
+{
+  "title": "An arm sorter that works the way the pack's arms do",
+  "from": "Pack 0.6.24: the book said the arm reads each funnel's filter and to make the funnels the arm's outputs. A Mechanical Arm can't target a funnel that feeds a belt, and before 0.6.25 a belt output ignored its funnel.",
+  "roots": [
+    "R1"
+  ],
+  "kind": "question",
+  "question": "how can I use a mechanical arm to take from one conveyor and sort to another based on what item it has, so it takes from belt one and decides to put it on belt 2 or belt 3 depending on the item",
+  "player": "Has brass and a few Precision Mechanisms; three belts already laid out next to each other.",
+  "rubric": [
+    "Puts a Brass Belt Funnel with a filter on the belt block the arm drops onto, one per output belt",
+    "Makes the belt block under each funnel the arm's output (not the funnel itself)",
+    "Says the arm only picks up an item one of its outputs takes, and that a belt block with no funnel takes anything"
+  ],
+  "world": [
+    "fill ~-12 ~-1 ~-12 ~12 ~-1 ~12 minecraft:grass_block",
+    "time set 6000"
+  ],
+  "box": [
+    -12,
+    -1,
+    -12,
+    12,
+    0,
+    12
+  ],
+  "built": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "stand": [
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "inventory": [
+    {
+      "id": "create:mechanical_arm",
+      "count": 1
+    },
+    {
+      "id": "create:brass_funnel",
+      "count": 4
+    },
+    {
+      "id": "create:belt_connector",
+      "count": 12
+    },
+    {
+      "id": "create:filter",
+      "count": 4
+    },
+    {
+      "id": "create:shaft",
+      "count": 16
+    },
+    {
+      "id": "create:cogwheel",
+      "count": 8
+    },
+    {
+      "id": "create:brass_ingot",
+      "count": 32
+    }
+  ],
+  "advancements": [
+    "minecraft:story/root",
+    "minecraft:story/mine_stone",
+    "minecraft:story/upgrade_tools",
+    "minecraft:story/smelt_iron",
+    "minecraft:husbandry/root",
+    "create:root",
+    "create:andesite_alloy",
+    "create:water_wheel",
+    "create:shifting_gears",
+    "create:mechanical_press",
+    "create:andesite_casing",
+    "create:belt",
+    "create:encased_fan",
+    "create:fan_processing",
+    "create:mechanical_mixer",
+    "create:compacting",
+    "create:millstone",
+    "create:crushing_wheel",
+    "create:brass",
+    "create:brass_casing",
+    "create:deployer",
+    "create:mechanical_arm"
+  ],
+  "crafted": {
+    "create:brass_ingot": 48,
+    "create:golden_sheet": 16,
+    "create:mechanical_press": 2
+  }
+}

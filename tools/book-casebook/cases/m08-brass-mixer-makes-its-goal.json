@@ -1,0 +1,62 @@
+{
+  "title": "A mixer that makes brass, driven fast enough, works",
+  "from": "step 3 (goal test): a line that holds its recipe's machines must not be refused",
+  "roots": [
+    "R3"
+  ],
+  "kind": "model",
+  "model": {
+    "title": "Brass mixer",
+    "goal": "create:brass_ingot from copper and zinc",
+    "size_x": 3,
+    "size_y": 4,
+    "size_z": 1,
+    "blocks": [
+      {
+        "block": "create:blaze_burner",
+        "x": 1,
+        "y": 0,
+        "z": 0
+      },
+      {
+        "block": "create:basin",
+        "x": 1,
+        "y": 1,
+        "z": 0
+      },
+      {
+        "block": "create:mechanical_mixer",
+        "x": 1,
+        "y": 3,
+        "z": 0
+      },
+      {
+        "block": "create:cogwheel[axis=y]",
+        "x": 0,
+        "y": 3,
+        "z": 0
+      },
+      {
+        "block": "create:creative_motor[facing=up]",
+        "x": 0,
+        "y": 2,
+        "z": 0
+      },
+      {
+        "block": "create:depot",
+        "x": 2,
+        "y": 0,
+        "z": 0
+      }
+    ]
+  },
+  "expect": {
+    "built": true,
+    "has": [
+      "It holds what the mixing recipe"
+    ],
+    "lacks": [
+      "PROBLEM"
+    ]
+  }
+}

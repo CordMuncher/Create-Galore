@@ -1,0 +1,22 @@
+{
+  "title": "An answer with a made-up item id, an item id as a recipe and a missing diagram goes back to be fixed",
+  "from": "step 5 (answer audit): blank icons and recipes that never drew",
+  "roots": [
+    "R1"
+  ],
+  "kind": "answer",
+  "answer": "Use {create:brass_mixer} on a basin.\n\n[recipe create:brass_ingot]\n\n[diagram 2]",
+  "diagrams": [
+    {
+      "type": "model"
+    }
+  ],
+  "expect": {
+    "has": [
+      "{create:brass_mixer} isn't an item",
+      "[recipe create:brass_ingot] isn't a recipe",
+      "[diagram 2] doesn't exist",
+      "diagram 1 was made"
+    ]
+  }
+}

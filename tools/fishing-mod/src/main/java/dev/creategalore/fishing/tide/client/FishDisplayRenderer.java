@@ -7,7 +7,6 @@
  * modified for Create Galore Fishing.
  */
 package dev.creategalore.fishing.tide.client;
-import org.joml.Matrix4f;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.item.ItemStack;
@@ -18,6 +17,7 @@ import java.util.List;
 import java.util.ArrayList;
 import dev.creategalore.fishing.tide.util.TideUtils;
 import dev.creategalore.fishing.client.FishingClient;
+import dev.creategalore.fishing.client.FloatingLabel;
 import dev.creategalore.fishing.tide.compat.CompatHelper;
 import dev.creategalore.fishing.tide.data.fishing.DisplayData;
 import dev.creategalore.fishing.tide.registries.blocks.FishDisplayBlock;
@@ -125,16 +125,10 @@ public record FishDisplayRenderer(EntityRenderDispatcher entityRenderer) impleme
         poseStack.translate(0.5, 1.0 + 0.14 * lines.size(), 0.5);
         poseStack.mulPose(entityRenderer.cameraOrientation());
         poseStack.scale(0.0125f, -0.0125f, 0.0125f);
-        Matrix4f pose = poseStack.last().pose();
-        int background = (int) (Minecraft.getInstance().options.getBackgroundOpacity(0.25f) * 255) << 24;
-        for (int i = 0; i < lines.size(); i++) {
-            Component line = lines.get(i);
-            // The tooltip's dark grey is unreadable on the label's dark backing.
-            if (line.getStyle().getColor() != null && line.getStyle().getColor().getValue() == 0x555555)
-                line = line.copy().withStyle(ChatFormatting.GRAY);
-            font.drawInBatch(line, -font.width(line) / 2f, i * 11, 0xffffffff, false, pose, buffer,
-                    Font.DisplayMode.NORMAL, background, light);
-        }
+        // The tooltip's dark grey is unreadable on the label's dark backing.
+        lines.replaceAll(line -> line.getStyle().getColor() != null && line.getStyle().getColor().getValue() == 0x555555
+                ? line.copy().withStyle(ChatFormatting.GRAY) : line);
+        FloatingLabel.draw(font, lines, poseStack.last().pose(), buffer, light);
         poseStack.popPose();
     }
 }

@@ -41,7 +41,7 @@
         "item": "aeronautics:adjustable_burner"
       },
       "title": "Hot Air Burner",
-      "text": "Redstone fills the balloon above from the top down. Set the maximum output in its [#](7A3C9A)[panel](entry://glossary/value_panel)[#](). Several burners can feed one balloon."
+      "text": "Redstone fills the balloon above from the top down. Set the maximum output in its [#](7A3C9A)[panel](entry://glossary/value_panel)[#](). Several burners can feed one balloon. It burns no fuel: redstone alone runs it."
     },
     {
       "type": "modonomicon:spotlight",
@@ -55,6 +55,21 @@
       "type": "modonomicon:text",
       "title": "Altitude and air",
       "text": "Lift weakens as altitude rises, so a ship settles where lift and weight balance. Changing lift changes altitude. The Altitude Sensor outputs a redstone signal for height and, with [#](2E5AAC)[goggles](entry://create_basics/tools_wrench)[#](), shows air pressure. Other worlds have very different air: see [#](2E5AAC)[Planets](entry://space/planets)[#]()."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Speed and drag",
+      "text": "Every envelope block drags as the ship moves, about as much as three blocks' worth of its weight, so an envelope bigger than the load needs makes it slower. Size it to the weight with room to climb: each m3 of hot air holds up about 1.5 mass low down, less higher up.\\\n\\\nMount the propellers about level with the middle of the envelope: low ones tip the nose up at speed."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "A sky base that flies",
+      "text": "[#](FFFFFF)\ue103[#]() **In depth.** A balloon with a 7 by 11 gondola (bed, smoker, crafting table, eight barrels and chests) under a 290 m3 envelope, and two pods beside the envelope, each with two Portable Engines geared to 128 RPM on a 13-sail Propeller Bearing, cruises at about 9 blocks a second and climbs to about y 210."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "One Steering Wheel at the helm steers it: a comparator against each side of the wheel lights while it is turned one way, and Redstone Links carry each to the Analog Transmission in one pod's line. A Throttle Lever beside it sets the speed through the same transmissions."
     },
     {
       "type": "modonomicon:spotlight",

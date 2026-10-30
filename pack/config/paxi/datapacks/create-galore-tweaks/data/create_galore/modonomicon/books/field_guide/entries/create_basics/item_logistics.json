@@ -69,8 +69,13 @@
     },
     {
       "type": "modonomicon:text",
+      "title": "Sorting with an Arm",
+      "text": "The arm has no filter of its own. Sort with **Brass Belt Funnels**: when an output is a belt block with a funnel on it, the arm only drops items that funnel's filter passes there. Only that one belt block counts, not the rest of the belt.\\\n\\\nSelect the belt block under the funnel as the output, not the funnel. The arm checks every output before it picks an item up, and leaves items no output takes where they are. A belt block with no funnel takes anything."
+    },
+    {
+      "type": "modonomicon:text",
       "title": "",
-      "text": "**Filters** go in funnel, tunnel or smart chute filter slots.\n\n- [List Filter](item://create:filter): matches chosen items.\n- [Attribute Filter](item://create:attribute_filter): matches by property (food, enchanted, and so on)."
+      "text": "**Filters** go in funnel, tunnel or smart chute filter slots.\n\n- [List Filter](item://create:filter): matches chosen items.\n- [Attribute Filter](item://create:attribute_filter): matches by property (food, enchanted, and so on).\n\nAn Attribute Filter set to **Allow-List (Any)** passes an item with any one of its attributes, **Allow-List (All)** only one with all of them. For \"smeltable but not smokable\" use All, or raw meat passes as smeltable."
     },
     {
       "type": "modonomicon:spotlight",

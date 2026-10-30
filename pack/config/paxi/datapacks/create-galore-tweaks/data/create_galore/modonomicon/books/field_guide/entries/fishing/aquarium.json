@@ -20,7 +20,7 @@
     {
       "type": "modonomicon:text",
       "title": "Aquarium Tanks",
-      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- Tank blocks that fill a **box** up to 8 on a side join into one tank.\n- [#](FFFFFF)\ue107[#]() Fill it **half** with water, then let fish in from buckets.\n- Fish swim inside at their real size.\n- Two baitfish of a kind, fed **Fish Meal**, breed."
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- Tank blocks that fill a **box** up to 8 on a side join into one tank.\n- [#](FFFFFF)\ue107[#]() Fill it **half** with water, then let fish in from buckets or a **Creature Net**.\n- Fish swim inside at their real size.\n- Two baitfish of a kind, fed **Fish Meal**, breed."
     },
     {
       "type": "modonomicon:crafting_recipe",
@@ -36,6 +36,11 @@
       "type": "modonomicon:text",
       "title": "",
       "text": "A fish needs room by its size, and a tank longer than itself. An empty hand on the tank shows its size, water, fish and food.\\\n\\\nBreaking a wall spills the fish; breaking off a whole end keeps them in what is left."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "**Sea creatures.** Hybrid Aquatic's **Creature Net** catches starfish, crabs, shrimp, urchins and any water fish. Right-click the tank with the full net to let it in. Starfish, crabs and urchins keep to the sand floor; the rest swim.\\\n\\\nAn empty net takes one back out. Otters, seals, turtles and birds can't live in a tank."
     },
     {
       "type": "modonomicon:text",

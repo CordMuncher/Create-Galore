@@ -1,0 +1,45 @@
+
+== 20261025-213710-L2 (run finished), NVIDIA GeForce RTX 4080 SUPER/PCIe/SSE2, Perfect Presentation off, 2560x1440
+mode             viewpoint input>GPU    p90 behind    fps  drv in>GPU drv p90 drv sim>GPU  GPU busy/frame  unit  reflex
+lat-base         shore          11.0   15.5    4.7    162           -       -           -               -     -  off
+lat-base         shore          16.6   16.7   13.2    178           -       -           -               -     -  off
+                 shore     median 13.8 ms, +0.0 ms against the first mode, repeats 11.0-16.6
+lat-base         canopy         18.7   18.8   14.1    158           -       -           -               -     -  off
+lat-base         canopy         18.8   18.9   15.6    158           -       -           -               -     -  off
+                 canopy    median 18.8 ms, +0.0 ms against the first mode, repeats 18.7-18.8
+lat-late         shore          16.3   16.6   11.8    178           -       -           -               -     -  off
+lat-late         shore          16.7   16.8   13.3    177           -       -           -               -     -  off
+                 shore     median 16.5 ms, +2.7 ms against the first mode, repeats 16.3-16.7
+lat-late         canopy         18.7   18.8   14.9    158           -       -           -               -     -  off
+lat-late         canopy         18.8   18.9   15.6    158           -       -           -               -     -  off
+                 canopy    median 18.7 ms, -0.1 ms against the first mode, repeats 18.7-18.8
+lat-cap          shore          20.8   23.7    4.4     60           -       -           -               -     -  off
+lat-cap          shore          21.0   23.4    4.6     60           -       -           -               -     -  off
+                 shore     median 20.9 ms, +7.1 ms against the first mode, repeats 20.8-21.0
+lat-cap          canopy         20.9   23.5    4.5     60           -       -           -               -     -  off
+lat-cap          canopy         20.9   23.5    4.5     60           -       -           -               -     -  off
+                 canopy    median 20.9 ms, +2.1 ms against the first mode, repeats 20.9-20.9
+lat-cap-late     shore           8.9    9.8    4.5     60           -       -           -               -     -  off
+lat-cap-late     shore           9.3   10.4    4.4     60           -       -           -               -     -  off
+                 shore     median 9.1 ms, -4.7 ms against the first mode, repeats 8.9-9.3
+lat-cap-late     canopy          8.6    9.4    4.6     60           -       -           -               -     -  off
+lat-cap-late     canopy          8.5    9.6    4.6     60           -       -           -               -     -  off
+                 canopy    median 8.5 ms, -10.2 ms against the first mode, repeats 8.5-8.6
+lat-ra1          shore          12.9   13.4    7.5    178           -       -           -               -     -  off
+lat-ra1          shore          13.0   13.5    7.6    179           -       -           -               -     -  off
+                 shore     median 13.0 ms, -0.8 ms against the first mode, repeats 12.9-13.0
+lat-ra1          canopy         15.5   15.8    9.3    158           -       -           -               -     -  off
+lat-ra1          canopy         15.4   15.8    9.3    158           -       -           -               -     -  off
+                 canopy    median 15.4 ms, -3.3 ms against the first mode, repeats 15.4-15.5
+lat-ra0          shore          11.3   13.0    3.8    126           -       -           -               -     -  off
+lat-ra0          shore          11.3   12.8    3.8    127           -       -           -               -     -  off
+                 shore     median 11.3 ms, -2.5 ms against the first mode, repeats 11.3-11.3
+lat-ra0          canopy         12.3   14.2    4.4    119           -       -           -               -     -  off
+lat-ra0          canopy         12.3   13.9    4.5    121           -       -           -               -     -  off
+                 canopy    median 12.3 ms, -6.5 ms against the first mode, repeats 12.3-12.3
+lat-ra1-late     shore          11.1   11.2    7.4    172           -       -           -               -     -  off
+lat-ra1-late     shore          11.1   11.2    7.6    178           -       -           -               -     -  off
+                 shore     median 11.1 ms, -2.7 ms against the first mode, repeats 11.1-11.1
+lat-ra1-late     canopy         12.5   12.6    9.3    158           -       -           -               -     -  off
+lat-ra1-late     canopy         12.6   12.6    9.2    158           -       -           -               -     -  off
+                 canopy    median 12.6 ms, -6.2 ms against the first mode, repeats 12.5-12.6

@@ -1,5 +1,6 @@
 package dev.creategalore.bridge.dlss;
 
+import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.WeakHashMap;
 
@@ -27,6 +28,11 @@ import org.slf4j.LoggerFactory;
  * with this frame's model-view (the hand moves with the camera, its bobbing is in the model-view); 0, not known (not
  * drawn last frame, more vertices than last frame, a jump), which leaves it to the pack's reprojection. The patched
  * pack only takes exactly 2 or 3, so a vertex nobody wrote (left over memory) is never taken.
+ *
+ * A model's cubes (vanilla's, Sodium's and Entity Model Features') are counted each on its own within the thing that
+ * draws them ({@link #cube}): a part shown or hidden (Fresh Animations' blinking eyes, a sheared sheep) changes how
+ * many vertices come before the rest of the model, and counted together every vertex after it would be matched to
+ * another one's place last frame, a motion of up to a block for that frame.
  */
 public final class EntityMotion {
     public static final String ATTRIBUTE = "cg_prev_pos";
@@ -40,6 +46,11 @@ public final class EntityMotion {
 
     /** Written into vertices by the BufferBuilder mixin, which the format only takes this attribute with. */
     public interface Writer {}
+
+    /** A model cube (the ModelPart.Cube mixin): how many vertices it draws. */
+    public interface Cube {
+        int create_galore_bridge$vertices();
+    }
 
     private static VertexFormatElement element;
     private static boolean usable;
@@ -60,9 +71,17 @@ public final class EntityMotion {
     private static final int MAX_DEPTH = 8;
     private static final Track[] STACK = new Track[MAX_DEPTH];
     private static final boolean[] STACK_HAND = new boolean[MAX_DEPTH];
+    private static final boolean[] STACK_SHADOW_PLAYER = new boolean[MAX_DEPTH];
     private static int depth;
     private static Track current;
+    /** The cube drawing now within current, and how many of its vertices are still to come. */
+    private static Track cubeTrack;
+    private static int cubeLeft;
     private static boolean handSpace;
+    /** dlaaCubeMotion (testing): false counts a model's cubes together with the rest, as before. */
+    private static boolean cubes = true;
+    /** The shadow pass draws the camera's own entity (counted for the hand watch). */
+    private static boolean shadowPlayer;
     private static final Matrix4f HAND_VIEW = new Matrix4f();
     private static final Matrix4f HAND_VIEW_INVERSE = new Matrix4f();
     private static final Vector3f VEC = new Vector3f();
@@ -93,6 +112,11 @@ public final class EntityMotion {
         return element;
     }
 
+    /** The display settings were read: whether cubes are counted on their own (dlaaCubeMotion, testing). */
+    static void cubes(boolean on) {
+        cubes = on;
+    }
+
     /** Start of a level frame (see {@link Dlss#beginFrame}): tracks this frame if DLAA hands over motion of its own. */
     static void beginFrame(boolean active, Vec3 camera) {
         frame++;
@@ -116,6 +140,10 @@ public final class EntityMotion {
         cameraKnown = true;
         depth = 0;
         current = null;
+        cubeTrack = null;
+        cubeLeft = 0;
+        shadowPlayer = false;
+        HandWatch.beginFrame(camera);
     }
 
     /** End of the level frame: what draws after (screens, the inventory's player) is not tracked. */
@@ -123,6 +151,8 @@ public final class EntityMotion {
         tracking = false;
         depth = 0;
         current = null;
+        cubeTrack = null;
+        cubeLeft = 0;
     }
 
     /** An entity or block entity starts drawing (relative to the camera). Pair with {@link #end()}. */
@@ -130,13 +160,17 @@ public final class EntityMotion {
         push(thing, false);
     }
 
-    /** The hand starts drawing (the solid and the translucent pass each draw all of it). Pair with {@link #end()}. */
-    public static void beginHand() {
+    /**
+     * The hand starts drawing (the solid and the translucent pass each draw all of it), with {@code light} (packed).
+     * Pair with {@link #end()}.
+     */
+    public static void beginHand(int light) {
         push(HAND_KEY, true);
         if (current != null && handSpace) {
             HAND_VIEW.set(RenderSystem.getModelViewMatrix());
             HAND_VIEW.invert(HAND_VIEW_INVERSE);
         }
+        HandWatch.handPass(light, current != null && handSpace ? current.drawnBefore : -1);
     }
 
     private static void push(Object key, boolean hand) {
@@ -146,14 +180,24 @@ public final class EntityMotion {
         if (depth < MAX_DEPTH) {
             STACK[depth] = current;
             STACK_HAND[depth] = handSpace;
+            STACK_SHADOW_PLAYER[depth] = shadowPlayer;
         }
         depth++;
-        if (!tracking || depth > MAX_DEPTH || ShadowRenderingState.areShadowsCurrentlyBeingRendered()) {
+        cubeTrack = null;
+        cubeLeft = 0;
+        boolean shadows = ShadowRenderingState.areShadowsCurrentlyBeingRendered();
+        if (shadows && HandWatch.on() && key == net.minecraft.client.Minecraft.getInstance().getCameraEntity()) {
+            HandWatch.shadowPlayerDraw();
+            shadowPlayer = true;
+        }
+        if (!tracking || depth > MAX_DEPTH || shadows) {
             current = null;
             return;
         }
         Track track = TRACKS.computeIfAbsent(key, k -> new Track());
-        track.enter(frame);
+        if (track.enter(frame) && HandWatch.on()) {
+            HandWatch.countChange();
+        }
         current = track;
         handSpace = hand;
     }
@@ -163,29 +207,62 @@ public final class EntityMotion {
             return;
         }
         depth--;
+        cubeTrack = null;
+        cubeLeft = 0;
         if (depth < MAX_DEPTH) {
             current = STACK[depth];
             handSpace = STACK_HAND[depth];
+            shadowPlayer = STACK_SHADOW_PLAYER[depth];
             STACK[depth] = null;
         } else {
             current = null;
+            shadowPlayer = false;
         }
+    }
+
+    /**
+     * A model cube starts drawing its {@code vertices} vertices (the cube mixins): they are counted on their own, within
+     * what draws now, as this cube's vertices last frame.
+     */
+    public static void cube(Object cube, int vertices) {
+        if (!cubes || current == null || !RenderSystem.isOnRenderThread()) {
+            return;
+        }
+        Track track = current.cubes.computeIfAbsent(cube, k -> new Track());
+        track.enter(frame);
+        cubeTrack = track;
+        cubeLeft = vertices;
     }
 
     /** Writes the attribute at {@code pointer} for a vertex at x, y, z (as written to the buffer). */
     public static void write(long pointer, float x, float y, float z) {
+        if (shadowPlayer && RenderSystem.isOnRenderThread()) {
+            HandWatch.shadowPlayerVertex(x, y, z);
+        }
         Track track = current;
         // Another thread building a buffer in this format (a mod baking a model) is no part of what draws now.
         if (track == null || !RenderSystem.isOnRenderThread()) {
             unknown(pointer);
             return;
         }
+        track.drawn++;
+        if (cubeLeft > 0) {
+            cubeLeft--;
+            track = cubeTrack;
+        }
         if (handSpace) {
             HAND_VIEW.transformPosition(x, y, z, VEC);
             int i = track.add(VEC.x, VEC.y, VEC.z);
             if (i >= track.lastCount) {
+                HandWatch.handVertex(false, 0.0f);
                 unknown(pointer);
                 return;
+            }
+            if (HandWatch.on()) {
+                float mx = VEC.x - track.last[3 * i];
+                float my = VEC.y - track.last[3 * i + 1];
+                float mz = VEC.z - track.last[3 * i + 2];
+                HandWatch.handVertex(true, (float) Math.sqrt(mx * mx + my * my + mz * mz));
             }
             HAND_VIEW_INVERSE.transformPosition(track.last[3 * i], track.last[3 * i + 1], track.last[3 * i + 2], VEC);
             put(pointer, VEC.x, VEC.y, VEC.z, HAND);
@@ -220,25 +297,38 @@ public final class EntityMotion {
         MemoryUtil.memPutFloat(pointer + 12, w);
     }
 
-    /** One thing's vertex positions this frame and last frame, in drawing order. */
+    /** One thing's (or one of its cubes') vertex positions this frame and last frame, in drawing order. */
     private static final class Track {
         private long frame = Long.MIN_VALUE;
         float[] now = new float[3 * 64];
         int nowCount;
         float[] last = new float[3 * 64];
         int lastCount;
+        /** Its cubes, each counted on its own (see {@link #cube}). */
+        final Map<Object, Track> cubes = new IdentityHashMap<>();
+        /** Vertices it drew this frame and last, cubes' included (for the hand watch). */
+        int drawn;
+        int drawnBefore = -1;
 
-        /** Drawn again in the same frame (the hand's two passes, a mod drawing it twice): carries on counting. */
-        void enter(long current) {
+        /**
+         * Drawn again in the same frame (the hand's two passes, a mod drawing it twice): carries on counting. True if it
+         * drew a different number of vertices last frame than the frame before.
+         */
+        boolean enter(long current) {
             if (frame == current) {
-                return;
+                return false;
             }
+            boolean consecutive = frame == current - 1;
+            boolean changed = consecutive && drawnBefore >= 0 && drawn != drawnBefore;
+            drawnBefore = consecutive ? drawn : -1;
+            drawn = 0;
             float[] swap = last;
             last = now;
             now = swap;
-            lastCount = frame == current - 1 ? nowCount : 0;
+            lastCount = consecutive ? nowCount : 0;
             nowCount = 0;
             frame = current;
+            return changed;
         }
 
         int add(float x, float y, float z) {

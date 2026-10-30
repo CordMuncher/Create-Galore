@@ -1,7 +1,9 @@
 package dev.creategalore.bridge.client;
 
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.blaze3d.vertex.VertexFormat;
 import com.simibubi.create.AllDataComponents;
 import com.simibubi.create.CreateClient;
 import com.simibubi.create.content.schematics.client.SchematicEditScreen;
@@ -51,8 +53,11 @@ import net.neoforged.neoforge.client.event.ScreenEvent;
  */
 public final class PinnedSchematicView {
     private static final int RED = 0xE5484D, CHECK_EVERY = 10;
-    /** How faint the blocks still to place are drawn. */
-    private static final float GHOST_ALPHA = 0.3f, WRONG_ALPHA = 0.7f;
+    /**
+     * How faint the blocks still to place are drawn: without a shader pack, and with one (packs draw a translucent
+     * surface fainter than its alpha says, Complementary's at 0.3 showed a tint with no blocks in it).
+     */
+    private static final float GHOST_ALPHA = 0.4f, GHOST_ALPHA_SHADERS = 0.65f, WRONG_ALPHA = 0.7f;
     /** Wrong blocks drawn red per pin (the outline still shows every one). */
     private static final int MAX_RED = 512;
     /** Pins further than this from the player (to the build's box) are neither checked nor drawn. */
@@ -142,22 +147,17 @@ public final class PinnedSchematicView {
         Vec3 camera = event.getCamera().getPosition();
         PoseStack ms = event.getPoseStack();
         SuperRenderTypeBuffer inner = DefaultSuperRenderTypeBuffer.getInstance();
-        GhostBuffer faint = new GhostBuffer(inner, 1, 1, 1, GHOST_ALPHA);
-        GhostBuffer red = new GhostBuffer(inner, 1, 0.22f, 0.22f, WRONG_ALPHA);
+        // Two passes over the same ghost: the first only fills the depth buffer, the second draws colour where a ghost
+        // face is the nearest one. So a pin shows as one see-through skin (its nearest faces), not every face of every
+        // block stacked behind each other (a block's own back faces culled too), and the bottom of a pin standing on the
+        // ground no longer fights the ground's top face for the same pixels.
+        float alpha = SchematicLayers.shadersOn() ? GHOST_ALPHA_SHADERS : GHOST_ALPHA;
+        drawGhosts(ms, camera, new GhostBuffer(inner, GhostBuffer.DEPTH, 1, 1, 1, alpha));
+        inner.draw();
+        drawGhosts(ms, camera, new GhostBuffer(inner, GhostBuffer.COLOR, 1, 1, 1, alpha));
+        inner.draw();
+        GhostBuffer red = new GhostBuffer(inner, GhostBuffer.COLOR, 1, 0.22f, 0.22f, WRONG_ALPHA);
         for (Shown s : pins.values()) {
-            for (Map.Entry<Long, Section> e : s.sections.entrySet()) {
-                SchematicRenderer renderer = e.getValue().renderer;
-                if (renderer == null) continue;
-                BlockPos origin = SectionPos.of(e.getKey()).origin().offset(s.pin.anchor());
-                ms.pushPose();
-                ms.translate(origin.getX() - camera.x, origin.getY() - camera.y, origin.getZ() - camera.z);
-                try {
-                    renderer.render(ms, faint);
-                } catch (RuntimeException ex) {
-                    e.getValue().renderer = null;
-                }
-                ms.popPose();
-            }
             // A wrong block is drawn again over itself in red, a hair bigger so it covers the real faces.
             int drawn = 0;
             for (BlockPos pos : s.wrong) {
@@ -174,6 +174,24 @@ public final class PinnedSchematicView {
             }
         }
         inner.draw();
+    }
+
+    private static void drawGhosts(PoseStack ms, Vec3 camera, GhostBuffer buffer) {
+        for (Shown s : pins.values()) {
+            for (Map.Entry<Long, Section> e : s.sections.entrySet()) {
+                SchematicRenderer renderer = e.getValue().renderer;
+                if (renderer == null) continue;
+                BlockPos origin = SectionPos.of(e.getKey()).origin().offset(s.pin.anchor());
+                ms.pushPose();
+                ms.translate(origin.getX() - camera.x, origin.getY() - camera.y, origin.getZ() - camera.z);
+                try {
+                    renderer.render(ms, buffer);
+                } catch (RuntimeException ex) {
+                    e.getValue().renderer = null;
+                }
+                ms.popPose();
+            }
+        }
     }
 
     /** Pin and Unpin on Create's placement screen (sneak-right-click a Schematic). */
@@ -239,16 +257,18 @@ public final class PinnedSchematicView {
             BlockPos.MutableBlockPos at = new BlockPos.MutableBlockPos();
             for (Map.Entry<Long, Section> e : sections.entrySet()) {
                 Section section = e.getValue();
-                Set<BlockPos> sectionTodo = new HashSet<>();
+                Set<BlockPos> sectionTodo = new HashSet<>(), ghost = new HashSet<>();
                 for (Map.Entry<BlockPos, BlockState> b : section.wanted.entrySet()) {
                     at.setWithOffset(b.getKey(), pin.anchor());
                     BlockState have = mc.level.getBlockState(at);
                     if (SchematicTrace.same(b.getValue(), have)) continue;
                     sectionTodo.add(b.getKey());
+                    // A wrong block is tinted red instead; a ghost inside it would share every face with it and flicker.
                     if (!have.isAir() && !have.canBeReplaced()) bad.add(at.immutable());
+                    else ghost.add(b.getKey());
                 }
                 todo.addAll(sectionTodo);
-                if (!sectionTodo.equals(section.left) || !compared) section.redraw(mc, SectionPos.of(e.getKey()).origin(), sectionTodo);
+                if (!ghost.equals(section.left) || !compared) section.redraw(mc, SectionPos.of(e.getKey()).origin(), ghost);
             }
             compared = true;
             left = todo;
@@ -276,7 +296,7 @@ public final class PinnedSchematicView {
         }
     }
 
-    /** A 16-block cube of a pin: its blocks (relative to the pin's anchor) and the ghost of those still to place. */
+    /** A 16-block cube of a pin: its blocks (relative to the pin's anchor) and the ghost drawn of those still to place (left; a wrong block is red, not ghost). */
     private static final class Section {
         final Map<BlockPos, BlockState> wanted = new HashMap<>();
         Set<BlockPos> left = Set.of();
@@ -296,35 +316,41 @@ public final class PinnedSchematicView {
     }
 
     /**
-     * Create's schematic renderer draws into the usual block layers at full strength; this sends every block layer to an
-     * entity-translucent one on the block atlas and scales each vertex's colour, the way Create draws its own ghost
-     * blocks. Colour and alpha ride on the vertices, and shader packs keep vertex alpha on translucent entities (they
-     * drop it on translucent terrain, which drew the ghost solid under Complementary).
+     * Create's schematic renderer draws into the usual block layers at full strength; this sends every block layer to one
+     * of two ghost layers on the block atlas and scales each vertex's colour, the way Create draws its own ghost blocks.
+     * Colour and alpha ride on the vertices, and shader packs keep vertex alpha on translucent entities (they drop it on
+     * translucent terrain, which drew the ghost solid under Complementary), so both layers use the entity translucent
+     * shader, which shader packs map to their own translucent entity program (lit by open sky there, see
+     * {@link SchematicLayers}). DEPTH writes depth only and draws nothing else (block entities included); COLOR draws where
+     * DEPTH left the nearest face. Both cull faces turned away.
      */
-    private record GhostBuffer(SuperRenderTypeBuffer inner, float r, float g, float b, float alpha) implements SuperRenderTypeBuffer {
-        private static final RenderType GHOST = RenderType.entityTranslucent(InventoryMenu.BLOCK_ATLAS);
+    private record GhostBuffer(SuperRenderTypeBuffer inner, RenderType ghost, float r, float g, float b, float alpha)
+            implements SuperRenderTypeBuffer {
+        static final RenderType DEPTH = Layers.ghost("depth", Layers.DEPTH_ONLY), COLOR = Layers.ghost("color", Layers.COLOR_ONLY);
 
-        private static RenderType layer(RenderType type) {
-            return RenderType.chunkBufferLayers().contains(type) ? GHOST : type;
+        private VertexConsumer consumer(VertexConsumer target, RenderType type) {
+            if (ghost == DEPTH && !RenderType.chunkBufferLayers().contains(type)) return NOTHING;
+            VertexConsumer faint = new ColoringVertexConsumer(target, r, g, b, alpha);
+            return SchematicLayers.shadersOn() ? SchematicLayers.skyLit(faint) : faint;
         }
 
-        private VertexConsumer faint(VertexConsumer consumer) {
-            return new ColoringVertexConsumer(consumer, r, g, b, alpha);
+        private RenderType layer(RenderType type) {
+            return RenderType.chunkBufferLayers().contains(type) ? ghost : type;
         }
 
         @Override
         public VertexConsumer getEarlyBuffer(RenderType type) {
-            return faint(inner.getEarlyBuffer(layer(type)));
+            return consumer(inner.getEarlyBuffer(layer(type)), type);
         }
 
         @Override
         public VertexConsumer getBuffer(RenderType type) {
-            return faint(inner.getBuffer(layer(type)));
+            return consumer(inner.getBuffer(layer(type)), type);
         }
 
         @Override
         public VertexConsumer getLateBuffer(RenderType type) {
-            return faint(inner.getLateBuffer(layer(type)));
+            return consumer(inner.getLateBuffer(layer(type)), type);
         }
 
         @Override
@@ -335,6 +361,63 @@ public final class PinnedSchematicView {
         @Override
         public void draw(RenderType type) {
             inner.draw(layer(type));
+        }
+    }
+
+    /** Swallows what a block entity draws during the depth pass. */
+    private static final VertexConsumer NOTHING = new VertexConsumer() {
+        @Override
+        public VertexConsumer addVertex(float x, float y, float z) {
+            return this;
+        }
+
+        @Override
+        public VertexConsumer setColor(int r, int g, int b, int a) {
+            return this;
+        }
+
+        @Override
+        public VertexConsumer setUv(float u, float v) {
+            return this;
+        }
+
+        @Override
+        public VertexConsumer setUv1(int u, int v) {
+            return this;
+        }
+
+        @Override
+        public VertexConsumer setUv2(int u, int v) {
+            return this;
+        }
+
+        @Override
+        public VertexConsumer setNormal(float x, float y, float z) {
+            return this;
+        }
+    };
+
+    /** Holder for the ghost layers (RenderType's state pieces are only reachable from a subclass). */
+    private static final class Layers extends RenderType {
+        static final WriteMaskStateShard DEPTH_ONLY = DEPTH_WRITE, COLOR_ONLY = COLOR_WRITE;
+
+        private Layers() {
+            super("", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 0, false, false, () -> {
+            }, () -> {
+            });
+        }
+
+        static RenderType ghost(String name, WriteMaskStateShard mask) {
+            return create("create_galore_pinned_ghost_" + name, DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 1536,
+                    true, true, CompositeState.builder()
+                            .setShaderState(RENDERTYPE_ENTITY_TRANSLUCENT_SHADER)
+                            .setTextureState(new TextureStateShard(InventoryMenu.BLOCK_ATLAS, false, false))
+                            .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
+                            .setCullState(CULL)
+                            .setLightmapState(LIGHTMAP)
+                            .setOverlayState(OVERLAY)
+                            .setWriteMaskState(mask)
+                            .createCompositeState(true));
         }
     }
 }

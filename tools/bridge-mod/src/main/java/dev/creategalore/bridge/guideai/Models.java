@@ -26,6 +26,12 @@ import net.minecraft.world.level.block.state.BlockState;
 public final class Models {
     public static final int MAX_SIZE = 32, MAX_ENTRIES = 256, MAX_LABELS = 12, MAX_PALETTE = 60;
     private static final int MIN_HOLDINGS = 24;
+    static final String[] SHAPES = {"box", "hollow_box", "ellipsoid", "ellipsoid_shell", "repaint"};
+
+    /** A model built for the answer being written, kept so the next version can start from it (from_draft). */
+    record Draft(Map<BlockPos, BlockState> cells, int sx, int sy, int sz, JsonArray labels, JsonArray moving, String title,
+                 String caption, JsonArray speeds) {
+    }
 
     private Models() {
     }
@@ -43,6 +49,15 @@ public final class Models {
         p.add("x2", WorldTools.prop("integer", "With y2 and z2, the opposite corner of a box filled with this block; the same as x, y, z for one block."));
         p.add("y2", WorldTools.prop("integer", "See x2."));
         p.add("z2", WorldTools.prop("integer", "See x2."));
+        JsonObject shape = WorldTools.prop("string", "What part of the box (x, y, z to x2, y2, z2) this fills: box (all of it), "
+                + "hollow_box (its outer walls, one block thick), ellipsoid (the rounded solid that fits inside it) or "
+                + "ellipsoid_shell (that rounded solid's outer skin, one block thick: an envelope, dome or rounded hull in one entry; "
+                + "clear its underside with an air box where a balloon needs its open bottom) or repaint (only the cells in the box "
+                + "that already hold a block, which take this one instead: a stripe round an envelope, a different wood for a trim).");
+        JsonArray shapes = new JsonArray();
+        for (String k : SHAPES) shapes.add(k);
+        shape.add("enum", shapes);
+        p.add("shape", shape);
         block.add("properties", p);
         block.add("required", required(p));
         block.addProperty("additionalProperties", false);
@@ -85,6 +100,22 @@ public final class Models {
         copy.add("required", required(cp));
         copy.addProperty("additionalProperties", false);
 
+        JsonObject shift = new JsonObject();
+        shift.addProperty("type", "object");
+        JsonObject sp = new JsonObject();
+        sp.add("x1", WorldTools.prop("integer", "Model cell x of one corner of the box of blocks to move."));
+        sp.add("y1", WorldTools.prop("integer", "See x1."));
+        sp.add("z1", WorldTools.prop("integer", "See x1."));
+        sp.add("x2", WorldTools.prop("integer", "Model cell x of the opposite corner."));
+        sp.add("y2", WorldTools.prop("integer", "See x2."));
+        sp.add("z2", WorldTools.prop("integer", "See x2."));
+        sp.add("dx", WorldTools.prop("integer", "How many cells to move it along x (negative moves it toward x = 0)."));
+        sp.add("dy", WorldTools.prop("integer", "Along y."));
+        sp.add("dz", WorldTools.prop("integer", "Along z."));
+        shift.add("properties", sp);
+        shift.add("required", required(sp));
+        shift.addProperty("additionalProperties", false);
+
         JsonObject row = new JsonObject();
         row.addProperty("type", "string");
         JsonObject layer = new JsonObject();
@@ -108,6 +139,18 @@ public final class Models {
                 + "model for the player and listed back to you in world coordinates.");
         fromWorld.add("items", copy);
         props.add("from_world", fromWorld);
+        props.add("from_draft", WorldTools.prop("integer", "0, or the number of a model built earlier for this answer (each "
+                + "result names it) to start from instead of writing it all again: its blocks, labels, moving parts, title and "
+                + "caption come along (labels, moving, title and caption you write replace them), size 0 keeps its size, and "
+                + "move, layers and blocks then write only the changes (a layer's '.' leaves the cell as it was, minecraft:air "
+                + "takes a block out). Use it for every revision of a design."));
+        JsonObject moves = new JsonObject();
+        moves.addProperty("type", "array");
+        moves.addProperty("description", "Empty, or boxes of blocks to slide, applied in order before layers and blocks: everything "
+                + "in the box moves together and the cells it leaves become air (a balloon one block back, an engine pod "
+                + "up a block, the gondola toward the bow), so a design is shifted without rewriting it.");
+        moves.add("items", shift);
+        props.add("move", moves);
         JsonObject palette = new JsonObject();
         palette.addProperty("type", "array");
         palette.addProperty("description", "The characters layers use, at most " + MAX_PALETTE + "; empty when layers is.");
@@ -133,56 +176,51 @@ public final class Models {
         labels.add("items", label);
         props.add("labels", labels);
         props.add("caption", WorldTools.prop("string", "One short sentence under the model, or an empty string."));
-        props.add("draft", WorldTools.prop("boolean", "True to try the model first: you get pictures of it (two corner "
-                + "views, front and side) and the machine check, and nothing is added to the answer. Look, fix what looks "
-                + "wrong, then call again with draft false to put it in the answer."));
+        props.add("draft", WorldTools.prop("boolean", "True for a try that isn't shown."));
+        props.add("goal", WorldTools.prop("string", "What it makes, if it makes an item: that item's id first, then from "
+                + "what (create:brass_ingot from copper and zinc). Its check proves the model makes it."));
         props.add("shows_a_fault", WorldTools.prop("boolean", "True only when the model is meant to show a build that "
                 + "doesn't work (such as the player's own broken build); then it is built even when the rotation check finds faults."));
+        props.add("for_later", WorldTools.prop("boolean", "True only when the player asked for a build to make later on; "
+                + "then parts they can't make yet don't stop it being built."));
         props.add("moving", MotionCheck.definition());
+        JsonObject speed = new JsonObject();
+        speed.addProperty("type", "object");
+        JsonObject vp = new JsonObject();
+        vp.add("x", WorldTools.prop("integer", "Its cell."));
+        vp.add("y", WorldTools.prop("integer", "See x."));
+        vp.add("z", WorldTools.prop("integer", "See x."));
+        vp.add("rpm", WorldTools.prop("integer", "-256 to 256."));
+        speed.add("properties", vp);
+        speed.add("required", required(vp));
+        speed.addProperty("additionalProperties", false);
+        JsonObject speeds = new JsonObject();
+        speeds.addProperty("type", "array");
+        speeds.addProperty("description", "Each Rotation Speed Controller's set speed; one left out is at 16 RPM.");
+        speeds.add("items", speed);
+        props.add("speeds", speeds);
         props.add("part_of_vehicle", WorldTools.prop("boolean", "True only when the model shows one part of a vehicle (an "
                 + "engine room, a rudder, a burner and its balloon) rather than the whole of it: the vehicle check's numbers "
                 + "come back but don't stop it being built. Leave it false for a whole boat, submarine, airship or car."));
         return WorldTools.tool("build_model", "Builds a 3D model out of real blocks, up to " + MAX_SIZE + " a side, which "
-                + "the book shows as a hologram the player can turn around and zoom into. Two uses. To explain (how machines "
-                + "connect in space, which way blocks face): keep it to the blocks that matter. To show a build (a boat, a "
-                + "house, a bridge, a tower) the player can copy or take ideas from: build it as a skilled Minecraft builder "
-                + "would, at a size that gives it shape (a small sailing boat is about 12 to 20 blocks long), with stairs, "
-                + "slabs, trapdoors, fences, walls and buttons for curves and detail, two or three materials that go "
-                + "together and that the player holds where a block they hold would look as good (building_materials "
-                + "counts them; the result lists what the model takes against what they hold), depth and trim instead of flat walls, and no plain boxes. Fences, walls, panes and bars join their "
-                + "neighbours (fences also diagonally, to a fence at a free corner) and stairs turn corners by themselves, as when placed. Write such builds as layers. Try a "
-                + "build first with draft true and look at the pictures: fix whatever looks blocky, lopsided or wrong, "
-                + "then call again with draft false. Before a model is shown the server tries its Create machines with "
-                + "Create's own rules (which faces take a shaft, cogs, belts, sources, water on wheels) and refuses one "
-                + "with faults, saying what is wrong, so fix it and call again. Each block's facing decides which faces "
-                + "take rotation (a saw, press or drill takes its shaft at its back, the face opposite its facing): get it "
-                + "right rather than guessing (lookup_recipes or read_guide help). Every block keeps the facing or axis you write "
-                + "and takes its default when you leave it out, often the wrong way (a Windcatcher panel's default lies flat), "
-                + "so write it on every block that has one. Sail rigs are checked the same way, with Winds & Weather's rules: "
-                + "Masts stack straight up, Yards run sideways out from a Mast along their axis, Sail Kit cloth hangs straight "
-                + "below a run of Yards facing across it, and Windcatcher panels stand upright with a sideways facing. Vehicles (a "
-                + "boat, submarine, airship, plane or Offroad car) are worked out from their blocks, "
-                + "with every engine at its usual speed: mass against buoyancy or lift, whether it floats upright or "
-                + "capsizes, how it sits at rest (bow or stern down, leaning to a side) or hangs in the air, with how much "
-                + "weight to move to level it, its centre of mass against its lift, thrust, top speed, turn rate, climb and ceiling, and "
-                + "problems when it would sink, capsize, not lift, not move or turn, or be too slow or clumsy to be of use. Every "
-                + "block of a vehicle must share a face with the rest, since Super Glue refuses blocks that touch only "
-                + "diagonally: shape a hull's curves with stairs and slabs, not blocks stepped at their edges. "
-                + "Whoever drives stands on the vehicle: a Boat Engine's helmsman stands two blocks out from the side it faces, "
-                + "so it goes at the stern facing into the boat with deck under that spot, and every Steering Wheel, Throttle "
-                + "Lever or lever needs a spot on board within reach to stand at. "
-                + "Fix those before recommending it, and give the player its numbers. Parts that move as Create contraptions "
-                + "(a windmill, a turning door or drawbridge, a turntable, a piston wall, a lift, a gantry crane) go in "
-                + "moving, with the Super Glue the player puts on: the server finds what comes along by Create's rules, plays "
-                + "the motion on the model and says what it runs into, how fast it goes and the stress, so give the bearing, "
-                + "piston or pulley room to move and glue every block that has to come along. Write pistons retracted, with "
-                + "their extension poles behind them. Water and lava can be shown flowing: a "
-                + "source is level=0, flowing water level=1 to 7 (higher = further from the source), falling water "
-                + "level=8. To improve or fix something the player built, copy it in with from_world (find its bounds with "
-                + "trace_build or read_area first) and write only what changes; the player then sees their own build "
-                + "with the changes outlined, and you get the changes in world coordinates to name in your answer. "
-                + "It returns the model's number; write [diagram N] on a line of its own where it should appear, "
-                + "or put it inside a drawing with a shape of kind model.", props);
+                + "the book shows as a hologram the player can turn around and zoom into, and works out how it behaves. "
+                + "Write a detailed build as layers; fences, walls, panes and bars join their neighbours (fences also "
+                + "diagonally) and stairs turn corners by themselves, as when placed. Every block keeps the facing or axis "
+                + "you write and takes its default when you leave it out, often the wrong way, so write it on every block "
+                + "that has one. Try a design with draft true first: you get pictures of it and its check, and nothing goes "
+                + "in the answer. Revise with from_draft and write only the changes (move slides a part over). Before a "
+                + "model is shown the server runs it by the mods' own rules: rotation (which faces take a shaft, cogs, "
+                + "belts, sources, speeds, water on wheels), where machines send their output, sail rigs, posts, moving "
+                + "parts, and for a vehicle (boat, submarine, airship, plane or Offroad car) its mass, lift or buoyancy, "
+                + "trim, speed, turning, ceiling and how its crew walks, reaches, boards and keeps warm. A model with a "
+                + "PROBLEM is refused with what to change. Every block of a vehicle must share a face with the rest (Super "
+                + "Glue refuses edge and corner contact); edge and corner steps are filled for you and the result says "
+                + "where. Parts that move as Create contraptions go in moving, with the Super Glue the player puts on; "
+                + "write pistons retracted, poles behind them. Water and lava: a source is level=0, flowing 1 to 7, "
+                + "falling 8. To change a build of the player's, copy it in with from_world (bounds from trace_build or "
+                + "read_area) and write only what changes; you get the changes back in world coordinates. It returns the "
+                + "model's number: write [diagram N] on a line of its own where it should appear, or put it inside a "
+                + "drawing with a shape of kind model.", props);
     }
 
     private static JsonArray required(JsonObject properties) {
@@ -196,6 +234,27 @@ public final class Models {
      * the model's machines in a scratch copy of {@code level}).
      */
     static Result build(JsonObject input, ServerLevel level, Copier copier, net.minecraft.server.level.ServerPlayer player) {
+        return build(input, level, copier, player, null);
+    }
+
+    /** Builds the model; with {@code drafts}, from_draft can start from one of them and the new one is added to them. */
+    static Result build(JsonObject input, ServerLevel level, Copier copier, net.minecraft.server.level.ServerPlayer player,
+                        List<Draft> drafts) {
+        return build(input, level, copier, player, drafts, null);
+    }
+
+    /**
+     * Builds the model; {@code briefs} holds the kinds of build whose design brief this answer already got, and the
+     * first model of a new kind (a build to copy, a vehicle, an airship...) comes back with that kind's brief.
+     */
+    static Result build(JsonObject input, ServerLevel level, Copier copier, net.minecraft.server.level.ServerPlayer player,
+                        List<Draft> drafts, java.util.Set<String> briefs) {
+        // The checks name only drive parts this player can make, and read the model's speed controller settings.
+        return Drives.asking(player, Map.of(), () -> buildAs(input, level, copier, player, drafts, briefs));
+    }
+
+    private static Result buildAs(JsonObject input, ServerLevel level, Copier copier, net.minecraft.server.level.ServerPlayer player,
+                                  List<Draft> drafts, java.util.Set<String> briefs) {
         List<String> problems = new ArrayList<>();
         int sx = Diagrams.intOr(input, "size_x", 0), sy = Diagrams.intOr(input, "size_y", 0), sz = Diagrams.intOr(input, "size_z", 0);
         Map<BlockPos, BlockState> cells = new HashMap<>();
@@ -226,8 +285,57 @@ public final class Models {
             for (Map.Entry<BlockPos, BlockState> e : copy.blocks().entrySet()) base.put(e.getKey().offset(offset), e.getValue());
             cells.putAll(base);
         }
+        int fromDraft = Diagrams.intOr(input, "from_draft", 0);
+        Draft draft0 = null;
+        if (fromDraft != 0) {
+            if (base != null) return Result.problem("Not built: use from_world or from_draft, not both.");
+            int have = drafts == null ? 0 : drafts.size();
+            if (fromDraft < 1 || fromDraft > have)
+                return Result.problem("Not built: there is no model " + fromDraft + " to start from (" + (have == 0 ? "none built yet"
+                        : "models 1 to " + have + " so far") + ").");
+            draft0 = drafts.get(fromDraft - 1);
+            cells.putAll(draft0.cells());
+            if (sx == 0) sx = draft0.sx();
+            if (sy == 0) sy = draft0.sy();
+            if (sz == 0) sz = draft0.sz();
+        }
         if (sx < 1 || sx > MAX_SIZE || sy < 1 || sy > MAX_SIZE || sz < 1 || sz > MAX_SIZE)
             return Result.problem("Not built: size_x, size_y and size_z must each be 1 to " + MAX_SIZE + ".");
+        JsonArray speedsIn = array(input, "speeds");
+        if (speedsIn.isEmpty() && draft0 != null && draft0.speeds() != null) speedsIn = draft0.speeds();
+        Map<BlockPos, Float> set = new HashMap<>();
+        for (JsonElement e : speedsIn) {
+            if (!e.isJsonObject()) continue;
+            JsonObject o = e.getAsJsonObject();
+            set.put(new BlockPos(Diagrams.intOr(o, "x", 0), Diagrams.intOr(o, "y", 0), Diagrams.intOr(o, "z", 0)),
+                    (float) Math.max(-256, Math.min(256, Diagrams.intOr(o, "rpm", 16))));
+        }
+        Drives.setModel(set);
+        JsonArray moves = array(input, "move");
+        for (int i = 0; i < moves.size() && problems.size() < 10; i++) {
+            if (!moves.get(i).isJsonObject()) continue;
+            JsonObject m = moves.get(i).getAsJsonObject();
+            int x1 = Diagrams.intOr(m, "x1", 0), y1 = Diagrams.intOr(m, "y1", 0), z1 = Diagrams.intOr(m, "z1", 0);
+            int x2 = Diagrams.intOr(m, "x2", 0), y2 = Diagrams.intOr(m, "y2", 0), z2 = Diagrams.intOr(m, "z2", 0);
+            BlockPos d = new BlockPos(Diagrams.intOr(m, "dx", 0), Diagrams.intOr(m, "dy", 0), Diagrams.intOr(m, "dz", 0));
+            Map<BlockPos, BlockState> lifted = new HashMap<>();
+            for (BlockPos q : BlockPos.betweenClosed(Math.min(x1, x2), Math.min(y1, y2), Math.min(z1, z2), Math.max(x1, x2),
+                    Math.max(y1, y2), Math.max(z1, z2))) {
+                BlockState st = cells.remove(q);
+                if (st != null) lifted.put(q.immutable(), st);
+            }
+            String out = null;
+            for (BlockPos q : lifted.keySet()) {
+                BlockPos t = q.offset(d);
+                if (!inside(t.getX(), sx) || !inside(t.getY(), sy) || !inside(t.getZ(), sz)) out = t.getX() + "," + t.getY() + "," + t.getZ();
+            }
+            if (out != null) {
+                problems.add("move " + i + " would put a block at " + out + ", outside the " + sx + "x" + sy + "x" + sz + " model (make it bigger)");
+                cells.putAll(lifted);
+                continue;
+            }
+            lifted.forEach((q, st) -> cells.put(q.offset(d), st));
+        }
         Map<Character, BlockState> keys = new HashMap<>();
         java.util.Set<String> undirected = new java.util.TreeSet<>();
         JsonArray palette = array(input, "palette");
@@ -282,13 +390,22 @@ public final class Models {
                 problems.add("entry " + i + " (" + raw + "): a corner is outside the " + sx + "x" + sy + "x" + sz + " model");
                 continue;
             }
+            String shape = GuideText.string(b, "shape");
             for (BlockPos p : BlockPos.betweenClosed(x, y, z, x2, y2, z2)) {
+                if (!inShape(shape, p, x, y, z, x2, y2, z2) || shape.equals("repaint") && !cells.containsKey(p)) continue;
                 if (state.isAir()) cells.remove(p);
                 else cells.put(p.immutable(), state);
             }
         }
         if (cells.isEmpty() && problems.isEmpty()) problems.add("the model has no blocks: fill layers or blocks");
+        for (BlockPos q : cells.keySet())
+            if (!inside(q.getX(), sx) || !inside(q.getY(), sy) || !inside(q.getZ(), sz)) {
+                problems.add("a block at " + q.getX() + "," + q.getY() + "," + q.getZ() + " is outside the " + sx + "x" + sy + "x" + sz
+                        + " model (keep the size, or move it in)");
+                break;
+            }
         JsonArray labelsIn = array(input, "labels");
+        if (labelsIn.isEmpty() && draft0 != null) labelsIn = draft0.labels();
         if (labelsIn.size() > MAX_LABELS) problems.add("at most " + MAX_LABELS + " labels");
         JsonArray labels = new JsonArray();
         for (int i = 0; i < Math.min(MAX_LABELS, labelsIn.size()); i++) {
@@ -314,6 +431,9 @@ public final class Models {
         }
         if (GuideText.string(input, "title").length() > 60) problems.add("title longer than 60 characters");
         if (GuideText.string(input, "caption").length() > 240) problems.add("caption longer than 240 characters");
+        String unbuilt = missingPart(GuideText.string(input, "caption"), cells, null);
+        if (unbuilt != null) problems.add("the caption names " + unbuilt + ", but the model has none: build the part in, or "
+                + "leave it out of the caption; the caption only names what the model really has");
         if (!problems.isEmpty()) return Result.problem("Not built. Fix these and call again: " + String.join("; ", problems) + ".");
         // What the model changes on the copied build, before blocks join up (a fence that now meets a new post isn't a change).
         Map<BlockPos, Boolean> changes = new HashMap<>();
@@ -322,32 +442,75 @@ public final class Models {
                 if (!e.getValue().equals(base.get(e.getKey()))) changes.put(e.getKey(), false);
             for (BlockPos p : base.keySet()) if (!cells.containsKey(p)) changes.put(p, true);
         }
+        for (BlockPos p : set.keySet()) {
+            BlockState at = cells.get(p);
+            if (at == null || !BuiltInRegistries.BLOCK.getKey(at.getBlock()).toString().equals("create:rotation_speed_controller"))
+                return Result.problem("Not built: speeds names cell " + p.getX() + "," + p.getY() + "," + p.getZ()
+                        + ", which holds no Rotation Speed Controller.");
+        }
+        boolean showsFault = input.has("shows_a_fault") && input.get("shows_a_fault").isJsonPrimitive()
+                && input.get("shows_a_fault").getAsBoolean();
+        // A vehicle's corner steps are filled so it glues as one piece; the book is told where, so it builds them in.
+        List<BlockPos> steps = showsFault || base != null ? List.of() : VehicleCheck.closeSteps(cells, sx, sy, sz);
         if (level != null) connect(cells, level);
         // Moving parts first: the blocks that ride on them leave the network they sit against, so the rotation check
         // only looks at the blocks that stay put.
         List<String> motionProblems = new ArrayList<>();
-        MotionCheck.Result motion = MotionCheck.check(cells, array(input, "moving"), level, sx, sy, sz, motionProblems);
+        JsonArray movingIn = array(input, "moving");
+        if (movingIn.isEmpty() && draft0 != null) movingIn = draft0.moving();
+        MotionCheck.Result motion = MotionCheck.check(cells, movingIn, level, sx, sy, sz, motionProblems);
         if (!motionProblems.isEmpty()) return Result.problem("Not built. Fix these and call again: " + String.join("; ", motionProblems) + ".");
         Map<BlockPos, BlockState> fixed = cells;
         if (motion != null) {
             fixed = new HashMap<>(cells);
             motion.riding().forEach(fixed::remove);
         }
-        BuildCheck.Report check = join(level == null ? null : BuildCheck.check(fixed, level), RigCheck.check(cells));
-        if (motion != null) check = join(check, motion.report());
-        check = join(check, vehicle(cells, level, input.has("part_of_vehicle") && input.get("part_of_vehicle").isJsonPrimitive()
+        // One pipeline, three lenses: does it do its job, can a player use it, can this player build it now.
+        BuildCheck.Report works = join(level == null ? null : BuildCheck.check(fixed, level), RigCheck.check(cells));
+        if (level != null) works = join(works, OutputCheck.check(fixed, level));
+        net.minecraft.world.item.Item goal = GoalCheck.goal(input);
+        if (goal != null && level != null) works = join(works, GoalCheck.check(cells, goal, GuideText.string(input, "goal"), level));
+        if (motion != null) works = join(works, motion.report());
+        works = join(works, vehicle(cells, level, input.has("part_of_vehicle") && input.get("part_of_vehicle").isJsonPrimitive()
                 && input.get("part_of_vehicle").getAsBoolean()));
-        boolean showsFault = input.has("shows_a_fault") && input.get("shows_a_fault").isJsonPrimitive()
-                && input.get("shows_a_fault").getAsBoolean();
+        BuildCheck.Report usable = PlayerCheck.posts(cells);
+        BuildCheck.Report makeable = null;
+        boolean forLater = input.has("for_later") && input.get("for_later").isJsonPrimitive() && input.get("for_later").getAsBoolean();
+        if (level != null && !forLater) {
+            // Parts the player would place: on their own build, only what the model adds.
+            java.util.Set<net.minecraft.world.level.block.Block> built = new java.util.HashSet<>();
+            if (base != null) base.values().forEach(st -> built.add(st.getBlock()));
+            List<BlockState> added = new ArrayList<>();
+            for (BlockState st : cells.values()) if (!built.contains(st.getBlock())) added.add(st);
+            if (player != null) makeable = Reach.parts(player, level.getServer(), added, goal);
+            if (goal != null) makeable = join(makeable, Reach.selfMade(player, level.getServer(), added, goal));
+        }
+        BuildCheck.Report check = lenses(works, usable, makeable);
         boolean draft = input.has("draft") && input.get("draft").isJsonPrimitive() && input.get("draft").getAsBoolean();
+        String title = GuideText.string(input, "title"), caption = GuideText.string(input, "caption");
+        if (draft0 != null && title.isEmpty()) title = draft0.title();
+        if (draft0 != null && caption.isEmpty()) caption = draft0.caption();
+        // Kept for the next version, refused or not: fixing a fault is a few changes on top of it.
+        String saved = "";
+        if (drafts != null) {
+            drafts.add(new Draft(new HashMap<>(cells), sx, sy, sz, labels, movingIn, title, caption, speedsIn));
+            saved = "\nThis is model " + drafts.size() + ": start its next version with from_draft " + drafts.size()
+                    + " and write only what changes.";
+        }
+        // The design briefs for kinds of build this answer hasn't had yet; a model only explaining a point gets none.
+        if (briefs != null && !showsFault && base == null) {
+            List<String> brief = DesignBriefs.forModel(cells, briefs);
+            if (!brief.isEmpty()) saved += "\n\nDesign brief for this kind of build (for you; follow it in this version and every "
+                    + "later one):\n" + String.join("\n", brief);
+        }
         if (check != null && !check.faults().isEmpty() && !showsFault && !draft) {
             return Result.problem("Not built: blocks in it wouldn't work as placed. Fix the model and call again (or "
-                    + "set shows_a_fault if it is meant to show a broken build).\n" + check.text());
+                    + "set shows_a_fault if it is meant to show a broken build).\n" + check.text() + saved);
         }
         JsonObject model = new JsonObject();
         model.addProperty("type", "model");
-        model.addProperty("title", GuideText.string(input, "title"));
-        model.addProperty("caption", GuideText.string(input, "caption"));
+        model.addProperty("title", title);
+        model.addProperty("caption", caption);
         JsonArray size = new JsonArray();
         size.add(sx);
         size.add(sy);
@@ -357,6 +520,7 @@ public final class Models {
         model.add("labels", labels);
         if (motion != null) model.add("moving", motion.moving());
         String report = check == null ? "" : check.text();
+        if (!steps.isEmpty()) report = (report.isEmpty() ? "" : report + "\n") + stepReport(steps, cells);
         report = (report.isEmpty() ? "" : report + "\n") + tally(cells);
         // A build to copy, not a few machines explaining a point: what it takes of the player's own materials.
         String holdings = cells.size() < MIN_HOLDINGS || level == null ? null : Materials.against(cells, player, level.getServer());
@@ -367,6 +531,7 @@ public final class Models {
             model.add("changes", changeRuns(changes, sx, sy, sz));
             report = (report.isEmpty() ? "" : report + "\n") + changeReport(changes, cells, base, worldMin.subtract(offset), base.size());
         }
+        report += saved;
         byte[] picture = !draft ? null : motion == null ? Preview.render(cells, sx, sy, sz) : Preview.render(cells, sx, sy, sz, motion.moved());
         return new Result(model, null, report, draft, picture);
     }
@@ -429,22 +594,47 @@ public final class Models {
         PARTS.put("barrel", storage);
         PARTS.put("furnace", id -> id.contains("furnace") || id.contains("smoker"));
         PARTS.put("lever", id -> id.contains("lever"));
+        PARTS.put("throttle", id -> id.contains("throttle_lever"));
+        PARTS.put("transmission", id -> id.contains("transmission"));
+        PARTS.put("belt", id -> id.contains("belt"));
+        PARTS.put("deployer", id -> id.contains("deployer"));
+        PARTS.put("funnel", id -> id.contains("funnel"));
+        PARTS.put("arm", id -> id.endsWith("_arm"));
+        PARTS.put("depot", id -> id.contains("depot"));
+        PARTS.put("basin", id -> id.contains("basin"));
+        PARTS.put("mixer", id -> id.contains("mixer"));
+        PARTS.put("spout", id -> id.contains("spout"));
+        PARTS.put("fan", id -> id.contains("fan"));
+        PARTS.put("saw", id -> id.contains("saw"));
+        PARTS.put("drill", id -> id.contains("drill"));
     }
 
     /**
      * The part a label's words name when no block near its cell is that part, else null. Near is within two blocks, or
      * anywhere straight above or below the cell and its neighbours: a label on a roof or deck honestly names the barrels
-     * or engine under it, though the label can only point at the outside.
+     * or engine under it, though the label can only point at the outside. With no cell (a caption), anywhere in the model.
      */
     private static String missingPart(String text, Map<BlockPos, BlockState> cells, BlockPos at) {
-        for (String w : text.toLowerCase(java.util.Locale.ROOT).split("[^a-z]+")) {
-            String word = w.endsWith("s") && PARTS.containsKey(w.substring(0, w.length() - 1)) ? w.substring(0, w.length() - 1) : w;
+        if (text == null || text.isEmpty()) return null;
+        // Each thing a label names is the last part word of its phrase: "propeller throttle" is a throttle (for the
+        // propellers), "engine and propeller" names both.
+        List<String> named = new ArrayList<>();
+        for (String phrase : text.toLowerCase(java.util.Locale.ROOT).split(",|&|\\band\\b|\\bwith\\b|\\+|/")) {
+            String last = null;
+            for (String w : phrase.split("[^a-z]+")) {
+                String word = w.endsWith("s") && PARTS.containsKey(w.substring(0, w.length() - 1)) ? w.substring(0, w.length() - 1) : w;
+                if (PARTS.containsKey(word)) last = word;
+            }
+            if (last != null) named.add(last);
+        }
+        for (String word : named) {
             java.util.function.Predicate<String> is = PARTS.get(word);
-            if (is == null) continue;
             boolean found = false;
             for (Map.Entry<BlockPos, BlockState> e : cells.entrySet()) {
                 BlockPos q = e.getKey();
-                int dx = Math.abs(q.getX() - at.getX()), dy = Math.abs(q.getY() - at.getY()), dz = Math.abs(q.getZ() - at.getZ());
+                // With no cell (a caption), anywhere in the model counts.
+                int dx = at == null ? 0 : Math.abs(q.getX() - at.getX()), dy = at == null ? 0 : Math.abs(q.getY() - at.getY()),
+                        dz = at == null ? 0 : Math.abs(q.getZ() - at.getZ());
                 if ((dx <= 1 && dz <= 1 || dx <= 2 && dy <= 2 && dz <= 2)
                         && is.test(net.minecraft.core.registries.BuiltInRegistries.BLOCK.getKey(e.getValue().getBlock()).toString())) {
                     found = true;
@@ -483,6 +673,67 @@ public final class Models {
         if (!part) return new BuildCheck.Report(text, r.faults());
         return new BuildCheck.Report(text.replace("- PROBLEM: ", "- As a whole vehicle these blocks alone would fail: ")
                 + "\n- (Marked part_of_vehicle: check the whole vehicle with its own model before recommending it.)", List.of());
+    }
+
+    /** Whether a cell of the box x..x2, y..y2, z..z2 (corners in any order) is part of the named shape. */
+    static boolean inShape(String shape, BlockPos p, int x, int y, int z, int x2, int y2, int z2) {
+        int ax = Math.min(x, x2), bx = Math.max(x, x2), ay = Math.min(y, y2), by = Math.max(y, y2), az = Math.min(z, z2), bz = Math.max(z, z2);
+        return switch (shape) {
+            case "hollow_box" -> p.getX() == ax || p.getX() == bx || p.getY() == ay || p.getY() == by || p.getZ() == az || p.getZ() == bz;
+            case "ellipsoid" -> inEllipsoid(p.getX(), p.getY(), p.getZ(), ax, bx, ay, by, az, bz);
+            case "ellipsoid_shell" -> {
+                if (!inEllipsoid(p.getX(), p.getY(), p.getZ(), ax, bx, ay, by, az, bz)) yield false;
+                // On the skin when any neighbour, edge and corner ones too, is outside it: then the skin is joined face to
+                // face all round, with no steps that meet only at an edge.
+                for (int dx = -1; dx <= 1; dx++)
+                    for (int dy = -1; dy <= 1; dy++)
+                        for (int dz = -1; dz <= 1; dz++)
+                            if (!inEllipsoid(p.getX() + dx, p.getY() + dy, p.getZ() + dz, ax, bx, ay, by, az, bz)) yield true;
+                yield false;
+            }
+            default -> true;
+        };
+    }
+
+    /** The cell's centre inside the ellipsoid that fits the box (a box one cell thick on an axis is flat along it). */
+    private static boolean inEllipsoid(int x, int y, int z, int ax, int bx, int ay, int by, int az, int bz) {
+        if (x < ax || x > bx || y < ay || y > by || z < az || z > bz) return false;
+        double sum = 0;
+        int[][] axes = {{x, ax, bx}, {y, ay, by}, {z, az, bz}};
+        for (int[] a : axes) {
+            double r = (a[2] - a[1] + 1) / 2.0, c = (a[1] + a[2] + 1) / 2.0;
+            if (r > 0.5) sum += Math.pow((a[0] + 0.5 - c) / r, 2);
+        }
+        return sum <= 1.0001;
+    }
+
+    /** Where corner steps were filled, so the book's next version has them and its words match the model. */
+    private static String stepReport(List<BlockPos> steps, Map<BlockPos, BlockState> cells) {
+        List<String> where = new ArrayList<>();
+        for (int i = 0; i < Math.min(steps.size(), 24); i++) {
+            BlockPos p = steps.get(i);
+            where.add(p.getX() + "," + p.getY() + "," + p.getZ() + " (" + BuiltInRegistries.BLOCK.getKey(cells.get(p).getBlock()).getPath() + ")");
+        }
+        return "Filled " + steps.size() + " corner step" + (steps.size() == 1 ? "" : "s") + " where blocks met only along an edge or "
+                + "at a corner, so the whole vehicle shares faces and Super Glue takes it as one (they are in this model, and "
+                + "from_draft keeps them; count them in the materials): " + String.join("; ", where)
+                + (steps.size() > 24 ? "; and more" : "") + ".";
+    }
+
+    /** The three lenses' reports as one, each under its heading; null when none has anything to say. */
+    private static BuildCheck.Report lenses(BuildCheck.Report works, BuildCheck.Report usable, BuildCheck.Report makeable) {
+        String[] headings = {"WORKS (does it do its job)", "USABLE (can a player reach, use and get around it)",
+                "MAKEABLE (can this player build it now)"};
+        BuildCheck.Report[] reports = {works, usable, makeable};
+        StringBuilder text = new StringBuilder();
+        List<String> faults = new ArrayList<>();
+        for (int i = 0; i < 3; i++) {
+            if (reports[i] == null) continue;
+            if (!text.isEmpty()) text.append('\n');
+            text.append("== ").append(headings[i]).append(" ==\n").append(reports[i].text());
+            faults.addAll(reports[i].faults());
+        }
+        return text.isEmpty() ? null : new BuildCheck.Report(text.toString(), faults);
     }
 
     /** Both checks' reports as one; either may be null (nothing of its kind in the model). */

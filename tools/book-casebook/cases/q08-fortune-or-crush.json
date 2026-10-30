@@ -1,0 +1,79 @@
+{
+  "title": "Ore facts come from the loot table",
+  "roots": [
+    "R1"
+  ],
+  "kind": "question",
+  "question": "Is Fortune or crushing better for iron ore?",
+  "player": "Has a Fortune III pickaxe and a crusher setup.",
+  "rubric": [
+    "Uses block_drops / recipe numbers (Fortune III about 2.2 raw iron per ore)",
+    "Compares with Silk Touch plus crushing with real numbers"
+  ],
+  "world": [
+    "fill ~-12 ~-1 ~-12 ~12 ~-1 ~12 minecraft:grass_block",
+    "time set 6000"
+  ],
+  "box": [
+    -12,
+    -1,
+    -12,
+    12,
+    0,
+    12
+  ],
+  "built": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "stand": [
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "inventory": [
+    {
+      "id": "minecraft:diamond_pickaxe",
+      "count": 1
+    },
+    {
+      "id": "minecraft:iron_ore",
+      "count": 64
+    },
+    {
+      "id": "minecraft:raw_iron",
+      "count": 20
+    },
+    {
+      "id": "create:crushing_wheel",
+      "count": 2
+    }
+  ],
+  "advancements": [
+    "minecraft:story/root",
+    "minecraft:story/mine_stone",
+    "minecraft:story/upgrade_tools",
+    "minecraft:story/smelt_iron",
+    "minecraft:husbandry/root",
+    "create:root",
+    "create:andesite_alloy",
+    "create:water_wheel",
+    "create:shifting_gears",
+    "create:mechanical_press",
+    "create:andesite_casing",
+    "create:belt",
+    "create:encased_fan",
+    "create:fan_processing",
+    "create:mechanical_mixer",
+    "create:compacting",
+    "create:millstone",
+    "create:crushing_wheel",
+    "minecraft:story/mine_diamond"
+  ]
+}

@@ -1,0 +1,46 @@
+{
+  "title": "Basin pushing its output down onto a chest gives nothing",
+  "from": "pack 0.5.5 (PR #193): output chest one down beside the basin got nothing",
+  "roots": [
+    "R3"
+  ],
+  "kind": "model",
+  "model": {
+    "title": "Basin over a chest",
+    "size_x": 3,
+    "size_y": 2,
+    "size_z": 1,
+    "blocks": [
+      {
+        "block": "create:basin",
+        "x": 1,
+        "y": 1,
+        "z": 0
+      },
+      {
+        "block": "minecraft:stone",
+        "x": 0,
+        "y": 1,
+        "z": 0
+      },
+      {
+        "block": "minecraft:chest[facing=north]",
+        "x": 2,
+        "y": 0,
+        "z": 0
+      },
+      {
+        "block": "minecraft:stone",
+        "x": 1,
+        "y": 0,
+        "z": 0
+      }
+    ]
+  },
+  "expect": {
+    "built": false,
+    "has": [
+      "chest"
+    ]
+  }
+}

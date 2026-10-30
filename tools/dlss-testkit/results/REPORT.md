@@ -1,7 +1,7 @@
 # DLAA round 1: results (RTX 4080 SUPER)
 
-Run on Emre's PC on 2026-10-24, 13:56–14:58, by a Claude Code session in `C:\Users\coolm\Documents\Claude\MC-CREATE`
-(`$T`), following `tools/dlss-testkit/PC-RUNBOOK.md` at `3e7a2ea`. All five runs finished. The decisions Emre made
+Run on the player's PC on 2026-10-24, 13:56–14:58, by a Claude Code session in `C:\Users\<user>\Documents\Claude\MC-CREATE`
+(`$T`), following `tools/dlss-testkit/PC-RUNBOOK.md` at `3e7a2ea`. All five runs finished. The decisions the player made
 during the session are listed under [Changes from the runbook](#changes-from-the-runbook).
 
 > **Correction, added after the report (2026-10-24).** The report first read Photon's TAA as the sharper image and
@@ -59,14 +59,14 @@ during the session are listed under [Changes from the runbook](#changes-from-the
 
 ## Changes from the runbook
 
-Emre decided each of these during the session:
+The player decided each of these during the session:
 
 1. **NVIDIA App DLSS override turned off.** At the first launch, NGX used the NVIDIA App's global override instead of
    the pack's DLL (`Feature dlss override enabled`, snippet
    `C:\ProgramData\NVIDIA\NGX\models\dlss\versions\20318480\files/160_E658700.bin version: 310.9.16`,
    `(DLAA) Using DRS Overridden Preset K`, `Override Reported: ModelPreset, Value: 11, Requested: Yes, Applied: Yes, Is Latest: Yes`).
    No per-app profile matched this Java (`NvAPI_DRS_FindApplicationByName -166`), so it came from the Global profile.
-   It would have forced preset K for every mode and replaced the developer DLL. Emre switched it off in the NVIDIA App
+   It would have forced preset K for every mode and replaced the developer DLL. The player switched it off in the NVIDIA App
    during the first hold. From the second launch on, NGX loads `instance\create-galore-dlss/nvngx_dlss.dll` (`APP_NAME = default`)
    and honours the app's preset. Only the step-4 launch ran with the override.
 2. **Distant Horizons radius 256 → 64 and the "I paid for the whole CPU" thread preset**, in the test instance's
@@ -82,14 +82,14 @@ Emre decided each of these during the session:
    | 2 | 64 chunks, 32 threads | 14:17–14:32 (full 900 s) | 213 MB, DH chat: `16,016 left` |
    | 3 | same | 14:34–14:38, closed early | 229.5 MB, last progress line 14:35:13, unchanged for 60 s |
 
-   Emre turned on DH's `showGenerationProgress = "CHAT"` during hold 2. It stayed on for the runs, where chat is
+   the player turned on DH's `showGenerationProgress = "CHAT"` during hold 2. It stayed on for the runs, where chat is
    hidden. DH counts chunk area, not work, so its "left" figure drops in jumps; it started near 65,000 for radius 64,
    probably because the far LOD tiles snap to a grid wider than the radius. The database barely moved during the runs
    (224.78 MB before A, 224.89 MB after E).
 4. **`tutorialStep:none`** added to `options.txt` before run A. Without it, the "Move with W, A, S and D" popup (drawn
    even with the HUD hidden) would have been in the top right of every screenshot, since the camera never moves by key.
 5. **Closing the game myself**, through a normal window close (Minecraft saves), to end holds early and to restart run D.
-6. **Computer use:** Emre allowed the session to look at the game window with computer use whenever needed. It was used
+6. **Computer use:** The player allowed the session to look at the game window with computer use whenever needed. It was used
    only for screenshots (where the player was during the hold, DH's chat counter), never to click or type in the game.
 7. **Two runs started twice:** run A (the first start crashed at world load, see below) and run D (the first start
    came up without Perfect Presentation and was closed before the world loaded).
@@ -103,10 +103,10 @@ First launch (override still on):
 14:03:49.037 DLAA: made shaderpacks/Photon v1.3a + DLAA from photon_v1.3a + Clrwl_1.0.5.zip
 14:04:05.955 DLAA: on for this shader pack, preset default
 14:04:32.115 DLAA: on for this shader pack, preset default
-14:04:44.079 DLAA: NGX ready on NVIDIA GeForce RTX 4080 SUPER (its own DirectX device), nvngx_dlss.dll from C:\Users\coolm\Documents\Claude\MC-CREATE\instance\create-galore-dlss
+14:04:44.079 DLAA: NGX ready on NVIDIA GeForce RTX 4080 SUPER (its own DirectX device), nvngx_dlss.dll from C:\Users\<user>\Documents\Claude\MC-CREATE\instance\create-galore-dlss
 14:04:45.646 DLAA: DLSS running at 2560x1421, preset default
 14:14:18.955 DLAA: closed its DirectX device
-14:14:20.647 DLAA: NGX ready on NVIDIA GeForce RTX 4080 SUPER (its own DirectX device), nvngx_dlss.dll from C:\Users\coolm\Documents\Claude\MC-CREATE\instance\create-galore-dlss
+14:14:20.647 DLAA: NGX ready on NVIDIA GeForce RTX 4080 SUPER (its own DirectX device), nvngx_dlss.dll from C:\Users\<user>\Documents\Claude\MC-CREATE\instance\create-galore-dlss
 14:14:20.702 DLAA: DLSS running at 2560x1421, preset default
 ```
 
@@ -253,7 +253,7 @@ It was closed before the world loaded, and the second start had Perfect Presenta
 14:52:42 Perfect Presentation: on, the game window will be shown through a DXGI swap chain
 14:52:50.990 Perfect Presentation: DXGI swap chain ready (OpenGL on a hidden context)
 14:53:30.823 Perfect Presentation: swap chain wait timed out
-14:53:54.373 DLAA: NGX ready on Perfect Presentation's device (Perfect Presentation's DirectX device), nvngx_dlss.dll from C:\Users\coolm\Documents\Claude\MC-CREATE\instance\create-galore-dlss
+14:53:54.373 DLAA: NGX ready on Perfect Presentation's device (Perfect Presentation's DirectX device), nvngx_dlss.dll from C:\Users\<user>\Documents\Claude\MC-CREATE\instance\create-galore-dlss
 ```
 
 The one `swap chain wait timed out` came during loading and didn't repeat.
@@ -271,7 +271,7 @@ Run 20261024-145722 at 2560x1440, NVIDIA GeForce RTX 4080 SUPER/PCIe/SSE2, Photo
 | dlaa-default | yes | 9.16 | 0.13 / 0.04% | 2.67 / 2.18 | 4.34 |
 
 NGX's own log: `Build v310.9.16 CL 38955375`,
-`Loaded from path "C:\Users\coolm\Documents\Claude\MC-CREATE\dlss-dev/nvngx_dlss.dll" by java.exe`, on a D3D11 device.
+`Loaded from path "C:\Users\<user>\Documents\Claude\MC-CREATE\dlss-dev/nvngx_dlss.dll" by java.exe`, on a D3D11 device.
 The watermark `DLSS SDK - DO NOT DISTRIBUTE - CONTACT NVIDIA TO OBTAIN DLLS FOR YOUR TITLE` is in the top right,
 vertically flipped (`results/E/watermark-strip-dlaa-default.png`). No other debug text is drawn. The developer DLL's
 other on-screen output may need switching on; this round didn't try.
@@ -288,9 +288,9 @@ DLL search, config section names and feature cache lookups, with no warnings or 
 ```
 14:16:16.921 DLAA: on for this shader pack, preset default
 14:16:33.277 DLAA: on for this shader pack, preset default
-14:16:43.210 DLAA: NGX ready on NVIDIA GeForce RTX 4080 SUPER (its own DirectX device), nvngx_dlss.dll from C:\Users\coolm\Documents\Claude\MC-CREATE\instance\create-galore-dlss
+14:16:43.210 DLAA: NGX ready on NVIDIA GeForce RTX 4080 SUPER (its own DirectX device), nvngx_dlss.dll from C:\Users\<user>\Documents\Claude\MC-CREATE\instance\create-galore-dlss
 14:16:44.998 DLAA: DLSS running at 2560x1421, preset default
-  NGX: feature dlss snippet: C:\Users\coolm\Documents\Claude\MC-CREATE\instance\create-galore-dlss/nvngx_dlss.dll version: 310.9.16
+  NGX: feature dlss snippet: C:\Users\<user>\Documents\Claude\MC-CREATE\instance\create-galore-dlss/nvngx_dlss.dll version: 310.9.16
   NGX: (DLAA) App hint Preset Unspecified or Overridden, using title default Preset K
 ```
 
@@ -304,11 +304,11 @@ The end of this launch's log rolled off (the game keeps seven logs); it was clos
 14:32:36 Perfect Presentation: off (config/create_galore_bridge-display.properties)
 14:33:28.689 DLAA: on for this shader pack, preset default
 14:33:48.204 DLAA: on for this shader pack, preset default
-14:33:58.539 DLAA: NGX ready on NVIDIA GeForce RTX 4080 SUPER (its own DirectX device), nvngx_dlss.dll from C:\Users\coolm\Documents\Claude\MC-CREATE\instance\create-galore-dlss
+14:33:58.539 DLAA: NGX ready on NVIDIA GeForce RTX 4080 SUPER (its own DirectX device), nvngx_dlss.dll from C:\Users\<user>\Documents\Claude\MC-CREATE\instance\create-galore-dlss
 14:34:01.066 DLAA: DLSS running at 2560x1421, preset default
   NGX: (DLAA) App hint Preset Unspecified or Overridden, using title default Preset K
 14:37:46.505 DLAA: closed its DirectX device
-14:37:48.099 DLAA: NGX ready on NVIDIA GeForce RTX 4080 SUPER (its own DirectX device), nvngx_dlss.dll from C:\Users\coolm\Documents\Claude\MC-CREATE\instance\create-galore-dlss
+14:37:48.099 DLAA: NGX ready on NVIDIA GeForce RTX 4080 SUPER (its own DirectX device), nvngx_dlss.dll from C:\Users\<user>\Documents\Claude\MC-CREATE\instance\create-galore-dlss
 14:37:48.154 DLAA: DLSS running at 2560x1421, preset default
   NGX: (DLAA) App hint Preset Unspecified or Overridden, using title default Preset K
 ```
@@ -322,7 +322,7 @@ The end of this launch's log rolled off (the game keeps seven logs); it was clos
 14:39:14.448 DLAA: on for this shader pack, preset default
 14:39:27.379 DLAA: on for this shader pack, preset default
 14:39:27.850 [Server thread/FATAL] Preparing crash report ... crash-2026-10-24_14.39.27-server.txt
-14:39:30.683 DLAA: NGX ready on NVIDIA GeForce RTX 4080 SUPER (its own DirectX device), nvngx_dlss.dll from C:\Users\coolm\Documents\Claude\MC-CREATE\instance\create-galore-dlss
+14:39:30.683 DLAA: NGX ready on NVIDIA GeForce RTX 4080 SUPER (its own DirectX device), nvngx_dlss.dll from C:\Users\<user>\Documents\Claude\MC-CREATE\instance\create-galore-dlss
 14:39:31.890 [Render thread/FATAL] Preparing crash report ... crash-2026-10-24_14.39.31-client.txt
 ```
 </details>
@@ -334,7 +334,7 @@ The end of this launch's log rolled off (the game keeps seven logs); it was clos
 14:40:53 Perfect Presentation: off (config/create_galore_bridge-display.properties)
 14:41:38.773 DLAA: on for this shader pack, preset default
 14:41:51.589 DLAA: on for this shader pack, preset default
-14:42:01.417 DLAA: NGX ready on NVIDIA GeForce RTX 4080 SUPER (its own DirectX device), nvngx_dlss.dll from C:\Users\coolm\Documents\Claude\MC-CREATE\instance\create-galore-dlss
+14:42:01.417 DLAA: NGX ready on NVIDIA GeForce RTX 4080 SUPER (its own DirectX device), nvngx_dlss.dll from C:\Users\<user>\Documents\Claude\MC-CREATE\instance\create-galore-dlss
 14:42:03.404 DLAA: DLSS running at 2560x1421, preset default
   NGX: (DLAA) App hint Preset Unspecified or Overridden, using title default Preset K
 14:42:16.454 DLAA test: mode photon-taa
@@ -349,7 +349,7 @@ The end of this launch's log rolled off (the game keeps seven logs); it was clos
 14:43:51.309 DLAA: DLSS running at 2560x1421, preset M
   NGX: (DLAA) Using App hint Preset M
 14:44:14.857 DLAA: closed its DirectX device
-14:44:16.519 DLAA: NGX ready on NVIDIA GeForce RTX 4080 SUPER (its own DirectX device), nvngx_dlss.dll from C:\Users\coolm\Documents\Claude\MC-CREATE\instance\create-galore-dlss
+14:44:16.519 DLAA: NGX ready on NVIDIA GeForce RTX 4080 SUPER (its own DirectX device), nvngx_dlss.dll from C:\Users\<user>\Documents\Claude\MC-CREATE\instance\create-galore-dlss
 14:44:16.553 DLAA: DLSS running at 2560x1421, preset M
   NGX: (DLAA) Using App hint Preset M
 ```
@@ -362,7 +362,7 @@ The end of this launch's log rolled off (the game keeps seven logs); it was clos
 14:45:22 Perfect Presentation: off (config/create_galore_bridge-display.properties)
 14:46:08.627 DLAA: on for this shader pack, preset default
 14:46:21.572 DLAA: on for this shader pack, preset default
-14:46:32.511 DLAA: NGX ready on NVIDIA GeForce RTX 4080 SUPER (its own DirectX device), nvngx_dlss.dll from C:\Users\coolm\Documents\Claude\MC-CREATE\instance\create-galore-dlss
+14:46:32.511 DLAA: NGX ready on NVIDIA GeForce RTX 4080 SUPER (its own DirectX device), nvngx_dlss.dll from C:\Users\<user>\Documents\Claude\MC-CREATE\instance\create-galore-dlss
 14:46:34.029 DLAA: DLSS running at 2560x1421, preset default
   NGX: (DLAA) App hint Preset Unspecified or Overridden, using title default Preset K
 14:46:45.984 DLAA: on for this shader pack, preset default
@@ -370,7 +370,7 @@ The end of this launch's log rolled off (the game keeps seven logs); it was clos
 14:47:08.175 DLAA: on for this shader pack, preset default, jitter sign 1,-1
 14:47:15.300 DLAA: on for this shader pack, preset default, jitter sign -1,-1
 14:47:24.122 DLAA: closed its DirectX device
-14:47:25.730 DLAA: NGX ready on NVIDIA GeForce RTX 4080 SUPER (its own DirectX device), nvngx_dlss.dll from C:\Users\coolm\Documents\Claude\MC-CREATE\instance\create-galore-dlss
+14:47:25.730 DLAA: NGX ready on NVIDIA GeForce RTX 4080 SUPER (its own DirectX device), nvngx_dlss.dll from C:\Users\<user>\Documents\Claude\MC-CREATE\instance\create-galore-dlss
 14:47:25.776 DLAA: DLSS running at 2560x1421, preset default
   NGX: (DLAA) App hint Preset Unspecified or Overridden, using title default Preset K
 ```
@@ -383,7 +383,7 @@ The end of this launch's log rolled off (the game keeps seven logs); it was clos
 14:48:11 Perfect Presentation: off (config/create_galore_bridge-display.properties)
 14:48:57.869 DLAA: on for this shader pack, preset default
 14:49:10.627 DLAA: on for this shader pack, preset default
-14:49:20.508 DLAA: NGX ready on NVIDIA GeForce RTX 4080 SUPER (its own DirectX device), nvngx_dlss.dll from C:\Users\coolm\Documents\Claude\MC-CREATE\instance\create-galore-dlss
+14:49:20.508 DLAA: NGX ready on NVIDIA GeForce RTX 4080 SUPER (its own DirectX device), nvngx_dlss.dll from C:\Users\<user>\Documents\Claude\MC-CREATE\instance\create-galore-dlss
 14:49:22.742 DLAA: DLSS running at 2560x1421, preset default
   NGX: (DLAA) App hint Preset Unspecified or Overridden, using title default Preset K
 14:49:35.611 DLAA: on for this shader pack, preset default (debug view motion, DLSS itself not used)
@@ -407,14 +407,14 @@ The end of this launch's log rolled off (the game keeps seven logs); it was clos
 14:53:29.806 DLAA: on for this shader pack, preset default
 14:53:30.823 Perfect Presentation: swap chain wait timed out
 14:53:43.790 DLAA: on for this shader pack, preset default
-14:53:54.373 DLAA: NGX ready on Perfect Presentation's device (Perfect Presentation's DirectX device), nvngx_dlss.dll from C:\Users\coolm\Documents\Claude\MC-CREATE\instance\create-galore-dlss
+14:53:54.373 DLAA: NGX ready on Perfect Presentation's device (Perfect Presentation's DirectX device), nvngx_dlss.dll from C:\Users\<user>\Documents\Claude\MC-CREATE\instance\create-galore-dlss
 14:53:56.230 DLAA: DLSS running at 2560x1440, preset default
   NGX: (DLAA) App hint Preset Unspecified or Overridden, using title default Preset K
 14:54:38.741 DLAA: on for this shader pack, preset default
 14:55:00.399 DLAA: on for this shader pack, preset K
 14:55:00.560 DLAA: DLSS running at 2560x1440, preset K
   NGX: (DLAA) Using App hint Preset K
-14:55:25.329 DLAA: NGX ready on Perfect Presentation's device (Perfect Presentation's DirectX device), nvngx_dlss.dll from C:\Users\coolm\Documents\Claude\MC-CREATE\instance\create-galore-dlss
+14:55:25.329 DLAA: NGX ready on Perfect Presentation's device (Perfect Presentation's DirectX device), nvngx_dlss.dll from C:\Users\<user>\Documents\Claude\MC-CREATE\instance\create-galore-dlss
 14:55:25.379 DLAA: DLSS running at 2560x1440, preset K
   NGX: (DLAA) Using App hint Preset K
 ```
@@ -427,12 +427,12 @@ The end of this launch's log rolled off (the game keeps seven logs); it was clos
 14:56:01 Perfect Presentation: off (config/create_galore_bridge-display.properties)
 14:56:47.747 DLAA: on for this shader pack, preset default
 14:57:00.768 DLAA: on for this shader pack, preset default
-14:57:11.275 DLAA: NGX ready on NVIDIA GeForce RTX 4080 SUPER (its own DirectX device), nvngx_dlss.dll from C:\Users\coolm\Documents\Claude\MC-CREATE\dlss-dev
+14:57:11.275 DLAA: NGX ready on NVIDIA GeForce RTX 4080 SUPER (its own DirectX device), nvngx_dlss.dll from C:\Users\<user>\Documents\Claude\MC-CREATE\dlss-dev
 14:57:13.233 DLAA: DLSS running at 2560x1440, preset default
   NGX: (DLAA) App hint Preset Unspecified or Overridden, using title default Preset K
 14:57:23.775 DLAA: on for this shader pack, preset default
 14:57:40.516 DLAA: closed its DirectX device
-14:57:42.094 DLAA: NGX ready on NVIDIA GeForce RTX 4080 SUPER (its own DirectX device), nvngx_dlss.dll from C:\Users\coolm\Documents\Claude\MC-CREATE\dlss-dev
+14:57:42.094 DLAA: NGX ready on NVIDIA GeForce RTX 4080 SUPER (its own DirectX device), nvngx_dlss.dll from C:\Users\<user>\Documents\Claude\MC-CREATE\dlss-dev
 14:57:42.148 DLAA: DLSS running at 2560x1440, preset default
   NGX: (DLAA) App hint Preset Unspecified or Overridden, using title default Preset K
 ```
@@ -456,7 +456,7 @@ as it does for any DLSS game.
   `AbstractTempCap.serializeModifiers` ← `Temperature.updateModifiers` ← coldsweat_altitude 0.8.1
   `ColdSweatCompat.removeAltitudeModifier` ← `AltitudeTemperatureManager.onPlayerTick`, Cold Sweat 2.4.4. The player
   was at 1029.5, 59, 160.5. The client crash at 14:39:31 is the follow-on (integrated server gone). The same world
-  loaded fine before (hold 3) and after (run A again and all later runs). In hold 2, Emre had flown up to y 176 and back
+  loaded fine before (hold 3) and after (run A again and all later runs). In hold 2, the player had flown up to y 176 and back
   down, which may have left an altitude modifier in the saved player data. It's a pack issue worth a look, because a
   player on a server could hit it too. The crash reports are in `$T\round1-logs\A-crash1\`.
 - **Perfect Presentation needs two starts** after switching it on: the first start only turns off NeoForge's early

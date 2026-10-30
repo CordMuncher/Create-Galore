@@ -25,7 +25,7 @@ import net.neoforged.neoforge.fluids.FluidUtil;
 /**
  * The Fuel Reel Drive: copper casing with an engine and an exhaust stack at the back, a rod bracket on top. Takes a
  * rod like the other drives; furnace fuel goes into its fuel slot and a bucket of liquid fuel into its tank by hand,
- * bait into its bait slot. Sneaking with an empty hand takes the bait and fuel back out.
+ * bait into its bait slot. Sneaking with an empty hand opens its window: the fuel and bait slots and its switches.
  */
 public class FuelReelDriveBlock extends HorizontalDirectionalBlock implements IBE<FuelReelDriveBlockEntity>, IWrenchable {
     public static final MapCodec<FuelReelDriveBlock> CODEC = simpleCodec(FuelReelDriveBlock::new);
@@ -76,10 +76,6 @@ public class FuelReelDriveBlock extends HorizontalDirectionalBlock implements IB
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
         if (!(level.getBlockEntity(pos) instanceof FuelReelDriveBlockEntity be)) return InteractionResult.PASS;
-        if (player.isShiftKeyDown() && DriveUse.takeAll(be.fuelSlot(), player, level.isClientSide)) {
-            DriveUse.takeAll(be.drive().bait(), player, level.isClientSide);
-            return InteractionResult.sidedSuccess(level.isClientSide);
-        }
         return DriveUse.use(be, player, InteractionHand.MAIN_HAND) ? InteractionResult.sidedSuccess(level.isClientSide) : InteractionResult.PASS;
     }
 

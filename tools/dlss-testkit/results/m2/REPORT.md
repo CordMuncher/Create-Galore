@@ -1,10 +1,10 @@
 # Milestone 2 on the RTX 4080 SUPER: things that move
 
-PC session on 2026-10-24, 21:50–22:54, by a Claude Code session in `C:\Users\coolm\Documents\Claude\MC-CREATE` (`$T`),
+PC session on 2026-10-24, 21:50–22:54, by a Claude Code session in `C:\Users\<user>\Documents\Claude\MC-CREATE` (`$T`),
 following "Milestone 2, PC session: things that move" in `tools/dlss-testkit/PC-RUNBOOK.md` at `956c9e4`, with
-Bridge 1.91.0 and the test kit from that commit. Automated runs J–N, then about 45 minutes by eye with Emre.
+Bridge 1.91.0 and the test kit from that commit. Automated runs J–N, then about 45 minutes by eye with the player.
 
-**Emre's game server ran during the whole session** (his call; the test game had the X3D CCD). Frame times in this
+**The player's game server ran during the whole session** (his call; the test game had the X3D CCD). Frame times in this
 report are noisy and are not used for any conclusion.
 
 ## Summary
@@ -46,7 +46,7 @@ report are noisy and are not used for any conclusion.
   3.8, lava pool 4.4, smoke 2.1, waterfall 1.7. Its `kept` is 0.08–0.23, against FSR's 0.16–0.31 and 0.24–0.47 without
   masks. On the still bricks under the rain (the normal anti-aliasing level) DLSS is at 1.5, FSR 1.8, FSR without
   masks 2.8.
-- **By eye, Emre's verdict (details in [Emre's notes](#emres-notes)):**
+- **By eye, the player's verdict (details in [the player's notes](#emres-notes)):**
   - **Motion:** `dlaa-default` shows no motion degradation, "pretty perfect", no trails or ghosts on anything moving.
   - **Camera-only motion:** `dlaa-camera` looks the same while standing still. While moving around moving things,
     textures go soft ("like you need glasses"), and shadows in the gear notches boil clearly. So the new motion vectors
@@ -65,7 +65,7 @@ report are noisy and are not used for any conclusion.
 - **Found along the way (not anti-aliasing):**
   - **Particles over the hand:** small particles are drawn on top of the first-person hand and held items in **every**
     mode (DLSS, FSR with and without masks, Photon's TAA). That covers the water sparkles, rain splash droplets,
-    campfire smoke and portal particles; the rain streaks themselves are fine. Emre thinks it's the shader pack's
+    campfire smoke and portal particles; the rain streaks themselves are fine. The player thinks it's the shader pack's
     interaction with some particle effects. Phone photos in `$T\round-m2-photos\`.
   - **Rain in fog:** rain looks thinner in fog at the horizon in every mode, so it's the pack's own look.
   - **Shadows up close:** they fizzle for about half a second up close (Photon's lighting). The motion vectors make it
@@ -123,7 +123,7 @@ Run 20261024-215254 at 2560x1440, NVIDIA GeForce RTX 4080 SUPER/PCIe/SSE2, Photo
 
 No conclusions from the frame times (game server running). At this viewpoint the machines, ship and entities keep
 moving during the still path and the flick, so shimmer and residue here also count the scene's own motion. Lower
-isn't simply better: a mode that blurs moving things changes less from frame to frame. Emre saw that blur in
+isn't simply better: a mode that blurs moving things changes less from frame to frame. The player saw that blur in
 `dlaa-camera` by eye.
 
 ### K: ghostcheck.py
@@ -316,19 +316,19 @@ k = 1 is still the best by far there.
 | 37->38 | 4.4% | 24.50 | 60.10 | 54.07 | 50.22 | **3.98** | 50.64 |
 | 38->39 | 10.0% | 508.00 | 45.92 | 74.02 | 68.08 | **11.39** | 75.85 |
 
-## Emre's notes
+## the player's notes
 
 The by-eye session ran from 22:07 to 22:53. I started the game without autorun and opened `dlaa-test` (computer use).
-Then I switched modes and scenes with the runbook's `/dlaatest` commands, typed into the game's chat, while Emre
+Then I switched modes and scenes with the runbook's `/dlaatest` commands, typed into the game's chat, while the player
 played and watched. The moving scene was built with `/dlaatest scene build` at normal speed. The effects scene was
 built with `/dlaatest scene build effects`. The first build at 22:33 still had the moving scene up, because a doubled
 slash made the `remove` fail, so it was taken down and the effects scene rebuilt clean at 22:35. The rain is
-Minecraft's normal rain at full level (`weather rain`, thunder off); the test kit only skips the fade-in. Emre found
+Minecraft's normal rain at full level (`weather rain`, thunder off); the test kit only skips the fade-in. The player found
 it very heavy.
 
 ### Moving scene
 
-**dlaa-default.** Emre rode the ship and looked from close up and far away.
+**dlaa-default.** The player rode the ship and looked from close up and far away.
 - "Looks pretty perfect": no trails, ghosts or anything on objects as they move, from a distance or close up.
   Maybe something with his nose against the screen, "but that's just DLSS working".
 - Textures and edges stay clean in motion; transparencies look as expected.
@@ -396,7 +396,7 @@ it very heavy.
 - **Particles over the hand:** first seen in fsr3 over the water, then checked in every mode. Small particles show on
   top of the first-person hand and held items with DLSS, FSR with and without masks, and Photon's TAA: water
   sparkles, rain splash droplets, campfire smoke, portal particles. The rain streaks themselves don't. Not an
-  anti-aliasing issue; Emre thinks it's the pack's shader interacting with some particle effects. Phone photos:
+  anti-aliasing issue; the player thinks it's the pack's shader interacting with some particle effects. Phone photos:
   `$T\round-m2-photos\fsr3-pink-dots-1.jpg`, `fsr3-pink-dots-2.jpg`, `fsr3-nomask-particles-over-hand.jpg`.
 - **Rain in fog:** rain is less visible in fog at the horizon in every mode (DLSS, FSR, Photon's TAA). It's the pack's
   look.
@@ -412,7 +412,7 @@ and the by-eye session.
 ```
 J  21:51:21 Perfect Presentation: off (config/create_galore_bridge-display.properties)
 J  21:51:22 DLAA: made shaderpacks/Photon v1.3a + DLAA from photon_v1.3a + Clrwl_1.0.5.zip
-J  21:52:42.199 DLAA: NGX ready on NVIDIA GeForce RTX 4080 SUPER (its own DirectX device), nvngx_dlss.dll from C:\Users\coolm\Documents\Claude\MC-CREATE\instance\create-galore-dlss
+J  21:52:42.199 DLAA: NGX ready on NVIDIA GeForce RTX 4080 SUPER (its own DirectX device), nvngx_dlss.dll from C:\Users\<user>\Documents\Claude\MC-CREATE\instance\create-galore-dlss
 J  21:52:44.602 DLAA: DLSS running at 2560x1440, preset default
 J  21:53:18.127 DLAA: on for this shader pack, preset default                     (dlaa-default)
 J  21:53:28.955 DLAA: on for this shader pack, preset default                     (dlaa-camera)
@@ -459,10 +459,10 @@ version 1.0.5`, `Created/Deleted pipeline data for ... IrisRenderingPipeline`). 
 
 - **One frame of K, `dlaa-default` f039 (of 40 saved frames in K), has two large solid blue rectangles** (top centre and
   right). They're not in any other frame or mode, and **not in that frame's raw DLSS input or output** (checked on the
-  `raw` dumps). So they were drawn after DLSS, or the dump is from a neighbouring frame. Emre reads them as raindrops
+  `raw` dumps). So they were drawn after DLSS, or the dump is from a neighbouring frame. The player reads them as raindrops
   that came right up to the camera in that one frame. Nothing like it showed in the by-eye session. The crops avoid
   those spots.
-- `dlaa-camera` scores lower shimmer than `dlaa-default` in J's table, but that matches the softness Emre saw: blurred
+- `dlaa-camera` scores lower shimmer than `dlaa-default` in J's table, but that matches the softness the player saw: blurred
   moving things change less between frames.
 
 ## Crops

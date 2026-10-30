@@ -3,6 +3,7 @@ package dev.creategalore.fishing.machine;
 import com.simibubi.create.api.equipment.goggles.IHaveGoggleInformation;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
+import dev.creategalore.fishing.cast.CastHook;
 import dev.creategalore.fishing.compat.LiquidFuels;
 import java.util.List;
 import net.minecraft.core.BlockPos;
@@ -28,9 +29,13 @@ import net.neoforged.neoforge.items.wrapper.CombinedInvWrapper;
 /**
  * The Fuel Reel Drive: a geared drive with its own engine and no shafts, made for boats. The engine winds against
  * up to {@link #RATING} kgf in gear 1.0 (four times that in the lowest gear) and bogs and stalls beyond it. It burns
- * furnace fuel from its fuel slot or a liquid fuel (see {@link LiquidFuels}) from its tank, by load: a tenth while the
- * line waits, all of it while it winds against the most it can. It only runs while a rod is set in and has a line out
- * or one to cast.
+ * furnace fuel from its fuel slot or a liquid fuel (see {@link LiquidFuels}) from its tank, by how hard it works: a
+ * tenth while the line waits, a quarter while it winds in an empty line or a lure, and in a fight from
+ * {@link #FIGHT_BURN} with a fish barely pulling up to all of it once the line pulls {@link #FULL_BURN_KGF} (a drag
+ * near the top of what tackle takes). The gear doesn't change it: a heavy fish in a low gear still costs what its pull
+ * costs. A bigger fight costs more, but every fish costs something and none costs much. It only runs while it is switched on and a rod is
+ * set in with a line out or one to cast. Its window (sneak and use with an empty hand) holds the fuel and bait slots
+ * and the on and autocast switches.
  *
  * <p>Hoppers and funnels reach two slots (bait, fuel); pipes fill the tank.
  */
@@ -42,6 +47,12 @@ public class FuelReelDriveBlockEntity extends SmartBlockEntity implements DriveM
     public static final int TANK_MB = 4000;
     /** Share of full burn while the engine idles. */
     public static final double IDLE_BURN = 0.1;
+    /** Share of full burn while it winds with nothing on (a lure retrieved, the line wound in to cast again). */
+    public static final double WIND_BURN = 0.25;
+    /** Share of full burn in a fight against a fish that barely pulls. */
+    public static final double FIGHT_BURN = 0.4;
+    /** Line pull (kgf) at which a fight burns fuel at the full rate. */
+    public static final double FULL_BURN_KGF = 10;
 
     private DriveSlots.Settings settings;
     private final MountedRod rod;
@@ -65,7 +76,8 @@ public class FuelReelDriveBlockEntity extends SmartBlockEntity implements DriveM
     };
     private IItemHandler items;
     private double burnLeft;
-    private double load;
+    /** The pull the engine winds against this tick, kgf (0 outside a fight). */
+    private double pull;
     private boolean running;
     private int fuelTicks;
     private int syncIn;
@@ -82,6 +94,11 @@ public class FuelReelDriveBlockEntity extends SmartBlockEntity implements DriveM
         // Runs from Create's constructor, before this class's fields are set up: only the settings may be made here.
         settings = DriveSlots.create(this);
         settings.addTo(behaviours);
+    }
+
+    @Override
+    public DriveSlots.Settings settings() {
+        return settings;
     }
 
     @Override
@@ -112,6 +129,15 @@ public class FuelReelDriveBlockEntity extends SmartBlockEntity implements DriveM
         return tank;
     }
 
+    /** Fuel left in ticks at full load, as last synced. */
+    public int fuelTicks() {
+        return fuelTicks;
+    }
+
+    public int tankMb() {
+        return tank.getFluidAmount();
+    }
+
     public boolean running() {
         return running;
     }
@@ -130,8 +156,8 @@ public class FuelReelDriveBlockEntity extends SmartBlockEntity implements DriveM
         settings.applyTo(drive);
         rod.tick();
         drive.tick();
-        boolean nowRunning = !rod.rod().isEmpty() && (rod.hook() != null || drive.wantsToCast()) && hasFuel();
-        if (nowRunning) burnLeft -= IDLE_BURN + (1 - IDLE_BURN) * load;
+        boolean nowRunning = drive.on() && !rod.rod().isEmpty() && (rod.hook() != null || drive.willCast()) && hasFuel();
+        if (nowRunning) burnLeft -= burn(pull, rod.hook() != null && rod.hook().flag(CastHook.FLAG_REELING));
         int nowFuel = (int) Math.max(0, burnLeft) + storedTicks();
         boolean changed = drive.takeDirty() || nowRunning != running;
         if (--syncIn <= 0 && Math.abs(nowFuel - fuelTicks) >= 20) {
@@ -143,6 +169,12 @@ public class FuelReelDriveBlockEntity extends SmartBlockEntity implements DriveM
             fuelTicks = nowFuel;
             sendData();
         }
+    }
+
+    /** Share of full burn this tick: winding against {@code pull} kgf in a fight, else winding in or idling. */
+    public static double burn(double pull, boolean winding) {
+        if (pull > 0) return FIGHT_BURN + (1 - FIGHT_BURN) * Math.min(1, pull / FULL_BURN_KGF);
+        return winding ? WIND_BURN : IDLE_BURN;
     }
 
     /** True if the engine has fuel burning or can take more from the tank or the slot. */
@@ -204,7 +236,7 @@ public class FuelReelDriveBlockEntity extends SmartBlockEntity implements DriveM
 
         @Override
         public void load(double kgf, double gear) {
-            load = Math.min(1, kgf * gear / RATING);
+            pull = kgf;
         }
     }
 

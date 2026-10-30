@@ -171,6 +171,10 @@ final class WorldTools {
 
     /** Runs one tool call; call it on the server thread (the world and the recipe list are not thread-safe). */
     static String run(String name, JsonObject input, ServerPlayer player, MinecraftServer server) {
+        return Drives.asking(player, () -> runAs(name, input, player, server));
+    }
+
+    private static String runAs(String name, JsonObject input, ServerPlayer player, MinecraftServer server) {
         try {
             return switch (name) {
                 case "look_at" -> lookAt(player);
@@ -611,6 +615,13 @@ final class WorldTools {
         Recipe<?> recipe = holder.value();
         ResourceLocation type = BuiltInRegistries.RECIPE_TYPE.getKey(recipe.getType());
         StringBuilder out = new StringBuilder("- ").append(type == null ? "?" : type).append(" (").append(holder.id()).append("): ");
+        if (recipe instanceof com.simibubi.create.content.processing.sequenced.SequencedAssemblyRecipe assembly) {
+            try {
+                return out.append(Assembly.describe(assembly)).toString();
+            } catch (RuntimeException | LinkageError ignored) {
+                // Fall back to the plain listing below.
+            }
+        }
         List<String> inputs = new ArrayList<>();
         for (Ingredient ingredient : recipe.getIngredients()) if (!ingredient.isEmpty()) inputs.add(ingredient(ingredient));
         if (recipe instanceof ProcessingRecipe<?, ?> processing) {
@@ -640,6 +651,7 @@ final class WorldTools {
             if (!r.isEmpty()) results.add(r.getCount() + "x " + r.getHoverName().getString());
         }
         out.append(results.isEmpty() ? "(special result)" : String.join(", ", results));
+        out.append(AutoCrafting.phrase(holder));
         return out.toString();
     }
 

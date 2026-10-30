@@ -1,0 +1,72 @@
+{
+  "title": "What players saw is real",
+  "roots": [
+    "R1",
+    "R2"
+  ],
+  "kind": "question",
+  "question": "I keep seeing big green flying dragons spitting stuff near the stony beach. What are they?",
+  "player": "Overworld, Stony Shore, night.",
+  "rubric": [
+    "Names the Mowzie's Mobs Naga (or asks what else they noticed, with the Naga first)",
+    "Never says no such creature exists or that it must be something they didn't describe",
+    "Gives its health, where it spawns and its drops from find_creatures, not memory"
+  ],
+  "world": [
+    "fill ~-12 ~-1 ~-12 ~12 ~-1 ~12 minecraft:grass_block",
+    "fillbiome ~-16 ~-8 ~-16 ~16 ~8 ~16 minecraft:stony_shore",
+    "time set 18000"
+  ],
+  "box": [
+    -12,
+    -1,
+    -12,
+    12,
+    0,
+    12
+  ],
+  "built": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "stand": [
+    0,
+    0,
+    0,
+    90,
+    0
+  ],
+  "inventory": [
+    {
+      "id": "minecraft:iron_sword",
+      "count": 1
+    },
+    {
+      "id": "minecraft:bow",
+      "count": 1
+    },
+    {
+      "id": "minecraft:arrow",
+      "count": 32
+    },
+    {
+      "id": "minecraft:cooked_beef",
+      "count": 12
+    },
+    {
+      "id": "minecraft:torch",
+      "count": 40
+    }
+  ],
+  "advancements": [
+    "minecraft:story/root",
+    "minecraft:story/mine_stone",
+    "minecraft:story/upgrade_tools",
+    "minecraft:story/smelt_iron",
+    "minecraft:husbandry/root"
+  ]
+}

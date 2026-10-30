@@ -160,33 +160,51 @@ public final class GuideAiClient {
         if (mc.screen instanceof AskScreen ask && ask.isShowing(answered.pageId())) return;
         unread.add(answered.pageId());
         if (mc.screen instanceof AskScreen ask) ask.unreadChanged();
-        mc.getToasts().addToast(new AnswerToast(answered.title(), answered.answered()));
+        // A worn Field Guide Pendant has no slot to glow in, so the notice shows the pendant and the key that opens it.
+        boolean pendant = PendantClient.worn(mc.player);
+        mc.getToasts().addToast(new AnswerToast(answered.title(), answered.answered(),
+                pendant ? PendantClient.keyName(PendantClient.ASK) : "", pendant));
         if (AskSettings.sound())
             mc.getSoundManager().play(net.minecraft.client.resources.sounds.SimpleSoundInstance.forUI(
                     net.minecraft.sounds.SoundEvents.BOOK_PAGE_TURN, 1.0f, 0.8f));
     }
 
-    /** "The book has answered" and the page's title, under a picture of the guide; gone after a few seconds. */
+    /**
+     * "The book has answered" and the page's title, under a picture of the guide (or of the pendant, with the key that
+     * opens the answer, while the pendant is worn); gone after a few seconds.
+     */
     private static final class AnswerToast implements net.minecraft.client.gui.components.toasts.Toast {
         private static final ResourceLocation BACKGROUND = ResourceLocation.withDefaultNamespace("toast/advancement");
         private static final long SHOWN_MS = 7000;
         private final String title;
         private final boolean answered;
+        private final String key;
+        private final boolean pendant;
 
-        AnswerToast(String title, boolean answered) {
+        AnswerToast(String title, boolean answered, String key, boolean pendant) {
             this.title = title;
             this.answered = answered;
+            this.key = key;
+            this.pendant = pendant;
         }
 
         @Override
         public Visibility render(net.minecraft.client.gui.GuiGraphics g, net.minecraft.client.gui.components.toasts.ToastComponent toasts, long time) {
             var font = toasts.getMinecraft().font;
             g.blitSprite(BACKGROUND, 0, 0, width(), height());
-            g.renderFakeItem(new net.minecraft.world.item.ItemStack(BuiltInRegistries.ITEM
-                    .getOptional(ResourceLocation.fromNamespaceAndPath("modonomicon", "modonomicon_red"))
-                    .orElse(net.minecraft.world.item.Items.BOOK)), 8, 8);
-            g.drawString(font, answered ? "The book has answered" : "The book couldn't answer", 30, 7, 0xFFFFFF00, false);
-            g.drawString(font, font.plainSubstrByWidth(title, width() - 36), 30, 18, 0xFFFFFFFF, false);
+            g.renderFakeItem(pendant ? new ItemStack(dev.creategalore.bridge.CreateGaloreBridge.FIELD_GUIDE_PENDANT.get())
+                    : new ItemStack(BuiltInRegistries.ITEM.getOptional(ResourceLocation.fromNamespaceAndPath("modonomicon", "modonomicon_red"))
+                    .orElse(Items.BOOK)), 8, 8);
+            String head = answered ? "The book has answered" : "The book couldn't answer";
+            g.drawString(font, head, 30, 7, 0xFFFFFF00, false);
+            // The key that opens it goes in front of the page's title: "[Y] Gearboxes".
+            int x = 30;
+            if (!key.isEmpty()) {
+                String hint = "[" + key + "] ";
+                g.drawString(font, hint, x, 18, 0xFFB0B0B0, false);
+                x += font.width(hint);
+            }
+            g.drawString(font, font.plainSubstrByWidth(title, width() - 6 - x), x, 18, 0xFFFFFFFF, false);
             return time >= SHOWN_MS * toasts.getNotificationDisplayTimeMultiplier() ? Visibility.HIDE : Visibility.SHOW;
         }
     }

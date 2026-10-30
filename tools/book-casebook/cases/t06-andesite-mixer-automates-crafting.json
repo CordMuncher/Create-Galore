@@ -1,0 +1,18 @@
+{
+  "title": "The recipe lookup says a Mechanical Mixer runs the shapeless Andesite crafting recipe, so the book never calls it hand-only",
+  "from": "0.6.18: an answer said diorite plus cobblestone only works at a crafting table and is no good for automation",
+  "roots": [
+    "R1"
+  ],
+  "kind": "tool",
+  "tool": "lookup_recipes",
+  "input": {
+    "item": "minecraft:andesite"
+  },
+  "expect": {
+    "has": [
+      "andesite_from_flint",
+      "Mechanical Mixer over a Basin (it runs shapeless crafting)"
+    ]
+  }
+}

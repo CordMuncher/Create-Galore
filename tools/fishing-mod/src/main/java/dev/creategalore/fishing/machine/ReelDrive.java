@@ -34,6 +34,11 @@ import net.neoforged.neoforge.items.ItemStackHandler;
  * {@link DriveMode#CAST} they lob the rig out and wind it back slowly to work a lure, in {@link DriveMode#WAIT} they
  * cast once and hold. They re-bait from a bait slot (filled by hand, hopper or funnel) before each cast.
  *
+ * <p>A drive can be switched off (it then neither casts, strikes nor winds, as if its power were cut), and a geared
+ * one can have its autocast off: it then casts once each time it is switched on or told to, and leaves its line in once
+ * it comes back. Both are set in the drive's window, as is whether a lost fish is reported in chat. The Basic drive's
+ * window has only the on/off switch and the reports.
+ *
  * <p>The torque the reel needs is the line's tension times the gear. Where it comes from is the drive's
  * {@link Power}: Create rotation (as stress) for the shaft drives, an engine for the fuel drive. A fish that pulls
  * more than that stalls the reel until it eases off.
@@ -84,6 +89,13 @@ public final class ReelDrive {
     private final ItemStackHandler bait;
 
     private DriveMode mode = DriveMode.WAIT;
+    private boolean on = true;
+    private boolean autocast = true;
+    private boolean reportLosses;
+    /** Autocast off: a cast is waiting, from switching the drive on or the window's Cast button. */
+    private boolean castArmed;
+    /** Whether a set-in rod's bait has been moved to the slot since the line last came in (not saved: checked again on load). */
+    private boolean stowed;
     private int castDistance = 12;
     private int topGear = Gearbox.GEARS.length - 1;
     private Gearbox gearbox = new Gearbox(0, topGear);
@@ -144,6 +156,67 @@ public final class ReelDrive {
         }
     }
 
+    public boolean on() {
+        return on;
+    }
+
+    public boolean autocast() {
+        return autocast;
+    }
+
+    /** Switches the drive on or off. With autocast off, switching it on doesn't cast: only the Cast button does. */
+    public void setOn(boolean on) {
+        this.on = on;
+        // A cast asked for but not made yet (no bait, no power) is called off with the drive.
+        if (!on) castArmed = false;
+        changed();
+    }
+
+    /** Whether a lost fish is reported in chat to the player who set the rod in (off by default). */
+    public boolean reportLosses() {
+        return reportLosses;
+    }
+
+    public void setReportLosses(boolean report) {
+        reportLosses = report;
+        changed();
+    }
+
+    public void setAutocast(boolean autocast) {
+        this.autocast = autocast;
+        castArmed = false;
+        changed();
+    }
+
+    /**
+     * The window's Cast button: one cast, now, if the line is in. With autocast off that cast is all it does: in Cast
+     * and wait it waits for a bite and lands the fish, in Cast and retrieve it winds the rig back once, fish or not,
+     * then the drive stops with its line in. With autocast on it just casts without waiting out the pause.
+     */
+    public void castOnce() {
+        castArmed = true;
+        recastIn = 0;
+        changed();
+    }
+
+    private void changed() {
+        dirty = true;
+        be.setChanged();
+    }
+
+    /** What the power can wind against now: nothing while the drive is switched off. */
+    private double torque() {
+        return on ? power.torqueAtOne() : 0;
+    }
+
+    /**
+     * How fast the rod turns to drop a catch: the top gear it is set to (a drive limited to low gears turns slowly),
+     * 1 for the Basic drive.
+     */
+    public double turnSpeed() {
+        return kind.geared() ? Gearbox.GEARS[topGear] : 1;
+    }
+
     public double gearRatio() {
         return kind.geared() ? gearbox.ratio() : 1;
     }
@@ -152,12 +225,12 @@ public final class ReelDrive {
 
     /** Outside a fight only geared drives wind: a lure worked back in Cast mode, or a rig that landed on the bank. */
     public boolean reeling(CastHook hook) {
-        if (!kind.geared() || power.torqueAtOne() <= 0) return false;
+        if (!kind.geared() || torque() <= 0) return false;
         return mode == DriveMode.CAST || hook.phase() == CastHook.Phase.GROUNDED;
     }
 
     public double retrieveScale(CastHook hook) {
-        return (hook.phase() == CastHook.Phase.GROUNDED ? 1 : CAST_RETRIEVE) * power.speedScale();
+        return (hook.phase() == CastHook.Phase.GROUNDED ? 1 : CAST_RETRIEVE) * (on ? power.speedScale() : 0);
     }
 
     public int biteTicks() {
@@ -175,21 +248,21 @@ public final class ReelDrive {
             if (be.getLevel().getGameTime() % 20 == 0) rod.alarm();
             return false;
         }
-        return ++biteAge > STRIKE_DELAY && power.torqueAtOne() > 0;
+        return ++biteAge > STRIKE_DELAY && torque() > 0;
     }
 
     public void fight(Fight fight, Controls c) {
-        double torque = power.torqueAtOne();
+        double torque = torque();
         if (kind.geared()) {
             gearbox.update(torque, fight);
             gearbox.apply(c, torque);
-            c.retrieveScale *= power.speedScale();
-            c.reeling = power.driven() && !fight.slipping();
+            c.retrieveScale *= on ? power.speedScale() : 0;
+            c.reeling = on && power.driven() && !fight.slipping();
             c.crankThroughSlip = false;
         } else {
             c.crankLimit = torque;
             c.retrieveScale = power.speedScale();
-            c.reeling = power.driven();
+            c.reeling = on && power.driven();
             c.crankThroughSlip = true;
         }
         c.rodAngle = ROD_ANGLE;
@@ -216,7 +289,7 @@ public final class ReelDrive {
                     gearbox.index() > gear ? 1.1f : 0.9f);
         }
         boolean nowWinding = hook != null && hook.flag(CastHook.FLAG_REELING);
-        double nowHeadroom = power.torqueAtOne() / gearRatio();
+        double nowHeadroom = torque() / gearRatio();
         if (nowStalled != stalled || nowWinding != winding || gearbox.index() != gear
                 || (Math.abs(nowHeadroom - headroomKg) > 0.25 && syncIn <= 0)) {
             stalled = nowStalled;
@@ -235,8 +308,15 @@ public final class ReelDrive {
         if (lineWasOut) {
             lineWasOut = false;
             recastIn = RECAST_DELAY;
+            stowed = false;
         }
-        if (kind.geared()) castWhenReady();
+        if (kind.geared()) {
+            if (!stowed) {
+                stowBait();
+                stowed = true;
+            }
+            castWhenReady();
+        }
     }
 
     /** True once if what clients see has changed (the block entity then sends an update). */
@@ -251,7 +331,7 @@ public final class ReelDrive {
             recastIn--;
             return;
         }
-        if (!wantsToCast() || power.torqueAtOne() <= 0) return;
+        if (!willCast() || torque() <= 0) return;
         rebait();
         RodStats stats = rod.stats();
         // The bait in store may not be what's on the hook (and an empty hook isn't worth casting).
@@ -262,17 +342,23 @@ public final class ReelDrive {
                 new Vec3(facing.getStepX(), 0, facing.getStepZ()));
         CastHook.castFrom(rod.angler(), stats, mount.tip(), out, castDistance);
         recastIn = 20;
+        castArmed = false;
     }
 
     /**
-     * True if a geared drive with its line in would cast: a rod with a reel is set in, no fish hangs at the tip, and
+     * True if a geared drive with its line in would cast: a rod with a reel is set in, no catch hangs from it or is on its way, and
      * there is a lure on, or bait on the rod or in store.
      */
     public boolean wantsToCast() {
-        if (!kind.geared() || rod.rod().isEmpty() || !rod.dangling().isEmpty()) return false;
+        if (!kind.geared() || rod.rod().isEmpty() || rod.busy()) return false;
         RodStats stats = rod.stats();
         if (stats == null || stats.isPole()) return false;
         return lure(stats) || !RodItem.parts(rod.rod()).bait().isEmpty() || !bait.getStackInSlot(0).isEmpty();
+    }
+
+    /** True if the drive would cast now its line is in: it wants to, is switched on, and autocasts or was told to. */
+    public boolean willCast() {
+        return on && (autocast || castArmed) && wantsToCast();
     }
 
     private static boolean lure(RodStats stats) {
@@ -280,6 +366,42 @@ public final class ReelDrive {
     }
 
     /** Tops the rod's bait up from the bait slot: more of the same bait, or any bait if the rod has none. */
+    /** A rod was set in: its bait moves to the slot once the line is in (now, or when it comes back). */
+    public void rodSetIn() {
+        stowed = false;
+    }
+
+    /**
+     * A geared drive keeps the bait of a rod set in with its line in in its own bait slot, where the window shows it
+     * and it can be added to or taken out; each cast takes what it needs onto the hook, and what is left comes back
+     * when the line does. Bait that doesn't fit the slot (another kind is in there) stays on the rod.
+     */
+    public void stowBait() {
+        if (!kind.geared() || rod.rod().isEmpty() || rod.hook() != null) return;
+        ItemStack stack = rod.rod();
+        RodParts parts = RodItem.parts(stack);
+        ItemStack fitted = parts.bait();
+        if (fitted.isEmpty()) return;
+        ItemStack store = bait.getStackInSlot(0);
+        ItemStack rest;
+        if (store.getItem() instanceof LiveBaitBucketItem && LiveBait.isLive(fitted)) {
+            ItemStack bucket = store.copy();
+            ItemStack left = LiveBaitBucketItem.putBack(bucket, fitted.copy());
+            bait.setStackInSlot(0, bucket);
+            rest = left.isEmpty() ? ItemStack.EMPTY : LiveBait.alive(left);
+        } else {
+            rest = bait.insertItem(0, fitted.copy(), false);
+        }
+        if (rest.getCount() == fitted.getCount()) return;
+        RodItem.setParts(stack, parts.with(RodParts.Slot.BAIT, rest));
+        rod.changed();
+    }
+
+    /** The rod is coming out: with its line in, it takes its bait back from the slot (as much as a rod carries). */
+    public void refitBait() {
+        if (kind.geared() && !rod.rod().isEmpty() && rod.hook() == null) rebait();
+    }
+
     private void rebait() {
         ItemStack stack = rod.rod();
         RodParts parts = RodItem.parts(stack);
@@ -313,7 +435,8 @@ public final class ReelDrive {
     // ---- goggles ----
 
     public MachineInfo.Drive info(boolean fuelled, int fuelTicks, int tankMb) {
-        return new MachineInfo.Drive(kind.geared(), gear, headroomKg, stalled, bait.getStackInSlot(0), fuelled, fuelTicks, tankMb);
+        return new MachineInfo.Drive(kind.geared(), gear, headroomKg, stalled, bait.getStackInSlot(0), fuelled, fuelTicks, tankMb,
+                on, autocast);
     }
 
     /** The gear in use, an index into {@link Gearbox#GEARS} (synced, for clients). */
@@ -331,14 +454,18 @@ public final class ReelDrive {
 
     /** One line for {@code /cgfish machine}: gear, what it can wind against, whether it cranks or stalled. */
     public String describe() {
-        return String.format(java.util.Locale.ROOT, "%s gear %.2f, winds against %.1f kgf, cranking %s, stalled %s, recast in %d",
-                kind, gearRatio(), power.torqueAtOne() / gearRatio(), cranking, stalled, recastIn);
+        return String.format(java.util.Locale.ROOT, "%s gear %.2f, winds against %.1f kgf, cranking %s, stalled %s, recast in %d, on %s, autocast %s",
+                kind, gearRatio(), torque() / gearRatio(), cranking, stalled, recastIn, on, autocast);
     }
 
     // ---- saving ----
 
     public void write(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
         tag.put("bait", bait.serializeNBT(registries));
+        tag.putBoolean("on", on);
+        tag.putBoolean("autocast", autocast);
+        tag.putBoolean("cast_armed", castArmed);
+        tag.putBoolean("report_losses", reportLosses);
         if (clientPacket) {
             tag.putInt("gear", gear);
             tag.putDouble("headroom", headroomKg);
@@ -349,6 +476,11 @@ public final class ReelDrive {
 
     public void read(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
         if (tag.contains("bait")) bait.deserializeNBT(registries, tag.getCompound("bait"));
+        // Drives from before the switches were added are on, with autocast.
+        on = !tag.contains("on") || tag.getBoolean("on");
+        autocast = !tag.contains("autocast") || tag.getBoolean("autocast");
+        castArmed = tag.getBoolean("cast_armed");
+        reportLosses = tag.getBoolean("report_losses");
         if (clientPacket) {
             gear = tag.getInt("gear");
             headroomKg = tag.getDouble("headroom");

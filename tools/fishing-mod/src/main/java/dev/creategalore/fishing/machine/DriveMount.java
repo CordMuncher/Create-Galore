@@ -7,6 +7,10 @@ import dev.creategalore.fishing.sim.Fight;
 import dev.creategalore.fishing.sim.Outcome;
 import dev.creategalore.fishing.tackle.RodStats;
 import java.util.List;
+import java.util.Locale;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemStack;
@@ -19,9 +23,23 @@ import net.minecraft.world.phys.Vec3;
  * The rod sits on top of the drive and points the way the drive faces.
  */
 public interface DriveMount extends RodMount {
+    /** A geared drive's mode, cast distance and top gear (its value boxes); null for the Basic drive. */
+    DriveSlots.Settings settings();
+
     ReelDrive drive();
 
     BlockEntity blockEntity();
+
+    /** A geared drive keeps the rod's bait in its own slot while the rod is in (see {@link ReelDrive#stowBait}). */
+    @Override
+    default void rodSetIn() {
+        drive().rodSetIn();
+    }
+
+    @Override
+    default void rodTakingOut() {
+        drive().refitBait();
+    }
 
     @Override
     default BlockPos mountPos() {
@@ -42,6 +60,11 @@ public interface DriveMount extends RodMount {
     default Vec3 tip() {
         return SableShips.toWorld(blockEntity().getLevel(),
                 MountedRod.tip(Vec3.atLowerCornerOf(mountPos()).add(rodBase()), rodFacing(), mounted().stats()));
+    }
+
+    @Override
+    default double turnSpeed() {
+        return drive().turnSpeed();
     }
 
     @Override
@@ -81,6 +104,16 @@ public interface DriveMount extends RodMount {
 
     @Override
     default void lost(CastHook hook, Outcome outcome) {
+        // Off by default: a bank of drives would fill the chat. Switched on in the window, to find a rig's weak link.
+        if (!drive().reportLosses()) return;
+        ServerPlayer owner = mounted().ownerOnline();
+        if (owner == null) return;
+        BlockPos at = BlockPos.containing(SableShips.toWorld(blockEntity().getLevel(), Vec3.atCenterOf(mountPos())));
+        owner.sendSystemMessage(Component.translatable("message.create_galore_fishing.machine_lost",
+                blockEntity().getBlockState().getBlock().getName(), at.getX(), at.getY(), at.getZ(),
+                Component.translatable("message.create_galore_fishing.lost." + outcome.name().toLowerCase(Locale.ROOT))));
+        Component why = hook.lossReason();
+        if (why != null) owner.sendSystemMessage(why.copy().withStyle(ChatFormatting.GRAY));
     }
 
     @Override

@@ -1,0 +1,40 @@
+{
+  "title": "A fence post on a bottom slab floats and joins nothing",
+  "from": "pack 0.6.3 (PR #206): a player's book blimp had fences on bottom slabs",
+  "roots": [
+    "R4"
+  ],
+  "kind": "model",
+  "model": {
+    "title": "Railing on slabs",
+    "size_x": 3,
+    "size_y": 2,
+    "size_z": 1,
+    "blocks": [
+      {
+        "block": "minecraft:oak_slab[type=bottom]",
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "x2": 2,
+        "y2": 0,
+        "z2": 0
+      },
+      {
+        "block": "minecraft:oak_fence",
+        "x": 0,
+        "y": 1,
+        "z": 0,
+        "x2": 2,
+        "y2": 1,
+        "z2": 0
+      }
+    ]
+  },
+  "expect": {
+    "built": false,
+    "has": [
+      "bottom slab"
+    ]
+  }
+}

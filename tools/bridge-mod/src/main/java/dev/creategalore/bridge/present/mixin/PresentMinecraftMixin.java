@@ -21,6 +21,7 @@ public abstract class PresentMinecraftMixin {
     @Inject(method = "runTick(Z)V", at = @At(value = "CONSTANT", args = "stringValue=render"))
     private void create_galore_bridge$waitForSwapChain(boolean renderLevel, CallbackInfo ci) {
         Presentation.waitForSwapChain();
+        dev.creategalore.bridge.latency.FrameLatency.beforeRender(true);
     }
 
     @WrapOperation(method = "runTick(Z)V", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/pipeline/RenderTarget;blitToScreen(II)V"))

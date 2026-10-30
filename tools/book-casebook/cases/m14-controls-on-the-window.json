@@ -1,0 +1,210 @@
+{
+  "title": "Controls set against the front window block the pilot's view",
+  "from": "pack 0.6.18: a book airship put three Redstone Links on the cabin's front window, so the pilot could not see out",
+  "roots": [
+    "R4"
+  ],
+  "kind": "model",
+  "model": {
+    "title": "Airship",
+    "size_x": 9,
+    "size_y": 12,
+    "size_z": 13,
+    "blocks": [
+      {
+        "block": "minecraft:spruce_planks",
+        "x": 1,
+        "y": 0,
+        "z": 2,
+        "x2": 7,
+        "y2": 0,
+        "z2": 10
+      },
+      {
+        "block": "minecraft:spruce_planks",
+        "x": 1,
+        "y": 1,
+        "z": 2,
+        "x2": 7,
+        "y2": 3,
+        "z2": 2
+      },
+      {
+        "block": "minecraft:spruce_planks",
+        "x": 1,
+        "y": 1,
+        "z": 10,
+        "x2": 7,
+        "y2": 3,
+        "z2": 10
+      },
+      {
+        "block": "minecraft:spruce_planks",
+        "x": 1,
+        "y": 1,
+        "z": 2,
+        "x2": 1,
+        "y2": 3,
+        "z2": 10
+      },
+      {
+        "block": "minecraft:spruce_planks",
+        "x": 7,
+        "y": 1,
+        "z": 2,
+        "x2": 7,
+        "y2": 3,
+        "z2": 10
+      },
+      {
+        "block": "minecraft:spruce_planks",
+        "x": 1,
+        "y": 4,
+        "z": 2,
+        "x2": 7,
+        "y2": 4,
+        "z2": 10
+      },
+      {
+        "block": "minecraft:glass_pane[east=true,west=true]",
+        "x": 2,
+        "y": 2,
+        "z": 2,
+        "x2": 6,
+        "y2": 2,
+        "z2": 2
+      },
+      {
+        "block": "minecraft:glass_pane[north=true,south=true]",
+        "x": 1,
+        "y": 2,
+        "z": 4,
+        "x2": 1,
+        "y2": 2,
+        "z2": 8
+      },
+      {
+        "block": "minecraft:glass_pane[north=true,south=true]",
+        "x": 7,
+        "y": 2,
+        "z": 4,
+        "x2": 7,
+        "y2": 2,
+        "z2": 8
+      },
+      {
+        "block": "minecraft:spruce_door[facing=north,half=lower,hinge=left]",
+        "x": 4,
+        "y": 1,
+        "z": 10
+      },
+      {
+        "block": "minecraft:spruce_door[facing=north,half=upper,hinge=left]",
+        "x": 4,
+        "y": 2,
+        "z": 10
+      },
+      {
+        "block": "minecraft:spruce_planks",
+        "x": 2,
+        "y": 1,
+        "z": 3,
+        "x2": 6,
+        "y2": 1,
+        "z2": 3
+      },
+      {
+        "block": "simulated:steering_wheel[facing=south]",
+        "x": 4,
+        "y": 1,
+        "z": 4
+      },
+      {
+        "block": "simulated:physics_assembler",
+        "x": 4,
+        "y": 0,
+        "z": 7
+      },
+      {
+        "block": "aeronautics:adjustable_burner",
+        "x": 4,
+        "y": 5,
+        "z": 6
+      },
+      {
+        "block": "minecraft:redstone_block",
+        "x": 4,
+        "y": 5,
+        "z": 7
+      },
+      {
+        "block": "minecraft:spruce_fence",
+        "x": 1,
+        "y": 5,
+        "z": 2
+      },
+      {
+        "block": "minecraft:spruce_fence",
+        "x": 7,
+        "y": 5,
+        "z": 2
+      },
+      {
+        "block": "minecraft:spruce_fence",
+        "x": 1,
+        "y": 5,
+        "z": 10
+      },
+      {
+        "block": "minecraft:spruce_fence",
+        "x": 7,
+        "y": 5,
+        "z": 10
+      },
+      {
+        "block": "aeronautics:white_envelope",
+        "x": 0,
+        "y": 6,
+        "z": 0,
+        "x2": 8,
+        "y2": 11,
+        "z2": 12,
+        "shape": "ellipsoid_shell"
+      },
+      {
+        "block": "minecraft:air",
+        "x": 3,
+        "y": 6,
+        "z": 4,
+        "x2": 5,
+        "y2": 6,
+        "z2": 8
+      },
+      {
+        "block": "create:redstone_link[facing=south]",
+        "x": 2,
+        "y": 2,
+        "z": 3
+      },
+      {
+        "block": "create:redstone_link[facing=south]",
+        "x": 4,
+        "y": 2,
+        "z": 3
+      },
+      {
+        "block": "create:redstone_link[facing=south]",
+        "x": 6,
+        "y": 2,
+        "z": 3
+      }
+    ]
+  },
+  "expect": {
+    "has": [
+      "the pilot can't see out ahead",
+      "Redstone Link at 2,2,3",
+      "below the window sill"
+    ]
+  }
+}
