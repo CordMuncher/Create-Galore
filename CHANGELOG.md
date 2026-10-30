@@ -5,6 +5,18 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.6.50
+
+### Added
+- Create Galore Bridge 1.164.0.
+- **More groundwork for future shader packs: a copy of the blocks around you.** A shader pack can ask the Bridge for the blocks around the player, read from the game's own block data rather than from what the camera sees: each block's shape, colour and light, and its sky light. The copy follows as chunks load and blocks change, so a pack can trace light through the world exactly. Shader packs that don't ask for it, Photon and the others, are not affected.
+
+### Fixed
+- Nothing.
+
+### Removed
+- Nothing.
+
 ## 0.6.49
 
 ### Added
