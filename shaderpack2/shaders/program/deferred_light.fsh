@@ -194,7 +194,8 @@ void main() {
         // clump, and grass doesn't shade itself.
         float radius = (s.material == MAT_HAND || thin ? 2.0 : 1.5) * SHADOW_SOFTNESS;
         float ignore = s.material == MAT_LEAVES ? 1.0 : s.material == MAT_PLANT ? 0.5 : 0.0;
-        sun_reach = shadow_light(shadow_offset_point(scene, s.face, l), radius, ignore, sun_beyond_map(s.sky)) * sky_gate;
+        sun_reach = shadow_light(shadow_offset_point(scene, s.face, l), radius, ignore, sun_beyond_map(s.sky),
+                                 s.material == MAT_HAND) * sky_gate;
         sun = g_light_color.rgb * facing * sun_reach;
     } else if (lod) {
         sun = g_light_color.rgb * facing * sun_beyond_map(s.sky);

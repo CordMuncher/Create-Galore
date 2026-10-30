@@ -7,8 +7,8 @@
 // - cg_palette_tex, 16 words per block state: 0 the pack's number from block.properties (bits 0..15, 0xffff none),
 //   the light Minecraft says it gives (16..19) and facts about it (20 and up); 1 its colour as drawn (sRGB, alpha the
 //   share of its texture that shows); 2 its glow colour (its brightest texels, sRGB); 3 where in its block it glows
-//   (x, y, z in 32nds, 6 bits each) and how many boxes its shape has (24..27); 4..11 its shape, a box a word (low
-//   corner x, y, z, then high corner, in 16ths, 5 bits each).
+//   (x, y, z in 32nds, 6 bits each) and how many boxes its shape has (24..27); 4..15 its shape as drawn, a box a word
+//   (low corner x, y, z, then high corner, in 16ths, 5 bits each).
 // Air's word 15 holds grid_mark: without it there is no Bridge, and the pack falls back to Minecraft's own light.
 //
 // program/world.csh turns the grid into the voxel copy's words each frame (lib/voxel.glsl); everything else reads
@@ -66,18 +66,18 @@ uint grid_word(ivec3 world_block) {
     return (w & 0x80000000u) != 0u && (w & 0x0ff00000u) == tag ? w : 0u;
 }
 
-// One box of a palette entry's shape, in blocks (0..1 within its block), rounded to 8ths: a step of a 16th (a path
-// against grass, a carpet's lip) never casts a shadow.
+// One box of a palette entry's shape, in blocks (0..1 within its block), exactly as the Bridge gives it (16ths): a
+// box the copy made bigger than the drawn one would hold the surface's own pixels, and light would get out through it.
 void palette_box(uint entry, uint i, out vec3 lo, out vec3 hi) {
     uint b = palette_word(entry, 4u + i);
     uvec3 l = uvec3(b, b >> 5u, b >> 10u) & 31u;
     uvec3 h = uvec3(b >> 15u, b >> 20u, b >> 25u) & 31u;
-    lo = floor(vec3(l) * 0.5 + 0.5) / 8.0;
-    hi = floor(vec3(h) * 0.5 + 0.5) / 8.0;
+    lo = vec3(l) / 16.0;
+    hi = vec3(h) / 16.0;
 }
 
 uint palette_box_count(uint entry) {
-    return min((palette_word(entry, 3u) >> 24u) & 15u, 8u);
+    return min((palette_word(entry, 3u) >> 24u) & 15u, 12u);
 }
 
 #endif

@@ -42,6 +42,7 @@ shared vec3 s_color[tile_list_max];
 shared float s_reach[tile_list_max];
 shared float s_radius[tile_list_max];
 shared float s_level[tile_list_max];
+shared uint s_group[tile_list_max];
 shared uint s_contribution[tile_list_max];
 
 const int own_reach_tiles = 2; // the tiles whose own lights are candidates: up to this many away on each axis
@@ -179,11 +180,12 @@ void main() {
             s_color[index] = l.color;
             s_reach[index] = l.reach;
             s_level[index] = l.level;
-            // Its soft shadows' cone: half a block, less where the light's block sits in a tight spot (its shadows
-            // are then sharper). Measured from the block's middle, not the light's place in it, so a light that moves
-            // in its block (a portal's) keeps the width of every shadow it casts.
+            s_group[index] = l.group;
+            // Its soft shadows' cone: half a block (three quarters for a patch of lava), less where the light's block
+            // sits in a tight spot (its shadows are then sharper). Measured from the block's middle, not the light's
+            // place in it, so a light that moves in its block (a portal's) keeps the width of every shadow it casts.
             float space = max(free_space(floor(l.pos) + 0.5, 0), 0.05);
-            s_radius[index] = 0.5 * min(1.0, space) * 0.6;
+            s_radius[index] = (l.group > 1u ? 0.75 : 0.5) * min(1.0, space) * 0.6;
             s_contribution[index] = 0u;
             atomicMax(s_list_count, index + 1u);
         }
@@ -245,6 +247,7 @@ void main() {
                     l.pos = s_pos[j];
                     l.color = s_color[j];
                     l.level = s_level[j];
+                    l.group = s_group[j];
                     store_record(records + 1u + 3u * r, key, l, s_radius[j]);
                     r++;
                 }
@@ -257,6 +260,7 @@ void main() {
                 l.pos = s_pos[j];
                 l.color = s_color[j];
                 l.level = s_level[j];
+                l.group = s_group[j];
                 store_record(records + 1u + 3u * r, s_key[s_order[j]], l, s_radius[j]);
                 r++;
             }

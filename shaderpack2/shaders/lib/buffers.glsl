@@ -29,6 +29,9 @@ const vec4 colortex7ClearColor = vec4(0.0, 0.0, 0.0, 0.0);
 const int shadowcolor0Format = RGBA8;
 const bool shadowcolor0Clear = true;
 const vec4 shadowcolor0ClearColor = vec4(1.0, 1.0, 1.0, 1.0);
+const int shadowcolor1Format = R8;
+const bool shadowcolor1Clear = true;
+const vec4 shadowcolor1ClearColor = vec4(0.0, 0.0, 0.0, 0.0);
 */
 
 #if !defined LIB_BUFFERS

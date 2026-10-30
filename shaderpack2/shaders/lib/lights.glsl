@@ -57,6 +57,15 @@ bool block_tile_of(vec3 p, out ivec3 tile) {
     return all(greaterThanEqual(cell, ivec3(0))) && all(lessThan(cell, vox_size));
 }
 
+// A patch of lava's light against one lava block's: as bright as all its blocks together, and reaching further.
+float group_brightness(uint group) {
+    return float(group);
+}
+
+float group_reach(uint group) {
+    return sqrt(sqrt(float(group)));
+}
+
 // The light whose key this is, as this frame's program/world.csh found it; valid false when it is gone. Its place is in
 // vox_pos space (blocks from the corner of the camera's block).
 Light light_from_key(uint key) {
@@ -81,23 +90,27 @@ Light light_from_key(uint key) {
     l.pos = vec3(light_key_block(key) - cameraPositionInt) + local;
     l.level = float(level_kind >> 8u);
     l.kind = int(level_kind & 255u) - 1;
-    l.color = color * light_brightness(l.level);
-    l.reach = light_reach(l.level);
+    l.group = l.kind == KIND_LAVA ? min(count, 8u) : 1u;
+    l.color = color * light_brightness(l.level) * group_brightness(l.group);
+    l.reach = light_reach(l.level) * group_reach(l.group);
     l.valid = l.level > 0.0;
     return l;
 }
 
-// A light as a record: its key; its place in its block (32nds, 5 bits each), the size of its soft shadows' cone (in
-// 1/510 blocks, 8 bits) and its level (5 bits); its colour at full strength (11, 11 and 10 bits).
+// A light as a record: its key; its place (32nds from the corner of its key's block, 6 bits each: a lava patch's
+// light can sit in the next block), the size of its soft shadows' cone (in 1/510 blocks, 8 bits) and its level
+// (5 bits); its colour at full strength (10, 10 and 9 bits) and its group less one (3 bits).
 void store_record(uint at, uint key, Light l, float radius) {
-    uvec3 local = uvec3(clamp((l.pos - floor(l.pos)) * 32.0, 0.0, 31.0) + 0.5);
+    vec3 home = vec3(light_key_block(key) - cameraPositionInt);
+    uvec3 local = uvec3(clamp((l.pos - home) * 32.0, 0.0, 63.0) + 0.5);
     uint r = uint(clamp(radius * 510.0, 0.0, 255.0) + 0.5);
     uint level = uint(clamp(l.level, 0.0, 31.0) + 0.5);
-    vec3 c = clamp(l.color / max(light_brightness(l.level), 1e-6), 0.0, 1.0);
-    uvec3 q = uvec3(c * vec3(2047.0, 2047.0, 1023.0) + 0.5);
+    uint group = clamp(l.group, 1u, 8u);
+    vec3 c = clamp(l.color / max(light_brightness(l.level) * group_brightness(group), 1e-6), 0.0, 1.0);
+    uvec3 q = uvec3(c * vec3(1023.0, 1023.0, 511.0) + 0.5);
     data_store(at, key);
-    data_store(at + 1u, local.x | (local.y << 5u) | (local.z << 10u) | (r << 15u) | (level << 23u));
-    data_store(at + 2u, q.r | (q.g << 11u) | (q.b << 22u));
+    data_store(at + 1u, local.x | (local.y << 6u) | (local.z << 12u) | (r << 18u) | (level << 26u));
+    data_store(at + 2u, q.r | (q.g << 10u) | (q.b << 20u) | ((group - 1u) << 29u));
 }
 
 Light load_record(uint at, out float radius) {
@@ -105,15 +118,16 @@ Light load_record(uint at, out float radius) {
     uint bits = data_load(at + 1u);
     uint q = data_load(at + 2u);
     Light l;
-    vec3 local = vec3(uvec3(bits, bits >> 5u, bits >> 10u) & 31u) / 32.0;
+    vec3 local = vec3(uvec3(bits, bits >> 6u, bits >> 12u) & 63u) / 32.0;
     l.pos = vec3(light_key_block(key) - cameraPositionInt) + local;
-    l.level = float((bits >> 23u) & 31u);
-    l.color = vec3(float(q & 2047u) / 2047.0, float((q >> 11u) & 2047u) / 2047.0, float(q >> 22u) / 1023.0)
-            * light_brightness(l.level);
-    l.reach = light_reach(l.level);
+    l.level = float((bits >> 26u) & 31u);
+    l.group = (q >> 29u) + 1u;
+    l.color = vec3(float(q & 1023u) / 1023.0, float((q >> 10u) & 1023u) / 1023.0, float((q >> 20u) & 511u) / 511.0)
+            * light_brightness(l.level) * group_brightness(l.group);
+    l.reach = light_reach(l.level) * group_reach(l.group);
     l.kind = -1;
     l.valid = l.level > 0.0;
-    radius = float((bits >> 15u) & 255u) / 510.0;
+    radius = float((bits >> 18u) & 255u) / 510.0;
     return l;
 }
 

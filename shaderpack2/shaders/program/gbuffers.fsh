@@ -190,6 +190,14 @@ void main() {
     }
     vec3 albedo = color.rgb;
     float glow = glow_of(srgb_to_linear(albedo), v_block, v_emission);
+#if defined PROGRAM_TERRAIN
+    if (v_block == BLOCK_LIGHT + KIND_LAVA) {
+        // Lava keeps its deep orange; its brightest flecks burn towards yellow-white, and all of it glows a little more.
+        float heat = smoothstep(0.3, 0.75, luminance(srgb_to_linear(albedo)));
+        albedo = mix(albedo, vec3(1.0, 0.9, 0.6), 0.7 * heat);
+        glow = min(glow * 1.3 + 0.1, 1.0);
+    }
+#endif
 #if defined PROGRAM_BLOCK
     if (end_portal) {
         vec4 space = end_portal_look(normalize(v_scene_pos), n);

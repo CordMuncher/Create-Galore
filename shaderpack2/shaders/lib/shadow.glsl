@@ -2,9 +2,9 @@
 //
 // The map is squeezed towards the middle (a radial warp), so it has the most texels around you and fewer far
 // away, and its depth is squeezed too, so it reaches from deep caves to the build limit. shadowtex0 holds the
-// nearest of everything, shadowtex1 only what light can't pass (no water or glass), and shadowcolor0 the colour of
+// nearest of everything, shadowtex1 only what light can't pass (no water or glass), shadowcolor0 the colour of
 // the nearest see-through thing over the light-blocking one (rgb, sRGB; a below a half for water, whose depth then
-// absorbs the light, see shadow_tint).
+// absorbs the light, see shadow_tint), and shadowcolor1 where your own body is the nearest thing to the light.
 
 #if !defined LIB_SHADOW
 #define LIB_SHADOW
@@ -40,6 +40,7 @@ uniform sampler2DShadow shadowtex0HW;
 uniform sampler2DShadow shadowtex1HW;
 uniform sampler2D shadowtex0;
 uniform sampler2D shadowcolor0;
+uniform sampler2D shadowcolor1;
 
 // Where a point (scene space) falls in the map: xy 0..1, z its depth there, w how far from the middle (0..1).
 vec4 shadow_coord(vec3 scene_pos) {
@@ -89,7 +90,9 @@ const vec2 shadow_disk[12] = vec2[](
 // - ignore: what casts from less than this many blocks in front of the point doesn't count (leaves and grass, which
 //   let light through their own clump and mustn't shade themselves).
 // - beyond: what the light is past the map's reach (sun_beyond_map).
-vec3 shadow_light(vec3 scene_pos, float radius, float ignore, float beyond) {
+// - past_player: your own body doesn't count (what you hold: it would sit in your body's shadow, flickering as you
+//   walk). Where the map shows your body, nothing nearer the light is there, so that tap is lit.
+vec3 shadow_light(vec3 scene_pos, float radius, float ignore, float beyond, bool past_player) {
     vec4 c = shadow_coord(scene_pos);
     if (any(lessThan(c.xy, vec2(0.0))) || any(greaterThan(c.xy, vec2(1.0))) || c.z > 1.0) {
         return vec3(beyond);
@@ -104,6 +107,11 @@ vec3 shadow_light(vec3 scene_pos, float radius, float ignore, float beyond) {
     float all_of = 0.0;
     for (int i = 0; i < shadow_taps; i++) {
         vec3 p = vec3(c.xy + shadow_disk[i] * r, z - bias);
+        if (past_player && texelFetch(shadowcolor1, ivec2(p.xy * float(shadowMapResolution)), 0).r > 0.5) {
+            solid += 1.0;
+            all_of += 1.0;
+            continue;
+        }
         solid += texture(shadowtex1HW, p);
         all_of += texture(shadowtex0HW, p);
     }
@@ -126,9 +134,13 @@ vec3 shadow_light(vec3 scene_pos, float radius, float ignore, float beyond) {
     return mix(result, vec3(beyond), edge_fade);
 }
 
+vec3 shadow_light(vec3 scene_pos, float radius, float ignore, float beyond) {
+    return shadow_light(scene_pos, radius, ignore, beyond, false);
+}
+
 // A plain look-up with the least filter (the water's glint).
 vec3 shadow_light(vec3 scene_pos, float radius) {
-    return shadow_light(scene_pos, radius, 0.0, 1.0);
+    return shadow_light(scene_pos, radius, 0.0, 1.0, false);
 }
 
 #endif

@@ -1,4 +1,5 @@
-// The shadow pass's fragments (see shadow.vsh): the shadow map's depth and the colour of what light passes through.
+// The shadow pass's fragments (see shadow.vsh): the shadow map's depth, the colour of what light passes through, and
+// where your own body is (what you hold looks past it, see shadow_light).
 // (The voxel copy of the world no longer comes from this pass: the Create Galore Bridge keeps it, see lib/world.glsl.)
 
 #define PROGRAM_SHADOW
@@ -15,8 +16,18 @@ in vec4 vs_color;
 in vec3 vs_scene;
 flat in int vs_block;
 
+#ifdef PROGRAM_SHADOW_WATER
 /* RENDERTARGETS: 0 */
 layout(location = 0) out vec4 out_color;
+#else
+/* RENDERTARGETS: 0,1 */
+layout(location = 0) out vec4 out_color;
+layout(location = 1) out vec4 out_player; // shadowcolor1: 1 where your own body is the nearest thing to the light
+#endif
+
+#if !defined PROGRAM_SHADOW_TERRAIN
+uniform int entityId; // entity.properties
+#endif
 
 #ifdef PROGRAM_SHADOW_TERRAIN
 
@@ -79,5 +90,10 @@ void main() {
     }
 #else
     out_color = vec4(1.0);
+#if defined PROGRAM_SHADOW_TERRAIN
+    out_player = vec4(0.0);
+#else
+    out_player = vec4(entityId == ENTITY_PLAYER ? 1.0 : 0.0);
+#endif
 #endif
 }

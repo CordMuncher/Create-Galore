@@ -181,6 +181,7 @@ struct Light {
     float level; // 0..31
     float reach; // blocks
     int kind;    // -1 not on the list
+    uint group;  // how many blocks it stands for (a patch of lava, see program/world.csh), else 1
     bool valid;
 };
 

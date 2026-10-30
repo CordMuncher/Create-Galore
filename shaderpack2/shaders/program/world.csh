@@ -2,8 +2,9 @@
 // (lib/world.glsl): one work group per 8 x 8 x 8 tile of the box. Each block's word says what it does to light, from
 // what the game says it is:
 // - a light (block.properties lists it, or Minecraft says it gives light 7 or more): into the light hash and its
-//   tile's own list, at the place in its block where its texture glows most, in its listed colour or its texture's.
-//   A light never stops light (it never shadows itself);
+//   tile's own list, at the place in its block where its texture glows most, in its listed colour or its texture's
+//   (lava: one light per 2 x 2 patch of the lava that shows, see add_light). A light never stops light (it never
+//   shadows itself);
 // - water and other fluids: see-through;
 // - plants, and anything you walk through (torches, flowers, rails, signs): nothing;
 // - flat layers (every box of its shape at most 2/16 tall, on the floor: carpets, snow layers, pressure plates,
@@ -43,21 +44,56 @@ bool flat_layer(uint entry) {
     return true;
 }
 
-// Adds a light to the light hash (lib/voxel.glsl) with one sample: its place in its block and its colour.
-void add_light(ivec3 world, uint entry, int kind, float level) {
-    uint base = light_claim(light_key(world));
+// Whether a lava block shows: a neighbour that isn't lava and doesn't hide it (air, a slab, glass). Lava under lava or
+// walled in by stone lights nothing you can see.
+bool lava_shows(ivec3 world) {
+    for (int i = 0; i < 6; i++) {
+        ivec3 o = ivec3(i == 0 ? 1 : i == 1 ? -1 : 0, i == 2 ? 1 : i == 3 ? -1 : 0, i == 4 ? 1 : i == 5 ? -1 : 0);
+        uint g = grid_word(world + o);
+        uint entry = g & 0xffffu;
+        if (g == 0u || entry == 0u) {
+            return true; // air, or not known yet
+        }
+        uint p0 = palette_word(entry, 0u);
+        bool hides = (p0 & PAL_LAVA) != 0u
+                || ((p0 & PAL_FULL_CUBE) != 0u && (p0 & (PAL_TRANSLUCENT | PAL_MOSTLY_CLEAR | PAL_NO_COLLISION)) == 0u);
+        if (!hides) {
+            return true;
+        }
+    }
+    return false;
+}
+
+// Adds a light to the light hash (lib/voxel.glsl) with one sample: its place and its colour. Its key is its block's,
+// except lava's: the lava that shows in each 2 x 2 patch of a layer of the world is one light (see group_brightness),
+// at the middle of its blocks, so a lake is a handful of wide lights instead of hundreds of small ones. Where the air
+// is open above it, its light sits half a block over its surface, in the hot air it glows into: from inside the lava
+// it would only reach what stands higher than the lake, and the ground round a pool in a floor would stay dark. True
+// for the first sample of its key this frame (the one that lists it in its tile).
+bool add_light(ivec3 world, uint entry, int kind, float level, out uint key) {
+    bool lava = kind == KIND_LAVA;
+    ivec3 home = lava ? ivec3(world.x & ~1, world.y, world.z & ~1) : world;
+    key = light_key(home);
+    uint base = light_claim(key);
     if (base == light_none) {
-        return;
+        return false;
     }
-    uint at = palette_word(entry, 3u);
-    vec3 local = vec3(uvec3(at, at >> 6u, at >> 12u) & 63u) / 32.0;
-    if (kind == 25) {
-        // A nether portal's light drifts slowly about its block, as its swirl does.
-        vec3 h = hash33(uvec3(world + 4096));
-        float t = frameTimeCounter;
-        local += 0.12 * vec3(sin(t * 0.9 + h.x * TAU), sin(t * 0.7 + h.y * TAU), sin(t * 0.8 + h.z * TAU));
+    vec3 local;
+    if (lava) {
+        uint up = grid_word(world + ivec3(0, 1, 0)) & 0xffffu;
+        bool open_above = up == 0u || (palette_word(up, 0u) & (PAL_LAVA | PAL_HAS_SHAPE)) == 0u;
+        local = vec3(world - home) + vec3(0.5, open_above ? 1.4 : 0.5, 0.5);
+    } else {
+        uint at = palette_word(entry, 3u);
+        local = vec3(uvec3(at, at >> 6u, at >> 12u) & 63u) / 32.0;
+        if (kind == 25) {
+            // A nether portal's light drifts slowly about its block, as its swirl does.
+            vec3 h = hash33(uvec3(world + 4096));
+            float t = frameTimeCounter;
+            local += 0.12 * vec3(sin(t * 0.9 + h.x * TAU), sin(t * 0.7 + h.y * TAU), sin(t * 0.8 + h.z * TAU));
+        }
+        local = clamp(local, 0.03, 0.97);
     }
-    local = clamp(local, 0.03, 0.97);
     vec4 listed = light_kind(kind);
     vec3 c;
     if (listed.r >= 0.0) {
@@ -69,10 +105,11 @@ void add_light(ivec3 world, uint entry, int kind, float level) {
     uvec3 q = uvec3(local * 32.0 + 0.5);
     uvec3 qc = uvec3(clamp(c, 0.0, 1.0) * 32.0 + 0.5);
     data_add(base + 1u, q.x | (q.y << 16u));
-    data_add(base + 2u, q.z | (1u << 16u));
+    uint was = data_add(base + 2u, q.z | (1u << 16u));
     data_add(base + 3u, qc.r | (qc.g << 16u));
     data_add(base + 4u, qc.b);
     data_max(base + 5u, (uint(level + 0.5) << 8u) | uint(kind + 1));
+    return (was >> 16u) == 0u;
 }
 
 uint classify(ivec3 world, uint grid) {
@@ -90,10 +127,13 @@ uint classify(ivec3 world, uint grid) {
     bool walk_through = (p0 & PAL_NO_COLLISION) != 0u;
     if (listed || emission >= 7.0) {
         int kind = listed ? id - BLOCK_LIGHT : -1;
-        add_light(world, entry, kind, listed ? light_kind(kind).a : unlisted_light_level(emission));
-        uint at = atomicAdd(s_count, 1u);
-        if (at < own_list_max) {
-            s_keys[at] = light_key(world);
+        uint key;
+        if ((kind != KIND_LAVA || lava_shows(world))
+                && add_light(world, entry, kind, listed ? light_kind(kind).a : unlisted_light_level(emission), key)) {
+            uint at = atomicAdd(s_count, 1u);
+            if (at < own_list_max) {
+                s_keys[at] = key;
+            }
         }
         return word | VOX_LIGHT;
     }

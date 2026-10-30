@@ -6,7 +6,7 @@ name is for its motion vectors: not only the camera's, but how each moving thing
 contraptions, ships, mobs, the hand), which is what lets DLSS and FSR keep them sharp. The Bridge's Upscaling &
 Display screen picks the upscaler and the render resolution; the pack has no settings of its own for them.
 
-**Work in progress: alpha 0.4.** It lives on its own branch and is not in the modpack yet. The first Create Galore
+**Work in progress: alpha 0.4.1.** It lives on its own branch and is not in the modpack yet. The first Create Galore
 pack (`shaderpack/`) stays as a research build; the two share only the DLSS hand-off and the mods' plumbing
 (Colorwheel, Distant Horizons), not their lighting.
 
@@ -14,9 +14,9 @@ pack (`shaderpack/`) stays as a research build; the two share only the DLSS hand
 
 - **A copy of the world around you, fixed to the world.** The Create Galore Bridge keeps a box of blocks around you
   (128 x 96 x 128 by default) from the game's own block data: it reads a chunk when it loads and a block when it
-  changes, never what the camera sees. Each block comes with its real shape (up to eight boxes, rounded to eighths so
-  a 16th's step casts no shadow), its colour and its light. The box moves 8 blocks at a time and each block keeps its
-  place in it, so a ray between two points gives the same answer wherever you stand. Plants, flat layers (carpets,
+  changes, never what the camera sees. Each block comes with its shape as it is drawn (up to twelve boxes, to the
+  16th), its colour and its light. The box moves 8 blocks at a time and each block keeps its place in it, so a ray
+  between two points gives the same answer wherever you stand. Plants, flat layers (carpets,
   snow, barnacles, pressure plates) and clear glass let light through; stained glass and water tint it; leaves let
   some through. A distance field lets rays skip empty space. Without the Bridge, the pack lights with Minecraft's own
   light.
@@ -33,6 +33,8 @@ pack (`shaderpack/`) stays as a research build; the two share only the DLSS hand
   golden afternoons and evenings, nights lit faintly and only a little blue; rain takes the sun away and greys the sky.
 - **Ambient occlusion** on screen for nooks and corners, from nearby walls only, over everything but mobs and the hand.
 - **Hot texels glow**: a torch's flame, not its stick; lava, glowstone and froglights all over.
+- **Lava lights its surroundings** wide and soft, one light for each 2 x 2 patch of it that shows, from the hot air
+  just over it, so a pool sunk in a floor lights the floor round it; its glow bounces too.
 - **The sun and the moon** cast steady shadows from a shadow map (no noise, so nothing flickers), coloured through
   glass and through water with its caustics, with a clean, slightly soft edge. Leaves let light through the outside of
   their clump, grass doesn't shade itself, and near the map's edge they fade into what Minecraft's sky light says.
@@ -52,8 +54,8 @@ pack (`shaderpack/`) stays as a research build; the two share only the DLSS hand
   would spread over the whole screen through the bloom) and a small square at the middle of the left edge shows where
   it was caught (option Bad Frame Mark).
 - **Held lights** light the world in their own colour, from the hand that holds them; what you hold takes the colour
-  of the lights around you. Glowing particles (flames, sparks, portal particles) glow, and the End portal shows its
-  starfield and gives light.
+  of the lights around you, and your own body casts no shadow on your hands or what they hold. Glowing particles
+  (flames, sparks, portal particles) glow, and the End portal shows its starfield and gives light.
 - **The block outline and leads** are drawn into the scene before the lighting, so they show as in vanilla.
 
 ## Later milestones

@@ -1,4 +1,5 @@
-// The block numbers of block.properties and what each kind of light gives.
+// The block numbers of block.properties (and the entity numbers of entity.properties), and what each kind of light
+// gives.
 
 #if !defined LIB_BLOCKS
 #define LIB_BLOCKS
@@ -14,6 +15,9 @@
 #define BLOCK_LIGHT 100 // and up: the kind of light (number - 100), see light_kind
 #define LIGHT_KINDS 38
 
+// entity.properties
+#define ENTITY_PLAYER 1 // you (not other players)
+
 // Kinds whose look the programs treat apart.
 #define KIND_LAVA 15
 #define KIND_FIRE 16
@@ -25,7 +29,7 @@
 
 // A kind of light's colour (rgb, 0..1, at full strength) and level (a, 0..31: how far it reaches and how bright it
 // is). The colours lean towards strong, clear hues: a torch is warm orange-white, a soul lantern cyan, redstone red.
-// A negative red means "take the colour from the texture" (flames and lava, whose textures say it best).
+// A negative red means "take the colour from the texture" (flames, whose textures say it best).
 vec4 light_kind(int kind) {
     switch (kind) {
         case 0: return vec4(1.0, 0.7, 0.45, 20.0);    // torch
@@ -43,7 +47,7 @@ vec4 light_kind(int kind) {
         case 12: return vec4(1.0, 0.05, 0.05, 16.0);  // redstone torch
         case 13: return vec4(1.0, 0.05, 0.05, 20.0);  // block of redstone
         case 14: return vec4(1.0, 0.05, 0.05, 16.0);  // lit redstone ore
-        case 15: return vec4(-1.0, 0.0, 0.0, 24.0);   // lava
+        case 15: return vec4(1.0, 0.5, 0.16, 27.0);   // lava (one light per patch, see program/world.csh)
         case 16: return vec4(-1.0, 0.0, 0.0, 23.0);   // fire
         case 17: return vec4(-1.0, 0.0, 0.0, 23.0);   // soul fire
         case 18: return vec4(-1.0, 0.0, 0.0, 20.0);   // campfire
@@ -82,8 +86,7 @@ vec4 held_light(int item, float vanilla_level) {
     vec4 l = kind >= 0 && kind < LIGHT_KINDS ? light_kind(kind) : vec4(light_kind(0).rgb, 0.0);
     if (l.r < 0.0) {
         // Kinds that take their colour from their texture when placed.
-        l.rgb = kind == KIND_LAVA ? vec3(1.0, 0.42, 0.08)
-              : kind == KIND_SOUL_FIRE || kind == KIND_SOUL_CAMPFIRE ? vec3(0.15, 0.8, 0.95)
+        l.rgb = kind == KIND_SOUL_FIRE || kind == KIND_SOUL_CAMPFIRE ? vec3(0.15, 0.8, 0.95)
               : vec3(1.0, 0.6, 0.3); // fire, campfires, candles
     }
     if (l.a <= 0.0) {

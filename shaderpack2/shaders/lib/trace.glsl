@@ -4,7 +4,7 @@
 // gives the same answer from wherever the camera is. A distance field (cg_sdf_img, program/sdf.csh) says per cell how
 // many cells away the nearest one that stops light is, counted the way a cube grows (the largest cube of empty cells
 // around it), so a ray leaps across empty space in one step (green), and how far the nearest full block is (red), read
-// blended between cells for how much room a ray has (soft shadows). A ray that reaches a cell that stops light:
+// blended between cells for how much room a light has around it. A ray that reaches a cell that stops light:
 // - a full block stops it;
 // - a part block (a slab, a path, a fence post, stairs) stops it only where one of its shape's boxes is, tested
 //   exactly; a ray that misses them goes on, and how close it came softens its shadow;
@@ -12,7 +12,7 @@
 // Three ways through:
 // - trace_ray: to the first thing it hits (bounce light, reflections);
 // - cone_visibility: how much of a light gets past, softly, from the narrowest gap the ray squeezes through
-//   against how wide the cone is there (one ray, no extra samples);
+//   (measured exactly against the blocks beside it) against how wide the cone is there (one ray, no extra samples);
 // - see_through_tint: a walk block by block to the first see-through block (stained glass, water), whose colour
 //   tints the light.
 
@@ -124,7 +124,7 @@ float part_hit(ivec3 cell, uint entry, vec3 o, vec3 inv_dir, float t0, float t1,
         vec3 hi;
         palette_box(entry, i, lo, hi);
         if (any(lessThanEqual(hi, lo))) {
-            continue; // thinner than an 8th: rounded away
+            continue;
         }
         float t;
         vec3 face;
@@ -149,6 +149,35 @@ float part_room(ivec3 cell, uint entry, vec3 q) {
         }
         vec3 d = max(max(vec3(cell) + lo - q, q - vec3(cell) - hi), 0.0);
         room = min(room, length(d));
+    }
+    return room;
+}
+
+// How far a point is from what stops light in the blocks around its own (full blocks, and part blocks' boxes), exactly,
+// up to cap blocks (under half a block): only the blocks on the sides it is within cap of are read. Leaves don't count
+// (a ray that crosses them loses part of its light there). The blended distance field can't stand in here: in an inside
+// corner (a block's foot on the floor) it reads no room at all for nearly half a block, and part blocks aren't in it.
+float near_room(vec3 q, float cap) {
+    cap = min(cap, 0.49);
+    ivec3 cell = ivec3(floor(q));
+    vec3 f = q - vec3(cell);
+    ivec3 side = ivec3(greaterThan(f, vec3(1.0 - cap))) - ivec3(lessThan(f, vec3(cap)));
+    float room = cap;
+    for (int i = 1; i < 8; i++) {
+        ivec3 bits = ivec3(i & 1, (i >> 1) & 1, (i >> 2) & 1);
+        if (any(greaterThan(bits, abs(side)))) {
+            continue; // a side it isn't near
+        }
+        ivec3 n = cell + bits * side;
+        uint word = vox_word(n);
+        if ((word & VOX_SOLID) == 0u || (word & VOX_LEAVES) != 0u) {
+            continue;
+        }
+        if ((word & VOX_PART) != 0u) {
+            room = min(room, part_room(n, word & VOX_ENTRY, q));
+        } else {
+            room = min(room, length(max(max(vec3(n) - q, q - vec3(n + 1)), 0.0)));
+        }
     }
     return room;
 }
@@ -224,7 +253,8 @@ bool start_inside(vec3 p) {
 }
 
 // How much of a light at distance dist along dir gets to p (0..1): the narrowest the empty space around the ray
-// gets (free_space, and how close it passes a part block's boxes), against the cone's radius there, which runs from
+// gets (near_room: how close it passes the blocks and part blocks' boxes beside it), against the cone's radius there
+// (always under half a block, so cells with nothing within a block are leapt over), which runs from
 // width_start at p to width_end at the light (the lamp's size); each block of leaves on the way lets leaf_pass of
 // it through. The last stop_short blocks before the light are its own. A ray that leaves the voxel box counts as
 // getting there; one that runs out of steps first doesn't.
@@ -245,29 +275,40 @@ float cone_visibility(vec3 p, vec3 dir, float dist, float width_start, float wid
             left_box = true;
             break;
         }
-        float width = mix(width_start, width_end, clamp(t / dist, 0.0, 1.0)) + 0.02;
         uint d = sdf_at(cell, 0);
-        if (d > 0u) {
-            visible = min(visible, free_space(q, 0) / width);
+        if (d > 1u) {
+            // Nothing that stops light within a block: more room than any cone here is wide.
             t += box_exit(q, inv_dir, vec3(cell - int(d) + 1), vec3(cell + int(d))) + 0.002;
             continue;
         }
+        float width = mix(width_start, width_end, clamp(t / dist, 0.0, 1.0)) + 0.02;
         float exit_t = t + box_exit(q, inv_dir, vec3(cell), vec3(cell + 1));
+        float seg_end = min(exit_t, end);
+        float mid_t = 0.5 * (t + seg_end);
+        vec3 mid = p + dir * mid_t;
+        float mid_width = mix(width_start, width_end, clamp(mid_t / dist, 0.0, 1.0)) + 0.02;
+        if (d == 1u) {
+            // Beside something: the room where the ray comes in and halfway through, measured exactly (a ray that
+            // slips through where two blocks only touch at an edge comes in with none).
+            visible = min(visible, min(near_room(q, width) / width, near_room(mid, mid_width) / mid_width));
+            t = exit_t + 0.002;
+            continue;
+        }
         uint word = vox_word(cell);
         if ((word & VOX_SOLID) == 0u) {
             // Emptied since the distance field last looked.
         } else if ((word & VOX_LEAVES) != 0u) {
             through *= leaf_pass;
         } else if ((word & VOX_PART) != 0u) {
-            float seg_end = min(exit_t, end);
             vec3 n;
             if (part_hit(cell, word & VOX_ENTRY, p, inv_dir, t, seg_end, cell == start, n) >= 0.0) {
                 return 0.0;
             }
+            float room = near_room(mid, mid_width);
             if (cell != start) {
-                vec3 mid = p + dir * (0.5 * (t + seg_end));
-                visible = min(visible, part_room(cell, word & VOX_ENTRY, mid) / width);
+                room = min(room, part_room(cell, word & VOX_ENTRY, mid));
             }
+            visible = min(visible, room / mid_width);
         } else if (cell != start) {
             return 0.0;
         }
