@@ -22,6 +22,7 @@
 #include "/lib/common.glsl"
 #include "/lib/globals.glsl"
 #include "/lib/view.glsl"
+#include "/lib/bad_frame.glsl"
 #ifndef NO_SKY_LIGHT
 #include "/lib/sky.glsl"
 #endif
@@ -34,7 +35,7 @@ uniform vec3 shadowLightPosition;
 uniform int moonPhase;
 uniform vec3 fogColor;
 uniform float rainStrength;
-layout(rgba32f) writeonly uniform image2D cg_globals_img;
+layout(rgba32f) uniform image2D cg_globals_img;
 
 const vec3 sun_high = vec3(2.0, 1.25, 0.72);
 const vec3 sun_low = vec3(6.0, 2.45, 1.0);
@@ -99,10 +100,11 @@ void main() {
     vec3 haze = srgb_to_linear(fogColor);
     g_light_dir = vec4(0.0, 1.0, 0.0, 0.0);
     g_light_color = vec4(0.0);
-    // The light in the Nether's air, on every surface the bounce light finds open (see lib/lighting.glsl): its fog's
-    // hue a little towards grey, about as bright as a moonlit night, whatever the biome.
-    vec3 hue = mix(vec3(luminance(haze)), haze, 0.75) / max(luminance(haze), 1e-4);
-    vec3 nether_air = hue * 0.035 * NIGHT_BRIGHTNESS;
+    // The light in the Nether's air, on every surface the bounce light finds open (see lib/lighting.glsl): its
+    // biome's fog hue, halfway to grey (so a teal valley's light still shows brown soul sand), about three times as
+    // bright as a moonlit night, whatever the biome.
+    vec3 hue = mix(vec3(luminance(haze)), haze, 0.5) / max(luminance(haze), 1e-4);
+    vec3 nether_air = hue * 0.1 * NIGHT_BRIGHTNESS;
     g_sky_up = vec4(nether_air, 0.0);
     g_sky_side = vec4(nether_air, 0.0);
     g_sky_down = vec4(nether_air * 0.8, 0.0);
@@ -166,7 +168,29 @@ void main() {
     g_horizon = vec4(sky_air(normalize(away + vec3(0.0, 0.05, 0.0))), 0.0);
 #endif
 
-    for (int k = 0; k < GLOBALS_COUNT; k++) {
-        imageStore(cg_globals_img, ivec2(k, 0), g_globals[k]);
+    // A value that came out infinite or not a number keeps last frame's (lib/bad_frame.glsl); the bad frame record
+    // moves on a frame.
+    if (i == 0u) {
+        uint caught = 0u;
+        for (int k = 0; k < GLOBALS_COUNT; k++) {
+            vec4 value = g_globals[k];
+            if (bad_value(value)) {
+                value = imageLoad(cg_globals_img, ivec2(k, 0));
+                value = bad_value(value) ? vec4(0.0, 1.0, 0.0, 0.0) : value;
+                caught = BAD_GLOBALS;
+            }
+            imageStore(cg_globals_img, ivec2(k, 0), value);
+        }
+        uint record = data_load(data_bad_frame);
+        caught |= record & 255u;
+        uint shown = (record >> 8u) & 255u;
+        uint left = record >> 16u;
+        if (caught != 0u) {
+            shown = (left > 0u ? shown : 0u) | caught;
+            left = 120u;
+        } else if (left > 0u) {
+            left--;
+        }
+        data_store(data_bad_frame, (left << 16u) | (shown << 8u));
     }
 }

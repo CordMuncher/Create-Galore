@@ -39,7 +39,6 @@ uniform mat4 shadowProjection;
 uniform sampler2DShadow shadowtex0HW;
 uniform sampler2DShadow shadowtex1HW;
 uniform sampler2D shadowtex0;
-uniform sampler2D shadowtex1;
 uniform sampler2D shadowcolor0;
 
 // Where a point (scene space) falls in the map: xy 0..1, z its depth there, w how far from the middle (0..1).
@@ -76,21 +75,17 @@ float sun_beyond_map(float sky) {
 #endif
 }
 
-// A sunflower pattern of taps (a Vogel disk), turned by an angle fixed to the place in the world, so a wide filter
-// has no pattern of its own and nothing changes from frame to frame.
-const int shadow_taps = 16;
-const int shadow_search_taps = 8;
-
-vec2 vogel_tap(int i, int count, float turn) {
-    float r = sqrt((float(i) + 0.5) / float(count));
-    float a = float(i) * 2.39996323 + turn;
-    return r * vec2(cos(a), sin(a));
-}
+// A fixed pattern of taps (no noise from frame to frame or from place to place, so the edges are clean and stand
+// still), each one a 2 x 2 compare by the hardware.
+const int shadow_taps = 12;
+const vec2 shadow_disk[12] = vec2[](
+    vec2(-0.326, -0.406), vec2(-0.840, -0.074), vec2(-0.696, 0.457), vec2(-0.203, 0.621),
+    vec2(0.962, -0.195), vec2(0.473, -0.480), vec2(0.519, 0.767), vec2(0.185, -0.893),
+    vec2(0.507, 0.064), vec2(0.896, 0.412), vec2(-0.322, -0.933), vec2(-0.792, -0.598)
+);
 
 // How much of the light reaches a point (0..1), and its colour through glass and water.
-// - radius: the filter's least width in texels at the middle of the map (wider far out, where texels are bigger).
-// - The shadow softens with the distance to what casts it, as under the real sun (spread blocks of blur per block of
-//   distance, SHADOW_SOFTNESS times): a leaf canopy throws a soft dappled shade, a post a sharp foot.
+// - radius: the filter's width in texels at the middle of the map (wider far out, where texels are bigger).
 // - ignore: what casts from less than this many blocks in front of the point doesn't count (leaves and grass, which
 //   let light through their own clump and mustn't shade themselves).
 // - beyond: what the light is past the map's reach (sun_beyond_map).
@@ -102,37 +97,13 @@ vec3 shadow_light(vec3 scene_pos, float radius, float ignore, float beyond) {
     float edge_fade = smoothstep(0.86, 0.98, c.w);
     float texel = 1.0 / float(shadowMapResolution);
     float per_block = shadow_depth_per_block();
-    float texels_per_block = shadow_texels_per_block(min(c.w, 1.0));
     float z = c.z - ignore * per_block;
-    ivec3 spot = ivec3(floor((scene_pos + cameraPositionFract) * 16.0)) + cameraPositionInt * 16;
-    float turn = hash33(uvec3(spot)).x * TAU;
-
-    // The blockers around: how far in front of the point they are, on average.
-    const float spread = 0.035 * SHADOW_SOFTNESS;
-    float least = radius * mix(1.0, 2.0, c.w);
-    float search = clamp(8.0 * spread * texels_per_block, least, 24.0);
-    float blocker_sum = 0.0;
-    float blockers = 0.0;
-    for (int i = 0; i < shadow_search_taps; i++) {
-        vec2 at = c.xy + vogel_tap(i, shadow_search_taps, turn + 1.3) * search * texel;
-        float d = textureLod(shadowtex1, at, 0.0).r;
-        if (d < z - texel * shadow_depth_scale) {
-            blocker_sum += d;
-            blockers += 1.0;
-        }
-    }
-    float r = least;
-    if (blockers > 0.0) {
-        float distance_away = (z - blocker_sum / blockers) / per_block;
-        r = clamp(distance_away * spread * texels_per_block, least, search);
-    }
-
-    // The filter: the bias grows with its width, so a surface turned from the light doesn't shade itself in it.
-    float bias = texel * shadow_depth_scale * (0.5 + 0.6 * r);
+    float r = radius * texel * mix(1.0, 2.0, c.w);
+    float bias = texel * 0.5 * shadow_depth_scale;
     float solid = 0.0;
     float all_of = 0.0;
     for (int i = 0; i < shadow_taps; i++) {
-        vec3 p = vec3(c.xy + vogel_tap(i, shadow_taps, turn) * r * texel, z - bias);
+        vec3 p = vec3(c.xy + shadow_disk[i] * r, z - bias);
         solid += texture(shadowtex1HW, p);
         all_of += texture(shadowtex0HW, p);
     }

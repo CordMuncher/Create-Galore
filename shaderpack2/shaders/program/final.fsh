@@ -4,6 +4,7 @@
 
 #include "/lib/settings.glsl"
 #include "/lib/bloom.glsl"
+#include "/lib/bad_frame.glsl"
 
 in vec2 v_uv;
 
@@ -44,6 +45,10 @@ vec3 upscaled(vec2 window_pixel) {
 void main() {
     vec2 window_pixel = gl_FragCoord.xy;
     vec3 c = frame_full_size() ? texelFetch(colortex0, ivec2(window_pixel), 0).rgb : upscaled(window_pixel);
+    if (bad_value(c)) {
+        c = vec3(0.0);
+        note_bad(BAD_AFTER_DLSS);
+    }
 
     vec2 uv = window_pixel / window_size();
 #if DEBUG_VIEW != 0
@@ -62,5 +67,22 @@ void main() {
 
     vec3 srgb = linear_to_srgb(c);
     srgb += (hash33(uvec3(uvec2(window_pixel), uint(frameCounter))).x - 0.5) / 255.0;
+    if (bad_value(srgb)) {
+        srgb = vec3(0.0);
+        note_bad(BAD_FINAL);
+    }
+#ifdef BAD_FRAME_MARK
+    // The bad frame mark (lib/bad_frame.glsl), 12 pixels from the top left corner.
+    vec2 corner = vec2(window_pixel.x, window_size().y - window_pixel.y);
+    if (all(lessThan(corner, vec2(20.0))) && all(greaterThan(corner, vec2(8.0)))) {
+        uint record = data_load(data_bad_frame);
+        uint shown = (record >> 8u) & 255u;
+        if ((record >> 16u) > 0u && shown != 0u) {
+            srgb = (shown & BAD_FINAL) != 0u ? vec3(1.0)
+                 : vec3((shown & BAD_BEFORE_DLSS) != 0u ? 1.0 : 0.0, (shown & BAD_AFTER_DLSS) != 0u ? 1.0 : 0.0,
+                        (shown & BAD_GLOBALS) != 0u ? 1.0 : 0.0);
+        }
+    }
+#endif
     out_color = vec4(srgb, 1.0);
 }

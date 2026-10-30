@@ -47,5 +47,6 @@ vec2 motion_vector(vec4 clip_now, vec4 clip_prev) {
 #define MOTION_WORLD 1.0
 #define MOTION_HAND 2.0
 #define MOTION_LOD 3.0   // Distant Horizons
+#define MOTION_PARTICLE 4.0 // smoke, flames, dust: DLSS gets the surface behind them (see program/dlss.fsh)
 
 #endif

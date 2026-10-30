@@ -4,6 +4,10 @@
 // - motion vectors in render pixels towards last frame, unjittered (cg_motion_img): a surface's own where it moves
 //   by itself (colortex7), else where the camera's motion takes its depth, Distant Horizons' included;
 // - DLSS depth, 1 at the near plane falling towards 0 far away, 0 for the sky (cg_depth_img);
+// - over a particle, the depth and motion of the surface behind it. Particles have no motion of their own to give,
+//   and taken at their own depth DLSS fetched last frame's picture from the wrong place round a slow, dim one (torch
+//   smoke), so it showed a shifted piece of what was behind it, like a floating piece of glass. Now DLSS keeps the
+//   background where it belongs and the particle counts as new each frame;
 // - the exposure the final pass gives the scene (cg_exposure_img).
 // While upscaling, the frame fills the lower left corner of the buffers at the render size and only that is handed
 // over. Without the Bridge, or with DLSS off, the final pass shows this pass's output itself.
@@ -12,9 +16,11 @@
 #include "/lib/buffers.glsl"
 #include "/lib/motion.glsl"
 #include "/lib/post.glsl"
+#include "/lib/bad_frame.glsl"
 
 uniform sampler2D colortex7;
 uniform sampler2D depthtex0;
+uniform sampler2D depthtex1; // without particles and see-through things
 uniform float near;
 uniform float cg_dlss_object_motion; // 0 while the Bridge tests without the motion of things that move by themselves
 
@@ -59,14 +65,21 @@ void main() {
 
     // No NaN or infinity reaches DLSS.
     vec3 scene_color = texelFetch(colortex0, texel, 0).rgb;
-    if (any(isnan(scene_color)) || any(isinf(scene_color))) {
+    if (bad_value(scene_color)) {
         scene_color = vec3(0.0);
+        note_bad(BAD_BEFORE_DLSS);
     }
     out_color = vec4(clamp(scene_color, 0.0, 4096.0), 1.0);
 
     // This pixel's centre without the jitter, in normalised device coordinates.
     vec2 ndc = (vec2(texel) + 0.5 - vec2(cg_dlss_jitter_x, cg_dlss_jitter_y)) / size * 2.0 - 1.0;
-    float depth = texelFetch(depthtex0, texel, 0).r;
+    vec4 own = texelFetch(colortex7, texel, 0);
+#ifdef PARTICLES_SHOW_BACKGROUND
+    bool particle = own.a > 0.5 && abs(own.b - MOTION_PARTICLE) < 0.5;
+#else
+    bool particle = false;
+#endif
+    float depth = particle ? texelFetch(depthtex1, texel, 0).r : texelFetch(depthtex0, texel, 0).r;
     vec2 motion = vec2(0.0);
     float depth_out = 0.0;
 
@@ -98,8 +111,7 @@ void main() {
         }
     }
 
-    vec4 own = texelFetch(colortex7, texel, 0);
-    if (own.a > 0.5 && own.b > 0.5 && cg_dlss_object_motion > 0.5) {
+    if (own.a > 0.5 && own.b > 0.5 && !particle && cg_dlss_object_motion > 0.5) {
         motion = own.rg;
     }
 

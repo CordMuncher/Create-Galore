@@ -35,26 +35,21 @@ const bool shadowHardwareFiltering = true;
 
 // The sizes, and the work groups of 8 x 8 x 8 cells the passes over the box take, as plain numbers (Iris reads
 // workGroups without working anything out).
-// voxelDistance: how far around you Iris sends every chunk through the shadow pass (see shadow.culling in
-// shaders.properties), half the box's width.
 #if VOXEL_BOX == 0
 #define VOX_X 96
 #define VOX_Y 64
 #define VOX_GROUPS_X 12
 #define VOX_GROUPS_Y 8
-const float voxelDistance = 48.0;
 #elif VOXEL_BOX == 2
 #define VOX_X 256
 #define VOX_Y 128
 #define VOX_GROUPS_X 32
 #define VOX_GROUPS_Y 16
-const float voxelDistance = 128.0;
 #else
 #define VOX_X 128
 #define VOX_Y 96
 #define VOX_GROUPS_X 16
 #define VOX_GROUPS_Y 12
-const float voxelDistance = 64.0;
 #endif
 // The distance field's passes cover every level, stacked up y.
 #if VOXEL_BOX == 0 && VOXEL_LEVELS == 4
@@ -120,6 +115,12 @@ const float eyeBrightnessHalflife = 5.0;
 // 7 the voxel copy (what a ray from the camera hits first), 8 its distance field, 9 ambient occlusion, 14 the light
 // layers side by side (see deferred_light.fsh).
 #define DEBUG_VIEW 0 // [0 1 2 3 4 5 6 7 8 9 10 11 12 13 14]
+// A small square in the top left corner for about two seconds whenever a pass caught a value that is infinite or not
+// a number (see lib/bad_frame.glsl): its colour says where.
+#define BAD_FRAME_MARK
+// DLSS and FSR get the surface behind a particle (its depth and motion) instead of the particle's own (see
+// program/dlss.fsh): off to compare, for the rising torch smoke that looked like a piece of glass.
+#define PARTICLES_SHOW_BACKGROUND
 
 // --- What follows ----------------------------------------------------------------------------------------------------
 

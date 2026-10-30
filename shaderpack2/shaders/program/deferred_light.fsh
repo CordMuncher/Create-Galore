@@ -190,9 +190,9 @@ void main() {
     float sky_gate = 1.0; // the End has no sky light: its light reaches wherever the shadow map lets it
 #endif
     if (facing > 0.0 && sky_gate > 0.0 && !lod) {
-        // What you hold gets a soft shadow: a sharp one (leaves' patterns) swims over it as you turn. Leaves let the
-        // light through the outside of their clump, and grass doesn't shade itself.
-        float radius = (s.material == MAT_HAND ? 6.0 : thin ? 2.0 : 1.2) * SHADOW_SOFTNESS;
+        // What you hold and plants get a little softer edge. Leaves let the light through the outside of their
+        // clump, and grass doesn't shade itself.
+        float radius = (s.material == MAT_HAND || thin ? 2.0 : 1.5) * SHADOW_SOFTNESS;
         float ignore = s.material == MAT_LEAVES ? 1.0 : s.material == MAT_PLANT ? 0.5 : 0.0;
         sun_reach = shadow_light(shadow_offset_point(scene, s.face, l), radius, ignore, sun_beyond_map(s.sky)) * sky_gate;
         sun = g_light_color.rgb * facing * sun_reach;
@@ -222,9 +222,12 @@ void main() {
     }
     vec3 color = diffuse_color * light;
 
-    // Highlights: every nearby light's, and the sun's.
+    // Highlights: every nearby light's, and the sun's. Their strength follows how smooth the surface is: rough blocks
+    // (sand, dirt, stone, everything not marked polished or metal) keep only a faint sheen, so a lamp's reflection
+    // doesn't slide over them as you move; polished blocks, metal and machines keep theirs.
     vec3 tint = mix(vec3(1.0), s.albedo, s.metal);
-    color += highlight * tint * s.smoothness;
+    float sheen = s.smoothness * mix(0.15, 1.0, smoothstep(0.15, 0.4, s.smoothness));
+    color += highlight * tint * sheen;
 #if defined SUNLIGHT || defined WORLD_END
     if (!lod && max3(sun_reach) > 0.0 && s.smoothness > 0.2) {
         color += g_light_color.rgb * sun_reach * tint * ggx_specular(n, v, l, s.smoothness, mix(0.04, 0.6, s.metal));

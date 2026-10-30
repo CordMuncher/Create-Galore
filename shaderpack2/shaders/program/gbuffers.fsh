@@ -79,6 +79,8 @@ vec4 motion_out() {
 #else
     return vec4(motion_vector(v_clip_now, v_clip_prev), MOTION_WORLD, 1.0);
 #endif
+#elif defined PROGRAM_PARTICLES
+    return vec4(0.0, 0.0, MOTION_PARTICLE, 1.0);
 #else
     return vec4(0.0, 0.0, MOTION_NONE, 1.0);
 #endif

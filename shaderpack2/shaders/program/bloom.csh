@@ -11,6 +11,9 @@
 #include "/lib/settings.glsl"
 #include "/lib/bloom.glsl"
 #include "/lib/globals.glsl"
+#if defined BLOOM_DOWN && BLOOM_DOWN == 1
+#include "/lib/bad_frame.glsl"
+#endif
 
 layout(local_size_x = 8, local_size_y = 8) in;
 
@@ -101,6 +104,10 @@ void main() {
         vec2 at = uv + o * step_uv;
 #if BLOOM_DOWN == 1
         vec3 c = frame_at(at);
+        if (bad_value(c)) {
+            c = vec3(0.0); // one such pixel would spread over the whole bloom
+            note_bad(BAD_AFTER_DLSS);
+        }
         float boost = 1.0 + fogginess * fog_share(distance_at(at));
         c *= boost;
         float w = 1.0 / (1.0 + luminance(c) * 0.25);

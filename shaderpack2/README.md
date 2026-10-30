@@ -6,7 +6,7 @@ name is for its motion vectors: not only the camera's, but how each moving thing
 contraptions, ships, mobs, the hand), which is what lets DLSS and FSR keep them sharp. The Bridge's Upscaling &
 Display screen picks the upscaler and the render resolution; the pack has no settings of its own for them.
 
-**Work in progress: build 3.** It lives on its own branch and is not in the modpack yet. The first Create Galore
+**Work in progress: alpha 0.3.1.** It lives on its own branch and is not in the modpack yet. The first Create Galore
 pack (`shaderpack/`) stays as a research build; the two share only the DLSS hand-off and the mods' plumbing
 (Colorwheel, Distant Horizons), not their lighting.
 
@@ -30,9 +30,8 @@ pack (`shaderpack/`) stays as a research build; the two share only the DLSS hand
 - **Ambient occlusion** on screen for nooks and corners, from nearby walls only, over everything but mobs and the hand.
 - **Hot texels glow**: a torch's flame, not its stick; lava, glowstone and froglights all over.
 - **The sun and the moon** cast steady shadows from a shadow map (no noise, so nothing flickers), coloured through
-  glass and through water with its caustics. They soften with the distance to what casts them (a canopy's shade is
-  dappled, a post's foot sharp), leaves let light through the outside of their clump, grass doesn't shade itself, and
-  near the map's edge they fade into what Minecraft's sky light says.
+  glass and through water with its caustics, with a clean, slightly soft edge. Leaves let light through the outside of
+  their clump, grass doesn't shade itself, and near the map's edge they fade into what Minecraft's sky light says.
 - **The sky**: a physically based atmosphere with the sun, the moon and the stars.
 - **Water**: its own colour, deeper the deeper it is, and waves crossing from three directions, longer ones faster.
 - **Light in the air**: a coloured haze around lamps (strongest at night, underground and in the Nether), haze far
@@ -41,7 +40,13 @@ pack (`shaderpack/`) stays as a research build; the two share only the DLSS hand
 - **A fixed exposure**: day, night and caves look as dark as they are; the tone curve eases highlights to white and
   deepens the mid-tones a little.
 - **Create's machines and contraptions** (Colorwheel) and **Distant Horizons** are lit like the rest of the world.
-- The Nether and the End have their own light and haze; the End's light casts shadows.
+- The Nether and the End have their own light and haze; the Nether's light takes its biome's colour, and the End's
+  light casts shadows.
+- **Highlights** from every nearby lamp on polished blocks, metal and machines; rough blocks keep a faint sheen.
+- **DLSS and FSR** get the surface behind particles, so slow smoke doesn't turn into a shifted window onto the scene.
+- **The bad frame mark**: every pass that hands the frame on replaces an infinite or invalid value with nothing (one
+  would spread over the whole screen through the bloom) and a small square in the top left corner shows where it was
+  caught (option Bad Frame Mark).
 - **Held lights** light the world in their own colour, from the hand that holds them; what you hold takes the colour
   of the lights around you. Glowing particles (flames, sparks, portal particles) glow, and the End portal shows its
   starfield and gives light.

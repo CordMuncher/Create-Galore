@@ -87,3 +87,8 @@ value.DEBUG_VIEW.11=Voxel Colours
 value.DEBUG_VIEW.12=Light Lists
 value.DEBUG_VIEW.13=Sun and Sky Light
 value.DEBUG_VIEW.14=Light Layers Side by Side
+
+option.BAD_FRAME_MARK=Bad Frame Mark
+option.BAD_FRAME_MARK.comment=A small square in the top left corner for two seconds when a pass caught a broken value and drew nothing there instead. Red: the lit scene. Green: after DLSS or FSR. Blue: the sun and sky values. White: the last pass.
+option.PARTICLES_SHOW_BACKGROUND=Particles Show Background
+option.PARTICLES_SHOW_BACKGROUND.comment=DLSS and FSR get the surface behind smoke and other particles instead of the particles themselves. Off: as in build 3, to compare the rising torch smoke.
