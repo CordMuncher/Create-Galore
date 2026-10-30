@@ -65,8 +65,7 @@ VARIANTS = [
     ("nogi-nossao", [], [flip("GI", False), flip("SSAO", False)]),
     ("nohand-nospec", [], [flip("HAND_LIGHT", False), flip("LIGHT_SPECULAR", False)]),
     ("box0-scale1", [], [value("VOXEL_BOX", 1, 0), value("PIXEL_LIGHT_SCALE", 3, 1)]),
-    ("box2-scale6-levels4", ["DISTANT_HORIZONS"], [value("VOXEL_BOX", 1, 2), value("PIXEL_LIGHT_SCALE", 3, 6),
-                                                    value("VOXEL_LEVELS", 6, 4)]),
+    ("box2-scale6", ["DISTANT_HORIZONS"], [value("VOXEL_BOX", 1, 2), value("PIXEL_LIGHT_SCALE", 3, 6)]),
     ("noall", [], [flip("PIXEL_LIGHT", False), flip("GI", False), flip("SSAO", False), flip("HAND_LIGHT", False)]),
 ] + [(f"debug-{n}", [], [value("DEBUG_VIEW", 0, n)]) for n in range(1, 15)]
 
@@ -85,6 +84,11 @@ def expand(path, edits):
         else:
             out.append(line)
     return "\n".join(out)
+
+
+RESERVED = ("common|partition|active|asm|class|union|enum|typedef|template|this|packed|resource|goto|inline|noinline|"
+            "public|static|extern|external|interface|long|short|half|fixed|unsigned|superp|input|output|filter|sizeof|"
+            "cast|namespace|using")
 
 
 def texture_unit_limit(name):
@@ -122,6 +126,11 @@ for prog in progs:
         if prog.parent != root and vname not in OTHER_WORLD_VARIANTS:
             continue
         src = expand(prog, edits)
+        # Words GLSL keeps for later that glslang lets through as names, but Mesa (and maybe other drivers) refuses.
+        reserved = re.search(r"\b(?:u?int|float|bool|[iu]?vec[234]|mat[234])\s+(" + RESERVED + r")\b", src)
+        if reserved:
+            print(f"== {rel} [{vname}]\na reserved word as a name: {reserved.group(1)}")
+            fails += 1
         if re.search(r"#\s*(el)?if.*__VERSION__", src):
             print(f"== {rel} [{vname}]\nan #if on __VERSION__, which Iris's preprocessor doesn't define")
             fails += 1

@@ -1,10 +1,14 @@
-// The lights the voxel copy found (see the light hash in lib/voxel.glsl), and the short lists of them that each
-// tile of blocks (program/voxel_light.csh) and each tile of the screen (program/pixel_light.csh) keeps.
+// The lights the voxel copy holds (see the light hash in lib/voxel.glsl), and the short lists of them that each 8-block
+// tile of the world keeps (program/voxel_light.csh).
 //
-// There is no list of every light. A tile starts from the lights inside it, the ones that lit it last time and the
-// ones that lit its neighbours; keeps those that still reach it, brightest first; and after lighting, keeps the ones
-// that did light it for next time. So a lantern found in one tile becomes known to the tiles around it, then to
-// theirs, as far as it still matters, and lights that stop mattering drop out by themselves.
+// Every tile knows the lights inside it (program/world.csh lists them each frame). A tile's list starts from those of
+// the tiles around it as far as a light can reach, plus the ones that lit it and its neighbours last time; keeps those
+// that still reach it, brightest first; and after lighting keeps the ones that did light it. The per-pixel light
+// (program/pixel_light.csh) takes the list of the tile its surface is in, as records ready to use. So which lights a
+// spot gets depends on where the spot is, never on where the camera looks from.
+//
+// Each tile's tables sit in its tile slot: its place in the world (in tiles) modulo the box's tiles, so they stay
+// with the tile while it stays in the box.
 
 #if !defined LIB_LIGHTS
 #define LIB_LIGHTS
@@ -16,13 +20,39 @@
 const uint tile_list_max = 128u;
 const uint tile_list_stride = tile_list_max + 1u;
 
-uint block_tile_index(ivec3 tile) {
-    return data_tile_lists_base + uint(tile.x + vox_tiles.x * (tile.y + vox_tiles.y * tile.z)) * tile_list_stride;
+// The lights inside each tile: their count, then up to own_list_max keys.
+const uint own_list_max = 32u;
+const uint own_list_stride = own_list_max + 1u;
+
+// Each tile's records: their count, then up to record_max lights of three words (see store_record).
+const uint record_max = 64u;
+const uint record_stride = 3u * record_max + 1u;
+
+// A tile (counted from the box's corner) as its slot's number.
+uint tile_slot_index(ivec3 tile) {
+    ivec3 slot = imod3((vox_box_world_lo(cameraPositionInt) >> 3) + tile, vox_tiles);
+    return uint(slot.x + vox_tiles.x * (slot.y + vox_tiles.y * slot.z));
 }
 
-// The block tile a point is in (vox_pos space), counted from the box's corner; false outside the box.
+uint block_tile_index(ivec3 tile) {
+    return data_tile_lists_base + tile_slot_index(tile) * tile_list_stride;
+}
+
+uint own_list_index(ivec3 tile) {
+    return data_own_lists_base + tile_slot_index(tile) * own_list_stride;
+}
+
+uint record_index(ivec3 tile) {
+    return data_records_base + tile_slot_index(tile) * record_stride;
+}
+
+bool tile_in_box(ivec3 tile) {
+    return all(greaterThanEqual(tile, ivec3(0))) && all(lessThan(tile, vox_tiles));
+}
+
+// The tile a point is in (vox_pos space), counted from the box's corner; false outside the box.
 bool block_tile_of(vec3 p, out ivec3 tile) {
-    ivec3 cell = ivec3(floor(p)) + vox_half;
+    ivec3 cell = ivec3(floor(p)) - vox_box_lo();
     tile = cell >> 3;
     return all(greaterThanEqual(cell, ivec3(0))) && all(lessThan(cell, vox_size));
 }
@@ -54,6 +84,36 @@ Light light_from_key(uint key) {
     l.color = color * light_brightness(l.level);
     l.reach = light_reach(l.level);
     l.valid = l.level > 0.0;
+    return l;
+}
+
+// A light as a record: its key; its place in its block (32nds, 5 bits each), the size of its soft shadows' cone (in
+// 1/510 blocks, 8 bits) and its level (5 bits); its colour at full strength (11, 11 and 10 bits).
+void store_record(uint at, uint key, Light l, float radius) {
+    uvec3 local = uvec3(clamp((l.pos - floor(l.pos)) * 32.0, 0.0, 31.0) + 0.5);
+    uint r = uint(clamp(radius * 510.0, 0.0, 255.0) + 0.5);
+    uint level = uint(clamp(l.level, 0.0, 31.0) + 0.5);
+    vec3 c = clamp(l.color / max(light_brightness(l.level), 1e-6), 0.0, 1.0);
+    uvec3 q = uvec3(c * vec3(2047.0, 2047.0, 1023.0) + 0.5);
+    data_store(at, key);
+    data_store(at + 1u, local.x | (local.y << 5u) | (local.z << 10u) | (r << 15u) | (level << 23u));
+    data_store(at + 2u, q.r | (q.g << 11u) | (q.b << 22u));
+}
+
+Light load_record(uint at, out float radius) {
+    uint key = data_load(at);
+    uint bits = data_load(at + 1u);
+    uint q = data_load(at + 2u);
+    Light l;
+    vec3 local = vec3(uvec3(bits, bits >> 5u, bits >> 10u) & 31u) / 32.0;
+    l.pos = vec3(light_key_block(key) - cameraPositionInt) + local;
+    l.level = float((bits >> 23u) & 31u);
+    l.color = vec3(float(q & 2047u) / 2047.0, float((q >> 11u) & 2047u) / 2047.0, float(q >> 22u) / 1023.0)
+            * light_brightness(l.level);
+    l.reach = light_reach(l.level);
+    l.kind = -1;
+    l.valid = l.level > 0.0;
+    radius = float((bits >> 15u) & 255u) / 510.0;
     return l;
 }
 

@@ -32,9 +32,13 @@ vec4 sample_block_table(sampler3D table, vec3 p) {
     return v.a > 1e-3 ? vec4(v.rgb / v.a, v.a) : vec4(0.0);
 }
 
-// How far inside the voxel box a point is: 1 well inside, falling to 0 over the last part of the way to its edge.
+// How far inside the voxel box a point is: 1 well inside, falling to 0 over the last part of the way to its edge; 0
+// everywhere without the Bridge's grid (Minecraft's own light then).
 float box_fade(vec3 p) {
-    vec3 r = abs(p) / vec3(vox_half);
+    if (!grid_live()) {
+        return 0.0;
+    }
+    vec3 r = abs(p - vox_box_middle()) / vec3(vox_half);
     return 1.0 - smoothstep(0.82, 0.96, max3(r));
 }
 

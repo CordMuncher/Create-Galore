@@ -28,10 +28,9 @@ const bool shadowHardwareFiltering = true;
 
 // --- The voxel copy of the world -------------------------------------------------------------------------------------
 
-// The box around you that the block light and the bounce light see: 0 is 96 x 64 x 96 blocks, 1 is 128 x 96 x 128,
-// 2 is 256 x 128 x 256. Each detail level halves its width and doubles its detail, so the finest is near you.
+// The box of blocks around you that the block light and the bounce light see, one cell per block (the Create Galore
+// Bridge keeps it, see lib/world.glsl): 0 is 96 x 64 x 96 blocks, 1 is 128 x 96 x 128, 2 is 256 x 128 x 256.
 #define VOXEL_BOX 1 // [0 1 2]
-#define VOXEL_LEVELS 6 // [4 5 6]
 
 // The sizes, and the work groups of 8 x 8 x 8 cells the passes over the box take, as plain numbers (Iris reads
 // workGroups without working anything out).
@@ -50,26 +49,6 @@ const bool shadowHardwareFiltering = true;
 #define VOX_Y 96
 #define VOX_GROUPS_X 16
 #define VOX_GROUPS_Y 12
-#endif
-// The distance field's passes cover every level, stacked up y.
-#if VOXEL_BOX == 0 && VOXEL_LEVELS == 4
-#define SDF_GROUPS_Y 32
-#elif VOXEL_BOX == 0 && VOXEL_LEVELS == 5
-#define SDF_GROUPS_Y 40
-#elif VOXEL_BOX == 0
-#define SDF_GROUPS_Y 48
-#elif VOXEL_BOX == 2 && VOXEL_LEVELS == 4
-#define SDF_GROUPS_Y 64
-#elif VOXEL_BOX == 2 && VOXEL_LEVELS == 5
-#define SDF_GROUPS_Y 80
-#elif VOXEL_BOX == 2
-#define SDF_GROUPS_Y 96
-#elif VOXEL_LEVELS == 4
-#define SDF_GROUPS_Y 48
-#elif VOXEL_LEVELS == 5
-#define SDF_GROUPS_Y 60
-#else
-#define SDF_GROUPS_Y 72
 #endif
 const ivec3 vox_size = ivec3(VOX_X, VOX_Y, VOX_X);
 const ivec3 vox_tiles = vox_size / 8;

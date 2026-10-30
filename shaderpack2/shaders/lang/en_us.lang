@@ -63,12 +63,10 @@ option.CAVE_BRIGHTNESS=Cave Brightness
 option.CAVE_BRIGHTNESS.comment=The faint light where no sky reaches, so caves are never fully black.
 
 option.VOXEL_BOX=Voxel Box
-option.VOXEL_BOX.comment=The box around you that block light and bounce light are traced through.
+option.VOXEL_BOX.comment=The box of blocks around you that block light and bounce light are traced through, one cell per block. The Create Galore Bridge keeps it with each block's real shape.
 value.VOXEL_BOX.0=96 × 64
 value.VOXEL_BOX.1=128 × 96
 value.VOXEL_BOX.2=256 × 128
-option.VOXEL_LEVELS=Detail Levels
-option.VOXEL_LEVELS.comment=Each level is half the width and twice the detail of the one before, so the finest is near you.
 
 option.DEBUG_VIEW=Debug View
 option.DEBUG_VIEW.comment=Shows one part of the lighting on its own.

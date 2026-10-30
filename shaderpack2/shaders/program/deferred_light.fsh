@@ -248,20 +248,22 @@ void main() {
 #elif DEBUG_VIEW == 6
     color = gi.rgb * fade;
 #elif DEBUG_VIEW == 7
+    // Lit by the face the ray went in by, so part blocks show their real shape.
     Hit h = trace_ray(vox_pos(vec3(0.0)), -v, 128.0, 128);
-    color = h.hit ? vox_color(ivec3(floor(h.pos))).rgb * (0.6 + 0.4 * float(h.level) / float(VOXEL_LEVELS)) : vec3(0.0, 0.0, 0.2);
+    color = h.hit ? vox_color(h.block).rgb * (0.55 + 0.45 * abs(dot(h.normal, vec3(0.3, 0.9, 0.5)))) : vec3(0.0, 0.0, 0.2);
 #elif DEBUG_VIEW == 8
     color = vec3(float(sdf_at(ivec3(floor(in_front)), 0)) / 16.0);
 #elif DEBUG_VIEW == 9
     color = vec3(ao * screen_ao);
 #elif DEBUG_VIEW == 10
-    // The surface's own block in the voxel copy: red solid, green see-through, blue a light; dim when no colour
-    // was gathered for it.
-    uint word = vox_word(ivec3(floor(p - s.face * 0.5)));
-    color = vec3(float((word & vox_solid_bit(0)) != 0u), float((word & vox_see_bit(0)) != 0u), float((word & VOX_LIGHT) != 0u));
-    color *= (word >> VOX_COUNT_SHIFT) > 0u ? 1.0 : 0.3;
+    // The surface's own block in the voxel copy: red stops light (yellow a part block, orange leaves), green
+    // see-through, blue a light; dim where the Bridge hasn't read the block yet.
+    uint word = vox_word(ivec3(floor(p - s.face * 0.02)));
+    color = vec3(float((word & VOX_SOLID) != 0u), float((word & VOX_SEE) != 0u), float((word & VOX_LIGHT) != 0u));
+    color.g += (word & VOX_PART) != 0u ? 0.8 : (word & VOX_LEAVES) != 0u ? 0.4 : 0.0;
+    color *= (word & VOX_KNOWN) != 0u ? 1.0 : 0.3;
 #elif DEBUG_VIEW == 11
-    color = vox_color(ivec3(floor(p - s.face * 0.5))).rgb;
+    color = vox_color(ivec3(floor(p - s.face * 0.02))).rgb;
 #elif DEBUG_VIEW == 12
     // The light list of the block tile in front of the surface: red its length (16 = full), green how many of its
     // first eight lights are still there (8 = full), blue the per-block table's confidence.
@@ -280,7 +282,7 @@ void main() {
     {
         // In strips from the left: the lit picture (a fifth), then the block light used, the per-block table, the
         // traced per-pixel light (blue where there is none), the bounce light, and flags (red: traced light there;
-        // green: the trace starts inside something; blue: the level read there, brighter finer).
+        // green: the trace starts inside a full block; blue: inside the voxel box).
         float sx = gl_FragCoord.x / render_size().x;
         if (sx < 0.2) {
         } else if (sx < 0.35) {
@@ -295,13 +297,12 @@ void main() {
             color = gi.rgb * fade;
         } else {
             vec3 dp = vox_pos(scene) + s.face * 0.04;
-            vec3 ds = trace_start(dp, s.face);
 #ifdef PIXEL_LIGHT
             float valid = traced.a > 0.5 ? 1.0 : 0.0;
 #else
             float valid = 0.0;
 #endif
-            color = vec3(valid * 0.5, start_inside(ds) ? 1.0 : 0.0, float(vox_level(dp) + 1) / 6.0);
+            color = vec3(valid * 0.5, start_inside(dp) ? 1.0 : 0.0, float(vox_level(dp) + 1));
         }
     }
 #endif

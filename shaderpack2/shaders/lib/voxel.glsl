@@ -1,18 +1,17 @@
-// The voxel copy of the world around the camera (see program/shadow.gsh, which makes it each frame).
+// The voxel copy of the world around the camera, one cell per block, made each frame by program/world.csh from the
+// Create Galore Bridge's block grid (see lib/world.glsl).
 //
-// A box of VOX_X x VOX_Y x VOX_X cells, at VOXEL_LEVELS levels of detail: level 0 has a cell per block, each level
-// after it covers half the width at twice the detail (level 5: 32 cells per block, 2 blocks around you). All levels
-// share one 32-bit word per cell slot, a bit each; a slot holds a different place at each level. Each level's box
-// stays centred on the cell the camera is in at that level (the finer ones a little lower, see vox_drop), so it moves
-// a cell at a time (a 32nd of a block at the finest, a block at the coarsest): a step never shifts which detail a
-// surface near you is read at by more than the step itself. The slots wrap around (a place keeps its slot while it stays in the box), so the tables kept from frame
-// to frame (the distance field, the light) never have to be moved.
+// A box of VOX_X x VOX_Y x VOX_X cells fixed to the world: its low corner sits on a multiple of 8 blocks, as near to
+// centred on the camera's block as that allows, so its 8-block tiles are the world's own and the box moves 8 blocks
+// at a time. A block's cell (its slot) is its position modulo the box's size, so a place keeps its slot while it stays
+// in the box, and the tables kept from frame to frame never move. What a block holds comes from the game itself (the
+// Bridge reads each block's shape and light), never from what the camera happens to see, so a ray through the copy
+// gives the same answer from wherever it is looked at.
 //
-// Each word: bits 0..7 solid at that level, 8..15 see-through (glass, water) at that level; at level 0 also bit 16
-// water, bit 17 a light, bits 18..19 the sky light the block's faces see (a Gray code: OR-ing two keeps a value
-// between them), and from bit 20 up how many colour samples the block's colour sums hold. The words are the first
-// third of cg_vox_img along x; the second third holds the colour sums' red | green << 16 and the last blue |
-// alpha << 16 (sums of 0..255), slot for slot.
+// Each word: bits 0..15 the block's palette entry (its colour and shape, lib/world.glsl); bit 16 something in it stops
+// light (VOX_SOLID); 17 see-through (stained glass, water, ice: tints the light); 18 water; 19 a light; 20..23 the sky
+// light in the block (0..15); 24 a part block (a slab, a path, a fence post: VOX_SOLID only where its shape's boxes
+// are); 25 leaves (they let some light through); 26 known (the Bridge has read it).
 
 #if !defined LIB_VOXEL
 #define LIB_VOXEL
@@ -20,34 +19,32 @@
 #include "/lib/settings.glsl"
 #include "/lib/common.glsl"
 #include "/lib/view.glsl"
+#include "/lib/world.glsl"
 
-#define VOX_WATER (1u << 16u)
-#define VOX_LIGHT (1u << 17u)
-#define VOX_SKY_SHIFT 18u
-#define VOX_COUNT_SHIFT 20u
+#define VOX_ENTRY 0xffffu
+#define VOX_SOLID (1u << 16u)
+#define VOX_SEE (1u << 17u)
+#define VOX_WATER (1u << 18u)
+#define VOX_LIGHT (1u << 19u)
+#define VOX_SKY_SHIFT 20u
+#define VOX_PART (1u << 24u)
+#define VOX_LEAVES (1u << 25u)
+#define VOX_KNOWN (1u << 26u)
 
 const ivec3 vox_half = vox_size / 2;
-// The voxel triangles' corner of the shadow map holds a level's box with this many cells to spare on each side, so a
-// triangle reaching out of the box (up to two blocks at the finest level) still marks the coarser levels there.
-const float vox_map_margin = 64.0;
-const ivec3 vox_rg_offset = ivec3(VOX_X, 0, 0);
-const ivec3 vox_ba_offset = ivec3(2 * VOX_X, 0, 0);
 
+// A cell that stops light everywhere in it: a full block (not a part block, not leaves).
+bool vox_full(uint word) {
+    return (word & (VOX_SOLID | VOX_PART | VOX_LEAVES)) == VOX_SOLID;
+}
+
+// (The level parameters below are left over from the copy's six detail levels: there is only level 0 now.)
 uint vox_solid_bit(int level) {
-    return 1u << uint(level);
+    return VOX_SOLID;
 }
 
 uint vox_see_bit(int level) {
-    return 1u << uint(level + 8);
-}
-
-int imod(int a, int n) {
-    int r = a - n * (a / n);
-    return r < 0 ? r + n : r;
-}
-
-ivec3 imod3(ivec3 a, ivec3 n) {
-    return ivec3(imod(a.x, n.x), imod(a.y, n.y), imod(a.z, n.z));
+    return VOX_SEE;
 }
 
 // A point in scene space (camera-relative) as blocks from the corner of the camera's block.
@@ -55,61 +52,48 @@ vec3 vox_pos(vec3 scene_pos) {
     return scene_pos + cameraPositionFract;
 }
 
-// The cell a point (from vox_pos) is in at a level, counted from the corner of the camera's block.
+// The block a point (from vox_pos) is in, counted from the camera's block.
 ivec3 vox_cell(vec3 p, int level) {
-    return ivec3(floor(p * float(1 << level)));
+    return ivec3(floor(p));
 }
 
-// The finer levels' boxes sit this many blocks below the eye, so the ground under your feet is in the finest one
-// (its box is only a block and a half high each way).
-const float vox_drop = 0.75;
-
-// The middle of a level's box: the cell at that level that the camera (less the drop) is in; 0 at level 0, whose box
-// moves a block at a time with the camera's block. This frame's, and last frame's from last frame's camera.
-ivec3 vox_centre_from(vec3 camera_fract, int level) {
-    if (level == 0) {
-        return ivec3(0);
-    }
-    return ivec3(floor((camera_fract - vec3(0.0, vox_drop, 0.0)) * float(1 << level)));
+// The box's low corner in world blocks for a camera block: on a multiple of 8, as near as that allows to half the box
+// below the camera's block. The Bridge places its grid the same way.
+ivec3 vox_box_world_lo(ivec3 camera_block) {
+    return ((camera_block - vox_half) >> 3) << 3;
 }
 
-ivec3 vox_centre(int level) {
-    return vox_centre_from(cameraPositionFract, level);
+// The box's low corner, counted from the camera's block (this frame's).
+ivec3 vox_box_lo() {
+    return vox_box_world_lo(cameraPositionInt) - cameraPositionInt;
 }
 
-ivec3 vox_previous_centre(int level) {
-    return vox_centre_from(previousCameraPositionFract, level);
+// The box's middle (vox_pos space).
+vec3 vox_box_middle() {
+    return vec3(vox_box_lo() + vox_half);
 }
 
 bool vox_in_box(ivec3 cell, int level) {
-    ivec3 c = cell - vox_centre(level);
-    return all(greaterThanEqual(c, -vox_half)) && all(lessThan(c, vox_half));
+    ivec3 c = cell - vox_box_lo();
+    return all(greaterThanEqual(c, ivec3(0))) && all(lessThan(c, vox_size));
 }
 
-// The slot of a cell at a level (the slots wrap around the world, so each place keeps its own).
+// The slot of a cell (the slots wrap around the world, so each place keeps its own).
 ivec3 vox_slot(ivec3 cell, int level) {
-    ivec3 base = imod3(cameraPositionInt * (1 << level), vox_size);
-    return (base + cell + vox_size) % vox_size;
+    return imod3(cameraPositionInt + cell, vox_size);
 }
 
-// The cell a slot holds this frame at a level (the inverse of vox_slot within the level's box).
-ivec3 vox_slot_cell(ivec3 slot, int level) {
-    ivec3 base = imod3(cameraPositionInt * (1 << level), vox_size);
-    ivec3 centre = vox_centre(level);
-    return (slot - base - centre + 2 * vox_size + vox_half) % vox_size - vox_half + centre;
-}
-
-// Whether a cell (of this frame) was in last frame's box at its level too.
+// Whether a cell (of this frame) was in last frame's box too.
 bool vox_was_in_box(ivec3 cell, int level) {
-    ivec3 moved = (cameraPositionInt - previousCameraPositionInt) * (1 << level);
-    ivec3 c = cell + moved - vox_previous_centre(level);
-    return all(greaterThanEqual(c, -vox_half)) && all(lessThan(c, vox_half));
+    ivec3 world = cameraPositionInt + cell;
+    ivec3 c = world - vox_box_world_lo(previousCameraPositionInt);
+    return all(greaterThanEqual(c, ivec3(0))) && all(lessThan(c, vox_size));
 }
 
-// How far a cell is from its level's box edge, in cells (0 on the outermost cells).
+// How far a cell is from the box's edge, in cells (0 on the outermost cells).
 int vox_edge_distance(ivec3 cell, int level) {
-    ivec3 c = cell - vox_centre(level);
-    ivec3 d = min(c + vox_half, vox_half - 1 - c);
+    ivec3 c = cell - vox_box_lo();
+    ivec3 d = min(c, vox_size - 1 - c);
     return min(d.x, min(d.y, d.z));
 }
 
@@ -126,17 +110,12 @@ float vox_tile_distance(vec3 centre) {
     return min(length(centre), length(centre - ahead));
 }
 
-// The finest level whose box holds a point, keeping a cell clear of the box's edge; -1 outside them all.
+// 0 inside the box (a cell clear of its edge), -1 outside.
 int vox_level(vec3 p) {
-    for (int level = VOXEL_LEVELS - 1; level >= 0; level--) {
-        if (vox_edge_distance(vox_cell(p, level), level) >= 1) {
-            return level;
-        }
-    }
-    return -1;
+    return vox_edge_distance(ivec3(floor(p)), 0) >= 1 ? 0 : -1;
 }
 
-// The light hash (in cg_data_img, see lib/data.glsl): what the shadow pass found out about each block that holds a light, in 65536
+// The light hash (in cg_data_img, see lib/data.glsl): what program/world.csh found out about each block that holds a light, in 65536
 // slots of eight words, found by the block's key (up to four tries from where the key hashes to). Words: 0 the key
 // plus 1 (0: free), 1 the light's place in its block as x and y << 16 (sums, 1/32 block steps), 2 z and the count of
 // samples << 16, 3 red and green << 16 (sums, 1/32 steps), 4 blue, 5 its level << 8 and its kind + 1 (the largest

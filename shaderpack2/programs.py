@@ -37,16 +37,16 @@ FULLSCREEN = "fullscreen.vsh"
 add("setup", {"csh": "sky.csh"}, ["SKY_TRANSMITTANCE"], sky_only=True)
 add("setup1", {"csh": "sky.csh"}, ["SKY_MULTIPLE"], sky_only=True)
 add("begin", {"csh": "sky.csh"}, ["SKY_VIEW"], sky_only=True)
-# The light hash cleared, then the frame's light.
+# The light hash cleared, the frame's light, then the voxel copy from the Bridge's block grid.
 add("begin1", {"csh": "clear.csh"})
 add("begin2", {"csh": "frame.csh"})
+add("begin3", {"csh": "world.csh"})
 
-# The shadow pass: mobs and block entities, then the world's blocks (shadow map and voxel copy).
+# The shadow pass (the sun's shadow map): mobs and block entities, then the world's blocks.
 add("shadow", {"vsh": "shadow.vsh", "fsh": "shadow.fsh"})
 for kind in ("solid", "cutout"):
-    add("shadow_" + kind, {"vsh": "shadow.vsh", "gsh": "shadow.gsh", "fsh": "shadow.fsh"}, ["PROGRAM_SHADOW_TERRAIN"])
-add("shadow_water", {"vsh": "shadow.vsh", "gsh": "shadow.gsh", "fsh": "shadow.fsh"},
-    ["PROGRAM_SHADOW_TERRAIN", "PROGRAM_SHADOW_WATER"])
+    add("shadow_" + kind, {"vsh": "shadow.vsh", "fsh": "shadow.fsh"}, ["PROGRAM_SHADOW_TERRAIN"])
+add("shadow_water", {"vsh": "shadow.vsh", "fsh": "shadow.fsh"}, ["PROGRAM_SHADOW_TERRAIN", "PROGRAM_SHADOW_WATER"])
 add("clrwl_shadow", {"vsh": "clrwl_shadow.vsh", "fsh": "clrwl_shadow.fsh"})
 
 # The voxel copy's distance field, the light per block, the bounce light per block.

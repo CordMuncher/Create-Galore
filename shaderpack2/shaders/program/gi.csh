@@ -6,10 +6,11 @@
 // - solid cells hold nothing;
 // - cells in the open (more than a block from anything, not see-through) take the average of their six neighbours,
 //   which carries the bounce light into the air without tracing;
+// - part blocks (a slab, a path) hold the light of the open part of their block, like any cell by a surface;
 // - cells by a surface send GI_RAYS rays over the surface's half of the sphere, up to 30 blocks through the distance
 //   field. A ray that hits takes what lights the spot it hit (the block light there, its own bounce light, the sun
 //   through the real shadow map) times that block's colour; and some sky, the more the further it got. A ray that
-//   gets away brings the sky. The sky is scaled by the sky light the cell's neighbours saw.
+//   gets away brings the sky. The sky is scaled by Minecraft's sky light in and around the cell.
 // The new rays join the old ones, which fade (by about 1% per frame at 60 frames a second), so the light settles
 // over a second or two and holds several bounces (each hit reads the bounce light already there). More than
 // far_tiles blocks from you (and from where you are heading), half the tiles trace each frame (a checkerboard): the
@@ -98,20 +99,20 @@ vec4 load_gi(ivec3 cell) {
 vec3 trace_cell(ivec3 cell, ivec3 slot) {
     vec3 normal = vox_normal(cell);
     bool has_normal = dot(normal, normal) > 0.5;
-    vec3 p = vec3(cell) + 0.5 - normal * 0.3;
+    vec3 p = cell_light_point(cell, vox_word(cell), normal);
 
-    // The sky its neighbours' faces saw, nudged up as you yourself see more of it.
-    uint seen = 0u;
+    // The sky light in the block and around it (the most of them), nudged up as you yourself see more of it.
+    float sky_light = vox_sky(vox_word(cell));
     for (int i = 0; i < 6; i++) {
         ivec3 o = ivec3(i == 0 ? 1 : i == 1 ? -1 : 0, i == 2 ? 1 : i == 3 ? -1 : 0, i == 4 ? 1 : i == 5 ? -1 : 0);
         if (vox_in_box(cell + o, 0)) {
-            seen |= vox_word(cell + o);
+            sky_light = max(sky_light, vox_sky(vox_word(cell + o)));
         }
     }
 #if defined NO_SKY_LIGHT
     float sky = 1.0; // the Nether's and the End's air light is everywhere; what the rays find shades it
 #else
-    float sky = vox_sky(seen);
+    float sky = sky_light;
     sky = mix(sky, 1.0, 0.4 * float(eyeBrightnessSmooth.y) / 240.0);
 #endif
 
@@ -129,14 +130,8 @@ vec3 trace_cell(ivec3 cell, ivec3 slot) {
         Hit h = trace_ray(p, dir, gi_reach, 70);
         vec3 from_sky = sky_from(dir) * sky;
         if (h.hit) {
-            // The face it went in by: the axis whose cell wall the hit is nearest.
-            float cell_size = exp2(float(-h.level));
-            vec3 f = fract(h.pos / cell_size);
-            vec3 wall = min(f, 1.0 - f);
-            int axis = wall.x < wall.y && wall.x < wall.z ? 0 : wall.y < wall.z ? 1 : 2;
-            vec3 hit_normal = vec3(0.0);
-            hit_normal[axis] = -sign(dir[axis]);
-            ivec3 block = ivec3(floor(h.pos - hit_normal * 0.01));
+            vec3 hit_normal = h.normal;
+            ivec3 block = h.block;
             ivec3 front = ivec3(floor(h.pos + hit_normal * 0.5));
             vec4 color = vox_color(block);
             vec4 gi_there = load_gi(front);
@@ -155,10 +150,11 @@ vec3 trace_cell(ivec3 cell, ivec3 slot) {
 
 void main() {
     ivec3 tile = ivec3(gl_WorkGroupID);
-    ivec3 tile_min = tile * 8 - vox_half;
+    ivec3 tile_min = vox_box_lo() + tile * 8;
     ivec3 cell = tile_min + ivec3(gl_LocalInvocationID);
     uint index = gl_LocalInvocationIndex;
     ivec3 slot = vox_slot(cell, 0);
+    ivec3 world_tile = (vox_box_world_lo(cameraPositionInt) >> 3) + tile;
 
     if (index == 0u) {
         s_active = in_view(vec3(tile_min) + 4.0, 7.0, 10.0) ? 1u : 0u;
@@ -175,7 +171,8 @@ void main() {
     }
 
     uint word = vox_word(cell);
-    if ((word & vox_solid_bit(0)) != 0u) {
+    if ((word & VOX_SOLID) != 0u && (word & VOX_PART) == 0u) {
+        // A full block or leaves: nothing inside.
         imageStore(cg_gi_img, slot, vec4(0.0));
         imageStore(cg_gi_img, slot + gi_count_offset, vec4(0.0));
     } else if (sdf_at(cell, 0) >= 2u && (word & vox_see_bit(0)) == 0u) {
@@ -189,7 +186,7 @@ void main() {
         if (sum.a > 0.0) {
             imageStore(cg_gi_img, slot, vec4(sum.rgb / sum.a, 1.0));
         }
-    } else if (vox_tile_distance(vec3(tile_min) + 4.0) < far_tiles || (tile.x + tile.y + tile.z + frameCounter) % 2 == 0) {
+    } else if (vox_tile_distance(vec3(tile_min) + 4.0) < far_tiles || (world_tile.x + world_tile.y + world_tile.z + frameCounter) % 2 == 0) {
         s_trace[atomicAdd(s_trace_count, 1u)] = index;
     }
     barrier();

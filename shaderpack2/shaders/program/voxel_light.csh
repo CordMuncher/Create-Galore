@@ -2,11 +2,14 @@
 // for water and glass, the light in the air, the bounce light, and any pixel the traced light on the screen can't
 // serve (see program/pixel_light.csh).
 //
-// One work group per 8 x 8 x 8 tile of blocks. It gathers its candidate lights (see lib/lights.glsl), weighs each
-// at its nearest point of the tile, sorts them, and keeps the 128 strongest. Then each cell, for each light in reach
-// that its surface faces: one cone trace through the distance field for how much of the light gets there, and a
-// walk to the first see-through block for its colour. A cell in the open has no surface, so it takes light from
-// every side (the light in the air). The sum is log-compressed (see compress_light).
+// One work group per 8 x 8 x 8 tile of blocks. It gathers its candidate lights (see lib/lights.glsl): those inside
+// the tiles up to two away, and those that lit it and its six neighbours last time. It weighs each at its nearest
+// point of the tile, sorts them, and keeps the 128 strongest. Then each cell, for each light in reach that its surface
+// faces: one cone trace through the distance field for how much of the light gets there, and a walk to the first
+// see-through block for its colour. A cell in the open has no surface, so it takes light from every side (the light in
+// the air). The sum is log-compressed (see compress_light). Last, the tile keeps its list for next time and writes
+// its strongest lights as records for the per-pixel light (program/pixel_light.csh), those that lit something here
+// first.
 //
 // Tiles in view (and a little around it) update: near you (or where you are heading) every frame, further away less
 // often, down to every 10th frame. Tiles the box has just reached update at once.
@@ -37,7 +40,11 @@ shared uint s_list_count;
 shared vec3 s_pos[tile_list_max];
 shared vec3 s_color[tile_list_max];
 shared float s_reach[tile_list_max];
+shared float s_radius[tile_list_max];
+shared float s_level[tile_list_max];
 shared uint s_contribution[tile_list_max];
+
+const int own_reach_tiles = 2; // the tiles whose own lights are candidates: up to this many away on each axis
 
 // Whether a box (vox_pos space, centre and half size) is in view, give or take margin blocks.
 bool in_view(vec3 centre, float radius, float margin) {
@@ -96,7 +103,7 @@ void sort_candidates(uint index) {
 
 void main() {
     ivec3 tile = ivec3(gl_WorkGroupID);
-    ivec3 tile_min = tile * 8 - vox_half;
+    ivec3 tile_min = vox_box_lo() + tile * 8;
     ivec3 cell = tile_min + ivec3(gl_LocalInvocationID);
     uint index = gl_LocalInvocationIndex;
     vec3 lo = vec3(tile_min);
@@ -106,7 +113,7 @@ void main() {
     if (index == 0u) {
         float distance_away = vox_tile_distance(centre);
         int interval = clamp(int(distance_away / 8.0), 1, 10);
-        uint offset = pcg3d(uvec3(tile)).x;
+        uint offset = pcg3d(uvec3((vox_box_world_lo(cameraPositionInt) >> 3) + tile + 1024)).x;
         bool due = (uint(frameCounter) + offset) % uint(interval) == 0u;
         s_update = due && in_view(centre, 7.0, 10.0) ? 1u : 0u;
         s_count = 0u;
@@ -126,14 +133,22 @@ void main() {
     }
     barrier();
 
-    // Candidates: the lights in the tile, the tile's own list and its six neighbours'.
-    uint word = vox_word(cell);
-    if ((word & VOX_LIGHT) != 0u) {
-        add_candidate(light_key(cameraPositionInt + cell));
+    // Candidates: the lights inside the tiles around (one tile per thread), then the lists of the tile and its six
+    // neighbours.
+    const int span = 2 * own_reach_tiles + 1;
+    if (index < uint(span * span * span)) {
+        ivec3 t = tile + ivec3(int(index) % span, (int(index) / span) % span, int(index) / (span * span)) - own_reach_tiles;
+        if (tile_in_box(t)) {
+            uint base = own_list_index(t);
+            uint count = min(data_load(base), own_list_max);
+            for (uint j = 0u; j < count; j++) {
+                add_candidate(data_load(base + 1u + j));
+            }
+        }
     }
     for (int n = 0; n < 7; n++) {
         ivec3 t = tile + (n == 0 ? ivec3(0) : ivec3(n == 1 ? 1 : n == 2 ? -1 : 0, n == 3 ? 1 : n == 4 ? -1 : 0, n == 5 ? 1 : n == 6 ? -1 : 0));
-        if (any(lessThan(t, ivec3(0))) || any(greaterThanEqual(t, vox_tiles))) {
+        if (!tile_in_box(t)) {
             continue;
         }
         uint base = block_tile_index(t);
@@ -163,6 +178,12 @@ void main() {
             s_pos[index] = l.pos;
             s_color[index] = l.color;
             s_reach[index] = l.reach;
+            s_level[index] = l.level;
+            // Its soft shadows' cone: half a block, less where the light's block sits in a tight spot (its shadows
+            // are then sharper). Measured from the block's middle, not the light's place in it, so a light that moves
+            // in its block (a portal's) keeps the width of every shadow it casts.
+            float space = max(free_space(floor(l.pos) + 0.5, 0), 0.05);
+            s_radius[index] = 0.5 * min(1.0, space) * 0.6;
             s_contribution[index] = 0u;
             atomicMax(s_list_count, index + 1u);
         }
@@ -170,12 +191,13 @@ void main() {
     barrier();
 
     // This cell's light.
+    uint word = vox_word(cell);
     ivec3 slot = vox_slot(cell, 0);
-    if ((word & vox_solid_bit(0)) != 0u) {
-        imageStore(cg_blk_img, slot, vec4(0.0));
+    if ((word & VOX_SOLID) != 0u && (word & VOX_PART) == 0u) {
+        imageStore(cg_blk_img, slot, vec4(0.0)); // a full block or leaves: nothing inside
     } else {
         vec3 normal = vox_normal(cell);
-        vec3 p = vec3(cell) + 0.5 - normal * 0.3;
+        vec3 p = cell_light_point(cell, word, normal);
         vec3 sum = vec3(0.0);
         int traces = 0;
         uint lights = s_list_count;
@@ -207,16 +229,38 @@ void main() {
     }
     barrier();
 
-    // The lights that lit something here, for next time.
+    // The lights that lit something here, for next time; and the records, those first.
     if (index == 0u) {
         uint base = block_tile_index(tile);
+        uint records = record_index(tile);
         uint n = 0u;
+        uint r = 0u;
         for (uint j = 0u; j < s_list_count; j++) {
             if (uintBitsToFloat(s_contribution[j]) > 2e-4) {
-                data_store(base + 1u + n, s_key[s_order[j]]);
+                uint key = s_key[s_order[j]];
+                data_store(base + 1u + n, key);
                 n++;
+                if (r < record_max) {
+                    Light l;
+                    l.pos = s_pos[j];
+                    l.color = s_color[j];
+                    l.level = s_level[j];
+                    store_record(records + 1u + 3u * r, key, l, s_radius[j]);
+                    r++;
+                }
             }
         }
         data_store(base, n);
+        for (uint j = 0u; j < s_list_count && r < record_max; j++) {
+            if (uintBitsToFloat(s_contribution[j]) <= 2e-4) {
+                Light l;
+                l.pos = s_pos[j];
+                l.color = s_color[j];
+                l.level = s_level[j];
+                store_record(records + 1u + 3u * r, s_key[s_order[j]], l, s_radius[j]);
+                r++;
+            }
+        }
+        data_store(records, r);
     }
 }

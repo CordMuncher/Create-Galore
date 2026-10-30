@@ -1,8 +1,10 @@
-// The pack's tables of words, in one image (cg_data_img: 4096 words a row, 1688 rows):
+// The pack's tables of words, in one image (cg_data_img: 4096 words a row, 1552 rows), each 8-block tile's in its tile
+// slot (the tile's place in the world modulo the box's tiles, see lib/lights.glsl), enough for the biggest box:
 // - rows 0..127: the light hash (lib/voxel.glsl), 65536 slots of eight words;
-// - rows 128..647: each 8-block tile's light list (lib/lights.glsl), 129 words each;
-// - rows 648..1687: each screen tile's light list (program/pixel_light.csh), 65 words each;
-// - the last word of the 8-block tiles' rows, past the biggest box's lists: the bad frame record (see
+// - rows 128..647: each tile's light list (lib/lights.glsl), 129 words each;
+// - rows 648..779: the lights inside each tile (program/world.csh), 33 words each;
+// - rows 780..1551: each tile's lights as records the per-pixel light reads (program/voxel_light.csh), 193 words each;
+// - the last word of the tiles' light list rows, past the biggest box's lists: the bad frame record (see
 //   lib/bad_frame.glsl).
 //
 // An image rather than storage buffers: Iris gives storage buffers only binding points 0 to 8, which Flywheel's
@@ -17,8 +19,8 @@ layout(r32ui) uniform uimage2D cg_data_img;
 const uint data_hash_base = 0u;
 const uint data_tile_lists_base = 128u * 4096u;
 const uint data_tile_lists_size = 520u * 4096u;
-const uint data_screen_lists_base = 648u * 4096u;
-const uint data_screen_lists_size = 1040u * 4096u;
+const uint data_own_lists_base = 648u * 4096u;
+const uint data_records_base = 780u * 4096u;
 const uint data_bad_frame = data_tile_lists_base + data_tile_lists_size - 1u;
 
 ivec2 data_texel(uint i) {

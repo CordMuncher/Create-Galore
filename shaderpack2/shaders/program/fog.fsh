@@ -43,7 +43,7 @@ vec3 light_in_air(vec3 dir, float reach, ivec2 texel) {
             break;
         }
         vec3 p = origin + dir * t;
-        vec3 r = abs(p) / vec3(vox_half);
+        vec3 r = abs(p - vox_box_middle()) / vec3(vox_half);
         // Fades towards the box's edge, sooner up and down (the box is flatter).
         float edge = (1.0 - smoothstep(0.6, 0.95, max(r.x, r.z))) * (1.0 - smoothstep(0.5, 0.9, r.y));
         float near_fade = smoothstep(0.0, 32.0, t);

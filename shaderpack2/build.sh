@@ -4,7 +4,7 @@
 set -euo pipefail
 HERE="$(cd "$(dirname "$0")" && pwd)"
 OUT="$(mkdir -p "${1:-$HERE/dist}" && cd "${1:-$HERE/dist}" && pwd)"
-VERSION=alpha-0.3.1
+VERSION=alpha-0.4
 ZIP="$OUT/vector-$VERSION.zip"
 python3 "$HERE/programs.py" --check
 rm -f "$ZIP"
