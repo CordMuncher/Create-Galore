@@ -5,6 +5,17 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.6.51
+
+### Added
+- Create Galore Bridge 1.165.0.
+
+### Fixed
+- **Groundwork for future shader packs: block shapes as they are drawn.** The copy of the blocks around you now gives each block the shape its model draws instead of the box you click: a fence's two rails rather than a solid post-high panel on each arm, a closed gate's bars rather than a solid board, with up to twelve pieces per block. A shader pack that traces light through the copy can now let light through fence rails and gates. Shader packs that don't ask for the copy, Photon and the others, are not affected.
+
+### Removed
+- Nothing.
+
 ## 0.6.50
 
 ### Added
