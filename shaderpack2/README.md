@@ -49,8 +49,8 @@ pack (`shaderpack/`) stays as a research build; the two share only the DLSS hand
 - **Highlights** from every nearby lamp on polished blocks, metal and machines; rough blocks keep a faint sheen.
 - **DLSS and FSR** get the surface behind particles, so slow smoke doesn't turn into a shifted window onto the scene.
 - **The bad frame mark**: every pass that hands the frame on replaces an infinite or invalid value with nothing (one
-  would spread over the whole screen through the bloom) and a small square in the top left corner shows where it was
-  caught (option Bad Frame Mark).
+  would spread over the whole screen through the bloom) and a small square at the middle of the left edge shows where
+  it was caught (option Bad Frame Mark).
 - **Held lights** light the world in their own colour, from the hand that holds them; what you hold takes the colour
   of the lights around you. Glowing particles (flames, sparks, portal particles) glow, and the End portal shows its
   starfield and gives light.

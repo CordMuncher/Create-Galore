@@ -72,9 +72,10 @@ void main() {
         note_bad(BAD_FINAL);
     }
 #ifdef BAD_FRAME_MARK
-    // The bad frame mark (lib/bad_frame.glsl), 12 pixels from the top left corner.
-    vec2 corner = vec2(window_pixel.x, window_size().y - window_pixel.y);
-    if (all(lessThan(corner, vec2(20.0))) && all(greaterThan(corner, vec2(8.0)))) {
+    // The bad frame mark (lib/bad_frame.glsl), 12 pixels in from the middle of the left edge (minimaps sit in the
+    // corners).
+    vec2 mark = vec2(window_pixel.x - 14.0, window_pixel.y - window_size().y * 0.5);
+    if (all(lessThan(abs(mark), vec2(6.0)))) {
         uint record = data_load(data_bad_frame);
         uint shown = (record >> 8u) & 255u;
         if ((record >> 16u) > 0u && shown != 0u) {

@@ -94,8 +94,8 @@ const float eyeBrightnessHalflife = 5.0;
 // 7 the voxel copy (what a ray from the camera hits first), 8 its distance field, 9 ambient occlusion, 14 the light
 // layers side by side (see deferred_light.fsh).
 #define DEBUG_VIEW 0 // [0 1 2 3 4 5 6 7 8 9 10 11 12 13 14]
-// A small square in the top left corner for about two seconds whenever a pass caught a value that is infinite or not
-// a number (see lib/bad_frame.glsl): its colour says where.
+// A small square at the middle of the left edge for about two seconds whenever a pass caught a value that is
+// infinite or not a number (see lib/bad_frame.glsl): its colour says where.
 #define BAD_FRAME_MARK
 // DLSS and FSR get the surface behind a particle (its depth and motion) instead of the particle's own (see
 // program/dlss.fsh): off to compare, for the rising torch smoke that looked like a piece of glass.
