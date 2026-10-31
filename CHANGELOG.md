@@ -5,6 +5,19 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.6.58
+
+### Added
+- Create Galore Bridge 1.170.0.
+- **The Farm Magnifying Glass shows why a sick animal got sick.** The moment a tamed animal falls ill, the reasons it could have are kept with it, and the glass shows them until it is well again: a sick animal nearby, crowding (how many animals within 4 blocks, and which kinds), happiness under 50, days unfed, or darkness. It also says how long ago it happened, and when it happened as an unloaded farm ran again after some days away (a farm that isn't loaded rolls once for all the days it missed, the moment it runs again).
+
+### Fixed
+- **Barns lit by daylight no longer count as dark at night.** Animal Husbandry checks each tamed animal's care once a day, at the time of day it was tamed (a skipped night moves it). It read the light at that moment, so an animal in a roofed barn lit only through its open sides counted as kept dark when its check fell at night: a chance to fall sick and 5 happiness lost every day, only for some animals in the barn. The check now reads the sky as it is by day, so a barn counts as dark only when it is dim by day too. A torch-lit barn stays fine.
+- The Field Guide's animal pages say that a sick animal passes it on to those within 4 blocks, that sick animals sometimes recover by themselves, and what the glass shows for a sick one.
+
+### Removed
+- Nothing.
+
 ## 0.6.57
 
 ### Added

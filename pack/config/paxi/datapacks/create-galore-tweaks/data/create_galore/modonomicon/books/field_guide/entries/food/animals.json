@@ -39,7 +39,7 @@
         "item": "animalhusbandry:farm_ledger"
       },
       "title": "Farm Ledger",
-      "text": "Tracks hunger, cleanliness, growth, yield, fertility and happiness. The symbol at the top left is its sex. The [Farm Magnifying Glass](item://animalhusbandry:magnifying_glass) inspects one animal: sex, health, happiness, cooldowns, wool and milk, and why it isn't mating yet."
+      "text": "Tracks hunger, cleanliness, growth, yield, fertility and happiness. The symbol at the top left is its sex. The [Farm Magnifying Glass](item://animalhusbandry:magnifying_glass) inspects one animal: sex, health, happiness, cooldowns, wool and milk, why it isn't mating yet, and for a sick one what made it sick."
     },
     {
       "type": "modonomicon:spotlight",
@@ -100,7 +100,12 @@
     {
       "type": "modonomicon:text",
       "title": "Sickness",
-      "text": "Each day a tamed animal may fall sick if it is unhappy (under 50), unfed for more than 3 days, crowded (over 5 animals within 4 blocks) or kept dark (no sky and light under 4). A torch-lit barn is fine.\\\n\\\nAfter 4 sick days it loses a heart a day and can die. Animal Medicine cures it."
+      "text": "Each day a tamed animal may fall sick if it is unhappy (under 50), unfed for more than 3 days, crowded (over 5 animals within 4 blocks) or kept dark (no sky and light under 4 even by day). A torch-lit barn is fine.\\\n\\\nAfter 4 sick days it loses a heart a day and can die. Animal Medicine cures it."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Why it got sick",
+      "text": "A sick animal passes it on to those within 4 blocks, 1 day in 10. Some days it recovers by itself.\\\n\\\nThe Farm Magnifying Glass shows what made it sick: crowd and kinds, happiness, days unfed, light or a sick neighbour. An unloaded farm rolls for its missed days when it runs again; the glass says so."
     },
     {
       "type": "modonomicon:text",
