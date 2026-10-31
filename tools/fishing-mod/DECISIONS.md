@@ -786,3 +786,11 @@ what it is when you see it in the water.
   cats keep vanilla feeding.
 - Self-test `processing`: a cat and an ocelot eat fish from each mod and the cuts, refuse a 6 kg salmon, a
   pufferfish and cooked fish.
+
+## Goggles show line out of the total (0.3.28)
+
+- Asked for: a rod machine's goggle readout gives the line out against how much line the rod has, so a long run
+  shows at a glance how close it is to the spool.
+- `MachineInfo` reads `RodStats.lineMeters()` (line on the rod, capped by the reel or a pole's fixed length) and
+  shows "Line out: 40 / 120 m", gold from 85% of it. With the line in it reads "Line in: 0 / 120 m". A rod with
+  no line falls back to the old wording.
