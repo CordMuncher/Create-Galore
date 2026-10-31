@@ -127,9 +127,16 @@ public final class WorldGrid {
             // so the box's 8-block tiles are fixed to the world.
             moveBox(Math.floorDiv(at.getX() - sx / 2, 8) * 8, Math.floorDiv(at.getY() - sy / 2, 8) * 8,
                     Math.floorDiv(at.getZ() - sz / 2, 8) * 8);
+            if (palette.idsStale()) {
+                // A pack's block numbers arrive during its first frame, after this point (see BlockPalette.irisIds):
+                // until then the entries carry the last pack's, and its lights, leaves and plants would be read as
+                // something else. The pack reads the palette afresh each frame, so new numbers are all it takes.
+                palette.refreshIds();
+            }
             fill();
             uploadCells();
             uploadPalette();
+            uploadHoles();
         } catch (RuntimeException e) {
             if (!warned) {
                 warned = true;
@@ -178,6 +185,8 @@ public final class WorldGrid {
         tilesZ = sz / 8;
         dirtyTiles = new boolean[tilesX * tilesY * tilesZ];
         palette = new BlockPalette();
+        holesFit = (long) ph * BlockPalette.ROW >= (long) BlockPalette.ENTRIES * BlockPalette.WORDS + BlockHoles.WORDS;
+        palette.holes.markAllDirty(); // the image's rows start as whatever GL left there
         palette.idOf(net.minecraft.world.level.block.Blocks.AIR.defaultBlockState());
         // Air's last word (unused by any entry) tells the pack the grid is the Bridge's: without it, the pack falls back
         // to Minecraft's own light.
@@ -186,7 +195,7 @@ public final class WorldGrid {
         // Whatever the texture held is another place's: clear it all on the first upload.
         java.util.Arrays.fill(dirtyTiles, true);
         anyDirty = true;
-        LOG.info("Block grid for the shader pack: {} x {} x {} blocks", sx, sy, sz);
+        LOG.info("Block grid for the shader pack: {} x {} x {} blocks{}", sx, sy, sz, holesFit ? ", with holes in cut-out faces" : "");
     }
 
     /** Moves the box to a new low corner; what it brings in is queued to read. */
@@ -391,6 +400,44 @@ public final class WorldGrid {
         } finally {
             restoreUnpack(saved);
             glBindBuffer(GL_PIXEL_UNPACK_BUFFER, unpackBuffer);
+        }
+    }
+
+    /** Whether the pack's palette image has the rows for the holes in cut-out faces (see {@link BlockHoles}). */
+    private static boolean holesFit;
+
+    private static void uploadHoles() {
+        if (!holesFit) {
+            return;
+        }
+        BlockHoles holes = palette.holes;
+        int first = BlockPalette.ENTRIES * BlockPalette.WORDS / BlockPalette.ROW;
+        int unpackBuffer = -1;
+        int[] saved = null;
+        try {
+            for (int row = 0; row < BlockHoles.ROWS; row++) {
+                if (!holes.takeDirty(row)) {
+                    continue;
+                }
+                if (saved == null) {
+                    unpackBuffer = glGetInteger(GL_PIXEL_UNPACK_BUFFER_BINDING);
+                    saved = saveUnpack();
+                    glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
+                    glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
+                    glPixelStorei(GL_UNPACK_SKIP_PIXELS, 0);
+                    glPixelStorei(GL_UNPACK_SKIP_ROWS, 0);
+                    glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
+                }
+                upload.clear();
+                upload.put(holes.words(), row * BlockPalette.ROW, BlockPalette.ROW);
+                upload.flip();
+                glTextureSubImage2D(paletteTex, 0, 0, first + row, BlockPalette.ROW, 1, GL_RED_INTEGER, GL_UNSIGNED_INT, upload);
+            }
+        } finally {
+            if (saved != null) {
+                restoreUnpack(saved);
+                glBindBuffer(GL_PIXEL_UNPACK_BUFFER, unpackBuffer);
+            }
         }
     }
 

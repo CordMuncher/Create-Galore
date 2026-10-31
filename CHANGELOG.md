@@ -5,6 +5,18 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.6.53
+
+### Added
+- Create Galore Bridge 1.167.0.
+- **More groundwork for future shader packs: see-through pixels in block faces.** The copy of the blocks around you now also says which pixels of a block's cut-out faces are clear: a trapdoor's windows, a grate's slots, a ladder's gaps. A shader pack that traces light through the copy can let light shine through them. Shader packs that don't ask for it, Photon and the others, are not affected.
+
+### Fixed
+- **Groundwork for future shader packs: block numbers after switching shader packs.** After switching from one shader pack to another without restarting the game, the copy of the blocks around you kept the first pack's block numbers, so the new pack could take its lights for other blocks and light them in the wrong colour (a placed torch white instead of orange, a soul lantern dim teal instead of blue). The copy now takes the new pack's numbers as soon as it switches.
+
+### Removed
+- Nothing.
+
 ## 0.6.52
 
 ### Added
