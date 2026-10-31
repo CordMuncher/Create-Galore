@@ -317,11 +317,14 @@ vec3 moon_disc(vec3 dir, vec3 through) {
     return color * edge * through;
 }
 
-// The glow round the moon, cool and faint, with its phase: a tight one about the disc's size and a wide faint one.
+// The glow round the moon, cool and faint: a tight one about the disc's size and a wide faint one. It comes from the
+// lit part only, so it shrinks with the phase and a new moon has none (the night's light keeps its third of a full
+// moon's, in moon_illuminance, for play).
 vec3 moon_glow(vec3 dir, vec3 through) {
     float angle = acos(clamp(dot(dir, g_moon_dir.xyz), -1.0, 1.0));
     float tight = 0.25 * exp(-max(angle - moon_radius(), 0.0) / (0.5 * moon_radius()));
-    return vec3(0.75, 0.88, 1.12) * moon_illuminance() * (tight + 0.05 * exp(-angle / 0.25)) * through;
+    float lit = 0.17 * NIGHT_BRIGHTNESS * g_moon_dir.w;
+    return vec3(0.75, 0.88, 1.12) * lit * (tight + 0.05 * exp(-angle / 0.25)) * through;
 }
 
 // The Milky Way: a soft band across the sky with darker lanes in it, warmer at its heart.
