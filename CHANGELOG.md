@@ -5,6 +5,19 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.6.64
+
+### Added
+- Create Galore Bridge 1.174.0.
+- **Groundwork for future shader packs: block textures in the block grid.** Next to each block's shape, colour and light, the grid now also tells a shader pack where each side of a block finds its texture in the game's block atlas, and how the texture lies on that side, with the block's tint (grass, leaves and water take their colour). A pack that traces rays through the grid can then draw what a ray hits with its real texture instead of one flat colour per block.
+
+### Fixed
+- **The block grid starts over after a resource reload.** Switching a resource pack (or pressing F3+T) stitches the block textures anew, and the grid kept colours and texture places from before. It now notices the new block atlas and refills itself, which takes a few frames.
+- **The Bridge no longer sets up its wear screen without an accessory mod.** Without Curios or Accessories installed, it still registered the screen and its key for a menu that never exists. The pack always has one of them, so players never saw this.
+
+### Removed
+- Nothing.
+
 ## 0.6.63
 
 ### Added

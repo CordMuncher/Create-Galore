@@ -51,6 +51,8 @@ public final class WearClient {
             "accessories.key.open_accessories_screen");
 
     public static void init(IEventBus modBus) {
+        // The wear screen exists only with an accessory mod (see Wear.register); without one its menu is never made.
+        if (!dev.creategalore.bridge.wear.Worn.HAS_CURIOS && !dev.creategalore.bridge.wear.Worn.HAS_ACCESSORIES) return;
         modBus.addListener((RegisterMenuScreensEvent e) -> e.register(WearMenu.TYPE.get(), WearScreen::new));
         modBus.addListener((RegisterKeyMappingsEvent e) -> e.register(KEY));
         NeoForge.EVENT_BUS.addListener(EventPriority.LOWEST, WearClient::onInit);
