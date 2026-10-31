@@ -5,6 +5,18 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.6.63
+
+### Added
+- Create Galore Bridge 1.173.0.
+
+### Fixed
+- **Standing on a turning airship no longer drops you into the crawl.** The pose check asked whether a player had room to stand against the ship as it was one tick earlier, with the player's whole box, so on any quick turn a rail beside you or the deck tilting under your feet counted as "no room" and you went into the crawl animation until you shook loose. The check now uses the ship where it is and the middle of the player only. A real low roof on a ship still makes you crouch or crawl, and crouching under a slab on a ship now works like it does on land.
+- **The other player no longer vanishes from a flying ship.** While someone stands on a ship, the server sends their spot on the ship and the game turns it into a world position at the end of that player's tick, but Entity Culling skips most of the tick for anyone you can't see at that moment. The other player then stayed behind where you last saw them while the ship flew on: rubber banding, or gone for good, and you couldn't hit them either. Anyone standing on a ship now always gets their full tick, so they stay where they really are. Seated players were never affected.
+
+### Removed
+- Nothing.
+
 ## 0.6.62
 
 ### Added
