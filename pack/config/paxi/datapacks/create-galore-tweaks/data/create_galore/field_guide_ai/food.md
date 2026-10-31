@@ -1,4 +1,4 @@
-<!-- sources sha256:19cd7ec0b31aa3b1138229e80d529ac66dadbd3208597c59394a8d8dae1a88b9 -->
+<!-- sources sha256:d219fc361f2430c4b9022c8466ba056737259cdaadcd6c3d55fc063d9835281b -->
 # Food and Farming (food)
 
 ## food/first_food | Food in Your First Days
@@ -160,7 +160,7 @@
 
 ## food/animals | Animals and Husbandry
 - Animal Husbandry: animals have hunger, cleanliness, happiness, health, inherited traits (genes); care changes what you get. Check them in the Farm Ledger. Brush for happiness; sick ones need Animal Medicine.
-- Farm Ledger: shows item animalhusbandry:farm_ledger. Tracks hunger, cleanliness, growth, yield, fertility, happiness; the symbol at its top left is the animal's sex. Farm Magnifying Glass [animalhusbandry:magnifying_glass] inspects one animal: sex, health, happiness, cooldowns, wool, milk, and why it isn't mating yet (happiness under 80, no tame mate of the other sex within 8 blocks, mate unhappy, sick); warns when crowded or hungry.
+- Farm Ledger: shows item animalhusbandry:farm_ledger. Tracks hunger, cleanliness, growth, yield, fertility, happiness; the symbol at its top left is the animal's sex. Farm Magnifying Glass [animalhusbandry:magnifying_glass] inspects one animal: sex, health, happiness, cooldowns, wool, milk, and why it isn't mating yet (happiness under 80, no tame mate of the other sex within 8 blocks, mate unhappy, sick); warns when crowded or hungry. For a sick animal it shows why it got sick, as kept the moment it fell ill (crowd count and kinds, happiness, days unfed, light, or a sick neighbour), how long ago, and whether it happened when an unloaded farm ran again.
 - Grooming: shows item animalhusbandry:brush. Brush animals to raise happiness. Feeding Troughs hold feed; Brushing Posts help grooming; sick animals need Animal Medicine [animalhusbandry:animal_medicine]. Fertility Potion [animalhusbandry:fertility_potion] readies a pair to mate.
 - Traits (see in ledger): Glutton grows fast and eats 2 items a meal; Truffle Snout finds more truffles; Heavyweight drops double meat and leather.
 - Eggs and Cheese: shows item animalhusbandry:chicken_nest. Chicken Nests hold eggs. Milk in a cauldron becomes cheese blocks and slices. Pigs with the right trait dig up truffles; either truffle (this one or Fungi Delight's) works in Animal Medicine and Fungi Delight dishes.
@@ -173,7 +173,7 @@
   - Hungry for more than a day takes 10 a day. Crowd takes the most: 6 or more animals of any kind within 4 blocks, each loses ~40 a day, more than care gives, so a packed pen never mates. Fences don't stop it, so neighbouring pens count too. Give small groups room.
 - Mating now: Fertility Potion on one, then on the other within 30 seconds; only the second uses up the potion. Two of the same sex are refused with a message, so it also tells you which you have. Females are a little smaller than males.
 - Pen won't breed: check each animal with the Farm Magnifying Glass: sex, happiness, what is missing. Usual causes: all one sex, happiness under 80 (crowding, missed feeding), animals not tamed (hand each its food once).
-- Sickness: each day a tamed animal may fall sick if unhappy (under 50), unfed for more than 3 days, crowded (over 5 animals within 4 blocks), or kept dark (no sky and light under 4). Torch-lit barn is fine. After 4 sick days it loses a heart a day and can die. Animal Medicine cures it.
+- Sickness: each day a tamed animal may fall sick if unhappy (under 50), unfed for more than 3 days, crowded (over 5 animals within 4 blocks), or kept dark (no sky and light under 4 even by day). Torch-lit barn is fine. A sick animal within 4 blocks passes it on, 1 day in 10. A farm that wasn't loaded rolls once for all missed days when it runs again. Sick animals recover by themselves some days, sooner with good genes. After 4 sick days it loses a heart a day and can die. Animal Medicine cures it.
 - Feeding Troughs: hold feed or water, not both. A hungry tamed animal walks to the nearest trough it can reach within 20 blocks that has its food: wheat (cows, sheep, goats), carrots or potatoes (pigs), seeds (chickens). A meal lasts 2.5 days, a drink too: each animal eats 2 items and drinks 2 of a trough's 16 water levels per 5 days (Glutton 4 items). One water bucket fills a trough: 8 animals for 5 days. A farm left behind keeps eating from its troughs while the player is away. Spread a few troughs around a pen so a herd doesn't crowd one. Farm Magnifying Glass says when no trough in reach has an animal's food.
 - Eggs: Only hens lay; Broody hens never do. Egg laid on stone or planks breaks 4 times in 5; on dirt, sand, hay, wool, leaves 1 in 10. Chicken Nest keeps them all.
 - Milk: wild cows milk as usual. Tamed cow gives milk only if female and not sick, a few buckets a day.
