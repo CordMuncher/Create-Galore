@@ -11,7 +11,9 @@
 // Each word: bits 0..15 the block's palette entry (its colour and shape, lib/world.glsl); bit 16 something in it stops
 // light (VOX_SOLID); 17 see-through (stained glass, water, ice: tints the light); 18 water; 19 a light; 20..23 the sky
 // light in the block (0..15); 24 a part block (a slab, a path, a fence post: VOX_SOLID only where its shape's boxes
-// are); 25 leaves (they let some light through); 26 known (the Bridge has read it).
+// are); 25 leaves (they let some light through); 26 known (the Bridge has read it); 27 a part block whose faces have
+// see-through pixels (a trapdoor's windows, a grate's slots: the Bridge's hole masks, lib/world.glsl), where light gets
+// through.
 
 #if !defined LIB_VOXEL
 #define LIB_VOXEL
@@ -30,6 +32,7 @@
 #define VOX_PART (1u << 24u)
 #define VOX_LEAVES (1u << 25u)
 #define VOX_KNOWN (1u << 26u)
+#define VOX_HOLES (1u << 27u)
 
 const ivec3 vox_half = vox_size / 2;
 

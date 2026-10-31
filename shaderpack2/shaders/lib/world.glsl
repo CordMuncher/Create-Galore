@@ -10,6 +10,8 @@
 //   (x, y, z in 32nds, 6 bits each) and how many boxes its shape has (24..27); 4..15 its shape as drawn, a box a word
 //   (low corner x, y, z, then high corner, in 16ths, 5 bits each).
 // Air's word 15 holds grid_mark: without it there is no Bridge, and the pack falls back to Minecraft's own light.
+// The palette image's rows after its own 256 (the pack declares it 304 rows tall) hold the holes in block states'
+// cut-out faces (see hole_word).
 //
 // program/world.csh turns the grid into the voxel copy's words each frame (lib/voxel.glsl); everything else reads
 // those, and the palette for the shapes of part blocks.
@@ -33,6 +35,7 @@ const uint grid_mark = 0x43474731u;
 #define PAL_HAS_SHAPE (1u << 25u)
 #define PAL_LAVA (1u << 26u)
 #define PAL_FLUID (1u << 27u)
+#define PAL_HOLES (1u << 28u) // its cut-out faces have clear pixels (see hole_word)
 
 int imod(int a, int n) {
     int r = a - n * (a / n);
@@ -78,6 +81,45 @@ void palette_box(uint entry, uint i, out vec3 lo, out vec3 hi) {
 
 uint palette_box_count(uint entry) {
     return min((palette_word(entry, 3u) >> 24u) & 15u, 12u);
+}
+
+// The holes in block states' cut-out faces (the Bridge's BlockHoles), for light to get through them: a trapdoor's
+// windows, a grate's slots, a ladder's gaps. 48 rows of words after the palette's, 4096 a row:
+// - [0, 65536): per palette entry, the word where its table starts (0: no holes); air's word holds hole_mark when the
+//   Bridge writes them (a Bridge that doesn't leaves no holes anywhere);
+// - [65536, 131072): the tables, two words per box of the entry's shape (in its order): its masks across x (bits
+//   0..15) and y (16..31), then across z (0..15);
+// - [131072, 196608): the masks, 8 words each, for both faces of a box across an axis: 16 x 16 cells in 16ths of the
+//   block, open where every face drawn across that axis in the box shows a clear texel there. Of the two axes along
+//   the faces, a is the one after the faces' own (y for x, z for y, x for z) and b the one after that: cell (i, j) is
+//   bit i of row j, rows two a word (the even one in bits 0..15). Mask 0 is a closed face.
+const uint hole_mark = 0x484f4c31u;
+
+uint hole_word(uint i) {
+    return texelFetch(cg_palette_tex, ivec2(int(i & 4095u), 256 + int(i >> 12u)), 0).r;
+}
+
+bool holes_live() {
+    return hole_word(0u) == hole_mark;
+}
+
+// Where an entry's table starts; 0 when it has no holes.
+uint hole_table(uint entry) {
+    uint t = entry == 0u ? 0u : hole_word(entry);
+    return t >= 65536u && t < 131072u ? t : 0u;
+}
+
+// Box i's masks across x, y and z.
+uvec3 hole_masks(uint table, uint i) {
+    uint w0 = hole_word(table + i * 2u);
+    uint w1 = hole_word(table + i * 2u + 1u);
+    return uvec3(w0 & 0xffffu, w0 >> 16u, w1 & 0xffffu);
+}
+
+// Row j (0..15) of a mask: bit i set where cell i is open.
+uint hole_row(uint mask, int j) {
+    uint w = hole_word(131072u + mask * 8u + uint(j >> 1));
+    return (w >> uint((j & 1) * 16)) & 0xffffu;
 }
 
 #endif

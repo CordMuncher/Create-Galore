@@ -120,6 +120,23 @@ if len(made_images) > CUSTOM_IMAGES:
 if re.search(r"^\s*bufferObject\.", properties, re.M):
     print("a storage buffer in shaders.properties: Iris takes them only at bindings 0 to 8, which Flywheel binds over")
     fails += 1
+# One light table (light_kind in lib/blocks.glsl) for a light placed and the same light held: every light block in
+# block.properties has its colour there, and every held light in item.properties is a light block's number.
+blocks_glsl = (root / "lib" / "blocks.glsl").read_text()
+kinds = int(re.search(r"#define LIGHT_KINDS (\d+)", blocks_glsl).group(1))
+light_base = int(re.search(r"#define BLOCK_LIGHT (\d+)", blocks_glsl).group(1))
+table = re.search(r"vec4 light_kind\(int kind\) \{(.*?)\n\}", blocks_glsl, re.S).group(1)
+with_colour = {int(k) for k in re.findall(r"case (\d+): return vec4\(", table)}
+light_blocks = {int(n) for n in re.findall(r"^block\.(\d+)\s*=", (root / "block.properties").read_text(), re.M)
+                if light_base <= int(n) < light_base + kinds}
+for n in sorted(light_blocks):
+    if n - light_base not in with_colour:
+        print(f"block.{n} is a light with no colour in light_kind (lib/blocks.glsl)")
+        fails += 1
+for n in re.findall(r"^item\.(\d+)\s*=", (root / "item.properties").read_text(), re.M):
+    if light_base <= int(n) < light_base + kinds and int(n) not in light_blocks:
+        print(f"item.{n} is a held light with no light block of its number in block.properties")
+        fails += 1
 # Iris takes a bare #define on a menu screen as an on/off option only when some file tests it with #ifdef or #ifndef
 # (#if defined doesn't count); otherwise it isn't an option at all, and #ifdef on it in shaders.properties is false.
 on_screens = set(re.findall(r"\b[A-Z][A-Z0-9_]+\b", " ".join(re.findall(r"^screen\.?\w*\s*=(.*)$", properties, re.M))))

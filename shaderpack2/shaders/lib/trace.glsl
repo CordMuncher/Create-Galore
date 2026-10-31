@@ -7,12 +7,14 @@
 // blended between cells for how much room a light has around it. A ray that reaches a cell that stops light:
 // - a full block stops it;
 // - a part block (a slab, a path, a fence post, stairs) stops it only where one of its shape's boxes is, tested
-//   exactly; a ray that misses them goes on, and how close it came softens its shadow;
-// - leaves let part of it through.
+//   exactly; a ray that misses them goes on, and how close it came softens its shadow. Where a box's faces have
+//   see-through pixels (a trapdoor's windows, a grate's slots: VOX_HOLES), light gets through the open ones (box_open);
+// - leaves let light through the gaps in their texture (VOX_HOLES), or a share of it where those aren't known.
 // Three ways through:
 // - trace_ray: to the first thing it hits (bounce light, reflections);
 // - cone_visibility: how much of a light gets past, softly, from the narrowest gap the ray squeezes through
-//   (measured exactly against the blocks beside it) against how wide the cone is there (one ray, no extra samples);
+//   (measured exactly against the blocks beside it) against how wide the cone is there (one ray, no extra samples),
+//   and the share of see-through pixels it crosses (blurred as wide as the cone is there);
 // - see_through_tint: a walk block by block to the first see-through block (stained glass, water), whose colour
 //   tints the light.
 
@@ -25,7 +27,7 @@ layout(r32ui) uniform uimage3D cg_vox_img;
 layout(rg8) uniform image3D cg_sdf_img;
 uniform sampler3D cg_sdf_tex; // the same, for blended reads
 
-// How much of the light one block of leaves lets through.
+// How much of the light one block of leaves lets through, where the Bridge has no masks of their see-through pixels.
 const float leaf_pass = 0.35;
 
 uint vox_word(ivec3 cell) {
@@ -114,8 +116,67 @@ bool box_entry(vec3 lo, vec3 hi, vec3 o, vec3 inv_dir, float t0, float t1, bool 
     return true;
 }
 
-// The first of a part block's boxes a ray meets inside its cell (between t0 and t1): its distance, or -1.
-float part_hit(ivec3 cell, uint entry, vec3 o, vec3 inv_dir, float t0, float t1, bool skip_inside, out vec3 normal) {
+// The open share of a square of half width h round a point c on a box's faces across an axis (both in 16ths, along
+// the faces' a and b, see hole_word in lib/world.glsl), of the part of the square that lies on the faces (ext: their
+// low a, low b, high a, high b). The square's edge cells count for as much of them as it covers, so the share changes
+// smoothly as the point moves. With h 0: whether the cell under the point is open.
+float hole_open(uint mask, vec2 c, float h, ivec4 ext) {
+    if (mask == 0u) {
+        return 0.0;
+    }
+    vec2 lo = max(c - h, vec2(ext.xy));
+    vec2 hi = min(c + h, vec2(ext.zw));
+    if (h <= 0.0 || any(lessThanEqual(hi - lo, vec2(1e-3)))) {
+        ivec2 cell = clamp(ivec2(floor(c)), ext.xy, ext.zw - 1);
+        return float((hole_row(mask, cell.y) >> uint(cell.x)) & 1u);
+    }
+    int i0 = int(floor(lo.x));
+    int i1 = min(int(ceil(hi.x)) - 1, 15);
+    int j0 = int(floor(lo.y));
+    int j1 = min(int(ceil(hi.y)) - 1, 15);
+    float w0 = i0 == i1 ? hi.x - lo.x : float(i0 + 1) - lo.x;
+    float w1 = i0 == i1 ? 0.0 : hi.x - float(i1);
+    uint inner = i1 - i0 >= 2 ? ((1u << uint(i1)) - 1u) & ~((2u << uint(i0)) - 1u) : 0u;
+    float open = 0.0;
+    for (int j = j0; j <= j1; j++) {
+        float wj = min(float(j + 1), hi.y) - max(float(j), lo.y);
+        uint row = hole_row(mask, j);
+        open += wj * (float(bitCount(row & inner)) + w0 * float((row >> uint(i0)) & 1u)
+                      + w1 * float((row >> uint(i1)) & 1u));
+    }
+    return open / ((hi.x - lo.x) * (hi.y - lo.y));
+}
+
+// How much of a cone of half width h (16ths; 0 a single ray) gets through box i (lo..hi in its cell) of a part block
+// with see-through pixels: the open share round where the ray from o (in the cell's own coordinates) goes in, and
+// round where it comes out, each on the faces it crosses there, whichever is less (a trapdoor's two faces have the
+// same windows, so a ray through one window gets through both).
+float box_open(uint table, uint i, vec3 lo, vec3 hi, vec3 o, vec3 dir, vec3 inv_dir, float h) {
+    uvec3 masks = hole_masks(table, i);
+    vec3 ta = (lo - o) * inv_dir;
+    vec3 tb = (hi - o) * inv_dir;
+    vec3 near = min(ta, tb);
+    vec3 far = max(ta, tb);
+    int in_axis = near.x >= near.y && near.x >= near.z ? 0 : near.y >= near.z ? 1 : 2;
+    int out_axis = far.x <= far.y && far.x <= far.z ? 0 : far.y <= far.z ? 1 : 2;
+    float open = 1.0;
+    for (int k = 0; k < 2 && open > 0.0; k++) {
+        int axis = k == 0 ? in_axis : out_axis;
+        vec3 q = o + dir * (k == 0 ? near[axis] : far[axis]);
+        int a = (axis + 1) % 3;
+        int b = (axis + 2) % 3;
+        ivec4 ext = ivec4(round(vec4(lo[a], lo[b], hi[a], hi[b]) * 16.0));
+        open = min(open, hole_open(masks[axis], vec2(q[a], q[b]) * 16.0, h, ext));
+    }
+    return open;
+}
+
+// The first of a part block's boxes a ray meets inside its cell (between t0 and t1): its distance, or -1. A ray
+// through an open pixel of a box with see-through pixels misses that box.
+float part_hit(ivec3 cell, uint word, vec3 o, vec3 inv_dir, float t0, float t1, bool skip_inside, out vec3 normal) {
+    uint entry = word & VOX_ENTRY;
+    uint table = (word & VOX_HOLES) != 0u ? hole_table(entry) : 0u;
+    vec3 dir = 1.0 / inv_dir;
     float best = -1.0;
     normal = vec3(0.0);
     uint n = palette_box_count(entry);
@@ -129,6 +190,9 @@ float part_hit(ivec3 cell, uint entry, vec3 o, vec3 inv_dir, float t0, float t1,
         float t;
         vec3 face;
         if (box_entry(vec3(cell) + lo, vec3(cell) + hi, o, inv_dir, t0, t1, skip_inside, t, face) && (best < 0.0 || t < best)) {
+            if (table != 0u && box_open(table, i, lo, hi, o - vec3(cell), dir, inv_dir, 0.0) > 0.5) {
+                continue; // through a hole
+            }
             best = t;
             normal = face;
         }
@@ -136,8 +200,36 @@ float part_hit(ivec3 cell, uint entry, vec3 o, vec3 inv_dir, float t0, float t1,
     return best;
 }
 
-// How far a point is from a part block's boxes, in blocks.
-float part_room(ivec3 cell, uint entry, vec3 q) {
+// How much of a cone of half width h (16ths) gets through a part block with see-through pixels (VOX_HOLES) between
+// t0 and t1: what each of the boxes the ray goes into lets through (box_open), together.
+float part_pass(ivec3 cell, uint word, vec3 o, vec3 inv_dir, float t0, float t1, bool skip_inside, float h) {
+    uint entry = word & VOX_ENTRY;
+    uint table = hole_table(entry);
+    vec3 dir = 1.0 / inv_dir;
+    float pass = 1.0;
+    uint n = palette_box_count(entry);
+    for (uint i = 0u; i < n && pass > 0.0; i++) {
+        vec3 lo;
+        vec3 hi;
+        palette_box(entry, i, lo, hi);
+        if (any(lessThanEqual(hi, lo))) {
+            continue;
+        }
+        float t;
+        vec3 face;
+        if (box_entry(vec3(cell) + lo, vec3(cell) + hi, o, inv_dir, t0, t1, skip_inside, t, face)) {
+            pass *= table != 0u ? box_open(table, i, lo, hi, o - vec3(cell), dir, inv_dir, h) : 0.0;
+        }
+    }
+    return pass;
+}
+
+// How far a point is from a part block's boxes, in blocks. A box with see-through pixels doesn't count from inside it
+// or from in front of a face of it that has them: what gets through those is worked out where a ray crosses the box
+// (part_pass). From beside it (past its edges) it counts, as any box does.
+float part_room(ivec3 cell, uint word, vec3 q) {
+    uint entry = word & VOX_ENTRY;
+    uint table = (word & VOX_HOLES) != 0u ? hole_table(entry) : 0u;
     float room = 1.0;
     uint n = palette_box_count(entry);
     for (uint i = 0u; i < n; i++) {
@@ -148,6 +240,17 @@ float part_room(ivec3 cell, uint entry, vec3 q) {
             continue;
         }
         vec3 d = max(max(vec3(cell) + lo - q, q - vec3(cell) - hi), 0.0);
+        if (table != 0u) {
+            bvec3 outside = greaterThan(d, vec3(0.0));
+            int sides = int(outside.x) + int(outside.y) + int(outside.z);
+            if (sides <= 1) {
+                uvec3 m = hole_masks(table, i);
+                uint facing = sides == 0 ? m.x | m.y | m.z : outside.x ? m.x : outside.y ? m.y : m.z;
+                if (facing != 0u) {
+                    continue;
+                }
+            }
+        }
         room = min(room, length(d));
     }
     return room;
@@ -174,7 +277,7 @@ float near_room(vec3 q, float cap) {
             continue;
         }
         if ((word & VOX_PART) != 0u) {
-            room = min(room, part_room(n, word & VOX_ENTRY, q));
+            room = min(room, part_room(n, word, q));
         } else {
             room = min(room, length(max(max(vec3(n) - q, q - vec3(n + 1)), 0.0)));
         }
@@ -219,8 +322,9 @@ Hit trace_ray(vec3 p, vec3 dir, float max_t, int max_steps) {
             vec3 n = vec3(0.0);
             if ((word & VOX_SOLID) == 0u) {
                 // Emptied since the distance field last looked (it follows within a frame or two).
-            } else if ((word & VOX_PART) != 0u && (word & VOX_LEAVES) == 0u) {
-                hit_t = part_hit(cell, word & VOX_ENTRY, p, inv_dir, t, exit_t + 1e-4, cell == start, n);
+            } else if ((word & (VOX_PART | VOX_HOLES)) != 0u) {
+                // A part block, or leaves with see-through pixels.
+                hit_t = part_hit(cell, word, p, inv_dir, t, exit_t + 1e-4, cell == start, n);
             } else if (cell != start) {
                 float te;
                 box_entry(vec3(cell), vec3(cell + 1), p, inv_dir, t - 1e-3, exit_t + 1e-3, false, te, n);
@@ -299,15 +403,29 @@ float cone_visibility(vec3 p, vec3 dir, float dist, float width_start, float wid
         if ((word & VOX_SOLID) == 0u) {
             // Emptied since the distance field last looked.
         } else if ((word & VOX_LEAVES) != 0u) {
-            through *= leaf_pass;
+            // Leaves: through the gaps in their texture, or a share of the light without masks.
+            through *= (word & VOX_HOLES) != 0u
+                     ? part_pass(cell, word, p, inv_dir, t, seg_end, cell == start, clamp(mid_width * 16.0, 0.5, 3.0))
+                     : leaf_pass;
+            if (through <= 0.0) {
+                return 0.0;
+            }
         } else if ((word & VOX_PART) != 0u) {
             vec3 n;
-            if (part_hit(cell, word & VOX_ENTRY, p, inv_dir, t, seg_end, cell == start, n) >= 0.0) {
+            if ((word & VOX_HOLES) != 0u) {
+                // The share of the cone that gets through the open pixels, blurred by how wide the cone is there.
+                float pass = part_pass(cell, word, p, inv_dir, t, seg_end, cell == start,
+                                       clamp(mid_width * 16.0, 0.5, 3.0));
+                if (pass <= 0.0) {
+                    return 0.0;
+                }
+                through *= pass;
+            } else if (part_hit(cell, word, p, inv_dir, t, seg_end, cell == start, n) >= 0.0) {
                 return 0.0;
             }
             float room = near_room(mid, mid_width);
             if (cell != start) {
-                room = min(room, part_room(cell, word & VOX_ENTRY, mid));
+                room = min(room, part_room(cell, word, mid));
             }
             visible = min(visible, room / mid_width);
         } else if (cell != start) {
@@ -375,7 +493,7 @@ vec3 cell_light_point(ivec3 cell, uint word, vec3 normal) {
         return middle - normal * 0.3;
     }
     uint entry = word & VOX_ENTRY;
-    if (part_room(cell, entry, middle) > 0.05) {
+    if (part_room(cell, word, middle) > 0.05) {
         return middle;
     }
     float top = 0.0;

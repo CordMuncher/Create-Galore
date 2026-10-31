@@ -589,6 +589,53 @@
       ]
     },
     {
+      "name": "trapdoor-box",
+      "dimension": "minecraft:overworld",
+      "x": 1386.5,
+      "y": 173.5,
+      "z": 261.5,
+      "yaw": 0,
+      "pitch": 32,
+      "time": 18000,
+      "maxTurn": 0,
+      "about": "a closed pale room at night: a lantern on the floor boxed in by oak trapdoors (four open ones round it, a closed one on top), its light coming out through the trapdoors' windows onto the floor, walls and ceiling",
+      "build": [
+        "fill 1380 170 260 1392 178 272 minecraft:calcite hollow",
+        "fill 1381 170 261 1391 170 271 minecraft:spruce_planks",
+        "setblock 1386 171 266 minecraft:lantern",
+        "setblock 1386 171 265 minecraft:oak_trapdoor[facing=north,half=bottom,open=true]",
+        "setblock 1386 171 267 minecraft:oak_trapdoor[facing=south,half=bottom,open=true]",
+        "setblock 1385 171 266 minecraft:oak_trapdoor[facing=west,half=bottom,open=true]",
+        "setblock 1387 171 266 minecraft:oak_trapdoor[facing=east,half=bottom,open=true]",
+        "setblock 1386 172 266 minecraft:oak_trapdoor[facing=north,half=bottom,open=false]"
+      ]
+    },
+    {
+      "name": "grate-ladder",
+      "dimension": "minecraft:overworld",
+      "x": 1406.5,
+      "y": 173.5,
+      "z": 261.5,
+      "yaw": 0,
+      "pitch": 28,
+      "time": 18000,
+      "maxTurn": 0,
+      "about": "a closed pale room at night: a soul lantern walled in by copper grates (light through the slots), and to the right a torch on the floor with a ladder in front of it (light through the ladder's gaps onto the floor)",
+      "build": [
+        "fill 1400 170 260 1412 178 272 minecraft:calcite hollow",
+        "fill 1401 170 261 1411 170 271 minecraft:spruce_planks",
+        "setblock 1404 171 266 minecraft:soul_lantern",
+        "setblock 1404 171 265 minecraft:copper_grate",
+        "setblock 1404 171 267 minecraft:copper_grate",
+        "setblock 1403 171 266 minecraft:copper_grate",
+        "setblock 1405 171 266 minecraft:copper_grate",
+        "setblock 1404 172 266 minecraft:copper_grate",
+        "setblock 1409 171 267 minecraft:cobbled_deepslate",
+        "setblock 1409 171 266 minecraft:torch",
+        "setblock 1409 171 265 minecraft:ladder[facing=north]"
+      ]
+    },
+    {
       "name": "sunset",
       "dimension": "minecraft:overworld",
       "x": 1029.5,

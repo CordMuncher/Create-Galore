@@ -16,12 +16,16 @@ pack (`shaderpack/`) stays as a research build; the two share only the DLSS hand
   (128 x 96 x 128 by default) from the game's own block data: it reads a chunk when it loads and a block when it
   changes, never what the camera sees. Each block comes with its shape as it is drawn (up to twelve boxes, to the
   16th), its colour and its light. The box moves 8 blocks at a time and each block keeps its place in it, so a ray
-  between two points gives the same answer wherever you stand. Plants, flat layers (carpets,
-  snow, barnacles, pressure plates) and clear glass let light through; stained glass and water tint it; leaves let
-  some through. A distance field lets rays skip empty space. Without the Bridge, the pack lights with Minecraft's own
-  light.
-- **Coloured block light, traced.** Every light (a table of vanilla's lights with their colours and strengths, or any
-  block Minecraft says gives light, coloured from its texture) is traced through the copy, so light stops at walls,
+  between two points gives the same answer wherever you stand. Plants and flat layers (carpets, snow, barnacles,
+  pressure plates) let light through; stained glass and water tint it. Cut-out faces let light through their clear
+  pixels and stop it at the rest: a trapdoor's windows, a grate's slots, the gaps between iron bars, the clear middle of
+  glass inside its frame, the gaps in leaves. The Bridge (1.167.0 and later) reads each face's texture once into
+  16 x 16 masks, and a ray reads the pixels it crosses, blurred as wide as its cone is there; with an older Bridge,
+  clear glass and bars let all light through and leaves some. A distance field lets rays skip empty space. Without
+  the Bridge, the pack lights with Minecraft's own light.
+- **Coloured block light, traced.** Every light (a table of vanilla's lights with their colours and strengths, the
+  same table for a light placed and the same light held, or any block Minecraft says gives light, coloured from its
+  texture) is traced through the copy, so light stops at walls,
   passes beside a fence post or over a slab exactly as their shapes allow, and takes the colour of the glass it passes
   through. Per block for everything, and per pixel near you for sharp shadows from lamps, sampled at a fraction of the
   pixels and filtered over frames. Which lights a spot gets is kept per 8-block patch of the world, never per part of

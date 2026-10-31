@@ -9,9 +9,12 @@
 // - plants, and anything you walk through (torches, flowers, rails, signs): nothing;
 // - flat layers (every box of its shape at most 2/16 tall, on the floor: carpets, snow layers, pressure plates,
 //   barnacles): nothing, so they can't shade their block or trap the light of what lies on them;
-// - mostly clear blocks drawn cut out (glass, panes, bars): nothing; drawn see-through (stained glass, ice): tints;
-// - leaves: they stop some of the light;
-// - anything else with a shape: solid, a part block when its shape isn't the whole block (its boxes do the stopping).
+// - mostly clear blocks drawn cut out (glass, panes, bars): their frames and bars where the Bridge has their hole
+//   masks (VOX_HOLES), else nothing; drawn see-through (stained glass, ice): tints;
+// - leaves: their texture's gaps let light through (VOX_HOLES), or without masks they stop some of it;
+// - anything else with a shape: solid, a part block when its shape isn't the whole block (its boxes do the stopping),
+//   or when its faces have see-through pixels (a trapdoor's windows, a grate's slots, a ladder's gaps: the Bridge's
+//   hole masks), which light gets through (VOX_HOLES, lib/trace.glsl).
 
 #include "/lib/settings.glsl"
 #include "/lib/voxel.glsl"
@@ -26,6 +29,7 @@ uniform float frameTimeCounter;
 layout(r32ui) writeonly uniform uimage3D cg_vox_img;
 
 shared uint s_live;
+shared uint s_holes;
 shared uint s_count;
 shared uint s_keys[own_list_max];
 
@@ -152,13 +156,16 @@ uint classify(ivec3 world, uint grid) {
     if (translucent) {
         return word | VOX_SEE;
     }
+    bool holes = s_holes != 0u && (p0 & PAL_HOLES) != 0u;
     if (clear) {
-        return word;
+        // Glass, panes, bars: their frames and bars stop light where the Bridge says their pixels aren't clear.
+        return holes ? word | VOX_SOLID | VOX_PART | VOX_HOLES : word;
     }
     if (id == BLOCK_LEAVES) {
-        return word | VOX_SOLID | VOX_LEAVES;
+        // Through the gaps in their texture when the Bridge knows them (fancy leaves), else leaf_pass.
+        return word | VOX_SOLID | VOX_LEAVES | (holes ? VOX_HOLES : 0u);
     }
-    return word | VOX_SOLID | ((p0 & PAL_FULL_CUBE) != 0u ? 0u : VOX_PART);
+    return word | VOX_SOLID | ((p0 & PAL_FULL_CUBE) != 0u && !holes ? 0u : VOX_PART) | (holes ? VOX_HOLES : 0u);
 }
 
 void main() {
@@ -167,6 +174,7 @@ void main() {
     uint index = gl_LocalInvocationIndex;
     if (index == 0u) {
         s_live = grid_live() ? 1u : 0u;
+        s_holes = s_live != 0u && holes_live() ? 1u : 0u;
         s_count = 0u;
     }
     barrier();
