@@ -5,6 +5,18 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.6.60
+
+### Added
+- Create Galore Fishing 0.3.28.
+- **Rod Holders and Reel Drives show line out of the total.** Engineer's Goggles on a rod machine read "Line out: 40 / 120 m", the line out against all the line the rod holds, so a long run shows at a glance how close it is to the spool. The figure turns gold from 85% of the line. With the line in it reads "Line in: 0 / 120 m".
+
+### Fixed
+- Nothing.
+
+### Removed
+- Nothing.
+
 ## 0.6.59
 
 ### Added

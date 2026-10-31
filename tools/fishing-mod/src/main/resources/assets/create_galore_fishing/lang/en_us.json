@@ -312,6 +312,8 @@
   "goggles.create_galore_fishing.fish_on": "Fish on!",
   "goggles.create_galore_fishing.tension": "Tension %s of the line",
   "goggles.create_galore_fishing.line_out": "%s m of line out",
+  "goggles.create_galore_fishing.line_out_total": "Line out: %s / %s m",
+  "goggles.create_galore_fishing.line_in_total": "Line in: 0 / %s m",
   "goggles.create_galore_fishing.drag": "Drag %s",
   "goggles.create_galore_fishing.bait": "Bait: %s x%s",
   "goggles.create_galore_fishing.no_bait": "No bait",

@@ -122,7 +122,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**Experience.** A machine earns half what you would for each catch, with no release bonus. It banks it and pays it out whenever a rod goes in or out.\\\n\\\n[#](FFFFFF)[#]() [#](7A3C9A)[Goggles](entry://glossary/goggles)[#]() show the rod, a bite or fish on (not which fish) and its tension, line out, drag, bait and bait in store, reel wear, gear, what it can still wind against, fuel and banked experience."
+      "text": "**Experience.** A machine earns half what you would for each catch, with no release bonus. It banks it and pays it out whenever a rod goes in or out.\\\n\\\n[#](FFFFFF)[#]() [#](7A3C9A)[Goggles](entry://glossary/goggles)[#]() show the rod, a bite or fish on (not which fish) and its tension, line out and the line the rod holds (Line out: 40 / 120 m), drag, bait and bait in store, reel wear, gear, what it can still wind against, fuel and banked experience."
     },
     {
       "type": "modonomicon:text",
