@@ -70,6 +70,8 @@ final class BlockPalette {
     private final int[] words = new int[ENTRIES * WORDS];
     /** The holes in its cut-out faces (see {@link BlockHoles}). */
     final BlockHoles holes = new BlockHoles();
+    /** Where its faces find their texture in the block atlas (see {@link BlockFaces}). */
+    final BlockFaces faces = new BlockFaces();
     private int count = 0;
     /** Entries made since the last upload, from this one on. */
     private int uploadedUpTo = 0;
@@ -201,6 +203,11 @@ final class BlockPalette {
                 && holes.describe(at / WORDS, written, look.quads)) {
             flags |= FLAG_HOLES;
         }
+        if (!look.quads.isEmpty()) {
+            faces.describe(at / WORDS, look.quads, look.tints);
+        } else if (look.fluidSprite != null) {
+            faces.describeFluid(at / WORDS, look.fluidSprite, look.fluidTint);
+        }
         if (boxCount > 0) {
             flags |= FLAG_HAS_SHAPE;
         }
@@ -251,6 +258,11 @@ final class BlockPalette {
         boolean cutout;
         List<AABB> drawn = List.of();
         List<BakedQuad> quads = List.of();
+        /** Each quad's tint (sRGB, red low), -1 for an untinted one. */
+        int[] tints = new int[0];
+        /** A fluid's still texture and its tint (-1 for none), for a fluid that draws no model. */
+        TextureAtlasSprite fluidSprite;
+        int fluidTint = -1;
     }
 
     private static Look look(BlockState state) {
@@ -261,6 +273,7 @@ final class BlockPalette {
             if (!fluid.isEmpty()) {
                 // Water and lava draw no block model: their still texture.
                 TextureAtlasSprite sprite = mc.getModelManager().getBlockModelShaper().getParticleIcon(fluid.createLegacyBlock());
+                look.fluidSprite = sprite;
                 float[] c = average(sprite, 0.0f, 1.0f, 0.0f, 1.0f, null);
                 if (c != null) {
                     look.color = new float[] {c[0], c[1], c[2]};
@@ -269,6 +282,7 @@ final class BlockPalette {
                 look.translucent = fluid.is(FluidTags.WATER);
                 if (look.translucent) {
                     look.color = new float[] {0.25f, 0.42f, 0.8f}; // its texture is grey; the biome tints it
+                    look.fluidTint = 0x3f | (0x76 << 8) | (0xe4 << 16); // the default water colour, 0x3F76E4
                 }
             }
             return look;
@@ -288,6 +302,7 @@ final class BlockPalette {
             return look;
         }
         look.quads = quads;
+        look.tints = new int[quads.size()];
         try {
             random.setSeed(42L);
             for (net.minecraft.client.renderer.RenderType type
@@ -306,15 +321,18 @@ final class BlockPalette {
         double[] glowSum = new double[3];
         double[] at = new double[3];
         double glowWeight = 0;
-        for (BakedQuad quad : quads) {
+        for (int q = 0; q < quads.size(); q++) {
+            BakedQuad quad = quads.get(q);
             int[] v = quad.getVertices();
             int stride = v.length / 4;
             float[] tint = {1, 1, 1};
+            look.tints[q] = -1;
             if (quad.isTinted()) {
                 try {
                     int c = mc.getBlockColors().getColor(state, null, null, quad.getTintIndex());
                     if (c != -1) {
                         tint = new float[] {((c >> 16) & 255) / 255.0f, ((c >> 8) & 255) / 255.0f, (c & 255) / 255.0f};
+                        look.tints[q] = ((c >> 16) & 255) | (((c >> 8) & 255) << 8) | ((c & 255) << 16);
                     }
                 } catch (RuntimeException ignored) {
                     // A colour provider that needs a level: untinted.

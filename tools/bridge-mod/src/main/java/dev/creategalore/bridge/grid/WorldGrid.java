@@ -41,7 +41,8 @@ import org.slf4j.LoggerFactory;
 
 /**
  * A copy of the blocks around the camera for a shader pack that asks for one: a pack that makes custom images named
- * cg_world_img (3D, r32ui, its size is the copy's) and cg_palette_img (2D, r32ui, 4096 x 256) gets them filled here,
+ * cg_world_img (3D, r32ui, its size is the copy's) and cg_palette_img (2D, r32ui, 4096 x 256, or taller for the holes in
+ * cut-out faces, {@link BlockHoles}, and then the faces' textures, {@link BlockFaces}) gets them filled here,
  * at the start of each frame before any of its passes run. Packs without them never see this.
  *
  * The copy is fixed to the world: a block keeps its slot (its position modulo the copy's size) while it stays in the
@@ -121,6 +122,14 @@ public final class WorldGrid {
                     return; // sizes it doesn't take (start warned once)
                 }
             }
+            if (atlasChanged()) {
+                // Resources were reloaded (a resource pack switched, F3+T): the block atlas was stitched anew, so the
+                // entries' colours and their faces' places in it are stale. Start over; the box refills in a few frames.
+                start(worldTex, paletteTex, mc.level);
+                if (worldTex == 0) {
+                    return;
+                }
+            }
             Camera camera = mc.gameRenderer.getMainCamera();
             BlockPos at = camera.getBlockPosition();
             // The low corner on a multiple of 8 blocks, as the pack works it out (lib/voxel.glsl, vox_box_world_lo),
@@ -137,6 +146,7 @@ public final class WorldGrid {
             uploadCells();
             uploadPalette();
             uploadHoles();
+            uploadFaces();
         } catch (RuntimeException e) {
             if (!warned) {
                 warned = true;
@@ -187,6 +197,9 @@ public final class WorldGrid {
         palette = new BlockPalette();
         holesFit = (long) ph * BlockPalette.ROW >= (long) BlockPalette.ENTRIES * BlockPalette.WORDS + BlockHoles.WORDS;
         palette.holes.markAllDirty(); // the image's rows start as whatever GL left there
+        facesFit = holesFit && ph >= BlockPalette.ENTRIES * BlockPalette.WORDS / BlockPalette.ROW + BlockHoles.ROWS + BlockFaces.ROWS;
+        palette.faces.markAllDirty();
+        atlasMark = atlasMark();
         palette.idOf(net.minecraft.world.level.block.Blocks.AIR.defaultBlockState());
         // Air's last word (unused by any entry) tells the pack the grid is the Bridge's: without it, the pack falls back
         // to Minecraft's own light.
@@ -195,7 +208,8 @@ public final class WorldGrid {
         // Whatever the texture held is another place's: clear it all on the first upload.
         java.util.Arrays.fill(dirtyTiles, true);
         anyDirty = true;
-        LOG.info("Block grid for the shader pack: {} x {} x {} blocks{}", sx, sy, sz, holesFit ? ", with holes in cut-out faces" : "");
+        LOG.info("Block grid for the shader pack: {} x {} x {} blocks{}{}", sx, sy, sz, holesFit ? ", with holes in cut-out faces" : "",
+                facesFit ? ", with block textures" : "");
     }
 
     /** Moves the box to a new low corner; what it brings in is queued to read. */
@@ -438,6 +452,59 @@ public final class WorldGrid {
                 restoreUnpack(saved);
                 glBindBuffer(GL_PIXEL_UNPACK_BUFFER, unpackBuffer);
             }
+        }
+    }
+
+    /**
+     * Whether the pack's palette image has the rows for the faces' textures (see {@link BlockFaces}), after the holes'.
+     */
+    private static boolean facesFit;
+    /** The block atlas's missing-texture sprite when the palette was started: a new one after every stitch. */
+    private static Object atlasMark;
+
+    private static Object atlasMark() {
+        try {
+            return Minecraft.getInstance().getModelManager().getAtlas(net.minecraft.client.renderer.texture.TextureAtlas.LOCATION_BLOCKS)
+                    .getSprite(net.minecraft.client.renderer.texture.MissingTextureAtlasSprite.getLocation());
+        } catch (RuntimeException e) {
+            return null;
+        }
+    }
+
+    private static boolean atlasChanged() {
+        Object now = atlasMark();
+        return now != null && now != atlasMark;
+    }
+
+    private static void uploadFaces() {
+        if (!facesFit) {
+            return;
+        }
+        BlockFaces faces = palette.faces;
+        int from = faces.dirtyRowFrom();
+        int to = faces.dirtyRowTo();
+        if (from >= to) {
+            return;
+        }
+        int first = BlockPalette.ENTRIES * BlockPalette.WORDS / BlockPalette.ROW + BlockHoles.ROWS;
+        int unpackBuffer = glGetInteger(GL_PIXEL_UNPACK_BUFFER_BINDING);
+        int[] saved = saveUnpack();
+        try {
+            glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
+            glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
+            glPixelStorei(GL_UNPACK_SKIP_PIXELS, 0);
+            glPixelStorei(GL_UNPACK_SKIP_ROWS, 0);
+            glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
+            for (int row = from; row < to; row++) {
+                upload.clear();
+                upload.put(faces.words(), row * BlockPalette.ROW, BlockPalette.ROW);
+                upload.flip();
+                glTextureSubImage2D(paletteTex, 0, 0, first + row, BlockPalette.ROW, 1, GL_RED_INTEGER, GL_UNSIGNED_INT, upload);
+            }
+            faces.markUploaded();
+        } finally {
+            restoreUnpack(saved);
+            glBindBuffer(GL_PIXEL_UNPACK_BUFFER, unpackBuffer);
         }
     }
 
