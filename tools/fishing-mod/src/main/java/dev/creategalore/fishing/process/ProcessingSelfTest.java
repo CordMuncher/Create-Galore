@@ -84,6 +84,7 @@ public final class ProcessingSelfTest {
         cleaner(server.overworld(), r);
         liveBait(r);
         chum(server.overworld(), r);
+        catFood(server.overworld(), r);
         if (ModList.get().isLoaded("createliquidfuel")) {
             var fuel = RegistryManager.getDataMap(Registries.FLUID, ResourceLocation.fromNamespaceAndPath("createliquidfuel", "liquid_fuel"));
             r.check(fuel != null && BuiltInRegistries.FLUID.wrapAsHolder(FishingRegistry.FISH_OIL.get()).getData(fuel) != null,
@@ -129,6 +130,37 @@ public final class ProcessingSelfTest {
         r.check(smelting.getRecipeFor(RecipeType.SMELTING, new SingleRecipeInput(trophy), level).isPresent(), "a 2.5 kg trophy salmon cooks whole");
         r.check(smelting.getRecipeFor(RecipeType.SMELTING, new SingleRecipeInput(big), level).isEmpty(), "a 6 kg salmon doesn't fit the furnace");
         r.check(smelting.getRecipeFor(RecipeType.SMOKING, new SingleRecipeInput(big), level).isEmpty(), "nor the smoker");
+    }
+
+    /**
+     * Cats and ocelots take every raw fish (Tide's, the Nether ones and other mods' too) and the Cleaning Table's cuts,
+     * but not a fish too big to cook whole, and still not a pufferfish.
+     */
+    private static void catFood(ServerLevel level, SelfTest.Report r) {
+        var cat = net.minecraft.world.entity.EntityType.CAT.create(level);
+        var ocelot = net.minecraft.world.entity.EntityType.OCELOT.create(level);
+        if (cat == null || ocelot == null) {
+            r.fail("couldn't make a cat and an ocelot");
+            return;
+        }
+        List<ItemStack> eats = new java.util.ArrayList<>(List.of(new ItemStack(Items.COD), new ItemStack(Items.TROPICAL_FISH),
+                caught(Items.SALMON, SizeClass.TROPHY, 2.5)));
+        for (String id : List.of("tide:anchovy", "tide:magma_mackerel", "tide:chorus_cod", "aquaculture:fish_fillet_raw",
+                "aquaculture:catfish", "hybrid_aquatic:raw_fish_steak", "hybrid_aquatic:mackerel", "alexscaves:lanternfish",
+                "naturalist:bass", "farmersdelight:cod_slice")) {
+            BuiltInRegistries.ITEM.getOptional(ResourceLocation.parse(id)).ifPresent(item -> eats.add(new ItemStack(item)));
+        }
+        for (ItemStack fish : eats) {
+            String name = BuiltInRegistries.ITEM.getKey(fish.getItem()).toString();
+            r.check(cat.isFood(fish), "a cat eats " + name);
+            r.check(ocelot.isFood(fish), "an ocelot eats " + name);
+        }
+        ItemStack big = caught(Items.SALMON, SizeClass.LARGE, 6);
+        r.check(!cat.isFood(big) && !ocelot.isFood(big), "a 6 kg salmon is too big for a cat or an ocelot");
+        r.check(!cat.isFood(new ItemStack(Items.PUFFERFISH)), "a cat won't eat a pufferfish");
+        r.check(!cat.isFood(new ItemStack(Items.COOKED_COD)), "nor cooked fish");
+        cat.discard();
+        ocelot.discard();
     }
 
     private static ItemStack caught(Item item, SizeClass size, double kg) {

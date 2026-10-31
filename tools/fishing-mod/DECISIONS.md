@@ -768,3 +768,21 @@ what it is when you see it in the water.
   in a HUD layer under every other one: the label's top projected with the AFTER_SKY view and projection matrices
   and the camera position, scaled to the size a 0.0125-block font pixel has at that depth. It hides with F1 and is
   not covered by blocks in front, which doesn't matter: a label only shows while the crosshair is on its block.
+
+## Cats and ocelots eat any raw fish (0.3.27)
+
+- Asked for: cats take any raw fish, the pack's own ones too, except a fish too big to cook whole; they do eat
+  the fillets and steaks cleaned out of one.
+- `create_galore_fishing:cat_fish` lists every raw fish (Tide's cookable ones, its lava and End ones, vanilla
+  cod, salmon and tropical fish, Hybrid Aquatic, Alex's Caves, Better End, Cataclysm, Naturalist, Critters and
+  Companions, Aquamirae) and the raw cuts (Aquaculture fillets, Hybrid Aquatic steaks and fish meat, Farmer's Delight
+  slices); other mods' entries are optional. `minecraft:cat_food` and `minecraft:ocelot_food` take it whole, and
+  Aquaculture adds its own fish to both itself. Pufferfish, Hybrid Aquatic's blowfish and Ocean's Delight's fugu
+  slice stay out (poison fish), as do shellfish, tentacles and Nether "fish" from the delight mods.
+- `CatFoodMixin` (on `Cat` and `Ocelot`): `isFood` is false for a stack `WholeFishIngredient.small` refuses, the
+  furnace's 3 kg rule, so taming, trusting, healing and breeding all refuse it. A big fish still tempts them
+  (the tempt goals read the tag), which only means they follow you.
+- The animal food rate and troughs (Bridge) and Animal Husbandry only handle cows, pigs, sheep, goats and chickens;
+  cats keep vanilla feeding.
+- Self-test `processing`: a cat and an ocelot eat fish from each mod and the cuts, refuse a 6 kg salmon, a
+  pufferfish and cooked fish.
