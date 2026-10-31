@@ -2,7 +2,7 @@ hash-format = "sha256"
 
 [[files]]
 file = "config/DistantHorizons.toml"
-hash = "517774e283d163ab1454ff385f2a8871fbc20f45022ae417845cce746afd439e"
+hash = "1862b62c31ae2c70cae769b5e6ceae73b3804ff52d123d050eede23df70fd612"
 preserve = true
 
 [[files]]
@@ -204,6 +204,10 @@ hash = "fbded3027456c656977610fb0ea58188b1cf7974662ef17830703b2a79fc21a5"
 [[files]]
 file = "config/curios-common.toml"
 hash = "77d10c5a92c637dd1da279fd256f9262eb913921c441d526469e3fe9b1bffe36"
+
+[[files]]
+file = "config/fml.toml"
+hash = "ae54768733410adc27681c133e6879af43482b3e05dabd9ef25a13ed13ceb994"
 
 [[files]]
 file = "config/gravestone-server.toml"
@@ -5014,8 +5018,8 @@ hash = "db683b65dc15a03dd6de2d34d5dc6ad0e3490744ced513a8cc584784ee9d3d8b"
 metafile = true
 
 [[files]]
-file = "mods/create-galore-bridge-1.167.0.jar"
-hash = "259a013493953d1902553468e77c5ec4246c9397f09fa2d3577d98bf2952a887"
+file = "mods/create-galore-bridge-1.168.0.jar"
+hash = "27e73b7c4eeba08a43539155034133a57716a949dced15802ec7504f7f463e45"
 
 [[files]]
 file = "mods/create-galore-fishing-0.3.25.jar"
