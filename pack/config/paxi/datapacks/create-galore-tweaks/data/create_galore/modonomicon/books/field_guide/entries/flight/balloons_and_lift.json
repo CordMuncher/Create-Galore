@@ -59,17 +59,12 @@
     {
       "type": "modonomicon:text",
       "title": "Speed and drag",
-      "text": "Every envelope block drags as the ship moves, about as much as three blocks' worth of its weight, so an envelope bigger than the load needs makes it slower. Size it to the weight with room to climb: each m3 of hot air holds up about 1.5 mass low down, less higher up.\\\n\\\nMount the propellers about level with the middle of the envelope: low ones tip the nose up at speed."
+      "text": "Every envelope block drags as the ship moves, about as much as three blocks' worth of its weight, so an envelope bigger than the load needs makes it slower. Size it to the weight with room to climb: each m3 of hot air holds up about 1.5 mass low down, less higher up.\\\n\\\nPush level with the middle of the envelope: propellers low under it tip the nose up at speed."
     },
     {
       "type": "modonomicon:text",
-      "title": "A sky base that flies",
-      "text": "[#](FFFFFF)\ue103[#]() **In depth.** A balloon with a 7 by 11 gondola (bed, smoker, crafting table, eight barrels and chests) under a 290 m3 envelope, and two pods beside the envelope, each with two Portable Engines geared to 128 RPM on a 13-sail Propeller Bearing, cruises at about 9 blocks a second and climbs to about y 210."
-    },
-    {
-      "type": "modonomicon:text",
-      "title": "",
-      "text": "One Steering Wheel at the helm steers it: a comparator against each side of the wheel lights while it is turned one way, and Redstone Links carry each to the Analog Transmission in one pod's line. A Throttle Lever beside it sets the speed through the same transmissions."
+      "title": "A whole airship",
+      "text": "[#](FFFFFF)\ue103[#]() **In depth.** How the envelope, gondola, engines, propellers and fins of an airship fit together, with a hauling blimp that cruises at about 9 blocks a second: [#](2E5AAC)[Designing Aircraft](entry://flight/aircraft_design)[#]()."
     },
     {
       "type": "modonomicon:spotlight",
@@ -95,7 +90,7 @@
     {
       "type": "modonomicon:text",
       "title": "Related",
-      "text": "Heat and fluids drive burners and vents. Sky whales supply bone dust.\n\n- [#](2E5AAC)[Airships](entry://flight/airships)[#]()\n- [#](2E5AAC)[Weather and Danger](entry://flight/weather_and_danger)[#]()\n- [#](2E5AAC)[Blaze Burner and Heat](entry://create_basics/heat)[#]()\n- [#](2E5AAC)[Fluids, Pipes and Pumps](entry://create_basics/fluids)[#]()"
+      "text": "Heat and fluids drive burners and vents. Sky whales supply bone dust.\n\n- [#](2E5AAC)[Airships](entry://flight/airships)[#]()\n- [#](2E5AAC)[Designing Aircraft](entry://flight/aircraft_design)[#]()\n- [#](2E5AAC)[Weather and Danger](entry://flight/weather_and_danger)[#]()\n- [#](2E5AAC)[Blaze Burner and Heat](entry://create_basics/heat)[#]()\n- [#](2E5AAC)[Fluids, Pipes and Pumps](entry://create_basics/fluids)[#]()"
     }
   ]
 }

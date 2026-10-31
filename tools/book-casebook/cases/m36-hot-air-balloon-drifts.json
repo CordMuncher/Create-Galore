@@ -1,0 +1,158 @@
+{
+  "title": "A hot air balloon with no propellers is a drifting balloon to explain, not a broken airship",
+  "from": "2026-10-31 stand-in test: a starter hot air balloon was pushed into a steered airship because the check refused any balloon without propellers",
+  "roots": [
+    "R3"
+  ],
+  "kind": "model",
+  "model": {
+    "title": "Hot air balloon",
+    "size_x": 11,
+    "size_y": 17,
+    "size_z": 11,
+    "blocks": [
+      {
+        "block": "aeronautics:white_envelope",
+        "x": 1,
+        "y": 6,
+        "z": 1,
+        "x2": 9,
+        "y2": 15,
+        "z2": 9,
+        "shape": "ellipsoid_shell"
+      },
+      {
+        "block": "minecraft:air",
+        "x": 4,
+        "y": 6,
+        "z": 4,
+        "x2": 6,
+        "y2": 6,
+        "z2": 6
+      },
+      {
+        "block": "minecraft:spruce_planks",
+        "x": 3,
+        "y": 0,
+        "z": 3,
+        "x2": 7,
+        "y2": 0,
+        "z2": 7
+      },
+      {
+        "block": "minecraft:spruce_fence",
+        "x": 3,
+        "y": 1,
+        "z": 3,
+        "x2": 7,
+        "y2": 1,
+        "z2": 3
+      },
+      {
+        "block": "minecraft:spruce_fence",
+        "x": 3,
+        "y": 1,
+        "z": 7,
+        "x2": 7,
+        "y2": 1,
+        "z2": 7
+      },
+      {
+        "block": "minecraft:spruce_fence",
+        "x": 3,
+        "y": 1,
+        "z": 4,
+        "x2": 3,
+        "y2": 1,
+        "z2": 6
+      },
+      {
+        "block": "minecraft:spruce_fence",
+        "x": 7,
+        "y": 1,
+        "z": 4,
+        "x2": 7,
+        "y2": 1,
+        "z2": 5
+      },
+      {
+        "block": "minecraft:spruce_fence_gate[facing=east]",
+        "x": 7,
+        "y": 1,
+        "z": 6
+      },
+      {
+        "block": "minecraft:spruce_fence",
+        "x": 3,
+        "y": 2,
+        "z": 3,
+        "x2": 3,
+        "y2": 6,
+        "z2": 3
+      },
+      {
+        "block": "minecraft:spruce_fence",
+        "x": 7,
+        "y": 2,
+        "z": 3,
+        "x2": 7,
+        "y2": 6,
+        "z2": 3
+      },
+      {
+        "block": "minecraft:spruce_fence",
+        "x": 3,
+        "y": 2,
+        "z": 7,
+        "x2": 3,
+        "y2": 6,
+        "z2": 7
+      },
+      {
+        "block": "minecraft:spruce_fence",
+        "x": 7,
+        "y": 2,
+        "z": 7,
+        "x2": 7,
+        "y2": 6,
+        "z2": 7
+      },
+      {
+        "block": "minecraft:spruce_planks",
+        "x": 5,
+        "y": 1,
+        "z": 5,
+        "x2": 5,
+        "y2": 4,
+        "z2": 5
+      },
+      {
+        "block": "aeronautics:adjustable_burner",
+        "x": 5,
+        "y": 5,
+        "z": 5
+      },
+      {
+        "block": "minecraft:lever[face=wall,facing=north]",
+        "x": 5,
+        "y": 5,
+        "z": 4
+      },
+      {
+        "block": "simulated:physics_assembler[facing=north]",
+        "x": 4,
+        "y": 0,
+        "z": 4
+      }
+    ],
+    "part_of_vehicle": false
+  },
+  "expect": {
+    "has": [
+      "it is a drifting balloon"
+    ],
+    "lacks": [
+      "nothing pushes it along: it can only drift"
+    ]
+  }
+}

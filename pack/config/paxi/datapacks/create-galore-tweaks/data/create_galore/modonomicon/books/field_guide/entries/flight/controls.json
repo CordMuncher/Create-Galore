@@ -38,7 +38,7 @@
     {
       "type": "modonomicon:text",
       "title": "One wheel",
-      "text": "Steer with one wheel, not a lever per side:\n\n- Its cog turns a [#](2E5AAC)[Swivel Bearing](entry://flight/ship_building)[#]() under a stern propeller.\n- Or a comparator at each side of it slows one side's propeller line through an Analog Transmission; Redstone Links reach pods.\n\nLevers are for settings."
+      "text": "Steer with one wheel, not a lever per side:\n\n- Its cog turns a [#](2E5AAC)[Swivel Bearing](entry://flight/ship_building)[#]() under a stern propeller.\n- Or a comparator at each side of it slows one side's propeller line through an Analog Transmission; Redstone Links reach far ones.\n\nLevers are for settings."
     },
     {
       "type": "modonomicon:spotlight",
@@ -59,7 +59,7 @@
     {
       "type": "modonomicon:text",
       "title": "One throttle",
-      "text": "One Throttle Lever sets the speed:\n\n- An Analog Transmission in each propeller line: shaft from the engine, cogwheel toward the propeller.\n- Wrench the lever once: pulled back stops them, pushed forward is flat out.\n- Links carry its strength to pods."
+      "text": "One Throttle Lever sets the speed:\n\n- An Analog Transmission in each propeller line: shaft from the engine, cogwheel toward the propeller.\n- Wrench the lever once: pulled back stops them, pushed forward is flat out.\n- Links carry its strength to far ones."
     },
     {
       "type": "modonomicon:spotlight",

@@ -1339,7 +1339,13 @@ final class VehicleCheck {
             else if (climb < CLIMB_SLOW) notes.add(String.format(Locale.ROOT, "it climbs slowly (%.1f blocks/s)", climb));
         }
 
-        if (side.isEmpty()) {
+        if (side.isEmpty() && filled > 0 && wings.count == 0 && lev == 0) {
+            // A hot air balloon that only climbs, sinks and drifts is a real aircraft, and the first one a player can make.
+            notes.add("nothing pushes it along: it is a drifting balloon that climbs and sinks on its burners and goes where the "
+                    + "wind takes it. That is right only for a hot air balloon the player wants to drift in; tell them so, and that "
+                    + "a propeller turned from the basket (a Portable Engine, or a hand crank at first) would push and steer it. An "
+                    + "airship meant to travel needs propellers driven by an on-board engine, or thrusters");
+        } else if (side.isEmpty()) {
             faults.add("nothing pushes it along: it can only drift with the wind. Add propellers driven by an on-board engine, "
                     + "or thrusters");
         } else {
@@ -1791,8 +1797,9 @@ final class VehicleCheck {
         if (Math.abs(pitch) < 4) return;
         String text = String.format(Locale.ROOT, "at full speed it pitches about %.0f° nose %s: its propellers push %.1f blocks %s the "
                 + "middle of its drag (the envelope, about %.0f blocks above its lowest block), so the air holds the top back while they drive "
-                + "the bottom on; mount the propellers about level with the middle of the envelope (on pods beside it or on the "
-                + "frame that holds it), or lower the envelope toward them", Math.abs(pitch), gap > 0 ? "up" : "down",
+                + "the bottom on; drive propellers level with the middle of the envelope instead, by shafts from the engines "
+                + "in the gondola (one fan on the envelope's axis behind its tail, or a pair on short shaft arms at its widest "
+                + "point), or hang the gondola closer under the envelope", Math.abs(pitch), gap > 0 ? "up" : "down",
                 Math.abs(gap), gap > 0 ? "below" : "above", dy - b.minY);
         if (Math.abs(pitch) >= 10) faults.add(text);
         else notes.add(text);
