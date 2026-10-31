@@ -5,6 +5,17 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.6.61
+
+### Added
+- Create Galore Fishing 0.3.29.
+
+### Fixed
+- **A server crash after a fish broke the line on a Reel Drive.** With autocast on, the drive cast the rod again with no line on it, and when a fish took the hook the strike stopped the whole server. A drive now never casts a rod that can't be cast (no line, no reel, or bait with no hook): its window's status says **Can't cast** and its goggles name the missing part. A poor rig is still cast, a bare hook with no bait or float too, so an empty bait slot no longer stops a drive. A line that is already out is let go as soon as the rod holding it can't be cast any more (another rod switched into the hand, or a part taken off), the same as letting go of the rod.
+
+### Removed
+- Nothing.
+
 ## 0.6.60
 
 ### Added

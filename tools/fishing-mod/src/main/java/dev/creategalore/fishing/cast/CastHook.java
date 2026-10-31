@@ -491,7 +491,10 @@ public class CastHook extends FishingHook {
         Player owner = getPlayerOwner();
         ItemStack rod = owner == null ? ItemStack.EMPTY : owner.getItemInHand(hand);
         RodStats stats = RodStats.of(rod).orElse(null);
-        if (owner == null || !owner.isAlive() || owner.level() != level() || stats == null
+        // A rod that can no longer cast (another rod switched into the hand, or its line, reel or hook taken off
+        // while the rig was out) has nothing holding this line: it goes, the same as letting go of the rod. Striking
+        // or fighting on it would need parts it doesn't have.
+        if (owner == null || !owner.isAlive() || owner.level() != level() || stats == null || !stats.canCast()
                 || owner.distanceTo(this) > stats.lineMeters() + 24) {
             if (owner != null && phase() == Phase.FIGHTING) {
                 TackleWear.tell(owner, Component.translatable("message.create_galore_fishing.line_dropped"));

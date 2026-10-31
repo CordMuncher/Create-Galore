@@ -79,6 +79,11 @@ public final class MachineInfo {
                         : Component.translatable(P + "line_out", out))
                         .withStyle(total > 0 && out >= total * 0.85f ? ChatFormatting.GOLD : ChatFormatting.GRAY), 1));
             }
+            // A rod short of a part can't go out at all (a poor rig still can): say what it needs.
+            Component cantCast = hook == null ? cantCast(stats, drive) : null;
+            if (cantCast != null) {
+                tooltip.add(line(Component.translatable(P + "cant_cast", cantCast).withStyle(ChatFormatting.RED), 1));
+            }
             if (stats != null && stats.reel().isPresent()) {
                 tooltip.add(line(Component.translatable(P + "drag", kg(stats.drag())).withStyle(ChatFormatting.GRAY), 1));
             }
@@ -126,6 +131,14 @@ public final class MachineInfo {
             tooltip.add(line(Component.translatable(P + "banked_xp", rod.bankedXp()).withStyle(ChatFormatting.GREEN), 1));
         }
         return true;
+    }
+
+    /** Why this rod can't be cast (by hand, or by a geared drive, which needs a reel too); null if it can. */
+    static Component cantCast(RodStats stats, Drive drive) {
+        if (stats == null) return null;
+        if (!stats.canCast()) return stats.missing().get(0);
+        if (drive != null && drive.geared() && stats.isPole()) return Component.translatable("tooltip.create_galore_fishing.needs.reel");
+        return null;
     }
 
     private static MutableComponent line(Component text, int indent) {

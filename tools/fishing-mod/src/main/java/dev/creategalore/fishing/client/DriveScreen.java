@@ -152,7 +152,8 @@ public class DriveScreen extends AbstractContainerScreen<DriveMenu> {
         String key;
         if (!on()) key = "status_off";
         else if (menu.data(DriveMenu.DATA_LINE_OUT) != 0) key = "status_out";
-        else if (menu.data(DriveMenu.DATA_CAN_CAST) == 0) key = "status_empty";
+        else if (menu.data(DriveMenu.DATA_CAN_CAST) == ReelDrive.CastState.NO_ROD.ordinal()) key = "status_empty";
+        else if (menu.data(DriveMenu.DATA_CAN_CAST) == ReelDrive.CastState.CANT_CAST.ordinal()) key = "status_cant";
         else key = autocast() ? "status_casting" : "status_ready";
         return Component.translatable(P + key);
     }
