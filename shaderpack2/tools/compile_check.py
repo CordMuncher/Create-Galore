@@ -213,7 +213,8 @@ def run(job):
                     samplers.add(name)
                 if name in declared_images:
                     images.add(name)
-    for name in sorted(images - made_images):
+    # colorimgN is Iris's own colortexN, written as an image (not a custom image).
+    for name in sorted(n for n in images - made_images if not re.fullmatch(r"colorimg\d+", n)):
         problems.append(f"uses the image {name}, which shaders.properties doesn't make")
     for name in sorted(s for s in samplers if s.startswith("cg_") and s not in made_samplers):
         problems.append(f"uses the sampler {name}, which shaders.properties doesn't make")

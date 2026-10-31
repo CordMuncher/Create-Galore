@@ -1,9 +1,9 @@
 profile.LOW=Low
-profile.LOW.comment=A smaller voxel box (96 blocks across), fewer light traces per pixel, three bounce rays per block, a 1024 shadow map.
+profile.LOW.comment=A smaller voxel box (96 blocks across), fewer light traces per pixel, three bounce rays per block, a 1024 shadow map, the water reflecting what is on screen.
 profile.DEFAULT=Default
-profile.DEFAULT.comment=A 128-block voxel box, 32 light traces per pixel, seven bounce rays per block, a 2048 shadow map.
+profile.DEFAULT.comment=A 128-block voxel box, 32 light traces per pixel, seven bounce rays per block, a 2048 shadow map, the water reflecting the world at half the render size.
 profile.HIGH=High
-profile.HIGH.comment=A 256-block voxel box, more light traces at twice the detail, thirteen bounce rays per block, a 4096 shadow map.
+profile.HIGH.comment=A 256-block voxel box, more light traces at twice the detail, thirteen bounce rays per block, a 4096 shadow map, the water reflecting the world at the full render size.
 
 screen.LIGHT=Light
 screen.LIGHT.comment=Block light, the bounce light and ambient occlusion.
@@ -13,6 +13,8 @@ screen.LOOK=Look
 screen.LOOK.comment=Exposure, bloom, the light in the air and colour.
 screen.SKY=Sky
 screen.SKY.comment=The clouds.
+screen.WATER=Water
+screen.WATER.comment=Waves, reflections, the colour of deep water, caustics and the light under it.
 screen.VOXEL=Voxel Copy
 screen.VOXEL.comment=The copy of the world around you that block light and bounce light are traced through.
 
@@ -79,6 +81,23 @@ option.MOON_SIZE.comment=How big the moon looks, against Minecraft's own moon. I
 option.CLOUD_STEPS=Cloud Quality
 option.CLOUD_STEPS.comment=How many looks into the clouds each ray takes: more keeps the far clouds' detail finer, at some cost.
 
+option.WATER_QUALITY=Water Reflections
+option.WATER_QUALITY.comment=Low: the sky and its clouds only. Medium: what is on screen, then the sky. High: the world itself with its blocks' textures, traced through the voxel copy, so the reflection holds what is off screen and doesn't change as you look around; mobs and Create's machines from the screen. Ultra: the same at the full render size, reaching further.
+value.WATER_QUALITY.0=Low
+value.WATER_QUALITY.1=Medium
+value.WATER_QUALITY.2=High
+value.WATER_QUALITY.3=Ultra
+option.WATER_WAVES=Waves
+option.WATER_WAVES.comment=How strong the waves are. They run with the clouds' wind, build a swell only where there is open water up-wind, and are calmer or choppier from place to place. 0: still water.
+option.WATER_REFRACTION=Refraction
+option.WATER_REFRACTION.comment=What lies under the water is bent by its waves. Off: seen straight through.
+option.RAIN_RINGS=Rain Rings
+option.RAIN_RINGS.comment=Raindrops make rings on open water where it rains.
+option.CAUSTICS=Caustics
+option.CAUSTICS.comment=The waves focus the sunlight into bright moving lines on what lies under the water.
+option.SHAFT_STRENGTH=Light Shafts
+option.SHAFT_STRENGTH.comment=How bright the sun's shafts in the water around you are, shaded by what stands over it. 0: none.
+
 option.VOXEL_BOX=Voxel Box
 option.VOXEL_BOX.comment=The box of blocks around you that block light and bounce light are traced through, one cell per block. The Create Galore Bridge keeps it with each block's real shape.
 value.VOXEL_BOX.0=96 × 64
@@ -102,6 +121,7 @@ value.DEBUG_VIEW.11=Voxel Colours
 value.DEBUG_VIEW.12=Light Lists
 value.DEBUG_VIEW.13=Sun and Sky Light
 value.DEBUG_VIEW.14=Light Layers Side by Side
+value.DEBUG_VIEW.15=Water Alone
 
 option.BAD_FRAME_MARK=Bad Frame Mark
 option.BAD_FRAME_MARK.comment=A small square at the middle of the left edge for two seconds when a pass caught a broken value and drew nothing there instead. Red: the lit scene. Green: after DLSS or FSR. Blue: the sun and sky values. White: the last pass.

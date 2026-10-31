@@ -141,4 +141,20 @@ vec3 expand_light(vec3 c) {
     return len > 1e-6 ? c * ((exp(len) - 1.0) / len) : c;
 }
 
+// How much of a light block's texel glows: the bright, hot ones (a torch's flame, not its stick; a furnace's fire,
+// not its stone). Lamps that glow all over (glowstone, lava, froglights) glow from their dimmer texels too.
+float glow_of(vec3 albedo, int id, float emission) {
+    bool listed = id >= BLOCK_LIGHT && id < BLOCK_LIGHT + LIGHT_KINDS;
+    if (!listed && emission < 1.0) {
+        return 0.0;
+    }
+    int kind = id - BLOCK_LIGHT;
+    bool all_over = listed && (kind == 4 || kind == 5 || kind == 6 || kind == 7 || (kind >= 9 && kind <= 11)
+            || kind == KIND_LAVA || kind == KIND_MAGMA || kind == 24 || kind == 25 || kind == 32);
+    float peak = max3(albedo);
+    float hot = all_over ? smoothstep(0.15, 0.6, luminance(albedo)) : smoothstep(0.55, 0.9, peak);
+    float strength = listed ? light_kind(kind).a / 22.0 : emission / 15.0;
+    return hot * clamp(strength, 0.3, 1.2);
+}
+
 #endif

@@ -3,8 +3,9 @@
 // The map is squeezed towards the middle (a radial warp), so it has the most texels around you and fewer far
 // away, and its depth is squeezed too, so it reaches from deep caves to the build limit. shadowtex0 holds the
 // nearest of everything, shadowtex1 only what light can't pass (no water or glass), shadowcolor0 the colour of
-// the nearest see-through thing over the light-blocking one (rgb, sRGB; a below a half for water, whose depth then
-// absorbs the light, see shadow_tint), and shadowcolor1 where your own body is the nearest thing to the light.
+// the nearest see-through thing over the light-blocking one (rgb, sRGB), or for water its biome's water colour with
+// how its waves focus the light (a: below a half, 0.49 for four times the light; see shadow.fsh), and shadowcolor1
+// where your own body is the nearest thing to the light.
 
 #if !defined LIB_SHADOW
 #define LIB_SHADOW
@@ -12,6 +13,7 @@
 #include "/lib/settings.glsl"
 #include "/lib/common.glsl"
 #include "/lib/view.glsl"
+#include "/lib/water_color.glsl"
 
 const float shadow_warp = 0.85;
 const float shadow_depth_scale = 0.25;
@@ -85,6 +87,10 @@ const vec2 shadow_disk[12] = vec2[](
     vec2(0.507, 0.064), vec2(0.896, 0.412), vec2(-0.322, -0.933), vec2(-0.792, -0.598)
 );
 
+// How far the light runs through water to the point being lit, when the caller knows it from the block copy (see
+// water_path in lib/trace.glsl; -1: not known, the map's depth says). Set just before shadow_light, and back to -1.
+float g_water_path = -1.0;
+
 // How much of the light reaches a point (0..1), and its colour through glass and water.
 // - radius: the filter's width in texels at the middle of the map (wider far out, where texels are bigger).
 // - ignore: what casts from less than this many blocks in front of the point doesn't count (leaves and grass, which
@@ -118,20 +124,67 @@ vec3 shadow_light(vec3 scene_pos, float radius, float ignore, float beyond, bool
     solid /= float(shadow_taps);
     all_of /= float(shadow_taps);
     vec3 result;
-    if (solid - all_of < 0.01) {
+    vec4 tint = texture(shadowcolor0, c.xy);
+    bool water_read = tint.a < 0.5;
+    if (g_water_path > 0.0 || (water_read && solid - all_of >= 0.01)) {
+        // Through water: what its depth soaks up on the light's way down (the block copy's walk when the caller has
+        // it, so it never depends on which side of an edge the map's texel fell; else the map's depth), and how its
+        // waves focus the light (only where the map shows the water itself over the point).
+        float depth = g_water_path;
+        if (depth < 0.0 || !(g_water_path > 0.0)) {
+            float surface = texture(shadowtex0, c.xy).r;
+            depth = max(c.z - surface, 0.0) / per_block;
+        }
+        vec3 biome = water_read ? tint.rgb : vec3(0.247, 0.463, 0.894);
+        float focus = water_read ? tint.a / 0.49 * 4.0 : 1.0;
+        vec3 color = exp(-(water_absorption_for(biome) + water_scatter) * depth) * focus;
+        result = g_water_path > 0.0 ? solid * color : vec3(all_of) + (solid - all_of) * color;
+    } else if (solid - all_of < 0.01) {
         result = vec3(solid);
     } else {
-        // Some of it comes through something see-through: its colour, and for water, its depth.
-        vec4 tint = texture(shadowcolor0, c.xy);
-        vec3 color = srgb_to_linear(tint.rgb);
-        if (tint.a < 0.5) {
-            float surface = texture(shadowtex0, c.xy).r;
-            float depth = max(c.z - surface, 0.0) / per_block;
-            color *= exp(-vec3(0.28, 0.07, 0.04) * depth);
-        }
-        result = vec3(all_of) + (solid - all_of) * color;
+        // Some of it comes through something see-through: its colour.
+        result = vec3(all_of) + (solid - all_of) * srgb_to_linear(tint.rgb);
     }
     return mix(result, vec3(beyond), edge_fade);
+}
+
+// Only what light can't pass (no water or glass), for the water's own surface: water must never shade itself, as
+// its own place in the map would (a03).
+float shadow_solid(vec3 scene_pos, float radius, float beyond) {
+    vec4 c = shadow_coord(scene_pos);
+    if (any(lessThan(c.xy, vec2(0.0))) || any(greaterThan(c.xy, vec2(1.0))) || c.z > 1.0) {
+        return beyond;
+    }
+    float edge_fade = smoothstep(0.86, 0.98, c.w);
+    float texel = 1.0 / float(shadowMapResolution);
+    float r = radius * texel * mix(1.0, 2.0, c.w);
+    float bias = texel * 0.5 * shadow_depth_scale;
+    float solid = 0.0;
+    for (int i = 0; i < shadow_taps; i++) {
+        solid += texture(shadowtex1HW, vec3(c.xy + shadow_disk[i] * r, c.z - bias));
+    }
+    return mix(solid / float(shadow_taps), beyond, edge_fade);
+}
+
+// The sunlight at a point in water, one look: none where something solid shades it, else what the water above
+// soaks up on the way down and how its waves focus it (the light shafts under water, program/water_shafts.csh).
+vec3 shadow_water_light(vec3 scene_pos) {
+    vec4 c = shadow_coord(scene_pos);
+    if (any(lessThan(c.xy, vec2(0.0))) || any(greaterThan(c.xy, vec2(1.0))) || c.z > 1.0) {
+        return vec3(0.0);
+    }
+    float bias = 0.5 * shadow_depth_scale / float(shadowMapResolution);
+    float solid = texture(shadowtex1HW, vec3(c.xy, c.z - bias));
+    if (solid <= 0.0) {
+        return vec3(0.0);
+    }
+    vec4 tint = texture(shadowcolor0, c.xy);
+    if (tint.a >= 0.5) {
+        return vec3(solid);
+    }
+    float surface = texture(shadowtex0, c.xy).r;
+    float depth = max(c.z - surface, 0.0) / shadow_depth_per_block();
+    return solid * exp(-(water_absorption_for(tint.rgb) + water_scatter) * depth) * (tint.a / 0.49 * 4.0);
 }
 
 vec3 shadow_light(vec3 scene_pos, float radius, float ignore, float beyond) {

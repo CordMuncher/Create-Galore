@@ -6,7 +6,7 @@ name is for its motion vectors: not only the camera's, but how each moving thing
 contraptions, ships, mobs, the hand), which is what lets DLSS and FSR keep them sharp. The Bridge's Upscaling &
 Display screen picks the upscaler and the render resolution; the pack has no settings of its own for them.
 
-**Work in progress: alpha 0.6.** It lives on its own branch and is not in the modpack yet. The first Create Galore
+**Work in progress: alpha 0.7.** It lives on its own branch and is not in the modpack yet. The first Create Galore
 pack (`shaderpack/`) stays as a research build; the two share only the DLSS hand-off and the mods' plumbing
 (Colorwheel, Distant Horizons), not their lighting.
 
@@ -74,7 +74,29 @@ pack (`shaderpack/`) stays as a research build; the two share only the DLSS hand
   every frame at half the render size each way and smoothed over a few frames, never a fraction of the pixels per
   frame (which makes clouds crawl in motion); DLSS gets their own motion. Their shadows cross the land (option Cloud
   Shadows). Option Realistic Clouds off gives Minecraft's clouds, lit orange and pink at dusk and dawn.
-- **Water**: its own colour, deeper the deeper it is, and waves crossing from three directions, longer ones faster.
+- **Water** (its own options screen):
+  - **Waves** in four layers, the biggest a swell running with the clouds' wind that only builds where there is open
+    water up-wind (a pond stays calm, a sea doesn't), the others crossing it, down to ripples a third of a block
+    across; crests bend along their length, and stretches hundreds of blocks across run calmer or choppier. The
+    pattern repeats every 1024 blocks and every hour exactly, so it never jumps. Waves too fine for a pixel to show
+    become roughness that spreads the sun's glint and the reflection instead of flickering. Rain roughens the small
+    waves and drops rings on open water (option Rain Rings); walking into water sends a ring out from you.
+  - **Reflections** (option Water Reflections): Low the sky and its clouds; Medium what is on screen, then the sky;
+    High the world itself traced through the block copy with its blocks' textures (the Bridge hands over the block
+    atlas and each block's face maps), lit as the world is lit, so the reflection is the same from wherever you look
+    and holds what is off screen; mobs and Create's machines, which the copy doesn't hold, come from the screen where
+    they are nearer. High works at half the render size, Ultra at full size and further. The textures need the
+    Bridge 1.174.0 (pack 0.6.64) or later; with an older one a reflected block shows its average colour.
+  - **Colour**: light is absorbed red first, so water deepens from clear turquoise over sand to deep blue, tinted by
+    the biome's water colour; what lies under it is bent by the waves (option Refraction), never pulling nearer
+    things in. Seen from under the surface, the sky shows only through Snell's window and the rest is a mirror.
+  - **Caustics**: the waves focus sunlight into moving bright lines on what lies under them, worked out from where
+    the light actually lands (option Caustics); the sun reaches under water along the water in the block copy, so a
+    dock's shade stays on the floor under it.
+  - **Under water**: the water's own fog, light shafts from the sun shaded by what stands over it (option Light
+    Shafts), and the surface seen from below.
+  - Distant Horizons' water uses the same waves, colour and sky with clouds, so a sea looks the same across the
+    edge of the loaded chunks.
 - **Light in the air**: a coloured haze around lamps (strongest at night, underground and in the Nether), haze far
   off, water and lava around you.
 - **Bloom**, with a bloom fog that softens far lights at dusk and night, in rain and underground; big bright patches
@@ -102,8 +124,8 @@ pack (`shaderpack/`) stays as a research build; the two share only the DLSS hand
 
 ## Later milestones
 
-Reflections; foam and calmer, more varied water; sun shafts; material maps; soft sun shadows traced through
-the copy; moving Create contraptions and ships in the copy, and mobs and the player shading lamp light (now they only
+Wakes behind boats, mobs and ships; foam; material maps and block reflections (reusing the water's reflection
+trace); soft sun shadows traced through the copy; moving Create contraptions and ships in the copy, and mobs and the player shading lamp light (now they only
 cast sun shadows).
 
 ## Own denoisers and Ray Reconstruction
@@ -143,8 +165,9 @@ notes for its options; `scene_leaks.py` and `scene_regress.py` are examples.
 - The passes, in order: the air's tables (`setup`, `begin`), the frame's light (`begin2`), the voxel copy from the
   Bridge's block grid (`begin3`); the sun's shadow map (`shadow_*`); the distance field, the light per block and the
   bounce light (`shadowcomp1` to `3`); the world into the G-buffer; the light per pixel and its filter (`deferred`,
-  `deferred1`); the clouds (`deferred2`, the Overworld only); the lighting (`deferred3`); water, glass and particles lit as they are drawn; the light in the air
-  (`composite`); the DLSS point (`composite1`); the bloom (`composite2` to `12`); the final pass.
+  `deferred1`); the clouds (`deferred2`, the Overworld only); the lighting (`deferred3`); water, glass and particles lit as they are drawn; the water's
+  reflection and the sun's shafts in it (`composite_a`, `composite_b`); the light in the air (`composite1`); the DLSS
+  point (`composite2`); the bloom (`composite3` to `13`); the final pass.
 - The pack keeps all its data in images, no storage buffers: Iris takes those only at bindings 0 to 8, and Flywheel
   (Create's machines through Colorwheel) binds its own at 0 to 9 every frame. Iris allows 16 custom images; the pack
   uses all 16 (two of them the Bridge's block grid and palette), several of them holding more than one table side by side

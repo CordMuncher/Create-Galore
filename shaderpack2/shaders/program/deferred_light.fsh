@@ -10,9 +10,7 @@
 #include "/lib/voxel_sample.glsl"
 #include "/lib/shadow.glsl"
 #include "/lib/sky.glsl"
-#if DEBUG_VIEW == 7 || DEBUG_VIEW == 8 || DEBUG_VIEW == 10 || DEBUG_VIEW == 11 || DEBUG_VIEW == 14
 #include "/lib/trace.glsl"
-#endif
 #if DEBUG_VIEW == 12
 #include "/lib/lights.glsl"
 #endif
@@ -35,8 +33,11 @@ layout(rgba16f) readonly uniform image2D cg_plh_img; // see pixel_light_filter.c
 
 in vec2 v_uv;
 
-/* RENDERTARGETS: 0 */
+/* RENDERTARGETS: 0,5 */
 layout(location = 0) out vec4 out_color;
+// The same lit scene, kept for the water to see through with its refraction (gbuffers_water can't read colortex0 while
+// it draws into it).
+layout(location = 1) out vec4 out_scene;
 
 // Screen-space ambient occlusion: eight looks into the half sphere over the surface, in view space, up to 0.6 of a
 // block out; a surface is shaded by how many land just behind something. Only something near counts: a look that
@@ -98,7 +99,7 @@ vec3 with_clouds(vec3 color, ivec2 texel, float dist, float surface_y) {
 void main() {
     ivec2 texel = ivec2(gl_FragCoord.xy);
     if (outside_render_area(gl_FragCoord.xy)) {
-        out_color = vec4(0.0);
+        out_color = vec4(0.0); out_scene = out_color;
         return;
     }
 #if DEBUG_VIEW == 13
@@ -106,7 +107,7 @@ void main() {
     // surface facing up, facing the horizon and facing down.
     int band = clamp(int(4.0 - 4.0 * gl_FragCoord.y / render_size().y), 0, 3);
     vec4 frame_light = band == 0 ? g_light_color : band == 1 ? g_sky_up : band == 2 ? g_sky_side : g_sky_down;
-    out_color = vec4(frame_light.rgb * 0.5, 1.0);
+    out_color = vec4(frame_light.rgb * 0.5, 1.0); out_scene = out_color;
     return;
 #endif
     float depth = texelFetch(depthtex0, texel, 0).r;
@@ -129,7 +130,7 @@ void main() {
 #ifdef VOLUME_CLOUDS
             c = with_clouds(c, texel, cloud_far_sky, dir.y > 0.0 ? 1e6 : -1e6);
 #endif
-            out_color = vec4(c + texelFetch(colortex0, texel, 0).rgb, 1.0);
+            out_color = vec4(c + texelFetch(colortex0, texel, 0).rgb, 1.0); out_scene = out_color;
             return;
         }
     } else {
@@ -206,8 +207,11 @@ void main() {
         // clump, and grass doesn't shade itself.
         float radius = (s.material == MAT_HAND || thin ? 2.0 : 1.5) * SHADOW_SOFTNESS;
         float ignore = s.material == MAT_LEAVES ? 1.0 : s.material == MAT_PLANT ? 0.5 : 0.0;
+        // Under water, the light's way down through it comes from the block copy (lib/shadow.glsl).
+        g_water_path = water_path(vox_pos(scene) + s.face * 0.05, l, 48);
         sun_reach = shadow_light(shadow_offset_point(scene, s.face, l), radius, ignore, sun_beyond_map(s.sky),
                                  s.material == MAT_HAND) * sky_gate * cloud_shadow(scene);
+        g_water_path = -1.0;
         sun = g_light_color.rgb * facing * sun_reach;
     } else if (lod) {
         sun = g_light_color.rgb * facing * sun_beyond_map(s.sky) * cloud_shadow(scene);
@@ -325,5 +329,5 @@ void main() {
         color = with_clouds(color, texel, length(view), cameraPosition.y + scene.y);
     }
 #endif
-    out_color = vec4(color, 1.0);
+    out_color = vec4(color, 1.0); out_scene = out_color;
 }

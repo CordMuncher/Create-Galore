@@ -24,12 +24,15 @@
 #include "/lib/view.glsl"
 #include "/lib/bad_frame.glsl"
 #include "/lib/sky.glsl"
+#include "/lib/trace.glsl"
 
 layout(local_size_x = 64) in;
 const ivec3 workGroups = ivec3(1, 1, 1);
 
 uniform vec3 sunPosition;
 uniform vec3 shadowLightPosition;
+uniform float frameTime;
+uniform int biome_precipitation; // the biome you are in: 0 none, 1 rain, 2 snow
 layout(rgba32f) uniform image2D cg_globals_img;
 
 const vec3 sun_high = vec3(2.0, 1.25, 0.72);
@@ -173,6 +176,39 @@ void main() {
     g_sky_down = vec4(ground, 0.0);
     g_horizon = vec4(0.0); // the Overworld's haze takes the sky behind it (program/fog.fsh)
 #endif
+
+    // The water's (lib/water.glsl): the rain on it eases in over 5 seconds and away over 20 (where the biome you are
+    // in rains, not snows); and where your feet last went into or out of water, for the ring that spreads from there
+    // (the block copy says, so it is last frame's: a frame late at most).
+    vec4 water_was = imageLoad(cg_globals_img, ivec2(9, 0));
+    vec4 splash_was = imageLoad(cg_globals_img, ivec2(10, 0));
+#if defined SUNLIGHT
+    float rain_target = biome_precipitation == 1 ? rainStrength : 0.0;
+#else
+    float rain_target = 0.0;
+#endif
+    float rain_step = frameTime / (rain_target > water_was.x ? 5.0 : 20.0);
+    float rain_on = clamp(water_was.x + clamp(rain_target - water_was.x, -rain_step, rain_step), 0.0, 1.0);
+    ivec3 feet = ivec3(floor(cameraPositionFract + vec3(0.0, -1.45, 0.0)));
+    bool wet = vox_in_box(feet, 0) && (vox_word(feet) & VOX_WATER) != 0u;
+    vec4 splash = splash_was;
+    if (wet != (water_was.y > 0.5)) {
+        // The surface: up from the feet while there is water (or down to it, coming out).
+        ivec3 top = feet;
+        for (int k = 0; k < 4; k++) {
+            ivec3 next = wet ? top + ivec3(0, 1, 0) : top - ivec3(0, 1, 0);
+            bool water = vox_in_box(next, 0) && (vox_word(next) & VOX_WATER) != 0u;
+            if (wet ? !water : water) {
+                top = wet ? top : next;
+                break;
+            }
+            top = next;
+        }
+        float surface = float(cameraPositionInt.y + top.y) + 0.89;
+        splash = vec4(cameraPosition.x, surface, cameraPosition.z, frameTimeCounter);
+    }
+    g_water = vec4(rain_on, wet ? 1.0 : 0.0, 0.0, 0.0);
+    g_splash = splash;
 
     // A value that came out infinite or not a number keeps last frame's (lib/bad_frame.glsl); the bad frame record
     // moves on a frame.

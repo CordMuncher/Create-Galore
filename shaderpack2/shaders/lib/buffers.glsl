@@ -5,22 +5,38 @@
 // colortex2  its normals: the texture's in xy, the face's in zw (octahedral)
 // colortex3  Minecraft's block light (x) and sky light (y), the corner shading (z), how much it glows (w)
 // colortex4  how smooth (x) and how metallic (y) it is, how much light goes through it (z)
+// colortex5  the lit scene before anything see-through is drawn, for the water's refraction (RGBA16F)
+// colortex6  the water's surface, for its reflection: its normal (xy, octahedral), how much it reflects (z), 1 (w)
 // colortex7  motion vectors for DLSS: rg render pixels towards last frame, b what drew it, a whether it takes over
+// colortex8  the water's reflection (program/water_reflect.csh, written as colorimg8): at half the render size each way
+//            in its top left quarter, what it reflects and how far away (rgb, a) on the left and where each look was
+//            taken from on the right (the surface's distance, its normal, 1); at Ultra, what it reflects at every pixel
+// colortex9  the light shafts under water (program/water_shafts.csh, written as colorimg9): at half the render size,
+//            last frame's and this frame's taking turns in the top right and bottom left quarters
 /*
 const int colortex0Format = RGBA16F;
 const int colortex1Format = RGBA8;
 const int colortex2Format = RGBA16;
 const int colortex3Format = RGBA8;
 const int colortex4Format = RGBA8;
+const int colortex5Format = RGBA16F;
+const int colortex6Format = RGBA16;
 const int colortex7Format = RGBA16F;
+const int colortex8Format = RGBA16F;
+const int colortex9Format = RGBA16F;
 const bool colortex0Clear = true;
 const bool colortex1Clear = true;
 const bool colortex2Clear = true;
 const bool colortex3Clear = true;
 const bool colortex4Clear = true;
+const bool colortex5Clear = false;
+const bool colortex6Clear = true;
 const bool colortex7Clear = true;
+const bool colortex8Clear = false;
+const bool colortex9Clear = false;
 const vec4 colortex0ClearColor = vec4(0.0, 0.0, 0.0, 0.0);
 const vec4 colortex1ClearColor = vec4(0.0, 0.0, 0.0, 0.0);
+const vec4 colortex6ClearColor = vec4(0.0, 0.0, 0.0, 0.0);
 const vec4 colortex7ClearColor = vec4(0.0, 0.0, 0.0, 0.0);
 const int shadowcolor0Format = RGBA8;
 const bool shadowcolor0Clear = true;

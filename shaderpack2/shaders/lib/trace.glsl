@@ -657,6 +657,46 @@ vec3 see_through_tint(vec3 p, vec3 dir, float dist) {
     return vec3(1.0);
 }
 
+// How far a ray from p (vox_pos space) runs through water before it comes out of it (into air or anything else),
+// walking the blocks one by one: the water a ray of sunlight crossed to reach p. The surface is taken where
+// Minecraft draws it, a ninth of a block under the top of the highest water block. -1 when the walk leaves the copy
+// or runs out of steps still in water (the shadow map's own depth is the fallback then), 0 when p isn't in water.
+float water_path(vec3 p, vec3 dir, int max_steps) {
+    ivec3 cell = ivec3(floor(p));
+    if (!vox_in_box(cell, 0) || (vox_word(cell) & VOX_WATER) == 0u) {
+        return 0.0;
+    }
+    ivec3 step_dir = ivec3(sign(dir));
+    vec3 inv_dir = safe_inverse(dir);
+    vec3 next = (vec3(cell) + step(0.0, dir) - p) * inv_dir;
+    vec3 delta = abs(inv_dir);
+    for (int i = 0; i < max_steps; i++) {
+        float t;
+        bool up = false;
+        if (next.x < next.y && next.x < next.z) {
+            t = next.x;
+            next.x += delta.x;
+            cell.x += step_dir.x;
+        } else if (next.y < next.z) {
+            t = next.y;
+            next.y += delta.y;
+            cell.y += step_dir.y;
+            up = step_dir.y > 0;
+        } else {
+            t = next.z;
+            next.z += delta.z;
+            cell.z += step_dir.z;
+        }
+        if (!vox_in_box(cell, 0)) {
+            return -1.0;
+        }
+        if ((vox_word(cell) & VOX_WATER) == 0u) {
+            return up ? max(t - (1.0 / 9.0) * abs(inv_dir.y), 0.0) : t;
+        }
+    }
+    return -1.0;
+}
+
 // The direction a surface near a cell faces, from how the distance field grows around it; zero in the open.
 vec3 vox_normal(ivec3 cell) {
     float dx = float(sdf_at(cell + ivec3(1, 0, 0), 0)) - float(sdf_at(cell - ivec3(1, 0, 0), 0));

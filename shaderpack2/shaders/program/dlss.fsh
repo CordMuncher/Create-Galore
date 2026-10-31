@@ -1,4 +1,4 @@
-// The DLSS point (composite1, see create_galore_dlss.properties). This pass hands DLSS (or FSR) what it needs, and
+// The DLSS point (composite2, see create_galore_dlss.properties). This pass hands DLSS (or FSR) what it needs, and
 // the Create Galore Bridge runs it right after this pass, writing its result over this pass's output:
 // - the scene in linear light, before exposure and tone (colortex0), jittered and not anti-aliased;
 // - motion vectors in render pixels towards last frame, unjittered (cg_motion_img): a surface's own where it moves

@@ -10,8 +10,9 @@
 //   (x, y, z in 32nds, 6 bits each) and how many boxes its shape has (24..27); 4..15 its shape as drawn, a box a word
 //   (low corner x, y, z, then high corner, in 16ths, 5 bits each).
 // Air's word 15 holds grid_mark: without it there is no Bridge, and the pack falls back to Minecraft's own light.
-// The palette image's rows after its own 256 (the pack declares it 304 rows tall) hold the holes in block states'
-// cut-out faces (see hole_word).
+// The palette image's rows after its own 256 hold the holes in block states' cut-out faces (48 rows, see hole_word),
+// then where each state's faces find their texture in the block atlas (512 rows, see face_texture); the pack declares
+// it 816 rows tall.
 //
 // program/world.csh turns the grid into the voxel copy's words each frame (lib/voxel.glsl); everything else reads
 // those, and the palette for the shapes of part blocks.
@@ -120,6 +121,74 @@ uvec3 hole_masks(uint table, uint i) {
 uint hole_row(uint mask, int j) {
     uint w = hole_word(131072u + mask * 8u + uint(j >> 1));
     return (w >> uint((j & 1) * 16)) & 0xffffu;
+}
+
+// Where block states' faces find their texture in the block atlas (the Bridge's BlockFaces), for drawing the copy's
+// blocks with their real textures (reflections): 512 rows after the holes', 32 words per palette entry. For each side
+// in Minecraft's order (0 down, 1 up, 2 north -z, 3 south +z, 4 west -x, 5 east +x) five words: its sprite's low and high
+// corner in the atlas (u in bits 0..15, v in 16..31, in 65536ths), then how a point on the side finds its texel in
+// the sprite, s = s0 + s1 a + s2 b and t = t0 + t1 a + t2 b, with a and b the point's place in the block along the
+// side's two axes (as hole_word's) and the six numbers as half floats, two a word. Word 30: which sides have a texture
+// (bits 0..5) and which are tinted (8..13); word 31 the tint (sRGB, red low), and in air's entry faces_mark.
+uniform sampler2D cg_atlas;
+
+const uint faces_mark = 0x55565331u;
+
+uint face_word(uint entry, uint w) {
+    uint i = entry * 32u + w;
+    return texelFetch(cg_palette_tex, ivec2(int(i & 4095u), 304 + int(i >> 12u)), 0).r;
+}
+
+bool faces_live() {
+    return face_word(0u, 31u) == faces_mark;
+}
+
+// The side a face with outward normal n is, in Minecraft's order.
+int face_side(vec3 n) {
+    vec3 a = abs(n);
+    if (a.y >= a.x && a.y >= a.z) {
+        return n.y < 0.0 ? 0 : 1;
+    }
+    if (a.z >= a.x) {
+        return n.z < 0.0 ? 2 : 3;
+    }
+    return n.x < 0.0 ? 4 : 5;
+}
+
+// A block's texture where a point (local: 0..1 in its block) on its side with outward normal n is, in linear colour
+// with the share that shows in alpha, as seen across footprint blocks per pixel (its mip level follows from that and the
+// texture's size); false when the Bridge gives that side no texture (the block's average colour stands in).
+bool face_texture(uint entry, vec3 n, vec3 local, float footprint, out vec4 color) {
+    color = vec4(0.0);
+    uint flags = face_word(entry, 30u);
+    int side = face_side(n);
+    if ((flags & (1u << uint(side))) == 0u) {
+        return false;
+    }
+    uint base = uint(side) * 5u;
+    uint w0 = face_word(entry, base);
+    uint w1 = face_word(entry, base + 1u);
+    vec2 s01 = unpackHalf2x16(face_word(entry, base + 2u));
+    vec2 s2t0 = unpackHalf2x16(face_word(entry, base + 3u));
+    vec2 t12 = unpackHalf2x16(face_word(entry, base + 4u));
+    int axis = side < 2 ? 1 : side < 4 ? 2 : 0;
+    float a = local[(axis + 1) % 3];
+    float b = local[(axis + 2) % 3];
+    vec2 st = vec2(s01.x + s01.y * a + s2t0.x * b, s2t0.y + t12.x * a + t12.y * b);
+    vec2 lo = vec2(uvec2(w0 & 0xffffu, w0 >> 16u)) / 65536.0;
+    vec2 hi = vec2(uvec2(w1 & 0xffffu, w1 >> 16u)) / 65536.0;
+    // Kept half a texel inside the sprite, so its neighbours in the atlas never bleed in.
+    vec2 texels = max(abs(hi - lo) * vec2(textureSize(cg_atlas, 0)), vec2(1.0));
+    st = clamp(st, 0.5 / texels, 1.0 - 0.5 / texels);
+    float per_block = max(texels.x * length(vec2(s01.y, s2t0.x)), texels.y * length(t12));
+    float lod = max(log2(max(footprint * per_block, 1e-4)), 0.0);
+    color = textureLod(cg_atlas, mix(lo, hi, st), lod);
+    color.rgb = srgb_to_linear(color.rgb);
+    if ((flags & (1u << uint(8 + side))) != 0u) {
+        uint tint = face_word(entry, 31u);
+        color.rgb *= srgb_to_linear(vec3(uvec3(tint, tint >> 8u, tint >> 16u) & 255u) / 255.0);
+    }
+    return true;
 }
 
 #endif

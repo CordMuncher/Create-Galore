@@ -22,7 +22,8 @@ flat in int v_material;
 #include "/lib/forward.glsl"
 #include "/lib/water.glsl"
 #if defined SUNLIGHT
-#include "/lib/sky.glsl"
+#define CLOUDS_NO_READ_BACK
+#include "/lib/sky_mirror.glsl"
 #endif
 
 uniform sampler2D depthtex0;
@@ -38,22 +39,39 @@ void main() {
             || texelFetch(depthtex0, ivec2(gl_FragCoord.xy), 0).r < 1.0) {
         discard;
     }
-    // The same water as near by (see shade_water in gbuffers.fsh), with only the long waves this far off and the
-    // sun without the shadow map.
+    // The same water as near by (see shade_water in gbuffers.fsh): the waves a pixel can still show this far off (the
+    // rest as roughness that spreads the sun's glint into a path), the sky mirrored, the sun without the shadow map.
     vec3 to_eye = normalize(-v_scene_pos);
     float distance_away = length(v_scene_pos);
-    vec3 n = v_normal.y > 0.5 ? wave_normal(v_scene_pos.xz + cameraPosition.xz, frameTimeCounter, 1.0, distance_away)
-            : v_normal;
-    if (isEyeInWater == 1) {
-        n = -n;
+    bool inside = isEyeInWater == 1;
+    vec3 face = normalize(v_normal);
+    if (dot(face, to_eye) < 0.0) {
+        face = -face;
     }
-    float cos_v = clamp(dot(n, to_eye), 0.0, 1.0);
-    float fresnel = 0.02 + 0.98 * pow(1.0 - cos_v, 5.0);
+    vec3 n = face;
+    float rough = 0.0;
+    if (abs(face.y) > 0.5) {
+        float grazing = abs(to_eye.y);
+        float footprint = distance_away * pixel_angle() * inversesqrt(max(grazing, 0.02));
+        float strength = WATER_WAVES * mix(0.25, 1.0, smoothstep(0.5, 0.95, v_light.y)) * water_chop(v_scene_pos)
+                       * mix(0.35, 1.0, smoothstep(0.0, 0.25, grazing));
+        float rain = g_water.x * smoothstep(0.8, 0.9, v_light.y);
+        Waves w = water_waves(water_local(v_scene_pos), strength, 1.0, rain, footprint);
+        rough = w.rough;
+        vec3 wave = wave_normal(w);
+        n = face.y > 0.0 ? wave : -wave;
+    }
+    float spread = 2.0 * sqrt(rough);
+    float cos_v = max(dot(n, to_eye), 0.0);
+    float fresnel = fresnel_dielectric(cos_v, inside ? 1.0 / water_ior : water_ior);
     vec3 light_here = forward_light(vec3(0.0, 1.0, 0.0), v_scene_pos, v_light, 1.0, 0.0);
-#if defined SUNLIGHT
     vec3 r = reflect(-to_eye, n);
-    r.y = abs(r.y);
-    vec3 reflected = mix(light_here * 0.05, sky(r, false), vanilla_sky_share(v_light.y));
+#if defined SUNLIGHT
+    r.y = inside ? -abs(r.y) : abs(r.y);
+    vec3 reflected = inside ? light_here * 0.05 : mix(light_here * 0.05, reflect_sky(r), vanilla_sky_share(v_light.y));
+    if (!inside && g_light_dir.w > 0.5) {
+        reflected += sun_seen(r, spread) * smoothstep(0.05, 0.3, v_light.y) * cloud_shadow(v_scene_pos);
+    }
 #else
     vec3 reflected = light_here * 0.05;
 #endif
@@ -66,11 +84,15 @@ void main() {
         vec3 under_scene = view_to_scene(v.xyz / v.w);
         thickness = distance(under_scene, v_scene_pos);
     }
-    vec3 through = exp(-water_extinction * thickness);
+    vec3 extinction = water_absorption_for(v_color.rgb) + water_scatter;
+    float lit = smoothstep(0.02, 0.4, luminance(light_here));
+    float depth = inside ? 0.0 : max(thickness, mix(2.0, 1.0, lit));
+    vec3 through = exp(-extinction * depth);
     float kept = dot(through, vec3(0.3, 0.4, 0.3));
-    vec3 tint = clamp(srgb_to_linear(v_color.rgb) * 1.2, 0.0, 1.0);
-    vec3 scattered = light_here * water_scattering / water_extinction * (1.0 - through) * tint * 2.2;
-    out_color = vec4(scattered * (1.0 - fresnel) + reflected * fresnel, 1.0 - kept * (1.0 - fresnel));
+    float cos_t = sqrt(max(1.0 - (1.0 - cos_v * cos_v) / (water_ior * water_ior), 0.0));
+    vec3 along = extinction * (1.0 + 1.15 * cos_t);
+    vec3 glow = light_here * (water_scatter * water_scatter_boost) * (1.0 - exp(-along * depth)) / along;
+    out_color = vec4(glow * (1.0 - fresnel) + reflected * fresnel, 1.0 - kept * (1.0 - fresnel));
 }
 
 #else

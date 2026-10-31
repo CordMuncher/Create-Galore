@@ -35,11 +35,9 @@
 #define LIB_CLOUDS
 
 #include "/lib/sky.glsl"
+#include "/lib/wind.glsl"
 
-uniform sampler3D cg_cloud_noise; // see tools/cloud_noise.py
-uniform float cloudHeight;        // Minecraft's cloud height for this world (an Iris uniform; not a number without clouds)
-uniform int worldTime;            // the game's clock: ticks into the day
-uniform int worldDay;             // and days
+uniform float cloudHeight; // Minecraft's cloud height for this world (an Iris uniform; not a number without clouds)
 
 const float cloud_reach = 5000.0;
 const float cloud_far_sky = 60000.0; // a look that went out to the sky, in the distances
@@ -78,41 +76,6 @@ vec3 cloud_origin() {
 const float cloud_body_tile = 256.0;
 const float cloud_detail_tile = 64.0;
 const float cloud_wisp_tile = 16.0;
-
-// The game's clock in ticks, within 1024 days: every movement below comes back to where it started in that time, so
-// it never jumps.
-int cloud_ticks() {
-    return (worldDay & 1023) * 24000 + worldTime;
-}
-
-// The steady wind in 160ths of a block a tick (whole numbers, so the carry stays exact): CLOUD_SPEED blocks a second
-// towards the north-north-east at 1 (x half of it, z all of it).
-ivec2 cloud_steady_wind() {
-    int k = int(CLOUD_SPEED * 2.0 + 0.5);
-    return ivec2(4 * k, -8 * k);
-}
-
-const float cloud_wander_ticks = 96000.0; // four days: the wind's direction wanders once round in that time
-float cloud_wander_size() {
-    return 0.4 * CLOUD_SPEED * (cloud_wander_ticks / 20.0) / TAU;
-}
-
-// How far the wind has carried the clouds (blocks, x and z, within 8192 either way).
-vec2 cloud_drift() {
-    int ticks = cloud_ticks();
-    ivec2 v = cloud_steady_wind();
-    vec2 steady = vec2(ivec2((ticks * v.x) % (8192 * 160), (ticks * v.y) % (8192 * 160))) / 160.0;
-    float w = TAU * float(ticks % int(cloud_wander_ticks)) / cloud_wander_ticks;
-    return steady + cloud_wander_size() * vec2(sin(w), -cos(w));
-}
-
-// The wind now, in blocks a second (to follow the clouds from frame to frame), as a 3D vector.
-vec3 cloud_wind() {
-    vec2 v = vec2(cloud_steady_wind()) / 8.0; // 160ths of a block a tick to blocks a second
-    float w = TAU * float(cloud_ticks() % int(cloud_wander_ticks)) / cloud_wander_ticks;
-    v += cloud_wander_size() * (TAU * 20.0 / cloud_wander_ticks) * vec2(cos(w), sin(w));
-    return vec3(v.x, 0.0, v.y);
-}
 
 // How the billows turn over on the clumps: they slip back 64 blocks and rise 64 every 80 minutes of game time (one
 // repeat of their noise).
@@ -292,7 +255,60 @@ vec4 cirrus(vec3 dir, vec3 sun_light, vec3 sky_light) {
     return vec4(light * alpha, 1.0 - alpha);
 }
 
+// A quick look at the clouds in a direction from where you are, for what water mirrors (program/water_reflect.csh):
+// the layer looked through at four heights for its body alone (no billows: a reflection's look is wide and broken
+// by the waves anyway), lit as the march lights it with one look towards the light, then the high layer. rgb the
+// light (premultiplied), a what gets through. From above the layer, nothing.
+vec4 clouds_simple(vec3 dir) {
+    if (dir.y < 0.01 || !clouds_here() || cameraPosition.y > cloud_bottom()) {
+        return vec4(0.0, 0.0, 0.0, 1.0);
+    }
+    vec4 lit = g_cloud_light;
+    vec3 l = lit.w > 0.5 ? g_sun_dir.xyz : g_moon_dir.xyz;
+    float cos_theta = dot(dir, l);
+    float phase = mix(cloud_phase(cos_theta, 0.7), cloud_phase(cos_theta, -0.25), 0.3);
+    const vec3 to_display = vec3(1.0 / 2.2);
+    vec3 sun = pow(max(lit.rgb, 0.0), to_display);
+    vec3 sky_light = pow(max(cloud_sky_light(dir), 0.0), to_display);
+    vec3 sky_seen = sky_look(sky_air_seen(dir), dir);
+    vec3 origin = cloud_origin();
+    float flat_len = length(dir.xz);
+    float through = 1.0;
+    vec3 light = vec3(0.0);
+    const float layer_step = 20.0;
+    for (int k = 0; k < 4; k++) {
+        float y = cloud_bottom() + (float(k) + 0.5) * layer_step;
+        float t = (y - cameraPosition.y) / dir.y;
+        if (t * flat_len > cloud_reach) {
+            break;
+        }
+        vec3 p = origin + dir * t;
+        CloudMap map = cloud_map(p.xz);
+        float body = cloud_body(p, y, map);
+        if (body <= 0.0) {
+            continue;
+        }
+        float shade = cloud_body(p + l * 10.0, y + l.y * 10.0, map);
+        float direct = phase * exp(-shade * cloud_extinction * 10.0);
+        float soft = min(direct, 1.0);
+        float up = clamp((y - map.base) / map.tall, 0.0, 1.0);
+        float open = mix(mix(0.35, 0.6, rainStrength), 1.0, up) * (1.0 - 0.4 * body);
+        vec3 sample_light = pow(sun * soft * cloud_sun_gain + sky_light * open * cloud_sky_gain, vec3(2.2))
+                          + lit.rgb * (direct - soft) * 0.12;
+        float haze = (1.0 - exp(-t * flat_len / 1200.0)) * 0.95;
+        sample_light = mix(sample_light, sky_seen, haze);
+        float step_through = exp(-body * 1.5 * cloud_extinction * layer_step / max(dir.y, 0.05) * 0.25);
+        light += sample_light * through * (1.0 - step_through);
+        through *= step_through;
+    }
+    vec4 high = cirrus(dir, lit.rgb, cloud_sky_light(dir));
+    light += through * high.rgb;
+    through *= high.a;
+    return vec4(light, through);
+}
+
 // --- Reading them back -----------------------------------------------------------------------------------------------
+#if !defined CLOUDS_NO_READ_BACK
 
 // Each half of the image (half the window each way), and this frame's.
 ivec2 cloud_half() {
@@ -351,5 +367,7 @@ CloudSample clouds_at(ivec2 texel, float dist) {
     }
     return s;
 }
+
+#endif // CLOUDS_NO_READ_BACK
 
 #endif

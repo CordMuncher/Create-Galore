@@ -61,13 +61,16 @@ add("deferred1", {"csh": "pixel_light_filter.csh"})
 add("deferred2", {"csh": "clouds.csh"}, sky_only=True)
 add("deferred3", {"vsh": FULLSCREEN, "fsh": "deferred_light.fsh"})
 
-# The air, the DLSS point, the bloom, the final pass.
-add("composite", {"vsh": FULLSCREEN, "fsh": "fog.fsh"})
-add("composite1", {"vsh": FULLSCREEN, "fsh": "dlss.fsh"})
+# The water's reflection and shafts (a pass of their own, so the cost meter shows them apart), the air, the DLSS
+# point, the bloom, the final pass.
+add("composite_a", {"csh": "water_reflect.csh"})
+add("composite_b", {"csh": "water_shafts.csh"})
+add("composite1", {"vsh": FULLSCREEN, "fsh": "fog.fsh"})
+add("composite2", {"vsh": FULLSCREEN, "fsh": "dlss.fsh"})
 for level in range(1, 7):
-    add("composite%d" % (1 + level), {"csh": "bloom.csh"}, ["BLOOM_DOWN %d" % level])
+    add("composite%d" % (2 + level), {"csh": "bloom.csh"}, ["BLOOM_DOWN %d" % level])
 for i, level in enumerate(range(5, 0, -1)):
-    add("composite%d" % (8 + i), {"csh": "bloom.csh"}, ["BLOOM_UP %d" % level])
+    add("composite%d" % (9 + i), {"csh": "bloom.csh"}, ["BLOOM_UP %d" % level])
 add("final", {"vsh": FULLSCREEN, "fsh": "final.fsh"})
 
 # The world's programs.

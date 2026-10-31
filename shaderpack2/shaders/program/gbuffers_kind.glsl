@@ -1,8 +1,8 @@
 // What each world program draws, from the PROGRAM_ define its gbuffers_* file sets, and how the pack lights it.
 // Shared by gbuffers.vsh, gbuffers.fsh and the Colorwheel and Distant Horizons programs.
 //
-// Motion vectors go to colortex7 (see composite1.fsh): rg the motion in render pixels towards last frame, b what
-// drew the pixel (MOTION_WORLD, MOTION_HAND, or MOTION_NONE where composite1 works it out from the depth), a whether
+// Motion vectors go to colortex7 (see program/dlss.fsh): rg the motion in render pixels towards last frame, b what
+// drew the pixel (MOTION_WORLD, MOTION_HAND, or MOTION_NONE where program/dlss.fsh works it out from the depth), a whether
 // the fragment takes the pixel over.
 
 #if !defined PROGRAM_KIND
@@ -25,7 +25,7 @@
 #define TEXTURED
 #endif
 
-// Things that move by themselves work out their own motion; the rest only claim the pixel (so composite1
+// Things that move by themselves work out their own motion; the rest only claim the pixel (so program/dlss.fsh
 // reprojects their depth) or, where they add light on top of what is there, leave it alone.
 #if defined PROGRAM_TERRAIN || defined PROGRAM_WATER || (defined ENTITY_FORMAT && !defined PROGRAM_SPIDEREYES) || defined COLORWHEEL
 #define OWN_MOTION

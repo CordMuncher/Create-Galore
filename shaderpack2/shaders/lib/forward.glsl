@@ -11,8 +11,9 @@
 #include "/lib/sky.glsl"
 
 // The light on a surface at scene_pos facing n. light: Minecraft's block and sky light (0..1); ao: its corner
-// shading; sun_shadow_radius: the shadow filter's width in texels (0: no shadow look-up, the sky light decides).
-vec3 forward_light(vec3 n, vec3 scene_pos, vec2 light, float ao, float sun_shadow_radius) {
+// shading; sun_shadow_radius: the shadow filter's width in texels (0: no shadow look-up, the sky light decides);
+// solid_only: only what light can't pass shades it (the water's surface, see shadow_solid).
+vec3 forward_light(vec3 n, vec3 scene_pos, vec2 light, float ao, float sun_shadow_radius, bool solid_only) {
     vec3 p = vox_pos(scene_pos) + n * 0.5;
     float fade = box_fade(p);
     vec4 blk = sample_block_table(cg_blk_tex, p);
@@ -41,15 +42,21 @@ vec3 forward_light(vec3 n, vec3 scene_pos, vec2 light, float ao, float sun_shado
 #else
         const bool held = false;
 #endif
-        vec3 reach = sun_shadow_radius > 0.0
-                ? shadow_light(shadow_offset_point(scene_pos, n, g_light_dir.xyz), sun_shadow_radius, 0.0,
-                               sun_beyond_map(light.y), held)
-                : vec3(1.0);
+        vec3 lit_point = shadow_offset_point(scene_pos, n, g_light_dir.xyz);
+        vec3 reach = vec3(1.0);
+        if (sun_shadow_radius > 0.0) {
+            reach = solid_only ? vec3(shadow_solid(lit_point, sun_shadow_radius, sun_beyond_map(light.y)))
+                               : shadow_light(lit_point, sun_shadow_radius, 0.0, sun_beyond_map(light.y), held);
+        }
         sun = g_light_color.rgb * facing * reach * sky_gate * cloud_shadow(scene_pos);
     }
 #endif
     parts.sun = sun;
     return mix_light(parts);
+}
+
+vec3 forward_light(vec3 n, vec3 scene_pos, vec2 light, float ao, float sun_shadow_radius) {
+    return forward_light(n, scene_pos, light, ao, sun_shadow_radius, false);
 }
 
 #endif

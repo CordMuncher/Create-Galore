@@ -20,6 +20,9 @@
 #include "/lib/sky.glsl"
 
 uniform sampler2D colortex0;
+uniform sampler2D colortex6; // the water's surface (see lib/buffers.glsl)
+uniform sampler2D colortex8; // its reflection (program/water_reflect.csh)
+uniform sampler2D colortex9; // the light shafts under water (program/water_shafts.csh)
 uniform sampler2D depthtex1; // without clouds, water, glass and particles
 uniform int isEyeInWater;
 uniform ivec2 eyeBrightnessSmooth;
@@ -69,6 +72,46 @@ vec3 light_in_air(vec3 dir, float reach, ivec2 texel) {
     return top > 0.0 ? avg / top * sqrt(sqrt(top)) * 0.25 : vec3(0.0);
 }
 
+// The water's reflection at a water pixel (WATER_QUALITY 1 to 3), traced in program/water_reflect.csh. At High its
+// looks were taken one per 2 x 2 pixels: each pixel blends the four nearest, each counting less the further its
+// surface lies from this one's in depth or turns from it in normal, so the reflection stays sharp along a shore or a
+// boat's edge.
+vec3 water_reflection(ivec2 texel, vec4 water, float depth) {
+#if WATER_QUALITY == 3
+    return texelFetch(colortex8, texel, 0).rgb;
+#else
+    ivec2 half_size = (ivec2(render_size()) + 1) / 2;
+    vec2 at = (vec2(texel) + 0.5) * 0.5 - 0.5;
+    ivec2 base = ivec2(floor(at));
+    vec2 f = at - vec2(base);
+    vec3 n = decode_normal(water.xy);
+    vec3 sum = vec3(0.0);
+    float total = 0.0;
+    vec3 any_sum = vec3(0.0);
+    float any_total = 0.0;
+    for (int i = 0; i < 4; i++) {
+        ivec2 o = ivec2(i & 1, i >> 1);
+        ivec2 c = clamp(base + o, ivec2(0), half_size - 1);
+        vec4 from = texelFetch(colortex8, c + ivec2(half_size.x, 0), 0);
+        if (from.w < 0.5) {
+            continue;
+        }
+        vec3 look = texelFetch(colortex8, c, 0).rgb;
+        float w = mix(1.0 - f.x, f.x, float(o.x)) * mix(1.0 - f.y, f.y, float(o.y)) + 1e-3;
+        any_sum += look * w;
+        any_total += w;
+        w *= pow(max(dot(decode_normal(from.yz), n), 0.0), 4.0);
+        w *= exp(-abs(from.x - depth) / (0.03 * depth + 0.1));
+        sum += look * w;
+        total += w;
+    }
+    if (total > 1e-4) {
+        return sum / total;
+    }
+    return any_total > 0.0 ? any_sum / any_total : vec3(0.0);
+#endif
+}
+
 // The average of e^((y - base) / scale) along a straight line from height y0 to y1: how much of the way a layer that
 // thickens (scale > 0) or thins (scale < 0) upwards takes up.
 float layer_average(float y0, float y1, float base, float scale) {
@@ -108,6 +151,13 @@ void main() {
     far_end = max(far, float(dhRenderDistance));
 #endif
     vec3 scene = view_to_scene_pos(view);
+#if WATER_QUALITY >= 1
+    // The water's reflection, over the water the forward pass drew (which leaves it out), before the air.
+    vec4 water = texelFetch(colortex6, texel, 0);
+    if (water.w > 0.5 && depth < 1.0) {
+        color += water.z * water_reflection(texel, water, -view.z);
+    }
+#endif
     float dist = sky_pixel ? 1e4 : length(scene);
     vec3 dir = normalize(scene);
     float solid = sky_pixel ? 0.0 : 1.0;
@@ -117,12 +167,12 @@ void main() {
 
     // Water or lava around you.
     if (isEyeInWater == 1) {
-        float d = min(dist, 96.0);
-        vec3 through = exp(-water_extinction * d);
-        vec3 lit = (g_light_color.rgb * 0.25 + g_sky_up.rgb) * vanilla_sky_share(float(eyeBrightnessSmooth.y) / 240.0);
-        lit += vec3(0.02, 0.04, 0.05) * CAVE_BRIGHTNESS * 0.2;
-        vec3 scattered = lit * water_scattering / water_extinction * (1.0 - through) * vec3(0.55, 0.9, 1.0);
-        color = color * through + scattered;
+        color = water_inside(color, min(dist, 96.0), water_light_around(float(eyeBrightnessSmooth.y) / 240.0));
+        // The sun's shafts (program/water_shafts.csh), this frame's, from half the size.
+        vec2 half_size = vec2((ivec2(render_size()) + 1) / 2);
+        vec2 corner = (frameCounter & 1) == 0 ? vec2(0.0, half_size.y) : vec2(half_size.x, 0.0);
+        vec2 at = clamp((vec2(texel) + 0.5) * 0.5, vec2(0.5), half_size - 0.5) + corner;
+        color += textureLod(colortex9, at / window_size(), 0.0).rgb;
     } else if (isEyeInWater == 2) {
         float f = 1.0 - exp(-dist * 1.2);
         color = mix(color, vec3(1.6, 0.35, 0.05), f);

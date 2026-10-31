@@ -244,22 +244,35 @@ vec3 sky_look(vec3 c, vec3 dir) {
     return c;
 }
 
-// The sun's disc, its edge a little darker (limb darkening), and the glow round it.
-vec3 sun_disc(vec3 dir, vec3 through) {
+// The sun's disc, its edge a little darker (limb darkening), and the glow round it. spread (radians): how far a
+// rough mirror scatters it (the water's glint, see program/gbuffers.fsh): the disc grows by it and dims to keep its
+// light, its edge softens.
+vec3 sun_disc(vec3 dir, vec3 through, float spread) {
     float cos_d = dot(dir, g_sun_dir.xyz);
     float angle = acos(clamp(cos_d, -1.0, 1.0));
     // The glow: a tight one the bloom spreads, and a wide faint one, warmer as the sun sinks.
     float dusk = twilight();
     vec3 glow_color = mix(vec3(1.0, 0.95, 0.85), vec3(1.0, 0.6, 0.3), dusk);
     vec3 c = glow_color * (0.3 * exp(-angle / 0.022) + 0.05 * exp(-angle / 0.12)) * sun_illuminance;
-    if (angle < sun_radius) {
-        float r = angle / sun_radius;
+    float radius = sqrt(sun_radius * sun_radius + spread * spread);
+    if (angle < radius) {
+        float r = angle / radius;
         float limb = 1.0 - 0.6 * (1.0 - sqrt(max(0.0, 1.0 - r * r)));
-        float edge = 1.0 - smoothstep(0.9, 1.0, r);
+        float edge = 1.0 - smoothstep(mix(0.9, 0.0, spread / radius), 1.0, r);
         // Bright enough to bloom, not the real sun's thousands.
-        c += sun_illuminance * 6.0 * limb * edge;
+        c += sun_illuminance * 6.0 * limb * edge * sqr(sun_radius / radius);
     }
     return c * through;
+}
+
+vec3 sun_disc(vec3 dir, vec3 through) {
+    return sun_disc(dir, through, 0.0);
+}
+
+// The sun as a mirror shows it from a direction (the disc and its glow through the air, hidden by rain).
+vec3 sun_seen(vec3 dir, float spread) {
+    vec3 through = air_transmittance(camera_radius(cameraPosition.y), max(dir.y, 0.0));
+    return sun_disc(dir, through, spread) * (1.0 - rainStrength);
 }
 
 // The moon: the real Moon's near side (textures/moon.png, from NASA's maps: tools/moon_map.py), MOON_SIZE times
