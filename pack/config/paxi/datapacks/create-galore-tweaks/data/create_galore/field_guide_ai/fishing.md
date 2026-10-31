@@ -1,4 +1,4 @@
-<!-- sources sha256:1297ab778e3cb9289910f99a19557226192ec10e986daf8819d29b977053a3fe -->
+<!-- sources sha256:bdd71a64e21f48f1ebc46ae00e4e2590d2b1f4327cc80673234a0131330a5d0d -->
 # Fishing (fishing)
 
 ## fishing/overview | Fishing
@@ -168,7 +168,7 @@
 - **Craft a fish into**: Iron Tetra: 2 raw iron; Gilded Minnow: 2 raw gold; Lapis Lanternfish: 2 lapis; Crystal Shrimp: 4 amethyst; Glowfish: 2 glow ink sacs; Enderfin: ender pearl; Endergazer: eye of ender; Elytrout: phantom membrane; Luminescent Jellyfish or Sun Emblem: 8 **Jelly Torches** (burn underwater); Incandescent Larva and Pale Clubfish: 4 bait
 - **Gear**: Sailfish, Swordfish, Blazing Swordfish are swords (last sets things on fire). Shooting Starfish + bow: **Starlight Bow**. Dragon Fish + netherite boots: **Dragonfin Boots**, a jump in mid-air
 - **Eaten**: lava fish give Fire Resistance; Uranias Pisces 10 minutes of Luck; Ender Glider and Mantyvern Slow Falling; Chorus Cod teleports like chorus fruit. Watch out: Witherfin gives Wither; several Hybrid Aquatic fish poison you raw
-- **Chasm Eel** can't eat through bedrock. Cats eat cookable fish. Inferno Guppy burns in a furnace for 160 seconds
+- **Chasm Eel** can't eat through bedrock. Cats and ocelots take any raw fish (every mod's, lava and End fish too) and raw fillets, steaks and slices; a fish of 3 kg or more is too big (clean it, feed the cuts); they refuse pufferfish, blowfish and cooked fish. Inferno Guppy burns in a furnace for 160 seconds
 
 ## fishing/cleaning | Cleaning Table and Fish Products
 - Lay a fish on the **Cleaning Table** (right-click with the fish), cut with any **knife**; heavier fish take more strokes and give more. A Deployer (see create_basics/deployer) with a knife works it; hoppers and funnels empty it (see create_basics/item_logistics). Scraps become Fish Meal and Fish Oil

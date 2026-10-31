@@ -5,6 +5,18 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.6.57
+
+### Added
+- Create Galore Fishing 0.3.27.
+- **Cats and ocelots eat any raw fish.** Every raw fish in the pack now tames, heals and breeds cats and ocelots: Tide's fish (the lava and End ones too), Hybrid Aquatic's, Alex's Caves', Better End's, Cataclysm's lionfish and tropical fish, along with the fish that already worked. The raw fillets, fish steaks and fish meat a Cleaning Table or Fish Cleaner cuts count as well, as do Farmer's Delight's raw slices. A fish of 3 kg or more is too big for them, just as it is too big to cook whole: clean it and feed them the cuts. Pufferfish, blowfish and cooked fish are still refused. The Field Guide's What Fish Are For entry has a page on it.
+
+### Fixed
+- Nothing.
+
+### Removed
+- Nothing.
+
 ## 0.6.56
 
 ### Added
