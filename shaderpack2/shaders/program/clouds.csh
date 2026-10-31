@@ -18,6 +18,7 @@ layout(local_size_x = 8, local_size_y = 8) in;
 const vec2 workGroupsRender = vec2(0.5, 0.5);
 
 layout(rgba16f) uniform image2D cg_cloud_img;
+layout(rgba16f) writeonly uniform image2D cg_sky_img; // the clouds' shadow map goes in its rows 312 on
 
 #include "/lib/clouds.glsl"
 
@@ -29,6 +30,38 @@ uniform mat4 dhProjectionInverse;
 #endif
 
 shared vec4 s_light[64];
+
+// One texel of the clouds' shadow map (cloud_shadow in lib/sky.glsl): what gets through the clouds towards the light
+// from the point at the camera's height under the texel's middle, through their body (eight looks across the layer).
+void shadow_texel(ivec2 texel) {
+    float through = 1.0;
+#ifdef CLOUD_SHADOWS
+    vec2 rel = cloud_shadow_corner() + (vec2(texel) + 0.5) * cloud_shadow_texel;
+    vec2 shift = cloud_shadow_shift();
+    float y0 = cameraPosition.y;
+    float bottom = cloud_bottom();
+    float lo = max(bottom, y0);
+    float hi = bottom + cloud_depth;
+    if (clouds_here() && hi > lo) {
+        vec3 origin = cloud_origin();
+        const int looks = 8;
+        float dy = (hi - lo) / float(looks);
+        float tau = 0.0;
+        // The weather changes over kilometres: one look at it does for the whole way across the layer.
+        vec2 mid = rel + shift * (0.5 * (lo + hi) - y0);
+        CloudMap map = cloud_map(origin.xz + mid);
+        for (int i = 0; i < looks; i++) {
+            float y = lo + (float(i) + 0.5) * dy;
+            vec2 xz = rel + shift * (y - y0);
+            vec3 p = origin + vec3(xz.x, y - y0, xz.y);
+            float h = (y - bottom) / cloud_depth;
+            tau += cloud_body(p, h, map) * 0.15 * dy * length(vec3(shift, 1.0));
+        }
+        through = max(exp(-tau), 0.05);
+    }
+#endif
+    imageStore(cg_sky_img, cloud_shadow_origin + texel, vec4(through, 0.0, 0.0, 1.0));
+}
 
 // How far the look through a render pixel goes before a surface stops it (cloud_far_sky for the sky and the hand).
 float surface_distance(ivec2 texel) {
@@ -106,9 +139,14 @@ March march(vec3 dir, float limit, float jitter) {
     const vec3 to_display = vec3(1.0 / 2.2);
     vec3 sun = pow(max(lit.rgb, 0.0), to_display);
     vec3 sky_light = pow(max(cloud_sky_light(dir), 0.0), to_display);
+    // A little of the sunlit ground's light from below (green-brown).
+    vec3 ground_light = pow(max(lit.rgb * max(l.y, 0.0) * vec3(0.10, 0.11, 0.08) + g_sky_up.rgb * 0.1, 0.0), to_display);
     vec3 sky_seen = sky_look(sky_air_seen(dir), dir);
     vec3 origin = cloud_origin();
-    const float extinction = 0.2; // per block in the thickest cloud
+    const float extinction = 0.15; // per block in the thickest cloud
+    // The powder look: with the sun behind you, the outer billows (little cloud between them and the sun) a little
+    // darker than the folds.
+    float powder_amount = 0.6 * (0.5 - 0.5 * cos_theta);
 
     float through = 1.0;
     vec3 light = vec3(0.0);
@@ -127,10 +165,10 @@ March march(vec3 dir, float limit, float jitter) {
         if (h <= 0.0 || h >= 1.0) {
             continue;
         }
-        float fade = 1.0 - smoothstep(1500.0, cloud_reach, t * flat_len);
-        vec2 map = cloud_map(p.xz);
+        float fade = 1.0 - smoothstep(1000.0, cloud_reach, t * flat_len);
+        CloudMap map = cloud_map(p.xz);
         float body;
-        float density = cloud_density(p, h, map, body) * fade;
+        float density = cloud_density(p, h, map, dt, body) * fade;
         if (density <= 0.002) {
             continue;
         }
@@ -143,7 +181,7 @@ March march(vec3 dir, float limit, float jitter) {
             float hl = h + l.y * d / cloud_depth;
             if (hl > 0.0 && hl < 1.0) {
                 float near_body;
-                float v = k == 0 ? cloud_density(p + l * d, hl, map, near_body) : cloud_body(p + l * d, hl, map);
+                float v = k == 0 ? cloud_density(p + l * d, hl, map, dt, near_body) : cloud_body(p + l * d, hl, map);
                 shade += v * (k == 0 ? 6.0 : (k == 1 ? 12.0 : 24.0));
             }
         }
@@ -152,15 +190,17 @@ March march(vec3 dir, float limit, float jitter) {
         for (int o = 0; o < 3; o++) {
             direct += exp2(-float(o)) * phase[o] * exp(-tau * exp2(-float(o)));
         }
+        direct *= mix(1.0, 1.0 - exp(-tau * 2.0 - density * 1.5), powder_amount);
         // The sky's light from above: the undersides get less of it (in rain, with no sun, the closed-up layer
         // passes more of it round inside). The light mixes in display values like a surface's, up to about a sunlit
         // face's; the bright forward lobe round the sun goes on top as it is (in display values its peak would square
         // into a glare many times the sun's).
         float open = mix(mix(0.4, 0.65, rainStrength), 1.0, h) * (1.0 - 0.35 * body);
         float soft = min(direct, 1.2);
-        vec3 sample_light = pow(sun * soft * 1.1 + sky_light * open, vec3(2.2)) + lit.rgb * (direct - soft) * 0.15;
-        // Far off, the clouds take on the sky's colour behind them.
-        float haze = (1.0 - exp(-t / 2500.0)) * 0.85;
+        vec3 sample_light = pow(sun * soft * 1.1 + sky_light * open + ground_light * (1.0 - h), vec3(2.2))
+                          + lit.rgb * (direct - soft) * 0.15;
+        // Far off, the clouds take on the sky's colour behind them and fade into the haze.
+        float haze = (1.0 - exp(-t * flat_len / 1200.0)) * 0.95;
         sample_light = mix(sample_light, sky_seen, haze);
 
         float step_through = exp(-density * extinction * dt);
@@ -189,6 +229,14 @@ March march(vec3 dir, float limit, float jitter) {
 
 void main() {
     ivec2 p = ivec2(gl_GlobalInvocationID.xy);
+    // The shadow map's texels, shared out over every invocation of the pass (at least a quarter of them each frame
+    // even at the smallest render size: then some do more than one).
+    uint invocations = gl_NumWorkGroups.x * gl_NumWorkGroups.y * 64u;
+    uint index = (gl_WorkGroupID.y * gl_NumWorkGroups.x + gl_WorkGroupID.x) * 64u + gl_LocalInvocationIndex;
+    for (uint k = index; k < 65536u; k += invocations) {
+        shadow_texel(ivec2(k & 255u, k >> 8u));
+    }
+
     ivec2 size = cloud_size();
     bool inside = all(lessThan(p, size));
     uint local = gl_LocalInvocationIndex;
@@ -211,6 +259,12 @@ void main() {
         dir = normalize(mat3(gbufferModelViewInverse) * (view.xyz / view.w));
         float jitter = fract(ign(vec2(p)) + float(frameCounter % 256) * GOLDEN);
         m = march(dir, limit, jitter);
+        if (limit >= cloud_far_sky && m.light.a > 0.0) {
+            // The high layer, behind the main one.
+            vec4 high = cirrus(dir, g_cloud_light.rgb, cloud_sky_light(dir));
+            m.light.rgb += m.light.a * high.rgb;
+            m.light.a *= high.a;
+        }
     }
     s_light[local] = m.light;
     barrier();

@@ -8,6 +8,7 @@
 #include "/lib/lighting.glsl"
 #include "/lib/voxel_sample.glsl"
 #include "/lib/shadow.glsl"
+#include "/lib/sky.glsl"
 
 // The light on a surface at scene_pos facing n. light: Minecraft's block and sky light (0..1); ao: its corner
 // shading; sun_shadow_radius: the shadow filter's width in texels (0: no shadow look-up, the sky light decides).
@@ -44,7 +45,7 @@ vec3 forward_light(vec3 n, vec3 scene_pos, vec2 light, float ao, float sun_shado
                 ? shadow_light(shadow_offset_point(scene_pos, n, g_light_dir.xyz), sun_shadow_radius, 0.0,
                                sun_beyond_map(light.y), held)
                 : vec3(1.0);
-        sun = g_light_color.rgb * facing * reach * sky_gate;
+        sun = g_light_color.rgb * facing * reach * sky_gate * cloud_shadow(scene_pos);
     }
 #endif
     parts.sun = sun;

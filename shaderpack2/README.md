@@ -6,7 +6,7 @@ name is for its motion vectors: not only the camera's, but how each moving thing
 contraptions, ships, mobs, the hand), which is what lets DLSS and FSR keep them sharp. The Bridge's Upscaling &
 Display screen picks the upscaler and the render resolution; the pack has no settings of its own for them.
 
-**Work in progress: alpha 0.5.2.** It lives on its own branch and is not in the modpack yet. The first Create Galore
+**Work in progress: alpha 0.6.** It lives on its own branch and is not in the modpack yet. The first Create Galore
 pack (`shaderpack/`) stays as a research build; the two share only the DLSS hand-off and the mods' plumbing
 (Colorwheel, Distant Horizons), not their lighting.
 
@@ -42,19 +42,30 @@ pack (`shaderpack/`) stays as a research build; the two share only the DLSS hand
 - **The sun and the moon** cast steady shadows from a shadow map (no noise, so nothing flickers), coloured through
   glass and through water with its caustics, with a clean, slightly soft edge. Leaves let light through the outside of
   their clump, grass doesn't shade itself, and near the map's edge they fade into what Minecraft's sky light says.
-- **The sky**: a physically based atmosphere, pushed to the look we follow: a deep blue by day, an orange glow round
-  the setting sun and a pink belt across from it, a deep blue night with stars in their own colours (a few twinkle
-  low down) and the Milky Way; the sun, round, with its glow; the moon, round, lit from the side its phase says, with
-  darker seas, the Earth's faint light on its dark part and a soft halo. The far haze takes the sky's colour.
-- **Clouds**: one layer of heaped cumulus round Minecraft's cloud height, 48 blocks deep, drawn as a volume: flat
-  underneath, rounded on top, worn into wisps below and crisp billows above; more of them in some places than
-  others, never repeating in rows, closing up into a grey deck in rain. Lit by the sun through the cloud between
-  (white tops, shade in the crevices, grey bellies, silver edges round the sun, which burns through thin parts) and
-  by the sky from above (grey-blue undersides), gold and pink at dusk and dawn, moonlit at night; they fade into the
-  sky's colour far off and reach 5000 blocks. The wind drifts them north and the billows on them a little slower and
-  slowly rising, so their edges churn as they go. Worked out at half the render size each way and smoothed over
-  frames; DLSS gets their own motion. Option Realistic Clouds off gives Minecraft's clouds, lit orange and pink at
-  dusk and dawn.
+- **The sky**: a physically based atmosphere, pushed to the look we follow: a deep blue overhead by day paling to a
+  bright, slightly hazy horizon, an orange glow round the setting sun and a pink belt across from it, a deep blue
+  night. Stars by the thousand in their own colours, steady (no twinkle) and at least a pixel and a half wide so the
+  upscaler keeps them: the brightest come out first at dusk, and a bright moon hides the faint ones and the Milky Way,
+  which has dark dust lanes along it. The sun, round, with a tight glow. The moon about twice Minecraft's size
+  (option Moon Size), its surface from NASA's maps of the Moon: its seas and craters, lit from the side its phase
+  says so the craters stand out along the line between light and dark, a cool silver-blue, with the Earth's faint
+  light on its dark part and a soft halo. The far haze takes the sky's colour. Sunlight on the land turns warmer at
+  dawn and dusk.
+- **Clouds**: a layer of real clouds round Minecraft's cloud height, up to 64 blocks deep, drawn as a volume. A
+  slow weather map says where the sky is clear blue, scattered, broken or nearly closed, and what kind of cloud is
+  there: flat stratocumulus sheets with gaps, small fair-weather cumulus, or big heaped cumulus where the cover is
+  thick; rain closes it into a grey deck. Flat underneath, ragged outlines, crisp billows on top and swirled wisps
+  underneath, with small loose scraps round the bigger ones; thin parts stay see-through. Far above, thin streaks and
+  fine ripples (cirrus and cirrocumulus) in places. Lit by the sun through the cloud between (white tops, shade in
+  the crevices, silver edges round the sun, which burns through thin parts, and with the sun behind you the darker
+  "powder" look of real cumulus) and by the sky from above (grey-blue undersides), gold and pink at dusk and dawn,
+  moonlit at night; they fade into the sky's colour far off and reach 5000 blocks, and detail too fine to show at a
+  distance gives way to its average so nothing far off flickers. The game's clock moves them (they don't jump, they
+  are where they were when you reload, and with the daylight cycle stopped they stop too) at about a block a second
+  (option Cloud Speed), the wind's direction wandering over days. Every pixel is worked out every frame at half the
+  render size each way and smoothed over a few frames, never a fraction of the pixels per frame (which makes clouds
+  crawl in motion); DLSS gets their own motion. Their shadows cross the land (option Cloud Shadows). Option Realistic
+  Clouds off gives Minecraft's clouds, lit orange and pink at dusk and dawn.
 - **Water**: its own colour, deeper the deeper it is, and waves crossing from three directions, longer ones faster.
 - **Light in the air**: a coloured haze around lamps (strongest at night, underground and in the Nether), haze far
   off, water and lava around you.
@@ -83,7 +94,7 @@ pack (`shaderpack/`) stays as a research build; the two share only the DLSS hand
 
 ## Later milestones
 
-Reflections; foam and calmer, more varied water; sun shafts; clouds' shadows; material maps; soft sun shadows traced through
+Reflections; foam and calmer, more varied water; sun shafts; material maps; soft sun shadows traced through
 the copy; moving Create contraptions and ships in the copy, and mobs and the player shading lamp light (now they only
 cast sun shadows).
 
@@ -107,6 +118,7 @@ off:
     python3 shaderpack2/tools/compile_check.py  # compiles every program and option variant with glslangValidator
     shaderpack2/build.sh                     # zips the pack into shaderpack2/dist/
     python3 shaderpack2/tools/cloud_noise.py # remakes the clouds' noise (shaders/textures/cloud_noise.dat)
+    python3 shaderpack2/tools/moon_map.py    # remakes the moon's surface (shaders/textures/moon.png) from NASA's maps
 
 ## How it is laid out
 
@@ -127,3 +139,9 @@ off:
   compute dispatch sizes that aren't plain numbers, and images or samplers no `image.` line makes.
 
 The pack is our own code; it contains no third-party code.
+
+## Credits
+
+The moon's surface (`shaders/textures/moon.png`) is made from NASA's CGI Moon Kit (the Lunar Reconnaissance Orbiter's
+colour mosaic and elevation map, https://svs.gsfc.nasa.gov/4720/), in the public domain. Credit: NASA's Scientific
+Visualization Studio.

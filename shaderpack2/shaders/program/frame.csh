@@ -34,12 +34,12 @@ uniform float rainStrength;
 layout(rgba32f) uniform image2D cg_globals_img;
 
 const vec3 sun_high = vec3(2.0, 1.25, 0.72);
-const vec3 sun_low = vec3(6.0, 2.45, 1.0);
+const vec3 sun_low = vec3(6.6, 2.4, 0.85); // build 6: warmer at dawn and dusk
 const vec3 moon_light = vec3(0.0064, 0.0063, 0.0104);
 const float sky_high = 1.26;
 const float sky_low = 3.8;
 const float sky_night = 1.8;
-const vec3 sky_low_tint = vec3(1.5, 0.85, 0.55);
+const vec3 sky_low_tint = vec3(1.6, 0.85, 0.5);
 const float sky_saturation = 0.7;
 // The shade by day: further towards grey and a touch warm, halfway between our old blue and the look's warmer one.
 const float shade_saturation_day = 0.5;

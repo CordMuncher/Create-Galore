@@ -73,11 +73,12 @@ vec3 star_color(float kelvin) {
 }
 
 // The stars in a frame of their own: one at most in each cell of a cube's faces (256 x 256 a face), count of them over
-// the whole sky, as many faint ones for each bright one as the real sky has, their temperatures between cold and hot
-// (most of them white to pale blue, a few orange). Each is a point whose light spreads over about a pixel, so the
-// upscaler finds the same star in every frame. twinkle: how much they flicker (most low down, where their light
-// comes through the most air). At its brightest about 0.45.
-vec3 star_field(vec3 local, float count, vec2 kelvin, float twinkle) {
+// the whole sky, as many faint ones for each bright one as the real sky has (their brightness a little evened out, so
+// the faint ones still show), their temperatures between cold and hot (most of them white to pale blue, a few orange).
+// Each is a soft point about two pixels across, so the upscaler finds the same star in every frame and never averages
+// it away. Only stars brighter than magnitude limit show (dusk and moonlight hide the faint ones first). twinkle: how
+// much they flicker. At its brightest about 0.45.
+vec3 star_field(vec3 local, float count, vec2 kelvin, float twinkle, float limit) {
     vec3 a = abs(local);
     uint face;
     vec2 uv;
@@ -109,14 +110,18 @@ vec3 star_field(vec3 local, float count, vec2 kelvin, float twinkle) {
     // Brightness: as many stars brighter than magnitude m as the sky has, about 10^(0.45 m + 0.9) of them.
     float u = (pick / present) * 0.999 + 0.001;
     float magnitude = (log2(u * count) / 3.321928 - 0.9) / 0.45;
-    float flux = exp2(-0.4 * 3.321928 * (magnitude - 1.0)); // 1 for a first-magnitude star
+    float shows = 1.0 - smoothstep(limit - 1.0, limit, magnitude);
+    if (shows <= 0.0) {
+        return vec3(0.0);
+    }
+    float flux = exp2(-0.4 * 0.75 * 3.321928 * (magnitude - 1.0)) * shows; // 1 for a first-magnitude star
     float k = mix(kelvin.x, kelvin.y, pow(float(h.z & 0xffffu) / 65535.0, 0.6));
     if (twinkle > 0.0) {
         float phase = float(h.z >> 16u) / 65535.0 * TAU;
         float flicker = 0.6 * sin(frameTimeCounter * 3.1 + phase) + 0.4 * sin(frameTimeCounter * 5.3 + 2.3 * phase);
         flux *= max(1.0 + twinkle * flicker, 0.0);
     }
-    float sigma = 0.6 * pixel_angle();
+    float sigma = 0.75 * pixel_angle();
     // The peak scaled with the pixel's size, so a star sends the same light whatever the resolution.
     const float reference = 0.0011; // a pixel's angle at 1080 lines and 70 degrees
     return star_color(k) * (0.45 * min(flux, 4.0) * sqr(reference / sigma * 0.6)) * exp(-0.5 * s * s / (sigma * sigma));
@@ -140,6 +145,40 @@ float moon_illuminance() {
 
 vec3 air_transmittance(float r, float mu) {
     return texture(cg_sky_tex, sky_atlas_uv(trans_uv(r, mu), trans_size, trans_origin)).rgb;
+}
+
+// The clouds' shadows on the land: a map 4096 blocks across round the camera (16 blocks a texel, on a grid fixed to
+// the world), each texel what gets through the clouds towards the sun (or the moon) from a point at the camera's
+// height there (program/clouds.csh). A point higher or lower looks it up shifted along the light's direction.
+const float cloud_shadow_texel = 16.0;
+
+// The map's low corner, from the camera (blocks, x and z).
+vec2 cloud_shadow_corner() {
+    ivec2 cam = cameraPositionInt.xz;
+    return vec2(((cam >> 4) << 4) - cam) - cameraPositionFract.xz - 128.0 * cloud_shadow_texel;
+}
+
+// How far a point's look-up shifts per block of height (the light's direction, never flatter than about 7 degrees).
+vec2 cloud_shadow_shift() {
+    return g_light_dir.xz / max(g_light_dir.y, 0.12);
+}
+
+// What gets through the clouds to a point (scene space) from the sun or the moon: 1 without clouds.
+float cloud_shadow(vec3 scene_pos) {
+#ifdef CLOUD_SHADOWS
+#if defined VOLUME_CLOUDS
+    vec2 xz = scene_pos.xz - cloud_shadow_shift() * scene_pos.y;
+    vec2 uv = (xz - cloud_shadow_corner()) / (cloud_shadow_texel * vec2(cloud_shadow_size));
+    float fade = smoothstep(0.0, 0.08, min(min(uv.x, uv.y), min(1.0 - uv.x, 1.0 - uv.y)));
+    if (fade <= 0.0) {
+        return 1.0;
+    }
+    uv = clamp(uv, 0.5 / vec2(cloud_shadow_size), 1.0 - 0.5 / vec2(cloud_shadow_size));
+    float through = texture(cg_sky_tex, sky_atlas_uv(uv, cloud_shadow_size, cloud_shadow_origin)).r;
+    return mix(1.0, through, fade);
+#endif
+#endif
+    return 1.0;
 }
 
 // The night sky as you see it is darker than the light it gives: the look we follow keeps it a deep blue overhead so
@@ -180,11 +219,17 @@ float twilight() {
     return 1.0 - smoothstep(0.0, 0.25, abs(g_sun_dir.w + 0.02));
 }
 
-// The air's light in our look: pushed away from grey, most at dusk and dawn; round the setting sun it burns orange,
-// on the far side a pink band sits over the horizon (the sky's evening belt), and at night it stays a deep blue.
+// The air's light in our look: pushed away from grey, most at dusk and dawn; by day deeper overhead and paler and
+// brighter towards the horizon, where you look through the most air; round the setting sun it burns orange, on the
+// far side a pink band sits over the horizon (the sky's evening belt), and at night it stays a deep blue.
 vec3 sky_look(vec3 c, vec3 dir) {
     float dusk = twilight();
-    c = push_from_grey(c, mix(1.25, 1.55, dusk));
+    float day = smoothstep(-0.05, 0.1, g_sun_dir.w) * (1.0 - dusk);
+    c = push_from_grey(c, mix(mix(1.25, 1.15, day), 1.55, dusk));
+    float up = clamp(dir.y, 0.0, 1.0);
+    float horizon = 1.0 - smoothstep(0.0, 0.35, up);
+    c = mix(c, luminance(c) * vec3(0.93, 1.0, 1.12), 0.4 * horizon * day);
+    c *= 1.0 + day * (0.22 * horizon - 0.15 * smoothstep(0.3, 1.0, up));
     vec2 flat_dir = normalize(dir.xz + vec2(1e-5, 0.0));
     vec2 flat_sun = normalize(g_sun_dir.xz + vec2(1e-5, 0.0));
     float toward_sun = dot(flat_dir, flat_sun) * 0.5 + 0.5; // 1 under the sun, 0 away
@@ -202,7 +247,7 @@ vec3 sun_disc(vec3 dir, vec3 through) {
     // The glow: a tight one the bloom spreads, and a wide faint one, warmer as the sun sinks.
     float dusk = twilight();
     vec3 glow_color = mix(vec3(1.0, 0.95, 0.85), vec3(1.0, 0.6, 0.3), dusk);
-    vec3 c = glow_color * (0.35 * exp(-angle / 0.03) + 0.06 * exp(-angle / 0.15)) * sun_illuminance;
+    vec3 c = glow_color * (0.3 * exp(-angle / 0.022) + 0.05 * exp(-angle / 0.12)) * sun_illuminance;
     if (angle < sun_radius) {
         float r = angle / sun_radius;
         float limb = 1.0 - 0.6 * (1.0 - sqrt(max(0.0, 1.0 - r * r)));
@@ -213,44 +258,66 @@ vec3 sun_disc(vec3 dir, vec3 through) {
     return c * through;
 }
 
-// The moon: a round disc the sun's size, lit like a ball from the side its phase says (full at phase 0, new at 4;
-// waxing lit on the side it travels towards, waning on the other), its darker seas from noise fixed to its face, and
-// the dark part faintly lit by the Earth. Its face turns with the sky.
-const float moon_radius = 0.042;
+// The moon: the real Moon's near side (textures/moon.png, from NASA's maps: tools/moon_map.py), MOON_SIZE times
+// Minecraft's, lit like a ball from the side its phase says (full at phase 0, new at 4; waxing lit on the side it
+// travels towards, waning on the other). Lit as the Moon is: its dust sends light back the way it came, so the full
+// moon is evenly bright to its edge, and the slopes of its craters, steepened, cast their shade along the line
+// between day and night, where they show the most. Its dark part is faintly lit by the Earth. A cool silvery white.
+uniform sampler2D cg_moon; // rgb its colour (sRGB), a its height
+
+float moon_radius() {
+    return 0.042 * MOON_SIZE;
+}
+
+const float moon_relief = 10.0; // how much steeper than the real ones its slopes are drawn
 
 vec3 moon_disc(vec3 dir, vec3 through) {
     vec3 m = g_moon_dir.xyz;
+    float radius = moon_radius();
     float cos_d = dot(dir, m);
-    if (cos_d < cos(moon_radius * 1.2)) {
+    if (cos_d < cos(radius * 1.2)) {
         return vec3(0.0);
     }
     float tilt = radians(sunPathRotation);
     vec3 axis = vec3(0.0, -sin(tilt), cos(tilt));
     vec3 across = normalize(cross(axis, m)); // the way it travels
     vec3 up = cross(m, across);
-    vec2 uv = vec2(dot(dir, across), dot(dir, up)) / moon_radius;
+    vec2 uv = vec2(dot(dir, across), dot(dir, up)) / radius;
     float r = length(uv);
-    float edge = 1.0 - smoothstep(1.0 - 1.5 * pixel_angle() / moon_radius, 1.0, r);
+    float edge = 1.0 - smoothstep(1.0 - 1.5 * pixel_angle() / radius, 1.0, r);
     if (edge <= 0.0) {
         return vec3(0.0);
     }
+    vec2 tc = uv * vec2(0.5, -0.5) + 0.5;
+    vec4 surface = texture(cg_moon, tc);
+    vec2 texel = 1.0 / vec2(textureSize(cg_moon, 0));
+    float hx = texture(cg_moon, tc + vec2(texel.x, 0.0)).a - texture(cg_moon, tc - vec2(texel.x, 0.0)).a;
+    float hy = texture(cg_moon, tc - vec2(0.0, texel.y)).a - texture(cg_moon, tc + vec2(0.0, texel.y)).a;
     vec3 n = vec3(uv, sqrt(max(1.0 - r * r, 0.0)));
+    vec3 bumped = normalize(n - vec3(hx, hy, 0.0) * moon_relief);
+
     float angle = float(moonPhase) * (PI / 4.0);
     vec3 sun_side = vec3(-sin(angle), 0.0, cos(angle));
-    float lit = smoothstep(-0.04, 0.08, dot(n, sun_side));
-    // The seas: big dark patches and smaller ones, with a few bright speckles.
-    float seas = smoothstep(0.45, 0.75, fbm(vec3(uv * 1.3, 7.0), 3)) * 0.38
-            + smoothstep(0.55, 0.8, fbm(vec3(uv * 3.7, 2.0), 2)) * 0.12;
-    float face = (1.0 - seas) * (0.88 + 0.12 * n.z);
+    float mu0 = dot(bumped, sun_side);
+    float mu = max(bumped.z, 0.05);
+    // Lommel-Seeliger (flat to the edge at full moon) with a little Lambert in it.
+    float shade = mu0 > 0.0 ? mix(mu0, 2.0 * mu0 / (mu0 + mu), 0.8) : 0.0;
+    float day = smoothstep(-0.03, 0.04, dot(n, sun_side));
+    shade *= day;
+
+    vec3 albedo = srgb_to_linear(surface.rgb) / 0.38;
+    albedo = mix(vec3(luminance(albedo)), albedo, 0.75);
+    albedo = pow(albedo, vec3(1.25)) * vec3(0.88, 0.95, 1.08);
     float bright = 0.17 * NIGHT_BRIGHTNESS * 1.7;
-    vec3 color = vec3(0.92, 0.95, 1.0) * face * (lit + 0.015) * bright;
+    vec3 color = albedo * (shade + 0.02 * (1.0 - day)) * bright;
     return color * edge * through;
 }
 
-// The glow round the moon, cool and faint, with its phase.
+// The glow round the moon, cool and faint, with its phase: a tight one about the disc's size and a wide faint one.
 vec3 moon_glow(vec3 dir, vec3 through) {
     float angle = acos(clamp(dot(dir, g_moon_dir.xyz), -1.0, 1.0));
-    return vec3(0.8, 0.9, 1.1) * moon_illuminance() * (0.25 * exp(-angle / 0.04) + 0.05 * exp(-angle / 0.25)) * through;
+    float tight = 0.25 * exp(-max(angle - moon_radius(), 0.0) / (0.5 * moon_radius()));
+    return vec3(0.75, 0.88, 1.12) * moon_illuminance() * (tight + 0.05 * exp(-angle / 0.25)) * through;
 }
 
 // The Milky Way: a soft band across the sky with darker lanes in it, warmer at its heart.
@@ -266,7 +333,7 @@ vec3 milky_way(vec3 local) {
     float lanes = smoothstep(0.35, 0.65, fbm(local * 11.0 + 3.0, 3));
     float heart = exp(-sqr(dot(local, normalize(vec3(0.9, -0.35, 0.2))) - 1.0) * 4.0);
     vec3 color = mix(vec3(0.75, 0.85, 1.1), vec3(1.15, 0.95, 0.75), heart);
-    return color * band * clouds * clouds * mix(1.0, 0.35, lanes * band) * 0.03;
+    return color * band * clouds * clouds * mix(1.0, 0.2, lanes * band) * 0.045;
 }
 
 // The whole sky in a direction (without the clouds).
@@ -277,8 +344,11 @@ vec3 sky(vec3 dir, bool with_sun) {
     vec3 through = air_transmittance(cam_r, max(dir.y, 0.0));
     if (dir.y > -0.02 && night > 0.0) {
         vec3 local = transpose(celestial_frame()) * dir;
-        vec3 night_sky = star_field(local, 7000.0, vec2(3500.0, 11000.0), 0.35 * (1.0 - smoothstep(0.05, 0.4, dir.y)))
-                + milky_way(local) * NIGHT_BRIGHTNESS;
+        // The brightest come out first as the sky darkens; a bright moon high up hides the faintest.
+        float moon_up = g_moon_dir.w * smoothstep(-0.05, 0.25, g_moon_dir.y);
+        float limit = -1.5 + 10.0 * night - 1.2 * moon_up;
+        vec3 night_sky = star_field(local, 18000.0, vec2(3500.0, 11000.0), 0.0, limit)
+                + milky_way(local) * NIGHT_BRIGHTNESS * (1.0 - 0.5 * moon_up);
         c += night_sky * night * through * smoothstep(-0.02, 0.0, dir.y);
     }
     c += moon_glow(dir, through) + moon_disc(dir, through);
@@ -334,7 +404,7 @@ vec3 sky(vec3 dir, bool with_sun) {
     nebula += vec3(0.12, 0.5, 0.3) * green * 0.6;
     c += nebula * 0.1 * (0.5 + 0.5 * low * low);
 
-    c += star_field(dir, 5000.0, vec2(4500.0, 9000.0), 0.6) * vec3(0.95, 0.85, 1.1) * 0.5;
+    c += star_field(dir, 5000.0, vec2(4500.0, 9000.0), 0.6, 99.0) * vec3(0.95, 0.85, 1.1) * 0.5;
 
     if (with_sun) {
         float angle = acos(clamp(dot(dir, g_light_dir.xyz), -1.0, 1.0));
@@ -370,6 +440,13 @@ vec3 sky(vec3 dir, bool with_sun) {
     return nether_haze();
 }
 
+#endif
+
+#if defined NO_SKY_LIGHT
+// No clouds here, so no shadows of them.
+float cloud_shadow(vec3 scene_pos) {
+    return 1.0;
+}
 #endif
 
 #endif

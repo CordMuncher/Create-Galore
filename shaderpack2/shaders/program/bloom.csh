@@ -6,7 +6,7 @@
 // day out in the open; dusk, night, caves, under water, rain), so far lights and far surfaces turn into a soft glow
 // while the frame itself stays as it was. It starts slowly (a twentieth at 32 blocks, a quarter at 64, three
 // quarters at 128), so what is near stays clear. Bright pixels are weighed down in the first copy, so a single
-// sparkling pixel doesn't flicker into a blob, while big bright patches (lava, fire, glowstone, the sun) bloom more,
+// sparkling pixel doesn't flicker into a blob, while big bright patches (lava, fire, glowstone) bloom more,
 // twice as much again in the Nether, where lava and fire light the world.
 
 #include "/lib/settings.glsl"
@@ -90,6 +90,8 @@ const float hot_bloom = 2.0;
 #else
 const float hot_bloom = 1.0;
 #endif
+// How bright the sky can be in the bloom: the sun's disc blooms as a tight glow instead of searing a wide patch.
+const float sky_bloom_cap = 4.0;
 #endif
 
 void main() {
@@ -117,8 +119,12 @@ void main() {
             c = vec3(0.0); // one such pixel would spread over the whole bloom
             note_bad(BAD_AFTER_DLSS);
         }
-        float boost = 1.0 + fogginess * fog_share(distance_at(at));
+        float distance = distance_at(at);
+        float boost = 1.0 + fogginess * fog_share(distance);
         c *= boost;
+        if (distance >= far) {
+            c *= min(1.0, sky_bloom_cap / max(luminance(c), 1e-4)); // the sun: its glow, not a glare
+        }
         float w = 1.0 / (1.0 + luminance(c) * 0.25);
 #else
         vec3 c = bloom_down_at(level - 1, at);

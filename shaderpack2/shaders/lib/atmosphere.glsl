@@ -23,12 +23,15 @@ const ivec2 trans_size = ivec2(256, 64);
 const ivec2 ms_size = ivec2(32, 32);
 const ivec2 skyview_size = ivec2(192, 108);
 
-// The tables share one image (cg_sky_img, 256 x 312): the transmittance at the bottom, the multiple scattering
-// above it, then the sky view (the sun's sky, then the moon's, each skyview_size).
-const ivec2 sky_atlas_size = ivec2(256, 312);
+// The tables share one image (cg_sky_img, 256 x 568): the transmittance at the bottom, the multiple scattering
+// above it, then the sky view (the sun's sky, then the moon's, each skyview_size), then the clouds' shadow map
+// (256 x 256, program/clouds.csh, cloud_shadow in lib/sky.glsl).
+const ivec2 sky_atlas_size = ivec2(256, 568);
 const ivec2 trans_origin = ivec2(0, 0);
 const ivec2 ms_origin = ivec2(0, 64);
 const ivec2 skyview_origin = ivec2(0, 96);
+const ivec2 cloud_shadow_origin = ivec2(0, 312);
+const ivec2 cloud_shadow_size = ivec2(256, 256);
 
 // A table's coordinates (0..1 over the table) in the image.
 vec2 sky_atlas_uv(vec2 uv, ivec2 size, ivec2 origin) {

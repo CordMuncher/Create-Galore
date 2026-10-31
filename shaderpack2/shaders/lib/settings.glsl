@@ -93,6 +93,12 @@ const ivec3 vox_tiles = vox_size / 8;
 #define CLOUD_AMOUNT 1.0 // [0.5 0.75 1.0 1.25 1.5]
 // The most looks into the clouds along each ray: more keeps the far clouds' detail finer.
 #define CLOUD_STEPS 24 // [16 24 32 48]
+// How fast the wind carries the clouds, in blocks a second (0: they stay still).
+#define CLOUD_SPEED 1.0 // [0.0 0.5 1.0 1.5 2.0]
+// Clouds' shadows drifting over the land.
+#define CLOUD_SHADOWS
+// How big the moon looks, against Minecraft's own moon.
+#define MOON_SIZE 2.0 // [1.0 1.5 2.0 2.5 3.0]
 
 // How fast Minecraft's smoothed sky light at the camera (eyeBrightnessSmooth: under a roof or out in the open)
 // follows you, in seconds to halfway.

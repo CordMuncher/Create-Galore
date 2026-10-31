@@ -68,6 +68,12 @@ option.REAL_CLOUDS=Realistic Clouds
 option.REAL_CLOUDS.comment=Heaped clouds drawn as a volume, lit by the sun and the sky, drifting with the wind. Off: Minecraft's own clouds (the game's Clouds setting turns those off).
 option.CLOUD_AMOUNT=Cloud Amount
 option.CLOUD_AMOUNT.comment=How much of the sky the clouds cover on a fair day. Rain closes the sky up.
+option.CLOUD_SPEED=Cloud Speed
+option.CLOUD_SPEED.comment=How fast the wind carries the clouds, in blocks a second. They follow the game's clock: with the daylight cycle stopped, they stop too.
+option.CLOUD_SHADOWS=Cloud Shadows
+option.CLOUD_SHADOWS.comment=Clouds' shadows drifting over the land.
+option.MOON_SIZE=Moon Size
+option.MOON_SIZE.comment=How big the moon looks, against Minecraft's own moon. Its surface is from NASA's maps of the Moon.
 option.CLOUD_STEPS=Cloud Quality
 option.CLOUD_STEPS.comment=How many looks into the clouds each ray takes: more keeps the far clouds' detail finer, at some cost.
 
