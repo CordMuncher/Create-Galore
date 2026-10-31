@@ -1,8 +1,11 @@
 package dev.creategalore.bridge.mixin;
 
 import com.endertech.minecraft.mods.adpother.blocks.FilterFrame;
+import com.simibubi.create.api.equipment.goggles.IHaveGoggleInformation;
 import dev.creategalore.bridge.CreateGaloreBridge;
 import dev.creategalore.bridge.FilterUpkeep;
+import java.util.List;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
@@ -14,10 +17,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
  * A filter frame's block entity: always working, takes no filter material, shows a Precision filter inside, and uses
- * up whatever material and byproduct an older frame still held.
+ * up whatever material and byproduct an older frame still held. Engineer's Goggles show the pressure under it.
  */
 @Mixin(value = FilterFrame.BlockTile.class, remap = false)
-public abstract class PotrFilterTileMixin implements FilterUpkeep.Budget {
+public abstract class PotrFilterTileMixin implements FilterUpkeep.Budget, IHaveGoggleInformation {
     @Unique
     private long create_galore_bridge$second = -1;
     @Unique
@@ -37,6 +40,14 @@ public abstract class PotrFilterTileMixin implements FilterUpkeep.Budget {
     public void create_galore_bridge$set(long second, int used) {
         create_galore_bridge$second = second;
         create_galore_bridge$used = used;
+    }
+
+    /** Engineer's Goggles read the frame: green, yellow or red for the pressure under it (see FilterPressure). */
+    @Override
+    public boolean addToGoggleTooltip(List<Component> tooltip, boolean isPlayerSneaking) {
+        FilterFrame.BlockTile tile = (FilterFrame.BlockTile) (Object) this;
+        if (tile.getLevel() == null || !tile.getLevel().isClientSide) return false;
+        return dev.creategalore.bridge.client.FilterGoggles.addToTooltip(tile.getBlockPos(), tooltip, isPlayerSneaking);
     }
 
     @Inject(method = "isActive", at = @At("HEAD"), cancellable = true)

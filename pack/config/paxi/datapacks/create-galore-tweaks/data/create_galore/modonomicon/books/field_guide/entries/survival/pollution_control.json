@@ -65,7 +65,7 @@
         "item": "adpother:iron_filter_frame"
       },
       "title": "Filter Frame",
-      "text": "Stack frames on the pump's outlet. Every frame catches all three kinds of smog (carbon, sulfur and dust) and needs nothing put in it. An iron frame filters 2 units a second, gold 4, diamond 8. Right-click a frame to see its rate."
+      "text": "Stack frames on the pump's outlet. Every frame catches all three kinds of smog (carbon, sulfur and dust) and needs nothing put in it. An iron frame filters 2 units a second, gold 4, diamond 8. Right-click it for its rate; Goggles show its pressure."
     },
     {
       "type": "modonomicon:text",

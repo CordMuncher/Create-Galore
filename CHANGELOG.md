@@ -5,6 +5,18 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.6.56
+
+### Added
+- Create Galore Bridge 1.169.0.
+- **Engineer's Goggles read Filter Frames.** Look at a Filter Frame with goggles on to see the pressure under its stack: green **Normal** (open air below, or a sealed room the filters keep up with), yellow **Pressure** (a sealed room at least a quarter full of smog, or the stack filtering flat out) and red **Overpressure** (a sealed room 60% full, or smog under a stack whose top is closed). Red is the warning that a smoky machine in that room can run out of room for its smog and blow. The readout also shows how full of smog the room is, whether it is filling up or clearing, and how many units a second the stack filters out of its total; sneak to see the room's size. The Field Guide's Pressure and Sealed Casings entry has two new pages on it.
+
+### Fixed
+- Nothing.
+
+### Removed
+- Nothing.
+
 ## 0.6.55
 
 ### Added
