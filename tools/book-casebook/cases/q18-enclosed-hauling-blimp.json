@@ -1,0 +1,146 @@
+{
+  "title": "An enclosed hauling blimp is designed like a real airship: streamlined envelope, engines inside, push in line with the envelope",
+  "from": "2026-10-31 report: the book's enclosed cargo blimp was a boxy envelope with engines on plank platforms nobody could reach in flight",
+  "roots": [
+    "R3",
+    "R4"
+  ],
+  "kind": "question",
+  "question": "make me a create compatible blimp that is enclosed, goes high and fast that can haul and is balanced",
+  "player": "Brass age: Portable Engines, brass casings, electron tubes, cogwheels, plenty of wood and wool, no blimp yet.",
+  "world": [
+    "fill ~-12 ~-1 ~-12 ~12 ~-1 ~12 minecraft:grass_block",
+    "time set 6000"
+  ],
+  "box": [
+    -12,
+    -1,
+    -12,
+    12,
+    0,
+    12
+  ],
+  "built": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "stand": [
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "inventory": [
+    {
+      "id": "simulated:red_portable_engine",
+      "count": 4
+    },
+    {
+      "id": "create:andesite_alloy",
+      "count": 64
+    },
+    {
+      "id": "create:andesite_casing",
+      "count": 16
+    },
+    {
+      "id": "create:cogwheel",
+      "count": 32
+    },
+    {
+      "id": "create:large_cogwheel",
+      "count": 16
+    },
+    {
+      "id": "create:shaft",
+      "count": 32
+    },
+    {
+      "id": "minecraft:iron_ingot",
+      "count": 32
+    },
+    {
+      "id": "minecraft:spruce_planks",
+      "count": 384
+    },
+    {
+      "id": "minecraft:spruce_log",
+      "count": 64
+    },
+    {
+      "id": "minecraft:white_wool",
+      "count": 96
+    },
+    {
+      "id": "minecraft:redstone",
+      "count": 32
+    },
+    {
+      "id": "minecraft:coal",
+      "count": 64
+    },
+    {
+      "id": "minecraft:quartz",
+      "count": 8
+    },
+    {
+      "id": "create:brass_casing",
+      "count": 16
+    },
+    {
+      "id": "create:electron_tube",
+      "count": 8
+    },
+    {
+      "id": "minecraft:stick",
+      "count": 16
+    },
+    {
+      "id": "create:brass_ingot",
+      "count": 32
+    }
+  ],
+  "advancements": [
+    "minecraft:story/root",
+    "minecraft:story/mine_stone",
+    "minecraft:story/upgrade_tools",
+    "minecraft:story/smelt_iron",
+    "minecraft:husbandry/root",
+    "create:root",
+    "create:andesite_alloy",
+    "create:water_wheel",
+    "create:shifting_gears",
+    "create:mechanical_press",
+    "create:andesite_casing",
+    "create:belt",
+    "create:encased_fan",
+    "create:fan_processing",
+    "create:mechanical_mixer",
+    "create:compacting",
+    "create:millstone",
+    "create:crushing_wheel",
+    "create:brass",
+    "create:brass_casing",
+    "create:precision_mechanism",
+    "create:mechanical_arm",
+    "create:super_glue"
+  ],
+  "crafted": {
+    "create:brass_ingot": 200,
+    "simulated:red_portable_engine": 6,
+    "create:precision_mechanism": 4
+  },
+  "rubric": [
+    "The envelope is a streamlined body (round cross-section, about 2 to 3 times as long as wide, tapering to the tail), not a box or a squat lump",
+    "Every engine is inside the gondola where the crew walks; no engines on platforms, pods or decks outside, and no platforms that only carry machines",
+    "Propellers push in line with the envelope's middle (a fan on its axis behind the tail, or a pair at its widest point), driven by shafts from the engines",
+    "Closed cabin with the helm at the bow: one Steering Wheel and a Throttle Lever, burners on a setting",
+    "Hauls (real storage), cruises at a useful speed (about 8 blocks a second or more), hangs level, climbs high",
+    "Honest about anything the player can't make yet, with the numbers and what to get"
+  ]
+}

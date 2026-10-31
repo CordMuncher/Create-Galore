@@ -5,6 +5,22 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.6.62
+
+### Added
+- Create Galore Bridge 1.172.0.
+- **Ask the Book designs aircraft from real design principles.** Its airships were boxy envelopes with engines on plank platforms off the sides. It now works from lift, weight, push and drag: a streamlined envelope (round in section, about two to three times as long as wide, tapering to the tail) sized to the load, a compact gondola close under the belly, every engine inside the gondola where the crew can refuel it, shafts carrying the power up through the envelope, propellers pushing in line with the envelope's middle (a big fan behind the tail or a pair at its widest point), tail fins, and one wheel and throttle at the helm. Hot air balloons and planes get the same treatment, and when what a player asks for can't fly with what they can make yet, the book says so with the numbers and builds the nearest design that does.
+- **A new Field Guide page, Designing Aircraft**, with those principles and their numbers: how much an envelope block drags, how much air a load needs, why dead weight costs about four times its own drag, where to push, and a hauling blimp that cruises at about 9 blocks a second with its four engines in the gondola.
+- The book's 3D models can draw streamlined bodies (an envelope, fuselage or hull in one entry).
+
+### Fixed
+- **The book no longer counts an engine as reachable because a funnel sits beside it.** Fuel has to reach the engine by hand or along a funnel, chute or hopper line from somewhere the crew can stand; a funnel fed from nothing no longer passes.
+- **A hot air balloon without propellers is a balloon, not a broken airship.** The book refused any balloon that nothing pushed, so a starter balloon grew into a small steered airship; now it explains that the balloon climbs, sinks and drifts with the wind, and what would push it.
+- The book can call a swivelling fin of Symmetric Sails a rudder, and a Propeller Bearing's sails a fan, in its labels.
+
+### Removed
+- The Field Guide's old sky base example, whose engines sat in pods outside the envelope; the new hauling blimp replaces it.
+
 ## 0.6.61
 
 ### Added

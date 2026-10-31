@@ -1,0 +1,122 @@
+{
+  "title": "An early hot air balloon is a real balloon, and the book is honest about what it can do",
+  "from": "2026-10-31 request: aircraft designs in general, honest about the player's stage",
+  "roots": [
+    "R3",
+    "R4"
+  ],
+  "kind": "question",
+  "question": "can you make me a hot air balloon to look around from up high? I just started with create",
+  "player": "Andesite age: andesite alloy, shafts, cogwheels, hand cranks, wool and wood; no brass, no Portable Engine made yet.",
+  "world": [
+    "fill ~-12 ~-1 ~-12 ~12 ~-1 ~12 minecraft:grass_block",
+    "time set 6000"
+  ],
+  "box": [
+    -12,
+    -1,
+    -12,
+    12,
+    0,
+    12
+  ],
+  "built": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "stand": [
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "inventory": [
+    {
+      "id": "create:andesite_alloy",
+      "count": 64
+    },
+    {
+      "id": "create:andesite_casing",
+      "count": 16
+    },
+    {
+      "id": "create:cogwheel",
+      "count": 32
+    },
+    {
+      "id": "create:large_cogwheel",
+      "count": 16
+    },
+    {
+      "id": "create:shaft",
+      "count": 32
+    },
+    {
+      "id": "minecraft:iron_ingot",
+      "count": 32
+    },
+    {
+      "id": "minecraft:spruce_planks",
+      "count": 384
+    },
+    {
+      "id": "minecraft:spruce_log",
+      "count": 64
+    },
+    {
+      "id": "minecraft:white_wool",
+      "count": 96
+    },
+    {
+      "id": "minecraft:redstone",
+      "count": 32
+    },
+    {
+      "id": "minecraft:coal",
+      "count": 64
+    },
+    {
+      "id": "minecraft:quartz",
+      "count": 8
+    },
+    {
+      "id": "minecraft:stick",
+      "count": 16
+    }
+  ],
+  "advancements": [
+    "minecraft:story/root",
+    "minecraft:story/mine_stone",
+    "minecraft:story/upgrade_tools",
+    "minecraft:story/smelt_iron",
+    "minecraft:husbandry/root",
+    "create:root",
+    "create:andesite_alloy",
+    "create:water_wheel",
+    "create:shifting_gears",
+    "create:mechanical_press",
+    "create:andesite_casing",
+    "create:belt",
+    "create:encased_fan",
+    "create:fan_processing",
+    "create:mechanical_mixer",
+    "create:compacting",
+    "create:millstone",
+    "create:crushing_wheel",
+    "create:super_glue"
+  ],
+  "crafted": {
+    "create:andesite_alloy": 64
+  },
+  "rubric": [
+    "A round envelope about as wide as tall over a basket hung on posts or chains from its corners, burners under its open bottom",
+    "Light: no decks or platforms that do nothing",
+    "Controls the player can make now; says honestly that it mostly drifts and what to make next to drive and steer it",
+    "The basket is reachable and boardable; the burners are worked from the basket"
+  ]
+}

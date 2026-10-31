@@ -1,0 +1,203 @@
+{
+  "title": "An airship's engines on platforms outside count as unreachable even with a funnel beside them that nothing feeds",
+  "from": "2026-10-31 report: a book cargo blimp put its engines on plank platforms off the envelope's sides, out of reach in flight",
+  "roots": [
+    "R3",
+    "R4"
+  ],
+  "kind": "model",
+  "model": {
+    "title": "Enclosed Cargo Blimp (replica)",
+    "size_x": 29,
+    "size_y": 20,
+    "size_z": 24,
+    "blocks": [
+      {
+        "block": "aeronautics:white_envelope",
+        "x": 7,
+        "y": 8,
+        "z": 1,
+        "x2": 21,
+        "y2": 17,
+        "z2": 22,
+        "shape": "ellipsoid_shell"
+      },
+      {
+        "block": "minecraft:air",
+        "x": 12,
+        "y": 8,
+        "z": 8,
+        "x2": 16,
+        "y2": 8,
+        "z2": 16
+      },
+      {
+        "block": "minecraft:oak_planks",
+        "x": 10,
+        "y": 2,
+        "z": 6,
+        "x2": 18,
+        "y2": 7,
+        "z2": 17,
+        "shape": "hollow_box"
+      },
+      {
+        "block": "minecraft:air",
+        "x": 11,
+        "y": 3,
+        "z": 7,
+        "x2": 17,
+        "y2": 6,
+        "z2": 16
+      },
+      {
+        "block": "minecraft:glass_pane",
+        "x": 12,
+        "y": 4,
+        "z": 6,
+        "x2": 16,
+        "y2": 5,
+        "z2": 6
+      },
+      {
+        "block": "minecraft:oak_door[half=lower,facing=east]",
+        "x": 18,
+        "y": 3,
+        "z": 12
+      },
+      {
+        "block": "minecraft:oak_door[half=upper,facing=east]",
+        "x": 18,
+        "y": 4,
+        "z": 12
+      },
+      {
+        "block": "aeronautics:adjustable_burner",
+        "x": 14,
+        "y": 7,
+        "z": 9
+      },
+      {
+        "block": "aeronautics:adjustable_burner",
+        "x": 14,
+        "y": 7,
+        "z": 12
+      },
+      {
+        "block": "aeronautics:adjustable_burner",
+        "x": 14,
+        "y": 7,
+        "z": 15
+      },
+      {
+        "block": "minecraft:lever[face=ceiling,facing=north]",
+        "x": 14,
+        "y": 6,
+        "z": 9
+      },
+      {
+        "block": "minecraft:lever[face=ceiling,facing=north]",
+        "x": 14,
+        "y": 6,
+        "z": 12
+      },
+      {
+        "block": "minecraft:lever[face=ceiling,facing=north]",
+        "x": 14,
+        "y": 6,
+        "z": 15
+      },
+      {
+        "block": "simulated:steering_wheel[facing=north]",
+        "x": 14,
+        "y": 3,
+        "z": 8
+      },
+      {
+        "block": "minecraft:barrel",
+        "x": 11,
+        "y": 3,
+        "z": 10,
+        "x2": 11,
+        "y2": 5,
+        "z2": 16
+      },
+      {
+        "block": "minecraft:barrel",
+        "x": 17,
+        "y": 3,
+        "z": 13,
+        "x2": 17,
+        "y2": 5,
+        "z2": 16
+      },
+      {
+        "block": "minecraft:oak_planks",
+        "x": 1,
+        "y": 12,
+        "z": 9,
+        "x2": 6,
+        "y2": 12,
+        "z2": 13
+      },
+      {
+        "block": "minecraft:oak_planks",
+        "x": 22,
+        "y": 12,
+        "z": 9,
+        "x2": 27,
+        "y2": 12,
+        "z2": 13
+      },
+      {
+        "block": "simulated:red_portable_engine[facing=south]",
+        "x": 3,
+        "y": 13,
+        "z": 10
+      },
+      {
+        "block": "aeronautics:wooden_propeller[facing=south]",
+        "x": 3,
+        "y": 13,
+        "z": 11
+      },
+      {
+        "block": "simulated:red_portable_engine[facing=south]",
+        "x": 25,
+        "y": 13,
+        "z": 10
+      },
+      {
+        "block": "aeronautics:wooden_propeller[facing=south]",
+        "x": 25,
+        "y": 13,
+        "z": 11
+      },
+      {
+        "block": "simulated:physics_assembler",
+        "x": 14,
+        "y": 2,
+        "z": 14
+      },
+      {
+        "block": "create:andesite_funnel[facing=north]",
+        "x": 3,
+        "y": 13,
+        "z": 9
+      },
+      {
+        "block": "create:andesite_funnel[facing=north]",
+        "x": 25,
+        "y": 13,
+        "z": 9
+      }
+    ],
+    "part_of_vehicle": false
+  },
+  "expect": {
+    "has": [
+      "no one can get to Red Portable Engine at 3,13,10"
+    ],
+    "lacks": []
+  }
+}

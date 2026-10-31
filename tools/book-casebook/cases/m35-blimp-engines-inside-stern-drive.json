@@ -1,0 +1,1444 @@
+{
+  "title": "A blimp laid out like a real airship: engines in the gondola, a shaft through the envelope to a stern fan, a swivelling stern propeller steering it",
+  "from": "2026-10-31 report: book blimps were boxy, with engines on outside platforms; the Designing Aircraft reference design",
+  "roots": [
+    "R3"
+  ],
+  "kind": "model",
+  "model": {
+    "title": "Stern-drive blimp",
+    "size_x": 21,
+    "size_y": 23,
+    "size_z": 27,
+    "blocks": [
+      {
+        "block": "aeronautics:white_envelope",
+        "x": 8,
+        "y": 10,
+        "z": 0,
+        "x2": 18,
+        "y2": 20,
+        "z2": 24,
+        "shape": "streamlined_shell"
+      },
+      {
+        "block": "aeronautics:red_envelope",
+        "x": 8,
+        "y": 10,
+        "z": 4,
+        "x2": 18,
+        "y2": 20,
+        "z2": 4,
+        "shape": "repaint"
+      },
+      {
+        "block": "aeronautics:red_envelope",
+        "x": 8,
+        "y": 10,
+        "z": 16,
+        "x2": 18,
+        "y2": 20,
+        "z2": 16,
+        "shape": "repaint"
+      },
+      {
+        "block": "minecraft:spruce_planks",
+        "x": 10,
+        "y": 5,
+        "z": 2,
+        "x2": 16,
+        "y2": 9,
+        "z2": 11,
+        "shape": "hollow_box"
+      },
+      {
+        "block": "minecraft:air",
+        "x": 11,
+        "y": 6,
+        "z": 3,
+        "x2": 15,
+        "y2": 8,
+        "z2": 10
+      },
+      {
+        "block": "minecraft:air",
+        "x": 14,
+        "y": 10,
+        "z": 10,
+        "x2": 14,
+        "y2": 10,
+        "z2": 10
+      },
+      {
+        "block": "minecraft:air",
+        "x": 13,
+        "y": 10,
+        "z": 8,
+        "x2": 13,
+        "y2": 10,
+        "z2": 8
+      },
+      {
+        "block": "minecraft:air",
+        "x": 14,
+        "y": 10,
+        "z": 9,
+        "x2": 14,
+        "y2": 10,
+        "z2": 9
+      },
+      {
+        "block": "minecraft:air",
+        "x": 13,
+        "y": 10,
+        "z": 7,
+        "x2": 13,
+        "y2": 10,
+        "z2": 7
+      },
+      {
+        "block": "minecraft:air",
+        "x": 13,
+        "y": 10,
+        "z": 10,
+        "x2": 13,
+        "y2": 10,
+        "z2": 10
+      },
+      {
+        "block": "minecraft:air",
+        "x": 14,
+        "y": 10,
+        "z": 8,
+        "x2": 14,
+        "y2": 10,
+        "z2": 8
+      },
+      {
+        "block": "minecraft:air",
+        "x": 13,
+        "y": 10,
+        "z": 9,
+        "x2": 13,
+        "y2": 10,
+        "z2": 9
+      },
+      {
+        "block": "aeronautics:adjustable_burner",
+        "x": 14,
+        "y": 9,
+        "z": 8,
+        "x2": 14,
+        "y2": 9,
+        "z2": 8
+      },
+      {
+        "block": "aeronautics:adjustable_burner",
+        "x": 14,
+        "y": 9,
+        "z": 10,
+        "x2": 14,
+        "y2": 9,
+        "z2": 10
+      },
+      {
+        "block": "aeronautics:propeller_bearing[facing=south]",
+        "x": 13,
+        "y": 15,
+        "z": 25,
+        "x2": 13,
+        "y2": 15,
+        "z2": 25
+      },
+      {
+        "block": "aeronautics:white_envelope_encased_shaft[axis=y]",
+        "x": 12,
+        "y": 10,
+        "z": 10,
+        "x2": 12,
+        "y2": 10,
+        "z2": 10
+      },
+      {
+        "block": "aeronautics:white_envelope_encased_shaft[axis=y]",
+        "x": 13,
+        "y": 10,
+        "z": 12,
+        "x2": 13,
+        "y2": 10,
+        "z2": 12
+      },
+      {
+        "block": "aeronautics:white_envelope_encased_shaft[axis=y]",
+        "x": 14,
+        "y": 13,
+        "z": 20,
+        "x2": 14,
+        "y2": 13,
+        "z2": 20
+      },
+      {
+        "block": "aeronautics:white_envelope_encased_shaft[axis=y]",
+        "x": 14,
+        "y": 14,
+        "z": 20,
+        "x2": 14,
+        "y2": 14,
+        "z2": 20
+      },
+      {
+        "block": "aeronautics:white_envelope_encased_shaft[axis=z]",
+        "x": 13,
+        "y": 12,
+        "z": 17,
+        "x2": 13,
+        "y2": 12,
+        "z2": 17
+      },
+      {
+        "block": "aeronautics:white_envelope_encased_shaft[axis=z]",
+        "x": 13,
+        "y": 12,
+        "z": 18,
+        "x2": 13,
+        "y2": 12,
+        "z2": 18
+      },
+      {
+        "block": "aeronautics:white_envelope_encased_shaft[axis=z]",
+        "x": 13,
+        "y": 12,
+        "z": 19,
+        "x2": 13,
+        "y2": 12,
+        "z2": 19
+      },
+      {
+        "block": "aeronautics:white_envelope_encased_shaft[axis=z]",
+        "x": 13,
+        "y": 15,
+        "z": 22,
+        "x2": 13,
+        "y2": 15,
+        "z2": 22
+      },
+      {
+        "block": "aeronautics:white_envelope_encased_shaft[axis=z]",
+        "x": 13,
+        "y": 15,
+        "z": 23,
+        "x2": 13,
+        "y2": 15,
+        "z2": 23
+      },
+      {
+        "block": "aeronautics:white_envelope_encased_shaft[axis=z]",
+        "x": 13,
+        "y": 15,
+        "z": 24,
+        "x2": 13,
+        "y2": 15,
+        "z2": 24
+      },
+      {
+        "block": "aeronautics:wooden_propeller[facing=south]",
+        "x": 14,
+        "y": 11,
+        "z": 21,
+        "x2": 14,
+        "y2": 11,
+        "z2": 21
+      },
+      {
+        "block": "create:andesite_casing",
+        "x": 13,
+        "y": 15,
+        "z": 26,
+        "x2": 13,
+        "y2": 15,
+        "z2": 26
+      },
+      {
+        "block": "create:cogwheel[axis=y]",
+        "x": 12,
+        "y": 8,
+        "z": 10,
+        "x2": 12,
+        "y2": 8,
+        "z2": 10
+      },
+      {
+        "block": "create:gearbox[axis=x]",
+        "x": 13,
+        "y": 5,
+        "z": 4,
+        "x2": 13,
+        "y2": 5,
+        "z2": 4
+      },
+      {
+        "block": "create:gearbox[axis=x]",
+        "x": 13,
+        "y": 5,
+        "z": 12,
+        "x2": 13,
+        "y2": 5,
+        "z2": 12
+      },
+      {
+        "block": "create:gearbox[axis=x]",
+        "x": 14,
+        "y": 11,
+        "z": 20,
+        "x2": 14,
+        "y2": 11,
+        "z2": 20
+      },
+      {
+        "block": "create:gearbox[axis=x]",
+        "x": 13,
+        "y": 12,
+        "z": 12,
+        "x2": 13,
+        "y2": 12,
+        "z2": 12
+      },
+      {
+        "block": "create:gearbox[axis=x]",
+        "x": 13,
+        "y": 12,
+        "z": 20,
+        "x2": 13,
+        "y2": 12,
+        "z2": 20
+      },
+      {
+        "block": "create:gearbox[axis=y]",
+        "x": 13,
+        "y": 6,
+        "z": 8,
+        "x2": 13,
+        "y2": 6,
+        "z2": 8
+      },
+      {
+        "block": "create:gearbox[axis=y]",
+        "x": 13,
+        "y": 15,
+        "z": 10,
+        "x2": 13,
+        "y2": 15,
+        "z2": 10
+      },
+      {
+        "block": "create:gearbox[axis=y]",
+        "x": 13,
+        "y": 15,
+        "z": 20,
+        "x2": 13,
+        "y2": 15,
+        "z2": 20
+      },
+      {
+        "block": "create:gearbox[axis=z]",
+        "x": 12,
+        "y": 7,
+        "z": 9,
+        "x2": 12,
+        "y2": 7,
+        "z2": 9
+      },
+      {
+        "block": "create:gearbox[axis=z]",
+        "x": 12,
+        "y": 15,
+        "z": 10,
+        "x2": 12,
+        "y2": 15,
+        "z2": 10
+      },
+      {
+        "block": "create:gearbox[axis=z]",
+        "x": 14,
+        "y": 15,
+        "z": 20,
+        "x2": 14,
+        "y2": 15,
+        "z2": 20
+      },
+      {
+        "block": "create:large_cogwheel[axis=x]",
+        "x": 13,
+        "y": 7,
+        "z": 9,
+        "x2": 13,
+        "y2": 7,
+        "z2": 9
+      },
+      {
+        "block": "create:red_seat",
+        "x": 13,
+        "y": 6,
+        "z": 6,
+        "x2": 13,
+        "y2": 6,
+        "z2": 6
+      },
+      {
+        "block": "create:redstone_link[facing=down,receiver=true]",
+        "x": 15,
+        "y": 9,
+        "z": 8,
+        "x2": 15,
+        "y2": 9,
+        "z2": 8
+      },
+      {
+        "block": "create:redstone_link[facing=down,receiver=true]",
+        "x": 15,
+        "y": 9,
+        "z": 10,
+        "x2": 15,
+        "y2": 9,
+        "z2": 10
+      },
+      {
+        "block": "create:redstone_link[facing=up,receiver=false]",
+        "x": 11,
+        "y": 6,
+        "z": 4,
+        "x2": 11,
+        "y2": 6,
+        "z2": 4
+      },
+      {
+        "block": "create:redstone_link[facing=up,receiver=false]",
+        "x": 15,
+        "y": 6,
+        "z": 4,
+        "x2": 15,
+        "y2": 6,
+        "z2": 4
+      },
+      {
+        "block": "create:redstone_link[facing=up,receiver=false]",
+        "x": 12,
+        "y": 6,
+        "z": 5,
+        "x2": 12,
+        "y2": 6,
+        "z2": 5
+      },
+      {
+        "block": "create:redstone_link[facing=up,receiver=false]",
+        "x": 14,
+        "y": 6,
+        "z": 5,
+        "x2": 14,
+        "y2": 6,
+        "z2": 5
+      },
+      {
+        "block": "create:redstone_link[facing=west,receiver=true]",
+        "x": 11,
+        "y": 8,
+        "z": 9,
+        "x2": 11,
+        "y2": 8,
+        "z2": 9
+      },
+      {
+        "block": "create:rotation_speed_controller[axis=z]",
+        "x": 13,
+        "y": 6,
+        "z": 9,
+        "x2": 13,
+        "y2": 6,
+        "z2": 9
+      },
+      {
+        "block": "create:shaft[axis=y]",
+        "x": 13,
+        "y": 6,
+        "z": 12,
+        "x2": 13,
+        "y2": 6,
+        "z2": 12
+      },
+      {
+        "block": "create:shaft[axis=y]",
+        "x": 13,
+        "y": 7,
+        "z": 12,
+        "x2": 13,
+        "y2": 7,
+        "z2": 12
+      },
+      {
+        "block": "create:shaft[axis=y]",
+        "x": 13,
+        "y": 8,
+        "z": 12,
+        "x2": 13,
+        "y2": 8,
+        "z2": 12
+      },
+      {
+        "block": "create:shaft[axis=y]",
+        "x": 12,
+        "y": 9,
+        "z": 10,
+        "x2": 12,
+        "y2": 9,
+        "z2": 10
+      },
+      {
+        "block": "create:shaft[axis=y]",
+        "x": 13,
+        "y": 9,
+        "z": 12,
+        "x2": 13,
+        "y2": 9,
+        "z2": 12
+      },
+      {
+        "block": "create:shaft[axis=y]",
+        "x": 12,
+        "y": 11,
+        "z": 10,
+        "x2": 12,
+        "y2": 11,
+        "z2": 10
+      },
+      {
+        "block": "create:shaft[axis=y]",
+        "x": 13,
+        "y": 11,
+        "z": 12,
+        "x2": 13,
+        "y2": 11,
+        "z2": 12
+      },
+      {
+        "block": "create:shaft[axis=y]",
+        "x": 12,
+        "y": 12,
+        "z": 10,
+        "x2": 12,
+        "y2": 12,
+        "z2": 10
+      },
+      {
+        "block": "create:shaft[axis=y]",
+        "x": 12,
+        "y": 13,
+        "z": 10,
+        "x2": 12,
+        "y2": 13,
+        "z2": 10
+      },
+      {
+        "block": "create:shaft[axis=y]",
+        "x": 12,
+        "y": 14,
+        "z": 10,
+        "x2": 12,
+        "y2": 14,
+        "z2": 10
+      },
+      {
+        "block": "create:shaft[axis=z]",
+        "x": 13,
+        "y": 5,
+        "z": 5,
+        "x2": 13,
+        "y2": 5,
+        "z2": 5
+      },
+      {
+        "block": "create:shaft[axis=z]",
+        "x": 13,
+        "y": 5,
+        "z": 6,
+        "x2": 13,
+        "y2": 5,
+        "z2": 6
+      },
+      {
+        "block": "create:shaft[axis=z]",
+        "x": 13,
+        "y": 5,
+        "z": 7,
+        "x2": 13,
+        "y2": 5,
+        "z2": 7
+      },
+      {
+        "block": "create:shaft[axis=z]",
+        "x": 13,
+        "y": 5,
+        "z": 8,
+        "x2": 13,
+        "y2": 5,
+        "z2": 8
+      },
+      {
+        "block": "create:shaft[axis=z]",
+        "x": 13,
+        "y": 5,
+        "z": 9,
+        "x2": 13,
+        "y2": 5,
+        "z2": 9
+      },
+      {
+        "block": "create:shaft[axis=z]",
+        "x": 13,
+        "y": 5,
+        "z": 10,
+        "x2": 13,
+        "y2": 5,
+        "z2": 10
+      },
+      {
+        "block": "create:shaft[axis=z]",
+        "x": 13,
+        "y": 5,
+        "z": 11,
+        "x2": 13,
+        "y2": 5,
+        "z2": 11
+      },
+      {
+        "block": "create:shaft[axis=z]",
+        "x": 13,
+        "y": 12,
+        "z": 13,
+        "x2": 13,
+        "y2": 12,
+        "z2": 13
+      },
+      {
+        "block": "create:shaft[axis=z]",
+        "x": 13,
+        "y": 12,
+        "z": 14,
+        "x2": 13,
+        "y2": 12,
+        "z2": 14
+      },
+      {
+        "block": "create:shaft[axis=z]",
+        "x": 13,
+        "y": 12,
+        "z": 15,
+        "x2": 13,
+        "y2": 12,
+        "z2": 15
+      },
+      {
+        "block": "create:shaft[axis=z]",
+        "x": 13,
+        "y": 12,
+        "z": 16,
+        "x2": 13,
+        "y2": 12,
+        "z2": 16
+      },
+      {
+        "block": "create:shaft[axis=z]",
+        "x": 13,
+        "y": 15,
+        "z": 11,
+        "x2": 13,
+        "y2": 15,
+        "z2": 11
+      },
+      {
+        "block": "create:shaft[axis=z]",
+        "x": 13,
+        "y": 15,
+        "z": 12,
+        "x2": 13,
+        "y2": 15,
+        "z2": 12
+      },
+      {
+        "block": "create:shaft[axis=z]",
+        "x": 13,
+        "y": 15,
+        "z": 13,
+        "x2": 13,
+        "y2": 15,
+        "z2": 13
+      },
+      {
+        "block": "create:shaft[axis=z]",
+        "x": 13,
+        "y": 15,
+        "z": 14,
+        "x2": 13,
+        "y2": 15,
+        "z2": 14
+      },
+      {
+        "block": "create:shaft[axis=z]",
+        "x": 13,
+        "y": 15,
+        "z": 15,
+        "x2": 13,
+        "y2": 15,
+        "z2": 15
+      },
+      {
+        "block": "create:shaft[axis=z]",
+        "x": 13,
+        "y": 15,
+        "z": 16,
+        "x2": 13,
+        "y2": 15,
+        "z2": 16
+      },
+      {
+        "block": "create:shaft[axis=z]",
+        "x": 13,
+        "y": 15,
+        "z": 17,
+        "x2": 13,
+        "y2": 15,
+        "z2": 17
+      },
+      {
+        "block": "create:shaft[axis=z]",
+        "x": 13,
+        "y": 15,
+        "z": 18,
+        "x2": 13,
+        "y2": 15,
+        "z2": 18
+      },
+      {
+        "block": "create:shaft[axis=z]",
+        "x": 13,
+        "y": 15,
+        "z": 19,
+        "x2": 13,
+        "y2": 15,
+        "z2": 19
+      },
+      {
+        "block": "create:shaft[axis=z]",
+        "x": 13,
+        "y": 15,
+        "z": 21,
+        "x2": 13,
+        "y2": 15,
+        "z2": 21
+      },
+      {
+        "block": "create:white_sail[facing=south]",
+        "x": 13,
+        "y": 8,
+        "z": 26,
+        "x2": 13,
+        "y2": 8,
+        "z2": 26
+      },
+      {
+        "block": "create:white_sail[facing=south]",
+        "x": 13,
+        "y": 9,
+        "z": 26,
+        "x2": 13,
+        "y2": 9,
+        "z2": 26
+      },
+      {
+        "block": "create:white_sail[facing=south]",
+        "x": 13,
+        "y": 10,
+        "z": 26,
+        "x2": 13,
+        "y2": 10,
+        "z2": 26
+      },
+      {
+        "block": "create:white_sail[facing=south]",
+        "x": 13,
+        "y": 11,
+        "z": 26,
+        "x2": 13,
+        "y2": 11,
+        "z2": 26
+      },
+      {
+        "block": "create:white_sail[facing=south]",
+        "x": 13,
+        "y": 12,
+        "z": 26,
+        "x2": 13,
+        "y2": 12,
+        "z2": 26
+      },
+      {
+        "block": "create:white_sail[facing=south]",
+        "x": 13,
+        "y": 13,
+        "z": 26,
+        "x2": 13,
+        "y2": 13,
+        "z2": 26
+      },
+      {
+        "block": "create:white_sail[facing=south]",
+        "x": 13,
+        "y": 14,
+        "z": 26,
+        "x2": 13,
+        "y2": 14,
+        "z2": 26
+      },
+      {
+        "block": "create:white_sail[facing=south]",
+        "x": 6,
+        "y": 15,
+        "z": 26,
+        "x2": 12,
+        "y2": 15,
+        "z2": 26
+      },
+      {
+        "block": "create:white_sail[facing=south]",
+        "x": 14,
+        "y": 15,
+        "z": 26,
+        "x2": 20,
+        "y2": 15,
+        "z2": 26
+      },
+      {
+        "block": "create:white_sail[facing=south]",
+        "x": 13,
+        "y": 16,
+        "z": 26,
+        "x2": 13,
+        "y2": 16,
+        "z2": 26
+      },
+      {
+        "block": "create:white_sail[facing=south]",
+        "x": 13,
+        "y": 17,
+        "z": 26,
+        "x2": 13,
+        "y2": 17,
+        "z2": 26
+      },
+      {
+        "block": "create:white_sail[facing=south]",
+        "x": 13,
+        "y": 18,
+        "z": 26,
+        "x2": 13,
+        "y2": 18,
+        "z2": 26
+      },
+      {
+        "block": "create:white_sail[facing=south]",
+        "x": 13,
+        "y": 19,
+        "z": 26,
+        "x2": 13,
+        "y2": 19,
+        "z2": 26
+      },
+      {
+        "block": "create:white_sail[facing=south]",
+        "x": 13,
+        "y": 20,
+        "z": 26,
+        "x2": 13,
+        "y2": 20,
+        "z2": 26
+      },
+      {
+        "block": "create:white_sail[facing=south]",
+        "x": 13,
+        "y": 21,
+        "z": 26,
+        "x2": 13,
+        "y2": 21,
+        "z2": 26
+      },
+      {
+        "block": "create:white_sail[facing=south]",
+        "x": 13,
+        "y": 22,
+        "z": 26,
+        "x2": 13,
+        "y2": 22,
+        "z2": 26
+      },
+      {
+        "block": "minecraft:barrel[facing=up]",
+        "x": 11,
+        "y": 6,
+        "z": 6,
+        "x2": 11,
+        "y2": 6,
+        "z2": 6
+      },
+      {
+        "block": "minecraft:barrel[facing=up]",
+        "x": 11,
+        "y": 6,
+        "z": 7,
+        "x2": 11,
+        "y2": 6,
+        "z2": 7
+      },
+      {
+        "block": "minecraft:barrel[facing=up]",
+        "x": 11,
+        "y": 7,
+        "z": 6,
+        "x2": 11,
+        "y2": 7,
+        "z2": 6
+      },
+      {
+        "block": "minecraft:barrel[facing=up]",
+        "x": 11,
+        "y": 7,
+        "z": 7,
+        "x2": 11,
+        "y2": 7,
+        "z2": 7
+      },
+      {
+        "block": "minecraft:barrel[facing=up]",
+        "x": 11,
+        "y": 8,
+        "z": 6,
+        "x2": 11,
+        "y2": 8,
+        "z2": 6
+      },
+      {
+        "block": "minecraft:barrel[facing=up]",
+        "x": 11,
+        "y": 8,
+        "z": 7,
+        "x2": 11,
+        "y2": 8,
+        "z2": 7
+      },
+      {
+        "block": "minecraft:comparator[facing=east]",
+        "x": 12,
+        "y": 6,
+        "z": 4,
+        "x2": 12,
+        "y2": 6,
+        "z2": 4
+      },
+      {
+        "block": "minecraft:comparator[facing=west]",
+        "x": 14,
+        "y": 6,
+        "z": 4,
+        "x2": 14,
+        "y2": 6,
+        "z2": 4
+      },
+      {
+        "block": "minecraft:crafting_table",
+        "x": 15,
+        "y": 6,
+        "z": 7,
+        "x2": 15,
+        "y2": 6,
+        "z2": 7
+      },
+      {
+        "block": "minecraft:glass_pane[east=true,west=true]",
+        "x": 11,
+        "y": 7,
+        "z": 2,
+        "x2": 15,
+        "y2": 7,
+        "z2": 2
+      },
+      {
+        "block": "minecraft:glass_pane[east=true,west=true]",
+        "x": 11,
+        "y": 8,
+        "z": 2,
+        "x2": 15,
+        "y2": 8,
+        "z2": 2
+      },
+      {
+        "block": "minecraft:glass_pane[north=true,south=true]",
+        "x": 10,
+        "y": 7,
+        "z": 4,
+        "x2": 10,
+        "y2": 7,
+        "z2": 4
+      },
+      {
+        "block": "minecraft:glass_pane[north=true,south=true]",
+        "x": 16,
+        "y": 7,
+        "z": 4,
+        "x2": 16,
+        "y2": 7,
+        "z2": 4
+      },
+      {
+        "block": "minecraft:glass_pane[north=true,south=true]",
+        "x": 10,
+        "y": 7,
+        "z": 7,
+        "x2": 10,
+        "y2": 7,
+        "z2": 7
+      },
+      {
+        "block": "minecraft:glass_pane[north=true,south=true]",
+        "x": 16,
+        "y": 7,
+        "z": 7,
+        "x2": 16,
+        "y2": 7,
+        "z2": 7
+      },
+      {
+        "block": "minecraft:smoker[facing=west]",
+        "x": 15,
+        "y": 6,
+        "z": 8,
+        "x2": 15,
+        "y2": 6,
+        "z2": 8
+      },
+      {
+        "block": "minecraft:spruce_door[half=lower,facing=west,hinge=left]",
+        "x": 16,
+        "y": 6,
+        "z": 6,
+        "x2": 16,
+        "y2": 6,
+        "z2": 6
+      },
+      {
+        "block": "minecraft:spruce_door[half=upper,facing=west,hinge=left]",
+        "x": 16,
+        "y": 7,
+        "z": 6,
+        "x2": 16,
+        "y2": 7,
+        "z2": 6
+      },
+      {
+        "block": "simulated:analog_transmission[axis=y]",
+        "x": 12,
+        "y": 8,
+        "z": 9,
+        "x2": 12,
+        "y2": 8,
+        "z2": 9
+      },
+      {
+        "block": "simulated:physics_assembler[facing=north]",
+        "x": 12,
+        "y": 5,
+        "z": 7,
+        "x2": 12,
+        "y2": 5,
+        "z2": 7
+      },
+      {
+        "block": "simulated:red_portable_engine[facing=east]",
+        "x": 12,
+        "y": 6,
+        "z": 8,
+        "x2": 12,
+        "y2": 6,
+        "z2": 8
+      },
+      {
+        "block": "simulated:red_portable_engine[facing=north]",
+        "x": 13,
+        "y": 6,
+        "z": 10,
+        "x2": 13,
+        "y2": 6,
+        "z2": 10
+      },
+      {
+        "block": "simulated:red_portable_engine[facing=south]",
+        "x": 13,
+        "y": 6,
+        "z": 7,
+        "x2": 13,
+        "y2": 6,
+        "z2": 7
+      },
+      {
+        "block": "simulated:red_portable_engine[facing=west]",
+        "x": 14,
+        "y": 6,
+        "z": 8,
+        "x2": 14,
+        "y2": 6,
+        "z2": 8
+      },
+      {
+        "block": "simulated:steering_wheel[facing=north]",
+        "x": 13,
+        "y": 6,
+        "z": 4,
+        "x2": 13,
+        "y2": 6,
+        "z2": 4
+      },
+      {
+        "block": "simulated:swivel_bearing[facing=down]",
+        "x": 14,
+        "y": 12,
+        "z": 20,
+        "x2": 14,
+        "y2": 12,
+        "z2": 20
+      },
+      {
+        "block": "simulated:throttle_lever[facing=north,inverted=true]",
+        "x": 11,
+        "y": 6,
+        "z": 5,
+        "x2": 11,
+        "y2": 6,
+        "z2": 5
+      },
+      {
+        "block": "simulated:throttle_lever[facing=north]",
+        "x": 15,
+        "y": 6,
+        "z": 5,
+        "x2": 15,
+        "y2": 6,
+        "z2": 5
+      },
+      {
+        "block": "simulated:white_symmetric_sail[axis=x]",
+        "x": 14,
+        "y": 8,
+        "z": 20,
+        "x2": 14,
+        "y2": 8,
+        "z2": 20
+      },
+      {
+        "block": "simulated:white_symmetric_sail[axis=x]",
+        "x": 14,
+        "y": 8,
+        "z": 21,
+        "x2": 14,
+        "y2": 8,
+        "z2": 21
+      },
+      {
+        "block": "simulated:white_symmetric_sail[axis=x]",
+        "x": 14,
+        "y": 8,
+        "z": 22,
+        "x2": 14,
+        "y2": 8,
+        "z2": 22
+      },
+      {
+        "block": "simulated:white_symmetric_sail[axis=x]",
+        "x": 14,
+        "y": 9,
+        "z": 20,
+        "x2": 14,
+        "y2": 9,
+        "z2": 20
+      },
+      {
+        "block": "simulated:white_symmetric_sail[axis=x]",
+        "x": 14,
+        "y": 9,
+        "z": 21,
+        "x2": 14,
+        "y2": 9,
+        "z2": 21
+      },
+      {
+        "block": "simulated:white_symmetric_sail[axis=x]",
+        "x": 14,
+        "y": 9,
+        "z": 22,
+        "x2": 14,
+        "y2": 9,
+        "z2": 22
+      },
+      {
+        "block": "simulated:white_symmetric_sail[axis=x]",
+        "x": 14,
+        "y": 10,
+        "z": 20,
+        "x2": 14,
+        "y2": 10,
+        "z2": 20
+      },
+      {
+        "block": "simulated:white_symmetric_sail[axis=x]",
+        "x": 14,
+        "y": 10,
+        "z": 21,
+        "x2": 14,
+        "y2": 10,
+        "z2": 21
+      },
+      {
+        "block": "simulated:white_symmetric_sail[axis=x]",
+        "x": 14,
+        "y": 10,
+        "z": 22,
+        "x2": 14,
+        "y2": 10,
+        "z2": 22
+      },
+      {
+        "block": "simulated:white_symmetric_sail[axis=x]",
+        "x": 13,
+        "y": 17,
+        "z": 22,
+        "x2": 13,
+        "y2": 17,
+        "z2": 22
+      },
+      {
+        "block": "simulated:white_symmetric_sail[axis=x]",
+        "x": 13,
+        "y": 18,
+        "z": 20,
+        "x2": 13,
+        "y2": 18,
+        "z2": 20
+      },
+      {
+        "block": "simulated:white_symmetric_sail[axis=x]",
+        "x": 13,
+        "y": 18,
+        "z": 21,
+        "x2": 13,
+        "y2": 18,
+        "z2": 21
+      },
+      {
+        "block": "simulated:white_symmetric_sail[axis=x]",
+        "x": 13,
+        "y": 18,
+        "z": 22,
+        "x2": 13,
+        "y2": 18,
+        "z2": 22
+      },
+      {
+        "block": "simulated:white_symmetric_sail[axis=x]",
+        "x": 13,
+        "y": 19,
+        "z": 18,
+        "x2": 13,
+        "y2": 19,
+        "z2": 18
+      },
+      {
+        "block": "simulated:white_symmetric_sail[axis=x]",
+        "x": 13,
+        "y": 19,
+        "z": 19,
+        "x2": 13,
+        "y2": 19,
+        "z2": 19
+      },
+      {
+        "block": "simulated:white_symmetric_sail[axis=x]",
+        "x": 13,
+        "y": 19,
+        "z": 20,
+        "x2": 13,
+        "y2": 19,
+        "z2": 20
+      },
+      {
+        "block": "simulated:white_symmetric_sail[axis=x]",
+        "x": 13,
+        "y": 19,
+        "z": 21,
+        "x2": 13,
+        "y2": 19,
+        "z2": 21
+      },
+      {
+        "block": "simulated:white_symmetric_sail[axis=x]",
+        "x": 13,
+        "y": 20,
+        "z": 18,
+        "x2": 13,
+        "y2": 20,
+        "z2": 18
+      },
+      {
+        "block": "simulated:white_symmetric_sail[axis=x]",
+        "x": 13,
+        "y": 20,
+        "z": 19,
+        "x2": 13,
+        "y2": 20,
+        "z2": 19
+      },
+      {
+        "block": "simulated:white_symmetric_sail[axis=y]",
+        "x": 8,
+        "y": 15,
+        "z": 18,
+        "x2": 9,
+        "y2": 15,
+        "z2": 18
+      },
+      {
+        "block": "simulated:white_symmetric_sail[axis=y]",
+        "x": 17,
+        "y": 15,
+        "z": 18,
+        "x2": 18,
+        "y2": 15,
+        "z2": 18
+      },
+      {
+        "block": "simulated:white_symmetric_sail[axis=y]",
+        "x": 8,
+        "y": 15,
+        "z": 19,
+        "x2": 9,
+        "y2": 15,
+        "z2": 19
+      },
+      {
+        "block": "simulated:white_symmetric_sail[axis=y]",
+        "x": 17,
+        "y": 15,
+        "z": 19,
+        "x2": 18,
+        "y2": 15,
+        "z2": 19
+      },
+      {
+        "block": "simulated:white_symmetric_sail[axis=y]",
+        "x": 9,
+        "y": 15,
+        "z": 20,
+        "x2": 10,
+        "y2": 15,
+        "z2": 20
+      },
+      {
+        "block": "simulated:white_symmetric_sail[axis=y]",
+        "x": 16,
+        "y": 15,
+        "z": 20,
+        "x2": 17,
+        "y2": 15,
+        "z2": 20
+      },
+      {
+        "block": "simulated:white_symmetric_sail[axis=y]",
+        "x": 9,
+        "y": 15,
+        "z": 21,
+        "x2": 10,
+        "y2": 15,
+        "z2": 21
+      },
+      {
+        "block": "simulated:white_symmetric_sail[axis=y]",
+        "x": 16,
+        "y": 15,
+        "z": 21,
+        "x2": 17,
+        "y2": 15,
+        "z2": 21
+      },
+      {
+        "block": "simulated:white_symmetric_sail[axis=y]",
+        "x": 10,
+        "y": 15,
+        "z": 22,
+        "x2": 11,
+        "y2": 15,
+        "z2": 22
+      },
+      {
+        "block": "simulated:white_symmetric_sail[axis=y]",
+        "x": 15,
+        "y": 15,
+        "z": 22,
+        "x2": 16,
+        "y2": 15,
+        "z2": 22
+      }
+    ],
+    "part_of_vehicle": false,
+    "speeds": [
+      {
+        "x": 13,
+        "y": 6,
+        "z": 9,
+        "rpm": 128
+      }
+    ],
+    "labels": [
+      {
+        "text": "engines",
+        "x": 12,
+        "y": 6,
+        "z": 8
+      },
+      {
+        "text": "helm",
+        "x": 13,
+        "y": 6,
+        "z": 4
+      },
+      {
+        "text": "rudder",
+        "x": 14,
+        "y": 10,
+        "z": 21
+      },
+      {
+        "text": "stern propeller",
+        "x": 13,
+        "y": 15,
+        "z": 25
+      }
+    ]
+  },
+  "expect": {
+    "built": true,
+    "has": [
+      "Steered with one Steering Wheel, which swings the Swivel Bearing",
+      "Throttle: an Analog Transmission",
+      "Propeller Bearing (28 sails)"
+    ],
+    "lacks": [
+      "PROBLEM",
+      "no one can get to"
+    ]
+  }
+}

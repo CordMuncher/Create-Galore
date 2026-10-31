@@ -1028,7 +1028,7 @@ hash = "04950a14129e70b5b7c63433ae975406492ac12086f04575c86b0a101f580354"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/flight.md"
-hash = "531fdf8492445c2bf7b95810459456901787aada8b1b52d9c06a5d021bc088ef"
+hash = "74d48d02ce337c6780addff267f515e19ef776315b1c683b2d7456db2a2c86d3"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/food.md"
@@ -1431,16 +1431,20 @@ file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomico
 hash = "6cf3835455a0bae13eb25abbd0115ade57310c5c4ab49ac620f43d1d68a47a9d"
 
 [[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/flight/aircraft_design.json"
+hash = "2b1ce3d7fd49163d4b08daf03e525199085e50a7dbb890e4c073c9a0643edf4c"
+
+[[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/flight/airships.json"
 hash = "0adca6fd4e1a50351d2c6bc49d54b50495b47c5b26f140e15677bd088348ce42"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/flight/balloons_and_lift.json"
-hash = "e7fcdc1a5e98256b7d4c606eabe0293a4cb934bf77f40075d9c7148d82120c1f"
+hash = "25e9be35f2fbc2d87a656e758e8cb1d44e19172498026e5d3a107d0d91e2a463"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/flight/controls.json"
-hash = "c85428434d025f82ad3b073ff1c10494f4cccfb70219bf198e9b707af7b9c8a2"
+hash = "f9141aa9db31b8ca12b98f5133e98a76a50157bbb76336722d0353c425e60902"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/flight/destinations.json"
@@ -5038,8 +5042,8 @@ hash = "db683b65dc15a03dd6de2d34d5dc6ad0e3490744ced513a8cc584784ee9d3d8b"
 metafile = true
 
 [[files]]
-file = "mods/create-galore-bridge-1.171.0.jar"
-hash = "7aa5815f11b2cefb6b1be9eaa1e08ee68cc4b134d709c7cae2c2eac17e7e5e99"
+file = "mods/create-galore-bridge-1.172.0.jar"
+hash = "f19daaff321ab2b501d69ecd08425cfa5c420c6c936b9d3c4e27ae3dad55efc3"
 
 [[files]]
 file = "mods/create-galore-fishing-0.3.29.jar"
