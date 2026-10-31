@@ -1044,7 +1044,7 @@ hash = "4f180259d1c62cd1440a39dae258ae596096cdbe7b40d37183c0be3983127027"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/survival.md"
-hash = "3adb96143935d0e2d6cb78eca346afd7d5b31d660e65d52771b783e9b27c0708"
+hash = "6bc7683ff4d3ed99c218640d8fc2e0d8d37bf8a2e7e6e19b073f8aade9f969eb"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/transport.md"
@@ -1956,7 +1956,7 @@ hash = "8a24f0803c5db07c79d9c2276ca3ce0e17cf9ddf95c942f66e5cb07006de4251"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/survival/pollution_control.json"
-hash = "4d2a55b353ee3fe40ae80c93686635329cc213b49eac3d675759a9ed33d87d37"
+hash = "55a9e346b60fc27361ff9a86418cc157abc494c24a4d8c7016f14df7158c9b03"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/survival/seasons.json"
@@ -1968,7 +1968,7 @@ hash = "5d72281a2702d892398a2cd95462934a062b515c0c296da144a2d1b4f208cd85"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/survival/smog_pressure.json"
-hash = "f2167909770951f3debe45149712377f45a20b1c06413d1262aaa15c8b98c0cb"
+hash = "d66558842ab50e472218980b4650b6c1d38e4ce846446af3d9af932aa3c65576"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/survival/temperature.json"
@@ -5018,8 +5018,8 @@ hash = "db683b65dc15a03dd6de2d34d5dc6ad0e3490744ced513a8cc584784ee9d3d8b"
 metafile = true
 
 [[files]]
-file = "mods/create-galore-bridge-1.168.0.jar"
-hash = "27e73b7c4eeba08a43539155034133a57716a949dced15802ec7504f7f463e45"
+file = "mods/create-galore-bridge-1.169.0.jar"
+hash = "f2e5414626eca2f08cc6ffa9a07567a9665c00ebc853c787dc7105917d939496"
 
 [[files]]
 file = "mods/create-galore-fishing-0.3.26.jar"

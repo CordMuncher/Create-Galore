@@ -12,6 +12,11 @@ public final class FilterUpkeep {
         return Math.max(1, slotLimit / 8);
     }
 
+    /** A filter frame block: how many units a second it takes. */
+    public interface Rated {
+        int create_galore_bridge$rate();
+    }
+
     /** What a frame's budget tracks: the second it was last used in and how much it has taken in it. */
     public interface Budget {
         long create_galore_bridge$second();

@@ -1,4 +1,4 @@
-<!-- sources sha256:cbe899e839a0719bb51a8755f2df74f36749d1b8560ab79c49b3d9fe8e0e1b3c -->
+<!-- sources sha256:d664b4f0a4e60703eeff8e171b5a9868352e1704613b81f71d177894d5a8d729 -->
 # Survival Layers (survival)
 Layers: Temperature (Cold Sweat), Thirst, Seasons (Serene Seasons), Pollution (Pollution of the Realms smog, exhaust systems), food/health, death/graves.
 
@@ -120,7 +120,7 @@ Layers: Temperature (Cold Sweat), Thirst, Seasons (Serene Seasons), Pollution (P
 - Vent [adchimneys:metal_vent]: intake inside the room; pulls in smog up to 4 blocks away; join to pump with ducts. Stone version same.
 - Duct [adchimneys:duct]: carries smog from vents/machines to a pump, up to 256 blocks. Joins a vent beside or above it, not below. Duct touching a machine takes its smoke straight in.
 - Pump [adchimneys:metal_pump]: runs while an Encased Fan (see create_basics/fans) right under it turns >= 16 RPM, blowing up or down; the fan's stress (see create_basics/stress) is the pump's cost (a bare shaft does not run it). Pushes smog upward only, into the chimney or frames above.
-- Filter Frame [adpother:iron_filter_frame]: stack on the pump's outlet. Every frame catches all three smogs (carbon, sulfur, dust), needs nothing put in it. Iron filters 2 units a second, gold 4, diamond 8. Right-click a frame to see its rate.
+- Filter Frame [adpother:iron_filter_frame]: stack on the pump's outlet. Every frame catches all three smogs (carbon, sulfur, dust), needs nothing put in it. Iron filters 2 units a second, gold 4, diamond 8. Right-click a frame to see its rate; Engineer's Goggles on a frame show its pressure (see survival/smog_pressure).
 - Respirator filters: craft a Respirator together with a filter material to pick what it stops (units each): Leaves: carbon 8; Wool: sulfur 8; Paper: dust 8; Filter Cartridge [smog:filter_cartridge]: carbon 32; Brass Filter Cartridge: carbon + sulfur 64; Precision Filter Cartridge: all three 128. A clogged cartridge comes clean with a Fan through water, sometimes Soot. Soot burns as fuel, makes black dye, or compacts (see glossary/compacting) to Graphite and Block of Soot.
 - Busy stacks: a frame never fills up or runs out. Smog arriving faster than a stack filters waits below until it can pass; nothing slips through unfiltered. Filter faster with more frames or gold/diamond ones; two iron frames = one gold. A pump moves about 1.5 units a second whatever its speed, so one iron frame keeps up with it; gold/diamond pay off in a sealed room's roof under pressure (see survival/smog_pressure).
 - Mixed smog: every frame catches carbon, sulfur and dust alike, so one stack handles mixed smog.
@@ -139,6 +139,8 @@ Layers: Temperature (Cold Sweat), Thirst, Seasons (Serene Seasons), Pollution (P
 - Opening a cased door: only redstone opens it (button, lever, pressure plate, circuit). Hands can't; villagers and mobs can't open or break through it. Wrench takes the casing off (casing back to the player, same door back); sneak-wrench picks it all up. Breaking it drops the casing and the door. Sneaking with casing in hand places the casing block instead.
 - Sealed smelter: 1. fan, lava (or Blaze Burner) and belt inside a box of full blocks; 2. casing on the belt, shafts, pipes and door through the wall; 3. Filter Frame in the roof; 4. open sky or chimney above the frame. Each item smelted sends smog up through the filter.
 - Watch out, overpressure: a sealed space that fills up has no room for more smoke. Furnace or other machine in it blows up after a few tries and breaks. Fan smelting into it blows the casing open (as hard as a Creeper) after 4 batches that find no room.
+- Reading a filter: wear Engineer's Goggles and look at a Filter Frame. Shows the room under its stack, how full of smog it is (bar + %), filling up / clearing / steady, and units a second the stack filters of its total. Sneak: room size in blocks and smog units of what it holds.
+- Goggle colours: green Normal = open air below (no pressure builds), nothing open under it, or a sealed room the filters keep up with; yellow Pressure = sealed room at least a quarter full, or the stack filtering flat out (also yellow Not filtering: open space below but the stack's top is closed); red Overpressure = sealed room 60% full, or smog under a stack whose top is closed (nothing gets out). On red a smoky machine in the room can blow: add frames, use gold/diamond, or open the top.
 - Related: (see survival/pollution_control), (see survival/pollution), (see create_basics/fans), (see create_basics/item_logistics)
 
 ## survival/water_pumps | Cleaning Polluted Water
