@@ -62,7 +62,7 @@
     {
       "type": "modonomicon:text",
       "title": "Steel Tools and Armor",
-      "text": "The Alloy Forge takes steel tools and armor in iron's shapes, any steel. Steel Horse Armor: Iron Horse Armor and four steel.\\\n\\\n[#](7A3C9A)[JEI](entry://glossary/jei)[#]() doesn't list the forge's recipes. It lists the [#](7A3C9A)[Mechanical Crafting](entry://glossary/mechanical_crafting)[#]() ones, which make the same tools and armor (not the horse armor)."
+      "text": "The Alloy Forge takes steel tools and armor in iron's shapes, any steel. Steel Horse Armor: Iron Horse Armor and four steel.\\\n\\\n[#](7A3C9A)[JEI](entry://glossary/jei)[#]() shows them on its Alloy Forge page, with the time each takes; the forge needs fuel. [#](7A3C9A)[Mechanical Crafting](entry://glossary/mechanical_crafting)[#]() makes the same tools and armor too (not the horse armor)."
     }
   ]
 }

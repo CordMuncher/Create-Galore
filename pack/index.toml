@@ -423,8 +423,20 @@ file = "config/paxi/datapacks/create-galore-tweaks/data/aquaculture/loot_table/g
 hash = "a125ca370997d6282e2e01d100dd1fbc1e654867b2b7c97e0fd0814e5dff4fc6"
 
 [[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/aquaculture/recipe/acacia_fish_mount.json"
+hash = "e9e3390dc8d7fe5ce4816fb94a7460465566914754fc52b3023e8a789ab35108"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/aquaculture/recipe/birch_fish_mount.json"
+hash = "3479438edcc6c7fd0a0f4dda1f2272734a0928b909b7ca14a46d0c8ee595a550"
+
+[[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/aquaculture/recipe/bobber.json"
 hash = "23a32162cdaf48501ee275127cb5986f6826313e37c64f9d1013d891893682fe"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/aquaculture/recipe/dark_oak_fish_mount.json"
+hash = "4eac936bd511bcb4de59e9697530a9cf38815a06e2ce703e4518de048e94062e"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/aquaculture/recipe/diamond_fishing_rod.json"
@@ -463,6 +475,10 @@ file = "config/paxi/datapacks/create-galore-tweaks/data/aquaculture/recipe/iron_
 hash = "5eded5d8c62bb1324546dbb1dfd60b55f2f4c89fccd557a43a0635ca6abde13c"
 
 [[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/aquaculture/recipe/jungle_fish_mount.json"
+hash = "668e871a7742197d970c7b4f6787935f5bc98e038dc641d7361d6f73176954f5"
+
+[[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/aquaculture/recipe/light_hook.json"
 hash = "a6f82ae2b78a8de6f2e49ed01d7ee0a8aae7330b678dba284b602764b7506538"
 
@@ -479,8 +495,16 @@ file = "config/paxi/datapacks/create-galore-tweaks/data/aquaculture/recipe/note_
 hash = "d763fd2321b11dd8b379cbd1a116c7e73c71f11631052290e355a0a68cdf9791"
 
 [[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/aquaculture/recipe/oak_fish_mount.json"
+hash = "82735c994f2bee27a836869406616eb9ed30fb0b13cb57377450e86c24c68fe8"
+
+[[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/aquaculture/recipe/redstone_hook.json"
 hash = "1807d33e31c98f5dc9bec9efb5a16e49d2e4ebea5a42902ab55f78bbb07662dd"
+
+[[files]]
+file = "config/paxi/datapacks/create-galore-tweaks/data/aquaculture/recipe/spruce_fish_mount.json"
+hash = "988b313ff3ff2dc859122ec7477e6e2fa471c4bcf53bdfda512a3e6f3adfa08c"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/aquaculture/recipe/tackle_box.json"
@@ -1000,7 +1024,7 @@ hash = "45aa6ab83e08916eeface0abf8fd65811a19df7fbd78febaca3b29f7ea42c5bf"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/fishing.md"
-hash = "59080857159b335479cc73f63d1f84da76f3bfe38ae35e702729555ec3b41d7f"
+hash = "72d1ee6646cee9202ac383b93c180c6f49edfce8cecc70782b30caefee9df538"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/flight.md"
@@ -1008,7 +1032,7 @@ hash = "531fdf8492445c2bf7b95810459456901787aada8b1b52d9c06a5d021bc088ef"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/food.md"
-hash = "87b73cc1d22c67e3a39916c384cba14781b5460246615dfc8dec9ac533450be3"
+hash = "c4089f0e00a40ef3cda18cb5a33eb3bb453b1b08fec26f1cba7784b35aa6d06f"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/glossary.md"
@@ -1020,7 +1044,7 @@ hash = "254aa4d6bae8a9f1244f998584bb4f59502a3147cf0d7836f0299f1ac49d8f9e"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/industry.md"
-hash = "aaf20f4c93860eee93f420d5b5126dbda3efc50519e25ed69bd0aaa30ff4c031"
+hash = "e9444f5b2fcd73b40001c83507c40d5bd19a6e4eb8380253fae0222c02e04cad"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/materials.md"
@@ -1356,7 +1380,7 @@ hash = "b74d38b02f340e8af258d339cdf5b0898719ab12d3dba08452b92b839b216af5"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/fishing/journal.json"
-hash = "8c269a2008e4ac4e41d0bef2978c4110fb2bd0c994fecda93244b0e1e5228509"
+hash = "b85de0a2c4d438d8acf6aa2f120292be3669e8d00e3d86469aa0eb2d3a522e5f"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/fishing/landing.json"
@@ -1460,7 +1484,7 @@ hash = "4677c93978d71d79d9ce02cc8838d58103e1f3f6f85975e4e8e4d4e1a7a2b709"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/food/bees.json"
-hash = "c52e2e1bddbd451c8e949f1841bc8bf501c8f5b599052e863f1bd62cb27c7e5e"
+hash = "66bb24f49ba8ad2b423eb98f7522897a3a5fbb573e641ff8212a4009c84d7782"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/food/brewing.json"
@@ -1732,7 +1756,7 @@ hash = "037ccfa7244736bdf664abaae741d5524d5d3e0dd83c1f77db6820d01d9e682a"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/industry/alloyed.json"
-hash = "3b95ffbf4dc5fa09cc64047c7ae53cebd6c1ec63372b7b34aab4c855157b4fa3"
+hash = "53b9327c3036ef8b3f58f2c02e3f14ac1c1d47a997b8baa321a7f671a0a7ea34"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/industry/cannons.json"
@@ -4107,10 +4131,6 @@ file = "config/paxi/datapacks/create-galore-tweaks/data/productivebees/recipe/ce
 hash = "51738bd0249080c68f525f117a5df62f081d9d4a7a6639bc97566d5531f01364"
 
 [[files]]
-file = "config/paxi/datapacks/create-galore-tweaks/data/productivebees/recipe/centrifuge/honeycomb_draconic.json"
-hash = "a832fe6a416d8eedfd091ae92820aad67945ff807fcae623bb88871544b6f4a8"
-
-[[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/productivebees/recipe/centrifuge/honeycomb_ender.json"
 hash = "ca1879df9afed33a6fab5f2b1ce38ce7932f2a6a981fcade7ca86b656b8a1359"
 
@@ -5018,8 +5038,8 @@ hash = "db683b65dc15a03dd6de2d34d5dc6ad0e3490744ced513a8cc584784ee9d3d8b"
 metafile = true
 
 [[files]]
-file = "mods/create-galore-bridge-1.170.0.jar"
-hash = "ecd526603f859066fc0a709debd5bd2a91b77a7e61d48f7b5968b0a0a51ba610"
+file = "mods/create-galore-bridge-1.171.0.jar"
+hash = "7aa5815f11b2cefb6b1be9eaa1e08ee68cc4b134d709c7cae2c2eac17e7e5e99"
 
 [[files]]
 file = "mods/create-galore-fishing-0.3.27.jar"
