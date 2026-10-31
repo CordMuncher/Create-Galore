@@ -30,7 +30,6 @@ const ivec3 workGroups = ivec3(1, 1, 1);
 
 uniform vec3 sunPosition;
 uniform vec3 shadowLightPosition;
-uniform float rainStrength;
 layout(rgba32f) uniform image2D cg_globals_img;
 
 const vec3 sun_high = vec3(2.0, 1.25, 0.72);
@@ -148,7 +147,7 @@ void main() {
     float cloud_y = clamp(cameraPosition.y, 192.0, 320.0);
     vec3 cloud_through = air_transmittance(camera_radius(cloud_y), max(cloud_by_sun ? sun.y : moon.y, 0.004));
     vec3 cloud_sun = cloud_through * (cloud_by_sun ? mix(sun_low, sun_high, noon) : moon_now);
-    float cloud_white = cloud_by_sun ? 0.5 * smoothstep(0.05, 0.4, sun.y) : 0.0;
+    float cloud_white = cloud_by_sun ? 0.85 * smoothstep(0.05, 0.4, sun.y) : 0.0; // white by day, gold low down
     cloud_sun = mix(cloud_sun, vec3(luminance(cloud_sun)), cloud_white);
     cloud_sun = mix(cloud_sun, vec3(luminance(cloud_sun)), 0.6 * rain) * mix(1.0, 0.08, rain);
     float cloud_rise = cloud_by_sun ? smoothstep(-0.03, 0.01, sun.y) : smoothstep(-0.03, 0.05, moon.y);

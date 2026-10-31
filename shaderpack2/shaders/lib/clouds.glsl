@@ -34,7 +34,6 @@
 
 uniform sampler3D cg_cloud_noise; // see tools/cloud_noise.py
 uniform float cloudHeight;        // Minecraft's cloud height for this world (an Iris uniform; not a number without clouds)
-uniform float rainStrength;
 uniform int worldTime;            // the game's clock: ticks into the day
 uniform int worldDay;             // and days
 
@@ -155,7 +154,8 @@ float cloud_body(vec3 p, float h, CloudMap map) {
     vec2 push = textureLod(cg_cloud_noise, q / 128.0, 0.0).ra - 0.5;
     float lumps = cloud_lumps(q + vec3(push.x, 0.0, push.y) * 24.0);
     lumps = mix(0.3 + 0.7 * lumps, lumps, map.kind); // sheets: broad, with gaps
-    float top = mix(mix(0.3, 0.45, map.kind), 1.0, map.big);
+    lumps = mix(lumps, 0.55 + 0.45 * lumps, rainStrength); // rain: one closed deck
+    float top = mix(mix(mix(0.3, 0.45, map.kind), 1.0, map.big), 0.8, rainStrength);
     float profile = smoothstep(0.0, 0.05, h) * (1.0 - smoothstep(top * 0.3, top, h));
     float above = lumps * profile - (1.0 - map.cover);
     float body = clamp(above / max(map.cover * 0.8, 0.4), 0.0, 1.0);
@@ -166,10 +166,10 @@ float cloud_body(vec3 p, float h, CloudMap map) {
     return max(body, scraps * 0.45);
 }
 
-// The cloud's density at p (0..1), and its body (for the far looks towards the light, which skip the billows). step is
-// the length of road the look takes this sample for (blocks): the billows and wisps finer than that would only
-// flicker, so they give way to their average.
-float cloud_density(vec3 p, float h, CloudMap map, float step, out float body) {
+// The cloud's density at p (0..1), and its body (for the far looks towards the light, which skip the billows). blur is
+// how much this sample stands for (blocks: the road the look takes it for, or what a pixel covers there): billows and
+// wisps finer than that would only shimmer, so they give way to their average.
+float cloud_density(vec3 p, float h, CloudMap map, float blur, out float body) {
     body = cloud_body(p, h, map);
     if (body <= 0.0) {
         return 0.0;
@@ -177,13 +177,14 @@ float cloud_density(vec3 p, float h, CloudMap map, float step, out float body) {
     vec2 drift = cloud_drift();
     vec3 q = p + vec3(-drift.x, 0.0, -drift.y) + cloud_churn();
     vec4 n = textureLod(cg_cloud_noise, q / cloud_detail_tile, 0.0);
-    float cells = mix(0.48, n.g * 0.625 + n.b * 0.375, 1.0 - smoothstep(24.0, 96.0, step));
+    float cells = mix(0.48, n.g * 0.625 + n.b * 0.375, 1.0 - smoothstep(24.0, 96.0, blur));
     // Worn away between the cells on top (what's left is round billows) and at their hearts underneath (wisps),
     // and finer still at the edges, swirled by the billows' own noise.
     float worn = mix(cells, 1.0 - cells, smoothstep(0.0, 0.3, h)) * 0.65;
     vec3 swirled = q + (n.rgb - 0.5) * 9.0;
-    float fine = mix(0.48, textureLod(cg_cloud_noise, swirled / cloud_wisp_tile, 0.0).g, 1.0 - smoothstep(6.0, 24.0, step));
+    float fine = mix(0.48, textureLod(cg_cloud_noise, swirled / cloud_wisp_tile, 0.0).g, 1.0 - smoothstep(6.0, 24.0, blur));
     worn += (1.0 - fine) * mix(0.42, 0.1, smoothstep(0.2, 0.8, body));
+    worn *= 1.0 - 0.6 * rainStrength; // a rain deck is worn only a little
     // The billows' edges are crisp on top; underneath, where the wisps are, it thickens over a few blocks, and thin
     // parts stay see-through.
     float d = clamp((body - worn) / max(1.0 - worn, 0.05), 0.0, 1.0);

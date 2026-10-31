@@ -50,11 +50,11 @@ pack (`shaderpack/`) stays as a research build; the two share only the DLSS hand
   (option Moon Size), its surface from NASA's maps of the Moon: its seas and craters, lit from the side its phase
   says so the craters stand out along the line between light and dark, a cool silver-blue, with the Earth's faint
   light on its dark part and a soft halo. The far haze takes the sky's colour. Sunlight on the land turns warmer at
-  dawn and dusk.
+  dawn and dusk. Rain greys the sky and hides the sun, the moon and the stars.
 - **Clouds**: a layer of real clouds round Minecraft's cloud height, up to 64 blocks deep, drawn as a volume. A
   slow weather map says where the sky is clear blue, scattered, broken or nearly closed, and what kind of cloud is
   there: flat stratocumulus sheets with gaps, small fair-weather cumulus, or big heaped cumulus where the cover is
-  thick; rain closes it into a grey deck. Flat underneath, ragged outlines, crisp billows on top and swirled wisps
+  thick; rain closes it into one grey deck. Flat underneath, ragged outlines, crisp billows on top and swirled wisps
   underneath, with small loose scraps round the bigger ones; thin parts stay see-through. Far above, thin streaks and
   fine ripples (cirrus and cirrocumulus) in places. Lit by the sun through the cloud between (white tops, shade in
   the crevices, silver edges round the sun, which burns through thin parts, and with the sun behind you the darker

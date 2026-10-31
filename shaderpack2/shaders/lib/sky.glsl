@@ -22,6 +22,7 @@
 // --- Shared ----------------------------------------------------------------------------------------------------------
 
 uniform int moonPhase; // 0 full .. 4 new .. 7
+uniform float rainStrength; // 0 dry .. 1 raining (Minecraft eases it in and out)
 
 // A colour's distance from grey scaled by a power of it (under 1 pulls it towards grey), keeping its brightness.
 vec3 push_from_grey(vec3 c, float by) {
@@ -124,7 +125,7 @@ vec3 star_field(vec3 local, float count, vec2 kelvin, float twinkle, float limit
     float sigma = 0.75 * pixel_angle();
     // The peak scaled with the pixel's size, so a star sends the same light whatever the resolution.
     const float reference = 0.0011; // a pixel's angle at 1080 lines and 70 degrees
-    return star_color(k) * (0.45 * min(flux, 4.0) * sqr(reference / sigma * 0.6)) * exp(-0.5 * s * s / (sigma * sigma));
+    return star_color(k) * (1.25 * min(flux, 4.0) * sqr(reference / sigma * 0.6)) * exp(-0.5 * s * s / (sigma * sigma));
 }
 
 #if !defined NO_SKY_LIGHT
@@ -237,7 +238,10 @@ vec3 sky_look(vec3 c, vec3 dir) {
     vec3 glow = mix(vec3(1.0), vec3(1.45, 0.95, 0.7), sqr(toward_sun) * low * dusk);
     float belt = smoothstep(0.02, 0.1, dir.y) * (1.0 - smoothstep(0.12, 0.35, dir.y)) * sqr(1.0 - toward_sun);
     glow = mix(glow, vec3(1.3, 0.95, 1.15), belt * dusk);
-    return c * glow;
+    c *= glow;
+    // Rain: the sky closes into grey, a little cool, and darker.
+    c = mix(c, vec3(luminance(c)) * vec3(0.93, 0.97, 1.04), 0.8 * rainStrength) * mix(1.0, 0.55, rainStrength);
+    return c;
 }
 
 // The sun's disc, its edge a little darker (limb darkening), and the glow round it.
@@ -349,11 +353,12 @@ vec3 sky(vec3 dir, bool with_sun) {
         float limit = -1.5 + 10.0 * night - 1.2 * moon_up;
         vec3 night_sky = star_field(local, 18000.0, vec2(3500.0, 11000.0), 0.0, limit)
                 + milky_way(local) * NIGHT_BRIGHTNESS * (1.0 - 0.5 * moon_up);
-        c += night_sky * night * through * smoothstep(-0.02, 0.0, dir.y);
+        c += night_sky * night * through * smoothstep(-0.02, 0.0, dir.y) * (1.0 - rainStrength);
     }
-    c += moon_glow(dir, through) + moon_disc(dir, through);
+    // Rain hides the sun, the moon and the stars, as in Minecraft.
+    c += (moon_glow(dir, through) + moon_disc(dir, through)) * (1.0 - rainStrength);
     if (with_sun) {
-        c += sun_disc(dir, through);
+        c += sun_disc(dir, through) * (1.0 - rainStrength);
     }
     return c;
 }

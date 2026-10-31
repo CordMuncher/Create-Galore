@@ -88,7 +88,7 @@ struct March {
     float slab;  // halfway through the layer along the look (to follow the clouds where there are none)
 };
 
-March march(vec3 dir, float limit, float jitter) {
+March march(vec3 dir, float limit, float jitter, float pixel) {
     March m;
     m.light = vec4(0.0, 0.0, 0.0, 1.0);
     m.front = cloud_far_sky;
@@ -168,7 +168,9 @@ March march(vec3 dir, float limit, float jitter) {
         float fade = 1.0 - smoothstep(1000.0, cloud_reach, t * flat_len);
         CloudMap map = cloud_map(p.xz);
         float body;
-        float density = cloud_density(p, h, map, dt, body) * fade;
+        // What one of these pixels covers there (blocks): detail finer than that, or than the step, would only shimmer.
+        float blur = max(dt, t * pixel * 3.0);
+        float density = cloud_density(p, h, map, blur, body) * fade;
         if (density <= 0.002) {
             continue;
         }
@@ -181,7 +183,7 @@ March march(vec3 dir, float limit, float jitter) {
             float hl = h + l.y * d / cloud_depth;
             if (hl > 0.0 && hl < 1.0) {
                 float near_body;
-                float v = k == 0 ? cloud_density(p + l * d, hl, map, dt, near_body) : cloud_body(p + l * d, hl, map);
+                float v = k == 0 ? cloud_density(p + l * d, hl, map, blur, near_body) : cloud_body(p + l * d, hl, map);
                 shade += v * (k == 0 ? 6.0 : (k == 1 ? 12.0 : 24.0));
             }
         }
@@ -258,7 +260,7 @@ void main() {
         vec4 view = gbufferProjectionInverse * vec4(ndc, 1.0, 1.0);
         dir = normalize(mat3(gbufferModelViewInverse) * (view.xyz / view.w));
         float jitter = fract(ign(vec2(p)) + float(frameCounter % 256) * GOLDEN);
-        m = march(dir, limit, jitter);
+        m = march(dir, limit, jitter, 2.0 * pixel_angle()); // the clouds' pixels are twice the render's
         if (limit >= cloud_far_sky && m.light.a > 0.0) {
             // The high layer, behind the main one.
             vec4 high = cirrus(dir, g_cloud_light.rgb, cloud_sky_light(dir));
