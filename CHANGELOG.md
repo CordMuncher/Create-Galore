@@ -5,6 +5,130 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.6.63
+
+### Added
+- Create Galore Bridge 1.173.0.
+
+### Fixed
+- **Standing on a turning airship no longer drops you into the crawl.** The pose check asked whether a player had room to stand against the ship as it was one tick earlier, with the player's whole box, so on any quick turn a rail beside you or the deck tilting under your feet counted as "no room" and you went into the crawl animation until you shook loose. The check now uses the ship where it is and the middle of the player only. A real low roof on a ship still makes you crouch or crawl, and crouching under a slab on a ship now works like it does on land.
+- **The other player no longer vanishes from a flying ship.** While someone stands on a ship, the server sends their spot on the ship and the game turns it into a world position at the end of that player's tick, but Entity Culling skips most of the tick for anyone you can't see at that moment. The other player then stayed behind where you last saw them while the ship flew on: rubber banding, or gone for good, and you couldn't hit them either. Anyone standing on a ship now always gets their full tick, so they stay where they really are. Seated players were never affected.
+
+### Removed
+- Nothing.
+
+## 0.6.62
+
+### Added
+- Create Galore Bridge 1.172.0.
+- **Ask the Book designs aircraft from real design principles.** Its airships were boxy envelopes with engines on plank platforms off the sides. It now works from lift, weight, push and drag: a streamlined envelope (round in section, about two to three times as long as wide, tapering to the tail) sized to the load, a compact gondola close under the belly, every engine inside the gondola where the crew can refuel it, shafts carrying the power up through the envelope, propellers pushing in line with the envelope's middle (a big fan behind the tail or a pair at its widest point), tail fins, and one wheel and throttle at the helm. Hot air balloons and planes get the same treatment, and when what a player asks for can't fly with what they can make yet, the book says so with the numbers and builds the nearest design that does.
+- **A new Field Guide page, Designing Aircraft**, with those principles and their numbers: how much an envelope block drags, how much air a load needs, why dead weight costs about four times its own drag, where to push, and a hauling blimp that cruises at about 9 blocks a second with its four engines in the gondola.
+- The book's 3D models can draw streamlined bodies (an envelope, fuselage or hull in one entry).
+
+### Fixed
+- **The book no longer counts an engine as reachable because a funnel sits beside it.** Fuel has to reach the engine by hand or along a funnel, chute or hopper line from somewhere the crew can stand; a funnel fed from nothing no longer passes.
+- **A hot air balloon without propellers is a balloon, not a broken airship.** The book refused any balloon that nothing pushed, so a starter balloon grew into a small steered airship; now it explains that the balloon climbs, sinks and drifts with the wind, and what would push it.
+- The book can call a swivelling fin of Symmetric Sails a rudder, and a Propeller Bearing's sails a fan, in its labels.
+
+### Removed
+- The Field Guide's old sky base example, whose engines sat in pods outside the envelope; the new hauling blimp replaces it.
+
+## 0.6.61
+
+### Added
+- Create Galore Fishing 0.3.29.
+
+### Fixed
+- **A server crash after a fish broke the line on a Reel Drive.** With autocast on, the drive cast the rod again with no line on it, and when a fish took the hook the strike stopped the whole server. A drive now never casts a rod that can't be cast (no line, no reel, or bait with no hook): its window's status says **Can't cast** and its goggles name the missing part. A poor rig is still cast, a bare hook with no bait or float too, so an empty bait slot no longer stops a drive. A line that is already out is let go as soon as the rod holding it can't be cast any more (another rod switched into the hand, or a part taken off), the same as letting go of the rod.
+
+### Removed
+- Nothing.
+
+## 0.6.60
+
+### Added
+- Create Galore Fishing 0.3.28.
+- **Rod Holders and Reel Drives show line out of the total.** Engineer's Goggles on a rod machine read "Line out: 40 / 120 m", the line out against all the line the rod holds, so a long run shows at a glance how close it is to the spool. The figure turns gold from 85% of the line. With the line in it reads "Line in: 0 / 120 m".
+
+### Fixed
+- Nothing.
+
+### Removed
+- Nothing.
+
+## 0.6.59
+
+### Added
+- Create Galore Bridge 1.171.0.
+- **An Alloy Forge page in JEI.** The Alloy Forge makes Alloyed's steel tools, armor and horse armor from any steel, including TFMG's, but JEI never listed its recipes (Alloyed only shows them in EMI), so steel armor looked like it could only come from a Mechanical Crafter, and the horse armor looked like it had no recipe at all. JEI now has an Alloy Forge page with the grid, the fuel and the time each recipe takes, and the Field Guide's Alloyed entry has a page on steel tools and armor.
+- A recipe reach check for test servers: the Data Check tool (1.1.0) also writes every loaded recipe and loot table item, and `tools/reachability.py` lists items no one can make any more because the pack turned off the only recipes for them or for one of their ingredients.
+
+### Fixed
+- **Productive Bees productivity upgrades can be made again.** All four Productivity Upgrades, the Inactive Dragon Egg and the Heated Centrifuge need Draconic Chunks, and the only source of Draconic Dust, the Draconic comb, had been switched off along with the combs that skip progression. The Draconic comb gives Draconic Dust again. Draconic Bees still only live on the End's main island.
+- **Aquaculture's fish mounts can be made again.** They needed Aquaculture's iron hook, which went away when the pack's fishing mod took over hooks. Six buttons of one wood around a Medium Hook make a mount now.
+
+### Removed
+- Nothing.
+
+## 0.6.58
+
+### Added
+- Create Galore Bridge 1.170.0.
+- **The Farm Magnifying Glass shows why a sick animal got sick.** The moment a tamed animal falls ill, the reasons it could have are kept with it, and the glass shows them until it is well again: a sick animal nearby, crowding (how many animals within 4 blocks, and which kinds), happiness under 50, days unfed, or darkness. It also says how long ago it happened, and when it happened as an unloaded farm ran again after some days away (a farm that isn't loaded rolls once for all the days it missed, the moment it runs again).
+
+### Fixed
+- **Barns lit by daylight no longer count as dark at night.** Animal Husbandry checks each tamed animal's care once a day, at the time of day it was tamed (a skipped night moves it). It read the light at that moment, so an animal in a roofed barn lit only through its open sides counted as kept dark when its check fell at night: a chance to fall sick and 5 happiness lost every day, only for some animals in the barn. The check now reads the sky as it is by day, so a barn counts as dark only when it is dim by day too. A torch-lit barn stays fine.
+- The Field Guide's animal pages say that a sick animal passes it on to those within 4 blocks, that sick animals sometimes recover by themselves, and what the glass shows for a sick one.
+
+### Removed
+- Nothing.
+
+## 0.6.57
+
+### Added
+- Create Galore Fishing 0.3.27.
+- **Cats and ocelots eat any raw fish.** Every raw fish in the pack now tames, heals and breeds cats and ocelots: Tide's fish (the lava and End ones too), Hybrid Aquatic's, Alex's Caves', Better End's, Cataclysm's lionfish and tropical fish, along with the fish that already worked. The raw fillets, fish steaks and fish meat a Cleaning Table or Fish Cleaner cuts count as well, as do Farmer's Delight's raw slices. A fish of 3 kg or more is too big for them, just as it is too big to cook whole: clean it and feed them the cuts. Pufferfish, blowfish and cooked fish are still refused. The Field Guide's What Fish Are For entry has a page on it.
+
+### Fixed
+- Nothing.
+
+### Removed
+- Nothing.
+
+## 0.6.56
+
+### Added
+- Create Galore Bridge 1.169.0.
+- **Engineer's Goggles read Filter Frames.** Look at a Filter Frame with goggles on to see the pressure under its stack: green **Normal** (open air below, or a sealed room the filters keep up with), yellow **Pressure** (a sealed room at least a quarter full of smog, or the stack filtering flat out) and red **Overpressure** (a sealed room 60% full, or smog under a stack whose top is closed). Red is the warning that a smoky machine in that room can run out of room for its smog and blow. The readout also shows how full of smog the room is, whether it is filling up or clearing, and how many units a second the stack filters out of its total; sneak to see the room's size. The Field Guide's Pressure and Sealed Casings entry has two new pages on it.
+
+### Fixed
+- Nothing.
+
+### Removed
+- Nothing.
+
+## 0.6.55
+
+### Added
+- Create Galore Fishing 0.3.26.
+
+### Fixed
+- **Fish labels under Photon.** 0.6.39 fixed the Cleaning Table and trophy mount labels under Complementary, but under Photon the dark backing still covered the letters. The labels are now drawn with the on-screen display, pinned over their block at the same size, so no shader pack changes them: the fish's name and the cleaning progress (or the trophy's size, weight and length) read the same with any shaders or none. They hide with the rest of the display (F1).
+
+### Removed
+- Nothing.
+
+## 0.6.54
+
+### Added
+- Create Galore Bridge 1.168.0.
+
+### Fixed
+- **Mods no longer tell you to update them.** Every mod in the pack stays on the version the pack was tested with, and a mod updated on its own can break the others, so none of them may offer an update in game any more. Gone: the "Version x is available, get it on CurseForge" chat line from Create - Xaero's Map, the update screen Create: Deep Seas opened over the title menu, Create Dupe Fix's join message, Iris's chat line and shader screen notice, the "update available" text Euphoria Patches wrote into the shader pack, Distant Horizons' offer to replace its own jar, the outdated flags in Xaero's Minimap and World Map, and the update star on the Mods button. The pack's own updater still brings new pack versions as before.
+
+### Removed
+- Nothing.
+
 ## 0.6.53
 
 ### Added

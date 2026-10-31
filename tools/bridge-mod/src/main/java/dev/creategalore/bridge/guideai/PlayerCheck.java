@@ -189,7 +189,7 @@ final class PlayerCheck {
             String id = id(s);
             if (VehicleCheck.isControl(id)) controls.add(p);
             if (id.endsWith("_seat") || id.endsWith(":seat")) seats.add(p);
-            if (fuelled(id) && !fed(blocks, p)) fuel.add(p);
+            if (fuelled(id)) fuel.add(p);
             if (id.equals("simulated:physics_assembler")) assemblers.add(p);
         });
         Set<Node> helm = new LinkedHashSet<>();
@@ -210,7 +210,10 @@ final class PlayerCheck {
             List<String> cold = new ArrayList<>();
             boolean freezing = ceiling >= FREEZING;
             for (BlockPos f : sorted(fuel)) {
-                List<Node> at = aboard.values().stream().filter(n -> reaches(blocks, getter, n.eye(), f, null)).toList();
+                // Fuel goes in by hand at the engine, or anywhere along a funnel, chute or hopper line feeding it and the
+                // storage that line takes from; a funnel fed from nothing the crew reaches doesn't help.
+                Set<BlockPos> points = feeds(blocks, f);
+                List<Node> at = aboard.values().stream().filter(n -> points.stream().anyMatch(q -> reaches(blocks, getter, n.eye(), q, null))).toList();
                 List<Node> mine = at.stream().filter(crew::contains).toList();
                 String what = name(blocks.get(f));
                 if (mine.isEmpty())
@@ -411,15 +414,35 @@ final class PlayerCheck {
                 || id.equals("createpropulsion:solid_fuel_thruster");
     }
 
-    /** Fed from a funnel, chute or hopper beside it instead of by hand. */
-    private static boolean fed(Map<BlockPos, BlockState> blocks, BlockPos p) {
-        for (Direction d : Direction.values()) {
-            BlockState s = blocks.get(p.relative(d));
-            if (s == null) continue;
-            String id = id(s);
-            if (id.contains("funnel") || id.contains("chute") || id.endsWith(":hopper")) return true;
+    /**
+     * Where fuel can be put in for the engine at {@code p}: the engine itself, and the funnels, chutes and hoppers feeding
+     * it, followed back through each other to the storage, belts and depots they take from (up to 24 blocks).
+     */
+    private static Set<BlockPos> feeds(Map<BlockPos, BlockState> blocks, BlockPos p) {
+        Set<BlockPos> out = new LinkedHashSet<>();
+        out.add(p);
+        ArrayDeque<BlockPos> todo = new ArrayDeque<>();
+        todo.add(p);
+        while (!todo.isEmpty() && out.size() < 25) {
+            BlockPos a = todo.poll();
+            boolean line = a.equals(p) || isFeedLine(id(blocks.get(a)));
+            if (!line) continue;
+            for (Direction d : Direction.values()) {
+                BlockPos q = a.relative(d);
+                BlockState s = blocks.get(q);
+                if (s == null || out.contains(q)) continue;
+                String id = id(s);
+                if (isFeedLine(id) || !a.equals(p) && java.util.stream.Stream.of("barrel", "chest", "vault", "crate", "shulker_box", "belt", "depot").anyMatch(id::contains)) {
+                    out.add(q);
+                    todo.add(q);
+                }
+            }
         }
-        return false;
+        return out;
+    }
+
+    private static boolean isFeedLine(String id) {
+        return id.contains("funnel") || id.contains("chute") || id.endsWith(":hopper");
     }
 
     // ---------- the view ahead ----------

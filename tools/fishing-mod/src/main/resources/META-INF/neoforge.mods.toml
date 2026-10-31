@@ -4,7 +4,7 @@ license = "MIT AND MPL-2.0"
 
 [[mods]]
 modId = "create_galore_fishing"
-version = "0.3.25"
+version = "0.3.29"
 displayName = "Create Galore Fishing"
 authors = "Create Galore"
 credits = "Fish, models, journal and fishing data ported from Tide 2 by Lightning-64 (MPL-2.0); Aquaculture, Hybrid Aquatic and other mods' fish data adapted from Tide Extra Compatibility (MIT)."

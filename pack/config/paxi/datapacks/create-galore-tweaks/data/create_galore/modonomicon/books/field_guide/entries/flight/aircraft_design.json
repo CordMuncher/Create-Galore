@@ -1,0 +1,123 @@
+{
+  "category": "flight",
+  "name": "Designing Aircraft",
+  "description": "How airships, balloons and planes are laid out to fly well.",
+  "icon": {
+    "item": "aeronautics:white_envelope"
+  },
+  "x": -3,
+  "y": 0,
+  "sort_number": 13,
+  "parents": [
+    {
+      "entry": "flight/ship_building",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Designing Aircraft",
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- Every block is weight to lift and drag to push.\n- Envelope: round, **2 to 3 times as long as wide**, tapering to the tail.\n- **Engines inside**, where the crew refuels them; shafts carry the power out.\n- Push **level with the envelope's middle**."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Lift, weight, push and drag decide how an aircraft flies. Hot air lifts by the cubic metre it fills, the air drags on every envelope block and on the ship's weight, and propellers push only up to their airflow. Good designs come from those four, not from a look."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "The envelope",
+      "text": "Each envelope block drags about as much as three blocks' worth of the ship's weight, whatever the envelope's shape, and each m3 of hot air holds up about 1.5 mass low down, less higher up. So a fatter envelope carries more for its skin: an 11-wide one holds about 0.75 m3 per block, a 13-wide one about 0.9."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Its shape",
+      "text": "About 2 to 3 times as long as it is wide reads as an airship, points into the wind and stays cheap to push. Round in every cross-section (a stepped circle, never a square), blunt at the nose, fullest about two fifths back, then tapering to a point at the tail. A sphere is a hot air balloon."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Sizing it",
+      "text": "Size the envelope to the load, with room to climb: about 1.2 m3 of hot air per mass of ship takes it to y 200. A bigger envelope only adds drag, a smaller one won't climb. Each Hot Air Burner fills 500 m3."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "The gondola",
+      "text": "Hang the gondola close under the envelope's belly, touching it or on short posts, a little forward of the envelope's middle, since a tail propeller, fins and shafts weigh on the stern. Keep it compact: a cabin with the helm at the bow and the engine room behind."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Engines and fuel",
+      "text": "Put every engine where the crew walks: an engine room in the gondola, reached along its floor from the helm and warm inside it. A ship whose engines sit on platforms outside drifts helpless once their fuel runs out, because nobody can reach them in flight."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "aeronautics:white_envelope_encased_shaft"
+      },
+      "title": "Shafts through the skin",
+      "text": "Carry the power from the engine room to the propellers by shafts: up through the belly and along inside the envelope. Where a shaft passes through the skin, an envelope-encased shaft keeps the balloon sealed. Shafts weigh little; a platform for an engine is dead weight."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Weight",
+      "text": "Dead weight costs twice: once to lift, with more envelope that drags, and once to push. Each block of weight costs about four times its own drag in the envelope that holds it up. Leave out decks and platforms nothing stands on, solid walls where trapdoors or panes will do, and iron blocks for balance."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Where it pushes",
+      "text": "Nearly all the drag is the envelope, so push in line with its middle. Propellers low under it tip the nose up at speed, high ones tip it down. Two good places: one big propeller on the envelope's axis behind the tail, or a pair at its widest point on short shaft arms through its sides."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "aeronautics:propeller_bearing"
+      },
+      "title": "Big slow fans",
+      "text": "A Propeller Bearing pushes 0.2 x sails^1.5 x RPM for 2 stress units per sail per RPM, so the same engines push harder on a bigger fan. Each Portable Engine gives 2048 stress units: four of them turn 28 sails at 128 RPM, pushing about 3800."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "simulated:white_symmetric_sail"
+      },
+      "title": "Fins",
+      "text": "Fins of Symmetric Sails at the tail (a cross, or three in a Y) keep it pointing ahead, and set along the line of flight they cost little going straight. A fin alone on a Swivel Bearing turns a big airship only slowly."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "simulated:swivel_bearing"
+      },
+      "title": "Steering",
+      "text": "One Steering Wheel at the helm, its shafts running to a Swivel Bearing under the tail with a Wooden Propeller on it, powered through the bearing from the drive line: turned, it swings the stern round. A ship with a pair of propellers can steer by slowing one side instead."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Hot air balloons",
+      "text": "A hot air balloon is the simple early aircraft: a round envelope as wide as it is tall, a basket hung under it on posts from its corners, a burner. It climbs, sinks and drifts with the wind. Propellers on the basket push low and tip it at speed: keep them small and slow."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Planes",
+      "text": "A plane flies only while it moves, so it must be light: a slim body, long fabric wings over the weight's centre, a tail far back with a flat stabiliser and an upright fin, the engine and propeller at the nose. No plane holds itself level here: it needs a Gyroscope. See [#](2E5AAC)[Propellers](entry://flight/propellers)[#]()."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "A blimp that hauls",
+      "text": "[#](FFFFFF)\ue103[#]() **In depth.** An 11 by 11 by 25 envelope (about 600 m3) over a closed 7 by 10 gondola with the helm, barrels, a smoker and a crafting table. Four Portable Engines in its engine room turn a 28-sail Propeller Bearing behind the tail at 128 RPM."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "It cruises at about 9 blocks a second, climbs past y 250 and turns about 4 degrees a second. The drive shaft runs up through the belly and along the envelope's axis to the fan; a branch drives a Wooden Propeller on a Swivel Bearing under the tail, which the Steering Wheel swings."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Related",
+      "text": "- [#](2E5AAC)[Balloons and Lift](entry://flight/balloons_and_lift)[#]()\n- [#](2E5AAC)[Propellers](entry://flight/propellers)[#]()\n- [#](2E5AAC)[Steering and Controls](entry://flight/controls)[#]()\n- [#](2E5AAC)[Building a Ship](entry://flight/ship_building)[#]()"
+    }
+  ]
+}

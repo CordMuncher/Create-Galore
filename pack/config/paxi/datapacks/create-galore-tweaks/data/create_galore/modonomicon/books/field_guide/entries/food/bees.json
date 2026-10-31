@@ -41,6 +41,14 @@
     {
       "type": "modonomicon:spotlight",
       "item": {
+        "item": "productivebees:draconic_dust"
+      },
+      "title": "Draconic Dust",
+      "text": "The Draconic comb stays on: it is the only source of Draconic Dust. Nine make a Draconic Chunk, and the chunks make the Productivity Upgrades and the Inactive Dragon Egg, which goes into the Heated Centrifuge. Draconic Bees live in obsidian pillars on the End's main island."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
         "item": "productivebees:bee_cage"
       },
       "title": "Cages and Breeding",

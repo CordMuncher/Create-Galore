@@ -64,6 +64,16 @@
     },
     {
       "type": "modonomicon:text",
+      "title": "Reading a filter",
+      "text": "Wear **Engineer's Goggles** and look at a Filter Frame. It shows the room under its stack, how full of smog that room is, whether it is filling up or clearing, and how many units a second the stack filters.\\\n\\\nSneak to also see the room's size."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Green, yellow, red",
+      "text": "- [#](2E8B2E)**Normal**[#](): open air below, or the filters keep up\n- [#](B8860B)**Pressure**[#](): sealed room a quarter full, or the stack filtering flat out\n- [#](B22222)**Overpressure**[#](): sealed room 60%% full, or its stack's top closed\n\nOn red, a smoky machine in the room can blow. Add frames, use better ones, or open the top."
+    },
+    {
+      "type": "modonomicon:text",
       "title": "Related",
       "text": "- [#](2E5AAC)[Exhaust Systems](entry://survival/pollution_control)[#]()\n- [#](2E5AAC)[Pollution](entry://survival/pollution)[#]()\n- [#](2E5AAC)[Encased Fans](entry://create_basics/fans)[#]()\n- [#](2E5AAC)[Moving Items](entry://create_basics/item_logistics)[#]()"
     }

@@ -11,7 +11,7 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.network.chat.Component;
-import net.minecraft.client.gui.Font;
+import net.minecraft.world.phys.Vec3;
 import net.minecraft.ChatFormatting;
 import java.util.List;
 import java.util.ArrayList;
@@ -98,7 +98,7 @@ public record FishDisplayRenderer(EntityRenderDispatcher entityRenderer) impleme
 
         poseStack.popPose();
         poseStack.popPose();
-        if (looking(display)) label(display, poseStack, buffer, packedLight);
+        if (looking(display)) label(display);
     }
 
     /** True when the player's crosshair is on this mount, close enough to read it. */
@@ -113,22 +113,17 @@ public record FishDisplayRenderer(EntityRenderDispatcher entityRenderer) impleme
      * The trophy's label (Create Galore Fishing): the fish's name and, for a fish caught with this mod, its size
      * class, weight, length and angler, floating above the mount like a name tag.
      */
-    private void label(FishDisplayBlockEntity display, PoseStack poseStack, MultiBufferSource buffer, int light) {
+    private static void label(FishDisplayBlockEntity display) {
         ItemStack stack = display.getDisplayStack();
         List<Component> lines = new ArrayList<>();
         lines.add(stack.getHoverName());
         lines.addAll(FishingClient.catchLines(stack));
         if (lines.size() == 1 && display.getFishLength() > 0)
             lines.add(TideUtils.getFormattedLength(display.getFishLength()).withStyle(ChatFormatting.GRAY));
-        Font font = Minecraft.getInstance().font;
-        poseStack.pushPose();
-        poseStack.translate(0.5, 1.0 + 0.14 * lines.size(), 0.5);
-        poseStack.mulPose(entityRenderer.cameraOrientation());
-        poseStack.scale(0.0125f, -0.0125f, 0.0125f);
         // The tooltip's dark grey is unreadable on the label's dark backing.
         lines.replaceAll(line -> line.getStyle().getColor() != null && line.getStyle().getColor().getValue() == 0x555555
                 ? line.copy().withStyle(ChatFormatting.GRAY) : line);
-        FloatingLabel.draw(font, lines, poseStack.last().pose(), buffer, light);
-        poseStack.popPose();
+        FloatingLabel.show(display.getBlockPos(),
+                Vec3.atLowerCornerOf(display.getBlockPos()).add(0.5, 1.0 + 0.14 * lines.size(), 0.5), lines);
     }
 }

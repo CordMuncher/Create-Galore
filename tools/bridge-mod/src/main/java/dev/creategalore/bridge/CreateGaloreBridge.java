@@ -81,6 +81,7 @@ public final class CreateGaloreBridge {
         ExhaustPressure.register();
         GuideAi.register(modBus);
         ShipGlueCheck.register(modBus);
+        FilterPressure.register(modBus);
         PinnedSchematics.register(modBus);
         SharedSchematics.register(modBus);
         SchematicannonGlue.register(modBus);

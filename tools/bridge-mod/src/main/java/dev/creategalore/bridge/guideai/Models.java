@@ -26,7 +26,7 @@ import net.minecraft.world.level.block.state.BlockState;
 public final class Models {
     public static final int MAX_SIZE = 32, MAX_ENTRIES = 256, MAX_LABELS = 12, MAX_PALETTE = 60;
     private static final int MIN_HOLDINGS = 24;
-    static final String[] SHAPES = {"box", "hollow_box", "ellipsoid", "ellipsoid_shell", "repaint"};
+    static final String[] SHAPES = {"box", "hollow_box", "ellipsoid", "ellipsoid_shell", "streamlined", "streamlined_shell", "repaint"};
 
     /** A model built for the answer being written, kept so the next version can start from it (from_draft). */
     record Draft(Map<BlockPos, BlockState> cells, int sx, int sy, int sz, JsonArray labels, JsonArray moving, String title,
@@ -50,10 +50,10 @@ public final class Models {
         p.add("y2", WorldTools.prop("integer", "See x2."));
         p.add("z2", WorldTools.prop("integer", "See x2."));
         JsonObject shape = WorldTools.prop("string", "What part of the box (x, y, z to x2, y2, z2) this fills: box (all of it), "
-                + "hollow_box (its outer walls, one block thick), ellipsoid (the rounded solid that fits inside it) or "
-                + "ellipsoid_shell (that rounded solid's outer skin, one block thick: an envelope, dome or rounded hull in one entry; "
-                + "clear its underside with an air box where a balloon needs its open bottom) or repaint (only the cells in the box "
-                + "that already hold a block, which take this one instead: a stripe round an envelope, a different wood for a trim).");
+                + "hollow_box (its outer walls), ellipsoid (the rounded solid that fits inside it), streamlined (a teardrop along "
+                + "its longer level side: round nose, fullest 2/5 back, tapering to a point at the x2 or z2 end), a _shell of either (its skin, one block thick: an "
+                + "envelope, dome, fuselage or hull; clear a balloon's open bottom with air) or repaint (only cells that already "
+                + "hold a block: a stripe, a trim).");
         JsonArray shapes = new JsonArray();
         for (String k : SHAPES) shapes.add(k);
         shape.add("enum", shapes);
@@ -574,7 +574,9 @@ public final class Models {
         PARTS.put("cannon", cannon);
         PARTS.put("gun", cannon);
         PARTS.put("keel", id -> id.contains("keel"));
-        PARTS.put("rudder", id -> id.contains("rudder"));
+        // An aircraft's rudder is a fin of Symmetric Sails, swung on a Swivel Bearing.
+        PARTS.put("rudder", id -> id.contains("rudder") || id.endsWith("_symmetric_sail") || id.equals("simulated:swivel_bearing"));
+        PARTS.put("fin", id -> id.contains("sail") || id.contains("rudder"));
         PARTS.put("sail", id -> id.contains("sail") || id.contains("windcatcher"));
         PARTS.put("engine", id -> id.contains("engine"));
         PARTS.put("motor", id -> id.contains("engine") || id.contains("motor"));
@@ -604,7 +606,7 @@ public final class Models {
         PARTS.put("basin", id -> id.contains("basin"));
         PARTS.put("mixer", id -> id.contains("mixer"));
         PARTS.put("spout", id -> id.contains("spout"));
-        PARTS.put("fan", id -> id.contains("fan"));
+        PARTS.put("fan", id -> id.contains("fan") || id.contains("propeller"));
         PARTS.put("saw", id -> id.contains("saw"));
         PARTS.put("drill", id -> id.contains("drill"));
     }
@@ -677,8 +679,19 @@ public final class Models {
 
     /** Whether a cell of the box x..x2, y..y2, z..z2 (corners in any order) is part of the named shape. */
     static boolean inShape(String shape, BlockPos p, int x, int y, int z, int x2, int y2, int z2) {
+        // A streamlined body's tail is at the second corner's end of its longer level side.
+        String tail = Math.abs(x2 - x) > Math.abs(z2 - z) ? (x2 >= x ? "east" : "west") : (z2 >= z ? "south" : "north");
         int ax = Math.min(x, x2), bx = Math.max(x, x2), ay = Math.min(y, y2), by = Math.max(y, y2), az = Math.min(z, z2), bz = Math.max(z, z2);
         return switch (shape) {
+            case "streamlined" -> inStreamlined(p.getX(), p.getY(), p.getZ(), ax, bx, ay, by, az, bz, tail);
+            case "streamlined_shell" -> {
+                if (!inStreamlined(p.getX(), p.getY(), p.getZ(), ax, bx, ay, by, az, bz, tail)) yield false;
+                for (int dx = -1; dx <= 1; dx++)
+                    for (int dy = -1; dy <= 1; dy++)
+                        for (int dz = -1; dz <= 1; dz++)
+                            if (!inStreamlined(p.getX() + dx, p.getY() + dy, p.getZ() + dz, ax, bx, ay, by, az, bz, tail)) yield true;
+                yield false;
+            }
             case "hollow_box" -> p.getX() == ax || p.getX() == bx || p.getY() == ay || p.getY() == by || p.getZ() == az || p.getZ() == bz;
             case "ellipsoid" -> inEllipsoid(p.getX(), p.getY(), p.getZ(), ax, bx, ay, by, az, bz);
             case "ellipsoid_shell" -> {
@@ -693,6 +706,34 @@ public final class Models {
             }
             default -> true;
         };
+    }
+
+    /**
+     * The cell's centre inside a streamlined body that fits the box: round in section (an ellipse filling the box across),
+     * along its length a quarter ellipse from the nose to its fullest point 2/5 back, then a smooth taper (1 - u^2 of the
+     * fullest radius, u running 0 to 1 over the rest) to a point at the tail end (north, south, east or west).
+     */
+    static boolean inStreamlined(int x, int y, int z, int ax, int bx, int ay, int by, int az, int bz, String tail) {
+        if (x < ax || x > bx || y < ay || y > by || z < az || z > bz) return false;
+        String t = tail;
+        boolean alongX = t.equals("east") || t.equals("west");
+        boolean toHigh = t.equals("east") || t.equals("south");
+        int lo = alongX ? ax : az, hi = alongX ? bx : bz, at = alongX ? x : z;
+        double len = hi - lo + 1, from = toHigh ? at + 0.5 - lo : hi + 1 - (at + 0.5);
+        double s = from / len, m = 0.4, r;
+        if (s <= m) r = Math.sqrt(Math.max(0, 1 - Math.pow((m - s) / m, 2)));
+        else r = 1 - Math.pow((s - m) / (1 - m), 2);
+        if (r <= 0) return false;
+        // Across: the ellipse of the box's other two axes, shrunk to r, never thinner than the one cell on its centre line.
+        int[][] across = alongX ? new int[][] {{y, ay, by}, {z, az, bz}} : new int[][] {{x, ax, bx}, {y, ay, by}};
+        double sum = 0;
+        for (int[] a : across) {
+            double half = (a[2] - a[1] + 1) / 2.0, c = (a[1] + a[2] + 1) / 2.0;
+            if (half <= 0.5) continue;
+            double rad = Math.max(half * r, 0.5);
+            sum += Math.pow((a[0] + 0.5 - c) / rad, 2);
+        }
+        return sum <= 1.0001;
     }
 
     /** The cell's centre inside the ellipsoid that fits the box (a box one cell thick on an axis is flat along it). */

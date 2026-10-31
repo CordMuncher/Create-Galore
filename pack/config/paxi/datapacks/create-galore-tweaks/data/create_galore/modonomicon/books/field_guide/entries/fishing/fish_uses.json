@@ -49,8 +49,13 @@
     },
     {
       "type": "modonomicon:text",
+      "title": "Cats and ocelots",
+      "text": "Cats and ocelots take **any raw fish**: every mod's fish, the lava and End fish too, and the raw fillets, steaks and slices you cut. A fish tames, heals and breeds them the same.\\\n\\\nA fish of **3 kg** or more is too big for them: clean it first and feed them the cuts. They refuse pufferfish and blowfish, and cooked fish."
+    },
+    {
+      "type": "modonomicon:text",
       "title": "",
-      "text": "[#](FFFFFF)\ue103[#]() **In depth.** The **Chasm Eel** can't eat through bedrock. Cats eat cookable fish. The Inferno Guppy burns in a furnace for 160 seconds.\\\n\\\nThe 3 kg limit holds for every mod's fish and every way of cooking."
+      "text": "[#](FFFFFF)\ue103[#]() **In depth.** The **Chasm Eel** can't eat through bedrock. The Inferno Guppy burns in a furnace for 160 seconds.\\\n\\\nThe 3 kg limit holds for every mod's fish and every way of cooking."
     }
   ]
 }

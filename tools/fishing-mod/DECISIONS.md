@@ -760,3 +760,55 @@ what it is when you see it in the water.
 - Tested in a client: 5 fish scraps on a rod moved to the slot on set-in, shown in the window; 20 more added by
   shift-click (25); rod out carried 16, 9 stayed. On a Fuel drive, Cast now took 16 onto the hook, a forced bite ate
   one, 15 came back into the slot. Goggles during the fight read "Fish on!".
+## Floating labels drawn with the HUD (0.3.26)
+
+- The 0.3.24 name-tag recipe fixed Complementary, but Photon still drew the see-through backing over the letters.
+  Each pack draws world text its own way, so no in-world recipe holds for all of them. `FloatingLabel` now collects
+  the labels while the block entities render (one per block, since a shadow pass renders them again) and draws them
+  in a HUD layer under every other one: the label's top projected with the AFTER_SKY view and projection matrices
+  and the camera position, scaled to the size a 0.0125-block font pixel has at that depth. It hides with F1 and is
+  not covered by blocks in front, which doesn't matter: a label only shows while the crosshair is on its block.
+
+## Cats and ocelots eat any raw fish (0.3.27)
+
+- Asked for: cats take any raw fish, the pack's own ones too, except a fish too big to cook whole; they do eat
+  the fillets and steaks cleaned out of one.
+- `create_galore_fishing:cat_fish` lists every raw fish (Tide's cookable ones, its lava and End ones, vanilla
+  cod, salmon and tropical fish, Hybrid Aquatic, Alex's Caves, Better End, Cataclysm, Naturalist, Critters and
+  Companions, Aquamirae) and the raw cuts (Aquaculture fillets, Hybrid Aquatic steaks and fish meat, Farmer's Delight
+  slices); other mods' entries are optional. `minecraft:cat_food` and `minecraft:ocelot_food` take it whole, and
+  Aquaculture adds its own fish to both itself. Pufferfish, Hybrid Aquatic's blowfish and Ocean's Delight's fugu
+  slice stay out (poison fish), as do shellfish, tentacles and Nether "fish" from the delight mods.
+- `CatFoodMixin` (on `Cat` and `Ocelot`): `isFood` is false for a stack `WholeFishIngredient.small` refuses, the
+  furnace's 3 kg rule, so taming, trusting, healing and breeding all refuse it. A big fish still tempts them
+  (the tempt goals read the tag), which only means they follow you.
+- The animal food rate and troughs (Bridge) and Animal Husbandry only handle cows, pigs, sheep, goats and chickens;
+  cats keep vanilla feeding.
+- Self-test `processing`: a cat and an ocelot eat fish from each mod and the cuts, refuse a 6 kg salmon, a
+  pufferfish and cooked fish.
+
+## Goggles show line out of the total (0.3.28)
+
+- Asked for: a rod machine's goggle readout gives the line out against how much line the rod has, so a long run
+  shows at a glance how close it is to the spool.
+- `MachineInfo` reads `RodStats.lineMeters()` (line on the rod, capped by the reel or a pole's fixed length) and
+  shows "Line out: 40 / 120 m", gold from 85% of it. With the line in it reads "Line in: 0 / 120 m". A rod with
+  no line falls back to the old wording.
+
+## A drive never casts a rod that can't be cast (0.3.29)
+
+- Reported: a dedicated server stopped (`NoSuchElementException` in `RodStats.tackle`, from `CastHook.strike`). A
+  fish had just broken the line on a Geared Reel Drive with autocast on. `wantsToCast` only asked for "a rod with a
+  reel and a lure or bait", never for a line, so the drive cast the lineless rod, a fish bit, the drive struck and
+  `tackle()` found no line.
+- Asked for: a drive refuses only a rod that can't be cast at all (no line, no reel, bait but no hook) and says so;
+  a poor rig is still cast: a bare hook on a line with no bait, float or sinker, or a lure.
+- `ReelDrive.castState()` (Ready / No rod / Can't cast) uses `RodStats.canCast()` (the hand rule) plus "has a reel";
+  `DATA_CAN_CAST` sends it. The old "no bait, don't cast" rule is gone: an empty bait slot no longer stops a drive.
+  The window's status reads No rod or Can't cast, the goggles add "Can't cast: <the first missing part>".
+- `CastHook.tick` lets a line go (as when the angler drops the rod) once the rod in the hand or machine can't cast:
+  another rod switched in, or the line, reel or hook taken off while the rig is out. That covers hand rods and any
+  other path to a strike on a rod short of a part.
+- Self-tests: `partsgone` (line, reel taken off, a bare rod switched in during a bite, line taken off in a fight;
+  before the fix three of those threw the server's exception and the fight one kept fighting) and `machines`
+  (a geared drive casts a bare hook and a hookless lure, refuses no line, no reel, bait with no hook).

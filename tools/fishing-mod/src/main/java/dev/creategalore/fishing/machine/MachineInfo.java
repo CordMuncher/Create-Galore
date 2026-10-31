@@ -58,8 +58,10 @@ public final class MachineInfo {
             tooltip.add(line(stack.getHoverName().copy().withStyle(ChatFormatting.GOLD), 1));
             CastHook hook = clientHook(rod.mountPos());
             RodStats stats = RodStats.of(stack).orElse(null);
+            int total = stats != null ? stats.lineMeters() : 0;
             if (hook == null) {
-                tooltip.add(line(Component.translatable(P + "line_in").withStyle(ChatFormatting.GRAY), 1));
+                tooltip.add(line((total > 0 ? Component.translatable(P + "line_in_total", total)
+                        : Component.translatable(P + "line_in")).withStyle(ChatFormatting.GRAY), 1));
             } else {
                 switch (hook.phase()) {
                     case BITE -> tooltip.add(line(Component.translatable(P + "bite").withStyle(ChatFormatting.YELLOW), 1));
@@ -71,7 +73,16 @@ public final class MachineInfo {
                     }
                     default -> tooltip.add(line(Component.translatable(P + "waiting").withStyle(ChatFormatting.GRAY), 1));
                 }
-                tooltip.add(line(Component.translatable(P + "line_out", Math.round(hook.lineOut())).withStyle(ChatFormatting.GRAY), 1));
+                // Out of how much the rod holds, so a long run shows at a glance how close it is to the spool.
+                int out = Math.round(hook.lineOut());
+                tooltip.add(line((total > 0 ? Component.translatable(P + "line_out_total", out, total)
+                        : Component.translatable(P + "line_out", out))
+                        .withStyle(total > 0 && out >= total * 0.85f ? ChatFormatting.GOLD : ChatFormatting.GRAY), 1));
+            }
+            // A rod short of a part can't go out at all (a poor rig still can): say what it needs.
+            Component cantCast = hook == null ? cantCast(stats, drive) : null;
+            if (cantCast != null) {
+                tooltip.add(line(Component.translatable(P + "cant_cast", cantCast).withStyle(ChatFormatting.RED), 1));
             }
             if (stats != null && stats.reel().isPresent()) {
                 tooltip.add(line(Component.translatable(P + "drag", kg(stats.drag())).withStyle(ChatFormatting.GRAY), 1));
@@ -120,6 +131,14 @@ public final class MachineInfo {
             tooltip.add(line(Component.translatable(P + "banked_xp", rod.bankedXp()).withStyle(ChatFormatting.GREEN), 1));
         }
         return true;
+    }
+
+    /** Why this rod can't be cast (by hand, or by a geared drive, which needs a reel too); null if it can. */
+    static Component cantCast(RodStats stats, Drive drive) {
+        if (stats == null) return null;
+        if (!stats.canCast()) return stats.missing().get(0);
+        if (drive != null && drive.geared() && stats.isPole()) return Component.translatable("tooltip.create_galore_fishing.needs.reel");
+        return null;
     }
 
     private static MutableComponent line(Component text, int indent) {

@@ -27,13 +27,18 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
  * at the top of the filter stack, so a filter whose top is closed off takes nothing: you can't filter into a sealed box.
  */
 @Mixin(value = FilterFrame.class, remap = false)
-public abstract class PotrFilterExhaustMixin {
+public abstract class PotrFilterExhaustMixin implements FilterUpkeep.Rated {
     private static final String FILL =
         "fill(Lcom/endertech/minecraft/mods/adpother/blocks/FilterFrame$BlockTile;Lcom/endertech/minecraft/mods/adpother/blocks/Pollutant;I)I";
 
     @Shadow
     @Final
     protected int slotLimit;
+
+    @Override
+    public int create_galore_bridge$rate() {
+        return FilterUpkeep.rate(slotLimit);
+    }
 
     @Inject(method = FILL, at = @At("HEAD"), cancellable = true)
     private void create_galore_bridge$fill(FilterFrame.BlockTile storage, Pollutant<?> pollutant, int amount, CallbackInfoReturnable<Integer> cir) {

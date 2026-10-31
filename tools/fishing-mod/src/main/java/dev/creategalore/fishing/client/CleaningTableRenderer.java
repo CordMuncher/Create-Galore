@@ -6,17 +6,16 @@ import dev.creategalore.fishing.process.CleaningTableBlockEntity;
 import java.util.List;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
-import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
 
 /**
  * Draws the fish on a Cleaning Table as its own 3D model, lying on its side at its size (a long fish overhangs the
@@ -28,12 +27,7 @@ final class CleaningTableRenderer implements BlockEntityRenderer<CleaningTableBl
     /** The table top's height, blocks. */
     private static final float TOP = 15 / 16f;
 
-    private final EntityRenderDispatcher entities;
-    private final Font font;
-
     CleaningTableRenderer(BlockEntityRendererProvider.Context context) {
-        this.entities = context.getEntityRenderer();
-        this.font = context.getFont();
     }
 
     @Override
@@ -55,7 +49,7 @@ final class CleaningTableRenderer implements BlockEntityRenderer<CleaningTableBl
         pose.mulPose(Axis.XP.rotationDegrees(90));
         FishView.draw(fish, length * 100, kg, pose, buffers, light, 0);
         pose.popPose();
-        if (looking(table)) label(table, fish, pose, buffers, light);
+        if (looking(table)) label(table, fish);
     }
 
     private static boolean looking(CleaningTableBlockEntity table) {
@@ -66,17 +60,13 @@ final class CleaningTableRenderer implements BlockEntityRenderer<CleaningTableBl
     }
 
     /** The fish's name and the strokes done, floating above the table like a name tag. */
-    private void label(CleaningTableBlockEntity table, ItemStack fish, PoseStack pose, MultiBufferSource buffers, int light) {
+    private static void label(CleaningTableBlockEntity table, ItemStack fish) {
         Component progress = table.strokes() == 0
                 ? Component.translatable("block.create_galore_fishing.cleaning_table.hint").withStyle(ChatFormatting.GRAY)
                 : Component.translatable("block.create_galore_fishing.cleaning_table.progress", table.strokes(), table.needed())
                 .withStyle(ChatFormatting.GRAY);
         List<Component> lines = List.of(fish.getHoverName(), progress);
-        pose.pushPose();
-        pose.translate(0.5, 1.35 + 0.14 * lines.size(), 0.5);
-        pose.mulPose(entities.cameraOrientation());
-        pose.scale(0.0125f, -0.0125f, 0.0125f);
-        FloatingLabel.draw(font, lines, pose.last().pose(), buffers, light);
-        pose.popPose();
+        FloatingLabel.show(table.getBlockPos(),
+                Vec3.atLowerCornerOf(table.getBlockPos()).add(0.5, 1.35 + 0.14 * lines.size(), 0.5), lines);
     }
 }

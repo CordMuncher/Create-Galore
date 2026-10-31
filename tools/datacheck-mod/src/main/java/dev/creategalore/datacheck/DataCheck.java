@@ -121,6 +121,7 @@ public class DataCheck {
             foods++;
             lines.add("FOOD\t" + BuiltInRegistries.ITEM.getKey(item) + "\t" + f.nutrition() + "/" + f.saturation());
         }
+        writeRecipeDump(server);
         lines.add(0, "# recipes " + recipes + ", unmakeable " + broken + "; blocks with an item " + blocks + ", drop nothing with any tool " + noLoot
                 + "; edible items " + foods + ", half-built items edible but not food " + halfEdible);
         Path out = server.getServerDirectory().resolve("datacheck/report.txt");
@@ -131,6 +132,116 @@ public class DataCheck {
             throw new RuntimeException(ex);
         }
         return out;
+    }
+
+    // datacheck/recipes.tsv: every recipe as id, type, what it makes and what each ingredient slot accepts,
+    // for an offline pass that finds items nobody can make and recipes stuck behind them (tools/reachability.py).
+    static void writeRecipeDump(MinecraftServer server) {
+        List<String> rows = new ArrayList<>();
+        for (RecipeHolder<?> h : server.getRecipeManager().getRecipes()) {
+            Set<String> outs = new LinkedHashSet<>();
+            try {
+                ItemStack r = h.value().getResultItem(server.registryAccess());
+                if (r != null && !r.isEmpty()) outs.add(BuiltInRegistries.ITEM.getKey(r.getItem()).toString());
+            } catch (Exception ignored) {
+            }
+            List<String> ins = new ArrayList<>();
+            collect(h.value(), 0, outs, ins, Collections.newSetFromMap(new IdentityHashMap<>()));
+            rows.add(h.id() + "\t" + BuiltInRegistries.RECIPE_TYPE.getKey(h.value().getType()) + "\t" + String.join(",", outs) + "\t" + String.join(";", ins));
+        }
+        for (Item item : BuiltInRegistries.ITEM) rows.add("ITEM\t" + BuiltInRegistries.ITEM.getKey(item));
+        // Items a loot table can give (chests, mobs, fishing, a block dropping something other than itself): those can be found, not only made.
+        for (var id : server.reloadableRegistries().getKeys(Registries.LOOT_TABLE)) {
+            Set<Item> found = new LinkedHashSet<>();
+            try {
+                lootItems(server.reloadableRegistries().getLootTable(ResourceKey.create(Registries.LOOT_TABLE, id)), 0, found, Collections.newSetFromMap(new IdentityHashMap<>()));
+            } catch (Exception ignored) {
+            }
+            Item self = Items.AIR;
+            if (id.getPath().startsWith("blocks/")) {
+                var b = BuiltInRegistries.BLOCK.getOptional(id.withPath(id.getPath().substring(7)));
+                if (b.isPresent()) self = b.get().asItem();
+            }
+            for (Item it : found) if (it != self && it != Items.AIR) rows.add("LOOT\t" + BuiltInRegistries.ITEM.getKey(it) + "\t" + id);
+        }
+        try {
+            Path out = server.getServerDirectory().resolve("datacheck/recipes.tsv");
+            Files.createDirectories(out.getParent());
+            Files.write(out, rows);
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    // Item stacks a recipe holds are what it makes (Create keeps them in ProcessingOutputs); ingredients are what it takes.
+    static void collect(Object o, int depth, Set<String> outs, List<String> ins, Set<Object> seen) {
+        if (o == null || depth > 5 || !seen.add(o)) return;
+        if (o instanceof Ingredient ing) { if (!ing.isEmpty()) ins.add(options(ing)); return; }
+        if (o instanceof SizedIngredient s) { if (!s.ingredient().isEmpty()) ins.add(options(s.ingredient())); return; }
+        if (o instanceof ItemStack s) { if (!s.isEmpty()) outs.add(BuiltInRegistries.ITEM.getKey(s.getItem()).toString()); return; }
+        if (o instanceof FluidIngredient || o instanceof SizedFluidIngredient) return;
+        if (o instanceof CharSequence || o instanceof Number || o instanceof Enum<?> || o instanceof Boolean) return;
+        if (o instanceof Iterable<?> it) { for (Object x : it) collect(x, depth + 1, outs, ins, seen); return; }
+        if (o instanceof Map<?, ?> m) { for (Object x : m.values()) collect(x, depth + 1, outs, ins, seen); return; }
+        if (o.getClass().isArray()) {
+            if (o.getClass().getComponentType().isPrimitive()) return;
+            for (int i = 0; i < Array.getLength(o); i++) collect(Array.get(o, i), depth + 1, outs, ins, seen);
+            return;
+        }
+        String cn = o.getClass().getName();
+        if (cn.startsWith("java.") || cn.startsWith("com.mojang.") || cn.startsWith("com.google.")) return;
+        for (Class<?> c = o.getClass(); c != null && c != Object.class; c = c.getSuperclass()) {
+            for (Field f : c.getDeclaredFields()) {
+                if (Modifier.isStatic(f.getModifiers()) || f.getType().isPrimitive()) continue;
+                try {
+                    f.setAccessible(true);
+                    collect(f.get(o), depth + 1, outs, ins, seen);
+                } catch (Exception ignored) {
+                }
+            }
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    static void lootItems(Object o, int depth, Set<Item> found, Set<Object> seen) {
+        if (o == null || depth > 8 || !seen.add(o)) return;
+        if (o instanceof Item it) { found.add(it); return; }
+        if (o instanceof net.minecraft.core.Holder<?> h) {
+            if (h.isBound() && h.value() instanceof Item it) found.add(it);
+            return;
+        }
+        if (o instanceof net.minecraft.tags.TagKey<?> t) {
+            if (t.registry().equals(Registries.ITEM))
+                for (var h : BuiltInRegistries.ITEM.getTagOrEmpty((net.minecraft.tags.TagKey<Item>) t)) found.add(h.value());
+            return;
+        }
+        if (o instanceof ItemStack st) { found.add(st.getItem()); return; }
+        if (o instanceof CharSequence || o instanceof Number || o instanceof Enum<?> || o instanceof Boolean) return;
+        if (o instanceof Iterable<?> it) { for (Object x : it) lootItems(x, depth + 1, found, seen); return; }
+        if (o instanceof Map<?, ?> m) { for (Object x : m.values()) lootItems(x, depth + 1, found, seen); return; }
+        if (o.getClass().isArray()) {
+            if (o.getClass().getComponentType().isPrimitive()) return;
+            for (int i = 0; i < Array.getLength(o); i++) lootItems(Array.get(o, i), depth + 1, found, seen);
+            return;
+        }
+        String cn = o.getClass().getName();
+        if (cn.startsWith("java.") || cn.startsWith("com.mojang.") || cn.startsWith("com.google.") || o instanceof Block) return;
+        for (Class<?> c = o.getClass(); c != null && c != Object.class; c = c.getSuperclass()) {
+            for (Field f : c.getDeclaredFields()) {
+                if (Modifier.isStatic(f.getModifiers()) || f.getType().isPrimitive()) continue;
+                try {
+                    f.setAccessible(true);
+                    lootItems(f.get(o), depth + 1, found, seen);
+                } catch (Exception ignored) {
+                }
+            }
+        }
+    }
+
+    static String options(Ingredient ing) {
+        Set<String> ids = new TreeSet<>();
+        for (ItemStack s : ing.getItems()) if (!s.isEmpty() && !s.is(Items.BARRIER)) ids.add(BuiltInRegistries.ITEM.getKey(s.getItem()).toString());
+        return String.join("|", ids);
     }
 
     // What eating would give (NeoForge's ItemStack method: the item's own food, or what a mod puts there instead).

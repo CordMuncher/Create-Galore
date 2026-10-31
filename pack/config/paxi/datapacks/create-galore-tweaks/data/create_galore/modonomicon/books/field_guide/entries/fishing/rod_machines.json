@@ -72,7 +72,11 @@
     },
     {
       "type": "modonomicon:text",
-      "text": "- **Reports** (note, off by default): when a fish gets away, whoever set the rod in is told in chat what broke and why. A bank of drives stays quiet with it off.\n- **Status**: Off, Line out, No bait, Ready (waiting for Cast now) or Casting.\n\nThe Basic drive's window has only Power and Reports."
+      "text": "- **Reports** (note, off by default): when a fish gets away, whoever set the rod in is told in chat what broke and why. A bank of drives stays quiet with it off.\n- **Status**: Off, Line out, No rod, Can't cast, Ready (waiting for Cast now) or Casting.\n\nThe Basic drive's window has only Power and Reports."
+    },
+    {
+      "type": "modonomicon:text",
+      "text": "**Can't cast.** A drive only casts a rod with a reel, line, and a hook or lure. A fish that breaks the line leaves none, so the drive waits with its status on Can't cast; [#](7A3C9A)[Goggles](entry://glossary/goggles)[#]() name the missing part.\\\n\\\nA poor rig still goes out: a bare hook with no bait or float, or a lure. An empty bait slot doesn't stop it."
     },
     {
       "type": "modonomicon:crafting_recipe",
@@ -122,7 +126,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**Experience.** A machine earns half what you would for each catch, with no release bonus. It banks it and pays it out whenever a rod goes in or out.\\\n\\\n[#](FFFFFF)[#]() [#](7A3C9A)[Goggles](entry://glossary/goggles)[#]() show the rod, a bite or fish on (not which fish) and its tension, line out, drag, bait and bait in store, reel wear, gear, what it can still wind against, fuel and banked experience."
+      "text": "**Experience.** A machine earns half what you would for each catch, with no release bonus. It banks it and pays it out whenever a rod goes in or out.\\\n\\\n[#](FFFFFF)[#]() [#](7A3C9A)[Goggles](entry://glossary/goggles)[#]() show the rod, a bite or fish on (not which fish) and its tension, line out and the line the rod holds (Line out: 40 / 120 m), drag, bait and bait in store, reel wear, gear, what it can still wind against, fuel and banked experience."
     },
     {
       "type": "modonomicon:text",
