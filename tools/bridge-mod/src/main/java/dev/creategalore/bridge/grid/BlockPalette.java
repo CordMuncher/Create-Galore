@@ -2,6 +2,7 @@ package dev.creategalore.bridge.grid;
 
 import com.mojang.blaze3d.platform.NativeImage;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Reference2IntMap;
 import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -60,18 +61,47 @@ final class BlockPalette {
     static final int FLAG_HAS_SHAPE = 1 << 25;
     static final int FLAG_LAVA = 1 << 26;
     static final int FLAG_FLUID = 1 << 27;
+    /** Its cut-out faces have clear pixels: its holes are in {@link BlockHoles}. */
+    static final int FLAG_HOLES = 1 << 28;
 
     private static final int MAX_BOXES = 12;
 
     private final Reference2IntOpenHashMap<BlockState> ids = new Reference2IntOpenHashMap<>();
     private final int[] words = new int[ENTRIES * WORDS];
+    /** The holes in its cut-out faces (see {@link BlockHoles}). */
+    final BlockHoles holes = new BlockHoles();
     private int count = 0;
     /** Entries made since the last upload, from this one on. */
     private int uploadedUpTo = 0;
+    /**
+     * The pack's block numbers the entries carry: Iris's map as it was when they were read. Iris sets a new pack's map
+     * at the start of its pipeline's first frame, after the grid has begun that frame, so a palette started then holds
+     * the previous pack's numbers (or none) until {@link #refreshIds} catches up.
+     */
     private Object2IntMap<BlockState> irisIds;
 
     BlockPalette() {
         ids.defaultReturnValue(-1);
+        irisIds = WorldRenderingSettings.INSTANCE.getBlockStateIds();
+    }
+
+    /** Whether Iris's block numbers are another map than the one the entries carry (a pack was loaded or switched). */
+    boolean idsStale() {
+        return WorldRenderingSettings.INSTANCE.getBlockStateIds() != irisIds;
+    }
+
+    /**
+     * Gives every entry the pack's number from Iris's current map and marks the whole palette for upload. The entries
+     * themselves stay (a block state keeps its entry), so the grid's words stay valid.
+     */
+    void refreshIds() {
+        irisIds = WorldRenderingSettings.INSTANCE.getBlockStateIds();
+        for (Reference2IntMap.Entry<BlockState> e : ids.reference2IntEntrySet()) {
+            int at = e.getIntValue() * WORDS;
+            int irisId = irisIds == null ? -1 : irisIds.getOrDefault(e.getKey(), -1);
+            words[at] = (words[at] & ~0xffff) | (irisId < 0 ? 0xffff : irisId & 0xffff);
+        }
+        uploadedUpTo = 0;
     }
 
     int count() {
@@ -125,9 +155,6 @@ final class BlockPalette {
     }
 
     private void describe(BlockState state, int at) {
-        if (irisIds == null) {
-            irisIds = WorldRenderingSettings.INSTANCE.getBlockStateIds();
-        }
         int irisId = irisIds == null ? -1 : irisIds.getOrDefault(state, -1);
         int flags = 0;
         FluidState fluid = state.getFluidState();
@@ -160,6 +187,7 @@ final class BlockPalette {
             boxes = boxes.subList(0, MAX_BOXES);
         }
         int boxCount = 0;
+        List<int[]> written = new ArrayList<>();
         for (AABB b : boxes) {
             int x0 = sixteenth(b.minX), y0 = sixteenth(b.minY), z0 = sixteenth(b.minZ);
             int x1 = sixteenth(b.maxX), y1 = sixteenth(b.maxY), z1 = sixteenth(b.maxZ);
@@ -167,6 +195,11 @@ final class BlockPalette {
                 continue;
             }
             words[at + 4 + boxCount++] = x0 | (y0 << 5) | (z0 << 10) | (x1 << 15) | (y1 << 20) | (z1 << 25);
+            written.add(new int[] {x0, y0, z0, x1, y1, z1});
+        }
+        if (look.cutout && !look.translucent && !look.quads.isEmpty() && !written.isEmpty()
+                && holes.describe(at / WORDS, written, look.quads)) {
+            flags |= FLAG_HOLES;
         }
         if (boxCount > 0) {
             flags |= FLAG_HAS_SHAPE;
@@ -214,7 +247,10 @@ final class BlockPalette {
         float[] glow = {1.0f, 1.0f, 1.0f};
         float[] glowAt = {0.5f, 0.5f, 0.5f};
         boolean translucent;
+        /** Drawn cut out: its texture's clear texels are holes (a trapdoor's, a grate's, a ladder's gaps). */
+        boolean cutout;
         List<AABB> drawn = List.of();
+        List<BakedQuad> quads = List.of();
     }
 
     private static Look look(BlockState state) {
@@ -250,6 +286,19 @@ final class BlockPalette {
         quads.addAll(model.getQuads(state, null, random));
         if (quads.isEmpty()) {
             return look;
+        }
+        look.quads = quads;
+        try {
+            random.setSeed(42L);
+            for (net.minecraft.client.renderer.RenderType type
+                    : model.getRenderTypes(state, random, net.neoforged.neoforge.client.model.data.ModelData.EMPTY)) {
+                if (type == net.minecraft.client.renderer.RenderType.cutout()
+                        || type == net.minecraft.client.renderer.RenderType.cutoutMipped()) {
+                    look.cutout = true;
+                }
+            }
+        } catch (RuntimeException e) {
+            // A model that can't say without a level: no holes.
         }
         look.drawn = drawnBoxes(quads);
         double[] sum = new double[3];
@@ -405,7 +454,7 @@ final class BlockPalette {
     }
 
     /** A sprite's texel at a point of the atlas (u, v), ABGR as NativeImage keeps it; 0x7fffffff when unreadable. */
-    private static int sample(TextureAtlasSprite sprite, float u, float v) {
+    static int sample(TextureAtlasSprite sprite, float u, float v) {
         try {
             NativeImage image = sprite.contents().getOriginalImage();
             if (image == null) {
