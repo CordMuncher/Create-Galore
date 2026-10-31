@@ -293,10 +293,20 @@ vec3 moon_disc(vec3 dir, vec3 through) {
         return vec3(0.0);
     }
     vec2 tc = uv * vec2(0.5, -0.5) + 0.5;
-    vec4 surface = texture(cg_moon, tc);
-    vec2 texel = 1.0 / vec2(textureSize(cg_moon, 0));
-    float hx = texture(cg_moon, tc + vec2(texel.x, 0.0)).a - texture(cg_moon, tc - vec2(texel.x, 0.0)).a;
-    float hy = texture(cg_moon, tc - vec2(0.0, texel.y)).a - texture(cg_moon, tc + vec2(0.0, texel.y)).a;
+    // Read over at least what one screen pixel covers of the map (the map has no smaller copies): finer slopes, made
+    // ten times steeper, would only sparkle black and white along the line between day and night. Four reads at the
+    // corners of that square give the colour and the slopes across it.
+    vec2 size = vec2(textureSize(cg_moon, 0));
+    float span = max(1.0, 0.5 * pixel_angle() / radius * size.x);
+    vec2 d = 0.5 * span / size;
+    vec4 a = texture(cg_moon, tc + vec2(-d.x, -d.y));
+    vec4 b = texture(cg_moon, tc + vec2(d.x, -d.y));
+    vec4 c = texture(cg_moon, tc + vec2(-d.x, d.y));
+    vec4 e = texture(cg_moon, tc + vec2(d.x, d.y));
+    vec4 surface = 0.25 * (a + b + c + e);
+    // Slopes in height per two texels, as moon_relief was set for.
+    float hx = ((b.a + e.a) - (a.a + c.a)) / span;
+    float hy = ((a.a + b.a) - (c.a + e.a)) / span;
     vec3 n = vec3(uv, sqrt(max(1.0 - r * r, 0.0)));
     vec3 bumped = normalize(n - vec3(hx, hy, 0.0) * moon_relief);
 
