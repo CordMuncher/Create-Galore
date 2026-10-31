@@ -5,6 +5,17 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.6.54
+
+### Added
+- Create Galore Bridge 1.168.0.
+
+### Fixed
+- **Mods no longer tell you to update them.** Every mod in the pack stays on the version the pack was tested with, and a mod updated on its own can break the others, so none of them may offer an update in game any more. Gone: the "Version x is available, get it on CurseForge" chat line from Create - Xaero's Map, the update screen Create: Deep Seas opened over the title menu, Create Dupe Fix's join message, Iris's chat line and shader screen notice, the "update available" text Euphoria Patches wrote into the shader pack, Distant Horizons' offer to replace its own jar, the outdated flags in Xaero's Minimap and World Map, and the update star on the Mods button. The pack's own updater still brings new pack versions as before.
+
+### Removed
+- Nothing.
+
 ## 0.6.53
 
 ### Added
