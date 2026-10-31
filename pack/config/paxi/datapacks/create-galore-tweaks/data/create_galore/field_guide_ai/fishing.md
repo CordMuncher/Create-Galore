@@ -152,7 +152,7 @@
 - Fishy Note [tide:fishy_note]: every crate holds one, usually for an unfound fish; or craft any fish with paper; right-click to see that fish's page
 - Trophy Mount [tide:fish_display]: sticks around a log; hang on a wall, right-click with a fish to mount it at real size with weight, length, catcher; empty hand takes it back
 - Fish Satchel [tide:fish_satchel]: 4 leather around a fish; right-click to open; while open picked-up fish go straight in; holds 64 fish
-- Aquaculture's fish mounts still work for its fish. Fish under 3 kg stack by species and size class; bigger fish and trophies keep their numbers, don't stack. Swimming fish can be caught in a water bucket as usual (lava fish need a lava bucket)
+- Aquaculture's fish mounts [aquaculture:oak_fish_mount] still work for its fish: six buttons of one wood around a Medium Hook [create_galore_fishing:medium_hook] make one. Fish under 3 kg stack by species and size class; bigger fish and trophies keep their numbers, don't stack. Swimming fish can be caught in a water bucket as usual (lava fish need a lava bucket)
 
 ## fishing/crates | Crates and Treasure
 - Now and then a bite is a **crate**: flies out of the water, lands as a block, open like a barrel. Crates and treasure need **open water**. **Neptune's Bounty** is how you find Neptunium. Luck and magnetic tackle bring more of both

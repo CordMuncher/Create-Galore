@@ -1,4 +1,4 @@
-<!-- sources sha256:bd737e982ae19693b61534e340572d9ef4afeed37937b9b14295533a370c5c70 -->
+<!-- sources sha256:bc258aa7a6499d5c9f2b825594f55fa17bf239ebd1c176bf59091396e9d60b77 -->
 # Industry and Power (industry)
 Rotation vs FE, Crafts & Additions electricity, TFMG, liquid fuel burners, nuclear, ore excavation, chunk loaders, alloys, enchanting, fan effects, cannons.
 
@@ -128,6 +128,7 @@ Rotation vs FE, Crafts & Additions electricity, TFMG, liquid fuel burners, nucle
 - Bronze [alloyed:bronze_ingot]: Alloyed's bronze is the pack's bronze; Big Cannons and TFMG bronze recipes give it too; used for casing, sheet, blocks; bronze blocks oxidize like copper, can be waxed
 - Bronze Bell [alloyed:bronze_bell]: playable block; rings when hit or redstone-powered; Wrench (see create_basics/tools_wrench) tunes it; Deployer (see create_basics/deployer) can ring it
 - Casings/building blocks: Steel Casing and Bronze Casing with encased (see glossary/encased) shafts and cogwheels (more tiers); steel catwalks, mesh fences, doors
+- Steel tools and armor [alloyed:steel_helmet]: Alloy Forge takes them in the same shapes as iron tools/armor, any steel; Steel Horse Armor [alloyed:steel_horse_armor] = Iron Horse Armor + 4 steel (forge only). JEI (see glossary/jei) doesn't list forge recipes, only the Mechanical Crafting (see glossary/mechanical_crafting) ones, which make the same tools and armor (not horse armor). TFMG's own steel tools (no armor) craft in a crafting table
 - Old Alloyed steel ingots convert to TFMG steel in crafting grid (see industry/tfmg_steel)
 
 ## industry/enchanting | Enchantment Industry

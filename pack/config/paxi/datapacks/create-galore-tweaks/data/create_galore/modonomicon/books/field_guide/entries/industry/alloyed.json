@@ -58,6 +58,11 @@
       "type": "modonomicon:text",
       "title": "",
       "text": "**Casings and building blocks:**\n- Steel Casing and Bronze Casing, with [#](7A3C9A)[encased](entry://glossary/encased)[#]() shafts and cogwheels, add more tiers to your builds\n- Steel catwalks, mesh fences and doors\n\nOld Alloyed steel ingots convert to TFMG steel in a crafting grid. See [#](2E5AAC)[TFMG Steel](entry://industry/tfmg_steel)[#]()."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Steel Tools and Armor",
+      "text": "The Alloy Forge takes steel tools and armor in iron's shapes, any steel. Steel Horse Armor: Iron Horse Armor and four steel.\\\n\\\n[#](7A3C9A)[JEI](entry://glossary/jei)[#]() doesn't list the forge's recipes. It lists the [#](7A3C9A)[Mechanical Crafting](entry://glossary/mechanical_crafting)[#]() ones, which make the same tools and armor (not the horse armor)."
     }
   ]
 }
