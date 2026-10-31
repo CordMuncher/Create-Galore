@@ -5,6 +5,17 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.6.55
+
+### Added
+- Create Galore Fishing 0.3.26.
+
+### Fixed
+- **Fish labels under Photon.** 0.6.39 fixed the Cleaning Table and trophy mount labels under Complementary, but under Photon the dark backing still covered the letters. The labels are now drawn with the on-screen display, pinned over their block at the same size, so no shader pack changes them: the fish's name and the cleaning progress (or the trophy's size, weight and length) read the same with any shaders or none. They hide with the rest of the display (F1).
+
+### Removed
+- Nothing.
+
 ## 0.6.54
 
 ### Added
