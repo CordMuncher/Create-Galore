@@ -6,7 +6,7 @@ name is for its motion vectors: not only the camera's, but how each moving thing
 contraptions, ships, mobs, the hand), which is what lets DLSS and FSR keep them sharp. The Bridge's Upscaling &
 Display screen picks the upscaler and the render resolution; the pack has no settings of its own for them.
 
-**Work in progress: alpha 0.5.1.** It lives on its own branch and is not in the modpack yet. The first Create Galore
+**Work in progress: alpha 0.5.2.** It lives on its own branch and is not in the modpack yet. The first Create Galore
 pack (`shaderpack/`) stays as a research build; the two share only the DLSS hand-off and the mods' plumbing
 (Colorwheel, Distant Horizons), not their lighting.
 
