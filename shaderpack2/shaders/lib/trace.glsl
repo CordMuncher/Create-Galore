@@ -7,7 +7,9 @@
 // blended between cells for how much room a light has around it. A ray that reaches a cell that stops light:
 // - a full block stops it;
 // - a part block (a slab, a path, a fence post, stairs) stops it only where one of its shape's boxes is, tested
-//   exactly; a ray that misses them goes on, and how close it came softens its shadow. Where a box's faces have
+//   exactly; a ray that misses them goes on, and how close it came softens its shadow. A box narrower than the
+//   cone is wide there (a fence's rail in front of a torch's flame) only hides the share of the light it covers, so
+//   a thin part's shadow is a soft partial one, as under a real flame of that size. Where a box's faces have
 //   see-through pixels (a trapdoor's windows, a grate's slots: VOX_HOLES), light gets through the open ones (box_open);
 // - leaves let light through the gaps in their texture (VOX_HOLES), or a share of it where those aren't known.
 // Three ways through:
@@ -260,12 +262,14 @@ float part_room(ivec3 cell, uint word, vec3 q) {
 // up to cap blocks (under half a block): only the blocks on the sides it is within cap of are read. Leaves don't count
 // (a ray that crosses them loses part of its light there). The blended distance field can't stand in here: in an inside
 // corner (a block's foot on the floor) it reads no room at all for nearly half a block, and part blocks aren't in it.
-float near_room(vec3 q, float cap) {
+// The same, kept apart for full blocks (what it returns) and part blocks' boxes (part).
+float near_room_split(vec3 q, float cap, out float part) {
     cap = min(cap, 0.49);
     ivec3 cell = ivec3(floor(q));
     vec3 f = q - vec3(cell);
     ivec3 side = ivec3(greaterThan(f, vec3(1.0 - cap))) - ivec3(lessThan(f, vec3(cap)));
     float room = cap;
+    part = cap;
     for (int i = 1; i < 8; i++) {
         ivec3 bits = ivec3(i & 1, (i >> 1) & 1, (i >> 2) & 1);
         if (any(greaterThan(bits, abs(side)))) {
@@ -277,12 +281,174 @@ float near_room(vec3 q, float cap) {
             continue;
         }
         if ((word & VOX_PART) != 0u) {
-            room = min(room, part_room(n, word, q));
+            part = min(part, part_room(n, word, q));
         } else {
             room = min(room, length(max(max(vec3(n) - q, q - vec3(n + 1)), 0.0)));
         }
     }
     return room;
+}
+
+float near_room(vec3 q, float cap) {
+    float part;
+    float room = near_room_split(q, cap, part);
+    return min(room, part);
+}
+
+// How much of a cone of half width w a part block's box leaves when the cone's middle passes room blocks beside
+// it (as a part's box can be thin, its shadow's soft edge runs both ways from the box's outline: half the cone at
+// the outline itself).
+float part_edge_visible(float room, float w) {
+    return clamp(0.5 + 0.5 * room / w, 0.0, 1.0);
+}
+
+// The room round a ray (going along dir) at q for a cone of half width w, as cone_visibility measures it: from the
+// full blocks round q, as near_room_split (returned); and how much of the cone the part blocks' boxes in the blocks
+// round q leave (part_visible; with own, those of q's own block too). A box beside the ray hides the share of the
+// cone on its side (half of it at the box's outline, part_edge_visible), and boxes on opposite sides of the ray add
+// up: a ray that slips between two boxes that only touch (open trapdoors standing round a lantern, meeting at its
+// corners) crosses neither, but the cone round it is covered on both sides. A box with see-through pixels counts as
+// well where the ray only passes it: part_pass works out what gets through its open pixels where a ray goes through
+// it, and a ray that just grazes its edge never does (the trace steps from block to block diagonally there), so
+// without it the frame round a grate's or a trapdoor's holes would let a fine line of light through.
+float near_room_cone(vec3 q, vec3 dir, float w, bool own, out float part_visible) {
+    float cap = min(w, 0.49);
+    ivec3 cell = ivec3(floor(q));
+    vec3 f = q - vec3(cell);
+    ivec3 side = ivec3(greaterThan(f, vec3(1.0 - cap))) - ivec3(lessThan(f, vec3(cap)));
+    vec3 inv_dir = safe_inverse(dir);
+    float room = cap;
+    float covers[8];
+    vec3 aside[8];
+    int count = 0;
+    int strongest = -1;
+    for (int i = own ? 0 : 1; i < 8; i++) {
+        ivec3 bits = ivec3(i & 1, (i >> 1) & 1, (i >> 2) & 1);
+        if (any(greaterThan(bits, abs(side)))) {
+            continue; // a side it isn't near
+        }
+        ivec3 n = cell + bits * side;
+        uint word = vox_word(n);
+        if ((word & VOX_SOLID) == 0u || (word & VOX_LEAVES) != 0u) {
+            continue;
+        }
+        if ((word & VOX_PART) == 0u) {
+            room = min(room, length(max(max(vec3(n) - q, q - vec3(n + 1)), 0.0)));
+            continue;
+        }
+        uint entry = word & VOX_ENTRY;
+        bool holes = (word & VOX_HOLES) != 0u;
+        uint boxes = palette_box_count(entry);
+        vec3 local = q - vec3(n);
+        for (uint b = 0u; b < boxes; b++) {
+            vec3 lo;
+            vec3 hi;
+            palette_box(entry, b, lo, hi);
+            if (any(lessThanEqual(hi, lo))) {
+                continue;
+            }
+            vec3 to = clamp(local, lo, hi) - local; // to its nearest point
+            float cover = clamp(0.5 - 0.5 * length(to) / w, 0.0, 1.0);
+            if (cover <= 0.0) {
+                continue;
+            }
+            if (holes) {
+                // The ray goes through it (part_pass): a little inside its outline, as one that only clips its edge
+                // may never get there.
+                vec3 ta = (lo + 1e-3 - local) * inv_dir;
+                vec3 tb = (hi - 1e-3 - local) * inv_dir;
+                if (max3(min(ta, tb)) < min3(max(ta, tb))) {
+                    continue;
+                }
+            }
+            if (count < 8) {
+                vec3 across = to - dot(to, dir) * dir;
+                float len = length(across);
+                covers[count] = cover;
+                aside[count] = len > 1e-6 ? across / len : vec3(0.0);
+                if (strongest < 0 || cover > covers[strongest]) {
+                    strongest = count;
+                }
+                count++;
+            }
+        }
+    }
+    part_visible = 1.0;
+    if (strongest >= 0) {
+        float other = 0.0;
+        for (int j = 0; j < count; j++) {
+            other = max(other, covers[j] * clamp(-dot(aside[j], aside[strongest]), 0.0, 1.0));
+        }
+        part_visible = clamp(1.0 - covers[strongest] - other, 0.0, 1.0);
+    }
+    return room;
+}
+
+// Whether a point is inside something that stops light (a full block, or one of a part block's boxes).
+bool stops_light_at(vec3 q) {
+    ivec3 cell = ivec3(floor(q));
+    uint word = vox_word(cell);
+    if ((word & VOX_SOLID) == 0u || (word & VOX_LEAVES) != 0u) {
+        return false;
+    }
+    return (word & VOX_PART) == 0u || part_room(cell, word, q) <= 0.0;
+}
+
+// How much of a cone of half width w the boxes of a part block (without see-through pixels) hide where its middle
+// ray goes through them (between t0 and t1; 0 where it misses them all). Seen along the ray, a box covers a patch
+// round the ray (the box's outline from that side); the cone gets past it by the shortest way out of that patch,
+// unless what lies that way stops light too (the next slab of a floor, the rail going on into the next fence). So
+// a fence's rail, thinner than a torch's cone a few blocks out, hides only part of the light; a slab or a wall of
+// them hides it all.
+float part_cover(ivec3 cell, uint word, vec3 o, vec3 dir, vec3 inv_dir, float t0, float t1, bool skip_inside,
+                 float w) {
+    uint entry = word & VOX_ENTRY;
+    float cover = 0.0;
+    uint n = palette_box_count(entry);
+    for (uint i = 0u; i < n && cover < 0.999; i++) {
+        vec3 lo;
+        vec3 hi;
+        palette_box(entry, i, lo, hi);
+        if (any(lessThanEqual(hi, lo))) {
+            continue;
+        }
+        lo += vec3(cell);
+        hi += vec3(cell);
+        float t;
+        vec3 face;
+        if (!box_entry(lo, hi, o, inv_dir, t0, t1, skip_inside, t, face)) {
+            continue;
+        }
+        float t_out = min(min3(max((lo - o) * inv_dir, (hi - o) * inv_dir)), t1);
+        vec3 m = o + dir * (0.5 * (t + t_out));
+        vec3 rel = m - 0.5 * (lo + hi);
+        vec3 size = hi - lo;
+        // The outline's sides run along the box's edges as seen along the ray: across each, the way out is at
+        // right angles to the ray and to that edge.
+        float hidden = 1.0;
+        for (int k = 0; k < 3; k++) {
+            vec3 axis = vec3(0.0);
+            axis[k] = 1.0;
+            vec3 across = cross(dir, axis);
+            float len = length(across);
+            if (len < 0.05) {
+                continue; // the ray runs along this edge
+            }
+            across /= len;
+            float half_width = 0.5 * dot(abs(across), size);
+            float at = dot(across, rel);
+            vec2 out_by = vec2(half_width + at, half_width - at); // to the outline's side behind, ahead
+            if (out_by.x < w && stops_light_at(m - across * (out_by.x + 0.02))) {
+                out_by.x = 1e9;
+            }
+            if (out_by.y < w && stops_light_at(m + across * (out_by.y + 0.02))) {
+                out_by.y = 1e9;
+            }
+            hidden = min(hidden, (min(out_by.y, w) + min(out_by.x, w)) / (2.0 * w));
+        }
+        cover = max(cover, clamp(hidden, 0.0, 1.0));
+    }
+    return cover;
 }
 
 struct Hit {
@@ -394,8 +560,13 @@ float cone_visibility(vec3 p, vec3 dir, float dist, float width_start, float wid
         float mid_width = mix(width_start, width_end, clamp(mid_t / dist, 0.0, 1.0)) + 0.02;
         if (d == 1u) {
             // Beside something: the room where the ray comes in and halfway through, measured exactly (a ray that
-            // slips through where two blocks only touch at an edge comes in with none).
-            visible = min(visible, min(near_room(q, width) / width, near_room(mid, mid_width) / mid_width));
+            // slips through where two blocks only touch at an edge comes in with none); beside a part block's box,
+            // its soft edge runs both ways from its outline (near_room_cone).
+            float part_in;
+            float part_mid;
+            float full_in = near_room_cone(q, dir, width, false, part_in);
+            float full_mid = near_room_cone(mid, dir, mid_width, false, part_mid);
+            visible = min(visible, min(min(full_in / width, full_mid / mid_width), min(part_in, part_mid)));
             t = exit_t + 0.002;
             continue;
         }
@@ -411,7 +582,6 @@ float cone_visibility(vec3 p, vec3 dir, float dist, float width_start, float wid
                 return 0.0;
             }
         } else if ((word & VOX_PART) != 0u) {
-            vec3 n;
             if ((word & VOX_HOLES) != 0u) {
                 // The share of the cone that gets through the open pixels, blurred by how wide the cone is there.
                 float pass = part_pass(cell, word, p, inv_dir, t, seg_end, cell == start,
@@ -420,14 +590,25 @@ float cone_visibility(vec3 p, vec3 dir, float dist, float width_start, float wid
                     return 0.0;
                 }
                 through *= pass;
-            } else if (part_hit(cell, word, p, inv_dir, t, seg_end, cell == start, n) >= 0.0) {
-                return 0.0;
+                float room = near_room(mid, mid_width);
+                if (cell != start) {
+                    room = min(room, part_room(cell, word, mid));
+                }
+                visible = min(visible, room / mid_width);
+            } else {
+                // The share of the cone its boxes hide where the ray goes through them (all of it for a box wider
+                // than the cone), or, where it misses them, how close it passes.
+                float cover = part_cover(cell, word, p, dir, inv_dir, t, seg_end, cell == start, mid_width);
+                if (cover >= 0.999) {
+                    return 0.0;
+                }
+                float part;
+                float room = near_room_cone(mid, dir, mid_width, cover <= 0.0 && cell != start, part);
+                if (cover > 0.0) {
+                    visible = min(visible, 1.0 - cover);
+                }
+                visible = min(visible, min(room / mid_width, part));
             }
-            float room = near_room(mid, mid_width);
-            if (cell != start) {
-                room = min(room, part_room(cell, word, mid));
-            }
-            visible = min(visible, room / mid_width);
         } else if (cell != start) {
             return 0.0;
         }

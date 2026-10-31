@@ -144,7 +144,7 @@ void main() {
     // (sun_high, for the land) is half taken off them so they stay white by day, and comes back as it sinks, so they
     // still turn gold and pink at dusk.
     bool cloud_by_sun = sun.y > -0.03;
-    float cloud_y = clamp(cameraPosition.y, 192.0, 320.0);
+    float cloud_y = clamp(cameraPosition.y, float(CLOUD_HEIGHT), float(CLOUD_HEIGHT) + 100.0);
     vec3 cloud_through = air_transmittance(camera_radius(cloud_y), max(cloud_by_sun ? sun.y : moon.y, 0.004));
     vec3 cloud_sun = cloud_through * (cloud_by_sun ? mix(sun_low, sun_high, noon) : moon_now);
     float cloud_white = cloud_by_sun ? 0.85 * smoothstep(0.05, 0.4, sun.y) : 0.0; // white by day, gold low down

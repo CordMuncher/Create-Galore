@@ -89,6 +89,9 @@ const ivec3 vox_tiles = vox_size / 8;
 // Heaped clouds drawn as a volume, lit by the sun and the sky (lib/clouds.glsl). Off: Minecraft's own clouds, lit by
 // the pack (the game's Clouds setting turns those off).
 #define REAL_CLOUDS
+// Where their bases gather (Y): they spread from 15 under it to 20 over it, every choice above Pollution of the Realms'
+// smog (Y 189-192).
+#define CLOUD_HEIGHT 230 // [215 230 250 280 320]
 // How much of the sky they cover on a fair day (rain closes it up).
 #define CLOUD_AMOUNT 1.0 // [0.5 0.75 1.0 1.25 1.5]
 // The most looks into the clouds along each ray: more keeps the far clouds' detail finer.

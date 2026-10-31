@@ -25,11 +25,14 @@ pack (`shaderpack/`) stays as a research build; the two share only the DLSS hand
   the Bridge, the pack lights with Minecraft's own light.
 - **Coloured block light, traced.** Every light (a table of vanilla's lights with their colours and strengths, the
   same table for a light placed and the same light held, or any block Minecraft says gives light, coloured from its
-  texture) is traced through the copy, so light stops at walls,
-  passes beside a fence post or over a slab exactly as their shapes allow, and takes the colour of the glass it passes
-  through. Per block for everything, and per pixel near you for sharp shadows from lamps, sampled at a fraction of the
-  pixels and filtered over frames. Which lights a spot gets is kept per 8-block patch of the world, never per part of
-  the screen, so it doesn't change as you look around.
+  texture) is traced through the copy, so light stops at walls, passes beside a fence post or over a slab exactly as
+  their shapes allow, and takes the colour of the glass it passes through. A part thinner than a light is wide there
+  (a fence's rail in front of a torch's flame) hides only the share of the light it covers, so its shadow is soft and
+  partial, never a hard cut. Light that only grazes an edge counts what lies on both sides of it, so no fine line gets
+  through where two trapdoors meet at a corner or past the frame of a grate. Per block for everything, and per pixel
+  near you for sharp shadows from lamps, sampled at a fraction of the pixels and filtered over frames. Which lights a
+  spot gets is kept per 8-block patch of the world, never per part of the screen, so it doesn't change as you look
+  around.
 - **Bounce light.** Sunlight, skylight and block light bounce off the blocks around you and take on their colour
   (far off, every other frame).
 - **Light that mixes like display colours**: the sun, the sky and the lamps add up the way the look we follow does,
@@ -51,21 +54,26 @@ pack (`shaderpack/`) stays as a research build; the two share only the DLSS hand
   says so the craters stand out along the line between light and dark, a cool silver-blue, with the Earth's faint
   light on its dark part and a soft halo. The far haze takes the sky's colour. Sunlight on the land turns warmer at
   dawn and dusk. Rain greys the sky and hides the sun, the moon and the stars.
-- **Clouds**: a layer of real clouds round Minecraft's cloud height, up to 64 blocks deep, drawn as a volume. A
-  slow weather map says where the sky is clear blue, scattered, broken or nearly closed, and what kind of cloud is
-  there: flat stratocumulus sheets with gaps, small fair-weather cumulus, or big heaped cumulus where the cover is
-  thick; rain closes it into one grey deck. Flat underneath, ragged outlines, crisp billows on top and swirled wisps
-  underneath, with small loose scraps round the bigger ones; thin parts stay see-through. Far above, thin streaks and
-  fine ripples (cirrus and cirrocumulus) in places. Lit by the sun through the cloud between (white tops, shade in
-  the crevices, silver edges round the sun, which burns through thin parts, and with the sun behind you the darker
-  "powder" look of real cumulus) and by the sky from above (grey-blue undersides), gold and pink at dusk and dawn,
-  moonlit at night; they fade into the sky's colour far off and reach 5000 blocks, and detail too fine to show at a
-  distance gives way to its average so nothing far off flickers. The game's clock moves them (they don't jump, they
-  are where they were when you reload, and with the daylight cycle stopped they stop too) at about a block a second
-  (option Cloud Speed), the wind's direction wandering over days. Every pixel is worked out every frame at half the
-  render size each way and smoothed over a few frames, never a fraction of the pixels per frame (which makes clouds
-  crawl in motion); DLSS gets their own motion. Their shadows cross the land (option Cloud Shadows). Option Realistic
-  Clouds off gives Minecraft's clouds, lit orange and pink at dusk and dawn.
+- **Clouds**: a layer of real clouds drawn as a volume, their bases gathering round Y 230 (option Cloud Height),
+  always above the pollution's smog, so they never hide what goes on below them. The bases rise and fall over a
+  kilometre or two and from cloud to cloud (15 blocks under the layer's height to 20 over it), so the layer never
+  reads as one flat floor. A slow weather map says where the sky is clear blue, scattered, broken or nearly closed,
+  and what kind of cloud is there: flat stratocumulus sheets 12 to 24 blocks deep with gaps, small fair-weather
+  cumulus 24 to 40 tall with domed tops, or big cumulus towering up to 95 where the cover is thick; rain closes it
+  into one grey deck. Flat underneath, ragged outlines, round cauliflower billows on top and swirled wisps under the
+  base, a frayed edge about a block across up close (for planes), small loose scraps round the bigger ones; the cores
+  are solid and only the edges thin out. Far above, thin streaks and soft ripples (cirrus and cirrocumulus) in places.
+  Lit by the sun through the cloud between (white tops, shade in the crevices and on the far side, silver edges round
+  the sun, which burns through thin parts, and with the sun behind you the darker "powder" look of real cumulus) and
+  by the sky from above (grey-blue undersides), gold and pink at dusk and dawn, moonlit at night; they fade into the
+  sky's colour far off and reach 5000 blocks. The look along each pixel crosses empty air in coarse steps and goes
+  back over the stretch where it found cloud in fine ones, so their edges hold still from frame to frame, and detail
+  too fine to show at a distance gives way to its average so nothing far off flickers. The game's clock moves them
+  (they don't jump, they are where they were when you reload, and with the daylight cycle stopped they stop too) at
+  about a block a second (option Cloud Speed), the wind's direction wandering over days. Every pixel is worked out
+  every frame at half the render size each way and smoothed over a few frames, never a fraction of the pixels per
+  frame (which makes clouds crawl in motion); DLSS gets their own motion. Their shadows cross the land (option Cloud
+  Shadows). Option Realistic Clouds off gives Minecraft's clouds, lit orange and pink at dusk and dawn.
 - **Water**: its own colour, deeper the deeper it is, and waves crossing from three directions, longer ones faster.
 - **Light in the air**: a coloured haze around lamps (strongest at night, underground and in the Nether), haze far
   off, water and lava around you.
@@ -119,6 +127,12 @@ off:
     shaderpack2/build.sh                     # zips the pack into shaderpack2/dist/
     python3 shaderpack2/tools/cloud_noise.py # remakes the clouds' noise (shaders/textures/cloud_noise.dat)
     python3 shaderpack2/tools/moon_map.py    # remakes the moon's surface (shaders/textures/moon.png) from NASA's maps
+    python3 shaderpack2/tools/light_tester/light_tester.py SCENE.py OUT.png  # the block light without Minecraft
+
+`tools/light_tester/` runs the pack's own block light programs (the voxel copy, the distance field, the light per
+block and the light per pixel) on a scene of blocks written in Python, in a stand-in for Iris, and draws it at any
+resolution in under a minute on the CPU: for problems too fine or too slow to chase in the game. See the script's
+notes for its options; `scene_leaks.py` and `scene_regress.py` are examples.
 
 ## How it is laid out
 

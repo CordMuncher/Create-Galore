@@ -32,7 +32,7 @@ uniform mat4 dhProjectionInverse;
 shared vec4 s_light[64];
 
 // One texel of the clouds' shadow map (cloud_shadow in lib/sky.glsl): what gets through the clouds towards the light
-// from the point at the camera's height under the texel's middle, through their body (eight looks across the layer).
+// from the point at the camera's height under the texel's middle, through their body (twelve looks across the layer).
 void shadow_texel(ivec2 texel) {
     float through = 1.0;
 #ifdef CLOUD_SHADOWS
@@ -44,7 +44,7 @@ void shadow_texel(ivec2 texel) {
     float hi = bottom + cloud_depth;
     if (clouds_here() && hi > lo) {
         vec3 origin = cloud_origin();
-        const int looks = 8;
+        const int looks = 12;
         float dy = (hi - lo) / float(looks);
         float tau = 0.0;
         // The weather changes over kilometres: one look at it does for the whole way across the layer.
@@ -54,8 +54,7 @@ void shadow_texel(ivec2 texel) {
             float y = lo + (float(i) + 0.5) * dy;
             vec2 xz = rel + shift * (y - y0);
             vec3 p = origin + vec3(xz.x, y - y0, xz.y);
-            float h = (y - bottom) / cloud_depth;
-            tau += cloud_body(p, h, map) * 0.15 * dy * length(vec3(shift, 1.0));
+            tau += cloud_body(p, y, map) * cloud_extinction * dy * length(vec3(shift, 1.0));
         }
         through = max(exp(-tau), 0.05);
     }
@@ -120,10 +119,13 @@ March march(vec3 dir, float limit, float jitter, float pixel) {
         return m;
     }
 
-    // Steps: about one every 6 blocks, at most CLOUD_STEPS; from inside the layer they start short and grow (squared
-    // spacing), so the clouds round you keep their detail and the far ones still get looked at.
+    // Coarse looks cross the empty air: about one every 8 blocks, at most CLOUD_STEPS; from inside the layer they
+    // start short and grow (squared spacing), so the clouds round you keep their detail and the far ones still get
+    // looked at. Where a look finds cloud (or the last one did), the stretch since the last look is looked through
+    // again in finer steps, down to about what a pixel covers there: the cloud's edge is found wherever the coarse
+    // looks fall, so it holds still from frame to frame instead of shimmering, and the billows keep their shape.
     float len = t1 - t0;
-    int n = clamp(int(len / 6.0) + 4, 6, CLOUD_STEPS);
+    int n = clamp(int(len / 8.0) + 4, 6, CLOUD_STEPS);
     float spread = t0 < 1.0 ? 2.0 : 1.0;
 
     vec4 lit = g_cloud_light;
@@ -143,7 +145,6 @@ March march(vec3 dir, float limit, float jitter, float pixel) {
     vec3 ground_light = pow(max(lit.rgb * max(l.y, 0.0) * vec3(0.10, 0.11, 0.08) + g_sky_up.rgb * 0.1, 0.0), to_display);
     vec3 sky_seen = sky_look(sky_air_seen(dir), dir);
     vec3 origin = cloud_origin();
-    const float extinction = 0.15; // per block in the thickest cloud
     // The powder look: with the sun behind you, the outer billows (little cloud between them and the sun) a little
     // darker than the folds.
     float powder_amount = 0.6 * (0.5 - 0.5 * cos_theta);
@@ -152,70 +153,110 @@ March march(vec3 dir, float limit, float jitter, float pixel) {
     vec3 light = vec3(0.0);
     float mid_sum = 0.0;
     float weight_sum = 0.0;
-    for (int i = 0; i < CLOUD_STEPS; i++) {
-        if (i >= n) {
+    float s_last = 0.0;
+    bool was_in = false;
+    int fine_left = CLOUD_STEPS * 3;
+    for (int i = 0; i <= CLOUD_STEPS; i++) {
+        if (i > n || s_last >= 1.0 || through < 0.02) {
             break;
         }
-        float s = pow((float(i) + jitter) / float(n), spread);
-        float s_end = pow((float(i) + 1.0) / float(n), spread);
-        float dt = len * (s_end - pow(float(i) / float(n), spread));
-        float t = t0 + len * s;
-        vec3 p = origin + dir * t;
-        float h = (y0 + dir.y * t - bottom) / cloud_depth;
-        if (h <= 0.0 || h >= 1.0) {
+        float s = min(pow((float(i) + jitter) / float(n), spread), 1.0);
+        float ta = t0 + len * s_last;
+        float tc = t0 + len * s;
+        s_last = s;
+        vec3 pc = origin + dir * tc;
+        CloudMap map = cloud_map(pc.xz);
+        bool hit = cloud_body(pc, y0 + dir.y * tc, map) > 0.0;
+        if (!hit && !was_in) {
             continue;
         }
-        float fade = 1.0 - smoothstep(1000.0, cloud_reach, t * flat_len);
-        CloudMap map = cloud_map(p.xz);
-        float body;
-        // What one of these pixels covers there (blocks): detail finer than that, or than the step, would only shimmer.
-        float blur = max(dt, t * pixel * 3.0);
-        float density = cloud_density(p, h, map, blur, body) * fade;
-        if (density <= 0.002) {
-            continue;
-        }
+        bool entering = !was_in;
+        was_in = hit;
 
-        // The light's way out: three looks towards it, each standing for the stretch round it; the nearest takes the
-        // billows (so the crevices between them shade), the others only the body.
-        float shade = 0.0;
-        for (int k = 0; k < 3; k++) {
-            float d = k == 0 ? 3.0 : (k == 1 ? 12.0 : 30.0);
-            float hl = h + l.y * d / cloud_depth;
-            if (hl > 0.0 && hl < 1.0) {
-                float near_body;
-                float v = k == 0 ? cloud_density(p + l * d, hl, map, blur, near_body) : cloud_body(p + l * d, hl, map);
-                shade += v * (k == 0 ? 6.0 : (k == 1 ? 12.0 : 24.0));
+        // Coming into a cloud: its edge lies somewhere between the last look and this one (tens of blocks apart far
+        // off), so find it by halving first. The finer steps then start at the cloud's real surface, not wherever the
+        // looks fell, so a far slope doesn't break into slices one look deep.
+        float start = ta;
+        if (entering) {
+            float lo = ta;
+            float hi = tc;
+            for (int b = 0; b < 5; b++) {
+                float t_mid = 0.5 * (lo + hi);
+                if (cloud_body(origin + dir * t_mid, y0 + dir.y * t_mid, map) > 0.0) {
+                    hi = t_mid;
+                } else {
+                    lo = t_mid;
+                }
             }
+            start = lo;
         }
-        float tau = shade * extinction;
-        float direct = 0.0;
-        for (int o = 0; o < 3; o++) {
-            direct += exp2(-float(o)) * phase[o] * exp(-tau * exp2(-float(o)));
-        }
-        direct *= mix(1.0, 1.0 - exp(-tau * 2.0 - density * 1.5), powder_amount);
-        // The sky's light from above: the undersides get less of it (in rain, with no sun, the closed-up layer
-        // passes more of it round inside). The light mixes in display values like a surface's, up to about a sunlit
-        // face's; the bright forward lobe round the sun goes on top as it is (in display values its peak would square
-        // into a glare many times the sun's).
-        float open = mix(mix(0.4, 0.65, rainStrength), 1.0, h) * (1.0 - 0.35 * body);
-        float soft = min(direct, 1.2);
-        vec3 sample_light = pow(sun * soft * 1.1 + sky_light * open + ground_light * (1.0 - h), vec3(2.2))
-                          + lit.rgb * (direct - soft) * 0.15;
-        // Far off, the clouds take on the sky's colour behind them and fade into the haze.
-        float haze = (1.0 - exp(-t * flat_len / 1200.0)) * 0.95;
-        sample_light = mix(sample_light, sky_seen, haze);
 
-        float step_through = exp(-density * extinction * dt);
-        float taken = through * (1.0 - step_through);
-        light += sample_light * taken;
-        if (m.front >= cloud_far_sky) {
-            m.front = t;
-        }
-        mid_sum += t * taken;
-        weight_sum += taken;
-        through *= step_through;
-        if (through < 0.02) {
-            break;
+        // The stretch since the last look (or from the edge), in finer steps.
+        float stretch = tc - start;
+        float fine_len = max(tc * pixel * 1.5, 1.0);
+        int k_n = clamp(int(ceil(stretch / fine_len)), 1, min(6, max(fine_left, 1)));
+        fine_left -= k_n;
+        float dt = stretch / float(k_n);
+        for (int k = 0; k < 6; k++) {
+            if (k >= k_n) {
+                break;
+            }
+            float t = start + dt * (float(k) + jitter);
+            vec3 p = origin + dir * t;
+            float y = y0 + dir.y * t;
+            float fade = 1.0 - smoothstep(1000.0, cloud_reach, t * flat_len);
+            float body;
+            // What one of these pixels covers there (blocks): detail finer than that, or than the step, would only
+            // shimmer.
+            float blur = max(dt, t * pixel * 3.0);
+            float density = cloud_density(p, y, map, blur, body) * fade;
+            if (density <= 0.002) {
+                continue;
+            }
+
+            // The light's way out: four looks towards it, each standing for the stretch round it; the nearest takes
+            // the billows (so the crevices between them shade), the others only the body.
+            float shade = 0.0;
+            for (int j = 0; j < 4; j++) {
+                float d = j == 0 ? 2.5 : (j == 1 ? 9.0 : (j == 2 ? 22.0 : 50.0));
+                float w = j == 0 ? 5.0 : (j == 1 ? 9.0 : (j == 2 ? 18.0 : 36.0));
+                float near_body;
+                float v = j == 0 ? cloud_density(p + l * d, y + l.y * d, map, blur, near_body)
+                                 : cloud_body(p + l * d, y + l.y * d, map);
+                shade += v * w;
+            }
+            float tau = shade * cloud_extinction;
+            float direct = 0.0;
+            for (int o = 0; o < 3; o++) {
+                direct += exp2(-float(o)) * phase[o] * exp(-tau * exp2(-float(o)));
+            }
+            direct *= mix(1.0, 1.0 - exp(-tau * 2.0 - density * 1.5), powder_amount);
+            // The sky's light from above: the lower in the cloud, the less of it (in rain, with no sun, the
+            // closed-up layer passes more of it round inside). The light mixes in display values like a surface's,
+            // up to about a sunlit white face's; the bright forward lobe round the sun goes on top as it is (in
+            // display values its peak would square into a glare many times the sun's).
+            float up = clamp((y - map.base) / map.tall, 0.0, 1.0);
+            float open = mix(mix(0.35, 0.6, rainStrength), 1.0, up) * (1.0 - 0.4 * body);
+            float soft = min(direct, 1.0);
+            vec3 sample_light = pow(sun * soft * cloud_sun_gain + sky_light * open * cloud_sky_gain
+                                    + ground_light * (1.0 - up), vec3(2.2))
+                              + lit.rgb * (direct - soft) * 0.12;
+            // Far off, the clouds take on the sky's colour behind them and fade into the haze.
+            float haze = (1.0 - exp(-t * flat_len / 1200.0)) * 0.95;
+            sample_light = mix(sample_light, sky_seen, haze);
+
+            float step_through = exp(-density * cloud_extinction * dt);
+            float taken = through * (1.0 - step_through);
+            light += sample_light * taken;
+            if (m.front >= cloud_far_sky) {
+                m.front = t;
+            }
+            mid_sum += t * taken;
+            weight_sum += taken;
+            through *= step_through;
+            if (through < 0.02) {
+                break;
+            }
         }
     }
     if (through < 0.02) {
