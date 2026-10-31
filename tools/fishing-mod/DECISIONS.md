@@ -794,3 +794,21 @@ what it is when you see it in the water.
 - `MachineInfo` reads `RodStats.lineMeters()` (line on the rod, capped by the reel or a pole's fixed length) and
   shows "Line out: 40 / 120 m", gold from 85% of it. With the line in it reads "Line in: 0 / 120 m". A rod with
   no line falls back to the old wording.
+
+## A drive never casts a rod that can't be cast (0.3.29)
+
+- Reported: a dedicated server stopped (`NoSuchElementException` in `RodStats.tackle`, from `CastHook.strike`). A
+  fish had just broken the line on a Geared Reel Drive with autocast on. `wantsToCast` only asked for "a rod with a
+  reel and a lure or bait", never for a line, so the drive cast the lineless rod, a fish bit, the drive struck and
+  `tackle()` found no line.
+- Asked for: a drive refuses only a rod that can't be cast at all (no line, no reel, bait but no hook) and says so;
+  a poor rig is still cast: a bare hook on a line with no bait, float or sinker, or a lure.
+- `ReelDrive.castState()` (Ready / No rod / Can't cast) uses `RodStats.canCast()` (the hand rule) plus "has a reel";
+  `DATA_CAN_CAST` sends it. The old "no bait, don't cast" rule is gone: an empty bait slot no longer stops a drive.
+  The window's status reads No rod or Can't cast, the goggles add "Can't cast: <the first missing part>".
+- `CastHook.tick` lets a line go (as when the angler drops the rod) once the rod in the hand or machine can't cast:
+  another rod switched in, or the line, reel or hook taken off while the rig is out. That covers hand rods and any
+  other path to a strike on a rod short of a part.
+- Self-tests: `partsgone` (line, reel taken off, a bare rod switched in during a bite, line taken off in a fight;
+  before the fix three of those threw the server's exception and the fight one kept fighting) and `machines`
+  (a geared drive casts a bare hook and a hookless lure, refuses no line, no reel, bait with no hook).

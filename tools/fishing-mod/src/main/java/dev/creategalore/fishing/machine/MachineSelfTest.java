@@ -13,6 +13,8 @@ import dev.creategalore.fishing.sim.Gearbox;
 import dev.creategalore.fishing.sim.MonteCarlo;
 import dev.creategalore.fishing.sim.Outcome;
 import dev.creategalore.fishing.sim.TacklePresets;
+import dev.creategalore.fishing.tackle.RodItem;
+import dev.creategalore.fishing.tackle.RodParts;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -46,7 +48,8 @@ import net.neoforged.neoforge.fluids.capability.IFluidHandler;
  * {@code /cgfish selftest machines}: the torque-against-drag rule (what stalls a water wheel and what doesn't), the
  * gearbox, the Basic drive wearing its reel faster than the Geared one on the same fish, where a machine's catch
  * goes (the inventory below, never another drive's bait slot, else it hangs at the tip), banked XP and its pay-out,
- * the drives' settings surviving a reload, the Fuel drive taking fuel, and alive fish going back into the water.
+ * the drives' settings surviving a reload, the Fuel drive taking fuel, alive fish going back into the water, and a
+ * geared drive refusing only a rod that can't be cast (a poor rig still goes out).
  */
 public final class MachineSelfTest {
     private MachineSelfTest() {
@@ -68,6 +71,7 @@ public final class MachineSelfTest {
             settings(level, base.offset(0, 0, 4), placed, r);
             fuel(level, base.offset(0, 0, 6), placed, r);
             alive(level, base.offset(0, 0, 8), placed, r);
+            castable(level, base.offset(0, 0, 10), placed, r);
         } finally {
             for (BlockPos p : placed) level.removeBlock(p, false);
             AABB area = new AABB(base).inflate(14);
@@ -223,6 +227,52 @@ public final class MachineSelfTest {
         r.check(light > FuelReelDriveBlockEntity.burn(0, true) && heavy > 1.5 * light && heavy <= 1,
                 String.format(Locale.ROOT, "a fight against a 3.6 kg drag burns %.2f of full, one near 10 kg %.2f, winding in an empty line %.2f, waiting %.2f",
                         light, heavy, FuelReelDriveBlockEntity.burn(0, true), FuelReelDriveBlockEntity.burn(0, false)));
+    }
+
+    /**
+     * A geared drive casts any rod that can be cast, a bare hook with no bait or float too, and refuses one short of a
+     * line, a reel, or a hook or lure (the autocast after a fish broke the line used to cast a rod with none).
+     */
+    private static void castable(ServerLevel level, BlockPos at, List<BlockPos> placed, SelfTest.Report r) {
+        place(level, at, FishingRegistry.GEARED_REEL_DRIVE.get(), placed);
+        if (!(level.getBlockEntity(at) instanceof ReelDriveBlockEntity be)) {
+            r.fail("the geared drive for the cast checks has its block entity");
+            return;
+        }
+        var player = FakePlayerFactory.getMinecraft(level);
+        player.setPos(at.getX() + 0.5, at.getY() + 1, at.getZ() + 0.5);
+        ReelDrive drive = be.drive();
+        r.check(drive.castState() == ReelDrive.CastState.NO_ROD && !drive.wantsToCast(), "with no rod in, it has nothing to cast");
+        record Rig(String what, RodParts parts, boolean casts) {
+        }
+        ItemStack reel = new ItemStack(FishingRegistry.IRON_REEL.get());
+        ItemStack line = new ItemStack(FishingRegistry.MONO_LINE.get());
+        ItemStack hook = new ItemStack(FishingRegistry.MEDIUM_HOOK.get());
+        ItemStack lure = new ItemStack(FishingRegistry.SPOON.get());
+        List<Rig> rigs = new ArrayList<>(List.of(
+                new Rig("a reel, line and a bare hook (no bait, no float)", RodParts.EMPTY.with(RodParts.Slot.REEL, reel.copy())
+                        .with(RodParts.Slot.LINE, line.copy()).with(RodParts.Slot.HOOK, hook.copy()), true),
+                new Rig("no line (the fish broke it)", RodParts.EMPTY.with(RodParts.Slot.REEL, reel.copy())
+                        .with(RodParts.Slot.HOOK, hook.copy()).with(RodParts.Slot.BAIT, baitItem().split(4)), false),
+                new Rig("no reel", RodParts.EMPTY.with(RodParts.Slot.LINE, line.copy()).with(RodParts.Slot.HOOK, hook.copy()), false),
+                new Rig("bait but no hook", RodParts.EMPTY.with(RodParts.Slot.REEL, reel.copy()).with(RodParts.Slot.LINE, line.copy())
+                        .with(RodParts.Slot.BAIT, baitItem().split(4)), false),
+                new Rig("a lure and no hook", RodParts.EMPTY.with(RodParts.Slot.REEL, reel.copy()).with(RodParts.Slot.LINE, line.copy())
+                        .with(RodParts.Slot.TERMINAL, lure.copy()), true)));
+        for (Rig rig : rigs) {
+            ItemStack rod = new ItemStack(FishingRegistry.IRON_ROD.get());
+            RodItem.setParts(rod, rig.parts());
+            player.setItemInHand(InteractionHand.MAIN_HAND, rod);
+            be.mounted().use(player, InteractionHand.MAIN_HAND);
+            ReelDrive.CastState state = drive.castState();
+            r.check(rig.casts() ? state == ReelDrive.CastState.READY && drive.wantsToCast()
+                            : state == ReelDrive.CastState.CANT_CAST && !drive.wantsToCast(),
+                    "a rod with " + rig.what() + (rig.casts() ? " is cast" : " is refused") + " (" + state + ")");
+            player.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
+            be.mounted().use(player, InteractionHand.MAIN_HAND);
+            if (!r.check(be.mounted().rod().isEmpty(), "and comes out again")) break;
+        }
+        player.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
     }
 
     /** An alive fish dropped into water goes back; a dead one loses its marker and stays. */

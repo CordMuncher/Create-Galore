@@ -167,7 +167,7 @@ public class DriveMenu extends AbstractContainerMenu {
                 case DATA_DISTANCE -> drive.settings() == null ? 0 : drive.settings().distance().getValue();
                 case DATA_TOP_GEAR -> drive.settings() == null ? 0 : drive.settings().topGear().getValue();
                 case DATA_REPORT -> reel.reportLosses() ? 1 : 0;
-                case DATA_CAN_CAST -> reel.wantsToCast() ? 1 : 0;
+                case DATA_CAN_CAST -> reel.castState().ordinal();
                 default -> 0;
             };
         }

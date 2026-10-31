@@ -334,8 +334,8 @@ public final class ReelDrive {
         if (!willCast() || torque() <= 0) return;
         rebait();
         RodStats stats = rod.stats();
-        // The bait in store may not be what's on the hook (and an empty hook isn't worth casting).
-        if (!lure(stats) && RodItem.parts(rod.rod()).bait().isEmpty()) return;
+        // Rebaiting doesn't change what the rod can cast, but read it again: only a rod that can cast goes out.
+        if (stats == null || !stats.canCast()) return;
         Direction facing = be.getBlockState().getValue(BlockStateProperties.HORIZONTAL_FACING);
         // On a ship, out over the side the drive faces as the ship is turned now.
         Vec3 out = SableShips.directionToWorld(be.getLevel(), Vec3.atCenterOf(be.getBlockPos()),
@@ -346,23 +346,32 @@ public final class ReelDrive {
     }
 
     /**
-     * True if a geared drive with its line in would cast: a rod with a reel is set in, no catch hangs from it or is on its way, and
-     * there is a lure on, or bait on the rod or in store.
+     * True if a geared drive with its line in would cast: a rod that can be cast (a reel, line, and a hook or lure) is
+     * set in and no catch hangs from it or is on its way. A poor rig still goes out (a bare hook, no bait, no float):
+     * only one that can't be cast at all is refused, and the window and goggles say why.
      */
     public boolean wantsToCast() {
-        if (!kind.geared() || rod.rod().isEmpty() || rod.busy()) return false;
-        RodStats stats = rod.stats();
-        if (stats == null || stats.isPole()) return false;
-        return lure(stats) || !RodItem.parts(rod.rod()).bait().isEmpty() || !bait.getStackInSlot(0).isEmpty();
+        return kind.geared() && castState() == CastState.READY && !rod.busy();
+    }
+
+    /** Whether the rod set in a geared drive can be cast by it, for the window and the goggles. */
+    public enum CastState {
+        READY, NO_ROD, CANT_CAST
+    }
+
+    public CastState castState() {
+        if (rod.rod().isEmpty()) return CastState.NO_ROD;
+        return castable(rod.stats()) ? CastState.READY : CastState.CANT_CAST;
+    }
+
+    /** A drive casts a rod that can be cast and has a reel to wind it: never a pole, nor a rod short of a part. */
+    public static boolean castable(RodStats stats) {
+        return stats != null && !stats.isPole() && stats.canCast();
     }
 
     /** True if the drive would cast now its line is in: it wants to, is switched on, and autocasts or was told to. */
     public boolean willCast() {
         return on && (autocast || castArmed) && wantsToCast();
-    }
-
-    private static boolean lure(RodStats stats) {
-        return stats.terminal().map(t -> t.kind() == TacklePart.Kind.LURE).orElse(false);
     }
 
     /** Tops the rod's bait up from the bait slot: more of the same bait, or any bait if the rod has none. */
