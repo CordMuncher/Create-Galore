@@ -69,6 +69,7 @@ public final class FishingClient {
         }));
         FishingInput.init(modBus);
         FishingHud.init(modBus);
+        FloatingLabel.init(modBus);
         RodItemRenderer.init(modBus);
         HoldPose.init(modBus);
         FishItems.init(modBus);

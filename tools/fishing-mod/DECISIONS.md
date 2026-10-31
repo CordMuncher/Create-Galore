@@ -760,3 +760,11 @@ what it is when you see it in the water.
 - Tested in a client: 5 fish scraps on a rod moved to the slot on set-in, shown in the window; 20 more added by
   shift-click (25); rod out carried 16, 9 stayed. On a Fuel drive, Cast now took 16 onto the hook, a forced bite ate
   one, 15 came back into the slot. Goggles during the fight read "Fish on!".
+## Floating labels drawn with the HUD (0.3.26)
+
+- The 0.3.24 name-tag recipe fixed Complementary, but Photon still drew the see-through backing over the letters.
+  Each pack draws world text its own way, so no in-world recipe holds for all of them. `FloatingLabel` now collects
+  the labels while the block entities render (one per block, since a shadow pass renders them again) and draws them
+  in a HUD layer under every other one: the label's top projected with the AFTER_SKY view and projection matrices
+  and the camera position, scaled to the size a 0.0125-block font pixel has at that depth. It hides with F1 and is
+  not covered by blocks in front, which doesn't matter: a label only shows while the crosshair is on its block.
