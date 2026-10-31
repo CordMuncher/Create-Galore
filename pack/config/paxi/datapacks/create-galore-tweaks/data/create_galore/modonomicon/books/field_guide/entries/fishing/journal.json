@@ -59,7 +59,7 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "[#](FFFFFF)\ue103[#]() **In depth.** Aquaculture's fish mounts still work for its fish. Fish under 3 kg stack by species and size class; bigger fish and trophies keep their own numbers and don't stack.\\\n\\\nFish swimming in the world can be caught in a water bucket as usual (lava fish need a lava bucket)."
+      "text": "[#](FFFFFF)\ue103[#]() **In depth.** Aquaculture's fish mounts still work for its fish: six buttons around a Medium Hook make one. Fish under 3 kg stack by species and size class; bigger fish and trophies keep their own numbers and don't stack.\\\n\\\nFish swimming in the world can be caught in a water bucket as usual (lava fish need a lava bucket)."
     }
   ]
 }

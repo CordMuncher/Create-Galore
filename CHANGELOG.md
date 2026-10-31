@@ -5,6 +5,20 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.6.59
+
+### Added
+- Create Galore Bridge 1.171.0.
+- **An Alloy Forge page in JEI.** The Alloy Forge makes Alloyed's steel tools, armor and horse armor from any steel, including TFMG's, but JEI never listed its recipes (Alloyed only shows them in EMI), so steel armor looked like it could only come from a Mechanical Crafter, and the horse armor looked like it had no recipe at all. JEI now has an Alloy Forge page with the grid, the fuel and the time each recipe takes, and the Field Guide's Alloyed entry has a page on steel tools and armor.
+- A recipe reach check for test servers: the Data Check tool (1.1.0) also writes every loaded recipe and loot table item, and `tools/reachability.py` lists items no one can make any more because the pack turned off the only recipes for them or for one of their ingredients.
+
+### Fixed
+- **Productive Bees productivity upgrades can be made again.** All four Productivity Upgrades, the Inactive Dragon Egg and the Heated Centrifuge need Draconic Chunks, and the only source of Draconic Dust, the Draconic comb, had been switched off along with the combs that skip progression. The Draconic comb gives Draconic Dust again. Draconic Bees still only live on the End's main island.
+- **Aquaculture's fish mounts can be made again.** They needed Aquaculture's iron hook, which went away when the pack's fishing mod took over hooks. Six buttons of one wood around a Medium Hook make a mount now.
+
+### Removed
+- Nothing.
+
 ## 0.6.58
 
 ### Added
