@@ -1,0 +1,44 @@
+{
+  "title": "Airship wishes given together with hand-drawn layers are refused, so a layout and a hand build never mix",
+  "from": "2026-11-01 report (pack 0.6.66): blimps kept failing after many redesigns; the server now lays airships out",
+  "roots": [
+    "R3"
+  ],
+  "kind": "model",
+  "model": {
+    "title": "Mixed",
+    "size_x": 0,
+    "size_y": 0,
+    "size_z": 0,
+    "airship": [
+      {
+        "enclosed": true,
+        "beds": 1,
+        "storage": 0,
+        "speed": 9,
+        "ceiling": 200,
+        "wood": "oak",
+        "colour": "white"
+      }
+    ],
+    "draft": true,
+    "palette": [
+      {
+        "char": "P",
+        "block": "minecraft:oak_planks"
+      }
+    ],
+    "layers": [
+      [
+        "P"
+      ]
+    ]
+  },
+  "expect": {
+    "built": false,
+    "has": [
+      "the server lays out an airship by itself"
+    ],
+    "lacks": []
+  }
+}

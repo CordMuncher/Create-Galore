@@ -1434,7 +1434,8 @@
     "has": [
       "Steered with one Steering Wheel, which swings the Swivel Bearing",
       "Throttle: an Analog Transmission",
-      "Propeller Bearing (28 sails)"
+      "Propeller Bearing (28 sails)",
+      "its weight must move about 73 mass x blocks toward the bow (-z)"
     ],
     "lacks": [
       "PROBLEM",

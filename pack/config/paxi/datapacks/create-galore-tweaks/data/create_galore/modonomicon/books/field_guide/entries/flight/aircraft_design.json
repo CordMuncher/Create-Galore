@@ -49,6 +49,11 @@
     },
     {
       "type": "modonomicon:text",
+      "title": "Hanging level",
+      "text": "A balloon hangs with its weight straight under the centre of its air. A compact airship's air centres only 2 to 4 blocks above its weight, so one block of gondola along the keel tips it 5 to 10 degrees. The tapering tail is more skin than air, so a bare envelope hangs tail-down."
+    },
+    {
+      "type": "modonomicon:text",
       "title": "Engines and fuel",
       "text": "Put every engine where the crew walks: an engine room in the gondola, reached along its floor from the helm and warm inside it. A ship whose engines sit on platforms outside drifts helpless once their fuel runs out, because nobody can reach them in flight."
     },
@@ -68,7 +73,7 @@
     {
       "type": "modonomicon:text",
       "title": "Where it pushes",
-      "text": "Nearly all the drag is the envelope, so push in line with its middle. Propellers low under it tip the nose up at speed, high ones tip it down. Two good places: one big propeller on the envelope's axis behind the tail, or a pair at its widest point on short shaft arms through its sides."
+      "text": "Nearly all the drag is the envelope, so push in line with its middle. Propellers low under it tip the nose up at speed, high ones tip it down. Good places: one big propeller on the envelope's axis ahead of the nose, where its weight evens out the tail's, or behind the tail; or a pair at its widest point on short shaft arms through its sides."
     },
     {
       "type": "modonomicon:spotlight",
@@ -113,6 +118,11 @@
       "type": "modonomicon:text",
       "title": "",
       "text": "It cruises at about 9 blocks a second, climbs past y 250 and turns about 4 degrees a second. The drive shaft runs up through the belly and along the envelope's axis to the fan; a branch drives a Wooden Propeller on a Swivel Bearing under the tail, which the Steering Wheel swings."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Ask the Book",
+      "text": "Where the book has its voice, ask it for an airship and it lays one out to your wishes (open deck or cabin, beds, chests, speed, height), balanced to hang level, as a 3D model you can save as a schematic."
     },
     {
       "type": "modonomicon:text",

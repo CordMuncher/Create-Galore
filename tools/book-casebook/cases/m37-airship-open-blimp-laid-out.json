@@ -1,0 +1,41 @@
+{
+  "title": "A fast, high, compact open blimp with one bed, asked for as airship wishes, comes back laid out, working and level",
+  "from": "2026-11-01 report (pack 0.6.66): blimps kept failing after many redesigns; the server now lays airships out",
+  "roots": [
+    "R3"
+  ],
+  "kind": "model",
+  "model": {
+    "title": "Open blimp",
+    "size_x": 0,
+    "size_y": 0,
+    "size_z": 0,
+    "airship": [
+      {
+        "enclosed": false,
+        "beds": 1,
+        "storage": 0,
+        "speed": 10,
+        "ceiling": 210,
+        "wood": "spruce",
+        "colour": "white"
+      }
+    ],
+    "draft": true
+  },
+  "expect": {
+    "built": true,
+    "has": [
+      "Laid out by the server from airship",
+      "Steered with one Steering Wheel, which swings the Swivel Bearing",
+      "Throttle: an Analog Transmission",
+      "Windproof Lining onto each armour piece",
+      "Nothing here stops it working"
+    ],
+    "lacks": [
+      "PROBLEM",
+      "hangs level, under",
+      "which shows"
+    ]
+  }
+}

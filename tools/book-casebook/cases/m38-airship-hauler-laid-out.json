@@ -1,0 +1,41 @@
+{
+  "title": "A closed hauling airship with 4 beds and 8 chests fits a model, reaches 9 blocks a second and y 220, and hangs level",
+  "from": "2026-11-01 report (pack 0.6.66): blimps kept failing after many redesigns; the server now lays airships out",
+  "roots": [
+    "R3"
+  ],
+  "kind": "model",
+  "model": {
+    "title": "Hauler",
+    "size_x": 0,
+    "size_y": 0,
+    "size_z": 0,
+    "airship": [
+      {
+        "enclosed": true,
+        "beds": 4,
+        "storage": 8,
+        "speed": 9,
+        "ceiling": 220,
+        "wood": "dark_oak",
+        "colour": "blue"
+      }
+    ],
+    "draft": true
+  },
+  "expect": {
+    "built": true,
+    "has": [
+      "Laid out by the server from airship",
+      "4 beds and 8 chests aboard",
+      "two Hot Air Burners",
+      "reaches 9 blocks/s and y 220",
+      "Nothing here stops it working"
+    ],
+    "lacks": [
+      "PROBLEM",
+      "comes nearest to",
+      "which shows"
+    ]
+  }
+}

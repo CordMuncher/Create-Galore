@@ -30,7 +30,7 @@ public final class Models {
 
     /** A model built for the answer being written, kept so the next version can start from it (from_draft). */
     record Draft(Map<BlockPos, BlockState> cells, int sx, int sy, int sz, JsonArray labels, JsonArray moving, String title,
-                 String caption, JsonArray speeds) {
+                 String caption, JsonArray speeds, boolean open) {
     }
 
     private Models() {
@@ -143,12 +143,12 @@ public final class Models {
                 + "result names it) to start from instead of writing it all again: its blocks, labels, moving parts, title and "
                 + "caption come along (labels, moving, title and caption you write replace them), size 0 keeps its size, and "
                 + "move, layers and blocks then write only the changes (a layer's '.' leaves the cell as it was, minecraft:air "
-                + "takes a block out). Use it for every revision of a design."));
+                + "takes a block out)."));
         JsonObject moves = new JsonObject();
         moves.addProperty("type", "array");
-        moves.addProperty("description", "Empty, or boxes of blocks to slide, applied in order before layers and blocks: everything "
-                + "in the box moves together and the cells it leaves become air (a balloon one block back, an engine pod "
-                + "up a block, the gondola toward the bow), so a design is shifted without rewriting it.");
+        moves.addProperty("description", "Empty, or boxes of blocks to slide, in order before layers and blocks: everything in "
+                + "the box moves together and the cells it leaves become air (a gondola toward the bow), so a design shifts "
+                + "without rewriting it.");
         moves.add("items", shift);
         props.add("move", moves);
         JsonObject palette = new JsonObject();
@@ -199,20 +199,19 @@ public final class Models {
         speeds.addProperty("description", "Each Rotation Speed Controller's set speed; one left out is at 16 RPM.");
         speeds.add("items", speed);
         props.add("speeds", speeds);
+        props.add("airship", Airships.definition());
+        props.add("open_by_request", WorldTools.prop("boolean", "True only when the player asked for an open vehicle (no cabin)."));
         props.add("part_of_vehicle", WorldTools.prop("boolean", "True only when the model shows one part of a vehicle (an "
-                + "engine room, a rudder, a burner and its balloon) rather than the whole of it: the vehicle check's numbers "
-                + "come back but don't stop it being built. Leave it false for a whole boat, submarine, airship or car."));
-        return WorldTools.tool("build_model", "Builds a 3D model out of real blocks, up to " + MAX_SIZE + " a side, which "
-                + "the book shows as a hologram the player can turn around and zoom into, and works out how it behaves. "
+                + "engine room, a rudder) rather than all of it: then the vehicle check doesn't stop it being built."));
+        return WorldTools.tool("build_model", "Builds a 3D model out of real blocks, up to " + MAX_SIZE + " a side, shown "
+                + "as a hologram the player can turn and zoom, and works out how it behaves. "
                 + "Write a detailed build as layers; fences, walls, panes and bars join their neighbours (fences also "
-                + "diagonally) and stairs turn corners by themselves, as when placed. Every block keeps the facing or axis "
-                + "you write and takes its default when you leave it out, often the wrong way, so write it on every block "
-                + "that has one. Try a design with draft true first: you get pictures of it and its check, and nothing goes "
-                + "in the answer. Revise with from_draft and write only the changes (move slides a part over). Before a "
-                + "model is shown the server runs it by the mods' own rules: rotation (which faces take a shaft, cogs, "
-                + "belts, sources, speeds, water on wheels), where machines send their output, sail rigs, posts, moving "
-                + "parts, and for a vehicle (boat, submarine, airship, plane or Offroad car) its mass, lift or buoyancy, "
-                + "trim, speed, turning, ceiling and how its crew walks, reaches, boards and keeps warm. A model with a "
+                + "diagonally) and stairs turn corners by themselves, as when placed. Write the facing or axis on every "
+                + "block that has one: left out, it takes its default, often the wrong way. Try a design with draft true "
+                + "first: you get pictures of it and its check, and nothing goes in the answer. Revise with from_draft and "
+                + "write only the changes (move slides a part over). The server checks it by the mods' own rules: rotation "
+                + "(faces, cogs, belts, sources, speeds), machine output, sails, posts, moving parts, and a vehicle's lift "
+                + "or buoyancy, trim, speed, turning, ceiling and crew (walking, reach, boarding, warmth). A model with a "
                 + "PROBLEM is refused with what to change. Every block of a vehicle must share a face with the rest (Super "
                 + "Glue refuses edge and corner contact); edge and corner steps are filled for you and the result says "
                 + "where. Parts that move as Create contraptions go in moving, with the Super Glue the player puts on; "
@@ -258,6 +257,37 @@ public final class Models {
         List<String> problems = new ArrayList<>();
         int sx = Diagrams.intOr(input, "size_x", 0), sy = Diagrams.intOr(input, "size_y", 0), sz = Diagrams.intOr(input, "size_z", 0);
         Map<BlockPos, BlockState> cells = new HashMap<>();
+        boolean open = flag(input, "open_by_request");
+        // An airship the server lays out from the player's wishes: its cells are the model, and what it chose goes first.
+        String laidOut = null;
+        JsonArray airship = array(input, "airship");
+        JsonArray airshipSpeeds = null;
+        if (airship.size() > 1) return Result.problem("Not built: airship takes one airship at most.");
+        if (airship.size() == 1 && airship.get(0).isJsonObject()) {
+            if (!array(input, "from_world").isEmpty() || Diagrams.intOr(input, "from_draft", 0) != 0 || !array(input, "move").isEmpty()
+                    || !array(input, "layers").isEmpty() || !array(input, "blocks").isEmpty())
+                return Result.problem("Not built: the server lays out an airship by itself, so leave from_world, from_draft, move, "
+                        + "layers and blocks empty with it; change the result afterwards with from_draft.");
+            List<String> wrong = new ArrayList<>();
+            Airships.Spec spec = Airships.spec(airship.get(0).getAsJsonObject(), wrong);
+            Airships.Layout layout = wrong.isEmpty() ? Airships.design(spec, wrong) : null;
+            if (layout == null) return Result.problem("Not built: " + String.join("; ", wrong) + ".");
+            cells.putAll(layout.cells());
+            sx = layout.sx();
+            sy = layout.sy();
+            sz = layout.sz();
+            laidOut = layout.summary();
+            airshipSpeeds = new JsonArray();
+            for (Map.Entry<BlockPos, Float> e : layout.speeds().entrySet()) {
+                JsonObject o = new JsonObject();
+                o.addProperty("x", e.getKey().getX());
+                o.addProperty("y", e.getKey().getY());
+                o.addProperty("z", e.getKey().getZ());
+                o.addProperty("rpm", Math.round(e.getValue()));
+                airshipSpeeds.add(o);
+            }
+            if (!spec.enclosed()) open = true;
+        }
         // A build copied from the world: its blocks are the starting point, and what changes on them is marked.
         Map<BlockPos, BlockState> base = null;
         BlockPos worldMin = null, offset = null;
@@ -295,6 +325,7 @@ public final class Models {
                         : "models 1 to " + have + " so far") + ").");
             draft0 = drafts.get(fromDraft - 1);
             cells.putAll(draft0.cells());
+            open |= draft0.open();
             if (sx == 0) sx = draft0.sx();
             if (sy == 0) sy = draft0.sy();
             if (sz == 0) sz = draft0.sz();
@@ -303,6 +334,7 @@ public final class Models {
             return Result.problem("Not built: size_x, size_y and size_z must each be 1 to " + MAX_SIZE + ".");
         JsonArray speedsIn = array(input, "speeds");
         if (speedsIn.isEmpty() && draft0 != null && draft0.speeds() != null) speedsIn = draft0.speeds();
+        if (speedsIn.isEmpty() && airshipSpeeds != null) speedsIn = airshipSpeeds;
         Map<BlockPos, Float> set = new HashMap<>();
         for (JsonElement e : speedsIn) {
             if (!e.isJsonObject()) continue;
@@ -471,8 +503,7 @@ public final class Models {
         net.minecraft.world.item.Item goal = GoalCheck.goal(input);
         if (goal != null && level != null) works = join(works, GoalCheck.check(cells, goal, GuideText.string(input, "goal"), level));
         if (motion != null) works = join(works, motion.report());
-        works = join(works, vehicle(cells, level, input.has("part_of_vehicle") && input.get("part_of_vehicle").isJsonPrimitive()
-                && input.get("part_of_vehicle").getAsBoolean()));
+        works = join(works, vehicle(cells, level, flag(input, "part_of_vehicle"), open));
         BuildCheck.Report usable = PlayerCheck.posts(cells);
         BuildCheck.Report makeable = null;
         boolean forLater = input.has("for_later") && input.get("for_later").isJsonPrimitive() && input.get("for_later").getAsBoolean();
@@ -493,7 +524,7 @@ public final class Models {
         // Kept for the next version, refused or not: fixing a fault is a few changes on top of it.
         String saved = "";
         if (drafts != null) {
-            drafts.add(new Draft(new HashMap<>(cells), sx, sy, sz, labels, movingIn, title, caption, speedsIn));
+            drafts.add(new Draft(new HashMap<>(cells), sx, sy, sz, labels, movingIn, title, caption, speedsIn, open));
             saved = "\nThis is model " + drafts.size() + ": start its next version with from_draft " + drafts.size()
                     + " and write only what changes.";
         }
@@ -505,7 +536,8 @@ public final class Models {
         }
         if (check != null && !check.faults().isEmpty() && !showsFault && !draft) {
             return Result.problem("Not built: blocks in it wouldn't work as placed. Fix the model and call again (or "
-                    + "set shows_a_fault if it is meant to show a broken build).\n" + check.text() + saved);
+                    + "set shows_a_fault if it is meant to show a broken build).\n" + (laidOut == null ? "" : laidOut + "\n")
+                    + check.text() + saved);
         }
         JsonObject model = new JsonObject();
         model.addProperty("type", "model");
@@ -520,6 +552,7 @@ public final class Models {
         model.add("labels", labels);
         if (motion != null) model.add("moving", motion.moving());
         String report = check == null ? "" : check.text();
+        if (laidOut != null) report = laidOut + (report.isEmpty() ? "" : "\n" + report);
         if (!steps.isEmpty()) report = (report.isEmpty() ? "" : report + "\n") + stepReport(steps, cells);
         report = (report.isEmpty() ? "" : report + "\n") + tally(cells);
         // A build to copy, not a few machines explaining a point: what it takes of the player's own materials.
@@ -663,10 +696,14 @@ public final class Models {
      * The vehicle check on a model, with every engine turning at its usual speed. A model of only part of a vehicle
      * (an engine room, a rudder) still gets the numbers, but they don't stop it being built.
      */
-    private static BuildCheck.Report vehicle(Map<BlockPos, BlockState> cells, ServerLevel level, boolean part) {
+    private static boolean flag(JsonObject input, String name) {
+        return input.has(name) && input.get(name).isJsonPrimitive() && input.get(name).getAsBoolean();
+    }
+
+    private static BuildCheck.Report vehicle(Map<BlockPos, BlockState> cells, ServerLevel level, boolean part, boolean open) {
         List<String> assumed = new ArrayList<>();
         Map<BlockPos, Float> rpm = level == null ? Map.of() : BuildCheck.rpm(cells, level, assumed);
-        BuildCheck.Report r = VehicleCheck.check(cells, level, rpm, true);
+        BuildCheck.Report r = VehicleCheck.check(cells, level, rpm, true, open);
         if (r == null) return null;
         String text = r.text();
         int nl = text.indexOf('\n');
@@ -800,6 +837,12 @@ public final class Models {
         return o.has(key) && o.get(key).isJsonArray() ? o.getAsJsonArray(key) : new JsonArray();
     }
 
+    /** The block state as build_model would read it (fences as their diagonal twins), or null when it isn't one. */
+    static BlockState state(String raw) {
+        List<String> none = new ArrayList<>();
+        return parse(raw, "", none, new java.util.TreeSet<>());
+    }
+
     private static BlockState parse(String raw, String where, List<String> problems, java.util.Set<String> undirected) {
         try {
             BlockStateParser.BlockResult parsed = BlockStateParser.parseForBlock(BuiltInRegistries.BLOCK.asLookup(), raw.strip(), false);
@@ -812,9 +855,34 @@ public final class Models {
             }
             return state;
         } catch (CommandSyntaxException e) {
-            problems.add(where + ": " + raw + " is not a block state on this server (" + e.getRawMessage().getString() + ")");
+            problems.add(where + ": " + raw + " is not a block state on this server (" + e.getRawMessage().getString() + ")"
+                    + validStates(raw));
             return null;
         }
+    }
+
+    /**
+     * What the block named in a state that didn't parse does take, so the next try is right the first time instead of
+     * another guess: each property with its values, or that it has none. Empty when the block itself isn't known.
+     */
+    static String validStates(String raw) {
+        String name = raw.strip();
+        int bracket = name.indexOf('[');
+        if (bracket >= 0) name = name.substring(0, bracket);
+        net.minecraft.resources.ResourceLocation id = net.minecraft.resources.ResourceLocation.tryParse(name.strip());
+        if (id == null || !BuiltInRegistries.BLOCK.containsKey(id)) return "";
+        net.minecraft.world.level.block.Block block = BuiltInRegistries.BLOCK.get(id);
+        List<String> props = new ArrayList<>();
+        for (net.minecraft.world.level.block.state.properties.Property<?> prop : block.getStateDefinition().getProperties())
+            props.add(prop.getName() + " (" + values(prop) + ")");
+        return props.isEmpty() ? "; " + id + " has no properties: write it bare"
+                : "; " + id + " takes " + String.join(", ", props);
+    }
+
+    private static <T extends Comparable<T>> String values(net.minecraft.world.level.block.state.properties.Property<T> prop) {
+        List<String> out = new ArrayList<>();
+        for (T v : prop.getPossibleValues()) out.add(prop.getName(v));
+        return String.join(", ", out);
     }
 
     /**

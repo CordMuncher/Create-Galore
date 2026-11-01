@@ -147,7 +147,8 @@ final class PlayerCheck {
      * reach of the helm, a way aboard from the ground it lands on (when it lands), and a sheltered helm at the heights
      * it reaches ({@code ceiling}, NaN when it doesn't fly).
      */
-    static void vehicle(Map<BlockPos, BlockState> blocks, double ceiling, boolean lands, List<String> faults, List<String> notes) {
+    static void vehicle(Map<BlockPos, BlockState> blocks, double ceiling, boolean lands, boolean open, List<String> faults,
+            List<String> notes) {
         BlockGetter getter = new Cells(blocks);
         int minX = Integer.MAX_VALUE, minZ = Integer.MAX_VALUE, maxX = Integer.MIN_VALUE, maxZ = Integer.MIN_VALUE;
         int groundY = Integer.MAX_VALUE;
@@ -251,9 +252,17 @@ final class PlayerCheck {
                             .reduce((a, b) -> a + ", " + b).orElse("");
                     String fix = "Close a cabin around the helm: walls, a roof and a door or hatch that shuts (glass and glass panes "
                             + "count), within 4 blocks of the pilot on every side, so whoever flies it stays warm";
-                    if (freezing)
+                    if (freezing && open)
+                        // The player chose an open ship: their call, and what keeps them warm in it is their armour.
+                        notes.add(String.format(Locale.ROOT, "it climbs to about y %.0f, and above y %d the open wind freezes a "
+                                + "player in under a minute; the player asked for it open, so whoever works %s stands in that "
+                                + "wind: tell them to sew Windproof Lining onto every piece of their armour at a Sewing Table (it "
+                                + "takes away most of the wind's chill) before flying it high, or to close a cabin around the helm",
+                                ceiling, FREEZING, where));
+                    else if (freezing)
                         faults.add(String.format(Locale.ROOT, "it climbs to about y %.0f, and above y %d the open wind freezes a player in "
-                                + "under a minute (the cold starts at y %d), but whoever works %s stands in the open air. %s",
+                                + "under a minute (the cold starts at y %d), but whoever works %s stands in the open air. %s (or, "
+                                + "if the player asked for an open ship, set open_by_request)",
                                 ceiling, FREEZING, COLD, where, fix));
                     else
                         notes.add(String.format(Locale.ROOT, "it climbs to about y %.0f, where the open wind chills a player who stays "

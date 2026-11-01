@@ -77,14 +77,21 @@ final class VehicleCheck {
      * sources, a real build's as it turns now); {@code model} says whether these are a design rather than a real build.
      */
     static BuildCheck.Report check(Map<BlockPos, BlockState> blocks, BlockGetter getter, Map<BlockPos, Float> rpm, boolean model) {
+        return check(blocks, getter, rpm, model, false);
+    }
+
+    /** As above; {@code open} says the player asked for an open ship, so an open helm high up is theirs to dress for. */
+    static BuildCheck.Report check(Map<BlockPos, BlockState> blocks, BlockGetter getter, Map<BlockPos, Float> rpm, boolean model,
+            boolean open) {
         try {
-            return run(blocks, getter == null ? EmptyBlockGetter.INSTANCE : getter, rpm == null ? Map.of() : rpm, model);
+            return run(blocks, getter == null ? EmptyBlockGetter.INSTANCE : getter, rpm == null ? Map.of() : rpm, model, open);
         } catch (RuntimeException | LinkageError e) {
             return new BuildCheck.Report("(The vehicle check couldn't run on these blocks: " + e.getClass().getSimpleName() + ".)", List.of());
         }
     }
 
-    private static BuildCheck.Report run(Map<BlockPos, BlockState> blocks, BlockGetter getter, Map<BlockPos, Float> rpm, boolean model) {
+    private static BuildCheck.Report run(Map<BlockPos, BlockState> blocks, BlockGetter getter, Map<BlockPos, Float> rpm, boolean model,
+            boolean open) {
         boolean sub = false, water = false, air = false, land = false;
         for (BlockState s : blocks.values()) {
             String id = id(s);
@@ -138,7 +145,7 @@ final class VehicleCheck {
         if (model) ballast(blocks, getter, faults);
         boatEngines(blocks, getter, faults);
         controls(blocks, getter, faults);
-        PlayerCheck.vehicle(blocks, body.ceiling, air || land || (props && !water && !sub), faults, notes);
+        PlayerCheck.vehicle(blocks, body.ceiling, air || land || (props && !water && !sub), open, faults, notes);
         boolean redstone = blocks.values().stream().anyMatch(s -> s.isSignalSource() || id(s).contains("throttle_lever"));
         if (redstone) {
             boolean wire = blocks.values().stream().anyMatch(s -> s.is(net.minecraft.world.level.block.Blocks.REDSTONE_WIRE)
@@ -1192,6 +1199,7 @@ final class VehicleCheck {
         // Balloons: each burner fills the envelope above it.
         Map<BlockPos, int[]> balloons = new java.util.LinkedHashMap<>(); // seed -> volume, burners
         Map<BlockPos, double[]> centres = new java.util.HashMap<>(); // seed -> centre of its air
+        Map<BlockPos, String> leaks = new java.util.HashMap<>(); // seed -> where its air gets out before it fills the envelope
         double balloonY = 0;
         for (Part p : b.parts) {
             boolean burner = p.id.equals("aeronautics:adjustable_burner"), vent = p.id.equals("aeronautics:steam_vent");
@@ -1211,12 +1219,16 @@ final class VehicleCheck {
             if (key == null) {
                 Set<BlockPos> cells = balloon(b, seed);
                 if (cells.isEmpty()) {
-                    faults.add("the balloon over " + xyz(p.pos) + " leaks: its air escapes sideways or upward through a gap in the "
-                            + "envelope (a balloon is an upside-down bucket: closed top and sides, open bottom)");
+                    List<BlockPos> way = escape(b, seed);
+                    faults.add("the balloon over " + xyz(p.pos) + " leaks: its air escapes sideways or upward"
+                            + (way.isEmpty() ? " through a gap in the envelope" : ": " + gap(b, way))
+                            + " (a balloon is an upside-down bucket: closed top and sides, open bottom)");
                     continue;
                 }
                 key = seed;
                 balloons.put(key, new int[] {cells.size(), 0, 0});
+                String leak = leak(b, seed, cells);
+                if (leak != null) leaks.put(key, leak);
                 double xs = 0, ys = 0, zs = 0;
                 for (BlockPos c : cells) {
                     xs += c.getX() + 0.5;
@@ -1288,11 +1300,15 @@ final class VehicleCheck {
         if (wingLift > 0) src.add(String.format(Locale.ROOT, "%s, %.0f at its top speed of %.1f blocks/s", wings.describe(), wingLift, v));
         out.append(src.isEmpty() ? "nothing lifts it" : String.join("; ", src)).append(").\n");
         if (wings.count > 0) wingLift(b, wings, v, p0, other, best, side, rpm, out, faults, notes);
-        for (int[] bv : balloons.values())
-            if (bv[0] > bv[1]) notes.add(String.format(Locale.ROOT, "a balloon holds %d m3 but its burners fill only %d (500 each at "
+        for (Map.Entry<BlockPos, int[]> e : balloons.entrySet()) {
+            int[] bv = e.getValue();
+            String leak = leaks.get(e.getKey());
+            if (leak != null) notes.add(String.format(Locale.ROOT, "a balloon fills only %d m3 of its envelope: %s", bv[0], leak));
+            else if (bv[0] > bv[1]) notes.add(String.format(Locale.ROOT, "a balloon holds %d m3 but its burners fill only %d (500 each at "
                     + "full); another burner would add lift", bv[0], bv[1]));
             else if (bv[1] > bv[0] * 1.6) notes.add(String.format(Locale.ROOT, "a balloon holds only %d m3 for %d m3 of burner: a "
                     + "bigger envelope would lift more (each m3 holds up 1.5 mass)", bv[0], bv[1]));
+        }
         if (lift0 < G * b.m && wings.up > 0) {
             // Wings: say what it takes in wings or speed, the two things the builder can change.
             double each = 0.475 * p0 * v, needSpeed = (G * b.m - other) / (wings.up * p0);
@@ -1372,8 +1388,12 @@ final class VehicleCheck {
             // Turning: uneven thrust, vectoring thrusters or tilting propellers, against Sable's damping and the envelope.
             double q = 0;
             String how = null;
+            // A propeller or fin on an upright Swivel Bearing swings round as a Steering Wheel turns the bearing's cog.
+            Swivel swivel = swivel(b, all, v, p0);
             double diff = differentialAir(b, side, best);
-            if (diff > 0) {
+            // Running one side's propellers harder steers only through something at the helm that does it; beside a
+            // wheel-turned swivel with nothing reading the wheel for each side, the swivel is what steers.
+            if (diff > 0 && (swivel == null || !swivel.wheel() || sideControls(b))) {
                 q = diff;
                 how = "running its propellers or thrusters unevenly";
             }
@@ -1395,8 +1415,6 @@ final class VehicleCheck {
                     how = "tilting its " + t.what;
                 }
             }
-            // A propeller or fin on an upright Swivel Bearing swings round as a Steering Wheel turns the bearing's cog.
-            Swivel swivel = swivel(b, all, v, p0);
             if (swivel != null && !swivel.wheel())
                 faults.add("nothing turns the Swivel Bearing at " + xyz(swivel.bearing()) + ", so what it carries only points straight: "
                         + "put a Steering Wheel at the helm with a line of cogwheels from its shaft to the bearing's cog");
@@ -1884,15 +1902,41 @@ final class VehicleCheck {
                 .append(" of its weight: move the balloon or the gondola's rooms and machines to level it");
         out.append(").\n");
         // Sliding the balloon (or everything under it) by d moves lift and weight apart by d x the rest's share of the mass.
-        double envelope = 0;
-        for (Part p : b.parts) if (airtight(p.state)) envelope += p.mass;
-        double slide = Math.abs(a) * b.m / Math.max(b.m - envelope, 0.25 * b.m);
-        if (Math.abs(pd) >= TRIM_BAD) faults.add(String.format(Locale.ROOT, "it hangs %.1f° %s down: slide the balloon about %.0f "
-                + "block%s toward the %s, or the gondola with everything under the balloon that far toward the %s (or move its heavy "
-                + "rooms and machines that way), until it hangs level", Math.abs(pd), pd > 0 ? behind : ahead, Math.max(1, slide),
-                Math.round(Math.max(1, slide)) == 1 ? "" : "s", pd > 0 ? behind : ahead, pd > 0 ? ahead : behind));
-        else if (Math.abs(pd) >= TRIM_NOTE) notes.add(String.format(Locale.ROOT, "it hangs %.1f° %s down, which shows",
-                Math.abs(pd), pd > 0 ? behind : ahead));
+        double envelope = 0, skin = 0;
+        for (Part p : b.parts)
+            if (airtight(p.state)) {
+                envelope += p.mass;
+                skin += p.mass * b.along(p.cx(), p.cz());
+            }
+        double rest = Math.max(b.m - envelope, 0.25 * b.m);
+        double slide = Math.abs(a) * b.m / rest;
+        if (Math.abs(pd) >= TRIM_NOTE) {
+            // In whole blocks, with what a block of slide does, and the rest of the way by moving heavy parts, so the
+            // next try lands level instead of overshooting: a compact airship's lift sits only a few blocks above its
+            // weight, so one block of gondola can be several degrees. Past TRIM_BAD it is a fault, else a note.
+            double perBlock = Math.toDegrees(Math.atan2(rest / b.m, v)), tolerance = Math.tan(Math.toRadians(TRIM_NOTE)) * v * b.m;
+            long whole = Math.round(slide);
+            double left = (slide - whole) * rest;
+            String toward = pd > 0 ? ahead : behind;
+            StringBuilder how = new StringBuilder(String.format(Locale.ROOT, "it hangs %.1f° %s down%s: its weight must move about %.0f "
+                    + "mass x blocks toward the %s (within about %.0f it hangs level, under %.1f°). Each block the gondola slides "
+                    + "(with everything under the balloon) changes it about %.1f°, since its lift sits only %.1f blocks above its "
+                    + "weight", Math.abs(pd), pd > 0 ? behind : ahead, Math.abs(pd) >= TRIM_BAD ? "" : ", which shows",
+                    Math.abs(a) * b.m, toward, tolerance, TRIM_NOTE, perBlock, v));
+            if (whole >= 1) how.append(String.format(Locale.ROOT, ", so slide it %d block%s toward the %s (or the balloon that far "
+                    + "the other way)", whole, whole == 1 ? "" : "s", toward));
+            if (Math.abs(left) > tolerance) how.append(String.format(Locale.ROOT, "%s move about %.0f mass x blocks %sof heavy parts "
+                    + "toward the %s (an engine, gearbox, bearing or bed half is 1 mass, a shaft or cogwheel 0.5; a whole block of "
+                    + "slide would overshoot)", whole >= 1 ? "; then" : ": instead", Math.abs(left), whole >= 1 ? "more " : "",
+                    left > 0 ? toward : pd > 0 ? behind : ahead));
+            // A streamlined envelope's thin tail is mostly skin and little air, so the envelope alone hangs tail down.
+            double own = skin - envelope * a; // the envelope's own weight about the centre of its air
+            if (Math.abs(own) >= 0.3 * Math.abs(a) * b.m && Math.signum(own) == -Math.signum(a))
+                how.append(String.format(Locale.ROOT, ". The envelope alone pulls %.0f mass x blocks that way: its tapering %s end "
+                        + "is mostly skin and little air, so its own weight sits off the middle of its air (a fan or heavy rooms "
+                        + "toward the other end balance it)", Math.abs(own), pd > 0 ? behind : ahead));
+            (Math.abs(pd) >= TRIM_BAD ? faults : notes).add(how.toString());
+        }
         double sideways = Math.abs(l) * b.m / Math.max(b.m - envelope, 0.25 * b.m);
         if (Math.abs(ld) >= TRIM_BAD) faults.add(String.format(Locale.ROOT, "it hangs %.1f° down to %s: slide the balloon about %.0f "
                 + "block%s toward %s, or balance the weight under it across it (the same side to side)", Math.abs(ld),
@@ -2338,6 +2382,18 @@ final class VehicleCheck {
         return false;
     }
 
+    /** Whether the helm can run each side's propellers on its own: comparators reading a wheel, or an Aeroworks console. */
+    private static boolean sideControls(Body b) {
+        if (b.count("aeroworks:control_desk") + b.count("aeroworks:control_stand") > 0) return true;
+        for (Part p : b.parts) {
+            if (!p.id.equals("simulated:steering_wheel")) continue;
+            Direction f = facing(p.state);
+            if (f != null && f.getAxis().isHorizontal() && reads(b, p.pos, f.getClockWise()) && reads(b, p.pos, f.getCounterClockWise()))
+                return true;
+        }
+        return false;
+    }
+
     /** Whether a comparator beside the wheel, on its {@code side}, reads it (its back against the wheel). */
     private static boolean reads(Body b, BlockPos wheel, Direction side) {
         BlockState s = b.blocks.get(wheel.relative(side));
@@ -2412,6 +2468,177 @@ final class VehicleCheck {
         return cells;
     }
 
+    /**
+     * Why a balloon's air stops short of the envelope around it, or null when it fills it: the burner's opening ends in
+     * a second layer of a thick belly (the air stays in the hole), or the air finds a gap in the side lower down (a
+     * bare shaft or another block that isn't airtight, or a missing block) and stops filling at that height.
+     */
+    private static String leak(Body b, BlockPos seed, Set<BlockPos> cells) {
+        if (cells.size() <= 3) {
+            List<BlockPos> thick = new ArrayList<>();
+            BlockPos q = seed.above();
+            while (q.getY() <= b.maxY && b.blocks.get(q) != null && airtight(b.blocks.get(q))) {
+                thick.add(q);
+                q = q.above();
+            }
+            BlockPos inside = q;
+            boolean room = false;
+            for (; q.getY() <= b.maxY; q = q.above()) {
+                BlockState s = b.blocks.get(q);
+                if (s != null && airtight(s)) {
+                    room = q.getY() > inside.getY();
+                    break;
+                }
+            }
+            if (!thick.isEmpty() && room) return String.format(Locale.ROOT, "the burner's opening at %s ends in more envelope (%s), "
+                    + "so its air stays in the opening instead of filling the envelope above; take %s out as well (Envelope "
+                    + "Encased Shaft or envelope), or put the burner under a part of the belly one block thick",
+                    xyz(seed), String.join(", ", thick.stream().map(VehicleCheck::xyz).toList()), thick.size() == 1 ? "it" : "them");
+            return null;
+        }
+        int bottom = Integer.MAX_VALUE;
+        for (BlockPos c : cells) bottom = Math.min(bottom, c.getY());
+        // The layer under the air: it is still inside the envelope when most of it is closed in by envelope all round.
+        List<BlockPos> start = new ArrayList<>();
+        for (BlockPos c : cells)
+            if (c.getY() == bottom) {
+                BlockState s = b.blocks.get(c.below());
+                if (s == null || !airtight(s)) start.add(c.below());
+            }
+        if (start.isEmpty()) return null;
+        long enclosed = start.stream().filter(c -> enclosed(b, c)).count();
+        if (enclosed * 2 < start.size()) return null;
+        Map<BlockPos, BlockPos> from = new java.util.HashMap<>();
+        ArrayDeque<BlockPos> q = new ArrayDeque<>(start);
+        for (BlockPos c : start) from.put(c, c);
+        BlockPos out = null;
+        while (!q.isEmpty() && out == null) {
+            BlockPos p = q.poll();
+            for (Direction d : Direction.Plane.HORIZONTAL) {
+                BlockPos n = p.relative(d);
+                if (from.containsKey(n)) continue;
+                BlockState s = b.blocks.get(n);
+                if (s != null && airtight(s)) continue;
+                from.put(n, p);
+                if (outside(b, n)) {
+                    out = p;
+                    break;
+                }
+                q.add(n);
+            }
+        }
+        if (out == null) return null;
+        List<BlockPos> path = new ArrayList<>();
+        for (BlockPos p = out; ; p = from.get(p)) {
+            path.add(0, p);
+            if (from.get(p).equals(p)) break;
+        }
+        return String.format(Locale.ROOT, "its air stops at y %d, above the bottom of the envelope, because at y %d %s; sealed, the "
+                + "burner fills it on down to the belly and it lifts more", bottom, bottom - 1, gap(b, path));
+    }
+
+    /** The way a balloon's first fill (up and sideways from its seed) gets out of the model, inside first; empty if none. */
+    private static List<BlockPos> escape(Body b, BlockPos seed) {
+        Map<BlockPos, BlockPos> from = new java.util.HashMap<>();
+        ArrayDeque<BlockPos> q = new ArrayDeque<>(List.of(seed));
+        from.put(seed, seed);
+        while (!q.isEmpty()) {
+            BlockPos p = q.poll();
+            for (Direction d : new Direction[] {Direction.UP, Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST}) {
+                BlockPos n = p.relative(d);
+                if (from.containsKey(n)) continue;
+                BlockState s = b.blocks.get(n);
+                if (s != null && airtight(s)) continue;
+                if (outside(b, n)) {
+                    List<BlockPos> path = new ArrayList<>();
+                    for (BlockPos c = p; ; c = from.get(c)) {
+                        path.add(0, c);
+                        if (from.get(c).equals(c)) break;
+                    }
+                    return path;
+                }
+                from.put(n, p);
+                q.add(n);
+            }
+        }
+        return List.of();
+    }
+
+    /**
+     * What lets the air out along its way out of the envelope (inside first): the blocks that stand in the skin, walled
+     * in by envelope across the way the air goes, but aren't airtight, such as a bare shaft carried through it; else the
+     * first block on the way, or where the way leaves the envelope's outline.
+     */
+    private static String gap(Body b, List<BlockPos> path) {
+        List<BlockPos> run = new ArrayList<>();
+        boolean walled = false;
+        for (int i = 0; i < path.size(); i++) {
+            BlockPos p = path.get(i);
+            BlockState s = b.blocks.get(p);
+            // The way the air goes through this cell: on to the next one, or in from the last at the end.
+            BlockPos from = i + 1 < path.size() ? p : i > 0 ? path.get(i - 1) : p, to = i + 1 < path.size() ? path.get(i + 1) : p;
+            Direction.Axis along = from.equals(to) ? Direction.Axis.Y
+                    : from.getX() != to.getX() ? Direction.Axis.X : from.getY() != to.getY() ? Direction.Axis.Y : Direction.Axis.Z;
+            // The skin is the last wall on the way out, so the last such run of blocks is the gap.
+            if (s != null && !s.isAir() && skinned(b, p, along)) {
+                if (!walled) run.clear();
+                walled = true;
+                if (run.size() < 4) run.add(p);
+            } else walled = false;
+        }
+        if (run.isEmpty()) {
+            BlockPos gap = null;
+            for (BlockPos p : path) {
+                BlockState s = b.blocks.get(p);
+                if (s != null && !s.isAir()) {
+                    gap = p;
+                    break;
+                }
+                if (gap == null && !enclosed(b, p)) gap = p;
+            }
+            if (gap == null) gap = path.get(path.size() - 1);
+            BlockState s = b.blocks.get(gap);
+            if (s == null || s.isAir()) return "the envelope has a gap at about " + xyz(gap) + " (fill it with envelope)";
+            run.add(gap);
+        }
+        List<String> names = new ArrayList<>();
+        boolean shaft = false;
+        for (BlockPos p : run) {
+            BlockState s = b.blocks.get(p);
+            names.add(s.getBlock().getName().getString() + " at " + xyz(p));
+            shaft |= id(s).equals("create:shaft");
+        }
+        String list = names.size() == 1 ? names.get(0) : String.join(", ", names.subList(0, names.size() - 1)) + " and " + names.get(names.size() - 1);
+        return list + (run.size() == 1 ? " lets it out (it isn't" : " let it out (they aren't") + " airtight"
+                + (shaft ? ": an Envelope Encased Shaft carries a shaft through the skin and keeps it sealed"
+                        : "; build " + (run.size() == 1 ? "that cell" : "those cells") + " of the skin in envelope") + ")";
+    }
+
+    /** Whether a cell stands in the envelope's skin: envelope on three of its four sides across the way the air goes. */
+    private static boolean skinned(Body b, BlockPos p, Direction.Axis along) {
+        int n = 0;
+        for (Direction d : Direction.values()) {
+            if (d.getAxis() == along) continue;
+            BlockState s = b.blocks.get(p.relative(d));
+            if (s != null && airtight(s)) n++;
+        }
+        return n >= 3;
+    }
+
+    /** Whether envelope closes a cell in on all four sides at its own height (inside a balloon's outline). */
+    private static boolean enclosed(Body b, BlockPos c) {
+        for (Direction d : Direction.Plane.HORIZONTAL) {
+            BlockPos q = c.relative(d);
+            while (true) {
+                if (outside(b, q)) return false;
+                BlockState s = b.blocks.get(q);
+                if (s != null && airtight(s)) break;
+                q = q.relative(d);
+            }
+        }
+        return true;
+    }
+
     private static boolean outside(Body b, BlockPos p) {
         return p.getX() < b.minX || p.getX() > b.maxX || p.getY() < b.minY || p.getY() > b.maxY || p.getZ() < b.minZ || p.getZ() > b.maxZ;
     }
@@ -2476,7 +2703,7 @@ final class VehicleCheck {
 
     // ---------- helpers ----------
 
-    private static double mass(BlockGetter getter, BlockPos pos, BlockState s) {
+    static double mass(BlockGetter getter, BlockPos pos, BlockState s) {
         try {
             return dev.ryanhcode.sable.physics.config.block_properties.PhysicsBlockPropertyHelper.getMass(getter, pos, s);
         } catch (RuntimeException | LinkageError e) {
@@ -2673,6 +2900,11 @@ final class VehicleCheck {
 
     private static boolean airtight(BlockState s) {
         return s.is(AIRTIGHT) || s.is(BlockTags.WOOL);
+    }
+
+    /** Whether it holds a balloon's air in (envelope, encased shafts through it, wool). */
+    static boolean isAirtight(BlockState s) {
+        return airtight(s);
     }
 
     private static boolean isPropeller(String id) {

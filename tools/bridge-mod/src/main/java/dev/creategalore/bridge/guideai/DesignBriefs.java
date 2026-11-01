@@ -98,23 +98,28 @@ final class DesignBriefs {
             Gyroscope. When a draft fails, change the design (more wing, less weight, faster propellers, a biplane).""";
 
     static final String AIRSHIP = """
-            An airship or blimp is an envelope with a small gondola under it. The envelope is a streamlined body, not a \
-            box or a ball: round in every cross-section, blunt at the nose, fullest about two fifths back, tapering to \
-            a point at the tail, about two to three times as long as it is wide (build_model's streamlined_shell draws \
-            one; paint stripes or panels on it). Size it to the load with room to climb, since every envelope block \
-            drags as much as several blocks of weight: a fatter envelope holds more air per block of skin, a longer \
-            one only reads better. The gondola hangs close under the belly, a little forward of the envelope's middle \
-            (the tail's propeller and fins weigh on the stern), compact, with the helm at the bow behind windows and \
-            the engine room behind it. Every engine sits inside that engine room, where the crew walks to refuel it \
-            in the warm; shafts carry the power out (up through the belly, along inside the envelope, out through \
-            the skin with envelope-encased shafts), never engines on platforms, pods or decks outside. Push in line \
-            with the envelope's middle, which is where its drag is: one big Propeller Bearing fan on the envelope's \
-            axis behind the tail, or a pair at its widest point on short shaft arms through its sides; never \
-            propellers low under the gondola. Big slow fans push most for their engines (each Portable Engine gives \
-            2048 stress; a fan draws 2 per sail per RPM). Fins of Symmetric Sails at the tail keep it pointing \
-            ahead. Steer with the wheel's shafts swinging a Swivel Bearing under the tail that carries a powered \
-            Wooden Propeller, or by slowing one side of a pair; throttle the drive line. It should cruise at about 8 \
-            blocks a second or better; a balloon at walking pace is not a finished design.
+            Start every new airship or blimp from build_model's airship: say what the player wants (closed cabin or \
+            open deck, beds, chests, speed, ceiling, wood, colour) and the server lays it out by these rules and \
+            balances it, so its first version works; then change it with from_draft only where the player asked for \
+            something the wishes don't cover, and keep its heavy parts in place. An open deck is only for a player \
+            who asked for one; above y 192 they need Windproof Lining on their armour. The rules, to explain the \
+            design and to judge one the player built: an airship is an envelope with a small gondola under it. The \
+            envelope is a streamlined body, not a box or a ball: round in every cross-section, blunt at the nose, \
+            fullest about two fifths back, tapering to a point at the tail, about two to three times as long as it \
+            is wide. Size it to the load with room to climb, since every envelope block drags as much as several \
+            blocks of weight: a fatter envelope holds more air per block of skin. The gondola hangs close under the \
+            belly, compact, with the helm at the bow and the engine room behind it. Every engine sits inside that \
+            engine room, where the crew walks to refuel it; shafts carry the power up through the belly and along \
+            the envelope's axis (envelope-encased where they pass the skin), never engines on platforms, pods or \
+            decks outside. Push in line with the envelope's middle, where its drag is: a Propeller Bearing fan on \
+            the axis ahead of the nose or behind the tail (or both), or a pair at the widest point on short shaft \
+            arms; never propellers low under the gondola. Big slow fans push most for their engines (each Portable \
+            Engine gives 2048 stress; a fan draws 2 per sail per RPM). Steer with the wheel's shafts swinging a \
+            Swivel Bearing under the tail that carries a powered Wooden Propeller; throttle the drive line. A \
+            balloon hangs with its weight straight under the middle of its air, and on a compact airship that air \
+            sits only a few blocks above its weight, so one heavy part moved a few blocks tips it: the envelope's \
+            thin tail is mostly skin, the fan and swivel weigh on their end, and the gondola sits where it balances \
+            them. It should cruise at about 8 blocks a second or better.
             A hot air balloon is the simple early aircraft: a round envelope about as wide as it is tall, a basket or \
             small gondola hung under it on posts from its corners, burners under the open bottom; it climbs, sinks \
             and drifts. Build one when the player asks for a balloon, or can't make an airship's drive yet, and say \
