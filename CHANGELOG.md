@@ -5,6 +5,19 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.6.65
+
+### Added
+- Create Galore Bridge 1.175.0.
+- **Groundwork for future shader packs: what moves through the water.** The Bridge now tells a shader pack where boats, ships, swimming players and mobs move through water, how fast and how big they are, so a pack can draw the wake each one drags behind it.
+- **Groundwork for future shader packs: the height of the land far out.** With Distant Horizons installed, the Bridge reads the height of the ground for about a kilometre around the camera from Distant Horizons' own terrain data, on a thread of its own, and hands it to a shader pack. A pack can then cast sun shadows past the range of the game's shadow map, such as a mountain shading the valley beside it. Each part of the land is read once and kept until Distant Horizons reports that it changed.
+
+### Fixed
+- Nothing.
+
+### Removed
+- Nothing.
+
 ## 0.6.64
 
 ### Added
