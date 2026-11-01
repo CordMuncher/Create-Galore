@@ -140,7 +140,8 @@ March march(vec3 dir, float limit, float jitter, float pixel) {
     vec3 sun = pow(max(lit.rgb, 0.0), to_display);
     vec3 sky_light = pow(max(cloud_sky_light(dir), 0.0), to_display);
     // A little of the sunlit ground's light from below (green-brown).
-    vec3 ground_light = pow(max(lit.rgb * max(l.y, 0.0) * vec3(0.06, 0.066, 0.048) + g_sky_up.rgb * 0.06, 0.0), to_display);
+    vec3 ground_light = pow(max(lit.rgb * max(l.y, 0.0) * vec3(0.06, 0.066, 0.048) + g_sky_up.rgb * 0.06, 0.0),
+                            to_display);
     vec3 sky_seen = sky_look(sky_air_seen(dir), dir);
     vec3 origin = cloud_origin();
     // The powder look: with the sun behind you, the outer billows (little cloud between them and the sun) a little
