@@ -7,12 +7,17 @@
 // What moves through the surface comes from the Create Galore Bridge (1.175.0 and later; an older one gives none):
 // cg_wake_count of them in cg_wake0 to cg_wake7, nearest first, each
 // - [0]: where (scene space; y the water's surface under it) and how much of it cuts the surface (0..1),
-// - [1]: how fast it goes (blocks a second),
+// - [1]: xyz how fast it goes (blocks a second); w a ship's draft (blocks under the surface; 0 for anything else, and
+//   from a Bridge before 1.176.0),
 // - [2]: its outline at the surface: half its length along its heading, half its width, its heading (x, z),
-// - [3]: x how round its ends are (1 a mob or a boat, less a ship's hull).
+// - [3]: x how round its ends are (1 a mob or a boat, less a ship's hull); for a ship (Bridge 1.176.0 and later), y
+//   and z how far its sides close in towards a pointed end at the front and back of its heading (0 a square end), w
+//   how much water its hull pushes aside (blocks).
 // The water it pushes aside rises in a band just outside its outline where it arrives and sinks where it leaves (the
 // difference between where it is now and a frame ago), so a thing that stays still leaves the water flat, and the
-// fields hold still inside its outline (the hull keeps the water out).
+// fields hold still inside its outline (the hull keeps the water out). A ship's rise grows with the water its hull
+// pushes aside (its weight) and its band with its draft, so a big laden hull throws a big wake and a skiff a small one,
+// worked out by the Bridge once for each ship, not each frame.
 
 #include "/lib/settings.glsl"
 #include "/lib/common.glsl"
@@ -45,14 +50,22 @@ mat4 mover(int i) {
 }
 
 // How far a point (blocks, beside the outline's middle) lies outside a mover's outline (less than 0 inside): a
-// rectangle with rounded ends.
+// rectangle with rounded ends, its sides closing in towards a tip a block across over a ship's pointed end.
 float outline_distance(vec2 q, mat4 m) {
     vec2 way = m[2].zw;
     vec2 local = vec2(dot(q, way), dot(q, vec2(-way.y, way.x)));
     vec2 half_size = m[2].xy;
-    float r = min(half_size.x, half_size.y) * m[3].x;
+    float taper = local.x > 0.0 ? m[3].y : m[3].z;
+    float r = min(half_size.x, half_size.y) * (taper > 0.5 ? 0.1 : m[3].x);
     vec2 d = abs(local) - (half_size - r);
-    return length(max(d, 0.0)) + min(max(d.x, d.y), 0.0) - r;
+    float dist = length(max(d, 0.0)) + min(max(d.x, d.y), 0.0) - r;
+    if (taper > 0.5 && half_size.y > 0.5) {
+        float slope = (half_size.y - 0.5) / taper; // half the width lost per block towards the end
+        float from_end = max(half_size.x - abs(local.x), 0.0);
+        float side = (abs(local.y) - min(half_size.y, 0.5 + slope * from_end)) * inversesqrt(1.0 + slope * slope);
+        dist = max(dist, side);
+    }
+    return dist;
 }
 
 // The water a mover pushes aside: all of it inside the outline, fading out over a band outside it.
@@ -109,15 +122,19 @@ void main() {
         float strength = m[0].w;
         vec2 q = here - m[0].xz;
         float size = min(m[2].x, m[2].y);
-        if (strength <= 0.0 || dot(q, q) > sqr(max(m[2].x, m[2].y) + 2.0)) {
+        float draft = m[1].w;
+        float band = 0.35 + 0.25 * size + 0.3 * min(draft, 4.0);
+        if (strength <= 0.0 || dot(q, q) > sqr(max(m[2].x, m[2].y) + band + 1.0)) {
             continue;
         }
-        float band = 0.35 + 0.25 * size;
         float now = outline_distance(q, m);
         float before = outline_distance(q + m[1].xz * dt, m);
         float speed = length(m[1].xz);
-        // How high the water it pushes aside rises: more for a faster and a bigger one.
-        float rise = 0.12 * strength * clamp(speed / 4.0, 0.3, 1.2) * clamp(sqrt(size / 0.7), 1.0, 2.0);
+        // How high the water it pushes aside rises: more for a faster and a bigger one; for a ship, by the water its
+        // hull pushes aside (about 1 for a small boat of 8 blocks, 1.6 for 64, 2.6 for 512, at most 3.5).
+        float heavy = m[3].w > 0.0 ? clamp(0.5 + 0.35 * log2(1.0 + m[3].w / 8.0), 1.0, 3.5)
+                                   : clamp(sqrt(size / 0.7), 1.0, 2.0);
+        float rise = 0.12 * strength * clamp(speed / 4.0, 0.3, 1.2) * heavy;
         // Going down into the water (or bobbing) lifts the water around it.
         h += rise * (pushed(now, band) - pushed(before, band)) - m[1].y * dt * 0.5 * strength * pushed(now, band);
         held = max(held, strength * clamp(0.5 - now / cell, 0.0, 1.0));
