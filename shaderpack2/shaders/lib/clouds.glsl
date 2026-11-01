@@ -52,6 +52,7 @@ const float cloud_extinction = 0.4; // per block in the thickest cloud
 // The sun's and the sky's light on the clouds, against a white face's (display values, see march() in clouds.csh).
 const float cloud_sun_gain = 0.85;
 const float cloud_sky_gain = 0.8;
+const float cloud_lobe_gain = 0.1; // the forward lobe's, in linear light
 
 // Where the noise sits: positions are taken within 8192 blocks (every noise repeats evenly into it) so they stay
 // exact far from the world's origin.
@@ -105,8 +106,8 @@ CloudMap cloud_map(vec2 xz) {
     // Sheets sit a little lower than cumulus; a rain deck lower still.
     float base = 24.0 * (e - 0.5) + 16.0 * (f - 0.5) + mix(-3.0, 3.0, m.kind);
     m.base = cloud_layer() + clamp(mix(base, -8.0, rainStrength), -15.0, 20.0);
-    // Sheets 12 to 24 blocks deep, small cumulus 24 to 40 tall, the big ones up to 95.
-    m.tall = mix(mix(12.0 + 12.0 * m.cover, 24.0 + 16.0 * m.cover, m.kind), 95.0, m.big);
+    // Sheets 12 to 24 blocks deep, small cumulus 24 to 40 tall, the big ones up to 120 (towers taller than wide).
+    m.tall = mix(mix(12.0 + 12.0 * m.cover, 24.0 + 16.0 * m.cover, m.kind), 120.0, m.big);
     m.tall = mix(m.tall, 50.0, rainStrength);
     // Clouds come in groups: over a few hundred blocks the cover swells and thins (two reads of the smooth noise,
     // turned apart), so the puffs gather into clusters with clear sky between instead of spreading out evenly, one to
@@ -151,14 +152,14 @@ float cloud_strength(float clumps, CloudMap map) {
 // The body (0..1: how far inside it a point is) at height z over the clouds' base, where the clump is that strong.
 // Each clump has a top over its flat base that rises with how strong the clump is there, so the stronger it is the
 // higher it reaches: a sheet's top comes up quickly and stays flat, a cumulus's keeps rising towards its heart into a
-// dome, and where the big ones grow it towers. Under its top it thickens over ramp blocks; over its base within
-// three (a flat underside).
+// dome, and where the big ones grow it towers. Under its top it thickens over ramp blocks; over its base within a
+// block and a half (a hard, flat underside).
 float cloud_body_of(float strength, float z, float ramp, CloudMap map) {
     float s = clamp(strength, 0.0, 1.0);
     float sheet_top = smoothstep(0.0, 0.6, s);
     float heap_top = pow(s, 0.75);
     float top = mix(mix(sheet_top, heap_top, map.kind), smoothstep(0.0, 0.5, s), rainStrength) * map.tall;
-    return strength <= 0.0 ? 0.0 : clamp(min((top - z) / ramp, (z + 0.5) / 3.0), 0.0, 1.0);
+    return strength <= 0.0 ? 0.0 : clamp(min((top - z) / ramp, (z + 0.25) / 1.5), 0.0, 1.0);
 }
 
 // The thickening under a cloud's top: about a quarter of its height, so its billows have room (the far looks
@@ -220,9 +221,11 @@ float cloud_density(vec3 p, float y, CloudMap map, float blur, out float body) {
     float detail = 1.0 - smoothstep(12.0, 48.0, blur);
     float bumps = mix(0.5, n.g, detail);  // 1 at a bump's heart
     float small = mix(0.5, n.b, 1.0 - smoothstep(6.0, 24.0, blur));
-    float under = 1.0 - smoothstep(1.0, 4.0, z);
-    // Worn on top and round the sides (in the clumps' noise, about 0.02 a block); under the base the hearts instead.
-    float worn = mix((1.0 - bumps) * 0.12 + (1.0 - small) * 0.05, bumps * 0.08, under);
+    float under = 1.0 - smoothstep(0.5, 2.5, z);
+    // Worn on top and round the sides (in the clumps' noise, about 0.02 a block), more the higher up (a firm lower
+    // body, a broken top); under the base the hearts instead.
+    float high = clamp(z / map.tall, 0.0, 1.0);
+    float worn = mix(((1.0 - bumps) * 0.12 + (1.0 - small) * 0.05) * mix(0.6, 1.7, high), bumps * 0.08, under);
     vec3 swirled = qd + (n.rgb - 0.5) * 9.0;
     float fine = mix(0.5, textureLod(cg_cloud_noise, swirled / cloud_wisp_tile, 0.0).a, 1.0 - smoothstep(3.0, 10.0, blur));
     worn += (1.0 - fine) * 0.03;
@@ -234,13 +237,36 @@ float cloud_density(vec3 p, float y, CloudMap map, float blur, out float body) {
     worn *= 1.0 - 0.6 * rainStrength; // a rain deck is worn only a little
     float shaped = cloud_body_of(cloud_strength(clumps - worn, map), z, max(1.5, 0.5 * blur), map);
     float d = max(shaped, scraps * fine);
-    return clamp(d * mix(1.2, 2.4, smoothstep(1.0, 6.0, z)), 0.0, 1.0);
+    return clamp(d * mix(1.6, 2.4, smoothstep(0.5, 4.0, z)), 0.0, 1.0);
 }
 
 // Henyey-Greenstein, 1 for light scattered the same way in every direction.
 float cloud_phase(float cos_theta, float g) {
     float g2 = g * g;
     return (1.0 - g2) / pow(max(1.0 + g2 - 2.0 * g * cos_theta, 1e-4), 1.5);
+}
+
+// How much of the sun's (or the moon's) light reaches a point in a cloud with tau of cloud between it and the light
+// (0..1). Light scattered once sees all of that cloud; light scattered again and again sees less of it each time (0.4
+// of the depth a pass, each pass with half the light of the one before, eight passes), so the body in the shade of
+// its own top keeps some of the sun, as a real cloud's does, and only deep inside goes dim.
+float cloud_key(float tau) {
+    float key = 0.0;
+    float share = 1.0;
+    float depth = 1.0;
+    for (int o = 0; o < 8; o++) {
+        key += share * exp(-tau * depth);
+        share *= 0.5;
+        depth *= 0.4;
+    }
+    return key / 1.9921875;
+}
+
+// The bright light scattered forwards round the sun (or the moon), on top of the rest: the silver edge, and the
+// light burning through thin parts. Only the light that came straight through (tau) takes it, and only near the
+// light's direction.
+float cloud_lobe(float cos_theta, float tau) {
+    return max(cloud_phase(cos_theta, 0.7) - 1.0, 0.0) * exp(-tau);
 }
 
 // The sky's light on the clouds (no sun), from above: what lights the surfaces facing up, and through dusk and dawn
@@ -310,7 +336,6 @@ vec4 clouds_simple(vec3 dir, vec3 from) {
     vec4 lit = g_cloud_light;
     vec3 l = lit.w > 0.5 ? g_sun_dir.xyz : g_moon_dir.xyz;
     float cos_theta = dot(dir, l);
-    float phase = mix(cloud_phase(cos_theta, 0.7), cloud_phase(cos_theta, -0.25), 0.3);
     float night = 1.0 - smoothstep(0.05, 0.5, luminance(lit.rgb)); // as the march (program/clouds.csh)
     float base_open = mix(mix(0.35, 0.6, rainStrength), 0.5, night);
     const vec3 to_display = vec3(1.0 / 2.2);
@@ -334,13 +359,12 @@ vec4 clouds_simple(vec3 dir, vec3 from) {
         if (body <= 0.0) {
             continue;
         }
-        float shade = cloud_body(p + l * 10.0, y + l.y * 10.0, map);
-        float direct = phase * exp(-shade * cloud_extinction * 10.0);
-        float soft = min(direct, 1.0);
+        // Lit as the march lights them (one look towards the light instead of four).
+        float tau = cloud_body(p + l * 10.0, y + l.y * 10.0, map) * cloud_extinction * 10.0;
         float up = clamp((y - map.base) / map.tall, 0.0, 1.0);
         float open = mix(base_open, 1.0, up) * (1.0 - 0.4 * body);
-        vec3 sample_light = pow(sun * soft * cloud_sun_gain + sky_light * open * cloud_sky_gain, vec3(2.2))
-                          + lit.rgb * (direct - soft) * 0.12;
+        vec3 sample_light = pow(sun * cloud_key(tau) * cloud_sun_gain + sky_light * open * cloud_sky_gain, vec3(2.2))
+                          + lit.rgb * cloud_lobe(cos_theta, tau) * cloud_lobe_gain;
         float haze = (1.0 - exp(-t * flat_len / 1200.0)) * 0.95;
         sample_light = mix(sample_light, sky_seen, haze);
         float step_through = exp(-body * 1.5 * cloud_extinction * layer_step / max(dir.y, 0.05) * 0.25);

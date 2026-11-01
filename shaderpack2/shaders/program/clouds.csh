@@ -135,18 +135,12 @@ March march(vec3 dir, float limit, float jitter, float pixel) {
     vec4 lit = g_cloud_light;
     vec3 l = lit.w > 0.5 ? g_sun_dir.xyz : g_moon_dir.xyz;
     float cos_theta = dot(dir, l);
-    // Mostly forwards (the silver edge and the sun burning through), some backwards.
-    float phase[3];
-    for (int o = 0; o < 3; o++) {
-        float g = 0.7 * exp2(-float(o));
-        phase[o] = mix(cloud_phase(cos_theta, g), cloud_phase(cos_theta, -0.25), 0.3);
-    }
     // The lights in display values, as lib/lighting.glsl mixes them.
     const vec3 to_display = vec3(1.0 / 2.2);
     vec3 sun = pow(max(lit.rgb, 0.0), to_display);
     vec3 sky_light = pow(max(cloud_sky_light(dir), 0.0), to_display);
     // A little of the sunlit ground's light from below (green-brown).
-    vec3 ground_light = pow(max(lit.rgb * max(l.y, 0.0) * vec3(0.10, 0.11, 0.08) + g_sky_up.rgb * 0.1, 0.0), to_display);
+    vec3 ground_light = pow(max(lit.rgb * max(l.y, 0.0) * vec3(0.06, 0.066, 0.048) + g_sky_up.rgb * 0.06, 0.0), to_display);
     vec3 sky_seen = sky_look(sky_air_seen(dir), dir);
     vec3 origin = cloud_origin();
     // The powder look: with the sun behind you, the outer billows (little cloud between them and the sun) a little
@@ -223,33 +217,29 @@ March march(vec3 dir, float limit, float jitter, float pixel) {
                 continue;
             }
 
-            // The light's way out: four looks towards it, each standing for the stretch round it; the nearest takes
-            // the billows (so the crevices between them shade), the others only the body.
+            // The light's way out: four looks towards it, each standing for the stretch of the way round it (so the
+            // first, a block and a quarter out, for the first two and a half blocks); the nearer two take the billows,
+            // so the creases between them go dark, the further two only the body.
             float shade = 0.0;
             for (int j = 0; j < 4; j++) {
-                float d = j == 0 ? 2.5 : (j == 1 ? 9.0 : (j == 2 ? 22.0 : 50.0));
-                float w = j == 0 ? 5.0 : (j == 1 ? 9.0 : (j == 2 ? 18.0 : 36.0));
+                float d = j == 0 ? 1.25 : (j == 1 ? 5.0 : (j == 2 ? 14.0 : 36.0));
+                float w = j == 0 ? 2.5 : (j == 1 ? 6.0 : (j == 2 ? 13.0 : 34.0));
                 float near_body;
-                float v = j == 0 ? cloud_density(p + l * d, y + l.y * d, map, blur, near_body)
-                                 : cloud_body(p + l * d, y + l.y * d, map);
+                float v = j < 2 ? cloud_density(p + l * d, y + l.y * d, map, max(blur, d * 0.5), near_body)
+                                : cloud_body(p + l * d, y + l.y * d, map);
                 shade += v * w;
             }
             float tau = shade * cloud_extinction;
-            float direct = 0.0;
-            for (int o = 0; o < 3; o++) {
-                direct += exp2(-float(o)) * phase[o] * exp(-tau * exp2(-float(o)));
-            }
-            direct *= mix(1.0, 1.0 - exp(-tau * 2.0 - density * 1.5), powder_amount);
-            // The sky's light from above: the lower in the cloud, the less of it (in rain, with no sun, the
-            // closed-up layer passes more of it round inside). The light mixes in display values like a surface's,
-            // up to about a sunlit white face's; the bright forward lobe round the sun goes on top as it is (in
-            // display values its peak would square into a glare many times the sun's).
+            float key = cloud_key(tau) * mix(1.0, 1.0 - exp(-tau * 2.0 - density * 1.5), powder_amount);
+            // The sun's (or the moon's) light and the sky's from above (the lower in the cloud, the less of it; in
+            // rain, with no sun, the closed-up layer passes more of it round inside) add up as a surface's do, in
+            // display values: a sunlit top comes out as bright as a sunlit white face, its shaded side greyer and a
+            // little blue. The bright forward lobe round the light goes on top as it is.
             float up = clamp((y - map.base) / map.tall, 0.0, 1.0);
             float open = mix(base_open, 1.0, up) * (1.0 - 0.4 * body);
-            float soft = min(direct, 1.0);
-            vec3 sample_light = pow(sun * soft * cloud_sun_gain + sky_light * open * cloud_sky_gain
+            vec3 sample_light = pow(sun * key * cloud_sun_gain + sky_light * open * cloud_sky_gain
                                     + ground_light * (1.0 - up), vec3(2.2))
-                              + lit.rgb * (direct - soft) * 0.12;
+                              + lit.rgb * cloud_lobe(cos_theta, tau) * cloud_lobe_gain;
             // Far off, the clouds take on the sky's colour behind them and fade into the haze.
             float haze = (1.0 - exp(-t * flat_len / 1200.0)) * 0.95;
             sample_light = mix(sample_light, sky_seen, haze);
@@ -372,8 +362,11 @@ void main() {
                 history += imageLoad(cg_cloud_img, last_slot + clamp(base + o, ivec2(0), size - 1)) * w;
             }
             vec4 margin = (hi - lo) * 0.1;
-            history = clamp(history, lo - margin, hi + margin);
-            result = mix(history, m.light, 0.15);
+            vec4 held = clamp(history, lo - margin, hi + margin);
+            // Where last frame's had to be pulled into this frame's range (an edge on the move), less of it is
+            // kept, so a moving edge stays crisp instead of smearing over several frames.
+            float pulled = clamp(2.0 * length(held - history) / (length(hi - lo) + 0.02), 0.0, 1.0);
+            result = mix(held, m.light, mix(0.15, 0.5, pulled));
         }
     }
 

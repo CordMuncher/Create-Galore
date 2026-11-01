@@ -160,7 +160,7 @@ bool clouds_here() {
 }
 
 // Where the clouds' bases gather (world Y, the CLOUD_HEIGHT option): from 15 under it to 20 over it, cloud by cloud
-// and region by region, and the biggest cumulus heap up about 95 over their base. Pollution of the Realms' smog piles
+// and region by region, and the biggest cumulus tower up about 120 over their base. Pollution of the Realms' smog piles
 // up at Y 189-192; even the lowest choice keeps every base above it, so clouds never hide what goes on under them.
 float cloud_layer() {
     return float(CLOUD_HEIGHT);
@@ -170,7 +170,7 @@ float cloud_layer() {
 float cloud_bottom() {
     return cloud_layer() - 15.0;
 }
-const float cloud_depth = 135.0;
+const float cloud_depth = 160.0;
 
 // The clouds' shadows on the land: a map 4096 blocks across (16 blocks a texel, on a grid fixed to the world), each
 // texel the line towards the sun (or the moon) up from a point on the layer's floor (cloud_bottom()), and in its four
