@@ -41,29 +41,12 @@
 #include "/lib/sky.glsl"
 #include "/lib/wind.glsl"
 
-uniform float cloudHeight; // Minecraft's cloud height for this world (an Iris uniform; not a number without clouds)
-
 const float cloud_reach = 5000.0;
 const float cloud_far_sky = 60000.0; // a look that went out to the sky, in the distances
 const float cirrus_above = 900.0;    // the high layer, over where the main layer's bases gather
 
-// Minecraft gives a world without clouds (the Nether, the End, some modded ones) no number for their height.
-bool clouds_here() {
-    return cloudHeight > -4096.0 && cloudHeight < 4096.0;
-}
-
-// Where the clouds' bases gather (world Y, the CLOUD_HEIGHT option): from 15 under it to 20 over it, cloud by cloud
-// and region by region, and the biggest cumulus heap up about 95 over their base. Pollution of the Realms' smog piles
-// up at Y 189-192; even the lowest choice keeps every base above it, so clouds never hide what goes on under them.
-float cloud_layer() {
-    return float(CLOUD_HEIGHT);
-}
-
-// The slab every cloud sits in: from the lowest base anywhere to the top of the tallest cumulus.
-float cloud_bottom() {
-    return cloud_layer() - 15.0;
-}
-const float cloud_depth = 135.0;
+// The layer's heights (clouds_here, cloud_layer, cloud_bottom, cloud_depth) are in lib/sky.glsl, with the clouds'
+// shadow map.
 
 const float cloud_extinction = 0.4; // per block in the thickest cloud
 // The sun's and the sky's light on the clouds, against a white face's (display values, see march() in clouds.csh).

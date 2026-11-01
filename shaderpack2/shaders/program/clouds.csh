@@ -31,35 +31,39 @@ uniform mat4 dhProjectionInverse;
 
 shared vec4 s_light[64];
 
-// One texel of the clouds' shadow map (cloud_shadow in lib/sky.glsl): what gets through the clouds towards the light
-// from the point at the camera's height under the texel's middle, through their body (twelve looks across the layer).
-void shadow_texel(ivec2 texel) {
-    float through = 1.0;
+// One texel of the clouds' shadow map (cloud_shadow in lib/sky.glsl): what gets through the clouds along the line
+// towards the light from the floor of the layer under the texel's middle, from four heights on it to the top, through
+// the clouds' body (three looks a quarter, twelve in all).
+void shadow_texel(ivec2 cell) {
+    vec4 through = vec4(1.0);
 #ifdef CLOUD_SHADOWS
-    vec2 rel = cloud_shadow_corner() + (vec2(texel) + 0.5) * cloud_shadow_texel;
     vec2 shift = cloud_shadow_shift();
-    float y0 = cameraPosition.y;
     float bottom = cloud_bottom();
-    float lo = max(bottom, y0);
-    float hi = bottom + cloud_depth;
-    if (clouds_here() && hi > lo) {
-        vec3 origin = cloud_origin();
-        const int looks = 12;
-        float dy = (hi - lo) / float(looks);
-        float tau = 0.0;
-        // The weather changes over kilometres: one look at it does for the whole way across the layer.
-        vec2 mid = rel + shift * (0.5 * (lo + hi) - y0);
-        CloudMap map = cloud_map(origin.xz + mid);
+    vec2 rel = cloud_shadow_middle(cell);
+    vec3 origin = cloud_origin();
+    float y0 = cameraPosition.y;
+    const int looks = 3;
+    const float dy = cloud_depth / 4.0 / float(looks);
+    float step_len = dy * length(vec3(shift, 1.0));
+    // The weather changes over kilometres: one look at it does for the whole way up the layer.
+    vec2 mid = rel + shift * (0.5 * cloud_depth);
+    CloudMap map = cloud_map(origin.xz + mid);
+    vec4 tau = vec4(0.0); // each quarter's own
+    for (int q = 0; q < 4; q++) {
+        float sum = 0.0;
         for (int i = 0; i < looks; i++) {
-            float y = lo + (float(i) + 0.5) * dy;
-            vec2 xz = rel + shift * (y - y0);
-            vec3 p = origin + vec3(xz.x, y - y0, xz.y);
-            tau += cloud_body(p, y, map) * cloud_extinction * dy * length(vec3(shift, 1.0));
+            float up = (float(q * looks + i) + 0.5) * dy;
+            vec2 xz = rel + shift * up;
+            float y = bottom + up;
+            sum += cloud_body(origin + vec3(xz.x, y - y0, xz.y), y, map);
         }
-        through = max(exp(-tau), 0.05);
+        tau[q] = sum * cloud_extinction * step_len;
     }
+    // From each height to the top.
+    vec4 above = vec4(tau.x + tau.y + tau.z + tau.w, tau.y + tau.z + tau.w, tau.z + tau.w, tau.w);
+    through = max(exp(-above), vec4(0.05));
 #endif
-    imageStore(cg_sky_img, cloud_shadow_origin + texel, vec4(through, 0.0, 0.0, 1.0));
+    imageStore(cg_sky_img, cloud_shadow_slot(cell), through);
 }
 
 // How far the look through a render pixel goes before a surface stops it (cloud_far_sky for the sky and the hand).
@@ -277,13 +281,28 @@ March march(vec3 dir, float limit, float jitter, float pixel) {
 
 void main() {
     ivec2 p = ivec2(gl_GlobalInvocationID.xy);
-    // The shadow map's texels, shared out over every invocation of the pass (at least a quarter of them each frame
-    // even at the smallest render size: then some do more than one).
-    uint invocations = gl_NumWorkGroups.x * gl_NumWorkGroups.y * 64u;
-    uint index = (gl_WorkGroupID.y * gl_NumWorkGroups.x + gl_WorkGroupID.x) * 64u + gl_LocalInvocationIndex;
-    for (uint k = index; k < 65536u; k += invocations) {
-        shadow_texel(ivec2(k & 255u, k >> 8u));
+#ifdef CLOUD_SHADOWS
+    // A quarter of the shadow map's texels each frame (each 2 x 2 of the world's texels takes its turn at one), shared
+    // out over every invocation of the pass; all of them when the window jumped (a teleport, a trip to another world).
+    if (clouds_here()) {
+        ivec2 low = cloud_shadow_low();
+        ivec2 last_low = cloud_shadow_low(previousCameraPositionInt, previousCameraPositionFract);
+        bool jumped = any(greaterThan(abs(low - last_low), ivec2(4))) || frameCounter < 4;
+        uint count = jumped ? 65536u : 16384u;
+        ivec2 turn = ivec2(frameCounter & 1, (frameCounter >> 1) & 1);
+        uint invocations = gl_NumWorkGroups.x * gl_NumWorkGroups.y * 64u;
+        uint index = (gl_WorkGroupID.y * gl_NumWorkGroups.x + gl_WorkGroupID.x) * 64u + gl_LocalInvocationIndex;
+        for (uint k = index; k < count; k += invocations) {
+            ivec2 at = jumped ? ivec2(k & 255u, k >> 8u) : ivec2(k & 127u, k >> 7u) * 2;
+            // The world texel in the window at this place, on its turn.
+            ivec2 cell = low + at;
+            if (!jumped) {
+                cell += (turn - cell) & 1;
+            }
+            shadow_texel(cell);
+        }
     }
+#endif
 
     ivec2 size = cloud_size();
     bool inside = all(lessThan(p, size));

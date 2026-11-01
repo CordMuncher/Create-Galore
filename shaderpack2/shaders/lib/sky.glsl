@@ -151,34 +151,108 @@ vec3 air_transmittance(float r, float mu) {
     return texture(cg_sky_tex, sky_atlas_uv(trans_uv(r, mu), trans_size, trans_origin)).rgb;
 }
 
-// The clouds' shadows on the land: a map 4096 blocks across round the camera (16 blocks a texel, on a grid fixed to
-// the world), each texel what gets through the clouds towards the sun (or the moon) from a point at the camera's
-// height there (program/clouds.csh). A point higher or lower looks it up shifted along the light's direction.
-const float cloud_shadow_texel = 16.0;
+// The cloud layer's heights (lib/clouds.glsl draws the clouds). Minecraft gives a world without clouds (the Nether,
+// the End, some modded ones) no number for their height.
+uniform float cloudHeight; // Minecraft's cloud height for this world (an Iris uniform; not a number without clouds)
 
-// The map's low corner, from the camera (blocks, x and z).
-vec2 cloud_shadow_corner() {
-    ivec2 cam = cameraPositionInt.xz;
-    return vec2(((cam >> 4) << 4) - cam) - cameraPositionFract.xz - 128.0 * cloud_shadow_texel;
+bool clouds_here() {
+    return cloudHeight > -4096.0 && cloudHeight < 4096.0;
 }
 
-// How far a point's look-up shifts per block of height (the light's direction, never flatter than about 7 degrees).
+// Where the clouds' bases gather (world Y, the CLOUD_HEIGHT option): from 15 under it to 20 over it, cloud by cloud
+// and region by region, and the biggest cumulus heap up about 95 over their base. Pollution of the Realms' smog piles
+// up at Y 189-192; even the lowest choice keeps every base above it, so clouds never hide what goes on under them.
+float cloud_layer() {
+    return float(CLOUD_HEIGHT);
+}
+
+// The slab every cloud sits in: from the lowest base anywhere to the top of the tallest cumulus.
+float cloud_bottom() {
+    return cloud_layer() - 15.0;
+}
+const float cloud_depth = 135.0;
+
+// The clouds' shadows on the land: a map 4096 blocks across (16 blocks a texel, on a grid fixed to the world), each
+// texel the line towards the sun (or the moon) up from a point on the layer's floor (cloud_bottom()), and in its four
+// channels what gets through the clouds along it from four heights on it (the floor, a quarter, half and three
+// quarters of the way up the layer) to the layer's top (program/clouds.csh). A point anywhere looks up the texel its
+// own line towards the light crosses the floor in, and the heights either side of its own; under the layer, the
+// floor's. So the map holds still in the world while you climb or drop: only the clouds and the light move it.
+// - The window follows the camera a texel at a time, round the point where the camera's line towards the light
+//   crosses the floor (the land round you casts its shadow from there). A texel keeps its slot (its place modulo 256)
+//   while the window keeps it in, so a quarter of them can be worked out each frame; those the window has just
+//   brought in sit in its outer stretch, which fades out.
+const float cloud_shadow_texel = 16.0;
+const int cloud_shadow_cells = 256;
+const float cloud_shadow_fade = 20.0; // texels
+
+// How far a point's line towards the light shifts per block of height (never flatter than about 7 degrees).
 vec2 cloud_shadow_shift() {
     return g_light_dir.xz / max(g_light_dir.y, 0.12);
+}
+
+// The window's low corner (world texels) for a camera at cam_int + cam_fract.
+ivec2 cloud_shadow_low(ivec3 cam_int, vec3 cam_fract) {
+    vec2 off = cam_fract.xz + cloud_shadow_shift() * (cloud_bottom() - (float(cam_int.y) + cam_fract.y));
+    ivec2 middle = (cam_int.xz + ivec2(floor(off))) >> 4;
+    return middle - cloud_shadow_cells / 2;
+}
+
+ivec2 cloud_shadow_low() {
+    return cloud_shadow_low(cameraPositionInt, cameraPositionFract);
+}
+
+// A world texel's place in the map (cg_sky_img).
+ivec2 cloud_shadow_slot(ivec2 cell) {
+    return cloud_shadow_origin + (cell & (cloud_shadow_cells - 1));
+}
+
+// A world texel's middle on the layer's floor, from the camera (blocks, x and z).
+vec2 cloud_shadow_middle(ivec2 cell) {
+    return vec2(cell * 16 + 8 - cameraPositionInt.xz) - cameraPositionFract.xz;
 }
 
 // What gets through the clouds to a point (scene space) from the sun or the moon: 1 without clouds.
 float cloud_shadow(vec3 scene_pos) {
 #ifdef CLOUD_SHADOWS
 #if defined VOLUME_CLOUDS
-    vec2 xz = scene_pos.xz - cloud_shadow_shift() * scene_pos.y;
-    vec2 uv = (xz - cloud_shadow_corner()) / (cloud_shadow_texel * vec2(cloud_shadow_size));
-    float fade = smoothstep(0.0, 0.08, min(min(uv.x, uv.y), min(1.0 - uv.x, 1.0 - uv.y)));
+    if (!clouds_here()) {
+        return 1.0;
+    }
+    float y = scene_pos.y + cameraPosition.y;
+    float floor_y = cloud_bottom();
+    float up = (y - floor_y) / cloud_depth * 4.0;
+    if (up >= 4.0) {
+        return 1.0;
+    }
+    // Where the point's line towards the light crosses the floor, in texels from the window's low corner.
+    vec2 xz = scene_pos.xz + cloud_shadow_shift() * (floor_y - y);
+    ivec2 low = cloud_shadow_low();
+    vec2 at = (xz + cameraPositionFract.xz + vec2(cameraPositionInt.xz - low * 16)) / cloud_shadow_texel - 0.5;
+    float edge = min(min(at.x, at.y), min(float(cloud_shadow_cells - 1) - at.x, float(cloud_shadow_cells - 1) - at.y));
+    float fade = smoothstep(0.0, cloud_shadow_fade, edge);
     if (fade <= 0.0) {
         return 1.0;
     }
-    uv = clamp(uv, 0.5 / vec2(cloud_shadow_size), 1.0 - 0.5 / vec2(cloud_shadow_size));
-    float through = texture(cg_sky_tex, sky_atlas_uv(uv, cloud_shadow_size, cloud_shadow_origin)).r;
+    ivec2 base = ivec2(floor(at));
+    vec2 f = at - vec2(base);
+    vec4 t = vec4(0.0);
+    for (int i = 0; i < 4; i++) {
+        ivec2 o = ivec2(i & 1, i >> 1);
+        vec4 v = texelFetch(cg_sky_tex, cloud_shadow_slot(low + base + o), 0);
+        // A texel never worked out yet (garbage, a NaN) lets everything through.
+        v = all(greaterThanEqual(v, vec4(0.0))) && all(lessThanEqual(v, vec4(1.0))) ? v : vec4(1.0);
+        t += v * ((o.x == 1 ? f.x : 1.0 - f.x) * (o.y == 1 ? f.y : 1.0 - f.y));
+    }
+    // Between the heights either side of the point (the layer's top lets everything through).
+    float through = t.x;
+    if (up > 0.0) {
+        int k = int(up);
+        float w = up - float(k);
+        float a = k == 0 ? t.x : k == 1 ? t.y : k == 2 ? t.z : t.w;
+        float b = k == 0 ? t.y : k == 1 ? t.z : k == 2 ? t.w : 1.0;
+        through = mix(a, b, w);
+    }
     return mix(1.0, through, fade);
 #endif
 #endif
