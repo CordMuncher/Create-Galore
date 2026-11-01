@@ -366,7 +366,7 @@ vec4 shade_water(vec4 base, out float reflected, out vec3 n, out float spread) {
     reflected = 0.0;
     vec3 r = reflect(-to_eye, n);
     r.y = inside ? -abs(r.y) : abs(r.y);
-    vec3 own_reflection = (inside ? light_here * 0.05 : mix(light_here * 0.05, reflect_sky(r),
+    vec3 own_reflection = (inside ? light_here * 0.05 : mix(light_here * 0.05, reflect_sky(r, v_scene_pos),
                            vanilla_sky_share(levels.y))) * fresnel;
 #endif
 

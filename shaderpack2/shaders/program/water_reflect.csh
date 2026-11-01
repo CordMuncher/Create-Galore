@@ -185,7 +185,7 @@ void main() {
     }
 #else
     ScreenHit sh = screen_reflect(view, view_dir, 24);
-    vec3 color = reflect_sky(r);
+    vec3 color = reflect_sky(r, scene);
     dist = reach;
     if (sh.hit && sh.material != MAT_HAND) {
         color = mix(color, sh.color, sh.fade);

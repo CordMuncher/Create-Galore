@@ -92,7 +92,7 @@ vec3 reflect_world(vec3 start, vec3 r, float start_width, float spread, float re
             return reflect_hit_color(h, start_width + spread * h.t);
         }
     }
-    return reflect_sky(r);
+    return reflect_sky(r, start);
 }
 
 #endif

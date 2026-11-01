@@ -259,18 +259,19 @@ vec3 cloud_sky_light(vec3 dir) {
 
 // The high layer along a look (only up): its light (rgb, premultiplied) and what gets through it (a). Streaks drawn
 // out along the wind, fine ripples in places, patchy from day to day; lit by the sun scattered forwards and by the
-// sky, thin enough that it never hides the sky behind it.
-vec4 cirrus(vec3 dir, vec3 sun_light, vec3 sky_light) {
+// sky, thin enough that it never hides the sky behind it. From a point (scene space): the camera, or what water
+// mirrors it at.
+vec4 cirrus(vec3 dir, vec3 sun_light, vec3 sky_light, vec3 from) {
     if (dir.y < 0.02 || !clouds_here()) {
         return vec4(0.0, 0.0, 0.0, 1.0);
     }
-    float height = cloud_layer() + cirrus_above - cameraPosition.y;
+    float height = cloud_layer() + cirrus_above - cameraPosition.y - from.y;
     if (height <= 0.0) {
         return vec4(0.0, 0.0, 0.0, 1.0);
     }
     float t = height / dir.y;
     vec2 drift = cloud_drift() * 2.0; // faster up there (8192 is still a whole number of every repeat below)
-    vec2 at = cloud_origin().xz + dir.xz * t - drift;
+    vec2 at = cloud_origin().xz + from.xz + dir.xz * t - drift;
     // Turned about 27 degrees, by whole numbers of every repeat below when a position wraps at 8192.
     vec2 w = vec2(at.x - 0.5 * at.y, 0.5 * at.x + at.y);
     float turn = cloud_weather_turn();
@@ -296,12 +297,14 @@ vec4 cirrus(vec3 dir, vec3 sun_light, vec3 sky_light) {
     return vec4(light * alpha, 1.0 - alpha);
 }
 
-// A quick look at the clouds in a direction from where you are, for what water mirrors (program/water_reflect.csh):
+// A quick look at the clouds in a direction from a point (scene space), for what water mirrors (lib/sky_mirror.glsl):
 // the layer looked through at four heights for its body alone (no billows: a reflection's look is wide and broken
 // by the waves anyway), lit as the march lights it with one look towards the light, then the high layer. rgb the
-// light (premultiplied), a what gets through. From above the layer, nothing.
-vec4 clouds_simple(vec3 dir) {
-    if (dir.y < 0.01 || !clouds_here() || cameraPosition.y > cloud_bottom()) {
+// light (premultiplied), a what gets through. From the point the water mirrors them at, so they hold still on it as
+// you climb or drop. From above the layer, nothing.
+vec4 clouds_simple(vec3 dir, vec3 from) {
+    float from_y = from.y + cameraPosition.y;
+    if (dir.y < 0.01 || !clouds_here() || from_y > cloud_bottom()) {
         return vec4(0.0, 0.0, 0.0, 1.0);
     }
     vec4 lit = g_cloud_light;
@@ -321,11 +324,11 @@ vec4 clouds_simple(vec3 dir) {
     const float layer_step = 20.0;
     for (int k = 0; k < 4; k++) {
         float y = cloud_bottom() + (float(k) + 0.5) * layer_step;
-        float t = (y - cameraPosition.y) / dir.y;
+        float t = (y - from_y) / dir.y;
         if (t * flat_len > cloud_reach) {
             break;
         }
-        vec3 p = origin + dir * t;
+        vec3 p = origin + from + dir * t;
         CloudMap map = cloud_map(p.xz);
         float body = cloud_body(p, y, map);
         if (body <= 0.0) {
@@ -344,7 +347,7 @@ vec4 clouds_simple(vec3 dir) {
         light += sample_light * through * (1.0 - step_through);
         through *= step_through;
     }
-    vec4 high = cirrus(dir, lit.rgb, cloud_sky_light(dir));
+    vec4 high = cirrus(dir, lit.rgb, cloud_sky_light(dir), from);
     light += through * high.rgb;
     through *= high.a;
     return vec4(light, through);

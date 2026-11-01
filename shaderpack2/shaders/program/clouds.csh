@@ -328,7 +328,7 @@ void main() {
         m = march(dir, limit, jitter, 2.0 * pixel_angle()); // the clouds' pixels are twice the render's
         if (limit >= cloud_far_sky && m.light.a > 0.0) {
             // The high layer, behind the main one.
-            vec4 high = cirrus(dir, g_cloud_light.rgb, cloud_sky_light(dir));
+            vec4 high = cirrus(dir, g_cloud_light.rgb, cloud_sky_light(dir), vec3(0.0));
             m.light.rgb += m.light.a * high.rgb;
             m.light.a *= high.a;
         }

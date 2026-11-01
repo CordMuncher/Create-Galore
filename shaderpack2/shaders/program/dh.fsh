@@ -74,7 +74,7 @@ void main() {
     vec3 r = reflect(-to_eye, n);
 #if defined SUNLIGHT
     r.y = inside ? -abs(r.y) : abs(r.y);
-    vec3 reflected = inside ? light_here * 0.05 : mix(light_here * 0.05, reflect_sky(r), vanilla_sky_share(v_light.y));
+    vec3 reflected = inside ? light_here * 0.05 : mix(light_here * 0.05, reflect_sky(r, v_scene_pos), vanilla_sky_share(v_light.y));
     if (!inside && g_light_dir.w > 0.5) {
         reflected += sun_seen(r, spread) * smoothstep(0.05, 0.3, v_light.y) * cloud_shadow(v_scene_pos);
     }
