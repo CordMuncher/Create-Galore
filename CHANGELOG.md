@@ -5,6 +5,18 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.6.66
+
+### Added
+- Create Galore Bridge 1.176.0.
+- **Groundwork for future shader packs: how big and heavy a ship is in the water.** For a ship that moves through water, the Bridge now also tells a shader pack how deep its hull goes, how much water it pushes aside, and whether its bow and stern come to a point, so a pack can draw a bigger wake behind a big laden ship than behind a small boat, shaped to the hull. The Bridge works this out once for each ship (again every two seconds, or when the ship sinks deeper or rises), a little each frame, not anew every frame.
+
+### Fixed
+- Nothing.
+
+### Removed
+- Nothing.
+
 ## 0.6.65
 
 ### Added
