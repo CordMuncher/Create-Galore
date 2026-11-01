@@ -205,13 +205,16 @@ void main() {
 #endif
         // In the colour of the sky right behind what it hides (its horizon in that direction, or the sky itself
         // above it), so a far hill against the sunset fades into the sunset and one across from it into the blue.
-        vec3 behind = normalize(vec3(dir.x, max(dir.y, 0.0) + 0.05, dir.z));
-        vec3 haze_color = sky_look(sky_air_seen(behind), behind);
-        // Mixed in display space, like the light on surfaces: in linear light even a little of the bright horizon
-        // lifts dark land a lot, so the distance greys out.
-        const vec3 to_display = vec3(1.0 / 2.2);
-        vec3 shown = mix(pow(max(color, 0.0), to_display), pow(haze_color, to_display), haze * solid);
-        color = pow(shown, vec3(2.2));
+        // (None over the sky itself, which already is that colour: skipped there.)
+        if (haze * solid > 0.0) {
+            vec3 behind = normalize(vec3(dir.x, max(dir.y, 0.0) + 0.05, dir.z));
+            vec3 haze_color = sky_look(sky_air_seen(behind), behind);
+            // Mixed in display space, like the light on surfaces: in linear light even a little of the bright
+            // horizon lifts dark land a lot, so the distance greys out.
+            const vec3 to_display = vec3(1.0 / 2.2);
+            vec3 shown = mix(pow(max(color, 0.0), to_display), pow(haze_color, to_display), haze * solid);
+            color = pow(shown, vec3(2.2));
+        }
     }
 #elif defined WORLD_NETHER
     // The haze: its biome's colour and thickness (lib/sky.glsl), thicker under the ceiling (from about 30 blocks
@@ -263,9 +266,12 @@ void main() {
             fog *= vec3(0.4, 0.8, 1.0);
         }
         // Mixed in display space, like the light on surfaces (see lib/lighting.glsl): faint haze stays faint.
-        vec3 shown = pow(max(color, 0.0), vec3(1.0 / 2.2));
-        shown = shown * (1.0 - clamp(max3(fog) * 0.5, 0.0, 0.5)) + fog * 0.65;
-        color = pow(shown, vec3(2.2));
+        // (Skipped where no light lies in the air, most of the outdoors by day.)
+        if (max3(fog) > 0.0) {
+            vec3 shown = pow(max(color, 0.0), vec3(1.0 / 2.2));
+            shown = shown * (1.0 - clamp(max3(fog) * 0.5, 0.0, 0.5)) + fog * 0.65;
+            color = pow(shown, vec3(2.2));
+        }
     }
 
     out_color = vec4(color, 1.0);
