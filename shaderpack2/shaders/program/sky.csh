@@ -3,6 +3,15 @@
 
 #include "/lib/atmosphere.glsl"
 
+#if !defined SKY_TRANSMITTANCE
+// The transmittance table the first stage made, for the stages after it.
+uniform sampler2D cg_sky_tex;
+
+vec3 transmittance(float r, float mu) {
+    return texture(cg_sky_tex, sky_atlas_uv(trans_uv(r, mu), trans_size, trans_origin)).rgb;
+}
+#endif
+
 #if defined SKY_TRANSMITTANCE
 
 layout(local_size_x = 8, local_size_y = 8) in;
@@ -32,15 +41,10 @@ void main() {
 layout(local_size_x = 64) in;
 const ivec3 workGroups = ivec3(32, 32, 1);
 
-uniform sampler2D cg_sky_tex;
 layout(rgba16f) writeonly uniform image2D cg_sky_img;
 
 shared vec3 s_light[64];
 shared vec3 s_fraction[64];
-
-vec3 transmittance(float r, float mu) {
-    return texture(cg_sky_tex, sky_atlas_uv(trans_uv(r, mu), trans_size, trans_origin)).rgb;
-}
 
 void main() {
     ivec2 texel = ivec2(gl_WorkGroupID.xy);
@@ -111,15 +115,10 @@ void main() {
 layout(local_size_x = 8, local_size_y = 4) in;
 const ivec3 workGroups = ivec3(24, 54, 1);
 
-uniform sampler2D cg_sky_tex;
 uniform vec3 cameraPosition;
 uniform vec3 sunPosition;
 uniform mat4 gbufferModelViewInverse;
 layout(rgba16f) writeonly uniform image2D cg_sky_img;
-
-vec3 transmittance(float r, float mu) {
-    return texture(cg_sky_tex, sky_atlas_uv(trans_uv(r, mu), trans_size, trans_origin)).rgb;
-}
 
 void main() {
     ivec2 texel = ivec2(gl_GlobalInvocationID.xy);

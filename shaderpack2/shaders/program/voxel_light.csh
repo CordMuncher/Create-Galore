@@ -47,24 +47,6 @@ shared uint s_contribution[tile_list_max];
 
 const int own_reach_tiles = 2; // the tiles whose own lights are candidates: up to this many away on each axis
 
-// Whether a box (vox_pos space, centre and half size) is in view, give or take margin blocks.
-bool in_view(vec3 centre, float radius, float margin) {
-    vec3 view = (gbufferModelView * vec4(centre - cameraPositionFract, 1.0)).xyz;
-    mat4 m = gbufferProjection;
-    vec4 row0 = vec4(m[0][0], m[1][0], m[2][0], m[3][0]);
-    vec4 row1 = vec4(m[0][1], m[1][1], m[2][1], m[3][1]);
-    vec4 row2 = vec4(m[0][2], m[1][2], m[2][2], m[3][2]);
-    vec4 row3 = vec4(m[0][3], m[1][3], m[2][3], m[3][3]);
-    vec4 planes[5] = vec4[](row3 + row0, row3 - row0, row3 + row1, row3 - row1, row3 + row2);
-    for (int i = 0; i < 5; i++) {
-        float len = length(planes[i].xyz);
-        if (dot(planes[i].xyz, view) + planes[i].w < -(radius + margin) * len) {
-            return false;
-        }
-    }
-    return true;
-}
-
 void add_candidate(uint key) {
     uint h = pcg3d(uvec3(key, 3u, 5u)).x & uint(set_size - 1);
     for (int i = 0; i < 16; i++) {

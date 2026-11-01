@@ -45,23 +45,6 @@ const float gi_reach = 30.0;
 const float gi_memory = 700.0; // rays a cell holds at most
 const float far_tiles = 24.0;
 
-bool in_view(vec3 centre, float radius, float margin) {
-    vec3 view = (gbufferModelView * vec4(centre - cameraPositionFract, 1.0)).xyz;
-    mat4 m = gbufferProjection;
-    vec4 row0 = vec4(m[0][0], m[1][0], m[2][0], m[3][0]);
-    vec4 row1 = vec4(m[0][1], m[1][1], m[2][1], m[3][1]);
-    vec4 row2 = vec4(m[0][2], m[1][2], m[2][2], m[3][2]);
-    vec4 row3 = vec4(m[0][3], m[1][3], m[2][3], m[3][3]);
-    vec4 planes[5] = vec4[](row3 + row0, row3 - row0, row3 + row1, row3 - row1, row3 + row2);
-    for (int i = 0; i < 5; i++) {
-        float len = length(planes[i].xyz);
-        if (dot(planes[i].xyz, view) + planes[i].w < -(radius + margin) * len) {
-            return false;
-        }
-    }
-    return true;
-}
-
 // The sky's light from a direction, on the scale of the light on a surface.
 vec3 sky_from(vec3 dir) {
     return dir.y >= 0.0 ? mix(g_sky_side.rgb, g_sky_up.rgb, dir.y) : mix(g_sky_side.rgb, g_sky_down.rgb, -dir.y);
