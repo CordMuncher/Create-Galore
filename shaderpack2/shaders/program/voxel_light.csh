@@ -65,12 +65,15 @@ void add_candidate(uint key) {
     }
 }
 
-// Sorts s_order by s_score, highest first (bitonic, all threads).
-void sort_candidates(uint index) {
-    for (uint size = 2u; size <= uint(candidates_max); size <<= 1u) {
+// Sorts the first n of s_order by s_score, highest first (bitonic, all threads; n a power of two, the same for all of
+// them). Past the candidates every score is -1, so sorting only the smallest power of two that holds them all puts
+// them in the same order as sorting the whole table would, at a fraction of the steps: a tile with a few lights near
+// it sorts 4 or 8, not 512.
+void sort_candidates(uint index, uint n) {
+    for (uint size = 2u; size <= n; size <<= 1u) {
         for (uint stride = size >> 1u; stride > 0u; stride >>= 1u) {
             uint other = index ^ stride;
-            if (other > index) {
+            if (other > index && other < n) {
                 bool descending = (index & size) == 0u;
                 uint a = s_order[index];
                 uint b = s_order[other];
@@ -152,7 +155,11 @@ void main() {
     s_score[index] = score;
     s_order[index] = index;
     barrier();
-    sort_candidates(index);
+    uint sorted = 2u;
+    while (sorted < candidates) {
+        sorted <<= 1u;
+    }
+    sort_candidates(index, sorted);
 
     if (index < tile_list_max) {
         uint k = s_order[index];
