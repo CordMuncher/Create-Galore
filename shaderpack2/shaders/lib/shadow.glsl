@@ -101,6 +101,9 @@ const vec2 shadow_disk[12] = vec2[](
 // How far the light runs through water to the point being lit, when the caller knows it from the block copy (see
 // water_path in lib/trace.glsl; -1: not known, the map's depth says). Set just before shadow_light, and back to -1.
 float g_water_path = -1.0;
+// The waves' focus there when the caller has it already (program/caustics.csh: once per 2 x 2 pixels; -1: not known,
+// worked out here). Set just before shadow_light too, and back to -1.
+float g_caustic = -1.0;
 
 // How much of the light reaches a point (0..1), and its colour through glass and water.
 // - radius: the filter's width in texels at the middle of the map (wider far out, where texels are bigger).
@@ -167,7 +170,9 @@ vec3 shadow_light(vec3 scene_pos, float radius, float ignore, float beyond, bool
         // it stands still on the floor whatever the map's texels do (no flicker, no grid of texels), fades in from
         // nothing just under the surface, and is no finer than the pixel or what the depth blurs (the sun's disc
         // and the water spread it). Not on what you hold: the waves over your hands would swim with you.
-        if (!past_player && depth > 0.0) {
+        if (!past_player && depth > 0.0 && g_caustic >= 0.0) {
+            focus = g_caustic;
+        } else if (!past_player && depth > 0.0) {
             vec3 surface = scene_pos + g_light_dir.xyz * depth;
             float below = depth * g_light_dir.y;
             float pixel = length(scene_pos) * 2.0 / (gbufferProjection[1][1] * render_size().y);

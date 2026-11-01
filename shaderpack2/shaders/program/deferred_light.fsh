@@ -16,6 +16,9 @@
 #endif
 
 uniform sampler2D colortex0; // light added before this pass (see gbuffers.fsh, LIT_GLOW)
+#ifdef CAUSTICS
+uniform sampler2D colortex9; // the waves' focus under water, a look per 2 x 2 pixels (program/caustics.csh)
+#endif
 
 #ifdef VOLUME_CLOUDS
 layout(rgba16f) readonly uniform image2D cg_cloud_img; // see clouds.csh
@@ -180,7 +183,17 @@ void main() {
     // comes from all over it), which soaks up red first: deep floors go blue-green and dim, not lit by bounce light
     // that never passed the water. Minecraft's own sky light already drops a step a block in water, without colour:
     // it is taken as it is at the surface instead, here and for the sun (which went dark 13 blocks down before).
-    float water_above = lod ? 0.0 : water_path(p + s.face * 0.05, vec3(0.0, 1.0, 0.0), 48);
+    // With the light high, one walk serves both: along the light to the surface, which lies as deep straight up
+    // (the floor's sky light can do with that; its sun light below needs the walk itself).
+    vec3 l = g_light_dir.xyz;
+    float light_water = -2.0; // not walked
+    float water_above = 0.0;
+    if (!lod) {
+        if (l.y > 0.5) {
+            light_water = water_path(p + s.face * 0.05, l, 48);
+        }
+        water_above = light_water >= 0.0 ? light_water * l.y : water_path(p + s.face * 0.05, vec3(0.0, 1.0, 0.0), 48);
+    }
     vec3 through_above = vec3(1.0);
     if (water_above > 0.0) {
         through_above = exp(-water_extinction * water_above * 1.2);
@@ -200,7 +213,6 @@ void main() {
 
     // The sun (or the moon).
     bool thin = s.material == MAT_PLANT || s.material == MAT_LEAVES;
-    vec3 l = g_light_dir.xyz;
     vec3 sun = vec3(0.0);
     vec3 sun_reach = vec3(0.0);
 #if defined SUNLIGHT || defined WORLD_END
@@ -221,10 +233,19 @@ void main() {
         float radius = (s.material == MAT_HAND || thin ? 2.0 : 1.5) * SHADOW_SOFTNESS;
         float ignore = s.material == MAT_LEAVES ? 1.0 : s.material == MAT_PLANT ? 0.5 : 0.0;
         // Under water, the light's way down through it comes from the block copy (lib/shadow.glsl).
-        g_water_path = water_path(vox_pos(scene) + s.face * 0.05, l, 48);
+        g_water_path = light_water > -2.0 ? light_water : water_path(p + s.face * 0.05, l, 48);
+#ifdef CAUSTICS
+        if (g_water_path > 0.0) {
+            // The waves' focus, worked out once per 2 x 2 pixels (program/caustics.csh), blended.
+            vec2 half_size = vec2((ivec2(render_size()) + 1) / 2);
+            vec2 at = clamp(vec2(texel) * 0.5 + 0.5, vec2(0.5), half_size - 0.5);
+            g_caustic = textureLod(colortex9, at / window_size(), 0.0).r;
+        }
+#endif
         sun_reach = shadow_light(shadow_offset_point(scene, s.face, l), radius, ignore, sun_beyond_map(sky_level),
                                  s.material == MAT_HAND) * sky_gate * cloud_shadow(scene);
         g_water_path = -1.0;
+        g_caustic = -1.0;
         sun = g_light_color.rgb * facing * sun_reach;
     } else if (lod) {
         sun = g_light_color.rgb * facing * sun_beyond_map(s.sky) * far_sun(scene).x * cloud_shadow(scene);

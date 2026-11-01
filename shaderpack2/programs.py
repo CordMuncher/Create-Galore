@@ -59,11 +59,13 @@ add("shadowcomp1", {"csh": "sdf.csh"})
 add("shadowcomp2", {"csh": "voxel_light.csh"})
 add("shadowcomp3", {"csh": "gi.csh"})
 
-# The light per pixel and its filter, the clouds (the Overworld's sky only), then the lighting.
+# The light per pixel and its filter, the caustics under water (once per 2 x 2 pixels, a pass of their own so the cost
+# meter tells them apart), the clouds (the Overworld's sky only), then the lighting.
 add("deferred", {"csh": "pixel_light.csh"})
 add("deferred1", {"csh": "pixel_light_filter.csh"})
-add("deferred2", {"csh": "clouds.csh"}, sky_only=True)
-add("deferred3", {"vsh": FULLSCREEN, "fsh": "deferred_light.fsh"})
+add("deferred2", {"csh": "caustics.csh"})
+add("deferred3", {"csh": "clouds.csh"}, sky_only=True)
+add("deferred4", {"vsh": FULLSCREEN, "fsh": "deferred_light.fsh"})
 
 # The water's reflection and shafts (a pass of their own, so the cost meter shows them apart), the air, the DLSS
 # point, the bloom, the final pass.
