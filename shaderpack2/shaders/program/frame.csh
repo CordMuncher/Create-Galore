@@ -38,6 +38,7 @@ layout(rgba32f) uniform image2D cg_globals_img;
 const vec3 sun_high = vec3(2.0, 1.25, 0.72);
 const vec3 sun_low = vec3(6.6, 2.4, 0.85); // build 6: warmer at dawn and dusk
 const vec3 moon_light = vec3(0.0064, 0.0063, 0.0104);
+const float moonlit_clouds = 8.0;
 const float sky_high = 1.26;
 const float sky_low = 3.8;
 const float sky_night = 1.8;
@@ -143,13 +144,14 @@ void main() {
     g_light_color = vec4(light_color * rise, 0.0);
 
     // The light up at the clouds (lib/clouds.glsl): the sun's through the air from there, still on them for a little
-    // while after it has set for the land (so they glow on after sunset), then the moon's. The high sun's warm tint
+    // while after it has set for the land (so they glow on after sunset), then the moon's, moonlit_clouds times what
+    // the land gets, so their tops stand out about twice as bright as the night sky round them. The high sun's warm tint
     // (sun_high, for the land) is half taken off them so they stay white by day, and comes back as it sinks, so they
     // still turn gold and pink at dusk.
     bool cloud_by_sun = sun.y > -0.03;
     float cloud_y = clamp(cameraPosition.y, float(CLOUD_HEIGHT), float(CLOUD_HEIGHT) + 100.0);
     vec3 cloud_through = air_transmittance(camera_radius(cloud_y), max(cloud_by_sun ? sun.y : moon.y, 0.004));
-    vec3 cloud_sun = cloud_through * (cloud_by_sun ? mix(sun_low, sun_high, noon) : moon_now);
+    vec3 cloud_sun = cloud_through * (cloud_by_sun ? mix(sun_low, sun_high, noon) : moon_now * moonlit_clouds);
     float cloud_white = cloud_by_sun ? 0.85 * smoothstep(0.05, 0.4, sun.y) : 0.0; // white by day, gold low down
     cloud_sun = mix(cloud_sun, vec3(luminance(cloud_sun)), cloud_white);
     cloud_sun = mix(cloud_sun, vec3(luminance(cloud_sun)), 0.6 * rain) * mix(1.0, 0.08, rain);
