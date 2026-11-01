@@ -43,6 +43,8 @@ add("begin2", {"csh": "frame.csh"})
 add("begin3", {"csh": "world.csh"})
 # The wakes' ripples, a step a frame (lib/wakes.glsl).
 add("begin4", {"csh": "wakes.csh"})
+# The far sun shadows' heights, a sixteenth of the map a frame (lib/far_shadow.glsl).
+add("begin5", {"csh": "far_shadow.csh"}, sky_only=True)
 
 # The shadow pass (the sun's shadow map): mobs and block entities, then the world's blocks.
 add("shadow", {"vsh": "shadow.vsh", "fsh": "shadow.fsh"})

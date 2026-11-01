@@ -44,7 +44,12 @@ pack (`shaderpack/`) stays as a research build; the two share only the DLSS hand
   just over it, so a pool sunk in a floor lights the floor round it; its glow bounces too.
 - **The sun and the moon** cast steady shadows from a shadow map (no noise, so nothing flickers), coloured through
   glass and through water with its caustics, with a clean, slightly soft edge. Leaves let light through the outside of
-  their clump, grass doesn't shade itself, and near the map's edge they fade into what Minecraft's sky light says.
+  their clump, and grass doesn't shade itself. Past the map, out to about 1000 blocks and in Distant Horizons'
+  terrain too, mountains shade mountains and forests their floors: far sun shadows from the ground's height, one per
+  4 x 4 blocks, worked out a slice per frame and kept, softer further off; a far ridge also shades the valley you
+  stand in at sunset. The map's last quarter fades into them (and into what Minecraft's sky light says), so its edge
+  never shows as a line. The heights come from Distant Horizons through the Bridge 1.175.0 (pack 0.6.65) or later,
+  which reads only what changed; without them the map fades into the sky light alone.
 - **The sky**: a physically based atmosphere, pushed to the look we follow: a deep blue overhead by day paling to a
   bright, slightly hazy horizon, an orange glow round the setting sun and a pink belt across from it, a deep blue
   night. Stars by the thousand in their own colours, steady (no twinkle) and at least a pixel and a half wide so the
@@ -169,7 +174,8 @@ notes for its options; `scene_leaks.py` and `scene_regress.py` are examples.
   written by `programs.py`.
 - `shaders/lib/` holds what the programs share.
 - The passes, in order: the air's tables (`setup`, `begin`), the frame's light (`begin2`), the voxel copy from the
-  Bridge's block grid (`begin3`); the sun's shadow map (`shadow_*`); the distance field, the light per block and the
+  Bridge's block grid (`begin3`), the wakes (`begin4`), the far sun shadows (`begin5`); the sun's shadow map
+  (`shadow_*`); the distance field, the light per block and the
   bounce light (`shadowcomp1` to `3`); the world into the G-buffer; the light per pixel and its filter (`deferred`,
   `deferred1`); the clouds (`deferred2`, the Overworld only); the lighting (`deferred3`); water, glass and particles lit as they are drawn; the water's
   reflection and the sun's shafts in it (`composite_a`, `composite_b`); the light in the air (`composite1`); the DLSS

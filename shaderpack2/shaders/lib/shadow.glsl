@@ -37,6 +37,8 @@ float shadow_texels_per_block(float r) {
 
 #if !defined PROGRAM_SHADOW
 
+#include "/lib/far_shadow.glsl"
+
 uniform mat4 shadowModelView;
 uniform mat4 shadowProjection;
 // The depth compared by the hardware (2 x 2 texels each look-up), and plain (iris.features SEPARATE_HARDWARE_SAMPLERS).
@@ -71,13 +73,20 @@ float shadow_depth_per_block() {
 }
 
 // The sun's light past what the map reaches, from Minecraft's sky light alone (open ground lit, a block under the
-// edge of a roof or a canopy mostly not); the map's last part fades into it, so its edge never shows.
+// edge of a roof or a canopy mostly not); the map's last part fades into it, with the far ground's shade
+// (lib/far_shadow.glsl), so its edge never shows.
 float sun_beyond_map(float sky) {
 #if defined NO_SKY_LIGHT
     return 1.0;
 #else
     return pow(clamp(sky, 0.0, 1.0), 8.0);
 #endif
+}
+
+// How much of the map's last stretch has faded into what lies past it (0..1, by how far from its middle): over the
+// last quarter, so the shadows thin out gradually instead of stopping on a line.
+float shadow_edge_fade(float r) {
+    return smoothstep(0.75, 0.98, r);
 }
 
 // A fixed pattern of taps (no noise from frame to frame or from place to place, so the edges are clean and stand
@@ -102,10 +111,11 @@ float g_water_path = -1.0;
 //   walk). Where the map shows your body, nothing nearer the light is there, so that tap is lit.
 vec3 shadow_light(vec3 scene_pos, float radius, float ignore, float beyond, bool past_player) {
     vec4 c = shadow_coord(scene_pos);
+    vec2 far = far_sun(scene_pos);
     if (any(lessThan(c.xy, vec2(0.0))) || any(greaterThan(c.xy, vec2(1.0))) || c.z > 1.0) {
-        return vec3(beyond);
+        return vec3(beyond * far.x);
     }
-    float edge_fade = smoothstep(0.86, 0.98, c.w);
+    float edge_fade = shadow_edge_fade(c.w);
     float texel = 1.0 / float(shadowMapResolution);
     float per_block = shadow_depth_per_block();
     float z = c.z - ignore * per_block;
@@ -173,17 +183,18 @@ vec3 shadow_light(vec3 scene_pos, float radius, float ignore, float beyond, bool
         // Some of it comes through something see-through: its colour.
         result = vec3(all_of) + (solid - all_of) * srgb_to_linear(tint.rgb);
     }
-    return mix(result, vec3(beyond), edge_fade);
+    return mix(result * far.y, vec3(beyond * far.x), edge_fade);
 }
 
 // Only what light can't pass (no water or glass), for the water's own surface: water must never shade itself, as
 // its own place in the map would (a03).
 float shadow_solid(vec3 scene_pos, float radius, float beyond) {
     vec4 c = shadow_coord(scene_pos);
+    vec2 far = far_sun(scene_pos);
     if (any(lessThan(c.xy, vec2(0.0))) || any(greaterThan(c.xy, vec2(1.0))) || c.z > 1.0) {
-        return beyond;
+        return beyond * far.x;
     }
-    float edge_fade = smoothstep(0.86, 0.98, c.w);
+    float edge_fade = shadow_edge_fade(c.w);
     float texel = 1.0 / float(shadowMapResolution);
     float r = radius * texel * mix(1.0, 2.0, c.w);
     float bias = texel * 0.5 * shadow_depth_scale;
@@ -191,7 +202,7 @@ float shadow_solid(vec3 scene_pos, float radius, float beyond) {
     for (int i = 0; i < shadow_taps; i++) {
         solid += texture(shadowtex1HW, vec3(c.xy + shadow_disk[i] * r, c.z - bias));
     }
-    return mix(solid / float(shadow_taps), beyond, edge_fade);
+    return mix(solid / float(shadow_taps) * far.y, beyond * far.x, edge_fade);
 }
 
 // The sunlight at a point in water, one look: none where something solid shades it, else what the water above

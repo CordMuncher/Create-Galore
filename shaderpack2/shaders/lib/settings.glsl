@@ -128,8 +128,9 @@ const float eyeBrightnessHalflife = 5.0;
 
 // 0 off. 1 albedo, 2 normals, 3 sun shadow, 4 block light (per block), 5 block light (per pixel), 6 bounce light,
 // 7 the voxel copy (what a ray from the camera hits first), 8 its distance field, 9 ambient occlusion, 14 the light
-// layers side by side (see deferred_light.fsh), 15 the water's own (see shade_water in gbuffers.fsh).
-#define DEBUG_VIEW 0 // [0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15]
+// layers side by side (see deferred_light.fsh), 15 the water's own (see shade_water in gbuffers.fsh), 16 the far sun
+// shadows (see deferred_light.fsh).
+#define DEBUG_VIEW 0 // [0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16]
 // A small square at the middle of the left edge for about two seconds whenever a pass caught a value that is
 // infinite or not a number (see lib/bad_frame.glsl): its colour says where.
 #define BAD_FRAME_MARK

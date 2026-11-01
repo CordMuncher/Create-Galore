@@ -132,7 +132,10 @@ vec3 star_field(vec3 local, float count, vec2 kelvin, float twinkle, float limit
 
 // --- The Overworld ---------------------------------------------------------------------------------------------------
 
+#if !defined CG_SKY_TEX
+#define CG_SKY_TEX
 uniform sampler2D cg_sky_tex; // the air's tables (see lib/atmosphere.glsl)
+#endif
 
 // The sun's light above the air, for the sky as you see it (its air and its disc). The light the sun and the sky
 // give surfaces is set apart from this, in program/frame.csh.

@@ -226,7 +226,7 @@ void main() {
         g_water_path = -1.0;
         sun = g_light_color.rgb * facing * sun_reach;
     } else if (lod) {
-        sun = g_light_color.rgb * facing * sun_beyond_map(s.sky) * cloud_shadow(scene);
+        sun = g_light_color.rgb * facing * sun_beyond_map(s.sky) * far_sun(scene).x * cloud_shadow(scene);
     }
 #endif
     parts.sun = sun;
@@ -333,6 +333,23 @@ void main() {
 #endif
             color = vec3(valid * 0.5, start_inside(dp) ? 1.0 : 0.0, float(vox_level(dp) + 1));
         }
+    }
+#elif DEBUG_VIEW == 16
+    {
+        // The far sun shadows (lib/far_shadow.glsl): red where the Bridge has no height for the ground here, else the
+        // ground's height in green bands (a band every 16 blocks); blue how much light gets past the far ground
+        // (bright: all), dimmed by how much the shadow map's own cells say.
+        vec3 wp = scene + cameraPosition;
+        ivec2 cell = ivec2(floor(wp.xz / far_cell));
+        ivec2 slot = cell & (far_size - 1);
+        int i = slot.y * far_size + slot.x;
+        uint w = texelFetch(cg_palette_tex, ivec2(i & 4095, 816 + (i >> 12)), 0).r;
+        uint place = uint((cell.x >> 9) & 15) | (uint((cell.y >> 9) & 15) << 4u);
+        bool known = (w & 0x80000000u) != 0u && ((w >> 16u) & 255u) == place;
+        float h = float(w & 0xffffu) - 4096.0;
+        vec2 far = far_sun(scene);
+        color = known ? vec3(0.0, 0.3 + 0.7 * fract(h / 16.0), far.x) : vec3(1.0, 0.0, far.x);
+        color *= 0.5 + 0.5 * far.y;
     }
 #endif
     color += texelFetch(colortex0, texel, 0).rgb;

@@ -11,8 +11,8 @@
 //   (low corner x, y, z, then high corner, in 16ths, 5 bits each).
 // Air's word 15 holds grid_mark: without it there is no Bridge, and the pack falls back to Minecraft's own light.
 // The palette image's rows after its own 256 hold the holes in block states' cut-out faces (48 rows, see hole_word),
-// then where each state's faces find their texture in the block atlas (512 rows, see face_texture); the pack declares
-// it 816 rows tall.
+// then where each state's faces find their texture in the block atlas (512 rows, see face_texture), then the ground's
+// height far round the camera (64 rows, see far_height in program/far_shadow.csh); the pack declares it 880 rows tall.
 //
 // program/world.csh turns the grid into the voxel copy's words each frame (lib/voxel.glsl); everything else reads
 // those, and the palette for the shapes of part blocks.
