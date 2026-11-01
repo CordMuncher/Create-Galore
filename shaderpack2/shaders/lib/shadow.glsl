@@ -135,8 +135,23 @@ vec3 shadow_light(vec3 scene_pos, float radius, float ignore, float beyond, bool
             float surface = texture(shadowtex0, c.xy).r;
             depth = max(c.z - surface, 0.0) / per_block;
         }
+        // What you hold takes no focus: the map's focus is worked out for the floor 4 blocks down, and on your hands,
+        // just under the surface, it drew bright and dark blotches that swam as you bobbed, cut off where your body
+        // hides the water in the map (your body's outline on your hands). The water's colour there comes from beside
+        // your body.
+        if (past_player && !water_read) {
+            float beside = shadow_texels_per_block(min(c.w, 1.0)) / float(shadowMapResolution);
+            for (int i = 0; i < 4 && !water_read; i++) {
+                vec4 t = texture(shadowcolor0, c.xy + vec2(i < 2 ? (i == 0 ? beside : -beside) : 0.0,
+                                                          i < 2 ? 0.0 : (i == 2 ? beside : -beside)));
+                if (t.a < 0.5) {
+                    tint = t;
+                    water_read = true;
+                }
+            }
+        }
         vec3 biome = water_read ? tint.rgb : vec3(0.247, 0.463, 0.894);
-        float focus = water_read ? tint.a / 0.49 * 4.0 : 1.0;
+        float focus = water_read && !past_player ? tint.a / 0.49 * 4.0 : 1.0;
         vec3 color = exp(-(water_absorption_for(biome) + water_scatter) * depth) * focus;
         result = g_water_path > 0.0 ? solid * color : vec3(all_of) + (solid - all_of) * color;
     } else if (solid - all_of < 0.01) {
