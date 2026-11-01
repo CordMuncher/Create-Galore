@@ -46,6 +46,16 @@ uint record_index(ivec3 tile) {
     return data_records_base + tile_slot_index(tile) * record_stride;
 }
 
+// A tile's frame stamps (lib/data.glsl): when its blocks last changed (or a light in it moved), and when its block
+// light was last worked out.
+uint changed_stamp_index(ivec3 tile) {
+    return data_stamps_base + tile_slot_index(tile);
+}
+
+uint traced_stamp_index(ivec3 tile) {
+    return data_stamps_base + data_stamps_tiles + tile_slot_index(tile);
+}
+
 bool tile_in_box(ivec3 tile) {
     return all(greaterThanEqual(tile, ivec3(0))) && all(lessThan(tile, vox_tiles));
 }

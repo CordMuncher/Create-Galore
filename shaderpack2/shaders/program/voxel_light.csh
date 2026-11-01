@@ -12,7 +12,12 @@
 // first.
 //
 // Tiles in view (and a little around it) update: near you (or where you are heading) every frame, further away less
-// often, down to every 10th frame. Tiles the box has just reached update at once.
+// often, down to every 10th frame. Tiles the box has just reached update at once. A tile's light depends only on the
+// blocks and lights round it, never on the camera, so an update only works it out again where something changed: a
+// block in the tiles up to three away since its last time (program/world.csh stamps each tile's last change), or in the
+// last changed_settle frames (the distance field takes a few frames to follow a change, program/sdf.csh). Every tile
+// is worked out again now and then whatever happened (every sweep_frames to twice that), for anything further off:
+// a lava lake's or a beacon's light, which reaches beyond three tiles.
 
 #include "/lib/settings.glsl"
 #include "/lib/trace.glsl"
@@ -46,6 +51,12 @@ shared uint s_group[tile_list_max];
 shared uint s_contribution[tile_list_max];
 
 const int own_reach_tiles = 2; // the tiles whose own lights are candidates: up to this many away on each axis
+const int changed_reach_tiles = 3; // the tiles whose changes this one's light follows
+const int changed_settle = 32; // frames a tile keeps being worked out after a change near it
+const int sweep_frames = 64;
+
+shared uint s_dirty;
+shared int s_traced_ago;
 
 void add_candidate(uint key) {
     uint h = pcg3d(uvec3(key, 3u, 5u)).x & uint(set_size - 1);
@@ -104,13 +115,36 @@ void main() {
         s_update = due && in_view(centre, 7.0, 10.0) ? 1u : 0u;
         s_count = 0u;
         s_list_count = 0u;
+        int ago = frames_since(data_load(traced_stamp_index(tile)), frameCounter);
+        s_traced_ago = ago;
+        bool sweep = ago >= sweep_frames + int(offset % uint(sweep_frames));
+        bool fresh = frames_since(data_load(data_fresh_frame), frameCounter) < changed_settle;
+        s_dirty = sweep || fresh ? 1u : 0u;
     }
     barrier();
     if (!vox_was_in_box(cell, 0)) {
         atomicOr(s_update, 1u);
+        atomicOr(s_dirty, 1u);
     }
     barrier();
     if (s_update == 0u) {
+        return;
+    }
+
+    // Whether anything near changed since this tile's last time, or only just now.
+    const int changed_span = 2 * changed_reach_tiles + 1;
+    if (index < uint(changed_span * changed_span * changed_span)) {
+        ivec3 t = tile + ivec3(int(index) % changed_span, (int(index) / changed_span) % changed_span,
+                               int(index) / (changed_span * changed_span)) - changed_reach_tiles;
+        if (tile_in_box(t)) {
+            int ago = frames_since(data_load(changed_stamp_index(t)), frameCounter);
+            if (ago < changed_settle || ago < s_traced_ago) {
+                atomicOr(s_dirty, 1u);
+            }
+        }
+    }
+    barrier();
+    if (s_dirty == 0u) {
         return;
     }
 
@@ -230,6 +264,7 @@ void main() {
 
     // The lights that lit something here, for next time; and the records, those first.
     if (index == 0u) {
+        data_store(traced_stamp_index(tile), uint(frameCounter));
         uint base = block_tile_index(tile);
         uint records = record_index(tile);
         uint n = 0u;

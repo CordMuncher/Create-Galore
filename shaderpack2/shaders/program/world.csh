@@ -25,10 +25,12 @@ layout(local_size_x = 8, local_size_y = 8, local_size_z = 8) in;
 const ivec3 workGroups = ivec3(VOX_GROUPS_X, VOX_GROUPS_Y, VOX_GROUPS_X);
 
 uniform float frameTimeCounter;
+uniform int frameCounter;
 
-layout(r32ui) writeonly uniform uimage3D cg_vox_img;
+layout(r32ui) uniform uimage3D cg_vox_img; // read too: what changed since last frame
 
 shared uint s_live;
+shared uint s_changed;
 shared uint s_holes;
 shared uint s_count;
 shared uint s_keys[own_list_max];
@@ -139,6 +141,9 @@ uint classify(ivec3 world, uint grid) {
                 s_keys[at] = key;
             }
         }
+        if (kind == 25) {
+            atomicOr(s_changed, 1u); // a nether portal's light drifts about its block (add_light): never still
+        }
         return word | VOX_LIGHT;
     }
     if (fluid && (walk_through || id == BLOCK_WATER)) {
@@ -176,17 +181,28 @@ void main() {
         s_live = grid_live() ? 1u : 0u;
         s_holes = s_live != 0u && holes_live() ? 1u : 0u;
         s_count = 0u;
+        s_changed = 0u;
     }
     barrier();
 
     ivec3 world = cameraPositionInt + cell;
     uint grid = s_live != 0u ? grid_word(world) : 0u;
     uint word = grid != 0u ? classify(world, grid) : 0u;
-    imageStore(cg_vox_img, vox_slot(cell, 0), uvec4(word));
+    ivec3 slot = vox_slot(cell, 0);
+    // What changed since last frame, but for the sky light (no use to the block light): a block placed, broken or
+    // turned, or the slot taken by a block the box has just reached.
+    if (((imageLoad(cg_vox_img, slot).r ^ word) & ~(15u << VOX_SKY_SHIFT)) != 0u) {
+        atomicOr(s_changed, 1u);
+    }
+    imageStore(cg_vox_img, slot, uvec4(word));
     barrier();
 
-    // The lights inside this tile, for the light lists (lib/lights.glsl).
+    // The lights inside this tile, for the light lists (lib/lights.glsl); and the frame anything here last changed.
     if (index == 0u) {
+        uint stamp = changed_stamp_index(tile);
+        if (s_changed != 0u || data_load(stamp) >= 720720u) {
+            data_store(stamp, uint(frameCounter));
+        }
         uint base = own_list_index(tile);
         uint n = min(s_count, own_list_max);
         data_store(base, n);
