@@ -27,7 +27,7 @@
 #include "/lib/blocks.glsl"
 
 layout(r32ui) uniform uimage3D cg_vox_img;
-layout(rg8) uniform image3D cg_sdf_img;
+layout(rgba8) uniform image3D cg_sdf_img;
 uniform sampler3D cg_sdf_tex; // the same, for blended reads
 
 // How much of the light one block of leaves lets through, where the Bridge has no masks of their see-through pixels.
@@ -40,6 +40,13 @@ uint vox_word(ivec3 cell) {
 // The distance field at a cell: to the nearest cell that stops light (anything: full blocks, part blocks, leaves).
 uint sdf_at(ivec3 cell, int level) {
     return uint(imageLoad(cg_sdf_img, vox_slot(cell, 0)).g * 255.0 + 0.5);
+}
+
+// The same, and how far the nearest part block's box is from the cell (in blocks, up to one: program/sdf.csh).
+uint sdf_with_part_gap(ivec3 cell, out float part_gap) {
+    vec4 v = imageLoad(cg_sdf_img, vox_slot(cell, 0));
+    part_gap = v.b;
+    return uint(v.g * 255.0 + 0.5);
 }
 
 // The distance to the nearest full block (red), blended between the eight cells around a point, in cells.
@@ -394,6 +401,26 @@ float near_room(vec3 q, float cap) {
     return min(room, part);
 }
 
+// The same for full blocks alone.
+float near_room_full(vec3 q, float cap) {
+    cap = min(cap, 0.49);
+    ivec3 cell = ivec3(floor(q));
+    vec3 f = q - vec3(cell);
+    ivec3 side = ivec3(greaterThan(f, vec3(1.0 - cap))) - ivec3(lessThan(f, vec3(cap)));
+    float room = cap;
+    for (int i = 1; i < 8; i++) {
+        ivec3 bits = ivec3(i & 1, (i >> 1) & 1, (i >> 2) & 1);
+        if (any(greaterThan(bits, abs(side)))) {
+            continue; // a side it isn't near
+        }
+        ivec3 n = cell + bits * side;
+        if (vox_full(vox_word(n))) {
+            room = min(room, length(max(max(vec3(n) - q, q - vec3(n + 1)), 0.0)));
+        }
+    }
+    return room;
+}
+
 // The room round a ray (going along dir) at q for a cone of half width w, as cone_visibility measures it: from the
 // full blocks round q, as near_room_split (returned); and how much of the cone the part blocks' boxes in the blocks
 // round q leave (part_visible; with own, those of q's own block too). A box within the cone's width of q hides what
@@ -681,7 +708,8 @@ float cone_visibility(vec3 p, vec3 dir, float dist, float width_start, float wid
             left_box = true;
             break;
         }
-        uint d = sdf_at(cell, 0);
+        float part_gap;
+        uint d = sdf_with_part_gap(cell, part_gap);
         if (d > 1u) {
             // Nothing that stops light within a block: more room than any cone here is wide.
             t += box_exit(q, inv_dir, vec3(cell - int(d) + 1), vec3(cell + int(d))) + 0.002;
@@ -693,15 +721,20 @@ float cone_visibility(vec3 p, vec3 dir, float dist, float width_start, float wid
         float mid_t = 0.5 * (t + seg_end);
         float mid_width = mix(width_start, width_end, clamp(mid_t / dist, 0.0, 1.0)) + 0.02;
         if (d == 1u) {
-            // Beside something: the room where the ray comes in and halfway through, measured exactly (a ray that
-            // slips through where two blocks only touch at an edge comes in with none); beside a part block's box,
-            // its soft edge runs both ways from its outline (near_room_cone).
+            // Beside something: the room the full blocks leave where the ray comes in and halfway through (a ray that
+            // slips through where two blocks only touch at an edge comes in with none). Part blocks' boxes count
+            // once, along the whole stretch through the cell, where one comes within the cone's width of it (the
+            // cell's part_gap says): their soft edges run both ways from their outlines (near_room_cone).
             // (Each taken in as soon as it is known: kept for one min, they took registers in the second look.)
-            float part;
-            float full = near_room_cone(q, dir, width, false, t, end - t, 0.0, 0.0, part);
-            visible = min(visible, min(full / width, part));
-            full = near_room_cone(p + dir * mid_t, dir, mid_width, false, mid_t, end - mid_t, mid_t - t, widen, part);
-            visible = min(visible, min(full / mid_width, part));
+            visible = min(visible, near_room_full(q, width) / width);
+            vec3 mid = p + dir * mid_t;
+            if (part_gap < mid_width + abs(widen) * (mid_t - t)) {
+                float part;
+                float full = near_room_cone(mid, dir, mid_width, false, mid_t, end - mid_t, mid_t - t, widen, part);
+                visible = min(visible, min(full / mid_width, part));
+            } else {
+                visible = min(visible, near_room_full(mid, mid_width) / mid_width);
+            }
             t = exit_t + 0.002;
             continue;
         }
