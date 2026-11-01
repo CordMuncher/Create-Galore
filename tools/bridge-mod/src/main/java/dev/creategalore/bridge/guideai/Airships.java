@@ -123,7 +123,7 @@ final class Airships {
         JsonObject o = new JsonObject();
         o.addProperty("type", "object");
         JsonObject p = new JsonObject();
-        p.add("enclosed", WorldTools.prop("boolean", "A closed cabin; false for an open deck, only if the player asked."));
+        p.add("enclosed", WorldTools.prop("boolean", "A closed cabin; false for an open deck (open_by_request), only if asked."));
         p.add("beds", WorldTools.prop("integer", "Beds, 0 to 4."));
         p.add("storage", WorldTools.prop("integer", "Chests, 0 to 8."));
         p.add("speed", WorldTools.prop("number", "Wanted top speed, blocks/s (8 usable, 11 fast)."));

@@ -124,10 +124,10 @@ public final class Models {
 
         JsonObject props = new JsonObject();
         props.add("title", WorldTools.prop("string", "A few words naming what the model shows, or an empty string."));
-        props.add("size_x", WorldTools.prop("integer", "Width in blocks, 1 to " + MAX_SIZE + "; 0 with from_world to fit "
-                + "the copied box."));
-        props.add("size_y", WorldTools.prop("integer", "Height in blocks, 1 to " + MAX_SIZE + "; 0 with from_world to fit it."));
-        props.add("size_z", WorldTools.prop("integer", "Depth in blocks, 1 to " + MAX_SIZE + "; 0 with from_world to fit it."));
+        props.add("size_x", WorldTools.prop("integer", "Width in blocks, 1 to " + MAX_SIZE + "; 0 to fit from_world or "
+                + "airship."));
+        props.add("size_y", WorldTools.prop("integer", "Height in blocks, 1 to " + MAX_SIZE + "; 0 to fit, as for size_x."));
+        props.add("size_z", WorldTools.prop("integer", "Depth in blocks, 1 to " + MAX_SIZE + "; 0 to fit, as for size_x."));
         JsonObject fromWorld = new JsonObject();
         fromWorld.addProperty("type", "array");
         fromWorld.addProperty("description", "Empty, or one box of the player's world to copy into the model before layers "

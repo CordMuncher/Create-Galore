@@ -1,4 +1,4 @@
-<!-- sources sha256:b45ef7b978dd8aea4ddaba2ddcb9ad0607b286f2e8b414ad1fd15e5536562db3 -->
+<!-- sources sha256:8c217657a384bf0d0447862406c4e22371c8c4b1c39694fe7e525a4314cb36b0 -->
 # Flight (flight)
 Create Aeronautics ships, lift, thrust, steering, wind, dangers and sky destinations.
 
@@ -186,6 +186,6 @@ Create Aeronautics ships, lift, thrust, steering, wind, dangers and sky destinat
 - Steering [simulated:swivel_bearing]: one Steering Wheel at the helm, its shafts running to a Swivel Bearing under the tail with a Wooden Propeller on it, powered through the bearing from the drive line: turned, it swings the stern round; a ship with a pair of propellers can steer by slowing one side instead
 - Hot air balloons: the simple early aircraft: round envelope as wide as tall, a basket hung under it on posts from its corners, a burner; climbs, sinks, drifts with the wind; propellers on the basket push low and tip it at speed: keep them small and slow
 - Planes: fly only while moving, so light: slim body, long fabric wings over the weight's centre, tail far back with flat stabiliser and upright fin, engine and propeller at the nose; no plane holds itself level here: it needs a Gyroscope (see flight/propellers)
-- A blimp that hauls (in depth): 11 by 11 by 25 envelope (about 600 m3) over a closed 7 by 10 gondola with the helm, barrels, a smoker and a crafting table; four Portable Engines in its engine room turn a 28-sail Propeller Bearing behind the tail at 128 RPM: cruises at about 9 blocks a second, climbs past y 250, turns about 4 degrees a second; the drive shaft runs up through the belly and along the envelope's axis to the fan; a branch drives a Wooden Propeller on a Swivel Bearing under the tail, which the Steering Wheel swings
+- A blimp that hauls (in depth): 11 by 11 by 25 envelope (about 600 m3) over a closed 7 by 10 gondola with the helm, barrels, a smoker, a crafting table and two Hot Air Burners; four Portable Engines in its engine room turn a 28-sail Propeller Bearing behind the tail at 128 RPM: cruises at about 9 blocks a second, climbs past y 250, turns about 4 degrees a second; the drive shaft runs up through the belly and along the envelope's axis to the fan; a branch drives a Wooden Propeller on a Swivel Bearing under the tail, which the Steering Wheel swings
 - Ask the Book: where the book has its voice, ask it for an airship and it lays one out to the player's wishes (open deck or cabin, beds, chests, speed, height), balanced to hang level, as a 3D model to save as a schematic
 - Related: Balloons and Lift (see flight/balloons_and_lift), Propellers (see flight/propellers), Steering and Controls (see flight/controls), Building a Ship (see flight/ship_building)
