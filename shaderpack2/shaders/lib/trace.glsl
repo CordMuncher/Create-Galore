@@ -318,69 +318,76 @@ float near_room_cone(vec3 q, vec3 dir, float w, bool own, out float part_visible
     ivec3 side = ivec3(greaterThan(f, vec3(1.0 - cap))) - ivec3(lessThan(f, vec3(cap)));
     vec3 inv_dir = safe_inverse(dir);
     float room = cap;
-    float covers[8];
-    vec3 aside[8];
-    int count = 0;
-    int strongest = -1;
-    for (int i = own ? 0 : 1; i < 8; i++) {
-        ivec3 bits = ivec3(i & 1, (i >> 1) & 1, (i >> 2) & 1);
-        if (any(greaterThan(bits, abs(side)))) {
-            continue; // a side it isn't near
+    // Two looks at the same boxes, so that no list of them has to be kept: the first finds the box that hides the
+    // most of the cone (the first such, if two hide as much), the second how much a box on the other side of the ray
+    // hides on top of it. Only the first 8 boxes that hide any of it count. (A list here cost the block light passes
+    // more than half their speed on a GPU: an array indexed in a loop takes registers from every pixel of the pass,
+    // whether or not a part block is near, so fewer pixels run at once.)
+    float strongest = -1.0;
+    vec3 strongest_aside = vec3(0.0);
+    float other = 0.0;
+    for (int look = 0; look < 2; look++) {
+        if (look == 1 && strongest < 0.0) {
+            break; // no part block's box hides any of it
         }
-        ivec3 n = cell + bits * side;
-        uint word = vox_word(n);
-        if ((word & VOX_SOLID) == 0u || (word & VOX_LEAVES) != 0u) {
-            continue;
-        }
-        if ((word & VOX_PART) == 0u) {
-            room = min(room, length(max(max(vec3(n) - q, q - vec3(n + 1)), 0.0)));
-            continue;
-        }
-        uint entry = word & VOX_ENTRY;
-        bool holes = (word & VOX_HOLES) != 0u;
-        uint boxes = palette_box_count(entry);
-        vec3 local = q - vec3(n);
-        for (uint b = 0u; b < boxes; b++) {
-            vec3 lo;
-            vec3 hi;
-            palette_box(entry, b, lo, hi);
-            if (any(lessThanEqual(hi, lo))) {
+        int count = 0;
+        for (int i = own ? 0 : 1; i < 8; i++) {
+            ivec3 bits = ivec3(i & 1, (i >> 1) & 1, (i >> 2) & 1);
+            if (any(greaterThan(bits, abs(side)))) {
+                continue; // a side it isn't near
+            }
+            ivec3 n = cell + bits * side;
+            uint word = vox_word(n);
+            if ((word & VOX_SOLID) == 0u || (word & VOX_LEAVES) != 0u) {
                 continue;
             }
-            vec3 to = clamp(local, lo, hi) - local; // to its nearest point
-            float cover = clamp(0.5 - 0.5 * length(to) / w, 0.0, 1.0);
-            if (cover <= 0.0) {
+            if ((word & VOX_PART) == 0u) {
+                if (look == 0) {
+                    room = min(room, length(max(max(vec3(n) - q, q - vec3(n + 1)), 0.0)));
+                }
                 continue;
             }
-            if (holes) {
-                // The ray goes through it (part_pass): a little inside its outline, as one that only clips its edge
-                // may never get there.
-                vec3 ta = (lo + 1e-3 - local) * inv_dir;
-                vec3 tb = (hi - 1e-3 - local) * inv_dir;
-                if (max3(min(ta, tb)) < min3(max(ta, tb))) {
+            uint entry = word & VOX_ENTRY;
+            bool holes = (word & VOX_HOLES) != 0u;
+            uint boxes = palette_box_count(entry);
+            vec3 local = q - vec3(n);
+            for (uint b = 0u; b < boxes && count < 8; b++) {
+                vec3 lo;
+                vec3 hi;
+                palette_box(entry, b, lo, hi);
+                if (any(lessThanEqual(hi, lo))) {
                     continue;
                 }
-            }
-            if (count < 8) {
-                vec3 across = to - dot(to, dir) * dir;
-                float len = length(across);
-                covers[count] = cover;
-                aside[count] = len > 1e-6 ? across / len : vec3(0.0);
-                if (strongest < 0 || cover > covers[strongest]) {
-                    strongest = count;
+                vec3 to = clamp(local, lo, hi) - local; // to its nearest point
+                float cover = clamp(0.5 - 0.5 * length(to) / w, 0.0, 1.0);
+                if (cover <= 0.0) {
+                    continue;
+                }
+                if (holes) {
+                    // The ray goes through it (part_pass): a little inside its outline, as one that only clips its
+                    // edge may never get there.
+                    vec3 ta = (lo + 1e-3 - local) * inv_dir;
+                    vec3 tb = (hi - 1e-3 - local) * inv_dir;
+                    if (max3(min(ta, tb)) < min3(max(ta, tb))) {
+                        continue;
+                    }
                 }
                 count++;
+                vec3 across = to - dot(to, dir) * dir;
+                float len = length(across);
+                vec3 aside = len > 1e-6 ? across / len : vec3(0.0);
+                if (look == 0) {
+                    if (cover > strongest) {
+                        strongest = cover;
+                        strongest_aside = aside;
+                    }
+                } else {
+                    other = max(other, cover * clamp(-dot(aside, strongest_aside), 0.0, 1.0));
+                }
             }
         }
     }
-    part_visible = 1.0;
-    if (strongest >= 0) {
-        float other = 0.0;
-        for (int j = 0; j < count; j++) {
-            other = max(other, covers[j] * clamp(-dot(aside[j], aside[strongest]), 0.0, 1.0));
-        }
-        part_visible = clamp(1.0 - covers[strongest] - other, 0.0, 1.0);
-    }
+    part_visible = strongest >= 0.0 ? clamp(1.0 - strongest - other, 0.0, 1.0) : 1.0;
     return room;
 }
 
