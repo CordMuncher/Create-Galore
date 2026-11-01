@@ -10,6 +10,16 @@
 #include "/lib/waves.glsl"
 #include "/lib/water_color.glsl"
 
+// Where Minecraft's water hands over to Distant Horizons' (program/gbuffers.fsh, program/dh.fsh): over the last 16
+// blocks (flat distance) before the render distance, a share of the pixels that grows from none to all, picked
+// afresh each frame so the upscaler's history smooths it into a fade (one pass draws a pixel, the other leaves it).
+// far_blocks: the render distance.
+bool dh_water_takes(vec3 scene_pos, vec2 frag, float far_blocks) {
+    float share = clamp((length(scene_pos.xz) - (far_blocks - 16.0)) / 16.0, 0.0, 1.0);
+    float pick = fract(ign(floor(frag)) + float(frameCounter & 255) * GOLDEN);
+    return pick < share;
+}
+
 // The light in the water about you, from the sky and the sun above as much of it as reaches where you are
 // (eye_sky: Minecraft's smoothed sky light at your eyes, 0..1), and a faint glow of its own in the dark.
 vec3 water_light_around(float eye_sky) {

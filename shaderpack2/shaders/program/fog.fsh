@@ -127,6 +127,24 @@ float layer_average(float y0, float y1, float base, float scale) {
     return (exp(b) - exp(a)) / (b - a);
 }
 
+#if defined SUNLIGHT
+// The haze's thickness along a look between heights y0 and y1, against its thickness at sea level: the same up to
+// Y 63, thinning out above it (by e every 60 blocks). So a look down from high up goes through the thin air up there
+// as well as the thick air at the bottom.
+float haze_share(float y0, float y1) {
+    float lo = min(y0, y1);
+    float hi = max(y0, y1);
+    if (hi <= 63.0) {
+        return 1.0;
+    }
+    if (lo >= 63.0) {
+        return layer_average(lo, hi, 63.0, -60.0);
+    }
+    float below = (63.0 - lo) / (hi - lo);
+    return below + (1.0 - below) * layer_average(63.0, hi, 63.0, -60.0);
+}
+#endif
+
 void main() {
     ivec2 texel = ivec2(gl_FragCoord.xy);
     if (outside_render_area(gl_FragCoord.xy)) {
@@ -166,7 +184,14 @@ void main() {
     vec3 dir = normalize(scene);
     float solid = sky_pixel ? 0.0 : 1.0;
     if (depth < 1.0 && texelFetch(depthtex1, texel, 0).r >= 1.0) {
-        solid = 0.0; // Minecraft's clouds, or glass or a particle with only sky behind it: no haze, like the sky
+        // Minecraft's clouds, or glass or a particle with only the sky behind it: no haze, like the sky. Water is
+        // hazed by its own distance whatever lies under it (a floor only Distant Horizons has, or none), as Distant
+        // Horizons' water beside it is; so is anything with Distant Horizons' land behind it.
+        bool behind = texelFetch(colortex6, texel, 0).w > 0.5;
+#ifdef DISTANT_HORIZONS
+        behind = behind || texelFetch(dhDepthTex0, texel, 0).r < 1.0;
+#endif
+        solid = behind ? 1.0 : 0.0;
     }
 
     // Water or lava around you.
@@ -201,11 +226,11 @@ void main() {
 #endif
     // Haze far off.
     if (isEyeInWater == 0) {
-        float height = scene.y + cameraPosition.y;
-        // Starts slowly (squared), so the land around you stays clear: about 0.05 at 64 blocks, 0.15 at 128, 0.35
-        // at 256.
-        float density = 0.005 * exp(-max(height - 63.0, 0.0) / 60.0);
-        float haze = sqr(1.0 - exp(-min(dist, far_end) * density));
+        // Starts slowly (squared), so the land around you stays clear: at sea level about 0.05 at 64 blocks, 0.15 at
+        // 128, 0.35 at 256; thinner along a look through higher air.
+        float d = min(dist, far_end);
+        float density = 0.005 * haze_share(cameraPosition.y, cameraPosition.y + dir.y * d);
+        float haze = sqr(1.0 - exp(-d * density));
         float border = smoothstep(far_end * 0.8, far_end, dist);
         haze = max(haze * 0.7, border);
         // In the colour of the sky right behind what it hides (its horizon in that direction, or the sky itself

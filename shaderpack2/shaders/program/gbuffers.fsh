@@ -209,6 +209,7 @@ uniform sampler2D depthtex1;
 #if defined DISTANT_HORIZONS && defined PROGRAM_WATER
 uniform sampler2D dhDepthTex1; // Distant Horizons' terrain, drawn before Minecraft's chunks
 uniform mat4 dhProjectionInverse;
+uniform float far; // the render distance in blocks
 #endif
 
 #if defined PROGRAM_WATER
@@ -445,6 +446,13 @@ void main() {
 
 #if defined PROGRAM_WATER || defined PROGRAM_HAND_WATER
     if (v_block == BLOCK_WATER) {
+#if defined DISTANT_HORIZONS && defined PROGRAM_WATER
+        // Over the last 16 blocks before the render distance, Distant Horizons' water takes over pixel by pixel
+        // (program/dh.fsh draws these).
+        if (dh_water_takes(v_scene_pos, gl_FragCoord.xy, far)) {
+            discard;
+        }
+#endif
         float reflected;
         vec3 wave;
         float spread;
