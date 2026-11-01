@@ -2,10 +2,9 @@
 // reflected off its waves. At High and Ultra it is traced through the block copy (lib/reflect.glsl), so the
 // reflection is the same from wherever you look and holds what is off screen too; mobs, Create's moving machines,
 // ships, plants and lamps are not in the copy (or not as solid blocks), so a short look along the screen catches them
-// where they are nearer than what the trace found. At Medium only that look along the screen (further), and the sky with its clouds where
-// it finds nothing. At Medium and High one look per 2 x 2 pixels (the first water pixel of the square), with where it
-// was taken from beside it, for program/fog.fsh to blend them back up by depth and normal; at Ultra one per pixel,
-// reaching further.
+// where they are nearer than what the trace found. At Medium only that look along the screen (further), and the sky
+// with its clouds where it finds nothing. One look per pixel at every quality (a look per 2 x 2 pixels blended back
+// up showed as blocks along every edge in the reflection); Ultra reaches further.
 
 #include "/lib/settings.glsl"
 #define CLOUDS_NO_READ_BACK
@@ -15,11 +14,7 @@
 #include "/lib/water.glsl"
 
 layout(local_size_x = 8, local_size_y = 8) in;
-#if WATER_QUALITY == 3
 const vec2 workGroupsRender = vec2(1.0, 1.0);
-#else
-const vec2 workGroupsRender = vec2(0.5, 0.5);
-#endif
 
 uniform sampler2D colortex5; // the lit scene before water and glass (program/deferred_light.fsh)
 uniform sampler2D colortex6;
@@ -120,41 +115,25 @@ bool screen_only(ScreenHit sh) {
 
 void main() {
 #if WATER_QUALITY == 3
-    const int scale = 1;
     const float reach = 96.0;
     const int steps = 128;
+    const int screen_steps = 24;
 #elif WATER_QUALITY == 2
-    const int scale = 2;
     const float reach = 56.0;
     const int steps = 80;
+    const int screen_steps = 24;
 #else
-    const int scale = 2;
-    const float reach = 64.0; // about what 24 looks along the screen reach (lib/reflect.glsl's steps unused)
+    const float reach = 64.0; // about what the looks along the screen reach (lib/reflect.glsl's steps unused)
     const int steps = 0;
+    const int screen_steps = 32;
 #endif
-    ivec2 id = ivec2(gl_GlobalInvocationID.xy);
-    ivec2 size = ivec2(render_size());
-    ivec2 out_size = (size + scale - 1) / scale;
-    if (any(greaterThanEqual(id, out_size))) {
+    ivec2 texel = ivec2(gl_GlobalInvocationID.xy);
+    if (any(greaterThanEqual(texel, ivec2(render_size())))) {
         return;
     }
-    ivec2 texel = id * scale;
-    vec4 water = vec4(0.0);
-    for (int k = 0; k < scale * scale; k++) {
-        ivec2 t = min(id * scale + ivec2(k & 1, k >> 1), size - 1);
-        vec4 w = texelFetch(colortex6, t, 0);
-        if (w.w > 0.5) {
-            texel = t;
-            water = w;
-            break;
-        }
-    }
+    vec4 water = texelFetch(colortex6, texel, 0);
     if (water.w < 0.5) {
-        imageStore(colorimg8, id, vec4(0.0));
-#if WATER_QUALITY != 3
-        imageStore(colorimg8, id + ivec2(out_size.x, 0), vec4(0.0));
-#endif
-        return;
+        return; // program/fog.fsh reads only water pixels
     }
 
     vec3 view = pixel_to_view(texel, texelFetch(depthtex0, texel, 0).r);
@@ -169,22 +148,22 @@ void main() {
     if (into < 0.03) {
         r = normalize(r + flat_n * (0.03 - into));
     }
-    // A pixel's look widens with distance (its size on screen, at the scale it is traced), and more where the waves
-    // too fine to see scatter it (the forward pass's spread, see gbuffers.fsh).
+    // A pixel's look widens with distance (its size on screen), and more where the waves too fine to see scatter it
+    // (the forward pass's spread, see gbuffers.fsh).
     float rough_spread = (1.0 - water.w) / 0.49 * 0.5;
-    float spread = pixel_angle() * float(scale) * 1.5 + rough_spread;
+    float spread = pixel_angle() * 1.5 + rough_spread;
     float dist;
     vec3 view_dir = mat3(gbufferModelView) * r;
 #if WATER_QUALITY >= 2
     vec3 color = reflect_world(scene + flat_n * 0.02, r, distance_away * spread, spread, reach, steps, dist);
     // What the copy doesn't hold (see screen_only), from the screen where it is nearer.
-    ScreenHit sh = screen_reflect(view, view_dir, 12);
+    ScreenHit sh = screen_reflect(view, view_dir, screen_steps);
     if (sh.hit && sh.dist < dist && screen_only(sh)) {
         color = mix(color, sh.color, sh.fade);
         dist = mix(dist, sh.dist, sh.fade);
     }
 #else
-    ScreenHit sh = screen_reflect(view, view_dir, 24);
+    ScreenHit sh = screen_reflect(view, view_dir, screen_steps);
     vec3 color = reflect_sky(r, scene);
     dist = reach;
     if (sh.hit && sh.material != MAT_HAND) {
@@ -201,8 +180,5 @@ void main() {
     }
     color = clamp(color, 0.0, 64000.0);
 
-    imageStore(colorimg8, id, vec4(color, dist));
-#if WATER_QUALITY != 3
-    imageStore(colorimg8, id + ivec2(out_size.x, 0), vec4(-view.z, water.xy, 1.0));
-#endif
+    imageStore(colorimg8, texel, vec4(color, dist));
 }

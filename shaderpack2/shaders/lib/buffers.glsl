@@ -8,9 +8,8 @@
 // colortex5  the lit scene before anything see-through is drawn, for the water's refraction (RGBA16F)
 // colortex6  the water's surface, for its reflection: its normal (xy, octahedral), how much it reflects (z), 1 (w)
 // colortex7  motion vectors for DLSS: rg render pixels towards last frame, b what drew it, a whether it takes over
-// colortex8  the water's reflection (program/water_reflect.csh, written as colorimg8): at half the render size each way
-//            in its top left quarter, what it reflects and how far away (rgb, a) on the left and where each look was
-//            taken from on the right (the surface's distance, its normal, 1); at Ultra, what it reflects at every pixel
+// colortex8  the water's reflection (program/water_reflect.csh, written as colorimg8): what each water pixel reflects
+//            and how far away (rgb, a)
 // colortex9  the light shafts under water (program/water_shafts.csh, written as colorimg9): at half the render size,
 //            last frame's and this frame's taking turns in the top right and bottom left quarters
 /*
