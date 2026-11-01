@@ -44,6 +44,23 @@ vec3 water_absorption_for(vec3 biome_srgb) {
     return water_absorption * clamp(1.0 + (darker - 1.0) / 3.0, 0.5, 4.0);
 }
 
+// Seen through the surface, what lies under it fades into the water's own colour much sooner than the light going
+// down to it dims: the fine silt and life in real water hide a floor a few blocks down while it is still lit (so
+// shallows stay clear, a sandy floor fades out within about 15 blocks of water, and deep water is a body of its own,
+// a dark navy-teal, instead of a tinted floor or black). water_murk: per block, what it takes off the floor's light
+// on the way up to the surface besides the water itself; water_murk_glow: how much of what it takes it scatters
+// back towards you (little, and blue-green). Only the surfaces' look at what lies under them takes it (the water
+// passes); the light going down (shadow.glsl, the lighting pass) and the water round you when you swim don't.
+const vec3 water_murk = vec3(0.15, 0.14, 0.12);
+const vec3 water_murk_glow = vec3(0.01, 0.035, 0.07);
+
+// What a look through the surface loses per block (water_absorption_for, the scattering and the murk), and what it
+// scatters back towards you per block (the water's own glow), for the biome's water colour.
+vec3 water_view_extinction(vec3 biome_srgb) {
+    return water_absorption_for(biome_srgb) + water_scatter + water_murk;
+}
+const vec3 water_view_glow = water_scatter * water_scatter_boost + water_murk * water_murk_glow;
+
 // Snell's law at the surface: how much of the light is reflected (unpolarised), for the cosine between the look and
 // the normal on the side it comes from, and eta the other side's index over this side's (1.333 from the air into
 // water, 1 / 1.333 from inside). From inside, past about 48.6 degrees it all reflects.

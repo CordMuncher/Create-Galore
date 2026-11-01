@@ -94,7 +94,9 @@ void main() {
     // The sky mirrored wherever it is open to the sky, as the near water's traced reflection sees it there (a dim copy
     // of its own light only where Distant Horizons says the sky is mostly hidden).
     float open_sky = smoothstep(0.1, 0.5, v_light.y);
-    vec3 reflected = inside ? light_here * 0.05 : mix(light_here * 0.05, reflect_sky(r, v_scene_pos), open_sky);
+    float turn = fract(ign(floor(gl_FragCoord.xy)) + float(frameCounter & 255) * GOLDEN);
+    vec3 reflected = inside ? light_here * 0.05
+                            : mix(light_here * 0.05, reflect_sky(r, v_scene_pos, spread, turn), open_sky);
     if (!inside && g_light_dir.w > 0.5) {
         reflected += sun_seen(r, spread) * smoothstep(0.05, 0.3, v_light.y) * cloud_shadow(v_scene_pos);
     }
@@ -116,13 +118,13 @@ void main() {
         vec3 under_scene = view_to_scene(v.xyz / v.w);
         thickness = distance(under_scene, v_scene_pos);
     }
-    vec3 extinction = water_absorption_for(v_color.rgb) + water_scatter;
+    vec3 extinction = water_view_extinction(v_color.rgb);
     float lit = smoothstep(0.02, 0.4, luminance(light_here));
     float depth = inside ? 0.0 : max(thickness, mix(2.0, 1.0, lit));
     vec3 through = exp(-extinction * depth);
     float cos_t = sqrt(max(1.0 - (1.0 - cos_v * cos_v) / (water_ior * water_ior), 0.0));
     vec3 along = extinction * (1.0 + 1.15 * cos_t);
-    vec3 glow = light_here * (water_scatter * water_scatter_boost) * (1.0 - exp(-along * depth)) / along;
+    vec3 glow = light_here * water_view_glow * (1.0 - exp(-along * depth)) / along;
 #ifdef DH_WATER_SEES_UNDER
     // Tinted by the water between, as the near water's floor is (not greyed by a single blend).
     vec3 under_light = textureLod(colortex5, gl_FragCoord.xy / window_size(), 0.0).rgb;

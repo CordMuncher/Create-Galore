@@ -367,8 +367,10 @@ vec4 shade_water(vec4 base, out float reflected, out vec3 n, out float spread) {
     reflected = 0.0;
     vec3 r = reflect(-to_eye, n);
     r.y = inside ? -abs(r.y) : abs(r.y);
-    vec3 own_reflection = (inside ? light_here * 0.05 : mix(light_here * 0.05, reflect_sky(r, v_scene_pos),
-                           vanilla_sky_share(levels.y))) * fresnel;
+    float turn = fract(ign(floor(gl_FragCoord.xy)) + float(frameCounter & 255) * GOLDEN);
+    vec3 own_reflection = (inside ? light_here * 0.05
+                                  : mix(light_here * 0.05, reflect_sky(r, v_scene_pos, spread, turn),
+                                        vanilla_sky_share(levels.y))) * fresnel;
 #endif
 
     // The sun's glint: its disc as the sky shows it, mirrored, spread by the waves too fine to see.
@@ -402,7 +404,7 @@ vec4 shade_water(vec4 base, out float reflected, out vec3 n, out float spread) {
     }
 #endif
     float thickness = distance_under(at, depth_under, here, 64.0);
-    vec3 extinction = water_absorption_for(v_color.rgb) + water_scatter;
+    vec3 extinction = water_view_extinction(v_color.rgb);
     // At least a block or two of it (more in the dark), so even a shallow edge reads as water; none when you are in
     // it (program/fog.fsh has that water).
     float lit = smoothstep(0.02, 0.4, luminance(light_here));
@@ -412,7 +414,7 @@ vec4 shade_water(vec4 base, out float reflected, out vec3 n, out float spread) {
     // down as well as on its way back): it fades in over the first blocks and then holds, the water's own glow.
     float cos_t = sqrt(max(1.0 - (1.0 - cos_v * cos_v) / (water_ior * water_ior), 0.0));
     vec3 along = extinction * (1.0 + 1.15 * cos_t);
-    vec3 glow = light_here * (water_scatter * water_scatter_boost) * (1.0 - exp(-along * depth)) / along;
+    vec3 glow = light_here * water_view_glow * (1.0 - exp(-along * depth)) / along;
 
 #if DEBUG_VIEW == 15
     // The water's own: red your feet are in water, green eighths of the seconds since you last went in or out (to

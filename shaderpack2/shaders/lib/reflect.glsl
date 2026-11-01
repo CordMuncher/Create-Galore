@@ -81,8 +81,10 @@ vec3 reflect_hit_color(Hit h, float footprint) {
 
 // What a reflected ray from start (scene space) going along r sees: the first block in the copy, or the sky. spread:
 // how much wider the look gets per block it travels (the screen's pixel size there, and how rough the surface is);
-// start_width: how wide it is where it leaves the surface. dist: how far it went (the reach where it saw the sky).
-vec3 reflect_world(vec3 start, vec3 r, float start_width, float spread, float reach, int steps, out float dist) {
+// start_width: how wide it is where it leaves the surface; turn: the pixel's own turn for the sky's soft mirror
+// (reflect_sky). dist: how far it went (the reach where it saw the sky).
+vec3 reflect_world(vec3 start, vec3 r, float start_width, float spread, float reach, int steps, float turn,
+                   out float dist) {
     vec3 p = vox_pos(start);
     dist = reach;
     if (grid_live() && vox_edge_distance(ivec3(floor(p)), 0) >= 1) {
@@ -92,7 +94,7 @@ vec3 reflect_world(vec3 start, vec3 r, float start_width, float spread, float re
             return reflect_hit_color(h, start_width + spread * h.t);
         }
     }
-    return reflect_sky(r, start);
+    return reflect_sky(r, start, spread, turn);
 }
 
 #endif

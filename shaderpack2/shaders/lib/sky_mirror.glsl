@@ -14,11 +14,29 @@
 #include "/lib/clouds.glsl"
 #endif
 
-// The sky and its clouds along r, as a point (scene space) mirrors them.
-vec3 reflect_sky(vec3 r, vec3 from) {
+// The sky and its clouds along r, as a point (scene space) mirrors them. spread: how far (radians) the waves too fine
+// to see spread the reflection; past a little, the clouds are looked at three times round r within it, turned by
+// turn (0..1, a pixel's own, changing from frame to frame), so a rough or far sea mirrors them soft instead of as
+// sharp blobs. (The sky itself is smooth enough as it is.)
+vec3 reflect_sky(vec3 r, vec3 from, float spread, float turn) {
     vec3 c = sky(r, false);
 #ifdef VOLUME_CLOUDS
-    vec4 clouds = clouds_simple(r, from);
+    vec4 clouds;
+    float s = min(0.5 * spread, 0.3);
+    if (s < 0.01) {
+        clouds = clouds_simple(r, from);
+    } else {
+        vec3 t;
+        vec3 b;
+        basis(r, t, b);
+        clouds = vec4(0.0);
+        for (int k = 0; k < 3; k++) {
+            float a = TAU * (turn + float(k) / 3.0);
+            vec3 d = normalize(r + (t * cos(a) + b * sin(a)) * s);
+            clouds += clouds_simple(d, from);
+        }
+        clouds /= 3.0;
+    }
     c = c * clouds.a + clouds.rgb;
 #endif
     return c;

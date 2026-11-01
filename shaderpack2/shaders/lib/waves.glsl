@@ -4,7 +4,7 @@
 // 0.4 of the speed of real deep-water waves its size. The biggest, the swell (crests about 28 blocks apart), runs with
 // the clouds' steady wind (lib/wind.glsl) and only builds where there is open water up-wind of it; the next (crests
 // about 15 blocks apart) carries lakes and the sea, and is calmer on ponds and rivers too. The two small ones are
-// weak, and the ripples show only near you. Each runs a golden angle (137.5 degrees) round from the one before, so no
+// weak; the finest shows only within about 100 blocks. Each runs a golden angle (137.5 degrees) round from the one before, so no
 // two run together and nothing marches one way. The crests bend a little along their length. Each layer's grid is
 // laid on a whole-number direction, so the pattern repeats every 1024 blocks exactly and its time every hour exactly
 // (frameTimeCounter's own repeat): it never jumps. Where a layer is finer than a pixel can show (far off, or seen at a
@@ -64,8 +64,9 @@ const float wave_height[4] = float[](0.5, 0.23, 0.033, 0.0047);
 const float wave_periods[4] = float[](21.0, 28.0, 24.0, 11.0);
 // What rain does to each (its drops roughen the small waves, not the swell).
 const float wave_rain[4] = float[](1.0, 2.0, 6.0, 12.0);
-// How far off (blocks) the two small layers fade from what you see (into roughness): the ripples only near you.
-const vec2 wave_near[4] = vec2[](vec2(1e4, 2e4), vec2(1e4, 2e4), vec2(32.0, 80.0), vec2(12.0, 32.0));
+// How far off (blocks) the two small layers fade from what you see (into roughness): the 16-block ripples only where a
+// pixel can no longer show them (so the far water keeps a texture to the horizon), the finest within about 100.
+const vec2 wave_near[4] = vec2[](vec2(1e4, 2e4), vec2(1e4, 2e4), vec2(1e4, 2e4), vec2(32.0, 96.0));
 
 struct Waves {
     vec2 slope;  // d height / dx, d height / dz

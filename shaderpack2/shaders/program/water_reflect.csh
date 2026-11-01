@@ -155,7 +155,8 @@ void main() {
     float dist;
     vec3 view_dir = mat3(gbufferModelView) * r;
 #if WATER_QUALITY >= 2
-    vec3 color = reflect_world(scene + flat_n * 0.02, r, distance_away * spread, spread, reach, steps, dist);
+    float turn = fract(ign(vec2(texel)) + float(frameCounter & 255) * GOLDEN);
+    vec3 color = reflect_world(scene + flat_n * 0.02, r, distance_away * spread, spread, reach, steps, turn, dist);
     // What the copy doesn't hold (see screen_only), from the screen where it is nearer.
     ScreenHit sh = screen_reflect(view, view_dir, screen_steps);
     if (sh.hit && sh.dist < dist && screen_only(sh)) {
@@ -164,7 +165,7 @@ void main() {
     }
 #else
     ScreenHit sh = screen_reflect(view, view_dir, screen_steps);
-    vec3 color = reflect_sky(r, scene);
+    vec3 color = reflect_sky(r, scene, spread, fract(ign(vec2(texel)) + float(frameCounter & 255) * GOLDEN));
     dist = reach;
     if (sh.hit && sh.material != MAT_HAND) {
         color = mix(color, sh.color, sh.fade);
