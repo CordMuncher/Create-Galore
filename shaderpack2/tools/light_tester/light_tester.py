@@ -8,7 +8,7 @@ light_tester.py SCENE.py OUT.png [view ...]   view = name:x,y,z,yaw,pitch[,fov] 
 env: W, H, MODE (pixel|block|both, default pixel), EXPO, DEFS ("A=1 B=2"), SUBS ('a=>b;;c=>d' applied to all
 programs), ROOT (shaders dir: point it at a copy for a before/after), FRAMES (default 24), MC_JAR (Minecraft's
 client jar, for the vanilla textures whose see-through pixels make the hole masks; found in the Bridge's build cache
-by default). Needs Python with numpy, Pillow and moderngl, and an OpenGL 4.3 context (Mesa's llvmpipe will do, with
+by default), TIMING (1: each pass's time, summed over the frames). Needs Python with numpy, Pillow and moderngl, and an OpenGL 4.3 context (Mesa's llvmpipe will do, with
 an X display such as Xvfb). It covers the block light only: no sun shadows, sky, water or filtering over frames."""
 import glob, io, os, re, sys, math, pathlib, importlib.util, tempfile, zipfile
 import numpy as np, moderngl
@@ -315,6 +315,20 @@ def mats(cam, yaw, pitch, fov):
                      [0, 0, -1, 0]])
     return cam3, view, proj
 
+# TIMING=1: each pass's time on this machine (the CPU renderer here, so compare a pass with itself, before and after).
+TIMES = {}
+
+def timed(name, fn):
+    if os.environ.get('TIMING') != '1':
+        fn()
+        return
+    import time
+    ctx.finish()
+    t = time.perf_counter()
+    fn()
+    ctx.finish()
+    TIMES[name] = TIMES.get(name, 0.0) + time.perf_counter() - t
+
 def run_frames(cam, frames):
     ci = tuple(int(math.floor(c)) for c in cam)
     cf = tuple(c - math.floor(c) for c in cam)
@@ -329,7 +343,7 @@ def run_frames(cam, frames):
             setu(p, 'previousCameraPositionInt', prev); setu(p, 'previousCameraPositionFract', cf)
             setu(p, 'frameCounter', fr); setu(p, 'frameTimeCounter', fr / 60.0)
             groups = (2048, 1, 1) if name == 'clear' else (VX // 8, VY // 8, VX // 8)
-            p.run(*groups)
+            timed(name, lambda: p.run(*groups))
             ctx.memory_barrier()
 
 def render(cam, yaw, pitch, fov, mode):
@@ -342,7 +356,7 @@ def render(cam, yaw, pitch, fov, mode):
     setu(draw, 'previousCameraPositionInt', ci); setu(draw, 'previousCameraPositionFract', cf)
     setu(draw, 'u_cam', tuple(cam3.T.flatten())); setu(draw, 'u_tan', math.tan(math.radians(fov) / 2))
     setu(draw, 'u_mode', mode); setu(draw, 'u_size', (float(W), float(H)))
-    draw.run((W + 7) // 8, (H + 7) // 8)
+    timed('pixel light (draw)', lambda: draw.run((W + 7) // 8, (H + 7) // 8))
     ctx.finish()
     a = np.frombuffer(out_img.read(), np.float32).reshape(H, W, 4)[..., :3]
     return a
@@ -385,3 +399,5 @@ if __name__ == '__main__':
         sheet.paste(t, ((i % cols) * W, (i // cols) * H))
     sheet.save(out)
     print('saved', out)
+    for k, v in TIMES.items():
+        print(f'{k}: {v:.2f} s')
