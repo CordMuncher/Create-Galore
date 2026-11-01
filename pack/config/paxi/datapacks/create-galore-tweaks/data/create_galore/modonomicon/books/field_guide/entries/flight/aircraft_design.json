@@ -20,7 +20,7 @@
     {
       "type": "modonomicon:text",
       "title": "Designing Aircraft",
-      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- Every block is weight to lift and drag to push.\n- Envelope: round, **2 to 3 times as long as wide**, tapering to the tail.\n- **Engines inside**, where the crew refuels them; shafts carry the power out.\n- Push **level with the envelope's middle**."
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- Every block is weight to lift and drag to push.\n- Envelope: round, **2 to 3 times as long as wide**, tapering to the tail.\n- **Engines inside**, where the crew refuels them; shafts carry the power out.\n- Push **through the middle of the drag**."
     },
     {
       "type": "modonomicon:text",
@@ -45,7 +45,12 @@
     {
       "type": "modonomicon:text",
       "title": "The gondola",
-      "text": "Hang the gondola close under the envelope's belly, touching it or on short posts, a little forward of the envelope's middle, since a tail propeller, fins and shafts weigh on the stern. Keep it compact: a cabin with the helm at the bow and the engine room behind."
+      "text": "Hang the gondola under the envelope's belly, touching it or on posts, a little forward of the envelope's middle, since a tail propeller, fins and shafts weigh on the stern. Keep it compact: a cabin with the helm at the bow and the engine room behind."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Hanging level",
+      "text": "A balloon hangs with its weight straight under the centre of its air. A compact airship's air centres only 2 to 4 blocks above its weight, so one block of gondola along the keel tips it 5 to 10 degrees. The tapering tail is more skin than air, so a bare envelope hangs tail-down."
     },
     {
       "type": "modonomicon:text",
@@ -68,7 +73,12 @@
     {
       "type": "modonomicon:text",
       "title": "Where it pushes",
-      "text": "Nearly all the drag is the envelope, so push in line with its middle. Propellers low under it tip the nose up at speed, high ones tip it down. Two good places: one big propeller on the envelope's axis behind the tail, or a pair at its widest point on short shaft arms through its sides."
+      "text": "Nearly all the drag is the envelope, so push in line with its middle. Propellers low under it tip the nose up at speed, high ones tip it down. Good places: one big propeller on the envelope's axis ahead of the nose, where its weight evens out the tail's, or behind the tail; or a pair at its widest point on short shaft arms through its sides."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Level at full speed",
+      "text": "The gondola drags too, so the drag's middle sits a shade under a round envelope's axis: a push a tenth of a block above it dips the nose a degree or two at full speed. An envelope a row taller than wide, its shaft where a round one's axis would be, lifts that middle onto the shaft; an open deck hung lower brings it back down a little."
     },
     {
       "type": "modonomicon:spotlight",
@@ -107,12 +117,17 @@
     {
       "type": "modonomicon:text",
       "title": "A blimp that hauls",
-      "text": "[#](FFFFFF)\ue103[#]() **In depth.** An 11 by 11 by 25 envelope (about 600 m3) over a closed 7 by 10 gondola with the helm, barrels, a smoker and a crafting table. Four Portable Engines in its engine room turn a 28-sail Propeller Bearing behind the tail at 128 RPM."
+      "text": "[#](FFFFFF)\ue103[#]() **In depth.** An 11 by 11 by 25 envelope (about 600 m3) over a closed 7 by 10 gondola with the helm, barrels, a smoker, a crafting table and two Hot Air Burners. Four Portable Engines in its engine room turn a 28-sail Propeller Bearing behind the tail at 128 RPM."
     },
     {
       "type": "modonomicon:text",
       "title": "",
       "text": "It cruises at about 9 blocks a second, climbs past y 250 and turns about 4 degrees a second. The drive shaft runs up through the belly and along the envelope's axis to the fan; a branch drives a Wooden Propeller on a Swivel Bearing under the tail, which the Steering Wheel swings."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Ask the Book",
+      "text": "Where the book has its voice, ask it for an airship and it lays one out to your wishes (open deck or cabin, beds, chests, speed, height), balanced to hang level, as a 3D model you can save as a schematic."
     },
     {
       "type": "modonomicon:text",

@@ -1,0 +1,145 @@
+{
+  "title": "A fast, high, compact open blimp with one bed comes back as a finished, level 3D model, not a give-up in words",
+  "from": "2026-11-01 report (pack 0.6.66): the book designed for its whole time budget, then gave the layout in words without a model; its last finished draft still hung 5 degrees nose-down",
+  "roots": [
+    "R5"
+  ],
+  "kind": "question",
+  "question": "make me a blimp that is fast and flies high, compact and only space for one bed for a spawn point, does not need to be enclosed to save weight, symetrical",
+  "player": "Brass age: Portable Engines, brass casings, electron tubes, cogwheels, plenty of wood and wool, no blimp yet.",
+  "world": [
+    "fill ~-12 ~-1 ~-12 ~12 ~-1 ~12 minecraft:grass_block",
+    "time set 6000"
+  ],
+  "box": [
+    -12,
+    -1,
+    -12,
+    12,
+    0,
+    12
+  ],
+  "built": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "stand": [
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "inventory": [
+    {
+      "id": "simulated:red_portable_engine",
+      "count": 4
+    },
+    {
+      "id": "create:andesite_alloy",
+      "count": 64
+    },
+    {
+      "id": "create:andesite_casing",
+      "count": 16
+    },
+    {
+      "id": "create:cogwheel",
+      "count": 32
+    },
+    {
+      "id": "create:large_cogwheel",
+      "count": 16
+    },
+    {
+      "id": "create:shaft",
+      "count": 32
+    },
+    {
+      "id": "minecraft:iron_ingot",
+      "count": 32
+    },
+    {
+      "id": "minecraft:spruce_planks",
+      "count": 384
+    },
+    {
+      "id": "minecraft:spruce_log",
+      "count": 64
+    },
+    {
+      "id": "minecraft:white_wool",
+      "count": 96
+    },
+    {
+      "id": "minecraft:redstone",
+      "count": 32
+    },
+    {
+      "id": "minecraft:coal",
+      "count": 64
+    },
+    {
+      "id": "minecraft:quartz",
+      "count": 8
+    },
+    {
+      "id": "create:brass_casing",
+      "count": 16
+    },
+    {
+      "id": "create:electron_tube",
+      "count": 8
+    },
+    {
+      "id": "minecraft:stick",
+      "count": 16
+    },
+    {
+      "id": "create:brass_ingot",
+      "count": 32
+    }
+  ],
+  "advancements": [
+    "minecraft:story/root",
+    "minecraft:story/mine_stone",
+    "minecraft:story/upgrade_tools",
+    "minecraft:story/smelt_iron",
+    "minecraft:husbandry/root",
+    "create:root",
+    "create:andesite_alloy",
+    "create:water_wheel",
+    "create:shifting_gears",
+    "create:mechanical_press",
+    "create:andesite_casing",
+    "create:belt",
+    "create:encased_fan",
+    "create:fan_processing",
+    "create:mechanical_mixer",
+    "create:compacting",
+    "create:millstone",
+    "create:crushing_wheel",
+    "create:brass",
+    "create:brass_casing",
+    "create:precision_mechanism",
+    "create:mechanical_arm",
+    "create:super_glue"
+  ],
+  "crafted": {
+    "create:brass_ingot": 200,
+    "simulated:red_portable_engine": 6,
+    "create:precision_mechanism": 4
+  },
+  "rubric": [
+    "Comes back with a finished 3D model that passes its checks, inside the book's time budget",
+    "The envelope is a streamlined body sized to the small load (compact), not a box",
+    "Open gondola (no walls) with one bed, the helm at the bow with one Steering Wheel and a Throttle Lever, every engine inside the gondola",
+    "Symmetric left to right, apart from the bed if it can't be",
+    "Fast (8 blocks a second or more) and high (ceiling well above y 200), hangs level",
+    "Honest about anything the player can't make yet"
+  ]
+}

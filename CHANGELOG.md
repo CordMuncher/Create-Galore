@@ -5,6 +5,25 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.6.68
+
+### Added
+- Create Galore Bridge 1.178.0.
+- **Ask the Book lays out airships for you.** Ask for an airship or blimp and say what you want (a closed cabin or an open deck, how many beds and chests, how fast, how high, the wood and the envelope colour), and the server lays it out by the Field Guide's airship rules: a streamlined envelope with the gondola under it, every Portable Engine inside the gondola, one shaft up through the belly to fans along the envelope (ahead of the nose, behind the tail, or both), one Steering Wheel swinging a propeller on a Swivel Bearing under the tail, a Throttle Lever, and a Hot Air Burner (two for a big envelope). It tries envelopes from 9 to 15 wide and every place for the gondola, fins, swivel and Physics Assembler, and keeps the smallest, with the fewest engines, that reaches the speed and height asked for, hangs level (within 1 degree) and flies level at full speed (within 1.5 degrees). Up to 4 beds and 8 chests fit; with many rooms the gondola widens to 9 blocks with two rows of rooms each side. The layout says where the wheel, throttle, burner, Physics Assembler, beds, chests and engines are. The book then builds it as a 3D model you can save as a schematic, and changes it from there only where you asked for something more.
+- **Field Guide, Designing Aircraft: hanging level.** A new page explains why a compact airship tips so easily (its air centres only 2 to 4 blocks above its weight, so one block of gondola tips it 5 to 10 degrees, and the tapering tail makes a bare envelope hang tail-down), the fan ahead of the nose is added as a good place to push from, a page explains flying level at full speed (the gondola drags too, so the middle of the drag sits a shade under a round envelope's axis, and an envelope a row taller than wide puts it back on the shaft), and a page says the book can lay an airship out.
+
+### Fixed
+- **Ask the Book's airships hang level.** When an airship the book checks hangs more than 1.5 degrees, it is now told how far its weight has to move, what one block of gondola slide does, how many whole blocks to slide, what to move for the rest, and how much of the tilt the envelope's own tail causes, instead of only that it hangs nose-down. Its designs kept tipping because one block of gondola tips a compact airship several degrees.
+- **Airships fly level at full speed.** The book's airships flew about 5 degrees nose-down at full throttle: the fans pushed on the envelope's axis, but the gondola drags too, so the middle of the drag sits a shade lower, and on a compact airship a tenth of a block of that is a degree or two. Laid-out airships now put the middle of the drag on the fans' shaft, with an envelope a row taller than wide or an open deck hung a little lower, and the check's advice for a ship that pitches at speed names the fix for that way round (it used to say to push level with the middle of the envelope).
+- **Sliding part of a model keeps its speed settings.** When the book slid part of an earlier model (a gondola toward the bow), a Rotation Speed Controller in it lost its speed setting and the model was refused. Speed settings and labels now move with their blocks, and the book is told when a slide lands on blocks already there.
+- **A shaft that lets a balloon's air out is named.** A bare shaft (or another block that isn't airtight) carried through the envelope's skin is now named with where it is and that an Envelope Encased Shaft seals it, both when the air gets out completely and when it stops filling partway down. It used to be reported as "a bigger envelope would lift more", or as a gap somewhere in the envelope.
+- **Open decks are allowed when asked for.** An open deck on an airship that flies above y 192 is a note (sew Windproof Lining onto your armour) instead of a fault when the player asked for an open airship, and its engines are no longer said to be better reached from a closed room: the note says Windproof Lining keeps whoever fuels them warm. The book could never finish an open blimp.
+- **Steering with two side fans and a swivel.** A ship with a propeller on each side and a Swivel Bearing swung by its Steering Wheel was credited with turning by running its side propellers unevenly, though nothing aboard does that, and its wheel was reported as steering nothing. It is now judged by the swivel it really steers with.
+- **Block states the book gets wrong.** When the book writes a block state the server doesn't have (such as a Portable Engine facing up), it is now told every property that block takes and its values, so the next try is right.
+
+### Removed
+- Nothing.
+
 ## 0.6.67
 
 ### Added

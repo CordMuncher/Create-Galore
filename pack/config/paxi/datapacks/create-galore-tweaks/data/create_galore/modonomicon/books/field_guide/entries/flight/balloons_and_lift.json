@@ -59,7 +59,7 @@
     {
       "type": "modonomicon:text",
       "title": "Speed and drag",
-      "text": "Every envelope block drags as the ship moves, about as much as three blocks' worth of its weight, so an envelope bigger than the load needs makes it slower. Size it to the weight with room to climb: each m3 of hot air holds up about 1.5 mass low down, less higher up.\\\n\\\nPush level with the middle of the envelope: propellers low under it tip the nose up at speed."
+      "text": "Every envelope block drags as the ship moves, about as much as three blocks' worth of its weight, so an envelope bigger than the load needs makes it slower. Size it to the weight with room to climb: each m3 of hot air holds up about 1.5 mass low down, less higher up.\\\n\\\nPush through the middle of the drag: propellers low under it tip the nose up at speed."
     },
     {
       "type": "modonomicon:text",

@@ -1,0 +1,43 @@
+{
+  "title": "A block state the server doesn't have is refused with the values that block does take, so the next try is right",
+  "from": "2026-11-01 blimp rerun: rounds lost to guessed block states (a Portable Engine facing up)",
+  "roots": [
+    "R1"
+  ],
+  "kind": "model",
+  "model": {
+    "title": "Engine",
+    "size_x": 3,
+    "size_y": 2,
+    "size_z": 3,
+    "blocks": [
+      {
+        "block": "minecraft:spruce_planks",
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "x2": 2,
+        "y2": 0,
+        "z2": 2
+      },
+      {
+        "block": "simulated:red_portable_engine[facing=up]",
+        "x": 1,
+        "y": 1,
+        "z": 1,
+        "x2": 1,
+        "y2": 1,
+        "z2": 1
+      }
+    ],
+    "labels": [],
+    "speeds": []
+  },
+  "expect": {
+    "built": false,
+    "has": [
+      "simulated:red_portable_engine takes facing (north, south, west, east)"
+    ],
+    "lacks": []
+  }
+}

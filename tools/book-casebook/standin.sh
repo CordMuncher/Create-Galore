@@ -17,8 +17,11 @@ STATE="$HERE/standin"
 mkdir -p "$STATE"
 abs() { echo "$(cd "$(dirname "$1")" && pwd)/$(basename "$1")"; }
 
+# Whether the server is still up: a write to the console with no server reading it would wait for ever.
+alive() { kill -0 "$(cat "$STATE/pid" 2>/dev/null)" 2>/dev/null; }
+
 send() { # command, file it writes, seconds
-  [ -p "$STATE/console" ] || { echo "The stand-in server isn't running (standin.sh start first)" >&2; exit 1; }
+  [ -p "$STATE/console" ] && alive || { echo "The stand-in server isn't running (standin.sh start first)" >&2; exit 1; }
   rm -f "$2"
   echo "$1" > "$STATE/console"
   for _ in $(seq "$3"); do [ -s "$2" ] && return 0; sleep 1; done
@@ -69,7 +72,7 @@ case "${1:-}" in
     cat "$OUT"
     ;;
   stop)
-    [ -p "$STATE/console" ] && echo stop > "$STATE/console" || true
+    [ -p "$STATE/console" ] && alive && echo stop > "$STATE/console" || true
     PID="$(cat "$STATE/pid" 2>/dev/null || true)"
     if [ -n "$PID" ]; then
       for _ in $(seq 120); do kill -0 "$PID" 2>/dev/null || break; sleep 1; done
