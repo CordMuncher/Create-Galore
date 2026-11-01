@@ -202,9 +202,11 @@ vec2 rain_rings(vec2 local, float amount, float footprint, inout float rough) {
 // as far as the drawn waves would need to bend it as much (and the lines follow the waves you see: bigger and slower
 // where they are). That grows over the first blocks down and then holds: past there the ripples' lines have crossed
 // and blur into each other. And the light is looked for where it left the surface (a step back along the way it was
-// bent), and what the lines still add on average (more the stronger the waves: about a tenth at full strength, from
-// a simulation of these waves) taken back off, so the floor gets as much light as under flat water, only gathered
-// into lines.
+// bent), and what the lines still add on average (more the stronger the waves, from a simulation of these waves)
+// taken back off, so the floor gets about as much light as under flat water, only gathered into lines.
+// For the look: the lines' brightest parts roll off softly towards twice the flat water's light (a hard cap at four
+// read as white lines pasted on bright sand), and the lines lose their contrast with depth (by e every 10 blocks
+// below the surface), as the light scattered on its way down fills in between them.
 const float caustic_reach = 52.0;
 
 vec2 caustic_land(vec2 at, vec3 light_dir, float strength, float rain, float reach, float footprint) {
@@ -223,8 +225,11 @@ float caustic_focus(vec2 local, vec3 light_dir, float strength, float rain, floa
     vec2 land_x = caustic_land(from + vec2(step, 0.0), light_dir, strength, rain, reach, footprint);
     vec2 land_z = caustic_land(from + vec2(0.0, step), light_dir, strength, rain, reach, footprint);
     mat2 spread = mat2(1.0) + mat2((land_x - land) / step, (land_z - land) / step);
-    float focus = clamp(1.0 / max(abs(determinant(spread)), 1e-4), 0.0, 4.0);
-    return focus / (1.0 + 0.1 * pow(reach * strength / caustic_reach, 2.4));
+    float focus = 1.0 / max(abs(determinant(spread)), 1e-4);
+    float over = max(focus - 1.0, 0.0);
+    focus = min(focus, 1.0) + over / (1.0 + over); // towards 2
+    focus /= 1.0 + 0.05 * pow(reach * strength / caustic_reach, 2.4);
+    return 1.0 + (focus - 1.0) * exp(-below / 10.0);
 }
 
 #endif
