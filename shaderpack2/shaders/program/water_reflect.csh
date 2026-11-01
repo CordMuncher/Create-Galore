@@ -1,8 +1,8 @@
 // The water's reflection (WATER_QUALITY 1 to 3): for each water pixel the forward pass marked (colortex6), a ray
 // reflected off its waves. At High and Ultra it is traced through the block copy (lib/reflect.glsl), so the
-// reflection is the same from wherever you look and holds what is off screen too; mobs, the hand's world and
-// Create's moving machines are not in the copy, so a short look along the screen catches them where they are nearer
-// than what the trace found. At Medium only that look along the screen (further), and the sky with its clouds where
+// reflection is the same from wherever you look and holds what is off screen too; mobs, Create's moving machines,
+// ships, plants and lamps are not in the copy (or not as solid blocks), so a short look along the screen catches them
+// where they are nearer than what the trace found. At Medium only that look along the screen (further), and the sky with its clouds where
 // it finds nothing. At Medium and High one look per 2 x 2 pixels (the first water pixel of the square), with where it
 // was taken from beside it, for program/fog.fsh to blend them back up by depth and normal; at Ultra one per pixel,
 // reaching further.
@@ -34,6 +34,7 @@ struct ScreenHit {
     float fade;     // 1 well inside the screen, less towards its edges
     float dist;     // blocks from where the look left the water
     int material;   // what the G-buffer says it hit (MAT_)
+    vec3 pos;       // where (view space), just past the front of what it hit
 };
 
 // What a look from view_start along view_dir finds on the screen: marched in steps that grow by half each time (the
@@ -48,6 +49,7 @@ ScreenHit screen_reflect(vec3 view_start, vec3 view_dir, int steps) {
     h.fade = 0.0;
     h.dist = 0.0;
     h.material = MAT_NONE;
+    h.pos = view_start;
     vec2 size = render_size();
     float step_len = 0.3;
     vec3 last = view_start;
@@ -96,12 +98,24 @@ ScreenHit screen_reflect(vec3 view_start, vec3 view_dir, int steps) {
                 h.color = textureLod(colortex5, buv * size / window_size(), 0.0).rgb;
                 h.dist = distance(b, view_start);
                 h.material = int(texelFetch(colortex1, ivec2(buv * size), 0).a * 255.0 + 0.5);
+                h.pos = b;
                 return h;
             }
         }
         step_len = min(step_len * 1.5, 4.0);
     }
     return h;
+}
+
+// Whether what the look along the screen found is something the block copy doesn't hold, so only the screen can show
+// it: mobs, Create's machines, ships, plants and lamps (the copy keeps those out of its solid blocks), and anything
+// past the copy's reach. What the copy does hold, its own trace shows the same from wherever you look.
+bool screen_only(ScreenHit sh) {
+    if (sh.material == MAT_ENTITY || sh.material == MAT_MACHINE) {
+        return true;
+    }
+    ivec3 cell = ivec3(floor(vox_pos(view_to_scene_pos(sh.pos))));
+    return !grid_live() || !vox_in_box(cell, 0) || (vox_word(cell) & VOX_SOLID) == 0u;
 }
 
 void main() {
@@ -163,9 +177,9 @@ void main() {
     vec3 view_dir = mat3(gbufferModelView) * r;
 #if WATER_QUALITY >= 2
     vec3 color = reflect_world(scene + flat_n * 0.02, r, distance_away * spread, spread, reach, steps, dist);
-    // What the copy doesn't hold (mobs, Create's machines), from the screen where it is nearer.
+    // What the copy doesn't hold (see screen_only), from the screen where it is nearer.
     ScreenHit sh = screen_reflect(view, view_dir, 12);
-    if (sh.hit && sh.dist < dist && (sh.material == MAT_ENTITY || sh.material == MAT_MACHINE)) {
+    if (sh.hit && sh.dist < dist && screen_only(sh)) {
         color = mix(color, sh.color, sh.fade);
         dist = mix(dist, sh.dist, sh.fade);
     }
