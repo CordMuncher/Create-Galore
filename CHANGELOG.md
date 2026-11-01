@@ -5,6 +5,17 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.6.67
+
+### Added
+- Create Galore Bridge 1.177.0.
+
+### Fixed
+- **The map no longer fills up with airships that are long gone.** Create - Xaero's Map keeps a picture of a ship that leaves view while standing still, and let it go only when a player came within 48 blocks of that spot, which almost never happens for a ship high in the air. Flyover airships that stalled at the edge of the loaded area, and ships removed out of view, stayed on the minimap and world map for good, dozens along every route. The server now tells each player's map which ships were removed (also while the player was away) and which are passing flyovers, and the map drops their pictures; a parked ship that is still there keeps its picture as before. Pictures saved before this version are cleared once per world, so a parked ship of your own shows again the next time it is in view.
+
+### Removed
+- Nothing.
+
 ## 0.6.66
 
 ### Added
