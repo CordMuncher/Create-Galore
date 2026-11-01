@@ -8,7 +8,9 @@
 // shows: the same spot gets the same lights from wherever you look at it. For each light in reach that its surface
 // faces, up to PIXEL_LIGHT_TRACES of them: a cone trace through the voxel copy (the light's size over its distance:
 // near lights give soft shadows, far ones sharp), a walk to a random point on the light for the colour of any glass
-// on the way, and a GGX highlight. The held light (HAND_LIGHT) is always looked at.
+// on the way, and a GGX highlight. The held light (HAND_LIGHT) is always looked at. A light too faint to matter beside
+// what the sample already has isn't traced: those let go add up to at most light_let_go of the sample's light, and
+// the strongest come first in the records anyway.
 
 #include "/lib/settings.glsl"
 #include "/lib/trace.glsl"
@@ -39,10 +41,14 @@ uniform int heldItemId2;
 // Diffuse (compressed; a: which pixel of the square + 1) in the left half, highlights (compressed) in the right.
 layout(rgba16f) writeonly uniform image2D cg_pl_img;
 
+const float light_let_go = 0.015;
+
 // The light that one point gets from a light at to, of colour (at a block) and reach, through a cone of radius at
-// the light, traced from start up to own blocks short of the light; adds its highlight to spec.
+// the light, traced from start up to own blocks short of the light; adds its highlight to spec. Not traced where
+// the most it could give, with what was let go before (dropped), stays within let_go.
 vec3 light_from(vec3 p, vec3 start, vec3 n, vec3 v, float smoothness, bool thin, vec3 to, vec3 color, float reach,
-                float radius, float own, inout vec3 spec, inout int traces, vec3 jitter) {
+                float radius, float own, inout vec3 spec, inout int traces, vec3 jitter, float let_go,
+                inout float dropped) {
     vec3 to_light = to - p;
     float d = length(to_light);
     if (d >= reach || d < 1e-3) {
@@ -57,7 +63,12 @@ vec3 light_from(vec3 p, vec3 start, vec3 n, vec3 v, float smoothness, bool thin,
         return vec3(0.0);
     }
     vec3 c = color * light_falloff(d, reach);
-    if (max3(c) * facing < 1e-4) {
+    float most = max3(c) * facing;
+    if (most < 1e-4) {
+        return vec3(0.0);
+    }
+    if (dropped + most <= let_go) {
+        dropped += most;
         return vec3(0.0);
     }
     traces++;
@@ -113,6 +124,7 @@ void main() {
     vec3 diffuse = vec3(0.0);
     vec3 spec = vec3(0.0);
     vec3 jitter = hash33(uvec3(uvec2(pixel), uint(frameCounter) * 3u + 2u)) * 2.0 - 1.0;
+    float dropped = 0.0;
 #ifdef HAND_LIGHT
     // Each hand's light, in its own colour (item.properties), from where that hand holds it.
     for (int h = 0; h < 2; h++) {
@@ -126,7 +138,7 @@ void main() {
         // The last half block is the hand's own (it can sit inside a block beside you).
         diffuse += light_from(p, p, s.normal, v, s.smoothness, thin, vox_pos(hand_scene),
                               kind.rgb * light_brightness(kind.a), light_reach(kind.a), 0.12, 0.5, spec, traces,
-                              jitter);
+                              jitter, 0.0, dropped);
     }
 #endif
     ivec3 tile;
@@ -137,7 +149,7 @@ void main() {
             float radius;
             Light l = load_record(records + 1u + 3u * j, radius);
             diffuse += light_from(p, p, s.normal, v, s.smoothness, thin, l.pos, l.color, l.reach, radius, 0.0, spec,
-                                  traces, jitter);
+                                  traces, jitter, light_let_go * max3(diffuse), dropped);
         }
     }
     imageStore(cg_pl_img, sample_texel, vec4(compress_light(diffuse), float(turn) + 1.0));
