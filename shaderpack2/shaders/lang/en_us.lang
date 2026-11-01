@@ -1,7 +1,7 @@
 profile.LOW=Low
 profile.LOW.comment=A smaller voxel box (96 blocks across), fewer light traces per pixel, three bounce rays per block, a 1024 shadow map, the water reflecting what is on screen.
 profile.DEFAULT=Default
-profile.DEFAULT.comment=A 128-block voxel box, 32 light traces per pixel, seven bounce rays per block, a 2048 shadow map, the water reflecting the world at half the render size.
+profile.DEFAULT.comment=A 128-block voxel box, 32 light traces per pixel, seven bounce rays per block, a 2048 shadow map, the water reflecting the world.
 profile.HIGH=High
 profile.HIGH.comment=A 256-block voxel box, more light traces at twice the detail, thirteen bounce rays per block, a 4096 shadow map, the water reflecting the world at the full render size.
 
@@ -82,7 +82,7 @@ option.CLOUD_STEPS=Cloud Quality
 option.CLOUD_STEPS.comment=How many looks into the clouds each ray takes: more keeps the far clouds' detail finer, at some cost.
 
 option.WATER_QUALITY=Water Reflections
-option.WATER_QUALITY.comment=Low: the sky and its clouds only. Medium: what is on screen, then the sky. High: the world itself with its blocks' textures, traced through the voxel copy, so the reflection holds what is off screen and doesn't change as you look around; mobs and Create's machines from the screen. Ultra: the same at the full render size, reaching further.
+option.WATER_QUALITY.comment=Low: the sky and its clouds only. Medium: what is on screen, then the sky. High: the world itself with its blocks' textures, traced through the voxel copy, so the reflection holds what is off screen and doesn't change as you look around; mobs and Create's machines from the screen. Ultra: the same, reaching further.
 value.WATER_QUALITY.0=Low
 value.WATER_QUALITY.1=Medium
 value.WATER_QUALITY.2=High

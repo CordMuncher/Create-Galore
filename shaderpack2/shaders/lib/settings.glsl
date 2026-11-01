@@ -109,9 +109,9 @@ const float eyeBrightnessHalflife = 5.0;
 
 // --- Water -----------------------------------------------------------------------------------------------------------
 
-// What water reflects (program/water_reflect.csh): 0 the sky only; 1 what is on screen, then the sky; 2 the world
-// itself, traced through the block copy with its blocks' textures, at half the render size (the same from wherever you
-// look, and what is off screen too); 3 the same at the full render size, reaching further.
+// What water reflects (program/water_reflect.csh), one look per pixel: 0 the sky only; 1 what is on screen, then the
+// sky; 2 the world itself, traced through the block copy with its blocks' textures (the same from wherever you look,
+// and what is off screen too); 3 the same, reaching further.
 #define WATER_QUALITY 2 // [0 1 2 3]
 // How strong the waves are (1 as tuned; 0 still water).
 #define WATER_WAVES 1.0 // [0.0 0.25 0.5 0.75 1.0 1.25 1.5 2.0]
