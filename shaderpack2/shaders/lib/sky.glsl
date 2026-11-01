@@ -356,7 +356,8 @@ vec3 sun_seen(vec3 dir, float spread) {
 // Minecraft's, lit like a ball from the side its phase says (full at phase 0, new at 4; waxing lit on the side it
 // travels towards, waning on the other). Lit as the Moon is: its dust sends light back the way it came, so the full
 // moon is evenly bright to its edge, and the slopes of its craters, steepened, cast their shade along the line
-// between day and night, where they show the most. Its dark part is faintly lit by the Earth. A cool silvery white.
+// between day and night, where they show the most. Its dark part is faintly lit by the Earth. A cool silvery white,
+// as the sun is a warm one (the map's own grey-brown would read neutral).
 uniform sampler2D cg_moon; // rgb its colour (sRGB), a its height
 
 float moon_radius() {
@@ -411,7 +412,7 @@ vec3 moon_disc(vec3 dir, vec3 through) {
 
     vec3 albedo = srgb_to_linear(surface.rgb) / 0.38;
     albedo = mix(vec3(luminance(albedo)), albedo, 0.75);
-    albedo = pow(albedo, vec3(1.25)) * vec3(0.88, 0.95, 1.08);
+    albedo = pow(albedo, vec3(1.25)) * vec3(0.82, 0.95, 1.23); // a cool silver, about a tenth bluer than red on screen
     float bright = 0.17 * NIGHT_BRIGHTNESS * 1.7;
     vec3 color = albedo * (shade + 0.02 * (1.0 - day)) * bright;
     return color * edge * through;
