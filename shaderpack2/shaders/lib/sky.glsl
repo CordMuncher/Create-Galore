@@ -459,10 +459,12 @@ vec3 sky(vec3 dir, bool with_sun) {
                 + milky_way(local) * NIGHT_BRIGHTNESS * (1.0 - 0.5 * moon_up);
         c += night_sky * night * through * smoothstep(-0.02, 0.0, dir.y) * (1.0 - rainStrength);
     }
-    // Rain hides the sun, the moon and the stars, as in Minecraft.
-    c += (moon_glow(dir, through) + moon_disc(dir, through)) * (1.0 - rainStrength);
+    // Rain hides the sun, the moon and the stars, as in Minecraft; the ground hides them below the horizon (seen
+    // through a hole in the land not loaded yet, or past its far edge), as it does the stars.
+    float shown = (1.0 - rainStrength) * smoothstep(-0.012, 0.004, dir.y);
+    c += (moon_glow(dir, through) + moon_disc(dir, through)) * shown;
     if (with_sun) {
-        c += sun_disc(dir, through) * (1.0 - rainStrength);
+        c += sun_disc(dir, through) * shown;
     }
     return c;
 }
