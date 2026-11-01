@@ -80,8 +80,9 @@ float ssao(vec3 view, vec3 view_normal, ivec2 texel) {
 #endif
 }
 
-// The clouds over what a render pixel shows, `dist` blocks away (cloud_far_sky for the sky). A surface below the
-// clouds seen from below them (or above them from above) has none in front of it.
+// The clouds over the sky a render pixel shows (cloud_far_sky away); those in front of a surface are laid over it in
+// program/fog.fsh. A surface below the clouds seen from below them (or above them from above) has none in front of
+// it.
 vec3 with_clouds(vec3 color, ivec2 texel, float dist, float surface_y) {
 #ifdef VOLUME_CLOUDS
     float bottom = cloud_bottom();
@@ -353,10 +354,7 @@ void main() {
     }
 #endif
     color += texelFetch(colortex0, texel, 0).rgb;
-#if DEBUG_VIEW == 0
-    if (s.material != MAT_HAND) {
-        color = with_clouds(color, texel, length(view), cameraPosition.y + scene.y);
-    }
-#endif
+    // The clouds in front of a surface (seen from above them, or round a mountain in them) come later, over the water
+    // and glass in front of it too (program/fog.fsh).
     out_color = vec4(color, 1.0); out_scene = out_color;
 }

@@ -183,6 +183,22 @@ void main() {
     }
 
 #if defined SUNLIGHT
+    // The clouds in front of what the pixel shows (seen from above them, or round a mountain in them): laid over the
+    // land's haze below, and over the water, glass and water's reflection in front of the land, so these never cut
+    // holes in them. (The sky's are laid over it in program/deferred_light.fsh, and glass with only the sky behind
+    // it keeps those.)
+    vec4 clouds_front = vec4(0.0, 0.0, 0.0, 1.0);
+#if defined VOLUME_CLOUDS && DEBUG_VIEW == 0
+    {
+        float bottom = cloud_bottom();
+        float surface_y = cameraPosition.y + scene.y;
+        float y0 = cameraPosition.y;
+        if (solid > 0.0 && clouds_here() && !(y0 < bottom && surface_y < bottom)
+                && !(y0 > bottom + cloud_depth && surface_y > bottom + cloud_depth)) {
+            clouds_front = clouds_at(texel, dist).light;
+        }
+    }
+#endif
     // Haze far off.
     if (isEyeInWater == 0) {
         float height = scene.y + cameraPosition.y;
@@ -192,17 +208,6 @@ void main() {
         float haze = sqr(1.0 - exp(-min(dist, far_end) * density));
         float border = smoothstep(far_end * 0.8, far_end, dist);
         haze = max(haze * 0.7, border);
-#ifdef VOLUME_CLOUDS
-        // Clouds in front of the land (seen from above them, or round a mountain in them) were laid over it already
-        // (program/deferred_light.fsh) and carry their own haze: this one is only for the land's light behind them.
-        float bottom = cloud_bottom();
-        float surface_y = cameraPosition.y + scene.y;
-        float y0 = cameraPosition.y;
-        if (solid > 0.0 && clouds_here() && !(y0 < bottom && surface_y < bottom)
-                && !(y0 > bottom + cloud_depth && surface_y > bottom + cloud_depth)) {
-            haze *= clouds_at(texel, dist).light.a;
-        }
-#endif
         // In the colour of the sky right behind what it hides (its horizon in that direction, or the sky itself
         // above it), so a far hill against the sunset fades into the sunset and one across from it into the blue.
         // (None over the sky itself, which already is that colour: skipped there.)
@@ -216,6 +221,8 @@ void main() {
             color = pow(shown, vec3(2.2));
         }
     }
+    // The clouds carry their own haze.
+    color = color * clouds_front.a + clouds_front.rgb;
 #elif defined WORLD_NETHER
     // The haze: its biome's colour and thickness (lib/sky.glsl), thicker under the ceiling (from about 30 blocks
     // below it), and lit from below by the lava sea, orange where the view runs low over it. At the edge of what's
