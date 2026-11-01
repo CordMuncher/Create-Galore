@@ -330,16 +330,21 @@ vec4 shade_water(vec4 base, out float reflected, out vec3 n, out float spread) {
         float footprint = distance_away * pixel_angle() * inversesqrt(max(grazing, 0.02));
         float open = smoothstep(0.5, 0.95, levels.y);
         float rain = g_water.x * smoothstep(0.8, 0.9, levels.y);
-        // Weaker under a roof and in caves, stronger in the open; calm and choppy stretches; flatter at a grazing
-        // look, where the waves would only break the reflection into noise.
-        float strength = WATER_WAVES * mix(0.25, 1.0, open) * water_chop(v_scene_pos)
-                       * mix(0.35, 1.0, smoothstep(0.0, 0.25, grazing));
-        Waves w = water_waves(local, strength, swell_room(v_scene_pos), rain, footprint);
-        rough = w.rough;
+        // Weaker under a roof and in caves, stronger in the open; calm and choppy stretches.
+        float strength = WATER_WAVES * mix(0.25, 1.0, open) * water_chop(v_scene_pos);
+        Waves w = water_waves(local, strength, swell_room(v_scene_pos), rain, footprint, distance_away);
+        // Flatter at a grazing look, where the waves would only break the reflection into noise; what that takes
+        // off is still there, finer than the eye follows: roughness.
+        float flatter = mix(0.35, 1.0, smoothstep(0.0, 0.25, grazing));
+        w.slope *= flatter;
+        rough = w.rough + w.seen * (1.0 - flatter * flatter);
 #ifdef RAIN_RINGS
         w.slope += rain_rings(local, rain * (1.0 - smoothstep(10.0, 35.0, distance_away)), footprint, rough);
 #endif
         w.slope += splash_ring(world);
+        if (face.y > 0.0 && !inside) {
+            w.slope += facing_tilt(rough, to_eye);
+        }
         vec3 wave = wave_normal(w);
         n = face.y > 0.0 ? wave : -wave;
     }

@@ -29,7 +29,6 @@
 layout(local_size_x = 8, local_size_y = 8, local_size_z = 8) in;
 const ivec3 workGroups = ivec3(VOX_GROUPS_X, VOX_GROUPS_Y, VOX_GROUPS_X);
 
-uniform int frameCounter;
 uniform float frameTime;
 uniform ivec2 eyeBrightnessSmooth;
 

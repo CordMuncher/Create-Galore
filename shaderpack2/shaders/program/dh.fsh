@@ -53,11 +53,17 @@ void main() {
     if (abs(face.y) > 0.5) {
         float grazing = abs(to_eye.y);
         float footprint = distance_away * pixel_angle() * inversesqrt(max(grazing, 0.02));
-        float strength = WATER_WAVES * mix(0.25, 1.0, smoothstep(0.5, 0.95, v_light.y)) * water_chop(v_scene_pos)
-                       * mix(0.35, 1.0, smoothstep(0.0, 0.25, grazing));
+        float strength = WATER_WAVES * mix(0.25, 1.0, smoothstep(0.5, 0.95, v_light.y)) * water_chop(v_scene_pos);
         float rain = g_water.x * smoothstep(0.8, 0.9, v_light.y);
-        Waves w = water_waves(water_local(v_scene_pos), strength, 1.0, rain, footprint);
-        rough = w.rough;
+        Waves w = water_waves(water_local(v_scene_pos), strength, 1.0, rain, footprint, distance_away);
+        // As the near water (program/gbuffers.fsh): flatter at a grazing look, the rest as roughness, which tilts
+        // the water towards you.
+        float flatter = mix(0.35, 1.0, smoothstep(0.0, 0.25, grazing));
+        w.slope *= flatter;
+        rough = w.rough + w.seen * (1.0 - flatter * flatter);
+        if (face.y > 0.0 && !inside) {
+            w.slope += facing_tilt(rough, to_eye);
+        }
         vec3 wave = wave_normal(w);
         n = face.y > 0.0 ? wave : -wave;
     }

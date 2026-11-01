@@ -4,8 +4,8 @@
 // away, and its depth is squeezed too, so it reaches from deep caves to the build limit. shadowtex0 holds the
 // nearest of everything, shadowtex1 only what light can't pass (no water or glass), shadowcolor0 the colour of
 // the nearest see-through thing over the light-blocking one (rgb, sRGB), or for water its biome's water colour with
-// how its waves focus the light (a: below a half, 0.49 for four times the light; see shadow.fsh), and shadowcolor1
-// where your own body is the nearest thing to the light.
+// how its waves focus the light 4 blocks down (a: below a half, 0.49 for four times the light; see shadow.fsh; only
+// the light shafts under water use it), and shadowcolor1 where your own body is the nearest thing to the light.
 
 #if !defined LIB_SHADOW
 #define LIB_SHADOW
@@ -13,7 +13,9 @@
 #include "/lib/settings.glsl"
 #include "/lib/common.glsl"
 #include "/lib/view.glsl"
+#include "/lib/globals.glsl"
 #include "/lib/water_color.glsl"
+#include "/lib/waves.glsl"
 
 const float shadow_warp = 0.85;
 const float shadow_depth_scale = 0.25;
@@ -135,10 +137,8 @@ vec3 shadow_light(vec3 scene_pos, float radius, float ignore, float beyond, bool
             float surface = texture(shadowtex0, c.xy).r;
             depth = max(c.z - surface, 0.0) / per_block;
         }
-        // What you hold takes no focus: the map's focus is worked out for the floor 4 blocks down, and on your hands,
-        // just under the surface, it drew bright and dark blotches that swam as you bobbed, cut off where your body
-        // hides the water in the map (your body's outline on your hands). The water's colour there comes from beside
-        // your body.
+        // What you hold: where your body hides the water in the map, the water's colour comes from beside your body
+        // (else your body's outline shows on your hands).
         if (past_player && !water_read) {
             float beside = shadow_texels_per_block(min(c.w, 1.0)) / float(shadowMapResolution);
             for (int i = 0; i < 4 && !water_read; i++) {
@@ -151,7 +151,20 @@ vec3 shadow_light(vec3 scene_pos, float radius, float ignore, float beyond, bool
             }
         }
         vec3 biome = water_read ? tint.rgb : vec3(0.247, 0.463, 0.894);
-        float focus = water_read && !past_player ? tint.a / 0.49 * 4.0 : 1.0;
+        float focus = 1.0;
+#ifdef CAUSTICS
+        // How the waves focus the light here (lib/waves.glsl), worked out for this very point at its own depth, so
+        // it stands still on the floor whatever the map's texels do (no flicker, no grid of texels), fades in from
+        // nothing just under the surface, and is no finer than the pixel or what the depth blurs (the sun's disc
+        // and the water spread it). Not on what you hold: the waves over your hands would swim with you.
+        if (!past_player && depth > 0.0) {
+            vec3 surface = scene_pos + g_light_dir.xyz * depth;
+            float below = depth * g_light_dir.y;
+            float pixel = length(scene_pos) * 2.0 / (gbufferProjection[1][1] * render_size().y);
+            focus = caustic_focus(water_local(surface), g_light_dir.xyz, WATER_WAVES * water_chop(surface), g_water.x,
+                                  below, max(below * 0.05, pixel * 2.0));
+        }
+#endif
         vec3 color = exp(-(water_absorption_for(biome) + water_scatter) * depth) * focus;
         result = g_water_path > 0.0 ? solid * color : vec3(all_of) + (solid - all_of) * color;
     } else if (solid - all_of < 0.01) {

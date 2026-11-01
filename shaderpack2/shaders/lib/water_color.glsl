@@ -12,8 +12,10 @@
 
 #include "/lib/common.glsl"
 
-const vec3 water_absorption = vec3(0.39, 0.14, 0.07); // per block
-const float water_scatter = 0.01;                    // per block, the light it scatters (any colour)
+const vec3 water_absorption = vec3(0.30, 0.065, 0.032); // per block
+// Per block, the light it scatters: little, and most of it blue (as small particles scatter), so deep water reads
+// navy, not milky.
+const vec3 water_scatter = vec3(0.0002, 0.0004, 0.00093);
 // Light scattered more than once comes back too: the scattered light's share of the water's own glow.
 const float water_scatter_boost = 3.0;
 const vec3 water_extinction = water_absorption + water_scatter;

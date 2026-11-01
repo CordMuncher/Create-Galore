@@ -174,7 +174,19 @@ void main() {
 
     // Sky and bounce light.
     vec4 gi = fade > 0.0 ? sample_block_table(cg_gi_tex, in_front) : vec4(0.0);
-    vec3 open_sky = sky_light_on(n) * vanilla_sky_share(s.sky);
+    float sky_level = s.sky;
+    // Under water, both come down through the water above (about straight up, a fifth longer as the sky's light
+    // comes from all over it), which soaks up red first: deep floors go blue-green and dim, not lit by bounce light
+    // that never passed the water. Minecraft's own sky light already drops a step a block in water, without colour:
+    // it is taken as it is at the surface instead, here and for the sun (which went dark 13 blocks down before).
+    float water_above = lod ? 0.0 : water_path(p + s.face * 0.05, vec3(0.0, 1.0, 0.0), 48);
+    vec3 through_above = vec3(1.0);
+    if (water_above > 0.0) {
+        through_above = exp(-water_extinction * water_above * 1.2);
+        sky_level = min(sky_level + water_above / 15.0, 1.0);
+        gi.rgb *= through_above;
+    }
+    vec3 open_sky = sky_light_on(n) * vanilla_sky_share(sky_level) * through_above;
 #ifdef GI
     // Bounce light, never below half the open sky's (a mob's never below all of it: it isn't in the voxel copy, so
     // the nook it stands in shouldn't turn it into a silhouette).
@@ -198,7 +210,7 @@ void main() {
         facing = 0.25 + 0.75 * max(dot(n, l), 0.0); // mobs: the light wraps further, so they never turn flat black
     }
 #if defined SUNLIGHT
-    float sky_gate = smoothstep(0.05, 0.3, s.sky);
+    float sky_gate = smoothstep(0.05, 0.3, sky_level);
 #else
     float sky_gate = 1.0; // the End has no sky light: its light reaches wherever the shadow map lets it
 #endif
@@ -209,7 +221,7 @@ void main() {
         float ignore = s.material == MAT_LEAVES ? 1.0 : s.material == MAT_PLANT ? 0.5 : 0.0;
         // Under water, the light's way down through it comes from the block copy (lib/shadow.glsl).
         g_water_path = water_path(vox_pos(scene) + s.face * 0.05, l, 48);
-        sun_reach = shadow_light(shadow_offset_point(scene, s.face, l), radius, ignore, sun_beyond_map(s.sky),
+        sun_reach = shadow_light(shadow_offset_point(scene, s.face, l), radius, ignore, sun_beyond_map(sky_level),
                                  s.material == MAT_HAND) * sky_gate * cloud_shadow(scene);
         g_water_path = -1.0;
         sun = g_light_color.rgb * facing * sun_reach;
