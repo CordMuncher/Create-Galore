@@ -20,7 +20,7 @@
     {
       "type": "modonomicon:text",
       "title": "Designing Aircraft",
-      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- Every block is weight to lift and drag to push.\n- Envelope: round, **2 to 3 times as long as wide**, tapering to the tail.\n- **Engines inside**, where the crew refuels them; shafts carry the power out.\n- Push **level with the envelope's middle**."
+      "text": "[#](FFFFFF)\ue100[#]() **Key points**\n\n- Every block is weight to lift and drag to push.\n- Envelope: round, **2 to 3 times as long as wide**, tapering to the tail.\n- **Engines inside**, where the crew refuels them; shafts carry the power out.\n- Push **through the middle of the drag**."
     },
     {
       "type": "modonomicon:text",
@@ -45,7 +45,7 @@
     {
       "type": "modonomicon:text",
       "title": "The gondola",
-      "text": "Hang the gondola close under the envelope's belly, touching it or on short posts, a little forward of the envelope's middle, since a tail propeller, fins and shafts weigh on the stern. Keep it compact: a cabin with the helm at the bow and the engine room behind."
+      "text": "Hang the gondola under the envelope's belly, touching it or on posts, a little forward of the envelope's middle, since a tail propeller, fins and shafts weigh on the stern. Keep it compact: a cabin with the helm at the bow and the engine room behind."
     },
     {
       "type": "modonomicon:text",
@@ -74,6 +74,11 @@
       "type": "modonomicon:text",
       "title": "Where it pushes",
       "text": "Nearly all the drag is the envelope, so push in line with its middle. Propellers low under it tip the nose up at speed, high ones tip it down. Good places: one big propeller on the envelope's axis ahead of the nose, where its weight evens out the tail's, or behind the tail; or a pair at its widest point on short shaft arms through its sides."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Level at full speed",
+      "text": "The gondola drags too, so the drag's middle sits a shade under a round envelope's axis: a push a tenth of a block above it dips the nose a degree or two at full speed. An envelope a row taller than wide, its shaft where a round one's axis would be, lifts that middle onto the shaft; an open deck hung lower brings it back down a little."
     },
     {
       "type": "modonomicon:spotlight",

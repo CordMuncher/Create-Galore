@@ -847,7 +847,7 @@ final class VehicleCheck {
         double[] off = centreOfLift(b, fl);
         List<String> fix = new ArrayList<>();
         if (Math.abs(pd) >= 0.25) fix.add(String.format(Locale.ROOT, "%.0f mass x blocks toward the %s", Math.abs(off[0]) * b.m, pd > 0 ? ahead : behind));
-        if (Math.abs(ld) >= 0.25) fix.add(String.format(Locale.ROOT, "%.0f toward %s", Math.abs(off[1]) * b.m, ld > 0 ? plusSide : minusSide));
+        if (Math.abs(ld) >= 0.25) fix.add(String.format(Locale.ROOT, "%.0f mass x blocks toward %s", Math.abs(off[1]) * b.m, ld > 0 ? plusSide : minusSide));
         if (!fix.isEmpty()) out.append(" (its weight and lift are off by ").append(String.join(", ", fix)).append("; level it "
                 + "with the hull's own shape and layout: a fuller, wider hull under the heavy end, or the engine room, cargo and "
                 + "cabin moved toward the high end; a plank weighs 0.5)");
@@ -1813,12 +1813,15 @@ final class VehicleCheck {
         double dy = dragY / drag, ty = pushY / push, gap = dy - ty;
         double pitch = Math.toDegrees(Math.asin(Math.max(-1, Math.min(1, drag * gap / (G * b.m * liftAbove)))));
         if (Math.abs(pitch) < 4) return;
+        // The middle of the drag is the envelope's, pulled a shade down by the weight's own drag.
         String text = String.format(Locale.ROOT, "at full speed it pitches about %.0f° nose %s: its propellers push %.1f blocks %s the "
-                + "middle of its drag (the envelope, about %.0f blocks above its lowest block), so the air holds the top back while they drive "
-                + "the bottom on; drive propellers level with the middle of the envelope instead, by shafts from the engines "
-                + "in the gondola (one fan on the envelope's axis behind its tail, or a pair on short shaft arms at its widest "
-                + "point), or hang the gondola closer under the envelope", Math.abs(pitch), gap > 0 ? "up" : "down",
-                Math.abs(gap), gap > 0 ? "below" : "above", dy - b.minY);
+                + "middle of its drag (about %.1f blocks above its lowest block: mostly the envelope's, pulled a little down by "
+                + "the weight's), so the air holds the %s back while they drive the %s on; drive propellers level with that "
+                + "middle instead, by shafts from the engines in the gondola (one fan behind the tail or ahead of the nose, or a "
+                + "pair on short shaft arms at the widest point), %s", Math.abs(pitch), gap > 0 ? "up" : "down",
+                Math.abs(gap), gap > 0 ? "below" : "above", dy - b.minY, gap > 0 ? "top" : "bottom", gap > 0 ? "bottom" : "top",
+                gap > 0 ? "or hang the gondola lower under the envelope" : "or hang the gondola closer under the envelope, or "
+                        + "make the envelope a row taller with the shaft where it was");
         if (Math.abs(pitch) >= 10) faults.add(text);
         else notes.add(text);
     }
@@ -1897,7 +1900,7 @@ final class VehicleCheck {
                 + "mass", trimText, listText, v));
         List<String> fix = new ArrayList<>();
         if (Math.abs(pd) >= 0.25) fix.add(String.format(Locale.ROOT, "%.0f mass x blocks toward the %s", Math.abs(a) * b.m, pd > 0 ? ahead : behind));
-        if (Math.abs(ld) >= 0.25) fix.add(String.format(Locale.ROOT, "%.0f toward %s", Math.abs(l) * b.m, ld > 0 ? plusSide : minusSide));
+        if (Math.abs(ld) >= 0.25) fix.add(String.format(Locale.ROOT, "%.0f mass x blocks toward %s", Math.abs(l) * b.m, ld > 0 ? plusSide : minusSide));
         if (!fix.isEmpty()) out.append("; its lift sits ").append(String.join(", ", fix))
                 .append(" of its weight: move the balloon or the gondola's rooms and machines to level it");
         out.append(").\n");

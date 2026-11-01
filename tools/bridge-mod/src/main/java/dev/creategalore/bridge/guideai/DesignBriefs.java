@@ -107,13 +107,15 @@ final class DesignBriefs {
             envelope is a streamlined body, not a box or a ball: round in every cross-section, blunt at the nose, \
             fullest about two fifths back, tapering to a point at the tail, about two to three times as long as it \
             is wide. Size it to the load with room to climb, since every envelope block drags as much as several \
-            blocks of weight: a fatter envelope holds more air per block of skin. The gondola hangs close under the \
-            belly, compact, with the helm at the bow and the engine room behind it. Every engine sits inside that \
+            blocks of weight: a fatter envelope holds more air per block of skin. The gondola hangs under the belly, \
+            compact, with the helm at the bow and the engine room behind it. Every engine sits inside that \
             engine room, where the crew walks to refuel it; shafts carry the power up through the belly and along \
             the envelope's axis (envelope-encased where they pass the skin), never engines on platforms, pods or \
-            decks outside. Push in line with the envelope's middle, where its drag is: a Propeller Bearing fan on \
-            the axis ahead of the nose or behind the tail (or both), or a pair at the widest point on short shaft \
-            arms; never propellers low under the gondola. Big slow fans push most for their engines (each Portable \
+            decks outside. Push through the middle of the drag, which the gondola's own drag pulls a shade under a round \
+            envelope's axis (a tenth of a block off pitches a compact airship a degree or two at full speed; the \
+            airship layout makes its envelope a row taller than wide, or hangs an open deck lower, to put that \
+            middle on the shaft): a Propeller Bearing fan on that line ahead of the nose or behind the tail (or \
+            both), or a pair at the widest point on short shaft arms; never propellers low under the gondola. Big slow fans push most for their engines (each Portable \
             Engine gives 2048 stress; a fan draws 2 per sail per RPM). Steer with the wheel's shafts swinging a \
             Swivel Bearing under the tail that carries a powered Wooden Propeller; throttle the drive line. A \
             balloon hangs with its weight straight under the middle of its air, and on a compact airship that air \

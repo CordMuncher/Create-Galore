@@ -235,7 +235,9 @@ final class PlayerCheck {
                         + "between (or feed it with a funnel or chute from a hold they can reach)");
             }
             if (!cold.isEmpty())
-                notes.add("fuelling " + String.join(", ", cold) + " means standing out in the open air, and at the heights it "
+                notes.add(open ? "fuelling " + String.join(", ", cold) + " is out on the open deck the player asked for, which "
+                        + "freezes from y " + FREEZING + ": Windproof Lining on every armour piece keeps whoever fuels it warm"
+                        : "fuelling " + String.join(", ", cold) + " means standing out in the open air, and at the heights it "
                         + "climbs (from y " + FREEZING + ") that freezes a player in under a minute: better reached from inside a "
                         + "closed room");
 

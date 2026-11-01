@@ -30,12 +30,14 @@
       "Steered with one Steering Wheel, which swings the Swivel Bearing",
       "Throttle: an Analog Transmission",
       "Windproof Lining onto each armour piece",
-      "Nothing here stops it working"
+      "Nothing here stops it working",
+      "fore and aft at full speed"
     ],
     "lacks": [
       "PROBLEM",
       "hangs level, under",
-      "which shows"
+      "which shows",
+      "pitches about"
     ]
   }
 }

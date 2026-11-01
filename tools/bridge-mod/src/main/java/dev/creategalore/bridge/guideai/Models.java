@@ -333,17 +333,13 @@ public final class Models {
         if (sx < 1 || sx > MAX_SIZE || sy < 1 || sy > MAX_SIZE || sz < 1 || sz > MAX_SIZE)
             return Result.problem("Not built: size_x, size_y and size_z must each be 1 to " + MAX_SIZE + ".");
         JsonArray speedsIn = array(input, "speeds");
+        // Speeds and labels carried over from the draft ride with the blocks a move slides; ones written now are where they end up.
+        boolean speedsCarried = speedsIn.isEmpty(), labelsCarried = array(input, "labels").isEmpty();
         if (speedsIn.isEmpty() && draft0 != null && draft0.speeds() != null) speedsIn = draft0.speeds();
         if (speedsIn.isEmpty() && airshipSpeeds != null) speedsIn = airshipSpeeds;
-        Map<BlockPos, Float> set = new HashMap<>();
-        for (JsonElement e : speedsIn) {
-            if (!e.isJsonObject()) continue;
-            JsonObject o = e.getAsJsonObject();
-            set.put(new BlockPos(Diagrams.intOr(o, "x", 0), Diagrams.intOr(o, "y", 0), Diagrams.intOr(o, "z", 0)),
-                    (float) Math.max(-256, Math.min(256, Diagrams.intOr(o, "rpm", 16))));
-        }
-        Drives.setModel(set);
         JsonArray moves = array(input, "move");
+        List<BlockPos[]> slid = new ArrayList<>();
+        List<String> covered = new ArrayList<>();
         for (int i = 0; i < moves.size() && problems.size() < 10; i++) {
             if (!moves.get(i).isJsonObject()) continue;
             JsonObject m = moves.get(i).getAsJsonObject();
@@ -366,8 +362,35 @@ public final class Models {
                 cells.putAll(lifted);
                 continue;
             }
-            lifted.forEach((q, st) -> cells.put(q.offset(d), st));
+            int over = 0;
+            BlockPos first = null;
+            for (Map.Entry<BlockPos, BlockState> e : lifted.entrySet()) {
+                BlockPos t = e.getKey().offset(d);
+                if (cells.put(t, e.getValue()) != null && over++ == 0) first = t;
+            }
+            if (over > 0) covered.add("move " + i + " slid its blocks onto " + over + " block" + (over == 1 ? "" : "s") + " already there"
+                    + " (the first at " + first.getX() + "," + first.getY() + "," + first.getZ() + "), which it replaced");
+            slid.add(new BlockPos[] {new BlockPos(Math.min(x1, x2), Math.min(y1, y2), Math.min(z1, z2)),
+                    new BlockPos(Math.max(x1, x2), Math.max(y1, y2), Math.max(z1, z2)), d});
         }
+        Map<BlockPos, Float> set = new HashMap<>();
+        JsonArray speedsNow = new JsonArray();
+        for (JsonElement e : speedsIn) {
+            if (!e.isJsonObject()) continue;
+            JsonObject o = e.getAsJsonObject();
+            BlockPos at = new BlockPos(Diagrams.intOr(o, "x", 0), Diagrams.intOr(o, "y", 0), Diagrams.intOr(o, "z", 0));
+            if (speedsCarried) at = slide(at, slid);
+            set.put(at, (float) Math.max(-256, Math.min(256, Diagrams.intOr(o, "rpm", 16))));
+            JsonObject n = o.deepCopy();
+            n.addProperty("x", at.getX());
+            n.addProperty("y", at.getY());
+            n.addProperty("z", at.getZ());
+            speedsNow.add(n);
+        }
+        speedsIn = speedsNow;
+        Drives.setModel(set);
+        String coveredNote = covered.isEmpty() ? null : "Note: " + String.join("; ", covered)
+                + ". If that wasn't meant, move those blocks first or take the slide back.";
         Map<Character, BlockState> keys = new HashMap<>();
         java.util.Set<String> undirected = new java.util.TreeSet<>();
         JsonArray palette = array(input, "palette");
@@ -446,6 +469,12 @@ public final class Models {
             JsonObject l = e.getAsJsonObject();
             String text = GuideText.string(l, "text").strip();
             int x = Diagrams.intOr(l, "x", -1), y = Diagrams.intOr(l, "y", -1), z = Diagrams.intOr(l, "z", -1);
+            if (labelsCarried && !slid.isEmpty()) {
+                BlockPos at = slide(new BlockPos(x, y, z), slid);
+                x = at.getX();
+                y = at.getY();
+                z = at.getZ();
+            }
             if (text.isEmpty() || text.length() > 40) problems.add("label " + i + ": text must be 1 to 40 characters");
             else if (!inside(x, sx) || !inside(y, sy) || !inside(z, sz)) problems.add("label " + i + " is outside the model");
             else {
@@ -537,7 +566,7 @@ public final class Models {
         if (check != null && !check.faults().isEmpty() && !showsFault && !draft) {
             return Result.problem("Not built: blocks in it wouldn't work as placed. Fix the model and call again (or "
                     + "set shows_a_fault if it is meant to show a broken build).\n" + (laidOut == null ? "" : laidOut + "\n")
-                    + check.text() + saved);
+                    + (coveredNote == null ? "" : coveredNote + "\n") + check.text() + saved);
         }
         JsonObject model = new JsonObject();
         model.addProperty("type", "model");
@@ -552,6 +581,7 @@ public final class Models {
         model.add("labels", labels);
         if (motion != null) model.add("moving", motion.moving());
         String report = check == null ? "" : check.text();
+        if (coveredNote != null) report = coveredNote + (report.isEmpty() ? "" : "\n" + report);
         if (laidOut != null) report = laidOut + (report.isEmpty() ? "" : "\n" + report);
         if (!steps.isEmpty()) report = (report.isEmpty() ? "" : report + "\n") + stepReport(steps, cells);
         report = (report.isEmpty() ? "" : report + "\n") + tally(cells);
@@ -567,6 +597,14 @@ public final class Models {
         report += saved;
         byte[] picture = !draft ? null : motion == null ? Preview.render(cells, sx, sy, sz) : Preview.render(cells, sx, sy, sz, motion.moved());
         return new Result(model, null, report, draft, picture);
+    }
+
+    /** Where a cell ends up after the slides, in order: a cell inside a slid box moves with it. */
+    private static BlockPos slide(BlockPos p, List<BlockPos[]> slid) {
+        for (BlockPos[] s : slid)
+            if (p.getX() >= s[0].getX() && p.getX() <= s[1].getX() && p.getY() >= s[0].getY() && p.getY() <= s[1].getY()
+                    && p.getZ() >= s[0].getZ() && p.getZ() <= s[1].getZ()) p = p.offset(s[2]);
+        return p;
     }
 
     /**
