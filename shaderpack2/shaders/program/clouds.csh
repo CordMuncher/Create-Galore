@@ -148,6 +148,11 @@ March march(vec3 dir, float limit, float jitter, float pixel) {
     // The powder look: with the sun behind you, the outer billows (little cloud between them and the sun) a little
     // darker than the folds.
     float powder_amount = 0.6 * (0.5 - 0.5 * cos_theta);
+    // How much of the sky's light reaches a cloud's underside: less by day, with the sun's light on the rest of it;
+    // more in rain, and by night, when the moon's light is too faint to set tops apart from bases, so undersides stay
+    // a little under the sky's own colour instead of dark blots on it.
+    float night = 1.0 - smoothstep(0.05, 0.5, luminance(lit.rgb));
+    float base_open = mix(mix(0.35, 0.6, rainStrength), 0.5, night);
 
     float through = 1.0;
     vec3 light = vec3(0.0);
@@ -236,7 +241,7 @@ March march(vec3 dir, float limit, float jitter, float pixel) {
             // up to about a sunlit white face's; the bright forward lobe round the sun goes on top as it is (in
             // display values its peak would square into a glare many times the sun's).
             float up = clamp((y - map.base) / map.tall, 0.0, 1.0);
-            float open = mix(mix(0.35, 0.6, rainStrength), 1.0, up) * (1.0 - 0.4 * body);
+            float open = mix(base_open, 1.0, up) * (1.0 - 0.4 * body);
             float soft = min(direct, 1.0);
             vec3 sample_light = pow(sun * soft * cloud_sun_gain + sky_light * open * cloud_sky_gain
                                     + ground_light * (1.0 - up), vec3(2.2))

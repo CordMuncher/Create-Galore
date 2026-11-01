@@ -60,13 +60,15 @@ pack (`shaderpack/`) stays as a research build; the two share only the DLSS hand
   reads as one flat floor. A slow weather map says where the sky is clear blue, scattered, broken or nearly closed,
   and what kind of cloud is there: flat stratocumulus sheets 12 to 24 blocks deep with gaps, small fair-weather
   cumulus 24 to 40 tall with domed tops, or big cumulus towering up to 95 where the cover is thick; rain closes it
-  into one grey deck. Flat underneath, ragged outlines, round cauliflower billows on top and swirled wisps under the
-  base, a frayed edge about a block across up close (for planes), small loose scraps round the bigger ones; the cores
-  are solid and only the edges thin out. Far above, thin streaks and soft ripples (cirrus and cirrocumulus) in places.
+  into one grey deck. They gather in groups with clear sky between rather than spreading out evenly. Flat
+  underneath, ragged outlines, round cauliflower billows bulging from their tops and sides with a crisp surface, and
+  swirled wisps under the base, a frayed edge about a block across up close (for planes), small loose scraps round
+  the bigger ones; the cores are solid. Far above, thin streaks and soft ripples (cirrus and cirrocumulus) in places.
   Lit by the sun through the cloud between (white tops, shade in the crevices and on the far side, silver edges round
   the sun, which burns through thin parts, and with the sun behind you the darker "powder" look of real cumulus) and
-  by the sky from above (grey-blue undersides), gold and pink at dusk and dawn, moonlit at night; they fade into the
-  sky's colour far off and reach 5000 blocks. The look along each pixel crosses empty air in coarse steps and goes
+  by the sky from above (grey-blue undersides), gold and pink at dusk and dawn, moonlit at night (undersides a little
+  under the sky's colour); they fade into the sky's colour far off and reach 5000 blocks. Seen from above, the land's
+  haze stays behind them. The look along each pixel crosses empty air in coarse steps and goes
   back over the stretch where it found cloud in fine ones, so their edges hold still from frame to frame, and detail
   too fine to show at a distance gives way to its average so nothing far off flickers. The game's clock moves them
   (they don't jump, they are where they were when you reload, and with the daylight cycle stopped they stop too) at

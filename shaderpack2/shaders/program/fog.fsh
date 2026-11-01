@@ -23,6 +23,10 @@ uniform sampler2D colortex0;
 uniform sampler2D colortex6; // the water's surface (see lib/buffers.glsl)
 uniform sampler2D colortex8; // its reflection (program/water_reflect.csh)
 uniform sampler2D colortex9; // the light shafts under water (program/water_shafts.csh)
+#if defined SUNLIGHT && defined VOLUME_CLOUDS
+layout(rgba16f) readonly uniform image2D cg_cloud_img; // see clouds.csh
+#include "/lib/clouds.glsl"
+#endif
 uniform sampler2D depthtex1; // without clouds, water, glass and particles
 uniform int isEyeInWater;
 uniform ivec2 eyeBrightnessSmooth;
@@ -188,6 +192,17 @@ void main() {
         float haze = sqr(1.0 - exp(-min(dist, far_end) * density));
         float border = smoothstep(far_end * 0.8, far_end, dist);
         haze = max(haze * 0.7, border);
+#ifdef VOLUME_CLOUDS
+        // Clouds in front of the land (seen from above them, or round a mountain in them) were laid over it already
+        // (program/deferred_light.fsh) and carry their own haze: this one is only for the land's light behind them.
+        float bottom = cloud_bottom();
+        float surface_y = cameraPosition.y + scene.y;
+        float y0 = cameraPosition.y;
+        if (solid > 0.0 && clouds_here() && !(y0 < bottom && surface_y < bottom)
+                && !(y0 > bottom + cloud_depth && surface_y > bottom + cloud_depth)) {
+            haze *= clouds_at(texel, dist).light.a;
+        }
+#endif
         // In the colour of the sky right behind what it hides (its horizon in that direction, or the sky itself
         // above it), so a far hill against the sunset fades into the sunset and one across from it into the blue.
         vec3 behind = normalize(vec3(dir.x, max(dir.y, 0.0) + 0.05, dir.z));
