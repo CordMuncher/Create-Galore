@@ -1,5 +1,6 @@
 package dev.creategalore.bridge.mixin;
 
+import dev.creategalore.bridge.grid.FarHeights;
 import dev.creategalore.bridge.grid.WorldGrid;
 import java.util.Set;
 import net.irisshaders.iris.gl.image.GlImage;
@@ -12,7 +13,10 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-/** The block grid: filled into the pack's images at the start of each frame, before its first pass (see {@link WorldGrid}). */
+/**
+ * The block grid and the far heights: filled into the pack's images at the start of each frame, before its first pass
+ * (see {@link WorldGrid}, {@link FarHeights}).
+ */
 @Pseudo
 @Mixin(targets = "net.irisshaders.iris.pipeline.IrisRenderingPipeline", remap = false)
 public abstract class IrisPipelineWorldGridMixin {
@@ -21,6 +25,7 @@ public abstract class IrisPipelineWorldGridMixin {
     @Inject(method = "beginLevelRendering", at = @At("HEAD"))
     private void create_galore_bridge$worldGrid(CallbackInfo ci) {
         WorldGrid.beginFrame(this, this::create_galore_bridge$gridImage);
+        FarHeights.beginFrame(this, this::create_galore_bridge$gridImage);
     }
 
     @Unique
