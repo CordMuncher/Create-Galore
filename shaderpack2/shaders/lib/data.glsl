@@ -1,9 +1,10 @@
-// The pack's tables of words, in one image (cg_data_img: 4096 words a row, 1552 rows), each 8-block tile's in its tile
+// The pack's tables of words, in one image (cg_data_img: 4096 words a row, 1872 rows), each 8-block tile's in its tile
 // slot (the tile's place in the world modulo the box's tiles, see lib/lights.glsl), enough for the biggest box:
 // - rows 0..127: the light hash (lib/voxel.glsl), 65536 slots of eight words;
 // - rows 128..647: each tile's light list (lib/lights.glsl), 129 words each;
 // - rows 648..779: the lights inside each tile (program/world.csh), 33 words each;
 // - rows 780..1551: each tile's lights as records the per-pixel light reads (program/voxel_light.csh), 193 words each;
+// - rows 1552..1871: the wakes' ripples (lib/wakes.glsl), two copies of their state and then their slope;
 // - the last word of the tiles' light list rows, past the biggest box's lists: the bad frame record (see
 //   lib/bad_frame.glsl).
 //

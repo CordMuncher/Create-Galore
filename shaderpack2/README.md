@@ -81,11 +81,15 @@ pack (`shaderpack/`) stays as a research build; the two share only the DLSS hand
     pattern repeats every 1024 blocks and every hour exactly, so it never jumps. Waves too fine for a pixel to show
     become roughness that spreads the sun's glint and the reflection instead of flickering. Rain roughens the small
     waves and drops rings on open water (option Rain Rings); walking into water sends a ring out from you.
+  - **Wakes**: you, other players, mobs, boats and Sable's ships push the water aside as they go, so ripples spread
+    from them and trail a V behind whatever moves, narrower the faster it goes; a still one leaves the water flat.
+    Worked out 64 blocks round you, fixed to the world, so a wake stays where it was made. The Bridge 1.175.0 (pack
+    0.6.65) or later lists what moves through the water; with an older one there are no wakes.
   - **Reflections** (option Water Reflections): Low the sky and its clouds; Medium what is on screen, then the sky;
     High the world itself traced through the block copy with its blocks' textures (the Bridge hands over the block
     atlas and each block's face maps), lit as the world is lit, so the reflection is the same from wherever you look
-    and holds what is off screen; mobs and Create's machines, which the copy doesn't hold, come from the screen where
-    they are nearer. High works at half the render size, Ultra at full size and further. The textures need the
+    and holds what is off screen; what the copy doesn't hold as solid blocks (mobs, Create's machines, Sable's ships,
+    plants, lamps) comes from the screen where it is nearer. High works at half the render size, Ultra at full size and further. The textures need the
     Bridge 1.174.0 (pack 0.6.64) or later; with an older one a reflected block shows its average colour.
   - **Colour**: light is absorbed red first, so water deepens from clear turquoise over sand to deep blue, tinted by
     the biome's water colour; what lies under it is bent by the waves (option Refraction), never pulling nearer
@@ -124,7 +128,7 @@ pack (`shaderpack/`) stays as a research build; the two share only the DLSS hand
 
 ## Later milestones
 
-Wakes behind boats, mobs and ships; foam; material maps and block reflections (reusing the water's reflection
+Foam; material maps and block reflections (reusing the water's reflection
 trace); soft sun shadows traced through the copy; moving Create contraptions and ships in the copy, and mobs and the player shading lamp light (now they only
 cast sun shadows).
 

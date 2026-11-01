@@ -202,6 +202,7 @@ void main() {
 
 #include "/lib/forward.glsl"
 #include "/lib/water.glsl"
+#include "/lib/wakes.glsl"
 #include "/lib/sky.glsl"
 
 uniform sampler2D depthtex1;
@@ -342,6 +343,8 @@ vec4 shade_water(vec4 base, out float reflected, out vec3 n, out float spread) {
         w.slope += rain_rings(local, rain * (1.0 - smoothstep(10.0, 35.0, distance_away)), footprint, rough);
 #endif
         w.slope += splash_ring(world);
+        // The wakes of what moves through the water (lib/wakes.glsl).
+        w.slope += wake_slope(v_scene_pos);
         if (face.y > 0.0 && !inside) {
             w.slope += facing_tilt(rough, to_eye);
         }

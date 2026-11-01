@@ -41,6 +41,8 @@ add("begin", {"csh": "sky.csh"}, ["SKY_VIEW"], sky_only=True)
 add("begin1", {"csh": "clear.csh"})
 add("begin2", {"csh": "frame.csh"})
 add("begin3", {"csh": "world.csh"})
+# The wakes' ripples, a step a frame (lib/wakes.glsl).
+add("begin4", {"csh": "wakes.csh"})
 
 # The shadow pass (the sun's shadow map): mobs and block entities, then the world's blocks.
 add("shadow", {"vsh": "shadow.vsh", "fsh": "shadow.fsh"})
