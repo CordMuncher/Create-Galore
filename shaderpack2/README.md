@@ -6,7 +6,7 @@ name is for its motion vectors: not only the camera's, but how each moving thing
 contraptions, ships, mobs, the hand), which is what lets DLSS and FSR keep them sharp. The Bridge's Upscaling &
 Display screen picks the upscaler and the render resolution; the pack has no settings of its own for them.
 
-**Work in progress: alpha 0.7.5.** It lives on its own branch and is not in the modpack yet. The first Create Galore
+**Work in progress: alpha 0.7.6.** It lives on its own branch and is not in the modpack yet. The first Create Galore
 pack (`shaderpack/`) stays as a research build; the two share only the DLSS hand-off and the mods' plumbing
 (Colorwheel, Distant Horizons), not their lighting.
 
@@ -32,7 +32,9 @@ pack (`shaderpack/`) stays as a research build; the two share only the DLSS hand
   through where two trapdoors meet at a corner or past the frame of a grate. Per block for everything, and per pixel
   near you for sharp shadows from lamps, sampled at a fraction of the pixels and filtered over frames. Which lights a
   spot gets is kept per 8-block patch of the world, never per part of the screen, so it doesn't change as you look
-  around.
+  around. A block's light is traced again only where something within about 24 blocks of it changed (a block
+  placed or broken, a lamp lit or put out, a portal in view), and every 64 to 128 frames anyway; a lamp whose light
+  can't show on a pixel is skipped there.
 - **Bounce light.** Sunlight, skylight and block light bounce off the blocks around you and take on their colour
   (far off, every other frame).
 - **Light that mixes like display colours**: the sun, the sky and the lamps add up the way the look we follow does,
@@ -56,60 +58,71 @@ pack (`shaderpack/`) stays as a research build; the two share only the DLSS hand
   upscaler keeps them: the brightest come out first at dusk, and a bright moon hides the faint ones and the Milky Way,
   which has dark dust lanes along it. The sun, round, with a tight glow. The moon about twice Minecraft's size
   (option Moon Size), its surface from NASA's maps of the Moon: its seas and craters, lit from the side its phase
-  says so the craters stand out along the line between light and dark, a cool silver-blue, with the Earth's faint
-  light on its dark part and a soft halo. The far haze takes the sky's colour. Sunlight on the land turns warmer at
+  says so the craters stand out along the line between light and dark, a cool silver (about a tenth bluer than red,
+  as the sun is a warm white), with the Earth's faint light on its dark part and a halo of the moonlight the air
+  scatters, half as bright about ten degrees out. The sun and the moon set behind the ground, also where it isn't
+  drawn yet. The far haze takes the sky's colour. Sunlight on the land turns warmer at
   dawn and dusk. Rain greys the sky and hides the sun, the moon and the stars.
 - **Clouds**: a layer of real clouds drawn as a volume, their bases gathering round Y 230 (option Cloud Height),
   always above the pollution's smog, so they never hide what goes on below them. The bases rise and fall over a
   kilometre or two and from cloud to cloud (15 blocks under the layer's height to 20 over it), so the layer never
   reads as one flat floor. A slow weather map says where the sky is clear blue, scattered, broken or nearly closed,
   and what kind of cloud is there: flat stratocumulus sheets 12 to 24 blocks deep with gaps, small fair-weather
-  cumulus 24 to 40 tall with domed tops, or big cumulus towering up to 95 where the cover is thick; rain closes it
-  into one grey deck. They gather in groups with clear sky between rather than spreading out evenly. Flat
-  underneath, ragged outlines, round cauliflower billows bulging from their tops and sides with a crisp surface, and
+  cumulus 24 to 40 tall with domed tops, or big cumulus towering up to 120 where the cover is thick; rain closes it
+  into one grey deck. They gather in groups with clear sky between rather than spreading out evenly. A hard flat base,
+  ragged outlines, round cauliflower billows bulging from their tops and sides with a crisp surface, and
   swirled wisps under the base, a frayed edge about a block across up close (for planes), small loose scraps round
   the bigger ones; the cores are solid. Far above, thin streaks and soft ripples (cirrus and cirrocumulus) in places.
-  Lit by the sun through the cloud between (white tops, shade in the crevices and on the far side, silver edges round
-  the sun, which burns through thin parts, and with the sun behind you the darker "powder" look of real cumulus) and
-  by the sky from above (grey-blue undersides), gold and pink at dusk and dawn, moonlit at night (undersides a little
-  under the sky's colour); they fade into the sky's colour far off and reach 5000 blocks. Seen from above, the land's
-  haze stays behind them. The look along each pixel crosses empty air in coarse steps and goes
+  Lit by the sun through the cloud between, the light scattered again and again inside so a thick cloud's body glows
+  (white tops, shade in the crevices and on the far side, silver edges round the sun, which burns through thin parts,
+  and with the sun behind you the darker "powder" look of real cumulus) and by the sky from above (grey-blue
+  undersides), gold and pink at dusk and dawn, moonlit at night (tops about twice as bright as the night sky round
+  them, undersides a little darker); they fade into the sky's colour far off and reach 5000 blocks. Seen from above,
+  they stay in front of the land's haze, the water and glass. The look along each pixel crosses empty air in coarse steps and goes
   back over the stretch where it found cloud in fine ones, so their edges hold still from frame to frame, and detail
   too fine to show at a distance gives way to its average so nothing far off flickers. The game's clock moves them
   (they don't jump, they are where they were when you reload, and with the daylight cycle stopped they stop too) at
   about a block a second (option Cloud Speed), the wind's direction wandering over days. Every pixel is worked out
   every frame at half the render size each way and smoothed over a few frames, never a fraction of the pixels per
   frame (which makes clouds crawl in motion); DLSS gets their own motion. Their shadows cross the land (option Cloud
-  Shadows). Option Realistic Clouds off gives Minecraft's clouds, lit orange and pink at dusk and dawn.
+  Shadows) and hold still while you climb or drop. Option Realistic Clouds off gives Minecraft's clouds, lit orange and pink at dusk and dawn.
 - **Water** (its own options screen):
   - **Waves** in four layers, the biggest a swell running with the clouds' wind that only builds where there is open
     water up-wind (a pond stays calm, a sea doesn't), the others crossing it, down to ripples a third of a block
     across; crests bend along their length, and stretches hundreds of blocks across run calmer or choppier. The
-    pattern repeats every 1024 blocks and every hour exactly, so it never jumps. Waves too fine for a pixel to show
+    ripples stay on the water as far as a pixel can show them. The pattern repeats every 1024 blocks and every hour exactly, so it never jumps. Waves too fine for a pixel to show
     become roughness that spreads the sun's glint and the reflection instead of flickering. Rain roughens the small
     waves and drops rings on open water (option Rain Rings); walking into water sends a ring out from you.
   - **Wakes**: you, other players, mobs, boats and Sable's ships push the water aside as they go, so ripples spread
     from them and trail a V behind whatever moves, narrower the faster it goes; a still one leaves the water flat.
-    Worked out 64 blocks round you, fixed to the world, so a wake stays where it was made. The Bridge 1.175.0 (pack
-    0.6.65) or later lists what moves through the water; with an older one there are no wakes.
+    A ship's wake grows with the water its hull pushes aside and its band with its draft, so a laden hull throws a
+    big wake and a skiff a small one, and a pointed bow or stern cuts the water to a tip. Worked out 64 blocks round
+    you, fixed to the world, so a wake stays where it was made. The Bridge 1.175.0 (pack 0.6.65) or later lists what
+    moves through the water, and 1.176.0 (pack 0.6.66) or later how big and heavy a ship is in it; with an older one
+    there are no wakes, or ships' are a mob's.
   - **Reflections** (option Water Reflections): Low the sky and its clouds; Medium what is on screen, then the sky;
     High the world itself traced through the block copy with its blocks' textures (the Bridge hands over the block
     atlas and each block's face maps), lit as the world is lit, so the reflection is the same from wherever you look
     and holds what is off screen; what the copy doesn't hold as solid blocks (mobs, Create's machines, Sable's ships,
-    plants, lamps) comes from the screen where it is nearer. High works at half the render size, Ultra at full size and further. The textures need the
-    Bridge 1.174.0 (pack 0.6.64) or later; with an older one a reflected block shows its average colour.
+    plants, lamps) comes from the screen where it is nearer. One look per pixel at every quality; Ultra
+    reaches further. The clouds water mirrors are looked at from the water's own point, so they hold still on it, and
+    as soft as the waves spread them. The textures need the Bridge 1.174.0 (pack 0.6.64) or later; with an older one a
+    reflected block shows its average colour.
   - **Colour**: light is absorbed red first, so water deepens from clear turquoise over sand to deep blue, tinted by
-    the biome's water colour; what lies under it is bent by the waves (option Refraction), never pulling nearer
+    the biome's water colour; a floor fades into the water's own colour within about 15 blocks of water, and deep
+    water is a dark navy-teal body; what lies under it is bent by the waves (option Refraction), never pulling nearer
     things in. Seen from under the surface, the sky shows only through Snell's window and the rest is a mirror.
   - **Caustics**: the waves focus sunlight into moving bright lines on what lies under them, worked out from where
-    the light actually lands (option Caustics); the sun reaches under water along the water in the block copy, so a
+    the light actually lands, once per 2 x 2 pixels (option Caustics); the brightest roll off softly and the lines
+    lose their contrast with depth; the sun reaches under water along the water in the block copy, so a
     dock's shade stays on the floor under it.
   - **Under water**: the water's own fog, light shafts from the sun shaded by what stands over it (option Light
     Shafts), and the surface seen from below.
-  - Distant Horizons' water uses the same waves, colour and sky with clouds, so a sea looks the same across the
-    edge of the loaded chunks.
+  - Distant Horizons' water uses the same waves, colour, floor and sky with clouds, so a sea looks the same across
+    the edge of the loaded chunks, and takes over from Minecraft's pixel by pixel over the last 16 blocks before it.
 - **Light in the air**: a coloured haze around lamps (strongest at night, underground and in the Nether), haze far
-  off, water and lava around you.
+  off (as thick as the air along the look, so from high up the land below is hazed no more than it should be), water
+  and lava around you.
 - **Bloom**, with a bloom fog that softens far lights at dusk and night, in rain and underground; big bright patches
   (lava, fire, glowstone, the sun) bloom more, twice as much in the Nether.
 - **A fixed exposure**: day, night and caves look as dark as they are; the tone curve eases highlights to white and
@@ -177,7 +190,7 @@ notes for its options; `scene_leaks.py` and `scene_regress.py` are examples.
   Bridge's block grid (`begin3`), the wakes (`begin4`), the far sun shadows (`begin5`); the sun's shadow map
   (`shadow_*`); the distance field, the light per block and the
   bounce light (`shadowcomp1` to `3`); the world into the G-buffer; the light per pixel and its filter (`deferred`,
-  `deferred1`); the clouds (`deferred2`, the Overworld only); the lighting (`deferred3`); water, glass and particles lit as they are drawn; the water's
+  `deferred1`); the caustics (`deferred2`); the clouds (`deferred3`, the Overworld only); the lighting (`deferred4`); water, glass and particles lit as they are drawn; the water's
   reflection and the sun's shafts in it (`composite_a`, `composite_b`); the light in the air (`composite1`); the DLSS
   point (`composite2`); the bloom (`composite3` to `13`); the final pass.
 - The pack keeps all its data in images, no storage buffers: Iris takes those only at bindings 0 to 8, and Flywheel
