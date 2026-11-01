@@ -84,12 +84,13 @@ def tex3(comps, dtype, filt=moderngl.NEAREST):
     return t
 
 vox = tex3(1, 'u4')
-sdf = tex3(2, 'f1', moderngl.LINEAR)
+# rg8 until 0.7.6, rgba8 since (blue: the nearest part block's box, program/sdf.csh).
+sdf = tex3(4 if 'rgba8' in (ROOT / 'program/sdf.csh').read_text() else 2, 'f1', moderngl.LINEAR)
 blk = tex3(4, 'f2', moderngl.LINEAR)
 world = tex3(1, 'u4')
 gi = ctx.texture3d((VX * 2, VY, VX), 4, dtype='f2'); gi.filter = (moderngl.LINEAR, moderngl.LINEAR)
 palette = ctx.texture((4096, 304), 1, dtype='u4'); palette.filter = (moderngl.NEAREST, moderngl.NEAREST)
-data = ctx.texture((4096, 1552), 1, dtype='u4'); data.filter = (moderngl.NEAREST, moderngl.NEAREST)
+data = ctx.texture((4096, 1880), 1, dtype='u4'); data.filter = (moderngl.NEAREST, moderngl.NEAREST)
 globals_tex = ctx.texture((9, 1), 4, dtype='f4')
 out_img = ctx.texture((W, H), 4, dtype='f4')
 
@@ -232,6 +233,11 @@ for stage, name in [('begin1.csh', 'clear'), ('begin3.csh', 'world'), ('shadowco
 
 pl = (ROOT / 'program/pixel_light.csh').read_text()
 light_from = re.search(r'vec3 light_from\(.*?\n\}\n', pl, re.S).group(0)
+# Since 0.7.6 the pack lets go of lights too faint to matter (light_let_go); a ROOT from before takes the old call.
+LET_GO_ARGS = ''
+if 'let_go' in light_from:
+    let_go = re.search(r'const float light_let_go = ([0-9.]+);', pl)
+    LET_GO_ARGS = f', {os.environ.get("LET_GO", let_go.group(1) if let_go else "0.0")} * max3(diffuse), dropped'
 DRAW = r'''
 #include "/lib/settings.glsl"
 #include "/lib/trace.glsl"
@@ -263,6 +269,7 @@ void main() {
     vec3 diffuse = vec3(0.0);
     vec3 spec = vec3(0.0);
     int traces = 0;
+    float dropped = 0.0;
     if (u_mode == 0 || u_mode == 2) {
         ivec3 tile;
         if (block_tile_of(p, tile)) {
@@ -272,7 +279,7 @@ void main() {
                 float radius;
                 Light l = load_record(records + 1u + 3u * j, radius);
                 diffuse += light_from(p, p, n, v, 0.0, false, l.pos, l.color, l.reach, radius, 0.0, spec, traces,
-                                      vec3(0.0));
+                                      vec3(0.0)LET_GO_ARGS);
             }
         }
         diffuse = compress_light(diffuse);
@@ -296,7 +303,7 @@ void main() {
     imageStore(lh_out, px, vec4(c * 4.0 * alb.rgb * grid + 0.004 * alb.rgb, 1.0));
 }
 '''
-VIRTUAL['lh_draw'] = DRAW
+VIRTUAL['lh_draw'] = DRAW.replace('LET_GO_ARGS', LET_GO_ARGS)
 draw = compute(program_src('lh_draw'), 'draw')
 
 def setu(prog, name, v):
