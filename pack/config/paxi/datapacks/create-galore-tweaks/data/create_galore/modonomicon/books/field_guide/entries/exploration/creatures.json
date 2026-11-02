@@ -86,6 +86,16 @@
     },
     {
       "type": "modonomicon:text",
+      "title": "Patting",
+      "text": "Any creature or player can be patted (**PatPat**): look at it with nothing in your main hand, hold Shift and right-click. A hand pats its head, it squishes down a little and you hear a soft pat. Keep the keys held to keep patting.\\\n\\\nOn a server, the players nearby see and hear it too."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "A creature that does something of its own on Shift + right-click keeps it: a tamed horse, donkey or llama opens its inventory. It is patted only when that does nothing.\\\n\\\nOther creatures are patted instead of their plain right-click, so a pet dog stays standing and a villager doesn't open trades. Change the keys under Controls, PatPat."
+    },
+    {
+      "type": "modonomicon:text",
       "title": "",
       "text": "Sea creatures: [#](2E5AAC)[Sea Life](entry://ocean/sea_life)[#](). Creature drops feed cooking in [#](2E5AAC)[Farmer's Delight](entry://food/farmers_delight)[#]()."
     }

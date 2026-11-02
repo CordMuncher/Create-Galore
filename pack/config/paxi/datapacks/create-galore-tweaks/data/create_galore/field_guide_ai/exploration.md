@@ -1,4 +1,4 @@
-<!-- sources sha256:f01967032202a1ebd0db13e48d62cdc415679b6fb4650ed8c3f543aac84a1a0f -->
+<!-- sources sha256:c8e4188394a5d77d8aea69e03719f24ce3d3553ccf2c12a18949425cff7c9df1 -->
 # Exploration and Adventure (exploration)
 
 ## exploration/dimensions | Dimensions
@@ -225,4 +225,6 @@
 - Snail Slime [crittersandcompanions:snail_slime_bottle]: glass bottle on any grown snail (Critters' snail, Hybrid Aquatic's scalyfoot snail, the Moon's snail); each snail refills every 5 minutes; a bottle crafts into a slime ball
 - Hybrid Aquatic's **sea slug** fills a bottle with **Sea Bunny Slime** (same 5 minutes); four make a Sea Bunny Slime Block. Hand a Critters **clam** (river fishing treasure) to a Hybrid Aquatic **otter**: it cracks it, a **pearl** 1 time in 4, for Pearl Necklaces. Frogs eat wild dragonflies and leave **froglass**, never tamed ones
 - Twilight Forest animals: **deer** drop venison, leather and antlers like Overworld deer (venison jerky dries from any venison); **boars** drop porkchops, fat and hide; **helmet crabs** drop raw crab and armor shards
+- **Patting (PatPat)**: any creature or player, empty main hand, hold Shift + right-click (keys under Controls, PatPat); a hand pats its head, it squishes, a soft pat sound; held keys keep patting; on a server nearby players see and hear it
+- A creature with its own Shift + right-click keeps it (a tamed horse, donkey or llama opens its inventory) and is patted only when that does nothing; any other creature is patted instead of its plain right-click (a pet dog stays standing, a villager opens no trades)
 - Sea creatures: Sea Life (see ocean/sea_life). Creature drops feed cooking in Farmer's Delight (see food/farmers_delight)

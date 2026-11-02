@@ -5,6 +5,20 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.6.71
+
+### Added
+- Create Galore Bridge 1.181.0.
+- **PatPat.** Pat any animal, mob or other player: with an empty hand, hold Shift and right-click it (change the keys under Controls, PatPat). A hand pats its head, it squishes down a little and you hear a soft pat, and on a server the players nearby see and hear it too. Its settings are under Mods, PatPat, Config.
+- **Creatures keep their own Shift + right-click.** On its own, PatPat takes every Shift + right-click with an empty hand on a creature, so a tamed horse, donkey or llama could no longer open its inventory. In the pack, a creature that does something of its own on Shift + right-click does it, and is patted only when that does nothing. Every other creature is patted instead of its plain right-click: a pet dog stays standing and a villager doesn't open trades.
+- **Field Guide, Creatures: Patting** says how to pat and which creatures keep their own Shift + right-click.
+
+### Fixed
+- Nothing.
+
+### Removed
+- Nothing.
+
 ## 0.6.70
 
 ### Added
