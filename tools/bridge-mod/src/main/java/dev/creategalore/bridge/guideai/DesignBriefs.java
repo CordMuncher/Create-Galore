@@ -98,11 +98,12 @@ final class DesignBriefs {
             Gyroscope. When a draft fails, change the design (more wing, less weight, faster propellers, a biplane).""";
 
     static final String AIRSHIP = """
-            Start every new airship or blimp from build_model's airship: say what the player wants (closed cabin or \
+            Start every airship or blimp you design new from build_model's airship: say what the player wants (closed cabin or \
             open deck, beds, chests, speed, ceiling, wood, colour, style) and the server lays it out by these rules and \
             balances it, so its first version works; then change it with from_draft only where the player asked for \
-            something the wishes don't cover, and keep its heavy parts in place. An open deck is only for a player \
-            who asked for one; above y 192 they need Windproof Lining on their armour. Pick the style from how the \
+            something the wishes don't cover, and keep its heavy parts in place. One the player built stays theirs: \
+            copy it with from_world and improve it in its own shape and look, by the rules below. An open deck is only \
+            for a player who asked for one; above y 192 they need Windproof Lining on their armour. Pick the style from how the \
             player describes it: sleek is long and slim with long fins (more cloth, so it drags more for its engines \
             and turns slower), classic the all-rounder, cargo fat with a boxy cabin for big loads; each gets a trim \
             colour on its fins, a stripe along its top and its propeller blades. When a style can't do what was asked \

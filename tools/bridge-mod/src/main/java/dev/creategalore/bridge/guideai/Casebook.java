@@ -504,15 +504,44 @@ final class Casebook {
         List<BlockPos> blocks = new ArrayList<>();
         for (BlockPos p : BlockPos.betweenClosed(at.offset(b[0], b[1], b[2]), at.offset(b[3], b[4], b[5])))
             if (!level.getBlockState(p).isAir()) blocks.add(p.immutable());
-        Result result = c.has("tool") ? new Result(null, WorldTools.run(GuideText.string(c, "tool"),
+        Result result = c.has("models") ? models(run, c, at, blocks)
+                : c.has("tool") ? new Result(null, WorldTools.run(GuideText.string(c, "tool"),
                 c.has("input") ? c.getAsJsonObject("input") : new JsonObject(), tester(run, c, at), run.server))
                 : new Result(null, MachineCheck.check(level, blocks));
+        PlacedBlocks marks = GuideAi.placed();
+        if (marks != null && c.has("models")) for (BlockPos p : blocks) marks.remove(level, p);
         judge(run, c, result);
         for (BlockPos p : BlockPos.betweenClosed(at.offset(b[0], b[1], b[2]), at.offset(b[3], b[4], b[5])))
             level.setBlock(p, Blocks.AIR.defaultBlockState(), 2 | 16);
         level.getEntities((net.minecraft.world.entity.Entity) null, new net.minecraft.world.phys.AABB(at.offset(b[0], b[1], b[2]).getCenter(),
                 at.offset(b[3], b[4], b[5]).getCenter()).inflate(2), e -> !(e instanceof ServerPlayer)).forEach(e -> e.discard());
         forceLoad(level, at, c, false);
+    }
+
+    /**
+     * A world case's {@code models}: build_model calls made in order, as the book makes them in one answer (sharing its
+     * drafts and design briefs), on the setup's blocks marked as the player's own build, so from_world copies them.
+     * {x}, {y+1}... in an input give absolute coordinates. The text judged is every result, each under its number.
+     */
+    private static Result models(Run run, JsonObject c, BlockPos at, List<BlockPos> blocks) {
+        ServerLevel level = run.server.overworld();
+        PlacedBlocks placed = GuideAi.placed();
+        if (placed == null) return new Result(null, "(no placed-block marks on this server)");
+        for (BlockPos p : blocks) placed.add(level, p, level.getBlockState(p));
+        ServerPlayer player = tester(run, c, at);
+        Models.Copier copier = (a, b, max) -> Builds.copy(player, placed, null, a, b, max);
+        List<Models.Draft> drafts = new ArrayList<>();
+        java.util.Set<String> briefs = new java.util.HashSet<>();
+        StringBuilder text = new StringBuilder();
+        Boolean built = null;
+        int n = 0;
+        for (JsonElement e : array(c, "models")) {
+            JsonObject input = JsonParser.parseString(place(e.toString(), at)).getAsJsonObject();
+            Models.Result r = Models.build(input, level, copier, player, drafts, briefs);
+            built = r.problem() == null;
+            text.append("=== model ").append(++n).append(" ===\n").append(built ? r.check() : r.problem()).append('\n');
+        }
+        return new Result(built, text.toString());
     }
 
     private static int[] box(JsonObject c) {
