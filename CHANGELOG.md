@@ -5,6 +5,23 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.6.69
+
+### Added
+- Create Galore Bridge 1.179.0.
+- **Airship styles.** Ask the Book's laid-out airships come in three looks: sleek (long and slim, about three times as long as wide, with long swept fins), classic (about two and a half times as long as wide, stripped logs at the gondola's corners and lanterns) and cargo (fat, for big loads, with a boxy cabin under a slab roof). Say which you want, or the book picks from how you describe it. A sleek envelope carries more cloth for the air it holds, so it drags more: for a very fast, very high airship the book offers classic or cargo instead.
+- **Airships look the part.** Swept cross fins at the tail (the upright one of envelope cloth, flat Symmetric Sail fins either side), a trim colour on the fins, a stripe along the top and the propeller blades (red on white, white on blue, orange on yellow and so on), propellers with four broad blades, closed cabins with a band of side windows, a stepped keel, overhanging eaves and lanterns under them, and open decks hung on chains with log posts at their corners.
+
+### Fixed
+- **Laid-out airships no longer all look alike.** Every one came out the same: a stubby envelope (1.6 to 2.3 times as long as wide), a plain plank box of a cabin or a raft hung up to 7 blocks down on thin posts. Envelopes now keep to their style's proportions and an open deck hangs at most 6 blocks under the belly.
+- **Flying level at full speed without odd shapes.** The fine trim that keeps a laid-out airship level at full speed is now a ridge of envelope along its top (cloth drags like the rest of the envelope, so each block lifts the middle of the drag a little), instead of a deck hung far down or an envelope made taller than wide. Every laid-out airship still hangs within 1 degree at rest and 1.5 degrees at full speed.
+- **The speed controller is set for the speed asked.** Laid-out airships ran their propellers at the top 128 RPM and overshot the speed asked (13.7 blocks a second for 10), which dipped them more at speed and took more engines. The setting is now just enough for the speed asked and for brisk steering.
+- **Laid-out airships turn briskly.** A long envelope damps turning hard, so a layout that would turn slower than about 3.3 degrees a second now loses to one that doesn't, and a style goes a little shorter than usual when at its usual length nothing reaches the speed and height asked, hangs level and turns.
+- **Field Guide, Designing Aircraft: level at full speed** now explains the ridge of envelope along the top.
+
+### Removed
+- Nothing.
+
 ## 0.6.68
 
 ### Added
