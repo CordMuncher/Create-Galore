@@ -5,6 +5,17 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.6.70
+
+### Added
+- Create Galore Bridge 1.180.0.
+
+### Fixed
+- **Ask the Book improves your own builds as yours.** When you ask the book to improve something you built (an airship of your own shape, a boat, a base), it copies your build and changes it. From its second try on it forgot the build was yours: it was handed its instructions for designing a new airship from scratch and for building a showpiece, and it lost the list of blocks to place and break in your world. Now every try stays your build: it is told to keep your design's shape, look and layout and to change only what you asked for and what keeps it from working, the changes stay outlined on the model and listed by where they go in your world, and the materials list counts only the blocks you have to add (it counted your whole build, so it said you were short of blocks you had already placed).
+
+### Removed
+- Nothing.
+
 ## 0.6.69
 
 ### Added

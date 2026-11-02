@@ -29,8 +29,12 @@ public final class Models {
     static final String[] SHAPES = {"box", "hollow_box", "ellipsoid", "ellipsoid_shell", "streamlined", "streamlined_shell", "repaint"};
 
     /** A model built for the answer being written, kept so the next version can start from it (from_draft). */
+    /**
+     * A model kept for its next version. {@code base} and {@code origin} are set when it changes a build of the player's
+     * (from_world): the copied blocks and world = cell + origin, so every later version stays the player's build.
+     */
     record Draft(Map<BlockPos, BlockState> cells, int sx, int sy, int sz, JsonArray labels, JsonArray moving, String title,
-                 String caption, JsonArray speeds, boolean open) {
+                 String caption, JsonArray speeds, boolean open, Map<BlockPos, BlockState> base, BlockPos origin) {
     }
 
     private Models() {
@@ -290,7 +294,7 @@ public final class Models {
         }
         // A build copied from the world: its blocks are the starting point, and what changes on them is marked.
         Map<BlockPos, BlockState> base = null;
-        BlockPos worldMin = null, offset = null;
+        BlockPos origin = null;
         JsonArray copies = array(input, "from_world");
         if (copies.size() > 1) return Result.problem("Not built: from_world takes one box at most.");
         if (copies.size() == 1 && copies.get(0).isJsonObject()) {
@@ -299,8 +303,8 @@ public final class Models {
             Builds.Copy copy = copier.copy(new BlockPos(Diagrams.intOr(c, "x1", 0), Diagrams.intOr(c, "y1", 0), Diagrams.intOr(c, "z1", 0)),
                     new BlockPos(Diagrams.intOr(c, "x2", 0), Diagrams.intOr(c, "y2", 0), Diagrams.intOr(c, "z2", 0)), MAX_SIZE);
             if (copy.problem() != null) return Result.problem("Not built: " + copy.problem() + ".");
-            offset = new BlockPos(Diagrams.intOr(c, "x", 0), Diagrams.intOr(c, "y", 0), Diagrams.intOr(c, "z", 0));
-            worldMin = copy.min();
+            BlockPos offset = new BlockPos(Diagrams.intOr(c, "x", 0), Diagrams.intOr(c, "y", 0), Diagrams.intOr(c, "z", 0));
+            origin = copy.min().subtract(offset);
             int bx = Math.abs(Diagrams.intOr(c, "x2", 0) - Diagrams.intOr(c, "x1", 0)) + 1,
                     by = Math.abs(Diagrams.intOr(c, "y2", 0) - Diagrams.intOr(c, "y1", 0)) + 1,
                     bz = Math.abs(Diagrams.intOr(c, "z2", 0) - Diagrams.intOr(c, "z1", 0)) + 1;
@@ -325,6 +329,9 @@ public final class Models {
                         : "models 1 to " + have + " so far") + ").");
             draft0 = drafts.get(fromDraft - 1);
             cells.putAll(draft0.cells());
+            // A later version of the player's own build is still theirs: its changes stay marked against what they built.
+            base = draft0.base();
+            origin = draft0.origin();
             open |= draft0.open();
             if (sx == 0) sx = draft0.sx();
             if (sy == 0) sy = draft0.sy();
@@ -553,7 +560,7 @@ public final class Models {
         // Kept for the next version, refused or not: fixing a fault is a few changes on top of it.
         String saved = "";
         if (drafts != null) {
-            drafts.add(new Draft(new HashMap<>(cells), sx, sy, sz, labels, movingIn, title, caption, speedsIn, open));
+            drafts.add(new Draft(new HashMap<>(cells), sx, sy, sz, labels, movingIn, title, caption, speedsIn, open, base, origin));
             saved = "\nThis is model " + drafts.size() + ": start its next version with from_draft " + drafts.size()
                     + " and write only what changes.";
         }
@@ -586,13 +593,22 @@ public final class Models {
         if (!steps.isEmpty()) report = (report.isEmpty() ? "" : report + "\n") + stepReport(steps, cells);
         report = (report.isEmpty() ? "" : report + "\n") + tally(cells);
         // A build to copy, not a few machines explaining a point: what it takes of the player's own materials.
-        String holdings = cells.size() < MIN_HOLDINGS || level == null ? null : Materials.against(cells, player, level.getServer());
+        String holdings;
+        if (base != null) {
+            // The player's own build: they already have what stands; what they need is what the changes place.
+            Map<BlockPos, BlockState> placed = new HashMap<>();
+            changes.forEach((p, broken) -> {
+                if (!broken) placed.put(p, cells.get(p));
+            });
+            holdings = placed.isEmpty() || level == null ? null : Materials.against(placed, player, level.getServer(),
+                    "What the changes place against what the player holds");
+        } else holdings = cells.size() < MIN_HOLDINGS || level == null ? null : Materials.against(cells, player, level.getServer());
         if (holdings != null) report += "\n" + holdings;
         if (!undirected.isEmpty()) report += "\nWritten without a facing or axis, so they took their default (check each is "
                 + "meant that way): " + String.join("; ", undirected) + ".";
         if (base != null) {
             model.add("changes", changeRuns(changes, sx, sy, sz));
-            report = (report.isEmpty() ? "" : report + "\n") + changeReport(changes, cells, base, worldMin.subtract(offset), base.size());
+            report = (report.isEmpty() ? "" : report + "\n") + changeReport(changes, cells, base, origin, base.size());
         }
         report += saved;
         byte[] picture = !draft ? null : motion == null ? Preview.render(cells, sx, sy, sz) : Preview.render(cells, sx, sy, sz, motion.moved());
@@ -979,7 +995,9 @@ public final class Models {
     private static String changeReport(Map<BlockPos, Boolean> changes, Map<BlockPos, BlockState> cells, Map<BlockPos, BlockState> base,
                                        BlockPos origin, int copied) {
         StringBuilder out = new StringBuilder("Copied " + copied + " blocks from the world (world = cell + " + origin.getX() + " "
-                + origin.getY() + " " + origin.getZ() + "). ");
+                + origin.getY() + " " + origin.getZ() + "). It is the player's own design: improve it in its own shape, look and "
+                + "layout, changing only what they asked for and what a PROBLEM needs, never swapping it for a design of yours "
+                + "unless they ask for a new one. ");
         if (changes.isEmpty()) return out.append("Nothing in it changes yet.").toString();
         out.append(changes.size()).append(changes.size() == 1 ? " cell changes" : " cells change").append(", outlined for the "
                 + "player (world x y z):\n");

@@ -474,6 +474,11 @@ final class Materials {
      * and how many they have, with the blocks the model needs that they lack. Null when the player is unknown.
      */
     static String against(Map<BlockPos, BlockState> cells, ServerPlayer player, MinecraftServer server) {
+        return against(cells, player, server, "The model's blocks against what the player holds");
+    }
+
+    /** As {@link #against(Map, ServerPlayer, MinecraftServer)}, the list headed by {@code what} (the blocks it counts). */
+    static String against(Map<BlockPos, BlockState> cells, ServerPlayer player, MinecraftServer server, String what) {
         if (player == null) return null;
         Graph g = graph(server);
         Map<Item, Integer> need = new LinkedHashMap<>();
@@ -497,8 +502,8 @@ final class Materials {
             if (p == null) loose.put(item, n);
             else byRoot.computeIfAbsent(p.root, k -> new LinkedHashMap<>()).put(item, n);
         });
-        StringBuilder out = new StringBuilder("The model's blocks against what the player holds (inventory and storage "
-                + "they opened nearby; what a crafting table or stonecutter makes from a material they hold counts as theirs):\n");
+        StringBuilder out = new StringBuilder(what + " (inventory and storage they opened nearby; what a crafting table "
+                + "or stonecutter makes from a material they hold counts as theirs):\n");
         List<String> shortWood = new ArrayList<>(), shortStone = new ArrayList<>();
         double unitsShortWood = 0, unitsShortStone = 0;
         for (Map.Entry<Item, Map<Item, Integer>> e : byRoot.entrySet()) {

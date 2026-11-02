@@ -45,7 +45,9 @@ One JSON file per case in `cases/`, named `<kind letter><number>-<what>.json`.
 - **world**: `setup` is a list of commands run from the case's spot high above the world. `~` works, and `{x}`,
   `{y+2}` and so on give absolute coordinates (belts need their controller's). After `ticks` (default 40) the live machine
   check runs on every block in `box` (`[x1,y1,z1,x2,y2,z2]` relative to the spot), or `tool` runs there instead. The
-  box is cleared afterwards.
+  box is cleared afterwards. `models` instead is a list of build_model inputs made in order, as the book makes them in
+  one answer (sharing its drafts and design briefs), with the setup's blocks marked as the player's own build so
+  from_world copies them; `{x-4}` and the like work in them too, and every result is judged under its number.
 - **tool**: `tool` and `input` are one tool call, made as a stand-in player holding `inventory`.
 - **answer**: `answer` is a finished answer as the book wrote it and `diagrams` the drawings and models it made; the
   answer audit checks its item ids, recipes and diagrams as it does before a real answer reaches the player.
