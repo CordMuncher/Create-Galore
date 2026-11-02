@@ -1,0 +1,44 @@
+{
+  "title": "A sleek open airship comes back long and slim, with trim-coloured fins and stripe, still level at rest and at speed",
+  "from": "2026-11-02 looks pass (pack 0.6.69): the laid-out airships all looked alike; styles, trim, swept cross fins and a levelling ridge",
+  "roots": [
+    "R3"
+  ],
+  "kind": "model",
+  "model": {
+    "title": "Sleek",
+    "size_x": 0,
+    "size_y": 0,
+    "size_z": 0,
+    "airship": [
+      {
+        "enclosed": false,
+        "beds": 1,
+        "storage": 0,
+        "speed": 10,
+        "ceiling": 210,
+        "wood": "spruce",
+        "colour": "white",
+        "style": "sleek"
+      }
+    ],
+    "draft": true
+  },
+  "expect": {
+    "built": true,
+    "has": [
+      "A sleek airship",
+      "long and slim",
+      "red trim",
+      "reaches 10 blocks/s and y 210",
+      "Nothing here stops it working",
+      "fore and aft at full speed"
+    ],
+    "lacks": [
+      "PROBLEM",
+      "comes nearest to",
+      "a little shorter than",
+      "pitches about"
+    ]
+  }
+}

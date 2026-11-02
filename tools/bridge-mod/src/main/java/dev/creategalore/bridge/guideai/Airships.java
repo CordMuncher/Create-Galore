@@ -21,7 +21,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FluidState;
 
 /**
- * Airships laid out by the server from a few wishes (open or closed, beds, chests, speed, ceiling, wood, colour), so
+ * Airships laid out by the server from a few wishes (open or closed, beds, chests, speed, ceiling, wood, colour, style), so
  * the book never wires 700 blocks by hand. The layout follows the airship rules the Field Guide teaches: a streamlined
  * envelope with the gondola close under it; the engines inside the gondola; one shaft up through the belly to the
  * envelope's axis, where the fans push in line with the envelope's middle; one Steering Wheel swinging a Wooden
@@ -35,16 +35,30 @@ import net.minecraft.world.level.material.FluidState;
 final class Airships {
     /** The vehicle check's sums: weight per mass, balloon lift per m3, Sable's damping, envelope drag, burner fill. */
     private static final double G = 11, LIFT = 16.5, DAMP = 0.09, ENVELOPE_DRAG = 0.33, BURNER = 500, ENGINE = 2048;
-    private static final int RPM = 128;
+    /** The speed controller's top setting, and the lowest it is turned down to so as not to overshoot the wished speed. */
+    private static final int RPM = 128, MIN_RPM = 48;
+    /**
+     * Turns at least this fast, degrees a second, where the speed controller can give it, and never slower than the
+     * least (the vehicle check refuses 3).
+     */
+    private static final double TURN = 4.5, TURN_MIN = 3.3;
     /** Hangs this level or better fore and aft and side to side, in degrees (the vehicle check notes 1.5 and refuses 5). */
     private static final double LEVEL = 1.0, SPEED_LEVEL = 1.5;
-    /** How many blocks lower than close under the belly an open deck may hang, on longer posts. */
-    static final int MAX_HANG = 3;
+    /** How many blocks lower than close under the belly an open deck may hang, on longer chains. */
+    static final int MAX_HANG = 2;
+    /** The most steps of ridge along the envelope's top (see lay): a line nose to fin, then a pair either side. */
+    static final int MAX_DORSAL = 48;
 
     static final List<String> WOODS = List.of("oak", "spruce", "birch", "jungle", "acacia", "dark_oak", "mangrove", "cherry",
             "bamboo", "crimson", "warped");
     static final List<String> COLOURS = List.of("white", "light_gray", "gray", "black", "brown", "red", "orange", "yellow", "lime",
             "green", "cyan", "light_blue", "blue", "purple", "magenta", "pink");
+    /** The trim colour each envelope colour gets for its fins, the stripe along its top and its propeller blades. */
+    static final Map<String, String> TRIM = Map.ofEntries(Map.entry("white", "red"), Map.entry("light_gray", "gray"),
+            Map.entry("gray", "black"), Map.entry("black", "red"), Map.entry("brown", "orange"), Map.entry("red", "white"),
+            Map.entry("orange", "brown"), Map.entry("yellow", "orange"), Map.entry("lime", "green"), Map.entry("green", "lime"),
+            Map.entry("cyan", "blue"), Map.entry("light_blue", "blue"), Map.entry("blue", "white"), Map.entry("purple", "magenta"),
+            Map.entry("magenta", "purple"), Map.entry("pink", "magenta"));
 
     private Airships() {
     }
@@ -63,7 +77,43 @@ final class Airships {
     }
 
     /** What the player asked for. */
-    record Spec(boolean enclosed, int beds, int storage, double speed, int ceiling, String wood, String colour) {
+    record Spec(boolean enclosed, int beds, int storage, double speed, int ceiling, String wood, String colour, Style style) {
+    }
+
+    /**
+     * The look asked for. Each keeps the same rules and balancing; it sets the envelope's proportions (how long for its
+     * width, which widths), where the fans may go, the fins (how far forward they start, how far past the envelope's
+     * top line and width their tips reach) and the gondola's trim.
+     */
+    enum Style {
+        /** Long and slim (about 3 times as long as wide), one fan at either end, long fins, a trimmed gondola. */
+        SLEEK(2.7, 3.2, new int[] {7, 9, 11}, new Fan[] {Fan.STERN, Fan.NOSE}, 6, 0, true, false),
+        /** About 2.4 times as long as wide, a fan at either end or both, swept fins, eaves, a log frame and lanterns. */
+        CLASSIC(2.2, 2.6, new int[] {9, 11, 13}, Fan.values(), 5, -1, true, true),
+        /** Fatter (about twice as long as wide) for big loads, a boxy log-framed gondola, short fins. */
+        CARGO(1.8, 2.3, new int[] {11, 13}, Fan.values(), 4, -2, false, true);
+
+        /** How long for its width, at least and at most. */
+        final double ratio, maxRatio;
+        final int[] widths;
+        final Fan[] fans;
+        final int finLength, finHeight;
+        final boolean trimmed, lanterns;
+
+        Style(double ratio, double maxRatio, int[] widths, Fan[] fans, int finLength, int finHeight, boolean trimmed, boolean lanterns) {
+            this.ratio = ratio;
+            this.maxRatio = maxRatio;
+            this.widths = widths;
+            this.fans = fans;
+            this.finLength = finLength;
+            this.finHeight = finHeight;
+            this.trimmed = trimmed;
+            this.lanterns = lanterns;
+        }
+
+        String word() {
+            return name().toLowerCase(Locale.ROOT);
+        }
     }
 
     /** A laid-out airship: model cells from 0, its Rotation Speed Controller's setting, and what was chosen and why. */
@@ -75,21 +125,42 @@ final class Airships {
     }
 
     /**
-     * One layout's choices: envelope width, how many rows taller than wide (each lifts the middle of the drag about half
-     * a block over the fans' shaft, which stays where a round envelope's axis would be), how many blocks lower an open
-     * deck hangs (which lowers that middle a little), length, fans, engines, and the places that trim it.
+     * How the middle of the drag is brought level with the fans' shaft: rows of envelope taller than wide (each lifts
+     * that middle about half a block; the shaft stays where a round envelope's axis would be), blocks an open deck hangs
+     * lower (lowers it a little), and the length of the ridge of cloth along the top, which drags like the envelope
+     * (each block lifts it a hundredth of a block or so).
      */
-    record Knobs(int w, int tall, int hang, int l, Fan fan, int r, int engines, int gz0, int fins, int swivelIn, int steer, int ax, int az) {
+    record Shape(int tall, int hang, int dorsal) {
+    }
+
+    /**
+     * One layout's choices: envelope width, its shape (above), length, fans, engines, the places that trim it and the
+     * speed controller's setting.
+     */
+    record Knobs(int w, Shape shape, int l, Fan fan, int r, int engines, int gz0, int fins, int swivelIn, int steer, int ax, int az,
+                 int rpm) {
+        int tall() {
+            return shape.tall();
+        }
+
+        int hang() {
+            return shape.hang();
+        }
+
+        int dorsal() {
+            return shape.dorsal();
+        }
+
         Knobs with(int gz0, int fins, int swivelIn, int steer) {
-            return new Knobs(w, tall, hang, l, fan, r, engines, gz0, fins, swivelIn, steer, ax, az);
+            return new Knobs(w, shape, l, fan, r, engines, gz0, fins, swivelIn, steer, ax, az, rpm);
         }
 
         Knobs assembler(int x, int z) {
-            return new Knobs(w, tall, hang, l, fan, r, engines, gz0, fins, swivelIn, steer, x, z);
+            return new Knobs(w, shape, l, fan, r, engines, gz0, fins, swivelIn, steer, x, z, rpm);
         }
 
-        Knobs withEngines(int n) {
-            return new Knobs(w, tall, hang, l, fan, r, n, gz0, fins, swivelIn, steer, ax, az);
+        Knobs drive(int n, int rpm) {
+            return new Knobs(w, shape, l, fan, r, n, gz0, fins, swivelIn, steer, ax, az, rpm);
         }
     }
 
@@ -97,10 +168,10 @@ final class Airships {
      * What a layout does, by the vehicle check's sums: mass; where the centre of the balloon's air sits from the centre
      * of mass (along the keel, across it, above it); air, envelope blocks, top speed, ceiling and the drive's stress; how
      * far its fans push above the middle of its drag at top speed, the share of that drag on its weight rather than its
-     * envelope, and the bow-down pitch the push adds (cruise, degrees).
+     * envelope, the bow-down pitch the push adds (cruise, degrees), and how fast the swivel turns it (degrees a second).
      */
     record Numbers(double mass, double along, double across, double above, int air, int airtight, double speed,
-                   double ceiling, double stress, double gap, double share, double cruise) {
+                   double ceiling, double stress, double gap, double share, double cruise, double turn) {
         /** Bow down at rest, degrees. */
         double pitch() {
             return Math.toDegrees(Math.atan2(along, above));
@@ -119,10 +190,17 @@ final class Airships {
             return Math.abs(pitch()) + Math.abs(list()) + 0.5 * Math.abs(atSpeed());
         }
 
-        /** Level at rest and at full speed (where the vehicle check notes 4 degrees of pitch from the push alone). */
+        /**
+         * Level at rest and at full speed (where the vehicle check notes 4 degrees of pitch from the push alone), and
+         * turning with a margin over the vehicle check's 3 degrees a second.
+         */
         boolean level() {
             return Math.abs(pitch()) <= LEVEL && Math.abs(list()) <= LEVEL && Math.abs(atSpeed()) <= SPEED_LEVEL
-                    && Math.abs(cruise) < 3.5;
+                    && Math.abs(cruise) < 3.5 && turns();
+        }
+
+        boolean turns() {
+            return turn >= TURN_MIN;
         }
     }
 
@@ -131,7 +209,7 @@ final class Airships {
     }
 
     /** The cells of one layout (in its own frame, x = 0 on the keel), with the places later steps need. */
-    record Built(Map<BlockPos, BlockState> cells, BlockPos rsc, BlockPos assembler, int floorZ0, int floorZ1, int burners) {
+    record Built(Map<BlockPos, BlockState> cells, BlockPos rsc, BlockPos assembler, int floorZ0, int floorZ1, int burners, int ridge) {
     }
 
     // ---------- the spec ----------
@@ -140,13 +218,14 @@ final class Airships {
         JsonObject o = new JsonObject();
         o.addProperty("type", "object");
         JsonObject p = new JsonObject();
-        p.add("enclosed", WorldTools.prop("boolean", "A closed cabin; false for an open deck (open_by_request), only if asked."));
+        p.add("enclosed", WorldTools.prop("boolean", "Closed cabin; false = open deck (open_by_request), only if asked."));
         p.add("beds", WorldTools.prop("integer", "Beds, 0 to 4."));
         p.add("storage", WorldTools.prop("integer", "Chests, 0 to 8."));
-        p.add("speed", WorldTools.prop("number", "Wanted top speed, blocks/s (8 usable, 11 fast)."));
-        p.add("ceiling", WorldTools.prop("integer", "Wanted ceiling, y (200 clears mountains)."));
+        p.add("speed", WorldTools.prop("number", "Top speed, blocks/s (8 usable, 11 fast)."));
+        p.add("ceiling", WorldTools.prop("integer", "Ceiling, y (200 clears mountains)."));
         p.add("wood", WorldTools.prop("string", "Gondola wood, such as spruce."));
         p.add("colour", WorldTools.prop("string", "Envelope dye colour."));
+        p.add("style", WorldTools.prop("string", "sleek, classic or cargo look."));
         o.add("properties", p);
         JsonArray req = new JsonArray();
         p.keySet().forEach(req::add);
@@ -169,13 +248,22 @@ final class Airships {
         String colour = GuideText.string(o, "colour").strip().toLowerCase(Locale.ROOT).replace(' ', '_').replace("grey", "gray");
         if (wood.isEmpty()) wood = "spruce";
         if (colour.isEmpty()) colour = "white";
+        String look = GuideText.string(o, "style").strip().toUpperCase(Locale.ROOT);
+        Style style = Style.CLASSIC;
+        if (!look.isEmpty()) {
+            try {
+                style = Style.valueOf(look);
+            } catch (IllegalArgumentException e) {
+                problems.add("airship style must be sleek, classic or cargo");
+            }
+        }
         if (beds < 0 || beds > 4) problems.add("airship beds must be 0 to 4");
         if (storage < 0 || storage > 8) problems.add("airship storage must be 0 to 8 chests");
         if (speed < 3 || speed > 16) problems.add("airship speed must be 3 to 16 blocks/s");
         if (ceiling < 100 || ceiling > 280) problems.add("airship ceiling must be y 100 to 280");
         if (!WOODS.contains(wood)) problems.add("airship wood must be one of " + String.join(", ", WOODS));
         if (!COLOURS.contains(colour)) problems.add("airship colour must be one of " + String.join(", ", COLOURS));
-        return new Spec(enclosed, beds, storage, speed, ceiling, wood, colour);
+        return new Spec(enclosed, beds, storage, speed, ceiling, wood, colour, style);
     }
 
     // ---------- the search ----------
@@ -187,39 +275,61 @@ final class Airships {
             problems.add(parts.missing);
             return null;
         }
-        // Sizes: for each envelope width, fan and fan size, the envelope lengths that reach the ceiling, as tall as
-        // keeps it level at speed. The gondola sits roughly under the middle for now.
+        // As long for its width as the style asks; if none of those does what was asked, hangs level and turns briskly
+        // (a long envelope drags more and damps turning harder), a little shorter.
+        String[] why = new String[1];
+        double ratio = spec.style().ratio;
+        Try best = search(spec, parts, ratio, why);
+        if (best == null || rank(spec, best) > 0) {
+            double shorter = Math.max(1.7, ratio - 0.5);
+            Try alt = search(spec, parts, shorter, why);
+            if (alt != null && (best == null || better(spec, alt, best))) {
+                best = alt;
+                ratio = shorter;
+            }
+        }
+        if (best == null) {
+            problems.add(why[0]);
+            return null;
+        }
+        return finish(spec, best, !meets(spec, best.n), ratio);
+    }
+
+    /** The best layout with envelopes at least ratio times as long as wide, or null with why. */
+    private static Try search(Spec spec, Parts parts, double ratio, String[] why) {
+        // Sizes: for each envelope width, fan and fan size, the envelope lengths that reach the ceiling, shaped to keep it
+        // level at speed. The gondola sits roughly under the middle for now.
         List<Try> sized = new ArrayList<>();
-        for (int w : new int[] {9, 11, 13, 15})
-            for (Fan fan : Fan.values())
-                for (int r = 3; r <= 8; r++) {
-                    int longest = Math.min((int) (2.6 * w), 28), shortest = Math.max(w + 6, (int) Math.ceil(1.5 * w));
-                    List<Try> plain = lengths(spec, parts, w, 0, 0, shortest, longest, fan, r);
+        for (int w : spec.style().widths)
+            for (Fan fan : spec.style().fans)
+                for (int r = 2; r <= 4; r++) {
+                    // No longer than the style has it, nor than the model allows with its fans.
+                    int longest = Math.min((int) Math.round(spec.style().maxRatio * w), 28), shortest = Math.min(longest, (int) Math.ceil(ratio * w));
+                    List<Try> plain = lengths(spec, parts, w, new Shape(0, 0, 0), shortest, longest, fan, r);
                     if (plain.isEmpty()) continue;
                     // On the envelope's axis the fans push above the middle of the drag, which the gondola's weight
                     // pulls under the axis, so at speed the bow dips: a tenth of a block of that is a degree or two.
-                    // Each row of height on the envelope lifts the drag's middle about half a block; an open deck
-                    // hung a block lower lowers it a little and steadies the hang. Take what levels it best.
-                    Try first = plain.get(0);
-                    int tall = 0, hang = 0;
-                    double off = Math.abs(first.n.cruise());
-                    for (int t = 0; t <= 2 && off > 0.5; t++)
-                        for (int h = 0; h <= (spec.enclosed() ? 0 : MAX_HANG) && off > 0.5; h++) {
-                            if (t == 0 && h == 0) continue;
-                            Try x = sizing(spec, parts, w, t, h, first.k.l(), fan, r);
-                            if (x == null) {
-                                List<Try> xs = lengths(spec, parts, w, t, h, shortest, longest, fan, r);
-                                x = xs.isEmpty() ? null : xs.get(0);
-                            }
-                            if (x == null || Math.abs(x.n.cruise()) >= off - 0.2) continue;
-                            off = Math.abs(x.n.cruise());
-                            tall = t;
-                            hang = h;
+                    // A ridge of cloth along the top lifts that middle in fine steps (cloth drags like the envelope);
+                    // a row of envelope height lifts it about half a block at once, and an open deck hung a block
+                    // lower lowers it a little. Height and hang cost looks (a rounder envelope, longer chains), so each
+                    // must earn its place; the ridge is sized to what's left.
+                    int l = plain.get(0).k.l();
+                    Shape shape = null;
+                    double best = Double.MAX_VALUE;
+                    for (int t = 0; t <= 2 && best > 0.3; t++)
+                        for (int h = 0; h <= (spec.enclosed() ? 0 : MAX_HANG); h++) {
+                            Try x = finned(spec, parts, w, t, h, l, shortest, longest, fan, r);
+                            if (x == null) continue;
+                            double score = Math.abs(x.n.cruise()) + 0.3 * t + 0.4 * h;
+                            if (score >= best - 0.05) continue;
+                            best = score;
+                            shape = x.k.shape();
                         }
-                    sized.addAll(tall == 0 && hang == 0 ? plain : lengths(spec, parts, w, tall, hang, shortest, longest, fan, r));
+                    if (shape == null) continue;
+                    sized.addAll(lengths(spec, parts, w, shape, shortest, longest, fan, r));
                 }
         if (sized.isEmpty()) {
-            problems.add("no airship layout fits a " + Models.MAX_SIZE + "-block model for these wishes; ask for fewer beds or chests");
+            why[0] = "no airship layout fits a " + Models.MAX_SIZE + "-block model for these wishes; ask for fewer beds or chests";
             return null;
         }
         // What does what was asked, cheapest first: in envelope (wool and drag), then engines (fuel), then fan size;
@@ -237,11 +347,9 @@ final class Airships {
             if (best == null || better(spec, trimmed, best)) best = trimmed;
             if (rank(spec, best) == 0) break;
         }
-        if (best == null) {
-            problems.add("no airship layout for these wishes holds its burner's air; ask for a lower ceiling or fewer beds or chests");
-            return null;
-        }
-        return finish(spec, best, !meets(spec, best.n));
+        if (best == null)
+            why[0] = "no airship layout for these wishes holds its burner's air; ask for a lower ceiling or fewer beds or chests";
+        return best;
     }
 
     /**
@@ -249,17 +357,51 @@ final class Airships {
      * since trimming moves things) and the next two longer: a block of length moves the air's centre about half a
      * block, between two gondola places.
      */
-    private static List<Try> lengths(Spec spec, Parts parts, int w, int tall, int hang, int shortest, int longest, Fan fan, int r) {
+    private static List<Try> lengths(Spec spec, Parts parts, int w, Shape shape, int shortest, int longest, Fan fan, int r) {
         List<Try> out = new ArrayList<>();
         for (int l = shortest; l <= longest && out.size() < 3; l++) {
-            Try t = sizing(spec, parts, w, tall, hang, l, fan, r);
+            Try t = sizing(spec, parts, w, shape, l, fan, r);
             if (t == null) continue;
             if (!out.isEmpty() || t.n.ceiling() >= spec.ceiling() + 4 || l == longest) out.add(t);
         }
         return out;
     }
 
-    /** 0: does what was asked and hangs level; 1: does it; 2: hangs level; 3: neither. */
+    /**
+     * For one envelope height and deck hang, the ridge along the top that brings the drag's middle nearest the fans'
+     * shaft: more ridge, more nose-up at speed, so its length is found by halving. Tried at length l, or if that won't
+     * lay out, the shortest that does.
+     */
+    private static Try finned(Spec spec, Parts parts, int w, int tall, int hang, int l, int shortest, int longest, Fan fan, int r) {
+        java.util.function.IntFunction<Try> at = d -> {
+            Shape shape = new Shape(tall, hang, d);
+            Try x = sizing(spec, parts, w, shape, l, fan, r);
+            if (x != null) return x;
+            List<Try> xs = lengths(spec, parts, w, shape, shortest, longest, fan, r);
+            return xs.isEmpty() ? null : xs.get(0);
+        };
+        Try lo = at.apply(0);
+        if (lo == null || lo.n.gap() <= 0) return lo;
+        Try hi = at.apply(MAX_DORSAL);
+        if (hi == null) return lo;
+        if (hi.n.gap() > 0) return hi;
+        int a = 0, b = MAX_DORSAL;
+        while (b - a > 1) {
+            int mid = (a + b) / 2;
+            Try m = at.apply(mid);
+            if (m == null) break;
+            if (m.n.gap() > 0) {
+                a = mid;
+                lo = m;
+            } else {
+                b = mid;
+                hi = m;
+            }
+        }
+        return Math.abs(lo.n.cruise()) <= Math.abs(hi.n.cruise()) ? lo : hi;
+    }
+
+    /** 0: does what was asked and hangs level (and turns); 1: does it; 2: hangs level; 3: neither. */
     private static int rank(Spec spec, Try t) {
         boolean m = meets(spec, t.n), level = t.n.level();
         return m && level ? 0 : m ? 1 : level ? 2 : 3;
@@ -283,15 +425,24 @@ final class Airships {
         return Math.min(1, n.speed() / spec.speed()) + Math.min(1, (n.ceiling() - 63) / (spec.ceiling() - 63));
     }
 
-    /** One envelope and fan, with the gondola about under the middle and as many engines as the fans need. */
-    private static Try sizing(Spec spec, Parts parts, int w, int tall, int hang, int l, Fan fan, int r) {
+    /**
+     * One envelope and fan, with the gondola about under the middle, the speed controller set to reach the wished speed
+     * with a little to spare (the propellers come in big steps; a faster top speed than asked dips the bow more and
+     * draws more engines), and as many engines as that needs.
+     */
+    private static Try sizing(Spec spec, Parts parts, int w, Shape shape, int l, Fan fan, int r) {
         int gz0 = Math.max(0, (int) Math.round(0.4 * l) - 6);
-        Knobs k = new Knobs(w, tall, hang, l, fan, r, 2, gz0, 1, 0, 1, 1, -1);
-        Try t = evaluate(spec, parts, k);
-        if (t == null) return null;
-        int engines = (int) Math.ceil(t.n.stress() / ENGINE);
-        if (engines > maxEngines(spec)) return null;
-        if (engines != 2) t = evaluate(spec, parts, k.withEngines(Math.max(2, engines)));
+        Try t = evaluate(spec, parts, new Knobs(w, shape, l, fan, r, 2, gz0, 1, 0, 1, 1, -1, RPM));
+        for (int pass = 0; t != null && pass < 3; pass++) {
+            // Top speed goes with the controller's setting, and so do the stress and how fast the swivel turns it, which
+            // stays brisk (a long envelope damps turning hard).
+            double want = Math.max(spec.speed() * 1.03 + 0.1, t.n.speed() * TURN / Math.max(0.1, t.n.turn()));
+            int rpm = Math.max(MIN_RPM, Math.min(RPM, 4 * (int) Math.ceil(t.k.rpm() * want / Math.max(0.1, t.n.speed()) / 4)));
+            int engines = Math.max(2, (int) Math.ceil(t.n.stress() * rpm / t.k.rpm() / ENGINE));
+            if (engines > maxEngines(spec)) return null;
+            if (engines == t.k.engines() && rpm == t.k.rpm()) break;
+            t = evaluate(spec, parts, t.k.drive(engines, rpm));
+        }
         return t;
     }
 
@@ -310,15 +461,17 @@ final class Airships {
         }
         Try best = null;
         for (int gz0 : near)
-            for (int fins = 0; fins <= 2; fins++)
+            for (int fins = 1; fins <= 2; fins++)
                 for (int swivelIn = 0; swivelIn <= 4; swivelIn++)
                     for (int steer : new int[] {1, -1}) {
                         Try t = evaluate(spec, parts, k0.with(gz0, fins, swivelIn, steer));
                         if (t == null || Math.abs(t.n.pitch()) > 6 || t.n.stress() > k0.engines() * ENGINE) continue;
                         t = assembler(spec, parts, t);
                         if (t == null) continue;
-                        if (best == null || t.n.tilt() < best.n.tilt() - 0.05
-                                || Math.abs(t.n.tilt() - best.n.tilt()) <= 0.05 && t.k.swivelIn() < best.k.swivelIn())
+                        // Turning briskly enough first (the swivel nearer the tail turns it harder), then level.
+                        if (best == null || t.n.turns() && !best.n.turns() || t.n.turns() == best.n.turns()
+                                && (t.n.tilt() < best.n.tilt() - 0.05
+                                || Math.abs(t.n.tilt() - best.n.tilt()) <= 0.05 && t.k.swivelIn() < best.k.swivelIn()))
                             best = t;
                     }
         return best;
@@ -398,6 +551,9 @@ final class Airships {
         int x0 = -hw, x1 = hw;
         for (int x = x0; x <= x1; x++)
             for (int z = gz0; z <= gz1; z++) c.put(new BlockPos(x, 0, z), parts.planks);
+        Style style = spec.style();
+        // A trimmed hull: the floor's edge stepped in underneath, like a keel.
+        if (style.trimmed) rim(c, x0, x1, gz0, gz1, 0, true, parts);
         if (spec.enclosed()) {
             for (int y = 1; y <= 3; y++) {
                 for (int z = gz0; z <= gz1; z++) {
@@ -408,21 +564,34 @@ final class Airships {
                     c.put(new BlockPos(x, y, gz0), parts.planks);
                     c.put(new BlockPos(x, y, gz1), parts.planks);
                 }
+                // A frame of logs at the corners.
+                for (int x : new int[] {x0, x1})
+                    for (int z : new int[] {gz0, gz1}) c.put(new BlockPos(x, y, z), parts.log);
             }
             for (int x = x0; x <= x1; x++)
                 for (int z = gz0; z <= gz1; z++) c.put(new BlockPos(x, 4, z), parts.planks);
-            // Windows ahead and down the front of each side, so the pilot sees out.
-            for (int y = 2; y <= 3; y++) {
+            // Eaves: a ring round the roof a block out, of stairs stepping down outward (or plain slabs on a plain box).
+            if (style.trimmed) rim(c, x0 - 1, x1 + 1, gz0 - 1, gz1 + 1, 4, false, parts);
+            else
+                for (int x = x0 - 1; x <= x1 + 1; x++)
+                    for (int z = gz0 - 1; z <= gz1 + 1; z++)
+                        if (x < x0 || x > x1 || z < gz0 || z > gz1) c.put(new BlockPos(x, 4, z), parts.slab);
+            // A wide window ahead, so the pilot sees out, and a band of windows along each side.
+            for (int y = 2; y <= 3; y++)
                 for (int x = x0 + 1; x < x1; x++) c.put(new BlockPos(x, y, gz0), parts.paneX);
-                for (int z = gz0 + 1; z < zp; z++) {
-                    c.put(new BlockPos(x0, y, z), parts.paneZ);
-                    c.put(new BlockPos(x1, y, z), parts.paneZ);
-                }
-                for (int z = zp + 1; z < zb; z += 2) {
-                    c.put(new BlockPos(x0, y, z), parts.paneZ);
-                    c.put(new BlockPos(x1, y, z), parts.paneZ);
+            for (int z = gz0 + 1; z < gz1; z++) {
+                if (z == zp) continue;
+                c.put(new BlockPos(x0, 2, z), parts.paneZ);
+                c.put(new BlockPos(x1, 2, z), parts.paneZ);
+                if (z < zp) {
+                    c.put(new BlockPos(x0, 3, z), parts.paneZ);
+                    c.put(new BlockPos(x1, 3, z), parts.paneZ);
                 }
             }
+            // Lanterns hung under the eaves' corners.
+            if (style.lanterns)
+                for (int x : new int[] {x0 - 1, x1 + 1})
+                    for (int z : new int[] {gz0 - 1, gz1 + 1}) c.put(new BlockPos(x, 3, z), parts.lanternHung);
             c.put(new BlockPos(x0, 1, zp), parts.door(Direction.EAST, false, true));
             c.put(new BlockPos(x0, 2, zp), parts.door(Direction.EAST, true, true));
             c.put(new BlockPos(x1, 1, zp), parts.door(Direction.WEST, false, false));
@@ -436,10 +605,15 @@ final class Airships {
                 c.put(new BlockPos(x, 1, gz0), parts.fence);
                 c.put(new BlockPos(x, 1, gz1), parts.fence);
             }
-            // A gap each side to board by, and a post of planks where the steering shaft leaves the back.
+            // A gap each side to board by, a post where the steering shaft leaves the back, log posts at the corners
+            // and lanterns on the bow's.
             c.remove(new BlockPos(x0, 1, zp));
             c.remove(new BlockPos(x1, 1, zp));
-            c.put(new BlockPos(0, 1, gz1), parts.planks);
+            c.put(new BlockPos(0, 1, gz1), parts.log);
+            for (int x : new int[] {x0, x1})
+                for (int z : new int[] {gz0, gz1}) c.put(new BlockPos(x, 1, z), parts.log);
+            if (style.lanterns)
+                for (int x : new int[] {x0, x1}) c.put(new BlockPos(x, 2, gz0), parts.lantern);
             for (int end : new int[] {gz0, gz1}) {
                 int dir = end == gz0 ? 1 : -1;
                 for (int side : new int[] {-1, 1}) post(c, env, hw, side, end, dir, parts);
@@ -566,20 +740,42 @@ final class Airships {
         c.put(new BlockPos(sx, yLine, zsw), parts.gearboxX);
         for (y = yLine + 1; y < ysw; y++) c.put(new BlockPos(sx, y, zsw), parts.shaft(Direction.Axis.Y));
         c.put(new BlockPos(sx, ysw, zsw), parts.cogY);
-        // Fins of Symmetric Sails: one upright over the tail, and with 2 a flat one out each side.
-        int zf = tail - 2;
-        if (k.fins() >= 1) {
-            int top = env.high(0, zf);
-            for (int z = zf - 1; z <= zf + 1; z++)
-                for (int yy = top + 1; yy <= top + 2; yy++) c.putIfAbsent(new BlockPos(0, yy, z), parts.finUp);
+        // Cross fins over the last fl blocks of the tail, each with a straight swept leading edge from the envelope's
+        // surface out to a straight tip: the upright one of envelope cloth like a real airship's, its tip up to the
+        // envelope's top line (and fr above it), so it grows as the tail tapers under it; with fins 2 a flat one of
+        // Symmetric Sails out each side to the envelope's width (they drag only up and down, steadying the pitch). Running
+        // forward from the upright fin along the top, a ridge of cloth k.dorsal blocks long: cloth drags like the
+        // envelope, so it lifts the middle of the drag a little a block, which is what levels the ship at speed.
+        int fl = spec.style().finLength, fr = spec.style().finHeight, zf = tail - fl + 1;
+        if (env.low(0, zf) == Integer.MIN_VALUE) return null;
+        int up0 = env.high(0, zf) + 1, upTip = ye1 + fr;
+        for (int i = 0; i < fl; i++) {
+            int z = zf + i;
+            if (env.low(0, z) == Integer.MIN_VALUE) continue;
+            int top = up0 + (int) Math.round((upTip - up0) * i / (double) Math.max(1, fl - 1));
+            for (int yy = env.high(0, z) + 1; yy <= top; yy++) c.putIfAbsent(new BlockPos(0, yy, z), parts.trim);
+            if (k.fins() >= 2)
+                for (int side : new int[] {-1, 1}) {
+                    int edge0 = Math.abs(env.edge(side, yc, zf)) + 1, tip = half + fr;
+                    int out = edge0 + (int) Math.round((tip - edge0) * i / (double) Math.max(1, fl - 1));
+                    for (int d = Math.abs(env.edge(side, yc, z)) + 1; d <= out; d++) c.putIfAbsent(new BlockPos(side * d, yc, z), parts.finFlat);
+                }
         }
-        if (k.fins() >= 2)
-            for (int side : new int[] {-1, 1}) {
-                int edge = env.edge(side, yc, zf);
-                for (int z = zf - 1; z <= zf + 1; z++)
-                    for (int d = 1; d <= 2; d++) c.putIfAbsent(new BlockPos(edge + side * d, yc, z), parts.finFlat);
+        // Past the whole length, a line either side of it, in pairs so it stays even, widening it to a band of three.
+        int ridge = 0, left = k.dorsal();
+        for (int[] xs : new int[][] {{0}, {-1, 1}})
+            for (int z = zf - 1; z >= 0 && left > 0; z--) {
+                if (env.low(0, z) == Integer.MIN_VALUE) continue;
+                left--;
+                for (int x : xs)
+                    if (env.low(x, z) != Integer.MIN_VALUE && c.putIfAbsent(new BlockPos(x, env.high(x, z) + 1, z), parts.trim) == null) ridge++;
             }
-        return new Built(c, rsc, assembler, gz0 + 1, gz1 - 1, burnerXs.length);
+        // A stripe of the trim colour along the top, nose to fin, which the ridge rises from.
+        for (int z = 0; z < l; z++) {
+            BlockPos p = new BlockPos(0, env.high(0, z), z);
+            if (c.get(p) == parts.envelope) c.put(p, parts.trim);
+        }
+        return new Built(c, rsc, assembler, gz0 + 1, gz1 - 1, burnerXs.length, ridge);
     }
 
     /** A shaft along an axis, encased in envelope where it passes through the skin so the balloon stays sealed. */
@@ -588,30 +784,52 @@ final class Airships {
         c.put(p, skin ? parts.encased(axis) : parts.shaft(axis));
     }
 
-    /** A Propeller Bearing facing out along the keel, its casing and a cross of sails r long each way. */
+    /**
+     * A Propeller Bearing facing out along the keel, its casing and four blades r long, each two sails broad and set
+     * round the hub like a propeller's (8 x r sails): a compact propeller, where a thin cross r long reads as a windmill.
+     */
     private static void fan(Map<BlockPos, BlockState> c, BlockPos bearing, Direction facing, int r, Parts parts) {
         c.put(bearing, parts.bearing(facing));
         BlockPos hub = bearing.relative(facing);
         c.put(hub, parts.casing);
         for (int d = 1; d <= r; d++) {
             c.put(hub.offset(d, 0, 0), parts.sail(facing));
-            c.put(hub.offset(-d, 0, 0), parts.sail(facing));
+            c.put(hub.offset(d, 1, 0), parts.sail(facing));
             c.put(hub.offset(0, d, 0), parts.sail(facing));
+            c.put(hub.offset(-1, d, 0), parts.sail(facing));
+            c.put(hub.offset(-d, 0, 0), parts.sail(facing));
+            c.put(hub.offset(-d, -1, 0), parts.sail(facing));
             c.put(hub.offset(0, -d, 0), parts.sail(facing));
+            c.put(hub.offset(1, -d, 0), parts.sail(facing));
         }
     }
 
     /**
-     * A fence post from the rail up to the envelope at one end of the gondola, as near its corner as the envelope
-     * above allows (Super Glue holds the gondola to the envelope through it).
+     * The edge of a gondola layer (floor or roof) as stairs stepping down outward (the roof's eaves) or, under, stepped
+     * in (the floor's keel); their full side stays inward, so the cabin stays closed.
+     */
+    private static void rim(Map<BlockPos, BlockState> c, int x0, int x1, int z0, int z1, int y, boolean under, Parts parts) {
+        for (int x = x0; x <= x1; x++) {
+            c.put(new BlockPos(x, y, z0), parts.stairs(Direction.SOUTH, under));
+            c.put(new BlockPos(x, y, z1), parts.stairs(Direction.NORTH, under));
+        }
+        for (int z = z0 + 1; z < z1; z++) {
+            c.put(new BlockPos(x0, y, z), parts.stairs(Direction.EAST, under));
+            c.put(new BlockPos(x1, y, z), parts.stairs(Direction.WEST, under));
+        }
+    }
+
+    /**
+     * A chain from the deck up to the envelope near one end of the gondola, a block in from its corner post and as near
+     * it as the envelope above allows, like an airship's rigging (Super Glue holds the gondola to the envelope through it).
      */
     private static void post(Map<BlockPos, BlockState> c, Envelope env, int hw, int side, int end, int dir, Parts parts) {
-        for (int in = 0; in <= 4; in++)
+        for (int in = 1; in <= 4; in++)
             for (int x = hw; x >= 1; x--) {
                 int z = end + dir * in, px = side * x;
                 int low = env.low(px, z);
                 if (low == Integer.MIN_VALUE || low > env.ay + 5) continue;
-                for (int y = 1; y < low; y++) c.put(new BlockPos(px, y, z), parts.fence);
+                for (int y = 1; y < low; y++) c.put(new BlockPos(px, y, z), parts.chain);
                 return;
             }
     }
@@ -738,6 +956,7 @@ final class Airships {
         int airtight = 0;
         double stress = 0, force = 0, overAir = 0;
         double p0 = VehicleCheck.pressure(100);
+        int rpm = k.rpm();
         int minX = Integer.MAX_VALUE, minY = Integer.MAX_VALUE, minZ = Integer.MAX_VALUE, maxX = Integer.MIN_VALUE,
                 maxY = Integer.MIN_VALUE, maxZ = Integer.MIN_VALUE;
         BlockPos burner = null;
@@ -764,19 +983,19 @@ final class Airships {
                 burners++;
             }
             if (id.equals("aeronautics:propeller_bearing")) {
-                int sails = 4 * k.r();
-                double f = 0.2 * Math.pow(sails, 1.5) * RPM;
+                int sails = 8 * k.r();
+                double f = 0.2 * Math.pow(sails, 1.5) * rpm;
                 force += f * p0;
-                overAir += f * p0 / (0.05 * Math.sqrt(sails) * RPM);
-                stress += 2.0 * sails * RPM;
-                props.add(new double[] {f * p0, 0.05 * Math.sqrt(sails) * RPM, p.getY() + 0.5});
+                overAir += f * p0 / (0.05 * Math.sqrt(sails) * rpm);
+                stress += 2.0 * sails * rpm;
+                props.add(new double[] {f * p0, 0.05 * Math.sqrt(sails) * rpm, p.getY() + 0.5});
             } else if (id.equals("aeronautics:wooden_propeller")) {
-                force += RPM * p0;
-                overAir += RPM * p0 / (0.1 * RPM);
-                stress += 4.0 * RPM;
-                props.add(new double[] {RPM * p0, 0.1 * RPM, p.getY() + 0.5});
+                force += rpm * p0;
+                overAir += rpm * p0 / (0.1 * rpm);
+                stress += 4.0 * rpm;
+                props.add(new double[] {rpm * p0, 0.1 * rpm, p.getY() + 0.5});
             } else {
-                stress += Parts.impact(s) * RPM;
+                stress += Parts.impact(s) * rpm;
             }
         }
         if (burner == null || m <= 0) return null;
@@ -816,9 +1035,20 @@ final class Airships {
         }
         double gap = push <= 0 || drag <= 0 ? 0 : pushY / push - dragY / drag;
         double cruise = above <= 0 ? 0 : Math.toDegrees(Math.asin(Math.max(-1, Math.min(1, drag * gap / (G * m * above)))));
+        // Turning (the vehicle check's sums): the Wooden Propeller on the swivel at full lock, about the centre of mass,
+        // against Sable's damping of the yaw and each envelope block's drag at its distance.
+        double damp = 0, arm = 0;
+        for (Map.Entry<BlockPos, BlockState> e : c.entrySet()) {
+            BlockPos p = e.getKey();
+            double r2 = Math.pow(p.getX() + 0.5 - mx, 2) + Math.pow(p.getZ() + 0.5 - mz, 2);
+            damp += DAMP * Parts.mass(e.getValue()) * (1 / 6.0 + r2);
+            if (Parts.airtight(e.getValue())) damp += ENVELOPE_DRAG * p0 * r2;
+            if (Parts.id(e.getValue()).equals("simulated:swivel_bearing")) arm = Math.abs(p.getZ() + 0.5 - mz);
+        }
+        double turn = damp <= 0 ? 0 : Math.toDegrees(rpm * p0 * Math.sin(Math.toRadians(45)) * arm / damp);
         // Along the keel, toward the stern (+z) positive: lift there leaves the bow down.
         return new Numbers(m, az - mz, ax - mx, above, air.size(), airtight, speed, ceiling, stress, gap,
-                DAMP * m / linear, cruise);
+                DAMP * m / linear, cruise, turn);
     }
 
     /** The balloon's air, filled the way the vehicle check (and Aeronautics) fills it from the burner. */
@@ -887,7 +1117,7 @@ final class Airships {
 
     // ---------- the result ----------
 
-    private static Layout finish(Spec spec, Try t, boolean missed) {
+    private static Layout finish(Spec spec, Try t, boolean missed, double ratio) {
         Map<BlockPos, BlockState> cells = t.b.cells();
         int minX = Integer.MAX_VALUE, minY = Integer.MAX_VALUE, minZ = Integer.MAX_VALUE, maxX = Integer.MIN_VALUE,
                 maxY = Integer.MIN_VALUE, maxZ = Integer.MIN_VALUE;
@@ -903,28 +1133,49 @@ final class Airships {
         Map<BlockPos, BlockState> out = new LinkedHashMap<>();
         cells.forEach((p, s) -> out.put(p.offset(shift), s));
         int sx = maxX - minX + 1, sy = maxY - minY + 1, sz = maxZ - minZ + 1;
-        Map<BlockPos, Float> speeds = Map.of(t.b.rsc().offset(shift), (float) RPM);
+        Map<BlockPos, Float> speeds = Map.of(t.b.rsc().offset(shift), (float) t.k.rpm());
         Knobs k = t.k;
         Numbers n = t.n;
         BlockPos rsc = t.b.rsc().offset(shift);
         StringBuilder s = new StringBuilder("Laid out by the server from airship (for you: tell the player what it is and how "
                 + "to build and fly it):\n");
-        s.append(String.format(Locale.ROOT, "- A %d x %d x %d (wide, tall, long) %s envelope (streamlined, %d blocks, %d m3 of air) "
-                        + "over a %d x %d %s %s; %d x %d x %d in all, bow toward -z.\n", k.w(), k.w() + k.tall(), k.l(),
-                spec.colour().replace('_', ' '), n.airtight(), n.air(), 2 * halfWidth(spec) + 1, t.b.floorZ1() - t.b.floorZ0() + 3,
-                spec.wood().replace('_', ' '), spec.enclosed() ? "closed gondola close under its belly"
-                        : "open gondola, its deck " + (4 + k.hang()) + " blocks under the belly on fence posts", sx, sy, sz));
+        Style style = spec.style();
+        s.append(String.format(Locale.ROOT, "- A %s airship: a %d x %d x %d (wide, tall, long) %s envelope (streamlined, %d blocks, "
+                        + "%d m3 of air) over a %d x %d %s %s; %d x %d x %d in all, bow toward -z.\n", style.word(), k.w(),
+                k.w() + k.tall(), k.l(), spec.colour().replace('_', ' '), n.airtight(), n.air(), 2 * halfWidth(spec) + 1,
+                t.b.floorZ1() - t.b.floorZ0() + 3, spec.wood().replace('_', ' '), spec.enclosed() ? "closed gondola close under its belly"
+                        : "open gondola, its deck " + (4 + k.hang()) + " blocks under the belly on chains", sx, sy, sz));
+        String trim = TRIM.getOrDefault(spec.colour(), spec.colour()).replace('_', ' ');
+        String shorter = ratio < style.ratio ? ": a little shorter than a " + style.word() + " envelope usually is, as at its "
+                + "usual length none did what was asked, hung level and turned briskly" : "";
+        String gondola = spec.enclosed() ? switch (style) {
+            case SLEEK -> "the cabin's floor stepped in underneath like a keel and eaves stepping down round its roof";
+            case CLASSIC -> "a stepped keel and eaves, stripped logs at the cabin's corners and lanterns under the eaves";
+            case CARGO -> "a plain box of a cabin framed in stripped logs under a slab roof, with lanterns at its corners";
+        } + "; a wide window ahead and a band of windows along each side" : switch (style) {
+            case SLEEK, CLASSIC -> "a railed deck, its edge stepped in underneath like a keel, log posts at its corners"
+                    + (style.lanterns ? " and lanterns on the bow's" : "");
+            case CARGO -> "a railed deck with log posts at its corners and lanterns on the bow's";
+        } + ", hung on chains";
+        s.append("- Its look: " + switch (style) {
+            case SLEEK -> String.format(Locale.ROOT, "long and slim (%.1f times as long as wide%s), long swept fins", k.l() / (double) k.w(), shorter);
+            case CLASSIC -> String.format(Locale.ROOT, "%.1f times as long as wide%s, swept fins", k.l() / (double) k.w(), shorter);
+            case CARGO -> String.format(Locale.ROOT, "a fat envelope for its load (%.1f times as long as wide%s), short fins", k.l() / (double) k.w(), shorter);
+        } + "; " + gondola + String.format(Locale.ROOT, "; %s trim: the upright fin and a stripe along the "
+                + "top in %s envelope, the side fins and propeller blades dyed %s. Add light trim of your own if the player wants "
+                + "it (banners, trapdoor shutters, a flag): it changes the balance little.\n", trim, trim, trim));
         String fans = switch (k.fan()) {
-            case STERN -> "a " + 4 * k.r() + "-sail fan behind the tail";
-            case NOSE -> "a " + 4 * k.r() + "-sail fan ahead of the nose";
-            case BOTH -> "two " + 4 * k.r() + "-sail fans, one ahead of the nose and one behind the tail";
+            case STERN -> "a " + 8 * k.r() + "-sail propeller behind the tail";
+            case NOSE -> "a " + 8 * k.r() + "-sail propeller ahead of the nose";
+            case BOTH -> "two " + 8 * k.r() + "-sail propellers, one ahead of the nose and one behind the tail";
         };
         s.append(String.format(Locale.ROOT, "- %s %s, driven by %d Portable Engines in the gondola through "
-                        + "the Rotation Speed Controller at %d,%d,%d (set it to %d RPM) and one shaft up through the belly; "
+                        + "the Rotation Speed Controller at %d,%d,%d (set it to %d RPM%s) and one shaft up through the belly; "
                         + "the engines' %.0f stress units cover the %.0f the propellers and swivel draw.\n",
                 Character.toUpperCase(fans.charAt(0)) + fans.substring(1), k.tall() == 0 ? "on the envelope's axis"
-                        : "on a shaft " + (k.w() - 1) / 2 + " blocks above the envelope's bottom row", k.engines(), rsc.getX(), rsc.getY(), rsc.getZ(), RPM,
-                k.engines() * ENGINE, n.stress()));
+                        : "on a shaft " + (k.w() - 1) / 2 + " blocks above the envelope's bottom row", k.engines(), rsc.getX(), rsc.getY(), rsc.getZ(), k.rpm(),
+                k.rpm() < RPM ? ": enough for the speed asked and brisk steering, fewer engines and less dip at speed than its top "
+                        + RPM : "", k.engines() * ENGINE, n.stress()));
         s.append("- Flown with one Steering Wheel (it swings the Wooden Propeller on the Swivel Bearing under the tail) and one "
                 + "Throttle Lever (on the Analog Transmission by Redstone Links: give both links the same two frequency items); "
                 + (t.b.burners() > 1 ? "a lever beside each of its two Hot Air Burners turns" : "a lever beside the Hot Air Burner turns")
@@ -934,24 +1185,29 @@ final class Airships {
         s.append(String.format(Locale.ROOT, "- Worked out: about %.1f blocks/s, ceiling about y %.0f, hanging %.1f° fore and aft and "
                         + "%.1f° side to side at rest and %.1f° fore and aft at full speed (the full check below has the exact "
                         + "figures).\n", n.speed(), n.ceiling(), Math.abs(n.pitch()), Math.abs(n.list()), Math.abs(n.atSpeed())));
-        if (k.tall() + k.hang() > 0) {
+        if (k.tall() + k.hang() + t.b.ridge() > 0) {
             // The fans push on the shaft; the air drags on the envelope and the weight, so its middle sits off a round
             // envelope's axis, and a push off the drag's middle pitches it at speed.
             List<String> how = new ArrayList<>();
             if (k.tall() > 0) how.add(String.format(Locale.ROOT, "the envelope is %d block%s taller than wide with the shaft where "
                     + "a round one's axis would be, which lifts that middle", k.tall(), k.tall() == 1 ? "" : "s"));
-            if (k.hang() > 0) how.add(String.format(Locale.ROOT, "the deck hangs %d block%s lower than it needs to on longer posts, "
+            if (t.b.ridge() > 0) how.add(String.format(Locale.ROOT, "a ridge of %d envelope block%s runs forward from the upright fin "
+                    + "on top of the stripe (cloth drags like the envelope), which lifts it a little", t.b.ridge(), t.b.ridge() == 1 ? "" : "s"));
+            if (k.hang() > 0) how.add(String.format(Locale.ROOT, "the deck hangs %d block%s lower than it needs to on longer chains, "
                     + "which lowers it a little and steadies the hang", k.hang(), k.hang() == 1 ? "" : "s"));
             s.append("- Shaped to fly level at full speed too: the gondola drags as well as the envelope, so on a round envelope the "
                     + "middle of the drag sits under the axis and a push there dips the bow. Here " + String.join(", and ", how)
                     + ", so it sits level with the shaft (keep these when you revise it).\n");
         }
         s.append("- Where things are (model cells): ").append(places(out)).append(".\n");
-        s.append(String.format(Locale.ROOT, "- Why this one: of the envelopes tried (9 to 15 wide, fans at the nose, the tail or both), "
-                        + "the smallest, then the fewest engines, that %s; its lift centres only %.1f blocks above its weight, so it was balanced by trying "
-                        + "every place for the gondola, fins, swivel and Physics Assembler.\n",
-                missed ? String.format(Locale.ROOT, "comes nearest to %.0f blocks/s and y %d (no layout up to 15 wide with %d engines "
-                        + "reaches both: tell the player what it does instead)", spec.speed(), spec.ceiling(), maxEngines(spec))
+        String widths = style.widths[0] + " to " + style.widths[style.widths.length - 1] + " wide";
+        s.append(String.format(Locale.ROOT, "- Why this one: of the %s envelopes tried (%s, at least %.1f times as long as wide, "
+                        + "propellers %s), the smallest, then the fewest engines, that %s; its lift centres only %.1f blocks above its "
+                        + "weight, so it was balanced by trying every place for the gondola, fins, swivel and Physics Assembler.\n",
+                style.word(), widths, ratio, style.fans.length == 3 ? "at the nose, the tail or both" : "at the nose or the tail",
+                missed ? String.format(Locale.ROOT, "comes nearest to %.0f blocks/s and y %d (no %s layout with %d engines "
+                        + "reaches both: tell the player what it does instead, or try another style)", spec.speed(), spec.ceiling(),
+                        style.word(), maxEngines(spec))
                         : String.format(Locale.ROOT, "reaches %.0f blocks/s and y %d", spec.speed(), spec.ceiling()), n.above()));
         double tip = Math.toDegrees(Math.atan2(40.0 / n.mass(), n.above()));
         s.append(String.format(Locale.ROOT, "- Keep its heavy parts where they are when you revise it (from_draft): moving 4 mass "
@@ -1001,8 +1257,8 @@ final class Airships {
         private static final Map<BlockState, Double> MASS = new HashMap<>();
         final String missing;
         final BlockState envelope, planks, fence, paneX, paneZ, wheel, throttle, linkOut, linkIn, assembler, burner, lever,
-                engine, chainZ, rsc, largeCogX, gearboxX, gearboxY, gearboxZ, transmission, cogY, cogZ, swivel, woodenProp,
-                casing, finUp, finFlat;
+                trim, engine, chainZ, rsc, largeCogX, gearboxX, gearboxY, gearboxZ, transmission, cogY, cogZ, swivel, woodenProp,
+                casing, finFlat, log, slab, chain, lantern, lanternHung;
         private final Map<String, BlockState> cache = new HashMap<>();
         private final Spec spec;
 
@@ -1010,6 +1266,7 @@ final class Airships {
             this.spec = spec;
             String w = spec.wood(), col = spec.colour();
             envelope = get("aeronautics:" + col + "_envelope");
+            trim = get("aeronautics:" + TRIM.getOrDefault(col, col) + "_envelope");
             planks = get("minecraft:" + w + "_planks");
             fence = get("minecraft:" + w + "_fence");
             paneX = get("minecraft:glass_pane[east=true,west=true]");
@@ -1034,11 +1291,28 @@ final class Airships {
             swivel = get("simulated:swivel_bearing[facing=down]");
             woodenProp = get("aeronautics:wooden_propeller[facing=south]");
             casing = get("create:andesite_casing");
-            finUp = coloured("simulated:%s_symmetric_sail[axis=x]");
-            finFlat = coloured("simulated:%s_symmetric_sail[axis=y]");
+            finFlat = trimmed("simulated:%s_symmetric_sail[axis=y]");
+            log = get(switch (w) {
+                case "bamboo" -> "minecraft:stripped_bamboo_block[axis=y]";
+                case "crimson", "warped" -> "minecraft:stripped_" + w + "_stem[axis=y]";
+                default -> "minecraft:stripped_" + w + "_log[axis=y]";
+            });
+            slab = get("minecraft:" + w + "_slab[type=bottom]");
+            chain = get("minecraft:chain[axis=y]");
+            lantern = get("minecraft:lantern[hanging=false]");
+            lanternHung = get("minecraft:lantern[hanging=true]");
+            for (Direction d : Direction.Plane.HORIZONTAL) {
+                stairs(d, true);
+                stairs(d, false);
+            }
             String gone = null;
             for (Map.Entry<String, BlockState> e : cache.entrySet()) if (e.getValue() == null) gone = e.getKey();
             missing = gone == null ? null : "the airship layout needs " + gone + ", which this server doesn't have";
+        }
+
+        /** A stair of the wood with its full side toward f; under = upside down (its step underneath). */
+        BlockState stairs(Direction f, boolean under) {
+            return get("minecraft:" + spec.wood() + "_stairs[facing=" + f.getName() + ",half=" + (under ? "top" : "bottom") + "]");
         }
 
         BlockState shaft(Direction.Axis a) {
@@ -1054,7 +1328,7 @@ final class Airships {
         }
 
         BlockState sail(Direction f) {
-            return coloured("create:%s_sail[facing=" + f.getName() + "]");
+            return trimmed("create:%s_sail[facing=" + f.getName() + "]");
         }
 
         BlockState bed(boolean head) {
@@ -1079,6 +1353,12 @@ final class Airships {
         private BlockState coloured(String pattern) {
             BlockState s = Models.state(String.format(Locale.ROOT, pattern, spec.colour()));
             return s != null ? s : get(String.format(Locale.ROOT, pattern, "white"));
+        }
+
+        /** In the trim colour (fins, the top's stripe, propeller blades). */
+        private BlockState trimmed(String pattern) {
+            BlockState s = Models.state(String.format(Locale.ROOT, pattern, TRIM.getOrDefault(spec.colour(), spec.colour())));
+            return s != null ? s : coloured(pattern);
         }
 
         private BlockState get(String raw) {

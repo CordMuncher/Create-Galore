@@ -99,10 +99,14 @@ final class DesignBriefs {
 
     static final String AIRSHIP = """
             Start every new airship or blimp from build_model's airship: say what the player wants (closed cabin or \
-            open deck, beds, chests, speed, ceiling, wood, colour) and the server lays it out by these rules and \
+            open deck, beds, chests, speed, ceiling, wood, colour, style) and the server lays it out by these rules and \
             balances it, so its first version works; then change it with from_draft only where the player asked for \
             something the wishes don't cover, and keep its heavy parts in place. An open deck is only for a player \
-            who asked for one; above y 192 they need Windproof Lining on their armour. The rules, to explain the \
+            who asked for one; above y 192 they need Windproof Lining on their armour. Pick the style from how the \
+            player describes it: sleek is long and slim with long fins (more cloth, so it drags more for its engines \
+            and turns slower), classic the all-rounder, cargo fat with a boxy cabin for big loads; each gets a trim \
+            colour on its fins, a stripe along its top and its propeller blades. When a style can't do what was asked \
+            the layout says so: offer another style. The rules, to explain the \
             design and to judge one the player built: an airship is an envelope with a small gondola under it. The \
             envelope is a streamlined body, not a box or a ball: round in every cross-section, blunt at the nose, \
             fullest about two fifths back, tapering to a point at the tail, about two to three times as long as it \
@@ -113,8 +117,9 @@ final class DesignBriefs {
             the envelope's axis (envelope-encased where they pass the skin), never engines on platforms, pods or \
             decks outside. Push through the middle of the drag, which the gondola's own drag pulls a shade under a round \
             envelope's axis (a tenth of a block off pitches a compact airship a degree or two at full speed; the \
-            airship layout makes its envelope a row taller than wide, or hangs an open deck lower, to put that \
-            middle on the shaft): a Propeller Bearing fan on that line ahead of the nose or behind the tail (or \
+            airship layout runs a ridge of envelope along the top, which drags like the rest, or makes the envelope a \
+            row taller than wide, to put that middle on the shaft): a Propeller Bearing fan on that line ahead of the \
+            nose or behind the tail (or \
             both), or a pair at the widest point on short shaft arms; never propellers low under the gondola. Big slow fans push most for their engines (each Portable \
             Engine gives 2048 stress; a fan draws 2 per sail per RPM). Steer with the wheel's shafts swinging a \
             Swivel Bearing under the tail that carries a powered Wooden Propeller; throttle the drive line. A \
