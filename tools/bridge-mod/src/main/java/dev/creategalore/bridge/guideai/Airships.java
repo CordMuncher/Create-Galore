@@ -234,7 +234,7 @@ final class Airships {
         JsonObject a = new JsonObject();
         a.addProperty("type", "array");
         a.addProperty("description", "Empty, or one airship the server lays out and balances (envelope, gondola, rooms, "
-                + "engines, drive, steering) in place of layers and blocks.");
+                + "drive, steering) in place of layers and blocks.");
         a.add("items", o);
         return a;
     }

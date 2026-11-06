@@ -49,8 +49,8 @@ public final class Models {
                 + "minecraft:air clears cells that earlier entries filled."));
         p.add("x", WorldTools.prop("integer", "Cell x, 0 to size_x - 1 (x runs left to right as the player first sees it)."));
         p.add("y", WorldTools.prop("integer", "Cell y, 0 to size_y - 1 (y is up)."));
-        p.add("z", WorldTools.prop("integer", "Cell z, 0 to size_z - 1 (z runs from the back towards the player; north is the back)."));
-        p.add("x2", WorldTools.prop("integer", "With y2 and z2, the opposite corner of a box filled with this block; the same as x, y, z for one block."));
+        p.add("z", WorldTools.prop("integer", "Cell z, 0 to size_z - 1 (z runs from the back toward the player; north is the back)."));
+        p.add("x2", WorldTools.prop("integer", "With y2 and z2, the opposite corner of a box of this block; as x, y, z for one block."));
         p.add("y2", WorldTools.prop("integer", "See x2."));
         p.add("z2", WorldTools.prop("integer", "See x2."));
         JsonObject shape = WorldTools.prop("string", "What part of the box (x, y, z to x2, y2, z2) this fills: box (all of it), "
@@ -80,7 +80,7 @@ public final class Models {
         JsonObject key = new JsonObject();
         key.addProperty("type", "object");
         JsonObject kp = new JsonObject();
-        kp.add("key", WorldTools.prop("string", "One character that stands for this block in layers (not '.' or a space)."));
+        kp.add("key", WorldTools.prop("string", "One character for this block in layers (not '.' or space)."));
         kp.add("block", WorldTools.prop("string", "The block state it stands for, written as in blocks."));
         key.add("properties", kp);
         key.add("required", required(kp));
@@ -113,7 +113,7 @@ public final class Models {
         sp.add("x2", WorldTools.prop("integer", "Model cell x of the opposite corner."));
         sp.add("y2", WorldTools.prop("integer", "See x2."));
         sp.add("z2", WorldTools.prop("integer", "See x2."));
-        sp.add("dx", WorldTools.prop("integer", "How many cells to move it along x (negative moves it toward x = 0)."));
+        sp.add("dx", WorldTools.prop("integer", "Cells to move it along x (negative: toward x = 0)."));
         sp.add("dy", WorldTools.prop("integer", "Along y."));
         sp.add("dz", WorldTools.prop("integer", "Along z."));
         shift.add("properties", sp);
@@ -127,9 +127,9 @@ public final class Models {
         layer.add("items", row);
 
         JsonObject props = new JsonObject();
-        props.add("title", WorldTools.prop("string", "A few words naming what the model shows, or an empty string."));
-        props.add("size_x", WorldTools.prop("integer", "Width in blocks, 1 to " + MAX_SIZE + "; 0 to fit from_world or "
-                + "airship."));
+        props.add("title", WorldTools.prop("string", "A few words naming the model, or empty."));
+        props.add("size_x", WorldTools.prop("integer", "Width in blocks, 1 to " + MAX_SIZE + "; 0 to fit from_world, "
+                + "airship or plane."));
         props.add("size_y", WorldTools.prop("integer", "Height in blocks, 1 to " + MAX_SIZE + "; 0 to fit, as for size_x."));
         props.add("size_z", WorldTools.prop("integer", "Depth in blocks, 1 to " + MAX_SIZE + "; 0 to fit, as for size_x."));
         JsonObject fromWorld = new JsonObject();
@@ -179,7 +179,7 @@ public final class Models {
         labels.addProperty("description", "Short labels floating at cells, at most " + MAX_LABELS + "; often none.");
         labels.add("items", label);
         props.add("labels", labels);
-        props.add("caption", WorldTools.prop("string", "One short sentence under the model, or an empty string."));
+        props.add("caption", WorldTools.prop("string", "One short sentence under the model, or empty."));
         props.add("draft", WorldTools.prop("boolean", "True for a try that isn't shown."));
         props.add("goal", WorldTools.prop("string", "What it makes, if it makes an item: that item's id first, then from "
                 + "what (create:brass_ingot from copper and zinc). Its check proves the model makes it."));
@@ -204,6 +204,7 @@ public final class Models {
         speeds.add("items", speed);
         props.add("speeds", speeds);
         props.add("airship", Airships.definition());
+        props.add("plane", Planes.definition());
         props.add("open_by_request", WorldTools.prop("boolean", "True only when the player asked for an open vehicle (no cabin)."));
         props.add("new_by_request", WorldTools.prop("boolean", "True if the player asked for a new design."));
         props.add("part_of_vehicle", WorldTools.prop("boolean", "True only when the model shows one part of a vehicle (an "
@@ -318,6 +319,33 @@ public final class Models {
                 airshipSpeeds.add(o);
             }
             if (!spec.enclosed()) open = true;
+        }
+        // A plane the server lays out the same way.
+        JsonArray plane = array(input, "plane");
+        if (plane.size() > 1) return Result.problem("Not built: plane takes one plane at most.");
+        if (plane.size() == 1 && plane.get(0).isJsonObject()) {
+            if (airship.size() > 0 || !array(input, "from_world").isEmpty() || Diagrams.intOr(input, "from_draft", 0) != 0
+                    || !array(input, "move").isEmpty() || !array(input, "layers").isEmpty() || !array(input, "blocks").isEmpty())
+                return Result.problem("Not built: the server lays out a plane by itself, so leave airship, from_world, from_draft, "
+                        + "move, layers and blocks empty with it; change the result afterwards with from_draft.");
+            if (!flag(input, "new_by_request") && ownBuild(drafts, briefs))
+                return Result.problem("Not built: this page is about the player's own build" + ownDraft(drafts) + ", and plane "
+                        + "would swap it for a new design of yours. Keep improving theirs: start from their copy with from_draft "
+                        + "(or copy it again with from_world) and fix each PROBLEM in its own shape and look, keeping their "
+                        + "wings, fuselage, propellers and drive where they can stay, the way the check says. Set new_by_request "
+                        + "true only if the player asked for a new design rather than theirs made better.");
+            if (level == null) return Result.problem("Not built: planes are laid out against the server's own checks, which aren't "
+                    + "available here.");
+            List<String> wrong = new ArrayList<>();
+            Planes.Spec spec = Planes.spec(plane.get(0).getAsJsonObject(), wrong);
+            Airships.Layout layout = wrong.isEmpty() ? Planes.design(spec, level, wrong) : null;
+            if (layout == null) return Result.problem("Not built: " + String.join("; ", wrong) + ".");
+            cells.putAll(layout.cells());
+            sx = layout.sx();
+            sy = layout.sy();
+            sz = layout.sz();
+            laidOut = layout.summary();
+            open = true;
         }
         // A build copied from the world: its blocks are the starting point, and what changes on them is marked.
         Map<BlockPos, BlockState> base = null;
