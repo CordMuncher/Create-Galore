@@ -228,9 +228,7 @@ final class BuildCheck {
             for (Cell c : kinetic.values()) if (!speed.containsKey(c.pos)) idle.add(name(c));
             if (!idle.isEmpty()) {
                 notes.add("Not turning (no source reaches it): " + String.join("; ", idle));
-                // A wheel mount rolls free unturned (a plane's or a trailer's wheels); the vehicle check says when a car
-                // needs its wheels driven.
-                if (idle.stream().anyMatch(s -> !s.contains("create:shaft") && !s.contains("cogwheel") && !s.contains("wheel_mount")))
+                if (idle.stream().anyMatch(s -> !s.contains("create:shaft") && !s.contains("cogwheel")))
                     faults.add("rotation never reaches " + String.join("; ", idle));
             }
         }
@@ -300,10 +298,6 @@ final class BuildCheck {
                 if (!isSource(src) || out.containsKey(src.pos) || name(src).contains("steering_wheel")) continue;
                 float r = nominalRpm(src.state);
                 assumed.add(name(src) + " at " + trim(r) + " RPM");
-                // A Portable Engine turns its shaft along the way it faces (one facing west turns it at -32), so two
-                // engines facing apart turn their lines opposite ways round: props on them push by that, not alike.
-                Integer way = spin(src);
-                if (way != null) r *= way;
                 out.put(src.pos, r);
                 ArrayDeque<Cell> todo = new ArrayDeque<>(List.of(src));
                 while (!todo.isEmpty()) {

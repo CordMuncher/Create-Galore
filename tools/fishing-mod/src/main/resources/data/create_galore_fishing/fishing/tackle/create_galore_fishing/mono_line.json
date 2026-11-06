@@ -2,7 +2,7 @@
   "item": "create_galore_fishing:mono_line",
   "_generated": "from tools/fishing-mod/gen_tackle.py; edit that, not this file",
   "kind": "line",
-  "test": 8,
+  "test": 10,
   "stretch": 0.5,
   "visibility": 0.4,
   "meters": 150,

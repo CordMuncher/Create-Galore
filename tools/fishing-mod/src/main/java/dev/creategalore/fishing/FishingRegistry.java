@@ -211,6 +211,7 @@ public final class FishingRegistry {
     public static final DeferredItem<TackleItem> TROLLING_REEL = part("trolling_reel", () -> new TackleItem(new Item.Properties().durability(1500).rarity(Rarity.RARE)));
 
     public static final DeferredItem<LineItem> STRING_LINE = part("string_line", () -> new LineItem(new Item.Properties().stacksTo(64)));
+    public static final DeferredItem<LineItem> TWISTED_LINE = part("twisted_line", () -> new LineItem(new Item.Properties().stacksTo(64)));
     public static final DeferredItem<LineItem> MONO_LINE = part("mono_line", () -> new LineItem(new Item.Properties().stacksTo(64)));
     public static final DeferredItem<LineItem> CLEAR_LINE = part("clear_line", () -> new LineItem(new Item.Properties().stacksTo(64)));
     public static final DeferredItem<LineItem> BRAIDED_LINE = part("braided_line", () -> new LineItem(new Item.Properties().stacksTo(64)));
@@ -255,6 +256,7 @@ public final class FishingRegistry {
             () -> new LiveBaitBucketItem(new Item.Properties().stacksTo(1)
                     .component(DataComponents.BUNDLE_CONTENTS, BundleContents.EMPTY)));
     public static final DeferredItem<Item> FISH_SCRAPS = good("fish_scraps", () -> new Item(new Item.Properties()));
+    public static final DeferredItem<Item> TWISTED_CORD = good("twisted_cord", () -> new Item(new Item.Properties()));
     public static final DeferredItem<Item> FISH_MEAL = good("fish_meal", () -> new Item(new Item.Properties()));
     public static final DeferredItem<Item> FISH_ROE = good("fish_roe", () -> new Item(new Item.Properties()
             .food(new FoodProperties.Builder().nutrition(2).saturationModifier(0.4f).build())));

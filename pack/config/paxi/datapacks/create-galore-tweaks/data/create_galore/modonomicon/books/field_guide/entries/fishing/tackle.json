@@ -61,6 +61,9 @@
           "item": "create_galore_fishing:string_line"
         },
         {
+          "item": "create_galore_fishing:twisted_line"
+        },
+        {
           "item": "create_galore_fishing:mono_line"
         },
         {
@@ -79,12 +82,25 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**Lines**: test, stretch, visibility, metres.\n\n- String: 4 kg, 70%%, 70%%, 100\n- Mono: 8 kg, 50%%, 40%%, 150\n- Clear: 10 kg, 30%%, 10%%, 150\n- Braided: 18 kg, 10%%, 80%%, 200\n- Heavy Mono: 50 kg, 45%%, 50%%, 600"
+      "text": "**Lines**: test, stretch, visibility, metres.\n\n- String: 4 kg, 70%%, 70%%, 100\n- Twisted: 8 kg, 60%%, 60%%, 120\n- Mono: 10 kg, 50%%, 40%%, 150\n- Clear: 12 kg, 30%%, 10%%, 150\n- Braided: 18 kg, 10%%, 80%%, 200\n- Heavy Mono: 50 kg, 45%%, 50%%, 600"
     },
     {
       "type": "modonomicon:text",
       "title": "",
       "text": "**Stretch** soaks shocks; braid barely stretches, so jumps hit hard. Shy fish (trout, salmon, carp, koi, char, grayling, bonefish) mind a **visible** line and bite less.\\\n\\\nBraided Line is spun from 8 of TFMG's **Synthetic String** (a Rubber Sheet on a stonecutter makes 4) around a stick.\\\n\\\nUnder 5 m of line left the rod can't be cast."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": [
+        {
+          "item": "create_galore_fishing:twisted_cord"
+        },
+        {
+          "item": "create_galore_fishing:twisted_line"
+        }
+      ],
+      "title": "Twisted Line",
+      "text": "Line for the brass age, before plastic and rubber. A **heated** Mixer twists 3 string with 100 mB of [#](2E5AAC)[Fish Oil](entry://fishing/cleaning)[#]() or a Honeycomb into 2 **Twisted Cord**; 4 cord around a stick make the spool."
     },
     {
       "type": "modonomicon:spotlight",

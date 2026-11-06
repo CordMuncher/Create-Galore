@@ -5,19 +5,26 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
-## 0.6.73
+## 0.6.74
 
 ### Added
 - Create Galore Bridge 1.183.0.
-- **Ask the Book lays out small planes.** Ask for a plane (one or two seats, a wood and a colour) and the book starts from a worked layout: a biplane about 15 blocks long and 21 wide with two Portable Engines, Grindstone landing gear, a closed nose with a windscreen, one Steering Wheel and a Throttle Lever at the seat, and a lever that reverses the propellers to brake after landing. Its page gives the take-off run, lift-off speed, top speed, ceiling and stopping distance, and the Redstone Link frequencies of each control.
-- **Plane checks on the ground.** The book's vehicle check now works out how a winged build stands and rolls: what it stands on, whether it tips onto its nose or tail, how many blocks it needs to take off from a field and how far it rolls after touching down, with and without its propellers reversed. Wheel mounts with no drive drag hard, so a plane on them is told its run is too long and that Grindstones roll almost freely.
-- **Field Guide, Flight: Propellers** has new pages on landing gear and on stopping and seeing out of a plane.
 
 ### Fixed
-- **Ask the Book shows a small plane when asked for one.** Asked for a basic two-seat plane that doesn't need a long runway, the book wired a huge three-engine biplane by hand, never got it to pass its checks and showed no model. It now starts from the laid-out plane.
-- **The pilot's view is judged from the seat.** The book checked the view ahead from wherever a player could stand at the controls, even facing back over the wings, so a plane with a seat at the helm could fail for a view the pilot never has. With a seat at the helm, the view is judged from the seat.
-- **Engines turn the way they face.** The book counted every Portable Engine as turning the same way, so on a plane with an engine facing each way it got one propeller's direction wrong.
-- **Undriven wheel mounts are no longer a fault.** Wheel mounts that only roll (as on a plane) were reported as machines the drive never reaches.
+- **The game no longer fills its memory over a long session with DLAA on.** The motion vectors that DLAA and FSR get for mobs, block entities and the hand kept every model piece they had ever seen, and some models are rebuilt while the game runs, so the list only grew: after an hour or two of play it held over 6 GB, the memory sat at 98-99%, frames dropped and Distant Horizons warned about low memory. Pieces that are no longer drawn are now forgotten after a frame, so memory stays flat. The motion vectors themselves are unchanged.
+
+### Removed
+- Nothing.
+
+## 0.6.73
+
+### Added
+- Create Galore Fishing 0.3.30.
+- **Twisted Line, a fishing line for the brass age.** Between String Line and the lines made from plastic and rubber there was nothing, so an Iron Rod and a Brass Precision reel fished on 4 kg string until oil. Twisted Line holds 8 kg, stretches 60%, is 60% visible and comes 120 m to a spool: weaker and easier for shy fish to see than Mono, but it lets an iron rod go after salmon, muskellunge, carp and other mid-sized fish. It is made from **Twisted Cord**: a heated Mixer twists 3 string with 100 mB of Fish Oil or a Honeycomb into 2 cord, and 4 cord around a stick make the spool.
+- **Field Guide, Reels, Lines and Hooks** has a Twisted Line page and the new line in the list.
+
+### Fixed
+- **Mono and Clear Line hold more than the lines before them.** Mono Line now holds 10 kg (was 8) and Clear Line 12 kg (was 10), so each plastic line is stronger than Twisted Line as well as harder to see. Spools already on rods change with them.
 
 ### Removed
 - Nothing.

@@ -479,13 +479,11 @@ final class PlayerCheck {
                              List<BlockPos> seats, List<String> faults) {
         if (controls.isEmpty()) return;
         List<Eye> eyes = new ArrayList<>();
+        for (Node n : helm) eyes.add(new Eye(n.eye(), "standing at " + xyz(n.cell)));
         for (BlockPos s : seats)
             if (helm.stream().anyMatch(n -> n.cell.distManhattan(s) <= 2))
                 eyes.add(new Eye(new Vec3(s.getX() + 0.5, s.getY() + SEATED_EYE, s.getZ() + 0.5), "sitting on the " + name(blocks.get(s))
                         + " at " + xyz(s)));
-        // A seat at the helm is where the pilot flies from: a spot to stand on beyond the wheel (looking back at it, into
-        // the machinery behind) is no pilot's view. With no seat there, the pilot stands.
-        if (eyes.isEmpty()) for (Node n : helm) eyes.add(new Eye(n.eye(), "standing at " + xyz(n.cell)));
         Sight best = null;
         for (Eye eye : eyes) {
             Vec3 ahead = ahead(blocks, getter, eye.at, controls);

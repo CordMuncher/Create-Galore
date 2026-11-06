@@ -1,0 +1,26 @@
+{
+  "type": "create:mixing",
+  "heat_requirement": "heated",
+  "ingredients": [
+    {
+      "tag": "c:strings"
+    },
+    {
+      "tag": "c:strings"
+    },
+    {
+      "tag": "c:strings"
+    },
+    {
+      "type": "neoforge:single",
+      "amount": 100,
+      "fluid": "create_galore_fishing:fish_oil"
+    }
+  ],
+  "results": [
+    {
+      "id": "create_galore_fishing:twisted_cord",
+      "count": 2
+    }
+  ]
+}

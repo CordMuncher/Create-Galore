@@ -812,3 +812,27 @@ what it is when you see it in the water.
 - Self-tests: `partsgone` (line, reel taken off, a bare rod switched in during a bite, line taken off in a fight;
   before the fix three of those threw the server's exception and the fight one kept fighting) and `machines`
   (a geared drive casts a bare hook and a hookless lure, refuses no line, no reel, bait with no hook).
+
+## Twisted Line, the brass-age line (0.3.30)
+
+- Asked for: a line between String (4 kg) and the oil-age lines. Before this, every line past String needed TFMG
+  plastic or rubber, so an Iron Rod (9 kg) and a Brass Precision reel (10 kg drag) fished on 4 kg string until oil;
+  B3 above left exactly this open. Wanted: about 8 kg, made after string and before rubber, Create-themed, weaker and
+  easier to see than Mono, suited to an iron rod and an iron or brass reel.
+- Chosen: **Twisted Cord** (new item): a **heated** Mixer twists 3 string (`#c:strings`) with 100 mB Fish Oil or one
+  Honeycomb into 2 cord, the way linen and silk lines were dressed with oil or wax before nylon. Heat means a Blaze
+  Burner, the same step that makes brass, so it lands in the brass age. **Twisted Line**: 4 cord and a stick (6 string
+  a spool), 8 kg test, 60% stretch, 60% visible, 120 m.
+- **Mono 8 -> 10 kg, Clear 10 -> 12 kg**, so Mono stays stronger than Twisted as well as harder to see, and the
+  plastic lines keep their place between Twisted (8) and Braided (18). Clear Line now matches the Clear Leader (12).
+- Sim (`sim.sh` on a `/cgfish simulate export` from a full pack server, 187 species, 300 fights, careful angler),
+  Iron Rod + Brass Precision reel with String then Twisted Line: salmon 76% -> 96%, muskellunge 67% -> 94%,
+  tambaqui 44% -> 89%, spinefish 57% -> 95%, halibut 24% -> 56% (Steel rig 80%), mahi-mahi 15% -> 60% (Steel 87%),
+  stingray 8% -> 17% (Steel 66%). Species landed 80%+ of the time: 142 -> 151 (Steel rig 144, it takes bigger hooks
+  and so bigger fish). The same rig with the old 8 kg Mono landed the same, so this is the rig the old "iron" preset
+  already assumed, now reachable before oil. Shy fish still bite less on it (60% visible against Mono's 40%).
+- Sim presets: "iron" is now what it really is before brass (Iron Rod, Iron reel, String), a new "brass" preset is
+  Iron Rod, Brass Precision reel, Twisted Line.
+- Old worlds: lines already made keep working; Mono and Clear spools on rods now hold 10 and 12 kg.
+- Reverse: drop `twisted_line` from `gen_tackle.py`, the two `mixing/twisted_cord_*` entries from `gen_processing.py`,
+  `recipe/twisted_line.json` and the two items in `FishingRegistry`; Mono and Clear back to 8 and 10.

@@ -73,6 +73,15 @@ CREATE = {
     "mixing/chum": ("create:mixing", {
         "ingredients": [item(M + "fish_scraps"), item(M + "fish_scraps"), item(M + "fish_meal")],
         "results": [result(M + "chum", 2)]}, []),
+    # Twisted Cord: three strings twisted together in a heated Mixer and set with fish oil or wax, for Twisted Line.
+    "mixing/twisted_cord_from_fish_oil": ("create:mixing", {
+        "heat_requirement": "heated",
+        "ingredients": [item("#c:strings")] * 3 + [fluid(M + "fish_oil", 100)],
+        "results": [result(M + "twisted_cord", 2)]}, []),
+    "mixing/twisted_cord_from_honeycomb": ("create:mixing", {
+        "heat_requirement": "heated",
+        "ingredients": [item("#c:strings")] * 3 + [item("minecraft:honeycomb")],
+        "results": [result(M + "twisted_cord", 2)]}, []),
     "milling/fish_meal_from_scraps": ("create:milling", {
         "ingredients": [item(M + "fish_scraps")], "processing_time": 100,
         "results": [result(M + "fish_meal"), result(M + "fish_meal", chance=0.25)]}, []),

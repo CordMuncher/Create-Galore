@@ -299,7 +299,10 @@ public final class EntityMotion {
 
     /** One thing's (or one of its cubes') vertex positions this frame and last frame, in drawing order. */
     private static final class Track {
+        /** Frames between sweeps of a thing's cubes. */
+        private static final long PRUNE_EVERY = 64;
         private long frame = Long.MIN_VALUE;
+        private long pruned;
         float[] now = new float[3 * 64];
         int nowCount;
         float[] last = new float[3 * 64];
@@ -317,6 +320,15 @@ public final class EntityMotion {
         boolean enter(long current) {
             if (frame == current) {
                 return false;
+            }
+            // Forget cubes it no longer draws. Their positions are no use after a frame away (see consecutive below), and
+            // some models are built anew while the game runs, so every cube object ever drawn piled up here: on a long
+            // session the tracks, their cubes and the cubes' vertices took over 6 GB and the heap ran full.
+            if (current - pruned >= PRUNE_EVERY) {
+                pruned = current;
+                if (!cubes.isEmpty()) {
+                    cubes.values().removeIf(t -> t.frame < current - 1);
+                }
             }
             boolean consecutive = frame == current - 1;
             boolean changed = consecutive && drawnBefore >= 0 && drawn != drawnBefore;

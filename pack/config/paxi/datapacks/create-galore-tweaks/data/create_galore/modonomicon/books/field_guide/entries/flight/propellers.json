@@ -95,22 +95,12 @@
     {
       "type": "modonomicon:text",
       "title": "A plane that flies",
-      "text": "[#](FFFFFF)\ue103[#]() **In depth.** A 15-block biplane about 21 wide with about 150 sails. Two Portable Engines behind the seats are geared to 256 RPM out along the wings to four Wooden Propellers on the wings' leading edge; a third engine turns a Gyroscope. It lifts off at about 15 blocks a second after about 25 blocks and cruises near 17."
+      "text": "[#](FFFFFF)\ue103[#]() **In depth.** A 19-block biplane with about 130 sails, two Portable Engines at 256 RPM on four Wooden Propellers and a Gyroscope on a third engine takes off at about 15 blocks a second and cruises near 16."
     },
     {
       "type": "modonomicon:text",
       "title": "",
       "text": "A Steering Wheel at the seat steers it: a comparator at each side of the wheel slows one side's Analog Transmission while it is turned that way. Turn it briefly and back, since held over it spins and sinks. A Throttle Lever sets the speed through the same transmissions."
-    },
-    {
-      "type": "modonomicon:text",
-      "title": "Landing gear",
-      "text": "**Grindstones** roll almost freely as a plane's landing gear: one under the nose, two just behind the centre of mass. Offroad wheel mounts drag harder the faster they roll and the more weight they carry, so a plane on wheels needs far more wing and a long field. Planks and most blocks barely slide."
-    },
-    {
-      "type": "modonomicon:text",
-      "title": "Stopping and seeing",
-      "text": "A **Gearshift** in each propeller line, on a lever at the pilot's hand, turns the propellers backwards after landing and stops a small plane in under 10 blocks.\\\n\\\nKeep engines and propellers behind the pilot or out on the wings, never in front of the windscreen."
     },
     {
       "type": "modonomicon:text",
