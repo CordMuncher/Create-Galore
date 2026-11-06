@@ -5,6 +5,17 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.6.74
+
+### Added
+- Create Galore Bridge 1.183.0.
+
+### Fixed
+- **The game no longer fills its memory over a long session with DLAA on.** The motion vectors that DLAA and FSR get for mobs, block entities and the hand kept every model piece they had ever seen, and some models are rebuilt while the game runs, so the list only grew: after an hour or two of play it held over 6 GB, the memory sat at 98-99%, frames dropped and Distant Horizons warned about low memory. Pieces that are no longer drawn are now forgotten after a frame, so memory stays flat. The motion vectors themselves are unchanged.
+
+### Removed
+- Nothing.
+
 ## 0.6.73
 
 ### Added
