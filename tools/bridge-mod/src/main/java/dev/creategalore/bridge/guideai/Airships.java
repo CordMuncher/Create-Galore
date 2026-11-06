@@ -628,7 +628,7 @@ final class Airships {
         int ax = k.ax(), az = k.az() < 0 ? zp : k.az();
         if (az < gz0 + 1 || az > gz1 - 1 || ax == 0 || Math.abs(ax) > hw - 1) return null;
         BlockPos assembler = new BlockPos(ax, 0, az);
-        for (int z = zh + 1; z < zt; z++) c.put(new BlockPos(0, 0, z), parts.shaft(Direction.Axis.Z));
+        for (int z = zh + 1; z < zt; z++) shaft(c, env, new BlockPos(0, 0, z), Direction.Axis.Z, parts);
         c.put(assembler, parts.assembler);
         for (Room room : rooms) room.place(c, zr, parts);
         // The burner under the belly, its column clear up into the air, and its lever; an envelope holding more air
@@ -778,10 +778,13 @@ final class Airships {
         return new Built(c, rsc, assembler, gz0 + 1, gz1 - 1, burnerXs.length, ridge);
     }
 
-    /** A shaft along an axis, encased in envelope where it passes through the skin so the balloon stays sealed. */
+    /**
+     * A shaft along an axis, encased in envelope where it passes through the skin so the balloon stays sealed, and in
+     * Andesite Casing where it passes through the gondola's floor or roof, so the cabin keeps no open slot round it.
+     */
     private static void shaft(Map<BlockPos, BlockState> c, Envelope env, BlockPos p, Direction.Axis axis, Parts parts) {
-        boolean skin = c.get(p) == parts.envelope;
-        c.put(p, skin ? parts.encased(axis) : parts.shaft(axis));
+        BlockState was = c.get(p);
+        c.put(p, was == parts.envelope ? parts.encased(axis) : was != null ? parts.cased(axis) : parts.shaft(axis));
     }
 
     /**
@@ -1305,6 +1308,7 @@ final class Airships {
                 stairs(d, true);
                 stairs(d, false);
             }
+            cased(Direction.Axis.Z);
             String gone = null;
             for (Map.Entry<String, BlockState> e : cache.entrySet()) if (e.getValue() == null) gone = e.getKey();
             missing = gone == null ? null : "the airship layout needs " + gone + ", which this server doesn't have";
@@ -1317,6 +1321,10 @@ final class Airships {
 
         BlockState shaft(Direction.Axis a) {
             return get("create:shaft[axis=" + a.getName() + "]");
+        }
+
+        BlockState cased(Direction.Axis a) {
+            return get("create:andesite_encased_shaft[axis=" + a.getName() + "]");
         }
 
         BlockState encased(Direction.Axis a) {

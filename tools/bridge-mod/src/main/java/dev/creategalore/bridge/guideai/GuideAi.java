@@ -635,6 +635,8 @@ public final class GuideAi {
         List<Models.Draft> drafts = new ArrayList<>();
         // The kinds of build whose design brief this answer already got (build_model hands each over once).
         Set<String> briefs = new HashSet<>();
+        // A page that already copied or read a build of the player's stays about that build (no laid-out airship for it).
+        if (ownBuildEarlier(messages)) briefs.add(Models.OWN_BUILD);
         Streamer streamer = new Streamer(l, playerId, pageId);
         boolean audited = false;
         // Turns that ended with nothing for the player, each taken back and asked again (see unanswered).
@@ -1140,6 +1142,7 @@ public final class GuideAi {
             } catch (java.util.concurrent.ExecutionException ex) {
                 result = "The tool failed on this server.";
             }
+            if (readsOwnAircraft(name, result)) briefs.add(Models.OWN_BUILD);
             JsonObject r = new JsonObject();
             r.addProperty("type", "tool_result");
             r.addProperty("tool_use_id", GuideText.string(block, "id"));
@@ -1166,6 +1169,39 @@ public final class GuideAi {
         user.addProperty("role", "user");
         user.add("content", results);
         return user;
+    }
+
+    /** Whether a trace_build or read_area result read a balloon or airship the player built (its envelope blocks). */
+    static boolean readsOwnAircraft(String tool, String result) {
+        return (tool.equals("trace_build") || tool.equals("read_area")) && result != null && result.contains("_envelope");
+    }
+
+    /**
+     * Whether earlier turns of this page copied a build of the player's into a model (build_model with from_world) or
+     * read an aircraft of theirs, so later answers on the page keep improving that build.
+     */
+    static boolean ownBuildEarlier(JsonArray messages) {
+        Map<String, String> tools = new HashMap<>();
+        for (JsonElement m : messages) {
+            if (!m.isJsonObject() || !m.getAsJsonObject().has("content") || !m.getAsJsonObject().get("content").isJsonArray()) continue;
+            for (JsonElement e : m.getAsJsonObject().getAsJsonArray("content")) {
+                if (!e.isJsonObject()) continue;
+                JsonObject b = e.getAsJsonObject();
+                String type = GuideText.string(b, "type");
+                if (type.equals("tool_use")) {
+                    String name = GuideText.string(b, "name");
+                    tools.put(GuideText.string(b, "id"), name);
+                    JsonObject in = b.has("input") && b.get("input").isJsonObject() ? b.getAsJsonObject("input") : null;
+                    if (name.equals("build_model") && in != null && in.has("from_world") && in.get("from_world").isJsonArray()
+                            && !in.getAsJsonArray("from_world").isEmpty()) return true;
+                } else if (type.equals("tool_result")) {
+                    JsonElement c = b.get("content");
+                    String text = c == null ? "" : c.isJsonPrimitive() ? c.getAsString() : c.toString();
+                    if (readsOwnAircraft(tools.getOrDefault(GuideText.string(b, "tool_use_id"), ""), text)) return true;
+                }
+            }
+        }
+        return false;
     }
 
     /**

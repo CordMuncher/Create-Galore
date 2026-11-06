@@ -205,6 +205,9 @@ public final class Models {
         props.add("speeds", speeds);
         props.add("airship", Airships.definition());
         props.add("open_by_request", WorldTools.prop("boolean", "True only when the player asked for an open vehicle (no cabin)."));
+        props.add("new_by_request", WorldTools.prop("boolean", "True only when the player asked for a new design of yours rather "
+                + "than one they built made better (\"show my build but better\" is theirs, improved): only then can airship "
+                + "lay out a new one after their build was copied or read on this page."));
         props.add("part_of_vehicle", WorldTools.prop("boolean", "True only when the model shows one part of a vehicle (an "
                 + "engine room, a rudder) rather than all of it: then the vehicle check doesn't stop it being built."));
         return WorldTools.tool("build_model", "Builds a 3D model out of real blocks, up to " + MAX_SIZE + " a side, shown "
@@ -224,6 +227,25 @@ public final class Models {
                 + "read_area) and write only what changes; you get the changes back in world coordinates. It returns the "
                 + "model's number: write [diagram N] on a line of its own where it should appear, or put it inside a "
                 + "drawing with a shape of kind model.", props);
+    }
+
+    /**
+     * Marks, in an answer's briefs, that the page is about a build of the player's (copied with from_world, or a
+     * vehicle of theirs read with trace_build or read_area), so a laid-out airship can't replace it.
+     */
+    static final String OWN_BUILD = "player's own build";
+
+    private static boolean ownBuild(List<Draft> drafts, java.util.Set<String> briefs) {
+        if (briefs != null && briefs.contains(OWN_BUILD)) return true;
+        if (drafts != null) for (Draft d : drafts) if (d.base() != null) return true;
+        return false;
+    }
+
+    /** ", copied as model N" for the first draft of this answer that started from their world, or nothing. */
+    private static String ownDraft(List<Draft> drafts) {
+        if (drafts != null)
+            for (int i = 0; i < drafts.size(); i++) if (drafts.get(i).base() != null) return " (model " + (i + 1) + " is their copy)";
+        return "";
     }
 
     private static JsonArray required(JsonObject properties) {
@@ -272,6 +294,14 @@ public final class Models {
                     || !array(input, "layers").isEmpty() || !array(input, "blocks").isEmpty())
                 return Result.problem("Not built: the server lays out an airship by itself, so leave from_world, from_draft, move, "
                         + "layers and blocks empty with it; change the result afterwards with from_draft.");
+            // The player's own build is being improved: a laid-out airship would swap it for a design of the book's.
+            if (!flag(input, "new_by_request") && ownBuild(drafts, briefs))
+                return Result.problem("Not built: this page is about the player's own build" + ownDraft(drafts) + ", and airship "
+                        + "would swap it for a new design of yours. Keep improving theirs: start from their copy with from_draft "
+                        + "(or copy it again with from_world) and fix each PROBLEM in its own shape and look, keeping their "
+                        + "envelope, gondola, propellers and drive where they can stay, the way the check says. When a change "
+                        + "breaks their drive, take that change back and make a smaller one. Set new_by_request true only if "
+                        + "the player asked for a new design rather than theirs made better.");
             List<String> wrong = new ArrayList<>();
             Airships.Spec spec = Airships.spec(airship.get(0).getAsJsonObject(), wrong);
             Airships.Layout layout = wrong.isEmpty() ? Airships.design(spec, wrong) : null;
@@ -319,6 +349,8 @@ public final class Models {
             for (Map.Entry<BlockPos, BlockState> e : copy.blocks().entrySet()) base.put(e.getKey().offset(offset), e.getValue());
             cells.putAll(base);
         }
+        // An open deck the player built is their choice: the cold up high is told to them, not built away.
+        if (base != null) open = true;
         int fromDraft = Diagrams.intOr(input, "from_draft", 0);
         Draft draft0 = null;
         if (fromDraft != 0) {

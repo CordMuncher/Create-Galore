@@ -102,7 +102,9 @@ final class DesignBriefs {
             open deck, beds, chests, speed, ceiling, wood, colour, style) and the server lays it out by these rules and \
             balances it, so its first version works; then change it with from_draft only where the player asked for \
             something the wishes don't cover, and keep its heavy parts in place. One the player built stays theirs: \
-            copy it with from_world and improve it in its own shape and look, by the rules below. An open deck is only \
+            copy it with from_world and improve it in its own shape and look, by the rules below; when a draft of it has \
+            faults, fix them on their copy (a smaller change if one broke their drive), never with a laid-out airship \
+            ("my build but better" is still theirs). An open deck is only \
             for a player who asked for one; above y 192 they need Windproof Lining on their armour. Pick the style from how the \
             player describes it: sleek is long and slim with long fins (more cloth, so it drags more for its engines \
             and turns slower), classic the all-rounder, cargo fat with a boxy cabin for big loads; each gets a trim \

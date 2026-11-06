@@ -235,7 +235,7 @@ final class PlayerCheck {
                         + "between (or feed it with a funnel or chute from a hold they can reach)");
             }
             if (!cold.isEmpty())
-                notes.add(open ? "fuelling " + String.join(", ", cold) + " is out on the open deck the player asked for, which "
+                notes.add(open ? "fuelling " + String.join(", ", cold) + " is out on the open deck the player chose (asked for, or built that way), which "
                         + "freezes from y " + FREEZING + ": Windproof Lining on every armour piece keeps whoever fuels it warm"
                         : "fuelling " + String.join(", ", cold) + " means standing out in the open air, and at the heights it "
                         + "climbs (from y " + FREEZING + ") that freezes a player in under a minute: better reached from inside a "
@@ -257,7 +257,7 @@ final class PlayerCheck {
                     if (freezing && open)
                         // The player chose an open ship: their call, and what keeps them warm in it is their armour.
                         notes.add(String.format(Locale.ROOT, "it climbs to about y %.0f, and above y %d the open wind freezes a "
-                                + "player in under a minute; the player asked for it open, so whoever works %s stands in that "
+                                + "player in under a minute; the player chose it open (asked for it, or built it that way), so whoever works %s stands in that "
                                 + "wind: tell them to sew Windproof Lining onto every piece of their armour at a Sewing Table (it "
                                 + "takes away most of the wind's chill) before flying it high, or to close a cabin around the helm",
                                 ceiling, FREEZING, where));
