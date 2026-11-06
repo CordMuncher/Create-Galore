@@ -1,4 +1,4 @@
-<!-- sources sha256:7a7337b47e67de630600930ee21093a8ee562072e756662a22237286737c6f0a -->
+<!-- sources sha256:bc00d2ccb90d74f810b8efece2f05c391070cc4612cea87cd7e60dac3bda8c3b -->
 # Fishing (fishing)
 
 ## fishing/overview | Fishing
@@ -68,8 +68,9 @@
 - Reel: top drag, speed, line held. Line: **test** (pull it snaps at), stretch, visibility. Hook size picks the fish's size. Floats, sinkers, lures set how bait is shown
 - Tackle is crafted from Create parts (cogwheels, shafts, precision mechanisms, andesite alloy, iron/copper/brass sheets) plus TFMG steel, plastic, rubber; JEI (see start_here/tools) shows every recipe
 - Reels [create_galore_fishing:copper_reel] (max drag, line held): Copper Spinning 3 kg 100 m; Iron Spinning 6 kg 150 m; Brass Precision 10 kg 200 m; Steel Baitcaster 14 kg 180 m; Big-Game Trolling 30 kg 600 m. Better reels wind faster (1 to 1.8 m/s), crank harder, smoother drag soaks spikes (30% Copper, 85% Brass Precision). Durability: Copper 300, Iron 500, Brass and Steel 900, Big-Game 1500; a broken reel is gone
-- Lines [create_galore_fishing:string_line]: spool goes in the line slot; tooltip shows test, stretch, visibility, metres left. Test, stretch, visibility, metres: String 4 kg 70% 70% 100; Mono 8 kg 50% 40% 150; Clear 10 kg 30% 10% 150; Braided 18 kg 10% 80% 200; Heavy Mono 50 kg 45% 50% 600
+- Lines [create_galore_fishing:string_line]: spool goes in the line slot; tooltip shows test, stretch, visibility, metres left. Test, stretch, visibility, metres: String 4 kg 70% 70% 100; Twisted 8 kg 60% 60% 120; Mono 10 kg 50% 40% 150; Clear 12 kg 30% 10% 150; Braided 18 kg 10% 80% 200; Heavy Mono 50 kg 45% 50% 600
 - Stretch soaks shocks (braid barely stretches, jumps hit hard). Shy fish (trout, salmon, carp, koi, char, grayling, bonefish) mind a visible line. Braided Line is spun from 8 TFMG **Synthetic String** (a Rubber Sheet on a stonecutter makes 4) around a stick. Under 5 m of line left the rod can't cast
+- Twisted Line [create_galore_fishing:twisted_line]: the brass-age line, before plastic and rubber (suits an Iron Rod with an Iron or Brass Precision reel). A **heated** Mixer twists 3 string with 100 mB Fish Oil (see fishing/cleaning) or 1 Honeycomb into 2 Twisted Cord [create_galore_fishing:twisted_cord]; 4 cord around a stick make the spool
 - Leaders [create_galore_fishing:clear_leader]: optional, at the hook. Clear Leader 12 kg, 10% visible, hides strong line from shy fish. Iron Leader [create_galore_fishing:iron_leader] 12 kg, crafted from 3 iron nuggets and a string (makes 2), early; teeth can't cut it. Steel Leader 60 kg, same for big fish. Teeth fray anything else
 - Hooks [create_galore_fishing:small_hook]: Small (#10) panfish; Medium (#4); Large (1/0) pike, bass, carp; Big-Game (6/0) tuna, sharks. Far too big scares a fish off; too small holds badly
 - Golden and Netherite Hooks [create_galore_fishing:golden_hook]: Golden medium size, +1 luck; Netherite large, survives lava, any rod with it fishes lava

@@ -29,6 +29,8 @@ src/main/resources/data/create_galore_fishing/recipe/milling/fish_meal_from_scra
 src/main/resources/data/create_galore_fishing/recipe/mixing/boilies.json
 src/main/resources/data/create_galore_fishing/recipe/mixing/chum.json
 src/main/resources/data/create_galore_fishing/recipe/mixing/maggots.json
+src/main/resources/data/create_galore_fishing/recipe/mixing/twisted_cord_from_fish_oil.json
+src/main/resources/data/create_galore_fishing/recipe/mixing/twisted_cord_from_honeycomb.json
 src/main/resources/data/create_galore_fishing/recipe/smoking/leather_from_shark_skin.json
 src/main/resources/data/create_galore_fishing/recipe/splashing/coarse_dirt.json
 src/main/resources/data/create_galore_fishing/recipe/splashing/dirt.json

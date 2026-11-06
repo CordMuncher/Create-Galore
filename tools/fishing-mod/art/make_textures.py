@@ -278,7 +278,7 @@ def reel(name, color, style, line="#d8e8d0"):
 
 # --- line spools and leaders ------------------------------------------------------------------------------------
 
-def spool(name, color, braided=False):
+def spool(name, color, braided=False, twisted=False):
     s = Sprite()
     line = s.add_material("line", color)
     s.rect(2, 3, 3, 12, "oak")                 # flanges
@@ -288,10 +288,28 @@ def spool(name, color, braided=False):
         for x in range(4, 12):
             if braided and (x + y) % 3 == 0:
                 s.put(x, y, line, "shadow")
-            elif not braided and y % 2 == 0:
+            elif twisted and (x + y) % 3 == 0:
+                s.put(x, y, line, "light")
+            elif not braided and not twisted and y % 2 == 0:
                 s.put(x, y, line, "light" if x < 10 else "mid")
     # The loose end.
     s.thread([(12, 2), (13, 1), (14, 1)], color)
+    save(s.render(), name)
+
+
+def twisted_cord(name, color):
+    """A hank of cord: a thick loop with the twist showing as light and dark stripes, the tied ends at the top."""
+    s = Sprite()
+    cord = s.add_material("cord", color)
+    s.ring(8, 9, 5, cord)
+    s.ring(8, 9, 4, cord)
+    for (x, y) in list(s.core):
+        if (x + y) % 3 == 0:
+            s.put(x, y, cord, "light")
+    # The loose ends hanging from the tie at the bottom right.
+    s.put(12, 13, cord, "light")
+    s.put(13, 14, cord)
+    s.put(11, 14, cord, "shadow")
     save(s.render(), name)
 
 
@@ -678,6 +696,7 @@ def main():
                                ("trolling_reel", "#c8a040", "trolling")):
         reel(name, color, style)
     spool("string_line", "#e8e8e4")
+    spool("twisted_line", "#a8643a", twisted=True)
     spool("mono_line", "#b8d8a8")
     spool("clear_line", "#c8e4f4")
     spool("braided_line", "#4a7a42", braided=True)
@@ -701,6 +720,7 @@ def main():
     boilies("boilies")
     chum("chum")
     fish_scraps("fish_scraps")
+    twisted_cord("twisted_cord", "#a8643a")
     fish_meal("fish_meal")
     fish_roe("fish_roe")
     shark_skin("shark_skin")

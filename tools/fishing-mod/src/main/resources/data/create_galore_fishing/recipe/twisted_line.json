@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    {
+      "item": "create_galore_fishing:twisted_cord"
+    },
+    {
+      "item": "create_galore_fishing:twisted_cord"
+    },
+    {
+      "item": "create_galore_fishing:twisted_cord"
+    },
+    {
+      "item": "create_galore_fishing:twisted_cord"
+    },
+    {
+      "tag": "c:rods/wooden"
+    }
+  ],
+  "result": {
+    "id": "create_galore_fishing:twisted_line",
+    "count": 1
+  }
+}

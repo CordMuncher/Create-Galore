@@ -5,6 +5,19 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.6.73
+
+### Added
+- Create Galore Fishing 0.3.30.
+- **Twisted Line, a fishing line for the brass age.** Between String Line and the lines made from plastic and rubber there was nothing, so an Iron Rod and a Brass Precision reel fished on 4 kg string until oil. Twisted Line holds 8 kg, stretches 60%, is 60% visible and comes 120 m to a spool: weaker and easier for shy fish to see than Mono, but it lets an iron rod go after salmon, muskellunge, carp and other mid-sized fish. It is made from **Twisted Cord**: a heated Mixer twists 3 string with 100 mB of Fish Oil or a Honeycomb into 2 cord, and 4 cord around a stick make the spool.
+- **Field Guide, Reels, Lines and Hooks** has a Twisted Line page and the new line in the list.
+
+### Fixed
+- **Mono and Clear Line hold more than the lines before them.** Mono Line now holds 10 kg (was 8) and Clear Line 12 kg (was 10), so each plastic line is stronger than Twisted Line as well as harder to see. Spools already on rods change with them.
+
+### Removed
+- Nothing.
+
 ## 0.6.72
 
 ### Added
