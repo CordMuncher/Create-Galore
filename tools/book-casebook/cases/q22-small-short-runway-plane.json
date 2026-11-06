@@ -1,0 +1,41 @@
+{
+  "title": "Shows a small two-seat plane that takes off and lands in a short run, as a model, with the pilot's view ahead worked out",
+  "from": "pack 0.6.72: the book drew a 27-wide biplane with 272 sails and three engines, said it couldn't finish the pilot's view ahead and left that to the player, and showed no model",
+  "roots": ["R3", "R5"],
+  "kind": "question",
+  "question": "show me a basic plane for 2 that doesnt need a super long runway to land or take off",
+  "player": "Late andesite age with brass started: has Portable Engines, sails, shafts and cogwheels, an Analog Transmission and Throttle Lever, a Steering Wheel and a Gyroscope.",
+  "rubric": [
+    "Shows a plane model with no PROBLEM: it lifts, is stable and is fast enough",
+    "It is small: a basic two-seat plane, nowhere near hundreds of sails or a 27-wide wing",
+    "It takes off within a short run and the answer says about how far",
+    "Two seats, both boardable, the pilot's controls in reach from their seat",
+    "The pilot can see ahead; the book never leaves part of the design for the player to sort out"
+  ],
+  "world": [
+    "fill ~-16 ~-1 ~-16 ~16 ~-1 ~16 minecraft:grass_block",
+    "time set 6000"
+  ],
+  "box": [-16, -1, -16, 16, 0, 16],
+  "built": [0, 0, 0, 0, 0, 0],
+  "stand": [0, 0, 0, 0, 0],
+  "inventory": [
+    {"id": "simulated:red_portable_engine", "count": 4},
+    {"id": "create:andesite_alloy", "count": 128},
+    {"id": "create:brass_ingot", "count": 32},
+    {"id": "create:white_sail", "count": 64},
+    {"id": "create:shaft", "count": 48},
+    {"id": "create:cogwheel", "count": 24},
+    {"id": "create:large_cogwheel", "count": 12},
+    {"id": "simulated:steering_wheel", "count": 1},
+    {"id": "simulated:analog_transmission", "count": 2},
+    {"id": "simulated:throttle_lever", "count": 1},
+    {"id": "aeroworks:gyroscope", "count": 1},
+    {"id": "minecraft:spruce_planks", "count": 256},
+    {"id": "minecraft:spruce_slab", "count": 64},
+    {"id": "minecraft:coal", "count": 64}
+  ],
+  "advancements": ["minecraft:story/root", "minecraft:story/mine_stone", "minecraft:story/smelt_iron", "create:*"],
+  "crafted": {"simulated:red_portable_engine": 4, "create:andesite_alloy": 300, "create:brass_ingot": 40},
+  "placed": {"create:shaft": 80, "create:cogwheel": 40}
+}
