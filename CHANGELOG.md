@@ -5,6 +5,19 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.6.72
+
+### Added
+- Create Galore Bridge 1.182.0.
+
+### Fixed
+- **Ask the Book keeps improving your own airship instead of swapping it for one of its own.** Asked to show a better version of a blimp you built, the book copied it and started changing it, but when a try came back with faults (its bigger balloon cut the drive to the propellers) it gave up and showed its own laid-out airship as your blimp improved, which looked nothing like yours. While a page is about your build, the book now has to fix the faults on your copy, a smaller change at a time, and can only lay out a new airship when you ask for a new design.
+- **Ask the Book leaves your open deck open.** Asked to make an open blimp fly higher, the book counted its open helm up in the cold as a fault and walled in a cabin nobody asked for. On a build of yours, an open deck is your choice: the book keeps it open and tells you about the cold up high (Windproof Lining on your armour, or a cabin if you want one).
+- **No open slots round shafts in laid-out airship cabins.** The steering shaft ran along the middle of the cabin floor as a bare shaft, which left an open slot the length of the floor, and the drive shaft left a hole in the roof where it rose to the envelope. Where a shaft passes through the floor or roof it is now an Andesite Encased Shaft, so the cabin is closed.
+
+### Removed
+- Nothing.
+
 ## 0.6.71
 
 ### Added
