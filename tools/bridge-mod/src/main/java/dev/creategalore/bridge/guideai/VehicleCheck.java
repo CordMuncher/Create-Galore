@@ -51,6 +51,12 @@ final class VehicleCheck {
             SAILS = tag("create:windmill_sails"), HIGH_SEAS_SAILS = tag("create_high_seas:sails"),
             STORAGE_BLOCKS = tag("c:storage_blocks");
 
+    /**
+     * The last check's figures on this thread, for a layout search that tries designs (Planes): "top" speed, "takeoff"
+     * speed, take-off "run" and landing "stop" run in blocks, "ceiling", "turn" in degrees a second.
+     */
+    static final ThreadLocal<Map<String, Double>> FIGURES = ThreadLocal.withInitial(java.util.HashMap::new);
+
     private VehicleCheck() {
     }
 
@@ -93,6 +99,7 @@ final class VehicleCheck {
     private static BuildCheck.Report run(Map<BlockPos, BlockState> blocks, BlockGetter getter, Map<BlockPos, Float> rpm, boolean model,
             boolean open) {
         boolean sub = false, water = false, air = false, land = false;
+        FIGURES.get().clear();
         for (BlockState s : blocks.values()) {
             String id = id(s);
             if (id.equals("create_submarine:oxygene_diffuser") || id.endsWith(":hull_controller") || id.equals("create_submarine:ballast_tank")) sub = true;
@@ -104,6 +111,9 @@ final class VehicleCheck {
         }
         boolean props = blocks.values().stream().anyMatch(s -> isPropeller(id(s)) || isThruster(id(s)) || liftScalar(s) > 0);
         if (!sub && !water && !air && !land && !props) return null;
+        // A plane on wheel mounts is an aircraft that rolls: judged in the air, with its wheels in its ground run.
+        boolean winged = blocks.values().stream().anyMatch(s -> isPropeller(id(s)))
+                && blocks.values().stream().filter(s -> liftScalar(s) > 0).count() >= 8;
 
         List<Part> parts = new ArrayList<>();
         for (Map.Entry<BlockPos, BlockState> e : blocks.entrySet()) {
@@ -135,7 +145,7 @@ final class VehicleCheck {
         if (air) air(body, rpm, out, faults, notes);
         else if (sub) sub(body, rpm, out, faults, notes);
         else if (water) boat(body, rpm, out, faults, notes, false);
-        else if (land) land(body, rpm, out, faults, notes);
+        else if (land && !winged) land(body, rpm, out, faults, notes);
         else if (props) {
             // Propellers or wings alone: a boat if one of them is a water propeller, else judged as an aircraft.
             air(body, rpm, out, faults, notes);
@@ -1338,6 +1348,7 @@ final class VehicleCheck {
             double need = G * b.m / ((wings.up * v + up) * pressure(63));
             double ceiling = Math.min(280, 63 - Math.log(need) / 0.004);
             b.ceiling = ceiling;
+            FIGURES.get().put("ceiling", ceiling);
             out.append(String.format(Locale.ROOT, "- Ceiling about y %.0f at full speed (the air thins as it climbs).\n", ceiling));
             if (ceiling < CEILING_BAD) faults.add(String.format(Locale.ROOT, "its ceiling is only about y %.0f: it barely clears "
                     + "the ground and hits hills; it needs more wings or more speed for its weight", ceiling));
@@ -1376,6 +1387,7 @@ final class VehicleCheck {
             out.append(String.format(Locale.ROOT, "- Top speed about %.1f blocks/s at y %d (%s; drag from %s).\n", v,
                     (int) TAKEOFF_Y, describe(side), wings.list.isEmpty() ? airtight + " envelope blocks and its mass"
                     : wings.count + " wings and its mass"));
+            FIGURES.get().put("top", v);
             judgeSpeed(v, AIR_BAD, AIR_SLOW, "aircraft", faults, notes);
             if (filled > 0 && wings.count == 0 && lev == 0 && v < AIRSHIP_GOOD)
                 airshipAdvice(b, v, drag, filled, balloonY, p0, faults, notes);
@@ -1552,10 +1564,12 @@ final class VehicleCheck {
         } else if (other < weight && v > 0) {
             double takeoff = (weight - other) / (w.up * p0);
             if (takeoff <= v) {
+                FIGURES.get().put("takeoff", takeoff);
                 out.append(String.format(Locale.ROOT, "- Its wings carry it from about %.1f blocks/s (take-off speed at y %d), so "
                         + "it needs a run along the ground or water to get up to that.\n", takeoff, (int) TAKEOFF_Y));
                 if (takeoff > 0.85 * v) notes.add(String.format(Locale.ROOT, "it only just flies: it takes off at %.1f blocks/s and "
                         + "tops out at %.1f; more wings or thrust give it margin to climb", takeoff, v));
+                if (best != null) ground(b, w, side, best, p0, other, takeoff, out, faults, notes);
             }
         }
         for (Direction d : new Direction[] {Direction.NORTH, Direction.SOUTH, Direction.WEST, Direction.EAST}) {
@@ -1620,6 +1634,186 @@ final class VehicleCheck {
                 ? "an Aeroworks Gyroscope" : "its Gyroscope", (int) Math.round(need * GYRO_RPM), (int) GYRO_RPM)
                 : ". Neither moving its wings nor a Gyroscope settles it: bring the thrusters' line level with the centre of "
                 + "mass and keep the wings even around it"));
+    }
+
+    /**
+     * Rolling drag of one Offroad wheel mount, per block/s and per mass it carries up to its suspension setting (10 as
+     * placed): (0.075 + 0.3 x brake) x 20 x min(load, setting) x speed, from WheelMountBlockEntity; full brake is 5 times
+     * that. Measured: a 40-mass cart on four mounts loses 1.5 blocks/s every second at the default setting.
+     */
+    private static final double WHEEL_ROLL = 1.5, WHEEL_SUSPENSION = 10, WHEEL_BRAKE = 5;
+    /** Ground runs, blocks: longer than the first is a long field; longer than the second is no use. */
+    private static final double RUN_LONG = 60, RUN_BAD = 150;
+    /** The height a plane's field is judged at. */
+    private static final double GROUND_Y = 70;
+
+    /**
+     * The run along the ground to take off and to stop after landing, worked out step by step: the propellers' push
+     * (falling toward their airflow), Sable's damping and the wings' drag, and what the plane stands on. Wheel mounts
+     * drag in proportion to speed and the load on them, which is what makes a wheeled plane need a long field; blocks
+     * slide with their Sable friction against the weight the wings don't yet carry (a Grindstone's 0.05 rolls almost
+     * freely; planks and most blocks, 1, barely slide). Landing: it touches down near its take-off speed, and stops on
+     * its friction, on wheel brakes, or on its propellers turned backwards (a Gearshift in each propeller line).
+     */
+    private static void ground(Body b, Wings w, List<Thrust> side, Direction best, double p0, double other, double takeoff,
+            StringBuilder out, List<String> faults, List<String> notes) {
+        // Judged on a field at about y 70, where most are; the air there is thicker than at y 100, where it flies.
+        double weight = G * b.m;
+        p0 = pressure(GROUND_Y);
+        takeoff = (weight - other) / (w.up * p0);
+        List<double[]> push = new ArrayList<>(); // force, airflow
+        for (Thrust t : side)
+            if (t.dir == best || t.reversible && t.dir == best.getOpposite()) push.add(new double[] {t.force * p0, t.airflow});
+        if (push.isEmpty()) return;
+        List<Part> mounts = b.parts.stream().filter(p -> p.id.equals("offroad:wheel_mount")).toList();
+        // What touches the ground: the bottom row's blocks whose shape reaches the bottom of their cell (not a top slab).
+        BlockGetter g = b.level != null ? b.level : EmptyBlockGetter.INSTANCE;
+        List<Part> feet = mounts.isEmpty() ? b.parts.stream().filter(p -> p.pos.getY() == b.minY && p.mass > 0 && touchesBelow(g, p)).toList()
+                : mounts;
+        if (feet.isEmpty()) return;
+        Direction right = best.getClockWise();
+        double fore0 = Double.MAX_VALUE, fore1 = -Double.MAX_VALUE, side0 = Double.MAX_VALUE, side1 = -Double.MAX_VALUE, mu = 0;
+        for (Part p : feet) {
+            double f = forward(b, best, p.cx(), p.cz()), r = forward(b, right, p.cx(), p.cz());
+            fore0 = Math.min(fore0, f - 0.5);
+            fore1 = Math.max(fore1, f + 0.5);
+            side0 = Math.min(side0, r - 0.5);
+            side1 = Math.max(side1, r + 0.5);
+            mu += friction(p.state);
+        }
+        mu /= feet.size();
+        int wheels = mounts.size();
+        String gear = wheels > 0 ? wheels + " wheel mount" + (wheels == 1 ? "" : "s")
+                : feet.stream().map(p -> p.state.getBlock().getName().getString()).distinct().limit(3).reduce((a, c) -> a + ", " + c).orElse("")
+                + String.format(Locale.ROOT, " (sliding friction %.2f)", mu);
+        if (fore0 > 0 || fore1 < 0) {
+            faults.add(String.format(Locale.ROOT, "it can't stand on the ground: everything it rests on (%s) is %s its centre of "
+                    + "mass, so it tips onto its %s; put landing gear both ahead of and behind the centre of mass (a nose wheel "
+                    + "and two mains just behind it)", gear, fore0 > 0 ? "ahead of" : "behind", fore0 > 0 ? "tail" : "nose"));
+            return;
+        }
+        if (side0 > -0.5 || side1 < 0.5) {
+            faults.add("it can't stand on the ground: what it rests on (" + gear + ") is all on one side of its centre of mass, "
+                    + "so it tips onto a wing; put gear on both sides");
+            return;
+        }
+        double drag = DAMP * b.m + w.drag(best.getAxis(), p0);
+        double dt = 0.025;
+        // Take-off: from standing, until the wings carry the weight.
+        double u = 0, x = 0, t = 0;
+        boolean stuck = false;
+        while (true) {
+            double lift = other + w.up * p0 * u;
+            if (lift >= weight) break;
+            double load = weight - lift, thrust = 0;
+            for (double[] k : push) thrust += k[1] < Double.MAX_VALUE ? k[0] * Math.max(0, 1 - u / k[1]) : k[0];
+            double roll = wheels > 0 ? wheels * WHEEL_ROLL * Math.min(load / G / wheels, WHEEL_SUSPENSION) * u : mu * load;
+            if (u < 1e-6 && wheels == 0 && thrust <= roll) {
+                stuck = true;
+                break;
+            }
+            double a = (thrust - drag * u - roll) / b.m;
+            u = Math.max(0, u + a * dt);
+            x += u * dt;
+            t += dt;
+            if (t > 60 || a < 1e-4 && t > 2) {
+                stuck = true;
+                break;
+            }
+        }
+        if (stuck) {
+            double tops = u;
+            faults.add(String.format(Locale.ROOT, "it never gets off the ground: on its %s it %s, short of the %.1f blocks/s its "
+                    + "wings need, because what it stands on drags too hard. %s", gear, tops < 0.1 ? "doesn't move at all"
+                    : String.format(Locale.ROOT, "tops out at %.1f blocks/s", tops), takeoff, wheels > 0 ? "Wheel mounts drag "
+                    + "in proportion to speed and to the weight on them (" + WHEEL_ROLL + " per block/s per mass carried, up to "
+                    + "their suspension setting), so a heavy plane on wheels never reaches flying speed: stand it on Grindstones "
+                    + "instead (they roll almost freely: one under the nose, two just behind the centre of mass)"
+                    : "Stand it on Grindstones (they roll almost freely: one under the nose, two just behind the centre of mass)"));
+            return;
+        }
+        // Landing: touching down at take-off speed with the propellers idle, braked or reversed.
+        boolean reverse = reverser(b), brakes = wheels > 0;
+        double idle = stop(b, w, p0, other, takeoff, drag, wheels, mu, 0, 1), back = 0, braked = 0;
+        if (reverse) {
+            for (double[] k : push) back += k[0];
+            back = stop(b, w, p0, other, takeoff, drag, wheels, mu, back, 1);
+        }
+        if (brakes) braked = stop(b, w, p0, other, takeoff, drag, wheels, mu, 0, WHEEL_BRAKE);
+        double land = reverse ? back : brakes ? braked : idle;
+        out.append(String.format(Locale.ROOT, "- On the ground it stands on %s: from a field at about y %d its take-off run is about %.0f blocks (%.0f s), "
+                + "lifting off at %.1f blocks/s, and after touching down at about %.0f blocks/s it stops in about %.0f blocks %s.\n", gear, (int) GROUND_Y, x, t,
+                takeoff, takeoff, land,
+                reverse ? String.format(Locale.ROOT, "with its propellers reversed (Gearshift lever on; %.0f with them just idle)", idle)
+                : brakes ? String.format(Locale.ROOT, "on full wheel brakes (redstone into the mounts' tops; %.0f rolling free)", idle)
+                : "rolling on its own friction with the propellers idle"));
+        FIGURES.get().put("run", x);
+        FIGURES.get().put("stop", land);
+        FIGURES.get().put("liftoff", takeoff);
+        double field = Math.max(x, land);
+        if (field > RUN_BAD) faults.add(String.format(Locale.ROOT, "it needs a field about %.0f blocks long (%.0f to take off, "
+                + "%.0f to stop), too long to be of use. %s", field, x, land, wheels > 0 ? "Wheel mounts drag hard at speed: "
+                + "Grindstones roll almost freely as landing gear, and a Gearshift in each propeller line reverses them to stop"
+                : !reverse && land > x ? "Put a Gearshift in each propeller line, on a lever at the pilot's hand: reversed, the "
+                + "propellers stop it in a few blocks" : "More forward thrust or more wing shortens the run"));
+        else if (field > RUN_LONG) notes.add(String.format(Locale.ROOT, "it needs a long field: about %.0f blocks to take off and "
+                + "%.0f to stop%s", x, land, !reverse ? "; a Gearshift in each propeller line, on a lever at the pilot's hand, "
+                + "reverses them and stops it in a few blocks" : ""));
+        if (!reverse && wheels == 0 && mu < 0.3 && idle > 2 * x)
+            notes.add(String.format(Locale.ROOT, "nothing stops it after landing but its own drag (about %.0f blocks): a Gearshift "
+                    + "in each propeller line, on a lever at the pilot's hand, turns them backwards as an air brake", idle));
+    }
+
+    private static boolean touchesBelow(BlockGetter g, Part p) {
+        VoxelShape shape = p.state.getCollisionShape(g, p.pos);
+        return !shape.isEmpty() && shape.min(Direction.Axis.Y) < 0.01;
+    }
+
+    /** The run to stop from {@code u0}, blocks: drag, the ground's friction (wheel mounts at {@code brake} times) and reverse push. */
+    private static double stop(Body b, Wings w, double p0, double other, double u0, double drag, int wheels, double mu,
+            double back, double brake) {
+        double weight = G * b.m, u = u0, x = 0, dt = 0.025;
+        for (int i = 0; i < 40 * 120 && u > 0.2; i++) {
+            double load = Math.max(0, weight - other - w.up * p0 * u);
+            double roll = wheels > 0 ? brake * wheels * WHEEL_ROLL * Math.min(load / G / wheels, WHEEL_SUSPENSION) * u : mu * load;
+            u = Math.max(0, u - (drag * u + roll + back) / b.m * dt);
+            x += u * dt;
+        }
+        return x;
+    }
+
+    /** Whether a lever or link at a Gearshift can turn the propellers it drives backwards. */
+    private static boolean reverser(Body b) {
+        for (Part p : b.parts) {
+            if (!p.id.equals("create:gearshift")) continue;
+            boolean worked = false;
+            for (Direction d : Direction.values()) {
+                BlockState n = b.blocks.get(p.pos.relative(d));
+                if (n == null) continue;
+                String id = id(n);
+                if (id.equals("minecraft:lever") || id.equals("create:redstone_link") || id.endsWith("_button") || id.equals("minecraft:redstone_wire"))
+                    worked = true;
+            }
+            if (!worked) continue;
+            if (b.level == null) return true;
+            try {
+                for (BlockPos q : BuildCheck.network(b.blocks, b.level, p.pos)) {
+                    BlockState s = b.blocks.get(q);
+                    if (s != null && isPropeller(id(s))) return true;
+                }
+            } catch (RuntimeException | LinkageError e) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    static double friction(BlockState s) {
+        try {
+            return dev.ryanhcode.sable.physics.config.block_properties.PhysicsBlockPropertyHelper.getFriction(s);
+        } catch (RuntimeException | LinkageError e) {
+            return 1;
+        }
     }
 
     /** How it flies at full power, and at the power that holds its height (cruise; null when full power can't). */
@@ -2698,6 +2892,7 @@ final class VehicleCheck {
             return;
         }
         double deg = Math.toDegrees(torque / damping);
+        FIGURES.get().put("turn", deg);
         out.append(String.format(Locale.ROOT, "- Turns at about %.0f°/s at speed, by %s.\n", deg, how));
         if (deg < TURN_BAD) faults.add(String.format(Locale.ROOT, "it barely turns (%.1f°/s): a full circle takes %.0f s; it "
                 + "needs a stronger turning force farther from its centre", deg, 360 / deg));

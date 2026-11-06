@@ -85,17 +85,24 @@ final class DesignBriefs {
             numbers behind these rules.""";
 
     static final String PLANE = """
-            A plane should read as an aircraft at a glance, not a platform with parts set on it: a fuselage that is a \
-            body (the engine in the nose or in nacelles on the wings, the propellers out front, a cockpit, a body \
-            narrowing back to the tail; a streamlined shape draws one), long slim wings (about five or six times as \
-            wide as they are deep, a biplane's two stacked on struts) set over the weight's centre, a tail far back \
-            with a flat stabiliser and an upright fin, and landing gear under it. The pilot sits in the cockpit with \
-            every control in front of them, grouped like a dashboard, steers with the Steering Wheel and sets the \
-            speed with a Throttle Lever. Planes fly only if they are light, so wings and tail are fabric (Create sails \
-            lift like Wing blocks at a quarter of the weight; Symmetric Sails steady a tail without lifting) and the \
-            body is slabs, trapdoors and fences, with solid blocks only where they matter. Propeller planes work from \
-            the start: Portable Engines geared up to 256 RPM turning Wooden Propellers, on sail wings, with a \
-            Gyroscope. When a draft fails, change the design (more wing, less weight, faster propellers, a biplane).""";
+            Start every small propeller plane you design new from build_model's plane: say how many seats (one or two), \
+            the wood and the colour, and the server lays it out and checks it, so its first version flies; then change \
+            it with from_draft only where the player asked for something it doesn't cover, and keep its engines, gear \
+            and wing in place. One the player built stays theirs: copy it with from_world and improve it in its own \
+            shape by the rules below, never by swapping in a laid-out plane. The rules, to explain the design and to \
+            judge one the player built: a plane reads as an aircraft, a body narrowing back to a tail with a flat \
+            stabiliser and an upright fin, wings set over the weight's centre, and it flies only if it is light, so \
+            wings and tail are fabric (Create sails lift like Wing blocks at a quarter of the weight; Symmetric Sails \
+            steady a tail without lifting) and the body is slabs, stairs and fences. The pilot sits up front with \
+            every control in reach and nothing but a low nose and a window ahead of their eyes: engines and \
+            propellers go behind the pilot or out on the wings (propellers on the wings' leading edge, pushing at the \
+            height of the centre of mass), never in front of the windscreen, and a wing in front of the pilot's eyes \
+            blinds them. Portable Engines geared up to 256 RPM turn Wooden Propellers from the start, and a Gyroscope \
+            keeps the wings level. A short field comes from what it rolls on as much as from its wings: Grindstones \
+            roll almost freely as landing gear (one under the nose, two just behind the centre of mass), wheel mounts \
+            drag so hard at speed that a plane on them needs huge wings and a long field, and a Gearshift in each \
+            propeller line, on a lever at the pilot's hand, reverses them to stop in a few blocks after landing. The \
+            check gives the take-off and landing runs; quote them. When a draft fails, change the design.""";
 
     static final String AIRSHIP = """
             Start every airship or blimp you design new from build_model's airship: say what the player wants (closed cabin or \
