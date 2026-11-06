@@ -48,8 +48,11 @@ REELS = {
 LINES = {
     # name: test, stretch, visibility, meters, color
     "string_line": (4, 0.7, 0.7, 100, "#e8e8e8"),
-    "mono_line": (8, 0.5, 0.4, 150, "#d8e8d0"),
-    "clear_line": (10, 0.3, 0.1, 150, "#e0f0ff"),
+    # Twisted Line: string twisted and dressed with fish oil or wax in a heated Mixer, the pre-oil line for iron rods
+    # and brass reels; stronger than string, weaker and easier to see than the plastic lines.
+    "twisted_line": (8, 0.6, 0.6, 120, "#a8643a"),
+    "mono_line": (10, 0.5, 0.4, 150, "#d8e8d0"),
+    "clear_line": (12, 0.3, 0.1, 150, "#e0f0ff"),
     "braided_line": (18, 0.1, 0.8, 200, "#3a6a3a"),
     "heavy_line": (50, 0.45, 0.5, 600, "#f0d070"),
 }
