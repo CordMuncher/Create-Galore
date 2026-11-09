@@ -152,6 +152,8 @@ final class VehicleCheck {
         }
         if (getter instanceof net.minecraft.server.level.ServerLevel level) drive(body, rpm, level, faults);
         pieces(blocks, model, faults, notes);
+        // Aircraft must look built: no part hanging loose with a gap round it, no sky showing through the hull.
+        if (air || (props && !water && !sub)) Integrity.check(blocks, getter, model, faults, notes);
         if (model) ballast(blocks, getter, faults);
         boatEngines(blocks, getter, faults);
         controls(blocks, getter, faults);

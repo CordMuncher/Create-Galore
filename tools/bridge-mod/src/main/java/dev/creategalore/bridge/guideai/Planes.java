@@ -30,16 +30,20 @@ final class Planes {
     /** Take-off run wished for, blocks: the smallest wing that needs no more than this wins; else the shortest run. */
     private static final double SHORT_RUN = 40;
     /**
-     * Ceiling wished for, y: a plane that can't climb over hills is of little use (y 120 clears most; mountains need more). Four Wooden Propellers on two Portable
-     * Engines push 1024 at most (a quarter of the engines' stress), so the ceiling comes from wing for the weight.
+     * Ceiling wished for, y: a plane that can't climb over hills is of little use (y 110 clears the trees and most hills; mountains
+     * need more). Four Wooden Propellers on two Portable Engines push 1024 at most, so the ceiling comes from wing for the
+     * weight. With a closed body (no sky through it) and a gyroscope geared to 128 RPM, y 120 took a 29-block span; y 110
+     * keeps it about 25 (flown in a test world, the 27-block one climbed to y 116 as worked out).
      */
-    private static final double CEILING = 120;
+    private static final double CEILING = 110;
     /** How long the fuselage is, nose to tail fin; the tail's stabiliser and fin stand at its last row. */
     private static final int TAIL = 14;
     /** Where along the fuselage the main gear stands (just behind the centre of mass). */
     private static final int GEAR = 8;
-    /** Where along the cockpit the steps up into it are, beside the seats. */
+    /** Where along the cockpit the step in is, between the seats. */
     private static final int STEP = 4;
+    /** The last row of the three-wide body (the engine bay's back); the boom runs on from here to the tail. */
+    private static final int BAY = 9;
     /** The propellers' places out along each wing. */
     private static final int INNER = 7, OUTER = 9;
 
@@ -113,10 +117,10 @@ final class Planes {
             return null;
         }
         List<Wing> wings = new ArrayList<>();
-        for (int half = 7; half <= 11; half++)
-            for (int chord = 3; chord <= 5; chord++)
+        for (int half = 7; half <= 13; half++)
+            for (int chord = 3; chord <= 6; chord++)
                 for (boolean bi : new boolean[] {false, true})
-                    for (int lead = 3; lead <= 4; lead++) wings.add(new Wing(half, chord, lead, bi));
+                    for (int lead = 1; lead <= 5; lead++) wings.add(new Wing(half, chord, lead, bi));
         wings.sort(java.util.Comparator.comparingInt(Wing::sails).thenComparingInt(w -> w.biplane() ? 1 : 0));
         Try best = null, nearest = null;
         String why = null;
@@ -130,7 +134,7 @@ final class Planes {
             if (r == null) continue;
             Try t = new Try(w, cells, r.faults(), new HashMap<>(VehicleCheck.FIGURES.get()));
             if (Boolean.getBoolean("creategalore.planes.debug"))
-                System.out.println("[planes] " + w + " run " + t.run() + " " + t.figures + " " + t.faults);
+                System.out.println("[planes] " + w + " run " + t.run() + " " + t.figures + " " + r.text().lines().skip(1).findFirst().orElse("") + " " + t.faults);
             if (!t.faults.isEmpty()) {
                 if (why == null) why = t.faults.get(0);
                 continue;
@@ -160,6 +164,17 @@ final class Planes {
         raw.put("slab", "minecraft:" + w + "_slab[type=bottom]");
         raw.put("planks", "minecraft:" + w + "_planks");
         raw.put("stairs", "minecraft:" + w + "_stairs[facing=south,half=bottom]");
+        raw.put("stairsNoseW", "minecraft:" + w + "_stairs[facing=east,half=top]");
+        raw.put("stairsNoseE", "minecraft:" + w + "_stairs[facing=west,half=top]");
+        raw.put("ladder", "minecraft:ladder[facing=west]");
+        raw.put("belly", "minecraft:" + w + "_stairs[facing=south,half=top]");
+        raw.put("wallW", "minecraft:" + w + "_stairs[facing=east,half=top]");
+        raw.put("wallE", "minecraft:" + w + "_stairs[facing=west,half=top]");
+        raw.put("linkUp", "create:redstone_link[facing=up,receiver=true]");
+        raw.put("casing", "create:andesite_casing");
+        raw.put("largeEnc", "create:andesite_encased_large_cogwheel[axis=x,top_shaft=true,bottom_shaft=true]");
+        raw.put("cogEnc", "create:andesite_encased_cogwheel[axis=x,top_shaft=true,bottom_shaft=true]");
+        raw.put("shaftEnc", "create:andesite_encased_shaft[axis=x]");
         raw.put("pane", "minecraft:glass_pane[east=true,west=true]");
         raw.put("wheel", "simulated:steering_wheel[facing=south]");
         raw.put("compWest", "minecraft:comparator[facing=east]");
@@ -173,6 +188,11 @@ final class Planes {
         raw.put("gearboxX", "create:gearbox[axis=x]");
         raw.put("gearboxY", "create:gearbox[axis=y]");
         raw.put("gyro", "aeroworks:gyroscope");
+        // The gyroscope's step-up: each cogwheel's shaft opens only toward the one it hands the drive to.
+        raw.put("gyroLarge1", "create:andesite_encased_large_cogwheel[axis=y,top_shaft=false,bottom_shaft=true]");
+        raw.put("gyroSmall1", "create:andesite_encased_cogwheel[axis=y,top_shaft=true,bottom_shaft=false]");
+        raw.put("gyroLarge2", "create:andesite_encased_large_cogwheel[axis=y,top_shaft=false,bottom_shaft=true]");
+        raw.put("gyroSmall2", "create:andesite_encased_cogwheel[axis=y,top_shaft=true,bottom_shaft=false]");
         raw.put("gearshift", "create:gearshift[axis=x]");
         raw.put("large", "create:large_cogwheel[axis=x]");
         raw.put("cog", "create:cogwheel[axis=x]");
@@ -204,23 +224,27 @@ final class Planes {
     /** The plane's cells, nose toward -z (north) at z 0, the fuselage's middle at x 0, the gear's foot at y 0. */
     private static Map<BlockPos, BlockState> lay(Spec spec, Wing w, Map<String, BlockState> p) {
         Map<BlockPos, BlockState> c = new LinkedHashMap<>();
-        // Landing gear: a Grindstone under the nose and two just behind the centre of mass. A step up into the cockpit
-        // each side: top slabs under its floor's edge and one out beside it, clear of the ground.
-        c.put(new BlockPos(0, 0, 1), p.get("gear"));
-        for (int x : new int[] {-1, 1}) c.put(new BlockPos(x, 0, GEAR), p.get("gear"));
-        for (int x : new int[] {-2, -1, 1, 2}) c.put(new BlockPos(x, 0, STEP), p.get("slabTop"));
-        // Fuselage floor: a keel of top slabs nose to tail, the cockpit's floor either side of it.
-        for (int z = 0; z < TAIL - 3; z++) c.put(new BlockPos(0, 1, z), p.get("slabTop"));
-        // The cockpit floor runs back past the engines to the main gear, so the crew walks to every engine to refuel it.
-        for (int x : new int[] {-1, 1})
-            for (int z = 2; z <= GEAR + 1; z++) c.put(new BlockPos(x, 1, z), p.get("slabTop"));
-        // A low nose and the windscreen: stairs and planks under the pilot's eye, panes at it.
-        c.put(new BlockPos(0, 2, 0), p.get("stairs"));
+        // The fuselage: a closed wooden body three wide, its belly and sides two blocks deep from nose to engine bay, then
+        // a two-high boom one wide to the tail. Every part below joins it where its shape meets a block's, so nothing
+        // hangs loose and no sky shows through the body.
+        // Wooden stairs weigh half what planks do (Sable counts them super light) and still look solid from the side.
+        for (int z = 0; z <= BAY; z++) c.put(new BlockPos(0, 1, z), p.get("belly"));
+        // The boom is planks: stacked stairs would leave a notch in every block, a lattice from the side.
+        for (int z = BAY + 1; z <= TAIL; z++) for (int y = 1; y <= 2; y++) c.put(new BlockPos(0, y, z), p.get("planks"));
+        for (int z = 1; z <= BAY; z++) {
+            c.put(new BlockPos(-1, 1, z), p.get("wallW"));
+            c.put(new BlockPos(1, 1, z), p.get("wallE"));
+        }
+        c.put(new BlockPos(-1, 1, 0), p.get("stairsNoseW"));
+        c.put(new BlockPos(1, 1, 0), p.get("stairsNoseE"));
+        // The nose: a cowling of stairs sloping up to the windscreen, planks under the pilot's eye, panes at it.
         for (int x = -1; x <= 1; x++) {
-            c.put(new BlockPos(x, 2, 1), x == 0 ? p.get("planks") : p.get("stairs"));
+            c.put(new BlockPos(x, 2, 0), p.get("stairs"));
+            c.put(new BlockPos(x, 2, 1), p.get("planks"));
             c.put(new BlockPos(x, 3, 1), p.get("pane"));
         }
-        // The dash: the wheel ahead of the pilot, a comparator each side of it, the throttle and the reverse lever by the seat.
+        // The dash: the wheel ahead of the pilot, a comparator each side of it (the cockpit's sides there), the throttle
+        // and the reverse lever by the seat, and the senders for the links outside them.
         c.put(new BlockPos(0, 2, 2), p.get("wheel"));
         c.put(new BlockPos(-1, 2, 2), p.get("compWest"));
         c.put(new BlockPos(1, 2, 2), p.get("compEast"));
@@ -232,48 +256,75 @@ final class Planes {
         c.put(new BlockPos(2, 2, 3), p.get("linkOutEast"));
         c.put(new BlockPos(0, 2, 3), p.get("seat"));
         if (spec.seats() > 1) c.put(new BlockPos(0, 2, 5), p.get("seat"));
+        // The cockpit's sides: planks, with a gap on the left at the step in, a ladder up the side below it.
+        for (int z = STEP; z <= BAY; z++) {
+            c.put(new BlockPos(1, 2, z), p.get("wallE"));
+            if (z != STEP) c.put(new BlockPos(-1, 2, z), p.get("wallW"));
+        }
+        // The ladder hangs on a plank (a stair's side is too narrow to hold one).
+        c.put(new BlockPos(-1, 1, STEP), p.get("planks"));
+        c.put(new BlockPos(-2, 1, STEP), p.get("ladder"));
+        // Landing gear: a Grindstone under the nose and two under the sides just behind the centre of mass, each right
+        // under a plank so it is set into the body.
+        c.put(new BlockPos(0, 0, 1), p.get("gear"));
+        for (int x : new int[] {-1, 1}) c.put(new BlockPos(x, 0, GEAR), p.get("gear"));
         // Engines behind the seats, each reached from the cockpit floor to refuel; the middle one turns the Gyroscope
-        // through the gearbox under it.
-        c.put(new BlockPos(-1, 2, 7), p.get("engineWest"));
-        c.put(new BlockPos(1, 2, 7), p.get("engineEast"));
+        // through the gearbox under it and a short tower of encased cogwheels stepping large to small twice, 32 up to
+        // 128 RPM: Aeroworks' gyroscope works in proportion to its RPM (full at 256), and at an engine's bare 32 RPM it
+        // let this plane fly banked 8 degrees; at 128 it holds it within about a degree, using all of one engine's
+        // 2048 stress units (16 per RPM).
+        c.put(new BlockPos(-1, 3, 7), p.get("engineWest"));
+        c.put(new BlockPos(1, 3, 7), p.get("engineEast"));
         c.put(new BlockPos(0, 2, 6), p.get("engineSouth"));
         c.put(new BlockPos(0, 2, 8), p.get("assembler"));
         c.put(new BlockPos(0, 2, 7), p.get("gearboxX"));
-        c.put(new BlockPos(0, 3, 7), p.get("gyro"));
+        c.put(new BlockPos(0, 3, 7), p.get("gyroLarge1"));
+        c.put(new BlockPos(1, 3, 8), p.get("gyroSmall1"));
+        c.put(new BlockPos(1, 4, 8), p.get("gyroLarge2"));
+        c.put(new BlockPos(0, 4, 7), p.get("gyroSmall2"));
+        c.put(new BlockPos(0, 5, 7), p.get("gyro"));
         for (int s : new int[] {-1, 1}) {
-            // Each engine's line: the Gearshift (reverse), a cog ladder up to 256 RPM out along the wing, the
-            // transmission, and the shaft along the leading edge with a propeller on a gearbox at each place.
-            c.put(new BlockPos(2 * s, 2, 7), p.get("gearshift"));
-            c.put(new BlockPos(2 * s, 1, 7), p.get("linkDown"));
-            c.put(new BlockPos(3 * s, 2, 7), p.get("large"));
-            c.put(new BlockPos(3 * s, 3, 6), p.get("cog"));
-            c.put(new BlockPos(4 * s, 3, 6), p.get("large"));
-            c.put(new BlockPos(4 * s, 2, 5), p.get("cog"));
-            c.put(new BlockPos(5 * s, 2, 5), p.get("large"));
-            c.put(new BlockPos(5 * s, 3, 4), p.get("cog"));
-            c.put(new BlockPos(6 * s, 3, 4), p.get("transmission"));
-            c.put(new BlockPos(6 * s, 3, 5), p.get("linkSouth"));
-            c.put(new BlockPos(7 * s, 3, 4), p.get(s < 0 ? "linkInWest" : "linkInEast"));
-            c.put(new BlockPos(6 * s, 3, 3), p.get("cog"));
+            // Each engine's line, in a casing at the wing's root: the Gearshift (reverse), encased cogwheels stepping
+            // large to small three times (32 to 256 RPM) down to the wing, with casing filling each step's corner, the
+            // transmission, and the encased shaft along the leading edge with a propeller on a gearbox at each place.
+            // The drive comes down from the engines to the wing so the propellers push level with the centre of mass.
+            c.put(new BlockPos(2 * s, 3, 7), p.get("gearshift"));
+            c.put(new BlockPos(2 * s, 4, 7), p.get("linkUp"));
+            c.put(new BlockPos(3 * s, 3, 7), p.get("largeEnc"));
+            c.put(new BlockPos(3 * s, 2, 7), p.get("casing"));
+            c.put(new BlockPos(3 * s, 2, 6), p.get("cogEnc"));
+            c.put(new BlockPos(4 * s, 2, 6), p.get("largeEnc"));
+            c.put(new BlockPos(4 * s, 3, 6), p.get("casing"));
+            c.put(new BlockPos(4 * s, 3, 5), p.get("cogEnc"));
+            c.put(new BlockPos(5 * s, 3, 5), p.get("largeEnc"));
+            c.put(new BlockPos(5 * s, 2, 5), p.get("casing"));
+            c.put(new BlockPos(5 * s, 2, 4), p.get("cogEnc"));
+            c.put(new BlockPos(6 * s, 2, 4), p.get("transmission"));
+            c.put(new BlockPos(6 * s, 2, 5), p.get("linkSouth"));
+            c.put(new BlockPos(7 * s, 2, 4), p.get(s < 0 ? "linkInWest" : "linkInEast"));
+            // On a monoplane a casing behind the receiver joins the wing's root sails to the drive; a biplane's wings
+            // run above and below that cell, so it stays empty there (a casing would hang between them).
+            if (!w.biplane()) c.put(new BlockPos(7 * s, 2, 5), p.get("casing"));
+            c.put(new BlockPos(6 * s, 2, 3), p.get("cogEnc"));
             for (int x = INNER; x <= OUTER; x++) {
                 if (x == INNER || x == OUTER) {
-                    c.put(new BlockPos(x * s, 3, 3), p.get("gearboxY"));
-                    c.put(new BlockPos(x * s, 3, 2), p.get(x == INNER ? "propIn" : "propOut"));
-                } else c.put(new BlockPos(x * s, 3, 3), p.get("shaft"));
+                    c.put(new BlockPos(x * s, 2, 3), p.get("gearboxY"));
+                    c.put(new BlockPos(x * s, 2, 2), p.get(x == INNER ? "propIn" : "propOut"));
+                } else c.put(new BlockPos(x * s, 2, 3), p.get("shaftEnc"));
             }
         }
-        // Wings: the top wing just above the propellers' line, the lower one (a biplane's) at the floor, outboard of the cockpit.
-        for (int x = -w.half(); x <= w.half(); x++)
-            for (int z = w.lead(); z < w.lead() + w.chord(); z++) c.put(new BlockPos(x, 4, z), p.get("sail"));
-        if (w.biplane())
+        // The wing, level with the drive line and the centre of mass, joined at its root to the body and the casings.
+        // Sails join the blocks beside them at their middle, so the wing meets the body along its root.
+        // A biplane's wings are above and below the drive line instead, the upper one joined to the casings' tops
+        // and the lower one to the belly's sides, with the propellers between them.
+        for (int y : w.biplane() ? new int[] {1, 3} : new int[] {2})
             for (int x = -w.half(); x <= w.half(); x++) {
-                if (Math.abs(x) <= 2) continue;
-                for (int z = w.lead(); z < w.lead() + w.chord(); z++) c.putIfAbsent(new BlockPos(x, 1, z), p.get("sail"));
+                if (Math.abs(x) <= 1) continue;
+                for (int z = w.lead(); z < w.lead() + w.chord(); z++) c.putIfAbsent(new BlockPos(x, y, z), p.get("sail"));
             }
-        // Tail: a boom of slabs, a flat stabiliser across it and an upright fin.
-        for (int z = TAIL - 3; z <= TAIL; z++) c.put(new BlockPos(0, 2, z), p.get("slab"));
-        for (int x = -3; x <= 3; x++) c.put(new BlockPos(x, 3, TAIL), p.get("stabiliser"));
-        for (int y = 4; y <= 5; y++) c.put(new BlockPos(0, y, TAIL), p.get("fin"));
+        // Tail: a flat stabiliser either side of its end and an upright fin on it.
+        for (int x = -3; x <= 3; x++) if (x != 0) c.put(new BlockPos(x, 2, TAIL), p.get("stabiliser"));
+        for (int y = 3; y <= 4; y++) c.put(new BlockPos(0, y, TAIL), p.get("fin"));
         return c;
     }
 
@@ -321,27 +372,28 @@ final class Planes {
                 spec.seats() == 1 ? "one" : "two (pilot in front, passenger behind)", spec.wood().replace('_', ' '), TAIL + 1,
                 w.biplane() ? "two wings" : "one wing", w.sails(), spec.colour().replace('_', ' '), 2 * w.half() + 1, w.chord(),
                 sx, sy, sz));
-        s.append("- Drive: two Portable Engines behind the seats, each through a Gearshift and a cog ladder (large to small "
-                + "three times: 32 up to 256 RPM) out along its wing to an Analog Transmission and two Wooden Propellers on "
-                + "the wing's leading edge, all four pushing forward at the height of the centre of mass. The inner two have "
+        s.append("- Drive: two Portable Engines behind the seats, each through a Gearshift and encased cogwheels stepping large "
+                + "to small three times (32 up to 256 RPM, a casing in each step's corner) down to its wing's root, then an "
+                + "Analog Transmission and an encased shaft along the leading edge to two Wooden Propellers, all four pushing forward at the height of the centre of mass. The inner two have "
                 + "their blades reversed (as the model shows) because they turn the other way round from the outer two; if a "
                 + "propeller blows backwards when built, flip its blades with a wrench. A third engine, behind the passenger, turns the "
-                + "Gyroscope, which keeps the wings level; nothing else does in the air.\n");
+                + "Gyroscope through a gearbox and two large-to-small steps (128 RPM: a gyroscope works in proportion to its RPM, "
+                + "and at an engine's bare 32 it lets the plane fly banked), which keeps the wings level; nothing else does in the air.\n");
         s.append("- Landing gear: Grindstones, one under the nose and two just behind the centre of mass (they roll almost "
-                + "freely; wheel mounts drag so hard at speed that a plane on them needs a far longer field). The top slabs "
-                + "under the cockpit's sides are the steps up into it.\n");
+                + "freely; wheel mounts drag so hard at speed that a plane on them needs a far longer field). Board on the "
+                + "left: a ladder on the plank there leads up to the gap in the cockpit's side.\n");
         s.append(String.format(Locale.ROOT, "- Controls, all within the pilot's reach: the Steering Wheel at %s steers by "
                         + "slowing one side's propellers (the comparator each side of it sends that side's Redstone Link); the "
                         + "Throttle Lever at %s sets both transmissions (pushed fully forward is flat out, pulled back the propellers stop); the lever at %s reverses the "
                         + "propellers through the Gearshifts, as a brake after landing. Redstone Link frequencies (two items "
                         + "in each link's slots, the same on the sender and its receivers): throttle Redstone + Redstone (sender "
                         + "%s, receivers on both transmissions' backs %s and %s); left side Stick + Redstone (%s to %s); right "
-                        + "side Redstone + Stick (%s to %s); reverse Stick + Stick (%s to the links under both Gearshifts, %s "
+                        + "side Redstone + Stick (%s to %s); reverse Stick + Stick (%s to the links on top of both Gearshifts, %s "
                         + "and %s).\n", at.apply(new BlockPos(0, 2, 2)), at.apply(new BlockPos(-1, 2, 3)),
-                at.apply(new BlockPos(1, 2, 3)), at.apply(new BlockPos(-2, 2, 3)), at.apply(new BlockPos(-6, 3, 5)),
-                at.apply(new BlockPos(6, 3, 5)), at.apply(new BlockPos(-2, 2, 2)), at.apply(new BlockPos(-7, 3, 4)),
-                at.apply(new BlockPos(2, 2, 2)), at.apply(new BlockPos(7, 3, 4)), at.apply(new BlockPos(2, 2, 3)),
-                at.apply(new BlockPos(-2, 1, 7)), at.apply(new BlockPos(2, 1, 7))));
+                at.apply(new BlockPos(1, 2, 3)), at.apply(new BlockPos(-2, 2, 3)), at.apply(new BlockPos(-6, 2, 5)),
+                at.apply(new BlockPos(6, 2, 5)), at.apply(new BlockPos(-2, 2, 2)), at.apply(new BlockPos(-7, 2, 4)),
+                at.apply(new BlockPos(2, 2, 2)), at.apply(new BlockPos(7, 2, 4)), at.apply(new BlockPos(2, 2, 3)),
+                at.apply(new BlockPos(-2, 4, 7)), at.apply(new BlockPos(2, 4, 7))));
         s.append(String.format(Locale.ROOT, "- Worked out: from a field at about y 70 it lifts off at about %.0f blocks/s after a run of about %.0f blocks, "
                         + "tops out near %.0f blocks/s, ceiling about y %.0f; after touching down, reversing the propellers stops "
                         + "it in about %.0f blocks (the full check below has the exact figures).\n", f.getOrDefault("liftoff", 0.0),
@@ -352,7 +404,7 @@ final class Planes {
                 + "time: full wheel stops one side, which turns it hard and loses speed. To land, ease the throttle back to sink, and "
                 + "once it is down flip the reverse lever, then off again when it has stopped.\n");
         boolean met = t.run() <= SHORT_RUN && t.ceiling() >= CEILING;
-        s.append(String.format(Locale.ROOT, "- Why this one: wings of 7 to 11 blocks a side, 3 to 5 deep, one deck or two, at "
+        s.append(String.format(Locale.ROOT, "- Why this one: wings of 7 to 13 blocks a side, 3 to 6 deep, one deck or two, at "
                 + "two places along the fuselage were each judged with the vehicle check (flight, balance, take-off and landing "
                 + "runs, steering, the pilot's view and reach, boarding), and this is the smallest that passes with a take-off "
                 + "run of %.0f blocks or less and a ceiling of y %.0f or more%s. Its two drive engines give all the push it "

@@ -5,6 +5,21 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.6.76
+
+### Added
+- Create Galore Bridge 1.185.0.
+- **Ask the Book checks that a flying build looks built.** Every plane, airship, blimp or balloon the book designs or reads is now checked for parts that hang loose (glued on, but with a gap all round, like a Grindstone under a top slab or a fin over a slab) and for a hull the sky shows through. Each one is named with where it is, how big the gap or hole is and what closes it.
+- **Field Guide, Flight:** a Built solid page in Designing Aircraft; the Wing page gives how much each wing block lifts for its weight (a Wing lifts like a sail at four times the weight; the middle Copycat Wing lifts half again as much as a sail for the same weight); Keeping it level says a Gyroscope's strength follows its RPM.
+
+### Fixed
+- **The book's plane is solid.** The two-seat plane it lays out had a body of slabs with open sides, landing gear hanging under half slabs, a tail fin and stabiliser floating over a slab boom, wings and bare cogwheels with gaps round them, so it looked see-through and in pieces. It now has a closed wooden body and tail boom, gear set into the body, its gearing in casings at the wings' roots, and every part joined to the next. The solid body is heavier, so the wings grew: 25 blocks across with 270 sails; it lifts off in about 30 blocks and climbs to about y 113, flown in a test world.
+- **The book's plane flies level.** Its Gyroscope turned at a Portable Engine's 32 RPM, where it pulls back with an eighth of its strength, so the plane flew leaning about 8 degrees. It is now geared up to 128 RPM and leans about 2.
+- **Airship cabins have no slit beside the door.** A glass pane beside a door stops half way, leaving a gap the sky showed through; the door's jambs are planks now.
+
+### Removed
+- Nothing.
+
 ## 0.6.75
 
 ### Added
