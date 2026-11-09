@@ -18,7 +18,8 @@ import net.minecraft.world.level.block.state.BlockState;
  * front under the wing and nothing ahead of them but a low nose and a window, so they see where they go; two Portable
  * Engines side by side behind the seats, each geared up to 256 RPM through a Gearshift and a cog ladder out along its
  * wing to an Analog Transmission and two Wooden Propellers on the wing's leading edge (four in all, pushing in line
- * with the centre of mass); a third engine under an Aeroworks Gyroscope, which keeps the wings level; and Grindstones
+ * with the centre of mass); two more engines, one on the other, under an Aeroworks Gyroscope at 256 RPM, which keeps
+ * the wings level; and Grindstones
  * for landing gear (one under the nose, two just behind the centre of mass), which roll almost freely where wheel
  * mounts drag hard. One Steering Wheel steers by slowing one side's propellers (a comparator each side of it, by
  * Redstone Links to that side's transmission); a Throttle Lever slows both; a lever reverses the propellers through the
@@ -30,12 +31,13 @@ final class Planes {
     /** Take-off run wished for, blocks: the smallest wing that needs no more than this wins; else the shortest run. */
     private static final double SHORT_RUN = 40;
     /**
-     * Ceiling wished for, y: a plane that can't climb over hills is of little use (y 110 clears the trees and most hills; mountains
+     * Ceiling wished for, y: a plane that can't climb over hills is of little use (y 105 clears the trees and most hills; mountains
      * need more). Four Wooden Propellers on two Portable Engines push 1024 at most, so the ceiling comes from wing for the
-     * weight. With a closed body (no sky through it) and a gyroscope geared to 128 RPM, y 120 took a 29-block span; y 110
-     * keeps it about 25 (flown in a test world, the 27-block one climbed to y 116 as worked out).
+     * weight, and it is touchy: air thins with height, so a few percent more weight costs about ten blocks of ceiling.
+     * The gyroscope's second engine and its third step-up weigh about 5 more; with them a sail biplane needed more than
+     * a 31-block span for y 110 and about 27 for y 105. Copycat Wings carry it in less (21 across for a biplane).
      */
-    private static final double CEILING = 110;
+    private static final double CEILING = 105;
     /** How long the fuselage is, nose to tail fin; the tail's stabiliser and fin stand at its last row. */
     private static final int TAIL = 14;
     /** Where along the fuselage the main gear stands (just behind the centre of mass). */
@@ -46,12 +48,14 @@ final class Planes {
     private static final int BAY = 9;
     /** The propellers' places out along each wing. */
     private static final int INNER = 7, OUTER = 9;
+    /** Wing span either side of the fuselage's middle: the propellers sit out to OUTER, so the wing reaches past them. */
+    private static final int MIN_HALF = OUTER + 1, MAX_HALF = 15;
 
     private Planes() {
     }
 
     /** What the player asked for. */
-    record Spec(int seats, String wood, String colour) {
+    record Spec(int seats, String wood, String colour, int wings, boolean copycat, int span, int chord, boolean round) {
     }
 
     /** One wing layout: span either side of the fuselage, chord, the row its leading edge is at, and a lower wing too. */
@@ -69,8 +73,12 @@ final class Planes {
         o.addProperty("type", "object");
         JsonObject p = new JsonObject();
         p.add("seats", WorldTools.prop("integer", "1 or 2."));
-        p.add("wood", WorldTools.prop("string", "Fuselage wood."));
+        p.add("wood", WorldTools.prop("string", "Body wood."));
         p.add("colour", WorldTools.prop("string", "Wing dye."));
+        p.add("wings", WorldTools.prop("integer", "1, 2, 0."));
+        p.add("wing_block", WorldTools.prop("string", "sail or copycat_wing."));
+        p.add("span", WorldTools.prop("integer", "0 auto."));
+        p.add("tips", WorldTools.prop("string", "square/round."));
         o.add("properties", p);
         JsonArray req = new JsonArray();
         p.keySet().forEach(req::add);
@@ -78,7 +86,7 @@ final class Planes {
         o.addProperty("additionalProperties", false);
         JsonObject a = new JsonObject();
         a.addProperty("type", "array");
-        a.addProperty("description", "Empty, or one small plane laid out as airship.");
+        a.addProperty("description", "Empty or one small plane.");
         a.add("items", o);
         return a;
     }
@@ -90,9 +98,20 @@ final class Planes {
         if (wood.isEmpty()) wood = "spruce";
         if (colour.isEmpty()) colour = "white";
         if (seats < 1 || seats > 2) problems.add("plane seats must be 1 or 2");
+        int wings = Diagrams.intOr(o, "wings", 0), span = Diagrams.intOr(o, "span", 0), chord = Diagrams.intOr(o, "chord", 0);
+        String block = GuideText.string(o, "wing_block").strip().toLowerCase(Locale.ROOT).replace("createpropulsion:", "");
+        String tips = GuideText.string(o, "tips").strip().toLowerCase(Locale.ROOT);
+        if (wings < 0 || wings > 2) problems.add("plane wings must be 1, 2 or 0 (either)");
+        if (!block.isEmpty() && !block.equals("sail") && !block.startsWith("copycat_wing"))
+            problems.add("plane wing_block must be sail or copycat_wing");
+        if (span != 0 && (span < 2 * MIN_HALF + 1 || span > 2 * MAX_HALF + 1))
+            problems.add("plane span must be 0 (worked out) or " + (2 * MIN_HALF + 1) + " to " + (2 * MAX_HALF + 1) + " blocks");
+        if (chord != 0 && (chord < 2 || chord > 7)) problems.add("plane chord must be 0 (worked out) or 2 to 7 blocks");
+        if (!tips.isEmpty() && !tips.equals("square") && !tips.equals("round")) problems.add("plane tips must be square or round");
         if (!Airships.WOODS.contains(wood)) problems.add("plane wood must be one of " + String.join(", ", Airships.WOODS));
         if (!Airships.COLOURS.contains(colour)) problems.add("plane colour must be one of " + String.join(", ", Airships.COLOURS));
-        return new Spec(seats, wood, colour);
+        return new Spec(seats, wood, colour, wings, block.startsWith("copycat"), span == 0 ? 0 : span | 1, chord,
+                tips.equals("round"));
     }
 
     // ---------- the search ----------
@@ -117,10 +136,15 @@ final class Planes {
             return null;
         }
         List<Wing> wings = new ArrayList<>();
-        for (int half = 7; half <= 13; half++)
-            for (int chord = 3; chord <= 6; chord++)
-                for (boolean bi : new boolean[] {false, true})
+        // The player's (or the book's) choices fix what they name; the rest is searched, smallest wing first.
+        for (int half = MIN_HALF; half <= MAX_HALF; half++)
+            for (int chord = 2; chord <= 7; chord++)
+                for (boolean bi : new boolean[] {false, true}) {
+                    if (spec.span() != 0 && 2 * half + 1 != spec.span()) continue;
+                    if (spec.chord() != 0 ? chord != spec.chord() : chord < 3 || chord > 6) continue;
+                    if (spec.wings() != 0 && bi != (spec.wings() == 2)) continue;
                     for (int lead = 1; lead <= 5; lead++) wings.add(new Wing(half, chord, lead, bi));
+                }
         wings.sort(java.util.Comparator.comparingInt(Wing::sails).thenComparingInt(w -> w.biplane() ? 1 : 0));
         Try best = null, nearest = null;
         String why = null;
@@ -129,6 +153,9 @@ final class Planes {
             // Glue takes only blocks that share faces: the cog ladders and propeller gearboxes meet the rest at edges.
             int[] size = size(cells);
             VehicleCheck.closeSteps(cells, size[0], size[1], size[2]);
+            // Panes and fences join their neighbours as build_model will place them, so the check sees the same shapes
+            // (a windscreen pane doesn't reach out to a wing beside it, which left a gap).
+            Models.connect(cells, level);
             Map<BlockPos, Float> rpm = BuildCheck.rpm(cells, level, new ArrayList<>());
             BuildCheck.Report r = VehicleCheck.check(cells, level, rpm, true, true);
             if (r == null) continue;
@@ -147,7 +174,10 @@ final class Planes {
         }
         if (best == null) best = nearest;
         if (best == null) {
-            problems.add("no plane layout passed the vehicle check" + (why == null ? "" : " (the smallest: " + why + ")"));
+            String hint = spec.wings() == 1 && !spec.copycat() ? "; sails can't carry a monoplane here (a single sail wing wide "
+                    + "enough to lift it drags too much to hold its height): use wing_block copycat_wing, or two wings"
+                    : spec.span() != 0 ? "; try span 0 so the server can pick a wider wing" : "";
+            problems.add("no plane layout passed the vehicle check" + (why == null ? "" : " (the smallest: " + why + ")") + hint);
             return null;
         }
         return finish(spec, best);
@@ -193,6 +223,9 @@ final class Planes {
         raw.put("gyroSmall1", "create:andesite_encased_cogwheel[axis=y,top_shaft=true,bottom_shaft=false]");
         raw.put("gyroLarge2", "create:andesite_encased_large_cogwheel[axis=y,top_shaft=false,bottom_shaft=true]");
         raw.put("gyroSmall2", "create:andesite_encased_cogwheel[axis=y,top_shaft=true,bottom_shaft=false]");
+        raw.put("gyroLarge3", "create:andesite_encased_large_cogwheel[axis=y,top_shaft=false,bottom_shaft=true]");
+        raw.put("gyroSmall3", "create:andesite_encased_cogwheel[axis=y,top_shaft=false,bottom_shaft=false]");
+        raw.put("gyroIdler", "create:andesite_encased_cogwheel[axis=y,top_shaft=true,bottom_shaft=false]");
         raw.put("gearshift", "create:gearshift[axis=x]");
         raw.put("large", "create:large_cogwheel[axis=x]");
         raw.put("cog", "create:cogwheel[axis=x]");
@@ -206,7 +239,7 @@ final class Planes {
         raw.put("linkDown", "create:redstone_link[facing=down,receiver=true]");
         raw.put("linkOutWest", "create:redstone_link[facing=west,receiver=false]");
         raw.put("linkOutEast", "create:redstone_link[facing=east,receiver=false]");
-        raw.put("sail", "create:" + spec.colour() + "_sail[facing=up]");
+        raw.put("sail", spec.copycat() ? "createpropulsion:copycat_wing_8[facing=up]" : "create:" + spec.colour() + "_sail[facing=up]");
         raw.put("fin", "simulated:" + spec.colour() + "_symmetric_sail[axis=x]");
         raw.put("stabiliser", "simulated:white_symmetric_sail[axis=y]");
         raw.put("assembler", "simulated:physics_assembler[facing=north]");
@@ -268,21 +301,32 @@ final class Planes {
         // under a plank so it is set into the body.
         c.put(new BlockPos(0, 0, 1), p.get("gear"));
         for (int x : new int[] {-1, 1}) c.put(new BlockPos(x, 0, GEAR), p.get("gear"));
-        // Engines behind the seats, each reached from the cockpit floor to refuel; the middle one turns the Gyroscope
-        // through the gearbox under it and a short tower of encased cogwheels stepping large to small twice, 32 up to
-        // 128 RPM: Aeroworks' gyroscope works in proportion to its RPM (full at 256), and at an engine's bare 32 RPM it
-        // let this plane fly banked 8 degrees; at 128 it holds it within about a degree, using all of one engine's
-        // 2048 stress units (16 per RPM).
+        // Engines behind the seats, each reached from the cockpit to refuel. The side two drive the propellers; the
+        // middle two, one on the other, each turn a gearbox, and the two gearboxes share one shaft up to the Gyroscope
+        // through a tower of encased cogwheels stepping large to small three times, 32 up to 256 RPM. Aeroworks'
+        // gyroscope works in proportion to its RPM and only reaches full strength at 256: at an engine's bare 32 this
+        // plane flew banked 8 degrees, at 128 still a few, at 256 level. At 256 it takes 4096 stress units (16 per RPM),
+        // both engines' worth. (Engines facing each other through one gearbox would leave the back one out of reach.)
         c.put(new BlockPos(-1, 3, 7), p.get("engineWest"));
         c.put(new BlockPos(1, 3, 7), p.get("engineEast"));
         c.put(new BlockPos(0, 2, 6), p.get("engineSouth"));
+        c.put(new BlockPos(0, 3, 6), p.get("engineSouth"));
         c.put(new BlockPos(0, 2, 8), p.get("assembler"));
         c.put(new BlockPos(0, 2, 7), p.get("gearboxX"));
-        c.put(new BlockPos(0, 3, 7), p.get("gyroLarge1"));
-        c.put(new BlockPos(1, 3, 8), p.get("gyroSmall1"));
-        c.put(new BlockPos(1, 4, 8), p.get("gyroLarge2"));
-        c.put(new BlockPos(0, 4, 7), p.get("gyroSmall2"));
-        c.put(new BlockPos(0, 5, 7), p.get("gyro"));
+        c.put(new BlockPos(0, 3, 7), p.get("gearboxX"));
+        c.put(new BlockPos(0, 4, 7), p.get("gyroLarge1"));
+        // Every step-up is a pair, one cogwheel each side of the tower, so its weight sits on the middle line: off to
+        // one side, it leaned the plane over a few degrees that the gyroscope had to hold all flight.
+        for (int x : new int[] {-1, 1}) {
+            c.put(new BlockPos(x, 4, 8), p.get("gyroSmall1"));
+            c.put(new BlockPos(x, 5, 8), p.get("gyroLarge2"));
+            c.put(new BlockPos(x, 6, 8), p.get("gyroSmall3"));
+        }
+        c.put(new BlockPos(0, 5, 7), p.get("gyroSmall2"));
+        c.put(new BlockPos(0, 6, 7), p.get("gyroLarge3"));
+        // The last pair hands 256 RPM to a cogwheel between them, under the gyroscope.
+        c.put(new BlockPos(0, 6, 8), p.get("gyroIdler"));
+        c.put(new BlockPos(0, 7, 8), p.get("gyro"));
         for (int s : new int[] {-1, 1}) {
             // Each engine's line, in a casing at the wing's root: the Gearshift (reverse), encased cogwheels stepping
             // large to small three times (32 to 256 RPM) down to the wing, with casing filling each step's corner, the
@@ -320,12 +364,28 @@ final class Planes {
         for (int y : w.biplane() ? new int[] {1, 3} : new int[] {2})
             for (int x = -w.half(); x <= w.half(); x++) {
                 if (Math.abs(x) <= 1) continue;
-                for (int z = w.lead(); z < w.lead() + w.chord(); z++) c.putIfAbsent(new BlockPos(x, y, z), p.get("sail"));
+                for (int z = w.lead(); z < w.lead() + w.chord(); z++) {
+                    // Round tips: the tip's front and back corners left off, as a wing's tip curves in.
+                    boolean corner = z == w.lead() || z == w.lead() + w.chord() - 1;
+                    if (spec.round() && w.chord() >= 3 && Math.abs(x) == w.half() && corner) continue;
+                    c.putIfAbsent(new BlockPos(x, y, z), p.get("sail"));
+                }
             }
         // Tail: a flat stabiliser either side of its end and an upright fin on it.
         for (int x = -3; x <= 3; x++) if (x != 0) c.put(new BlockPos(x, 2, TAIL), p.get("stabiliser"));
         for (int y = 3; y <= 4; y++) c.put(new BlockPos(0, y, TAIL), p.get("fin"));
         return c;
+    }
+
+    /** What was asked for, as the start of "why this one". */
+    private static String choices(Spec spec) {
+        List<String> c = new ArrayList<>();
+        if (spec.wings() != 0) c.add(spec.wings() == 2 ? "two wings" : "one wing");
+        c.add(spec.copycat() ? "Copycat Wings (8m)" : "sails");
+        if (spec.span() != 0) c.add(spec.span() + " blocks across");
+        if (spec.chord() != 0) c.add(spec.chord() + " deep");
+        if (spec.round()) c.add("round tips");
+        return "asked for " + String.join(", ", c) + "; within that, ";
     }
 
     /** The cells moved so the smallest x, y and z are 0, as a model's are. */
@@ -367,18 +427,27 @@ final class Planes {
         };
         StringBuilder s = new StringBuilder("Laid out by the server from plane (for you: tell the player what it is and how to "
                 + "build and fly it):\n");
-        s.append(String.format(Locale.ROOT, "- A small %s plane for %s: a %s fuselage %d blocks long, %s of %d %s sails "
-                        + "(%d wide, %d deep); %d x %d x %d in all, nose toward -z.\n", w.biplane() ? "biplane" : "monoplane",
+        long wingBlocks = out.values().stream().map(b -> net.minecraft.core.registries.BuiltInRegistries.BLOCK.getKey(b.getBlock()).getPath())
+                .filter(id -> id.equals("copycat_wing_8") || id.endsWith("_sail") && !id.endsWith("symmetric_sail")).count();
+        s.append(String.format(Locale.ROOT, "- A small %s for %s: a %s fuselage %d blocks long, %s of %d %s (%d wide, %d deep, "
+                        + "%s tips); %d x %d x %d in all, nose toward -z.\n", w.biplane() ? "biplane" : "monoplane",
                 spec.seats() == 1 ? "one" : "two (pilot in front, passenger behind)", spec.wood().replace('_', ' '), TAIL + 1,
-                w.biplane() ? "two wings" : "one wing", w.sails(), spec.colour().replace('_', ' '), 2 * w.half() + 1, w.chord(),
+                w.biplane() ? "two wings" : "one wing", wingBlocks, spec.copycat() ? "Copycat Wings (8m)"
+                        : spec.colour().replace('_', ' ') + " sails", 2 * w.half() + 1, w.chord(), spec.round() ? "round" : "square",
                 sx, sy, sz));
+        if (spec.copycat()) s.append("- Copycat Wings (8m): each is two Copycat Wings stacked in one block (cut a Wing on a "
+                + "Mechanical Saw or stonecutter for a Copycat Wing, place one, then use a second on it), facing up; it lifts "
+                + "half again as much as a sail for the same weight, which is why this plane is smaller than a sail-winged one. "
+                + "Use any block on a placed wing to give it that block's look (white wool or concrete for a classic wing); "
+                + "the look doesn't change its weight.\n");
         s.append("- Drive: two Portable Engines behind the seats, each through a Gearshift and encased cogwheels stepping large "
                 + "to small three times (32 up to 256 RPM, a casing in each step's corner) down to its wing's root, then an "
                 + "Analog Transmission and an encased shaft along the leading edge to two Wooden Propellers, all four pushing forward at the height of the centre of mass. The inner two have "
                 + "their blades reversed (as the model shows) because they turn the other way round from the outer two; if a "
-                + "propeller blows backwards when built, flip its blades with a wrench. A third engine, behind the passenger, turns the "
-                + "Gyroscope through a gearbox and two large-to-small steps (128 RPM: a gyroscope works in proportion to its RPM, "
-                + "and at an engine's bare 32 it lets the plane fly banked), which keeps the wings level; nothing else does in the air.\n");
+                + "propeller blows backwards when built, flip its blades with a wrench. Two more engines, one on the other behind the passenger, "
+                + "each turning a gearbox on one shaft, turn the Gyroscope through three large-to-small steps (256 RPM: a gyroscope "
+                + "works in proportion to its RPM, full at 256, and takes 16 stress units per RPM, both engines' worth; slower, "
+                + "the plane flies banked), which keeps the wings level; nothing else does in the air.\n");
         s.append("- Landing gear: Grindstones, one under the nose and two just behind the centre of mass (they roll almost "
                 + "freely; wheel mounts drag so hard at speed that a plane on them needs a far longer field). Board on the "
                 + "left: a ladder on the plank there leads up to the gap in the cockpit's side.\n");
@@ -399,19 +468,19 @@ final class Planes {
                         + "it in about %.0f blocks (the full check below has the exact figures).\n", f.getOrDefault("liftoff", 0.0),
                 f.getOrDefault("run", 0.0), f.getOrDefault("top", 0.0), f.getOrDefault("ceiling", 0.0), f.getOrDefault("stop", 0.0)));
         s.append("- Flying it: build it on open flat ground or a runway pointed into the open, glue it all with Super Glue and "
-                + "use the Physics Assembler at " + at.apply(new BlockPos(0, 2, 8)) + "; light the three engines, sit in the front "
+                + "use the Physics Assembler at " + at.apply(new BlockPos(0, 2, 8)) + "; light all four engines, sit in the front "
                 + "seat and push the throttle fully forward: it rolls, lifts and climbs by itself. Turn the wheel only a little at a "
                 + "time: full wheel stops one side, which turns it hard and loses speed. To land, ease the throttle back to sink, and "
                 + "once it is down flip the reverse lever, then off again when it has stopped.\n");
         boolean met = t.run() <= SHORT_RUN && t.ceiling() >= CEILING;
-        s.append(String.format(Locale.ROOT, "- Why this one: wings of 7 to 13 blocks a side, 3 to 6 deep, one deck or two, at "
-                + "two places along the fuselage were each judged with the vehicle check (flight, balance, take-off and landing "
+        s.append(String.format(Locale.ROOT, "- Why this one: " + choices(spec) + "wings %d to %d blocks across, 3 to 6 deep, at "
+                + "five places along the fuselage were each judged with the vehicle check (flight, balance, take-off and landing "
                 + "runs, steering, the pilot's view and reach, boarding), and this is the smallest that passes with a take-off "
                 + "run of %.0f blocks or less and a ceiling of y %.0f or more%s. Its two drive engines give all the push it "
                 + "has (four propellers at 256 RPM take all their stress), so more height or speed comes from less weight or "
                 + "more wing, not more propellers. Keep the engines, gear and wing where they are when you revise it "
                 + "(from_draft): they set its balance; light trim (paint, a pane, a banner) changes little; check every version.\n",
-                SHORT_RUN, CEILING, met ? "" : String.format(Locale.ROOT, " (none did both, so this is the one that climbs "
+                2 * MIN_HALF + 1, 2 * MAX_HALF + 1, SHORT_RUN, CEILING, met ? "" : String.format(Locale.ROOT, " (none did both, so this is the one that climbs "
                         + "highest, run %.0f blocks, ceiling y %.0f: tell the player)", t.run(), t.ceiling())));
         s.append("- Open cockpit: above y 128 the wind chills whoever is aboard and above y 192 it freezes them, so tell the "
                 + "player to sew Windproof Lining onto each armour piece before climbing high.\n");

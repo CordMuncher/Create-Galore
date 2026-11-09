@@ -1,0 +1,58 @@
+{
+  "title": "A plane asked for as a sleek monoplane on Copycat Wings is laid out that way, flies, and says why it is the size it is",
+  "from": "2026-11-09 report (pack 0.6.75): the book's planes were one preset; the player wants it to design from the mods' rules",
+  "roots": [
+    "R3",
+    "R4"
+  ],
+  "kind": "model",
+  "model": {
+    "title": "Two-seat plane",
+    "size_x": 0,
+    "size_y": 0,
+    "size_z": 0,
+    "from_world": [],
+    "from_draft": 0,
+    "move": [],
+    "palette": [],
+    "layers": [],
+    "blocks": [],
+    "labels": [],
+    "caption": "",
+    "draft": false,
+    "goal": "",
+    "shows_a_fault": false,
+    "for_later": false,
+    "speeds": [],
+    "airship": [],
+    "plane": [
+      {
+        "seats": 2,
+        "wood": "spruce",
+        "colour": "white",
+        "wings": 1,
+        "wing_block": "copycat_wing",
+        "span": 0,
+        "tips": "round"
+      }
+    ],
+    "open_by_request": true,
+    "new_by_request": true,
+    "part_of_vehicle": false
+  },
+  "expect": {
+    "built": true,
+    "has": [
+      "small monoplane",
+      "Copycat Wings (8m)",
+      "round tips",
+      "asked for one wing, Copycat Wings (8m), round tips"
+    ],
+    "lacks": [
+      "PROBLEM",
+      "none did both",
+      "parts that don't visibly join",
+      "hull can be seen through"
+    ]
+  }
+}

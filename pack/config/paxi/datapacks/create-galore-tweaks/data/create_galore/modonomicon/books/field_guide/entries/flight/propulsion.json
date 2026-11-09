@@ -85,7 +85,7 @@
     {
       "type": "modonomicon:text",
       "title": "Keeping it level",
-      "text": "Nothing levels a ship by itself, so a plane tips over without help. Put an [#](2E5AAC)[Aeroworks Gyroscope](entry://flight/controls)[#]() on board, turned from below by an engine on the ship. It pulls back in proportion to its RPM, full strength at 256: at a Portable Engine's bare 32 RPM a two-seat plane flies leaning about 8 degrees, at 128 RPM (two large-to-small cogwheel steps, all of one engine's 2048 stress units) about 2.\\\n\\\nUpright wings push sideways whenever the ship moves, so face them in pairs that cancel out."
+      "text": "Nothing levels a ship by itself, so a plane tips over without help. Put an [#](2E5AAC)[Aeroworks Gyroscope](entry://flight/controls)[#]() on board, turned from below by an engine on the ship. It pulls back in proportion to its RPM, full strength at 256: at a Portable Engine's bare 32 RPM a two-seat plane flies leaning about 8 degrees, at 128 RPM (two large-to-small cogwheel steps) still a few degrees, and at 256 (three steps, 4096 stress units: two engines of its own) it flies dead level.\\\n\\\nUpright wings push sideways whenever the ship moves, so face them in pairs that cancel out."
     },
     {
       "type": "modonomicon:spotlight",

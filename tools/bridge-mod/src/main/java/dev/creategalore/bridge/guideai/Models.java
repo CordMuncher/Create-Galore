@@ -210,10 +210,10 @@ public final class Models {
         props.add("part_of_vehicle", WorldTools.prop("boolean", "True only when the model shows one part of a vehicle (an "
                 + "engine room, a rudder) rather than all of it: then the vehicle check doesn't stop it being built."));
         return WorldTools.tool("build_model", "Builds a 3D model out of real blocks, up to " + MAX_SIZE + " a side, shown "
-                + "as a hologram the player can turn and zoom, and works out how it behaves. "
+                + "as a turnable hologram, and works out how it behaves. "
                 + "Write a detailed build as layers; fences, walls, panes and bars join their neighbours (fences also "
-                + "diagonally) and stairs turn corners by themselves, as when placed. Write the facing or axis on every "
-                + "block that has one: left out, it takes its default, often the wrong way. Try a design with draft true "
+                + "diagonally) and stairs turn corners by themselves, as when placed. Write the facing or axis of every "
+                + "block that has one (its default is often wrong). Try a design with draft true "
                 + "first: you get pictures of it and its check, and nothing goes in the answer. Revise with from_draft and "
                 + "write only the changes (move slides a part over). The server checks it by the mods' own rules: rotation "
                 + "(faces, cogs, belts, sources, speeds), machine output, sails, posts, moving parts, and a vehicle's lift "
@@ -685,7 +685,7 @@ public final class Models {
      * connect, stairs turn corners, chests pair up. A block the update would remove (a torch with nothing to stand on)
      * stays as written.
      */
-    private static void connect(Map<BlockPos, BlockState> cells, ServerLevel level) {
+    static void connect(Map<BlockPos, BlockState> cells, ServerLevel level) {
         try {
             SchematicLevel world = new SchematicLevel(level);
             cells.forEach((pos, state) -> world.setBlock(pos, state, 0));

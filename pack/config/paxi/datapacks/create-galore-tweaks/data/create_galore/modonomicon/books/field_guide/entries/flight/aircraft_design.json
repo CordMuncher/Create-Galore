@@ -121,6 +121,11 @@
     },
     {
       "type": "modonomicon:text",
+      "title": "Choosing the wings",
+      "text": "Lift grows with speed, and every block is weight, so the wing block sets a plane's size. A two-seater on sails needs two wings about 27 blocks across. Copycat Wings (8m) lift half again as much for the same weight: two of them about 21 across, or a single wing about 27 across, which sails can't carry.\\\n\\\nWider wings climb higher; round tips look softer but lift a little less."
+    },
+    {
+      "type": "modonomicon:text",
       "title": "A blimp that hauls",
       "text": "[#](FFFFFF)\ue103[#]() **In depth.** An 11 by 11 by 25 envelope (about 600 m3) over a closed 7 by 10 gondola with the helm, barrels, a smoker, a crafting table and two Hot Air Burners. Four Portable Engines in its engine room turn a 28-sail Propeller Bearing behind the tail at 128 RPM."
     },
@@ -132,7 +137,7 @@
     {
       "type": "modonomicon:text",
       "title": "Ask the Book",
-      "text": "Where the book has its voice, ask it for an airship and it lays one out to your wishes (open deck or cabin, beds, chests, speed, height), balanced to hang level, as a 3D model you can save as a schematic. Ask it for a small plane (one or two seats) and it lays out one that flies from a short field."
+      "text": "Where the book has its voice, ask it for an airship and it lays one out to your wishes (open deck or cabin, beds, chests, speed, height), balanced to hang level, as a 3D model you can save as a schematic. Ask it for a small plane (one or two seats) and it designs one that flies from a short field, with one wing or two, sails or Copycat Wings, round or square tips, to suit what you want and can make."
     },
     {
       "type": "modonomicon:text",

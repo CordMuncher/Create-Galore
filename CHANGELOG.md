@@ -5,6 +5,21 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.6.77
+
+### Added
+- Create Galore Bridge 1.186.0.
+- **Ask the Book designs planes to suit you.** Ask for a plane and the book picks its shape for what you want and can make: one wing or two, Create sails or Copycat Wings (8m), how wide, and round or square wingtips. The server builds every part joined, geared and balanced, works out whatever was left open and checks it, or says why a choice can't fly and what would. A biplane on Copycat Wings comes out about 21 blocks across and climbs higher than a sail-winged one; a single wing only flies on Copycat Wings (about 27 across).
+- **Field Guide, Flight: Designing Aircraft** has a Choosing the wings page.
+
+### Fixed
+- **The book's planes fly dead level.** A Gyroscope only pulls back at full strength at 256 RPM, and at 128 the plane still flew a few degrees banked. Its Gyroscope now has two Portable Engines of its own, stacked behind the passenger so both can be refuelled from the cockpit, geared up to 256 RPM; flown in a test world, every wing choice flew with no lean at all, and the Copycat biplane cruises near 17.5 blocks a second. The extra engine is weight, so a sail-winged biplane is now about 27 blocks across, and the book aims for a ceiling of y 105.
+- **The book's plane gyroscope tower sits on the middle line.** Its step-up cogwheels were all on one side.
+- **A plane's top wing beside the windscreen joins it.** The book's plane check judged the windscreen panes before they joined their neighbours, so a top wing next to them could pass and then hang loose once built.
+
+### Removed
+- Nothing.
+
 ## 0.6.76
 
 ### Added
