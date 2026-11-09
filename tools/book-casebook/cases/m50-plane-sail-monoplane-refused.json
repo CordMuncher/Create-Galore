@@ -1,0 +1,53 @@
+{
+  "title": "A sail-winged monoplane, which can't hold its height here, is refused with the reason instead of a plane that falls",
+  "from": "2026-11-09 report (pack 0.6.75): the book's planes were one preset; the player wants it to design from the mods' rules",
+  "roots": [
+    "R3",
+    "R4"
+  ],
+  "kind": "model",
+  "model": {
+    "title": "Two-seat plane",
+    "size_x": 0,
+    "size_y": 0,
+    "size_z": 0,
+    "from_world": [],
+    "from_draft": 0,
+    "move": [],
+    "palette": [],
+    "layers": [],
+    "blocks": [],
+    "labels": [],
+    "caption": "",
+    "draft": false,
+    "goal": "",
+    "shows_a_fault": false,
+    "for_later": false,
+    "speeds": [],
+    "airship": [],
+    "plane": [
+      {
+        "seats": 2,
+        "wood": "spruce",
+        "colour": "white",
+        "wings": 1,
+        "wing_block": "sail",
+        "span": 0,
+        "tips": "square"
+      }
+    ],
+    "open_by_request": true,
+    "new_by_request": true,
+    "part_of_vehicle": false
+  },
+  "expect": {
+    "built": false,
+    "has": [
+      "no plane layout passed the vehicle check",
+      "use wing_block copycat_wing, or two wings"
+    ],
+    "lacks": [
+      "Laid out by the server from plane"
+    ]
+  }
+}

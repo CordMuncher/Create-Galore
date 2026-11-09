@@ -85,20 +85,33 @@ final class DesignBriefs {
             numbers behind these rules.""";
 
     static final String PLANE = """
-            Start every small propeller plane you design new from build_model's plane: say how many seats (one or two), \
-            the wood and the colour, and the server lays it out and checks it, so its first version flies; then change \
-            it with from_draft only where the player asked for something it doesn't cover, and keep its engines, gear \
-            and wing in place. One the player built stays theirs: copy it with from_world and improve it in its own \
+            Design every small propeller plane new through build_model's plane, choosing its shape for this player: \
+            seats (one or two), wood and colour, then the wings. Lift grows with speed and every block is weight, so \
+            the wing block sets the plane's size: Create sails are cheap (wool and sticks) and lift for a quarter of a \
+            block's weight, but a sail plane needs about 27 blocks of span and two wings; Copycat Wings (8m) lift half \
+            again as much for the same weight (iron sheets: a Wing cut on a saw, two stacked per block), so a Copycat \
+            biplane is about 21 across and climbs higher, and only Copycat Wings carry a monoplane (about 27 across). \
+            Pick wings 1 (sleek, wide), 2 (compact, classic) or 0 to let the server choose; span 0 unless the player \
+            named a size (wider lifts more and climbs higher, narrower fits a hangar); tips round for a softer, real \
+            plane look, square for the most lift. Choose from what they can make and what they asked for (small, \
+            cheap, high, sleek, a look) and say why in your answer. The server builds every part joined, geared and \
+            balanced, fills in what you left to it and checks it, or says why the choice can't fly and what would; \
+            then change it with from_draft only where the player asked for something it doesn't cover (paint, \
+            trim, a copycat look), keeping its engines, gear and wing in place. Every part must visibly join the next \
+            and no sky may show through its body: a sail is a thin panel across the middle of its block and joins \
+            only blocks beside it. One the player built stays theirs: copy it with from_world and improve it in its own \
             shape by the rules below, never by swapping in a laid-out plane. The rules, to explain the design and to \
             judge one the player built: a plane reads as an aircraft, a body narrowing back to a tail with a flat \
             stabiliser and an upright fin, wings set over the weight's centre, and it flies only if it is light, so \
-            wings and tail are fabric (Create sails lift like Wing blocks at a quarter of the weight; Symmetric Sails \
-            steady a tail without lifting) and the body is slabs, stairs and fences. The pilot sits up front with \
+            wings and tail are fabric or copycat (Create sails lift like Wing blocks at a quarter of the weight; Symmetric \
+            Sails steady a tail without lifting) and the body is light wood, stairs rather than planks, closed at the \
+            sides. The pilot sits up front with \
             every control in reach and nothing but a low nose and a window ahead of their eyes: engines and \
             propellers go behind the pilot or out on the wings (propellers on the wings' leading edge, pushing at the \
             height of the centre of mass), never in front of the windscreen, and a wing in front of the pilot's eyes \
             blinds them. Portable Engines geared up to 256 RPM turn Wooden Propellers from the start, and a Gyroscope \
-            keeps the wings level. A short field comes from what it rolls on as much as from its wings: Grindstones \
+            keeps the wings level, in proportion to its RPM: only at 256 (two engines' worth, 16 stress units per RPM) does it hold a plane \
+            level; at 128 it flies a few degrees banked, at a bare 32 it leans hard. A short field comes from what it rolls on as much as from its wings: Grindstones \
             roll almost freely as landing gear (one under the nose, two just behind the centre of mass), wheel mounts \
             drag so hard at speed that a plane on them needs huge wings and a long field, and a Gearshift in each \
             propeller line, on a lever at the pilot's hand, reverses them to stop in a few blocks after landing. The \
