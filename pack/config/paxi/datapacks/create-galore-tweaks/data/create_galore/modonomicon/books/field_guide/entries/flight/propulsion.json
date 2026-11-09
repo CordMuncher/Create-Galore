@@ -75,7 +75,7 @@
         "item": "createpropulsion:wing"
       },
       "title": "Wing",
-      "text": "Plain wing blocks. Smelt one to get a Tempered Wing. [#](7A3C9A)[Copycat](entry://glossary/copycat)[#]() versions copy another block's look."
+      "text": "Plain wing blocks: a Wing lifts as much as a Create sail but weighs four times as much. Smelt one to get a Tempered Wing.\\\n\\\n[#](7A3C9A)[Copycat](entry://glossary/copycat)[#]() Wings copy another block's look and come in three thicknesses: the thin one weighs and lifts like a sail, the middle one lifts half again as much for the same weight, the thick one weighs and lifts twice as much."
     },
     {
       "type": "modonomicon:text",
@@ -85,7 +85,7 @@
     {
       "type": "modonomicon:text",
       "title": "Keeping it level",
-      "text": "Nothing levels a ship by itself, so a plane tips over without help. Put an [#](2E5AAC)[Aeroworks Gyroscope](entry://flight/controls)[#]() on board, turned from below by an engine on the ship: full strength at 256 RPM, though a Portable Engine's 32 RPM holds a small plane.\\\n\\\nUpright wings push sideways whenever the ship moves, so face them in pairs that cancel out."
+      "text": "Nothing levels a ship by itself, so a plane tips over without help. Put an [#](2E5AAC)[Aeroworks Gyroscope](entry://flight/controls)[#]() on board, turned from below by an engine on the ship. It pulls back in proportion to its RPM, full strength at 256: at a Portable Engine's bare 32 RPM a two-seat plane flies leaning about 8 degrees, at 128 RPM (two large-to-small cogwheel steps, all of one engine's 2048 stress units) about 2.\\\n\\\nUpright wings push sideways whenever the ship moves, so face them in pairs that cancel out."
     },
     {
       "type": "modonomicon:spotlight",

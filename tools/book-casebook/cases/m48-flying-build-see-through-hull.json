@@ -1,0 +1,83 @@
+{
+  "title": "A flying build whose hull has a hole the sky shows through fails, with where the hole is and what closes it",
+  "from": "2026-11-09 report (pack 0.6.75): the book's plane was 'borderline see through', its body slabs with open sides",
+  "roots": [
+    "R3",
+    "R4"
+  ],
+  "kind": "model",
+  "model": {
+    "title": "See-through balloon",
+    "size_x": 5,
+    "size_y": 8,
+    "size_z": 5,
+    "blocks": [
+      {
+        "block": "aeronautics:white_envelope",
+        "x": 0,
+        "y": 5,
+        "z": 0,
+        "x2": 4,
+        "y2": 7,
+        "z2": 4
+      },
+      {
+        "block": "minecraft:spruce_planks",
+        "x": 0,
+        "y": 0,
+        "z": 2,
+        "x2": 4,
+        "y2": 1,
+        "z2": 2
+      },
+      {
+        "block": "minecraft:spruce_planks",
+        "x": 0,
+        "y": 3,
+        "z": 2,
+        "x2": 4,
+        "y2": 4,
+        "z2": 2
+      },
+      {
+        "block": "minecraft:spruce_planks",
+        "x": 0,
+        "y": 2,
+        "z": 2,
+        "x2": 1,
+        "y2": 2,
+        "z2": 2
+      },
+      {
+        "block": "minecraft:spruce_planks",
+        "x": 3,
+        "y": 2,
+        "z": 2,
+        "x2": 4,
+        "y2": 2,
+        "z2": 2
+      },
+      {
+        "block": "aeronautics:adjustable_burner",
+        "x": 2,
+        "y": 4,
+        "z": 0,
+        "x2": 2,
+        "y2": 4,
+        "z2": 0
+      }
+    ],
+    "labels": [],
+    "speeds": []
+  },
+  "expect": {
+    "built": false,
+    "has": [
+      "can be seen through",
+      "front or back"
+    ],
+    "lacks": [
+      "don't visibly join"
+    ]
+  }
+}

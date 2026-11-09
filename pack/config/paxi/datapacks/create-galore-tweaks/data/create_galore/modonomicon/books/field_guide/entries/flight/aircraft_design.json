@@ -116,6 +116,11 @@
     },
     {
       "type": "modonomicon:text",
+      "title": "Built solid",
+      "text": "Every part should meet the blocks beside it where their shapes touch; glue holds a part that doesn't, but it hangs in the air with a gap round it. A sail is a thin panel across the middle of its block, so it joins blocks beside it, not one above or below; a Grindstone under a top slab hangs half a block clear.\\\n\\\nClose a body's sides with stairs, walls, trapdoors or panes so no sky shows through it, and case its gearing (encased cogwheels, casings) instead of leaving bare cogs sticking out."
+    },
+    {
+      "type": "modonomicon:text",
       "title": "A blimp that hauls",
       "text": "[#](FFFFFF)\ue103[#]() **In depth.** An 11 by 11 by 25 envelope (about 600 m3) over a closed 7 by 10 gondola with the helm, barrels, a smoker, a crafting table and two Hot Air Burners. Four Portable Engines in its engine room turn a 28-sail Propeller Bearing behind the tail at 128 RPM."
     },

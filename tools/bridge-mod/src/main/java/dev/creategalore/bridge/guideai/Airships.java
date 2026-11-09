@@ -580,7 +580,8 @@ final class Airships {
             for (int y = 2; y <= 3; y++)
                 for (int x = x0 + 1; x < x1; x++) c.put(new BlockPos(x, y, gz0), parts.paneX);
             for (int z = gz0 + 1; z < gz1; z++) {
-                if (z == zp) continue;
+                // The door's jambs stay planks: a pane can't join a door, so beside one it stops half way and leaves a slit.
+                if (Math.abs(z - zp) <= 1) continue;
                 c.put(new BlockPos(x0, 2, z), parts.paneZ);
                 c.put(new BlockPos(x1, 2, z), parts.paneZ);
                 if (z < zp) {
