@@ -14,6 +14,8 @@ Not on Modrinth, add by hand: **Twilight Forest** `twilightforest-1.21.1-4.8.334
 
 Resource pack, turned on by default: [Fresh Animations](https://modrinth.com/resourcepack/fresh-animations) 1.10.4 (client, needs EMF + ETF).
 
+Resource packs that are always on (loaded by Paxi from `config/paxi/resourcepacks`, client only, need Fusion): [Fusion Connected Glass](https://modrinth.com/resourcepack/fusion-connected-glass) 1.0.1 and [Fusion Connected Blocks](https://modrinth.com/resourcepack/fusion-connected-blocks) 1.1.0.
+
 | Mod | Version | Side |
 |---|---|---|
 | [Advanced Chimneys](https://modrinth.com/mod/advanced-chimneys) | 11.1.13.0 | both |
@@ -139,6 +141,7 @@ Resource pack, turned on by default: [Fresh Animations](https://modrinth.com/res
 | [Fragmentum](https://modrinth.com/mod/fragmentum) | 5.4.0 | both |
 | [Fruits Delight](https://modrinth.com/mod/fruits-delight) | 1.2.14 | both |
 | [Fungi Delight (A Farmer's Delight Add-on)](https://modrinth.com/mod/fungi-delight) | 1.3 | both |
+| [Fusion (Connected Textures)](https://modrinth.com/mod/fusion-connected-textures) | 1.3.16-neoforge-mc1.21.1 | client |
 | [Fzzy Config](https://modrinth.com/mod/fzzy-config) | 0.7.7+1.21+neoforge | client |
 | [Geckolib](https://modrinth.com/mod/geckolib) | 4.9.3 | both |
 | [GlitchCore](https://modrinth.com/mod/glitchcore) | 2.1.0.2 | both |

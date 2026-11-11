@@ -5,6 +5,18 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.6.78
+
+### Added
+- **Connected textures.** Fusion (Connected Textures) 1.3.16 with the Fusion Connected Glass and Fusion Connected Blocks resource packs, always on. Glass, the stained glasses, tinted glass and glass panes join into one sheet, so a window has a single frame round its edge instead of a frame on every block. Bookshelves, sandstone, smooth stone, quartz, purpur pillars, the polished stones (andesite, diorite, granite, deepslate, blackstone, tuff, with their slabs and stairs) and blocks of iron, gold, copper, diamond, lapis and netherite join the same way. The joins show on Create contraptions and ships too, and with shader packs. Create's framed and tiled glass already joined; glass from other mods keeps its frame on every block.
+- **Field Guide, Home: Building** has a Connected Textures page.
+
+### Fixed
+- Nothing.
+
+### Removed
+- Nothing.
+
 ## 0.6.77
 
 ### Added
