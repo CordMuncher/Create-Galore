@@ -1,4 +1,4 @@
-<!-- sources sha256:7d2cd9db69c744df320ec4b33aa43b5ace84bc60137f11f123eb102c7a00a2c3 -->
+<!-- sources sha256:bbdf35be965f6c744c2824967a1175aa9903e16720338ec957880ff70e017aa6 -->
 # Home, Storage and Maps (home)
 
 ## home/storage | Backpacks and Storage
@@ -23,6 +23,7 @@
 - Handcrafted [handcrafted:oak_table]: tables, benches, couches, desks, drawers, shelves, counters, beds, sheets, cushions in many wood types; trophies and pillar trims.
 - Macaw's Roofs [mcwroofs:oak_roof]: many roof shapes (attic, top and lower base roofs per wood and material); Roofing Hammer helps. Macaw's Doors and Windows follow same pattern.
 - Diagonal Fences [minecraft:oak_fence]: a placed fence also joins a fence one block away across a corner, when the corner is clear and neither post already joins straight that way. Wood fences join wood fences; stone and metal fences join each other (works for vanilla, Twilight Forest, Aether, Alex's Caves, Cataclysm, Garnished, Hybrid Aquatic, My Nether's Delight fences and Alloyed's steel mesh fence; not Better End, Create Deco mesh, Supplementaries wicker, rope or copycat fences). Sneak + right-click a fence with an empty hand turns its corner joins off or back on (the block becomes plain oak fence or its diagonal twin, same item and drop). Fences in villages and other found buildings start without them; the same click adds them.
+- Connected Textures [minecraft:glass]: looks only. Glass, the 16 stained glasses, tinted glass and their panes join into one sheet: a window shows one frame round its outside edge and no seams between blocks (panes also hide the faces between stacked panes). Bookshelves, sandstone, red sandstone and their cut kinds, smooth stone, quartz block, purpur pillar, polished andesite, diorite, granite, deepslate, blackstone and tuff (with their slabs and stairs) and blocks of iron, gold, diamond, lapis, netherite and copper (all weathering stages) join the same way. Create's framed and tiled glass join on their own. Glass from other mods (Aether quicksoil glass, Alex's Caves sugar and depth glass, Naturalist froglass, Macaw's mosaic glass, Twilight Forest auroralized glass, Create Nuclear reinforced glass) keeps a frame on every block. Joins also show on Create contraptions and ships.
 - Macaw's Windows [mcwwindows:oak_window]: resizeable windows, Window Hammer, Window Key. Macaw's Doors: many door styles, Garage Remote.
 - Supplementaries [supplementaries:jar]: jars hold small things; flags, awnings, bunting, candle holders, goblets, book piles, soap, a Wrench. Browse item list in JEI (see start_here/tools).
 - Furniture is mostly decor. Seats on moving contraptions (see create_basics/contraptions): Create's own Seat works; Coasters (see transport/coasters) add coaster seats.

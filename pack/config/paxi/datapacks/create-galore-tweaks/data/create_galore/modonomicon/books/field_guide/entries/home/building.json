@@ -57,6 +57,14 @@
     {
       "type": "modonomicon:spotlight",
       "item": {
+        "item": "minecraft:glass"
+      },
+      "title": "Connected Textures",
+      "text": "Glass, stained and tinted glass and glass panes join up: a window has one frame round its edge. Bookshelves, sandstone, smooth stone, quartz, purpur pillars, polished stones and blocks of iron, gold, copper, diamond, lapis and netherite join too."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
         "item": "supplementaries:jar"
       },
       "title": "Supplementaries",
