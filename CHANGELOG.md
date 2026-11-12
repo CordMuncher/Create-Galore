@@ -5,6 +5,17 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.6.79
+
+### Added
+- Create Galore Bridge 1.187.0.
+
+### Fixed
+- **No more water caustics inside a ship's hull.** With Photon (and other shader packs that draw water into their sun shadows), the sea a hull sits in still went into the shadow map, so a deck or hold floor below the waterline got water caustics and a green water tint in sunlight. The sea inside a hull is now left out of the sun's shadows the same way it is hidden from view, and stays out while the ship moves, turns or leans. The sea around the ship keeps its caustics.
+
+### Removed
+- Nothing.
+
 ## 0.6.78
 
 ### Added
