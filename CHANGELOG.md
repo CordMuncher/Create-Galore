@@ -5,6 +5,19 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.6.80
+
+### Added
+- Create Galore Bridge 1.188.0.
+- **Ask the Book knows which creatures can be pets.** When a player asks about a creature, the server now tries taming it for real: a stand-in hands a creature made for the test (never added to the world) every food and taming item there is, a hundred times each, and the book gets which items tame it and how often, whether it sits when told, follows its owner (and whether that can be switched with a Whistle) and stays. Farm animals that Animal Husbandry looks after are named as farm animals, not pets. Asking for "pet" or "tame" finds the tameable creatures.
+- **Field Guide, Exploration: Creatures** has Hedgehogs as pets and a Whistle page.
+
+### Fixed
+- **The book said a hedgehog can't be a pet.** Naturalist's hedgehog can: sweet berries or glow berries tame it (1 try in 2), it follows its owner straight away, sits and stands on an empty-hand right-click, can be patted, and a Whistle switches it between following and wandering. The book had no notes on it and answered no; it now checks taming on the server instead of going by its notes, and the guide says how to keep one.
+
+### Removed
+- Nothing.
+
 ## 0.6.79
 
 ### Added

@@ -1,0 +1,25 @@
+{
+  "title": "A hedgehog can be kept as a pet: berries tame it, it sits, follows and a Whistle switches that",
+  "from": "pack 0.6.80: the book told a player a hedgehog can't be a pet",
+  "roots": [
+    "R1",
+    "R2"
+  ],
+  "kind": "tool",
+  "tool": "find_creatures",
+  "input": {
+    "query": "hedgehog"
+  },
+  "expect": {
+    "has": [
+      "Sweet Berries",
+      "Glow Berries",
+      "Whistle",
+      "sit and stand",
+      "never despawns"
+    ],
+    "lacks": [
+      "no item tamed it"
+    ]
+  }
+}

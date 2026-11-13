@@ -52,7 +52,8 @@ import net.neoforged.neoforge.common.Tags;
 /**
  * find_creatures: every creature on this server, so the book never has to guess whether something a player saw is
  * real. It reads the entity registry (every mod's creatures, by name and mod), what each one is like (health, attack,
- * size, whether it flies or swims, is hostile or a boss, the main colours of its skin), where it spawns by itself (the
+ * size, whether it flies or swims, is hostile or a boss, the main colours of its skin), whether a player can tame it
+ * and keep it as a pet (and with what, tried for real by {@link Pets}), where it spawns by itself (the
  * biomes' real spawn lists, with every mod's spawn changes applied), what it drops when a player kills it (its loot
  * table rolled many times) and which creatures are around the asking player right now. Players describe creatures by
  * their looks ("a big green dragon"), so a search also matches those words.
@@ -62,8 +63,8 @@ final class Creatures {
     private static final int MAX_DETAILED = 6, MAX_LISTED = 40, DROP_ROLLS = 200, MAX_BIOMES = 14;
 
     /** What a creature is like; worked out once per type from a creature made for it (never added to the world). */
-    private record Traits(boolean flies, boolean swims, boolean hostile, boolean boss, boolean large) {
-        static final Traits UNKNOWN = new Traits(false, false, false, false, false);
+    private record Traits(boolean flies, boolean swims, boolean hostile, boolean boss, boolean large, boolean tameable) {
+        static final Traits UNKNOWN = new Traits(false, false, false, false, false, false);
 
         List<String> words() {
             List<String> w = new ArrayList<>();
@@ -72,6 +73,7 @@ final class Creatures {
             if (hostile) w.add("hostile");
             if (flies) w.add("flies");
             if (swims) w.add("swims");
+            if (tameable) w.add("tameable");
             return w;
         }
     }
@@ -146,8 +148,9 @@ final class Creatures {
         return out.toString().strip();
     }
 
-    private static final Map<String, String> SYNONYMS = Map.of("big", "large", "huge", "large", "giant", "large",
-            "flying", "flies", "fly", "flies", "swimming", "swims", "swim", "swims", "gray", "grey");
+    private static final Map<String, String> SYNONYMS = Map.ofEntries(Map.entry("big", "large"), Map.entry("huge", "large"),
+            Map.entry("giant", "large"), Map.entry("flying", "flies"), Map.entry("fly", "flies"), Map.entry("swimming", "swims"), Map.entry("swim", "swims"), Map.entry("gray", "grey"),
+            Map.entry("pet", "tameable"), Map.entry("pets", "tameable"), Map.entry("tame", "tameable"));
 
     private static int exactness(EntityType<?> type, String q) {
         String name = name(type).toLowerCase(Locale.ROOT);
@@ -227,7 +230,8 @@ final class Creatures {
         }
         s.append(String.format(Locale.ROOT, "; %s blocks wide and %s tall", num(type.getWidth()), num(type.getHeight())));
         if (type.fireImmune()) s.append("; fire and lava don't hurt it");
-        s.append(".\nSpawns by itself: ").append(spawns(server, type)).append('\n');
+        s.append(".\nKept as a pet (tried on this server): ").append(Pets.describe(player.serverLevel(), type));
+        s.append("\nSpawns by itself: ").append(spawns(server, type)).append('\n');
         s.append("A player's kill drops (rolled ").append(DROP_ROLLS).append(" times, average and range): ")
                 .append(drops(player, type));
         return s.toString();
@@ -346,7 +350,7 @@ final class Creatures {
             if (known != null) return known;
         }
         boolean boss = type.is(Tags.EntityTypes.BOSSES), large = type.getWidth() >= 2 || type.getHeight() >= 2.5f;
-        Traits traits = new Traits(false, false, false, boss, large);
+        Traits traits = new Traits(false, false, false, boss, large, false);
         try {
             Entity e = type.create(level);
             if (e != null) {
@@ -354,7 +358,7 @@ final class Creatures {
                         || e instanceof Mob m && m.getNavigation() instanceof FlyingPathNavigation;
                 boolean swims = e instanceof WaterAnimal || e instanceof Mob m && (m.getNavigation() instanceof WaterBoundPathNavigation
                         || m.getNavigation() instanceof AmphibiousPathNavigation);
-                traits = new Traits(flies, swims, e instanceof Enemy, boss, large);
+                traits = new Traits(flies, swims, e instanceof Enemy, boss, large, Pets.tameable(e));
                 e.discard();
             }
         } catch (RuntimeException | LinkageError ignored) {

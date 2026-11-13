@@ -1,0 +1,22 @@
+{
+  "title": "A cow is Animal Husbandry's farm animal, never called untameable",
+  "from": "pack 0.6.80: the book told a player a hedgehog can't be a pet",
+  "roots": [
+    "R1",
+    "R2"
+  ],
+  "kind": "tool",
+  "tool": "find_creatures",
+  "input": {
+    "query": "minecraft:cow"
+  },
+  "expect": {
+    "has": [
+      "Animal Husbandry",
+      "never sits or follows"
+    ],
+    "lacks": [
+      "can't be tamed"
+    ]
+  }
+}

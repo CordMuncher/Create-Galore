@@ -1,4 +1,4 @@
-<!-- sources sha256:c8e4188394a5d77d8aea69e03719f24ce3d3553ccf2c12a18949425cff7c9df1 -->
+<!-- sources sha256:28d0c005f99fcf29cf39821b2c8058af0b128ba02eb04b5e75d35687795d4d1e -->
 # Exploration and Adventure (exploration)
 
 ## exploration/dimensions | Dimensions
@@ -219,8 +219,11 @@
 - **Critters and Companions**: dragonflies (with armor), ferrets, koi, red pandas, jumping spiders, ladybugs, leaf insects, snails, more; plus Grappling Hook and Pearl Necklaces. Its otter, Dumbo Octopus, Sea Bunny spawns are **off** (Hybrid Aquatic has those)
 - Koi Fish [crittersandcompanions:koi_fish]: pond fish, carryable in a bucket
 - Grappling Hook [crittersandcompanions:grappling_hook]
-- **Naturalist**: land animals: bears, deer, boar, lions, tigers, zebras, giraffes, elephants, hippos, rhinos, lizards, snakes, tortoises, ducks, turkeys, vultures, more. Nine sea animals **off**: anglerfish, blobfish, giant isopod, great white shark, piranha, jellyfish, starfish, crab, ray
+- **Naturalist**: land animals: bears, deer, boar, lions, tigers, zebras, giraffes, elephants, hippos, rhinos, lizards, snakes, tortoises, hedgehogs, ducks, turkeys, vultures, more. Nine sea animals **off**: anglerfish, blobfish, giant isopod, great white shark, piranha, jellyfish, starfish, crab, ray
 - Capture Net [naturalist:capture_net]: catches small creatures like butterflies and firefly
+- **Hedgehogs** (Naturalist; plains, meadows, forests, taiga) can be pets. A wild one curls into a spiky ball when a player walks up (2 damage on touch); crouch or hold berries and it stays out. Tame with sweet berries or glow berries, 1 try in 2 (hearts = tamed, smoke = try again). Tamed: follows its owner straight away; empty-hand right-click = sit/stand; Shift + right-click pats it; berries heal it; a dye recolours its little outfit (red at first), shears take the dye off; never despawns; its spikes never hurt its owner
+- Whistle [naturalist:whistle]: copper ingot over string; right-click a tamed Naturalist pet to switch it between following its owner and wandering
+- Taming any creature: find_creatures says whether it can be tamed, with which items and how often, tried on the server
 - All **snails** and **dragonflies** are Critters and Companions'; every one can be tamed, 1 try in 10: snails with leaves, dragonflies with a spider eye. Snails drop snail shells and slime balls
 - Snail Slime [crittersandcompanions:snail_slime_bottle]: glass bottle on any grown snail (Critters' snail, Hybrid Aquatic's scalyfoot snail, the Moon's snail); each snail refills every 5 minutes; a bottle crafts into a slime ball
 - Hybrid Aquatic's **sea slug** fills a bottle with **Sea Bunny Slime** (same 5 minutes); four make a Sea Bunny Slime Block. Hand a Critters **clam** (river fishing treasure) to a Hybrid Aquatic **otter**: it cracks it, a **pearl** 1 time in 4, for Pearl Necklaces. Frogs eat wild dragonflies and leave **froglass**, never tamed ones
