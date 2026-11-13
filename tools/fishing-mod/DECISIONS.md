@@ -836,3 +836,20 @@ what it is when you see it in the water.
 - Old worlds: lines already made keep working; Mono and Clear spools on rods now hold 10 and 12 kg.
 - Reverse: drop `twisted_line` from `gen_tackle.py`, the two `mixing/twisted_cord_*` entries from `gen_processing.py`,
   `recipe/twisted_line.json` and the two items in `FishingRegistry`; Mono and Clear back to 8 and 10.
+
+## A drag below the rod's rating keeps the rod safe (13 Nov 2026, mod 0.3.31, pack 0.6.81)
+
+Reported: a full-durability 9 kg Iron Rod kept breaking mid-fight on big fish with the drag at 7.6 kg.
+
+- **Cause.** `Fight` wore the rod whenever the load passed 70% of its rating (`(load - 0.7) x 2` a second, 15
+  durability a unit). Held at a 7.6 kg drag (84% of 9 kg) that is about 4.3 durability a second: a 20 kg fish cost
+  ~120 of the rod's 450, a 40 kg one ~290, an 80 kg one wore it through (sim, 300 fights each, hand and geared drive
+  the same). A worn rod also holds less (`RodStats.rodLoad`, down to 60%), so after one big fight the 7.6 kg drag was
+  over the weakened rating and the next fight cracked it outright. Separately, a jump or run on a low-stretch line
+  could push the peak past the rod's rating even with the drag under it (the spike cap only protected the line).
+- **Fix.** A rod wears only past its rating (`ROD_WEAR_PER_OVERLOAD = 2` a second per unit over), and the spike cap
+  that keeps a drag under the line's test from snapping it now also keeps a drag under the rod's rating from
+  overloading the rod (peak at most drag + 90% of the margin). Same rule as for lines: the drag protects what it is
+  set under. A drag over the rod's rating still wears and cracks it (Iron Rod, 10 kg drag, 20 kg fish: ~73% cracked).
+- After: the same fights all land (bar the odd thrown hook) with no rod wear past the 1 a fight. Self-test "a rod with a drag
+  below its rating never wears or cracks" (fails on the old rule: broke in 1 s).

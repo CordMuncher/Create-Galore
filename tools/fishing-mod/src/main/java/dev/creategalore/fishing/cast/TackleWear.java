@@ -16,7 +16,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 /**
- * What a fight costs the tackle. Every fight wears the rod (more the longer it was loaded near its rating), the reel
+ * What a fight costs the tackle. Every fight wears the rod (more for every moment it was loaded past its rating), the reel
  * (more by cranking while its drag slipped, with the square of the drag) and the leader, hook and float, sinker or
  * lure a little. A line only gets weaker by fraying, which teeth do (Emre, 22 Oct): load and long fights never
  * weaken it, it holds or it snaps. Nothing lasts for ever and nothing caps it: a careless angler can
