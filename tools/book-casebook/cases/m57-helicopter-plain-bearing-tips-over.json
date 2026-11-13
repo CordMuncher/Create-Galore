@@ -1,0 +1,383 @@
+{
+ "title": "A helicopter lifted by a plain Propeller Bearing rolls over: the check says so and names the Gyroscopic Propeller Bearing",
+ "from": "2026-11-13 test flight (pack 0.6.82): a plain bearing's push turns with the cabin and a 0.6 rad/s kick flipped the test craft",
+ "roots": [
+  "R3"
+ ],
+ "kind": "model",
+ "model": {
+  "title": "Helicopter",
+  "size_x": 15,
+  "size_y": 9,
+  "size_z": 19,
+  "palette": [
+   {
+    "key": "A",
+    "block": "minecraft:stripped_spruce_log[axis=z]"
+   },
+   {
+    "key": "B",
+    "block": "minecraft:spruce_planks"
+   },
+   {
+    "key": "C",
+    "block": "simulated:physics_assembler[face=wall,facing=north]"
+   },
+   {
+    "key": "D",
+    "block": "create:gearbox[axis=z]"
+   },
+   {
+    "key": "E",
+    "block": "create:andesite_encased_shaft[axis=y]"
+   },
+   {
+    "key": "F",
+    "block": "create:gearbox[axis=y]"
+   },
+   {
+    "key": "G",
+    "block": "create:andesite_encased_shaft[axis=z]"
+   },
+   {
+    "key": "H",
+    "block": "minecraft:spruce_door[facing=east,half=lower,hinge=left,open=false,powered=false]"
+   },
+   {
+    "key": "I",
+    "block": "minecraft:spruce_door[facing=west,half=lower,hinge=right,open=false,powered=false]"
+   },
+   {
+    "key": "J",
+    "block": "minecraft:spruce_door[facing=east,half=upper,hinge=left,open=false,powered=false]"
+   },
+   {
+    "key": "K",
+    "block": "minecraft:spruce_door[facing=west,half=upper,hinge=right,open=false,powered=false]"
+   },
+   {
+    "key": "L",
+    "block": "minecraft:glass_pane[east=false,north=true,south=true,waterlogged=false,west=false]"
+   },
+   {
+    "key": "M",
+    "block": "minecraft:glass_pane[east=true,north=false,south=false,waterlogged=false,west=true]"
+   },
+   {
+    "key": "N",
+    "block": "minecraft:ladder[facing=west,waterlogged=false]"
+   },
+   {
+    "key": "O",
+    "block": "minecraft:ladder[facing=east,waterlogged=false]"
+   },
+   {
+    "key": "P",
+    "block": "simulated:steering_wheel[facing=north,on_floor=true,waterlogged=false]"
+   },
+   {
+    "key": "Q",
+    "block": "simulated:throttle_lever[face=floor,facing=north,inverted=true]"
+   },
+   {
+    "key": "R",
+    "block": "create:redstone_link[facing=up,powered=false,receiver=false]"
+   },
+   {
+    "key": "S",
+    "block": "create:white_seat[waterlogged=false]"
+   },
+   {
+    "key": "T",
+    "block": "simulated:red_portable_engine[facing=south,lit=false]"
+   },
+   {
+    "key": "U",
+    "block": "create:encased_chain_drive[axis=z,axis_along_first=true,part=start]"
+   },
+   {
+    "key": "V",
+    "block": "create:encased_chain_drive[axis=z,axis_along_first=true,part=middle]"
+   },
+   {
+    "key": "W",
+    "block": "create:encased_chain_drive[axis=z,axis_along_first=true,part=end]"
+   },
+   {
+    "key": "X",
+    "block": "create:gearbox[axis=x]"
+   },
+   {
+    "key": "Y",
+    "block": "simulated:analog_transmission[axis=y,powered=true]"
+   },
+   {
+    "key": "Z",
+    "block": "create:redstone_link[facing=west,powered=false,receiver=true]"
+   },
+   {
+    "key": "a",
+    "block": "create:andesite_encased_cogwheel[axis=y,bottom_shaft=false,top_shaft=true]"
+   },
+   {
+    "key": "b",
+    "block": "create:shaft[axis=y,waterlogged=false]"
+   },
+   {
+    "key": "c",
+    "block": "aeronautics:propeller_bearing[facing=up]"
+   },
+   {
+    "key": "d",
+    "block": "create:andesite_casing"
+   },
+   {
+    "key": "e",
+    "block": "create:white_sail[facing=up]"
+   },
+   {
+    "key": "f",
+    "block": "create:red_sail[facing=up]"
+   },
+   {
+    "key": "g",
+    "block": "simulated:analog_transmission[axis=z,powered=true]"
+   },
+   {
+    "key": "h",
+    "block": "create:redstone_link[facing=up,powered=false,receiver=true]"
+   },
+   {
+    "key": "i",
+    "block": "create:andesite_encased_cogwheel[axis=z,bottom_shaft=true,top_shaft=true]"
+   },
+   {
+    "key": "j",
+    "block": "create:andesite_encased_large_cogwheel[axis=z,bottom_shaft=true,top_shaft=true]"
+   },
+   {
+    "key": "k",
+    "block": "simulated:swivel_bearing[assembled=false,facing=down,powered=false]"
+   },
+   {
+    "key": "l",
+    "block": "aeronautics:wooden_propeller[facing=south,reversed=false]"
+   },
+   {
+    "key": "m",
+    "block": "simulated:red_symmetric_sail[axis=x]"
+   },
+   {
+    "key": "n",
+    "block": "simulated:red_symmetric_sail[axis=y]"
+   },
+   {
+    "key": "o",
+    "block": "create:shaft[axis=z,waterlogged=false]"
+   },
+   {
+    "key": "p",
+    "block": "create:cogwheel[axis=y,waterlogged=false]"
+   }
+  ],
+  "layers": [
+   [
+    "...............",
+    "...............",
+    ".....A...A.....",
+    ".....A...A.....",
+    ".....A...A.....",
+    ".....A...A.....",
+    ".....A...A.....",
+    ".....A...A.....",
+    ".....A...A.....",
+    "...............",
+    "...............",
+    "...............",
+    "...............",
+    "...............",
+    "...............",
+    "...............",
+    "...............",
+    "...............",
+    "..............."
+   ],
+   [
+    "...............",
+    "...............",
+    "....BBBBBBB....",
+    "....BBBDFBB....",
+    "...NBBCBGBBO...",
+    "....BBBBGBB....",
+    "....BBBBGBB....",
+    "....BBBBGBB....",
+    "....BBBBGBB....",
+    "........X......",
+    "...............",
+    "...............",
+    "...............",
+    "...............",
+    "...............",
+    "...............",
+    "...............",
+    "...............",
+    "..............."
+   ],
+   [
+    "...............",
+    "...............",
+    "....BBBBBBB....",
+    "....BRQPQRB....",
+    "....H..S..I....",
+    "....BS....B....",
+    "....BTTXTTB....",
+    "....BUVVVWB....",
+    "....BBBGBBB....",
+    "......igb......",
+    "......jd.......",
+    "...............",
+    "...............",
+    ".......m.......",
+    ".......m.......",
+    ".......m.......",
+    "...............",
+    "...............",
+    "..............."
+   ],
+   [
+    "...............",
+    "...............",
+    "....BMMMMMB....",
+    "....B.....B....",
+    "....J.....K....",
+    "....B.....B....",
+    "....L.ZY..L....",
+    "....L..a..L....",
+    "....BBBBBBB....",
+    ".......hb......",
+    ".......i.......",
+    ".......j.......",
+    "...............",
+    ".......m.......",
+    ".......m.......",
+    ".......m.......",
+    "...............",
+    ".......X.......",
+    ".......l......."
+   ],
+   [
+    "...............",
+    "...............",
+    "....BBBBBBB....",
+    "....BBBBBBB....",
+    "....BBBBBBB....",
+    "....BBBBBBB....",
+    "....BBBBBBB....",
+    "....BBBEBBB....",
+    "....BBBBBBB....",
+    "........b......",
+    "...............",
+    "......id.......",
+    "......jd.......",
+    ".......B.......",
+    ".......B.......",
+    ".......B.......",
+    ".....nnBnn.....",
+    ".......kp......",
+    "..............."
+   ],
+   [
+    "...............",
+    "...............",
+    "...............",
+    "...............",
+    "...............",
+    "...............",
+    "...............",
+    ".......b.......",
+    "...............",
+    "........X......",
+    "........o......",
+    "........o......",
+    ".......io......",
+    ".......Go......",
+    ".......Go......",
+    ".......Go......",
+    ".......Go......",
+    ".......XX......",
+    "..............."
+   ],
+   [
+    "...............",
+    "...............",
+    "...............",
+    "...............",
+    "...............",
+    "...............",
+    "...............",
+    ".......b.......",
+    "...............",
+    "...............",
+    "...............",
+    "...............",
+    "...............",
+    "...............",
+    "...............",
+    ".......m.......",
+    ".......m.......",
+    ".......m.......",
+    "..............."
+   ],
+   [
+    "...............",
+    "...............",
+    "...............",
+    "...............",
+    "...............",
+    "...............",
+    "...............",
+    ".......c.......",
+    "...............",
+    "...............",
+    "...............",
+    "...............",
+    "...............",
+    "...............",
+    "...............",
+    "...............",
+    "...............",
+    "...............",
+    "..............."
+   ],
+   [
+    ".......ff......",
+    ".......ee......",
+    ".......ee......",
+    ".......ee......",
+    ".......ee......",
+    ".......ee......",
+    "feeeeeeee......",
+    "feeeeeedeeeeeef",
+    "......eeeeeeeef",
+    "......ee.......",
+    "......ee.......",
+    "......ee.......",
+    "......ee.......",
+    "......ee.......",
+    "......ff.......",
+    "...............",
+    "...............",
+    "...............",
+    "..............."
+   ]
+  ],
+  "blocks": []
+ },
+ "expect": {
+  "built": false,
+  "has": [
+   "tips over",
+   "Gyroscopic Propeller Bearing"
+  ]
+ }
+}

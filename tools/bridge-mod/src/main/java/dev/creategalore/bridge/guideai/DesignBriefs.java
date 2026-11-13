@@ -155,6 +155,33 @@ final class DesignBriefs {
             and drifts. Build one when the player asks for a balloon, or can't make an airship's drive yet, and say \
             what it can't do (it goes where the wind and a small propeller take it).""";
 
+    static final String HELICOPTER = """
+            Design every helicopter new through build_model's helicopter: say the seats (one to three), wood and colour, \
+            and the server sizes its rotor and engines, balances it and checks it, so its first version flies; change \
+            it with from_draft only where the player asked for something it doesn't cover (paint, trim, a window), keeping \
+            its engines, mast, rotor and tail in place. One the player built stays theirs: copy it with from_world and \
+            improve it in its own shape by the rules below. The rules, to explain the design and to judge one the player \
+            built: a helicopter here lifts on one Gyroscopic Propeller Bearing facing up on a mast above the cabin, \
+            turning a rotor of Create sails. That bearing keeps its push pointing straight up (up to 12 degrees off its \
+            own axis) whatever the cabin does, so with the rotor well above the weight the cabin hangs under it like a \
+            pendulum and rights itself; a plain Propeller Bearing or upward Wooden Propellers push the way the cabin \
+            points, and the first gust rolls it over (only an Aeroworks Gyroscope at 256 RPM would hold that level). The \
+            rotor must sit over the centre of mass: the bearing can lean its push only 12 degrees. The rotor pushes 0.2 x \
+            sails^1.5 x RPM for 2 stress units per sail per RPM, so on the same engines a bigger, slower rotor lifts \
+            more; its push thins with the air, which sets the ceiling, and below that the collective (an Analog \
+            Transmission in the rotor's line on a Throttle Lever) climbs, hovers or sinks it. Rotors don't twist the \
+            cabin here, so it needs no anti-torque tail rotor, and since the rotor stays level, tipping the cabin doesn't \
+            drive it along as on a real helicopter: a Wooden Propeller at the tail, geared to 256 RPM and pushing level \
+            with the centre of mass, drives it forward on its own throttle, hung under a Swivel Bearing the Steering \
+            Wheel swings to turn it. Nothing grips the air sideways, so it yaws on the spot: an upright fin of several \
+            sails at the tail damps that (without one it spins up at full wheel and coasts half a turn after), and it \
+            slides on the way it was going for a few seconds after a turn. Nothing may stand in the rotor's disc or \
+            touch the blades: they strike it, and the ship can come apart there when they spin up. The bearing's value \
+            panel sets which way the rotor pushes for the way it turns: set it so it lifts. The gearbox and propeller \
+            under the swivel get their own glue box, apart from the ship's. Engines sit in the cabin where the crew \
+            refuels them; shafts carry the power up the mast and back along the boom. Helicopters need brass (the bearing's Gyroscopic Mechanism); before \
+            that, offer a hot air balloon and say why.""";
+
     static final String BOAT = """
             A boat has a real hull: a keel, a bow that narrows, sides that curve with stairs and slabs, a \
             deck with a rail and a cabin or wheelhouse, sized to what it carries. The helmsman stands on the deck at the \
@@ -190,7 +217,7 @@ final class DesignBriefs {
 
     /** The briefs for the kinds of build this model is, not counting those already given in this answer. */
     static List<String> forModel(Map<BlockPos, BlockState> cells, Set<String> given) {
-        boolean envelope = false, wing = false, prop = false, water = false, wheels = false, sub = false;
+        boolean envelope = false, wing = false, prop = false, water = false, wheels = false, sub = false, rotor = false;
         int bottom = Integer.MAX_VALUE, building = 0;
         for (BlockPos p : cells.keySet()) bottom = Math.min(bottom, p.getY());
         for (Map.Entry<BlockPos, BlockState> e : cells.entrySet()) {
@@ -203,6 +230,9 @@ final class DesignBriefs {
             if (id.endsWith("_envelope") || id.equals("aeronautics:adjustable_burner") || id.contains("levitite")) envelope = true;
             if (s.is(WINDMILL_SAILS) || id.contains("wing") || id.endsWith("_symmetric_sail") || id.equals("aeroworks:gyroscope")) wing = true;
             if (id.endsWith("propeller") || id.startsWith("createpropulsion:") || id.endsWith("propeller_bearing")) prop = true;
+            // A rotor: a propeller bearing or propeller pushing up (its sails are its blades, not wings).
+            if ((id.endsWith("propeller_bearing") || id.endsWith("propeller")) && s.hasProperty(net.minecraft.world.level.block.state.properties.BlockStateProperties.FACING)
+                    && s.getValue(net.minecraft.world.level.block.state.properties.BlockStateProperties.FACING).getAxis().isVertical()) rotor = true;
             if (id.startsWith("create_high_seas:") || id.startsWith("create_submarine:")) water = true;
             if (id.equals("create_submarine:ballast_tank") || id.equals("create_submarine:oxygene_diffuser")
                     || id.equals("create_submarine:submarine_propeller") || id.equals("create_submarine:command_sub")) sub = true;
@@ -211,8 +241,9 @@ final class DesignBriefs {
         List<String> kinds = new ArrayList<>();
         if (building >= SHOWPIECE) kinds.add("build");
         if (envelope || prop || water || wheels) kinds.add("vehicle");
-        if (envelope || wing && prop) kinds.add("aircraft");
+        if (envelope || rotor || wing && prop) kinds.add("aircraft");
         if (envelope) kinds.add("airship");
+        else if (rotor) kinds.add("helicopter");
         else if (wing && prop) kinds.add("plane");
         if (sub) kinds.add("submarine");
         else if (water) kinds.add("boat");
@@ -226,6 +257,7 @@ final class DesignBriefs {
                 case "airship" -> AIRSHIP;
                 case "plane" -> PLANE;
                 case "submarine" -> SUBMARINE;
+                case "helicopter" -> HELICOPTER;
                 default -> BOAT;
             });
         }

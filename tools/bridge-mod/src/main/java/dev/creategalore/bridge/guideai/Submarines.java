@@ -62,7 +62,7 @@ final class Submarines {
         o.addProperty("additionalProperties", false);
         JsonObject a = new JsonObject();
         a.addProperty("type", "array");
-        a.addProperty("description", "Empty or one submarine.");
+        a.addProperty("description", "Empty or one.");
         a.add("items", o);
         return a;
     }

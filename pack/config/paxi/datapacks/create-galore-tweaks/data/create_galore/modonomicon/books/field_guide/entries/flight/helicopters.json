@@ -1,0 +1,106 @@
+{
+  "category": "flight",
+  "name": "Helicopters",
+  "description": "Rotor craft that hover, climb and fly on a gyroscopic rotor.",
+  "icon": {
+    "item": "aeronautics:gyroscopic_propeller_bearing"
+  },
+  "x": -5,
+  "y": 0,
+  "sort_number": 14,
+  "parents": [
+    {
+      "entry": "flight/aircraft_design",
+      "draw_arrow": true,
+      "line_enabled": true,
+      "line_reversed": true
+    }
+  ],
+  "pages": [
+    {
+      "type": "modonomicon:text",
+      "title": "Helicopters",
+      "text": "[#](FFFFFF)[#]() **Key points**\n\n- Lift from a **Gyroscopic Propeller Bearing** facing up on a mast above the cabin.\n- The rotor sits **over the centre of mass**.\n- A **Wooden Propeller on a Swivel Bearing** at the tail pushes and steers.\n- Needs **brass** for the bearing's Gyroscopic Mechanism."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Staying upright",
+      "text": "A Gyroscopic Propeller Bearing keeps its push pointing straight up, up to 12 degrees off its own axis, whatever the cabin does."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "With the rotor well above the weight, the cabin hangs under it like a pendulum and rights itself: kicked to 14 degrees, a test craft rocked back level. A plain Propeller Bearing pushes the way the cabin points, and the same kick rolled it over."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Over the weight",
+      "text": "The bearing can lean its push only 12 degrees, so the rotor must sit over the centre of mass. On a compact craft the rotor stands only a few blocks above the weight, and one block of engines or tail along the keel tips it several degrees: balance it with the tail's length, not by leaning the rotor."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Sizing the rotor",
+      "text": "A rotor pushes 0.2 x sails^1.5 x RPM and draws 2 stress units per sail per RPM, so on the same engines a bigger, slower rotor lifts more. A rotor of 56 sails, 15 blocks across, at a Portable Engine's own 32 RPM pushes about 2700 and draws 3584 stress units. Its push thins with the air, which sets the ceiling."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Which way it pushes",
+      "text": "The bearing's value panel (or a wrench) sets which way it pushes for the way it turns: \"Push air when clockwise\" or \"Pull air when clockwise\". Set it so the rotor lifts: on the other setting it presses the craft into the ground. Rotors here don't twist the cabin, so a helicopter needs no tail rotor against that."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Up and down",
+      "text": "The collective is an Analog Transmission in the rotor's line on a Throttle Lever: forward climbs, back sinks, and in between it hovers. Near the ground it hovers about halfway back; high up, where the air is thin, only a notch or two back. A two-seater climbs about 4 blocks a second low down."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Going places",
+      "text": "The rotor stays level, so tipping the cabin doesn't drive it along. A Wooden Propeller at the tail, geared up to 256 RPM and pushing level with the centre of mass, drives it forward on its own Throttle Lever; the test two-seater flew about 8 blocks a second."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Steering",
+      "text": "The tail propeller hangs under a Swivel Bearing that the Steering Wheel swings. Nothing grips the air sideways, so it yaws on the spot: an upright fin of several Symmetric Sails at the tail damps that."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "With a 2 by 3 fin it turned about 23 degrees a second at full wheel and stopped a second or two after the wheel came back; with one of 2 sails it kept spinning up and coasted half a turn. After a turn it slides on the way it was going for a few seconds and loses speed, so steer early."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Keep the disc clear",
+      "text": "Nothing may stand in the plane the blades sweep or touch them from above or below: the blades strike it, and a fin touching a blade tip was enough for the tail to break off the moment the rotor spun up. Hang fins under the boom or keep them a block below the blades."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Glue and assembly",
+      "text": "Glue the gearbox and propeller under the Swivel Bearing in their own small Super Glue box, apart from the rest: glued in with the ship, they stay behind when the swivel takes its propeller."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "Assemble with the Physics Assembler while every engine is off, then right-click the Swivel Bearing with an empty hand; light the engines last, or the rotor loses its blades."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "A helicopter that flies",
+      "text": "A two-seater, 15 x 9 x 19: a closed 7 by 7 cabin on log skids, four Portable Engines in its back row, a 56-sail rotor 15 blocks across at 32 RPM, a tail boom to a swivelled Wooden Propeller at 256 RPM and a fin under it."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "It lifts off level, climbs about 4 blocks a second, tops out near y 205 and turns about 23 degrees a second (flown in a test world)."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Ask the Book",
+      "text": "Where the book has its voice, ask it for a helicopter (one to three seats) and it lays one out, sized, balanced and checked, as a 3D model you can save as a schematic."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Related",
+      "text": "- [#](2E5AAC)[Designing Aircraft](entry://flight/aircraft_design)[#]()\n- [#](2E5AAC)[Propellers](entry://flight/propellers)[#]()\n- [#](2E5AAC)[Steering and Controls](entry://flight/controls)[#]()\n- [#](2E5AAC)[Building a Ship](entry://flight/ship_building)[#]()"
+    }
+  ]
+}
