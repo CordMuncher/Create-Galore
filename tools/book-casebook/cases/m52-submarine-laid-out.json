@@ -1,0 +1,60 @@
+{
+ "title": "A two-seat submarine laid out from build_model submarine: air from an Electrolyzer, roof tanks for its weight, 3x3 propeller squares level with its weight, sealed cabin with a roof hatch, no PROBLEM",
+ "from": "2026-11-13 report (pack 0.6.79): asked whether the book can build real submarines; its stand-in sub had no air, rudders that never moved and prop squares flagged as undriven",
+ "roots": [
+  "R3",
+  "R4"
+ ],
+ "kind": "model",
+ "model": {
+  "title": "Two-seat submarine",
+  "size_x": 0,
+  "size_y": 0,
+  "size_z": 0,
+  "from_world": [],
+  "from_draft": 0,
+  "move": [],
+  "palette": [],
+  "layers": [],
+  "blocks": [],
+  "labels": [],
+  "caption": "",
+  "draft": false,
+  "goal": "",
+  "shows_a_fault": false,
+  "for_later": false,
+  "speeds": [],
+  "airship": [],
+  "plane": [],
+  "open_by_request": false,
+  "new_by_request": true,
+  "part_of_vehicle": false,
+  "submarine": [
+   {
+    "crew": 2,
+    "beds": 1,
+    "storage": 4,
+    "hull": "copper",
+    "windows": true,
+    "colour": "yellow",
+    "speed": 0
+   }
+  ]
+ },
+ "expect": {
+  "built": true,
+  "has": [
+   "Laid out by the server from submarine",
+   "Oxygen Diffuser",
+   "3x3 Submarine Propeller square",
+   "Redstone Link frequencies",
+   "hatch",
+   "Nothing here stops it working"
+  ],
+  "lacks": [
+   "PROBLEM",
+   "rotation never reaches",
+   "isn't turning"
+  ]
+ }
+}

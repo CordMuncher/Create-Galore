@@ -1,0 +1,51 @@
+{
+  "title": "Shows a small two-person submarine that really dives, surfaces, stays dry inside, steers and is boarded from the surface",
+  "from": "2026-11-13 check before the player needs one: the book had no submarine layout and the checks never proved a dry inside, a way to dive and surface from the helm, or steering",
+  "roots": ["R3", "R4"],
+  "kind": "question",
+  "question": "can you design a small submarine for 2 of us so we can go explore underwater? we have brass stuff going",
+  "player": "Brass age: has Mechanical Pumps, fluid pipes, Ballast Tanks and Vents, Submarine Propellers, an Onboard Computer and Pump Controller, an Oxygen Diffuser and Electrolyzer, Portable Engines, a Steering Wheel, Analog Transmissions and a Throttle Lever, iron, copper and glass.",
+  "rubric": [
+    "Shows a submarine model with no PROBLEM: it dives, surfaces and holds a depth, and the answer says how",
+    "The crew compartment is sealed so the inside stays dry under water, with a hatch they shut behind them",
+    "The crew controls dive and surface from inside at the helm (no wrenching pumps round mid-dive)",
+    "It steers with one wheel and has a throttle, both in reach of the helm, and moves at a useful speed",
+    "Boarded from the water's surface; fuel, oxygen and every control reached on foot inside; labels name real parts"
+  ],
+  "world": [
+    "fill ~-16 ~-1 ~-16 ~16 ~-1 ~16 minecraft:sand",
+    "time set 6000"
+  ],
+  "box": [-16, -1, -16, 16, 0, 16],
+  "built": [0, 0, 0, 0, 0, 0],
+  "stand": [0, 0, 0, 0, 0],
+  "inventory": [
+    {"id": "simulated:red_portable_engine", "count": 4},
+    {"id": "create:andesite_alloy", "count": 128},
+    {"id": "create:brass_ingot", "count": 48},
+    {"id": "create:iron_sheet", "count": 64},
+    {"id": "minecraft:iron_block", "count": 16},
+    {"id": "minecraft:copper_block", "count": 64},
+    {"id": "minecraft:glass", "count": 64},
+    {"id": "create:shaft", "count": 48},
+    {"id": "create:cogwheel", "count": 24},
+    {"id": "create:large_cogwheel", "count": 12},
+    {"id": "create:mechanical_pump", "count": 4},
+    {"id": "create:fluid_pipe", "count": 64},
+    {"id": "create_submarine:ballast_tank", "count": 16},
+    {"id": "create_submarine:ballast_vent", "count": 2},
+    {"id": "create_submarine:submarine_propeller", "count": 8},
+    {"id": "create_submarine:command_sub", "count": 1},
+    {"id": "create_submarine:pump_controller", "count": 2},
+    {"id": "create_submarine:oxygene_diffuser", "count": 1},
+    {"id": "create_submarine:electrolyzer", "count": 1},
+    {"id": "simulated:steering_wheel", "count": 1},
+    {"id": "simulated:analog_transmission", "count": 2},
+    {"id": "simulated:throttle_lever", "count": 1},
+    {"id": "minecraft:iron_trapdoor", "count": 4},
+    {"id": "minecraft:coal", "count": 64}
+  ],
+  "advancements": ["minecraft:story/root", "minecraft:story/mine_stone", "minecraft:story/smelt_iron", "create:*"],
+  "crafted": {"simulated:red_portable_engine": 4, "create:andesite_alloy": 300, "create:brass_ingot": 60},
+  "placed": {"create:shaft": 80, "create:cogwheel": 40, "create:fluid_pipe": 40}
+}

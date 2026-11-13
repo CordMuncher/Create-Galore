@@ -11,9 +11,11 @@ import com.simibubi.create.content.kinetics.waterwheel.LargeWaterWheelBlock;
 import com.simibubi.create.content.kinetics.waterwheel.WaterWheelBlock;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import net.createmod.catnip.levelWrappers.SchematicLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -225,7 +227,20 @@ final class BuildCheck {
         }
         if (!sources.isEmpty()) {
             List<String> idle = new ArrayList<>();
-            for (Cell c : kinetic.values()) if (!speed.containsKey(c.pos)) idle.add(name(c));
+            // A 2x2 or 3x3 square of Submarine Propellers turns as one from a single driven block.
+            Set<BlockPos> square = new HashSet<>();
+            ArrayDeque<BlockPos> todo = new ArrayDeque<>();
+            for (Cell c : kinetic.values())
+                if (speed.containsKey(c.pos) && subProp(c)) todo.add(c.pos);
+            while (!todo.isEmpty()) {
+                BlockPos p = todo.poll();
+                for (Direction d : Direction.values()) {
+                    Cell n = kinetic.get(p.relative(d));
+                    if (n != null && !speed.containsKey(n.pos) && subProp(n)
+                            && n.state.equals(kinetic.get(p).state) && square.add(n.pos)) todo.add(n.pos);
+                }
+            }
+            for (Cell c : kinetic.values()) if (!speed.containsKey(c.pos) && !square.contains(c.pos)) idle.add(name(c));
             if (!idle.isEmpty()) {
                 notes.add("Not turning (no source reaches it): " + String.join("; ", idle));
                 // A wheel mount rolls free unturned (a plane's or a trailer's wheels); the vehicle check says when a car
@@ -604,6 +619,10 @@ final class BuildCheck {
         Direction facing = state.hasProperty(BlockStateProperties.FACING) ? state.getValue(BlockStateProperties.FACING)
                 : state.hasProperty(BlockStateProperties.HORIZONTAL_FACING) ? state.getValue(BlockStateProperties.HORIZONTAL_FACING) : null;
         return compass + " face" + (facing == d ? " (its front)" : facing == d.getOpposite() ? " (its back)" : "");
+    }
+
+    private static boolean subProp(Cell c) {
+        return BuiltInRegistries.BLOCK.getKey(c.state.getBlock()).toString().equals("create_submarine:submarine_propeller");
     }
 
     static String name(Cell c) {

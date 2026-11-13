@@ -219,13 +219,13 @@ final class Airships {
         o.addProperty("type", "object");
         JsonObject p = new JsonObject();
         p.add("enclosed", WorldTools.prop("boolean", "Closed cabin; false = open deck (open_by_request), only if asked."));
-        p.add("beds", WorldTools.prop("integer", "Beds, 0 to 4."));
-        p.add("storage", WorldTools.prop("integer", "Chests, 0 to 8."));
+        p.add("beds", WorldTools.prop("integer", "0-4."));
+        p.add("storage", WorldTools.prop("integer", "Chests, 0-8."));
         p.add("speed", WorldTools.prop("number", "Top speed, blocks/s (8 usable, 11 fast)."));
         p.add("ceiling", WorldTools.prop("integer", "Ceiling, y (200 clears mountains)."));
-        p.add("wood", WorldTools.prop("string", "Gondola wood, such as spruce."));
-        p.add("colour", WorldTools.prop("string", "Envelope dye colour."));
-        p.add("style", WorldTools.prop("string", "sleek, classic or cargo look."));
+        p.add("wood", WorldTools.prop("string", "Gondola wood."));
+        p.add("colour", WorldTools.prop("string", "Envelope dye."));
+        p.add("style", WorldTools.prop("string", "sleek, classic or cargo."));
         o.add("properties", p);
         JsonArray req = new JsonArray();
         p.keySet().forEach(req::add);
@@ -233,8 +233,7 @@ final class Airships {
         o.addProperty("additionalProperties", false);
         JsonObject a = new JsonObject();
         a.addProperty("type", "array");
-        a.addProperty("description", "Empty, or one airship the server lays out and balances (envelope, gondola, rooms, "
-                + "drive, steering) in place of layers and blocks.");
+        a.addProperty("description", "Empty or one airship.");
         a.add("items", o);
         return a;
     }

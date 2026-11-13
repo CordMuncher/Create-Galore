@@ -979,24 +979,69 @@ final class VehicleCheck {
             if (wNet > 480 * tanks * 0.5) notes.add("it is heavy for its tanks, so it drops fast with full tanks (the tanks can't "
                     + "slow a fall beyond 2 blocks/s)");
         }
-        if (b.parts.stream().noneMatch(p -> p.id.equals("create:mechanical_pump") || p.id.equals("create_submarine:ballast_vent")
-                || p.id.equals("create_submarine:pump_controller")))
-            faults.add("nothing fills or empties the tanks: they need a Mechanical Pump (or a Ballast Vent) piped to them; a pump "
-                    + "pushes only the way its arrow points, so use one each way or turn it with a Wrench");
-        if (b.count("create_submarine:oxygene_diffuser") == 0)
-            notes.add("no Oxygen Diffuser, so the crew has no air once the hatch shuts");
-        depth(b, out, notes);
+        // Deep Seas: each tank drives about 75 mass up or down (its ballastLiftPerTank).
+        long need = (long) Math.ceil(b.m / 75);
+        if (tanks > 0 && tanks < need)
+            faults.add(String.format(Locale.ROOT, "too few Ballast Tanks for its weight: each one dives and lifts about 75 mass, so "
+                    + "%.0f mass needs %d and it has %d; add tanks (in the roof) or lighten it", b.m, need, tanks));
+        Set<BlockPos> wet = sea(b);
+        ballast(b, rpm, tanks, need, out, faults, notes);
+        oxygen(b, rpm, faults, notes);
+        crew(b, wet, faults, notes);
+        depth(b, wet, out, notes);
 
         double vWet = 0;
         for (Floater f : fl) vWet += f.wetVolume;
         Thrusts t = waterThrust(b, rpm, Double.POSITIVE_INFINITY, faults, notes);
+        Direction ahead = t.ahead();
+        submergedTrim(b, fl, ahead, out, faults, notes);
         if (t.list.isEmpty()) {
-            faults.add("nothing drives it under water: add Submarine Propellers (best as a 2x2 or 3x3 square), a Water "
-                    + "Thruster, or a Boat Engine");
+            if (faults.stream().noneMatch(x -> x.contains("isn't turning")))
+                faults.add("nothing drives it under water: add Submarine Propellers (best as a 2x2 or 3x3 square), a Water "
+                        + "Thruster, or a Boat Engine");
             return;
         }
-        // Under water with tanks wet: 0.7 x mass of ballast drag on top of Sable's 0.09 and the water on each block.
-        double v = t.forward() / ((0.7 + DAMP) * b.m + WATER_DRAG * vWet);
+        // On the surface the tanks ride at the waterline (they push it up until their middles reach it).
+        double hSurf = surfaceLine(b);
+        if (!Double.isNaN(hSurf)) {
+            Thrusts top = waterThrust(b, rpm, hSurf, new ArrayList<>(), new ArrayList<>());
+            if (top.forward() < 0.5 * t.forward())
+                faults.add(String.format(Locale.ROOT, "on the surface its tanks float it with the waterline at height %.1f, so its "
+                        + "propellers sit above the water and it can barely move until it dives: put the Ballast Tanks in the roof "
+                        + "so the hull and propellers stay under", hSurf - b.minY));
+        }
+        Direction helm = helmEnd(b);
+        if (ahead != null && helm != null && ahead != helm)
+            faults.add("it goes " + (ahead == helm.getOpposite() ? "stern first" : "sideways") + ": its propellers push toward the "
+                    + ahead.getName() + " but the helm faces the " + helm.getName() + "; wrench the propellers to reversed (or turn "
+                    + "their shafts the other way) so they push the bow ahead");
+        // Measured in a pool: a 450-mass sub made 2.25 blocks/s on 3072 of push and 4.8 on 15552, so the water's drag
+        // grows with the square of speed, about 1.45 x mass x v^2.
+        double v = Math.sqrt(t.forward() / (1.45 * b.m));
+        FIGURES.get().put("subSpeed", v);
+        // Push below or above the centre of mass tips the bow up or down while it drives (measured: a 3x3 square each
+        // side 0.8 blocks under it pitched a sub 26 degrees bow up and drove it to the surface).
+        double push = 0, py = 0;
+        for (Thrust th : t.list)
+            if (th.dir == ahead) {
+                push += th.force;
+                py += th.force * t.pushY.getOrDefault(th, th.at.getY() + 0.5);
+            }
+        if (push > 0) {
+            double dy = py / push - b.cy, k = 0;
+            for (Floater fv : fl) k += fv.lift * Math.max(0, fv.y - b.cy);
+            // Half the bare lever's lean: the pool's sub leaned 5.6° with its 3x3 squares 0.2 blocks high (this gives 7°)
+            // and 26° and rising with them 0.8 low (this gives 25°).
+            double tilt = Math.toDegrees(Math.atan2(0.5 * push * Math.abs(dy), Math.max(1, k + 0.8 * b.iPitch())));
+            FIGURES.get().put("subDrivePitch", tilt);
+            // The tanks still hold its depth through a few degrees; past ten it drives itself up or down.
+            if (tilt >= 2 * TRIM_BAD)
+                faults.add(String.format(Locale.ROOT, "its propellers push %.1f blocks %s its centre of mass, so at speed it tips "
+                        + "about %.0f° bow %s and %s: set them level with the middle of the hull's weight", Math.abs(dy),
+                        dy < 0 ? "under" : "over", tilt, dy < 0 ? "up" : "down", dy < 0 ? "climbs" : "dives"));
+            else if (tilt >= 2 * TRIM_NOTE) notes.add(String.format(Locale.ROOT, "at full speed it tips about %.0f° bow %s, which "
+                    + "the tanks hold against", tilt, dy < 0 ? "up" : "down"));
+        }
         out.append(String.format(Locale.ROOT, "- Top speed under water about %.1f blocks/s (%s).\n", v, t.describe()));
         judgeSpeed(v, SUB_BAD, SUB_SLOW, "submarine", faults, notes);
         double iy = b.iYaw(), damp = DAMP * iy + 0.7 * iy + wetTurnDrag(b, fl, Double.POSITIVE_INFINITY);
@@ -1011,17 +1056,326 @@ final class VehicleCheck {
                 how = "the Boat Engine's tiller";
             }
         }
-        turn(q * TURN_SLIP, damp, how, faults, notes, out, "submarine");
+        // Measured in a pool: one side's 3x3 square alone turned a 460-mass sub 24°/s under water, a 2x2 square about 6°/s;
+        // about 2.3 times what Sable's damping alone gives.
+        turn(q * TURN_SLIP * 2.3, damp, how, faults, notes, out, "submarine");
+        if ("running its propellers unevenly".equals(how)) steering(b, null, faults, notes, out);
+        if (b.count("aeronauticswinds:rudder") > 0)
+            faults.add("a Winds & Weather Rudder on a submarine spins and tilts it at the surface (measured: about 3 blocks/s round "
+                    + "and 20° over); steer it with a 2x2 propeller square each side, slowed one side at a time from the wheel");
+        List<Thrust> side = new ArrayList<>();
+        for (Thrust th : t.list) if (th.dir.getAxis().isHorizontal()) side.add(th);
+        throttle(b, side, faults, notes, out);
+    }
+
+    /** Height of the waterline when surfaced: the middle of its Ballast Tanks (they lift it until their middles reach it). */
+    private static double surfaceLine(Body b) {
+        double y = 0;
+        int n = 0;
+        for (Part p : b.parts)
+            if (p.id.equals("create_submarine:ballast_tank")) {
+                y += p.pos.getY() + 0.5;
+                n++;
+            }
+        return n == 0 ? Double.NaN : y / n;
+    }
+
+    /**
+     * Filling and emptying the tanks: a Pump Controller (run by an Onboard Computer at the helm, which holds a depth) piped to
+     * the tanks and to a Ballast Vent. It moves about 9.7 mB/s per RPM at the computer's fast setting (two thirds on normal,
+     * a third on slow); a tank holds 8000 mB, and a surfaced sub starts down only once they are over half full (they float
+     * at about a third).
+     */
+    private static void ballast(Body b, Map<BlockPos, Float> rpm, long tanks, long need, StringBuilder out, List<String> faults,
+            List<String> notes) {
+        if (tanks == 0) return;
+        List<Part> ctrls = new ArrayList<>(), pumps = new ArrayList<>();
+        for (Part p : b.parts) {
+            if (p.id.equals("create_submarine:pump_controller")) ctrls.add(p);
+            if (p.id.equals("create:mechanical_pump")) pumps.add(p);
+        }
+        boolean computer = b.count("create_submarine:command_sub") > 0;
+        double flow = 0;
+        boolean piped = false;
+        for (Part c : ctrls) {
+            Set<String> net = pipeNet(b, c.pos);
+            if (!net.contains("create_submarine:ballast_tank")) {
+                faults.add("the Pump Controller at " + xyz(c.pos) + " isn't piped to the Ballast Tanks: a Fluid Pipe from one side of it "
+                        + "to a tank, and from the other to a Ballast Vent in the hull's floor");
+                continue;
+            }
+            if (!net.contains("create_submarine:ballast_vent"))
+                faults.add("the Pump Controller at " + xyz(c.pos) + " has no Ballast Vent on its pipes, so it has no sea water to fill "
+                        + "the tanks from or empty them into: pipe it to a Ballast Vent set in the hull's floor");
+            piped = true;
+            float r = Math.abs(rpm.getOrDefault(c.pos, 0f));
+            if (r == 0) faults.add("the Pump Controller at " + xyz(c.pos) + " isn't turning: give it an engine of its own");
+            flow += 9.7 * r;
+        }
+        if (ctrls.isEmpty()) {
+            if (pumps.stream().noneMatch(p -> pipeNet(b, p.pos).contains("create_submarine:ballast_tank")))
+                faults.add("nothing fills or empties the tanks: a Pump Controller piped to the tanks and to a Ballast Vent, run by an "
+                        + "Onboard Computer at the helm, dives and surfaces it");
+            else faults.add("a plain Mechanical Pump fills the tanks only one way and nothing at the helm says how deep: use a Pump "
+                    + "Controller with an Onboard Computer at the helm, which pumps either way to hold the depth the pilot sets");
+            return;
+        }
+        if (!computer)
+            faults.add("no Onboard Computer: without one the Pump Controller is a plain one-way pump and nothing holds a depth; put "
+                    + "an Onboard Computer at the helm (it links to the sub's Pump Controllers itself)");
+        if (!piped || flow == 0) return;
+        double start = 0.17 * 8000 * tanks / flow, full = 0.5 * 8000 * tanks / flow;
+        FIGURES.get().put("subDiveStart", start);
+        out.append(String.format(Locale.ROOT, "- Ballast: %d tank%s (it needs %d for its weight); the Pump Controller%s about "
+                + "%.0f mB/s on the computer's fast setting, so from the surface it starts down after about %.0f s and empties them in "
+                + "about %.0f s.\n", tanks, tanks == 1 ? "" : "s", need, ctrls.size() == 1 ? " moves" : "s move", flow, start, full));
+        if (start > 120)
+            faults.add(String.format(Locale.ROOT, "it takes about %.0f s to start diving: the pumps move %.0f mB/s into %d tanks of "
+                    + "8000 mB; use fewer tanks (it needs %d) or run the Pump Controller faster (gear it up)", start, flow, tanks, need));
+        else if (start > 60) notes.add(String.format(Locale.ROOT, "it takes about %.0f s to start diving from the surface", start));
+    }
+
+    /**
+     * Air: Deep Seas treats a build as a submarine only while an Oxygen Diffuser runs (a redstone signal and oxygen in it);
+     * otherwise it is a boat, which floods inside and tilts under water. Oxygen comes from an Electrolyzer (a Shaft in its
+     * module slot, turning, water piped in, switched on), pumped through pipes to the Diffuser. Both break themselves when a
+     * block sits on top of them.
+     */
+    private static void oxygen(Body b, Map<BlockPos, Float> rpm, List<String> faults, List<String> notes) {
+        List<Part> diff = new ArrayList<>(), elec = new ArrayList<>();
+        for (Part p : b.parts) {
+            if (p.id.equals("create_submarine:oxygene_diffuser")) diff.add(p);
+            if (p.id.equals("create_submarine:electrolyzer")) elec.add(p);
+        }
+        if (b.count("create_submarine:hull_controller") > 0) return;
+        if (diff.isEmpty()) {
+            faults.add("no Oxygen Diffuser: Deep Seas counts it as a submarine only while a running Diffuser fills it with air, so "
+                    + "without one it is a boat that floods inside and tilts under water. Give it an Electrolyzer (a Shaft in its "
+                    + "module slot, turned by an engine) making oxygen from sea water, pumped through pipes to a Diffuser with a "
+                    + "lever beside it");
+            return;
+        }
+        for (Part p : diff) {
+            BlockState up = b.blocks.get(p.pos.above());
+            if (up != null && !up.canBeReplaced()) faults.add("the Oxygen Diffuser at " + xyz(p.pos) + " has " + up.getBlock().getName().getString()
+                    + " on top, and it breaks itself when its top isn't clear: keep the block above it empty (a lever goes beside it)");
+            if (!powered(b, p.pos)) faults.add("the Oxygen Diffuser at " + xyz(p.pos) + " has no redstone signal, and it only runs "
+                    + "with one: put a lever beside it");
+            Set<String> net = pipeNet(b, p.pos);
+            if (!net.contains("create_submarine:electrolyzer"))
+                faults.add("nothing pipes oxygen to the Oxygen Diffuser at " + xyz(p.pos) + ": pipe it from an Electrolyzer through a "
+                        + "Mechanical Pump");
+        }
+        for (Part p : elec) {
+            BlockState up = b.blocks.get(p.pos.above());
+            if (up != null && !up.canBeReplaced()) faults.add("the Electrolyzer at " + xyz(p.pos) + " has " + up.getBlock().getName().getString()
+                    + " on top, and it breaks itself when its top isn't clear: keep the block above it empty");
+            if (rpm.getOrDefault(p.pos, 0f) == 0) faults.add("the Electrolyzer at " + xyz(p.pos) + " isn't turning: it makes power "
+                    + "from rotation (a Shaft in its module slot), so give it an engine");
+            Set<String> net = pipeNet(b, p.pos);
+            if (!net.contains("create_submarine:ballast_vent"))
+                faults.add("the Electrolyzer at " + xyz(p.pos) + " gets no water: pipe it through a Mechanical Pump from a Ballast Vent "
+                        + "in the hull's floor");
+            if (!net.contains("create:mechanical_pump"))
+                faults.add("no Mechanical Pump moves water into the Electrolyzer at " + xyz(p.pos) + " or oxygen out to the Diffuser");
+        }
+        if (!diff.isEmpty() && elec.isEmpty() && faults.stream().noneMatch(x -> x.contains("pipes oxygen")))
+            faults.add("nothing makes oxygen: add an Electrolyzer");
+        notes.add("tell the player to put a Shaft in each Electrolyzer's module slot and switch it on in its screen, and to flip the "
+                + "Diffuser's lever before diving (the sub counts as a submarine only once the Diffuser has air to give)");
+    }
+
+    /** Whether a lever, button, redstone block or torch, or a Redstone Link powers the block at pos. */
+    private static boolean powered(Body b, BlockPos pos) {
+        for (Direction d : Direction.values()) {
+            BlockState s = b.blocks.get(pos.relative(d));
+            if (s == null) continue;
+            String id = id(s);
+            if (id.equals("minecraft:lever") || id.endsWith("_button") || id.equals("minecraft:redstone_block")
+                    || id.contains("redstone_torch") || id.equals("create:redstone_link") || id.equals("minecraft:redstone_wire")
+                    || id.equals("minecraft:comparator") || id.equals("minecraft:repeater")) return true;
+        }
+        return false;
+    }
+
+    /** The ids of everything joined to pos by fluid pipes and pumps (pos's own neighbours included). */
+    private static Set<String> pipeNet(Body b, BlockPos start) {
+        Set<String> ids = new HashSet<>();
+        Set<BlockPos> seen = new HashSet<>(List.of(start));
+        ArrayDeque<BlockPos> todo = new ArrayDeque<>(List.of(start));
+        while (!todo.isEmpty()) {
+            BlockPos p = todo.poll();
+            for (Direction d : Direction.values()) {
+                BlockPos n = p.relative(d);
+                BlockState s = b.blocks.get(n);
+                if (s == null || !seen.add(n)) continue;
+                String id = id(s);
+                ids.add(id);
+                // Pipes, pumps and valves carry it on; the Electrolyzer passes water in and oxygen out; tanks share water.
+                if (id.contains("pipe") || id.contains("pump") || id.contains("valve") || id.equals("create_submarine:electrolyzer")
+                        || id.equals("create_submarine:ballast_tank")) todo.add(n);
+            }
+        }
+        return ids;
+    }
+
+    /**
+     * Whether water passes from p into its neighbour across d, by Deep Seas' own seal test (air and any part-block gap let
+     * it through; full blocks, machines and closed doors and trapdoors hold it). Null when Deep Seas isn't loaded.
+     */
+    private static java.util.function.BiPredicate<BlockPos, Direction> seaPasses(Body b) {
+        try {
+            Class<?> hs = Class.forName("com.maxenonyme.createsubmarine.submarine.compartment.HullSeal");
+            Class<?> shape = Class.forName("com.maxenonyme.createsubmarine.submarine.compartment.HullSeal$Shape");
+            var of = hs.getMethod("of", BlockState.class);
+            var connects = hs.getMethod("connects", shape, Direction.class, shape);
+            Object open = hs.getField("OPEN").get(null);
+            Map<BlockPos, Object> cache = new java.util.HashMap<>();
+            java.util.function.Function<BlockPos, Object> sh = q -> cache.computeIfAbsent(q, k -> {
+                BlockState s = b.blocks.get(k);
+                try {
+                    return s == null ? open : of.invoke(null, s);
+                } catch (ReflectiveOperationException e) {
+                    return open;
+                }
+            });
+            return (p, d) -> {
+                try {
+                    return (boolean) connects.invoke(null, sh.apply(p), d, sh.apply(p.relative(d)));
+                } catch (ReflectiveOperationException e) {
+                    return !b.solid(p.relative(d));
+                }
+            };
+        } catch (ReflectiveOperationException | LinkageError e) {
+            return null;
+        }
+    }
+
+    /** The cells the sea reaches from outside the hull (its bounds and one block around them). */
+    private static Set<BlockPos> sea(Body b) {
+        var passes = seaPasses(b);
+        Set<BlockPos> wet = new HashSet<>();
+        BlockPos start = new BlockPos(b.minX - 1, b.minY - 1, b.minZ - 1);
+        ArrayDeque<BlockPos> todo = new ArrayDeque<>(List.of(start));
+        wet.add(start);
+        while (!todo.isEmpty()) {
+            BlockPos p = todo.poll();
+            for (Direction d : Direction.values()) {
+                BlockPos n = p.relative(d);
+                if (n.getX() < b.minX - 1 || n.getX() > b.maxX + 1 || n.getY() < b.minY - 1 || n.getY() > b.maxY + 1
+                        || n.getZ() < b.minZ - 1 || n.getZ() > b.maxZ + 1 || wet.contains(n)) continue;
+                if (passes != null ? !passes.test(p, d) : b.solid(n)) continue;
+                wet.add(n);
+                todo.add(n);
+            }
+        }
+        return wet;
+    }
+
+    /**
+     * The crew's room: the open cells beside the helm must stay dry, and a door or trapdoor must lead in from the sea (above
+     * the waterline when surfaced, or opening it floods the cabin).
+     */
+    private static void crew(Body b, Set<BlockPos> wet, List<String> faults, List<String> notes) {
+        for (Part p : b.parts) {
+            if (!p.id.equals("simulated:steering_wheel") && !p.id.equals("create_submarine:command_sub")) continue;
+            for (Direction d : Direction.Plane.HORIZONTAL) {
+                BlockPos n = p.pos.relative(d);
+                if (b.blocks.containsKey(n) || !wet.contains(n)) continue;
+                faults.add("the cabin floods: the sea reaches the helm at " + xyz(n) + ". Close every gap in the hull (a part block "
+                        + "such as a slab, stair, pane or fence leaves one; machines, full blocks and shut doors and trapdoors seal)");
+                return;
+            }
+        }
+        double h = surfaceLine(b);
+        boolean hatch = false, high = false;
+        for (Part p : b.parts) {
+            if (!(p.state.getBlock() instanceof net.minecraft.world.level.block.TrapDoorBlock)
+                    && !(p.state.getBlock() instanceof net.minecraft.world.level.block.DoorBlock)) continue;
+            boolean out = false, in = false;
+            for (Direction d : Direction.values()) {
+                BlockPos n = p.pos.relative(d);
+                BlockState ns = b.blocks.get(n);
+                if (ns != null && Block.isShapeFullBlock(ns.getCollisionShape(EmptyBlockGetter.INSTANCE, n))) continue;
+                if (wet.contains(n)) out = true;
+                else in = true;
+            }
+            if (out && in) {
+                hatch = true;
+                if (Double.isNaN(h) || p.pos.getY() >= h) high = true;
+            }
+        }
+        if (!hatch) faults.add("no way in: give it a hatch, an iron trapdoor (or a door) in the hull, on top for boarding from the "
+                + "surface, with a ladder down inside");
+        else if (!high) faults.add(String.format(Locale.ROOT, "its hatch is under the waterline when it is surfaced (the tanks hold "
+                + "the waterline at height %.1f), so opening it floods the cabin: put the hatch on top, on a short tower if need be",
+                h - b.minY));
+    }
+
+    /**
+     * How it hangs fully under water. The hull's lift acts at the middle of its blocks' volume and the weight at the
+     * centre of mass; the Ballast Tanks push straight through the centre of mass, so they don't level it. Deep Seas pulls a
+     * tilted sub back toward upright each tick (0.05 x (0.8 x tilt - spin) rad/s), about 0.8 x I x sin(tilt) of
+     * restoring torque. So it settles where lift x offset x cos = (lift x height of lift over weight + 0.8 I) x sin.
+     */
+    private static void submergedTrim(Body b, List<Floater> fl, Direction ahead, StringBuilder out, List<String> faults, List<String> notes) {
+        double sum = 0, a = 0, l = 0, y = 0;
+        for (Floater f : fl) {
+            sum += f.lift;
+            a += f.lift * b.along(f.x, f.z);
+            l += f.lift * b.lateral(f.x, f.z);
+            y += f.lift * f.y;
+        }
+        if (sum <= 0) return;
+        double along = a / sum, side = l / sum, above = y / sum - b.cy;
+        // Measured: 7 iron blocks 4 blocks ahead tipped a 450-mass sub 5.0 degrees more, as this says (5.1).
+        double pitch = Math.toDegrees(Math.atan2(sum * Math.abs(along), sum * Math.max(0, above) + 0.8 * b.iPitch()));
+        double roll = Math.toDegrees(Math.atan2(sum * Math.abs(side), sum * Math.max(0, above) + 0.8 * b.iRoll()));
+        FIGURES.get().put("subPitch", pitch * Math.signum(along));
+        FIGURES.get().put("subRoll", roll * Math.signum(side));
+        FIGURES.get().put("subAbove", above);
+        Direction bow = ahead != null ? ahead : bow(b);
+        Direction plus = b.keel == Direction.Axis.X ? Direction.EAST : Direction.SOUTH;
+        // The lift centre ahead of the weight raises that end: the other end goes down.
+        boolean liftAhead = along > 0 == (bow == null || bow == plus);
+        String low = bow == null ? (along > 0 ? plus.getOpposite() : plus).getName() + " end" : liftAhead ? "stern" : "bow";
+        String high = bow == null ? (along > 0 ? plus : plus.getOpposite()).getName() + " end" : liftAhead ? "bow" : "stern";
+        out.append(String.format(Locale.ROOT, "- Under water it hangs %s and %s (its hull's lift centres %.1f blocks above its "
+                        + "weight, %.2f along the keel and %.2f across from it).\n",
+                pitch < 0.25 ? "level fore and aft" : String.format(Locale.ROOT, "%.1f° %s down", pitch, low),
+                roll < 0.25 ? "level side to side" : String.format(Locale.ROOT, "listing %.1f°", roll), above, along, side));
+        // No fault for weight above the lift: Deep Seas pulls a submerged sub upright itself (measured upright at -0.0).
+        String fix = " (the lift sits %.2f blocks %s of the weight: move about %.0f mass of machines, tanks or rooms toward the %s, "
+                + "or give the %s end more hull)";
+        if (pitch >= TRIM_BAD)
+            faults.add(String.format(Locale.ROOT, "under water it hangs %.0f° %s down%s; the Ballast Tanks push through the "
+                    + "centre of mass and can't level it", pitch, low, String.format(Locale.ROOT, fix, Math.abs(along), "toward the " + high,
+                    Math.abs(along) * b.m, high, low)));
+        else if (pitch >= TRIM_NOTE) notes.add(String.format(Locale.ROOT, "under water it hangs %.1f° %s down, which shows", pitch, low));
+        if (roll >= TRIM_BAD)
+            faults.add(String.format(Locale.ROOT, "under water it lists %.0f°: balance its weight across it (the lift sits %.2f "
+                    + "blocks to one side of the weight)", roll, Math.abs(side)));
+        else if (roll >= TRIM_NOTE) notes.add(String.format(Locale.ROOT, "under water it lists %.1f°, which shows", roll));
     }
 
     /** Deep Seas' hull rating: the weakest outer block's own depth, before the hull's shape scales it (0.5x to 2x). */
-    private static void depth(Body b, StringBuilder out, List<String> notes) {
+    private static void depth(Body b, Set<BlockPos> wet, StringBuilder out, List<String> notes) {
         String weakest = null;
         int worst = Integer.MAX_VALUE;
         try {
             Class<?> cfg = Class.forName("com.maxenonyme.createsubmarine.submarine.config.HullStrengthConfig");
             var getFor = cfg.getMethod("getFor", BlockState.class);
-            Set<BlockPos> outer = outerHull(b);
+            // The blocks the sea touches (a ladder or pipe inside a sealed hull never meets it).
+            Set<BlockPos> outer = new HashSet<>();
+            for (BlockPos w : wet) {
+                // A part block the sea gets into (a hatch trapdoor) meets it itself; what lies past it doesn't.
+                if (b.blocks.containsKey(w)) {
+                    outer.add(w);
+                    continue;
+                }
+                for (Direction d : Direction.values())
+                    if (b.blocks.containsKey(w.relative(d))) outer.add(w.relative(d));
+            }
             for (Part p : b.parts) {
                 if (!outer.contains(p.pos)) continue;
                 Object opt = getFor.invoke(null, p.state);
@@ -1040,32 +1394,13 @@ final class VehicleCheck {
                 + "short panel doubles it, a wide thin one halves it).\n", weakest, worst));
     }
 
-    /** The blocks the sea touches: those next to the open air around the hull, reached from outside its bounds. */
-    private static Set<BlockPos> outerHull(Body b) {
-        Set<BlockPos> outside = new HashSet<>(), hull = new HashSet<>();
-        BlockPos start = new BlockPos(b.minX - 1, b.minY - 1, b.minZ - 1);
-        ArrayDeque<BlockPos> todo = new ArrayDeque<>(List.of(start));
-        outside.add(start);
-        while (!todo.isEmpty()) {
-            BlockPos p = todo.poll();
-            for (Direction d : Direction.values()) {
-                BlockPos n = p.relative(d);
-                if (n.getX() < b.minX - 1 || n.getX() > b.maxX + 1 || n.getY() < b.minY - 1 || n.getY() > b.maxY + 1
-                        || n.getZ() < b.minZ - 1 || n.getZ() > b.maxZ + 1) continue;
-                if (b.solid(n)) {
-                    hull.add(n);
-                    continue;
-                }
-                if (outside.add(n)) todo.add(n);
-            }
-        }
-        return hull;
-    }
 
     // ---------- water thrust ----------
 
     private static final class Thrusts {
         final List<Thrust> list = new ArrayList<>();
+        /** The height a propeller square pushes at (its middle), where it isn't its own block's. */
+        final Map<Thrust, Double> pushY = new java.util.IdentityHashMap<>();
         double sailTarget;
         int windPanels;
 
@@ -1076,6 +1411,21 @@ final class VehicleCheck {
                 double sum = 0;
                 for (Thrust t : list) if (t.dir == d || t.reversible && t.dir == d.getOpposite()) sum += t.force;
                 best = Math.max(best, sum);
+            }
+            return best;
+        }
+
+        /** The way it pushes hardest; null when nothing pushes sideways. */
+        Direction ahead() {
+            Direction best = null;
+            double most = 0;
+            for (Direction d : Direction.Plane.HORIZONTAL) {
+                double sum = 0;
+                for (Thrust t : list) if (t.dir == d || t.reversible && t.dir == d.getOpposite()) sum += t.force;
+                if (sum > most) {
+                    most = sum;
+                    best = d;
+                }
             }
             return best;
         }
@@ -1111,19 +1461,44 @@ final class VehicleCheck {
                 case "create_submarine:submarine_propeller" -> {
                     if (grouped.contains(p.pos)) continue;
                     Direction f = facing(p.state);
-                    if (f == null || p.cy() > h) {
-                        if (p.cy() > h) notes.add("the Submarine Propeller at " + xyz(p.pos) + " is above the water line and gives nothing there");
+                    if (f == null) continue;
+                    List<BlockPos> members = new ArrayList<>();
+                    int size = square(b, p, grouped, members);
+                    // A square turns as one from whichever member is driven, at the fastest member's speed.
+                    float r = 0;
+                    double cy = 0;
+                    BlockPos driven = p.pos;
+                    for (BlockPos m : members) {
+                        float rm = rpm.getOrDefault(m, 0f);
+                        if (Math.abs(rm) > Math.abs(r)) {
+                            r = rm;
+                            driven = m;
+                        }
+                        cy += m.getY() + 0.5;
+                    }
+                    cy /= members.size();
+                    String at = size == 1 ? "the Submarine Propeller at " + xyz(p.pos)
+                            : "the " + size + "x" + size + " Submarine Propeller square at " + xyz(p.pos);
+                    if (cy > h) {
+                        notes.add(at + " is above the water line and gives nothing there");
                         continue;
                     }
-                    int size = square(b, p, grouped);
-                    float r = Math.abs(rpm.getOrDefault(p.pos, 0f));
                     if (r == 0) {
-                        faults.add("the Submarine Propeller at " + xyz(p.pos) + " isn't turning: nothing drives it");
+                        faults.add(at + " isn't turning: no shaft reaches it" + (size == 1 ? "" : " (one driven block turns the whole square)"));
                         continue;
                     }
-                    double force = 3 * r * (size == 1 ? 1 : size * size * size * size);
-                    t.list.add(new Thrust(p.pos, f, force, Double.MAX_VALUE,
-                            size == 1 ? "Submarine Propeller" : size + "x" + size + " Submarine Propeller square", true));
+                    // It pushes along its facing axis by its spin: speed x the facing's sign (x -1 when wrenched to
+                    // reversed); a negative product pushes the way it faces.
+                    boolean rev = p.state.getProperties().stream().anyMatch(q -> q.getName().equals("reversed")
+                            && q instanceof net.minecraft.world.level.block.state.properties.BooleanProperty bp && p.state.getValue(bp));
+                    double sign = r * f.getAxisDirection().getStep() * (rev ? -1 : 1);
+                    Direction push = sign < 0 ? f : f.getOpposite();
+                    double force = 3 * Math.abs(r) * (size == 1 ? 1 : size * size * size * size);
+                    // Its airflow never limits it under water; a finite one marks it a shaft-driven propeller for the throttle.
+                    Thrust th = new Thrust(driven, push, force, 1e12,
+                            size == 1 ? "Submarine Propeller" : size + "x" + size + " Submarine Propeller square", false);
+                    t.list.add(th);
+                    t.pushY.put(th, cy);
                 }
                 case "create_submarine:water_thruster" -> {
                     Direction f = facing(p.state);
@@ -1145,8 +1520,9 @@ final class VehicleCheck {
     }
 
     /** The side of an isolated 2x2 or 3x3 square of Submarine Propellers this one belongs to (1 when alone). */
-    private static int square(Body b, Part p, Set<BlockPos> grouped) {
+    private static int square(Body b, Part p, Set<BlockPos> grouped, List<BlockPos> members) {
         Direction f = facing(p.state);
+        members.add(p.pos);
         if (f == null) return 1;
         Direction[] plane = f.getAxis() == Direction.Axis.X ? new Direction[] {Direction.UP, Direction.SOUTH}
                 : f.getAxis() == Direction.Axis.Z ? new Direction[] {Direction.UP, Direction.EAST} : new Direction[] {Direction.EAST, Direction.SOUTH};
@@ -1155,7 +1531,13 @@ final class VehicleCheck {
                 for (int c = 0; c < size; c++) {
                     BlockPos corner = p.pos.relative(plane[0], -a).relative(plane[1], -c);
                     if (!isolated(b, corner, plane, p.state, size)) continue;
-                    for (int i = 0; i < size; i++) for (int j = 0; j < size; j++) grouped.add(corner.relative(plane[0], i).relative(plane[1], j));
+                    members.clear();
+                    for (int i = 0; i < size; i++)
+                        for (int j = 0; j < size; j++) {
+                            BlockPos m = corner.relative(plane[0], i).relative(plane[1], j);
+                            grouped.add(m);
+                            members.add(m);
+                        }
                     return size;
                 }
         }
@@ -1176,13 +1558,14 @@ final class VehicleCheck {
     /** Winds & Weather rudders: side force |v|·sin(30°)·M·(0.18c + 0.5·max(0.5,|v|)) at a lever of at least 3. */
     private static double rudderTorque(Body b, Map<BlockPos, Float> rpm, double v, List<String> faults) {
         double best = 0;
-        boolean wheel = b.count("simulated:steering_wheel") > 0;
         for (Part p : b.parts) {
             if (!p.id.equals("aeronauticswinds:rudder")) continue;
-            // Its blade angle follows a Steering Wheel on board, or a shaft turning it; with neither it stays straight.
-            if (!wheel && rpm.getOrDefault(p.pos, 0f) == 0) {
-                faults.add("the Rudder at " + xyz(p.pos) + " has nothing setting its angle, so it stays straight: put a "
-                        + "Steering Wheel on board (the rudder follows it) or turn the rudder with a shaft");
+            // Its blade angle follows a Steering Wheel that turns it: one straight above it through a column of shafts or
+            // other turning blocks (or set on it), or a shaft turning it; any other wheel on board doesn't move it.
+            if (!wheelAbove(b, p.pos) && rpm.getOrDefault(p.pos, 0f) == 0) {
+                faults.add("the Rudder at " + xyz(p.pos) + " has nothing setting its angle, so it stays straight: it follows only a "
+                        + "Steering Wheel straight above it, joined to it by a column of shafts (or a shaft turning it), not a "
+                        + "wheel elsewhere on board");
                 continue;
             }
             double c = Math.max(0.85, Math.min(6, Math.sqrt(b.m / 3)));
@@ -1191,6 +1574,17 @@ final class VehicleCheck {
             best = Math.max(best, Math.min(25 * b.m, force) * lever);
         }
         return Math.min(best, 80 * b.m);
+    }
+
+    /** Whether a Steering Wheel sits straight above pos, joined by an unbroken column of turning blocks. */
+    private static boolean wheelAbove(Body b, BlockPos pos) {
+        for (BlockPos p = pos.above(); p.getY() <= b.maxY; p = p.above()) {
+            BlockState s = b.blocks.get(p);
+            if (s == null) return false;
+            if (id(s).equals("simulated:steering_wheel")) return true;
+            if (!(s.getBlock() instanceof com.simibubi.create.content.kinetics.base.IRotate)) return false;
+        }
+        return false;
     }
 
     /** Turning by pushing harder on one side: the larger side's thrust times its distance off the centre line. */

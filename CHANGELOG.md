@@ -5,6 +5,23 @@ workflow copies the section for the version in `pack/pack.toml` to the top of th
 fails when that section is missing. Notes never name the pack's owner or any player: say "a player reported" or just
 describe the fix (the build fails on a name it knows).
 
+## 0.6.82
+
+### Added
+- Create Galore Bridge 1.189.0.
+- **Ask the Book lays out submarines.** Asked for a submarine, the book now names who goes aboard, beds, barrels, a copper or iron hull and a bow window, and the server lays it out by Create Deep Seas' own rules, checks it and keeps the smallest that passes: an Electrolyzer on its own engine making oxygen from sea water for an Oxygen Diffuser (without air a build is only a boat), Ballast Tanks in the roof sized to its weight, a Pump Controller run by an Onboard Computer at the helm, a 3x3 Submarine Propeller square each side of the stern on its own engine, steered by comparators at the Steering Wheel and throttled by a Throttle Lever, a Pressurized Glass window and an iron hatch on the roof with a ladder down. A test sub built this way dives, holds its depth, surfaces, stays dry inside, runs about 5 blocks a second under water and turns about 25 degrees a second.
+- **Field Guide, Ocean: Submarines** has four pages on building one that works: air, roof tanks, propeller squares level with the sub's weight, steering and the hatch.
+
+### Fixed
+- **The book's submarine checks missed what makes a sub work.** A submarine with no running Oxygen Diffuser passed, although Deep Seas treats it as a boat that floods inside and tilts under water; the check now follows the oxygen from the Ballast Vent through the pumps and Electrolyzer to the Diffuser and its lever, and catches an Electrolyzer or Diffuser with a block on top (they break themselves).
+- **A 2x2 or 3x3 Submarine Propeller square driven through one block** was reported as three or eight propellers that rotation never reaches; one driven block turns the whole square, and its push now counts the way it spins (a wrenched square pushes the other way).
+- **A Winds & Weather Rudder** was taken to follow any Steering Wheel on board; it follows only a wheel joined straight above it by shafts. On a submarine it spun and tipped the sub at the surface, so the check now says to steer a sub with a propeller square each side.
+- **Sub checks now cover** tanks for the sub's weight (about 75 mass each) and how long the pumps take before it starts down, a sealed cabin and a hatch above the waterline, propellers still under water when surfaced, propellers pushing above or below the sub's weight (a low pair tipped a test sub 26 degrees bow up and drove it to the surface), going bow first, steering and throttle. Speed and turning were measured in a test pool and the check now matches them (speed grows with the square root of the push). A hatch trapdoor no longer makes the ladder under it the hull's weakest block.
+- **Field Guide, Ocean: Submarines** said to fit a few spare tanks; extra tanks only slow the dive, so it now says to fit about the sub's mass divided by 75 and a couple spare. The Submarine Propeller page now covers 3x3 squares, one driven block and which way it pushes.
+
+### Removed
+- The check's "under water it rolls over" fault: Deep Seas pulls a submerged sub upright itself.
+
 ## 0.6.81
 
 ### Added

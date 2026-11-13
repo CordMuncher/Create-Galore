@@ -1,0 +1,266 @@
+{
+ "title": "Propeller squares under the centre of mass are refused: in the pool they tipped the sub bow up and drove it to the surface",
+ "from": "2026-11-13 report (pack 0.6.79): asked whether the book can build real submarines; its stand-in sub had no air, rudders that never moved and prop squares flagged as undriven",
+ "roots": [
+  "R3",
+  "R4"
+ ],
+ "kind": "model",
+ "model": {
+  "title": "Submarine with low propellers",
+  "size_x": 9,
+  "size_y": 6,
+  "size_z": 17,
+  "from_world": [],
+  "from_draft": 0,
+  "move": [],
+  "palette": [
+   {
+    "key": "A",
+    "block": "create:andesite_encased_shaft[axis=z]"
+   },
+   {
+    "key": "B",
+    "block": "create:cogwheel[axis=z]"
+   },
+   {
+    "key": "C",
+    "block": "create:fluid_pipe"
+   },
+   {
+    "key": "D",
+    "block": "create:mechanical_pump[facing=north]"
+   },
+   {
+    "key": "E",
+    "block": "create:mechanical_pump[facing=south]"
+   },
+   {
+    "key": "F",
+    "block": "create:redstone_link[facing=down,receiver=true]"
+   },
+   {
+    "key": "G",
+    "block": "create:redstone_link[facing=east,receiver=false]"
+   },
+   {
+    "key": "H",
+    "block": "create:redstone_link[facing=up,receiver=true]"
+   },
+   {
+    "key": "I",
+    "block": "create:redstone_link[facing=west,receiver=false]"
+   },
+   {
+    "key": "J",
+    "block": "create_submarine:ballast_tank"
+   },
+   {
+    "key": "K",
+    "block": "create_submarine:ballast_vent"
+   },
+   {
+    "key": "L",
+    "block": "create_submarine:command_sub[facing=north]"
+   },
+   {
+    "key": "M",
+    "block": "create_submarine:electrolyzer[facing=north,alternator=true]"
+   },
+   {
+    "key": "N",
+    "block": "create_submarine:oxygene_diffuser"
+   },
+   {
+    "key": "O",
+    "block": "create_submarine:pump_controller[facing=north]"
+   },
+   {
+    "key": "P",
+    "block": "create_submarine:submarine_propeller[facing=north,reversed=true]"
+   },
+   {
+    "key": "Q",
+    "block": "minecraft:comparator[facing=east]"
+   },
+   {
+    "key": "R",
+    "block": "minecraft:comparator[facing=west]"
+   },
+   {
+    "key": "S",
+    "block": "minecraft:copper_block"
+   },
+   {
+    "key": "T",
+    "block": "minecraft:glass"
+   },
+   {
+    "key": "U",
+    "block": "minecraft:iron_trapdoor[half=bottom,open=false,facing=north]"
+   },
+   {
+    "key": "V",
+    "block": "minecraft:ladder[facing=south]"
+   },
+   {
+    "key": "W",
+    "block": "minecraft:lever[face=floor,facing=north,powered=true]"
+   },
+   {
+    "key": "X",
+    "block": "simulated:analog_transmission[axis=z]"
+   },
+   {
+    "key": "Y",
+    "block": "simulated:red_portable_engine[facing=north]"
+   },
+   {
+    "key": "Z",
+    "block": "simulated:steering_wheel[facing=north,on_floor=true]"
+   },
+   {
+    "key": "a",
+    "block": "simulated:throttle_lever[face=floor,facing=north,inverted=true]"
+   }
+  ],
+  "layers": [
+   [
+    "PPP...PPP",
+    ".SSSSSSS.",
+    ".SSSSSSS.",
+    ".SSSSSSS.",
+    ".SSSSSSS.",
+    ".SSSSSSS.",
+    ".SSSSKSS.",
+    ".KSSSSSS.",
+    ".SSSSSSS.",
+    ".SSSSSSS.",
+    ".SSSSSSS.",
+    ".SSSSSSS.",
+    ".SSSSSSS.",
+    ".FSSSSSF.",
+    ".SSSSSSS.",
+    ".SSSSSSS.",
+    ".SSSSSSS."
+   ],
+   [
+    "PPP...PPP",
+    ".SASSSAS.",
+    "SSASSSASS",
+    "SSASSSASS",
+    "SSASSSASS",
+    "SSASSSASS",
+    "SSASSCACS",
+    "SCASSSADS",
+    "SSASSSACS",
+    "SSASSSASS",
+    "SSASSSASS",
+    "SSASSSASS",
+    "SSASSSASS",
+    "SXBSSSBXS",
+    "SYSSSSSYS",
+    "SSSSSSSSS",
+    ".SSSSSSS."
+   ],
+   [
+    "PPP...PPP",
+    ".SSSSSSS.",
+    "S...S...S",
+    "S...V...S",
+    "S.......S",
+    "S......WS",
+    "S....CCNS",
+    "SC....EBS",
+    "SB....CMS",
+    "SA.....YS",
+    "SY......S",
+    "S.......S",
+    "S.......S",
+    "SH.....HS",
+    "S.Ia.L..S",
+    "S.IQZRG.S",
+    ".STTTTTS."
+   ],
+   [
+    ".........",
+    ".SSSSSSS.",
+    "S...S...S",
+    "S...V...S",
+    "S.......S",
+    "S.......S",
+    "S.......S",
+    "SC......S",
+    "SO......S",
+    "SC......S",
+    "S.......S",
+    "S.......S",
+    "S.......S",
+    "S.......S",
+    "S.......S",
+    "S.......S",
+    ".STTTTTS."
+   ],
+   [
+    ".........",
+    ".........",
+    ".SSSSSSS.",
+    ".SSSVSSS.",
+    ".SSSSSSS.",
+    ".SSSSSSS.",
+    ".SSSSSSS.",
+    ".SSSSSSS.",
+    ".SJJJJJS.",
+    ".CJJJJJS.",
+    ".SSSSSSS.",
+    ".SSSSSSS.",
+    ".SSSSSSS.",
+    ".SSSSSSS.",
+    ".SSSSSSS.",
+    ".SSSSSSS.",
+    "........."
+   ],
+   [
+    ".........",
+    ".........",
+    "....S....",
+    "...SUS...",
+    "....S....",
+    ".........",
+    ".........",
+    ".........",
+    ".........",
+    ".........",
+    ".........",
+    ".........",
+    ".........",
+    ".........",
+    ".........",
+    ".........",
+    "........."
+   ]
+  ],
+  "blocks": [],
+  "labels": [],
+  "caption": "",
+  "draft": false,
+  "goal": "",
+  "shows_a_fault": false,
+  "for_later": false,
+  "speeds": [],
+  "airship": [],
+  "plane": [],
+  "open_by_request": false,
+  "new_by_request": true,
+  "part_of_vehicle": false,
+  "moving": []
+ },
+ "expect": {
+  "built": false,
+  "has": [
+   "blocks under its centre of mass",
+   "bow up and climbs"
+  ],
+  "lacks": []
+ }
+}
