@@ -1,0 +1,20 @@
+{
+  "title": "Taming is tried for real, so a wolf comes back tamed with a bone, not its food",
+  "from": "pack 0.6.80: the book told a player a hedgehog can't be a pet",
+  "roots": [
+    "R1",
+    "R2"
+  ],
+  "kind": "tool",
+  "tool": "find_creatures",
+  "input": {
+    "query": "wolf"
+  },
+  "expect": {
+    "has": [
+      "Bone [minecraft:bone]",
+      "sit and stand",
+      "it follows its owner"
+    ]
+  }
+}

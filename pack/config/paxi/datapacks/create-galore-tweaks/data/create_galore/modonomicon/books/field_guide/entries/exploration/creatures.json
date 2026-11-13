@@ -20,7 +20,7 @@
     {
       "type": "modonomicon:text",
       "title": "Creatures",
-      "text": "[#](FFFFFF)[#]() **Key points**\n\n- **Critters and Companions** and **Naturalist** add Overworld animals, many of them tameable.\n- Every snail and dragonfly can be tamed, and every snail gives slime in a bottle.\n- Hybrid Aquatic otters crack clams for pearls."
+      "text": "[#](FFFFFF)[#]() **Key points**\n\n- **Critters and Companions** and **Naturalist** add Overworld animals, many of them tameable.\n- **Hedgehogs** make pets: sweet or glow berries tame one.\n- Every snail and dragonfly can be tamed; snails give slime in a bottle."
     },
     {
       "type": "modonomicon:text",
@@ -51,7 +51,25 @@
     {
       "type": "modonomicon:text",
       "title": "",
-      "text": "**Naturalist** adds land animals: bears, deer, boar, lions, tigers, zebras, giraffes, elephants, hippos, rhinos, lizards, snakes, tortoises, ducks, turkeys, vultures and more.\\\n\\\nNine sea animals are **off**: anglerfish, blobfish, giant isopod, great white shark, piranha, jellyfish, starfish, crab and ray."
+      "text": "**Naturalist** adds land animals: bears, deer, boar, lions, tigers, zebras, giraffes, elephants, hippos, rhinos, lizards, snakes, tortoises, hedgehogs, ducks, turkeys, vultures and more.\\\n\\\nNine sea animals are **off**: anglerfish, blobfish, giant isopod, great white shark, piranha, jellyfish, starfish, crab and ray."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "Hedgehogs as pets",
+      "text": "Naturalist's **hedgehog** lives in plains, meadows, forests and taiga. A wild one curls into a spiky ball when you walk up; crouch or hold berries and it stays out. Touching a curled one hurts.\\\n\\\nHand it **sweet berries** or **glow berries**: each one is a 1 in 2 try. Hearts mean it's yours, smoke means try again."
+    },
+    {
+      "type": "modonomicon:text",
+      "title": "",
+      "text": "- It **follows** you from the moment it is tamed.\n- Right-click it with an empty hand to make it **sit** or stand.\n- Hold Shift and right-click to **pat** it.\n- Berries heal it when it's hurt.\n- A dye recolours its little outfit (red at first); shears take the dye off.\n- It never despawns, and its spikes never hurt its owner."
+    },
+    {
+      "type": "modonomicon:spotlight",
+      "item": {
+        "item": "naturalist:whistle"
+      },
+      "title": "Whistle",
+      "text": "A copper ingot over string. Right-click your tamed hedgehog (or another Naturalist pet) to switch it between **following** you and **wandering** near where it is."
     },
     {
       "type": "modonomicon:spotlight",

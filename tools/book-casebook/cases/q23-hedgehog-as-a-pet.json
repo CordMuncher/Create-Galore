@@ -1,0 +1,59 @@
+{
+  "title": "A creature the notes don't cover can still be a pet",
+  "from": "pack 0.6.80: the book told a player a hedgehog can't be a pet",
+  "roots": [
+    "R1",
+    "R2"
+  ],
+  "kind": "question",
+  "question": "can i have a hedgehog as a pet??",
+  "player": "Overworld, Meadow, day, a wild hedgehog a few blocks away.",
+  "rubric": [
+    "Says yes: Naturalist's hedgehog can be tamed, with sweet berries or glow berries, a few tries each (from find_creatures, not memory)",
+    "Says how to keep it: empty-hand right-click to sit or stand, it follows once tamed, a Whistle switches following and wandering",
+    "Never says the hedgehog can't be tamed or kept"
+  ],
+  "world": [
+    "fill ~-12 ~-1 ~-12 ~12 ~-1 ~12 minecraft:grass_block",
+    "fillbiome ~-16 ~-8 ~-16 ~16 ~8 ~16 minecraft:meadow",
+    "time set 6000",
+    "summon naturalist:hedgehog ~4 ~ ~"
+  ],
+  "box": [
+    -12,
+    -1,
+    -12,
+    12,
+    0,
+    12
+  ],
+  "built": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "stand": [
+    0,
+    0,
+    0,
+    -90,
+    10
+  ],
+  "inventory": [
+    {
+      "id": "minecraft:sweet_berries",
+      "count": 12
+    },
+    {
+      "id": "minecraft:bread",
+      "count": 8
+    }
+  ],
+  "advancements": [
+    "minecraft:story/root",
+    "minecraft:husbandry/root"
+  ]
+}

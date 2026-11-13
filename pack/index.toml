@@ -1020,7 +1020,7 @@ hash = "3be9152c5906f71b4c5aabef0d495230777062e527a49cdf92a455e4deced559"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/exploration.md"
-hash = "6dd9dfb1d96dd8be4646e2abd8ad35b7f9548e12ae150f02fa80194e9fd43c38"
+hash = "cbcd4654f8289b4414ebba7fa2863122bed59c4ebcb3913e8161b9724bc13594"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/field_guide_ai/fishing.md"
@@ -1288,7 +1288,7 @@ hash = "de3647efacd1e520151e24664bcdf4c741a47e7b21a322f2cc4926e3f08b0858"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/exploration/creatures.json"
-hash = "cd8563c789d40eae505fdbcf8ce36b5f511492d458cee8a19912276867136da6"
+hash = "9f405a168b0aa409d4a0fce2b69b8de667c9f9e1e172ff255690a9eabbb992b6"
 
 [[files]]
 file = "config/paxi/datapacks/create-galore-tweaks/data/create_galore/modonomicon/books/field_guide/entries/exploration/dimensions.json"
@@ -5052,8 +5052,8 @@ hash = "db683b65dc15a03dd6de2d34d5dc6ad0e3490744ced513a8cc584784ee9d3d8b"
 metafile = true
 
 [[files]]
-file = "mods/create-galore-bridge-1.187.0.jar"
-hash = "f0923ff74fa80acfb3ce7d42198c80b27cb7c430250f271ef7129cb3f90170c4"
+file = "mods/create-galore-bridge-1.188.0.jar"
+hash = "f51640a7059b1ae9ce571c42bed0e6bb4465a35bffb0daedda53d4da53472649"
 
 [[files]]
 file = "mods/create-galore-fishing-0.3.30.jar"
