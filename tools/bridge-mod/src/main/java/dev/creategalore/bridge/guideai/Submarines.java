@@ -48,13 +48,13 @@ final class Submarines {
         JsonObject o = new JsonObject();
         o.addProperty("type", "object");
         JsonObject p = new JsonObject();
-        p.add("crew", WorldTools.prop("integer", "1 to 4 aboard."));
-        p.add("beds", WorldTools.prop("integer", "0 to 4."));
-        p.add("storage", WorldTools.prop("integer", "Barrels, 0 to 8."));
-        p.add("hull", WorldTools.prop("string", "copper (85 m) or iron (101 m)."));
-        p.add("windows", WorldTools.prop("boolean", "Pressurized Glass window at the bow."));
-        p.add("colour", WorldTools.prop("string", "Seat and bed dye."));
-        p.add("speed", WorldTools.prop("number", "Wished blocks/s under water, 0 any."));
+        p.add("crew", WorldTools.prop("integer", "1-4."));
+        p.add("beds", WorldTools.prop("integer", "0-4."));
+        p.add("storage", WorldTools.prop("integer", "Barrels, 0-8."));
+        p.add("hull", WorldTools.prop("string", "copper or iron."));
+        p.add("windows", WorldTools.prop("boolean", "Bow window."));
+        p.add("colour", WorldTools.prop("string", "Dye."));
+        p.add("speed", WorldTools.prop("number", "Blocks/s, 0 any."));
         o.add("properties", p);
         JsonArray req = new JsonArray();
         p.keySet().forEach(req::add);
@@ -62,7 +62,7 @@ final class Submarines {
         o.addProperty("additionalProperties", false);
         JsonObject a = new JsonObject();
         a.addProperty("type", "array");
-        a.addProperty("description", "Empty, or one submarine the server lays out (hull, air, ballast, drive, helm, hatch) in place of layers and blocks.");
+        a.addProperty("description", "Empty or one submarine.");
         a.add("items", o);
         return a;
     }

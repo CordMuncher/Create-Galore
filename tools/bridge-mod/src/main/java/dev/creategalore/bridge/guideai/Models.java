@@ -128,8 +128,7 @@ public final class Models {
 
         JsonObject props = new JsonObject();
         props.add("title", WorldTools.prop("string", "A few words naming the model, or empty."));
-        props.add("size_x", WorldTools.prop("integer", "Width in blocks, 1 to " + MAX_SIZE + "; 0 to fit from_world, "
-                + "airship, plane or submarine."));
+        props.add("size_x", WorldTools.prop("integer", "Width in blocks, 1 to " + MAX_SIZE + "; 0 to fit from_world or a laid-out vehicle."));
         props.add("size_y", WorldTools.prop("integer", "Height in blocks, 1 to " + MAX_SIZE + "; 0 to fit, as for size_x."));
         props.add("size_z", WorldTools.prop("integer", "Depth in blocks, 1 to " + MAX_SIZE + "; 0 to fit, as for size_x."));
         JsonObject fromWorld = new JsonObject();
